@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d56e0315cc6e10318c00f0196e4b99841190d90c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-592-carryover-v1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/706",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "59fc02fc638e68ceb0767d0093ff9c32eecd66167e8926e8204627148573787c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/706",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/733",
+    "action": "delivery",
+    "detection_head": "b792e2379e33f92f74885a32c19b394097a0118b",
+    "context_sha256": "48cbaa4ae071db59c59f1faf58b646384f3a4c4d72dd59f036a92674fd530ed8",
+    "operator": "Sail-Li",
+    "worker": "Codex-Sail-Li",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/706",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42740906422",
+    "diagnosis": "签发前另一工单 PR #734 把 main 推进到 94137491，入口按预期要求整合主线。",
+    "next_action": "已核对主线差异不涉及本次编辑器和 CLI 代码，整合 main 后在同一候选工作树重跑签发及 CI。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T02:10:27.567075+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-10T02:12:14.884454+00:00",
+  "sha256": "a7e5b287b52d92dcca60f15e5a0ccac6c7ab8e052e70e6e5be215002e84b92ed"
+}

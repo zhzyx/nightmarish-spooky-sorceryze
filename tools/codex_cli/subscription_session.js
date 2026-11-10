@@ -19,6 +19,29 @@ function assistantKey(message) {
     ]);
 }
 const fault = () => new Error('SUBSCRIPTION_SESSION_UNAVAILABLE');
+const mandateMarker = '\nHost mandate (actual identity and permission must be authenticated by host):\n';
+
+// The framework renders the current user outcome as one field of a canonical
+// JSON mandate. Only that field may be sent separately on an acknowledged thread.
+function mandateSnapshot(system) {
+    const index = system.findIndex(message => typeof message.content === 'string' && message.content.includes(mandateMarker));
+    if (index < 0) return null;
+    const text = system[index].content;
+    const start = text.indexOf(mandateMarker) + mandateMarker.length;
+    if (text.includes(mandateMarker, start) || system.slice(index + 1).some(message =>
+        typeof message.content === 'string' && message.content.includes(mandateMarker))) return null;
+    const rendered = text.slice(start).trimEnd();
+    try {
+        const mandate = JSON.parse(rendered);
+        if (typeof mandate?.outcome !== 'string' || JSON.stringify(mandate) !== rendered) return null;
+        const policy = system.slice();
+        policy[index] = {...system[index], content: text.slice(0, start) +
+            JSON.stringify({...mandate, outcome: null}) + text.slice(start + rendered.length)};
+        return {policy: hash(policy), outcome: mandate.outcome};
+    } catch {
+        return null;  // Unrecognized or too deeply nested: transmit the original host text.
+    }
+}
 function fileIdentity(file) {
     try {
         const s = lstatSync(file, {bigint: true});
@@ -99,6 +122,13 @@ class Subscription {
         this.rpc = channel;
         this.cwd = cwd;
         this.features = features;
+        channel.notify = packet => {
+            const params = packet.params;
+            if (this.thread && params?.threadId === this.thread &&
+                (packet.method === 'thread/compacted' || params.item?.type === 'contextCompaction'))
+                this.compacted = true;
+            this.onTurn?.(packet);
+        };
     }
     async initialize() {
         const rpc = this.rpc;
@@ -139,12 +169,19 @@ class Subscription {
         const history = input.messages.filter(m => m.role !== 'system'),
               system = input.messages.filter(m => m.role === 'system');
         const keys = history.map(hash), currentSystem = hash(system);
+        const mandate = mandateSnapshot(system);
         const controls = {...input.tool_context};
         delete controls.tool_rounds;
         const binding = hash([scope, input.model, input.reasoning_effort, controls, input.available_tools]);
-        const reuse = this.thread && binding === this.binding && this.keys?.length < keys.length &&
-            this.keys.every((v, i) => keys[i] === v) && this.reply &&
-            assistantKey(history[this.keys.length]) === this.reply;
+        let rebuild = null;
+        if (!this.thread) rebuild = 'new_thread';
+        else if (this.compacted) rebuild = 'context_compacted';
+        else if (binding !== this.binding) rebuild = 'binding_changed';
+        else if (!this.keys || this.keys.length >= keys.length || !this.keys.every((v, i) => keys[i] === v))
+            rebuild = 'history_prefix_changed';
+        else if (!this.reply || assistantKey(history[this.keys.length]) !== this.reply)
+            rebuild = 'accepted_reply_changed';
+        const reuse = rebuild === null;
         if (!reuse) {
             try {
                 const r = await this.rpc.call('thread/start', {
@@ -162,6 +199,7 @@ class Subscription {
                     r.sandbox.networkAccess !== false)
                     throw fault();
                 this.thread = r.thread.id;
+                this.compacted = false;
             } catch {
                 const e = fault();
                 e.beforeTurn = true;
@@ -171,13 +209,20 @@ class Subscription {
             progress('thread_started');
         }
         const items = reuse ? history.slice(this.keys.length) : input.messages;
+        let instructions = {};
+        if (reuse && this.system !== currentSystem) {
+            instructions = mandate && this.mandatePolicy === mandate.policy ?
+                {host_mandate_update: {field: 'outcome', value: mandate.outcome}} :
+                {current_host_instructions: system};
+        }
         const text = reuse ? JSON.stringify({
             messages: items,
             tool_context: input.tool_context,
-            ...(this.system !== currentSystem ? {current_host_instructions: system} : {})
+            ...instructions
         }) :
                              prompt(input);
         const rpc = this.rpc, thread = this.thread;
+        const updateLostContext = () => instructions.host_mandate_update && this.compacted;
         let turn, resolve, reject, early = [], result = '', total = 0, previewParser = new (require('./content_preview').ContentPreview)(), preview = '';
         const terminal = new Promise((ok, no) => {
             resolve = ok;
@@ -200,6 +245,7 @@ class Subscription {
             if (p.method === 'item/agentMessage/delta') {
                 total += Buffer.byteLength(p.params.delta || '');
                 if (total > 2 * 1024 * 1024) throw fault();
+                if (updateLostContext()) return;
                 const next = previewParser.feed(p.params.delta || '');
                 if (next && next !== preview) { preview = next; progress('content_preview', next); }
             }
@@ -211,7 +257,8 @@ class Subscription {
                     resolve(result);
             }
         }
-        rpc.notify = receive;
+        this.onTurn = receive;
+        this.reply = null;  // A failed or unacknowledged turn cannot authorize reuse.
         try {
             const r = await rpc.call('turn/start', {
                 threadId: thread,
@@ -225,13 +272,20 @@ class Subscription {
             for (const p of early) receive(p);
             early = [];
             const output = await terminal;
+            if (updateLostContext()) {
+                const error = fault();
+                error.bridgeCode = 'CONTEXT_COMPACTED';
+                throw error;
+            }
             this.keys = keys;
             this.system = currentSystem;
+            this.mandatePolicy = mandate?.policy;
             this.reply = null;
-            return {output, mode: reuse ? 'incremental' : 'bootstrap', messages: items.length};
+            return {output, mode: reuse ? 'incremental' : 'bootstrap', messages: items.length,
+                inputTextBytes: Buffer.byteLength(text), rebuild};
         } finally {
             clearTimeout(timer);
-            rpc.notify = null;
+            this.onTurn = null;
             rpc.onclose = null;
         }
     }
