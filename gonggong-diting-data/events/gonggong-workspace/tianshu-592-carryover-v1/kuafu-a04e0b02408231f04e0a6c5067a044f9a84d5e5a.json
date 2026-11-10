@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a04e0b02408231f04e0a6c5067a044f9a84d5e5a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-592-carryover-v1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/706",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e133ef33f4c416477066c73b20cece7ed224959b229135e2d53d21bf19b3ea1b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/706",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/746",
+    "action": "user-report",
+    "detection_head": "ba415a3e5011c6ba184312e6181563d901ed18f0",
+    "context_sha256": "0f049fc277fa2d9184a3ed05cac920f001b1453bfa56718f7e13f50df53d9574",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/706",
+    "evidence": "host-context-02b57adb78b84106a1401d052a916dda; recorded_file SHA256 4cb58569deecc364770094b3cda90c39e1e07f3a2e0717f22e55214b9681dae6",
+    "diagnosis": "The installed editor is current. Normal chat resolved the selected worktree adapter at 69efa217 with a 15-second single-event budget. The current adapter flushed the original envelope in 3.06 seconds.",
+    "next_action": "Correct normal send host selection under #747 and revalidate the installation.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T16:11:52.753652+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li, #747",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-10T16:17:48.391413+00:00",
+  "sha256": "d379e3da0d5a394547474cb2eb45e4ad95f0a711f250741c6ffb88964f790432"
+}

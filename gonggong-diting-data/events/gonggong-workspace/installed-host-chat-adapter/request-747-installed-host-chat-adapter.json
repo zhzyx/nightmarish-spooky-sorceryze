@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "request-747-installed-host-chat-adapter",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "installed-host-chat-adapter",
+  "kind": "request",
+  "occurred_at": "2026-11-10T16:29:36.675100+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/747",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [
+    "dispatch-38e634e3b6fb4666a64a7347405be44b"
+  ],
+  "payload": {
+    "scope": "Correct ordinary chat and receipt retry adapter selection when the selected worktree is older than the running editor",
+    "operator": "Sail-Li",
+    "usage": null,
+    "usage_unknown_reason": "No measured usage in host receipt"
+  },
+  "sha256": "057122138febdbdd7a0290d8cfd14536989e97ffe074a6bcfa5244578351c308"
+}
