@@ -40,6 +40,9 @@ def linked_archives():
 test_headers = []
 inventory_path = ARGUMENTS.get("module_build_inventory")
 module_inputs = {}
+# Core, scene, servers, editor and drivers have already registered their archives.
+object_inventory_path = ARGUMENTS.get("engine_object_inventory")
+engine_archives = linked_archives() if object_inventory_path else ()
 # libmodule_<name>.a for each active module.
 for name, path in env.module_list.items():
     env.modules_sources = []
@@ -77,6 +80,20 @@ for name, path in env.module_list.items():
 
 if inventory_path:
     Path(inventory_path).write_text(json.dumps(module_inputs), encoding="utf-8")
+    if object_inventory_path:
+        root = Path(env.Dir("#").abspath)
+        targets = {}
+        for archive in engine_archives:
+            for obj in archive.sources:
+                if not isinstance(obj, File) or root not in Path(obj.abspath).parents:
+                    continue
+                for source in obj.sources:
+                    if isinstance(source, File) and root in Path(source.abspath).parents:
+                        name = Path(source.abspath).relative_to(root).as_posix()
+                        targets.setdefault(name, set()).add(Path(obj.abspath).relative_to(root).as_posix())
+        Path(object_inventory_path).write_text(
+            json.dumps({name: sorted(objects) for name, objects in targets.items()}), encoding="utf-8"
+        )
     Exit(0)
 
 # Generate header to be included in `tests/test_main.cpp` to run module-specific tests.

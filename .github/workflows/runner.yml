@@ -18,11 +18,13 @@ jobs:
   # First stage: Only static checks, fast and prevent expensive builds from running.
 
   static-checks:
-    if: ${{ !vars.DISABLE_GODOT_CI || github.run_attempt > 1 || github.event_name == 'workflow_dispatch' }}
+    if: >-
+      !vars.DISABLE_GODOT_CI || github.run_attempt > 1 ||
+      github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
     name: 📊 Static checks
     uses: ./.github/workflows/static_checks.yml
 
-  # Second stage: Windows PC by default; other platforms are explicitly opt-in.
+  # Release tags validate Windows and macOS. Additional platforms remain opt-in.
 
   android-build:
     name: 🤖 Android
@@ -49,18 +51,19 @@ jobs:
   macos-build:
     name: 🍎 macOS
     needs: static-checks
-    if: github.event_name == 'workflow_dispatch' && inputs.full_platforms
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.full_platforms) ||
+      startsWith(github.ref, 'refs/tags/')
     uses: ./.github/workflows/macos_builds.yml
 
   modules-build:
-    name: Compile affected engine modules
+    name: Compile affected Windows engine targets
     needs: static-checks
     if: >-
       needs.static-checks.outputs.build-mode == 'modules' &&
-      (github.event_name == 'pull_request' ||
-        (github.event_name == 'push' &&
-         startsWith(github.ref, 'refs/heads/') && github.ref_name != github.event.repository.default_branch &&
-         !startsWith(github.ref, 'refs/heads/codex/submit/')))
+      (github.event_name == 'pull_request' || github.event_name == 'merge_group' ||
+       (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/') &&
+        !startsWith(github.ref, 'refs/heads/codex/submit/')))
     runs-on: windows-latest
     outputs:
       build-mode: ${{ steps.modules.outputs.build-mode }}
@@ -69,14 +72,41 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/godot-deps
-      - name: Compile selected archives
+      - name: Install Direct3D 12 SDK for affected driver objects
+        if: needs.static-checks.outputs.needs-d3d12 == 'true'
+        run: python misc/scripts/install_d3d12_sdk_windows.py --msvc-only
+      - name: Compile selected objects and archives
         id: modules
         env:
           BUILD_BASE: ${{ needs.static-checks.outputs.build-base }}
         run: >-
-          python tools/build_engine_modules.py --committed --base "$env:BUILD_BASE" --build --defer-full --
+          python tools/build_engine_modules.py --ci-platform windows --committed --base "$env:BUILD_BASE" --build --defer-full --
           platform=windows target=editor dev_mode=yes module_text_server_fb_enabled=yes
-          debug_symbols=no d3d12=no angle=no accesskit=no
+          debug_symbols=no d3d12=${{ needs.static-checks.outputs.needs-d3d12 == 'true' && 'yes' || 'no' }}
+          angle=no accesskit=no
+
+  metal-build:
+    name: Compile affected Metal targets
+    needs: static-checks
+    if: >-
+      needs.static-checks.outputs.has-metal == 'true' &&
+      (github.event_name == 'pull_request' || github.event_name == 'merge_group' ||
+       (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/') &&
+        !startsWith(github.ref, 'refs/heads/codex/submit/')))
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/godot-deps
+        with:
+          python-arch: arm64
+      - name: Build from the same candidate and comparison base
+        env:
+          BUILD_BASE: ${{ needs.static-checks.outputs.build-base }}
+        run: >-
+          python3 tools/build_engine_modules.py --ci-platform metal --committed --base "$BUILD_BASE" --build --
+          platform=macos target=editor arch=arm64 metal=yes vulkan=no angle=no accesskit=no
 
   windows-build:
     name: 🏁 Windows
@@ -84,15 +114,17 @@ jobs:
     permissions:
       contents: read
       actions: read
-    # Manual requests, integration builds and unknown inputs keep the existing matrix.
+    # Unknown/shared inputs validate one editor. Releases and manual requests run the full matrix.
     if: >-
       always() && !cancelled() && needs.static-checks.result == 'success' &&
       (github.event_name != 'push' || !startsWith(github.ref, 'refs/heads/codex/submit/')) &&
-      (github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/') ||
        (needs.static-checks.outputs.build-mode != 'skip' &&
         (needs.modules-build.result == 'skipped' ||
          (needs.modules-build.result == 'success' && needs.modules-build.outputs.build-mode != 'modules'))))
     uses: ./.github/workflows/windows_builds.yml
+    with:
+      editor_only: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/tags/') }}
 
   web-build:
     name: 🌐 Web

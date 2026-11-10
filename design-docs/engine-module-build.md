@@ -13,7 +13,9 @@ scons module-bmp module-tga platform=windows target=editor
 scons module-bmp module-tga platform=macos target=editor vulkan=no accesskit=no
 ```
 
-## 按 Git 差异选择
+## 提交后的自动编译
+
+推送分支、创建或更新 PR、进入合并队列和更新 main 都会自动比较 Git 差异。日常提交无需指定编译目标。下列命令供本机预览和复现。
 
 ```sh
 # 预览当前工作目录相对 HEAD 的改动，含已暂存、未暂存和未跟踪文件
@@ -29,12 +31,15 @@ python3 tools/build_engine_modules.py --base origin/main --committed --build -- 
 | 当前变更 | 自动构建行为 |
 | --- | --- |
 | 仅变更已列出的仓库说明、需求 Markdown 或采集记录，或没有变更 | 输出 skip，跳过 SCons，CI 保留静态检查与工单门禁 |
-| 修改现有 modules 子目录内的 C、C++ 或 Objective-C 实现 | 输出 modules 预选。执行时读取当前 SCons 配置下各库的实际对象源文件，命中的库一起编译 |
+| 修改已注册模块的独立实现 | 从当前 SCons 图选出实际消费该源文件的模块归档 |
+| 修改 core、scene、editor、servers 或 drivers 中的独立实现 | 编译当前构建图里直接消费它的对象及其依赖。一次提交中的多个对象和模块归档会一起处理 |
 | 当前平台未启用对应模块或未消费该源文件 | 转完整构建 |
 | 新增、删除、移动原生文件，或涉及公共头、注册入口、测试、生成器、嵌入资源、第三方库、构建配置或未分类路径 | 转完整构建 |
 | 缺失基线或无法确认构建图 | 转完整构建。归档目标的实际编译错误直接报错 |
 
-CI 在 PR 的合并树以及普通分支推送上编译匹配的 Windows MSVC 编辑器模块。首次分支推送使用与默认分支的共同祖先。原生变动进入默认分支或合并队列时执行现有 Windows 完整矩阵，覆盖最终链接、模板、程序运行与产物。手动启动仍可运行完整构建。模块静态库可供随后链接，部署编辑器需走完整构建入口。
+CI 使用 Windows MSVC 处理通用目标，按需安装 D3D12 SDK。Metal 驱动由 macOS arm64 编译。两类源文件在同一次提交中改变时，两台构建机各自处理其负责的文件。编译命令前的 `Selected SCons targets` 给出实际选中的目标。首次分支推送以默认分支共同祖先为基线，签发分支由对应 PR 验证。
+
+普通分支、PR、合并队列和 main 自动局部编译。仅 Metal 实现改动由 macOS 处理，Windows 跳过。纯文档在这些事件中同样跳过引擎。公共接口、构建系统或缺少可靠映射时，按所在平台验证编辑器。推送发布标签会自动对 Windows 和 macOS 运行完整工作流及产物验收，即使标签指向纯文档提交。手动完整构建继续可用，其他平台通过 full_platforms 选择。更多验收见[提交后自动选择渲染编译范围](render-auto-build.md)。
 
 ## 实测与来源
 
