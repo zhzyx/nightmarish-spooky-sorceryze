@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-34c0b134209af6275cf58ad49983319bc512c89b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-module-build",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/739",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6a7f7f6ae5908b13411013d91d1692d7aa0fd8526e9750dee0eaf82c58876cb6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/739",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/740",
+    "action": "delivery",
+    "detection_head": "5cd964c4fc0746311d674fd5d80e05ba1765a5da",
+    "context_sha256": "a739e765a0e6e03fe163ba480016942401c286d586712ddeb11a979fa062b9ce",
+    "operator": "Sail-Li",
+    "worker": "codex-739-delivery",
+    "authority_ref": "issue-739-user-authorized-formal-delivery",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/739",
+    "diagnosis": "已登记的派发、审查和排障事件中缺少 kind=request 的来源记录，正式门禁按规则拒绝。",
+    "next_action": "将真实需求及处置记录暂存，重新签发。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T02:54:51.823642+00:00",
+    "attempted": "已按实际工单回读结果用谛听 record 写入精确绑定 #739 的 request 事件，接收摘要 b211820605daac2553e7287de414af2a8c2f4760289213d6d95a4285b6a7fd0d。",
+    "repair_owner": "Sail-Li",
+    "continuable": "继续原工单。"
+  },
+  "occurred_at": "2026-11-10T02:56:29.100791+00:00",
+  "sha256": "10c4aca994e28788b94d7852e37445875e2e748d576678cd35ec49e67fc2c701"
+}

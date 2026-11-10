@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "request-739-engine-module-build",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-module-build",
+  "kind": "request",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/739",
+  "occurred_at": "2026-11-10T02:55:21.748054+00:00",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "origin": "external-authorized-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee"
+  },
+  "payload": {
+    "action": "record_authorized_issue_binding",
+    "issue_number": 739,
+    "intake_status": "status:in-progress",
+    "scope": "工程根按模块独立编译，按 Git 差异选择跳过、模块归档或完整构建。",
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage in host receipt",
+    "design": {
+      "path": "design-docs/engine-module-build.md",
+      "sha256": "7bb58c0e86ed1c7fd66f0cc85aa0df582488eff57c3316a98206bedef1b2e0a5"
+    }
+  },
+  "evidence_refs": [],
+  "sha256": "b211820605daac2553e7287de414af2a8c2f4760289213d6d95a4285b6a7fd0d"
+}

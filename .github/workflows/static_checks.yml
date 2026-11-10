@@ -2,6 +2,12 @@ name: 📊 Static Checks
 on:
   workflow_call:
     outputs:
+      build-base:
+        description: Resolved base commit for the engine scope.
+        value: ${{ jobs.static-checks.outputs.build-base }}
+      build-mode:
+        description: Engine build scope for this checkout.
+        value: ${{ jobs.static-checks.outputs.build-mode }}
       changed-files:
         description: A list of changed files, pre-filtered for parsing by clangd-tidy.
         value: ${{ jobs.static-checks.outputs.changed-files }}
@@ -16,6 +22,8 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 30
     outputs:
+      build-base: ${{ steps.engine-scope.outputs.build-base }}
+      build-mode: ${{ steps.engine-scope.outputs.build-mode }}
       changed-files: '"${{ steps.changed-files.outputs.clangd_all_changed_files }}"' # Wrap with quotes to bookend internal quote separators.
       sources-changed: ${{ steps.changed-files.outputs.sources_any_changed }}
     steps:
@@ -29,6 +37,17 @@ jobs:
       - name: .gitignore checks (gitignore_check.sh)
         run: |
           bash ./misc/scripts/gitignore_check.sh
+
+      - name: Plan engine compilation
+        id: engine-scope
+        env:
+          BUILD_BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+          NEW_BRANCH_BASE: >-
+            ${{ startsWith(github.ref, 'refs/heads/') && github.ref_name != github.event.repository.default_branch &&
+                format('refs/remotes/origin/{0}', github.event.repository.default_branch) || '' }}
+        run: |
+          python3 tools/test_build_engine_modules.py
+          python3 tools/build_engine_modules.py --committed --base "$BUILD_BASE" --new-branch-base "$NEW_BRANCH_BASE"
 
       - name: Get changed files
         id: changed-files
