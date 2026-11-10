@@ -71,6 +71,9 @@ var workflow_mode = ""
 var inspector_fields: VBoxContainer
 var service_choice: OptionButton
 var endpoint_edit: LineEdit
+var kimi_model_edit: LineEdit
+var kimi_model_label: Label
+var kimi_auth_label: Label
 var image_model_choice: OptionButton
 var mesh_model_choice: OptionButton
 var image_model_label: Label
@@ -1350,7 +1353,7 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	title.text = "生成服务"
 	service_fields.add_child(title)
 	service_choice = OptionButton.new()
-	for choice in [["offline", "离线复制演示（不调用模型）"], ["comfy", "ComfyUI 图像与网格生成"], ["legacy", "兼容已有服务配置（高级）"], ['codex', 'Codex CLI 图像 + 本机网格（沿用当前登录额度）'], ['codex_modeling', 'GPT CLI 图像与指令建模（无需 ComfyUI）'], ['codex_sculpt', 'GPT CLI 图像与复杂网格建模（Blender）']]:
+	for choice in [["offline", "离线复制演示（不调用模型）"], ["comfy", "ComfyUI 图像与网格生成"], ["legacy", "兼容已有服务配置（高级）"], ['codex', 'Codex CLI 图像 + 本机网格（沿用当前登录额度）'], ['codex_modeling', 'GPT CLI 图像与指令建模（无需 ComfyUI）'], ['codex_sculpt', 'GPT CLI 图像与复杂网格建模（Blender）'], ['kimi_native', 'Kimi Native 文字／图片建模（Godot 原语）']]:
 		service_choice.add_item(choice[1])
 		service_choice.set_item_metadata(service_choice.item_count - 1, choice[0])
 	service_fields.add_child(service_choice)
@@ -1388,6 +1391,14 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	cli_fields.add_child(billing)
 	cli_path_edit.text_changed.connect(func(_text): _service_settings_changed())
 	endpoint_edit = line(service_fields, "生成服务地址，如 http://127.0.0.1:8188", "http://127.0.0.1:8188")
+	kimi_model_label = Label.new()
+	kimi_model_label.text = 'Kimi 模型 ID'
+	service_fields.add_child(kimi_model_label)
+	kimi_model_edit = line(service_fields, 'Kimi 模型，例如 k3.1-pro', 'k3.1-pro')
+	kimi_auth_label = Label.new()
+	kimi_auth_label.text = 'Kimi 是唯一语义建模模型；密钥从 KIMI_API_KEY 环境读取，不保存到工作流、设置或日志。网格由固定 Godot 构造器生成。'
+	kimi_auth_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	service_fields.add_child(kimi_auth_label)
 	var image_label = Label.new()
 	image_model_label = image_label
 	image_label.text = "图像模型"
@@ -1424,6 +1435,7 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	service_fields.add_child(guide)
 	service_choice.item_selected.connect(func(_index): _service_settings_changed())
 	endpoint_edit.text_changed.connect(func(_text): _service_settings_changed())
+	kimi_model_edit.text_changed.connect(func(_text): _service_settings_changed())
 	image_model_choice.item_selected.connect(func(_index): _service_settings_changed())
 	mesh_model_choice.item_selected.connect(func(_index): _service_settings_changed())
 	if settings.get_value("service", "mode", "") == "legacy": service_choice.select(2)
@@ -1432,9 +1444,9 @@ func _restore_service_settings(settings: ConfigFile):
 	service_ui_loading = true
 	if FileAccess.file_exists(service_config_path):
 		var loaded = JSON.parse_string(FileAccess.get_file_as_string(service_config_path))
-		if loaded is Dictionary and loaded.get("schema_version") == 1 and loaded.get("mode") in ["offline", "comfy", 'codex', 'codex_modeling', 'codex_sculpt']:
+		if loaded is Dictionary and loaded.get("schema_version") == 1 and loaded.get("mode") in ["offline", "comfy", 'codex', 'codex_modeling', 'codex_sculpt', 'kimi_native']:
 			service_saved = {"schema_version":1, "mode":loaded.mode, "endpoint":str(loaded.get("endpoint", "http://127.0.0.1:8188")), "image_model":str(loaded.get("image_model", "")), "mesh_model":str(loaded.get("mesh_model", ""))}
-			service_choice.select(5 if service_saved.mode == 'codex_sculpt' else 4 if service_saved.mode == 'codex_modeling' else 3 if service_saved.mode == 'codex' else 1 if service_saved.mode == "comfy" else 0)
+			service_choice.select(6 if service_saved.mode == 'kimi_native' else 5 if service_saved.mode == 'codex_sculpt' else 4 if service_saved.mode == 'codex_modeling' else 3 if service_saved.mode == 'codex' else 1 if service_saved.mode == "comfy" else 0)
 			if service_saved.mode in ['codex', 'codex_modeling', 'codex_sculpt']:
 				service_saved['cli_path'] = str(loaded.get('cli_path', 'codex'))
 				cli_path_edit.text = service_saved.cli_path
@@ -1442,9 +1454,12 @@ func _restore_service_settings(settings: ConfigFile):
 				service_saved['blender_path'] = str(loaded.get('blender_path', blender_path_edit.text))
 				service_saved['builder_path'] = str(loaded.get('builder_path', ''))
 				blender_path_edit.text = service_saved.blender_path
-			if service_saved.mode == 'codex_modeling':
+			if service_saved.mode in ['codex_modeling', 'kimi_native']:
 				service_saved['godot_path'] = str(loaded.get('godot_path', ''))
 				service_saved['builder_path'] = str(loaded.get('builder_path', ''))
+			if service_saved.mode == 'kimi_native':
+				service_saved['kimi_model'] = str(loaded.get('kimi_model', 'k3.1-pro'))
+				kimi_model_edit.text = service_saved.kimi_model
 			endpoint_edit.text = service_saved.endpoint
 			_set_model_options(image_model_choice, [], service_saved.image_model, false)
 			_set_model_options(mesh_model_choice, [], service_saved.mesh_model, false)
@@ -1459,11 +1474,13 @@ func _restore_service_settings(settings: ConfigFile):
 func _generator_description(data: Dictionary) -> String:
 	var kind = str(data.get('type', 'copy'))
 	if kind == 'copy': return '本机离线复制'
+	if _service_mode() == 'kimi_native': return node_label(kind) + '（Kimi Native / Godot 原语）'
 	if _service_mode() == 'codex_sculpt': return node_label(kind) + ('（GPT CLI 指令 / Blender）' if kind.ends_with('mesh') else '（GPT CLI）')
 	if _service_mode() == 'codex_modeling': return node_label(kind) + ('（GPT CLI 指令 / Godot）' if kind.ends_with('mesh') else '（GPT CLI）')
 	return node_label(kind) + ('（Codex CLI / 本机模型）' if _service_mode() == 'codex' else '（ComfyUI）')
 
 func _generator_provider(kind: String) -> String:
+	if _service_mode() == 'kimi_native': return 'kimi_native'
 	if _service_mode() == 'codex_sculpt': return 'codex-sculpt' if kind.ends_with('mesh') else 'codex'
 	if _service_mode() == 'codex_modeling': return 'codex-modeling' if kind.ends_with('mesh') else 'codex'
 	return 'comfy'
@@ -1481,11 +1498,15 @@ func service_draft() -> Dictionary:
 	if value.mode in ['codex', 'codex_modeling', 'codex_sculpt']:
 		value['cli_path'] = cli_path_edit.text.strip_edges()
 		value.image_model = 'builtin'
-	if value.mode == 'codex_modeling':
-		value.endpoint = ''
+	if value.mode in ['codex_modeling', 'kimi_native']:
 		value.mesh_model = ''
 		value['godot_path'] = OS.get_executable_path()
 		value['builder_path'] = ProjectSettings.globalize_path(get_script().resource_path.get_base_dir().path_join('modeling_builder.gd'))
+	if value.mode == 'codex_modeling':
+		value.endpoint = ''
+	if value.mode == 'kimi_native':
+		value.image_model = ''
+		value['kimi_model'] = kimi_model_edit.text.strip_edges()
 	if value.mode == 'codex_sculpt':
 		value.endpoint = ''
 		value.mesh_model = ''
@@ -1510,6 +1531,8 @@ func _set_model_options(choice: OptionButton, names: Array, selected_name: Strin
 
 func _service_settings_changed():
 	if service_ui_loading: return
+	if _service_mode() == 'kimi_native' and endpoint_edit.text.strip_edges() == 'http://127.0.0.1:8188':
+		endpoint_edit.text = 'https://api.kimi.com/coding/v1'
 	service_report = {}
 	service_report_draft = ""
 	_update_service_summary()
@@ -1520,6 +1543,7 @@ func _update_service_summary():
 	var cli_mode = mode in ['codex', 'codex_modeling', 'codex_sculpt']
 	var modeling_mode = mode in ['codex_modeling', 'codex_sculpt']
 	var sculpt_mode = mode == 'codex_sculpt'
+	var kimi_mode = mode == 'kimi_native'
 	if graph != null:
 		for data in nodes:
 			var description = graph.get_node_or_null(NodePath(str(data.id) + '/GeneratorDescription'))
@@ -1528,20 +1552,24 @@ func _update_service_summary():
 		parameter_form.set_cli_mode(cli_mode)
 		parameter_form.set_modeling_mode(modeling_mode)
 		parameter_form.set_sculpt_mode(sculpt_mode)
+		parameter_form.set_kimi_mode(kimi_mode)
 	if cli_fields != null: cli_fields.visible = cli_mode
 	if blender_fields != null: blender_fields.visible = sculpt_mode
 	if cli_billing != null:
 		cli_billing.text = '图像与建模指令均使用当前 Codex CLI 登录额度；Blender 根据固定建模器构造连续表面。请通过预览检查人物、有机结构和隐藏面；无需 ComfyUI 或三维生成模型。' if sculpt_mode else '图像与建模指令均使用当前 Codex CLI 登录额度；Godot 根据指令构造 Mesh。无需 ComfyUI 或本机三维模型；复杂人物和有机造型的效果仍需验证。' if modeling_mode else '复用 Codex CLI 当前的 ChatGPT 登录；图像生成与编辑计入同一 Codex 额度。网格由本机模型执行。'
 	if managed_comfy_panel != null: managed_comfy_panel.visible = mode == 'codex'
-	if service_guide != null: service_guide.visible = not cli_mode
+	if service_guide != null: service_guide.visible = not cli_mode and not kimi_mode
 	if cli_mode and _model_name(image_model_choice) != 'builtin':
 		_set_model_options(image_model_choice, ['builtin'], 'builtin', true)
 	endpoint_edit.visible = not cli_mode
-	endpoint_edit.editable = mode == 'comfy'
-	image_model_choice.visible = not modeling_mode
-	mesh_model_choice.visible = not modeling_mode
-	if image_model_label != null: image_model_label.visible = not modeling_mode
-	if mesh_model_label != null: mesh_model_label.visible = not modeling_mode
+	endpoint_edit.editable = mode in ['comfy', 'kimi_native']
+	kimi_model_label.visible = kimi_mode
+	kimi_model_edit.visible = kimi_mode
+	kimi_auth_label.visible = kimi_mode
+	image_model_choice.visible = not modeling_mode and not kimi_mode
+	mesh_model_choice.visible = not modeling_mode and not kimi_mode
+	if image_model_label != null: image_model_label.visible = not modeling_mode and not kimi_mode
+	if mesh_model_label != null: mesh_model_label.visible = not modeling_mode and not kimi_mode
 	image_model_choice.disabled = mode != 'comfy'
 	mesh_model_choice.disabled = mode not in ['comfy', 'codex']
 	if mode == 'offline':
@@ -1550,7 +1578,9 @@ func _update_service_summary():
 		service_status.text = '正在兼容已有的高级服务配置。'
 	elif service_report.is_empty():
 		if service_draft() != service_saved:
-			service_status.text = '服务设置尚未保存。请检测连接并保存。' if modeling_mode else '服务设置尚未保存。请检测连接、选择模型，再保存。'
+			service_status.text = '服务设置尚未保存。请检测连接并保存。' if modeling_mode or kimi_mode else '服务设置尚未保存。请检测连接、选择模型，再保存。'
+		elif kimi_mode:
+			service_status.text = 'Kimi 输出严格建模计划，固定 Godot 构造器生成网格；已恢复设置，待检测。'
 		elif modeling_mode:
 			service_status.text = 'GPT CLI 规划三维结构，Blender 构造连续表面；已恢复设置，待检测。' if sculpt_mode else 'GPT CLI 输出建模指令，Godot 构造网格；已恢复设置，待检测。'
 		else:
@@ -1560,7 +1590,8 @@ func _update_service_summary():
 		if kind == 'copy': label.text = node_label(kind) + '：可用，不调用模型'
 		elif mode == 'offline': label.text = node_label(kind) + '：不可用，尚未连接真实生成服务'
 		elif mode == 'legacy': label.text = node_label(kind) + '：由已有高级配置检查'
-		else: label.text = node_label(kind) + ('：待检测 · GPT 指令与 Blender 连续表面' if sculpt_mode and kind.ends_with('mesh') else '：待检测 · GPT 指令与 Godot 构造' if modeling_mode and kind.ends_with('mesh') else '：待检测')
+		elif kimi_mode and not kind.ends_with('mesh'): label.text = node_label(kind) + '：不可用 · Kimi Native 仅生成网格'
+		else: label.text = node_label(kind) + ('：待检测 · Kimi 严格计划与 Godot 原语' if kimi_mode else '：待检测 · GPT 指令与 Blender 连续表面' if sculpt_mode and kind.ends_with('mesh') else '：待检测 · GPT 指令与 Godot 构造' if modeling_mode and kind.ends_with('mesh') else '：待检测')
 
 func _using_legacy_service() -> bool:
 	return _service_mode() == "legacy" or (factory_edit != null and not factory_edit.text in ["editor_demo:factory", "comfy_provider:factory"])
@@ -1586,6 +1617,11 @@ func save_service_settings():
 	if draft.mode in ['comfy', 'codex'] and not _valid_service_endpoint(draft.endpoint):
 		_show_run_problem("服务地址应为 http:// 或 https:// 加主机与端口，不可包含账号、密码、查询参数或路径。请修正后重新检测。")
 		return
+	if draft.mode == 'kimi_native':
+		draft.endpoint = draft.endpoint.trim_suffix('/')
+		if draft.endpoint not in ['https://api.kimi.com/coding/v1', 'https://api.moonshot.cn/v1', 'https://api.moonshot.ai/v1'] or draft.kimi_model not in ['k3', 'k3-256k', 'k3.1-pro', 'k3.1-pro-highspeed']:
+			_show_run_problem('请选择官方 Kimi HTTPS 接口和受支持的 K3／K3.1 模型；地址不可包含凭据或额外路径。')
+			return
 	var temporary = service_config_path + ".tmp-" + str(Time.get_ticks_usec())
 	var output = FileAccess.open(temporary, FileAccess.WRITE)
 	if output == null:
@@ -1610,7 +1646,7 @@ func save_service_settings():
 		_show_run_problem("服务配置已写入，但运行环境设置保存失败，请检查用户目录。")
 		return
 	_update_service_summary()
-	service_status.text = '已保存 GPT CLI 与 Blender 建模设置；无需 ComfyUI 或三维生成模型。' if draft.mode == 'codex_sculpt' else '已保存 GPT CLI 指令建模设置；网格由 Godot 构造，无需 ComfyUI。' if draft.mode == 'codex_modeling' else '已保存 CLI 图像与本机网格设置；图像沿用当前 CLI 登录额度。' if draft.mode == 'codex' else "已保存生成服务设置；检测通过后可明确查看各类生成能力。" if draft.mode == "comfy" else "已保存离线复制模式；该模式不调用生成模型。"
+	service_status.text = '已保存 Kimi Native 设置；密钥仍只从环境读取，网格由固定 Godot 构造器生成。' if draft.mode == 'kimi_native' else '已保存 GPT CLI 与 Blender 建模设置；无需 ComfyUI 或三维生成模型。' if draft.mode == 'codex_sculpt' else '已保存 GPT CLI 指令建模设置；网格由 Godot 构造，无需 ComfyUI。' if draft.mode == 'codex_modeling' else '已保存 CLI 图像与本机网格设置；图像沿用当前 CLI 登录额度。' if draft.mode == 'codex' else "已保存生成服务设置；检测通过后可明确查看各类生成能力。" if draft.mode == "comfy" else "已保存离线复制模式；该模式不调用生成模型。"
 	if status != null: status.text = service_status.text
 	if service_config_link != null: service_config_link.hide()
 
@@ -1621,7 +1657,7 @@ func check_service():
 	if _service_mode() == "legacy":
 		service_status.text = "旧配置由原服务适配器检查。选择 ComfyUI 可在本界面检测地址与模型。"
 		return
-	service_status.text = "正在检测 Codex CLI 与 Blender 建模环境；不会发起生成…" if _service_mode() == 'codex_sculpt' else "正在检测 Codex CLI 与 Godot 建模环境；不会发起生成…" if _service_mode() == 'codex_modeling' else "正在检测连接、节点和模型列表；不会生成内容或下载模型…"
+	service_status.text = '正在检测 Kimi 官方接口、模型与 Godot 构造器；不会发起生成…' if _service_mode() == 'kimi_native' else "正在检测 Codex CLI 与 Blender 建模环境；不会发起生成…" if _service_mode() == 'codex_sculpt' else "正在检测 Codex CLI 与 Godot 建模环境；不会发起生成…" if _service_mode() == 'codex_modeling' else "正在检测连接、节点和模型列表；不会生成内容或下载模型…"
 	launch("service-check", {"service":service_draft()})
 
 func _apply_service_check(data: Dictionary, checked_draft: Dictionary):
@@ -1645,18 +1681,20 @@ func _apply_service_check(data: Dictionary, checked_draft: Dictionary):
 
 func _service_blocker(kind: String, data: Dictionary = {}) -> String:
 	if kind == "copy" or _using_legacy_service(): return ""
-	if kind.ends_with('mesh') and managed_comfy_panel != null:
+	if kind.ends_with('mesh') and managed_comfy_panel != null and _service_mode() == 'codex':
 		var bundle_problem: String = managed_comfy_panel.bundled_mesh_blocker()
 		if not bundle_problem.is_empty(): return bundle_problem
-	if _service_mode() not in ['comfy', 'codex', 'codex_modeling', 'codex_sculpt']:
+	if _service_mode() not in ['comfy', 'codex', 'codex_modeling', 'codex_sculpt', 'kimi_native']:
 		return "当前为离线复制模式，无法生成图像或网格。请点击“配置生成服务”连接真实服务。"
 	if service_saved.is_empty() or service_draft() != service_saved:
 		return "生成服务设置尚未保存。请在 AI 设置中检测连接、选择模型并保存。"
+	if _service_mode() == 'kimi_native' and not kind.ends_with('mesh'):
+		return 'Kimi Native 仅支持文字生成网格和图像生成网格，不支持二维图像节点。'
 	var effective_prompt = (str(data.get("parameters", {}).get("prompt", "")) + "\n" + str(data.get("text", ""))).strip_edges()
-	var redraw = kind == "image_to_mesh" and not effective_prompt.is_empty() and _service_mode() not in ['codex_modeling', 'codex_sculpt']
-	if _service_mode() not in ['codex', 'codex_modeling', 'codex_sculpt'] and (kind != "image_to_mesh" or redraw) and service_saved.image_model.is_empty():
+	var redraw = kind == "image_to_mesh" and not effective_prompt.is_empty() and _service_mode() not in ['codex_modeling', 'codex_sculpt', 'kimi_native']
+	if _service_mode() not in ['codex', 'codex_modeling', 'codex_sculpt', 'kimi_native'] and (kind != "image_to_mesh" or redraw) and service_saved.image_model.is_empty():
 		return "该节点的图像重绘需要图像模型，请检测模型并保存选择。" if redraw else "尚未选择图像模型，请检测当前服务中的模型并保存选择。"
-	if kind.ends_with("mesh") and _service_mode() not in ['codex_modeling', 'codex_sculpt'] and service_saved.mesh_model.is_empty():
+	if kind.ends_with("mesh") and _service_mode() not in ['codex_modeling', 'codex_sculpt', 'kimi_native'] and service_saved.mesh_model.is_empty():
 		return "尚未选择网格模型，请检测当前服务中的模型并保存选择。"
 	if not service_report.is_empty() and service_report_draft == JSON.stringify(service_draft()):
 		if redraw:

@@ -29,6 +29,7 @@ var _dirty_numbers: Dictionary = {}
 var _cli_mode = false
 var _modeling_mode = false
 var _sculpt_mode = false
+var _kimi_mode = false
 
 func _init():
 	name = "GenerationParameterForm"
@@ -175,21 +176,26 @@ func set_sculpt_mode(enabled: bool):
 	_sculpt_mode = enabled
 	_apply_cli_controls()
 
+func set_kimi_mode(enabled: bool):
+	_kimi_mode = enabled
+	_apply_cli_controls()
+
 func _apply_cli_controls():
 	var generator = kind != 'copy'
-	var modeling_mesh = _modeling_mode and kind.ends_with('mesh')
-	cli_hint.visible = (_cli_mode or _modeling_mode) and generator
-	cli_hint.text = 'GPT 根据描述和参考图规划完整三维形态与隐藏面，Blender 构造连续表面；请预览检查人物比例、有机结构及背面。无需 ComfyUI 或三维生成模型。' if modeling_mesh and _sculpt_mode else 'GPT 根据描述或参考图输出建模指令，Godot 构造基础形状与材质；无需 ComfyUI 或三维模型。复杂人物和有机造型的效果仍需验证。' if modeling_mesh else 'CLI 图像按提示词及参考图生成；尺寸为目标要求，会采用支持的接近尺寸。图像不使用本机模型的随机种子、采样步数或重绘强度。'
-	rows.prompt.text = ('建模要求（可选，结合源图推断结构）' if _modeling_mode else '提示词（可选，填写后先重绘图像）') if kind == 'image_to_mesh' else ('建模要求' if modeling_mesh else '提示词')
+	var instruction_mode = _modeling_mode or _kimi_mode
+	var modeling_mesh = instruction_mode and kind.ends_with('mesh')
+	cli_hint.visible = (_cli_mode or instruction_mode) and generator
+	cli_hint.text = 'Kimi 是唯一语义建模模型，根据描述或参考图返回严格建模计划，固定 Godot 构造器生成基础形状与材质；采样、随机种子和网格提取参数不适用。' if _kimi_mode else 'GPT 根据描述和参考图规划完整三维形态与隐藏面，Blender 构造连续表面；请预览检查人物比例、有机结构及背面。无需 ComfyUI 或三维生成模型。' if modeling_mesh and _sculpt_mode else 'GPT 根据描述或参考图输出建模指令，Godot 构造基础形状与材质；无需 ComfyUI 或三维模型。复杂人物和有机造型的效果仍需验证。' if modeling_mesh else 'CLI 图像按提示词及参考图生成；尺寸为目标要求，会采用支持的接近尺寸。图像不使用本机模型的随机种子、采样步数或重绘强度。'
+	rows.prompt.text = ('建模要求（可选，结合源图推断结构）' if instruction_mode else '提示词（可选，填写后先重绘图像）') if kind == 'image_to_mesh' else ('建模要求' if modeling_mesh else '提示词')
 	for key in ['width', 'height']:
 		rows[key].visible = generator and not modeling_mesh
 	for key in ['mesh_steps', 'mesh_resolution', 'octree_resolution', 'mesh_threshold', 'mesh_algorithm']:
-		rows[key].visible = kind.ends_with('mesh') and not _modeling_mode
-	rows.seed.visible = generator and not _modeling_mode and (not _cli_mode or kind.ends_with('mesh'))
+		rows[key].visible = kind.ends_with('mesh') and not instruction_mode
+	rows.seed.visible = generator and not instruction_mode and (not _cli_mode or kind.ends_with('mesh'))
 	rows.seed.get_child(0).text = '网格随机种子' if _cli_mode and kind.ends_with('mesh') else '随机种子'
-	rows.steps.visible = generator and not _cli_mode and not _modeling_mode
-	rows.denoise.visible = not _cli_mode and not _modeling_mode and kind in ['image_to_image', 'image_to_mesh']
-	advanced_toggle.visible = generator and not _modeling_mode and (not _cli_mode or kind.ends_with('mesh'))
+	rows.steps.visible = generator and not _cli_mode and not instruction_mode
+	rows.denoise.visible = not _cli_mode and not instruction_mode and kind in ['image_to_image', 'image_to_mesh']
+	advanced_toggle.visible = generator and not instruction_mode and (not _cli_mode or kind.ends_with('mesh'))
 	if not advanced_toggle.visible: advanced_box.hide()
 
 func set_developer_mode(enabled: bool):

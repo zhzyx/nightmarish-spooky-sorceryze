@@ -55,6 +55,13 @@ MESSAGES = {
     "editor_command_failed": "操作未完成。请检查节点输入与本机设置；本机诊断已记录不含凭据的错误类别。",
     "modeling_runtime_missing": "指令建模需要有效的 Godot 程序和内置构造工具，请使用包含该功能的马良引擎。",
     "sculpt_runtime_missing": "复杂网格构造器尚未就绪，请在设置的环境页选择 Blender 4 或更高版本，并检查内置构造工具。",
+    "kimi_key_missing": "未检测到 KIMI_API_KEY（或 MOONSHOT_API_KEY）环境变量；请在本机设置后重启马良。",
+    "kimi_endpoint_invalid": "Kimi 服务地址或模型不受支持；只允许官方 HTTPS 建模接口。",
+    "kimi_auth_required": "Kimi 接口未接受当前凭据；请检查密钥产品与接口是否匹配。",
+    "kimi_model_unavailable": "当前 Kimi 接口未提供所选模型，请检测模型列表并修正设置。",
+    "kimi_rate_limited": "Kimi 接口当前限流；本任务未自动重发，请稍后显式重试。",
+    "kimi_unreachable": "无法连接 Kimi 官方接口；请检查网络后重试，系统不会自动重复提交。",
+    "api_timeout": "Kimi 建模请求超时；远程回执可能不明，不会自动重发。",
 }
 
 
@@ -85,6 +92,7 @@ def settings(value):
         "godot_path",
         "builder_path",
         "blender_path",
+        "kimi_model",
     }:
         raise ServiceError("service_config_invalid")
     result = dict(schema_version=1, mode="offline", endpoint="http://127.0.0.1:8188", image_model="", mesh_model="")
@@ -92,7 +100,7 @@ def settings(value):
     if (
         result["schema_version"] != 1
         or isinstance(result["schema_version"], bool)
-        or result["mode"] not in ("offline", "comfy", "codex", "codex_modeling", "codex_sculpt")
+        or result["mode"] not in ("offline", "comfy", "codex", "codex_modeling", "codex_sculpt", "kimi_native")
     ):
         raise ServiceError("service_config_invalid")
     if not all(isinstance(result[key], str) for key in ("endpoint", "image_model", "mesh_model")):
@@ -109,6 +117,22 @@ def settings(value):
             raise ServiceError("cli_unavailable")
     elif "cli_path" in result:
         raise ServiceError("service_config_invalid")
+    if result["mode"] == "kimi_native":
+        from kimi_provider import DEFAULT_ENDPOINT, DEFAULT_MODEL, validate_endpoint, validate_model
+
+        result.setdefault("endpoint", DEFAULT_ENDPOINT)
+        result.setdefault("kimi_model", DEFAULT_MODEL)
+        try:
+            result["endpoint"] = validate_endpoint(result["endpoint"])
+            result["kimi_model"] = validate_model(result["kimi_model"])
+        except ValueError:
+            raise ServiceError("kimi_endpoint_invalid") from None
+        if result["image_model"] or result["mesh_model"]:
+            raise ServiceError("service_config_invalid")
+        if not all(isinstance(result.get(key), str) and result[key].strip() for key in ("godot_path", "builder_path")):
+            raise ServiceError("modeling_runtime_missing")
+    elif "kimi_model" in result:
+        raise ServiceError("service_config_invalid")
     if result["mode"] == "codex_modeling":
         if not all(isinstance(result.get(key), str) and result[key].strip() for key in ("godot_path", "builder_path")):
             raise ServiceError("modeling_runtime_missing")
@@ -121,9 +145,9 @@ def settings(value):
             raise ServiceError("sculpt_runtime_missing")
         if "godot_path" in result:
             raise ServiceError("service_config_invalid")
-    elif any(key in result for key in ("godot_path", "builder_path")):
+    elif result["mode"] != "kimi_native" and any(key in result for key in ("godot_path", "builder_path")):
         raise ServiceError("service_config_invalid")
-    elif "blender_path" in result:
+    elif result["mode"] != "kimi_native" and "blender_path" in result:
         raise ServiceError("service_config_invalid")
     if result["mode"] in ("comfy", "codex"):
         try:
@@ -218,8 +242,16 @@ def capability(kind, config, info, models, extra_image=False):
 
 
 def _probe_service(value):
+    reported_mode = value.get("mode", "comfy") if isinstance(value, dict) else "comfy"
+    fallback_mode = (
+        reported_mode
+        if reported_mode in ("comfy", "codex", "codex_modeling", "codex_sculpt", "kimi_native")
+        else "comfy"
+    )
     try:
         config = settings(value)
+        if config["mode"] == "kimi_native":
+            return _probe_kimi(config), {}
         if config["mode"] == "codex_sculpt":
             return _probe_sculpt(config), {}
         if config["mode"] == "codex_modeling":
@@ -264,7 +296,7 @@ def _probe_service(value):
         return result, info
     except ServiceError as error:
         return dict(
-            mode="comfy",
+            mode=fallback_mode,
             connected=False,
             models={"image": [], "mesh": []},
             capabilities={kind: dict(ready=False, code=error.code, message=str(error)) for kind in KINDS},
@@ -276,6 +308,40 @@ def _probe_service(value):
 
 def check_service(value):
     return _probe_service(value)[0]
+
+
+def _probe_kimi(config):
+    from kimi_provider import check_kimi
+
+    auth = check_kimi(dict(endpoint=config["endpoint"], model=config["kimi_model"]))
+    runtime = all(Path(config[key]).is_file() for key in ("godot_path", "builder_path"))
+    ready = bool(auth.get("connected") and runtime)
+    code = "" if ready else auth.get("code") or "modeling_runtime_missing"
+    message = (
+        "Kimi 严格建模计划与 Godot 构造器已就绪；检测未生成内容，结果适合有界原语组合。"
+        if ready
+        else auth.get("message", "")
+        if not auth.get("connected")
+        else MESSAGES["modeling_runtime_missing"]
+    )
+    mesh = dict(ready=ready, code=code, message=message, missing_nodes=[])
+    image = dict(ready=False, code="node_unsupported", message="Kimi Native 仅提供文字／图片生成网格，不生成二维图像。", missing_nodes=[])
+    return dict(
+        mode="kimi_native",
+        connected=ready,
+        kimi=auth,
+        models=dict(image=[], mesh=[config["kimi_model"]] if auth.get("connected") else []),
+        capabilities=dict(
+            text_to_image=dict(image),
+            image_to_image=dict(image),
+            text_to_mesh=mesh,
+            image_to_mesh=dict(mesh),
+        ),
+        backend_revision="kimi-native-v1|" + config["kimi_model"],
+        message="Kimi 是唯一语义建模模型；网格由固定 Godot 构造器生成，不调用 ComfyUI、混元或 Codex。"
+        if ready
+        else message,
+    )
 
 
 def _probe_modeling(config):
@@ -465,6 +531,28 @@ def prepare_provider(config, model, database, run_id):
     generated = [node for node in model["nodes"] if node.get("type", "copy") in KINDS]
     if not generated:
         return registry, providers, {"mode": "offline"}
+    if config["mode"] == "kimi_native":
+        from kimi_provider import KimiNativeProvider
+
+        if any(not node["type"].endswith("mesh") for node in generated):
+            raise ServiceError("node_unsupported")
+        report = _probe_kimi(config)
+        for node in generated:
+            capability_report = report["capabilities"][node["type"]]
+            if not capability_report["ready"]:
+                raise ServiceError(capability_report.get("code") or "service_not_configured")
+        provider_config = dict(
+            endpoint=config["endpoint"],
+            model=config["kimi_model"],
+            storage=str(Path(database).resolve().parent / "kimi-native-state"),
+            godot_path=config["godot_path"],
+            builder_path=config["builder_path"],
+        )
+        register(registry)
+        providers["kimi_native"] = KimiNativeProvider(provider_config)
+        for node in generated:
+            node["provider"] = "kimi_native"
+        return registry, providers, dict(mode="kimi_native", provider=provider_config)
     if config["mode"] == "codex_sculpt":
         from codex_provider import CodexProvider, check_cli
 
@@ -615,6 +703,11 @@ def restore_provider(snapshot):
     if snapshot["mode"] == "comfy":
         register(registry)
         providers["comfy"] = ComfyProvider(snapshot["provider"])
+    elif snapshot["mode"] == "kimi_native":
+        from kimi_provider import KimiNativeProvider
+
+        register(registry)
+        providers["kimi_native"] = KimiNativeProvider(snapshot["provider"])
     elif snapshot["mode"] == "codex":
         from codex_provider import CodexProvider
 

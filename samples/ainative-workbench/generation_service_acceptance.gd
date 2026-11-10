@@ -82,7 +82,8 @@ func configure_valid():
 
 func run():
 	root.size = Vector2i(1440,1000)
-	state_path = ProjectSettings.globalize_path("user://generation-service-test-" + str(Time.get_ticks_usec()))
+	var state_override = OS.get_environment("AINATIVE_SERVICE_TEST_STATE")
+	state_path = state_override.path_join(str(Time.get_ticks_usec())) if not state_override.is_empty() else ProjectSettings.globalize_path("user://generation-service-test-" + str(Time.get_ticks_usec()))
 	valid_endpoint = OS.get_environment("AINATIVE_SERVICE_TEST_ENDPOINT")
 	if not check(not valid_endpoint.is_empty(), "read-only HTTP fixture endpoints are explicitly supplied"):
 		await finish()
@@ -93,7 +94,7 @@ func run():
 		return
 	var available_modes: Array = []
 	for i in panel.service_choice.item_count: available_modes.append(panel.service_choice.get_item_metadata(i))
-	check(available_modes == ["offline","comfy","legacy","codex"], "settings distinguish existing services and current-login CLI generation")
+	check(available_modes == ["offline","comfy","legacy","codex","codex_modeling","codex_sculpt","kimi_native"], "settings preserve existing services and expose Kimi Native")
 	check(panel._service_mode() == "offline" and panel.service_saved.is_empty(), "a fresh project starts without a claimed real generation service")
 	check(panel.service_status.text.contains("离线") and panel.service_capability_labels.copy.text.contains("可用"), "fresh settings clearly show offline copying availability")
 	set_node("text_to_image", "", "fixture prompt; do not submit")
@@ -109,6 +110,7 @@ func run():
 	panel.endpoint_edit.text = valid_endpoint
 	panel.check_service()
 	await idle()
+	print('DISCOVERY_REPORT ',JSON.stringify(panel.service_report),' STATUS ',panel.service_status.text,' DRAFT ',JSON.stringify(panel.service_draft()))
 	check(panel.service_report.get("connected", false), "GUI discovery reaches the read-only HTTP fixture through the real Python subprocess")
 	check(panel._model_name(panel.image_model_choice).is_empty() and panel._model_name(panel.mesh_model_choice).is_empty(), "discovery lists models without silently selecting one")
 	var images: Array = []
@@ -230,6 +232,21 @@ func run():
 	serial = panel.serial
 	panel.check_service()
 	check(panel.serial == serial and panel.service_status.text.contains("旧配置"), "legacy check points to the configured adapter without sending managed HTTP discovery")
+	# Kimi configuration is local-only here; no discovery or inference is submitted.
+	mode("kimi_native")
+	panel.endpoint_edit.text = "https://api.kimi.com/coding/v1"
+	panel.kimi_model_edit.text = "k3-256k"
+	var kimi_draft = panel.service_draft()
+	check(kimi_draft.endpoint == "https://api.kimi.com/coding/v1" and not kimi_draft.has("cli_path") and not kimi_draft.has("blender_path"), "Kimi Native does not inherit ComfyUI, Codex or Blender configuration")
+	check(panel._generator_provider("text_to_mesh") == "kimi_native" and panel._generator_provider("image_to_mesh") == "kimi_native", "Kimi Native routes both Mesh node kinds")
+	panel.save_service_settings()
+	check(panel._service_blocker("text_to_image").contains("不支持二维图像") and panel._service_blocker("image_to_image").contains("不支持二维图像"), "Kimi Native explicitly rejects 2D image-generation nodes")
+	var kimi_json = FileAccess.get_file_as_string(panel.service_config_path)
+	check(panel.service_saved == kimi_draft and not kimi_json.contains("api_key") and not kimi_json.contains("secret") and not kimi_json.contains("authorization"), "Kimi Native saves model identity without credentials")
+	panel.queue_free()
+	await settle()
+	await new_panel()
+	check(panel.service_saved == kimi_draft and panel.kimi_model_edit.text == "k3-256k" and panel._service_mode() == "kimi_native", "Kimi Native settings restore through a fresh Workbench")
 	# Switching to offline remains usable for real local-copy preview/publication.
 	mode("offline")
 	panel.save_service_settings()

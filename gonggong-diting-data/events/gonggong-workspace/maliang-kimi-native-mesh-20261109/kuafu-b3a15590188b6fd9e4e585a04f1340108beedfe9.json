@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b3a15590188b6fd9e4e585a04f1340108beedfe9",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-native-mesh-20261109",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/646",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "23824cfc97c79583c98d7e701c87bfc038a9abd7ea2cef28ab729d75e2a9369b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/646",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/717",
+    "action": "validation",
+    "detection_head": "b8f4757b3d80d3db2a69bd27576e8f4d6138e1bd",
+    "context_sha256": "d3f9d4802530b0b8f55e3ff4799daff305ec4a40418589b96a19004003781b97",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-continuation-subagent",
+    "authority_ref": "Issue #646 continuation authorization; repository WRITE verified for kaiyunxue",
+    "evidence": "framework-validation-with-node.json and formal-gate-before-submit.json in private continuation evidence",
+    "diagnosis": "Host Node lookup failure: the shell shim is not directly executable by Python. An isolated Node runtime plus POSIX-form PATH resolved framework validation; no framework or candidate source defect found.",
+    "next_action": "The exact original formal gate has passed; continue evidence-bound signed submission and final independent review. Do not close issue 646.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T01:05:39.150321+00:00",
+    "attempted": "Repeated trusted framework validation and the same formal issue gate with the isolated Node runtime",
+    "repair_owner": "kimi-work-continuation-subagent for this host environment",
+    "continuable": "Signed candidate submission can proceed; final acceptance remains pending"
+  },
+  "occurred_at": "2026-11-10T01:11:21.602339+00:00",
+  "sha256": "3de27a6548d8a534bbe579a0582ae18ad315dcad52e16e0b232ab5916cf5839d"
+}

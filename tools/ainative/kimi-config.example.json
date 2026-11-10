@@ -1,0 +1,7 @@
+{
+  "endpoint": "https://api.kimi.com/coding/v1",
+  "model": "k3.1-pro",
+  "storage": "kimi-native-state",
+  "godot_path": "Godot.exe",
+  "builder_path": "samples/ainative-workbench/addons/ainative/modeling_builder.gd"
+}

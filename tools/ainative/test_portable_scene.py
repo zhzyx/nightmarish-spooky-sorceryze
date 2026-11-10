@@ -76,7 +76,8 @@ class PortableScenePublicationTests(unittest.TestCase):
 
     def test_project_script_and_ordinary_scene_bytes_are_unchanged(self):
         data = self.payload.replace(
-            str(self.scripts / "hair_runtime.gd").encode(), b"res://addons/ainative/hair_runtime.gd"
+            json.dumps(str(self.scripts / "hair_runtime.gd"))[1:-1].encode(),
+            b"res://addons/ainative/hair_runtime.gd",
         )
         self.stage.write_bytes(data)
         # Irrelevant manifests cannot break ordinary project publication.
@@ -113,7 +114,12 @@ class PortableScenePublicationTests(unittest.TestCase):
         self.assertEqual((runtime / "sentinel").read_bytes(), b"keep")
 
     def test_dangling_destination_link_is_rejected_before_writes(self):
-        self.target.symlink_to(self.output / "missing")
+        try:
+            self.target.symlink_to(self.output / "missing")
+        except OSError as error:
+            if getattr(error, "winerror", None) == 1314:
+                self.skipTest("Windows symlink privilege is unavailable")
+            raise
         with self.assertRaises(FileExistsError):
             self.publish()
         self.assertTrue(self.target.is_symlink())
@@ -128,7 +134,12 @@ class PortableScenePublicationTests(unittest.TestCase):
         dependency.unlink()
         outside = self.root / "outside.gd"
         outside.write_bytes(self.sources["interop.gd"])
-        dependency.symlink_to(outside)
+        try:
+            dependency.symlink_to(outside)
+        except OSError as error:
+            if getattr(error, "winerror", None) == 1314:
+                self.skipTest("Windows symlink privilege is unavailable")
+            raise
         with self.assertRaisesRegex(ValueError, "linked"):
             self.publish()
         self.assertEqual(list(self.output.iterdir()), [])

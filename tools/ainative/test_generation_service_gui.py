@@ -3,6 +3,7 @@
 import json
 import os
 import subprocess
+import sys
 import tempfile
 import threading
 import time
@@ -84,6 +85,7 @@ class ServiceGuiTests(unittest.TestCase):
                 return "http://127.0.0.1:" + str(server.server_port)
 
             env = dict(os.environ)
+            env["AINATIVE_PYTHON"] = sys.executable
             env.pop("AINATIVE_PROVIDER_FACTORY", None)
             env.pop("AINATIVE_COMFY_CONFIG", None)
             env["AINATIVE_SERVICE_TEST_ENDPOINT"] = start("valid")
@@ -93,10 +95,20 @@ class ServiceGuiTests(unittest.TestCase):
             env["AINATIVE_SERVICE_TEST_STOPS_ENDPOINT"] = start("stops")
             env["AINATIVE_SERVICE_TEST_TRAFFIC"] = str(traffic_file)
             receipt = Path(env.get("AINATIVE_SERVICE_GUI_REPORT", str(folder / "report.json")))
+            receipt.parent.mkdir(parents=True, exist_ok=True)
             env["AINATIVE_SERVICE_GUI_REPORT"] = str(receipt)
+            log_path = (
+                Path(os.environ["AINATIVE_SERVICE_GUI_LOG"])
+                if os.environ.get("AINATIVE_SERVICE_GUI_LOG")
+                else None
+            )
+            if log_path:
+                log_path.parent.mkdir(parents=True, exist_ok=True)
             root = Path(__file__).resolve().parents[2]
+            for key in ("AINATIVE_KIMI_CONFIG", "KIMI_API_KEY", "MOONSHOT_API_KEY"):
+                env.pop(key, None)
             try:
-                result = subprocess.run(
+                with subprocess.Popen(
                     [
                         env["AINATIVE_GUI_TEST_GODOT"],
                         "--headless",
@@ -107,14 +119,24 @@ class ServiceGuiTests(unittest.TestCase):
                     ],
                     cwd=root,
                     env=env,
-                    capture_output=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
                     text=True,
-                    timeout=120,
-                )
-                log = result.stdout + result.stderr
-                if os.environ.get("AINATIVE_SERVICE_GUI_LOG"):
-                    Path(os.environ["AINATIVE_SERVICE_GUI_LOG"]).write_text(log)
-                self.assertEqual(result.returncode, 0, log[-16000:])
+                    errors="replace",
+                ) as process:
+                    try:
+                        stdout, stderr = process.communicate(timeout=float(env.get("AINATIVE_GUI_TEST_TIMEOUT", "120")))
+                    except subprocess.TimeoutExpired:
+                        process.kill()
+                        stdout, stderr = process.communicate()
+                        log = stdout + stderr
+                        if os.environ.get("AINATIVE_SERVICE_GUI_LOG"):
+                            Path(os.environ["AINATIVE_SERVICE_GUI_LOG"]).write_text(log, encoding="utf-8")
+                        self.fail("Godot GUI acceptance timed out:\n" + log[-16000:])
+                    log = stdout + stderr
+                    if os.environ.get("AINATIVE_SERVICE_GUI_LOG"):
+                        Path(os.environ["AINATIVE_SERVICE_GUI_LOG"]).write_text(log, encoding="utf-8")
+                    self.assertEqual(process.returncode, 0, log[-16000:])
                 self.assertNotIn("SCRIPT ERROR:", log)
                 report = json.loads(receipt.read_text())
                 self.assertTrue(report["ok"], log)
