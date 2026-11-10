@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "request-750-editor-model-path-audit",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-model-path-audit",
+  "kind": "request",
+  "occurred_at": "2026-11-10T17:08:31.128052+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/750",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "operator": "Sail-Li",
+    "scope": "Audit editor model discovery, CLI and HTTP routes, permissions, concurrent sends, cancellation and restart under #750.",
+    "usage": null,
+    "usage_unknown_reason": "No measured usage in host receipt"
+  },
+  "evidence_refs": [
+    "dispatch-0d6d938dd4b44996a10f45f9aa6ad90c"
+  ],
+  "sha256": "0b46512513009e84cb60d2437e8e488f7d3e1e830c25def071b4621bf2e95575"
+}

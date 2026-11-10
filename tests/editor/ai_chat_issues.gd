@@ -18,7 +18,7 @@ func check(ok: bool, message: String) -> bool:
 
 func open_issue(number: int, message := "") -> bool:
 	var url := "https://github.com/fixture/concurrency/issues/%d" % number
-	var selection := {} if message.is_empty() else {"backend": 0, "id": "fixture"}
+	var selection := {} if message.is_empty() else {"backend": 3 if OS.get_environment("STEERING_RESPONSES") == "1" else 0, "id": "fixture"}
 	var error: String = dock.open_daqian_chat(url, number, "request-%d" % number, message, true, selection, true)
 	return check(error.is_empty(), error) and check(dock.mount_daqian_chat(host), "Cannot mount issue %d" % number)
 
@@ -42,6 +42,10 @@ func run():
 	settings.set_project_metadata("daqian_access", workspace.sha256_text(), {"actor":{
 		"repo_id":"fixture", "user_id":"tester", "repo":"fixture/concurrency"}})
 	var controls = dock.get_ai_settings_control()
+	if OS.get_environment("STEERING_RESPONSES") == "1":
+		var backend = controls.find_child("AIBackend", true, false)
+		backend.select(3)
+		backend.item_selected.emit(3)
 	controls.find_child("APIEndpoint", true, false).text = OS.get_environment("STEERING_ENDPOINT")
 	controls.find_child("APIKey", true, false).text = "isolated-fixture-key"
 	controls.find_child("APIModel", true, false).text = "fixture"

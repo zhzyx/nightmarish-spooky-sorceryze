@@ -3974,10 +3974,16 @@ void AIChatDock::_reject_action() {
 	}
 }
 
+String AIChatDock::_codex_bridge() const {
+	const String root = _engine_root();
+	return root.is_absolute_path() ? root.path_join("tools/codex_cli/godot_bridge.js") : String();
+}
+
 bool AIChatDock::_validate_cli(const Dictionary &p_runtime) const {
 	const Dictionary runtime = p_runtime.is_empty() ? GongGongRuntimeConfig::read_effective() : p_runtime;
 	if (backend->get_selected() == 2) {
-		return GongGongRuntimeConfig::path(runtime, "codex").is_absolute_path() && FileAccess::exists(GongGongRuntimeConfig::path(runtime, "codex")) && FileAccess::exists(GongGongRuntimeConfig::path(runtime, "node")) && FileAccess::exists(_engine_root().path_join("tools/codex_cli/godot_bridge.js"));
+		const String bridge = _codex_bridge();
+		return !bridge.is_empty() && GongGongRuntimeConfig::path(runtime, "codex").is_absolute_path() && FileAccess::exists(GongGongRuntimeConfig::path(runtime, "codex")) && FileAccess::exists(GongGongRuntimeConfig::path(runtime, "node")) && FileAccess::exists(bridge);
 	}
 	if (GongGongRuntimeConfig::path(runtime, "node").is_empty()) {
 		return false;
@@ -5390,7 +5396,7 @@ void AIChatDock::_refresh_models() {
 		}
 		_cancel_cli();
 		List<String> arguments;
-		arguments.push_back(backend->get_selected() == 2 ? _engine_root().path_join("tools/codex_cli/godot_bridge.js") : cli_bridge->get_text().strip_edges());
+		arguments.push_back(backend->get_selected() == 2 ? _codex_bridge() : cli_bridge->get_text().strip_edges());
 		arguments.push_back("models");
 		arguments.push_back(backend->get_selected() == 2 ? GongGongRuntimeConfig::path(runtime, "codex") : cli_entry->get_text().strip_edges());
 		Dictionary process = OS::get_singleton()->execute_with_pipe(GongGongRuntimeConfig::path(runtime, "node"), arguments, false);
@@ -5603,8 +5609,15 @@ void AIChatDock::_login_cli() {
 void AIChatDock::_start_codex(const Array &p_messages) {
 	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
+	const String bridge = _codex_bridge();
+	if (bridge.is_empty() || !FileAccess::exists(bridge)) {
+		_cancel_cli();
+		_append(TTR("Error"), U"Codex 对话桥接文件缺失，请修复当前引擎安装。");
+		_set_busy(false);
+		return;
+	}
 #ifdef WINDOWS_ENABLED
-	const bool native_session = FileAccess::exists(_engine_root().path_join("tools/codex_cli/subscription_session.js")) && !GongGongRuntimeConfig::path(runtime, "workflow_python").is_empty();
+	const bool native_session = FileAccess::exists(bridge.get_base_dir().path_join("subscription_session.js")) && !GongGongRuntimeConfig::path(runtime, "workflow_python").is_empty();
 #else
 	const bool native_session = false;
 #endif
@@ -5612,7 +5625,7 @@ void AIChatDock::_start_codex(const Array &p_messages) {
 	for (const String &key : { String("CODEX_HOME"), String("HOME"), String("USERPROFILE"), String("APPDATA"), String("LOCALAPPDATA"), String("CODEX_API_KEY"), String("OPENAI_API_KEY"), String("OPENAI_BASE_URL"), String("OPENAI_ORG_ID"), String("OPENAI_PROJECT_ID"), String("CHATGPT_BASE_URL"), String("HTTPS_PROXY"), String("HTTP_PROXY"), String("ALL_PROXY"), String("NO_PROXY"), String("SSL_CERT_FILE"), String("NODE_EXTRA_CA_CERTS") }) {
 		environment += key + ":" + OS::get_singleton()->get_environment(key).sha256_text() + "\n";
 	}
-	const String configuration = "codex:" + (JSON::stringify(runtime) + environment).sha256_text() + ":" + GongGongRuntimeConfig::path(runtime, "codex") + "\n" + GongGongRuntimeConfig::path(runtime, "node") + "\n" + GongGongRuntimeConfig::path(runtime, "workflow_python") + "\n" + conversation_id;
+	const String configuration = "codex:" + bridge + "\n" + (JSON::stringify(runtime) + environment).sha256_text() + ":" + GongGongRuntimeConfig::path(runtime, "codex") + "\n" + GongGongRuntimeConfig::path(runtime, "node") + "\n" + GongGongRuntimeConfig::path(runtime, "workflow_python") + "\n" + conversation_id;
 	if (!native_session || !cli_session || cli_configuration != configuration || cli_waiting || !OS::get_singleton()->is_process_running(cli_process_id)) {
 		_cancel_cli();
 	}
@@ -5668,7 +5681,7 @@ void AIChatDock::_start_codex(const Array &p_messages) {
 	}
 	if (!native_session) {
 		List<String> arguments;
-		arguments.push_back(_engine_root().path_join("tools/codex_cli/godot_bridge.js"));
+		arguments.push_back(bridge);
 		arguments.push_back("chat");
 		arguments.push_back(GongGongRuntimeConfig::path(runtime, "codex"));
 		arguments.push_back(cli_input_path);
@@ -5687,7 +5700,7 @@ void AIChatDock::_start_codex(const Array &p_messages) {
 	} else {
 		if (!cli_session) {
 			List<String> arguments;
-			arguments.push_back(_engine_root().path_join("tools/codex_cli/godot_bridge.js"));
+			arguments.push_back(bridge);
 			arguments.push_back("session");
 			arguments.push_back(GongGongRuntimeConfig::path(runtime, "codex"));
 			arguments.push_back(GongGongRuntimeConfig::path(runtime, "workflow_python"));
