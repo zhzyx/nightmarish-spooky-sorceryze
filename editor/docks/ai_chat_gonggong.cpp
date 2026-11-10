@@ -39,6 +39,7 @@
 #include "editor/docks/ai_chat_issue_guide.h"
 #include "editor/docks/ai_chat_requirement_context.h"
 #include "editor/docks/ai_chat_resume.h"
+#include "editor/docks/gonggong_engine_origin.h"
 #include "editor/docks/gonggong_panel.h"
 #include "editor/docks/gonggong_runtime_config.h"
 #include "editor/file_system/editor_paths.h"
@@ -48,6 +49,20 @@
 #include "scene/gui/option_button.h"
 #include "scene/gui/text_edit.h"
 #include "scene/main/timer.h"
+
+// Portable editors can be paired with a workspace-supplied launcher.
+static String chat_bridge(const String &p_installation, const String &p_workspace) {
+	if (p_installation.is_absolute_path()) {
+		const String adapter = p_installation.path_join("customizations/components/godot-host/bridge.py");
+		if (FileAccess::exists(adapter) || FileAccess::exists(p_installation.path_join("integrations/gonggong/frozen-distribution.json"))) {
+			return adapter;
+		}
+	}
+	if (bool(GongGongEngineOrigin::read().get("managed", false)) || !p_workspace.is_absolute_path()) {
+		return String();
+	}
+	return p_workspace.path_join("tools/gonggong_bridge.py");
+}
 
 bool AIChatDock::_record_gonggong(const String &p_kind, const String &p_phase, const String &p_status) {
 	if (consultation_turn) {
@@ -239,16 +254,12 @@ void AIChatDock::_start_gonggong_flush() {
 	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	const String workflow_python = GongGongRuntimeConfig::path(runtime, "workflow_python");
-	// Resolve the adapter from the running engine's verified installation. The
-	// work-order candidate can legitimately contain an older bridge protocol.
-	const String installed_bridge = _engine_root().path_join("customizations/components/godot-host/bridge.py");
-	const bool scoped_protocol = FileAccess::exists(installed_bridge) &&
-			FileAccess::get_file_as_string(installed_bridge).contains("gonggong-scoped-batch-receipts-v1");
-	// Older installed hosts retain their complete, gated outbox drain protocol.
-	// Scope is still mandatory above the transport; never substitute an empty one.
-	const String receipt_bridge = scoped_protocol ? installed_bridge : gonggong_receipt_root.path_join("tools/gonggong_bridge.py");
+	const String installation = _engine_root();
+	const String receipt_bridge = chat_bridge(installation, gonggong_receipt_root);
+	const bool scoped_protocol = !receipt_bridge.is_empty() && FileAccess::exists(receipt_bridge) &&
+			FileAccess::get_file_as_string(receipt_bridge).contains("gonggong-scoped-batch-receipts-v1");
 	String provenance_error = "receipt_scope_or_installed_bridge_missing";
-	if (workflow_python.is_empty() || _engine_root().is_empty() || !FileAccess::exists(receipt_bridge) || gonggong_receipt_root.is_empty() ||
+	if (workflow_python.is_empty() || installation.is_empty() || receipt_bridge.is_empty() || !FileAccess::exists(receipt_bridge) || gonggong_receipt_root.is_empty() ||
 			String(gonggong_receipt_scope.get("tenant_id", String())).is_empty() ||
 			String(gonggong_receipt_scope.get("request_ref", String())).is_empty() ||
 			String(gonggong_receipt_scope.get("source_ref", String())).is_empty()) {
@@ -428,11 +439,8 @@ void AIChatDock::_begin_gonggong_context() {
 	const String python = GongGongRuntimeConfig::path(runtime, "workflow_python");
 	gonggong_report_root = root;
 	gonggong_report_python = python;
-	// Keep the host protocol on the editor version when resuming an older candidate.
-	// The request still reads the candidate's own framework, Issue gate and data.
-	const String installed_bridge = _engine_root().path_join("customizations/components/godot-host/bridge.py");
-	const String bridge = snapshot_state.has("engine_candidate") && FileAccess::exists(installed_bridge) ? installed_bridge : gonggong_report_root.path_join("tools/gonggong_bridge.py");
-	if (root.is_empty() || !FileAccess::exists(bridge)) {
+	const String bridge = chat_bridge(_engine_root(), root);
+	if (root.is_empty() || bridge.is_empty() || !FileAccess::exists(bridge)) {
 		issue_guide_outcome = outcome;
 		issue_guide_state = "agent_error";
 		if (needs_intake) {

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-8cdb037bacbb19cc2355e6f447d9fe259fbccbb1a19554755533db44f13b8cd6",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/747",
+  "occurred_at": "2026-11-10T16:33:41.792691+00:00",
+  "evidence_refs": [
+    "request-747-installed-host-chat-adapter",
+    "learn-d9eabf61ef98d8cf6441bf7e8374f9a90080360a99711a0335d84fc5788b2340"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 7,
+    "previous": "432b7a707d1b544e971e437a4be4f7327ddc4d828f0d41cc98632a4f86d40cb8",
+    "action": "applied",
+    "details": {
+      "task": "Windows editor #747 chat adapter selection",
+      "observed": "Changing the native C++ selector rebuilt the editor. Running the same binary with a stale data launcher and an unregistered portable source tree passed both private native fixtures. Writing the build log under the existing excluded bin/*.log path kept measured build inputs stable."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/installed-host-chat-adapter-747.json",
+        "sha256": "87ac612550491505a15af6cfc9a614b4ffbacfff96b0afb392fac0aed722d100"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/installed-host-chat-adapter/request-747-installed-host-chat-adapter.json",
+      "sha256": "057122138febdbdd7a0290d8cfd14536989e97ffe074a6bcfa5244578351c308"
+    }
+  },
+  "sha256": "0fd1777d1d4d829552fc1e3b0be3892acd4b18b48d47a85f0f2a30ec113af312"
+}

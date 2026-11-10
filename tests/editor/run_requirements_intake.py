@@ -78,6 +78,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument(
+        "--portable-chat", action="store_true", help="Pair an unregistered editor with the workspace launcher"
+    )
     parser.add_argument("--runtime-source", type=Path)
     parser.add_argument("--runtime-python", type=Path)
     parser.add_argument("--runtime-node", type=Path)
@@ -148,6 +151,19 @@ def main():
         shutil.copyfile(ROOT / "SConstruct", installation / "SConstruct")
         for directory in ("customizations", "tools", "integrations"):
             shutil.copytree(root / directory, installation / directory)
+        if args.portable_chat:
+            (installation / "customizations/components/godot-host/bridge.py").unlink()
+            (installation / "integrations/gonggong/frozen-distribution.json").unlink()
+        else:
+            # The selected data checkout predates the installed chat protocol. Other
+            # workspace operations still use their normal launcher.
+            launcher = root / "tools/gonggong_bridge.py"
+            launcher.write_text(
+                "import sys\nif sys.argv[1] in ('chat', 'flush'):\n"
+                "    raise SystemExit('stale workspace chat adapter executed')\n"
+                + launcher.read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
         copy_runtime_policy(ROOT, installation)
         project = root / "project"
         project.mkdir()
@@ -427,6 +443,9 @@ def main():
                 "new requirement",
                 "supplement during intake amends the same Issue before the first development request",
                 "followup reuses Issue",
+                "portable workspace launcher"
+                if args.portable_chat
+                else "installed chat and flush with stale workspace launcher",
                 "new requirement while bound",
                 "same text new turn still classified",
                 "cancel before publication",

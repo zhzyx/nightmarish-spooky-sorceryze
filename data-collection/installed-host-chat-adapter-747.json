@@ -1,0 +1,122 @@
+{
+  "issue_number": 747,
+  "request_id": "installed-host-chat-adapter",
+  "source_issue": 706,
+  "kuafu_tracker": 746,
+  "production_event_readback": [
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianshu-592-carryover-v1/host-context-02b57adb78b84106a1401d052a916dda.json",
+      "file_sha256": "d491a566135847b060766d928fde851d2e1a09f29ffc0e899cb5044206e267c5",
+      "event_sha256": "4cb58569deecc364770094b3cda90c39e1e07f3a2e0717f22e55214b9681dae6"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianshu-592-carryover-v1/kuafu-a04e0b02408231f04e0a6c5067a044f9a84d5e5a.json",
+      "file_sha256": "ae8caac52b586ab6e8e7e8ca75c858beede80f4fb7ae56e13b989f1d6daf8461",
+      "event_sha256": "d379e3da0d5a394547474cb2eb45e4ad95f0a711f250741c6ffb88964f790432"
+    }
+  ],
+  "build": {
+    "worktree": "D:\\GongGong-work\\installed-host-chat-adapter",
+    "revision": "ba415a3e5011c6ba184312e6181563d901ed18f0",
+    "source_digest": "1d2417ff852d8516a3e39a69e3449e823c64d71933a3111bf2e153230631ea06",
+    "clean_source": false,
+    "console_sha256": "e739919dd686f0c77050af014d5a2826240c55216255ceae4c30c4c21a6bddab",
+    "native": {
+      "status": "built",
+      "key": "5d112e84bf77572d2c94b7e032d554f041ffbbf504d7e727b02698a3cf7f0cb1",
+      "reason": "",
+      "artifact_sha256": "35491b7ddd77d5036fbd821fb78e717095fd138c2e8c472e298c91a754fcfa79",
+      "producer_head": "ba415a3e5011c6ba184312e6181563d901ed18f0",
+      "consumer_head": "ba415a3e5011c6ba184312e6181563d901ed18f0",
+      "outputs": {
+        "bin/godot.windows.editor.x86_64.exe": "35491b7ddd77d5036fbd821fb78e717095fd138c2e8c472e298c91a754fcfa79",
+        "bin/godot.windows.editor.x86_64.console.exe": "e739919dd686f0c77050af014d5a2826240c55216255ceae4c30c4c21a6bddab"
+      }
+    },
+    "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "aichat": "passed"
+  },
+  "native_tests": {
+    "cases_passed": 45,
+    "assertions_passed": 638
+  },
+  "native_headless": {
+    "installed": {
+      "ok": true,
+      "native_page": true,
+      "runtime_setup_and_resume": false,
+      "catalog_requests": [
+        "/v1/models",
+        "/v1/models"
+      ],
+      "bootstrap_runtime_configuration": "private installation JSON; mutable fields, no Python/Node/Codex override",
+      "windows_owned_process_cleanup": "verified Job empty",
+      "actual_native_read_tool_roundtrips": 1,
+      "actual_yanshi_admission": true,
+      "model_and_github": "isolated loopback/CLI fixtures only",
+      "requirements_calls": 11,
+      "development_calls": 7,
+      "issues_created": 5,
+      "events": 71,
+      "git_check": {
+        "git_state": "committed",
+        "files": 74,
+        "records": 71,
+        "remote_merge_verified": false
+      },
+      "cases": [
+        "new requirement",
+        "supplement during intake amends the same Issue before the first development request",
+        "followup reuses Issue",
+        "installed chat and flush with stale workspace launcher",
+        "new requirement while bound",
+        "same text new turn still classified",
+        "cancel before publication",
+        "model API repair then explicit retry",
+        "GitHub auth repair before model call",
+        "clarification pauses and resumes the same requirement"
+      ],
+      "editor_sha256": "35491b7ddd77d5036fbd821fb78e717095fd138c2e8c472e298c91a754fcfa79",
+      "fixture_events_imported": false
+    },
+    "portable": {
+      "ok": true,
+      "native_page": true,
+      "runtime_setup_and_resume": false,
+      "catalog_requests": [
+        "/v1/models",
+        "/v1/models"
+      ],
+      "bootstrap_runtime_configuration": "private installation JSON; mutable fields, no Python/Node/Codex override",
+      "windows_owned_process_cleanup": "verified Job empty",
+      "actual_native_read_tool_roundtrips": 1,
+      "actual_yanshi_admission": true,
+      "model_and_github": "isolated loopback/CLI fixtures only",
+      "requirements_calls": 11,
+      "development_calls": 7,
+      "issues_created": 5,
+      "events": 71,
+      "git_check": {
+        "git_state": "committed",
+        "files": 74,
+        "records": 71,
+        "remote_merge_verified": false
+      },
+      "cases": [
+        "new requirement",
+        "supplement during intake amends the same Issue before the first development request",
+        "followup reuses Issue",
+        "portable workspace launcher",
+        "new requirement while bound",
+        "same text new turn still classified",
+        "cancel before publication",
+        "model API repair then explicit retry",
+        "GitHub auth repair before model call",
+        "clarification pauses and resumes the same requirement"
+      ],
+      "editor_sha256": "35491b7ddd77d5036fbd821fb78e717095fd138c2e8c472e298c91a754fcfa79",
+      "fixture_events_imported": false
+    }
+  },
+  "delivery_scope": "Local installation and original worktree readback follow main delivery under the parent session."
+}
