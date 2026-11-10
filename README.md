@@ -65,6 +65,8 @@ Official binaries for the Godot editor and the export templates can be found
 
 ### Compiling from source
 
+在工程根可用 `scons module-bmp` 单独编译 BMP 模块。按 Git 变更选择目标及 CI 触发范围见[引擎模块编译](design-docs/engine-module-build.md)。
+
 [See the official docs](https://docs.godotengine.org/en/latest/engine_details/development/compiling)
 for compilation instructions for every supported platform.
 

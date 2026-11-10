@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ad8599af863c0feb8c36d506147cc7fe59bde73b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-module-build",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/739",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0f00a62602f934c943495ae1c3bfcede7903422394e93928897ad9555f65ebd5",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/739",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/740",
+    "action": "delivery",
+    "detection_head": "b0538249adc98e7e447074cbc8f26ac8b1626961",
+    "context_sha256": "a739e765a0e6e03fe163ba480016942401c286d586712ddeb11a979fa062b9ce",
+    "operator": "Sail-Li",
+    "worker": "codex-739-delivery",
+    "authority_ref": "issue-739-user-authorized-formal-delivery",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/738",
+    "diagnosis": "签发时 main 收到 #738。两张工单的写入路径无重叠，新主线改动涉及订阅脚本、测试及记录，未改变模块归档、差异工具或 CI 工作流。",
+    "next_action": "在 5cd964c4 重跑正式签发并回读 PR 和 CI。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T02:51:59.306518+00:00",
+    "attempted": "已在隔离工作树快进整合；重跑 3 个回归、13 种分流条件及 BMP/TGA 归档均通过。",
+    "repair_owner": "Sail-Li",
+    "continuable": "继续 #739 正式签发和合入。"
+  },
+  "occurred_at": "2026-11-10T02:54:10.223162+00:00",
+  "sha256": "d847f48770adf62a516d9e3faf3c575b1cc4aed8d9022e4b3c8158c2cfb354ff"
+}

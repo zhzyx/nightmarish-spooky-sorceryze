@@ -52,15 +52,46 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && inputs.full_platforms
     uses: ./.github/workflows/macos_builds.yml
 
+  modules-build:
+    name: Compile affected engine modules
+    needs: static-checks
+    if: >-
+      needs.static-checks.outputs.build-mode == 'modules' &&
+      (github.event_name == 'pull_request' ||
+        (github.event_name == 'push' &&
+         startsWith(github.ref, 'refs/heads/') && github.ref_name != github.event.repository.default_branch &&
+         !startsWith(github.ref, 'refs/heads/codex/submit/')))
+    runs-on: windows-latest
+    outputs:
+      build-mode: ${{ steps.modules.outputs.build-mode }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/godot-deps
+      - name: Compile selected archives
+        id: modules
+        env:
+          BUILD_BASE: ${{ needs.static-checks.outputs.build-base }}
+        run: >-
+          python tools/build_engine_modules.py --committed --base "$env:BUILD_BASE" --build --defer-full --
+          platform=windows target=editor dev_mode=yes module_text_server_fb_enabled=yes
+          debug_symbols=no d3d12=no angle=no accesskit=no
+
   windows-build:
     name: 🏁 Windows
-    needs: static-checks
+    needs: [static-checks, modules-build]
     permissions:
       contents: read
       actions: read
-    # The signed push and its PR represent one delivery. Validate the PR
-    # merge tree even when changes fall outside a file extension list.
-    if: github.event_name != 'push' || !startsWith(github.ref, 'refs/heads/codex/submit/')
+    # Manual requests, integration builds and unknown inputs keep the existing matrix.
+    if: >-
+      always() && !cancelled() && needs.static-checks.result == 'success' &&
+      (github.event_name != 'push' || !startsWith(github.ref, 'refs/heads/codex/submit/')) &&
+      (github.event_name == 'workflow_dispatch' ||
+       (needs.static-checks.outputs.build-mode != 'skip' &&
+        (needs.modules-build.result == 'skipped' ||
+         (needs.modules-build.result == 'success' && needs.modules-build.outputs.build-mode != 'modules'))))
     uses: ./.github/workflows/windows_builds.yml
 
   web-build:

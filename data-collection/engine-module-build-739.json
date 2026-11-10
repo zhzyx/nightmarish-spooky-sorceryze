@@ -1,0 +1,92 @@
+{
+  "request_id": "engine-module-build",
+  "issue_number": 739,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/739",
+  "base": "b0538249adc98e7e447074cbc8f26ac8b1626961",
+  "input_sha256": {
+    "modules/SCsub": "414ff1d212da75aca22291c02c0b541c78f24c3fbf83bc6cc3f80c7bb94fe9ba",
+    "modules/camera/SCsub": "831810a185f0b91866aed2204f8d306dc47a6f3eb35d17130dc38b6552b9cabf",
+    "tools/build_engine_modules.py": "e1a6e640baffca08d6ab161947f8f0a2804f19ee03d174d014002eca062f76c8",
+    "tools/test_build_engine_modules.py": "9a75addb46bdaa742e0369040876ab3119cb10d7e815858aa443c2e6db3fc3cf",
+    ".github/workflows/static_checks.yml": "fec6aefab8e260e12ca9231543e3d88d53ad499881a61d175726a166603a9dd6",
+    ".github/workflows/runner.yml": "696bcee97e879c9bc92cfaac77f736b298d39622b309a82f6797dfa87cf5fb0c"
+  },
+  "host": "macOS arm64, SCons 4.10.1, Xcode Command Line Tools, Python 3.14.3",
+  "invocation": "python tools/build_engine_modules.py --base <fixture revision> --build --defer-full [--committed] -- platform=macos target=editor vulkan=no accesskit=no",
+  "observations": [
+    {
+      "scenario": "documentation commit",
+      "mode": "skip",
+      "actions": []
+    },
+    {
+      "scenario": "BMP working change on clean build directory",
+      "mode": "modules",
+      "actions": [
+        "scons: Reading SConscript files ...",
+        "scons: done reading SConscript files.",
+        "scons: Building targets ...",
+        "Generating core/object/gdvirtual.gen.h ...",
+        "Generating core/extension/gdextension_interface.gen.h ...",
+        "Compiling modules/bmp/register_types.cpp ...",
+        "Compiling modules/bmp/image_loader_bmp.cpp ...",
+        "Linking Static Library bin/obj/modules/libmodule_bmp.macos.editor.arm64.a ...",
+        "scons: done building targets."
+      ]
+    },
+    {
+      "scenario": "identical BMP commit on warm build",
+      "mode": "modules",
+      "actions": [
+        "scons: Reading SConscript files ...",
+        "scons: done reading SConscript files.",
+        "scons: Building targets ...",
+        "scons: `module-bmp' is up to date.",
+        "scons: done building targets."
+      ]
+    },
+    {
+      "scenario": "two module commits",
+      "mode": "modules",
+      "actions": [
+        "scons: Reading SConscript files ...",
+        "scons: done reading SConscript files.",
+        "scons: Building targets ...",
+        "scons: `module-bmp' is up to date.",
+        "Compiling modules/tga/image_loader_tga.cpp ...",
+        "Compiling modules/tga/register_types.cpp ...",
+        "Linking Static Library bin/obj/modules/libmodule_tga.macos.editor.arm64.a ...",
+        "scons: done building targets."
+      ]
+    },
+    {
+      "scenario": "BMP disabled in selected configuration",
+      "mode": "full",
+      "actions": []
+    },
+    {
+      "scenario": "shared header",
+      "mode": "full",
+      "actions": []
+    },
+    {
+      "scenario": "unknown baseline",
+      "mode": "full",
+      "actions": []
+    }
+  ],
+  "checks": [
+    "Three regression tests cover staged/unstaged/untracked and committed changes, cross-directory rename, shared/embedded inputs and probe versus compiler errors.",
+    "Both workflow YAML files parsed. 13 runner condition cases exercised, including absent mode, main, merge group, manual, and signed push."
+  ],
+  "review": {
+    "worker": "/root/sinan_093087445ab7c342",
+    "findings": [
+      "Inventory probe failures must request full scope while compilation failures remain errors.",
+      "Unknown or empty routing outputs on successful jobs must request full scope."
+    ],
+    "recheck": "Probe failure and compile failure regression passed. Actual Windows job condition evaluated with empty and unknown modes, successful fallback and archive failure."
+  },
+  "integration_base": "5cd964c4fc0746311d674fd5d80e05ba1765a5da",
+  "integration_recheck": "All six recorded input digests match; reran three regression tests, thirteen workflow routing cases and module-bmp/module-tga SCons targets."
+}
