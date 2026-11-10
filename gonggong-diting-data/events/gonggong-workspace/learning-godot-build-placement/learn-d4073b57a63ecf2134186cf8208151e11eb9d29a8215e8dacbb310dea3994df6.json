@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-d4073b57a63ecf2134186cf8208151e11eb9d29a8215e8dacbb310dea3994df6",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/690",
+  "occurred_at": "2026-11-09T23:51:10.036454+00:00",
+  "evidence_refs": [
+    "kuafu-923cb51c64263198d96429b4cf6cccc32e76fe19",
+    "learn-d2df548faccb0d77058f04a2151c38b0b229ffe2b423ccad0ef8d04f34dda4b2"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 5,
+    "previous": "ae16e50c02b2f2a991f503fa27c7beae30e186e5eee61833871223e928e557a8",
+    "action": "applied",
+    "details": {
+      "task": "云端 #690 首次未能复用时，按实际 MSVC 消费者比较真实生产、消费输入并复验传输链。",
+      "observed": "同源码、同镜像、同参数时只有 SDK 摘要不同；真实归档按 ID、传输摘要、二进制摘要恢复成功。SDK 安装还生成 MinGW 专用资产。复验应观测云端编译步骤及每个工单自己的测试结果。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/engine-ci-sdk-690.json",
+        "sha256": "413f934f838a89541028dd7f6794371d05e0ddbfadd8a3db4be49e0f33d5b3d6"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/engine-build-cli-ci-reuse/kuafu-923cb51c64263198d96429b4cf6cccc32e76fe19.json",
+      "sha256": "f06f9d0922d03b29edb013479251d73cc85e24ba4572ceff7030f1643202d427"
+    }
+  },
+  "sha256": "2824948bb162645623ca2f1395cadafba70b8da0b7dd567aed666b413b053915"
+}

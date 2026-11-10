@@ -145,6 +145,9 @@ else: sys.exit(1)
             DAQIAN_TEST_REPO=str(Path(__file__).resolve().parents[2]),
             DAQIAN_TEST_PYTHON=sys.executable,
         )
+        if args.scenario == "graph":
+            # Configure the fixture workspace before startup checks can open the runtime setup window.
+            env["GONGGONG_WORKSPACE"] = env["DAQIAN_TEST_REPO"]
     if args.scenario in {"publish", "direct", "details"}:
         # Exercise the actual UI, chat session and subprocess boundary without creating a real Issue.
         workspace = project / ".fixture"

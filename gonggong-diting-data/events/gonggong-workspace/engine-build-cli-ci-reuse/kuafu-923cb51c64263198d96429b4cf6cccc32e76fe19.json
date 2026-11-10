@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-923cb51c64263198d96429b4cf6cccc32e76fe19",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-build-cli-ci-reuse",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/690",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7ab0f5390f1a801be5c39288407e68cd1987885a5c30c5f998ce5f8cea82d179",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/690",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/714",
+    "action": "validation",
+    "detection_head": "1e5f504d8b12db3c898081bc4ab4db3fa99cb17a",
+    "context_sha256": "0a8e0aef6e249718d2191a16e78fb6e87707d6a571527bde9179064711d739ed",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "codex-user-01a1c1a6-e32a-7613-8803-fa3927c2bde6-engine-reuse-rollout",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42721796858",
+    "diagnosis": "同一 main SHA、相同镜像和构建参数，唯一不同的分项为下载 SDK 的目录摘要。生产与消费均在 MSVC 配置生成 MinGW 适配文件。实际主线 ZIP 按 run/ID/传输哈希/EXE 哈希成功恢复。",
+    "next_action": "隔离 MSVC 所需的发布 SDK 字节，待主线生产、真实二次云端消费并回读 Compilation 跳过后复核。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-09T23:43:23.780241+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-09T23:46:01.872653+00:00",
+  "sha256": "f06f9d0922d03b29edb013479251d73cc85e24ba4572ceff7030f1643202d427"
+}

@@ -1,9 +1,13 @@
 import hashlib
+import io
 import json
+import os
+import runpy
 import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -11,6 +15,32 @@ from zipfile import ZipFile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / ".github/scripts"))
 import windows_editor_artifact as artifact
+
+
+class WindowsSdkInstallTests(unittest.TestCase):
+    def test_msvc_install_uses_only_published_sdk_bytes(self):
+        script = Path(__file__).resolve().parents[1] / "misc/scripts/install_d3d12_sdk_windows.py"
+
+        def download(url, destination):
+            with ZipFile(destination, "w") as archive:
+                archive.writestr("bin/x64/WinPixEventRuntime.lib", b"published import library")
+                archive.writestr("bin/ARM64/WinPixEventRuntime.lib", b"published import library")
+
+        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, LOCALAPPDATA=tmp, MSYSTEM=""):
+            for flags, calls in [([], 4), (["--msvc-only"], 0)]:
+                with (
+                    self.subTest(flags=flags),
+                    patch.object(sys, "argv", [str(script), *flags]),
+                    patch.object(sys, "path", list(sys.path)),
+                    patch("urllib.request.urlretrieve", download),
+                    patch("shutil.which", return_value="fixture-tool"),
+                    patch("subprocess.run") as generate,
+                    redirect_stdout(io.StringIO()),
+                ):
+                    runpy.run_path(str(script), run_name="__main__")
+                    self.assertEqual(generate.call_count, calls)
+                    pix = Path(tmp) / "Godot/build_deps/pix/bin/x64"
+                    self.assertEqual((pix / "WinPixEventRuntime.lib").read_bytes(), b"published import library")
 
 
 class WindowsEditorArtifactTests(unittest.TestCase):

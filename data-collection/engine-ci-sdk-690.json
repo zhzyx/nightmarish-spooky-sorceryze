@@ -1,0 +1,27 @@
+{
+  "issue_number": 690,
+  "request_id": "engine-build-cli-ci-reuse",
+  "producer_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42720707700",
+  "consumer_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42721796858",
+  "source_commit": "8c009688ffcb5c1d27d2588d500e16ef76a58095",
+  "identity_fields_changed": [
+    "sdk_sha256"
+  ],
+  "producer_sdk": "ef49fb669116bd975a594ec3952bef8b05f64b554d594e6c6805ec89d0fd420c",
+  "consumer_sdk": "baf68569db52f89e28f7530d61fccb13e4983889d8a460badb6389582e7af987",
+  "image": [
+    "win25-vs2026",
+    "20261103.298.1",
+    "X64"
+  ],
+  "fallback_compiled": true,
+  "actual_archive_restore": {
+    "source_run": "42720707700",
+    "artifact_id": 13721046213,
+    "archive_sha256": "sha256:20cda8c5d80ee4ffddb3dd35e469387f6f68171a37b8d761f6321eab88fdd38a",
+    "verified_executable": "8fab1ee87f5a1d66ab96cc787b78f4fee1543a5ad8410e1d336199f784dc4bd2",
+    "host": "local current operator, actual GitHub API and Actions artifact"
+  },
+  "local_trial": "带模拟 gendef/dlltool 的两次 SDK 安装：默认生成 4 次适配调用，MSVC 专用生成 0 次并保留已发布 .lib 文件。7 项 Windows 产物测试通过。",
+  "scope": "原云端 MSVC 作业日志确认同时生成 MinGW 导入库，实际回执仅 SDK 整体摘要不同。修订候选从 MSVC 安装中分离 MinGW 自生成文件，保留完整 SDK 字节校验，并保存相对路径与逐文件摘要用于诊断。新的云端生产和消费由 #690 验收。"
+}
