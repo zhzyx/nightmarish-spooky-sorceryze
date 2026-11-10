@@ -1,5 +1,8 @@
 import importlib.util
 import json
+import os
+import subprocess
+import sys
 import tempfile
 import time
 import types
@@ -28,6 +31,33 @@ def batch_receipt(kwargs):
             dict(state="recorded_file", tenant_id=envelope["tenant_id"], event_id=envelope["event_id"], sha256=digest)
         )
     return json.dumps(dict(ok=True, receipts=receipts))
+
+
+class BridgeOutputTests(unittest.TestCase):
+    def test_stdout_json_is_utf8_on_legacy_code_pages(self):
+        root = Path(__file__).resolve().parents[3]
+        with tempfile.TemporaryDirectory() as directory:
+            request = Path(directory) / "中文.json"
+            for encoding in ("cp936", "cp1252"):
+                with self.subTest(encoding=encoding):
+                    result = subprocess.run(
+                        [
+                            sys.executable,
+                            str(root / "tools/gonggong_bridge.py"),
+                            "chat",
+                            "--workspace",
+                            str(root),
+                            "--request",
+                            str(request),
+                        ],
+                        env=dict(os.environ, PYTHONUTF8="0", PYTHONIOENCODING=encoding),
+                        capture_output=True,
+                        timeout=30,
+                    )
+                    self.assertEqual(result.returncode, 1)
+                    response = json.loads(result.stdout.decode("utf-8"))
+                    self.assertFalse(response["ok"])
+                    self.assertIn(request.name, response["error"])
 
 
 class IssueIntakeRecoveryTests(unittest.TestCase):

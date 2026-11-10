@@ -1178,7 +1178,7 @@ def main():
         temporary.write_text(content, encoding="utf-8")
         temporary.replace(args.out)
     else:
-        print(content)
+        sys.stdout.buffer.write((content + "\n").encode("utf-8"))
     return 0 if result["ok"] else 1
 
 
