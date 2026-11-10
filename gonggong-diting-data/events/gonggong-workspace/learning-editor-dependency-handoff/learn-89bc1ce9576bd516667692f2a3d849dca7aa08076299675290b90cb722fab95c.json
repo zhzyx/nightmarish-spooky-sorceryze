@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-89bc1ce9576bd516667692f2a3d849dca7aa08076299675290b90cb722fab95c",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/758",
+  "occurred_at": "2026-11-10T17:55:06.9925300+00:00",
+  "evidence_refs": [
+    "kuafu-307574270732b21f389af2c2fc5231e41594a8bc",
+    "learn-510e00c4bd4f0d16f145f2fa96d09b328e8db83fccbe19e589ee81ddf16bbee8"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 5,
+    "previous": "aa67da636051c482368ce7a08b600e0b2b0c88a8b05fb79d55007f5570b92d87",
+    "action": "applied",
+    "details": {
+      "observed": "回读原生双工单窗口和两个独立候选的实际文件，验证发送、审批与终态。原先仅切换 --codex 仍走 HTTP 的回归不能用于 CLI 验收，已要求真实 fixture PID 及存活者见证取消。",
+      "task": "#758 跨工单真实 CLI 执行"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/tianshu-production-parallel-758.json",
+        "sha256": "722c94c1be6fba300f29bef18c7c9ce0a0f23e5e8c8de132d95e400c6be4d264"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianshu-production-parallel/kuafu-307574270732b21f389af2c2fc5231e41594a8bc.json",
+      "sha256": "8dad6be19e89d902b7cc0282609bfa165eb55af80a31dc163c101c353aadddda"
+    }
+  },
+  "sha256": "2f6e7c97f1448caee38ab84a3011c40854b6a91d742b8a584bb1cd182770f6d3"
+}

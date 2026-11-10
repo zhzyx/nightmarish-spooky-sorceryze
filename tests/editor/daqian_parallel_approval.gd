@@ -64,6 +64,24 @@ func run():
 		push_error("Two independent command approvals did not arrive")
 		quit(4)
 		return
+	# A card on a third Issue must not synchronously run Git for either pending candidate.
+	var trace := ProjectSettings.globalize_path("res://approval-lookup-git.jsonl")
+	var had_trace := OS.has_environment("GIT_TRACE2_EVENT")
+	var previous_trace := OS.get_environment("GIT_TRACE2_EVENT")
+	OS.set_environment("GIT_TRACE2_EVENT", trace)
+	var lookup_start := Time.get_ticks_usec()
+	var unrelated: Dictionary = chat.get_daqian_issue_approval("https://github.com/fixture/board/issues/212")
+	var lookup_usec := Time.get_ticks_usec() - lookup_start
+	var launched_git := FileAccess.file_exists(trace)
+	if had_trace:
+		OS.set_environment("GIT_TRACE2_EVENT", previous_trace)
+	else:
+		OS.unset_environment("GIT_TRACE2_EVENT")
+
+	if launched_git or not unrelated.is_empty():
+		push_error("Unrelated Issue queried another candidate checkout")
+		quit(9)
+		return
 	if a.root == b.root or a.token == b.token or a.tool != "run_command" or b.tool != a.tool or chat.confirm_daqian_issue_approval(a.url, b.token):
 		push_error("Candidate or exact approval isolation failed")
 		quit(5)
@@ -85,5 +103,5 @@ func run():
 		push_error("Unexpected command effects or receipts " + str([completions, end_states]))
 		quit(8)
 		return
-	print("DAQIAN_PARALLEL_APPROVAL_OK ", JSON.stringify({"terminal":end_states,"execution_receipts":completions,"separate_candidates":a.root != b.root}))
+	print("DAQIAN_PARALLEL_APPROVAL_OK ", JSON.stringify({"unrelated_lookup_usec":lookup_usec,"terminal":end_states,"execution_receipts":completions,"separate_candidates":a.root != b.root}))
 	quit(0)

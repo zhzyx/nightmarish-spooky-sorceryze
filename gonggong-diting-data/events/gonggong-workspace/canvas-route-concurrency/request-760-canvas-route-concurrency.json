@@ -1,0 +1,25 @@
+{
+  "evidence_refs": [],
+  "event_id": "request-760-canvas-route-concurrency",
+  "request_id": "canvas-route-concurrency",
+  "occurred_at": "2026-11-10T17:56:53.6669778+00:00",
+  "schema_version": 1,
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/760",
+  "agent": {
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8",
+    "id": "codex-current-operator-host",
+    "version": "1",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "usage": null,
+    "usage_unknown_reason": "No measured provider usage in Issue receipt",
+    "design": "design-docs/canvas-route-concurrency.md",
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-10T17:17:32Z",
+    "scope": "天枢画布在另一工单工作时并发完成范围判断"
+  },
+  "kind": "request",
+  "tenant_id": "gonggong-workspace",
+  "sha256": "cd1e6934f8b46ac45a98cb9fe030be2cbde99ce5b3054b1ad419eb7373883659"
+}

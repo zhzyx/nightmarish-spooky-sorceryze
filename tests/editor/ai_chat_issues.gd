@@ -6,6 +6,7 @@ var host: VBoxContainer
 var failures: Array[String] = []
 var received := {}
 var cancelled := {}
+var selected_backend := 0
 
 func _initialize():
 	run.call_deferred()
@@ -18,7 +19,7 @@ func check(ok: bool, message: String) -> bool:
 
 func open_issue(number: int, message := "") -> bool:
 	var url := "https://github.com/fixture/concurrency/issues/%d" % number
-	var selection := {} if message.is_empty() else {"backend": 3 if OS.get_environment("STEERING_RESPONSES") == "1" else 0, "id": "fixture"}
+	var selection := {} if message.is_empty() else {"backend": selected_backend, "id": "fixture"}
 	var error: String = dock.open_daqian_chat(url, number, "request-%d" % number, message, true, selection, true)
 	return check(error.is_empty(), error) and check(dock.mount_daqian_chat(host), "Cannot mount issue %d" % number)
 
@@ -42,10 +43,15 @@ func run():
 	settings.set_project_metadata("daqian_access", workspace.sha256_text(), {"actor":{
 		"repo_id":"fixture", "user_id":"tester", "repo":"fixture/concurrency"}})
 	var controls = dock.get_ai_settings_control()
-	if OS.get_environment("STEERING_RESPONSES") == "1":
+	if OS.get_environment("STEERING_CODEX") == "1":
+		selected_backend = 2
+		controls.find_child("CodexModel", true, false).text = "fixture"
+	elif OS.get_environment("STEERING_RESPONSES") == "1":
+		selected_backend = 3
+	if selected_backend != 0:
 		var backend = controls.find_child("AIBackend", true, false)
-		backend.select(3)
-		backend.item_selected.emit(3)
+		backend.select(selected_backend)
+		backend.item_selected.emit(selected_backend)
 	controls.find_child("APIEndpoint", true, false).text = OS.get_environment("STEERING_ENDPOINT")
 	controls.find_child("APIKey", true, false).text = "isolated-fixture-key"
 	controls.find_child("APIModel", true, false).text = "fixture"
@@ -102,6 +108,9 @@ func run():
 		return
 	check(host.find_child("ChatInput", true, false).text == "draft B", "B lost its draft")
 	check(not host.find_child("Stop", true, false).disabled, "Stopping A cancelled B")
+	if selected_backend == 2:
+		if await wait_for_file("cli-a-exited"):
+			check(FileAccess.get_file_as_string("res://cli-a-exited") == FileAccess.get_file_as_string("res://ISSUE_B"), "The surviving CLI did not witness A exiting")
 	FileAccess.open("res://release-response", FileAccess.WRITE).store_string("ok")
 	var deadline := Time.get_ticks_msec() + 10000
 	while received.is_empty() and Time.get_ticks_msec() < deadline:

@@ -3,7 +3,8 @@ extends SceneTree
 class Workspace extends "res://editor/docks/daqian/workspace.gd":
 	func _repo() -> String: return "/workspace"
 	func _ready() -> void: pass
-	func _sync_workflow(_redraw := true) -> void: pass
+	var workflow_refreshes := 0
+	func _sync_workflow(_redraw := true) -> void: workflow_refreshes += 1
 	func _queue_save() -> void: pass
 	func _exit_tree() -> void: pass
 
@@ -50,6 +51,25 @@ func run() -> void:
 	w.execution_turns["turn-2"] = {"root":"/workspace","actor":w.actor.duplicate(),"key":key}
 	w._execution_finished({"token":"turn-2"},"",true)
 	check(w._work_summary(item,{}).state != "failed", "A later successful turn retained the failure")
+	w.board = {"issues":[item]}
+	w.current = "https://github.com/fixture/repo/issues/999"
+	var binding := {"source_ref":item.url, "source_sha256":"v1", "actor":"8", "request_ref":item.request}
+	var before := w.workflow_refreshes
+	w._chat_work_event("/workspace",binding,"worker","request","chat","running")
+	check(w.chat_work[item.url].has("worker") and w.workflow_refreshes == before, "Background Issue refreshed the foreground workflow")
+	w.current = "draft_source"
+	w.saved.linked = {w.current:{"number":item.number,"request":"older-non-direct-id"}}
+	w._chat_work_event("/workspace",binding,"worker","step","implement","running")
+	check(w.workflow_refreshes == before + 1, "Linked draft missed a foreground progress event")
+	w.current = item.url
+	w._chat_work_event("/workspace",binding,"worker","request_end","chat","completed")
+	check(w.chat_work[item.url].is_empty() and w.workflow_refreshes == before + 2, "Foreground Issue missed its terminal event")
+	w._chat_work_event("/workspace",binding,"worker","request","chat","running")
+	w.current = ""
+	w.project_snapshot = w.board
+	w.board = {"issues":[]}
+	w._chat_work_event("/workspace",binding,"worker","request_end","chat","failed")
+	check(w.chat_work[item.url].is_empty() and w._work_summary(item,{}).state == "failed", "Switching boards lost a background terminal receipt")
 	var directory := OS.get_user_data_dir().path_join("failed-events-" + Crypto.new().generate_random_bytes(8).hex_encode())
 	DirAccess.make_dir_recursive_absolute(directory)
 	var event := {"kind":"request_end","occurred_at":"2026-01-01T12:00:01Z","request_id":item.request,

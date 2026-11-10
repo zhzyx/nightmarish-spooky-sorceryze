@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-307574270732b21f389af2c2fc5231e41594a8bc",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-production-parallel",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/758",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c37a992fb130f8a6d382a813c3557bc787accae1e4114a7210b09a1aa43e4a7e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/758",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/763",
+    "action": "user-report",
+    "detection_head": "3d472ba60614b706eeaf96c3ee75ecdc12e02c3a",
+    "context_sha256": "7252ad35c02412c248a64fc77db1c68b04c45cbcfaec06af19086560e2e6dd75",
+    "operator": "Sail-Li",
+    "worker": "codex-host-758",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/758",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/758",
+    "diagnosis": "已安装版本中带编号双工单真实 Codex 返回两份可实例化场景。已复现两处缺口：历史 CLI 回归错误走 HTTP、后台工单事件重复刷新前台工作流。当前操作者负责 #758 测试归属与后台刷新，现场侧栏另由 #761 在途。",
+    "next_action": "复核修正后的确切候选及真实侧栏发送、审批、终态。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T17:19:03.665196+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-10T17:32:09.280728+00:00",
+  "sha256": "8dad6be19e89d902b7cc0282609bfa165eb55af80a31dc163c101c353aadddda"
+}

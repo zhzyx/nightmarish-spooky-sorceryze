@@ -2,11 +2,15 @@ extends SceneTree
 
 # Run with --headless --path <repository> --script tests/editor/daqian_canvas_chat.gd.
 class Workspace extends "res://editor/docks/daqian/workspace.gd":
+	signal access_checked
+	var delay_access := false
 	var new_drafts := 0
 	var published_form := false
 	func _repo() -> String:
 		return "/test"
 	func _fresh_access() -> bool:
+		if delay_access:
+			await access_checked
 		return true
 	func _board_command(_only: bool, _expected := "", _project := false) -> Dictionary:
 		return {"board":{"user_id":"u", "repo_id":"r", "issues":[]}}
@@ -26,10 +30,12 @@ class Graph extends Control:
 
 class Chat extends Control:
 	var last := []
+	var sends := 0
 	func get_daqian_models() -> Dictionary:
 		return {"backend":0, "current":"first", "options":[{"id":"second"}]}
-	func open_daqian_chat(source, number, request, message, preview, selection, embedded, preview_receipt := "", _existing_only := false) -> String:
-		last = [source, number, request, message, preview, selection, embedded, preview_receipt]
+	func open_daqian_chat(source, number, request, message, preview, selection, embedded, preview_receipt := "", _existing_only := false, _background := false) -> String:
+		sends += 1
+		last = [source, number, request, message, preview, selection, embedded, preview_receipt, _background]
 		return ""
 
 func _initialize() -> void:
@@ -158,13 +164,49 @@ func run() -> void:
 	panel._preview_received(chat.last[7], "9fc6d11verify")
 	await process_frame
 	var plain_ok: bool = "答复 · 9fc6d11verify" in canvas.canvas_log.text and not canvas.waiting.visible
+	panel.delay_access = true
+	canvas.canvas_message.text = "已点击的原工单指令"
+	var before: int = chat.sends
+	canvas.send_requested.emit()
+	canvas.send_requested.emit()
+	panel.current = ""
+	panel._sync_canvas_scope()
+	canvas.canvas_message.text = "其他范围的新草稿"
+	panel.delay_access = false
+	panel.access_checked.emit()
+	await process_frame
+	var submitted_ok: bool = chat.sends == before + 1 and canvas.canvas_message.text == "其他范围的新草稿" and "已点击的原工单指令" in chat.last[3]
+	panel._preview_received(chat.last[7], '{"route":"execute","text":"执行原工单指令"}')
+	await process_frame
+	submitted_ok = submitted_ok and chat.sends == before + 2 and chat.last[0] == issue and chat.last[1] == 42 and chat.last[8] and canvas.canvas_message.text == "其他范围的新草稿"
+	panel.current = issue
+	panel._sync_canvas_scope()
+	submitted_ok = submitted_ok and canvas.canvas_message.text.is_empty()
+	# A source revision changed while authorization was pending: keep the draft and send nothing.
+	panel.delay_access = true
+	canvas.canvas_message.text = "过期的指令"
+	before = chat.sends
+	canvas.send_requested.emit()
+	panel.board.issues[0].updated = "new revision"
+	panel.delay_access = false
+	panel.access_checked.emit()
+	await process_frame
+	var revoked_ok: bool = chat.sends == before and canvas.canvas_message.text == "过期的指令"
+	panel.delay_access = true
+	canvas.send_requested.emit()
+	canvas.clear_session()
+	panel.actor.user_id = "new actor"
+	panel.delay_access = false
+	panel.access_checked.emit()
+	await process_frame
+	revoked_ok = revoked_ok and chat.sends == before and canvas.canvas_history.is_empty()
 	canvas.free()
 	for id in Node.get_orphan_node_ids():
 		if not original_orphans.has(id) and is_instance_id_valid(id):
 			var node := instance_from_id(id) as Node
 			if node and not node.get_parent():
 				node.free()
-	if not (input_ok and local_ok and execute_ok and project_ok and draft_ok and stale_ok and isolated and waiting_ok and failure_ok and plain_ok):
+	if not (input_ok and local_ok and execute_ok and project_ok and draft_ok and stale_ok and isolated and waiting_ok and failure_ok and plain_ok and submitted_ok and revoked_ok):
 		push_error("Canvas chat routing regression")
 		quit(1)
 	else:

@@ -31,9 +31,28 @@ process.stdin.on('end', () => {
         || input.tool_context.writes_allowed !== false
         || input.tool_context.execution_allowed !== false) process.exit(5);
     const body = JSON.stringify({model: input.model, messages: input.messages, tools: input.available_tools});
+    if (process.env.STEERING_CASE === 'issues' && input.messages.some(m => m.role === 'user' && m.content === 'ISSUE_B')) {
+        // Godot can only query child handles on Windows. B independently observes
+        // A's OS process exiting while B's own response remains blocked.
+        const fs = require('node:fs');
+        const path = require('node:path');
+        const folder = process.env.STEERING_FIXTURE_ROOT;
+        const pid = Number(fs.readFileSync(path.join(folder, 'ISSUE_A'), 'utf8'));
+        if (!Number.isSafeInteger(pid) || pid <= 0 || pid === process.pid) process.exit(8);
+        fs.writeFileSync(path.join(folder, 'cli-b-probing'), String(pid));
+        const timer = setInterval(() => {
+            try { process.kill(pid, 0); }
+            catch (error) {
+                if (error.code !== 'ESRCH') process.exit(9);
+                clearInterval(timer);
+                fs.writeFileSync(path.join(folder, 'cli-a-exited'), String(process.pid));
+            }
+        }, 40);
+        timer.unref();
+    }
     const request = http.request(process.env.STEERING_ENDPOINT, {method: 'POST', headers: {
         'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body),
-        Authorization: 'Bearer isolated-fixture-key'
+        Authorization: 'Bearer isolated-fixture-key', 'X-Fixture-CLI-Pid': String(process.pid)
     }}, response => {
         let text = '';
         response.setEncoding('utf8');
@@ -69,6 +88,7 @@ def main():
         parser.error("--responses requires the HTTP issues case")
     args.out.parent.mkdir(parents=True, exist_ok=True)
     errors, requests, model_requests = [], [], []
+    cli_pids = set()
     with tempfile.TemporaryDirectory(prefix="chat-steering-", dir=args.out.parent) as folder:
         project = Path(folder).resolve()
         (project / "project.godot").write_text(
@@ -115,6 +135,10 @@ def main():
                     messages = body["input" if args.responses else "messages"]
                     users = [m["content"] for m in messages if m["role"] == "user"]
                     requests.append({"users": users})
+                    if args.codex:
+                        pid = int(self.headers.get("X-Fixture-CLI-Pid", 0))
+                        assert pid > 0, "Missing CLI worker PID"
+                        cli_pids.add(pid)
                     assert self.headers.get("Authorization") == "Bearer isolated-fixture-key"
                     assert body["model"] == "fixture"
                     if args.case != "tools":
@@ -122,7 +146,7 @@ def main():
                     if args.case == "issues":
                         (issue,) = users
                         assert issue in {"ISSUE_A", "ISSUE_B"}, users
-                        (project / issue).touch()
+                        (project / issue).write_text(str(pid) if args.codex else "", encoding="ascii")
                         deadline = time.monotonic() + 25
                         while not (project / "release-response").exists() and time.monotonic() < deadline:
                             time.sleep(0.02)
@@ -195,7 +219,7 @@ def main():
         server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
         worker = threading.Thread(target=server.serve_forever, daemon=True)
         worker.start()
-        env = dict(os.environ)
+        env = {key: value for key, value in os.environ.items() if not key.startswith("GONGGONG_")}
         for key in ["OPENAI_API_KEY", "GODOT_AI_API_KEY", "GONGGONG_WORKSPACE", "GONGGONG_TEST_WORKSPACE"]:
             env.pop(key, None)
         for key in ["APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "TEMP", "TMP"]:
@@ -204,6 +228,7 @@ def main():
         env.update(
             STEERING_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
             STEERING_CASE=args.case,
+            STEERING_FIXTURE_ROOT=str(project),
             STEERING_RESPONSES="1" if args.responses else "",
             STEERING_CODEX="1" if args.codex else "",
             STEERING_CODEX_ENTRY=str(entry),
@@ -220,6 +245,14 @@ def main():
             + "\n",
             encoding="utf-8",
         )
+        if args.codex:
+            entry.chmod(0o755)
+            private_config = isolated_editor.parent / "editor_data/gonggong/config.json"
+            private_config.parent.mkdir(parents=True, exist_ok=True)
+            private_config.write_text(
+                json.dumps({"schema_version": 1, "runtimes": {"codex": str(entry), "node": env["STEERING_NODE"]}}),
+                encoding="utf-8",
+            )
         restored = None
         try:
             run = subprocess.run(
@@ -277,6 +310,7 @@ def main():
             ).hexdigest(),
             fixture_sha256={p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in [Path(__file__), fixture]},
             real_provider=False,
+            cli_pids=sorted(cli_pids),
             model_transport="Codex bridge + offline JSONL CLI + loopback mock"
             if args.codex
             else "isolated loopback mock",
@@ -285,6 +319,7 @@ def main():
             report.get("passed", False)
             and (restored is None or restored.get("passed", False))
             and run.returncode == 0
+            and (not args.codex or args.case != "issues" or len(cli_pids) == 2)
             and not errors
             and len(requests) == (2 if args.case in {"steering", "tools", "issues"} else 1)
         )

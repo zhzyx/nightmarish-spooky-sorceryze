@@ -10,6 +10,8 @@ var canvas_message := TextEdit.new()
 var canvas_models := OptionButton.new()
 var canvas_backend := -1
 var pending_turns := {}
+var checking_turns := {}
+var latest_submissions := {}
 var session_epoch := 0
 var selections := {}
 var canvas_history := {}
@@ -115,6 +117,8 @@ func clear_session() -> void:
 	canvas_message.clear_undo_history()
 	session_epoch += 1
 	pending_turns.clear()
+	checking_turns.clear()
+	latest_submissions.clear()
 	waiting.hide()
 	selections.clear()
 	canvas_backend = -1
@@ -132,12 +136,16 @@ func model_selection() -> Dictionary:
 
 func sent(turn: Dictionary) -> void:
 	if not turn.project:
-		canvas_generation += 1
-		turn.generation = canvas_generation
+		latest_submissions[turn.scope] = turn.submission
+		if turn.scope == canvas_location:
+			canvas_generation += 1
+			turn.generation = canvas_generation
 		append_line(turn.scope, "你 · " + str(turn.question))
-		if canvas_message.text.strip_edges() == turn.question:
+		if turn.scope == canvas_location and canvas_message.text.strip_edges() == turn.question:
 			canvas_message.clear()
 			canvas_message.clear_undo_history()
+		elif turn.scope != canvas_location and str(canvas_drafts.get(turn.scope, "")).strip_edges() == turn.question:
+			canvas_drafts.erase(turn.scope)
 	pending_turns[turn.source] = turn
 	_update_waiting()
 
