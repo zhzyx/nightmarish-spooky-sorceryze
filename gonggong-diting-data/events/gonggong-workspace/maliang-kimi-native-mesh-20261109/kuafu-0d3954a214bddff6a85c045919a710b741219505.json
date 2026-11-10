@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0d3954a214bddff6a85c045919a710b741219505",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-native-mesh-20261109",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/646",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8d368956a735fa483577e9147fa6cae10873a96759970487c78b097a0df6e7de",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/646",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/717",
+    "action": "validation",
+    "detection_head": "427f946440e5fc1c0afb23171aac539e1e438119",
+    "context_sha256": "d3f9d4802530b0b8f55e3ff4799daff305ec4a40418589b96a19004003781b97",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-continuation-subagent",
+    "authority_ref": "Issue #646 continuation authorization; repository WRITE verified for kaiyunxue",
+    "evidence": "Private ruff-fix/formal-gate.json; issue_gate.py check_collection rejects modified or deleted tracked data-collection paths",
+    "diagnosis": "The formal gate requires immutable committed collection receipts. The attempted in-place validation update was rejected before submission; no product-source or runtime failure occurred. The original validation has been restored byte-for-byte and the new Ruff/native evidence will use an append-only correction.",
+    "next_action": "Stage only the preserved original and the new correction, rerun the formal gate and tracked check, then continue the replacement submission. Do not claim this gate recovered until it actually passes.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T01:39:05.786140+00:00",
+    "attempted": "Restored the exact HEAD validation receipt, removed the in-place edits and retained the measured Ruff/native results for a separate correction record.",
+    "repair_owner": "kimi-work-continuation-subagent for evidence-file handling",
+    "continuable": "Append-only evidence correction and formal-gate rerun; no rebuild or model request is required"
+  },
+  "occurred_at": "2026-11-10T01:42:14.465571+00:00",
+  "sha256": "1a0e1eb873b076a5e3362030f43eee7f756357391022afbbd8caac8e2c3231db"
+}

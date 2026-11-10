@@ -170,8 +170,89 @@ def check_modeling_cli(path):
     return result
 
 
+def _matrix_multiply(left, right):
+    return tuple(
+        tuple(sum(left[row][index] * right[index][column] for index in range(4)) for column in range(4))
+        for row in range(4)
+    )
+
+
+def _node_matrix(node):
+    identity = ((1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1))
+    if "matrix" in node:
+        values = node["matrix"]
+        require(isinstance(values, list) and len(values) == 16, "mesh_invalid")
+        require(all(type(value) in (int, float) and math.isfinite(value) for value in values), "mesh_invalid")
+        return tuple(tuple(values[column * 4 + row] for column in range(4)) for row in range(4))
+    translation = node.get("translation", [0, 0, 0])
+    rotation = node.get("rotation", [0, 0, 0, 1])
+    scale = node.get("scale", [1, 1, 1])
+    require(
+        all(
+            isinstance(value, list) and len(value) == length
+            for value, length in ((translation, 3), (rotation, 4), (scale, 3))
+        ),
+        "mesh_invalid",
+    )
+    require(
+        all(type(number) in (int, float) and math.isfinite(number) for number in translation + rotation + scale),
+        "mesh_invalid",
+    )
+    x, y, z, w = rotation
+    length = math.sqrt(x * x + y * y + z * z + w * w)
+    require(length > 0, "mesh_invalid")
+    x, y, z, w = x / length, y / length, z / length, w / length
+    rotated = (
+        (1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w), 0),
+        (2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w), 0),
+        (2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y), 0),
+        (0, 0, 0, 1),
+    )
+    scaled = tuple(
+        tuple(rotated[row][column] * (scale[column] if column < 3 else 1) for column in range(4)) for row in range(4)
+    )
+    translated = [list(row) for row in identity]
+    translated[0][3], translated[1][3], translated[2][3] = translation
+    return _matrix_multiply(tuple(tuple(row) for row in translated), scaled)
+
+
+def _mesh_world_transforms(document):
+    """Resolve glTF's column-major TRS scene graph into row-major world transforms."""
+    nodes = document.get("nodes")
+    scenes = document.get("scenes")
+    require(isinstance(nodes, list) and len(nodes) <= 4096, "mesh_invalid")
+    require(isinstance(scenes, list) and scenes, "mesh_invalid")
+    scene_index = document.get("scene", 0)
+    require(type(scene_index) is int and 0 <= scene_index < len(scenes), "mesh_invalid")
+    roots = scenes[scene_index].get("nodes", [])
+    require(isinstance(roots, list), "mesh_invalid")
+    transforms = {index: [] for index in range(len(document.get("meshes", [])))}
+    identity = ((1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1))
+    visited = set()
+
+    def visit(index, parent):
+        require(type(index) is int and 0 <= index < len(nodes) and index not in visited, "mesh_invalid")
+        visited.add(index)
+        node = nodes[index]
+        require(isinstance(node, dict), "mesh_invalid")
+        world = _matrix_multiply(parent, _node_matrix(node))
+        if "mesh" in node:
+            mesh = node["mesh"]
+            require(type(mesh) is int and mesh in transforms, "mesh_invalid")
+            transforms[mesh].append(world)
+        children = node.get("children", [])
+        require(isinstance(children, list), "mesh_invalid")
+        for child in children:
+            visit(child, world)
+
+    for root in roots:
+        visit(root, identity)
+    require(all(len(values) == 1 for values in transforms.values()), "mesh_invalid")
+    return {index: values[0] for index, values in transforms.items()}
+
+
 def validate_mesh(data):
-    """Verify embedded GLB and actual finite triangle positions, not only its header."""
+    """Independently validate indexed triangles and transformed finite scene bounds."""
     require(20 <= len(data) <= MAX_GLB_BYTES, "mesh_invalid")
     validate_embedded_glb(data)
     size = struct.unpack_from("<I", data, 12)[0]
@@ -181,52 +262,124 @@ def validate_mesh(data):
     binary_size, kind = struct.unpack_from("<II", data, offset)
     require(kind == 0x004E4942 and offset + 8 + binary_size == len(data), "mesh_invalid")
     binary = data[offset + 8 :]
-    total = 0
-    primitives = 0
-    for mesh in document.get("meshes", []):
+    transforms = _mesh_world_transforms(document)
+    total_vertices = total_triangles = primitives = 0
+    lower = upper = None
+
+    def accessor_bounds(accessor, component_size):
+        require(isinstance(accessor, dict) and not accessor.get("sparse"), "mesh_invalid")
+        count = accessor.get("count")
+        view_index = accessor.get("bufferView")
+        require(type(count) is int and count > 0 and type(view_index) is int, "mesh_invalid")
+        views = document.get("bufferViews", [])
+        require(0 <= view_index < len(views), "mesh_invalid")
+        view = views[view_index]
+        view_offset = view.get("byteOffset", 0)
+        item_offset = accessor.get("byteOffset", 0)
+        require(
+            view.get("buffer", 0) == 0
+            and type(view_offset) is int
+            and type(item_offset) is int
+            and view_offset >= 0
+            and item_offset >= 0,
+            "mesh_invalid",
+        )
+        stride = view.get("byteStride", component_size)
+        require(type(stride) is int and component_size <= stride <= 256, "mesh_invalid")
+        begin = view_offset + item_offset
+        end = begin + (count - 1) * stride + component_size
+        view_end = view_offset + view.get("byteLength", -1)
+        require(0 <= begin < end <= view_end <= len(binary), "mesh_invalid")
+        return begin, stride
+
+    for mesh_index, mesh in enumerate(document.get("meshes", [])):
+        world = transforms[mesh_index]
         for primitive in mesh.get("primitives", []):
-            require(primitive.get("mode", 4) == 4, "mesh_invalid")
-            accessor = document["accessors"][primitive["attributes"]["POSITION"]]
-            require(
-                accessor["componentType"] == 5126 and accessor["type"] == "VEC3" and not accessor.get("sparse"),
-                "mesh_invalid",
-            )
-            count = accessor["count"]
+            require(primitive.get("mode", 4) == 4 and primitives < 4096, "mesh_invalid")
+            attributes = primitive.get("attributes", {})
+            position_index = attributes.get("POSITION")
+            accessors = document.get("accessors", [])
+            require(type(position_index) is int and 0 <= position_index < len(accessors), "mesh_invalid")
+            accessor = accessors[position_index]
+            require(accessor.get("componentType") == 5126 and accessor.get("type") == "VEC3", "mesh_invalid")
+            count = accessor.get("count")
             require(type(count) is int and 3 <= count <= 1000000, "mesh_invalid")
-            view = document["bufferViews"][accessor["bufferView"]]
-            stride = view.get("byteStride", 12)
-            require(view.get("buffer", 0) == 0 and type(stride) is int and 12 <= stride <= 256, "mesh_invalid")
-            begin = view.get("byteOffset", 0) + accessor.get("byteOffset", 0)
-            end = begin + (count - 1) * stride + 12
+            begin, stride = accessor_bounds(accessor, 12)
+            positions = [struct.unpack_from("<fff", binary, begin + index * stride) for index in range(count)]
             require(
-                0 <= begin < end <= len(binary) and end <= view.get("byteOffset", 0) + view["byteLength"],
+                all(math.isfinite(value) and abs(value) <= 1000 for point in positions for value in point),
                 "mesh_invalid",
             )
-            for index in range(count):
+            for point in positions:
+                x, y, z = point
+                transformed = tuple(
+                    world[row][0] * x + world[row][1] * y + world[row][2] * z + world[row][3] for row in range(3)
+                )
+                require(all(math.isfinite(value) and abs(value) <= 1000 for value in transformed), "mesh_invalid")
+                if lower is None:
+                    lower, upper = list(transformed), list(transformed)
+                else:
+                    lower = [min(lower[index], transformed[index]) for index in range(3)]
+                    upper = [max(upper[index], transformed[index]) for index in range(3)]
+            if "indices" in primitive:
+                index_index = primitive["indices"]
+                require(type(index_index) is int and 0 <= index_index < len(accessors), "mesh_invalid")
+                indices_accessor = accessors[index_index]
+                component = indices_accessor.get("componentType")
+                require(component in (5121, 5123, 5125) and indices_accessor.get("type") == "SCALAR", "mesh_invalid")
+                index_count = indices_accessor.get("count")
                 require(
-                    all(
-                        math.isfinite(v) and abs(v) <= 1000
-                        for v in struct.unpack_from("<fff", binary, begin + index * stride)
-                    ),
+                    type(index_count) is int and 3 <= index_count <= 6000000 and index_count % 3 == 0,
                     "mesh_invalid",
                 )
-            total += count
+                component_size, code = {5121: (1, "B"), 5123: (2, "H"), 5125: (4, "I")}[component]
+                index_begin, index_stride = accessor_bounds(indices_accessor, component_size)
+                require(index_stride == component_size, "mesh_invalid")
+                indices = [
+                    struct.unpack_from("<" + code, binary, index_begin + index * index_stride)[0]
+                    for index in range(index_count)
+                ]
+            else:
+                indices = list(range(count))
+            for start in range(0, len(indices), 3):
+                triangle = indices[start : start + 3]
+                require(
+                    all(0 <= index < count for index in triangle) and len(set(triangle)) == 3,
+                    "mesh_invalid",
+                )
+            total_vertices += count
+            total_triangles += len(indices) // 3
+            require(total_vertices <= 1000000 and total_triangles <= 2000000, "mesh_invalid")
             primitives += 1
-    require(primitives >= 1 and 3 <= total <= 1000000, "mesh_invalid")
-    return dict(vertices=total, primitives=primitives, bytes=len(data))
+    require(
+        primitives >= 1
+        and 3 <= total_vertices <= 1000000
+        and 1 <= total_triangles <= 2000000
+        and lower is not None
+        and all(upper[index] > lower[index] for index in range(3)),
+        "mesh_invalid",
+    )
+    return dict(
+        vertices=total_vertices,
+        triangles=total_triangles,
+        primitives=primitives,
+        bytes=len(data),
+        bounds=dict(min=lower, max=upper),
+    )
 
 
 class ModelingProvider(CodexProvider):
+    CONFIG_KEYS = frozenset(("cli_path", "storage", "godot_path", "builder_path"))
+    DATABASE_NAME = "modeling-jobs.sqlite"
+    MESSAGES = MESSAGES
+
     def __init__(self, config):
-        require(
-            isinstance(config, dict) and set(config) == {"cli_path", "storage", "godot_path", "builder_path"},
-            "invalid modeling config",
-        )
+        require(isinstance(config, dict) and set(config) == self.CONFIG_KEYS, "invalid modeling config")
         require(all(isinstance(value, str) and value.strip() for value in config.values()), "invalid modeling config")
         self.config = json.loads(canonical(config))
         self.storage = Path(config["storage"]).expanduser().resolve()
         self.storage.mkdir(parents=True, exist_ok=True)
-        self.database = self.storage / "modeling-jobs.sqlite"
+        self.database = self.storage / self.DATABASE_NAME
         with self.db() as db:
             db.execute("CREATE TABLE IF NOT EXISTS jobs(key TEXT PRIMARY KEY, body TEXT NOT NULL)")
         builder = Path(config["builder_path"])
@@ -247,9 +400,15 @@ class ModelingProvider(CodexProvider):
             available=True,
         )
 
+    def worker_path(self):
+        return Path(__file__).resolve()
+
+    def check_authentication(self):
+        return check_modeling_cli(self.config["cli_path"])
+
     def finish(self, key, state, code=None, result=None):
         outputs = {"result": {k: result["artifacts"][-1][k] for k in ("id", "revision")}} if result else None
-        values = dict(terminal=self.snapshot(key, state, outputs, MESSAGES[code] if code else None))
+        values = dict(terminal=self.snapshot(key, state, outputs, self.MESSAGES[code] if code else None))
         if result:
             values["result"] = result
         return self.write(key, **values)["terminal"]
@@ -324,7 +483,7 @@ class ModelingProvider(CodexProvider):
             return self.poll(key)
         try:
             plan = self.plan(request, manifest)
-            report = check_modeling_cli(self.config["cli_path"])
+            report = self.check_authentication()
             require(report["connected"], report["code"])
             directory = self.storage / key
             directory.mkdir(exist_ok=False)
@@ -336,7 +495,7 @@ class ModelingProvider(CodexProvider):
                         sys.executable,
                         "-X",
                         "utf8",
-                        str(Path(__file__).resolve()),
+                        str(self.worker_path()),
                         "--worker",
                         str(directory / "config.json"),
                         key,
@@ -352,9 +511,12 @@ class ModelingProvider(CodexProvider):
             _WORKERS.append(worker)
             return self.poll(key)
         except (ValueError, OSError, KeyError, TypeError) as error:
-            return self.finish(key, "failed", str(error) if str(error) in MESSAGES else "worker_failed")
+            return self.finish(key, "failed", str(error) if str(error) in self.MESSAGES else "worker_failed")
 
-    def _run_owned(self, key, arguments, directory, label, stdin=None, timeout=CLI_TIMEOUT):
+    def _run_owned(self, key, arguments, directory, label, stdin=None, timeout=CLI_TIMEOUT, error_codes=None):
+        timeout_code, output_code = error_codes or (
+            ("cli_timeout", "cli_output_invalid") if label == "cli" else ("builder_timeout", "builder_failed")
+        )
         if not self._active(key, label):
             return None
         with (
@@ -376,13 +538,13 @@ class ModelingProvider(CodexProvider):
                         process.terminate()
                         return None
                     if time.monotonic() > deadline:
-                        self.finish(key, "failed", "cli_timeout" if label == "cli" else "builder_timeout")
+                        self.finish(key, "failed", timeout_code)
                         process.terminate()
                         return None
                     if (directory / (label + ".stdout")).stat().st_size > MAX_EVENTS_BYTES or (
                         directory / (label + ".stderr")
                     ).stat().st_size > MAX_EVENTS_BYTES:
-                        self.finish(key, "failed", "cli_output_invalid" if label == "cli" else "builder_failed")
+                        self.finish(key, "failed", output_code)
                         process.terminate()
                         return None
                     time.sleep(0.1)
@@ -512,6 +674,55 @@ class ModelingProvider(CodexProvider):
         (directory / "validated-plan.json").write_text(canonical(instructions), encoding="utf-8")
         return instructions, receipt
 
+    def _native_geometry_matches(self, receipt, geometry):
+        def vector_matches(actual, expected):
+            return (
+                isinstance(actual, list)
+                and len(actual) == 3
+                and all(
+                    type(value) in (int, float)
+                    and math.isfinite(value)
+                    and math.isclose(value, expected[index], rel_tol=0.00001, abs_tol=0.0001)
+                    for index, value in enumerate(actual)
+                )
+            )
+
+        return (
+            receipt.get("vertices") == geometry["vertices"]
+            and receipt.get("triangles") == geometry["triangles"]
+            and receipt.get("bytes") == geometry["bytes"]
+            and vector_matches(receipt.get("bounds_min"), geometry["bounds"]["min"])
+            and vector_matches(receipt.get("bounds_max"), geometry["bounds"]["max"])
+        )
+
+    def _artifact(self, key, record, instructions, instruction_receipt, builder_receipt, data, sha):
+        return dict(
+            id="codex-modeling-" + key,
+            revision=sha,
+            type="mesh",
+            payload=dict(
+                content_base64=base64.b64encode(data).decode(),
+                content_sha256=sha,
+                extension=".glb",
+                bytes=len(data),
+                provenance=dict(
+                    provider="codex-modeling",
+                    cli_version=record["cli_report"]["version"],
+                    auth_mode="chatgpt",
+                    execution="validated_declarative_primitives_in_godot",
+                    instructions_sha256=digest(instructions),
+                    instruction_receipt=instruction_receipt,
+                    builder_receipt=builder_receipt,
+                    source_sha256=record["plan"]["source"]["payload"]["content_sha256"]
+                    if record["plan"]["source"]
+                    else None,
+                    request_sha256=digest(record["request"]),
+                    source_manifest_sha256=digest(record["manifest"]),
+                    generated_code_executed=False,
+                ),
+            ),
+        )
+
     def work(self, key):
         record = self.read(key)
         if "terminal" in record:
@@ -521,7 +732,7 @@ class ModelingProvider(CodexProvider):
         planned = self._instructions(key, record["plan"], directory)
         if planned is None or not self._active(key):
             return
-        instructions, cli_receipt = planned
+        instructions, instruction_receipt = planned
         (directory / "project.godot").write_text(
             'config_version=5\n[application]\nconfig/name="Maliang Fixed Mesh Builder"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n',
             encoding="utf-8",
@@ -561,8 +772,8 @@ class ModelingProvider(CodexProvider):
         require(
             native_receipt.get("ok") is True
             and native_receipt.get("sha256") == sha
-            and native_receipt.get("vertices") == geometry["vertices"]
-            and native_receipt.get("parts") == len(instructions["parts"]),
+            and native_receipt.get("parts") == len(instructions["parts"])
+            and self._native_geometry_matches(native_receipt, geometry),
             "builder_failed",
         )
         builder_receipt = dict(
@@ -574,32 +785,7 @@ class ModelingProvider(CodexProvider):
             geometry=geometry,
         )
         self.write(key, builder_receipt=builder_receipt)
-        artifact = dict(
-            id="codex-modeling-" + key,
-            revision=sha,
-            type="mesh",
-            payload=dict(
-                content_base64=base64.b64encode(data).decode(),
-                content_sha256=sha,
-                extension=".glb",
-                bytes=len(data),
-                provenance=dict(
-                    provider="codex-modeling",
-                    cli_version=record["cli_report"]["version"],
-                    auth_mode="chatgpt",
-                    execution="validated_declarative_primitives_in_godot",
-                    instructions_sha256=digest(instructions),
-                    instruction_receipt=cli_receipt,
-                    builder_receipt=builder_receipt,
-                    source_sha256=record["plan"]["source"]["payload"]["content_sha256"]
-                    if record["plan"]["source"]
-                    else None,
-                    request_sha256=digest(record["request"]),
-                    source_manifest_sha256=digest(record["manifest"]),
-                    generated_code_executed=False,
-                ),
-            ),
-        )
+        artifact = self._artifact(key, record, instructions, instruction_receipt, builder_receipt, data, sha)
         self.finish(key, "succeeded", result=dict(schema_version=1, artifacts=[artifact]))
 
 

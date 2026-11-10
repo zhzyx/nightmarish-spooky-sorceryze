@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c122551f6eb9a6b9964f1f5ff0b464184b43eaf7",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-native-mesh-20261109",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/646",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "504b513e8f7512dcb21d950f2c7eaff1012f8a58e666a2b21d42c2306081df60",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/646",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/717",
+    "action": "validation",
+    "detection_head": "c3b63851b3f9bbfbce93a02bcf4b807d098adb01",
+    "context_sha256": "d3f9d4802530b0b8f55e3ff4799daff305ec4a40418589b96a19004003781b97",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-continuation-subagent",
+    "authority_ref": "Issue #646 continuation authorization; repository WRITE verified for kaiyunxue",
+    "evidence": "Private ruff-fix/formal-gate-integrated.json and the preserved 22-path staged tree on b792e237",
+    "diagnosis": "The append-only correction became committed during local main replay, so a subsequent edit was rejected by the immutable-collection gate. The complete candidate is now staged against the unchanged b792e237 baseline; no product-source or runtime failure occurred.",
+    "next_action": "Append this event as a new path, freeze collection bytes, rerun the formal gate and tracked check, then resume signing. Do not modify committed collection history or claim recovery before the gate actually passes.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T01:53:21.288337+00:00",
+    "attempted": "Verified tree identity across the soft reset to b792e237; only the 22 intended candidate paths remain and no upstream reverse deletions remain.",
+    "repair_owner": "kimi-work-continuation-subagent for staged evidence handling",
+    "continuable": "Final append-only event, gate rerun and signed submission; no rebuild or model request required"
+  },
+  "occurred_at": "2026-11-10T01:57:33.288663+00:00",
+  "sha256": "d8dd42858a2af23161fa7b58b7fcae922aeaaa8b9dd37f00bf363eb9abdae8bb"
+}

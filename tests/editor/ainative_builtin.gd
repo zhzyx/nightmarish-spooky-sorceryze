@@ -140,7 +140,7 @@ func verify_generation_service_controls():
 	if not check(panel.get("service_choice") is OptionButton and panel.has_method("check_service"), 'bundled editor exposes generation service setup controls'): return
 	var service_modes: Array = []
 	for i in panel.service_choice.item_count: service_modes.append(panel.service_choice.get_item_metadata(i))
-	check(service_modes == ["offline", "comfy", "legacy", "codex", "codex_modeling", "codex_sculpt"], 'bundled service picker preserves existing modes and adds current-login CLI generation')
+	check(service_modes == ["offline", "comfy", "legacy", "codex", "codex_modeling", "codex_sculpt", "kimi_native"], 'bundled service picker preserves all existing modes and adds Kimi Native')
 	check(panel.get('cli_path_edit') is LineEdit and panel.get('managed_comfy_panel') is VBoxContainer, 'bundled CLI and local Mesh management controls are installed')
 	check(panel.service_config_path.get_base_dir() == panel.state_dir and panel.service_config_path.get_file() == "generation-service.json", 'bundled service configuration is private machine state')
 	check(panel._service_mode() == "offline" and panel.service_saved.is_empty(), 'fresh native project does not claim a real generation service')
@@ -149,6 +149,29 @@ func verify_generation_service_controls():
 	if not await wait_idle(): return
 	check(panel.serial == serial + 1 and panel.service_report.get("mode") == "offline" and not panel.service_report.get("connected", true), 'bundled read-only service check reaches its Python implementation')
 	check(not panel.service_report.get("capabilities", {}).get("text_to_image", {}).get("ready", true) and not FileAccess.file_exists(panel.service_config_path), 'checking offline mode neither invents generation readiness nor writes configuration')
+	panel.service_choice.select(6)
+	panel.service_choice.item_selected.emit(6)
+	panel.kimi_model_edit.text = 'k3-256k'
+	var draft = panel.service_draft()
+	check(draft.get('mode') == 'kimi_native' and draft.get('endpoint') == 'https://api.kimi.com/coding/v1' and draft.get('kimi_model') == 'k3-256k', 'Kimi Native edits its semantic provider, official endpoint and model')
+	check(not draft.has('cli_path') and not draft.has('blender_path') and draft.image_model.is_empty() and draft.mesh_model.is_empty(), 'Kimi Native does not require Codex, Blender or ComfyUI model settings')
+	check(panel._generator_provider('text_to_mesh') == 'kimi_native' and panel._generator_provider('image_to_mesh') == 'kimi_native', 'both Mesh node kinds route to Kimi Native')
+	panel.save_service_settings()
+	check(panel._service_blocker('text_to_image').contains('不支持二维图像') and panel._service_blocker('image_to_image').contains('不支持二维图像'), 'Kimi Native explicitly rejects image-generation nodes')
+	var stored = FileAccess.get_file_as_string(panel.service_config_path)
+	check(panel.service_saved == draft and not stored.contains('api_key') and not stored.contains('authorization') and not stored.contains('secret') and not stored.contains('password'), 'Kimi Native saves settings without API credentials')
+	var restored = panel.get_script().new()
+	restored.state_dir = panel.state_dir
+	restored.set_meta('ainative_builtin', true)
+	restored.set_meta('ainative_tools_dir', panel.get_meta('ainative_tools_dir', ''))
+	root.add_child(restored)
+	restored.hide()
+	await process_frame
+	check(restored._service_mode() == 'kimi_native' and restored.service_saved == draft and restored.kimi_model_edit.text == 'k3-256k', 'Kimi Native settings survive a real Workbench reopen')
+	restored.queue_free()
+	await process_frame
+	panel.service_choice.select(0)
+	panel.service_choice.item_selected.emit(0)
 
 func verify_context_controls():
 	check(panel.get("context_menu") is PopupMenu and panel.has_method("show_context_menu"), 'bundled editor exposes contextual editing')
