@@ -61,7 +61,12 @@ def main():
     parser.add_argument("--codex", action="store_true", help="Use the real Codex bridge with an offline CLI fixture")
     parser.add_argument("--node", type=Path, help="Node executable for --codex; defaults to PATH")
     parser.add_argument("--case", choices=["steering", "tools", "stop", "cancel", "mode", "issues"], default="steering")
+    parser.add_argument(
+        "--responses", action="store_true", help="Exercise the Responses wire format for concurrent Issues"
+    )
     args = parser.parse_args()
+    if args.responses and (args.case != "issues" or args.codex):
+        parser.error("--responses requires the HTTP issues case")
     args.out.parent.mkdir(parents=True, exist_ok=True)
     errors, requests, model_requests = [], [], []
     with tempfile.TemporaryDirectory(prefix="chat-steering-", dir=args.out.parent) as folder:
@@ -73,6 +78,16 @@ def main():
         )
         # Per-process self-contained settings also isolate macOS, which ignores XDG.
         isolated_editor = copy_editor(args.godot, project / "isolated-editor")
+        if args.codex:
+            installation = isolated_editor.parent
+            (installation / "SConstruct").touch()
+            tools = Path(__file__).resolve().parents[2] / "tools"
+            for provider in ("codex_cli", "codebuddy_cli"):
+                target = installation / "tools" / provider
+                target.mkdir(parents=True)
+                for source in (tools / provider).glob("*.js"):
+                    shutil.copyfile(source, target / source.name)
+            shutil.copyfile(tools / "codex_cli/attach_job.ps1", installation / "tools/codex_cli/attach_job.ps1")
         fixture = Path(__file__).with_name("ai_chat_issues.gd" if args.case == "issues" else "ai_chat_steering.gd")
         shutil.copyfile(fixture, project / "gate.gd")
         entry = project / "offline-codex.js"
@@ -95,7 +110,9 @@ def main():
             def do_POST(self):
                 try:
                     body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
-                    messages = body["messages"]
+                    if args.responses:
+                        assert self.path == "/v1/responses" and body["stream"] is False and body["store"] is False
+                    messages = body["input" if args.responses else "messages"]
                     users = [m["content"] for m in messages if m["role"] == "user"]
                     requests.append({"users": users})
                     assert self.headers.get("Authorization") == "Bearer isolated-fixture-key"
@@ -157,7 +174,13 @@ def main():
                             ],
                         }
                         finish = "tool_calls"
-                    payload = json.dumps({"choices": [{"message": message, "finish_reason": finish}]}).encode()
+                    response = {"choices": [{"message": message, "finish_reason": finish}]}
+                    if args.responses:
+                        response = {
+                            "status": "completed",
+                            "output": [{"type": "message", "content": [{"type": "output_text", "text": text}]}],
+                        }
+                    payload = json.dumps(response).encode()
                     self.send_response(200)
                     self.send_header("Content-Type", "application/json")
                     self.send_header("Content-Length", str(len(payload)))
@@ -181,6 +204,7 @@ def main():
         env.update(
             STEERING_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
             STEERING_CASE=args.case,
+            STEERING_RESPONSES="1" if args.responses else "",
             STEERING_CODEX="1" if args.codex else "",
             STEERING_CODEX_ENTRY=str(entry),
             STEERING_NODE=str(args.node.resolve()) if args.node else shutil.which("node") or "",
@@ -188,6 +212,14 @@ def main():
         )
         if args.codex and not env["STEERING_NODE"]:
             parser.error("--codex requires Node on PATH or --node")
+        settings = isolated_editor.parent / "editor_data/editor_settings-4.8.tres"
+        settings.write_text(
+            '[gd_resource type="EditorSettings" format=3]\n\n[resource]\nai_chat/backend = 0\n'
+            + "ai_chat/endpoint = "
+            + json.dumps(env["STEERING_ENDPOINT"])
+            + "\n",
+            encoding="utf-8",
+        )
         restored = None
         try:
             run = subprocess.run(
@@ -234,6 +266,7 @@ def main():
         report = json.loads(report_file.read_bytes()) if report_file.exists() else {}
         report.update(
             case=args.case,
+            responses=args.responses,
             restart=restored,
             requests=requests,
             model_requests=model_requests,

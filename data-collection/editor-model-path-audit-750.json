@@ -1,0 +1,404 @@
+{
+  "issue_number": 750,
+  "request_id": "editor-model-path-audit",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/750",
+  "path_base": "repository root",
+  "platform": "Windows x86_64; copied self-contained headless editors",
+  "original_install_sha256": "35491b7ddd77d5036fbd821fb78e717095fd138c2e8c472e298c91a754fcfa79",
+  "candidate_build": {
+    "worktree": "D:\\GongGong-work\\editor-model-path-audit",
+    "revision": "3d472ba60614b706eeaf96c3ee75ecdc12e02c3a",
+    "source_digest": "48dcdbe54c7b0efc666bfcf5ac2786bb1de4b0a21c492889975d548699ecf14f",
+    "clean_source": false,
+    "console_sha256": "8ff0d2e7d75185376789e32fdc063ed239f6d65e01179d8f63d6107897735638",
+    "native": {
+      "status": "built",
+      "key": "1b6f8e48e7cb01ec58a9b29349c4168cc414a64a7ee72aec702f73330715a865",
+      "reason": "",
+      "artifact_sha256": "ea67e3d888ba148a63419c565ebecb02b6ca19afc0ecff6ec5df62fa41fc7673",
+      "producer_head": "3d472ba60614b706eeaf96c3ee75ecdc12e02c3a",
+      "consumer_head": "3d472ba60614b706eeaf96c3ee75ecdc12e02c3a",
+      "outputs": {
+        "bin/godot.windows.editor.x86_64.exe": "ea67e3d888ba148a63419c565ebecb02b6ca19afc0ecff6ec5df62fa41fc7673",
+        "bin/godot.windows.editor.x86_64.console.exe": "8ff0d2e7d75185376789e32fdc063ed239f6d65e01179d8f63d6107897735638"
+      }
+    },
+    "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "aichat": "passed"
+  },
+  "aichat_native": {
+    "cases": 45,
+    "assertions": 638
+  },
+  "origin_regression": {
+    "runner": "tests/editor/run_codex_bridge_origin.py",
+    "baseline_missing_origin": "project/tools/codex_cli/godot_bridge.js executed",
+    "candidate_missing_origin": "no marker, native invalid path diagnostic",
+    "valid_origin_both": "tools/codex_cli/godot_bridge.js in installation executed",
+    "independent_review": "Parent Codex session independently reran both candidate branches with exit 0 and reviewed all launch references."
+  },
+  "catalog_discovery": [
+    {
+      "case": "api-chat-startup",
+      "checks": [
+        "manual refresh button absent",
+        "configured backend startup enumerated once"
+      ],
+      "events": [
+        "api-model-list"
+      ],
+      "ok": true
+    },
+    {
+      "case": "api-responses-startup",
+      "checks": [
+        "manual refresh button absent",
+        "configured backend startup enumerated once"
+      ],
+      "events": [
+        "api-model-list"
+      ],
+      "ok": true
+    },
+    {
+      "case": "codebuddy-startup",
+      "checks": [
+        "manual refresh button absent",
+        "configured backend startup enumerated once"
+      ],
+      "events": [
+        "codebuddy-model-list"
+      ],
+      "ok": true
+    }
+  ],
+  "real_account": {
+    "codex": {
+      "cli_login_status": "Logged in using ChatGPT",
+      "native_picker_item_count_including_controls": 9,
+      "consultation": "gpt-6.1-sol, tools off, received exact concatenated sentinel MODEL_AUDIT_750_OK in native reply",
+      "tested_on": [
+        "installed baseline copy",
+        "candidate copy"
+      ]
+    },
+    "codebuddy": {
+      "installed_version": "2.176.0",
+      "native_picker_item_count_including_controls": 22,
+      "native_send": "CodeBuddy CLI reported an authentication error. Complete official CLI Login.",
+      "tested_on": "installed baseline copy"
+    },
+    "external_http": "No live API key supplied to this isolated test. HTTP routes below use loopback."
+  },
+  "concurrent_chat_completions_baseline": {
+    "cancelled": {
+      "https://github.com/fixture/concurrency/issues/1": "本次请求已结束，未收到完整答复，请重试。"
+    },
+    "failures": [],
+    "passed": true,
+    "received": {
+      "https://github.com/fixture/concurrency/issues/2": "ISSUE_B_REPLY"
+    },
+    "case": "issues",
+    "restart": {
+      "cancelled": {},
+      "failures": [],
+      "passed": true,
+      "received": {}
+    },
+    "requests": [
+      {
+        "users": [
+          "ISSUE_A"
+        ]
+      },
+      {
+        "users": [
+          "ISSUE_B"
+        ]
+      }
+    ],
+    "model_requests": [
+      "/v1/models"
+    ],
+    "errors": [],
+    "native_exit_code": 0,
+    "editor_sha256": "35491b7ddd77d5036fbd821fb78e717095fd138c2e8c472e298c91a754fcfa79",
+    "fixture_sha256": {
+      "run_ai_chat_steering.py": "8aacfbd249986b1bdfc0805f5b481bd57877eb9b1f112223e81498ab96efc951",
+      "ai_chat_issues.gd": "e9ea264bcb4e3347e934e53d335c85b88a5d4e2c02762a5b80f4046a007bf09f"
+    },
+    "real_provider": false,
+    "model_transport": "isolated loopback mock"
+  },
+  "concurrent_responses_candidate": {
+    "cancelled": {
+      "https://github.com/fixture/concurrency/issues/1": "本次请求已结束，未收到完整答复，请重试。"
+    },
+    "failures": [],
+    "passed": true,
+    "received": {
+      "https://github.com/fixture/concurrency/issues/2": "ISSUE_B_REPLY"
+    },
+    "case": "issues",
+    "responses": true,
+    "restart": {
+      "cancelled": {},
+      "failures": [],
+      "passed": true,
+      "received": {}
+    },
+    "requests": [
+      {
+        "users": [
+          "ISSUE_A"
+        ]
+      },
+      {
+        "users": [
+          "ISSUE_B"
+        ]
+      }
+    ],
+    "model_requests": [
+      "/v1/models"
+    ],
+    "errors": [],
+    "native_exit_code": 0,
+    "editor_sha256": "ea67e3d888ba148a63419c565ebecb02b6ca19afc0ecff6ec5df62fa41fc7673",
+    "fixture_sha256": {
+      "run_ai_chat_steering.py": "1fd5ff9a27b5d69d478200243e9cff8a16d71a0be10820fb22b455db9ff9ddb8",
+      "ai_chat_issues.gd": "e3f4715c9897826fa029e77b7bb788dad5f3d126b9ffec2ab46f239f5cb8e081"
+    },
+    "real_provider": false,
+    "model_transport": "isolated loopback mock"
+  },
+  "consultation_codex_tools_candidate": {
+    "accepted_count": 2,
+    "failure": "",
+    "final_reply_count": 1,
+    "final_snapshot": "976614b33a61fae4d8c6bebf057dbc6e",
+    "initial_reply_count": 1,
+    "initial_snapshot": "976614b33a61fae4d8c6bebf057dbc6e",
+    "passed": true,
+    "received_status": "已收到 · 2 条 · 等待安全边界应用到当前任务",
+    "case": "tools",
+    "responses": false,
+    "restart": null,
+    "requests": [
+      {
+        "users": [
+          "STEERING_ORIGINAL"
+        ]
+      },
+      {
+        "users": [
+          "STEERING_ORIGINAL",
+          "STEERING_ADDITION_ONE",
+          "STEERING_ADDITION_TWO"
+        ]
+      }
+    ],
+    "model_requests": [
+      "/v1/models"
+    ],
+    "errors": [],
+    "native_exit_code": 0,
+    "editor_sha256": "ea67e3d888ba148a63419c565ebecb02b6ca19afc0ecff6ec5df62fa41fc7673",
+    "fixture_sha256": {
+      "run_ai_chat_steering.py": "fb1830cc013cfe223b5b84a38390e67182f29056d0f4cf10cce37498106c0b1c",
+      "ai_chat_steering.gd": "78be4f2949a8989bc52fe43cf71b311790e31bc17baef2cbd6e486def6ab6aed"
+    },
+    "real_provider": false,
+    "model_transport": "Codex bridge + offline JSONL CLI + loopback mock"
+  },
+  "cancel_restart_candidate": {
+    "accepted_count": 2,
+    "failure": "",
+    "final_snapshot": "530c0571c520d1484676abb69ab4cfd5",
+    "initial_snapshot": "530c0571c520d1484676abb69ab4cfd5",
+    "model_discovery_completed": true,
+    "passed": true,
+    "received_status": "已收到 · 2 条 · 等待安全边界应用到当前任务",
+    "case": "cancel",
+    "responses": false,
+    "restart": {
+      "failure": "",
+      "original_visible": true,
+      "passed": true,
+      "pending_visible": [
+        "STEERING_ADDITION_ONE",
+        "STEERING_ADDITION_TWO"
+      ],
+      "restored_backend": 0,
+      "restored_count": 2,
+      "restored_endpoint": "http://127.0.0.1:14307/v1/chat/completions",
+      "restored_model": "fixture",
+      "session_key_absent": true,
+      "snapshot": "530c0571c520d1484676abb69ab4cfd5"
+    },
+    "requests": [
+      {
+        "users": [
+          "STEERING_ORIGINAL"
+        ]
+      }
+    ],
+    "model_requests": [
+      "/v1/models",
+      "/v1/models",
+      "/v1/models"
+    ],
+    "errors": [],
+    "native_exit_code": 0,
+    "editor_sha256": "ea67e3d888ba148a63419c565ebecb02b6ca19afc0ecff6ec5df62fa41fc7673",
+    "fixture_sha256": {
+      "run_ai_chat_steering.py": "fb1830cc013cfe223b5b84a38390e67182f29056d0f4cf10cce37498106c0b1c",
+      "ai_chat_steering.gd": "78be4f2949a8989bc52fe43cf71b311790e31bc17baef2cbd6e486def6ab6aed"
+    },
+    "real_provider": false,
+    "model_transport": "isolated loopback mock"
+  },
+  "http_cancel_recovery_candidate": {
+    "case": "headers",
+    "max_frame_gap_seconds": 0.006897,
+    "observed_server_release": true,
+    "recovery_max_frame_gap_seconds": 0.023543,
+    "recovery_received": true,
+    "server_released_at_recovery": false,
+    "server_released_at_stop_return": false,
+    "stale_response_absent": true,
+    "stop_call_seconds": 0.001754,
+    "stop_disabled_after": true,
+    "stop_trigger": "pressed_signal_callback",
+    "stop_was_enabled": true,
+    "editor_sha256": "ea67e3d888ba148a63419c565ebecb02b6ca19afc0ecff6ec5df62fa41fc7673",
+    "server_delay_seconds": 4.0,
+    "native_exit_code": 0,
+    "model_transport": "isolated loopback mock",
+    "real_provider": false,
+    "requests": [
+      {
+        "models": false,
+        "recovery": false
+      },
+      {
+        "models": false,
+        "recovery": true
+      }
+    ],
+    "errors": [],
+    "visible": false,
+    "gzip_recovery": true,
+    "fixture_sha256": {
+      "run_ai_chat_http_cancel.py": "a90506c01e7a3b4404b032d3f3bf71a5b8ced65d55609ea26ed804650d20d212",
+      "ai_chat_http_cancel.gd": "ecc88672e9e80901cd1d3da87f13116b827e8df649350880415e93d0cc32f668"
+    },
+    "max_stop_seconds": 0.25,
+    "max_allowed_frame_gap_seconds": 0.25,
+    "passed": true
+  },
+  "mixed_host_intake_candidate": {
+    "ok": true,
+    "native_page": true,
+    "runtime_setup_and_resume": false,
+    "catalog_requests": [
+      "/v1/models",
+      "/v1/models"
+    ],
+    "bootstrap_runtime_configuration": "private installation JSON; mutable fields, no Python/Node/Codex override",
+    "windows_owned_process_cleanup": "verified Job empty",
+    "actual_native_read_tool_roundtrips": 1,
+    "actual_yanshi_admission": true,
+    "model_and_github": "isolated loopback/CLI fixtures only",
+    "requirements_calls": 11,
+    "development_calls": 7,
+    "issues_created": 5,
+    "events": 71,
+    "git_check": {
+      "git_state": "committed",
+      "files": 74,
+      "records": 71,
+      "remote_merge_verified": false
+    },
+    "cases": [
+      "new requirement",
+      "supplement during intake amends the same Issue before the first development request",
+      "followup reuses Issue",
+      "installed chat and flush with stale workspace launcher",
+      "new requirement while bound",
+      "same text new turn still classified",
+      "cancel before publication",
+      "model API repair then explicit retry",
+      "GitHub auth repair before model call",
+      "clarification pauses and resumes the same requirement"
+    ],
+    "editor_sha256": "8ff0d2e7d75185376789e32fdc063ed239f6d65e01179d8f63d6107897735638",
+    "fixture_events_imported": false
+  },
+  "codex_request_lifetime_baseline": {
+    "cases": [
+      {
+        "cleanup": true,
+        "name": "success",
+        "remaining_request_files": 0,
+        "request_retained": true
+      },
+      {
+        "cleanup": true,
+        "name": "failure",
+        "remaining_request_files": 0,
+        "request_retained": true
+      },
+      {
+        "cleanup": true,
+        "name": "cancel",
+        "remaining_request_files": 0,
+        "request_retained": true
+      },
+      {
+        "cleanup": true,
+        "name": "start_failure",
+        "remaining_request_files": 0,
+        "request_retained": false
+      }
+    ],
+    "error": "",
+    "ok": true,
+    "fixture_sha256": {
+      "run_codex_request_lifetime.py": "abb83b372c0086c5513ba56724a9cdeeef7db6920936e4eace691a3c64fbf86d",
+      "codex_request_lifetime.gd": "eaa60b6de38529cf1c3605d40e132f4b20492d62814cc2213fb003261b7f068c"
+    },
+    "expected_missing": false,
+    "editor_sha256": "35491b7ddd77d5036fbd821fb78e717095fd138c2e8c472e298c91a754fcfa79",
+    "process_exit": 0,
+    "fixture_errors": [],
+    "real_provider": false,
+    "request_files_after_exit": 0
+  },
+  "codebuddy_native_candidate": {
+    "test": "tests/editor/run_codebuddy_read_batch.py",
+    "parallel_reads": 4,
+    "individually_correlated_success": 3,
+    "individually_correlated_missing_file": 1,
+    "completion": "CODEBUDDY_READ_BATCH_OK",
+    "services": "isolated ACP and Issue fixtures"
+  },
+  "node_suite": {
+    "tests": [
+      "test_codex_models.js",
+      "test_codebuddy_bridge.js",
+      "test_codebuddy_acp.js",
+      "test_codex_content_preview.js"
+    ],
+    "passed": 60,
+    "conditions": "Installed pinned CodeBuddy dependencies; CODEBUDDY_GIT_BASH_PATH supplied"
+  },
+  "followups": [
+    706,
+    593,
+    217,
+    522
+  ],
+  "kuafu_tracker": 752
+}

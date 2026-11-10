@@ -14,7 +14,7 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from editor_test_isolation import macos_editor
+from editor_test_isolation import copy_editor
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -40,7 +40,8 @@ def main():
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="http-cancel-", dir=args.out.parent) as folder:
         project = Path(folder)
-        isolated_editor = macos_editor(args.godot, project / "isolated-editor")
+        os.environ.pop("GONGGONG_WORKSPACE", None)
+        isolated_editor = copy_editor(args.godot, project / "isolated-editor")
         (project / "project.godot").write_text(
             '[application]\nconfig/name="Issue51 HTTP Cancel Fixture"\n'
             '[rendering]\nrenderer/rendering_method="gl_compatibility"\n',
@@ -137,6 +138,15 @@ def main():
             CANCEL_DELAY=str(args.delay),
             CANCEL_MANUAL="1" if args.manual_stop else "",
         )
+        if args.case != "models":
+            settings = isolated_editor.parent / "editor_data/editor_settings-4.8.tres"
+            settings.write_text(
+                '[gd_resource type="EditorSettings" format=3]\n\n[resource]\nai_chat/backend = 0\n'
+                + "ai_chat/endpoint = "
+                + json.dumps(env["CANCEL_ENDPOINT"])
+                + "\n",
+                encoding="utf-8",
+            )
         command = [str(isolated_editor)]
         if not args.visible:
             command.append("--headless")

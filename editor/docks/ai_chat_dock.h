@@ -704,6 +704,7 @@ class AIChatDock : public EditorDock {
 	void _update_agent_add_button();
 	void _cancel_all_agents();
 	void _release_cli_request();
+	String _codex_bridge() const;
 	bool _validate_cli(const Dictionary &p_runtime = Dictionary()) const;
 	void _backend_changed(int p_backend);
 	void _login_cli();
