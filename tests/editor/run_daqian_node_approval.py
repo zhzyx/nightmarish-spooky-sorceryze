@@ -1,6 +1,7 @@
 """Exercise the native command approval path with isolated Issue and model transports."""
 
 import argparse
+import hashlib
 import json
 import os
 import shutil
@@ -85,7 +86,26 @@ class Model(BaseHTTPRequestHandler):
         assert request["model"] == "fixture"
         messages = request["messages"]
         last_user = next(turn for turn in reversed(messages) if turn["role"] == "user")
-        if self.server.parallel and not any(turn["role"] == "tool" for turn in messages):
+        prompt = str(last_user["content"])
+        entry = self.server.entry
+        issue = next((number for number in (210, 211, 426, 706) if f"UI dispatch #{number}" in prompt), None)
+        canvas_route = entry in ("canvas", "existing") and "execute" in prompt and "route" in prompt
+        seed = self.server.entry == "existing" and prompt == "Prepare saved root conversation"
+        if seed:
+            self.server.workspace.joinpath("root-worker-busy").touch()
+            deadline = time.monotonic() + 20
+            while not self.server.workspace.joinpath("seed-worker-saved").exists() and time.monotonic() < deadline:
+                time.sleep(0.05)
+        elif canvas_route:
+            self.server.route_issues.append(issue)
+            self.server.workspace.joinpath(f"canvas-route-{issue}").touch()
+            if self.server.entry == "canvas":
+                self.server.routes.wait(timeout=35)
+        elif self.server.parallel and not any(turn["role"] == "tool" for turn in messages):
+            if entry:
+                self.server.execution_issues.append(issue)
+            if entry == "existing" and issue == 706:
+                self.server.workspace.joinpath("root-worker-busy").touch()
             self.server.overlap.wait(timeout=40)
         if last_user["content"] == "Wait for steering":
             self.server.workspace.joinpath("awaiting-steering").touch()
@@ -111,7 +131,11 @@ class Model(BaseHTTPRequestHandler):
         if last_user["content"] == "Retain the amended icon scope":
             message["content"] = "Amendment resumed on original Issue"
         filtered = "canvas fixture filtered" in str(last_user["content"])
-        if filtered:
+        if seed:
+            message["content"] = "Saved root conversation"
+        elif canvas_route:
+            message["content"] = json.dumps({"route": "execute", "text": "Proceed with the requested command"})
+        elif filtered:
             time.sleep(0.4)
             message["content"] = json.dumps({"route": "answer", "text": "Unexpected filtered answer"})
         elif any("canvas fixture question" in str(turn.get("content")) for turn in messages if turn["role"] == "user"):
@@ -255,7 +279,8 @@ def check_command_restart(command, env, project, changed_actor, stop_watching):
     print("DAQIAN_COMMAND_RESTART_OK", initial["conversation"], initial["tool_calls"][initial["tool_index"]]["id"])
 
 
-def run(binary, restart=False, changed_actor=False, stop_watching=False, parallel=False):
+def run(binary, restart=False, changed_actor=False, stop_watching=False, parallel=False, entry=None):
+    parallel = parallel or entry is not None
     os.environ.pop("GONGGONG_WORKSPACE", None)
     with (
         tempfile.TemporaryDirectory(prefix="daqian-approval-", ignore_cleanup_errors=os.name == "nt") as tmp,
@@ -280,6 +305,10 @@ def run(binary, restart=False, changed_actor=False, stop_watching=False, paralle
         )
         workspace = project / ".fixture"
         server.restart = restart
+        server.entry = entry
+        server.route_issues = []
+        server.execution_issues = []
+        server.routes = threading.Barrier(2)
         server.parallel = parallel
         server.overlap = threading.Barrier(2)
         server.workspace = workspace
@@ -297,7 +326,7 @@ def run(binary, restart=False, changed_actor=False, stop_watching=False, paralle
         row = dict(
             number=210,
             title="Approval test",
-            status="planned",
+            status="in-progress" if entry else "planned",
             closed=False,
             request="daqian-direct-" + "a" * 20,
             url="https://github.com/fixture/board/issues/210",
@@ -316,11 +345,15 @@ def run(binary, restart=False, changed_actor=False, stop_watching=False, paralle
                 ),
             ),
         )
+        if entry == "existing":
+            row.update(number=706, request="fixture-carryover", url="https://github.com/fixture/board/issues/706")
         others = (
             [dict(row, number=211, url=row["url"][:-3] + "211", request="daqian-direct-" + "b" * 20)]
             if parallel
             else []
         )
+        if entry == "existing":
+            others[0].update(number=426, url="https://github.com/fixture/board/issues/426")
         reporting = dict(
             tenant_id="fixture",
             request_ref=row["request"],
@@ -411,6 +444,7 @@ Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result), encodin
             GONGGONG_RUNTIME_CONFIG=str(configuration),
             # Configure the fixture before Windows startup opens the runtime setup window.
             GONGGONG_WORKSPACE=str(workspace),
+            DAQIAN_TEST_ENTRY=entry or "native",
             DAQIAN_TEST_REPO=str(workspace),
             DAQIAN_TEST_PYTHON=sys.executable,
             GODOT_AI_API_KEY="fixture-key",
@@ -435,6 +469,13 @@ Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result), encodin
                 finally:
                     server.shutdown()
                 return
+            if entry == "existing":
+                seed = subprocess.run(
+                    command, env=dict(env, DAQIAN_TEST_SEED="1"), capture_output=True, timeout=65
+                )
+                if seed.returncode or b"DAQIAN_FIXTURE_HISTORY_READY" not in seed.stdout + seed.stderr:
+                    raise SystemExit((seed.stdout + seed.stderr).decode("utf-8", errors="replace"))
+                workspace.joinpath("root-worker-busy").unlink()
             result = subprocess.run(
                 command,
                 env=env,
@@ -455,6 +496,18 @@ Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result), encodin
         marker = "DAQIAN_PARALLEL_APPROVAL_OK" if parallel else "DAQIAN_INLINE_APPROVAL_OK"
         if result.returncode or marker not in log or "SCRIPT ERROR" in log:
             raise SystemExit(log)
+        if entry:
+            expected = [426, 706] if entry == "existing" else [210, 211]
+            routes = {"canvas": [210, 211], "existing": [426], "conversation": []}[entry]
+            if sorted(server.route_issues) != routes or sorted(server.execution_issues) != expected:
+                raise SystemExit(f"Incorrect model requests: routes={server.route_issues}, execution={server.execution_issues}")
+            # The Windows console launcher has different bytes from the editor it runs.
+            editor = isolated_editor
+            if editor.name.endswith(".console.exe"):
+                editor = editor.with_name(editor.name.removesuffix(".console.exe") + ".exe")
+            with editor.open("rb") as binary_file:
+                print(f"Tested editor SHA-256 {hashlib.file_digest(binary_file, 'sha256').hexdigest()}")
+            print(f"Model received routes={server.route_issues}, executions={server.execution_issues}")
         print(next(line for line in log.splitlines() if marker in line))
 
 
@@ -462,8 +515,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--command-restart", action="store_true")
+    parser.add_argument("--parallel-entry", choices=("canvas", "conversation", "existing"))
     parser.add_argument("--parallel", action="store_true")
     parser.add_argument("--changed-actor", action="store_true")
     parser.add_argument("--stop-watch", action="store_true")
     args = parser.parse_args()
-    run(args.godot, args.command_restart, args.changed_actor, args.stop_watch, args.parallel)
+    run(args.godot, args.command_restart, args.changed_actor, args.stop_watch, args.parallel, args.parallel_entry)

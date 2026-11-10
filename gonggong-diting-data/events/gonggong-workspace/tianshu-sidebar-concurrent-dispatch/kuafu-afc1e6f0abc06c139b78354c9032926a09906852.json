@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-afc1e6f0abc06c139b78354c9032926a09906852",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-sidebar-concurrent-dispatch",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f8167fd5000e8608ca63b0c3fd46a35a958a8c4fc6066231801044a13167c30e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+    "action": "delivery",
+    "detection_head": "db5ae81dfc5eba4b4ec333dd89154ba0e9e968e5",
+    "context_sha256": "f5181b3d613da0e5d271e507e356dd2aeb49a2cbfe64014c74ab49225feda902",
+    "operator": "Sail-Li",
+    "worker": "codex-761-validation",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+    "evidence": "git authenticated fetch direct TCP 443 timeout after 21 seconds; retry via configured system proxy passed",
+    "diagnosis": "Git 直连超时，回读 Windows 上已配置代理并向同一服务认证 fetch 成功。",
+    "next_action": "这次签发进程沿相同代理重试门禁、提交、推送及 PR。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T18:10:04.039061+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-10T18:12:25.547894+00:00",
+  "sha256": "baab0563abbf17a6d5f2e7e014db68791cba988df10bdcb53d5cff4650fc23d9"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e5bd4a12d3ff4c1c60889f0bceffbdc905bf767a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-sidebar-concurrent-dispatch",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "90e8ab2b4ece581e76f4af4f861e366254ea1e4f2b0090c5f097483c2cb16fd6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+    "action": "validation",
+    "detection_head": "e56e0b540ca35f5a8f31173b1ed9d2f3e18ac30e",
+    "context_sha256": "f5181b3d613da0e5d271e507e356dd2aeb49a2cbfe64014c74ab49225feda902",
+    "operator": "Sail-Li",
+    "worker": "codex-761-validation",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/761",
+    "evidence": "data-collection/tianshu-sidebar-concurrent-dispatch-761.json",
+    "diagnosis": "同一门禁两次观察到采集 JSON 工作树 CRLF 与 Git 暂存 LF 字节不一致。已把文件按仓库 eol=lf 写回。",
+    "next_action": "同一工单重跑正式门禁并审查依赖产品交付后的最终候选。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-10T17:49:37.878284+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-10T18:03:46.655562+00:00",
+  "sha256": "93e2577fac4280801bd725002fab1bc361f3eb90af14a5850a9a83d52e6ef5d0"
+}
