@@ -470,9 +470,7 @@ Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result), encodin
                     server.shutdown()
                 return
             if entry == "existing":
-                seed = subprocess.run(
-                    command, env=dict(env, DAQIAN_TEST_SEED="1"), capture_output=True, timeout=65
-                )
+                seed = subprocess.run(command, env=dict(env, DAQIAN_TEST_SEED="1"), capture_output=True, timeout=65)
                 if seed.returncode or b"DAQIAN_FIXTURE_HISTORY_READY" not in seed.stdout + seed.stderr:
                     raise SystemExit((seed.stdout + seed.stderr).decode("utf-8", errors="replace"))
                 workspace.joinpath("root-worker-busy").unlink()
@@ -500,7 +498,9 @@ Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result), encodin
             expected = [426, 706] if entry == "existing" else [210, 211]
             routes = {"canvas": [210, 211], "existing": [426], "conversation": []}[entry]
             if sorted(server.route_issues) != routes or sorted(server.execution_issues) != expected:
-                raise SystemExit(f"Incorrect model requests: routes={server.route_issues}, execution={server.execution_issues}")
+                raise SystemExit(
+                    f"Incorrect model requests: routes={server.route_issues}, execution={server.execution_issues}"
+                )
             # The Windows console launcher has different bytes from the editor it runs.
             editor = isolated_editor
             if editor.name.endswith(".console.exe"):
