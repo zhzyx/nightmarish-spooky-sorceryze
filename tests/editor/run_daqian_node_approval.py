@@ -266,7 +266,11 @@ def run(binary, restart=False, changed_actor=False, stop_watching=False, paralle
         configuration = isolated_editor.parent / "editor_data/gonggong/config.json"
         configuration.parent.mkdir(parents=True, exist_ok=True)
         configuration.write_text(
-            json.dumps({"schema_version": 1, "runtimes": {"workflow_python": sys.executable}}), encoding="utf-8"
+            json.dumps({
+                "schema_version": 1,
+                "runtimes": {"workflow_python": sys.executable, "node": shutil.which("node") or ""},
+            }),
+            encoding="utf-8",
         )
         # The editor enumerates models at startup, before the test can configure the inline form.
         (isolated_editor.parent / "editor_data/editor_settings-4.8.tres").write_text(
@@ -405,6 +409,8 @@ Path(sys.argv[sys.argv.index('--out')+1]).write_text(json.dumps(result), encodin
         env = dict(
             {key: value for key, value in os.environ.items() if not key.startswith("GONGGONG_")},
             GONGGONG_RUNTIME_CONFIG=str(configuration),
+            # Configure the fixture before Windows startup opens the runtime setup window.
+            GONGGONG_WORKSPACE=str(workspace),
             DAQIAN_TEST_REPO=str(workspace),
             DAQIAN_TEST_PYTHON=sys.executable,
             GODOT_AI_API_KEY="fixture-key",
