@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "event_id": "verify-run-only-incident-713",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-run-42721796858-attempt-1",
+  "kind": "request",
+  "occurred_at": "2026-11-10T00:40:40.519064+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/713",
+  "agent": {
+    "id": "codex-host",
+    "origin": "codex",
+    "version": "session",
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "scope": "按用户要求复核所有相关工单，处理未关联原工单的运行阻塞。",
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage in the host receipt."
+  },
+  "sha256": "bf38d226849717a04c654a3b566fb3db02794f4aeaf195ddda9cfa26a0a455f9"
+}
