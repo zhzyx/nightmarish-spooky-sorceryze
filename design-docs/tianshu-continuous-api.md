@@ -76,3 +76,11 @@ Sail-Li 按用户决定将 [#592](https://github.com/zhzyx/nightmarish-spooky-so
 | 合并候选整体验收与未知项 | #706，沿用原定 6 Astra 独立核查，保留取消后短答初次断言失败与同版复验通过的两次记录 |
 
 订阅工具闭环、恢复与隔离沿用各原子项回执。九文件批量与正文预览已取得 [#666 主线整合实测](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/592#issuecomment-6748351011)，多 CLI 宿主链路已取得 [#674 主线复验](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/592#issuecomment-6749269626)。本次结转的关闭原因按 not_planned 记录，剩余范围的验收状态以承接单为准。
+
+### #706 的 Windows 订阅追问
+
+工具轮完成后，编辑器将对话历史收敛为用户问题和已接受的终答。首次追问沿压缩后的历史重建模型会话。第二次追问只有在身份、授权范围、历史前缀和编辑器已接受的回复均通过校验时才增量发送。
+
+宿主每轮重新生成 mandate。订阅桥核对全部系统消息，只在规范 JSON 中唯一的 `outcome` 字段发生变化时单独发送该字段。其他系统消息变更仍随请求发送完整指令。模型服务报告上下文压缩后，下一轮从完整的宿主输入重建。若压缩发生在仅发送 `outcome` 的一轮中，桥会丢弃该轮终答和动作，返回 `CONTEXT_COMPACTED`，可从原工单重新发起。传输回执记录重建原因和本轮输入文本的 UTF-8 字节数。
+
+按同一组九个只读文件轮换原生 Codex、当前输入框和重新打开已有对话三个入口。每个入口检查九个值的顺序、两个短追问的逐字答案及完成回执，重新打开对话另计进入耗时。样本、分段计时及失败记录见[工单实测数据](../data-collection/tianshu-706-followups.json)。CodeBuddy 官方账号认证沿用 #662，独立 HTTP API 沿用 #593 的延期决定。

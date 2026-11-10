@@ -1,0 +1,1881 @@
+{
+  "issue_number": 706,
+  "request_id": "tianshu-592-carryover-v1",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/706",
+  "operator": "Sail-Li",
+  "platform": "Windows x86_64, local ChatGPT subscription, gpt-6.1-sol, official standalone Codex CLI 0.167.0",
+  "date": "2026-11-10",
+  "engine_sha256": "efda5b86c3aad27c4f5816e5e9116cb69d4e93b2e6aff937f3e66d439149cd2a",
+  "engine_source": "c096647fa2753ac7c561194b80c70cfb4a3e38c5",
+  "candidate_host_base": "c454886b31c5ada42fc90a3f60d6b63aa88f5987",
+  "candidate_files": {
+    "tools/codex_cli/subscription_session.js": "195640f7be8281e53c7fbb7c554900f160fbc63896e5f24ddfe90f0951c4d6d2",
+    "tools/codex_cli/godot_bridge.js": "aa1a436de7acd977199763f15e52484d93287a1bb49a148ae9f28e2f88a62976",
+    "tests/editor/test_codex_subscription.js": "50340dd863706f9c4f86377d1adee242ec91fe274d1d5fd320914b6a8cde53d8",
+    "tools/codebuddy_cli/godot_bridge.js": "9315abfb529d85bac57ae80ed4ae35addfc2ba71d51a155a7fe1ad376304e3fa"
+  },
+  "probe_files": {
+    "main-live652.gd": "d60a388a725b19033c3d9b0d2a6d6020fe0d879b4bfa439f8c0231dafc2583a4",
+    "editor.py": "b51983257ccc8bce70c082d54efca68e21ed1e20e69eefe9f6ce423c8476ac7a",
+    "native_persistent.py": "064bf6077c2b85d1584cca515a110c9150854d687ec4567c3bce290dc364a8ea",
+    "trace.cjs": "b1718ed697c818f4dea7f6e8ccf4ca68eaa50d0b5e6c0cfbb7f39498e0237a06",
+    "sitecustomize.py": "d1db86852ee1c08a667ba4f520e2382f0cfdddf7e644a85285734c49d93f85f2"
+  },
+  "fixtures": {
+    "1": {
+      "source_1.gd": "6eb3cfec83f26cfa06e7f1c7e7857410312832d5843dc002c3eb1a4cd6bec4a8",
+      "source_2.gd": "9ba06cc3b1856cb303f5062867c762af635be09b70e153f1d9f94ccd5402ae5e",
+      "source_3.gd": "a4b2a4167e21900e89da6392c7086230d1b72881ac15fed669f7d1ad6a8c9901",
+      "source_4.gd": "46eb668a6af8729b9a76310f34c62bdc4a9efd151e3de66131b238d043d7ae3b",
+      "source_5.gd": "fd5968b2ad103424b9cb93f9834d1d433be3982d899983ee726963b4a3ba49a5",
+      "source_6.gd": "b396c2f26d3258635688aaef92bc2f4ed79cdb1a28857df62ade9ed496cd6ca1",
+      "source_7.gd": "e35f29bc021c3a958ec69e828b3f64b4430852a63072ab65ccd4e71eba8aeda4",
+      "source_8.gd": "3507e7860b9ef98abe7f2f67dba92d1b7e4a37b4008a965ee62ee9b2dbf25a20",
+      "source_9.gd": "179074ed02d70ccea189bec867f27c1979c29a13901c620de9c9e4e56c1fb97e"
+    },
+    "2": {
+      "source_1.gd": "42a7a9beda4dc7b00d0136c08d5a48d816ba12b2b7eb5b4193ae46aaec6f9a54",
+      "source_2.gd": "eda815b81083a6b91bf96d51a99eb9234592a4a5c4ab8fdf041b038dca2b7e6c",
+      "source_3.gd": "e15ded116036c08fbdd22b03c31f5ea77cbf427a6e031ac84f206960e620507e",
+      "source_4.gd": "36e4de9a5aa03daa1ca9dd9931e4552d98b7a2ab20b7f1b928e337a3d23cab08",
+      "source_5.gd": "301aee84775f1bdc60cbd576604666cf8d7651e741ad8d35370d5e7f5bf0e46d",
+      "source_6.gd": "b0f33fe0379baa4f3e0f8fbdf3405594c8d07af94127705202a969779dac0b88",
+      "source_7.gd": "9beb3033514665f0bb1ae5f2e556866aa584c87f3c931e85507e98849effe3d0",
+      "source_8.gd": "9d4f47e1c01c1ef130788030e7bb3d3dcb29528a16552e233acf77dfb49f4f02",
+      "source_9.gd": "5c2794c6530be075d3fcbb5645429b0836d2a951fb963c25545a8c81d3da9472"
+    },
+    "3": {
+      "source_1.gd": "4435c72d186d95bc69874058b8546117a20fb9b408baf6ef2af4d6cbea5a9614",
+      "source_2.gd": "c38b6636a79b10f1711b0dcf72f52c16fd28b5487134eb79a3b71716dd17eddf",
+      "source_3.gd": "c9930789e81f4f2fa74a8bf3508ffb4fa9cd0898561209992ff6e1d3678da075",
+      "source_4.gd": "6799c7f44861d6a9b620432d4a732acaf22927fec650fb98c47714599c651545",
+      "source_5.gd": "9d789200bd6ce92d4d360d5df13d2b0869095880ca4c674ff2b460668270f928",
+      "source_6.gd": "fda2ef2d9e8255de2cf8000223bdf67b7db9c1db3fe7bdca9735d2405bfd4435",
+      "source_7.gd": "5db8dcffd112c55b43a33bd944f2427fdbcd7df392cec0e1823be206c6c260da",
+      "source_8.gd": "b580855c2f597af2bc4f1bda70e2429c192524bdd03e9225468178459a70c6fe",
+      "source_9.gd": "ab23ea644d79fdc28bb021512954f3a7c43f5683d02efae38f044e0a99a6df76"
+    },
+    "4": {
+      "source_1.gd": "2e138233bdc1089d648352c1566bdeee07e36b8716fe6ddd1f66cec128dfa37e",
+      "source_2.gd": "837e37be1dc3de349fe7b3a1ccacbc42c23ae6a155b3f8dd5898904d1dba65e1",
+      "source_3.gd": "bb534bf8e8dcd5d4c37d4541214cea157f397a60e79316668dd26db0c0bd4b78",
+      "source_4.gd": "768f20febbbd020e482a9457fc17888b21f56b103f129a068d7f1baf1a408356",
+      "source_5.gd": "1e83d004fc95b220666c8d5b46c6fe30da6017d82f4f1acbf0635c1a617a9f3c",
+      "source_6.gd": "f94549684771643bf8efaf19f62659aee62cb0b863a8d3484a9252975aeb8ce8",
+      "source_7.gd": "29537c6a360782c2d718d97e3547152f9190e4ff222bab4e615498ef9910c3a2",
+      "source_8.gd": "c43269238273f59cbbbeca334afa0029bb7ad992a7a8546d43addfe546c5858d",
+      "source_9.gd": "f58affe0c8f334ff106b4b4ebe3524cba7168d3d19405fe1423d5cf53e26fe09"
+    },
+    "5": {
+      "source_1.gd": "570db8310854cefda72825533a2d6840354a464f21c9e38e53e97cb24f987d53",
+      "source_2.gd": "98cb96d59fbaf62f39b39ef2efc7ede526aae13862b10ce14de931d094cc5890",
+      "source_3.gd": "4e219d7bb62245653739d1f1f00649e990ec88f073f7e72bb0a2b974dac2bb59",
+      "source_4.gd": "533fc03185a2a20cba85f5e437fa93a5202dbc2a5a40906429b62911a9b42ea2",
+      "source_5.gd": "85b7f07dd48d0831c85d2748b9c7256ed853b1afb4af8a26092631d9bcd672ba",
+      "source_6.gd": "c1cb451a340426594d42a723ea0830311916628bea336aa3f539fad5e1ad1fd1",
+      "source_7.gd": "35f08bbddf320182213a3d6b9aa2ebd1f71857970b99ff8194b6ed9d1adc4f13",
+      "source_8.gd": "a03ce45c3b67c17579757ee69022b7dae4a3e57efaa34e2c5bcadb9bc1c71811",
+      "source_9.gd": "0ec5ec303b22df444c04d54627754dc3c76a3ed2edc35e61b06d39a463263092"
+    }
+  },
+  "protocol": [
+    "Rotate native/current/reopen, current/reopen/native, reopen/native/current across five independent nine-file fixtures. Within each fixture reuse exactly the same bytes and list order. Two suffix questions select the third and eighth VALUE. Fresh editor settings for every case.",
+    "The baseline native entry launches codex exec and exec resume. The candidate comparison uses one native Codex app-server ephemeral read-only thread across three turns. Report them separately. All model trials run serially.",
+    "Editor samples require exact answers, nine ordered result receipts, unchanged fixture hashes, two tool-free follow-ups, same conversation and three terminal receipts. Reopen timings cover leaving, fresh access check and reopening existing issue conversation before sending. full_answer_ms measures from Send, excluding reopen_ms.",
+    "model_ms spans turn/start to completed output. input_text_bytes is the UTF-8 length of the text input to that RPC, excluding output schema and RPC framing. issue_binding_ms times live intake. receipt_flush_ms sums scoped durable flush calls including terminal flush until next intake, and may overlap displayed answer time. account_read_ms is the live Codex account read. These fields are not additive.",
+    "One baseline current-composer case predates Python timing instrumentation. Null denotes unavailable measurements. Each P95 is nearest-rank and equals the maximum at n=5.",
+    "Initial nine-file user prompt is specific to the tool surface: native shell vs Godot read_file. Follow-up messages and expected values match. Neither of the two follow-ups invokes tools. No statistics use the earlier one-sample reference.",
+    "The running Windows executable and UI package are identical across both editor measurements. The JS subscription bridge is loaded from each installation. Concurrent main changes between host bases and live provider latency limit attribution of differences in wall-clock time."
+  ],
+  "baseline": {
+    "summary": {
+      "native_turn_1": {
+        "full_answer_ms": {
+          "n": 5,
+          "median": 11407,
+          "p95_nearest_rank": 12844,
+          "max": 12844
+        },
+        "model_ms": null,
+        "issue_binding_ms": null,
+        "receipt_flush_ms": null,
+        "account_read_ms": null,
+        "input_text_bytes": null,
+        "reopen_ms": null
+      },
+      "native_turn_2": {
+        "full_answer_ms": {
+          "n": 5,
+          "median": 13563,
+          "p95_nearest_rank": 16390,
+          "max": 16390
+        },
+        "model_ms": null,
+        "issue_binding_ms": null,
+        "receipt_flush_ms": null,
+        "account_read_ms": null,
+        "input_text_bytes": null,
+        "reopen_ms": null
+      },
+      "current_turn_1": {
+        "full_answer_ms": {
+          "n": 5,
+          "median": 11649,
+          "p95_nearest_rank": 17871,
+          "max": 17871
+        },
+        "model_ms": {
+          "n": 5,
+          "median": 7011,
+          "p95_nearest_rank": 9298,
+          "max": 9298
+        },
+        "issue_binding_ms": {
+          "n": 4,
+          "median": 922.0,
+          "p95_nearest_rank": 1571,
+          "max": 1571
+        },
+        "receipt_flush_ms": {
+          "n": 4,
+          "median": 3134.5,
+          "p95_nearest_rank": 3781,
+          "max": 3781
+        },
+        "account_read_ms": {
+          "n": 5,
+          "median": 2,
+          "p95_nearest_rank": 3,
+          "max": 3
+        },
+        "input_text_bytes": {
+          "n": 5,
+          "median": 37059,
+          "p95_nearest_rank": 37059,
+          "max": 37059
+        },
+        "reopen_ms": null
+      },
+      "current_turn_2": {
+        "full_answer_ms": {
+          "n": 5,
+          "median": 8446,
+          "p95_nearest_rank": 13989,
+          "max": 13989
+        },
+        "model_ms": {
+          "n": 5,
+          "median": 3647,
+          "p95_nearest_rank": 7064,
+          "max": 7064
+        },
+        "issue_binding_ms": {
+          "n": 4,
+          "median": 994.5,
+          "p95_nearest_rank": 1239,
+          "max": 1239
+        },
+        "receipt_flush_ms": {
+          "n": 4,
+          "median": 3305.5,
+          "p95_nearest_rank": 6842,
+          "max": 6842
+        },
+        "account_read_ms": {
+          "n": 5,
+          "median": 2,
+          "p95_nearest_rank": 4,
+          "max": 4
+        },
+        "input_text_bytes": {
+          "n": 5,
+          "median": 16328,
+          "p95_nearest_rank": 16328,
+          "max": 16328
+        },
+        "reopen_ms": null
+      },
+      "reopen_turn_1": {
+        "full_answer_ms": {
+          "n": 5,
+          "median": 11334,
+          "p95_nearest_rank": 17127,
+          "max": 17127
+        },
+        "model_ms": {
+          "n": 5,
+          "median": 6749,
+          "p95_nearest_rank": 8000,
+          "max": 8000
+        },
+        "issue_binding_ms": {
+          "n": 5,
+          "median": 904,
+          "p95_nearest_rank": 1004,
+          "max": 1004
+        },
+        "receipt_flush_ms": {
+          "n": 5,
+          "median": 3281,
+          "p95_nearest_rank": 3425,
+          "max": 3425
+        },
+        "account_read_ms": {
+          "n": 5,
+          "median": 2,
+          "p95_nearest_rank": 3,
+          "max": 3
+        },
+        "input_text_bytes": {
+          "n": 5,
+          "median": 37059,
+          "p95_nearest_rank": 37059,
+          "max": 37059
+        },
+        "reopen_ms": {
+          "n": 5,
+          "median": 1013,
+          "p95_nearest_rank": 1020,
+          "max": 1020
+        }
+      },
+      "reopen_turn_2": {
+        "full_answer_ms": {
+          "n": 5,
+          "median": 9288,
+          "p95_nearest_rank": 12558,
+          "max": 12558
+        },
+        "model_ms": {
+          "n": 5,
+          "median": 4889,
+          "p95_nearest_rank": 7343,
+          "max": 7343
+        },
+        "issue_binding_ms": {
+          "n": 5,
+          "median": 885,
+          "p95_nearest_rank": 974,
+          "max": 974
+        },
+        "receipt_flush_ms": {
+          "n": 5,
+          "median": 3298,
+          "p95_nearest_rank": 4775,
+          "max": 4775
+        },
+        "account_read_ms": {
+          "n": 5,
+          "median": 2,
+          "p95_nearest_rank": 2,
+          "max": 2
+        },
+        "input_text_bytes": {
+          "n": 5,
+          "median": 16328,
+          "p95_nearest_rank": 16328,
+          "max": 16328
+        },
+        "reopen_ms": {
+          "n": 5,
+          "median": 1014,
+          "p95_nearest_rank": 1015,
+          "max": 1015
+        }
+      }
+    },
+    "editor": [
+      {
+        "fixture": 1,
+        "entry": "current",
+        "turn": 1,
+        "utc": "2026-11-10T00:59:38.279426+00:00",
+        "model_ms": 6486,
+        "account_read_ms": 2,
+        "issue_binding_ms": null,
+        "receipt_flush_ms": null,
+        "full_answer_ms": 11142,
+        "reopen_ms": null,
+        "mode": "bootstrap",
+        "input_text_bytes": 37059,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-121124-82662652",
+        "request_end_sha256": "c23a2e2248957ba7840d0ed88d334ecac494ba11176e0b1b8de5c09ec29e09f6",
+        "nine_results": 9
+      },
+      {
+        "fixture": 1,
+        "entry": "current",
+        "turn": 2,
+        "utc": "2026-11-10T00:59:38.279426+00:00",
+        "model_ms": 4552,
+        "account_read_ms": 2,
+        "issue_binding_ms": null,
+        "receipt_flush_ms": null,
+        "full_answer_ms": 9419,
+        "reopen_ms": null,
+        "mode": "incremental",
+        "input_text_bytes": 16328,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-121124-91968776",
+        "request_end_sha256": "658f479af1653a9d1a6177b596f14ef5c03ec6f6cf7414a6941eeb020616ac79",
+        "nine_results": 9
+      },
+      {
+        "fixture": 1,
+        "entry": "reopen",
+        "turn": 1,
+        "utc": "2026-11-10T01:01:49.039648+00:00",
+        "model_ms": 6342,
+        "account_read_ms": 3,
+        "issue_binding_ms": 854,
+        "receipt_flush_ms": 3281,
+        "full_answer_ms": 10785,
+        "reopen_ms": 1013,
+        "mode": "bootstrap",
+        "input_text_bytes": 37059,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-11776-80846911",
+        "request_end_sha256": "9a7f7511a2808e1acd88f29139ea80b4c142b4479dfcc0ff4a66a56a29d3598f",
+        "nine_results": 9
+      },
+      {
+        "fixture": 1,
+        "entry": "reopen",
+        "turn": 2,
+        "utc": "2026-11-10T01:01:49.039648+00:00",
+        "model_ms": 4465,
+        "account_read_ms": 2,
+        "issue_binding_ms": 942,
+        "receipt_flush_ms": 3298,
+        "full_answer_ms": 8974,
+        "reopen_ms": 1014,
+        "mode": "incremental",
+        "input_text_bytes": 16328,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-11776-90775509",
+        "request_end_sha256": "af0ac365f863c28e2c1bc3c000196bfc087988bb3715dd52698b97b3e2d19f3c",
+        "nine_results": 9
+      },
+      {
+        "fixture": 2,
+        "entry": "current",
+        "turn": 1,
+        "utc": "2026-11-10T01:04:03.097035+00:00",
+        "model_ms": 9298,
+        "account_read_ms": 3,
+        "issue_binding_ms": 1571,
+        "receipt_flush_ms": 3766,
+        "full_answer_ms": 17871,
+        "reopen_ms": null,
+        "mode": "bootstrap",
+        "input_text_bytes": 37059,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-38000-103381020",
+        "request_end_sha256": "1ffbd7e2671cd6b08c42b240c97583689a18b3c7e3d842a87ea1ebabc454d5ad",
+        "nine_results": 9
+      },
+      {
+        "fixture": 2,
+        "entry": "current",
+        "turn": 2,
+        "utc": "2026-11-10T01:04:03.097035+00:00",
+        "model_ms": 7064,
+        "account_read_ms": 4,
+        "issue_binding_ms": 1051,
+        "receipt_flush_ms": 6842,
+        "full_answer_ms": 13989,
+        "reopen_ms": null,
+        "mode": "incremental",
+        "input_text_bytes": 16328,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-38000-117786079",
+        "request_end_sha256": "59364d967a8140ca1454d1f371d61d1f94c80337b6cbc7a704a0d4ab3868f2ac",
+        "nine_results": 9
+      },
+      {
+        "fixture": 2,
+        "entry": "reopen",
+        "turn": 1,
+        "utc": "2026-11-10T01:06:15.210721+00:00",
+        "model_ms": 8000,
+        "account_read_ms": 2,
+        "issue_binding_ms": 882,
+        "receipt_flush_ms": 2504,
+        "full_answer_ms": 12491,
+        "reopen_ms": 1010,
+        "mode": "bootstrap",
+        "input_text_bytes": 37059,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-14664-91830597",
+        "request_end_sha256": "740e59b28704992f6bda1701d510add823f9365ff5b2ce87927b42a87c734976",
+        "nine_results": 9
+      },
+      {
+        "fixture": 2,
+        "entry": "reopen",
+        "turn": 2,
+        "utc": "2026-11-10T01:06:15.210721+00:00",
+        "model_ms": 7343,
+        "account_read_ms": 2,
+        "issue_binding_ms": 867,
+        "receipt_flush_ms": 4775,
+        "full_answer_ms": 12558,
+        "reopen_ms": 1014,
+        "mode": "incremental",
+        "input_text_bytes": 16328,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-14664-105412903",
+        "request_end_sha256": "bd404ebbb119971492fd8ba7f63a8368e31ef79010532d0eec1b971298c1baba",
+        "nine_results": 9
+      },
+      {
+        "fixture": 3,
+        "entry": "reopen",
+        "turn": 1,
+        "utc": "2026-11-10T01:09:20.319207+00:00",
+        "model_ms": 7783,
+        "account_read_ms": 2,
+        "issue_binding_ms": 1004,
+        "receipt_flush_ms": 3362,
+        "full_answer_ms": 17127,
+        "reopen_ms": 1020,
+        "mode": "bootstrap",
+        "input_text_bytes": 37059,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-58736-104552306",
+        "request_end_sha256": "053a0cd3cb228cb4bc199e18fdcdb62e17f24ad164df20572cf2574cbd409fec",
+        "nine_results": 9
+      },
+      {
+        "fixture": 3,
+        "entry": "reopen",
+        "turn": 2,
+        "utc": "2026-11-10T01:09:20.319207+00:00",
+        "model_ms": 4889,
+        "account_read_ms": 2,
+        "issue_binding_ms": 882,
+        "receipt_flush_ms": 3268,
+        "full_answer_ms": 9288,
+        "reopen_ms": 1007,
+        "mode": "incremental",
+        "input_text_bytes": 16328,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-58736-114826703",
+        "request_end_sha256": "efa0a1a9f4841b6c7282c38fca1616b0b900d0bbcad1b5440247f4b2f37a20f1",
+        "nine_results": 9
+      },
+      {
+        "fixture": 3,
+        "entry": "current",
+        "turn": 1,
+        "utc": "2026-11-10T01:12:15.615694+00:00",
+        "model_ms": 8454,
+        "account_read_ms": 2,
+        "issue_binding_ms": 923,
+        "receipt_flush_ms": 2479,
+        "full_answer_ms": 13025,
+        "reopen_ms": null,
+        "mode": "bootstrap",
+        "input_text_bytes": 37059,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-137508-83425813",
+        "request_end_sha256": "707d3500f17ee54e8a96fe2e10c1dbcfeb0844754ea69cc14d17bdca7f86ffff",
+        "nine_results": 9
+      },
+      {
+        "fixture": 3,
+        "entry": "current",
+        "turn": 2,
+        "utc": "2026-11-10T01:12:15.615694+00:00",
+        "model_ms": 3394,
+        "account_read_ms": 2,
+        "issue_binding_ms": 843,
+        "receipt_flush_ms": 3281,
+        "full_answer_ms": 7882,
+        "reopen_ms": null,
+        "mode": "incremental",
+        "input_text_bytes": 16328,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-137508-91263724",
+        "request_end_sha256": "2352c963b566e515f34ab114d19b4110ffa49803f98acfe55d357d3f9c1fc528",
+        "nine_results": 9
+      },
+      {
+        "fixture": 4,
+        "entry": "current",
+        "turn": 1,
+        "utc": "2026-11-10T01:15:18.327361+00:00",
+        "model_ms": 7011,
+        "account_read_ms": 2,
+        "issue_binding_ms": 921,
+        "receipt_flush_ms": 2503,
+        "full_answer_ms": 11638,
+        "reopen_ms": null,
+        "mode": "bootstrap",
+        "input_text_bytes": 37059,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-123764-84000658",
+        "request_end_sha256": "c1495b5009a575c8fd0dfd7e92707b51fa05879249bae19c2afc8110cd953e8e",
+        "nine_results": 9
+      },
+      {
+        "fixture": 4,
+        "entry": "current",
+        "turn": 2,
+        "utc": "2026-11-10T01:15:18.327361+00:00",
+        "model_ms": 3399,
+        "account_read_ms": 2,
+        "issue_binding_ms": 938,
+        "receipt_flush_ms": 3285,
+        "full_answer_ms": 7804,
+        "reopen_ms": null,
+        "mode": "incremental",
+        "input_text_bytes": 16328,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-123764-91844833",
+        "request_end_sha256": "d06ce571b96b3391fb507670448799aab972a0e67371bd0e160cb0ec23678e45",
+        "nine_results": 9
+      },
+      {
+        "fixture": 4,
+        "entry": "reopen",
+        "turn": 1,
+        "utc": "2026-11-10T01:17:32.970798+00:00",
+        "model_ms": 6059,
+        "account_read_ms": 2,
+        "issue_binding_ms": 904,
+        "receipt_flush_ms": 3266,
+        "full_answer_ms": 10402,
+        "reopen_ms": 1015,
+        "mode": "bootstrap",
+        "input_text_bytes": 37059,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-61716-72457968",
+        "request_end_sha256": "b206282b3468020f960392b9f4583340f5ba5c7207b21a357a8cd75431a2b60c",
+        "nine_results": 9
+      },
+      {
+        "fixture": 4,
+        "entry": "reopen",
+        "turn": 2,
+        "utc": "2026-11-10T01:17:32.970798+00:00",
+        "model_ms": 3684,
+        "account_read_ms": 2,
+        "issue_binding_ms": 974,
+        "receipt_flush_ms": 3224,
+        "full_answer_ms": 8218,
+        "reopen_ms": 1006,
+        "mode": "incremental",
+        "input_text_bytes": 16328,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-61716-81686514",
+        "request_end_sha256": "76aa6849af21685bfdb3a930cfd543b5bc83e811942b29c7d015dadd1562cc85",
+        "nine_results": 9
+      },
+      {
+        "fixture": 5,
+        "entry": "current",
+        "turn": 1,
+        "utc": "2026-11-10T01:19:45.371138+00:00",
+        "model_ms": 6967,
+        "account_read_ms": 2,
+        "issue_binding_ms": 915,
+        "receipt_flush_ms": 3781,
+        "full_answer_ms": 11649,
+        "reopen_ms": null,
+        "mode": "bootstrap",
+        "input_text_bytes": 37059,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-25332-73977093",
+        "request_end_sha256": "ab876010f468631304157b1455299c7ec8145dea9917ff1aa8a08f99b6668211",
+        "nine_results": 9
+      },
+      {
+        "fixture": 5,
+        "entry": "current",
+        "turn": 2,
+        "utc": "2026-11-10T01:19:45.371138+00:00",
+        "model_ms": 3647,
+        "account_read_ms": 3,
+        "issue_binding_ms": 1239,
+        "receipt_flush_ms": 3326,
+        "full_answer_ms": 8446,
+        "reopen_ms": null,
+        "mode": "incremental",
+        "input_text_bytes": 16328,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-25332-82404187",
+        "request_end_sha256": "49b6640f5ca2e6ed83aeabe84ec49c0265fd3ff7654d4aa5cf0e0db26a9dfd09",
+        "nine_results": 9
+      },
+      {
+        "fixture": 5,
+        "entry": "reopen",
+        "turn": 1,
+        "utc": "2026-11-10T01:22:10.036203+00:00",
+        "model_ms": 6749,
+        "account_read_ms": 2,
+        "issue_binding_ms": 936,
+        "receipt_flush_ms": 3425,
+        "full_answer_ms": 11334,
+        "reopen_ms": 1013,
+        "mode": "bootstrap",
+        "input_text_bytes": 37059,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-23948-78484552",
+        "request_end_sha256": "fadc9294fdca10ba6a627b8e4212a45ea163d7b0d01a2faee1441b4fb1fdc359",
+        "nine_results": 9
+      },
+      {
+        "fixture": 5,
+        "entry": "reopen",
+        "turn": 2,
+        "utc": "2026-11-10T01:22:10.036203+00:00",
+        "model_ms": 5345,
+        "account_read_ms": 2,
+        "issue_binding_ms": 885,
+        "receipt_flush_ms": 3330,
+        "full_answer_ms": 9688,
+        "reopen_ms": 1015,
+        "mode": "incremental",
+        "input_text_bytes": 16328,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-23948-89164720",
+        "request_end_sha256": "8d521eb068adfd89cc8aa79260de0d895bcbf330ae1665cab795ae7bb7b56016",
+        "nine_results": 9
+      }
+    ],
+    "native": [
+      {
+        "fixture": 1,
+        "entry": "native",
+        "turn": 1,
+        "full_answer_ms": 10141,
+        "commands": 0
+      },
+      {
+        "fixture": 1,
+        "entry": "native",
+        "turn": 2,
+        "full_answer_ms": 13563,
+        "commands": 0
+      },
+      {
+        "fixture": 2,
+        "entry": "native",
+        "turn": 1,
+        "full_answer_ms": 11407,
+        "commands": 0
+      },
+      {
+        "fixture": 2,
+        "entry": "native",
+        "turn": 2,
+        "full_answer_ms": 12234,
+        "commands": 0
+      },
+      {
+        "fixture": 3,
+        "entry": "native",
+        "turn": 1,
+        "full_answer_ms": 10875,
+        "commands": 0
+      },
+      {
+        "fixture": 3,
+        "entry": "native",
+        "turn": 2,
+        "full_answer_ms": 12891,
+        "commands": 0
+      },
+      {
+        "fixture": 4,
+        "entry": "native",
+        "turn": 1,
+        "full_answer_ms": 12437,
+        "commands": 0
+      },
+      {
+        "fixture": 4,
+        "entry": "native",
+        "turn": 2,
+        "full_answer_ms": 15547,
+        "commands": 0
+      },
+      {
+        "fixture": 5,
+        "entry": "native",
+        "turn": 1,
+        "full_answer_ms": 12844,
+        "commands": 0
+      },
+      {
+        "fixture": 5,
+        "entry": "native",
+        "turn": 2,
+        "full_answer_ms": 16390,
+        "commands": 0
+      }
+    ],
+    "post_review": [],
+    "failures": [
+      {
+        "utc": "2026-11-10T00:50:39.524465+00:00",
+        "entry": "current",
+        "fixture": "1",
+        "binary": "2e03ba105251f10e41b53e6a03f89b9c64c868d6b834e249201fa33e4320fae8",
+        "rounds": [],
+        "reason": [
+          "READBATCH_UNEXPECTED_LENGTH 240",
+          "READBATCH_FAILED nine-file round "
+        ]
+      },
+      {
+        "utc": "2026-11-10T00:57:49.380574+00:00",
+        "entry": "current",
+        "fixture": "1",
+        "binary": "efda5b86c3aad27c4f5816e5e9116cb69d4e93b2e6aff937f3e66d439149cd2a",
+        "rounds": [],
+        "reason": []
+      },
+      {
+        "entry": "native",
+        "fixture": 1,
+        "turns": [
+          {
+            "turn": 1,
+            "ms": 28719,
+            "ok": false,
+            "commands": 2,
+            "returncode": 0
+          }
+        ]
+      },
+      {
+        "entry": "native",
+        "fixture": 1,
+        "turns": [
+          {
+            "turn": 1,
+            "ms": 21406,
+            "ok": false,
+            "commands": 1,
+            "returncode": 0
+          }
+        ]
+      }
+    ]
+  },
+  "candidate": {
+    "summary": {
+      "native_turn_1": {
+        "full_answer_ms": {
+          "n": 5,
+          "median": 4656,
+          "p95_nearest_rank": 6016,
+          "max": 6016
+        },
+        "model_ms": null,
+        "issue_binding_ms": null,
+        "receipt_flush_ms": null,
+        "account_read_ms": null,
+        "input_text_bytes": null,
+        "reopen_ms": null
+      },
+      "native_turn_2": {
+        "full_answer_ms": {
+          "n": 5,
+          "median": 4953,
+          "p95_nearest_rank": 6281,
+          "max": 6281
+        },
+        "model_ms": null,
+        "issue_binding_ms": null,
+        "receipt_flush_ms": null,
+        "account_read_ms": null,
+        "input_text_bytes": null,
+        "reopen_ms": null
+      },
+      "current_turn_1": {
+        "full_answer_ms": {
+          "n": 5,
+          "median": 12691,
+          "p95_nearest_rank": 15592,
+          "max": 15592
+        },
+        "model_ms": {
+          "n": 5,
+          "median": 8055,
+          "p95_nearest_rank": 10671,
+          "max": 10671
+        },
+        "issue_binding_ms": {
+          "n": 5,
+          "median": 979,
+          "p95_nearest_rank": 1030,
+          "max": 1030
+        },
+        "receipt_flush_ms": {
+          "n": 5,
+          "median": 2579,
+          "p95_nearest_rank": 2621,
+          "max": 2621
+        },
+        "account_read_ms": {
+          "n": 5,
+          "median": 2,
+          "p95_nearest_rank": 3,
+          "max": 3
+        },
+        "input_text_bytes": {
+          "n": 5,
+          "median": 37158,
+          "p95_nearest_rank": 37158,
+          "max": 37158
+        },
+        "reopen_ms": null
+      },
+      "current_turn_2": {
+        "full_answer_ms": {
+          "n": 5,
+          "median": 8927,
+          "p95_nearest_rank": 10513,
+          "max": 10513
+        },
+        "model_ms": {
+          "n": 5,
+          "median": 4350,
+          "p95_nearest_rank": 5807,
+          "max": 5807
+        },
+        "issue_binding_ms": {
+          "n": 5,
+          "median": 905,
+          "p95_nearest_rank": 1038,
+          "max": 1038
+        },
+        "receipt_flush_ms": {
+          "n": 5,
+          "median": 3229,
+          "p95_nearest_rank": 3285,
+          "max": 3285
+        },
+        "account_read_ms": {
+          "n": 5,
+          "median": 2,
+          "p95_nearest_rank": 3,
+          "max": 3
+        },
+        "input_text_bytes": {
+          "n": 5,
+          "median": 689,
+          "p95_nearest_rank": 689,
+          "max": 689
+        },
+        "reopen_ms": null
+      },
+      "reopen_turn_1": {
+        "full_answer_ms": {
+          "n": 5,
+          "median": 12867,
+          "p95_nearest_rank": 14980,
+          "max": 14980
+        },
+        "model_ms": {
+          "n": 5,
+          "median": 8050,
+          "p95_nearest_rank": 9534,
+          "max": 9534
+        },
+        "issue_binding_ms": {
+          "n": 5,
+          "median": 943,
+          "p95_nearest_rank": 1965,
+          "max": 1965
+        },
+        "receipt_flush_ms": {
+          "n": 5,
+          "median": 3378,
+          "p95_nearest_rank": 3770,
+          "max": 3770
+        },
+        "account_read_ms": {
+          "n": 5,
+          "median": 2,
+          "p95_nearest_rank": 2,
+          "max": 2
+        },
+        "input_text_bytes": {
+          "n": 5,
+          "median": 37158,
+          "p95_nearest_rank": 37158,
+          "max": 37158
+        },
+        "reopen_ms": {
+          "n": 5,
+          "median": 1005,
+          "p95_nearest_rank": 1013,
+          "max": 1013
+        }
+      },
+      "reopen_turn_2": {
+        "full_answer_ms": {
+          "n": 5,
+          "median": 9846,
+          "p95_nearest_rank": 11177,
+          "max": 11177
+        },
+        "model_ms": {
+          "n": 5,
+          "median": 4915,
+          "p95_nearest_rank": 6185,
+          "max": 6185
+        },
+        "issue_binding_ms": {
+          "n": 5,
+          "median": 1128,
+          "p95_nearest_rank": 1355,
+          "max": 1355
+        },
+        "receipt_flush_ms": {
+          "n": 5,
+          "median": 3360,
+          "p95_nearest_rank": 3395,
+          "max": 3395
+        },
+        "account_read_ms": {
+          "n": 5,
+          "median": 2,
+          "p95_nearest_rank": 2,
+          "max": 2
+        },
+        "input_text_bytes": {
+          "n": 5,
+          "median": 689,
+          "p95_nearest_rank": 689,
+          "max": 689
+        },
+        "reopen_ms": {
+          "n": 5,
+          "median": 1010,
+          "p95_nearest_rank": 1017,
+          "max": 1017
+        }
+      }
+    },
+    "editor": [
+      {
+        "fixture": 1,
+        "entry": "current",
+        "turn": 1,
+        "utc": "2026-11-10T01:25:45.727146+00:00",
+        "model_ms": 8123,
+        "account_read_ms": 3,
+        "issue_binding_ms": 948,
+        "receipt_flush_ms": 2461,
+        "full_answer_ms": 12691,
+        "reopen_ms": null,
+        "mode": "bootstrap",
+        "input_text_bytes": 37158,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": "history_prefix_changed",
+        "request_end_id": "godot-event-124948-79981483",
+        "request_end_sha256": "34fa72e7f812a38c332ee2d0b743c0c42d0908f1974e321a18af3414cdf82a71",
+        "nine_results": 9
+      },
+      {
+        "fixture": 1,
+        "entry": "current",
+        "turn": 2,
+        "utc": "2026-11-10T01:25:45.727146+00:00",
+        "model_ms": 3368,
+        "account_read_ms": 2,
+        "issue_binding_ms": 871,
+        "receipt_flush_ms": 3229,
+        "full_answer_ms": 7690,
+        "reopen_ms": null,
+        "mode": "incremental",
+        "input_text_bytes": 689,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-124948-87653783",
+        "request_end_sha256": "0f835191a39f261ac445652d41a4e5658f470a00da1dd79099636be3ad686207",
+        "nine_results": 9
+      },
+      {
+        "fixture": 1,
+        "entry": "reopen",
+        "turn": 1,
+        "utc": "2026-11-10T01:28:00.561118+00:00",
+        "model_ms": 7396,
+        "account_read_ms": 2,
+        "issue_binding_ms": 855,
+        "receipt_flush_ms": 3161,
+        "full_answer_ms": 11778,
+        "reopen_ms": 1004,
+        "mode": "bootstrap",
+        "input_text_bytes": 37158,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": "history_prefix_changed",
+        "request_end_id": "godot-event-101056-78949591",
+        "request_end_sha256": "f4142465e6c82111d9792940e908aea2dece8cac1e511daa7b34eb53313340f5",
+        "nine_results": 9
+      },
+      {
+        "fixture": 1,
+        "entry": "reopen",
+        "turn": 2,
+        "utc": "2026-11-10T01:28:00.561118+00:00",
+        "model_ms": 4759,
+        "account_read_ms": 2,
+        "issue_binding_ms": 1035,
+        "receipt_flush_ms": 3230,
+        "full_answer_ms": 9240,
+        "reopen_ms": 1017,
+        "mode": "incremental",
+        "input_text_bytes": 689,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-101056-89256442",
+        "request_end_sha256": "05f2be83b7084925189fc309b98d584198ea6b6ae5995fe60411c6ca418cbb9e",
+        "nine_results": 9
+      },
+      {
+        "fixture": 2,
+        "entry": "current",
+        "turn": 1,
+        "utc": "2026-11-10T01:30:08.811479+00:00",
+        "model_ms": 7963,
+        "account_read_ms": 2,
+        "issue_binding_ms": 979,
+        "receipt_flush_ms": 2444,
+        "full_answer_ms": 12473,
+        "reopen_ms": null,
+        "mode": "bootstrap",
+        "input_text_bytes": 37158,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": "history_prefix_changed",
+        "request_end_id": "godot-event-12240-77629549",
+        "request_end_sha256": "ce8a3128841d635ff299839267d333ce2d15b25275915dcc859ada9bc9edcefd",
+        "nine_results": 9
+      },
+      {
+        "fixture": 2,
+        "entry": "current",
+        "turn": 2,
+        "utc": "2026-11-10T01:30:08.811479+00:00",
+        "model_ms": 4781,
+        "account_read_ms": 2,
+        "issue_binding_ms": 905,
+        "receipt_flush_ms": 3227,
+        "full_answer_ms": 9180,
+        "reopen_ms": null,
+        "mode": "incremental",
+        "input_text_bytes": 689,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-12240-86857703",
+        "request_end_sha256": "0a8f971797cff4307ffcde117ff2dda7c71a8f35479e11aa065f88d9cd95cae9",
+        "nine_results": 9
+      },
+      {
+        "fixture": 4,
+        "entry": "current",
+        "turn": 1,
+        "utc": "2026-11-10T01:37:39.333880+00:00",
+        "model_ms": 6226,
+        "account_read_ms": 2,
+        "issue_binding_ms": 1030,
+        "receipt_flush_ms": 2579,
+        "full_answer_ms": 11252,
+        "reopen_ms": null,
+        "mode": "bootstrap",
+        "input_text_bytes": 37158,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": "history_prefix_changed",
+        "request_end_id": "godot-event-4864-74666130",
+        "request_end_sha256": "75b6c6dd7b34ca0378a7dc4bb80793dfb3a06362273b9d4a99ce71eee7d332da",
+        "nine_results": 9
+      },
+      {
+        "fixture": 4,
+        "entry": "current",
+        "turn": 2,
+        "utc": "2026-11-10T01:37:39.333880+00:00",
+        "model_ms": 3550,
+        "account_read_ms": 1,
+        "issue_binding_ms": 852,
+        "receipt_flush_ms": 3191,
+        "full_answer_ms": 7894,
+        "reopen_ms": null,
+        "mode": "incremental",
+        "input_text_bytes": 689,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-4864-82586777",
+        "request_end_sha256": "2fad7ea6a9955719019524024c914f3427bc0b14937f7b7d02911470063c738b",
+        "nine_results": 9
+      },
+      {
+        "fixture": 4,
+        "entry": "reopen",
+        "turn": 1,
+        "utc": "2026-11-10T01:39:47.454436+00:00",
+        "model_ms": 9534,
+        "account_read_ms": 2,
+        "issue_binding_ms": 1965,
+        "receipt_flush_ms": 3161,
+        "full_answer_ms": 14980,
+        "reopen_ms": 931,
+        "mode": "bootstrap",
+        "input_text_bytes": 37158,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": "history_prefix_changed",
+        "request_end_id": "godot-event-60620-91524174",
+        "request_end_sha256": "71cda1b10c273fe80d9be2c95bd8300008759840a20838c6a1959d378547ad49",
+        "nine_results": 9
+      },
+      {
+        "fixture": 4,
+        "entry": "reopen",
+        "turn": 2,
+        "utc": "2026-11-10T01:39:47.454436+00:00",
+        "model_ms": 4915,
+        "account_read_ms": 2,
+        "issue_binding_ms": 1355,
+        "receipt_flush_ms": 3395,
+        "full_answer_ms": 9846,
+        "reopen_ms": 1010,
+        "mode": "incremental",
+        "input_text_bytes": 689,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-60620-102311040",
+        "request_end_sha256": "ebaa0319006460aaf2de06d3a95f382e6efb43e85188848407fefdf76480ad05",
+        "nine_results": 9
+      },
+      {
+        "fixture": 5,
+        "entry": "current",
+        "turn": 1,
+        "utc": "2026-11-10T01:41:55.005933+00:00",
+        "model_ms": 8055,
+        "account_read_ms": 2,
+        "issue_binding_ms": 904,
+        "receipt_flush_ms": 2587,
+        "full_answer_ms": 15513,
+        "reopen_ms": null,
+        "mode": "bootstrap",
+        "input_text_bytes": 37158,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": "history_prefix_changed",
+        "request_end_id": "godot-event-89956-77097851",
+        "request_end_sha256": "788500fff9c3c7accadd8d00549a6f95879613e7b2fe0635106f3a721bbe9eec",
+        "nine_results": 9
+      },
+      {
+        "fixture": 5,
+        "entry": "current",
+        "turn": 2,
+        "utc": "2026-11-10T01:41:55.005933+00:00",
+        "model_ms": 4350,
+        "account_read_ms": 2,
+        "issue_binding_ms": 1022,
+        "receipt_flush_ms": 3248,
+        "full_answer_ms": 8927,
+        "reopen_ms": null,
+        "mode": "incremental",
+        "input_text_bytes": 689,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-89956-86080754",
+        "request_end_sha256": "aaf2ddfc3dc1a17109684fc65ae424357cc368f0faec054b64386032503afc8b",
+        "nine_results": 9
+      },
+      {
+        "fixture": 5,
+        "entry": "reopen",
+        "turn": 1,
+        "utc": "2026-11-10T01:44:03.525356+00:00",
+        "model_ms": 8050,
+        "account_read_ms": 2,
+        "issue_binding_ms": 943,
+        "receipt_flush_ms": 3535,
+        "full_answer_ms": 12867,
+        "reopen_ms": 1005,
+        "mode": "bootstrap",
+        "input_text_bytes": 37158,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": "history_prefix_changed",
+        "request_end_id": "godot-event-113780-84996549",
+        "request_end_sha256": "1f47b81dbcc43603c3017bc8365714e4551dff2a4e6b87bc4dc16d975a78bf11",
+        "nine_results": 9
+      },
+      {
+        "fixture": 5,
+        "entry": "reopen",
+        "turn": 2,
+        "utc": "2026-11-10T01:44:03.525356+00:00",
+        "model_ms": 5918,
+        "account_read_ms": 2,
+        "issue_binding_ms": 1128,
+        "receipt_flush_ms": 3232,
+        "full_answer_ms": 10756,
+        "reopen_ms": 1010,
+        "mode": "incremental",
+        "input_text_bytes": 689,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-113780-96828656",
+        "request_end_sha256": "e3826db9c1e938e99bba929cce8899507b8f5744d11ad3d0d9d846b93a75e09b",
+        "nine_results": 9
+      },
+      {
+        "fixture": 2,
+        "entry": "reopen",
+        "turn": 1,
+        "utc": "2026-11-10T01:46:39.044432+00:00",
+        "model_ms": 6125,
+        "account_read_ms": 2,
+        "issue_binding_ms": 1432,
+        "receipt_flush_ms": 3770,
+        "full_answer_ms": 11731,
+        "reopen_ms": 1013,
+        "mode": "bootstrap",
+        "input_text_bytes": 37158,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": "history_prefix_changed",
+        "request_end_id": "godot-event-14432-84438796",
+        "request_end_sha256": "6679b5b3f611a8eea19fcddb6e2eeda6b480b30dd946108a0e16c9f5865a4f07",
+        "nine_results": 9
+      },
+      {
+        "fixture": 2,
+        "entry": "reopen",
+        "turn": 2,
+        "utc": "2026-11-10T01:46:39.044432+00:00",
+        "model_ms": 6185,
+        "account_read_ms": 2,
+        "issue_binding_ms": 1187,
+        "receipt_flush_ms": 3389,
+        "full_answer_ms": 11177,
+        "reopen_ms": 1006,
+        "mode": "incremental",
+        "input_text_bytes": 689,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-14432-96677340",
+        "request_end_sha256": "f2c483b8230caf1a643442b484d300434d5c8d07cc21d3eb5b46ab07e8bb37c4",
+        "nine_results": 9
+      },
+      {
+        "fixture": 3,
+        "entry": "current",
+        "turn": 1,
+        "utc": "2026-11-10T01:48:46.301287+00:00",
+        "model_ms": 10671,
+        "account_read_ms": 2,
+        "issue_binding_ms": 1016,
+        "receipt_flush_ms": 2621,
+        "full_answer_ms": 15592,
+        "reopen_ms": null,
+        "mode": "bootstrap",
+        "input_text_bytes": 37158,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": "history_prefix_changed",
+        "request_end_id": "godot-event-39556-82318101",
+        "request_end_sha256": "b7378ed98acd0d86dc185c8adc946aecf1927e4dc56f9b24402ff3b8aaa324d9",
+        "nine_results": 9
+      },
+      {
+        "fixture": 3,
+        "entry": "current",
+        "turn": 2,
+        "utc": "2026-11-10T01:48:46.301287+00:00",
+        "model_ms": 5807,
+        "account_read_ms": 3,
+        "issue_binding_ms": 1038,
+        "receipt_flush_ms": 3285,
+        "full_answer_ms": 10513,
+        "reopen_ms": null,
+        "mode": "incremental",
+        "input_text_bytes": 689,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-39556-92854448",
+        "request_end_sha256": "173934dddf2344456f1adbc00639cded27e38e4fa42f197cab32a1f6bba4b087",
+        "nine_results": 9
+      },
+      {
+        "fixture": 3,
+        "entry": "reopen",
+        "turn": 1,
+        "utc": "2026-11-10T01:51:01.672568+00:00",
+        "model_ms": 9017,
+        "account_read_ms": 2,
+        "issue_binding_ms": 882,
+        "receipt_flush_ms": 3378,
+        "full_answer_ms": 13659,
+        "reopen_ms": 1012,
+        "mode": "bootstrap",
+        "input_text_bytes": 37158,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": "history_prefix_changed",
+        "request_end_id": "godot-event-121944-86981517",
+        "request_end_sha256": "51bc88a100a96848bb01fd93d543dd8886c096ceed96e8f3ced9ee3c827af276",
+        "nine_results": 9
+      },
+      {
+        "fixture": 3,
+        "entry": "reopen",
+        "turn": 2,
+        "utc": "2026-11-10T01:51:01.672568+00:00",
+        "model_ms": 3793,
+        "account_read_ms": 2,
+        "issue_binding_ms": 851,
+        "receipt_flush_ms": 3360,
+        "full_answer_ms": 8167,
+        "reopen_ms": 996,
+        "mode": "incremental",
+        "input_text_bytes": 689,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-121944-96148499",
+        "request_end_sha256": "a6f018847682c536d9917a12d713b147ee1931f9d1a4eb9d22b1164e72bcb1e7",
+        "nine_results": 9
+      }
+    ],
+    "native": [
+      {
+        "fixture": 1,
+        "entry": "native",
+        "turn": 1,
+        "full_answer_ms": 4219,
+        "commands": 0
+      },
+      {
+        "fixture": 1,
+        "entry": "native",
+        "turn": 2,
+        "full_answer_ms": 5313,
+        "commands": 0
+      },
+      {
+        "fixture": 2,
+        "entry": "native",
+        "turn": 1,
+        "full_answer_ms": 6016,
+        "commands": 0
+      },
+      {
+        "fixture": 2,
+        "entry": "native",
+        "turn": 2,
+        "full_answer_ms": 6281,
+        "commands": 0
+      },
+      {
+        "fixture": 3,
+        "entry": "native",
+        "turn": 1,
+        "full_answer_ms": 5516,
+        "commands": 0
+      },
+      {
+        "fixture": 3,
+        "entry": "native",
+        "turn": 2,
+        "full_answer_ms": 4953,
+        "commands": 0
+      },
+      {
+        "fixture": 4,
+        "entry": "native",
+        "turn": 1,
+        "full_answer_ms": 4656,
+        "commands": 0
+      },
+      {
+        "fixture": 4,
+        "entry": "native",
+        "turn": 2,
+        "full_answer_ms": 3141,
+        "commands": 0
+      },
+      {
+        "fixture": 5,
+        "entry": "native",
+        "turn": 1,
+        "full_answer_ms": 4109,
+        "commands": 0
+      },
+      {
+        "fixture": 5,
+        "entry": "native",
+        "turn": 2,
+        "full_answer_ms": 4688,
+        "commands": 0
+      }
+    ],
+    "post_review": [
+      {
+        "fixture": 1,
+        "entry": "current",
+        "turn": 1,
+        "utc": "2026-11-10T01:58:43.608771+00:00",
+        "model_ms": 7347,
+        "account_read_ms": 2,
+        "issue_binding_ms": 935,
+        "receipt_flush_ms": 4221,
+        "full_answer_ms": 12745,
+        "reopen_ms": null,
+        "mode": "bootstrap",
+        "input_text_bytes": 37158,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": "history_prefix_changed",
+        "request_end_id": "godot-event-26736-83981942",
+        "request_end_sha256": "289384ffc5ea4eb66d3d10b5fe2e5f84d6d05e2d89629588e850e2d25b2e8069",
+        "nine_results": 9
+      },
+      {
+        "fixture": 1,
+        "entry": "current",
+        "turn": 2,
+        "utc": "2026-11-10T01:58:43.608771+00:00",
+        "model_ms": 3706,
+        "account_read_ms": 2,
+        "issue_binding_ms": 925,
+        "receipt_flush_ms": 3673,
+        "full_answer_ms": 8907,
+        "reopen_ms": null,
+        "mode": "incremental",
+        "input_text_bytes": 689,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-26736-92892941",
+        "request_end_sha256": "664b890a44bd85bc35df832ad37030c6817f42364d9879745bf8242a5a140418",
+        "nine_results": 9
+      },
+      {
+        "fixture": 1,
+        "entry": "reopen",
+        "turn": 1,
+        "utc": "2026-11-10T02:00:59.064253+00:00",
+        "model_ms": 7087,
+        "account_read_ms": 2,
+        "issue_binding_ms": 3094,
+        "receipt_flush_ms": 3659,
+        "full_answer_ms": 14280,
+        "reopen_ms": 1013,
+        "mode": "bootstrap",
+        "input_text_bytes": 37158,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": "history_prefix_changed",
+        "request_end_id": "godot-event-32068-89236291",
+        "request_end_sha256": "a703379a343ab8f10ac4c7c68bcbd07ea34a789bd9c359ec5cdd70f6b423f770",
+        "nine_results": 9
+      },
+      {
+        "fixture": 1,
+        "entry": "reopen",
+        "turn": 2,
+        "utc": "2026-11-10T02:00:59.064253+00:00",
+        "model_ms": 4810,
+        "account_read_ms": 2,
+        "issue_binding_ms": 1874,
+        "receipt_flush_ms": 4267,
+        "full_answer_ms": 10954,
+        "reopen_ms": 1002,
+        "mode": "incremental",
+        "input_text_bytes": 689,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-32068-101130076",
+        "request_end_sha256": "c075a95cd35488886ec633ff7c5b92f99814e3419f546358d7374be079fb28e4",
+        "nine_results": 9
+      },
+      {
+        "fixture": 1,
+        "entry": "current",
+        "turn": 1,
+        "utc": "2026-11-10T02:07:02.674903+00:00",
+        "model_ms": 11384,
+        "account_read_ms": 2,
+        "issue_binding_ms": 844,
+        "receipt_flush_ms": 2961,
+        "full_answer_ms": 16551,
+        "reopen_ms": null,
+        "mode": "bootstrap",
+        "input_text_bytes": 37158,
+        "history_before": 11,
+        "history_after": 3,
+        "prefix_matches": false,
+        "accepted_at_expected_index": false,
+        "binding_matches": true,
+        "rebuild_reason": "history_prefix_changed",
+        "request_end_id": "godot-event-25636-104486691",
+        "request_end_sha256": "7063ddbc085a46431c27a57ac1bb1c9ee7c38df7951fd53ae346837624838baf",
+        "nine_results": 9
+      },
+      {
+        "fixture": 1,
+        "entry": "current",
+        "turn": 2,
+        "utc": "2026-11-10T02:07:02.674903+00:00",
+        "model_ms": 4207,
+        "account_read_ms": 2,
+        "issue_binding_ms": 894,
+        "receipt_flush_ms": 3968,
+        "full_answer_ms": 9239,
+        "reopen_ms": null,
+        "mode": "incremental",
+        "input_text_bytes": 689,
+        "history_before": 3,
+        "history_after": 5,
+        "prefix_matches": true,
+        "accepted_at_expected_index": true,
+        "binding_matches": true,
+        "rebuild_reason": null,
+        "request_end_id": "godot-event-25636-113727730",
+        "request_end_sha256": "930ca1a7877f7c407261ddae35e9f5fe7fb2c536581d3d0aae7031611e5b0467",
+        "nine_results": 9
+      }
+    ],
+    "failures": [
+      {
+        "utc": "2026-11-10T01:32:18.411398+00:00",
+        "entry": "reopen",
+        "fixture": "2",
+        "binary": "efda5b86c3aad27c4f5816e5e9116cb69d4e93b2e6aff937f3e66d439149cd2a",
+        "rounds": [
+          {
+            "ms": 64220,
+            "round": 1,
+            "transport": {
+              "input_text_bytes": 19672.0,
+              "message_count": 10.0,
+              "mode": "incremental",
+              "rebuild_reason": null
+            }
+          }
+        ],
+        "reason": [
+          "READBATCH_FAILED existing conversation did not reopen"
+        ]
+      },
+      {
+        "utc": "2026-11-10T01:34:09.421860+00:00",
+        "entry": "reopen",
+        "fixture": "3",
+        "binary": "efda5b86c3aad27c4f5816e5e9116cb69d4e93b2e6aff937f3e66d439149cd2a",
+        "rounds": [
+          {
+            "ms": 72658,
+            "round": 1,
+            "transport": {
+              "input_text_bytes": 19672.0,
+              "message_count": 10.0,
+              "mode": "incremental",
+              "rebuild_reason": null
+            }
+          }
+        ],
+        "reason": [
+          "READBATCH_FAILED existing conversation did not reopen"
+        ]
+      },
+      {
+        "utc": "2026-11-10T01:36:02.258938+00:00",
+        "entry": "current",
+        "fixture": "3",
+        "binary": "efda5b86c3aad27c4f5816e5e9116cb69d4e93b2e6aff937f3e66d439149cd2a",
+        "rounds": [
+          {
+            "ms": 62069,
+            "round": 1,
+            "transport": {
+              "input_text_bytes": 19672.0,
+              "message_count": 10.0,
+              "mode": "incremental",
+              "rebuild_reason": null
+            }
+          }
+        ],
+        "reason": [
+          "READBATCH_FAILED current conversation composer unavailable"
+        ]
+      }
+    ]
+  },
+  "receipt_events": 1480,
+  "verification": {
+    "native_cases": 45,
+    "native_assertions": 638,
+    "node_tests": 28,
+    "native_recovery": "Packaged host CLI child inherited a registered Windows Core environment and failed to start shell. Isolated standalone CLI with desktop IPC and registered-Core variables removed read the nine actual files and returned exact suffixes.",
+    "initial_intake_incident": 720,
+    "retained_592_cancel_failure": "Initial post-cancel strict answer failed on the previous main. Same binary rerun passed. Cause of initial mismatch is unknown.",
+    "rechecks": "All five fixtures passed each final entry. Earlier reopens (fixtures 2 and 3) and a composer check (fixture 3) stopped before sending. The original probe directly assigned current or checked button state before text entry. Repeat checks selected the actual issue row and set the draft before checking Send. The initial failures had no notice snapshot, so the specific causes remain unknown.",
+    "observer_setup_failure": "A Windows NODE_OPTIONS preload path lost its backslashes; context rejected the call before model execution. Corrected the observer path and reran. The first separate nine-file editor pilot produced 240 characters and failed exact match.",
+    "paired_interpretation": "In each of ten successful editor conversations per phase, the first follow-up rebuilt after tool-history cleanup and the second reused acknowledged history. Exactly one model turn per successful follow-up, zero observed duplicate sends. Baseline second follow-up input was 16328 bytes, candidate 689. Wall-clock medians did not improve; provider time, live intake and durable receipts remain measurable.",
+    "build": "Local cached builds refused a changed native input fingerprint while the private measurement folder was being written. Isolated uncached local build completed, and all 45 native cases passed on the tested binary.",
+    "review_fixes": "The first independent 6 Astra review requested invalidation after provider-side context compaction and fail-safe handling of deeply nested JSON. Final code covers both and clears acknowledgement before a new turn. Both normal editor entries passed again on the revised JS. The two post-review samples are separate from the five-fixture matrix.",
+    "post_review_host_base": "b792e2379e33f92f74885a32c19b394097a0118b",
+    "final_review": "Two revisions addressed compaction, deep JSON fallback, and a compaction notification during an outstanding outcome-only update. The latter discards the terminal output and proposed actions; a later work-order submission reauthenticates. Final isolated gpt-6-astra review approved scoped code delivery. Business acceptance remains open.",
+    "post_review_samples": "Post-review rows 1-4 exercise the first compaction fix in current and reopened conversations. Rows 5-6 exercise the final candidate in the current composer; the final code also passed the targeted in-turn/idle compaction, failed turn and authorization regressions."
+  },
+  "other_acceptance": {
+    "codebuddy": {
+      "issue": 662,
+      "acp_initialize": "success",
+      "session_new_error": -32000,
+      "authenticated_business_request": false
+    },
+    "claude_code": "Adapter evaluation pending. No local CLI on PATH.",
+    "http_api": {
+      "issue": 593,
+      "status": "deferred by prior user decision; requires authorized account and rescheduling"
+    }
+  },
+  "benchmark_candidate_files": {
+    "tools/codex_cli/subscription_session.js": "923a0b38f54f8c9111912b02f6a7522ce958e4d9af0b3e16a77a7d1f58b342fa",
+    "tools/codex_cli/godot_bridge.js": "aa1a436de7acd977199763f15e52484d93287a1bb49a148ae9f28e2f88a62976",
+    "tests/editor/test_codex_subscription.js": "c7312a1b022a487f9c2f34fc1b684e831518c8d825e5f32c811fdfe30d835e9e"
+  },
+  "independent_reviews": [
+    {
+      "model": "gpt-6-astra",
+      "utc": "2026-11-10T01:55:42.307Z",
+      "entry": "ephemeral subscription app-server with live identity and exact thread/start model check; no native tools",
+      "sha256": {
+        "tools/codex_cli/subscription_session.js": "923a0b38f54f8c9111912b02f6a7522ce958e4d9af0b3e16a77a7d1f58b342fa",
+        "tools/codex_cli/godot_bridge.js": "aa1a436de7acd977199763f15e52484d93287a1bb49a148ae9f28e2f88a62976",
+        "tests/editor/test_codex_subscription.js": "c7312a1b022a487f9c2f34fc1b684e831518c8d825e5f32c811fdfe30d835e9e"
+      },
+      "patch_sha256": "9c9eae5333411582826ac3db4b967ccb3c3975b6475a6b7b1099477d9e589f1b",
+      "verdict": "changes_required"
+    },
+    {
+      "model": "gpt-6-astra",
+      "utc": "2026-11-10T02:03:50.238Z",
+      "entry": "ephemeral subscription app-server with live identity and exact thread/start model check; no native tools",
+      "sha256": {
+        "tools/codex_cli/subscription_session.js": "e430c2e315183489e952f6beca66e2863611f5a617895cf5f3a9316d6c0761c5",
+        "tools/codex_cli/godot_bridge.js": "aa1a436de7acd977199763f15e52484d93287a1bb49a148ae9f28e2f88a62976",
+        "tests/editor/test_codex_subscription.js": "effd18bac59435e76b375cca5285afd5c33645c13f33aa365d2e40435832d07b"
+      },
+      "patch_sha256": "e665b45fed4a74ec7499cec644e81b6ced824053d4ea77a78a0b0b5c2e8884ee",
+      "verdict": "changes_required"
+    },
+    {
+      "model": "gpt-6-astra",
+      "utc": "2026-11-10T02:08:41.579Z",
+      "entry": "ephemeral subscription app-server with live identity and exact thread/start model check; no native tools",
+      "sha256": {
+        "tools/codex_cli/subscription_session.js": "195640f7be8281e53c7fbb7c554900f160fbc63896e5f24ddfe90f0951c4d6d2",
+        "tools/codex_cli/godot_bridge.js": "aa1a436de7acd977199763f15e52484d93287a1bb49a148ae9f28e2f88a62976",
+        "tests/editor/test_codex_subscription.js": "50340dd863706f9c4f86377d1adee242ec91fe274d1d5fd320914b6a8cde53d8",
+        "tools/codebuddy_cli/godot_bridge.js": "9315abfb529d85bac57ae80ed4ae35addfc2ba71d51a155a7fe1ad376304e3fa"
+      },
+      "patch_sha256": "79382c42ba5096675214453972514a9858da4b27bbbfe953f77a92085606bf2a",
+      "verdict": "approve_scoped_change"
+    }
+  ]
+}

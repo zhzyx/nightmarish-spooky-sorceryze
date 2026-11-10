@@ -1,0 +1,42 @@
+{
+  "agent": {
+    "definition_sha256": "d1d470c1a9c12c5d87e7522d6b1da795a0859fc5d03b98bd92e98bc3ca6b8458",
+    "id": "sinan",
+    "origin": "gonggong-framework",
+    "version": "0.1.5"
+  },
+  "event_id": "godot-event-25636-90360411",
+  "evidence_refs": [],
+  "kind": "request",
+  "occurred_at": "2026-11-10T02:08:33Z",
+  "payload": {
+    "binding": {
+      "actor": "350401007",
+      "agent": {
+        "definition_sha256": "d1d470c1a9c12c5d87e7522d6b1da795a0859fc5d03b98bd92e98bc3ca6b8458",
+        "id": "sinan",
+        "origin": "gonggong-framework",
+        "version": "0.1.5"
+      },
+      "agent_snapshot_ref": "sinan@0.1.5#59d90f15b093ee20a8a72044165c51c403dd2ea924f1c83df38f1a87f0de80b9",
+      "authority_ref": "godot-editor:user-chat:7269e5799582333b97bc022975d0caca",
+      "outbox_path": ".gonggong-outbox/chat",
+      "path_base": "workspace_root",
+      "request_ref": "tianshu-592-carryover-v1",
+      "sink_ref": "gonggong-diting-data",
+      "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/706",
+      "source_sha256": "39245b58697ea67549e7c1ad705403f55bf719c6322742314bc387e0cc513477",
+      "tenant_id": "gonggong-workspace"
+    },
+    "input_tokens": null,
+    "output_tokens": null,
+    "phase": "chat",
+    "reason": "Host lifecycle metadata only; provider token usage is not measured by this connector",
+    "status": "running"
+  },
+  "request_id": "tianshu-592-carryover-v1",
+  "schema_version": 1,
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/706",
+  "tenant_id": "gonggong-workspace",
+  "sha256": "8a21d3c55fc551b44705ab007e49b459d8f12f188ce1ba498b86f78f9b17e10e"
+}
