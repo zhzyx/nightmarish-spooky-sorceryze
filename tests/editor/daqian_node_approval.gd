@@ -132,6 +132,7 @@ func run() -> void:
 		composer.text = "Preserve original queued work"
 		root.find_child("ChatLayout", true, false).find_child("Send", true, false).pressed.emit()
 		return
+	deadline = Time.get_ticks_msec() + 10000
 	while not panel.editor.canvas.has_node("wf-operation") and Time.get_ticks_msec() < deadline:
 		await create_timer(0.05).timeout
 	if not panel.editor.canvas.has_node("wf-operation"):
@@ -293,7 +294,7 @@ func check_native_canvas(panel, row: Dictionary) -> void:
 	var deadline := Time.get_ticks_msec() + 10000
 	while canvas.pending_turns.is_empty() and Time.get_ticks_msec() < deadline:
 		await create_timer(0.02).timeout
-	check(not canvas.pending_turns.is_empty(), "The native canvas did not start its scoped preview: " + panel.notice.text)
+	check(not canvas.pending_turns.is_empty(), "The native canvas did not start its scoped preview: " + panel.notice.text + " / " + canvas.canvas_log.text.right(400) + " focus=" + str(root.gui_get_focus_owner()))
 	panel._show_board()
 	while not canvas.pending_turns.is_empty() and Time.get_ticks_msec() < deadline:
 		await create_timer(0.02).timeout

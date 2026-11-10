@@ -33,6 +33,7 @@
 #include "core/io/file_access.h"
 #include "core/os/thread.h"
 #include "core/templates/safe_refcount.h"
+#include "editor/docks/ai_chat_resume.h"
 #include "editor/docks/editor_dock.h"
 
 class AIChatEditorControl;
@@ -562,6 +563,17 @@ class AIChatDock : public EditorDock {
 	// Periodic tasks share the single executor, but own separate Agent histories.
 	TabContainer *workspace_pages = nullptr;
 	VBoxContainer *session_navigation = nullptr;
+	AIChatResume resume_storage;
+	HashMap<String, AIChatDock *> issue_workers;
+	AIChatDock *selected_worker = nullptr;
+	AIChatDock *settings_owner = nullptr;
+	AIChatDock *_ensure_issue_worker(const String &p_key);
+	bool _can_switch_issue() const;
+	bool _transfer_archived_issue(int p_id, AIChatDock *p_worker);
+	bool _mount_selected_chat(Control *p_host);
+	void _unmount_selected_chat();
+	Dictionary _issue_approval(const String &p_url) const;
+	bool _confirm_issue_approval(const String &p_url, const String &p_token);
 	ObjectID daqian_chat_host;
 	String daqian_mount_conversation;
 	bool _mount_daqian_chat(Control *p_host);
@@ -783,6 +795,6 @@ public:
 	Control *get_ai_settings_control() const;
 	Control *get_environment_settings_control() const;
 	void set_environment_changing_handler(const Callable &p_handler);
-	AIChatDock();
+	AIChatDock(const String &p_session_directory = String());
 	~AIChatDock();
 };

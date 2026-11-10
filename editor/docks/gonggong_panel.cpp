@@ -48,7 +48,7 @@
 #include "scene/main/timer.h"
 #include "servers/display/display_server.h"
 
-GongGongPanel::GongGongPanel() {
+GongGongPanel::GongGongPanel(bool p_check_environment) {
 	set_name("GongGongPage");
 	const String workspace_default = GongGongHostPaths::workspace();
 	EDITOR_DEF("gonggong/workspace", workspace_default);
@@ -175,7 +175,9 @@ GongGongPanel::GongGongPanel() {
 	timer->set_wait_time(0.25);
 	timer->connect("timeout", callable_mp(this, &GongGongPanel::poll));
 	add_child(timer);
-	callable_mp(this, &GongGongPanel::ensure_environment).call_deferred();
+	if (p_check_environment) {
+		callable_mp(this, &GongGongPanel::ensure_environment).call_deferred();
+	}
 }
 
 static String gonggong_runtime_path(const String &p_root, const String &p_environment, const String &p_relative, const String &p_command) {

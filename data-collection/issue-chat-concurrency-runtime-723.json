@@ -1,0 +1,15 @@
+{
+  "request_id": "issue-chat-concurrency",
+  "issue_number": 723,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/723",
+  "source_base": "b792e2379e33f92f74885a32c19b394097a0118b",
+  "editor_sha256": "bf2fea20d5b5f77d5013ef2f1c3f1012c156165716c971a83d9c91c0166b41dd",
+  "runtime_deployment_simulation": {
+    "passed": true,
+    "command": "tests/editor/run_runtime_setup_simulation.py --godot <console> --out <isolated-report-dir>",
+    "original_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42738803804/job/129574746353",
+    "failure": "Intermediate progress reported gh_unauthenticated before the independently polled final result exposed the login button. Wait for the actual visible window and button along with the required status.",
+    "interruption_cases": 3
+  },
+  "prior_record": "data-collection/issue-chat-concurrency-723.json"
+}

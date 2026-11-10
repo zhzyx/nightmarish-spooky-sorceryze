@@ -55,24 +55,26 @@ public:
 	static bool records_valid(const Variant &p_value, bool p_transcript);
 	static bool calls_valid(const Variant &p_value);
 
-	static String journal_path();
-	static String ack_path();
-	static String report_path();
+	String directory;
+	String storage_dir() const;
+	String journal_path() const;
+	String ack_path() const;
+	String report_path() const;
 	// Globalized directory of the files above, for processes without res:// support.
-	static String global_dir();
+	String global_dir() const;
 
 	static bool journal_valid(const Dictionary &p_journal);
 	// Storage codec only: never summarizes messages or changes pending tool arguments.
 	static Error encode_journal(const Dictionary &p_journal, String &r_body, Dictionary &r_stats);
 	static bool decode_journal(const String &p_body, Dictionary &r_journal);
-	static bool read_journal(Dictionary &r_journal);
-	static Error write_journal(const Dictionary &p_journal, Dictionary *r_stats = nullptr);
-	static Error write_command_offer(const Dictionary &p_journal, String &r_marker);
-	static void clear_journal();
+	bool read_journal(Dictionary &r_journal) const;
+	Error write_journal(const Dictionary &p_journal, Dictionary *r_stats = nullptr) const;
+	Error write_command_offer(const Dictionary &p_journal, String &r_marker) const;
+	void clear_journal() const;
 
-	static Error write_ack(const String &p_token, const String &p_executable);
-	static bool read_report(Dictionary &r_report);
-	static void clear_report();
+	Error write_ack(const String &p_token, const String &p_executable) const;
+	bool read_report(Dictionary &r_report) const;
+	void clear_report() const;
 
 	// Correlates one handoff with one acknowledgement. Not a security secret.
 	static String make_token();
