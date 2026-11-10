@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-d9eabf61ef98d8cf6441bf7e8374f9a90080360a99711a0335d84fc5788b2340",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-host",
+    "origin": "codex",
+    "version": "session",
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42727474058",
+  "occurred_at": "2026-11-10T00:27:06.739344+00:00",
+  "evidence_refs": [
+    "hosted-editor-consumed-42727474058",
+    "learn-d4073b57a63ecf2134186cf8208151e11eb9d29a8215e8dacbb310dea3994df6"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 6,
+    "previous": "2824948bb162645623ca2f1395cadafba70b8da0b7dd567aed666b413b053915",
+    "action": "applied",
+    "details": {
+      "task": "#690 在修订后的 main 上，用第二次真实云端运行验收受信产物复用。",
+      "observed": "消费作业按原始 run、artifact ID 和传输 SHA-256 恢复；编辑器字节一致，Compilation 跳过，业务包重建、原生单测与天枢图验收通过。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/engine-ci-hosted-reuse-690.json",
+        "sha256": "dea93771fe024367628c59a5cd9010eecd44328470973d3622f3ab09979dfa27"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/engine-build-cli-ci-reuse/hosted-editor-consumed-42727474058.json",
+      "sha256": "355caffe6c674571d26c803d87c485dba376ce01e1aaf7726519602ddae0dd9d"
+    }
+  },
+  "sha256": "432b7a707d1b544e971e437a4be4f7327ddc4d828f0d41cc98632a4f86d40cb8"
+}

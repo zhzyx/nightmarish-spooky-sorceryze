@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-build-cli-ci-reuse",
+  "kind": "step",
+  "event_id": "hosted-editor-consumed-42727474058",
+  "occurred_at": "2026-11-10T00:27:06.739344+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42727474058",
+  "agent": {
+    "id": "codex-host",
+    "origin": "codex",
+    "version": "session",
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8"
+  },
+  "evidence_refs": [
+    "request-690-engine-build-placement"
+  ],
+  "payload": {
+    "consumer_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/42727474058/job/129536706547",
+    "artifact_id": 13722613079,
+    "binary_sha256": "e3f83ca772b24564db0bbddc1eeac40dac5f60881b83693bd9e29071366d7414",
+    "compiled": "skipped",
+    "unit_tests": "success",
+    "usage": null,
+    "usage_unknown_reason": "No measured model resource usage in Actions receipt"
+  },
+  "sha256": "355caffe6c674571d26c803d87c485dba376ce01e1aaf7726519602ddae0dd9d"
+}
