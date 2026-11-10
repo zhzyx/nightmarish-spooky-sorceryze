@@ -7176,7 +7176,7 @@ void AIChatDock::_notification(int p_what) {
 		_load_resume();
 		if (resume_storage.directory.is_empty()) {
 			schedule_timer->start();
-			// Restore outstanding approvals and restart acknowledgements before
+			// Restore outstanding approvals and restart acknowledgments before
 			// a user reopens their issue. Idle histories remain lazy.
 			const String directory = resume_storage.storage_dir().path_join("tianshu_workers");
 			const Ref<DirAccess> folders = DirAccess::open(directory);
