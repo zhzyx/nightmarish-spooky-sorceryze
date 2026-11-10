@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-issue-path-audit",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/749",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "kind": "request",
+  "event_id": "issue-749-editor-audit-readback",
+  "occurred_at": "2026-11-10T17:21:53.873499+00:00",
+  "evidence_refs": [
+    "dispatch-4e5917b3878a4695a8feb70723ade1a2"
+  ],
+  "payload": {
+    "issue_number": 749,
+    "title": "清查天枢工单、候选、命令与回执的实际入口",
+    "state": "OPEN",
+    "body_sha256": "7cfe3b90e65343c7dae62f6cacd34726077a5002f3c1600abe99ae7139cf6b8e",
+    "issue_updated_at": "2026-11-10T17:20:27Z",
+    "assignment_revision": "0eae0efaaa19a2d80c5d2c58d1f7a373d4c75e5286df1c92e6aec904fe5cf8bc",
+    "parent_issue": 748,
+    "worker": "/root/sinan_63d20a00b4403570",
+    "coverage": "explicit Issue readback and assigned host"
+  },
+  "sha256": "a9375409d5f1321c288559beb2654f84a4aeb1333f289096107dc3ee161c172c"
+}

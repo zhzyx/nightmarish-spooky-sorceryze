@@ -124,7 +124,17 @@ else: sys.exit(1)
         )
         if os.name == "nt":
             # A native console-script launcher keeps REST query '&' and jq pipes out of cmd.exe.
-            from pip._vendor.distlib.scripts import ScriptMaker
+            try:
+                from pip._vendor.distlib.scripts import ScriptMaker
+            except ModuleNotFoundError as error:
+                if error.name != "pip":
+                    raise
+                # Minimal workflow venvs may only have the bundled ensurepip wheel.
+                import ensurepip
+
+                wheel = next((Path(ensurepip.__file__).parent / "_bundled").glob("pip-*.whl"))
+                sys.path.insert(0, str(wheel))
+                from pip._vendor.distlib.scripts import ScriptMaker
 
             source_dir = project / "fixture-source"
             source_dir.mkdir()

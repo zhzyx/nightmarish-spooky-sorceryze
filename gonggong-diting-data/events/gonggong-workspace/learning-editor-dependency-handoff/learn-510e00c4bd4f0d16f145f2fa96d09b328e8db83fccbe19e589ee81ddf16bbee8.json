@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-510e00c4bd4f0d16f145f2fa96d09b328e8db83fccbe19e589ee81ddf16bbee8",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/749",
+  "occurred_at": "2026-11-10T17:21:53.873499+00:00",
+  "evidence_refs": [
+    "dispatch-4e5917b3878a4695a8feb70723ade1a2",
+    "learn-00dbad22febf41096b15122a36593f8309357d8ff8cb27becb0f60e6413f6d11"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 4,
+    "previous": "0307db28c66721013a49e60a335ef6edaec5cc5f548f19a1a8c1a9c2ae04d21d",
+    "action": "applied",
+    "details": {
+      "task": "#749 Windows 原生编辑器工单路径",
+      "observed": "独立审查者回读当前候选并实跑协作者用例。EXE 与资源的精确 SHA-256、未通过的平台用例和本地 HTTP 的范围同时交接给父工单 #748，未以派发回执判定通过。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-issue-path-audit-749.json",
+        "sha256": "3b5fa70a11fd2af04bee380c2ff877b192a0852e781a74d38dd5466b908b8d34"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-issue-path-audit/dispatch-4e5917b3878a4695a8feb70723ade1a2.json",
+      "sha256": "6de0bebfbe6eb7cd02bf2dba577e6cbc80f6f2580ab9384b1418aa19fa694745"
+    }
+  },
+  "sha256": "aa67da636051c482368ce7a08b600e0b2b0c88a8b05fb79d55007f5570b92d87"
+}
