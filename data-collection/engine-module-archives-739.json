@@ -1,0 +1,29 @@
+{
+  "issue_number": 739,
+  "request_id": "engine-module-build",
+  "base": "2480e78868dcb1973bc40fac2d905e8e370c2252",
+  "host": "macOS arm64 editor, vulkan=no accesskit=no, SCons 4.10.1",
+  "original_failure": "scons module-freetype reported an unknown target; the module has a bundled archive and no wrapper translation units.",
+  "input_sha256": {
+    "modules/SCsub": "c0bedb3c9a81969f6658b4aabd20d13eb6840c52926a59cfaa3d7032f614c3a2",
+    "modules/camera/SCsub": "3de70e050706f211e5b3761b63359da9d108d453dee2022d162f0758a565898c",
+    "modules/freetype/SCsub": "6db86715c81113a9a07c084b0cc795e21e35f68fdf9d164dd539287dc3419901",
+    "modules/msdfgen/SCsub": "291c08141b374ff306c9558913db7abda9f74437fac58f5b14fe1d231374cd57"
+  },
+  "command": "scons -Q module-freetype module-msdfgen module-bmp module-tga platform=macos target=editor vulkan=no accesskit=no",
+  "observed_archive_actions": [
+    "Linking Static Library bin/obj/modules/msdfgen/libmsdfgen_builtin.macos.editor.arm64.a ...",
+    "Linking Static Library bin/obj/modules/freetype/libfreetype_builtin.macos.editor.arm64.a ..."
+  ],
+  "archive_members": {
+    "freetype": 44,
+    "msdfgen": 19
+  },
+  "repeat_compile_actions": 0,
+  "inventory": "Compared generated modules/modules_enabled.gen.h to module_build_inventory in default macOS editor configuration: same 57 names. Compared to initial inventory: all previous 55 and their sources retained.",
+  "independent_review": {
+    "result": "passed",
+    "worker": "/root/sinan_989ebcb418070436",
+    "scope": "SCons link nodes and archive membership; source review of external Apple camera archive, no mobile SDK run."
+  }
+}

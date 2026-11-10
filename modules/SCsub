@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 
 import modules_builders
+from SCons.Node.FS import File
 
 Import("env")
 
@@ -30,12 +31,19 @@ register_module_types = env.CommandNoCache(
 )
 
 
+def linked_archives():
+    # Some modules contribute only a bundled or platform-specific library.
+    libs = env.Flatten([env["LIBS"], env.get("LIBS_EXTERNAL", [])])
+    return {node for node in libs if isinstance(node, File) and node.has_builder()}
+
+
 test_headers = []
 inventory_path = ARGUMENTS.get("module_build_inventory")
 module_inputs = {}
 # libmodule_<name>.a for each active module.
 for name, path in env.module_list.items():
     env.modules_sources = []
+    previous_archives = linked_archives()
 
     # Name for built-in modules, (absolute) path for custom ones.
     base_path = path if os.path.isabs(path) else name
@@ -44,14 +52,18 @@ for name, path in env.module_list.items():
     if env.modules_sources:
         lib = env_modules.add_library(f"module_{name}", env.modules_sources)
         env.Prepend(LIBS=[lib])
-        env.Alias(f"module-{name}", lib)
+
+    archives = sorted(linked_archives() - previous_archives, key=str)
+    if archives:
+        env.Alias(f"module-{name}", archives)
         if inventory_path:
             root = Path(env.Dir("#").abspath)
             module_inputs[name] = sorted(
                 Path(source.abspath).relative_to(root).as_posix()
-                for obj in env.Flatten(env.modules_sources)
+                for archive in archives
+                for obj in archive.sources
                 for source in obj.sources
-                if root in Path(source.abspath).parents
+                if isinstance(source, File) and root in Path(source.abspath).parents
             )
 
     if env["tests"]:
