@@ -1,0 +1,89 @@
+{
+  "issue_number": 749,
+  "request_id": "editor-issue-path-audit",
+  "parent_issue": 748,
+  "related": [
+    747,
+    753
+  ],
+  "source_base": "3d472ba60614b706eeaf96c3ee75ecdc12e02c3a",
+  "editor_sha256": "35491b7ddd77d5036fbd821fb78e717095fd138c2e8c472e298c91a754fcfa79",
+  "platform": "Windows, private self-contained headless copies of installed editor, synthetic GitHub/loopback model/temporary repositories",
+  "native_graph_scenarios": {
+    "graph": "passed",
+    "entry": "passed",
+    "details": "passed",
+    "publish": "passed",
+    "direct": "passed",
+    "parallel": "passed",
+    "parallel-inputs": "passed",
+    "parallel-multi_issue": "passed"
+  },
+  "markers": {
+    "approval": [
+      "DAQIAN_INLINE_APPROVAL_OK"
+    ],
+    "offer": [
+      "DAQIAN_PENDING_OFFER_OK {\"actor\": true, \"board_workspace\": true, \"confirmed\": true, \"cwd_rejected\": false, \"detail\": true, \"duplicate\": false, \"foreign_preserved\": true, \"foreign_rejected\": true, \"fresh\": true, \"offered\": true, \"old_accepted\": false, \"request\": true, \"root\": true, \"source_sha256\": true, \"step\": true, \"stopped_before_card\": false, \"unexecuted\": true, \"url\": true}"
+    ],
+    "cwd": [
+      "DAQIAN_MISSING_CWD_BATCH_PAUSED_OK {\"cwd_rejected\": true, \"offered\": false, \"old_accepted\": false, \"stopped_before_card\": false, \"unexecuted\": true}",
+      "DAQIAN_PENDING_OFFER_OK {\"actor\": true, \"board_workspace\": true, \"cwd_rejected\": true, \"detail\": true, \"foreign_preserved\": true, \"foreign_rejected\": true, \"foreign_survived_stop\": true, \"fresh\": true, \"offered\": true, \"old_accepted\": false, \"request\": true, \"root\": true, \"source_sha256\": true, \"step\": true, \"stopped_before_card\": false, \"unexecuted\": true, \"url\": true}"
+    ],
+    "admission": [
+      "DAQIAN_STOP_DURING_AUTHORITY_OK {\"cwd_rejected\": false, \"offered\": false, \"old_accepted\": false, \"stopped_before_card\": true, \"unexecuted\": true}",
+      "DAQIAN_PENDING_OFFER_OK {\"actor\": true, \"board_workspace\": true, \"confirmed\": true, \"cwd_rejected\": false, \"detail\": true, \"duplicate\": false, \"foreign_preserved\": true, \"foreign_rejected\": true, \"fresh\": true, \"offered\": true, \"old_accepted\": false, \"request\": true, \"root\": true, \"source_sha256\": true, \"step\": true, \"stopped_before_card\": false, \"unexecuted\": true, \"url\": true}"
+    ],
+    "restart": [
+      "DAQIAN_COMMAND_RESTART_OK 873312986728bed5bad68ab86c5102ed fixture-command"
+    ],
+    "batch": [
+      "DAQIAN_PARALLEL_APPROVAL_OK {\"execution_receipts\":{\"daqian-direct-aaaaaaaaaaaaaaaaaaaa\":[\"\",true],\"daqian-direct-bbbbbbbbbbbbbbbbbbbb\":[\"\",true]},\"separate_candidates\":true,\"terminal\":{\"https://github.com/fixture/board/issues/210\":\"cancelled\",\"https://github.com/fixture/board/issues/211\":\"completed\"}}"
+    ],
+    "legacy": [
+      "DAQIAN_BOARD_HELPERS_OK"
+    ],
+    "panel": [
+      "PANEL_SIX_ACTIONS_OK"
+    ]
+  },
+  "ui_package": {
+    "editor_sha256": "35491b7ddd77d5036fbd821fb78e717095fd138c2e8c472e298c91a754fcfa79",
+    "installed_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "candidate_sha256": "3dc6d3571390c8990781f25b1b562ed6f75774f8e34c80c0920daa821c50be01",
+    "cases": {
+      "installed": "48 应用更改",
+      "selected": "96 应用候选",
+      "rollback": "48 应用更改",
+      "independent_self_update_slot": "96 应用候选",
+      "wrong_pin": "blocked",
+      "missing_pin": "blocked",
+      "project_path": "blocked",
+      "missing_selected": "blocked",
+      "damaged_payload": "blocked",
+      "incompatible": "blocked",
+      "missing_default": "blocked"
+    }
+  },
+  "settings": {
+    "functional_assertions": "passed",
+    "strict_exit": "failed: Windows headless renderer RID leaks and EditorDebuggerSession plugin not attached",
+    "owner": "parent #748"
+  },
+  "additional_checks": {
+    "collaborator_sessions": "8 passed; successive children of a newly created Windows venv resolve the same actual editor parent",
+    "board_projection": "5 passed",
+    "board_delta": "5 passed",
+    "plans": "4 passed",
+    "issue_details": "6 passed",
+    "delivery_finalize": "15 passed",
+    "candidate_tests": "46 total; 38 passed, 7 skipped, 1 setup error Windows symlink privilege",
+    "guard_tests": "41 total; 31 passed, 6 skipped, 4 platform/fixture failures (symlink privilege, POSIX killpg, /bin/sh and macOS sandbox profile string)",
+    "delivery_complete_native": "normal and reject-before-mutation cannot start POSIX fixture on this Windows host (required tools symlink, WinError 1314); real publication of this issue is separately bound to its PR"
+  },
+  "reproduction": {
+    "before": "run_daqian_graph --scenario graph: fixture membership not verified; parallel did not load requirement; original approval Enter never started preview",
+    "after": "same executable, workflow venv and controls: graph, parallel including inputs/multi_issue, inline approval and scoped preview all passed",
+    "sources": "See design-docs/editor-issue-path-audit.md"
+  }
+}

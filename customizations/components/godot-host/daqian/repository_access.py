@@ -93,6 +93,36 @@ def refresh_collaborator(root):
         cursor_args = ["-f", "cursor=" + cursor]
 
 
+def editor_parent_pid():
+    parent = os.getppid()
+    if os.name != "nt" or sys.prefix == sys.base_prefix:
+        return parent
+    # Windows venvs spawn the interpreter through a short-lived redirector.
+    # Only unwrap the actual configured launcher, never an arbitrary ancestor.
+    import _winapi
+    import ctypes
+    from ctypes import wintypes
+
+    try:
+        handle = _winapi.OpenProcess(0x1000, False, parent)  # PROCESS_QUERY_LIMITED_INFORMATION
+    except OSError:
+        return parent
+    try:
+        process = wintypes.HANDLE(handle)
+        size = wintypes.DWORD(32768)
+        image = ctypes.create_unicode_buffer(size.value)
+        if not ctypes.windll.kernel32.QueryFullProcessImageNameW(process, 0, image, ctypes.byref(size)):
+            return parent
+        if os.path.normcase(image.value) != os.path.normcase(sys.executable):
+            return parent
+        # PROCESS_BASIC_INFORMATION ends with InheritedFromUniqueProcessId.
+        info = (ctypes.c_size_t * 6)()
+        status = ctypes.windll.ntdll.NtQueryInformationProcess(process, 0, info, ctypes.sizeof(info), None)
+        return info[5] if status == 0 and info[5] else parent
+    finally:
+        _winapi.CloseHandle(handle)
+
+
 def session_path(nonce):
     if not re.fullmatch(r"[a-f0-9]{32}", nonce):
         raise AccessDenied("编辑器会话无效")
@@ -104,7 +134,7 @@ def session_path(nonce):
         / "editor-sessions"
     )
     cache.mkdir(mode=0o700, parents=True, exist_ok=True)
-    return cache / f"{os.getppid()}-{nonce}.json"
+    return cache / f"{editor_parent_pid()}-{nonce}.json"
 
 
 def session_actor(root, nonce, *, allow_login=False):
