@@ -18,6 +18,10 @@ def main():
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
+    # A Windows console launcher has a different PID from the editor it starts.
+    binary = args.godot.resolve(strict=True)
+    if binary.name.endswith(".console.exe"):
+        binary = binary.with_suffix("").with_suffix(".exe")
     source = Path(__file__).resolve().parents[2]
     spec = importlib.util.spec_from_file_location("editor_client", source / "tools/editor_control_client.py")
     client_module = importlib.util.module_from_spec(spec)
@@ -30,9 +34,9 @@ def main():
         logs = []
 
         def launch(index):
-            editor = copy_editor(args.godot, project / f"editor-{index}")
+            editor = copy_editor(binary, project / f"editor-{index}")
             (editor.parent / "editor_data/editor_settings-4.8.tres").write_text(
-                '[gd_resource type="EditorSettings" format=3]\n[resource]\nai_chat/editor_control_bridge_enabled = true\n'
+                '[gd_resource type="EditorSettings" format=3]\n[resource]\nai_chat/editor_control_bridge_enabled = true\nai_chat/endpoint = ""\n'
             )
             log = (project / f"process-{index}.log").open("w")
             logs.append(log)
@@ -88,6 +92,14 @@ def main():
             stop(third)
             stop(fourth)
             assert not marker.parent.exists()
+            marker.parent.mkdir()
+            unknown = "4294967296"
+            marker.write_text(unknown, encoding="ascii")
+            fifth = launch(4)
+            refused = attempt(ready(fifth), "unknown-owner")
+            assert refused.get("error") == "receipt_store_unavailable", refused
+            stop(fifth)
+            assert marker.read_text(encoding="ascii") == unknown
             args.report.parent.mkdir(parents=True, exist_ok=True)
             args.report.write_text(
                 json.dumps(
@@ -100,6 +112,7 @@ def main():
                             "one writer across simultaneous stale-lock recovery",
                             "owner marker retained",
                             "clean release",
+                            "unknown owner retained",
                         ],
                         "desktop_control": False,
                     },

@@ -51,7 +51,7 @@ def main():
             commands.mkdir()
             editor = copy_editor(args.godot, base / "engine")
             (editor.parent / "editor_data/editor_settings-4.8.tres").write_text(
-                '[gd_resource type="EditorSettings" format=3]\n[resource]\nai_chat/editor_control_bridge_enabled = true\n'
+                '[gd_resource type="EditorSettings" format=3]\n[resource]\nai_chat/editor_control_bridge_enabled = true\nai_chat/endpoint = ""\n'
             )
             (project / "project.godot").write_text(
                 'config_version=5\n[application]\nconfig/name="Scene Completion"\nrun/main_scene="res://fixture.tscn"\n[rendering]\ntextures/vram_compression/import_etc2_astc=true\n'

@@ -25,6 +25,7 @@ from pathlib import Path
 p = argparse.ArgumentParser()
 for key in ('current', 'status', 'log', 'cancel'):
     p.add_argument('--' + key, required=True)
+p.add_argument('--host-build-options', required=True)
 p.add_argument('--scons-arg', action='append', default=[])
 a = p.parse_args()
 if not all(Path(value).is_absolute() for value in (a.status, a.log, a.cancel)):
@@ -156,7 +157,7 @@ def main():
     args = parser.parse_args()
     if os.name != "nt":
         parser.error("This self-update test targets Windows")
-    with tempfile.TemporaryDirectory(prefix="self_update_test_", dir=ROOT / "bin") as directory:
+    with tempfile.TemporaryDirectory(prefix="self_update_test_") as directory:
         base = Path(directory)
         engine = base / "engine"
         project = base / "project"
@@ -169,7 +170,7 @@ def main():
         if source_editor.name.endswith(".console.exe"):
             source_editor = source_editor.with_name(source_editor.name.replace(".console.exe", ".exe"))
         initial = engine / "bin/godot.windows.editor.dev.x86_64.self_update_a.mono.exe"
-        os.link(source_editor, initial)
+        shutil.copy2(source_editor, initial)
         (project / "addons/restart_receipt").mkdir(parents=True)
         (engine / "tools/editor_self_build.py").write_text(MOCK, encoding="utf-8")
         (engine / "tools/mode").write_text("fail", encoding="utf-8")
@@ -179,7 +180,19 @@ def main():
         shutil.copyfile(ROOT / "tools/editor_restart_watchdog.py", engine / "tools/editor_restart_watchdog.py")
         # A distinct executable proves the actual process was switched, not just reopened.
         artifact = engine / "bin/godot.windows.editor.dev.x86_64.self_update_b.mono.exe"
-        os.link(source_editor, artifact)
+        os.link(initial, artifact)
+        sys.path.insert(0, str(ROOT / "tools"))
+        from package_tianshu_ui import installed_package
+
+        for slot in (initial, artifact):
+            shutil.copyfile(installed_package(source_editor), installed_package(slot))
+        (engine / "bin/_sc_").touch()
+        settings = engine / "bin/editor_data/editor_settings-4.8.tres"
+        settings.parent.mkdir()
+        settings.write_text(
+            '[gd_resource type="EditorSettings" format=3]\n[resource]\nai_chat/endpoint = ""\n',
+            encoding="utf-8",
+        )
         for name in ["GodotSharp", "D3D12Core.dll", "d3d12SDKLayers.dll"]:
             source = args.godot.resolve().parent / name
             destination = artifact.parent / name
@@ -187,7 +200,7 @@ def main():
                 # Keep fixture cleanup independent of Windows junction handling.
                 shutil.copytree(source, destination)
             elif source.is_file():
-                os.link(source, destination)
+                shutil.copy2(source, destination)
         (project / "project.godot").write_text(
             'config_version=5\n[application]\nconfig/name="Self Update Test"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n[editor_plugins]\nenabled=PackedStringArray("res://addons/restart_receipt/plugin.cfg")\n',
             encoding="utf-8",
@@ -207,7 +220,19 @@ def main():
         env["DOTNET_ROOT"] = str(ROOT / ".dotnet")
         env["DOTNET_ROOT_X64"] = str(ROOT / ".dotnet")
         env["PATH"] = str(ROOT / ".dotnet") + os.pathsep + env.get("PATH", "")
-        command = [str(initial), "--headless", "--editor", "--path", str(project), "--script", "res://integration.gd"]
+        command = [
+            str(initial),
+            "--headless",
+            "--display-driver",
+            "headless",
+            "--audio-driver",
+            "Dummy",
+            "--editor",
+            "--path",
+            str(project),
+            "--script",
+            "res://integration.gd",
+        ]
         # Native create_instance() does not promise inherited captured pipes.
         # Watch the atomic startup receipt instead of mistaking old-process exit
         # for new-process readiness, without racing fixture cleanup against startup.

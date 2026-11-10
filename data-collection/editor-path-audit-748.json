@@ -1,0 +1,216 @@
+{
+  "request_id": "editor-path-audit",
+  "platform": "Windows x86_64",
+  "runs": {
+    "final-commands": {
+      "state": true,
+      "report_sha256": "200b9fd9addbdd6e0b5f4c6581b1acb924d37a2ccb7ba1e966db45f0557de1eb",
+      "checks": [
+        "core and explicit alias metadata with live protection",
+        "dynamic screens with HTTP receipt/state/selection/visibility readback",
+        "resource open/path rejection",
+        "scene pagination",
+        "target pagination",
+        "state endpoint",
+        "exact cancellation",
+        "session rejection",
+        "manual-only chat requests",
+        "stale draft rejection",
+        "typed settings and disk conflict",
+        "restart recovery without replay",
+        "corrupt receipts fail closed",
+        "8192 target and 50000 node boundaries",
+        "scene edits and selection",
+        "animation paths and undo",
+        "field and popup observations",
+        "model index beyond 100 stale binding",
+        "900 second restart expiry",
+        "headless scene run and stop"
+      ]
+    },
+    "final-receipt": {
+      "state": true,
+      "report_sha256": "46d425fe1fa8ff7bc4d069a37e7c4f517ce37965278b291e925fec55fd43f8dd",
+      "checks": [
+        "one writer across simultaneous editors",
+        "second editor fails closed",
+        "SIGKILL stale owner",
+        "one writer across simultaneous stale-lock recovery",
+        "owner marker retained",
+        "clean release",
+        "unknown owner retained"
+      ]
+    },
+    "complex": {
+      "state": true,
+      "report_sha256": "696aead878a8d451f9750d66668f4d940fb3fdea304882929898834e1d2934af",
+      "checks": [
+        "PopupMenu Window discovery, pagination, label/metadata/selection stale guards, native ID activation, deferred lifecycle",
+        "Popup native delayed submenu state machine opens persistent nested Window; replacement/reopen drift rejected; leaf business ID read back",
+        "PopupMenu replacement instance rejected",
+        "Graph ports/connections read, deferred native owner connect/disconnect, dragged owner model movement",
+        "Tree/ItemList native accept and context business handlers",
+        "Real Inspector CurveEdit resource preset and native UndoRedo state restoration",
+        "Curve add/delete/reorder/left-right tangents/modes: full point Undo/Redo, finite/range/order/stale/script rejection",
+        "Real Inspector GradientEdit add/remove/recolor/reverse, non-merging UndoRedo, unrelated history and stale resource guards",
+        "Gradient offset preserves point colors across sorted indices with complete Undo/Redo and duplicate/range/stale rejection",
+        "Built-in C++ VisualShader owner: native connect/disconnect/dragged update actual shader resource connections and node position",
+        "Tool permission and consultation denial retained"
+      ]
+    },
+    "scene": {
+      "state": true,
+      "report_sha256": "716d56a30652f600a07ee0daa7c905f4ce77b4ed7c59a1501bdb7621302332ed",
+      "checks": [
+        "native metadata references reject structural edits; scalar metadata permits normal move and undo",
+        "script storage references reject structural edits without getters or broken paths",
+        "subtree move, owners, native animation paths, undo and redo",
+        "subtree delete and exact owner/animation restoration",
+        "script-attached native property edit and undo",
+        "script-shadowed native rename/add/remove/reparent/move/owner with undo and redo",
+        "instance editable override, protected internal structure, instance-root subtree move",
+        "native resource assignment/undo and explicit resource export",
+        "unchanged-version Gradient content staleness; nested script/cycle rejection and fresh save",
+        "persistent signal connect/disconnect and undo without method invocation",
+        "script-shadowed native connect/disconnect with undo and redo",
+        "native history branch rejects approval even when UndoRedo version and scene values repeat",
+        "run project and scene approvals bind history epoch when numeric version repeats",
+        "stale property and resource file hash rejection",
+        "no preview loading; loader delete/replace/old-value mutation rejected after confirmation",
+        "native texture reimport/scan and actual import metadata",
+        "PCK approval binds actual imported artifact contents",
+        "native preset project pack export with actual output hash",
+        "native ZIP export succeeds through project destination with actual archive validation",
+        "disabled macOS signing accepts empty native collections and rejects nonempty credential collections",
+        "PCK binds global class cache; editor receipts preserve approval validity",
+        "application export missing templates is a real failure, no download",
+        "path/tool/consultation boundaries",
+        "inherited property override and local addition; inherited structure protected"
+      ]
+    },
+    "final-settings": {
+      "state": "passed",
+      "report_sha256": "2517c79d73ed9aba0f4f7fb6674ac8fb37c4af0d48aff83db0835d060e19b5f3",
+      "phases": [
+        {
+          "name": "full",
+          "passed": true,
+          "checks": 107,
+          "errors": []
+        },
+        {
+          "name": "reopen",
+          "passed": true,
+          "checks": 41,
+          "errors": []
+        }
+      ]
+    },
+    "builtin": {
+      "state": "passed",
+      "report_sha256": "f1fdc4e1c09284975e6b6d57dde07a42497d30a96a455bf6cf5b03cfd86af5d1",
+      "scope": "Native AINative editor entry, bundled host, Mesh Copy preview/publication, synthetic rigging, isolated project state and relocated runtime scripts; no AI inference"
+    },
+    "package": {
+      "state": "passed",
+      "report_sha256": "9c824336021e1af0c167846bffb917c8c8400e7328ba2fda581b0d592d72fe45",
+      "cases": {
+        "installed": "48 应用更改",
+        "selected": "96 应用候选",
+        "rollback": "48 应用更改",
+        "independent_self_update_slot": "96 应用候选",
+        "wrong_pin": "blocked",
+        "missing_pin": "blocked",
+        "project_path": "blocked",
+        "missing_selected": "blocked",
+        "damaged_payload": "blocked",
+        "incompatible": "blocked",
+        "missing_default": "blocked"
+      }
+    }
+  },
+  "production_reports": [
+    747,
+    749,
+    750,
+    758,
+    759,
+    760,
+    761
+  ],
+  "self_update": {
+    "marker": "SELF_UPDATE_UI_RESTART_OK",
+    "simulated_compiler": true,
+    "real_replacement_process": true
+  },
+  "art_python": {
+    "run": 370,
+    "skipped": 43,
+    "failures": 0,
+    "errors": 0,
+    "live_inference": false
+  },
+  "receipt_store_failures": [
+    "Windows read handle prevented atomic recovery rewrite",
+    "Windows dead writer lock could not be reclaimed after confirmed process exit"
+  ],
+  "limitations": [
+    "No external HTTP provider credentials were exercised",
+    "CodeBuddy live send requires account login",
+    "Live GPU inference and platform-specific export templates are separate from local routing/asset tests",
+    "The true Tianshu canvas concurrent dispatcher has independent acceptance in #758 and #761"
+  ],
+  "issue_number": 748,
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/748",
+  "reviewed_binary_sha256": "30fc53b1feee4fe694f23f43f9ae3d1cbb846b664d9ee0d7c476a3416f2cc18d",
+  "source_base": "e56e0b540ca35f5a8f31173b1ed9d2f3e18ac30e",
+  "additional_tests": {
+    "windows_installer": 3,
+    "hosted_artifact_reuse": 7,
+    "maliang_packaging": {
+      "run": 8,
+      "skipped": 2
+    },
+    "builtin_bundle": 1
+  },
+  "concurrent_ui": {
+    "field_pair": [
+      706,
+      426
+    ],
+    "previous_install_reproduced": true,
+    "later_isolated_candidate": "7ca151448b64a8e042462386bd418a7ce295fe09ab813139180af89d656ecd3d",
+    "scope": "Independent #761 canvas, bound sidebar Send and restored empty issue worker; main deployment follows #758 and #761.",
+    "product_pr": 766,
+    "product_merge": "db5ae81dfc5eba4b4ec333dd89154ba0e9e968e5",
+    "production_scope": "Real signed-in Codex CLI with isolated issue authority and candidate asset writes. Original #706/#426 commands were not replayed.",
+    "audit_integrated_binary": "f1c4ac39d5039c894656cc88058b0b633f59b88eb68d4ec4d65a5ecd06b35cf9",
+    "main_base_for_integrated_probes": "db5ae81dfc5eba4b4ec333dd89154ba0e9e968e5",
+    "post_merge_probes": {
+      "existing": {
+        "entry": "existing",
+        "separate_candidates": true,
+        "terminal": {
+          "https://github.com/fixture/board/issues/426": "completed",
+          "https://github.com/fixture/board/issues/706": "cancelled"
+        }
+      },
+      "canvas": {
+        "entry": "canvas",
+        "separate_candidates": true,
+        "terminal": {
+          "https://github.com/fixture/board/issues/210": "cancelled",
+          "https://github.com/fixture/board/issues/211": "completed"
+        }
+      },
+      "conversation": {
+        "entry": "conversation",
+        "separate_candidates": true,
+        "terminal": {
+          "https://github.com/fixture/board/issues/210": "cancelled",
+          "https://github.com/fixture/board/issues/211": "completed"
+        }
+      }
+    }
+  }
+}

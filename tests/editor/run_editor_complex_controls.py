@@ -31,7 +31,7 @@ def main():
         project = Path(directory)
         editor = copy_editor(args.godot, project / "private-editor")
         (editor.parent / "editor_data/editor_settings-4.8.tres").write_text(
-            '[gd_resource type="EditorSettings" format=3]\n[resource]\nai_chat/editor_control_bridge_enabled = true\n',
+            '[gd_resource type="EditorSettings" format=3]\n[resource]\nai_chat/editor_control_bridge_enabled = true\nai_chat/endpoint = ""\n',
             encoding="utf-8",
         )
         (project / "project.godot").write_text(

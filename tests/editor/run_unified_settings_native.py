@@ -102,6 +102,12 @@ def main():
         definition = 'config_version=5\n[application]\nconfig/name="Unified Native Settings Fixture"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n'
         (project / "project.godot").write_text(definition, encoding="utf-8", newline="\n")
         shutil.copy2(script, project / "accept.gd")
+        (project / "accept.tscn").write_text(
+            "[gd_scene load_steps=2 format=3]\n"
+            '[ext_resource type="Script" path="res://accept.gd" id="1"]\n'
+            '[node name="SettingsAcceptance" type="Node"]\nscript = ExtResource("1")\n',
+            encoding="utf-8",
+        )
         old_workspace = base / "old-workspace"
         new_workspace = base / "new-workspace"
         old_workspace.mkdir()
@@ -222,8 +228,7 @@ def main():
                     "--editor",
                     "--path",
                     str(project),
-                    "--script",
-                    "res://accept.gd",
+                    "res://accept.tscn",
                 ]
                 try:
                     process = subprocess.run(

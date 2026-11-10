@@ -99,8 +99,8 @@ bool EditorDebuggerSession::is_debuggable() {
 }
 
 bool EditorDebuggerSession::is_active() {
-	ERR_FAIL_NULL_V_MSG(debugger, false, "Plugin is not attached to debugger.");
-	return debugger->is_session_active();
+	// Retained sessions can be queried while the debugger is shutting down.
+	return debugger && ObjectDB::get_instance(debugger_id) == debugger && debugger->is_session_active();
 }
 
 void EditorDebuggerSession::set_breakpoint(const String &p_path, int p_line, bool p_enabled) {

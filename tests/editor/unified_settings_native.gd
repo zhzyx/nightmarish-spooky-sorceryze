@@ -1,5 +1,5 @@
 @tool
-extends SceneTree
+extends Node
 # All model, workspace and runtime fixtures are private and synthetic.
 
 var failures: Array = []
@@ -17,7 +17,10 @@ var callback_values: Array = []
 var watchdog: Timer
 var finishing := false
 
-func _initialize():
+var root: Window:
+	get: return get_tree().root
+
+func _ready():
 	print('UNIFIED_SETTINGS_FIXTURE_INITIALIZED')
 	run.call_deferred()
 
@@ -48,23 +51,26 @@ func finish():
 		watchdog.stop()
 		watchdog.queue_free()
 		watchdog = null
-		await process_frame
+		await get_tree().process_frame
 	var output = FileAccess.open(OS.get_environment('UNIFIED_SETTINGS_RECEIPT'), FileAccess.WRITE)
 	if output:
 		output.store_string(JSON.stringify({'ok':failures.is_empty(),'checks':checks,'failures':failures,'details':details}, '  '))
 		output.close()
 	print('UNIFIED_SETTINGS_NATIVE_OK' if failures.is_empty() else 'UNIFIED_SETTINGS_NATIVE_FAILED')
-	quit(0 if failures.is_empty() else 1)
+	if failures.is_empty():
+		root.propagate_notification(Node.NOTIFICATION_WM_CLOSE_REQUEST)
+	else:
+		get_tree().quit(1)
 
 func wait_idle() -> bool:
 	var deadline = Time.get_ticks_msec() + 15000
 	while (not chat.find_child('Stop', true, false).disabled or not field('APIEndpoint').editable) and Time.get_ticks_msec() < deadline:
-		await create_timer(0.025).timeout
+		await get_tree().create_timer(0.025).timeout
 	return check(chat.find_child('Stop', true, false).disabled and field('APIEndpoint').editable, 'native chat returns to idle')
 
 func open_section(section: String):
 	settings_dock.get_meta('settings_navigator').call(section)
-	await process_frame
+	await get_tree().process_frame
 
 func environment_will_change():
 	callback_values = current_environment()
@@ -82,7 +88,7 @@ func run():
 		finish())
 	watchdog.start()
 	root.size = Vector2i(1440, 1000)
-	await create_timer(1.0).timeout
+	await get_tree().create_timer(1.0).timeout
 	settings_dock = root.find_child('UnifiedSettings', true, false)
 	chat = root.find_child('AI Chat', true, false)
 	if not check(settings_dock != null and chat != null and ClassDB.class_exists('UnifiedSettingsEditorPlugin'), 'native settings plugin and chat are registered'):
@@ -147,15 +153,15 @@ func verify_navigation(tabs: TabContainer, artist: Control, planner: Control):
 	for item in [['AdvancedToggle','ai'], ['EnvironmentSettings','environment'], ['GongGongEnvironmentSettingsButton','environment']]:
 		tabs.current_tab = tabs.get_tab_idx_from_control(chat)
 		chat.find_child(item[0], true, false).pressed.emit()
-		await process_frame
+		await get_tree().process_frame
 		check(settings_dock.is_visible_in_tree() and categories.current_tab == (1 if item[1] == 'environment' else 0), 'chat navigation opens central ' + item[1] + ': ' + item[0])
 	tabs.current_tab = tabs.get_tab_idx_from_control(artist)
 	workbench.native_buttons.settings.pressed.emit()
-	await process_frame
+	await get_tree().process_frame
 	check(settings_dock.is_visible_in_tree() and categories.current_tab == 1, 'artist settings button opens central environment')
 	tabs.current_tab = tabs.get_tab_idx_from_control(planner)
 	workspace._open_connection()
-	await process_frame
+	await get_tree().process_frame
 	check(settings_dock.is_visible_in_tree() and categories.current_tab == 1 and not workspace.connection_panel.visible, 'planner environment button opens central environment')
 	await open_section('ai')
 	var catalog = workspace.models_dialog
@@ -165,7 +171,7 @@ func verify_navigation(tabs: TabContainer, artist: Control, planner: Control):
 	await open_section('ai')
 	catalog.key.text = 'synthetic-catalog-key'
 	tabs.current_tab = tabs.get_tab_idx_from_control(chat)
-	await process_frame
+	await get_tree().process_frame
 	check(catalog.key.text.is_empty(), 'leaving settings clears catalog session key')
 	await open_section('ai')
 
@@ -194,7 +200,7 @@ func verify_model_catalog():
 	catalog._connect_local()
 	var deadline = Time.get_ticks_msec() + 12000
 	while catalog.pending and Time.get_ticks_msec() < deadline:
-		await create_timer(0.025).timeout
+		await get_tree().create_timer(0.025).timeout
 	var capture = JSON.parse_string(FileAccess.get_file_as_string(OS.get_environment('UNIFIED_MODEL_CAPTURE')))
 	check(capture is Dictionary and capture.get('endpoint') == field('APIEndpoint').text and capture.get('editor_key') == field('APIKey').text and capture.get('model') == 'live-unsaved-model', 'catalog identifies current unsaved endpoint model and session key consistently')
 	var runtime: Dictionary = chat.get_runtime_configuration()
@@ -213,7 +219,7 @@ func verify_busy_lock():
 	if not await wait_idle(): return
 	chat.find_child('ChatInput', true, false).text = 'unified-settings-offline-lock-fixture'
 	chat.find_child('Send', true, false).pressed.emit()
-	await create_timer(0.2).timeout
+	await get_tree().create_timer(0.2).timeout
 	check(not chat.find_child('Stop', true, false).disabled and field('AIBackend').disabled and not field('APIEndpoint').editable, 'active synthetic chat locks centralized AI controls')
 	check(not field('GongGongWorkspace').editable and not field('GongGongPython').editable and field('SaveGongGongEnvironment').disabled, 'active synthetic chat locks shared environment and save')
 	var runtime_before: Dictionary = chat.get_runtime_configuration()
@@ -250,8 +256,8 @@ func verify_scope_change():
 	check(callback_values == original_environment, 'environment callback observes old scope before all shared writes')
 	check(workspace.actor.is_empty() and workspace.watcher.is_empty() and workspace.chat_work.is_empty() and workspace.debug_process.is_empty(), 'scope change releases old actor watch chat and debug state')
 	check(workspace.models_dialog.authorized_root.is_empty() and workspace.models_dialog.user_id.is_empty(), 'scope change invalidates model catalog authorization')
-	await process_frame
-	await process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
 	check(workspace.scope_epoch == epoch + 1 and not workspace.environment_reset_pending, 'workspace Python tenant writes coalesce to one scope reset')
 	check(settings_dock.is_visible_in_tree(), 'saving new environment keeps the settings page selected')
 	original_environment = current_environment()
@@ -263,12 +269,12 @@ func verify_scope_change():
 	edit_field('GongGongPython', OS.get_environment('UNIFIED_SECOND_FRAMEWORK_PYTHON'))
 	check(callback_values == original_environment, 'workflow Python callback observes the old effective path before the canonical field write')
 	check(chat.get_runtime_configuration().configured.workflow_python == OS.get_environment('UNIFIED_SECOND_FRAMEWORK_PYTHON'), 'workflow Python edit atomically persists its canonical field')
-	await process_frame
-	await process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
 	check(workspace.actor.is_empty() and workspace.models_dialog.authorized_root.is_empty() and workspace.scope_epoch == epoch + 1 and not workspace.environment_reset_pending, 'runtime JSON notification resets scope once and revokes old model authorization')
 	edit_field('GongGongPython', OS.get_environment('UNIFIED_FRAMEWORK_PYTHON'))
-	await process_frame
-	await process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
 	chat.set_environment_changing_handler(Callable(workspace, 'prepare_environment_change'))
 
 func write_external_workflow(configuration_path: String, value: String) -> bool:
@@ -337,8 +343,8 @@ func verify_cross_window_environment():
 		check(workspace.models_dialog.authorized_root.is_empty() and workspace.models_dialog.user_id.is_empty() and not workspace._canvas_matches(old_context), entry + ': cross-window detection revokes the catalog and rejects the old context')
 		check(workspace.scope_epoch == epoch + 1 and workspace.selection_epoch == selection_epoch + 1, entry + ': synchronous invalidation advances each old context epoch exactly once')
 		check(not FileAccess.file_exists(marker), entry + ': no stale workspace request reaches the private sentinel')
-		await process_frame
-		await process_frame
+		await get_tree().process_frame
+		await get_tree().process_frame
 		check(workspace.scope_epoch == epoch + 1 and workspace.selection_epoch == selection_epoch + 1 and not workspace.environment_reset_pending, entry + ': deferred observation does not invalidate the same context again')
 		var restored := write_external_workflow(configuration_path, original_python)
 		var before_refresh := FileAccess.get_file_as_string(configuration_path)
@@ -413,8 +419,8 @@ func verify_lifetime(tabs: TabContainer, artist: Control):
 	check(is_instance_id_valid(art_ai_id) and workbench.is_ancestor_of(art_ai) and not central.is_ancestor_of(art_ai) and not art_ai.visible, 'temporarily removing settings restores artist controls to live source')
 	check(FileAccess.file_exists(lease) and workbench.managed_comfy_panel.lease_path == lease, 'settings reparenting preserves the active local model lease')
 	old_parent.add_child(central)
-	await process_frame
-	await process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
 	await open_section('ai')
 	check(ai.get_instance_id() == ai_id and ai.get_parent().name == 'ChatAISettingsSlot' and art_ai.get_parent().name == 'ArtAISettingsSlot', 'reentering settings rebinds the same controls exactly once')
 	var panel = workbench
