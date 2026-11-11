@@ -1,0 +1,47 @@
+{
+  "issue_number": 783,
+  "request_id": "native-authorized-acceptance-20261111",
+  "failed_pr": 801,
+  "failed_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43059092871/job/130656783646",
+  "failed_tests": {
+    "tests": 1560,
+    "passed": 1559,
+    "failed": 1,
+    "failed_assertions": 128,
+    "test": "[GDScript][RuntimeCompile] Virtual scripts release cache bookkeeping"
+  },
+  "source_owner_issue": 796,
+  "source_owner_bug": 798,
+  "source_fix_pr": 802,
+  "source_fix_head": "d21954cae901ae91df573f60c93c96f40e4daf83",
+  "handoff": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/796#issuecomment-6801689497",
+  "own_native_source_changed": false,
+  "isolated_integration": "ab3240ed66e439ed4773c78140404b8f2caf958d",
+  "build": {
+    "source_digest": "6d42a94c69596e94718172a9df0fcbf8e294e278e04f5b53cf6e0bc6ebd0dfcf",
+    "gui_sha256": "e9d980be585095d0d690377f975110dcdc87a72bfa548d72a9accd44e4c4d94b",
+    "console_sha256": "1d0c5b04014025fb32b9337c72b56f9027a504c0256f2ea179df7699347be358",
+    "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462"
+  },
+  "full_suite": {
+    "tests": 1560,
+    "assertions": 435560,
+    "passed": true,
+    "skipped": 3,
+    "exit_code": 0,
+    "log_sha256": "fdae5e602fea9c9456e90d47fd7cb8689168acedbf9fcf1df552040f9d624d89",
+    "python": "Explicit existing GONGGONG_TEST_PYTHON runtime"
+  },
+  "local_prior_failure": {
+    "tests_failed": 4,
+    "product_regression": "Same upstream 128 assertions",
+    "other_tests": "Three RuntimeConfig subprocess probes did not find usable default Python; explicit test runtime rerun passed 8 tests/50 assertions",
+    "original_log_sha256": "6074fa024a1fe524fc07ba53652a4431a87dab70c6f9c119558ad6f6c1c5b37b"
+  },
+  "remaining": [
+    "exact integrated candidate CI",
+    "main and installed acceptance"
+  ],
+  "source_fix_main": "7a99514ed14362a0bba047fa6da36209f3a2acc2",
+  "source_fix_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43060805226"
+}
