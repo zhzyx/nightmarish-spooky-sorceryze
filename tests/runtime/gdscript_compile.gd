@@ -34,22 +34,26 @@ func _initialize() -> void:
 	check(initialized.error == OK, "static data and nested class compile")
 	if initialized.error == OK:
 		check(initialized.script.new().value() == 49, "static initializer and nested class execute")
-	var printing_errors := Engine.print_error_messages
-	Engine.print_error_messages = false
-	var broken_init := GDScript.compile_source("extends RefCounted\nstatic func _static_init():\n\tvar missing: Variant = null\n\tmissing.no_such_method()\n", "res://bad_init.gd")
-	Engine.print_error_messages = printing_errors
-	check(broken_init.error == ERR_CANT_CREATE and broken_init.script == null, "static initialization failure returns no script")
-	check(not broken_init.diagnostics.is_empty(), "static initialization diagnostic present")
-	if not broken_init.diagnostics.is_empty():
-		check(broken_init.diagnostics[0].stage == "initialize" and broken_init.diagnostics[0].path == "res://bad_init.gd", "static initialization diagnostic location")
-	Engine.print_error_messages = false
-	var child_source := "extends RefCounted\nstatic func _static_init():\n\tvar missing: Variant = null\n\tmissing.no_such_method()\n"
-	var parent_source := "extends RefCounted\nstatic var result: int = -1\nstatic func _static_init():\n\tresult = GDScript.compile_source(%s).error\n" % JSON.stringify(child_source)
-	var handled := GDScript.compile_source(parent_source)
-	Engine.print_error_messages = printing_errors
-	check(handled.error == OK, "handled nested compile failure does not fail outer initialization")
-	if handled.error == OK:
-		check(handled.script.get("result") == ERR_CANT_CREATE, "outer initializer receives child error")
+	# Release VM omits some runtime error checks; initialization diagnostics
+	# are only asserted when the VM reports those errors.
+	if OS.is_debug_build():
+		var printing_errors := Engine.print_error_messages
+		Engine.print_error_messages = false
+		var broken_init := GDScript.compile_source("extends RefCounted\nstatic func _static_init():\n\tvar missing: Variant = null\n\tmissing.no_such_method()\n", "res://bad_init.gd")
+		Engine.print_error_messages = printing_errors
+		check(broken_init.error == ERR_CANT_CREATE and broken_init.script == null, "static initialization failure returns no script")
+		check(not broken_init.diagnostics.is_empty(), "static initialization diagnostic present")
+		if not broken_init.diagnostics.is_empty():
+			check(broken_init.diagnostics[0].stage == "initialize" and broken_init.diagnostics[0].path == "res://bad_init.gd", "static initialization diagnostic location")
+		Engine.print_error_messages = false
+		var child_source := "extends RefCounted\nstatic func _static_init():\n\tvar missing: Variant = null\n\tmissing.no_such_method()\n"
+		var parent_source := "extends RefCounted\nstatic var result: int = -1\nstatic func _static_init():\n\tresult = GDScript.compile_source(%s).error\n" % JSON.stringify(child_source)
+		var handled := GDScript.compile_source(parent_source)
+		Engine.print_error_messages = printing_errors
+		check(handled.error == OK, "handled nested compile failure does not fail outer initialization")
+		if handled.error == OK:
+			check(handled.script.get("result") == ERR_CANT_CREATE, "outer initializer receives child error")
+
 	for iteration in 32:
 		var transient := GDScript.compile_source("extends RefCounted\nstatic var value: int = 42\n")
 		check(transient.error == OK, "repeated static compile")
@@ -75,7 +79,7 @@ func _initialize() -> void:
 		if preloaded.error == OK:
 			check(preloaded.script.new().value() == 73, "relative preload executes")
 		DirAccess.remove_absolute(dependency_path)
-	print(JSON.stringify({"test": "gdscript_compile", "passed": failures.is_empty(), "failures": failures}))
+	print(JSON.stringify({"test": "gdscript_compile", "initialization_diagnostics_checked": OS.is_debug_build(), "passed": failures.is_empty(), "failures": failures}))
 	if failures.is_empty():
 		print("RUNTIME_GDSCRIPT_COMPILE_OK")
 	quit(0 if failures.is_empty() else 1)

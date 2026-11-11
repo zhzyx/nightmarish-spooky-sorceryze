@@ -1,0 +1,55 @@
+{
+  "request_id": "runtime-native-20261111",
+  "issue_number": 797,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/797",
+  "base": "a1340f5dd0e71a8c3c874284be3e4e2d0ab6d950",
+  "previous_candidate": "a1220ac88ddfab9b142a12de0d7752577dc66789",
+  "previous_pr": 804,
+  "previous_ci": {
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43062575634",
+    "conclusion": "success"
+  },
+  "reason": "Concurrent PR803 advanced main before merge; integrate latest main and re-sign exact candidate.",
+  "upstream_scope": "editor AI dock and acceptance tests, separate from runtime API files",
+  "overlapping_write_paths": [],
+  "reviewed_runtime_inputs_unchanged": true,
+  "runs": {
+    "integrated-native-test": {
+      "executable_sha256": "d27dc9a4324c168ece822eaf7b1e6ed5f5aed38eef579f431baaf089e7b85808",
+      "header_sha256": "46a7175af4aa400d37ab6945ca9dec59ba9696df4129c15a837575c93aef9ad0",
+      "fixture_sha256": "7b14c9e53aee4e1fc4d039c581d187733980506010acc65be6e1b1869b3555a5",
+      "compiler": "Apple clang version 21.0.0 (clang-2100.0.123.102)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Library/Developer/CommandLineTools/usr/bin\n",
+      "exit_code": 0,
+      "stdout": "Godot Engine v4.8.beta.custom_build.a1340f5dd (2026-11-11 16:59:45 UTC) - https://godotengine.org\n\n{\"failures\":[],\"passed\":true,\"test\":\"native_compile\"}\nRUNTIME_NATIVE_COMPILE_OK\n",
+      "stderr": "",
+      "passed": true
+    },
+    "integrated-gdscript-test": {
+      "executable_sha256": "d27dc9a4324c168ece822eaf7b1e6ed5f5aed38eef579f431baaf089e7b85808",
+      "test_sha256": "51a6668233f564f9789ab978cd3c2ce8a58d3a7f0779f9f7af0b41f548299f95",
+      "exit_code": 0,
+      "stdout": "Godot Engine v4.8.beta.custom_build.a1340f5dd (2026-11-11 16:59:45 UTC) - https://godotengine.org\n\n{\"failures\":[],\"initialization_diagnostics_checked\":true,\"passed\":true,\"test\":\"gdscript_compile\"}\nRUNTIME_GDSCRIPT_COMPILE_OK\n",
+      "stderr": "",
+      "passed": true
+    },
+    "integrated-release-native-test": {
+      "executable_sha256": "e19668b6503f3217f7338da514279578d0229da78b124f973ca2ed1ba5290df8",
+      "header_sha256": "46a7175af4aa400d37ab6945ca9dec59ba9696df4129c15a837575c93aef9ad0",
+      "fixture_sha256": "7b14c9e53aee4e1fc4d039c581d187733980506010acc65be6e1b1869b3555a5",
+      "compiler": "Apple clang version 21.0.0 (clang-2100.0.123.102)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Library/Developer/CommandLineTools/usr/bin\n",
+      "exit_code": 0,
+      "stdout": "Godot Engine v4.8.beta.custom_build.a1340f5dd (2026-11-11 16:59:45 UTC) - https://godotengine.org\n\n{\"failures\":[],\"passed\":true,\"test\":\"native_compile\"}\nRUNTIME_NATIVE_COMPILE_OK\n",
+      "stderr": "",
+      "passed": true
+    },
+    "integrated-release-gdscript-test": {
+      "executable_sha256": "e19668b6503f3217f7338da514279578d0229da78b124f973ca2ed1ba5290df8",
+      "test_sha256": "51a6668233f564f9789ab978cd3c2ce8a58d3a7f0779f9f7af0b41f548299f95",
+      "exit_code": 0,
+      "stdout": "Godot Engine v4.8.beta.custom_build.a1340f5dd (2026-11-11 16:59:45 UTC) - https://godotengine.org\n\n{\"failures\":[],\"initialization_diagnostics_checked\":false,\"passed\":true,\"test\":\"gdscript_compile\"}\nRUNTIME_GDSCRIPT_COMPILE_OK\n",
+      "stderr": "",
+      "passed": true
+    }
+  },
+  "state": "local_integration_passed_pending_exact_ci"
+}

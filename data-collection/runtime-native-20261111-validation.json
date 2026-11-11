@@ -1,0 +1,108 @@
+{
+  "implementation": "GDExtensionManager.compile_extension; explicit compiler and argument array, unique output directory, compiler diagnostics, descriptor written only after successful library generation; explicit existing load/unload API",
+  "validated_cases": [
+    "C version 42 and 73 compile/load/static call/unload",
+    "C++ version 42 and 73 compile/load/static call/unload",
+    "paths containing spaces",
+    "existing destination rejected without replacing loaded module",
+    "missing compiler returns failure",
+    "compiler diagnostics preserved; failed builds do not publish descriptor",
+    "debug and release templates",
+    "GDScript integration in both templates"
+  ],
+  "observations": [
+    {
+      "failure": "initial native descriptor omitted compatibility_minimum",
+      "resolution": "descriptor now pins current engine version; actual load/call succeeds"
+    },
+    {
+      "failure": "assert-based script failure stopped script without quitting",
+      "resolution": "explicit check collector executes side effects in both debug and release; runner bounds exit frames"
+    },
+    {
+      "failure": "release VM omits invalid runtime-call diagnostics; debug-only error assertions failed",
+      "resolution": "API documentation states release diagnostics limitation; test asserts init diagnostics in debug and records coverage mode, while parsing/type errors and execution remain tested in release"
+    }
+  ],
+  "limits": [
+    "external compatible compiler/header required",
+    "macOS arm64 Apple Clang 21 exercised; Linux/BSD and Windows compile driver branches not runtime tested",
+    "MSVC command syntax and mobile/Web compilation unsupported",
+    "synchronous execution, trusted sources; no sandbox or automatic state migration",
+    "release GDScript initialization error reporting depends on VM build"
+  ],
+  "review": {
+    "worker": "/root/sinan_6ce7ed38c01b623f",
+    "state": "no_blocking_findings",
+    "scope": "native API, fixture and tests; independent read-only source review",
+    "limits": [
+      "Windows native argument escaping not runtime tested",
+      "concurrent directory race and descriptor write-failure not dynamically injected"
+    ]
+  },
+  "request_id": "runtime-native-20261111",
+  "issue_number": 797,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/797",
+  "base": "7a99514ed14362a0bba047fa6da36209f3a2acc2",
+  "state": "local_validation_passed",
+  "gdscript_recovery": {
+    "pull_request": 802,
+    "main": "7a99514ed14362a0bba047fa6da36209f3a2acc2",
+    "ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43060805226",
+    "conclusion": "success"
+  },
+  "runs": {
+    "native-test": {
+      "executable_sha256": "785a42e2bca6645b5729a1be41da1e4308ff40597647255ba8fbec880d4bf504",
+      "header_sha256": "46a7175af4aa400d37ab6945ca9dec59ba9696df4129c15a837575c93aef9ad0",
+      "fixture_sha256": "7b14c9e53aee4e1fc4d039c581d187733980506010acc65be6e1b1869b3555a5",
+      "compiler": "Apple clang version 21.0.0 (clang-2100.0.123.102)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Library/Developer/CommandLineTools/usr/bin\n",
+      "exit_code": 0,
+      "stdout": "Godot Engine v4.8.beta.custom_build.7a99514ed (2026-11-11 16:50:13 UTC) - https://godotengine.org\n\n{\"failures\":[],\"passed\":true,\"test\":\"native_compile\"}\nRUNTIME_NATIVE_COMPILE_OK\n",
+      "stderr": "",
+      "passed": true
+    },
+    "gdscript-integration": {
+      "executable_sha256": "785a42e2bca6645b5729a1be41da1e4308ff40597647255ba8fbec880d4bf504",
+      "test_sha256": "51a6668233f564f9789ab978cd3c2ce8a58d3a7f0779f9f7af0b41f548299f95",
+      "exit_code": 0,
+      "stdout": "Godot Engine v4.8.beta.custom_build.7a99514ed (2026-11-11 16:50:13 UTC) - https://godotengine.org\n\n{\"failures\":[],\"initialization_diagnostics_checked\":true,\"passed\":true,\"test\":\"gdscript_compile\"}\nRUNTIME_GDSCRIPT_COMPILE_OK\n",
+      "stderr": "",
+      "passed": true
+    },
+    "release-native-test": {
+      "executable_sha256": "eb2729e75c19ea891ce70623ebb5489ffa3d985214002d5a9e1528105b7eedff",
+      "header_sha256": "46a7175af4aa400d37ab6945ca9dec59ba9696df4129c15a837575c93aef9ad0",
+      "fixture_sha256": "7b14c9e53aee4e1fc4d039c581d187733980506010acc65be6e1b1869b3555a5",
+      "compiler": "Apple clang version 21.0.0 (clang-2100.0.123.102)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Library/Developer/CommandLineTools/usr/bin\n",
+      "exit_code": 0,
+      "stdout": "Godot Engine v4.8.beta.custom_build.7a99514ed (2026-11-11 16:50:13 UTC) - https://godotengine.org\n\n{\"failures\":[],\"passed\":true,\"test\":\"native_compile\"}\nRUNTIME_NATIVE_COMPILE_OK\n",
+      "stderr": "",
+      "passed": true
+    },
+    "release-gdscript-test": {
+      "executable_sha256": "eb2729e75c19ea891ce70623ebb5489ffa3d985214002d5a9e1528105b7eedff",
+      "test_sha256": "51a6668233f564f9789ab978cd3c2ce8a58d3a7f0779f9f7af0b41f548299f95",
+      "exit_code": 0,
+      "stdout": "Godot Engine v4.8.beta.custom_build.7a99514ed (2026-11-11 16:50:13 UTC) - https://godotengine.org\n\n{\"failures\":[],\"initialization_diagnostics_checked\":false,\"passed\":true,\"test\":\"gdscript_compile\"}\nRUNTIME_GDSCRIPT_COMPILE_OK\n",
+      "stderr": "",
+      "passed": true
+    }
+  },
+  "input_sha256": {
+    "core/extension/gdextension_manager.cpp": "d6776a6285d50bf14ddb69b209416a21ffec93d7369b23bd99dfba0e4dd29123",
+    "core/extension/gdextension_manager.h": "e486a643dee3930d25c49b3eb45ca37bfa462ef4ae3fcc45914e308eca5bee39",
+    "doc/classes/GDExtensionManager.xml": "efc52c085fe160d823efd193e7d0b5d9f5448e481b8ec4bb1771c4ca32cd359d",
+    "modules/gdscript/doc_classes/GDScript.xml": "2e7e337565a377445f120ff833ca568e516598890b3575f58e09e0fed68598e6",
+    "tests/runtime/native_compile.gd": "55d1cbd822b41d84b8832de4ff27a652e003c98507f11c6a367623ab64994fb2",
+    "tests/runtime/native_fixture.c": "7b14c9e53aee4e1fc4d039c581d187733980506010acc65be6e1b1869b3555a5",
+    "tests/runtime/run_native_compile.py": "a0062677a6a36f0b8ee0450d3b9b705fc8414f77f2fa53c78801482c8ca01e30",
+    "tests/runtime/gdscript_compile.gd": "51a6668233f564f9789ab978cd3c2ce8a58d3a7f0779f9f7af0b41f548299f95"
+  },
+  "checks": {
+    "clang_format_22_1_5": true,
+    "python_ruff": true,
+    "xml_reference": true,
+    "diff_whitespace": true
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "runtime-native-20261111-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "runtime-native-20261111",
+  "kind": "request",
+  "occurred_at": "2026-11-11T16:41:51.495903+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/797",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "C and C++ runtime compilation using explicit external compiler and GDExtension loading; child 797 of 795",
+    "authorization_ref": "codex:user:runtime-compilation-20261111",
+    "validation": "data-collection/runtime-native-20261111-validation.json",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "6afdaac084eafa09df759328d4ac520589ac307c576656a1bfb2db58debb0910"
+}
