@@ -506,7 +506,7 @@ void GongGongPanel::run_setup(bool p_rollback) {
 		args.push_back("-Progress");
 		args.push_back(setup_progress_path);
 		const String codex = GongGongRuntimeConfig::path(current_runtime, "codex");
-		const String codex_model = EDITOR_GET("ai_chat/codex_model");
+		const String codex_model = EditorSettings::get_singleton()->get_project_metadata("ai_chat", "codex_model", EDITOR_GET("ai_chat/codex_model"));
 		if (!codex.strip_edges().is_empty()) {
 			args.push_back("-Codex");
 			args.push_back(codex.strip_edges());

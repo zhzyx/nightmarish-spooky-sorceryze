@@ -38,6 +38,7 @@
 #include "editor/editor_node.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/box_container.h"
+#include "scene/gui/button.h"
 #include "scene/gui/label.h"
 #include "scene/gui/margin_container.h"
 #include "scene/gui/scroll_container.h"
@@ -101,12 +102,53 @@ UnifiedSettingsEditorPlugin::UnifiedSettingsEditorPlugin() {
 	categories->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 	dock->add_child(categories);
 	VBoxContainer *ai = settings_category(categories, "AI", "AISettingsPage");
+	VBoxContainer *project = settings_group(ai, U"项目 AI 配置", "ProjectAISettings");
+	ai_summary = memnew(Label);
+	ai_summary->set_name("ProjectAIStatus");
+	ai_summary->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
+	project->add_child(ai_summary);
+	Label *scope = memnew(Label);
+	scope->set_text(U"对话与 Agent 共用当前项目的模型配置。个人模型凭据和本机运行环境由当前用户保管。图像与 Mesh 服务在下方配置。");
+	scope->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
+	project->add_child(scope);
+	HBoxContainer *actions = memnew(HBoxContainer);
+	project->add_child(actions);
+	Button *connect_local = memnew(Button);
+	connect_local->set_name("ConnectProjectAI");
+	connect_local->set_text(U"一键获取本地模型");
+	connect_local->set_tooltip_text(U"复用天枢：核对当前身份，识别本机已配置的模型并验证文本回复。");
+	connect_local->connect("pressed", callable_mp(this, &UnifiedSettingsEditorPlugin::_connect_local_ai));
+	actions->add_child(connect_local);
+	ai_verify = memnew(Button);
+	ai_verify->set_name("VerifyProjectAI");
+	ai_verify->set_text(U"验证当前模型接入");
+	ai_verify->set_tooltip_text(U"向当前项目模型发送一次简短文本请求，验证实际可用性。");
+	ai_verify->connect("pressed", callable_mp(this, &UnifiedSettingsEditorPlugin::_verify_ai));
+	actions->add_child(ai_verify);
 	chat_ai = settings_group(ai, U"对话与 Agent", "ChatAISettingsSlot");
 	art_ai = settings_group(ai, U"图像与 Mesh 生成", "ArtAISettingsSlot");
 	catalog_ai = settings_group(ai, U"个人模型库", "ModelCatalogSettingsSlot");
 	VBoxContainer *environment = settings_category(categories, U"环境", "EnvironmentSettingsPage");
 	chat_environment = settings_group(environment, U"聊天、工作流与编译环境", "ChatEnvironmentSettingsSlot");
 	art_environment = settings_group(environment, U"美术工具与本机模型运行库", "ArtEnvironmentSettingsSlot");
+	ai_toolbar = memnew(HBoxContainer);
+	ai_toolbar_id = ai_toolbar->get_instance_id();
+	ai_toolbar->set_name("ProjectAIToolbar");
+	ai_toolbar->add_theme_constant_override("separation", 4 * EDSCALE);
+	ai_entry = memnew(Button);
+	ai_entry->set_name("ProjectAIConfiguration");
+	ai_entry->set_text(U"AI 配置");
+	ai_entry->set_flat(true);
+	ai_entry->connect("pressed", callable_mp(this, &UnifiedSettingsEditorPlugin::_open_section).bind("ai"));
+	ai_toolbar->add_child(ai_entry);
+	ai_status = memnew(Label);
+	ai_status->set_name("ProjectAIConnectionStatus");
+	ai_status->set_text(U"●");
+	ai_status->set_mouse_filter(Control::MOUSE_FILTER_PASS);
+	ai_status->add_theme_font_size_override("font_size", 14 * EDSCALE);
+	ai_toolbar->add_child(ai_status);
+	add_control_to_container(CONTAINER_TOOLBAR, ai_toolbar);
+	_refresh_ai_status();
 	dock->connect(SceneStringName(visibility_changed), callable_mp(this, &UnifiedSettingsEditorPlugin::_visibility_changed));
 	dock->connect(SceneStringName(tree_exiting), callable_mp(this, &UnifiedSettingsEditorPlugin::_dock_exiting));
 	dock->connect(SceneStringName(tree_entered), callable_mp(this, &UnifiedSettingsEditorPlugin::_bind_sources), CONNECT_DEFERRED);
@@ -124,6 +166,11 @@ void UnifiedSettingsEditorPlugin::_watch_source(Node *p_source) {
 	p_source->connect(SceneStringName(tree_entered), callable_mp(this, &UnifiedSettingsEditorPlugin::_bind_sources), CONNECT_DEFERRED);
 	if (p_source->has_signal("settings_requested")) {
 		p_source->connect("settings_requested", callable_mp(this, &UnifiedSettingsEditorPlugin::_open_section));
+	}
+	for (const StringName &signal : { SNAME("ai_configuration_changed"), SNAME("ai_connection_status_changed") }) {
+		if (p_source->has_signal(signal)) {
+			p_source->connect(signal, callable_mp(this, &UnifiedSettingsEditorPlugin::_refresh_ai_status));
+		}
 	}
 }
 
@@ -175,6 +222,52 @@ void UnifiedSettingsEditorPlugin::_bind_sources() {
 		}
 	}
 	binding = false;
+	_refresh_ai_status();
+}
+
+void UnifiedSettingsEditorPlugin::_refresh_ai_status() {
+	if (shutting_down || !ai_status) {
+		return;
+	}
+	Dictionary status;
+	Dictionary configuration;
+	if (AIChatDock *chat = Object::cast_to<AIChatDock>(settings_source("AI Chat"))) {
+		status = chat->get_ai_connection_status();
+		configuration = chat->get_ai_configuration();
+	}
+	const String state = status.get("state", "unconfigured");
+	const String message = status.get("message", U"尚未配置项目模型");
+	const String label = state == "available" ? String(U"可用") : state == "checking" ? String(U"验证中")
+			: state == "unavailable"												  ? String(U"不可用")
+																					  : String(U"未验证");
+	const Color color = state == "available" ? Color(0.25, 0.8, 0.45) : state == "checking" ? Color(0.95, 0.7, 0.2)
+			: state == "unavailable"														? Color(0.95, 0.35, 0.35)
+																							: Color(0.55, 0.58, 0.62);
+	ai_status->add_theme_color_override("font_color", color);
+	ai_status->set_meta("connection_state", state);
+	const String description = String(U"项目 AI 接入：") + label + "\n" + message + String(U"\n状态对应当前对话与 Agent 模型；图像/Mesh 服务使用各自的连接检查。");
+	ai_status->set_tooltip_text(description);
+	ai_entry->set_tooltip_text(description);
+	ai_summary->set_text(description);
+	ai_verify->set_disabled(state == "checking" || configuration.is_empty());
+}
+
+void UnifiedSettingsEditorPlugin::_verify_ai() {
+	if (AIChatDock *chat = Object::cast_to<AIChatDock>(settings_source("AI Chat"))) {
+		chat->verify_ai_connection();
+	}
+}
+
+void UnifiedSettingsEditorPlugin::_connect_local_ai() {
+	_bind_sources();
+	if (EditorDock *planner = settings_source("Daqian")) {
+		Node *workspace = planner->find_child("DaqianWorkspace", true, false);
+		if (workspace && workspace->has_method("connect_project_models")) {
+			workspace->call("connect_project_models");
+			return;
+		}
+	}
+	ai_summary->set_text(U"天枢模型接入尚未就绪，请稍后重试。");
 }
 
 void UnifiedSettingsEditorPlugin::_restore_source(ObjectID p_source) {
@@ -197,6 +290,7 @@ void UnifiedSettingsEditorPlugin::_restore_source(ObjectID p_source) {
 
 void UnifiedSettingsEditorPlugin::_source_exiting(uint64_t p_id) {
 	_restore_source(ObjectID(p_id));
+	callable_mp(this, &UnifiedSettingsEditorPlugin::_refresh_ai_status).call_deferred();
 }
 
 void UnifiedSettingsEditorPlugin::_restore_all() {
@@ -236,4 +330,8 @@ void UnifiedSettingsEditorPlugin::_notification(int p_what) {
 
 UnifiedSettingsEditorPlugin::~UnifiedSettingsEditorPlugin() {
 	_restore_all();
+	if (ObjectDB::get_instance(ai_toolbar_id) == ai_toolbar) {
+		remove_control_from_container(CONTAINER_TOOLBAR, ai_toolbar);
+		memdelete(ai_toolbar);
+	}
 }

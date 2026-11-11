@@ -237,6 +237,30 @@ class AIChatDock : public EditorDock {
 	uint64_t command_watch_generation = 0;
 	void _watch_command(uint64_t p_generation, String p_owner, String p_receipt, uint64_t p_deadline);
 
+	bool ai_configuration_ready = false;
+	bool ai_project_settings_owner = false;
+	String ai_configuration_signature;
+	String ai_connection_state = "unconfigured";
+	String ai_connection_message;
+	String ai_connection_signature;
+	String ai_chat_request_signature;
+	uint64_t ai_connection_generation = 0;
+	HTTPRequest *ai_connection_request = nullptr;
+	Timer *ai_connection_timer = nullptr;
+	int64_t ai_connection_pid = -1;
+	uint64_t ai_connection_started = 0;
+	Ref<FileAccess> ai_connection_stdout;
+	Ref<FileAccess> ai_connection_stderr;
+	Ref<FileAccess> ai_connection_input;
+	PackedByteArray ai_connection_output;
+	void _project_ai_configuration_changed();
+	String _ai_connection_signature() const;
+	bool _ai_connection_configured() const;
+	void _cancel_ai_connection_probe();
+	void _set_ai_connection_status(const String &p_state, const String &p_message);
+	void _poll_ai_connection();
+	void _ai_connection_completed(int p_result, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, uint64_t p_generation);
+
 	LineEdit *endpoint = nullptr;
 	LineEdit *model = nullptr;
 	LineEdit *api_key = nullptr;
@@ -810,6 +834,9 @@ public:
 	Dictionary prepare_runtime_configuration() const;
 	String set_runtime_field(const String &p_field, const String &p_value);
 	void refresh_runtime_controls();
+	Dictionary get_ai_configuration() const;
+	Dictionary get_ai_connection_status() const;
+	void verify_ai_connection();
 	Control *get_ai_settings_control() const;
 	Control *get_environment_settings_control() const;
 	void set_environment_changing_handler(const Callable &p_handler);

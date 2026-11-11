@@ -17,6 +17,11 @@ var callback_values: Array = []
 var watchdog: Timer
 var finishing := false
 
+func fixture_watcher() -> Dictionary:
+	var pid := OS.create_process(OS.get_environment('UNIFIED_FRAMEWORK_PYTHON'), PackedStringArray(['-c', 'import time; time.sleep(60)']))
+	check(pid > 0, 'private watcher fixture starts as an owned child')
+	return {'pid':pid}
+
 var root: Window:
 	get: return get_tree().root
 
@@ -240,7 +245,7 @@ func verify_scope_change():
 	original_environment = current_environment()
 	workspace.actor = {'user_id':'fixture-user', 'repo_id':'fixture-repo'}
 	workspace.picker_scope = original_environment[0]
-	workspace.watcher = {'pid':99999999}
+	workspace.watcher = fixture_watcher()
 	workspace.watcher_buffer = 'old synthetic watch'
 	workspace.chat_work = {'old':{}}
 	workspace.debug_process = {'pid':99999999}
@@ -291,7 +296,7 @@ func write_external_workflow(configuration_path: String, value: String) -> bool:
 func seed_cross_window_context() -> Dictionary:
 	workspace.actor = {'user_id':'fixture-user', 'repo_id':'fixture-repo'}
 	workspace.picker_scope = workspace._repo()
-	workspace.watcher = {'pid':99999999}
+	workspace.watcher = fixture_watcher()
 	workspace.watcher_buffer = 'cross-window synthetic watch'
 	workspace.chat_work = {'old':{}}
 	workspace.debug_process = {'pid':99999999}
@@ -365,7 +370,7 @@ func verify_persistence():
 	workbench.managed_comfy_panel.runtime_path.text = OS.get_environment('UNIFIED_MESH_RUNTIME')
 	workbench.managed_comfy_panel.save_local()
 	var settings = EditorInterface.get_editor_settings()
-	check(settings.get_setting('ai_chat/model') == 'persisted-unified-model' and settings.get_setting('ai_chat/build_arguments') == 'debug_symbols=yes', 'central chat save persists existing nonsecret settings keys')
+	check(settings.get_project_metadata('ai_chat', 'model', '') == 'persisted-unified-model' and settings.get_setting('ai_chat/build_arguments') == 'debug_symbols=yes', 'central chat save persists project model and host build settings')
 	check(not settings.has_setting('ai_chat/api_key'), 'central chat save never creates a persisted API key')
 	# A different writer may have updated the JSON while this form still holds
 	# older text. Neither Save action may publish a stale group of runtime values.

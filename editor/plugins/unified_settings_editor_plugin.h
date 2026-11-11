@@ -34,6 +34,9 @@
 #include "editor/plugins/editor_plugin.h"
 
 class EditorDock;
+class Button;
+class HBoxContainer;
+class Label;
 class TabContainer;
 class VBoxContainer;
 
@@ -55,6 +58,12 @@ class UnifiedSettingsEditorPlugin : public EditorPlugin {
 	VBoxContainer *catalog_ai = nullptr;
 	VBoxContainer *chat_environment = nullptr;
 	VBoxContainer *art_environment = nullptr;
+	HBoxContainer *ai_toolbar = nullptr;
+	ObjectID ai_toolbar_id;
+	Button *ai_entry = nullptr;
+	Label *ai_status = nullptr;
+	Label *ai_summary = nullptr;
+	Button *ai_verify = nullptr;
 	bool binding = false;
 	bool shutting_down = false;
 
@@ -67,6 +76,9 @@ class UnifiedSettingsEditorPlugin : public EditorPlugin {
 	void _visibility_changed();
 	void _dock_exiting();
 	void _open_section(const String &p_section);
+	void _refresh_ai_status();
+	void _verify_ai();
+	void _connect_local_ai();
 
 protected:
 	static void _bind_methods();
