@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-efdf3f5014a9f2e7af16a50669243f437e8d01f9",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "runtime-gdscript-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/796",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f0f029c1cc2e3dc01f4f877d67a1bf81643f3dfdc9be1e8fbcd228cc0cd2d01a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/796",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/798",
+    "action": "validation",
+    "detection_head": "a18c04fc16a5ca54bf36b34a708085fd53aa4062",
+    "context_sha256": "3a2305f7e377d451594000cb37586c522e742f99c7ef7608b1cbe8232ec06b58",
+    "operator": "Sail-Li",
+    "worker": "codex-runtime-compilation-root",
+    "authority_ref": "codex:user:runtime-compilation-20261111",
+    "evidence": "data-collection/runtime-gdscript-20261111-validation.json",
+    "diagnosis": "Scoped runtime cache ownership and same-thread nested initialization errors required explicit lifecycle handling. Host PATH and template path override fixture failures resolved. Current headless behavior passes with empty stderr; native cache unit passes 256 assertions.",
+    "next_action": "Finish independent affected-diff review, signed PR delivery and exact main acceptance; keep native child 797 open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T16:11:05.042285+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T16:13:09.238961+00:00",
+  "sha256": "883590d9189bea2232872f5a6f2f1edeb05e79157f7181773775de513bfcf115"
+}

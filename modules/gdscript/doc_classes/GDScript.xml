@@ -12,6 +12,24 @@
 		<link title="GDScript documentation index">$DOCS_URL/tutorials/scripting/gdscript/index.html</link>
 	</tutorials>
 	<methods>
+		<method name="compile_source" qualifiers="static">
+			<return type="Dictionary" />
+			<param index="0" name="source" type="String" />
+			<param index="1" name="path" type="String" default="&quot;&quot;" />
+			<description>
+				Compiles [param source] into a new script without modifying existing scripts or instances. Returns a dictionary containing [code]error[/code] (an [enum Error]), [code]script[/code] (a [GDScript] on success, otherwise [code]null[/code]), and [code]diagnostics[/code] (an [Array] of dictionaries).
+				Each error diagnostic contains [code]stage[/code] ([code]parse[/code], [code]analyze[/code], [code]compile[/code], or [code]initialize[/code]), [code skip-lint]path[/code], [code]line[/code], [code]column[/code], and [code]message[/code]. Parser positions are one-based; unavailable positions may be zero or negative. Warnings are not returned. Initialization diagnostics include script errors reported on the calling thread; native code that fails without reporting a script error cannot be detected.
+				The optional [param path] supplies a source location for diagnostics and a directory for resolving relative dependencies. If empty, dependencies resolve from [code]res://[/code]. Compilation uses a unique virtual resource filename in that directory, so the returned script's path differs from [param path] and existing cached resources are preserved. The virtual source is not written to disk or retained in the script cache; static data remains alive only while callers hold the compiled script or its instances. Self-references by the supplied filename resolve through normal resource loading, not to this new script.
+				On success the script can be instantiated with [method new], or explicitly attached to a compatible object with [method Object.set_script]. State migration is the caller's responsibility. Static initialization executes during compilation; source and its dependencies must be trusted. This method does not sandbox code or roll back external side effects of initialization.
+				[codeblock]
+				var result = GDScript.compile_source("extends RefCounted\nfunc answer():\n\treturn 42\n")
+				if result.error == OK:
+				    print(result.script.new().answer()) # Prints 42.
+				else:
+				    print(result.diagnostics)
+				[/codeblock]
+			</description>
+		</method>
 		<method name="new" qualifiers="vararg">
 			<return type="Variant" />
 			<description>

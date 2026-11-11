@@ -1095,7 +1095,146 @@ void GDScript::_get_property_list(List<PropertyInfo> *p_properties) const {
 	}
 }
 
+namespace {
+struct RuntimeScriptErrors {
+	static inline thread_local RuntimeScriptErrors *active = nullptr;
+	RuntimeScriptErrors *previous = active;
+	RuntimeScriptErrors() { active = this; }
+	~RuntimeScriptErrors() { active = previous; }
+
+	Array diagnostics;
+	Thread::ID thread = Thread::get_caller_id();
+	String source_path;
+	String virtual_path;
+
+	static void capture(void *p_data, const char *p_function, const char *p_file, int p_line, const char *p_error, const char *p_message, bool p_editor_notify, ErrorHandlerType p_type) {
+		RuntimeScriptErrors &errors = *static_cast<RuntimeScriptErrors *>(p_data);
+		if (p_type != ERR_HANDLER_SCRIPT || Thread::get_caller_id() != errors.thread || active != &errors) {
+			return;
+		}
+		Dictionary diagnostic;
+		diagnostic["stage"] = "initialize";
+		diagnostic["path"] = String(p_file) == errors.virtual_path ? errors.source_path : String(p_file);
+		diagnostic["line"] = p_line;
+		diagnostic["column"] = 0;
+		diagnostic["message"] = String(p_message).is_empty() ? String(p_error) : String(p_message);
+		errors.diagnostics.push_back(diagnostic);
+	}
+};
+} // namespace
+
+Dictionary GDScript::compile_source(const String &p_source, const String &p_path) {
+	Dictionary result;
+	Array diagnostics;
+	result["error"] = OK;
+	result["script"] = Variant();
+	result["diagnostics"] = diagnostics;
+	RuntimeScriptErrors runtime_errors;
+
+	Ref<GDScript> script;
+	script.instantiate();
+	script->set_source_code(p_source);
+	// Compiler caches are keyed by path. Never claim the caller's existing resource.
+	const String base_dir = p_path.is_empty() ? String("res://") : p_path.get_base_dir();
+	const String compile_path = base_dir.path_join(vformat("__runtime_%s.gd", script->get_instance_id()));
+	script->set_path_cache(compile_path);
+	// A virtual source cannot be loaded again by filename. Release its cache
+	// bookkeeping on every exit, including reverse dependency and static roots.
+	auto finish = [&]() {
+		GDScriptCache::remove_script(compile_path);
+		MutexLock lock(GDScriptCache::singleton->mutex);
+		GDScriptCache::singleton->abandoned_parser_map.erase(compile_path);
+		GDScriptCache::singleton->static_gdscript_cache.erase(script->get_fully_qualified_name());
+		Vector<String> empty_dependencies;
+		for (KeyValue<String, HashSet<String>> &entry : GDScriptCache::singleton->parser_inverse_dependencies) {
+			entry.value.erase(compile_path);
+			if (entry.value.is_empty()) {
+				empty_dependencies.push_back(entry.key);
+			}
+		}
+		for (const String &dependency : empty_dependencies) {
+			GDScriptCache::singleton->parser_inverse_dependencies.erase(dependency);
+		}
+		return result;
+	};
+
+	Ref<GDScriptParserRef> parser_ref;
+	parser_ref.instantiate();
+	parser_ref->path = compile_path;
+	parser_ref->source_hash = p_source.hash();
+	parser_ref->status = GDScriptParserRef::PARSED;
+	GDScriptParser *parser = parser_ref->get_parser();
+	{
+		MutexLock lock(GDScriptCache::singleton->mutex);
+		GDScriptCache::singleton->parser_map[compile_path] = parser_ref.ptr();
+		GDScriptCache::singleton->shallow_gdscript_cache[compile_path] = script;
+	}
+	Error err = parser->parse(p_source, compile_path, false);
+	parser_ref->result = err;
+	String stage = "parse";
+	if (err == OK) {
+		stage = "analyze";
+		GDScriptCompiler::make_scripts(script.ptr(), parser->get_tree(), false);
+		err = parser_ref->raise_status(GDScriptParserRef::FULLY_SOLVED);
+	}
+	if (err != OK) {
+		for (const GDScriptParser::ParserError &error : parser->get_errors()) {
+			Dictionary diagnostic;
+			diagnostic["stage"] = stage;
+			diagnostic["path"] = p_path;
+			diagnostic["line"] = error.start_line;
+			diagnostic["column"] = error.start_column;
+			diagnostic["message"] = error.message;
+			diagnostics.push_back(diagnostic);
+		}
+		result["error"] = ERR_PARSE_ERROR;
+		return finish();
+	}
+
+	GDScriptCompiler compiler;
+	err = compiler.compile(parser, script.ptr());
+	if (err != OK) {
+		Dictionary diagnostic;
+		diagnostic["stage"] = "compile";
+		diagnostic["path"] = p_path;
+		diagnostic["line"] = compiler.get_error_line();
+		diagnostic["column"] = compiler.get_error_column();
+		diagnostic["message"] = compiler.get_error();
+		diagnostics.push_back(diagnostic);
+		result["error"] = ERR_COMPILATION_FAILED;
+		return finish();
+	}
+
+	runtime_errors.diagnostics = diagnostics;
+	runtime_errors.source_path = p_path;
+	runtime_errors.virtual_path = compile_path;
+	ErrorHandlerList handler;
+	handler.errfunc = RuntimeScriptErrors::capture;
+	handler.userdata = &runtime_errors;
+	add_error_handler(&handler);
+	err = script->_static_init();
+	remove_error_handler(&handler);
+	if (!diagnostics.is_empty()) {
+		result["error"] = ERR_CANT_CREATE;
+		return finish();
+	}
+	if (err != OK) {
+		Dictionary diagnostic;
+		diagnostic["stage"] = "initialize";
+		diagnostic["path"] = p_path;
+		diagnostic["line"] = 0;
+		diagnostic["column"] = 0;
+		diagnostic["message"] = "Script static initialization failed.";
+		diagnostics.push_back(diagnostic);
+		result["error"] = err;
+		return finish();
+	}
+	result["script"] = script;
+	return finish();
+}
+
 void GDScript::_bind_methods() {
+	ClassDB::bind_static_method("GDScript", D_METHOD("compile_source", "source", "path"), &GDScript::compile_source, DEFVAL(String()));
 	ClassDB::bind_vararg_method(METHOD_FLAGS_DEFAULT, "new", &GDScript::_new, MethodInfo("new"));
 }
 
