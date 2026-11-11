@@ -217,6 +217,7 @@ repos:
             data-collection/parallel-worker-receipts-785\.json|
             data-collection/authorized-acceptance-adapter-776\.json|
             data-collection/editor-production-setup-810\.json|
+            data-collection/editor-production-setup-810-c811-integration\.json|
               data-collection/maliang-gpt-modeling-20261108-host-snapshot\.json|
             .*\.test\.txt|
             .*\.svg|

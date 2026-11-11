@@ -191,6 +191,7 @@ func _ready():
 		environment_settings.move_child(advanced_button, service_advanced.get_index())
 	var runtime_label = Label.new()
 	runtime_label.text = '马良工具与本机模型 Python（3.11+，独立于引擎编译 Python）'
+	runtime_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	service_advanced.add_child(runtime_label)
 	var configured_python = bundled_runtime.get('python', '') if settings.get_value('host', 'use_bundled_python', false) else settings.get_value('host', 'python', default_python)
 	python_edit = line(service_advanced, "马良 Python 可执行文件（3.11+）", OS.get_environment("AINATIVE_PYTHON") if OS.has_environment("AINATIVE_PYTHON") else configured_python)
@@ -1353,6 +1354,9 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	title.text = "生成服务"
 	service_fields.add_child(title)
 	service_choice = OptionButton.new()
+	service_choice.fit_to_longest_item = false
+	service_choice.clip_text = true
+	service_choice.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	for choice in [["offline", "离线复制演示（不调用模型）"], ["comfy", "ComfyUI 图像与网格生成"], ["legacy", "兼容已有服务配置（高级）"], ['codex', 'Codex CLI 图像 + 本机网格（沿用当前登录额度）'], ['codex_modeling', 'GPT CLI 图像与指令建模（无需 ComfyUI）'], ['codex_sculpt', 'GPT CLI 图像与复杂网格建模（Blender）'], ['kimi_native', 'Kimi Native 文字／图片建模（Godot 原语）']]:
 		service_choice.add_item(choice[1])
 		service_choice.set_item_metadata(service_choice.item_count - 1, choice[0])

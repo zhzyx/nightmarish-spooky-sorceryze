@@ -7690,13 +7690,15 @@ void fragment() {
 	model_picker->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
 	model_picker->connect("item_selected", callable_mp(this, &AIChatDock::_model_selected));
 	models->add_child(model_picker);
+	HBoxContainer *reasoning = memnew(HBoxContainer);
+	selector_row->add_child(reasoning);
 	Label *reasoning_label = memnew(Label);
 	reasoning_label->set_text(U"推理强度");
-	models->add_child(reasoning_label);
+	reasoning->add_child(reasoning_label);
 	reasoning_picker = memnew(OptionButton);
 	reasoning_picker->set_name("ReasoningEffort");
 	reasoning_picker->connect("item_selected", callable_mp(this, &AIChatDock::_reasoning_selected));
-	models->add_child(reasoning_picker);
+	reasoning->add_child(reasoning_picker);
 	model_status = memnew(Label);
 	model_status->set_name("ModelStatus");
 	model_status->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);
@@ -7795,8 +7797,8 @@ void fragment() {
 	settings->add_child(auto_execute_commands);
 	production_setup = memnew(CheckBox);
 	production_setup->set_name("ProductionSetup");
-	production_setup->set_text(U"授权并行生产：自动准备独立工作副本");
-	production_setup->set_tooltip_text(U"使用当前连接和已发现模型；按工单落地时后台准备。显式自定义配置优先，此授权仅本次编辑器会话有效。");
+	production_setup->set_text(U"授权自动准备并行生产");
+	production_setup->set_tooltip_text(U"使用当前连接和已发现模型；按工单落地时后台准备独立工作副本。显式自定义配置优先，此授权仅本次编辑器会话有效。");
 	settings->add_child(production_setup);
 	production_capacity = add_field(settings, U"并行容量（正整数，不代表供应商额度）", "ProductionCapacity", "2");
 

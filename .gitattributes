@@ -62,3 +62,5 @@ data-collection/authorized-acceptance-adapter-776.json -text whitespace=cr-at-eo
 
 # Preserve the original #810 setup handoff referenced by immutable method events.
 data-collection/editor-production-setup-810.json -text whitespace=cr-at-eol
+# Preserve the #810 c811 integration receipt referenced by method revision 12.
+data-collection/editor-production-setup-810-c811-integration.json -text whitespace=cr-at-eol

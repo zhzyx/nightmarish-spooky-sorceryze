@@ -1,0 +1,91 @@
+{
+  "candidate": {
+    "binary_sha256": "907f26be6baa1bbbee242613550cf56c5dffe1418535c4de989fc81890a1227a",
+    "build_command": "python -X utf8 -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no tests=yes accesskit=no d3d12=no angle=no warnings=extra werror=yes cache_path=D:/GongGong/.git/gonggong-native-cache -j8",
+    "build_result": "passed",
+    "commit": "8d1f4da271892ba9eeb58f6593806f2f303fda65",
+    "engine_sha256": "8008fd046408091f0e8e842c60df266fddfe3add065ae8ff49df967a3b9fa183",
+    "source_sha256": {
+      "editor/docks/ai_chat_dock.cpp": "124a276eb3f56cc1fda020d18f863a4de694a767bca5afb64daf231d5267da27",
+      "editor/docks/ai_chat_dock.h": "b9b524220e28026666654fded46e833a675665bdfdbfa001058d20351e01f753",
+      "editor/docks/ai_chat_sub_agents.cpp": "eef932eff38f4f089da51bde0be723870b09646afe762f8bd9ea706eefc47ab4",
+      "editor/editor_node.cpp": "9bbc65231d6039e05f400a2689f23e372a125a16dfcdf96e105091a39d37e233",
+      "samples/ainative-workbench/addons/ainative/workbench.gd": "a7c304cd3dd580780936bfcc0e24776967b6621cac6f139394596cd311ec75c4",
+      "tools/godot_parallel/setup.mjs": "fd558acac3fc736f010acddcc258a2349f4e10d33543a388ae16c07339eb22dd"
+    }
+  },
+  "checks": [
+    {
+      "name": "codex-menu.json",
+      "passed": true,
+      "raw_sha256": "8df6ca34f19a13a128f5c322e68025a8d2559b71aa7fe2658630192d20dc9b81"
+    },
+    {
+      "name": "codebuddy-menu.json",
+      "passed": true,
+      "raw_sha256": "f2a4880cc9ea5b87e4a48e32930d83badf2ab12fec5c0d10043674d9fa8a6ac6"
+    },
+    {
+      "name": "layout-menu/summary.json",
+      "passed": true,
+      "raw_sha256": "a26b5e9024edc39098aeb6195c986e3538f511492167a4c7dfa9fced840d6571"
+    },
+    {
+      "name": "spatial-menu.json",
+      "passed": true,
+      "raw_sha256": "32731569e4eb97ead778dafcd98d364116c30ef059db9ab33adcdde74bd1d95f"
+    },
+    {
+      "name": "wave-menu.json",
+      "passed": true,
+      "raw_sha256": "54bccb83c4d8cb26c748cc29c3b4f1d19de4ad6a4e691a18d61b9d1382a43356"
+    }
+  ],
+  "defect": {
+    "bug": 807,
+    "causes": [
+      "Model and reasoning controls shared nonwrapping HBox",
+      "Production permission label unnecessarily long",
+      "Embedded art service OptionButton sized to longest menu entry and Python label did not wrap",
+      "Main menu collapsed for AIChat only; UnifiedSettings restored full menu forcing 878px ancestor width"
+    ],
+    "fix": "Separate reasoning flow group; concise authorization label retaining detailed tooltip; art option ellipsis and label wrap; use existing ai_control_page_only marker for compact menu. All six layout combinations pass, including wave active/stop and normal 3D/Script menu restoration.",
+    "incident": "55586c0ad698dca152b1e8535e808ca656a34ff6b4e017cf93de4765c8c434ea",
+    "trigger": "640 physical pixels at 1.5 editor scale: settings controls clipped"
+  },
+  "failed_attempts_preserved": [
+    "build.log: optional SDK defaults missing; existing disabled options restored",
+    "codex-setup.log: project Python lacks pip; existing build Python runs fixture and rebinds to project Python",
+    "spatial.log: inherited workspace rejected; explicitly cleared and retry passed",
+    "layout/ and layout-fixed/ and layout-final/: actual narrow layout failures retained",
+    "layout-scriptfix/: source edit does not replace embedded resource; build-art-fix.log confirms generated header and native plugin invalidation",
+    "build-menu-fix.log: own native tests held binary; waited for exit0 then build-menu-retry.log succeeded"
+  ],
+  "final_native_counts": {
+    "assertions": 638,
+    "cases": 45,
+    "failed": 0
+  },
+  "integration_base": "c811b583d4f709f697161280ed285c08793c90ef",
+  "issue_number": 810,
+  "native_checks": "Initial combined and art-fix binary each passed 1560 cases / 435575 assertions / 3 existing skips. Final menu binary passed AIChat focused suite; final exact counts in aichat-menu.log. Setup helper 25/25 passed.",
+  "prior_evidence": "data-collection/editor-production-setup-810-final.json",
+  "raw_integration_receipt_sha256": "f150c0c97717c3298d36cdac3fd232409add5ae49b5d91382a8370ec09f3ca13",
+  "request_id": "editor-production-setup-20261112",
+  "review": {
+    "result": "No findings; exact diff and metadata producers/call sites checked; final six-layout and restoration receipts verified",
+    "reviewer": "root, independent of integration worker sinan_9473dce4867b6132",
+    "scope": [
+      "Separate reasoning HBox flows with existing selector container",
+      "Concise production grant label retains tooltip scope",
+      "Embedded art option truncation preserves full menu choices and label wraps",
+      "Compact menu follows existing ai_control_page_only metadata; 3D and Script remain unaffected"
+    ]
+  },
+  "scope_limits": [
+    "Model and GitHub transports are controlled fixtures; real two concurrent worker processes and four bound receipts tested. Independent review/provider authentication/model quality/business acceptance excluded.",
+    "No GUI, installation, global config, commits, pushes, PR or remote Issue writes by this worker. Root owns formal delivery.",
+    "Full raw prior public receipts unchanged. Original and new Kuafu event files retained."
+  ],
+  "source_head": "8d1f4da271892ba9eeb58f6593806f2f303fda65"
+}

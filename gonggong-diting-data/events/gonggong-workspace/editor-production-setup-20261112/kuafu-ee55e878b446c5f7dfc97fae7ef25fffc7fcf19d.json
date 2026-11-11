@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ee55e878b446c5f7dfc97fae7ef25fffc7fcf19d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-production-setup-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a07d18705e14c599133015331a0784ada4245598b677ba190dde33dfac3d248d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "8d1f4da271892ba9eeb58f6593806f2f303fda65",
+    "context_sha256": "b38d2d9409f8271e5b5f96800d5719c659dc53223259be0ca344e2d90c230716",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+    "evidence": "formal-gate-810-c811: Collection source/receipt must be staged with current bytes",
+    "diagnosis": "新 c811 原始回执在 Windows 写入 CRLF，被 Git 文本规范化后 index 与方法引用摘要不一致。原始字节已冻结，补充该精确文件的 -text 和格式器排除，沿既有原始证据规则保留。",
+    "next_action": "重新暂存完整候选，正式门禁核对 raw/index 摘要后签发，CI 验证精确候选。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T22:31:06.570041+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": "其他已验收 native 测试与独立845审查不受影响"
+  },
+  "occurred_at": "2026-11-11T22:33:19.660142+00:00",
+  "sha256": "b83f76880f875f96c213270a35757c81d5ae7f0c033ee66fa7686eef505292a2"
+}

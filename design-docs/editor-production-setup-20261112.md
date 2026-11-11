@@ -27,3 +27,7 @@
 准备 helper 的 25 项测试覆盖未提交设计/文件、真实 index/HEAD 保持、Windows 换行和长路径、幂等、配置漂移、未知占用、崩溃及竞争恢复。首次实现的七项回执保留原始字节；完整候选证据另存 `data-collection/editor-production-setup-810-final.json`，路径以仓库根解析。
 
 本项不解决普通外部游戏仓库的完整接入，该验收由父项关联的 [#821](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/821) 接续；原生编辑运行的任务级持续授权由 [#820](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/820) 实现。成果接入 #811 已在主线，真实账号组合生产与最终安装仍由 #773 验收，父项保持开放。
+
+## c811 主线组合复验
+
+最新主线组合发现并修复 640 像素／1.5 缩放设置页裁剪：模型与推理分行流式布局，美术服务选项不按最长菜单项撑宽，环境说明换行，同类控制页使用紧凑主菜单。最终六种布局、空间页及重启、波浪入口、两条 CLI 正常准备及 Python 重绑定均通过；最终二进制 45 项 AIChat／638 断言通过，全量通过记录属于菜单修正前组合二进制。精确输入、独立审查和验证范围见 `data-collection/editor-production-setup-810-c811-integration.json`，以本仓库根解析。旧 PR826 的无任务排队回执存在矛盾，保留未知，更新候选重新取得精确 CI。

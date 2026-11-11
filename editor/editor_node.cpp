@@ -8356,7 +8356,8 @@ void EditorNode::_add_to_main_menu(const String &p_name, PopupMenu *p_menu) {
 void EditorNode::_update_main_menu_type() {
 	bool can_expand = bool(EDITOR_GET("interface/editor/appearance/expand_to_title")) && DisplayServer::get_singleton()->has_feature(DisplayServerEnums::FEATURE_EXTEND_TO_TITLE);
 	bool use_menu_button = EDITOR_GET("interface/editor/appearance/collapse_main_menu");
-	const bool compact_chat = editor_main_screen && is_inside_tree() && Object::cast_to<AIChatDock>(editor_main_screen->get_current_tab_control()) && get_viewport()->get_visible_rect().size.x < 960 * EDSCALE;
+	const Control *current_screen = editor_main_screen ? editor_main_screen->get_current_tab_control() : nullptr;
+	const bool compact_chat = current_screen && is_inside_tree() && bool(current_screen->get_meta("ai_control_page_only", false)) && get_viewport()->get_visible_rect().size.x < 960 * EDSCALE;
 	use_menu_button = use_menu_button || compact_chat;
 	bool global_menu = !bool(EDITOR_GET("interface/editor/appearance/use_embedded_menu")) && NativeMenu::get_singleton()->has_feature(NativeMenu::FEATURE_GLOBAL_MENU);
 	MenuType new_menu_type;
