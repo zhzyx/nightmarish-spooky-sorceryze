@@ -1,0 +1,33 @@
+{
+  "issue_number": 777,
+  "request_id": "parallel-configured-capacity-20261111",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/777",
+  "command": "node --test tests/editor/test_parallel_work_orders.mjs",
+  "result": {
+    "tests": 17,
+    "passed": 17,
+    "failed": 0,
+    "skipped": 0
+  },
+  "platform": "Windows x86_64, Node v24.22.1",
+  "inputs": {
+    "tools/godot_parallel/runner.mjs": "08513739c79d1ed332ddd8e683e67181570cc38f37f4ebc9beb32b69538203a7",
+    "tests/editor/test_parallel_work_orders.mjs": "f0b315e9748d6472c5cbbc91cf853a15b2551d5b628672e61893baefbd162e41"
+  },
+  "scope": "Temporary real Git worktrees and controlled CLI processes; three-worker overlap barrier, bounded ready-consumer allocation, invalid limits and existing dependency/receipt regressions. No provider throughput claim.",
+  "native_rebuild_required": false,
+  "independent_review": {
+    "worker": "/root/sinan_d3be8c87c266ef7a",
+    "result": "no actionable findings in inspected diff",
+    "producer_tests_verified_by_hash": true,
+    "reviewer_tests": [
+      "node --check tools/godot_parallel/runner.mjs",
+      "node --check tests/editor/test_parallel_work_orders.mjs"
+    ],
+    "limitations": [
+      "No simultaneous competing batch test",
+      "No live capacity decrease test",
+      "Different configured limits are not a unified global budget"
+    ]
+  }
+}

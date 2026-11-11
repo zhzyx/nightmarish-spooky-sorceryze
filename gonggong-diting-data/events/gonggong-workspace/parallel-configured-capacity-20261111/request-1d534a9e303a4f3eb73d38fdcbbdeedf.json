@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "request-1d534a9e303a4f3eb73d38fdcbbdeedf",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "parallel-configured-capacity-20261111",
+  "kind": "request",
+  "occurred_at": "2026-11-11T10:55:35.343981+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/777",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "operator": "Sail-Li",
+    "action": "authorized_capacity_implementation",
+    "parent_issue": 773,
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/777",
+    "usage": null,
+    "validation_file": "data-collection/parallel-configured-capacity-777.json"
+  },
+  "evidence_refs": [],
+  "sha256": "73f502e35d59c779b5be6dd5bc976efadff518d85669a945d670362ffb90f4f4"
+}
