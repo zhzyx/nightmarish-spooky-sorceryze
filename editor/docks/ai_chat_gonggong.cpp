@@ -604,6 +604,24 @@ void AIChatDock::_poll_gonggong_context() {
 		if (missing.size() > 0 && _start_igniter(missing)) {
 			return; // Environment gaps enter the local configuration igniter, not "blocked".
 		}
+		const int64_t bound_issue = String(_work_order_binding("issue_number")).to_int();
+		const String bound_request = _work_order_binding("request_id");
+		if (AIChatIssueGuide::is_status_error(error) && AIChatIssueGuide::is_bound(bound_issue, bound_request) &&
+				!scheduled_agents.has(active_agent) && !sub_agents.has(active_agent) && gonggong_recovered_result.is_empty() &&
+				!restoring_command_offer && command_recovery_reporting.is_empty() && !last_user_content(messages).strip_edges().is_empty()) {
+			// Preserve the binding and original message. Only a later explicit Start
+			// reply may run issue-start; every retry still passes the normal gate.
+			_cancel_issue_guide(String());
+			issue_guide_fields["issue_number"] = bound_issue;
+			issue_guide_fields["request_id"] = bound_request;
+			issue_guide_outcome = last_user_content(messages);
+			issue_guide_state = "await_status";
+			set_meta("gonggong_status", "issue_guide");
+			_append(TTR("Error"), String(U"GongGong 入口校验未通过：") + error);
+			_issue_guide_prompt();
+			_set_busy(false);
+			return;
+		}
 		if (issue_guide_state == "retrying" && _direct_daqian_task()) {
 			set_meta("gonggong_status", "blocked");
 			issue_guide_state = "agent_error";

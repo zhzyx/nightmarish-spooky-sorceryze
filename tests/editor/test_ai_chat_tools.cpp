@@ -453,6 +453,30 @@ TEST_CASE("[AIChat] Issue guide parses bindings and only guides missing local bi
 	CHECK_FALSE(AIChatIssueGuide::is_binding_error("Issue intake rejected; verify GitHub access"));
 }
 
+TEST_CASE("[AIChat] Issue guide recognizes only the exact intake status rejection") {
+	const String reason = "Issue intake rejected: Issue requires exactly one active status label";
+	CHECK(AIChatIssueGuide::is_status_error(reason + "; read attempts=1"));
+	CHECK(AIChatIssueGuide::is_status_error(reason + "; read attempts=2"));
+	for (const String &error : {
+				 String(), reason, reason + "; read attempts=0", reason + "; read attempts=3",
+				 reason + "; read attempts=1\nIssue is not open", "prefix " + reason + "; read attempts=1",
+				 String("Issue intake rejected: Issue is not open; read attempts=1"),
+				 String("Issue intake rejected: Issue must explicitly include workspace:gonggong; read attempts=1"),
+				 String("Issue intake rejected: Issue requires exactly one known type label; read attempts=1"),
+				 String("Issue intake rejected: Issue stable request ID does not match unambiguously; read attempts=1"),
+				 String("Issue intake rejected: verify GitHub access; read attempts=2"),
+				 String("Missing host request: request_id") }) {
+		CHECK_FALSE(AIChatIssueGuide::is_status_error(error));
+	}
+	// A retry or acknowledgement is not permission to change the Issue's state.
+	CHECK(AIChatIssueGuide::is_start(U"开始"));
+	CHECK(AIChatIssueGuide::is_start("Start"));
+	CHECK_FALSE(AIChatIssueGuide::is_start(U"重试"));
+	CHECK_FALSE(AIChatIssueGuide::is_start(U"已更新"));
+	CHECK_FALSE(AIChatIssueGuide::is_start(U"继续"));
+	CHECK_FALSE(AIChatIssueGuide::is_start("yes"));
+}
+
 TEST_CASE("[AIChat] Issue guide explains gh login without running it") {
 	const String text = AIChatIssueGuide::gh_login_text("/x/gh auth login --hostname github.com --git-protocol https --web", U"确认");
 	CHECK(text.contains("```\n/x/gh auth login --hostname github.com --git-protocol https --web\n```"));
