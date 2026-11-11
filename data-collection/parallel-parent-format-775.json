@@ -1,0 +1,12 @@
+{
+  "issue_number": 775,
+  "request_id": "parallel-parent-continuation-20261111",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/775",
+  "correction": "ruff 0.17.1 formatting of test harness only",
+  "before_sha256": "7760acf90ac35fb0c9e96189a11632d4f99b00a261ca4a78f9c49b462e1f4365",
+  "after_sha256": "cb052905b15a775f7b070e4dbbd0638c90418bb96271895c1f02f3ef0dcad0b5",
+  "ast_equal": true,
+  "native_sources_changed": false,
+  "behavior_evidence": "data-collection/parallel-parent-continuation-775.json",
+  "ci_failure": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43011756964/job/130492840219"
+}

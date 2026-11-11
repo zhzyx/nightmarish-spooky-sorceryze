@@ -30,8 +30,15 @@ ROOT = Path(__file__).resolve().parents[2]
 REQUEST = "design-batch-fixture"
 SECRET = "design-batch-isolated-secret"
 CASES = [
-    "parallel-normal", "parallel-failure", "parallel-unknown", "parallel-stop",
-    "parallel-unrelated", "parallel-binding-drift", "parallel-design-drift", "parallel-close-parent", "parallel-receipt-failure",
+    "parallel-normal",
+    "parallel-failure",
+    "parallel-unknown",
+    "parallel-stop",
+    "parallel-unrelated",
+    "parallel-binding-drift",
+    "parallel-design-drift",
+    "parallel-close-parent",
+    "parallel-receipt-failure",
     "review",
     "review-stale-head",
     "review-stale-bytes",
@@ -320,13 +327,19 @@ def main():
         # The bare offline engine locates its read-only tools independently of CLI settings.
         (folder / "SConstruct").touch()
         if args.case.startswith("parallel-"):
-            shutil.copytree(ROOT / "tools", folder / "tools", ignore=shutil.ignore_patterns("node_modules", "__pycache__"))
+            shutil.copytree(
+                ROOT / "tools", folder / "tools", ignore=shutil.ignore_patterns("node_modules", "__pycache__")
+            )
             (folder / "tools/godot_parallel/runner.mjs").write_text(PARALLEL_RUNNER)
             # Copied candidate helpers still load the trusted installed gate.
             (folder / "customizations/components").mkdir(parents=True)
             for name in ("customizations/components/issue-workorders",):
                 if os.name == "nt":
-                    subprocess.run(["cmd", "/d", "/c", "mklink", "/J", str(folder / name), str(ROOT / name)], check=True, capture_output=True)
+                    subprocess.run(
+                        ["cmd", "/d", "/c", "mklink", "/J", str(folder / name), str(ROOT / name)],
+                        check=True,
+                        capture_output=True,
+                    )
                 else:
                     (folder / name).symlink_to(ROOT / name, target_is_directory=True)
         elif os.name == "nt":
@@ -622,22 +635,41 @@ def main():
                     prompt = next(
                         message["content"] for message in reversed(body["messages"]) if message["role"] == "user"
                     )
-                    if args.case.startswith("parallel-") and prompt not in {"DESIGN_BATCH_WARMUP", "DESIGN_BATCH_START"}:
-                        assert args.case in {"parallel-normal", "parallel-failure", "parallel-unknown"}, "Forbidden parallel return"
+                    if args.case.startswith("parallel-") and prompt not in {
+                        "DESIGN_BATCH_WARMUP",
+                        "DESIGN_BATCH_START",
+                    }:
+                        assert args.case in {"parallel-normal", "parallel-failure", "parallel-unknown"}, (
+                            "Forbidden parallel return"
+                        )
                         stages["return"] += 1
                         assert stages["return"] == 1, "Duplicate terminal notification"
                         receipt = receipts_from_prompt(prompt)
                         parent_returns.append(receipt)
                         assert receipt["business_accepted"] is None and receipt["issue_number"] == 441
                         assert receipt["request_id"] == REQUEST and receipt["parallel_batch"]
-                        expected = {"parallel-normal":"review", "parallel-failure":"reconcile_required", "parallel-unknown":"unknown"}[args.case]
-                        assert all(c["state"] == expected and c["business_accepted"] is None for c in receipt["children"].values())
+                        expected = {
+                            "parallel-normal": "review",
+                            "parallel-failure": "reconcile_required",
+                            "parallel-unknown": "unknown",
+                        }[args.case]
+                        assert all(
+                            c["state"] == expected and c["business_accepted"] is None
+                            for c in receipt["children"].values()
+                        )
                         terminal = receipt["terminal_receipt"]
                         raw = Path(terminal["path"]).read_bytes()
                         assert hashlib.sha256(raw).hexdigest() == terminal["file_sha256"]
                         envelope = json.loads(raw)
                         assert hashlib.sha256(envelope["payload"].encode()).hexdigest() == envelope["sha256"]
-                        data = json.dumps({"choices":[{"message":{"role":"assistant","content":"DESIGN_BATCH_PARENT_VERIFIED_OK"},"finish_reason":"stop"}]}).encode()
+                        data = json.dumps({
+                            "choices": [
+                                {
+                                    "message": {"role": "assistant", "content": "DESIGN_BATCH_PARENT_VERIFIED_OK"},
+                                    "finish_reason": "stop",
+                                }
+                            ]
+                        }).encode()
                         self.send_response(200)
                         self.send_header("Content-Length", str(len(data)))
                         self.end_headers()
@@ -1177,7 +1209,18 @@ def main():
             except (AssertionError, ValueError, KeyError) as error:
                 errors.append(repr(error))
         successful = (
-            args.case in {"normal", "failure", "timeout", "stale-retry", "review", "parallel-normal", "parallel-failure", "parallel-unknown"} or args.case in MODELS_WAKE_CASES
+            args.case
+            in {
+                "normal",
+                "failure",
+                "timeout",
+                "stale-retry",
+                "review",
+                "parallel-normal",
+                "parallel-failure",
+                "parallel-unknown",
+            }
+            or args.case in MODELS_WAKE_CASES
         )
         expected_returns = 1 if successful else 0
         ok = (
@@ -1191,7 +1234,10 @@ def main():
             ok = ok and stages["child1"] == stages["child2"] == 0
             if args.case == "parallel-receipt-failure":
                 history = json.loads((project / ".godot/editor/ai_chat_history.json").read_text())
-                assert any(a.get("queue_paused") and any("design_batch_return" in m for m in a.get("queued_messages", [])) for a in history["agents"])
+                assert any(
+                    a.get("queue_paused") and any("design_batch_return" in m for m in a.get("queued_messages", []))
+                    for a in history["agents"]
+                )
         elif args.case.startswith("review-stale-"):
             ok = ok and not parent_returns and stages["return"] == 0 and stages["review"] == 3
             assert len(receipt_files) == 1
