@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "startup-config-sync-20261112-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "startup-config-sync-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-11T23:07:46.563459+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/857",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "On editor startup check project Git, fetch and fast-forward only clean compatible worktree; reuse project AI configuration, TianShu model discovery and real connection validation in background.",
+    "authorization_ref": "codex-user-startup-config-sync-20261112",
+    "design": "design-docs/startup-config-sync-20261112.md",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "a8c40613f9c9274b1c01a477650a0bfe690b9097a5f67ed794251febf4a68972"
+}

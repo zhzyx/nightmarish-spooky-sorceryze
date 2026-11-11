@@ -4598,6 +4598,7 @@ void AIChatDock::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_ai_configuration"), &AIChatDock::get_ai_configuration);
 	ClassDB::bind_method(D_METHOD("get_ai_connection_status"), &AIChatDock::get_ai_connection_status);
 	ClassDB::bind_method(D_METHOD("verify_ai_connection"), &AIChatDock::verify_ai_connection);
+	ClassDB::bind_method(D_METHOD("cancel_ai_connection_check", "expected_generation"), &AIChatDock::cancel_ai_connection_check, DEFVAL(-1));
 	ADD_SIGNAL(MethodInfo("ai_configuration_changed"));
 	ADD_SIGNAL(MethodInfo("ai_connection_status_changed"));
 	ClassDB::bind_method(D_METHOD("get_ai_settings_control"), &AIChatDock::get_ai_settings_control);
@@ -5503,6 +5504,7 @@ bool AIChatDock::_ai_connection_configured() const {
 Dictionary AIChatDock::get_ai_connection_status() const {
 	Dictionary status;
 	const bool current = !ai_configuration_ready || ai_connection_signature.is_empty() || ai_connection_signature == _ai_connection_signature();
+	status["generation"] = int64_t(ai_connection_generation);
 	status["state"] = current ? ai_connection_state : String("unconfigured");
 	status["message"] = current ? ai_connection_message : String(U"配置已变化，请重新验证连接。");
 	return status;
@@ -5565,6 +5567,13 @@ void AIChatDock::_project_ai_configuration_changed() {
 	ai_connection_signature = signature;
 	_set_ai_connection_status("unconfigured", _ai_connection_configured() ? String(U"配置已变化，请重新验证连接。") : String(U"请先配置模型连接。"));
 	emit_signal("ai_configuration_changed");
+}
+
+void AIChatDock::cancel_ai_connection_check(int64_t p_expected_generation) {
+	if (ai_connection_state == "checking" && (p_expected_generation < 0 || uint64_t(p_expected_generation) == ai_connection_generation)) {
+		_cancel_ai_connection_probe();
+		_set_ai_connection_status("unconfigured", U"连接检查已取消，可重新验证。");
+	}
 }
 
 void AIChatDock::verify_ai_connection() {

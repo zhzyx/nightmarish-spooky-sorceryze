@@ -838,6 +838,7 @@ public:
 	Dictionary get_ai_configuration() const;
 	Dictionary get_ai_connection_status() const;
 	void verify_ai_connection();
+	void cancel_ai_connection_check(int64_t p_expected_generation = -1);
 	Control *get_ai_settings_control() const;
 	Control *get_environment_settings_control() const;
 	void set_environment_changing_handler(const Callable &p_handler);
