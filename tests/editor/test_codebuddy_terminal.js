@@ -19,6 +19,8 @@ test('Semantic editor requests retain structured arguments and never reach the s
     const { hostActionRequest } = require('../../tools/codebuddy_cli/godot_terminal');
     assert.deepEqual(hostActionRequest('godot-host-action delegate_review {"prompt":"Review","title":"Readonly"}'), { name: 'delegate_review', arguments: { prompt: 'Review', title: 'Readonly' } });
     assert.throws(() => hostActionRequest('godot-host-action delegate_review {} && echo bypass'));
+    assert.deepEqual(hostActionRequest('godot-host-action integrate_production_result {"action":"plan","producer_id":7}'), { name: 'integrate_production_result', arguments: { action: 'plan', producer_id: 7 } });
+    assert.throws(() => hostActionRequest('godot-host-action integrate_production_result {} && echo bypass'));
     assert.deepEqual(hostActionRequest('godot-host-action get_editor_state'), { name: 'get_editor_state', arguments: {} });
     const routed = { intent: 'engine_operation', request_id: 'new-page', operation: { action: 'set_text', target: 'editor.input', value: '你好' } };
     assert.deepEqual(hostActionRequest('godot-host-action route_engine_message ' + JSON.stringify(routed)), { name: 'route_engine_message', arguments: routed });

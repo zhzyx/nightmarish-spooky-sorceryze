@@ -37,7 +37,7 @@ function hostActionRequest(command) {
     const text = command.trim();
     const plain = /^godot-host-action (read_logs|get_parent_context|get_editor_state|list_scripts|build_engine|restart_engine|rollback_engine)$/.exec(text);
     if (plain) return { name: plain[1], arguments: {} };
-    const action = /^godot-host-action (editor_action|route_engine_message|complete_delivery|delegate_review|read_file|read_script|list_directory) ([\s\S]+)$/.exec(text);
+    const action = /^godot-host-action (editor_action|route_engine_message|complete_delivery|delegate_review|integrate_production_result|read_file|read_script|list_directory) ([\s\S]+)$/.exec(text);
     if (action) {
         const limit = action[1] === 'complete_delivery' ? 65536 : 32768;
         if (action[2].length < 2 || (action[1] === 'complete_delivery' ? Buffer.byteLength(action[2], 'utf8') : action[2].length) > limit) throw new Error('Godot host action JSON exceeds its size limit.');

@@ -30,6 +30,7 @@ if SCENARIO not in {
     "cancel-verify",
     "parallel",
     "parallel-repair",
+    "parallel-integration",
     "parallel-config-drift",
     "parallel-self-review",
     "repair",
@@ -40,6 +41,9 @@ if SCENARIO not in {
     "auxiliary-as-evidence",
 }:
     raise SystemExit("Unknown native acceptance scenario")
+
+if SCENARIO == "parallel-integration" and "--case" not in sys.argv:
+    sys.argv.extend(["--case", "models-initial-ok"])
 
 batch.BRIDGE = batch.BRIDGE.replace("'tenant_id':'fixture'", "'tenant_id':'gonggong-workspace'")
 _original_dumps = batch.json.dumps
@@ -96,9 +100,13 @@ batch.fixture_program = authority_program
 # Its isolated origin uses insteadOf to avoid networking; the real intake reader
 # needs the fixture Git transport to return the configured GitHub origin.
 _original_run = batch.subprocess.run
+integration_restore_report: dict[str, Any] = {}
+integration_restarting = False
+integration_binary = ""
 
 
 def native_run(command, *args, **kwargs):
+    global integration_restore_report, integration_restarting, integration_binary
     if SCENARIO.startswith("parallel") and "mklink" in command and Path(command[-2]).name == "tools":
         target = Path(command[-2])
         batch.shutil.copytree(
@@ -125,6 +133,7 @@ def native_run(command, *args, **kwargs):
         return batch.subprocess.CompletedProcess(command, 0, b"", b"")
     env = kwargs.get("env")
     if env and "DESIGN_BATCH_PROJECT" in env and "--editor" in command:
+        integration_binary = str(command[0])
         env = dict(env)
         env["NATIVE_ACCEPTANCE_SCENARIO"] = SCENARIO
         env["GONGGONG_GIT"] = str(
@@ -135,7 +144,33 @@ def native_run(command, *args, **kwargs):
             batch.os.environ["NATIVE_PARALLEL_NODE"] = env["DESIGN_BATCH_NODE"]
             batch.os.environ["NATIVE_PARALLEL_PYTHON"] = env["DESIGN_BATCH_PYTHON"]
         kwargs["env"] = env
-    return _original_run(command, *args, **kwargs)
+    completed = _original_run(command, *args, **kwargs)
+    if (
+        SCENARIO == "parallel-integration"
+        and env
+        and "DESIGN_BATCH_PROJECT" in env
+        and "--editor" in command
+        and completed.returncode == 0
+    ):
+        report_path = Path(env["DESIGN_BATCH_PROJECT"]) / "design-batch-report.json"
+        initial_report = report_path.read_bytes()
+        cold_kwargs = dict(kwargs)
+        cold_kwargs["env"] = dict(kwargs["env"], DESIGN_BATCH_PHASE="integration-restore")
+        cold_kwargs["timeout"] = 180
+        integration_restarting = True
+        restored = _original_run(command, *args, **cold_kwargs)
+        integration_restore_report = batch.json.loads(report_path.read_text(encoding="utf8"))
+        assert restored.returncode == 0, restored.stdout + restored.stderr
+        assert (
+            integration_restore_report["ok"] and "NATIVE_INTEGRATION_RECOVERED" in integration_restore_report["stages"]
+        ), integration_restore_report
+        # The base fixture assesses the first run; keep both real reports.
+        report_path.with_name("integration-restore-report.json").write_bytes(report_path.read_bytes())
+        report_path.write_bytes(initial_report)
+        completed = batch.subprocess.CompletedProcess(
+            command, restored.returncode, completed.stdout + restored.stdout, completed.stderr + restored.stderr
+        )
+    return completed
 
 
 batch.subprocess.run = native_run
@@ -145,7 +180,13 @@ _original_copyfile = batch.shutil.copyfile
 
 def fixture_copyfile(source, target, *args, **kwargs):
     result = _original_copyfile(source, target, *args, **kwargs)
-    if Path(source).name == "design_batch.gd" and SCENARIO in {"pass", "repair", "parallel", "parallel-repair"}:
+    if Path(source).name == "design_batch.gd" and SCENARIO in {
+        "pass",
+        "repair",
+        "parallel",
+        "parallel-repair",
+        "parallel-integration",
+    }:
         # Independent review and a repair add real processes to the base batch.
         # Keep the wait bounded while allowing those extra completion events.
         script = Path(target).read_text(encoding="utf8")
@@ -156,6 +197,13 @@ def fixture_copyfile(source, target, *args, **kwargs):
         script = script.replace(
             'settings.set_setting("ai_chat/parallel_work_orders_config", "")',
             'settings.set_setting("ai_chat/parallel_work_orders_config", OS.get_environment("NATIVE_PARALLEL_CONFIG"))',
+        )
+        Path(target).write_text(script, encoding="utf8")
+    if Path(source).name == "design_batch.gd" and SCENARIO == "parallel-integration":
+        script = Path(target).read_text(encoding="utf8")
+        script = script.replace(
+            '\tvar mode := OS.get_environment("DESIGN_BATCH_CASE")\n\tif OS.get_environment("DESIGN_BATCH_PHASE") == "review-restore":',
+            '\tvar mode := OS.get_environment("DESIGN_BATCH_CASE")\n\tif OS.get_environment("DESIGN_BATCH_PHASE") == "integration-restore":\n\t\tawait create_timer(0.5).timeout\n\t\t_check(dock.find_child("Stop", true, false).disabled, "Cold integration restarted work without user input")\n\t\tdock.get_ai_settings_control().find_child("APIKey", true, false).text = "design-batch-isolated-secret"\n\t\t_send("NATIVE_INTEGRATION_RECOVERY")\n\t\tawait _wait_marker("NATIVE_INTEGRATION_RECOVERED", 120.0)\n\t\t_finish()\n\t\treturn\n\tif OS.get_environment("DESIGN_BATCH_PHASE") == "review-restore":',
         )
         Path(target).write_text(script, encoding="utf8")
     if Path(source).name == "design_batch.gd" and SCENARIO in {"cancel", "cancel-verify"}:
@@ -187,11 +235,27 @@ review_calls: list[dict[str, Any]] = []
 repair_calls: list[dict[str, Any]] = []
 failure_notices: list[str] = []
 repair_returns: list[str] = []
+integration_receipts: list[dict[str, Any]] = []
+integration_runtime: dict[str, Any] = {}
 
 
 class AcceptanceServer(ThreadingHTTPServer):
     def __init__(self, address, handler):
         original = handler.do_POST
+        original_get = handler.do_GET
+
+        def get(instance):
+            if SCENARIO == "parallel-integration" and integration_restarting and instance.path.endswith("/models"):
+                data = batch.json.dumps({"data": [{"id": "design-batch-fixture"}]}).encode()
+                instance.send_response(200)
+                instance.send_header("Content-Type", "application/json")
+                instance.send_header("Content-Length", str(len(data)))
+                instance.end_headers()
+                instance.wfile.write(data)
+                return
+            return original_get(instance)
+
+        handler.do_GET = get
 
         def post(instance):
             raw = instance.rfile.read(int(instance.headers["Content-Length"]))
@@ -246,6 +310,41 @@ class AcceptanceServer(ThreadingHTTPServer):
                 instance.end_headers()
                 instance.wfile.write(data)
                 return
+            if SCENARIO == "parallel-integration" and prompt == "NATIVE_INTEGRATION_RECOVERY":
+                results = {m.get("tool_call_id"): m.get("content", "") for m in body["messages"] if m["role"] == "tool"}
+                if "integration-cold-list" not in results:
+                    message = batch.tool_call(
+                        "integration-cold-list", "integrate_production_result", {"action": "list"}
+                    )
+                else:
+                    listed = batch.json.loads(results["integration-cold-list"])
+                    producer = next(p for p in listed["producers"] if p["work_order"] == 3)
+                    assert producer["live_independent_acceptance"] is False, producer
+                    if "integration-cold-rollback" not in results:
+                        assert (
+                            parallel.folder / "original/samples/project/production-output.txt"
+                        ).read_text() == "ACCEPTED_NATIVE_PROJECT_OUTPUT"
+                        message = batch.tool_call(
+                            "integration-cold-rollback",
+                            "integrate_production_result",
+                            {"action": "rollback", "producer_id": producer["producer_id"]},
+                        )
+                    else:
+                        value = batch.json.loads(results["integration-cold-rollback"])
+                        assert value.get("ok") is True and value["state"] == "rolled_back", value
+                        assert not (parallel.folder / "original/samples/project/production-output.txt").exists()
+                        assert not (parallel.folder / "original/samples/project/production-output.gd").exists()
+                        integration_receipts.append(
+                            dict(action="rollback", result=value, cold_restart=True, live_reviewer=False)
+                        )
+                        message = {"role": "assistant", "content": "NATIVE_INTEGRATION_RECOVERED"}
+                data = batch.json.dumps({"choices": [{"message": message, "finish_reason": "stop"}]}).encode()
+                instance.send_response(200)
+                instance.send_header("Content-Type", "application/json")
+                instance.send_header("Content-Length", str(len(data)))
+                instance.end_headers()
+                instance.wfile.write(data)
+                return
             if SCENARIO.startswith("parallel") and prompt == "DESIGN_BATCH_START":
                 parallel.setup(SCENARIO)
             if (
@@ -254,11 +353,73 @@ class AcceptanceServer(ThreadingHTTPServer):
                 and "current_host_design_batch" in prompt
             ):
                 if SCENARIO.startswith("parallel"):
-                    parallel.returns.append(prompt)
+                    if SCENARIO != "parallel-integration" or prompt not in parallel.returns:
+                        parallel.returns.append(prompt)
                 else:
                     assert "acceptance_findings" in prompt and "Missing repair-evidence.txt execution proof" in prompt
                     repair_returns.append(prompt)
                 message = {"role": "assistant", "content": "DESIGN_BATCH_PARENT_VERIFIED_OK"}
+                if SCENARIO == "parallel-integration":
+                    results = {
+                        m.get("tool_call_id"): m.get("content", "") for m in body["messages"] if m["role"] == "tool"
+                    }
+
+                    def native_result(action):
+                        value = batch.json.loads(results["integration-" + action])
+                        assert value.get("ok") is True, value
+                        if not any(item["action"] == action for item in integration_receipts):
+                            integration_receipts.append(dict(action=action, result=value))
+                        return value
+
+                    if "integration-list" not in results:
+                        message = batch.tool_call("integration-list", "integrate_production_result", {"action": "list"})
+                    else:
+                        listed = native_result("list")
+                        producer = next(
+                            p["producer_id"]
+                            for p in listed["producers"]
+                            if p["work_order"] == 3 and p["live_independent_acceptance"]
+                        )
+                        for action, expected in (("plan", "planned"), ("apply", "applied")):
+                            if "integration-" + action not in results:
+                                message = batch.tool_call(
+                                    "integration-" + action,
+                                    "integrate_production_result",
+                                    {"action": action, "producer_id": producer},
+                                )
+                                break
+                            value = native_result(action)
+                            assert value["state"] == expected, value
+                            if action == "plan":
+                                assert value["changed_files"] == ["production-output.gd", "production-output.txt"], (
+                                    value
+                                )
+                        else:
+                            if "integration-run" not in results:
+                                game_command = [
+                                    integration_binary,
+                                    "--headless",
+                                    "--path",
+                                    str(parallel.folder / "original/samples/project"),
+                                    "--script",
+                                    "res://production-output.gd",
+                                ]
+                                code = (
+                                    "import subprocess; p=subprocess.run("
+                                    + repr(game_command)
+                                    + ",capture_output=True,text=True,timeout=30); print(p.stdout); print(p.stderr); raise SystemExit(p.returncode)"
+                                )
+                                message = batch.tool_call(
+                                    "integration-run", "run_command", {"command": batch.python_command(code)}
+                                )
+                            else:
+                                actual = batch.json.loads(results["integration-run"])
+                                assert (
+                                    actual["exit_code"] == 0
+                                    and "NATIVE_INTEGRATION_EXECUTED:ACCEPTED_NATIVE_PROJECT_OUTPUT"
+                                    in batch.json.dumps(actual)
+                                ), actual
+                                integration_runtime.update(actual)
                 data = batch.json.dumps({"choices": [{"message": message, "finish_reason": "stop"}]}).encode()
                 instance.send_response(200)
                 instance.send_header("Content-Type", "application/json")
@@ -398,6 +559,8 @@ class DiagnosticDirectory(TemporaryDirectory[str]):
                 for file in candidate.glob(".gonggong-outbox/intake-failures/*.json"):
                     diagnostics.append({"path": str(file.relative_to(root)), "body": file.read_text(encoding="utf8")})
             for file in (root / "isolated-editor/editor_data/cache").glob("gonggong-acceptance*.result"):
+                diagnostics.append({"path": str(file.relative_to(root)), "body": file.read_text(encoding="utf8")})
+            for file in (root / "isolated-editor/editor_data/cache").glob("gonggong-project-integration*.result"):
                 diagnostics.append({"path": str(file.relative_to(root)), "body": file.read_text(encoding="utf8")})
             for file in (root / "original/samples/project/.godot/editor/ai_chat_snapshots").glob("*.acceptance.json"):
                 diagnostics.append({
@@ -554,6 +717,16 @@ if __name__ == "__main__":
             valid = valid and any(item["path"] == "cancelled" for item in diagnostics)
         else:
             valid = valid and not review_calls
+    if SCENARIO == "parallel-integration":
+        valid = (
+            valid
+            and integration_restore_report.get("ok") is True
+            and integration_runtime.get("exit_code") == 0
+            and [item["action"] for item in integration_receipts] == ["list", "plan", "apply", "rollback"]
+        )
+        result["integration_receipts"] = integration_receipts
+        result["integration_restore"] = integration_restore_report
+        result["integration_runtime"] = integration_runtime
     result["transport_fixture_ok"] = result["ok"]
     result["ok"] = bool(valid)
     result["verification_status"] = "native_acceptance_passed" if valid else "failed"

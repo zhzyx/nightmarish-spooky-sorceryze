@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-05ad0eebdcec9fde926ceddd04ffb24bca781ac04eb05b4ee37de56d3c588adf",
+  "kind": "analysis",
+  "agent": {
+    "id": "gonggong-host-adapter",
+    "version": "1.2.1",
+    "definition_sha256": "eba2ca0eee027dfae57826453d1a1901baa8a127fa0e2af954f0255fc3888f2d",
+    "origin": "gonggong-host-adapter"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "occurred_at": "2026-11-11T17:56:43.502309+00:00",
+  "evidence_refs": [
+    "host-context-24c2c9f7c4f44f40b72e2fc41fdda95b"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "verify-normal-product-entry",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Before declaring a native editor production goal complete, map each original user workflow to its normal product entry and record every external preconfiguration, fixture substitution and manual host intervention. Require installed user-flow evidence for every completion claim.",
+      "when": "A task promises an editor product workflow while individual mechanisms and sample chains have passed tests.",
+      "counterexample": "A user explicitly requests only a bounded sample or mechanism test; full product coverage is outside that acceptance.",
+      "trial_plan": "Start with configured accounts and CLIs only, exercise setup, parallel production, accepted integration and run/repair through normal editor entry. Reject overall completion if a required step needs private hand-authored fixture configuration or external manual copying; preserve scoped regression success separately."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-product-scope-correction-773.json",
+        "sha256": "c8b713391d93ac05764d954fb78c836220df885709c093bdc210ef0641cd8d8f"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/host-context-24c2c9f7c4f44f40b72e2fc41fdda95b.json",
+      "sha256": "6a17d86eb2338a087924830dd8bbcee717bb5c4c432ef270bb91d480696afeb7"
+    }
+  },
+  "sha256": "94cc94fcd7133ab6dcea3ce35517093d503fecc3c05f09f0ed8005760b7d2519"
+}

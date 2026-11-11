@@ -13,7 +13,7 @@ if __name__ == "__main__":
     # Acceptance attests candidate data. The candidate cannot choose its verifier.
     source = (
         installation
-        if options.action in {"acceptance-capture", "acceptance-verify", "acceptance-current"}
+        if options.action in {"acceptance-capture", "acceptance-verify", "acceptance-current", "project-integration"}
         else Path(options.workspace).resolve()
     )
     runpy.run_path(str(source / "customizations/components/godot-host/bridge.py"), run_name="__main__")

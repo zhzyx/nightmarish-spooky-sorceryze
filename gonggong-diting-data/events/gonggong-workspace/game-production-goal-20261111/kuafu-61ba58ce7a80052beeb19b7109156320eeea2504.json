@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-61ba58ce7a80052beeb19b7109156320eeea2504",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "58d42d9ee891565744e7a5a5523e2bba2f990118ae5927752f62b6031d294c0a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "dispatch",
+    "detection_head": "34cd08867ce15fe561ad5885a31e3db114074292",
+    "context_sha256": "a9eabe6df2a4d3ec4b9891af7dd1d4394ad66b0d76fffd834d3b8d8446104690",
+    "operator": "Sail-Li",
+    "worker": "codex-root-editor-completeness-773",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773#issuecomment-6802900973",
+    "diagnosis": "Issue updated while the corrected audit dispatch was reading and claiming its source. compareAndStart rejected before creating a claim or launch intent. No native request or worker exists for reservation337fedbdd712f21f0e6f99e153e58732aefe0c0dd81f20fdc2a4afc87f14afd7.",
+    "next_action": "Release only this proven never-launched reservation using host verification, then dispatch one audit on the reread source after reporting updates settle.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T17:36:48.139144+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T17:39:06.937546+00:00",
+  "sha256": "e1b20c992f8a3ad17418d3760f3c310180ddeb22c6d6ad6e01b581466a9799a9"
+}
