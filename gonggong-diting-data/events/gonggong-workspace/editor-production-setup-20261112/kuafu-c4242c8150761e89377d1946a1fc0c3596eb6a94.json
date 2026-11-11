@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c4242c8150761e89377d1946a1fc0c3596eb6a94",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-production-setup-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a8c000e66df1ccef8134421e14cb1e6f5c612c12f8350b11ed5071a9a5932bd4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "20af8042b6e16ba768428097990838513758a32f",
+    "context_sha256": "b38d2d9409f8271e5b5f96800d5719c659dc53223259be0ca344e2d90c230716",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+    "evidence": "data-collection/editor-production-setup-810-ci-correction.json",
+    "diagnosis": "CI file-format normalized the original hash-bound CRLF handoff despite Git -text. Added exact single-file exclusion beside existing immutable evidence cases; compared actual old/new regex and ran formatter over all other candidate files.",
+    "next_action": "Original evidence SHA preserved; new evidence remains formatted and all formal gates stay enabled. Re-sign corrected candidate and supersede failed PR824; remote CI recovery pending.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T20:16:04.886235+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T20:17:44.380732+00:00",
+  "sha256": "929e3cece6ecf791072a0c6295efa3d1c5219950b591f9807a65893a575ca0be"
+}

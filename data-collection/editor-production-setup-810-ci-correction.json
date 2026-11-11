@@ -1,0 +1,22 @@
+{
+  "issue_number": 810,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+  "request_id": "editor-production-setup-20261112",
+  "failed_pr": 824,
+  "failed_signed_head": "e2c231a91b404f079c94780080e1d12e8b9a492d",
+  "failure": "file-format rewrote original CRLF handoff whose raw SHA is referenced by immutable method events; Git attributes alone do not control the hook",
+  "fix": "Add only this exact original evidence path to existing immutable-evidence format exclusions; all other gates and new evidence formatting remain enabled",
+  "checks": [
+    {
+      "command": "Compare old/new actual hook regex against entire candidate changed paths",
+      "passed": true,
+      "observed": "Exactly data-collection/editor-production-setup-810.json changes selection; final/new receipts remain selected"
+    },
+    {
+      "command": "Run actual file_format.py on remaining candidate selection",
+      "passed": true,
+      "observed": "All selected files pass; original raw hash remains unchanged"
+    }
+  ],
+  "preserved_sha256": "32501c95cf742b17d3f6442181538247188f802d8cbe2353d4f87729192a5a83"
+}
