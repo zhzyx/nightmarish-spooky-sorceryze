@@ -1,0 +1,10 @@
+{
+  "correction": "Original immutable receipt uses numeric issue; gate expects numeric issue_number or URL issue. Append explicit binding without rewriting the method-referenced proof.",
+  "evidence": {
+    "path": "data-collection/editor-runtime-diagnostics-845.json",
+    "sha256": "6259322c62413ed1ad132df2498d630e1c81e70197864dd3eb64351cefaef105"
+  },
+  "issue_number": 845,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+  "request_id": "editor-runtime-diagnostics-20261112"
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "request-editor-runtime-diagnostics-20261112",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-runtime-diagnostics-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-11T22:58:13.269674+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Godot native read_logs actual debugger errors/warnings/session lifecycle plus consumer and snapshot JSON preservation",
+    "authorization_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "design": "design-docs/editor-runtime-diagnostics-20261112.md",
+    "validation": "data-collection/editor-runtime-diagnostics-845.json",
+    "definition_ref": "AGENTS.md relative to repository root",
+    "recording_note": "Current host appends missing request source after formal gate exposed absence; earlier Kuafu and dispatch events retained. This records authorized task intake, not new authorization or retroactive acceptance.",
+    "usage": null,
+    "usage_unknown_reason": "Actual usage unavailable"
+  },
+  "evidence_refs": [],
+  "sha256": "232930e82312de0871fe947e39ae04c5ee305e8be79684ab7d2e36e4d02358db"
+}

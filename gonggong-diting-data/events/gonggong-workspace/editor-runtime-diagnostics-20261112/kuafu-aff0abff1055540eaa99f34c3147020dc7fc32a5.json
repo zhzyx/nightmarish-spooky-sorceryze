@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-aff0abff1055540eaa99f34c3147020dc7fc32a5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-runtime-diagnostics-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "bc5e09afc1ebcd84efb4b7d345b504f92c5e1336d7dfb9ad0e6028c2d6da4eae",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+    "action": "validation",
+    "detection_head": "1f6ea3e74244275efafc484d7cf324d9feea5c4a",
+    "context_sha256": "2b19ed01dfa67b39831f47f3469b19481306c485a5a7d8baccc99311de6eb14e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+    "diagnosis": "read_logs currently returns only EditorLog Output. Runtime debugger errors have a separate receiver and are omitted. Source boundary confirmed; private native reproduction and exact consumer verification remain to execute.",
+    "next_action": "Current root owns isolated source repair, bounded redacted read-only debugger snapshot and native before/after tests. Independent reviewer will verify candidate; no change to task grants or automatic log sending.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T21:33:47.598234+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T21:35:27.209331+00:00",
+  "sha256": "1d30ca64fb8de2b6125815dc4a9791c44d7e22e86dbba021a2fa7bf2bd2831b1"
+}

@@ -14,11 +14,39 @@ from run_macos_external_host_acceptance import (
     cleanup_owned_resources,
     finish_report,
     fuse_states,
+    parse_powershell_version,
+    same_product_upgrade,
     validate_reply,
 )
 
 
 class AcceptanceGateTests(unittest.TestCase):
+    def test_actual_product_receipt_must_match_pinned_package(self):
+        self.assertEqual(parse_powershell_version("PowerShell 7.6.9\n", "7.6.9"), "7.6.9")
+        for output, expected in (
+            ("OtherMicrosoftProduct 7.7.0", None),
+            ("7.7.0", None),
+            ("PowerShell 7.7.0\nunknown extra output", None),
+            ("PowerShell 7.7.0", "7.6.9"),
+        ):
+            with self.subTest(output=output), self.assertRaises(RuntimeError):
+                parse_powershell_version(output, expected)
+
+    def test_product_upgrade_allows_new_identifier_but_requires_real_version_change(self):
+        identity = ("host", "UBF8T346G9", "pwsh-original-uuid", "a" * 40)
+        candidate = ("host", "UBF8T346G9", "pwsh-new-uuid", "b" * 40)
+        original = {"product": "PowerShell", "version": "7.6.9"}
+        upgraded = {"product": "PowerShell", "version": "7.7.0"}
+        self.assertTrue(same_product_upgrade(identity, original, candidate, upgraded))
+        for changed_identity, changed_product in (
+            (candidate, original),
+            (candidate, {"product": "OtherMicrosoftProduct", "version": "7.7.0"}),
+            (("host", "OTHERTEAM00", candidate[2], candidate[3]), upgraded),
+            ((*candidate[:3], identity[3]), upgraded),
+        ):
+            with self.subTest(identity=changed_identity, product=changed_product):
+                self.assertFalse(same_product_upgrade(identity, original, changed_identity, changed_product))
+
     def test_policy_cleanup_failure_still_stops_real_child_and_saves_logs(self):
         class BrokenPolicy:
             def registry(self):

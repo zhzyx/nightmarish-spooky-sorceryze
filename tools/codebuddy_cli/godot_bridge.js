@@ -69,7 +69,7 @@ const ERROR_MESSAGES = {
     IMAGE_UNSUPPORTED: 'The CLI connection does not support image input. Images were not submitted to the model; their previews remain in this conversation.',
     NETWORK_ERROR: 'CodeBuddy CLI reported a network or service connection error.',
     PROCESS_EXIT: 'CodeBuddy CLI exited without a successful completion. No completion was confirmed; previously approved operations may already have completed. Check the Godot operation history.',
-    CONTEXT_COMPACTED: 'Codex compacted the conversation during a mandate update. This reply was discarded. Retry in the same work order to rebuild its context.',
+    CONTEXT_COMPACTED: 'CodeBuddy compacted the conversation during a mandate update. This reply was discarded. Retry in the same work order to rebuild its context.',
     PROCESS_START: 'The CodeBuddy CLI process could not be started. Check Node and CLI installation.',
     EMPTY_RESPONSE: 'CodeBuddy CLI returned no completion. Check the CLI account, service and output compatibility.',
     TIMEOUT: 'CodeBuddy CLI exceeded the response time limit. No completion was confirmed; previously approved operations may already have completed. Check the Godot operation history.',

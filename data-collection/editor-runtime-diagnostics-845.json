@@ -1,0 +1,93 @@
+{
+  "base": "c811b583d4f709f697161280ed285c08793c90ef",
+  "binary_sha256": "9e24d2e024ce398bb12e631f86c325fd44cac5bf21da656322eae97ea7d04bda",
+  "build_inputs": [
+    "editor/debugger/script_editor_debugger.cpp",
+    "editor/debugger/script_editor_debugger.h",
+    "editor/docks/ai_chat_dock.cpp"
+  ],
+  "checks": {
+    "actual_private_native_diagnostics": {
+      "bounded_characters": 29312,
+      "errors_per_session": [
+        206,
+        206
+      ],
+      "instances": 2,
+      "lifecycle": "Empty/live/stopped/clear/new generation/bounded verified",
+      "ok": true,
+      "permission_off": "Native tool disabled refuses; no model tool result",
+      "phases": [
+        "empty",
+        "bad",
+        "stopped",
+        "cleared",
+        "fixed",
+        "bounded"
+      ],
+      "redaction": "Actual short key true omitted from error text while typed JSON booleans preserved",
+      "snapshot": "Hashed envelope/payload read from editor-created files; messages_before arrays and typed consultation bools verified; no JSON::parse_string stderr"
+    },
+    "native_full": {
+      "assertions": 435575,
+      "failed": 0,
+      "passed": 1560,
+      "skipped": 3
+    },
+    "strict_windows_build": "passed 41.47 seconds; affected native objects and current main wave resources rebuilt"
+  },
+  "failures_preserved": [
+    "Before fixture proved actual debugger error missing from read_logs",
+    "Oversize multi-session returned context excerpt; now complete result <=30000 chars",
+    "Short-key serialized redaction produced invalid tool JSON; fixed typed consumer preservation",
+    "Original snapshot JSON parse errors fixed typed recursion",
+    "Snapshot fixture r1 corrected envelope handling; r2 corrected consultation intentionally omits transient tool records",
+    "Earlier full test three RuntimeConfig failures due absent fixture Python; targeted rerun passed then final combined full suite passed"
+  ],
+  "fallback": "Use prior editor binary to restore Output-only tool; project/user logs are neither migrated nor deleted",
+  "issue": 845,
+  "limits": [
+    "Controlled local model transport; real debugger and native callback, not real provider acceptance",
+    "Driver edits controlled faulty script; not an AI autonomous repair claim",
+    "Nested JSON tool-history snapshot recursion statically reviewed, not retained by consultation fixture",
+    "Known shutdown RID/ObjectDB warnings retained; no claim zero stderr",
+    "No installed editor changed; parent773 remains open"
+  ],
+  "parent": 773,
+  "raw_private_receipt_hashes": {
+    "runtime-diagnostics-before-r4.json": "cbec3e78aba1a5fedb91935eecb43f721195fb5047983d4d3235b497e49bf9da",
+    "runtime-diagnostics-build-c811.log": "4b98e3e954e3f8aa6a09410079e4ce9f40ccc6f084201df7df51609a3f5b56cd",
+    "runtime-diagnostics-c811-final.json": "8a27a84cb91726c4729431e556127edc096140acdbf91274666f68cc82db34c5",
+    "runtime-diagnostics-extended-r2.json": "6ece98557b5fe19a7fe8f1f0926ceeae8be8c36063cc8d5691eb42112cf9424b",
+    "runtime-diagnostics-native-c811-full.log": "7d8a748e36c269c65b8cac61aafd791220788f82b5a889bc0e768abf3e1acc28",
+    "runtime-diagnostics-short-key-after-r1.json": "d7c14d7d8013f79d23d0d7ba232af696b03ccae23ce65ad7f7dc6cdb4f461a12",
+    "runtime-diagnostics-short-key-before.json": "ce101a0d0643a435166c2ea6483f1f015dfb6dd8950073ed7cb0d7794b1730aa",
+    "runtime-diagnostics-snapshot-final-r1.json": "3d30034f12e3dc5418e0ae255509d5b50439eff91d221b866847ae2f9e40884c",
+    "runtime-diagnostics-snapshot-final-r2.json": "e53020c83b6dee74549603948a5490efc203ea4023db61129e96a82000e07944",
+    "runtime-diagnostics-snapshot-final-r3.json": "e781b68b8a8f19816cbe15d367e392636eadc76c930969827dcfac12ed87656d"
+  },
+  "request_id": "editor-runtime-diagnostics-20261112",
+  "review": [
+    {
+      "finding": "P2 serialized diagnostic consumer redaction breaks short-key JSON; corrected and reproduced",
+      "worker": "sinan_4d7fe2e7b67cad47"
+    },
+    {
+      "result": "No further findings in structured result consumption; found existing snapshot-side corruption, separately corrected",
+      "worker": "sinan_996856511b30a64c"
+    },
+    {
+      "integration": "Own exact source changes applied without conflicts onto c811; wave-only upstream changes independently inspected; final combined binary diagnostics and full native suite passed",
+      "result": "No findings in typed snapshot correction and actual envelope assertions",
+      "reviewed_dock_sha256": "44b8e411037a0f7ca8666bc168fabe9d06fdbfa564d8025b117ca1c49cd3d9c9",
+      "worker": "sinan_bd907a3850d56dca"
+    }
+  ],
+  "source_sha256": {
+    "editor/debugger/script_editor_debugger.cpp": "1dd276529703d50a88f8a0d9e5fd2333d0d3af95e87e9cfb8dcf8d62bc2be0fc",
+    "editor/debugger/script_editor_debugger.h": "52df2e4117e105c60b3417fc64487154b1276baa48bd4d41f3078cb32069707a",
+    "editor/docks/ai_chat_dock.cpp": "ed7c3bb61eb503c25ea8bba3c2ef893907212876620ab7faaa1cf0fd7d463d28",
+    "tests/editor/run_runtime_diagnostics.py": "afcca5490463706e39592db47a9069a610df1f2c11e4c6323dba78d6b270e424",
+    "tests/editor/runtime_diagnostics.gd": "bda6358d7dc7dca868e44f4df03cb7c30c7f3ac0df379c0573fe43b7adb15eaa"
+  }
+}

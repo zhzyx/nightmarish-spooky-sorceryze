@@ -38,10 +38,12 @@ python3 tools/editor_trusted_hosts.py revoke --role host --team TEAMID1234 --ide
 
 补充真实进程链入口 `tools/run_macos_external_host_acceptance.py`，属于仅在一次性 macOS GitHub runner 执行的宿主验收工具，不嵌入引擎。输入为当前候选编辑器、官方发布且固定 SHA-256 的 PowerShell 7.6.9/7.7.0 包，以及可选官方 Codex 应用；输出实际签名、进程 PID、原生 socket 鉴权回执和逐项结果。通过用户域 launchctl 后台启动完整祖先链，不修改签名、不打开可见桌面、不调用模型，登记前要求现有信任条目为空，结束撤销测试条目并清理自有进程。
 
-workflow 在编译前执行真实签名/launchd 预检，编译后验证未登记拒绝、登记成功、角色升降级、错误摘要拒绝、同 Team ID/identifier 的真实版本升级先拒绝再登记成功、撤销拒绝。Codex 仅在官方 Electron RunAsNode fuse 已允许时验证内建签名锚；缺条件记 unavailable，已具备条件后请求失败仍判失败。报告分别保留 non_codex_host_ok 与 full_signed_anchor_acceptance_ok，不把前者冒充后者。脚本失败可回退至已有纯链测试入口，但不能由此宣称真实链通过；所有实际结果以 CI 上传回执为准。
+workflow 在编译前执行真实签名/launchd 预检，编译后验证未登记拒绝、登记成功、角色升降级、错误摘要拒绝、同供应商且经产品版本回读确认的真实升级先拒绝再登记成功、撤销拒绝。Codex 仅在官方 Electron RunAsNode fuse 已允许时验证内建签名锚；缺条件记 unavailable，已具备条件后请求失败仍判失败。报告分别保留 non_codex_host_ok 与 full_signed_anchor_acceptance_ok，不把前者冒充后者。脚本失败可回退至已有纯链测试入口，但不能由此宣称真实链通过；所有实际结果以 CI 上传回执为准。
 
 首次真实 macOS run 43111713606 的 arm64 编译成功，随后 Python 签名拒绝用例在复制 `/usr/bin/true` 时因 `shutil.copy2` 继承系统受保护文件标志而失败，原生测试尚未执行。夹具改为只复制二进制内容并设置 owner 执行权限；实际 codesign/ad-hoc/无签名拒绝断言保留，平台 Python 测试移到编译前。故障按真实运行关联 #856，并关联原工单 #843 与父 #840；Windows 的跳过不能证明此 macOS 故障恢复。
 
 后续 run 43118045814 的真实签名拒绝与存储测试已通过，宿主预检停在官方双版本 PowerShell 的严格签名校验。排查发现登记工具把裸 requirement 文本传给 `codesign -R`，而 Apple 命令将无 `=` 前缀的值作为文件名。已仅在 CLI 参数加 `=`，保留完整 Team ID/identifier/CDHash/Apple generic 表达式；原生 `SecRequirementCreateWithString` 仍使用原始 DSL。新增分阶段签名回执与实际 macOS 字面表达式解析测试。旧运行没有阶段诊断，不能据此断言全部失败由该语法问题引起；仍须复验完整宿主链。此修复是独立宿主工具变化，不改变前次已构建的原生输入。
 
 命令语义依据 [Apple Code Signing Tasks](https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html) 与 codesign 手册：文本 requirement 需字面前缀；通用程序各架构分别签名。登记时保留全部架构完整性核验，按实际观察到的 Team ID/identifier/CDHash 找到唯一对应架构，仅对该架构执行精确摘要要求；不依赖 Python 的 Rosetta 架构猜测，也不把其他架构自动加入信任登记。
+
+实际 run 43120417239 已通过 14 项 macOS/通用登记工具测试（另 1 项非 macOS 拒绝用例跳过）及 6 项验收门禁测试，两个固定官方 PowerShell 包的严格签名检查均通过；剩余失败是验收工具错误要求不同版本维持同一 Identifier。真实 PowerShell 7.6.9/7.7.0 的标识带各自构建 UUID，会随版本改变。升级夹具现以官方固定包摘要、实际 `pwsh --version` 产品/版本回读、同 Team 和不同 CDHash 确认升级，并记录 identifier_changed；生产登记仍精确绑定新标识及摘要，同标识仅改摘要的拒绝用例保留。此调整是对真实供应商升级方式的验收纠偏，不放宽鉴权。

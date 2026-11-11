@@ -14,6 +14,7 @@ import json
 import mmap
 import os
 import plistlib
+import re
 import shutil
 import subprocess
 import sys
@@ -63,6 +64,35 @@ def sha256(path):
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def parse_powershell_version(output, expected=None):
+    match = re.fullmatch(r"PowerShell ([0-9]+\.[0-9]+\.[0-9]+(?:-[A-Za-z0-9.-]+)?)", output.strip())
+    require(match is not None, "signed executable did not report a PowerShell product version")
+    version = match[1]
+    require(expected is None or version == expected, "PowerShell version differs from pinned official package")
+    return version
+
+
+def powershell_version(binary, expected=None):
+    observed = command([binary, "--version"])
+    return dict(
+        product="PowerShell",
+        version=parse_powershell_version(observed.stdout, expected),
+        stdout=observed.stdout,
+        stderr=observed.stderr,
+        exit_code=observed.returncode,
+        expected_package_version=expected,
+    )
+
+
+def same_product_upgrade(identity, product, candidate_identity, candidate_product):
+    return (
+        identity[1] == candidate_identity[1]
+        and identity[3] != candidate_identity[3]
+        and product["product"] == candidate_product["product"] == "PowerShell"
+        and product["version"] != candidate_product["version"]
+    )
 
 
 def fuse_states(data):
@@ -308,22 +338,33 @@ def main(argv=None):
         with tempfile.TemporaryDirectory(prefix="gonggong-host-acceptance-") as temporary:
             folder = Path(temporary).resolve()
             hosts = powershell_packages(folder, report) if args.download_fixtures else []
+            fixed_versions = {path.resolve(): version for path, (version, _) in zip(hosts, PACKAGES)}
             installed = shutil.which("pwsh")
             host = args.host_pwsh or (hosts[0] if hosts else Path(installed) if installed else None)
             require(host is not None, "PowerShell host unavailable")
             host = host.resolve(strict=True)
             identity = trust.signed_identity(host, "host", diagnostics=report.setdefault("signature_checks", []))
-            report["host"] = dict(path=str(host), identity=identity, sha256=sha256(host))
+            product = powershell_version(host, fixed_versions.get(host))
+            report["host"] = dict(path=str(host), identity=identity, sha256=sha256(host), product=product)
             upgrades = [args.upgrade_pwsh] if args.upgrade_pwsh else hosts
             upgraded = None
             for candidate in upgrades:
                 candidate = candidate.resolve(strict=True)
+                if candidate == host:
+                    continue
                 observed = trust.signed_identity(candidate, "host", diagnostics=report["signature_checks"])
-                if observed[1:3] == identity[1:3] and observed[3] != identity[3]:
+                candidate_product = powershell_version(candidate, fixed_versions.get(candidate))
+                if same_product_upgrade(identity, product, observed, candidate_product):
                     upgraded = (candidate, observed)
+                    report["upgraded_host"] = dict(
+                        path=str(candidate),
+                        identity=observed,
+                        sha256=sha256(candidate),
+                        product=candidate_product,
+                        identifier_changed=observed[2] != identity[2],
+                    )
                     break
             require(upgraded is not None, "second actual vendor-signed code version unavailable")
-            report["upgraded_host"] = dict(path=str(upgraded[0]), identity=upgraded[1], sha256=sha256(upgraded[0]))
             if args.preflight:
                 report["scope"] = (
                     "environment preflight only: actual vendor signatures and launchd execution; no editor authentication tested"
