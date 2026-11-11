@@ -673,6 +673,10 @@ class AIChatDock : public EditorDock {
 	bool _design_return_allowed(int p_parent, const Dictionary &p_message) const;
 	int64_t sub_agent_parallel_pid = -1;
 	String sub_agent_parallel_output;
+	CheckBox *production_setup = nullptr;
+	LineEdit *production_capacity = nullptr;
+	bool production_preparing = false;
+	int production_setup_parent = -1;
 	bool _dispatch_parallel_sub_agents();
 	void _poll_parallel_sub_agents();
 	Dictionary sub_agent_spawned;

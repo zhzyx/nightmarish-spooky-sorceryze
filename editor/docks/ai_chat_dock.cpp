@@ -7793,6 +7793,12 @@ void fragment() {
 	auto_execute_commands->set_tooltip_text(U"勾选即持续授权 AI 以你的操作系统权限执行命令、构建、测试及脚本，不再逐次弹出 Approve。不是沙箱：命令可修改或删除文件、访问网络和启动进程，且不能通过文件撤销恢复。仅在信任当前 AI 和工程时启用；工具详情保留执行记录，可用停止按钮中断。关闭本地工具后自动授权不生效。此设置会保存到编辑器设置；与上方文件自动应用开关同时启用可连续自动开发。");
 	auto_execute_commands->connect("toggled", callable_mp(this, &AIChatDock::_automation_toggled));
 	settings->add_child(auto_execute_commands);
+	production_setup = memnew(CheckBox);
+	production_setup->set_name("ProductionSetup");
+	production_setup->set_text(U"授权并行生产：自动准备独立工作副本");
+	production_setup->set_tooltip_text(U"使用当前连接和已发现模型；按工单落地时后台准备。显式自定义配置优先，此授权仅本次编辑器会话有效。");
+	settings->add_child(production_setup);
+	production_capacity = add_field(settings, U"并行容量（正整数，不代表供应商额度）", "ProductionCapacity", "2");
 
 	const String build_root = cli_directory.get_base_dir().get_base_dir();
 #ifdef WINDOWS_ENABLED

@@ -306,7 +306,7 @@ void AIChatDock::_register_design_batch(int p_parent, const String &p_request_id
 	batch["workspace"] = _workflow_root(p_parent);
 	batch["state"] = "running";
 	batch["read_only_review"] = p_review >= 0;
-	batch["parallel_external"] = p_review < 0 && !String(EDITOR_GET("ai_chat/parallel_work_orders_config")).is_empty();
+	batch["parallel_external"] = p_review < 0 && (production_setup->is_pressed() || !String(EDITOR_GET("ai_chat/parallel_work_orders_config")).is_empty());
 	Dictionary children;
 	Array order;
 	bool pending = false;
@@ -456,7 +456,7 @@ String AIChatDock::_delegate_review(const Dictionary &p_arguments) {
 
 bool AIChatDock::_prepare_manual_design_attempt() {
 	Dictionary info = sub_agents[active_agent];
-	if (gonggong_receipt_pid >= 0 || info.get("parallel_external", false) || !String(EDITOR_GET("ai_chat/parallel_work_orders_config")).is_empty()) {
+	if (gonggong_receipt_pid >= 0 || info.get("parallel_external", false) || production_setup->is_pressed() || !String(EDITOR_GET("ai_chat/parallel_work_orders_config")).is_empty()) {
 		return false;
 	}
 	const int parent = info["parent"];
@@ -1279,7 +1279,7 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit, const D
 	sub_agent_spawned[request_id] = true;
 	_register_design_batch(p_parent, request_id, issue);
 	if (p_parent == active_agent) {
-		_append(TTR("Editor"), vformat(U"设计已定稿：已按 %s 的 %d 张生产工单在「%s」窗口内创建子会话，将按顺序逐个落地。在上方子会话标签条查看进度；前序未完成时后续会停住，可点「继续落地」。", request_id + ".md", created, parent_title));
+		_append(TTR("Editor"), vformat(U"设计已定稿：已按 %s 的 %d 张生产工单在「%s」窗口内创建子会话，将按当前执行配置落地。在上方子会话标签条查看进度；依赖未验收时后续会停住，可点「继续落地」。", request_id + ".md", created, parent_title));
 	}
 	_refresh_sub_agents();
 	_queue_history_save();
@@ -1318,7 +1318,7 @@ bool AIChatDock::_resume_work_order_agents(int p_parent, const String &p_request
 		return false;
 	}
 	if (resumed) {
-		_append(TTR("Editor"), vformat(U"继续落地：%d 个未完成的工单子会话已重新排队，按工单顺序执行。", resumed));
+		_append(TTR("Editor"), vformat(U"继续落地：%d 个未完成的工单子会话已重新排队，按当前配置和依赖验收执行。", resumed));
 	}
 	_cancel_design_batch(p_parent);
 	_register_design_batch(p_parent, p_request_id, _work_order_binding("issue_number", p_parent).to_int());
@@ -1494,8 +1494,8 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 	}
 	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
-	const String config = EDITOR_GET("ai_chat/parallel_work_orders_config");
-	if (config.is_empty()) {
+	String config = EDITOR_GET("ai_chat/parallel_work_orders_config");
+	if (config.is_empty() && !production_setup->is_pressed()) {
 		return false;
 	}
 	if (sub_agent_parallel_pid >= 0) {
@@ -1561,28 +1561,116 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 	if (workers.is_empty()) {
 		return false;
 	}
+	if (config.is_empty()) {
+		const String signature = _model_config_signature(runtime) + ":" + GongGongRuntimeConfig::path(runtime, "workflow_python") + ":" + _active_model_field()->get_text() + ":" + production_capacity->get_text() + ":" + String(Dictionary(workers[0])["designSha256"]);
+		if (String(design_batches[dispatch_parent].get("production_signature", "")) == signature) {
+			config = design_batches[dispatch_parent].get("production_config", "");
+		}
+		if (config.is_empty()) {
+			if (!allow_tools->is_pressed() || !auto_apply_file_changes->is_pressed() || !auto_execute_commands->is_pressed() || consultation_only->is_pressed()) {
+				_append(TTR("Error"), U"生产准备未启动：开启工具、自动文件修改、自动命令并退出仅咨询后继续落地。");
+				return true;
+			}
+			const String selected_model = _active_model_field()->get_text().strip_edges();
+			const Array catalog = discovered_model_catalogs.get(_model_config_signature(runtime), Array());
+			const String capacity = production_capacity->get_text().strip_edges();
+			if ((backend->get_selected() != 1 && backend->get_selected() != 2) || selected_model.is_empty() || catalog.is_empty() || !capacity.is_valid_int() || capacity.to_int() < 1) {
+				_append(TTR("Error"), U"选择已连接的 Codex/CodeBuddy CLI，刷新并选择实际发现的模型，填写正整数容量后继续落地。普通串行会话仍可用，本次未降级执行。");
+				return true;
+			}
+			Dictionary preparation;
+			preparation["workspace"] = workspace;
+			preparation["issue"] = int64_t(String(_work_order_binding("issue_number", dispatch_parent)).to_int());
+			preparation["requestId"] = request_id;
+			preparation["designSha256"] = Dictionary(workers[0])["designSha256"];
+			preparation["nativeWorkspaceWrite"] = true;
+			preparation["authorityRef"] = "editor-production-authorization:" + request_id;
+			preparation["capacity"] = capacity.to_int();
+			preparation["model"] = selected_model;
+			preparation["discoveredModels"] = catalog;
+			preparation["backend"] = backend->get_selected() == 2 ? "codex" : "codebuddy";
+			preparation["python"] = GongGongRuntimeConfig::path(runtime, "workflow_python");
+			preparation["executable"] = GongGongRuntimeConfig::path(runtime, backend->get_selected() == 2 ? "codex" : "node");
+			preparation["cliEntry"] = cli_entry->get_text().strip_edges();
+			preparation["node"] = GongGongRuntimeConfig::path(runtime, "node");
+			preparation["modelBridge"] = backend->get_selected() == 2 ? _codex_bridge() : cli_bridge->get_text().strip_edges();
+			Array orders;
+			for (const KeyValue<int, Dictionary> &entry : sub_agents) {
+				if (int(entry.value.get("parent", -1)) == dispatch_parent && String(entry.value.get("source", "")) == "design" && String(entry.value.get("request_id", "")) == request_id) {
+					orders.push_back(entry.value["number"]);
+				}
+			}
+			preparation["orders"] = orders;
+			const String directory = workspace.path_join("data-collection/outbox");
+			if (DirAccess::make_dir_recursive_absolute(directory) != OK) {
+				_append(TTR("Error"), U"无法写入生产准备目录；检查权限后继续。");
+				return true;
+			}
+			const String setup_input = directory.path_join("setup-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(OS::get_singleton()->get_ticks_usec()) + ".json");
+			Ref<FileAccess> file = FileAccess::open(setup_input, FileAccess::WRITE);
+			if (file.is_null()) {
+				_append(TTR("Error"), U"无法保存生产准备请求；检查目录权限后继续。");
+				return true;
+			}
+			file->store_string(JSON::stringify(preparation));
+			file->flush();
+			if (file->get_error() != OK) {
+				_append(TTR("Error"), U"生产准备请求写入失败；检查磁盘空间后继续。");
+				return true;
+			}
+			file.unref();
+			sub_agent_parallel_output = setup_input + ".result.json";
+			List<String> args;
+			args.push_back(_engine_root().path_join("tools/godot_parallel/setup.mjs"));
+			args.push_back(setup_input);
+			args.push_back(sub_agent_parallel_output);
+			if (OS::get_singleton()->create_process(GongGongRuntimeConfig::path(runtime, "node"), args, &sub_agent_parallel_pid) != OK) {
+				sub_agent_parallel_pid = -1;
+				_append(TTR("Error"), U"无法启动生产准备；检查 Node 路径后继续落地。");
+				return true;
+			}
+			design_batches[dispatch_parent]["production_signature"] = signature;
+			production_preparing = true;
+			production_setup_parent = dispatch_parent;
+			set_process(true);
+			_append(TTR("Editor"), U"正在后台核对连接并准备独立工作副本；不覆盖未知目录或已有工作者。");
+			return true;
+		}
+	}
 	const Variant config_value = JSON::parse_string(FileAccess::get_file_as_string(config));
 	if (!config.is_absolute_path() || config_value.get_type() != Variant::DICTIONARY) {
+		_append(TTR("Error"), U"并行配置无效：请指定存在的绝对路径 JSON 对象，修正后继续落地。未降级串行。");
 		return true;
 	}
 	const String config_sha256 = FileAccess::get_sha256(config);
-	const Array jobs = Dictionary(config_value).get("jobs", Array());
+	const Variant jobs_value = Dictionary(config_value).get("jobs", Variant());
+	if (jobs_value.get_type() != Variant::ARRAY) {
+		_append(TTR("Error"), U"并行配置缺少 jobs 数组；修正后继续落地。");
+		return true;
+	}
+	const Array jobs = jobs_value;
 	Dictionary assignments;
 	for (const Variant &value : workers) {
 		const Dictionary worker = value;
 		Dictionary assignment;
 		for (const Variant &job_value : jobs) {
+			if (job_value.get_type() != Variant::DICTIONARY) {
+				_append(TTR("Error"), U"并行配置 jobs 包含非对象项；修正后继续落地。");
+				return true;
+			}
 			const Dictionary job = job_value;
 			if (int(job.get("order", -1)) != int(worker["order"])) {
 				continue;
 			}
 			if (!assignment.is_empty()) {
+				_append(TTR("Error"), vformat(U"并行配置工单 %d 重复；保留唯一映射后继续落地。", int(worker["order"])));
 				return true;
 			}
 			assignment = job.duplicate(true);
 		}
 		const String root = assignment.get("worktree", "");
 		if (!root.is_absolute_path() || !AIChatHostRuntime::matches_recorded_directory(root, root)) {
+			_append(TTR("Error"), vformat(U"工单 %d 缺少有效独立工作副本；核对配置及目录后继续落地。", int(worker["order"])));
 			return true;
 		}
 		assignment["config_path"] = config;
@@ -1694,6 +1782,24 @@ void AIChatDock::_poll_parallel_sub_agents() {
 		if (parsed.get_type() == Variant::DICTIONARY) {
 			result = parsed;
 		}
+	}
+	if (production_preparing) {
+		production_preparing = false;
+		const int parent = production_setup_parent;
+		production_setup_parent = -1;
+		if (result.get("state", "") != "ready") {
+			_append(TTR("Error"), String(U"生产准备未完成：") + String(result.get("error", U"准备进程未留下有效回执，请核对日志和原目录。")) + U"；修复后继续落地。");
+			return;
+		}
+		if (!design_batches.has(parent)) {
+			return;
+		}
+		design_batches[parent]["production_config"] = result["config"];
+		_append(TTR("Editor"), U"独立工作副本及私有配置已准备，继续核对授权与依赖验收。");
+		if (active_agent == parent && String(design_batches[parent].get("state", "")) == "running" && production_setup->is_pressed()) {
+			_dispatch_parallel_sub_agents();
+		}
+		return;
 	}
 	for (KeyValue<int, Dictionary> &entry : sub_agents) {
 		if (String(entry.value.get("parallel_output", "")) == sub_agent_parallel_output && String(entry.value.get("state", "")) == "pending_host") {
@@ -2450,7 +2556,10 @@ bool AIChatDock::_finish_acceptance_review(int p_reviewer, const Array &p_histor
 	if (failed_review) {
 		if (context.has("producer_execution_id")) {
 			const Dictionary assignment = sub_agents[producer].get("parallel_assignment", Dictionary());
-			const String configured = EDITOR_GET("ai_chat/parallel_work_orders_config");
+			String configured = EDITOR_GET("ai_chat/parallel_work_orders_config");
+			if (configured.is_empty()) {
+				configured = assignment.get("config_path", "");
+			}
 			if (configured != String(assignment.get("config_path", "")) || FileAccess::get_sha256(configured) != String(assignment.get("config_sha256", ""))) {
 				return rejected("parallel_assignment_changed");
 			}
@@ -2533,9 +2642,12 @@ bool AIChatDock::_finish_acceptance_review(int p_reviewer, const Array &p_histor
 	acceptance_request["issue_number"] = context["producer_issue_number"];
 	acceptance_request["request_id"] = context["producer_request_id"];
 	acceptance_request["decision_json"] = serialized;
-	const String config = EDITOR_GET("ai_chat/parallel_work_orders_config");
+	String config = EDITOR_GET("ai_chat/parallel_work_orders_config");
 	if (context.has("producer_execution_id")) {
 		const Dictionary assignment = sub_agents[producer].get("parallel_assignment", Dictionary());
+		if (config.is_empty()) {
+			config = assignment.get("config_path", "");
+		}
 		if (config != String(assignment.get("config_path", "")) || FileAccess::get_sha256(config) != String(assignment.get("config_sha256", ""))) {
 			return rejected("parallel_assignment_changed");
 		}
