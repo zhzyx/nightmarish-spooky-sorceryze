@@ -1,0 +1,15 @@
+{
+  "issue": 785,
+  "pr": 788,
+  "signed_head": "569d533ee69315902e5c4a855abc07a720f8f395",
+  "main": "dc8795a4ed8ea7bd873cebf62ac13fcc06bbe655",
+  "merged_by": "Sail-Li",
+  "merged_at": "2026-11-11T13:14:20Z",
+  "ci_run": 43025815383,
+  "checks": "All applicable checks passed including Windows editor, native tests and runtime recovery; irrelevant platforms skipped by existing workflow",
+  "source_implementation": "runner receipt registration and terminal candidate snapshot",
+  "issue_complete": false,
+  "remaining": "Native external-worker receipt consumption and independent business acceptance in 783/776",
+  "superseded_failed_pr": 787,
+  "observed_at": "2026-11-11T13:14:45.901302+00:00"
+}

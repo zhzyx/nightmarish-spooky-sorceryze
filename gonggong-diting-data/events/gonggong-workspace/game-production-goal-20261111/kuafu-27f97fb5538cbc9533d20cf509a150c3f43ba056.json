@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-27f97fb5538cbc9533d20cf509a150c3f43ba056",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "413bd7ea9969b5a14785b3dafff933678d8b2d6ea01e53f8a8abd5561e664137",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/774",
+    "action": "validation",
+    "detection_head": "4030196fb82d0e9d2eb0e82d82553c23d71169df",
+    "context_sha256": "614cebd15ec82687840dea986e9954ee0fd27e9893308eecfb4d6908ad2f4c0c",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "data-collection/receipts/game-production-773/scene.json",
+    "diagnosis": "Test harness inherited GONGGONG_WORKSPACE; isolation guard rejected before launch. Clearing only the test process environment allowed the same installed binary scene validation to pass. No product defect reproduced.",
+    "next_action": "Retain original failure and successful consumer report; continue live game production validation under 773.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T10:32:58.158960+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T10:34:57.050924+00:00",
+  "sha256": "53c7c3b6947683ab438f3a6d463d340a430ac7d83084b476670a302083f4ca2d"
+}

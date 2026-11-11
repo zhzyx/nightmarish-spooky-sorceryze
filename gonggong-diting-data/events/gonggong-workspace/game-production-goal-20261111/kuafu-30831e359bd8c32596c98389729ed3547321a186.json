@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-30831e359bd8c32596c98389729ed3547321a186",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "cb54b57faafe828faee9542409c2331473c2018b47f5478308c54a09102efd81",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/794",
+    "action": "validation",
+    "detection_head": "c781cfc61607fa65da36ac8fcd8223f3ac795b09",
+    "context_sha256": "5ced523ee6cc068d6e05cae0310a73773b3b69a8df42641e436240098c91eb95",
+    "operator": "Sail-Li",
+    "worker": "codex-root-game-production-773",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "data-collection/receipts/game-production-773/live-native3.diagnostics-report.json",
+    "diagnosis": "Actual Codex A and B produced game assets concurrently. Independent backend2 reviewer successfully read both A files and returned complete pass, but reading the host-bound external producer receipt set review_source_unverified and successful list_directory results counted as unknown. This is a reproduced native consumer defect beyond controlled one-read fixtures.",
+    "next_action": "Native owner #783 accepted source repair: preserve strict candidate evidence, separately validate bound producer receipt context and record actual successful directory reads; rerun multi-tool regression and the live game chain.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T14:34:15.383157+00:00",
+    "attempted": null,
+    "repair_owner": "/root/sinan_8157a138f9681320",
+    "continuable": "Keep native publication pending; independent source integration preparation remains available."
+  },
+  "occurred_at": "2026-11-11T14:46:03.846049+00:00",
+  "sha256": "92034a0cbc6e1b582cf9e958617e3617caaee8883c234cc068e1100d0e576dd6"
+}

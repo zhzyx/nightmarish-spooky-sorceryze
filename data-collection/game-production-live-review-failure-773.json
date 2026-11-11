@@ -1,0 +1,41 @@
+{
+  "issue": 773,
+  "bug": 794,
+  "native_issue": 783,
+  "binary_sha256": "90997ad9a38caa9c76c38f1ee001fc548f08386e910113d2d308813cb1490594",
+  "scope": "Actual logged-in Codex workers and independent native Codex reviewer; isolated GitHub mandate and initial design model",
+  "result": "blocked_after_valid_game_source_reads",
+  "worker_events": [
+    {
+      "worker": "A",
+      "start_ms": 1794407887638,
+      "finish_ms": 1794408135648
+    },
+    {
+      "worker": "B",
+      "start_ms": 1794407887638,
+      "finish_ms": 1794408183930
+    }
+  ],
+  "observed": [
+    "Two actual producers created Player and Beacon scenes/scripts concurrently",
+    "Reviewer read both Player files successfully and returned complete pass",
+    "Read of host-bound external producer receipt marked review_source_unverified",
+    "Two successful directory reads were classified as unknown",
+    "No A acceptance and no downstream C launch; isolated run stopped by root after capture"
+  ],
+  "source_repair_owner": "native implementation under #783",
+  "verification": "pending",
+  "private_evidence": [
+    {
+      "path": "live-native3-report.json",
+      "sha256": "1152d33f9d6a48e2e867fe0152c08c882290ac67d9e4d9f7b4e15bbaf637bba4"
+    },
+    {
+      "path": "live-native3-report.diagnostics-report.json",
+      "sha256": "069625110b1591d6c98c40e59eaa0434adf66485d60b5487705ab3ba5dbf76a1"
+    }
+  ],
+  "private_path_base": "original #773 worktree data-collection/receipts/game-production-773",
+  "observed_at": "2026-11-11T14:53:14.890169+00:00"
+}

@@ -1,0 +1,148 @@
+{
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "source_pr": 803,
+  "signed_head": "68cdfd0d85613f786182f87774ea40c836866ab3",
+  "main": "a1340f5dd0e71a8c3c874284be3e4e2d0ab6d950",
+  "ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43062476606",
+  "installation": {
+    "schema_version": 2,
+    "source_root": "../..",
+    "workspace": "../..",
+    "main_revision": "a1340f5dd0e71a8c3c874284be3e4e2d0ab6d950",
+    "path_base": "installation_directory",
+    "default_editor": "bin/godot.windows.editor.x86_64.exe",
+    "console_editor": "bin/godot.windows.editor.x86_64.console.exe",
+    "files": [
+      {
+        "sha256": "1d0c5b04014025fb32b9337c72b56f9027a504c0256f2ea179df7699347be358",
+        "path": "bin/godot.windows.editor.x86_64.console.exe",
+        "bytes": 242688
+      },
+      {
+        "sha256": "e9d980be585095d0d690377f975110dcdc87a72bfa548d72a9accd44e4c4d94b",
+        "path": "bin/godot.windows.editor.x86_64.exe",
+        "bytes": 175976960
+      },
+      {
+        "sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+        "path": "bin/tianshu-ui.json",
+        "bytes": 67422
+      }
+    ]
+  },
+  "installation_hashes_verified_before_and_after": true,
+  "clean_main_build": {
+    "clean_source": true,
+    "source_digest": "6d42a94c69596e94718172a9df0fcbf8e294e278e04f5b53cf6e0bc6ebd0dfcf",
+    "receipt_sha256": "a953f94dc53e2bf40ce8346f7d25256b5036a623396ea23175ec8ad07719664f"
+  },
+  "checks": [
+    {
+      "scenario": "parallel-repair",
+      "exit_code": 0,
+      "report": "installed-native-parallel-repair-report.json",
+      "report_sha256": "b3d907624e619651001e3d68a111ba645688d84d4da0783e8d0c39ff27e1a2bb"
+    },
+    {
+      "scenario": "cancel-verify",
+      "exit_code": 0,
+      "report": "installed-native-cancel-verify-report.json",
+      "report_sha256": "e1f57a661fe4553eeb02be3bd2734fb4cf0c6543f1fb7c78776445e42a341978"
+    },
+    {
+      "scenario": "cold-restart",
+      "exit_code": 0,
+      "report": "installed-cold-restart-report.json",
+      "report_sha256": "d75f7a0791f19fd6cf4f3f1753f3426c313d1ca93a0def8a554826fa6a1568ce"
+    },
+    {
+      "scenario": "real-input-gameplay",
+      "exit_code": 0,
+      "marker": true,
+      "log_sha256": "f5a7007ca3ea9fdc76f7904bc14c586caf0120cdcb2113fade380456c4b13d49"
+    }
+  ],
+  "parallel_repair": {
+    "verified_decisions": 3,
+    "parent_returns": 1,
+    "events": [
+      {
+        "name": "B",
+        "phase": "start",
+        "pid": 9576,
+        "time": 1794416549644
+      },
+      {
+        "name": "A",
+        "phase": "start",
+        "pid": 131372,
+        "time": 1794416549644
+      },
+      {
+        "name": "B",
+        "phase": "finish",
+        "pid": 9576,
+        "time": 1794416550855
+      },
+      {
+        "name": "A",
+        "phase": "finish",
+        "pid": 131372,
+        "time": 1794416550855
+      },
+      {
+        "name": "A",
+        "phase": "start",
+        "pid": 31880,
+        "time": 1794416569121
+      },
+      {
+        "name": "A",
+        "phase": "finish",
+        "pid": 31880,
+        "time": 1794416570331
+      },
+      {
+        "name": "C",
+        "phase": "start",
+        "pid": 83720,
+        "time": 1794416591180
+      },
+      {
+        "name": "C",
+        "phase": "finish",
+        "pid": 83720,
+        "time": 1794416592392
+      }
+    ]
+  },
+  "cancel_verify": {
+    "verified_decisions": 0,
+    "result": "native_acceptance_passed"
+  },
+  "cold_restart": {
+    "ok": true,
+    "result": "accepted"
+  },
+  "full_suite": {
+    "tests": 1560,
+    "assertions": 435560,
+    "failed": 0,
+    "skipped": 3,
+    "evidence": "data-collection/native-upstream-recovery-783.json"
+  },
+  "private_report_sha256": "950617aac6c3a5f7e83ae6f0f3e7b45ae79a23272267a7ce419eabe7e1f971e9",
+  "game_artifact": "project/games/BeaconRun-773-final/project.godot",
+  "game_artifact_path_base": "installed workspace root",
+  "rollback": {
+    "verified_previous_main": "c781cfc61607fa65da36ac8fcd8223f3ac795b09",
+    "backup_verified_before_install": true
+  },
+  "boundaries": [
+    "Installed native scenarios use isolated model and GitHub transports with actual editor/Python/Node/git/process behavior",
+    "Actual Codex game production and independent review are separately audited in game-production-live-773.json and game-production-independent-review-773.json",
+    "Final gameplay uses the installed binary and actual engine Input events; no desktop input or focus manipulation"
+  ]
+}

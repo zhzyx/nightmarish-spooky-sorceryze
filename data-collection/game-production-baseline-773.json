@@ -1,0 +1,78 @@
+{
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "source_base": "4030196fb82d0e9d2eb0e82d82553c23d71169df",
+  "installed_editor_sha256": "c3e47e13c7bd0d05d02ecea2dad7036d6f61e216b01c26316b511c83d8a6ef1a",
+  "canvas": {
+    "result": "passed",
+    "separate_candidates": true,
+    "terminal": [
+      "cancelled",
+      "completed"
+    ],
+    "model": "controlled loopback fixture"
+  },
+  "scene_checks": [
+    "native metadata references reject structural edits; scalar metadata permits normal move and undo",
+    "script storage references reject structural edits without getters or broken paths",
+    "subtree move, owners, native animation paths, undo and redo",
+    "subtree delete and exact owner/animation restoration",
+    "script-attached native property edit and undo",
+    "script-shadowed native rename/add/remove/reparent/move/owner with undo and redo",
+    "instance editable override, protected internal structure, instance-root subtree move",
+    "native resource assignment/undo and explicit resource export",
+    "unchanged-version Gradient content staleness; nested script/cycle rejection and fresh save",
+    "persistent signal connect/disconnect and undo without method invocation",
+    "script-shadowed native connect/disconnect with undo and redo",
+    "native history branch rejects approval even when UndoRedo version and scene values repeat",
+    "run project and scene approvals bind history epoch when numeric version repeats",
+    "stale property and resource file hash rejection",
+    "no preview loading; loader delete/replace/old-value mutation rejected after confirmation",
+    "native texture reimport/scan and actual import metadata",
+    "PCK approval binds actual imported artifact contents",
+    "native preset project pack export with actual output hash",
+    "native ZIP export succeeds through project destination with actual archive validation",
+    "disabled macOS signing accepts empty native collections and rejects nonempty credential collections",
+    "PCK binds global class cache; editor receipts preserve approval validity",
+    "application export missing templates is a real failure, no download",
+    "path/tool/consultation boundaries",
+    "inherited property override and local addition; inherited structure protected"
+  ],
+  "live_cli": {
+    "complete_ms": {
+      "https://github.com/fixture/game/issues/1": {
+        "at": 9924
+      },
+      "https://github.com/fixture/game/issues/2": {
+        "at": 10414
+      }
+    },
+    "errors": {},
+    "launch_ms": {
+      "https://github.com/fixture/game/issues/1": 0,
+      "https://github.com/fixture/game/issues/2": 25
+    },
+    "loaded_scenes": {
+      "Beacon": true,
+      "Scout": true
+    },
+    "max_frame_ms": 112.465,
+    "p95_frame_ms": 8.004
+  },
+  "game_integration": {
+    "executor": "current Codex host; not autonomous editor continuation",
+    "result": "GAME_PRODUCTION_PLAYABLE_OK",
+    "checks": [
+      "movement",
+      "goal reached",
+      "restart"
+    ]
+  },
+  "remaining_issues": [
+    775,
+    776,
+    777
+  ],
+  "overall_complete": false
+}

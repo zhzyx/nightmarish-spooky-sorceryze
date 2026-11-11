@@ -1,0 +1,14 @@
+{
+  "issue": 792,
+  "pr": 793,
+  "signed_head": "3d103683d69756f30533dc82fb7e0e607ac9a67d",
+  "main": "a18c04fc16a5ca54bf36b34a708085fd53aa4062",
+  "merged_by": "Sail-Li",
+  "merged_at": "2026-11-11T14:20:53Z",
+  "ci_run": 43035778077,
+  "all_applicable_checks": "passed",
+  "delivered_scope": "External runner source-bound failed-review repair continuation, one successor per predecessor, immutable provenance and rollback",
+  "overall_complete": false,
+  "remaining": "Native editor final consumer and installed game-production acceptance under #783/#776/#773",
+  "observed_at": "2026-11-11T14:29:16.900938+00:00"
+}

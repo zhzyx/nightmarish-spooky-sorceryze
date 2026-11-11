@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-20feb140c7ef3e5755babf5d55d4e8e13bb83390d59c046ae963be3e0c1386d9",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "occurred_at": "2026-11-11T15:54:23.259994+00:00",
+  "evidence_refs": [
+    "kuafu-30831e359bd8c32596c98389729ed3547321a186",
+    "learn-0f1bf5b91d0a72c7f842fdff791fe8f1b6279b1d03b554f141b45c0e25cc4fe3"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "review-context-and-source-evidence",
+    "revision": 3,
+    "previous": "704ae3f2649b906ea206b3a2834c6d2d8d5da93d567ef7dfa09cc18d2a3c2492",
+    "action": "verify",
+    "details": {
+      "test": "Build21 native controlled auxiliary context regressions plus actual logged-in Codex game chain and root independent game input validation; independent delta reviewer checked raw owner diagnostics and ran unit3/11.",
+      "expected": "Actual Codex A/B parallel production and three independent acceptances released C exactly once and resumed parent once; game movement, goal and restart passed independent real-input checks. Same native candidate positive upstream/transcript context succeeded; auxiliary drift and auxiliary-as-evidence rejected with zero decisions, as independently reviewed.",
+      "observed": "Actual Codex A/B parallel production and three independent acceptances released C exactly once and resumed parent once; game movement, goal and restart passed independent real-input checks. Same native candidate positive upstream/transcript context succeeded; auxiliary drift and auxiliary-as-evidence rejected with zero decisions, as independently reviewed."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/game-production-live-773.json",
+        "sha256": "435979d101740f693a7c2d694fc1d583168082dc1a3a8fc5790adc7bf08eaad7"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/kuafu-30831e359bd8c32596c98389729ed3547321a186.json",
+      "sha256": "92034a0cbc6e1b582cf9e958617e3617caaee8883c234cc068e1100d0e576dd6"
+    }
+  },
+  "sha256": "cbadc0358370649b5eb6841284f9a3e3bb0c9703fb340500b06afe9141900b10"
+}

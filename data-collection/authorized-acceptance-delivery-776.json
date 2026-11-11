@@ -1,0 +1,19 @@
+{
+  "issue": 776,
+  "pr": 791,
+  "signed_head": "cd7d188e3829807febdd0740a7f5c0b3ef041563",
+  "main": "5c2cddf8ac5241ae575b63e4c1e39cffbe37cd42",
+  "merged_by": "Sail-Li",
+  "merged_at": "2026-11-11T13:44:47Z",
+  "ci_run": 43030077394,
+  "all_applicable_checks": "passed",
+  "delivered_scope": "Trusted Python/Node acceptance adapter, actual ledger projection and pure-read asynchronous currentness verifier",
+  "overall_complete": false,
+  "remaining_issues": [
+    783,
+    785,
+    792
+  ],
+  "superseded_failed_pr": 790,
+  "observed_at": "2026-11-11T13:47:54.056134+00:00"
+}

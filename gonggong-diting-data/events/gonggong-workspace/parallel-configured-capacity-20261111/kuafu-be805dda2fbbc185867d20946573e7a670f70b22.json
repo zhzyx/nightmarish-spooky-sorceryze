@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-be805dda2fbbc185867d20946573e7a670f70b22",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "parallel-configured-capacity-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/777",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "37814e734c4663b176f17853993894cd55177bdbb05a48a2941c3e6eeab7960f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/777",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/778",
+    "action": "dispatch",
+    "detection_head": "4030196fb82d0e9d2eb0e82d82553c23d71169df",
+    "context_sha256": "d839bac10a8e087c9c647cbe9ddbbe9f6cc3ee03ae55f5d8724be3d6ce2ad25b",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/777",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/779",
+    "diagnosis": "GitHub TLS handshake timed out before native launch. The retained claim was verified never-launched and released; retry obtained an actual independent reviewer receipt and completed review. Formal gate and committed-data verification subsequently passed.",
+    "next_action": "Wait exact PR head CI and verify remote main after merge; preserve this later operational receipt for parent-goal delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T10:48:47.016268+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T11:02:45.265229+00:00",
+  "sha256": "9859d9a7b5fdee8bd865969e146c048df07be6a3ebddf793379711eec680f646"
+}
