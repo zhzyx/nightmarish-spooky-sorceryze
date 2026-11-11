@@ -1,0 +1,35 @@
+{
+  "issue_number": 810,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+  "request_id": "editor-production-setup-20261112",
+  "integration_base": "1f6ea3e74244275efafc484d7cf324d9feea5c4a",
+  "prior_evidence": "data-collection/editor-production-setup-810-final.json",
+  "upstream_pr": 822,
+  "overlapping_write_paths": [],
+  "reviewed_source_blobs_unchanged": true,
+  "integration": "Own staged candidate stashed, upstream main fast-forwarded, exact index restored. Main changes Tianshu feedback/stale access only; native prepare source and tests byte-equivalent by Git blob to independently reviewed candidate. Original immutable handoff raw hash preserved.",
+  "checks": [
+    {
+      "command": "strict Windows SCons editor warnings=extra werror=yes cached rebuild",
+      "passed": true,
+      "observed": "Generated embedded Tianshu input invalidated editor target; rebuild passed17.85s"
+    },
+    {
+      "command": "run_tianshu_spatial.py --godot rebuilt_editor --report private_report",
+      "passed": true,
+      "observed": "Embedded native Tianshu plus restart assertions pass; preceding source-only trial also passed after clearing inherited GONGGONG_WORKSPACE in isolated test env"
+    },
+    {
+      "command": "run_native_production_setup.py --backend codex --rebind-python alternate_python --case models-initial-ok",
+      "passed": true,
+      "observed": "Normal setup with in-flight Python switch and actual concurrent worker receipts passed on new combined binary"
+    }
+  ],
+  "binary_sha256": "1975242a77d3675d51e04a26b5542bc98978a54d00a3c429c5d6c03cf9a6b173",
+  "setup_report_sha256": "5337596251b8ea1469599965fdba41fe2742b69e1fd3d53131d739440f229736",
+  "spatial_report_sha256": "8c021b2fec78665f947f355873c9564df69b07b8acf0537bf035178539941326",
+  "limitations": [
+    "Controlled provider/GitHub transports only",
+    "No installed editor switched; parent773 acceptance continues"
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "issue_number": 810,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+  "request_id": "editor-production-setup-20261112",
+  "parent_issue": 773,
+  "recorded_at": "2026-11-11T20:01:55.945461+00:00",
+  "base_revision": "46697266403533f1038fd129956859597d4eda88",
+  "candidate_state": "Validated implementation; formal submission/main receipt tracked separately",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "674056205dc3fe9f04a5029a5345bf09d2258b79fb7fe550755d5a915c664ce6",
+    "editor/docks/ai_chat_dock.h": "bd384d7787866cc033cad6115a9b92b6369162ee4cb55ab8f51bb3951ad75c32",
+    "editor/docks/ai_chat_sub_agents.cpp": "eef932eff38f4f089da51bde0be723870b09646afe762f8bd9ea706eefc47ab4",
+    "tools/godot_parallel/setup.mjs": "fd558acac3fc736f010acddcc258a2349f4e10d33543a388ae16c07339eb22dd",
+    "tests/editor/test_production_setup.mjs": "7225165f2ce4c310dde3417ef986afc4560dbdbc9d1afc2b3269a80cd2fae1d6",
+    "tests/editor/run_native_production_setup.py": "db5845099f4f413aec0095e4c9808bf3ebab5be9275c076ff81f2dc09a4cb45c",
+    "tests/editor/native_acceptance_parallel.py": "1e88f01cdcd102df305ce3b007f1846bd43a570a0d86d77080cddb29443712c4"
+  },
+  "input_blobs": {
+    "editor/docks/ai_chat_dock.cpp": "992f010e269108bfbbc8cd7f16e8c62919d262db",
+    "editor/docks/ai_chat_dock.h": "13bb625caa4bb350720637b7bc4dcd851d915650",
+    "editor/docks/ai_chat_sub_agents.cpp": "ecffbf35b6af7490ae2f203d8f888a7fceb15d1d",
+    "tools/godot_parallel/setup.mjs": "502a37fcb643c8c4b38ba87ddbe6849d0e8e1b79",
+    "tests/editor/test_production_setup.mjs": "232b335204af2c37dd02128e13ea2f5a0c7b0d7b",
+    "tests/editor/run_native_production_setup.py": "07effa42ac09d0fc08a4424c5c96d8e18640e940",
+    "tests/editor/native_acceptance_parallel.py": "d8845f91dea0373ba5db3ebbaeec86b6d20bdf95"
+  },
+  "build_impact": {
+    "placement": "Existing native editor and host_tool extension; no new independently registered module",
+    "host_contract": "Native session controls authorize asynchronous installed Node setup; current CLI login/model discovery, immutable snapshot/config, existing runner and independent acceptance remain authoritative",
+    "rollback": "Disable automatic setup and restore prior native/tool versions; retain explicit configuration, private copies, immutable receipts and unknown reservations",
+    "native_invalidation": {
+      "passed": true,
+      "before_gui_sha256": "0bf9512c8e5840d22f9fd75108b498c63516345d5689b09a84faeda7d0efbe1d",
+      "after_gui_sha256": "efa837d8f6fb20eed457cd919a4a123731d96f396fdd81c9d5a72a038922cca7",
+      "observed": "Main integration and Python signature input changes rebuilt native targets; actual normal UI and runtime rebind passed"
+    },
+    "native_build": "Windows MSVC x86_64 editor tests=yes warnings=extra werror=yes; candidate build, not final clean installed release",
+    "host_behavior": {
+      "passed": true,
+      "observed": "Normal Codex/CodeBuddy controls create two real isolated worktrees without user JSON, preserve raw design bytes, dispatch concurrent processes and verify bound receipts"
+    }
+  },
+  "checks": [
+    {
+      "command": "node --test tests/editor/test_production_setup.mjs",
+      "passed": true,
+      "observed": "25/25: uncommitted snapshots with source HEAD/index unchanged, EOL/encoding, longpaths, exact ownership, crash/retry and concurrent recovery; final helper differs only by EOL/EOF whitespace normalization, verified byte equivalence after normalization"
+    },
+    {
+      "command": "GONGGONG_TEST_PYTHON=verified_python godot --headless --test",
+      "passed": true,
+      "observed": "Combined main build: 1560 passed, 435575 assertions, 3 existing skips; final one-line Python signature correction subsequently tested by 86 AIChat cases / 1583 assertions and two native rebind scenarios"
+    },
+    {
+      "command": "PYTHONUTF8=1 NATIVE_ACCEPTANCE_JOB_OBJECT=trusted_installed_module CODEBUDDY_GIT_BASH_PATH=verified_bash python -X utf8 tests/editor/run_native_production_setup.py --backend codex|codebuddy --rebind-python alternate_verified_python --case models-initial-ok --godot verified_binary --node verified_node --out private_report",
+      "passed": true,
+      "observed": "Both normal provider selections, discovery and 2 concurrent actual workers pass; changing Python during in-flight preparation creates new immutable config before worker dispatch"
+    },
+    {
+      "command": "clang-format --dry-run --Werror; ruff check/format --check; mypy two fixture files; git diff --cached --check",
+      "passed": true,
+      "observed": "Changed native/Python files pass; staged EOF blank removed without helper logic change"
+    }
+  ],
+  "native_evidence": [
+    {
+      "backend": "codex",
+      "report_sha256": "077dbc9caa700fadfa32710f70831848852f58bcfac8bdb73f5cfe4614b6b2fe",
+      "binary_sha256": "efa837d8f6fb20eed457cd919a4a123731d96f396fdd81c9d5a72a038922cca7",
+      "passed": true,
+      "normal_ui_controls": true,
+      "manual_configuration_absent": true,
+      "workers": 2,
+      "concurrent_execution": true,
+      "bound_receipts": 4,
+      "live_model_discovery_count": 3,
+      "immutable_config_versions": 2,
+      "python_changed_during_preparation": true,
+      "repository_longpaths_before": false,
+      "repository_longpaths_after": "true",
+      "base_fixture_note": "Serial base assertions are diagnostics only; explicit native_production_setup oracle passed."
+    },
+    {
+      "backend": "codebuddy",
+      "report_sha256": "0f08331470f870fa61f2405e81e4e40a4ec5b998047b10563de9d0e8ed3ecd83",
+      "binary_sha256": "efa837d8f6fb20eed457cd919a4a123731d96f396fdd81c9d5a72a038922cca7",
+      "passed": true,
+      "normal_ui_controls": true,
+      "manual_configuration_absent": true,
+      "workers": 2,
+      "concurrent_execution": true,
+      "bound_receipts": 4,
+      "live_model_discovery_count": 3,
+      "immutable_config_versions": 2,
+      "python_changed_during_preparation": true,
+      "repository_longpaths_before": false,
+      "repository_longpaths_after": "true",
+      "base_fixture_note": "Serial base assertions are diagnostics only; explicit native_production_setup oracle passed."
+    }
+  ],
+  "independent_review": {
+    "full_review": "collaboration.final:/root/sinan_d5ca9f490f7492dd:workflow-python-cache-signature",
+    "finding": "P2: workflow_python absent from production cache signature; root corrected and both actual native rebind scenarios passed",
+    "correction_review": "collaboration.final:/root/sinan_666b78a8878c7bb4:python-correction-no-findings",
+    "scope": "Independent source and evidence review; native execution performed by root, not independently rerun by reviewer"
+  },
+  "preserved_failures": [
+    "Windows long-path worktree failure: repository-local core.longpaths enabled and tested from false; no global Git setting changed",
+    "Stash normalized original hash-bound CRLF evidence; exact original bytes restored against immutable hash and narrow -text attribute added",
+    "Root fixture reinvocation omitted Job Object/UTF8/Python environment: failures retained, corrected invocations passed; not counted as product success",
+    "Independent review Python cache omission corrected with real in-flight reconfiguration regression"
+  ],
+  "original_handoff": {
+    "path": "data-collection/editor-production-setup-810.json",
+    "sha256": "32501c95cf742b17d3f6442181538247188f802d8cbe2353d4f87729192a5a83",
+    "scope": "Initial seven tests, preserved unchanged; superseded validation scope is this new record"
+  },
+  "limitations": [
+    "GitHub and model responses are controlled transports; no live provider authentication/quality/quota claim",
+    "Configured capacity is an operator limit, not measured optimal throughput",
+    "Ordinary external game repositories require #821; task-level native editing authorization is #820",
+    "Final installed editor unchanged; parent #773 retains real-account combined production, run, repair and installation acceptance"
+  ]
+}
