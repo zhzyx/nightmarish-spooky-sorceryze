@@ -4394,6 +4394,7 @@ void AIChatDock::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_daqian_models"), &AIChatDock::_get_daqian_models);
 	ClassDB::bind_method(D_METHOD("open_daqian_chat", "source", "issue", "request", "message", "preview", "selection", "embedded", "preview_receipt", "existing_only", "background"), &AIChatDock::_open_daqian_chat, DEFVAL(Dictionary()), DEFVAL(false), DEFVAL(String()), DEFVAL(false), DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("mount_daqian_chat", "host"), &AIChatDock::_mount_selected_chat);
+	ClassDB::bind_method(D_METHOD("stage_daqian_message", "host", "message"), &AIChatDock::_stage_daqian_message);
 	ClassDB::bind_method(D_METHOD("unmount_daqian_chat"), &AIChatDock::_unmount_selected_chat);
 	ADD_SIGNAL(MethodInfo("daqian_chat_unmounted"));
 	ADD_SIGNAL(MethodInfo("daqian_requirement_phase", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::STRING, "phase"), PropertyInfo(Variant::DICTIONARY, "design")));
@@ -4598,6 +4599,21 @@ bool AIChatDock::_confirm_issue_approval(const String &p_url, const String &p_to
 	return daqian_approval.get("url", "") == p_url && _confirm_daqian_approval(p_token);
 }
 
+String AIChatDock::_stage_daqian_message(Control *p_host, const String &p_message) {
+	AIChatDock *worker = selected_worker ? selected_worker : this;
+	if (!p_host || worker->daqian_chat_host != p_host->get_instance_id() || worker->daqian_mount_conversation != worker->conversation_id) {
+		return U"聊天挂载已改变，请重新打开。";
+	}
+	if (p_message.is_empty() || p_message.length() > 12000) {
+		return U"模型上下文为空或过长。";
+	}
+	if (!worker->input->get_text().is_empty() || !worker->draft_images.is_empty() || !worker->queued_messages.is_empty()) {
+		return U"已保留原草稿、附件或排队消息；未覆盖模型上下文。";
+	}
+	worker->input->set_text(p_message);
+	return String();
+}
+
 bool AIChatDock::_mount_daqian_chat(Control *p_host) {
 	if (!is_inside_tree() || !p_host || !p_host->is_inside_tree() || p_host->is_queued_for_deletion() || p_host->get_tree() != get_tree() || p_host == this || is_ancestor_of(p_host) || p_host->is_ancestor_of(this) || daqian_mount_conversation.is_empty() || conversation_id != daqian_mount_conversation) {
 		return false;
@@ -4691,7 +4707,8 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 	auto matches = [&](const Dictionary &p_entry, bool p_current) {
 		const String source = p_entry.get("source", "");
 		const bool exact = String(p_entry.get("issue_number", "")).to_int() == p_issue && String(p_entry.get("request_id", "")) == p_request;
-		const bool alias = p_issue > 0 && exact && source.begins_with("draft_") && p_source == issue_url;
+		const bool draft_source = source.begins_with("draft_") || source.begins_with("spatial_");
+		const bool alias = p_issue > 0 && exact && draft_source && p_source == issue_url;
 		if (!(source == p_source && (exact || !p_embedded)) && !alias) {
 			return false;
 		}
@@ -4722,7 +4739,8 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		if (p_embedded) {
 			daqian_mount_conversation = conversation_id;
 			Dictionary entry = bindings[conversation_id];
-			const bool linked_draft = p_issue > 0 && p_source == issue_url && String(entry.get("source", "")).begins_with("draft_");
+			const String source = entry.get("source", "");
+			const bool linked_draft = p_issue > 0 && p_source == issue_url && (source.begins_with("draft_") || source.begins_with("spatial_"));
 			if (entry.get("scope", "") != scope || (linked_draft && entry.get("issue_url", "") != issue_url)) {
 				entry["scope"] = scope;
 				if (linked_draft) {

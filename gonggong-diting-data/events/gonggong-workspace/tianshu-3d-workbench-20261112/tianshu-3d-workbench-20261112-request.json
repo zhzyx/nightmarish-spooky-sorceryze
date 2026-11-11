@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-3d-workbench-20261112-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-3d-workbench-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-11T18:28:25.940964+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/813",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "3D embedded Tianshu, model-linked issues and production content, native chat task drafting",
+    "authorization_ref": "Current user goal and Issue 813 execution authority",
+    "design": "design-docs/tianshu-3d-workbench-20261112.md",
+    "validation": "data-collection/tianshu-3d-workbench-813.json",
+    "usage": null,
+    "usage_unknown_reason": "Host token/cost usage not exposed"
+  },
+  "evidence_refs": [],
+  "sha256": "072e1fadc35befddb4e779018371c97508a617688fa6a44a44fc24b2926e3502"
+}

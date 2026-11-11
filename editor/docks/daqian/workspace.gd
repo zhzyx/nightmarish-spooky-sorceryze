@@ -10,6 +10,8 @@ var environment_cleanup_active := false
 var observed_runtime: Dictionary = {}
 
 var canvas_script: Script
+var spatial_script: Script
+var spatial_workbench: EditorPlugin
 var board_bundle_base64 := ""
 var board_bundle_sha256 := ""
 # Reviewed pre-delta helpers: original model routing and the later offline/HTTP status fix.
@@ -4377,6 +4379,11 @@ func _host_result(pid: int, req_path: String, result_path: String) -> Dictionary
 
 func _attach_chat() -> void:
 	chat = get_tree().root.find_child("AI Chat", true, false)
+	if spatial_script and not is_instance_valid(spatial_workbench):
+		spatial_workbench = spatial_script.new()
+		spatial_workbench.name = "TianshuSpatialWorkbench"
+		add_child(spatial_workbench)
+		spatial_workbench.build(self)
 	if get_meta("unified_settings", false) and is_instance_valid(chat) and chat.has_signal("runtime_configuration_changed"):
 		chat.connect("runtime_configuration_changed", _queue_environment_check)
 	if chat and chat.has_signal("daqian_issue_bound"):
