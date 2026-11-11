@@ -54,6 +54,8 @@ def sanitized_environment(base):
         directory = base / "private-home" / key.lower()
         directory.mkdir(parents=True, exist_ok=True)
         environment[key] = str(directory)
+    # The macOS model-runtime discovery reads this directory even in a private home.
+    (Path(environment["HOME"]) / "Library/Caches").mkdir(parents=True, exist_ok=True)
     environment["PYTHONNOUSERSITE"] = "1"
     environment["GODOT_AI_API_KEY"] = ""
     environment["OPENAI_API_KEY"] = ""
