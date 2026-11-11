@@ -3,6 +3,7 @@
 import contextlib
 import io
 import os
+import re
 import shutil
 import stat
 import subprocess
@@ -71,21 +72,115 @@ class RegistryLogic(unittest.TestCase):
         reply = SimpleNamespace(
             returncode=0,
             stdout="",
-            stderr="Identifier=com.example.host\nTeamIdentifier=ABCDEFGHIJ\nCDHash=" + "a" * 40 + "\n",
+            stderr="Executable="
+            + str(Path(__file__).resolve())
+            + "\nIdentifier=com.example.host\nTeamIdentifier=ABCDEFGHIJ\nCDHash="
+            + "a" * 40
+            + "\n",
         )
         with (
             patch.object(hosts.sys, "platform", "darwin"),
-            patch.object(hosts.subprocess, "run", return_value=reply) as run,
+            patch.object(
+                hosts.subprocess,
+                "run",
+                side_effect=lambda args, **kwargs: (
+                    SimpleNamespace(returncode=0, stdout="arm64", stderr="") if args[0] == "/usr/bin/lipo" else reply
+                ),
+            ) as run,
         ):
             self.assertEqual(hosts.signed_identity(__file__, "host"), ENTRY)
-            self.assertEqual(run.call_count, 3)
-            self.assertIn(hosts.requirement(ENTRY), run.call_args.args[0])
+            self.assertEqual(run.call_count, 5)
+            self.assertNotIn("--architecture", run.call_args_list[0].args[0])
+            arguments = run.call_args.args[0]
+            self.assertEqual(arguments[arguments.index("--architecture") + 1], "arm64")
+            self.assertEqual(arguments[arguments.index("-R") + 1], "=" + hosts.requirement(ENTRY))
+            self.assertFalse(hosts.requirement(ENTRY).startswith("="))
         with (
             patch.object(hosts.sys, "platform", "darwin"),
-            patch.object(hosts.subprocess, "run", return_value=SimpleNamespace(returncode=1)),
+            patch.object(
+                hosts.subprocess, "run", return_value=SimpleNamespace(returncode=1, stdout="", stderr="bad signature")
+            ),
         ):
             with self.assertRaises(hosts.TrustError):
                 hosts.signed_identity(__file__, "host")
+
+    def test_requirement_failure_preserves_stage_and_codesign_diagnostic(self):
+        valid = SimpleNamespace(returncode=0, stdout="", stderr="")
+        details = SimpleNamespace(
+            returncode=0,
+            stdout="",
+            stderr="Executable="
+            + str(Path(__file__).resolve())
+            + "\nIdentifier=com.example.host\nTeamIdentifier=ABCDEFGHIJ\nCDHash="
+            + "a" * 40
+            + "\n",
+        )
+        invalid = SimpleNamespace(
+            returncode=1, stdout="", stderr="test requirement: code failed to satisfy specified code requirement(s)"
+        )
+        diagnostics = []
+        with (
+            patch.object(hosts.sys, "platform", "darwin"),
+            patch.object(
+                hosts.subprocess,
+                "run",
+                side_effect=[
+                    valid,
+                    details,
+                    SimpleNamespace(returncode=0, stdout="arm64", stderr=""),
+                    details,
+                    invalid,
+                ],
+            ),
+            self.assertRaisesRegex(hosts.TrustError, "exact_requirement: exit=1: test requirement"),
+        ):
+            hosts.signed_identity(__file__, "host", diagnostics=diagnostics)
+        self.assertEqual(
+            [item["stage"] for item in diagnostics], ["integrity", "identity", "slice_identity", "exact_requirement"]
+        )
+        self.assertEqual(diagnostics[-1]["stderr"], invalid.stderr)
+        self.assertEqual(diagnostics[-1]["exit_code"], 1)
+
+    def test_observed_slice_is_bound_independent_of_architecture_order(self):
+        for selected in ("arm64", "x86_64"):
+            with self.subTest(selected=selected):
+
+                def run(args, **kwargs):
+                    if args[0] == "/usr/bin/lipo":
+                        return SimpleNamespace(returncode=0, stdout="x86_64 arm64", stderr="")
+                    architecture = args[args.index("--architecture") + 1] if "--architecture" in args else selected
+                    digest = "a" * 40 if architecture == selected else "b" * 40
+                    return SimpleNamespace(
+                        returncode=0,
+                        stdout="",
+                        stderr=f"Executable={Path(__file__).resolve()}\nIdentifier=com.example.host\nTeamIdentifier=ABCDEFGHIJ\nCDHash={digest}\n",
+                    )
+
+                with (
+                    patch.object(hosts.sys, "platform", "darwin"),
+                    patch.object(hosts.subprocess, "run", side_effect=run) as invoked,
+                ):
+                    self.assertEqual(hosts.signed_identity(__file__, "host"), ENTRY)
+                    final = invoked.call_args.args[0]
+                    self.assertEqual(final[final.index("--architecture") + 1], selected)
+                    self.assertIn("=" + hosts.requirement(ENTRY), final)
+
+    def test_duplicate_slice_identity_is_rejected(self):
+        def run(args, **kwargs):
+            if args[0] == "/usr/bin/lipo":
+                return SimpleNamespace(returncode=0, stdout="x86_64 arm64", stderr="")
+            return SimpleNamespace(
+                returncode=0,
+                stdout="",
+                stderr=f"Executable={Path(__file__).resolve()}\nIdentifier=com.example.host\nTeamIdentifier=ABCDEFGHIJ\nCDHash={'a' * 40}\n",
+            )
+
+        with (
+            patch.object(hosts.sys, "platform", "darwin"),
+            patch.object(hosts.subprocess, "run", side_effect=run),
+            self.assertRaisesRegex(hosts.TrustError, "host_observed_architecture_ambiguous"),
+        ):
+            hosts.signed_identity(__file__, "host")
 
     def test_changed_observed_identity_does_not_write(self):
         with (
@@ -118,6 +213,53 @@ class RegistryLogic(unittest.TestCase):
 
 @unittest.skipUnless(sys.platform == "darwin", "requires real macOS codesign and POSIX filesystem")
 class MacOSIntegration(unittest.TestCase):
+    def test_actual_universal_exact_digest_requires_same_slice(self):
+        binary = "/usr/bin/true"
+        architectures = subprocess.run(
+            ["/usr/bin/lipo", "-archs", binary], check=True, capture_output=True, text=True
+        ).stdout.split()
+        if len(architectures) < 2:
+            self.skipTest("system fixture is not universal; no cross-slice evidence")
+        subprocess.run(["/usr/bin/codesign", "--verify", "--strict", binary], check=True, capture_output=True)
+        details = subprocess.run(
+            ["/usr/bin/codesign", "--display", "--verbose=4", "--architecture", architectures[0], binary],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        hashes = re.findall(r"^CDHash=([a-f0-9]{40})$", details.stdout + details.stderr, re.MULTILINE)
+        self.assertEqual(len(hashes), 1)
+        expression = '=anchor apple and cdhash H"' + hashes[0] + '"'
+        subprocess.run(
+            ["/usr/bin/codesign", "--verify", "--strict", "--architecture", architectures[0], "-R", expression, binary],
+            check=True,
+            capture_output=True,
+        )
+        other = subprocess.run(
+            ["/usr/bin/codesign", "--verify", "--strict", "--architecture", architectures[1], "-R", expression, binary],
+            capture_output=True,
+        )
+        self.assertNotEqual(other.returncode, 0)
+        all_slices = subprocess.run(
+            ["/usr/bin/codesign", "--verify", "--strict", "-R", expression, binary], capture_output=True
+        )
+        self.assertNotEqual(all_slices.returncode, 0)
+
+    def test_actual_codesign_literal_requirement_is_not_a_filename(self):
+        # Exercise Apple's actual -R parser, without modifying or registering
+        # the system binary. This is syntax evidence, not third-party host trust.
+        expression = "anchor apple"
+        subprocess.run(
+            ["/usr/bin/codesign", "--verify", "--strict", "-R", "=" + expression, "/usr/bin/true"],
+            check=True,
+            capture_output=True,
+        )
+        bare = subprocess.run(
+            ["/usr/bin/codesign", "--verify", "--strict", "-R", expression, "/usr/bin/true"],
+            capture_output=True,
+        )
+        self.assertNotEqual(bare.returncode, 0)
+
     def test_actual_adhoc_and_unsigned_executables_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
             candidate = Path(directory) / "host"

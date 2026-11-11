@@ -67,28 +67,67 @@ def requirement(entry):
     )
 
 
-def signed_identity(path, role):
+def signed_identity(path, role, *, diagnostics=None):
     if sys.platform != "darwin":
         raise TrustError("host_registration_requires_macos")
     path = str(Path(path).resolve(strict=True))
 
-    def codesign(*args):
+    def codesign(stage, *args):
         completed = subprocess.run(["/usr/bin/codesign", *args, path], capture_output=True, text=True, timeout=30)
+        if diagnostics is not None:
+            diagnostics.append({
+                "stage": stage,
+                "path": path,
+                "arguments": list(args),
+                "exit_code": completed.returncode,
+                "stdout": completed.stdout[-4096:],
+                "stderr": completed.stderr[-4096:],
+            })
         if completed.returncode:
-            raise TrustError("host_signature_verification_failed")
+            raise TrustError(
+                f"host_signature_verification_failed: {stage}: exit={completed.returncode}: {completed.stderr[-2000:]}"
+            )
         return completed.stdout + completed.stderr
 
-    codesign("--verify", "--strict")
-    details = codesign("--display", "--verbose=4")
+    codesign("integrity", "--verify", "--strict")
+    details = codesign("identity", "--display", "--verbose=4")
 
-    def field(name):
-        matches = re.findall(r"^" + name + r"=(.+)$", details, re.MULTILINE)
+    def field(name, text=details):
+        matches = re.findall(r"^" + name + r"=(.+)$", text, re.MULTILINE)
         if len(matches) != 1:
             raise TrustError("host_signature_identity_unavailable")
         return matches[0].strip()
 
     entry = validate_entry((role, field("TeamIdentifier"), field("Identifier"), field("CDHash").lower()))
-    codesign("--verify", "--strict", "-R", requirement(entry))
+    # Resolve the observed slice instead of guessing from Python's architecture
+    # (which may be Rosetta). codesign resolves Executable for app bundles too.
+    executable = field("Executable")
+    if not Path(executable).is_absolute() or not Path(executable).is_file():
+        raise TrustError("host_executable_unavailable")
+    slices = subprocess.run(["/usr/bin/lipo", "-archs", executable], capture_output=True, text=True, timeout=30)
+    architectures = slices.stdout.split()
+    if (
+        slices.returncode
+        or not architectures
+        or len(architectures) > 16
+        or len(set(architectures)) != len(architectures)
+        or any(not re.fullmatch(r"[A-Za-z0-9_]+", architecture) for architecture in architectures)
+    ):
+        raise TrustError(f"host_architecture_unavailable: exit={slices.returncode}: {slices.stderr[-2000:]}")
+    matching = []
+    for architecture in architectures:
+        observed = codesign("slice_identity", "--display", "--verbose=4", "--architecture", architecture)
+        if (
+            field("TeamIdentifier", observed),
+            field("Identifier", observed),
+            field("CDHash", observed).lower(),
+        ) == entry[1:]:
+            matching.append(architecture)
+    if len(matching) != 1:
+        raise TrustError("host_observed_architecture_ambiguous")
+    # codesign -R interprets unprefixed text as a filename. Only the CLI needs
+    # this literal-source prefix; SecRequirementCreateWithString takes raw DSL.
+    codesign("exact_requirement", "--verify", "--strict", "--architecture", matching[0], "-R", "=" + requirement(entry))
     return entry
 
 

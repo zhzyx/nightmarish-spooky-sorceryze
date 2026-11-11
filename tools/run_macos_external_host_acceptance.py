@@ -312,13 +312,13 @@ def main(argv=None):
             host = args.host_pwsh or (hosts[0] if hosts else Path(installed) if installed else None)
             require(host is not None, "PowerShell host unavailable")
             host = host.resolve(strict=True)
-            identity = trust.signed_identity(host, "host")
+            identity = trust.signed_identity(host, "host", diagnostics=report.setdefault("signature_checks", []))
             report["host"] = dict(path=str(host), identity=identity, sha256=sha256(host))
             upgrades = [args.upgrade_pwsh] if args.upgrade_pwsh else hosts
             upgraded = None
             for candidate in upgrades:
                 candidate = candidate.resolve(strict=True)
-                observed = trust.signed_identity(candidate, "host")
+                observed = trust.signed_identity(candidate, "host", diagnostics=report["signature_checks"])
                 if observed[1:3] == identity[1:3] and observed[3] != identity[3]:
                     upgraded = (candidate, observed)
                     break
@@ -451,7 +451,7 @@ def main(argv=None):
                     require(app is not None, "official Codex macOS app not supplied")
                     metadata = plistlib.loads((app / "Contents/Info.plist").read_bytes())
                     binary = app / "Contents/MacOS" / metadata["CFBundleExecutable"]
-                    observed = trust.signed_identity(binary, "host")
+                    observed = trust.signed_identity(binary, "host", diagnostics=report["signature_checks"])
                     require(
                         observed[1:3] == ("2DC432GLL2", "com.openai.codex"),
                         "app is not the existing built-in Codex desktop identity",
