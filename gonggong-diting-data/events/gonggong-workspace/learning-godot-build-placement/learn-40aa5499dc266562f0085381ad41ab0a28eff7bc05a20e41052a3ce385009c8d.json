@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-40aa5499dc266562f0085381ad41ab0a28eff7bc05a20e41052a3ce385009c8d",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+  "occurred_at": "2026-11-11T20:40:52.958881+00:00",
+  "evidence_refs": [
+    "tianshu-3d-inline-actions-20261112-request",
+    "learn-54cea5e5f90f9807a997cf117756808a46fe8972aa6e2c24b884569d3e8d1383"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 12,
+    "previous": "3ce7dd2c38273e543185a55e9ba9a700707847614c8b5891cfd6042f06e6eaf7",
+    "action": "applied",
+    "details": {
+      "task": "#830 inline 3D reply and progression modules",
+      "observed": "Traced embedded GDScript native consumer, rebuilt macOS arm64 editor and passed isolated native panel interaction/restart acceptance."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/tianshu-inline-actions-830.json",
+        "sha256": "b5c45cb1860adec41bc895e144f00e34e237d4c34397ae7dfc89874b715113f1"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-inline-actions-20261112/tianshu-3d-inline-actions-20261112-request.json",
+      "sha256": "bb7bf4955f5199a58c2bfa18bc90828286dbc544be944ec6b9760f6ac08d9a55"
+    }
+  },
+  "sha256": "77296a72875e12d5ceb2e845ecb833fdb69771e03985d1ea3f7741d0821ca066"
+}

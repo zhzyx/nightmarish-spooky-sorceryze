@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1c7a2ddba10817e1a36749bfaa5ef589b3ddf95f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-3d-inline-actions-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ed9a566e1de70a06f2bd15695c39e95e739e96398fa27499e0ee8677cb9ed8d2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+    "action": "user-report",
+    "detection_head": "1f6ea3e74244275efafc484d7cf324d9feea5c4a",
+    "context_sha256": "95ff89b9189246b340d66f39a0a206ab29742ae73a4b6a0f3ccfba3c56fa933f",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+    "evidence": "data-collection/tianshu-inline-actions-830.json",
+    "diagnosis": "Missing 3D reply/detail module adapter repaired; isolated candidate binary tests pass, including real native chat mount and revision/selection-bound reply and confirmation adapters. Independent code review has no blocking findings.",
+    "next_action": "Deliver exact candidate through formal gate, PR and main readback; preserve production #827 pending human material choice.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T20:33:48.023910+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T20:40:27.244676+00:00",
+  "sha256": "73bf5af8b98f222c5367da714d130f37aafc4e035b8bf9867533a1755b53a53a"
+}

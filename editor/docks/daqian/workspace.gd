@@ -4322,6 +4322,13 @@ func _update_direct_action() -> void:
 	publish_button.tooltip_text = action.get("detail", "")
 
 
+func read_issue_details(item: Dictionary) -> Dictionary:
+	if offline or actor.is_empty(): return {"error":"离线或身份尚未核实"}
+	var args := _board_entry_args(_repo().path_join("customizations/components/godot-host/daqian/board.py"))
+	args.append_array(["--repo", _repo(), "--editor-session", editor_session, "--expected-user", str(actor.user_id)])
+	return await _host_command(args, "--result", {"action":"details", "number":int(item.number), "request":item.get("request", "")})
+
+
 func read_graph(id: String) -> Dictionary:
 	return await _graph_command(id,"read",{})
 

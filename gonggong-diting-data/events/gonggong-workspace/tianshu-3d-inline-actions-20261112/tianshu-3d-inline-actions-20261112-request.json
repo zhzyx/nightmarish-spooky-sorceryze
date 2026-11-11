@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-3d-inline-actions-20261112-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-3d-inline-actions-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-11T20:40:20.081180+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Integrate inline model issue details, structured replies, native conversation continuation and pending confirmations into 3D side panel",
+    "authorization_ref": "Current user explicit request to reply and advance within 3D editor",
+    "design": "design-docs/tianshu-3d-inline-actions-20261112.md",
+    "validation": "data-collection/tianshu-inline-actions-830.json",
+    "usage": null,
+    "usage_unknown_reason": "Actual model token/cost usage not collected"
+  },
+  "evidence_refs": [],
+  "sha256": "bb7bf4955f5199a58c2bfa18bc90828286dbc544be944ec6b9760f6ac08d9a55"
+}

@@ -1,6 +1,13 @@
 @tool
 extends SceneTree
 
+class ApprovalChat extends Control:
+	var confirmed := []
+	func confirm_daqian_issue_approval(url: String, token: String) -> bool:
+		confirmed.append([url, token])
+		return true
+	func render_daqian_markdown(view: RichTextLabel, markdown: String) -> void: view.add_text(markdown)
+
 class AccessFixture extends VBoxContainer:
 	var actor := {"repo":"fixture/project", "user_id":"42", "repo_id":"1"}
 	var board := {"issues":[]}
@@ -16,6 +23,30 @@ class AccessFixture extends VBoxContainer:
 	var saved := {}
 	var saves := 0
 	var refreshes := 0
+	var snapshot := {}
+	var detail_delay := false
+	var answer_delay := false
+	var answer_result := {}
+	var answers_sent := []
+	var operation := {}
+	var matcher
+	var board_delay := false
+	signal release_board
+	func _board_command(_refresh: bool, _user: String) -> Dictionary:
+		if board_delay: await release_board
+		return {"board":{"repo_id":actor.repo_id,"user_id":actor.user_id,"issues":board.issues}}
+	signal release_detail
+	signal release_answer
+	func read_issue_details(_item: Dictionary) -> Dictionary:
+		if detail_delay: await release_detail
+		return {"document":{"markdown":"# Model design", "editable":true}, "related":[]}
+	func read_graph(_id: String) -> Dictionary: return snapshot.duplicate(true)
+	func _pending_operation(item: Dictionary) -> Dictionary:
+		return {} if operation.is_empty() else matcher.matching_operation(item, operation, _repo(), actor.user_id)
+	func _graph_command(id: String, action: String, request: Dictionary) -> Dictionary:
+		answers_sent.append({"url":id,"action":action,"request":request})
+		if answer_delay: await release_answer
+		return answer_result.duplicate(true)
 	signal release_access
 	func _repo() -> String: return ProjectSettings.globalize_path("res://").trim_suffix("/")
 	func _fresh_access() -> bool:
@@ -268,6 +299,99 @@ func run() -> void:
 	spatial.close_chat()
 	await settle()
 	check(not spatial.feedback.text.contains("在下方聊天"), "closing chat clears obsolete send hint")
+	# Inline details and graph answer ports stay in the 3D panel. The native
+	# conversation is real; remote reads/writes use bounded, delayed fixtures.
+	selected.clear()
+	selected.add_node(model)
+	spatial.selection_changed()
+	access.board = {"issues":[fake_issue]}
+	spatial.update_view(true)
+	access.snapshot = {"revision":"rev1", "context":{"can_answer":true,"questions":{"color":{"prompt":"Choose model color", "options":["rainbow","gradient"]}},"answers":{}}}
+	await spatial.open_detail()
+	check(spatial.drawer.is_visible_in_tree() and not spatial.details.visible, "details rendered in visible 3D drawer")
+	check(spatial.inspector.field.text == "# Model design" and not spatial.inspector.field.editable, "existing inspector renders read-only design")
+	check(spatial.reply_controls == 1, "explicit graph question has inline reply control")
+	var choice: OptionButton = spatial.question_box.find_child("InlineAnswer", true, false)
+	choice.select(2)
+	choice.item_selected.emit(2)
+	spatial.close_chat()
+	await spatial.open_detail()
+	choice = spatial.question_box.find_child("InlineAnswer", true, false)
+	check(choice.selected == 2, "answer draft survives closing and reopening same revision")
+	access.delay = true
+	spatial.submit_answer("color")
+	check(spatial.submitting and spatial.question_box.find_child("InlineAnswer", true, false).disabled, "answer controls freeze while permission check runs")
+	selected.clear()
+	selected.add_node(other)
+	spatial.selection_changed()
+	access.release_access.emit()
+	await settle()
+	check(access.answers_sent.is_empty(), "switching model before access completes sends no answer")
+	selected.clear()
+	selected.add_node(model)
+	spatial.selection_changed()
+	access.delay = false
+	access.answer_result = {"ok":false,"error":"revision changed"}
+	await spatial.open_detail()
+	await spatial.submit_answer("color")
+	check(access.answers_sent.size() == 1 and access.answers_sent[0].request == {"revision":"rev1","node":"color","value":"gradient"}, "reply uses original revision and selected value")
+	check(spatial.feedback.text == "revision changed" and spatial.question_box.find_child("InlineAnswer", true, false).selected == 2, "failed reply retains draft and actual failure")
+	access.answer_result = {"ok":true,"context":{"can_answer":true,"questions":access.snapshot.context.questions,"answers":{"color":{"value":"gradient"}}}}
+	await spatial.submit_answer("color")
+	check(spatial.reply_controls == 0 and spatial.feedback.text.contains("已记录答复"), "successful reply displays receipt without duplicate request")
+	# A refreshed source invalidates an older drawer rather than leaving a stale prompt.
+	fake_issue.updated = "new-revision"
+	spatial.update_view(true)
+	check(not spatial.drawer.visible and spatial.details.visible, "board update invalidates drawer and restores summary")
+	# An older response invocation may not mount chat after another details selection.
+	access.detail_delay = true
+	spatial.open_response()
+	spatial.close_chat()
+	access.release_detail.emit()
+	await settle()
+	check(not spatial.owns_chat, "cancelled response read cannot reopen chat")
+	access.detail_delay = false
+	access.snapshot = {"revision":"rev2", "context":{"can_answer":false,"questions":{"human":{"prompt":"Material clarification"}},"answers":{}}}
+	await spatial.open_response()
+	await settle()
+	check(spatial.owns_chat and spatial.chat_host.is_visible_in_tree(), "ordinary clarification opens original native chat inside 3D")
+	check(spatial.chat_host.find_child("ChatInput", true, false).text == "Hero context\nTask: ", "inline continuation preserves existing original conversation draft")
+	spatial.close_chat()
+	check(spatial.details.visible and not spatial.drawer.visible, "return restores model summary")
+	var approval_chat := ApprovalChat.new()
+	root.add_child(approval_chat)
+	access.chat = approval_chat
+	access.matcher = spatial.operation_panel
+	access.operation = {"token":"one-click", "url":fake_issue.url, "request":fake_issue.request, "source_sha256":"", "actor":"42", "board_workspace":access._repo(), "summary":"fixture operation", "detail":"fixture command", "tool":"fixture"}
+	await spatial.open_detail()
+	await settle()
+	check(spatial.operation_panel.visible and spatial.operation_panel.details_confirm.text == "确认此操作", "pending operation renders existing confirmation module in 3D")
+	check(approval_chat.confirmed.is_empty(), "viewing pending operation never executes it")
+	for width in [1440, 1100]:
+		root.size = Vector2i(width, 900)
+		await settle()
+		check(spatial.panel.size.x < EditorInterface.get_base_control().size.x - 160, "inline details preserve viewport at %d" % width)
+		check(spatial.drawer.get_global_rect().end.y <= root.size.y, "scrollable detail drawer within window at %d" % width)
+	access.board_delay = true
+	spatial.operation_panel.details_confirm.pressed.emit()
+	check(approval_chat.confirmed.is_empty(), "confirmation waits for live board readback")
+	spatial.close_chat()
+	access.release_board.emit()
+	await settle()
+	check(approval_chat.confirmed.is_empty(), "closing drawer cancels stale confirmation")
+	await spatial.open_detail()
+	spatial.operation_panel.details_confirm.pressed.emit()
+	access.operation.token = "replacement"
+	access.release_board.emit()
+	await settle()
+	check(approval_chat.confirmed.is_empty(), "changed operation token cannot be confirmed")
+	await spatial.open_detail()
+	access.board_delay = false
+	spatial.operation_panel.details_confirm.pressed.emit()
+	await settle()
+	check(approval_chat.confirmed == [[fake_issue.url,"replacement"]], "explicit click confirms exactly selected issue and live token")
+	access.chat = chat
+	approval_chat.queue_free()
 	spatial.workspace = workspace
 	# Run the actual embedded access method with a delayed transport port, so
 	# stale denials cannot destroy a newer actor/root/epoch after awaiting I/O.
