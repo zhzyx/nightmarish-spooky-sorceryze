@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-23890921df06ec4089ef3a7987978130e610dca3",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-runtime-diagnostics-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "32aa876f1c5af494d0c29cd2fd43b075c020c194c42b977e1f95ca301188b397",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+    "action": "validation",
+    "detection_head": "c811b583d4f709f697161280ed285c08793c90ef",
+    "context_sha256": "2b19ed01dfa67b39831f47f3469b19481306c485a5a7d8baccc99311de6eb14e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+    "evidence": "formal-gate-845: PR_EVIDENCE_BINDING; original proof has numeric issue field; gate supports numeric issue_number or issue URL",
+    "diagnosis": "原始回执工单字段类型不符合门禁绑定契约；新增绑定文件提供 request_id、issue_number、issue_url 和原始回执摘要，保留方法已引用原件不改。",
+    "next_action": "重新暂存含绑定和本故障回执的完整候选后门禁签发。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T22:49:39.448310+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T22:51:41.903169+00:00",
+  "sha256": "6b61b050fcac0397f4718b05f36593ab55d3e19550af87a19eda2a03b0c2f850"
+}

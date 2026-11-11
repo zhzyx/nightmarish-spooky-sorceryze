@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-diagnostic-consumption",
+  "event_id": "learn-b2234d7328ed50d93bbcf6b36dacb0a235bb811e29189a1c47d25c145c617f00",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+  "occurred_at": "2026-11-11T22:47:59.083651+00:00",
+  "evidence_refs": [
+    "kuafu-aff0abff1055540eaa99f34c3147020dc7fc32a5"
+  ],
+  "payload": {
+    "scope": "editor-diagnostic-consumption",
+    "lesson": "preserve-typed-json-through-consumers",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "结构化诊断在字段脱敏和字符预算后，应逐一核查后续模型上下文、设计回执与会话快照消费者，避免对整段序列化 JSON 重复替换。原生测试用短凭据 true，并回读真实持久化信封。",
+      "when": "编辑器工具输出携带结构化诊断，且使用字符串凭据替换或预算截取；本次 Windows read_logs 和咨询快照路径。",
+      "counterexample": "诊断源头返回有效 JSON 不证明最终模型或快照可解析。咨询结束不保留临时工具记录，不能凭此测试声称工具历史递归已实测。",
+      "trial_plan": "下次更改诊断或快照消费者时，用真实错误/警告和短凭据运行正常工具，验证最终 JSON、大小、持久快照摘要与布尔类型；单独构造保留工具历史的非咨询会话反证嵌套路径。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-runtime-diagnostics-845.json",
+        "sha256": "6259322c62413ed1ad132df2498d630e1c81e70197864dd3eb64351cefaef105"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-runtime-diagnostics-20261112/kuafu-aff0abff1055540eaa99f34c3147020dc7fc32a5.json",
+      "sha256": "1d30ca64fb8de2b6125815dc4a9791c44d7e22e86dbba021a2fa7bf2bd2831b1"
+    }
+  },
+  "sha256": "4ce8eaf0d3632b9f25cf008fb00a46a0fdda3961908e26ed31578c69035dec48"
+}

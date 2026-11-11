@@ -1287,6 +1287,7 @@ String ScriptEditorDebugger::_format_frame_text(const ScriptLanguage::StackInfo 
 void ScriptEditorDebugger::start(Ref<RemoteDebuggerPeer> p_peer) {
 	_clear_errors_list();
 	stop();
+	diagnostic_generation++;
 
 	profiler->set_enabled(true, true);
 	visual_profiler->set_enabled(true);
@@ -1922,6 +1923,64 @@ void ScriptEditorDebugger::_vmem_item_menu_id_pressed(int p_option) {
 			FileSystemDock::get_owners_dialog()->show(path);
 		} break;
 	}
+}
+
+Dictionary ScriptEditorDebugger::get_error_snapshot(int p_max_messages, int p_max_characters) const {
+	const int message_limit = CLAMP(p_max_messages, 0, 200);
+	const int character_limit = CLAMP(p_max_characters, 0, 32000);
+	int remaining = character_limit;
+	bool truncated = false;
+	// Omit an oversized field instead of slicing it: a caller can still redact
+	// complete secrets before publishing, without a truncated credential prefix.
+	auto bounded = [&](const String &p_text) -> String {
+		if (p_text.length() > remaining) {
+			truncated = true;
+			return String();
+		}
+		remaining -= p_text.length();
+		return p_text;
+	};
+	Array entries;
+	TreeItem *root = error_tree->get_root();
+	TreeItem *item = root ? root->get_last_child() : nullptr;
+	for (; item && entries.size() < message_limit; item = item->get_prev()) {
+		Dictionary entry;
+		entry["warning"] = item->has_meta("_is_warning");
+		entry["time"] = bounded(item->get_text(0));
+		entry["message"] = bounded(item->get_text(1));
+		const Variant source = item->get_metadata(0);
+		if (source.get_type() == Variant::ARRAY && Array(source).size() == 2) {
+			const Array location = source;
+			entry["file"] = bounded(location[0]);
+			entry["line"] = location[1];
+		}
+		Array details;
+		TreeItem *child = item->get_first_child();
+		for (; child && details.size() < 32 && remaining > 0; child = child->get_next()) {
+			Dictionary detail;
+			detail["label"] = bounded(child->get_text(0));
+			detail["text"] = bounded(child->get_text(1));
+			const Variant location_metadata = child->get_metadata(0);
+			if (location_metadata.get_type() == Variant::ARRAY && Array(location_metadata).size() == 2) {
+				const Array location = location_metadata;
+				detail["file"] = bounded(location[0]);
+				detail["line"] = location[1];
+			}
+			details.push_back(detail);
+		}
+		truncated = truncated || child != nullptr;
+		entry["details"] = details;
+		entries.push_back(entry);
+	}
+	Dictionary snapshot;
+	snapshot["generation"] = diagnostic_generation;
+	snapshot["error_count"] = error_count;
+	snapshot["warning_count"] = warning_count;
+	snapshot["entries"] = entries;
+	snapshot["order"] = "newest_first";
+	snapshot["truncated"] = truncated || item != nullptr;
+	snapshot["characters"] = character_limit - remaining;
+	return snapshot;
 }
 
 void ScriptEditorDebugger::_clear_errors_list() {
