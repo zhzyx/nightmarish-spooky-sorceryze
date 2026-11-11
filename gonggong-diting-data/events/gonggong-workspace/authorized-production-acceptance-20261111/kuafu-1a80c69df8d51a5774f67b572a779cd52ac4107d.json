@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1a80c69df8d51a5774f67b572a779cd52ac4107d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "authorized-production-acceptance-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/776",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d7d32ff665f73271dcb3c65fb053c7af9e0fef4327e186d7085254b8b6b6d667",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/776",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/789",
+    "action": "validation",
+    "detection_head": "39b072048f04d2090495c4f583b600e5db9df282",
+    "context_sha256": "9be5943c9c4df76502b9a66ff03b1bebe852910ef297c0d7b710cef14d92d158",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/776",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43028704431",
+    "diagnosis": "PR790 mypy requires ModuleSpec and loader non-null assertion in new test loader. Offline distribution registry still held old coordinator and production host-package digests. Added assertion and refreshed only those two reviewed implementation hashes; frozen framework file registrations unchanged. Mypy four files, offline snapshot and eight actual CLI tests now pass locally.",
+    "next_action": "Independent review exact registration diff, then formal gate and replacement signed candidate CI; retain original CI failure and pending native business acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T13:27:50.872790+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T13:30:00.521017+00:00",
+  "sha256": "c85653c97670d91035b1ffe217d93ba7c513b8919a1ea507d6e95edfaa254ee1"
+}

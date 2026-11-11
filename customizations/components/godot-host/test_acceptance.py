@@ -12,6 +12,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location("acceptance", Path(__file__).with_name("acceptance.py"))
+assert spec is not None and spec.loader is not None
 acceptance = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(acceptance)
 

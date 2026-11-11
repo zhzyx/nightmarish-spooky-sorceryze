@@ -1,0 +1,46 @@
+{
+  "issue": 776,
+  "request_id": "authorized-production-acceptance-20261111",
+  "observed_at": "2026-11-11T13:31:47.217120+00:00",
+  "original_pr": 790,
+  "original_signed_head": "1e24f3aa721026adb4d2ea1f63eb270b4228843d",
+  "failed_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43028704431",
+  "findings": [
+    "Test dynamic loader did not narrow optional ModuleSpec/loader for mypy",
+    "Two changed host-package files retained old registration digests"
+  ],
+  "corrections": [
+    "Add explicit non-null loader assertion",
+    "Update only coordinator.mjs and runtime/src/production.mjs host-package hashes to actual reviewed bytes"
+  ],
+  "frozen_framework_changed": false,
+  "independent_review": {
+    "worker": "/root/sinan_8157a138f9681320",
+    "result": "Exactly one test assertion and two host-package hashes; actual bytes match; frozen framework registration unchanged; no remaining finding"
+  },
+  "targeted_validation": {
+    "mypy_files": 4,
+    "offline_snapshot": {
+      "frozen_files": 256,
+      "javascript": 16,
+      "json": 158,
+      "python": 24
+    },
+    "actual_cli_authority_tests": 8,
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "failures": 0
+  },
+  "files": [
+    {
+      "path": "customizations/components/godot-host/test_acceptance.py",
+      "sha256": "e70b3e1a74675e1fe658516902d393b15844e83ba8a9f88c47048b28870266a5"
+    },
+    {
+      "path": "integrations/gonggong/frozen-distribution.json",
+      "sha256": "607c139138b6755bdea8c11268e18a8ab26bc2f24925e434a2bb7e7633857760"
+    }
+  ],
+  "new_ci_passed": null,
+  "native_business_acceptance": "pending 783/776"
+}

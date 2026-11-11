@@ -276,7 +276,7 @@
   },
   "host_packages": {
     "customizations/platforms/process-management/yuanheng-local/sinan": {
-      "coordinator.mjs": "474e7b626d7f63430183a61be44a15e65b77a05b60d60f578ca13efe62d31ff5",
+      "coordinator.mjs": "183ab7914292da2ec7fd228a7c79e3f4bdab6145bef807040a712b9444806ae4",
       "dispatch.mjs": "676f3d4c8797aab5878a7eb66f3c476f09b7d903e25606a55fbdfded819e8654",
       "module.json": "dbd82acc19ca96badd99072e71243838cdeb1b4790bae43bd4a5f476e8adf397",
       "parallel-dispatch.md": "debd4c28d1ccfcacb9b829e0b384650daea6a6e2bab8adebc27b0d4ad4c2b839",
@@ -293,7 +293,7 @@
       "README.md": "bd15ab78e195f6e7553ef438882d2e1720b3b38ccb6e2cb43eaab722d41cdb63",
       "runtime/cli.mjs": "cc6e2043b3eca0697a668c1924ec4b62d77f9e863cd5df50e13dba81cae069fd",
       "runtime/src/catalog.mjs": "f8b8b26cf0498e8994b1e53c83e82b791155380f42eb309da79062b68cffe0bb",
-      "runtime/src/production.mjs": "4bfef545f171f9f21dcaa5b3333a644cd51d0e55f34d3303e845c0972de96bde",
+      "runtime/src/production.mjs": "0e7d8ea1da2bec8b85cff0ae89e3634b45c8b7315edca5357a2c297f3304de07",
       "yanshi.mjs": "acd3d84bc18b214943525fd9270962c6e72e9d45f7f453eb03ad80dd98cef300"
     },
     "customizations/platforms/ai-access/host-http/runtime": {
