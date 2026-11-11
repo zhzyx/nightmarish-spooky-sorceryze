@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-cc2e41b03f87b2837226d83efa1e4ee5989619b515b29981d142dd1c3d8dd34f",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/775",
+  "occurred_at": "2026-11-11T11:16:52.251220+00:00",
+  "evidence_refs": [
+    "request-7db258d8b3084d81bb1cf58e08e821e2",
+    "learn-6b942ba19ab48a1c2dc2bc0e21540a50e087a39b41c720b3936c452d7971e842"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 7,
+    "previous": "d5bbec14e5f933afa4ae411404c907299c8f5468c1d46fea32b77a35ebf717a0",
+    "action": "applied",
+    "details": {
+      "task": "#775 并行 CLI 子工单终态回传父会话，独立候选构建及静默验证。",
+      "observed": "9 项原生并行交接场景通过：正常/失败/未知各一次通知；停止、无关会话、父关闭、绑定/设计变化和落盘失败不误续。回执与实际业务验收分开，未自动放行依赖、批准或合入。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/parallel-parent-continuation-775.json",
+        "sha256": "7943f356710127cd50361f0d53076d864130ee497a87f7fffd12efe87de1ea78"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/parallel-parent-continuation-20261111/request-7db258d8b3084d81bb1cf58e08e821e2.json",
+      "sha256": "e3e274947d369c509e04116e7b70d7ac64b2f53ab7d5e9c886fa65548d8d6649"
+    }
+  },
+  "sha256": "93048153639337fc6faf3a18a3a3a8c57eacc3b73988afdc5b0187fb379ff37e"
+}

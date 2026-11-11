@@ -663,7 +663,7 @@ void AIChatDock::_scheduler_finished() {
 	// Completed periodic Agents retain history, not idle CLI subprocesses.
 	if (!busy && scheduled_agents.has(active_agent) && queued_messages.is_empty()) {
 		_cancel_cli();
-		set_process(process_id >= 0);
+		set_process(process_id >= 0 || sub_agent_parallel_pid >= 0);
 	}
 	if (!busy && !models_loading && engine_build_pid < 0 && _manual_agent_count() == 0) {
 		_add_agent();

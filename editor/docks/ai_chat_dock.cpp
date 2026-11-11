@@ -646,6 +646,9 @@ void AIChatDock::_poll_history_save() {
 		}
 	}
 	memdelete(job);
+	if (!history_save_error && !history_dirty && design_batches.has(active_agent) && bool(design_batches[active_agent].get("parallel_external", false)) && String(design_batches[active_agent].get("state", "")) == "queued" && !queued_messages.is_empty() && Dictionary(queued_messages[0]).has("design_batch_return")) {
+		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
+	}
 }
 
 void AIChatDock::_flush_history() {
@@ -1841,7 +1844,6 @@ void AIChatDock::_set_busy(bool p_busy) {
 	gonggong_panel->set_task_locked(locked || engine_restart_requested);
 	snapshot_history_button->set_disabled(locked || engine_restart_requested);
 	_refresh_engine_controls();
-	stop_button->set_disabled(!busy && pending_external_editor_message.is_empty() && !models_loading && !snapshot_restoring && gonggong_recovered_result.is_empty() && (observed_command_owner.is_empty() || observed_command_owner != conversation_id));
 	for (const Variant &value : find_children("RestoreSessionSnapshot", "Button", true, false)) {
 		Button *button = Object::cast_to<Button>(static_cast<Object *>(value));
 		button->set_disabled(locked || !allow_tools->is_pressed());
@@ -2009,6 +2011,14 @@ void AIChatDock::_dispatch_queued_message(int p_agent) {
 	}
 	const Dictionary message = queued_messages[0];
 	const bool design_return = message.has("design_batch_return");
+	if (design_return && design_batches.has(p_agent) && bool(design_batches[p_agent].get("parallel_external", false)) && (history_save_job || history_dirty || history_save_error)) {
+		if (history_save_error) {
+			queue_paused = true;
+		} else {
+			_save_history();
+		}
+		return; // The history-save completion event resumes a durable notice.
+	}
 	if (design_return && gonggong_receipt_pid >= 0) {
 		return;
 	}
@@ -4086,7 +4096,7 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 	_apply_models(catalog);
 	model_catalog_config = config;
 	_set_busy(false);
-	set_process(cli_process_id >= 0);
+	set_process(cli_process_id >= 0 || sub_agent_parallel_pid >= 0);
 }
 
 void AIChatDock::_agent_selected(int p_index) {
@@ -4983,7 +4993,7 @@ void AIChatDock::_restore_cli_after_models() {
 	cli_output.clear();
 	model_query_session = AgentSession();
 	cli_suspended_for_models = false;
-	set_process(cli_process_id >= 0 || process_id >= 0);
+	set_process(cli_process_id >= 0 || process_id >= 0 || sub_agent_parallel_pid >= 0);
 }
 
 void AIChatDock::_cancel_all_agents() {
@@ -5013,7 +5023,7 @@ void AIChatDock::_backend_changed(int p_backend) {
 		return;
 	}
 	_cancel_cli();
-	set_process(process_id >= 0);
+	set_process(process_id >= 0 || sub_agent_parallel_pid >= 0);
 	request_generation++;
 	session_generation++;
 	_get_editor_control()->cancel_guidance();
@@ -5580,7 +5590,7 @@ void AIChatDock::_login_cli() {
 	EditorSettings::get_singleton()->set_setting("ai_chat/cli_bridge", cli_bridge->get_text().strip_edges());
 	EditorSettings::get_singleton()->set_setting("ai_chat/cli_entry", cli_entry->get_text().strip_edges());
 	_cancel_cli();
-	set_process(process_id >= 0);
+	set_process(process_id >= 0 || sub_agent_parallel_pid >= 0);
 	List<String> arguments;
 #ifdef MACOS_ENABLED
 	const String node_path = GongGongRuntimeConfig::path(runtime, "node");
@@ -5967,7 +5977,7 @@ void AIChatDock::_poll_cli() {
 		}
 		if (cli_session && !cli_waiting && newline < 0 && !running) {
 			_cancel_cli();
-			set_process(process_id >= 0);
+			set_process(process_id >= 0 || sub_agent_parallel_pid >= 0);
 			return;
 		}
 	}
@@ -6102,7 +6112,7 @@ void AIChatDock::_poll_cli() {
 	if (listing) {
 		_restore_cli_after_models();
 	}
-	set_process(cli_process_id >= 0 || process_id >= 0);
+	set_process(cli_process_id >= 0 || process_id >= 0 || sub_agent_parallel_pid >= 0);
 	if (listing && generation == request_generation) {
 		_models_completed(!timeout && !cli_truncated && exit_code == 0 ? HTTPRequest::RESULT_SUCCESS : HTTPRequest::RESULT_CANT_CONNECT, exit_code == 0 ? 200 : 500, PackedStringArray(), body, generation);
 		return;
@@ -6995,7 +7005,7 @@ void AIChatDock::_poll_process() {
 	process_id = -1;
 	process_stdout.unref();
 	process_stderr.unref();
-	set_process(false);
+	set_process(sub_agent_parallel_pid >= 0);
 	Dictionary result;
 	result["exit_code"] = exit_code;
 	result["timed_out"] = process_timed_out;
@@ -7097,6 +7107,21 @@ void AIChatDock::_stop() {
 		_finish_delivery_retry("{}");
 		return;
 	}
+	const int parallel_parent = _sub_agent_root(active_agent);
+	if (design_batches.has(parallel_parent) && bool(design_batches[parallel_parent].get("parallel_external", false))) {
+		const Dictionary batch = design_batches[parallel_parent];
+		const String output = batch.get("parallel_output", "");
+		if (!output.is_empty() && sub_agent_parallel_pid >= 0) {
+			for (const Variant &id : Array(batch["order"])) {
+				Ref<FileAccess> cancel = FileAccess::open(output + "." + itos(int(id)) + ".cancel", FileAccess::WRITE);
+				if (cancel.is_valid()) {
+					cancel->store_string("user_stopped_parent_batch");
+				} else {
+					_append(TTR("Error"), U"无法记录外部工作者取消请求。父接续已停止，工作者仍需核对实际终态。");
+				}
+			}
+		}
+	}
 	_cancel_design_batch(active_agent);
 	_cancel_engine_candidate();
 	_end_daqian_approval("cancelled");
@@ -7165,7 +7190,7 @@ void AIChatDock::_stop() {
 	process_stdout.unref();
 	process_stderr.unref();
 	_cancel_cli();
-	set_process(false);
+	set_process(sub_agent_parallel_pid >= 0);
 	// Stop also disowns a self-update in flight, so no later restart answers a
 	// tool call from a conversation that no longer exists.
 	_cancel_engine_build();
@@ -8037,7 +8062,7 @@ void fragment() {
 	model_config_timer->set_one_shot(true);
 	model_config_timer->connect("timeout", callable_mp(this, &AIChatDock::_model_config_timeout));
 	add_child(model_config_timer);
-	set_process(false);
+	set_process(sub_agent_parallel_pid >= 0);
 	_set_busy(false);
 	http_settings->set_visible(backend->get_selected() == 0 || backend->get_selected() == 3);
 	codex_settings->set_visible(backend->get_selected() == 2);

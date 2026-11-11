@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-118e0bf158272ac9b69387ae007b565825be21ba658c798649234ce1300c58f3",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/775",
+  "occurred_at": "2026-11-11T11:16:52.235327+00:00",
+  "evidence_refs": [
+    "request-7db258d8b3084d81bb1cf58e08e821e2",
+    "learn-1c82934d1e07dc499a672872236c4b9fc2b47b09b5d915edad0ed0b223bfeeb4"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 9,
+    "previous": "95455efee506ed7bc2e403a404a0135730570f82de660e6cf2be20381379475f",
+    "action": "applied",
+    "details": {
+      "task": "#775 并行 CLI 子工单终态回传父会话，独立候选构建及静默验证。",
+      "observed": "原生 C++ 变更重建并取得不同二进制，45/638 原生核查通过。可变日志放在 data-collection/outbox/*.log 被保守输入键纳入，导致 native_build_inputs_changed；沿实际排除条件改放 bin/*.log 后精确复核成功。此纠偏仅支持现有 Windows 构建入口，不推广为按后缀忽略源码。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/parallel-parent-continuation-775.json",
+        "sha256": "7943f356710127cd50361f0d53076d864130ee497a87f7fffd12efe87de1ea78"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/parallel-parent-continuation-20261111/request-7db258d8b3084d81bb1cf58e08e821e2.json",
+      "sha256": "e3e274947d369c509e04116e7b70d7ac64b2f53ab7d5e9c886fa65548d8d6649"
+    }
+  },
+  "sha256": "c63d7e986a753fa4def01c05dfe6b59e1294d3238ee7dfbdfb3b288e26352f56"
+}

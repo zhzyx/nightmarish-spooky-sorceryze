@@ -30,6 +30,8 @@ ROOT = Path(__file__).resolve().parents[2]
 REQUEST = "design-batch-fixture"
 SECRET = "design-batch-isolated-secret"
 CASES = [
+    "parallel-normal", "parallel-failure", "parallel-unknown", "parallel-stop",
+    "parallel-unrelated", "parallel-binding-drift", "parallel-design-drift", "parallel-close-parent", "parallel-receipt-failure",
     "review",
     "review-stale-head",
     "review-stale-bytes",
@@ -103,6 +105,26 @@ elif action=='flush':
   value={'ok':True}
 else: value={'ok':False,'error':'fixture_unknown_action'}
 out.write_text(json.dumps(value),encoding='utf-8')
+"""
+
+# The native editor launches this real, private process through its production
+# runner boundary. Runner implementation/worker ownership has separate Node tests.
+PARALLEL_RUNNER = r"""
+import fs from 'node:fs';
+const request = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+const output = process.argv[3], project = process.env.DESIGN_BATCH_PROJECT;
+fs.writeFileSync(project + '/parallel-started', JSON.stringify(request));
+while (!fs.existsSync(project + '/parallel-release')) await new Promise(r=>setTimeout(r,25));
+const mode = process.env.DESIGN_BATCH_CASE;
+if (mode === 'parallel-unknown') process.exit(0);
+const state = mode === 'parallel-failure' ? 'reconcile_required' : 'review';
+const workers = request.workers.map(w=> {
+ const cancelRequested = fs.existsSync(output+'.'+w.id+'.cancel');
+ return {...w,issue:request.issue,state:cancelRequested?'reconcile_required':state,exitCode:cancelRequested?null:state==='review'?0:7,cancelRequested};
+});
+if(workers.every(w=>w.cancelRequested)) fs.writeFileSync(project+'/parallel-cancelled', 'observed by actual runner process');
+fs.writeFileSync(output, JSON.stringify({...request,workers}));
+if(mode==='parallel-receipt-failure') fs.mkdirSync(output+'.parent.json.tmp');
 """
 
 
@@ -297,7 +319,17 @@ def main():
         binary = copy_editor(args.godot, folder / "isolated-editor")
         # The bare offline engine locates its read-only tools independently of CLI settings.
         (folder / "SConstruct").touch()
-        if os.name == "nt":
+        if args.case.startswith("parallel-"):
+            shutil.copytree(ROOT / "tools", folder / "tools", ignore=shutil.ignore_patterns("node_modules", "__pycache__"))
+            (folder / "tools/godot_parallel/runner.mjs").write_text(PARALLEL_RUNNER)
+            # Copied candidate helpers still load the trusted installed gate.
+            (folder / "customizations/components").mkdir(parents=True)
+            for name in ("customizations/components/issue-workorders",):
+                if os.name == "nt":
+                    subprocess.run(["cmd", "/d", "/c", "mklink", "/J", str(folder / name), str(ROOT / name)], check=True, capture_output=True)
+                else:
+                    (folder / name).symlink_to(ROOT / name, target_is_directory=True)
+        elif os.name == "nt":
             subprocess.run(
                 ["cmd", "/d", "/c", "mklink", "/J", str(folder / "tools"), str(ROOT / "tools")],
                 check=True,
@@ -590,6 +622,27 @@ def main():
                     prompt = next(
                         message["content"] for message in reversed(body["messages"]) if message["role"] == "user"
                     )
+                    if args.case.startswith("parallel-") and prompt not in {"DESIGN_BATCH_WARMUP", "DESIGN_BATCH_START"}:
+                        assert args.case in {"parallel-normal", "parallel-failure", "parallel-unknown"}, "Forbidden parallel return"
+                        stages["return"] += 1
+                        assert stages["return"] == 1, "Duplicate terminal notification"
+                        receipt = receipts_from_prompt(prompt)
+                        parent_returns.append(receipt)
+                        assert receipt["business_accepted"] is None and receipt["issue_number"] == 441
+                        assert receipt["request_id"] == REQUEST and receipt["parallel_batch"]
+                        expected = {"parallel-normal":"review", "parallel-failure":"reconcile_required", "parallel-unknown":"unknown"}[args.case]
+                        assert all(c["state"] == expected and c["business_accepted"] is None for c in receipt["children"].values())
+                        terminal = receipt["terminal_receipt"]
+                        raw = Path(terminal["path"]).read_bytes()
+                        assert hashlib.sha256(raw).hexdigest() == terminal["file_sha256"]
+                        envelope = json.loads(raw)
+                        assert hashlib.sha256(envelope["payload"].encode()).hexdigest() == envelope["sha256"]
+                        data = json.dumps({"choices":[{"message":{"role":"assistant","content":"DESIGN_BATCH_PARENT_VERIFIED_OK"},"finish_reason":"stop"}]}).encode()
+                        self.send_response(200)
+                        self.send_header("Content-Length", str(len(data)))
+                        self.end_headers()
+                        self.wfile.write(data)
+                        return
                     if args.case.startswith("review"):
                         message = review_response(body, prompt)
                         data = json.dumps({"choices": [{"message": message, "finish_reason": "stop"}]}).encode()
@@ -984,6 +1037,7 @@ def main():
             ),
             DESIGN_BATCH_BRIDGE_AUDIT=str(folder / "bridge-audit.txt"),
             DESIGN_BATCH_CASE=args.case,
+            DESIGN_BATCH_PROJECT=str(project),
             DESIGN_BATCH_PHASE="initial",
             DESIGN_BATCH_EXPECT_STALLED="1" if args.expect_stalled else "0",
             GONGGONG_GH=str(gh),
@@ -1123,7 +1177,7 @@ def main():
             except (AssertionError, ValueError, KeyError) as error:
                 errors.append(repr(error))
         successful = (
-            args.case in {"normal", "failure", "timeout", "stale-retry", "review"} or args.case in MODELS_WAKE_CASES
+            args.case in {"normal", "failure", "timeout", "stale-retry", "review", "parallel-normal", "parallel-failure", "parallel-unknown"} or args.case in MODELS_WAKE_CASES
         )
         expected_returns = 1 if successful else 0
         ok = (
@@ -1133,7 +1187,12 @@ def main():
             and bool(events)
             and len(parent_returns) == expected_returns
         )
-        if args.case.startswith("review-stale-"):
+        if args.case.startswith("parallel-"):
+            ok = ok and stages["child1"] == stages["child2"] == 0
+            if args.case == "parallel-receipt-failure":
+                history = json.loads((project / ".godot/editor/ai_chat_history.json").read_text())
+                assert any(a.get("queue_paused") and any("design_batch_return" in m for m in a.get("queued_messages", [])) for a in history["agents"])
+        elif args.case.startswith("review-stale-"):
             ok = ok and not parent_returns and stages["return"] == 0 and stages["review"] == 3
             assert len(receipt_files) == 1
             preserved = json.loads(json.loads(receipt_files[0].read_text(encoding="utf8"))["payload"])

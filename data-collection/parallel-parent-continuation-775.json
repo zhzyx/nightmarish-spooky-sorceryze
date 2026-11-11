@@ -1,0 +1,255 @@
+{
+  "issue_number": 775,
+  "request_id": "parallel-parent-continuation-20261111",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/775",
+  "base_sha": "cc05be558c27806938180d3de6e7d0b2ac6e2186",
+  "platform": "Windows x86_64, MSVC 14.5, SDK 10.0.26100.0",
+  "inputs": {
+    "editor/docks/ai_chat_dock.cpp": "bdae7f7d825eb0f17a8610cbd75ca89a8a02df0d64799d670062db78447edc4a",
+    "editor/docks/ai_chat_scheduler.cpp": "97ea94525231869d1d47b35d8e63e22957607835a73b76f14dbd7949f0dcf6ee",
+    "editor/docks/ai_chat_sub_agents.cpp": "c4abfb393000b060e40358f2ec43d0b113876f2396233eb859a20993dcfac09d",
+    "tests/editor/design_batch.gd": "a540f421d2ec2b7a56decb859404c1590517d7e43bcd554aa914f131efa9f008",
+    "tests/editor/run_design_batch.py": "7760acf90ac35fb0c9e96189a11632d4f99b00a261ca4a78f9c49b462e1f4365",
+    "tools/godot_parallel/runner.mjs": "08513739c79d1ed332ddd8e683e67181570cc38f37f4ebc9beb32b69538203a7",
+    "tests/editor/test_parallel_work_orders.mjs": "f0b315e9748d6472c5cbbc91cf853a15b2551d5b628672e61893baefbd162e41"
+  },
+  "native_build": {
+    "worktree": "D:\\GongGong-work\\parallel-parent-775",
+    "revision": "cc05be558c27806938180d3de6e7d0b2ac6e2186",
+    "source_digest": "801f93aa9f2032a1ab36e921a6e0dc3400a685394188b6bff04d446cbcdd6b99",
+    "clean_source": false,
+    "console_sha256": "a3560dfdf6516fb4cd859d8e149d137bcb0593908e1c62fe549e55111ee4ed6d",
+    "native": {
+      "status": "built",
+      "key": "100170dfed3df93aa0fe18237ed6833ffd6671b5b6bdae38dc592c020e2a4f35",
+      "reason": "",
+      "artifact_sha256": "e65f247a72e6d710bdd035e0e100fd6fae8f202d0b7bdf7180acbe8f2f3719e8",
+      "producer_head": "cc05be558c27806938180d3de6e7d0b2ac6e2186",
+      "consumer_head": "cc05be558c27806938180d3de6e7d0b2ac6e2186",
+      "outputs": {
+        "bin/godot.windows.editor.x86_64.exe": "e65f247a72e6d710bdd035e0e100fd6fae8f202d0b7bdf7180acbe8f2f3719e8",
+        "bin/godot.windows.editor.x86_64.console.exe": "a3560dfdf6516fb4cd859d8e149d137bcb0593908e1c62fe549e55111ee4ed6d"
+      }
+    },
+    "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "aichat": "passed"
+  },
+  "native_build_receipt_sha256": "6285ab42cbcd70bb682992a888cbd8a84c10842e9903baba16afbbcfa1a7dcb7",
+  "native_tests": {
+    "cases": 45,
+    "assertions": 638,
+    "failed": 0
+  },
+  "runner_tests": {
+    "command": "node --test tests/editor/test_parallel_work_orders.mjs",
+    "tests": 17,
+    "passed": 17,
+    "failed": 0,
+    "log_sha256": "4c01c4d3e074c91219f36681e7f0ef7d76f280d50f89f3b989e9d4cfb54cb4dc"
+  },
+  "headless_command": "python -X utf8 tests/editor/run_design_batch.py --godot bin/godot.windows.editor.x86_64.exe --node <private Node> --case <case> --out <private report>",
+  "checks": [
+    {
+      "case": "parallel-normal",
+      "passed": true,
+      "artifact_sha256": "e65f247a72e6d710bdd035e0e100fd6fae8f202d0b7bdf7180acbe8f2f3719e8",
+      "parent_return_count": 1,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "return": 1
+      },
+      "recorded_event_files": 21,
+      "private_report": "data-collection/outbox/parallel-normal-775.json",
+      "private_report_sha256": "73d889db9bb8469bbbfc9c554ba3607862b6c61f9cf0cd671684fb48caf126e3"
+    },
+    {
+      "case": "parallel-failure",
+      "passed": true,
+      "artifact_sha256": "e65f247a72e6d710bdd035e0e100fd6fae8f202d0b7bdf7180acbe8f2f3719e8",
+      "parent_return_count": 1,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "return": 1
+      },
+      "recorded_event_files": 21,
+      "private_report": "data-collection/outbox/parallel-failure-775.json",
+      "private_report_sha256": "e382e5795bc57d2ae9b582ae7295714283324ef23f7fbdbc7c98badc3f4849dc"
+    },
+    {
+      "case": "parallel-unknown",
+      "passed": true,
+      "artifact_sha256": "e65f247a72e6d710bdd035e0e100fd6fae8f202d0b7bdf7180acbe8f2f3719e8",
+      "parent_return_count": 1,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "return": 1
+      },
+      "recorded_event_files": 21,
+      "private_report": "data-collection/outbox/parallel-unknown-775.json",
+      "private_report_sha256": "4b920e2caa9f526f90e03f01fdf6741cb9dc2fcc72bc6baaa104af39df04db5a"
+    },
+    {
+      "case": "parallel-stop",
+      "passed": true,
+      "artifact_sha256": "e65f247a72e6d710bdd035e0e100fd6fae8f202d0b7bdf7180acbe8f2f3719e8",
+      "parent_return_count": 0,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1
+      },
+      "recorded_event_files": 14,
+      "private_report": "data-collection/outbox/parallel-stop-775.json",
+      "private_report_sha256": "63a6b78a2c50f7f2437d0a3f3abac072f6b8eb759108cb4a683f6c4c9972cb64"
+    },
+    {
+      "case": "parallel-unrelated",
+      "passed": true,
+      "artifact_sha256": "e65f247a72e6d710bdd035e0e100fd6fae8f202d0b7bdf7180acbe8f2f3719e8",
+      "parent_return_count": 0,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1
+      },
+      "recorded_event_files": 14,
+      "private_report": "data-collection/outbox/parallel-unrelated-775.json",
+      "private_report_sha256": "f1b63ae3f2020d4c45aec6dfd3ef1fe82a2477a50e9bb568a1bc0cb9ccb3fc10"
+    },
+    {
+      "case": "parallel-binding-drift",
+      "passed": true,
+      "artifact_sha256": "e65f247a72e6d710bdd035e0e100fd6fae8f202d0b7bdf7180acbe8f2f3719e8",
+      "parent_return_count": 0,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1
+      },
+      "recorded_event_files": 14,
+      "private_report": "data-collection/outbox/parallel-binding-drift-775.json",
+      "private_report_sha256": "2e18ee71b7a448769c342d68f05003ad705da220ebf06bdea2dc891124d87c0c"
+    },
+    {
+      "case": "parallel-design-drift",
+      "passed": true,
+      "artifact_sha256": "e65f247a72e6d710bdd035e0e100fd6fae8f202d0b7bdf7180acbe8f2f3719e8",
+      "parent_return_count": 0,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1
+      },
+      "recorded_event_files": 14,
+      "private_report": "data-collection/outbox/parallel-design-drift-775.json",
+      "private_report_sha256": "2ab4f88f539333ed5574806248cd176cd7d8778f7ef5aa2608d74dc0a018aa93"
+    },
+    {
+      "case": "parallel-close-parent",
+      "passed": true,
+      "artifact_sha256": "e65f247a72e6d710bdd035e0e100fd6fae8f202d0b7bdf7180acbe8f2f3719e8",
+      "parent_return_count": 0,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1
+      },
+      "recorded_event_files": 14,
+      "private_report": "data-collection/outbox/parallel-close-parent-775.json",
+      "private_report_sha256": "fd220575e0e4e173c9cc0bafa0430bba2023f9fbd0eb86e4e7ab3cb2114eed13"
+    },
+    {
+      "case": "parallel-receipt-failure",
+      "passed": true,
+      "artifact_sha256": "e65f247a72e6d710bdd035e0e100fd6fae8f202d0b7bdf7180acbe8f2f3719e8",
+      "parent_return_count": 0,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1
+      },
+      "recorded_event_files": 14,
+      "private_report": "data-collection/outbox/parallel-receipt-failure-775.json",
+      "private_report_sha256": "cfb934aeda8c4f1140e5d293bfa726ae752ce63725035a7905abad0d43cd4123"
+    },
+    {
+      "case": "normal",
+      "passed": true,
+      "artifact_sha256": "e65f247a72e6d710bdd035e0e100fd6fae8f202d0b7bdf7180acbe8f2f3719e8",
+      "parent_return_count": 1,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "consult": 1,
+        "retry": 3,
+        "child2": 3,
+        "return": 3
+      },
+      "recorded_event_files": 141,
+      "private_report": "data-collection/outbox/normal-775.json",
+      "private_report_sha256": "d6c62d5b2ecf2a677fedad9daa8dcfb7d2403e538d211851b6cad1a4a26e4735"
+    },
+    {
+      "case": "review",
+      "passed": true,
+      "artifact_sha256": "e65f247a72e6d710bdd035e0e100fd6fae8f202d0b7bdf7180acbe8f2f3719e8",
+      "parent_return_count": 1,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 2,
+        "review": 3,
+        "return": 2,
+        "tamper": 3
+      },
+      "recorded_event_files": 33,
+      "private_report": "data-collection/outbox/review-775.json",
+      "private_report_sha256": "28c28ac4fc9ef6aec56f0e4d13febdb00650fdb9e60c82729cbf4d157a0b4fc3"
+    }
+  ],
+  "installed_baseline": {
+    "artifact_sha256": "c3e47e13c7bd0d05d02ecea2dad7036d6f61e216b01c26316b511c83d8a6ef1a",
+    "case": "parallel-normal",
+    "passed": false,
+    "stage_requests": {
+      "warmup": 1,
+      "parent": 1
+    },
+    "parent_return_count": 0,
+    "failure": "Missing native reply: DESIGN_BATCH_PARENT_VERIFIED_OK",
+    "report_sha256": "86d5995e9f088e2809eaf2c4701e39d984f95b700c65380ca642deb53935cf82"
+  },
+  "independent_review": {
+    "reviewer": "Codex /root",
+    "role": "independent implementation reviewer",
+    "result": "no actionable findings after source-bound history callback, Stop cancellation and process observation corrections",
+    "source_sha256": {
+      "editor/docks/ai_chat_dock.cpp": "bdae7f7d825eb0f17a8610cbd75ca89a8a02df0d64799d670062db78447edc4a",
+      "editor/docks/ai_chat_scheduler.cpp": "97ea94525231869d1d47b35d8e63e22957607835a73b76f14dbd7949f0dcf6ee",
+      "editor/docks/ai_chat_sub_agents.cpp": "c4abfb393000b060e40358f2ec43d0b113876f2396233eb859a20993dcfac09d"
+    }
+  },
+  "corrections": [
+    {
+      "observed": "Build Python lacked SCons/zstandard",
+      "recovery": "Private venv under own ignored outbox; no shared runtime mutation"
+    },
+    {
+      "observed": "native_build_inputs_changed while build log under data-collection/outbox/*.log changed during build",
+      "recovery": "Moved mutable build log to existing excluded bin/*.log; exact input recheck passed",
+      "failure_log_sha256": "d9e440842244ed5c4c052ab8599607983fa2dda0fde572091a626f5cf8d6c1eb"
+    },
+    {
+      "observed": "Copied fixture helpers lacked trusted gate, then broad customizations junction selected production bridge",
+      "recovery": "Expose only issue-workorders fixture junction; actual isolated headless cases pass"
+    }
+  ],
+  "limitations": [
+    "Controlled HTTP model and CLI subprocess fixture; not provider-account throughput or business acceptance",
+    "Installed editor was never replaced; installation/release acceptance remains parent delivery responsibility"
+  ],
+  "native_invalidation": {
+    "before_key": "ba7ab2a48d0144213bfdb81860325b4c8880913ae981c21b1784eb384a97ca84",
+    "after_key": "100170dfed3df93aa0fe18237ed6833ffd6671b5b6bdae38dc592c020e2a4f35",
+    "before_artifact_sha256": "2face20a6a134b2b5cbffa8e7f5cc474c490a3ec373ee72f24830aeda6e3130a",
+    "after_artifact_sha256": "e65f247a72e6d710bdd035e0e100fd6fae8f202d0b7bdf7180acbe8f2f3719e8",
+    "observed": "C++ review fixes recompiled affected editor translation units; changed artifact tested and final integrated candidate input recheck passed."
+  }
+}
