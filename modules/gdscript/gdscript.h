@@ -220,6 +220,8 @@ public:
 	static String debug_get_script_name(const Ref<Script> &p_script);
 #endif
 
+	static Dictionary compile_source(const String &p_source, const String &p_path = String());
+
 	static String canonicalize_path(const String &p_path);
 	_FORCE_INLINE_ static bool is_canonically_equal_paths(const String &p_path_a, const String &p_path_b) {
 		return canonicalize_path(p_path_a) == canonicalize_path(p_path_b);
