@@ -1,0 +1,60 @@
+{
+  "issue_number": 748,
+  "main_revision": "011cbc2388ca895a107ef5385f5f9663680f7b49",
+  "activation": {
+    "entry": "canonical_desktop_shortcut",
+    "responding": true,
+    "process_id": 12232,
+    "same_project": true,
+    "same_selected_workspace": true,
+    "window_title": "main.tscn - GongGong Workbench - Godot Engine"
+  },
+  "parallel": {
+    "real_user_requests_replayed": false,
+    "terminal": {
+      "issue_706": "cancelled",
+      "issue_426": "completed"
+    },
+    "fixture": "isolated_project_and_model_endpoint",
+    "separate_candidates": true,
+    "model_routes": [
+      426
+    ],
+    "exit_code": 0,
+    "log_sha256": "4937ea6346a5aadd5849d5c3489af8ca3e482fe32f1a1738c037955ba6bc3594",
+    "model_executions": [
+      706,
+      426
+    ],
+    "scenario": "existing"
+  },
+  "build_receipt": "6a4bc06ffd924aff8e02f05775ad699e",
+  "installation_incident": {
+    "root_cause": "unknown transient owner",
+    "initial": "File.Replace sharing violation; complete rollback",
+    "same_candidate_retry": "passed",
+    "issue": 770,
+    "registered_lock_owners": [],
+    "source_changes_required": false
+  },
+  "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/748#issuecomment-6792842131",
+  "files": [
+    {
+      "sha256": "98640b92bb8a6c04bd2d53f2832ea7d665542708b6ff81f52d4fc8119c4b5eb1",
+      "path": "bin/godot.windows.editor.x86_64.console.exe",
+      "verified": true
+    },
+    {
+      "sha256": "c3e47e13c7bd0d05d02ecea2dad7036d6f61e216b01c26316b511c83d8a6ef1a",
+      "path": "bin/godot.windows.editor.x86_64.exe",
+      "verified": true
+    },
+    {
+      "sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "path": "bin/tianshu-ui.json",
+      "verified": true
+    }
+  ],
+  "request_id": "editor-path-audit",
+  "installation_schema": 2
+}
