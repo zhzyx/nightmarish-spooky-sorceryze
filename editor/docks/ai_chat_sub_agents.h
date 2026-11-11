@@ -146,6 +146,27 @@ public:
 			dependencies = Array();
 			prior.push_back(current["number"]);
 			current["body"] = body.strip_edges().left(MAX_WORK_ORDER_CHARS);
+			Array criteria;
+			Array ids;
+			bool criteria_valid = true;
+			for (const String &line : body.split("\n")) {
+				const String field = line.strip_edges().trim_prefix("- ").replace(U"：", ":");
+				if (!field.begins_with(U"验收:")) {
+					continue;
+				}
+				const Vector<String> parts = field.substr(field.find(":") + 1).split("|");
+				if (parts.size() != 2 || parts[0].strip_edges().is_empty() || parts[1].strip_edges().is_empty() || ids.has(parts[0].strip_edges())) {
+					criteria_valid = false;
+					continue;
+				}
+				Dictionary criterion;
+				criterion["id"] = parts[0].strip_edges();
+				criterion["requirement"] = parts[1].strip_edges();
+				ids.push_back(criterion["id"]);
+				criteria.push_back(criterion);
+			}
+			current["acceptance_criteria"] = criteria;
+			current["acceptance_criteria_valid"] = criteria_valid && !criteria.is_empty();
 			orders.push_back(current);
 			current = Dictionary();
 			body = String();

@@ -1,0 +1,79 @@
+{
+  "issue": 783,
+  "linked_bug": 794,
+  "base": "a18c04fc16a5ca54bf36b34a708085fd53aa4062",
+  "reviewer": "/root/sinan_eaa398fd5d2b4ac8",
+  "tool_result": "collaboration.FINAL_ANSWER:/root/sinan_eaa398fd5d2b4ac8",
+  "conclusion": "No actionable findings in exact frozen candidate; not game business acceptance or installed delivery",
+  "files": [
+    {
+      "path": "editor/docks/ai_chat_dock.cpp",
+      "sha256": "03fa3302bb06e6f4489acb40cf36f05cea6ae5f4df4b14a21ed2db2decd0d921"
+    },
+    {
+      "path": "editor/docks/ai_chat_dock.h",
+      "sha256": "86468429984ef1eab946cb91279e423438c975333cac1b4651eba56c24d63bcf"
+    },
+    {
+      "path": "editor/docks/ai_chat_sub_agents.cpp",
+      "sha256": "dbbd53ddca908f4c3ed4897412abcd381b3fadbb7ae4c4a1eecefd9986c5ea0a"
+    },
+    {
+      "path": "editor/docks/ai_chat_sub_agents.h",
+      "sha256": "096346b8d20e71ada0a31f8494bfb553092e326e0e9418075f014c333ff03d3c"
+    },
+    {
+      "path": "tests/editor/native_acceptance_parallel.py",
+      "sha256": "109fb1dfa83e324923cb85ae36b83caf366edb34fae4fe52b8c1bada15922cec"
+    },
+    {
+      "path": "tests/editor/run_native_acceptance.py",
+      "sha256": "7805024cb66886fbb878f2c8d5779a4daa3ce394fb73183a5fd577f10f8b5b4c"
+    },
+    {
+      "path": "tests/editor/test_native_acceptance.cpp",
+      "sha256": "828b1080849389b2ee8be60de03efcceb3cc1fd0bdd6598fbb30049ad805a8b4"
+    },
+    {
+      "path": "design-docs/native-authorized-acceptance-20261111.md",
+      "sha256": "93401d67aea69bbdc99c53517d7ae6dc8f714a13c17ff0c0aceaf52d1d9a5670"
+    }
+  ],
+  "independent_execution": {
+    "command": "--headless --test --test-case=*[NativeAcceptance]*",
+    "tests": 3,
+    "assertions": 11,
+    "exit_code": 0,
+    "console_sha256": "44f51d1114866612352c964f3a4d99bcba6122c2867fef7da8966f4f7628d60b"
+  },
+  "source_review": [
+    "Successful navigation is explicit host status; absent status remains unknown",
+    "Bound context receipt requires matching path and read/current raw hash, rechecked on completion",
+    "Context is excluded from source evidence",
+    "Independent identity, complete criteria, currentness, cancellation liveness and one repair generation remain bound",
+    "Runner rechecks dependency currentness before actual launch"
+  ],
+  "owner_reports_inspected": [
+    {
+      "name": "parallel",
+      "sha256": "898673864a229f13f9e3bd1ed01b435ef62ffa93ccfe37cee5da9b85cb784f3c",
+      "result": "three independent decisions; terminal and registration reads context only"
+    },
+    {
+      "name": "receipt-tamper",
+      "sha256": "d77a7c2860f1ec07ea6474658a584472fbf38b1dde653b012e504a4f265096cb",
+      "result": "no acceptance; registration_changed"
+    },
+    {
+      "name": "pass retry",
+      "sha256": "b948bae942f3c10cce891ec3e079cd9d77af8eaad018b6642e5095511e684ef8",
+      "result": "two decisions, one parent return; original timeout retained"
+    }
+  ],
+  "limits": [
+    "Owner integration reports inspected, not independently rerun",
+    "receipt-as-evidence and directory-failure reports still running at review completion",
+    "Real CLI game and installed main acceptance remain root-owned"
+  ],
+  "observed_at": "2026-11-11T15:11:35.776057+00:00"
+}

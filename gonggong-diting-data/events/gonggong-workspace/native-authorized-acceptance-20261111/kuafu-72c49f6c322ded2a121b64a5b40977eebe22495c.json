@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-72c49f6c322ded2a121b64a5b40977eebe22495c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-authorized-acceptance-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b1bff9a03d63c982181e73eaec0f97534e3d698c8db17cd39a5ece26639aa7bb",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/784",
+    "action": "validation",
+    "detection_head": "c781cfc61607fa65da36ac8fcd8223f3ac795b09",
+    "context_sha256": "7d3674a959331eac1497c047b620fd5983c119674602b7eb02d84187d783255d",
+    "operator": "Sail-Li",
+    "worker": "native-acceptance-783",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783",
+    "evidence": "bin/native-acceptance-build.log",
+    "diagnosis": "Native acceptance additions used OS::ProcessID instead of ProcessID and omitted Timer definition include. Corrected locally. Second compile completed but candidate input guard refused a receipt because edits continued during compilation. No verified binary yet.",
+    "next_action": "Freeze current inputs, rebuild original candidate, run native acceptance and existing regression fixtures before claiming recovery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T11:58:21.425043+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T12:02:04.000609+00:00",
+  "sha256": "a5b3790ec350e9f4d3d6e89d4143db258eee70fbb3fa8ffa1ba4a915068c0dea"
+}

@@ -1,0 +1,83 @@
+{
+  "issue": 783,
+  "linked_bug": 794,
+  "base": "a18c04fc16a5ca54bf36b34a708085fd53aa4062",
+  "reviewer": "/root/sinan_e233bbe86289b823",
+  "tool_result": "collaboration.FINAL_ANSWER:/root/sinan_e233bbe86289b823",
+  "conclusion": "No actionable findings in exact build21 delta; excludes game business and installed delivery acceptance",
+  "prior_review": "data-collection/native-independent-review-783.json",
+  "files": [
+    {
+      "path": "editor/docks/ai_chat_dock.cpp",
+      "sha256": "03fa3302bb06e6f4489acb40cf36f05cea6ae5f4df4b14a21ed2db2decd0d921"
+    },
+    {
+      "path": "editor/docks/ai_chat_dock.h",
+      "sha256": "86468429984ef1eab946cb91279e423438c975333cac1b4651eba56c24d63bcf"
+    },
+    {
+      "path": "editor/docks/ai_chat_sub_agents.cpp",
+      "sha256": "a76ebcba554e2c76b8daa1373bd58da24e3b2acb13cfcc7255db84ba303ce940"
+    },
+    {
+      "path": "editor/docks/ai_chat_sub_agents.h",
+      "sha256": "096346b8d20e71ada0a31f8494bfb553092e326e0e9418075f014c333ff03d3c"
+    },
+    {
+      "path": "tests/editor/native_acceptance_parallel.py",
+      "sha256": "109fb1dfa83e324923cb85ae36b83caf366edb34fae4fe52b8c1bada15922cec"
+    },
+    {
+      "path": "tests/editor/run_native_acceptance.py",
+      "sha256": "292f102ac7ca9b253dc4423721a4c184a630262801413acbfcbf6462d50ffb00"
+    },
+    {
+      "path": "tests/editor/test_native_acceptance.cpp",
+      "sha256": "828b1080849389b2ee8be60de03efcceb3cc1fd0bdd6598fbb30049ad805a8b4"
+    },
+    {
+      "path": "design-docs/native-authorized-acceptance-20261111.md",
+      "sha256": "7e23ed3a70ad9794e9bdf8223e088c69fb91a30af44bc520bcfa0cf2452ae26c"
+    }
+  ],
+  "independent_execution": {
+    "command": "--headless --test --test-case=*[NativeAcceptance]*",
+    "tests": 3,
+    "assertions": 11,
+    "exit_code": 0,
+    "console_sha256": "926882923d1185066bdc048dfbd58e98e6201ebf8ee3b7f60634d6951f2c07e2",
+    "gui_sha256": "a7cf4806f57884f408b96a9e03766a5198792830236e1f629ee3e0bf30428e78"
+  },
+  "source_review": [
+    "Auxiliary reads only in automatic acceptance reviewers",
+    "First observed raw digest fixed; repeated reads cannot repin; completion rechecks",
+    "Known bound receipt mismatch cannot become auxiliary",
+    "Auxiliary data excluded from candidate evidence",
+    "Ordinary review, candidate link rejection and cancellation retained"
+  ],
+  "owner_reports_inspected": [
+    {
+      "scenario": "parallel",
+      "sha256": "2e22ef7c9e531ae0fda33f6b716d878f80a780de5a7040b1d6a836872d9c7d82"
+    },
+    {
+      "scenario": "repair",
+      "sha256": "8ad152edeac7918fe3be1c48915385f48615b634966315c05292a9da9f64101b"
+    },
+    {
+      "scenario": "auxiliary-tamper",
+      "sha256": "fa19cfa6a07058fcfe4a3a93f3b8a8d3c25d7688c04d152f31b594a501ed7724"
+    },
+    {
+      "scenario": "auxiliary-as-evidence",
+      "sha256": "e515fc75847079677072a3c8d9b7fc3cea046ad5e8e14f329c57c6799c429250"
+    }
+  ],
+  "negative_results": "auxiliary_context_changed and evidence_not_read; zero decisions, one failure notice, no repair dispatch",
+  "limits": [
+    "Editor integration receipts independently inspected, not independently rerun",
+    "Repin and link boundaries statically reviewed",
+    "Actual CLI game and installed main remain root-owned"
+  ],
+  "observed_at": "2026-11-11T15:43:56.063445+00:00"
+}

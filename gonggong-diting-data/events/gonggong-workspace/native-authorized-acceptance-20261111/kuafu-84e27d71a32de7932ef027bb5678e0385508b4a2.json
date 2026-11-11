@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-84e27d71a32de7932ef027bb5678e0385508b4a2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-authorized-acceptance-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d83b370870911ceebb4bac1f73c4f28a864d0587b6fe909a3147c5f40539200e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/784",
+    "action": "dispatch",
+    "detection_head": "c781cfc61607fa65da36ac8fcd8223f3ac795b09",
+    "context_sha256": "25ab03d6488a2fb9f29456ebeceb0d5320236378739fc2773ef5d16978642c85",
+    "operator": "Sail-Li",
+    "worker": "codex-root-native-delivery-783",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783",
+    "evidence": "data-collection/native-independent-acceptance-783-final.json",
+    "diagnosis": "Native handoff reconciliation failed before worker verification due GitHub TLS handshake timeout. Same authenticated Sail-Li account reread succeeded; unchanged request resumed, actual FINAL_ANSWER verified through NativeToolBridge, reservation reconciled completed with no dispatch requests.",
+    "next_action": "Preserve original timeout; deliver source and events through root integration tree and continue exact CI/main/installed validation.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T15:58:38.880642+00:00",
+    "attempted": null,
+    "repair_owner": "codex-root-native-delivery-783",
+    "continuable": "No repeated worker spawn, no release of unknown #600 occupation, no source change."
+  },
+  "occurred_at": "2026-11-11T16:04:16.496009+00:00",
+  "sha256": "6df77d897c5c92999699fd6f3633ff613dc82fa2ac7487f9d5bfd25c598c4901"
+}

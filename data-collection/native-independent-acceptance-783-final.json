@@ -1,0 +1,1113 @@
+{
+  "schema_version": 1,
+  "issue": 783,
+  "request_id": "native-authorized-acceptance-20261111",
+  "parent_issue": 776,
+  "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783",
+  "status": "local_native_verified_parent_delivery_pending",
+  "path_base": "repository_root; private build receipt is relative to the named producer checkout",
+  "candidate": {
+    "implementation_checkout_head": "c781cfc61607fa65da36ac8fcd8223f3ac795b09",
+    "delivery_build_head": "a18c04fc16a5ca54bf36b34a708085fd53aa4062",
+    "clean_source": false,
+    "owned_inputs": [
+      {
+        "path": "editor/docks/ai_chat_dock.cpp",
+        "sha256": "03fa3302bb06e6f4489acb40cf36f05cea6ae5f4df4b14a21ed2db2decd0d921",
+        "git_blob": "9e5f5e49f365ebb87e08a14d6b133c0a23a4fa8c"
+      },
+      {
+        "path": "editor/docks/ai_chat_dock.h",
+        "sha256": "86468429984ef1eab946cb91279e423438c975333cac1b4651eba56c24d63bcf",
+        "git_blob": "ee034c1520fb707dcef39179322edd3a9037939e"
+      },
+      {
+        "path": "editor/docks/ai_chat_sub_agents.cpp",
+        "sha256": "a76ebcba554e2c76b8daa1373bd58da24e3b2acb13cfcc7255db84ba303ce940",
+        "git_blob": "2779cc2924658da172e86c36fdeaec6882447927"
+      },
+      {
+        "path": "editor/docks/ai_chat_sub_agents.h",
+        "sha256": "096346b8d20e71ada0a31f8494bfb553092e326e0e9418075f014c333ff03d3c",
+        "git_blob": "1cf4f44920a7ef8cd86494abf66056f84276ab17"
+      },
+      {
+        "path": "tests/editor/test_native_acceptance.cpp",
+        "sha256": "828b1080849389b2ee8be60de03efcceb3cc1fd0bdd6598fbb30049ad805a8b4",
+        "git_blob": "64a099204c1b83384685728bf5bfa2591efad7d1"
+      },
+      {
+        "path": "tests/editor/run_native_acceptance.py",
+        "sha256": "292f102ac7ca9b253dc4423721a4c184a630262801413acbfcbf6462d50ffb00",
+        "git_blob": "b1a984628654f853e4c751bc9930ab65e5a29d58"
+      },
+      {
+        "path": "tests/editor/native_acceptance_parallel.py",
+        "sha256": "109fb1dfa83e324923cb85ae36b83caf366edb34fae4fe52b8c1bada15922cec",
+        "git_blob": "34ff428d9682d1cccd4f251050ae27fc3872d841"
+      },
+      {
+        "path": "design-docs/native-authorized-acceptance-20261111.md",
+        "sha256": "7e23ed3a70ad9794e9bdf8223e088c69fb91a30af44bc520bcfa0cf2452ae26c",
+        "git_blob": "80152770cdc47efbfd0b4b996a76d81ce628341f"
+      }
+    ],
+    "consumed_host_tool_inputs": [
+      {
+        "path": "tools/gonggong_bridge.py",
+        "sha256": "c9e4b3ebaffa432c5773756a62e994580dac10ef1d054c9f30a13ac2c14f0364",
+        "git_blob": "a26b10f7eae2cae2d0a1970a143a4be3d45587c8"
+      },
+      {
+        "path": "customizations/components/godot-host/bridge.py",
+        "sha256": "eba2ca0eee027dfae57826453d1a1901baa8a127fa0e2af954f0255fc3888f2d",
+        "git_blob": "0437a4452898092fb126bb34011c1fc15a66306b"
+      },
+      {
+        "path": "customizations/components/godot-host/acceptance.py",
+        "sha256": "6edbcec8969b97a5b38fafa5b08d19eb48b94e6c81daf5285547712e053d7cf3",
+        "git_blob": "af8d8eff86d5b6a5fc75dd0379fb4dc53b00d7ac"
+      },
+      {
+        "path": "customizations/components/repository-dispatch/acceptance.mjs",
+        "sha256": "32daebf153e908d0ab52701dac657825c15960b33ee5e3a5cecdffa2474e4d62",
+        "git_blob": "3d83dda25efba9c913fcbe268dc027589dcebf01"
+      },
+      {
+        "path": "customizations/components/repository-dispatch/acceptance-candidate.mjs",
+        "sha256": "dca2d88c03a0ce1904211df72a4d9c3b042b4ae3738be068ec9b7d59c95d048f",
+        "git_blob": "d4e8f61529e25920a9b1f3086ceec2639d3df42d"
+      },
+      {
+        "path": "customizations/components/repository-dispatch/session.mjs",
+        "sha256": "99e667645961d10962ad282a31fa4f0bde5dcbce425a77972bef2c222fb1298b",
+        "git_blob": "e75a76dfc606b2d21783a68aedcee373a6f98d69"
+      },
+      {
+        "path": "customizations/platforms/document-management/git-markdown/yanshi-legacy/runtime/src/production.mjs",
+        "sha256": "0e7d8ea1da2bec8b85cff0ae89e3634b45c8b7315edca5357a2c297f3304de07",
+        "git_blob": "bca29c84ed3bed778efcc3208e93c89b663a1c70"
+      },
+      {
+        "path": "customizations/platforms/process-management/yuanheng-local/sinan/coordinator.mjs",
+        "sha256": "ab2dd22cb08e128d785a5cac4dc4ac3c899d6b4dfc1e80a55cc68e19c010b162",
+        "git_blob": "52465ea815f3cb0e6157f2f9c8d2aae421c9924a"
+      },
+      {
+        "path": "tools/godot_parallel/runner.mjs",
+        "sha256": "68f1b822aec3746ce3763575a8ebc3a474bf6419999ee9b1812ec4769c42ff2e",
+        "git_blob": "a760087fdabf08e76bc5227a8de05846c21874ec"
+      },
+      {
+        "path": "tools/godot_parallel/repair.mjs",
+        "sha256": "fe53d5b19f36adc01c4f8077b6ee22fd1be68bc3c1c744930e804166bcb9571a",
+        "git_blob": "bad4ebc177e0aad6dcc51eef895525f5c25905ae"
+      }
+    ],
+    "host_tool_source_note": "Fixtures run from native-acceptance-783 using the previously reviewed adapter/runner copies. Delivery binary is built from native-delivery-783 on main a18c04f. Parent owns adapter/runner/main delivery; these copies are not native-worker delivery changes."
+  },
+  "build": {
+    "producer_checkout": "native-delivery-783",
+    "private_receipt": "bin/gonggong-build-receipts/e6eb704939824fdd9bb4c9b2fd5e8803.json",
+    "receipt_sha256": "cd1fd2910552a9dfb2cdfceb67b33ddc196226b7c11221d30b16b3fd9464a377",
+    "native_key": "e189eb13d471eb1eb6e4c8ebd3a29f5181f1712ae561fa7ebf69f4c9c033446a",
+    "executable_sha256": "a7cf4806f57884f408b96a9e03766a5198792830236e1f629ee3e0bf30428e78",
+    "console_sha256": "926882923d1185066bdc048dfbd58e98e6201ebf8ee3b7f60634d6951f2c07e2",
+    "tianshu_ui_package_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "source_digest": "3c1c2dde07f2591bf6737877dc91bb30e51995e57716bcf475151e1f78ae40d5",
+    "producer_head": "a18c04fc16a5ca54bf36b34a708085fd53aa4062",
+    "command": "$WORKFLOW_PYTHON tools/build_gonggong_editor.py --jobs 8",
+    "native_invalidation": "Parent compiled changed native source against current main; receipt native.status=built. Native key differs from build20; no installed editor was replaced by this worker.",
+    "rollback": "No installed editor was replaced. Retain the previously verified executable; parent owns trusted main delivery."
+  },
+  "checks": [
+    {
+      "scenario": "pass",
+      "passed": true,
+      "binary_generation": "build21",
+      "executable_sha256": "a7cf4806f57884f408b96a9e03766a5198792830236e1f629ee3e0bf30428e78",
+      "report_sha256": "3bc6bfe2ac1a2f62731c18b7241c73c381d27c2b47b8e7bbef6fe201a9c9c06e",
+      "private_report": "bin/native-acceptance-build21-pass-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario pass --out bin/native-acceptance-build21-pass-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "child2": 3,
+        "return": 3
+      },
+      "decisions": [
+        {
+          "producer": 1,
+          "decision_sha256": "bdd78f10fb4c1badeb6bd7d945df50edd13fca49bacb903a4d32af3eb4fcea01",
+          "criteria": [
+            "A"
+          ]
+        },
+        {
+          "producer": 2,
+          "decision_sha256": "dec0e6e344ea3681d46d77d5ebe9861a2ea83bf3a398b151c437ec6a4c0ad0b4",
+          "criteria": [
+            "B"
+          ]
+        }
+      ],
+      "review_completions": 2,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 1,
+      "private_diagnostics_sha256": "d7d1188afd3c3d73134d06f2d1a4e3295f0171b9687a050216e570e05a2c74e5",
+      "review_read_provenance": [
+        {
+          "child_id": 4,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 1,
+          "context_reads": {
+            "untrusted_auxiliary": 1,
+            "producer_terminal": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        },
+        {
+          "child_id": 3,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 1,
+          "context_reads": {
+            "untrusted_auxiliary": 1,
+            "producer_terminal": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        }
+      ]
+    },
+    {
+      "scenario": "repair",
+      "passed": true,
+      "binary_generation": "build21",
+      "executable_sha256": "a7cf4806f57884f408b96a9e03766a5198792830236e1f629ee3e0bf30428e78",
+      "report_sha256": "8ad152edeac7918fe3be1c48915385f48615b634966315c05292a9da9f64101b",
+      "private_report": "bin/native-acceptance-build21-repair-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario repair --out bin/native-acceptance-build21-repair-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "child2": 3
+      },
+      "decisions": [
+        {
+          "producer": 1,
+          "decision_sha256": "56b367c40f3581b54554aa85f575d3d3bcc463de38db6285b03dae953c83bb7d",
+          "criteria": [
+            "A"
+          ]
+        },
+        {
+          "producer": 2,
+          "decision_sha256": "2a3b91de02e87c919365aae80ab38c0314e65773a04e3f1b8543b182dbd3c176",
+          "criteria": [
+            "B"
+          ]
+        }
+      ],
+      "review_completions": 3,
+      "failure_parent_notices": 0,
+      "repair_completions": 1,
+      "parent_returns": 1,
+      "parent_return_basis": "Dedicated fixture asserts len(repair_returns)==1, with original failed reason in acceptance_findings; legacy parent_return_count is not this counter.",
+      "private_diagnostics_sha256": "b9c640c3f6e5a0c67755b0e1febf7d191eef849adb40dab0365f7e5fbe73bbf8",
+      "review_read_provenance": [
+        {
+          "child_id": 3,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 1,
+          "context_reads": {
+            "untrusted_auxiliary": 1,
+            "producer_terminal": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        },
+        {
+          "child_id": 5,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 1,
+          "context_reads": {
+            "untrusted_auxiliary": 1,
+            "producer_terminal": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        },
+        {
+          "child_id": 4,
+          "candidate_read_count": 2,
+          "auxiliary_read_count": 1,
+          "context_reads": {
+            "untrusted_auxiliary": 1,
+            "producer_terminal": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        }
+      ]
+    },
+    {
+      "scenario": "parallel",
+      "passed": true,
+      "binary_generation": "build21",
+      "executable_sha256": "a7cf4806f57884f408b96a9e03766a5198792830236e1f629ee3e0bf30428e78",
+      "report_sha256": "2e22ef7c9e531ae0fda33f6b716d878f80a780de5a7040b1d6a836872d9c7d82",
+      "private_report": "bin/native-acceptance-build21-parallel-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario parallel --out bin/native-acceptance-build21-parallel-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1
+      },
+      "decisions": [
+        {
+          "producer": 1,
+          "decision_sha256": "3c7945146c62fcd71b8cf5ea51f15c6446c9e4dc449a00bc4480760ed8fb37c5",
+          "criteria": [
+            "A"
+          ]
+        },
+        {
+          "producer": 2,
+          "decision_sha256": "024f81caa8b1912c71e34f6d15df446d079b4d9568575deab01237f1ca7380e0",
+          "criteria": [
+            "B"
+          ]
+        },
+        {
+          "producer": 3,
+          "decision_sha256": "cc0d73b9bf74d051694b7112a2e6eb26d49c6a29cd9beedeeb6a7382feee46d3",
+          "criteria": [
+            "C"
+          ]
+        }
+      ],
+      "review_completions": 3,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 1,
+      "actual_process_events": [
+        {
+          "name": "B",
+          "phase": "start",
+          "pid": 27116,
+          "time": 1794411070453
+        },
+        {
+          "name": "A",
+          "phase": "start",
+          "pid": 75580,
+          "time": 1794411070453
+        },
+        {
+          "name": "B",
+          "phase": "finish",
+          "pid": 27116,
+          "time": 1794411071664
+        },
+        {
+          "name": "A",
+          "phase": "finish",
+          "pid": 75580,
+          "time": 1794411071664
+        },
+        {
+          "name": "C",
+          "phase": "start",
+          "pid": 96340,
+          "time": 1794411098629
+        },
+        {
+          "name": "C",
+          "phase": "finish",
+          "pid": 96340,
+          "time": 1794411099831
+        }
+      ],
+      "private_diagnostics_sha256": "444cd4776d321e118f5ac4633177d016cbb7b2740012a4eff5e137fa531d0ba2",
+      "review_read_provenance": [
+        {
+          "child_id": 6,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 4,
+          "context_reads": {
+            "untrusted_auxiliary": 4,
+            "producer_terminal": 1,
+            "producer_registration": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        },
+        {
+          "child_id": 4,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 2,
+          "context_reads": {
+            "untrusted_auxiliary": 2,
+            "producer_terminal": 1,
+            "producer_registration": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        },
+        {
+          "child_id": 5,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 2,
+          "context_reads": {
+            "untrusted_auxiliary": 2,
+            "producer_terminal": 1,
+            "producer_registration": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        }
+      ]
+    },
+    {
+      "scenario": "parallel-repair",
+      "passed": true,
+      "binary_generation": "build21",
+      "executable_sha256": "a7cf4806f57884f408b96a9e03766a5198792830236e1f629ee3e0bf30428e78",
+      "report_sha256": "e689683a2632d733165d61bb05da0625bd688ea7f262c1984f575bae045fbda3",
+      "private_report": "bin/native-acceptance-build21-parallel-repair-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario parallel-repair --out bin/native-acceptance-build21-parallel-repair-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1
+      },
+      "decisions": [
+        {
+          "producer": 1,
+          "decision_sha256": "c096d9c13feb2fc12ce5943940f429068273be5efbc9b0f67420bdce33e16c47",
+          "criteria": [
+            "A"
+          ]
+        },
+        {
+          "producer": 2,
+          "decision_sha256": "188fd609f20f40200548a9aa1386b076a67aedb41122eafd0e6157977c50c8da",
+          "criteria": [
+            "B"
+          ]
+        },
+        {
+          "producer": 3,
+          "decision_sha256": "b21795f04dc194f3bd187f704921cab031ea31a10347be9c287e1f1a5439d740",
+          "criteria": [
+            "C"
+          ]
+        }
+      ],
+      "review_completions": 4,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 1,
+      "actual_process_events": [
+        {
+          "name": "B",
+          "phase": "start",
+          "pid": 108560,
+          "time": 1794411478113
+        },
+        {
+          "name": "A",
+          "phase": "start",
+          "pid": 2596,
+          "time": 1794411478113
+        },
+        {
+          "name": "A",
+          "phase": "finish",
+          "pid": 2596,
+          "time": 1794411479323
+        },
+        {
+          "name": "B",
+          "phase": "finish",
+          "pid": 108560,
+          "time": 1794411479323
+        },
+        {
+          "name": "A",
+          "phase": "start",
+          "pid": 42420,
+          "time": 1794411496811
+        },
+        {
+          "name": "A",
+          "phase": "finish",
+          "pid": 42420,
+          "time": 1794411498014
+        },
+        {
+          "name": "C",
+          "phase": "start",
+          "pid": 69256,
+          "time": 1794411520233
+        },
+        {
+          "name": "C",
+          "phase": "finish",
+          "pid": 69256,
+          "time": 1794411521444
+        }
+      ],
+      "private_diagnostics_sha256": "ab7a4be34136dc2a5b35acfd697956f538bfda60104746f63df89e75bf167c49",
+      "review_read_provenance": [
+        {
+          "child_id": 4,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 2,
+          "context_reads": {
+            "untrusted_auxiliary": 2,
+            "producer_terminal": 1,
+            "producer_registration": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        },
+        {
+          "child_id": 7,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 4,
+          "context_reads": {
+            "untrusted_auxiliary": 4,
+            "producer_terminal": 1,
+            "producer_registration": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        },
+        {
+          "child_id": 5,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 2,
+          "context_reads": {
+            "untrusted_auxiliary": 2,
+            "producer_terminal": 1,
+            "producer_registration": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        },
+        {
+          "child_id": 6,
+          "candidate_read_count": 2,
+          "auxiliary_read_count": 2,
+          "context_reads": {
+            "untrusted_auxiliary": 2,
+            "producer_terminal": 1,
+            "producer_registration": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        }
+      ]
+    },
+    {
+      "scenario": "parallel-config-drift",
+      "passed": true,
+      "binary_generation": "build21",
+      "executable_sha256": "a7cf4806f57884f408b96a9e03766a5198792830236e1f629ee3e0bf30428e78",
+      "report_sha256": "64524aee58f09ffc709e4dac536b93d5ff48eac553c63168ab6af223d6789e5b",
+      "private_report": "bin/native-acceptance-build21-parallel-config-drift-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario parallel-config-drift --out bin/native-acceptance-build21-parallel-config-drift-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1
+      },
+      "decisions": [],
+      "review_completions": 1,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 1,
+      "actual_process_events": [
+        {
+          "name": "A",
+          "phase": "start",
+          "pid": 131892,
+          "time": 1794412008264
+        },
+        {
+          "name": "B",
+          "phase": "start",
+          "pid": 37240,
+          "time": 1794412008264
+        },
+        {
+          "name": "B",
+          "phase": "finish",
+          "pid": 37240,
+          "time": 1794412009472
+        },
+        {
+          "name": "A",
+          "phase": "finish",
+          "pid": 131892,
+          "time": 1794412009472
+        }
+      ],
+      "private_diagnostics_sha256": "52c4deeb4f882191c465d58932ab53a659a399b1d75fdc2db995c17b9a8f4295",
+      "review_read_provenance": [
+        {
+          "child_id": 4,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 2,
+          "context_reads": {
+            "untrusted_auxiliary": 2,
+            "producer_terminal": 1,
+            "producer_registration": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        }
+      ]
+    },
+    {
+      "scenario": "parallel-self-review",
+      "passed": true,
+      "binary_generation": "build21",
+      "executable_sha256": "a7cf4806f57884f408b96a9e03766a5198792830236e1f629ee3e0bf30428e78",
+      "report_sha256": "e96688df109a1ea2101b1804ba899c236e25e6e642dc43cb883957f76fc6d2df",
+      "private_report": "bin/native-acceptance-build21-parallel-self-review-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario parallel-self-review --out bin/native-acceptance-build21-parallel-self-review-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1
+      },
+      "decisions": [
+        {
+          "producer": 2,
+          "decision_sha256": "14e6a4787539770580a3d379808a868132fef8c8b073644ad69bf518a97373d5",
+          "criteria": [
+            "B"
+          ]
+        }
+      ],
+      "review_completions": 2,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 0,
+      "actual_process_events": [
+        {
+          "name": "B",
+          "phase": "start",
+          "pid": 52624,
+          "time": 1794412054505
+        },
+        {
+          "name": "A",
+          "phase": "start",
+          "pid": 82048,
+          "time": 1794412054505
+        },
+        {
+          "name": "B",
+          "phase": "finish",
+          "pid": 52624,
+          "time": 1794412055710
+        },
+        {
+          "name": "A",
+          "phase": "finish",
+          "pid": 82048,
+          "time": 1794412055710
+        }
+      ],
+      "private_diagnostics_sha256": "657715611ad001431af594eb27e1cc44d231d8f1fe97989417cee03e36455b62",
+      "review_read_provenance": [
+        {
+          "child_id": 5,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 2,
+          "context_reads": {
+            "untrusted_auxiliary": 2,
+            "producer_terminal": 1,
+            "producer_registration": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        },
+        {
+          "child_id": 4,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 2,
+          "context_reads": {
+            "untrusted_auxiliary": 2,
+            "producer_terminal": 1,
+            "producer_registration": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        }
+      ]
+    },
+    {
+      "scenario": "receipt-tamper",
+      "passed": true,
+      "binary_generation": "build21",
+      "executable_sha256": "a7cf4806f57884f408b96a9e03766a5198792830236e1f629ee3e0bf30428e78",
+      "report_sha256": "7e788ca48a4a5d83e43c3e003337f29235ae597b801e2439edae3998a4d900d2",
+      "private_report": "bin/native-acceptance-build21-receipt-tamper-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario receipt-tamper --out bin/native-acceptance-build21-receipt-tamper-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 1,
+      "failure_parent_notices": 1,
+      "repair_completions": 0,
+      "parent_returns": 0,
+      "private_diagnostics_sha256": "867788e174bc710a87b3e234821f363e456ebf06e6e8cc9629072fdcdccd5589",
+      "review_read_provenance": [
+        {
+          "child_id": 3,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 1,
+          "context_reads": {
+            "untrusted_auxiliary": 1,
+            "producer_terminal": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        }
+      ]
+    },
+    {
+      "scenario": "receipt-as-evidence",
+      "passed": true,
+      "binary_generation": "build21",
+      "executable_sha256": "a7cf4806f57884f408b96a9e03766a5198792830236e1f629ee3e0bf30428e78",
+      "report_sha256": "177486155f6ed553ae225cc8641bee601cbaa35d451c351bfed3a64d3b0fa0b3",
+      "private_report": "bin/native-acceptance-build21-receipt-as-evidence-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario receipt-as-evidence --out bin/native-acceptance-build21-receipt-as-evidence-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 1,
+      "failure_parent_notices": 1,
+      "repair_completions": 0,
+      "parent_returns": 0,
+      "private_diagnostics_sha256": "40e9563b80275bcb4519ebfe706a647043cc2813d8732e6dd8388801db7d5c4e",
+      "review_read_provenance": [
+        {
+          "child_id": 3,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 1,
+          "context_reads": {
+            "untrusted_auxiliary": 1,
+            "producer_terminal": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        }
+      ]
+    },
+    {
+      "scenario": "directory-failure",
+      "passed": true,
+      "binary_generation": "build21",
+      "executable_sha256": "a7cf4806f57884f408b96a9e03766a5198792830236e1f629ee3e0bf30428e78",
+      "report_sha256": "185984a98166e9c109a8ab2ca1a48e549b32ffac49b44f5e6e32494fd15f74a8",
+      "private_report": "bin/native-acceptance-build21-directory-failure-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario directory-failure --out bin/native-acceptance-build21-directory-failure-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 1,
+      "failure_parent_notices": 1,
+      "repair_completions": 0,
+      "parent_returns": 0,
+      "private_diagnostics_sha256": "92b6fa5ab3dac66836adba9e28d74a9b8a9b108c6c25b67524783fb2de2a31f7",
+      "review_read_provenance": [
+        {
+          "child_id": 3,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 1,
+          "context_reads": {
+            "untrusted_auxiliary": 1,
+            "producer_terminal": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 1
+        }
+      ]
+    },
+    {
+      "scenario": "auxiliary-tamper",
+      "passed": true,
+      "binary_generation": "build21",
+      "executable_sha256": "a7cf4806f57884f408b96a9e03766a5198792830236e1f629ee3e0bf30428e78",
+      "report_sha256": "fa19cfa6a07058fcfe4a3a93f3b8a8d3c25d7688c04d152f31b594a501ed7724",
+      "private_report": "bin/native-acceptance-build21-auxiliary-tamper-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario auxiliary-tamper --out bin/native-acceptance-build21-auxiliary-tamper-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 1,
+      "failure_parent_notices": 1,
+      "repair_completions": 0,
+      "parent_returns": 0,
+      "private_diagnostics_sha256": "b9f42cd80becacab9a52abfa2a887603a06058b1325c5edbcd4d3f597b4ff062",
+      "review_read_provenance": [
+        {
+          "child_id": 3,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 1,
+          "context_reads": {
+            "untrusted_auxiliary": 1,
+            "producer_terminal": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        }
+      ]
+    },
+    {
+      "scenario": "auxiliary-as-evidence",
+      "passed": true,
+      "binary_generation": "build21",
+      "executable_sha256": "a7cf4806f57884f408b96a9e03766a5198792830236e1f629ee3e0bf30428e78",
+      "report_sha256": "e515fc75847079677072a3c8d9b7fc3cea046ad5e8e14f329c57c6799c429250",
+      "private_report": "bin/native-acceptance-build21-auxiliary-as-evidence-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario auxiliary-as-evidence --out bin/native-acceptance-build21-auxiliary-as-evidence-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 1,
+      "failure_parent_notices": 1,
+      "repair_completions": 0,
+      "parent_returns": 0,
+      "private_diagnostics_sha256": "08b296b5693461de08a4f98058046335bb0e5a50d9c9ef1ffe24202fbaa4cc36",
+      "review_read_provenance": [
+        {
+          "child_id": 3,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 1,
+          "context_reads": {
+            "untrusted_auxiliary": 1,
+            "producer_terminal": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        }
+      ]
+    },
+    {
+      "scenario": "cancel-verify",
+      "passed": true,
+      "binary_generation": "build21",
+      "executable_sha256": "a7cf4806f57884f408b96a9e03766a5198792830236e1f629ee3e0bf30428e78",
+      "report_sha256": "d4f29591367db9e2b12989018fcd87111cef0600bf689412776987429eaa0d09",
+      "private_report": "bin/native-acceptance-build21-cancel-verify-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario cancel-verify --out bin/native-acceptance-build21-cancel-verify-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 1,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 0,
+      "private_diagnostics_sha256": "c632d23d5e43325cd40cd0f3ee947939d39fe4b48d61a58c04e1eba810dbc19b",
+      "review_read_provenance": [
+        {
+          "child_id": 3,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 1,
+          "context_reads": {
+            "untrusted_auxiliary": 1,
+            "producer_terminal": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        }
+      ]
+    }
+  ],
+  "prior_negative_regressions": [
+    {
+      "scenario": "stale",
+      "passed": true,
+      "binary_generation": "build20",
+      "executable_sha256": "c31070db4207a7718793c9bfe30c5d922b60dda3c0ed8891a73724c00723f412",
+      "report_sha256": "5bd3d55ed7d0acabd144c8a5ea1578a539037646328e729ccfda66413f6899b0",
+      "private_report": "bin/native-acceptance-build20-stale-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario stale --out bin/native-acceptance-build20-stale-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 1,
+      "failure_parent_notices": 1,
+      "repair_completions": 0,
+      "parent_returns": 0,
+      "private_diagnostics_sha256": "42812ce65d050daf54418912ac34d780ad6339c268dfdbf9ec209ecea717bbfc",
+      "review_read_provenance": [
+        {
+          "child_id": 3,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 0,
+          "context_reads": {
+            "producer_terminal": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        }
+      ]
+    },
+    {
+      "scenario": "unknown",
+      "passed": true,
+      "binary_generation": "build20",
+      "executable_sha256": "c31070db4207a7718793c9bfe30c5d922b60dda3c0ed8891a73724c00723f412",
+      "report_sha256": "e3cffc46102205cab3a2e8ec6ef0fef053448ea9004950e85e67f780a139f9ac",
+      "private_report": "bin/native-acceptance-build20-unknown-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario unknown --out bin/native-acceptance-build20-unknown-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 1,
+      "failure_parent_notices": 1,
+      "repair_completions": 0,
+      "parent_returns": 0,
+      "private_diagnostics_sha256": "ee7b12909f06b00cbb54ea71ab8c52943dc9b063bbbcad32fcb8b1405c8db0ef",
+      "review_read_provenance": [
+        {
+          "child_id": 3,
+          "candidate_read_count": 1,
+          "auxiliary_read_count": 0,
+          "context_reads": {
+            "producer_terminal": 1
+          },
+          "source_unverified": false,
+          "unknown_receipts": 0,
+          "failed_receipts": 0
+        }
+      ]
+    },
+    {
+      "scenario": "empty",
+      "passed": true,
+      "binary_generation": "build20",
+      "executable_sha256": "c31070db4207a7718793c9bfe30c5d922b60dda3c0ed8891a73724c00723f412",
+      "report_sha256": "86384896ac2d878ddfb27ac8e777b8e792a1e360c4e3be3784b58bf225270c77",
+      "private_report": "bin/native-acceptance-build20-empty-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario empty --out bin/native-acceptance-build20-empty-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 0,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 0,
+      "private_diagnostics_sha256": "b78e1952c35674456e53aed9a995eac25b6f71e87da34340cfe535027eb91352",
+      "review_read_provenance": []
+    },
+    {
+      "scenario": "no-permission",
+      "passed": true,
+      "binary_generation": "build20",
+      "executable_sha256": "c31070db4207a7718793c9bfe30c5d922b60dda3c0ed8891a73724c00723f412",
+      "report_sha256": "dc13c0356e26c16e6450dd129103ed7ad27b9efb6e52a5d020ba45ef1f72e333",
+      "private_report": "bin/native-acceptance-build20-no-permission-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario no-permission --out bin/native-acceptance-build20-no-permission-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 0,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 0,
+      "private_diagnostics_sha256": "d971b30375477bba6cbb0167375784db9042401e7a365f5bcb43c8f3c9a32923",
+      "review_read_provenance": []
+    },
+    {
+      "scenario": "cancel",
+      "passed": true,
+      "binary_generation": "build20",
+      "executable_sha256": "c31070db4207a7718793c9bfe30c5d922b60dda3c0ed8891a73724c00723f412",
+      "report_sha256": "02aa15ec569fbbe8cf3435c983d7eb595d6697d7d2b10d8c8d6c57ea8c9797e7",
+      "private_report": "bin/native-acceptance-build20-cancel-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot $VERIFIED_GUI --node $NODE --case models-initial-ok --scenario cancel --out bin/native-acceptance-build20-cancel-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 0,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 0,
+      "private_diagnostics_sha256": "f7dca9674aa8b5bc8a0e9d38f4efd468d163c8be823579be2da2a9746c217dcb",
+      "review_read_provenance": []
+    }
+  ],
+  "regressions": {
+    "native_criteria_and_unknown_directory_receipt": {
+      "passed": true,
+      "binary_generation": "build21",
+      "cases": 3,
+      "assertions": 11,
+      "log_sha256": "8281e97bec1873126ea9c844c9008cf0630eab523c8ea51b8a1d19349309a7d9"
+    },
+    "default_native": {
+      "passed": true,
+      "binary_generation": "build21",
+      "cases": 45,
+      "assertions": 638,
+      "evidence": "Parent-produced build receipt aichat=passed"
+    },
+    "existing_read_only_review": {
+      "passed": true,
+      "binary_generation": "build19",
+      "executable_sha256": "512849ab3474303de721e70ad5b94ed20dcd1feb77ae8b9cf626f5aca91d61f7",
+      "private_report": "bin/native-acceptance-build19-review-regression-report.json",
+      "report_sha256": "ddc1e4a8605a1a4e4e432f0a27dcf8595373c59a843828e4e155649b9008cccd",
+      "rerun_on_build21": false,
+      "reason": "Build21 auxiliary branch is limited to acceptance_reviews; ordinary delegated review source contract unchanged. Parent directed targeted verification after independent source review."
+    },
+    "static_checks": {
+      "clang_format": "5 C++ files, clang-format 22.1.5, dry-run Werror passed",
+      "copyright_headers": "5 C++ files passed",
+      "header_guards": "2 header files passed",
+      "file_format": "Owned C++/Python/design passed",
+      "validate_includes": "5 C++ files passed",
+      "ruff": "2 Python files, check and format passed",
+      "mypy": "2 Python files, no issues"
+    }
+  },
+  "failure_recovery": [
+    {
+      "failure": "MSVC parsed temporary Dictionary indexing as a declaration",
+      "failure_log_sha256": "b4acd508eda34ee45d09b22b1475430cac943459afb39d4158acd4c0bde6488c",
+      "repair": "Use named Dictionary reference before assignment",
+      "revalidation": "Build18 original compile path and full native checks passed"
+    },
+    {
+      "failure": "External completion treated asynchronous currentness pending as reporting failure",
+      "failure_report_sha256": "f51d7df380b3eaa8d38a94bbe63768f7b58ab8e9cb94915804c85f1bb5bb5b73",
+      "repair": "Only actual reportingError blocks reporting; independent review admission awaits currentness callback",
+      "revalidation": "Build18 parallel-repair passed through C review and original-parent return"
+    },
+    {
+      "issue": 794,
+      "failure": "Actual Codex reviewer successfully read host producer receipts and directories, but external receipt reads poisoned source provenance and successful directory responses were unknown.",
+      "repair": "Explicit host callback outcomes; exact bound terminal/registration context with final hash check, never criterion evidence.",
+      "revalidation": "Build20 multi-tool pass/parallel and receipt/failed-directory negatives passed; build21 retains these checks."
+    },
+    {
+      "issue": 794,
+      "failure": "Actual C reviewer successfully read upstream source files and real CLI transcript outside C candidate, causing blanket source rejection.",
+      "repair": "Automatic-acceptance-only untrusted auxiliary read map, fixed successful-read raw hashes, no re-pin, completion hash validation. Changed bound receipts cannot fall back to auxiliary. Criterion evidence remains exclusively actual captured-candidate reads.",
+      "revalidation": "Build21 parallel actually reads upstream A/B plus transcript; auxiliary-tamper and auxiliary-as-evidence both blocked. Independent parent-owned source review completed; real CLI business revalidation is parent evidence."
+    },
+    {
+      "failure": "Build20 serial pass/repair reached the original 90-second marker wait under additional real review/verification work. Original failed reports retained.",
+      "private_reports": [
+        {
+          "path": "bin/native-acceptance-build20-pass-report.json",
+          "sha256": "e9dac62c63f8b3e0fec16a1e1bccc33206bdcdba18830e4601f20ad60cea0d20"
+        },
+        {
+          "path": "bin/native-acceptance-build20-repair-report.json",
+          "sha256": "a373907eb405d1ed871b14c1a644e60aed2e3d9612d0fcee8d432d98392edae9"
+        }
+      ],
+      "repair": "Dedicated native fixture positive scenarios use bounded 180-second marker wait; subprocess total remains240 seconds, native bridge timeout remains600 seconds. Negative scenarios retain90 seconds.",
+      "revalidation": "Build21 pass, repair, parallel and parallel-repair all completed with exact success assertions."
+    }
+  ],
+  "boundaries": {
+    "placement": "native",
+    "existing_host": "AIChatDock and AIChatSubAgents",
+    "host_contract": "Async capture/verify/current; private nonce/liveness; exact host registration, complete criteria and actual successful evidence reads; real runner continuation",
+    "host_tool_issues": [
+      776,
+      785,
+      792
+    ],
+    "same_binary": "All12 checks above bind build21 GUI a7cf4806...;5 prior negative regressions explicitly bind build20; ordinary delegated-review regression explicitly binds build19. They are not described as build21 reruns.",
+    "context_contract": "Bound host receipts and untrusted auxiliary context never enter review_files or criterion evidence. Actual failed/unknown tools and context drift reject completion.",
+    "verification_scope": "Parent directed stopping unused queued tests after current case completed; no running fixture editor was killed. The outer test scheduler exit is not a fixture failure."
+  },
+  "historical_evidence": {
+    "path": "data-collection/native-independent-acceptance-783.json",
+    "sha256": "dd6dcbf3e8d0f565aea6254bda388351d0e89486363a1adda6f4cf1a1faaf439",
+    "line_endings": "LF",
+    "immutable": true,
+    "scope": "Original build18 evidence referenced by Issue783 Kuafu recovery; not overwritten and not evidence for later794 correction."
+  },
+  "request_source": {
+    "path": "gonggong-diting-data/events/gonggong-workspace/native-authorized-acceptance-20261111/host-context-144e6190099b4e739624e4009ea87e62.json",
+    "sha256": "2b26e5524e9535f7ef30623d5dd5f39d73ea1bf78ff195cf65deb52ccd124403",
+    "source": "Actual trusted chat/context entry, Issue783 readback and framework context succeeded; context collection is not model execution."
+  },
+  "limitations": [
+    "Model HTTP responses and GitHub transports are controlled fixtures; runner, child processes, Git worktrees, ledger, Python/Node bridge and native completion callbacks are real.",
+    "Legacy transport_fixture_ok and legacy parent_return_count fields are not the acceptance verdict. This report uses the dedicated native assertions and actual external_parent_returns.",
+    "The broader #773 real-model playable-game acceptance remains with the parent coordinator; local fixture success does not close that business requirement.",
+    "No commit, push, merge, installed editor replacement or shared learning revision was performed by this native worker.",
+    "Build21 controlled fixture assertions are local native acceptance, not a substitute for parent773 actual Codex game verification or main installation. Parent reports that live5 succeeded; its exact source/receipt audit and gameplay evidence are recorded separately by parent.",
+    "This handoff does not claim commit/push/CI/main/install completion; those remain with the explicitly authorized parent publisher."
+  ],
+  "private_evidence_policy": "Raw histories, fixture credentials and temporary candidate manifests remain in ignored bin diagnostics. Only hashes and public-safe measurements are copied here."
+}
