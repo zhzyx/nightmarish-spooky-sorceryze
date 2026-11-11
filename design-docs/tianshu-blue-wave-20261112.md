@@ -16,3 +16,5 @@
 ## 验证记录
 
 Issue #834；原生 macOS arm64 编译、AI Chat 入口与 1440/1100 布局验证通过。现有真实聊天布局测试使用合成 loopback 请求验证发送时 working=1、停止后 working=0，无生产模型调用。独立只读审查未发现阻断项。证据见 data-collection/tianshu-blue-wave-834.json。持续 TIME 动画不依赖主界面处理循环；后台工单向根入口聚合 busy。多人同时工作强度传播仅静态核查；headless 不代表像素或屏幕焦点验收。
+
+CI #835 首轮仅 SVGO 格式未通过；已应用原 CI 优化结果，逐元素属性及子树相等（仅空白和属性顺序），重编译及入口复验通过。关联缺陷 #836，追加证据 data-collection/tianshu-blue-wave-834-format.json。当前已启动的浪花/3D 组合版本具有等价 SVG，保留原对话与模型关联。

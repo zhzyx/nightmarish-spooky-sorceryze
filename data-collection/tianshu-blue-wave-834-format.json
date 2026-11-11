@@ -1,0 +1,25 @@
+{
+  "before_sha256": "1cea99350b1fedf74ec529b612084126c14c6cf625d7b158631625a5a1783608",
+  "after_sha256": "8cd7cd904fe02149a8cad8f840527a11c0443f075089afe63f5c829176d6192e",
+  "svg_structure_equal": true,
+  "source": "PR835 CI SVGO output; whitespace and attribute order only",
+  "issue_number": 834,
+  "related_bug": 836,
+  "failed_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43099520193",
+  "rebuild": "passed",
+  "entry": {
+    "state": "passed",
+    "editor_sha256": "daa282628407cd2ead36b069acd75c4d583faa24257a74a98b1dec852a5bfb8b",
+    "scenario": "entry",
+    "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+  },
+  "consumer": {
+    "binary_sha256": "20f6654150aced50b102ecbcbdefa2bed1d1428f6f52749f715c892d4ee68f0f",
+    "source_base": "28427c00272303053f0ed4764604f448269c53fa",
+    "wave_candidate": "cdd07e6bf1900cefc9a2bac27fffe5fb874cf37d",
+    "entry_spatial_restart": "passed",
+    "startup": "passed",
+    "instance": 17002,
+    "scope": "Local combined pre-format artifact; parsed SVG equivalent, original conversation restored; not main publication"
+  }
+}
