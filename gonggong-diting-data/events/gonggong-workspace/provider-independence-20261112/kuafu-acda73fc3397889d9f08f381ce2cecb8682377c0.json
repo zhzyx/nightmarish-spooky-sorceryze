@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-acda73fc3397889d9f08f381ce2cecb8682377c0",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "provider-independence-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "78dee462e8aa7d83b6335747a79115f820bd73648f0ac1f55d275ca266797c79",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/844",
+    "action": "delivery",
+    "detection_head": "aefbf7e8deb58789e336575276f73120dbfb02d1",
+    "context_sha256": "78c4645907ce2d38fdcc840279524bda1bd3d37ca6bcc60c1c1a1d900db37dbb",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "Issue840 user-authorized continuous delivery",
+    "evidence": "aefbf7e8deb58789e336575276f73120dbfb02d1 commit metadata and writer-submit rejection",
+    "diagnosis": "Manual merge commit inserted blank line between required consecutive work-order trailers; writer correctly rejected clean HEAD. Same local unpublished content tree amended to contiguous trailers.",
+    "next_action": "Rerun formal gate and signed submission; preserve existing PR until replacement confirmed",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T23:50:56.472200+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T23:52:05.157337+00:00",
+  "sha256": "9bcf332616d1ac3cb69ebc43de29f67b6f0fcba83ea315556ee70fdaceae26fc"
+}
