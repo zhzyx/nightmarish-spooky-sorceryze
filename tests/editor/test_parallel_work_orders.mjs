@@ -7,7 +7,7 @@ import {execFileSync} from 'node:child_process';
 import crypto from 'node:crypto';
 import {prepare,run as runHost} from '../../tools/godot_parallel/runner.mjs';
 const run=(request,config,output)=>runHost(request,config,output,{report:async()=>({ok:true,state:'recorded_file',fixture:true})});
-function fixture(t) {
+function fixture(t, count=2) {
   const base=fs.mkdtempSync(path.join(os.tmpdir(),'godot-parallel-'));
   t.after(()=>fs.rmSync(base,{recursive:true,force:true,maxRetries:5,retryDelay:100}));
   const root=path.join(base,'repo');fs.mkdirSync(root);
@@ -18,8 +18,9 @@ function fixture(t) {
   }
   fs.writeFileSync(path.join(root,'CURRENT_FRAMEWORK.json'),'{}');fs.writeFileSync(path.join(root,'framework/package-lock.json'),'{}');
   git('add','.');git('commit','-m','Controlled fake host gate fixtures');
-  const a=path.join(base,'a'),b=path.join(base,'b');
-  git('worktree','add','-b','a',a);git('worktree','add','-b','b',b);
+  const names=Array.from({length:count},(_,i)=>String.fromCharCode(97+i));
+  const worktrees=names.map(name=>path.join(base,name));
+  names.forEach((name,i)=>git('worktree','add','-b',name,worktrees[i]));
   const fake=path.join(base,'fake.mjs');
   fs.writeFileSync(fake,`import assert from 'node:assert/strict';
     import fs from 'node:fs';
@@ -29,17 +30,38 @@ function fixture(t) {
     const base = ${JSON.stringify(base)};
     fs.writeFileSync(path.join(base,path.basename(process.cwd())+'.started'),'yes');
     const deadline = Date.now()+5000;
-    while (!['a','b'].every(name=>fs.existsSync(path.join(base,name+'.started')))) {
+    while (!${JSON.stringify(names)}.every(name=>fs.existsSync(path.join(base,name+'.started')))) {
       if (Date.now()>=deadline) throw Error('Second worker never started while first worker was alive');
       await delay(10);
     }
   `);
-  const config={nativeWorkspaceWrite:true,authorityRef:'fixture-only',capacity:2,python:process.execPath,codex:fake,
+  const config={nativeWorkspaceWrite:true,authorityRef:'fixture-only',capacity:count,python:process.execPath,codex:fake,
     models:[{id:'fixture-model',targets:['agent'],available:true,capabilities:['coding']}],
-    jobs:[{order:1,worktree:a,capabilities:['coding'],dependsOn:[]},{order:2,worktree:b,capabilities:['coding'],dependsOn:[]}]};
-  const request={requestId:'fixture-request',issue:1,workspace:root,workers:[{id:1,order:1,prompt:'a'},{id:2,order:2,prompt:'b'}]};
+    jobs:worktrees.map((worktree,i)=>({order:i+1,worktree,capabilities:['coding'],dependsOn:[]}))};
+  const request={requestId:'fixture-request',issue:1,workspace:root,workers:names.map((prompt,i)=>({id:i+1,order:i+1,prompt}))};
   return {request,config,output:path.join(base,'receipt.json')};
 }
+
+test('three authorized slots run three isolated workers concurrently',async t=>{
+  const f=fixture(t,3);
+  const result=await run(f.request,f.config,f.output);
+  assert.deepEqual(result.workers.map(worker=>worker.state),['review','review','review']);
+  assert.equal(new Set(result.workers.map(worker=>worker.pid)).size,3);
+});
+
+test('large valid capacity allocates only the ready workers',async t=>{
+  const f=fixture(t);
+  f.config.capacity=Number.MAX_SAFE_INTEGER;
+  const result=await run(f.request,f.config,f.output);
+  assert.deepEqual(result.workers.map(worker=>worker.state),['review','review']);
+});
+
+test('invalid host capacities are rejected before dispatch',t=>{
+  const f=fixture(t);
+  for(const capacity of [0,-1,1.5,Infinity,Number.MAX_SAFE_INTEGER+1]) {
+    assert.throws(()=>prepare(f.request,{...f.config,capacity}),/capacity/);
+  }
+});
 test('real child processes overlap in isolated worktrees and retain exact model receipts',async t=>{
   const f=fixture(t);const r=await run(f.request,f.config,f.output);
   assert.deepEqual(r.workers.map(w=>w.state),['review','review'],r.workers.map(w=>w.reason).join('\n'));

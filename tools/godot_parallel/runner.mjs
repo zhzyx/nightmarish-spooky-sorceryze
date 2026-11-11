@@ -72,7 +72,7 @@ function restoreTicket(file, record, request) {
 }
 
 export function prepare(request, config) {
-  if (config.nativeWorkspaceWrite !== true || !config.authorityRef || !Number.isInteger(config.capacity) || config.capacity < 1 || config.capacity > 2) throw Error('Explicit native workspace-write mandate and capacity 1..2 required');
+  if (config.nativeWorkspaceWrite !== true || !config.authorityRef || !Number.isSafeInteger(config.capacity) || config.capacity < 1) throw Error('Explicit native workspace-write mandate and positive safe integer capacity required');
   if (![request.workspace,config.python].every(p=>typeof p==='string'&&path.isAbsolute(p))) throw Error('Workspace and executables must use absolute paths');
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(request.requestId) || !Number.isInteger(request.issue) || request.issue < 1) throw Error('Invalid Issue binding');
   const launch = workerCommand(config);
@@ -220,7 +220,10 @@ export async function run(request, config, output, runtime = {}) {
       save();
     }
   }
-  await Promise.all(Array.from({length:config.capacity},consume));
+  // Capacity belongs to the authorized host; allocate consumers only for work
+  // actually ready in this event, even if the configured limit is much larger.
+  const consumers = Math.min(config.capacity, pending.length);
+  await Promise.all(Array.from({length:consumers},consume));
   save();
   fs.unlinkSync(reservation); // Crash leaves this marker; only actual completion releases it.
   return result;
