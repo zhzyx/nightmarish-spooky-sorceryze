@@ -5435,9 +5435,9 @@ void AIChatDock::verify_ai_connection() {
 	}
 	_set_ai_connection_status("checking", U"正在执行最小文本请求验证（最长 45 秒）…");
 	Dictionary payload;
-	Array messages;
-	messages.push_back(chat_message("user", "Reply only with OK. Do not use tools."));
-	payload["messages"] = messages;
+	Array probe_messages;
+	probe_messages.push_back(chat_message("user", "Reply only with OK. Do not use tools."));
+	payload["messages"] = probe_messages;
 	payload["model"] = _active_model_field()->get_text().strip_edges();
 	payload["stream"] = false;
 	const String effort = _reasoning_effort();
