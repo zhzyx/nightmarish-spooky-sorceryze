@@ -1,0 +1,39 @@
+{
+  "request_id": "runtime-gdscript-20261111",
+  "issue_number": 796,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/796",
+  "base": "7c4c252fab19091fce5bbddd9a945bae1cbe1c43",
+  "state": "local_followup_validation_passed",
+  "failure_source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43057092440/job/130649773026",
+  "diagnosis": "Prior test suite calls language.finish(), which leaves GDScriptCache.cleared true after language.init(). Generic remove_script skips cleanup, retaining subsequent runtime compilation. Scope-owned cleanup now explicitly removes its transient entries regardless of global shutdown flag.",
+  "cache_unit": {
+    "exit_code": 0,
+    "stdout": "[doctest] doctest version is \"2.4.12\"\n[doctest] run with \"--help\" for options\n===============================================================================\n[doctest] test cases:   1 |   1 passed | 0 failed | 1404 skipped\n[doctest] assertions: 256 | 256 passed | 0 failed |\n[doctest] Status: SUCCESS!\n",
+    "stderr": ""
+  },
+  "runtime": {
+    "executable_sha256": "24d9ee93691328e9ff55f5a5554e45896e792049c1215645350d64ba48bacf9a",
+    "test_sha256": "1b3fcb37dbda054d884a1d525576781d7115e1b3af1cba05bd15d890b9d15ac5",
+    "exit_code": 0,
+    "stdout": "Godot Engine v4.8.beta.custom_build.7c4c252fa (2026-11-11 16:21:10 UTC) - https://godotengine.org\n\n{\"failures\":[],\"passed\":true,\"test\":\"gdscript_compile\"}\nRUNTIME_GDSCRIPT_COMPILE_OK\n",
+    "stderr": "WARNING: Falling back to dummy PhysicsServer3D; 3D physics functionality will be disabled. If this is intended, set the physics/3d/physics_engine project setting to Dummy.\n     at: initialize_server (servers/physics_3d/physics_server_3d_manager.cpp:66)\n",
+    "passed": true
+  },
+  "full_local_suite": {
+    "passed": false,
+    "limitations": [
+      "minimal text server lacks confusable identifier support: 3 existing GDScript expectations differ",
+      "sandbox denies localhost TCP listener: existing TCP test aborts before runtime test"
+    ],
+    "authoritative_full_suite": "pending new candidate Windows CI"
+  },
+  "review": {
+    "worker": "/root/sinan_e5743314a2e5d413",
+    "state": "no_blocking_findings",
+    "scope": "read-only two-file source delta; parser lifetime, mutex and shutdown/restart ownership"
+  },
+  "input_sha256": {
+    "modules/gdscript/gdscript.cpp": "2fafb22be48169f0241b732cf28a142bcf2a49f2618cf57f99b4209416c37c94",
+    "tests/runtime/test_gdscript_compile.cpp": "c5692d887222f43e07e6ba8317ad4ea75712440a5900d35daada6b7f53cf7556"
+  }
+}
