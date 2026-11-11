@@ -7024,6 +7024,21 @@ void EditorNode::_toggle_distraction_free_mode() {
 	}
 }
 
+void EditorNode::_toggle_workspace_focus_mode() {
+	// The original scene/bottom-panel button remains the sole shortcut owner.
+	distraction_free->set_pressed(workspace_focus->is_pressed());
+	_toggle_distraction_free_mode();
+}
+
+void EditorNode::update_workspace_focus_button(bool p_full_workspace) {
+	if (!workspace_focus) {
+		return;
+	}
+	workspace_focus->set_visible(!p_full_workspace);
+	workspace_focus->set_pressed_no_signal(is_distraction_free_mode_enabled());
+	workspace_focus->set_text(is_distraction_free_mode_enabled() ? TTR("Restore Layout") : TTR("Focus"));
+}
+
 void EditorNode::update_distraction_free_mode() {
 	if (!EDITOR_GET("interface/editor/behavior/separate_distraction_mode")) {
 		return;
@@ -7047,6 +7062,9 @@ void EditorNode::set_distraction_free_mode(bool p_enter) {
 		editor_dock_manager->set_docks_visible(true);
 	}
 
+	if (editor_main_screen) {
+		editor_main_screen->update_window_fill();
+	}
 	emit_signal(SNAME("distraction_free_mode_changed"), p_enter);
 }
 
@@ -8356,8 +8374,8 @@ void EditorNode::_add_to_main_menu(const String &p_name, PopupMenu *p_menu) {
 void EditorNode::_update_main_menu_type() {
 	bool can_expand = bool(EDITOR_GET("interface/editor/appearance/expand_to_title")) && DisplayServer::get_singleton()->has_feature(DisplayServerEnums::FEATURE_EXTEND_TO_TITLE);
 	bool use_menu_button = EDITOR_GET("interface/editor/appearance/collapse_main_menu");
-	const bool compact_chat = editor_main_screen && is_inside_tree() && Object::cast_to<AIChatDock>(editor_main_screen->get_current_tab_control()) && get_viewport()->get_visible_rect().size.x < 960 * EDSCALE;
-	use_menu_button = use_menu_button || compact_chat;
+	const bool compact_layout = is_inside_tree() && get_viewport()->get_visible_rect().size.x < 960 * EDSCALE;
+	use_menu_button = use_menu_button || compact_layout;
 	bool global_menu = !bool(EDITOR_GET("interface/editor/appearance/use_embedded_menu")) && NativeMenu::get_singleton()->has_feature(NativeMenu::FEATURE_GLOBAL_MENU);
 	MenuType new_menu_type;
 	if (global_menu) {
@@ -8370,7 +8388,7 @@ void EditorNode::_update_main_menu_type() {
 
 	if (new_menu_type == menu_type) {
 		if (main_menu_button) {
-			main_menu_button->set_text(compact_chat ? String() : TTR("Main Menu"));
+			main_menu_button->set_text(compact_layout ? String() : TTR("Main Menu"));
 		}
 		return; // Nothing to do.
 	}
@@ -8410,7 +8428,7 @@ void EditorNode::_update_main_menu_type() {
 	// Create new menu.
 	if (new_menu_type == MENU_TYPE_COMPACT) {
 		main_menu_button = memnew(MenuButton);
-		main_menu_button->set_text(compact_chat ? String() : TTR("Main Menu"));
+		main_menu_button->set_text(compact_layout ? String() : TTR("Main Menu"));
 		main_menu_button->set_tooltip_text(TTR("Main Menu"));
 		main_menu_button->set_accessibility_name(TTR("Main Menu"));
 		main_menu_button->set_theme_type_variation("MainScreenButton");
@@ -8898,6 +8916,13 @@ EditorNode::EditorNode() {
 	main_vbox->add_child(title_bar);
 #endif
 
+	// Create the navigation owner before the content tree so its borrowed tab strip
+	// outlives the main-screen tabs during Node's reverse-insertion teardown.
+	HBoxContainer *workspace_navigation = memnew(HBoxContainer);
+	workspace_navigation->set_name("WorkspaceNavigation");
+	workspace_navigation->add_theme_constant_override("separation", 8 * EDSCALE);
+	main_vbox->add_child(workspace_navigation);
+
 	DockSplitContainer *main_vsplit = memnew(DockSplitContainer);
 	main_vsplit->set_name("DockVSplitMain");
 	main_vsplit->set_vertical(true);
@@ -9088,7 +9113,19 @@ EditorNode::EditorNode() {
 	editor_main_screen = memnew(EditorMainScreen);
 	editor_main_screen->connect("tab_changed", callable_mp(this, &EditorNode::_update_main_menu_type).unbind(1), CONNECT_DEFERRED);
 	srt->add_child(editor_main_screen);
-	title_bar->set_center_control(editor_main_screen->get_internal_container());
+	// Workspace navigation has its own width budget, independent of global menus and run controls.
+	HBoxContainer *workspace_tabs = editor_main_screen->get_internal_container();
+	workspace_tabs->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	workspace_tabs->reparent(workspace_navigation);
+
+	workspace_focus = memnew(Button);
+	workspace_focus->set_name("WorkspaceFocus");
+	workspace_focus->set_theme_type_variation("FlatMenuButton");
+	workspace_focus->set_toggle_mode(true);
+	workspace_focus->set_tooltip_text(TTR("Focus the current workspace by hiding side docks. Activate again to restore them."));
+	workspace_focus->connect(SceneStringName(pressed), callable_mp(this, &EditorNode::_toggle_workspace_focus_mode));
+	workspace_navigation->add_child(workspace_focus);
+	update_workspace_focus_button(false);
 
 	editor_dock_manager->register_dock_slot(editor_main_screen);
 
@@ -9295,7 +9332,7 @@ EditorNode::EditorNode() {
 
 	_update_main_menu_type();
 
-	// Spacer to center 2D / 3D / Script buttons.
+	// Flexible space between global menus and run controls.
 	left_spacer = memnew(HBoxContainer);
 	left_spacer->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 	left_spacer->set_h_size_flags(Control::SIZE_EXPAND_FILL);
@@ -9311,7 +9348,7 @@ EditorNode::EditorNode() {
 	project_title->set_visible(can_expand && menu_type == MENU_TYPE_GLOBAL);
 	left_spacer->add_child(project_title);
 
-	// Spacer to center 2D / 3D / Script buttons.
+	// Flexible space between global menus and run controls.
 	right_spacer = memnew(Control);
 	right_spacer->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 	right_spacer->set_h_size_flags(Control::SIZE_EXPAND_FILL);
@@ -9326,8 +9363,6 @@ EditorNode::EditorNode() {
 	right_menu_hb = memnew(HBoxContainer);
 	right_menu_hb->set_mouse_filter(Control::MOUSE_FILTER_STOP);
 	title_bar->add_child(right_menu_hb);
-
-	title_bar->move_child(editor_main_screen->get_internal_container(), left_spacer->get_index());
 
 	renderer = memnew(OptionButton);
 	renderer->set_flat(true);

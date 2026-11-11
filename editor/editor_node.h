@@ -344,7 +344,7 @@ private:
 	EditorRunBar *project_run_bar = nullptr;
 	HBoxContainer *right_menu_hb = nullptr;
 
-	// Spacers to center 2D / 3D / Script buttons.
+	// Flexible spacing in the global toolbar.
 	HBoxContainer *left_spacer = nullptr;
 	Control *right_spacer = nullptr;
 
@@ -440,6 +440,7 @@ private:
 	Timer *editor_layout_save_delay_timer = nullptr;
 	Timer *scan_changes_timer = nullptr;
 	Button *distraction_free = nullptr;
+	Button *workspace_focus = nullptr;
 	Callable palette_file_selected_callback;
 
 	EditorBottomPanel *bottom_panel = nullptr;
@@ -699,6 +700,7 @@ private:
 	void _update_addon_config();
 
 	void _toggle_distraction_free_mode();
+	void _toggle_workspace_focus_mode();
 
 	void _inherit_imported(const String &p_action);
 	void _open_imported();
@@ -836,6 +838,7 @@ public:
 	void new_inherited_scene() { _menu_option_confirm(SCENE_NEW_INHERITED_SCENE, false); }
 
 	void update_distraction_free_mode();
+	void update_workspace_focus_button(bool p_full_workspace);
 	void set_distraction_free_mode(bool p_enter);
 	bool is_distraction_free_mode_enabled() const;
 	void update_distraction_free_button_theme();

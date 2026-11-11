@@ -107,9 +107,59 @@ func run():
 	var mode = OS.get_environment('UNIFIED_SETTINGS_MODE')
 	if mode != 'reopen':
 		check(artist.find_child('AINativeWorkbench', true, false) == null, 'artist controls start lazy before settings is opened')
+		await load('res://editor_shell_layout.gd').new().run(self)
 	await open_section('ai')
 	categories = settings_dock.find_child('UnifiedSettingsCategories', true, false)
-	check(categories.get_tab_count() == 2 and categories.get_tab_title(0) == 'AI' and categories.get_tab_title(1) == '环境', 'settings has exactly AI and environment categories')
+	check(categories.get_tab_count() == 5 and categories.get_tab_title(0) == '对话与 Agent' and categories.get_tab_title(1) == '运行环境', 'settings separates five task-focused categories')
+	check(not categories.tabs_visible, 'settings uses one visible navigation surface')
+	var navigation = settings_dock.find_child('SettingsNavigation', true, false)
+	var picker = settings_dock.find_child('SettingsCategoryPicker', true, false)
+	check(navigation.is_visible_in_tree() and not picker.visible, 'wide settings shows category sidebar')
+	for i in range(5):
+		var category_button = settings_dock.find_child('SettingsCategory' + str(i), true, false)
+		category_button.pressed.emit()
+		await get_tree().process_frame
+		check(categories.current_tab == i and category_button.button_pressed and picker.selected == i, 'category navigation selects and marks page ' + str(i))
+		check(settings_dock.find_child('SettingsSectionTitle', true, false).text == category_button.text, 'category title matches selected navigation ' + str(i))
+		check(categories.get_tab_control(i).is_visible_in_tree(), 'selected category contents visible ' + str(i))
+	root.size = Vector2i(850, 900)
+	await get_tree().create_timer(0.15).timeout
+	check(not navigation.visible and picker.is_visible_in_tree(), 'compact settings replaces sidebar with category picker')
+	picker.select(2)
+	picker.item_selected.emit(2)
+	await get_tree().process_frame
+	check(categories.current_tab == 2, 'compact category picker navigates to model library')
+	check(picker.get_global_rect().end.x <= root.size.x + 1, 'compact category picker stays within viewport')
+	for i in range(5):
+		picker.select(i)
+		picker.item_selected.emit(i)
+		for frame in range(24): await get_tree().process_frame
+		var outside: Array = []
+		var page: Control = categories.get_tab_control(i)
+		for control in page.find_children('*', 'Control', true, false):
+			if control.is_visible_in_tree() and (control is LineEdit or control is BaseButton):
+				var bounds: Rect2 = control.get_global_rect()
+				if bounds.position.x < page.global_position.x - 1 or bounds.end.x > root.size.x + 1:
+					outside.append(str(control.name) + ':' + str(bounds) + ' parent-min=' + str(control.get_parent().get_combined_minimum_size()))
+		check(outside.is_empty(), 'compact page ' + str(i) + ' input and action bounds: ' + str(outside))
+		if not outside.is_empty():
+			var n: Node = page.find_children('*', 'LineEdit', true, false)[0]
+			while n is Control:
+				print('LAYOUT_DIAG ', n.name, ' ', n.get_global_rect(), ' visible=', n.visible, ' min=', n.get_combined_minimum_size(), ' right=', n.anchor_right, '/', n.offset_right, ' bottom=', n.anchor_bottom, '/', n.offset_bottom)
+				n = n.get_parent()
+	root.size = Vector2i(1440, 1000)
+	for frame in range(24): await get_tree().process_frame
+	var keyboard_category = settings_dock.find_child('SettingsCategory2', true, false)
+	keyboard_category.grab_focus()
+	check(keyboard_category.has_focus(), 'settings category accepts keyboard focus before activation')
+	for pressed in [true, false]:
+		var accept := InputEventKey.new()
+		accept.keycode = KEY_SPACE
+		accept.pressed = pressed
+		root.push_input(accept, true)
+		await get_tree().process_frame
+	check(keyboard_category.has_focus() and categories.current_tab == 2, 'keyboard can activate focused settings category; focus=' + str(keyboard_category.has_focus()) + ', page=' + str(categories.current_tab))
+	await open_section('ai')
 	check(tabs.current_tab == tabs.get_tab_idx_from_control(settings_dock) and categories.current_tab == 0, 'opening settings initializes artist without selecting its business tab')
 	ai = chat.get_ai_settings_control()
 	environment = chat.get_environment_settings_control()
@@ -163,17 +213,24 @@ func verify_navigation(tabs: TabContainer, artist: Control, planner: Control):
 	tabs.current_tab = tabs.get_tab_idx_from_control(artist)
 	workbench.native_buttons.settings.pressed.emit()
 	await get_tree().process_frame
-	check(settings_dock.is_visible_in_tree() and categories.current_tab == 1, 'artist settings button opens central environment')
+	check(settings_dock.is_visible_in_tree() and categories.current_tab == 4 and workbench.get_settings_sections().environment.is_visible_in_tree(), 'artist settings button opens its visible environment controls')
+	workbench.settings_requested.emit('ai')
+	await get_tree().process_frame
+	check(categories.current_tab == 3 and workbench.get_settings_sections().ai.is_visible_in_tree(), 'artist service settings opens its visible AI controls')
 	tabs.current_tab = tabs.get_tab_idx_from_control(planner)
 	workspace._open_connection()
 	await get_tree().process_frame
 	check(settings_dock.is_visible_in_tree() and categories.current_tab == 1 and not workspace.connection_panel.visible, 'planner environment button opens central environment')
+	workspace.settings_requested.emit('ai')
+	await get_tree().process_frame
+	check(categories.current_tab == 2 and workspace.get_model_settings_control().is_visible_in_tree(), 'planner model entry opens visible model library')
 	await open_section('ai')
 	var catalog = workspace.models_dialog
+	await open_section('catalog')
 	catalog.key.text = 'synthetic-catalog-key'
 	await open_section('environment')
 	check(catalog.key.text.is_empty(), 'changing settings category clears catalog session key')
-	await open_section('ai')
+	await open_section('catalog')
 	catalog.key.text = 'synthetic-catalog-key'
 	tabs.current_tab = tabs.get_tab_idx_from_control(chat)
 	await get_tree().process_frame

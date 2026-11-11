@@ -37,6 +37,7 @@ class EditorDock;
 class Button;
 class HBoxContainer;
 class Label;
+class OptionButton;
 class TabContainer;
 class VBoxContainer;
 
@@ -53,6 +54,11 @@ class UnifiedSettingsEditorPlugin : public EditorPlugin {
 	EditorDock *dock = nullptr;
 	ObjectID dock_id;
 	TabContainer *categories = nullptr;
+	VBoxContainer *navigation = nullptr;
+	OptionButton *compact_navigation = nullptr;
+	Vector<Button *> section_buttons;
+	Label *section_title = nullptr;
+	Label *section_description = nullptr;
 	VBoxContainer *chat_ai = nullptr;
 	VBoxContainer *art_ai = nullptr;
 	VBoxContainer *catalog_ai = nullptr;
@@ -76,6 +82,9 @@ class UnifiedSettingsEditorPlugin : public EditorPlugin {
 	void _visibility_changed();
 	void _dock_exiting();
 	void _open_section(const String &p_section);
+	void _open_source_section(const String &p_section, uint64_t p_source);
+	void _select_category(int p_index);
+	void _update_navigation();
 	void _refresh_ai_status();
 	void _verify_ai();
 	void _connect_local_ai();

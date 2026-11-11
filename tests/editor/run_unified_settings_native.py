@@ -104,6 +104,7 @@ def main():
         definition = 'config_version=5\n[application]\nconfig/name="Unified Native Settings Fixture"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n'
         (project / "project.godot").write_text(definition, encoding="utf-8", newline="\n")
         shutil.copy2(script, project / "accept.gd")
+        shutil.copy2(script.with_name("editor_shell_layout.gd"), project / "editor_shell_layout.gd")
         (project / "accept.tscn").write_text(
             "[gd_scene load_steps=2 format=3]\n"
             '[ext_resource type="Script" path="res://accept.gd" id="1"]\n'

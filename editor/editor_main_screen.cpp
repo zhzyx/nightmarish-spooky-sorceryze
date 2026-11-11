@@ -42,6 +42,8 @@
 #include "editor/script/script_editor_plugin.h"
 #include "editor/settings/editor_settings.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/menu_button.h"
+#include "scene/gui/split_container.h"
 
 #ifndef DISABLE_DEPRECATED
 void LegacyMainScreenContainer::_force_dock_visible(EditorDock *p_dock, CanvasItem *p_child) {
@@ -79,7 +81,15 @@ void LegacyMainScreenContainer::add_child_notify(Node *p_child) {
 void EditorMainScreen::_set_window_fill(bool p_fill) {
 	// Distraction-free settings may have changed dock visibility since the last
 	// tab switch, including when switching between two full-workspace pages.
+	if (p_fill && !window_filling) {
+		restore_expanded_bottom_panel = !EditorNode::get_top_split()->is_visible();
+	}
 	EditorNode::get_bottom_panel()->set_hidden_by_main_screen(p_fill);
+	if (!p_fill && window_filling && restore_expanded_bottom_panel) {
+		EditorNode::get_bottom_panel()->set_expanded(true);
+	}
+	window_filling = p_fill;
+	EditorNode::get_singleton()->update_workspace_focus_button(p_fill);
 	EditorSceneTabs::get_singleton()->set_visible(!p_fill);
 	EditorDockManager::get_singleton()->set_docks_visible(!p_fill && !EditorNode::get_singleton()->is_distraction_free_mode_enabled());
 }
@@ -93,6 +103,27 @@ void EditorMainScreen::update_window_fill() {
 	if (is_inside_tree()) {
 		const EditorDock *dock = get_dock(get_current_tab());
 		_set_window_fill(dock && (Object::cast_to<AIChatDock>(dock) || dock->get_layout_key() == "DaqianMainScreen" || dock->get_layout_key() == "AINativeMainScreen" || dock->get_layout_key() == "UnifiedSettingsMainScreen"));
+	}
+}
+
+void EditorMainScreen::_update_workspace_menu() {
+	PopupMenu *popup = workspace_menu->get_popup();
+	popup->clear();
+	for (int i = 0; i < get_tab_count(); i++) {
+		if (is_tab_hidden(i)) {
+			continue;
+		}
+		popup->add_icon_radio_check_item(get_tab_icon(i), get_tab_title(i), i);
+		const int item = popup->get_item_count() - 1;
+		popup->set_item_checked(item, i == get_current_tab());
+		popup->set_item_disabled(item, is_tab_disabled(i));
+	}
+}
+
+void EditorMainScreen::_select_workspace(int p_tab) {
+	// This is explicit user navigation, not automatic selection while inspecting a node.
+	if (p_tab >= 0 && p_tab < get_tab_count() && !is_tab_hidden(p_tab) && !is_tab_disabled(p_tab)) {
+		set_current_tab(p_tab);
 	}
 }
 
@@ -116,8 +147,8 @@ void EditorMainScreen::_on_tab_changed(int p_tab) {
 void EditorMainScreen::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_POSTINITIALIZE: {
-			set_tab_alignment(TabBar::ALIGNMENT_CENTER);
-			get_internal_container()->set_alignment(BoxContainer::ALIGNMENT_CENTER);
+			set_tab_alignment(TabBar::ALIGNMENT_LEFT);
+			get_internal_container()->set_alignment(BoxContainer::ALIGNMENT_BEGIN);
 			connect("tab_changed", callable_mp(this, &EditorMainScreen::_on_tab_changed));
 		} break;
 
@@ -222,6 +253,18 @@ EditorMainScreen::EditorMainScreen() :
 	set_v_size_flags(Control::SIZE_EXPAND_FILL);
 	set_draw_behind_parent(true);
 	get_tab_bar()->set_mouse_filter(Control::MOUSE_FILTER_PASS);
+	set_clip_tabs(true);
+	get_tab_bar()->set_scroll_to_selected(true);
+
+	workspace_menu = memnew(MenuButton);
+	workspace_menu->set_name("WorkspaceMenu");
+	workspace_menu->set_focus_mode(Control::FOCUS_ALL);
+	workspace_menu->set_text(TTR("Workspaces"));
+	workspace_menu->set_tooltip_text(TTR("Select any workspace, including tabs outside the visible area."));
+	workspace_menu->set_theme_type_variation("FlatMenuButton");
+	workspace_menu->connect("about_to_popup", callable_mp(this, &EditorMainScreen::_update_workspace_menu));
+	workspace_menu->get_popup()->connect("id_pressed", callable_mp(this, &EditorMainScreen::_select_workspace));
+	get_internal_container()->add_child(workspace_menu);
 
 #ifndef DISABLE_DEPRECATED
 	main_screen_vbox = memnew(LegacyMainScreenContainer);
