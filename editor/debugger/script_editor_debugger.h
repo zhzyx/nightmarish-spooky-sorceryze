@@ -98,6 +98,7 @@ private:
 
 	VBoxContainer *errors_tab = nullptr;
 	Tree *error_tree = nullptr;
+	uint64_t diagnostic_generation = 0;
 	Button *expand_all_button = nullptr;
 	Button *collapse_all_button = nullptr;
 	Button *clear_button = nullptr;
@@ -349,6 +350,7 @@ public:
 
 	int get_error_count() const { return error_count; }
 	int get_warning_count() const { return warning_count; }
+	Dictionary get_error_snapshot(int p_max_messages, int p_max_characters) const;
 	String get_stack_script_file() const;
 	int get_stack_script_line() const;
 	int get_stack_script_frame() const;

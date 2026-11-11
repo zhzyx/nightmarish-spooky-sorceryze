@@ -1,0 +1,36 @@
+{
+  "base": "5903fb96fee73c0d68967bf953abcd0a5d265fcb",
+  "binary_sha256": "4fefb13cbc16cfd574adf0ba227a684dc91a1d625ad8e9827a149c80104c91d0",
+  "checks": {
+    "native_aichat": {
+      "assertions": 1583,
+      "failed": 0,
+      "passed": 86
+    },
+    "strict_build": "passed78.52seconds",
+    "two_actual_debugger_sessions_and_snapshot": true,
+    "upstream_project_ai_configuration": "runner exit0: initial,reopen,other,child,scheduled passed on same binary"
+  },
+  "integration": "Own staged stash preserved by exact hash6c5b06f4915344710e5aa4ff80fa2fa36df61fae; direct index patch could not apply at changed namespace; clean tree verified, ordinary three-way apply succeeded without conflicts. Upstream project settings/layout retained, diagnostic source intent unchanged.",
+  "issue_number": 845,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+  "limits": [
+    "Full1560/435575 belongs to prior c811 combined binary; current5903 has directed native and actual affected tests",
+    "Controlled transports, no real-provider or install acceptance",
+    "Snapshot request source event appended at current time after gate failure; no historical record fabricated"
+  ],
+  "prior_evidence": "data-collection/editor-runtime-diagnostics-845.json",
+  "raw_private_sha256": {
+    "runtime-diagnostics-5903-final.json": "2fd3d791d137babe78277fc0d805fbe9401e0d6852d6627531e38b5ac0cfb0ba",
+    "runtime-diagnostics-5903-project-config.json": "4095ec8240092301730e66a5db35a56e4e742150aa486cd7ecab96c7870a49ff",
+    "runtime-diagnostics-5903-project-config.log": "bc64073263a5c50e1f0957fb89bf772bf176a63f00dfcf21d12e7efdfa9250f9",
+    "runtime-diagnostics-build-5903.log": "344d02c0a964c735b5bc3ca7c14cc30ddd26c309990aaf2b2b9f20ea27995b03",
+    "runtime-diagnostics-native-5903-aichat.log": "94a9e8a01903f10a5c0b4f63e237805454008492883acce5f47d7d407df58ba7"
+  },
+  "request_id": "editor-runtime-diagnostics-20261112",
+  "source_sha256": {
+    "editor/debugger/script_editor_debugger.cpp": "1dd276529703d50a88f8a0d9e5fd2333d0d3af95e87e9cfb8dcf8d62bc2be0fc",
+    "editor/debugger/script_editor_debugger.h": "52df2e4117e105c60b3417fc64487154b1276baa48bd4d41f3078cb32069707a",
+    "editor/docks/ai_chat_dock.cpp": "a05c265cdc66d9a7468de79076da3ce3872880a598db41fdff4f30c9e426969e"
+  }
+}
