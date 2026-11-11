@@ -17,4 +17,17 @@
 
 ## 当前来源与状态
 
-基线：`a18c04fc1`。当前 GitHub 操作者 `Sail-Li`，仓库权限 `WRITE` 已回读。CLI 位于用户本机工具目录；沙箱内网络失败，通过已授权网络执行通道回读成功。GDScript 接口与首次运行测试已通过；正在独立审查，C/C++ 尚未实现。
+基线：`a18c04fc1`。当前 GitHub 操作者 `Sail-Li`，仓库权限 `WRITE` 已回读。GDScript PR #800 交付接口后，完整 Windows 套件发现语言关闭/重启后的临时缓存清理缺陷；PR #802 修复并通过完整 Windows CI，已合入 `7a99514ed14362a0bba047fa6da36209f3a2acc2`。C/C++ 已实现并独立审查通过，基于该 main 集成验证 debug/release 模板，等待原生候选 CI 与 main 验收。
+
+
+## 原生接口与边界
+
+`GDExtensionManager.compile_extension(compiler, arguments, output_directory, entry_symbol)` 返回 `error/exit_code/output/path/library_path`。它同步执行显式编译器参数列表，原子创建全新目录并拒绝已有目录，仅在动态库存在且描述文件写入成功后返回路径；调用方再显式 `load_extension`。描述文件绑定当前引擎最低版本，类冲突、实例释放、状态迁移及卸载由调用方管理。失败不覆盖运行中产物，失败目录保留供诊断。
+
+当前实际验证为 macOS arm64 / Apple Clang 21 的 C 与 C++。GNU/Clang 风格的 Linux/BSD 与 Windows 分支已实现，但未声明这些平台已实测；MSVC 参数语法和移动/Web 原生编译不支持。外部工具链与 ABI 头文件是依赖，不捆绑编译器，不直接改写引擎自身类型布局。
+
+来源：父 #795；GDScript #796 / PR #800；原生 #797（当前候选）。GDScript 夸父问题 #798 的原失败单元测试已在 PR #802 的完整 Windows CI 成功复验；本地原生初测缺失 compatibility_minimum 已复现并修复，测试断言失败曾使脚本不退出，运行器新增受限退出帧数避免该等待。
+
+发布模板补充验证：release VM 会省略部分运行时错误检查，GDScript 初始化诊断只覆盖虚拟机实际报告的错误；API 文档明确该边界。两类模板均验证语法/类型诊断、有效静态初始化、依赖、脚本替换与缓存回收；初始化失败诊断在 debug 中验证。
+
+最终候选整合：原生 PR #804 的全部 CI 已通过；合入前 main 接收 PR #803，推进到 `a1340f5dd0e71a8c3c874284be3e4e2d0ab6d950`。运行时输入与独立审查版本完全一致、无写路径重叠，基于新 main 重验 debug/release 的 GDScript 与 C/C++ 全部通过；另行签发最新基线候选。原始 PR/验证记录保留，最终远端验收以 #797 时间线为准。

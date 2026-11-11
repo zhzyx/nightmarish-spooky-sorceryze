@@ -68,6 +68,7 @@ private:
 #endif
 
 public:
+	Dictionary compile_extension(const String &p_compiler, const PackedStringArray &p_arguments, const String &p_output_directory, const String &p_entry_symbol);
 	LoadStatus load_extension(const String &p_path);
 	LoadStatus load_extension_from_function(const String &p_path, GDExtensionPtr<const GDExtensionInitializationFunction> p_init_func);
 	LoadStatus load_extension_with_loader(const String &p_path, const Ref<GDExtensionLoader> &p_loader);
