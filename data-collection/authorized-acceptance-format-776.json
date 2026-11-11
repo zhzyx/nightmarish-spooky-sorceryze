@@ -1,0 +1,32 @@
+{
+  "issue": 776,
+  "scope": "Historical AST-equivalent formatting mapping before acceptance-current addition",
+  "original_array_sha256": "45aaa2d61d6f1cb68d9c4bae5d0ec0038d0fd2a362071e5bd41e64a9daa293a4",
+  "files": [
+    {
+      "path": "tools/gonggong_bridge.py",
+      "before": "3ade78c352d7b81d3ca0140bddb90485522ded1893ce78cf0ae73c85b2a7100e",
+      "after": "ff3d9d7a3041f1b089f03b33296ff51b267f623c87dc8cd838b3143ed57e48d8",
+      "ast_equivalent": true
+    },
+    {
+      "path": "customizations/components/godot-host/bridge.py",
+      "before": "16887e3298a819b02ef5c192fa257f239047f494a851f924851869e1959fe65f",
+      "after": "61f8087df8d825db566bc779a320b76d71aef25575187628168a26ff0fda9484",
+      "ast_equivalent": true
+    },
+    {
+      "path": "customizations/components/godot-host/acceptance.py",
+      "before": "8c6a425071c967559ceac5fff52a9967d4e1dfcb2995e096ec309e11ad7c819b",
+      "after": "46cd908939ca4f415e6ec524949be971c996d094a2e5b151ef386f017ca90d33",
+      "ast_equivalent": true
+    },
+    {
+      "path": "customizations/components/godot-host/test_acceptance.py",
+      "before": "b28be8fa99bcec3922ad330265ee8beffd78c7d92efd54cff1c4ff82c7c913e4",
+      "after": "4533c9bd24364e14a3ece2cacb9b628c04d0ce0c500ae5ca7f03d584930692c7",
+      "ast_equivalent": true
+    }
+  ],
+  "schema_correction": "Wrap original mapping array in evidence object required by PR evidence gate; values unchanged"
+}

@@ -1,0 +1,29 @@
+{
+  "issue_number": 776,
+  "request_id": "authorized-production-acceptance-20261111",
+  "reviewer": "current-codex-host",
+  "original_implementation_worker": "/root/sinan_339657759c33e284",
+  "scope": "Node/Python adapter only; native end-to-end remains pending",
+  "findings_corrected": [
+    "Cancel must invalidate host liveness before process termination, and recheck before each downstream launch",
+    "Actual parallel_work_orders_config jobs/registry must not be treated as repository-dispatch workers/requests config",
+    "Actual running ledger accepts complete evidence and independent review atomically, without a manual submit prerequisite",
+    "External producer uses actual execution identity/immutable registration and terminal, never invented conversation ID",
+    "Acceptance wrapper must execute trusted installation verifier, not candidate-provided adapter"
+  ],
+  "independent_wrapper_review": {
+    "worker": "/root/sinan_8157a138f9681320",
+    "reviewed_sha256": "3ade78c352d7b81d3ca0140bddb90485522ded1893ce78cf0ae73c85b2a7100e",
+    "formatted_sha256": "ff3d9d7a3041f1b089f03b33296ff51b267f623c87dc8cd838b3143ed57e48d8",
+    "ast_equivalent": true,
+    "actual_cli_tests_passed": 7
+  },
+  "root_retests": {
+    "acceptance_node_tests": 22,
+    "existing_bridge_tests": 43,
+    "authority_tests": 7,
+    "failures": 0
+  },
+  "format_mapping": "data-collection/authorized-acceptance-format-776.json",
+  "remaining": "Native producer/reviewer real provenance, cancellation, stale candidate and dependency release in installed editor; exact full-candidate gate and CI"
+}

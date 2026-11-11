@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "request-c6c539e4bd8145acb5298263709dfc61",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "authorized-production-acceptance-20261111",
+  "kind": "request",
+  "occurred_at": "2026-11-11T13:21:15.470492+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/776",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "operator": "Sail-Li",
+    "worker": "current-codex-host",
+    "action": "authorized_acceptance_delivery_source_readback",
+    "parent_issue": 773,
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/776",
+    "issue_body_sha256": "4791a69c44909e6bf0e7f2a3c4de46029cf8fbe1053b82e02a1acc6a5a71e5bb",
+    "issue_updated_at": "2026-11-11T13:19:45Z",
+    "usage": null,
+    "design_file": "design-docs/authorized-production-acceptance-20261111.md",
+    "validation_file": "data-collection/authorized-acceptance-current-776.json",
+    "scope": "Deliver tested host adapter; native and full business acceptance remain pending"
+  },
+  "sha256": "473cd23911cf9812b37ced92946ea1eb9272891fdbaf0a579c99e730804ee9e3"
+}

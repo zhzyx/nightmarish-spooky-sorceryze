@@ -90,10 +90,14 @@ export function board(config,base=process.cwd()) {
             if(!relative||relative==='..'||relative.startsWith('..'+path.sep)||path.isAbsolute(relative)||relative.split(path.sep).some(p=>['.git','.yuanheng'].includes(p)))throw Error('Invalid evidence path');
             if(digest(fs.readFileSync(actual))!==a.sha256)throw Error('Stale evidence');
           }}catch{evidenceValid=false;}
+          if(t.review?.host_acceptance) {
+            const binding=t.review.host_acceptance;
+            evidenceValid=evidenceValid&&binding.ledger_key===key(s.ledgerId,t.id)&&!!binding.operator&&/^[a-f0-9]{64}$/.test(binding.decision_sha256)&&binding.candidate?.root===root&&binding.producer_worker_id===t.owner&&binding.reviewer_worker_id===t.review.reviewer&&binding.producer_worker_id!==binding.reviewer_worker_id&&requireAdapter('../../../../components/repository-dispatch/acceptance-candidate.mjs').terminalReceiptsCurrent(binding.terminal_receipts)&&requireAdapter('../../../../components/repository-dispatch/acceptance-candidate.mjs').candidateCurrent(binding.candidate,true);
+          }
           if(!evidenceValid)problems.push('acceptance_evidence_invalid');
         }
         const assignment=(s.agents||[]).find(a=>a.id===t.agent);
-        return {key:key(s.ledgerId,t.id),source:source.id,id:t.id,title:t.title,root,goal:t.goal,status:t.status,owner:t.owner||null,plan:t.plan||null,dependsOn:(t.dependsOn||[]).map(d=>key(s.ledgerId,d)),softDependencies:[],definitionValid,evidenceValid,execution:assignment?.execution||null,blocker:t.blocker||null,created:t.created||null,problems,snapshot:{ledgerId:s.ledgerId,eventCursor:s.events?.length??0,sha256:digest(bytes)}};
+        return {key:key(s.ledgerId,t.id),source:source.id,id:t.id,title:t.title,root,goal:t.goal,status:t.status,owner:t.owner||null,plan:t.plan||null,dependsOn:(t.dependsOn||[]).map(d=>key(s.ledgerId,d)),softDependencies:[],definitionValid,evidenceValid,hostAcceptanceVerified:!!t.review?.host_acceptance&&evidenceValid,execution:assignment?.execution||null,blocker:t.blocker||null,created:t.created||null,problems,snapshot:{ledgerId:s.ledgerId,eventCursor:s.events?.length??0,sha256:digest(bytes)}};
       });
       ledgers.add(s.ledgerId);items.push(...local);sourceSnapshots.push({source:source.id,root,ledgerId:s.ledgerId,eventCursor:s.events?.length??0,sha256:digest(bytes)});
     }catch(e){diagnostics.push({source:source.id,error:e.message});}
