@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-29890ec8149ab72a7b064f6527d787d7c0566439",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "parallel-worker-acceptance-receipts-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f6eeda58f3d2b36d75b1b25fb36c6c7121d1da34d26265adfc82ffe8bf977997",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/786",
+    "action": "validation",
+    "detection_head": "c781cfc61607fa65da36ac8fcd8223f3ac795b09",
+    "context_sha256": "d7504b5c259519130af5c4a648c766b02ed47cd7346a5e9164e304ada46342e3",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785",
+    "evidence": "Index retained prior normalized blob after attribute addition; explicit git add --renormalize refreshed it. Raw working evidence now exactly equals git show :path; unchanged formal gate passed.",
+    "diagnosis": "Git cached index bytes were not refreshed by ordinary add after changing text attributes. No evidence bytes or immutable records were rewritten.",
+    "next_action": "Stage this correction event and let writer_submit rerun final checks before exact candidate publication.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T12:34:52.297609+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T12:38:02.572379+00:00",
+  "sha256": "70326833826fdc2c3d19dd0dfb363a11d410f2ed1f0dc92e218d91eaf37ff305"
+}

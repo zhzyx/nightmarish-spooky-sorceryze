@@ -54,3 +54,6 @@ customizations/components/yanluo/reporting.json -text whitespace=cr-at-eol
 
 # Preserve the exact native-host snapshot referenced by Issue #543 immutable request.
 data-collection/maliang-gpt-modeling-20261108-host-snapshot.json -text whitespace=cr-at-eol
+
+# Preserve the exact #785 validation bytes referenced by immutable method events.
+data-collection/parallel-worker-receipts-785.json -text whitespace=cr-at-eol

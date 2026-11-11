@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-84486ca875a94c2d2f701481d545644f78e44dce",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "parallel-worker-acceptance-receipts-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "782944f0239c33ce67d6e3b26cc88cbc867141aac67a8e30a0a26896589b97f9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/786",
+    "action": "validation",
+    "detection_head": "c781cfc61607fa65da36ac8fcd8223f3ac795b09",
+    "context_sha256": "d7504b5c259519130af5c4a648c766b02ed47cd7346a5e9164e304ada46342e3",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785",
+    "evidence": "Independent reviewer /root/sinan_fd1bed61a0bb703b reproduced delayed transcript final failure and rechecked fixed runner20463dbf061f60155b57faa1ff77a9b075c5fea2018a71b23e87946b7790b703; 24 tests and separate delayed fixture passed.",
+    "diagnosis": "Process close did not settle required transcript flushing. Awaiting stream finished with prompt delivery and process close prevents premature immutable successful transport.",
+    "next_action": "Publish exact independently checked candidate through formal gate and CI; original 785 consumer acceptance remains pending native integration.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T12:26:55.845647+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T12:27:57.564764+00:00",
+  "sha256": "d9d40650e655d8622fa53f38fd50cde4484cf70816709d4b0e27db40958dd6fb"
+}

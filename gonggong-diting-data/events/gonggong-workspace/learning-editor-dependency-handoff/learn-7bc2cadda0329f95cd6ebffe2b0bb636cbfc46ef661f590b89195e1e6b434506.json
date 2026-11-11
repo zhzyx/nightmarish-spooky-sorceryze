@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-7bc2cadda0329f95cd6ebffe2b0bb636cbfc46ef661f590b89195e1e6b434506",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785",
+  "occurred_at": "2026-11-11T12:26:52.113921+00:00",
+  "evidence_refs": [
+    "request-87740df0f7c84dbab20d0c6af4e7e963"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "await-terminal-observers",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Publish CLI transport success only after prompt handoff, actual process close, required transcript flush and durable terminal reporting have completed; retain unknown if any observer fails.",
+      "when": "An external worker terminal receipt is consumed by independent review or downstream scheduling and its transcript is required evidence.",
+      "counterexample": "A process close callback alone does not settle asynchronous stream finalization; optional telemetry that is not required evidence does not by itself establish this gate.",
+      "trial_plan": "Run real worker registration success and late transcript final failure fixtures; require true only for complete observation, false/reconcile_required for late failure."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/parallel-worker-receipts-785.json",
+        "sha256": "be9e2a746236b65b31cd05078a374ab7fe35926dfc3f9dec09fc04e4e3d03ea4"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/parallel-worker-acceptance-receipts-20261111/request-87740df0f7c84dbab20d0c6af4e7e963.json",
+      "sha256": "a04f534e1c3ed981f970e376b9068f49ac761fee1c755ecaf7f3f5334df7beff"
+    }
+  },
+  "sha256": "ff282e2ca870bb63188f8d3e41dfe123d0170c9ddf598f8a3065c9ef09d54be5"
+}
