@@ -1,0 +1,53 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/813",
+  "issue_number": 813,
+  "request_id": "tianshu-3d-workbench-20261112",
+  "feature_delivery": {
+    "pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/815",
+    "headRefOid": "a65f7d9eba167b0161f956e015ff8092938f5e23",
+    "mergeCommit": {
+      "oid": "7389f6728bc7ea0f000fd20bf2c827b4407f5fe4"
+    },
+    "mergedAt": "2026-11-11T18:42:30Z",
+    "mergedBy": {
+      "id": "U_kgDOFOKx7w",
+      "is_bot": false,
+      "login": "Sail-Li",
+      "name": ""
+    },
+    "state": "MERGED",
+    "remote_main_contains_candidate": true
+  },
+  "ci": {
+    "run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43078785563",
+    "issue_association": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43078785161",
+    "result": "all applicable checks passed, including Windows editor build and native regression"
+  },
+  "followup": {
+    "change": "Use copy_editor on every platform instead of only macOS; never invoke the caller editor directly for this stateful test.",
+    "product_inputs_changed": false,
+    "reused_evidence": "data-collection/tianshu-3d-workbench-813.json",
+    "runner_sha256": "59913710a1901e719aeea14850d7e56034e9e1405d92934b6c9441371c4286cb",
+    "test_sha256": "943df992f06e461d7e1327166f66ef50ffc440c4a5aa4e5fd3bb297c7c3e73d5",
+    "executable_sha256": "82fb6ace841568ebdd67dab1de3ed730d999d98353073c55faae5b5f48cb9446",
+    "macos_native_and_restart_passed": true,
+    "limits": "Non-macOS invocation of the updated runner was not executed locally. Existing Windows PR native regression passed for the feature.",
+    "execution": "headless isolated executable/project; no desktop interaction"
+  },
+  "acceptance": {
+    "compact_3d_panel": "passed native geometry and signal assertions",
+    "chat_and_model_context": "passed native mount/stage, scoped restoration and stale-selection checks; no live model request claimed",
+    "explicit_model_issue_and_content_links": "passed known/unknown/missing states and returned binding receipt fixture",
+    "persistence": "passed editor process restart and concurrent-edit protection",
+    "delivery": "feature merged and read back; test-isolation/learning receipt followup in this candidate"
+  },
+  "bug": {
+    "number": 814,
+    "resolved": [
+      "explicit tenant intake",
+      "Clang module cache location and environment import",
+      "canonical Issue evidence fields",
+      "request-kind Diting source event"
+    ]
+  }
+}
