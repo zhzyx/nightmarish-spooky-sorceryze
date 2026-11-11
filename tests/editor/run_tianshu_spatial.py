@@ -8,7 +8,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from editor_test_isolation import macos_editor
+from editor_test_isolation import copy_editor
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--godot", type=Path, required=True)
@@ -18,7 +18,7 @@ args = parser.parse_args()
 source = Path(__file__).with_name("tianshu_spatial.gd")
 with tempfile.TemporaryDirectory(prefix="tianshu-spatial-") as directory:
     root = Path(directory)
-    editor = macos_editor(args.godot.resolve(), root / "editor")
+    editor = copy_editor(args.godot.resolve(), root / "editor")
     (root / "project.godot").write_text('[application]\nconfig/name="Tianshu 3D acceptance"\n')
     (root / "test.gd").write_bytes(source.read_bytes())
     env = {k: v for k, v in os.environ.items() if not k.startswith("GONGGONG_")}
