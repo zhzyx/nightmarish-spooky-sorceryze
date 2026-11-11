@@ -1,0 +1,58 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/819",
+  "issue_number": 819,
+  "request_id": "tianshu-3d-new-task-feedback-20261112",
+  "base": "325fdb12c388de0821bd51d33a63bd867b2e7137",
+  "cause": "Unauthenticated and failed access returned silently; runtime lacked workflow Python. Prior tests preseeded an actor.",
+  "original_native_failure": "unconnected button explains connection requirement",
+  "fixes": [
+    "Direct workspace connection action and durable waiting/denial guidance",
+    "Clear recovered save errors and closed-chat hints",
+    "Discard access replies after root, actor or scope epoch changes before side effects"
+  ],
+  "inputs": {
+    "editor/docks/daqian/spatial_workbench.gd": "84a4fc68ff348621a85136efc1e20887917aaf1a3388693d9faea19c16881a05",
+    "editor/docks/daqian/workspace.gd": "bd347eb5d873694b31daa7396b033c30b2b368f1f741133a64b0d019d42071cd",
+    "tests/editor/tianshu_spatial.gd": "b264f022928722fde846fb3dac13a7dd7b8a09e518f19dd7d255c156c4a97ce8"
+  },
+  "binary_sha256": "739d8d918eb9d42e1ac95440be8cada6087344770d22d80212c7e0543d40770d",
+  "platform": "macOS arm64 Metal/OpenGL native dev editor",
+  "build": "Cloned prior same-baseline incremental build products; SCons regenerated embedded GDScript header, recompiled native dock and relinked editor. Candidate behavior verified in private executable/project copies.",
+  "native": {
+    "passed": true,
+    "exit_code": 0,
+    "restart_exit_code": 0,
+    "coverage": [
+      "real new-task button without identity",
+      "immediate and redraw-persistent pending state",
+      "duplicate click does not duplicate request",
+      "denied access displays cause",
+      "successful retry and closing clears stale messages",
+      "model/account switch rejects delayed action",
+      "embedded access method with controlled transport rejects stale denial and success by root/actor/epoch",
+      "existing model association, draft preservation, canonical Issue restoration, persistence and concurrent writes"
+    ]
+  },
+  "real_access": {
+    "passed": true,
+    "login": "Sail-Li",
+    "scope": "Private native editor, installed Python configured before startup, actual workspace refresh and GitHub collaborator checks followed by native 3D new-task button and chat input; no model request or Issue creation",
+    "external_model_sent": false
+  },
+  "entry": {
+    "passed": true,
+    "binary_sha256": "3c001c8a74864d6b5815961973fdfb4c829f7c0b2a0d6494b1c4d0574f459cbb",
+    "scope": "Prior build before final close-feedback-only adjustment; same entry integration, not final-binary claim"
+  },
+  "independent_review": {
+    "worker": "/root/sinan_c41fa8df8a8b2b45",
+    "result": "Initial stale denial, feedback recovery and incomplete fixture findings fixed; targeted final review no blockers",
+    "execution": "Actual native dispatch and terminal reconcile"
+  },
+  "limits": [
+    "Headless controls/signals/geometry, not pixel/high-DPI validation",
+    "Existing shutdown RID warnings and sandbox data-directory/certificate diagnostics retained",
+    "During test development one incomplete guard fixture timed out; fixed missing helper and added parse-failure exit; final candidate tests passed",
+    "No external model production task sent; live test covers real identity and native chat mount"
+  ]
+}

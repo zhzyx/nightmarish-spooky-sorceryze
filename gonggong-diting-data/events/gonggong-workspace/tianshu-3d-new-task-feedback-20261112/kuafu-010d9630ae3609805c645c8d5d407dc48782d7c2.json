@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-010d9630ae3609805c645c8d5d407dc48782d7c2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-3d-new-task-feedback-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/819",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a5b3294c303c014c3a791d2c14a819ae7ed4bd7f30ba10abe9ad799b4cf51445",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/819",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/819",
+    "action": "user-report",
+    "detection_head": "325fdb12c388de0821bd51d33a63bd867b2e7137",
+    "context_sha256": "a6ae1c2f96715f5635942faf3ba6764bbecf7ff9481b71064cee7ddc1fac5d36",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/819",
+    "evidence": "data-collection/receipts/tianshu-3d-click/red.json: original native button regression failed unconnected guidance assertion",
+    "diagnosis": "3D open_chat returns silently when actor is empty or access fails; previous tests preseeded actor and omitted connection feedback. Scope is original #813 delivery; current root owns repair. Independent review also identified stale access denial and feedback recovery cases.",
+    "next_action": "Add visible connection action and progress/error feedback, discard stale access results, test failed and recovered paths, rebuild native embedded consumer and deliver via PR.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T19:31:31.780939+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T19:37:29.102628+00:00",
+  "sha256": "00817c02c2744521092263cd7b1f7102a8aa4ea577fcd071fde3d35c4aebe73b"
+}

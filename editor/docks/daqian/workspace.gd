@@ -2413,9 +2413,16 @@ func _run_board_command(access_only: bool, expected: String, project: bool, delt
 
 func _fresh_access() -> bool:
 	if actor.is_empty():
+		notice.text = "请先连接工作区并核对协作者身份。"
 		return false
+	var root := _repo()
+	var expected_actor := actor.duplicate(true)
+	var epoch := scope_epoch
 	var check: Dictionary = await _board_command(true,actor.user_id)
+	if root != _repo() or actor != expected_actor or epoch != scope_epoch:
+		return false
 	if check.get("environment_changed", false):
+		notice.text = "运行环境已改变，请重新核对工作区身份。"
 		return false
 	if not check.has("access"):
 		if check.get("denied",true):
@@ -2424,7 +2431,10 @@ func _fresh_access() -> bool:
 		else:
 			notice.text = "当前离线，须重新核实协作者身份后提交"
 		return false
-	return check.access == actor
+	if check.access != actor:
+		notice.text = "仓库协作者身份已改变，请重新连接工作区。"
+		return false
+	return true
 
 
 func _open_models() -> void:
