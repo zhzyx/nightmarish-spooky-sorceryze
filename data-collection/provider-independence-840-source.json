@@ -1,0 +1,14 @@
+{
+  "request_id": "provider-independence-20261112",
+  "issue_number": 840,
+  "source_digest": "dfc5be72552e942a713b6316d97f79172a874bc52b12a29cf7bb7e1171a72b92",
+  "native_artifact_sha256": "343ee5ade57e3861cbc5809d1c0dab77439dd53a809360f95c68ba244ad0421d",
+  "console_sha256": "878d8a77952711fdc7edeaefb1b08b036178189e597c14eadade121ac5d560a6",
+  "native_tests": {
+    "passed": 88,
+    "assertions": 1598
+  },
+  "metadata_delta": ".gitattributes preserves immutable validation evidence bytes; no product input changed after the earlier business checks",
+  "gitattributes_blob": "920d0a563115920601e9ece2757926996dce6d98",
+  "prior_evidence": "data-collection/provider-independence-840.json"
+}

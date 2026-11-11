@@ -97,6 +97,12 @@ jobs:
         if: matrix.target == 'editor'
         run: python3 tests/editor/run_tianshu_ui_package.py --godot ./bin/godot.macos.editor.arm64 --report "$RUNNER_TEMP/tianshu-package.json"
 
+      - name: Verify external host trust on macOS
+        if: matrix.target == 'editor'
+        run: |
+          python3 -m unittest discover -s tools -p test_editor_trusted_hosts.py -v
+          ./bin/godot.macos.editor.arm64 --headless --test --test-case='[Editor][AIChat][ExternalPeer]*'
+
       - name: Verify Tianshu creator navigation on arm64
         if: matrix.target == 'editor'
         run: |

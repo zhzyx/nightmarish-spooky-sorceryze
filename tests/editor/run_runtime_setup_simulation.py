@@ -377,9 +377,11 @@ def main():
                 assert value["ok"] is True
                 if name == "runtime-setup":
                     assert len(value["cases"]) == 10
-                    assert "governed host model step selects and validates a complete runtime package" in value["cases"]
-                    assert "changed host policy blocks model invocation before native selector starts" in value["cases"]
-                    assert "missing host policy blocks model invocation before native selector starts" in value["cases"]
+                    assert (
+                        "governed deterministic host selects and validates a complete runtime package" in value["cases"]
+                    )
+                    assert "changed host policy blocks configuration before deployment" in value["cases"]
+                    assert "missing host policy blocks configuration before deployment" in value["cases"]
                 else:
                     assert value["runtime_setup_and_resume"] is True
                 report[name] = value

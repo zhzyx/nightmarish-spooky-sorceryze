@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-da644bd8e556fa6f90fce0556372dc2e72e06f8c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "provider-independence-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8c67d60c9718245c82e7d296d520ed5ed1131c1c9ae351dcfeb9c2d4ac424ad0",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/844",
+    "action": "validation",
+    "detection_head": "c811b583d4f709f697161280ed285c08793c90ef",
+    "context_sha256": "61104106c745d8b62350066d75bf7a56af8eca10989ffcebd8fc8b450020b8b5",
+    "operator": "Sail-Li",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+    "evidence": "data-collection/provider-independence-840.json",
+    "diagnosis": "Source fixes and actual behavior assertions rechecked independently. Final Windows native tests passed 88 cases; asset GUI old assertions corrected, configured Codex still works, complete runtime-source and explicit-direct-path request resume both passed without invoking Codex.",
+    "next_action": "Run formal gates, sign exact integrated candidate, push and validate macOS CI; retain real third-party-host acceptance limitations.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T22:05:42.344967+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-11T22:17:26.982082+00:00",
+  "sha256": "2cdd37852e92d9374e66f5dd5738c34a0c686a44aa7ac35ec8eac84af9acb957"
+}

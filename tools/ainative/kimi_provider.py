@@ -16,7 +16,6 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-from codex_provider import _creationflags, _environment, validate_jpeg
 from comfy_provider import digest
 from extensions import canonical, require
 from modeling_provider import (
@@ -28,6 +27,7 @@ from modeling_provider import (
 from modeling_provider import (
     MESSAGES as MODELING_MESSAGES,
 )
+from provider_common import _creationflags, _environment, validate_jpeg
 
 VERSION = "1"
 DEFAULT_ENDPOINT = "https://api.kimi.com/coding/v1"

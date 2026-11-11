@@ -16,15 +16,15 @@ import sys
 import time
 from pathlib import Path
 
-import codex_provider
 import modeling_provider
+import provider_common
 from character_detail import resolve_detail
-from codex_provider import _creationflags, _environment, resolve_cli, validate_jpeg, validate_png
 from comfy_provider import digest, register
 from extensions import NodeRegistry, canonical, require, validate_invocation
-from modeling_provider import ModelingProvider, check_modeling_cli, validate_mesh
+from modeling_provider import ModelingProvider, resolve_cli, validate_mesh
 from organic_detail import expand_patterns
 from period_groom import MAX_GROOM_TRIANGLES, MAX_GROOM_VERTICES, resolve_period_groom
+from provider_common import _creationflags, _environment, validate_jpeg, validate_png
 from sculpt_builder import (
     CHARACTER_AGE_WEIGHTS,
     LOFT_STEPS,
@@ -301,10 +301,22 @@ def load_operator_calibration(builder):
 class SculptProvider(ModelingProvider):
     def __init__(self, config):
         require(
-            isinstance(config, dict) and set(config) == {"cli_path", "storage", "blender_path", "builder_path"},
+            isinstance(config, dict)
+            and set(config)
+            in (
+                {"cli_path", "storage", "blender_path", "builder_path"},
+                {"planner", "storage", "blender_path", "builder_path"},
+            ),
             "invalid sculpt config",
         )
-        require(all(isinstance(value, str) and value.strip() for value in config.values()), "invalid sculpt config")
+        require(
+            all(isinstance(value, str) and value.strip() for name, value in config.items() if name != "planner"),
+            "invalid sculpt config",
+        )
+        if "planner" in config:
+            from api_planner import validate_config
+
+            validate_config(config["planner"])
         self.config = json.loads(canonical(config))
         self.storage = Path(config["storage"]).expanduser().resolve()
         self.storage.mkdir(parents=True, exist_ok=True)
@@ -321,15 +333,20 @@ class SculptProvider(ModelingProvider):
             self.config,
             hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
             hashlib.sha256(Path(modeling_provider.__file__).read_bytes()).hexdigest(),
-            hashlib.sha256(Path(codex_provider.__file__).read_bytes()).hexdigest(),
+            hashlib.sha256(Path(provider_common.__file__).read_bytes()).hexdigest(),
+            hashlib.sha256(Path(__file__).with_name("api_planner.py").read_bytes()).hexdigest()
+            if "planner" in config
+            else None,
             self.runtime_inputs,
         ])
 
     def describe(self):
         return dict(
-            id="codex-sculpt",
+            id="api-sculpt" if "planner" in self.config else "codex-sculpt",
             version=VERSION,
-            model="GPT CLI anatomical and organic plans + fixed Blender sculpt interpreter",
+            model=self.config["planner"]["model"]
+            if "planner" in self.config
+            else "GPT CLI anatomical and organic plans + fixed Blender sculpt interpreter",
             model_version=self.fingerprint,
             capabilities=["text_to_mesh", "image_to_mesh"],
             context_types=["text", "image"],
@@ -486,7 +503,7 @@ class SculptProvider(ModelingProvider):
             return self.poll(key)
         try:
             plan = self.plan(request, manifest)
-            report = check_modeling_cli(self.config["cli_path"])
+            report = self.check_authentication()
             require(report["connected"], report["code"])
             directory = self.storage / key
             directory.mkdir(exist_ok=False)
@@ -522,7 +539,7 @@ class SculptProvider(ModelingProvider):
         calibration = load_operator_calibration(builder)
         require(calibration["metadata"] == plan["operator_calibration"], "builder_failed")
         arguments = [
-            resolve_cli(self.config["cli_path"]),
+            resolve_cli(self.config["cli_path"]) if "planner" not in self.config else "",
             "--no-daemon",
             "exec",
             "--json",
@@ -644,72 +661,85 @@ class SculptProvider(ModelingProvider):
         )
         (directory / "schema.json").write_text(canonical(schema), encoding="utf-8")
         (directory / "prompt.txt").write_text(prompt, encoding="utf-8")
-        with (directory / "prompt.txt").open("rb") as source:
-            require(_runtime_inputs(builder) == self.runtime_inputs, "builder_failed")
-            exit_code = self._run_owned(key, arguments, directory, "cli", stdin=source, timeout=CLI_TIMEOUT)
-        if exit_code is None:
-            return None
-        require(exit_code == 0, "cli_execution_failed")
-        raw = (directory / "cli.stdout").read_bytes()
-        require(len(raw) <= MAX_EVENTS_BYTES, "cli_output_invalid")
-        events = [json.loads(line) for line in raw.decode("utf-8").splitlines() if line.strip()]
-        threads = [event.get("thread_id") for event in events if event.get("type") == "thread.started"]
-        completed = [event for event in events if event.get("type") == "turn.completed"]
-        require(
-            len(threads) == 1 and isinstance(threads[0], str) and re.fullmatch(r"[a-f0-9-]{36}", threads[0]),
-            "cli_output_invalid",
-        )
-        require(
-            len(completed) == 1 and not any(event.get("type") == "turn.failed" for event in events),
-            "cli_output_invalid",
-        )
-        output = directory / "instructions.json"
-        output_data = (
-            output.read_bytes()
-            if output.is_file() and not output.is_symlink() and output.stat().st_size <= MAX_PLAN_BYTES
-            else None
-        )
-        usage = completed[0].get("usage")
-        turn_receipt = dict(
-            scope="completed_cli_turn_before_semantic_plan_validation",
-            thread_id=threads[0],
-            cli_exit_code=exit_code,
-            cli_events_sha256=hashlib.sha256(raw).hexdigest(),
-            host_quality_policy_sha256=digest(modeling_quality_policy()),
-            operator_calibration=calibration_receipt,
-            raw_output_sha256=hashlib.sha256(output_data).hexdigest() if output_data is not None else None,
-            raw_output_bytes=len(output_data) if output_data is not None else None,
-            input_evidence_priority="image_led_with_explicit_user_edits"
-            if plan["images"]
-            else "text_only_secondary_acceptance_priority",
-            cli_turn_usage={
-                name: number
-                for name, number in usage.items()
-                if name
-                in (
-                    "input_tokens",
-                    "cached_input_tokens",
-                    "cache_write_input_tokens",
-                    "output_tokens",
-                    "reasoning_output_tokens",
-                )
-                and type(number) is int
-                and number >= 0
-            }
-            if isinstance(usage, dict)
-            else None,
-        )
-        # A semantically rejected plan still incurred a real completed CLI turn.
-        # Record its observed usage and raw response hash before any plan gate.
-        self.write(key, cli_turn_receipt=turn_receipt)
-        require(
-            not any(
-                event.get("item", {}).get("type") in ("command_execution", "file_change", "mcp_tool_call", "web_search")
-                for event in events
-            ),
-            "cli_output_invalid",
-        )
-        require(output_data is not None, "cli_output_invalid")
+        if "planner" in self.config:
+            from api_planner import instructions as api_instructions
+
+            outcome = api_instructions(self, key, directory, arguments)
+            if outcome is None:
+                return None
+            response, turn_receipt = outcome
+            turn_receipt.update(
+                operator_calibration=calibration_receipt, host_quality_policy_sha256=digest(modeling_quality_policy())
+            )
+            output_data = canonical(response).encode("utf-8")
+        else:
+            with (directory / "prompt.txt").open("rb") as source:
+                require(_runtime_inputs(builder) == self.runtime_inputs, "builder_failed")
+                exit_code = self._run_owned(key, arguments, directory, "cli", stdin=source, timeout=CLI_TIMEOUT)
+            if exit_code is None:
+                return None
+            require(exit_code == 0, "cli_execution_failed")
+            raw = (directory / "cli.stdout").read_bytes()
+            require(len(raw) <= MAX_EVENTS_BYTES, "cli_output_invalid")
+            events = [json.loads(line) for line in raw.decode("utf-8").splitlines() if line.strip()]
+            threads = [event.get("thread_id") for event in events if event.get("type") == "thread.started"]
+            completed = [event for event in events if event.get("type") == "turn.completed"]
+            require(
+                len(threads) == 1 and isinstance(threads[0], str) and re.fullmatch(r"[a-f0-9-]{36}", threads[0]),
+                "cli_output_invalid",
+            )
+            require(
+                len(completed) == 1 and not any(event.get("type") == "turn.failed" for event in events),
+                "cli_output_invalid",
+            )
+            output = directory / "instructions.json"
+            output_data = (
+                output.read_bytes()
+                if output.is_file() and not output.is_symlink() and output.stat().st_size <= MAX_PLAN_BYTES
+                else None
+            )
+            usage = completed[0].get("usage")
+            turn_receipt = dict(
+                scope="completed_cli_turn_before_semantic_plan_validation",
+                thread_id=threads[0],
+                cli_exit_code=exit_code,
+                cli_events_sha256=hashlib.sha256(raw).hexdigest(),
+                host_quality_policy_sha256=digest(modeling_quality_policy()),
+                operator_calibration=calibration_receipt,
+                raw_output_sha256=hashlib.sha256(output_data).hexdigest() if output_data is not None else None,
+                raw_output_bytes=len(output_data) if output_data is not None else None,
+                input_evidence_priority="image_led_with_explicit_user_edits"
+                if plan["images"]
+                else "text_only_secondary_acceptance_priority",
+                cli_turn_usage={
+                    name: number
+                    for name, number in usage.items()
+                    if name
+                    in (
+                        "input_tokens",
+                        "cached_input_tokens",
+                        "cache_write_input_tokens",
+                        "output_tokens",
+                        "reasoning_output_tokens",
+                    )
+                    and type(number) is int
+                    and number >= 0
+                }
+                if isinstance(usage, dict)
+                else None,
+            )
+            # A semantically rejected plan still incurred a real completed CLI turn.
+            # Record its observed usage and raw response hash before any plan gate.
+            self.write(key, cli_turn_receipt=turn_receipt)
+            require(
+                not any(
+                    event.get("item", {}).get("type")
+                    in ("command_execution", "file_change", "mcp_tool_call", "web_search")
+                    for event in events
+                ),
+                "cli_output_invalid",
+            )
+            require(output_data is not None, "cli_output_invalid")
         try:
             response = json.loads(output_data.decode("utf-8"))
             require(isinstance(response, dict), "plan_fields_invalid")
@@ -719,6 +749,8 @@ class SculptProvider(ModelingProvider):
             if "reference_panels" in response:
                 require(plan["distinct_reference_images"] == 1, "reference_panels_invalid")
                 evidence = sheet_evidence(response.pop("reference_panels"))
+                if "planner" in self.config:
+                    evidence["source"] = "api_observed_panels"
                 evidence["source_sha256"] = image_roles[0]["reference_sha256"]
             instructions = validate_plan(response)
             selected = None
@@ -760,7 +792,9 @@ class SculptProvider(ModelingProvider):
         )
         receipt = dict(
             turn_receipt,
-            scope="validated_cli_modeling_instructions",
+            scope="validated_api_modeling_instructions"
+            if "planner" in self.config
+            else "validated_cli_modeling_instructions",
             instructions_sha256=digest(instructions),
             reference_images=image_roles,
             distinct_reference_images=plan["distinct_reference_images"],
@@ -921,7 +955,7 @@ class SculptProvider(ModelingProvider):
         )
         self.write(key, builder_receipt=builder_receipt)
         artifact = dict(
-            id="codex-sculpt-" + key,
+            id=self.describe()["id"] + "-" + key,
             revision=sha,
             type="mesh",
             payload=dict(
@@ -930,9 +964,9 @@ class SculptProvider(ModelingProvider):
                 extension=".glb",
                 bytes=len(data),
                 provenance=dict(
-                    provider="codex-sculpt",
+                    provider=self.describe()["id"],
                     cli_version=record["cli_report"]["version"],
-                    auth_mode="chatgpt",
+                    auth_mode="api_key" if "planner" in self.config else "chatgpt",
                     execution="validated_organic_plan_in_fixed_blender_interpreter",
                     instructions_sha256=digest(instructions),
                     instruction_receipt=cli_receipt,

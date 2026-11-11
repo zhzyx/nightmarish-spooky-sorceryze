@@ -64,7 +64,7 @@ Dictionary AIChatExternalPeer::validate_chain(const Vector<Process> &p_before, c
 		if (entry.pid <= 1 || entry.uid != p_uid || entry.real_uid != p_uid || entry.saved_uid != p_uid) {
 			return rejected("ancestor_uid_mismatch");
 		}
-		if (entry.code != APPLE_PLATFORM && entry.code != OPENAI_CLI && entry.code != OPENAI_DESKTOP) {
+		if (entry.code != APPLE_PLATFORM && entry.code != OPENAI_CLI && entry.code != OPENAI_DESKTOP && entry.code != REGISTERED_HOST && entry.code != REGISTERED_HELPER) {
 			return rejected("unrecognized_ancestor_code");
 		}
 		if (entry.fingerprint.is_empty()) {
@@ -83,7 +83,7 @@ Dictionary AIChatExternalPeer::validate_chain(const Vector<Process> &p_before, c
 				return rejected("ancestor_link_changed");
 			}
 		}
-		if (entry.code == OPENAI_DESKTOP) {
+		if (entry.code == OPENAI_DESKTOP || entry.code == REGISTERED_HOST) {
 			desktop = entry.pid;
 		}
 	}
@@ -95,21 +95,26 @@ Dictionary AIChatExternalPeer::validate_chain(const Vector<Process> &p_before, c
 	result["peer_pid"] = p_before[0].pid;
 	result["peer_birth_sec"] = int64_t(p_before[0].birth_sec);
 	result["peer_birth_usec"] = int64_t(p_before[0].birth_usec);
-	result["trusted_desktop_pid"] = desktop;
+	result["trusted_desktop_pid"] = desktop; // Compatibility with existing clients.
+	result["trusted_host_pid"] = desktop;
 	return result;
 }
 
 #ifdef MACOS_ENABLED
 #include <CoreFoundation/CoreFoundation.h>
 #include <Security/Security.h>
+#include <fcntl.h>
 #include <libproc.h>
 #include <mach/message.h>
+#include <pwd.h>
 #include <sys/proc.h>
 #include <sys/proc_info.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/un.h>
 #include <unistd.h>
 
+#include <cerrno>
 #include <cstring>
 
 namespace {
@@ -122,6 +127,90 @@ struct OwnedCF {
 		}
 	}
 };
+
+// No environment or project-controlled path can supply trust policy. The
+// account's private directory and file are opened without following symlinks.
+bool read_hosts(String &r_text) {
+	passwd *account = getpwuid(getuid());
+	if (!account || !account->pw_dir) {
+		return false;
+	}
+	int home = open(account->pw_dir, O_RDONLY | O_DIRECTORY | O_NOFOLLOW);
+	struct stat st = {};
+	if (home < 0) {
+		return false;
+	}
+	bool home_ok = fstat(home, &st) == 0 && st.st_uid == getuid() && !(st.st_mode & 0022);
+	int dir = home_ok ? openat(home, ".gonggong-external-hosts", O_RDONLY | O_DIRECTORY | O_NOFOLLOW) : -1;
+	int dir_error = errno;
+	close(home);
+	if (dir < 0) {
+		return home_ok && dir_error == ENOENT;
+	}
+	bool dir_ok = fstat(dir, &st) == 0 && st.st_uid == getuid() && !(st.st_mode & 0077);
+	int fd = dir_ok ? openat(dir, "hosts-v1.tsv", O_RDONLY | O_NOFOLLOW | O_NONBLOCK) : -1;
+	int file_error = errno;
+	close(dir);
+	if (fd < 0) {
+		return dir_ok && file_error == ENOENT;
+	}
+	if (fstat(fd, &st) != 0 || !S_ISREG(st.st_mode) || st.st_uid != getuid() || (st.st_mode & 0077) || st.st_nlink != 1 || st.st_size > 32768) {
+		close(fd);
+		return false;
+	}
+	char data[32769];
+	ssize_t count = read(fd, data, sizeof(data));
+	close(fd);
+	if (count < 0 || count > 32768 || count != st.st_size || std::memchr(data, 0, count)) {
+		return false;
+	}
+	r_text = String::utf8(data, count);
+	return true;
+}
+
+bool safe_identity(const String &p_value, bool p_hex = false) {
+	if (p_value.is_empty() || p_value.length() > 512) {
+		return false;
+	}
+	for (int i = 0; i < p_value.length(); i++) {
+		char32_t c = p_value[i];
+		if (p_hex ? !((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')) : !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '.' || c == '-' || c == '_')) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool valid_hosts(const String &p_text) {
+	for (const String &line : p_text.split("\n", false)) {
+		PackedStringArray fields = line.split("\t");
+		if (fields.size() != 4 || (fields[0] != "host" && fields[0] != "helper") || fields[1].length() != 10 || !safe_identity(fields[1]) || !safe_identity(fields[2]) || fields[3].length() != 40 || !safe_identity(fields[3], true)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+AIChatExternalPeer::CodeKind registered_code(SecCodeRef p_code, const String &p_hosts, const String &p_id, const String &p_hash) {
+	AIChatExternalPeer::CodeKind result = AIChatExternalPeer::UNKNOWN;
+	for (const String &line : p_hosts.split("\n", false)) {
+		PackedStringArray fields = line.split("\t");
+		if (fields[2] != p_id || fields[3] != p_hash) {
+			continue;
+		}
+		String expression = "anchor apple generic and identifier \"" + fields[2] + "\" and certificate leaf[subject.OU] = \"" + fields[1] + "\" and cdhash H\"" + fields[3] + "\"";
+		OwnedCF<CFStringRef> text;
+		text.value = CFStringCreateWithCString(nullptr, expression.utf8().get_data(), kCFStringEncodingUTF8);
+		OwnedCF<SecRequirementRef> requirement;
+		if (text.value && SecRequirementCreateWithString(text.value, kSecCSDefaultFlags, &requirement.value) == errSecSuccess && SecCodeCheckValidity(p_code, kSecCSDefaultFlags, requirement.value) == errSecSuccess) {
+			if (fields[0] == "host") {
+				return AIChatExternalPeer::REGISTERED_HOST;
+			}
+			result = AIChatExternalPeer::REGISTERED_HELPER;
+		}
+	}
+	return result;
+}
 
 struct Peer {
 	pid_t pid = 0;
@@ -157,7 +246,7 @@ bool read_process(int p_pid, AIChatExternalPeer::Process &r_process) {
 	return true;
 }
 
-bool code_identity(int p_pid, const audit_token_t *p_audit, SecRequirementRef p_desktop, SecRequirementRef p_cli, SecRequirementRef p_apple, AIChatExternalPeer::Process &r_process) {
+bool code_identity(int p_pid, const audit_token_t *p_audit, SecRequirementRef p_desktop, SecRequirementRef p_cli, SecRequirementRef p_apple, const String &p_hosts, AIChatExternalPeer::Process &r_process) {
 	OwnedCF<CFNumberRef> pid_number;
 	OwnedCF<CFDataRef> audit_data;
 	const void *key;
@@ -205,19 +294,19 @@ bool code_identity(int p_pid, const audit_token_t *p_audit, SecRequirementRef p_
 	} else if (signing_id.begins_with("com.apple.") && SecCodeCheckValidity(code.value, kSecCSDefaultFlags, p_apple) == errSecSuccess) {
 		r_process.code = AIChatExternalPeer::APPLE_PLATFORM;
 	} else {
-		r_process.code = AIChatExternalPeer::UNKNOWN;
+		r_process.code = registered_code(code.value, p_hosts, signing_id, r_process.fingerprint);
 	}
 	return true;
 }
 
-bool capture_chain(const Peer &p_peer, SecRequirementRef p_desktop, SecRequirementRef p_cli, SecRequirementRef p_apple, Vector<AIChatExternalPeer::Process> &r_chain) {
+bool capture_chain(const Peer &p_peer, SecRequirementRef p_desktop, SecRequirementRef p_cli, SecRequirementRef p_apple, const String &p_hosts, Vector<AIChatExternalPeer::Process> &r_chain) {
 	int pid = p_peer.pid;
 	for (int i = 0; i < 64; i++) {
 		AIChatExternalPeer::Process process;
 		if (pid <= 1 || !read_process(pid, process)) {
 			return false;
 		}
-		if (!code_identity(pid, i == 0 ? &p_peer.audit : nullptr, p_desktop, p_cli, p_apple, process)) {
+		if (!code_identity(pid, i == 0 ? &p_peer.audit : nullptr, p_desktop, p_cli, p_apple, p_hosts, process)) {
 			return false;
 		}
 		AIChatExternalPeer::Process after;
@@ -253,10 +342,18 @@ Dictionary AIChatExternalPeer::verify(int p_socket_fd, int p_engine_pid) {
 	if (SecRequirementCreateWithString(CFSTR("identifier \"com.openai.codex\" and anchor apple generic and certificate leaf[subject.OU] = \"2DC432GLL2\""), kSecCSDefaultFlags, &desktop.value) != errSecSuccess || SecRequirementCreateWithString(CFSTR("identifier \"codex\" and anchor apple generic and certificate leaf[subject.OU] = \"2DC432GLL2\""), kSecCSDefaultFlags, &cli.value) != errSecSuccess || SecRequirementCreateWithString(CFSTR("anchor apple"), kSecCSDefaultFlags, &apple.value) != errSecSuccess) {
 		return rejected("code_requirements_unavailable");
 	}
+	String hosts_before;
+	if (!read_hosts(hosts_before) || !valid_hosts(hosts_before)) {
+		return rejected("host_registry_invalid");
+	}
 	Vector<Process> chain_before;
 	Vector<Process> chain_after;
-	if (!capture_chain(before, desktop.value, cli.value, apple.value, chain_before) || !capture_chain(before, desktop.value, cli.value, apple.value, chain_after)) {
+	if (!capture_chain(before, desktop.value, cli.value, apple.value, hosts_before, chain_before) || !capture_chain(before, desktop.value, cli.value, apple.value, hosts_before, chain_after)) {
 		return rejected("ancestor_identity_unavailable");
+	}
+	String hosts_after;
+	if (!read_hosts(hosts_after) || hosts_before != hosts_after) {
+		return rejected("host_registry_changed");
 	}
 	Peer after;
 	if (!read_peer(p_socket_fd, after) || before.pid != after.pid || before.uid != after.uid || before.gid != after.gid || std::memcmp(&before.audit, &after.audit, sizeof(before.audit)) != 0) {

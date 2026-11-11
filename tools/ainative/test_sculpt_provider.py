@@ -268,8 +268,11 @@ class CalibrationTests(unittest.TestCase):
         self.builder.with_name("anatomy_calibration.py").write_text("CALIBRATION = {}\n", encoding="utf-8")
         provider = SculptProvider(config)
         request = dict(node="text_to_mesh", version="1", inputs={}, parameters=dict(prompt="human"), context=[])
-        with patch("sculpt_provider.check_modeling_cli", side_effect=AssertionError("must fail before auth")):
+        with patch.object(
+            SculptProvider, "check_authentication", side_effect=AssertionError("must fail before auth")
+        ) as authenticate:
             result = provider.submit(request, dict(schema_version=1, artifacts=[]), KEY)
+            authenticate.assert_not_called()
         self.assertEqual(result["state"], "failed")
         self.assertIn("基线", result["error"])
         self.assertFalse((self.directory / "state" / KEY).exists())
@@ -278,8 +281,11 @@ class CalibrationTests(unittest.TestCase):
         value = copy.deepcopy(self.value)
         value["panels"][0]["label"] = "changed fixed fixture"
         self.store(value)
-        with patch("sculpt_provider.check_modeling_cli", side_effect=AssertionError("must fail before auth")):
+        with patch.object(
+            SculptProvider, "check_authentication", side_effect=AssertionError("must fail before auth")
+        ) as authenticate:
             result = changed.submit(request, dict(schema_version=1, artifacts=[]), KEY)
+            authenticate.assert_not_called()
         self.assertEqual(result["state"], "failed")
         self.assertFalse((self.directory / "changed-state" / KEY).exists())
 

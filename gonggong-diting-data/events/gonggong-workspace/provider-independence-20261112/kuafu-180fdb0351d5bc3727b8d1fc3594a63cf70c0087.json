@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-180fdb0351d5bc3727b8d1fc3594a63cf70c0087",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "provider-independence-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3e0d6eed18d4f6ef4c3681403b2593e38e8c39cdb61592da7de66b2eda4821f2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/844",
+    "action": "validation",
+    "detection_head": "c811b583d4f709f697161280ed285c08793c90ef",
+    "context_sha256": "61104106c745d8b62350066d75bf7a56af8eca10989ffcebd8fc8b450020b8b5",
+    "operator": "Sail-Li",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+    "evidence": "Formal gate 840 local_checks_passed; worktree and index evidence blob both e5bc28da4b99f780c243ed78e41ee6649daf38c2",
+    "diagnosis": "Evidence was hashed into immutable method event before Git LF normalization. Preserved original evidence bytes using existing repository exact-evidence attribute convention and explicitly reindexed the file after the attribute change. Gate now verifies identical source/index bytes; original record and hashes retained.",
+    "next_action": "Complete signed submission and remote checks; no gate or immutable event bypass.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T22:18:24.310996+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-11T22:22:42.553496+00:00",
+  "sha256": "d2b7ec628bd1a464af6ff343236e3621c0aa963d4442c2db1909ed82191c3bec"
+}

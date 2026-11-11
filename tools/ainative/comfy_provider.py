@@ -516,6 +516,23 @@ class ComfyProvider:
         return record["terminal"]
 
 
+class LocalMeshProvider(ComfyProvider):
+    """Direct local image-to-mesh contract; cannot silently invoke image editing."""
+
+    def describe(self):
+        value = super().describe()
+        value.update(capabilities=["image_to_mesh"], model="local image-to-mesh")
+        return value
+
+    def build(self, request, manifest, key):
+        require(request["node"] == "image_to_mesh", "local_mesh_only")
+        prompt = "\n".join(
+            [request["parameters"].get("prompt", "")] + [c["text"] for c in request["context"] if "text" in c]
+        ).strip()
+        require(not prompt, "local_mesh_does_not_redraw")
+        return super().build(request, manifest, key)
+
+
 def factory(config_path=None):
     from editor_demo import factory as demo_factory
     from generation_service import ServiceError

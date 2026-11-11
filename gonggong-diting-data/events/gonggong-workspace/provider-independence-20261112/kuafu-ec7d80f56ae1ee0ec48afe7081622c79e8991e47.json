@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ec7d80f56ae1ee0ec48afe7081622c79e8991e47",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "provider-independence-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "933d61ef2b9ee3ae378722fb508aae365bf0cbcc109d1dada799030d77409eb7",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/844",
+    "action": "dispatch",
+    "detection_head": "1f6ea3e74244275efafc484d7cf324d9feea5c4a",
+    "context_sha256": "61104106c745d8b62350066d75bf7a56af8eca10989ffcebd8fc8b450020b8b5",
+    "operator": "Sail-Li",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+    "evidence": "data-collection/receipts/provider-independence-result.json",
+    "diagnosis": "Common ledger retained three unrelated nonterminal workers; initial capacity omitted this host three available slots. Preserved old occupancy and reconciled capacity to six. Actual native receipts now identify three running workers.",
+    "next_action": "Continue three assigned implementations and verify terminal receipts; preserve unrelated claims.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T21:30:31.376838+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-11T21:37:12.541510+00:00",
+  "sha256": "cdf28345c2b68c573d7f061a5dcb149dd6f30baf79d3312443d88c5b88542ba7"
+}

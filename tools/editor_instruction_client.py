@@ -2,7 +2,9 @@
 
 The ordinary TCP bridge retains its confirmation policy. This separate channel
 uses kernel Unix peer identity in both directions; discovery is not authority.
-Run with Apple's /usr/bin/python3 from the authorized Codex desktop process tree.
+Run with Apple's /usr/bin/python3 from the authorized Codex or explicitly registered signed host process tree.
+Register each non-Apple helper and the host with editor_trusted_hosts.py;
+unregistered same-user processes and arbitrary valid signatures are rejected.
 """
 
 import argparse

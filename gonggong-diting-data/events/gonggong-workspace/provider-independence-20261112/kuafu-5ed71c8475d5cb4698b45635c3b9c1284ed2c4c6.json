@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5ed71c8475d5cb4698b45635c3b9c1284ed2c4c6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "provider-independence-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "cda39dd63706265c658354b7ae6dc063cf57a38442e1d730f00b25b8e21ebbad",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/844",
+    "action": "dependency",
+    "detection_head": "1f6ea3e74244275efafc484d7cf324d9feea5c4a",
+    "context_sha256": "61104106c745d8b62350066d75bf7a56af8eca10989ffcebd8fc8b450020b8b5",
+    "operator": "Sail-Li",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+    "evidence": "git fetch using existing Windows system proxy succeeded; origin/main c811b583d4f709f697161280ed285c08793c90ef matches GitHub API",
+    "diagnosis": "Git direct HTTPS did not use current Windows system proxy; TLS reset and direct connection timed out, while GitHub API stayed available. Per-process http.proxy pointing to existing local user proxy restored authenticated Git transport without disabling TLS.",
+    "next_action": "Integrate exact main and verify candidate, keep process-scoped proxy for delivery subprocesses.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T21:50:23.383025+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-11T21:56:09.430701+00:00",
+  "sha256": "98b7d5061bd3f53f956cf4aecb327c6b8576dc4b7641dc10595a749290d2b762"
+}

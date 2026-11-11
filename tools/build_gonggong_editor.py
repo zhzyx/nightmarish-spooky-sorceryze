@@ -48,7 +48,7 @@ def build(root, jobs, use_mingw=False, cache_path=None, cache_limit=8):
     package = root / "bin/tianshu-ui.json"
     subprocess.run([sys.executable, "tools/package_tianshu_ui.py", "--output", str(package)], cwd=root, check=True)
     console = binary.with_suffix(".console.exe")
-    subprocess.run([console, "--headless", "--test", "--test-case=[AIChat]*"], cwd=root, check=True)
+    subprocess.run([console, "--headless", "--test", "--test-case=*[AIChat]*"], cwd=root, check=True)
     if (
         source_snapshot(root)["source_digest"] != source
         or git_bytes(root, "rev-parse", "HEAD").decode().strip() != head

@@ -69,8 +69,8 @@ func _run():
 		push_error("Local model catalog did not become ready before original demand")
 		quit(1)
 		return
-	var test_codex = OS.get_environment("GONGGONG_TEST_CODEX")
-	if not test_codex.is_empty():
+	var test_runtime_setup = OS.get_environment("GONGGONG_TEST_RUNTIME_SETUP") == "1"
+	if test_runtime_setup:
 		if not _configure_python(dock, folder.path_join("missing-python.exe")):
 			quit(1)
 			return
@@ -82,13 +82,8 @@ func _run():
 			push_error("Final runtime catalog did not settle before original demand")
 			quit(1)
 			return
-		var codex_error: String = dock.set_runtime_field("codex", test_codex)
-		if not codex_error.is_empty():
-			push_error("Test Codex configuration rejected: " + codex_error)
-			quit(1)
-			return
 	_send(dock, "Create first feature button")
-	if not test_codex.is_empty():
+	if test_runtime_setup:
 		var setup = dock.find_child("GongGongRuntimeSetup", true, false)
 		var setup_deadline := Time.get_ticks_msec() + 15000
 		while not setup.visible and Time.get_ticks_msec() < setup_deadline:
@@ -103,11 +98,11 @@ func _run():
 			quit(1)
 			return
 		if "Python" not in setup.find_child("GongGongMissingComponents", true, false).text:
-			push_error("Configuration Agent did not list the missing component")
+			push_error("Runtime configuration did not list the missing component")
 			quit(1)
 			return
 		var setup_progress = setup.find_child("GongGongSetupProgress", true, false)
-		if setup_progress == null or "上下文" not in setup_progress.text or "独立 Codex 配置 Agent" not in setup_progress.text or "原需求" not in setup_progress.text:
+		if setup_progress == null or "上下文" not in setup_progress.text or "宿主确定性配置" not in setup_progress.text or "原需求" not in setup_progress.text:
 			push_error("Independent configuration window did not expose preserved request context")
 			quit(1)
 			return
@@ -176,7 +171,7 @@ func _run():
 	if not _contains(dock, "gh_unauthenticated"):
 		quit(1)
 		return
-	if not test_codex.is_empty():
+	if test_runtime_setup:
 		var github_setup = dock.find_child("GongGongRuntimeSetup", true, false)
 		var login = github_setup.find_child("GongGongGitHubLogin", true, false)
 		var progress = github_setup.find_child("GongGongSetupProgress", true, false)
@@ -191,7 +186,7 @@ func _run():
 			quit(1)
 			return
 	DirAccess.remove_absolute(folder.path_join("gh_disabled"))
-	if not test_codex.is_empty():
+	if test_runtime_setup:
 		dock.find_child("GongGongGitHubLogin", true, false).pressed.emit()
 	else:
 		_send(dock, "重试")
