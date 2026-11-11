@@ -12,6 +12,30 @@
 		<link title="GDExtension example in C++">$DOCS_URL/tutorials/scripting/cpp/gdextension_cpp_example.html</link>
 	</tutorials>
 	<methods>
+		<method name="compile_extension">
+			<return type="Dictionary" />
+			<param index="0" name="compiler" type="String" />
+			<param index="1" name="arguments" type="PackedStringArray" />
+			<param index="2" name="output_directory" type="String" />
+			<param index="3" name="entry_symbol" type="String" />
+			<description>
+				Synchronously runs a trusted external C/C++ compiler using an argument array without a shell. This blocks the calling thread. Supported drivers are Apple Clang on macOS and GNU/Clang-compatible desktop drivers on Linux/BSD and Windows; MSVC command syntax is unsupported. Other platforms return [constant @GlobalScope.ERR_UNAVAILABLE]. The caller must provide trusted source paths, include paths, compiler options, and a matching GDExtension C ABI header (or compatible C++ bindings), architecture and toolchain.
+				[param output_directory] must name a new directory with an existing parent. Existing directories and files are refused; failed builds retain their directory and diagnostics. Shared-library flags and the output filename are appended to [param arguments]. On success, writes a library and a ConfigFile-based [code]extension.gdextension[/code] with [param entry_symbol] and the running engine version as its minimum compatibility version.
+				Returns [code]error[/code] (an [enum @GlobalScope.Error]), [code]exit_code[/code] (or -1 if no compiler exit is available), [code]output[/code] (combined stdout and stderr), [code]path[/code] and [code]library_path[/code]. Paths are populated only on success; a nonzero compiler exit returns [constant @GlobalScope.FAILED].
+				Does not load or replace extensions. Call [method load_extension] explicitly with the returned [code]path[/code]. Use separate version directories for recompilation. The caller manages instances, class-name conflicts, state transfer and unloading; free instances before [method unload_extension]. Compiling arbitrary native code requires the same trust as executing it.
+				[codeblock]
+				var build = GDExtensionManager.compile_extension(
+				    "/usr/bin/clang",
+				    PackedStringArray([ProjectSettings.globalize_path("res://example.c"), "-I", "/path/to/headers"]),
+				    "user://native_v1", "example_init")
+				if build.error == OK:
+				    var status = GDExtensionManager.load_extension(build.path)
+				    print(status)
+				else:
+				    print(build.error, build.exit_code, build.output)
+				[/codeblock]
+			</description>
+		</method>
 		<method name="get_extension">
 			<return type="GDExtension" />
 			<param index="0" name="path" type="String" />

@@ -31,15 +31,18 @@
 #include "gdextension_manager.h"
 
 #include "core/config/engine.h"
+#include "core/config/project_settings.h"
 #include "core/extension/gdextension_function_loader.h"
 #include "core/extension/gdextension_library_loader.h"
 #include "core/extension/gdextension_special_compat_hashes.h"
+#include "core/io/config_file.h"
 #include "core/io/dir_access.h"
 #include "core/io/file_access.h"
 #include "core/object/callable_mp.h"
 #include "core/object/class_db.h"
 #include "core/object/script_language.h"
 #include "core/os/os.h"
+#include "core/version.h"
 
 GDExtensionManager::LoadStatus GDExtensionManager::_load_extension_internal(const Ref<GDExtension> &p_extension, bool p_first_load) {
 	if (level >= 0) { // Already initialized up to some level.
@@ -110,6 +113,91 @@ GDExtensionManager::LoadStatus GDExtensionManager::_unload_extension_internal(co
 	p_extension->frame_callback = nullptr;
 
 	return LOAD_STATUS_OK;
+}
+
+Dictionary GDExtensionManager::compile_extension(const String &p_compiler, const PackedStringArray &p_arguments, const String &p_output_directory, const String &p_entry_symbol) {
+	Dictionary result;
+	result["error"] = ERR_UNAVAILABLE;
+	result["exit_code"] = -1;
+	result["output"] = String();
+	result["path"] = String();
+	result["library_path"] = String();
+#if defined(MACOS_ENABLED) || defined(LINUXBSD_ENABLED) || defined(WINDOWS_ENABLED)
+	if (p_compiler.is_empty() || p_output_directory.is_empty() || p_entry_symbol.is_empty()) {
+		result["error"] = ERR_INVALID_PARAMETER;
+		return result;
+	}
+	const String directory = ProjectSettings::get_singleton()->globalize_path(p_output_directory).simplify_path();
+	if (!directory.is_absolute_path()) {
+		result["error"] = ERR_INVALID_PARAMETER;
+		return result;
+	}
+	// make_dir (not make_dir_recursive) provides exclusive creation, including under races.
+	Error error = DirAccess::make_dir_absolute(directory);
+	if (error != OK) {
+		result["error"] = error;
+		return result;
+	}
+	List<String> arguments;
+	for (const String &argument : p_arguments) {
+		arguments.push_back(argument);
+	}
+	String library;
+	String feature;
+#ifdef MACOS_ENABLED
+	library = directory.path_join("extension.dylib");
+	feature = "macos";
+	arguments.push_back("-dynamiclib");
+#elif defined(WINDOWS_ENABLED)
+	library = directory.path_join("extension.dll");
+	feature = "windows";
+	arguments.push_back("-shared");
+#else
+	library = directory.path_join("extension.so");
+	feature = OS::get_singleton()->get_name().to_lower();
+	arguments.push_back("-shared");
+	arguments.push_back("-fPIC");
+#endif
+	arguments.push_back("-o");
+	arguments.push_back(library);
+	String output;
+	int exit_code = -1;
+	error = OS::get_singleton()->execute(p_compiler, arguments, &output, &exit_code, true);
+	result["exit_code"] = exit_code;
+	result["output"] = output;
+	if (error == OK && exit_code != 0) {
+		error = FAILED;
+	}
+	if (error == OK && !FileAccess::exists(library)) {
+		error = ERR_FILE_NOT_FOUND;
+	}
+	if (error != OK) {
+		result["error"] = error;
+		return result;
+	}
+	Ref<ConfigFile> config;
+	config.instantiate();
+	config->set_value("configuration", "entry_symbol", p_entry_symbol);
+	config->set_value("configuration", "compatibility_minimum", vformat("%d.%d.%d", GODOT_VERSION_MAJOR, GODOT_VERSION_MINOR, GODOT_VERSION_PATCH));
+	config->set_value("libraries", feature, library);
+	const String path = directory.path_join("extension.gdextension");
+	Ref<FileAccess> file = FileAccess::open(path, FileAccess::WRITE, &error);
+	if (error == OK) {
+		file->store_string(config->encode_to_text());
+		file->flush();
+		error = file->get_error();
+		file.unref();
+		if (error != OK) {
+			DirAccess::remove_absolute(path);
+		}
+	}
+	result["error"] = error;
+	if (error == OK) {
+		result["path"] = path;
+		result["library_path"] = library;
+	}
+#endif
+	return result;
 }
 
 GDExtensionManager::LoadStatus GDExtensionManager::load_extension(const String &p_path) {
@@ -484,6 +572,7 @@ GDExtensionManager *GDExtensionManager::get_singleton() {
 }
 
 void GDExtensionManager::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("compile_extension", "compiler", "arguments", "output_directory", "entry_symbol"), &GDExtensionManager::compile_extension);
 	ClassDB::bind_method(D_METHOD("load_extension", "path"), &GDExtensionManager::load_extension);
 	ClassDB::bind_method(D_METHOD("load_extension_from_function", "path", "init_func"), &GDExtensionManager::load_extension_from_function);
 	ClassDB::bind_method(D_METHOD("reload_extension", "path"), &GDExtensionManager::reload_extension);
