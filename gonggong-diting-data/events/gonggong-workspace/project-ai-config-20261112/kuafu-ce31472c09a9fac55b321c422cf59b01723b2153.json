@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ce31472c09a9fac55b321c422cf59b01723b2153",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "project-ai-config-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/828",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7edec5e3e437ece7db6847ac84ee717dd4ca3ae3d48e52233789f2b0a8c6a740",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/828",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/833",
+    "action": "delivery",
+    "detection_head": "42f943f62f3d86c1344c282e3f7e0974cf8d0620",
+    "context_sha256": "4d8cf93ab4d9499c9215b524c8b89133adc6b3065223dcdfd8e94287aa30245a",
+    "operator": "Sail-Li",
+    "worker": "codex-root-project-ai-config",
+    "authority_ref": "codex-user-goal-project-ai-config-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43097980046; https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/832; https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/833",
+    "diagnosis": "交付被 GitHub Actions 排队阻塞，原运行仍为 queued 且 jobs 为空；未产生可供定位的失败作业。候选代码及本地验证摘要未漂移。尚无证据确定排队根因，不能判为代码失败或全局服务故障。",
+    "next_action": "保留原运行等待回执；由具有仓库 Actions 管理权限的维护者核查队列、策略与配额。原运行恢复后核对全部适用检查与精确候选，再按普通 PR 路径合入 main、回读并验收原工单。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T20:47:53.383454+00:00",
+    "attempted": "回读 PR、原运行和 jobs；同仓库多个原有运行也排队；自动夸父工作流亦未执行。当前账号 Sail-Li 有 WRITE，但 Actions 策略读取返回 403，不能继续核实管理侧原因。未取消或重跑他人任务，未绕过 CI。",
+    "repair_owner": "待具有本仓库 Actions 管理权限的维护者接收；当前会话负责原候选回读与恢复后的交付。",
+    "continuable": "实现、隔离编译、原生测试、独立审查、正式门禁、提交与推送均已完成；当前可执行的诊断和证据核对已完成。"
+  },
+  "occurred_at": "2026-11-11T20:55:13.071998+00:00",
+  "sha256": "7db6db6cdf0ec927422b5e1cf4d3a7b3bb58d0cab90a0b5cf0b8c93cf6faef13"
+}

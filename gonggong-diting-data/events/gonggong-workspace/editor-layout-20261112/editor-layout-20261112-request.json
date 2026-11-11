@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "editor-layout-20261112-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-layout-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-11T21:46:30.405269+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/846",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Editor-wide layout and interaction improvements explicitly selected by user: shell navigation, focus and panel restoration, task-based settings navigation and responsive layout. Integrates current session AI configuration candidate #828.",
+    "authorization_ref": "codex-user-editor-layout-20261112",
+    "design": "design-docs/editor-layout-20261112.md",
+    "usage": null,
+    "usage_unknown_reason": "Per-task actual model accounting unavailable"
+  },
+  "evidence_refs": [],
+  "sha256": "74c079a0f153e8cd6442b002f21b185fae4f2ec2eb3bd0f1b730bae027e25984"
+}

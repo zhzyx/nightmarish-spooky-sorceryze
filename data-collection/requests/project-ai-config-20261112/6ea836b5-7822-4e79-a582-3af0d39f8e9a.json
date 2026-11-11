@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "project-ai-config-20261112",
+  "collected_at": "2026-11-11T20:44:23.192279+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/project-ai-config-20261112/dispatch-0d414c028f07452cab0a338a58de2802.json",
+      "sha256": "27898803a80783e7ea1295900c74c1c50a005f6d0695a38cb251b7ea4e484c21",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-0d414c028f07452cab0a338a58de2802",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/project-ai-config-20261112/dispatch-2b3c153774ae462d82848f642412b7a5.json",
+      "sha256": "86c824c29873d8d9db5179c1d62086bea048b76ae0ab9e3dbfe8646704ca46c9",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-2b3c153774ae462d82848f642412b7a5",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/project-ai-config-20261112/dispatch-4535ec996f044af584f8c09162d57172.json",
+      "sha256": "a2a29b8e72adbfe9adeb0819472859577dbe8421695f2e4af2bb1eb38b1318a3",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-4535ec996f044af584f8c09162d57172",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/project-ai-config-20261112/dispatch-838a04d268ad45edb9ed2806571de672.json",
+      "sha256": "ddd88b4d7df1efcde2668d68dfb4a6fa72ec314fd2b9405f31688cacb0db69e8",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-838a04d268ad45edb9ed2806571de672",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot"
+}

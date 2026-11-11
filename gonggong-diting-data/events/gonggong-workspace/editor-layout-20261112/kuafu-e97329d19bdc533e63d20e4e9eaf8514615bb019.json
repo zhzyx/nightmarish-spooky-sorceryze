@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e97329d19bdc533e63d20e4e9eaf8514615bb019",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-layout-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/846",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6ac940251cf384cae1cecfcec352f5a8c624d3860d3b3127a2eba05971596d0c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/846",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/848",
+    "action": "validation",
+    "detection_head": "ee30903396d2b9c6ceeb9950c14d62a10dab6131",
+    "context_sha256": "a9ceb1f1133f6b22a343edac3226e842c46159dda80dce6c48465c5b64978a72",
+    "operator": "Sail-Li",
+    "worker": "codex-root-editor-layout",
+    "authority_ref": "codex-user-editor-layout-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43109801179/job/130822772987; data-collection/editor-layout-846.json",
+    "diagnosis": "MSVC /WX 将 C4458 作为错误：连接探针局部变量 messages 遮蔽 AIChatDock::messages。局部变量及两处引用已一致改名为 probe_messages，请求结构不变。独立只读复核通过；修正后 macOS 候选构建、布局/设置272项及AI五场景62项再次通过。尚未取得修正候选的Windows CI成功回执。",
+    "next_action": "正式门禁签发修正候选，保留旧失败日志并由新候选复验Windows编译；全部适用检查通过后推进main与原需求验收。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T22:23:27.060175+00:00",
+    "attempted": "已下载实际失败作业日志定位 C2220/C4458；未降低警告级别、关闭 /WX 或跳过平台检查。",
+    "repair_owner": "Sail-Li 当前 Codex 会话",
+    "continuable": "源头修正与本地复验完成，可继续发布修正候选；Windows恢复仍待CI。"
+  },
+  "occurred_at": "2026-11-11T22:26:33.487646+00:00",
+  "sha256": "c22b02378c1182c61ddc5a3cae88f6294c19ad28f5ed78773b9eb8854789f984"
+}

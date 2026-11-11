@@ -54,6 +54,8 @@ def sanitized_environment(base):
         directory = base / "private-home" / key.lower()
         directory.mkdir(parents=True, exist_ok=True)
         environment[key] = str(directory)
+    # The macOS model-runtime discovery reads this directory even in a private home.
+    (Path(environment["HOME"]) / "Library/Caches").mkdir(parents=True, exist_ok=True)
     environment["PYTHONNOUSERSITE"] = "1"
     environment["GODOT_AI_API_KEY"] = ""
     environment["OPENAI_API_KEY"] = ""
@@ -102,6 +104,7 @@ def main():
         definition = 'config_version=5\n[application]\nconfig/name="Unified Native Settings Fixture"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n'
         (project / "project.godot").write_text(definition, encoding="utf-8", newline="\n")
         shutil.copy2(script, project / "accept.gd")
+        shutil.copy2(script.with_name("editor_shell_layout.gd"), project / "editor_shell_layout.gd")
         (project / "accept.tscn").write_text(
             "[gd_scene load_steps=2 format=3]\n"
             '[ext_resource type="Script" path="res://accept.gd" id="1"]\n'

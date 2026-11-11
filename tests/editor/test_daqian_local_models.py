@@ -30,6 +30,23 @@ class LocalModels(unittest.TestCase):
             )
         )
 
+    def test_project_responses_connection_imports_matching_protocol_and_secret(self):
+        vault = {}
+        settings = {
+            "backend": "3",
+            "model": "project-responses-model",
+            "endpoint": "https://example.test/v1/chat/completions",
+            "editor_key": "synthetic-private-key",
+        }
+        with patch.object(local_models, "run_json", return_value={"models": []}):
+            rows = catalog.connect_local(self.db, settings, vault.__setitem__)
+        row = next(row for row in rows if row["name"] == "AI Chat")
+        profile = catalog.profiles(self.db)[row["candidate"]]
+        self.assertEqual(profile["protocol"], "responses")
+        self.assertEqual(profile["endpoint"], "https://example.test/v1/responses")
+        self.assertEqual(vault[row["candidate"]], "synthetic-private-key")
+        self.assertNotIn("synthetic-private-key", json.dumps(profile))
+
     def test_connect_retries_preserve_profiles_evidence_and_secrets(self):
         self.cache.write_text(json.dumps({"models": [{"slug": "local-a"}, {"slug": "hidden", "visibility": "hide"}]}))
         os.environ.update(DEEPSEEK_MODEL="test-api", DEEPSEEK_API_KEY="private-test")

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-efab571a93bb3ea2d54a664e27a5e5bbef7a8ffa",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-layout-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/846",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "13c1b4a5b24968e563ee92cd587e015d848bbe14dc19d32bbbf0f4b39cc0f80d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/846",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/848",
+    "action": "validation",
+    "detection_head": "60ed66afed1fb42409bf83c9341b338614129f52",
+    "context_sha256": "a9ceb1f1133f6b22a343edac3226e842c46159dda80dce6c48465c5b64978a72",
+    "operator": "Sail-Li",
+    "worker": "codex-root-editor-layout",
+    "authority_ref": "codex-user-editor-layout-20261112",
+    "evidence": "Issue #846 isolated candidate; successful macOS arm64 SCons build and full/reopen native report; public evidence to be committed as data-collection/editor-layout-846.json",
+    "diagnosis": "初始编译使用了错误的 Button 对齐方法，已改为 set_text_alignment 并成功重编译。实际交互回归另发现显式导航误用自动切换限制、设置来源路由未跟随分类、导航标签释放顺序错误，以及滚动表单期望尺寸撑大祖先容器；均已源头修复。原生 full/reopen 行为及严格错误检查已通过。",
+    "next_action": "独立核查最终源摘要并完成同二进制 AI 配置回归后，正式门禁提交与 PR/main 交付；主线验收后关闭关联故障。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T21:47:28.322385+00:00",
+    "attempted": "按实际日志定位 Button API、Node 反向插入顺序析构和 Control::grow_to_desired_size；修复后复验 1440/850 窗口、键盘分类、面板状态、所有表单边界、重启及退出。",
+    "repair_owner": "Sail-Li 当前 Codex 会话；独立核查由已派发只读工作者承担。",
+    "continuable": "本地验证故障已解除，可继续最终提交与交付。"
+  },
+  "occurred_at": "2026-11-11T22:07:05.426590+00:00",
+  "sha256": "3072a505bf6b6e5afa350e2728c9a57823afb1e99c685d3162a1660a84b87671"
+}
