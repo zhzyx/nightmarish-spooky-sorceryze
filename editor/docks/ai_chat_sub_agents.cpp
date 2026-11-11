@@ -2066,8 +2066,8 @@ Dictionary AIChatDock::_acceptance_bridge(const String &p_operation, const Dicti
 	}
 	const String nonce = itos(OS::get_singleton()->get_process_id()) + "-" + itos(OS::get_singleton()->get_ticks_usec());
 	const String stem = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-acceptance-" + nonce);
-	Dictionary request = p_request.duplicate(true);
-	request["request_nonce"] = nonce;
+	Dictionary acceptance_request = p_request.duplicate(true);
+	acceptance_request["request_nonce"] = nonce;
 	if (p_operation == "acceptance-verify") {
 		const String live = stem + ".request.live";
 		Dictionary liveness;
@@ -2082,13 +2082,13 @@ Dictionary AIChatDock::_acceptance_bridge(const String &p_operation, const Dicti
 		if (marker->get_error() != OK) {
 			return Dictionary();
 		}
-		request["host_liveness_path"] = live;
+		acceptance_request["host_liveness_path"] = live;
 	}
 	Ref<FileAccess> file = FileAccess::open(stem + ".request", FileAccess::WRITE);
 	if (file.is_null()) {
 		return Dictionary();
 	}
-	file->store_string(JSON::stringify(request));
+	file->store_string(JSON::stringify(acceptance_request));
 	file->flush();
 	if (file->get_error() != OK) {
 		return Dictionary();
@@ -2220,10 +2220,10 @@ bool AIChatDock::_start_acceptance_review(int p_producer) {
 	if (root.is_empty()) {
 		return false;
 	}
-	Dictionary request;
-	request["issue_number"] = producer["issue_number"];
-	request["request_id"] = producer["request_id"];
-	const Dictionary capture = _acceptance_bridge("acceptance-capture", request, root, p_producer);
+	Dictionary acceptance_request;
+	acceptance_request["issue_number"] = producer["issue_number"];
+	acceptance_request["request_id"] = producer["request_id"];
+	const Dictionary capture = _acceptance_bridge("acceptance-capture", acceptance_request, root, p_producer);
 	const Dictionary candidate = capture.get("candidate", Dictionary());
 	if (candidate.is_empty()) {
 		if (acceptance_bridge_jobs.has(p_producer)) {
@@ -2521,10 +2521,10 @@ bool AIChatDock::_finish_acceptance_review(int p_reviewer, const Array &p_histor
 		return true;
 	}
 	const String serialized = JSON::stringify(decision);
-	Dictionary request;
-	request["issue_number"] = context["producer_issue_number"];
-	request["request_id"] = context["producer_request_id"];
-	request["decision_json"] = serialized;
+	Dictionary acceptance_request;
+	acceptance_request["issue_number"] = context["producer_issue_number"];
+	acceptance_request["request_id"] = context["producer_request_id"];
+	acceptance_request["decision_json"] = serialized;
 	const String config = EDITOR_GET("ai_chat/parallel_work_orders_config");
 	if (context.has("producer_execution_id")) {
 		const Dictionary assignment = sub_agents[producer].get("parallel_assignment", Dictionary());
@@ -2533,9 +2533,9 @@ bool AIChatDock::_finish_acceptance_review(int p_reviewer, const Array &p_histor
 		}
 	}
 	if (!config.is_empty()) {
-		request["host_dispatch_config"] = config;
+		acceptance_request["host_dispatch_config"] = config;
 	}
-	const Dictionary verified = _acceptance_bridge("acceptance-verify", request, root, p_reviewer);
+	const Dictionary verified = _acceptance_bridge("acceptance-verify", acceptance_request, root, p_reviewer);
 	if (verified.is_empty() && acceptance_bridge_jobs.has(p_reviewer)) {
 		return true;
 	}
