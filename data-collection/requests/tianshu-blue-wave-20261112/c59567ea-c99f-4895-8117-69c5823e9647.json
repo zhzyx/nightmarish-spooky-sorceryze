@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "tianshu-blue-wave-20261112",
+  "collected_at": "2026-11-11T21:00:59.488937+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-blue-wave-20261112/dispatch-a1c1107c6bf5452babe12cf8c76cf8dc.json",
+      "sha256": "6a33d2eeab29d0d8920eba3224510de56263c490405fa619d2def72cabb4adc8",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-a1c1107c6bf5452babe12cf8c76cf8dc",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-blue-wave-20261112/dispatch-e7c23ce1ee3f431dab80de0b3e757074.json",
+      "sha256": "dcca9ab3f4b98ad24c89484cdf261018706438d73960738ad06e1e73f91b1afe",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-e7c23ce1ee3f431dab80de0b3e757074",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-blue-wave-20261112/tianshu-blue-wave-20261112-request.json",
+      "sha256": "67d8e990715627003712c229550fec34c5b06c26a37a5e90229a0e61f5d7b851",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "tianshu-blue-wave-20261112-request",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 834,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/834"
+}

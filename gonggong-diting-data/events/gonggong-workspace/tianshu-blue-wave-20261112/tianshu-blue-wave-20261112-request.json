@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-blue-wave-20261112-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-blue-wave-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-11T21:00:58.315875+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/834",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Replace native AI Chat pig/rainbow with blue wave, continuously animated water and foam with working intensity",
+    "authorization_ref": "Current explicit user visual and animation request",
+    "design": "design-docs/tianshu-blue-wave-20261112.md",
+    "validation": "data-collection/tianshu-blue-wave-834.json",
+    "usage": null,
+    "usage_unknown_reason": "Actual model token/cost usage not collected"
+  },
+  "evidence_refs": [],
+  "sha256": "77d945ed37032ce0ca0f4498d6c45f53704a95b419a3f91edbdc9d3aaa4254e6"
+}

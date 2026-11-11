@@ -1712,6 +1712,19 @@ void AIChatDock::_set_activity(const String &p_activity) {
 	_update_activity();
 }
 
+void AIChatDock::_update_wave_activity() {
+	bool working = busy;
+	for (const KeyValue<String, AIChatDock *> &entry : issue_workers) {
+		working = working || entry.value->busy;
+	}
+	if (wave_material.is_valid()) {
+		wave_material->set_shader_parameter("working", working ? 1.0 : 0.0);
+	}
+	if (settings_owner) {
+		settings_owner->_update_wave_activity();
+	}
+}
+
 void AIChatDock::_update_activity() {
 	if (!busy) {
 		return;
@@ -1832,6 +1845,7 @@ void AIChatDock::_set_busy(bool p_busy) {
 		_end_gonggong(turn_completed ? "completed" : "failed");
 	}
 	busy = p_busy;
+	_update_wave_activity();
 	if (scheduled_agents.has(active_agent)) {
 		if (p_busy) {
 			scheduled_agents[active_agent]["state"] = "running";
@@ -7269,9 +7283,9 @@ void AIChatDock::_stop() {
 
 void AIChatDock::_notification(int p_what) {
 	if (p_what == NOTIFICATION_READY || p_what == NOTIFICATION_THEME_CHANGED) {
-		glow_material->set_shader_parameter("pig", get_editor_theme_icon(SNAME("AIChatPig")));
+		wave_material->set_shader_parameter("crest", get_editor_theme_icon(SNAME("AIChatWave")));
 		const bool light_text = get_theme_color(SNAME("font_color"), SNAME("Label")).get_luminance() > 0.5f;
-		set_title_color(light_text ? Color::html("#9ee9ee") : Color::html("#763a80"));
+		set_title_color(light_text ? Color::html("#7dd3fc") : Color::html("#0369a1"));
 	}
 	if (p_what == NOTIFICATION_READY) {
 		_load_history();
@@ -7409,7 +7423,7 @@ AIChatDock::AIChatDock(const String &p_session_directory) {
 	set_meta("ai_control_page_only", true);
 	_get_editor_control();
 	set_layout_key("AIChatMainScreen");
-	set_icon_name("AIChatPig");
+	set_icon_name("AIChatWave");
 	set_force_show_icon(true);
 	set_available_layouts(DOCK_LAYOUT_MAIN_SCREEN);
 	set_default_slot(DOCK_SLOT_MAIN_SCREEN);
@@ -7469,17 +7483,18 @@ AIChatDock::AIChatDock(const String &p_session_directory) {
 	layout->set_v_size_flags(SIZE_EXPAND_FILL);
 	layout->add_theme_constant_override("separation", 6 * EDSCALE);
 	agents_page->add_child(layout);
-	ColorRect *chat_glow = memnew(ColorRect);
-	chat_glow->set_name("ChatGlow");
-	chat_glow->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
-	chat_glow->set_custom_minimum_size(Size2(0, 28 * EDSCALE));
-	Ref<Shader> glow_shader;
-	glow_shader.instantiate();
-	glow_shader->set_code(R"(
+	ColorRect *chat_wave = memnew(ColorRect);
+	chat_wave->set_name("ChatWave");
+	chat_wave->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
+	chat_wave->set_custom_minimum_size(Size2(0, 28 * EDSCALE));
+	Ref<Shader> wave_shader;
+	wave_shader.instantiate();
+	wave_shader->set_code(R"(
 shader_type canvas_item;
 render_mode unshaded;
-uniform sampler2D pig : source_color, filter_linear, repeat_disable;
+uniform sampler2D crest : source_color, filter_linear, repeat_disable;
 uniform float height;
+uniform float working = 0.0;
 varying vec2 local_pos;
 
 void vertex() {
@@ -7487,36 +7502,50 @@ void vertex() {
 }
 
 void fragment() {
-	float t = TIME * 0.65;
-	vec3 tint = 0.68 + 0.32 * cos(t + UV.x * 7.0 + vec3(0.0, 2.1, 4.2));
-	float line = exp(-abs(UV.y - 0.5) * 24.0);
-	float pulse = 0.80 + 0.09 * sin(t * 2.5);
-	vec2 icon_uv = (local_pos / height - vec2(0.5)) / pulse + 0.5;
-	vec4 icon = texture(pig, icon_uv);
-	float mask = step(0.0, icon_uv.x) * step(icon_uv.x, 1.0) * step(0.0, icon_uv.y) * step(icon_uv.y, 1.0) * icon.a;
-	COLOR = vec4(mix(tint, icon.rgb * (0.45 + tint), mask), max(mask, line * smoothstep(1.0, 1.4, local_pos.x / height)));
+	// Fixed time speed keeps the water continuous when work starts or finishes.
+	float t = TIME * 1.4;
+	vec2 p = local_pos / height;
+	float swell = 0.04 + working * 0.045;
+	float surface = 0.56 + swell * sin(p.x * 3.2 - t * 2.0)
+			+ 0.025 * sin(p.x * 6.1 - t * 2.7);
+	float body = smoothstep(surface - 0.015, surface + 0.025, UV.y)
+			* (1.0 - smoothstep(0.84, 1.0, UV.y));
+	float foam = exp(-abs(UV.y - surface) * 100.0);
+	float wash = 0.5 + 0.5 * sin(p.x * 4.5 - t * 3.0 + UV.y * 8.0);
+	vec3 water = mix(vec3(0.035, 0.32, 0.72), vec3(0.12, 0.68, 0.96), wash);
+	water = mix(water, vec3(0.80, 0.95, 1.0), foam * (0.60 + working * 0.25));
+	float water_alpha = max(body * 0.72, foam * 0.85) * smoothstep(0.7, 1.25, p.x);
+	vec2 icon_uv = (p - 0.5) / 0.9 + 0.5;
+	icon_uv.y += sin(t * 2.0 + icon_uv.x * 4.0) * (0.018 + working * 0.018);
+	vec4 icon = texture(crest, icon_uv);
+	float mask = step(0.0, icon_uv.x) * step(icon_uv.x, 1.0)
+			* step(0.0, icon_uv.y) * step(icon_uv.y, 1.0) * icon.a;
+	float alpha = mask + water_alpha * (1.0 - mask);
+	vec3 color = (icon.rgb * mask + water * water_alpha * (1.0 - mask)) / max(alpha, 0.001);
+	COLOR = vec4(color, alpha);
 }
 )");
-	glow_material.instantiate();
-	glow_material->set_shader(glow_shader);
-	glow_material->set_shader_parameter("height", 28 * EDSCALE);
-	chat_glow->set_material(glow_material);
-	layout->add_child(chat_glow);
+	wave_material.instantiate();
+	wave_material->set_shader(wave_shader);
+	wave_material->set_shader_parameter("height", 28 * EDSCALE);
+	chat_wave->set_material(wave_material);
+	layout->add_child(chat_wave);
 
-	// Render the same pulsing face into the existing dock tab at its native size.
-	SubViewport *pig_viewport = memnew(SubViewport);
+	// Render the same flowing wave into the dock tab at its native size.
+	SubViewport *wave_viewport = memnew(SubViewport);
+	wave_viewport->set_name("ChatWaveIcon");
 	const int icon_size = MAX(1, int(16 * EDSCALE));
-	pig_viewport->set_size(Size2i(icon_size, icon_size));
-	pig_viewport->set_transparent_background(true);
-	pig_viewport->set_disable_3d(true);
-	pig_viewport->set_update_mode(SubViewport::UPDATE_WHEN_VISIBLE);
-	add_child(pig_viewport);
-	ColorRect *pig_face = memnew(ColorRect);
-	pig_face->set_size(Size2(28, 28) * EDSCALE);
-	pig_face->set_scale(Vector2(1, 1) * icon_size / (28 * EDSCALE));
-	pig_face->set_material(glow_material);
-	pig_viewport->add_child(pig_face);
-	set_dock_icon(pig_viewport->get_texture());
+	wave_viewport->set_size(Size2i(icon_size, icon_size));
+	wave_viewport->set_transparent_background(true);
+	wave_viewport->set_disable_3d(true);
+	wave_viewport->set_update_mode(SubViewport::UPDATE_WHEN_VISIBLE);
+	add_child(wave_viewport);
+	ColorRect *wave_face = memnew(ColorRect);
+	wave_face->set_size(Size2(28, 28) * EDSCALE);
+	wave_face->set_scale(Vector2(1, 1) * icon_size / (28 * EDSCALE));
+	wave_face->set_material(wave_material);
+	wave_viewport->add_child(wave_face);
+	set_dock_icon(wave_viewport->get_texture());
 
 	VBoxContainer *timers_page = memnew(VBoxContainer);
 	timers_page->set_name("TimersPage");

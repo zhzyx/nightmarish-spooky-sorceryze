@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "issue_number": 834,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/834",
+  "request_id": "tianshu-blue-wave-20261112",
+  "base": "1f6ea3e74244275efafc484d7cf324d9feea5c4a",
+  "platform": "macOS arm64",
+  "binary_sha256": "b6837c87fa99a2dc3afb7e26f75a72f73d8563c92691823f086e2ceec9808eee",
+  "inputs": {
+    "editor/docks/ai_chat_dock.cpp": "70e77a3bf85c0bdb0c54127b3eff4cce26d9d2fe67350c968d7dde4f4695ef56",
+    "editor/docks/ai_chat_dock.h": "71b98e7bbdff133d6b5846e9388b8e2819b2b4007712b8600d5e5fe5ea6d9200",
+    "editor/icons/AIChatWave.svg": "1cea99350b1fedf74ec529b612084126c14c6cf625d7b158631625a5a1783608"
+  },
+  "native_consumer": "editor/icons/AIChatWave.svg generated theme icon, shared CanvasItem shader in AIChatDock; native recompile required",
+  "validation": {
+    "build": "passed",
+    "entry": "passed",
+    "layout_busy_stop": "passed: isolated real dock with synthetic loopback response, active wave=1 during sending, inactive=0 after Stop, no live model calls",
+    "dimensions": "entry geometry at 1440 and 1100; loopback layout at 1440 scale1",
+    "review": "/root/sinan_c4f7e4feb3d70a1b read-only review found no blocking findings"
+  },
+  "limits": [
+    "Headless geometry/state and shader load; rendered pixels and native display not independently verified",
+    "Simultaneous issue-worker wave intensity propagation inspected in code, not runtime-tested",
+    "Other platforms not built",
+    "Integration with locally running #830 is a separate consumer candidate; not part of this main-based binary"
+  ],
+  "usage": null
+}
