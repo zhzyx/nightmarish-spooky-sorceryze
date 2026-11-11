@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-6b5cc7bedc1a7aefd91a4b456bd57f2cd4e8bba4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-path-audit",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/748",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "02e1a41a4cc74ad97c49b31bed1dc3d22479cf5701615b1ed04db7577b82e763",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/748",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/770",
+    "action": "delivery",
+    "detection_head": "011cbc2388ca895a107ef5385f5f9663680f7b49",
+    "context_sha256": "b5fa693331f32c072ff7bb856c2db6f79a9b8a806ada99a40e026e8a427ad9ef",
+    "operator": "Sail-Li",
+    "worker": "codex-root-editor-path-audit",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/748",
+    "evidence": "main 011cbc23 installed; GUI SHA256 c3e47e13c7bd0d05d02ecea2dad7036d6f61e216b01c26316b511c83d8a6ef1a; installed-existing test passed routes [426], executions [706,426]",
+    "diagnosis": "First File.Replace returned sharing violation and rollback retained complete prior inventory. No editor process or RestartManager registered owner remained. One subsequent unchanged install succeeded. Specific transient lock owner remains unknown; no product source change was required.",
+    "next_action": "Record installed inventory and live window readback; close recovered deployment incident after final acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T09:56:59.700900+00:00",
+    "attempted": null,
+    "repair_owner": "codex-root-editor-path-audit",
+    "continuable": "Same authorized project reopened; installed binary parallel regression passed"
+  },
+  "occurred_at": "2026-11-11T10:00:13.905606+00:00",
+  "sha256": "65e2a7a2c782ce502a4555d019abe1db5fa9ed4709b7998855face99801f4a67"
+}

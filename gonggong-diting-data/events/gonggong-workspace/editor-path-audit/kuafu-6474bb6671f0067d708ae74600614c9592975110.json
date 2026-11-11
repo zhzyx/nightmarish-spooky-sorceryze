@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-6474bb6671f0067d708ae74600614c9592975110",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-path-audit",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/748",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "177764a87615d4bb0691f6a1e57a5c5df627838a6a9354eb429e383930498677",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/748",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/770",
+    "action": "delivery",
+    "detection_head": "011cbc2388ca895a107ef5385f5f9663680f7b49",
+    "context_sha256": "b5fa693331f32c072ff7bb856c2db6f79a9b8a806ada99a40e026e8a427ad9ef",
+    "operator": "Sail-Li",
+    "worker": "codex-root-editor-path-audit",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/748",
+    "evidence": "data-collection/editor-path-audit-748-activation.json",
+    "diagnosis": "Activation evidence used integer issue, while the existing evidence schema requires integer issue_number or URL issue. Corrected only the evidence field name; no source or test claim changed.",
+    "next_action": "Rerun formal submission with the corrected staged evidence",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T10:03:08.805081+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T10:04:51.855930+00:00",
+  "sha256": "1719b15382406bd44ec350aa1be34f2696232cd55cd81c85f99fff355f770ed8"
+}

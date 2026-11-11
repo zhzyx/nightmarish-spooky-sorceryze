@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4c47bc316b423e6dd9738cb0fa7707e7b44545f4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-path-audit",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/748",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "afd4d741f1b36247e21a9de50309b1cbe067831caa7f2f8aff1bdf544e42309f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/748",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/770",
+    "action": "delivery",
+    "detection_head": "011cbc2388ca895a107ef5385f5f9663680f7b49",
+    "context_sha256": "b5fa693331f32c072ff7bb856c2db6f79a9b8a806ada99a40e026e8a427ad9ef",
+    "operator": "Sail-Li",
+    "worker": "codex-root-editor-path-audit",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/748",
+    "evidence": "data-collection/editor-path-audit-748-activation.json",
+    "diagnosis": "PowerShell ConvertTo-Json produced CRLF while Git stages LF; the gate correctly required identical evidence bytes. Normalized this newly generated receipt to LF before staging.",
+    "next_action": "Rerun exact-byte evidence gate and deliver receipts",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T10:05:26.360983+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T10:06:16.584276+00:00",
+  "sha256": "7f263ae191b4d51c987ab783c7fdbb3143a2b390ef74a95cda1661bc869c19a3"
+}
