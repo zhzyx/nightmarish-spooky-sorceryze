@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2bacfc9eb084bfdb5e698ef596231b1100da0775",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "startup-config-sync-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/857",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "216798956c0ab47282fe4080b427cb8ddff7b0b44c51c888da2e3be18b12c925",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/857",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/862",
+    "action": "delivery",
+    "detection_head": "5903fb96fee73c0d68967bf953abcd0a5d265fcb",
+    "context_sha256": "7e0bb1fdc40faff9fc06b9a5d4342dd811eefd13641d7481148b7dcd5966f6b4",
+    "operator": "Sail-Li",
+    "worker": "codex-root-startup-config",
+    "authority_ref": "codex-user-startup-config-sync-20261112",
+    "evidence": "main7813a30245c65427094934fd29590b98c1a1dd96; shared ai_chat_dock.cpp SHA256 eb9d746b81ab6e880d7687ce30f1f2ba8555b3ff55f72039f8bb227a9a7d120c; isolated native receipts",
+    "diagnosis": "writer_submit stopped before commit because main advanced with accepted runtime diagnostics. Integrated own changes onto new main without conflict. Independent reviewer verified removing only our3 additions restores exact upstream file; new native build and startup30/layout272/diagnostics regression passed, final AI regression running.",
+    "next_action": "Finish same-candidate AI regression, append new evidence while preserving original, then rerun formal gate and signed PR delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T23:35:00.598185+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T23:38:08.257319+00:00",
+  "sha256": "2b5416f5118520cfaad9ee14c6c6507d77186ff03df7f4bb711e3736ae0ab63f"
+}

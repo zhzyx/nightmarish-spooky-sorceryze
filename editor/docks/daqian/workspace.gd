@@ -201,6 +201,11 @@ var host: Object
 var selection_epoch := 0
 var editor_session := Crypto.new().generate_random_bytes(16).hex_encode()
 var project_model_connecting := false
+var startup_model_generation := 0
+var startup_models_running := false
+var startup_model_operation := -1
+var startup_access_pid := -1
+var process_stopper: Callable
 
 
 func _ready() -> void:
@@ -426,6 +431,7 @@ func _ready() -> void:
 	editor.visible = false
 	editor.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	models_dialog = models_script.new()
+	models_dialog.process_stopper = process_stopper
 	models_dialog.set_meta("unified_settings", get_meta("unified_settings", false))
 	models_dialog.editor_session = editor_session
 	add_child(models_dialog)
@@ -1526,6 +1532,7 @@ func _save() -> void:
 
 
 func _exit_tree() -> void:
+	cancel_startup_model_refresh()
 	_stop_progress_watch()
 	if not picker_scope.is_empty():
 		var bridge := picker_scope.path_join("customizations/components/godot-host/daqian/board.py")
@@ -2358,7 +2365,7 @@ func _board_command(access_only: bool, expected := "", project := false) -> Dict
 	return await _run_board_command(access_only, expected, project, {})
 
 
-func _run_board_command(access_only: bool, expected: String, project: bool, delta_request: Dictionary) -> Dictionary:
+func _run_board_command(access_only: bool, expected: String, project: bool, delta_request: Dictionary, startup := false) -> Dictionary:
 	var root := _repo()
 	var bridge := root.path_join("customizations/components/godot-host/daqian/board.py")
 	if not root.is_absolute_path() or not FileAccess.file_exists(bridge):
@@ -2396,8 +2403,16 @@ func _run_board_command(access_only: bool, expected: String, project: bool, delt
 		if not delta_request.is_empty():
 			DirAccess.remove_absolute(request_path)
 		return {"denied":delta_request.is_empty(),"error":"无法启动共工身份核验入口"}
+	if startup:
+		startup_access_pid = pid
+	var deadline := Time.get_ticks_msec() + 30_000
 	while not FileAccess.file_exists(path) and OS.is_process_running(pid):
+		if startup and Time.get_ticks_msec() >= deadline:
+			_stop_startup_process(pid)
+			break
 		await get_tree().create_timer(HOST_RECEIPT_POLL_SECONDS).timeout
+	if startup and startup_access_pid == pid:
+		startup_access_pid = -1
 	if not delta_request.is_empty():
 		DirAccess.remove_absolute(request_path)
 	if not FileAccess.file_exists(path):
@@ -2467,6 +2482,66 @@ func connect_project_models() -> void:
 	await _open_models()
 	if is_instance_valid(models_dialog) and not models_dialog.authorized_root.is_empty() and not models_dialog.user_id.is_empty():
 		await models_dialog._connect_local()
+	project_model_connecting = false
+
+
+# Startup uses the same access and model-discovery interfaces without navigation.
+func refresh_startup_models() -> Dictionary:
+	if project_model_connecting or not is_instance_valid(models_dialog) or models_dialog.pending:
+		return {"status":"busy", "message":"模型接入正在运行，请稍后重试。"}
+	project_model_connecting = true
+	startup_models_running = true
+	startup_model_operation = -1
+	startup_model_generation += 1
+	var generation := startup_model_generation
+	var root := _repo()
+	var runtime := _runtime_paths(true)
+	var result: Dictionary = await _run_board_command(true, "", false, {}, true)
+	if generation != startup_model_generation:
+		return {"status":"cancelled", "message":"模型库刷新已取消。"}
+	if root != _repo() or runtime != _runtime_paths(true):
+		startup_models_running = false
+		project_model_connecting = false
+		return {"status":"changed", "message":"运行环境已变化，请重新检查。"}
+	if not result.has("access"):
+		startup_models_running = false
+		project_model_connecting = false
+		return {"status":"needs_configuration", "message":"请在运行环境中核对工作区、Python 和仓库身份。"}
+	if models_dialog.pending:
+		startup_models_running = false
+		project_model_connecting = false
+		return {"status":"busy", "message":"模型设置正在执行手动操作，请稍后重试。"}
+	models_dialog.user_id = str(result.access.get("user_id", ""))
+	models_dialog.chat = chat
+	models_dialog.authorize_embedded(root)
+	startup_model_operation = models_dialog.operation_serial + 1
+	await models_dialog._connect_local()
+	if generation != startup_model_generation:
+		return {"status":"cancelled", "message":"模型库刷新已取消。"}
+	startup_models_running = false
+	project_model_connecting = false
+	startup_model_operation = -1
+	return models_dialog.last_result.duplicate(true)
+
+
+func _stop_startup_process(pid: int) -> void:
+	if process_stopper.is_valid():
+		process_stopper.call(pid)
+	elif OS.is_process_running(pid):
+		OS.kill(pid)
+
+
+func cancel_startup_model_refresh() -> void:
+	if not startup_models_running:
+		return
+	startup_models_running = false
+	startup_model_generation += 1
+	if startup_access_pid > 0 and OS.is_process_running(startup_access_pid):
+		_stop_startup_process(startup_access_pid)
+	startup_access_pid = -1
+	if startup_model_operation >= 0 and is_instance_valid(models_dialog):
+		models_dialog.cancel_operation(startup_model_operation)
+	startup_model_operation = -1
 	project_model_connecting = false
 
 

@@ -27,6 +27,10 @@ var embedded := false
 var authorized_root := ""
 var authorized_workflow_python := ""
 var context_generation := 0
+var last_result: Dictionary = {}
+var operation_pid := -1
+var operation_serial := 0
+var process_stopper: Callable
 
 
 func _ready() -> void:
@@ -137,6 +141,9 @@ func _save_profile() -> void:
 
 
 func _connect_local() -> void:
+	if pending:
+		return
+	last_result = {"status":"needs_configuration", "message":"模型设置尚未准备完成，请检查配置。"}
 	var settings := EditorInterface.get_editor_settings()
 	var local := {}
 	# Model choices belong to this project; executable paths remain host-owned.
@@ -175,12 +182,13 @@ func _connect_local() -> void:
 			# An ambient OpenAI key belongs only to its own endpoint.
 			if secret != OS.get_environment("OPENAI_API_KEY") or local.get("endpoint") in ["https://api.openai.com/v1/chat/completions", "https://api.openai.com/v1/responses"]:
 				local.editor_key = secret
-	_run("connect-local", local)
+	await _run("connect-local", local)
 
 
 func _run(action: String, input: Dictionary) -> void:
 	if pending:
 		return
+	last_result = {"status":"needs_configuration", "message":"请核对工作区身份与模型运行环境。"}
 	var settings := EditorInterface.get_editor_settings()
 	var root: String = str(settings.get_setting("gonggong/workspace")) if settings.has_setting("gonggong/workspace") else ""
 	if embedded and (authorized_root != root or user_id.is_empty()):
@@ -211,6 +219,9 @@ func _run(action: String, input: Dictionary) -> void:
 		info.text = "无法启动凭据存储接入"
 		return
 	pending = true
+	operation_serial += 1
+	var operation := operation_serial
+	operation_pid = int(process.pid)
 	_update_controls()
 	var pipe: FileAccess = process.stdio
 	pipe.store_line(JSON.stringify(input))
@@ -219,22 +230,40 @@ func _run(action: String, input: Dictionary) -> void:
 		key.clear()
 	info.text = "正在识别本机模型，并验证文本回复…" if action == "connect-local" else "正在写入系统凭据存储…"
 	var data := PackedByteArray()
-	while OS.is_process_running(process.pid):
-		if pipe.get_length()>0:
-			data.append_array(pipe.get_buffer(pipe.get_length()))
+	var deadline := Time.get_ticks_msec() + 180_000
+	var timed_out := false
+	while operation == operation_serial and OS.is_process_running(process.pid):
+		if pipe.get_length() > 0:
+			data.append_array(pipe.get_buffer(mini(pipe.get_length(), 1_048_576)))
+		var errors: FileAccess = process.get("stderr")
+		if errors and errors.get_length() > 0:
+			errors.get_buffer(mini(errors.get_length(), 1_048_576))
+		if Time.get_ticks_msec() >= deadline or data.size() > 1_048_576:
+			timed_out = true
+			_stop_process(process.pid)
+			break
 		await get_tree().create_timer(0.1).timeout
-	if pipe.get_length()>0:
-		data.append_array(pipe.get_buffer(pipe.get_length()))
+	if operation != operation_serial:
+		return
+	operation_pid = -1
+	if pipe.get_length() > 0:
+		data.append_array(pipe.get_buffer(mini(pipe.get_length(), 1_048_576)))
 	var result = JSON.parse_string(data.get_string_from_utf8())
 	pending = false
 	_update_controls()
+	if timed_out:
+		last_result = {"status":"timeout", "message":"模型库刷新超时，请检查网络后重试。"}
+		info.text = last_result.message
+		return
 	var current_root: String = str(settings.get_setting("gonggong/workspace")) if settings.has_setting("gonggong/workspace") else ""
 	var current_runtime: Dictionary = chat.get_runtime_configuration().get("executables", {}) if is_instance_valid(chat) else {}
 	if embedded and (generation != context_generation or authorized_root != root or current_root != root or runtime != current_runtime):
+		last_result = {"status":"changed", "message":"配置已变化，请重新检查。"}
 		clear_embedded_access()
 		info.text = "设置上下文已改变，旧接入回执已保留，不应用到当前工作区。"
 		return
 	if result is Dictionary and result.get("denied",false):
+		last_result = {"status":"denied", "message":"模型库身份核验未通过。"}
 		access_denied.emit(root,user,str(result.error))
 		return
 	if result is Dictionary and result.has("result"):
@@ -249,10 +278,35 @@ func _run(action: String, input: Dictionary) -> void:
 					line += " · " + str(source.note)
 				lines.append(line)
 			info.text = "\n".join(lines)
+			last_result = {"status":"refreshed", "message":"已刷新天枢模型发现结果，请在个人模型库查看各来源详情。"}
 			catalog_changed.emit()
 			return
 		info.text = "已保存，能力由宿主的评测证据决定"
 		catalog_changed.emit()
 		hide()
 	else:
+		last_result = {"status":"unavailable", "message":"模型库刷新未成功，请检查配置与网络。"}
 		info.text = str(result.get("error","系统凭据存储未返回成功")) if result is Dictionary else "系统凭据存储未返回有效回执"
+
+
+func _stop_process(pid: int) -> void:
+	if process_stopper.is_valid():
+		process_stopper.call(pid)
+	elif OS.is_process_running(pid):
+		OS.kill(pid)
+
+
+func cancel_operation(expected_serial := -1) -> void:
+	if expected_serial >= 0 and expected_serial != operation_serial:
+		return
+	operation_serial += 1
+	if operation_pid > 0 and OS.is_process_running(operation_pid):
+		_stop_process(operation_pid)
+	operation_pid = -1
+	pending = false
+	last_result = {"status":"cancelled", "message":"模型库刷新已取消。"}
+	_update_controls()
+
+
+func _exit_tree() -> void:
+	cancel_operation()

@@ -51,6 +51,16 @@ if env.editor_build:
     )
 
     env.CommandNoCache(
+        "docks/startup_checks.gen.h",
+        [
+            "docks/daqian/startup_checks.gd",
+            "docks/daqian/startup_git.gd",
+            "#customizations/components/godot-host/startup_git_helper.py",
+        ],
+        env.Run(editor_builders.daqian_scripts_builder),
+    )
+
+    env.CommandNoCache(
         "docks/daqian_board.gen.h",
         [
             "#customizations/components/godot-host/daqian/" + name

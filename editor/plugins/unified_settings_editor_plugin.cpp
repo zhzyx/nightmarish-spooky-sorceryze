@@ -33,6 +33,7 @@
 #include "core/object/callable_mp.h"
 #include "core/object/class_db.h"
 #include "editor/docks/ai_chat_dock.h"
+#include "editor/docks/daqian_dock.h"
 #include "editor/docks/editor_dock.h"
 #include "editor/docks/editor_dock_manager.h"
 #include "editor/editor_node.h"
@@ -199,6 +200,11 @@ UnifiedSettingsEditorPlugin::UnifiedSettingsEditorPlugin() {
 	actions->add_child(ai_verify);
 	chat_ai = settings_group(ai, U"对话与 Agent", "ChatAISettingsSlot");
 	VBoxContainer *environment = settings_category(categories, titles[1], "EnvironmentSettingsPage");
+	VBoxContainer *startup = settings_group(environment, U"启动检查与更新", "StartupChecksSettings");
+	if (Node *checks = create_gonggong_startup_checks()) {
+		checks->set("status_host", startup);
+		dock->add_child(checks);
+	}
 	chat_environment = settings_group(environment, U"聊天、工作流与编译环境", "ChatEnvironmentSettingsSlot");
 	VBoxContainer *catalog = settings_category(categories, titles[2], "ModelCatalogPage");
 	catalog_ai = settings_group(catalog, U"已连接的模型", "ModelCatalogSettingsSlot");
