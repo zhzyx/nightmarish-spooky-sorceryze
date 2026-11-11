@@ -30,6 +30,7 @@
 
 #include "editor/docks/ai_chat_sub_agents.h"
 
+#include "core/config/project_settings.h"
 #include "core/crypto/crypto_core.h"
 #include "core/io/dir_access.h"
 #include "core/io/file_access.h"
@@ -37,12 +38,15 @@
 #include "core/object/callable_mp.h"
 #include "core/os/os.h"
 #include "editor/docks/ai_chat_dock.h"
+#include "editor/docks/ai_chat_editor_control.h"
 #include "editor/docks/ai_chat_host_runtime.h"
 #include "editor/docks/ai_chat_issue_guide.h"
 #include "editor/docks/ai_chat_sub_agent_receipts.h"
 #include "editor/docks/ai_chat_tools.h"
 #include "editor/docks/gonggong_runtime_config.h"
+#include "editor/file_system/editor_file_system.h"
 #include "editor/file_system/editor_paths.h"
+#include "editor/script/script_editor_plugin.h"
 #include "editor/settings/editor_settings.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/box_container.h"
@@ -53,6 +57,7 @@
 #include "scene/gui/line_edit.h"
 #include "scene/gui/option_button.h"
 #include "scene/gui/tab_bar.h"
+#include "scene/gui/text_edit.h"
 #include "scene/main/timer.h"
 
 namespace {
@@ -227,6 +232,9 @@ int AIChatDock::_design_child_parent(int p_child) const {
 }
 
 void AIChatDock::_cancel_design_batch(int p_agent) {
+	if (!production_integration_job.is_empty() && (int(production_integration_job.get("parent", -1)) == p_agent || int(production_integration_job.get("producer", -1)) == p_agent)) {
+		_cancel_production_integration();
+	}
 	const int acceptance_parent = acceptance_reviews.has(p_agent) ? int(acceptance_reviews[p_agent].get("parent", -1)) : -1;
 	const int cancelled_parent = _design_child_parent(p_agent);
 	Vector<int> jobs;
@@ -2608,4 +2616,300 @@ bool AIChatDock::_automatic_acceptance_current(int p_producer) const {
 	}
 
 	return JSON::stringify(decision).sha256_text() == String(acceptance["decision_sha256"]);
+}
+
+void AIChatDock::_integrate_production_result(const Dictionary &p_arguments, bool p_confirmed) {
+	const auto reject = [this](const String &p_error) {
+		Dictionary result;
+		result["ok"] = false;
+		result["error"] = p_error;
+		_finish_tool(JSON::stringify(result), false, true);
+	};
+	if (sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || consultation_turn || consultation_only->is_pressed() || !allow_tools->is_pressed() || !history_writable || history_save_error || snapshot_restoring || snapshot_transaction_failed) {
+		reject("authorized_parent_required");
+		return;
+	}
+	const String action = p_arguments.get("action", "");
+	if (action == "list") {
+		Array producers;
+		for (const KeyValue<int, Dictionary> &entry : sub_agents) {
+			if (int(entry.value.get("parent", -1)) != active_agent || entry.value.get("source", "") != "design") {
+				continue;
+			}
+			Dictionary item;
+			item["producer_id"] = entry.key;
+			item["title"] = entry.value.get("title", "");
+			item["work_order"] = entry.value.get("number", 0);
+			const Dictionary acceptance = entry.value.get("acceptance", Dictionary());
+			const int reviewer = String(acceptance.get("reviewer", "-1")).to_int();
+			item["live_independent_acceptance"] = acceptance.has("decision_sha256") && acceptance_reviews.has(reviewer) && acceptance_reviews[reviewer].has("verified_decision");
+			item["integration"] = entry.value.get("project_integration", Dictionary());
+			producers.push_back(item);
+		}
+		Dictionary result;
+		result["ok"] = true;
+		result["producers"] = producers;
+		result["note"] = "Listing does not authorize writes. Plan rechecks actual candidate and target; apply uses the pinned plan.";
+		_finish_tool(JSON::stringify(result), false, true);
+		return;
+	}
+	if (action != "plan" && action != "apply" && action != "rollback") {
+		reject("invalid_integration_action");
+		return;
+	}
+	const Variant producer_value = p_arguments.get("producer_id", Variant());
+	if ((producer_value.get_type() != Variant::INT && producer_value.get_type() != Variant::FLOAT) || double(producer_value) != int(producer_value) || !sub_agents.has(int(producer_value))) {
+		reject("unknown_producer");
+		return;
+	}
+	const int producer = int(producer_value);
+	const Dictionary child = sub_agents[producer];
+	if (int(child.get("parent", -1)) != active_agent || child.get("source", "") != "design" || _work_order_binding("request_id") != String(child.get("request_id", "")) || _work_order_binding("issue_number").to_int() != int64_t(child.get("issue_number", 0))) {
+		reject("producer_parent_binding_changed");
+		return;
+	}
+	if (!production_integration_job.is_empty()) {
+		reject("integration_in_progress_preserve_original_execution");
+		return;
+	}
+	const String workspace = _workflow_root();
+	const String project = ProjectSettings::get_singleton()->get_resource_path();
+	if (action == "rollback" && !production_integration_plans.has(producer)) {
+		// Recovery grants restoration only. Saved receipts never recreate a
+		// live reviewer or permit a new production/apply operation.
+		const Dictionary recovery = child.get("project_integration_recovery", Dictionary());
+		const String recovery_path = recovery.get("path", "");
+		Ref<FileAccess> recovery_file = FileAccess::open(recovery_path, FileAccess::READ);
+		if (recovery_file.is_valid() && recovery_file->get_length() <= 16 * 1024 * 1024 && FileAccess::get_sha256(recovery_path) == String(recovery.get("sha256", ""))) {
+			const Variant parsed = JSON::parse_string(recovery_file->get_as_utf8_string());
+			if (parsed.get_type() == Variant::DICTIONARY) {
+				const Dictionary recovered = parsed;
+				const Dictionary original = recovered.get("request", Dictionary());
+				if (recovered.get("conversation_id", "") == Variant(conversation_id) && int(recovered.get("producer_id", -1)) == producer && original.get("request_id", "") == child.get("request_id", Variant()) && original.get("issue_number", 0) == child.get("issue_number", Variant()) && original.get("project_root", "") == Variant(project) && original.get("workspace_root", "") == Variant(workspace)) {
+					production_integration_plans.insert(producer, recovered);
+				}
+			}
+		}
+	}
+	Dictionary integration_request;
+	if (action == "rollback" && production_integration_plans.has(producer)) {
+		integration_request = Dictionary(production_integration_plans[producer]["request"]).duplicate(true);
+	} else {
+		const Dictionary acceptance = child.get("acceptance", Dictionary());
+		const int reviewer = String(acceptance.get("reviewer", "-1")).to_int();
+		if (!acceptance.has("decision_sha256") || !acceptance_reviews.has(reviewer) || int(acceptance_reviews[reviewer].get("producer", -1)) != producer || !acceptance_reviews[reviewer].has("verified_decision")) {
+			reject("current_independent_acceptance_required");
+			return;
+		}
+		// The batch is consumed when its completion starts this parent's new
+		// turn. Retain the live independent completion, not the old turn ID.
+		const Dictionary review_context = acceptance_reviews[reviewer];
+		if (review_context.get("conversation_id", "") != Variant(conversation_id) || review_context.get("workspace", "") != Variant(workspace) || review_context.get("binding", Dictionary()) != _read_design(active_agent).get("binding", Variant())) {
+			reject("accepted_design_or_parent_changed");
+			return;
+		}
+		const Dictionary decision = acceptance_reviews[reviewer]["verified_decision"];
+		const String decision_json = JSON::stringify(decision);
+		if (decision_json.sha256_text() != String(acceptance["decision_sha256"]) || FileAccess::get_sha256(acceptance.get("evidence", "")) != String(acceptance.get("decision_file_sha256", ""))) {
+			reject("independent_acceptance_changed");
+			return;
+		}
+		integration_request["decision_json"] = decision_json;
+		integration_request["workspace_root"] = workspace;
+		integration_request["resolve_project_workspace"] = true;
+		integration_request["project_root"] = project;
+		integration_request["transaction_root"] = workspace.path_join("data-collection/outbox/project-integration");
+		integration_request["issue_number"] = child["issue_number"];
+		integration_request["request_id"] = child["request_id"];
+	}
+	if (integration_request.get("workspace_root", "") != Variant(workspace) || integration_request.get("project_root", "") != Variant(project)) {
+		reject("integration_destination_changed");
+		return;
+	}
+	if (action != "plan") {
+		if (!production_integration_plans.has(producer)) {
+			reject("plan_required_before_integration");
+			return;
+		}
+		const Dictionary planned = production_integration_plans[producer];
+		const Dictionary planned_request = planned["request"];
+		if (integration_request.get("decision_json", "") != planned_request.get("decision_json", Variant())) {
+			reject("plan_acceptance_changed");
+			return;
+		}
+		integration_request["plan_path"] = planned["plan_path"];
+		integration_request["plan_sha256"] = planned["plan_sha256"];
+		_flush_history();
+		if (!history_writable || history_save_error || history_dirty || !child.has("project_integration_recovery")) {
+			reject("durable_integration_recovery_required");
+			return;
+		}
+		const Dictionary editor_state = _get_editor_control()->get_state();
+		if (!Array(editor_state.get("unsaved_scenes", Array())).is_empty() || (ScriptEditor::get_singleton() && !ScriptEditor::get_singleton()->get_unsaved_files().is_empty()) || bool(editor_state.get("running", true))) {
+			reject("save_project_scenes_and_scripts_before_integration");
+			return;
+		}
+		if (!p_confirmed && !(auto_apply_file_changes->is_pressed() && auto_execute_commands->is_pressed())) {
+			pending_action = "integrate_production_result";
+			pending_editor_action = p_arguments.duplicate(true);
+			confirmation->set_title(U"整合已验收的项目成果");
+			preview->set_text(_redact(vformat(U"操作：%s\n项目：%s\n工单：%d\n计划摘要：%s\n\n仅处理计划中与当前文件一致的变更；用户修改或来源变化会拒绝执行。原始文件与执行回执保留用于恢复。", action, project, int(child.get("number", 0)), String(planned["plan_sha256"]))));
+			_show_confirmation();
+			return;
+		}
+	}
+	integration_request["action"] = action;
+	// JSON restores numbers as floats. The trusted intake requires an integer
+	// Issue ID, including explicit rollback after a cold editor restart.
+	integration_request["issue_number"] = int64_t(child["issue_number"]);
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(runtime);
+	const String python = GongGongRuntimeConfig::path(runtime, "workflow_python");
+	const String bridge = _engine_root().path_join("tools/gonggong_bridge.py");
+	if (python.is_empty() || !FileAccess::exists(bridge)) {
+		reject("integration_host_runtime_unavailable");
+		return;
+	}
+	const String nonce = itos(OS::get_singleton()->get_process_id()) + "-" + itos(OS::get_singleton()->get_ticks_usec());
+	const String stem = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-project-integration-" + nonce);
+	integration_request["request_nonce"] = nonce;
+	integration_request["host_liveness_path"] = stem + ".live";
+	Dictionary live;
+	live["active"] = true;
+	live["request_nonce"] = nonce;
+	for (const String &suffix : { String(".live"), String(".request") }) {
+		Ref<FileAccess> file = FileAccess::open(stem + suffix, FileAccess::WRITE);
+		if (file.is_null()) {
+			DirAccess::remove_absolute(stem + ".live");
+			reject("integration_request_persist_failed");
+			return;
+		}
+		file->store_string(JSON::stringify(suffix == ".live" ? live : integration_request));
+		file->flush();
+		if (file->get_error() != OK) {
+			DirAccess::remove_absolute(stem + ".live");
+			reject("integration_request_persist_failed");
+			return;
+		}
+	}
+	const Dictionary decision = JSON::parse_string(integration_request["decision_json"]);
+	const String source = Dictionary(decision["candidate"])["root"];
+	List<String> args;
+	for (const String &arg : { bridge, String("project-integration"), String("--workspace"), source, String("--request"), stem + ".request", String("--out"), stem + ".result" }) {
+		args.push_back(arg);
+	}
+	ProcessID pid = -1;
+	if (OS::get_singleton()->create_process(python, args, &pid) != OK) {
+		DirAccess::remove_absolute(stem + ".live");
+		reject("integration_process_not_started");
+		return;
+	}
+	production_integration_job["pid"] = int64_t(pid);
+	production_integration_job["parent"] = active_agent;
+	production_integration_job["producer"] = producer;
+	production_integration_job["generation"] = int64_t(session_generation);
+	production_integration_job["conversation"] = conversation_id;
+	production_integration_job["request"] = integration_request;
+	production_integration_job["stem"] = stem;
+	production_integration_job["started"] = int64_t(OS::get_singleton()->get_ticks_msec());
+	// API requests stop the dock's process loop after transport completion.
+	// Observe this child independently until its actual terminal result arrives.
+	if (!production_integration_timer) {
+		production_integration_timer = memnew(Timer);
+		production_integration_timer->set_wait_time(0.1);
+		production_integration_timer->connect("timeout", callable_mp(this, &AIChatDock::_poll_production_integration));
+		add_child(production_integration_timer);
+	}
+	production_integration_timer->start();
+	_set_activity(action == "plan" ? String(U"正在核对已验收成果与当前项目差异") : String(U"正在整合项目成果并保留恢复回执"));
+}
+
+void AIChatDock::_cancel_production_integration() {
+	if (production_integration_job.is_empty()) {
+		return;
+	}
+	// The child observes this before every file mutation. Preserve the process,
+	// plan and journal until its actual result is known; never guess rollback.
+	DirAccess::remove_absolute(String(production_integration_job["stem"]) + ".live");
+	production_integration_job["cancelled"] = true;
+}
+
+void AIChatDock::_poll_production_integration() {
+	if (production_integration_job.is_empty()) {
+		return;
+	}
+	const Dictionary job = production_integration_job;
+	const Dictionary integration_request = job["request"];
+	const bool owner = active_agent == int(job["parent"]) && conversation_id == String(job["conversation"]) && session_generation == uint64_t(int64_t(job["generation"])) && busy;
+	if (!owner || !allow_tools->is_pressed() || consultation_only->is_pressed()) {
+		_cancel_production_integration();
+	}
+	const bool expired = OS::get_singleton()->get_ticks_msec() - uint64_t(int64_t(job["started"])) > 600000;
+	if (OS::get_singleton()->is_process_running(int64_t(job["pid"])) && !expired) {
+		return;
+	}
+	if (expired) {
+		_cancel_production_integration();
+		OS::get_singleton()->kill(int64_t(job["pid"]));
+	}
+	Dictionary result;
+	result["ok"] = false;
+	result["state"] = "reconcile_required";
+	result["error"] = "integration_result_unknown_preserve_journal";
+	const String stem = job["stem"];
+	Ref<FileAccess> file = FileAccess::open(stem + ".result", FileAccess::READ);
+	if (!expired && file.is_valid() && file->get_length() <= 16 * 1024 * 1024) {
+		const Variant parsed = JSON::parse_string(file->get_as_utf8_string());
+		if (parsed.get_type() == Variant::DICTIONARY && Dictionary(parsed).get("request_nonce", "") == integration_request.get("request_nonce", Variant())) {
+			result = parsed;
+		}
+	}
+	file.unref();
+	DirAccess::remove_absolute(stem + ".live");
+	const int producer = job["producer"];
+	if (bool(result.get("ok", false)) && result.has("plan_path") && result.has("plan_sha256") && sub_agents.has(producer)) {
+		Dictionary plan;
+		plan["request"] = integration_request;
+		plan["plan_path"] = result["plan_path"];
+		plan["plan_sha256"] = result["plan_sha256"];
+		plan["conversation_id"] = job["conversation"];
+		plan["producer_id"] = producer;
+		const String recovery_json = JSON::stringify(plan);
+		const String recovery_path = String(result["plan_path"]) + ".host-" + recovery_json.sha256_text() + ".json";
+		Ref<FileAccess> recovery_file = FileAccess::open(recovery_path, FileAccess::WRITE);
+		if (recovery_file.is_valid()) {
+			recovery_file->store_string(recovery_json);
+			recovery_file->flush();
+			const bool saved = recovery_file->get_error() == OK;
+			recovery_file.unref();
+			if (saved && FileAccess::get_sha256(recovery_path) == recovery_json.sha256_text()) {
+				Dictionary recovery;
+				recovery["path"] = recovery_path;
+				recovery["sha256"] = recovery_json.sha256_text();
+				sub_agents[producer]["project_integration_recovery"] = recovery;
+				production_integration_plans.insert(producer, plan);
+			} else {
+				result["ok"] = false;
+				result["error"] = "integration_recovery_persist_failed_preserve_journal";
+			}
+		} else {
+			result["ok"] = false;
+			result["error"] = "integration_recovery_persist_failed_preserve_journal";
+		}
+	}
+	if (sub_agents.has(producer)) {
+		sub_agents[producer]["project_integration"] = result;
+		_queue_history_save();
+	}
+	const String state = result.get("state", "");
+	if (state == "applied" || state == "rolled_back" || state == "reconcile_required") {
+		if (EditorFileSystem::get_singleton()) {
+			EditorFileSystem::get_singleton()->scan_changes();
+		}
+	}
+	production_integration_job.clear();
+	production_integration_timer->stop();
+	if (owner && tool_index >= 0 && tool_index < tool_calls.size() && String(Dictionary(Dictionary(tool_calls[tool_index])["function"])["name"]) == "integrate_production_result") {
+		_finish_tool(JSON::stringify(result), bool(result.get("ok", false)) && state == "applied", true);
+	}
 }

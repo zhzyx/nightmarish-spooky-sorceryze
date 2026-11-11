@@ -39,6 +39,8 @@ def prepare(env):
         check=True,
         capture_output=True,
     )
+    if env.get("NATIVE_ACCEPTANCE_SCENARIO") == "parallel-integration":
+        subprocess.run(["git", "-C", str(original), "add", "samples/project"], check=True, capture_output=True)
     subprocess.run(
         ["git", "-C", str(original), "commit", "-m", "isolated actual framework inputs"],
         check=True,
@@ -78,6 +80,18 @@ event('finish');console.log('Actual fixture worker completed '+name);
 """,
         encoding="utf8",
     )
+    if scenario == "parallel-integration":
+        game_script = 'extends SceneTree\nfunc _initialize():\n\tprint("NATIVE_INTEGRATION_EXECUTED:" + FileAccess.get_file_as_string("res://production-output.txt"))\n\tquit()\n'
+        worker.write_text(
+            worker.read_text(encoding="utf8").replace(
+                "event('finish');",
+                "if(name==='C'){fs.writeFileSync('samples/project/production-output.txt','ACCEPTED_NATIVE_PROJECT_OUTPUT');"
+                + "fs.writeFileSync('samples/project/production-output.gd',"
+                + json.dumps(game_script)
+                + ");}\nevent('finish');",
+            ),
+            encoding="utf8",
+        )
     roots = []
     owners = ["4" if scenario == "parallel-self-review" and name == "A" else "external-" + name for name in "ABC"]
     for name in ("A", "B", "C"):
@@ -143,6 +157,8 @@ fs.writeFileSync(new URL('./ledger-keys.json',import.meta.url),JSON.stringify(ke
 
 def diagnostics():
     result = []
+    if folder is None:
+        return result
     for path in folder.glob("external-*/.yuanheng/state.json"):
         result.append({"path": path.relative_to(folder).as_posix(), "body": path.read_text(encoding="utf8")})
     for path in folder.glob("godot-candidate-*/data-collection/outbox/parallel-*"):

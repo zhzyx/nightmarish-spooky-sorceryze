@@ -643,6 +643,12 @@ class AIChatDock : public EditorDock {
 	HashMap<int, Dictionary> acceptance_bridge_jobs;
 	HashMap<int, Dictionary> acceptance_bridge_results;
 	Timer *acceptance_bridge_timer = nullptr;
+	Dictionary production_integration_job;
+	Timer *production_integration_timer = nullptr;
+	HashMap<int, Dictionary> production_integration_plans;
+	void _integrate_production_result(const Dictionary &p_arguments, bool p_confirmed = false);
+	void _poll_production_integration();
+	void _cancel_production_integration();
 	Dictionary _acceptance_bridge(const String &p_operation, const Dictionary &p_request, const String &p_root, int p_actor);
 	void _poll_acceptance_bridge();
 	bool _start_acceptance_review(int p_producer);

@@ -1,0 +1,145 @@
+{
+  "issue_number": 811,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/811",
+  "request_id": "editor-production-integration-20261112",
+  "parent_issue": 773,
+  "recorded_at": "2026-11-11T19:21:05.223877+00:00",
+  "base_revision": "325fdb12c388de0821bd51d33a63bd867b2e7137",
+  "candidate_state": "uncommitted implementation; formal submission and main delivery tracked separately",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "fb42cc158f4e47782d2656fda6b65919272d06ab946802a2bb8d4a501e312f49",
+    "editor/docks/ai_chat_dock.h": "63bda97b21b4c5bfbf1fd9a0685ed91fd375c979f68e86fd3452d98b409c51c1",
+    "editor/docks/ai_chat_sub_agents.cpp": "67d871ced197b72b835c8162452670ae6678ffa21923b6ce8be49c6482ab7d16",
+    "editor/docks/ai_chat_sub_agent_receipts.h": "5d39643b979c20a8ec6f2a36d10bbd7198fafb3069d707a6d6386be9afaad52a",
+    "customizations/components/godot-host/project_integration.py": "3751fbf7134225a72ca32561bd560e93d6eebe04934ab5cfa9056054a33a6f2e",
+    "customizations/components/godot-host/bridge.py": "b7941b1d4600d9a8badab61bb927d01bca0db536b693d53890811349bbfe08f9",
+    "tools/gonggong_bridge.py": "fe349f1ac2197fdd5de155129e229daa9f2db99cd3ff327668c99fbf5f9f17bf",
+    "tools/godot_parallel/integration.mjs": "402448d90cddd93382b27276a9da0698e37106fdc9ccbb053e9d2a377a8b556b",
+    "tests/editor/test_production_integration.mjs": "842e7770bb362f0f8502469199f6b6ec0baeec6ce65c1038190394c1bbb153db",
+    "tools/codebuddy_cli/godot_acp.js": "c8a97ce0710b609f21e1acf703b7bde28237487da73863d451fec50881c38bd3",
+    "tools/codebuddy_cli/godot_bridge.js": "cfb53091408f1a950c2c69b845bf316945e9b7b2cbc6a9f267f8e02023b918bc",
+    "tools/codebuddy_cli/godot_terminal.js": "62617529b9c22f95083a6ecf5fe0f81de80373a41597b94a77862933a8531cc0",
+    "tests/editor/test_codebuddy_terminal.js": "f8d9d2630ce06d297afb2bd08e3f51f960caa9a9ebfeb87463183f57b068c219",
+    "tests/editor/run_native_acceptance.py": "3b794281be35f35a3efdc0267d3217accf4c947ae7e9323bfe07d7c74ba1e7c4",
+    "tests/editor/native_acceptance_parallel.py": "04bab14da81423a4e141f9309a16fe24cf6d400a664cf6e4e40aa0327e861675"
+  },
+  "input_blobs": {
+    "editor/docks/ai_chat_dock.cpp": "eeddd8302d2cc161a2b80ef2cf61d851216762d7",
+    "editor/docks/ai_chat_dock.h": "f285ced5022e44b5610575c2cd47679c2fddb551",
+    "editor/docks/ai_chat_sub_agents.cpp": "f5212a77a367cffbe5dec3a0e0c52e5c91feaf28",
+    "editor/docks/ai_chat_sub_agent_receipts.h": "64b0b12c0af1e6391f4cda7c0133da5c664a8ce3",
+    "customizations/components/godot-host/project_integration.py": "d0234c328cc0b105cf01da791a876c59e3043a7d",
+    "customizations/components/godot-host/bridge.py": "b32e3efb46dbbacd928dc71e326651c34d7c74a8",
+    "tools/gonggong_bridge.py": "db5c28406e7b10508d8c45b8524c6dcd70fa7099",
+    "tools/godot_parallel/integration.mjs": "e7787ee62e9106931c4d54717b8f6c0babe3db5a",
+    "tests/editor/test_production_integration.mjs": "3597f6eeb122a1c561f5f5303cf06e499aea338b",
+    "tools/codebuddy_cli/godot_acp.js": "eda0913bf9231575a6e444efe957653a1d9bfcbd",
+    "tools/codebuddy_cli/godot_bridge.js": "79c33661bb1041e7edd07b06d8f036c19a97fe9c",
+    "tools/codebuddy_cli/godot_terminal.js": "db0070986bba61f44b7fdb21f6608662edbc422b",
+    "tests/editor/test_codebuddy_terminal.js": "d3d5991d2302b370416d59bb2fdca7b91e09a391",
+    "tests/editor/run_native_acceptance.py": "5e55034b9375a77b13df8886d622b7261a09f5af",
+    "tests/editor/native_acceptance_parallel.py": "d0dc8e8362fdd26af1f39fdae097b5ff673ea85c"
+  },
+  "build_impact": {
+    "placement": "existing native editor and host_tool extension",
+    "host_contract": "Native parent tool selects verified producer; installed Python rechecks account/Issue; Node applies pinned file transaction with process-bound liveness and Git-ref CAS. Independent native Timer observes real child termination.",
+    "rollback": "Restore prior native/tool versions preserving plans, raw backups, journals and unknown ownership. New host explicitly rolls back unchanged transaction bytes after cold restart; old saved verdict cannot authorize new apply.",
+    "native_invalidation": {
+      "passed": true,
+      "before_console_sha256": "98b3f954540cc8472f190f2ead3b0d056de894edd12ac747765c880d6f376737",
+      "after_console_sha256": "efa186523f4f60ada6d114cb86383ab541e1c486519f5a4f5f8d514642cc3a56",
+      "observed": "Initial PROCESS observer stalled after planned result; dedicated Timer and cold integer normalization rebuilt and passed actual editor integration/restart recovery."
+    },
+    "native_build": "Direct SCons Windows MSVC x86_64 editor tests=yes warnings=extra werror=yes; candidate validation, not clean release installation",
+    "host_behavior": {
+      "passed": true,
+      "observed": "Normal native tool list/plan/apply, actual headless execution of accepted script in current project, editor process exit/restart, explicit rollback with no live reviewer."
+    }
+  },
+  "checks": [
+    {
+      "command": "node --test --test-isolation=none --test-timeout=180000 --test-reporter=tap tests/editor/test_production_integration.mjs",
+      "passed": true,
+      "observed": "42 tests: 41 passed, 1 Windows file-symlink privilege skip; junction boundary passed. Real concurrent recovery, crash and generation tests passed."
+    },
+    {
+      "command": "godot --headless --test",
+      "passed": true,
+      "observed": "1560 passed; 435575 assertions; 3 existing configuration skips after main325fdb12 integration."
+    },
+    {
+      "command": "node --test tests/editor/test_codebuddy_terminal.js tests/editor/test_codebuddy_bridge.js tests/editor/test_codebuddy_acp.js",
+      "passed": true,
+      "observed": "68 tests: 67 passed, 1 existing skip; trusted pinned installed dependencies and Git Bash path required."
+    },
+    {
+      "command": "python tests/editor/run_native_acceptance.py --case models-initial-ok --scenario parallel-integration --godot VERIFIED_CONSOLE --node TRUSTED_NODE --out PRIVATE_REPORT",
+      "passed": true,
+      "observed": "Three real parallel producers/independent native reviews, one parent continuation, two planned project files, native run_command launches accepted GDScript, cold explicit rollback restores absence."
+    },
+    {
+      "command": "ruff check/format; mypy on five changed Python files; clang-format --dry-run --Werror on four changed native files",
+      "passed": true,
+      "observed": "Static checks passed; Python formatting AST unchanged, then fixture type annotation corrected."
+    }
+  ],
+  "native_evidence": {
+    "report_sha256": "dd857e6ea9f2dc796ed6f06d16bba83eeecf9d973a161bd3b9f7b18c52100ff8",
+    "binary_sha256": "efa186523f4f60ada6d114cb86383ab541e1c486519f5a4f5f8d514642cc3a56",
+    "parent_returns": 1,
+    "decisions": [
+      {
+        "producer": 1,
+        "decision_sha256": "3561df8818620b675684fd208132428a31500fbe56addc69921ecaf232f26f44",
+        "criteria": [
+          "A"
+        ]
+      },
+      {
+        "producer": 2,
+        "decision_sha256": "14589af5c2f9768ca93c67d65ad4b87e40515dca70bde17f99d218afe049a198",
+        "criteria": [
+          "B"
+        ]
+      },
+      {
+        "producer": 3,
+        "decision_sha256": "ac7c0801d4a45d84f471da26266f6c653fe11b51abf41db9215b102bae803e0f",
+        "criteria": [
+          "C"
+        ]
+      }
+    ],
+    "actions": [
+      "list",
+      "plan",
+      "apply",
+      "rollback"
+    ],
+    "cold_restart": true,
+    "live_reviewer_on_rollback": false,
+    "project_script_exit_code": 0,
+    "project_script_marker": "NATIVE_INTEGRATION_EXECUTED:ACCEPTED_NATIVE_PROJECT_OUTPUT",
+    "transport_fixture_ok": false,
+    "transport_fixture_note": "Base serial fixture assertions are not the parallel scenario oracle; native_acceptance passed verifies explicit parallel criteria, actual receipts and editor results."
+  },
+  "independent_review": {
+    "worker": "/root/sinan_fd19c2c98e323e13",
+    "reference": "collaboration.final:/root/sinan_fd19c2c98e323e13:targeted-review-no-blockers-eight-tests",
+    "finding": "No remaining blocker in corrective deltas; independently reran 8 ownership tests. Native result reviewed, not independently rerun.",
+    "prior_findings_fixed": [
+      "cold rollback lost live review context",
+      "Windows Git EOL baseline mismatch",
+      "stale PID file unlink race",
+      "native observer disabled by API transport",
+      "cold JSON float rejected as Issue integer"
+    ]
+  },
+  "limitations": [
+    "GitHub/model responses are isolated transports; this is not live-provider business acceptance.",
+    "Source and current project must share Git common directory; separate game repositories remain parent acceptance scope.",
+    "At most 512 changed files and 64MiB before/after bytes per plan.",
+    "Unchanged user disk values and saved scenes/scripts required; no claim of OS-global atomic exclusion of arbitrary user edits.",
+    "Current installed editor has not been switched. Parent773 remains open."
+  ]
+}

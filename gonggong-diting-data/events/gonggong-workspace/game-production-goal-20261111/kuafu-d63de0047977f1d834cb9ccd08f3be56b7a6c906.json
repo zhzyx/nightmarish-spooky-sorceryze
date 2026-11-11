@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d63de0047977f1d834cb9ccd08f3be56b7a6c906",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c611e05ccebf9cc8447bf54e22f6f523244529ce5fbfc8e0f30ac6fc73ec517a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "user-report",
+    "detection_head": "34cd08867ce15fe561ad5885a31e3db114074292",
+    "context_sha256": "a9eabe6df2a4d3ec4b9891af7dd1d4394ad66b0d76fffd834d3b8d8446104690",
+    "operator": "Sail-Li",
+    "worker": "codex-root-editor-completeness-773",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773#issuecomment-6802716858",
+    "diagnosis": "A verified sample chain was incorrectly treated as complete editor product acceptance. Current parallel production still requires manually authored private configuration and worktrees; it does not itself integrate results into the project. Parent 773 has been reopened with product-level criteria; previously delivered scoped features remain valid.",
+    "next_action": "Current root owns the correction: audit native user workflows, implement missing onboarding and project integration through isolated child work orders, independently verify the installed product flow before overall closure.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T17:35:52.606840+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T17:37:56.127448+00:00",
+  "sha256": "98cdf6cb8e3f1b5e220a0d95a59a003b25e9fbc6e11b16d64626467c0f97abcd"
+}

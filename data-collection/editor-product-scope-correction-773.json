@@ -1,0 +1,30 @@
+{
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773#issuecomment-6802716858",
+  "kind": "product_acceptance_scope_correction",
+  "observed_at": "2026-11-11T17:56:43.502017+00:00",
+  "overall_complete": false,
+  "correction": "The verified sample chain and installed regression checks do not prove complete native editor production support. Parent reopened after user clarification. Historical raw evidence is preserved.",
+  "confirmed_gaps": [
+    {
+      "area": "onboarding",
+      "evidence": "tools/godot_parallel/README.md; editor/docks/ai_chat_sub_agents.cpp",
+      "finding": "Private JSON, job/worktree mapping and model catalog require external preparation; invalid config can return without a visible diagnostic.",
+      "issue": 810
+    },
+    {
+      "area": "project_integration",
+      "evidence": "tools/godot_parallel/runner.mjs; editor/docks/ai_chat_sub_agents.cpp",
+      "finding": "Workers produce isolated candidates; no native accepted-candidate-to-current-project transaction exists in the audited main.",
+      "issue": 811
+    }
+  ],
+  "audit": {
+    "worker": "/root/sinan_76fc31167f966391",
+    "mode": "read_only_source_audit",
+    "native_execution_tested": false
+  },
+  "existing_capabilities": "Connection/settings/login/model discovery and bounded native editor tools exist; these are not wholly missing.",
+  "remaining": "Normal editor setup, real connected parallel production, accepted result integration, import/run/diagnose/repair and recovery must be verified through the actual installed product."
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ea6ee55d9dead4357988e81d7f31a9cbf8c1e954",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "387420708a1fe9ddf91d09913f39e5c021bc0e60328a0e2da74f0a3a89af70d6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "dispatch",
+    "detection_head": "34cd08867ce15fe561ad5885a31e3db114074292",
+    "context_sha256": "a9eabe6df2a4d3ec4b9891af7dd1d4394ad66b0d76fffd834d3b8d8446104690",
+    "operator": "Sail-Li",
+    "worker": "codex-root-editor-completeness-773",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "data-collection/receipts/editor-completeness-773/reconcile-onboarding-audit-result.json",
+    "diagnosis": "Release-unstarted was called with empty requests, preventing authorization match. Retrying with original authorized request released only the verified unlaunched reservation; unknown or running workers were preserved. Host invocation failure, not changed grant.",
+    "next_action": "Use exact authorized request and await reconciliation terminal state before the next dispatch.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T17:39:26.399435+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T18:57:19.040136+00:00",
+  "sha256": "f5204b8b87fdbe45e963a761c8b705c296cad9edec9d9caabb0ca7616ad172cb"
+}

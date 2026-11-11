@@ -1064,6 +1064,28 @@ def acceptance_action(root, request, capture=False, current=False):
     return module.current(host, root, request) if current else module.execute(host, root, request, capture)
 
 
+def project_integration_action(root, request):
+    spec = importlib.util.spec_from_file_location(
+        "gonggong_project_integration", Path(__file__).with_name("project_integration.py")
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    from types import SimpleNamespace
+
+    host = SimpleNamespace(host_environment=host_environment, find_gh=find_gh, issue_binding=issue_binding)
+    try:
+        return module.execute(host, root, request)
+    except Exception as error:
+        # Keep the native request correlation even when intake/runtime fails.
+        # A missing child result cannot establish that no mutation happened.
+        return {
+            "ok": False,
+            "request_nonce": request.get("request_nonce"),
+            "state": "reconcile_required",
+            "error": str(error),
+        }
+
+
 ENVIRONMENT_ACTIONS = {
     "environment-check": environment_check_action,
     "environment-deploy": environment_deploy_action,
@@ -1072,6 +1094,7 @@ ENVIRONMENT_ACTIONS = {
 
 
 GUIDE_ACTIONS = {
+    "project-integration": project_integration_action,
     "acceptance-current": lambda root, request: acceptance_action(root, request, current=True),
     "acceptance-capture": lambda root, request: acceptance_action(root, request, True),
     "acceptance-verify": acceptance_action,

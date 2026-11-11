@@ -2,7 +2,23 @@
 
 父工单 [#773](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773)，需求 ID `game-production-goal-20261111`。用户连接有权使用的账号和 CLI 后，在当前编辑器内生产游戏，利用可用并发，连续推进、验证、修复与迭代。用户授权必要的编辑器启停；独立审查、精确候选准入及分支保护保持适用。
 
-## 已验收行为
+## 当前目标与完成判定纠正（2026-11-12）
+
+用户明确要求 Godot 编辑器自身做好完备的游戏生产支持。上一版以预先配置的小游戏链路通过判定总目标完成，覆盖不足；父工单已重新打开。下文的样例、安装和子项证据保留为局部能力的历史记录，不能表示整个编辑器产品已验收。权威纠正来源为 [用户反馈回读](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773#issuecomment-6802716858)。
+
+整体验收沿正常产品入口逐项核对：
+
+| 用户流程 | 当前证据与缺口 | 验收责任 |
+| --- | --- | --- |
+| 连接账号、发现 CLI、选择可用模型及容量 | 已有运行环境和连接面板；并行入口仍要求手工 JSON、工作副本映射，独立核查进行中 | 接入子项，父项复核真实账号 |
+| 需求拆分、并行生产、独立验收、依赖补位 | #775/#777/#785/#776/#792/#783 已交付局部机制；需从正常配置入口复验 | 父项集成验收 |
+| 场景、节点、脚本、资源、导入与项目设置 | 复用原生编辑器工具；#559 已实现的十五类不能误报成全未实现，剩余操作子集保留原责任 | 父项覆盖矩阵及 #559 |
+| 成果进入当前项目、导入、运行、诊断与修复 | 文件工作者只写独立副本，当前无已验收成果到当前项目的完整产品接续 | 成果接入子项，父项运行验收 |
+| 观察进度、取消、恢复、连续新任务 | 已有取消/冷启动保留机制；仍需产品入口复验，不能以私有夹具替代 | 父项集成验收 |
+
+两个可独立交付的补齐单元为 [#810](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810)（`editor-production-setup-20261112.md`）与 [#811](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/811)（`editor-production-integration-20261112.md`），已回读原生父子关系。父项负责跨模块、真实账号和最终安装验收，未满足全部原需求前保持开放。模型/工具输出不授予新增权限，已有未知工作者占用、其他人的候选及有效安装保持原状。
+
+## 历史局部验收行为
 
 独立生产工单按实际配置容量并发执行，每项使用自己的工作副本和真实执行登记。生产结束触发独立只读审查，宿主核对完整标准、实际读取证据、原生产者终态及当前候选，验收回读一致后由真实事件补位依赖任务。明确失败的外部生产修复使用新执行身份并保留原回执；取消、权限不足、未知或漂移证据不释放依赖。关闭后冷启动保留记录，不使用旧 token 自动重派。
 
@@ -26,11 +42,11 @@ PR #799 因局部变量遮蔽触发 MSVC C4458 /WX 失败，14处局部标识符
 
 ## 证据及适用边界
 
-`data-collection/game-production-goal-773.json` 映射五项整体验收、子项结束回执和交付版本；`game-production-installed-773.json` 记录正式安装；`game-production-live-773.json` 与 `game-production-independent-review-773.json` 记录真实 Codex 链路及独立核查。初始基线保留在 `game-production-baseline-773.json`，真实模型的两次上下文误拒和各次 CI 失败分别保留。本文及这些证据路径均相对仓库根。
+`data-collection/game-production-goal-773.json` 保留上一版五项验收判定、子项结束回执和交付版本；其中整体验收结论已由本次范围纠正撤回，原始字节作为历史证据保留。`game-production-installed-773.json` 记录正式安装；`game-production-live-773.json` 与 `game-production-independent-review-773.json` 记录真实 Codex 链路及独立核查。初始基线保留在 `game-production-baseline-773.json`，真实模型的两次上下文误拒和各次 CI 失败分别保留。本文及这些证据路径均相对仓库根。
 
 初始设计模型传输和示例 GitHub 授权采用隔离夹具；实际 Codex CLI、模型审查、原生工具回调、Python/Node 验收、Git worktree、工作者进程和台账均实际执行。现有真实账号权限由宿主单独回读，不把夹具授权当作外部实际生产权限。此次真实账号演示覆盖 Codex，未逐一实测所有第三方后端。配置容量不等于供应商额度，也不证明理论最优吞吐。已有未知工作者占用和其他工作树保持原状。
 
-任务开始召回 `editor-dependency-handoff / bind-consumer-release`，按实际复用追加 revision 8；真实多工具审查纠偏形成已验证的 `review-context-and-source-evidence`。C4458 实例追加并验证 `build-validation / match-ci-warning-policy`：严格目标编译、完整套件、CI 和实际消费者分别留证，不能相互替代。最终证据快照时业务验收已通过，本文提交自身的 main 回执及 #794/#773 结束状态由 [父工单权威时间线](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773) 接续记录。
+任务开始召回 `editor-dependency-handoff / bind-consumer-release`，按实际复用追加 revision 8；真实多工具审查纠偏形成已验证的 `review-context-and-source-evidence`。C4458 实例追加并验证 `build-validation / match-ci-warning-policy`：严格目标编译、完整套件、CI 和实际消费者分别留证，不能相互替代。原快照只支持其已实测的局部机制；本次新增 `verify-normal-product-entry` 候选，要求从正常产品入口验证。#773 当前保持开放，完整产品尚未验收，状态由 [父工单权威时间线](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773) 接续记录。
 
 ## 使用当前入口
 

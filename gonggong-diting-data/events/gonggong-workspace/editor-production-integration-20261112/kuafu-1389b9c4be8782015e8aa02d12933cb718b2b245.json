@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1389b9c4be8782015e8aa02d12933cb718b2b245",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-production-integration-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/811",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "105b0652f215295abb7c4f5f2c9c6838677396b65a5431c7a6f723497c2c0aef",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/811",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/812",
+    "action": "validation",
+    "detection_head": "34cd08867ce15fe561ad5885a31e3db114074292",
+    "context_sha256": "e6e644c60abf765b3c12d654ef1b64be49562a9e970c0e2ad01b2bcdeeab67c5",
+    "operator": "Sail-Li",
+    "worker": "codex-root-native-integration-811",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/811",
+    "evidence": "data-collection/receipts/editor-completeness-773/native-project-integration-r3-report.json",
+    "diagnosis": "Actual native plan completed but API transport disabled dock processing, so the host never consumed its result. Root replaced PROCESS-dependent observer with a dedicated job timer. Independent review also identified stale-file lock unlink race in integration.mjs; this separate issue needs an atomic ownership fix and real concurrent-process test.",
+    "next_action": "Rebuild and repeat native integration/cold recovery. Delegate helper lock correction; keep business acceptance open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T18:39:32.854551+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T18:41:25.044785+00:00",
+  "sha256": "04a1c609318ec46ee6567cf8c7ccd60e6005c97041d2e219a86fd51d94219f0f"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3d0f0894cc7553a0c0ec597f801ee12f69cde5be",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5a18ce6beeeeee486b9b1602af9096b09b7fd24f54eb1225fc36135ba1f81f5a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "dispatch",
+    "detection_head": "34cd08867ce15fe561ad5885a31e3db114074292",
+    "context_sha256": "a9eabe6df2a4d3ec4b9891af7dd1d4394ad66b0d76fffd834d3b8d8446104690",
+    "operator": "Sail-Li",
+    "worker": "codex-root-editor-completeness-773",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773#issuecomment-6802716858",
+    "diagnosis": "The audit host supplied two requests for one ticket in a single batch. Adapter correctly rejected before launch. Corrected to one audit per ticket; no duplicate worker was launched.",
+    "next_action": "Use one dispatch request for 773, separate implementation tickets for independent modules; verify and release only never-launched reservations before retrying against stable source.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T17:35:47.066786+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T17:38:08.462169+00:00",
+  "sha256": "2aa259a33d67747b245137441ede0d8b406b8836daf17cccf1f2f175d84bc623"
+}
