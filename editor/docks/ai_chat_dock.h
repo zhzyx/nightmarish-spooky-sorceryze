@@ -789,6 +789,7 @@ class AIChatDock : public EditorDock {
 	String _work_order_binding(const String &p_field, int p_agent = -1) const;
 	String _get_legacy_candidate_failure(const String &p_owner, const String &p_workspace, int64_t p_issue) const;
 	Dictionary _get_daqian_models() const;
+	String _stage_daqian_message(Control *p_host, const String &p_message);
 	Dictionary _launch_daqian_routing(const Dictionary &p_binding, const Dictionary &p_selection) const;
 	void _set_issue_model_config(Dictionary &r_request, const Dictionary &p_runtime = Dictionary()) const;
 	void _emit_daqian_requirement_phase(const String &p_phase, const Dictionary &p_design = Dictionary());

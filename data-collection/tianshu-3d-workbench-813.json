@@ -1,0 +1,109 @@
+{
+  "issue": 813,
+  "request_id": "tianshu-3d-workbench-20261112",
+  "base": "34cd08867ce15fe561ad5885a31e3db114074292",
+  "platform": "macOS arm64",
+  "placement": {
+    "native": [
+      "editor/docks/ai_chat_dock.cpp",
+      "editor/docks/ai_chat_dock.h",
+      "editor/docks/daqian_dock.cpp"
+    ],
+    "embedded": [
+      "editor/docks/daqian/workspace.gd",
+      "editor/docks/daqian/spatial_workbench.gd"
+    ],
+    "rollback": "Use preceding validated editor; preserve res://.gonggong/asset-work.json and local chat metadata."
+  },
+  "input_sha256": {
+    "editor/SCsub": "aa4614cefc6fbb3068ed16f5e5dfa91fb2440b4cf6cd4339cee55df2f1efba48",
+    "editor/docks/ai_chat_dock.cpp": "f2a5eefd93322fa630f3911d90545d429fb2d679b20a43072f26aceae904c454",
+    "editor/docks/ai_chat_dock.h": "63d1a42fe7c820112f6dff06cab48feb2f043bfb7decc1071e11999a77544c0a",
+    "editor/docks/daqian/workspace.gd": "aed940f7f6866abaa0fe7d1e018db41a434e5fc6b3bc153b712dddf1fc066d92",
+    "editor/docks/daqian/spatial_workbench.gd": "8aa71be5a3f95fd961c06b6ac5120dfc3623a48b84619c1d566006d82031bcaa",
+    "editor/docks/daqian_dock.cpp": "17bd51f68ee688e49652bfc636d6c1a55ce9cb5c3af5be945080792d7ad736b1",
+    "tests/editor/tianshu_spatial.gd": "943df992f06e461d7e1327166f66ef50ffc440c4a5aa4e5fd3bb297c7c3e73d5",
+    "tests/editor/run_tianshu_spatial.py": "abcd11a4c9f0638fb82a38ed227694177b7a1fb7ef6b9d473b77acb40074ebc2"
+  },
+  "input_blobs": {
+    "editor/SCsub": "c3681e326754d6290d529d4b5a2a35d409cfbd7d",
+    "editor/docks/ai_chat_dock.cpp": "ef81b168dd6c79f69b7560f1c78f11ab85770411",
+    "editor/docks/ai_chat_dock.h": "07045c9b291eb73e24425e0f83537095bac1dd6e",
+    "editor/docks/daqian/workspace.gd": "d4c5ccee8d9718b745088a2c26d5d8480ea670b3",
+    "editor/docks/daqian/spatial_workbench.gd": "fd649f7b83fff0a872771523187df6fa50fc16f5",
+    "editor/docks/daqian_dock.cpp": "25c338998ab9369702653a537c26305acacc6c43",
+    "tests/editor/tianshu_spatial.gd": "25ae718470c341f74c9096cff78eddbcd4453c99",
+    "tests/editor/run_tianshu_spatial.py": "18c95fc424fdd7c3ca9b06f5f9b2095696a8e628"
+  },
+  "validation": {
+    "native_headless": {
+      "passed": true,
+      "binary_sha256": "82fb6ace841568ebdd67dab1de3ed730d999d98353073c55faae5b5f48cb9446",
+      "test_sha256": "943df992f06e461d7e1327166f66ef50ffc440c4a5aa4e5fd3bb297c7c3e73d5",
+      "marker": "TIANSHU_SPATIAL_OK",
+      "command": "python3 tests/editor/run_tianshu_spatial.py --godot <candidate-editor> --report <private-report>",
+      "restart_passed": true
+    },
+    "entry": {
+      "state": "passed",
+      "editor_sha256": "82fb6ace841568ebdd67dab1de3ed730d999d98353073c55faae5b5f48cb9446",
+      "scenario": "entry",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "build": {
+      "passed": true,
+      "flags": "platform=macos target=editor dev_build=yes debug_symbols=no optimize=none tests=yes vulkan=no opengl3=yes metal=yes import_env_vars=CLANG_MODULE_CACHE_PATH",
+      "observed": "Renderer-enabled editor linked successfully after relocating Clang module cache to a private temporary directory."
+    }
+  },
+  "coverage": [
+    "3D side panel toggle and screen changes",
+    "saved scene and model identity, different model isolation, multiple selection clearing",
+    "explicit Issue binding and JSON reload",
+    "registered missing content shown as missing, unknown Issue not assumed current",
+    "concurrent file edit retained and conflict feedback",
+    "native chat mount/stage, no automatic send, wrong-host rejection and existing-draft preservation",
+    "chat input and viewport geometry at 1440x900 and 1100x900",
+    "canonical Issue reopen of bound spatial source retains draft",
+    "selection/account change during access await rejects stale open",
+    "actual side-panel open action with controlled access fixture and real native chat",
+    "binding signal fixture automatically links original asset and tracks/follows/refreshes Issue",
+    "new editor process reloads model content and bound Issue association"
+  ],
+  "review": {
+    "worker": "/root/sinan_863faad958edede1",
+    "state": "no_remaining_blocking_findings_after_targeted_recheck",
+    "mode": "independent read-only source review",
+    "resolved": [
+      "spatial source canonical Issue alias",
+      "new task follow/refresh registration",
+      "concurrent save retry feedback"
+    ]
+  },
+  "limits": [
+    "No external model request or real GitHub Issue creation from the editor during tests; permission lookup and bound event are isolated fixtures. Existing native production gates remain in place.",
+    "No pixel, focus, high-DPI or non-macOS acceptance.",
+    "Headless runs report sandbox-denied user data directory/system certificates and engine teardown RID/ObjectDB warnings; passed business assertions are not a claim of clean engine shutdown.",
+    "3A production capability and content quality are not proven by this editor integration."
+  ],
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/813",
+  "issue_number": 813,
+  "checks": {
+    "generated_input_invalidation": {
+      "command": "scons <same editor flags> after spatial_workbench.gd edit",
+      "observed": "Generated daqian_scripts.gen.h, compiled daqian_dock.cpp, linked editor; new conflict-feedback assertion passed on resulting native candidate.",
+      "passed": true
+    },
+    "native_invalidation": {
+      "command": "scons <same editor flags> after native chat alias edit",
+      "observed": "Compiled ai_chat_dock.cpp and linked editor; existing-only canonical Issue reopen retained original spatial draft.",
+      "passed": true
+    },
+    "format": {
+      "command": "clang-format 22.1.5 --dry-run --Werror; ruff check; git diff --check",
+      "observed": "Passed for changed C++/header/Python and whitespace.",
+      "passed": true
+    }
+  },
+  "current_editor": "The already-running editor was not replaced or restarted; no desktop focus, pointer, keyboard or production project interaction was performed."
+}

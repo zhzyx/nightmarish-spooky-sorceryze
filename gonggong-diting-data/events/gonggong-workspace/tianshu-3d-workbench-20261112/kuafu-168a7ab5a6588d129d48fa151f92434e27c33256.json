@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-168a7ab5a6588d129d48fa151f92434e27c33256",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-3d-workbench-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/813",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "11f31356b720b9a26b23da9c0058d3bf7d0c2e6fde4ad7eeb5264e29e4b46679",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/813",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/814",
+    "action": "intake",
+    "detection_head": "34cd08867ce15fe561ad5885a31e3db114074292",
+    "context_sha256": "b356f1f2abd292471ecf755df18933802c73fcd487126e78d0d10fb322ff0428",
+    "operator": "Sail-Li",
+    "worker": "codex-root-813",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/813",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43074020376",
+    "diagnosis": "The initial intake command omitted the required tenant. Re-running with --tenant gonggong-workspace passed for issue 813; no repository product defect or permission change was required. gh and Node are installed outside the default PATH.",
+    "next_action": "Continue issue 813 implementation and candidate validation using explicit tenant and verified runtime paths; close this invocation-only incident after evidence readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T18:02:59.636996+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T18:15:20.261974+00:00",
+  "sha256": "2497d699dae3a554d45c86a8ae5cc907d4722431d560426f1e6ab065b1e1e6f0"
+}
