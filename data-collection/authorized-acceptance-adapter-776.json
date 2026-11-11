@@ -1,0 +1,113 @@
+{
+  "issue": 776,
+  "request_id": "authorized-production-acceptance-20261111",
+  "scope": "Node/Python adapter, native integration owned separately",
+  "base": "c781cfc61607fa65da36ac8fcd8223f3ac795b09",
+  "method_recall": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 6,
+    "state": "verified",
+    "applicable": "Exact candidate, independent consumer and evidence-bound dependency release",
+    "counterexamples": [
+      "consultation",
+      "transport-only completion",
+      "stale bytes or HEAD",
+      "unknown identity"
+    ]
+  },
+  "files": [
+    {
+      "path": "customizations/components/godot-host/bridge.py",
+      "sha256": "16887e3298a819b02ef5c192fa257f239047f494a851f924851869e1959fe65f"
+    },
+    {
+      "path": "customizations/components/godot-host/acceptance.py",
+      "sha256": "8c6a425071c967559ceac5fff52a9967d4e1dfcb2995e096ec309e11ad7c819b"
+    },
+    {
+      "path": "customizations/components/godot-host/test_acceptance.py",
+      "sha256": "3348be9f87165eed9bfd66caa9005c7e23fcb37bf4517d28e427482bcf70501d"
+    },
+    {
+      "path": "customizations/components/repository-dispatch/acceptance.mjs",
+      "sha256": "c4539f356a5da35c81006639e54ebe7b62d289726206f43aef136de7fb5ba7d4"
+    },
+    {
+      "path": "customizations/components/repository-dispatch/acceptance-candidate.mjs",
+      "sha256": "9f4bf424ac5f63a71b9658b5b5aaade28c3bc9a823ffce109d86b2fb7b56644a"
+    },
+    {
+      "path": "customizations/components/repository-dispatch/acceptance.test.mjs",
+      "sha256": "fc57dbb059918f162457946daf7f5d7bd1100bf3c91a389c3457d7eb81ad581e"
+    },
+    {
+      "path": "customizations/components/repository-dispatch/acceptance.md",
+      "sha256": "9c130c25a0746f4835d959328c8063a936eb8aea072ebc1e19829fe0ce7e9fc3"
+    },
+    {
+      "path": "customizations/components/repository-dispatch/session.mjs",
+      "sha256": "99e667645961d10962ad282a31fa4f0bde5dcbce425a77972bef2c222fb1298b"
+    },
+    {
+      "path": "customizations/platforms/document-management/git-markdown/yanshi-legacy/runtime/src/production.mjs",
+      "sha256": "0e7d8ea1da2bec8b85cff0ae89e3634b45c8b7315edca5357a2c297f3304de07"
+    },
+    {
+      "path": "customizations/platforms/process-management/yuanheng-local/sinan/coordinator.mjs",
+      "sha256": "ab2dd22cb08e128d785a5cac4dc4ac3c899d6b4dfc1e80a55cc68e19c010b162"
+    }
+  ],
+  "tests": [
+    {
+      "suite": "Node acceptance + repository session + sinan regressions",
+      "passed": 59,
+      "failed": 0,
+      "controlled_identity": true,
+      "actual_operations": [
+        "temporary Git init/submit/review/commit",
+        "existing dispatchEvent",
+        "actual dependent Node process",
+        "child-process cancellation after ledger commit",
+        "running ledger submitted+reviewed in one writer lock and one Git commit",
+        "external producer terminal identity/registration validation",
+        "narrow current-request new audit events and source change rejection"
+      ],
+      "log_sha256": "315c8803eb091c2a599e2cc81c28701ba5ca708c56d8bc4c9c5a1293ebf0f88b"
+    },
+    {
+      "suite": "existing Python bridge tests",
+      "passed": 43,
+      "failed": 0
+    },
+    {
+      "suite": "Python acceptance authority tests",
+      "passed": 6,
+      "failed": 0,
+      "controlled_identity": true
+    }
+  ],
+  "live_capture": {
+    "ok": true,
+    "operator": "Sail-Li",
+    "candidate_head": "c781cfc61607fa65da36ac8fcd8223f3ac795b09",
+    "manifest_sha256": "52439bddf6ac6bf4c4b8b62682a5f61dd72aba902d33c507cb4199931e2047f0",
+    "file_count": 26584,
+    "audit_policy": {
+      "tenant_id": "gonggong-workspace",
+      "request_id": "authorized-production-acceptance-20261111",
+      "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/776"
+    },
+    "meaning": "Live gh account/write permission and #776 intake only; not independent business acceptance",
+    "historical_capture": "Subsequent test/document/schema-kind edits change candidate; capture is evidence of that exact prior read, not approval of this final diff"
+  },
+  "known_limits": [
+    "Native completion/generation/stop/cold-start provenance must be verified in native integration",
+    "No live model reviewer acceptance or installed binary demonstrated here",
+    "No commit push merge or formal full candidate gate executed by this worker",
+    "Trusted same-account host model; local JSON or nonce is not cryptographic identity",
+    "Trusted existing registry maps candidate root, producer owner and criteria; missing or ambiguous mapping fails closed; running mapped task can submit actual evidence atomically."
+  ],
+  "shared_learning_appended": false,
+  "native_integration_contract": "producer.execution_id is actual #785 identity; receipt is immutable terminal_receipt raw bytes. Native supplies own liveness file and owns reviewer registration/generation/read provenance. Current candidate returned after verify/project."
+}

@@ -1,0 +1,114 @@
+{
+  "issue": 776,
+  "request_id": "authorized-production-acceptance-20261111",
+  "observed_at": "2026-11-11T13:08:10.539564+00:00",
+  "scope": "Actual host CLI and existing Node/Python regressions, native integration separate",
+  "changes": [
+    "Pure-read acceptance-current trusted installed verifier for asynchronous native candidate recheck",
+    "Return the same verified snapshot rather than recapturing after validation",
+    "Bind canonical actual root as well as branch/head/file inventory; reject junction replacement even with identical Git tree"
+  ],
+  "independent_review": {
+    "worker": "/root/sinan_8157a138f9681320",
+    "finding": "Missing root comparison found and corrected; actual junction replacement negative test passed; no remaining finding in current-action change",
+    "candidate_helper_sha256": "dca2d88c03a0ce1904211df72a4d9c3b042b4ae3738be068ec9b7d59c95d048f"
+  },
+  "verification": {
+    "acceptance_node_tests": 22,
+    "bridge_tests": 43,
+    "authority_and_actual_cli_tests": 8,
+    "failures": 0,
+    "actual_operations": [
+      "Trusted wrapper rejects candidate verifier poisoning",
+      "Unicode-space filename manifest",
+      "Added/changed/deleted source rejected",
+      "Canonical root replacement by junction rejected",
+      "Unrelated HEAD change rejected"
+    ],
+    "identity_boundary": "Controlled authority fixtures; no live game business acceptance claimed"
+  },
+  "lint_only_followup": [
+    "Remove unused os import from acceptance.py",
+    "Sort standard library imports in test_acceptance.py"
+  ],
+  "files": [
+    {
+      "path": "tools/gonggong_bridge.py",
+      "sha256": "c9e4b3ebaffa432c5773756a62e994580dac10ef1d054c9f30a13ac2c14f0364"
+    },
+    {
+      "path": "customizations/components/godot-host/bridge.py",
+      "sha256": "eba2ca0eee027dfae57826453d1a1901baa8a127fa0e2af954f0255fc3888f2d"
+    },
+    {
+      "path": "customizations/components/godot-host/acceptance.py",
+      "sha256": "6edbcec8969b97a5b38fafa5b08d19eb48b94e6c81daf5285547712e053d7cf3"
+    },
+    {
+      "path": "customizations/components/godot-host/test_acceptance.py",
+      "sha256": "2e8bddc8a6a9713914b75ee575ab1252c7d1a620483099c5e7efdb90eaedb3ee"
+    },
+    {
+      "path": "customizations/components/repository-dispatch/acceptance.mjs",
+      "sha256": "c7fa7182e8d57c30baaeccc947a0c8cf8359d701858a2b840ed545b20c2e36c6"
+    },
+    {
+      "path": "customizations/components/repository-dispatch/acceptance-candidate.mjs",
+      "sha256": "0e899ee44e23a9f34c677ed30c3c61758d1822a1a264322159754d32e4d480ca"
+    },
+    {
+      "path": "customizations/components/repository-dispatch/acceptance.test.mjs",
+      "sha256": "fc57dbb059918f162457946daf7f5d7bd1100bf3c91a389c3457d7eb81ad581e"
+    },
+    {
+      "path": "customizations/components/repository-dispatch/session.mjs",
+      "sha256": "99e667645961d10962ad282a31fa4f0bde5dcbce425a77972bef2c222fb1298b"
+    },
+    {
+      "path": "customizations/platforms/document-management/git-markdown/yanshi-legacy/runtime/src/production.mjs",
+      "sha256": "0e7d8ea1da2bec8b85cff0ae89e3634b45c8b7315edca5357a2c297f3304de07"
+    },
+    {
+      "path": "customizations/platforms/process-management/yuanheng-local/sinan/coordinator.mjs",
+      "sha256": "183ab7914292da2ec7fd228a7c79e3f4bdab6145bef807040a712b9444806ae4"
+    }
+  ],
+  "remaining": [
+    "Native producer/reviewer completion and dependent dispatch across actual editor callbacks",
+    "External runner native consumption",
+    "Full candidate gate/CI/main and installed game production acceptance"
+  ],
+  "line_ending_mapping": [
+    {
+      "path": "customizations/components/repository-dispatch/acceptance.mjs",
+      "before_sha256": "32daebf153e908d0ab52701dac657825c15960b33ee5e3a5cecdffa2474e4d62",
+      "after_sha256": "c7fa7182e8d57c30baaeccc947a0c8cf8359d701858a2b840ed545b20c2e36c6",
+      "only_change": "CRLF to LF for exact published source bytes"
+    },
+    {
+      "path": "customizations/components/repository-dispatch/acceptance-candidate.mjs",
+      "before_sha256": "dca2d88c03a0ce1904211df72a4d9c3b042b4ae3738be068ec9b7d59c95d048f",
+      "after_sha256": "2ad8a5335f8f66cd19f5c8222456a1dfa7d21a2b4c2c1b5ca337fbd2827815c6",
+      "only_change": "CRLF to LF for exact published source bytes"
+    },
+    {
+      "path": "customizations/platforms/process-management/yuanheng-local/sinan/coordinator.mjs",
+      "before_sha256": "ab2dd22cb08e128d785a5cac4dc4ac3c899d6b4dfc1e80a55cc68e19c010b162",
+      "after_sha256": "183ab7914292da2ec7fd228a7c79e3f4bdab6145bef807040a712b9444806ae4",
+      "only_change": "CRLF to LF for exact published source bytes"
+    }
+  ],
+  "format_mapping": [
+    {
+      "path": "customizations/components/repository-dispatch/acceptance-candidate.mjs",
+      "before_sha256": "2ad8a5335f8f66cd19f5c8222456a1dfa7d21a2b4c2c1b5ca337fbd2827815c6",
+      "after_sha256": "0e899ee44e23a9f34c677ed30c3c61758d1822a1a264322159754d32e4d480ca",
+      "only_change": "Repository file-format removed an extra final blank line"
+    }
+  ],
+  "immutable_handoff_review": {
+    "worker": "/root/sinan_8157a138f9681320",
+    "sha256": "45928c9989456c05177a309fc332a312eee0ac1bf4fd875ebe117a0b50536b38",
+    "finding": "Exact gitattributes and file-format exclusion preserve original bytes; no other hooks changed; prior #785 paths retained"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ef5c3118aa0556c02dcfdd4d00a7a48239422941",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "authorized-production-acceptance-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/776",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "94264cc5e50f9536eb363e53904e72fdd2cef3eeabd6108be048f716799b1328",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/776",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/789",
+    "action": "validation",
+    "detection_head": "dc8795a4ed8ea7bd873cebf62ac13fcc06bbe655",
+    "context_sha256": "9be5943c9c4df76502b9a66ff03b1bebe852910ef297c0d7b710cef14d92d158",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/776",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/776",
+    "diagnosis": "Candidate contained dispatch events but no same-tenant request event with exact Issue source. Re-read actual open Issue and stable request ID and recorded this delivery source readback through existing bridge enqueue/flush; no retrospective event or acceptance fabricated.",
+    "next_action": "Stage actual request and Kuafu receipts; rerun complete formal gate and signed delivery, retaining pending native integration.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T13:19:23.959282+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T13:21:23.009525+00:00",
+  "sha256": "88182bcfe8170827c490b956b5ee4593d899a4b5347459905cfb4144d62b2d6e"
+}

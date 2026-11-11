@@ -1053,6 +1053,17 @@ def environment_rollback_action(root, request):
     return _igniter.environment_rollback(root, host_environment(root))
 
 
+def acceptance_action(root, request, capture=False, current=False):
+    spec = importlib.util.spec_from_file_location("gonggong_acceptance", Path(__file__).with_name("acceptance.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    # The wrapper may execute this file with runpy rather than importing it.
+    from types import SimpleNamespace
+
+    host = SimpleNamespace(host_environment=host_environment, find_gh=find_gh, issue_binding=issue_binding)
+    return module.current(host, root, request) if current else module.execute(host, root, request, capture)
+
+
 ENVIRONMENT_ACTIONS = {
     "environment-check": environment_check_action,
     "environment-deploy": environment_deploy_action,
@@ -1061,6 +1072,9 @@ ENVIRONMENT_ACTIONS = {
 
 
 GUIDE_ACTIONS = {
+    "acceptance-current": lambda root, request: acceptance_action(root, request, current=True),
+    "acceptance-capture": lambda root, request: acceptance_action(root, request, True),
+    "acceptance-verify": acceptance_action,
     "issue-draft": issue_draft,
     "issue-create": issue_create,
     "issue-start": issue_start,

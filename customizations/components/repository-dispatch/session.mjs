@@ -96,16 +96,24 @@ export function repositoryWorker(config, receipts) {
   };
 }
 
-export async function runEvent(config) {
+export async function runEvent(config, {isLive} = {}) {
+  const checkLive=()=>{if(isLive && isLive()!==true)throw Error('Host generation cancelled or unknown');};
+  checkLive();
   if (fs.realpathSync(config.workspace) !== workspace) throw Error('Run the entry from the bound trusted checkout');
   if (config.action && config.action !== 'dispatch' && config.action !== 'reconcile') throw Error('Unsupported repository event action');
   const receipts = path.join(await operatorStateRoot(workspace), 'sources');
   const gh = config.gh || 'gh';
   const worker = repositoryWorker(config, receipts);
+  if(isLive) {
+    const launch=worker.launch.bind(worker),revalidate=worker.revalidate.bind(worker);
+    worker.launch=async assignment=>{checkLive();return launch(assignment);};
+    worker.revalidate=async assignment=>{checkLive();const result=await revalidate(assignment);checkLive();return result;};
+  }
   const acceptedDependency = async ticket => {
     const source = config.dependencyRegistry;
     if (!source || !path.isAbsolute(source.path) || !source.tickets?.[ticket]) return false;
-    return board(read(source.path),path.dirname(source.path)).items.some(i => i.key === source.tickets[ticket] && i.acceptanceValid);
+    return board(read(source.path),path.dirname(source.path)).items.some(i => i.key === source.tickets[ticket] && i.acceptanceValid &&
+      (!source.requireHostAcceptance || i.hostAcceptanceVerified === true));
   };
   const validateIssue = issue => {
     if (config.workers['github:'+config.repository+'#'+issue.number]?.kind === check &&
@@ -113,6 +121,7 @@ export async function runEvent(config) {
   };
   const {host,runtime} = await openSession(config, {worker, acceptedDependency, validateIssue});
   async function intake() {
+    checkLive();
     if (config.action === 'reconcile') await runtime.verifyWriteAccess();
     for (const r of config.requests) {
       const w = config.workers[r.ticket];
@@ -140,9 +149,10 @@ export async function advance(config, host, worker, intake) {
   if (config.action === 'reconcile') {
     results.push(await reservationOperation(config, () => host.reconcile(event,config.reservationKey,config.workerReceipt)));
   }
-  if (pending.length && intake) await intake();
   while (pending.length || active.size) {
     if (pending.length) {
+      // Every completion/acceptance event gets a fresh intake before backfill.
+      if (intake) await intake();
       const batch = await host.run(event, pending);
       deferred = batch.deferred;
       for (const result of batch.results) {

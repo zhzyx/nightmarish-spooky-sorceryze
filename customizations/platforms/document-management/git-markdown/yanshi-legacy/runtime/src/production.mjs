@@ -118,13 +118,24 @@ export class Production {
     ensure(fs.statSync(target).isFile(), '产物必须是文件');
     return { path: relative.split(path.sep).join('/'), sha256: hash(fs.readFileSync(target)) };
   }
-  submit(id, files) { return this.mutate(s => {
-    const t = this.task(s,id); ensure(t.status === 'running', '只能提交运行中的工单');
+  submitEvidence(s, t, files) {
+    ensure(t.status === 'running', '只能提交运行中的工单');
     ensure(Array.isArray(files) && files.length, '必须提交实际证据文件');
     t.artifacts = files.map(f => this.artifact(f)); t.status = 'review';
-    this.event(s, 'submitted', { task: id, artifacts: t.artifacts });
-  }); }
-  review(id, r) { return this.mutate(s => {
+    this.event(s, 'submitted', { task: t.id, artifacts: t.artifacts });
+  }
+  submit(id, files) { return this.mutate(s => this.submitEvidence(s,this.task(s,id),files)); }
+  // A trusted host may supply a synchronous precondition. It runs while the
+  // ledger writer lock is held, before any review mutation; JSON cannot supply it.
+  review(id, r, precondition, submissionFiles) { return this.mutate(s => {
+    ensure(!r.host_acceptance || typeof precondition === 'function', '宿主验收绑定只能由可信回调登记');
+    if (precondition !== undefined) {
+      ensure(typeof precondition === 'function' && precondition(s, this.task(s,id)) === true, '宿主验收前置条件失效');
+    }
+    if (submissionFiles !== undefined) {
+      ensure(r.host_acceptance && typeof precondition === 'function', '真实宿主终态才能提交验收证据');
+      this.submitEvidence(s,this.task(s,id),submissionFiles);
+    }
     const t = this.task(s,id); ensure(t.status === 'review', '工单未提交审核');
     ensure(r.reviewer && ['pass','fail'].includes(r.verdict) && r.reason, '审核需要 reviewer、verdict(pass/fail)、reason');
     ensure(!t.independentReview || r.reviewer !== t.owner, '此工单需要独立审核者');

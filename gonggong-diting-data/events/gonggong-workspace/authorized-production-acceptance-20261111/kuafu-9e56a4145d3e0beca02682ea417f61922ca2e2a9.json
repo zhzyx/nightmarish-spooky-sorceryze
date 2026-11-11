@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9e56a4145d3e0beca02682ea417f61922ca2e2a9",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "authorized-production-acceptance-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/776",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5b67d6d88e4c2c29b2d837be1ae02c62fafabf98e735082ddee5f1f6643ae767",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/776",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/789",
+    "action": "validation",
+    "detection_head": "dc8795a4ed8ea7bd873cebf62ac13fcc06bbe655",
+    "context_sha256": "9be5943c9c4df76502b9a66ff03b1bebe852910ef297c0d7b710cef14d92d158",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/776",
+    "evidence": "data-collection/authorized-acceptance-format-776.json",
+    "diagnosis": "Formal gate requires PR evidence JSON objects; formatter AST mapping was a top-level array. Wrapped unchanged mapping entries in an evidence object and preserved original array digest and private bytes. No product source changed.",
+    "next_action": "Restage exact evidence and rerun formal gate, signed delivery and CI; native business acceptance remains pending.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T13:16:47.453055+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T13:18:08.007854+00:00",
+  "sha256": "071f119c2f38d7d80faab283db7a5663ca6da949f840f99ec2ebe39bf60527fd"
+}

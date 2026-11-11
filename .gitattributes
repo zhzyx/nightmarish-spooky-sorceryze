@@ -57,3 +57,5 @@ data-collection/maliang-gpt-modeling-20261108-host-snapshot.json -text whitespac
 
 # Preserve the exact #785 validation bytes referenced by immutable method events.
 data-collection/parallel-worker-receipts-785.json -text whitespace=cr-at-eol
+# Preserve the original #776 adapter handoff and validation bytes.
+data-collection/authorized-acceptance-adapter-776.json -text whitespace=cr-at-eol
