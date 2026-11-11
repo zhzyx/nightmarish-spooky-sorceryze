@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e32af35440c0883ac1cbf7951ef150a6750784d4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "runtime-gdscript-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/796",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f0f029c1cc2e3dc01f4f877d67a1bf81643f3dfdc9be1e8fbcd228cc0cd2d01a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/796",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/798",
+    "action": "validation",
+    "detection_head": "a18c04fc16a5ca54bf36b34a708085fd53aa4062",
+    "context_sha256": "3a2305f7e377d451594000cb37586c522e742f99c7ef7608b1cbe8232ec06b58",
+    "operator": "Sail-Li",
+    "worker": "codex-runtime-compilation-root",
+    "authority_ref": "codex:user:runtime-compilation-20261111",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43057092440/job/130649773026",
+    "diagnosis": "完整 Windows 套件复现语言 finish/init 后全局缓存关闭标志使临时清理跳过。已改作用域清理；macOS editor 生命周期 256 断言与脚本运行通过，独立审查通过。本地全套另有精简字体及沙箱限制。",
+    "next_action": "提交精确修复候选，等待完整 Windows CI 通过再合入；随后核验 native 集成与业务验收。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T16:11:05.042285+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T16:40:22.552042+00:00",
+  "sha256": "837e22377d49e7dc629199f3d32c0dceea7a8d337d778b68017d793ffdfcbdf5"
+}

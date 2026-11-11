@@ -56,6 +56,10 @@ public:
 
 TEST_CASE("[GDScript][RuntimeCompile] Virtual scripts release cache bookkeeping") {
 	GDScriptLanguage::get_singleton()->init();
+	// The existing GDScript suite finishes and reinitializes the language.
+	// Its cache-wide shutdown flag must not retain new transient compilations.
+	GDScriptLanguage::get_singleton()->finish();
+	GDScriptLanguage::get_singleton()->init();
 	for (int i = 0; i < 64; i++) {
 		Dictionary result = GDScript::compile_source("extends RefCounted\nstatic var answer: int = 42\n");
 		REQUIRE(int(result["error"]) == OK);

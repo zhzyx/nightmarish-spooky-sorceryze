@@ -1138,11 +1138,18 @@ Dictionary GDScript::compile_source(const String &p_source, const String &p_path
 	const String base_dir = p_path.is_empty() ? String("res://") : p_path.get_base_dir();
 	const String compile_path = base_dir.path_join(vformat("__runtime_%s.gd", script->get_instance_id()));
 	script->set_path_cache(compile_path);
+	Ref<GDScriptParserRef> parser_ref;
 	// A virtual source cannot be loaded again by filename. Release its cache
 	// bookkeeping on every exit, including reverse dependency and static roots.
 	auto finish = [&]() {
-		GDScriptCache::remove_script(compile_path);
 		MutexLock lock(GDScriptCache::singleton->mutex);
+		// Clean this transient owner even after the language has been restarted.
+		// remove_script() intentionally skips cleanup after cache-wide shutdown.
+		parser_ref->clear();
+		GDScriptCache::remove_parser(compile_path);
+		GDScriptCache::singleton->dependencies.erase(compile_path);
+		GDScriptCache::singleton->shallow_gdscript_cache.erase(compile_path);
+		GDScriptCache::singleton->full_gdscript_cache.erase(compile_path);
 		GDScriptCache::singleton->abandoned_parser_map.erase(compile_path);
 		GDScriptCache::singleton->static_gdscript_cache.erase(script->get_fully_qualified_name());
 		Vector<String> empty_dependencies;
@@ -1158,7 +1165,6 @@ Dictionary GDScript::compile_source(const String &p_source, const String &p_path
 		return result;
 	};
 
-	Ref<GDScriptParserRef> parser_ref;
 	parser_ref.instantiate();
 	parser_ref->path = compile_path;
 	parser_ref->source_hash = p_source.hash();
