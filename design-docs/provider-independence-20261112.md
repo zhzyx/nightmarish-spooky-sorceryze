@@ -57,3 +57,5 @@
 已快进整合最新 main `c811b583d4f709f697161280ed285c08793c90ef`（上游蓝色波浪图标改动，无本任务写域冲突）。Windows MSVC 14.5 / SDK 10.0.26100.0 构建成功；原生 AIChat 88 项、1598 断言全部通过。最终输入摘要 `dfc5be72552e942a713b6316d97f79172a874bc52b12a29cf7bb7e1171a72b92`；实际编辑器 SHA-256 `343ee5ade57e3861cbc5809d1c0dab77439dd53a809360f95c68ba244ad0421d`。构建过程观察到马良 bundle 重新生成、插件重新编译和重新链接，确认新增 Python/GDScript 是实际嵌入输入。
 
 验证纠偏：活动构建日志最初放在工作树中，被保守缓存识别为变化输入并拒绝发布缓存；移到工作树外，固定生产输入后重新构建成功。此前失败不算构建通过，也未修改缓存校验来绕过拒绝。Git 直连网络失败通过本机现有系统代理、仅进程级 Git 配置恢复；TLS 校验未关闭，远端 main 与 GitHub API 对齐。具体发布与候选实测汇总见 `data-collection/provider-independence-840.json`。
+
+首次签发 PR #851 的静态检查 run 43111628663 在 file-format 步骤失败：该步骤将已被不可变学习事件引用的 `data-collection/provider-independence-840.json` 从 CRLF 改为 LF。沿用仓库已有逐文件证据保留规则，在 `.pre-commit-config.yaml` 仅为此文件增加精确排除，与已有 `.gitattributes -text` 一致；原证据 blob `e5bc28da4b99f780c243ed78e41ee6649daf38c2` 不变，其他文件的格式检查和证据完整性门禁继续执行。此修正不改变任何生产实现或测试代码。故障与定向复验关联 #844，后续候选以实际新 CI 回执为准，旧失败不记通过。
