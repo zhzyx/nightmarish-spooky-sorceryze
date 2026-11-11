@@ -240,7 +240,7 @@ void AIChatDock::_cancel_design_batch(int p_agent) {
 }
 
 void AIChatDock::_register_design_batch(int p_parent, const String &p_request_id, int64_t p_issue, int p_review) {
-	if ((p_review < 0 && !String(EDITOR_GET("ai_chat/parallel_work_orders_config")).is_empty()) || !allow_tools->is_pressed() || consultation_only->is_pressed() || consultation_turn || !history_writable || design_batches.has(p_parent)) {
+	if (!allow_tools->is_pressed() || consultation_only->is_pressed() || consultation_turn || !history_writable || design_batches.has(p_parent)) {
 		return;
 	}
 	const bool parent_active = p_parent == active_agent;
@@ -261,6 +261,7 @@ void AIChatDock::_register_design_batch(int p_parent, const String &p_request_id
 	batch["workspace"] = _workflow_root(p_parent);
 	batch["state"] = "running";
 	batch["read_only_review"] = p_review >= 0;
+	batch["parallel_external"] = p_review < 0 && !String(EDITOR_GET("ai_chat/parallel_work_orders_config")).is_empty();
 	Dictionary children;
 	Array order;
 	bool pending = false;
@@ -271,7 +272,7 @@ void AIChatDock::_register_design_batch(int p_parent, const String &p_request_id
 		selected = _sub_agent_children(p_parent, true, p_request_id);
 	}
 	for (int id : selected) {
-		if (bool(sub_agents[id].get("parallel_external", false))) {
+		if (bool(sub_agents[id].get("parallel_external", false)) && !bool(batch["parallel_external"])) {
 			return;
 		}
 		const String state = sub_agents[id].get("state", "");
@@ -658,6 +659,20 @@ bool AIChatDock::_design_return_allowed(int p_parent, const Dictionary &p_messag
 		return false;
 	}
 	const Dictionary batch = design_batches[p_parent];
+	if (bool(batch.get("parallel_external", false))) {
+		if (!receipt_available(batch.get("terminal_receipt", Dictionary()))) {
+			return false;
+		}
+		for (const Variant &id : Array(batch["order"])) {
+			if (!sub_agents.has(int(id)) || !_design_child_ready(id)) {
+				return false;
+			}
+			const Dictionary child = Dictionary(batch["children"])[id];
+			if (FileAccess::get_sha256(child.get("receipt_path", "")) != String(child.get("receipt_sha256", ""))) {
+				return false;
+			}
+		}
+	}
 	if (bool(batch.get("read_only_review", false))) {
 		String error;
 		const Array order = batch["order"];
@@ -1238,6 +1253,9 @@ void AIChatDock::_sub_agent_dispatch() {
 		return;
 	}
 	Dictionary children = batch["children"];
+	if (bool(batch.get("parallel_external", false))) {
+		return; // External ownership never falls through to serial execution.
+	}
 	for (const Variant &child_id : Array(batch["order"])) {
 		const int id = child_id;
 		const String state = Dictionary(children[id])["state"];
@@ -1292,6 +1310,9 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 		return true;
 	}
 	const int dispatch_parent = _sub_agent_root(active_agent);
+	if (!design_batches.has(dispatch_parent) || String(design_batches[dispatch_parent].get("state", "")) != "running" || bool(design_batches[dispatch_parent].get("reporting_blocked", false))) {
+		return false;
+	}
 	const String request_id = _work_order_binding("request_id", dispatch_parent);
 	const String workspace = _workflow_root(dispatch_parent);
 	Array workers;
@@ -1342,6 +1363,10 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 		return true;
 	}
 	file->store_string(JSON::stringify(dispatch_request));
+	file->flush();
+	if (file->get_error() != OK) {
+		return true;
+	}
 	file.unref();
 	List<String> args;
 	args.push_back(_engine_root().path_join("tools/godot_parallel/runner.mjs"));
@@ -1358,7 +1383,26 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 		sub_agents[id]["parallel_external"] = true;
 		sub_agents[id]["parallel_batch"] = batch_id;
 		sub_agents[id]["parallel_output"] = sub_agent_parallel_output;
+		sub_agents[id].erase("parallel_receipt");
+		sub_agents[id].erase("terminal_receipt");
 	}
+	Dictionary batch = design_batches[dispatch_parent];
+	set_process(true); // Observe this existing runner even while chat is idle.
+	batch["parallel_batch"] = batch_id;
+	batch["parallel_output"] = sub_agent_parallel_output;
+	Dictionary children;
+	Array order;
+	for (const Variant &value : workers) {
+		const int id = Dictionary(value)["id"];
+		Dictionary child;
+		child["state"] = "pending_host";
+		child["receipts"] = Array();
+		child["design_approval"] = sub_agents[id]["design_approval"];
+		children[id] = child;
+		order.push_back(id);
+	}
+	batch["children"] = children;
+	batch["order"] = order;
 	_append(TTR("Editor"), U"已启动配置的 CLI 工单执行器。各工单在独立工作副本运行并按能力选模；不操作当前编辑器。退出成功仅进入待验收，结果与日志留在 data-collection/outbox。");
 	_queue_history_save();
 	_refresh_sub_agents();
@@ -1370,6 +1414,7 @@ void AIChatDock::_poll_parallel_sub_agents() {
 		return; // Observe an existing process only; no new scheduling or model call.
 	}
 	sub_agent_parallel_pid = -1;
+	set_process(cli_process_id >= 0 || process_id >= 0);
 	Ref<FileAccess> file = FileAccess::open(sub_agent_parallel_output, FileAccess::READ);
 	Dictionary result;
 	if (file.is_valid() && file->get_length() <= MAX_DESIGN_DOCUMENT_BYTES) {
@@ -1411,8 +1456,48 @@ void AIChatDock::_poll_parallel_sub_agents() {
 		}
 	}
 	_append(TTR("Editor"), vformat(U"并行执行器已结束。工单保留各自结果；待验收不自动合入，未明结果不重跑。回执：%s", sub_agent_parallel_output));
+	for (const KeyValue<int, Dictionary> &entry : design_batches) {
+		Dictionary batch = entry.value;
+		if (String(batch.get("parallel_output", "")) != sub_agent_parallel_output || String(batch.get("state", "")) != "running" || !_design_parent_matches(entry.key, batch)) {
+			continue;
+		}
+		Dictionary children = batch["children"];
+		for (const Variant &id : Array(batch["order"])) {
+			Dictionary child = children[id];
+			const Dictionary info = sub_agents[id];
+			const Dictionary receipt = info.get("parallel_receipt", Dictionary());
+			child["state"] = receipt.get("state", "unknown");
+			child["transport_completed"] = String(receipt.get("state", "")) == "review" ? Variant(true) : Variant();
+			child["business_accepted"] = Variant();
+			child["exit_code"] = receipt.get("exitCode", Variant());
+			child["cancel_requested"] = receipt.get("cancelRequested", false);
+			child["receipt_path"] = sub_agent_parallel_output;
+			child["receipt_sha256"] = FileAccess::get_sha256(sub_agent_parallel_output);
+			child["worker_id"] = id;
+			if (!_design_child_ready(id) || receipt.has("reportingError")) {
+				batch["reporting_blocked"] = true;
+			}
+		}
+		// Persist even absent/malformed runner output as unknown. The envelope is
+		// a host observation, never approval or a synthesized worker receipt.
+		Dictionary observation = batch.duplicate(true);
+		observation["business_accepted"] = Variant();
+		const String path = sub_agent_parallel_output + ".parent.json";
+		const Dictionary stored = store_design_receipts(path, observation);
+		if (!bool(stored.get("available", false))) {
+			batch["reporting_blocked"] = true;
+		}
+		Dictionary terminal;
+		terminal["path"] = path;
+		terminal["file_sha256"] = FileAccess::get_sha256(path);
+		batch["terminal_receipt"] = terminal;
+		batch["state"] = "ready";
+		_queue_design_parent_result(entry.key);
+		break;
+	}
 	_queue_history_save();
 	_refresh_sub_agents();
+	callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
 }
 
 void AIChatDock::_sub_agent_finished(int p_agent, bool p_completed, uint64_t p_generation) {
@@ -1461,6 +1546,8 @@ void AIChatDock::_refresh_sub_agents() {
 	const bool scheduled = scheduled_agents.has(active_agent);
 	sub_agent_bar->set_visible(!scheduled);
 	const int root = _sub_agent_root(active_agent);
+	const bool parallel_continuation = design_batches.has(root) && bool(design_batches[root].get("parallel_external", false)) && !queue_paused;
+	stop_button->set_disabled(!parallel_continuation && !busy && pending_external_editor_message.is_empty() && !models_loading && !snapshot_restoring && gonggong_recovered_result.is_empty() && (observed_command_owner.is_empty() || observed_command_owner != conversation_id));
 	const Vector<int> children = _sub_agent_children(root, false);
 	bool resumable = false;
 	sub_agent_tabs->set_block_signals(true);

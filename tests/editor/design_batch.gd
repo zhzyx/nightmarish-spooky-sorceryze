@@ -279,6 +279,8 @@ func _run():
 	settings.set_setting("gonggong/issue_number", "999")
 	settings.set_setting("gonggong/request_id", "design-batch-global-sentinel")
 	settings.set_setting("ai_chat/parallel_work_orders_config", "")
+	if mode.begins_with("parallel-"):
+		settings.set_setting("ai_chat/parallel_work_orders_config", "res://private-fixture-only.json")
 	# The private fixture's operator confirms the specific design shown by the host.
 	var design_confirmation = dock.find_child("WorkOrderConfirmation", true, false)
 	design_confirmation.visibility_changed.connect(func():
@@ -352,6 +354,42 @@ func _run():
 	if mode.begins_with("review"):
 		settings.set_setting("ai_chat/parallel_work_orders_config", "res://must-not-dispatch-production.json")
 	_send("DESIGN_BATCH_START")
+	if mode.begins_with("parallel-"):
+		if not await _wait_file("parallel-started"):
+			_finish()
+			return
+		var tabs = dock.find_child("AgentTabs", true, false)
+		if mode == "parallel-stop":
+			_check(not dock.find_child("Stop", true, false).disabled, "Stop is unavailable during external execution")
+			dock.find_child("Stop", true, false).pressed.emit()
+		elif mode == "parallel-unrelated":
+			dock.find_child("AddAgent", true, false).pressed.emit()
+			selected_after_boundary = int(tabs.get_tab_metadata(tabs.current_tab))
+		elif mode == "parallel-binding-drift":
+			var bindings: Dictionary = settings.get_project_metadata("daqian", "bindings", {})
+			for owner in bindings:
+				if bindings[owner].get("request_id", "") == "design-batch-fixture":
+					bindings[owner]["request_id"] = "parallel-drift"
+			settings.set_project_metadata("daqian", "bindings", bindings)
+		elif mode == "parallel-design-drift":
+			var request = JSON.parse_string(FileAccess.get_file_as_string("res://parallel-started"))
+			FileAccess.open(request.workspace.path_join("design-docs/design-batch-fixture.md"), FileAccess.WRITE).store_string("changed design")
+		elif mode == "parallel-close-parent":
+			tabs.tab_close_pressed.emit(0)
+			dock.find_child("AgentCloseConfirmation", true, false).get_ok_button().pressed.emit()
+		_file("parallel-release")
+		if mode == "parallel-stop":
+			await _wait_file("parallel-cancelled")
+		if mode in ["parallel-normal", "parallel-failure", "parallel-unknown"]:
+			await _wait_marker("DESIGN_BATCH_PARENT_VERIFIED_OK")
+		else:
+			await create_timer(3.0).timeout
+			_check(not "DESIGN_BATCH_PARENT_VERIFIED_OK" in _text(), "Forbidden parallel continuation")
+			if mode == "parallel-unrelated":
+				_check(int(tabs.get_tab_metadata(tabs.current_tab)) == selected_after_boundary, "Parallel completion stole unrelated session")
+		await create_timer(1.0).timeout
+		_finish()
+		return
 	if mode.begins_with("review-stale-"):
 		await _wait_marker("子工单回传已失效")
 		_check(dock.get_meta("queued_message_count", -1) == 0, "Stale review is still queued")

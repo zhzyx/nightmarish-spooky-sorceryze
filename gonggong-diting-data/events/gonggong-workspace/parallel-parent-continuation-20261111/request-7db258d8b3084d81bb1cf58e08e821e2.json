@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "request-7db258d8b3084d81bb1cf58e08e821e2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "parallel-parent-continuation-20261111",
+  "kind": "request",
+  "occurred_at": "2026-11-11T11:15:54.122200+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/775",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "operator": "Sail-Li",
+    "worker": "/root/sinan_c1390f904b1f5b41",
+    "action": "authorized_parallel_parent_continuation_implementation",
+    "parent_issue": 773,
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/775",
+    "usage": null,
+    "validation_file": "data-collection/parallel-parent-continuation-775.json",
+    "design_file": "design-docs/parallel-parent-continuation-20261111.md"
+  },
+  "evidence_refs": [
+    "dispatch-e28837ce1467422a86d3569c85de8cc1"
+  ],
+  "sha256": "e3e274947d369c509e04116e7b70d7ac64b2f53ab7d5e9c886fa65548d8d6649"
+}
