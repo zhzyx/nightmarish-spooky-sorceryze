@@ -3,10 +3,35 @@ import path from 'node:path';
 import {spawn, spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import crypto from 'node:crypto';
+import {finished} from 'node:stream/promises';
 import {selectModel} from '../../customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs';
 import {board} from '../../customizations/platforms/process-management/yuanheng-local/sinan/coordinator.mjs';
 
 const read = p => JSON.parse(fs.readFileSync(p, 'utf8'));
+const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+function sidecar(file, value) {
+  durable(file,value,true);
+  return {path:file,sha256:digest(fs.readFileSync(file))};
+}
+function candidate(root, base) {
+  const branch=command('git',['symbolic-ref','--short','HEAD'],root);
+  const head=command('git',['rev-parse','HEAD'],root);
+  const result=spawnSync('git',['ls-files','--cached','--others','--exclude-standard','-z'],{cwd:root,encoding:'utf8',windowsHide:true,maxBuffer:32*1024*1024});
+  if(result.status!==0)throw Error('Cannot capture produced files');
+  const names=[...new Set(result.stdout.split('\0').filter(p=>p&&!p.startsWith('.yuanheng/')))].sort();
+  const files=names.map(relative=>{
+    const file=path.resolve(root,relative);
+    for(let current=file;current!==root;current=path.dirname(current)) {
+      if(current===path.dirname(current))throw Error('Produced file escaped candidate');
+      try {if(fs.lstatSync(current).isSymbolicLink())throw Error('Linked produced file');}
+      catch(error){if(error.code!=='ENOENT')throw error;}
+    }
+    if(!fs.existsSync(file))return {path:relative,sha256:null};
+    if(!fs.statSync(file).isFile())throw Error('Produced candidate is not a regular file');
+    return {path:relative,sha256:digest(fs.readFileSync(file))};
+  });
+  return {root,branch,base_sha:base??head,head,files_sha256:digest(JSON.stringify(files)),files};
+}
 const inside = (a,b) => {
   if(process.platform==='win32'){a=a.toLowerCase();b=b.toLowerCase();}
   return a === b || a.startsWith(b + path.sep) || b.startsWith(a + path.sep);
@@ -57,7 +82,7 @@ function verifyDesign(request, job) {
   }
 }
 
-function restoreTicket(file, record, request) {
+function restoreTicket(file, record, request, job) {
   try {
     const ticket = read(file);
     if (ticket.designSha256 !== record.designSha256 ||
@@ -65,8 +90,20 @@ function restoreTicket(file, record, request) {
       throw Error('Existing ticket belongs to a different or unversioned design');
     }
     Object.assign(record, ticket, {id:record.id});
+    if(ticket.registration) {
+      const registration=read(ticket.registration.path);
+      if(digest(fs.readFileSync(ticket.registration.path))!==ticket.registration.sha256 ||
+          registration.candidate.root!==job.cwd || registration.execution_id!==ticket.execution_id ||
+          registration.issue_number!==request.issue || registration.request_id!==request.requestId ||
+          registration.order!==job.order || registration.editor_worker_id!==job.id ||
+          registration.worker_id!==ticket.worker_id || (job.workerId && job.workerId!==ticket.worker_id)) {
+        throw Error('Original worker registration differs from current assignment');
+      }
+      if(ticket.terminal_receipt && digest(fs.readFileSync(ticket.terminal_receipt.path))!==ticket.terminal_receipt.sha256)throw Error('Original terminal receipt changed');
+    }
   } catch (error) {
     record.state = 'reconcile_required';
+    record.transport_completed = false;
     record.reason = String(error.message);
   }
 }
@@ -89,6 +126,7 @@ export function prepare(request, config) {
     const job = config.jobs.find(j => j.order === worker.order);
     if (!job || typeof worker.prompt !== 'string' || !worker.prompt.trim() || !Array.isArray(job.capabilities) || !job.capabilities.length) throw Error('Each work order needs explicit capabilities and workspace');
     if(typeof job.worktree!=='string'||!path.isAbsolute(job.worktree))throw Error('Worktree must be absolute');
+    if(Object.hasOwn(job,'workerId') && (typeof job.workerId!=='string'||!job.workerId.trim()||job.workerId.length>256))throw Error('Invalid host worker identity');
     const cwd = canonical(job.worktree);
     const top = canonical(command('git',['rev-parse','--show-toplevel'],cwd));
     const commonPath = command('git',['rev-parse','--git-common-dir'],cwd);
@@ -98,7 +136,7 @@ export function prepare(request, config) {
     const model = selectModel(job.capabilities,config.models,'agent',job.model);
     if (!Array.isArray(job.dependsOn)) throw Error('Explicit dependencies required');
     const dependencyReady = job.dependsOn.every(d => accepted.includes(d));
-    return {...worker,cwd,model,launch,dependsOn:job.dependsOn,stateRoot:path.join(path.dirname(common),'data-collection/outbox'),ready:!!model&&dependencyReady,blocked:!model?'blocked_model':'blocked_dependency'};
+    return {...worker,cwd,model,launch,workerId:job.workerId,dependsOn:job.dependsOn,stateRoot:path.join(path.dirname(common),'data-collection/outbox'),ready:!!model&&dependencyReady,blocked:!model?'blocked_model':'blocked_dependency'};
   });
 }
 export async function run(request, config, output, runtime = {}) {
@@ -122,7 +160,7 @@ export async function run(request, config, output, runtime = {}) {
   for(const job of jobs) {
     const existing=path.join(job.stateRoot,`parallel-ticket-${request.requestId}-${job.order}.json`);
     if(fs.existsSync(existing)) {
-      restoreTicket(existing,result.workers.find(w=>w.id===job.id),request);
+      restoreTicket(existing,result.workers.find(w=>w.id===job.id),request,job);
       job.existing=true;
     }
   }
@@ -139,14 +177,14 @@ export async function run(request, config, output, runtime = {}) {
         fs.mkdirSync(locks,{recursive:true});
         const resourceKey = crypto.createHash('sha256').update(process.platform==='win32'?job.cwd.toLowerCase():job.cwd).digest('hex');
         ticketFile=path.join(locks,`parallel-ticket-${request.requestId}-${job.order}.json`);
-        if (fs.existsSync(ticketFile)) {restoreTicket(ticketFile,record,request);continue;}
+        if (fs.existsSync(ticketFile)) {restoreTicket(ticketFile,record,request,job);continue;}
         verifyDesign(request, job);
         record.workerBackend=job.launch.backend;
         try {
           durable(ticketFile,{...record,state:'reconcile_required'},true);ticketOwned=true;
         } catch (error) {
           if (error.code !== 'EEXIST') throw error;
-          restoreTicket(ticketFile,record,request);continue;
+          restoreTicket(ticketFile,record,request,job);continue;
         }
         resourceFile=path.join(locks,`parallel-resource-${resourceKey}.json`);
         durable(resourceFile,{requestId:request.requestId,order:job.order,output},true);resourceOwned=true;
@@ -163,10 +201,27 @@ export async function run(request, config, output, runtime = {}) {
         command(config.python,[path.join(job.cwd,'framework/tools/verify_framework.py')],job.cwd);
         record.reportingPrepared=await report(job,{state:'prepared',kind:'handoff'});
         verifyDesign(request, job);
+        record.execution_id=crypto.randomUUID();
+        record.worker_id=job.workerId??`parallel:${record.execution_id}`;
+        record.issue_number=request.issue;
+        record.request_id=request.requestId;
+        const initial={root:job.cwd,branch:command('git',['symbolic-ref','--short','HEAD'],job.cwd),head:command('git',['rev-parse','HEAD'],job.cwd)};
+        record.registration=sidecar(`${output}.${job.id}.${record.execution_id}.registration.json`,{
+          schema_version:1,execution_id:record.execution_id,worker_id:record.worker_id,
+          issue_number:request.issue,request_id:request.requestId,batch_id:request.batchId??null,
+          order:job.order,editor_worker_id:job.id,design_sha256:job.designSha256??null,
+          candidate:{root:initial.root,branch:initial.branch,base_sha:initial.head,head:initial.head},
+          worker_backend:job.launch.backend,requested_model:job.model.id,authority_ref:config.authorityRef,
+          prepared_receipt:record.reportingPrepared
+        });
+        record.base_sha=initial.head;
+        save();
+        durable(ticketFile,record);
         const transcript = `${output}.${job.id}.log`;
         const fd = fs.openSync(transcript,'wx',0o600);
         const stream = fs.createWriteStream(transcript,{fd});
         stream.on('error',()=>{record.logWriteFailed=true;});
+        const logged=finished(stream);
         const args = job.launch.args.map(arg => arg === '{model}' ? job.model.id : arg);
         launchAttempted=true;
         await new Promise((resolve,reject)=> {
@@ -202,16 +257,39 @@ export async function run(request, config, output, runtime = {}) {
               code===0&&!record.cancelRequested ? finished() : failed(Error('Worker exited without successful receipt'));
             });
           });
-          Promise.allSettled([dispatched,closed]).then(outcomes=>{
+          Promise.allSettled([dispatched,closed,logged]).then(outcomes=>{
             const failure=outcomes.find(outcome=>outcome.status==='rejected');
             if(failure) reject(failure.reason);
             else resolve();
           });
         });
+        if(record.logWriteFailed||record.cancelObservationFailed)throw Error('Worker observation incomplete');
         record.state='review'; // CLI success never establishes business acceptance.
       } catch(error) {record.state=launchAttempted?'reconcile_required':'blocked';record.reason=String(error.message);}
       try {record.reporting=await report(job,{state:record.state,kind:'step',pid:record.pid??null,exitCode:record.exitCode??null});}
       catch(error) {record.reportingError=String(error.message);if(launchAttempted)record.state='reconcile_required';}
+      if(launchAttempted) {
+        try {
+          const produced=candidate(job.cwd,record.base_sha);
+          const registration=read(record.registration.path);
+          if(digest(fs.readFileSync(record.registration.path))!==record.registration.sha256 ||
+              produced.branch!==registration.candidate.branch)throw Error('Worker registration or branch changed');
+          record.candidate=produced;
+          record.transport_completed=record.state==='review'&&record.exitCode===0&&!record.cancelRequested&&!record.reportingError;
+          record.terminal_receipt=sidecar(`${output}.${job.id}.${record.execution_id}.terminal.json`,{
+            schema_version:1,execution_id:record.execution_id,worker_id:record.worker_id,
+            issue_number:request.issue,request_id:request.requestId,registration:record.registration,
+            candidate:produced,pid:record.pid??null,exit_code:record.exitCode??null,state:record.state,
+            cancel_requested:!!record.cancelRequested,transport_completed:record.transport_completed,
+            reporting:record.reporting??null,reporting_error:record.reportingError??null,
+            business_accepted:null
+          });
+        } catch(error) {
+          record.state='reconcile_required';record.transport_completed=false;record.terminal_error=String(error.message);
+          try {record.reporting=await report(job,{state:record.state,kind:'step',pid:record.pid??null,exitCode:record.exitCode??null});}
+          catch(reportError) {record.reportingError=String(reportError.message);}
+        }
+      }
       if (ticketOwned) {
         if (!launchAttempted) {fs.unlinkSync(ticketFile);if(resourceOwned)fs.unlinkSync(resourceFile);}
         else durable(ticketFile,record);

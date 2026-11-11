@@ -1,0 +1,48 @@
+{
+  "issue_number": 785,
+  "request_id": "parallel-worker-acceptance-receipts-20261111",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785",
+  "base": "c781cfc61607fa65da36ac8fcd8223f3ac795b09",
+  "files": [
+    {
+      "path": "tools/godot_parallel/runner.mjs",
+      "sha256": "20463dbf061f60155b57faa1ff77a9b075c5fea2018a71b23e87946b7790b703"
+    },
+    {
+      "path": "tests/editor/test_parallel_work_orders.mjs",
+      "sha256": "8a4fb053f9a15c7d955e37ef9f2dde21ad3ff8c9c64132e66eba4aa849d9a319"
+    }
+  ],
+  "validation": {
+    "command": "node --test tests/editor/test_parallel_work_orders.mjs",
+    "passed": 24,
+    "failed": 0,
+    "operations": "Real temporary Git worktrees and Node processes; controlled admission/model/reporting fixtures"
+  },
+  "independent_review": {
+    "worker": "/root/sinan_fd1bed61a0bb703b",
+    "result": "no remaining actionable findings",
+    "original_finding": "Transcript stream.end was not awaited; delayed final write error could follow a successful immutable terminal",
+    "correction": "Wait for stream finished alongside process close and prompt delivery before terminal capture",
+    "revalidation": "24 suite tests and independent 300ms delayed stream failure reproduce correct reconcile_required/logWriteFailed/transport_completed false",
+    "additional_faults": [
+      "registration write failure prevents start",
+      "terminal sidecar write failure preserves unknown and original PID",
+      "final reporting failure preserves unknown and original PID"
+    ]
+  },
+  "fixture_correction": "Initial branch-drift test used one shared branch name for two linked worktrees; unique names restore intended condition, original failure retained in #786",
+  "module_boundary": {
+    "placement": "host_tool",
+    "existing_component": "tools/godot_parallel",
+    "native_rebuild_required": false,
+    "host_contract": "Existing editor JSON dispatch; additive immutable registration and terminal sidecars",
+    "rollback": "Restore previous verified runner, preserve prior reservations; absent source evidence blocks new automatic acceptance"
+  },
+  "limits": [
+    "No real external model service asserted",
+    "No business acceptance from CLI exit",
+    "Native consumer combination belongs #783/#776 and remains pending",
+    "Replay preserves original candidate; consumer checks current bytes"
+  ]
+}

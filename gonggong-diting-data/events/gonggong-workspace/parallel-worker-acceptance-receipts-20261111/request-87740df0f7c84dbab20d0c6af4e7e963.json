@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "request-87740df0f7c84dbab20d0c6af4e7e963",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "parallel-worker-acceptance-receipts-20261111",
+  "kind": "request",
+  "occurred_at": "2026-11-11T12:25:51.296178+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "operator": "Sail-Li",
+    "worker": "current-codex-host",
+    "action": "authorized_parallel_worker_acceptance_receipts",
+    "parent_issue": 776,
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785",
+    "usage": null,
+    "validation_file": "data-collection/parallel-worker-receipts-785.json",
+    "design_file": "design-docs/parallel-worker-acceptance-receipts-20261111.md"
+  },
+  "sha256": "a04f534e1c3ed981f970e376b9068f49ac761fee1c755ecaf7f3f5334df7beff"
+}

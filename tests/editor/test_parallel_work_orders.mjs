@@ -72,6 +72,111 @@ test('real child processes overlap in isolated worktrees and retain exact model 
   const unavailableReplay=await run(f.request,f.config,f.output);
   assert.deepEqual(unavailableReplay.workers.map(w=>[w.state,w.pid]),r.workers.map(w=>[w.state,w.pid]));
 });
+
+test('real worker registration and immutable terminal bind identity, candidate bytes and replay',async t=>{
+  const f=fixture(t);configureCommand(f);
+  f.config.jobs[0].workerId='actual-ledger-assignment';
+  const result=await run(f.request,f.config,f.output);
+  for(const [index,worker] of result.workers.entries()) {
+    assert.equal(worker.state,'review');assert.equal(worker.transport_completed,true);
+    const registrationBytes=fs.readFileSync(worker.registration.path);
+    const terminalBytes=fs.readFileSync(worker.terminal_receipt.path);
+    assert.equal(crypto.createHash('sha256').update(registrationBytes).digest('hex'),worker.registration.sha256);
+    assert.equal(crypto.createHash('sha256').update(terminalBytes).digest('hex'),worker.terminal_receipt.sha256);
+    const registration=JSON.parse(registrationBytes),terminal=JSON.parse(terminalBytes);
+    assert.equal(registration.candidate.root,fs.realpathSync(f.config.jobs[index].worktree));
+    assert.equal(registration.execution_id,worker.execution_id);
+    assert.equal(terminal.execution_id,registration.execution_id);
+    assert.equal(terminal.pid,worker.pid);assert.equal(terminal.business_accepted,null);
+    assert.equal(terminal.transport_completed,true);assert.equal(terminal.exit_code,0);
+    assert.ok(terminal.candidate.files.some(item=>item.path==='worker-result.json'&&item.sha256));
+    assert.equal(terminal.candidate.files_sha256,crypto.createHash('sha256').update(JSON.stringify(terminal.candidate.files)).digest('hex'));
+    assert.equal(Object.hasOwn(terminal,'conversation_id'),false);
+  }
+  assert.equal(result.workers[0].worker_id,'actual-ledger-assignment');
+  const replay=await run(f.request,f.config,f.output);
+  assert.deepEqual(replay.workers,result.workers);
+  fs.appendFileSync(result.workers[0].terminal_receipt.path,' ');
+  const tampered=await run(f.request,f.config,f.output);
+  assert.equal(tampered.workers[0].state,'reconcile_required');
+  assert.match(tampered.workers[0].reason,/terminal receipt changed/);
+  assert.equal(tampered.workers[0].pid,result.workers[0].pid);
+});
+
+test('failed process retains a false transport result and original execution receipt',async t=>{
+  const f=fixture(t);fs.writeFileSync(f.config.codex,'process.exit(7)');
+  const result=await run(f.request,f.config,f.output);
+  for(const worker of result.workers) {
+    assert.equal(worker.state,'reconcile_required');assert.equal(worker.transport_completed,false);
+    const terminal=JSON.parse(fs.readFileSync(worker.terminal_receipt.path));
+    assert.equal(terminal.transport_completed,false);assert.equal(terminal.exit_code,7);
+  }
+});
+
+test('changed configured worker identity never adopts a prior successful execution',async t=>{
+  const f=fixture(t);configureCommand(f);
+  const result=await run(f.request,f.config,f.output);
+  f.config.jobs[0].workerId='a-different-owner';
+  const replay=await run(f.request,f.config,f.output);
+  assert.equal(replay.workers[0].state,'reconcile_required');
+  assert.match(replay.workers[0].reason,/registration differs/);
+  assert.equal(replay.workers[0].execution_id,result.workers[0].execution_id);
+});
+
+test('new registration binds Issue even for a legacy unversioned design request',async t=>{
+  const f=fixture(t);configureCommand(f);
+  const result=await run(f.request,f.config,f.output);
+  f.request.issue=2;
+  const replay=await run(f.request,f.config,f.output);
+  for(const [index,worker] of replay.workers.entries()) {
+    assert.equal(worker.state,'reconcile_required');assert.equal(worker.transport_completed,false);
+    assert.equal(worker.pid,result.workers[index].pid);
+    assert.match(worker.reason,/registration differs/);
+  }
+});
+
+test('cancelled actual workers never publish a successful transport receipt',async t=>{
+  const f=fixture(t);
+  fs.writeFileSync(f.config.codex,'process.stdin.resume();setTimeout(()=>{},30000);');
+  const result=await runHost(f.request,f.config,f.output,{report:async event=>{
+    if(event.state==='running')fs.writeFileSync(`${f.output}.${event.order}.cancel`,'cancel');
+    return {ok:true,state:'recorded_file',fixture:true};
+  }});
+  for(const worker of result.workers) {
+    assert.equal(worker.state,'reconcile_required');
+    const terminal=JSON.parse(fs.readFileSync(worker.terminal_receipt.path));
+    assert.equal(terminal.cancel_requested,true);assert.equal(terminal.transport_completed,false);
+  }
+});
+
+test('changed candidate branch cannot retain the original production registration',async t=>{
+  const f=fixture(t);
+  fs.writeFileSync(f.config.codex,"import {execFileSync} from 'node:child_process';import path from 'node:path';execFileSync('git',['switch','-c','unexpected-'+path.basename(process.cwd())]);");
+  const result=await run(f.request,f.config,f.output);
+  for(const worker of result.workers) {
+    assert.equal(worker.state,'reconcile_required');assert.equal(worker.transport_completed,false);
+    assert.match(worker.terminal_error,/branch changed/);
+    assert.equal(worker.terminal_receipt,undefined);
+  }
+});
+
+test('late transcript flush failure cannot publish successful terminal transport',async t=>{
+  const f=fixture(t);configureCommand(f);
+  const create=fs.createWriteStream;
+  fs.createWriteStream=(...args)=>{
+    const stream=create(...args);
+    stream._final=callback=>setTimeout(()=>callback(Error('late transcript final failure')),100);
+    return stream;
+  };
+  try {
+    const result=await run(f.request,f.config,f.output);
+    for(const worker of result.workers) {
+      assert.equal(worker.state,'reconcile_required');assert.equal(worker.logWriteFailed,true);
+      assert.equal(worker.transport_completed,false);
+      assert.equal(JSON.parse(fs.readFileSync(worker.terminal_receipt.path)).transport_completed,false);
+    }
+  } finally {fs.createWriteStream=create;}
+});
 test('missing capability and shared workspace are rejected before launch',t=>{
   const f=fixture(t);f.config.jobs[0].capabilities=['vision'];
   assert.equal(prepare(f.request,f.config)[0].blocked,'blocked_model');

@@ -1,0 +1,16 @@
+{
+  "issue": 785,
+  "request_id": "parallel-worker-acceptance-receipts-20261111",
+  "observed_at": "2026-11-11T13:02:15.641907+00:00",
+  "failed_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43023209970",
+  "original_signed_head": "7c9257c54f532574280962a3286ca2685a5a61cb",
+  "cause": "file-format rewrote immutable evidence CRLF bytes to LF",
+  "correction": "Exact path exclusion from file-format only; existing immutable snapshot convention; all other hooks retained",
+  "original_evidence_sha256": "be9e2a746236b65b31cd05078a374ab7fe35926dfc3f9dec09fc04e4e3d03ea4",
+  "independent_review": {
+    "worker": "/root/sinan_8157a138f9681320",
+    "finding": "Only one exact file-format exclusion; original evidence digest unchanged; no remaining finding"
+  },
+  "source_code_changed": false,
+  "new_ci_passed": null
+}
