@@ -1,0 +1,72 @@
+{
+  "issue_number": 792,
+  "request_id": "parallel-repair-continuation-20261111",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/792",
+  "base": "5c2cddf8ac5241ae575b63e4c1e39cffbe37cd42",
+  "observed_at": "2026-11-11T14:08:00.209810+00:00",
+  "files": [
+    {
+      "path": "tools/godot_parallel/runner.mjs",
+      "sha256": "68f1b822aec3746ce3763575a8ebc3a474bf6419999ee9b1812ec4769c42ff2e"
+    },
+    {
+      "path": "tools/godot_parallel/repair.mjs",
+      "sha256": "fe53d5b19f36adc01c4f8077b6ee22fd1be68bc3c1c744930e804166bcb9571a"
+    },
+    {
+      "path": "tests/editor/test_parallel_work_orders.mjs",
+      "sha256": "5c98efbe9ef057bdfc74405da0361071bbf00ec88a41d3fbd4015802713aa611"
+    }
+  ],
+  "validation": {
+    "initial_suite": {
+      "passed": 37,
+      "failed": 0
+    },
+    "additional_admission_and_drift_tests": {
+      "passed": 2,
+      "failed": 0
+    },
+    "independent_full_suite": {
+      "passed": 39,
+      "failed": 0
+    },
+    "final_feedback_targeted_tests": {
+      "passed": 2,
+      "failed": 0
+    },
+    "final_terminal_lineage_test": {
+      "passed": 1,
+      "failed": 0
+    },
+    "runtime": "v24.22.1",
+    "operations": "Actual temporary Git worktrees, Node child processes, stdin delivery, atomic resource transfer/rollback and persistent replay; authority/model/review/reporting controlled fixtures"
+  },
+  "independent_review": {
+    "worker": "/root/sinan_8157a138f9681320",
+    "scope": "Runner/repair helper, competition and source/rollback guards; then narrow stdin-feedback and terminal-lineage diff",
+    "result": "No remaining finding in reviewed scope",
+    "final_runner_sha256": "68f1b822aec3746ce3763575a8ebc3a474bf6419999ee9b1812ec4769c42ff2e",
+    "final_helper_sha256": "fe53d5b19f36adc01c4f8077b6ee22fd1be68bc3c1c744930e804166bcb9571a"
+  },
+  "module_boundary": {
+    "placement": "host_tool",
+    "component": "tools/godot_parallel",
+    "added_file": "tools/godot_parallel/repair.mjs",
+    "input": "Actual completion host repairOf binding a failed independent decision to original execution and raw receipts",
+    "update_and_rollback": "Same Node executable runs original/repair/replay and failed admission/preparation rollback; original ticket bytes preserved",
+    "native_rebuild_required": false,
+    "rollback": "Restore previous runner and preserve all lineage/locks; native requires exact repair_of and cannot consume old original receipt as a new repair"
+  },
+  "checks": [
+    "Normal repair produces new execution identity and corrected file",
+    "Original immutable ticket remains byte-identical",
+    "Repeated same continuation reuses original repair PID",
+    "Different continuation cannot claim same predecessor",
+    "Concurrent requests create only one actual repair",
+    "A newly failed successor can have one later repair",
+    "Unknown/cancelled transport, source/candidate drift, wrong Issue/worker/reviewer, no failed criterion and different resource owner reject",
+    "Failed admission and preparation drift restore original resource without spawning"
+  ],
+  "remaining": "Actual native external fail-repair-review dependency chain in #783 and installed game production; no business acceptance inferred from CLI exit"
+}

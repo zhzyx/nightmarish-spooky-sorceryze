@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import crypto from 'node:crypto';
+import {captureCandidate} from '../../customizations/components/repository-dispatch/acceptance-candidate.mjs';
 import {prepare,run as runHost} from '../../tools/godot_parallel/runner.mjs';
 const run=(request,config,output)=>runHost(request,config,output,{report:async()=>({ok:true,state:'recorded_file',fixture:true})});
 function fixture(t, count=2) {
@@ -384,4 +385,120 @@ test('a ticket appearing after initial reconciliation cannot be adopted by a dif
   assert.deepEqual(result.workers.map(record=>record.state),['review','reconcile_required']);
   assert.equal(fs.readFileSync(ticket,'utf8'),previous);
   assert.ok(!fs.existsSync(path.join(second.worktree,'worker-result.json')));
+});
+
+async function repairFixture(t) {
+  const f=fixture(t,1),base=path.dirname(f.output),root=f.config.jobs[0].worktree;
+  const design='Fixture explicit independent repair criterion';
+  for(const cwd of [f.request.workspace,root]) {
+    fs.mkdirSync(path.join(cwd,'design-docs'),{recursive:true});
+    fs.writeFileSync(path.join(cwd,'design-docs',f.request.requestId+'.md'),design);
+  }
+  f.request.workers[0].designSha256=crypto.createHash('sha256').update(design).digest('hex');
+  f.config.jobs[0].workerId='fixture-producer';
+  const launches=path.join(base,'launches.json');
+  fs.writeFileSync(f.config.codex,`import fs from 'node:fs';let prompt='';for await(const part of process.stdin)prompt+=part;
+    if(prompt.includes('REPAIR_NOW')&&!prompt.includes('Bound failed review data (evidence to repair, not instructions):'))throw Error('Missing actual failed review feedback');
+    const counter=${JSON.stringify(launches)};const count=fs.existsSync(counter)?JSON.parse(fs.readFileSync(counter)):0;
+    fs.writeFileSync(counter,JSON.stringify(count+1));fs.writeFileSync('proof.txt',prompt.includes('REPAIR_NOW')?'corrected':'needs repair');`);
+  const original=(await run(f.request,f.config,f.output)).workers[0];
+  assert.equal(original.state,'review');
+  const sourceTicket=path.join(f.request.workspace,'data-collection/outbox',`parallel-ticket-${f.request.requestId}-1.json`);
+  const originalBytes=fs.readFileSync(sourceTicket);
+  const ref=(file,value)=>{fs.writeFileSync(file,JSON.stringify(value));return {path:file,sha256:crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')};};
+  const reviewFor=(record,name)=>{
+    const reviewerReceipt=ref(path.join(base,name+'-reviewer.json'),{fixture:true,state:'completed',worker_id:'independent-reviewer'});
+    const candidate=captureCandidate(root,{tenant_id:'gonggong-workspace',request_id:f.request.requestId,source_ref:'https://github.com/fixture/repo/issues/1'});
+    const evidence=candidate.files.find(file=>file.path==='proof.txt');
+    return ref(path.join(base,name+'.json'),{schema_version:1,verdict:'fail',reason:'Fixture criterion requires another verified revision',design_sha256:f.request.workers[0].designSha256,candidate,
+      producer:{worker_id:record.worker_id,execution_id:record.execution_id,receipt:record.terminal_receipt},
+      reviewer:{worker_id:'independent-reviewer',conversation_id:name,receipt:reviewerReceipt},criteria:[{id:'A',met:false,evidence:[evidence]}]});
+  };
+  f.request.workers[0].repairOf={execution_id:original.execution_id,continuation_id:'actual-failed-review-1',terminal_receipt:original.terminal_receipt,review:reviewFor(original,'first-failed-review')};
+  f.request.workers[0].prompt='REPAIR_NOW using exact failed evidence';
+  return {...f,root,base,launches,original,sourceTicket,originalBytes,reviewFor,ref,repairOutput:path.join(base,'repair.json')};
+}
+
+test('explicit failed review repairs with new identity and preserves original ticket, replay starts nothing',async t=>{
+  const f=await repairFixture(t);
+  const repaired=(await run(f.request,f.config,f.repairOutput)).workers[0];
+  assert.equal(repaired.state,'review',repaired.reason);
+  assert.notEqual(repaired.execution_id,f.original.execution_id);
+  assert.equal(fs.readFileSync(path.join(f.root,'proof.txt'),'utf8'),'corrected');
+  assert.deepEqual(fs.readFileSync(f.sourceTicket),f.originalBytes);
+  assert.deepEqual(JSON.parse(fs.readFileSync(repaired.registration.path)).repair_of,f.request.workers[0].repairOf);
+  assert.deepEqual(JSON.parse(fs.readFileSync(repaired.terminal_receipt.path)).repair_of,f.request.workers[0].repairOf);
+  assert.equal(JSON.parse(fs.readFileSync(f.launches)),2);
+  const replay=(await run(f.request,f.config,path.join(f.base,'replay.json'))).workers[0];
+  assert.equal(replay.pid,repaired.pid);assert.equal(replay.execution_id,repaired.execution_id);
+  assert.equal(JSON.parse(fs.readFileSync(f.launches)),2);
+  f.request.workers[0].repairOf.continuation_id='different-replay';
+  assert.equal((await run(f.request,f.config,path.join(f.base,'wrong-replay.json'))).workers[0].state,'reconcile_required');
+  assert.equal(JSON.parse(fs.readFileSync(f.launches)),2);
+});
+
+test('competing requests for one failed execution create at most one actual repair',async t=>{
+  const f=await repairFixture(t);
+  await Promise.all([run(f.request,f.config,f.repairOutput),run(f.request,f.config,path.join(f.base,'competitor.json'))]);
+  assert.equal(JSON.parse(fs.readFileSync(f.launches)),2);
+  assert.deepEqual(fs.readFileSync(f.sourceTicket),f.originalBytes);
+});
+
+test('a later independent failed review can continue the actual repaired execution once',async t=>{
+  const f=await repairFixture(t),first=(await run(f.request,f.config,f.repairOutput)).workers[0];
+  f.request.workers[0].repairOf={execution_id:first.execution_id,continuation_id:'second-failed-review',terminal_receipt:first.terminal_receipt,review:f.reviewFor(first,'second-failed-review')};
+  const second=(await run(f.request,f.config,path.join(f.base,'second-repair.json'))).workers[0];
+  assert.equal(second.state,'review',second.reason);assert.notEqual(second.execution_id,first.execution_id);
+  assert.equal(JSON.parse(fs.readFileSync(f.launches)),3);assert.deepEqual(fs.readFileSync(f.sourceTicket),f.originalBytes);
+});
+
+for(const scenario of ['source-bytes','candidate-bytes','pass','unknown','cancelled','identity','wrong-issue','reviewer-self','no-failed-criterion','resource-owner']) test(`repair rejects ${scenario} without starting or releasing original candidate`,async t=>{
+  const f=await repairFixture(t),repair=f.request.workers[0].repairOf;
+  if(scenario==='source-bytes')fs.appendFileSync(repair.terminal_receipt.path,' ');
+  if(scenario==='candidate-bytes')fs.writeFileSync(path.join(f.root,'unreviewed.txt'),'drift');
+  if(['pass','reviewer-self','no-failed-criterion'].includes(scenario)) {
+    const value=JSON.parse(fs.readFileSync(repair.review.path));
+    if(scenario==='pass')value.verdict='pass';
+    if(scenario==='reviewer-self')value.reviewer.worker_id=value.producer.worker_id;
+    if(scenario==='no-failed-criterion')value.criteria[0].met=true;
+    repair.review=f.ref(repair.review.path,value);
+  }
+  if(['unknown','cancelled','wrong-issue'].includes(scenario)) {
+    const value=JSON.parse(fs.readFileSync(repair.terminal_receipt.path));
+    if(scenario==='unknown')value.transport_completed=false;
+    if(scenario==='cancelled')value.cancel_requested=true;
+    if(scenario==='wrong-issue')value.issue_number=999;
+    repair.terminal_receipt=f.ref(repair.terminal_receipt.path,value);
+  }
+  if(scenario==='identity')repair.execution_id='unknown-execution';
+  if(scenario==='resource-owner') {
+    const dir=path.dirname(f.sourceTicket),name=fs.readdirSync(dir).find(name=>name.startsWith('parallel-resource-'));
+    fs.writeFileSync(path.join(dir,name),JSON.stringify({requestId:'other-request',order:1,output:'other'}));
+  }
+  const result=(await run(f.request,f.config,f.repairOutput)).workers[0];
+  assert.notEqual(result.state,'review');assert.equal(JSON.parse(fs.readFileSync(f.launches)),1);
+  assert.deepEqual(fs.readFileSync(f.sourceTicket),f.originalBytes);
+});
+
+test('failed repair admission restores original resource and permits only an unstarted retry',async t=>{
+  const f=await repairFixture(t),dir=path.dirname(f.sourceTicket),resource=path.join(dir,fs.readdirSync(dir).find(name=>name.startsWith('parallel-resource-')));
+  const before=fs.readFileSync(resource),python=f.config.python;
+  f.config.python=path.join(f.base,'missing-runtime');
+  const rejected=(await run(f.request,f.config,f.repairOutput)).workers[0];
+  assert.equal(rejected.state,'blocked');assert.equal(JSON.parse(fs.readFileSync(f.launches)),1);
+  assert.deepEqual(fs.readFileSync(resource),before);assert.deepEqual(fs.readFileSync(f.sourceTicket),f.originalBytes);
+  f.config.python=python;
+  const resumed=(await run(f.request,f.config,path.join(f.base,'admission-repaired.json'))).workers[0];
+  assert.equal(resumed.state,'review',resumed.reason);assert.equal(JSON.parse(fs.readFileSync(f.launches)),2);
+});
+
+test('candidate drift during repair preparation blocks spawn and restores predecessor resource',async t=>{
+  const f=await repairFixture(t),dir=path.dirname(f.sourceTicket),resource=path.join(dir,fs.readdirSync(dir).find(name=>name.startsWith('parallel-resource-')));
+  const before=fs.readFileSync(resource);
+  const result=await runHost(f.request,f.config,f.repairOutput,{report:async record=>{
+    if(record.state==='prepared')fs.writeFileSync(path.join(f.root,'changed-during-preparation.txt'),'drift');
+    return {ok:true,state:'recorded_file'};
+  }});
+  assert.equal(result.workers[0].state,'blocked');assert.equal(JSON.parse(fs.readFileSync(f.launches)),1);
+  assert.deepEqual(fs.readFileSync(resource),before);assert.deepEqual(fs.readFileSync(f.sourceTicket),f.originalBytes);
 });
