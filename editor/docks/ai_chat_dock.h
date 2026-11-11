@@ -579,7 +579,7 @@ class AIChatDock : public EditorDock {
 	bool _mount_daqian_chat(Control *p_host);
 	void _unmount_daqian_chat();
 	VBoxContainer *agents_page = nullptr;
-	Ref<ShaderMaterial> glow_material;
+	Ref<ShaderMaterial> wave_material;
 	VBoxContainer *chat_layout = nullptr;
 	VBoxContainer *timer_chat_host = nullptr;
 	TabBar *timer_agent_tabs = nullptr;
@@ -748,6 +748,7 @@ class AIChatDock : public EditorDock {
 	void _chat_scrolled();
 	void _set_activity(const String &p_activity);
 	void _update_activity();
+	void _update_wave_activity();
 	void _show_details(const Variant &p_meta);
 	String _tool_summary(const String &p_name, const Dictionary &p_arguments, const String &p_result) const;
 	void _set_busy(bool p_busy);

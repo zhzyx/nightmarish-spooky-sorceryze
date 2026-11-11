@@ -204,10 +204,12 @@ func _run():
 		_control("Send").pressed.emit()
 		await create_timer(0.1).timeout
 		_check(not _control("Stop").disabled, "Stop never became available")
+		_check(float(_control("ChatWave").material.get_shader_parameter("working")) == 1.0, "Active request did not intensify the blue wave")
 		_sample("%d sending" % width)
 		_control("Stop").pressed.emit()
 		await _settle()
 		_check(_control("Stop").disabled and not _control("Send").disabled, "Stop did not restore composer controls")
+		_check(float(_control("ChatWave").material.get_shader_parameter("working")) == 0.0, "Stopped request left the wave in active state")
 		for screen in ["3D", "Script"]:
 			EditorInterface.set_main_screen_editor(screen)
 			await _settle()
