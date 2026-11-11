@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d4a006e2624f9155f7650c822251a2fd95caf614",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "parallel-worker-acceptance-receipts-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fee67f0cb2a835dd15ae755c6bcf5a36c13b098e78fbe96b76755d9fd1db71fd",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/786",
+    "action": "delivery",
+    "detection_head": "0ae90ed3223d95304b7844453e5617bc3268a5f2",
+    "context_sha256": "30dd760330e639a2681f22e33eb2228008e57a0e52dbbe944241a73e1aa7f3a1",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/788",
+    "diagnosis": "Direct authenticated GitHub git transport failed on port 443; configured Windows loopback proxy restored git fetch/push. Proxy API TLS later timed out; direct api.github.com with per-process NO_PROXY restored API receipt readback. Same writer reconciled existing remote state and produced PR788 without duplicate publication. No global network configuration or credentials changed.",
+    "next_action": "Verify all exact PR788 checks and main merge; publication transport recovered, business acceptance remains with 783/776.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T13:02:54.639074+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T13:07:55.912584+00:00",
+  "sha256": "a15b9b8866994fd90b300b087c06eff65a025d1fa346d354abe5ff6de5a44466"
+}

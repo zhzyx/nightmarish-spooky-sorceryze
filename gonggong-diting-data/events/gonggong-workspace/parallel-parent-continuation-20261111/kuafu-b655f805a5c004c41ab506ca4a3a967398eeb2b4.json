@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b655f805a5c004c41ab506ca4a3a967398eeb2b4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "parallel-parent-continuation-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/775",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "bb11546721e896d5315211d9dd79e710786e6e037652e12c94acdbfb3b398741",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/775",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/780",
+    "action": "delivery",
+    "detection_head": "c781cfc61607fa65da36ac8fcd8223f3ac795b09",
+    "context_sha256": "30ff308e1cbca7382f1b1f9dbb7b82048d431cdaa67f255771bd2ec843c89980",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/775",
+    "evidence": "Main c781cfc6 clean build receipt c7d62c5571dd4892aa0937c684e7405a; installer rollback preserved old GUI hash; instrumented same installer installed all four verified files successfully.",
+    "diagnosis": "Transient Windows file sharing lock during replacement; no running Godot process observed. Exact locking process unknown. Additional read/write exclusive probes immediately before replacement succeeded and installation completed. No source code changed or permission bypass.",
+    "next_action": "Verify installed manifest and hashes, run parallel-normal and stop headless cases on installed executable; retain unknown lock owner and do not claim source-level repair.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T11:44:51.051192+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T11:47:44.699820+00:00",
+  "sha256": "2e39693d948d03002ef1d374cdf19e31789271f4f37a6985a7033b5d580070e5"
+}

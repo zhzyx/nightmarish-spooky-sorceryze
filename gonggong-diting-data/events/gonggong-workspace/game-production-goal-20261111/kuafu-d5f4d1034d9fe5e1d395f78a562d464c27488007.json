@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d5f4d1034d9fe5e1d395f78a562d464c27488007",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "18a82541a391b0a3b90354c90f310976793cd30679d009a93eee702c34b25826",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/794",
+    "action": "delivery",
+    "detection_head": "a1340f5dd0e71a8c3c874284be3e4e2d0ab6d950",
+    "context_sha256": "5ced523ee6cc068d6e05cae0310a73773b3b69a8df42641e436240098c91eb95",
+    "operator": "Sail-Li",
+    "worker": "codex-root-game-production-773",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/805",
+    "diagnosis": "父项签发前main推进到206addbd（#797/#805 C/C++运行时编译，16个路径），与本候选全部文档/证据/事件无重叠。本父工作树已快进整合；冻结已审查文档及安装证据字节未变。本任务正式安装及源工作区仍绑定已验收a1340f5d，不把后续独立功能的main提交声称为已安装实测。",
+    "next_action": "按新main重签父项纯证据候选、CI、合入和关闭回读；当前已验证编辑器发布保持a1340f5d，本任务没有新增未验收业务项。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T17:19:54.946484+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T17:22:16.806043+00:00",
+  "sha256": "d403adfb8aa760c13fa70849f12a8878cb37e9d691a5b43b1ef51bc65dd12de5"
+}

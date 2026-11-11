@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-99cf19bead54ee071c9efce4afe098c576bf00a1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "cb54b57faafe828faee9542409c2331473c2018b47f5478308c54a09102efd81",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/794",
+    "action": "validation",
+    "detection_head": "c781cfc61607fa65da36ac8fcd8223f3ac795b09",
+    "context_sha256": "5ced523ee6cc068d6e05cae0310a73773b3b69a8df42641e436240098c91eb95",
+    "operator": "Sail-Li",
+    "worker": "codex-root-game-production-773",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "data-collection/game-production-live-773.json",
+    "diagnosis": "最终 build21 修复目录成功状态及自动验收辅助上下文误拒；固定摘要的辅助读取不作为候选证据。真实 Codex 三生产者与三独立审查完成，A/B 实际重叠、C 只启动一次、父会话回传一次；原生负向漂移与冒充证据拒绝，独立真实输入玩法复验通过。两次原始失败保留，不改为首次通过。",
+    "next_action": "PR #799 正在 CI，继续精确候选 main 合入、正式安装复验及工单验收；当前故障单保持开放。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T14:34:15.383157+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T16:14:59.920428+00:00",
+  "sha256": "b346ee75223297d2ba7f1c107d48661e1ac27e29cc11447681f1fd31a0d2b0af"
+}

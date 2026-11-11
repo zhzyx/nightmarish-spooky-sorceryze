@@ -1,0 +1,38 @@
+{
+  "issue": 773,
+  "bug": 794,
+  "native_issue": 783,
+  "binary_sha256": "c31070db4207a7718793c9bfe30c5d922b60dda3c0ed8891a73724c00723f412",
+  "scope": "Actual Codex producers and native independent reviewers; isolated initial design and GitHub mandate",
+  "accepted_orders": [
+    1,
+    2
+  ],
+  "downstream_C": "Launched once after actual A/B acceptances, copied actual upstream assets, produced executable game and successful runtime log",
+  "independent_game_verification": {
+    "exit_code": 0,
+    "marker": true,
+    "binary_sha256": "c31070db4207a7718793c9bfe30c5d922b60dda3c0ed8891a73724c00723f412",
+    "artifact": "project/games/BeaconRun-773",
+    "path_base": "installed workspace root"
+  },
+  "failure": "C reviewer read all candidate files successfully, cross-checked accepted upstream original files and production transcript, returned complete pass, but auxiliary outside-candidate reads set review_source_unverified; no unknown or failed read counter",
+  "overall_complete": false,
+  "private_evidence": [
+    {
+      "path": "live-native4-report.json",
+      "sha256": "17b66f23b2bf0b22f9126b3f70fe7bf409b13deaa97d8427afe6f61d9a8299b2"
+    },
+    {
+      "path": "live-native4-report.diagnostics-report.json",
+      "sha256": "74e774c611afae70d7cc745582e8dabc4a983277ecda72e3d193244e4173a4ac"
+    },
+    {
+      "path": "independent-game-build20-report.json",
+      "sha256": "753395c68161c9a2401525873283d49ad84eb4cfd6b3c2f35cd3b8c43dae9910"
+    }
+  ],
+  "private_path_base": "original #773 worktree data-collection/receipts/game-production-773",
+  "repair_owner": "native #783; automatic acceptance context scope only",
+  "observed_at": "2026-11-11T15:21:27.104303+00:00"
+}

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-7953c95d2b34d6b0444d322b5245853a76909ceedd4ee29a22041b47a9d66765",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "occurred_at": "2026-11-11T11:48:27.3794015+00:00",
+  "evidence_refs": [
+    "dispatch-a9386eb4303e48ef96768f3701780b7d",
+    "learn-cc2e41b03f87b2837226d83efa1e4ee5989619b515b29981d142dd1c3d8dd34f"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 8,
+    "previous": "93048153639337fc6faf3a18a3a3a8c57eacc3b73988afdc5b0187fb379ff37e",
+    "action": "applied",
+    "details": {
+      "task": "#773 editor game production acceptance and independent child audit",
+      "observed": "Verified native worker terminal callback separately from business acceptance. Existing two-scene CLI generation and gameplay checks passed, but independent audit exposed absent parallel parent continuation and manual-only dependency acceptance; parent remains open with #775/#776 instead of treating completed transport as finished production."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/game-production-baseline-773.json",
+        "sha256": "6b8e07abc7197ce600fb4af46350724dd58b2d149ef4c279d928d0ab85ef53b3"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/dispatch-a9386eb4303e48ef96768f3701780b7d.json",
+      "sha256": "d2ab05dbc4b78907b63b6c89b81a274c5240fcc93142880e2a7b42a0bff83b90"
+    }
+  },
+  "sha256": "033a2fbdb78a631c6f3a86847aaaf46c7d33c2c60b76139f4709ed3775e1fce9"
+}

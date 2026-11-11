@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-build-validation",
+  "event_id": "learn-659284816b291782d3dee1aa013676f5fa3404a151f2f2dc071a14032ebb313f",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "occurred_at": "2026-11-11T16:29:10.853894+00:00",
+  "evidence_refs": [
+    "kuafu-99cf19bead54ee071c9efce4afe098c576bf00a1"
+  ],
+  "payload": {
+    "scope": "build-validation",
+    "lesson": "match-ci-warning-policy",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "For changed C++ targets, run compiler warnings and warnings-as-errors policy matching CI before submitting; retain full standard build and consumer acceptance separately.",
+      "when": "Local and CI builds have different warning policies, especially MSVC class-member shadowing.",
+      "counterexample": "A successful local default build or gameplay run cannot establish /WX compilation; strict single-object success does not establish full linking or installation.",
+      "trial_plan": "Run the changed object with warnings=extra werror=yes, independently review source delta, then exact CI, main and installed acceptance."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/game-production-strict-build-failure-773.json",
+        "sha256": "889a928f2198ff007c53bde848614999a37870bb0620cb878860886fa14e3106"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/kuafu-99cf19bead54ee071c9efce4afe098c576bf00a1.json",
+      "sha256": "b346ee75223297d2ba7f1c107d48661e1ac27e29cc11447681f1fd31a0d2b0af"
+    }
+  },
+  "sha256": "75120998fd3e9d9b8b30931293e3fd085ba2428a8df0c871fdfae4c08af50e31"
+}

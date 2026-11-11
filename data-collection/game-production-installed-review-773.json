@@ -1,0 +1,54 @@
+{
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "reviewer": "/root/sinan_60f8d337a2ebeea7",
+  "reference": "collaboration.FINAL_ANSWER:/root/sinan_60f8d337a2ebeea7",
+  "conclusion": "No actionable discrepancies within final installed evidence and document delta",
+  "files": [
+    {
+      "path": "design-docs/game-production-goal-20261111.md",
+      "sha256": "0ac31024166633f76ca5f364edaa5acf90b110a2889c948fe6fdd2e383903e19"
+    },
+    {
+      "path": "data-collection/game-production-goal-773.json",
+      "sha256": "42e1025dac81e1e4d7a2396ab983bfa35624f3ce34d4b02088ac14e34f12f8fd"
+    },
+    {
+      "path": "data-collection/game-production-installed-773.json",
+      "sha256": "a7775bd90da495784ebe5dfed5960dc9df9aba684dacf927bc03451101264b3c"
+    },
+    {
+      "path": "data-collection/game-production-independent-review-773.json",
+      "sha256": "d7daf6196382e79a1391a665bc33e098ff5124f68403a1d70fcbfc1be386a137"
+    }
+  ],
+  "verified": [
+    "Installation manifest, clean main receipt, report and before/after hash assertions consistent",
+    "A/B overlap, new A repair execution, three decisions and ledgers done, one C launch and parent notice",
+    "Actual Stop diagnostics and zero decisions; cold restore paused with zero new requests",
+    "Four installed scenarios passed; all nine artifact file bytes match original model output",
+    "Historical build21, current installation, real CLI and isolated transport boundaries distinct",
+    "Five child closure receipts match summary; parent773/794 publication remains pending",
+    "48 public candidate files inspected without absolute private paths or common credential patterns"
+  ],
+  "gameplay_boundary": "Movement and restart use actual engine Input. Test sets player position to trigger the goal; does not claim complete keyboard playthrough.",
+  "private_evidence": [
+    {
+      "name": "final-installed-checks-report.json",
+      "sha256": "950617aac6c3a5f7e83ae6f0f3e7b45ae79a23272267a7ce419eabe7e1f971e9"
+    },
+    {
+      "name": "final-installed-checks.py",
+      "sha256": "ecc3ceb3830a6fcc932a168f84a038cac29d440c0fbb770883e71fca09202c32"
+    },
+    {
+      "name": "accepted-children-closure-report.json",
+      "sha256": "6a04ea710f6bca32b87e65c1ef90495c6bbc8ad75791996c010db351930c7399"
+    }
+  ],
+  "limits": [
+    "Read-only evidence review; did not rerun editor or tests",
+    "Actual installation binary hashing performed by root validation script, reviewer inspected manifest and raw report",
+    "Final index gate, main publication and final closures remain root responsibility"
+  ]
+}

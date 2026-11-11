@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-68254315459e51fcc039a1aceef84d39570017ce",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "cb54b57faafe828faee9542409c2331473c2018b47f5478308c54a09102efd81",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/794",
+    "action": "validation",
+    "detection_head": "c781cfc61607fa65da36ac8fcd8223f3ac795b09",
+    "context_sha256": "5ced523ee6cc068d6e05cae0310a73773b3b69a8df42641e436240098c91eb95",
+    "operator": "Sail-Li",
+    "worker": "codex-root-game-production-773",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "data-collection/receipts/game-production-773/live-native1-report.json",
+    "diagnosis": "Private live-model harness initially configured actual Codex before the inherited fixture runtime assertion; second attempt omitted required model placeholder in workerCommand. Both are private harness adaptation failures, not product acceptance passes.",
+    "next_action": "Keep original failures and retry the corrected private harness with delayed actual CLI configuration and required model argument; then independently verify the resulting game.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T14:34:15.383157+00:00",
+    "attempted": null,
+    "repair_owner": "codex-root-game-production-773",
+    "continuable": "Native source validation and delivery preparation can continue independently."
+  },
+  "occurred_at": "2026-11-11T14:37:33.990969+00:00",
+  "sha256": "591ad023a931c02fd7ffd7d12193e031835794bf897ebb0e650da555d72924b6"
+}

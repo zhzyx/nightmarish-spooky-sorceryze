@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-build-validation",
+  "event_id": "learn-c53a6d8e713429c3eed7e181de8fd49a525b8524226e87a3e016d91d8fa9b74c",
+  "kind": "analysis",
+  "agent": {
+    "id": "gonggong-host-adapter",
+    "version": "1.2.1",
+    "definition_sha256": "eba2ca0eee027dfae57826453d1a1901baa8a127fa0e2af954f0255fc3888f2d",
+    "origin": "gonggong-host-adapter"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "occurred_at": "2026-11-11T17:09:10.080550+00:00",
+  "evidence_refs": [
+    "host-context-8a49eeaa5e53427dad9d48e45d3a43a6",
+    "learn-659284816b291782d3dee1aa013676f5fa3404a151f2f2dc071a14032ebb313f"
+  ],
+  "payload": {
+    "scope": "build-validation",
+    "lesson": "match-ci-warning-policy",
+    "revision": 2,
+    "previous": "75120998fd3e9d9b8b30931293e3fd085ba2428a8df0c871fdfae4c08af50e31",
+    "action": "verify",
+    "details": {
+      "test": "Strict MSVC target compile after independently verified local rename, full integrated suite, PR803 exact Windows CI and installed four-scenario acceptance",
+      "expected": "C4458 no longer fails strict compilation; complete candidate CI succeeds and installed behavior remains correct. Strict target alone does not mask other suite failures.",
+      "observed": "C4458 no longer fails strict compilation; complete candidate CI succeeds and installed behavior remains correct. Strict target alone does not mask other suite failures."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-ci-warning-recovery-783.json",
+        "sha256": "3bdc9c67b50703b86b7c903a024a8ffe296f1ccbb0ccd70d5044314ad470e846"
+      },
+      {
+        "path": "data-collection/native-upstream-recovery-783.json",
+        "sha256": "12417552ffc13e5997ffd98a5ca0a88acf5a8d90e54cb30c3366484bba80e05e"
+      },
+      {
+        "path": "data-collection/game-production-installed-773.json",
+        "sha256": "a7775bd90da495784ebe5dfed5960dc9df9aba684dacf927bc03451101264b3c"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/host-context-8a49eeaa5e53427dad9d48e45d3a43a6.json",
+      "sha256": "ce62b049dd4c6ccff5d804143f5ede6e49fec3fe034011aaea792031ab8cb61e"
+    }
+  },
+  "sha256": "4ea098970e221338fc7fecfca0650ab599ba770707156e9204010de2ab907294"
+}

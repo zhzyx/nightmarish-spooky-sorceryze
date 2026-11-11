@@ -1,0 +1,12 @@
+{
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "child_issue": 783,
+  "bug": 784,
+  "failed_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43055870363/job/130645386201",
+  "failure": "Three C4458 local request declarations fail MSVC /WX; original local standard build succeeded without werror",
+  "correction": "14 local identifier replacements only, independently reverse-checked; strict single-target compile and standard build22 passed",
+  "remaining": "Latest main integration build, exact CI and installed checks",
+  "evidence": "data-collection/native-ci-warning-recovery-783.json",
+  "evidence_path_base": "repository root after child delivery"
+}

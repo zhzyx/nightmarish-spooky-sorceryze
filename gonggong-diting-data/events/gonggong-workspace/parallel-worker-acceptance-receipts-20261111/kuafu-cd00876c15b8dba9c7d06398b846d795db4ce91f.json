@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-cd00876c15b8dba9c7d06398b846d795db4ce91f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "parallel-worker-acceptance-receipts-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "82fb8ca35ddf40ee510d83c380c9978dd84abb5843bf2214e08056b4298ba3e8",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/786",
+    "action": "delivery",
+    "detection_head": "c781cfc61607fa65da36ac8fcd8223f3ac795b09",
+    "context_sha256": "d7504b5c259519130af5c4a648c766b02ed47cd7346a5e9164e304ada46342e3",
+    "operator": "Sail-Li",
+    "worker": "current-codex-host/kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/788",
+    "diagnosis": "Direct authenticated GitHub git transport failed on port 443; configured Windows loopback proxy restored git fetch/push. Proxy API TLS later timed out; direct api.github.com with per-process NO_PROXY restored API receipt readback. Same writer reconciled existing remote state and produced PR788 without duplicate publication. No global network configuration or credentials changed.",
+    "next_action": "Verify all exact PR788 checks and main merge; publication transport recovered, business acceptance remains with 783/776.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T12:38:49.267254+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T13:07:23.062889+00:00",
+  "sha256": "f207b01531aedbb5d3555166d0a2f90e0ec0785e6aebd0f7eaaa35be509a7597"
+}

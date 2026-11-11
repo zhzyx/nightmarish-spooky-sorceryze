@@ -1,0 +1,121 @@
+{
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "snapshot_at": "2026-11-11T17:09:10.080271+00:00",
+  "business_acceptance_complete": true,
+  "completion_receipt_source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "snapshot_delivery_state": "Business and installed acceptance passed; this final evidence publication and parent/794 closure still pending at snapshot",
+  "acceptance_items": [
+    {
+      "id": "accounts-and-installation",
+      "state": "passed",
+      "evidence": [
+        "data-collection/game-production-baseline-773.json",
+        "data-collection/game-production-installed-773.json"
+      ]
+    },
+    {
+      "id": "parallel-production-and-dependency",
+      "state": "passed",
+      "evidence": [
+        "data-collection/game-production-live-773.json",
+        "data-collection/game-production-independent-review-773.json"
+      ]
+    },
+    {
+      "id": "playable-game-and-repair",
+      "state": "passed",
+      "evidence": [
+        "data-collection/game-production-installed-773.json",
+        "data-collection/native-independent-acceptance-783-final.json"
+      ]
+    },
+    {
+      "id": "completion-cancel-recovery-capacity",
+      "state": "passed",
+      "evidence": [
+        "data-collection/game-production-installed-773.json",
+        "data-collection/parallel-parent-installed-775.json",
+        "data-collection/parallel-worker-receipts-delivery-785.json"
+      ]
+    },
+    {
+      "id": "review-ci-main-and-installation",
+      "state": "passed",
+      "evidence": [
+        "data-collection/native-upstream-recovery-783.json",
+        "data-collection/game-production-installed-773.json"
+      ]
+    }
+  ],
+  "completed_issues": [
+    775,
+    777,
+    783,
+    785,
+    792,
+    776,
+    784
+  ],
+  "closure_receipts": [
+    {
+      "issue": 783,
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-11T17:06:46Z",
+      "comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783#issuecomment-6802181794"
+    },
+    {
+      "issue": 785,
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-11T17:06:52Z",
+      "comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/785#issuecomment-6802184945"
+    },
+    {
+      "issue": 792,
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-11T17:07:01Z",
+      "comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/792#issuecomment-6802188100"
+    },
+    {
+      "issue": 776,
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-11T17:07:08Z",
+      "comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/776#issuecomment-6802190503"
+    },
+    {
+      "issue": 784,
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-11T17:07:13Z",
+      "comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/784#issuecomment-6802193170"
+    }
+  ],
+  "pending_final_delivery_issues": [
+    773,
+    794
+  ],
+  "delivered_prs": [
+    779,
+    782,
+    788,
+    791,
+    793,
+    803
+  ],
+  "installed_main": "a1340f5dd0e71a8c3c874284be3e4e2d0ab6d950",
+  "installed_gui_sha256": "e9d980be585095d0d690377f975110dcdc87a72bfa548d72a9accd44e4c4d94b",
+  "artifact": "project/games/BeaconRun-773-final/project.godot",
+  "artifact_path_base": "installed workspace root",
+  "boundaries": [
+    "Live Codex workers and independent reviewers are real; initial design transport and demo GitHub authority isolated",
+    "Configured capacity is not measured optimum throughput or account quota",
+    "Other vendors were not exercised as live accounts in this final demo",
+    "Unknown existing worker claims and other worktrees were preserved"
+  ],
+  "historical_baseline": "data-collection/game-production-baseline-773.json"
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-94f5cb4033bd89c4ff99c711e271f57cc7f030a400cd28324728d55eb33c80d1",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "occurred_at": "2026-11-11T14:53:14.890169+00:00",
+  "evidence_refs": [
+    "kuafu-30831e359bd8c32596c98389729ed3547321a186"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "review-context-and-source-evidence",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Exercise actual reviewer multi-tool behavior before release; distinguish verified source evidence from host-bound context receipts and successful navigation observations without converting unknown results into success.",
+      "when": "An editor independent reviewer reads candidate files plus the host-supplied external producer receipt before releasing a dependent worker.",
+      "counterexample": "A controlled reviewer that only reads one candidate file does not cover realistic receipt inspection or directory navigation; an arbitrary outside file must not become candidate evidence.",
+      "trial_plan": "On the repaired candidate run successful source reads plus actual directory navigation and the exact host-bound receipt; require acceptance. Tampered/unbound receipts and unknown or failed directory results must remain rejected; repeat the real CLI game chain."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/game-production-live-review-failure-773.json",
+        "sha256": "75221b82dc2aa2779f7bff73e49990ab555c32e5551f90159ef31789290ab57a"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/kuafu-30831e359bd8c32596c98389729ed3547321a186.json",
+      "sha256": "92034a0cbc6e1b582cf9e958617e3617caaee8883c234cc068e1100d0e576dd6"
+    }
+  },
+  "sha256": "615de6a59726e84b385e100983478cd57f391d847d9cf6f504cc08cf2aecb5f1"
+}

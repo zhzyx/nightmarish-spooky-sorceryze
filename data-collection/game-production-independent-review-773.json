@@ -1,0 +1,49 @@
+{
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "reviewer": "/root/sinan_d6e132ec2c440b7a",
+  "reference": "collaboration.FINAL_ANSWER:/root/sinan_d6e132ec2c440b7a",
+  "result": "no actionable findings within actual game evidence scope",
+  "independently_executed": "Audit assertions rerun without writer section; actual raw hashes, 9 final asset bytes, upstream 4 file bytes, ledger state, decision coverage and real process/CLI transcript checks",
+  "overlap_seconds": 178.625,
+  "downstream_after_last_decision_seconds": 9.898,
+  "production_workers": 3,
+  "independent_reviewers": 3,
+  "ledger_done": 3,
+  "downstream_starts": 1,
+  "parent_completion_notices": 1,
+  "source_manifest_file_coverage": [
+    2,
+    2,
+    9
+  ],
+  "evidence": [
+    {
+      "name": "live-native5-report.json",
+      "sha256": "ca212708ce897b96a82ea91d59a6e7abfb8104166a51352822d0e0e8fc09da45"
+    },
+    {
+      "name": "live-native5-audit.json",
+      "sha256": "95bc8b2613207a5bf6bd108da0246f9dd2da12d989858d42c9f75b6119f4ef7c"
+    },
+    {
+      "name": "live-game-final-manifest.json",
+      "sha256": "967a792dfd13bfa70ea4b5bc6d56049f86fd28e4929df9a2d82000860b161c5c"
+    },
+    {
+      "name": "independent-game-check.gd",
+      "sha256": "e4e8e1c0b71b6b7a2a547e7f6f2fbf6a2e9d0bfa289cf97435568382691df186"
+    },
+    {
+      "name": "independent-game-build21-report.json",
+      "sha256": "d48e5aaedb4b3fa486ed3a819364fd0d413b96e9c605288db7509bc354e750d2"
+    }
+  ],
+  "limits": [
+    "Initial design transport and GitHub mandate are isolated fixture responses",
+    "Independent gameplay log reviewed but not rerun by reviewer",
+    "Native game evidence is build21; semantic-only C4458 rename independently reviewed separately",
+    "Does not establish optimal throughput, all vendors, final main or installed acceptance"
+  ],
+  "transport_statistics": "Legacy generic report failed/0 fields are retained; actual live stage and persisted native receipts establish business results, not these old fixture counters."
+}

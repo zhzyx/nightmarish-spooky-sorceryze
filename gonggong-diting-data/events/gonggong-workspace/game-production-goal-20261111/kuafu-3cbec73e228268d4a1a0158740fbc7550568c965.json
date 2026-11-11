@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3cbec73e228268d4a1a0158740fbc7550568c965",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "217cd84d6de01826d12f5147711dc96ad9ac1ed69852cffc76bd85857a22a286",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/794",
+    "action": "validation",
+    "detection_head": "7a99514ed14362a0bba047fa6da36209f3a2acc2",
+    "context_sha256": "5ced523ee6cc068d6e05cae0310a73773b3b69a8df42641e436240098c91eb95",
+    "operator": "Sail-Li",
+    "worker": "codex-root-game-production-773",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/host-context-8a49eeaa5e53427dad9d48e45d3a43a6.json",
+    "diagnosis": "父项候选已有派发/修复事件但缺少精确Issue来源的request事件；当前实际调用可信chat上下文入口成功回读#773，生成当前时间接收事件。context_ready=true且model_execution_started=false，不倒签或补造历史模型执行。",
+    "next_action": "加入当前真实接收回执并重跑完整证据门禁，安装后再提交父项最终验收候选。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T16:53:38.118720+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T16:56:45.362171+00:00",
+  "sha256": "636615e38b8823cdcb562a6e1255a7c9b10a0e1fbc98a2fe11f1364f12325dbe"
+}

@@ -1,0 +1,164 @@
+{
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "native_candidate_base": "a18c04fc16a5ca54bf36b34a708085fd53aa4062",
+  "gui_sha256": "a7cf4806f57884f408b96a9e03766a5198792830236e1f629ee3e0bf30428e78",
+  "live_production": {
+    "ok": true,
+    "actual_cli_workers": 3,
+    "actual_cli_independent_reviewers": 3,
+    "ledger_done": 3,
+    "parent_returns": 1,
+    "downstream_starts": 1,
+    "upstream_bytes_identical": true,
+    "events": [
+      {
+        "name": "A",
+        "phase": "start",
+        "pid": 101360,
+        "time": 1794411076906
+      },
+      {
+        "name": "B",
+        "phase": "start",
+        "pid": 72400,
+        "time": 1794411076906
+      },
+      {
+        "name": "A",
+        "phase": "finish",
+        "pid": 101360,
+        "time": 1794411255531
+      },
+      {
+        "name": "B",
+        "phase": "finish",
+        "pid": 72400,
+        "time": 1794411272133
+      },
+      {
+        "name": "C",
+        "phase": "start",
+        "pid": 76928,
+        "time": 1794411384361
+      },
+      {
+        "name": "C",
+        "phase": "finish",
+        "pid": 76928,
+        "time": 1794411553575
+      }
+    ],
+    "decisions": [
+      {
+        "order": "A",
+        "decision_sha256": "a6da11713d9148b881037f193518910e6513f0d598b62249555d8de6ee94865e",
+        "decision_file_sha256": "1ed04fa2bb869fa4faad91c867ef3203a4db82eeeb16b8c9af2ec380e2fd360c",
+        "execution_id": "ab8c4761-82e7-4f1b-bd89-974accfeb9a6",
+        "pid": 101360,
+        "reviewer_backend": 2,
+        "decision_persisted_ms": 1794411318865
+      },
+      {
+        "order": "B",
+        "decision_sha256": "53890a0530a55b45ebdf0eaefd0966c242fa6f0bf29e9cc9b6764e722d635ed3",
+        "decision_file_sha256": "cb9d9889e9604ca17e8787d82950ecff2b012e2333ad2106a72dcc5cc912c46e",
+        "execution_id": "1a363ae2-183a-4430-a6b3-97b6ca86e004",
+        "pid": 72400,
+        "reviewer_backend": 2,
+        "decision_persisted_ms": 1794411374463
+      },
+      {
+        "order": "C",
+        "decision_sha256": "d15f325ce2671a5dc1e7405c98702a8b6086a8cf2d292d35c1022801f52c4dff",
+        "decision_file_sha256": "f383305249480e42a9d0bc5a941cbf742c64171bc21026b114f5543e9811e144",
+        "execution_id": "b4530cd5-e462-4eeb-b779-c770eb44fb38",
+        "pid": 76928,
+        "reviewer_backend": 2,
+        "decision_persisted_ms": 1794411637279
+      }
+    ],
+    "original_report_sha256": "ca212708ce897b96a82ea91d59a6e7abfb8104166a51352822d0e0e8fc09da45"
+  },
+  "gameplay": {
+    "exit_code": 0,
+    "marker": true,
+    "gui_sha256": "a7cf4806f57884f408b96a9e03766a5198792830236e1f629ee3e0bf30428e78",
+    "artifact": "project/games/BeaconRun-773-final",
+    "path_base": "installed workspace root"
+  },
+  "artifact_files": [
+    {
+      "path": "beacon.gd",
+      "sha256": "47429e13813191168fef5bfa910e1551966f5dc4f9da8983681499ae916955da"
+    },
+    {
+      "path": "beacon.tscn",
+      "sha256": "88a3d1a4fad6732e30dbcf3bf44d410d1e7ee85bad01e5f5f9cba0e53f317cbd"
+    },
+    {
+      "path": "game.gd",
+      "sha256": "27d4ca5491b280b7e17ea7503a5299107878edd28cb5a8294158ba0ac145efe8"
+    },
+    {
+      "path": "main.tscn",
+      "sha256": "bd5fcbadb544b81731d31ac8672a9b2354ec4f09aab2bbad56f60927dea30e0d"
+    },
+    {
+      "path": "player.gd",
+      "sha256": "52ac1bacfa4d868e1ad0253062abeb52c2aa1e2d751d14eb6ba80d072ed24b4b"
+    },
+    {
+      "path": "player.tscn",
+      "sha256": "2c04f3cc26fe986cc6836d58462e50acb8143c15b58b69d1e9eaa6e616faaf48"
+    },
+    {
+      "path": "project.godot",
+      "sha256": "5beda02f6a56e0c1682501424e86100e9ec7ca54db9f5851c98e8085ef9a3724"
+    },
+    {
+      "path": "verification.txt",
+      "sha256": "a7fd53e086ca80d0ee4335cd57263f2cf588bb5904349fd5ee45112b561c2d4c"
+    },
+    {
+      "path": "verify.gd",
+      "sha256": "6d8c154b9bc213f95e29cfe9a83c901116571f8cba4ae9de0ef6c63e23b56b51"
+    }
+  ],
+  "actual_model": "gpt-6.1-sol",
+  "actual_account": "Existing logged-in Codex CLI; no additional API key",
+  "authority_boundary": "Initial design model and GitHub mandate transport isolated; production workers and independent review use actual logged-in Codex, native callbacks, real processes, Git worktrees, Node ledgers and persisted decisions. Real collaborator permission separately verified in #776.",
+  "test_end": "After three accepted orders and one parent continuation; the parent initiated additional read-only QA outside the completed test scope",
+  "capacity": {
+    "configured": 2,
+    "observed_simultaneous_producers": 2,
+    "throughput_improvement": null,
+    "reason": "Observed overlap, not a comparative throughput benchmark"
+  },
+  "source_and_installation": "Native #783 main delivery and installed-version checks remain separate and pending at this observation",
+  "private_evidence": [
+    {
+      "path": "live-native5-report.json",
+      "sha256": "ca212708ce897b96a82ea91d59a6e7abfb8104166a51352822d0e0e8fc09da45"
+    },
+    {
+      "path": "live-native5-report.diagnostics-report.json",
+      "sha256": "8ee7e6487afb1ca57e318b86713809c93463d2d5495e7dc6f019600cdf6df80d"
+    },
+    {
+      "path": "live-native5-audit.json",
+      "sha256": "95bc8b2613207a5bf6bd108da0246f9dd2da12d989858d42c9f75b6119f4ef7c"
+    },
+    {
+      "path": "independent-game-build21-report.json",
+      "sha256": "d48e5aaedb4b3fa486ed3a819364fd0d413b96e9c605288db7509bc354e750d2"
+    },
+    {
+      "path": "independent-game-build21.log",
+      "sha256": "f5a7007ca3ea9fdc76f7904bc14c586caf0120cdcb2113fade380456c4b13d49"
+    }
+  ],
+  "private_path_base": "original #773 worktree data-collection/receipts/game-production-773",
+  "observed_at": "2026-11-11T15:54:23.259994+00:00"
+}
