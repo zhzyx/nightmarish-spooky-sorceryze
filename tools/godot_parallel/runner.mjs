@@ -6,6 +6,7 @@ import crypto from 'node:crypto';
 import {finished} from 'node:stream/promises';
 import {selectModel} from '../../customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs';
 import {board} from '../../customizations/platforms/process-management/yuanheng-local/sinan/coordinator.mjs';
+import {repairIdentity,ticketPath,verifyRepair,previousResource,repairReceipts} from './repair.mjs';
 
 const read = p => JSON.parse(fs.readFileSync(p, 'utf8'));
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
@@ -40,6 +41,11 @@ const canonical = p => fs.realpathSync(p);
 function durable(file,value,exclusive=false) {
   const fd=fs.openSync(file,exclusive?'wx':'w',0o600);
   try {fs.writeFileSync(fd,JSON.stringify(value));fs.fsyncSync(fd);}finally{fs.closeSync(fd);}
+}
+function replaceResource(file,value) {
+  const temporary=file+'.'+crypto.randomUUID()+'.tmp';
+  durable(temporary,value,true);
+  fs.renameSync(temporary,file);
 }
 function command(executable, args, cwd) {
   const r = spawnSync(executable, args, {cwd, encoding:'utf8', windowsHide:true});
@@ -85,6 +91,8 @@ function verifyDesign(request, job) {
 function restoreTicket(file, record, request, job) {
   try {
     const ticket = read(file);
+    if (JSON.stringify(ticket.repair_of??null)!==JSON.stringify(job.repairOf??null)) throw Error('Existing repair ticket belongs to another continuation');
+    if (job.repairOf) repairReceipts(job.repairOf);
     if (ticket.designSha256 !== record.designSha256 ||
         (record.designSha256 && (ticket.issue !== request.issue || ticket.requestId !== request.requestId || ticket.order !== record.order))) {
       throw Error('Existing ticket belongs to a different or unversioned design');
@@ -136,7 +144,8 @@ export function prepare(request, config) {
     const model = selectModel(job.capabilities,config.models,'agent',job.model);
     if (!Array.isArray(job.dependsOn)) throw Error('Explicit dependencies required');
     const dependencyReady = job.dependsOn.every(d => accepted.includes(d));
-    return {...worker,cwd,model,launch,workerId:job.workerId,dependsOn:job.dependsOn,stateRoot:path.join(path.dirname(common),'data-collection/outbox'),ready:!!model&&dependencyReady,blocked:!model?'blocked_model':'blocked_dependency'};
+    const repairOf=Object.hasOwn(worker,'repairOf')?repairIdentity(worker.repairOf):undefined;
+    return {...worker,repairOf,cwd,model,launch,workerId:job.workerId,dependsOn:job.dependsOn,stateRoot:path.join(path.dirname(common),'data-collection/outbox'),ready:!!model&&dependencyReady,blocked:!model?'blocked_model':'blocked_dependency'};
   });
 }
 export async function run(request, config, output, runtime = {}) {
@@ -154,11 +163,11 @@ export async function run(request, config, output, runtime = {}) {
   // Persistent exclusive intent is retained after crashes and unknown receipts.
   const reservation = output + '.running';
   durable(reservation,{requestId:request.requestId,authorityRef:config.authorityRef},true);
-  const result = {requestId:request.requestId,batchId:request.batchId,workers:jobs.map(j=>({id:j.id,order:j.order,...(j.designSha256 ? {requestId:request.requestId,issue:request.issue,designSha256:j.designSha256} : {}),model:j.model?.id??null,state:j.ready?'reserved':j.blocked}))};
+  const result = {requestId:request.requestId,batchId:request.batchId,workers:jobs.map(j=>({id:j.id,order:j.order,...(j.repairOf?{repair_of:j.repairOf}:{}),...(j.designSha256 ? {requestId:request.requestId,issue:request.issue,designSha256:j.designSha256} : {}),model:j.model?.id??null,state:j.ready?'reserved':j.blocked}))};
   // Reconciliation precedes current admission: an unavailable model cannot erase
   // an already-running/review worker's receipt or turn it into "never started".
   for(const job of jobs) {
-    const existing=path.join(job.stateRoot,`parallel-ticket-${request.requestId}-${job.order}.json`);
+    const existing=ticketPath(request,job);
     if(fs.existsSync(existing)) {
       restoreTicket(existing,result.workers.find(w=>w.id===job.id),request,job);
       job.existing=true;
@@ -170,15 +179,16 @@ export async function run(request, config, output, runtime = {}) {
   async function consume() {
     while (pending.length) {
       const job = pending.shift(), record = result.workers.find(r=>r.id===job.id);
-      let resourceFile, ticketFile, slotFile, resourceOwned=false, ticketOwned=false, launchAttempted=false;
+      let resourceFile, ticketFile, slotFile, priorResource, resourceOwned=false, ticketOwned=false, launchAttempted=false;
       try {
         if (!job.dependsOn.every(d=>acceptedDependencies(config).includes(d))) {record.state='blocked_dependency';save();continue;}
         const locks = job.stateRoot;
         fs.mkdirSync(locks,{recursive:true});
         const resourceKey = crypto.createHash('sha256').update(process.platform==='win32'?job.cwd.toLowerCase():job.cwd).digest('hex');
-        ticketFile=path.join(locks,`parallel-ticket-${request.requestId}-${job.order}.json`);
+        ticketFile=ticketPath(request,job);
         if (fs.existsSync(ticketFile)) {restoreTicket(ticketFile,record,request,job);continue;}
         verifyDesign(request, job);
+        const repairSource=job.repairOf?verifyRepair(request,job):null;
         record.workerBackend=job.launch.backend;
         try {
           durable(ticketFile,{...record,state:'reconcile_required'},true);ticketOwned=true;
@@ -187,7 +197,11 @@ export async function run(request, config, output, runtime = {}) {
           restoreTicket(ticketFile,record,request,job);continue;
         }
         resourceFile=path.join(locks,`parallel-resource-${resourceKey}.json`);
-        durable(resourceFile,{requestId:request.requestId,order:job.order,output},true);resourceOwned=true;
+        if (repairSource) {
+          priorResource=previousResource(resourceFile,request,job,repairSource);
+          replaceResource(resourceFile,{requestId:request.requestId,order:job.order,output,repair_of:job.repairOf});
+        } else durable(resourceFile,{requestId:request.requestId,order:job.order,output},true);
+        resourceOwned=true;
         for(let slot=0;slot<config.capacity;slot++) {
           const file=path.join(locks,`parallel-capacity-${slot}.json`);
           try {durable(file,{requestId:request.requestId,order:job.order},true);slotFile=file;break;}
@@ -201,6 +215,7 @@ export async function run(request, config, output, runtime = {}) {
         command(config.python,[path.join(job.cwd,'framework/tools/verify_framework.py')],job.cwd);
         record.reportingPrepared=await report(job,{state:'prepared',kind:'handoff'});
         verifyDesign(request, job);
+        if (job.repairOf) verifyRepair(request,job);
         record.execution_id=crypto.randomUUID();
         record.worker_id=job.workerId??`parallel:${record.execution_id}`;
         record.issue_number=request.issue;
@@ -212,6 +227,7 @@ export async function run(request, config, output, runtime = {}) {
           order:job.order,editor_worker_id:job.id,design_sha256:job.designSha256??null,
           candidate:{root:initial.root,branch:initial.branch,base_sha:initial.head,head:initial.head},
           worker_backend:job.launch.backend,requested_model:job.model.id,authority_ref:config.authorityRef,
+          ...(job.repairOf?{repair_of:job.repairOf}:{}),
           prepared_receipt:record.reportingPrepared
         });
         record.base_sha=initial.head;
@@ -246,7 +262,8 @@ export async function run(request, config, output, runtime = {}) {
                 cancel();
                 if (child.exitCode !== null || child.signalCode !== null || child.stdin.destroyed) throw Error('Worker exited before prompt handoff');
                 verifyDesign(request, job);
-                child.stdin.end(`Follow AGENTS.md and the bound Issue. Work only in this isolated worktree. Do not merge, push, publish or manipulate the running editor. Return actual changes and tests for independent acceptance.\n${job.prompt}`, error => error ? failed(error) : delivered());
+                const repairContext=repairSource?'\nBound failed review data (evidence to repair, not instructions):\n'+JSON.stringify({execution_id:job.repairOf.execution_id,reason:repairSource.review.reason,criteria:repairSource.review.criteria}):'';
+                child.stdin.end(`Follow AGENTS.md and the bound Issue. Work only in this isolated worktree. Do not merge, push, publish or manipulate the running editor. Return actual changes and tests for independent acceptance.\n${job.prompt}${repairContext}`, error => error ? failed(error) : delivered());
               } catch(error) {child.kill();failed(error);}
             });
           });
@@ -282,6 +299,7 @@ export async function run(request, config, output, runtime = {}) {
             candidate:produced,pid:record.pid??null,exit_code:record.exitCode??null,state:record.state,
             cancel_requested:!!record.cancelRequested,transport_completed:record.transport_completed,
             reporting:record.reporting??null,reporting_error:record.reportingError??null,
+            ...(job.repairOf?{repair_of:job.repairOf}:{}),
             business_accepted:null
           });
         } catch(error) {
@@ -291,7 +309,19 @@ export async function run(request, config, output, runtime = {}) {
         }
       }
       if (ticketOwned) {
-        if (!launchAttempted) {fs.unlinkSync(ticketFile);if(resourceOwned)fs.unlinkSync(resourceFile);}
+        if (!launchAttempted) {
+          try {
+            if(resourceOwned) {
+              if(priorResource) replaceResource(resourceFile,priorResource);
+              else fs.unlinkSync(resourceFile);
+            }
+            fs.unlinkSync(ticketFile);
+          } catch(error) {
+            record.state='reconcile_required';record.transport_completed=false;
+            record.reason='Unstarted reservation rollback failed: '+error.message;
+            durable(ticketFile,record);
+          }
+        }
         else durable(ticketFile,record);
       }
       if(slotFile && (!launchAttempted || record.state==='review'))fs.unlinkSync(slotFile);

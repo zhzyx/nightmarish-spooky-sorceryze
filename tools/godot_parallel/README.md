@@ -62,3 +62,10 @@ report.py 复用现有 Godot bridge.enqueue/flush，在模型启动前持久记�
 测试 `node --test tests/editor/test_parallel_work_orders.mjs` 使用临时真实 Git worktree 和受控假 CLI、假门禁，验证 Codex 兼容路径及其他命令的实际子进程、参数/型号、标准输入、工作副本写入、门禁拒绝和去重，不能证明供应商调用、账户权限或生产准入。
 
 Windows 的独立子进程树边界使用仓库锁文件固定的 Job Object 模块，即使选择 workerCommand 也需要该模块。可信 Windows 执行宿主可按 tools/codebuddy_cli/package-lock.json 在本仓库运行 `npm ci --prefix tools/codebuddy_cli` 准备依赖；通用工单核验入口不加载该模块。
+
+
+宿主已绑定真实独立失败审查时，可在对应 request.workers 项传入 `repairOf: {execution_id, continuation_id, terminal_receipt:{path,sha256}, review:{path,sha256}}`。review 是完整失败 decision，包含原 candidate/audit_policy、生产 execution/worker/terminal、独立 reviewer/conversation/terminal、设计摘要以及逐项 `{id,met,evidence:[{path,sha256}]}`，至少一项 met=false；runner 核对原始字节、原票据、已知成功运输、实际候选和当前准入。这个私有数据接口不证明真实审查者身份，原生宿主必须沿实际完成上下文绑定，不能把任意 JSON 当批准。
+
+每个前驱 execution 只有一个后继修复票据。原票据保持原字节；资源从匹配的原执行登记原子转交，启动前失败恢复原资源，已尝试启动而结果未知时保留占用。相同 continuation 重放仅回读；不同 continuation 不能争抢同一前驱，新的失败审查只能针对实际后继执行。修复的 ticket/registration/terminal 保存 repair_of，stdin 另附已核验的失败 reason/criteria 作为任务数据。修复完成仍进入 review，不能自己获得业务验收。
+
+现有 Node 宿主直接加载 runner.mjs 与 repair.mjs；同一个 Node 可执行文件执行修复前后及失败回退测试。恢复旧 runner 时保留全部票据和审查证据；旧版本不能产生带 repair_of 的后继执行，原生消费者须拒绝缺少本次谱系的回执。未知、取消、过期来源均不可借此重新启动。
