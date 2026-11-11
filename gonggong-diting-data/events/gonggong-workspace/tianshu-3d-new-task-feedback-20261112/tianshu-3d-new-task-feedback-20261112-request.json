@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-3d-new-task-feedback-20261112-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-3d-new-task-feedback-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-11T19:43:30.949401+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/819",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Repair 3D new task no response; connection guidance, asynchronous access feedback and stale-result rejection",
+    "authorization_ref": "Current user bug report after #813 delivery",
+    "design": "design-docs/tianshu-3d-new-task-feedback-20261112.md",
+    "validation": "data-collection/tianshu-3d-click-819.json",
+    "usage": null,
+    "usage_unknown_reason": "No actual per-task token/cost accounting available"
+  },
+  "evidence_refs": [],
+  "sha256": "3e8a8b38700a4f07c0ff0f1f180958aa52f2a9c1f113ade4bbcb82698e7c4345"
+}

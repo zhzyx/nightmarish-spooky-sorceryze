@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-54cea5e5f90f9807a997cf117756808a46fe8972aa6e2c24b884569d3e8d1383",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/819",
+  "occurred_at": "2026-11-11T19:45:08.429579+00:00",
+  "evidence_refs": [
+    "tianshu-3d-new-task-feedback-20261112-request",
+    "learn-b0ca839e94eef1902553d9f07e16d7efdf79fe7c6b38f734d59fff180d75bc4a"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 11,
+    "previous": "db24220c5d6b092b5d7546fe949a1a790659cc23f791550d0c421da59d3352ae",
+    "action": "applied",
+    "details": {
+      "task": "#819 repair embedded 3D workbench access feedback; recalled revision 10 and copied prior same-baseline incremental outputs into an isolated worktree.",
+      "observed": "SCons regenerated embedded scripts and relinked native macOS Metal/OpenGL editor. Final binary passed button, failure/recovery, stale-access, restart tests and real GitHub identity-to-chat-mount probe. Fixture-only successful access would not have revealed missing runtime Python or silent unauthenticated return; verify failure and actual configured access separately."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/tianshu-3d-click-819.json",
+        "sha256": "7114fb2baafcd4901c23398325d144b184f9800ce1a80bbf3a1c5f1047127558"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-new-task-feedback-20261112/tianshu-3d-new-task-feedback-20261112-request.json",
+      "sha256": "3e8a8b38700a4f07c0ff0f1f180958aa52f2a9c1f113ade4bbcb82698e7c4345"
+    }
+  },
+  "sha256": "3ce7dd2c38273e543185a55e9ba9a700707847614c8b5891cfd6042f06e6eaf7"
+}

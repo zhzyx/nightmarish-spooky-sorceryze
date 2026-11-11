@@ -1,0 +1,20 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/819",
+  "issue_number": 819,
+  "request_id": "tianshu-3d-new-task-feedback-20261112",
+  "integration_base": "46697266403533f1038fd129956859597d4eda88",
+  "upstream_pr": 818,
+  "integration": "Fast-forwarded own isolated task branch; upstream native chat production integration has no overlapping edits in spatial_workbench.gd/workspace.gd/test. Rebuilt native editor and reran all spatial/restart assertions plus real identity-to-chat-button probe.",
+  "prior_evidence": "data-collection/tianshu-3d-click-819.json",
+  "binary_sha256": "03fa3fb7502a46de0e66aa1704393d4e398575bd6edfa1fdd96888e4c7930c2b",
+  "native_passed": true,
+  "restart_passed": true,
+  "live_access_and_chat_mount_passed": true,
+  "external_model_sent": false,
+  "changed_inputs": {
+    "editor/docks/daqian/spatial_workbench.gd": "84a4fc68ff348621a85136efc1e20887917aaf1a3388693d9faea19c16881a05",
+    "editor/docks/daqian/workspace.gd": "bd347eb5d873694b31daa7396b033c30b2b368f1f741133a64b0d019d42071cd",
+    "tests/editor/tianshu_spatial.gd": "b264f022928722fde846fb3dac13a7dd7b8a09e518f19dd7d255c156c4a97ce8"
+  },
+  "review": "Original independent review plus narrow second independent final-diff check; both completed and native dispatch claims reconciled."
+}

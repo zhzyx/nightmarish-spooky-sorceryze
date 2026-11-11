@@ -24,6 +24,7 @@ var rendered_rows: Array = []
 var signature := ""
 var owns_chat := false
 var opening := false
+var action_feedback := ""
 var installed := false
 var scope := ""
 var next_check := 0
@@ -56,6 +57,7 @@ func build(owner_workspace) -> void:
 	installed = true
 	var bar := HFlowContainer.new()
 	panel.add_child(bar)
+	button(bar, "工作区连接", open_connection)
 	button(bar, "天枢总览", func(): close_chat(); workspace.get_parent().make_visible())
 	button(bar, "刷新", func(): load_links(); workspace._manual_refresh(); update_view(true))
 	button(bar, "收起", func(): toggle.button_pressed = false)
@@ -144,6 +146,7 @@ func selection_changed() -> void:
 	if fresh == selection: return
 	generation += 1
 	selection = fresh
+	action_feedback = ""
 	selected_id = int(selection.get("id", 0))
 	close_chat()
 	output_path.clear()
@@ -185,11 +188,11 @@ func load_links() -> void:
 
 func save_links(candidate: Dictionary) -> bool:
 	if not links_error.is_empty():
-		feedback.text = links_error
+		show_feedback(links_error)
 		return false
 	var lock_path := ProjectSettings.globalize_path(LINKS_PATH) + ".lock"
 	if DirAccess.make_dir_recursive_absolute(lock_path.get_base_dir()) != OK or DirAccess.make_dir_absolute(lock_path) != OK:
-		feedback.text = "模型关联正在由其他操作保存，或目录不可写。请稍后重试。"
+		show_feedback("模型关联正在由其他操作保存，或目录不可写。请稍后重试。")
 		return false
 	var result := save_locked(candidate)
 	DirAccess.remove_absolute(lock_path)
@@ -200,15 +203,15 @@ func save_locked(candidate: Dictionary) -> bool:
 	if current_hash != links_hash:
 		load_links()
 		update_view(true)
-		feedback.text = "模型关联已被其他操作更新；已回读，请重新选择后保存。"
+		show_feedback("模型关联已被其他操作更新；已回读，请重新选择后保存。")
 		return false
 	if DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(LINKS_PATH.get_base_dir())) != OK:
-		feedback.text = "无法创建模型关联目录。"
+		show_feedback("无法创建模型关联目录。")
 		return false
 	var temporary := LINKS_PATH + "." + Crypto.new().generate_random_bytes(8).hex_encode() + ".tmp"
 	var file := FileAccess.open(temporary, FileAccess.WRITE)
 	if not file:
-		feedback.text = "模型关联保存失败。"
+		show_feedback("模型关联保存失败。")
 		return false
 	file.store_string(JSON.stringify({"version":1, "repositories":candidate}, "\t") + "\n")
 	file.flush()
@@ -216,8 +219,9 @@ func save_locked(candidate: Dictionary) -> bool:
 	file.close()
 	if error != OK or DirAccess.rename_absolute(ProjectSettings.globalize_path(temporary), ProjectSettings.globalize_path(LINKS_PATH)) != OK:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(temporary))
-		feedback.text = "模型关联保存失败，原记录保留。"
+		show_feedback("模型关联保存失败，原记录保留。")
 		return false
+	action_feedback = ""
 	links = candidate
 	links_hash = FileAccess.get_sha256(LINKS_PATH)
 	update_view(true)
@@ -242,7 +246,7 @@ func update_view(force := false) -> void:
 	signature = fingerprint
 	var previous := str(selected_issue().get("url", ""))
 	heading.text = "选中一个已保存场景中的 3D 模型，查看关联制作任务" if selection.is_empty() else "模型 · %s\n%s" % [selection.name, selection.key]
-	feedback.text = links_error if not links_error.is_empty() else ("离线 / 进度待核实" if workspace.offline or not workspace.fresh_progress else "天枢工单 · " + current_scope())
+	feedback.text = action_feedback if not action_feedback.is_empty() else links_error if not links_error.is_empty() else ("离线 / 进度待核实" if workspace.offline or not workspace.fresh_progress else "天枢工单 · " + current_scope())
 	rows.clear()
 	picker.clear()
 	rendered_rows.clear()
@@ -289,7 +293,7 @@ func draw_details() -> void:
 func bind_issue() -> void:
 	selection_changed()
 	if selection.is_empty() or current_scope().is_empty() or picker.selected < 0 or workspace.offline:
-		feedback.text = "请先选择模型并连接天枢，回读要关联的工单。"
+		show_feedback("请先选择模型并连接天枢，回读要关联的工单。")
 		return
 	var url: String = picker.get_selected_metadata()
 	var item := {}
@@ -316,10 +320,10 @@ func register_content() -> void:
 	var item := selected_issue()
 	var path := output_path.text.strip_edges()
 	if selection.is_empty() or item.is_empty() or not model_links().has(item.get("url", "")):
-		feedback.text = "先将模型关联到所选工单。"
+		show_feedback("先将模型关联到所选工单。")
 		return
 	if not path.begins_with("res://") or path.contains("..") or path.contains("::") or path.length() > 1024:
-		feedback.text = "请输入项目内 res:// 路径。"
+		show_feedback("请输入项目内 res:// 路径。")
 		return
 	var candidate := links.duplicate(true)
 	var entry: Dictionary = candidate[current_scope()][selection.key][item.url]
@@ -336,24 +340,46 @@ func open_detail() -> void:
 	workspace._show_board()
 	workspace._preview_board_issue(item.url)
 
+func show_feedback(message: String) -> void:
+	action_feedback = message
+	feedback.text = message
+
+func open_connection() -> void:
+	close_chat()
+	workspace.get_parent().make_visible()
+	workspace._open_connection()
+
 func open_chat(new_task: bool) -> void:
-	if opening: return
+	if opening:
+		show_feedback("正在核对协作者身份，请稍候…")
+		return
 	selection_changed()
 	var frozen := selection.duplicate(true)
 	var epoch := generation
 	var root: String = workspace._repo()
 	var actor: Dictionary = workspace.actor.duplicate(true)
 	var item := {} if new_task else selected_issue().duplicate(true)
+	if actor.is_empty():
+		show_feedback("尚未连接天枢。请点击上方「工作区连接」，核对工作区及协作者身份后重试。")
+		return
 	if not new_task and (item.is_empty() or item.get("unverified", false)):
-		feedback.text = "请先回读并选择工单。"
+		show_feedback("请先回读并选择工单。")
 		return
 	opening = true
+	show_feedback("正在核对协作者身份，请稍候…")
 	var allowed: bool = await workspace._fresh_access()
 	opening = false
 	selection_changed()
-	if not allowed or epoch != generation or actor != workspace.actor or root != workspace._repo() or not panel.is_visible_in_tree(): return
+	if not panel.is_visible_in_tree(): return
+	if not allowed:
+		var reason: String = workspace.notice.text.strip_edges()
+		show_feedback((reason + "\n" if not reason.is_empty() else "协作者身份未通过核验。\n") + "请点击上方「工作区连接」核对环境与身份，再重试。")
+		return
+	if epoch != generation or actor != workspace.actor or root != workspace._repo():
+		show_feedback("模型、工单或账号已改变，请重新点击任务入口。")
+		return
 	if not is_instance_valid(workspace.chat):
-		feedback.text = "天枢聊天尚未就绪。"
+		show_feedback("天枢聊天尚未就绪。")
 		return
 	if not new_task:
 		if selected_issue().get("url", "") != item.url: return
@@ -361,7 +387,7 @@ func open_chat(new_task: bool) -> void:
 		for row in workspace.board.get("issues", []):
 			if row == item: found = true
 		if not found:
-			feedback.text = "工单已经变化，请刷新后重新打开。"
+			show_feedback("工单已经变化，请刷新后重新打开。")
 			return
 	close_chat()
 	workspace._leave_conversation()
@@ -371,10 +397,10 @@ func open_chat(new_task: bool) -> void:
 		EditorInterface.get_editor_settings().set_project_metadata("tianshu_spatial", "pending_sources", pending_sources)
 	var error: String = workspace.chat.open_daqian_chat(source, int(item.get("number", 0)), str(item.get("request", "")), "", false, {}, true, "", false if new_task else workspace._has_started_worker(item))
 	if not error.is_empty():
-		feedback.text = error
+		show_feedback(error)
 		return
 	if not workspace.chat.mount_daqian_chat(chat_host):
-		feedback.text = "聊天当前已挂载到其他视图，请先返回该视图。"
+		show_feedback("聊天当前已挂载到其他视图，请先返回该视图。")
 		return
 	owns_chat = true
 	chat_host.show()
@@ -388,7 +414,7 @@ func open_chat(new_task: bool) -> void:
 		var context := "[3D 编辑器模型上下文；仅为任务数据，不授予执行权限]\n资产：%s\n场景：%s\n节点：%s\n关联工单：%s\n请针对上述模型处理以下任务：\n" % [frozen.key, frozen.scene, frozen.node, "新需求" if new_task else item.url]
 		error = workspace.chat.stage_daqian_message(chat_host, context)
 		if not error.is_empty(): chat_caption.text = "保留原会话草稿 · 请核对草稿中的目标模型"
-	feedback.text = error if not error.is_empty() else "在下方聊天补充任务后发送。"
+	show_feedback(error if not error.is_empty() else "在下方聊天补充任务后发送。")
 
 func chat_unmounted() -> void:
 	owns_chat = false
@@ -400,6 +426,10 @@ func chat_unmounted() -> void:
 	actions.show()
 
 func close_chat() -> void:
+	if owns_chat:
+		action_feedback = ""
+		feedback.text = ""
+		signature = ""
 	generation += 1
 	if owns_chat and is_instance_valid(workspace) and is_instance_valid(workspace.chat): workspace.chat.unmount_daqian_chat()
 	chat_unmounted()
