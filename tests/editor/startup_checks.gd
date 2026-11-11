@@ -90,7 +90,7 @@ func run() -> void:
 	chat.verify_ai_connection()
 	var manual_generation: int = chat.get_ai_connection_status().generation
 	controller.cancel_checks()
-	check(chat.get_ai_connection_status().state == "checking" and chat.get_ai_connection_status().generation == manual_generation, "cancelling startup preserves newer manual connection probe")
+	check(chat.get_ai_connection_status().state == "checking" and chat.get_ai_connection_status().generation == manual_generation, "canceling startup preserves newer manual connection probe")
 	await get_tree().create_timer(1.0).timeout
 	planner.cancelled = false
 	edit("APIEndpoint", OS.get_environment("STARTUP_ENDPOINT") + "/v1/chat/completions")
@@ -118,7 +118,7 @@ func run() -> void:
 	real_planner.project_model_connecting = true
 	real_planner.startup_model_operation = -1
 	real_planner.cancel_startup_model_refresh()
-	check(catalog.pending, "cancelling identity stage preserves manual model operation")
+	check(catalog.pending, "canceling identity stage preserves manual model operation")
 	while catalog.pending:
 		await get_tree().create_timer(0.05).timeout
 	check(catalog.last_result.status == "refreshed", "manual model operation completes after startup cancellation")

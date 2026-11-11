@@ -73,6 +73,9 @@ skip = [
 	"core/string/locales.h",
 	# Preserve the signed diagnostic wording in the #750 Kuafu receipt.
 	"gonggong-diting-data/events/gonggong-workspace/editor-model-path-audit/kuafu-b833f22b0b1c6683cda4338118658a41535fa0da.json",
+	# Preserve the exact original startup test receipts; corrected labels are recorded separately.
+	"data-collection/startup-config-sync-857.json",
+	"data-collection/startup-config-sync-857-integrated.json",
 	# Preserve this immutable receipt; its corrected prose is appended separately.
 	"data-collection/editor-unified-settings-main-integration-review-20261108.json",
 	"data-collection/requests/editor-command-gaps-batch-20261108/comment-spelling-validation.json",
