@@ -1,0 +1,47 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/825",
+  "issue_number": 825,
+  "request_id": "tianshu-3d-send-connection-20261112",
+  "scope": "Restore native 3D conversation sending through existing authenticated Codex; no product code changes",
+  "root_cause": "Native conversation used API backend (0) with empty model; local pre-send validation rejected it. Opening the chat alone had not tested this boundary.",
+  "authorization": "User chose already logged-in Codex, returned from mounted chat, approved native backend switch, then approved resuming the original queued task.",
+  "native_receipts": {
+    "backend_switch": {
+      "request_id": "send825-switch-current-to-codex",
+      "routing_status": "completed",
+      "old_backend": 0,
+      "new_backend": 2,
+      "queued_count_before": 1,
+      "manual_confirmation_required": true
+    },
+    "queue_resume": {
+      "request_id": "send825-resume-original-task",
+      "routing_status": "completed",
+      "manual_confirmation_required": true
+    }
+  },
+  "observed_result": {
+    "codex_login": "Logged in using ChatGPT",
+    "backend": 2,
+    "queued_count_after": 0,
+    "model_catalog_available": true,
+    "real_issue": 827,
+    "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/827",
+    "issue_state": "OPEN",
+    "issue_status": "status:needs-decision",
+    "asset": "res://preview.tscn::Hero",
+    "asset_binding": {
+      "contents": [],
+      "number": 827,
+      "request": "requirement-9a2529038a2d590ae7d7fa2f2f2c4fc8"
+    },
+    "next_step": "Godot-owned requirement clarification asks for material style: multicolor gradient, rainbow regions or solid color."
+  },
+  "acceptance": {
+    "original_configuration_failure_resolved": true,
+    "original_message_preserved_and_resumed": true,
+    "actual_model_round_trip_and_issue_binding_observed": true,
+    "game_asset_production_complete": false
+  },
+  "limits": "The created production requirement remains owned by its editor worker and awaits the user material choice. No claim of geometry/material production or full AAA acceptance. Credentials, private chat snapshots and original task contents are not stored here."
+}
