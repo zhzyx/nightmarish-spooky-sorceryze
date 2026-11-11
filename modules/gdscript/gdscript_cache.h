@@ -80,7 +80,8 @@ public:
 
 namespace GDScriptTests {
 class TestGDScriptCacheAccessor;
-}
+class RuntimeCompilationCacheAccessor;
+} //namespace GDScriptTests
 
 class GDScriptCache {
 	// String key is full path.
@@ -96,6 +97,7 @@ class GDScriptCache {
 	friend class GDScriptParserRef;
 	friend class GDScriptInstance;
 	friend class GDScriptTests::TestGDScriptCacheAccessor;
+	friend class GDScriptTests::RuntimeCompilationCacheAccessor;
 
 	static GDScriptCache *singleton;
 

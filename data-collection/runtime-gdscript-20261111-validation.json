@@ -1,0 +1,94 @@
+{
+  "request_id": "runtime-gdscript-20261111",
+  "issue_number": 796,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/796",
+  "base": "a18c04fc16a5ca54bf36b34a708085fd53aa4062",
+  "state": "local_validation_passed",
+  "observations": [
+    {
+      "action": "host-intake",
+      "failure": "gh not in PATH; sandbox network denied",
+      "resolution": "discovered installed authenticated CLI; authorized network execution verified Sail-Li WRITE"
+    },
+    {
+      "action": "dispatch",
+      "failure": "Node not in PATH made framework verification fail",
+      "resolution": "installed host Node explicitly placed on PATH; native launch and receipt recorded"
+    },
+    {
+      "action": "headless-test",
+      "failure": "template default disables --path overrides",
+      "resolution": "built test candidate with disable_path_overrides=no"
+    },
+    {
+      "action": "independent-review",
+      "failure": "temporary cache entries retained; static VM error not reflected by return code",
+      "resolution": "temporary parser/script registration and cache cleanup; scoped same-thread initialization error collection"
+    },
+    {
+      "action": "regression-test",
+      "failure": "nested classes attempted disk load of virtual source",
+      "resolution": "registered in-memory parser ref; nested and static headless cases pass"
+    },
+    {
+      "action": "cache-unit-test",
+      "failure": "test fixture omitted GDScriptLanguage initialization and then dereferenced null",
+      "resolution": "language initialized, null guarded; unit rerun found abandoned-parser tombstone, removed own transient tombstone; final 256 assertions pass"
+    }
+  ],
+  "unknown": [
+    "native compilation not yet implemented",
+    "main delivery not yet complete"
+  ],
+  "runtime": {
+    "executable_sha256": "9d4f0aa2bee4cc54833e88a229381f8c0251beb2b2f11226e2151f1299ed23f2",
+    "test_sha256": "1b3fcb37dbda054d884a1d525576781d7115e1b3af1cba05bd15d890b9d15ac5",
+    "exit_code": 0,
+    "stdout": "Godot Engine v4.8.beta.custom_build.a18c04fc1 (2026-11-11 14:20:53 UTC) - https://godotengine.org\n\n{\"failures\":[],\"passed\":true,\"test\":\"gdscript_compile\"}\nRUNTIME_GDSCRIPT_COMPILE_OK\n",
+    "stderr": "",
+    "passed": true
+  },
+  "cache_unit": {
+    "exit_code": 0,
+    "stdout": "[doctest] doctest version is \"2.4.12\"\n[doctest] run with \"--help\" for options\n===============================================================================\n[doctest] test cases:   1 |   1 passed | 0 failed | 1224 skipped\n[doctest] assertions: 256 | 256 passed | 0 failed |\n[doctest] Status: SUCCESS!\n",
+    "stderr": ""
+  },
+  "checks": {
+    "headless_runtime": true,
+    "cache_unit_assertions": 256,
+    "xml_reference": true,
+    "python_ruff": true,
+    "diff_whitespace": true,
+    "clang_format_22_1_5": true
+  },
+  "review": {
+    "worker": "/root/sinan_521a18872cf84e44",
+    "state": "passed_after_fixes",
+    "findings_addressed": [
+      "temporary cache retention",
+      "initialization errors",
+      "nested handled failure attribution",
+      "abandoned parser tombstone"
+    ],
+    "scope": "independent read-only source review, execution evidence from parent"
+  },
+  "input_sha256": {
+    "modules/gdscript/gdscript.cpp": "88d21fdea07f217af49b6e86ac666c1e32422f9e24203e7f842c3b6be0f968d9",
+    "modules/gdscript/gdscript.h": "436ded43adb639cbcda0c662204eb6a23201d37345258678e3a30b7b9578b836",
+    "modules/gdscript/gdscript_cache.h": "d0eea02aa868c83dd1879b856d2509e426ca3f7abbd9c9643f9b1e4bdcf808d6",
+    "modules/gdscript/doc_classes/GDScript.xml": "7f5deb92d5a39f0411d4fee6869d99a3c81c5705a82ef2d304ee40f46f4cf4c3",
+    "tests/runtime/gdscript_compile.gd": "1b3fcb37dbda054d884a1d525576781d7115e1b3af1cba05bd15d890b9d15ac5",
+    "tests/runtime/run_compile.py": "901fdd4a371b57c065bec151539a8a98fa08c28bd76f458b104de7d0d79a809a",
+    "tests/runtime/test_gdscript_compile.cpp": "352cdf3dfacd92ec71bf52cf80e066bdd8c8c70b2748f5f516c18d5b70af7c11"
+  },
+  "build": {
+    "platform": "macos",
+    "arch": "arm64",
+    "target": "template_debug",
+    "dev_build": true,
+    "tests": true,
+    "disable_path_overrides": false,
+    "reason": "exercise runtime API without editor-only dependencies; isolated candidate does not replace installed editor",
+    "native_invalidation": "editing gdscript.cpp rebuilt its object, module archive and executable; header change rebuilt dependent gdscript objects; behavior tests used resulting executable"
+  }
+}
