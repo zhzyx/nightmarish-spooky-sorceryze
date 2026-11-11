@@ -44,6 +44,13 @@ jobs:
       - name: Setup Python and SCons
         uses: ./.github/actions/godot-deps
 
+      - name: Preflight real signed external host and launchd
+        if: matrix.target == 'editor'
+        run: |
+          python3 -m unittest discover -s tools -p test_editor_trusted_hosts.py -v
+          python3 -m unittest discover -s tools -p test_macos_external_host_acceptance.py -v
+          python3 tools/run_macos_external_host_acceptance.py --preflight --report "$RUNNER_TEMP/external-host-preflight.json" --download-fixtures
+
       - name: Download pre-built ANGLE
         shell: sh
         id: angle-sdk
@@ -100,8 +107,26 @@ jobs:
       - name: Verify external host trust on macOS
         if: matrix.target == 'editor'
         run: |
-          python3 -m unittest discover -s tools -p test_editor_trusted_hosts.py -v
           ./bin/godot.macos.editor.arm64 --headless --test --test-case='[Editor][AIChat][ExternalPeer]*'
+
+      - name: Verify real signed external hosts without GUI or model calls
+        if: matrix.target == 'editor'
+        run: >-
+          python3 tools/run_macos_external_host_acceptance.py
+          --godot ./bin/godot.macos.editor.arm64
+          --report "$RUNNER_TEMP/external-host-acceptance.json"
+          --download-fixtures --download-codex
+
+      - name: Upload real signed host acceptance evidence
+        if: always() && matrix.target == 'editor'
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: macos-signed-host-acceptance
+          path: |
+            ${{ runner.temp }}/external-host-preflight.json
+            ${{ runner.temp }}/external-host-preflight-logs/*
+            ${{ runner.temp }}/external-host-acceptance.json
+            ${{ runner.temp }}/external-host-acceptance-logs/*
 
       - name: Verify Tianshu creator navigation on arm64
         if: matrix.target == 'editor'

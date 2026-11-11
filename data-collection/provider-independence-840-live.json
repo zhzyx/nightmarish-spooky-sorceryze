@@ -1,0 +1,50 @@
+{
+  "state": "succeeded",
+  "reopened_state": "succeeded",
+  "glb_sha256": "08842b82afde8c7df176718522882ed29ff62f55e9a207780862d53968f7266c",
+  "geometry": {
+    "vertices": 576,
+    "triangles": 780,
+    "primitives": 5,
+    "bytes": 12928,
+    "bounds": {
+      "min": [
+        -0.6000000238418579,
+        0.0,
+        -0.4000000059604645
+      ],
+      "max": [
+        0.6000000238418579,
+        0.7499999776482582,
+        0.4000000059604645
+      ]
+    }
+  },
+  "plan_parts": 5,
+  "parts": [
+    {
+      "name": "BlueTop",
+      "primitive": "box"
+    },
+    {
+      "name": "FrontLeftLeg",
+      "primitive": "cylinder"
+    },
+    {
+      "name": "FrontRightLeg",
+      "primitive": "cylinder"
+    },
+    {
+      "name": "BackLeftLeg",
+      "primitive": "cylinder"
+    },
+    {
+      "name": "BackRightLeg",
+      "primitive": "cylinder"
+    }
+  ],
+  "metadata": {},
+  "code_version": "576cbc171e70b8141199620bf6a4cb1b5e94253f",
+  "cli_version": "0.167.0-alpha.3.2",
+  "business_case": "Explicit configured Codex CLI generates five-part table through real model and current Godot builder; succeeded result survives provider reopen without resubmit"
+}

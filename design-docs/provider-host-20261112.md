@@ -35,3 +35,9 @@ python3 tools/editor_trusted_hosts.py revoke --role host --team TEAMID1234 --ide
 实际写域为原生实现与头、`tools/editor_instruction_client.py`、新增宿主工具及其测试、现有 `tests/editor/test_ai_chat_external_peer.cpp`（初始 .h 路径经派发责任者纠正）、本设计。复用了 godot-build-placement/trace-native-consumer revision 11：按真实消费者区分 native 与 host_tool，且单平台证据不外推到 macOS。
 
 独立审查纠偏：相同 Team ID/identifier/CDHash 的 helper 与 host 双项曾可能因排序优先匹配 helper。现 register 对相同精确签名身份替换旧角色，revoke 仍按含角色的完整项精确撤销；原生读取已有双项时显式 host 优先。新增升级、降级、撤销不误删另一角色与旧双项清理回归。Windows 10 项中 8 通过、2 个 macOS 实测跳过；ruff 0.17.1 format/check 和 clang-format 22.1.5 检查通过，原生生产输入已交给集成责任者构建。
+
+补充真实进程链入口 `tools/run_macos_external_host_acceptance.py`，属于仅在一次性 macOS GitHub runner 执行的宿主验收工具，不嵌入引擎。输入为当前候选编辑器、官方发布且固定 SHA-256 的 PowerShell 7.6.9/7.7.0 包，以及可选官方 Codex 应用；输出实际签名、进程 PID、原生 socket 鉴权回执和逐项结果。通过用户域 launchctl 后台启动完整祖先链，不修改签名、不打开可见桌面、不调用模型，登记前要求现有信任条目为空，结束撤销测试条目并清理自有进程。
+
+workflow 在编译前执行真实签名/launchd 预检，编译后验证未登记拒绝、登记成功、角色升降级、错误摘要拒绝、同 Team ID/identifier 的真实版本升级先拒绝再登记成功、撤销拒绝。Codex 仅在官方 Electron RunAsNode fuse 已允许时验证内建签名锚；缺条件记 unavailable，已具备条件后请求失败仍判失败。报告分别保留 non_codex_host_ok 与 full_signed_anchor_acceptance_ok，不把前者冒充后者。脚本失败可回退至已有纯链测试入口，但不能由此宣称真实链通过；所有实际结果以 CI 上传回执为准。
+
+首次真实 macOS run 43111713606 的 arm64 编译成功，随后 Python 签名拒绝用例在复制 `/usr/bin/true` 时因 `shutil.copy2` 继承系统受保护文件标志而失败，原生测试尚未执行。夹具改为只复制二进制内容并设置 owner 执行权限；实际 codesign/ad-hoc/无签名拒绝断言保留，平台 Python 测试移到编译前。故障按真实运行关联 #856，并关联原工单 #843 与父 #840；Windows 的跳过不能证明此 macOS 故障恢复。

@@ -1,0 +1,116 @@
+{
+  "issue": 840,
+  "request_id": "provider-independence-20261112",
+  "integrated_main": "5903fb96fee73c0d68967bf953abcd0a5d265fcb",
+  "source_digest": "39673fd8b3320b702d5ad7024b213c1e54cd6b4a5dce2516b7a16b2a7d5d8a86",
+  "native_artifact_sha256": "2a27bb750aee68e2256e3127e1a9782bdf9fdbdfd97d92a8e00ba0727db0b250",
+  "console_sha256": "709899a2e69f2f3718ec81a2c50adaa8adbb3b2e404c3cde83aacf6414c68786",
+  "native_tests": {
+    "passed": 88,
+    "assertions": 1598
+  },
+  "runtime_simulation": {
+    "ok": true,
+    "scope": "Windows-layout simulation with actual PowerShell, host Python/Node/Git via compiled fixture PE launchers, native editor, loopback model and GitHub fixtures",
+    "uncovered": [
+      "all power-loss cutpoints",
+      "concurrent deployment",
+      "interruption during rollback",
+      "real model/provider and GitHub publication",
+      "hardware or Linux acceptance"
+    ],
+    "editor_sha256": "2a27bb750aee68e2256e3127e1a9782bdf9fdbdfd97d92a8e00ba0727db0b250",
+    "cases": 3
+  },
+  "codex_plan_replay": {
+    "ok": true,
+    "scope": "Replay already received real Codex declarative plan on newly integrated native editor; no additional model call",
+    "output_sha256": "08842b82afde8c7df176718522882ed29ff62f55e9a207780862d53968f7266c",
+    "geometry": {
+      "vertices": 576,
+      "triangles": 780,
+      "primitives": 5,
+      "bytes": 12928,
+      "bounds": {
+        "min": [
+          -0.6000000238418579,
+          0.0,
+          -0.4000000059604645
+        ],
+        "max": [
+          0.6000000238418579,
+          0.7499999776482582,
+          0.4000000059604645
+        ]
+      }
+    },
+    "native_receipt": {
+      "bounds_max": [
+        0.600000023841858,
+        0.75,
+        0.400000005960464
+      ],
+      "bounds_min": [
+        -0.600000023841858,
+        0.0,
+        -0.400000005960464
+      ],
+      "bytes": 12928,
+      "ok": true,
+      "parts": 5,
+      "sha256": "08842b82afde8c7df176718522882ed29ff62f55e9a207780862d53968f7266c",
+      "triangles": 780,
+      "vertices": 576
+    }
+  },
+  "wrapper_provenance_tests_passed": 29,
+  "macos_acceptance_gate_tests_passed_on_windows": 6,
+  "source_blobs": {
+    "editor/docks/ai_chat_external_peer.cpp": "a085264e5d1599769bcc1a6ec94ba85dc2b274ec",
+    "editor/docks/ai_chat_external_peer.h": "9bb64b54f13f2c110d9d251aaf3de48250e3dc4a",
+    "editor/docks/gonggong_panel.cpp": "50ac6e6147abc981d8776ea498d74a1891d196be",
+    "samples/ainative-workbench/addons/ainative/managed_comfy_panel.gd": "9581fa2648f6da6e4a2463e3f0c939cabb67c68e",
+    "samples/ainative-workbench/addons/ainative/parameter_form.gd": "a47bc8424411b7c03481e734f34434e6fe2d222a",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "009143749c31729e1d354a567c85e12079699ab6",
+    "samples/ainative-workbench/generation_service_acceptance.gd": "ae88e0dc0a2ec3db68494ff107664740198c6a18",
+    "tests/editor/requirements_intake.gd": "486bd26f8215c6496e8028abe813893b3f431047",
+    "tests/editor/run_requirements_intake.py": "2def8f65348f33c8e42f982d586c6b7234cae79d",
+    "tests/editor/run_runtime_setup.py": "080de238d44df08fdda8b3603275cf1d6ec4c530",
+    "tests/editor/run_runtime_setup_simulation.py": "49ba614c4950fb58ddf7ef481db157331b636833",
+    "tests/editor/test_ai_chat_external_peer.cpp": "f2339a005c5c45a8d013449e5fcd4e7566c8b348",
+    "tools/ainative/api_planner.py": "e50d56b76ed1463d86d56181032056b0501adc38",
+    "tools/ainative/codex_provider.py": "b7af26b898848309308f05a2a6a404709ef38b51",
+    "tools/ainative/comfy_provider.py": "1187c4f51d98bd668bcd7a0a423e6f3562341d70",
+    "tools/ainative/generation_service.py": "1238307a9ef381e761d166d65d28ee4bec25722d",
+    "tools/ainative/kimi_provider.py": "cd190ebd63a396f0fae6adea3107d0907e511d3d",
+    "tools/ainative/modeling_provider.py": "c5b0d76e202991bdadb504f77a309dabf111bf69",
+    "tools/ainative/provider_common.py": "4393183701392f5dc3b5f4acf63a3b0a9a306159",
+    "tools/ainative/sculpt_provider.py": "c7d6a4a8ccf9fbda64f177eeccd82d9d8f250b49",
+    "tools/ainative/test_provider_independence.py": "451528f404c5c15800920c18d35bc6d39b650c48",
+    "tools/ainative/test_sculpt_provider.py": "b4d441ede7ba64cbe27364e551fd6bbb9bf99467",
+    "tools/build_gonggong_editor.py": "88da0dd7e7b916d29b5a057990f6968e8c10445a",
+    "tools/configure_gonggong_runtime.ps1": "5107c381341830e730bbfaa9331f9d649db128ce",
+    "tools/editor_instruction_client.py": "297a7eff16fd5389c3a11adf24e46bf149ef431d",
+    "tools/editor_trusted_hosts.py": "ca20189d8648112070aaeea3d0b58b75e980eb3f",
+    "tools/gonggong_runtime_policy.ps1": "d417ff45e8126dab7de8337bcd77d37ef5ddbd7a",
+    "tools/run_gonggong_config_agent.ps1": "468872dbbba4fb0b427964ff16e7c0df4fffda32",
+    "tools/run_macos_external_host_acceptance.py": "4949faa82d66b5d4f97b9a29e133cde9bd8edbda",
+    "tools/test_build_gonggong_editor.py": "5dbff3d2ed49f198709467e475a114adbeca011a",
+    "tools/test_editor_trusted_hosts.py": "c18120cec6c7fe12d70076208c3d0ae6d57e6782",
+    "tools/test_macos_external_host_acceptance.py": "42ee63a40e1d57cfd94c981e1d3037dbd5e47e4b",
+    "tools/test_runtime_provider_independence.py": "658197c469f10a8023c99440179f34af68f97831"
+  },
+  "reviewers": [
+    "/root/sinan_c0fe010abbc02e98",
+    "/root/sinan_ce2e0b89751f97de"
+  ],
+  "macos_previous_run": {
+    "run": 43111713606,
+    "native_compilation": "passed",
+    "platform_python_tests": "failed_copy2_protected_flags",
+    "fix": "copyfile plus owner execute mode; preserve real signature rejection assertions",
+    "native_tests": "not_run_after_python_failure",
+    "reverification": "pending_corrected_signed_candidate"
+  },
+  "scope": "Windows integration verified; macOS actual signing and native workflow require new candidate CI; non-Codex real generation deferred by user"
+}

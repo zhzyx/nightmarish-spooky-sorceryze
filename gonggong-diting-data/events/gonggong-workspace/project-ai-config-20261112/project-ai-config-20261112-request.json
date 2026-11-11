@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "project-ai-config-20261112-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "project-ai-config-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-11T20:45:01.369820+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/828",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Project-wide AI configuration, top entry and validated availability indicator; reuse Tianshu discovery and unify existing engine configuration surfaces",
+    "authorization_ref": "Current user goal 2026-11-12 project AI configuration",
+    "design": "design-docs/project-ai-config-20261112.md",
+    "validation": "data-collection/project-ai-config-828.json",
+    "recording_note": "User request captured after execution events; missing request-kind record detected and repaired by final gate",
+    "usage": null,
+    "usage_unknown_reason": "No actual per-task token or cost accounting exposed"
+  },
+  "evidence_refs": [],
+  "sha256": "4398d33053b979c326217bd91fbda91fd465a4086f45808f7b72d14b72bb4223"
+}

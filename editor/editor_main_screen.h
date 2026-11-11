@@ -36,6 +36,7 @@
 class ConfigFile;
 class EditorDock;
 class EditorPlugin;
+class MenuButton;
 
 #ifndef DISABLE_DEPRECATED
 class LegacyMainScreenContainer : public VBoxContainer {
@@ -57,6 +58,11 @@ private:
 	VBoxContainer *main_screen_vbox = nullptr;
 	Vector<EditorPlugin *> editor_table;
 #endif
+	MenuButton *workspace_menu = nullptr;
+	bool window_filling = false;
+	bool restore_expanded_bottom_panel = false;
+	void _update_workspace_menu();
+	void _select_workspace(int p_tab);
 	void _on_tab_changed(int p_tab);
 	void _set_window_fill(bool p_fill);
 
@@ -79,7 +85,7 @@ public:
 	void select_next();
 	void select_prev();
 
-	// Full-workspace pages fill everything below the title bar while selected.
+	// Full-workspace pages fill everything below workspace navigation while selected.
 	void update_window_fill();
 	void suspend_window_fill();
 

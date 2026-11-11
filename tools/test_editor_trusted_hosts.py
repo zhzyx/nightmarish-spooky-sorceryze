@@ -121,7 +121,9 @@ class MacOSIntegration(unittest.TestCase):
     def test_actual_adhoc_and_unsigned_executables_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
             candidate = Path(directory) / "host"
-            shutil.copy2("/usr/bin/true", candidate)
+            # Copy executable bytes without the system binary's protected flags.
+            shutil.copyfile("/usr/bin/true", candidate)
+            candidate.chmod(0o700)
             subprocess.run(
                 ["/usr/bin/codesign", "--force", "--sign", "-", str(candidate)], check=True, capture_output=True
             )

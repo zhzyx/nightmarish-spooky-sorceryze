@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-github-issue-delivery",
+  "event_id": "learn-f62032ba10e670a6ded9cae364dcc8fd515e418d8430d6525c61d0b30e3a4d58",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+  "occurred_at": "2026-11-11T22:46:34.364891+00:00",
+  "evidence_refs": [
+    "provider-independence-20261112-request"
+  ],
+  "payload": {
+    "scope": "github-issue-delivery",
+    "lesson": "format-before-evidence-binding",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "生成新的验收证据后先执行仓库格式规则和Git属性归一化，再计算不可变事件的原始字节摘要；已有不可变绑定的证据只使用该文件的精确保留规则，不能重写证据或扩大排除范围。",
+      "when": "验收JSON由Windows产生且将被学习事件或其他不可变记录以原始字节摘要引用。",
+      "counterexample": "可自由重建且尚未绑定的临时报告应正常归一化，不应借此排除所有JSON；精确保留也不能替代JSON内容校验。",
+      "trial_plan": "隔离临时Git库创建CRLF报告，先格式化和暂存再计算摘要，重复运行格式和暂存后摘要应不变；对已有CRLF绑定证明直接格式化导致摘要变化，并验证单文件排除不匹配相邻文件。"
+    },
+    "evidence": [
+      {
+        "path": "gonggong-diting-data/events/gonggong-workspace/provider-independence-20261112/kuafu-e8101067b00ae1d9273f1cd8cf499585d54dcdad.json",
+        "sha256": "a85eeb2f40939f163c8c98dbe38467fac34b5a37c18acf2745a594615c3c4389"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/provider-independence-20261112/provider-independence-20261112-request.json",
+      "sha256": "8ae982f87edaeefa321dde77ef1ac129429b842560a2839d679c9ec4a2bb8290"
+    }
+  },
+  "sha256": "7f93d9ae12ce3abeab668287c6084017fa0942a845981d78a8832e4a695c18fa"
+}

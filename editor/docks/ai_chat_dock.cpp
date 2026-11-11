@@ -92,6 +92,11 @@
 #include "scene/resources/text_file.h"
 #include "servers/display/display_server.h"
 
+#ifdef UNIX_ENABLED
+#include <signal.h>
+#include <unistd.h>
+#endif
+
 namespace {
 Dictionary tool_context(bool p_enabled, int p_rounds, bool p_auto_apply, bool p_auto_execute, bool p_auto_restart) {
 	Dictionary context;
@@ -488,14 +493,10 @@ void AIChatDock::set_environment_changing_handler(const Callable &p_handler) {
 
 void AIChatDock::_save_chat_settings() {
 	EditorSettings *settings = EditorSettings::get_singleton();
-	settings->set_setting("ai_chat/backend", backend->get_selected());
-	settings->set_setting("ai_chat/endpoint", endpoint->get_text().strip_edges());
-	settings->set_setting("ai_chat/model", model->get_text().strip_edges());
 	settings->set_setting("ai_chat/cli_bridge", cli_bridge->get_text().strip_edges());
 	settings->set_setting("ai_chat/cli_entry", cli_entry->get_text().strip_edges());
-	settings->set_setting("ai_chat/cli_model", cli_model->get_text().strip_edges());
-	settings->set_setting("ai_chat/codex_model", codex_model->get_text().strip_edges());
 	settings->set_setting("ai_chat/build_arguments", engine_build_arguments->get_text());
+	_project_ai_configuration_changed();
 	// The API key remains on the existing session-only control, never in settings.
 	EditorSettings::save();
 	_update_settings_summary();
@@ -938,13 +939,17 @@ void AIChatDock::_load_history() {
 				agent_tabs->set_current_tab(i);
 			}
 		}
-		agent_tabs->set_block_signals(false);
 		active_agent = history_data["active_agent"];
 		next_agent = history_data["next_agent"];
 		const AgentSession state = agent_sessions[active_agent];
 		agent_sessions.erase(active_agent);
 		state.message_list->set_name("Messages");
 		state.message_list->reparent(chat_scroll);
+		// Classify restored execution sessions before choosing project defaults.
+		// Keep tab signals blocked while the loaders hide child/scheduled tabs.
+		_load_schedules(history_data);
+		_load_sub_agents(history_data);
+		agent_tabs->set_block_signals(false);
 		_restore_agent(state);
 		_append(TTR("Editor"), history_primary_valid ? U"已从硬盘恢复各会话的聊天与草稿，可继续对话。旧命令和审批不会自动恢复。" : U"主聊天记录无法读取，已从上一份备份恢复。旧命令和审批不会自动恢复。");
 		_queue_chat_scroll_update();
@@ -959,8 +964,10 @@ void AIChatDock::_load_history() {
 	if (snapshot_transaction_failed) {
 		_append(TTR("Error"), String(U"版本还原事务未能恢复，已锁定对话和文件操作；请保留事务日志。\n") + transaction_error);
 	}
-	_load_schedules(history_data);
-	_load_sub_agents(history_data);
+	if (!restored) {
+		_load_schedules(history_data);
+		_load_sub_agents(history_data);
+	}
 	_queue_history_save();
 }
 
@@ -2263,8 +2270,6 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 			return false;
 		}
 		request_key = String();
-
-		EditorSettings::get_singleton()->set_setting("ai_chat/codex_model", codex_model->get_text().strip_edges());
 	} else if (backend->get_selected() == 1) {
 		if (!_validate_cli(runtime)) {
 			_append(TTR("Error"), TTR("Set existing absolute Node, bridge and CodeBuddy CLI entry paths, then use CLI Login to authenticate."));
@@ -2274,7 +2279,6 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 
 		EditorSettings::get_singleton()->set_setting("ai_chat/cli_bridge", cli_bridge->get_text().strip_edges());
 		EditorSettings::get_singleton()->set_setting("ai_chat/cli_entry", cli_entry->get_text().strip_edges());
-		EditorSettings::get_singleton()->set_setting("ai_chat/cli_model", cli_model->get_text().strip_edges());
 	} else {
 		const String url = endpoint->get_text().strip_edges();
 		const bool local_http = url.begins_with("http://127.0.0.1:") || url.begins_with("http://localhost:") || url.begins_with("http://[::1]:");
@@ -2287,11 +2291,9 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 			_append(TTR("Error"), TTR("The API key must not contain line breaks."));
 			return false;
 		}
-		EditorSettings::get_singleton()->set_setting("ai_chat/endpoint", url);
-		EditorSettings::get_singleton()->set_setting("ai_chat/model", model->get_text().strip_edges());
 	}
-	EditorSettings::get_singleton()->set_setting("ai_chat/backend", backend->get_selected());
 	EditorSettings::save();
+	_project_ai_configuration_changed();
 	const bool manual_design = !consultation_turn && sub_agents.has(active_agent) && sub_agents[active_agent].get("source", "") == "design" && design_child_starting != active_agent;
 	if (manual_design && !_prepare_manual_design_attempt()) {
 		_append(TTR("Editor"), U"当前工单无法建立新的执行回执。请先核对在途执行及回执，回到父会话点「继续落地」。");
@@ -2467,6 +2469,7 @@ void AIChatDock::_request_completion() {
 }
 
 void AIChatDock::_send_completion_after_receipt() {
+	ai_chat_request_signature = _ai_connection_signature();
 	if (!consultation_turn && !_ensure_engine_candidate()) {
 		return;
 	}
@@ -2688,6 +2691,17 @@ void AIChatDock::_response_after_receipt(int p_result, int p_code, const PackedS
 		request->queue_free();
 		request = nullptr;
 	}
+	// Revoke old success before validating this response, including malformed 2xx.
+	if (ai_chat_request_signature == _ai_connection_signature()) {
+		_cancel_ai_connection_probe();
+		ai_connection_signature = ai_chat_request_signature;
+		_set_ai_connection_status("unavailable", U"当前模型未返回有效回复，请检查连接后重新验证。");
+	}
+	auto mark_available = [this]() {
+		if (ai_chat_request_signature == _ai_connection_signature()) {
+			_set_ai_connection_status("available", U"当前模型已返回有效推理结果。");
+		}
+	};
 	if (p_result != HTTPRequest::RESULT_SUCCESS || p_code < 200 || p_code >= 300) {
 		_append(TTR("Error"), vformat(TTR("AI request failed (transport %d, HTTP %d). Check the endpoint, model and credentials."), p_result, p_code));
 		_set_busy(false);
@@ -2772,6 +2786,7 @@ void AIChatDock::_response_after_receipt(int p_result, int p_code, const PackedS
 			}
 			ids.insert(id);
 		}
+		mark_available();
 		Dictionary assistant = chat_message("assistant", _redact(content));
 		assistant["tool_calls"] = tool_calls.duplicate(true);
 		messages.push_back(assistant);
@@ -2780,6 +2795,9 @@ void AIChatDock::_response_after_receipt(int p_result, int p_code, const PackedS
 		_save_resume();
 		_next_tool(session_generation);
 	} else {
+		if (!content.strip_edges().is_empty()) {
+			mark_available();
+		}
 		Dictionary final = chat_message("assistant", _redact(content));
 		const String finish_reason = choice.get("finish_reason", "");
 		const bool is_preview_turn = consultation_turn && !daqian_preview_source.is_empty() && daqian_preview_conversation == conversation_id;
@@ -3779,7 +3797,7 @@ Dictionary AIChatDock::_chat_host_action(const Dictionary &p_args, bool p_confir
 		_backend_changed(index);
 	} else if (action == "chat_set_endpoint") {
 		endpoint->set_text(String(value).strip_edges());
-		EditorSettings::get_singleton()->set_setting("ai_chat/endpoint", endpoint->get_text());
+		_model_config_changed(String());
 		EditorSettings::save();
 	} else if (action == "chat_show_connection") {
 		_toggle_chat_settings(true);
@@ -4115,13 +4133,23 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 	image_picker->hide();
 	image_dialog->hide();
 	image_preview->set_texture(Ref<Texture2D>());
-	model->set_text(p_session.model);
-	cli_model->set_text(p_session.cli_model);
-	codex_model->set_text(p_session.codex_model);
-	backend->select(p_session.backend);
-	http_settings->set_visible(p_session.backend == 0 || p_session.backend == 3);
-	codex_settings->set_visible(p_session.backend == 2);
-	cli_settings->set_visible(p_session.backend == 1);
+	const bool execution_override = sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || !ai_project_settings_owner;
+	if (execution_override) {
+		model->set_text(p_session.model);
+		cli_model->set_text(p_session.cli_model);
+		codex_model->set_text(p_session.codex_model);
+		backend->select(p_session.backend);
+	} else {
+		// Ordinary conversations share the project selection, including after restart.
+		EditorSettings *settings = EditorSettings::get_singleton();
+		model->set_text(settings->get_project_metadata("ai_chat", "model", ""));
+		cli_model->set_text(settings->get_project_metadata("ai_chat", "cli_model", ""));
+		codex_model->set_text(settings->get_project_metadata("ai_chat", "codex_model", ""));
+		backend->select(CLAMP(int(settings->get_project_metadata("ai_chat", "backend", 0)), 0, 3));
+	}
+	http_settings->set_visible(backend->get_selected() == 0 || backend->get_selected() == 3);
+	codex_settings->set_visible(backend->get_selected() == 2);
+	cli_settings->set_visible(backend->get_selected() == 1);
 	cli_process_id = p_session.cli_process_id;
 	cli_stdout = p_session.cli_stdout;
 	cli_stderr = p_session.cli_stderr;
@@ -4130,6 +4158,9 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 	cli_session = cli_process_id >= 0;
 	cli_waiting = false;
 	cli_output.clear();
+	if (p_session.backend != backend->get_selected()) {
+		_cancel_cli();
+	}
 	set_meta("cli_transport", p_session.transport);
 	set_meta("cli_response_transport", p_session.response_transport);
 	snapshot_id = p_session.snapshot_id;
@@ -4419,6 +4450,11 @@ void AIChatDock::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("prepare_runtime_configuration"), &AIChatDock::prepare_runtime_configuration);
 	ClassDB::bind_method(D_METHOD("set_runtime_field", "field", "value"), &AIChatDock::set_runtime_field);
 	ClassDB::bind_method(D_METHOD("refresh_runtime_controls"), &AIChatDock::refresh_runtime_controls);
+	ClassDB::bind_method(D_METHOD("get_ai_configuration"), &AIChatDock::get_ai_configuration);
+	ClassDB::bind_method(D_METHOD("get_ai_connection_status"), &AIChatDock::get_ai_connection_status);
+	ClassDB::bind_method(D_METHOD("verify_ai_connection"), &AIChatDock::verify_ai_connection);
+	ADD_SIGNAL(MethodInfo("ai_configuration_changed"));
+	ADD_SIGNAL(MethodInfo("ai_connection_status_changed"));
 	ClassDB::bind_method(D_METHOD("get_ai_settings_control"), &AIChatDock::get_ai_settings_control);
 	ClassDB::bind_method(D_METHOD("get_environment_settings_control"), &AIChatDock::get_environment_settings_control);
 	ClassDB::bind_method(D_METHOD("set_environment_changing_handler", "handler"), &AIChatDock::set_environment_changing_handler);
@@ -5105,7 +5141,7 @@ void AIChatDock::_backend_changed(int p_backend) {
 	_sync_model_picker();
 	model_status->set_text(U"连接已切换，正在准备获取模型列表；不支持枚举时可手动填写模型 ID。");
 	_request_model_refresh(2);
-	EditorSettings::get_singleton()->set_setting("ai_chat/backend", p_backend);
+	_project_ai_configuration_changed();
 	_append(TTR("Editor"), p_backend == 1 ? String(U"已选择 CodeBuddy 账号。可搜索源码、读写文件并通过 Bash 构建和测试，无需 MCP；文件修改与执行是否需确认取决于自动操作开关。") : String(U"已选择模型 API。切换连接后对话上下文已重置。"));
 }
 
@@ -5182,20 +5218,18 @@ void AIChatDock::_model_selected(int p_index) {
 		return;
 	}
 	const String id = model_picker->get_item_metadata(p_index);
-	const bool cli = backend->get_selected() == 1 || backend->get_selected() == 2;
 	_active_model_field()->set_text(id);
-	EditorSettings::get_singleton()->set_setting(backend->get_selected() == 2 ? "ai_chat/codex_model" : cli ? "ai_chat/cli_model"
-																											: "ai_chat/model",
-			id);
 	_sync_reasoning_picker();
-	EditorSettings::save();
+	_project_ai_configuration_changed();
 }
 
 void AIChatDock::_model_edited(const String &p_text) {
+	_project_ai_configuration_changed();
 	if (busy || models_loading) {
 		return;
 	}
 	_apply_models(model_catalog);
+	_project_ai_configuration_changed();
 }
 
 // Codex capabilities come from model/list, never from a model-name guess.
@@ -5225,7 +5259,7 @@ void AIChatDock::_sync_reasoning_picker() {
 			}
 		}
 	}
-	const Dictionary preferences = EDITOR_GET("ai_chat/reasoning_preferences");
+	const Dictionary preferences = EditorSettings::get_singleton()->get_project_metadata("ai_chat", "reasoning_preferences", Dictionary());
 	const String key = itos(backend->get_selected()) + ":" + current;
 	const String saved = preferences.get(key, "");
 	reasoning_picker->clear();
@@ -5249,6 +5283,7 @@ void AIChatDock::_sync_reasoning_picker() {
 	reasoning_picker->set_disabled(busy || models_loading || supported.is_empty());
 	reasoning_picker->set_tooltip_text(supported.is_empty() ? String(U"尚无可用的强度信息；服务未声明支持情况时使用模型默认，适配待补充。") : String(U"只启用当前模型支持的推理强度。"));
 	_update_settings_summary();
+	_project_ai_configuration_changed();
 }
 
 String AIChatDock::_reasoning_effort() const {
@@ -5263,11 +5298,11 @@ void AIChatDock::_reasoning_selected(int p_index) {
 		_sync_reasoning_picker();
 		return;
 	}
-	Dictionary preferences = EDITOR_GET("ai_chat/reasoning_preferences");
+	Dictionary preferences = EditorSettings::get_singleton()->get_project_metadata("ai_chat", "reasoning_preferences", Dictionary());
 	const String key = itos(backend->get_selected()) + ":" + _active_model_field()->get_text().strip_edges();
 	preferences[key] = reasoning_picker->get_item_metadata(p_index);
-	EditorSettings::get_singleton()->set_setting("ai_chat/reasoning_preferences", preferences);
-	EditorSettings::save();
+	EditorSettings::get_singleton()->set_project_metadata("ai_chat", "reasoning_preferences", preferences);
+	_project_ai_configuration_changed();
 	_update_settings_summary();
 }
 
@@ -5281,6 +5316,276 @@ String AIChatDock::_model_config_signature(const Dictionary &p_runtime) const {
 		return "1:" + GongGongRuntimeConfig::path(runtime, "node") + ":" + cli_bridge->get_text().strip_edges() + ":" + cli_entry->get_text().strip_edges();
 	}
 	return itos(selected) + ":" + endpoint->get_text().strip_edges() + ":" + api_key->get_text().sha256_text();
+}
+
+Dictionary AIChatDock::get_ai_configuration() const {
+	Dictionary configuration;
+	if (!backend || !endpoint || !model || !cli_model || !codex_model || !api_key) {
+		return configuration;
+	}
+	configuration["scope"] = "project";
+	configuration["backend"] = backend->get_selected();
+	configuration["endpoint"] = endpoint->get_text().strip_edges();
+	configuration["model"] = model->get_text().strip_edges();
+	configuration["cli_model"] = cli_model->get_text().strip_edges();
+	configuration["codex_model"] = codex_model->get_text().strip_edges();
+	configuration["reasoning_effort"] = _reasoning_effort();
+	configuration["reasoning_preferences"] = EditorSettings::get_singleton()->get_project_metadata("ai_chat", "reasoning_preferences", Dictionary());
+	configuration["credential_present"] = !api_key->get_text().strip_edges().is_empty();
+	return configuration;
+}
+
+String AIChatDock::_ai_connection_signature() const {
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	String signature = JSON::stringify(get_ai_configuration()) + "\n" + _model_config_signature(runtime) + "\n" + JSON::stringify(runtime) + "\n" + api_key->get_text().sha256_text();
+	signature += "\n" + String(EDITOR_GET("network/http_proxy/host")) + ":" + itos(int(EDITOR_GET("network/http_proxy/port")));
+	// Credentials are hashed in memory only and never exposed in status or metadata.
+	for (const String &key : { String("CODEX_HOME"), String("HOME"), String("USERPROFILE"), String("CODEX_API_KEY"), String("OPENAI_API_KEY"), String("OPENAI_BASE_URL"), String("OPENAI_ORG_ID"), String("OPENAI_PROJECT_ID"), String("CHATGPT_BASE_URL"), String("HTTPS_PROXY"), String("HTTP_PROXY"), String("ALL_PROXY"), String("NO_PROXY"), String("SSL_CERT_FILE"), String("NODE_EXTRA_CA_CERTS") }) {
+		signature += "\n" + key + ":" + OS::get_singleton()->get_environment(key).sha256_text();
+	}
+	return signature.sha256_text();
+}
+
+bool AIChatDock::_ai_connection_configured() const {
+	if (backend->get_selected() == 1 || backend->get_selected() == 2) {
+		return _validate_cli(GongGongRuntimeConfig::read_effective());
+	}
+	const String url = endpoint->get_text().strip_edges();
+	const bool local_http = url.begins_with("http://127.0.0.1:") || url.begins_with("http://localhost:") || url.begins_with("http://[::1]:");
+	return (url.begins_with("https://") || local_http) && !url.contains("@") && !url.contains("\n") && !url.contains("\r") && !model->get_text().strip_edges().is_empty() && !api_key->get_text().contains("\n") && !api_key->get_text().contains("\r");
+}
+
+Dictionary AIChatDock::get_ai_connection_status() const {
+	Dictionary status;
+	const bool current = !ai_configuration_ready || ai_connection_signature.is_empty() || ai_connection_signature == _ai_connection_signature();
+	status["state"] = current ? ai_connection_state : String("unconfigured");
+	status["message"] = current ? ai_connection_message : String(U"配置已变化，请重新验证连接。");
+	return status;
+}
+
+void AIChatDock::_set_ai_connection_status(const String &p_state, const String &p_message) {
+	ai_connection_state = p_state;
+	ai_connection_message = p_message;
+	emit_signal("ai_connection_status_changed");
+}
+
+void AIChatDock::_cancel_ai_connection_probe() {
+	ai_connection_generation++;
+	if (ai_connection_request) {
+		ai_connection_request->cancel_request();
+		ai_connection_request->queue_free();
+		ai_connection_request = nullptr;
+	}
+	if (ai_connection_pid >= 0) {
+		if (OS::get_singleton()->is_process_running(ai_connection_pid)) {
+#ifdef UNIX_ENABLED
+			// execute_with_pipe creates a new session. Bound cancellation to this
+			// probe's process group so the provider child cannot outlive the probe.
+			if (::getpgid(ai_connection_pid) == ai_connection_pid) {
+				::kill(-ai_connection_pid, SIGKILL);
+			}
+#endif
+			OS::get_singleton()->kill(ai_connection_pid);
+		}
+		ai_connection_pid = -1;
+	}
+	ai_connection_stdout.unref();
+	ai_connection_stderr.unref();
+	if (ai_connection_input.is_valid()) {
+		const String path = ai_connection_input->get_path_absolute();
+		ai_connection_input.unref();
+		if (FileAccess::exists(path)) {
+			DirAccess::remove_absolute(path);
+		}
+	}
+	ai_connection_output.clear();
+}
+
+void AIChatDock::_project_ai_configuration_changed() {
+	if (!ai_configuration_ready) {
+		return;
+	}
+	const String signature = _ai_connection_signature();
+	if (signature == ai_configuration_signature) {
+		return;
+	}
+	ai_configuration_signature = signature;
+	if (ai_project_settings_owner && !sub_agents.has(active_agent) && !scheduled_agents.has(active_agent)) {
+		const Dictionary configuration = get_ai_configuration();
+		for (const char *key : { "backend", "endpoint", "model", "cli_model", "codex_model" }) {
+			EditorSettings::get_singleton()->set_project_metadata("ai_chat", key, configuration[key]);
+		}
+	}
+	_cancel_ai_connection_probe();
+	ai_connection_signature = signature;
+	_set_ai_connection_status("unconfigured", _ai_connection_configured() ? String(U"配置已变化，请重新验证连接。") : String(U"请先配置模型连接。"));
+	emit_signal("ai_configuration_changed");
+}
+
+void AIChatDock::verify_ai_connection() {
+	if (!ai_configuration_ready || !is_inside_tree()) {
+		return;
+	}
+	_project_ai_configuration_changed();
+	_cancel_ai_connection_probe();
+	ai_connection_signature = _ai_connection_signature();
+	if (!_ai_connection_configured()) {
+		_set_ai_connection_status("unconfigured", U"连接配置不完整：请检查模型、接口和宿主运行路径。");
+		return;
+	}
+	_set_ai_connection_status("checking", U"正在执行最小文本请求验证（最长 45 秒）…");
+	Dictionary payload;
+	Array probe_messages;
+	probe_messages.push_back(chat_message("user", "Reply only with OK. Do not use tools."));
+	payload["messages"] = probe_messages;
+	payload["model"] = _active_model_field()->get_text().strip_edges();
+	payload["stream"] = false;
+	const String effort = _reasoning_effort();
+	if (!effort.is_empty()) {
+		payload["reasoning_effort"] = effort;
+	}
+	const int selected = backend->get_selected();
+	if (selected == 1 || selected == 2) {
+		payload["available_tools"] = Array();
+		Dictionary context;
+		context["permission_enabled"] = false;
+		context["tool_rounds"] = 0;
+		context["max_tool_rounds"] = Variant();
+		context["consultation_only"] = true;
+		context["writes_allowed"] = false;
+		context["execution_allowed"] = false;
+		payload["tool_context"] = context;
+		Error error = OK;
+		ai_connection_input = FileAccess::create_temp(FileAccess::WRITE_READ, "godot_ai_connection", "json", false, &error);
+		if (error != OK || ai_connection_input.is_null()) {
+			_cancel_ai_connection_probe();
+			_set_ai_connection_status("unavailable", U"无法建立验证请求文件。");
+			return;
+		}
+		const String path = ai_connection_input->get_path_absolute();
+		const bool stored = ai_connection_input->store_string(JSON::stringify(payload));
+		ai_connection_input->flush();
+		const Error write_error = ai_connection_input->get_error();
+		ai_connection_input->close();
+		if (!stored || write_error != OK) {
+			_cancel_ai_connection_probe();
+			_set_ai_connection_status("unavailable", U"无法写入验证请求。");
+			return;
+		}
+		const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+		GongGongRuntimeConfig::prepare_child_environment(runtime);
+		List<String> arguments;
+		arguments.push_back(selected == 2 ? _codex_bridge() : cli_bridge->get_text().strip_edges());
+		arguments.push_back("chat");
+		arguments.push_back(selected == 2 ? GongGongRuntimeConfig::path(runtime, "codex") : cli_entry->get_text().strip_edges());
+		arguments.push_back(path);
+		const Dictionary process = OS::get_singleton()->execute_with_pipe(GongGongRuntimeConfig::path(runtime, "node"), arguments, false);
+		if (!process.has("pid") || !process.has("stdio") || !process.has("stderr")) {
+			_cancel_ai_connection_probe();
+			_set_ai_connection_status("unavailable", U"无法启动模型验证进程。");
+			return;
+		}
+		ai_connection_pid = process["pid"];
+		ai_connection_stdout = process["stdio"];
+		ai_connection_stderr = process["stderr"];
+		ai_connection_started = OS::get_singleton()->get_ticks_msec();
+		return;
+	}
+	if (selected == 3) {
+		payload = AIChatOpenAI::responses_payload(payload);
+		payload["max_output_tokens"] = 64;
+		if (!effort.is_empty()) {
+			Dictionary reasoning;
+			reasoning["effort"] = effort;
+			payload["reasoning"] = reasoning;
+		}
+	} else {
+		payload["max_completion_tokens"] = 64;
+	}
+	Vector<String> headers;
+	headers.push_back("Content-Type: application/json");
+	const String key = api_key->get_text().strip_edges();
+	if (!key.is_empty()) {
+		headers.push_back("Authorization: Bearer " + key);
+	}
+	ai_connection_request = memnew(HTTPRequest);
+	ai_connection_request->set_use_threads(false);
+	ai_connection_request->set_timeout(45);
+	ai_connection_request->set_body_size_limit(64 * 1024);
+	ai_connection_request->set_max_redirects(0);
+	ai_connection_request->connect("request_completed", callable_mp(this, &AIChatDock::_ai_connection_completed).bind(ai_connection_generation));
+	add_child(ai_connection_request);
+	ai_connection_request->set_http_proxy(EDITOR_GET("network/http_proxy/host"), EDITOR_GET("network/http_proxy/port"));
+	ai_connection_request->set_https_proxy(EDITOR_GET("network/http_proxy/host"), EDITOR_GET("network/http_proxy/port"));
+	const Error error = ai_connection_request->request(AIChatOpenAI::endpoint(endpoint->get_text().strip_edges(), selected == 3), headers, HTTPClient::METHOD_POST, JSON::stringify(payload));
+	if (error != OK) {
+		_cancel_ai_connection_probe();
+		_set_ai_connection_status("unavailable", vformat(U"无法发起验证请求（错误 %d）。", error));
+	}
+}
+
+void AIChatDock::_ai_connection_completed(int p_result, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, uint64_t p_generation) {
+	if (p_generation != ai_connection_generation) {
+		return;
+	}
+	if (ai_connection_signature != _ai_connection_signature()) {
+		_project_ai_configuration_changed();
+		return;
+	}
+	bool success = false;
+	JSON json;
+	if (p_result == HTTPRequest::RESULT_SUCCESS && p_code >= 200 && p_code < 300 && json.parse(String::utf8(reinterpret_cast<const char *>(p_body.ptr()), p_body.size())) == OK && json.get_data().get_type() == Variant::DICTIONARY) {
+		Dictionary response = json.get_data();
+		if (backend->get_selected() == 3) {
+			response = AIChatOpenAI::chat_completion(response);
+		}
+		const Variant choices = response.get("choices", Variant());
+		if (choices.get_type() == Variant::ARRAY && !Array(choices).is_empty() && Array(choices)[0].get_type() == Variant::DICTIONARY) {
+			const Variant message = Dictionary(Array(choices)[0]).get("message", Variant());
+			if (message.get_type() == Variant::DICTIONARY) {
+				const Variant content = Dictionary(message).get("content", Variant());
+				success = content.get_type() == Variant::STRING && !String(content).strip_edges().is_empty();
+			}
+		}
+	}
+	_cancel_ai_connection_probe();
+	_set_ai_connection_status(success ? "available" : "unavailable", success ? String(U"当前模型已通过实际文本请求验证。") : vformat(U"文本验证失败（传输 %d，状态 %d），或未返回有效正文。请检查模型权限、账号和接口。", p_result, p_code));
+}
+
+void AIChatDock::_poll_ai_connection() {
+	_project_ai_configuration_changed();
+	if (ai_connection_pid < 0) {
+		return;
+	}
+	bool received = false;
+	bool overflow = false;
+	for (const Ref<FileAccess> &pipe : { ai_connection_stdout, ai_connection_stderr }) {
+		if (pipe.is_null()) {
+			continue;
+		}
+		// Nonblocking pipes: bound work per timer tick as well as total output.
+		for (int i = 0; i < 8; i++) {
+			const PackedByteArray bytes = pipe->get_buffer(8192);
+			if (bytes.is_empty()) {
+				break;
+			}
+			received = true;
+			if (pipe == ai_connection_stdout) {
+				if (ai_connection_output.size() + bytes.size() > 64 * 1024) {
+					overflow = true;
+					break;
+				}
+				ai_connection_output.append_array(bytes);
+			}
+		}
+	}
+	const bool timeout = OS::get_singleton()->get_ticks_msec() - ai_connection_started >= 45000;
+	if (!timeout && !overflow && (OS::get_singleton()->is_process_running(ai_connection_pid) || received)) {
+		return;
+	}
+	const int exit_code = OS::get_singleton()->get_process_exit_code(ai_connection_pid);
+	const PackedByteArray body = ai_connection_output;
+	_ai_connection_completed(!timeout && !overflow && exit_code == 0 ? HTTPRequest::RESULT_SUCCESS : HTTPRequest::RESULT_CANT_CONNECT, exit_code == 0 ? 200 : 500, PackedStringArray(), body, ai_connection_generation);
 }
 
 Dictionary AIChatDock::get_runtime_configuration() const {
@@ -5326,6 +5631,7 @@ void AIChatDock::_runtime_field_changed(const String &p_value, const String &p_f
 }
 
 void AIChatDock::_model_config_changed(const String &p_text) {
+	_project_ai_configuration_changed();
 	const String config = _model_config_signature();
 	if (model_catalog_config != config) {
 		_apply_models(Array(discovered_model_catalogs.get(config, Array())));
@@ -5608,6 +5914,9 @@ void AIChatDock::_models_completed(int p_result, int p_code, const PackedStringA
 }
 
 void AIChatDock::_login_cli() {
+	_cancel_ai_connection_probe();
+	ai_connection_signature = _ai_connection_signature();
+	_set_ai_connection_status("unconfigured", U"账号可能变化，请在登录完成后重新验证连接。");
 	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	if (backend->get_selected() == 2) {
@@ -7330,6 +7639,10 @@ void AIChatDock::_notification(int p_what) {
 			_poll_process();
 		}
 	} else if (p_what == NOTIFICATION_EXIT_TREE) {
+		_cancel_ai_connection_probe();
+		if (ai_connection_state == "checking") {
+			_set_ai_connection_status("unconfigured", U"连接验证已取消，请重新验证。");
+		}
 		_cancel_production_integration();
 		for (const KeyValue<int, Dictionary> &entry : acceptance_bridge_jobs) {
 			DirAccess::remove_absolute(String(entry.value["stem"]) + ".request.live");
@@ -7405,6 +7718,7 @@ AIChatEditorControl *AIChatDock::_get_editor_control() {
 
 AIChatDock::AIChatDock(const String &p_session_directory) {
 	resume_storage.directory = p_session_directory;
+	ai_project_settings_owner = p_session_directory.is_empty();
 	delivery_retry_instance = new_conversation_id();
 	GongGongRuntimeConfig::initialize();
 	Dictionary legacy_runtime;
@@ -7459,6 +7773,13 @@ AIChatDock::AIChatDock(const String &p_session_directory) {
 	EDITOR_DEF("ai_chat/codex_entry", "");
 	EDITOR_DEF("ai_chat/codex_model", "");
 	EDITOR_DEF("ai_chat/reasoning_preferences", Dictionary());
+	// Only nonsecret model defaults migrate; credentials remain session/host owned.
+	if (!bool(EditorSettings::get_singleton()->get_project_metadata("ai_chat", "project_configuration_initialized", false))) {
+		for (const char *key : { "backend", "endpoint", "model", "cli_model", "codex_model", "reasoning_preferences" }) {
+			EditorSettings::get_singleton()->set_project_metadata("ai_chat", key, EditorSettings::get_singleton()->get_setting(String("ai_chat/") + key));
+		}
+		EditorSettings::get_singleton()->set_project_metadata("ai_chat", "project_configuration_initialized", true);
+	}
 	// Recorded at every version switch so a bad rebuild has somewhere to go back to.
 	EDITOR_DEF("ai_chat/rollback_executable", "");
 
@@ -7672,7 +7993,7 @@ void fragment() {
 	backend->set_fit_to_longest_item(false);
 	backend->set_clip_text(true);
 	backend->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
-	backend->select(CLAMP(int(EDITOR_GET("ai_chat/backend")), 0, 3));
+	backend->select(CLAMP(int(EditorSettings::get_singleton()->get_project_metadata("ai_chat", "backend", 0)), 0, 3));
 	backend->connect("item_selected", callable_mp(this, &AIChatDock::_backend_changed));
 	connection->add_child(backend);
 	HBoxContainer *models = memnew(HBoxContainer);
@@ -7716,9 +8037,9 @@ void fragment() {
 	};
 	http_settings = memnew(VBoxContainer);
 	settings->add_child(http_settings);
-	endpoint = add_field(http_settings, U"对话接口地址（HTTPS 或本机 HTTP）", "APIEndpoint", EDITOR_GET("ai_chat/endpoint"));
+	endpoint = add_field(http_settings, U"对话接口地址（HTTPS 或本机 HTTP）", "APIEndpoint", EditorSettings::get_singleton()->get_project_metadata("ai_chat", "endpoint", "https://api.openai.com/v1/chat/completions"));
 	endpoint->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
-	model = add_field(http_settings, U"手动模型 ID（接口不支持列表时使用）", "APIModel", EDITOR_GET("ai_chat/model"));
+	model = add_field(http_settings, U"手动模型 ID（接口不支持列表时使用）", "APIModel", EditorSettings::get_singleton()->get_project_metadata("ai_chat", "model", ""));
 	model->connect("text_changed", callable_mp(this, &AIChatDock::_model_edited));
 	api_key = add_field(http_settings, U"API 密钥（仅保留于本次会话）", "APIKey", OS::get_singleton()->get_environment("GODOT_AI_API_KEY"));
 	api_key->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
@@ -7737,10 +8058,9 @@ void fragment() {
 	cli_bridge->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
 	cli_entry = add_field(environment_settings_control, U"官方 CodeBuddy CLI 入口路径", "CLIEntry", EDITOR_GET("ai_chat/cli_entry"));
 	cli_entry->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
-	String saved_model = EDITOR_GET("ai_chat/cli_model");
+	String saved_model = EditorSettings::get_singleton()->get_project_metadata("ai_chat", "cli_model", "");
 	if (saved_model == "default-model") {
 		saved_model = "gpt-6.1-sol";
-		EditorSettings::get_singleton()->set_setting("ai_chat/cli_model", saved_model);
 	}
 	cli_model = add_field(cli_settings, U"手动模型 ID（留空跟随 CLI 默认）", "CLIModel", saved_model);
 	cli_model->connect("text_changed", callable_mp(this, &AIChatDock::_model_edited));
@@ -7759,7 +8079,7 @@ void fragment() {
 	settings->add_child(codex_settings);
 	codex_entry = add_field(environment_settings_control, U"聊天 Codex 可执行文件绝对路径（codex.exe 或原生二进制）", "CodexEntry", initial_paths.get("codex", ""));
 	codex_entry->connect("text_changed", callable_mp(this, &AIChatDock::_runtime_field_changed).bind(String("codex")));
-	codex_model = add_field(codex_settings, U"Codex 模型 ID（留空使用 CLI 默认）", "CodexModel", EDITOR_GET("ai_chat/codex_model"));
+	codex_model = add_field(codex_settings, U"Codex 模型 ID（留空使用 CLI 默认）", "CodexModel", EditorSettings::get_singleton()->get_project_metadata("ai_chat", "codex_model", ""));
 	codex_model->connect("text_changed", callable_mp(this, &AIChatDock::_model_edited));
 	Label *codex_help = memnew(Label);
 	codex_help->set_text(U"先在终端运行 codex login。需支持 --ignore-user-config 的 Codex CLI；Node 路径沿用 CodeBuddy 配置。");
@@ -8159,6 +8479,14 @@ void fragment() {
 	cli_settings->set_visible(backend->get_selected() == 1);
 	_sync_model_picker();
 	model_status->set_text(U"模型列表将在启动或连接配置变化后自动获取；服务不支持枚举时可手动填写模型 ID。");
+	ai_configuration_ready = true;
+	ai_configuration_signature = _ai_connection_signature();
+	ai_connection_message = _ai_connection_configured() ? String(U"当前配置尚未验证，请点击验证连接。") : String(U"请先配置模型连接。");
+	ai_connection_timer = memnew(Timer);
+	ai_connection_timer->set_wait_time(0.2);
+	ai_connection_timer->connect("timeout", callable_mp(this, &AIChatDock::_poll_ai_connection));
+	add_child(ai_connection_timer);
+	ai_connection_timer->set_autostart(true);
 }
 
 void AIChatDock::_show_snapshot_changes(const String &p_id) {
@@ -8843,6 +9171,9 @@ void AIChatDock::_reject_snapshot_restore() {
 }
 
 AIChatDock::~AIChatDock() {
+	// Child nodes may already have been destroyed; release only our process/file resources.
+	ai_connection_request = nullptr;
+	_cancel_ai_connection_probe();
 	_cancel_production_integration();
 	_cancel_engine_candidate();
 	// A visible approval can still belong to a settings window during shutdown.

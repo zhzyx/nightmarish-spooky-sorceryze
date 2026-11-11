@@ -49,6 +49,7 @@ func _ready() -> void:
 	for label in PROVIDERS:
 		provider.add_item(label)
 	connect_local = Button.new()
+	connect_local.name = "ConnectLocalModels"
 	connect_local.text = "一键识别并接入本地模型"
 	connect_local.tooltip_text = "读取本机 Codex、CodeBuddy 型号和已配置的供应商环境变量"
 	connect_local.pressed.connect(_connect_local)
@@ -138,7 +139,12 @@ func _save_profile() -> void:
 func _connect_local() -> void:
 	var settings := EditorInterface.get_editor_settings()
 	var local := {}
-	for field in ["backend", "model", "endpoint", "cli_node", "cli_entry", "cli_model", "codex_entry", "codex_model"]:
+	# Model choices belong to this project; executable paths remain host-owned.
+	if is_instance_valid(chat) and chat.has_method("get_ai_configuration"):
+		var configuration: Dictionary = chat.get_ai_configuration()
+		for field in ["backend", "model", "endpoint", "cli_model", "codex_model"]:
+			local[field] = str(configuration.get(field, ""))
+	for field in ["cli_node", "cli_entry", "codex_entry"]:
 		var path: String = "ai_chat/" + field
 		if settings.has_setting(path):
 			local[field] = str(settings.get_setting(path))
@@ -161,13 +167,13 @@ func _connect_local() -> void:
 				info.text = "聊天设置字段尚未准备完成，请稍后重试。"
 				return
 			local[field] = control.text.strip_edges()
-	if local.get("backend") == "0" and is_instance_valid(chat):
+	if local.get("backend") in ["0", "3"] and is_instance_valid(chat):
 		var ai: Control = chat.get_ai_settings_control() if chat.has_method("get_ai_settings_control") else chat
 		var field := ai.find_child("APIKey", true, false) as LineEdit if is_instance_valid(ai) else null
 		if field:
 			var secret := field.text.strip_edges()
 			# An ambient OpenAI key belongs only to its own endpoint.
-			if secret != OS.get_environment("OPENAI_API_KEY") or local.get("endpoint") == "https://api.openai.com/v1/chat/completions":
+			if secret != OS.get_environment("OPENAI_API_KEY") or local.get("endpoint") in ["https://api.openai.com/v1/chat/completions", "https://api.openai.com/v1/responses"]:
 				local.editor_key = secret
 	_run("connect-local", local)
 

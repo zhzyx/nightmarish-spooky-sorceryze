@@ -200,6 +200,7 @@ const DEBUG_MODELS := ["调试 · Claude","调试 · Gemini","调试 · GPT","�
 var host: Object
 var selection_epoch := 0
 var editor_session := Crypto.new().generate_random_bytes(16).hex_encode()
+var project_model_connecting := false
 
 
 func _ready() -> void:
@@ -2457,6 +2458,16 @@ func _open_models() -> void:
 
 func get_model_settings_control() -> Control:
 	return models_dialog.get_settings_control() if is_instance_valid(models_dialog) and models_dialog.has_method("get_settings_control") else null
+
+
+func connect_project_models() -> void:
+	if project_model_connecting or not is_instance_valid(models_dialog) or models_dialog.pending:
+		return
+	project_model_connecting = true
+	await _open_models()
+	if is_instance_valid(models_dialog) and not models_dialog.authorized_root.is_empty() and not models_dialog.user_id.is_empty():
+		await models_dialog._connect_local()
+	project_model_connecting = false
 
 
 func _use_personal_board(auth: Dictionary) -> void:
