@@ -214,6 +214,7 @@ repos:
             data-collection/issue6-continuation-(workspace-fix|independent-review)-20261103\.json|
             data-collection/issue27-.*\.json|
             data-collection/issue35-.*\.json|
+            data-collection/parallel-worker-receipts-785\.json|
               data-collection/maliang-gpt-modeling-20261108-host-snapshot\.json|
             .*\.test\.txt|
             .*\.svg|
