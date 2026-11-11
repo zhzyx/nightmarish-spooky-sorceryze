@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9312cbd094f2be6c2dae8d8267d7e11a66f43a78",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-authorized-acceptance-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b1bff9a03d63c982181e73eaec0f97534e3d698c8db17cd39a5ece26639aa7bb",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/784",
+    "action": "validation",
+    "detection_head": "c781cfc61607fa65da36ac8fcd8223f3ac795b09",
+    "context_sha256": "7d3674a959331eac1497c047b620fd5983c119674602b7eb02d84187d783255d",
+    "operator": "Sail-Li",
+    "worker": "native-acceptance-783",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783",
+    "evidence": "data-collection/native-independent-acceptance-783.json",
+    "diagnosis": "原生编译问题已修复并按原操作复验。build18完成45项638断言，专用原生2项8断言与12项实际桥接场景通过，同二进制SHA90997ad9a38caa9c76c38f1ee001fc548f08386e910113d2d308813cb1490594。原场景包含真实并行失败修复及依赖补位；公开证据摘要dd6dcbf3e8d0f565aea6254bda388351d0e89486363a1adda6f4cf1a1faaf439。",
+    "next_action": "交父任务独立核查精确native候选，沿main门禁交付并继续773真实模型游戏业务验收；本地恢复不代替main及业务验收。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T11:58:21.425043+00:00",
+    "attempted": null,
+    "repair_owner": "native-acceptance-783",
+    "continuable": "本地构建及native验收已恢复，父任务可继续精确候选整合。"
+  },
+  "occurred_at": "2026-11-11T14:35:03.279922+00:00",
+  "sha256": "2534495cdff808bdb7a3c4ccc82f849ff8a5e185cd1c81d44daa0fe857e5359d"
+}

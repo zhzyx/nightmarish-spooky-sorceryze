@@ -1,0 +1,45 @@
+{
+  "issue_number": 783,
+  "request_id": "native-authorized-acceptance-20261111",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783",
+  "failed_pr": 799,
+  "failed_head": "15eb199c0883d33081d84d72dd0af6675411cb7e",
+  "failed_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43055870363/job/130645386201",
+  "cause": "MSVC C4458 in three local request declarations, elevated by CI /WX; prior local build did not enable werror",
+  "repair": "Only 14 local identifier declarations/usages renamed request to acceptance_request, preserving protocol literals and logic",
+  "file": "editor/docks/ai_chat_sub_agents.cpp",
+  "sha256": "80f864498586f7113222262d74572f7c48505553864b8325375bfabb83f91c72",
+  "verification": {
+    "strict_target": "bin/obj/editor/docks/ai_chat_sub_agents.windows.editor.x86_64.obj",
+    "options": [
+      "warnings=extra",
+      "werror=yes"
+    ],
+    "exit_code": 0,
+    "log_sha256": "0d086c563db120e44505e72129558e9f09665db23a532e228a5894f6f3d7c130",
+    "initial_target_failure": "Source-directory object target did not exist; retried actual redirected bin/obj target. Original log retained."
+  },
+  "independent_review": {
+    "reviewer": "/root/sinan_d6e132ec2c440b7a",
+    "reference": "collaboration.FINAL_ANSWER:/root/sinan_d6e132ec2c440b7a",
+    "result": "No findings: inverse rename reproduces prior source exactly after CRLF normalization; 1 file, 14 replacements, no literal or logic change"
+  },
+  "prior_functional_evidence": "data-collection/native-independent-acceptance-783-final.json",
+  "prior_evidence_boundary": "build21 behavior tests unchanged; do not attribute their binary hashes to this rename candidate",
+  "remaining": [
+    "exact candidate CI",
+    "main delivery",
+    "installed combination and game checks"
+  ],
+  "full_build": {
+    "revision": "9fbf1bfba1e3e5138764c38ec9bea60ed7eb1b3b",
+    "source_digest": "bb2f3c77179de9df59ce274620a3707239a5a56119dbd34cd2ab9ce46559fc87",
+    "gui_sha256": "e1bc1fe4275b5c5e3ca341fe607d2103e8ae20d3077b696e369ab553d9c85b31",
+    "console_sha256": "bb383fc4965156e35aa058f715a1ff4369e9459119466bd597e9fe6d3d9267d1",
+    "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "tests": 45,
+    "assertions": 638,
+    "result": "passed",
+    "receipt_sha256": "45acd21811d5cc5aa09aca506b1f3c8e3f0cf170053ec434c4687a2e6f198330"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "issue_number": 783,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783",
+  "request_id": "native-authorized-acceptance-20261111",
+  "base": "a18c04fc16a5ca54bf36b34a708085fd53aa4062",
+  "evidence": [
+    {
+      "path": "data-collection/native-independent-acceptance-783.json",
+      "sha256": "dd6dcbf3e8d0f565aea6254bda388351d0e89486363a1adda6f4cf1a1faaf439"
+    },
+    {
+      "path": "data-collection/native-independent-acceptance-783-final.json",
+      "sha256": "b1b21370120e1497d8aeaf21fd4ba3e6ea2df3fda194c51d899baab9c697c646"
+    },
+    {
+      "path": "data-collection/native-independent-review-783.json",
+      "sha256": "a432d0ace2094a4f5c099743792613db9df31e86cab8f800b1998c32a47f8c57"
+    },
+    {
+      "path": "data-collection/native-auxiliary-context-review-783.json",
+      "sha256": "100ac6d22ea4fee57fb346533289907e841c919bfc69dafafb21993a7934c48f"
+    }
+  ],
+  "formal_gate_correction": "Original evidence uses integer issue; PR association accepts URL issue or integer issue_number. Added this explicit binding wrapper without changing immutable original evidence bytes.",
+  "source_and_tests": "Same independently reviewed build21 inputs; no source change for metadata correction",
+  "remaining": "commit, push, exact CI, main readback and installed consumer verification",
+  "observed_at": "2026-11-11T16:02:14.216182+00:00"
+}

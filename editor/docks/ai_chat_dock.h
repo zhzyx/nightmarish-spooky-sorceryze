@@ -638,6 +638,16 @@ class AIChatDock : public EditorDock {
 	HashMap<int, Dictionary> sub_agents;
 	// Live dispatch ownership never comes from saved chat history.
 	HashMap<int, Dictionary> design_batches;
+	HashMap<int, Dictionary> acceptance_reviews;
+	Dictionary _design_child_context(int p_child) const;
+	HashMap<int, Dictionary> acceptance_bridge_jobs;
+	HashMap<int, Dictionary> acceptance_bridge_results;
+	Timer *acceptance_bridge_timer = nullptr;
+	Dictionary _acceptance_bridge(const String &p_operation, const Dictionary &p_request, const String &p_root, int p_actor);
+	void _poll_acceptance_bridge();
+	bool _start_acceptance_review(int p_producer);
+	bool _finish_acceptance_review(int p_reviewer, const Array &p_history);
+	bool _automatic_acceptance_current(int p_producer) const;
 	int design_child_starting = -1;
 	int design_parent_starting = -1;
 	uint64_t design_last_blocked_generation = UINT64_MAX;

@@ -1,0 +1,658 @@
+{
+  "schema_version": 1,
+  "issue": 783,
+  "request_id": "native-authorized-acceptance-20261111",
+  "parent_issue": 776,
+  "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783",
+  "status": "local_native_verified_parent_delivery_pending",
+  "candidate": {
+    "checkout_head": "c781cfc61607fa65da36ac8fcd8223f3ac795b09",
+    "clean_source": false,
+    "owned_inputs": [
+      {
+        "path": "editor/docks/ai_chat_dock.cpp",
+        "sha256": "b10183f0127600d0b572ca24f28ffadf2d11097962902140799f2e649a44feb1",
+        "git_blob": "f3744afdbb6faa652815752e8a68f3ebdbae1de6"
+      },
+      {
+        "path": "editor/docks/ai_chat_dock.h",
+        "sha256": "2346a2bd3e2f7eeccbf11765fd9966281daa31f536dc025bffaf3e907635f790",
+        "git_blob": "ee034c1520fb707dcef39179322edd3a9037939e"
+      },
+      {
+        "path": "editor/docks/ai_chat_sub_agents.cpp",
+        "sha256": "6716caa9a185f264ea3696578362d5a8b24f3cd785f00d2ce96b79bb05f6d3b9",
+        "git_blob": "561414b8e598948da84381a9e70715c415bb3ac6"
+      },
+      {
+        "path": "editor/docks/ai_chat_sub_agents.h",
+        "sha256": "43ab87acd18b0c5d478add64e9cdec6ba5528e99c8806914157609a0f04f78ff",
+        "git_blob": "1cf4f44920a7ef8cd86494abf66056f84276ab17"
+      },
+      {
+        "path": "tests/editor/test_native_acceptance.cpp",
+        "sha256": "216cca5d32e629a2d292c41906bbc7ad6eeec83d7f4b90908f5801c7300b37fb",
+        "git_blob": "92f674283dd5d29ea14dc843877476e144d1b944"
+      },
+      {
+        "path": "tests/editor/run_native_acceptance.py",
+        "sha256": "93749d3c4a5159b500e4cf4fe53b639059167b0092a4179beac91e7c29009cf5",
+        "git_blob": "c576d7465335c4731cadd7fa19cbf04b29f64fa9"
+      },
+      {
+        "path": "tests/editor/native_acceptance_parallel.py",
+        "sha256": "109fb1dfa83e324923cb85ae36b83caf366edb34fae4fe52b8c1bada15922cec",
+        "git_blob": "34ff428d9682d1cccd4f251050ae27fc3872d841"
+      },
+      {
+        "path": "design-docs/native-authorized-acceptance-20261111.md",
+        "sha256": "09e36eb7da4700f00734e31d315bccdadcf648e0987a408b88b14b9086ed5299",
+        "git_blob": "2750bcdb7b3ee757d612eb200280ff6638598bc5"
+      }
+    ],
+    "consumed_host_tool_inputs": [
+      {
+        "path": "tools/gonggong_bridge.py",
+        "sha256": "c9e4b3ebaffa432c5773756a62e994580dac10ef1d054c9f30a13ac2c14f0364",
+        "git_blob": "a26b10f7eae2cae2d0a1970a143a4be3d45587c8"
+      },
+      {
+        "path": "customizations/components/godot-host/bridge.py",
+        "sha256": "eba2ca0eee027dfae57826453d1a1901baa8a127fa0e2af954f0255fc3888f2d",
+        "git_blob": "0437a4452898092fb126bb34011c1fc15a66306b"
+      },
+      {
+        "path": "customizations/components/godot-host/acceptance.py",
+        "sha256": "6edbcec8969b97a5b38fafa5b08d19eb48b94e6c81daf5285547712e053d7cf3",
+        "git_blob": "af8d8eff86d5b6a5fc75dd0379fb4dc53b00d7ac"
+      },
+      {
+        "path": "customizations/components/repository-dispatch/acceptance.mjs",
+        "sha256": "32daebf153e908d0ab52701dac657825c15960b33ee5e3a5cecdffa2474e4d62",
+        "git_blob": "3d83dda25efba9c913fcbe268dc027589dcebf01"
+      },
+      {
+        "path": "customizations/components/repository-dispatch/acceptance-candidate.mjs",
+        "sha256": "dca2d88c03a0ce1904211df72a4d9c3b042b4ae3738be068ec9b7d59c95d048f",
+        "git_blob": "d4e8f61529e25920a9b1f3086ceec2639d3df42d"
+      },
+      {
+        "path": "customizations/components/repository-dispatch/session.mjs",
+        "sha256": "99e667645961d10962ad282a31fa4f0bde5dcbce425a77972bef2c222fb1298b",
+        "git_blob": "e75a76dfc606b2d21783a68aedcee373a6f98d69"
+      },
+      {
+        "path": "customizations/platforms/document-management/git-markdown/yanshi-legacy/runtime/src/production.mjs",
+        "sha256": "0e7d8ea1da2bec8b85cff0ae89e3634b45c8b7315edca5357a2c297f3304de07",
+        "git_blob": "bca29c84ed3bed778efcc3208e93c89b663a1c70"
+      },
+      {
+        "path": "customizations/platforms/process-management/yuanheng-local/sinan/coordinator.mjs",
+        "sha256": "ab2dd22cb08e128d785a5cac4dc4ac3c899d6b4dfc1e80a55cc68e19c010b162",
+        "git_blob": "52465ea815f3cb0e6157f2f9c8d2aae421c9924a"
+      },
+      {
+        "path": "tools/godot_parallel/runner.mjs",
+        "sha256": "68f1b822aec3746ce3763575a8ebc3a474bf6419999ee9b1812ec4769c42ff2e",
+        "git_blob": "a760087fdabf08e76bc5227a8de05846c21874ec"
+      },
+      {
+        "path": "tools/godot_parallel/repair.mjs",
+        "sha256": "fe53d5b19f36adc01c4f8077b6ee22fd1be68bc3c1c744930e804166bcb9571a",
+        "git_blob": "bad4ebc177e0aad6dcc51eef895525f5c25905ae"
+      }
+    ]
+  },
+  "build": {
+    "receipt_sha256": "7271833932b5ab08dace7041908d429f60aef88873ed99ef46bc2a0606bc02dd",
+    "private_receipt": "bin/gonggong-build-receipts/873048041bb646e8922225e8f2696cc3.json",
+    "native_key": "cbd4477856583fad070bdd41e42c583b0db3a02e1bc5c88c7632da02db9a66a3",
+    "executable_sha256": "90997ad9a38caa9c76c38f1ee001fc548f08386e910113d2d308813cb1490594",
+    "console_sha256": "ede81a71d8103f15aae9a23d58bf1cb1a62489704b8c8cd4b0737d6ba2a4c46f",
+    "source_digest": "ae8a431a621ffafb5aa44e6146ade31572ca32a0032cdff1774d9d52fd1c5f10",
+    "native_invalidation": {
+      "passed": true,
+      "observed": "native input changes rebuilt and linked the editor; build18 completed 45 tests and 638 assertions"
+    },
+    "rollback": "No installed editor was replaced. Retain the previously verified executable; parent owns trusted main delivery."
+  },
+  "checks": [
+    {
+      "scenario": "pass",
+      "passed": true,
+      "report_sha256": "d965fb5fc5dd207bea8534a4d71e34a212a1853857f7241e70ef2b704e0f1153",
+      "private_report": "bin/native-acceptance-build18-pass-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot bin/godot.windows.editor.x86_64.exe --node $NODE --case models-initial-ok --scenario pass --out bin/native-acceptance-build18-pass-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "child2": 3,
+        "return": 3
+      },
+      "decisions": [
+        {
+          "producer": 1,
+          "decision_sha256": "14e07ab301f28335e6f85d7782949216558683936b75ec4add167bf2b5f39d83",
+          "criteria": [
+            "A"
+          ]
+        },
+        {
+          "producer": 2,
+          "decision_sha256": "6b506f327912bf0394bb832d35ea6d59147845d0af67baf03db0f53c4419d091",
+          "criteria": [
+            "B"
+          ]
+        }
+      ],
+      "review_completions": 2,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 1
+    },
+    {
+      "scenario": "repair",
+      "passed": true,
+      "report_sha256": "06a9db02d438ef0418c2a3ee6bf4684362dededb698053708bafd3fe200cd90e",
+      "private_report": "bin/native-acceptance-build18-repair-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot bin/godot.windows.editor.x86_64.exe --node $NODE --case models-initial-ok --scenario repair --out bin/native-acceptance-build18-repair-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "child2": 3
+      },
+      "decisions": [
+        {
+          "producer": 1,
+          "decision_sha256": "5c2eb54e2b4323c041db13d5a5396d1315400943652e1bd7bda68498cc30b416",
+          "criteria": [
+            "A"
+          ]
+        },
+        {
+          "producer": 2,
+          "decision_sha256": "8c22731cbb32673654c50051f980beaf98d5e98cd2a3c43fe6bd0870752faee7",
+          "criteria": [
+            "B"
+          ]
+        }
+      ],
+      "review_completions": 3,
+      "failure_parent_notices": 0,
+      "repair_completions": 1,
+      "parent_returns": 1,
+      "parent_return_basis": "fixture asserts exactly one final original-parent return with acceptance_findings and original failed reason"
+    },
+    {
+      "scenario": "parallel",
+      "passed": true,
+      "report_sha256": "343c8f0d2b85eed7e126a50d3fc2c65dc6265f89f785bdbbcb86217d3f9eec29",
+      "private_report": "bin/native-acceptance-build18-parallel-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot bin/godot.windows.editor.x86_64.exe --node $NODE --case models-initial-ok --scenario parallel --out bin/native-acceptance-build18-parallel-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1
+      },
+      "decisions": [
+        {
+          "producer": 1,
+          "decision_sha256": "fbd52203a0828ce8bfb369be73e0d7203535f3d9e20ab3c30adb4a5c46220563",
+          "criteria": [
+            "A"
+          ]
+        },
+        {
+          "producer": 2,
+          "decision_sha256": "931202c53e104a1d2cf4cb459a090e3e29a82172e96a283e14699b53b1e719e0",
+          "criteria": [
+            "B"
+          ]
+        },
+        {
+          "producer": 3,
+          "decision_sha256": "88f8cfd706adf7d09ea64d120b23d16712cd0d609e4c2b8ff2e88035762d7fa7",
+          "criteria": [
+            "C"
+          ]
+        }
+      ],
+      "review_completions": 3,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 1,
+      "actual_process_events": [
+        {
+          "name": "A",
+          "phase": "start",
+          "pid": 14152,
+          "time": 1794407446252
+        },
+        {
+          "name": "B",
+          "phase": "start",
+          "pid": 107332,
+          "time": 1794407446252
+        },
+        {
+          "name": "B",
+          "phase": "finish",
+          "pid": 107332,
+          "time": 1794407447468
+        },
+        {
+          "name": "A",
+          "phase": "finish",
+          "pid": 14152,
+          "time": 1794407447468
+        },
+        {
+          "name": "C",
+          "phase": "start",
+          "pid": 72272,
+          "time": 1794407470724
+        },
+        {
+          "name": "C",
+          "phase": "finish",
+          "pid": 72272,
+          "time": 1794407471934
+        }
+      ],
+      "ledger_states": [
+        {
+          "owner": "external-A",
+          "status": "done"
+        },
+        {
+          "owner": "external-B",
+          "status": "done"
+        },
+        {
+          "owner": "external-C",
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "scenario": "parallel-repair",
+      "passed": true,
+      "report_sha256": "8bf03d92e36feee0276ee8ddfa746547d209193ce2c17447a4f6617dc33510ea",
+      "private_report": "bin/native-acceptance-build18-parallel-repair-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot bin/godot.windows.editor.x86_64.exe --node $NODE --case models-initial-ok --scenario parallel-repair --out bin/native-acceptance-build18-parallel-repair-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1
+      },
+      "decisions": [
+        {
+          "producer": 1,
+          "decision_sha256": "27d7aa9c39c036817d3cce4adac2c79d9474174f9fb78dfa1fc5b96381910347",
+          "criteria": [
+            "A"
+          ]
+        },
+        {
+          "producer": 2,
+          "decision_sha256": "ee0a1a9d8a0f2d260cd04f3f5cfadf79b03cb2cdf0b2d7a959f823ba285e76b5",
+          "criteria": [
+            "B"
+          ]
+        },
+        {
+          "producer": 3,
+          "decision_sha256": "0e0d1abd619b4c0bca147fec143bdd9f514010d076b50519f30272e0deedf31b",
+          "criteria": [
+            "C"
+          ]
+        }
+      ],
+      "review_completions": 4,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 1,
+      "actual_process_events": [
+        {
+          "name": "B",
+          "phase": "start",
+          "pid": 8456,
+          "time": 1794407136357
+        },
+        {
+          "name": "A",
+          "phase": "start",
+          "pid": 127576,
+          "time": 1794407136358
+        },
+        {
+          "name": "A",
+          "phase": "finish",
+          "pid": 127576,
+          "time": 1794407137563
+        },
+        {
+          "name": "B",
+          "phase": "finish",
+          "pid": 8456,
+          "time": 1794407137562
+        },
+        {
+          "name": "A",
+          "phase": "start",
+          "pid": 101268,
+          "time": 1794407156179
+        },
+        {
+          "name": "A",
+          "phase": "finish",
+          "pid": 101268,
+          "time": 1794407157381
+        },
+        {
+          "name": "C",
+          "phase": "start",
+          "pid": 102828,
+          "time": 1794407176614
+        },
+        {
+          "name": "C",
+          "phase": "finish",
+          "pid": 102828,
+          "time": 1794407177817
+        }
+      ],
+      "ledger_states": [
+        {
+          "owner": "external-A",
+          "status": "done"
+        },
+        {
+          "owner": "external-B",
+          "status": "done"
+        },
+        {
+          "owner": "external-C",
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "scenario": "parallel-config-drift",
+      "passed": true,
+      "report_sha256": "d7a30a9c31ed748ac88ffd4ab5b46c4446bc5c07a704d3eacabe55f9d453d0f3",
+      "private_report": "bin/native-acceptance-build18-parallel-config-drift-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot bin/godot.windows.editor.x86_64.exe --node $NODE --case models-initial-ok --scenario parallel-config-drift --out bin/native-acceptance-build18-parallel-config-drift-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1
+      },
+      "decisions": [],
+      "review_completions": 1,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 1,
+      "actual_process_events": [
+        {
+          "name": "A",
+          "phase": "start",
+          "pid": 39656,
+          "time": 1794407135802
+        },
+        {
+          "name": "B",
+          "phase": "start",
+          "pid": 120412,
+          "time": 1794407135803
+        },
+        {
+          "name": "B",
+          "phase": "finish",
+          "pid": 120412,
+          "time": 1794407137012
+        },
+        {
+          "name": "A",
+          "phase": "finish",
+          "pid": 39656,
+          "time": 1794407137011
+        }
+      ],
+      "ledger_states": [
+        {
+          "owner": "external-A",
+          "status": "running"
+        },
+        {
+          "owner": "external-B",
+          "status": "running"
+        },
+        {
+          "owner": "external-C",
+          "status": "running"
+        }
+      ]
+    },
+    {
+      "scenario": "parallel-self-review",
+      "passed": true,
+      "report_sha256": "eb6b44402cb8f542866a2a97f3cd7cd77cb5e2fd895a021e279944a100aca377",
+      "private_report": "bin/native-acceptance-build18-parallel-self-review-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot bin/godot.windows.editor.x86_64.exe --node $NODE --case models-initial-ok --scenario parallel-self-review --out bin/native-acceptance-build18-parallel-self-review-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1
+      },
+      "decisions": [
+        {
+          "producer": 2,
+          "decision_sha256": "0bdaf778f4f250c1f992f32c9682341a5e5e69f5feec3c6b3638a2f44af414f1",
+          "criteria": [
+            "B"
+          ]
+        }
+      ],
+      "review_completions": 2,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 0,
+      "actual_process_events": [
+        {
+          "name": "A",
+          "phase": "start",
+          "pid": 39044,
+          "time": 1794407136137
+        },
+        {
+          "name": "B",
+          "phase": "start",
+          "pid": 51456,
+          "time": 1794407136137
+        },
+        {
+          "name": "A",
+          "phase": "finish",
+          "pid": 39044,
+          "time": 1794407137352
+        },
+        {
+          "name": "B",
+          "phase": "finish",
+          "pid": 51456,
+          "time": 1794407137352
+        }
+      ],
+      "ledger_states": [
+        {
+          "owner": "4",
+          "status": "running"
+        },
+        {
+          "owner": "external-B",
+          "status": "done"
+        },
+        {
+          "owner": "external-C",
+          "status": "running"
+        }
+      ]
+    },
+    {
+      "scenario": "cancel-verify",
+      "passed": true,
+      "report_sha256": "ed730c2d5c04f1417ad67044d921af4d5caef084f998cb001ea4a45be6a492f2",
+      "private_report": "bin/native-acceptance-build18-cancel-verify-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot bin/godot.windows.editor.x86_64.exe --node $NODE --case models-initial-ok --scenario cancel-verify --out bin/native-acceptance-build18-cancel-verify-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 1,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 0
+    },
+    {
+      "scenario": "stale",
+      "passed": true,
+      "report_sha256": "5660d5b7d6593e5679dbff7446aacf58e7d97c3033e1b59270f6067e3d7ee4b4",
+      "private_report": "bin/native-acceptance-build18-stale-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot bin/godot.windows.editor.x86_64.exe --node $NODE --case models-initial-ok --scenario stale --out bin/native-acceptance-build18-stale-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 1,
+      "failure_parent_notices": 1,
+      "repair_completions": 0,
+      "parent_returns": 0
+    },
+    {
+      "scenario": "unknown",
+      "passed": true,
+      "report_sha256": "57c113750d71da5c71b61039a868b4a0a9fe2f0b5a5d13d695dbad281d3932ed",
+      "private_report": "bin/native-acceptance-build18-unknown-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot bin/godot.windows.editor.x86_64.exe --node $NODE --case models-initial-ok --scenario unknown --out bin/native-acceptance-build18-unknown-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 1,
+      "failure_parent_notices": 1,
+      "repair_completions": 0,
+      "parent_returns": 0
+    },
+    {
+      "scenario": "empty",
+      "passed": true,
+      "report_sha256": "0440999ccaa43a1c8b84687df50bd062c339abed365a3cd5eef7b99bcc3f2d95",
+      "private_report": "bin/native-acceptance-build18-empty-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot bin/godot.windows.editor.x86_64.exe --node $NODE --case models-initial-ok --scenario empty --out bin/native-acceptance-build18-empty-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 0,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 0
+    },
+    {
+      "scenario": "no-permission",
+      "passed": true,
+      "report_sha256": "293d2d435a312adba932e8ce16d16723360c7a349f09510bffe336cfe0d40e30",
+      "private_report": "bin/native-acceptance-build18-no-permission-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot bin/godot.windows.editor.x86_64.exe --node $NODE --case models-initial-ok --scenario no-permission --out bin/native-acceptance-build18-no-permission-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 0,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 0
+    },
+    {
+      "scenario": "cancel",
+      "passed": true,
+      "report_sha256": "c533859630ba9e8af3b7d4db9c83f8cc9ef42f53975dfb580f7265cf42671dbd",
+      "private_report": "bin/native-acceptance-build18-cancel-report.json",
+      "command": "$WORKFLOW_PYTHON tests/editor/run_native_acceptance.py --godot bin/godot.windows.editor.x86_64.exe --node $NODE --case models-initial-ok --scenario cancel --out bin/native-acceptance-build18-cancel-report.json",
+      "stages": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "decisions": [],
+      "review_completions": 0,
+      "failure_parent_notices": 0,
+      "repair_completions": 0,
+      "parent_returns": 0
+    }
+  ],
+  "regressions": {
+    "existing_read_only_review": {
+      "passed": true,
+      "report_sha256": "8501b857cb33604f38b9b2c0cf50630abeb26cba568746aa7f6083c9e1a71aad",
+      "private_report": "bin/native-acceptance-build18-review-regression-report.json"
+    },
+    "native_criteria": {
+      "passed": true,
+      "cases": 2,
+      "assertions": 8,
+      "log_sha256": "b292c07ffa44d16f6979f10f0e819a189bd527d997135e6839f3e4352689b268"
+    },
+    "default_native": {
+      "passed": true,
+      "cases": 45,
+      "assertions": 638
+    },
+    "static_checks": {
+      "clang_format": "5 C++ files, clang-format 22.1.5",
+      "ruff": "2 Python files, check and format passed",
+      "mypy": "2 Python files, no issues"
+    }
+  },
+  "failure_recovery": [
+    {
+      "failure": "MSVC parsed temporary Dictionary indexing as a declaration",
+      "failure_log_sha256": "b4acd508eda34ee45d09b22b1475430cac943459afb39d4158acd4c0bde6488c",
+      "repair": "Use named Dictionary reference before assignment",
+      "revalidation": "Build18 original compile path and full native checks passed"
+    },
+    {
+      "failure": "External completion treated asynchronous currentness pending as reporting failure",
+      "failure_report_sha256": "f51d7df380b3eaa8d38a94bbe63768f7b58ab8e9cb94915804c85f1bb5bb5b73",
+      "repair": "Only actual reportingError blocks reporting; independent review admission awaits currentness callback",
+      "revalidation": "Build18 parallel-repair passed through C review and original-parent return"
+    }
+  ],
+  "boundaries": {
+    "placement": "native",
+    "existing_host": "AIChatDock and AIChatSubAgents",
+    "host_contract": "Async capture/verify/current; private nonce/liveness; exact host registration, complete criteria and actual successful evidence reads; real runner continuation",
+    "host_tool_issues": [
+      776,
+      785,
+      792
+    ],
+    "same_binary": "All 12 scenario reports and existing review regression above bind the same executable SHA"
+  },
+  "limitations": [
+    "Model HTTP responses and GitHub transports are controlled fixtures; runner, child processes, Git worktrees, ledger, Python/Node bridge and native completion callbacks are real.",
+    "Legacy transport_fixture_ok and legacy parent_return_count fields are not the acceptance verdict. This report uses the dedicated native assertions and actual external_parent_returns.",
+    "The broader #773 real-model playable-game acceptance remains with the parent coordinator; local fixture success does not close that business requirement.",
+    "No commit, push, merge, installed editor replacement or shared learning revision was performed by this native worker."
+  ],
+  "private_evidence_policy": "Raw histories, fixture credentials and temporary candidate manifests remain in ignored bin diagnostics. Only hashes and public-safe measurements are copied here."
+}

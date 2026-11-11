@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5813f04ea112a4e1e90bbbd689ef62e1473203ca",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-authorized-acceptance-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "940245d91e06a936cbb9a26cad8169ea7b372989e76bc6b15bfe9f489c7e0f4a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/784",
+    "action": "validation",
+    "detection_head": "a18c04fc16a5ca54bf36b34a708085fd53aa4062",
+    "context_sha256": "25ab03d6488a2fb9f29456ebeceb0d5320236378739fc2773ef5d16978642c85",
+    "operator": "Sail-Li",
+    "worker": "codex-root-native-delivery-783",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/783",
+    "evidence": "data-collection/native-delivery-evidence-783.json",
+    "diagnosis": "Formal PR association requires integer issue_number or URL issue; original native evidence uses integer issue. Added explicit binding wrapper while preserving immutable original report bytes and all reviewed source hashes.",
+    "next_action": "Stage wrapper and actual source events, rerun the same formal gate, then writer submission and exact CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T15:59:36.121191+00:00",
+    "attempted": null,
+    "repair_owner": "codex-root-native-delivery-783",
+    "continuable": "No native source or runtime test changes; actual game chain and independent review remain valid."
+  },
+  "occurred_at": "2026-11-11T16:03:07.116874+00:00",
+  "sha256": "10575bd602a680955a0170be9878836b568c458b5d1d6cb99204b76d41b483e7"
+}
