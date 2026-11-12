@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fab97049403e2ddcc7a2fa5d57f04d139dac4a63",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-model-adjust-node-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "74832bb701a997f3dda3dba5d50e1fea9e57ee0d4c9ecd2923a4b6c824807e7c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/926",
+    "action": "delivery",
+    "detection_head": "f9e0c53ae2a8b6052204e8c22d03b76a5e9ee8d0",
+    "context_sha256": "bcfd8e23fe61a8b7ccb38fbdbd11de8a025fbd660b326710e85cbd8230fb986d",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-kaiyunxue",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/928",
+    "diagnosis": "两次 git fetch 均因 github.com:443 连接超时停止在 merge 前。改用同一 gh 认证通道的 GitHub API 回读 main=2739fc7f，以精确 head 9414e7ac58b9bc12841af3e191d33afd0d375665 合入 PR #928；回读 mergedAt=2026-11-12T10:59:05Z、main=df490bf6daee43f090f2af2cc4da7329271e1e37，main 内容树 08e70d4ec5aa6bdea7effe6e22fef9d91e175096 与候选一致。",
+    "next_action": "提交网络恢复证据，关闭流程跟踪单，并按原节点验收及 main 回执关闭 #913。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T10:57:32.399985+00:00",
+    "attempted": "两次 git fetch 失败后改用 GitHub API 核对基线并合入同一 head，分别回读 PR 和 main。恢复记录所需的 main 对象通过 API 签名内容重建并校验远端 SHA 一致。",
+    "repair_owner": "kimi-work-kaiyunxue 已通过 GitHub API 完成实际恢复并继续负责关单。",
+    "continuable": "main 交付已核实；剩余为恢复证据提交和权威工单结束回读。"
+  },
+  "occurred_at": "2026-11-12T11:05:25.432918+00:00",
+  "sha256": "e866f1f5051321daeede010195c024a704ed1427672914ba6d2ba50acafec9fc"
+}
