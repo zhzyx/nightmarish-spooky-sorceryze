@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "kind": "main_delivery_acceptance",
+  "request_id": "engine-next-build-contract-20261112",
+  "issue": 882,
+  "bug": 884,
+  "recorded_at": "2026-11-12T07:26:20Z",
+  "candidate": "1bf68230524ac146cf5dbdac9cb6530ff77952d2",
+  "signed_commit": "9cb6d12cbcc31a81133071e3cea012ee45122736",
+  "pull_request": 900,
+  "merged_at": "2026-11-12T07:16:46Z",
+  "merged_by": "kaiyunxue",
+  "merge_commit": "35e3bbe0fc92a16d17e51556a544a528d87ce4ec",
+  "candidate_tree": "df4f4213f4ad1b6b5e806052ab59f9be0ebe8da6",
+  "main_tree": "df4f4213f4ad1b6b5e806052ab59f9be0ebe8da6",
+  "main_readback": "GitHub API main equals 35e3bbe0fc92a16d17e51556a544a528d87ce4ec; local candidate tree and origin/main tree are identical",
+  "checks": [
+    {
+      "scope": "pull_request",
+      "run": 43173092301,
+      "name": "Engine Next build contract",
+      "head": "9cb6d12cbcc31a81133071e3cea012ee45122736",
+      "result": "success on windows-latest and macos-26"
+    },
+    {
+      "scope": "pull_request",
+      "run": 43173092298,
+      "name": "GHA static checks and Windows editor",
+      "head": "9cb6d12cbcc31a81133071e3cea012ee45122736",
+      "result": "success"
+    },
+    {
+      "scope": "pull_request",
+      "run": 43173092004,
+      "name": "issue-association",
+      "head": "9cb6d12cbcc31a81133071e3cea012ee45122736",
+      "result": "success"
+    },
+    {
+      "scope": "main",
+      "run": 43174085538,
+      "name": "Engine Next build contract",
+      "head": "35e3bbe0fc92a16d17e51556a544a528d87ce4ec",
+      "result": "success"
+    },
+    {
+      "scope": "main",
+      "run": 43174085445,
+      "name": "GHA static checks and Windows editor",
+      "head": "35e3bbe0fc92a16d17e51556a544a528d87ce4ec",
+      "result": "success"
+    },
+    {
+      "scope": "post_merge_local",
+      "name": "Delivered-tree unit and data checks",
+      "result": "21 tests passed with 0 skipped; source audit reports no_sources and godot_free_runtime_verified=false; git-check require-committed passed"
+    }
+  ],
+  "incident_recovery": [
+    "60823dc4a6236a18a67ea4f30c3fd04cbedc589b0d2bd061d28a21e9b9da0484",
+    "8f4b83e50cd1ba6203b53977a0f71a423759bcabbf4aac2d9ebe283e0dcd75c8"
+  ],
+  "acceptance": {
+    "contract_and_checker": "done",
+    "positive_and_negative_tests": "done",
+    "windows_and_macos_ci": "done",
+    "formal_gate_and_committed_data": "done",
+    "main_readback": "done",
+    "next_runtime_godot_free": "not_claimed",
+    "real_linker_manifest_symbols_and_clean_run": "future_M2_scope"
+  },
+  "usage": null,
+  "usage_unknown_reason": "No measured model usage in host receipt"
+}
