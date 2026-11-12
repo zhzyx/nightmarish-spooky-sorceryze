@@ -25,6 +25,23 @@ test('actual callbacks receive capability selected models, isolated contexts and
   assert.ok(f.calls.every(c => c.fork_turns === 'none' && c.message.includes('source:context')));
   assert.ok(result.results.every(r => r.receipt.observedModel === null));
 });
+test('agent and chat handoffs carry scoped continuation without changing authority or model', async t => {
+  const f = setup(t);
+  f.requests[1].target = 'chat';
+  const result = await f.make().run(event, f.requests.slice(0, 2));
+  assert.equal(result.results.length, 2);
+  for (const args of f.calls) {
+    const prompt = args.message ?? args.prompt;
+    assert.ok(prompt.includes('读取事实 → 执行 → 验证 → 核对剩余验收'));
+    assert.ok(prompt.includes('只读、暂停、预算、工具审批和用户保留决定继续有效'));
+    assert.ok(prompt.includes('不接管父任务的交付权限'));
+    assert.ok(prompt.includes('授权引用：mandate'));
+    assert.ok(prompt.includes('验收：test'));
+  }
+  assert.equal(f.calls[0].fork_turns, 'none');
+  assert.equal(f.calls[0].model, 'small');
+  assert.equal(Object.hasOwn(f.calls[1], 'model'), false);
+});
 test('inherited agent model limits selection and leaves the native override unset', async t => {
   const f = setup(t);
   f.policy.inheritedAgentModel = 'large';

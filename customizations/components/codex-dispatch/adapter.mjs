@@ -46,7 +46,10 @@ function handoff(a) {
   return `工单：${a.ticket}\n目标：${a.outcome}\n责任人：${a.owner}\n授权引用：${a.authorityRef}\n验收：${a.acceptance}\n` +
     `上下文引用：${JSON.stringify(a.contextRefs)}\n来源版本：${JSON.stringify(a.sourceSnapshot)}\n` +
     `允许读取：${JSON.stringify(a.reads)}\n允许写入：${JSON.stringify(a.writes)}\n` +
-    '遵循工作区与元衡治理，仅执行本工单；不得扩大写入范围。提交实际产物与验证证据，不把产出当作业务验收。';
+    '遵循工作区与元衡治理，仅执行本工单及本次交接范围；不得扩大写入范围。提交实际产物与验证证据，不把产出当作业务验收。\n' +
+    '连续执行：读取事实 → 执行 → 验证 → 核对剩余验收 → 继续下一已授权步骤。目标明确、已有授权、工具可用且结果可验证时直接行动；常规可逆实现沿用仓库惯例，不询问“是否继续”。\n' +
+    '能由工具查明的信息先查，不猜测也不转问用户。仅缺少影响正确性或权限且无法自行取得的必要输入时提问，说明受影响步骤并继续独立项。只读、暂停、预算、工具审批和用户保留决定继续有效。\n' +
+    '回合结束、计划或阶段性成功不等于业务完成。结束前按本次交接的验收逐项核对真实证据；未完成且可执行的工作继续推进，不接管父任务的交付权限。相同失败无新证据时转排障，未知副作用先回读，不盲目重试。';
 }
 
 /** Explicit host binding only. Native tool callbacks must be supplied by the calling host. */
