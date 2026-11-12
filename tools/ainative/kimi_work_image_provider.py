@@ -80,7 +80,7 @@ def check_image_tool(tool_path, pythonw_path):
         if not tool_path or not pythonw_path:
             raise ValueError("image_not_configured")
         tool = _resolved_file(tool_path, ".py", "image_tool_missing")
-        fingerprint = _tool_fingerprint(tool)
+        fingerprint = _tool_fingerprint(str(tool))
         runtime = _resolved_file(pythonw_path, ".exe" if os.name == "nt" else "", "image_runtime_missing")
         require(os.name != "nt" or runtime.name.lower() == "pythonw.exe", "image_runtime_missing")
         return dict(
@@ -145,6 +145,37 @@ class KimiWorkImageProvider(CodexProvider):
         with self.db() as db:
             db.execute("CREATE TABLE IF NOT EXISTS jobs(key TEXT PRIMARY KEY, body TEXT NOT NULL)")
         self.fingerprint = digest([self.config, hashlib.sha256(Path(__file__).read_bytes()).hexdigest()])
+
+    def _job_directory(self, key):
+        # Keep the full 256-bit idempotency key in SQLite and in the compact
+        # directory's identity file. Never turn a prefix collision into reuse.
+        full = self.storage / key
+        compact = self.storage / ("j-" + key[:24])
+        if full.is_dir():
+            return full
+        if compact.exists():
+            identity = compact / "job-id"
+            require(
+                compact.is_dir()
+                and not compact.is_symlink()
+                and identity.is_file()
+                and identity.stat().st_size == 65
+                and identity.read_bytes() == (key + "\n").encode("ascii"),
+                "image_result_unknown",
+            )
+            return compact
+        plugin_log = full / "runtime" / ("image_generation-job-" + "x" * 8) / "worker.log"
+        if os.name == "nt" and len(str(plugin_log)) >= 260:
+            return compact
+        return full
+
+    def _create_job_directory(self, key):
+        directory = self._job_directory(key)
+        directory.mkdir(exist_ok=False)
+        if directory.name != key:
+            with (directory / "job-id").open("xb") as identity:
+                identity.write((key + "\n").encode("ascii"))
+        return directory
 
     def describe(self):
         return dict(
@@ -257,8 +288,7 @@ class KimiWorkImageProvider(CodexProvider):
             plan = self.plan(request, manifest)
             report = check_image_tool(self.config["tool_path"], self.config["pythonw_path"])
             require(report["connected"], report["code"])
-            directory = self.storage / key
-            directory.mkdir(exist_ok=False)
+            directory = self._create_job_directory(key)
             (directory / "config.json").write_text(canonical(self.config), encoding="utf-8")
             (directory / "runtime").mkdir()
             self.write(key, plan=plan, image_report=report, stage="queued")
@@ -516,7 +546,7 @@ class KimiWorkImageProvider(CodexProvider):
         if "terminal" in record:
             return
         require(record["fingerprint"] == self.fingerprint, "image_result_unknown")
-        image = self._cli(key, record["plan"], self.storage / key)
+        image = self._cli(key, record["plan"], self._job_directory(key))
         if image is None or not self._active(key):
             return
         self.write(key, image_stage=image, stages=[dict(stage="kimi_work_image", artifact_sha256=image["revision"])])

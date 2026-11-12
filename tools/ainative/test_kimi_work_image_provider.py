@@ -28,14 +28,29 @@ for name in ("description", "size", "background", "output"):
     generate.add_argument("--" + name, required=True)
 generate.add_argument("--reference-image", action="append")
 args = parser.parse_args()
+def append_record(name, record):
+    target = Path(__file__).parent / name
+    lock = target.with_suffix(target.suffix + ".lock")
+    deadline = time.monotonic() + 10
+    while True:
+        try:
+            lock.mkdir()
+            break
+        except FileExistsError:
+            if time.monotonic() >= deadline:
+                raise
+            time.sleep(0.01)
+    try:
+        with target.open("a", encoding="utf-8", newline="\n") as stream:
+            stream.write(json.dumps(record) + "\n")
+    finally:
+        lock.rmdir()
 if args.command == "image-to-url":
     digest = hashlib.sha256(Path(args.image_path).read_bytes()).hexdigest()
-    with (Path(__file__).parent / "uploads.jsonl").open("a", encoding="utf-8") as stream:
-        stream.write(json.dumps({"content_sha256": digest}) + "\n")
+    append_record("uploads.jsonl", {"content_sha256": digest})
     print("https://images.example.invalid/" + digest + ".png")
     raise SystemExit(0)
-with (Path(__file__).parent / "calls.jsonl").open("a", encoding="utf-8") as stream:
-    stream.write(json.dumps({"command": "generate", "references": args.reference_image or [], "description": args.description}) + "\n")
+append_record("calls.jsonl", {"command": "generate", "references": args.reference_image or [], "description": args.description})
 if os.environ.get("KIMI_WORK_FIXTURE_FAILURE") == "dependency":
     print("Missing dependency: fixture", file=sys.stderr)
     raise SystemExit(1)
@@ -203,6 +218,31 @@ class KimiWorkImageTests(unittest.TestCase):
         restored = KimiWorkImageProvider(self.config)
         self.assertEqual(restored.result_manifest(key), self.provider.result_manifest(key))
 
+    @unittest.skipUnless(os.name == "nt", "Windows MAX_PATH regression")
+    def test_long_state_path_preserves_full_job_identity_without_external_io(self):
+        storage = self.root / ("a" * 100) / "state"
+        config = dict(self.config, storage=str(storage))
+        provider = KimiWorkImageProvider(config)
+        key = digest(["long-local-state"])
+        plugin_log = storage / key / "runtime" / ("image_generation-job-" + "x" * 8) / "worker.log"
+        self.assertLess(len(str(storage / key / "generated.png")), 260)
+        self.assertGreater(len(str(plugin_log)), 260)
+        with patch("kimi_work_image_provider.subprocess.Popen") as worker:
+            worker.return_value.poll.return_value = 0
+            snapshot = provider.submit(self.request(), {"schema_version": 1, "artifacts": []}, key)
+        self.assertEqual(snapshot["state"], "queued")
+        directory = provider._job_directory(key)
+        self.assertLess(len(str(directory / "generated.png")), 260)
+        self.assertEqual((directory / "job-id").read_text(encoding="ascii"), key + "\n")
+        self.assertEqual(KimiWorkImageProvider(config)._job_directory(key), directory)
+        self.assertEqual(directory, provider._job_directory(key))
+        self.assertNotEqual(directory.name, key)
+        with self.assertRaisesRegex(ValueError, "image_result_unknown"):
+            provider._job_directory(key[:24] + "0" * 40)
+        worker.assert_called_once()
+        self.assertFalse((self.tools / "calls.jsonl").exists())
+        self.assertFalse((self.tools / "uploads.jsonl").exists())
+
     def test_image_to_image_uploads_reference_and_does_not_copy_input(self):
         source = self.source()
         manifest = {"schema_version": 1, "artifacts": [source]}
@@ -266,6 +306,16 @@ class KimiWorkImageTests(unittest.TestCase):
         report = check_image_tool("", "")
         self.assertFalse(report["connected"])
         self.assertEqual(report["code"], "image_not_configured")
+        runtime = self.root / "pythonw.exe" if os.name == "nt" else self.root / "pythonw"
+        runtime.touch()
+        with patch("pathlib.Path.read_text", side_effect=AssertionError("must not execute or read configuration")):
+            report = check_image_tool(self.config["tool_path"], str(runtime))
+        self.assertTrue(report["connected"], report)
+        self.assertEqual(report["code"], "")
+        self.assertEqual(report["tool_fingerprint"], _tool_fingerprint(self.config["tool_path"]))
+        self.assertEqual(report["pythonw_path"], str(runtime.resolve()))
+        self.assertFalse((self.tools / "calls.jsonl").exists())
+        self.assertFalse((self.tools / "uploads.jsonl").exists())
 
     def test_adapter_sends_both_ordered_sources_to_each_independent_output(self):
         from multi_image_provider import MultiImageProvider
@@ -300,10 +350,14 @@ class KimiWorkImageTests(unittest.TestCase):
         calls = [json.loads(line) for line in (self.tools / "calls.jsonl").read_text().splitlines()]
         self.assertEqual(len(calls), 2)
         expected = ["https://images.example.invalid/" + source["revision"] + ".png" for source in sources]
-        for call, label in zip(calls, ("front", "three-quarter")):
+        for call in calls:
             self.assertEqual(call["references"], expected)
             self.assertIn("exactly one independent image", call["description"])
-            self.assertIn(label, call["description"])
+        # The fixture's shared completion log is not submission order.
+        self.assertEqual(
+            {next(label for label in ("front", "three-quarter") if label in call["description"]) for call in calls},
+            {"front", "three-quarter"},
+        )
         # Independent workers can interleave the fixture's shared append-only
         # log. Verify each child's private, ordered upload receipts instead.
         for child in restored.read(key)["children"]:
