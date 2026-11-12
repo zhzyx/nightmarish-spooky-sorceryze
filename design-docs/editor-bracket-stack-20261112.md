@@ -8,10 +8,10 @@ Scope: reproduce the pairing-state problem with a meaningful native regression, 
 
 Acceptance:
 
-- [ ] A regression demonstrates incorrect old behavior or an invalid state at the storage transition and passes after the correction; include ordinary nesting and mixed scripts.
-- [ ] Original #902 Unicode, substring and emoji regressions still pass; strict Windows native build and suitable native tests pass.
-- [ ] Independent review, formal gate, exact CI/main and installed consumer verification are complete.
-- [ ] Record actual evidence and limits; do not claim #773 complete.
+- [x] A regression demonstrates incorrect old behavior or an invalid state at the storage transition and passes after the correction; include ordinary nesting and mixed scripts.
+- [x] Original #902 Unicode, substring and emoji regressions still pass; strict Windows native build and suitable native tests pass.
+- [x] Independent review, formal gate, exact CI/main and installed consumer verification are complete.
+- [x] Record actual evidence and limits; do not claim #773 complete.
 
 Execution authority is the current user's ongoing Godot editor completion goal, tracked by #773. Current operator owns this isolated follow-up. Existing in-flight workers and unrelated worktrees remain with their owners.
 
@@ -45,3 +45,11 @@ rebuilt and passed the two affected regressions. Independent comment-only
 review found no new issue. Additive evidence:
 `data-collection/editor-bracket-stack-916-guard.json`. New exact CI and installed
 acceptance remain required.
+
+PR932 passed applicable exact CI including Windows Editor and merged to
+`23412df4cff43f3579adb90524a396d2a4b9e82f`. The clean-main official build
+passed 90 AIChat cases / 1,672 assertions and was installed. Installed native
+regressions passed 2 cases / 38,669 assertions; TextEdit and RichTextLabel each
+passed the four-case mixed-bracket and original Unicode input scenarios, with
+binary and input hashes preserved. See
+`data-collection/editor-installed-main932-773.json`. Parent773 remains open.
