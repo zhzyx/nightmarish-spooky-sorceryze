@@ -265,6 +265,14 @@ class AIChatDock : public EditorDock {
 	LineEdit *endpoint = nullptr;
 	LineEdit *model = nullptr;
 	LineEdit *api_key = nullptr;
+	String strCredentialAudience;
+	String strCredentialHash;
+	String strCredentialSource;
+	String strRequestCredentialAudience;
+	void BindApiCredential(const String &strSecret, const String &strSource, const String &strAudience);
+	void ApiCredentialEdited(const String &strText);
+	void InvalidateApiCredential();
+	void CopyApiCredential(const AIChatDock *pOwner);
 	CheckBox *allow_tools = nullptr;
 	CheckBox *task_native_authorization = nullptr;
 	Label *task_native_scope = nullptr;
@@ -859,6 +867,8 @@ public:
 	String set_runtime_field(const String &p_field, const String &p_value);
 	void refresh_runtime_controls();
 	Dictionary get_ai_configuration() const;
+	String GetAiCredential() const;
+	bool RestoreAiCredential(const String &strSecret, const String &strExpectedEndpoint);
 	Dictionary get_ai_connection_status() const;
 	void verify_ai_connection();
 	void cancel_ai_connection_check(int64_t p_expected_generation = -1);

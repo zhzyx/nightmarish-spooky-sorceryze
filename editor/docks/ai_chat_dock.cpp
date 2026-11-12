@@ -1222,7 +1222,7 @@ void AIChatDock::_load_command_resume(const Dictionary &p_journal, const String 
 	completed_command_call = call["id"];
 	completed_command_receipt_path = EditorPaths::get_singleton()->get_cache_dir().path_join(receipt);
 	const bool interactive = DisplayServer::get_singleton() && DisplayServer::get_singleton()->get_name() != "headless";
-	gonggong_recovery_can_send = interactive && allow_tools->is_pressed() && ((backend->get_selected() == 1 || backend->get_selected() == 2) ? _validate_cli(runtime) : !api_key->get_text().strip_edges().is_empty());
+	gonggong_recovery_can_send = interactive && allow_tools->is_pressed() && ((backend->get_selected() == 1 || backend->get_selected() == 2) ? _validate_cli(runtime) : !GetAiCredential().is_empty());
 	queue_paused = true;
 	turn_completed = false;
 	_revoke_native_task();
@@ -1353,7 +1353,7 @@ void AIChatDock::_load_resume() {
 	// verification run. The HTTP key is never stored, so without it the result is
 	// recorded and the user resumes manually.
 	const bool interactive = DisplayServer::get_singleton() && DisplayServer::get_singleton()->get_name() != "headless";
-	const bool can_send = interactive && ((backend->get_selected() == 1 || backend->get_selected() == 2) ? _validate_cli(runtime) : !api_key->get_text().strip_edges().is_empty());
+	const bool can_send = interactive && ((backend->get_selected() == 1 || backend->get_selected() == 2) ? _validate_cli(runtime) : !GetAiCredential().is_empty());
 	queue_paused = !can_send;
 	turn_completed = false;
 	_revoke_native_task();
@@ -2351,7 +2351,7 @@ void AIChatDock::_send_with_mode(bool p_force_consultation) {
 bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p_daqian_selection) {
 	if (settings_owner) {
 		endpoint->set_text(settings_owner->endpoint->get_text());
-		api_key->set_text(settings_owner->api_key->get_text());
+		CopyApiCredential(settings_owner);
 		cli_bridge->set_text(settings_owner->cli_bridge->get_text());
 		cli_entry->set_text(settings_owner->cli_entry->get_text());
 	}
@@ -2415,7 +2415,8 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 			_append(TTR("Error"), TTR("Set a model and a full HTTPS chat completions URL. HTTP is allowed only for loopback services with an explicit port."));
 			return false;
 		}
-		request_key = api_key->get_text().strip_edges();
+		request_key = GetAiCredential();
+		strRequestCredentialAudience = AIChatOpenAI::CredentialAudience(url);
 		if (request_key.contains("\n") || request_key.contains("\r")) {
 			_append(TTR("Error"), TTR("The API key must not contain line breaks."));
 			return false;
@@ -2778,6 +2779,13 @@ void AIChatDock::_send_completion_after_receipt() {
 	const String body = JSON::stringify(payload);
 	if (body.utf8().length() > AIChatTools::MAX_REQUEST_BYTES) {
 		_append(TTR("Error"), U"完整请求（含工具定义）仍超过 1 MiB 安全上限，请缩短当前问题；聊天记录保留。");
+		_set_busy(false);
+		return;
+	}
+	// Recheck the frozen request credential immediately before every HTTP send,
+	// including tool continuations after a silent programmatic endpoint mutation.
+	if (strRequestCredentialAudience != AIChatOpenAI::CredentialAudience(endpoint->get_text()) || request_key != GetAiCredential()) {
+		_append(TTR("Error"), U"接口或凭据已变化，请重新发送当前消息。");
 		_set_busy(false);
 		return;
 	}
@@ -4683,6 +4691,8 @@ void AIChatDock::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_runtime_field", "field", "value"), &AIChatDock::set_runtime_field);
 	ClassDB::bind_method(D_METHOD("refresh_runtime_controls"), &AIChatDock::refresh_runtime_controls);
 	ClassDB::bind_method(D_METHOD("get_ai_configuration"), &AIChatDock::get_ai_configuration);
+	ClassDB::bind_method(D_METHOD("get_ai_credential"), &AIChatDock::GetAiCredential);
+	ClassDB::bind_method(D_METHOD("restore_ai_credential", "secret", "expected_endpoint"), &AIChatDock::RestoreAiCredential);
 	ClassDB::bind_method(D_METHOD("get_ai_connection_status"), &AIChatDock::get_ai_connection_status);
 	ClassDB::bind_method(D_METHOD("verify_ai_connection"), &AIChatDock::verify_ai_connection);
 	ClassDB::bind_method(D_METHOD("cancel_ai_connection_check", "expected_generation"), &AIChatDock::cancel_ai_connection_check, DEFVAL(-1));
@@ -4790,7 +4800,7 @@ AIChatDock *AIChatDock::_ensure_issue_worker(const String &p_key) {
 	worker->hide();
 	// The key is scoped to this editor process and never enters saved history.
 	worker->endpoint->set_text(endpoint->get_text());
-	worker->api_key->set_text(api_key->get_text());
+	worker->CopyApiCredential(this);
 	worker->backend->select(backend->get_selected());
 	worker->model->set_text(model->get_text());
 	worker->cli_model->set_text(cli_model->get_text());
@@ -5552,6 +5562,63 @@ String AIChatDock::_model_config_signature(const Dictionary &p_runtime) const {
 	return itos(selected) + ":" + endpoint->get_text().strip_edges() + ":" + api_key->get_text().sha256_text();
 }
 
+// Preserve CPP_CODING_STANDARD.md v1.1 Allman style during formatter transition.
+// clang-format off
+void AIChatDock::BindApiCredential(const String &strSecret, const String &strSource, const String &strAudience)
+{
+	api_key->set_text(strSecret);
+	strCredentialAudience = strAudience;
+	strCredentialHash = strSecret.sha256_text();
+	strCredentialSource = strSource;
+}
+
+void AIChatDock::ApiCredentialEdited(const String &strText)
+{
+	BindApiCredential(strText, "manual", AIChatOpenAI::CredentialAudience(endpoint->get_text()));
+	_model_config_changed(String());
+}
+
+String AIChatDock::GetAiCredential() const
+{
+	if (!api_key || !endpoint || !backend || (backend->get_selected() != 0 && backend->get_selected() != 3) || strCredentialAudience.is_empty() || strCredentialAudience != AIChatOpenAI::CredentialAudience(endpoint->get_text()) || strCredentialHash != api_key->get_text().sha256_text())
+	{
+		return String();
+	}
+	return api_key->get_text().strip_edges();
+}
+
+void AIChatDock::InvalidateApiCredential()
+{
+	if (api_key && !strCredentialAudience.is_empty() && strCredentialAudience != AIChatOpenAI::CredentialAudience(endpoint->get_text()))
+	{
+		BindApiCredential(String(), String(), String());
+	}
+}
+
+bool AIChatDock::RestoreAiCredential(const String &strSecret, const String &strExpectedEndpoint)
+{
+	if (strExpectedEndpoint != endpoint->get_text().strip_edges() || strSecret.is_empty() || strSecret.contains("\n") || strSecret.contains("\r") || !GetAiCredential().is_empty())
+	{
+		return false;
+	}
+	const String strAudience = AIChatOpenAI::CredentialAudience(strExpectedEndpoint);
+	if (strAudience.is_empty())
+	{
+		return false;
+	}
+	BindApiCredential(strSecret, "saved", strAudience);
+	_model_config_changed(String());
+	return true;
+}
+
+void AIChatDock::CopyApiCredential(const AIChatDock *pOwner)
+{
+	// Copy provenance unchanged: a worker cannot re-authorize a stale owner key.
+	BindApiCredential(pOwner->GetAiCredential(), pOwner->strCredentialSource, pOwner->strCredentialAudience);
+}
+
+// clang-format on
+
 Dictionary AIChatDock::get_ai_configuration() const {
 	Dictionary configuration;
 	if (!backend || !endpoint || !model || !cli_model || !codex_model || !api_key) {
@@ -5565,7 +5632,8 @@ Dictionary AIChatDock::get_ai_configuration() const {
 	configuration["codex_model"] = codex_model->get_text().strip_edges();
 	configuration["reasoning_effort"] = _reasoning_effort();
 	configuration["reasoning_preferences"] = EditorSettings::get_singleton()->get_project_metadata("ai_chat", "reasoning_preferences", Dictionary());
-	configuration["credential_present"] = !api_key->get_text().strip_edges().is_empty();
+	configuration["credential_present"] = !GetAiCredential().is_empty();
+	configuration["credential_source"] = GetAiCredential().is_empty() ? String() : strCredentialSource;
 	return configuration;
 }
 
@@ -5595,6 +5663,13 @@ Dictionary AIChatDock::get_ai_connection_status() const {
 	status["generation"] = int64_t(ai_connection_generation);
 	status["state"] = current ? ai_connection_state : String("unconfigured");
 	status["message"] = current ? ai_connection_message : String(U"配置已变化，请重新验证连接。");
+	if (backend && endpoint && (backend->get_selected() == 0 || backend->get_selected() == 3) && GetAiCredential().is_empty() && !OS::get_singleton()->get_environment("GODOT_AI_API_KEY").is_empty()) {
+		const String strAudience = AIChatOpenAI::CredentialAudience(endpoint->get_text());
+		const String strEnvironmentAudience = AIChatOpenAI::CredentialAudience(OS::get_singleton()->get_environment("GODOT_AI_API_ENDPOINT"));
+		if (strAudience.is_empty() || strEnvironmentAudience != strAudience) {
+			status["message"] = String(status["message"]) + U" 检测到未绑定当前接口的 GODOT_AI_API_KEY，未使用该密钥。请将 GODOT_AI_API_ENDPOINT 设为当前接口地址并重启编辑器，或在当前接口手动输入密钥。";
+		}
+	}
 	return status;
 }
 
@@ -5637,6 +5712,7 @@ void AIChatDock::_cancel_ai_connection_probe() {
 }
 
 void AIChatDock::_project_ai_configuration_changed() {
+	InvalidateApiCredential();
 	if (!ai_configuration_ready) {
 		return;
 	}
@@ -5746,7 +5822,7 @@ void AIChatDock::verify_ai_connection() {
 	}
 	Vector<String> headers;
 	headers.push_back("Content-Type: application/json");
-	const String key = api_key->get_text().strip_edges();
+	const String key = GetAiCredential();
 	if (!key.is_empty()) {
 		headers.push_back("Authorization: Bearer " + key);
 	}
@@ -6060,7 +6136,7 @@ void AIChatDock::_refresh_models() {
 		model_status->set_text(U"请先配置完整的 /chat/completions 接口；无法推导列表地址时请手动填写模型 ID。");
 		return;
 	}
-	model_request_key = api_key->get_text().strip_edges();
+	model_request_key = GetAiCredential();
 	if (model_request_key.contains("\n") || model_request_key.contains("\r")) {
 		model_status->set_text(U"密钥不能包含换行。");
 		model_request_key = String();
@@ -8316,11 +8392,17 @@ void fragment() {
 	endpoint->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
 	model = add_field(http_settings, U"手动模型 ID（接口不支持列表时使用）", "APIModel", EditorSettings::get_singleton()->get_project_metadata("ai_chat", "model", ""));
 	model->connect("text_changed", callable_mp(this, &AIChatDock::_model_edited));
-	api_key = add_field(http_settings, U"API 密钥（可在验证成功后记住）", "APIKey", OS::get_singleton()->get_environment("GODOT_AI_API_KEY"));
-	api_key->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
+	api_key = add_field(http_settings, U"API 密钥（可在验证成功后记住）", "APIKey", String());
+	api_key->connect("text_changed", callable_mp(this, &AIChatDock::ApiCredentialEdited));
 	api_key->set_secret(true);
-	if (api_key->get_text().is_empty()) {
-		api_key->set_text(OS::get_singleton()->get_environment("OPENAI_API_KEY"));
+	api_key->set_tooltip_text(U"API 密钥仅用于当前绑定的接口。使用 GODOT_AI_API_KEY 时，须同时将 GODOT_AI_API_ENDPOINT 设为此接口地址；修改环境变量后重启编辑器。也可在此手动输入密钥。");
+	const String strAudience = AIChatOpenAI::CredentialAudience(endpoint->get_text());
+	const String strGodotAudience = AIChatOpenAI::CredentialAudience(OS::get_singleton()->get_environment("GODOT_AI_API_ENDPOINT"));
+	if (!strAudience.is_empty() && strAudience == strGodotAudience && !OS::get_singleton()->get_environment("GODOT_AI_API_KEY").is_empty()) {
+		BindApiCredential(OS::get_singleton()->get_environment("GODOT_AI_API_KEY"), "godot_environment", strAudience);
+	} else if (strAudience == "https://api.openai.com/v1") {
+		// OPENAI_BASE_URL is routing configuration, never credential authorization.
+		BindApiCredential(OS::get_singleton()->get_environment("OPENAI_API_KEY"), "openai_environment", strAudience);
 	}
 	cli_settings = memnew(VBoxContainer);
 	settings->add_child(cli_settings);
