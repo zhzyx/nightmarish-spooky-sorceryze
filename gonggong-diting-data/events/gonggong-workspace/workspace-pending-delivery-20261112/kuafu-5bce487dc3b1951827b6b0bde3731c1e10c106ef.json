@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5bce487dc3b1951827b6b0bde3731c1e10c106ef",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "workspace-pending-delivery-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/974",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c6c126ccf78536fcee252ba018dac6cc71f7cbb1a7e398b8a004dc54dcfa6dcc",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/974",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/976",
+    "action": "delivery",
+    "detection_head": "309a77fadc74ad9e47df42b4c2b719970b3a7cd0",
+    "context_sha256": "cb6bf890a04ab219b4981a87f984aa249a87d700b313d8a40e141ac76f9940e2",
+    "operator": "Sail-Li",
+    "worker": "Codex current host",
+    "authority_ref": "codex-chat:01a1d066-704f-7893-b453-7356cd7d2039:user-submit-pending",
+    "evidence": "Git fetch origin main completed successfully with existing system proxy; remote and local main 309a77fadc74ad9e47df42b4c2b719970b3a7cd0",
+    "diagnosis": "Git and CLI children did not inherit the enabled system proxy; explicit command-scoped proxy restored Git transport without repository configuration changes.",
+    "next_action": "Complete independent review and submit candidate; verify exact CI and main before closure.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T15:50:14.430545+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T15:55:56.248366+00:00",
+  "sha256": "d72bbe2ae464babeaa24d3d347cec8319e752df229bc1bdbf1c082b2497a12ec"
+}

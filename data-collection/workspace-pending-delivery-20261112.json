@@ -1,0 +1,54 @@
+{
+  "issue_number": 974,
+  "request_id": "workspace-pending-delivery-20261112",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/974",
+  "artifact": "project/games/BeaconRun-773-final",
+  "source": "Existing local artifact referenced by main issue 773 evidence; original files left untouched",
+  "source_hashes": {
+    "beacon.gd": "47429e13813191168fef5bfa910e1551966f5dc4f9da8983681499ae916955da",
+    "beacon.tscn": "88a3d1a4fad6732e30dbcf3bf44d410d1e7ee85bad01e5f5f9cba0e53f317cbd",
+    "game.gd": "27d4ca5491b280b7e17ea7503a5299107878edd28cb5a8294158ba0ac145efe8",
+    "main.tscn": "bd5fcbadb544b81731d31ac8672a9b2354ec4f09aab2bbad56f60927dea30e0d",
+    "player.gd": "52ac1bacfa4d868e1ad0253062abeb52c2aa1e2d751d14eb6ba80d072ed24b4b",
+    "player.tscn": "2c04f3cc26fe986cc6836d58462e50acb8143c15b58b69d1e9eaa6e616faaf48",
+    "project.godot": "5beda02f6a56e0c1682501424e86100e9ec7ca54db9f5851c98e8085ef9a3724",
+    "verify.gd": "6d8c154b9bc213f95e29cfe9a83c901116571f8cba4ae9de0ef6c63e23b56b51"
+  },
+  "binary_sha256": "ff4164c95eed803d2b10376c305a6153ad366484d98371ee38b556ce2b7ed601",
+  "command": "godot --headless --path project/games/BeaconRun-773-final --script res://verify.gd",
+  "exit_code": 0,
+  "marker": "LIVE_GAME_PLAYABLE_OK",
+  "scope": "Existing movement, goal and restart assertions only; not acceptance of issue 773",
+  "legacy_review": {
+    "worktrees_with_pending_files": 14,
+    "files_identical_to_main_history": 117,
+    "policy": "Do not overwrite current implementations with historical candidates; preserve private claims, incident snapshots and open-issue drafts.",
+    "disposition": {
+      "issue64": "Explicitly withdrawn by issue96; do not restore gate relaxation",
+      "issue72": "Historical progress superseded by main 68-test/link/host evidence",
+      "issue46": "Superseded by issue559 PR571 and subsequent validation",
+      "issue131": "Historical isolated permission observation; current rules supersede",
+      "issue494": "Initial icon request superseded by implementation evidence",
+      "issue518": "Open testing draft and non-production route events retained",
+      "issue358": "Old incomplete incident snapshot retained without restating recovery"
+    }
+  },
+  "git_text_normalization": "Git attributes normalize text line endings to LF. source_hashes describe original local files; published_hashes describe repository LF bytes.",
+  "published_hashes": {
+    "beacon.gd": "47429e13813191168fef5bfa910e1551966f5dc4f9da8983681499ae916955da",
+    "beacon.tscn": "88a3d1a4fad6732e30dbcf3bf44d410d1e7ee85bad01e5f5f9cba0e53f317cbd",
+    "game.gd": "6f48f1894d5f264d5e748c0bd44a55dbcd0a98341d34744299dab15c359c7044",
+    "main.tscn": "07a3d9c8d74409ca443418703ab2d6e3785e81e01fc50cbf6c43a901dd0ab6f5",
+    "player.gd": "52ac1bacfa4d868e1ad0253062abeb52c2aa1e2d751d14eb6ba80d072ed24b4b",
+    "player.tscn": "2c04f3cc26fe986cc6836d58462e50acb8143c15b58b69d1e9eaa6e616faaf48",
+    "project.godot": "c846b7fa715da9f9e4281fd8f6e354913abece66061216dfaa201beaaa779374",
+    "verify.gd": "98cecc90304b86d920f1c1b3adf8a25f19c9210d06fc3b484ce2284cfb100a5a"
+  },
+  "independent_review": {
+    "worker": "/root/sinan_ae2b1a87bef6800d",
+    "state": "passed",
+    "reviewed_staged_diff_sha256": "731556b50675ad7ed2dc476a57cce08cf633e8e7be54079fa72394926659e41f",
+    "scope": "18 staged files; exact game source/published hashes, resource references, privacy, and legacy candidate disposition; no findings",
+    "execution": "Native independent read-only agent; did not rerun game or implement candidate"
+  }
+}
