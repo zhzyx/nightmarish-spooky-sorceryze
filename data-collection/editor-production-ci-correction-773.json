@@ -1,0 +1,74 @@
+{
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "prior_candidate": "fc99dab1d6114c8f925a0e22295f4af88641094f",
+  "prior_signed_commit": "09e294eb1c8a58b6b574097eb0109d1349021fc4",
+  "prior_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/873",
+  "failure": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43136055090/job/130911555750",
+  "failure_log_sha256": "62ade306bd36adaf4cc12694f4da4782aa060558a2fd6f69680460ffd4b3d691",
+  "correction": "Two Python test typing/import preconditions and two qualified include paths; no production behavior or acceptance weakening.",
+  "source_sha256": {
+    "customizations/components/godot-host/test_game_workspace.py": "5e53b22da05b8d82836a75e3682f905f01dea2b219da31e494e47e51e8dad61b",
+    "editor/docks/ai_chat_dock.h": "c3ee8144dd82e9be9321b3469ab0c58f9c05a755b4d1c0dc064dfd3943fab62c",
+    "editor/docks/ai_chat_task_authorization.cpp": "fc1e1d46dcc633c283c99704c8c73071b09c14b61a8f8c322f6284ad48c39bd2",
+    "tests/editor/run_game_workspace_binding.py": "67ef2b8233b906f0d0a491477a892cc06c1d89a0d3ac9852176e5a65531d2dc4"
+  },
+  "checks": [
+    {
+      "name": "mypy",
+      "exit": 0,
+      "seconds": 1.2
+    },
+    {
+      "name": "ruff-check",
+      "exit": 0,
+      "seconds": 0.03
+    },
+    {
+      "name": "ruff-format",
+      "exit": 0,
+      "seconds": 0.03
+    },
+    {
+      "name": "includes",
+      "exit": 0,
+      "seconds": 0.06
+    },
+    {
+      "name": "host-game-tests",
+      "exit": 0,
+      "seconds": 7.16
+    }
+  ],
+  "native": {
+    "exit": 0,
+    "seconds": 34.4,
+    "cases": 1565,
+    "assertions": 435630,
+    "failed": 0,
+    "skipped": 3
+  },
+  "build": {
+    "passed": true,
+    "warnings": "extra",
+    "werror": true,
+    "seconds": 20.39,
+    "log_sha256": "61f840b676cc6882792aa5206a06eaa73082764a8b42f48db55a42847b499bb4"
+  },
+  "binary_sha256": "e226326599f968e3b1d0b71feb5d8dbfcf5787b25fa939a919a8545302681f2a",
+  "engine_sha256": "8b4900307037125aea39fc6c9be9031cdbfebec8566b9dc94bc19bace894ef0b",
+  "independent_review": {
+    "worker": "sinan_f7665849f56b7716",
+    "event": "actual FINAL_ANSWER",
+    "result": "No blockers; reviewed exact four-file hashes and original CI diff. Source only, did not run tests."
+  },
+  "previous_workflow_evidence": {
+    "path": "data-collection/editor-production-main-integration-773.json",
+    "sha256": "993eb84fe0476786621477ec4fba8f10fde7914fbd26439e213f979f20e694a4",
+    "scope": "Original behavior checks retained. Correction changes test annotations and equivalent include paths; strict rebuild and full native tests rerun on corrected binary."
+  },
+  "limits": [
+    "Replacement remote CI and main delivery are pending at evidence creation.",
+    "No claim of overall #773 or effective-install completion."
+  ]
+}

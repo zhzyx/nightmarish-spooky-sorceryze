@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "ai_chat_task_authorization.h"
+#include "editor/docks/ai_chat_task_authorization.h"
 
 #include "core/io/file_access.h"
 #include "core/os/thread.h"

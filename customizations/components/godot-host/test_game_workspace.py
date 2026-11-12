@@ -15,6 +15,7 @@ import issue_gate
 import work_items
 
 spec = importlib.util.spec_from_file_location("paths", Path(__file__).with_name("workspace_paths.py"))
+assert spec is not None and spec.loader is not None
 paths = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(paths)
 

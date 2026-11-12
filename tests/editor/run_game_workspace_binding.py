@@ -61,7 +61,7 @@ with nullcontext(tempfile.mkdtemp(prefix="gonggong-game-binding-")) as folder:
         observed = json.loads(receipt.read_text(encoding="utf-8")) if receipt.exists() else {"ok": False}
         # Retain fixture files and wait for owned editor/board helpers, never delete live data.
         env.update(GAME_PROBE_EDITOR=str(editor.resolve()), GAME_PROBE_ROOT=str(repo))
-        remaining = []
+        remaining: list[dict[str, object]] = []
         deadline = time.monotonic() + 20
         if os.name == "nt":
             query = "@(Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -eq $env:GAME_PROBE_EDITOR -or ($_.Name -match '^python' -and $_.CommandLine -like ('*' + $env:GAME_PROBE_ROOT + '*')) } | Select-Object ProcessId,Name) | ConvertTo-Json -Compress"

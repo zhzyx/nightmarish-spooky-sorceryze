@@ -28,7 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "ai_chat_dock.h"
+#include "editor/docks/ai_chat_dock.h"
 
 #include "core/config/project_settings.h"
 #include "scene/gui/check_box.h"
