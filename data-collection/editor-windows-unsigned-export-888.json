@@ -1,0 +1,86 @@
+{
+  "issue_number": 888,
+  "request_id": "editor-windows-unsigned-export-20261112",
+  "parent_issue": 773,
+  "implementation_base": "93006dd2bdec4a7c1c2982a254d2fdef9151e7a1",
+  "combined_base": "336f20e7f4cf852e2581239eb78ea94dba5a32c7",
+  "source_sha256": {
+    "editor/docks/ai_chat_editor_scene_completion.cpp": "f463dcac4f7d394502621cb2eb5e9247f28d0812d2dfeddf2ce172a975ddb544",
+    "tests/editor/run_editor_scene_completion.py": "1c0e50e17eadb69fe58bc2a3b1d942e3523edaa57533e6c0de624c36fc0b7237"
+  },
+  "implementation_worker": "/root/sinan_3db6ff155ec3f171",
+  "independent_review": {
+    "reviewer": "current root operator, no implementation edits",
+    "checked": [
+      "Exact built-in Windows class and exact signing option Variant types",
+      "No active signing, nonempty credentials, unknown codesign keys or encryption allowed",
+      "Existing script/extension platform guard and other-platform rules preserved",
+      "Preset/input confirmation binding, real missing-template failure",
+      "Export runtime receives only EXE/PCK outside source project; ResourceLoader resolves exported resource mapping",
+      "Actual worker failures, correction, final runtime and independent combined regression"
+    ],
+    "source_normalization": "Only repository CRLF to LF; equivalence verified against worker raw SHA256"
+  },
+  "root_validation": {
+    "strict_build_exit": 0,
+    "native_exit": 0,
+    "native_cases": 1566,
+    "native_assertions": 435682,
+    "native_skipped": 3,
+    "scene_exit": 0,
+    "scene_checks": [
+      "native metadata references reject structural edits; scalar metadata permits normal move and undo",
+      "script storage references reject structural edits without getters or broken paths",
+      "subtree move, owners, native animation paths, undo and redo",
+      "subtree delete and exact owner/animation restoration",
+      "script-attached native property edit and undo",
+      "script-shadowed native rename/add/remove/reparent/move/owner with undo and redo",
+      "instance editable override, protected internal structure, instance-root subtree move",
+      "native resource assignment/undo and explicit resource export",
+      "unchanged-version Gradient content staleness; nested script/cycle rejection and fresh save",
+      "persistent signal connect/disconnect and undo without method invocation",
+      "script-shadowed native connect/disconnect with undo and redo",
+      "native history branch rejects approval even when UndoRedo version and scene values repeat",
+      "run project and scene approvals bind history epoch when numeric version repeats",
+      "stale property and resource file hash rejection",
+      "no preview loading; loader delete/replace/old-value mutation rejected after confirmation",
+      "native texture reimport/scan and actual import metadata",
+      "PCK approval binds actual imported artifact contents",
+      "native preset project pack export with actual output hash",
+      "native ZIP export succeeds through project destination with actual archive validation",
+      "disabled macOS signing accepts empty native collections and rejects nonempty credential collections",
+      "Windows enabled signing, credentials, custom options, encryption and wrong types rejected",
+      "Windows unsigned defaults accepted; exact preset file drift invalidates confirmation",
+      "Windows missing template remains an actual export failure",
+      "Windows EXE and adjacent PCK hashes validated; actual exported application emits runtime marker without errors",
+      "PCK binds global class cache; editor receipts preserve approval validity",
+      "application export missing templates is a real failure, no download",
+      "path/tool/consultation boundaries",
+      "inherited property override and local addition; inherited structure protected"
+    ],
+    "editor_sha256": "b68bda57dcda861c49abdab025a27b45aafff3a9c2f92345449f21bb44642c5e",
+    "template_sha256": "b1cf35cd69fc23a92461a8e63ff64046bc07b461eaf9d255eca3407d6a8f32ae",
+    "export_exe_sha256": "b1cf35cd69fc23a92461a8e63ff64046bc07b461eaf9d255eca3407d6a8f32ae",
+    "export_pck_sha256": "b8f3e6f997b8135e5098c7551fcfd668be8440958290943942be5ec5426da630",
+    "export_runtime": {
+      "exit_code": 0,
+      "stdout": "Godot Engine v4.8.beta.custom_build.93006dd2b (2026-11-12 04:19:28 UTC) - https://godotengine.org\n\nSCENE_COMPLETION_EXPORTED_APPLICATION_OK\n",
+      "stderr": ""
+    },
+    "log_sha256": {
+      "root-combined-build.log": "a5190f099503960eb62023eb713615d8b4e075c968297c1dd60c850fcb57b918",
+      "root-combined-native.log": "a57028f24487c936885122b7b30128b1b182fb0766535ce4c58c4a33b1b08410",
+      "root-combined-scene.json": "e69be9723da21b50f86005b770a2bb6bc0a308ea02ee4a66617499ed000d8e4e"
+    }
+  },
+  "failures_preserved": {
+    "reports": {
+      "scene-windows.json": "4c5ef13abf229b59bae46b778291cbe1b93e0e66d47778ea4cd5ef7ab5549988",
+      "scene-windows-isolated.json": "f5cf7505997128b03cf9189a35b77565daa5708f098bd262d5b9d4b0bc1c9285",
+      "scene-windows-isolated2.json": "37e32101f16aa501ae799fb9001530b029ed6e11ec267eb702a1e94ae0caa9b5",
+      "scene-windows-isolated3.json": "f2f97a88c544e77157a62793d2e5a55566458540b53a7ae9e8cc5fb351fa17d4"
+    },
+    "observed": "Initial Windows default log decoding failed; independent runtime exposed a test assertion using source filename existence instead of actual exported ResourceLoader load. Final isolated run and root reproduction pass. Native fixture cleanup diagnostics remain in logs; runtime stdout/stderr are independently checked."
+  },
+  "scope": "Windows unsigned native export and existing scene/resource regressions only. No macOS application template was supplied. Exact final CI/main and published-install replay remain pending at creation. Parent773 remains open."
+}

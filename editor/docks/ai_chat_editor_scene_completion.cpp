@@ -98,6 +98,28 @@ bool same(const Variant &p_a, const Variant &p_b) {
 	return p_a == p_b;
 }
 
+bool unsigned_windows_option(const String &p_key, const Variant &p_value) {
+	if (p_key == "codesign/enable") {
+		return p_value.get_type() == Variant::BOOL && !bool(p_value);
+	}
+	if (p_key == "codesign/timestamp") {
+		return p_value.get_type() == Variant::BOOL;
+	}
+	if (p_key == "codesign/digest_algorithm") {
+		return p_value.get_type() == Variant::INT && (int64_t(p_value) == 0 || int64_t(p_value) == 1);
+	}
+	if (p_key == "codesign/identity_type") {
+		return p_value.get_type() == Variant::INT && int64_t(p_value) == 0;
+	}
+	if (p_key == "codesign/identity" || p_key == "codesign/password" || p_key == "codesign/timestamp_server_url" || p_key == "codesign/description") {
+		return p_value.get_type() == Variant::STRING && String(p_value).is_empty();
+	}
+	if (p_key == "codesign/custom_options") {
+		return p_value.get_type() == Variant::PACKED_STRING_ARRAY && PackedStringArray(p_value).is_empty();
+	}
+	return false;
+}
+
 // Credential-related options must be absent/disabled, with exact Variant
 // types. In particular, a nonempty array of empty strings is still nonempty.
 bool empty_credential_option(const Variant &p_value) {
@@ -672,10 +694,18 @@ Dictionary AIChatEditorSceneCompletion::perform(const Dictionary &p_args, bool p
 				plugins.push_back(String::num_uint64(uint64_t(plugin->get_instance_id())));
 			}
 			state["export_plugins"] = plugins;
+			// Only the exact built-in Windows platform has these inert signing defaults.
+			// Validate every signing option by type; never exempt credentials or unknown keys.
+			const bool windows_platform = preset->get_platform()->get_class() == "EditorExportPlatformWindows";
+			if (windows_platform && !unsigned_windows_option("codesign/enable", preset->get("codesign/enable"))) {
+				return result(false, "credential_export_not_supported");
+			}
 			Dictionary values;
 			for (const KeyValue<StringName, Variant> &option : preset->get_values()) {
 				const String key = option.key;
-				if ((key.contains("codesign") || key.contains("notarization") || key.contains("keystore") || key.contains("password") || key.contains("certificate")) && !empty_credential_option(option.value)) {
+				const bool credential_option = key.contains("codesign") || key.contains("notarization") || key.contains("keystore") || key.contains("password") || key.contains("certificate");
+				const bool unsafe_option = windows_platform && key.contains("codesign") ? !unsigned_windows_option(key, option.value) : credential_option && !empty_credential_option(option.value);
+				if (unsafe_option) {
 					return result(false, "credential_export_not_supported");
 				}
 				if (key.contains("custom_template") && !String(option.value).is_empty() && (!AIChatEditorSceneActions::valid_project_path(option.value) || !unlinked(option.value))) {

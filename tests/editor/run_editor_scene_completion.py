@@ -33,6 +33,7 @@ def main():
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--macos-template", type=Path)
+    parser.add_argument("--windows-template", type=Path)
     args = parser.parse_args()
     repository = Path(__file__).resolve().parents[2]
     spec = importlib.util.spec_from_file_location("scene_client", repository / "tools/editor_control_client.py")
@@ -43,7 +44,7 @@ def main():
     real_settings = Path.home() / "Library/Application Support/Godot/editor_settings-4.8.tres"
     report["real_settings_before"] = digest(real_settings)
     try:
-        with tempfile.TemporaryDirectory(prefix="scene-completion-") as temporary:
+        with tempfile.TemporaryDirectory(prefix="scene-completion-", ignore_cleanup_errors=True) as temporary:
             base = Path(temporary)
             project = base / "project"
             project.mkdir()
@@ -54,7 +55,15 @@ def main():
                 '[gd_resource type="EditorSettings" format=3]\n[resource]\nai_chat/editor_control_bridge_enabled = true\nai_chat/endpoint = ""\n'
             )
             (project / "project.godot").write_text(
-                'config_version=5\n[application]\nconfig/name="Scene Completion"\nrun/main_scene="res://fixture.tscn"\n[rendering]\ntextures/vram_compression/import_etc2_astc=true\n'
+                'config_version=5\n[application]\nconfig/name="Scene Completion"\nrun/main_scene="res://runtime.tscn"\n[rendering]\ntextures/vram_compression/import_etc2_astc=true\n'
+            )
+            (project / "runtime.gd").write_text(
+                'extends Node\nfunc _ready():\n\tassert(load("res://gradient.tres") is Gradient)\n'
+                '\tprint("SCENE_COMPLETION_EXPORTED_APPLICATION_OK")\n\tget_tree().quit()\n'
+            )
+            (project / "runtime.tscn").write_text(
+                '[gd_scene load_steps=2 format=3]\n[ext_resource type="Script" path="res://runtime.gd" id="1"]\n'
+                '[node name="Runtime" type="Node"]\nscript = ExtResource("1")\n'
             )
             (project / "test.gd").write_text(Path(__file__).with_name("editor_scene_completion.gd").read_text())
             (project / "behavior.gd").write_text(
@@ -88,9 +97,13 @@ def main():
                 "\tget:\n\t\tgetter_calls += 1\n\t\treturn path\n"
             )
             if args.macos_template:
-                (project / "templates").mkdir()
+                (project / "templates").mkdir(exist_ok=True)
                 shutil.copy2(args.macos_template, project / "templates/mac-arm64.zip")
                 report["macos_template_sha256"] = digest(project / "templates/mac-arm64.zip")
+            if args.windows_template:
+                (project / "templates").mkdir(exist_ok=True)
+                shutil.copy2(args.windows_template, project / "templates/windows-debug.exe")
+                report["windows_template_sha256"] = digest(project / "templates/windows-debug.exe")
             (project / "resource_behavior.gd").write_text("@tool\nextends Gradient\n")
             (project / "gradient.tres").write_text(
                 '[gd_resource type="Gradient" format=3]\n[resource]\ncolors = PackedColorArray(1, 0, 0, 1, 0, 1, 0, 1)\n'
@@ -158,6 +171,37 @@ binary_format/architecture="x86_64"
                         "codesign/codesign=0\nnotarization/notarization=0\n"
                         + ('custom_template/release="res://templates/mac-arm64.zip"\n' if args.macos_template else "")
                         + extra
+                    )
+            windows_cases = {
+                "Defaults": {},
+                "Enabled": {"codesign/enable": "true"},
+                "Identity": {"codesign/identity": '"fixture.pfx"'},
+                "Password": {"codesign/password": '"fixture-password"'},
+                "Certificate Store": {"codesign/identity_type": "2"},
+                "Custom Options": {"codesign/custom_options": 'PackedStringArray("")'},
+                "Enable Wrong Type": {"codesign/enable": "0"},
+                "Timestamp Wrong Type": {"codesign/timestamp": "1"},
+                "Digest Wrong Type": {"codesign/digest_algorithm": '"1"'},
+                "Digest Invalid": {"codesign/digest_algorithm": "2"},
+                "Identity Wrong Type": {"codesign/identity": "false"},
+                "Options Wrong Type": {"codesign/custom_options": "[]"},
+                "Encrypted": {},
+                "Missing Template": {},
+            }
+            with (project / "export_presets.cfg").open("a") as presets:
+                for index, (name, overrides) in enumerate(windows_cases.items(), 4):
+                    options = {"codesign/enable": "false", **overrides}
+                    if args.windows_template and name != "Missing Template":
+                        options["custom_template/debug"] = '"res://templates/windows-debug.exe"'
+                    if name == "Missing Template":
+                        options["custom_template/debug"] = '"res://templates/absent.exe"'
+                    presets.write(
+                        f'\n[preset.{index}]\nname="Scene Windows {name}"\nplatform="Windows Desktop"\nrunnable=false\n'
+                        'export_filter="all_resources"\ninclude_filter=""\nexclude_filter="test.gd,templates/*,exports/*"\n'
+                        + ("encrypt_pck=true\n" if name == "Encrypted" else "")
+                        + f'[preset.{index}.options]\nbinary_format/architecture="x86_64"\n'
+                        + "application/modify_resources=false\n"
+                        + "".join(f"{key}={value}\n" for key, value in options.items())
                     )
             (project / "exports").mkdir()
             log_path = base / "editor.log"
@@ -542,6 +586,93 @@ binary_format/architecture="x86_64"
                     check(
                         "disabled macOS signing accepts empty native collections and rejects nonempty credential collections"
                     )
+                    for name in windows_cases:
+                        if name in ("Defaults", "Missing Template"):
+                            continue
+                        rejected = route(
+                            "project_export",
+                            preset=f"Scene Windows {name}",
+                            format="pack",
+                            debug=True,
+                            destination="res://exports/rejected-windows.pck",
+                        )[1]
+                        assert rejected["error"] == "credential_export_not_supported", (name, rejected)
+                    check("Windows enabled signing, credentials, custom options, encryption and wrong types rejected")
+                    message, preview = route(
+                        "project_export",
+                        preset="Scene Windows Defaults",
+                        format="pack",
+                        debug=True,
+                        destination="res://exports/windows.pck",
+                    )
+                    assert preview.get("confirmation_required"), preview
+                    presets_path = project / "export_presets.cfg"
+                    original_presets = presets_path.read_bytes()
+                    presets_path.write_bytes(original_presets + b"\n; preset drift\n")
+                    assert approve(message)["error"] == "scene_changed_since_confirmation"
+                    presets_path.write_bytes(original_presets)
+                    value = apply(
+                        "project_export",
+                        preset="Scene Windows Defaults",
+                        format="pack",
+                        debug=True,
+                        destination="res://exports/windows.pck",
+                    )
+                    assert value["output_sha256"] == digest(project / "exports/windows.pck"), value
+                    check("Windows unsigned defaults accepted; exact preset file drift invalidates confirmation")
+                    message, preview = route(
+                        "project_export",
+                        preset="Scene Windows Missing Template",
+                        format="project",
+                        debug=True,
+                        destination="res://exports/missing.exe",
+                    )
+                    assert preview.get("confirmation_required"), preview
+                    missing = approve(message)
+                    assert not missing["ok"] and missing["error"] == "project_export_unavailable", missing
+                    assert missing["missing_templates"], missing
+                    report["windows_missing_template"] = missing
+                    check("Windows missing template remains an actual export failure")
+                    if args.windows_template:
+                        value = apply(
+                            "project_export",
+                            preset="Scene Windows Defaults",
+                            format="project",
+                            debug=True,
+                            destination="res://exports/windows.exe",
+                        )
+                        application = project / "exports/windows.exe"
+                        pack = application.with_suffix(".pck")
+                        assert value["output_exists"] and value["output_sha256"] == digest(application), value
+                        assert application.read_bytes()[:2] == b"MZ" and pack.read_bytes()[:4] == b"GDPC"
+                        report["windows_application_sha256"] = digest(application)
+                        report["windows_application_pack_sha256"] = digest(pack)
+                        # Only the exported EXE/PCK enter this directory, outside the source project.
+                        runtime_directory = base / "exported-runtime"
+                        runtime_directory.mkdir()
+                        runtime_application = runtime_directory / application.name
+                        shutil.copy2(application, runtime_application)
+                        shutil.copy2(pack, runtime_directory / pack.name)
+                        runtime = subprocess.run(
+                            [str(runtime_application), "--headless", "--quit-after", "120"],
+                            cwd=runtime_directory,
+                            capture_output=True,
+                            text=True,
+                            encoding="utf-8",
+                            errors="replace",
+                            timeout=30,
+                        )
+                        report["windows_runtime"] = {
+                            "exit_code": runtime.returncode,
+                            "stdout": runtime.stdout,
+                            "stderr": runtime.stderr,
+                        }
+                        assert runtime.returncode == 0, report["windows_runtime"]
+                        assert "SCENE_COMPLETION_EXPORTED_APPLICATION_OK" in runtime.stdout, report["windows_runtime"]
+                        assert "ERROR:" not in runtime.stdout + runtime.stderr, report["windows_runtime"]
+                        check(
+                            "Windows EXE and adjacent PCK hashes validated; actual exported application emits runtime marker without errors"
+                        )
                     if args.macos_template:
                         value = apply(
                             "project_export",
@@ -638,13 +769,19 @@ binary_format/architecture="x86_64"
                     command("finish")
                     report["editor_exit_code"] = process.wait(timeout=30)
                     assert report["editor_exit_code"] == 0, report["editor_exit_code"]
-                    assert "SCRIPT ERROR:" not in log_path.read_text()
+                    assert "SCRIPT ERROR:" not in log_path.read_text(encoding="utf-8", errors="replace")
                     report["ok"] = True
                 finally:
                     if process.poll() is None:
-                        process.terminate()
-                        process.wait(timeout=20)
-                    report["log_tail"] = log_path.read_text()[-12000:]
+                        try:
+                            command("finish")
+                            process.wait(timeout=30)
+                        except Exception as shutdown_error:
+                            report["shutdown_error"] = repr(shutdown_error)
+                            if process.poll() is None:
+                                process.terminate()
+                                process.wait(timeout=20)
+                    report["log_tail"] = log_path.read_text(encoding="utf-8", errors="replace")[-12000:]
     except Exception as error:
         report["error"] = repr(error)
         report["traceback"] = traceback.format_exc()
@@ -652,7 +789,7 @@ binary_format/architecture="x86_64"
     report["real_settings_unchanged"] = report["real_settings_before"] == report["real_settings_after"]
     report["ok"] = report["ok"] and report["real_settings_unchanged"]
     args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+    args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0 if report["ok"] else 1
 

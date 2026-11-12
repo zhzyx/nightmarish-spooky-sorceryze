@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-export-validation",
+  "event_id": "learn-1686386ee496c68191f16fc1d307d1509810a71ae5eae020a38d87da5c4a915b",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/888",
+  "occurred_at": "2026-11-12T05:21:00.9876471+00:00",
+  "evidence_refs": [
+    "dispatch-6672c127a30a4ecba1356dcaace34dab",
+    "learn-c3df707d1bbeb248a3e9f9cedc413999a3e058c1bb3a06f35e49f15bc96e0ae1"
+  ],
+  "payload": {
+    "scope": "editor-export-validation",
+    "lesson": "preserve-runtime-evidence",
+    "revision": 2,
+    "previous": "1cbfc782230d6fc7a05c67b5ec21eb26df497ceacdd41313bd6e41a10ccdd7ec",
+    "action": "revise",
+    "details": {
+      "method": "Copy only exported EXE/PCK outside source project; load resources through ResourceLoader because native export remaps source formats; require application marker and clean stderr. Read logs with explicit encoding and finish owned fixtures before cleanup.",
+      "when": "Windows native editor export tests with isolated temporary projects and native UTF-8 logs.",
+      "counterexample": "Exit code alone can pass despite a script assertion; checking original resource filenames can fail after valid export remapping; running below source project can hide that failure. Other platforms require their own acceptance.",
+      "trial_plan": "Repeat exported runtime marker and resource load outside source project, alongside missing-template and credential negatives. Preserve earlier failed reports separately and verify cleanup cannot replace primary error."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-windows-unsigned-export-888.json",
+        "sha256": "847cc26dacc3b9ada82b454466378da5268de396b1916f9947f6a984123c2fe3"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-windows-unsigned-export-20261112/dispatch-6672c127a30a4ecba1356dcaace34dab.json",
+      "sha256": "1995d5f393b799d31625d291018f349a6e9f64a485e0d3b0d084b5d6d82f4667"
+    }
+  },
+  "sha256": "5c123ad01ac5833b247d8416c75d1f55be53a2c5aeacfc3aa1e8345f6da81086"
+}
