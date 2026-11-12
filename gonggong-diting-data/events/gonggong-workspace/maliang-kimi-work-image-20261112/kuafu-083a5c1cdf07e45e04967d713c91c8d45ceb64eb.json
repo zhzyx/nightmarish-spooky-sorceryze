@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-083a5c1cdf07e45e04967d713c91c8d45ceb64eb",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-work-image-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/808",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "30518e57d1141a08eca507b8229a81f148b45f9a83399d176b65843367068c33",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/808",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/809",
+    "action": "delivery",
+    "detection_head": "2249daa227f1fc58862453b77b9318ddc81e89a4",
+    "context_sha256": "d6d31ec2fcf3b72447717b9640bec9403e6e6157fe0e460b5160d6b58aeebf2b",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-main",
+    "authority_ref": "user-request-20261112-issue-808",
+    "evidence": "writer_submit 本地返回 WORKTREE_UNSTAGED；framework admission has not run",
+    "diagnosis": "格式修复及前一条验收事件仍在工作树而未暂存；提交前门禁按职责拒绝继续，尚未提交、推送或创建新 PR head。",
+    "next_action": "仅暂存本任务的格式修复和验收事件，核对暂存清单及 diff check 后重跑同一 writer_submit；若签发成功按实际新 head 核对远端。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T06:14:41.768057+00:00",
+    "attempted": "一次 writer_submit 调用在框架准入前终止，没有提交或推送结果。",
+    "repair_owner": "kimi-work-main",
+    "continuable": "隔离暂存、候选签发及后续 CI 核验可继续。"
+  },
+  "occurred_at": "2026-11-12T06:15:34.302121+00:00",
+  "sha256": "3ed950fff77d06c8c40106255a7c64dbdb30f1568d288905275142ba09168a08"
+}

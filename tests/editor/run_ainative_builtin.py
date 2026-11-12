@@ -68,18 +68,18 @@ def main():
         # Use Godot's canonical baseline, including its automatically persisted version feature.
         # The full renderer saves this metadata; the semantic sources must still remain untouched.
         definition = (
-            '; Engine configuration file.\n'
+            "; Engine configuration file.\n"
             "; It's best edited using the editor UI and not directly,\n"
-            '; since the parameters that go here are not all obvious.\n'
-            ';\n'
-            '; Format:\n'
-            ';   [section] ; section goes between []\n'
-            ';   param=value ; assign values to parameters\n\n'
-            'config_version=5\n\n'
-            '[application]\n\n'
+            "; since the parameters that go here are not all obvious.\n"
+            ";\n"
+            "; Format:\n"
+            ";   [section] ; section goes between []\n"
+            ";   param=value ; assign values to parameters\n\n"
+            "config_version=5\n\n"
+            "[application]\n\n"
             'config/name="AINative Native Acceptance"\n'
             'config/features=PackedStringArray("4.8")\n\n'
-            '[rendering]\n\n'
+            "[rendering]\n\n"
             'renderer/rendering_method="gl_compatibility"\n'
         )
         for project in projects:
@@ -203,8 +203,7 @@ def main():
                 for project in projects
             }
             intact = all(
-                item["definition_unchanged"] and item["addons_absent"]
-                for item in result["project_integrity"].values()
+                item["definition_unchanged"] and item["addons_absent"] for item in result["project_integrity"].values()
             )
             result["project_sources_unchanged"] = intact
             result["state"] = (
