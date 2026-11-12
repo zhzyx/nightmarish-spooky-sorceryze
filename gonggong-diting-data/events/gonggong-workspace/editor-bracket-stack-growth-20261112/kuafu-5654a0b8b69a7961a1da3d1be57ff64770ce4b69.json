@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5654a0b8b69a7961a1da3d1be57ff64770ce4b69",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-bracket-stack-growth-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/916",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "11d69e2518678542489f3906dd0edd99bbf40a7d2bcb7a504d8ab60e5f26ae97",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/916",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/916",
+    "action": "validation",
+    "detection_head": "494e4a84951f650a1a0b9b6e68068df99bae9846",
+    "context_sha256": "392b7a69fd074ca23f5669a7613b0cc4910d4db71143f6d114ad8d58c6174555",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/916",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43200597639/job/131122691792",
+    "diagnosis": "Signed PR922 static clang-format failed solely a missing blank separator between local and tests include groups in new native test header. Full original strict native suite passed but formatting was not run before publication. Preserve old candidate/evidence; no CI success claimed.",
+    "next_action": "One blank line applied. Local clang-format dry-run passes; rebuild and targeted two native regressions under way, independent supplemental review requested. Append exact new evidence and submit a new signed candidate; verify every applicable CI check before main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T10:30:29.553789+00:00",
+    "attempted": "Read exact failed-job log and diff; fixed only indicated include separator; no formatter rules or CI bypass changed.",
+    "repair_owner": "Current Issue916 root operator",
+    "continuable": "Original ordinary game now correctly bound Issue1 and continues its independent Git delivery in the editor."
+  },
+  "occurred_at": "2026-11-12T10:33:57.040686+00:00",
+  "sha256": "5b128ce5571ddfc0143095b4489418a6ccbf25b81737310f935f65666a0966a3"
+}

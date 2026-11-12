@@ -31,6 +31,7 @@
 #pragma once
 
 #include "script_iterator.h"
+
 #include "tests/test_macros.h"
 
 namespace TestScriptIterator {
