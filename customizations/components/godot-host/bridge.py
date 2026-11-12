@@ -561,13 +561,6 @@ def chat(root, request, tenant):
             "after_commit": "Run Diting git-check --require-committed against HEAD; record push and merge separately",
             "preserve_originals": "Append corrections; do not submit credentials, local absolute source paths, caches or synthetic production facts",
         },
-        "execution_policy": {
-            "scope": "Apply only within this task, current delegation and host tool permissions. Read-only scope, user cancellation, budgets, required approval and decisions reserved to the user remain binding.",
-            "continue": "Read facts, execute, verify, check remaining acceptance, then take the next authorized step. When the goal, authority, tools and observable acceptance are clear, act without asking whether to continue. Use repository conventions for routine reversible implementation choices.",
-            "clarify": "Read available sources before guessing or asking the user. Ask only for necessary input affecting correctness or authority that cannot be obtained with available tools. Name the affected step and continue independent authorized work.",
-            "finish": "A model turn ending, worker exit, plan or successful intermediate step is not business acceptance. Before finishing, check each criterion in this delegation against actual evidence. Continue executable remaining work; report unresolved evidence honestly and do not assume a parent task's delivery authority.",
-            "recover": "Inspect actual failures and use evidence to choose a bounded recovery. If the same failure has no new evidence, escalate through the existing blocker route; do not loop. Read back unknown side effects before retrying. Wait for actual external completion events instead of polling without change.",
-        },
         "authority_ref": request["authority_ref"],
         "host": host["id"],
         "host_descriptor": host,

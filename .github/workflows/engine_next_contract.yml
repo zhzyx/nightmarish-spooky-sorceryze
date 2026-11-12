@@ -5,6 +5,7 @@ on:
     paths:
       - ".github/workflows/engine_next_contract.yml"
       - "engine_next/**"
+      - "modules/gameplay/**"
       - "runtime_next/**"
       - "tools/check_engine_next_contract.py"
       - "tools/engine_next_contract.json"
@@ -15,6 +16,7 @@ on:
     paths:
       - ".github/workflows/engine_next_contract.yml"
       - "engine_next/**"
+      - "modules/gameplay/**"
       - "runtime_next/**"
       - "tools/check_engine_next_contract.py"
       - "tools/engine_next_contract.json"
@@ -26,7 +28,7 @@ permissions:
 
 jobs:
   source-contract:
-    name: No Godot source dependencies (${{ matrix.os }})
+    name: No Godot source or link dependencies (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     strategy:
@@ -44,8 +46,23 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Run contract tests
-        run: python -m unittest tools.test_check_engine_next_contract -v
+      - name: Run contract and build-tool tests
+        run: |
+          python -m unittest tools.test_check_engine_next_contract -v
+          python -m unittest discover -s engine_next/Tools -p "Test*.py" -v
 
-      - name: Audit current source roots
-        run: python tools/check_engine_next_contract.py --repo .
+      - name: Build and audit standalone tests (MSVC)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+          for /f "usebackq delims=" %%i in (`"%VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSROOT=%%i"
+          call "%VSROOT%\VC\Auxiliary\Build\vcvars64.bat"
+          python engine_next/Tools/BuildGameplay.py --repo . --compiler msvc --build-dir build/engine_next/msvc-release --run-tests
+          python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-release/LinkManifest.json
+
+      - name: Build and audit standalone tests (Clang)
+        if: runner.os == 'macOS'
+        run: |
+          python3 engine_next/Tools/BuildGameplay.py --repo . --compiler clang --build-dir build/engine_next/clang-release --run-tests
+          python3 tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-release/LinkManifest.json
