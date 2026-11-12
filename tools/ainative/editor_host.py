@@ -109,6 +109,8 @@ def compile_graph(model):
                 raise ValueError("input paths/snapshots length mismatch")
             if require_count > 8:
                 raise ValueError("too many input images")
+            if kind == "model_adjust" and field == "source" and len(paths) > 1:
+                raise ValueError("one source model required")
             for index in range(require_count):
                 selected_path = paths[index] if index < len(paths) else ""
                 snapshot = embedded_snapshots[index] if index < len(embedded_snapshots) else None
@@ -130,8 +132,11 @@ def compile_graph(model):
                     elif signature.startswith(b"\xff\xd8\xff") and ext == ".png":
                         ext = ".jpg"
                 payload["extension"] = ext
-                if kind != "copy" and ext not in (".png", ".jpg", ".jpeg"):
+                image_field = kind != "model_adjust" or field != "source"
+                if kind != "copy" and image_field and ext not in (".png", ".jpg", ".jpeg"):
                     raise ValueError("image context required")
+                if kind == "model_adjust" and field == "source" and ext not in (".glb", ".gltf"):
+                    raise ValueError("source model required")
                 if ext in (".gltf", ".glb"):
 
                     def embedded(v):

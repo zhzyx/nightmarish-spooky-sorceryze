@@ -155,6 +155,34 @@ A three-view marker is used only to select sheet splitting. Generation model `v3
 the default; the provider also validates the same model, face-limit, texture and quad
 combinations as the installed tool.
 
+### Model adjustment (#913)
+
+The **模型调整 / `model_adjust`** node accepts one required source Mesh, optional text and
+optional reference images, and produces a separate GLB Artifact. In Kimi Native mode it uses
+**Tripo API `texture_3d_model`** (default texture model `v3.5`), not Blender, K3 primitive
+planning or a new text-to-mesh generation. This operation targets appearance/material changes;
+it does not promise arbitrary topology editing, exact geometric identity or production rigging.
+
+A generated upstream Artifact supplies its Tripo API `task_id` when available. A local GLB or
+self-contained glTF without an upstream ID is uploaded through the configured tool's storage
+uploader and passed as `model_url`. The source is copied into private intent storage and is never
+overwritten. GLB geometry is independently validated before submission; embedded glTF receives
+structural/dependency validation, and every returned GLB receives full geometry validation.
+
+Text and images are both optional. Supported guidance modes are no guidance, text only, text plus
+one style image, one image without text, or exactly four images without text in
+**front/left/back/right** order. Two/three images, four images with text, or a missing source fail
+before task launch. `no_delight=true` is optional only with `v3.5`. The optional `texture_model`
+configuration accepts `v3.5`, `v3.0` or legacy `v2.5`; changing it changes the frozen provider
+identity and run snapshot.
+
+In the Workbench, Mesh outputs connect to the model-adjustment source port. The source picker
+accepts one `.glb`/`.gltf`; the separate context picker accepts PNG/JPEG references. Workflow saves
+embed ordered source-model and guidance-image snapshots. The resulting Artifact records
+`operation=texture_3d_model`, source/new task IDs and hashes, guidance mode, geometry,
+`original_model_not_overwritten=true` and `blender_used=false`. Other generation modes reject this
+node explicitly instead of routing it to an incompatible provider.
+
 ### Local configuration and credentials
 
 Copy `kimi-config.example.json` outside the repository and set absolute paths for

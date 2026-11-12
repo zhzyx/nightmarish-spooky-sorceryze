@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "request-913-model-adjust-node-20261112",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-model-adjust-node-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T10:29:07Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+  "agent": {
+    "id": "kimi-work-kaiyunxue",
+    "version": "20261112",
+    "definition_sha256": "1201ca0ea4682eff7e014b70c71645dde1c3e47d0ea13a29eef605d8b5e70a5c",
+    "origin": "current-authorized-host"
+  },
+  "payload": {
+    "scope": "Add a model adjustment node with one required existing mesh, optional text and image guidance, and a distinct new GLB output through Tripo API texture_3d_model without Blender",
+    "authorization_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+    "validation": "data-collection/maliang-model-adjust-node-20261112-validation.json",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "06ee3ab94a660ac91d48a39ce7cef634681864bf127252d370746488d25b715a"
+}

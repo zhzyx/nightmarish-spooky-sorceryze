@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 from generation_service import (
     ServiceError,
+    check_inputs,
     check_service,
     prepare_provider,
     restore_provider,
@@ -16,6 +17,7 @@ from generation_service import (
 )
 from kimi_provider import DEFAULT_ENDPOINT, DEFAULT_MODEL, KimiNativeDirectProvider, KimiNativeProvider
 from kimi_work_image_provider import KimiWorkImageProvider
+from test_kimi_provider import triangle_glb
 
 
 class KimiServiceTests(unittest.TestCase):
@@ -218,6 +220,56 @@ class KimiServiceTests(unittest.TestCase):
             settings({**self.value, "endpoint": "https://example.com/coding/v1"})
         with self.assertRaises(ServiceError):
             settings({**self.value, "model3d_model": "unsupported"})
+
+    def test_model_adjust_routes_to_kimi_and_freezes_texture_model(self):
+        model = self.model("model_adjust")
+        model["nodes"][0]["parameters"]["prompt"] = ""
+        _, providers, snapshot = prepare_provider(self.config, model, self.root / "adjust.sqlite", "f" * 32)
+        self.assertEqual(model["nodes"][0]["provider"], "kimi_native")
+        self.assertIsInstance(providers["kimi_native"], KimiNativeDirectProvider)
+        self.assertEqual(snapshot["provider"]["texture_model"], "v3.5")
+        registry, restored = restore_provider(snapshot)
+        self.assertIsInstance(restored["kimi_native"], KimiNativeDirectProvider)
+        definition = registry.get("model_adjust", "1")
+        self.assertEqual(definition["inputs"]["source"]["types"], ["mesh"])
+        self.assertEqual(definition["outputs"]["result"]["types"], ["mesh"])
+        self.assertTrue(check_service(self.value)["capabilities"]["model_adjust"]["ready"])
+        with self.assertRaises(ServiceError):
+            settings({**self.value, "texture_model": "v3.1"})
+        with self.assertRaises(ServiceError) as error:
+            prepare_provider(settings({"mode": "offline"}), model, self.root / "offline.sqlite", "0" * 32)
+        self.assertEqual(error.exception.code, "node_unsupported")
+
+    def test_model_adjust_file_compile_and_optional_prompt(self):
+        from editor_host import compile_graph
+
+        source_path = self.root / "source.glb"
+        source_path.write_bytes(triangle_glb())
+        model = self.model("model_adjust")
+        model["nodes"][0].update(source=str(source_path), source_paths=[str(source_path)], parameters={"prompt": ""})
+        check_inputs(model)
+        graph, manifest = compile_graph(model)
+        provider = KimiNativeDirectProvider(
+            dict(
+                tool_path=str(self.tool),
+                pythonw_path=sys.executable,
+                storage=str(self.root / "adjust-plan-state"),
+                model="v3.1",
+                texture_model="v3.5",
+            )
+        )
+        plan = provider.plan(graph[0]["request"], manifest)
+        self.assertEqual(plan["guidance_mode"], "none")
+        self.assertEqual(manifest["artifacts"][0]["type"], "mesh")
+        invalid = self.model("model_adjust")
+        invalid["nodes"][0].update(source=str(source_path), source_paths=[str(source_path), str(source_path)])
+        with self.assertRaises(ServiceError):
+            check_inputs(invalid)
+        image_path = self.root / "not-a-model.png"
+        image_path.write_bytes(b"fixture")
+        invalid["nodes"][0]["source_paths"] = [str(image_path)]
+        with self.assertRaises(ServiceError):
+            check_inputs(invalid)
 
 
 if __name__ == "__main__":

@@ -2,5 +2,6 @@
   "tool_path": "/absolute/path/to/model3d_generation_tool.py",
   "pythonw_path": "/absolute/path/to/pythonw.exe-or-python3",
   "storage": "kimi-native-3d-state",
-  "model": "v3.1"
+  "model": "v3.1",
+  "texture_model": "v3.5"
 }
