@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-7fdfa2aa88abefd14a211badaf3c1b91f232dfe020be3f71ec54454a7da9b09d",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/916",
+  "occurred_at": "2026-11-12T10:56:01.353364+00:00",
+  "evidence_refs": [
+    "request-916-20261112-readback",
+    "learn-10f049d972384df11bf948e348320e8ea5cfa40751a5c541608277fb236cc820"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 16,
+    "previous": "4a7abc16f89c3796c55c007dac3cb818eae405b323e65a1117a7d5a8932824c1",
+    "action": "applied",
+    "details": {
+      "task": "Issue916 main924 policy adaptation and module-private test relocation.",
+      "observed": "Tracing the actual consumer exposed an important directory dependency: modules/SCsub auto-collects tests/*.h into test_main, which lacks private HarfBuzz includes. The strict build failed after relocation. Keeping the test in internal_tests and including it from the module restored strict build success; regenerated global collection excludes it, bracket-only executes once with40 assertions and combined affected regressions pass38669 assertions. Independent read-only review confirmed inputs, logs and binaries. Directory names as well as suffixes can change the build consumer; this evidence covers the actual Windows consumer only."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-bracket-stack-916-main924.json",
+        "sha256": "f026a58f24e227baec2a437cfc5dc64825b2260c0d7e39ccbd5d10a54cf2cc4f"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-bracket-stack-growth-20261112/request-916-20261112-readback.json",
+      "sha256": "bb5af12aef99ddd7c2c7713893175049937cf95025e4c8f5d5ca993c47c8017f"
+    }
+  },
+  "sha256": "e5e3bd71b4e0163b024ec29c858129e33c5b2e1ca6d4fb17fc85680e01972d5d"
+}
