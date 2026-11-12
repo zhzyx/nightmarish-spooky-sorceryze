@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-54b4b1f5dc9d2657bdcc930d293f47065425fad6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "4cda89a97519ccf041dd7e6709fe41915386858b33c802955f35bf9f1a481a12",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "delivery",
+    "detection_head": "01ffceaf4e943eca5c9e8d759fc11c9a1a89ff27",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/938",
+    "diagnosis": "Main advanced87898011 to0af2ea49 through three evidence-only files, no runtime change and no write overlap. Preserved own staged receipts, rebased and restored exact index. Installation evidence remains bound to actual23412df4 binaries.",
+    "next_action": "Sign current evidence candidate and verify exact applicable CI/main before916closure; parent773 remains open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T11:44:58.493745+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": "New editor requirement intake proceeds independently."
+  },
+  "occurred_at": "2026-11-12T11:46:52.483511+00:00",
+  "sha256": "d7a6828f7d5a0945ea5ee4398078a8276015875cd15d8a45b748058bdb1eae77"
+}

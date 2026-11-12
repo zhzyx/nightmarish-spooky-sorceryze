@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-43df1850002a38d7d9562d912c10ff1e7e45f9e9",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "9ade0852224522c68bff5eefff18f9b2e7e2b611af36c246c39678d63ad73807",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "delivery",
+    "detection_head": "f8f9bbc9eb7243616ad6200df0de6e468da46267",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/compare/2432af5ea0a7bc74fe995c785d3dd723c4326a6f..8789801187f2054c377550709c9f9900503cdd01",
+    "diagnosis": "Initial signed-receipt readback rejected. Before retry, REST and the unchanged writer GraphQL verify_receipt both verified existing86e0cc19 with exact parent/tree/message/actor and valid GitHub signature. Initial differing field was not captured; precise transient cause unknown. The original remote signed ref is preserved.",
+    "next_action": "Sign current rebased exact candidate, verify real static/association CI and main receipt, then close916 while parent773 remains open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T11:38:31.958170+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": "Installed editor consumer acceptance continues independently."
+  },
+  "occurred_at": "2026-11-12T11:42:49.841394+00:00",
+  "sha256": "53ae968b4f4c7fce645fd04a32d471957a6b901675afb87ffe9b0746caaab0c0"
+}
