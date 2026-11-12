@@ -5,9 +5,13 @@ Import("env")
 Import("env_modules")
 
 env_gameplay = env_modules.Clone()
+env_gameplay.Prepend(CPPPATH=[env_gameplay.Dir("#/engine_next/include")])
 env_gameplay.add_source_files(
     env.modules_sources,
     [
+        "adapters/GameplayPredictionCore.cpp",
+        "../../engine_next/Gameplay/InterpolationBuffer.cpp",
+        "../../engine_next/Gameplay/PredictionModel.cpp",
         "gameplay_entity.cpp",
         "gameplay_match.cpp",
         "gameplay_prediction.cpp",

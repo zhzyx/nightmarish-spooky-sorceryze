@@ -28,7 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "EngineNext/Gameplay/PredictionModel.h"
+#include "engine_next/include/EngineNext/Gameplay/PredictionModel.h"
 
 #include <cmath>
 

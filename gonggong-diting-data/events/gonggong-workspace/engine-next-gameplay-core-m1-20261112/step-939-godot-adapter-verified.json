@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "step-939-godot-adapter-verified",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-gameplay-core-m1-20261112",
+  "kind": "step",
+  "occurred_at": "2026-11-12T16:00:29Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/939",
+  "agent": {
+    "id": "kimi-work-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "001b75e999158305bfc9f66c7b071cfe07f769b480088fc863e0e646d44be541",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "action": "verify_godot_adapter",
+    "issue_number": 939,
+    "scope": "PR B switches the four Godot classes to the merged independent core. Full Gameplay regression, API structure, native invalidation and standalone contract are verified locally; Windows and remote delivery remain pending.",
+    "verification": {
+      "path": "data-collection/engine-next-gameplay-core-m1-verification-20261112-r5.json",
+      "sha256": "896ea9e7ab6dbff76e4b7301611adb10f325ab5060b211a2db986de667b0c887"
+    },
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage in host receipt"
+  },
+  "evidence_refs": [
+    "request-939-engine-next-gameplay-core-m1"
+  ],
+  "sha256": "2db2b72749a72f414e79e72eaadd44d1b243f0f88ee4ce301c29fc3c525a54b1"
+}

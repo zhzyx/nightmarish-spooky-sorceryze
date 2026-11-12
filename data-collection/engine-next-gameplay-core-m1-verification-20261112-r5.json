@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "kind": "local_verification",
+  "request_id": "engine-next-gameplay-core-m1-20261112",
+  "issue": 939,
+  "recorded_at": "2026-11-12T15:58:00Z",
+  "base_head": "309a77fadc74ad9e47df42b4c2b719970b3a7cd0",
+  "candidate_state": "uncommitted_worktree",
+  "environment": {
+    "platform": "macOS-15.3.1-arm64-arm-64bit",
+    "architecture": "arm64",
+    "python": "3.12.16",
+    "clang": "Apple clang 17.0.0 (clang-1700.0.13.5)",
+    "scons": "4.11.1",
+    "godot_test_binary_sha256": "b997b5adac858a6f8cac8d84573a8fda36ba12f99ea360d5ed0f94d0945d042b"
+  },
+  "pr_a": {
+    "pull_request": 970,
+    "signed_head": "890f765f76b11f226462b289ce251e410341ae7f",
+    "merge_commit": "309a77fadc74ad9e47df42b4c2b719970b3a7cd0",
+    "windows_editor": "SUCCESS, actions/job/131281474851",
+    "windows_msvc": "SUCCESS, actions/job/131281068199",
+    "macos_clang": "SUCCESS, actions/job/131281068773",
+    "static_checks": "SUCCESS, actions/job/131281068764"
+  },
+  "checks": [
+    {
+      "command": "python engine_next/Tools/BuildGameplay.py --repo . --compiler clang --build-dir build/engine_next/clang-release --run-tests",
+      "observed": "12 tests and 200131 checks passed in build and clean directories; all public headers compile independently; archive members and dynamic dependencies remain within the declared boundary",
+      "passed": true
+    },
+    {
+      "command": "python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-release/LinkManifest.json",
+      "observed": "state=contract_passed; sources=sources_passed (14 files, 19 local includes); link=link_passed (7 objects, 1 library); godot_free_runtime_verified=false",
+      "passed": true
+    },
+    {
+      "command": "./bin/godot.macos.editor.arm64 --headless --test --test-case='[Gameplay][Prediction][EngineNext]*'",
+      "observed": "3 cases and 23 assertions passed: exact shared golden, transactional overflow rejection and five performance repetitions",
+      "passed": true
+    },
+    {
+      "command": "./bin/godot.macos.editor.arm64 --headless --test --test-case='[Gameplay]*'",
+      "observed": "28 cases and 4835 assertions passed, including all pre-existing Gameplay tests and real ENet prediction integration",
+      "passed": true
+    },
+    {
+      "command": "python build/engine_next/ComparePredictionApi.py",
+      "observed": "GameplayPredictionInput, GameplayPredictionState, GameplayPredictionModel and GameplayInterpolationBuffer all have api_structure_identical after removing documentation text",
+      "passed": true
+    },
+    {
+      "command": "python doc/tools/make_rst.py --dry-run doc/classes modules platform",
+      "observed": "No warnings or errors in class reference XML; 282 existing code-sample parity diagnostics are outside this candidate",
+      "passed": true
+    },
+    {
+      "command": "SCons module_build_inventory=<absolute build/engine_next/ModuleInputs.json>",
+      "observed": "module_gameplay inputs are engine_next/Gameplay/InterpolationBuffer.cpp, engine_next/Gameplay/PredictionModel.cpp, modules/gameplay/adapters/GameplayPredictionCore.cpp and the eight existing gameplay/register source files",
+      "passed": true
+    },
+    {
+      "command": "Temporary PredictionModel.h default speed 8 -> 9, rebuild Godot, restore -> 8 and rebuild",
+      "observed": "Godot rebuilt the adapter and relinked module_gameplay; changed model checksum was 3344215809 and restored checksum was 3325757522. Full Gameplay regression passed after rollback",
+      "passed": true
+    },
+    {
+      "command": "Ruff 0.17.1, clang-format 18.1.8, validate_codeowners.py, validate_includes.py and codespell on affected files",
+      "observed": "All checks passed without bulk-formatting legacy files; the new Allman scope is limited to engine_next and modules/gameplay/adapters",
+      "passed": true
+    },
+    {
+      "command": "git diff --check",
+      "observed": "exit 0",
+      "passed": true
+    }
+  ],
+  "performance": {
+    "workload": "1000000 model steps and 50000 mixed buffer operations at capacity 4096, median of five repetitions",
+    "legacy_godot": {
+      "model_median_us": 10931,
+      "buffer_median_us": 250816,
+      "model_checksum": 3325757522,
+      "buffer_checksum": 4097
+    },
+    "new_godot_adapter": {
+      "model_median_us": 5946,
+      "buffer_median_us": 177944,
+      "model_checksum": 3325757522,
+      "buffer_checksum": 4097
+    },
+    "standalone_release": {
+      "model_median_us": 4907,
+      "buffer_median_us": 164486,
+      "model_checksum": 3325757522,
+      "buffer_checksum": 4097
+    },
+    "standalone_clean_run": {
+      "model_median_us": 4901,
+      "buffer_median_us": 164718,
+      "model_checksum": 3325757522,
+      "buffer_checksum": 4097
+    },
+    "comparison": "Both Godot adapter workloads are faster than their legacy baselines. The earlier getter/setter conversion overhead was removed by using the stored core input and mutable core state directly; no parallel algorithm was added."
+  },
+  "corrections": [
+    "Public includes now use repository-relative paths so tests/test_main.cpp and the standalone target resolve the same headers without global Godot include paths.",
+    "The new adapter resides in modules/gameplay/adapters with a scoped Allman configuration; legacy gameplay_prediction files are not bulk formatted.",
+    "Simulation and sampling now use the stored core values directly, avoiding repeated Ref/getter/setter conversions and reducing model median from over 13000 us to 5946 us.",
+    "The unused legacy vector-to-dictionary helper was removed; the remaining network dictionary conversion path is unchanged.",
+    "Doctool initially rewrote unrelated documentation; those changes were restored and the four target classes were compared in an isolated output directory by API structure instead."
+  ],
+  "not_verified": [
+    "PR B Windows MSVC and full engine CI have not run yet and require the exact signed candidate.",
+    "No complete next_runtime executable, renderer, script system, editor or clean-environment game runtime exists in M1.",
+    "Double-precision Godot uses a different real_t contract and is not bit-identical to the standalone float kernel.",
+    "No claim is made that a static scan alone proves an entire runtime Godot-free; target-level compile, archive, link, dynamic dependency, symbol and clean-run evidence is used separately.",
+    "Remote formal gates, exact candidate CI, PR merge and main readback remain pending at this recording."
+  ],
+  "usage": null,
+  "usage_unknown_reason": "No measured model usage in host receipt"
+}
