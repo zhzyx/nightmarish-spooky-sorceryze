@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fe7caeb5fdd63788067d0d1cc31fb41dccb11402",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "71081b908d0bca2061c6ae209492aa966592aa0e8b6a7341c009b7938124dc47",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+    "action": "validation",
+    "detection_head": "1b7ddb6ff4dcdc16871901bc730d680fb52ee5de",
+    "context_sha256": "04a66840a4d223a2afa97da2ebaaa2756c853f8e4b6788c5939ab93a8b73c5a2",
+    "operator": "Sail-Li",
+    "worker": "agent:/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "local:joint773-parent-continuation-r2.json;local:joint773-receipt-storage-r2.json;local:joint773-codebuddy-continuation-r3.log",
+    "diagnosis": "Combined candidate validation exposed missing test dependencies (pip launcher, native job-object and ACP SDK/zod), plus the shared controlled authority fixture omitted actor now required by the receipt guard. The receipt integration invocation also used the default CodeBuddy backend although the existing complete-game fixture was validated with Codex. No product guard or acceptance check was bypassed. Root owns the joint candidate; original reports remain immutable.",
+    "next_action": "Use the verified build Python and pinned installed dependencies; put the fixture actor in its shared authority reporting response; invoke the existing Codex complete-game consumer explicitly. Re-run the failed native cases on the same joint binary, independently review the fixture/test delta, and bind the results to a new joint report. Do not claim installed game acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T15:42:02.190966+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T15:48:21.946790+00:00",
+  "sha256": "0ffc23ddaecef868c6a0d99e310215330afdd4efbe529627846ecd7055304ce4"
+}

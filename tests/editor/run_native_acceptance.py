@@ -20,6 +20,14 @@ if "--scenario" in sys.argv:
     at = sys.argv.index("--scenario")
     SCENARIO = sys.argv[at + 1]
     del sys.argv[at : at + 2]
+PARENT_BOUNDARY = (
+    SCENARIO.removeprefix("parallel-parent-")
+    if SCENARIO in {"parallel-parent-restart", "parallel-parent-cancel", "parallel-parent-repair-cancel"}
+    else ""
+)
+if PARENT_BOUNDARY:
+    SCENARIO = "parallel-parent-continuation"
+boundary_receipts = {}
 if SCENARIO not in {
     "pass",
     "unknown",
@@ -32,6 +40,7 @@ if SCENARIO not in {
     "parallel-repair",
     "parallel-evidence-completion",
     "parallel-evidence-exhausted",
+    "parallel-parent-continuation",
     "parallel-integration",
     "parallel-config-drift",
     "parallel-self-review",
@@ -95,6 +104,19 @@ def authority_program(path, source):
             "import os,time\nfrom pathlib import Path\nroot=Path(os.environ['DESIGN_BATCH_ROOT']).parent\nif list((root/'isolated-editor/editor_data/cache').glob('*.request.live')):\n (root/'original/samples/project/verify-transport-running').touch()\n time.sleep(3)\n"
             + source
         )
+    if PARENT_BOUNDARY and path.name == "git":
+        source = (
+            "import sys,time,json\nfrom pathlib import Path\nboundary_root=Path(sys.argv[0]).resolve().parent\n"
+            "if 'external-A' in ' '.join(sys.argv) and (boundary_root/'slow-current-951').exists():\n"
+            " boundary_deadline=time.monotonic()+20\n"
+            " while not (boundary_root/'original/samples/project/parent-boundary-951').exists() and time.monotonic()<boundary_deadline:time.sleep(0.05)\n"
+            " time.sleep(0.5)\n"
+            "if 'external-A' in ' '.join(sys.argv) and (boundary_root/'repair-cancel-951').exists():\n"
+            " for request_path in (boundary_root/'isolated-editor/editor_data/cache').glob('gonggong-acceptance-*.request'):\n"
+            "  if json.loads(request_path.read_text(encoding='utf8')).get('candidate',{}).get('audit_policy'):\n"
+            "   (boundary_root/'original/samples/project/parent-boundary-951').write_text('repair-cancel',encoding='utf8');time.sleep(2);break\n"
+            + source
+        )
     return _original_program(path, source)
 
 
@@ -156,8 +178,40 @@ def native_run(command, *args, **kwargs):
                 blocked.write_bytes(b"Actual storage obstruction; do not replace old evidence")
             batch.os.environ["NATIVE_PARALLEL_NODE"] = env["DESIGN_BATCH_NODE"]
             batch.os.environ["NATIVE_PARALLEL_PYTHON"] = env["DESIGN_BATCH_PYTHON"]
+        if SCENARIO == "parallel-parent-continuation":
+            kwargs["timeout"] = 420
         kwargs["env"] = env
     completed = _original_run(command, *args, **kwargs)
+    if PARENT_BOUNDARY and env and "DESIGN_BATCH_PROJECT" in env and "--editor" in command:
+        import time
+
+        time.sleep(4)
+        project = Path(env["DESIGN_BATCH_PROJECT"])
+        history_file = project / ".godot/editor/ai_chat_history.json"
+        if not history_file.exists():
+            print(completed.stdout, completed.stderr)
+            raise AssertionError("Boundary fixture editor exited before history was created")
+        first_history = batch.json.loads(history_file.read_text(encoding="utf8"))
+        first_producer = next(
+            a["sub_agent"] for a in first_history["agents"] if a.get("sub_agent", {}).get("work_order") == 1
+        )
+        operation = next(
+            o
+            for o in first_producer["parent_operations"]
+            if o["operation_id"] == ("repair-951" if PARENT_BOUNDARY == "repair-cancel" else "input-951")
+        )
+        boundary_receipts["before_exit_operation"] = operation
+        boundary_receipts["original_terminal"] = first_producer["terminal_receipt"]
+        if PARENT_BOUNDARY == "restart":
+            assert operation["state"] == "pending", operation
+            (parallel.folder / "slow-current-951").unlink(missing_ok=True)
+            restore_kwargs = dict(
+                kwargs, env=dict(kwargs["env"], DESIGN_BATCH_PHASE="parent-continuation-restore"), timeout=420
+            )
+            integration_restarting = True
+            completed = _original_run(command, *args, **restore_kwargs)
+        else:
+            assert operation["state"] == "cancelled", operation
     if (
         SCENARIO == "parallel-integration"
         and env
@@ -199,13 +253,16 @@ def fixture_copyfile(source, target, *args, **kwargs):
         "parallel",
         "parallel-repair",
         "parallel-evidence-completion",
+        "parallel-parent-continuation",
         "parallel-evidence-exhausted",
         "parallel-integration",
     }:
         # Independent review and a repair add real processes to the base batch.
         # Keep the wait bounded while allowing those extra completion events.
         script = Path(target).read_text(encoding="utf8")
-        script = script.replace("seconds := 90.0", "seconds := 180.0")
+        script = script.replace(
+            "seconds := 90.0", "seconds := 300.0" if SCENARIO == "parallel-parent-continuation" else "seconds := 180.0"
+        )
         # This fixture completes through independent native acceptance. The
         # ordinary batch separately tests the manual acceptance/consultation UI.
         script = script.replace("\t\tawait _verify_dependency_handoff()", "\t\tpass")
@@ -222,6 +279,28 @@ def fixture_copyfile(source, target, *args, **kwargs):
                 '_wait_marker("dependency_evidence_persist_failed_or_capacity_exceeded", 90.0, false)',
             )
         Path(target).write_text(script, encoding="utf8")
+    if Path(source).name == "design_batch.gd" and PARENT_BOUNDARY:
+        script = Path(target).read_text(encoding="utf8")
+        script = script.replace(
+            "func _initialize():", "func _initialize():\n\tprocess_frame.connect(_parent_boundary_951)"
+        )
+        script += """
+var parent_boundary_started_951 := false
+func _parent_boundary_951():
+	if parent_boundary_started_951 or not is_instance_valid(dock) or OS.get_environment("DESIGN_BATCH_PHASE") == "parent-continuation-restore" or not FileAccess.file_exists("res://parent-boundary-951"):
+		return
+	parent_boundary_started_951 = true
+	if FileAccess.get_file_as_string("res://parent-boundary-951") in ["cancel", "repair-cancel"]:
+		dock.find_child("Stop", true, false).pressed.emit()
+		await create_timer(0.2).timeout
+	_finish()
+"""
+        script = script.replace(
+            '\tvar mode := OS.get_environment("DESIGN_BATCH_CASE")\n\tif OS.get_environment("DESIGN_BATCH_PHASE") == "review-restore":',
+            '\tvar mode := OS.get_environment("DESIGN_BATCH_CASE")\n\tif OS.get_environment("DESIGN_BATCH_PHASE") == "parent-continuation-restore":\n\t\tawait create_timer(0.5).timeout\n\t\t_check(dock.find_child("Stop", true, false).disabled, "Cold continuation replayed without input")\n\t\tdock.get_ai_settings_control().find_child("APIKey", true, false).text = "design-batch-isolated-secret"\n\t\t_send("PRODUCTION_COLD_STATUS_951")\n\t\tawait _wait_marker("PRODUCTION_COLD_VERIFIED_951", 120.0)\n\t\tawait create_timer(0.5).timeout\n\t\tdock.find_child("SpawnWorkOrderAgents", true, false).pressed.emit()\n\t\tawait _wait_marker("DESIGN_BATCH_PARENT_VERIFIED_OK", 240.0)\n\t\t_finish()\n\t\treturn\n\tif OS.get_environment("DESIGN_BATCH_PHASE") == "review-restore":',
+            1,
+        )
+        Path(target).write_bytes(script.encode("utf8"))
     if Path(source).name == "design_batch.gd" and SCENARIO == "parallel-integration":
         script = Path(target).read_text(encoding="utf8")
         script = script.replace(
@@ -255,6 +334,11 @@ batch.shutil.copyfile = fixture_copyfile
 # Exercise a real read-only native reviewer through the HTTP transport. Its
 # model supplies only a verdict and paths; identity/digests come from the host.
 review_calls: list[dict[str, Any]] = []
+continuation_results = []
+continuation_phase = "supplement"
+continuation_nonce = 0
+continuation_probes = set()
+continuation_config_original = None
 repair_calls: list[dict[str, Any]] = []
 failure_notices: list[str] = []
 repair_returns: list[str] = []
@@ -268,7 +352,11 @@ class AcceptanceServer(ThreadingHTTPServer):
         original_get = handler.do_GET
 
         def get(instance):
-            if SCENARIO == "parallel-integration" and integration_restarting and instance.path.endswith("/models"):
+            if (
+                (SCENARIO == "parallel-integration" or PARENT_BOUNDARY == "restart")
+                and integration_restarting
+                and instance.path.endswith("/models")
+            ):
                 data = batch.json.dumps({"data": [{"id": "design-batch-fixture"}]}).encode()
                 instance.send_response(200)
                 instance.send_header("Content-Type", "application/json")
@@ -368,6 +456,58 @@ class AcceptanceServer(ThreadingHTTPServer):
                 instance.end_headers()
                 instance.wfile.write(data)
                 return
+            global continuation_phase, continuation_nonce, continuation_config_original
+            if PARENT_BOUNDARY == "restart" and prompt == "PRODUCTION_COLD_STATUS_951":
+                turn = max(i for i, m in enumerate(body["messages"]) if m["role"] == "user")
+                results = [m for m in body["messages"][turn + 1 :] if m["role"] == "tool"]
+                if not results:
+                    message = batch.tool_call("cold-status-951", "production_control", {"action": "status"})
+                else:
+                    assert not results[-1]["content"].startswith("Error:"), results[-1]
+                    restored = batch.json.loads(results[-1]["content"])
+                    if "items" not in restored:
+                        message = batch.tool_call(
+                            "cold-poll-" + str(len(results)), "production_control", {"action": "status"}
+                        )
+                    else:
+                        item = next(i for i in restored["items"] if i["work_order"] == 1)
+                        op = next(o for o in item["operations"] if o["operation_id"] == "input-951")
+                        assert op["state"] == "interrupted", item
+                        boundary_receipts["cold_status"] = item
+                        new_op = next((o for o in item["operations"] if o["operation_id"] == "cold-context-951"), None)
+                        if new_op is None:
+                            assert item["blocked_reason"] == "", item
+                            message = batch.tool_call(
+                                "cold-context",
+                                "production_control",
+                                {
+                                    "action": "supplement",
+                                    "operation_id": "cold-context-951",
+                                    "producer_id": int(item["producer_id"]),
+                                    "execution_id": item["execution_id"],
+                                    "candidate_sha256": item["candidate_sha256"],
+                                    "context": "PARENT_MISSING_INPUT_951: fresh bounded context after actual restart",
+                                },
+                            )
+                        elif new_op["state"] == "pending":
+                            message = batch.tool_call(
+                                "cold-poll-" + str(len(results)), "production_control", {"action": "status"}
+                            )
+                        else:
+                            assert new_op["state"] == "context_recorded", new_op
+                            boundary_receipts["cold_new_operation"] = new_op
+                            sibling = next(i for i in restored["items"] if i["work_order"] == 3)
+                            assert sibling["state"] == "interrupted" and not sibling["execution_id"], sibling
+                            boundary_receipts["cold_waiting_sibling"] = sibling
+                            continuation_phase = "review"
+                            message = {"role": "assistant", "content": "PRODUCTION_COLD_VERIFIED_951"}
+                data = batch.json.dumps({"choices": [{"message": message, "finish_reason": "stop"}]}).encode()
+                instance.send_response(200)
+                instance.send_header("Content-Type", "application/json")
+                instance.send_header("Content-Length", str(len(data)))
+                instance.end_headers()
+                instance.wfile.write(data)
+                return
             if SCENARIO.startswith("parallel") and prompt == "DESIGN_BATCH_START":
                 parallel.setup(SCENARIO)
             if (
@@ -376,12 +516,177 @@ class AcceptanceServer(ThreadingHTTPServer):
                 and "current_host_design_batch" in prompt
             ):
                 if SCENARIO.startswith("parallel"):
-                    if SCENARIO != "parallel-integration" or prompt not in parallel.returns:
+                    if (
+                        SCENARIO not in {"parallel-integration", "parallel-parent-continuation"}
+                        or prompt not in parallel.returns
+                    ):
                         parallel.returns.append(prompt)
                 else:
                     assert "acceptance_findings" in prompt and "Missing repair-evidence.txt execution proof" in prompt
                     repair_returns.append(prompt)
                 message = {"role": "assistant", "content": "DESIGN_BATCH_PARENT_VERIFIED_OK"}
+                if SCENARIO == "parallel-parent-continuation":
+                    import time
+
+                    parent_turn = max(i for i, m in enumerate(body["messages"]) if m["role"] == "user")
+                    results = [
+                        m
+                        for m in body["messages"][parent_turn + 1 :]
+                        if m["role"] == "tool" and str(m.get("tool_call_id", "")).startswith("pc-")
+                    ]
+                    last = results[-1] if results else None
+                    value = (
+                        batch.json.loads(last["content"]) if last and not last["content"].startswith("Error:") else None
+                    )
+                    if last and not any(r["id"] == last["tool_call_id"] for r in continuation_results):
+                        continuation_results.append({"id": last["tool_call_id"], "result": value or last["content"]})
+                    Path(sys.argv[sys.argv.index("--out") + 1]).with_suffix(".progress.json").write_bytes(
+                        batch.json.dumps(continuation_results, ensure_ascii=False).encode("utf8")
+                    )
+                    if (
+                        PARENT_BOUNDARY in {"restart", "cancel"}
+                        and value
+                        and value.get("action") == "supplement"
+                        and value.get("state") == "pending"
+                    ):
+                        (parallel.folder / "original/samples/project/parent-boundary-951").write_text(
+                            PARENT_BOUNDARY, encoding="utf8"
+                        )
+                    continuation_nonce += 1
+                    arguments = {"action": "status"}
+                    message = None
+                    if value and "items" in value:
+                        item = next(i for i in value["items"] if i["work_order"] == 1)
+                        if item["accepted"] or item["state"] == "completed" or not item["eligible_actions"]:
+                            if not item["accepted"] and item["state"] == "review" and item["blocked_reason"]:
+                                if continuation_phase in {"review", "repair", "repair-rejection"}:
+                                    message = {
+                                        "role": "assistant",
+                                        "content": "Continuation requested; finish parent turn so independent work can run.",
+                                    }
+                                else:
+                                    time.sleep(0.4)
+                            else:
+                                message = {
+                                    "role": "assistant",
+                                    "content": "DESIGN_BATCH_PARENT_VERIFIED_OK"
+                                    if all(i["accepted"] for i in value["items"])
+                                    else "Continuation requested; awaiting remaining independent production.",
+                                }
+                        else:
+                            identity = dict(
+                                producer_id=item["producer_id"],
+                                execution_id=item["execution_id"],
+                                candidate_sha256=item["candidate_sha256"],
+                            )
+                            operations = {o["operation_id"]: o for o in item["operations"]}
+                            if continuation_phase == "supplement":
+                                if "foreign" not in continuation_probes:
+                                    continuation_probes.add("foreign")
+                                    arguments = dict(
+                                        action="supplement",
+                                        operation_id="foreign-951",
+                                        context="bounded",
+                                        **dict(identity, producer_id=99999),
+                                    )
+                                elif "waiting" not in continuation_probes:
+                                    continuation_probes.add("waiting")
+                                    arguments = dict(
+                                        action="supplement",
+                                        operation_id="waiting-951",
+                                        context="bounded",
+                                        **dict(identity, producer_id=3),
+                                    )
+                                elif "stale" not in continuation_probes:
+                                    continuation_probes.add("stale")
+                                    arguments = dict(
+                                        action="supplement",
+                                        operation_id="stale-951",
+                                        context="bounded",
+                                        **dict(identity, candidate_sha256="0" * 64),
+                                    )
+                                elif "input-951" not in operations:
+                                    if PARENT_BOUNDARY in {"restart", "cancel"}:
+                                        (parallel.folder / "slow-current-951").touch()
+                                    arguments = dict(
+                                        action="supplement",
+                                        operation_id="input-951",
+                                        context="PARENT_MISSING_INPUT_951: use the assigned fixture input and retain actual execution evidence",
+                                        **identity,
+                                    )
+                                elif operations["input-951"]["state"] == "pending":
+                                    time.sleep(0.4)
+                                else:
+                                    assert operations["input-951"]["state"] == "context_recorded", operations
+                                    if "replay" not in continuation_probes:
+                                        continuation_probes.add("replay")
+                                        arguments = dict(
+                                            action="supplement",
+                                            operation_id="input-951",
+                                            context="bounded replay",
+                                            **identity,
+                                        )
+                                    else:
+                                        quoted = next(
+                                            (
+                                                f"quoted-951-{i}"
+                                                for i in range(1, 4)
+                                                if f"quoted-951-{i}" not in operations
+                                            ),
+                                            None,
+                                        )
+                                        if quoted:
+                                            arguments = dict(
+                                                action="supplement", operation_id=quoted, context='"' * 4000, **identity
+                                            )
+                                        elif "quota" not in continuation_probes:
+                                            continuation_probes.add("quota")
+                                            arguments = dict(
+                                                action="supplement",
+                                                operation_id="quota-reject-951",
+                                                context='"' * 4000,
+                                                **identity,
+                                            )
+                                        else:
+                                            continuation_phase = "review"
+                                            arguments = dict(action="review", operation_id="review-951", **identity)
+                            elif continuation_phase == "review":
+                                if "repair" in item["eligible_actions"]:
+                                    if PARENT_BOUNDARY == "repair-cancel":
+                                        (parallel.folder / "repair-cancel-951").touch()
+                                        continuation_phase = "repair"
+                                        arguments = dict(action="repair", operation_id="repair-951", **identity)
+                                    else:
+                                        continuation_phase = "repair-rejection"
+                                        config = parallel.folder / "parallel-config.json"
+                                        continuation_config_original = config.read_bytes()
+                                        config.write_bytes(continuation_config_original + b" ")
+                                        arguments = dict(action="repair", operation_id="repair-reject-951", **identity)
+                                else:
+                                    message = {
+                                        "role": "assistant",
+                                        "content": "Fresh review requested; awaiting independent result.",
+                                    }
+                            elif continuation_phase == "repair-rejection":
+                                rejected = operations.get("repair-reject-951", {})
+                                if rejected.get("state") == "rejected":
+                                    assert rejected["reason"] == "parallel_assignment_changed", rejected
+                                    assert item["parent_repairs"] == 0, item
+                                    (parallel.folder / "parallel-config.json").write_bytes(continuation_config_original)
+                                    continuation_phase = "repair"
+                                    arguments = dict(action="repair", operation_id="repair-951", **identity)
+                                else:
+                                    message = {
+                                        "role": "assistant",
+                                        "content": "Await the actual repair revalidation receipt.",
+                                    }
+                            elif continuation_phase == "repair":
+                                message = {
+                                    "role": "assistant",
+                                    "content": "Explicit bounded continuation requested; awaiting independent result.",
+                                }
+                    if message is None:
+                        message = batch.tool_call("pc-" + str(continuation_nonce), "production_control", arguments)
                 if SCENARIO == "parallel-integration":
                     results = {
                         m.get("tool_call_id"): m.get("content", "") for m in body["messages"] if m["role"] == "tool"
@@ -463,10 +768,25 @@ class AcceptanceServer(ThreadingHTTPServer):
             producer_receipt = batch.json.loads(prompt.split("\n")[2])
             auxiliary = root.parent / "native-review-auxiliary.txt"
             results = [m["content"] for m in body["messages"] if m["role"] == "tool"]
+            for entry in body["messages"]:
+                if entry.get("tool_call_id") == "readonly-continuation-951":
+                    assert entry["content"].startswith("Error:"), entry
+            if (
+                SCENARIO == "parallel-parent-continuation"
+                and criteria[0]["id"] == "A"
+                and any(r["completed"] and r["criteria"][0]["id"] == "A" for r in review_calls)
+            ):
+                assert "PARENT_MISSING_INPUT_951" in prompt, "Supplement did not reach the real fresh reviewer"
             repair_evidence = criteria[0]["id"] == "A" and (
                 (SCENARIO == "repair" and any(r["completed"] for r in repair_calls))
                 or (
-                    SCENARIO in {"parallel-repair", "parallel-evidence-completion", "parallel-evidence-exhausted"}
+                    SCENARIO
+                    in {
+                        "parallel-repair",
+                        "parallel-evidence-completion",
+                        "parallel-evidence-exhausted",
+                        "parallel-parent-continuation",
+                    }
                     and (root / "repair-evidence.txt").exists()
                 )
             )
@@ -474,6 +794,23 @@ class AcceptanceServer(ThreadingHTTPServer):
                 if not auxiliary.exists():
                     auxiliary.write_text("Untrusted external context, not criterion evidence", encoding="utf8")
                 message = batch.tool_call("acceptance-read", "read_file", {"path": str(root / "fixture-input.txt")})
+                if (
+                    SCENARIO == "parallel-parent-continuation"
+                    and criteria[0]["id"] == "A"
+                    and not any(r["completed"] and r["criteria"][0]["id"] == "A" for r in review_calls)
+                ):
+                    message["tool_calls"].append(
+                        batch.tool_call(
+                            "failed-source-read-951",
+                            "read_file",
+                            {"path": str(root / "fixture-input.txt"), "limit": 501},
+                        )["tool_calls"][0]
+                    )
+                    message["tool_calls"].append(
+                        batch.tool_call("readonly-continuation-951", "production_control", {"action": "status"})[
+                            "tool_calls"
+                        ][0]
+                    )
                 if getattr(batch, "COMPLETE_GAME", False):
                     message["tool_calls"].append(
                         batch.tool_call(
@@ -521,6 +858,12 @@ class AcceptanceServer(ThreadingHTTPServer):
                             "acceptance-registration-context", "read_file", {"path": terminal["registration"]["path"]}
                         )["tool_calls"][0]
                     )
+                if SCENARIO == "parallel-parent-continuation" and (root / "final-evidence.txt").exists():
+                    message["tool_calls"].append(
+                        batch.tool_call("final-proof-read", "read_file", {"path": str(root / "final-evidence.txt")})[
+                            "tool_calls"
+                        ][0]
+                    )
                 if repair_evidence:
                     message["tool_calls"].append(
                         batch.tool_call("repair-proof-read", "read_file", {"path": str(root / "repair-evidence.txt")})[
@@ -548,6 +891,7 @@ class AcceptanceServer(ThreadingHTTPServer):
                         and not (root / "repair-evidence.txt").exists()
                     )
                     or SCENARIO == "parallel-evidence-exhausted"
+                    or (SCENARIO == "parallel-parent-continuation" and not (root / "final-evidence.txt").exists())
                 )
                 verdict = {
                     "verdict": "unknown" if SCENARIO == "unknown" else "fail" if failing else "pass",
@@ -573,6 +917,15 @@ class AcceptanceServer(ThreadingHTTPServer):
                         for c in criteria
                     ],
                 }
+                if SCENARIO == "parallel-parent-continuation" and criteria[0]["id"] == "A":
+                    verdict["reason"] = (
+                        "Missing final-evidence.txt execution proof"
+                        if failing
+                        else "Actual final-evidence read after bounded parent repair"
+                    )
+                    if not failing:
+                        for criterion in verdict["criteria"]:
+                            criterion["evidence"].append("final-evidence.txt")
                 if SCENARIO in {"parallel-evidence-completion", "parallel-evidence-exhausted"} and failing:
                     verdict["verdict"] = "unknown"
                     verdict["unknown_kind"] = "missing_execution_evidence"
@@ -746,7 +1099,13 @@ if __name__ == "__main__":
                 assert source["decision"]["verdict"] == "pass"
         counts = {
             "A": 2
-            if SCENARIO in {"parallel-repair", "parallel-evidence-completion", "parallel-evidence-exhausted"}
+            if SCENARIO
+            in {
+                "parallel-repair",
+                "parallel-evidence-completion",
+                "parallel-evidence-exhausted",
+                "parallel-parent-continuation",
+            }
             else 1,
             "B": 1,
             "C": 1,
@@ -821,6 +1180,46 @@ if __name__ == "__main__":
                 )
                 and not any("gonggong-dependency-evidence" in item["path"] for item in diagnostics)
             )
+        if SCENARIO == "parallel-parent-continuation":
+            valid = (
+                not result["errors"]
+                and result["editor"]["ok"]
+                and len(starts["A"]) == 3
+                and len(starts["B"]) == len(starts["C"]) == 1
+                and len(accepted) == 3
+                and len([r for r in review_calls if r["completed"] and r["criteria"][0]["id"] == "A"]) == 4
+            )
+            if valid and not PARENT_BOUNDARY:
+                repaired = next(a["sub_agent"] for a in accepted if a["sub_agent"]["work_order"] == 1)
+                assert repaired["acceptance_repairs"] == 1 and repaired["parent_repairs"] == 1
+                assert any(
+                    r.get("review_source_unverified") and r.get("failure_stage") == "review_source_unverified"
+                    for r in repaired["review_history"]
+                ), "Original source-read failure was lost"
+                assert len({r["execution_id"] for r in repaired["terminal_history"]}) == 2
+                operations = {o["operation_id"]: o for o in repaired["parent_operations"]}
+                assert operations["repair-reject-951"]["state"] == "rejected"
+                assert operations["repair-reject-951"]["reason"] == "parallel_assignment_changed"
+                assert operations["repair-951"]["state"] == "repair_queued"
+                assert "quota-reject-951" not in operations
+                assert (
+                    len(
+                        batch.json.dumps(
+                            repaired["supplemental_inputs"], ensure_ascii=False, separators=(",", ":")
+                        ).encode("utf8")
+                    )
+                    <= 32768
+                )
+                errors = [r["result"] for r in continuation_results if isinstance(r["result"], str)]
+                for required_error in [
+                    "unknown_producer",
+                    "producer_not_known_unaccepted_terminal",
+                    "stale",
+                    "Replayed operation",
+                    "serialization exceeds",
+                ]:
+                    assert any(required_error in error for error in errors), (required_error, errors)
+            result["parent_continuation_operations"] = continuation_results
         result["external_events"] = events
         result["external_parent_returns"] = len(parallel.returns)
     elif SCENARIO in {"pass", "repair"}:
@@ -874,10 +1273,32 @@ if __name__ == "__main__":
         result["integration_receipts"] = integration_receipts
         result["integration_restore"] = integration_restore_report
         result["integration_runtime"] = integration_runtime
+    if PARENT_BOUNDARY == "restart":
+        assert boundary_receipts["cold_new_operation"]["state"] == "context_recorded"
+        assert boundary_receipts["cold_waiting_sibling"]["state"] == "interrupted"
+        assert len(starts["C"]) == 1 and len(accepted) == 3
+        result["parent_boundary_receipts"] = boundary_receipts
+    elif PARENT_BOUNDARY:
+        first = boundary_receipts["before_exit_operation"]
+        valid = (
+            not result["errors"]
+            and len(starts["A"]) == (2 if PARENT_BOUNDARY == "repair-cancel" else 1)
+            and len(starts["B"]) == 1
+            and not starts["C"]
+        )
+        valid = valid and not any(a["sub_agent"]["work_order"] == 1 for a in accepted)
+        if PARENT_BOUNDARY == "repair-cancel":
+            assert first["reason"] == "parent_cancelled_before_dispatch", first
+        valid = valid and (
+            first["state"] == "cancelled"
+            if PARENT_BOUNDARY in {"cancel", "repair-cancel"}
+            else boundary_receipts.get("cold_status", {}).get("operations", [{}])[0].get("state") == "interrupted"
+        )
+        result["parent_boundary_receipts"] = boundary_receipts
     result["transport_fixture_ok"] = result["ok"]
     result["ok"] = bool(valid)
     result["verification_status"] = "native_acceptance_passed" if valid else "failed"
-    result["native_scenario"] = SCENARIO
+    result["native_scenario"] = "parallel-parent-" + PARENT_BOUNDARY if PARENT_BOUNDARY else SCENARIO
     result["verified_decisions"] = decisions
     result["review_calls"] = review_calls
     result["repair_calls"] = repair_calls

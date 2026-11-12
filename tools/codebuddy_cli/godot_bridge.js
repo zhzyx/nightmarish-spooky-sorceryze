@@ -9,7 +9,7 @@ const { READ_ONLY_HOST_ACTIONS } = require('./godot_terminal');
 const OUTPUT_LIMIT = 2 * 1024 * 1024;
 // build_engine, restart_engine and rollback_engine can only be executed by the
 // host editor, because they rebuild and replace the process that is running.
-const ACTIONS = new Set(['get_editor_state', 'editor_action', 'route_engine_message', 'read_logs', 'list_scripts', 'read_script', 'write_script', 'check_script', 'run_test', 'read_file', 'write_file', 'list_directory', 'run_command', 'build_engine', 'restart_engine', 'rollback_engine', 'get_parent_context', 'complete_delivery', 'delegate_review', 'integrate_production_result']);
+const ACTIONS = new Set(['get_editor_state', 'editor_action', 'route_engine_message', 'read_logs', 'list_scripts', 'read_script', 'write_script', 'check_script', 'run_test', 'read_file', 'write_file', 'list_directory', 'run_command', 'build_engine', 'restart_engine', 'rollback_engine', 'get_parent_context', 'complete_delivery', 'delegate_review', 'integrate_production_result', 'production_control']);
 const SCHEMA = {
     type: 'object',
     additionalProperties: false,

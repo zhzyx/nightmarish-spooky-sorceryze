@@ -39,7 +39,7 @@
 // supplies the redacted result and owns bounded storage and call/history refs.
 class AIChatSubAgentReceipts {
 	static bool known_tool(const String &p_tool) {
-		return p_tool == "read_logs" || p_tool == "list_scripts" || p_tool == "read_script" || p_tool == "write_script" || p_tool == "check_script" || p_tool == "run_test" || p_tool == "read_file" || p_tool == "write_file" || p_tool == "list_directory" || p_tool == "run_command" || p_tool == "build_engine" || p_tool == "restart_engine" || p_tool == "rollback_engine" || p_tool == "get_parent_context" || p_tool == "get_editor_state" || p_tool == "editor_action" || p_tool == "route_engine_message" || p_tool == "delegate_review" || p_tool == "integrate_production_result" || p_tool == "complete_delivery";
+		return p_tool == "read_logs" || p_tool == "list_scripts" || p_tool == "read_script" || p_tool == "write_script" || p_tool == "check_script" || p_tool == "run_test" || p_tool == "read_file" || p_tool == "write_file" || p_tool == "list_directory" || p_tool == "run_command" || p_tool == "build_engine" || p_tool == "restart_engine" || p_tool == "rollback_engine" || p_tool == "get_parent_context" || p_tool == "get_editor_state" || p_tool == "editor_action" || p_tool == "route_engine_message" || p_tool == "production_control" || p_tool == "delegate_review" || p_tool == "integrate_production_result" || p_tool == "complete_delivery";
 	}
 
 	static Variant boolean_field(const Dictionary &p_value, const String &p_key) {

@@ -25,6 +25,27 @@ const typedTool = {
     } },
 };
 
+test('production continuation crosses the Codex bridge only when advertised by the parent', () => {
+    const configured = { ...input, available_tools: [{ type: 'function', function: { name: 'production_control' } }] };
+    const validated = validateRequest(configured);
+    const { outputSchemaFor } = require('../../tools/codex_cli/action_schema');
+    const { SCHEMA } = require('../../tools/codex_cli/godot_bridge');
+    assert.deepEqual(outputSchemaFor(validated, SCHEMA).properties.actions.items.properties.name.enum, ['production_control']);
+    for (const action of ['status', 'supplement', 'review', 'repair']) {
+        const args = action === 'status' ? { action } : { action, producer_id: 21,
+            execution_id: 'original-execution', candidate_sha256: 'a'.repeat(64),
+            operation_id: `parent-${action}`, context: '输入路径与验收证据 "quoted"\\path' };
+        const wire = JSON.stringify({ content: '', actions: [{ name: 'production_control', arguments: JSON.stringify(args) }] });
+        const result = completion(wire, validated).choices[0].message.tool_calls[0];
+        assert.equal(result.function.name, 'production_control');
+        assert.deepEqual(JSON.parse(result.function.arguments), args);
+        assert.throws(() => completion(wire, input), { bridgeCode: 'INVALID_ACTION' });
+        assert.throws(() => completion(wire, { ...validated, tool_context: { consultation_only: true } }), { bridgeCode: 'INVALID_ACTION' });
+    }
+    assert.throws(() => validateRequest({ ...configured, tool_context: { ...input.tool_context,
+        consultation_only: true, writes_allowed: false, execution_allowed: false } }), { bridgeCode: 'INVALID_REQUEST' });
+});
+
 test('output schema constrains active tools and typed arguments, retaining dynamic fallback', () => {
     const { outputSchemaFor } = require('../../tools/codex_cli/action_schema');
     const { SCHEMA } = require('../../tools/codex_cli/godot_bridge');

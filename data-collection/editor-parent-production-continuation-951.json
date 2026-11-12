@@ -1,0 +1,194 @@
+{
+  "schema_version": 1,
+  "issue": 951,
+  "issue_number": 951,
+  "request_id": "editor-parent-production-continuation-20261112",
+  "scope": "Native source and isolated Windows consumers; installed game acceptance and exact-candidate delivery remain owned by root.",
+  "baseline": "d91bd93e",
+  "executable_sha256": "c42043afa23674d66a1bfbcd920eac2c9c0adaa7c91d5f3b6fe076e09c1573a1",
+  "input_blobs": {
+    "editor/docks/production/ProductionControl.cpp": "9c915608376e8b911cce2605ebf7776b22639e93",
+    "editor/docks/production/.clang-format": "0b0dae686b4498cff4bee26fdfa55b1e51cd2e55",
+    "editor/docks/SCsub": "6755f17d9ca46df1a9fd5cc216722b2d55db2d61",
+    "editor/docks/ai_chat_dock.cpp": "b04fe2cf9433f814eccc9dd0c9974ecb44200238",
+    "editor/docks/ai_chat_dock.h": "f47de71046f150b58a4786db60f7d0c6c79c8b4a",
+    "editor/docks/ai_chat_sub_agents.cpp": "c1e8561565d8a477b92e34abc5ad5a2de242f8fc",
+    "editor/docks/ai_chat_sub_agent_receipts.h": "a5c78b20a7306633a180461d1dafd7f40f6aa9ad",
+    "tools/codebuddy_cli/godot_acp.js": "09904c4634a2b653edba01910aabe482a623332e",
+    "tools/codebuddy_cli/godot_bridge.js": "ce5fc382f3428628908d26b9fe47d2d26b551872",
+    "tools/codebuddy_cli/godot_terminal.js": "b6b3986c0eb7b7c5cdfbeedd5e76a14b2b83e8db",
+    "tests/editor/mock_codebuddy_cli.js": "730e4796e8f6a905c80611d2a03db2a10e641ba9",
+    "tests/editor/test_codebuddy_acp.js": "29e1666d074cfcc7421ec344ba3be0414b51ee77",
+    "tests/editor/native_acceptance_parallel.py": "a1c6e2d810e8ce0d15f48daf7920745a2bd58cb4",
+    "tests/editor/run_native_acceptance.py": "f6f9006264deb884822151f2421699b8983fd4a3",
+    "tools/godot_parallel/repair.mjs": "41fbc1fc3622d1da4ac71dcae3382047aaeccace",
+    "tools/gonggong_bridge.py": "1e1459420fc3f43ba9af6fb0f9d3a1074f393125",
+    "customizations/components/godot-host/acceptance.py": "af8d8eff86d5b6a5fc75dd0379fb4dc53b00d7ac",
+    "tests/editor/test_parallel_work_orders.mjs": "55c3f4e31f62ece4063382383378dba87b4e0258"
+  },
+  "checks": {
+    "native_invalidation": {
+      "command": "Change ProductionControl.cpp input, build its SCons object, restore exact bytes, strict full Windows build, then run native parent continuation consumers",
+      "observed": "{\"before_source_sha256\": \"86098c3c447bd4ce63b86b096e53736e19b250cf198ed042141645d44556901a\", \"before_source_signature\": \"=== editor\\\\docks\\\\production:\\nProductionControl.cpp: 978e1b31ebc6645d03f61d092ebdb3fa\\n\", \"executable_sha256\": \"c42043afa23674d66a1bfbcd920eac2c9c0adaa7c91d5f3b6fe076e09c1573a1\", \"exit_code\": 0, \"passed\": true, \"probe_source_sha256\": \"5e9935a999a0763992ea3deee68a2f21e40b0ebbe3a9129bfdf85a01da0b3fa3\", \"probe_source_signature\": \"=== editor\\\\docks\\\\production:\\nProductionControl.cpp: 7444c25f4aa07005cc2318e1c4ce6ccf\\n\", \"restored_build_exit_code\": 0, \"restored_source_sha256\": \"86098c3c447bd4ce63b86b096e53736e19b250cf198ed042141645d44556901a\", \"restored_source_signature\": \"=== editor\\\\docks\\\\production:\\nProductionControl.cpp: 978e1b31ebc6645d03f61d092ebdb3fa\\n\"}",
+      "passed": true
+    },
+    "strict_build": {
+      "command": "python -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no accesskit=no d3d12=no angle=no warnings=extra werror=yes tests=yes -j4",
+      "observed": {
+        "exit_code": 0,
+        "log_sha256": "8191dc1d3de00f7fd1f1c94ec43debc6f0abf9c7d7feb7b46b900c539cc775a0",
+        "MSYSTEM": "",
+        "GONGGONG_NATIVE_SOURCE_ARCHIVE": "1"
+      },
+      "passed": true
+    },
+    "native_consumers": {
+      "command": "python -X utf8 tests/editor/run_native_acceptance.py --godot <candidate> --node <node> --case models-initial-ok --scenario <scenario> --out <ignored-receipt>",
+      "observed": {
+        "parent-11": {
+          "passed": true,
+          "scenario": "parallel-parent-continuation",
+          "artifact_sha256": "c42043afa23674d66a1bfbcd920eac2c9c0adaa7c91d5f3b6fe076e09c1573a1",
+          "raw_receipt_sha256": "930a30a1e8676b7ba1a0898865280c253b8ce93be81074e262e08f989da1047a",
+          "accepted_producers": [
+            1,
+            2,
+            3
+          ],
+          "actual_worker_starts": {
+            "A": 3,
+            "B": 1,
+            "C": 1
+          }
+        },
+        "cancel-3": {
+          "passed": true,
+          "scenario": "parallel-parent-cancel",
+          "artifact_sha256": "13662eb2799f5cb0f0a161b247fa08f3f036f2457cc85aae0e9080c68898b0eb",
+          "raw_receipt_sha256": "f3360c33a0e91f904acbed21b7736fc9b1be68c6aa2c1c27bf2fd21df8bedcb7",
+          "accepted_producers": [],
+          "actual_worker_starts": {
+            "A": 1,
+            "B": 1,
+            "C": 0
+          },
+          "boundary_operations": {
+            "before_exit_operation": {
+              "action": "supplement",
+              "operation_id": "input-951",
+              "state": "cancelled"
+            }
+          }
+        },
+        "repair-cancel-4": {
+          "passed": true,
+          "scenario": "parallel-parent-repair-cancel",
+          "artifact_sha256": "c42043afa23674d66a1bfbcd920eac2c9c0adaa7c91d5f3b6fe076e09c1573a1",
+          "raw_receipt_sha256": "33c29b8e6030a96107e5833963362285528232c1a49f103090d960c2dc894bf4",
+          "accepted_producers": [
+            2
+          ],
+          "actual_worker_starts": {
+            "A": 2,
+            "B": 1,
+            "C": 0
+          },
+          "parent_repairs_consumed": 0,
+          "boundary_operations": {
+            "before_exit_operation": {
+              "action": "repair",
+              "operation_id": "repair-951",
+              "state": "cancelled",
+              "reason": "parent_cancelled_before_dispatch"
+            }
+          }
+        },
+        "restart-7": {
+          "passed": true,
+          "scenario": "parallel-parent-restart",
+          "artifact_sha256": "c42043afa23674d66a1bfbcd920eac2c9c0adaa7c91d5f3b6fe076e09c1573a1",
+          "raw_receipt_sha256": "f28f760782ef9770fd5db15e63298419263543bab36e2641e685f4d68ee62253",
+          "accepted_producers": [
+            1,
+            2,
+            3
+          ],
+          "actual_worker_starts": {
+            "A": 3,
+            "B": 1,
+            "C": 1
+          },
+          "original_host_waiting_observation": {
+            "payload_sha256": "40cccf2b67a3ef6517e24840428db7487057264314bfc54d1fbef4a4f191ee74",
+            "producer": 3,
+            "state": "waiting"
+          },
+          "cold_waiting_sibling": {
+            "state": "interrupted",
+            "execution_id": "",
+            "eligible_actions": []
+          },
+          "boundary_operations": {
+            "before_exit_operation": {
+              "action": "supplement",
+              "operation_id": "input-951",
+              "state": "pending"
+            },
+            "cold_new_operation": {
+              "action": "supplement",
+              "operation_id": "cold-context-951",
+              "state": "context_recorded",
+              "reason": null
+            }
+          }
+        }
+      },
+      "passed": true
+    },
+    "codebuddy_consumer": {
+      "command": "node --test --test-name-pattern 'CodeBuddy (read-only session|production parent|production continuation)' tests/editor/test_codebuddy_acp.js",
+      "observed": {
+        "tests": 3,
+        "passed": 3,
+        "log_sha256": "273629c1e039b98e597a049da9abf330fb5d258b8d11d255db636beb1a2b69da"
+      },
+      "passed": true
+    },
+    "runner_regression": {
+      "command": "node --test tests/editor/test_parallel_work_orders.mjs",
+      "observed": {
+        "tests": 65,
+        "passed": 65,
+        "log_sha256": "751960132decb8b3f789474677d6bd2757197dc4957e68c65e7a69bfd71786eb"
+      },
+      "passed": true
+    },
+    "native_unit": {
+      "command": "godot --headless --test --test-case=*NativeAcceptance*",
+      "observed": {
+        "cases": 3,
+        "assertions": 11,
+        "log_sha256": "ceed4bbf656f2a6aa5680f6ae4ab92ffc6ef81791a5b5911c310aa8cd6a1ab44"
+      },
+      "passed": true
+    },
+    "format": {
+      "command": "clang-format --dry-run --Werror <changed C++>; ruff check and format --check <changed Python/SCsub>; file_format.py; copyright_headers.py",
+      "observed": {
+        "clang_format_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "ruff_log_sha256": "2916b6d24c818c4563630f79d73a7f9e7df0d3028311d2c334ba4892c68e904a",
+        "file_format_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "copyright_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "passed": true
+    }
+  },
+  "preserved_failures": [
+    "Split native unit builds 5-8 exposed missing callable_mp include and were fixed in build9; logs retained.",
+    "Independent source review exposed escaped-input accounting, pending cold operations, premature repair success/budget and second-phase cancellation; targeted source corrections retain original failure receipts.",
+    "restart-5 proved only interrupted/no replay; its old overall true does not establish new-ID continuation. Final restart consumer requires context_recorded and complete dependency release through explicit existing Continue UI.",
+    "repair-cancel-2 reached queued repair because the fixture incorrectly expected .live for acceptance-current; final fixture observes actual reviewer currentness request.",
+    "repair-cancel-3 fixture invocation used workflow Python without pip; rerun uses existing build Python."
+  ],
+  "cold_recovery": "Startup performs no replay. A new identified supplement can operate on A while C remains interrupted. Existing explicit Continue Production restores the never-dispatched C through the original resume path; fresh independent upstream acceptance and currentness gate its first dispatch. External running/unknown workers remain occupied; no parent action resets them."
+}

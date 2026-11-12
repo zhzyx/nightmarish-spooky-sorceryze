@@ -1,0 +1,7 @@
+{
+  "placement": "native",
+  "reason": "SCsub compiles receipts/GameReceiptGuard.cpp into the existing editor library; the host member signature is a native dependency.",
+  "host_contract": "Main-thread AIChatDock::GetGameReceiptGuard receives runtime configuration and host-validated reporting, invokes installed editor_provenance_guard.py, and returns verified guard metadata or an error; no authority or candidate is created.",
+  "rollback": "Restore the prior verified editor with matching trusted host tools; retain private bindings, journals, events and projects.",
+  "evidence": "data-collection/editor-production-recovery-joint-773.json"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9a95bde487dcc5f63e7ad155c50a0bcd9b077ef1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b328b1b8e74fbbed6a94f69fa75f13818e75e531df8d858c9506999b960c89d5",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "action": "validation",
+    "detection_head": "d91bd93eb14d1420db9e6872c638e9cb82baf015",
+    "context_sha256": "cddba3532d7c13a3af3653f2299ad525ab1b260f28c84d1e9445f670eaf61ed3",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "Actual producer terminal receipts remain unaccepted; first independent reviewer read_file failed with the256KiB excerpt limit and retained review_source_unverified. Independent source audit confirms scoped parent continuation absent and UI-only resume exists. Actual metadata recovery is separately948.",
+    "diagnosis": "Parent task tools cannot supplement existing workers or request another bound review/repair; report-only delegation cannot replace acceptance. invalid_target_page is a separate pagination error with unpaired exact parameters, not evidence of a missing page. Preserve original failed review and start only fresh verified review/repair lineage.",
+    "next_action": "Issue951 has passed intake and actual isolated native worker dispatch; implement production_control status/supplement/review/repair with actual parent/candidate/terminal/authority binding, idempotence and independent acceptance. Root owns live existing-batch replay after formal delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T13:35:05.033953+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T13:39:41.876326+00:00",
+  "sha256": "a702b167fb1313ad164de52b487dcbcfb0b1e7d4ce5b2b326f7a91a39b7c92ae"
+}

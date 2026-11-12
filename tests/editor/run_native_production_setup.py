@@ -201,6 +201,9 @@ def run(command, *args, **kwargs):
         import threading
 
         env = dict(env)
+        # The generic normal-case parser probe adds a dependency after FINALIZED
+        # is assembled. This fixture explicitly tests two independent workers.
+        env["DESIGN_BATCH_FINALIZED"] = env["DESIGN_BATCH_FINALIZED"].replace("   - 依赖：工单 2。\n", "")
         # Frozen installed adapters are byte-pinned. Only ordinary inputs such
         # as the design exercise Windows checkout conversion.
         Path(env["DESIGN_BATCH_ROOT"], ".gitattributes").write_text(

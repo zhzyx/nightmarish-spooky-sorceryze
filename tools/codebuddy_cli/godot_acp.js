@@ -516,7 +516,7 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
         }
         const onlyReads = !writing && [...pending.values()].every(item => item.name === 'read_file');
         if (pending.size >= (onlyReads ? 32 : 8)) return deny('capacity', 'Godot file callback queue is full');
-        if (!active.input.available_tools.some(tool => tool.function?.name === name) || [...pending.values()].some(item => ['build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery', 'delegate_review', 'integrate_production_result'].includes(item.name))) return deny('unavailable', 'Godot file operation is not available during an editor self-update');
+        if (!active.input.available_tools.some(tool => tool.function?.name === name) || [...pending.values()].some(item => ['build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery', 'delegate_review', 'integrate_production_result', 'production_control'].includes(item.name))) return deny('unavailable', 'Godot file operation is not available during an editor self-update');
         let args;
         try {
             args = fileArguments(params, writing);
@@ -564,7 +564,7 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
         hostAction,
         approve: args => {
             if (!active?.input.tool_context.execution_allowed || active.input.tool_context.consultation_only) return Promise.reject(fileError('This Godot review session cannot execute commands'));
-            if (pending.size >= 8 || [...pending.values()].some(item => ['build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery', 'delegate_review', 'integrate_production_result'].includes(item.name))) return Promise.reject(fileError('Godot command capacity exceeded or editor self-update in progress'));
+            if (pending.size >= 8 || [...pending.values()].some(item => ['build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery', 'delegate_review', 'integrate_production_result', 'production_control'].includes(item.name))) return Promise.reject(fileError('Godot command capacity exceeded or editor self-update in progress'));
             reportProgress('tool_pending');
             return new Promise((resolve, reject) => {
                 const id = 'acp_command_' + randomUUID();
@@ -695,7 +695,7 @@ async function runAcpSession(entry, cwd, env, setChild, api) {
                     }
                     continue;
                 }
-                if (['read_logs', 'get_parent_context', 'get_editor_state', 'editor_action', 'route_engine_message', 'build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery', 'delegate_review', 'integrate_production_result'].includes(item.name)) {
+                if (['read_logs', 'get_parent_context', 'get_editor_state', 'editor_action', 'route_engine_message', 'build_engine', 'restart_engine', 'rollback_engine', 'complete_delivery', 'delegate_review', 'integrate_production_result', 'production_control'].includes(item.name)) {
                     try {
                         const actionResult = JSON.parse(result.content);
                         if (!actionResult || typeof actionResult.ok !== 'boolean') throw new Error('Invalid host action result');
