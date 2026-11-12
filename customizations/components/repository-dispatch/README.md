@@ -32,3 +32,5 @@ node customizations/components/repository-dispatch/session.mjs model ISSUE REQUE
 进程终态同时记录实际退出码和信号。核验进程的失败可回收并保留失败结果。模型进程缺少有效完成回执时保持占用；经授权宿主核实原调用后使用框架原有 recover 处理。已 ack 的原工作者可用其 reference 加 `:ledger` 作为恢复事件引用，由入口只读核对原签发任务、预算和 SQLite 终态。账本 completed 对应 execution.finished，cancelled 对应 execution.failed，其他状态继续占用。签发续期只能沿用原计划，所有路径相对本仓库根解析，私有路径按文中所示传绝对值。
 
 只读终态核验可使用已到期的原 grant，仍须通过该 grant 的历史签名、框架摘要、原计划绑定及数据库精确摘要检查。任何实际生产与重试继续检查有效期。
+
+`inspect`、`verify`、`model` 的 GitHub bootstrap 与配置文件入口复用 [派发宿主 GitHub 运行边界](../codex-dispatch/README.md)。`config.gh` 显式优先于 `GONGGONG_GH`；环境未提供时由已安装 Python 共享解析器查找。会话选定的绝对 CLI 同时传给 intake 与上报，不再各自使用裸 `gh`。安装／配置引导在 Python 尚未准备好时仍走独立 PowerShell provisioning，不能反向依赖完整派发运行时。

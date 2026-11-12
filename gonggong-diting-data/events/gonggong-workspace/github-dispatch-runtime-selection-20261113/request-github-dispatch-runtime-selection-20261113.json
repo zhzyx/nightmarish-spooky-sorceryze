@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "request-github-dispatch-runtime-selection-20261113",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "github-dispatch-runtime-selection-20261113",
+  "kind": "request",
+  "occurred_at": "2026-11-12T17:50:10.851739+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/994",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "authorization": "User authorized full AI/GitHub refactor; actual child994 unifies JS dispatch GitHub selection with delivered989 shared runtime",
+    "issue_number": 994,
+    "observed_model": null,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "6e8c1ae2b2e63ba7f2527ad3b1e476ab20e55ff3538142e1ec117225388a7ac5"
+}

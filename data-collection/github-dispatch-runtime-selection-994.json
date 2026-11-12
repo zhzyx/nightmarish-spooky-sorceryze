@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "issue": 994,
+  "request_id": "github-dispatch-runtime-selection-20261113",
+  "parent_issue": 978,
+  "dependency_issue": 989,
+  "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+  "responsible": "Sail-Li",
+  "source_body_sha256": "1d49b3d4e8d9f1c4aeb599c74e0f6df4b83cf27475e0c83e465a07df04ed59de",
+  "base_commit": "c55e823a691286afa69949a0985015fb9375094a",
+  "recorded_at": "2026-11-12T18:31:47.212645+00:00",
+  "path_base": "repository_root",
+  "platform": "darwin",
+  "node": "v24.22.1",
+  "python": "3.14.3",
+  "environment": {
+    "PATH_prefix": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin",
+    "GONGGONG_PYTHON": "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "GONGGONG_KUAFU_LOCAL_ONLY": "1"
+  },
+  "placement": "host_tool",
+  "build_boundary": "Existing issue-workorders/codex-dispatch/repository-dispatch components; no new module directory, registration, native or embedded input. Actual bridge dependencies resolved from installed file locations; git archive relocation verified. Shared Python 989 algorithm and errors reused.",
+  "checks": [
+    {
+      "command": "node --test customizations/components/codex-dispatch/*.test.mjs customizations/components/repository-dispatch/*.test.mjs customizations/components/issue-workorders/github_runtime.test.mjs customizations/components/issue-workorders/github_source.test.mjs customizations/components/issue-workorders/kuafu_dispatch.test.mjs",
+      "executable": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node",
+      "exit_code": 0,
+      "tests": 74,
+      "passed": 72,
+      "skipped": 2,
+      "skipped_reason": "Windows drive-root and UNC tests on macOS",
+      "stdout": "✔ actual callbacks receive capability selected models, isolated contexts and bounded handoff (38.097083ms)\n✔ agent and chat handoffs carry scoped continuation without changing authority or model (38.37375ms)\n✔ inherited agent model limits selection and leaves the native override unset (47.167916ms)\n✔ inherited agent cannot borrow capabilities from another catalog entry (6.314292ms)\n✔ launches overlap, before either receipt is resolved (34.372792ms)\n✔ restart retains unknown launch and prevents duplicate launch (26.87075ms)\n✔ durable receipt survives ack failure; authenticated completion frees capacity (69.205708ms)\n✔ chat uses configured default without overriding model; explicit exact model may override (34.451458ms)\n✔ chat creation and model override restrictions fail before source start (9.679083ms)\n✔ cross-chat lock refuses concurrent coordinator and never steals stale lock (6.411666ms)\n✔ queued chat setup is not reported as ready thread (18.384958ms)\n✔ same ticket at different revisions gets distinct native task names (10.382834ms)\n✔ receipt persistence failure preserves actual worker receipt on error (1.894125ms)\n✔ queued setup requires authoritative mapping before source acknowledgement (56.775125ms)\n✔ only explicit verified never-launched failure releases a reservation (32.396833ms)\n✔ aliases to a future output block readers until the original worker is verified terminal (68.796583ms)\n✔ an unresolved requested path fails only that work order before reservation (21.979875ms)\n﹣ a Windows drive root is refused for new work and retained in older reservations (0.058166ms) # SKIP\n﹣ a persisted slash-normalized UNC share still blocks a child read (0.035208ms) # SKIP\n✔ two independent processes cannot claim the same source (75.434791ms)\n✔ stale source is refused under claim lock and before native launch (41.057208ms)\n✔ native session rechecks effective write permission and can reconcile an existing worker after revocation (3370.329334ms)\n✔ worker, reservation and terminal receipt must match exactly (22.98775ms)\n✔ verified never-launched can release, but any native intent remains unknown (48.642791ms)\n✔ native bridge persists intent, binds receipt and refuses issuing twice (16.342417ms)\n✔ dependency closure without host acceptance proof is not readiness (1.120125ms)\n✔ launch intent and never-launched verification share the source lock (22.528208ms)\n✔ a verified unstarted terminal prevents a delayed original launch (21.727208ms)\n✔ GUI PATH environment selection reaches authenticated openSession and real installed reporting (695.272125ms)\n✔ real Python discovery honors environment with GUI PATH; config wins without mutating caller (379.928875ms)\n✔ explicit empty/null/invalid/unexecutable choices fail closed instead of falling back (203.909375ms)\n✔ exact command names resolve only the supplied PATH, including missing PATH (222.428042ms)\n✔ request transport bounds hangs, sanitizes HTTP/network/JSON errors and keeps unknown-write readback (628.854625ms)\n✔ git-archived bridge relocates with Python dependency; target project cannot provide tools (499.455125ms)\n✔ read-only source is not a dispatcher or fake Yuanheng ledger (2.993666ms)\n✔ wrong identity, ambiguity and workspace rejected (0.293459ms)\n✔ dependencies only explicit and source version changes on reassignment (0.336042ms)\n✔ one unavailable source does not hide readable independent source (0.3115ms)\n✔ source revision drift prevents start before backend call (0.319708ms)\n✔ source start and ack require exact backend and worker receipts (0.484292ms)\n✔ active workers cannot become ready; terminal status requires verification (0.268333ms)\n✔ unknown category rejected and local assessment failure isolated (0.276291ms)\n✔ native dependencies and legacy markers share the acceptance gate and revision (0.564917ms)\n{\"state\":\"kuafu_dispatch_unattributed\",\"action\":\"dispatch\"}\n✔ route proven per-ticket errors and blockers; preserve normal waits and successful peers (1.9215ms)\n{\"state\":\"kuafu_dispatch_unattributed\",\"action\":\"dispatch\"}\n{\"state\":\"kuafu_dispatch_unattributed\",\"action\":\"dispatch\"}\n{\"incident\": \"1d1887d72194ad72e722a7f962317cc85380a888217380501743b652c4bd8e30\", \"state\": \"pending_kuafu_intake\", \"issue\": 2, \"action\": \"dispatch\", \"next_action\": \"The active host must invoke Kuafu now: receive, investigate, then assess with the actual worker and bug.\", \"dispatch\": \"local_only\"}\n✔ use only the failed reservation from the bound worktree and preserve the original failure (329.635958ms)\n✔ entry bootstrap with one known Issue keeps its identity on failure (0.344ms)\n✔ actual Python capture binds the separate workspace and ignores its executable suggestion (580.2455ms)\n✔ real ledger review and derived board acceptance resume once using reservation idempotence (2523.008584ms)\n✔ dispatch failure retries from committed review without a second review (1958.557625ms)\n✔ reject self without accepting or releasing (725.926541ms)\n✔ reject unknown without accepting or releasing (671.476208ms)\n✔ reject stale without accepting or releasing (693.092834ms)\n✔ reject permission without accepting or releasing (596.106625ms)\n✔ reject criteria without accepting or releasing (688.971125ms)\n✔ reject lock without accepting or releasing (692.33575ms)\n✔ reject receipt without accepting or releasing (747.782ms)\n✔ complete candidate includes new files and deletions, rejects HEAD change (991.378625ms)\n✔ completion event releases real dependent process through dispatchEvent with no manual action (2270.297125ms)\n✔ ordinary review JSON cannot claim host acceptance (656.044459ms)\n✔ replay rejects unrelated empty HEAD change after a ledger acceptance (1348.810916ms)\n✔ actual cancellation after ledger commit preserves review and never starts dependent work (1007.852542ms)\n✔ host audit policy new (769.30575ms)\n✔ host audit policy old_changed (943.416666ms)\n✔ host audit policy wrong_request (1186.909875ms)\n✔ host audit policy code (752.015334ms)\n✔ host audit policy malformed (840.541667ms)\n✔ host audit policy tracked (659.678ms)\n✔ host audit policy evidence (626.430042ms)\n✔ actual running ledger submits verified terminal evidence and reviews in one commit (855.552209ms)\n✔ backfill intake failure preserves the original verified release (1.210542ms)\n✔ real verifier process and durable terminal match without native host callbacks (254.000792ms)\n✔ verified exit re-reads only deferred work; unknown exit retains occupancy (0.680625ms)\n✔ a faster worker frees its slot while the first worker is still busy (0.508542ms)\n✔ real bootstrap and intake share selected CLI in an isolated installed dispatch checkout (1087.134ms)\nℹ tests 74\nℹ suites 0\nℹ pass 72\nℹ fail 0\nℹ cancelled 0\nℹ skipped 2\nℹ todo 0\nℹ duration_ms 22284.170875\n"
+    },
+    {
+      "command": "python -m unittest discover -s customizations/components/issue-workorders -p test_github_runtime.py -v",
+      "executable": "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+      "exit_code": 0,
+      "tests": 17,
+      "result": "OK; actual legacy Node/Git state prepended a different gh directory while session absolute CLI executed; archive, import, exact PATH, fail-closed and transport coverage retained."
+    },
+    {
+      "command": "python -m unittest discover -s customizations/components/issue-workorders -p test_issue_gate.py -v",
+      "executable": "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+      "exit_code": 0,
+      "tests": 17,
+      "result": "OK"
+    },
+    {
+      "command": "python -m unittest discover -s customizations/components/godot-host -p test_bridge.py -v",
+      "executable": "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+      "exit_code": 0,
+      "tests": 44,
+      "result": "OK"
+    },
+    {
+      "command": "ruff check --no-fix customizations/components/issue-workorders/github_runtime_bridge.py customizations/components/issue-workorders/test_github_runtime.py customizations/components/codex-dispatch/report.py",
+      "tool_origin": "Existing private tool-venv in main workspace receipt directory; executed only",
+      "exit_code": 0,
+      "result": "All checks passed"
+    },
+    {
+      "command": "mypy customizations/components/issue-workorders/github_runtime_bridge.py customizations/components/codex-dispatch/report.py",
+      "tool_origin": "Existing private tool-venv in main workspace receipt directory; executed only",
+      "exit_code": 0,
+      "result": "Success: no issues found in 2 source files"
+    },
+    {
+      "command": "node --test customizations/components/issue-workorders/github_runtime.test.mjs",
+      "executable": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node",
+      "exit_code": 0,
+      "tests": 5,
+      "result": "All passed after separating short hang-test deadline from normal error-classification requests to avoid fixture timing sensitivity"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "result": "No whitespace errors"
+    }
+  ],
+  "actual_read_only_reproduction": {
+    "command": "env PATH=/usr/bin:/bin GONGGONG_GH=/Users/oracle/.local/bin/gh GONGGONG_PYTHON=/Library/Frameworks/Python.framework/Versions/3.14/bin/python3 PYTHONDONTWRITEBYTECODE=1 GONGGONG_KUAFU_LOCAL_ONLY=1 /Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node --input-type=module -",
+    "script": "import {githubRuntime} from \"./customizations/components/issue-workorders/github_runtime.mjs\"; import {openSession} from \"./customizations/components/codex-dispatch/operator.mjs\"; const config={workspace:process.cwd(),python:process.env.GONGGONG_PYTHON,repository:\"zhzyx/nightmarish-spooky-sorceryze\",capacity:1,defaultChatModel:\"verification-only\",catalog:[],requests:[],bindings:[{number:994,requestId:\"github-dispatch-runtime-selection-20261113\"}],authorityRef:\"codex-user-ai-github-integration-refactor-20261112\"}; config.operator=await (await githubRuntime(config)).text([\"api\",\"user\",\"--jq\",\".login\"]); const session=await openSession(config); try { console.log(JSON.stringify({original_gui_path_repro:\"recovered\",configured_gh_present:Object.hasOwn(config,\"gh\"),selected_environment_cli:session.github.gh===process.env.GONGGONG_GH,authenticated_operator:config.operator,authenticated_repository:config.repository,worker_launches:0,remote_writes:0})); } finally {session.bridge.close();}",
+    "result": {
+      "original_gui_path_repro": "recovered",
+      "configured_gh_present": false,
+      "selected_environment_cli": true,
+      "authenticated_operator": "Sail-Li",
+      "authenticated_repository": "zhzyx/nightmarish-spooky-sorceryze",
+      "worker_launches": 0,
+      "remote_writes": 0
+    }
+  },
+  "corrections": [
+    "Initial existing framework child test failed because shell PATH lacked Node; rerun with actual host Node directory passed.",
+    "New GUI fixture initially omitted required defaultChatModel and was rejected by existing check; supplied full configuration and reran successfully.",
+    "First real-account read-only attempt used empty bindings; existing Explicit source binding required check rejected after successful authentication. Retried with actual Issue994 binding; no workers or writes in either attempt.",
+    "Broad acceptance regression failed on macOS /var vs /private/var fixture roots. Canonicalized fixture with realpathSync; all existing ownership, self-review and acceptance assertions retained and passed.",
+    "mypy found pre-existing nullable report.py module spec; explicit installed adapter availability guard added; no type suppression.",
+    "Suspected legacy GH overwrite was disproven by inspecting actual igniter/runtime config field sets. No production bridge.py API change; verified legal legacy Node/Git PATH prep cannot replace the absolute CLI."
+  ],
+  "ps_bootstrap_audit": {
+    "files": [
+      "tools/configure_gonggong_runtime.ps1",
+      "tools/install_gonggong_editor.ps1"
+    ],
+    "result": "Provisioning intentionally works before Python installation. Configurator probes/deploys components, then runs doctor; installer probes Python through run_issue_gate.ps1. No Python-GitHub prerequisite added; Windows execution not performed."
+  },
+  "input_sha256": {
+    "customizations/components/codex-dispatch/README.md": "b9d912eb307a7b2dc399450abacf02a19fec40b0e665d80c8c2f7596dee66d31",
+    "customizations/components/codex-dispatch/operator.mjs": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "customizations/components/codex-dispatch/operator.test.mjs": "5384c51f2b2a2f17981945fd0715812c0cab5edf9f027e38087b3c3dca82a4a1",
+    "customizations/components/codex-dispatch/report.py": "f10419c7fe0bc2825480b0d0339e11162186b1df2696d63f63a940b34f702bae",
+    "customizations/components/godot-host/bridge.py": "9aba31357c8d5286629b98265d2470de32897a53fe3acce4a4261e2ac7f88aef",
+    "customizations/components/godot-host/environment_igniter.py": "d13fc47ddd44ba67858b1094b5d112b2e113f1c7b754c08116f375d1b5a26d44",
+    "customizations/components/issue-workorders/github_runtime.mjs": "7d3c5b00e25f29ece2bca5564df2d2be2ed5c03574feca449fce4f6176779dd8",
+    "customizations/components/issue-workorders/github_runtime.py": "ae29a22140a86356e1c887eb67f0c81de15e1ad21e45eddadeef1f6800abfa34",
+    "customizations/components/issue-workorders/github_runtime.test.mjs": "ef631fb420a5bb5cfcea7099cf0b9de066e00d066a73a494245b218b9c1d4f18",
+    "customizations/components/issue-workorders/github_runtime_bridge.py": "eb004066f16431ef1abbf7713ecbf6da70a962cc2d24b64102be3732c1360ea1",
+    "customizations/components/issue-workorders/test_github_runtime.py": "0fd439d490b3c4de532a2be397bde09f5bba0b5379b941588b51c03008c2e0ba",
+    "customizations/components/repository-dispatch/README.md": "7131e0168f0a2f536debafcdf844df0550647034bc86570cd4e0476f23734ded",
+    "customizations/components/repository-dispatch/acceptance.test.mjs": "52201bb3f89daf77ba779f9ba09801a32c6262b80b5d16c008057f98e2a9fcec",
+    "customizations/components/repository-dispatch/session.mjs": "aeeddc8a3f31a613f718209f1e5531204d0fc9ff4075c8acd0163134847b8311",
+    "customizations/components/repository-dispatch/session.test.mjs": "809beea59625e7663b8cf33bec5cbe54d402939edb7134fe5874fff8ae1fdb54",
+    "design-docs/github-dispatch-runtime-selection-994.md": "7c5a48832a7422739e909b86e67ba0cb65921a67467e5584d177956dcbe3fa74",
+    "editor/SCsub": "a63de8fc24157659dc375762a49d9c65f63c53d9c00f70b9c4d9db3f774cf57d",
+    "tools/configure_gonggong_runtime.ps1": "a113177939ed3c3d7787ec042e7ef827559a2c17b47bc9b9b5184a154e5f85df",
+    "tools/gonggong_runtime_config.py": "824d0a3d8c83daf281bb840c1b8c287c7ff01b9cea6a57aad240eff1cbad1025",
+    "tools/install_gonggong_editor.ps1": "adc33999299350cac57a77ae859bf4e415cdac9da4441ec5cde75e5295b6fdd1",
+    "tools/package_workspace_release.py": "8224cf1dc4df6586e3dae74e42ea533e11c1dcd72cc51a513c1f44d8458d174b"
+  },
+  "cleanup": {
+    "removed": [
+      "Task-created github_runtime.cpython-314.pyc",
+      "/tmp/github994-js-final.log after embedding its exact output in this receipt",
+      "Task-created worktree .mypy_cache",
+      "Task-created worktree .ruff_cache"
+    ],
+    "test_temporaries": "TemporaryDirectory and node t.after remove task-owned source archives, installations, synthetic CLIs, git repos, environment files and local event datasets.",
+    "retained": "Implementation worktree, branch and uncommitted candidate plus this evidence for parent review/delivery; active source claims and other tasks untouched."
+  },
+  "delivery_state": "review_ready_not_committed; parent owns independent review, exact gate/CI/commit/push/main and Issue closure; no assertion that #994 or #978 acceptance is complete"
+}

@@ -1,14 +1,14 @@
 // One explicit event in one bound local installation; no daemon or remote CAS.
 import fs from 'node:fs';
 import path from 'node:path';
-import {execFile,spawn} from 'node:child_process';
+import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {fileURLToPath} from 'node:url';
+import {githubRuntime} from '../issue-workorders/github_runtime.mjs';
 import {GitHubIssueSource,issueSnapshot,readIssueWithDependencies} from '../issue-workorders/github_source.mjs';
 import {CodexDispatchHost} from './adapter.mjs';
 import {NativeToolBridge,create,digest} from './native-bridge.mjs';
 const exec=promisify(execFile), read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
-const command=async(file,args,cwd)=>JSON.parse((await exec(file,args,{cwd,windowsHide:true,maxBuffer:4*1024*1024})).stdout);
 export class OperatorRuntime {
   constructor({root,repository,bindings,readIssue,allowedCategories,operator,catalog,capacity,authorityRef,authorize,report,verifyWorker,acceptedDependency,chatCreationAuthorized=false,verifyWriteAccess}) {
     if(!path.isAbsolute(root)||!operator||!authorityRef||typeof authorize!=='function'||typeof report!=='function'||typeof verifyWorker!=='function')throw Error('Actual operator host binding required');
@@ -90,14 +90,15 @@ export async function operatorStateRoot(workspace) {
 export async function openSession(config,ports={}) {
   const workspace=fs.realpathSync(config.workspace);
   const root=await operatorStateRoot(workspace);
-  const api=async endpoint=>command(config.gh??'gh',['api',endpoint],workspace);
+  const github=await githubRuntime({...config,workspace});
+  const api=endpoint=>github.json(['api',endpoint]);
   const settings=read(path.join(workspace,'work-items.json'));
   if(settings.repository!==config.repository||settings.tenant_id!=='gonggong-workspace')throw Error('Repository/tenant binding mismatch');
   const [owner, name] = config.repository.split('/');
   const viewerQuery = 'query($owner:String!,$name:String!){viewer{login} repository(owner:$owner,name:$name){nameWithOwner viewerPermission}}';
   async function verifyAccess(requireWrite) {
-    const response = await command(config.gh ?? 'gh', ['api','graphql','-f','query=' + viewerQuery,
-      '-f','owner=' + owner,'-f','name=' + name], workspace);
+    const response = await github.json(['api','graphql','-f','query=' + viewerQuery,
+      '-f','owner=' + owner,'-f','name=' + name]);
     const {viewer,repository} = response.data;
     if (viewer?.login !== config.operator || repository?.nameWithOwner !== config.repository) throw Error('Authenticated operator or repository changed');
     if (requireWrite && !['WRITE','MAINTAIN','ADMIN'].includes(repository.viewerPermission)) throw Error('Current operator write permission required');
@@ -125,10 +126,13 @@ export async function openSession(config,ports={}) {
       const binding=config.bindings.find(b=>`github:${config.repository}#${b.number}`===record.assignment?.ticket);
       if(!binding)throw Error('Reporting assignment binding missing');
       return await new Promise((resolve,reject)=>{
-        const child=spawn(config.python,[fileURLToPath(new URL('./report.py',import.meta.url)),workspace],{cwd:workspace,windowsHide:true,stdio:['pipe','pipe','pipe']});
-        let output='',error='';child.stdout.on('data',d=>output+=d);child.stderr.on('data',d=>error+=d);
-        child.on('error',reject);child.on('close',code=>{if(code!==0)return reject(Error('Diting reporting failed: '+error));try{const receipt=JSON.parse(output);if(receipt.ok!==true||receipt.state!=='recorded_file')throw Error('No reporting receipt');resolve(receipt);}catch(e){reject(e);}});
-        child.stdin.on('error',reject);child.stdin.end(JSON.stringify({requestId:binding.requestId,issue:binding.number,record,backend:ports.worker ? 'repository' : 'codex'}));
+        const child=execFile(config.python,['-I','-B','-X','utf8',fileURLToPath(new URL('./report.py',import.meta.url)),workspace],
+          {cwd:workspace,env:github.env,windowsHide:true,timeout:120000,killSignal:'SIGKILL',maxBuffer:4*1024*1024},(error,output)=>{
+            if(error)return reject(Error('Diting reporting failed; inspect recorded state before retrying'));
+            try{const receipt=JSON.parse(output);if(receipt.ok!==true||receipt.state!=='recorded_file')throw Error();resolve(receipt);}
+            catch{reject(Error('Diting reporting receipt invalid; inspect recorded state before retrying'));}
+          });
+        child.stdin.on('error',()=>{});child.stdin.end(JSON.stringify({requestId:binding.requestId,issue:binding.number,record,backend:ports.worker ? 'repository' : 'codex'}));
       });
     }),verifyWorker,acceptedDependency:ports.acceptedDependency,chatCreationAuthorized:config.chatCreationAuthorized===true});
   const source=new GitHubIssueSource({repository:config.repository,bindings:config.bindings,readIssue,allowedCategories:categories,runtime});
@@ -174,5 +178,5 @@ export async function openSession(config,ports={}) {
     };
   }
   const launch=host.launch.bind(host);host.launch=async a=>{if (ports.beforeLaunch) await ports.beforeLaunch(a);await runtime.beforeLaunch(a);return launch(a);};
-  return {host,bridge,runtime};
+  return {host,bridge,runtime,github};
 }

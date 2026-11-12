@@ -1,5 +1,6 @@
 """Offline CLI discovery, host isolation and transport regression coverage."""
 
+import hashlib
 import importlib.util
 import json
 import os
@@ -265,6 +266,37 @@ print(json.dumps([work_items.github_runtime.resolve_gh(), bridge.find_gh(dict(os
             with patch.dict(os.environ, {"GONGGONG_GH": str(target / "missing")}, clear=True):
                 with self.assertRaisesRegex(bridge._github.GitHubCommandError, "configured.*missing"):
                     bridge.host_environment(target)
+
+    @unittest.skipIf(os.name == "nt", "POSIX synthetic executable")
+    def test_dispatch_pin_survives_real_legacy_path_preparation(self):
+        spec = importlib.util.spec_from_file_location(
+            "github_legacy_fixture_bridge", ROOT / "customizations/components/godot-host/bridge.py"
+        )
+        bridge = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(bridge)
+        selected = self.executable(self.root / "session CLI", output="selected-session")
+        other = self.executable(self.installation / "legacy tools/gh", output="wrong-PATH-cli")
+        components = []
+        for name in ("node", "git"):
+            tool = self.executable(other.parent / name)
+            components.append({"id": name, "path": str(tool),
+                               "sha256": hashlib.sha256(tool.read_bytes()).hexdigest()})
+        state = self.installation / "project/runtime/state/installed.json"
+        state.parent.mkdir(parents=True)
+        state.write_text(json.dumps({"schema_version": 1, "authorized": True,
+                                     "path_base": "workspace_root", "components": components}))
+        supplied = {**self.env, "GONGGONG_GH": str(selected)}
+        with (
+            patch.object(bridge, "__file__", str(self.installation / "customizations/components/godot-host/bridge.py")),
+            patch.dict(os.environ, supplied, clear=True),
+        ):
+            prepared = bridge.host_environment(self.root / "target project")
+            self.assertEqual(os.environ["PATH"], "")
+            self.assertEqual(prepared["GONGGONG_GH"], str(selected))
+            self.assertEqual(prepared["GONGGONG_NODE"], str(other.parent / "node"))
+            self.assertEqual(prepared["GONGGONG_GIT"], str(other.parent / "git"))
+            self.assertIn(str(other.parent), prepared["PATH"].split(os.pathsep))
+            self.assertEqual(bridge._github.run_gh("api", "fixture", env=prepared), "selected-session")
 
     @unittest.skipIf(os.name == "nt", "POSIX synthetic executable")
     def test_archived_host_imports_dependency_and_relocates_runtime(self):

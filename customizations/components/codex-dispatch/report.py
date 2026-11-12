@@ -2,15 +2,18 @@
 import hashlib
 import importlib.util
 import json
-from pathlib import Path
 import sys
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
 
 root = Path(sys.argv[1]).resolve()
-module = root / 'customizations/components/godot-host/bridge.py'
+installation = Path(__file__).resolve().parents[3]
+module = installation / 'customizations/components/godot-host/bridge.py'
 sys.path.insert(0, str(module.parent))
 spec = importlib.util.spec_from_file_location('operator_reporting', module)
+if spec is None or spec.loader is None:
+    raise ImportError('Installed reporting adapter unavailable')
 bridge = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bridge)
 payload = json.load(sys.stdin)

@@ -6,6 +6,7 @@ import {randomUUID} from 'node:crypto';
 import {execFile, spawn} from 'node:child_process';
 import {promisify} from 'node:util';
 import {fileURLToPath} from 'node:url';
+import {githubRuntime} from '../issue-workorders/github_runtime.mjs';
 import {issueSnapshot, readIssueWithDependencies} from '../issue-workorders/github_source.mjs';
 import {openSession, operatorStateRoot} from '../codex-dispatch/operator.mjs';
 import {create} from '../codex-dispatch/native-bridge.mjs';
@@ -102,7 +103,6 @@ export async function runEvent(config, {isLive} = {}) {
   if (fs.realpathSync(config.workspace) !== workspace) throw Error('Run the entry from the bound trusted checkout');
   if (config.action && config.action !== 'dispatch' && config.action !== 'reconcile') throw Error('Unsupported repository event action');
   const receipts = path.join(await operatorStateRoot(workspace), 'sources');
-  const gh = config.gh || 'gh';
   const worker = repositoryWorker(config, receipts);
   if(isLive) {
     const launch=worker.launch.bind(worker),revalidate=worker.revalidate.bind(worker);
@@ -119,7 +119,7 @@ export async function runEvent(config, {isLive} = {}) {
     if (config.workers['github:'+config.repository+'#'+issue.number]?.kind === check &&
         !issue.labels.some(label=>label.name === 'type:test')) throw Error('Verification requires a dedicated type:test Issue');
   };
-  const {host,runtime} = await openSession(config, {worker, acceptedDependency, validateIssue});
+  const {host,runtime,github} = await openSession(config, {worker, acceptedDependency, validateIssue});
   async function intake() {
     checkLive();
     if (config.action === 'reconcile') await runtime.verifyWriteAccess();
@@ -134,7 +134,7 @@ export async function runEvent(config, {isLive} = {}) {
       const ticket = 'github:' + config.repository + '#' + b.number;
       await ticketOperation(ticket, () => exec(config.python, [path.join(workspace,'customizations/components/issue-workorders/issue_gate.py'),
         '--repo',workspace,'--issue',String(b.number),'--request-id',b.requestId,'--tenant','gonggong-workspace','--intake-only'],
-        {env:{...process.env, GONGGONG_GH:gh}}));
+        {env:github.env,timeout:120000,killSignal:'SIGKILL',windowsHide:true,maxBuffer:4*1024*1024}).catch(()=>{throw Error('Issue intake failed; read gate and remote state before retrying');}));
     }
   }
   return advance(config, host, worker, intake);
@@ -182,8 +182,9 @@ async function issueConfig(number, requestId, grant) {
   if (!Number.isSafeInteger(number) || number < 1 || typeof requestId !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(requestId)) throw Error('Supply ISSUE and stable request ID');
   const {repository} = read(path.join(workspace,'work-items.json'));
   const python = hostPython();
-  const gh = process.env.GONGGONG_GH || 'gh';
-  const operator = (await exec(gh,['api','user','--jq','.login'])).stdout.trim();
+  const github = await githubRuntime({python,workspace});
+  const gh = github.gh;
+  const operator = await github.text(['api','user','--jq','.login']);
   const ticket = 'github:' + repository + '#' + number;
   const authorityRef = 'explicit-verification:' + operator + ':' + ticket;
   const request = {ticket,target:'agent',model:check,capabilities:[check],owner:operator,outcome:'Verify the admitted framework',
@@ -209,7 +210,8 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const args = process.argv.slice(2);
   if (args.length === 3 && args[0] === 'inspect') {
     const c = await issueConfig(Number(args[1]),args[2]);
-    const api = async endpoint => JSON.parse((await exec(c.gh, ['api', endpoint], {maxBuffer:4*1024*1024})).stdout);
+    const github = await githubRuntime(c);
+    const api = endpoint => github.json(['api',endpoint]);
     const issue = await readIssueWithDependencies(api, c.repository, c.bindings[0].number);
     console.log(JSON.stringify(issueSnapshot(c.repository,c.bindings[0],issue,read(path.join(workspace,'.github/labels.json')).map(l=>l.name))));
     process.exit(0);
