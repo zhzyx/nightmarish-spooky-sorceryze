@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-0f8b6bc620122740c6114c3e5cbcf20c0c34bff8c0d0906a704eee989406ccfa",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/902",
+  "occurred_at": "2026-11-12T09:18:01+00:00",
+  "evidence_refs": [
+    "request-902-20261112-readback",
+    "learn-64b4f7cefaa6893e09490a077d726c00ac49ad66af7c8a3969688b6799a13956"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 15,
+    "previous": "bd79f20b8b8ec0d8f3e96d0711fb98f2a799402b98bbe4bcbb2763587b663b84",
+    "action": "applied",
+    "details": {
+      "task": "Issue902 editor Unicode input preservation and layout repair.",
+      "observed": "Diagnostic-only binaries did not establish recovery: removing temporary probes reproduced the failure. The final source passes the original text in actual native controls, native suite and independent review. Bind both the Windows console launcher and sibling engine binary, plus input bytes, before and after the consumer run. Headless layout does not replace installed-editor acceptance; preserve the old failed run and remaining scope."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-unicode-input-902.json",
+        "sha256": "55af636a8c1e994acfd771f283451bccd7d36753d7a7635b69de4ce72e798d93"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-unicode-input-crash-20261112/request-902-20261112-readback.json",
+      "sha256": "4de77c06e70129bf3c22a2f095aa8eea0b0b1c9b0a3d4b4e907dcd0d8de1c0d8"
+    }
+  },
+  "sha256": "ab9e806a01129ce1a13eb23e15fe9a223794c2e959e06c6e135decc3eb9a685b"
+}

@@ -1,0 +1,79 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/902",
+  "request_id": "editor-unicode-input-crash-20261112",
+  "parent_issue": 773,
+  "base": "55e41ffb6dbe537c8bfc1fa2450ffc20fc1a040e",
+  "input_sha256": {
+    "modules/text_server_adv/script_iterator.cpp": "f41859dd371c0695fcf4961ad7ce4aab8f84ecabdb8a3c9e36da8ed7677694f7",
+    "modules/text_server_adv/text_server_adv.cpp": "aa4a81d221a076dc724c538dc4e0ae4f27b8f919333b97bc35f7d4b9b7be6c66",
+    "tests/servers/test_text_server.cpp": "cc0fa4879bb3f971a2bee6851fd8e705a98737f90ca5e90acea34ade3165d2e0",
+    "tests/editor/run_unicode_input_layout.py": "97e71a2dcf72e8777f430ccb1c8eae3e9e9942d30e216c55023bd8e8373048d4",
+    "tests/editor/unicode_input_layout.gd": "43debb95968d29d5c38b6bb4d4b522755f5a235f5b410db443096cba5e43b511"
+  },
+  "original_input": {
+    "characters": 11361,
+    "text_sha256": "9b1d98551b733f7779d98d9b8f6388a36e666a8034b6e8993fada3bb71e16a6b",
+    "private_input_file_sha256": "475540bff431e9ad992342c65be22065aee737a2220f29fb5baccedaaf4b3aff",
+    "scope": "Text preservation and layout only; original text remains private."
+  },
+  "before": {
+    "installed_main": "979dfe277c6bc8460e9a174a148a6c2bf6f58cf5",
+    "engine_sha256": "3759cbf8c4d5e63ba2233406dc64cf5339db50571c3af6fce517977199f9d2c9",
+    "text_edit_exit": 2147483651,
+    "rich_label_exit": 0,
+    "rich_label_result": "Invalid break insert count diagnostics; zero process exit was not accepted as success.",
+    "history_correction": "Original R6 input entered the durable paused queue before deferred layout failed. No model request or command execution occurred. This corrects the initial assumption that no message survived.",
+    "root_intermediate_failure_log_sha256": "77d43ab998e3df78be579b80503a68a999e6ef424bc66380cae42ddf3cac3447",
+    "intermediate_limits": "Earlier diagnostic-guard builds passed, but removing probes reproduced failure. Those attempts are preserved and are not final recovery evidence. Final source has no temporary diagnostic probes."
+  },
+  "repairs": [
+    "Convert ICU span endpoints and returned boundaries in the correct UTF16/UTF32 coordinate space.",
+    "Read parent spans without mutating a lazy substring; use parent-relative offsets when slicing reshaped text.",
+    "Allocate break inserts from current shaped clusters and check capacity before writing.",
+    "Preserve emoji entries when growing storage and retain allocation across all script runs."
+  ],
+  "strict_build": {
+    "passed": true,
+    "warnings": "extra",
+    "werror": true,
+    "tests": true,
+    "log_sha256": "fe65021b6c3acd04c3308ec54a2a99fdcd62c90a27d85d896801895ffa2aa26d"
+  },
+  "tested_binary_files": {
+    "godot.windows.editor.x86_64.console.exe": "71773ebd4f754e77b149d6ef024787d934949a3703c0d2fe6c85a97524ee168b",
+    "godot.windows.editor.x86_64.exe": "19ca9f7a18fcea851be31cc55b2e05d06a881dd4d411672dddb12fb2114da880"
+  },
+  "native_suite": {
+    "passed": true,
+    "cases": 1568,
+    "assertions": 474314,
+    "skipped": 3,
+    "log_sha256": "06ebc0d2dbb473ade4770a1c211d50bcc230953be3cbf1d8052425e0891bef56",
+    "limits": "Other existing native test diagnostics remain in the log; this is not a zero-ERROR claim."
+  },
+  "layout": {
+    "passed": true,
+    "cases": 8,
+    "surfaces": ["TextEdit", "RichTextLabel"],
+    "original_bytes_preserved": true,
+    "stderr_empty": true,
+    "result_sha256": "ecb8800d28e865d285061c5e9cd7a8aabd31842994f96f4cce116fde8f156d84",
+    "limits": "Headless layout, text preservation and wrapping. No pixel rendering or installed-editor business acceptance claim."
+  },
+  "regressions": [
+    "Original text, short text, long CJK/emoji/quotes, combining and ZWJ text.",
+    "Multiple language spans; nonzero parent; nested and tail substrings after reshape.",
+    "Emoji storage growth across Han and Latin script runs with exact glyph coverage."
+  ],
+  "independent_review": {
+    "worker": "/root/sinan_c06903c21384a653",
+    "result": "No newly introduced blocking findings. Nonzero-parent/tail tests and dual-binary observation were reviewed read-only.",
+    "known_separate_issue": "Pre-existing bracket-stack growth concern is source-confirmed but not runtime-reproduced or repaired here; remaining investigation under parent773."
+  },
+  "remaining": [
+    "Current-main integration and exact candidate binding",
+    "Formal gate, signed CI/main and official installation",
+    "Actual editor ChatInput replay with accounts, project and history preserved",
+    "Parent773 complete-editor production acceptance"
+  ]
+}
