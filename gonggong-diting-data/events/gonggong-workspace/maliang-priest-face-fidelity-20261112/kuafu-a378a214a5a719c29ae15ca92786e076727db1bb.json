@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a378a214a5a719c29ae15ca92786e076727db1bb",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-priest-face-fidelity-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/944",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2bcd0d9ac198eeaf200a589f5b0739f3b7173115b63354937d0b5567d0246c0e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/944",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/944",
+    "action": "intake",
+    "detection_head": "52204f9c4c622d7afd590d79b9272e4bf5872784",
+    "context_sha256": "e1550916f1f2273c4b9519c00650133927cbbce5b5549014fa2254916f308262",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-kaiyunxue",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/944",
+    "evidence": "data-collection/maliang-priest-face-fidelity-20261112-validation.json",
+    "diagnosis": "第二次 intake 已明确租户，但 Issue 正文只有自然语言 ID 描述，没有框架可识别的 gonggong-request 标记，因此被要求补正。补齐唯一标记后同一工单通过，原命令复验为 operation_reverified。",
+    "next_action": "保留本次配置恢复记录，与面部修复证据一并提交后关单。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T12:15:08.947150+00:00",
+    "attempted": "在正文加入 gonggong-request:maliang-priest-face-fidelity-20261112，并重跑相同 intake。",
+    "repair_owner": "kimi-work-kaiyunxue 已修正需求标记并完成后续修复。",
+    "continuable": "绑定恢复已确认，剩余为证据 PR 与最终回读。"
+  },
+  "occurred_at": "2026-11-12T13:14:55.408270+00:00",
+  "sha256": "e5fcc1724ffe5e8f2ec01ac0fc6ce58715bf9afe5e58c6cb8c35895e83d7e2aa"
+}

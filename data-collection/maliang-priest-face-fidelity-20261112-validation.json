@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-priest-face-fidelity-20261112-validation",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-priest-face-fidelity-20261112",
+  "kind": "step",
+  "occurred_at": "2026-11-12T13:09:00Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/944",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/944",
+  "agent": {"id": "kimi-work-kaiyunxue", "version": "20261112", "origin": "current-authorized-host"},
+  "payload": {
+    "original_generation": {
+      "task_id": "782bf8af-c3a0-4ebd-9910-40a091408611",
+      "sha256": "c6d14c4491540bf4a2d2239ff3a004e77eb05ff09b5989bf5b13c11a3febfe21",
+      "bytes": 46391764,
+      "triangles": 1471105,
+      "head_triangles": 125878,
+      "strict_zero_area_triangles": 0,
+      "head_zero_or_missing_normals": 0,
+      "head_small_area_bins": {"lt_1e_14": 78, "lt_1e_12": 39039},
+      "review": "Native face closeups show changed face shape and unnatural cheek surface; the initial broad threshold was not treated as a hole count"
+    },
+    "head_reference": {
+      "task_id": "e7a0f650-6611-48b4-9452-2f0f625decb3",
+      "service": "Tripo API",
+      "operation": "generate_3d_model",
+      "model": "v3.1",
+      "texture_quality": "detailed",
+      "source_sha256": "b4f98e36d4be1e66ce3684ac24691930eeb85e0dffb13fce2e6fbc8565899154",
+      "sha256": "5262ee6c85b1a258f0c72e825bfa482fba7cedfc979d98e1d260d3fa4ba30f5b",
+      "strict_zero_area_triangles": 0,
+      "review": "High-resolution head-only reference produces a more natural face and cheek surface than the full-body three-view source"
+    },
+    "local_alignment": {
+      "scope": "separate experimental head/body alignment sample; no replacement of the original model",
+      "body_cut_y": 0.34,
+      "head_cut_y": 0.12,
+      "material_texture_and_sampler_indices_verified": true,
+      "source_files_overwritten": false
+    },
+    "decimation": {
+      "task_id": "407a808c-4a7f-48ee-8a65-f0322e3b200d",
+      "service": "Tripo API",
+      "operation": "decimate_3d_model",
+      "model": "v1.0",
+      "requested_face_limit": 1200000,
+      "actual_triangles": 1200135,
+      "target_is_not_a_hard_ceiling": true,
+      "vertices": 635471,
+      "head_triangles": 371348,
+      "strict_zero_area_triangles": 0,
+      "bytes": 39638180,
+      "sha256": "3a82cc56b0fbee9fde718ba596688355d16cbe7e4353cfc10a220fc654e8fa5c",
+      "preview_returned": false,
+      "actual_glb_render_used_instead": true
+    },
+    "native_review": {
+      "independent_glb_validation": "passed",
+      "full_body_and_face_closeups_inspected": true,
+      "publication_and_reopen_verified": true,
+      "source_hashes_unchanged": true,
+      "observation": "The final face is substantially closer to the reference, the former cheek artifact is not visible in the reviewed angles, and the shoulder armor, robe and T-pose remain",
+      "not_claimed": "perfect identity, seamless production topology, or universal automatic head-replacement quality"
+    },
+    "template": {
+      "file": "workflows/priest-refined-adjust.json (private local deliverable, not committed)",
+      "source_sha256": "3a82cc56b0fbee9fde718ba596688355d16cbe7e4353cfc10a220fc654e8fa5c",
+      "source": "verified decimated GLB embedded in the template",
+      "node": "one model_adjust node; no regeneration of the defective original face",
+      "headless_restore_and_run_preflight": "passed",
+      "native_preview_opened": true,
+      "generation_submitted_at_startup": false
+    },
+    "evidence_exclusions": {
+      "reference_photo_committed": false,
+      "signed_urls_committed": false,
+      "raw_api_responses_committed": false,
+      "large_glb_or_template_committed": false,
+      "credentials_committed": false
+    }
+  }
+}

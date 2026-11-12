@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "request-944-face-fidelity-20261112",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-priest-face-fidelity-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T13:09:00Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/944",
+  "agent": {
+    "id": "kimi-work-kaiyunxue",
+    "version": "20261112",
+    "definition_sha256": "1201ca0ea4682eff7e014b70c71645dde1c3e47d0ea13a29eef605d8b5e70a5c",
+    "origin": "current-authorized-host"
+  },
+  "payload": {
+    "scope": "Diagnose and repair the current priest's face-shape mismatch and cheek surface defects using high-resolution head reference, separate alignment, decimation, native closeup review and an embedded adjustment template without overwriting the original model",
+    "authorization_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/944",
+    "validation": "data-collection/maliang-priest-face-fidelity-20261112-validation.json",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "774d975046c1d3f6d3c97bc06626beba277f24118cde7ea8eaa3444f2a637b8e"
+}
