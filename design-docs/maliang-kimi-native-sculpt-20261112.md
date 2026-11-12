@@ -58,3 +58,10 @@
 ## 最新主线整合（2026-11-12）
 
 候选已整合 `origin/main=55e41ffb6dbe537c8bfc1fa2450ffc20fc1a040e`。唯一重叠文件 `tools/ainative/kimi_work_image_provider.py` 同时保留上游指纹修复和本候选运行时／TMPDIR 修复。整合后相关 Provider 测试全部通过，按该主线重建的四组原生验收再次全部通过。最新候选二进制 SHA-256 为 `210d94bdd9b84368122daf8efc8f2db0f0be8234f6480639d19e7665d955cc65`，资源包版本为 `0453427a8ada8302b9976666019dfbbdc1d523a0a8bcb74f02d366cf10c14145`。
+
+
+## 最终构建与合入回执（2026-11-12）
+
+- PR #906 已合入，merge commit 为 `8dc87bab2dcb81d23ead7c03c7a5f49a9760bafe`；head 为 `162a01e68f1da56ecaf04a25bdd45b0139700c5d`。main 内容树 `43f451fa9e06e4156089776f0a100e42d2c0b0ea` 与本地最终候选完全一致。
+- 最终源码重建后的候选二进制 SHA-256 为 `3ac58678242f0e42713a80b7a09adc2fc5c821971d9c009286c34fe9664b3110`，资源包版本为 `81eab29198221447414b84ab2328208fdf32b9cb3743f692315c6294dbb6d9f4`；四组原生验收再次全部通过。
+- PR 静态检查、Issue 关联和 Windows 编辑器检查均通过。Windows 作业曾因运行时点火器已有文件而失败，仅重跑该环境作业后通过，未修改无关脚本或绕过检查。

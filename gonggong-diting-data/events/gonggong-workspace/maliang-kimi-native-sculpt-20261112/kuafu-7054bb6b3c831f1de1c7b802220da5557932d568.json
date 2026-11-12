@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7054bb6b3c831f1de1c7b802220da5557932d568",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-native-sculpt-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "64d0369e8ceb36a9899cea1f36665c23f02f5a9a5b108207c236f2f3bfbc57d3",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/910",
+    "action": "validation",
+    "detection_head": "8dc87bab2dcb81d23ead7c03c7a5f49a9760bafe",
+    "context_sha256": "840042f86e31aaea36a04809989f909682c56c33d724c03d20303ee30429c666",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-kaiyunxue",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+    "evidence": "issue_gate: Preserve collection sources and receipts; append corrections",
+    "diagnosis": "The final binary and merge metadata initially modified an already committed validation file. The original bytes have been restored and the new information is now in a separate final-validation correction file.",
+    "next_action": "Rerun the formal gate with only the new correction and design document, then close this metadata issue after it passes.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T08:48:31.980977+00:00",
+    "attempted": "Restored the original validation file and created correction_of metadata pointing to it; no product code changed.",
+    "repair_owner": "kimi-work-kaiyunxue",
+    "continuable": "The correction now follows append-only evidence rules and can be validated again."
+  },
+  "occurred_at": "2026-11-12T08:52:48.821690+00:00",
+  "sha256": "81baca5782df6c5f803c68f0ea106c56e3d7c306757fa4ee99038092af35f898"
+}
