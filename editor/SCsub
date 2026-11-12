@@ -16,6 +16,7 @@ if env.editor_build:
         node for node in Glob("#samples/ainative-workbench/addons/ainative/*.gd") if node.name != "plugin.gd"
     ]
     ainative_sources += [node for node in Glob("#tools/ainative/*.py") if not node.name.startswith("test_")]
+    ainative_sources += [node for node in Glob("#tools/ainative/image_contact_sheet.gd")]
     env.CommandNoCache(
         "ainative/bundle.gen.h",
         ainative_sources,

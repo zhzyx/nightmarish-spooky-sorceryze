@@ -9,6 +9,12 @@ var status: Label
 var path_edit: LineEdit
 var source_edit: LineEdit
 var context_edit: LineEdit
+var source_picker: FileDialog
+var context_picker: FileDialog
+var source_browse: Button
+var context_browse: Button
+var source_clear: Button
+var context_clear: Button
 var text_edit: TextEdit
 var params_edit: TextEdit
 var parameter_form: VBoxContainer
@@ -38,6 +44,9 @@ var cancel_create = false
 var preview_target = ""
 var preview_history: Dictionary = {}
 var history_choice: OptionButton
+var result_choice: OptionButton
+var current_images: Array = []
+var preview_artifact: Dictionary = {}
 var preview_token = ""
 var preview_run = ""
 var preview_node = ""
@@ -74,6 +83,9 @@ var endpoint_edit: LineEdit
 var kimi_model_edit: LineEdit
 var kimi_model_label: Label
 var kimi_auth_label: Label
+var kimi_image_fields: VBoxContainer
+var kimi_image_tool_edit: LineEdit
+var kimi_image_pythonw_edit: LineEdit
 var image_model_choice: OptionButton
 var mesh_model_choice: OptionButton
 var image_model_label: Label
@@ -132,6 +144,71 @@ func button(parent: Node, label: String, action: Callable):
 	b.pressed.connect(action)
 	parent.add_child(b)
 	return b
+
+func _make_file_picker(picker_name: String, title_text: String) -> FileDialog:
+	var picker = FileDialog.new()
+	picker.name = picker_name
+	picker.title = title_text
+	picker.ok_button_text = "打开"
+	picker.cancel_button_text = "取消"
+	picker.access = FileDialog.ACCESS_FILESYSTEM
+	picker.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	picker.use_native_dialog = true
+	add_child(picker)
+	return picker
+
+func _show_file_picker(picker: FileDialog, selected_path: String):
+	var first = selected_path.split(" ; ")[0]
+	if not first.is_empty(): picker.current_path = first
+	picker.popup_centered_ratio(0.7)
+
+func _configure_source_picker(kind: String):
+	var copy = kind == "copy"
+	var multiple = kind in ["text_to_image", "image_to_image"]
+	source_picker.title = "选择源图像或模型" if copy else "选择源图像（可多选）"
+	source_picker.filters = PackedStringArray(["*.png,*.jpg,*.jpeg,*.glb,*.gltf ; 图像 / 网格" if copy else "*.png,*.jpg,*.jpeg ; PNG / JPEG 图像"])
+	source_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILES if multiple else FileDialog.FILE_MODE_OPEN_FILE
+	context_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILES if multiple else FileDialog.FILE_MODE_OPEN_FILE
+	source_browse.text = "选择文件…" if copy else "选择图片…"
+	source_edit.placeholder_text = "未选择源图像或模型" if copy else "未选择源图像，可多选"
+
+func _node_paths(data: Dictionary, field: String) -> Array:
+	var paths: Array = data.get(field + "_paths", []).duplicate()
+	if paths.is_empty() and not str(data.get(field, "")).is_empty(): paths.append(str(data[field]))
+	if paths.is_empty() and not data.get(field + "_snapshots", []).is_empty():
+		for _item in data[field + "_snapshots"]: paths.append("")
+	return paths
+
+func _sync_node_files(data: Dictionary):
+	for field in ["source", "image_context"]:
+		var paths = _node_paths(data, field)
+		data[field + "_paths"] = paths
+		data[field] = str(paths[0]) if not paths.is_empty() else ""
+
+func _set_node_file(field: String, selection):
+	if not field in ["source", "image_context"] or selected_id.is_empty(): return
+	if not (selection is String or selection is PackedStringArray or selection is Array): return
+	var paths: Array = [selection] if selection is String else Array(selection)
+	paths = paths.filter(func(path): return path is String and not path.is_empty())
+	for data in nodes:
+		if data.id != selected_id: continue
+		var other = "image_context" if field == "source" else "source"
+		var image_node = data.get("type", "copy") in ["text_to_image", "image_to_image"]
+		var total = paths.size() + _node_paths(data, other).size()
+		if paths.size() > 8 or (image_node and total > 8):
+			status.text = "源图与参考图合计每次最多 8 张"
+			return
+		data[field + "_paths"] = paths
+		data[field + "_snapshots"] = []
+		data[field] = ""
+		data.erase(field + "_snapshot")
+		_sync_node_files(data)
+		var edit = source_edit if field == "source" else context_edit
+		edit.text = " ; ".join(_node_paths(data, field))
+		edit.tooltip_text = edit.text if not edit.text.is_empty() else "通过系统资源管理器选择文件，可多选"
+		var label = "源文件" if field == "source" else "参考图像"
+		status.text = ("已清除" + label) if paths.is_empty() else ("已选择 %d 个%s" % [paths.size(), label])
+		return
 
 func _ready():
 	custom_minimum_size = Vector2(900, 520)
@@ -284,8 +361,33 @@ func _ready():
 	inspector_fields = inspector
 	inspector.custom_minimum_size.x = 360
 	split.add_child(inspector)
-	source_edit = line(inspector, "源文件绝对路径（PNG/JPEG/GLB/内嵌 glTF）")
-	context_edit = line(inspector, "参考图像绝对路径（可选）")
+	var source_row = HBoxContainer.new()
+	source_row.name = "SourceFileField"
+	inspector.add_child(source_row)
+	source_edit = line(source_row, "未选择源图像或模型")
+	source_edit.editable = false
+	source_edit.tooltip_text = "通过系统资源管理器选择源图像或模型"
+	source_browse = button(source_row, "选择文件…", func(): _show_file_picker(source_picker, source_edit.text))
+	source_browse.name = "SourceFileBrowse"
+	source_clear = button(source_row, "清除", func(): _set_node_file("source", ""))
+	source_clear.tooltip_text = "清除选中节点的源文件"
+	var context_row = HBoxContainer.new()
+	context_row.name = "ReferenceImageField"
+	inspector.add_child(context_row)
+	context_edit = line(context_row, "未选择参考图像（可选）")
+	context_edit.editable = false
+	context_edit.tooltip_text = "通过系统资源管理器选择一张参考图像"
+	context_browse = button(context_row, "选择图片…", func(): _show_file_picker(context_picker, context_edit.text))
+	context_browse.name = "ReferenceImageBrowse"
+	context_clear = button(context_row, "清除", func(): _set_node_file("image_context", ""))
+	context_clear.tooltip_text = "清除选中节点的参考图像"
+	source_picker = _make_file_picker("SourceFilePicker", "选择源图像或模型")
+	source_picker.file_selected.connect(func(path): _set_node_file("source", path))
+	source_picker.files_selected.connect(func(paths): _set_node_file("source", paths))
+	context_picker = _make_file_picker("ReferenceImagePicker", "选择参考图像（可多选）")
+	context_picker.filters = PackedStringArray(["*.png,*.jpg,*.jpeg ; PNG / JPEG 图像"])
+	context_picker.file_selected.connect(func(path): _set_node_file("image_context", path))
+	context_picker.files_selected.connect(func(paths): _set_node_file("image_context", paths))
 	text_edit = TextEdit.new()
 	text_edit.placeholder_text = "文字说明（请勿填写凭据）"
 	text_edit.custom_minimum_size.y = 65
@@ -301,6 +403,11 @@ func _ready():
 	history_choice = OptionButton.new()
 	history_choice.item_selected.connect(show_history)
 	inspector.add_child(history_choice)
+	result_choice = OptionButton.new()
+	result_choice.name = "ImageResultChoice"
+	result_choice.item_selected.connect(show_result)
+	inspector.add_child(result_choice)
+	result_choice.hide()
 	refresh_history()
 	native_inspector_fields = inspector.get_children()
 	texture = TextureRect.new()
@@ -404,6 +511,7 @@ func show_native_section(section: String):
 	rigging_panel.visible = section=='rig'
 	native_sections.publish.visible = section=='mesh'
 	for field in native_inspector_fields: field.visible = section=='mesh'
+	result_choice.visible = section=='mesh' and current_images.size() > 1
 	for panel in native_other_panels: panel.visible = section=='other'
 	texture.visible = section=='mesh' and preview_resource!=null
 	mesh_container.visible = is_instance_valid(preview_scene)
@@ -439,6 +547,8 @@ func save_settings():
 	c.set_value("host", "factory", factory_edit.text)
 	c.set_value("interface", "developer_mode", developer_mode.button_pressed)
 	if blender_path_edit != null: c.set_value("service", "blender_path", blender_path_edit.text.strip_edges())
+	if kimi_image_tool_edit != null: c.set_value('service', 'image_tool_path', kimi_image_tool_edit.text.strip_edges())
+	if kimi_image_pythonw_edit != null: c.set_value('service', 'image_pythonw_path', kimi_image_pythonw_edit.text.strip_edges())
 	if _using_legacy_service(): c.set_value("service", "mode", "legacy")
 	c.save(state_dir.path_join("local.cfg"))
 
@@ -491,20 +601,32 @@ func rebuild():
 		graph.add_child(node)
 		var run_button = button(node, "运行并预览", run_node_preview.bind(data.id))
 		run_button.mouse_filter = Control.MOUSE_FILTER_PASS
+		if data.get("type", "copy") in ["text_to_image", "image_to_image"]:
+			var set_label = Label.new()
+			set_label.text = "全部独立图片（有序集合）"
+			set_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			node.add_child(set_label)
+			node.set_slot(1, false, 0, Color.SKY_BLUE, true, 1, Color.PALE_GREEN)
 		node.node_selected.connect(select_node.bind(data.id))
 		node.position_offset_changed.connect(func(): data.x = node.position_offset.x; data.y = node.position_offset.y)
 	for edge in edges:
-		graph.connect_node(edge.from, 0, edge.to, 0)
+		graph.connect_node(edge.from, 1 if edge.get("output", "result") == "image_set" else 0, edge.to, 0)
 
 func select_node(id: String):
 	var changed = selected_id != id
 	selected_id = id
+	var selected_kind = "copy"
 	for data in nodes:
 		if data.id == id:
-			source_edit.text = data.source
-			context_edit.text = data.image_context
+			selected_kind = data.get("type", "copy")
+			_sync_node_files(data)
+			source_edit.text = " ; ".join(_node_paths(data, "source"))
+			context_edit.text = " ; ".join(_node_paths(data, "image_context"))
 			text_edit.text = data.text
-			parameter_form.configure(data.get("type", "copy"), data.parameters)
+			parameter_form.configure(selected_kind, data.parameters)
+	_configure_source_picker(selected_kind)
+	source_edit.tooltip_text = source_edit.text if not source_edit.text.is_empty() else "通过系统资源管理器选择源文件，可多选"
+	context_edit.tooltip_text = context_edit.text if not context_edit.text.is_empty() else "通过系统资源管理器选择参考图像，可多选"
 	refresh_history()
 	if changed:
 		clear_preview()
@@ -518,8 +640,7 @@ func apply_fields() -> bool:
 		return false
 	for data in nodes:
 		if data.id == selected_id:
-			data.source = source_edit.text
-			data.image_context = context_edit.text
+			_sync_node_files(data)
 			data.text = text_edit.text
 			data.parameters = params
 	return true
@@ -533,18 +654,23 @@ func safe(value) -> bool:
 			if not safe(child): return false
 	return true
 
-func connect_nodes(from: StringName, _fp: int, to: StringName, _tp: int):
+func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 	if from == to: return
 	var source_node = nodes.filter(func(n): return n.id == from)
 	var target_node = nodes.filter(func(n): return n.id == to)
 	if source_node.is_empty() or target_node.is_empty(): return
-	if target_node[0].get("type", "copy").begins_with("text_"): return
-	if target_node[0].get("type", "copy") != "copy" and output_kind(source_node[0]) != 1:
+	var target_kind = target_node[0].get("type", "copy")
+	if target_kind.begins_with("text_"): return
+	if target_kind != "copy" and output_kind(source_node[0]) != 1:
 		status.text = "生成节点需要连接图像输出"
+		return
+	var output = "image_set" if from_port == 1 else "result"
+	if output == "image_set" and (target_kind != "image_to_image" or not source_node[0].get("type", "copy") in ["text_to_image", "image_to_image"]):
+		status.text = "有序图片集合只能连接到图生图节点；网格请连接单张主图"
 		return
 	for edge in edges:
 		if edge.to == to: return
-	edges.append({"from": str(from), "to": str(to), "input": "source", "output": "result"})
+	edges.append({"from": str(from), "to": str(to), "input": "source", "output": output})
 	rebuild()
 
 func disconnect_nodes(from: StringName, _fp: int, to: StringName, _tp: int):
@@ -565,7 +691,38 @@ func delete_node():
 	rebuild()
 
 func model() -> Dictionary:
+	for data in nodes:
+		_sync_node_files(data)
+		if data.get("type", "copy") in ["text_to_image", "image_to_image"]: data.version = "2"
 	return {"format": 1, "nodes": nodes, "edges": edges}
+
+func _snapshot_inputs(data: Dictionary, field: String) -> bool:
+	var paths = _node_paths(data, field)
+	var previous: Array = data.get(field + "_snapshots", []).duplicate()
+	var snapshots: Array = []
+	for index in range(paths.size()):
+		var path: String = paths[index]
+		if path.is_empty():
+			var snapshot = previous[index] if index < previous.size() else data.get(field + "_snapshot", {}) if index == 0 else {}
+			if not snapshot is Dictionary or snapshot.is_empty(): return false
+			snapshots.append(snapshot)
+			continue
+		var input = FileAccess.open(path, FileAccess.READ)
+		if input == null: return false
+		var bytes = input.get_buffer(input.get_length())
+		var valid = not bytes.is_empty() and input.get_error() == OK
+		input.close()
+		if not valid: return false
+		var hash_context = HashingContext.new()
+		hash_context.start(HashingContext.HASH_SHA256)
+		hash_context.update(bytes)
+		snapshots.append({"content_base64": Marshalls.raw_to_base64(bytes), "content_sha256": hash_context.finish().hex_encode(), "extension": "." + path.get_extension().to_lower()})
+		paths[index] = ""
+	data[field + "_paths"] = paths
+	data[field + "_snapshots"] = snapshots
+	data[field] = ""
+	data.erase(field + "_snapshot")
+	return true
 
 func save_graph():
 	if not apply_fields(): return
@@ -573,27 +730,17 @@ func save_graph():
 		status.text = "工作流文件必须以 .json 结尾"
 		return
 	for n in nodes:
-		if path_edit.text.simplify_path() in [n.source.simplify_path(), n.image_context.simplify_path()]:
-			status.text = "不能覆盖输入资源"
-			return
+		for field in ["source", "image_context"]:
+			for path in _node_paths(n, field):
+				if not path.is_empty() and path.simplify_path() == path_edit.text.simplify_path():
+					status.text = "不能覆盖输入资源"
+					return
 	var portable = model().duplicate(true)
 	for n in portable.nodes:
 		for field in ["source", "image_context"]:
-			if not n[field].is_empty():
-				var input = FileAccess.open(n[field], FileAccess.READ)
-				if input == null:
-					status.text = "无法建立输入快照，已保留原工作流"
-					return
-				var bytes = input.get_buffer(input.get_length())
-				if bytes.is_empty() or input.get_error() != OK:
-					status.text = "无法读取输入，已保留原工作流"
-					return
-				input.close()
-				var hash_context = HashingContext.new()
-				hash_context.start(HashingContext.HASH_SHA256)
-				hash_context.update(bytes)
-				n[field + "_snapshot"] = {"content_base64": Marshalls.raw_to_base64(bytes), "content_sha256": hash_context.finish().hex_encode(), "extension": "." + n[field].get_extension().to_lower()}
-				n[field] = ""
+			if not _snapshot_inputs(n, field):
+				status.text = "无法读取输入并建立有序快照，已保留原工作流"
+				return
 	var temporary = path_edit.text + "." + str(Time.get_ticks_usec()) + ".tmp"
 	var f = FileAccess.open(temporary, FileAccess.WRITE)
 	if f == null:
@@ -607,14 +754,42 @@ func save_graph():
 		DirAccess.remove_absolute(temporary)
 		status.text = "无法替换工作流，已保留原工作流"
 		return
-	status.text = "已保存工作流及内嵌输入快照"
+	status.text = "已保存工作流及全部有序输入快照"
 
 func clear_embedded():
 	for data in nodes:
 		if data.id == selected_id:
-			data.erase("source_snapshot")
-			data.erase("image_context_snapshot")
+			for field in ["source", "image_context"]:
+				data.erase(field + "_snapshot")
+				data.erase(field + "_snapshots")
 	status.text = "已清除内嵌源文件和参考图像，路径字段仍然有效"
+
+func _valid_input_snapshots(value) -> bool:
+	if not value is Array or value.size() > 8: return false
+	for snapshot in value:
+		if not snapshot is Dictionary: return false
+		for key in ["content_base64", "content_sha256", "extension"]:
+			if not snapshot.get(key) is String: return false
+		if snapshot.extension.to_lower() not in [".png", ".jpg", ".jpeg", ".glb", ".gltf"]: return false
+		var bytes = Marshalls.base64_to_raw(snapshot.content_base64)
+		if bytes.is_empty(): return false
+		var hash_context = HashingContext.new()
+		if hash_context.start(HashingContext.HASH_SHA256) != OK: return false
+		if hash_context.update(bytes) != OK or hash_context.finish().hex_encode() != snapshot.content_sha256: return false
+	return true
+
+func _valid_workflow_edge(edge: Dictionary, by_id: Dictionary) -> bool:
+	if not edge.has_all(["from", "to"]) or not edge.from is String or not edge.to is String: return false
+	if not by_id.has(edge.from) or not by_id.has(edge.to) or edge.from == edge.to: return false
+	if not edge.get("input", "source") is String or not edge.get("output", "result") is String: return false
+	if edge.get("input", "source") != "source": return false
+	var source_kind = by_id[edge.from].get("type", "copy")
+	var target_kind = by_id[edge.to].get("type", "copy")
+	if target_kind.begins_with("text_"): return false
+	var output = edge.get("output", "result")
+	if output == "image_set":
+		return source_kind in ["text_to_image", "image_to_image"] and target_kind == "image_to_image"
+	return output == "result" and (target_kind == "copy" or output_kind(by_id[edge.from]) == 1)
 
 func open_graph():
 	_invalidate_context()
@@ -625,7 +800,7 @@ func open_graph():
 	if not value is Dictionary or not safe(value) or value.get("format") != 1 or not value.get("nodes") is Array or not value.get("edges") is Array:
 		status.text = "工作流无效"
 		return
-	var ids = []
+	var by_id: Dictionary = {}
 	for n in value.nodes:
 		if not n is Dictionary or not n.has_all(["id", "source", "image_context", "text", "parameters", "x", "y"]):
 			status.text = "节点无效"
@@ -634,21 +809,35 @@ func open_graph():
 			if not n[key] is String:
 				status.text = "节点字段类型无效"
 				return
-		if n.id.is_empty() or not n.id.is_valid_identifier() or n.id in ids or not n.parameters is Dictionary or not (n.x is float or n.x is int) or not (n.y is float or n.y is int):
+		if n.id.is_empty() or not n.id.is_valid_identifier() or by_id.has(n.id) or not n.parameters is Dictionary or not (n.x is float or n.x is int) or not (n.y is float or n.y is int):
 			status.text = "节点标识、参数或位置无效"
 			return
 		for key in ["type", "version", "provider"]:
 			if n.has(key) and not n[key] is String:
 				status.text = "节点定义字段无效"
 				return
-		ids.append(n.id)
+		if n.get("type", "copy") not in NODE_KINDS:
+			status.text = "节点类型无效"
+			return
+		for field in ["source", "image_context"]:
+			var paths = n.get(field + "_paths", [])
+			if not paths is Array or paths.size() > 8 or paths.any(func(path): return not path is String):
+				status.text = "输入路径列表无效"
+				return
+			if n.has(field + "_snapshots") and not _valid_input_snapshots(n[field + "_snapshots"]):
+				status.text = "输入快照列表无效"
+				return
+			if not paths.is_empty() and not n.get(field + "_snapshots", []).is_empty() and paths.size() != n[field + "_snapshots"].size():
+				status.text = "输入路径与快照的数量不一致"
+				return
+			if n.has(field + "_snapshot") and not _valid_input_snapshots([n[field + "_snapshot"]]):
+				status.text = "输入快照无效"
+				return
+		by_id[n.id] = n
 	var destinations = []
 	for e in value.edges:
-		if not e is Dictionary or not e.has_all(["from", "to"]) or not e.from is String or not e.to is String:
-			status.text = "连接无效"
-			return
-		if not e.from in ids or not e.to in ids or e.from == e.to or e.to in destinations:
-			status.text = "连接端点无效"
+		if not e is Dictionary or not _valid_workflow_edge(e, by_id) or e.to in destinations:
+			status.text = "连接端点或端口无效"
 			return
 		destinations.append(e.to)
 	preview_history.clear()
@@ -876,14 +1065,35 @@ func clear_preview():
 	preview_run = ""
 	preview_node = ""
 	preview_resource = null
+	preview_artifact = {}
+	current_images = []
+	result_choice.clear()
+	result_choice.hide()
 	if is_instance_valid(preview_scene): preview_scene.queue_free()
 	preview_scene = null
 	texture.texture = null
 	texture.hide()
 	mesh_container.hide()
 
-func load_preview(data: Dictionary, node_id: String, result_run: String = ""):
-	clear_preview()
+func show_result(index: int):
+	if index < 0 or index >= current_images.size(): return
+	var entry: Dictionary = current_images[index]
+	result_choice.select(index)
+	load_preview(entry, preview_node, preview_run, true)
+
+func load_preview(data: Dictionary, node_id: String, result_run: String = "", preserve_set: bool = false):
+	if not preserve_set:
+		clear_preview()
+		current_images = data.get("images", []).duplicate(true)
+		preview_run = run_id if result_run.is_empty() else result_run
+		preview_node = node_id
+		for index in current_images.size():
+			var item: Dictionary = current_images[index]
+			result_choice.add_item("%d. %s" % [index + 1, str(item.get("label", "独立图片"))])
+		result_choice.visible = current_images.size() > 1
+		if not current_images.is_empty():
+			show_result(0)
+			return
 	if data.type == "image":
 		var image = Image.load_from_file(data.path)
 		if image == null: status.text = "图像预览失败"; return
@@ -901,9 +1111,13 @@ func load_preview(data: Dictionary, node_id: String, result_run: String = ""):
 		mesh_container.show()
 		frame_mesh()
 	preview_token = data.token
+	# The primary result of an ordinary single-image node is not an explicit
+	# image_set selection. Only member entries carry an artifact override.
+	preview_artifact = data.get("artifact", {}).duplicate(true) if not current_images.is_empty() else {}
 	preview_run = run_id if result_run.is_empty() else result_run
 	preview_node = node_id
 	status.text = "已加载" + {"image":"图像", "mesh":"网格"}.get(data.type,data.type) + "预览，请检查后再发布"
+	if not current_images.is_empty(): status.text += "；当前为“" + str(data.get("label", "独立图片")) + "”，共 " + str(current_images.size()) + " 张"
 
 func frame_mesh():
 	var bounds = AABB()
@@ -975,6 +1189,7 @@ func review_publish():
 		if err == OK: err = ResourceSaver.save(packed, staged)
 	if err != OK: status.text = "资源编码失败"; return
 	confirmation = {"run": preview_run, "node": preview_node, "confirmation": preview_token, "staged": staged, "staged_sha256": FileAccess.get_sha256(staged), "target": target_edit.text}
+	if not preview_artifact.is_empty(): confirmation.artifact = preview_artifact.duplicate(true)
 	dialog.dialog_text = "将当前预览发布为新文件？\n运行编号：" + preview_run + "\n预览版本：" + preview_token + "\n资源 SHA256：" + confirmation.staged_sha256 + "\n" + target_edit.text
 	dialog.popup_centered()
 
@@ -1080,16 +1295,17 @@ func node_run_blocker(id: String) -> String:
 		var kind: String = data.get("type", "copy")
 		var incoming = edges.filter(func(edge): return edge.to == next_id)
 		for edge in incoming: pending.append(edge.from)
-		if not kind.begins_with("text_") and incoming.is_empty():
-			if data.get("source", "").is_empty() and not data.has("source_snapshot"):
-				return "请先设置源文件或连接上游节点（" + str(next_id) + "）"
-			if not data.get("source", "").is_empty() and not FileAccess.file_exists(data.source):
-				return "源文件不存在（" + str(next_id) + "）"
+		if not kind.begins_with("text_") and incoming.is_empty() and _node_paths(data, "source").is_empty():
+			return "请先设置源文件或连接上游节点（" + str(next_id) + "）"
+		for field in ["source", "image_context"]:
+			for path in _node_paths(data, field):
+				if not path.is_empty() and not FileAccess.file_exists(path):
+					return ("源文件" if field == "source" else "参考图像") + "不存在（" + str(next_id) + "）"
+		if kind in ["text_to_image", "image_to_image"] and _node_paths(data, "source").size() + _node_paths(data, "image_context").size() > 8:
+			return "源图与参考图合计每次最多 8 张（" + str(next_id) + "）"
 		var prompt = str(data.get("parameters", {}).get("prompt", "")) + "\n" + str(data.get("text", ""))
 		if not kind in ["copy", "image_to_mesh"] and prompt.strip_edges().is_empty():
 			return "请先填写生成提示词（" + str(next_id) + "）"
-		if not data.get("image_context", "").is_empty() and not FileAccess.file_exists(data.image_context):
-			return "参考图像不存在（" + str(next_id) + "）"
 		var service_reason = _service_blocker(kind, data)
 		if not service_reason.is_empty(): return service_reason
 	return ""
@@ -1357,7 +1573,7 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	service_choice.fit_to_longest_item = false
 	service_choice.clip_text = true
 	service_choice.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	for choice in [["offline", "离线复制演示（不调用模型）"], ["comfy", "ComfyUI 图像与网格生成"], ["legacy", "兼容已有服务配置（高级）"], ['codex', 'Codex CLI 图像 + 本机网格（沿用当前登录额度）'], ['codex_modeling', 'GPT CLI 图像与指令建模（无需 ComfyUI）'], ['codex_sculpt', 'GPT CLI 图像与复杂网格建模（Blender）'], ['kimi_native', 'Kimi Native 文字／图片建模（Godot 原语）'], ['local_mesh', '本机图生网格（无需 CLI）'], ['api_modeling', '自选 API 语义建模（Godot）'], ['api_sculpt', '自选 API 语义建模（Blender）']]:
+	for choice in [["offline", "离线复制演示（不调用模型）"], ["comfy", "ComfyUI 图像与网格生成"], ["legacy", "兼容已有服务配置（高级）"], ['codex', 'Codex CLI 图像 + 本机网格（沿用当前登录额度）'], ['codex_modeling', 'GPT CLI 图像与指令建模（无需 ComfyUI）'], ['codex_sculpt', 'GPT CLI 图像与复杂网格建模（Blender）'], ['kimi_native', 'Kimi Native Mesh + Kimi Work 二维图像'], ['local_mesh', '本机图生网格（无需 CLI）'], ['api_modeling', '自选 API 语义建模（Godot）'], ['api_sculpt', '自选 API 语义建模（Blender）']]:
 		service_choice.add_item(choice[1])
 		service_choice.set_item_metadata(service_choice.item_count - 1, choice[0])
 	service_fields.add_child(service_choice)
@@ -1400,9 +1616,40 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	service_fields.add_child(kimi_model_label)
 	kimi_model_edit = line(service_fields, 'Kimi 模型，例如 k3.1-pro', 'k3.1-pro')
 	kimi_auth_label = Label.new()
-	kimi_auth_label.text = 'Kimi 是唯一语义建模模型；密钥从 KIMI_API_KEY 环境读取，不保存到工作流、设置或日志。网格由固定 Godot 构造器生成。'
+	kimi_auth_label.text = 'Mesh：Kimi 模型生成严格建模计划，固定 Godot 构造器执行。二维：独立 Kimi Work 图像服务，不是 K3.1 Pro 直接输出图片。两类凭据都不写入工作流或日志。'
 	kimi_auth_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	service_fields.add_child(kimi_auth_label)
+	kimi_image_fields = VBoxContainer.new()
+	kimi_image_fields.name = 'KimiWorkImageSettings'
+	service_fields.add_child(kimi_image_fields)
+	var image_tool_default = OS.get_environment('KIMI_WORK_IMAGE_TOOL') if OS.has_environment('KIMI_WORK_IMAGE_TOOL') else str(settings.get_value('service', 'image_tool_path', ''))
+	var image_pythonw_default = OS.get_environment('KIMI_WORK_IMAGE_PYTHONW') if OS.has_environment('KIMI_WORK_IMAGE_PYTHONW') else str(settings.get_value('service', 'image_pythonw_path', ''))
+	kimi_image_tool_edit = line(kimi_image_fields, 'Kimi Work 图像工具 image_generation_tool.py', image_tool_default)
+	kimi_image_pythonw_edit = line(kimi_image_fields, '图像插件已验证的 pythonw.exe（不是控制台 Python）', image_pythonw_default)
+	var image_tool_picker = FileDialog.new()
+	image_tool_picker.title = '选择 Kimi Work 图像工具'
+	image_tool_picker.access = FileDialog.ACCESS_FILESYSTEM
+	image_tool_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	image_tool_picker.use_native_dialog = true
+	image_tool_picker.filters = PackedStringArray(['image_generation_tool.py'])
+	image_tool_picker.file_selected.connect(func(path): kimi_image_tool_edit.text = path; _service_settings_changed())
+	kimi_image_fields.add_child(image_tool_picker)
+	button(kimi_image_fields, '选择图像工具…', func(): image_tool_picker.popup_centered_ratio(0.7))
+	var image_pythonw_picker = FileDialog.new()
+	image_pythonw_picker.title = '选择图像插件已验证的 pythonw'
+	image_pythonw_picker.access = FileDialog.ACCESS_FILESYSTEM
+	image_pythonw_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	image_pythonw_picker.use_native_dialog = true
+	image_pythonw_picker.filters = PackedStringArray(['pythonw.exe'])
+	image_pythonw_picker.file_selected.connect(func(path): kimi_image_pythonw_edit.text = path; _service_settings_changed())
+	kimi_image_fields.add_child(image_pythonw_picker)
+	button(kimi_image_fields, '选择无窗口 Python…', func(): image_pythonw_picker.popup_centered_ratio(0.7))
+	var image_tool_hint = Label.new()
+	image_tool_hint.text = '二维路径仅保存在本机设置；检测只核对工具与运行时，不上传或生成。图生图运行时通过官方工具按顺序上传全部参考图，每次最多 8 张；保存的来源与任务回执用于重开恢复。'
+	image_tool_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	kimi_image_fields.add_child(image_tool_hint)
+	kimi_image_tool_edit.text_changed.connect(func(_text): _service_settings_changed())
+	kimi_image_pythonw_edit.text_changed.connect(func(_text): _service_settings_changed())
 	var image_label = Label.new()
 	image_model_label = image_label
 	image_label.text = "图像模型"
@@ -1454,6 +1701,9 @@ func _restore_service_settings(settings: ConfigFile):
 			if service_saved.mode in ['codex', 'codex_modeling', 'codex_sculpt']:
 				service_saved['cli_path'] = str(loaded.get('cli_path', 'codex'))
 				cli_path_edit.text = service_saved.cli_path
+			if service_saved.mode in ['comfy', 'codex', 'codex_modeling', 'codex_sculpt']:
+				# Resolve the trusted bundled board builder again after an engine move.
+				service_saved.merge(_image_board_runtime(), true)
 			if service_saved.mode in ['codex_sculpt', 'api_sculpt']:
 				service_saved['blender_path'] = str(loaded.get('blender_path', blender_path_edit.text))
 				service_saved['builder_path'] = str(loaded.get('builder_path', ''))
@@ -1468,6 +1718,11 @@ func _restore_service_settings(settings: ConfigFile):
 				service_saved['api_model'] = str(loaded.get('api_model', ''))
 				service_saved['api_key_env'] = str(loaded.get('api_key_env', 'AINATIVE_API_KEY'))
 				kimi_model_edit.text = service_saved.api_model
+			if service_saved.mode == 'kimi_native':
+				for field in ['image_tool_path', 'image_pythonw_path']:
+					var control: LineEdit = kimi_image_tool_edit if field == 'image_tool_path' else kimi_image_pythonw_edit
+					service_saved[field] = str(loaded.get(field, control.text))
+					control.text = service_saved[field]
 			endpoint_edit.text = service_saved.endpoint
 			_set_model_options(image_model_choice, [], service_saved.image_model, false)
 			_set_model_options(mesh_model_choice, [], service_saved.mesh_model, false)
@@ -1484,7 +1739,7 @@ func _generator_description(data: Dictionary) -> String:
 	if kind == 'copy': return '本机离线复制'
 	if _service_mode() in ['api_modeling', 'api_sculpt']: return node_label(kind) + '（自选 API 语义规划）'
 	if _service_mode() == 'local_mesh': return node_label(kind) + '（本机网格）'
-	if _service_mode() == 'kimi_native': return node_label(kind) + '（Kimi Native / Godot 原语）'
+	if _service_mode() == 'kimi_native': return node_label(kind) + ('（Kimi Native / Godot 原语）' if kind.ends_with('mesh') else '（Kimi Work 图像服务）')
 	if _service_mode() == 'codex_sculpt': return node_label(kind) + ('（GPT CLI 指令 / Blender）' if kind.ends_with('mesh') else '（GPT CLI）')
 	if _service_mode() == 'codex_modeling': return node_label(kind) + ('（GPT CLI 指令 / Godot）' if kind.ends_with('mesh') else '（GPT CLI）')
 	return node_label(kind) + ('（Codex CLI / 本机模型）' if _service_mode() in ['codex', 'local_mesh'] else '（ComfyUI）')
@@ -1493,7 +1748,7 @@ func _generator_provider(kind: String) -> String:
 	if _service_mode() == 'api_modeling': return 'api-modeling'
 	if _service_mode() == 'api_sculpt': return 'api-sculpt'
 	if _service_mode() == 'local_mesh': return 'comfy'
-	if _service_mode() == 'kimi_native': return 'kimi_native'
+	if _service_mode() == 'kimi_native': return 'kimi_native' if kind.ends_with('mesh') else 'kimi_work_image'
 	if _service_mode() == 'codex_sculpt': return 'codex-sculpt' if kind.ends_with('mesh') else 'codex'
 	if _service_mode() == 'codex_modeling': return 'codex-modeling' if kind.ends_with('mesh') else 'codex'
 	return 'comfy'
@@ -1506,8 +1761,19 @@ func _model_name(choice: OptionButton) -> String:
 	if choice.selected < 0: return ""
 	return str(choice.get_item_metadata(choice.selected))
 
+func _image_board_runtime() -> Dictionary:
+	# Installed bundles keep image_contact_sheet.gd beside modeling_builder.gd.
+	# Source-tree tests use the same trusted repository tool, never a relative
+	# path which escapes a missing bundle metadata directory.
+	var builder = ProjectSettings.globalize_path(get_script().resource_path.get_base_dir().path_join('image_contact_sheet.gd'))
+	if not FileAccess.file_exists(builder):
+		builder = ProjectSettings.globalize_path('res://../../tools/ainative/image_contact_sheet.gd')
+	return {'image_board_godot_path':OS.get_executable_path(), 'image_board_builder_path':builder}
+
 func service_draft() -> Dictionary:
 	var value = {"schema_version":1, "mode":_service_mode(), "endpoint":endpoint_edit.text.strip_edges(), "image_model":_model_name(image_model_choice), "mesh_model":_model_name(mesh_model_choice)}
+	if value.mode in ['comfy', 'codex', 'codex_modeling', 'codex_sculpt']:
+		value.merge(_image_board_runtime(), true)
 	if value.mode in ['codex', 'codex_modeling', 'codex_sculpt']:
 		value['cli_path'] = cli_path_edit.text.strip_edges()
 		value.image_model = 'builtin'
@@ -1520,6 +1786,8 @@ func service_draft() -> Dictionary:
 	if value.mode == 'kimi_native':
 		value.image_model = ''
 		value['kimi_model'] = kimi_model_edit.text.strip_edges()
+		value['image_tool_path'] = kimi_image_tool_edit.text.strip_edges()
+		value['image_pythonw_path'] = kimi_image_pythonw_edit.text.strip_edges()
 	if value.mode in ['codex_sculpt', 'api_sculpt']:
 		if value.mode == 'codex_sculpt': value.endpoint = ''
 		value.mesh_model = ''
@@ -1588,6 +1856,7 @@ func _update_service_summary():
 	kimi_model_label.visible = kimi_mode or api_mode
 	kimi_model_edit.visible = kimi_mode or api_mode
 	kimi_auth_label.visible = kimi_mode or api_mode
+	if kimi_image_fields != null: kimi_image_fields.visible = kimi_mode
 	image_model_choice.visible = not modeling_mode and not kimi_mode
 	mesh_model_choice.visible = not modeling_mode and not kimi_mode
 	if image_model_label != null: image_model_label.visible = not modeling_mode and not kimi_mode
@@ -1604,7 +1873,7 @@ func _update_service_summary():
 		elif api_mode:
 			service_status.text = '自选 API 规划结构，' + ('Blender' if sculpt_mode else 'Godot') + ' 构造网格；已恢复设置，待核对配置。'
 		elif kimi_mode:
-			service_status.text = 'Kimi 输出严格建模计划，固定 Godot 构造器生成网格；已恢复设置，待检测。'
+			service_status.text = 'Kimi Native 负责 Mesh，Kimi Work 图像服务负责二维；已恢复设置，待检测。'
 		elif modeling_mode:
 			service_status.text = 'GPT CLI 规划三维结构，Blender 构造连续表面；已恢复设置，待检测。' if sculpt_mode else 'GPT CLI 输出建模指令，Godot 构造网格；已恢复设置，待检测。'
 		else:
@@ -1618,8 +1887,7 @@ func _update_service_summary():
 			label.text = node_label(kind) + ('：待核对配置 · 自选 API 与 ' + ('Blender' if sculpt_mode else 'Godot') if kind.ends_with('mesh') else '：不可用 · 语义规划仅生成网格')
 		elif mode == 'local_mesh':
 			label.text = node_label(kind) + ('：待检测 · 本机模型' if kind == 'image_to_mesh' else '：不可用 · 仅直接图生网格')
-		elif kimi_mode and not kind.ends_with('mesh'): label.text = node_label(kind) + '：不可用 · Kimi Native 仅生成网格'
-		else: label.text = node_label(kind) + ('：待检测 · Kimi 严格计划与 Godot 原语' if kimi_mode else '：待检测 · GPT 指令与 Blender 连续表面' if sculpt_mode and kind.ends_with('mesh') else '：待检测 · GPT 指令与 Godot 构造' if modeling_mode and kind.ends_with('mesh') else '：待检测')
+		else: label.text = node_label(kind) + ('：待检测 · Kimi Work 独立图像服务' if kimi_mode and not kind.ends_with('mesh') else '：待检测 · Kimi 严格计划与 Godot 原语' if kimi_mode else '：待检测 · GPT 指令与 Blender 连续表面' if sculpt_mode and kind.ends_with('mesh') else '：待检测 · GPT 指令与 Godot 构造' if modeling_mode and kind.ends_with('mesh') else '：待检测')
 
 func _using_legacy_service() -> bool:
 	return _service_mode() == "legacy" or (factory_edit != null and not factory_edit.text in ["editor_demo:factory", "comfy_provider:factory"])
@@ -1700,7 +1968,7 @@ func save_service_settings():
 		_show_run_problem("服务配置已写入，但运行环境设置保存失败，请检查用户目录。")
 		return
 	_update_service_summary()
-	service_status.text = ('已保存自选 API 设置；' + ('Blender' if draft.mode == 'api_sculpt' else 'Godot') + ' 构造网格。') if draft.mode in ['api_modeling', 'api_sculpt'] else '已保存本机图生网格设置；无需 CLI。' if draft.mode == 'local_mesh' else '已保存 Kimi Native 设置；密钥仍只从环境读取，网格由固定 Godot 构造器生成。' if draft.mode == 'kimi_native' else '已保存 GPT CLI 与 Blender 建模设置；无需 ComfyUI 或三维生成模型。' if draft.mode == 'codex_sculpt' else '已保存 GPT CLI 指令建模设置；网格由 Godot 构造，无需 ComfyUI。' if draft.mode == 'codex_modeling' else '已保存 CLI 图像与本机网格设置；图像沿用当前 CLI 登录额度。' if draft.mode == 'codex' else "已保存生成服务设置；检测通过后可明确查看各类生成能力。" if draft.mode == "comfy" else "已保存离线复制模式；该模式不调用生成模型。"
+	service_status.text = ('已保存自选 API 设置；' + ('Blender' if draft.mode == 'api_sculpt' else 'Godot') + ' 构造网格。') if draft.mode in ['api_modeling', 'api_sculpt'] else '已保存本机图生网格设置；无需 CLI。' if draft.mode == 'local_mesh' else '已保存 Kimi 复合设置；Mesh 由 Kimi Native 构造，二维由独立 Kimi Work 图像服务生成；本机路径不进入工作流。' if draft.mode == 'kimi_native' else '已保存 GPT CLI 与 Blender 建模设置；无需 ComfyUI 或三维生成模型。' if draft.mode == 'codex_sculpt' else '已保存 GPT CLI 指令建模设置；网格由 Godot 构造，无需 ComfyUI。' if draft.mode == 'codex_modeling' else '已保存 CLI 图像与本机网格设置；图像沿用当前 CLI 登录额度。' if draft.mode == 'codex' else "已保存生成服务设置；检测通过后可明确查看各类生成能力。" if draft.mode == "comfy" else "已保存离线复制模式；该模式不调用生成模型。"
 	if status != null: status.text = service_status.text
 	if service_config_link != null: service_config_link.hide()
 
@@ -1711,7 +1979,7 @@ func check_service():
 	if _service_mode() == "legacy":
 		service_status.text = "旧配置由原服务适配器检查。选择 ComfyUI 可在本界面检测地址与模型。"
 		return
-	service_status.text = '正在核对 API 配置、凭据环境变量与构造器；不检测远端生成能力…' if _service_mode() in ['api_modeling', 'api_sculpt'] else '正在检测 Kimi 官方接口、模型与 Godot 构造器；不会发起生成…' if _service_mode() == 'kimi_native' else "正在检测 Codex CLI 与 Blender 建模环境；不会发起生成…" if _service_mode() == 'codex_sculpt' else "正在检测 Codex CLI 与 Godot 建模环境；不会发起生成…" if _service_mode() == 'codex_modeling' else "正在检测连接、节点和模型列表；不会生成内容或下载模型…"
+	service_status.text = '正在核对 API 配置、凭据环境变量与构造器；不检测远端生成能力…' if _service_mode() in ['api_modeling', 'api_sculpt'] else '正在分别检测 Kimi Native Mesh 与 Kimi Work 二维图像工具；不会上传或生成…' if _service_mode() == 'kimi_native' else "正在检测 Codex CLI 与 Blender 建模环境；不会发起生成…" if _service_mode() == 'codex_sculpt' else "正在检测 Codex CLI 与 Godot 建模环境；不会发起生成…" if _service_mode() == 'codex_modeling' else "正在检测连接、节点和模型列表；不会生成内容或下载模型…"
 	launch("service-check", {"service":service_draft()})
 
 func _apply_service_check(data: Dictionary, checked_draft: Dictionary):
@@ -1742,8 +2010,11 @@ func _service_blocker(kind: String, data: Dictionary = {}) -> String:
 		return "当前为离线复制模式，无法生成图像或网格。请点击“配置生成服务”连接真实服务。"
 	if service_saved.is_empty() or service_draft() != service_saved:
 		return "生成服务设置尚未保存。请在 AI 设置中检测连接、选择模型并保存。"
-	if _service_mode() in ['kimi_native', 'api_modeling', 'api_sculpt'] and not kind.ends_with('mesh'):
+	if _service_mode() in ['api_modeling', 'api_sculpt'] and not kind.ends_with('mesh'):
 		return '当前语义建模模式仅支持文字生成网格和图像生成网格。'
+	if _service_mode() == 'kimi_native' and not kind.ends_with('mesh'):
+		if str(service_saved.get('image_tool_path', '')).is_empty() or str(service_saved.get('image_pythonw_path', '')).is_empty():
+			return '请在 AI 设置中配置 Kimi Work 的 image_generation_tool.py 和已验证的 pythonw，再保存并检测。二维使用独立图像服务，不调用 K3.1 Pro 直接出图。'
 	var effective_prompt = (str(data.get("parameters", {}).get("prompt", "")) + "\n" + str(data.get("text", ""))).strip_edges()
 	if _service_mode() == 'local_mesh' and (kind != 'image_to_mesh' or not effective_prompt.is_empty()):
 		return '本机网格模式只接受已有图片；请留空重绘提示词。'
