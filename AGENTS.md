@@ -1,7 +1,5 @@
 # 共工统一工作区
 
-确定性任务按“读取事实 → 执行 → 验证 → 核对剩余验收 → 继续下一已授权步骤”推进。目标明确、已有授权、工具可用且结果可验证时直接行动；常规可逆实现沿用仓库惯例，不询问“是否继续”。能由工具查明的信息先查，不猜测也不转问用户。仅缺少影响正确性或权限且无法自行取得的必要输入时提问，说明受影响步骤并继续独立项。只读、暂停、预算、工具审批和用户保留决定继续有效。模型回合结束、子 Agent 退出、计划或阶段性成功均不等于业务完成；结束前按原验收逐项核对真实证据，未完成且可执行的工作继续推进。相同失败无新证据时转排障，未知副作用先回读，不盲目重试。详见[执行范围](customizations/components/issue-workorders/execution-policy.md)。
-
 任务开始时按[复盘与方法学习](framework/specs/method-learning.md)在本租户召回相同能力域的已验证经验，核对适用条件与反例。遇到实际纠偏、失败、交接复盘或复用结果时，由当前责任者在工单授权内按该入口追加提议、试验、反馈、修订或撤回。
 
 仅 Godot 引擎任务遵循 [Godot 宿主的静默验证约定](customizations/components/godot-host/README.md#静默验证)。此约定适用于本仓库的 Godot 接入。
@@ -17,8 +15,6 @@
 本仓库已接入 Git，任务通过 work-items.json 关联真实 Issue，需求在 design-docs/。开发前执行 customizations/components/issue-workorders/issue_gate.py 的 intake-only 回读；提交前执行正式门禁，提交后核验 git-check --require-committed。Git 约定属于接入层，不是共工核心的通用前提。
 
 Windows 工单门禁使用 tools/run_issue_gate.ps1 探测可执行 Python，见接入层 README；PR 证据预检绑定已回读目标分支与完整候选 index。新任务从当前主线隔离，保留其他工作树；按 commit/push/CI/main 回读分别记录失败，发布回执未知先回读，不重复发布。
-
-每次任务完成后，当前责任者在同次收尾中按[任务临时资源清理](customizations/platforms/process-management/repository/execution-policy.md#任务临时资源清理)清理本任务产生的临时文件、废弃应用包与测试设置、临时分支和 worktree。先核实交付与工作者终态并归档必要证据，再清理归属明确且无在途占用的对象；保留未交付改动、有效安装与配置、必要回退版本和其他任务资源。记录实际清理及保留原因，未清理项不能报成已完成。不新增定时扫描。
 
 接到用户明确需求后，按 customizations/components/issue-workorders/execution-policy.md 连续执行；本地必要验证通过即在同次任务中自动开始提交、推送与 main 合入推进，不等待用户再次说“提交”“合入”或“继续”。远端 main 回读及全部已验收关联工单关闭属于交付；已有授权不重复询问。用户明确限定本地或草稿范围时遵循其限制。只在真实必要决定、权限/准入缺失或范围变化时挂起受影响步骤；保留必要独立审查和精确候选准入。
 

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d0f5a9e0c946717f739f1aac99b813ee6e342df9",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-gameplay-core-m1-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/939",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2977dc94902f98c7cd8f3aaeaf1869f384cc99399c27e9dddbc7ac944db3e282",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/939",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/945",
+    "action": "validation",
+    "detection_head": "0abf11eecc738580874f891d4281d6b0f956cf75",
+    "context_sha256": "21964fda45a9967192626da05754d25e4466a2b75621d159eed34d8cc801c541",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-current-operator-host",
+    "authority_ref": "用户于 2026-11-12 19:41 明确落地，当前会话负责 M1 交付与故障复验",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/949",
+    "diagnosis": "已提交的采集证据不可直接改写。恢复初版原文，追加 verification-r2 与 build-impact-r2，并让模块记录指向 R2 后，正式门禁和构建影响门禁通过。",
+    "next_action": "以 PR #949 的精确候选 CI 和 main 回执继续交付，初版证据保留为历史，不再改写。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T12:51:52.141918+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T13:05:20.165430+00:00",
+  "sha256": "9fc6c17447becb753385d25e97e8dca47d2b8a67e19d0ff0c6c8cf20f79d9be4"
+}

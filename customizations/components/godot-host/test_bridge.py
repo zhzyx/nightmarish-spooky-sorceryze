@@ -277,13 +277,11 @@ class ChatGateTests(unittest.TestCase):
         )
         self.issue_patch.start()
         self.addCleanup(self.issue_patch.stop)
-        self.mandates = []
 
     def process(self, ok, receipt_ok=True):
         def run(command, **kwargs):
             if command[1].endswith("agent-context.mjs"):
                 mandate = json.loads(Path(command[-1]).read_text())
-                self.mandates.append(mandate)
                 self.assertFalse(mandate["tool_permission"]["tools_enabled"])
                 self.assertEqual(mandate["issue"]["url"], "https://github.com/test/repo/issues/6")
                 self.assertIn(
@@ -309,37 +307,6 @@ class ChatGateTests(unittest.TestCase):
         self.assertTrue(result["ok"])
         self.assertEqual(result["context"], "FRAMEWORK")
         self.assertEqual(run.call_count, 2)
-
-    def test_execution_policy_reaches_renderer_without_granting_tools(self):
-        process = self.process(True)
-
-        def render(command, **kwargs):
-            result = process(command, **kwargs)
-            if command[1].endswith("agent-context.mjs"):
-                result.stdout = (
-                    "FRAMEWORK\nHost mandate (actual identity and permission must be authenticated by host):\n"
-                    + json.dumps(self.mandates[-1])
-                )
-            return result
-
-        with patch.object(bridge.subprocess, "run", side_effect=render):
-            first = bridge.chat(self.root, self.request, "test")
-            later = bridge.chat(self.root, dict(self.request, outcome="next request"), "test")
-        delivered = json.loads(first["context"].split("authenticated by host):\n", 1)[1])
-        self.assertEqual(set(delivered["execution_policy"]), {"scope", "continue", "clarify", "finish", "recover"})
-        self.assertFalse(delivered["tool_permission"]["tools_enabled"])
-        self.assertTrue(delivered["tool_permission"]["execution_requires_approval"])
-        self.assertTrue(delivered["tool_permission"]["file_changes_require_approval"])
-        self.assertFalse(first["model_execution_started"])
-        self.assertEqual(first["governance_sha256"], later["governance_sha256"])
-        changed = json.loads(json.dumps(delivered))
-        changed["execution_policy"]["continue"] += " Updated policy."
-        changed_context = (
-            first["context"].split("authenticated by host):\n", 1)[0]
-            + "authenticated by host):\n"
-            + json.dumps(changed)
-        )
-        self.assertNotEqual(first["governance_sha256"], bridge.governance_fingerprint(changed_context, changed))
 
     def test_admission_failure_cannot_send_context(self):
         with patch.object(bridge.subprocess, "run", side_effect=self.process(False)):
@@ -368,7 +335,6 @@ class ChatGateTests(unittest.TestCase):
             with patch.object(bridge.subprocess, "run", side_effect=self.process(True)) as run:
                 result = bridge.chat(self.root, request, "test")
             self.assertTrue(result["context_ready"])
-            self.assertIn("execution_policy", self.mandates[-1])
             self.assertFalse(result["model_execution_started"])
             self.assertEqual(result["reporting"]["source_ref"], "https://github.com/test/repo/issues/6")
             self.assertEqual(run.call_args_list[0].args[0][-2], "yanshi")

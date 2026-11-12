@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "engine-next-gameplay-core-m1-20261112",
+  "collected_at": "2026-11-12T12:29:18.615952+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-gameplay-core-m1-20261112/request-939-engine-next-gameplay-core-m1.json",
+      "sha256": "98e0d389d3b853c9024b110cfa44356bd720083bb98745fe2f8ff55e0b266a9d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "request-939-engine-next-gameplay-core-m1",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 939,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/939"
+}
