@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "request-888-20261112-readback",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-windows-unsigned-export-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T05:12:09.457218+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/888",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "title": "Windows 未签名导出正确识别默认非凭据选项",
+    "issue": 888,
+    "parent_issue": 773,
+    "source_updated_at": "2026-11-12T04:50:58Z",
+    "issue_body_sha256": "14e0496c8235e1120da423109969c7a08c3ffb68b86042b2aa62477744192a21",
+    "request": "<!-- gonggong-request:editor-windows-unsigned-export-20261112 -->\n\n父项 #773，故障链 #807。按原用户授权完善 Godot 编辑器内游戏生产。当前责任者 Sail-Li / Codex 当前会话。\n\n正式 main93006dd2 安装实际场景/PCK/ZIP验证通过后，用同一 main 构建 Windows debug template，经编辑器原生 project_export 输出 Windows 可执行文件，明确 codesign/enable=false，仍在提案阶段收到 credential_export_not_supported。源码确认 Windows 内置默认 codesign/timestamp=true、codesign/digest_algorithm=1；签名关闭时不会调用签名程序，但通用凭据判定把这些非秘密默认选项视为凭据。原失败报告保留。\n\n验收：\n- [ ] Windows 内置平台明确关闭签名时，可在正常默认时间戳/摘要算法选项下提出并执行本地未签名导出；保留原生确认、精确预设/输入绑定。\n- [ ] 签名启用、真实凭据/密码/证书、自定义签名参数、加密和原有其他平台限制不放宽；未知平台/类型保守拒绝。\n- [ ] 缺少模板仍报告实际失败；使用同版本实际模板，导出真实 EXE/PCK，核验输出哈希并实际 headless 启动包，不能以退出码或PCK成功代替应用导出证据。\n- [ ] 覆盖默认未签名正例、启用签名/非空凭据/参数/错误类型及预设漂移反例，现有macOS和场景/资源导出回归通过。\n- [ ] 独立审查、严格构建、适用测试、正式门禁、精确候选CI/main及安装复验。\n\n隔离自当前 main；仅编辑器未签名导出判定及相应验收，不接管 #559 原责任候选，不更改签名策略或调用签名工具。最终完整生产链仍由父项验收。\n\n<!-- gonggong-host-git:Sail-Li -->\n",
+    "scope": "Existing authorized child implementation and validation; original parent acceptance remains open."
+  },
+  "sha256": "eb030711f5cddab32d523a52574bfd9115d26388b8833a6e94c730822752df6f"
+}
