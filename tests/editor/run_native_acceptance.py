@@ -27,7 +27,7 @@ PARENT_BOUNDARY = (
 )
 if PARENT_BOUNDARY:
     SCENARIO = "parallel-parent-continuation"
-boundary_receipts = {}
+boundary_receipts: dict[str, Any] = {}
 if SCENARIO not in {
     "pass",
     "unknown",
@@ -334,10 +334,10 @@ batch.shutil.copyfile = fixture_copyfile
 # Exercise a real read-only native reviewer through the HTTP transport. Its
 # model supplies only a verdict and paths; identity/digests come from the host.
 review_calls: list[dict[str, Any]] = []
-continuation_results = []
+continuation_results: list[dict[str, Any]] = []
 continuation_phase = "supplement"
 continuation_nonce = 0
-continuation_probes = set()
+continuation_probes: set[str] = set()
 continuation_config_original = None
 repair_calls: list[dict[str, Any]] = []
 failure_notices: list[str] = []
