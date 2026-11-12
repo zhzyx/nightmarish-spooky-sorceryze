@@ -6,6 +6,10 @@ var approvals := 0
 var failure := false
 var stale_regranted := false
 
+func _catalog_ready(dock) -> bool:
+	var snapshot: Dictionary = dock.get_model_catalog_snapshot()
+	return snapshot.get("state", "") == "ready" and snapshot.get("catalog_current", false) and not snapshot.get("loading", true)
+
 func _initialize():
 	run.call_deferred()
 
@@ -80,9 +84,9 @@ func run():
 	key.text_changed.emit(key.text)
 	var ready_deadline := Time.get_ticks_msec() + 35000
 	var status = controls.find_child("ModelStatus", true, false)
-	while (backend.disabled or not "模型列表已获取" in status.text) and Time.get_ticks_msec() < ready_deadline:
+	while (backend.disabled or not _catalog_ready(dock)) and Time.get_ticks_msec() < ready_deadline:
 		await process_frame
-	if not check(not dock.find_child("Send", true, false).disabled and "模型列表已获取" in status.text, "Model discovery did not finish: " + status.text):
+	if not check(not dock.find_child("Send", true, false).disabled and _catalog_ready(dock), "Model discovery did not finish: " + status.text):
 		quit(1)
 		return
 	var grant = controls.find_child("TaskNativeAuthorization", true, false)

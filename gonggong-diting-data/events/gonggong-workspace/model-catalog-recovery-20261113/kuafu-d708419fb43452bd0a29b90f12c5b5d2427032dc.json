@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d708419fb43452bd0a29b90f12c5b5d2427032dc",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "model-catalog-recovery-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "83f994584bfe6ae8d00360de4da56bb9984878b2fe6049bb4d49f543ebb55d2d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+    "action": "validation",
+    "detection_head": "a3b1ef65968f9f7d9dcdf701ae5e76feb94d9c3f",
+    "context_sha256": "53f4b5df415550404efb145ef31d1387151b272020b13fa24ecffc32920da863",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-refactor",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "bin/catalog-build.log",
+    "diagnosis": "Actual native compiler reported two stale _model_config_signature calls in ai_chat_sub_agents.cpp after catalog interface migration. Assigned worker /root/sinan_ba0ef260f77d1519 corrected both to GetModelCatalogIdentity in its isolated candidate and is rebuilding. Source fix is reported; full binary and business regression remain unverified.",
+    "next_action": "Original assigned worker completes native rebuild and model catalog regression; root independently reviews exact candidate and only then starts delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T17:33:58.427109+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T17:35:37.462409+00:00",
+  "sha256": "55a66b48d40da9acdec5ec520ca3a95963df7235cdbd0cc1a2d84f23040dd0bd"
+}

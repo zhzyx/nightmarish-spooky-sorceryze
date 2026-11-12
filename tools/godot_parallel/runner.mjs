@@ -374,7 +374,8 @@ export async function run(request, config, output, runtime = {}) {
   fs.unlinkSync(reservation); // Crash leaves this marker; only actual completion releases it.
   return result;
 }
-if (process.argv[1] && path.resolve(process.argv[1])===fileURLToPath(import.meta.url)) {
+// Node resolves module URLs through installation links; compare the actual files.
+if (process.argv[1] && fs.existsSync(process.argv[1]) && fs.realpathSync(process.argv[1])===fs.realpathSync(fileURLToPath(import.meta.url))) {
   try {
     if (process.platform==='win32') {
       const {createRequire} = await import('node:module');

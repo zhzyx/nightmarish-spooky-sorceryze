@@ -2,17 +2,15 @@
 extends SceneTree
 
 func _refresh_models(chat: Node):
-	# A real connection edit now replaces the removed manual refresh action.
-	# Normalization retains the fixture credential/executable used on the wire.
-	var backend = chat.get_ai_settings_control().find_child("AIBackend", true, false)
-	var field = chat.get_environment_settings_control().find_child("CLINode", true, false) if backend.selected in [1, 2] else chat.get_ai_settings_control().find_child("APIKey", true, false)
-	field.text = field.text.get_base_dir() + "/./" + field.text.get_file() if backend.selected in [1, 2] else field.text + " "
-	var status = chat.get_ai_settings_control().find_child("ModelStatus", true, false)
-	var previous_status = status.text
-	field.text_changed.emit(field.text)
-	var deadline = Time.get_ticks_msec() + 5000
-	while not backend.disabled and status.text == previous_status and Time.get_ticks_msec() < deadline:
-		await process_frame
+	var generation: int = chat.get_model_catalog_snapshot().generation
+	chat.refresh_model_catalog()
+	if chat.get_model_catalog_snapshot().generation <= generation:
+		finish(false, "refresh API did not start a new operation")
+		return
+	var deadline := Time.get_ticks_msec() + 40000
+	while chat.get_model_catalog_snapshot().loading and Time.get_ticks_msec() < deadline:
+		await create_timer(0.05).timeout
+
 var dock: Node
 var checks: Array = []
 func finish(ok: bool, reason := ""):
@@ -38,19 +36,15 @@ func _run():
 	await _refresh_models(dock)
 	var picker = dock.get_ai_settings_control().find_child("ModelPicker", true, false)
 	var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false)
-	var refresh = backend # Backend is disabled while the automatic model query owns the controls.
-	var until = Time.get_ticks_msec() + 40000
-	while refresh.disabled and Time.get_ticks_msec() < until:
-		await create_timer(0.05).timeout
 	if picker.item_count < 3:
 		finish(false, "refresh failed: " + status.text)
 		return
-	checks.append("live Codex model/list populated picker")
+	checks.append("actual Codex model/list populated picker")
 	picker.select(1)
 	picker.item_selected.emit(1)
 	var effort = dock.get_ai_settings_control().find_child("ReasoningEffort", true, false)
 	if effort.disabled or effort.is_item_disabled(3):
-		finish(false, "high unavailable for live default model")
+		finish(false, "high unavailable for advertised default model")
 		return
 	effort.select(3)
 	effort.item_selected.emit(3)
@@ -75,8 +69,8 @@ func _run():
 	# Bad path must leave refresh retryable and keep chat untouched.
 	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = "/nonexistent/codex"
 	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CodexEntry", true, false).text)
-	refresh.pressed.emit()
-	if refresh.disabled or not "路径" in status.text:
+	await _refresh_models(dock)
+	if dock.get_model_catalog_snapshot().loading or not "路径" in status.text:
 		finish(false, "invalid path cannot retry")
 		return
 	checks.append("invalid path reports cause and allows retry")
@@ -85,10 +79,7 @@ func _run():
 		backend.item_selected.emit(api_backend)
 		dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("MODEL_TEST_ENDPOINT") + ("/responses" if api_backend == 3 else "/chat/completions")
 		dock.get_ai_settings_control().find_child("APIModel", true, false).text = "fixture-reasoner"
-		refresh.pressed.emit()
-		until = Time.get_ticks_msec() + 5000
-		while refresh.disabled and Time.get_ticks_msec() < until:
-			await create_timer(0.05).timeout
+		await _refresh_models(dock)
 		if effort.disabled or effort.is_item_disabled(3) or not effort.is_item_disabled(6):
 			finish(false, "API advertised capabilities not respected")
 			return
@@ -97,7 +88,23 @@ func _run():
 		if not effort.disabled or effort.selected != 0:
 			finish(false, "unknown API model must keep default")
 			return
-	checks.append("both API modes honor declared efforts and keep unknown models at default")
+		var manual = dock.get_ai_settings_control().find_child("APIModel", true, false)
+		manual.text = ""
+		manual.text_changed.emit(manual.text)
+		if picker.selected != -1 or not dock.get_model_catalog_snapshot().current.is_empty():
+			finish(false, "empty selection visually adopted the first discovered model")
+			return
+		picker.select(0)
+		picker.item_selected.emit(0)
+		if dock.get_model_catalog_snapshot().current != "fixture-reasoner":
+			finish(false, "first model cannot be explicitly selected from the placeholder")
+			return
+		manual.text = "123"
+		manual.text_changed.emit(manual.text)
+		if not effort.disabled or dock.get_model_catalog_snapshot().options.any(func(option): return typeof(option.id) != TYPE_STRING):
+			finish(false, "numeric catalog ID was coerced into a string capability match")
+			return
+	checks.append("both API modes honor declared efforts, reject numeric IDs and keep unknown models at default")
 	backend.select(1)
 	backend.item_selected.emit(1)
 	if not effort.disabled or effort.selected != 0:

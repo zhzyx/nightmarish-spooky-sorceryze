@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-86cae7c8ebf112801396c8ef3670e28b7fd7342f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "model-catalog-recovery-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "843bd2636fbdf3ffed95d48141d59f270d012dd2786ff64497d9fceb5c5c0f80",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+    "action": "validation",
+    "detection_head": "a3b1ef65968f9f7d9dcdf701ae5e76feb94d9c3f",
+    "context_sha256": "53f4b5df415550404efb145ef31d1387151b272020b13fa24ecffc32920da863",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-refactor",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "bin/daqian-graph-tests.log",
+    "diagnosis": "Graph consumer fixture copies editor without its trusted host layout; engine-root lookup cannot find SConstruct and board.py, so workspace membership remains unavailable. Assigned worker will reproduce with same-candidate host files and isolated HOME/state, without changing production permission checks. Consumer acceptance remains pending.",
+    "next_action": "Correct only the isolated fixture source layout, rerun original graph consumer case, preserve failure and recovery receipts and perform independent review.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T17:38:09.381538+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T17:41:14.290095+00:00",
+  "sha256": "0fe2fa5aabe2a8e4b35e9e9f7677813ccce22b597ab98622168d809a81aef24a"
+}

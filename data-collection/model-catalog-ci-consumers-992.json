@@ -1,0 +1,468 @@
+{
+  "issue_number": 992,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+  "request_id": "model-catalog-recovery-20261113",
+  "kind": "additional CI consumer migration evidence",
+  "failed_candidate": "081d72b8b4e3a9553ff646e24841bea63db37451",
+  "failed_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43287128002/job/131423723632",
+  "root_cause": "Actual catalog succeeded; requirements-intake and four other fixtures matched obsolete localized status. Batch fixtures assumed catalog blocked inference; consumers now verify separate catalog lifecycle.",
+  "editor_sha256": "c64e76ed31757457226470ec6480c9869f9a81e9bc55635438db922d6622f249",
+  "native_checks": {
+    "intake": {
+      "passed": true,
+      "cases": 10,
+      "issues": 5,
+      "events": 71
+    },
+    "runtime_diagnostics": {
+      "passed": true
+    },
+    "steering": {
+      "passed": true,
+      "accepted_supplements": 2
+    },
+    "semantic_mouse_stop": {
+      "passed": true,
+      "stop_seconds": 0.039866,
+      "recovery_received": true
+    },
+    "task_native_authorization": {
+      "passed": true,
+      "actual_terminal_exit_codes": [
+        0,
+        0
+      ]
+    }
+  },
+  "batch_checks": [
+    {
+      "case": "models-no-live",
+      "passed": true,
+      "sha256": "6a8a66ff2b4c226736b404fc42fcfce6f832d4b41b9b3c6ded1afc58ad648b23",
+      "model_requests": [
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        },
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        },
+        {
+          "path": "/v2/models",
+          "target": true,
+          "status": 200,
+          "stages_at_start": {
+            "warmup": 1
+          },
+          "completed": true,
+          "stages_before_response": {
+            "warmup": 1
+          }
+        }
+      ],
+      "stage_requests": {
+        "warmup": 1
+      },
+      "parent_return_count": 0,
+      "terminal_binding": true
+    },
+    {
+      "case": "models-initial-ok",
+      "passed": true,
+      "sha256": "4224dcb7e9586c5e05f87194c3cd143e8814789fa931e69e1877bdecb60d3d52",
+      "model_requests": [
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        },
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        },
+        {
+          "path": "/v2/models",
+          "target": true,
+          "status": 200,
+          "stages_at_start": {
+            "warmup": 1
+          },
+          "completed": true,
+          "stages_before_response": {
+            "warmup": 1,
+            "parent": 1,
+            "child1": 1
+          }
+        }
+      ],
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "child2": 3,
+        "return": 3
+      },
+      "parent_return_count": 1,
+      "terminal_binding": true
+    },
+    {
+      "case": "models-initial-fail",
+      "passed": true,
+      "sha256": "d2cb59f053a3e36c3f008b2edc5c19d6afe7b97f5dad7407a55ea29aa69e28cc",
+      "model_requests": [
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        },
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        },
+        {
+          "path": "/v2/models",
+          "target": true,
+          "status": 500,
+          "stages_at_start": {
+            "warmup": 1
+          },
+          "completed": true,
+          "stages_before_response": {
+            "warmup": 1,
+            "parent": 1,
+            "child1": 1
+          }
+        }
+      ],
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "child2": 3,
+        "return": 3
+      },
+      "parent_return_count": 1,
+      "terminal_binding": true
+    },
+    {
+      "case": "models-return-ok",
+      "passed": true,
+      "sha256": "ce7851259c3c78e0b96c768242fbf10083af09a63b4c6805837f35f82ff11cd0",
+      "model_requests": [
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        },
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        },
+        {
+          "path": "/v2/models",
+          "target": true,
+          "status": 200,
+          "stages_at_start": {
+            "warmup": 1,
+            "parent": 1,
+            "child1": 3,
+            "child2": 3
+          },
+          "completed": true,
+          "stages_before_response": {
+            "warmup": 1,
+            "parent": 1,
+            "child1": 3,
+            "child2": 3,
+            "return": 1
+          }
+        }
+      ],
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "child2": 3,
+        "return": 3
+      },
+      "parent_return_count": 1,
+      "terminal_binding": true
+    },
+    {
+      "case": "models-return-fail",
+      "passed": true,
+      "sha256": "b8d59c2e454462bacb5a210f1b4e1ef95d445cb6e95b72d76155cf50473579c8",
+      "model_requests": [
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        },
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        },
+        {
+          "path": "/v2/models",
+          "target": true,
+          "status": 500,
+          "stages_at_start": {
+            "warmup": 1,
+            "parent": 1,
+            "child1": 3,
+            "child2": 3
+          },
+          "completed": true,
+          "stages_before_response": {
+            "warmup": 1,
+            "parent": 1,
+            "child1": 3,
+            "child2": 3,
+            "return": 1
+          }
+        }
+      ],
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "child2": 3,
+        "return": 3
+      },
+      "parent_return_count": 1,
+      "terminal_binding": true
+    },
+    {
+      "case": "models-initial-stop",
+      "passed": true,
+      "sha256": "857f11847381da2b104cdf1b0152aed0a0300d5694970ec1d7c9d4d79e1fc0ce",
+      "model_requests": [
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        },
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        },
+        {
+          "path": "/v2/models",
+          "target": true,
+          "status": 200,
+          "stages_at_start": {
+            "warmup": 1
+          },
+          "completed": true,
+          "stages_before_response": {
+            "warmup": 1,
+            "parent": 1,
+            "child1": 1
+          }
+        }
+      ],
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 1
+      },
+      "parent_return_count": 0,
+      "terminal_binding": true
+    },
+    {
+      "case": "models-initial-cancel",
+      "passed": true,
+      "sha256": "e266d65b12ee93c8442558d7db5b78ddee689d0ca1b339199cc6a9812dd3ccb2",
+      "model_requests": [
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        },
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        },
+        {
+          "path": "/v2/models",
+          "target": true,
+          "status": 200,
+          "stages_at_start": {
+            "warmup": 1
+          },
+          "completed": true,
+          "stages_before_response": {
+            "warmup": 1,
+            "parent": 1,
+            "child1": 1
+          }
+        }
+      ],
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "child2": 3,
+        "return": 3
+      },
+      "parent_return_count": 1,
+      "terminal_binding": true
+    },
+    {
+      "case": "normal",
+      "passed": true,
+      "sha256": "7926ff8508c48de8a59d920496efcf957fb96aec9cd02615256319621be580cc",
+      "model_requests": [
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        },
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        }
+      ],
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3,
+        "consult": 1,
+        "retry": 3,
+        "child2": 3,
+        "return": 3
+      },
+      "parent_return_count": 1,
+      "terminal_binding": false
+    },
+    {
+      "case": "terminal-failure",
+      "passed": true,
+      "sha256": "e5a292bfce3ef315cf98c9e64eb4a520281476b3c1db05c8f7482e169d5918fb",
+      "model_requests": [
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        },
+        {
+          "path": "/v1/models",
+          "target": false,
+          "status": 200,
+          "stages_at_start": {},
+          "completed": true
+        }
+      ],
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 1,
+        "child1": 3
+      },
+      "parent_return_count": 0,
+      "terminal_binding": false
+    }
+  ],
+  "fixture_changes": [
+    "Use ready/current/not-loading snapshot instead of translated UI text",
+    "Explicit key re-entry after endpoint audience change",
+    "Bounded GET handshake proves child/parent-return dispatch before catalog response",
+    "Stop cancels actual paused business child while catalog completes; catalog Cancel preserves actual business request",
+    "Terminal evidence matches expected source/agent/work-order/request and excludes existing/pending prior-turn events; actual persisted record and stable marker hash reread",
+    "Use storage.record_batch topological validation instead of unordered per-file writes; delete pending only after successful batch storage",
+    "Retire unsupported --expect-stalled explicitly before test resource creation",
+    "Parallel acceptance wrapper retains actual external-worker assertions and does not wait for unrelated serial HTTP child handshake"
+  ],
+  "limits": [
+    "All model/GitHub transports are isolated fixtures, no real account entitlement claimed",
+    "New exact Windows CI remains required before merge",
+    "Parent978,997 and971 scopes remain open",
+    "Before associated1005 entry fix, macOS parallel wrapper actually failed; original failure evidence retained."
+  ],
+  "files_sha256": {
+    "tests/editor/requirements_intake.gd": "5c3c24e1e5c3feb785e1e425ca39d09e6a5179fa5c82d15aaaac8ccd3f95b68b",
+    "tests/editor/ai_chat_semantic.gd": "79160ec0d458bfa561c77659e57ee5a65ff2657bb42fbf776819310702fc420f",
+    "tests/editor/ai_chat_task_authorization.gd": "a1f9f92334d06e3cfce4881aa3cb09dc9cde5f453c619a8aeff6a60abe62813f",
+    "tests/editor/ai_chat_steering.gd": "3bf70ab60c6dbdd74ec357dd6b9b1b8d44c71510aefa48a885b9a5811fcae54c",
+    "tests/editor/runtime_diagnostics.gd": "0f4bd99f58dab85066f1f78eba3565b14fade514b8b0e0e3bf4568b2c05ee901",
+    "tests/editor/design_batch.gd": "e6a9b90f370a8aa44a1297dbbd15e1ea404dcbe90c71ab4db785c1230dfaeaa4",
+    "tests/editor/run_design_batch.py": "05795cf1762846a4a93e1db0819f12528a8def64a54701d7e5163191092cabfa",
+    "tests/editor/run_native_acceptance.py": "ed754c46fd2705fdbffed53ca2d46ce139a85993f29c33ac75be6d1f33403d8d"
+  },
+  "reviews": [
+    {
+      "file": "review-ci-helper-addendum.json",
+      "sha256": "8cb8768d1e1c7f0c94b6ccaa05a555ae525cb33c7358d2f465874f7ce63a0ad2"
+    },
+    {
+      "file": "review-design-batch-followup.json",
+      "sha256": "3a1dcf7b6bb842e0707252215712c067a5a52d5b6c5709479bdb1363877d353b"
+    },
+    {
+      "file": "review-design-batch-binding-addendum.json",
+      "sha256": "db9df824132130280c166aadd0aae43ab1e0b10774fe09818503e9f468a900ab"
+    },
+    {
+      "file": "review-eight-file-final-approval.json",
+      "sha256": "ebaf327825c92b0fdd76c596ab9643aa28f5ca15d6855041b2b9e5ebad61c121"
+    }
+  ],
+  "native_cpp_unchanged_since_89c7a210": true,
+  "associated_host_entry_fix": {
+    "issue": 1005,
+    "path": "tools/godot_parallel/runner.mjs",
+    "reason": "Actual parallel wrapper exposed pre-existing linked CLI silent exit; see separate1005 evidence"
+  },
+  "native_parallel_wrapper": {
+    "passed": true,
+    "scenario": "parallel",
+    "verified_decisions": 3,
+    "external_parent_returns": 1,
+    "report_sha256": "15b4024aa129485859391ea2920a084c12c5e30c77dcf205a92c40cc795267bb",
+    "base_transport_fixture_ok": false,
+    "scope": "Wrapper supplies actual external workers and independently validates their production ledger, accepted dependency checks, native reviews and single parent return; serial HTTP child expectations are intentionally not its acceptance."
+  }
+}

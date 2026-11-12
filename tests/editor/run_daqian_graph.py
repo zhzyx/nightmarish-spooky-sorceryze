@@ -12,6 +12,7 @@ import tempfile
 from pathlib import Path
 
 from editor_test_isolation import copy_editor, macos_editor
+from run_unified_settings_native import sanitized_environment
 
 
 def timeout_output(output: str | bytes | None) -> str:
@@ -55,6 +56,8 @@ if args.scenario in {"parallel", "inputs", "multi_issue"}:
 binary = args.godot.resolve()
 with tempfile.TemporaryDirectory(prefix="daqian-editor-", ignore_cleanup_errors=os.name == "nt") as directory:
     project = Path(directory).resolve()
+    fixture_environment = {key: value for key, value in env.items() if key.startswith("DAQIAN_TEST_")}
+    env = {**sanitized_environment(project), **fixture_environment}
     if os.name == "nt":
         # These scenarios save EditorSettings, including the selected repository.
         # A self-contained executable also isolates an already portable source editor.
@@ -63,6 +66,21 @@ with tempfile.TemporaryDirectory(prefix="daqian-editor-", ignore_cleanup_errors=
         env["LOCALAPPDATA"] = str(project / "local")
     else:
         isolated_editor = macos_editor(binary, project / "isolated-editor")
+    # Native host paths resolve beside the isolated executable, independently
+    # of the selected workspace. Supply the read-only source installation too.
+    source = Path(__file__).resolve().parents[2]
+    shutil.copyfile(source / "SConstruct", project / "SConstruct")
+    for component in ("tools", "customizations", "integrations"):
+        # Copy instead of linking: the editor's import scan can create .gd.uid files.
+        shutil.copytree(
+            source / component,
+            project / component,
+            ignore=shutil.ignore_patterns("node_modules", "__pycache__", "*.pyc"),
+        )
+    for variable in ("HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME"):
+        private_profile = project / "private-profile" / variable.lower()
+        private_profile.mkdir(parents=True)
+        env[variable] = str(private_profile)
     configuration = (
         isolated_editor.parent / "editor_data/gonggong/config.json"
         if (isolated_editor.parent / "_sc_").is_file()

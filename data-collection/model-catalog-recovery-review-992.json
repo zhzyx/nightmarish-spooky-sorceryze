@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "issue_number": 992,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+  "request_id": "model-catalog-recovery-20261113",
+  "baseline": "308bc83c19ae7cd1811496cca0e7062e6b30dab0",
+  "worker_evidence": "data-collection/model-catalog-recovery-992.json",
+  "independent_review": {
+    "reviewer": "/root/sinan_06953850845bcb22",
+    "original": "P2 external runtime change during login status left checking/retry disabled, independently reproduced",
+    "repair": "Both login-status and deferred-refresh identity mismatches now restore current source lifecycle. New external file update fixture fails old binary and passes repaired binary.",
+    "approval": "bounded_approval",
+    "independent_checks": [
+      "Original external config/status reproducer: ready, loading=false, refresh enabled, two login status calls and one model query",
+      "external-status-config-change passed",
+      "codex-status-login-race passed",
+      "codex-catalog-failure passed with one request/no loop",
+      "codex-status-config-change passed"
+    ],
+    "review_sha256": "a128565baecbabd59eac5730ecdd66881143969c5d91be3d65b87ece4c1e8911",
+    "annotation_addendum": {
+      "approved": true,
+      "sha256": "34b67f8c4d6a5deb783d45818a2365da1dc1f81c81aba8b03dabe48ec060948a",
+      "conclusion": "Only empty-list type annotation; normalized bytes match previously reviewed picker and all18other reviewed inputs unchanged."
+    }
+  },
+  "incident": "1da7af5936e83a38a2c846c4ef42e31341098718534f38d62b95c061c95137b6",
+  "matrix": {
+    "passed": true,
+    "count": 19,
+    "source_unchanged": true,
+    "binary_sha256": "256c8ae8fd9725d50db87f87f7533081e777fe777c6624aab3c8f40aa1f89c8e",
+    "report_sha256": "853867160c5f36a9370519ecb4e14f27c38586e935cc723e1685f2d5a0d4471e",
+    "cases": [
+      {
+        "case": "catalog-process-boundary",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "cancel terminated real bridge, CLI and SIGTERM-ignoring descendant",
+          "native 35s timeout terminated suspended bridge, CLI and SIGTERM-ignoring descendant"
+        ]
+      },
+      {
+        "case": "catalog-recovery",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "fixture counted initial failure; failure did not loop",
+          "pending catalog allows manual selection, new session and switching",
+          "actual inference finished concurrently; catalog completion preserved busy state and selection",
+          "detached stable snapshot retains source and capability",
+          "cancel and retry counted separately; cancelled late response cannot replace current catalog",
+          "environment identity change rejected late result and refreshed current source"
+        ]
+      },
+      {
+        "case": "api-recovery",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "fixture counted initial failure; failure did not loop",
+          "pending catalog allows manual selection, new session and switching",
+          "actual inference finished concurrently; catalog completion preserved busy state and selection",
+          "detached stable snapshot retains source and capability",
+          "cancel and retry counted separately; cancelled late response cannot replace current catalog",
+          "environment identity change rejected late result and refreshed current source"
+        ]
+      },
+      {
+        "case": "codex-startup",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "startup fetched advertised Codex model once"
+        ]
+      },
+      {
+        "case": "codex-completed-status-delayed-poll",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "successful status subprocess finished before delayed native poll",
+          "completed exit result survived an eleven second UI pause; catalog fetched once"
+        ]
+      },
+      {
+        "case": "session-reuse",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "ordinary sessions share project selection and metadata in both directions while retaining separate drafts",
+          "new session reused catalog without query; config change invalidated old catalog"
+        ]
+      },
+      {
+        "case": "session-catalog-freshness",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "same-connection login refresh replaced archived C1 with C2 in both sessions and preserved project selection without duplicate discovery"
+        ]
+      },
+      {
+        "case": "shared-config-inflight",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "external shared-config edit during in-flight C1 query retained only C2 catalog"
+        ]
+      },
+      {
+        "case": "codex-login",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "login completed, catalog eventually fetched exactly once"
+        ]
+      },
+      {
+        "case": "codex-busy-login",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "login completed, catalog eventually fetched exactly once",
+          "busy chat finished and pending login event survived"
+        ]
+      },
+      {
+        "case": "codex-status-timeout",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "UI heartbeat continued during bounded auth-status timeout"
+        ]
+      },
+      {
+        "case": "codex-catalog-failure",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "catalog failure visible without retry loop"
+        ]
+      },
+      {
+        "case": "codex-status-config-change",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "changed config superseded a pending stale auth-status check"
+        ]
+      },
+      {
+        "case": "external-status-config-change",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "external runtime file edit during login-status check recovered current catalog and explicit refresh without UI signals"
+        ]
+      },
+      {
+        "case": "codex-status-login-race",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "login completed, catalog eventually fetched exactly once",
+          "successful login superseded an older auth-status failure"
+        ]
+      },
+      {
+        "case": "api-chat-startup",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "configured backend startup enumerated once"
+        ]
+      },
+      {
+        "case": "api-responses-startup",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "configured backend startup enumerated once"
+        ]
+      },
+      {
+        "case": "codebuddy-startup",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "configured backend startup enumerated once"
+        ]
+      },
+      {
+        "case": "backend-switch",
+        "ok": true,
+        "checks": [
+          "explicit catalog recovery API/button available",
+          "all configured backend switches repopulated catalog once"
+        ]
+      }
+    ]
+  },
+  "current_main_integration": {
+    "binary_sha256": "c64e76ed31757457226470ec6480c9869f9a81e9bc55635438db922d6622f249",
+    "reports": {
+      "picker-current-main.json": {
+        "passed": true,
+        "sha256": "ce34fb39f4b740019c3f66e4dfd8267566cc35a891bee6c876724000f0a2012e"
+      },
+      "http-current-main.json": {
+        "passed": true,
+        "sha256": "8a0f5db79917b232d1a66514e6e336956e7c3bc93b5efb3f89a68034e84dc657"
+      },
+      "graph-current-main.json": {
+        "passed": true,
+        "sha256": "bfaa088264ba6be08576831538ec0a7d46dc0c03990f1b4f4548e7f227b77b2a"
+      },
+      "catalog-current-main.json": {
+        "passed": true,
+        "sha256": "32a654b5dfea3fa09ce7b3bdb7d296113e57083039e5a32c72f2f5ac0e49e2bd"
+      }
+    },
+    "reason": "994 main changed dispatch/GitHub adapters but none of992 reviewed production inputs; rebuilt version provenance and re-ran consumer/picker/cancel/external-race checks."
+  },
+  "preflight": {
+    "mypy": "4changedPythonfilespass; added requests:list[str] annotation to picker fixture only",
+    "ruff": "4changedPythonfileslint/formatpass",
+    "clang_format": "changedC++headerspass",
+    "independent_js": "61/61 unchanged bridge tests passed",
+    "counterfactual": "old binary e7ce0fc5... fails the new external-status fixture with real status child and no model request"
+  },
+  "input_sha256": {
+    "editor/docks/ai_chat_delivery_retry.cpp": "7418a59b2c7c8c5272cb3734c0afff63002adb2bcc9ab89a7ecd5053162409ca",
+    "editor/docks/ai_chat_dock.cpp": "785219570fa9af7792efdff02ad6a3b85da3145b174cc9c097255d93ca93ff0e",
+    "editor/docks/ai_chat_dock.h": "96aa4c183fbfe135d2904e8e4cde32f2b4d272a96fa59bd1fa6d8342839f5de0",
+    "editor/docks/ai_chat_external_chat.cpp": "ad0d944c8e1c197268feac627f3b577526ccdcd8919bad4a1ceec79a4703e9e3",
+    "editor/docks/ai_chat_host_commands.cpp": "81a810abd6d8c173aaf5751714bd7ab4a4e6c8478d0b3fe299333b60a51a0cdb",
+    "editor/docks/ai_chat_scheduler.cpp": "cf1627388996f1a4e83c1630d97323595740f0930e8f05e56fd2f63d222646e0",
+    "editor/docks/ai_chat_sub_agents.cpp": "5cb4e075d8f2649c4bb3cc1a3c0d99cf25f00896eb2441571960454a8ee61981",
+    "editor/docks/daqian/model_settings.gd": "3ba642493ed7053e9612d28bf2490a0bafaef9b3c6ec30435bc767b391b4eeca",
+    "editor/docks/daqian/workspace.gd": "44ce0866665a32ae5dacc1db6eabdce062afd2c534e138f6beb2d6ca7802c962",
+    "tests/editor/ai_chat_http_cancel.gd": "7ae22b0624221709d06c41cb22d1fb2027ca820b63db9c18628de5ab1054ee5a",
+    "tests/editor/ai_chat_integration.gd": "aeeecedc46df8ea33ffe206882941f5e95e847e3d20f5ba6a076dc0637cdbfd1",
+    "tests/editor/daqian_canvas_chat.gd": "b5903d1fc8fcb207508488c41204f355f65e00cb28808694ce28da5cd41b19ec",
+    "tests/editor/model_picker.gd": "a7ca4d6f99f78b0a9215eb2552c837bb084b9d631a90647b675441a4f84287cc",
+    "tests/editor/run_ai_chat_http_cancel.py": "ec08d441d3e97430a2f27254147c70a82b8606d94d4719e8fc56013ed30a4f57",
+    "tests/editor/run_daqian_graph.py": "b42cc51b832a9e26275e3aa2634f2ccef93196a0c2df8c60061b0d78f3945791",
+    "tests/editor/run_model_autofetch.py": "0eebd40aee6d8c58b695b16882900bc18513280aa53a738a88c03ec7cdc15905",
+    "tests/editor/run_model_picker.py": "766ea00635e482e3b1968d29355ad6f7c240b6b82f3a0a2a6ee1848519684d79",
+    "tools/codebuddy_cli/godot_bridge.js": "29c4907589ed6255bb05b15b8cb6fe40be0127c2e21d80fe33b8a3b616eaab3f",
+    "tools/codex_cli/godot_bridge.js": "979edef52c67a77c448365aaddf5a6ef0b9fcae37824eda527f611fdab368bfd"
+  },
+  "limits": [
+    "Windows nested Job/process behavior not executed here; platform CI required",
+    "Synthetic fixtures do not establish real provider accounts or paid inference availability",
+    "No claim regarding Issue971 per-session/node persistence or Issue997 chat bridge protocol",
+    "Full legacy integration matrix not independently rerun"
+  ],
+  "delivery": "pending exact formal gate/CI/main; no installed editor replaced",
+  "cleanup": "Author54PID/18temporaryroots verified removed; root/reviewer isolated fixture roots auto removed; build/node_modules and exact evidence retained until delivery/997 consumer acceptance."
+}

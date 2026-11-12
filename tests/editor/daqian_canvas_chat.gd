@@ -31,7 +31,7 @@ class Graph extends Control:
 class Chat extends Control:
 	var last := []
 	var sends := 0
-	func get_daqian_models() -> Dictionary:
+	func get_model_catalog_snapshot() -> Dictionary:
 		return {"backend":0, "current":"first", "options":[{"id":"second"}]}
 	func open_daqian_chat(source, number, request, message, preview, selection, embedded, preview_receipt := "", _existing_only := false, _background := false) -> String:
 		sends += 1

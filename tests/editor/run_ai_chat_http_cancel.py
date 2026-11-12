@@ -38,7 +38,7 @@ def main():
     if args.manual_stop and not args.visible:
         parser.error("--manual-stop requires --visible")
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="http-cancel-", dir=args.out.parent) as folder:
+    with tempfile.TemporaryDirectory(prefix="http-cancel-") as folder:
         project = Path(folder)
         os.environ.pop("GONGGONG_WORKSPACE", None)
         isolated_editor = copy_editor(args.godot, project / "isolated-editor")
@@ -129,7 +129,16 @@ def main():
         env = dict(os.environ)
         for key in ["OPENAI_API_KEY", "GODOT_AI_API_KEY", "GONGGONG_WORKSPACE", "GONGGONG_TEST_WORKSPACE"]:
             env.pop(key, None)
-        for key in ["APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "TEMP", "TMP"]:
+        for key in [
+            "HOME",
+            "USERPROFILE",
+            "APPDATA",
+            "LOCALAPPDATA",
+            "XDG_CONFIG_HOME",
+            "XDG_DATA_HOME",
+            "TEMP",
+            "TMP",
+        ]:
             env[key] = str(project / key)
             (project / key).mkdir()
         env.update(

@@ -292,6 +292,16 @@ function normalizeResult(result, toolsAllowed, unavailableReason = 'permission_d
 
 async function main() {
     const mode = process.argv[2];
+    const hostModelGroup = mode === 'models' && process.argv[4] === '--host-process-group';
+    if (hostModelGroup) {
+        process.stdin.once('end', () => {
+            if (process.platform !== 'win32') {
+                try { process.kill(-process.pid, 'SIGKILL'); } catch (_) {}
+            }
+            process.exit();
+        });
+        process.stdin.resume();
+    }
     const suppliedEntry = process.argv[3];
     const entry = suppliedEntry || path.join(__dirname, 'node_modules/@tencent-ai/codebuddy-code/bin/codebuddy');
     if (!['chat', 'session', 'login', 'models'].includes(mode) || !path.isAbsolute(entry) || !fs.existsSync(entry)) {
@@ -380,7 +390,7 @@ async function main() {
         if (failed) throw bridgeError(failed, code);
         if (mode === 'models') {
             if (!modelsResult) throw bridgeError('EMPTY_RESPONSE', code);
-            process.stdout.write(JSON.stringify(modelsResult));
+            process.stdout.write(JSON.stringify(modelsResult) + (hostModelGroup ? '\n' : ''));
             return;
         }
         if (mode === 'chat' && stdoutFd >= 0) {
@@ -409,7 +419,7 @@ async function main() {
 module.exports = { cliEnvironment, safeArguments, sessionArguments, modelArguments, normalizeModels, buildPrompt, validateInput, sessionInstructions, normalizeResult, classifyDiagnostics, safeDiagnostics, serializeError, bridgeError, ACTIONS, SCHEMA };
 if (require.main === module) {
     main().catch(error => {
-        process.stdout.write(JSON.stringify({ error: serializeError(error) }));
+        process.stdout.write(JSON.stringify({ error: serializeError(error) }) + (process.argv[2] === 'models' && process.argv[4] === '--host-process-group' ? '\n' : ''));
         process.exitCode = 1;
     });
 }

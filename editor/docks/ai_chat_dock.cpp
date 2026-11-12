@@ -54,6 +54,7 @@
 #include "editor/docks/ai_chat_tools.h"
 #include "editor/docks/gonggong_host_paths.h"
 #include "editor/docks/gonggong_panel.h"
+#include "editor/docks/gonggong_process.h"
 #include "editor/docks/gonggong_runtime_config.h"
 #include "editor/editor_log.h"
 #include "editor/editor_node.h"
@@ -104,6 +105,9 @@
 
 #include <windows.h>
 #endif
+
+// A login performed in this editor invalidates catalogs in every issue worker.
+uint64_t AIChatDock::nCatalogAccountGeneration = 0;
 
 namespace {
 #ifdef WINDOWS_ENABLED
@@ -2009,7 +2013,7 @@ void AIChatDock::_set_busy(bool p_busy) {
 	if (sub_agent_tabs) {
 		_refresh_sub_agents();
 	}
-	const bool locked = busy || !pending_external_editor_message.is_empty() || models_loading || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty();
+	const bool locked = busy || !pending_external_editor_message.is_empty() || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty();
 	gonggong_panel->set_task_locked(locked || engine_restart_requested);
 	snapshot_history_button->set_disabled(locked || engine_restart_requested);
 	_refresh_engine_controls();
@@ -2029,11 +2033,11 @@ void AIChatDock::_set_busy(bool p_busy) {
 	cli_model->set_editable(!locked);
 	codex_entry->set_editable(!locked);
 	codex_model->set_editable(!locked);
-	cli_login->set_disabled(busy || models_loading);
-	model_picker->set_disabled(busy || models_loading);
+	cli_login->set_disabled(busy);
+	model_picker->set_disabled(busy);
 	_sync_reasoning_picker();
 	// Accept corrections while busy; apply them only at a host-owned safe boundary.
-	send_button->set_disabled(!pending_external_editor_message.is_empty() || snapshot_restoring || snapshot_transaction_failed || models_loading || (engine_build_pid >= 0 && !busy) || engine_restart_requested);
+	send_button->set_disabled(!pending_external_editor_message.is_empty() || snapshot_restoring || snapshot_transaction_failed || (engine_build_pid >= 0 && !busy) || engine_restart_requested);
 	send_button->set_text(busy ? U"补充要求" : U"发送");
 	send_button->set_tooltip_text(U"回车发送；执行中补充当前任务，在安全边界应用。切换咨询模式的消息单独排队。Shift+回车换行。");
 	backend->set_disabled(locked);
@@ -2091,7 +2095,7 @@ void AIChatDock::_set_busy(bool p_busy) {
 		_refresh_schedule_agents();
 	}
 	_refresh_sub_agents();
-	if (!busy && !models_loading && pending_model_sources) {
+	if (!busy && pending_model_sources) {
 		callable_mp(this, &AIChatDock::_try_pending_model_refresh).call_deferred();
 	}
 }
@@ -2116,7 +2120,7 @@ void AIChatDock::_refresh_message_queue() {
 																																	   : U"待执行 · %d 条 · 将作为独立任务执行",
 			queued_messages.size()));
 	queue_resume->set_visible(queue_paused);
-	queue_resume->set_disabled(busy || models_loading || engine_build_pid >= 0 || engine_restart_requested);
+	queue_resume->set_disabled(busy || engine_build_pid >= 0 || engine_restart_requested);
 	while (queue_list->get_child_count()) {
 		Node *child = queue_list->get_child(0);
 		queue_list->remove_child(child);
@@ -2162,7 +2166,7 @@ void AIChatDock::_remove_queued_message(int p_index) {
 }
 
 void AIChatDock::_resume_message_queue() {
-	if (busy || models_loading || engine_build_pid >= 0 || engine_restart_requested || queued_messages.is_empty()) {
+	if (busy || engine_build_pid >= 0 || engine_restart_requested || queued_messages.is_empty()) {
 		return;
 	}
 	queue_paused = false;
@@ -2175,7 +2179,7 @@ void AIChatDock::_dispatch_queued_message(int p_agent) {
 	if (!pending_external_editor_message.is_empty() || !gonggong_recovered_result.is_empty()) {
 		return;
 	}
-	if (!is_inside_tree() || history_restoring || busy || models_loading || engine_build_pid >= 0 || engine_restart_requested || p_agent != active_agent || queue_paused || queued_messages.is_empty()) {
+	if (!is_inside_tree() || history_restoring || busy || engine_build_pid >= 0 || engine_restart_requested || p_agent != active_agent || queue_paused || queued_messages.is_empty()) {
 		return;
 	}
 	const Dictionary message = queued_messages[0];
@@ -3951,7 +3955,7 @@ Dictionary AIChatDock::_chat_host_action(const Dictionary &p_args, bool p_confir
 	if (action == "chat_host_context" || action == "chat_host_send_message" || action == "chat_sessions" || action == "chat_schedules" || action == "chat_configuration" || action == "chat_attachments" || action == "chat_history" || action == "chat_rename_session" || action == "chat_close_session" || action == "chat_create_child" || action.begins_with("chat_schedule_") || action == "chat_set_model_id" || action == "chat_set_reasoning" || action == "chat_set_runtime_field" || action == "chat_set_cli_path" || action.begins_with("chat_attachment_") || action == "chat_send_message" || action == "chat_show_history" || action == "chat_show_changes") {
 		return _chat_extended_host_action(p_args, p_confirmed);
 	}
-	if (busy || models_loading || history_restoring || snapshot_restoring || snapshot_transaction_failed || engine_build_pid >= 0 || engine_restart_requested || !gonggong_recovered_result.is_empty() || daqian_chat_host.is_valid()) {
+	if (busy || history_restoring || snapshot_restoring || snapshot_transaction_failed || engine_build_pid >= 0 || engine_restart_requested || !gonggong_recovered_result.is_empty() || daqian_chat_host.is_valid()) {
 		result["error"] = "editor_busy";
 		return result;
 	}
@@ -4108,7 +4112,7 @@ Dictionary AIChatDock::_editor_bridge_request(const Dictionary &p_envelope) {
 	if (requested_operation.get("action", "") == "chat_state" || requested_operation.get("action", "") == "chat_stop" || requested_operation.get("action", "") == "chat_sessions" || requested_operation.get("action", "") == "chat_schedules" || requested_operation.get("action", "") == "chat_configuration" || requested_operation.get("action", "") == "chat_attachments" || requested_operation.get("action", "") == "chat_history" || requested_operation.get("action", "") == "chat_host_context") {
 		return control->route_message(message, true, false, false, true);
 	}
-	if (busy || !pending_external_editor_message.is_empty() || models_loading || history_restoring || snapshot_restoring || snapshot_transaction_failed || engine_build_pid >= 0 || engine_restart_requested || !gonggong_recovered_result.is_empty()) {
+	if (busy || !pending_external_editor_message.is_empty() || history_restoring || snapshot_restoring || snapshot_transaction_failed || engine_build_pid >= 0 || engine_restart_requested || !gonggong_recovered_result.is_empty()) {
 		denied["error"] = "editor_busy";
 		return denied;
 	}
@@ -4324,8 +4328,6 @@ AIChatDock::AgentSession AIChatDock::_capture_agent() const {
 	state.model = model->get_text();
 	state.cli_model = cli_model->get_text();
 	state.codex_model = codex_model->get_text();
-	state.model_catalog = model_catalog.duplicate(true);
-	state.model_catalog_config = model_catalog_config;
 	state.backend = backend->get_selected();
 	state.scroll = chat_follow_latest ? chat_scroll->get_v_scroll() : chat_scroll_position;
 	state.follow_latest = chat_follow_latest;
@@ -4408,7 +4410,7 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 	tool_rounds = 0;
 	details_dialog->hide();
 	details_text->set_text(String());
-	const String config = _model_config_signature();
+	const String config = GetModelCatalogIdentity();
 	const Array catalog = Array(discovered_model_catalogs.get(config, Array()));
 	_apply_models(catalog);
 	model_catalog_config = config;
@@ -4418,7 +4420,7 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 
 void AIChatDock::_agent_selected(int p_index) {
 	ERR_FAIL_INDEX(p_index, agent_tabs->get_tab_count());
-	if (daqian_chat_host.is_valid() || busy || !pending_external_editor_message.is_empty() || models_loading || engine_build_pid >= 0 || snapshot_restoring || !gonggong_recovered_result.is_empty()) {
+	if (daqian_chat_host.is_valid() || busy || !pending_external_editor_message.is_empty() || engine_build_pid >= 0 || snapshot_restoring || !gonggong_recovered_result.is_empty()) {
 		for (int i = 0; i < agent_tabs->get_tab_count(); i++) {
 			if (int(agent_tabs->get_tab_metadata(i)) == active_agent) {
 				agent_tabs->set_current_tab(i);
@@ -4555,7 +4557,7 @@ void AIChatDock::_agent_close_requested(int p_index) {
 		}
 	}
 	const int children = _sub_agent_children(id, false).size();
-	if (children || has_history || !state.draft.is_empty() || !state.draft_images.is_empty() || (id == active_agent && (busy || models_loading || engine_build_pid >= 0))) {
+	if (children || has_history || !state.draft.is_empty() || !state.draft_images.is_empty() || (id == active_agent && (busy || engine_build_pid >= 0))) {
 		agent_close_confirmation->set_text(vformat(U"关闭 %s？\n该会话的聊天记录和草稿将从当前会话及自动保存记录中移除，相关任务会停止。\n已应用的文件修改不会撤销；其他会话不受影响。", agent_tabs->get_tab_title(p_index)) + (children ? vformat(U"\n它的 %d 个子会话将一并关闭。", children) : String()));
 		agent_close_confirmation->popup_centered();
 		return;
@@ -4658,7 +4660,7 @@ void AIChatDock::_close_agent() {
 	agent_tabs->set_block_signals(false);
 	_sub_agent_removed(id);
 	_scheduled_agent_removed(id);
-	add_agent->set_disabled(busy || models_loading || engine_build_pid >= 0 || (_manual_agent_count() >= 16 || agent_tabs->get_tab_count() >= 256));
+	add_agent->set_disabled(busy || engine_build_pid >= 0 || (_manual_agent_count() >= 16 || agent_tabs->get_tab_count() >= 256));
 	callable_mp(this, &AIChatDock::_update_agent_add_button).call_deferred();
 	_queue_history_save();
 	_save_history();
@@ -4684,6 +4686,9 @@ String AIChatDock::_work_order_binding(const String &p_field, int p_agent) const
 }
 
 void AIChatDock::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("get_model_catalog_snapshot"), &AIChatDock::GetModelCatalogSnapshot);
+	ClassDB::bind_method(D_METHOD("refresh_model_catalog"), &AIChatDock::RefreshModelCatalog);
+	ClassDB::bind_method(D_METHOD("cancel_model_catalog"), &AIChatDock::CancelModelCatalog);
 	ClassDB::bind_method(D_METHOD("get_runtime_configuration"), &AIChatDock::get_runtime_configuration);
 	ClassDB::bind_method(D_METHOD("get_production_workspace"), &AIChatDock::get_production_workspace);
 	ClassDB::bind_method(D_METHOD("get_installed_host_root"), &AIChatDock::get_installed_host_root);
@@ -4771,21 +4776,7 @@ String AIChatDock::_get_legacy_candidate_failure(const String &p_owner, const St
 }
 
 Dictionary AIChatDock::_get_daqian_models() const {
-	Array options;
-	for (int i = 0; i < model_picker->get_item_count(); i++) {
-		if (model_picker->is_item_disabled(i)) {
-			continue;
-		}
-		Dictionary item;
-		item["id"] = model_picker->get_item_metadata(i);
-		item["label"] = model_picker->get_item_text(i);
-		options.push_back(item);
-	}
-	Dictionary result;
-	result["backend"] = backend->get_selected();
-	result["options"] = options;
-	result["current"] = _active_model_field()->get_text().strip_edges();
-	return result;
+	return GetModelCatalogSnapshot();
 }
 
 AIChatDock *AIChatDock::_ensure_issue_worker(const String &p_key) {
@@ -5188,11 +5179,6 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 	if (p_existing_only && index < 0) {
 		return U"此工单已有开工记录，但当前编辑器没有找到原工作者对话。请核对原工作区、账号和交接记录。";
 	}
-	if (models_loading) {
-		// Resume catalog discovery after the explicit work-order action.
-		pending_model_sources |= consumed_model_sources;
-		_cancel_model_query();
-	}
 	if (index < 0) {
 		const int before = agent_tabs->get_tab_count();
 		_add_agent();
@@ -5284,7 +5270,7 @@ void AIChatDock::_add_agent() {
 		_append(TTR("Editor"), U"请先恢复当前工具结果，或按停止明确放弃恢复。");
 		return;
 	}
-	if (busy || models_loading || engine_build_pid >= 0 || (_manual_agent_count() >= 16 || agent_tabs->get_tab_count() >= 256)) {
+	if (busy || engine_build_pid >= 0 || (_manual_agent_count() >= 16 || agent_tabs->get_tab_count() >= 256)) {
 		return;
 	}
 	const int index = agent_tabs->get_tab_count();
@@ -5326,29 +5312,11 @@ void AIChatDock::_update_agent_add_button() {
 	add_agent->set_rect(Rect2(Point2(x, last_tab.position.y), button_size));
 }
 
-void AIChatDock::_restore_cli_after_models() {
-	if (!cli_suspended_for_models) {
-		return;
-	}
-	cli_process_id = model_query_session.cli_process_id;
-	cli_stdout = model_query_session.cli_stdout;
-	cli_stderr = model_query_session.cli_stderr;
-	cli_configuration = model_query_session.cli_configuration;
-	cli_sent_messages = model_query_session.cli_sent_messages;
-	cli_session = cli_process_id >= 0;
-	cli_waiting = false;
-	cli_output.clear();
-	model_query_session = AgentSession();
-	cli_suspended_for_models = false;
-	set_process(cli_process_id >= 0 || process_id >= 0 || sub_agent_parallel_pid >= 0);
-}
-
 void AIChatDock::_cancel_all_agents() {
 	_cancel_issue_guide(String());
 	_cancel_igniter(String());
 	_cancel_cli();
-	_restore_cli_after_models();
-	_cancel_cli();
+	CancelModelCatalog();
 	for (KeyValue<int, AgentSession> &entry : agent_sessions) {
 		if (entry.value.cli_process_id >= 0 && OS::get_singleton()->is_process_running(entry.value.cli_process_id)) {
 			OS::get_singleton()->kill(entry.value.cli_process_id);
@@ -5366,9 +5334,10 @@ void AIChatDock::_backend_changed(int p_backend) {
 	if (!gonggong_recovered_result.is_empty()) {
 		return;
 	}
-	if (busy || models_loading) {
+	if (busy) {
 		return;
 	}
+	CancelModelCatalog();
 	_cancel_cli();
 	set_process(process_id >= 0 || sub_agent_parallel_pid >= 0);
 	request_generation++;
@@ -5402,7 +5371,7 @@ LineEdit *AIChatDock::_active_model_field() const {
 
 void AIChatDock::_sync_model_picker() {
 	_apply_models(Array());
-	model_catalog_config = _model_config_signature();
+	model_catalog_config = GetModelCatalogIdentity();
 }
 
 void AIChatDock::_apply_models(const Array &p_models) {
@@ -5450,15 +5419,17 @@ void AIChatDock::_apply_models(const Array &p_models) {
 		model_picker->set_item_metadata(0, String());
 		model_picker->set_item_disabled(0, true);
 	}
-	model_picker->select(selected >= 0 ? selected : 0);
-	_sync_reasoning_picker();
 	if (!cli && current.is_empty() && !ids.is_empty()) {
-		_model_selected(0);
+		model_picker->select(-1);
+		model_picker->set_text(U"请选择模型");
+	} else {
+		model_picker->select(selected >= 0 ? selected : 0);
 	}
+	_sync_reasoning_picker();
 }
 
 void AIChatDock::_model_selected(int p_index) {
-	if (busy || models_loading || p_index < 0 || p_index >= model_picker->get_item_count()) {
+	if (busy || p_index < 0 || p_index >= model_picker->get_item_count()) {
 		return;
 	}
 	const String id = model_picker->get_item_metadata(p_index);
@@ -5469,7 +5440,7 @@ void AIChatDock::_model_selected(int p_index) {
 
 void AIChatDock::_model_edited(const String &p_text) {
 	_project_ai_configuration_changed();
-	if (busy || models_loading) {
+	if (busy) {
 		return;
 	}
 	_apply_models(model_catalog);
@@ -5494,6 +5465,9 @@ void AIChatDock::_sync_reasoning_picker() {
 				continue;
 			}
 			const Dictionary item = entry;
+			if (item.get("id", Variant()).get_type() != Variant::STRING) {
+				continue;
+			}
 			if (String(item.get("id", "")) == current || (current.is_empty() && bool(item.get("is_default", false)))) {
 				const Variant efforts = item.get("reasoning_efforts", Array());
 				if (efforts.get_type() == Variant::ARRAY) {
@@ -5524,7 +5498,7 @@ void AIChatDock::_sync_reasoning_picker() {
 		}
 	}
 	reasoning_picker->select(selected);
-	reasoning_picker->set_disabled(busy || models_loading || supported.is_empty());
+	reasoning_picker->set_disabled(busy || supported.is_empty());
 	reasoning_picker->set_tooltip_text(supported.is_empty() ? String(U"尚无可用的强度信息；服务未声明支持情况时使用模型默认，适配待补充。") : String(U"只启用当前模型支持的推理强度。"));
 	_update_settings_summary();
 	_project_ai_configuration_changed();
@@ -5538,7 +5512,7 @@ String AIChatDock::_reasoning_effort() const {
 }
 
 void AIChatDock::_reasoning_selected(int p_index) {
-	if (busy || models_loading || p_index < 0 || p_index >= reasoning_picker->get_item_count() || reasoning_picker->is_item_disabled(p_index)) {
+	if (busy || p_index < 0 || p_index >= reasoning_picker->get_item_count() || reasoning_picker->is_item_disabled(p_index)) {
 		_sync_reasoning_picker();
 		return;
 	}
@@ -5550,17 +5524,374 @@ void AIChatDock::_reasoning_selected(int p_index) {
 	_update_settings_summary();
 }
 
-String AIChatDock::_model_config_signature(const Dictionary &p_runtime) const {
-	const Dictionary runtime = p_runtime.is_empty() ? GongGongRuntimeConfig::read_effective() : p_runtime;
-	const int selected = backend->get_selected();
-	if (selected == 2) {
-		return "2:" + GongGongRuntimeConfig::path(runtime, "codex") + ":" + GongGongRuntimeConfig::path(runtime, "node");
+// New catalog lifecycle follows CPP_CODING_STANDARD.md during formatter transition.
+// clang-format off
+String AIChatDock::GetModelCatalogIdentity(const Dictionary &mapRuntime) const
+{
+	const Dictionary mapEffective = mapRuntime.is_empty() ? GongGongRuntimeConfig::read_effective() : mapRuntime;
+	String strIdentity = itos(backend->get_selected()) + "\n" + JSON::stringify(mapEffective) + "\n" + itos(nCatalogAccountGeneration);
+	if (backend->get_selected() == 1 || backend->get_selected() == 2)
+	{
+		strIdentity += "\n" + cli_bridge->get_text().strip_edges() + "\n" + cli_entry->get_text().strip_edges() + "\n" + _codex_bridge();
 	}
-	if (selected == 1) {
-		return "1:" + GongGongRuntimeConfig::path(runtime, "node") + ":" + cli_bridge->get_text().strip_edges() + ":" + cli_entry->get_text().strip_edges();
+	else
+	{
+		strIdentity += "\n" + endpoint->get_text().strip_edges() + "\n" + GetAiCredential().sha256_text();
 	}
-	return itos(selected) + ":" + endpoint->get_text().strip_edges() + ":" + api_key->get_text().sha256_text();
+	strIdentity += "\n" + String(EDITOR_GET("network/http_proxy/host")) + ":" + itos(int(EDITOR_GET("network/http_proxy/port")));
+	// Hash only in memory. Never read CLI credential files or export this identity.
+	for (const String &strKey : { String("PATH"), String("CODEX_HOME"), String("HOME"), String("USERPROFILE"), String("CODEX_API_KEY"), String("OPENAI_API_KEY"), String("OPENAI_BASE_URL"), String("OPENAI_ORG_ID"), String("OPENAI_PROJECT_ID"), String("CHATGPT_BASE_URL"), String("HTTPS_PROXY"), String("HTTP_PROXY"), String("ALL_PROXY"), String("NO_PROXY"), String("SSL_CERT_FILE"), String("NODE_EXTRA_CA_CERTS") })
+	{
+		strIdentity += "\n" + strKey + ":" + OS::get_singleton()->get_environment(strKey).sha256_text();
+	}
+	return strIdentity.sha256_text();
 }
+
+Dictionary AIChatDock::GetModelCatalogSnapshot() const
+{
+	Dictionary mapSnapshot;
+	Array arrOptions;
+	const String strCurrent = _active_model_field()->get_text().strip_edges();
+	const bool bCli = backend->get_selected() == 1 || backend->get_selected() == 2;
+	HashSet<String> setIds;
+	if (bCli)
+	{
+		Dictionary mapDefault;
+		mapDefault["id"] = String();
+		mapDefault["label"] = U"跟随 CLI 默认模型";
+		mapDefault["source"] = "cli_default";
+		arrOptions.push_back(mapDefault);
+	}
+	const bool bCurrent = model_catalog_config == GetModelCatalogIdentity();
+	if (bCurrent)
+	{
+		for (int nIndex = 0; nIndex < MIN(model_catalog.size(), 200); nIndex++)
+		{
+			if (model_catalog[nIndex].get_type() != Variant::DICTIONARY)
+			{
+				continue;
+			}
+			const Dictionary mapSource = model_catalog[nIndex];
+			const Variant varId = mapSource.get("id", Variant());
+			if (varId.get_type() != Variant::STRING)
+			{
+				continue;
+			}
+			const String strId = String(varId).strip_edges();
+			if (strId.is_empty() || strId.length() > 128 || strId.contains("\n") || strId.contains("\r") || setIds.has(strId))
+			{
+				continue;
+			}
+			setIds.insert(strId);
+			// Export catalog metadata, never arbitrary provider/account fields.
+			Dictionary mapEntry;
+			mapEntry["id"] = strId;
+			const Variant varName = mapSource.get("name", Variant());
+			const Variant varDescription = mapSource.get("description", Variant());
+			const Variant varDefault = mapSource.get("is_default", Variant());
+			const Variant varSource = mapSource.get("source", Variant());
+			mapEntry["name"] = varName.get_type() == Variant::STRING ? String(varName).left(128) : strId;
+			mapEntry["description"] = varDescription.get_type() == Variant::STRING ? String(varDescription).left(512) : String();
+			mapEntry["is_default"] = varDefault.get_type() == Variant::BOOL && bool(varDefault);
+			Array arrEfforts;
+			const Variant varEfforts = mapSource.get("reasoning_efforts", Array());
+			if (varEfforts.get_type() == Variant::ARRAY)
+			{
+				for (const Variant &varEffort : Array(varEfforts))
+				{
+					if (varEffort.get_type() == Variant::STRING)
+					{
+						arrEfforts.push_back(String(varEffort));
+					}
+				}
+			}
+			mapEntry["reasoning_efforts"] = arrEfforts;
+			mapEntry["source"] = varSource.get_type() == Variant::STRING ? String(varSource).left(128) : String(backend->get_selected() == 2 ? "codex_model_list" : backend->get_selected() == 1 ? "codebuddy_model_list" : "api_models");
+			mapEntry["label"] = String(mapEntry.get("name", strId)).left(128).replace("\n", " ").replace("\r", " ");
+			arrOptions.push_back(mapEntry);
+		}
+	}
+	if (!strCurrent.is_empty() && !setIds.has(strCurrent))
+	{
+		Dictionary mapManual;
+		mapManual["id"] = strCurrent;
+		mapManual["label"] = strCurrent + String(U"（手动配置）");
+		mapManual["source"] = "manual";
+		arrOptions.push_back(mapManual);
+	}
+	mapSnapshot["backend"] = backend->get_selected();
+	mapSnapshot["current"] = strCurrent;
+	mapSnapshot["options"] = arrOptions;
+	mapSnapshot["state"] = strCatalogState;
+	mapSnapshot["status"] = model_status->get_text();
+	mapSnapshot["loading"] = models_loading || codex_status_pid >= 0;
+	mapSnapshot["generation"] = nCatalogGeneration;
+	mapSnapshot["catalog_current"] = bCurrent;
+	return mapSnapshot;
+}
+
+void AIChatDock::SetModelCatalogStatus(const String &strState, const String &strMessage)
+{
+	strCatalogState = strState;
+	model_status->set_text(strMessage);
+	pCatalogRefresh->set_disabled(models_loading || codex_status_pid >= 0);
+	pCatalogCancel->set_disabled(!models_loading && codex_status_pid < 0 && !pending_model_sources);
+}
+
+void AIChatDock::ReleaseModelCatalogTransport()
+{
+	if (model_request)
+	{
+		model_request->cancel_request();
+		model_request->queue_free();
+		model_request = nullptr;
+	}
+	if (nCatalogPid >= 0)
+	{
+		// The native catalog bridge keeps its process-group leader alive until
+		// this operation has consumed the result and terminated its whole tree.
+		stop_gonggong_process(nCatalogPid);
+		nCatalogPid = -1;
+	}
+	refCatalogStdout.unref();
+	refCatalogStderr.unref();
+	arrCatalogOutput.clear();
+	pCatalogTimer->stop();
+	model_request_key = String();
+	models_loading = false;
+}
+
+void AIChatDock::CancelModelCatalog()
+{
+	nCatalogGeneration++;
+	ReleaseModelCatalogTransport();
+	if (codex_status_pid >= 0)
+	{
+		OS::get_singleton()->kill(codex_status_pid);
+		codex_status_pid = -1;
+	}
+	codex_status_sources = 0;
+	pending_model_sources = 0;
+	model_config_timer->stop();
+	model_request_config = String();
+	SetModelCatalogStatus("cancelled", U"模型目录查询已取消。可点击“刷新 / 重试模型目录”；当前选择与对话继续保留。");
+}
+
+void AIChatDock::RefreshModelCatalog()
+{
+	if (!is_inside_tree())
+	{
+		return;
+	}
+	CancelModelCatalog();
+	// User retry is a new attempt, independent of automatic event deduplication.
+	pending_model_backend = backend->get_selected();
+	pending_model_config = GetModelCatalogIdentity();
+	consumed_model_sources |= 3;
+	StartModelCatalog();
+}
+
+void AIChatDock::StartModelCatalog()
+{
+	if (models_loading || !is_inside_tree())
+	{
+		return;
+	}
+	const Dictionary mapRuntime = GongGongRuntimeConfig::read_effective();
+	GongGongRuntimeConfig::prepare_child_environment(mapRuntime);
+	model_request_config = GetModelCatalogIdentity(mapRuntime);
+	nCatalogGeneration++;
+	if (backend->get_selected() == 1 || backend->get_selected() == 2)
+	{
+		if (!_validate_cli(mapRuntime))
+		{
+			SetModelCatalogStatus("failed", U"CLI 路径无效。请检查“设置 → 环境”，然后点击“刷新 / 重试模型目录”；也可手动填写模型 ID。");
+			return;
+		}
+		List<String> arrArguments;
+		arrArguments.push_back(backend->get_selected() == 2 ? _codex_bridge() : cli_bridge->get_text().strip_edges());
+		arrArguments.push_back("models");
+		arrArguments.push_back(backend->get_selected() == 2 ? GongGongRuntimeConfig::path(mapRuntime, "codex") : cli_entry->get_text().strip_edges());
+		arrArguments.push_back("--host-process-group");
+		const Dictionary mapProcess = OS::get_singleton()->execute_with_pipe(GongGongRuntimeConfig::path(mapRuntime, "node"), arrArguments, false);
+		if (!mapProcess.has("pid") || !mapProcess.has("stdio") || !mapProcess.has("stderr"))
+		{
+			SetModelCatalogStatus("failed", U"无法启动目录查询。请检查 CLI 和 Node 路径后点击“刷新 / 重试模型目录”。");
+			return;
+		}
+		nCatalogPid = mapProcess["pid"];
+		refCatalogStdout = mapProcess["stdio"];
+		refCatalogStderr = mapProcess["stderr"];
+		nCatalogStarted = OS::get_singleton()->get_ticks_msec();
+		arrCatalogOutput.clear();
+		models_loading = true;
+		pCatalogTimer->start();
+		SetModelCatalogStatus("loading", U"正在获取模型目录；可以继续对话、手动选模或取消查询。");
+		return;
+	}
+	const String strUrl = endpoint->get_text().strip_edges();
+	const bool bLocal = strUrl.begins_with("http://127.0.0.1:") || strUrl.begins_with("http://localhost:") || strUrl.begins_with("http://[::1]:");
+	if ((!strUrl.begins_with("https://") && !bLocal) || strUrl.contains("@") || strUrl.contains("\n") || strUrl.contains("\r") || (!strUrl.ends_with("/chat/completions") && !strUrl.ends_with("/responses")))
+	{
+		SetModelCatalogStatus("failed", U"请配置完整的 /chat/completions 或 /responses 接口后点击“刷新 / 重试模型目录”；不支持枚举时可手动填写模型 ID。");
+		return;
+	}
+	model_request_key = GetAiCredential();
+	Vector<String> arrHeaders;
+	if (!model_request_key.is_empty())
+	{
+		arrHeaders.push_back("Authorization: Bearer " + model_request_key);
+	}
+	model_request = memnew(HTTPRequest);
+	model_request->set_use_threads(false);
+	model_request->set_timeout(30);
+	model_request->set_body_size_limit(256 * 1024);
+	model_request->set_max_redirects(0);
+	model_request->set_http_proxy(EDITOR_GET("network/http_proxy/host"), EDITOR_GET("network/http_proxy/port"));
+	model_request->set_https_proxy(EDITOR_GET("network/http_proxy/host"), EDITOR_GET("network/http_proxy/port"));
+	model_request->connect("request_completed", callable_mp(this, &AIChatDock::CompleteModelCatalog).bind(nCatalogGeneration));
+	add_child(model_request);
+	models_loading = true;
+	SetModelCatalogStatus("loading", U"正在获取模型目录；可以继续对话、手动选模或取消查询。");
+	const Error eResult = model_request->request(strUrl.trim_suffix("/chat/completions").trim_suffix("/responses") + "/models", arrHeaders);
+	if (eResult != OK)
+	{
+		CompleteModelCatalog(HTTPRequest::RESULT_CANT_CONNECT, 0, PackedStringArray(), PackedByteArray(), nCatalogGeneration);
+	}
+}
+
+void AIChatDock::PollModelCatalog()
+{
+	if (nCatalogPid < 0)
+	{
+		return;
+	}
+	bool bReceived = false;
+	bool bOverflow = false;
+	for (const Ref<FileAccess> &refPipe : { refCatalogStdout, refCatalogStderr })
+	{
+		if (refPipe.is_null())
+		{
+			continue;
+		}
+		PackedByteArray arrBytes;
+		arrBytes.resize(16384);
+		const uint64_t nRead = refPipe->get_buffer(arrBytes.ptrw(), arrBytes.size());
+		if (nRead > 0 && nRead <= uint64_t(arrBytes.size()))
+		{
+			bReceived = true;
+			arrBytes.resize(nRead);
+			if (refPipe == refCatalogStdout)
+			{
+				bOverflow = arrCatalogOutput.size() + arrBytes.size() > 256 * 1024;
+				if (!bOverflow)
+				{
+					arrCatalogOutput.append_array(arrBytes);
+				}
+			}
+		}
+	}
+	// One terminal JSON line leaves the leader alive for owned-tree teardown.
+	for (int nIndex = 0; nIndex < arrCatalogOutput.size(); nIndex++)
+	{
+		if (arrCatalogOutput[nIndex] == '\n')
+		{
+			const PackedByteArray arrBody = arrCatalogOutput.slice(0, nIndex);
+			JSON stEnvelope;
+			const bool bSuccess = stEnvelope.parse(String::utf8(reinterpret_cast<const char *>(arrBody.ptr()), arrBody.size())) == OK && stEnvelope.get_data().get_type() == Variant::DICTIONARY && !Dictionary(stEnvelope.get_data()).has("error");
+			CompleteModelCatalog(bSuccess ? HTTPRequest::RESULT_SUCCESS : HTTPRequest::RESULT_CANT_CONNECT, bSuccess ? 200 : 500, PackedStringArray(), arrBody, nCatalogGeneration);
+			return;
+		}
+	}
+	const bool bRunning = OS::get_singleton()->is_process_running(nCatalogPid);
+	const bool bTimeout = OS::get_singleton()->get_ticks_msec() - nCatalogStarted > 35000;
+	if (!bTimeout && !bOverflow && (bRunning || bReceived))
+	{
+		return;
+	}
+	const int nExitCode = OS::get_singleton()->get_process_exit_code(nCatalogPid);
+	const PackedByteArray arrBody = arrCatalogOutput;
+	CompleteModelCatalog(bTimeout ? HTTPRequest::RESULT_TIMEOUT : !bOverflow && nExitCode == 0 ? HTTPRequest::RESULT_SUCCESS : HTTPRequest::RESULT_CANT_CONNECT, nExitCode == 0 ? 200 : 500, PackedStringArray(), arrBody, nCatalogGeneration);
+}
+
+void AIChatDock::CompleteModelCatalog(int nResult, int nCode, const PackedStringArray &arrHeaders, const PackedByteArray &arrBody, uint64_t nGeneration)
+{
+	if (!models_loading || nGeneration != nCatalogGeneration)
+	{
+		return;
+	}
+	const String strIdentity = model_request_config;
+	ReleaseModelCatalogTransport();
+	model_request_config = String();
+	if (strIdentity != GetModelCatalogIdentity())
+	{
+		SetModelCatalogStatus("stale", U"连接配置已变化，旧目录结果已丢弃；正在准备当前连接的目录。");
+		_model_config_changed(String());
+		_request_model_refresh(2);
+		return;
+	}
+	JSON stJson;
+	if (nResult != HTTPRequest::RESULT_SUCCESS || nCode < 200 || nCode >= 300 || stJson.parse(String::utf8(reinterpret_cast<const char *>(arrBody.ptr()), arrBody.size())) != OK || stJson.get_data().get_type() != Variant::DICTIONARY)
+	{
+		String strReason = U"模型目录查询失败或响应无效。请检查网络、接口地址和服务是否支持枚举。";
+		if (nResult == HTTPRequest::RESULT_TIMEOUT)
+		{
+			strReason = U"模型目录查询超时。请检查网络或代理。";
+		}
+		else if (nCode == 401 || nCode == 403)
+		{
+			strReason = U"服务拒绝目录访问。请核对当前接口的密钥、账号登录和权限。";
+		}
+		else if (nCode == 429)
+		{
+			strReason = U"服务限制了目录请求。请等待后重试并核对额度。";
+		}
+		JSON stDiagnostic;
+		if (stDiagnostic.parse(String::utf8(reinterpret_cast<const char *>(arrBody.ptr()), arrBody.size())) == OK && stDiagnostic.get_data().get_type() == Variant::DICTIONARY)
+		{
+			const Variant varError = Dictionary(stDiagnostic.get_data()).get("error", Variant());
+			if (varError.get_type() == Variant::DICTIONARY)
+			{
+				const String strCode = Dictionary(varError).get("code", "");
+				if (strCode == "CLI_NOT_FOUND" || strCode == "PROCESS_START")
+				{
+					strReason = U"无法启动 CLI。请检查可执行文件及 Node 路径。";
+				}
+				else if (strCode == "TIMEOUT")
+				{
+					strReason = U"CLI 目录查询超时。请检查网络及登录状态。";
+				}
+				else if (strCode == "MODEL_UNAVAILABLE" || strCode == "AUTH_REQUIRED")
+				{
+					strReason = U"CLI 拒绝目录查询。请核对登录、服务配置和 CLI 版本。";
+				}
+			}
+		}
+		SetModelCatalogStatus("failed", strReason + String(U"点击“刷新 / 重试模型目录”重新查询；也可手动填写模型 ID。"));
+		return;
+	}
+	const Dictionary mapResponse = stJson.get_data();
+	const Variant varEntries = mapResponse.get("models", mapResponse.get("data", Variant()));
+	if (varEntries.get_type() != Variant::ARRAY || Array(varEntries).is_empty())
+	{
+		SetModelCatalogStatus("failed", U"服务未返回模型目录。可点击“刷新 / 重试模型目录”，或手动填写模型 ID。");
+		return;
+	}
+	if (!discovered_model_catalogs.has(strIdentity) && discovered_model_catalogs.size() >= 8)
+	{
+		discovered_model_catalogs.clear();
+	}
+	discovered_model_catalogs[strIdentity] = Array(varEntries).duplicate(true);
+	// Apply only options; the current session's model field remains authoritative.
+	_apply_models(varEntries);
+	model_catalog_config = strIdentity;
+	SetModelCatalogStatus("ready", U"模型目录已获取；实际调用仍受账号权限、额度和服务状态约束。");
+	if (pending_model_sources)
+	{
+		callable_mp(this, &AIChatDock::_try_pending_model_refresh).call_deferred();
+	}
+}
+// clang-format on
 
 // Preserve CPP_CODING_STANDARD.md v1.1 Allman style during formatter transition.
 // clang-format off
@@ -5629,6 +5960,7 @@ Dictionary AIChatDock::get_ai_configuration() const {
 	configuration["endpoint"] = endpoint->get_text().strip_edges();
 	configuration["model"] = model->get_text().strip_edges();
 	configuration["cli_model"] = cli_model->get_text().strip_edges();
+	configuration["cli_entry"] = cli_entry->get_text().strip_edges();
 	configuration["codex_model"] = codex_model->get_text().strip_edges();
 	configuration["reasoning_effort"] = _reasoning_effort();
 	configuration["reasoning_preferences"] = EditorSettings::get_singleton()->get_project_metadata("ai_chat", "reasoning_preferences", Dictionary());
@@ -5639,7 +5971,7 @@ Dictionary AIChatDock::get_ai_configuration() const {
 
 String AIChatDock::_ai_connection_signature() const {
 	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
-	String signature = JSON::stringify(get_ai_configuration()) + "\n" + _model_config_signature(runtime) + "\n" + JSON::stringify(runtime) + "\n" + api_key->get_text().sha256_text();
+	String signature = JSON::stringify(get_ai_configuration()) + "\n" + GetModelCatalogIdentity(runtime) + "\n" + JSON::stringify(runtime) + "\n" + api_key->get_text().sha256_text();
 	signature += "\n" + String(EDITOR_GET("network/http_proxy/host")) + ":" + itos(int(EDITOR_GET("network/http_proxy/port")));
 	// Credentials are hashed in memory only and never exposed in status or metadata.
 	for (const String &key : { String("CODEX_HOME"), String("HOME"), String("USERPROFILE"), String("CODEX_API_KEY"), String("OPENAI_API_KEY"), String("OPENAI_BASE_URL"), String("OPENAI_ORG_ID"), String("OPENAI_PROJECT_ID"), String("CHATGPT_BASE_URL"), String("HTTPS_PROXY"), String("HTTP_PROXY"), String("ALL_PROXY"), String("NO_PROXY"), String("SSL_CERT_FILE"), String("NODE_EXTRA_CA_CERTS") }) {
@@ -5950,7 +6282,10 @@ void AIChatDock::_runtime_field_changed(const String &p_value, const String &p_f
 
 void AIChatDock::_model_config_changed(const String &p_text) {
 	_project_ai_configuration_changed();
-	const String config = _model_config_signature();
+	const String config = GetModelCatalogIdentity();
+	if (models_loading && model_request_config != config) {
+		CancelModelCatalog();
+	}
 	if (model_catalog_config != config) {
 		_apply_models(Array(discovered_model_catalogs.get(config, Array())));
 		model_catalog_config = config;
@@ -5966,7 +6301,7 @@ void AIChatDock::_model_config_timeout() {
 
 void AIChatDock::_request_model_refresh(uint8_t p_source) {
 	const int selected = backend->get_selected();
-	const String signature = _model_config_signature();
+	const String signature = GetModelCatalogIdentity();
 	if (selected != pending_model_backend || signature != pending_model_config) {
 		pending_model_backend = selected;
 		pending_model_config = signature;
@@ -5993,17 +6328,20 @@ void AIChatDock::_request_model_refresh(uint8_t p_source) {
 }
 
 void AIChatDock::_try_pending_model_refresh() {
-	if (!pending_model_sources || !is_inside_tree() || busy || models_loading || engine_build_pid >= 0 || engine_restart_requested || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty()) {
+	if (!pending_model_sources || !is_inside_tree() || models_loading || engine_build_pid >= 0 || engine_restart_requested || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty()) {
 		return;
 	}
-	if (pending_model_backend != backend->get_selected() || pending_model_config != _model_config_signature()) {
+	if (pending_model_backend != backend->get_selected() || pending_model_config != GetModelCatalogIdentity()) {
 		pending_model_sources = 0;
+		SetModelCatalogStatus("stale", U"连接配置已变化，正在准备当前连接的目录。");
+		_model_config_changed(String());
+		_request_model_refresh(2);
 		return;
 	}
 	const uint8_t sources = pending_model_sources;
 	pending_model_sources = 0;
 	consumed_model_sources |= sources;
-	_refresh_models();
+	StartModelCatalog();
 }
 
 void AIChatDock::_refresh_codex_models_on_start() {
@@ -6020,21 +6358,22 @@ void AIChatDock::_start_codex_status_check(uint8_t p_sources) {
 	const String executable = GongGongRuntimeConfig::path(runtime, "codex");
 	if (!executable.is_absolute_path() || !FileAccess::exists(executable)) {
 		consumed_model_sources |= p_sources;
-		model_status->set_text(U"请配置有效的 Codex 可执行文件路径；也可手动填写模型 ID。");
+		SetModelCatalogStatus("failed", U"请配置有效的 Codex 可执行文件路径，然后点击“刷新 / 重试模型目录”；也可手动填写模型 ID。");
 		return;
 	}
 	List<String> arguments;
 	arguments.push_back("login");
 	arguments.push_back("status");
 	codex_status_sources = p_sources;
-	codex_status_config = _model_config_signature(runtime);
+	codex_status_config = GetModelCatalogIdentity(runtime);
 	if (OS::get_singleton()->create_process(executable, arguments, &codex_status_pid) != OK) {
 		codex_status_pid = -1;
 		consumed_model_sources |= p_sources;
 		codex_status_sources = 0;
-		model_status->set_text(U"无法启动 Codex 登录状态检查；也可手动填写模型 ID。");
+		SetModelCatalogStatus("failed", U"无法启动 Codex 登录状态检查。请检查路径后点击“刷新 / 重试模型目录”；也可手动填写模型 ID。");
 		return;
 	}
+	SetModelCatalogStatus("checking", U"正在检查 Codex 登录状态；可取消或继续手动选模。");
 	codex_status_started = OS::get_singleton()->get_ticks_msec();
 	codex_login_timer->start();
 }
@@ -6053,13 +6392,17 @@ void AIChatDock::_poll_codex_login() {
 			codex_status_pid = -1;
 			const uint8_t sources = codex_status_sources;
 			codex_status_sources = 0;
-			if (backend->get_selected() == 2 && codex_status_config == _model_config_signature()) {
+			if (codex_status_config != GetModelCatalogIdentity()) {
+				SetModelCatalogStatus("stale", U"连接配置已变化，旧登录状态已丢弃；正在检查当前连接。");
+				_model_config_changed(String());
+				_request_model_refresh(2);
+			} else if (backend->get_selected() == 2) {
 				if (code == 0) {
 					pending_model_sources |= sources & ~consumed_model_sources;
 					callable_mp(this, &AIChatDock::_try_pending_model_refresh).call_deferred();
 				} else {
 					consumed_model_sources |= sources;
-					model_status->set_text(timeout ? String(U"Codex 登录状态检查超时；模型列表未刷新。") : String(U"Codex 尚未登录或状态检查失败；模型列表未刷新。"));
+					SetModelCatalogStatus("failed", timeout ? String(U"Codex 登录状态检查超时；请检查网络后点击“刷新 / 重试模型目录”。") : String(U"Codex 尚未登录或状态检查失败；请完成登录后点击“刷新 / 重试模型目录”。"));
 				}
 			}
 		}
@@ -6074,9 +6417,11 @@ void AIChatDock::_poll_codex_login() {
 			}
 			codex_login_pid = -1;
 			if (code == 0) {
+				nCatalogAccountGeneration++;
+				discovered_model_catalogs.clear();
 				consumed_model_sources &= ~uint8_t(4);
 				_request_model_refresh(4);
-			} else if (backend->get_selected() == 2 && !models_loading) {
+			} else if (backend->get_selected() == 2) {
 				model_status->set_text(timeout ? String(U"Codex 登录等待超时；模型列表未刷新。") : String(U"Codex 登录未完成；模型列表未刷新。"));
 			}
 		}
@@ -6086,152 +6431,11 @@ void AIChatDock::_poll_codex_login() {
 	}
 }
 
-void AIChatDock::_refresh_models() {
-	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
-	GongGongRuntimeConfig::prepare_child_environment(runtime);
-	if (busy || models_loading) {
-		return;
-	}
-	// Bind the response to the effective connection used to launch this query.
-	model_request_config = _model_config_signature(runtime);
-	model_status->set_text(U"正在获取模型列表（不发送对话、不调用模型推理）……");
-	if (backend->get_selected() == 1 || backend->get_selected() == 2) {
-		if (!_validate_cli(runtime)) {
-			model_status->set_text(U"CLI 路径无效。请检查“设置 → 环境”。");
-			return;
-		}
-		if (cli_session && cli_process_id >= 0) {
-			model_query_session = _capture_agent();
-			cli_suspended_for_models = true;
-			cli_process_id = -1;
-		}
-		_cancel_cli();
-		List<String> arguments;
-		arguments.push_back(backend->get_selected() == 2 ? _codex_bridge() : cli_bridge->get_text().strip_edges());
-		arguments.push_back("models");
-		arguments.push_back(backend->get_selected() == 2 ? GongGongRuntimeConfig::path(runtime, "codex") : cli_entry->get_text().strip_edges());
-		Dictionary process = OS::get_singleton()->execute_with_pipe(GongGongRuntimeConfig::path(runtime, "node"), arguments, false);
-		if (!process.has("pid") || !process.has("stdio") || !process.has("stderr")) {
-			_restore_cli_after_models();
-			model_status->set_text(U"无法启动模型列表查询，可手动填写模型 ID。");
-			return;
-		}
-		cli_process_id = process["pid"];
-		cli_stdout = process["stdio"];
-		cli_stderr = process["stderr"];
-		cli_started = OS::get_singleton()->get_ticks_msec();
-		cli_generation = ++request_generation;
-		cli_output.clear();
-		cli_truncated = false;
-		cli_listing_models = true;
-		models_loading = true;
-		_set_busy(false);
-		stop_button->set_disabled(false);
-		set_process(true);
-		return;
-	}
-	const String url = endpoint->get_text().strip_edges();
-	const bool local = url.begins_with("http://127.0.0.1:") || url.begins_with("http://localhost:") || url.begins_with("http://[::1]:");
-	if ((!url.begins_with("https://") && !local) || url.contains("@") || url.contains("\n") || url.contains("\r") || (!url.ends_with("/chat/completions") && !url.ends_with("/responses"))) {
-		model_status->set_text(U"请先配置完整的 /chat/completions 接口；无法推导列表地址时请手动填写模型 ID。");
-		return;
-	}
-	model_request_key = GetAiCredential();
-	if (model_request_key.contains("\n") || model_request_key.contains("\r")) {
-		model_status->set_text(U"密钥不能包含换行。");
-		model_request_key = String();
-		return;
-	}
-	Vector<String> headers;
-	if (!model_request_key.is_empty()) {
-		headers.push_back("Authorization: Bearer " + model_request_key);
-	}
-	model_request = memnew(HTTPRequest);
-	// Model discovery must be cancellable while the server is silent too.
-	model_request->set_use_threads(false);
-	model_request->set_timeout(30);
-	model_request->set_body_size_limit(256 * 1024);
-	model_request->set_max_redirects(0);
-	model_request->set_http_proxy(EDITOR_GET("network/http_proxy/host"), EDITOR_GET("network/http_proxy/port"));
-	model_request->set_https_proxy(EDITOR_GET("network/http_proxy/host"), EDITOR_GET("network/http_proxy/port"));
-	model_request->connect("request_completed", callable_mp(this, &AIChatDock::_models_completed).bind(++request_generation));
-	add_child(model_request);
-	models_loading = true;
-	_set_busy(false);
-	stop_button->set_disabled(false);
-	const Error error = model_request->request(url.trim_suffix("/chat/completions").trim_suffix("/responses") + "/models", headers);
-	if (error != OK) {
-		_models_completed(HTTPRequest::RESULT_CANT_CONNECT, 0, PackedStringArray(), PackedByteArray(), request_generation);
-	}
-}
-
-void AIChatDock::_models_completed(int p_result, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, uint64_t p_generation) {
-	if (!models_loading || p_generation != request_generation) {
-		return;
-	}
-	if (model_request) {
-		model_request->queue_free();
-		model_request = nullptr;
-	}
-	models_loading = false;
-	model_request_key = String();
-	const String request_config = model_request_config;
-	model_request_config = String();
-	_set_busy(false);
-	// Discovery may have blocked the batch's one queued dispatch. Only wake
-	// live ownership; the dispatcher rechecks permissions, pause and receipts.
-	if (design_batches.has(active_agent) || _design_child_parent(active_agent) >= 0) {
-		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
-	}
-	if (pending_model_sources) {
-		callable_mp(this, &AIChatDock::_try_pending_model_refresh).call_deferred();
-	}
-	// Another editor window can change the shared runtime while this request is
-	// in flight. Discard its response and refresh the current connection.
-	if (request_config != _model_config_signature()) {
-		_model_config_changed(String());
-		model_status->set_text(U"连接配置已变化，正在获取当前连接的模型列表。");
-		_request_model_refresh(2);
-		return;
-	}
-	JSON json;
-	if (p_result != HTTPRequest::RESULT_SUCCESS || p_code < 200 || p_code >= 300 || json.parse(String::utf8(reinterpret_cast<const char *>(p_body.ptr()), p_body.size())) != OK || json.get_data().get_type() != Variant::DICTIONARY) {
-		String reason = U"模型列表获取失败或服务不支持枚举。可重试，或手动填写模型 ID。";
-		JSON diagnostic;
-		if (diagnostic.parse(String::utf8(reinterpret_cast<const char *>(p_body.ptr()), p_body.size())) == OK && diagnostic.get_data().get_type() == Variant::DICTIONARY) {
-			const Dictionary response = diagnostic.get_data();
-			const Variant error = response.get("error", Variant());
-			if (error.get_type() == Variant::DICTIONARY) {
-				const String code = Dictionary(error).get("code", "");
-				if (code == "CLI_NOT_FOUND" || code == "PROCESS_START") {
-					reason = U"无法启动 CLI，请检查可执行文件及 Node 路径后重试。";
-				} else if (code == "TIMEOUT") {
-					reason = U"获取模型列表超时，请检查网络后重试。";
-				} else if (code == "MODEL_UNAVAILABLE" || code == "AUTH_REQUIRED") {
-					reason = U"CLI 拒绝模型列表查询，请检查登录状态、服务配置或 CLI 版本后重试。";
-				}
-			}
-		}
-		model_status->set_text(reason);
-		return;
-	}
-	Dictionary response = json.get_data();
-	const Variant entries = response.get("models", response.get("data", Variant()));
-	if (entries.get_type() != Variant::ARRAY || Array(entries).is_empty()) {
-		model_status->set_text(U"未返回可用模型列表。可在“设置 → AI”手动填写模型 ID。");
-		return;
-	}
-	const String config = request_config;
-	if (!discovered_model_catalogs.has(config) && discovered_model_catalogs.size() >= 8) {
-		discovered_model_catalogs.clear();
-	}
-	discovered_model_catalogs[config] = Array(entries).duplicate(true);
-	_apply_models(entries);
-	model_catalog_config = config;
-	model_status->set_text(U"模型列表已获取；实际调用仍受账号权限、额度和服务状态约束。");
-}
-
 void AIChatDock::_login_cli() {
+	CancelModelCatalog();
+	nCatalogAccountGeneration++;
+	discovered_model_catalogs.clear();
+	_sync_model_picker();
 	_cancel_ai_connection_probe();
 	ai_connection_signature = _ai_connection_signature();
 	_set_ai_connection_status("unconfigured", U"账号可能变化，请在登录完成后重新验证连接。");
@@ -6239,7 +6443,7 @@ void AIChatDock::_login_cli() {
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	if (backend->get_selected() == 2) {
 		const String executable = GongGongRuntimeConfig::path(runtime, "codex");
-		if (busy || models_loading || codex_login_pid >= 0 || !executable.is_absolute_path() || !FileAccess::exists(executable)) {
+		if (busy || codex_login_pid >= 0 || !executable.is_absolute_path() || !FileAccess::exists(executable)) {
 			_append(TTR("Error"), U"请先填写有效的 Codex 原生可执行文件路径。");
 			return;
 		}
@@ -6659,10 +6863,10 @@ void AIChatDock::_poll_cli() {
 		}
 	}
 	const uint64_t now = OS::get_singleton()->get_ticks_msec();
-	const bool timeout = cli_listing_models ? now - cli_started > 35000 : (!cli_session || cli_waiting) && (now - cli_last_activity > 310000 || now - cli_started > 1810000);
+	const bool timeout = (!cli_session || cli_waiting) && (now - cli_last_activity > 310000 || now - cli_started > 1810000);
 	const bool running = OS::get_singleton()->is_process_running(cli_process_id);
 	int newline = -1;
-	const bool codex_chat = !cli_listing_models && !cli_input_path.is_empty() && backend->get_selected() == 2;
+	const bool codex_chat = !cli_input_path.is_empty() && backend->get_selected() == 2;
 	if (cli_session || codex_chat) {
 		for (int i = 0; i < cli_output.size(); i++) {
 			if (cli_output[i] == '\n') {
@@ -6723,7 +6927,7 @@ void AIChatDock::_poll_cli() {
 	JSON envelope;
 	if (newline >= 0 && envelope.parse(String::utf8(reinterpret_cast<const char *>(body.ptr()), body.size())) == OK && envelope.get_data().get_type() == Variant::DICTIONARY) {
 		const Dictionary response = envelope.get_data();
-		if (response.get("event", "") == "command_result" && !cli_listing_models) {
+		if (response.get("event", "") == "command_result") {
 			cli_output = cli_output.slice(newline + 1);
 			if (busy && cli_waiting && generation == request_generation) {
 				const String result = _redact(JSON::stringify(response.get("result", Dictionary()), "\t"));
@@ -6741,7 +6945,7 @@ void AIChatDock::_poll_cli() {
 			}
 			return;
 		}
-		if (response.get("event", "") == "progress" && !cli_listing_models && now - cli_started <= 1810000) {
+		if (response.get("event", "") == "progress" && now - cli_started <= 1810000) {
 			cli_output = cli_output.slice(newline + 1);
 			const String activity = response.get("activity", "");
 			const Variant delta = response.get("content_delta", Variant());
@@ -6795,8 +6999,6 @@ void AIChatDock::_poll_cli() {
 			set_meta("cli_response_transport", response["transport"]);
 		}
 	}
-	const bool listing = cli_listing_models;
-	cli_listing_models = false;
 	if (cli_session && newline >= 0 && exit_code == 0 && !timeout && !cli_truncated) {
 		cli_output = cli_output.slice(newline + 1);
 		cli_waiting = false;
@@ -6804,14 +7006,7 @@ void AIChatDock::_poll_cli() {
 	} else {
 		_cancel_cli();
 	}
-	if (listing) {
-		_restore_cli_after_models();
-	}
 	set_process(cli_process_id >= 0 || process_id >= 0 || sub_agent_parallel_pid >= 0);
-	if (listing && generation == request_generation) {
-		_models_completed(!timeout && !cli_truncated && exit_code == 0 ? HTTPRequest::RESULT_SUCCESS : HTTPRequest::RESULT_CANT_CONNECT, exit_code == 0 ? 200 : 500, PackedStringArray(), body, generation);
-		return;
-	}
 	if (!busy || generation != request_generation) {
 		return;
 	}
@@ -6935,7 +7130,7 @@ void AIChatDock::_refresh_engine_controls() {
 	const bool running = engine_build_pid >= 0;
 	// A tool-driven build owns the chat turn, so chat busyness must not disable
 	// the cancel button that is the only way to stop it.
-	const bool chat_locked = (busy && engine_tool_call_id.is_empty()) || models_loading || snapshot_restoring || snapshot_transaction_failed;
+	const bool chat_locked = (busy && engine_tool_call_id.is_empty()) || snapshot_restoring || snapshot_transaction_failed;
 	engine_build_button->set_disabled(running || chat_locked || engine_restart_armed || !allow_tools->is_pressed());
 	engine_restart_button->set_disabled(running || chat_locked || engine_restart_armed || engine_updated_executable.is_empty() || !allow_tools->is_pressed());
 	engine_cancel_button->set_disabled(!running);
@@ -6943,11 +7138,11 @@ void AIChatDock::_refresh_engine_controls() {
 	Object::cast_to<Control>(engine_build_progress->get_parent())->set_visible(running);
 	engine_python->set_editable(!running);
 	engine_build_arguments->set_editable(!running);
-	engine_auto_restart->set_disabled(running || busy || models_loading || engine_restart_armed);
+	engine_auto_restart->set_disabled(running || busy || engine_restart_armed);
 }
 
 void AIChatDock::_build_engine() {
-	if (engine_build_pid >= 0 || busy || models_loading || snapshot_restoring || snapshot_transaction_failed || !allow_tools->is_pressed()) {
+	if (engine_build_pid >= 0 || busy || snapshot_restoring || snapshot_transaction_failed || !allow_tools->is_pressed()) {
 		return;
 	}
 	engine_restart_approved = engine_auto_restart->is_pressed();
@@ -7107,7 +7302,7 @@ void AIChatDock::_start_engine_build() {
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	// A tool-driven build runs inside a busy chat turn on purpose; only a second
 	// concurrent build or a pending restart is refused.
-	if (engine_build_pid >= 0 || engine_restart_armed || models_loading || !allow_tools->is_pressed()) {
+	if (engine_build_pid >= 0 || engine_restart_armed || !allow_tools->is_pressed()) {
 		return;
 	}
 	if (busy && engine_tool_call_id.is_empty()) {
@@ -7223,7 +7418,7 @@ void AIChatDock::_poll_engine_build() {
 			_abandon_engine_restart(U"编辑器没有在预期时间内重启（通常是保存确认被取消），已撤销本次版本切换。");
 			return;
 		}
-		if (!engine_updated_executable.is_empty() && engine_restart_approved && !engine_restart_requested && !busy && !models_loading) {
+		if (!engine_updated_executable.is_empty() && engine_restart_approved && !engine_restart_requested && !busy) {
 			_restart_updated_engine();
 		}
 		return;
@@ -7482,7 +7677,7 @@ void AIChatDock::_cancel_engine_build() {
 }
 
 void AIChatDock::_restart_updated_engine() {
-	if (engine_build_pid >= 0 || busy || models_loading || engine_updated_executable.is_empty() || !allow_tools->is_pressed()) {
+	if (engine_build_pid >= 0 || busy || engine_updated_executable.is_empty() || !allow_tools->is_pressed()) {
 		return;
 	}
 	if (!FileAccess::exists(engine_updated_executable)) {
@@ -7765,24 +7960,6 @@ void AIChatDock::_poll_process() {
 	_finish_tool(JSON::stringify(result));
 }
 
-void AIChatDock::_cancel_model_query() {
-	request_generation++;
-	if (model_request) {
-		model_request->cancel_request();
-		model_request->queue_free();
-		model_request = nullptr;
-	}
-	if (cli_listing_models) {
-		_cancel_cli();
-		_restore_cli_after_models();
-	}
-	models_loading = false;
-	cli_listing_models = false;
-	model_request_key = String();
-	model_status->set_text(U"模型列表查询已取消，保留当前选择与对话上下文。");
-	_set_busy(false);
-}
-
 void AIChatDock::_stop() {
 	_revoke_native_task();
 	_cancel_production_integration();
@@ -7872,10 +8049,6 @@ void AIChatDock::_stop() {
 	// Stop never starts another queued task, including a deferred completion.
 	queue_paused = !queued_messages.is_empty();
 	turn_completed = false;
-	if (models_loading && !busy) {
-		_cancel_model_query();
-		return;
-	}
 	request_generation++;
 	if (!cli_partial.is_empty()) {
 		const String interrupted = _redact(cli_partial) + U"\n\n[回复未完成，以上仅为中断前收到的正文。]";
@@ -7895,17 +8068,6 @@ void AIChatDock::_stop() {
 		request->queue_free();
 		request = nullptr;
 	}
-	if (model_request) {
-		model_request->cancel_request();
-		model_request->queue_free();
-		model_request = nullptr;
-	}
-	if (models_loading) {
-		model_status->set_text(U"模型列表查询已取消，保留当前选择。");
-	}
-	models_loading = false;
-	cli_listing_models = false;
-	model_request_key = String();
 	confirmation->hide();
 	if (process_id >= 0) {
 		_cancel_process();
@@ -8037,14 +8199,7 @@ void AIChatDock::_notification(int p_what) {
 		if (request) {
 			request->cancel_request();
 		}
-		if (model_request) {
-			model_request->cancel_request();
-			model_request->queue_free();
-			model_request = nullptr;
-		}
-		models_loading = false;
-		cli_listing_models = false;
-		model_request_key = String();
+		CancelModelCatalog();
 		_set_busy(false);
 		if (process_id >= 0) {
 			_cancel_process();
@@ -8520,6 +8675,19 @@ void fragment() {
 	model_status->add_theme_font_size_override("font_size", small_font_size);
 	model_status->set_v_size_flags(SIZE_SHRINK_CENTER);
 	ai_settings_control->add_child(model_status);
+	HBoxContainer *pCatalogActions = memnew(HBoxContainer);
+	ai_settings_control->add_child(pCatalogActions);
+	pCatalogRefresh = memnew(Button);
+	pCatalogRefresh->set_name("RefreshModels");
+	pCatalogRefresh->set_text(U"刷新 / 重试模型目录");
+	pCatalogRefresh->connect("pressed", callable_mp(this, &AIChatDock::RefreshModelCatalog));
+	pCatalogActions->add_child(pCatalogRefresh);
+	pCatalogCancel = memnew(Button);
+	pCatalogCancel->set_name("CancelModels");
+	pCatalogCancel->set_text(U"取消目录查询");
+	pCatalogCancel->set_disabled(true);
+	pCatalogCancel->connect("pressed", callable_mp(this, &AIChatDock::CancelModelCatalog));
+	pCatalogActions->add_child(pCatalogCancel);
 	HFlowContainer *build_actions = memnew(HFlowContainer);
 	environment_settings_control->add_child(build_actions);
 	engine_build_button = memnew(Button);
@@ -8844,6 +9012,10 @@ void fragment() {
 	codex_login_timer->set_wait_time(1.0);
 	codex_login_timer->connect("timeout", callable_mp(this, &AIChatDock::_poll_codex_login));
 	add_child(codex_login_timer);
+	pCatalogTimer = memnew(Timer);
+	pCatalogTimer->set_wait_time(0.05);
+	pCatalogTimer->connect("timeout", callable_mp(this, &AIChatDock::PollModelCatalog));
+	add_child(pCatalogTimer);
 	model_config_timer = memnew(Timer);
 	model_config_timer->set_wait_time(0.5);
 	model_config_timer->set_one_shot(true);
@@ -9024,7 +9196,7 @@ void AIChatDock::_open_external_diff() {
 }
 
 void AIChatDock::_show_snapshot_history() {
-	if (busy || models_loading || engine_build_pid >= 0 || snapshot_restoring || engine_restart_requested) {
+	if (busy || engine_build_pid >= 0 || snapshot_restoring || engine_restart_requested) {
 		return;
 	}
 	while (snapshot_history_list->get_child_count()) {
@@ -9201,7 +9373,7 @@ void AIChatDock::_add_snapshot_button(Control *p_parent, const String &p_id) {
 	button->set_meta("snapshot_restored", false);
 	button->set_text(U"还原到此版本");
 	button->set_tooltip_text(U"恢复到此轮结束时本会话的已记录文件版本，包括撤回后续轮次新建的文件。还原另记为一轮文件修改，保留历史并同步 AI 上下文。先预览和单独确认；外部修改或未保存内容会阻止整个事务。不使用 Git，不切换编辑器可执行版本。");
-	button->set_disabled(snapshot_transaction_failed || busy || models_loading || !allow_tools->is_pressed());
+	button->set_disabled(snapshot_transaction_failed || busy || !allow_tools->is_pressed());
 	button->connect(SceneStringName(pressed), callable_mp(this, &AIChatDock::_preview_snapshot_restore).bind(p_id));
 	actions->add_child(button);
 }
@@ -9374,7 +9546,7 @@ void AIChatDock::_preview_snapshot_restore(const String &p_id) {
 	if (!gonggong_recovered_result.is_empty()) {
 		return;
 	}
-	if (busy || models_loading || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || engine_restart_requested || !allow_tools->is_pressed()) {
+	if (busy || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || engine_restart_requested || !allow_tools->is_pressed()) {
 		return;
 	}
 	Dictionary restore_data;

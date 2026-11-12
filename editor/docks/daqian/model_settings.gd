@@ -144,36 +144,13 @@ func _connect_local() -> void:
 	if pending:
 		return
 	last_result = {"status":"needs_configuration", "message":"模型设置尚未准备完成，请检查配置。"}
-	var settings := EditorInterface.get_editor_settings()
 	var local := {}
 	# Model choices belong to this project; executable paths remain host-owned.
 	if is_instance_valid(chat) and chat.has_method("get_ai_configuration"):
 		var configuration: Dictionary = chat.get_ai_configuration()
-		for field in ["backend", "model", "endpoint", "cli_model", "codex_model"]:
+		for field in ["backend", "model", "endpoint", "cli_model", "codex_model", "cli_entry"]:
 			local[field] = str(configuration.get(field, ""))
-	for field in ["cli_node", "cli_entry", "codex_entry"]:
-		var path: String = "ai_chat/" + field
-		if settings.has_setting(path):
-			local[field] = str(settings.get_setting(path))
-	# Read the same live configuration as the session key; an unsaved endpoint
-	# must never be paired with a different saved endpoint's credential.
-	if is_instance_valid(chat) and chat.has_method("get_ai_settings_control"):
-		var ai: Control = chat.get_ai_settings_control()
-		var environment: Control = chat.get_environment_settings_control()
-		if not is_instance_valid(ai) or not is_instance_valid(environment):
-			info.text = "聊天设置尚未准备完成，请稍后重试。"
-			return
-		var backend_field := ai.find_child("AIBackend", true, false) as OptionButton
-		if backend_field == null: return
-		local.backend = str(backend_field.selected)
-		for field in ['model', 'endpoint', 'cli_node', 'cli_entry', 'cli_model', 'codex_entry', 'codex_model']:
-			var names := {'model':'APIModel','endpoint':'APIEndpoint','cli_node':'CLINode','cli_entry':'CLIEntry','cli_model':'CLIModel','codex_entry':'CodexEntry','codex_model':'CodexModel'}
-			var parent := environment if field in ['cli_node','cli_entry','codex_entry'] else ai
-			var control := parent.find_child(names[field], true, false) as LineEdit
-			if control == null:
-				info.text = "聊天设置字段尚未准备完成，请稍后重试。"
-				return
-			local[field] = control.text.strip_edges()
+	# Executable paths are filled from the effective runtime by _run.
 	if local.get("backend") in ["0", "3"] and is_instance_valid(chat):
 		local.editor_key = str(chat.get_ai_credential())
 	await _run("connect-local", local)
