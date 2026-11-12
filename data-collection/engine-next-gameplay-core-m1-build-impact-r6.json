@@ -1,0 +1,109 @@
+{
+  "request_id": "engine-next-gameplay-core-m1-20261112",
+  "issue_number": 939,
+  "measurements": [
+    "data-collection/engine-next-gameplay-core-m1-verification-20261112-r6.json"
+  ],
+  "input_blobs": {
+    ".github/CODEOWNERS": "06956bb251d76f2ab36b8a949027046938ef7037",
+    ".github/workflows/engine_next_contract.yml": "b8eb285303302d076cc12b942f5c8b1b7b06b92e",
+    "SConstruct": "00fb91b8eb93fdf0db3aa0da3b8d58091e5d25f3",
+    "engine_next/.clang-format": "e0971d7ef926fa5a8150d59663b99458c5eebdb7",
+    "engine_next/Gameplay/InterpolationBuffer.cpp": "0e4e66638149edf2feee84ac296f95a1c0da9b28",
+    "engine_next/Gameplay/PredictionModel.cpp": "f8588e175b3c6dac0627680144631435e7df26f3",
+    "engine_next/Tests/Gameplay/PredictionTrace.h": "7c626157dfb51e582e869e70b717a0e8c2f6c340",
+    "engine_next/Tests/Gameplay/TestInterpolationBuffer.cpp": "67c07d082cb467073200fb4e071f1c94efa1f5b5",
+    "engine_next/Tests/Gameplay/TestPredictionBenchmark.cpp": "9cb87923f33249d73fa2d64c8755f3a3b4742aad",
+    "engine_next/Tests/Gameplay/TestPredictionModel.cpp": "7d030188b834bcc4268e20ef9f28b405e931ecf7",
+    "engine_next/Tests/Gameplay/TestPredictionTrace.cpp": "eda497d437454547f59085055b5f4c6b86b57cf0",
+    "engine_next/Tests/TestFramework.h": "9d6d3ec745e9c1c14f404d1a49249b61fcd02fa3",
+    "engine_next/Tests/TestMain.cpp": "6d6eaf2efa73aade8aee5385deac83a198593f5b",
+    "engine_next/Tools/BuildGameplay.py": "bfc78a94041cab54ec1e3aa825af3f991b5b2311",
+    "engine_next/Tools/TestBuildGameplay.py": "bdf90f03394414391a75ec91e895843f3e71ae8a",
+    "engine_next/include/EngineNext/Gameplay/InterpolationBuffer.h": "7f591aab17723d0932f26f77f7328df18deb0f5b",
+    "engine_next/include/EngineNext/Gameplay/PredictionModel.h": "b7f8a39277252b632be45859504c95292e8c9247",
+    "engine_next/include/EngineNext/Gameplay/PredictionTypes.h": "2c5fa35f47bc7b0f5d951744c6f2a76c4f756137",
+    "engine_next/include/EngineNext/Gameplay/Status.h": "adcfbff2025352f67c88840cf63a2b360c53a98c",
+    "engine_next/include/EngineNext/Gameplay/Vector3.h": "d05489cdb0ad219760435a46850a1282f1571e16",
+    "modules/SCsub": "2f6a562d75decb0b867855226a9e390e4b686bbf",
+    "modules/gameplay/SCsub": "5ec08541c1c7103b2447371af344b0ec305cb32a",
+    "modules/gameplay/adapters/.clang-format": "ac26b202d72f9abc7bf1235d5536242e6654f9eb",
+    "modules/gameplay/adapters/GameplayPredictionCore.cpp": "41433b1280d4d1a45d82e64f47180d577442353c",
+    "modules/gameplay/adapters/GameplayPredictionCore.h": "0338c097052e5a4c1cc0cc8c641bbdcc8762f5dd",
+    "modules/gameplay/gameplay_prediction.cpp": "7f3985d178d0004657dedde5db4533698611550e",
+    "modules/gameplay/gameplay_prediction.h": "bf07ad22f479864079b747649e382458c9258e89",
+    "modules/gameplay/tests/.clang-format": "160f935adffc1f7860fe5bce9155d947f30f1efb",
+    "modules/gameplay/tests/TestPredictionCore.h": "f478b9c37f351c0f1a53ec1f26df7d2c9ab582cd",
+    "tests/test_main.cpp": "d71d95dc010ed6e3671bd8e9f3644a0641dbe5e9",
+    "tools/check_engine_next_contract.py": "91c32c3d3cff95f248ad295d90821580d3452d26",
+    "tools/engine_next_contract.json": "19d551538dc3b1f0dcd628e59887fc0b57d115be",
+    "tools/test_check_engine_next_contract.py": "88d061c272575ed7cf3d653807b50db50612584d"
+  },
+  "checks": {
+    "native_invalidation": {
+      "command": "Change engine_next/include/EngineNext/Gameplay/PredictionModel.h default max speed from 8 to 9 and rebuild the macOS Godot editor",
+      "observed": "SCons rebuilt modules/gameplay/adapters/GameplayPredictionCore.cpp and relinked module_gameplay and the editor; model checksum changed from 3325757522 to 3344215809 while all 23 targeted assertions passed",
+      "passed": true
+    },
+    "rollback": {
+      "command": "Restore the exact PredictionModel.h blob, rebuild Godot and run the complete Gameplay suite",
+      "observed": "Model checksum returned to 3325757522 and 28 cases plus 4835 assertions passed; the restored editor SHA-256 was b997b5adac858a6f8cac8d84573a8fda36ba12f99ea360d5ed0f94d0945d042b",
+      "passed": true
+    },
+    "standalone_tests": {
+      "command": "python engine_next/Tools/BuildGameplay.py --repo . --compiler clang --build-dir build/engine_next/clang-release --run-tests",
+      "observed": "12 tests and 200131 checks passed in build and clean directories; all public headers compiled independently; archive members were exactly PredictionModel.o and InterpolationBuffer.o",
+      "passed": true
+    },
+    "source_contract": {
+      "command": "python -m unittest tools.test_check_engine_next_contract -v && python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-release/LinkManifest.json",
+      "observed": "22 contract tests passed; real source state sources_passed with 14 files and 19 local includes; combined state contract_passed",
+      "passed": true
+    },
+    "link_manifest": {
+      "command": "Generate Link.rsp from actual test objects and EngineNextGameplay static library, link through that response, then audit LinkManifest.json",
+      "observed": "link_passed with seven objects and one library bound by SHA-256; dynamic dependencies were only libc++.1.dylib and libSystem.B.dylib; no forbidden Godot symbols; clean-run trace matched",
+      "passed": true
+    },
+    "legacy_godot_trace": {
+      "command": "Build macOS editor tests=yes and run ./bin/godot.macos.editor.arm64 --headless --test --test-case='[Gameplay][Prediction][EngineNext]*'",
+      "observed": "The unmodified legacy Godot implementation produced the exact shared golden; two cases and 19 assertions passed, including five baseline repetitions and the golden comparison",
+      "passed": true
+    },
+    "sanitizer": {
+      "command": "python engine_next/Tools/BuildGameplay.py --repo . --compiler clang --build-dir build/engine_next/clang-sanitize --run-tests --sanitize",
+      "observed": "ASan and UBSan completed all 12 tests and 200131 checks with zero failures and the same trace digest",
+      "passed": true
+    },
+    "performance": {
+      "command": "Run identical legacy and new Godot median-of-five benchmarks plus the standalone benchmark",
+      "observed": "Legacy model/buffer medians were 10931/250816 us; new Godot adapter values were 5946/177944 us; standalone values were 4907/164486 us with identical checksums",
+      "passed": true
+    },
+    "static_validation": {
+      "command": "Ruff 0.17.1, clang-format 18.1.8, validate_codeowners.py, validate_includes.py and codespell on affected files",
+      "observed": "All checks passed; the new adapter directory is owned and formatted without rewriting legacy files",
+      "passed": true
+    },
+    "codespell": {
+      "command": ".venv/bin/codespell <M1 text files>",
+      "observed": "No spelling diagnostics after preserving the MSVC object-output option through adjacent concatenation",
+      "passed": true
+    },
+    "godot_adapter_regression": {
+      "command": "./bin/godot.macos.editor.arm64 --headless --test --test-case='[Gameplay]*' and isolated API-structure comparison",
+      "observed": "28 cases and 4835 assertions passed; shared golden and overflow behavior matched; all four API structures were identical; make_rst reported no XML warning or error",
+      "passed": true
+    },
+    "module_inputs": {
+      "command": "SCons module_build_inventory=<absolute build/engine_next/ModuleInputs.json>",
+      "observed": "The inventory contains both engine_next core implementations and modules/gameplay/adapters/GameplayPredictionCore.cpp in addition to existing gameplay sources",
+      "passed": true
+    },
+    "include_order": {
+      "command": ".venv/bin/clang-format --dry-run --Werror modules/gameplay/gameplay_prediction.h",
+      "observed": "The legacy header passes after placing the adapter include before gameplay_relevancy.h and gameplay_session.h without an extra blank line",
+      "passed": true
+    }
+  }
+}

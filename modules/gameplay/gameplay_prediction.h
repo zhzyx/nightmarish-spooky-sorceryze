@@ -30,73 +30,13 @@
 
 #pragma once
 
+#include "adapters/GameplayPredictionCore.h"
 #include "gameplay_relevancy.h"
 #include "gameplay_session.h"
 
 #include "core/io/resource.h"
 #include "core/templates/hash_map.h"
 #include "scene/main/multiplayer_peer.h"
-
-class GameplayPredictionInput : public RefCounted {
-	GDCLASS(GameplayPredictionInput, RefCounted);
-
-	uint64_t sequence = 0;
-	Vector3 movement_input;
-	uint32_t step_msec = 16;
-
-protected:
-	static void _bind_methods();
-
-public:
-	void set_sequence(uint64_t p_sequence);
-	uint64_t get_sequence() const;
-	void set_movement_input(const Vector3 &p_input);
-	Vector3 get_movement_input() const;
-	void set_step_msec(uint32_t p_step_msec);
-	uint32_t get_step_msec() const;
-	Dictionary to_dictionary() const;
-};
-
-class GameplayPredictionState : public RefCounted {
-	GDCLASS(GameplayPredictionState, RefCounted);
-
-	Vector3 position;
-	Vector3 velocity;
-	uint64_t confirmed_sequence = 0;
-	uint64_t server_time_msec = 0;
-
-protected:
-	static void _bind_methods();
-
-public:
-	void set_position(const Vector3 &p_position);
-	Vector3 get_position() const;
-	void set_velocity(const Vector3 &p_velocity);
-	Vector3 get_velocity() const;
-	void set_confirmed_sequence(uint64_t p_sequence);
-	uint64_t get_confirmed_sequence() const;
-	void set_server_time_msec(uint64_t p_time_msec);
-	uint64_t get_server_time_msec() const;
-	Ref<GameplayPredictionState> duplicate_state() const;
-	Dictionary to_dictionary() const;
-};
-
-class GameplayPredictionModel : public Resource {
-	GDCLASS(GameplayPredictionModel, Resource);
-
-	float max_speed = 8.0f;
-	uint32_t fixed_step_msec = 16;
-
-protected:
-	static void _bind_methods();
-
-public:
-	void set_max_speed(float p_max_speed);
-	float get_max_speed() const;
-	void set_fixed_step_msec(uint32_t p_step_msec);
-	uint32_t get_fixed_step_msec() const;
-	Error simulate(const Ref<GameplayPredictionState> &p_state, const Ref<GameplayPredictionInput> &p_input) const;
-};
 
 class GameplayClientPrediction : public RefCounted {
 	GDCLASS(GameplayClientPrediction, RefCounted);
@@ -182,30 +122,6 @@ public:
 	Dictionary consume_input(int p_transport_sender_peer_id, int p_object_id, const Ref<GameplayPredictionInput> &p_input, uint64_t p_now_msec);
 	String get_last_rejection_reason() const;
 	int get_rejected_input_count() const;
-	void clear();
-};
-
-class GameplayInterpolationBuffer : public RefCounted {
-	GDCLASS(GameplayInterpolationBuffer, RefCounted);
-
-	Vector<Ref<GameplayPredictionState>> samples;
-	int max_samples = 32;
-	uint64_t interpolation_delay_msec = 100;
-	uint64_t stale_after_msec = 500;
-
-protected:
-	static void _bind_methods();
-
-public:
-	void set_max_samples(int p_max_samples);
-	int get_max_samples() const;
-	void set_interpolation_delay_msec(uint64_t p_delay_msec);
-	uint64_t get_interpolation_delay_msec() const;
-	void set_stale_after_msec(uint64_t p_stale_after_msec);
-	uint64_t get_stale_after_msec() const;
-	Error add_sample(const Ref<GameplayPredictionState> &p_state);
-	Dictionary sample(uint64_t p_now_msec) const;
-	int get_sample_count() const;
 	void clear();
 };
 

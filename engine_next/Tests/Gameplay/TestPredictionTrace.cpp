@@ -31,8 +31,8 @@
 #include "engine_next/Tests/TestFramework.h"
 #include "engine_next/Tests/Gameplay/PredictionTrace.h"
 
-#include "EngineNext/Gameplay/InterpolationBuffer.h"
-#include "EngineNext/Gameplay/PredictionModel.h"
+#include "engine_next/include/EngineNext/Gameplay/InterpolationBuffer.h"
+#include "engine_next/include/EngineNext/Gameplay/PredictionModel.h"
 
 #include <fstream>
 #include <iostream>
