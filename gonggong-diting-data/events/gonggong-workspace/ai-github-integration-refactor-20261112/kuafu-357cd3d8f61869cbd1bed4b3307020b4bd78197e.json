@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-357cd3d8f61869cbd1bed4b3307020b4bd78197e",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f0bdfa4ed164d1b3d339401bde8edd59e64def68a91c049e45e3e6b8694f4631",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/996",
+    "action": "dispatch",
+    "detection_head": "a3b1ef65968f9f7d9dcdf701ae5e76feb94d9c3f",
+    "context_sha256": "306357d8d837e56ebcb24f03ec6fe195da46a93b4f8acaef051c34c50ab05f60",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-refactor",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "diagnosis": "Root started provider terminal reconciliation while its other994 dispatch still held the shared coordination lock. Original994 dispatch completed and released the lock; root did not remove or steal it. Same provider reconciliation was then rerun once and actual native terminal was verified/released successfully. This was serialized-host scheduling, not a new model/source defect.",
+    "next_action": "Serialize session driver mutations through actual completion events; retain original lock failure and successful native terminal receipts; verify tracker contains no unrelated unresolved incident before closing996.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T17:51:19.520065+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T17:56:57.309234+00:00",
+  "sha256": "41720d6414add69fc5fbdeb9dcaf1d34d8507e486fc31ada89b9bc21bf8e19c9"
+}

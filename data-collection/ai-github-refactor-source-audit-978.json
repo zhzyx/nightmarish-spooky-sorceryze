@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "issue_number": 978,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "path_base": "repository_root",
+  "scope": "Source-family audit and coordination receipt; not whole-project semantic or account acceptance",
+  "audit_source_commit": "308bc83c19ae7cd1811496cca0e7062e6b30dab0",
+  "audit_report_sha256": "82b7542fa005e058d206654d6c8b818b454a9749523a7e67ce802255cc352593",
+  "coverage": [
+    {
+      "id": "framework-governance-and-runtime-contract",
+      "entrypoints": [
+        "CURRENT_FRAMEWORK.json",
+        "framework/specs/model-runtime.md",
+        "framework/templates/model-plan.json",
+        "framework/AGENTS.md"
+      ],
+      "contract": "Frozen FOUNDATION/upstream Yuanheng are authority inputs; runtime execution has migrated to host-http. Model capability evaluation, exact profile/config, delegation, shared call budget, reconciliation and business acceptance remain distinct."
+    },
+    {
+      "id": "host-http-controlled-runtime",
+      "entrypoints": [
+        "customizations/platforms/ai-access/host-http/runtime/runner.py:110",
+        "customizations/platforms/ai-access/host-http/runtime/runner.py:201",
+        "customizations/platforms/ai-access/host-http/runtime/adapters.py:23",
+        "customizations/platforms/ai-access/host-http/runtime/evaluate.py:10",
+        "customizations/platforms/ai-access/host-http/runtime/diting.py"
+      ],
+      "contract": "authorize/run/recover/renew use HMAC delegation and exact framework/profile/evaluation, SQLite/journal budget, OS lock and immutable terminal replay. Chat Completions/Ollama/gonggong-json non-streaming text only. Unknown transport/usage stops for reconciliation; no implicit switch after HTTP failure. API key environment is operator-owned, not account-certified."
+    },
+    {
+      "id": "daqian-personal-models-and-board",
+      "entrypoints": [
+        "customizations/components/godot-host/daqian/local_models.py",
+        "customizations/components/godot-host/daqian/model_catalog.py",
+        "customizations/components/godot-host/daqian/model_api.py",
+        "customizations/platforms/ai-access/daqian/http_protocols.py",
+        "customizations/platforms/ai-models/daqian/environment-providers.json"
+      ],
+      "contract": "Personal catalog/discovery, host vault, live proofs, CLI bridge or four HTTP protocol mappings. Environment registry only supplies prefix/protocol/default endpoint; it is not authorization. Board/plans consume proven candidates."
+    },
+    {
+      "id": "maliang-generation-routing-and-config",
+      "entrypoints": [
+        "tools/ainative/generation_service.py:90",
+        "tools/ainative/generation_service.py:333",
+        "tools/ainative/generation_service.py:730",
+        "tools/ainative/generation_service.py:940",
+        "tools/ainative/generation_service.py:951",
+        "tools/ainative/editor_host.py",
+        "tools/ainative/executor.py",
+        "tools/ainative/executor_cli.py",
+        "tools/ainative/generate.py"
+      ],
+      "contract": "Validates mode-specific settings; probes capabilities; selects providers; persists run_service immutable snapshot; executor durable node jobs and bounded local result contracts. Endpoint/model selection remains distinct from provider proof."
+    },
+    {
+      "id": "maliang-cli-image-modeling-sculpt",
+      "entrypoints": [
+        "tools/ainative/codex_provider.py",
+        "tools/ainative/modeling_provider.py",
+        "tools/ainative/sculpt_provider.py",
+        "tools/ainative/provider_common.py",
+        "tools/ainative/api_planner.py"
+      ],
+      "contract": "Dedicated ChatGPT CLI policy/config isolation, immutable SQLite intents, input/artifact validation; optional Chat Completions planner shares declarative fixed Godot/Blender construction and never executes generated code. API planner records requested/observed model and hashes, disallows redirects/proxies/retries."
+    },
+    {
+      "id": "maliang-kimi-and-tripo",
+      "entrypoints": [
+        "tools/ainative/kimi_provider.py:352",
+        "tools/ainative/kimi_provider.py:599",
+        "tools/ainative/kimi_provider.py:856",
+        "tools/ainative/kimi_work_image_provider.py:333"
+      ],
+      "contract": "Two active paths coexist: legacy KimiNativeProvider official language-model HTTP planning via explicit factory config; current GUI KimiNativeDirectProvider uses supplied Tripo model3d launcher/watch scripts and KimiWorkImageProvider separate SDK image tools. Tool fingerprints, intent/result hashes and SDK-held credentials."
+    },
+    {
+      "id": "maliang-comfy-localmesh-managed-runtime",
+      "entrypoints": [
+        "tools/ainative/comfy_provider.py",
+        "tools/ainative/managed_comfy.py",
+        "tools/ainative/bundled_hunyuan.py",
+        "tools/ainative/multi_image_provider.py"
+      ],
+      "contract": "Comfy HTTP has durable jobs, no redirects and explicit checkpoint identity; unknown remote checkpoint hashes use run-scoped identity rather than claiming cross-run equivalence. Managed runtime owns local process/health/config; multi-image context preprocessing uses fixed builder."
+    },
+    {
+      "id": "local-motion-models",
+      "entrypoints": [
+        "tools/ainative/motion_provider.py:25",
+        "tools/ainative/motion_provider.py:89",
+        "tools/ainative/motion_jobs.py:60",
+        "tools/ainative/motion_mdm.py",
+        "tools/ainative/motion_video.py",
+        "samples/ainative-workbench/addons/ainative/motion_panel.gd"
+      ],
+      "contract": "Explicit MDM/MediaPipe child interpreter, local model hashes, lock/intent/process creation identity, completed-artifact recovery; cancellation intentionally unsupported for active inference and documented as such. Future provider_factory remains local trusted plugin boundary."
+    },
+    {
+      "id": "maliang-workbench-selection",
+      "entrypoints": [
+        "samples/ainative-workbench/addons/ainative/workbench.gd:1737",
+        "samples/ainative-workbench/addons/ainative/workbench.gd:1823",
+        "samples/ainative-workbench/addons/ainative/workbench.gd:1857",
+        "samples/ainative-workbench/addons/ainative/workbench.gd:1880",
+        "samples/ainative-workbench/addons/ainative/workbench.gd:2030",
+        "samples/ainative-workbench/addons/ainative/parameter_form.gd"
+      ],
+      "contract": "Restores saved models, visibly retains unavailable explicit selection, snapshots draft for async probe and discards changed draft result. Unified settings are independent from node factory legacy settings."
+    },
+    {
+      "id": "native-cli-bridges",
+      "entrypoints": [
+        "tools/codex_cli/godot_bridge.js",
+        "tools/codex_cli/subscription_session.js",
+        "tools/codex_cli/subscription_profile.py",
+        "tools/codebuddy_cli/godot_bridge.js",
+        "tools/codebuddy_cli/godot_acp.js",
+        "tools/codebuddy_cli/godot_terminal.js",
+        "tools/codex_cli/attach_job.ps1"
+      ],
+      "contract": "CLI normalization, model list transport, input/tool gating, bounded RPC/output, persistent subscription session, ACP idle/hard budgets and terminal process groups. Codex subscription overrides are audited names, do not read credentials. CodeBuddy terminal has process-group/taskkill tree handling distinct from generation methods."
+    },
+    {
+      "id": "native-chat-selection-and-runtime",
+      "entrypoints": [
+        "editor/docks/ai_chat_dock.cpp",
+        "editor/docks/ai_chat_openai.h",
+        "editor/docks/daqian/model_settings.gd",
+        "editor/docks/gonggong_runtime_config.cpp",
+        "editor/plugins/unified_settings_editor_plugin.cpp"
+      ],
+      "contract": "Native configured connections, credential/session bindings, catalog selection, HTTP/session cancel/retry and runtime settings."
+    },
+    {
+      "id": "github-workorders-delivery-and-ci",
+      "entrypoints": [
+        "customizations/components/issue-workorders/",
+        "customizations/platforms/work-management/github/",
+        "customizations/platforms/development/git/",
+        ".github/workflows/",
+        "tools/check_gonggong_github.ps1",
+        "tools/install_gonggong_github_cli.ps1",
+        "tools/run_issue_gate.ps1"
+      ],
+      "contract": "Actual operator permission, intake/main readbacks, executable/runtime selection, bounded CLI errors, exact-candidate PR/CI delivery, no duplicate publish after unknown receipt."
+    },
+    {
+      "id": "dispatch-host-runtime-and-external-launch",
+      "entrypoints": [
+        "customizations/components/codex-dispatch/",
+        "customizations/components/repository-dispatch/",
+        "customizations/components/godot-host/bridge.py",
+        "customizations/components/godot-host/requirements_agent.py",
+        "tools/godot_parallel/",
+        "tools/gonggong_runtime_config.py",
+        "tools/editor_instruction_client.py",
+        "tools/editor_control_client.py",
+        "tools/editor_network_proxy.py",
+        "tools/run_macos_external_host_acceptance.py"
+      ],
+      "contract": "Delegation, source/ref occupancy, trusted native/external host identity, explicit production/runtime launch configuration and receipts. Provider-independent host operation remains distinct from availability of a specific native child/chat tool."
+    },
+    {
+      "id": "non-provider-assets-history-and-support",
+      "entrypoints": [
+        "tools/ainative/*_publish.py",
+        "tools/ainative/anatomy_*.py",
+        "tools/ainative/sculpt_builder.py",
+        "samples/ainative-workbench/*_acceptance.gd",
+        "tools/editor_*candidate*.py",
+        "tools/package_maliang_editor.py",
+        "customizations/platforms/catalog.json",
+        "archive/",
+        "framework/reviews/",
+        "olympus-hermes-data/"
+      ],
+      "contract": "Geometry/builders, input/output contract utilities, packaging/activation and policy registry are transitive support, not independent model credentials/endpoints. Historical releases, frozen reviews and archived drafts are never activated by inventory."
+    }
+  ],
+  "coverage_limit": "Initial362keyword candidates plus222 current family members mapped; counts are inventory coverage, not execution of every line or business acceptance. Frozen/history read as evidence only.",
+  "delivered_issues": [
+    973,
+    979,
+    980,
+    989,
+    992,
+    994,
+    1004,
+    1005
+  ],
+  "remaining": {
+    "997": "Exact source independently approved after source/key/credential concurrency fixes; formal delivery pending",
+    "1003": "Independent fixes and native installed-bundle acceptance passed; PR1010 exact CI pending",
+    "1001": "Actual original Windows failure cause still unknown; publication-loss reproduction led isolated recovery candidate, native/independent verification pending",
+    "1009": "Direct generation unused Kimi route settings isolated implementation ongoing",
+    "971": "Foreign operator per-session/per-node work remains unreceived and unmerged; no takeover or acceptance claim"
+  },
+  "coordination": "Audit and review native terminal receipts verified and reservations released; automatic duplicate terminal tracker1002 closed with original996 incident binding preserved",
+  "parent_status": "open; remaining known and unknown acceptance preserved"
+}

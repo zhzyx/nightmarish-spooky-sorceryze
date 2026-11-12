@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "issue_number": 997,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/997",
+  "request_id": "local-model-runtime-provenance-20261113",
+  "parent_issue": 978,
+  "path_base": "repository_root",
+  "baseline": "c6b7baa72f63c36a2fcd4063c8ed84300ee343fe",
+  "recorded_at": "2026-11-12T20:15:02.677021+00:00",
+  "operator": "Sail-Li",
+  "author": "/root",
+  "source_sha256": {
+    "customizations/components/godot-host/daqian/local_models.py": "aae0a84b2064d0901667c24cae6749073ad600b656957a2bc84799f016f092b9",
+    "customizations/components/godot-host/daqian/model_api.py": "0f4c2ec84ee344d69fd7c18b237bde90939a4ad9806f2d8f37d28a47c6be05e1",
+    "customizations/components/godot-host/daqian/model_catalog.py": "6b61f8f7532ca95ad321dc6d87b196193a26f8ac97abeea1428320db97c93262",
+    "tests/editor/test_daqian_local_models.py": "7873968218cd3fafe16c3918999dc19082406f453e1dc2b874abf506bb1eb678",
+    "tests/editor/test_daqian_models.py": "bc9c9b99f966f06e621c13c2f36dac9a5d70ae42eb40d737bf4d1cee3dad4484",
+    "tests/editor/test_daqian_cli_process.py": "25e49376a8826ed503f252698931a936711d954e9dc6ea51ec70e11b5e8471d5",
+    "tools/editor_provenance_process.py": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1",
+    "tools/test_editor_provenance_process.py": "b4f197848f6e536317e49822c3ff5873e4d010d2bf0ba0a37413c4ae2e95627c",
+    "tools/codex_cli/godot_bridge.js": "4403f2eba17dfb9ca78b0f64c983e8ed79adec3f1a2c2517c125fa423fb5c803",
+    "tools/codebuddy_cli/godot_bridge.js": "bec77822f131a33961ed3eaf3a60e260b9875b831628e5a38c15153b04e25998"
+  },
+  "checks": {
+    "daqian_unit_methods": 57,
+    "real_bridge_cases": 12,
+    "real_owned_tree_cases": 5,
+    "javascript_bridge_tests": 57,
+    "windows_helper_tests": {
+      "passed": 14,
+      "skipped": 6
+    },
+    "ruff": "passed",
+    "mypy_files": 8,
+    "actual_windows_kernel": false,
+    "real_provider_inference": false
+  },
+  "recovery_evidence": [
+    "Before chat protocol expansion, real Codex and CodeBuddy successful chat failed missing terminal receipt; same actual bridge matrix passes after expansion.",
+    "Initial JS tests failed because this isolated tree lacked pinned CodeBuddy/ACP packages. Read-only symlink to existing owned #992 dependency installation restored all 57 tests; no shared configuration changed.",
+    "Runtime transition test picked first hash-sorted profile and could target CodeBuddy despite explicit Codex selection; now selects Codex protocol and verifies actual chosen source."
+  ],
+  "contract": [
+    "Discovery uses current bridge catalog, never external models_cache.json as availability proof.",
+    "Source revision binds actual executable/bridge metadata and child environment plus auth/config metadata without reading auth contents.",
+    "Catalog disappearance retires active revision and live proof; reappearance and late evaluation cannot revive old proof.",
+    "Explicit verification always performs new challenge; selected current API credential uses pending/ready compare-and-set, missing current key never falls back.",
+    "Owned bridge uses terminal JSON line and retained leader identity; success/error/timeout/invalid/overlimit reclaim own tree. Windows job gains optional stdin without changing existing callers.",
+    "HTTP JSON shape errors become recoverable redacted errors."
+  ],
+  "limits": [
+    "Filesystem metadata does not attest provider account/weights or external vault-only account changes.",
+    "Synthetic, loopback and actual local process tests only; Windows runtime and real accounts not exercised.",
+    "POSIX deliberately detached descendants or externally killed host need separate guarantees.",
+    "No user editor replacement; #971 foreign session/node changes remain separately owned.",
+    "Independent review, exact CI and main delivery pending."
+  ],
+  "cleanup": {
+    "retained": "Own isolated worktree, evidence and link to #992 installed dependencies remain needed for review; only owned temporary test directories/processes removed."
+  },
+  "previous_source_sha256": {
+    "customizations/components/godot-host/daqian/local_models.py": "aae0a84b2064d0901667c24cae6749073ad600b656957a2bc84799f016f092b9",
+    "customizations/components/godot-host/daqian/model_api.py": "0f4c2ec84ee344d69fd7c18b237bde90939a4ad9806f2d8f37d28a47c6be05e1",
+    "customizations/components/godot-host/daqian/model_catalog.py": "5e7b8734f34f27f716a9b8dd8a122844b282464c53b1d2e6399def6c4d94be01",
+    "tests/editor/test_daqian_local_models.py": "65562c4f195767cbc5bba4cb6003d5f6d756d0ad1cf56b9cdd67f21d3e4c6f80",
+    "tests/editor/test_daqian_models.py": "bc9c9b99f966f06e621c13c2f36dac9a5d70ae42eb40d737bf4d1cee3dad4484",
+    "tests/editor/test_daqian_cli_process.py": "25e49376a8826ed503f252698931a936711d954e9dc6ea51ec70e11b5e8471d5",
+    "tools/editor_provenance_process.py": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1",
+    "tools/test_editor_provenance_process.py": "b4f197848f6e536317e49822c3ff5873e4d010d2bf0ba0a37413c4ae2e95627c",
+    "tools/codex_cli/godot_bridge.js": "4403f2eba17dfb9ca78b0f64c983e8ed79adec3f1a2c2517c125fa423fb5c803",
+    "tools/codebuddy_cli/godot_bridge.js": "bec77822f131a33961ed3eaf3a60e260b9875b831628e5a38c15153b04e25998"
+  },
+  "review_remediation": {
+    "findings": [
+      "Selected key A could be replaced by B between save and revision capture",
+      "Transition regression selected hash-sorted replacement provider without protocol filter"
+    ],
+    "changes": [
+      "Save passes exact committed revision and key to private verification binding; compare before invocation, supply captured key explicitly, retain post-call CAS",
+      "Both original and replacement IDs selected by Codex protocol"
+    ],
+    "validation": "Deterministic real model_api Request headers: replacement before capture makes no request; replacement after capture sends only A and rejects proof; unchanged succeeds. 57 Daqian methods passed."
+  }
+}

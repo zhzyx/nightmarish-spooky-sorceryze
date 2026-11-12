@@ -1,0 +1,53 @@
+{
+  "request_id": "local-model-runtime-provenance-20261113",
+  "issue_number": 997,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/997",
+  "integration_base": "c074db21be98784ff1288f1f2d99c793ba156395",
+  "native": {
+    "editor_sha256": "3ddaec42ad12d0c124ee29b9120e818606e3a27e37c41fcdca589ba7cec8a4b7",
+    "bundle_version": "db2502401b4938329aea49c1565f5166c9878a9cec00f2a4f24088b1aa663f5b",
+    "installed_bundle_matches_source": true,
+    "same_engine_bundle": true,
+    "project_state_isolated": true,
+    "project_sources_unchanged": true,
+    "runs": [
+      {
+        "name": "mesh-and-rig",
+        "passed": true
+      },
+      {
+        "name": "independent-project",
+        "passed": true
+      },
+      {
+        "name": "sample-addon-compatibility",
+        "passed": true
+      },
+      {
+        "name": "relocated-runtime",
+        "passed": true
+      }
+    ],
+    "bundle_file_count": 77,
+    "report_sha256": "6521b33a800f21d30856381e55741524b68c6323c9e76197eec6043ace504d70",
+    "shared_process_helper_sha256": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1"
+  },
+  "limits": [
+    "MacOS headless isolated synthetic fixtures only, no external inference or account certification",
+    "Exact candidate WindowsCI and main delivery remain pending",
+    "No effective installation replaced; prior failure evidence retained"
+  ],
+  "windows_consumer_coverage": {
+    "review_sha256": "91c7362f5b51e481f5e6afafbe656edae30fda61bd1165aaf6bde183107d7f02",
+    "adapter_tests_passed": 9,
+    "affected_watch_test_passed": 1,
+    "test_log_sha256": "878fd167be0f2cb1981ca923532b9cd35425944466d4de5ff573e1486aa84f76",
+    "actual_windows_execution": "pending exact CI",
+    "scope": "Existing Windows ownership step now runs generation adapters, with three CRLF/LF-safe assertions and a Windows interpreter startup budget. Product source unchanged."
+  },
+  "native_picker": {
+    "report_sha256": "ce34fb39f4b740019c3f66e4dfd8267566cc35a891bee6c876724000f0a2012e",
+    "ok": true,
+    "scope": "Actual isolated editor drives CLI and HTTP fixture model catalogs; no real provider"
+  }
+}

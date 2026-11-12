@@ -89,7 +89,8 @@ class AdapterProcessTests(unittest.TestCase):
                     self.assertFalse(release.is_set())
                     self.assertEqual(result, 0)
                     self.assertEqual(
-                        log_path.read_bytes(), b"Job log: /fixture/worker.log\nJob PID file: /fixture/worker.pid\n"
+                        log_path.read_bytes().splitlines(),
+                        [b"Job log: /fixture/worker.log", b"Job PID file: /fixture/worker.pid"],
                     )
                     identity = process_identity(int(pid_file.read_text()))
                     self.assertTrue(alive(identity))
@@ -108,7 +109,7 @@ class AdapterProcessTests(unittest.TestCase):
                             0,
                         )
                         watch.seek(0)
-                        self.assertEqual(watch.read(), b"done: fixture\n")
+                        self.assertEqual(watch.read().splitlines(), [b"done: fixture"])
                     self.assertTrue(alive(identity))
             finally:
                 release.set()
@@ -130,7 +131,7 @@ class AdapterProcessTests(unittest.TestCase):
             command.close()
             self.assertEqual(command.process.returncode, 0)
             output.seek(0)
-            self.assertEqual(output.read(), b"done\n")
+            self.assertEqual(output.read().splitlines(), [b"done"])
 
     def test_all_real_adapters_clean_owned_descendants_and_bound_output(self):
         for provider_type in (ModelingProvider, KimiWorkImageProvider, KimiNativeDirectProvider):
@@ -165,6 +166,8 @@ class AdapterProcessTests(unittest.TestCase):
                     provider._active = active
                     provider.finish = lambda *args: failures.append(args)
                     args = [sys.executable, str(script), str(root), mode, "parent"]
+                    # Windows starts three interpreters before the ready marker.
+                    timeout = 3.0 if os.name == "nt" else 0.6
                     started = time.monotonic()
                     try:
                         with (
@@ -175,12 +178,12 @@ class AdapterProcessTests(unittest.TestCase):
                             if provider_type == ModelingProvider:
 
                                 def invoke():
-                                    return provider._run_owned("fixture", args, root, "builder", timeout=0.6)
+                                    return provider._run_owned("fixture", args, root, "builder", timeout=timeout)
 
                             else:
 
                                 def invoke():
-                                    return provider._run_owned("fixture", args, "output.log", "fixture", 0.6, root)
+                                    return provider._run_owned("fixture", args, "output.log", "fixture", timeout, root)
 
                             if mode == "callback_error":
                                 with self.assertRaisesRegex(RuntimeError, "synthetic callback"):

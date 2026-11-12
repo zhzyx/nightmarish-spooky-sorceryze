@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 from credentials import secret
-from local_models import MODEL_ID, discover_cli
+from local_models import MODEL_ID, current_profile, discover_cli
 from model_api import PROTOCOLS, endpoint, invoke
 
 
@@ -40,6 +40,9 @@ def database(folder=None):
     db.execute(
         "CREATE TABLE IF NOT EXISTS credential_revisions(id TEXT PRIMARY KEY, revision TEXT NOT NULL, ready INTEGER NOT NULL)"
     )
+    db.execute(
+        "CREATE TABLE IF NOT EXISTS cli_revisions(id TEXT PRIMARY KEY, revision TEXT NOT NULL, active INTEGER NOT NULL)"
+    )
     return db
 
 
@@ -50,11 +53,48 @@ def credential_revision(db, profile_id):
     return row[0] if row else ""
 
 
+def verification_revision(db, profile_id):
+    profile = profiles(db).get(profile_id, {})
+    if profile.get("protocol") not in {"codex-cli", "codebuddy-cli"}:
+        return credential_revision(db, profile_id)
+    row = db.execute("SELECT revision, active FROM cli_revisions WHERE id=?", (profile_id,)).fetchone()
+    if not row or not row[1]:
+        raise ValueError("本地模型已从当前发现结果移除，请重新连接并验证")
+    return row[0]
+
+
+def _usable(db, profile_id, profile):
+    try:
+        verification_revision(db, profile_id)
+        return current_profile(profile)
+    except ValueError:
+        return False
+
+
+def _refresh_cli(db, label, configs):
+    protocol = {"Codex": "codex-cli", "CodeBuddy": "codebuddy-cli"}[label]
+    discovered = {identity(config): config for config in configs}
+    added = 0
+    with db:
+        db.execute("BEGIN IMMEDIATE")
+        for profile_id, profile in profiles(db).items():
+            if profile.get("protocol") == protocol and profile_id not in discovered:
+                db.execute("DELETE FROM evaluations WHERE id=? AND scope='live'", (profile_id,))
+                db.execute("INSERT OR REPLACE INTO cli_revisions VALUES(?,?,0)", (profile_id, secrets.token_hex(16)))
+        for profile_id, config in discovered.items():
+            added += db.execute("INSERT OR IGNORE INTO profiles VALUES(?,?)", (profile_id, json.dumps(config))).rowcount
+            row = db.execute("SELECT active FROM cli_revisions WHERE id=?", (profile_id,)).fetchone()
+            if row != (1,):
+                db.execute("DELETE FROM evaluations WHERE id=? AND scope='live'", (profile_id,))
+                db.execute("INSERT OR REPLACE INTO cli_revisions VALUES(?,?,1)", (profile_id, secrets.token_hex(16)))
+    return added
+
+
 def add(db, config, key, vault=secret):
     return _save_profile(db, config, key, vault)[0]
 
 
-def _save_profile(db, config, key, vault, *, only_if_missing=False):
+def _save_profile(db, config, key, vault, *, only_if_missing=False, verification_bindings=None):
     if set(config) != {"name", "model", "endpoint", "protocol"} or not all(
         isinstance(v, str) and v.strip() == v and v and len(v) <= 2048 for v in config.values()
     ):
@@ -71,8 +111,9 @@ def _save_profile(db, config, key, vault, *, only_if_missing=False):
     # proof. Failed external writes stay pending until an explicit save retries.
     with db:
         db.execute("BEGIN IMMEDIATE")
+        created = not db.execute("SELECT 1 FROM profiles WHERE id=?", (key_id,)).fetchone()
         if only_if_missing:
-            if db.execute("SELECT 1 FROM profiles WHERE id=?", (key_id,)).fetchone():
+            if not created:
                 return key_id, False
             credential_revision(db, key_id)
         if not key:
@@ -87,23 +128,21 @@ def _save_profile(db, config, key, vault, *, only_if_missing=False):
         vault(key_id, key)
         db.execute("INSERT OR IGNORE INTO profiles VALUES(?,?)", (key_id, json.dumps(config, ensure_ascii=False)))
         db.execute("UPDATE credential_revisions SET ready=1 WHERE id=? AND revision=?", (key_id, revision))
-    return key_id, True
+    if verification_bindings is not None:
+        # This action's exact key/revision stay private and never enter source
+        # rows or durable evidence. A later vault save cannot retarget its probe.
+        verification_bindings[key_id] = (revision, key)
+    return key_id, created
 
 
 # Only a provider's explicit model and matching credential are imported.
 PROVIDERS = Path(__file__).resolve().parents[3] / "platforms/ai-models/daqian/environment-providers.json"
 
 
-def connect_local(db, settings, vault=secret):
+def connect_local(db, settings, vault=secret, *, refresh_selected=False, verification_bindings=None):
     sources = []
     for label, configs, note in discover_cli(settings):
-        with db:
-            added = sum(
-                db.execute(
-                    "INSERT OR IGNORE INTO profiles VALUES(?,?)", (identity(config), json.dumps(config))
-                ).rowcount
-                for config in configs
-            )
+        added = _refresh_cli(db, label, configs)
         sources.append({
             "name": label,
             "candidate": identity(configs[0]) if configs else "",
@@ -131,7 +170,14 @@ def connect_local(db, settings, vault=secret):
             continue
         config = {"name": label, "protocol": protocol, "endpoint": url, "model": model}
         try:
-            _, added = _save_profile(db, config, key, vault, only_if_missing=True)
+            _, added = _save_profile(
+                db,
+                config,
+                key,
+                vault,
+                only_if_missing=not (refresh_selected and not settings.get("backend")),
+                verification_bindings=verification_bindings,
+            )
             row["added"], row["existing"] = int(added), int(not added)
             row["models"] = [model]
             row["candidate"] = identity(config)
@@ -154,7 +200,14 @@ def connect_local(db, settings, vault=secret):
         sources.append(row)
         try:
             endpoint(url)
-            _, added = _save_profile(db, config, settings.get("editor_key", ""), vault, only_if_missing=True)
+            _, added = _save_profile(
+                db,
+                config,
+                settings.get("editor_key", ""),
+                vault,
+                only_if_missing=not refresh_selected,
+                verification_bindings=verification_bindings,
+            )
             row["added"], row["existing"] = int(added), int(not added)
             row["candidate"] = identity(config)
         except (ValueError, OSError) as error:
@@ -162,14 +215,14 @@ def connect_local(db, settings, vault=secret):
     return sources
 
 
-def connect_and_verify(db, settings):
+def connect_and_verify(db, settings, vault=secret):
     selected_backend = settings.get("backend", "")
     selected_source = {"0": "AI Chat", "1": "CodeBuddy", "2": "Codex", "3": "AI Chat"}.get(selected_backend)
     if selected_backend and selected_source is None:
         raise ValueError("当前连接方式无效，请重新选择后验证")
-    sources = connect_local(db, settings)
+    verification_bindings = {}
+    sources = connect_local(db, settings, vault, refresh_selected=True, verification_bindings=verification_bindings)
     registered = profiles(db)
-    proven = {row["id"] for row in sinan_catalog(db, ["text"])}
     # Discovery may enumerate every source, but an explicit connection choice
     # authorizes verification of that source only, including on failure.
     candidates = [row for row in sources if row["name"] == selected_source] if selected_source else sources
@@ -186,13 +239,24 @@ def connect_and_verify(db, settings):
         if candidate not in registered:
             continue
         model = registered[candidate]["model"]
-        if candidate in proven:
-            row["note"] = f"{model} · 已验证，可用于文本任务"
-            break
+        # An explicit verification must probe the selected current connection.
+        # Revoke prior text proof first; a failed retry cannot leave it usable.
+        with db:
+            db.execute("DELETE FROM evaluations WHERE id=? AND scope='live' AND task='text'", (candidate,))
         challenge = "DAQIAN-" + secrets.token_hex(8)
         try:
-            revision = credential_revision(db, candidate)
-            response = invoke(registered[candidate], "Reply only with this exact string: " + challenge, [])
+            revision = verification_revision(db, candidate)
+            probe_key = None
+            if registered[candidate]["protocol"] not in {"codex-cli", "codebuddy-cli"}:
+                binding = verification_bindings.get(candidate)
+                if binding is None or binding[0] != revision:
+                    raise ValueError("凭据已被另一次保存更新，请重新验证当前选择")
+                probe_key = binding[1]
+            # Discovery is bounded to 35 + 40 seconds; leave room for the
+            # parent's 180-second UI deadline instead of a 320-second chat call.
+            response = invoke(
+                registered[candidate], "Reply only with this exact string: " + challenge, [], timeout=60, key=probe_key
+            )
             if response["text"].strip() != challenge:
                 raise ValueError("验证回复与预期不符")
             record_evaluation(
@@ -230,8 +294,12 @@ def record_evaluation(db, profile_id, task, scope, qualified, outcomes, evidence
     score = sum(outcomes) / len(outcomes) if outcomes else None
     with db:
         db.execute("BEGIN IMMEDIATE")
-        if scope == "live" and (expected_revision is None or credential_revision(db, profile_id) != expected_revision):
+        if scope == "live" and (
+            expected_revision is None or verification_revision(db, profile_id) != expected_revision
+        ):
             raise ValueError("凭据已更新，旧验证结果已失效，请重新验证")
+        if scope == "live" and not current_profile(profiles(db)[profile_id]):
+            raise ValueError("本地连接来源已改变，旧验证结果已失效，请重新验证")
         if not qualified:
             db.execute("DELETE FROM evaluations WHERE id=? AND task=? AND scope=?", (profile_id, task, scope))
         else:
@@ -251,7 +319,11 @@ def sinan_catalog(db, tasks, scope="live", preferred=""):
             scores.setdefault(profile_id, {})[task] = score
     candidates = []
     for profile_id, values in scores.items():
-        if profile_id in data and all(task in values for task in tasks):
+        if (
+            profile_id in data
+            and all(task in values for task in tasks)
+            and (scope != "live" or _usable(db, profile_id, data[profile_id]))
+        ):
             measured = [values[task] for task in tasks]
             score = None if None in measured else min(measured)
             candidates.append((score, profile_id))
