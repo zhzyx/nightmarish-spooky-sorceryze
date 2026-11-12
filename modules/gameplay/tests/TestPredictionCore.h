@@ -39,6 +39,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <limits>
 #include <vector>
 
 namespace TestGameplayPredictionCore
@@ -167,6 +168,29 @@ static std::string BuildLegacyTrace()
 	const EngineNext::GameplayTrace::TraceState stEmptyState;
 	EngineNext::GameplayTrace::AppendBufferSample(strTrace, "empty", ToTraceStatus(dictEmpty), false, stEmptyState);
 	return strTrace;
+}
+
+TEST_CASE("[Gameplay][Prediction][EngineNext] Core adapter rejects overflow without partial writes")
+{
+	Ref<GameplayPredictionModel> refModel;
+	refModel.instantiate();
+	refModel->set_max_speed(std::numeric_limits<float>::max());
+	refModel->set_fixed_step_msec(1000);
+	Ref<GameplayPredictionState> refState;
+	refState.instantiate();
+	refState->set_position(Vector3(std::numeric_limits<float>::max(), 0.0F, 0.0F));
+	Ref<GameplayPredictionInput> refInput;
+	refInput.instantiate();
+	refInput->set_sequence(1);
+	refInput->set_movement_input(Vector3(1.0F, 0.0F, 0.0F));
+	refInput->set_step_msec(1000);
+	ERR_PRINT_OFF;
+	const Error eError = refModel->simulate(refState, refInput);
+	ERR_PRINT_ON;
+	CHECK_EQ(eError, ERR_INVALID_PARAMETER);
+	CHECK(refState->get_position().is_equal_approx(Vector3(std::numeric_limits<float>::max(), 0.0F, 0.0F)));
+	CHECK(refState->get_velocity().is_equal_approx(Vector3()));
+	CHECK_EQ(refState->get_confirmed_sequence(), 0U);
 }
 
 static int64_t MeasureLegacyModel(uint32_t &out_nChecksum)

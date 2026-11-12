@@ -28,7 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "EngineNext/Gameplay/InterpolationBuffer.h"
+#include "engine_next/include/EngineNext/Gameplay/InterpolationBuffer.h"
 
 namespace EngineNext::Gameplay
 {

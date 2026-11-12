@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "EngineNext/Gameplay/PredictionTypes.h"
-#include "EngineNext/Gameplay/Status.h"
+#include "engine_next/include/EngineNext/Gameplay/PredictionTypes.h"
+#include "engine_next/include/EngineNext/Gameplay/Status.h"
 
 #include <cstddef>
 #include <cstdint>

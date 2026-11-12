@@ -30,8 +30,8 @@
 
 #include "engine_next/Tests/TestFramework.h"
 
-#include "EngineNext/Gameplay/InterpolationBuffer.h"
-#include "EngineNext/Gameplay/PredictionModel.h"
+#include "engine_next/include/EngineNext/Gameplay/InterpolationBuffer.h"
+#include "engine_next/include/EngineNext/Gameplay/PredictionModel.h"
 
 #include <algorithm>
 #include <chrono>

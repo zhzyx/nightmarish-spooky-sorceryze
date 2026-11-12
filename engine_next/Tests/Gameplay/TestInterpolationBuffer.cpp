@@ -30,7 +30,7 @@
 
 #include "engine_next/Tests/TestFramework.h"
 
-#include "EngineNext/Gameplay/InterpolationBuffer.h"
+#include "engine_next/include/EngineNext/Gameplay/InterpolationBuffer.h"
 
 #include <limits>
 

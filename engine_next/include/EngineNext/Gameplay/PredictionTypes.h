@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "EngineNext/Gameplay/Vector3.h"
+#include "engine_next/include/EngineNext/Gameplay/Vector3.h"
 
 #include <cstdint>
 
