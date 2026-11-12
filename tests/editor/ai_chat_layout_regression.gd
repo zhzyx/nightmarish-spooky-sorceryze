@@ -43,6 +43,10 @@ func _sample(label: String, settings_mode := false):
 			var min_size: Vector2 = ancestor.get_combined_minimum_size()
 			item.ancestors.append({"name": String(ancestor.name), "class": ancestor.get_class(), "rect": [bounds.position.x, bounds.position.y, bounds.size.x, bounds.size.y], "minimum": [min_size.x, min_size.y]})
 		ancestor = ancestor.get_parent()
+	item["visible_nodes"] = []
+	for node in dock.find_children("*", "Control", true, false):
+		if node.is_visible_in_tree():
+			item.visible_nodes.append({"name": String(node.name), "class": node.get_class(), "rect": str(node.get_global_rect()), "minimum": str(node.get_combined_minimum_size())})
 	item["layout_children"] = []
 	for child in _control("ChatLayout").get_children():
 		if child is Control and child.is_visible_in_tree():
@@ -147,10 +151,12 @@ func _run():
 		toggle.pressed.emit()
 		await _settle()
 		_check(settings_page.is_visible_in_tree() and categories.current_tab == 0 and not input.is_visible_in_tree(), "AI navigation must switch to the independent settings page")
-		_sample("%d settings" % width, true)
 		var settings := settings_page.find_child("AISettingsPage", true, false) as ScrollContainer
 		_check(settings != null and settings.is_visible_in_tree(), "Settings scroll missing/hidden")
 		if settings != null:
+			settings.ensure_control_visible(_control("SelectorRow"))
+			await _settle()
+			_sample("%d settings" % width, true)
 			_check(settings.get_v_scroll_bar().max_value > settings.size.y, "Settings do not have an independent scroll range")
 			settings.scroll_vertical = int(settings.get_v_scroll_bar().max_value)
 			await _settle()
@@ -218,7 +224,12 @@ func _run():
 			for menu in root.find_children("*", "MenuBar", true, false):
 				if menu.theme_type_variation == "MainMenuBar" and menu.is_visible_in_tree():
 					normal_menu = true
-			_check(normal_menu, "Full editor menu was not restored on " + screen)
+			var compact_menu := false
+			for menu in root.find_children("*", "MenuButton", true, false):
+				if menu.theme_type_variation == "MainScreenButton" and menu.get_popup().item_count > 0 and menu.is_visible_in_tree():
+					compact_menu = menu.get_popup().item_count > 0
+			var expect_compact := root.get_visible_rect().size.x < 960 * EditorInterface.get_editor_scale()
+			_check(compact_menu and not normal_menu if expect_compact else normal_menu and not compact_menu, "Responsive editor menu was not restored on " + screen)
 			EditorInterface.set_main_screen_editor("AI Chat")
 			await _settle()
 			_sample("%d return from %s" % [width, screen])

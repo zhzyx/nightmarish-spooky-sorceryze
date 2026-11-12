@@ -6,9 +6,13 @@
 
 计划拒绝目标已有冲突、候选/终态变化和路径越界。执行遵循已有自动文件与自动命令授权，未开启时沿普通确认入口；未保存场景/脚本或项目仍运行时先保存/停止。完成后触发资源扫描，父会话沿已有导入、运行与日志工具继续验证，`applied` 只表示文件整合成功。
 
-计划和原始字节备份保存在目标仓库根解析的 `data-collection/outbox/project-integration/`。`rollback` 核对当前权限、精确计划和目标字节；中断保留 journal，不猜测成功或覆盖后续用户修改。宿主保存回滚绑定，冷启动后仅允许明确恢复回滚，不由旧验收重新授权生产或 apply。项目迁移、回执损坏或未知目标变化须保留待核对状态。当前限制为单次最多 512 个变更文件、原始前后内容合计 64 MiB；大项目按独立工单逐批接入。
+计划和原始字节备份保存在目标仓库根解析的 `data-collection/outbox/project-integration/`。`rollback` 核对当前权限、精确计划和目标字节；中断保留 journal，不猜测成功或覆盖后续用户修改。宿主保存回滚绑定，冷启动可明确恢复回滚；继续生产须核对当前授权并完成新的独立验收，不由旧验收重新授权 apply。项目迁移、回执损坏或未知目标变化须保留待核对状态。当前限制为单次最多 512 个变更文件、原始前后内容合计 64 MiB；大项目按独立工单逐批接入。
 
 路径相对仓库根。编辑器设置 `ai_chat/parallel_work_orders_config` 指向宿主私有 JSON 的绝对路径，推荐保存在 `data-collection/parallel.local.json`。非空时“按工单落地”按配置启动独立 CLI 工作者（Codex 或其他支持标准输入的 CLI），每项独立 Git worktree。HTTP/CodeBuddy UI 执行器仍为串行；此通道不操作当前编辑器场景、菜单、构建或共享文件，不自动合入成果。
+
+原生编辑器派发时，把当前可执行文件的绝对路径与 SHA256 传给工作者。执行器在登记及交付 stdin 前核对该文件，登记回执保存相同绑定；工作者可用该程序在隔离子进程中进行 headless 验证，并记录实际命令与结果。独立调用执行器的旧配置仍兼容；路径传递不代表模型已经执行测试或通过验收。
+
+已结束但未通过验收的工单可在原父会话点“继续落地”。宿主重新读取原执行结果、配置、不可变登记和终态，并核对原设计授权及当前候选，再创建新的独立验收。原生产者不会重复启动，原失败记录保留。冷启动先重新授权自动准备并行生产；没有可核实终态的工作者保留占用。来源回执或已有生产/验收回读尚未结束时，“继续”保持禁用并在实际完成事件后刷新。
 
 配置示例（占位符必须换成已验证的实际配置）：
 
@@ -77,3 +81,17 @@ Windows 的独立子进程树边界使用仓库锁文件固定的 Job Object 模
 每个前驱 execution 只有一个后继修复票据。原票据保持原字节；资源从匹配的原执行登记原子转交，启动前失败恢复原资源，已尝试启动而结果未知时保留占用。相同 continuation 重放仅回读；不同 continuation 不能争抢同一前驱，新的失败审查只能针对实际后继执行。修复的 ticket/registration/terminal 保存 repair_of，stdin 另附已核验的失败 reason/criteria 作为任务数据。修复完成仍进入 review，不能自己获得业务验收。
 
 现有 Node 宿主直接加载 runner.mjs 与 repair.mjs；同一个 Node 可执行文件执行修复前后及失败回退测试。恢复旧 runner 时保留全部票据和审查证据；旧版本不能产生带 repair_of 的后继执行，原生消费者须拒绝缺少本次谱系的回执。未知、取消、过期来源均不可借此重新启动。
+
+## 编辑器内生产准备（#810）
+
+正常入口使用 AI 设置中的“授权并行生产：自动准备独立工作副本”和正整数容量，复用当前 Codex/CodeBuddy 连接及实际发现的模型；“按工单落地/继续落地”触发准备。授权仅本次编辑器会话有效，仍须同时启用原工具、自动文件和自动命令许可。显式 `ai_chat/parallel_work_orders_config` 非空时始终优先，不被自动准备覆盖；普通串行会话兼容。
+
+原生宿主通过当前 RuntimeConfig 的 Node 异步执行 `setup.mjs <request> <result>`，Python 使用 workflow_python，模型列表从已有 CLI bridge 再查询，Codex 另查真实 login status。模型目录并不证明账号额度或推理必然成功；实际生产调用失败仍由 runner 留证。设置容量是宿主上限，不是吞吐或额度测量。
+
+准备以真实 Git common directory 父级仓库根为基准，在 `data-collection/outbox/production-setup-<Issue/需求/定稿摘要键>/` 保存私有回执、不可变配置版本及每工单唯一 worktree。当前尚未提交的设计、需求及用户文件通过临时 Git index 和无分支引用的 commit-tree 固定快照；不改用户 HEAD、真实 index 或文件。前后树比较拒绝并发变化，定稿另外绑定用户确认的原始字节与 Git 清理后的 blob，新建副本保留确认字节，避免 Windows 换行转换破坏后续验收绑定。Windows 在 CLI 发现成功后为当前仓库设置 `core.longpaths=true`，支持副本中的深层路径；不修改全局 Git 配置。私有 outbox 排除于快照。工单副本从该快照创建，原生独立验收及依赖核对保持原入口；自动配置的 dependsOn 为空，因为原生宿主在请求进入 runner 前核对逐项依赖和独立验收，手动配置继续使用原 registry 协议。
+
+同一准备回执允许重读和配置版本更新，不覆盖工作者改动。当前源 HEAD、设计或业务文件变化时要求核对旧准备；单纯追加采集证据不阻断继续。Git ref 的比较交换绑定主机、PID 和 nonce；仅在确认旧拥有者已退出、分支和副本与固定快照相符时恢复中断准备。未知锁、无回执的同名分支/目录、被切换或修改的工作副本都阻断。修复明确的模型/路径/权限错误后点击继续落地。停止、父会话改变或重启不会自动启动生产工作者。
+
+构建边界：`ai_chat_dock.cpp/.h` 和 `ai_chat_sub_agents.cpp` 由现有 editor SCsub 编译，需新二进制及原生失效验证；`setup.mjs` 为既有 tools/godot_parallel host_tool 扩展，由同一 Node 直接读取，无嵌入或热包 ABI。回退旧二进制/脚本时保留私有工作副本、配置与全部回执，旧显式配置入口可继续使用，不能删除未知占用。最初七项验证保留在 `data-collection/editor-production-setup-810.json`；完整候选及组合原生验证见 `data-collection/editor-production-setup-810-final.json`。真实账号、独立游戏仓库接入和最终安装验收由父工单及其关联子项完成。
+
+正常入口测试为 `tests/editor/run_native_production_setup.py --backend codex|codebuddy --case models-initial-ok --godot <已编译编辑器> --node <Node> --out <私有回执>`。Windows 测试进程使用 `PYTHONUTF8=1`、`NATIVE_ACCEPTANCE_JOB_OBJECT=<已安装可信 job-object.node>`、`CODEBUDDY_GIT_BASH_PATH=<Git Bash>`，Python 需有现有 fixture 所用 pip；原生全套测试另设置 `GONGGONG_TEST_PYTHON=<可执行 Python>`。测试不预置生产配置或副本，最终判定为 `native_production_setup`；基底串行场景统计仅作诊断，不是此场景的通过条件。

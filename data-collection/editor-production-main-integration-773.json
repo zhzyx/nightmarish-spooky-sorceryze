@@ -1,0 +1,195 @@
+{
+  "issue_number": 773,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "request_id": "game-production-goal-20261111",
+  "source_base": "e15a49f9b7dbbdbb1b585fc2b68cc3f252d88c8b",
+  "scope": "Latest-main integration of ordinary-game production setup, task authorization, runtime diagnostics and explicit independent acceptance recovery. Overall editor product acceptance remains open.",
+  "binary_sha256": "7b155d665829eec985ad67fc49b415f224c0de31fc23b7c4c913ce9a1ce1b485",
+  "engine_sha256": "274f440dfd9facaa801ff035723eea6962245f027ad6af025a4eac7b4b400fc5",
+  "source_sha256": {
+    "customizations/components/godot-host/bridge.py": "97231e8dd92f2ddf6618b640b3429f05732681bf36d5dd6fae0f47e0981638e9",
+    "customizations/components/godot-host/daqian/board.py": "b4df0fd7ab6f7350aee0c4e8f33d200d23fe2f6b2293b289f1f234eb6bba5cc2",
+    "customizations/components/godot-host/requirements_agent.py": "96ae570e8aafaf211c8566482c9e661288bd8635405ce72080a8095c189e20e5",
+    "customizations/components/godot-host/test_bridge.py": "78ed6f47d495333fd41f8bdf2dffc446a9559671e75fec0466de499ec1746f76",
+    "customizations/components/godot-host/test_direct_issue.py": "753b70957e340784caf056c8be93550003643a37ae0090e190c829e997163058",
+    "customizations/components/godot-host/test_game_workspace.py": "44b2a043612ddf6b792dbbaaacdf02a926cf396dfea85dc7dc735ac94af5b59d",
+    "customizations/components/godot-host/test_issue_guide.py": "1f28532462d70c88e30f447126084e8bc247c693233e26b03a0695d3dddb1615",
+    "customizations/components/godot-host/workspace_paths.py": "fb2550e131f243f4489c1aebefd467fa857a9f7ff4bd6fd040ea56a84b68794c",
+    "customizations/components/issue-workorders/issue_gate.py": "a397c6a7a2cd44ed806fced45a8e9ec1faef55df0bee5faf8297790fc713bbca",
+    "customizations/components/issue-workorders/test_work_items.py": "74d3eb8ef0440cddc4f06f1bc88d60985a8ac156d8547bce15b2e29d9b92cf48",
+    "customizations/components/issue-workorders/test_writer_submit.py": "ee663917b30ed350483a4bf8a1acc32036b3e00a4b10431de4e8880914ebafee",
+    "customizations/components/issue-workorders/work_items.py": "27c923f79f164834827b954c8b97dc1a186d6090257e7d284b51300e69d722bd",
+    "customizations/components/issue-workorders/writer_submit.py": "7138d0a6d1391b874de94296d83375b7e0be6c9bf418d6f04915b6f13cd0b8d4",
+    "editor/docks/ai_chat_dock.cpp": "d7de49ca379b3b3884f2dfa57259a26b8703527adf2154fc7b3b8f55cbd4141e",
+    "editor/docks/ai_chat_dock.h": "d04ad47e49dda126de19459192dee0fa714ea91847b3fb5c2283ebcd638b3167",
+    "editor/docks/ai_chat_editor_control.cpp": "4d277518eb8319b1465a924cf6ea8a322a2a07e70e4a456f9b31619c94366e40",
+    "editor/docks/ai_chat_editor_scene_actions.cpp": "9903dbf51e993175d8613f89d61e3551ac58bed64970a1af1517299a50410387",
+    "editor/docks/ai_chat_editor_scene_completion.cpp": "68e069b7d1af6c2eb7df4d1a55e17e70c6920518cc8465d19bbec200e5efe48d",
+    "editor/docks/ai_chat_engine_candidate.cpp": "601ade62aebf41ad73f47333389ec89cbba6a1fcb71a92e6e780b1dc3b8ff4a7",
+    "editor/docks/ai_chat_gonggong.cpp": "c32b1e12f50152eaa24a02c820a36fbd607015c229d008ebd34ae039c502bfd2",
+    "editor/docks/ai_chat_host_runtime.h": "87eb30355cc36aa63a1fe572976a0f9fda2833d42dcad8509900fc685ab58926",
+    "editor/docks/ai_chat_sub_agents.cpp": "5381329b926b7b69be8dc72c8bedfc6b67ccc8b1bcd9516f151ebb8de418cbfb",
+    "editor/docks/ai_chat_task_authorization.cpp": "bb6528d82b6f379b0259617ec869e0b07fb55cc685f2f78eaabbc6113c2bbbec",
+    "editor/docks/ai_chat_task_authorization.h": "21615320e266c2b662aacf8b02c7ae3721769160402baadbfff27e00059f44a0",
+    "editor/docks/daqian/model_settings.gd": "a21f693a1079b1e901e8bad21162682de2e2faa41af90f1e5a6591589b05af0f",
+    "editor/docks/daqian/session_memory.gd": "c42b5e3063b74ab8b219990d521d1293ed7fda0dabda4fc062756d05f5117a68",
+    "editor/docks/daqian/workspace.gd": "899eb2b0203754385080eb53728ef9bdd2f3815eb88124df924c690a91af2592",
+    "editor/docks/gonggong_panel.cpp": "80686ba5450b1e648f612349b12d8a71165d3024d6669f6acf1ae6c9c9229455",
+    "editor/docks/gonggong_panel.h": "4134849aa88287a22ad07f1d2b1404d9e8f8a61f59dd4f710beb29f7f1b993ae",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "9c947dfc389280c18cdfba435664090e257cced1ca804012ab665278cf1d38ff",
+    "tests/editor/ai_chat_layout_regression.gd": "23708ed6994f2de74403e28e58528e93f7dc0c7673ededf9788082260d1939b1",
+    "tests/editor/ai_chat_task_authorization.gd": "e3587ea495bff7b9db8c7c2eb2d7b285ff0eb59d59764175fecd95c094f7a070",
+    "tests/editor/design_batch.gd": "289078bcea1d56a84f788769a0e7851076c63483654bd0590b00f7d609eff665",
+    "tests/editor/game_workspace_binding.gd": "6db0c7f82205a2a1286cf79540f2773fd81f47864384a6e6baa3c582e00f9738",
+    "tests/editor/native_acceptance_parallel.py": "1e88f01cdcd102df305ce3b007f1846bd43a570a0d86d77080cddb29443712c4",
+    "tests/editor/native_game_cold.py": "69ce3cf3141043d2602409a81b945f41d22fe1d4f5f32f9ea725835e75508064",
+    "tests/editor/native_game_integration.py": "e2b1b19100b71f8f5fcb0aa09504ba43fb9a587d749a8a9738d19975f95b4d91",
+    "tests/editor/native_review_recovery.py": "245b3a4a940e4058dd7b696f3b23ea2910fc1e4e777fdeb5491f7015ee24f497",
+    "tests/editor/run_ai_chat_semantic.py": "cc66dcdad9fec1045caa5dae93688c0bb6adfad6310ac48b884ac84cb0fe7170",
+    "tests/editor/run_design_batch.py": "41e6d04b9f3899dbc8454d63e612dafcaaca15449eb1a7c32d0ebf6ce7827a57",
+    "tests/editor/run_game_workspace_binding.py": "c04e1f81510c6cf13e428ee2af7e87998c4e5db574832774a5fab987009684fa",
+    "tests/editor/run_native_acceptance.py": "35887f052334a8cca5b04ee7c84d00bf68ad22dad5d651f0eaa9bb90b21a25f8",
+    "tests/editor/run_native_production_setup.py": "dfb7856d8f8437ccfe583d5abd2884c7083edc59fb1f9b69697eef0d35a9298e",
+    "tests/editor/run_startup_checks.py": "1f6dcec6a9eaf84232e7bac5eb325f1e0c44ef654195518afd04c630f58631d8",
+    "tests/editor/run_unified_settings_native.py": "3865d09771ff5c97c7951e59c4a29adfde29555dcd51d124fa5bb5367a76f889",
+    "tests/editor/startup_checks.gd": "c9e27a264dda29f1f5c3a3fda807aa00f28b5afd5f08f371d88c6210ab86c1f7",
+    "tests/editor/task_authorization_fixture.py": "7ed8cbeabd2c3fb1cfa7bc2af29f7bcfe30909252617e2100d1cf8807c07c897",
+    "tests/editor/task_authorization_input_game.gd": "1d07ba7bea4e9855858135c4cf8fe1ec210836e391ea64adb2eb39292733bbe4",
+    "tests/editor/test_ai_chat_editor_scene_actions.cpp": "4566ad69c14709e5c15b4b9ba7b91185b0e93d8b7b93a81f0cb2fe20a29a1590",
+    "tests/editor/test_parallel_work_orders.mjs": "7f466b8df6ec6f82d675cefaba232883e925895b705e6c76ad976c5c77ad8b93",
+    "tests/editor/test_production_setup.mjs": "7225165f2ce4c310dde3417ef986afc4560dbdbc9d1afc2b3269a80cd2fae1d6",
+    "tests/editor/test_runtime_config.cpp": "de89122c333cbdb0326aad9a74e280ee39408b8c4e0d42e9610d46566852063f",
+    "tests/editor/unified_settings_native.gd": "16313b5dc436fc7403075c96fc8f4fab124ceb89c6f99841b29193ca2226df0e",
+    "tools/godot_parallel/README.md": "39564973441f66c41244c721785eed33690636120e41603173e6102c7b2e3d47",
+    "tools/godot_parallel/runner.mjs": "26753392d187f227ecbc8b9905dbbe4c7b36795064ff40bd59f5326285e49256",
+    "tools/godot_parallel/setup.mjs": "fd558acac3fc736f010acddcc258a2349f4e10d33543a388ae16c07339eb22dd",
+    "tools/gonggong_bridge.py": "04dc832a1a6adf114ce02bb353c3fe74449d633e9cb305dbb8cc594a5987afbe"
+  },
+  "checks": [
+    {
+      "name": "native-full",
+      "exit": 0,
+      "seconds": 34.44
+    },
+    {
+      "name": "startup",
+      "exit": 0,
+      "seconds": 9.83
+    },
+    {
+      "name": "session-memory",
+      "exit": 0,
+      "seconds": 17.8
+    },
+    {
+      "name": "project-ai",
+      "exit": 0,
+      "seconds": 26.05
+    },
+    {
+      "name": "unified",
+      "exit": 1,
+      "seconds": 11.17
+    },
+    {
+      "name": "layout",
+      "exit": 0,
+      "seconds": 43.93
+    },
+    {
+      "name": "task-native",
+      "exit": 0,
+      "seconds": 85.69
+    },
+    {
+      "name": "diagnostics",
+      "exit": 0,
+      "seconds": 14.41
+    },
+    {
+      "name": "cold",
+      "exit": 0,
+      "seconds": 142.47
+    }
+  ],
+  "unified_settings_followup": {
+    "state": "passed",
+    "reason": "Original fixture put model helper in global workspace. Updated fixture uses installed helper and separate game authorization; existing assertions retained, target-root assertion added.",
+    "report_sha256": "47a936573e6f770920e0bc955ccfbda3ddeef4622b30f636c3f0f920b2ca5680"
+  },
+  "native_suite": {
+    "cases": 1565,
+    "assertions": 435630,
+    "failed": 0,
+    "skipped": 3
+  },
+  "cold_recovery": {
+    "ok": true,
+    "report_sha256": "f36c0e63b128d352a1dae6b4b16d09454ee117f46f9ddf86f25fb21b41d40557",
+    "scope": "Controlled model responses for ordinary-game setup/review/integration.\n\nOnly the model transport proposes actions. The editor executes reads, verifies\nindependent acceptance, applies a host plan, runs the game and rolls it back.\nThis is not a real-provider or first-Issue-publication acceptance test.\n"
+  },
+  "build": {
+    "result": "passed",
+    "log_sha256": "eb46675196bd9de9309eb78422dc2182e4ce7165d18efad48b7c7ff14da6e88a",
+    "command": "SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no tests=yes accesskit=no d3d12=no angle=no warnings=extra werror=yes cache_path=D:/GongGong/.git/gonggong-native-cache cache_limit=8 -j8"
+  },
+  "previous_proofs": [
+    {
+      "path": "data-collection/editor-production-combined-773.json",
+      "sha256": "81bef08420cc2b3385d7d97dcba3b893da145c3125ad76fe8a4b7134323ad49a"
+    },
+    {
+      "path": "data-collection/editor-production-recovery-773.json",
+      "sha256": "0de147750c499339975c4eb5b63621c3d1d1655fc2ef655ec97c5aa9117fd7fb"
+    }
+  ],
+  "integration": {
+    "main_2d0": "Startup and connection memory integrated; initial pipe/layout failures retained. Model settings separate installed scripts from production data.",
+    "main_e15": "Optional-provider support retained, narrow settings controls unioned. Main independently fixed Windows pipe EOF; main implementation and tests retained byte-identical instead of duplicate local core change.",
+    "concurrent_learning": "Published main revision12 unchanged. Exact unpublished #810 revision12 archived as evidence; application appended via method entry as revision13.",
+    "resolution_receipt_sha256": "77adfde6f5df5d00146d204d5f5e14285cbc97b49d1b584bb00fbcaec4a7208a"
+  },
+  "independent_review": [
+    {
+      "worker": "sinan_153bdac57bb1f073",
+      "scope": "pre-main runtime binding and warm/cold recovery",
+      "result": "no blockers"
+    },
+    {
+      "worker": "sinan_d99eee74cc924a8b",
+      "scope": "main2d0 merge",
+      "result": "found model helper root mismatch, fixed"
+    },
+    {
+      "worker": "sinan_2149764ed9630f5a",
+      "scope": "six-file path/pipe/layout correction",
+      "result": "no blockers; local pipe change later replaced with published main equivalent"
+    },
+    {
+      "worker": "sinan_cd5591f0e4e11851",
+      "scope": "main e15 integration and corrected unified fixture",
+      "result": "actual FINAL: no blockers, source-only review"
+    }
+  ],
+  "retained_failures": [
+    {
+      "scope": "main2d0 initial startup/session/layout",
+      "sha256": "e19dc465c28ac474558c69d6afabfe3ba4213992a7e28cbcfb6d5c1b81c97e6f"
+    },
+    {
+      "scope": "main2d0 test runner omitted explicit Python; three runtime lock failures, same-binary corrected-runtime rerun passed",
+      "sha256": "8b51191a99e14f10b423402ba6c329e2697e37efe113808610c81e106cf896c9"
+    },
+    {
+      "scope": "main e15 original unified helper fixture",
+      "sha256": "c27b3f7c8b25e52c861e97fba5af72c2cfea84fe6aab032e64ade837349c03ea"
+    }
+  ],
+  "limits": [
+    "Controlled transports validate actual process/native review/integration/run/rollback/restart behavior, not all real providers.",
+    "Actual-account blank game pilot created a real Issue and two concurrent workers; missing evidence and ordinary-game manual review still prevent full acceptance.",
+    "Missing-evidence repair, bounded retry after prelaunch block and full editor-native coverage remain parent follow-up work.",
+    "Effective installed editor has not been replaced by this source validation; main delivery and installed acceptance remain separate.",
+    "Configured concurrency does not prove optimal throughput or provider quota."
+  ]
+}

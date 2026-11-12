@@ -116,11 +116,13 @@ def main():
         old_workspace.mkdir()
         new_workspace.mkdir()
         model_capture = base / "model-helper-input.json"
-        entry = old_workspace / "customizations/components/godot-host/daqian/models_cli.py"
+        (executable.parent / "SConstruct").touch()
+        entry = executable.parent / "customizations/components/godot-host/daqian/models_cli.py"
         entry.parent.mkdir(parents=True)
         entry.write_text(
             "import json, sys\nfrom pathlib import Path\n"
             + "value=json.loads(sys.stdin.readline())\n"
+            + "value['authorized_workspace']=sys.argv[2]\n"
             + f"Path({str(model_capture)!r}).write_text(json.dumps(value), encoding='utf-8')\n"
             + "print(json.dumps({'result':[]}))\n",
             encoding="utf-8",

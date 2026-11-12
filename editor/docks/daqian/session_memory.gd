@@ -29,6 +29,8 @@ func _ready() -> void:
 	remember = CheckBox.new()
 	remember.name = "RememberAIConnection"
 	remember.text = "记住已验证的连接（密钥保存在本机系统凭据库）"
+	remember.clip_text = true
+	remember.tooltip_text = remember.text
 	remember.button_pressed = bool(_get_record("enabled", true))
 	remember.toggled.connect(_toggle_remember)
 	box.add_child(remember)

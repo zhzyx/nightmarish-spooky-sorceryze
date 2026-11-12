@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-1b83431f840047973b6bf7e1528233558025f7d3d4198b6ccefd4e061b9f49a4",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/821",
+  "occurred_at": "2026-11-11T21:28:22.490411+00:00",
+  "evidence_refs": [
+    "kuafu-17d3a4e97505493dcabce88421c5ab5ae4310003",
+    "learn-7953c95d2b34d6b0444d322b5245853a76909ceedd4ee29a22041b47a9d66765"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 9,
+    "previous": "033a2fbdb78a631c6f3a86847aaaf46c7d33c2c60b76139f4709ed3775e1fce9",
+    "action": "applied",
+    "details": {
+      "task": "#821 actual data-only game consumer separated from trusted installation; preserve engine candidate admission and live reviewer identity.",
+      "observed": "Normal native consumer exposed engine-only tool-path and review-marker assumptions; corrected and passed controlled two-worker independent-review apply/run/rollback, exact Git identity negatives, 223 Python/Node and 1560 native tests. Actual installed candidate checker rejected six mutations before worker spawn. Real-provider, ordinary-game cold restart and final installed release remain outside this result."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-game-workspace-821-final.json",
+        "sha256": "fc5ca21b5cd3bd31cf926aa5d127565315f8bf38791865062378854e5c23a10c"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-game-workspace-20261112/kuafu-17d3a4e97505493dcabce88421c5ab5ae4310003.json",
+      "sha256": "9c61b3c4c3f01a0c9e0f8e1a92b7b36ce080302347ed15884117fe55bbfcb051"
+    }
+  },
+  "sha256": "22d6a33cb7422863bbb9463a59eae1e56ce53884f3cda2606eedee6d03bc6875"
+}

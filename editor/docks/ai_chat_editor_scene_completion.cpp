@@ -838,6 +838,9 @@ Dictionary AIChatEditorSceneCompletion::perform(const Dictionary &p_args, bool p
 		const String path = p_args["resource_path"];
 		Vector<String> files;
 		files.push_back(path);
+		// New generated assets may not have reached the filesystem scan yet.
+		// Register the confirmed file before the synchronous importer looks it up.
+		filesystem->update_file(path);
 		filesystem->reimport_files(files);
 		filesystem->scan_changes();
 		int index = -1;

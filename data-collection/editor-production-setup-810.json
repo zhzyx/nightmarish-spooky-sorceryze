@@ -1,0 +1,53 @@
+{
+  "issue": 810,
+  "scope": "native editor production setup",
+  "platform": "Windows",
+  "method_recall": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 9,
+    "applied": "Native UI is compiled by editor SCsub; setup.mjs is independently executed by existing Node host, not classified by extension alone."
+  },
+  "checks": [
+    {
+      "command": "node --test tests/editor/test_production_setup.mjs",
+      "passed": true,
+      "observed": "7/7 pass: real worktrees, immutable configs/replay, stale model, invalid authorization/capacity/order, unknown ownership, host CLI error receipt, uncommitted design/user files without source HEAD/index changes, failed login and unowned target."
+    },
+    {
+      "command": "node --test tests/editor/test_parallel_work_orders.mjs tests/editor/test_production_setup.mjs",
+      "passed": true,
+      "observed": "44/44 passed before snapshot enhancement: 39 unchanged runner regression cases plus initial 5 setup cases. Current setup subsequently rerun as 7 cases."
+    },
+    {
+      "command": "git diff --check",
+      "passed": true,
+      "observed": "No whitespace errors."
+    }
+  ],
+  "build_impact": {
+    "native_inputs": [
+      "editor/docks/ai_chat_dock.cpp",
+      "editor/docks/ai_chat_dock.h",
+      "editor/docks/ai_chat_sub_agents.cpp"
+    ],
+    "host_tool_inputs": [
+      "tools/godot_parallel/setup.mjs"
+    ],
+    "host_contract": "RuntimeConfig Node launches setup.mjs request/result JSON asynchronously; existing CLI discovery bridges; existing runner remains execution/receipt authority",
+    "rollback": "Restore prior editor/tool, preserve private config/worktrees/receipts; explicit custom config remains supported",
+    "native_invalidation": "Pending parent combined strict compile/build and headless UI validation; no binary or install changed in this worker."
+  },
+  "limitations": [
+    "Controlled fixture CLI, no claim of real provider authentication/production acceptance",
+    "Native compiled/headless combined verification and independent review remain with parent"
+  ],
+  "inputs": {
+    "editor/docks/ai_chat_dock.cpp": "956cdea468e713e0355a2a00dcbff2e8e889ebfaeb86b816d5a199c6ad92a92a",
+    "editor/docks/ai_chat_dock.h": "10b6ffb574c618e6df91d19f9253c42e6e5d9104a2177c228ecca8fadf025643",
+    "editor/docks/ai_chat_sub_agents.cpp": "d7d7ad7275ddee2e0e3c4343cbf893304f11092cae213a7663fa78a8a4719fa1",
+    "tools/godot_parallel/setup.mjs": "8250b06b44f955ab3fc6bbfbffebe1a7744d5bcbd938911f99cba4f09d099ea8",
+    "tests/editor/test_production_setup.mjs": "2803e4ab684e8c70887ba6c281ab25681f44dde68da68517c372075ded6bd082",
+    "tools/godot_parallel/README.md": "847627eaefdaf52f1c5aad16749b0afa4b595078011409e16ccaeec437d6784e"
+  }
+}

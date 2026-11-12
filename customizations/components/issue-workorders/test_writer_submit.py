@@ -266,9 +266,13 @@ class HandoffTests(unittest.TestCase):
         self.git("switch", "-c", "ship", "main")
         (self.repo / "new.txt").write_text("new")
         self.git("add", "new.txt")
-        checker = self.repo / "customizations/platforms/data-collection/git-files/storage/diting_files.py"
-        checker.parent.mkdir(parents=True)
-        checker.write_text("import sys\nassert '--require-committed' in sys.argv\n")
+        # The installed post-commit validator must inspect real candidate data.
+        # No candidate executable can substitute for the host check.
+        self.git("config", "core.autocrlf", "false")
+        dataset = self.repo / "gonggong-diting-data/dataset.json"
+        dataset.parent.mkdir()
+        dataset.write_bytes((submission.issue_gate.INSTALLATION / "gonggong-diting-data/dataset.json").read_bytes())
+        self.git("add", "gonggong-diting-data")
         bodies = []
         readback = dict(state="OPEN", baseRefOid=self.pr_base)
 
@@ -301,4 +305,4 @@ class HandoffTests(unittest.TestCase):
         self.assertEqual(len(bodies), 1)
         for text in (self.pr_base, self.signed, first["candidate"], first["tree"], "new.txt", "alice", "验收证据"):
             self.assertIn(text, bodies[0])
-        self.assertEqual(first["handoff"]["write_paths"], ["new.txt"])
+        self.assertEqual(first["handoff"]["write_paths"], ["gonggong-diting-data/dataset.json", "new.txt"])

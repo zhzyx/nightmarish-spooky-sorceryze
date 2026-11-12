@@ -246,6 +246,7 @@ def find_gh(env, root=None):
 
 
 def host_environment(root):
+    root = Path(__file__).resolve().parents[3]
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONUTF8="1")
     snapshot = _runtime.read_effective(env=env) if env.get("GONGGONG_RUNTIME_CONFIG") else None
     if snapshot is None:
@@ -439,7 +440,7 @@ def issue_binding(root, request, tenant):
         raise ValueError("Before development, create/reuse a real Issue and bind issue_number and stable request_id")
     bound = request_id.startswith("daqian-direct-") or request.get("daqian_bound") is True
     # A candidate supplies repository data, never the reader trusted to attest its own actor.
-    installation = Path(__file__).resolve().parents[3] if bound else root
+    installation = Path(__file__).resolve().parents[3]
     command = [
         sys.executable,
         "-E",
@@ -751,7 +752,7 @@ ACTIVE_STATUSES = ("status:in-progress", "status:in-review")
 
 
 def work_items_module(root):
-    path = root / "customizations/components/issue-workorders/work_items.py"
+    path = Path(__file__).resolve().parents[3] / "customizations/components/issue-workorders/work_items.py"
     spec = importlib.util.spec_from_file_location("gonggong_work_items", path)
     if spec is None or spec.loader is None:
         raise ValueError("Issue work-order adapter is unavailable")
@@ -1171,6 +1172,8 @@ def main():
     parser.add_argument("--receipt-source")
     args = parser.parse_args()
     try:
+        if args.action in {"issue-agent", "issue-route", "issue-draft"}:
+            _paths_module.prepare_game_workspace(Path(args.workspace), work_items_module(Path(args.workspace)))
         if args.action == "chat":
             if args.request is None:
                 raise ValueError("chat requires --request")

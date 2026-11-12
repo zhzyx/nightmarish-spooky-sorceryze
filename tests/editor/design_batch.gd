@@ -353,6 +353,11 @@ func _run():
 		dock.get_environment_settings_control().find_child("EngineBuildPython", true, false).text = OS.get_environment("DESIGN_BATCH_ROOT").path_join("missing-python")
 	if mode.begins_with("review"):
 		settings.set_setting("ai_chat/parallel_work_orders_config", "res://must-not-dispatch-production.json")
+		if OS.get_environment("DESIGN_BATCH_TASK_NATIVE_REVIEW") == "1":
+			var grant = dock.get_ai_settings_control().find_child("TaskNativeAuthorization", true, false)
+			grant.button_pressed = true
+			_check(grant.button_pressed, "Review parent native authorization missing")
+			print("TASK_REVIEW_PARENT_GRANTED")
 	_send("DESIGN_BATCH_START")
 	if mode.begins_with("parallel-"):
 		if not await _wait_file("parallel-started"):

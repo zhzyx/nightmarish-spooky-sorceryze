@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-40aa5499dc266562f0085381ad41ab0a28eff7bc05a20e41052a3ce385009c8d",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+  "occurred_at": "2026-11-11T22:29:53.634723+00:00",
+  "evidence_refs": [
+    "kuafu-571403520f344c7627e84eb7877e42057ee86238",
+    "learn-54cea5e5f90f9807a997cf117756808a46fe8972aa6e2c24b884569d3e8d1383"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 12,
+    "previous": "3ce7dd2c38273e543185a55e9ba9a700707847614c8b5891cfd6042f06e6eaf7",
+    "action": "applied",
+    "details": {
+      "task": "#810 在 c811 主线组合复验窄屏设置：原生 dock/editor_node 和嵌入 workbench.gd。",
+      "observed": "仅改 GDScript 后旧二进制仍显示原最小宽度；严格构建实际重新生成嵌入头并编译插件，最终六种宽度/缩放全部通过，3D/Script 菜单恢复通过。按实际消费者而非后缀判定生效；不推断所有脚本均需原生重建。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-production-setup-810-c811-integration.json",
+        "sha256": "d499e9d7223d4a05878b9b72a5ad733cfa229312e80f2b71a0d50325ed69567f"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/kuafu-571403520f344c7627e84eb7877e42057ee86238.json",
+      "sha256": "63a127959e7b1967e150574b0c608f99e2a01f975cc04fd0a6049e0c7dd51f5b"
+    }
+  },
+  "sha256": "b9f1dd1bb1932da2bc67cad8c6d6b8521b152a5d9f510e627a0764337a8e355b"
+}

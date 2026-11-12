@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-92f0c9d903fc71dc44c7d7a2713d90ee04a0084a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-production-setup-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a2bcf099769afaf959db1b4cafa1524cf6e83bc4445f35a93fbd7f10fafbfcc4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "8d1f4da271892ba9eeb58f6593806f2f303fda65",
+    "context_sha256": "b38d2d9409f8271e5b5f96800d5719c659dc53223259be0ca344e2d90c230716",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+    "evidence": "raw SHA d499e9d7223d4a05878b9b72a5ad733cfa229312e80f2b71a0d50325ed69567f; index retained prior LF until git add --renormalize",
+    "diagnosis": "精确 -text 属性已生效，但普通 git add 保留已暂存旧规范化 blob。对唯一回执执行 --renormalize 后 raw/index 字节相等；未改原始回执。",
+    "next_action": "完整候选重新门禁后签发。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T22:34:27.278774+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T22:37:14.977302+00:00",
+  "sha256": "4221388bd09e620acef459a1aeda2816afcfc648dc07173336325ee06a3e5855"
+}

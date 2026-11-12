@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2d230164be916bdc00537f190df53c7c792265dd",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "93538cb5f45af524908dd2b857f921a7910c895e60065f8fb6cc2bf6068a2736",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "7813a30245c65427094934fd29590b98c1a1dd96",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "data-collection/editor-production-recovery-773.json",
+    "diagnosis": "Warm and cold normal-control recovery now both passed on console0edea42f / engine4ce4cfa2: exactly two original producers, fresh independent reviews, integration, actual game subprocess and rollback; original failure retained. Full native1561 cases435597assertions passed. Independent source review153bdac found no new blocker after receipt callback refresh. Real Codex history resumed in a private installation, but business review still unknown; no effective-install completion claimed. Main advanced to2d0ad5b2 with verified connection startup/session memory; merged own exact stash55cda61d without-index after index-apply refusal, all immutable proof bytes preserved; latest combined strict build passed20.82s, full consumer checks running.",
+    "next_action": "Finish latest-main combination checks and formal delivery while continuing actual game evidence/independence gaps. Keep parent773 open; blocked-prelaunch retry loop remains to correct.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T00:21:06.450698+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T01:01:58.306554+00:00",
+  "sha256": "2617a00ab2cc0139a3eafad30ca033e565b9d36a258f1ad0f75b319c11506780"
+}

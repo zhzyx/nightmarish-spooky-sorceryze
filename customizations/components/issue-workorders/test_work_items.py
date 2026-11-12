@@ -53,6 +53,10 @@ class WorkItemTests(unittest.TestCase):
 
     def test_authorized_create_records_mandate_and_starts(self):
         def fake(*args):
+            if args[:2] == ("api", "repos/test/repo"):
+                return '{"full_name":"test/repo","permissions":{"push":true}}'
+            if args[:2] == ("label", "create"):
+                return ""
             if args[:2] == ("api", "user"):
                 return '{"login":"test-host"}'
             if args[0] == "api":
@@ -135,6 +139,10 @@ class WorkItemTests(unittest.TestCase):
 
     def test_create_uses_exact_body_file(self):
         def fake(*args):
+            if args[:2] == ("api", "repos/test/repo"):
+                return '{"full_name":"test/repo","permissions":{"push":true}}'
+            if args[:2] == ("label", "create"):
+                return ""
             if args[0] == "api":
                 if args[1] == "user":
                     return '{"login":"test-host"}'

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a5bdcff07369cd48261ab18d967c872ca9199f51",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-production-setup-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "94d01f3e85557bb27901b238f958ad87c123eefaa270b5ebb5e7621218b08dec",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "delivery",
+    "detection_head": "971af97cc9d8e08a3c313a39ad59e0c6f904042b",
+    "context_sha256": "b38d2d9409f8271e5b5f96800d5719c659dc53223259be0ca344e2d90c230716",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43095279229",
+    "diagnosis": "Exact PR826 signed head remains queued with zero jobs since20:18:57UTC; many unrelated source workflows also queued. Repository concurrency is per-ref. No source-test failure or confirmed service root cause yet.",
+    "next_action": "Retain exact pending CI and PR; inspect authoritative workflow updates, do not duplicate publication or bypass checks. Continue local821/820 work independently.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T21:02:44.402687+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": "Local source fixes, native integration and independent reviews continue."
+  },
+  "occurred_at": "2026-11-11T21:04:28.675195+00:00",
+  "sha256": "5e52c23dec1ac91a36ac3f0de235f5e72716195d20ff031e536a2c975ef8400b"
+}

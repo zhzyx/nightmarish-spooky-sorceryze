@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d27afae070e9e3741e31abd7ccf288273d0f617b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-production-integration-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/811",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "02823023e15c45a2d6c31d4dcb04899328d3cca539327d0f8e683418a3b46894",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/811",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/812",
+    "action": "validation",
+    "detection_head": "325fdb12c388de0821bd51d33a63bd867b2e7137",
+    "context_sha256": "e6e644c60abf765b3c12d654ef1b64be49562a9e970c0e2ad01b2bcdeeab67c5",
+    "operator": "Sail-Li",
+    "worker": "codex-root-native-integration-811",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/811",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/818",
+    "diagnosis": "Only dispatch and quality events were initially staged; formal gate requires a real request event matching this Issue. Trusted installed bridge recorded actual current authorized chat context and it was staged without inventing a source.",
+    "next_action": "Formal gate and committed git-check passed, exact PR818 CI and remote main46697266403533f1038fd129956859597d4eda88 readback verified. This resolves source-evidence gate failure; parent full production acceptance stays open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T19:22:55.345708+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T19:49:35.904984+00:00",
+  "sha256": "96d07490ec8397f4bcb243cbe2f81e386aa85b0c0f8a91147ec5c023b47e3de1"
+}

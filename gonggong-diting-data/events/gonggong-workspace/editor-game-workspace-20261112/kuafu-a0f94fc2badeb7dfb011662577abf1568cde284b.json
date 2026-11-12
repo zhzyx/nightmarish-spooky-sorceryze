@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a0f94fc2badeb7dfb011662577abf1568cde284b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-game-workspace-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/821",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "abe921fbdebb69e7ba497bc0a9efd1ed93be38f087ecb1c62dc4871f7864696e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/821",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "971af97cc9d8e08a3c313a39ad59e0c6f904042b",
+    "context_sha256": "ffcc2bc27c19f956b4bfd7a08107db0e207902936b8874e4a76b40954d863187",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/821",
+    "evidence": "data-collection/receipts/native-game-production-setup-r1.json",
+    "diagnosis": "Windows normal-send preflight still requires tools/gonggong_bridge.py inside configured game data root. Runtime paths were configured; absence of host code in ordinary B triggers setup incorrectly.",
+    "next_action": "Root changed preflight to installed host and rebuilt strict Windows candidate; rerun exact normal game setup and independent review.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T20:42:04.309533+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T20:42:39.286469+00:00",
+  "sha256": "aeedefee9f39dd2787983a5f1ed4e79422ce243e3a90702ada6cec2335ca1362"
+}

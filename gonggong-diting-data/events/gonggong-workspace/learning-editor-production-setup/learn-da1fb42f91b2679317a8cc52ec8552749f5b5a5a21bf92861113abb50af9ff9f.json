@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-production-setup",
+  "event_id": "learn-da1fb42f91b2679317a8cc52ec8552749f5b5a5a21bf92861113abb50af9ff9f",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+  "occurred_at": "2026-11-12T03:00:00+08:00",
+  "evidence_refs": [
+    "dispatch-7305b91a3ccd4709b1278e36ff884a1d"
+  ],
+  "payload": {
+    "scope": "editor-production-setup",
+    "lesson": "pin-current-design-without-mutating-source",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "编辑器创建工单设计后，自动生产准备先用独立临时 index 固定当前工作文件并比较捕获前后树；用 snapshot commit 建独立副本，不要求用户先手工提交，不改源 HEAD/index。",
+      "when": "原生编辑器已定稿但设计/需求和用户工作尚未提交，准备真实 Git worktree。",
+      "counterexample": "初版要求源工作区 clean，会拒绝正常编辑器刚产生的设计；并发变更或准备基线变化不能沿用旧成功回执，必须停住核对。",
+      "trial_plan": "当前设计与用户文件未提交时运行正常 setup 入口，验证副本字节相等、源 HEAD/index 不变；再次调用不增加副本，后续业务内容变化及未知路径被拒绝。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-production-setup-810.json",
+        "sha256": "32501c95cf742b17d3f6442181538247188f802d8cbe2353d4f87729192a5a83"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/dispatch-7305b91a3ccd4709b1278e36ff884a1d.json",
+      "sha256": "adda44ad8c1125166f78e5b91f2b0db7aa1f8247e4865748da8d78c41f557da0"
+    }
+  },
+  "sha256": "b2e9ba0027ffa9fe1b48971f3cd1e5d0af4b6397a96a064456b1fc7a8a8121b0"
+}

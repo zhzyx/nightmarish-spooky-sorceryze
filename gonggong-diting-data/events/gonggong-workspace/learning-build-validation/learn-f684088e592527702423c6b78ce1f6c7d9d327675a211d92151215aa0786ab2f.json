@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-build-validation",
+  "event_id": "learn-f684088e592527702423c6b78ce1f6c7d9d327675a211d92151215aa0786ab2f",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "occurred_at": "2026-11-12T01:51:47.924126+00:00",
+  "evidence_refs": [
+    "kuafu-9b6b5d4fbe23517a750484076a956e7537c577aa"
+  ],
+  "payload": {
+    "scope": "build-validation",
+    "lesson": "validate-whole-signed-candidate",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Run static checks for the complete candidate diff against the observed target main, and require the whole-PR CI result for the exact signed head; an identical-tree signature commit can have a passing empty-diff branch run.",
+      "when": "The writer signs a same-tree delivery commit and CI scopes checks by changed files.",
+      "counterexample": "A branch build that explicitly checks the full target diff can be sufficient for that scope; compiler-only and empty signature diffs cannot establish whole-PR static validation.",
+      "trial_plan": "On the corrected four-file candidate run mypy, formatting and include validation across all files changed since main; then compare exact signed-head branch and whole-PR CI. Require both applicable checks to pass, retain original whole-PR failure and verify main readback separately."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-production-ci-correction-773.json",
+        "sha256": "705891fb8ea12da59603bbc5da40f1ecfa7548bca072b4beb848990d8041f1a6"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/kuafu-9b6b5d4fbe23517a750484076a956e7537c577aa.json",
+      "sha256": "82c36e2d1d9fa18891ec68db91586c00ba5cf4b27d81447a632b3dc5b2303b87"
+    }
+  },
+  "sha256": "686d7dc1828a82204dbc6f21dfef66c11edb14fc74724d8eaa74f88f40af1bb6"
+}

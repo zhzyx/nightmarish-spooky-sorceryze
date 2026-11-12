@@ -437,22 +437,22 @@ class ChatGateTests(unittest.TestCase):
             env = bridge.host_environment(self.root)
         self.assertEqual(env["PATH"].split(bridge.os.pathsep)[0], str(self.root.resolve()))
 
-    def test_workspace_runtime_does_not_require_ide_environment(self):
+    def test_candidate_cannot_supply_host_node(self):
         node = self.root / "project/runtime/node/node.exe"
         node.parent.mkdir(parents=True)
         node.touch()
         with patch.dict(bridge.os.environ, {"PATH": ""}, clear=True):
             env = bridge.host_environment(self.root)
-        self.assertEqual(env["GONGGONG_NODE"], str(node))
-        self.assertEqual(env["PATH"].split(bridge.os.pathsep)[0], str(node.parent))
+        self.assertNotEqual(env.get("GONGGONG_NODE"), str(node))
+        self.assertNotIn(str(node.parent), env["PATH"].split(bridge.os.pathsep))
 
-    def test_workspace_git_is_available_without_ide_path(self):
+    def test_candidate_cannot_supply_host_git(self):
         git = self.root / "project/runtime/git/cmd/git.exe"
         git.parent.mkdir(parents=True)
         git.touch()
         with patch.dict(bridge.os.environ, {"PATH": ""}, clear=True):
             env = bridge.host_environment(self.root)
-        self.assertEqual(env["PATH"].split(bridge.os.pathsep)[0], str(git.parent))
+        self.assertNotIn(str(git.parent), env["PATH"].split(bridge.os.pathsep))
 
     def test_doctor_reports_admission_failure_without_enabling_execution(self):
         def check(command, _root):
@@ -474,9 +474,12 @@ class ChatGateTests(unittest.TestCase):
         for raw, expected in ((None, "missing"), ("{", "invalid_or_unavailable")):
             if raw is not None:
                 (self.root / "framework/broken.json").write_text(raw)
-            with patch.object(
-                bridge, "diagnose", return_value={"ok": False, "blocking_checks": ["local_admission:yanshi"]}
-            ) as diagnose:
+            with (
+                patch.object(
+                    bridge, "diagnose", return_value={"ok": False, "blocking_checks": ["local_admission:yanshi"]}
+                ) as diagnose,
+                patch.object(bridge, "framework_root", return_value=self.root / "framework"),
+            ):
                 result = bridge.execute(self.root, "doctor", "test")
             diagnose.assert_called_once()
             self.assertFalse(result["ok"])

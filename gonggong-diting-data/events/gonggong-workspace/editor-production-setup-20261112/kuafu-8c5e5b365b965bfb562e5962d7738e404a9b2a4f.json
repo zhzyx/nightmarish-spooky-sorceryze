@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8c5e5b365b965bfb562e5962d7738e404a9b2a4f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-production-setup-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "17b5204ced0f366835e663b78d8ed8bcc389095e85ce56f01ee2426cacdb6d3f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "delivery",
+    "detection_head": "2918fc2549b6c314a05e3d83212a881fd4008592",
+    "context_sha256": "b38d2d9409f8271e5b5f96800d5719c659dc53223259be0ca344e2d90c230716",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+    "evidence": "Readback aff6282d96b899b3fa61d6f2cd27c17b8de0c614 valid GitHub signature, Sail-Li, exact2918 parent/tree6d457a0a/basec811; idempotent retry created PR854 same signed commit",
+    "diagnosis": "第一次提交后的立即回读未满足签发条件，原始失败保留；再次只读核对全部字段成立，同候选恢复成功。无法断言具体是哪一字段短暂不可见。",
+    "next_action": "跟踪PR854精确CI和main，原PR826由本发布者替代，禁止重复发布或重签同候选。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T22:40:43.216960+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T22:45:26.089833+00:00",
+  "sha256": "ae958034d89313561e690ac92993ac8342c3619db0a0ce49e3a9e9e5253f8b97"
+}

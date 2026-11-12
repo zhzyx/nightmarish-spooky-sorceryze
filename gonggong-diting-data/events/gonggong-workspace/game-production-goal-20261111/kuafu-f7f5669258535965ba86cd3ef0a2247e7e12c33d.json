@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f7f5669258535965ba86cd3ef0a2247e7e12c33d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "93538cb5f45af524908dd2b857f921a7910c895e60065f8fb6cc2bf6068a2736",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "7813a30245c65427094934fd29590b98c1a1dd96",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "data-collection/editor-production-main-integration-773.json SHA256 993eb84fe0476786621477ec4fba8f10fde7914fbd26439e213f979f20e694a4; source base e15a49f9b7dbbdbb1b585fc2b68cc3f252d88c8b; actual final sinan_cd5591f0e4e11851 no blockers",
+    "diagnosis": "Latest combined strict build passed14.98sec;1565 native tests435630assertions passed. Startup/session-memory/project-AI/layout/task-native/diagnostics/cold recovery passed. Unified old helper-location fixture failed two assertions; corrected installation/game split, kept existing assertions and added target-root assertion, rerun passed. Original failure retained. This is scoped source recovery, not overall #773 completion or installed acceptance.",
+    "next_action": "Proceed exact candidate gate, signed PR, CI and main readback. Continue parent missing-evidence repair, ordinary-game review, bounded prelaunch retries and effective-install acceptance without requiring new user instruction.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T00:21:06.450698+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T01:37:34.929877+00:00",
+  "sha256": "6abf13d973a5e44d1aab4442e86d35259cea414a4320aa45c073effdf0093331"
+}

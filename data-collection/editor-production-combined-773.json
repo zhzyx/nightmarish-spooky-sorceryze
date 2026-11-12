@@ -1,0 +1,241 @@
+{
+  "issue_number": 773,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "request_id": "game-production-goal-20261111",
+  "children": [
+    810,
+    821,
+    820,
+    845
+  ],
+  "tested_source_base": "5903fb96fee73c0d68967bf953abcd0a5d265fcb",
+  "delivery_base": "7813a30245c65427094934fd29590b98c1a1dd96",
+  "build_tree": "3bd389a9d55fd48998c950a1b8fb73b0fa087130",
+  "final_test_tree": "6f29990271c302f16828c5927653b02764048d8b",
+  "binary_sha256": "20c275d93d914a5f7ae64b4b5bf40e3daf5ec17abbb47105ee8f72acff9329ea",
+  "engine_sha256": "badec88e4a92bd855493b9fd78b1c6055449ca517360973da798acc40d2ab623",
+  "checks": [
+    {
+      "name": "native-full",
+      "exit_code": 0,
+      "seconds": 42.4
+    },
+    {
+      "name": "cold-game",
+      "exit_code": 0,
+      "seconds": 150.1
+    },
+    {
+      "name": "task-native",
+      "exit_code": 1,
+      "seconds": 93.39
+    },
+    {
+      "name": "diagnostics",
+      "exit_code": 0,
+      "seconds": 14.91
+    },
+    {
+      "name": "layout",
+      "exit_code": 0,
+      "seconds": 50.32
+    },
+    {
+      "name": "project-ai",
+      "exit_code": 0,
+      "seconds": 28.17
+    },
+    {
+      "name": "unified",
+      "exit_code": 0,
+      "seconds": 19.27
+    },
+    {
+      "name": "task-native-first-import-atomic-recheck",
+      "exit_code": 0,
+      "terminal_process_exit_codes": [
+        0,
+        0
+      ],
+      "log": "final/task-native-atomic.log"
+    }
+  ],
+  "native_summary": {
+    "cases": 1561,
+    "assertions": 435597,
+    "failed": 0,
+    "skipped": 3
+  },
+  "helpers": {
+    "host_unittest": {
+      "passed": 158,
+      "recheck": "python-host-corrected.log",
+      "prior": "python-host.log",
+      "prior_reason": "recursive discover needs daqian on PYTHONPATH"
+    },
+    "issue_unittest": {
+      "total": 124,
+      "skipped": 3,
+      "log": "python-issues.log"
+    },
+    "node": {
+      "passed": 72,
+      "log": "node.log"
+    }
+  },
+  "corrections": [
+    {
+      "path": "editor/docks/ai_chat_dock.cpp",
+      "reason": "Include task and production options in existing caption clipping rule; fixes 640@1.5 settings overflow",
+      "proof": "layout/layout-1.5-640.json",
+      "recheck": "final/layout/summary.json"
+    },
+    {
+      "path": "tests/editor/run_ai_chat_semantic.py",
+      "reason": "Copy isolated mocked framework and CURRENT_FRAMEWORK pointer to trusted host installation",
+      "proof": "task-native.log"
+    },
+    {
+      "path": "tests/editor/task_authorization_fixture.py",
+      "reason": "Atomic external terminal marker prevents existence-before-content race; actual calls had expected results and MOCK_ERRORS empty",
+      "proof": "final/task-native.log"
+    }
+  ],
+  "formatter": {
+    "ruff_check": "passed both corrected Python fixtures",
+    "ruff_format": "passed both corrected Python fixtures",
+    "clang_format": "passed ai_chat_dock.cpp full file dry-run Werror",
+    "git_diff_check": "passed"
+  },
+  "source_sha256": {
+    ".gitattributes": "62eaa3ee48a5aac915a8976d55d733302e66d2cf69c2b125713cbf584ea7baec",
+    ".pre-commit-config.yaml": "84cad824bda98952b84bb6e0010cb0609756cf7c737f69ad3c8c53cf0c6610b8",
+    "customizations/components/godot-host/bridge.py": "97231e8dd92f2ddf6618b640b3429f05732681bf36d5dd6fae0f47e0981638e9",
+    "customizations/components/godot-host/daqian/board.py": "b4df0fd7ab6f7350aee0c4e8f33d200d23fe2f6b2293b289f1f234eb6bba5cc2",
+    "customizations/components/godot-host/requirements_agent.py": "96ae570e8aafaf211c8566482c9e661288bd8635405ce72080a8095c189e20e5",
+    "customizations/components/godot-host/test_bridge.py": "78ed6f47d495333fd41f8bdf2dffc446a9559671e75fec0466de499ec1746f76",
+    "customizations/components/godot-host/test_direct_issue.py": "753b70957e340784caf056c8be93550003643a37ae0090e190c829e997163058",
+    "customizations/components/godot-host/test_game_workspace.py": "44b2a043612ddf6b792dbbaaacdf02a926cf396dfea85dc7dc735ac94af5b59d",
+    "customizations/components/godot-host/test_issue_guide.py": "1f28532462d70c88e30f447126084e8bc247c693233e26b03a0695d3dddb1615",
+    "customizations/components/godot-host/workspace_paths.py": "fb2550e131f243f4489c1aebefd467fa857a9f7ff4bd6fd040ea56a84b68794c",
+    "customizations/components/issue-workorders/issue_gate.py": "a397c6a7a2cd44ed806fced45a8e9ec1faef55df0bee5faf8297790fc713bbca",
+    "customizations/components/issue-workorders/test_work_items.py": "74d3eb8ef0440cddc4f06f1bc88d60985a8ac156d8547bce15b2e29d9b92cf48",
+    "customizations/components/issue-workorders/test_writer_submit.py": "ee663917b30ed350483a4bf8a1acc32036b3e00a4b10431de4e8880914ebafee",
+    "customizations/components/issue-workorders/work_items.py": "27c923f79f164834827b954c8b97dc1a186d6090257e7d284b51300e69d722bd",
+    "customizations/components/issue-workorders/writer_submit.py": "7138d0a6d1391b874de94296d83375b7e0be6c9bf418d6f04915b6f13cd0b8d4",
+    "data-collection/editor-game-workspace-821-cold.json": "5d2380d6a3279afb05202ba082aa77522442643c44f2d56c06f015be69d9573e",
+    "data-collection/editor-game-workspace-821-failures.json": "d60caaf92efcb7e5e464627e1b94f8f5e7cd4e6f6ca57dbd1e4c574fc768fc42",
+    "data-collection/editor-game-workspace-821-final.json": "fc5ca21b5cd3bd31cf926aa5d127565315f8bf38791865062378854e5c23a10c",
+    "data-collection/editor-game-workspace-821.json": "54f397bf5cb8cee15f0a64e453c867fa8c84ff7d024204f63761a2a3c6941a67",
+    "data-collection/editor-production-setup-810-c811-integration.json": "d499e9d7223d4a05878b9b72a5ad733cfa229312e80f2b71a0d50325ed69567f",
+    "data-collection/editor-production-setup-810-ci-correction.json": "35123d870eae3fb8a226a7dd336ab0bb9be2350393440a7d8b2f63382581353a",
+    "data-collection/editor-production-setup-810-final.json": "e4922d81f226f8408fc980df84ede24f94099ced81aecb7c91071e4b29af506a",
+    "data-collection/editor-production-setup-810-main-integration.json": "48fce44bef9b46626d1d52df8eab33268cde011ca7bb4f53ca765620c6d580a0",
+    "data-collection/editor-production-setup-810.json": "32501c95cf742b17d3f6442181538247188f802d8cbe2353d4f87729192a5a83",
+    "data-collection/editor-runtime-diagnostics-845-5903.json": "8f154260a5fc73104b05ef17506591b25cf8cf2c7a5ad1711b036c9fcd217c41",
+    "data-collection/editor-runtime-diagnostics-845-binding.json": "dd2ca825d366bc4bc479f983cdca2c186b958d4c9558b8c04ef1d6ea0caacc76",
+    "data-collection/editor-runtime-diagnostics-845.json": "6259322c62413ed1ad132df2498d630e1c81e70197864dd3eb64351cefaef105",
+    "data-collection/editor-task-authorization-820-first-import.json": "e437c1a32b8a8745e3d6f477b2503e287a14f8bdd0b2b760405e78a2d355d6c1",
+    "data-collection/editor-task-authorization-820.json": "3bc339c9ed94d49598eeb60b2dca022d0f95b5a279b53b25afe7094d0e985eb6",
+    "design-docs/editor-game-workspace-20261112.md": "9b69b6b0bd3e3bca09f161bde02506d2207615629583ed9e471d5791b691ee50",
+    "design-docs/editor-production-setup-20261112.md": "1d250dc56745f34b61287403b70688c89640d31c867edf56927178398acfd966",
+    "design-docs/editor-runtime-diagnostics-20261112.md": "840d1ab2e31f2db6cd3a2156b3749a5bc06c948dcc3e03213546677f050f337f",
+    "design-docs/editor-task-authorization-20261112.md": "5e96d27a640500ffd3cee075f3a874f46ee07a8220ea5e383fc089b8a6479dec",
+    "editor/debugger/script_editor_debugger.cpp": "1dd276529703d50a88f8a0d9e5fd2333d0d3af95e87e9cfb8dcf8d62bc2be0fc",
+    "editor/debugger/script_editor_debugger.h": "52df2e4117e105c60b3417fc64487154b1276baa48bd4d41f3078cb32069707a",
+    "editor/docks/ai_chat_dock.cpp": "7c1b034f450b25baace3f1fd3f63cf9f78fa37b680bfd4c635e4945517e30667",
+    "editor/docks/ai_chat_dock.h": "a3357967739b9246e3f530d737841fea97229fd66b4237165f5c43c6afaf8632",
+    "editor/docks/ai_chat_editor_control.cpp": "4d277518eb8319b1465a924cf6ea8a322a2a07e70e4a456f9b31619c94366e40",
+    "editor/docks/ai_chat_editor_scene_actions.cpp": "9903dbf51e993175d8613f89d61e3551ac58bed64970a1af1517299a50410387",
+    "editor/docks/ai_chat_editor_scene_completion.cpp": "68e069b7d1af6c2eb7df4d1a55e17e70c6920518cc8465d19bbec200e5efe48d",
+    "editor/docks/ai_chat_engine_candidate.cpp": "601ade62aebf41ad73f47333389ec89cbba6a1fcb71a92e6e780b1dc3b8ff4a7",
+    "editor/docks/ai_chat_gonggong.cpp": "9c873685afa85d85ceb35bf8de02540cbc2db6edce66d33939fccf2d8d9eb1bf",
+    "editor/docks/ai_chat_host_runtime.h": "87eb30355cc36aa63a1fe572976a0f9fda2833d42dcad8509900fc685ab58926",
+    "editor/docks/ai_chat_sub_agents.cpp": "17a193009557120845eb93de522f2741a4c1cf2249e470058ba02e780d442c30",
+    "editor/docks/ai_chat_task_authorization.cpp": "bb6528d82b6f379b0259617ec869e0b07fb55cc685f2f78eaabbc6113c2bbbec",
+    "editor/docks/ai_chat_task_authorization.h": "21615320e266c2b662aacf8b02c7ae3721769160402baadbfff27e00059f44a0",
+    "editor/docks/daqian/workspace.gd": "777b13fbb98b771d8866df85de2ccc16ad3b14c396557fa5ce45544f1ef58864",
+    "editor/docks/gonggong_panel.cpp": "03a89cd91dc387b489c62dde578eb28a23900105062fbfcc3814248fa9c0e7f0",
+    "editor/docks/gonggong_panel.h": "4134849aa88287a22ad07f1d2b1404d9e8f8a61f59dd4f710beb29f7f1b993ae",
+    "gonggong-diting-data/events/gonggong-workspace/editor-game-workspace-20261112/kuafu-17d3a4e97505493dcabce88421c5ab5ae4310003.json": "3130855ee417871ec22fb89ba28d9cc031a3461152e4cd65890e50123f92eb04",
+    "gonggong-diting-data/events/gonggong-workspace/editor-game-workspace-20261112/kuafu-2475696543333c17f88e274b98db23b2e5cfb9d5.json": "c87377ab253777c4f334cb69fc67eae090f1234079571f35e920f5120d4b306a",
+    "gonggong-diting-data/events/gonggong-workspace/editor-game-workspace-20261112/kuafu-a0f94fc2badeb7dfb011662577abf1568cde284b.json": "3ea99a46ac35260671f1868cfc7da185dd8b0ac1f8bd2d88a851df0eaeaa92e0",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/dispatch-1c8dde7193204fe484d4f23cd94eb851.json": "655b5988a2e044a3517a1b3a76db70d0e805ba648e915c6ef42174c97400386b",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/dispatch-716240828f934763924d1a956741650f.json": "194361d314a6cead8c21b15f7788535231098648901cbed80af946068a111821",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/dispatch-725f16e61694417f938c2c36448d1d2f.json": "4d7fabd63219a1cc92d17a074022a4a5eba37c782b20d3335110a16dc3525cfc",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/dispatch-7305b91a3ccd4709b1278e36ff884a1d.json": "260a79b1ce2d382c27d8423203647d1af103cbbb2a85006c023b02c5f576a2f2",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/dispatch-751f3db14d0041e59515d7820a355d55.json": "85f054f36f39d8bf42410f931237e5a41058ffe0942cb257fa3042462970f39a",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/dispatch-a3410de59ecd4b3b9c5c2145eae3e953.json": "f3ecfff37d291aec8d40a2ce7b93f9cea8cabf2190a10974f2531dde2e8cacbf",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/host-context-30082b4d36244efe867ab143404a0840.json": "6e82bb20dfabe4f3d394022698eb54325f1062c5d2f5d139ceeb33eb03b917ae",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/kuafu-571403520f344c7627e84eb7877e42057ee86238.json": "08e2bbf7397f142a9816b52751b81337afc107c20f8300c806a77b9a622c7d29",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/kuafu-5920479656e21d28b532f85e9667c99498a52660.json": "dd867f2071140a557710b88d507a4a508f60067a5d202ff4c3b533ae3786223a",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/kuafu-6b3735a49ceb38d3d2a43d548503ec7cfe17815c.json": "524208c9e6f8954910d3fa71e72b672ffabe69fe49ad5683ecdf9561719e9965",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/kuafu-8c5e5b365b965bfb562e5962d7738e404a9b2a4f.json": "34347f0c150d2b81124e2ef8df55f7b12c012b49adcd3ac5b528b96cabfa8117",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/kuafu-92f0c9d903fc71dc44c7d7a2713d90ee04a0084a.json": "718464a1fa3f853261ef9e95bfa3ef380d907e44a4f439d6d4920c5010396a6b",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/kuafu-a5bdcff07369cd48261ab18d967c872ca9199f51.json": "560333ad7962c99d63c5b2a33f5f3dbe840edcfc36e80ff22106245847eef6ed",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/kuafu-a602636f239ad1d909b82ca4d1cb5b5b495bbcdd.json": "52f0b5da5c8fec5c746ea8414abe718fe48d2e66d0c4de142c363ec2728d1efc",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/kuafu-c4242c8150761e89377d1946a1fc0c3596eb6a94.json": "47f94b2753e3a358d2978858d748f7437befdd1b7f0c3cdfb221beefc6611c69",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/kuafu-e45f9832f7eca339512f59cb61496e4047e66ed4.json": "2e6c347bf8612ba968f7871955cc30d651c42c18b40d8dddc3e271f6489e7fbd",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/kuafu-e54001119e9fddd84793907302c196d750ac87ad.json": "bfe8c8b7e818856915e844cb048f9c30873dafe3f20a7328a328ca6262d83814",
+    "gonggong-diting-data/events/gonggong-workspace/editor-production-setup-20261112/kuafu-ee55e878b446c5f7dfc97fae7ef25fffc7fcf19d.json": "ca4a8491e9a1300b06cd5839d47baea7d2fba073b45de23535e8f99e06ce5504",
+    "gonggong-diting-data/events/gonggong-workspace/editor-runtime-diagnostics-20261112/kuafu-167357af10147a6b36dbb02e2e06e2e13356425c.json": "6e4cc2d2f3d52cc1abb25affb1867c229cba66877f0b5055b56a96664fe1e558",
+    "gonggong-diting-data/events/gonggong-workspace/editor-runtime-diagnostics-20261112/kuafu-23890921df06ec4089ef3a7987978130e610dca3.json": "2f5f6ad9a4fcac246ca030c2fef3e408711262311cf813a84e41fa7019cb50aa",
+    "gonggong-diting-data/events/gonggong-workspace/editor-runtime-diagnostics-20261112/kuafu-aff0abff1055540eaa99f34c3147020dc7fc32a5.json": "fb771a67130f772962100d1329580b22681acff228f4cb13c0c8fb8f9fa175e3",
+    "gonggong-diting-data/events/gonggong-workspace/editor-runtime-diagnostics-20261112/request-editor-runtime-diagnostics-20261112.json": "9fa2a896ef7a8f0bb6b0a777ceb78e6c200f79eef61a6bbc7d33f1c8f765bd45",
+    "gonggong-diting-data/events/gonggong-workspace/editor-task-authorization-20261112/kuafu-5fe45c83aeb3e9656ccd9f178011a45967f770d6.json": "f642892407eb5ff9c919aeac204169f67ecd78b9163cb6e9ba89ca13b093b63f",
+    "gonggong-diting-data/events/gonggong-workspace/learning-editor-dependency-handoff/learn-1b83431f840047973b6bf7e1528233558025f7d3d4198b6ccefd4e061b9f49a4.json": "ceb484453e215db4247d166706511587cb9ec3549ed1a3cdef12760003ea8623",
+    "gonggong-diting-data/events/gonggong-workspace/learning-editor-diagnostic-consumption/learn-b2234d7328ed50d93bbcf6b36dacb0a235bb811e29189a1c47d25c145c617f00.json": "4ad9bdea983aa9c2e303575dcdd963ace9c8780f72da05ceb5d59a4a1db0ebe3",
+    "gonggong-diting-data/events/gonggong-workspace/learning-editor-native-acceptance/learn-f676fd00e7a70130334aceca1e1b634c267bede93598d7dce874e285f33a9cde.json": "554d5c67d58fb9143beda108a53b325ded0e00e35e77bdb8509a8502877398b8",
+    "gonggong-diting-data/events/gonggong-workspace/learning-editor-production-setup/learn-a95013b278225d6799e81c2686b97c3e112e0459ec3c9ee3b233fda0819d7deb.json": "cda92d5bd12b10e5334405ac1af81c96245c844d0612b197ab50caaab5fc8513",
+    "gonggong-diting-data/events/gonggong-workspace/learning-editor-production-setup/learn-da1fb42f91b2679317a8cc52ec8552749f5b5a5a21bf92861113abb50af9ff9f.json": "8573101bb8fc587c7d5f39444bbcdf6d3441f93747f34de744f850c5782a4ceb",
+    "gonggong-diting-data/events/gonggong-workspace/learning-godot-build-placement/learn-40aa5499dc266562f0085381ad41ab0a28eff7bc05a20e41052a3ce385009c8d.json": "04327115963234b9e1a53ffc803d15088b5cb9f5f313baebf5c8984e48840bf5",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "a7c304cd3dd580780936bfcc0e24776967b6621cac6f139394596cd311ec75c4",
+    "tests/editor/ai_chat_layout_regression.gd": "23708ed6994f2de74403e28e58528e93f7dc0c7673ededf9788082260d1939b1",
+    "tests/editor/ai_chat_task_authorization.gd": "e3587ea495bff7b9db8c7c2eb2d7b285ff0eb59d59764175fecd95c094f7a070",
+    "tests/editor/design_batch.gd": "289078bcea1d56a84f788769a0e7851076c63483654bd0590b00f7d609eff665",
+    "tests/editor/game_workspace_binding.gd": "6db0c7f82205a2a1286cf79540f2773fd81f47864384a6e6baa3c582e00f9738",
+    "tests/editor/native_acceptance_parallel.py": "1e88f01cdcd102df305ce3b007f1846bd43a570a0d86d77080cddb29443712c4",
+    "tests/editor/native_game_cold.py": "69ce3cf3141043d2602409a81b945f41d22fe1d4f5f32f9ea725835e75508064",
+    "tests/editor/native_game_integration.py": "e2b1b19100b71f8f5fcb0aa09504ba43fb9a587d749a8a9738d19975f95b4d91",
+    "tests/editor/run_ai_chat_semantic.py": "cc66dcdad9fec1045caa5dae93688c0bb6adfad6310ac48b884ac84cb0fe7170",
+    "tests/editor/run_design_batch.py": "41e6d04b9f3899dbc8454d63e612dafcaaca15449eb1a7c32d0ebf6ce7827a57",
+    "tests/editor/run_game_workspace_binding.py": "c04e1f81510c6cf13e428ee2af7e87998c4e5db574832774a5fab987009684fa",
+    "tests/editor/run_native_acceptance.py": "0603bba08a92a2cc7d0b9018eeba1feca7ce410e27f541723d5905ac86ec71eb",
+    "tests/editor/run_native_production_setup.py": "c0ea1a4df01684b25b6fe1c91289ddbe296d487da23ac69d8a7c018ca7eea878",
+    "tests/editor/run_runtime_diagnostics.py": "afcca5490463706e39592db47a9069a610df1f2c11e4c6323dba78d6b270e424",
+    "tests/editor/runtime_diagnostics.gd": "bda6358d7dc7dca868e44f4df03cb7c30c7f3ac0df379c0573fe43b7adb15eaa",
+    "tests/editor/task_authorization_fixture.py": "7ed8cbeabd2c3fb1cfa7bc2af29f7bcfe30909252617e2100d1cf8807c07c897",
+    "tests/editor/task_authorization_input_game.gd": "1d07ba7bea4e9855858135c4cf8fe1ec210836e391ea64adb2eb39292733bbe4",
+    "tests/editor/test_ai_chat_editor_scene_actions.cpp": "4566ad69c14709e5c15b4b9ba7b91185b0e93d8b7b93a81f0cb2fe20a29a1590",
+    "tests/editor/test_parallel_work_orders.mjs": "e928af71270758d682e01a33db3868b11875e7e3e5723068a61c2e5cbc70c8b9",
+    "tests/editor/test_production_setup.mjs": "7225165f2ce4c310dde3417ef986afc4560dbdbc9d1afc2b3269a80cd2fae1d6",
+    "tests/editor/test_runtime_config.cpp": "de89122c333cbdb0326aad9a74e280ee39408b8c4e0d42e9610d46566852063f",
+    "tests/editor/unified_settings_native.gd": "a8d7691c3092aefb9f7b556674e522f13d193b17a16acbe88025462dad8a7e32",
+    "tools/godot_parallel/README.md": "a6b13d403af771c48987e60c2bd29e513b5990e62150bc4d8b902d30b28c3bb0",
+    "tools/godot_parallel/runner.mjs": "9187edc0b9b4fbd620e2e423d1a4067cdee8a38c7c7fa11f4739329be37ac4d9",
+    "tools/godot_parallel/setup.mjs": "fd558acac3fc736f010acddcc258a2349f4e10d33543a388ae16c07339eb22dd",
+    "tools/gonggong_bridge.py": "04dc832a1a6adf114ce02bb353c3fe74449d633e9cb305dbb8cc594a5987afbe"
+  },
+  "independent_review": {
+    "issue_number": 773,
+    "reviewer": "root",
+    "base": "5903fb96fee73c0d68967bf953abcd0a5d265fcb",
+    "tree": "6f29990271c302f16828c5927653b02764048d8b",
+    "scope": "Independent integration conflict review of preserved adjacent setup/task authorization controls, header fields, additive immutable evidence attributes; independent exact two-file correction diff from original composed tree to 3bd389a9. Product adds both new checkboxes to existing clipped-caption loop retaining full tooltips. Task fixture copies its own approved fixture framework and pointer into the isolated installed host. Existing original product portions have prior independent reviews.",
+    "findings": [],
+    "limitations": [
+      "Does not certify real-provider completion, final install, or any changes after the bound tree.",
+      "Final actual six-size layout and native task first-import checks remain responsibility of integration agent."
+    ],
+    "additional_review": "Inspected exact 3bd389a9 to 6f299902 diff: terminal marker is written to a sibling temporary file and replaced atomically only after full verdict text; success and exception branches preserve original outcomes. No findings."
+  },
+  "private_completion_sha256": "0968b900ca0fddea6c344bb8e7e52ee9aba33d80ca89b083bc624fc2bcfe56c6",
+  "limits": [
+    "controlled provider/GitHub transports are not real-provider acceptance",
+    "native geometry is headless, not visual desktop QA",
+    "no commits, push, PR or Issue writes by this worker",
+    "Full real-provider and effective user installation acceptance still pending under parent773.",
+    "Merge7813 contains only the already-integrated845 source; updating HEAD to this base preserves exact staged product tree.",
+    "Old fixture error and later actual passing terminal codes are both retained."
+  ]
+}

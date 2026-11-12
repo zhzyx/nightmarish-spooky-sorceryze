@@ -1,0 +1,44 @@
+{
+  "binary_sha256": "6544f5077267341d4abc778e5d1c70c136466f9c2700117334b05343f4b51a97",
+  "checks": {
+    "apply_game_run_then_exit_and_restart": true,
+    "explicit_rollback_original_plan_sha": "f7ab2504aa8d5007555db86cd578fea6ea73e887f2a8a93e20acd0f5e32db862",
+    "fresh_plan_and_apply_refused": {
+      "apply": {
+        "error": "current_independent_acceptance_required",
+        "ok": false
+      },
+      "plan": {
+        "error": "current_independent_acceptance_required",
+        "ok": false
+      }
+    },
+    "journal_unchanged_before_explicit_request": true,
+    "no_manual_recovery_copy": true,
+    "normal_prepare_two_producers_two_reviewers": true,
+    "restored_producers_do_not_recreate_live_acceptance": true,
+    "target_output_removed": true
+  },
+  "historical_preformat_proof_sha256": "a54a6d74deb969329cd03845d31a9b1986f6f613059a9eef212ba85c09538be0",
+  "independent_review": {
+    "result": "No findings; final formatted native run passed",
+    "reviewer": "root, independent of cold fixture author sinan_987100ab953a4589",
+    "scope": "Actual process restart; same private binary; only current explicit user request results; journal hashes before request; two restored producers and live_acceptance false; plan/apply refusal; rollback identity and output removal; formatted final fixtures"
+  },
+  "issue_number": 821,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/821",
+  "limitations": [
+    "Model/GitHub/Issue transports controlled; actual native tools/processes/filesystem exercised",
+    "Not real-provider or installed update/rollback acceptance",
+    "Original private temporary workspaces are cleaned by test harness",
+    "Unchanged original public receipts retained; this appendix records cold and final formatted tests"
+  ],
+  "parent": 773,
+  "raw_receipt_sha256": "83d7e3e3193548c57719107454e699f004c5133a65e1079250f2003f60a72686",
+  "request_id": "editor-game-workspace-20261112",
+  "source_sha256": {
+    "tests/editor/native_game_cold.py": "69ce3cf3141043d2602409a81b945f41d22fe1d4f5f32f9ea725835e75508064",
+    "tests/editor/native_game_integration.py": "e2b1b19100b71f8f5fcb0aa09504ba43fb9a587d749a8a9738d19975f95b4d91",
+    "tests/editor/run_native_production_setup.py": "c0ea1a4df01684b25b6fe1c91289ddbe296d487da23ac69d8a7c018ca7eea878"
+  }
+}

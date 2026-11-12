@@ -217,6 +217,13 @@ repos:
             data-collection/parallel-worker-receipts-785\.json|
             data-collection/authorized-acceptance-adapter-776\.json|
             data-collection/provider-independence-840\.json|
+            data-collection/editor-production-setup-810\.json|
+            data-collection/editor-production-setup-810-c811-integration\.json|
+            data-collection/editor-game-workspace-821\.json|
+            data-collection/editor-game-workspace-821-failures\.json|
+            data-collection/editor-game-workspace-821-final\.json|
+            data-collection/editor-task-authorization-820\.json|
+            data-collection/editor-production-build-placement-concurrent-773\.json|
               data-collection/maliang-gpt-modeling-20261108-host-snapshot\.json|
             .*\.test\.txt|
             .*\.svg|

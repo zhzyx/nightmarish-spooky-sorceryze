@@ -1,0 +1,95 @@
+{
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "prior_candidate": "249814ab1199547e6a1c3ba6a82386ddc944bfe3",
+  "prior_signed_commit": "7861e2fafcd614ffbe9d175e388540dc0c4bfda9",
+  "failure": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43138903819/job/130921083407",
+  "failure_log_sha256": "00105db2eed2d20cc21d6220c7cf70ddb355aa268624495c1169b9d5e987e76c",
+  "remote_native": {
+    "compilation": "passed",
+    "cases": 1565,
+    "assertions": 435936,
+    "failed": 0,
+    "skipped": 3
+  },
+  "correction": "Separated installed-host fixture now includes framework and CURRENT_FRAMEWORK pointer. Fixture GitHub labels API supplies existing type/status/workspace labels. Diagnostic records fixture CLI calls; production admission unchanged.",
+  "source_sha256": {
+    "tests/editor/run_requirements_intake.py": "5157c737f4e0c5cffd79f155a05da27fc1d786ea6a495ae883d407d2c7d21348"
+  },
+  "original_retest": {
+    "ok": false,
+    "result_sha256": "d41a4fc934e81360855e6588ef9c8e3974d63325070d53dd7438847a5e1dc8d4",
+    "reason": "Framework repair passed setup; missing fixture labels API then rejected Issue publication."
+  },
+  "final_retest": {
+    "ok": true,
+    "summary_sha256": "ed727b3d57f25b1013280fa3b13dda6eb992d1e067850748cb91dfcebe873f80",
+    "requirements": {
+      "ok": true,
+      "native_page": true,
+      "runtime_setup_and_resume": true,
+      "runtime_setup_provider_invoked": false,
+      "runtime_setup_explicit_paths_verified": true,
+      "runtime_setup_source_kind": "supplied package",
+      "catalog_requests": [
+        "/v1/models",
+        "/v1/models"
+      ],
+      "bootstrap_runtime_configuration": "private installation JSON; mutable fields, no Python/Node/Codex override",
+      "windows_owned_process_cleanup": "verified Job empty",
+      "actual_native_read_tool_roundtrips": 1,
+      "actual_yanshi_admission": true,
+      "model_and_github": "isolated loopback/CLI fixtures only",
+      "requirements_calls": 11,
+      "development_calls": 7,
+      "issues_created": 5,
+      "events": 71,
+      "git_check": {
+        "git_state": "committed",
+        "files": 74,
+        "records": 71,
+        "remote_merge_verified": false
+      },
+      "cases": [
+        "missing runtime runs deterministic host setup and resumes the original request",
+        "new requirement",
+        "supplement during intake amends the same Issue before the first development request",
+        "followup reuses Issue",
+        "installed chat and flush with stale workspace launcher",
+        "new requirement while bound",
+        "same text new turn still classified",
+        "cancel before publication",
+        "model API repair then explicit retry",
+        "GitHub auth repair before model call",
+        "clarification pauses and resumes the same requirement"
+      ],
+      "editor_sha256": "8bf8ab407935b552ace14da1e40f1fe612033d2db5bdf0394fead9e86fa6c1c5",
+      "fixture_events_imported": false
+    },
+    "requirements_sha256": "34ca154557ab26ee69feff02de3d7f20c2a7a7230f04f52f659ea8002a4edcf1",
+    "interruption_cases": 3,
+    "journal_boundary_cases": 5,
+    "runtime_setup_cases": 10
+  },
+  "static_checks": {
+    "ruff_check": 0,
+    "ruff_format_check": 0,
+    "mypy": 0,
+    "git_diff_check": 0
+  },
+  "independent_review": {
+    "worker": "sinan_cb44e3ed12056b81",
+    "event": "actual FINAL_ANSWER",
+    "result": "No unresolved findings; inspected final source and full simulation receipts"
+  },
+  "previous_evidence": {
+    "path": "data-collection/editor-production-ci-style-773.json",
+    "sha256": "7e0ab54db8e4af8f28109c31ec409da4ccb7620c478ce297a1b74333afe98225"
+  },
+  "remaining_issues": [
+    876,
+    877,
+    878
+  ],
+  "remote_status": "New exact candidate CI and main delivery pending; installation unchanged; parent773 open."
+}

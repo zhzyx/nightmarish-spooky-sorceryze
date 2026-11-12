@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-61f072d561951c1b749fac45f78e6306902e5817",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "00e3c9158e0360dc913f93b6db23749438f22fa6f159b6667b9c993a7f1a9c3a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "dispatch",
+    "detection_head": "8d4f1aea897ded852e0564ce8c100727ea8ccd0b",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "data-collection/receipts/editor-completeness-773/terminal-773-worker-editor-review-result.json",
+    "diagnosis": "Root invoked a new dispatch before prior terminal reconciliation exited; coordination lock correctly rejected overlapping orchestration. Prior actual session exit0 observed before retry; new native request then taken, actual agent spawned and response recorded. No lock removal or duplicate launch.",
+    "next_action": "Await actual session completion after respond before subsequent orchestration; parent production acceptance remains incomplete.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T00:17:47.906653+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T00:19:55.715265+00:00",
+  "sha256": "7c3cadca2f0dc4ead27fbb06d3a5dde41d11b42f2ae5c64087dc9a0796d6a516"
+}

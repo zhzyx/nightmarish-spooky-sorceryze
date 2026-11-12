@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8b2c4d9c4575bcd56fec3b9be982117ec788f9f8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-production-integration-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/811",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e71767265d732a2df2e14eafad0aae860bf3fb39e176e3a77e7b8fb86d43c847",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/811",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/812",
+    "action": "validation",
+    "detection_head": "325fdb12c388de0821bd51d33a63bd867b2e7137",
+    "context_sha256": "e6e644c60abf765b3c12d654ef1b64be49562a9e970c0e2ad01b2bcdeeab67c5",
+    "operator": "Sail-Li",
+    "worker": "codex-root-native-integration-811",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/811",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/818",
+    "diagnosis": "New evidence was initially written with Windows CRLF while staging normalized LF. It was normalized before any immutable method reference, then exact working/index bytes matched and formal gate r3 and writer_submit passed.",
+    "next_action": "PR818 all applicable CI passed, exact signed head83f753969835d30de430dba3d01507db10768a6c merged into main46697266403533f1038fd129956859597d4eda88 and read back. Preserve immutable evidence and use UTF-8 LF for future new records.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T19:21:38.302561+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T19:49:26.821981+00:00",
+  "sha256": "27af075d997971871e04d2e3bcacfc0128dd24761b87d6ec808fac3b373f5317"
+}

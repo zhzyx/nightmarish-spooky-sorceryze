@@ -1,0 +1,168 @@
+{
+  "issue": 820,
+  "request_id": "editor-task-authorization-20261112",
+  "recorded_at": "2026-11-11T20:43:33.525315+00:00",
+  "source_base": "1f6ea3e74244275efafc484d7cf324d9feea5c4a",
+  "candidate": "uncommitted isolated task worktree; root owns exact integration and delivery",
+  "native_build": {
+    "status": "passed",
+    "compiler": "MSVC",
+    "flags": "warnings=extra werror=yes tests=yes module_mono_enabled=no d3d12=no angle=no accesskit=no -j8",
+    "first_failure": "new policy header used incomplete Variant/String declarations; fixed direct core/variant/variant.h include",
+    "logs": [
+      "data-collection/outbox/task-820/build-first-failure.log",
+      "data-collection/outbox/task-820/build.log",
+      "data-collection/outbox/task-820/build-final.log",
+      "data-collection/outbox/task-820/build-formatted.log"
+    ],
+    "final_status": "passed after clang-format; strict warning flags unchanged"
+  },
+  "unit_tests": {
+    "TaskAuthorization": {
+      "cases": 1,
+      "assertions": 22,
+      "status": "passed"
+    },
+    "SceneActions": {
+      "cases": 8,
+      "assertions": 103,
+      "status": "passed"
+    },
+    "final_formatted_candidate": {
+      "cases": 9,
+      "assertions": 125,
+      "status": "passed"
+    }
+  },
+  "native_ui_scenario": {
+    "status": "passed",
+    "command": "python tests/editor/run_ai_chat_semantic.py --godot <candidate> --task-native",
+    "scope": "Synthetic isolated Issue/framework and local model responses, normal native controls; no real provider authorization evidence",
+    "first_failures": "fixture began sending before initial model discovery settled; private Windows editor isolation and explicit model discovery added",
+    "exit_code": 0,
+    "markers": [
+      "TASK_NATIVE_AUTHORIZATION_OK",
+      "TASK_NATIVE_RESTART_OK"
+    ],
+    "observed": [
+      "default-off rejects model-proposed task_native_authorization JSON despite other auto switches",
+      "normal checkbox grants task-scoped native scene creation and run without per-action confirmation",
+      "game actually emits preseeded error and writes runtime-error.txt; model reads that file, stops, repairs script, reruns and reads changed successful runtime output",
+      "revoke/regrant while request is inflight refuses queued old proposal",
+      "Stop control during inflight model request revokes grant",
+      "revoked grant rejects subsequent native scene mutation",
+      "active grant does not survive session switch",
+      "consultation mode revokes and rejects mutation",
+      "idle development mode can explicitly regrant after consultation",
+      "same private project restarted with prior grant on starts with grant off"
+    ]
+  },
+  "build_boundary": {
+    "classification": "native implementation inside existing editor module",
+    "inputs": [
+      "editor/docks/ai_chat_task_authorization.cpp",
+      "editor/docks/ai_chat_task_authorization.h"
+    ],
+    "interface": "private AIChatDock callbacks and existing preview/confirmed editor-control calls",
+    "build_invalidation": "editor/docks/SCsub compiles *.cpp; strict candidate build compiled the new unit and dependent dock units",
+    "rollback": "disable ephemeral grant to return to per-action native confirmations; binary rollback follows existing root delivery"
+  },
+  "learning_recall": {
+    "scope": "editor-dependency-handoff",
+    "applied": "bind-consumer-release: parent must validate precise integrated source and native receipts; this implementation receipt is not business acceptance",
+    "counterexample": "policy-unit success alone cannot establish normal UI/game production acceptance"
+  },
+  "source_files": {
+    "editor/docks/ai_chat_dock.cpp": "31182bdff65a02a80b987b32309db86dc96d60a741ed44a303640b64278f97d0",
+    "editor/docks/ai_chat_dock.h": "5e7d9ec2844eca45a110eda1ccc3e68f0a8851871029289a801e8b718c4f0b37",
+    "editor/docks/ai_chat_gonggong.cpp": "e9f43a40f3ff00d7fde677a1c97db663c04831113ca8c6ae66c24d5a7a787054",
+    "editor/docks/gonggong_panel.cpp": "601347d5ba9fab1e81fe1298dd8a7610746ff19e652e1119170e98090731a507",
+    "editor/docks/gonggong_panel.h": "4134849aa88287a22ad07f1d2b1404d9e8f8a61f59dd4f710beb29f7f1b993ae",
+    "editor/docks/ai_chat_editor_scene_actions.cpp": "9903dbf51e993175d8613f89d61e3551ac58bed64970a1af1517299a50410387",
+    "editor/docks/ai_chat_task_authorization.cpp": "2782a371ec0594adf0e8130389dbf736cc51842adedc8036d4e22afcb953648a",
+    "editor/docks/ai_chat_task_authorization.h": "6cf2c7a01df975bde530bb253086450a71885c9e84c8832fefc8d43e4b9b5ae9",
+    "tests/editor/test_ai_chat_editor_scene_actions.cpp": "4566ad69c14709e5c15b4b9ba7b91185b0e93d8b7b93a81f0cb2fe20a29a1590",
+    "tests/editor/run_ai_chat_semantic.py": "93fbbbac9b598342f98ebc832ab941ced60d40ac6423d5db867f0b29634b97fb",
+    "tests/editor/task_authorization_fixture.py": "f7c884659b711eec13829e47f6852b28c84601a5fedb5bfe986a6a70f9919bde",
+    "tests/editor/ai_chat_task_authorization.gd": "eefaa21fbe24eff43d21782691b5eb3aa5303465d8a2fe59062ef01d59267021",
+    "editor/docks/ai_chat_editor_control.cpp": "1572677e49293c50e0b5bdf1ef0ba2106015aa039a9cfbaa04d700c66e3d6cc4"
+  },
+  "binary": {
+    "path": "bin/godot.windows.editor.x86_64.exe",
+    "sha256": "825b30fe77df18512193a348a18ebae52c81e97303b6ed071a344bd63460d8ad",
+    "installation_switched": false
+  },
+  "limitations": [
+    "Synthetic isolated framework/Issue and local HTTP model fixture, not real provider or production authorization acceptance.",
+    "read_logs did not include game debugger push_error; diagnosis in this fixture uses a real game-written error file. Debugger-log diagnosis remains a parent acceptance gap.",
+    "Existing stale resource/object and unsaved conflict implementation is unchanged; SceneActions native unit tests pass, but full native resource/import/input and independent review-child business scenarios were not rerun in this task.",
+    "Headless editor teardown printed existing RID/ObjectDB leak diagnostics and dummy TextureStorage null texture diagnostic; command exited0 and all semantic assertions passed. No visual rendering acceptance is claimed.",
+    "Independent review, root integration, exact-candidate admission, main delivery and real-provider final installation remain root-owned."
+  ],
+  "corrections": [
+    "New standalone policy header initially lacked complete Variant/String declarations: strict MSVC compilation failed; direct variant.h include corrected and strict compile passed.",
+    "Windows native fixture now uses private editor copy and trusted fixture installation, cancels initial model discovery via normal Stop control, and waits for local model discovery before Send.",
+    "Fixture game uses bounded self-exit and explicit teardown stop, avoiding child processes keeping captured stdout open.",
+    "Cancellation assertions distinguish stopped work from completed work; repeated Stop emission was removed.",
+    "Grant-toggle audit corrected stale idle consultation_turn: only busy consultation blocks regrant after user switches to development."
+  ],
+  "method_proposal_for_root_origin": {
+    "method": "For native editor task-authorization tests, initialize a private host, explicitly settle startup model discovery, assert cancellation separately from terminal success, and bound test-game lifetime before relying on subprocess completion.",
+    "when": "Normal-control headless tests launch real editor/game subprocesses and asynchronous model requests.",
+    "counterexample": "An editor process exit alone does not close inherited stdout while its game child remains alive; pure policy tests do not validate normal native UI dispatch.",
+    "trial": "Reuse exact candidate in independent normal-control production and negative-boundary scenario, including game child shutdown and restart with grant previously enabled.",
+    "origin_status": "Root must append against genuine dispatched Issue820 source; no origin event present in this isolated worktree."
+  },
+  "final_test_receipts": {
+    "build-formatted.log": {
+      "sha256": "cb70a5e85d97d33a75f58db91612ff377b9ba8d64a917d6982870a9814c5ba58",
+      "exit_code": 0,
+      "observed_lines": [
+        "scons: done reading SConscript files.",
+        "scons: done building targets.",
+        "INFO: Time elapsed: 00:00:23.73"
+      ],
+      "raw_log": "data-collection/outbox/task-820/build-formatted.log"
+    },
+    "unit-formatted.log": {
+      "sha256": "d92f8e617b5553366f4a176ee909da1bf0df0518d62461b6219e666396938a81",
+      "exit_code": 0,
+      "observed_lines": [
+        "[doctest] doctest version is \"2.4.12\"",
+        "[doctest] run with \"--help\" for options",
+        "[doctest] test cases:   9 |   9 passed | 0 failed | 1555 skipped",
+        "[doctest] assertions: 125 | 125 passed | 0 failed |",
+        "[doctest] Status: SUCCESS!"
+      ],
+      "raw_log": "data-collection/outbox/task-820/unit-formatted.log"
+    },
+    "native-formatted.log": {
+      "sha256": "b50b6ddec9a26bb91c8cc31522d86ff27661403e3046d0511004f8df65cf4244",
+      "exit_code": 0,
+      "observed_lines": [
+        "TASK_FIXTURE_STEP task_grant_default 0",
+        "TASK_FIXTURE_STEP task_grant_default 1",
+        "TASK_FIXTURE_STEP task_grant_continuous 0",
+        "TASK_FIXTURE_STEP task_grant_continuous 1",
+        "TASK_FIXTURE_STEP task_grant_continuous 2",
+        "TASK_FIXTURE_STEP task_grant_continuous 3",
+        "TASK_FIXTURE_STEP task_grant_continuous 4",
+        "TASK_FIXTURE_STEP task_grant_continuous 5",
+        "TASK_FIXTURE_STEP task_grant_continuous 6",
+        "TASK_FIXTURE_STEP task_grant_continuous 7",
+        "TASK_FIXTURE_STEP task_grant_continuous 8",
+        "TASK_FIXTURE_STEP task_grant_stale 0",
+        "TASK_FIXTURE_STEP task_grant_stale 1",
+        "TASK_FIXTURE_STEP task_grant_stop 0",
+        "TASK_FIXTURE_STEP task_grant_revoked 0",
+        "TASK_FIXTURE_STEP task_grant_revoked 1",
+        "TASK_FIXTURE_STEP task_grant_consultation 0",
+        "TASK_FIXTURE_STEP task_grant_consultation 1",
+        "TASK_NATIVE_AUTHORIZATION_OK",
+        "MOCK_ERRORS []",
+        "TASK_NATIVE_RESTART_OK"
+      ],
+      "raw_log": "data-collection/outbox/task-820/native-formatted.log"
+    }
+  }
+}

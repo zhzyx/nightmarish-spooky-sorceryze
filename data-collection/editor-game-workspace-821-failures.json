@@ -1,0 +1,25 @@
+{
+  "issue": 821,
+  "source_revision": "46697266",
+  "owner": "issue821 native game workspace implementer",
+  "incidents": [
+    {
+      "action": "native probe temporary workspace cleanup",
+      "observed": "Windows WinError32 removing game directory after both root/subdirectory editor probes exited; both JSON ok=true. Silent validation/editor child still had a directory handle during cleanup.",
+      "evidence": [
+        "data-collection/outbox/game-workspace-native/root.json",
+        "data-collection/outbox/game-workspace-native/subdirectory.json",
+        "data-collection/outbox/game-workspace-native/subdirectory.log"
+      ],
+      "correction": "Retain native temporary workspace; explicitly await owned executable and Python board helper termination with bounded wait. Do not treat ignored cleanup failures as pass.",
+      "followup": "Read-only CIM check found zero remaining matching processes. Rerun after main integration remains required."
+    },
+    {
+      "action": "git fetch origin main",
+      "observed": "Failed to connect to github.com port443 after21118ms",
+      "correction": "Read local origin/main and verify exact root-authorized main SHA1f6ea3e74244275efafc484d7cf324d9feea5c4a; ff that exact revision and reapply own stash, preserving upstream _fresh_access changes.",
+      "remote_state": "new fetch unavailable; no remote write attempted"
+    }
+  ],
+  "kuafu_handoff": "Root delivery owner to associate incident with821 and perform authoritative publication; source implementer authorized no commits/push."
+}

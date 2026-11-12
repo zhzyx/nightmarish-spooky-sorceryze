@@ -215,7 +215,7 @@ def complete(root, request, profile, messages, env, *, agent_id="yanshi"):
         ).call(profile, messages, 3000)
     node = request.get("cli_node") or env.get("GONGGONG_NODE", "")
     entry = request.get("cli_entry", "")
-    bridge = root / (
+    bridge = Path(__file__).resolve().parents[3] / (
         "tools/codex_cli/godot_bridge.js"
         if request.get("backend") == "codex"
         else "tools/codebuddy_cli/godot_bridge.js"

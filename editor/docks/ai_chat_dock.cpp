@@ -527,7 +527,9 @@ void AIChatDock::_update_composer_height() {
 	int max_lines = 8;
 	const Control *surface = daqian_chat_host.is_valid() ? static_cast<const Control *>(chat_layout) : this;
 	if (surface->is_inside_tree() && input->get_line_height() > 0) {
-		chat_scroll->set_custom_minimum_size(Size2(0, (surface->get_size().x < 640 * EDSCALE ? 48 : 80) * EDSCALE));
+		const real_t viewport_height = surface->get_viewport_rect().size.y - surface->get_global_position().y;
+		const bool compact_surface = surface->get_size().x < 640 * EDSCALE || viewport_height < 640 * EDSCALE;
+		chat_scroll->set_custom_minimum_size(Size2(0, (compact_surface ? 48 : 80) * EDSCALE));
 		const real_t other_height = surface->get_combined_minimum_size().y - input->get_custom_minimum_size().y;
 		const real_t available = surface->get_viewport_rect().size.y - surface->get_global_position().y - other_height - 16 * EDSCALE;
 		max_lines = CLAMP(int(available / input->get_line_height()), 3, 8);
@@ -578,6 +580,7 @@ void AIChatDock::_update_settings_summary() {
 		current = backend->get_selected() == 1 || backend->get_selected() == 2 ? String(U"CLI 默认模型") : String(U"尚未配置模型");
 	}
 	settings_summary->set_text(backend->get_item_text(backend->get_selected()) + U" · " + current + U" · " + reasoning_picker->get_item_text(reasoning_picker->get_selected()));
+	settings_summary->set_tooltip_text(settings_summary->get_text());
 }
 
 void AIChatDock::_save_history() {
@@ -1113,6 +1116,7 @@ void AIChatDock::_load_command_resume(const Dictionary &p_journal, const String 
 		tool_rounds = p_journal["tool_rounds"];
 		queue_paused = true;
 		turn_completed = false;
+		_revoke_native_task();
 		session_generation++;
 		_set_busy(true);
 		_begin_gonggong_context();
@@ -1170,6 +1174,7 @@ void AIChatDock::_load_command_resume(const Dictionary &p_journal, const String 
 	gonggong_recovery_can_send = interactive && allow_tools->is_pressed() && ((backend->get_selected() == 1 || backend->get_selected() == 2) ? _validate_cli(runtime) : !api_key->get_text().strip_edges().is_empty());
 	queue_paused = true;
 	turn_completed = false;
+	_revoke_native_task();
 	session_generation++;
 	_set_busy(true);
 	_append_work(U"正在核对原命令的终态回执与当前工单授权。");
@@ -1300,6 +1305,7 @@ void AIChatDock::_load_resume() {
 	const bool can_send = interactive && ((backend->get_selected() == 1 || backend->get_selected() == 2) ? _validate_cli(runtime) : !api_key->get_text().strip_edges().is_empty());
 	queue_paused = !can_send;
 	turn_completed = false;
+	_revoke_native_task();
 	session_generation++;
 	_get_editor_control()->cancel_guidance();
 	turn_model_requests = 0;
@@ -1879,6 +1885,11 @@ void AIChatDock::_automation_toggled(bool) {
 }
 
 void AIChatDock::_set_busy(bool p_busy) {
+	if (task_native_authorization && task_native_scope && !task_native_grant.matches(_native_task_scope())) {
+		_revoke_native_task();
+		const Dictionary scope = _native_task_scope();
+		task_native_scope->set_text(vformat(U"未授权 · 项目：%s\n工单 #%s · %s", scope["project"], scope["issue"], scope["request"]));
+	}
 	if (!p_busy) {
 		read_batch_count = 0;
 		read_batch_results.clear();
@@ -2422,7 +2433,9 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 	turn_completed = false;
 	tool_rounds = 0;
 	turn_model_requests = 0;
+	const Dictionary previous_native_scope = _native_task_scope();
 	session_generation++;
+	task_native_grant.advance(previous_native_scope, _native_task_scope());
 	if (design_parent_starting == active_agent) {
 		// This is a completion event for the already bound requirement, not a
 		// fresh user requirement. Framework/Issue/provenance gates still run.
@@ -2497,6 +2510,7 @@ void AIChatDock::_apply_pending_steering() {
 }
 
 void AIChatDock::_request_completion() {
+	task_native_request_epoch = task_native_epoch;
 	if (!busy) {
 		return;
 	}
@@ -2627,6 +2641,8 @@ void AIChatDock::_send_completion_after_receipt() {
 		_append_work(vformat(U"上下文已精简：%d 个重复工具快照、%d 个长结果或历史参数，省略最旧 %d 轮；模型上下文约 %d KiB。完整聊天与工具详情仍保留；节选不是文件全文。", int(context_stats["duplicates"]), int(context_stats["shortened"]), int(context_stats["dropped_turns"]), (int(context_stats["context_bytes"]) + 1023) / 1024));
 	}
 	Dictionary current_tools = tool_context(allow_tools->is_pressed(), tool_rounds, !consultation_turn && auto_apply_file_changes->is_pressed(), !consultation_turn && auto_execute_commands->is_pressed(), !consultation_turn && engine_auto_restart->is_pressed());
+	current_tools["native_task_authorized"] = allow_tools->is_pressed() && !consultation_turn && !consultation_only->is_pressed() && !_is_review_child() && task_native_grant.matches(_native_task_scope());
+	current_tools["native_task_actions"] = "scene_create_node, scene_delete_node, scene_rename_node, scene_reparent_node, scene_select_nodes, scene_set_property, scene_assign_resource, scene_connect_signal, scene_disconnect_signal, scene_import_resource, run_project, run_scene, stop_project, game_action_pulse";
 	current_tools["consultation_only"] = consultation_turn;
 	current_tools["writes_allowed"] = !consultation_turn;
 	current_tools["execution_allowed"] = !consultation_turn;
@@ -3101,7 +3117,7 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 			if (result.has("target_instance")) {
 				pending_editor_action["expected_target_instance"] = result["target_instance"];
 			}
-			if (auto_execute_commands->is_pressed() && !bool(result.get("manual_confirmation_required", false))) {
+			if (_native_task_allows(name, arguments) || (auto_execute_commands->is_pressed() && !bool(result.get("manual_confirmation_required", false)))) {
 				_confirm_action();
 			} else {
 				confirmation->set_title(TTR("Approve Editor Action"));
@@ -4252,6 +4268,7 @@ AIChatDock::AgentSession AIChatDock::_capture_agent() const {
 }
 
 void AIChatDock::_restore_agent(const AgentSession &p_session) {
+	_revoke_native_task();
 	snapshot_history_dialog->hide();
 	snapshot_changes_dialog->hide();
 	viewing_snapshot.clear();
@@ -4365,6 +4382,7 @@ void AIChatDock::_agent_selected(int p_index) {
 	}
 	active_agent = id;
 	request_generation++;
+	_revoke_native_task();
 	session_generation++;
 	_get_editor_control()->cancel_guidance();
 	// The guide belongs to the paused message of the conversation being left.
@@ -4502,6 +4520,7 @@ void AIChatDock::_close_agent() {
 		// Stopping a model query restores its suspended CLI session; close it too.
 		_cancel_cli();
 		request_generation++;
+		_revoke_native_task();
 		session_generation++;
 		_get_editor_control()->cancel_guidance();
 		closed_messages = message_list;
@@ -4592,6 +4611,8 @@ String AIChatDock::_work_order_binding(const String &p_field, int p_agent) const
 
 void AIChatDock::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_runtime_configuration"), &AIChatDock::get_runtime_configuration);
+	ClassDB::bind_method(D_METHOD("get_production_workspace"), &AIChatDock::get_production_workspace);
+	ClassDB::bind_method(D_METHOD("get_installed_host_root"), &AIChatDock::get_installed_host_root);
 	ClassDB::bind_method(D_METHOD("prepare_runtime_configuration"), &AIChatDock::prepare_runtime_configuration);
 	ClassDB::bind_method(D_METHOD("set_runtime_field", "field", "value"), &AIChatDock::set_runtime_field);
 	ClassDB::bind_method(D_METHOD("refresh_runtime_controls"), &AIChatDock::refresh_runtime_controls);
@@ -5275,6 +5296,7 @@ void AIChatDock::_backend_changed(int p_backend) {
 	_cancel_cli();
 	set_process(process_id >= 0 || sub_agent_parallel_pid >= 0);
 	request_generation++;
+	_revoke_native_task();
 	session_generation++;
 	_get_editor_control()->cancel_guidance();
 	_cancel_issue_guide(String());
@@ -7596,6 +7618,7 @@ void AIChatDock::_cancel_model_query() {
 }
 
 void AIChatDock::_stop() {
+	_revoke_native_task();
 	_cancel_production_integration();
 	if (!command_offer_id.is_empty()) {
 		// Before the fresh card is available, Stop cancels only this window's
@@ -7603,6 +7626,7 @@ void AIChatDock::_stop() {
 		if (!restoring_command_offer && !_consume_command_offer()) {
 			return;
 		}
+		_revoke_native_task();
 		session_generation++;
 		queue_paused = true;
 		turn_completed = false;
@@ -7696,6 +7720,7 @@ void AIChatDock::_stop() {
 		cli_partial = String();
 		cli_stream_text = nullptr;
 	}
+	_revoke_native_task();
 	session_generation++;
 	_get_editor_control()->cancel_guidance();
 	if (request) {
@@ -7838,6 +7863,7 @@ void AIChatDock::_notification(int p_what) {
 		history_loaded = false;
 		_cancel_all_agents();
 		request_generation++;
+		_revoke_native_task();
 		session_generation++;
 		_get_editor_control()->suspend_guidance();
 		if (request) {
@@ -8028,6 +8054,7 @@ void fragment() {
 	workspace_pages->set_tab_title(0, U"会话");
 	workspace_pages->set_tab_title(1, U"定时器");
 	gonggong_panel = memnew(GongGongPanel(p_session_directory.is_empty()));
+	gonggong_panel->set_task_binding_changed_handler(callable_mp(this, &AIChatDock::_revoke_native_task));
 	gonggong_panel->set_setup_completed(callable_mp(this, &AIChatDock::_environment_setup_completed));
 	gonggong_panel->set_runtime_changed_handler(callable_mp(this, &AIChatDock::_runtime_configuration_changed));
 	gonggong_panel->set_settings_requested(callable_mp(this, &AIChatDock::_request_settings));
@@ -8165,13 +8192,15 @@ void fragment() {
 	model_picker->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
 	model_picker->connect("item_selected", callable_mp(this, &AIChatDock::_model_selected));
 	models->add_child(model_picker);
+	HBoxContainer *reasoning = memnew(HBoxContainer);
+	selector_row->add_child(reasoning);
 	Label *reasoning_label = memnew(Label);
 	reasoning_label->set_text(U"推理强度");
-	models->add_child(reasoning_label);
+	reasoning->add_child(reasoning_label);
 	reasoning_picker = memnew(OptionButton);
 	reasoning_picker->set_name("ReasoningEffort");
 	reasoning_picker->connect("item_selected", callable_mp(this, &AIChatDock::_reasoning_selected));
-	models->add_child(reasoning_picker);
+	reasoning->add_child(reasoning_picker);
 	model_status = memnew(Label);
 	model_status->set_name("ModelStatus");
 	model_status->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);
@@ -8246,6 +8275,7 @@ void fragment() {
 	codex_settings->add_child(codex_login);
 	allow_tools = memnew(CheckBox);
 	allow_tools->set_name("AllowTools");
+	allow_tools->connect("toggled", callable_mp(this, &AIChatDock::_revoke_native_task).unbind(1));
 	allow_tools->set_text(U"允许源码搜索、文件操作与构建");
 	allow_tools->set_pressed(true);
 	allow_tools->set_tooltip_text(U"允许读取和搜索本机 UTF-8 文件（含工程、引擎源码和项目外文件）；读取、搜索及命令输出会发送到所选模型服务。普通聊天不附带编辑器日志；AI 排查问题时可主动读取最近 200 条日志（最多 32,000 字符），仅按需发送。日志读取无需命令执行授权，关闭本地工具后不可读取。工具轮数不设上限。CodeBuddy 的 Bash 由 Godot 客户端接管，Windows 使用 Git Bash，可运行 SCons 构建和测试。文件修改默认自动应用，命令与脚本执行默认需确认，可通过下方两个开关分别调整自动应用和自动执行。命令不受沙箱保护且不能通过文件撤销恢复。命令最长运行一小时，保留有上限的末尾输出；停止会终止会话进程树。");
@@ -8267,6 +8297,23 @@ void fragment() {
 	auto_execute_commands->set_tooltip_text(U"勾选即持续授权 AI 以你的操作系统权限执行命令、构建、测试及脚本，不再逐次弹出 Approve。不是沙箱：命令可修改或删除文件、访问网络和启动进程，且不能通过文件撤销恢复。仅在信任当前 AI 和工程时启用；工具详情保留执行记录，可用停止按钮中断。关闭本地工具后自动授权不生效。此设置会保存到编辑器设置；与上方文件自动应用开关同时启用可连续自动开发。");
 	auto_execute_commands->connect("toggled", callable_mp(this, &AIChatDock::_automation_toggled));
 	settings->add_child(auto_execute_commands);
+	production_setup = memnew(CheckBox);
+	production_setup->set_name("ProductionSetup");
+	production_setup->set_text(U"授权自动准备并行生产");
+	production_setup->set_tooltip_text(U"使用当前连接和已发现模型；按工单落地时后台准备独立工作副本。显式自定义配置优先，此授权仅本次编辑器会话有效。");
+	settings->add_child(production_setup);
+	production_capacity = add_field(settings, U"并行容量（正整数，不代表供应商额度）", "ProductionCapacity", "2");
+	task_native_authorization = memnew(CheckBox);
+	task_native_authorization->set_name("TaskNativeAuthorization");
+	task_native_authorization->set_text(U"授权当前任务：场景与资源编辑、导入、运行/停止、游戏验证输入");
+	task_native_authorization->set_tooltip_text(U"仅当前项目、工单和会话有效。随时取消勾选或停止即可撤销；切换会话或重启后须重新授权。保留对象状态、资源与未保存冲突检查。导出、任意路径及编辑器退出仍逐次确认。");
+	task_native_authorization->connect("toggled", callable_mp(this, &AIChatDock::_native_task_toggled));
+	settings->add_child(task_native_authorization);
+	task_native_scope = memnew(Label);
+	task_native_scope->set_name("TaskNativeScope");
+	task_native_scope->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
+	task_native_scope->set_text(U"当前任务未授权原生编辑操作");
+	settings->add_child(task_native_scope);
 
 	const String build_root = cli_directory.get_base_dir().get_base_dir();
 #ifdef WINDOWS_ENABLED
@@ -8288,7 +8335,8 @@ void fragment() {
 	environment_settings_control->add_child(engine_build_arguments);
 	settings_summary = memnew(Label);
 	settings_summary->set_name("CurrentAIConfiguration");
-	settings_summary->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
+	settings_summary->set_clip_text(true);
+	settings_summary->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
 	layout->add_child(settings_summary);
 	// Keep task controls and settings navigation beside the session summary.
 	const int small_font_size = 12 * EDSCALE;
@@ -8413,7 +8461,7 @@ void fragment() {
 	gonggong_environment->show();
 	// Long option captions must not widen the scroll viewport. Their existing
 	// tooltips retain the full permission and restart explanations.
-	for (CheckBox *option : { allow_tools, auto_apply_file_changes, auto_execute_commands, engine_auto_restart }) {
+	for (CheckBox *option : { allow_tools, auto_apply_file_changes, auto_execute_commands, engine_auto_restart, production_setup, task_native_authorization }) {
 		option->set_clip_text(true);
 		option->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
 	}
@@ -8548,6 +8596,7 @@ void fragment() {
 	actions->add_child(paste_image);
 	consultation_only = memnew(CheckBox);
 	consultation_only->set_name("ConsultationOnly");
+	consultation_only->connect("toggled", callable_mp(this, &AIChatDock::_revoke_native_task).unbind(1));
 	consultation_only->set_text(U"仅咨询");
 	consultation_only->set_tooltip_text(U"仅读取和回答，不创建工单，不允许修改或执行命令；支持 API、Codex CLI 和受限 CodeBuddy 只读通道。每条消息发送时固定模式。");
 	actions->add_child(consultation_only);

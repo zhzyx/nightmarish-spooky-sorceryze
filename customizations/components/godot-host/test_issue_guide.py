@@ -28,6 +28,7 @@ class IssueGuideTests(unittest.TestCase):
         (self.root / ".github/labels.json").write_text(
             '[{"name":"type:development","color":"123456","description":"dev"}]', encoding="utf-8"
         )
+        shutil.copyfile(HERE.parents[2] / ".github/status-labels.json", self.root / ".github/status-labels.json")
         self.module = bridge.work_items_module(self.root)
         self.request = {
             "request_id": "guide-req-1",
@@ -135,6 +136,8 @@ class IssueGuideTests(unittest.TestCase):
             calls.append(args)
             if args == ("api", "user"):
                 return '{"login":"fixture-worker"}'
+            if args == ("api", "repos/test/repo"):
+                return '{"full_name":"test/repo","permissions":{"push":true}}'
             if args[0] == "api":
                 return "[[]]"
             return "https://github.com/test/repo/issues/42"
@@ -157,6 +160,8 @@ class IssueGuideTests(unittest.TestCase):
                 side_effect=lambda *a: (
                     '{"login":"fixture-worker"}'
                     if a == ("api", "user")
+                    else '{"full_name":"test/repo","permissions":{"push":true}}'
+                    if a == ("api", "repos/test/repo")
                     else "[[]]"
                     if a[0] == "api"
                     else "https://github.com/x/y/issues/1"

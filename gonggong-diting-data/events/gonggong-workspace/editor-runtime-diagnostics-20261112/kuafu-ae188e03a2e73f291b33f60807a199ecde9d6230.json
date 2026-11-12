@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ae188e03a2e73f291b33f60807a199ecde9d6230",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-runtime-diagnostics-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c6470d70496b78c12f8194fe53fe4b2f1e75ff96c04fdda9d33b5f61bda8413d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+    "action": "delivery",
+    "detection_head": "bf2d33510a1a1c44eac2286ba0cd6b8ecd4d30db",
+    "context_sha256": "2b19ed01dfa67b39831f47f3469b19481306c485a5a7d8baccc99311de6eb14e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/845",
+    "evidence": "Original writer immediate signed-receipt check failed; later exact fa3168e8 valid GitHub signature/Sail-Li/parent bf2d3351/tree458f6a2c/base5903. Same-candidate idempotent retry created PR861, Windows CI running.",
+    "diagnosis": "首次回读未满足签发谓词，独立回读后各字段一致；同候选恢复未重复签发。未保存首次失败字段值，具体短暂不一致字段仍未知。",
+    "next_action": "跟进PR861精确CI/main；本补充事件随后随父项交付，不改已签候选。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T23:13:38.977314+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T23:22:29.316642+00:00",
+  "sha256": "9aa64334bfe0906a38b2a55e956443f496776117d2db63c90a31b31620645e66"
+}

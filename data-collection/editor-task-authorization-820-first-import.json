@@ -1,0 +1,44 @@
+{
+  "binary_sha256": "2e98ac4343afce054d0fcb2552d7868419f34373ff84626a188c19cb806a58fe",
+  "incident": "0f89b92cf89eeb9fc6d4b956f1c0963695aded48daca107486db6d888624f7e4",
+  "independent_review": {
+    "product_sha256": "68e069b7d1af6c2eb7df4d1a55e17e70c6920518cc8465d19bbec200e5efe48d",
+    "result": "No findings in update_file after confirmation/state guard and first import/resource/unsaved fixture oracles; EditorFileSystem implementation checked",
+    "worker": "sinan_a9fab592940f4626"
+  },
+  "issue_number": 820,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/820",
+  "limits": [
+    "Controlled model and Issue transport; actual native tools/game/coldrestart",
+    "Diagnostic file in this task fixture is not runtime debugger;845 separately implements actual debugger reading",
+    "This candidate not yet integrated latestmain/810/821/845 or installed; parent773 remainsopen",
+    "Existing teardown RID/ObjectDBwarnings retained"
+  ],
+  "native_case": {
+    "cold_restart_exit": 0,
+    "editor_exit": 0,
+    "first_import": "PNG created after startup in actual model callback; .import initially absent, old metadata hash empty; registered approved source, synchronous import valid and nonempty metadata; Sprite2D texture actualwidth2",
+    "pulse": "Actual game samples strength andduration/releases; submission is requested notbusinesscompleted",
+    "resource_drift": "Actual cached BoxMesh.size changed 1,2,3 to7,8,9 after external preview; scene_changed_since_confirmation exact and changedcontent preserved",
+    "runner_exit": 0,
+    "task_grants": "Existing continuous/grantoff/revoke+regrant/external/coldforgedwrite flow passed",
+    "unsaved_script": "Actual CodeEdit unsaved marker; normal model write refused; buffer anddisk unchanged"
+  },
+  "old_failure": "825b frozenbinary first-import failed immediately; attempt1 laterfixturetimeout retained; repaired run passes original first-import input",
+  "parent": 773,
+  "prior_private_evidence": {
+    "editor-task-authorization-820-oracle-correction-20261112.json": "992483bb080426a2c5165cd1a7ddf33f6f4fdafcd2ddac0980226684324ceeec",
+    "editor-task-authorization-820-remaining-20261112.json": "a942d359196f92e3c2ba2d3287844bebb84b44b4e701969e4a5ffd1d277a2f9d"
+  },
+  "raw_log_sha256": "30e350ef159a47e89fef40cff54d4faf0afbe7b768f79840d8016f8dd1a30b50",
+  "request_id": "editor-task-authorization-20261112",
+  "source_base": "1f6ea3e74244275efafc484d7cf324d9feea5c4a",
+  "source_sha256": {
+    "editor/docks/ai_chat_editor_scene_completion.cpp": "68e069b7d1af6c2eb7df4d1a55e17e70c6920518cc8465d19bbec200e5efe48d",
+    "tests/editor/ai_chat_task_authorization.gd": "d1a8ecf61ada7739c15ecf7924ad2be59334715a7027a840b69595632733860b",
+    "tests/editor/run_ai_chat_semantic.py": "e9673f31918f3f7c7a00f9df3c9341c07258ee3529cddd9e3859e4836bbc1d11",
+    "tests/editor/task_authorization_fixture.py": "725f94be9a2473f7ce7294163c51ed5b2ba4ec4a13f9df6413720b685bf6cfac",
+    "tests/editor/task_authorization_input_game.gd": "1d07ba7bea4e9855858135c4cf8fe1ec210836e391ea64adb2eb39292733bbe4"
+  },
+  "strict_build": "passed70.05s after exact native scene-completion input changed"
+}

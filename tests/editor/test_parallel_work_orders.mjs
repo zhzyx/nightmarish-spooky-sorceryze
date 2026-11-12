@@ -5,19 +5,92 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import crypto from 'node:crypto';
+import {fileURLToPath} from 'node:url';
 import {captureCandidate} from '../../customizations/components/repository-dispatch/acceptance-candidate.mjs';
 import {prepare,run as runHost} from '../../tools/godot_parallel/runner.mjs';
-const run=(request,config,output)=>runHost(request,config,output,{report:async()=>({ok:true,state:'recorded_file',fixture:true})});
+const denied = new Set();
+// Controlled host authority boundary, never a candidate-supplied executable.
+const verify = (python,args,cwd) => {
+  assert.ok(fs.existsSync(python), 'Host runtime missing');
+  const installation=fileURLToPath(new URL('../../',import.meta.url));
+  assert.ok(args[0].startsWith(installation), 'Only installed host code may verify');
+  assert.ok(fs.existsSync(args[0]));
+  if(args[0].endsWith('issue_gate.py')) {
+    assert.equal(args[2],cwd);
+    if(denied.has(cwd))throw Error('Controlled authority denied');
+  } else assert.equal(fs.realpathSync(cwd),fs.realpathSync(installation));
+};
+const run=(request,config,output)=>runHost(request,config,output,{verify,report:async()=>({ok:true,state:'recorded_file',fixture:true})});
+
+// Only Issue transport/reporting is controlled here. Both installed framework
+// checks execute real Python; the worker marker proves admission precedes spawn.
+for (const mutation of ['game', 'unchanged', 'file', 'pointer', 'lock', 'delete', 'committed-delete', 'base-only-delete']) {
+  test(`installed runner candidate admission: ${mutation}`, async t => {
+    const f = fixture(t, 1);
+    const installation = fileURLToPath(new URL('../../', import.meta.url));
+    const cwd = f.config.jobs[0].worktree;
+    const base = path.dirname(f.output);
+    const python = process.env.GONGGONG_PYTHON || execFileSync(process.platform === 'win32' ? 'py' : 'python3',
+      ['-c', 'import sys; print(sys.executable)'], {encoding:'utf8'}).trim();
+    f.config.python = python;
+    const git = (...args) => execFileSync('git', args, {cwd, stdio:'pipe'});
+    git('config', 'core.autocrlf', 'false');
+    if (mutation !== 'game') {
+      fs.cpSync(path.join(installation, 'framework'), path.join(cwd, 'framework'), {recursive:true});
+      fs.copyFileSync(path.join(installation, 'CURRENT_FRAMEWORK.json'), path.join(cwd, 'CURRENT_FRAMEWORK.json'));
+      git('add', 'framework', 'CURRENT_FRAMEWORK.json');
+      git('commit', '-m', 'Exact installed framework fixture');
+      if (mutation === 'file') fs.appendFileSync(path.join(cwd, 'framework/tools/verify_framework.py'),
+        `\nfrom pathlib import Path\nPath(${JSON.stringify(path.join(base,'candidate-validator-ran')).replaceAll('\\\\','/')}).write_text('unsafe')\n`);
+      if (mutation === 'pointer') fs.writeFileSync(path.join(cwd,'CURRENT_FRAMEWORK.json'), '{"root":"elsewhere"}');
+      if (mutation === 'lock') fs.writeFileSync(path.join(cwd,'framework/package-lock.json'), '{}');
+      if (mutation.includes('delete')) {
+        if (mutation === 'base-only-delete') git('update-ref','refs/remotes/origin/main','HEAD');
+        git('rm','-r','framework','CURRENT_FRAMEWORK.json');
+        if (mutation === 'committed-delete') git('commit','-m','Remove framework');
+        if (mutation === 'base-only-delete') {
+          // HEAD has no framework ancestry, but the fetched target owns it.
+          git('reset','--hard','HEAD~1');
+        }
+      }
+    }
+    const checks = [];
+    const actualVerify = (executable, args, directory) => {
+      verify(executable, args, directory);
+      if (args.includes('--intake-only')) return;
+      try {
+        execFileSync(executable, args, {cwd:directory, encoding:'utf8', stdio:'pipe'});
+        checks.push({candidate:args.includes('--candidate-framework-only'), ok:true});
+      } catch (error) {
+        checks.push({candidate:args.includes('--candidate-framework-only'), ok:false, status:error.status, stderr:String(error.stderr)});
+        throw error;
+      }
+    };
+    const result = await runHost(f.request,f.config,f.output,{verify:actualVerify,report:async()=>({ok:true,state:'recorded_file',fixture:true})});
+    const worker = result.workers[0];
+    const admitted = ['game','unchanged'].includes(mutation);
+    assert.equal(worker.state,admitted?'review':'blocked',worker.reason);
+    assert.equal(fs.existsSync(path.join(base,'a.started')),admitted);
+    assert.equal(fs.existsSync(path.join(base,'candidate-validator-ran')),false);
+    assert.equal(checks.filter(check=>check.candidate).length,1,'Actual installed candidate check must execute');
+    const checked = checks.find(check=>check.candidate);
+    assert.equal(checked.ok,admitted);
+    if (!admitted) {
+      assert.equal(checked.status,1);
+      assert.match(checked.stderr,/Candidate framework (differs|binding differs)/);
+      assert.equal(worker.pid,undefined);
+      assert.equal(worker.registration,undefined);
+      assert.equal(fs.existsSync(`${f.output}.1.log`),false);
+    }
+  });
+}
 function fixture(t, count=2) {
   const base=fs.mkdtempSync(path.join(os.tmpdir(),'godot-parallel-'));
   t.after(()=>fs.rmSync(base,{recursive:true,force:true,maxRetries:5,retryDelay:100}));
   const root=path.join(base,'repo');fs.mkdirSync(root);
   const git=(...args)=>execFileSync('git',args,{cwd:root,stdio:'pipe'});
   git('init');git('config','user.name','Fixture');git('config','user.email','fixture@example.invalid');
-  for (const file of ['customizations/components/issue-workorders/issue_gate.py','framework/tools/verify_framework.py']) {
-    const p=path.join(root,file);fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,'process.exit(0)');
-  }
-  fs.writeFileSync(path.join(root,'CURRENT_FRAMEWORK.json'),'{}');fs.writeFileSync(path.join(root,'framework/package-lock.json'),'{}');
+  fs.writeFileSync(path.join(root,'project.godot'),'config_version=5\n');
   git('add','.');git('commit','-m','Controlled fake host gate fixtures');
   const names=Array.from({length:count},(_,i)=>String.fromCharCode(97+i));
   const worktrees=names.map(name=>path.join(base,name));
@@ -48,6 +121,39 @@ test('three authorized slots run three isolated workers concurrently',async t=>{
   const result=await run(f.request,f.config,f.output);
   assert.deepEqual(result.workers.map(worker=>worker.state),['review','review','review']);
   assert.equal(new Set(result.workers.map(worker=>worker.pid)).size,3);
+});
+
+test('native host editor bytes reach the actual worker and immutable registration', async t => {
+  const f = fixture(t, 1);
+  const sha256 = crypto.createHash('sha256').update(fs.readFileSync(process.execPath)).digest('hex');
+  f.request.editorRuntime = {executable:process.execPath, sha256};
+  fs.writeFileSync(f.config.codex, `import fs from 'node:fs';
+    let prompt=''; for await (const chunk of process.stdin) prompt+=chunk;
+    fs.writeFileSync('observed-prompt.txt', prompt);
+  `);
+  const result = await run(f.request, f.config, f.output);
+  assert.equal(result.workers[0].state, 'review', result.workers[0].reason);
+  const prompt = fs.readFileSync(path.join(f.config.jobs[0].worktree, 'observed-prompt.txt'), 'utf8');
+  const expected = {executable:fs.realpathSync(process.execPath), sha256};
+  assert.ok(prompt.includes(JSON.stringify(expected)));
+  assert.ok(prompt.includes('--headless --audio-driver Dummy'));
+  const registration = JSON.parse(fs.readFileSync(result.workers[0].registration.path, 'utf8'));
+  assert.deepEqual(registration.editor_runtime, expected);
+});
+
+test('editor runtime drift before launch blocks the actual worker', async t => {
+  const f = fixture(t, 1);
+  const executable = path.join(path.dirname(f.output), 'bound-editor');
+  fs.writeFileSync(executable, 'original-host-editor');
+  f.request.editorRuntime = {executable, sha256:crypto.createHash('sha256').update(fs.readFileSync(executable)).digest('hex')};
+  const result = await runHost(f.request, f.config, f.output, {verify, report:async record => {
+    if (record.state === 'prepared') fs.writeFileSync(executable, 'changed-host-editor');
+    return {ok:true, state:'recorded_file', fixture:true};
+  }});
+  assert.equal(result.workers[0].state, 'blocked');
+  assert.match(result.workers[0].reason, /editor runtime is missing or changed/);
+  assert.equal(result.workers[0].pid, undefined);
+  assert.equal(fs.existsSync(path.join(path.dirname(f.output), 'a.started')), false);
 });
 
 test('large valid capacity allocates only the ready workers',async t=>{
@@ -139,7 +245,7 @@ test('new registration binds Issue even for a legacy unversioned design request'
 test('cancelled actual workers never publish a successful transport receipt',async t=>{
   const f=fixture(t);
   fs.writeFileSync(f.config.codex,'process.stdin.resume();setTimeout(()=>{},30000);');
-  const result=await runHost(f.request,f.config,f.output,{report:async event=>{
+  const result=await runHost(f.request,f.config,f.output,{verify,report:async event=>{
     if(event.state==='running')fs.writeFileSync(`${f.output}.${event.order}.cancel`,'cancel');
     return {ok:true,state:'recorded_file',fixture:true};
   }});
@@ -219,7 +325,7 @@ test('duplicate IDs and non-integer orders are rejected',t=>{
 });
 test('missing durable reporting blocks model execution',async t=>{
   const f=fixture(t);
-  const result=await runHost(f.request,f.config,f.output,{report:async()=>{throw Error('report offline');}});
+  const result=await runHost(f.request,f.config,f.output,{verify,report:async()=>{throw Error('report offline');}});
   assert.ok(result.workers.every(w=>w.state==='blocked'&&!w.pid));
 });
 test('registered evidence unlocks dependency on a later explicit invocation',async t=>{
@@ -257,7 +363,7 @@ test('command worker receives the selected model as one argument and bound promp
   configureCommand(f);
   f.config.models[0].id = 'fixture-model/2';
   const events = [];
-  const result = await runHost(f.request,f.config,f.output,{report: async event => {
+  const result = await runHost(f.request,f.config,f.output,{verify,report: async event => {
     events.push(event);
     return {ok:true,state:'recorded_file'};
   }});
@@ -293,14 +399,13 @@ test('command workers cannot bypass admission or use ambiguous model or executab
     assert.throws(() => prepare(f.request,config),/workerCommand/);
   }
   assert.throws(() => prepare(f.request,{...f.config,nativeWorkspaceWrite:false}),/mandate/);
-  const gate = path.join(f.config.jobs[0].worktree,'customizations/components/issue-workorders/issue_gate.py');
-  fs.writeFileSync(gate,'process.exit(1)');
+  denied.add(f.config.jobs[0].worktree);
   const result = await run(f.request,f.config,f.output);
   assert.equal(result.workers[0].state,'blocked');
   assert.equal(result.workers[0].pid,undefined);
   assert.equal(fs.existsSync(path.join(f.config.jobs[0].worktree,'worker-result.json')),false);
   assert.equal(result.workers[1].state,'review');
-  fs.writeFileSync(gate,'process.exit(0)');
+  denied.delete(f.config.jobs[0].worktree);
   const retry = await run(f.request,f.config,f.output);
   assert.deepEqual(retry.workers.map(w => w.state),['review','review']);
   assert.equal(retry.workers[1].pid,result.workers[1].pid);
@@ -310,7 +415,7 @@ test('child exit before prompt handoff retains an unknown work order',async t=>{
   const f=fixture(t);
   fs.writeFileSync(f.config.codex,'process.exit(0)');
   f.request.workers=f.request.workers.slice(0,1);
-  const result=await runHost(f.request,f.config,f.output,{report:async record=>{
+  const result=await runHost(f.request,f.config,f.output,{verify,report:async record=>{
     if(record.state==='running') await new Promise(resolve=>setTimeout(resolve,400));
     return {ok:true,state:'recorded_file'};
   }});
@@ -338,7 +443,7 @@ test('confirmed CLI design must match both checkouts before preparation and afte
       const root = side === 'source' ? f.request.workspace : f.config.jobs[0].worktree;
       const drift = () => fs.appendFileSync(path.join(root,'design-docs','fixture-request.md'),'changed');
       if (phase === 'initial') drift();
-      const result = await runHost(f.request,f.config,f.output,{report:async event=>{
+      const result = await runHost(f.request,f.config,f.output,{verify,report:async event=>{
         if (event.state === phase) drift();
         return {ok:true,state:'recorded_file'};
       }});
@@ -378,7 +483,7 @@ test('a ticket appearing after initial reconciliation cannot be adopted by a dif
   f.request.workers.push({...f.request.workers[0],id:2,order:9});
   const ticket = path.join(f.request.workspace,'data-collection/outbox/parallel-ticket-fixture-request-9.json');
   const previous = JSON.stringify({id:77,order:9,state:'review'});
-  const result = await runHost(f.request,f.config,f.output,{report:async event=>{
+  const result = await runHost(f.request,f.config,f.output,{verify,report:async event=>{
     if (event.order === 4 && event.state === 'prepared') fs.writeFileSync(ticket,previous);
     return {ok:true,state:'recorded_file'};
   }});
@@ -495,7 +600,7 @@ test('failed repair admission restores original resource and permits only an uns
 test('candidate drift during repair preparation blocks spawn and restores predecessor resource',async t=>{
   const f=await repairFixture(t),dir=path.dirname(f.sourceTicket),resource=path.join(dir,fs.readdirSync(dir).find(name=>name.startsWith('parallel-resource-')));
   const before=fs.readFileSync(resource);
-  const result=await runHost(f.request,f.config,f.repairOutput,{report:async record=>{
+  const result=await runHost(f.request,f.config,f.repairOutput,{verify,report:async record=>{
     if(record.state==='prepared')fs.writeFileSync(path.join(f.root,'changed-during-preparation.txt'),'drift');
     return {ok:true,state:'recorded_file'};
   }});

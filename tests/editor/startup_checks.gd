@@ -101,8 +101,8 @@ func run() -> void:
 	# Exercise the real native model dialog's await/cancel contract, with a private helper.
 	var settings := EditorInterface.get_editor_settings()
 	var old_workspace: String = str(settings.get_setting("gonggong/workspace"))
-	var model_workspace := OS.get_environment("STARTUP_MODEL_WORKSPACE")
-	settings.set_setting("gonggong/workspace", model_workspace)
+	var model_workspace: String = chat.get_production_workspace()
+	settings.set_setting("gonggong/workspace", OS.get_environment("STARTUP_MODEL_WORKSPACE"))
 	real_planner._observe_environment(real_planner._environment_state())
 	var catalog = real_planner.models_dialog
 	catalog.chat = chat
@@ -112,6 +112,8 @@ func run() -> void:
 	await catalog._connect_local()
 	check(Time.get_ticks_msec() - start >= 200 and not catalog.pending, "one-click model refresh awaits actual helper completion")
 	check(catalog.last_result.status == "refreshed", "real model dialog publishes successful model refresh receipt: " + str(catalog.last_result))
+	check(model_workspace != str(settings.get_setting("gonggong/workspace")) and model_workspace != chat.get_installed_host_root(), "game data, global workspace and installed helper roots are separate")
+	check(FileAccess.get_file_as_string(model_workspace.path_join("model-helper-target")).replace("\\", "/") == model_workspace.replace("\\", "/"), "installed model helper receives the authorized game workspace")
 	catalog._connect_local()
 	await get_tree().create_timer(0.05).timeout
 	real_planner.startup_models_running = true

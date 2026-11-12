@@ -208,12 +208,14 @@ bool GongGongPanel::ensure_environment_with_snapshot(const Dictionary &runtime) 
 		return true;
 	}
 	const String root = EDITOR_GET("gonggong/workspace");
+	const String host_root = GongGongHostPaths::engine_source();
+	const bool host_ready = host_root.is_absolute_path() && FileAccess::exists(host_root.path_join("tools/gonggong_bridge.py"));
 	const String current_python = GongGongRuntimeConfig::path(runtime, "workflow_python");
 	const String node = GongGongRuntimeConfig::path(runtime, "node");
-	const String git = gonggong_runtime_path(root, "GONGGONG_GIT", "project/runtime/git/cmd/git.exe", "git.exe");
+	const String git = gonggong_runtime_path(host_root, "GONGGONG_GIT", "project/runtime/git/cmd/git.exe", "git.exe");
 	String gh = EDITOR_GET("gonggong/gh");
 	if (!FileAccess::exists(gh)) {
-		gh = gonggong_runtime_path(root, "GONGGONG_GH", "project/runtime/gh/bin/gh.exe", "gh.exe");
+		gh = gonggong_runtime_path(host_root, "GONGGONG_GH", "project/runtime/gh/bin/gh.exe", "gh.exe");
 	}
 	if (gh.is_empty()) {
 		for (const String &candidate : { OS::get_singleton()->get_environment("ProgramFiles").path_join("GitHub CLI/gh.exe"), OS::get_singleton()->get_environment("LOCALAPPDATA").path_join("Microsoft/WinGet/Links/gh.exe") }) {
@@ -223,7 +225,7 @@ bool GongGongPanel::ensure_environment_with_snapshot(const Dictionary &runtime) 
 			}
 		}
 	}
-	const bool ready = !root.is_empty() && FileAccess::exists(root.path_join("tools/gonggong_bridge.py")) && FileAccess::exists(current_python) && !node.is_empty() && !git.is_empty() && !gh.is_empty();
+	const bool ready = host_ready && FileAccess::exists(current_python) && !node.is_empty() && !git.is_empty() && !gh.is_empty();
 	if (ready) {
 		OS::get_singleton()->set_environment("GONGGONG_GIT", git);
 		OS::get_singleton()->set_environment("GONGGONG_GH", gh);
@@ -242,8 +244,8 @@ bool GongGongPanel::ensure_environment_with_snapshot(const Dictionary &runtime) 
 	if (gh.is_empty()) {
 		missing.push_back("GitHub CLI (gh)");
 	}
-	if (root.is_empty() || !FileAccess::exists(root.path_join("tools/gonggong_bridge.py"))) {
-		missing.push_back(U"共工工作区");
+	if (!host_ready) {
+		missing.push_back(U"编辑器共工组件");
 	}
 	setup_missing->set_text(String(U"缺失配置：") + String(", ").join(missing));
 	workspace->set_text(root);
@@ -535,6 +537,9 @@ void GongGongPanel::reload_issue_binding() {
 }
 
 void GongGongPanel::save_issue_binding(const String &p_text) {
+	if (task_binding_changed.is_valid()) {
+		task_binding_changed.call();
+	}
 	EditorSettings::get_singleton()->set("gonggong/issue_number", issue_number->get_text().strip_edges());
 	EditorSettings::get_singleton()->set("gonggong/request_id", request_id->get_text().strip_edges());
 	EditorSettings::save();

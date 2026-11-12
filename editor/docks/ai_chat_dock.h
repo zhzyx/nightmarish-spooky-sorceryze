@@ -34,6 +34,7 @@
 #include "core/os/thread.h"
 #include "core/templates/safe_refcount.h"
 #include "editor/docks/ai_chat_resume.h"
+#include "editor/docks/ai_chat_task_authorization.h"
 #include "editor/docks/editor_dock.h"
 
 class AIChatEditorControl;
@@ -265,6 +266,15 @@ class AIChatDock : public EditorDock {
 	LineEdit *model = nullptr;
 	LineEdit *api_key = nullptr;
 	CheckBox *allow_tools = nullptr;
+	CheckBox *task_native_authorization = nullptr;
+	Label *task_native_scope = nullptr;
+	AIChatTaskAuthorization task_native_grant;
+	uint64_t task_native_epoch = 0;
+	uint64_t task_native_request_epoch = 0;
+	Dictionary _native_task_scope() const;
+	void _native_task_toggled(bool p_enabled);
+	void _revoke_native_task();
+	bool _native_task_allows(const String &p_tool, const Dictionary &p_arguments);
 	CheckBox *auto_apply_file_changes = nullptr;
 	CheckBox *auto_execute_commands = nullptr;
 	ScrollContainer *chat_scroll = nullptr;
@@ -697,7 +707,13 @@ class AIChatDock : public EditorDock {
 	bool _design_return_allowed(int p_parent, const Dictionary &p_message) const;
 	int64_t sub_agent_parallel_pid = -1;
 	String sub_agent_parallel_output;
+	CheckBox *production_setup = nullptr;
+	LineEdit *production_capacity = nullptr;
+	bool production_preparing = false;
+	int production_setup_parent = -1;
 	bool _dispatch_parallel_sub_agents();
+	bool _bind_parallel_review(int p_producer, const Dictionary &p_receipt, const Dictionary &p_result, const String &p_output);
+	bool _restore_parallel_review(int p_producer);
 	void _poll_parallel_sub_agents();
 	Dictionary sub_agent_spawned;
 	HBoxContainer *sub_agent_bar = nullptr;
@@ -832,6 +848,8 @@ protected:
 
 public:
 	Dictionary get_runtime_configuration() const;
+	String get_production_workspace() const { return _workflow_root(); }
+	String get_installed_host_root() const { return _engine_root(); }
 	Dictionary prepare_runtime_configuration() const;
 	String set_runtime_field(const String &p_field, const String &p_value);
 	void refresh_runtime_controls();

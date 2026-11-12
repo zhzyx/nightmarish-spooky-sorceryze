@@ -1,0 +1,119 @@
+{
+  "issue_number": 773,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "request_id": "game-production-goal-20261111",
+  "source_base": "7813a30245c65427094934fd29590b98c1a1dd96",
+  "scope": "Current native Godot runtime binding for CLI workers and explicit warm/cold independent acceptance recovery; not complete game-production acceptance",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.h": "e972bbc45ea039076816e3a5ab71dd3eed0d74309332a8a4db9f54846a3ffb6b",
+    "editor/docks/ai_chat_sub_agents.cpp": "5381329b926b7b69be8dc72c8bedfc6b67ccc8b1bcd9516f151ebb8de418cbfb",
+    "editor/docks/ai_chat_gonggong.cpp": "c32b1e12f50152eaa24a02c820a36fbd607015c229d008ebd34ae039c502bfd2",
+    "tools/godot_parallel/runner.mjs": "26753392d187f227ecbc8b9905dbbe4c7b36795064ff40bd59f5326285e49256",
+    "tests/editor/test_parallel_work_orders.mjs": "7f466b8df6ec6f82d675cefaba232883e925895b705e6c76ad976c5c77ad8b93",
+    "tests/editor/run_native_acceptance.py": "35887f052334a8cca5b04ee7c84d00bf68ad22dad5d651f0eaa9bb90b21a25f8",
+    "tests/editor/run_native_production_setup.py": "dfb7856d8f8437ccfe583d5abd2884c7083edc59fb1f9b69697eef0d35a9298e",
+    "tests/editor/native_review_recovery.py": "245b3a4a940e4058dd7b696f3b23ea2910fc1e4e777fdeb5491f7015ee24f497"
+  },
+  "strict_build": {
+    "passed": true,
+    "warnings": "extra",
+    "werror": true,
+    "receipt_sha256": "25b22d4c2f6aab6d3b99d8905259577e7757d79b0aaea0bb69a0f325164e2c13"
+  },
+  "binary": {
+    "checks": [
+      {
+        "name": "warm",
+        "exit": 0,
+        "seconds": 158.72764372825623
+      },
+      {
+        "name": "cold",
+        "exit": 0,
+        "seconds": 178.18712329864502
+      },
+      {
+        "name": "native-full",
+        "exit": 0,
+        "seconds": 37.61491942405701
+      }
+    ],
+    "console_sha256": "0edea42f188111f513af6f29919d29e1de611497d0f10cebda71e8fbeb001910",
+    "engine_sha256": "4ce4cfa2b0c5c213fa20edc5b63bc7916812cc9bf834bae5e5069d1eb2a165dc"
+  },
+  "native_suite": {
+    "cases": 1561,
+    "assertions": 435597,
+    "failed": 0,
+    "skipped": 3
+  },
+  "additional_checks": {
+    "runner_node_tests": 49,
+    "node_log_sha256": "e7681c8a7dc1310d38f15ef90594e055f241eca3363a2e1158c0314d18320978",
+    "codebuddy_non_game_setup": {
+      "name": "codebuddy",
+      "exit": 0,
+      "seconds": 45.7564971446991
+    },
+    "codebuddy_console_sha256": "fb58fb5d8b9fcdd77526c8fc4a6e35d3b4169231a49c5a78cf6d97ce3cbd22e8",
+    "codebuddy_evidence_sha256": "7e329a7875f263f85eb340b7ad74d5e278fdaa497b97c35a1e8b9a94268028fc"
+  },
+  "independent_review": {
+    "reviewer": "agent:/root/sinan_153bdac57bb1f073",
+    "result": "No new source blockers after durable recovery observation correction and receipt UI refresh recheck",
+    "kind": "read_only_source_review",
+    "test_execution_by_reviewer": false
+  },
+  "actual_provider_observation": {
+    "connected_account_cli": "Codex",
+    "ordinary_game_repo": true,
+    "two_producers_overlapped": true,
+    "both_terminal_exit_codes": [
+      0,
+      0
+    ],
+    "worker_a_tests_recorded": 3466,
+    "worker_b_godot_tests_run": false,
+    "business_acceptance": "unknown",
+    "observed_gaps": [
+      "Missing current editor runtime in worker prompt",
+      "Failed review tool read mislabeled registration_changed",
+      "Original review could not be resumed through the normal button"
+    ],
+    "latest_private_recovery": "New editor restored original history and started fresh read-only review without replaying the two terminal producers; business result remains pending"
+  },
+  "corrections": [
+    "Bind current executable path and SHA256 before registration and stdin; retain legacy non-native callers",
+    "Revalidate original result, assignment, registration, terminal and current candidate on explicit resume",
+    "Persist new host recovery observation and original per-worker result pins without rewriting originals",
+    "Fresh independent capture must match original produced fingerprint; old acceptance is historical only",
+    "Preserve first unverified tool receipt and separate error categories",
+    "Restore Issue integer type at strict capture/verify boundary",
+    "Refresh Continue eligibility on actual source receipt start/end",
+    "Correct isolated fixture installed adapter selection, framework presence and immutable CURRENT_FRAMEWORK byte handling"
+  ],
+  "retained_failures": [
+    {
+      "path": "data-collection/receipts/combined-773/worker-editor/checks.json",
+      "sha256": "544d44186771ee13363edfcecee381b3aaf9b9633c7439996ca78aa63d4e2f07"
+    },
+    {
+      "path": "data-collection/receipts/combined-773/review-recovery/checks.json",
+      "sha256": "f57c338f9a1b2225accdad3d3c067c1a8990e23ed9c69f0f1411faae3d48fd89"
+    },
+    {
+      "path": "data-collection/receipts/combined-773/review-recovery-r2/checks.json",
+      "sha256": "7600ce0ff6d2925c4f62c69b0b473c0b6d50fb76a34d44a10eac716058b56f6b"
+    },
+    {
+      "path": "data-collection/receipts/combined-773/review-recovery-r3/checks.json",
+      "sha256": "eb38a022d2879297cecf8f2b77d7000cd58fa6e1d00d69fe47a8ea3863c8f10a"
+    }
+  ],
+  "limits": [
+    "Controlled transport verifies mechanics, not real provider game completion",
+    "Known blocked prelaunch retry loop remains under parent issue for further correction",
+    "Final main integration, CI and effective installation still pending",
+    "Parent773 remains open; sample progress does not establish complete editor support"
+  ]
+}

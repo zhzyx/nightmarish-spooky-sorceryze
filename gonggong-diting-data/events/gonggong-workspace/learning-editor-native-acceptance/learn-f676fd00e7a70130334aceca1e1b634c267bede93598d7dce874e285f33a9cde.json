@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-f676fd00e7a70130334aceca1e1b634c267bede93598d7dce874e285f33a9cde",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/820",
+  "occurred_at": "2026-11-11T23:13:09.175584+00:00",
+  "evidence_refs": [
+    "kuafu-5fe45c83aeb3e9656ccd9f178011a45967f770d6"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "distinguish-first-import-from-prescan",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "首次导入验收在编辑器启动后才创建资源，断言源文件与导入元数据初始不存在，再经正常原生工具核对旧快照空、新导入有效和实际场景资源。",
+      "when": "AI生成新资源并在同一编辑器会话导入；测试准备可能触发启动扫描。",
+      "counterexample": "启动前写入PNG后再调用scene_import_resource只验证重导入，不能证明新生成资源路径可用；单看import_requested也不能证明导入完成。",
+      "trial_plan": "后续修改导入流程时分别运行新资源和已导入资源；在新目录、扫描忙、源内容漂移和无效导入器条件下反证保护，不以启动预扫描绕过。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-task-authorization-820-first-import.json",
+        "sha256": "e437c1a32b8a8745e3d6f477b2503e287a14f8bdd0b2b760405e78a2d355d6c1"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-task-authorization-20261112/kuafu-5fe45c83aeb3e9656ccd9f178011a45967f770d6.json",
+      "sha256": "e5faff917b4903aae8ef5dc57bae12f24ecbe4d7a5a55c561d739d296fd9733b"
+    }
+  },
+  "sha256": "c105411c526637ca6d598e04b0856d56866aedb2709c3d77287042eba884e968"
+}
