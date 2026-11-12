@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "project-cpp-coding-standard-20261112",
+  "collected_at": "2026-11-12T10:06:21.776653+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/project-cpp-coding-standard-20261112/request-917-project-cpp-standard-20261112.json",
+      "sha256": "e7f0e9e02eab4a12408aef6998335e0fa4fb5a42580a623bc6e6115893ab1930",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "request-917-project-cpp-standard-20261112",
+      "origin": "current-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 917,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/917"
+}
