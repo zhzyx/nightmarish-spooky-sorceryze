@@ -206,6 +206,9 @@ def fixture_copyfile(source, target, *args, **kwargs):
         # Keep the wait bounded while allowing those extra completion events.
         script = Path(target).read_text(encoding="utf8")
         script = script.replace("seconds := 90.0", "seconds := 180.0")
+        # This fixture completes through independent native acceptance. The
+        # ordinary batch separately tests the manual acceptance/consultation UI.
+        script = script.replace("\t\tawait _verify_dependency_handoff()", "\t\tpass")
         Path(target).write_text(script, encoding="utf8")
     if Path(source).name == "design_batch.gd" and SCENARIO.startswith("parallel"):
         script = Path(target).read_text(encoding="utf8")

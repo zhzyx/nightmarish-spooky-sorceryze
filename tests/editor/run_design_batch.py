@@ -1257,9 +1257,10 @@ def main():
             DESIGN_BATCH_NODE=str(args.node.resolve()),
             DESIGN_BATCH_ENDPOINT=endpoint,
             DESIGN_BATCH_FINALIZED=(
-                FINALIZED.replace("1. DESIGN", "2. DESIGN").replace(
-                    "2. DESIGN_BATCH_CHILD_2", "4. DESIGN_BATCH_CHILD_2"
-                )
+                FINALIZED
+                .replace("1. DESIGN", "2. DESIGN")
+                .replace("2. DESIGN_BATCH_CHILD_2", "4. DESIGN_BATCH_CHILD_2")
+                .replace("- 依赖: 1\n", "- 依赖: 2\n")
                 + "   - 依赖：工单 2。\n"
                 if args.case == "normal"
                 else FINALIZED

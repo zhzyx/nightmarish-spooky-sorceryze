@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b7a5d6d222279daaea52a29b7e70fb440f6ed89d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "eb166bc246d3856eff191f5eb0be7c59e3f0086bcfaae1e2b6877be0952a4003",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "23412df4cff43f3579adb90524a396d2a4b9e82f",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "Private failure log SHA256 13e65fa19aaab38e4ffc4da53716b9f9628a9dc97b34c82d4e077a094277afa4",
+    "diagnosis": "Installed native command test did not launch because test isolation correctly refused inherited GONGGONG_WORKSPACE. This is test environment setup, not a new engine failure. Original log and unchanged installed binary digest retained.",
+    "next_action": "Rerun once with inherited workspace removed only from the child test environment. Keep actual model non-execution separate from native offline transport fixture results.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T12:05:28.774572+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": "Issue4 editor design continues independently."
+  },
+  "occurred_at": "2026-11-12T12:07:25.253101+00:00",
+  "sha256": "9c0e9afd7f3ffbef6a6d381ee052ce951be25787e9c783854ca873d1317ce907"
+}

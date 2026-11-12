@@ -1266,7 +1266,10 @@ void AIChatDock::_add_sub_agent() {
 	_refresh_sub_agents();
 }
 
-Dictionary AIChatDock::_read_design(int p_parent) const {
+Dictionary AIChatDock::_read_design(int p_parent, String *out_pDiagnostics) const {
+	if (out_pDiagnostics) {
+		*out_pDiagnostics = U"无法读取需求文档：检查当前 Issue、需求 ID 与工作区绑定，以及 design-docs/<需求ID>.md 是否存在、非空且未超过大小限制。";
+	}
 	const String request_id = _work_order_binding("request_id", p_parent).strip_edges();
 	const int64_t issue = _work_order_binding("issue_number", p_parent).to_int();
 	const String root = _workflow_root(p_parent);
@@ -1285,7 +1288,13 @@ Dictionary AIChatDock::_read_design(int p_parent) const {
 	}
 	Dictionary doc = AIChatSubAgents::parse_work_orders(String::utf8((const char *)bytes.ptr(), bytes.size()));
 	if (!bool(doc["confirmation_section"]) || !bool(doc["valid"]) || Array(doc["orders"]).is_empty()) {
+		if (out_pDiagnostics) {
+			*out_pDiagnostics = doc["diagnostics"];
+		}
 		return Dictionary();
+	}
+	if (out_pDiagnostics) {
+		*out_pDiagnostics = String();
 	}
 	Dictionary binding;
 	binding["workspace"] = root;
@@ -1447,10 +1456,11 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit, const D
 	if (!p_explicit && sub_agent_spawned.has(request_id)) {
 		return false;
 	}
-	const Dictionary parsed = _read_design(p_parent);
+	String strDiagnostics;
+	const Dictionary parsed = _read_design(p_parent, &strDiagnostics);
 	if (parsed.is_empty()) {
 		if (p_explicit) {
-			_append(TTR("Editor"), U"请检查定版小节、生产工单编号和依赖（例如「依赖：工单 1–3」）。");
+			_append(TTR("Editor"), strDiagnostics);
 		}
 		return false;
 	}

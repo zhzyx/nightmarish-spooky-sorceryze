@@ -127,6 +127,12 @@ public:
 		return !p_value.is_empty();
 	}
 
+	// Canonical example for model guidance; document text never authorizes dispatch.
+	static constexpr const char32_t *DESIGN_TEMPLATE =
+			U"## 设计定版确认\n待操作者在编辑器原生确认对话框中核对当前版本并确认；本文不代表批准。\n\n"
+			U"## 生产工单\n1. 实现基础功能\n- 依赖：无\n- 验收: foundation | 基础功能通过实测，保留执行命令与结果\n\n"
+			U"2. 集成功能\n- 依赖：工单 1\n- 验收: integration | 前置工单验收后集成并记录端到端验证结果\n";
+
 	static Dictionary parse_work_orders(const String &p_document) {
 		Dictionary result;
 		bool confirmation_section = false;
@@ -134,6 +140,8 @@ public:
 		Array prior;
 		Array dependencies;
 		bool in_section = false;
+		bool bProductionSection = false;
+		String strDiagnostics;
 		Array orders;
 		Dictionary current;
 		String body;
@@ -187,6 +195,7 @@ public:
 						flush();
 					}
 					in_section = stripped.begins_with(U"## 生产工单");
+					bProductionSection = bProductionSection || in_section;
 					continue;
 				}
 			}
@@ -199,8 +208,12 @@ public:
 			if (!indented && parse_numbered(line, number, title)) {
 				flush();
 				if (orders.size() >= MAX_CHILDREN_PER_PARENT) {
+					strDiagnostics += U"生产工单过多：每个父会话最多 16 张，请拆分需求。\n";
 					valid = false;
 					break;
+				}
+				if (number <= 0 || prior.has(number)) {
+					strDiagnostics += vformat(U"工单编号 %d 无效或重复：使用唯一的正整数编号，例如 1. 基础功能。\n", number);
 				}
 				valid = valid && number > 0 && !prior.has(number);
 				current["number"] = number;
@@ -210,7 +223,11 @@ public:
 			if (!current.is_empty()) {
 				const String field = stripped.trim_prefix("- ").strip_edges().replace(U"：", ":");
 				if (field.begins_with(U"依赖:") || field.begins_with(U"业务依赖:")) {
-					valid = parse_dependencies(field.substr(field.find(":") + 1), prior, dependencies) && valid;
+					const bool bDependenciesValid = parse_dependencies(field.substr(field.find(":") + 1), prior, dependencies);
+					if (!bDependenciesValid) {
+						strDiagnostics += vformat(U"工单 %d 的依赖无效：独立工单写「- 依赖：无」；依赖工单写「- 依赖：工单 1」或「- 依赖：工单 1–3」，只能引用本文中已列出的前序编号，不能引用自身、后续或不存在的工单。\n", int(current["number"]));
+					}
+					valid = bDependenciesValid && valid;
 				}
 				body += line + "\n";
 			}
@@ -221,6 +238,15 @@ public:
 		result["confirmation_section"] = confirmation_section;
 		result["valid"] = valid;
 		result["orders"] = orders;
+		if (!confirmation_section) {
+			strDiagnostics += U"缺少定版小节：添加精确标题「## 设计定版确认」，正文写「待操作者在编辑器确认」。不要把待批准写进标题；文档文字不能代替原生确认。\n";
+		}
+		if (!bProductionSection) {
+			strDiagnostics += U"缺少生产工单小节：使用「## 生产工单」，例如把「## 4. 生产工单」改为该标题。\n";
+		} else if (orders.is_empty()) {
+			strDiagnostics += U"生产工单小节没有数字工单：使用不缩进的「1. 基础功能」「2. 集成功能」，不要使用「### 工单 A/B/C」。\n";
+		}
+		result["diagnostics"] = strDiagnostics.strip_edges();
 		return result;
 	}
 
