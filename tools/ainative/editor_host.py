@@ -16,9 +16,11 @@ from executor import Executor, snapshot_file
 from extensions import NodeRegistry, canonical, publish_new
 from generation_service import (
     ServiceError,
+    adapt_image_providers,
     check_inputs,
     check_service,
     failure,
+    image_batch_settings,
     load_settings,
     prepare_provider,
     restore_provider,
@@ -88,15 +90,39 @@ def compile_graph(model):
     for n in model["nodes"]:
         inputs = {}
         context = []
+        kind = n.get("type", "copy")
         for field in ("source", "image_context"):
-            if n.get(field) or n.get(field + "_snapshot"):
-                path = Path(n[field]) if n.get(field) else None
-                ext = path.suffix.lower() if path else n[field + "_snapshot"]["extension"]
+            plural = field + "_paths"
+            snapshots = field + "_snapshots"
+            paths = n.get(plural, [])
+            embedded_snapshots = n.get(snapshots, [])
+            if not isinstance(paths, list) or not isinstance(embedded_snapshots, list):
+                raise ValueError("invalid input collection")
+            multiple = bool(paths or embedded_snapshots)
+            if multiple and not paths and embedded_snapshots:
+                paths = [""] * len(embedded_snapshots)
+            if not multiple:
+                paths = [n.get(field, "")]
+                embedded_snapshots = [n.get(field + "_snapshot")] if n.get(field + "_snapshot") else []
+            require_count = len(paths) if multiple else 1
+            if multiple and embedded_snapshots and len(embedded_snapshots) != len(paths):
+                raise ValueError("input paths/snapshots length mismatch")
+            if require_count > 8:
+                raise ValueError("too many input images")
+            for index in range(require_count):
+                selected_path = paths[index] if index < len(paths) else ""
+                snapshot = embedded_snapshots[index] if index < len(embedded_snapshots) else None
+                if not selected_path and not snapshot:
+                    continue
+                if not isinstance(selected_path, str):
+                    raise ValueError("invalid input path")
+                path = Path(selected_path) if selected_path else None
+                ext = path.suffix.lower() if path else snapshot["extension"].lower()
                 if ext not in (".png", ".jpg", ".jpeg", ".glb", ".gltf"):
                     raise ValueError("unsupported asset")
-                payload = snapshot_file(path) if path else dict(n[field + "_snapshot"])
-                # Some export tools give JPEG bytes a PNG suffix. Use the immutable
-                # snapshot header for the image decoder and keep its original digest.
+                payload = snapshot_file(path) if path else dict(snapshot)
+                if not isinstance(payload, dict):
+                    raise ValueError("invalid input snapshot")
                 if ext in (".png", ".jpg", ".jpeg"):
                     signature = base64.b64decode(payload["content_base64"][:12], validate=True)
                     if signature.startswith(b"\x89PNG\r\n\x1a\n"):
@@ -104,8 +130,7 @@ def compile_graph(model):
                     elif signature.startswith(b"\xff\xd8\xff") and ext == ".png":
                         ext = ".jpg"
                 payload["extension"] = ext
-                # glTF must be self-contained; external buffers/textures are not snapshotted.
-                if field == "image_context" and ext not in (".png", ".jpg", ".jpeg"):
+                if kind != "copy" and ext not in (".png", ".jpg", ".jpeg"):
                     raise ValueError("image context required")
                 if ext in (".gltf", ".glb"):
 
@@ -126,7 +151,7 @@ def compile_graph(model):
                             raise ValueError("invalid GLB")
                         data = data[20 : 20 + chunk_length]
                     embedded(json.loads(data))
-                aid = n["id"] + "-" + field
+                aid = n["id"] + "-" + field + ("-" + str(index) if multiple else "")
                 assets.append(
                     dict(
                         id=aid,
@@ -136,7 +161,7 @@ def compile_graph(model):
                     )
                 )
                 ref = {"id": aid, "revision": payload["content_sha256"]}
-                if field == "source":
+                if field == "source" and "source" not in inputs:
                     inputs["source"] = ref
                 else:
                     context.append(dict(artifact=ref, role="reference", scope="node", strength="reference"))
@@ -155,7 +180,7 @@ def compile_graph(model):
                 id=n["id"],
                 provider=n.get("provider", "local-copy"),
                 request=dict(
-                    node=n.get("type", "copy"),
+                    node=kind,
                     version=n.get("version", "1"),
                     inputs=inputs,
                     parameters=n["parameters"],
@@ -197,10 +222,31 @@ def normalize_editor_integers(graph, registry):
 
 def selected(host, request, preview=False):
     exported = host.export_node(request["run"], request["node"]) if preview else host.export(request["run"])
-    ref = exported["outputs"][request["node"]]["result"]
+    outputs = exported["outputs"][request["node"]]
+    ref = outputs["result"]
+    chosen = request.get("artifact")
+    if chosen is not None:
+        require_ref = isinstance(chosen, dict) and set(chosen) == {"id", "revision"}
+        if not require_ref:
+            raise ValueError("invalid selected artifact")
+        if "image_set" not in outputs:
+            raise ValueError("selected artifact is not a set member")
+        collection = next(
+            (
+                a
+                for a in exported["manifest"]["artifacts"]
+                if a["id"] == outputs["image_set"]["id"] and a["revision"] == outputs["image_set"]["revision"]
+            ),
+            None,
+        )
+        if collection is None or not any(item["artifact"] == chosen for item in collection["payload"]["items"]):
+            raise ValueError("selected artifact is not a set member")
+        ref = chosen
     asset = next(
         a for a in exported["manifest"]["artifacts"] if a["id"] == ref["id"] and a["revision"] == ref["revision"]
     )
+    if asset["type"] not in ("image", "mesh"):
+        raise ValueError("selected artifact is not previewable")
     token = hashlib.sha256(canonical([request["run"], ref, asset]).encode()).hexdigest()
     return exported, asset, token
 
@@ -223,7 +269,15 @@ def dispatch(args, request):
         check_inputs(model)
         if service_path:
             run_id = uuid.uuid4().hex
-            registry, providers, runtime_service = prepare_provider(load_settings(service_path), model, args.db, run_id)
+            config = load_settings(service_path)
+            registry, providers, runtime_service = prepare_provider(config, model, args.db, run_id)
+            runtime_service["image_batch"] = image_batch_settings(config)
+            runtime_service["image_batch"]["database"] = str(Path(args.db).resolve())
+            runtime_service["image_batch"]["enabled"] = runtime_service["image_batch"]["enabled"] and any(
+                n.get("type", "copy") in ("text_to_image", "image_to_image") and n.get("version") == "2"
+                for n in model["nodes"]
+            )
+            providers = adapt_image_providers(providers, args.db, runtime_service["image_batch"])
         elif args.factory == "editor_demo:factory" and any(n.get("type", "copy") != "copy" for n in model["nodes"]):
             raise ServiceError("service_not_configured")
     elif args.command == "step":
@@ -249,20 +303,35 @@ def dispatch(args, request):
             return host.status(request["run"])
         if args.command == "preview":
             exported, asset, token = selected(host, request, preview=True)
-            data = base64.b64decode(asset["payload"]["content_base64"], validate=True)
-            if hashlib.sha256(data).hexdigest() != asset["payload"]["content_sha256"]:
-                raise ValueError("digest")
-            extension = asset["payload"]["extension"]
-            if extension not in (".png", ".jpg", ".jpeg", ".glb", ".gltf"):
-                raise ValueError("unsupported preview format")
-            path = Path(args.db).parent / (token + extension)
-            try:
-                with path.open("xb") as stream:
-                    stream.write(data)
-            except FileExistsError:
-                if path.read_bytes() != data:
-                    raise ValueError("preview collision")
-            return {"path": str(path), "token": token, "type": asset["type"]}
+
+            def materialize(selected_asset, selected_token):
+                data = base64.b64decode(selected_asset["payload"]["content_base64"], validate=True)
+                if hashlib.sha256(data).hexdigest() != selected_asset["payload"]["content_sha256"]:
+                    raise ValueError("digest")
+                extension = selected_asset["payload"]["extension"]
+                if extension not in (".png", ".jpg", ".jpeg", ".glb", ".gltf"):
+                    raise ValueError("unsupported preview format")
+                path = Path(args.db).parent / (selected_token + extension)
+                try:
+                    with path.open("xb") as stream:
+                        stream.write(data)
+                except FileExistsError:
+                    if path.read_bytes() != data:
+                        raise ValueError("preview collision")
+                return dict(path=str(path), token=selected_token, type=selected_asset["type"])
+
+            result = materialize(asset, token)
+            result["artifact"] = {"id": asset["id"], "revision": asset["revision"]}
+            outputs = exported["outputs"][request["node"]]
+            if "image_set" in outputs:
+                collection = next(a for a in exported["manifest"]["artifacts"] if a["id"] == outputs["image_set"]["id"])
+                result["images"] = []
+                for item in collection["payload"]["items"]:
+                    _, member, member_token = selected(host, dict(request, artifact=item["artifact"]), preview=True)
+                    entry = materialize(member, member_token)
+                    entry.update(label=item["label"], artifact=item["artifact"])
+                    result["images"].append(entry)
+            return result
         if args.command == "publish":
             exported, asset, token = selected(host, request)
             if request["confirmation"] != token:

@@ -14,6 +14,7 @@ from generation_service import (
     settings,
 )
 from kimi_provider import DEFAULT_ENDPOINT, DEFAULT_MODEL, KimiNativeProvider
+from kimi_work_image_provider import KimiWorkImageProvider
 
 
 class KimiServiceTests(unittest.TestCase):
@@ -59,22 +60,58 @@ class KimiServiceTests(unittest.TestCase):
             "edges": [],
         }
 
-    def test_probe_has_only_kimi_mesh_capabilities_and_never_calls_legacy_backends(self):
+    def image_value(self):
+        return {
+            **self.value,
+            "image_tool_path": str(self.root / "fixture" / "image_generation_tool.py"),
+            "image_pythonw_path": str(self.root / "pythonw.exe"),
+        }
+
+    def image_discovery(self):
+        return {
+            "connected": True,
+            "code": "",
+            "message": "synthetic local image tool; no generation",
+            "provider": "kimi_work_image",
+            "generation_version": "v2",
+            "tool_fingerprint": "fixture-image-tool-fingerprint",
+        }
+
+    def test_mesh_stays_ready_when_image_tool_is_absent_or_invalid(self):
         with (
             patch("kimi_provider.check_kimi", return_value=self.discovery) as kimi,
             patch("codex_provider.check_cli", side_effect=AssertionError("Codex probe called")),
             patch("modeling_provider.check_modeling_cli", side_effect=AssertionError("Modeling CLI probe called")),
             patch("generation_service.read_endpoint", side_effect=AssertionError("ComfyUI probe called")),
         ):
-            report = check_service(self.value)
-        kimi.assert_called_once_with({"endpoint": DEFAULT_ENDPOINT, "model": DEFAULT_MODEL})
-        self.assertEqual(report["mode"], "kimi_native")
+            for value in (self.value, self.image_value()):
+                report = check_service(value)
+                self.assertTrue(report["connected"])
+                self.assertTrue(report["capabilities"]["text_to_mesh"]["ready"])
+                self.assertTrue(report["capabilities"]["image_to_mesh"]["ready"])
+                self.assertFalse(report["capabilities"]["text_to_image"]["ready"])
+                self.assertIn(
+                    report["capabilities"]["image_to_image"]["code"], ("image_not_configured", "image_tool_missing")
+                )
+                self.assertEqual(report["models"], {"image": [], "mesh": [DEFAULT_MODEL]})
+        kimi.assert_called_with({"endpoint": DEFAULT_ENDPOINT, "model": DEFAULT_MODEL})
+
+    def test_independent_image_discovery_does_not_call_legacy_backends(self):
+        with (
+            patch("kimi_provider.check_kimi", return_value=self.discovery),
+            patch("kimi_work_image_provider.check_image_tool", return_value=self.image_discovery()) as image,
+            patch("codex_provider.check_cli", side_effect=AssertionError("Codex probe called")),
+            patch("generation_service.read_endpoint", side_effect=AssertionError("ComfyUI probe called")),
+        ):
+            report = check_service(self.image_value())
+        image.assert_called_once_with(self.image_value()["image_tool_path"], self.image_value()["image_pythonw_path"])
         self.assertTrue(report["connected"])
+        self.assertTrue(report["capabilities"]["text_to_image"]["ready"])
+        self.assertTrue(report["capabilities"]["image_to_image"]["ready"])
         self.assertTrue(report["capabilities"]["text_to_mesh"]["ready"])
-        self.assertTrue(report["capabilities"]["image_to_mesh"]["ready"])
-        self.assertFalse(report["capabilities"]["text_to_image"]["ready"])
-        self.assertEqual(report["capabilities"]["image_to_image"]["code"], "node_unsupported")
-        self.assertEqual(report["models"], {"image": [], "mesh": [DEFAULT_MODEL]})
+        self.assertEqual(report["kimi_work_image"]["provider"], "kimi_work_image")
+        self.assertEqual(report["models"]["image"], ["Kimi Work agent-gw generate_image v2"])
+        self.assertIn("独立 Kimi Work 图像服务", report["message"])
 
     def test_prepare_and_restore_freeze_only_nonsecret_kimi_configuration(self):
         with (
@@ -92,6 +129,7 @@ class KimiServiceTests(unittest.TestCase):
         self.assertNotIn("KIMI_API_KEY", json.dumps(snapshot))
         self.assertEqual(self.model()["nodes"][0]["provider"], "local-copy")
         self.assertIsInstance(providers["kimi_native"], KimiNativeProvider)
+        self.assertNotIn("kimi_work_image", providers)
         self.assertIsNotNone(registry.get("image_to_mesh", "1"))
         with patch("codex_provider.CodexProvider", side_effect=AssertionError("Codex restore called")):
             restored_registry, restored = restore_provider(snapshot)
@@ -100,17 +138,57 @@ class KimiServiceTests(unittest.TestCase):
         self.assertNotIn("codex", restored)
         self.assertNotIn("comfy", restored)
 
-    def test_prepare_routes_nodes_and_rejects_images_before_network(self):
-        model = self.model("text_to_mesh")
+    def test_mixed_nodes_route_and_composite_snapshot_restores(self):
+        model = {
+            "nodes": [
+                {"id": kind, "type": kind, "provider": "local-copy", "parameters": {"prompt": "fixture"}}
+                for kind in ("text_to_mesh", "text_to_image", "image_to_image")
+            ],
+            "edges": [],
+        }
+        with (
+            patch("kimi_provider.check_kimi", return_value=self.discovery),
+            patch("kimi_work_image_provider.check_image_tool", return_value=self.image_discovery()),
+            patch("codex_provider.check_cli", side_effect=AssertionError("Codex probe called")),
+            patch("generation_service.read_endpoint", side_effect=AssertionError("ComfyUI probe called")),
+        ):
+            _, providers, snapshot = prepare_provider(
+                settings(self.image_value()), model, self.root / "mixed.sqlite", "b" * 32
+            )
+        self.assertEqual(
+            [node["provider"] for node in model["nodes"]], ["kimi_native", "kimi_work_image", "kimi_work_image"]
+        )
+        self.assertEqual(set(snapshot), {"mode", "provider", "image_provider"})
+        self.assertIsInstance(providers["kimi_native"], KimiNativeProvider)
+        self.assertIsInstance(providers["kimi_work_image"], KimiWorkImageProvider)
+        self.assertNotIn("api_key", json.dumps(snapshot))
+        self.assertNotIn("credential", json.dumps(snapshot).lower())
+        with patch("codex_provider.CodexProvider", side_effect=AssertionError("Codex restore called")):
+            _, restored = restore_provider(snapshot)
+        self.assertIsInstance(restored["kimi_native"], KimiNativeProvider)
+        self.assertIsInstance(restored["kimi_work_image"], KimiWorkImageProvider)
+        self.assertNotIn("comfy", restored)
+
+    def test_pure_images_do_not_require_mesh_provider_and_missing_tool_is_actionable(self):
+        model = self.model("text_to_image")
+        with (
+            patch("kimi_provider.check_kimi", return_value=self.discovery),
+            patch("kimi_work_image_provider.check_image_tool", return_value=self.image_discovery()),
+        ):
+            _, providers, snapshot = prepare_provider(
+                settings(self.image_value()), model, self.root / "image.sqlite", "c" * 32
+            )
+        self.assertIsNone(snapshot["provider"])
+        self.assertNotIn("kimi_native", providers)
+        self.assertIsInstance(providers["kimi_work_image"], KimiWorkImageProvider)
+        self.assertEqual(model["nodes"][0]["provider"], "kimi_work_image")
+        _, restored = restore_provider(snapshot)
+        self.assertEqual(set(restored) - {"local-copy"}, {"kimi_work_image"})
         with patch("kimi_provider.check_kimi", return_value=self.discovery):
-            prepare_provider(self.config, model, self.root / "runs.sqlite", "b" * 32)
-        self.assertEqual(model["nodes"][0]["provider"], "kimi_native")
-        for kind in ("text_to_image", "image_to_image"):
-            with self.subTest(kind=kind), patch("kimi_provider.check_kimi") as discovery:
-                with self.assertRaises(ServiceError) as error:
-                    prepare_provider(self.config, self.model(kind), self.root / (kind + ".sqlite"), "c" * 32)
-                self.assertEqual(error.exception.code, "node_unsupported")
-                discovery.assert_not_called()
+            with self.assertRaises(ServiceError) as error:
+                prepare_provider(self.config, self.model("image_to_image"), self.root / "missing.sqlite", "d" * 32)
+            self.assertEqual(error.exception.code, "image_not_configured")
+            prepare_provider(self.config, self.model(), self.root / "mesh-without-image.sqlite", "e" * 32)
 
     def test_auth_and_builder_failures_are_distinct_and_legacy_settings_remain_valid(self):
         with patch(
