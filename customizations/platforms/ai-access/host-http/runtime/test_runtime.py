@@ -3,6 +3,7 @@ import json
 import os
 import runpy
 import shutil
+import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -11,6 +12,7 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 import evaluate
 import runner
@@ -23,6 +25,7 @@ BASE = Path.cwd()
 checks: list[dict[str, Any]] = []
 requests: list[dict[str, Any]] = []
 answers = []
+response_overrides: list[dict[str, Any]] = []
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -49,6 +52,9 @@ class Handler(BaseHTTPRequestHandler):
             }
         else:
             data = {"text": text, "finish_reason": "stop", "usage": {"input_tokens": 10, "output_tokens": 5}}
+        data["model"] = body["model"] + "-provider-alias"
+        if response_overrides:
+            data = response_overrides.pop(0)
         raw = json.dumps(data).encode()
         self.send_response(200)
         self.send_header("Content-Length", str(len(raw)))
@@ -128,6 +134,10 @@ try:
                 "synthetic",
             )
             assert report["passed_task_types"] == ["summary"]
+            identity = report["results"][0]["response"]
+            assert identity["requested_model"] == p["model"]
+            assert identity["observed_model"] == p["model"] + "-provider-alias"
+            assert identity["protocol"] == protocol and identity["model_identity_verified"] is False
             f = temp / (ident + "-eval.json")
             f.write_text(json.dumps(report), encoding="utf-8")
             p["evaluation"] = {
@@ -185,7 +195,80 @@ try:
             n = len(requests)
             assert runner.run(g, root, state)["replayed"]
             assert len(requests) == n
-            ok(p["protocol"] + " HTTP + actual admission + telemetry + idempotent replay")
+            ledger = runpy.run_path(str(root / "agents/diting/scripts/ledger.py"))
+            records = [x["record"] for x in ledger["query"](state / "diting.sqlite", "synthetic")]
+            step = next(x for x in records if x["kind"] == "step")
+            usage = step["payload"]["usage"]
+            assert usage["model"] == p["model"]  # Frozen schema: configured/requested identity only.
+            database, reference = usage["metering_ref"].split("#", 1)
+            task_id, seq = reference.rsplit("/", 1)
+            job = runner.jid_for({"tenant_id": step["tenant_id"], "id": task_id})
+            with sqlite3.connect(state / database) as cx:
+                kind, raw = cx.execute("SELECT kind,data FROM events WHERE job=? AND seq=?", (job, int(seq))).fetchone()
+            receipt = json.loads(raw)
+            assert kind == "call_end" and receipt["status"] == "received"
+            assert task_id == g["payload"]["task"]["id"] and receipt["call"] == 1
+            assert receipt["requested_model"] == p["model"]
+            assert receipt["observed_model"] == p["model"] + "-provider-alias"
+            assert receipt["protocol"] == p["protocol"] and receipt["observed_model_source"] == "response.model"
+            assert receipt["observed_model_status"] == "provider_reported"
+            assert receipt["model_identity_verified"] is False
+            # Simulate a stop after the completed event but before terminal finalization.
+            with sqlite3.connect(state / database) as cx:
+                runner.set_status(cx, job, "needs_attention")
+            assert runner.recover(g, root, state, "retry")["status"] == "completed"
+            with sqlite3.connect(state / database) as cx:
+                assert cx.execute("SELECT data FROM events WHERE job=? AND seq=?", (job, int(seq))).fetchone()[0] == raw
+            assert len(requests) == n
+            ok(p["protocol"] + " evaluation/journal/telemetry reference provenance + replay/recovery")
+        for model, status in [(None, "unavailable"), ({"untrusted": "object"}, "invalid")]:
+            state = temp / status
+            p = profiles[0]
+            response_overrides.append({
+                "model": model,
+                "choices": [{"message": {"content": '{"action":"final","value":"ok"}'}, "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 10, "completion_tokens": 5},
+            })
+            g = grant(plan(status, models=[p]), state)
+            assert runner.run(g, root, state)["status"] == "completed"
+            with sqlite3.connect(state / "runtime.sqlite") as cx:
+                receipt = next(
+                    e["data"]
+                    for e in runner.events(cx, runner.jid_for(g["payload"]["task"]))
+                    if e["kind"] == "call_end"
+                )
+            assert receipt["observed_model"] is None and receipt["observed_model_status"] == status
+            assert receipt["requested_model"] == p["model"] and receipt["model_identity_verified"] is False
+        ok("missing/malformed optional model identity retained as unknown without rejecting valid output")
+        state = temp / "unknown"
+        response_overrides.append({"model": "unusable-response-model"})
+        g = grant(plan("unknown", models=[profiles[0]]), state)
+        assert runner.run(g, root, state)["status"] == "needs_reconciliation"
+        with sqlite3.connect(state / "runtime.sqlite") as cx:
+            receipt = next(
+                e["data"] for e in runner.events(cx, runner.jid_for(g["payload"]["task"])) if e["kind"] == "call_end"
+            )
+        assert receipt["observed_model"] is None and receipt["observed_model_status"] == "unavailable"
+        assert receipt["requested_model"] == profiles[0]["model"]
+        assert receipt["protocol"] == profiles[0]["protocol"] and receipt["model_identity_verified"] is False
+        ok("malformed response reconciliation does not invent observed identity")
+        state = temp / "interrupted"
+        g = grant(plan("interrupted", models=[profiles[0]]), state)
+        with patch("runner.call", side_effect=KeyboardInterrupt):
+            try:
+                runner.run(g, root, state)
+                raise AssertionError("interruption not delivered")
+            except KeyboardInterrupt:
+                pass
+        assert runner.recover(g, root, state, "cancel")["status"] == "cancelled"
+        with sqlite3.connect(state / "runtime.sqlite") as cx:
+            receipt = next(
+                e["data"] for e in runner.events(cx, runner.jid_for(g["payload"]["task"])) if e["kind"] == "call_end"
+            )
+        assert receipt["requested_model"] == profiles[0]["model"]
+        assert receipt["observed_model"] is None and receipt["observed_model_status"] == "unavailable"
+        assert receipt["model_identity_verified"] is False
+        ok("interrupted-call recovery preserves request identity and unknown observation")
         for agent in ["kuafu", "diting"]:
             state = temp / agent
             assert runner.run(grant(plan(agent, agent), state), root, state)["status"] == "completed"

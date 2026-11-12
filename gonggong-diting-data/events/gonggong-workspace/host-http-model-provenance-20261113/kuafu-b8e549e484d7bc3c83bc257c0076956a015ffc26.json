@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b8e549e484d7bc3c83bc257c0076956a015ffc26",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "host-http-model-provenance-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "be47dcc0743f2e86faa9c7a726059f8fa6f09ebaee3a11c433a94bc5c9ab3d4c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+    "action": "validation",
+    "detection_head": "c692ca6652fb707f185517cb3c372a0b82dbbfb4",
+    "context_sha256": "e14e2bb7be85337606307c22563e631b406659e7f69779867ecd26600ba05b73",
+    "operator": "Sail-Li",
+    "worker": "/root/sinan_03552b5b08deb741",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "data-collection/host-http-model-provenance-1004-distribution-correction.json",
+    "diagnosis": "PR1007 static CI rejected the stale host-http/runtime package registration after four files changed and test_adapters.py was added. Reproduced the same failure on c692ca6652fb707f185517cb3c372a0b82dbbfb4. Updated only that host_packages entry; all other registration fields and frozen files remain unchanged. Normal offline distribution check now passes with Node/Python: 256 frozen files, 25 Python, 16 JavaScript, 158 JSON syntax checks.",
+    "next_action": "Root obtains independent registration review, publishes the corrected exact candidate to supersede PR1007, and verifies remote CI/main. Local check is not remote delivery recovery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T20:14:04.478764+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li delegated native worker /root/sinan_03552b5b08deb741; root remains publisher",
+    "continuable": "Registration correction and local offline validation complete; independent review and remote candidate CI remain required."
+  },
+  "occurred_at": "2026-11-12T20:15:33.027497+00:00",
+  "sha256": "bbcec7f8a2c38d798357f0facccac12b9c620fd580b06b85717874acd55eaeb5"
+}

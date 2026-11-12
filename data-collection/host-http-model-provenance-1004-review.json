@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "issue_number": 1004,
+  "reviewer": "/root/sinan_76ea7fa26040ca19",
+  "implementation_author": "/root/sinan_03552b5b08deb741",
+  "recorded_at": "2026-11-12T20:08:08.950827+00:00",
+  "verdict": "bounded_approval",
+  "blocking_findings": [],
+  "base_commit": "308bc83c19ae7cd1811496cca0e7062e6b30dab0",
+  "source_manifest": {
+    "head": "308bc83c19ae7cd1811496cca0e7062e6b30dab0",
+    "files": {
+      "customizations/platforms/ai-access/host-http/runtime/README.md": "3a3ce05335894aeb3d48faf00246662cddea27e86e8820c99b14c53a419ac303",
+      "customizations/platforms/ai-access/host-http/runtime/adapters.py": "d251de6a7c187caa6a5b3cb786485a396c58cdad0dbdf57b7d69548e8833dcc1",
+      "customizations/platforms/ai-access/host-http/runtime/runner.py": "7ccc47b132adf52c3bd0dbdd133f315ad79bd74b9b8218d0573a6ebbaf13ab7f",
+      "customizations/platforms/ai-access/host-http/runtime/test_adapters.py": "721ed5e808cbb4c97e3cad5ccb8502173d34abaedeeb54ed7164f8a403fb60eb",
+      "customizations/platforms/ai-access/host-http/runtime/test_runtime.py": "8f0afdd4aeef5d694771131ae8dc1b190a8098b301a060b7747dfa045291323b",
+      "data-collection/host-http-model-provenance-1004-event-correction.json": "2aa4aee347e64580673ef59ed887cdce27e5d4597e38b052d7e0ef56f59225a3",
+      "data-collection/host-http-model-provenance-1004.json": "be86d152619c9fae0da9a6039a4fcd1d8fdd38bbec63338612a9fc24389e4c0a",
+      "design-docs/host-http-model-provenance-20261113.md": "d4b94da89568fd11f479b48a78395675f8ac331aa649d0a21fb93309e944aca6",
+      "gonggong-diting-data/events/gonggong-workspace/host-http-model-provenance-20261113/dispatch-165ace22248e42218ae446a5b58b9f0d.json": "8325667bc637e7871fdf9f0d2972e14b5c14549ed28439150a797504a6c94cb7",
+      "gonggong-diting-data/events/gonggong-workspace/host-http-model-provenance-20261113/dispatch-347bee176d8e4d2482dbe814f14a387e.json": "eb629e4a230a50616852cd9d4017b113493ce44349165e9d4108caf4b4c2c47b",
+      "gonggong-diting-data/events/gonggong-workspace/host-http-model-provenance-20261113/dispatch-519bd2abf31347b6bafc66882f4e3e5d.json": "bd732ad52d26578b6872884911c83ef02e84e33ae800fbd1742c8dcb9301bf13",
+      "gonggong-diting-data/events/gonggong-workspace/host-http-model-provenance-20261113/dispatch-6e4fecda884f4e2cb0c4e9e7ac5c8cff.json": "f77d73621544b92004f063e3c65f2f6272b3e06e1e3b661c157d6931ed988821",
+      "gonggong-diting-data/events/gonggong-workspace/host-http-model-provenance-20261113/kuafu-59b8aa53892aeca6cd1ea778d51b8286090425a4.json": "0bcef17ee34a89edd7eab24f359fc905d55193fe28e4b8bfd8140164c1a69574",
+      "gonggong-diting-data/events/gonggong-workspace/host-http-model-provenance-20261113/kuafu-5eb006ee135aa80b1699ccb12aa487674cdda31f.json": "74b3c7359ec269a9f1295c81b30b21dea3adc3685372209aa4381c560e0eaf99",
+      "gonggong-diting-data/events/gonggong-workspace/host-http-model-provenance-20261113/request-1004-host-http-model-provenance-20261113.json": "f8a4aa7775fa9cdabab8c7b6dffd1821c241b03aaf244c2d338a0ef990d953c4"
+    },
+    "unchanged_during_review": true
+  },
+  "source_manifest_sha256": "1b465711d9fe963a3330a2456479a8a671a52fb85fc7b55fa2746178aae5c648",
+  "candidate_unchanged_during_review": true,
+  "checks": [
+    {
+      "area": "Identity contract",
+      "result": "All three existing protocols share bounded_model/model_provenance; exact printable nonempty UTF-8 identifiers <=512 bytes; invalid requests blocked before dispatch; missing/null observation unavailable and malformed observation invalid; no coercion/truncation or alias rejection."
+    },
+    {
+      "area": "Trust and authority",
+      "result": "Host-selected request/protocol/source/status override provider provenance claims; model_identity_verified is always false. Observation never selects profiles, bypasses evaluation, grants tools, or alters admission. New logic does not access credentials; transport exception redaction remains intact."
+    },
+    {
+      "area": "Consumers and actual Diting readback",
+      "result": "evaluate saves full response; runner call_end persists full receipt; actual local HTTP fixture resolves metering_ref via tenant/task jid_for and event seq to SQLite call_end for all three protocols. Replay and recovery leave existing call_end bytes unchanged and do not redispatch. Interrupted and malformed outcomes store requested identity with null observation."
+    },
+    {
+      "area": "Frozen boundary",
+      "result": "No framework files changed or added. Standalone Diting schema still exports configured/requested model; observed identity requires retained private runtime.sqlite and is explicitly documented. Synthetic fixture approvals exist only in removed private test copies."
+    },
+    {
+      "area": "Candidate auxiliary files",
+      "result": "Reviewed design, public evidence, event correction and all seven added request/dispatch/Kuafu events. Their claims stay synthetic and leave exact candidate delivery to root."
+    }
+  ],
+  "validation": {
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "unit_tests": 4,
+    "integration_checks": 13,
+    "differential_cases": 72,
+    "commands": "test-results.json",
+    "all_exit_codes_zero": true
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scope": "editor-diagnostic-consumption",
+    "lessons": []
+  },
+  "limits": [
+    "Synthetic loopback and mocked responses only; no paid/provider/account/weight/remote-route validation.",
+    "No Windows execution, streaming, tools API or additional transport protocol validation.",
+    "No formal candidate admission, CI, main delivery or Issue closure performed by this reviewer. Root must bind final staged candidate and handle appended delivery evidence.",
+    "Standalone Diting export still omits observed model; retain private journal. Existing grants require reauthorization after runtime digest changes."
+  ],
+  "cleanup": {
+    "removed": "TemporaryDirectory removed owned framework copies, SQLite fixture states, subprocess temporary files and mypy cache. HTTP fixture shut down through finally.",
+    "verified_no_temporary_directories_remain": true,
+    "retained": "Review logs, source manifests, candidate diff, Issue readback, differential receipt and integration report in this authorized private review directory. Candidate worktree remains with parent for delivery.",
+    "implementation_or_public_evidence_modified": false,
+    "check_correction": "Initial reviewer cleanup glob also matched retained model-integration-results.json; corrected check to directories only and verified none remain. This was a review assertion issue, not an implementation failure."
+  },
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+  "path_base": "repository_root",
+  "independent_report_sha256": "67e4948708cc2c2e73bdd4588f6c1ca9bd59ca3c810bf1ad450c3c12713cd0df",
+  "integration_base": "c6b7baa72f63c36a2fcd4063c8ed84300ee343fe",
+  "integration_note": "Fast-forward contains unrelated catalog/parallel fixes; reviewed implementation source hashes unchanged."
+}

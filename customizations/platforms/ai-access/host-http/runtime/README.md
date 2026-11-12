@@ -18,6 +18,10 @@ customizations/platforms/ai-access/host-http/runtime/runner.py提供本地受控
 
 模型profile包含id/protocol/endpoint/model/max_context_bytes、可选system_role/api_key_env/timeout_seconds/output_parameter。system_role=false时转换为带角色标签的单条文本输入，不声称保留原生角色隔离。凭据只在适配器从环境读取，不进入模型上下文。
 
+调用回执保留 `requested_model`、`observed_model` 和由宿主选择的 `protocol`。三个现有协议均只从响应顶层 `model` 读取供应商声明，`observed_model_source=response.model`；gonggong-json 可选提供此字段。模型名必须是非空、无首尾空白、可打印且不超过 512 UTF-8 字节的字符串，保持原值，不强转、截断或归一化。请求模型不合法时在发出网络请求前拒绝；响应的可选模型字段缺失/null 时 `observed_model_status=unavailable`，畸形时为 `invalid`，两者的 observed_model/source 均为 null，不影响原本有效的文本和用量。有效声明为 `provider_reported`，`model_identity_verified` 始终 false；别名、快照型号或与请求不同的声明都按原样保留，不自动拒绝或授予新模型准入。供应商回传的同名 provenance 字段不可信，也不用于覆盖宿主判断。
+
+`evaluate.results[].response` 与 `runtime.sqlite` 的 `call_end.data` 保存完整回执。重放与恢复保留原调用记录；传输/结果格式未知或调用被中断时 observed_model 保持 null，不从请求型号推断。当前冻结谛听 schema 的 `usage.model` 仍是请求配置；其 `usage.metering_ref=runtime.sqlite#<task-id>/<event-seq>` 在同一私有 state 目录解析，用记录的 tenant_id 与引用的 task-id 经 runner.jid_for 得到 events.job，再联合 seq 回读调用身份。单独导出的谛听记录不包含 observed_model，需连同原宿主 journal 才能核查。历史回执缺少新字段时仍属未知，不能回填为请求型号。此证据不是供应商账号、实际权重或路由的独立身份验证。
+
 customizations/platforms/ai-access/host-http/runtime/evaluate.py执行宿主提供的代表性用例，输出profile_digest、任务类型通过项、原始结果、样本集指纹、synthetic或live范围。profile的evaluation引用证据文件及SHA256，并复制profile_digest/scope/passed_task_types，运行前核对。变更模型、地址、配置或证据即需重新评测/准入。操作员负责证据真实性与代表性，测试脚本本身不认证供应商身份，也不证明开放任务能力。synthetic只能执行validation_only任务。
 
 宿主按profiles排列路由优先级；仅选择该任务类型通过且当前上下文可容纳的模型。无效输出可转下一候选，消耗同一总调用预算；没有可用模型则needs_attention，不放宽验收要求、不强制依赖更强模型。能力不足可由宿主另行拆分任务或转人工，模型不能自行扩权。

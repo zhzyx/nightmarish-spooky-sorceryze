@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "request-1004-host-http-model-provenance-20261113",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "host-http-model-provenance-20261113",
+  "kind": "request",
+  "occurred_at": "2026-11-12T19:48:39.562728+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+  "agent": {
+    "id": "kuafu",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb",
+    "origin": "current-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1004,
+    "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+    "scope": "Host HTTP adapter and existing consumers only; synthetic validation, no real provider requests or credential reads",
+    "authorization_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "worker": "/root/sinan_03552b5b08deb741",
+    "request_document": "design-docs/host-http-model-provenance-20261113.md",
+    "validation": "data-collection/host-http-model-provenance-1004.json",
+    "usage": null,
+    "usage_unknown_reason": "No measured provider usage supplied",
+    "path_base": "repository_root"
+  },
+  "evidence_refs": [],
+  "sha256": "ecb18a8f2f135196de9da6d83226fb35d489c3675213150e462a4239203e6353"
+}

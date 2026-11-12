@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-59b8aa53892aeca6cd1ea778d51b8286090425a4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "host-http-model-provenance-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "329eaa08125cebc761bb613d09dbdae28c235e99e755fbb0edf90c78a333a084",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+    "action": "validation",
+    "detection_head": "308bc83c19ae7cd1811496cca0e7062e6b30dab0",
+    "context_sha256": "e14e2bb7be85337606307c22563e631b406659e7f69779867ecd26600ba05b73",
+    "operator": "Sail-Li",
+    "worker": "/root/sinan_03552b5b08deb741",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+    "diagnosis": "Host HTTP adapter discards provider response.model; evaluate and runtime journal preserve returned fields, while fixed Diting usage.model denotes requested configuration and metering_ref resolves the journal call.",
+    "next_action": "Add bounded typed request and provider-reported identity receipts for all three existing protocols; verify evaluator, journal, replay and actual telemetry-reference readback using synthetic responses.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T19:37:25.116621+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li delegated native worker /root/sinan_03552b5b08deb741; root owns independent review and delivery",
+    "continuable": "Host-only source repair authorized; frozen framework and historical approvals remain unchanged."
+  },
+  "occurred_at": "2026-11-12T19:43:39.319553+00:00",
+  "sha256": "a7db74862e3001ffb70c35c0e49f7750c129845748c8df85d370acc5eb6ef5b0"
+}

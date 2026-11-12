@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "issue_number": 1004,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+  "path_base": "repository_root",
+  "reviewer": "/root/sinan_76ea7fa26040ca19",
+  "verdict": "bounded_approval",
+  "blocking_findings": [],
+  "private_review_sha256": "4dbf5caa20e50737565f8e01f2b030e2d7455fcf04603ed3597af5477bcade7f",
+  "manifest_sha256": "f28828f8ac364f8bb6546ddcddbe744237d8db3c02e86dbdd35c17b1b7a79507",
+  "checks": [
+    "Normal check_gonggong_distribution.py passed with no candidate bypass",
+    "All seven actual host package files match registration",
+    "Only four host HTTP hashes and one new test registration changed; every other registry field unchanged",
+    "Previously reviewed 15 file hashes unchanged; frozen framework/approval files unchanged"
+  ],
+  "registration_sha256": "a34c602ef1db2863e2910ee0594e8baf377087b36be4cf3176d6410b4f58dc90",
+  "scope": "Offline byte registration only, not new execution authority. Remote exact candidate CI pending."
+}

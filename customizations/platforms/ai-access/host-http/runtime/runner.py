@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import diting
-from adapters import TransportUnknown, call, canonical
+from adapters import TransportUnknown, call, canonical, model_provenance
 
 ROOT = Path(__file__).resolve().parents[5] / "framework"
 
@@ -122,6 +122,7 @@ def validate_plan(p):
         require(type(limits.get(field)) is int and 1 <= limits[field] <= maximum, "Invalid " + field)
     require(profiles and len({x["id"] for x in profiles}) == len(profiles), "Unique model profiles required")
     for model in profiles:
+        model_provenance(model)  # Validate the requested identity before any dispatch.
         require(
             model["protocol"] in {"chat-completions", "ollama-chat", "gonggong-json"}, "Unsupported model transport"
         )
@@ -351,6 +352,7 @@ def _run(grant, root, state):
                                     "profile": {"protocol": model["protocol"], "model": model["model"]},
                                     "started_at": started,
                                     "status": "unknown",
+                                    **model_provenance(model),
                                     "error": str(error),
                                 },
                             )
@@ -531,6 +533,7 @@ def _recover(grant, root, state, action):
                         "profile": {"protocol": profile["protocol"], "model": profile["model"]},
                         "started_at": e["time"],
                         "status": "unknown",
+                        **model_provenance(profile),
                         "error": "Worker interrupted; operator reconciliation; usage unavailable",
                     },
                 )
