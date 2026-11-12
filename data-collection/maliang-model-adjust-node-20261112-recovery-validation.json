@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-model-adjust-node-20261112-recovery-validation",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-model-adjust-node-20261112",
+  "kind": "step",
+  "occurred_at": "2026-11-12T11:36:31Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+  "agent": {
+    "id": "kimi-work-kaiyunxue",
+    "version": "20261112",
+    "origin": "current-authorized-host"
+  },
+  "payload": {
+    "scope": "Delivery recovery evidence only; no implementation or build input changes",
+    "original_pull_request": 928,
+    "original_signed_head": "9414e7ac58b9bc12841af3e191d33afd0d375665",
+    "original_merge_commit": "df490bf6daee43f090f2af2cc4da7329271e1e37",
+    "original_main_tree": "08e70d4ec5aa6bdea7effe6e22fef9d91e175096",
+    "original_main_tree_matches_verified_candidate": true,
+    "git_transport": "Two confirmed github.com:443 connection failures stopped before merge; the same authenticated GitHub API channel was used for baseline readback and merge",
+    "recovery_evidence_event": "gonggong-diting-data/events/gonggong-workspace/maliang-model-adjust-node-20261112/kuafu-fab97049403e2ddcc7a2fa5d57f04d139dac4a63.json",
+    "supplemental_candidate_base": "2432af5ea0a7bc74fe995c785d3dd723c4326a6f",
+    "latest_native_acceptance": {
+      "built_main": "23412df4cff43f3579adb90524a396d2a4b9e82f",
+      "state": "passed",
+      "runs": ["mesh-and-rig", "independent-project", "sample-addon-compatibility", "relocated-runtime"],
+      "later_main_changes": "coding-standard documents and evidence only; no engine inputs"
+    },
+    "history_evidence_modified": false,
+    "implementation_changed_by_supplement": false,
+    "new_model_inference_required": false,
+    "credentials_signed_urls_or_large_models_committed": false
+  }
+}
