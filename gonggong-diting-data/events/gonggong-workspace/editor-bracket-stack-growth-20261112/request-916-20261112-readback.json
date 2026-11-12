@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "request-916-20261112-readback",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-bracket-stack-growth-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T09:57:27.377377+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/916",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "title": "Preserve bracket pairing state when native text storage grows",
+    "issue": 916,
+    "parent_issue": 773,
+    "source_updated_at": "2026-11-12T09:50:01Z",
+    "request": "<!-- gonggong-request:editor-bracket-stack-growth-20261112 -->\r\n\r\n需求文档：`design-docs/editor-bracket-stack-20261112.md`\r\n\r\n[查看主线设计（合入后可用）](https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/main/design-docs/editor-bracket-stack-20261112.md)\r\n\r\n# Preserve bracket pairing state during text iterator growth\r\n\r\nRequest: `editor-bracket-stack-growth-20261112`; parent #773. This is the separate follow-up identified during independent review of #902, whose original input acceptance is complete.\r\n\r\nThe existing ScriptIterator uses a small local bracket stack. On its first heap growth, `modules/text_server_adv/script_iterator.cpp` allocates new storage without copying prior entries. Later closing-bracket matching consumes those prior entries. This is source-confirmed; a runtime regression has not yet been demonstrated. Preserve that distinction and the original #902 evidence.\r\n\r\nScope: reproduce the pairing-state problem with a meaningful native regression, correct the existing storage transition, and check nested/mixed bracket and script behavior. Preserve the existing Unicode input and emoji regression. No unrelated text-server redesign, new engine module, external engine directory or change to production history. Rebuild the native editor; rollback restores the previous verified binary and retains projects and receipts.\r\n\r\nAcceptance:\r\n\r\n- [ ] A regression demonstrates incorrect old behavior or an invalid state at the storage transition and passes after the correction; include ordinary nesting and mixed scripts.\r\n- [ ] Original #902 Unicode, substring and emoji regressions still pass; strict Windows native build and suitable native tests pass.\r\n- [ ] Independent review, formal gate, exact CI/main and installed consumer verification are complete.\r\n- [ ] Record actual evidence and limits; do not claim #773 complete.\r\n\r\nExecution authority is the current user's ongoing Godot editor completion goal, tracked by #773. Current operator owns this isolated follow-up. Existing in-flight workers and unrelated worktrees remain with their owners.\r\n\r\n\r\n执行授权来源（由调用宿主核实，不代替候选准入）：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773\r\n\r\n\r\n<!-- gonggong-host-git:Sail-Li -->\r\n",
+    "issue_body_sha256": "c40b350a3e7b206389077f6c55e3056e7a1dcc67412b3bb9478004c5b0b1df5b",
+    "scope": "Authorized isolated bracket storage correction; source finding requires runtime reproduction"
+  },
+  "sha256": "bb5af12aef99ddd7c2c7713893175049937cf95025e4c8f5d5ca993c47c8017f"
+}

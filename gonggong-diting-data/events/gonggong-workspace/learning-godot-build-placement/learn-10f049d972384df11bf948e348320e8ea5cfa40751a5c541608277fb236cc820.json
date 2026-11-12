@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-10f049d972384df11bf948e348320e8ea5cfa40751a5c541608277fb236cc820",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/916",
+  "occurred_at": "2026-11-12T10:25:55.937448+00:00",
+  "evidence_refs": [
+    "request-916-20261112-readback",
+    "learn-2f0d9212478db59f6cea277422eb8c0f101d51c884c3eab5d4f9bc65fb3880ad"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 15,
+    "previous": "27da084c4d967e402e32e60f3a3cc8c4550b66defa655810834f6232f522db2d",
+    "action": "applied",
+    "details": {
+      "task": "Issue916 native ScriptIterator bracket storage correction, isolated Windows build and shared cache.",
+      "observed": "Tracing the actual module consumer found TESTS_ENABLED was not inherited: the initial filtered run executed zero cases and was rejected as evidence. Registering the test in the compiled iterator object and enabling the define for tests=yes produced an actual old failure and fixed 40-assertion pass. Preserve the invalid initial fixture/no-exception bounds failure too. Root rechecked exact strict options and all1569 cases/474354 assertions after docs-only main advancement; native inputs/binaries remained identical. These observations support this native Windows consumer, not installed acceptance or all platforms."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-bracket-stack-916.json",
+        "sha256": "60c6f45e957ce18bd1813cf1976df223879f81cc8e939149b445485f136b8a9f"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-bracket-stack-growth-20261112/request-916-20261112-readback.json",
+      "sha256": "bb5af12aef99ddd7c2c7713893175049937cf95025e4c8f5d5ca993c47c8017f"
+    }
+  },
+  "sha256": "4a7abc16f89c3796c55c007dac3cb818eae405b323e65a1117a7d5a8932824c1"
+}

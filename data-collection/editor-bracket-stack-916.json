@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/916",
+  "request_id": "editor-bracket-stack-growth-20261112",
+  "parent_issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "tested_base": "19ab72a51600ab603834e1494c7fdb2eb96ab245",
+  "state": "local_native_regression_verified",
+  "integration_base": "3e2e655abb851143608a4e73f3124aeff9c675f5",
+  "integration_boundary": "Main advanced through evidence-only PR919. Its two files change installed899 evidence/design only; all three reviewed native input hashes are unchanged.",
+  "root_verification_after_integration": {
+    "build_exit": 0,
+    "build_options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no tests=yes accesskit=no d3d12=no angle=no warnings=extra werror=yes cache_limit=8 -j4",
+    "build_log_sha256": "0c1a10a1acccf15593c9131c6d2e620003ac8cf0d7423396b68d2c68ce13f74f",
+    "test_exit": 0,
+    "test_cases_passed": 1569,
+    "test_cases_skipped": 3,
+    "test_assertions_passed": 474354,
+    "test_log_sha256": "524da7375fcc4d7538d43b448b46a704479fd9bbcb04f36f73c6a71208a0179c",
+    "binary_hashes_unchanged": true,
+    "boundary": "The exact invoked strict command is retained at the start of the private build log. SCons found the reviewed native inputs up to date; the full actual suite passed on the same binary. Expected negative-test diagnostics remain in the raw test log."
+  },
+  "independent_review": {
+    "worker": "/root/sinan_6ed88a9afad36cc3",
+    "mode": "read_only",
+    "result": "No code findings requiring correction. First and subsequent growth, initialized storage, cleanup, test registration and regression meaning checked; actual failed attempts and installation limits preserved.",
+    "native_inputs_match": true
+  },
+  "change": "Copy the 128 initialized local bracket entries when ScriptIterator first allocates heap storage; retain existing subsequent realloc and cleanup.",
+  "native_inputs": {
+    "modules/text_server_adv/SCsub": "c5219cf5c1349d0977ef3a337cebfeedf649a97febcefaf219eec8b3926d4171",
+    "modules/text_server_adv/script_iterator.cpp": "04faf594cbf5e394f1f2f902d67a6205deeb74586ebd6f255bf4fb1451867937",
+    "modules/text_server_adv/test_script_iterator.h": "0e10b9ae4f1ac3e0ad78867361c6584be0fb73f2c968ea310eada530db8840be"
+  },
+  "build": "Windows x86_64 editor; tests=yes; warnings=extra; werror=yes; strict requested flags; exit 0",
+  "binary_sha256": {
+    "godot.windows.editor.x86_64.console.exe": "da674f2092cdfb3537fc49d374fa53ed6ffd55b319e3bdfeb416659f4cfeb69a",
+    "godot.windows.editor.x86_64.exe": "417c48f479e1014ba737b80955720525bd3170da8eb013f1b5e52e0170dcb8a1"
+  },
+  "old_regression": {
+    "exit": 1,
+    "assertions_passed": 30,
+    "assertions_failed": 1,
+    "observed": "At outer_depth=128, first growth produced 2 script ranges instead of expected 3."
+  },
+  "fixed_regression": {
+    "exit": 0,
+    "cases": 1,
+    "assertions": 40,
+    "outer_depths": [
+      1,
+      127,
+      128,
+      256
+    ]
+  },
+  "original_902_regression": {
+    "exit": 0,
+    "cases": 1,
+    "assertions": 38629
+  },
+  "full_native_suite": {
+    "exit": 0,
+    "cases_passed": 1569,
+    "cases_skipped": 3,
+    "assertions": 474354
+  },
+  "preserved_attempts": [
+    "old-regression.log executed zero cases because TESTS_ENABLED was not passed to this module; not reproduction.",
+    "old-regression-registered.log failed on the initial a-before-opening fixture at ordinary depth and then crashed because REQUIRE does not stop execution in this configuration; fixture corrected to opening-before-a and explicit range-size guard added. This attempt is not evidence of the growth defect."
+  ],
+  "private_validation_sha256": "15efbbeac6cda498ce2590cb762b9577723dd27db6a568709312ee5b1fc31640",
+  "normalized_private_logs": [
+    {
+      "name": "old-build.log",
+      "sha256": "098758e35368280f7af5b64a383b1db7b479c1955ececa508a2e84174e0d8b6c"
+    },
+    {
+      "name": "old-build-registered.log",
+      "sha256": "0b911b9178accad6f015b596280a8f2c515ece41353871dc845a33ea1d3b6223"
+    },
+    {
+      "name": "old-build-final.log",
+      "sha256": "b8e7b640c814fafed74a06f9318174cba2444b54c62cd2bb2cf370d7bb5c996c"
+    },
+    {
+      "name": "old-regression.log",
+      "sha256": "f52e88babeb33df50766c3ba99490541a01961894887353dc78b622e4fb3d08d"
+    },
+    {
+      "name": "old-regression-registered.log",
+      "sha256": "35ee1cad7a492b676e9e25fd2d9680efabae2a807116c27755bd951198d9eaec"
+    },
+    {
+      "name": "old-regression-final.log",
+      "sha256": "9814a6c9d08bfb5f013c2d7572cb1f3921dec636f6aa2645c857c05173eea971"
+    },
+    {
+      "name": "fixed-build-final.log",
+      "sha256": "8a3bd587cbe0889249ebb55fd78707758d3452540d586891f0502bb077b7acf3"
+    },
+    {
+      "name": "fixed-regression.log",
+      "sha256": "70cf847d33fd090d2704d55db387ba4a4e9618c6544d0f010b9c19f86aee36e8"
+    },
+    {
+      "name": "unicode-regression.log",
+      "sha256": "59e9385f9997d1aa4f3a7b000f99b590a04e92bf34a766dd89fa438b9d361536"
+    },
+    {
+      "name": "full-tests.log",
+      "sha256": "af2a9efbb77a809f12dfb6dbf55bfbca3ca65e90226a7ce2a140e82d1e7b4814"
+    }
+  ],
+  "limits": [
+    "Independent review, formal gate, CI/main and installed consumer verification belong to root delivery; not claimed here.",
+    "No claim that parent #773 is complete.",
+    "Existing script assignment with a-before-opening brackets differs from this fixture; not changed by the growth-only fix.",
+    "Full native test log contains negative-test engine diagnostics; doctest reports zero failures.",
+    "The old failing log is preserved; this receipt does not claim a retained/hash-bound old test binary. The fixed console and actual sibling engine are independently hashed above.",
+    "Raw logs and their LF-normalized copies remain private because they contain local paths. No files under data-collection/receipts are included in the public candidate."
+  ]
+}
