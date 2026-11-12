@@ -202,6 +202,19 @@ def issue(
             "host_git_account": owners[0] if len(set(owners)) == 1 else None,
             "host_identity_verified": False,
         }
+    # Confirm current permission on this repository before any remote mutation.
+    # All publication callers share this boundary; previews and existing-request
+    # reconciliation above remain read-only.
+    remote = json.loads(gh("api", "repos/" + settings["repository"]))
+    if (
+        remote.get("full_name", "").lower() != settings["repository"].lower()
+        or remote.get("permissions", {}).get("push") is not True
+    ):
+        raise ValueError("Repository write permission required")
+    labels(root, apply=True)
+    pages = json.loads(gh("api", "repos/" + settings["repository"] + "/labels?per_page=100", "--paginate", "--slurp"))
+    if not any(row.get("name") == "workspace:gonggong" for page in pages for row in page):
+        gh("label", "create", "workspace:gonggong", "--repo", settings["repository"], "--color", "5319e7")
     with tempfile.TemporaryDirectory() as temporary:
         path = Path(temporary) / "issue.md"
         path.write_text(body, encoding="utf-8")
@@ -233,7 +246,7 @@ def collect(root, request_id):
         "-I",
         "-X",
         "utf8",
-        str(root / "customizations/platforms/data-collection/git-files/storage/diting_files.py"),
+        str(ROOT / "customizations/platforms/data-collection/git-files/storage/diting_files.py"),
         "validate",
         "--repo",
         str(root),

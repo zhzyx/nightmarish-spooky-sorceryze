@@ -149,6 +149,10 @@ func run():
 				n = n.get_parent()
 	root.size = Vector2i(1440, 1000)
 	for frame in range(24): await get_tree().process_frame
+	# The deliberately workspace-free editor can open runtime setup in another window.
+	# Dismiss that unrelated window so keyboard input targets this settings fixture.
+	for window in root.find_children('GongGongRuntimeSetup', 'Window', true, false):
+		if window.visible: window.hide()
 	var keyboard_category = settings_dock.find_child('SettingsCategory2', true, false)
 	keyboard_category.grab_focus()
 	check(keyboard_category.has_focus(), 'settings category accepts keyboard focus before activation')
@@ -251,7 +255,7 @@ func verify_model_catalog():
 	# The helper is a private synthetic executable; it records input and never contacts a provider.
 	catalog.user_id = 'fixture-user'
 	catalog.chat = chat
-	catalog.authorize_embedded(str(EditorInterface.get_editor_settings().get_setting('gonggong/workspace')))
+	catalog.authorize_embedded(chat.get_production_workspace())
 	field('APIKey').text = 'synthetic-session-only-key'
 	field('APIEndpoint').text = OS.get_environment('UNIFIED_ENDPOINT')
 	field('APIModel').text = 'live-unsaved-model'
@@ -264,6 +268,7 @@ func verify_model_catalog():
 	while catalog.pending and Time.get_ticks_msec() < deadline:
 		await get_tree().create_timer(0.025).timeout
 	var capture = JSON.parse_string(FileAccess.get_file_as_string(OS.get_environment('UNIFIED_MODEL_CAPTURE')))
+	check(capture is Dictionary and capture.get('authorized_workspace') == chat.get_production_workspace() and chat.get_production_workspace() != chat.get_installed_host_root(), 'catalog uses installed helper with separate game workspace authorization')
 	check(capture is Dictionary and capture.get('endpoint') == field('APIEndpoint').text and capture.get('editor_key') == field('APIKey').text and capture.get('model') == 'live-unsaved-model', 'catalog identifies current unsaved endpoint model and session key consistently')
 	var runtime: Dictionary = chat.get_runtime_configuration()
 	check(capture is Dictionary and capture.get('cli_node') == runtime.executables.node and capture.get('codex_entry') == runtime.executables.codex and capture.get('cli_entry') == 'live-unsaved-buddy' and capture.get('codex_model') == 'live-unsaved-codex', 'catalog combines current authoritative runtime snapshot with unsaved model controls consistently')

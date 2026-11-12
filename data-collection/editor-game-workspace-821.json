@@ -1,0 +1,107 @@
+{
+  "issue": 821,
+  "request_id": "editor-game-workspace-20261112",
+  "base_revision": "1f6ea3e74244275efafc484d7cf324d9feea5c4a",
+  "state": "implementation_and_scoped_validation",
+  "input_blobs": {
+    "customizations/components/godot-host/bridge.py": "d31b3ca0967d7431fd2cdd09ee5d301f47e1eb13",
+    "customizations/components/godot-host/daqian/board.py": "b68954fedcf078f425b49d7b7592dc79e22caa0e",
+    "customizations/components/godot-host/direct_issue.py": "5eed91d1e26f4bc4040ac1aedd800b0da38048a6",
+    "customizations/components/godot-host/requirements_agent.py": "833b3f6d43deb0b88c792fc3ec2ed9d1a1541312",
+    "customizations/components/godot-host/test_bridge.py": "c76b856dff8fef7eef63a58dbbb285bc9dbb4550",
+    "customizations/components/godot-host/workspace_paths.py": "3eb39862087fb1ffef65a540295acc537173b88a",
+    "editor/docks/ai_chat_dock.cpp": "2bb23bc080e8f42c053455e0fe942ffb4a2edc81",
+    "editor/docks/ai_chat_dock.h": "9ae969138cb6afb5d801ca0526c002992ff9368d",
+    "editor/docks/ai_chat_engine_candidate.cpp": "f777bbf6b5dd5cdc960c7e0270373cb990c81d89",
+    "editor/docks/ai_chat_gonggong.cpp": "83b728f3171f3fb6fe20d751adcafcf4862da46a",
+    "editor/docks/daqian/workspace.gd": "2ac04a7f699316d4050ebaec0fcac2e410ec8c60",
+    "tests/editor/test_parallel_work_orders.mjs": "c4abdb318c679d11ef10f2bb2ff21eeadae1867c",
+    "tools/godot_parallel/runner.mjs": "c04ac0b4ebaa99d429fb2bc8f65c179ba3b570d7",
+    "tools/gonggong_bridge.py": "1e1459420fc3f43ba9af6fb0f9d3a1074f393125",
+    "customizations/components/godot-host/test_game_workspace.py": "bbe0be963974edc8334c1e4772ebdb47b2e22c08",
+    "tests/editor/game_workspace_binding.gd": "7f36bc0c0ded300c3092e104e171e27fa623c81e",
+    "tests/editor/run_game_workspace_binding.py": "5e9af97aab4cd53495ccbcf08fb33b94225156da"
+  },
+  "checks": [
+    {
+      "command": "py -X utf8 -m unittest discover -s customizations/components/godot-host -p test_game_workspace.py -q",
+      "passed": true,
+      "tests": 8,
+      "observed": "Actual isolated Git repositories, data-only bootstrap, installed storage validation, wrong identity/permission, user config preservation, missing Git/subdirectory rejection and untrusted framework pointer ignored; GitHub responses are controlled."
+    },
+    {
+      "command": "node --test tests/editor/test_parallel_work_orders.mjs",
+      "passed": true,
+      "tests": 39,
+      "observed": "Minimal game repositories containing project.godot; controlled trusted-host verification injection checks installed paths; actual child processes, worktree isolation, replay, immutable terminal and repair tests pass."
+    },
+    {
+      "command": "py -X utf8 -m unittest discover -s customizations/components/godot-host -p test_bridge.py -q",
+      "passed": true,
+      "tests": 43
+    },
+    {
+      "command": "py -X utf8 -m unittest discover -s customizations/components/godot-host -p test_requirements_agent.py -q",
+      "passed": true,
+      "tests": 35
+    },
+    {
+      "command": "py -X utf8 -m unittest discover -s customizations/components/godot-host -p test_direct_issue.py -q",
+      "passed": true,
+      "tests": 25
+    },
+    {
+      "command": "py -X utf8 -m unittest discover -s customizations/components/godot-host -p test_issue_guide.py -q",
+      "passed": true,
+      "tests": 13
+    },
+    {
+      "command": "py -X utf8 -m unittest discover -s customizations/components/godot-host -p test_acceptance.py -q",
+      "passed": true,
+      "tests": 8
+    },
+    {
+      "command": "SCons platform=windows target=editor arch=x86_64 tests=yes warnings=extra werror=yes cache_limit=8 -j8 (full command in private build log)",
+      "passed": true,
+      "observed": "Main1f6ea3e7 integration strict build26.28s; final embedded connection UI rebuild18.23s. daqian_scripts.gen.h regenerated, daqian_dock.cpp recompiled and editor relinked.",
+      "executable_sha256": "d96b88b9c6aee8c1e7b042c0323117b5d5545206a9dff6d6a49d1eebf91f9305"
+    },
+    {
+      "command": "py -X utf8 tests/editor/run_game_workspace_binding.py --godot bin/godot.windows.editor.x86_64.exe --report data-collection/outbox/game-workspace-native-final.json",
+      "passed": true,
+      "observed": "Root and subdirectory projects resolve same B Git root; host remains A. Both editor processes exit0; owned editor/Python helper query settles with no remaining processes. Fixture data retained. No model/provider execution.",
+      "cases": [
+        {
+          "case": "root",
+          "exit_code": 0,
+          "quiescent": true
+        },
+        {
+          "case": "subdirectory",
+          "exit_code": 0,
+          "quiescent": true
+        }
+      ]
+    }
+  ],
+  "build_boundary": {
+    "native": [
+      "editor/docks/ai_chat_dock.cpp",
+      "editor/docks/ai_chat_dock.h",
+      "editor/docks/ai_chat_engine_candidate.cpp",
+      "editor/docks/ai_chat_gonggong.cpp"
+    ],
+    "embedded": [
+      "editor/docks/daqian/workspace.gd",
+      "customizations/components/godot-host/daqian/board.py"
+    ],
+    "host_tools": "Installed Python/Node helper implementations; data root never chooses code.",
+    "rollback": "Restore matching reviewed installation source and rebuild embedded/native changes; do not overwrite game repository data."
+  },
+  "limitations": [
+    "Native probe reports pre-existing RID/ObjectDB exit leak warnings; successful binding/quiescence does not certify leak-free editor shutdown.",
+    "Normal UI two-task game production with810, independent acceptance/integration/runtime/rollback with811, real provider and final installed build acceptance remain parent773 responsibilities and are not inferred from controlled fixtures.",
+    "macOS/Linux native build not run."
+  ],
+  "failure_evidence": "data-collection/editor-game-workspace-821-failures.json"
+}

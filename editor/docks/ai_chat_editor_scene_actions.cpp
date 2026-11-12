@@ -801,7 +801,7 @@ Dictionary AIChatEditorSceneActions::perform(const Dictionary &p_args, bool p_co
 		if (!integer(expected) || int64_t(expected) != int64_t(editor->get_instance_id()) || !p_args.has("expected_old_value") || !same_json(p_args["expected_old_value"], state)) {
 			return outcome(false, "scene_changed_since_confirmation");
 		}
-		// The caller must obtain an explicit human confirmation even under autoexec.
+		// The caller must obtain human confirmation or a matching host task grant.
 		// Use the normal editor save/run chain; do not invoke arbitrary methods.
 		if (action == "run_project") {
 			editor->play_main_scene();

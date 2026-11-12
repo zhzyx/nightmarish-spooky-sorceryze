@@ -37,6 +37,7 @@ TEST_FORCE_LINK(test_ai_chat_editor_scene_actions)
 #include "core/object/class_db.h"
 #include "editor/docks/ai_chat_editor_scene_actions.h"
 #include "editor/docks/ai_chat_editor_scene_completion.h"
+#include "editor/docks/ai_chat_task_authorization.h"
 #include "scene/resources/gradient.h"
 
 namespace TestAIChatEditorSceneActions {
@@ -220,4 +221,42 @@ TEST_CASE("[AIChat][SceneActions] Synthetic extension placeholders reject native
 }
 
 } // namespace TestAIChatEditorSceneActions
+#endif
+
+#ifdef TOOLS_ENABLED
+namespace TestAIChatTaskAuthorization {
+TEST_CASE("[AIChat][TaskAuthorization] Host grant is ephemeral and exactly bound") {
+	Dictionary scope;
+	scope["project"] = "res://fixture";
+	scope["issue"] = 820;
+	scope["request"] = "editor-task-authorization-20261112";
+	scope["conversation"] = "host-conversation";
+	scope["generation"] = 2;
+	AIChatTaskAuthorization grant;
+	CHECK_FALSE(grant.allows(scope, "scene_set_property", false));
+	CHECK(grant.grant(scope));
+	CHECK(grant.allows(scope, "scene_set_property", false));
+	CHECK(grant.allows(scope, "run_scene", false));
+	CHECK(grant.allows(scope, "game_action_pulse", false));
+	CHECK_FALSE(grant.allows(scope, "run_scene", true));
+	for (const String &action : { "project_export", "scene_export_resource", "quit_editor", "execute_script", "chat_set_task_authorization", "viewport_transform_selection" }) {
+		CHECK_FALSE(grant.allows(scope, action, false));
+	}
+	for (const String &field : { "project", "request", "conversation", "issue", "generation" }) {
+		Dictionary stale = scope.duplicate(true);
+		stale[field] = "different";
+		CHECK_FALSE(grant.allows(stale, "run_scene", false));
+	}
+	Dictionary next = scope.duplicate(true);
+	next["generation"] = 3;
+	grant.advance(scope, next);
+	CHECK_FALSE(grant.allows(scope, "run_scene", false));
+	CHECK(grant.allows(next, "run_scene", false));
+	grant.revoke();
+	CHECK_FALSE(grant.allows(next, "run_scene", false));
+	grant.advance(next, scope);
+	CHECK_FALSE(grant.allows(scope, "run_scene", false));
+	CHECK_FALSE(grant.grant(Dictionary()));
+}
+} //namespace TestAIChatTaskAuthorization
 #endif

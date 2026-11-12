@@ -357,7 +357,7 @@ def submit(repo, issue, request, title, notes):
             "-I",
             "-X",
             "utf8",
-            str(repo / "customizations/platforms/data-collection/git-files/storage/diting_files.py"),
+            str(issue_gate.INSTALLATION / "customizations/platforms/data-collection/git-files/storage/diting_files.py"),
             "git-check",
             "--repo",
             str(repo),

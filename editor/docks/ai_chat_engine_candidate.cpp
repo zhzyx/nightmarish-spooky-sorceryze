@@ -29,6 +29,7 @@
 /**************************************************************************/
 
 #include "core/config/project_settings.h"
+#include "core/io/dir_access.h"
 #include "core/io/json.h"
 #include "core/object/callable_mp.h"
 #include "core/os/time.h"
@@ -49,6 +50,30 @@ String AIChatDock::_candidate_root() const {
 String AIChatDock::_workflow_root(int p_agent) const {
 	const Dictionary state = p_agent >= 0 && p_agent != active_agent && agent_sessions.has(p_agent) ? agent_sessions[p_agent].snapshot_state : snapshot_state;
 	const Dictionary candidate = state.get("engine_candidate", Dictionary());
+	if (!candidate.is_empty()) {
+		return candidate.get("source_root", "");
+	}
+	// Delegated workers retain their explicitly isolated data workspace.
+	if (sub_agents.has(p_agent < 0 ? active_agent : p_agent)) {
+		return candidate.get("source_root", state.get("requirement_workspace", ""));
+	}
+	// An external project owns its production data, including projects below a repo root.
+	const String project = ProjectSettings::get_singleton()->get_resource_path().simplify_path();
+	const String installation = _engine_root().simplify_path();
+	if (project != installation && !project.begins_with(installation + "/")) {
+		String directory = project;
+		while (!directory.is_empty()) {
+			if (DirAccess::dir_exists_absolute(directory.path_join(".git")) || FileAccess::exists(directory.path_join(".git"))) {
+				return directory;
+			}
+			const String parent = directory.get_base_dir();
+			if (parent == directory) {
+				break;
+			}
+			directory = parent;
+		}
+		return project; // The host reports Git/source prerequisites, without writing to the engine.
+	}
 	return candidate.get("source_root", state.get("requirement_workspace", EDITOR_GET("gonggong/workspace")));
 }
 
@@ -118,7 +143,13 @@ bool AIChatDock::_validate_engine_candidate(String &r_error, const String &p_rev
 		r_error = "candidate_issue_mismatch: active Issue or conversation changed.";
 		return false;
 	}
-	return AIChatHostRuntime::validate_candidate_checkout(candidate, r_error);
+	// Only a live host-created read-only acceptance context may validate a game
+	// worktree without the engine marker. Saved/model-supplied candidate fields
+	// alone never relax engine self-iteration validation.
+	const bool ordinary_review = _is_review_child() && acceptance_reviews.has(active_agent) &&
+			bool(acceptance_reviews[active_agent].get("ordinary_game_candidate", false)) &&
+			acceptance_reviews[active_agent].get("engine_candidate", Variant()) == Variant(candidate);
+	return AIChatHostRuntime::validate_candidate_checkout(candidate, r_error, !ordinary_review);
 }
 
 bool AIChatDock::_ensure_engine_candidate(const Dictionary &p_runtime) {

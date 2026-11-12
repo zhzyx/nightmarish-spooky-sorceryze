@@ -90,6 +90,8 @@ def main():
     parser.add_argument(
         "--routing", action="store_true", help="Run guidance through the shared engine-operation router"
     )
+    parser.add_argument("--task-native", action="store_true")
+    parser.add_argument("--task-native-first-import", action="store_true")
     args = parser.parse_args()
     assert not args.routing or args.guidance
     stop_case = args.manual_stop or args.signal_stop or bool(args.simulated_stop_input)
@@ -105,7 +107,9 @@ def main():
             pass
 
         def do_GET(self):
-            if not args.simulated_stop_input or self.path != "/v1/models":
+            if args.task_native:
+                print("TASK_MODELS_GET", self.path, flush=True)
+            if not (args.simulated_stop_input or args.task_native) or self.path != "/v1/models":
                 self.send_error(501)
                 return
             payload = json.dumps({"data": [{"id": "mock-semantic"}]}).encode()
@@ -150,7 +154,11 @@ def main():
                 case = messages[latest]["content"]
                 seen.add(case)
                 tool_results = [m["content"] for m in messages[latest:] if m["role"] == "tool"]
-                if tool_results:
+                if args.task_native:
+                    from task_authorization_fixture import response
+
+                    message = response(case, tool_results, project)
+                elif tool_results:
                     results[case] = tool_results[-1]
                     if args.guidance:
                         (project / "last-result.json").write_text(tool_results[-1], encoding="utf-8")
@@ -217,7 +225,7 @@ def main():
                     if stop_case and case == "highlight_tabs" and tool_results:
                         (project / "server-response-finished").write_text(outcome)
             except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
-                if not stop_case:
+                if not stop_case and not (args.task_native and locals().get("case") == "task_grant_stop"):
                     errors.append("Unexpected disconnected HTTP client")
             except Exception as exc:
                 errors.append(str(exc))
@@ -306,15 +314,20 @@ def main():
                 ],
                 check=True,
             )
-            isolate = copy_editor if args.simulated_stop_input else macos_editor
+            isolate = copy_editor if args.simulated_stop_input or args.task_native else macos_editor
             isolated_editor = isolate(args.godot, workspace / "isolated-editor")
-            if args.simulated_stop_input:
+            if args.simulated_stop_input or args.task_native:
                 # The current host loads trusted receipt code from its running
                 # installation, independently of the mocked work-order workspace.
                 installation = isolated_editor.parent
                 shutil.copyfile(source / "SConstruct", installation / "SConstruct")
-                for directory in ("customizations", "tools", "integrations"):
+                shutil.copyfile(workspace / "CURRENT_FRAMEWORK.json", installation / "CURRENT_FRAMEWORK.json")
+                for directory in ("customizations", "tools", "integrations", "framework"):
                     shutil.copytree(workspace / directory, installation / directory)
+                if args.task_native:
+                    (installation / "editor_data/editor_settings-4.8.tres").write_text(
+                        '[gd_resource type="EditorSettings" format=3]\n[resource]\nai_chat/editor_control_bridge_enabled = true\nrun/window_placement/game_embed_mode = 0\n'
+                    )
             project = workspace / "project"
             project.mkdir()
             for base in [workspace, project]:
@@ -329,6 +342,39 @@ def main():
             )
             (project / "fixture.gd").write_text("extends Node\n\nfunc demo():\n\tpass\n")
             script = "editor_guided_workflows.gd" if args.guidance else "ai_chat_semantic.gd"
+            if args.task_native:
+                script = "ai_chat_task_authorization.gd"
+                (project / "grant-mesh.tres").write_text(
+                    '[gd_resource type="BoxMesh" format=3]\n[resource]\nsize = Vector3(1, 2, 3)\n'
+                )
+                import struct
+                import zlib
+
+                def png_chunk(kind, data):
+                    return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+
+                (project / ("grant-png.bytes" if args.task_native_first_import else "grant.png")).write_bytes(
+                    b"\x89PNG\r\n\x1a\n"
+                    + png_chunk(b"IHDR", struct.pack(">IIBBBBB", 2, 2, 8, 2, 0, 0, 0))
+                    + png_chunk(b"IDAT", zlib.compress(b"\x00\xff\x00\x00\x00\xff\x00" * 2))
+                    + png_chunk(b"IEND", b"")
+                )
+                (project / "input_game.tscn").write_text(
+                    '[gd_scene load_steps=2 format=3]\n[ext_resource type="Script" path="res://input_game.gd" id="1"]\n[node name="Game" type="Node"]\nscript=ExtResource("1")\n'
+                )
+                shutil.copyfile(Path(__file__).with_name("task_authorization_input_game.gd"), project / "input_game.gd")
+                with (project / "project.godot").open("a", encoding="utf-8") as stream:
+                    stream.write(
+                        '[editor]\nrun/main_run_args="--headless"\n[input]\nfixture_move={"deadzone":0.5,"events":[]}\n'
+                    )
+                (project / "task_game.gd").write_text(
+                    'extends Node2D\nfunc _ready():\n\tpush_error("TASK_PRESEEDED_ERROR")\n\tFileAccess.open("res://runtime-error.txt", FileAccess.WRITE).store_string("TASK_PRESEEDED_ERROR")\n\tget_tree().create_timer(3).timeout.connect(get_tree().quit)\n',
+                    encoding="utf-8",
+                )
+                (project / "task_game.tscn").write_text(
+                    '[gd_scene load_steps=2 format=3]\n[ext_resource type="Script" path="res://task_game.gd" id="1"]\n[node name="TaskGame" type="Node2D"]\nscript = ExtResource("1")\n[node name="GrantMesh" type="MeshInstance3D" parent="."]\n',
+                    encoding="utf-8",
+                )
             shutil.copyfile(Path(__file__).with_name(script), project / "test.gd")
             env = {
                 **os.environ,
@@ -356,6 +402,11 @@ def main():
             )
             display = [] if args.manual_stop else ["--headless"]
             print("SEMANTIC_PROJECT", project, flush=True)
+            if args.task_native:
+                from task_authorization_fixture import external_checks
+
+                external_worker = threading.Thread(target=external_checks, args=(project, errors), daemon=True)
+                external_worker.start()
             run = subprocess.run(
                 [str(isolated_editor), *display, "--editor", "--path", str(project), "--script", "res://test.gd"],
                 env=env,
@@ -364,7 +415,15 @@ def main():
                 text=True,
                 encoding="utf-8",
                 errors="replace",
-                timeout=60 if args.simulated_stop_input else 300 if args.guidance else 240 if args.manual_stop else 180,
+                timeout=360
+                if args.task_native
+                else 60
+                if args.simulated_stop_input
+                else 300
+                if args.guidance
+                else 240
+                if args.manual_stop
+                else 180,
             )
             print(run.stdout)
             print(run.stderr)
@@ -382,6 +441,35 @@ def main():
                 print("NATIVE_CODEX_WIRE_CASES", sorted(wire), "HTTP_BUSINESS_CASES", sorted(seen))
             print("MOCK_RESULTS", json.dumps(results, ensure_ascii=False))
             print("MOCK_ERRORS", errors)
+            if args.task_native:
+                external_worker.join(timeout=1)
+                assert not external_worker.is_alive(), "External checks did not finish"
+                assert run.returncode == 0 and "TASK_NATIVE_AUTHORIZATION_OK" in run.stdout and not errors, (
+                    "task authorization scene driver failed"
+                )
+                restart = subprocess.run(
+                    [
+                        str(isolated_editor),
+                        "--headless",
+                        "--editor",
+                        "--path",
+                        str(project),
+                        "--script",
+                        "res://test.gd",
+                    ],
+                    env={**env, "TASK_NATIVE_RESTART": "1"},
+                    cwd=project,
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    errors="replace",
+                    timeout=150,
+                )
+                print(restart.stdout)
+                print(restart.stderr)
+                assert restart.returncode == 0 and "TASK_NATIVE_RESTART_OK" in restart.stdout and not errors
+                print("TASK_TERMINAL_EXIT_CODES", run.returncode, restart.returncode)
+                return
             assert run.returncode == 0 and "AI_CHAT_SEMANTIC_OK" in run.stdout, "scene driver failed"
             assert not errors, errors
             if args.guidance:

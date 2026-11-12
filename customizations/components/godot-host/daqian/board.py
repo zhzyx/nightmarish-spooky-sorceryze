@@ -496,6 +496,11 @@ def main():
     parser.add_argument("--delta", type=Path, help="Apply known issue changes to this editor session snapshot")
     args = parser.parse_args()
     try:
+        if args.access_only:
+            import workspace_paths
+
+            workspace_paths.prepare_game_workspace(args.repo, work_items)
+
         if any(n <= 0 for n in args.follow):
             raise ValueError("工单编号必须为正整数")
         if args.end_session:
@@ -594,7 +599,9 @@ def main():
             504,
         )
         result = {"denied": not offline, "offline_login": configured_login() if offline else "", "error": reason}
-    except (ValueError, TypeError, OSError, KeyError):
+    except ValueError as error:
+        result = {"denied": True, "error": str(error)}
+    except (TypeError, OSError, KeyError):
         result = {"denied": True, "error": "读取工单来源失败"}
     publish(args.result, result)
 

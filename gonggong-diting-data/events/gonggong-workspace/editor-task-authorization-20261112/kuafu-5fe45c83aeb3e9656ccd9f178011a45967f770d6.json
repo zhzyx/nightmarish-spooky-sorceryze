@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5fe45c83aeb3e9656ccd9f178011a45967f770d6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-task-authorization-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/820",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0f89b92cf89eeb9fc6d4b956f1c0963695aded48daca107486db6d888624f7e4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/820",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "1f6ea3e74244275efafc484d7cf324d9feea5c4a",
+    "context_sha256": "58e63e17087bee332554f085e9b10403c5e53c8218d51e8fa386b3b63c6e4506",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/820",
+    "evidence": "Frozen825b native attempt1: new PNG old .import hash empty; import_failed_or_pending. update_files creates missing FileInfo; reimport_files expects indexed path.",
+    "diagnosis": "首次生成资源尚未进入文件系统索引，原入口直接重导入。确认及漂移保护通过后先 update_file 注册该精确路径，再沿同步 reimport_files 实际导入。原生源严格编译通过，真实首次导入复验中。",
+    "next_action": "回读首次导入实际metadata和Texture2D，独立审查后验证原许可/冲突及冷启动；父773组合交付。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T22:45:13.931325+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T22:49:09.379358+00:00",
+  "sha256": "e5faff917b4903aae8ef5dc57bae12f24ecbe4d7a5a55c561d739d296fd9733b"
+}

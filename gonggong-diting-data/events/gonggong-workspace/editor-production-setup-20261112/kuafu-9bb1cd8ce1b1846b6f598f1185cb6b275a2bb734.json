@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9bb1cd8ce1b1846b6f598f1185cb6b275a2bb734",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-production-setup-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "197b2100e3829f459827e7e3aad79ed379ddc3c6d672634d80e69e012ab1db9b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "140d8caad921baf636b14e41a46c4414174b45e3",
+    "context_sha256": "b38d2d9409f8271e5b5f96800d5719c659dc53223259be0ca344e2d90c230716",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+    "diagnosis": "After integration with main 5903, real six-size editor tests found clipped short-viewport chat and configuration summary. The fix keeps the summary to one line with a full tooltip and reduces chat minimum height for viewports below 640 scaled pixels. Final exact source passed all six layouts, project settings, unified settings and both CLI setup entries; root independently reviewed the three-file correction. A separate test keyboard failure was caused by an unrelated runtime-setup modal in the isolated fixture and was corrected in the fixture without changing product behavior.",
+    "next_action": "Carry the precise candidate and immutable evidence into combined parent 773 validation and formal delivery. Real-provider end-to-end and installed consumer acceptance remain pending.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T23:23:15.715184+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T23:34:01.064902+00:00",
+  "sha256": "2ca67174d1fba6bf1c27e72a37fe647a16a4a6fd6e06a3bf30ecb08bab1acac2"
+}

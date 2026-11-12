@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5920479656e21d28b532f85e9667c99498a52660",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-production-setup-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f46c8c8b57e074ae435f9c28a81a027e62b57513967da88a6cb9d18e974d84fe",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "34cd08867ce15fe561ad5885a31e3db114074292",
+    "context_sha256": "86d7ef86478826eee68c44ea57e464b2a5de41a5748ba76077f573472fd5f310",
+    "operator": "Sail-Li",
+    "worker": "codex-root-editor-production-810",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+    "evidence": "data-collection/receipts/native-production-setup-summary.json",
+    "diagnosis": "Normal native setup reproduced Git Filename too long in deep independent copies. Windows setup now enables core.longpaths only in the authorized repository after CLI discovery; global configuration is unchanged. Native Codex and CodeBuddy setup both reverified from local false to true, automatic copies and two concurrent workers with verified terminal receipts. Earlier CRLF snapshot mismatch and raw confirmed design checkout representation were corrected and covered by setup tests.",
+    "next_action": "Deliver corrected source after final checks, merge latest main and verify combined normal connected-account production in parent773; fixture CLI transport is not live-provider acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T19:03:43.716132+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T19:14:30.723652+00:00",
+  "sha256": "2b5fc602f9286887508b2950a5771752b9556b347d83d749fd838017bd2b5447"
+}

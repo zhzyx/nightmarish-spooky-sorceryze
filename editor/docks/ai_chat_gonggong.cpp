@@ -200,6 +200,7 @@ void AIChatDock::_finish_gonggong_receipt(const Dictionary &result) {
 	if (!generation_pending) {
 		_resume_design_completions(gonggong_receipt_generation);
 	}
+	callable_mp(this, &AIChatDock::_refresh_sub_agents).call_deferred();
 	if (design_batches.has(active_agent) || _design_child_parent(active_agent) >= 0) {
 		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
 	}
@@ -291,6 +292,7 @@ void AIChatDock::_start_gonggong_flush() {
 		return;
 	}
 	gonggong_receipt_pid = pid;
+	_refresh_sub_agents();
 	if (!gonggong_receipt_timer) {
 		gonggong_receipt_timer = memnew(Timer);
 		gonggong_receipt_timer->set_wait_time(0.1);
@@ -351,7 +353,7 @@ static String last_user_content(const Array &p_messages) {
 }
 
 String AIChatDock::_daqian_board_workspace() const {
-	const String workspace = String(EDITOR_GET("gonggong/workspace")).strip_edges();
+	const String workspace = _workflow_root();
 	EditorSettings *settings = EditorSettings::get_singleton();
 	const Dictionary bindings = settings->get_project_metadata("daqian", "bindings", Dictionary());
 	const Dictionary entry = bindings.get(conversation_id, Dictionary());
@@ -718,7 +720,7 @@ Dictionary AIChatDock::_launch_daqian_routing(const Dictionary &p_binding, const
 	}
 	const String workspace = _workflow_root();
 	const String python = GongGongRuntimeConfig::path(runtime, "workflow_python");
-	const String bridge = workspace.path_join("tools/gonggong_bridge.py");
+	const String bridge = chat_bridge(_engine_root(), workspace);
 	if (workspace.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {
 		result["error"] = U"请配置共工工作区和 Python 后重试判断。";
 		return result;
@@ -990,7 +992,7 @@ void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_re
 	}
 	const String root = _workflow_root();
 	const String python = GongGongRuntimeConfig::path(runtime, "workflow_python");
-	const String bridge = root.path_join("tools/gonggong_bridge.py");
+	const String bridge = chat_bridge(_engine_root(), root);
 	if (root.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {
 		_append(TTR("Error"), U"GongGong 未配置：请在 GongGong 页设置工作区和 Python。");
 		_set_busy(false);
@@ -1251,6 +1253,9 @@ void AIChatDock::_cancel_issue_guide(const String &p_notice) {
 }
 
 void AIChatDock::_issue_guide_bind(int64_t p_number, const String &p_request_id) {
+	if (_work_order_binding("issue_number").to_int() != p_number || _work_order_binding("request_id") != p_request_id) {
+		_revoke_native_task();
+	}
 	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
 	if (!candidate.is_empty() && (int64_t(candidate.get("issue", 0)) != p_number || candidate.get("request_id", "") != p_request_id)) {
 		// Intake for the new Issue was written here. Preserve that provenance route
@@ -1444,7 +1449,7 @@ void AIChatDock::_igniter_run(const String &p_action, const Dictionary &p_reques
 	igniter_state = p_action == "environment-deploy" ? "deploying" : "checking";
 	const String root = _workflow_root();
 	const String python = GongGongRuntimeConfig::path(runtime, "workflow_python");
-	const String bridge = root.path_join("tools/gonggong_bridge.py");
+	const String bridge = chat_bridge(_engine_root(), root);
 	if (root.is_empty() || python.is_empty() || !FileAccess::exists(bridge)) {
 		_append(TTR("Error"), U"无法启动点火器：工作区或 Python 未配置，请在 GongGong 页设置后再试。");
 		_cancel_igniter(String(), "error");

@@ -122,6 +122,12 @@ def native_run(command, *args, **kwargs):
             target.parent / "integrations",
             ignore=batch.shutil.ignore_patterns("node_modules", "__pycache__"),
         )
+        batch.shutil.copytree(
+            batch.ROOT / "framework",
+            target.parent / "framework",
+            ignore=batch.shutil.ignore_patterns("node_modules", "__pycache__"),
+        )
+        batch.shutil.copyfile(batch.ROOT / "CURRENT_FRAMEWORK.json", target.parent / "CURRENT_FRAMEWORK.json")
         native = Path("codebuddy_cli/node_modules/@tencent-ai/codebuddy-code/bin/native/win32-x64/job-object.node")
         (target / native).parent.mkdir(parents=True, exist_ok=True)
         job_object = Path(batch.os.environ.get("NATIVE_ACCEPTANCE_JOB_OBJECT", str(batch.ROOT / "tools" / native)))
@@ -448,6 +454,12 @@ class AcceptanceServer(ThreadingHTTPServer):
                 if not auxiliary.exists():
                     auxiliary.write_text("Untrusted external context, not criterion evidence", encoding="utf8")
                 message = batch.tool_call("acceptance-read", "read_file", {"path": str(root / "fixture-input.txt")})
+                if getattr(batch, "COMPLETE_GAME", False):
+                    message["tool_calls"].append(
+                        batch.tool_call(
+                            "acceptance-game", "read_file", {"path": str(root / "samples/project/production-output.gd")}
+                        )["tool_calls"][0]
+                    )
                 message["tool_calls"].append(
                     batch.tool_call("acceptance-auxiliary-context", "read_file", {"path": str(auxiliary)})[
                         "tool_calls"
@@ -526,7 +538,13 @@ class AcceptanceServer(ThreadingHTTPServer):
                             if SCENARIO == "receipt-as-evidence"
                             else [str(auxiliary)]
                             if SCENARIO == "auxiliary-as-evidence"
-                            else ["fixture-input.txt"] + (["repair-evidence.txt"] if repair_evidence else []),
+                            else ["fixture-input.txt"]
+                            + (
+                                ["samples/project/production-output.gd"]
+                                if getattr(batch, "COMPLETE_GAME", False)
+                                else []
+                            )
+                            + (["repair-evidence.txt"] if repair_evidence else []),
                         }
                         for c in criteria
                     ],

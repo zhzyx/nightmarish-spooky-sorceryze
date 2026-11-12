@@ -467,6 +467,34 @@ def verify_platform_adapter(root, directory, registration_root=None):
     checker["platform_inventory"](root, directory, registration["platform_files"][directory])
 
 
+def verify_candidate_framework(root, base_ref="origin/main"):
+    """Candidate data cannot select verification code or inherit another approval."""
+    # Remember framework ownership across deletions, including an already committed
+    # candidate. A game repository without framework data needs only the installation.
+    # HEAD ancestry remembers committed removal even without an origin/main ref.
+    refs = ["HEAD"]
+    target = subprocess.run(
+        ["git", "rev-parse", "--verify", "--quiet", base_ref + "^{commit}"], cwd=root, capture_output=True
+    )
+    if target.returncode == 0:
+        refs.append(target.stdout.decode().strip())
+    historical = git(root, "log", "-1", "--format=%H", *refs, "--", "framework", "CURRENT_FRAMEWORK.json")
+    if (
+        not historical.strip()
+        and not os.path.lexists(root / "framework")
+        and not os.path.lexists(root / "CURRENT_FRAMEWORK.json")
+    ):
+        return
+    inventory = runpy.run_path(str(INSTALLATION / "framework/tools/package_integrity.py"))["inventory"]
+    if inventory(root / "framework") != inventory(INSTALLATION / "framework"):
+        raise ValueError(
+            "Candidate framework differs from the installed approved framework; exact candidate admission required"
+        )
+    for relative in ("CURRENT_FRAMEWORK.json", "framework/package-lock.json"):
+        if (root / relative).read_bytes() != (INSTALLATION / relative).read_bytes():
+            raise ValueError("Candidate framework binding differs from installed approval")
+
+
 def gate(root, number, request_id, session=None, base_ref="origin/main"):
     if session is not None:
         session.check_runtime()
@@ -494,15 +522,16 @@ def gate(root, number, request_id, session=None, base_ref="origin/main"):
     before = snapshot(root)
     association = check_pr_evidence(root, issue, request_id, tenant, base_ref)
     env = environment(root)
+    verify_candidate_framework(root, base_ref)
     framework = validate_command(
-        [sys.executable, "-X", "utf8", str(root / "framework/tools/verify_framework.py")],
-        root,
+        [sys.executable, "-I", "-X", "utf8", str(INSTALLATION / "framework/tools/verify_framework.py")],
+        INSTALLATION,
         env,
         "Formal GongGong verification",
     )
     if framework.get("mode") != "approved_file_integrity":
         raise ValueError("Formal GongGong verification required; candidate mode is insufficient")
-    verify_platform_adapter(root, "customizations/platforms/data-collection/git-files/storage")
+    verify_platform_adapter(INSTALLATION, "customizations/platforms/data-collection/git-files/storage")
     if session is None:
         validate_command(
             [
@@ -510,7 +539,7 @@ def gate(root, number, request_id, session=None, base_ref="origin/main"):
                 "-I",
                 "-X",
                 "utf8",
-                str(root / "customizations/platforms/data-collection/git-files/storage/diting_files.py"),
+                str(INSTALLATION / "customizations/platforms/data-collection/git-files/storage/diting_files.py"),
                 "git-check",
                 "--repo",
                 str(root),
@@ -578,8 +607,9 @@ class VerificationSession:
             raise ValueError("Gate implementation changed; restart the verification session")
 
     def check_diting(self, root):
-        validator = root / "customizations/platforms/data-collection/git-files/storage/diting_files.py"
-        batch = root / "customizations/platforms/development/git/git_batch.py"
+        verify_platform_adapter(INSTALLATION, "customizations/platforms/data-collection/git-files/storage")
+        validator = INSTALLATION / "customizations/platforms/data-collection/git-files/storage/diting_files.py"
+        batch = INSTALLATION / "customizations/platforms/development/git/git_batch.py"
         binding = (str(root.resolve()), validator.read_bytes(), batch.read_bytes(), sys.version)
         if binding != self.binding:
             self.module = runpy.run_path(str(validator))
@@ -604,6 +634,11 @@ def main():
     )
     parser.add_argument("--intake-only", action="store_true")
     parser.add_argument(
+        "--candidate-framework-only",
+        action="store_true",
+        help="Check worker framework bytes using trusted installed code; no Issue transport",
+    )
+    parser.add_argument(
         "--include-issue-source", action="store_true", help="Return the checked Issue row for local intake consumers"
     )
     parser.add_argument("--tenant")
@@ -616,6 +651,22 @@ def main():
         "--module-impact-only", action="store_true", help="Check added modules against the PR base and full index"
     )
     args = parser.parse_args()
+    if args.candidate_framework_only:
+        if (
+            args.intake_only
+            or args.session
+            or args.module_impact_only
+            or args.include_issue_source
+            or args.issue is not None
+            or args.request_id is not None
+        ):
+            parser.error("--candidate-framework-only is a separate file check")
+        try:
+            verify_candidate_framework(args.repo.resolve(), args.base_ref)
+            print(json.dumps({"candidate_framework_matches_installation": True}))
+        except (ValueError, OSError, TypeError, KeyError, subprocess.SubprocessError) as error:
+            parser.exit(1, str(error) + "\n")
+        return
     if args.module_impact_only:
         if args.intake_only or args.session or args.issue is not None or args.request_id is not None:
             parser.error("--module-impact-only is a separate file check")

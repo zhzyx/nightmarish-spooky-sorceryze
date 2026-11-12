@@ -36,7 +36,7 @@ def main():
             self.end_headers()
             try:
                 self.wfile.write(body)
-            except (BrokenPipeError, ConnectionResetError):
+            except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
                 pass
 
         def do_GET(self):
@@ -70,12 +70,15 @@ def main():
                 '[node name="StartupAcceptance" type="Node"]\nscript = ExtResource("1")\n'
             )
             workspace = base / "model-workspace"
-            helper = workspace / "customizations/components/godot-host/daqian/models_cli.py"
+            workspace.mkdir()
+            (binary.parent / "SConstruct").touch()
+            helper = binary.parent / "customizations/components/godot-host/daqian/models_cli.py"
             helper.parent.mkdir(parents=True)
             helper.write_text("""import json, sys, time, subprocess
 from pathlib import Path
 value=json.loads(sys.stdin.readline())
 root=Path(sys.argv[2])
+(root/'model-helper-target').write_text(str(root))
 if (root/'cancel-mode').exists():
     code="import time;from pathlib import Path;time.sleep(.8);Path("+repr(str(root/'descendant-ran'))+").write_text('ran')"
     subprocess.Popen([sys.executable,'-c',code])

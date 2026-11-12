@@ -44,6 +44,7 @@ class GongGongPanel : public VBoxContainer {
 	Callable settings_requested;
 	Callable environment_changing;
 	Callable runtime_changed;
+	Callable task_binding_changed;
 	bool task_locked = false;
 	LineEdit *workspace = nullptr;
 	LineEdit *python = nullptr;
@@ -94,6 +95,7 @@ public:
 	Control *get_environment_settings_control() const { return environment_settings_control; }
 	void set_settings_requested(const Callable &p_callback) { settings_requested = p_callback; }
 	void set_environment_changing_handler(const Callable &p_callback) { environment_changing = p_callback; }
+	void set_task_binding_changed_handler(const Callable &p_callback) { task_binding_changed = p_callback; }
 	void set_runtime_changed_handler(const Callable &p_callback) { runtime_changed = p_callback; }
 	void set_task_locked(bool p_locked);
 	bool set_environment_python(const String &p_python);

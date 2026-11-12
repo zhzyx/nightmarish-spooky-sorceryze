@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-dac7fe29955ada7e40a03a6507cd07990b6fe08fb8316a5eb886bfd1f0f90350",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "occurred_at": "2026-11-12T00:58:28.247357+00:00",
+  "evidence_refs": [
+    "kuafu-4ab00bfc35e2f2f085eaaa8be79e9f2d6fdb5570",
+    "learn-1b83431f840047973b6bf7e1528233558025f7d3d4198b6ccefd4e061b9f49a4"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 10,
+    "previous": "22d6a33cb7422863bbb9463a59eae1e56ce53884f3cda2606eedee6d03bc6875",
+    "action": "applied",
+    "details": {
+      "task": "Parent773 actual-provider review interruption and warm/cold native continuation, with complete source/receipt revalidation and independent code review",
+      "observed": "Native warm and cold trials recovered the original two terminated producers without relaunch, created fresh independent reviews against the original produced fingerprint, persisted a separate host observation, then integrated, ran and rolled back. A restored Issue numeric-type rejection and stale Continue state were corrected and rechecked on the same binary. Real-provider business acceptance remains unknown; this application does not promote sample success to complete editor support."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-production-recovery-773.json",
+        "sha256": "0de147750c499339975c4eb5b63621c3d1d1655fc2ef655ec97c5aa9117fd7fb"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/kuafu-4ab00bfc35e2f2f085eaaa8be79e9f2d6fdb5570.json",
+      "sha256": "aff5c62a24763709df3216e878345c3f62e5447d931e69f282cf7a18523ddeb3"
+    }
+  },
+  "sha256": "2e3accdadb1bd5c6c030caefe1adfd592f18ce5bee371baab64fe9b8c8c40284"
+}

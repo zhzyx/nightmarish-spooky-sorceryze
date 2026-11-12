@@ -72,7 +72,24 @@ public:
 #endif
 	}
 
-	static bool validate_candidate_checkout(const Dictionary &p_candidate, String &r_error) {
+	static String checkout_common_directory(const String &p_root) {
+		const String marker = p_root.path_join(".git");
+		if (DirAccess::dir_exists_absolute(marker)) {
+			return canonical_directory(marker);
+		}
+		const String link = FileAccess::get_file_as_string(marker).strip_edges();
+		if (!link.begins_with("gitdir: ")) {
+			return String();
+		}
+		String gitdir = link.trim_prefix("gitdir: ");
+		if (!gitdir.is_absolute_path()) {
+			gitdir = p_root.path_join(gitdir).simplify_path();
+		}
+		const String common = FileAccess::get_file_as_string(gitdir.path_join("commondir")).strip_edges();
+		return common.is_empty() ? String() : canonical_directory(common.is_absolute_path() ? common : gitdir.path_join(common).simplify_path());
+	}
+
+	static bool validate_candidate_checkout(const Dictionary &p_candidate, String &r_error, bool p_require_engine = true) {
 		const String source = p_candidate["source_root"];
 		const String link = FileAccess::get_file_as_string(source.path_join(".git")).strip_edges();
 		if (!link.begins_with("gitdir: ")) {
@@ -84,7 +101,7 @@ public:
 			gitdir = source.path_join(gitdir).simplify_path();
 		}
 		const String head = FileAccess::get_file_as_string(gitdir.path_join("HEAD")).strip_edges();
-		if (!AIChatHostRuntime::matches_recorded_directory(source, source) || !FileAccess::exists(source.path_join("SConstruct"))) {
+		if (!AIChatHostRuntime::matches_recorded_directory(source, source) || (p_require_engine && !FileAccess::exists(source.path_join("SConstruct")))) {
 			r_error = "candidate_source_changed: the recorded source directory is no longer the engine source.";
 			return false;
 		}

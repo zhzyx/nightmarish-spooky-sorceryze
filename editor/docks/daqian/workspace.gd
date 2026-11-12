@@ -503,7 +503,7 @@ func _environment_state(configuration: Dictionary = {}) -> Dictionary:
 	if configuration.is_empty() and is_instance_valid(source) and source.has_method("get_runtime_configuration"):
 		configuration = source.get_runtime_configuration()
 	var paths: Dictionary = configuration.get("paths", {})
-	var workspace: String = str(settings.get_setting("gonggong/workspace")) if settings.has_setting("gonggong/workspace") else ""
+	var workspace: String = _repo()
 	var tenant: String = str(settings.get_setting("gonggong/tenant")) if settings.has_setting("gonggong/tenant") else ""
 	return {"signature":JSON.stringify([workspace, str(paths.get("workflow_python", "")), tenant]), "runtime":Dictionary(configuration.get("executables", {})).duplicate()}
 
@@ -904,16 +904,18 @@ func _save_connection() -> void:
 		return
 	var path := workspace_path.text.strip_edges().simplify_path()
 	var python := str(_runtime_paths().get("workflow_python", ""))
-	if not path.is_absolute_path() or not FileAccess.file_exists(path.path_join("customizations/components/godot-host/daqian/board.py")):
-		notice.text = "请填写包含天枢工单入口的共工仓库路径。"
+	if not path.is_absolute_path() or not FileAccess.file_exists(_host_root().path_join("customizations/components/godot-host/daqian/board.py")):
+		notice.text = "请确认当前游戏项目路径和天枢安装。"
 		return
 	if not python.is_absolute_path() or not FileAccess.file_exists(python):
 		notice.text = "请填写本机 Python 可执行文件的绝对路径。"
 		return
 	if path != _repo():
+		if _repo() != _host_root():
+			notice.text = "生产工作区属于当前游戏项目；请打开目标项目后重新连接。"
+			return
 		_forget("正在切换工作区")
-	var settings := EditorInterface.get_editor_settings()
-	settings.set_setting("gonggong/workspace", path)
+		EditorInterface.get_editor_settings().set_setting("gonggong/workspace", path)
 	connection_panel.hide()
 	await refresh()
 
@@ -1256,7 +1258,7 @@ func _document_action(saving: bool) -> void:
 		await get_tree().process_frame
 		if epoch != selection_epoch or key != inspector_key or not is_same(inspector_sessions.get(key), state):
 			return
-	var args := _board_entry_args(origin.path_join("customizations/components/godot-host/daqian/board.py"))
+	var args := _board_entry_args(_host_root().path_join("customizations/components/godot-host/daqian/board.py"))
 	args.append_array(["--repo",origin,"--editor-session",editor_session,"--expected-user",str(principal.user_id)])
 	var result := await _host_command(args, "--result", request)
 	if origin != _repo() or principal != actor or not inspector_sessions.has(key) or not is_same(inspector_sessions[key], state):
@@ -1378,10 +1380,15 @@ func _opened() -> void:
 			auto_refresh_pending = true
 
 
+func _host_root() -> String:
+	var source = chat if is_instance_valid(chat) else get_tree().root.find_child("AI Chat", true, false)
+	return str(source.get_installed_host_root()) if is_instance_valid(source) and source.has_method("get_installed_host_root") else ""
+
+
 func _repo() -> String:
-	var settings := EditorInterface.get_editor_settings()
-	if settings.has_setting("gonggong/workspace"):
-		return str(settings.get_setting("gonggong/workspace")).strip_edges()
+	var source = chat if is_instance_valid(chat) else get_tree().root.find_child("AI Chat", true, false)
+	if is_instance_valid(source) and source.has_method("get_production_workspace"):
+		return str(source.get_production_workspace())
 	return ""
 
 
@@ -1535,7 +1542,7 @@ func _exit_tree() -> void:
 	cancel_startup_model_refresh()
 	_stop_progress_watch()
 	if not picker_scope.is_empty():
-		var bridge := picker_scope.path_join("customizations/components/godot-host/daqian/board.py")
+		var bridge := _host_root().path_join("customizations/components/godot-host/daqian/board.py")
 		var settings := EditorInterface.get_editor_settings()
 		var python := str(_runtime_paths().get("workflow_python", ""))
 		if FileAccess.file_exists(bridge):
@@ -2367,7 +2374,7 @@ func _board_command(access_only: bool, expected := "", project := false) -> Dict
 
 func _run_board_command(access_only: bool, expected: String, project: bool, delta_request: Dictionary, startup := false) -> Dictionary:
 	var root := _repo()
-	var bridge := root.path_join("customizations/components/godot-host/daqian/board.py")
+	var bridge := _host_root().path_join("customizations/components/godot-host/daqian/board.py")
 	if not root.is_absolute_path() or not FileAccess.file_exists(bridge):
 		return {"denied":true,"error":"点击「工作区连接」，填写共工仓库和 Python 路径。"}
 	var settings := EditorInterface.get_editor_settings()
@@ -4023,7 +4030,7 @@ func _start_or_view_direct(binding: Dictionary, operation := "", turn := {}) -> 
 			"expected_revision":binding.get("updated", binding.get("revision", ""))}
 		starting_direct[start_key] = true
 		_update_direct_action()
-		var args := PackedStringArray([root.path_join("tools/gonggong_bridge.py"), "issue-start", "--workspace", root])
+		var args := PackedStringArray([_host_root().path_join("tools/gonggong_bridge.py"), "issue-start", "--workspace", root])
 		var result: Dictionary = await _host_command(args, "--out", start)
 		starting_direct.erase(start_key)
 		if user != actor or root != _repo():
@@ -4289,7 +4296,7 @@ func _publish_direct(source: String, message: String, kind: String) -> void:
 	_update_publish_controls()
 	publish_status.text = "正在创建或核对工单…"
 	_save()
-	var args := PackedStringArray([root.path_join("tools/gonggong_bridge.py"), "issue-direct", "--workspace", root])
+	var args := PackedStringArray([_host_root().path_join("tools/gonggong_bridge.py"), "issue-direct", "--workspace", root])
 	var result: Dictionary = await _host_command(args, "--out", request)
 	direct_in_flight.erase(source)
 	if user != actor or root != _repo():

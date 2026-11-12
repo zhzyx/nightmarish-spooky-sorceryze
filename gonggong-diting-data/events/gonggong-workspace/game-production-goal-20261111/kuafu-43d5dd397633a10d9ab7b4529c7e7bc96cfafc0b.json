@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-43d5dd397633a10d9ab7b4529c7e7bc96cfafc0b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c4d11cab626da11083a98adc819ac81877ecbaf5c6038be494b6bd219895f92e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "7813a30245c65427094934fd29590b98c1a1dd96",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "data-collection/editor-production-recovery-773.json",
+    "diagnosis": "Current editor executable and hash now supplied and bound by native dispatch, independently reviewed; Node49tests plus native Codex/CodeBuddy stdin checks passed. Actual private run r3 resumed the original game after cold start without producer replay. Fresh reviewer still unknown because old producer evidence lacks authoritative runtime/baseline and generic delegation independence remains unknown. Parent model itself ran player3466 and HUD19 assertions with unchanged source/config hashes, but ordinary-game delegate_review rejected missing parent/candidate binding. These are later business evidence/continuation gaps, not transport success. No old registration or candidate was forged to pass.",
+    "next_action": "Deliver scoped runtime/recovery fixes after latest-main validation; keep parent773 open and continue ordinary-game missing-evidence/independent review continuation and blocked-prelaunch retry correction under original authority.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T00:01:48.319736+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T01:05:20.530750+00:00",
+  "sha256": "f7c352bdd344ddc20ddacf5dc5c5be52c1ddb0708a148580908ff2426defdaf0"
+}

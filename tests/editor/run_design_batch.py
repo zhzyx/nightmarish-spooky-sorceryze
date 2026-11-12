@@ -27,6 +27,7 @@ from pathlib import Path
 from editor_test_isolation import copy_editor
 
 ROOT = Path(__file__).resolve().parents[2]
+GAME_WORKSPACE = False
 REQUEST = "design-batch-fixture"
 SECRET = "design-batch-isolated-secret"
 CASES = [
@@ -195,11 +196,15 @@ def main():
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--case", choices=CASES, default="normal")
     parser.add_argument(
+        "--task-native-review", action="store_true", help="Authorize parent native operations before read-only review"
+    )
+    parser.add_argument(
         "--expect-stalled",
         action="store_true",
         help="Record a reproduced wakeup defect separately; never report feature acceptance",
     )
     args = parser.parse_args()
+    assert not args.task_native_review or args.case == "review"
     # This offline runner binds its own fixture; never inherit a live work order.
     os.environ.pop("GONGGONG_WORKSPACE", None)
     if args.expect_stalled and args.case not in MODELS_WAKE_CASES:
@@ -244,6 +249,9 @@ def main():
             }),
             "gonggong-diting-data/.gitattributes": "* text eol=lf\n",
         }
+        if GAME_WORKSPACE:
+            for name in ("SConstruct", "tools/gonggong_bridge.py", "tools/editor_self_build.py", "editor/source.cpp"):
+                del files[name]
         for name, content in files.items():
             path = original / name
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -323,10 +331,18 @@ def main():
             + repr(shutil.which("git"))
             + ",*a]))\n",
         )
-        binary = copy_editor(args.godot, folder / "isolated-editor")
+        installation = folder / "installation" if GAME_WORKSPACE else folder
+        installation.mkdir(exist_ok=True)
+        binary = copy_editor(args.godot, installation / "isolated-editor")
         # The bare offline engine locates its read-only tools independently of CLI settings.
-        (folder / "SConstruct").touch()
-        if args.case.startswith("parallel-"):
+        (installation / "SConstruct").touch()
+        if GAME_WORKSPACE:
+            for name in ("tools", "customizations", "integrations", "framework", ".github"):
+                shutil.copytree(
+                    ROOT / name, installation / name, ignore=shutil.ignore_patterns("node_modules", "__pycache__")
+                )
+            shutil.copyfile(ROOT / "CURRENT_FRAMEWORK.json", installation / "CURRENT_FRAMEWORK.json")
+        elif args.case.startswith("parallel-"):
             shutil.copytree(
                 ROOT / "tools", folder / "tools", ignore=shutil.ignore_patterns("node_modules", "__pycache__")
             )
@@ -392,6 +408,10 @@ def main():
             )
 
         def candidate(stage):
+            if GAME_WORKSPACE:
+                assert not bindings(), "Ordinary game unexpectedly entered engine self-iteration"
+                targets[stage] = original
+                return original
             matches = bindings()
             assert matches, "Host did not prepare an isolated candidate"
             if stage not in targets:
@@ -476,10 +496,10 @@ def main():
                     return message
                 if stages[stage] == 2:
                     context = json.loads(results[stage + "-context"])
-                    assert context["ok"] and context["untrusted"] and context["request_id"] == REQUEST
+                    assert context["ok"] and context["untrusted"] and context["request_id"] == REQUEST, context
                     assert (
                         "UNTRUSTED_FIXTURE_FILE" in results[stage + "-read"] and SECRET not in results[stage + "-read"]
-                    )
+                    ), results[stage + "-read"]
                     # An adversarial API response deliberately proposes tools
                     # absent from its schema. The actual host must reject all.
                     forbidden = {
@@ -490,6 +510,14 @@ def main():
                         "complete_delivery": {},
                         "editor_action": {"action": "main_screen", "value": "2D"},
                     }
+                    if args.task_native_review:
+                        forbidden["editor_action"] = {
+                            "action": "scene_create_node",
+                            "target": ".",
+                            "type": "Node2D",
+                            "name": "ReviewForbidden",
+                            "task_native_authorization": True,
+                        }
                     message = {"role": "assistant", "content": "Adversarial fixture only", "tool_calls": []}
                     for name, arguments in forbidden.items():
                         message["tool_calls"].append(
@@ -518,6 +546,8 @@ def main():
                             excerpt.parent.symlink_to(other, target_is_directory=True)
                 denied = [value for key, value in results.items() if key.startswith(stage + "-deny-")]
                 assert len(denied) == 6 and all("Consultation only permits read tools" in value for value in denied)
+                if args.task_native_review:
+                    print("TASK_REVIEW_NATIVE_DENIED", json.dumps(denied), flush=True)
                 assert not (targets["parent"] / "forbidden.txt").exists()
                 assert not (targets["parent"] / "forbidden-command").exists()
                 return {
@@ -1071,6 +1101,7 @@ def main():
             DESIGN_BATCH_CASE=args.case,
             DESIGN_BATCH_PROJECT=str(project),
             DESIGN_BATCH_PHASE="initial",
+            DESIGN_BATCH_TASK_NATIVE_REVIEW="1" if args.task_native_review else "0",
             DESIGN_BATCH_EXPECT_STALLED="1" if args.expect_stalled else "0",
             GONGGONG_GH=str(gh),
             GONGGONG_GIT=shutil.which("git") if os.name == "nt" else str(git_wrapper),

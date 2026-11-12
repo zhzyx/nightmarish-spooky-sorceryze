@@ -32,6 +32,7 @@ class DirectIssueTests(unittest.TestCase):
         subprocess.run(["git", "init", "-q", str(self.root)], check=True)
         (self.root / ".github").mkdir()
         (self.root / ".github/labels.json").write_text('[{"name":"type:development"}]')
+        shutil.copy(HOST.parents[2] / ".github/status-labels.json", self.root / ".github/status-labels.json")
         (self.root / "work-items.json").write_text('{"repository":"test/repo","tenant_id":"test"}')
         folder = self.root / "customizations/components/issue-workorders"
         folder.mkdir(parents=True)
@@ -68,6 +69,11 @@ class DirectIssueTests(unittest.TestCase):
         return context.start()
 
     def gh(self, *args):
+        if args == ("api", "repos/test/repo"):
+            return '{"full_name":"test/repo","permissions":{"push":true}}'
+        if args[:2] == ("api", "repos/test/repo/labels?per_page=100"):
+            definitions = json.loads((self.root / ".github/status-labels.json").read_text())
+            return json.dumps([definitions + [{"name": "workspace:gonggong"}, {"name": "type:development"}]])
         if args == ("api", "user"):
             return '{"login":"alice","id":7}'
         if args == ("api", "user", "--jq", ".id"):

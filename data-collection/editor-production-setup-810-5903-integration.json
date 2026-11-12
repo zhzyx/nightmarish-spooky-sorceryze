@@ -1,0 +1,76 @@
+{
+  "issue_number": 810,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810",
+  "request_id": "editor-production-setup-20261112",
+  "parent_issue": 773,
+  "base": "5903fb96fee73c0d68967bf953abcd0a5d265fcb",
+  "candidate": {
+    "commit": "140d8caad921baf636b14e41a46c4414174b45e3",
+    "binary_sha256": "cc4715ae94cfb62bc534889d3398b2465ddc39f4e6c5620b835ddb0b9770a58f",
+    "engine_sha256": "964eb0a00ecf32f56e9cef9ec15cc61c34bc39899e54936f56f126c48659a230",
+    "source_sha256": {
+      "editor/docks/ai_chat_dock.cpp": "4f2614e1768a147c5622d2665901224cbf823f6bff33b02c94efbbb1c6a98f83",
+      "editor/docks/ai_chat_dock.h": "f49a9e21623ba3784236d9f4c784fc38d39b1d70b2df6dc244fee35930543a85",
+      "editor/docks/ai_chat_sub_agents.cpp": "eef932eff38f4f089da51bde0be723870b09646afe762f8bd9ea706eefc47ab4",
+      "editor/editor_node.cpp": "d5987bbfab7e103689da47af53174e0fe01bc841bbde202ca017e08fe1f9980b",
+      "editor/plugins/unified_settings_editor_plugin.cpp": "445ecf569722d8ccb798defde29a19e6a8ffe0562d4b254758328c61f1a4ae40",
+      "samples/ainative-workbench/addons/ainative/workbench.gd": "a7c304cd3dd580780936bfcc0e24776967b6621cac6f139394596cd311ec75c4",
+      "tools/godot_parallel/setup.mjs": "fd558acac3fc736f010acddcc258a2349f4e10d33543a388ae16c07339eb22dd"
+    },
+    "build_result": "passed",
+    "build_command": "python -X utf8 -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no tests=yes accesskit=no d3d12=no angle=no warnings=extra werror=yes cache_path=D:/GongGong/.git/gonggong-native-cache -j8"
+  },
+  "checks": [
+    {
+      "test": "layout",
+      "exit": 0,
+      "seconds": 50.987326860427856
+    },
+    {
+      "test": "project-ai",
+      "exit": 0,
+      "seconds": 32.23133730888367
+    },
+    {
+      "test": "unified-settings",
+      "exit": 0,
+      "seconds": 18.96334195137024
+    },
+    {
+      "test": "codex",
+      "exit": 0,
+      "seconds": 45.602853775024414
+    },
+    {
+      "test": "codebuddy",
+      "exit": 0,
+      "seconds": 40.08543252944946
+    },
+    {
+      "test": "helper",
+      "exit": 0,
+      "seconds": 88.93972611427307
+    },
+    {
+      "test": "aichat",
+      "exit": 0,
+      "seconds": 6.8977532386779785
+    }
+  ],
+  "private_receipt_sha256": "f573e3154b3760cec9c4ce07e73e499375f3dea2a2332f24878643956ee77c62",
+  "independent_integration_review": {
+    "reviewer": "root (independent of integration agent sinan_6359884886d8ff02)",
+    "scope": "Three final UI/test corrections against main 5903: clipped single-line configuration summary with full tooltip; short-height chat minimum; layout scroller positioning and all-screen menu assertion; close unrelated fixture-only runtime modal before keyboard input. Inspected exact diffs and call sites.",
+    "findings": []
+  },
+  "stash_handoff_correction": {
+    "reported_hash": "6c5b06f4915344710e5aa4ff80fa2fa36df61fae",
+    "actual_owned_hash": "135a3d753fe227f7768cff8ed8f3abb923dfa76a",
+    "verification": "Exact untracked signature-event bytes in actual owned stash match current #810 event. Reported hash belongs to #845; no cross-tree mutation observed, both stashes retained."
+  },
+  "limits": [
+    "No real-provider or final installed acceptance in this receipt.",
+    "Final source includes uncommitted corrections bound by listed hashes; do not equate HEAD alone with tested tree.",
+    "Combined parent validation may reveal further interactions; original receipts remain immutable."
+  ]
+}

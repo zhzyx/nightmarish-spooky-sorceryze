@@ -86,6 +86,28 @@ TEST_CASE("[Editor][AIChat] Recorded candidate directory preserves identity acro
 		CHECK_FALSE(AIChatHostRuntime::validate_candidate_checkout(candidate, error));
 		CHECK(error.begins_with("candidate_repository_or_base_changed"));
 	}
+	const String game_receipt = OS::get_singleton()->get_environment("GONGGONG_TEST_GAME_CANDIDATE_RECEIPT");
+	if (!game_receipt.is_empty()) {
+		const Dictionary game = JSON::parse_string(FileAccess::get_file_as_string(game_receipt));
+		String error;
+		const String game_common = AIChatHostRuntime::checkout_common_directory(game["source_root"]);
+		CHECK(game_common == String(game["common_dir"]));
+		CHECK_FALSE(AIChatHostRuntime::validate_candidate_checkout(game, error));
+		CHECK(error.begins_with("candidate_source_changed"));
+		REQUIRE_MESSAGE(AIChatHostRuntime::validate_candidate_checkout(game, error, false), error.utf8().get_data());
+		Dictionary changed = game.duplicate(true);
+		changed["common_dir"] = path;
+		CHECK_FALSE(AIChatHostRuntime::validate_candidate_checkout(changed, error, false));
+		CHECK(error.begins_with("candidate_repository_or_base_changed"));
+		changed = game.duplicate(true);
+		changed["branch"] = String(game["branch"]) + "-different";
+		CHECK_FALSE(AIChatHostRuntime::validate_candidate_checkout(changed, error, false));
+		CHECK(error.begins_with("candidate_branch_changed"));
+		changed = game.duplicate(true);
+		changed["base_sha"] = "0000000000000000000000000000000000000000";
+		CHECK_FALSE(AIChatHostRuntime::validate_candidate_checkout(changed, error, false));
+		CHECK(error.begins_with("candidate_repository_or_base_changed"));
+	}
 }
 
 class RuntimeConfigTestAccess {

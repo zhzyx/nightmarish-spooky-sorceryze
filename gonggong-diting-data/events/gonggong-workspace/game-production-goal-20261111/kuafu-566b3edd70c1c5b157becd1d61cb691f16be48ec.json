@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-566b3edd70c1c5b157becd1d61cb691f16be48ec",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2995af878fdc8b589f654445f626383c6a6e65b6e888ce9cb61a1f43056b6d15",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "8d4f1aea897ded852e0564ce8c100727ea8ccd0b",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "diagnosis": "Combined candidate found a missing private fixture framework after host separation, actual narrow-screen clipping from new checkbox captions, and an existence-before-content race in the fixture terminal sentinel. Assigned integration worker repaired the private fixture installation and atomically publishes its verdict; product adds both new checkboxes to existing clipping policy, retaining tooltips. Root independently reviewed the exact incremental diffs. Final tree 6f29990271c302f16828c5927653b02764048d8b, console SHA25620c275d93d914a5f7ae64b4b5bf40e3daf5ec17abbb47105ee8f72acff9329ea passed full1561 native tests, actual cold ordinary-game flow, task authorization first import, diagnostics, six layouts and settings. Original failed runs retained.",
+    "next_action": "Root takes completed candidate through exact formal delivery and actual-provider installed acceptance; parent773 remains open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T23:40:43.716407+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T23:56:25.190902+00:00",
+  "sha256": "28e8b9f0a1b025f9bd4e896ee4bbf2c278c8afaa31fe2f69b9abccedbc5cdb17"
+}

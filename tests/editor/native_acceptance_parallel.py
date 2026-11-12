@@ -11,7 +11,7 @@ folder = None
 returns: list[str] = []
 
 
-def prepare(env):
+def prepare(env, manual_config=True):
     global folder
     folder = Path(env["DESIGN_BATCH_ROOT"]).parent
     original = Path(env["DESIGN_BATCH_ROOT"])
@@ -47,9 +47,10 @@ def prepare(env):
         capture_output=True,
     )
     subprocess.run(["git", "-C", str(original), "push", "origin", "HEAD:main"], check=True, capture_output=True)
-    env["NATIVE_PARALLEL_CONFIG"] = str(folder / "parallel-config.json")
     env["PATH"] = str(Path(env["DESIGN_BATCH_NODE"]).parent) + os.pathsep + env["PATH"]
-    (folder / "parallel-config.json").write_text("{}", encoding="utf8")
+    if manual_config:
+        env["NATIVE_PARALLEL_CONFIG"] = str(folder / "parallel-config.json")
+        (folder / "parallel-config.json").write_text("{}", encoding="utf8")
 
 
 def setup(scenario="parallel"):

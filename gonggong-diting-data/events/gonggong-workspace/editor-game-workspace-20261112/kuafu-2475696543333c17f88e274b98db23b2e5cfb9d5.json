@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2475696543333c17f88e274b98db23b2e5cfb9d5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-game-workspace-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/821",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "459476da5ba158c31b81a56dea4c408c0d076f94d1d2f7c5301e4a98b3ab2bab",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/821",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "971af97cc9d8e08a3c313a39ad59e0c6f904042b",
+    "context_sha256": "ffcc2bc27c19f956b4bfd7a08107db0e207902936b8874e4a76b40954d863187",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/821",
+    "evidence": "collaboration.final:/root/sinan_18584c0984efd1db:formal-gate-and-first-publication-blockers",
+    "diagnosis": "Independent review reproduced formal gate resolving framework/storage from game data root and first normal publication bypassing label preparation.",
+    "next_action": "Assigned isolated adapter repair worker; rerun minimal-game formal delivery and shared confirmed publication, then independent review and native combination.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T20:22:20.444419+00:00",
+    "attempted": null,
+    "repair_owner": "/root/sinan_a7e2157d62d42404",
+    "continuable": "Native fixture and task-authorization work continue independently."
+  },
+  "occurred_at": "2026-11-11T20:38:23.361835+00:00",
+  "sha256": "6c230a62f683bee07719cf882cd75a35d5eb4c0a7f15ae7540d7f478a2426861"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3ebb1d03c3fa0e701439535b1509f8c7cfcb93d4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c3b4865831de23568aa0e0f28ac72405b08cda8fa5e70bf27cc91194a0685198",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "dispatch",
+    "detection_head": "8d4f1aea897ded852e0564ce8c100727ea8ccd0b",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "diagnosis": "Host orchestration supplied worker.completed instead of the existing protocol execution.finished enum, so reconciliation correctly failed before launching any verify request. Corrected only the local event configuration, preserved failed config, then took verify_worker once and responded after actual FINAL plus collaboration.list_agents showed the assigned worker completed. Reconciliation receipt is now terminal and original unknown occupancy remains untouched.",
+    "next_action": "Continue final candidate delivery; use the existing terminal config schema for subsequent events. This is host invocation correction, not a product or worker failure.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T23:54:15.900032+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T23:58:35.553886+00:00",
+  "sha256": "8e4ce231518b60870ace597ab894bfa911c47f2e1e3ee805025aa208399a3fc5"
+}

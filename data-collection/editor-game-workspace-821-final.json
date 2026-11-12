@@ -1,0 +1,164 @@
+{
+  "issue_number": 821,
+  "request_id": "editor-game-workspace-20261112",
+  "recorded_at": "2026-11-11T21:27:41.701398+00:00",
+  "source_head": "971af97cc9d8e08a3c313a39ad59e0c6f904042b",
+  "path_base": "repository_root",
+  "scope": "Ordinary game native workflow with separate installed host; controlled model and GitHub transports. Local validation only; main delivery and real-provider acceptance remain pending.",
+  "binary_sha256": "6544f5077267341d4abc778e5d1c70c136466f9c2700117334b05343f4b51a97",
+  "input_sha256": {
+    "customizations/components/godot-host/bridge.py": "97231e8dd92f2ddf6618b640b3429f05732681bf36d5dd6fae0f47e0981638e9",
+    "customizations/components/godot-host/daqian/board.py": "b4df0fd7ab6f7350aee0c4e8f33d200d23fe2f6b2293b289f1f234eb6bba5cc2",
+    "customizations/components/godot-host/requirements_agent.py": "96ae570e8aafaf211c8566482c9e661288bd8635405ce72080a8095c189e20e5",
+    "customizations/components/godot-host/test_bridge.py": "78ed6f47d495333fd41f8bdf2dffc446a9559671e75fec0466de499ec1746f76",
+    "customizations/components/godot-host/test_direct_issue.py": "753b70957e340784caf056c8be93550003643a37ae0090e190c829e997163058",
+    "customizations/components/godot-host/test_issue_guide.py": "1f28532462d70c88e30f447126084e8bc247c693233e26b03a0695d3dddb1615",
+    "customizations/components/godot-host/workspace_paths.py": "fb2550e131f243f4489c1aebefd467fa857a9f7ff4bd6fd040ea56a84b68794c",
+    "customizations/components/issue-workorders/issue_gate.py": "a397c6a7a2cd44ed806fced45a8e9ec1faef55df0bee5faf8297790fc713bbca",
+    "customizations/components/issue-workorders/test_work_items.py": "74d3eb8ef0440cddc4f06f1bc88d60985a8ac156d8547bce15b2e29d9b92cf48",
+    "customizations/components/issue-workorders/test_writer_submit.py": "ee663917b30ed350483a4bf8a1acc32036b3e00a4b10431de4e8880914ebafee",
+    "customizations/components/issue-workorders/work_items.py": "27c923f79f164834827b954c8b97dc1a186d6090257e7d284b51300e69d722bd",
+    "customizations/components/issue-workorders/writer_submit.py": "7138d0a6d1391b874de94296d83375b7e0be6c9bf418d6f04915b6f13cd0b8d4",
+    "editor/docks/ai_chat_dock.cpp": "246f14d5542c56b3401a943759bd51bda34662a672c461309d8702e8fb9db441",
+    "editor/docks/ai_chat_dock.h": "d7fc238eb5557f73b246592ba9ba2890e2a6a5fc20750278b7509dbb30681d64",
+    "editor/docks/ai_chat_engine_candidate.cpp": "601ade62aebf41ad73f47333389ec89cbba6a1fcb71a92e6e780b1dc3b8ff4a7",
+    "editor/docks/ai_chat_gonggong.cpp": "d35b45faed4150563c29f0b1c27bfaead47ffb56833a5698c80b8d3e93ac0e16",
+    "editor/docks/ai_chat_host_runtime.h": "87eb30355cc36aa63a1fe572976a0f9fda2833d42dcad8509900fc685ab58926",
+    "editor/docks/ai_chat_sub_agents.cpp": "17a193009557120845eb93de522f2741a4c1cf2249e470058ba02e780d442c30",
+    "editor/docks/daqian/workspace.gd": "cc1d97227028636062a05f4d9ed55b67446ed0d5009623fb882af6cd8a2adf08",
+    "editor/docks/gonggong_panel.cpp": "163d7ad398a0dc6fc0d063c90404b69e30103b4ba51fb5f82a73fc5457899586",
+    "tests/editor/run_design_batch.py": "cea378aab920731cafd04c88e7b1153d56460a9f72443c1b2f1df1ca57f08332",
+    "tests/editor/run_native_acceptance.py": "0603bba08a92a2cc7d0b9018eeba1feca7ce410e27f541723d5905ac86ec71eb",
+    "tests/editor/run_native_production_setup.py": "158b06e885131a56deec580c3b08ac6c179e4ef078463b61d37a7805fa3012d6",
+    "tests/editor/test_parallel_work_orders.mjs": "e928af71270758d682e01a33db3868b11875e7e3e5723068a61c2e5cbc70c8b9",
+    "tests/editor/test_runtime_config.cpp": "de89122c333cbdb0326aad9a74e280ee39408b8c4e0d42e9610d46566852063f",
+    "tools/godot_parallel/runner.mjs": "9187edc0b9b4fbd620e2e423d1a4067cdee8a38c7c7fa11f4739329be37ac4d9",
+    "tools/gonggong_bridge.py": "04dc832a1a6adf114ce02bb353c3fe74449d633e9cb305dbb8cc594a5987afbe",
+    "customizations/components/godot-host/test_game_workspace.py": "44b2a043612ddf6b792dbbaaacdf02a926cf396dfea85dc7dc735ac94af5b59d",
+    "tests/editor/game_workspace_binding.gd": "6db0c7f82205a2a1286cf79540f2773fd81f47864384a6e6baa3c582e00f9738",
+    "tests/editor/native_game_integration.py": "eddb40cd5f10cfed1b4d2291ab7c031bc2d33a16437f8a98deb38036a6c735f0",
+    "tests/editor/run_game_workspace_binding.py": "c04e1f81510c6cf13e428ee2af7e87998c4e5db574832774a5fab987009684fa"
+  },
+  "checks": [
+    {
+      "suite": "test_game_workspace.py",
+      "passed": 11,
+      "log_sha256": "90b214227de4b70ce04bd68bbb8bf460be4496eb6be2cfee7afc50290ab7a8ed"
+    },
+    {
+      "suite": "test_issue_gate.py",
+      "passed": 17,
+      "log_sha256": "19eb7a9ac28e70a95299dff89101022b0704b780143a9a5d1c2fa8d07b3a7251"
+    },
+    {
+      "suite": "test_work_items.py",
+      "passed": 14,
+      "log_sha256": "11a38384802de8e9681453aebb6fb9bdb44a02adaba4f4adb23cdcc515d5b3f4"
+    },
+    {
+      "suite": "test_writer_submit.py",
+      "passed": 10,
+      "log_sha256": "e1812635580b4eca58a1efc9a230b740b30f8dedc39e72bd5ba572f0ef6e78b9"
+    },
+    {
+      "suite": "test_bridge.py",
+      "passed": 43,
+      "log_sha256": "80071fd3f5165a4d441de42490519d3a1a792bfa78076f147271c56da26b8219"
+    },
+    {
+      "suite": "test_requirements_agent.py",
+      "passed": 35,
+      "log_sha256": "e66a01c095f1f35c814948224f9adc036bf4248c4d505f8d7f2aee13f205a6c3"
+    },
+    {
+      "suite": "test_acceptance.py",
+      "passed": 8,
+      "log_sha256": "027a3d6140d8d3186fd899c279e01b8410f658270ca3820980c5c3d81af02fdb"
+    },
+    {
+      "suite": "test_direct_issue.py",
+      "passed": 25,
+      "log_sha256": "d32a9d0a6c9afd3817f13d0240f5d74da746c48bbbbdd6a93cab77b89d23a918"
+    },
+    {
+      "suite": "test_issue_guide.py-r3",
+      "passed": 13,
+      "log_sha256": "6008bbb8109007cd4ce461e947f7dee2af3f27009dc10a53ef434d23412f83dc"
+    },
+    {
+      "suite": "actual parallel lifecycle and installed candidate admission",
+      "passed": 47,
+      "log_sha256": "db8ebc236a0c5ed81d8f96b7e6717552858b89c7726a80fc7b1747a5278d6dea"
+    }
+  ],
+  "native_checks": {
+    "strict_windows_build": "passed warnings=extra werror=yes",
+    "complete_native_suite": {
+      "passed": 1560,
+      "assertions": 435575,
+      "skipped": 3,
+      "exit_code": 0
+    },
+    "ai_chat_identity_suite": {
+      "passed": 86,
+      "assertions": 1598,
+      "real_negative_cases": [
+        "wrong branch",
+        "wrong common directory",
+        "wrong baseline ancestry",
+        "ordinary game rejected by default engine requirement"
+      ]
+    },
+    "normal_controlled_game": {
+      "passed": true,
+      "workers": 2,
+      "completed_independent_reviewers": 2,
+      "bound_worker_receipts": 4,
+      "integration_operations": [
+        "list",
+        "plan",
+        "apply",
+        "rollback"
+      ],
+      "actual_game_output": "ORDINARY_GAME_EXECUTED",
+      "rollback_removes_output": true
+    }
+  },
+  "review": {
+    "worker": "/root/sinan_571a82546fd1b91b",
+    "result": "No new blocking findings; actual completed callback and host reconciliation verified. Read-only source and receipt review, no independent test execution.",
+    "scope": "Installed candidate pre-spawn admission; actual parent common-dir; live exact read-only review exception; saved state cannot grant engine-marker exemption."
+  },
+  "raw_private_evidence_sha256": {
+    "native-821-full-suite-python.log": "c1b35968e555da10b080cbe608422eee091c0517eaac2a423ba9fb94efc261fc",
+    "native-821-identity-and-ai-chat.log": "a598ecdda9762b6b51fe55e188009bae9ef3fdcdf2c304e855a842ffe88382cd",
+    "native-game-production-complete-r1.json": "360013faf4f59d581c8fdbc68246960a455160d18c5f67f98003b504738c72e6",
+    "native-game-production-complete-r2.json": "93bd9adffa26c3316f43bec15a426bad3b7c3f1cdc551e57835f6144718eed10",
+    "native-game-production-complete-r3.json": "d1b7e6c08011094bc22f07d3114d930180fdaeaac1ae8787fd0285b0492cd369",
+    "native-game-production-complete-r4.json": "411f115ebebfa96782ecc7580bc31d8de3f38ea435a9d66761385194033c7601",
+    "combined-810-821-review-tests-build-r2.log": "c419f2c5d8cacc1a331828ea151ab17668277cb8614324a3863e64f2ffae18ab",
+    "editor-game-workspace-821-runner-regression-before.txt": "885bc98c95728f6697e6a8021261e6ac8c8d8c116a2386fd9764ef40df442a24",
+    "editor-game-workspace-821-runner-regression-after.txt": "22df8795270b20b63b96c82d5452581e6d5ea3d4892318283e347f2c4f8240ed",
+    "formatted-test_issue_guide.py.log": "e3eb2c8536e572cfae899f97524f3234787cd6df56f94a8cc46d8ed71eac6e71",
+    "formatted-test_issue_guide.py-r2.log": "dd947d7b4ba2bebbd38379a999ed199af08b79b2d8a338e94e83ca6d95e7def8"
+  },
+  "historical_public_evidence": {
+    "editor-game-workspace-821.json": "54f397bf5cb8cee15f0a64e453c867fa8c84ff7d024204f63761a2a3c6941a67",
+    "editor-game-workspace-821-failures.json": "d60caaf92efcb7e5e464627e1b94f8f5e7cd4e6f6ca57dbd1e4c574fc768fc42"
+  },
+  "corrections": [
+    "Trusted installed formal validation and first-publish labels",
+    "Installed candidate framework admission before worker spawn, including deleted framework history",
+    "Windows tool preflight resolves installed host",
+    "Ordinary game reviewer receives actual parent Git identity; engine marker waiver only from live host review context",
+    "Old publication test stubs updated for actual repository write-permission read and status-label preparation; 13 final cases pass"
+  ],
+  "limitations": [
+    "Controlled model/GitHub and issue-agent/chat/flush transport; not real-provider or first-publication acceptance",
+    "Ordinary game cold restart integration not established by this receipt",
+    "No installed editor switch or final combined task-authorization binary yet",
+    "Native logs preserve existing teardown diagnostics; not leak-free or visual validation",
+    "CI for dependency PR826 remains queued with no jobs; no main delivery claim",
+    "Private logs retained by this host; hashes bind observations but are not publicly replayable raw artifacts"
+  ]
+}

@@ -189,8 +189,8 @@ func _run(action: String, input: Dictionary) -> void:
 	if pending:
 		return
 	last_result = {"status":"needs_configuration", "message":"请核对工作区身份与模型运行环境。"}
-	var settings := EditorInterface.get_editor_settings()
-	var root: String = str(settings.get_setting("gonggong/workspace")) if settings.has_setting("gonggong/workspace") else ""
+	var root: String = str(chat.get_production_workspace()) if is_instance_valid(chat) else ""
+	var host_root: String = str(chat.get_installed_host_root()) if is_instance_valid(chat) else ""
 	if embedded and (authorized_root != root or user_id.is_empty()):
 		clear_embedded_access()
 		info.text = "工作区或身份已改变，请重新核对模型库访问身份。"
@@ -205,9 +205,9 @@ func _run(action: String, input: Dictionary) -> void:
 	if action == "connect-local":
 		input.cli_node = str(runtime.get("node", ""))
 		input.codex_entry = str(runtime.get("codex", ""))
-	var entry := root.path_join("customizations/components/godot-host/daqian/models_cli.py")
-	if not root.is_absolute_path() or not FileAccess.file_exists(entry):
-		info.text = "请绑定包含天枢模型接入的共工仓库"
+	var entry := host_root.path_join("customizations/components/godot-host/daqian/models_cli.py")
+	if not root.is_absolute_path() or not host_root.is_absolute_path() or not FileAccess.file_exists(entry):
+		info.text = "请核对当前项目和编辑器安装中的天枢模型接入"
 		return
 	if python.is_empty():
 		info.text = "请配置有效的工作流 Python 路径"
@@ -255,9 +255,10 @@ func _run(action: String, input: Dictionary) -> void:
 		last_result = {"status":"timeout", "message":"模型库刷新超时，请检查网络后重试。"}
 		info.text = last_result.message
 		return
-	var current_root: String = str(settings.get_setting("gonggong/workspace")) if settings.has_setting("gonggong/workspace") else ""
+	var current_root: String = str(chat.get_production_workspace()) if is_instance_valid(chat) else ""
+	var current_host: String = str(chat.get_installed_host_root()) if is_instance_valid(chat) else ""
 	var current_runtime: Dictionary = chat.get_runtime_configuration().get("executables", {}) if is_instance_valid(chat) else {}
-	if embedded and (generation != context_generation or authorized_root != root or current_root != root or runtime != current_runtime):
+	if embedded and (generation != context_generation or authorized_root != root or current_root != root or current_host != host_root or runtime != current_runtime):
 		last_result = {"status":"changed", "message":"配置已变化，请重新检查。"}
 		clear_embedded_access()
 		info.text = "设置上下文已改变，旧接入回执已保留，不应用到当前工作区。"
