@@ -152,13 +152,14 @@ func verify_generation_service_controls():
 	check(not panel.service_report.get("capabilities", {}).get("text_to_image", {}).get("ready", true) and not FileAccess.file_exists(panel.service_config_path), 'checking offline mode neither invents generation readiness nor writes configuration')
 	panel.service_choice.select(6)
 	panel.service_choice.item_selected.emit(6)
-	panel.kimi_model_edit.text = 'k3-256k'
+	panel.kimi_model_edit.text = 'obsolete-language-model'
+	panel.endpoint_edit.text = 'https://obsolete.invalid/v1'
 	panel.model3d_tool_edit.text = 'fixture-3d/model3d_generation_tool.py'
 	panel.model3d_pythonw_edit.text = 'fixture-3d/pythonw.exe'
 	var draft = panel.service_draft()
 	check(draft.get('mode') == 'kimi_native' and draft.get('model3d_model') == 'v3.1', 'Kimi Native uses direct Tripo API generation')
 	check(not draft.has('cli_path') and not draft.has('blender_path') and draft.image_model.is_empty() and draft.mesh_model.is_empty(), 'Kimi Native does not require Codex, Blender or ComfyUI model settings')
-	check(panel.kimi_model3d_fields.visible and not panel.kimi_model_edit.visible, 'Kimi Native exposes direct 3D settings instead of the legacy K3 planner')
+	check(panel.kimi_model3d_fields.visible and not panel.kimi_model_edit.visible and not panel.endpoint_edit.visible and not panel.endpoint_edit.editable and draft.endpoint.is_empty() and not draft.has('kimi_model'), 'Kimi Native exposes direct 3D settings and discards obsolete language model routing')
 	check(panel._generator_provider('text_to_mesh') == 'kimi_native' and panel._generator_provider('image_to_mesh') == 'kimi_native' and panel._generator_provider('model_adjust') == 'kimi_native', 'both Mesh generation kinds and model adjustment route to Kimi Native')
 	check(panel._generator_provider('text_to_image') == 'kimi_work_image' and panel._generator_provider('image_to_image') == 'kimi_work_image', 'both 2D kinds route to the independent Kimi Work image service')
 	check(panel.get('model3d_tool_edit') is LineEdit and panel.get('model3d_pythonw_edit') is LineEdit and panel.get('kimi_image_tool_edit') is LineEdit and panel.get('kimi_image_pythonw_edit') is LineEdit, 'native settings expose independent 3D and 2D tools')
@@ -173,7 +174,7 @@ func verify_generation_service_controls():
 	root.add_child(restored)
 	restored.hide()
 	await process_frame
-	check(restored._service_mode() == 'kimi_native' and restored.service_saved == draft and restored.kimi_model_edit.text == 'k3-256k' and restored.model3d_tool_edit.text == draft.model3d_tool_path and restored.model3d_pythonw_edit.text == draft.model3d_pythonw_path, 'Kimi Native settings survive a real Workbench reopen')
+	check(restored._service_mode() == 'kimi_native' and restored.service_saved == draft and restored.service_saved.endpoint.is_empty() and not restored.service_saved.has('kimi_model') and not restored.endpoint_edit.visible and restored.model3d_tool_edit.text == draft.model3d_tool_path and restored.model3d_pythonw_edit.text == draft.model3d_pythonw_path, 'Kimi Native settings survive a real Workbench reopen')
 	restored.queue_free()
 	await process_frame
 	panel.service_choice.select(0)

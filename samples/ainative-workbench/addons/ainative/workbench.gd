@@ -1755,8 +1755,8 @@ func _restore_service_settings(settings: ConfigFile):
 				service_saved['godot_path'] = str(loaded.get('godot_path', ''))
 				service_saved['builder_path'] = str(loaded.get('builder_path', ''))
 			if service_saved.mode == 'kimi_native':
-				service_saved['kimi_model'] = str(loaded.get('kimi_model', 'k3.1-pro'))
-				kimi_model_edit.text = service_saved.kimi_model
+				# Old route fields do not select the SDK tools or authenticate them.
+				service_saved.endpoint = ''
 			if service_saved.mode in ['api_modeling', 'api_sculpt']:
 				service_saved['api_model'] = str(loaded.get('api_model', ''))
 				service_saved['api_key_env'] = str(loaded.get('api_key_env', 'AINATIVE_API_KEY'))
@@ -1835,7 +1835,7 @@ func service_draft() -> Dictionary:
 		value.endpoint = ''
 	if value.mode == 'kimi_native':
 		value.image_model = ''
-		value['kimi_model'] = kimi_model_edit.text.strip_edges()
+		value.endpoint = ''
 		value['image_tool_path'] = kimi_image_tool_edit.text.strip_edges()
 		value['image_pythonw_path'] = kimi_image_pythonw_edit.text.strip_edges()
 		value['model3d_tool_path'] = model3d_tool_edit.text.strip_edges()
@@ -1871,8 +1871,6 @@ func _set_model_options(choice: OptionButton, names: Array, selected_name: Strin
 
 func _service_settings_changed():
 	if service_ui_loading: return
-	if _service_mode() == 'kimi_native' and endpoint_edit.text.strip_edges() == 'http://127.0.0.1:8188':
-		endpoint_edit.text = 'https://api.kimi.com/coding/v1'
 	service_report = {}
 	service_report_draft = ""
 	_update_service_summary()
@@ -1903,10 +1901,10 @@ func _update_service_summary():
 	if service_guide != null: service_guide.visible = not cli_mode and not kimi_mode and not api_mode
 	if cli_mode and _model_name(image_model_choice) != 'builtin':
 		_set_model_options(image_model_choice, ['builtin'], 'builtin', true)
-	endpoint_edit.visible = not cli_mode
-	endpoint_edit.editable = mode in ['comfy', 'kimi_native', 'local_mesh', 'api_modeling', 'api_sculpt']
+	endpoint_edit.visible = not cli_mode and not kimi_mode
+	endpoint_edit.editable = mode in ['comfy', 'local_mesh', 'api_modeling', 'api_sculpt']
 	kimi_model_label.text = 'API 模型 ID' if mode in ['api_modeling', 'api_sculpt'] else 'Kimi 模型'
-	kimi_auth_label.text = '凭据环境变量：' + str(service_saved.get('api_key_env', 'AINATIVE_API_KEY')) + '；检测仅核对本机配置，运行时验证接口。' if mode in ['api_modeling', 'api_sculpt'] else 'Tripo API 与 Kimi Work 凭据由 agent-gw SDK 管理，不写入工作流或日志。'
+	kimi_auth_label.text = '凭据环境变量：' + str(service_saved.get('api_key_env', 'AINATIVE_API_KEY')) + '；检测仅核对本机配置，运行时验证接口。' if mode in ['api_modeling', 'api_sculpt'] else 'Tripo API 与 Kimi Work 凭据由 agent-gw SDK 管理。检测仅核对本机工具；账号授权、额度与网络尚未验证，以实际任务回执为准。无需配置 Kimi 语言模型地址或模型。'
 	kimi_model_label.visible = api_mode
 	kimi_model_edit.visible = api_mode
 	kimi_auth_label.visible = kimi_mode or api_mode
@@ -1968,11 +1966,6 @@ func save_service_settings():
 	if draft.mode in ['comfy', 'codex'] and not _valid_service_endpoint(draft.endpoint):
 		_show_run_problem("服务地址应为 http:// 或 https:// 加主机与端口，不可包含账号、密码、查询参数或路径。请修正后重新检测。")
 		return
-	if draft.mode == 'kimi_native':
-		draft.endpoint = draft.endpoint.trim_suffix('/')
-		if draft.endpoint not in ['https://api.kimi.com/coding/v1', 'https://api.moonshot.cn/v1', 'https://api.moonshot.ai/v1'] or draft.kimi_model not in ['k3', 'k3-256k', 'k3.1-pro', 'k3.1-pro-highspeed']:
-			_show_run_problem('请选择官方 Kimi HTTPS 接口和受支持的 K3／K3.1 模型；地址不可包含凭据或额外路径。')
-			return
 	if draft.mode in ['local_mesh', 'api_modeling', 'api_sculpt']:
 		var authority = draft.endpoint.get_slice('/', 2)
 		if authority.contains(':') and not authority.ends_with(']'):

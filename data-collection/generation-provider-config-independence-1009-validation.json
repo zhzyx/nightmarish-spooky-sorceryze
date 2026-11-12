@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "issue": 1009,
+  "parent_issue": 978,
+  "request_id": "generation-provider-config-independence-20261113",
+  "path_base": "repository_root",
+  "source_head": "69a7a624a6d0f932bf02ebcc33d60427193629f3",
+  "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+  "worker": "/root/sinan_6bc51a2bd43052ae",
+  "status": "local_validation_passed_pending_independent_review_and_delivery",
+  "source_sha256": {
+    "design-docs/generation-provider-config-independence-20261113.md": "83f432c4e1a08e7e67ff132ff06df7264501124faf9223e2f40a4205ff1835fb",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "875612a8706c734e2cca03b362703eb75499f783b5c20e13c52da4237dee0328",
+    "samples/ainative-workbench/generation_service_acceptance.gd": "b627c0c831604ddb396579736f94a97f29e79b4a6e578339029871763807cdb1",
+    "tools/ainative/generation_service.py": "2e32726302b7b41ba0e59441a671ae8d632be5518ad0de64587fc93276bf9c57",
+    "tools/ainative/test_generation_service_gui.py": "f4a9bdaea2a76766ff4d70a0d548acd21b32ab180066b6b05c0523511fa5e841",
+    "tools/ainative/test_kimi_service.py": "b56f8c24d612b56af22af96e4d7e923bf4615129f137c1b88ab430b6f5356964"
+  },
+  "tests": {
+    "python": {
+      "total": 56,
+      "passed": 55,
+      "skipped": 1,
+      "skip_reason": "Windows MAX_PATH regression on macOS"
+    },
+    "headless_candidate_script": {
+      "total": 96,
+      "passed": 96
+    },
+    "unified_settings": {
+      "total": 26,
+      "passed": 26
+    },
+    "ruff": "pass",
+    "ruff_format": "pass",
+    "mypy": "pass: 3 source files",
+    "diff_check": "pass"
+  },
+  "binary": {
+    "sha256": "7dfa08450f20a385ec83426201e6fbec7a64e8ffe32b2c65661be666d58c3ecd",
+    "source_issue": 1003,
+    "scope": "Borrowed macOS binary executes this candidate source GDScript; does not embed Issue1009 UI"
+  },
+  "coverage": [
+    "Current endpoint/kimi_model normalized before validation, including malformed obsolete JSON values",
+    "Save/load/draft/probe consistency; persisted migration on explicit save only",
+    "SDK model3d_model/texture_model identities and tool/runtime checks preserved",
+    "Contact-sheet Godot/builder runtime consumers preserved",
+    "Other services still validate actual endpoints",
+    "Direct snapshots restore direct provider; historical planner snapshots keep original endpoint/model/provider and reject invalid originals",
+    "SDK auth label separates local tool readiness from unknown account/quota/network"
+  ],
+  "initial_failures": [
+    {
+      "scope": "headless added persistence assertion",
+      "result": "95/96",
+      "cause": "JSON numeric type equality in fixture; use existing canonical same_settings helper",
+      "resolved": true
+    },
+    {
+      "scope": "broad Python suite",
+      "result": "53 pass, 1 failure, 2 skip",
+      "cause": "Fixture PYTHON fallback command absent; rerun with explicit trusted Python and borrowed Godot",
+      "resolved": true
+    },
+    {
+      "scope": "unified settings invocation",
+      "cause": "Required --godot and --report initially omitted; corrected invocation passed",
+      "resolved": true
+    }
+  ],
+  "raw_receipts": {
+    "path_base": "repository_root",
+    "directory": "data-collection/receipts/generation-provider-config-independence-1009",
+    "sha256": {
+      "headless.json": "251cab1491e9d08c0c3eff7d5655c0024617e5cf3be67568a36f47f1ac2ad060",
+      "headless.log": "faa5d6ba8c11c73d0e450e48750c96c3d9627e768487bba3c654a0deef57b49d",
+      "initial-headless.json": "b6b209087d41ca6eb6251908cf9f7c5e8d9db638c5ad248f2b74ff9c014adad5",
+      "initial-headless.log": "04c797a2495cd49d18dc13de7284ab679103aea266471798f9b952bb97b8354a",
+      "initial-python-tests.log": "ed2af80647dc64c83b1f1827dc3b86d756126e080e1050ff29b11567fd32bc3f",
+      "initial-unified-settings.log": "0f917563c6f17327ca130df85f139cdba6537f96b80d2c80141233ec8949e4a2",
+      "mypy.log": "8228fcc5ce46d42d01caf3cd941f4e9c5f2bcc372bb5b147a2f0572d2dd675a8",
+      "python-tests.log": "ce00604e88d31c6c826244755e126531567b4f7e0351b1466fba2d3f98c5034d",
+      "ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "unified-settings.json": "a957109d60f6821540c95e53395d37b34bcbebbf28ccbcada6dab53a08e37be6",
+      "unified-settings.log": "99de53b90683f1593a1fca8d22643a4a60c3e2062f0c9c812031a5990b43e981"
+    },
+    "publication": "local ignored diagnostic receipts; public summary records actual results"
+  },
+  "limitations": [
+    "No live SDK/account/model/credential/network/quota acceptance",
+    "Windows-specific scenario not executed on macOS",
+    "Integrated candidate embedded UI binary not built in this worker",
+    "No independent review/CI/main/Issue closure performed here",
+    "No claim for foreign Issue971 session/node selection acceptance"
+  ],
+  "cleanup": {
+    "completed": [
+      "Temporary test state/config directories",
+      "Synthetic tool/runtime/database fixtures",
+      "Unified-settings copied project",
+      "Owned headless and fixture HTTP processes"
+    ],
+    "retained": [
+      "Undelivered isolated candidate and branch for parent review/delivery",
+      "Public design/validation/events and local diagnostic receipts"
+    ],
+    "active_installations_changed": false
+  }
+}
