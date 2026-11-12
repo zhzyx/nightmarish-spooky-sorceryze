@@ -1,0 +1,71 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "request_id": "game-production-goal-20261111",
+  "installed_main": "3a714a6d6b337e47f1047c6af2342ca05c956a08",
+  "deliveries": [
+    {"pr": 912, "main": "ba1796e1bcb45b8706c5317ce4568fa78d5c3de9", "signed_head": "80a636fce941f802267acf071f4b68df77a1d39c"},
+    {"pr": 914, "main": "3a714a6d6b337e47f1047c6af2342ca05c956a08", "signed_head": "6ad9c39c4f895fb8c6b9ac581de948894620e450"}
+  ],
+  "exact_candidate_ci": "All applicable checks, including Windows editor builds, passed before normal PR merges; no protection override.",
+  "official_build": {
+    "clean_source": true,
+    "receipt_sha256": "467d7890e1e3f193fa1481d46ade19cc4f17c423b7c4c5d7b91bba5bc2a468f6",
+    "source_digest": "33ad521d3d9c2cc6031ca5e4a31f102f5c14df7323b9675a1f0ad1dbf1fd5066",
+    "aichat_cases": 90,
+    "aichat_assertions": 1672,
+    "aichat_passed": true
+  },
+  "installed_files": {
+    "godot.windows.editor.x86_64.console.exe": "dd82690d5f53170a6acc85db1f62134967af8b17112ee357a728c1a2b8451676",
+    "godot.windows.editor.x86_64.exe": "eee3db7ca6996ea84fb837de296e9c696800b59b814d1fa3a6407e3de503590f",
+    "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462"
+  },
+  "installation": {
+    "official_entry_point": "tools/install_gonggong_editor.ps1",
+    "passed": true,
+    "log_sha256": "ee2b099d03095d172769df8e62a68b245b8eb8ba972ec16eac529a34475233aa",
+    "verified_manifest_sha256": "e22263331fe8fe90bc578b491e188077cda566ae443dce02b0429f3ba13be1ba",
+    "local_staging_ignore_removed": true,
+    "repository_rule_attribution": ".gitignore:439:/project/godot/.editor-install-*/",
+    "prior_local_configuration_preserved": "Original 278 bytes preserved exactly; only the owned comment/rule removed, leaving one harmless trailing LF.",
+    "rollback_boundary": "Installer locking, replacement and rollback implementation unchanged; prior failed installation and successful rollback evidence remain historical. This successful install is not a newly injected rollback test."
+  },
+  "installed_layout_fixture": {
+    "passed": true,
+    "cases": 8,
+    "process_sha256": "49150c0dd4ab20097e13bc3f0e72d3c5b04f92a52861c0e8adaf69650e6124f3",
+    "result_sha256": "ecb8800d28e865d285061c5e9cd7a8aabd31842994f96f4cce116fde8f156d84",
+    "binary_and_input_bytes_checked_before_and_after": true
+  },
+  "actual_editor_input": {
+    "same_original_project_and_history": true,
+    "mocked_services": [],
+    "launch_sha256": "08f962d48b145ebff7646e66e4bb215aa5f24583f98238fa29b8820b70925868",
+    "installed_copy_verification_sha256": "fc44482ad3ec86b226ee944b25a97f6897498005c05abc23d4692c8f4fee60d5",
+    "characters": 11361,
+    "text_sha256": "9b1d98551b733f7779d98d9b8f6388a36e666a8034b6e8993fada3bb71e16a6b",
+    "visible_lines": 95,
+    "set_ack_sha256": "cf80db3186043df21c1692408d88be36f1cb5a40f5da342b90b8e73ed1b24333",
+    "later_observation_sha256": "b1290485d4d6a0c0a4487424e8d7e0a58f336423558cb2790bb46203f38dba7b",
+    "draft_restored_ack_sha256": "be96329c2a1226efdc7fcc9ed92fec8fce6ba3f60a5c05ee1ab809727cc95f10",
+    "observed_at_editor_ticks_ms": 51310,
+    "editor_alive_and_idle": true,
+    "error_lines_at_observation": 0,
+    "tested_text_sent_to_model": false,
+    "original_empty_draft_restored": true,
+    "startup_boundary": "Initial ready snapshot was still discovering the backend; input was set through the public TextEdit control. Later observation confirmed idle/send-ready state and unchanged full text. No private task or acceptance state was changed.",
+    "limits": "Actual headless editor controls and layout; not a pixel-rendering claim. Long-command execution acceptance remains separate."
+  },
+  "child_acceptance": {
+    "902": "All four original acceptance groups now have source, CI/main, installation and actual ChatInput evidence. Await authoritative close receipt.",
+    "903": "Narrow ignore fixture, independent review, CI/main, removal of owned local workaround and actual official install all passed. Await authoritative close receipt."
+  },
+  "remaining": [
+    "Issue896 actual-project dependency provenance acceptance",
+    "Issue899 original ordinary-review continuation acceptance",
+    "Issue891 original long-command consumer replay",
+    "Original game Issue1 unknown historical INT01 and remaining delivery",
+    "Source-confirmed separate bracket-stack investigation",
+    "Full Godot editor capability coverage and parent773 acceptance"
+  ]
+}
