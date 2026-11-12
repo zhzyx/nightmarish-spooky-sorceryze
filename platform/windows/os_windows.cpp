@@ -1042,6 +1042,15 @@ String OS_Windows::_quote_command_line_argument(const String &p_text) const {
 	return quoted + "\"";
 }
 
+uint64_t OS_Windows::get_process_command_line_length(const String &p_path, const List<String> &p_arguments) const {
+	const String path = p_path.is_absolute_path() ? fix_path(p_path) : p_path;
+	uint64_t units = _quote_command_line_argument(path).utf16().length() + 1; // NUL terminator.
+	for (const String &argument : p_arguments) {
+		units += 1 + _quote_command_line_argument(argument).utf16().length();
+	}
+	return units;
+}
+
 static void _append_to_pipe(char *p_bytes, int p_size, String *r_pipe, Mutex *p_pipe_mutex) {
 	// Try to convert from default ANSI code page to Unicode.
 	LocalVector<wchar_t> wchars;

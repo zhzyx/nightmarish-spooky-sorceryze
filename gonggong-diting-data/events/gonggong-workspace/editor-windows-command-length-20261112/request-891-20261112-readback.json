@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "request-891-20261112-readback",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-windows-command-length-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T05:52:42.2287735+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/891",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "title": "Windows 原生命令支持较长生产脚本并保留执行语义",
+    "issue": 891,
+    "parent_issue": 773,
+    "source_updated_at": "2026-11-12T05:46:03Z",
+    "request": "<!-- gonggong-request:editor-windows-command-length-20261112 -->\n\n父项 #773，故障链 #807。当前责任者 Sail-Li / Codex 当前会话，在原用户授权内修复正常编辑器生产流程。\n\n真实普通游戏的父会话补充审查证据时，run_command 请求约12K字符，经 UTF-16 PowerShell EncodedCommand 包装后，原生启动日志中的实际命令行长度为32773个UTF-16单元，超过Windows进程命令行上限。宿主只返回 Could not start the headless process with output capture on this platform，不能说明实际原因或恢复方式。原请求、失败日志及长度核对保留在私有验收记录，没有把失败当执行。\n\n范围：Windows原生命令启动的长脚本处理和真实回归；保留原批准命令、工作目录、UTF-8输出、退出码/超时/取消、原候选来源保护和恢复记录。优先复用既有机制，必要时以宿主拥有的独立临时脚本承载已批准包装器；不能截断命令、扩大授权或把未启动记作执行成功。\n\n验收：\n- [ ] 原生run_command实际执行超过现有EncodedCommand上限的有界脚本，保留Unicode/引号、cwd、stdout/stderr及真实退出码；短命令回归。\n- [ ] 临时承载方案若采用，只创建宿主拥有的独立文件，正确处理成功/失败/超时/取消的清理；来源保护及批准边界不放宽。确实无法支持的上限须在启动前给出明确原因和可执行恢复指导，不能笼统声称平台不支持。\n- [ ] 代表性长命令由真实Windows原生工具循环执行；覆盖失败与取消/清理，保留原失败，独立审查及严格构建通过。\n- [ ] 正式门禁、精确候选CI/main、正式安装及原场景复验。父项完整生产仍独立验收。\n\n不接管其他工作副本，不改变旧生产者终态、候选或验收决定。\n\n<!-- gonggong-host-git:Sail-Li -->\n",
+    "scope": "Existing authorized child repair; original parent remains open"
+  },
+  "sha256": "5d446e2c64f3fa040ece691000aca16a0ae86473735e7b7c370bfae892e9702e"
+}

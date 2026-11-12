@@ -4,13 +4,15 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from editor_test_isolation import macos_editor
+from editor_test_isolation import copy_editor, macos_editor
+from run_daqian_node_approval import prepare_candidate_fixture
 
 ROOT = Path(__file__).resolve().parents[2]
 BEFORE = "extends SceneTree\n\nfunc _initialize():\n\tquit(0)\n"
@@ -724,6 +726,94 @@ class Handler(BaseHTTPRequestHandler):
                     ]
                     assert expected in results[-1], results[-1]
                     response = completion(case.upper() + "_OK")
+            elif case.startswith("win_command_"):
+                kind = case.removeprefix("win_command_")
+                assert EXTERNAL is not None
+                # An apostrophe and Unicode exercise literal cwd and exact source transport.
+                cwd = EXTERNAL / "工作 ' quoted"
+                cwd.mkdir(exist_ok=True)
+
+                def owned():
+                    return list((EXTERNAL.parent / "project/temp").glob("godot-command-*.ps1"))
+
+                if not results:
+                    assert not owned(), "Previous owned command file leaked"
+                    body = {
+                        "short": "Write-Output 'short-ok'",
+                        "long": "[Console]::Out.WriteLine('中文 😀 ''single'' ` double \"'); [Console]::Error.WriteLine('错误 stderr'); Write-Output (Get-Location).ProviderPath; Write-Output ([Environment]::CurrentDirectory); cmd.exe /d /c exit 7",
+                        "near": "Write-Output 'near-ok'",
+                        "source": "Remove-Item -LiteralPath 'design-docs/windows-command-fixture.md'",
+                        "failstart": "Write-Output 'must-not-start'",
+                        "throw": "throw 'long-throw'",
+                        "timeout": "Start-Sleep -Seconds 30",
+                        "cancel": "[IO.File]::WriteAllText('"
+                        + str(cwd / "started").replace("'", "''")
+                        + "', [string]$PID); Start-Sleep -Seconds 30; [IO.File]::WriteAllText('"
+                        + str(cwd / "unexpected").replace("'", "''")
+                        + "', 'bad')",
+                        "limit": "Write-Output 'must-not-run'",
+                    }[kind]
+                    body = "if ($null -ne $f -or $null -ne $r -or $null -ne $s) { throw 'loader-scope-leak' }; " + body
+                    if kind == "long":
+                        body = (
+                            "$owned = @(Get-ChildItem -LiteralPath $env:TEMP -Filter 'godot-command-*.ps1'); if ($owned.Count -ne 1) { throw 'missing-owned-file' }; $blocked = 0; try { [IO.File]::WriteAllText($owned[0].FullName, 'tampered') } catch { $blocked++ }; try { [IO.File]::Delete($owned[0].FullName) } catch { $blocked++ }; if ($blocked -ne 2) { throw 'owner-lock-failed' }; "
+                            + body
+                        )
+                    if kind == "near":
+                        body += "\n#" + "a" * 3300
+                    elif kind != "short":
+                        body += "\n#" + "界😀'\"" * 2700
+                    if kind == "limit":
+                        body += "x" * 3000
+                    arguments = {"command": body, "timeout_seconds": 1 if kind == "timeout" else 30}
+                    if kind != "source":
+                        arguments["cwd"] = str(cwd)
+                    response = completion(
+                        calls=[
+                            tool(
+                                "run_command",
+                                arguments,
+                                kind,
+                            )
+                        ]
+                    )
+                else:
+                    assert not owned(), "Owned command file leaked after completion"
+                    if kind == "failstart":
+                        if results[-1].startswith("Error:"):
+                            assert "start" in results[-1], results[-1]
+                        else:
+                            failed = json.loads(results[-1])
+                            assert failed["exit_code"] != 0 and "must-not-start" not in failed["stdout"], failed
+                            assert failed["provenance_guard"]["command_exit_code"] == 127, failed
+                            assert not failed["provenance_guard"]["commands_replayed"], failed
+                    elif kind == "limit":
+                        assert "12,000" in results[-1] and "separately approved" in results[-1], results[-1]
+                    else:
+                        result_value = json.loads(results[-1])
+                        if kind == "short":
+                            assert result_value["exit_code"] == 0 and "short-ok" in result_value["stdout"], result_value
+                        elif kind == "near":
+                            assert result_value["exit_code"] == 0 and "near-ok" in result_value["stdout"], result_value
+                        elif kind == "source":
+                            assert result_value["exit_code"] != 0, result_value
+                            assert result_value["provenance_guard"]["restored_count"] == 1, result_value
+                            assert result_value["provenance_guard"]["error"] == "provenance_violation", result_value
+                        elif kind == "long":
+                            assert result_value["exit_code"] == 7, result_value
+                            assert "中文 😀 'single' ` double \"" in result_value["stdout"], result_value
+                            assert result_value["stdout"].lower().count(str(cwd).lower()) == 2, result_value
+                            assert "错误 stderr" in result_value["stderr"], result_value
+                        elif kind == "throw":
+                            assert result_value["exit_code"] == 1 and "long-throw" in result_value["stderr"], (
+                                result_value
+                            )
+                        elif kind == "timeout":
+                            assert result_value["timed_out"] and result_value["exit_code"] != 0, result_value
+                        else:
+                            raise AssertionError("Cancelled command must not continue the model loop")
+                    print("WINDOWS_COMMAND_RESULT", kind, results[-1], flush=True)
+                    response = completion(kind.upper() + "_COMMAND_OK")
             elif case == "expanded":
                 original = "int sample() { return 0; }\n"
                 changed = "int sample() { return 1; }\n"
@@ -937,6 +1027,8 @@ def main():
     )
     parser.add_argument("--visible", action="store_true")
     parser.add_argument("--images", action="store_true")
+    parser.add_argument("--windows-commands", action="store_true")
+    parser.add_argument("--windows-command-cancel-only", action="store_true")
     parser.add_argument(
         "--queue",
         action="store_true",
@@ -972,6 +1064,8 @@ def main():
     )
     parser.add_argument("--inject-mouse", type=int, help=argparse.SUPPRESS)
     args = parser.parse_args()
+    if args.windows_command_cancel_only:
+        args.windows_commands = True
     if args.inject_mouse is not None:
         return inject_windows_mouse(args.inject_mouse)
     if args.raw_input_stress:
@@ -1036,9 +1130,49 @@ def main():
             if args.rename_stress or args.snapshots:
                 script = "ai_chat_native_files.gd"
             shutil.copyfile(Path(__file__).with_name(script), project / "integration.gd")
+            if args.windows_commands:
+                isolated_editor = copy_editor(args.godot.resolve(), project / "private-editor")
+                workspace = project / ".fixture"
+                (workspace / "tools").mkdir(parents=True)
+                request_id = "windows-command-fixture"
+                prepare_candidate_fixture(project, workspace, {"number": 891, "request": request_id}, [])
+                bridge = workspace / "tools/gonggong_bridge.py"
+                bridge.write_text(
+                    "import json,sys,runpy\nfrom pathlib import Path\n"
+                    "args=sys.argv; action=args[1]; root=Path(args[args.index('--workspace')+1]); out=Path(args[args.index('--out')+1])\n"
+                    + f"store=runpy.run_path({str(ROOT / 'customizations/platforms/data-collection/git-files/storage/diting_files.py')!r})\n"
+                    + "if action=='flush':\n for p in (root/'.gonggong-outbox/chat').glob('*.json'): store['record'](root,p); p.unlink()\n"
+                    + "result={'ok':True,'ready':True,'issue_number':891,'request_id':'windows-command-fixture','url':'https://github.com/fixture/board/issues/891','context':'Offline transport fixture','reporting':{'tenant_id':'fixture','request_ref':'windows-command-fixture','source_ref':'https://github.com/fixture/board/issues/891','agent':{'id':'fixture','version':'1','definition_sha256':'0'*64,'origin':'offline-fixture'}}}\n"
+                    + "out.write_text(json.dumps(result),encoding='utf-8')\n",
+                    encoding="utf-8",
+                )
+                shutil.copyfile(bridge, project / "tools/gonggong_bridge.py")
+                installed = project / "customizations/components/godot-host/bridge.py"
+                installed.parent.mkdir(parents=True)
+                shutil.copyfile(bridge, installed)
+                configuration = isolated_editor.parent / "editor_data/gonggong/config.json"
+                configuration.parent.mkdir(parents=True)
+                configuration.write_text(
+                    json.dumps({
+                        "schema_version": 1,
+                        "runtimes": {"workflow_python": sys.executable, "node": shutil.which("node")},
+                    }),
+                    encoding="utf-8",
+                )
             env = os.environ.copy()
+            if args.windows_commands:
+                env["GONGGONG_RUNTIME_CONFIG"] = str(configuration)
+                env["GONGGONG_WORKSPACE"] = str(workspace)
+                env["GONGGONG_GIT"] = shutil.which("git") or ""
+                env["GONGGONG_GH"] = shutil.which("gh") or ""
+            env["AI_CHAT_TEST_PYTHON"] = sys.executable
+            env["AI_CHAT_WINDOWS_CANCEL_ONLY"] = "1" if args.windows_command_cancel_only else ""
+            env["AI_CHAT_WINDOWS_COMMANDS"] = "1" if args.windows_commands else ""
             env["APPDATA"] = str(project / "appdata")
             env["LOCALAPPDATA"] = str(project / "localappdata")
+            if args.windows_commands:
+                (project / "appdata").mkdir(exist_ok=True)
+                (project / "localappdata").mkdir(exist_ok=True)
             dotnet = ROOT / ".dotnet"
             env["DOTNET_ROOT"] = str(dotnet)
             env["DOTNET_ROOT_X64"] = str(dotnet)
@@ -1059,8 +1193,6 @@ def main():
             if args.snapshots:
                 env["AI_CHAT_SNAPSHOT_STAGE"] = "seed"
             if args.rename_stress:
-                import sys
-
                 env["AI_CHAT_TEST_RENAME_STRESS"] = "1"
                 env["AI_CHAT_TEST_PYTHON"] = sys.executable
                 env["AI_CHAT_TEST_RUNNER"] = str(Path(__file__).resolve())
@@ -1177,7 +1309,7 @@ def main():
                     text=True,
                     encoding="utf-8",
                     errors="replace",
-                    timeout=180,
+                    timeout=600 if args.windows_commands else 180,
                 )
             except subprocess.TimeoutExpired as error:
                 for output in (error.stdout, error.stderr):
@@ -1186,6 +1318,10 @@ def main():
                 return 1
             print(result.stdout)
             print(result.stderr)
+            if args.windows_commands:
+                passed = result.returncode == 0 and "WINDOWS_COMMANDS_OK" in result.stdout and not ERRORS
+                print("WINDOWS_COMMANDS_SUITE", passed, ERRORS)
+                return 0 if passed else 1
             if ERRORS:
                 print("Mock service errors:", ERRORS)
             if args.snapshots:
