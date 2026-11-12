@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "request-939-engine-next-gameplay-core-m1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-gameplay-core-m1-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T12:28:47Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/939",
+  "agent": {
+    "id": "kimi-work-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "action": "record_authorized_issue_binding",
+    "issue_number": 939,
+    "intake_status": "status:in-progress",
+    "scope": "抽取第一批真正不依赖 Godot 的 Gameplay 数据、固定步长和插值内核，保留原 Godot API 兼容壳，以共享 Trace、独立构建和双平台证据验收；分独立内核与 Godot 切换两个 PR 交付。",
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage in host receipt",
+    "design": {
+      "path": "design-docs/engine-next-gameplay-core-m1-20261112.md",
+      "sha256": "f8ae09c422a725b70c14d4e5cfc2a72ec96cd97c9c032cb5c783e0b4ead98d8e"
+    }
+  },
+  "evidence_refs": [],
+  "sha256": "21cae8bcd91cae2cef365dc76d8a06d92910f0556bedd5a34c0a6de22d153da0"
+}

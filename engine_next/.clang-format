@@ -1,0 +1,4 @@
+# Scope the project C++ standard to new Engine Next sources.
+BasedOnStyle: InheritParentConfig
+BreakBeforeBraces: Allman
+SortIncludes: Never
