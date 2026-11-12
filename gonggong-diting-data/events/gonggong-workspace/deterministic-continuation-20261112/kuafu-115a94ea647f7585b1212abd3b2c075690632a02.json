@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-115a94ea647f7585b1212abd3b2c075690632a02",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "deterministic-continuation-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/953",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2e89113a391e24200c5b45b4dce595b76c6a92800430117b4e6a5de25ee95b14",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/953",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/953",
+    "action": "user-report",
+    "detection_head": "a861735f109051ea3342dda1895b7ad3db49ad4f",
+    "context_sha256": "83e6b835af6bf15071bc8d8cfc01dcb4d456a6a8eb5291be54eb3eb937a62364",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session-953",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/953",
+    "evidence": "design-docs/deterministic-continuation-20261112.md",
+    "diagnosis": "用户报告跨模型提前结束；尚无配对运行证明推理强度是根因。已确认独立原生交接未携带简明连续执行与提问判定，Godot共享委托可补同类约定。提示词干预不等于宿主强制续跑。",
+    "next_action": "验证实际上下文和权限边界，独立审查后交付；跨模型效果留待同配置配对试验。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T14:19:56.863018+00:00",
+    "attempted": "已回读工单和官方文档；44项Python回归及17项Node回归通过，2项Windows特定测试在macOS跳过。",
+    "repair_owner": "codex-current-session-953",
+    "continuable": "本次提示词入口、回归与交付；不接管其他生产工单。"
+  },
+  "occurred_at": "2026-11-12T14:24:24.176017+00:00",
+  "sha256": "7ba34cb00cabd3d828bf8a17c29578c1ca7952c9fe6dea4122333afa062a0109"
+}
