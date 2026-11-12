@@ -101,6 +101,7 @@ ScriptIterator::ScriptIterator(const String &p_string, int p_start, int p_length
 						emoji_size += EMOJI_STACK_DEPTH;
 						if (emoji_stack == starter_emoji_stack) {
 							emoji_stack = static_cast<EmojiSubrunEntry *>(memalloc(emoji_size * sizeof(EmojiSubrunEntry)));
+							memcpy(emoji_stack, starter_emoji_stack, sizeof(starter_emoji_stack));
 						} else {
 							emoji_stack = static_cast<EmojiSubrunEntry *>(memrealloc(emoji_stack, emoji_size * sizeof(EmojiSubrunEntry)));
 						}
@@ -115,6 +116,9 @@ ScriptIterator::ScriptIterator(const String &p_string, int p_start, int p_length
 
 			UScriptCode sc = uscript_getScript(ch, &err);
 			if (U_FAILURE(err)) {
+				if (emoji_stack != starter_emoji_stack) {
+					memfree(emoji_stack);
+				}
 				if (paren_stack != starter_paren_stack) {
 					memfree(paren_stack);
 				}
@@ -198,11 +202,11 @@ ScriptIterator::ScriptIterator(const String &p_string, int p_start, int p_length
 			script_ranges.push_back(rng);
 		}
 
-		if (emoji_stack != starter_emoji_stack) {
-			memfree(emoji_stack);
-		}
 	} while (script_end < p_length);
 
+	if (emoji_stack != starter_emoji_stack) {
+		memfree(emoji_stack);
+	}
 	if (paren_stack != starter_paren_stack) {
 		memfree(paren_stack);
 	}

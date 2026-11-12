@@ -1,0 +1,47 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/902",
+  "request_id": "editor-unicode-input-crash-20261112",
+  "tested_integration_source": "e7f14c2a1db71ab88b17c4f3091b6ff0d56b4fb5",
+  "merged_main": "ba1796e1bcb45b8706c5317ce4568fa78d5c3de9",
+  "main_tree_identical_to_tested_source": true,
+  "main_readback": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/912",
+  "unicode_input_binding": {
+    "path": "data-collection/editor-unicode-input-902.json",
+    "sha256": "55af636a8c1e994acfd771f283451bccd7d36753d7a7635b69de4ce72e798d93",
+    "inputs_unchanged": true
+  },
+  "strict_build": {
+    "passed": true,
+    "log_sha256": "deaf6f66e8d083bc6df5bfda419b8dcc3ddfacfee4c86bbdff9202148c268c3c"
+  },
+  "tested_binary_files": {
+    "godot.windows.editor.x86_64.console.exe": "4573fe5bd1e42624d56437058018f9ce3bb77722311c49c5e6b13f6eca9db075",
+    "godot.windows.editor.x86_64.exe": "f7c70ed50e939bee2b6737c09fac8e8e92df7fbc016b5d26fe97d9375963aca7"
+  },
+  "native_suite": {
+    "passed": true,
+    "cases": 1568,
+    "assertions": 474314,
+    "skipped": 3,
+    "log_sha256": "2fd8253a6b07f6b9a16838c0e628f67b094c9349be98d1bd7584612ae0bd911f"
+  },
+  "original_input_layout": {
+    "passed": true,
+    "cases": 8,
+    "input_and_both_binary_hashes_unchanged_during_run": true,
+    "result_sha256": "ecb8800d28e865d285061c5e9cd7a8aabd31842994f96f4cce116fde8f156d84"
+  },
+  "review_continuation": {
+    "passed": true,
+    "parent_return_count": 1,
+    "cold_new_requests": 0,
+    "report_sha256": "d40f703cec78f110f06fbfb628b793e3d9d1184a433b428adaff11000e9f05a9",
+    "scope": "Actual native editor fixture with synthetic service transport; no business acceptance claim."
+  },
+  "remaining": [
+    "Exact Unicode candidate CI/main",
+    "Official clean-main build and installation",
+    "Original editor ChatInput consumer replay",
+    "Parent773 and separate known bracket-stack investigation"
+  ]
+}

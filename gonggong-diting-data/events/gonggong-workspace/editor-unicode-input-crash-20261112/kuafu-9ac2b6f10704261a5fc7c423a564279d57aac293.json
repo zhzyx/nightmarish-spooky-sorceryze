@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9ac2b6f10704261a5fc7c423a564279d57aac293",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-unicode-input-crash-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/902",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "82dddc5d02a6f2c77b2a5c59eaaa25053ee2e54ec1b97070c684ba47e303462d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/902",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/902",
+    "action": "dispatch",
+    "detection_head": "55e41ffb6dbe537c8bfc1fa2450ffc20fc1a040e",
+    "context_sha256": "cf698aa09a078b7ce053fbd13993b8e7e5df67e8a20c34c1f2a752be2f7e4a8f",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/902",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/902",
+    "diagnosis": "Implementation worker ended with actual platform content-risk rejection; read-only handoff attempt also failed. Root preserved candidate and original diagnostics and confirmed no active worker processes. First reconciliation mistakenly used execution.finished for an authenticated failed state; host correctly rejected mismatched terminal semantics. No reservation deletion or replacement launch. Correct event is execution.failed, retry pending actual verification.",
+    "next_action": "Reconcile exact failed worker through correct event, preserve unknown unrelated assignments. Root continues ordinary authorized text layout diagnosis. Existing candidate still fails forced-reshape regression without temporary probes and is not releasable.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T08:19:14.797478+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T08:22:17.675462+00:00",
+  "sha256": "62b7b2b22c5dcd359eb14f53d1bddd2a389270711f285f8a9efa797aa65a923b"
+}

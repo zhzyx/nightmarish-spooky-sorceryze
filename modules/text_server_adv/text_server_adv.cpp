@@ -5632,9 +5632,9 @@ bool TextServerAdvanced::_shape_substr(ShapedTextDataAdvanced *p_new_sd, const S
 			if (bidi_ranges[ov].x >= p_start + p_length || bidi_ranges[ov].y <= p_start) {
 				continue;
 			}
-			int ov_start = _convert_pos_inv(p_sd, bidi_ranges[ov].x);
-			int start = MAX(0, _convert_pos_inv(p_sd, p_start) - ov_start);
-			int end = MIN(_convert_pos_inv(p_sd, p_start + p_length), _convert_pos_inv(p_sd, bidi_ranges[ov].y)) - ov_start;
+			int ov_start = _convert_pos_inv(p_sd, bidi_ranges[ov].x - p_sd->start);
+			int start = MAX(0, _convert_pos_inv(p_sd, p_start - p_sd->start) - ov_start);
+			int end = MIN(_convert_pos_inv(p_sd, p_start + p_length - p_sd->start), _convert_pos_inv(p_sd, bidi_ranges[ov].y - p_sd->start)) - ov_start;
 
 			ERR_FAIL_COND_V_MSG((start < 0 || end - start > p_new_sd->utf16.length()), false, "Invalid BiDi override range.");
 
@@ -5695,8 +5695,8 @@ bool TextServerAdvanced::_shape_substr(ShapedTextDataAdvanced *p_new_sd, const S
 					ubidi_getVisualRun(bidi_iter, i, &_bidi_run_start, &_bidi_run_length);
 				}
 
-				int32_t bidi_run_start = _convert_pos(p_sd, ov_start + start + _bidi_run_start);
-				int32_t bidi_run_end = _convert_pos(p_sd, ov_start + start + _bidi_run_start + _bidi_run_length);
+				int32_t bidi_run_start = _convert_pos(p_sd, ov_start + start + _bidi_run_start) + p_sd->start;
+				int32_t bidi_run_end = _convert_pos(p_sd, ov_start + start + _bidi_run_start + _bidi_run_length) + p_sd->start;
 
 				bool cache_valid = false;
 				int cached_font_size = -1;
@@ -6474,12 +6474,12 @@ void TextServerAdvanced::_update_chars(ShapedTextDataAdvanced *p_sd) const {
 		int prev = -1;
 		int i = 0;
 
-		Vector<ShapedTextDataAdvanced::Span> &spans = p_sd->spans;
+		const ShapedTextDataAdvanced *span_sd = p_sd;
 		if (p_sd->parent != RID()) {
-			ShapedTextDataAdvanced *parent_sd = shaped_owner.get_or_null(p_sd->parent);
-			ERR_FAIL_COND(!parent_sd->valid.is_set());
-			spans = parent_sd->spans;
+			span_sd = shaped_owner.get_or_null(p_sd->parent);
+			ERR_FAIL_COND(!span_sd->valid.is_set());
 		}
+		const Vector<ShapedTextDataAdvanced::Span> &spans = span_sd->spans;
 
 		int span_size = spans.size();
 		while (i < span_size) {
@@ -6497,10 +6497,12 @@ void TextServerAdvanced::_update_chars(ShapedTextDataAdvanced *p_sd) const {
 				i++;
 			}
 			int r_end = MIN(spans[i].end - p_sd->start, p_sd->text.length());
-			UBreakIterator *bi = ubrk_open(UBRK_CHARACTER, (language.is_empty()) ? TranslationServer::get_singleton()->get_tool_locale().ascii().get_data() : language.ascii().get_data(), data + _convert_pos_inv(p_sd, r_start), _convert_pos_inv(p_sd, r_end - r_start), &err);
+			const int utf16_start = _convert_pos_inv(p_sd, r_start);
+			const int utf16_end = _convert_pos_inv(p_sd, r_end);
+			UBreakIterator *bi = ubrk_open(UBRK_CHARACTER, (language.is_empty()) ? TranslationServer::get_singleton()->get_tool_locale().ascii().get_data() : language.ascii().get_data(), data + utf16_start, utf16_end - utf16_start, &err);
 			if (U_SUCCESS(err)) {
 				while (ubrk_next(bi) != UBRK_DONE) {
-					int pos = _convert_pos(p_sd, ubrk_current(bi)) + r_start + p_sd->start;
+					int pos = _convert_pos(p_sd, utf16_start + ubrk_current(bi)) + p_sd->start;
 					if (prev != pos) {
 						p_sd->chars.push_back(pos);
 					}
@@ -6559,8 +6561,8 @@ bool TextServerAdvanced::_shaped_text_update_breaks(const RID &p_shaped) {
 		while (i < span_size) {
 			bool start_with_obj = sd->spans[i].embedded_key != Variant();
 			String language = sd->spans[i].language;
-			int r_start = sd->spans[i].start;
-			if (r_start == sd->spans[i].end) {
+			int r_start = sd->spans[i].start - sd->start;
+			if (sd->spans[i].start == sd->spans[i].end) {
 				i++;
 				continue;
 			}
@@ -6571,39 +6573,36 @@ bool TextServerAdvanced::_shaped_text_update_breaks(const RID &p_shaped) {
 				}
 				i++;
 			}
-			int r_end = sd->spans[i].end;
+			int r_end = sd->spans[i].end - sd->start;
+			const int utf16_start = _convert_pos_inv(sd, r_start);
+			const int utf16_end = _convert_pos_inv(sd, r_end);
 			UBreakIterator *bi = _create_line_break_iterator_for_locale(language, &err);
 
 			if (!U_FAILURE(err) && bi) {
-				ubrk_setText(bi, data + _convert_pos_inv(sd, r_start), _convert_pos_inv(sd, r_end - r_start), &err);
+				ubrk_setText(bi, data + utf16_start, utf16_end - utf16_start, &err);
 			}
 
 			if (U_FAILURE(err) || !bi) {
 				// No data loaded - use fallback.
 				for (int j = r_start; j < r_end; j++) {
-					char32_t c = sd->text[j - sd->start];
-					char32_t c_next = (j < r_end) ? sd->text[j - sd->start + 1] : 0x0000;
+					char32_t c = sd->text[j];
+					char32_t c_next = (j + 1 < r_end) ? sd->text[j + 1] : 0x0000;
 					if (is_whitespace(c)) {
-						sd->breaks[j + 1] = false;
+						sd->breaks[j + 1 + sd->start] = false;
 					}
 					if (is_linebreak(c)) {
 						if (c != 0x000D || c_next != 0x000A) { // Skip first hard break in CR-LF pair.
-							sd->breaks[j + 1] = true;
+							sd->breaks[j + 1 + sd->start] = true;
 						}
 					}
 				}
 			} else {
 				while (ubrk_next(bi) != UBRK_DONE) {
-					int pos = _convert_pos(sd, ubrk_current(bi)) + r_start;
+					int pos = _convert_pos(sd, utf16_start + ubrk_current(bi)) + sd->start;
 					if ((ubrk_getRuleStatus(bi) >= UBRK_LINE_HARD) && (ubrk_getRuleStatus(bi) < UBRK_LINE_HARD_LIMIT)) {
 						sd->breaks[pos] = true;
 					} else if ((ubrk_getRuleStatus(bi) >= UBRK_LINE_SOFT) && (ubrk_getRuleStatus(bi) < UBRK_LINE_SOFT_LIMIT)) {
 						sd->breaks[pos] = false;
-					}
-					int pos_p = pos - 1 - sd->start;
-					char32_t c = sd->text[pos_p];
-					if (pos - sd->start != sd->end && !is_whitespace(c) && (c != 0xfffc)) {
-						sd->break_inserts++;
 					}
 				}
 				ubrk_close(bi);
@@ -6620,6 +6619,20 @@ bool TextServerAdvanced::_shaped_text_update_breaks(const RID &p_shaped) {
 	int sd_size = sd->glyphs.size();
 	Glyph *sd_glyphs = sd->glyphs.ptr();
 	Glyph *sd_glyphs_new = nullptr;
+
+	// Count shaped clusters, not characters before ICU boundaries. A cluster can
+	// contain multiple characters, and reshaping can change its glyphs while the
+	// cached break opportunities remain valid. This is an upper bound: the loop
+	// below can skip an opportunity, but inserts at most once per cluster.
+	sd->break_inserts = 0;
+	for (int i = 0; i < sd_size; i++) {
+		if (sd_glyphs[i].count > 0) {
+			if (sd->breaks.has(sd_glyphs[i].end) && sd_glyphs[i].end != sd->end) {
+				sd->break_inserts++;
+			}
+			i += sd_glyphs[i].count - 1;
+		}
+	}
 
 	if (sd->break_inserts > 0) {
 		glyphs_new.resize(sd->glyphs.size() + sd->break_inserts);
@@ -6685,6 +6698,7 @@ bool TextServerAdvanced::_shaped_text_update_breaks(const RID &p_shaped) {
 						continue;
 					}
 					// Do not add extra space after existing space.
+					ERR_FAIL_COND_V_MSG(sd_shift >= sd->break_inserts, false, "Invalid break insert count!");
 					if (sd_glyphs[i].flags & GRAPHEME_IS_RTL) {
 						if ((i + count < sd_size - 1) && ((sd_glyphs[i + count].flags & (GRAPHEME_IS_SPACE | GRAPHEME_IS_BREAK_SOFT)) == (GRAPHEME_IS_SPACE | GRAPHEME_IS_BREAK_SOFT))) {
 							i += (sd_glyphs[i].count - 1);
@@ -6732,7 +6746,6 @@ bool TextServerAdvanced::_shaped_text_update_breaks(const RID &p_shaped) {
 						sd_glyphs_new[sd_shift + i + count] = gl;
 					}
 					sd_shift++;
-					ERR_FAIL_COND_V_MSG(sd_shift > sd->break_inserts, false, "Invalid break insert count!");
 				}
 			}
 			i += (sd_glyphs[i].count - 1);

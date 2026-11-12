@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "request-902-20261112-readback",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-unicode-input-crash-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T07:43:15.901630+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/902",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "title": "Godot 长混合 Unicode 聊天输入触发文本断行越界崩溃",
+    "issue": 902,
+    "parent_issue": 773,
+    "source_updated_at": "2026-11-12T07:41:06Z",
+    "request": "<!-- gonggong-request:editor-unicode-input-crash-20261112 -->\n\n父项 #773，实际验证故障链 #807。当前 Sail-Li / Codex 会话在原授权内修复 Godot 编辑器生产入口，不修改其他人的工作副本。\n\n正式 main979dfe27 / PR895 安装后的真实普通项目，给 AI Chat 的 ChatInput 设置一段合法长命令说明时崩溃，尚未发出模型请求或执行命令。文本中命令11001个Unicode字符、13702个UTF16单元，含中文、emoji、单/双引号与较长注释行。原现场 live-actual-r6/editor.log 三次报告 TextServerAdvanced::_shaped_text_update_breaks 的 Invalid break insert count!（text_server_adv.cpp:6735），随后编辑器退出3221225477/0xc0000005。历史文件仍停在此前审查14，草稿为空，未伪称命令执行。私有原始文本、驱动和日志保留。\n\n范围：先在新隔离、无服务模拟的原生 UI/文本排版场景复现，定位实际长 Unicode 输入造成的排版/插入计数或内存边界问题。保留完整用户文本，不通过截断、删除字符或吞掉诊断假装修复。必要时修正 Godot 现有 TextServer/TextEdit 路径；不改外部引擎目录、不扩大到无关排版重写。\n\n验收：\n- [ ] 同一实际触发文本在隔离 ChatInput 或等价原生 TextEdit 可设置、回读并进行布局，不崩溃且完整字符/字节内容一致；保留旧二进制失败与新候选通过证据。\n- [ ] 覆盖相关 CJK/非BMP emoji/引号/长行和正常短文本，定位并修复真实边界；严谨检查插入写入发生在容量验证之前的风险，不以退出码单独证明UI正常。\n- [ ] 严格 Windows native 构建、相关排版/编辑器测试与独立核查通过，原始失败和未覆盖条件明确保存。\n- [ ] 正式门禁、精确CI/main、正式安装及真实编辑器输入复验；既有账号/生产候选/历史保留。该缺陷与长命令启动修复 #891 分开判定，父项仍开放。\n\n<!-- gonggong-host-git:Sail-Li -->\n",
+    "issue_body_sha256": "21849352c936dcbdb2ee699486f223b90b3b38f53da629ca293300c2f4b4e713",
+    "scope": "Authorized editor production failure repair; original failed evidence retained"
+  },
+  "sha256": "4de77c06e70129bf3c22a2f095aa8eea0b0b1c9b0a3d4b4e907dcd0d8de1c0d8"
+}

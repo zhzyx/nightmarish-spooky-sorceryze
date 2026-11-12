@@ -41,6 +41,96 @@ TEST_FORCE_LINK(test_text_server)
 namespace TestTextServer {
 
 TEST_SUITE("[TextServer]") {
+	TEST_CASE("[TextServer] Unicode break spans and reshaped substrings") {
+		for (int interface = 0; interface < TextServerManager::get_singleton()->get_interface_count(); interface++) {
+			Ref<TextServer> ts = TextServerManager::get_singleton()->get_interface(interface);
+			if (!ts->has_feature(TextServer::FEATURE_BREAK_ITERATORS)) {
+				continue;
+			}
+			RID font = ts->create_font();
+			ts->font_set_data_ptr(font, _font_Inter_Regular, _font_Inter_Regular_size);
+			ts->font_set_allow_system_fallback(font, false);
+			Array fonts = { font };
+			RID ctx = ts->create_shaped_text();
+			const String prefix = U"😀😀";
+			const String body = String(U"界😀'\"").repeat(2700);
+			REQUIRE(ts->shaped_text_add_string(ctx, prefix, fonts, 16, Dictionary(), "en"));
+			REQUIRE(ts->shaped_text_add_string(ctx, body, fonts, 16, Dictionary(), "zh"));
+			REQUIRE(ts->shaped_text_update_breaks(ctx));
+			const PackedInt32Array breaks = ts->shaped_text_get_character_breaks(ctx);
+			REQUIRE(breaks.size() == prefix.length() + body.length());
+			for (int i = 0; i < breaks.size(); i++) {
+				CHECK(breaks[i] == i + 1);
+			}
+			RID part = ts->shaped_text_substr(ctx, prefix.length(), body.length());
+			const PackedInt32Array part_breaks = ts->shaped_text_get_character_breaks(part);
+			REQUIRE(part_breaks.size() == body.length());
+			CHECK(part_breaks[0] == prefix.length() + 1);
+			CHECK(part_breaks[part_breaks.size() - 1] == prefix.length() + body.length());
+			RID nested = ts->shaped_text_substr(part, prefix.length() + 4, 4);
+			const PackedInt32Array nested_breaks = ts->shaped_text_get_character_breaks(nested);
+			REQUIRE(nested_breaks.size() == 4);
+			CHECK(nested_breaks[0] == prefix.length() + 5);
+			ts->free_rid(nested);
+			// Force a full copy and a reshape at a nonzero parent offset.
+			ts->shaped_text_set_direction(part, TextServer::DIRECTION_RTL);
+			REQUIRE(ts->shaped_text_update_breaks(part));
+			RID reshaped_nested = ts->shaped_text_substr(part, prefix.length() + 4, 4);
+			const PackedInt32Array reshaped_breaks = ts->shaped_text_get_character_breaks(reshaped_nested);
+			REQUIRE(reshaped_breaks.size() == 4);
+			CHECK(reshaped_breaks[0] == prefix.length() + 5);
+			CHECK(reshaped_breaks[3] == prefix.length() + 8);
+			ts->free_rid(reshaped_nested);
+			const int tail_start = prefix.length() + body.length() - 4;
+			RID tail = ts->shaped_text_substr(part, tail_start, 4);
+			const PackedInt32Array tail_breaks = ts->shaped_text_get_character_breaks(tail);
+			REQUIRE(tail_breaks.size() == 4);
+			CHECK(tail_breaks[0] == tail_start + 1);
+			CHECK(tail_breaks[3] == tail_start + 4);
+			ts->free_rid(tail);
+			const Glyph *glyphs = ts->shaped_text_get_glyphs(part);
+			for (int i = 0; i < ts->shaped_text_get_glyph_count(part); i++) {
+				CHECK(glyphs[i].start >= prefix.length());
+				CHECK(glyphs[i].end <= prefix.length() + body.length());
+			}
+			const PackedInt32Array lines = ts->shaped_text_get_line_breaks(part, 160);
+			REQUIRE(lines.size() > 2);
+			CHECK(lines[0] == prefix.length());
+			CHECK(lines[lines.size() - 1] == prefix.length() + body.length());
+			ts->free_rid(part);
+			ts->free_rid(ctx);
+			RID objects = ts->create_shaped_text();
+			REQUIRE(ts->shaped_text_add_string(objects, U"😀界", fonts, 16, Dictionary(), "zh"));
+			REQUIRE(ts->shaped_text_add_object(objects, "object", Vector2(16, 16)));
+			REQUIRE(ts->shaped_text_add_string(objects, U"'שלום' á 👨‍👩‍👧‍👦", fonts, 16, Dictionary(), "he"));
+			REQUIRE(ts->shaped_text_update_breaks(objects));
+			CHECK(ts->shaped_text_get_line_breaks(objects, 80).size() > 2);
+			ts->free_rid(objects);
+			// Grow emoji-run storage, then reuse it across a different script run.
+			const String mixed_scripts = String(U"界😀").repeat(40) + String(U"a😀").repeat(40);
+			RID mixed = ts->create_shaped_text(TextServer::DIRECTION_RTL);
+			REQUIRE(ts->shaped_text_add_string(mixed, mixed_scripts, fonts, 16));
+			REQUIRE(ts->shaped_text_shape(mixed));
+			REQUIRE(ts->shaped_text_get_glyph_count(mixed) == mixed_scripts.length());
+			const Glyph *mixed_glyphs = ts->shaped_text_get_glyphs(mixed);
+			Vector<bool> covered;
+			covered.resize(mixed_scripts.length());
+			covered.fill(false);
+			for (int i = 0; i < ts->shaped_text_get_glyph_count(mixed); i++) {
+				REQUIRE(mixed_glyphs[i].start >= 0);
+				REQUIRE(mixed_glyphs[i].end == mixed_glyphs[i].start + 1);
+				REQUIRE(mixed_glyphs[i].end <= mixed_scripts.length());
+				CHECK_FALSE(covered[mixed_glyphs[i].start]);
+				covered.write[mixed_glyphs[i].start] = true;
+			}
+			for (bool present : covered) {
+				CHECK(present);
+			}
+			ts->free_rid(mixed);
+			ts->free_rid(font);
+		}
+	}
+
 	TEST_CASE("[TextServer] Init, font loading and shaping") {
 		SUBCASE("[TextServer] Loading fonts") {
 			for (int i = 0; i < TextServerManager::get_singleton()->get_interface_count(); i++) {
