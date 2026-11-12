@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "request-886-20261112-readback",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-long-line-review-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T05:12:07.260141+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/886",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "title": "编辑器独立审查支持有界长行证据读取",
+    "issue": 886,
+    "parent_issue": 773,
+    "source_updated_at": "2026-11-12T05:03:57Z",
+    "issue_body_sha256": "94faab765a3b59606e7c5774fcc8b76fab58bab1c5a99a6578e6ddd5831690df",
+    "request": "<!-- gonggong-request:editor-long-line-review-20261112 -->\n\n父项：#773；故障链：#807。原用户要求 Godot 编辑器内完整游戏生产和自主验证恢复。当前责任者 Sail-Li / Codex 当前会话继续执行。\n\n真实普通游戏项目的独立审查第 44 条 read_file 宿主回执失败，错误摘要 4a805e92bc0d70a27034f9f82f91c14c31372522b902f517b21d0a8605f7f7b9。审查者报告原始执行日志单行超过读取上限。当前 read_file/read_script 只有完整文件或按行读取；单行超过 256 KiB 时“减少行数”不能恢复读取，独立只读审查不能执行命令拆分原件。原始日志、候选和 unknown 结论保留，不以父会话转述代替证据。\n\n验收：\n- [ ] 在既有 read_file/read_script 增加明确、有界的长行分片读取方式，不增加执行或写入权限；保留现有完整文件/行范围兼容。\n- [ ] 返回实际范围、总长度、是否节选及可继续位置；UTF-8 多字节边界正确，输出和扫描上限保持有界。无效参数、范围冲突、无效编码/NUL、文件变化及越权读取拒绝。\n- [ ] 独立审查的原始文件摘要、候选/身份/父绑定与节选来源仍由宿主实际读取生成；不得把片段当完整文件或把辅助日志当候选验收证据。\n- [ ] 覆盖超过输出上限的单行 JSONL、中文/emoji 边界、末尾/空文件、超大/损坏输入及原有行范围回归；实际原生 read-only reviewer 能分片读取长行且每次绑定同一原始文件摘要。\n- [ ] 独立源码审查、严格构建、适用原生测试、精确候选 CI/main 交付和父项真实流程复验。\n\n从已交付 main 93006dd2 隔离实施。此单只修长行可读取性，不放宽验收条件，不重写历史日志，不声称解决全部候选来源缺口或完成父项。\n\n<!-- gonggong-host-git:Sail-Li -->\n",
+    "scope": "Existing authorized child implementation and validation; original parent acceptance remains open."
+  },
+  "sha256": "dc2615c387fa993be04fb035b878aa13f2c2d057d2895e631ff3def909ad567e"
+}

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-a544fc75dec8533d020c434b61312d7e52b364c29445efd38d741ccde4d2652b",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/886",
+  "occurred_at": "2026-11-12T05:02:40.530816+00:00",
+  "evidence_refs": [
+    "kuafu-a3258b4a938d70c19ae46dd56881cdebf553c927",
+    "learn-20feb140c7ef3e5755babf5d55d4e8e13bb83390d59c046ae963be3e0c1386d9"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "review-context-and-source-evidence",
+    "revision": 4,
+    "previous": "cbadc0358370649b5eb6841284f9a3e3bb0c9703fb340500b06afe9141900b10",
+    "action": "applied",
+    "details": {
+      "task": "#886 extends native read-only review with character excerpts after the actual real-provider long-line failure.",
+      "observed": "Root review required explicit has_more EOF semantics and matching guidance. Actual native batch review reads Unicode chunk with full raw source hash, rejects six production actions, and rejects changes in bytes outside the returned chunk. Full1566 native tests pass after exact CRLF-to-LF normalization. Existing candidate/auxiliary/host-receipt separation remains in original path; no generic unknown release or original real-provider acceptance inferred. Exact worker receipt was reread after a reconstructed map failed terminal verification."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-long-line-review-886.json",
+        "sha256": "1b0658f9b75f126398d938cd61c95358316eaac496217620ad5a0283bf98a587"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-long-line-review-20261112/kuafu-a3258b4a938d70c19ae46dd56881cdebf553c927.json",
+      "sha256": "265cdb8d43f8b728520b1e88cef70da8f59b8ed0aca50de80182c2f7ee374f0d"
+    }
+  },
+  "sha256": "f44c732b3537403a4598acc2c584683523c089312e12689af7382121b38c6e5e"
+}

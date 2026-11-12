@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-228e38338c311ce4ea1e21ba4e779448e443c5d5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "93538cb5f45af524908dd2b857f921a7910c895e60065f8fb6cc2bf6068a2736",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "7813a30245c65427094934fd29590b98c1a1dd96",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "Main883 install succeeded using identical official replacement logic with diagnostic target output; all installed hashes verified. Native scene/import/resource/PCK/ZIP24checks pass. Real Codex modeling native workflow19checks passes, generated3270vertices GLB, downstream preview/publication/reopen verified. Real game reviewer8 still unknown; actual host read_file receipt44 failed with result SHA4a805e92bc0d70a27034f9f82f91c14c31372522b902f517b21d0a8605f7f7b9 and reported oversized single JSONL line.",
+    "diagnosis": "Installation lock was transient, owner remains unknown. Real game review exposes bounded long-line read gap: reducing line count cannot read a single oversized execution record. Issue886 linked to parent773; scope is native read-only UTF8 chunking and source provenance, without relaxing original acceptance. Separate scope/history evidence remains unresolved.",
+    "next_action": "Implement and independently validate886 from main, preserve original game production and unknown verdicts. Continue installed resource and real asset acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T00:21:06.450698+00:00",
+    "attempted": null,
+    "repair_owner": "Current operator; isolated886 implementation to be delegated",
+    "continuable": "Asset production and installed runtime validation continue independently."
+  },
+  "occurred_at": "2026-11-12T04:31:41.175732+00:00",
+  "sha256": "9217c234290a27fbe00f5eb1bd6eaf90f041a4af92dd70207f0c87ff21400c41"
+}

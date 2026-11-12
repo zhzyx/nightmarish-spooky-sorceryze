@@ -7,13 +7,13 @@ cloned candidate executable, including on macOS. No production Issue is created.
 import argparse
 import json
 import os
-import shutil
 import subprocess
-import sys
 import tempfile
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+
+from editor_test_isolation import copy_editor
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = """@tool
@@ -31,6 +31,10 @@ func run():
     dock.get_ai_settings_control().find_child("APIKey", true, false).text = "offline-fixture"
     dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
     dock.find_child("ConsultationOnly", true, false).button_pressed = true
+    for i in range(200):
+        if not dock.find_child("Send", true, false).disabled:
+            break
+        await create_timer(0.05).timeout
     dock.find_child("ChatInput", true, false).text = "Read the fixture excerpts."
     dock.find_child("Send", true, false).pressed.emit()
     for i in range(1200):
@@ -44,6 +48,8 @@ func run():
                 print("LARGE_FILE_RANGE_OK")
                 quit(0)
                 return
+    for label in dock.find_children("*", "RichTextLabel", true, false):
+        print(label.get_parsed_text())
     quit(2)
 """
 
@@ -56,16 +62,7 @@ def main():
     cases, verified, errors = [], [], []
     with tempfile.TemporaryDirectory(prefix="large-file-read-") as folder:
         root = Path(folder)
-        executable = root / "editor" / args.godot.name
-        executable.parent.mkdir()
-        clone = (
-            subprocess.run(["cp", "-c", str(args.godot.resolve()), str(executable)], capture_output=True)
-            if sys.platform == "darwin"
-            else None
-        )
-        if clone is None or clone.returncode:
-            shutil.copy2(args.godot, executable)
-        (executable.parent / "_sc_").touch()
+        executable = copy_editor(args.godot, root / "editor")
         project = root / "project"
         project.mkdir()
         (project / "project.godot").write_text(
@@ -138,9 +135,73 @@ def main():
         ]:
             failure(label, fixture("invalid-" + label.replace(" ", "-") + ".txt", data), "UTF-8", offset=1, limit=1)
 
+        def chunk(label, path, text, offset=0, limit=1000, tool="read_file"):
+            selected = text[offset : offset + limit]
+            cases.append((
+                label,
+                tool,
+                dict(path=path, char_offset=offset, char_limit=limit),
+                dict(
+                    content=selected,
+                    char_offset=offset,
+                    returned_characters=len(selected),
+                    total_characters=len(text),
+                    next_char_offset=min(offset, len(text)) + len(selected),
+                    truncated=len(selected) < len(text),
+                    has_more=offset + len(selected) < len(text),
+                    read_mode="character_range",
+                ),
+            ))
+
+        long_text = '{"text":"' + "x" * 300000 + "汉😀" + '"}\n'
+        long_path = fixture("long.jsonl", long_text.encode())
+        for offset in (0, 131072, 299500):
+            chunk("long JSONL chunk " + str(offset), long_path, long_text, offset)
+        chunk("emoji boundary", long_path, long_text, 300009, 1, "read_script")
+        chunk("EOF", long_path, long_text, len(long_text))
+        chunk("beyond EOF", long_path, long_text, 2147483647)
+        chunk("empty chunk", fixture("empty-chunk.txt", b""), "")
+        chunk("escaped chunk", escaped, "\x01" * 50000)
+        chunk("scan boundary chunk", boundary, "a" * 16383 + "汉😀\nsecond", 16383, 2)
+        chunk("BOM chunk", fixture("bom-chunk.txt", b"\xef\xbb\xbfhello"), "\ufeffhello", 0, 1)
+        for kwargs in [
+            dict(char_offset=-1),
+            dict(char_offset=0.5),
+            dict(char_offset=True),
+            dict(char_offset="0"),
+            dict(char_offset=2147483648),
+            dict(char_limit=0),
+            dict(char_limit=32769),
+            dict(char_limit=1.5),
+            dict(char_limit=False),
+            dict(char_offset=0, offset=1),
+            dict(char_limit=1, limit=1),
+        ]:
+            failure("invalid chunk " + str(kwargs), long_path, "Character offset", **kwargs)
+        failure("chunk scan budget", str(sparse), "16 MiB", char_limit=1)
+        for index, data in enumerate([
+            b"ok\x00",
+            b"ok\xc0\xaf",
+            b"ok\xed\xa0\x80",
+            b"ok\xf4\x90\x80\x80",
+            b"ok\xe4\xb8",
+            b"ok\xe4a\x80",
+        ]):
+            failure(
+                "invalid chunk UTF-8 " + str(index), fixture("bad-chunk-" + str(index), data), "UTF-8", char_limit=1
+            )
+
         class Handler(BaseHTTPRequestHandler):
             def log_message(self, *_):
                 pass
+
+            def do_GET(self):
+                data = json.dumps({"data": [{"id": "offline-range-fixture"}]}).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
 
             def do_POST(self):
                 try:
@@ -187,6 +248,15 @@ def main():
 
         server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
         threading.Thread(target=server.serve_forever, daemon=True).start()
+        (executable.parent / "editor_data/editor_settings-4.8.tres").write_text(
+            '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n'
+            + "ai_chat/backend = 0\n"
+            + 'ai_chat/endpoint = "http://127.0.0.1:'
+            + str(server.server_port)
+            + '/v1/chat/completions"\n'
+            + 'ai_chat/model = "offline-range-fixture"\n'
+            + "ai_chat/editor_control_bridge_enabled = false\n"
+        )
         try:
             result = subprocess.run(
                 [str(executable), "--headless", "--editor", "--path", str(project), "--script", "res://test.gd"],

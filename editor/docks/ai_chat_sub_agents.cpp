@@ -719,7 +719,16 @@ void AIChatDock::_record_design_tool_receipt(const String &p_tool, const String 
 			const String relative = _resolve(target, absolute, error) ? review_relative_file(_candidate_root(), absolute) : String();
 			receipt["target_path_sha256"] = absolute.sha256_text();
 			receipt["raw_file_sha256"] = p_read_sha256;
-			receipt["read_mode"] = args.has("offset") || args.has("limit") ? "line_range" : "whole_file";
+			receipt["read_mode"] = args.has("char_offset") || args.has("char_limit") ? "character_range" : args.has("offset") || args.has("limit") ? "line_range"
+																																				   : "whole_file";
+			if (args.has("char_offset") || args.has("char_limit")) {
+				receipt["requested_char_offset"] = args.get("char_offset", 0);
+				receipt["requested_char_limit"] = args.get("char_limit", 16384);
+				const Dictionary result = JSON::parse_string(p_result);
+				for (const String &key : { String("char_offset"), String("returned_characters"), String("total_characters"), String("next_char_offset"), String("has_more"), String("truncated") }) {
+					receipt[key] = result.get(key, Variant());
+				}
+			}
 			if (args.has("offset") || args.has("limit")) {
 				receipt["requested_offset"] = args.get("offset", 1);
 				receipt["requested_limit"] = args.get("limit", 200);

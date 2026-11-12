@@ -126,7 +126,7 @@ bool AIChatTools::compact_context(const Array &p_messages, Array &r_messages, Di
 			const String role = message.get("role", "");
 			const String content = message.get("content", "");
 			if (role == "tool" && content.length() > limit) {
-				const String marker = vformat("\n[Context compacted: %d characters omitted from a %d-character tool result; SHA-256 %s. This is an incomplete excerpt, not a semantic summary. Re-read the file using offset/limit for missing lines before relying on them.]\n", content.length() - limit, content.length(), content.sha256_text());
+				const String marker = vformat("\n[Context compacted: %d characters omitted from a %d-character tool result; SHA-256 %s. This is an incomplete excerpt, not a semantic summary. Re-read the file using offset/limit for missing lines or char_offset/char_limit for long lines before relying on them.]\n", content.length() - limit, content.length(), content.sha256_text());
 				JSON json;
 				bool structured = false;
 				if (json.parse(content) == OK) {
@@ -314,7 +314,7 @@ bool AIChatTools::resolve_script_path(const String &p_path, const String &p_root
 bool AIChatTools::read_script(const String &p_absolute, String &r_content, String &r_error, String *r_raw_sha256) {
 	Vector<uint8_t> bytes;
 	if (!read_script_bytes(p_absolute, bytes) || !decode_script_bytes(bytes, r_content)) {
-		r_error = "Cannot read a complete UTF-8 script within the 256 KiB limit.";
+		r_error = "Cannot read a complete UTF-8 script within the 256 KiB limit. For large text use offset/limit lines or char_offset/char_limit for long lines.";
 		return false;
 	}
 	if (r_raw_sha256) {
@@ -329,10 +329,10 @@ bool AIChatTools::read_script(const String &p_absolute, String &r_content, Strin
 }
 
 // Scan in bounded chunks so an excerpt never requires a full-file text snapshot.
-bool AIChatTools::read_script_range(const String &p_absolute, int p_offset, int p_limit, Dictionary &r_result, String &r_error, String *r_raw_sha256) {
+bool AIChatTools::read_script_range(const String &p_absolute, int p_offset, int p_limit, Dictionary &r_result, String &r_error, String *r_raw_sha256, bool p_char_mode) {
 	r_result.clear();
-	if (p_offset < 1 || p_limit < 1 || p_limit > 500) {
-		r_error = "Read offset must be a positive integer and limit must be 1-500 lines.";
+	if (p_offset < (p_char_mode ? 0 : 1) || p_limit < 1 || p_limit > (p_char_mode ? 32768 : 500)) {
+		r_error = p_char_mode ? "Character offset must be nonnegative and char_limit must be 1-32768." : "Read offset must be a positive integer and limit must be 1-500 lines.";
 		return false;
 	}
 	Ref<FileAccess> file = FileAccess::open(p_absolute, FileAccess::READ);
@@ -343,6 +343,7 @@ bool AIChatTools::read_script_range(const String &p_absolute, int p_offset, int 
 	}
 	const int64_t last_line = int64_t(p_offset) + p_limit - 1;
 	int64_t line = 1;
+	int64_t character = -1;
 	Vector<uint8_t> excerpt;
 	uint8_t buffer[16384];
 	int continuation = 0;
@@ -366,6 +367,9 @@ bool AIChatTools::read_script_range(const String &p_absolute, int p_offset, int 
 		}
 		for (uint64_t i = 0; i < amount; i++) {
 			const uint8_t byte = buffer[i];
+			if (continuation == 0) {
+				character++;
+			}
 			bool valid = true;
 			if (continuation) {
 				valid = (byte & 0xc0) == 0x80;
@@ -387,9 +391,9 @@ bool AIChatTools::read_script_range(const String &p_absolute, int p_offset, int 
 				r_error = "Excerpt source is not valid UTF-8 text (invalid encoding or NUL byte).";
 				return false;
 			}
-			if (line >= p_offset && line <= last_line && (byte != '\n' || line < last_line)) {
+			if (p_char_mode ? (character >= p_offset && character <= last_line) : (line >= p_offset && line <= last_line && (byte != '\n' || line < last_line))) {
 				if (excerpt.size() >= MAX_SCRIPT_BYTES) {
-					r_error = "Requested excerpt exceeds the 256 KiB output limit; request fewer lines.";
+					r_error = "Requested excerpt exceeds the 256 KiB output limit; request fewer lines or use char_offset/char_limit for long lines.";
 					return false;
 				}
 				excerpt.push_back(byte);
@@ -411,13 +415,25 @@ bool AIChatTools::read_script_range(const String &p_absolute, int p_offset, int 
 	}
 	Dictionary result;
 	result["path"] = p_absolute;
-	result["offset"] = p_offset;
-	result["returned_lines"] = p_offset > line ? int64_t(0) : MIN(int64_t(p_limit), line - p_offset + 1);
-	result["total_lines"] = line;
-	result["truncated"] = p_offset > 1 || last_line < line;
+	if (p_char_mode) {
+		const int64_t total = character + 1;
+		const int64_t returned = p_offset >= total ? 0 : MIN(int64_t(p_limit), total - p_offset);
+		result["read_mode"] = "character_range";
+		result["char_offset"] = p_offset;
+		result["returned_characters"] = returned;
+		result["total_characters"] = total;
+		result["next_char_offset"] = MIN(int64_t(p_offset), total) + returned;
+		result["has_more"] = int64_t(p_offset) + returned < total;
+		result["truncated"] = returned < total;
+	} else {
+		result["offset"] = p_offset;
+		result["returned_lines"] = p_offset > line ? int64_t(0) : MIN(int64_t(p_limit), line - p_offset + 1);
+		result["total_lines"] = line;
+		result["truncated"] = p_offset > 1 || last_line < line;
+	}
 	result["content"] = content;
 	if (JSON::stringify(result).utf8().length() > MAX_SCRIPT_BYTES) {
-		r_error = "Encoded excerpt exceeds the 256 KiB output limit; request fewer lines.";
+		r_error = "Encoded excerpt exceeds the 256 KiB output limit; request fewer lines or use char_offset/char_limit for long lines.";
 		return false;
 	}
 	if (r_raw_sha256) {

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4ca310db928684c0667d9b8a9fc5f2c0eb246e4a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "93538cb5f45af524908dd2b857f921a7910c895e60065f8fb6cc2bf6068a2736",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "7813a30245c65427094934fd29590b98c1a1dd96",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "Actual installed-main883 Windows project_export proposal rejected credential_export_not_supported despite codesign/enable=false and matching real template built from main. Windows exporter defaults timestamp=true,digest_algorithm=1; _code_sign is gated by enable. Original private report preserves rejection and later isolated teardown error; actual source paths ai_chat_editor_scene_completion.cpp and platform/windows/export/export_plugin.cpp read.",
+    "diagnosis": "Confirmed unsigned Windows export false rejection of inactive nonsecret defaults. New linked Issue888 owns narrow correction; real credentials/signing/encryption remain outside this local unsigned action. No new export success claimed.",
+    "next_action": "Implement isolated888 with genuine Windows template/output/runtime test plus existing scene/macOS rejection regressions and independent review. Continue886 and existing real game evidence audit.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T00:21:06.450698+00:00",
+    "attempted": null,
+    "repair_owner": "Current operator; isolated888 worker pending dispatch",
+    "continuable": "Other accepted resource/asset checks and886 delivery continue."
+  },
+  "occurred_at": "2026-11-12T04:51:48.181616+00:00",
+  "sha256": "3214dc9a0c9578eba069ba6efa38f659fc1c1828858002b163b2353442371061"
+}

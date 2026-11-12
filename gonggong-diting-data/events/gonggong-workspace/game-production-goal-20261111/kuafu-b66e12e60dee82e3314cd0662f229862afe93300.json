@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b66e12e60dee82e3314cd0662f229862afe93300",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "93538cb5f45af524908dd2b857f921a7910c895e60065f8fb6cc2bf6068a2736",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "7813a30245c65427094934fd29590b98c1a1dd96",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "PR883 merged main93006dd2 after all applicable exact signed CI success. Clean main build and89AIChat/1620assertions passed. Official installer Replace failed with Windows file-in-use; original main879 manifest and all three artifact hashes were read back unchanged after automatic rollback.",
+    "diagnosis": "Installation file replacement blocked by external file handle; preserve effective prior install and inspect actual processes before one retry. No process ownership inferred from binary name.",
+    "next_action": "Continue isolated real-account acceptance; identify active installed binary handle or retry official installer after verified rollback. Do not claim new version installed until manifest and file hashes match.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T00:21:06.450698+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": "Other verification remains independent."
+  },
+  "occurred_at": "2026-11-12T04:22:43.402273+00:00",
+  "sha256": "a4e00fd58520b9add72a3fe80763c3f147a217253be9ea30d80973a4855bdb11"
+}

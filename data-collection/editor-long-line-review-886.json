@@ -1,0 +1,167 @@
+{
+  "issue_number": 886,
+  "request_id": "editor-long-line-review-20261112",
+  "parent_issue": 773,
+  "base": "93006dd2bdec4a7c1c2982a254d2fdef9151e7a1",
+  "source_sha256": {
+    "editor/docks/ai_chat_tools.cpp": "3df0486932d9cceb7149022998091245b8f0e851da33b3b8e312f89b8d334068",
+    "editor/docks/ai_chat_tools.h": "5688bf280cd387b9e33f84a730aecf16b5b845b7d9ade601350e1ee9a514cced",
+    "editor/docks/ai_chat_dock.cpp": "83d1a2a4836b4c28864be67ace6071b0745f24ffe798eff27358caaa8fe90ead",
+    "editor/docks/ai_chat_sub_agents.cpp": "59d0070d2e04da72fda27130f1543fde2460a1538817084cba92363219467631",
+    "tests/editor/test_ai_chat_tools.cpp": "4de62bbcdb6e8525f8b3a559edbf2e24f28189d5bb52420ec6721fb56760a942",
+    "tests/editor/run_design_batch.py": "638753432acba382a25a245307a6fa073b8b8f08b678bcf0e4862e9521bda3c4",
+    "tests/editor/run_large_file_read.py": "d55f769e7bfad159e40f5aaa563c0749d5fff2c3fd9ad43189ed35cd7d700aba"
+  },
+  "binary_sha256": "567f2b48052f37d142fcd44771aa8b63d0d77eefccf1bca641feae3f903dba2b",
+  "api": {
+    "parameters": [
+      "char_offset",
+      "char_limit"
+    ],
+    "offset": "zero-based Unicode scalar",
+    "default_limit": 16384,
+    "maximum_limit": 32768,
+    "maximum_scan_bytes": 16777216,
+    "maximum_encoded_result_bytes": 262144,
+    "continuation": "Follow next_char_offset only while has_more; truncated means not the whole source."
+  },
+  "implementation_worker": "/root/sinan_470aaab7c490c440",
+  "independent_review": {
+    "reviewer": "current root operator; no implementation edits",
+    "reviewed": [
+      "UTF8 continuation across chunks, Unicode bounds and EOF",
+      "Existing full/line mode compatibility and conflicting arguments",
+      "Original source hash and stale/auxiliary/permission boundaries",
+      "Actual native tests and failure records"
+    ],
+    "findings_fixed": [
+      "Added has_more to disambiguate final excerpt/EOF from truncated",
+      "Updated tool schema, normal/read-only system instructions, context compaction and size errors with long-line recovery guidance"
+    ]
+  },
+  "agent_validation": {
+    "issue": 886,
+    "base": "93006dd2",
+    "source_sha256": {
+      "editor/docks/ai_chat_tools.cpp": "247d423c18ffdf17308032618db252b2ed7774eb4656869691d5eaa8844f8048",
+      "editor/docks/ai_chat_tools.h": "49794f433057c9cf27af7baacf584898459be81c557e83f06f8f047017b1a7be",
+      "editor/docks/ai_chat_dock.cpp": "64260c37d2fd1ecb001eb220ea55fd53cb9ad640c07122229c5c3d859984cda6",
+      "editor/docks/ai_chat_sub_agents.cpp": "9da2027b42336898cc036b69ff53f091a42832105f6ebbbf5aecb2c63016aa84",
+      "tests/editor/test_ai_chat_tools.cpp": "84bf8480ad4ea7f10f05cfc2c04ec728967e5942c207754fb0f499574df13171",
+      "tests/editor/run_design_batch.py": "a0c848d5be27226cfe3dce82570f34b2f8ae35d8ecb64653e4f193ed98ef1f97",
+      "tests/editor/run_large_file_read.py": "a29e7ad1e99f8db10b0ef03060352567e0d7ba35e6955592c828fde872841ecf"
+    },
+    "binary_sha256": "feb184d3f19e74c8add13e8e3bc5b5cd01e708683b58326a3f52cbba95e1026f",
+    "checks": {
+      "strict_build": {
+        "exit_code": 0,
+        "log": "build-guidance.log"
+      },
+      "unit": {
+        "exit_code": 0,
+        "cases": 90,
+        "assertions": 1672,
+        "log": "unit-guidance.log"
+      },
+      "large_read": {
+        "exit_code": 0,
+        "ok": true,
+        "cases": 49
+      },
+      "game_review": {
+        "exit_code": 0,
+        "ok": true
+      },
+      "game_review_stale_bytes": {
+        "exit_code": 0,
+        "ok": true
+      },
+      "clang_format": 0,
+      "ruff_check": 0,
+      "ruff_format": 0,
+      "mypy": 0,
+      "git_diff_check": 0
+    },
+    "notes": [
+      "All native tests use private headless editor copies and local offline model fixtures.",
+      "Whole raw UTF-8 scan digest remains authoritative; character excerpt does not promote auxiliary evidence.",
+      "Unit suite reports existing Object/EditorSettings diagnostics after 90 successful cases; retained in raw log.",
+      "Initial failures retained: inherited workspace isolation refusal; embedded Python lacks pip; legacy large-read copy missing Tianshu package; model startup not seeded; 32768 character result correctly context-compacted, so model-facing fixture uses 1000-character chunks while native unit reconstructs entire JSONL with 32768-character chunks."
+    ],
+    "evidence_sha256": {
+      "build-final.log": "8d17098f3cea80f8e7a1287b100d0fff341d232d02eeac02b95a2451c4ea8b17",
+      "build-formatted.log": "e740de103fcb6ff2605255b3692942877cf1ddb293bff136262516aa7b7d987f",
+      "build-guidance.log": "49f7ffc85199ab7299ab0a2e8e6b7ce18733ed3b89ff8468ec5a0e65aeb149a3",
+      "build.log": "5358a5fec1ec5ac3fcf78380c0d7172365090459ec29bc96c28d2775c3084e92",
+      "clang-format-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "clang-format.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "game-review-final-run.log": "83caeada21092cb86eba471eca944558376dd791ae7cb7dc448d845043f811f8",
+      "game-review-final.json": "b280d89b8a5e3e542a5deb52f14bfb46b548f86a71d722f5cf6d52814faf735a",
+      "game-review-guidance-run.log": "4c21636eef8fd5648a8d2d0b6977ed7ab86b18faa8932c4b1fe815c5818e3243",
+      "game-review-guidance.json": "d30e14f0685deed991ec92e5e69f5df6ad3f86cc34b42b21c13d0b69921b66a7",
+      "game-review-release-run.log": "66da7d8adb4bc92ff67a738eb086d7d6d42820c812d6c1ea7bb52b2ab76727cd",
+      "game-review-release.json": "75fa03cf014e798f06a0a0797ca4d9212f77c09f29fdd35a78d11f982f28a67b",
+      "game-review-run.log": "88e4b37c539c5a62f8ab35d3b9452c3dd78dbd034e9038f4e88c5f3489305061",
+      "game-review-stale-guidance-run.log": "e4471a64dc8f70445beef9ca8cce970d0856bf4c2000f818db57f087d886f4a5",
+      "game-review-stale-guidance.json": "a30382c0cea1e9c1e5c5f5a863cc86889a1d4d59b4d9a24d58c9674effe5daed",
+      "game-review-stale-release-run.log": "066e956d858f475def64658171e129f97302c87e461492c7df76d38e3e29e2ff",
+      "game-review-stale-release.json": "988f708310a62964a95c08af791f41f3e92ffa6396e28f6348baab808fb03fc6",
+      "game-review-stale-run.log": "592c73fe1cb7e177d74b11cd4fd07fe16fd50e9bdaa4849d0e8baccff08680ff",
+      "game-review-stale.json": "e9bbae9e7930bd21a5d5ff7c985128073bb9db2c44e993aba64f36eb26de70a3",
+      "large-read-final-run.log": "95e42eccc4ccedb5472163a4e2755ad6871325a738c7192c9ea4c638866d5b4e",
+      "large-read-final.stderr.log": "1033320e62152aa60e4545d2b2e2dec6e0fa1a362221b68b276a571e14884474",
+      "large-read-final.stdout.log": "abf2dca79691589c86fbd794ab18f51370937b4215ea4eb5654ae9b2746d376d",
+      "large-read-guidance-run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "large-read-guidance.json": "db6ea02ca4ceacd53bd6bf2a898f24ddcb309babe70db5358ef7e13b61bda7d0",
+      "large-read-guidance.stderr.log": "07d4b40e173570fedde1f205fd73ac267f49970efac1598e44fd9d8ded3bd6ff",
+      "large-read-guidance.stdout.log": "03ea419b9d30f6c0c07dc8f833a2fb0c5685d33db129719e51a389481f032545",
+      "large-read-release-run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "large-read-release.json": "db6ea02ca4ceacd53bd6bf2a898f24ddcb309babe70db5358ef7e13b61bda7d0",
+      "large-read-release.stderr.log": "07d4b40e173570fedde1f205fd73ac267f49970efac1598e44fd9d8ded3bd6ff",
+      "large-read-release.stdout.log": "03ea419b9d30f6c0c07dc8f833a2fb0c5685d33db129719e51a389481f032545",
+      "large-read-run.log": "42760a52a7df8cc35cf8d0b3bc24f2d6f0ebfde458d9b30034459000cddb6cbb",
+      "large-read-startup-run.log": "f3d0c2cdd998087a7de7c2a303fe1cb11af75754ab72554acc7bbba34e5e4366",
+      "large-read-startup.stderr.log": "1d8b907a367b3f1b61977abd2335cc26e67d53b7e8f8e34ce9318ecb3efa3bb9",
+      "large-read-startup.stdout.log": "4b52df4c01ae8d0fc9e6336cc7870ea010751c6bf546326ca270705b85c23915",
+      "large-read-verified-run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "large-read-verified.json": "db6ea02ca4ceacd53bd6bf2a898f24ddcb309babe70db5358ef7e13b61bda7d0",
+      "large-read-verified.stderr.log": "07d4b40e173570fedde1f205fd73ac267f49970efac1598e44fd9d8ded3bd6ff",
+      "large-read-verified.stdout.log": "03ea419b9d30f6c0c07dc8f833a2fb0c5685d33db129719e51a389481f032545",
+      "large-read.stderr.log": "ddcf8c5a83e5e0fb44655600142523eaaf79acc11ae51b73d5365c91947aba2e",
+      "large-read.stdout.log": "cd7b17bc2f37e0e0d80e85ae94e231e14c740c1c43ee69037454f13ffc547ac0",
+      "mypy.log": "0c37c4158c91ef55c724ba017bf6465f26018199badb08e3ff13f98acdf056c2",
+      "ruff.log": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0",
+      "unit-final.log": "c85ec2a8d1387104b87357642b7198988c9d5e9cf3f1c52867dd690aec545107",
+      "unit-guidance.log": "c85ec2a8d1387104b87357642b7198988c9d5e9cf3f1c52867dd690aec545107",
+      "unit.log": "c85ec2a8d1387104b87357642b7198988c9d5e9cf3f1c52867dd690aec545107"
+    }
+  },
+  "root_validation": {
+    "source_normalization": "Only CRLF to LF per repository formatter; exact equivalence checked against original worker hashes.",
+    "strict_build": {
+      "exit": 0,
+      "log_sha256": "ab17171bc46b70f84567fa10d604a00b85e66ddda89ec736afe94fe704dd3292"
+    },
+    "full_native": {
+      "exit": 0,
+      "cases_passed": 1566,
+      "assertions_passed": 435682,
+      "skipped": 3,
+      "log_sha256": "bd3df1a0a0e72e7b194ec19a3ae4468b7121cf980ec39d6f93f66b903ca2cdf1"
+    },
+    "large_read": {
+      "ok": true,
+      "cases": 49,
+      "report_sha256": "db6ea02ca4ceacd53bd6bf2a898f24ddcb309babe70db5358ef7e13b61bda7d0"
+    },
+    "game_review": {
+      "ok": true,
+      "report_sha256": "f886a7aab7594923d32ee28aea727b961bf9d84803646d8b5e56f9dc726251cf"
+    },
+    "stale_unreturned_bytes": {
+      "ok": true,
+      "report_sha256": "a30382c0cea1e9c1e5c5f5a863cc86889a1d4d59b4d9a24d58c9674effe5daed"
+    }
+  },
+  "scope": "Candidate implementation/tests passed; signed CI/main/installation and original real-provider replay remain pending at creation. No acceptance or authority relaxation."
+}
