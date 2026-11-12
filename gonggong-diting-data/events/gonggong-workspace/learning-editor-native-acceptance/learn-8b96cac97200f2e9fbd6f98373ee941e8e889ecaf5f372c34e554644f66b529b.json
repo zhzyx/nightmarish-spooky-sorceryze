@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-8b96cac97200f2e9fbd6f98373ee941e8e889ecaf5f372c34e554644f66b529b",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/980",
+  "occurred_at": "2026-11-12T16:57:58.503091+00:00",
+  "evidence_refs": [
+    "request-ai-endpoint-credential-binding-20261113"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Before asserting cancellation or stale-result rejection, verify that the real asynchronous operation started; include the observed helper request or worker-start evidence in test success conditions.",
+      "when": "An editor fixture mutates state before starting an async operation and later checks only an empty field or unchanged result.",
+      "counterexample": "A test intentionally covering rejection before start should instead assert no launch; start evidence does not by itself prove successful completion.",
+      "trial_plan": "Run exact corrected memory fixture; then run a temporary copy omitting only the new pre-race verify. Corrected case must pass with two initial saves; negative copy must be rejected by pending_save_observed even when its control assertions pass."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/ai-credential-review-980.json",
+        "sha256": "b55d7d5e3b9e2b3e1863a1912a4f56cd7f8c87c58d0c496e1dbcc2cb8a19bf89"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/ai-endpoint-credential-binding-20261113/request-ai-endpoint-credential-binding-20261113.json",
+      "sha256": "67636954226dca6871ce8ce6b7479aa6c9fadeda934268d7c31f0149fdc1b7ce"
+    }
+  },
+  "sha256": "8765b124ad6fadec537b45c5e4b31565b60c55791e88f136af1513950c926567"
+}

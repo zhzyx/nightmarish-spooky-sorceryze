@@ -316,6 +316,7 @@ def run(args):
             private_path = root / "private-home" / name.lower()
             private_path.mkdir(parents=True, exist_ok=True)
             environment[name] = str(private_path)
+        (Path(environment["HOME"]) / "Library/Caches").mkdir(parents=True, exist_ok=True)
         environment["PYTHONNOUSERSITE"] = "1"
         launched = []
 

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-0a65af65012673f091131779f32f93a76b491b4e7df910b42b5fac10350ffb0e",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/980",
+  "occurred_at": "2026-11-12T16:59:54.771798+00:00",
+  "evidence_refs": [
+    "request-ai-endpoint-credential-binding-20261113",
+    "learn-8b96cac97200f2e9fbd6f98373ee941e8e889ecaf5f372c34e554644f66b529b"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "revision": 2,
+    "previous": "8765b124ad6fadec537b45c5e4b31565b60c55791e88f136af1513950c926567",
+    "action": "verify",
+    "details": {
+      "test": "Exact corrected native memory fixture and isolated counterfactual copy omitting only pre-race verify on same ec2d9b52-based candidate",
+      "expected": "Corrected fixture passes with two initial saves; omission of only pre-race verify is rejected despite passing control assertions.",
+      "observed": "Corrected fixture passes with two initial saves; omission of only pre-race verify is rejected despite passing control assertions."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/ai-credential-async-start-980.json",
+        "sha256": "bbdc2cb2ab47b8aef08c51c556a3bf455772c9a0168474df69998a955907043e"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/ai-endpoint-credential-binding-20261113/request-ai-endpoint-credential-binding-20261113.json",
+      "sha256": "67636954226dca6871ce8ce6b7479aa6c9fadeda934268d7c31f0149fdc1b7ce"
+    }
+  },
+  "sha256": "943526d643a3cb8216b9464e68cc97ef67822a141ecb8647098190b38726ab5b"
+}

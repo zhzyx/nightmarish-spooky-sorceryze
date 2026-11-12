@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-96ee17e36db8753aca33ce742e4bb0e2a386c80c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-endpoint-credential-binding-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/980",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3e931e82ad1c2d69a5e1f5a21345a99ad5de6f47d172ad0757716ffca938191f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/980",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/980",
+    "action": "dependency",
+    "detection_head": "08fe645a2296f8145185c9ea087fd4ab3ac345ed",
+    "context_sha256": "b9d374b78a10dc06cce643c8a6f61db553075b4622daa8a5a887030e39ee6b00",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-refactor",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "bin/credential-build.log, isolated source08fe645a2, worker /root/sinan_48c7c214e086659d",
+    "diagnosis": "Original build log confirms missing MoltenVK SDK and optional AccessKit dependencies; native credential source not implicated. Worker compiled editor objects with vulkan=no accesskit=no; complete headless candidate still building.",
+    "next_action": "Complete isolated headless candidate, run synthetic credential regressions and preserve full graphical build as unverified until dependencies available.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T16:18:34.344229+00:00",
+    "attempted": null,
+    "repair_owner": "/root/sinan_48c7c214e086659d",
+    "continuable": "headless native build and synthetic regressions"
+  },
+  "occurred_at": "2026-11-12T16:21:03.375263+00:00",
+  "sha256": "0793271da7ac06cbfc1054bf165780f14261a3053ce0d2cfc21003dc27239699"
+}

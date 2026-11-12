@@ -43,6 +43,32 @@ inline String endpoint(const String &p_url, bool p_responses) {
 	return p_url.trim_suffix("/chat/completions").trim_suffix("/responses") + (p_responses ? "/responses" : "/chat/completions");
 }
 
+// A credential authorizes one service path. Only the two supported wire
+// suffixes share an audience; prefixes, redirects and arbitrary base URLs do not.
+// Preserve CPP_CODING_STANDARD.md v1.1 Allman style during formatter transition.
+// clang-format off
+inline String CredentialAudience(const String &strEndpoint)
+{
+	const String strUrl = strEndpoint.strip_edges();
+	String strScheme;
+	String strHost;
+	String strPath;
+	String strFragment;
+	int nPort = 0;
+	if (strUrl.parse_url(strScheme, strHost, nPort, strPath, strFragment) != OK || strHost.is_empty() || strUrl.contains("@") || strUrl.contains("\n") || strUrl.contains("\r") || strUrl.contains("?") || strUrl.contains("#"))
+	{
+		return String();
+	}
+	const bool bLoopback = strHost == "127.0.0.1" || strHost == "localhost" || strHost == "::1";
+	if (strScheme != "https://" && !(strScheme == "http://" && bLoopback && nPort > 0))
+	{
+		return String();
+	}
+	return strUrl.trim_suffix("/chat/completions").trim_suffix("/responses");
+}
+
+// clang-format on
+
 inline Dictionary responses_payload(const Dictionary &p_chat) {
 	Dictionary result;
 	result["model"] = p_chat["model"];

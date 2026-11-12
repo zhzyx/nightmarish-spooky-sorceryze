@@ -79,15 +79,12 @@ func _render() -> void:
 
 
 func _configuration_changed() -> void:
-	# Never carry a restored credential to another endpoint. Fresh manual input wins.
+	# Storage handles remain compatible with existing records. Only the native
+	# credential audience decides whether in-memory credentials remain usable.
 	if not restored_binding.is_empty() and restored_binding != _binding():
-		var previous_hash := managed_secret_hash
 		restored_binding = ""
 		managed_secret_hash = ""
-		if not previous_hash.is_empty() and key_field.text.sha256_text() == previous_hash:
-			key_field.text = ""
-			key_field.text_changed.emit("")
-		message = "接口已切换，请验证当前连接；不会沿用其他接口的密钥。"
+		message = "连接已切换，请重新验证；密钥仅用于已绑定的接口。"
 		_render()
 
 
@@ -105,7 +102,7 @@ func _toggle_remember(enabled: bool) -> void:
 func restore() -> void:
 	if not is_instance_valid(key_field) or not remember.button_pressed or clearing: return
 	var config: Dictionary = chat.get_ai_configuration()
-	if int(config.get("backend", 0)) in [1, 2] or not key_field.text.is_empty(): return
+	if int(config.get("backend", 0)) in [1, 2] or not str(chat.get_ai_credential()).is_empty(): return
 	var account := _binding()
 	var records: Dictionary = _get_record("accounts", {})
 	if not records.has(account): return
@@ -121,8 +118,9 @@ func restore() -> void:
 	if result.get("status") == "loaded" and result.get("secret") is String and not str(result.secret).is_empty():
 		restored_binding = account
 		managed_secret_hash = str(result.secret).sha256_text()
-		key_field.text = result.secret
-		key_field.text_changed.emit(key_field.text)
+		if not chat.restore_ai_credential(result.secret, str(config.get("endpoint", ""))):
+			result.clear()
+			return
 		message = "已恢复上次保存的密钥，正在等待当前连接验证。"
 	else:
 		message = "保存的密钥缺失或系统凭据库不可用，请重新输入；原登录记录仍保留。"

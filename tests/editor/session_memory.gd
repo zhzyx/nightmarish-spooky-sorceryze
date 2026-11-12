@@ -52,6 +52,17 @@ func run() -> void:
 		check(memory.message.contains("已安全记住"), "verified API key saved through bounded helper protocol")
 		check(settings.get_project_metadata("ai_connection_memory", "accounts", {}).size() == 1, "only a project and endpoint bound handle is persisted")
 		check(memory.history.text.contains("remembered-model"), "last verified model and time are visible")
+		edit("APIEndpoint", OS.get_environment("MEMORY_ENDPOINT") + "/responses")
+		check(chat.get_ai_credential() == secret, "remembered credential survives same-service endpoint protocol switch")
+		var backend = ai.find_child("AIBackend", true, false)
+		backend.select(3)
+		backend.item_selected.emit(3)
+		check(chat.get_ai_credential() == secret, "remembered credential survives chat to responses backend switch")
+		backend.select(0)
+		backend.item_selected.emit(0)
+		edit("APIEndpoint", endpoint)
+		check(chat.get_ai_credential() == secret, "remembered credential survives responses to chat switch")
+		await verify() # Restore available state before exercising a second in-flight save.
 		# Forget only in-memory binding to exercise a first save while switching endpoints.
 		memory.saved_signature = ""
 		memory.restored_binding = ""

@@ -96,6 +96,10 @@ def main():
                     MEMORY_REPORT=str(report),
                     GONGGONG_PYTHON=sys.executable,
                 )
+                if stage == "restore":
+                    # A mismatched ambient credential must not mask the saved
+                    # custom endpoint's private-store credential on restart.
+                    env["OPENAI_API_KEY"] = "synthetic-unrelated-" + uuid.uuid4().hex
                 try:
                     process = subprocess.run(
                         [str(binary), "--headless", "--editor", "--path", str(project), "res://accept.tscn"],
@@ -128,6 +132,7 @@ def main():
                 "secret_on_disk": leaked,
                 "store_empty_after_forget": not store,
                 "operations": calls,
+                "pending_save_observed": calls[:2] == ["save", "save"],
             }
             args.report.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
             return (
@@ -137,6 +142,7 @@ def main():
                 and not errors
                 and not leaked
                 and not store
+                and result["pending_save_observed"]
                 else 1
             )
     finally:

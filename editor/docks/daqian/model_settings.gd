@@ -175,13 +175,7 @@ func _connect_local() -> void:
 				return
 			local[field] = control.text.strip_edges()
 	if local.get("backend") in ["0", "3"] and is_instance_valid(chat):
-		var ai: Control = chat.get_ai_settings_control() if chat.has_method("get_ai_settings_control") else chat
-		var field := ai.find_child("APIKey", true, false) as LineEdit if is_instance_valid(ai) else null
-		if field:
-			var secret := field.text.strip_edges()
-			# An ambient OpenAI key belongs only to its own endpoint.
-			if secret != OS.get_environment("OPENAI_API_KEY") or local.get("endpoint") in ["https://api.openai.com/v1/chat/completions", "https://api.openai.com/v1/responses"]:
-				local.editor_key = secret
+		local.editor_key = str(chat.get_ai_credential())
 	await _run("connect-local", local)
 
 
