@@ -8195,7 +8195,7 @@ void fragment() {
 	endpoint->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
 	model = add_field(http_settings, U"手动模型 ID（接口不支持列表时使用）", "APIModel", EditorSettings::get_singleton()->get_project_metadata("ai_chat", "model", ""));
 	model->connect("text_changed", callable_mp(this, &AIChatDock::_model_edited));
-	api_key = add_field(http_settings, U"API 密钥（仅保留于本次会话）", "APIKey", OS::get_singleton()->get_environment("GODOT_AI_API_KEY"));
+	api_key = add_field(http_settings, U"API 密钥（可在验证成功后记住）", "APIKey", OS::get_singleton()->get_environment("GODOT_AI_API_KEY"));
 	api_key->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
 	api_key->set_secret(true);
 	if (api_key->get_text().is_empty()) {

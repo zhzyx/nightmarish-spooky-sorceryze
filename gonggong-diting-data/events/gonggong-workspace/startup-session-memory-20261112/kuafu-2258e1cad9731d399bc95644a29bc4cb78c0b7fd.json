@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2258e1cad9731d399bc95644a29bc4cb78c0b7fd",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "startup-session-memory-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/867",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fa8814c69c6f070b20ef5f6bfda54ee2f5e9d8fe79aaf2453959ef6f5a481ecc",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/867",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/868",
+    "action": "validation",
+    "detection_head": "c7a335efde36144ede5d9443bf84bcb17706dd99",
+    "context_sha256": "5cfaea4311c601913257c1cbbc50b31b1ae15c81165afd1f5cd22932740c8261",
+    "operator": "Sail-Li",
+    "worker": "codex-root-session-memory",
+    "authority_ref": "codex-user-startup-session-memory-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/867",
+    "diagnosis": "Captured stderr showed GDScript calling the unbound EditorSettings.save_project_metadata method. Injected a native metadata-save Callable and removed invalid fixture call. Rebuilt candidate; original four-process memory scenario and 30 startup checks now pass without strict errors or secret disk leakage. Independent review boundary fixes also covered: pending-save endpoint binding, headless native-store guard, immediate cancel UI.",
+    "next_action": "Complete independent recheck and relevant regressions, then exact-candidate PR delivery and final issue acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T00:17:35.276937+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T00:21:10.781807+00:00",
+  "sha256": "7c253e3b4a7584aa7dc2310dc8e558c38dcfeaaca353a2bf42e6e47e8cea76c7"
+}

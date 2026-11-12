@@ -55,6 +55,8 @@ if env.editor_build:
         [
             "docks/daqian/startup_checks.gd",
             "docks/daqian/startup_git.gd",
+            "docks/daqian/session_memory.gd",
+            "#customizations/components/godot-host/session_credentials.py",
             "#customizations/components/godot-host/startup_git_helper.py",
         ],
         env.Run(editor_builders.daqian_scripts_builder),

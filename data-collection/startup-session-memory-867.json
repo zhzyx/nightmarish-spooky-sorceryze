@@ -1,0 +1,234 @@
+{
+  "issue": 867,
+  "request_id": "startup-session-memory-20261112",
+  "base": "c7a335efde36144ede5d9443bf84bcb17706dd99",
+  "path_base": "repository root",
+  "inputs": {
+    "editor/SCsub": "209784b736a3e68ef4fc035fd26a6625a86622da093c07d54a869c6db5ae62d9",
+    "editor/docks/ai_chat_dock.cpp": "f7f5769b8d99605b81da83b21380ce5f328e906abfcad07c1e1e2e42b87a9322",
+    "editor/docks/daqian_dock.cpp": "124e7e9046e9f2ca2358950c47074cf37164b2726ceccf1a6d5d777d5c0d0f4d",
+    "editor/docks/daqian/startup_checks.gd": "9a576f35c46c8587d3622b8d2f6e1cd6ee8196dd922cab1388d87177aeda032a",
+    "editor/docks/daqian/session_memory.gd": "c681c82df63c36347f43b61bea4f07d3f6a2281c8727e74583481352af99b84e",
+    "customizations/components/godot-host/session_credentials.py": "7a25ae1a00bba539b69ac7eb0b61882b43a7fc86eb2abf15bb8492018a5b6fcf",
+    "tests/editor/session_memory.gd": "d6f172e23856015bc414ebf1139d3c4fcf745b504e40aef385afb542af55506d",
+    "tests/editor/run_session_memory.py": "0052f2e4e64b44a40aefee0341f14cea0af4e8bac26986791f95c29dcd34d874",
+    "tests/editor/test_session_credentials.py": "bfcac37789b9e92347dc21c8a92e14ef96675fa895c70c2ddf5bad9a8cfb8b06"
+  },
+  "platform": "macOS arm64 / Clang; native headless isolated editors; RAM-only synthetic credential transport and local HTTP API",
+  "binary_sha256": "7cfbb4367c77a02902577cea9583919be6433bd5b1817c1ec62b5e4c3b342958",
+  "memory": {
+    "binary_sha256": "7cfbb4367c77a02902577cea9583919be6433bd5b1817c1ec62b5e4c3b342958",
+    "stages": {
+      "save": {
+        "result": {
+          "checks": [
+            "native editor installs connection memory",
+            "AI configuration exposes remember and clear controls",
+            "fresh project has no credential handles",
+            "actual loopback verifies the current restored credential",
+            "verified API key saved through bounded helper protocol",
+            "only a project and endpoint bound handle is persisted",
+            "last verified model and time are visible",
+            "endpoint switch during pending save clears the verified old credential"
+          ],
+          "failures": [],
+          "passed": true
+        },
+        "exit": 0
+      },
+      "other-project": {
+        "result": {
+          "checks": [
+            "native editor installs connection memory",
+            "AI configuration exposes remember and clear controls",
+            "another project cannot discover saved credentials",
+            "credential handles stay isolated per project"
+          ],
+          "failures": [],
+          "passed": true
+        },
+        "exit": 0
+      },
+      "restore": {
+        "result": {
+          "checks": [
+            "native editor installs connection memory",
+            "AI configuration exposes remember and clear controls",
+            "new editor process starts without plaintext key in settings",
+            "last selected model survives editor restart",
+            "previous Git AI check is shown as historical record",
+            "headless credential transport is disabled without explicit test substitute",
+            "credential restore immediately exposes cancel and disables retry",
+            "cancelled startup discards delayed credential restore",
+            "editor restart restores credential from same project and endpoint",
+            "historical success does not grant current green status",
+            "actual loopback verifies the current restored credential",
+            "switching endpoint clears managed credential",
+            "different endpoint cannot restore previous credential",
+            "late credential load preserves newer manual input",
+            "late credential load cannot follow endpoint change",
+            "unavailable credential store preserves manual recovery path",
+            "actual loopback verifies the current restored credential",
+            "clear disables automatic restoration",
+            "clear serialized after save removes all saved handles",
+            "clear removes last use record",
+            "clearing saved record keeps current session usable"
+          ],
+          "failures": [],
+          "passed": true
+        },
+        "exit": 0
+      },
+      "forgotten": {
+        "result": {
+          "checks": [
+            "native editor installs connection memory",
+            "AI configuration exposes remember and clear controls",
+            "remember preference stays disabled after restart",
+            "forgotten credential never restores on next launch",
+            "forgotten history is absent after restart"
+          ],
+          "failures": [],
+          "passed": true
+        },
+        "exit": 0
+      }
+    },
+    "strict_errors": [],
+    "secret_on_disk": false,
+    "store_empty_after_forget": true,
+    "operations": [
+      "save",
+      "save",
+      "load",
+      "load",
+      "load",
+      "load",
+      "load",
+      "save",
+      "delete"
+    ]
+  },
+  "startup": {
+    "passed": true,
+    "receipt": {
+      "checks": [
+        "native startup coordinator is installed",
+        "headless startup does not perform remote checks",
+        "settings exposes retry action",
+        "settings exposes separate status rows",
+        "missing model workspace yields actionable configuration status",
+        "missing configuration releases model refresh guard",
+        "in-flight check rejects duplicate invocation and disables retry",
+        "startup check completes within deadline",
+        "one run refreshes catalog once",
+        "native Git bridge reports non-repository without mutation",
+        "real loopback API success marks connection available",
+        "catalog result is reported independently",
+        "background check does not navigate settings",
+        "completed check re-enables retry",
+        "startup check completes within deadline",
+        "API failure is distinct from successful catalog refresh",
+        "API failure does not suppress catalog result",
+        "cancel stops coordinator and model refresh",
+        "cancel stops native AI probe",
+        "late cancelled response cannot restore green",
+        "canceling startup preserves newer manual connection probe",
+        "cancelled startup check can be retried",
+        "editing configuration revokes startup success summary",
+        "one-click model refresh awaits actual helper completion",
+        "real model dialog publishes successful model refresh receipt: { \"status\": \"refreshed\", \"message\": \"已刷新天枢模型发现结果，请在个人模型库查看各来源详情。\" }",
+        "canceling identity stage preserves manual model operation",
+        "manual model operation completes after startup cancellation",
+        "real model refresh is asynchronous",
+        "cancelled model refresh cannot apply late helper result",
+        "model refresh cancellation stops provider descendants"
+      ],
+      "failures": [],
+      "passed": true
+    },
+    "errors": [],
+    "secret_on_disk": false
+  },
+  "layout": {
+    "state": "passed",
+    "runs": [
+      {
+        "name": "full",
+        "passed": true,
+        "checks": 204,
+        "strict_errors": []
+      },
+      {
+        "name": "reopen",
+        "passed": true,
+        "checks": 68,
+        "strict_errors": []
+      }
+    ]
+  },
+  "credentials_unit": {
+    "passed": true,
+    "checks": 12,
+    "scope": "Fake native macOS and Windows APIs; no real user credential access"
+  },
+  "static": "Ruff check/format, mypy (three Python files), C++ clang-format, includes, codespell and diff checks passed",
+  "independent_review": {
+    "reviewer": "/root/sinan_e159ae4b95f41337",
+    "status": "passed",
+    "remaining_findings": [],
+    "fixed": [
+      "Bind verified credential before asynchronous save",
+      "Default headless transport cannot access native credentials",
+      "Render cancellation controls before restoring credentials"
+    ],
+    "input_hashes_match": true
+  },
+  "limitations": [
+    "Native Keychain and Windows credential APIs tested with fake native functions and source review, not user credentials",
+    "Other platforms without native secure-store adapter report unavailable; no plaintext fallback",
+    "GUI pixels and Windows runtime credential storage not exercised locally",
+    "No running editor was replaced"
+  ],
+  "kuafu": {
+    "bug": 868,
+    "incidents": [
+      "ea59dbd0e822dae869236f6f8a968635f31417efd516ce8b51e9669db5c8ce68",
+      "fa8814c69c6f070b20ef5f6bfda54ee2f5e9d8fe79aaf2453959ef6f5a481ecc"
+    ],
+    "state": "source repairs and original operation reverification passed"
+  },
+  "delivery": "pending exact-candidate CI and main readback",
+  "ai": {
+    "passed": true,
+    "secret_on_disk": false,
+    "project_sources_clean": true,
+    "runs": [
+      {
+        "mode": "full",
+        "passed": true,
+        "checks": 28
+      },
+      {
+        "mode": "reopen",
+        "passed": true,
+        "checks": 10
+      },
+      {
+        "mode": "other",
+        "passed": true,
+        "checks": 8
+      },
+      {
+        "mode": "child",
+        "passed": true,
+        "checks": 8
+      },
+      {
+        "mode": "scheduled",
+        "passed": true,
+        "checks": 8
+      }
+    ]
+  }
+}
