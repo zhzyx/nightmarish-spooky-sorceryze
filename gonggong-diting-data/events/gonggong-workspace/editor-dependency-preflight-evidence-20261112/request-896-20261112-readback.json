@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "request-896-20261112-readback",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-dependency-preflight-evidence-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T06:50:51.297575+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/896",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "title": "编辑器保留依赖放行的实际候选核验回执",
+    "issue": 896,
+    "parent_issue": 773,
+    "source_updated_at": "2026-11-12T06:49:03Z",
+    "request": "<!-- gonggong-request:editor-dependency-preflight-evidence-20261112 -->\n\n父项 #773，故障链 #807；衔接已交付 #783/#785/#876 的验收与依赖接续，现有写权限和原用户授权内修复。当前责任者 Sail-Li / Codex 当前会话，不接管他人工作树。\n\n真实普通游戏的上游两工单已独立通过，下游经宿主自动放行并完成生产；后续独立审查无法核对“这次启动前”的实际 acceptance-current 原始请求与结果，INT-01 因而保持 unknown。源代码显示 _automatic_acceptance_current 实际校验候选，但 _poll_acceptance_bridge_jobs 成功后删除 .request/.result，仅在 acceptance_bridge_results 内存中保留结果。Python acceptance.current 只返回 nonce、候选摘要与 current_candidate。源码和派发提示可以解释机制，不能冒充本次运行的历史核验原件；不倒填历史记录。\n\n范围：保留并绑定实际依赖放行时的宿主核验凭据，供后续只读审查追溯。优先复用现有派发/注册/验收回执与私有存储，避免新增并行执行体系。记录明确属于执行来源证据，不授予业务验收、不复活冷启动中的 live owner、不从磁盘记录恢复原有授权。旧批次未知状态保留。\n\n验收：\n- [ ] 正常编辑器内部独立验收→依赖放行路径，实际保留上游逐项决定、候选标识/摘要、核验请求关联及真实成功响应，并关联真正的下游派发或注册；时间由真实事件产生，不由生产者倒填。\n- [ ] 只读审查能从原路径找到、分段读取并核对这些证据；没有凭据、原始用户聊天或公开本机路径泄漏。证据体积有界，存储或持久化失败不声称已留证。\n- [ ] 保留现有授权/来源/候选/过期检查；缺失、篡改、候选变化及冷启动记录不能当成新的 live 批准；若回执绑定错误，不放行或明确保持未验证。\n- [ ] 真实 native 流程验证成功、失败、恢复和旧回执保留；严格构建、独立审查及精确候选正式门禁/CI/main完成。\n- [ ] 在正式安装编辑器的真实项目后续授权尝试复验可审查闭环；不将已清理的历史结果伪造出来，不重写原生产者终态。父项 #773 在完整验收前保持开放。\n\n<!-- gonggong-host-git:Sail-Li -->\n",
+    "issue_body_sha256": "8abf3797538f65a1d6f6730252302027b3a5bcb4ae6ad1482ab1743dac36d0fb",
+    "scope": "Authorized original parent repair; historical missing evidence remains unknown"
+  },
+  "sha256": "d15bb1c5afc000e7be806960422ce431020500a1b9337fa3ef8a294895f467c0"
+}

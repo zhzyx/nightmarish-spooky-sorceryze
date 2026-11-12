@@ -37,6 +37,7 @@
 #include "core/io/json.h"
 #include "core/object/callable_mp.h"
 #include "core/os/os.h"
+#include "core/os/time.h"
 #include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/ai_chat_editor_control.h"
 #include "editor/docks/ai_chat_host_runtime.h"
@@ -667,6 +668,25 @@ void AIChatDock::_design_turn_started() {
 	child["delegation"] = _child_delegation();
 	child["conversation_id"] = conversation_id;
 	child["snapshot_id"] = snapshot_id;
+	if (sub_agents[active_agent].has("dependency_dispatch")) {
+		Dictionary started;
+		started["dispatch"] = sub_agents[active_agent]["dependency_dispatch"];
+		started["generation"] = int64_t(session_generation);
+		started["conversation_id"] = conversation_id;
+		started["observed_unix_time"] = Time::get_singleton()->get_unix_time_from_system();
+		const String path = String(Dictionary(started["dispatch"])["path"]) + ".started.json";
+		Ref<FileAccess> file = FileAccess::open(path, FileAccess::WRITE);
+		bool stored = false;
+		if (file.is_valid()) {
+			file->store_string(JSON::stringify(started));
+			file->flush();
+			stored = file->get_error() == OK;
+		}
+		sub_agents[active_agent]["dependency_dispatch_started_recorded"] = stored;
+		if (!stored) {
+			_append(TTR("Error"), "Actual dispatch started, but its provenance linkage could not be persisted.");
+		}
+	}
 	if (!_is_review_child()) {
 		// A new production generation cannot inherit a prior capture or verdict.
 		acceptance_bridge_results.erase(active_agent);
@@ -705,6 +725,12 @@ void AIChatDock::_record_design_tool_receipt(const String &p_tool, const String 
 		return;
 	}
 	Dictionary receipt = AIChatSubAgentReceipts::summarize(p_tool, p_result, p_file_success, p_terminal);
+	if (_is_review_child() && (p_tool == "read_file" || p_tool == "read_script") && !p_file_success) {
+		batch["review_source_unverified"] = true;
+		// This is a host failure, not file content. Preserve actionable diagnostics
+		// alongside the original digest even after the bounded transcript rolls over.
+		receipt["diagnostic"] = _redact(p_result).left(1024);
+	}
 	if (_is_review_child() && p_file_success && (p_tool == "read_file" || p_tool == "read_script")) {
 		// Record the scope of successful host reads. The result digest covers
 		// exactly the returned (possibly excerpted and redacted) content.
@@ -797,6 +823,11 @@ void AIChatDock::_record_design_tool_receipt(const String &p_tool, const String 
 	const int count = int(child.get("receipt_count", 0)) + 1;
 	child["receipt_count"] = count;
 	receipt["sequence"] = count;
+	if (receipt.has("diagnostic") && !child.has("first_failed_source_receipt")) {
+		// Unrelated failures can precede a failed source read, and the rolling
+		// receipt window can later evict it. Retain its bounded diagnostic.
+		child["first_failed_source_receipt"] = receipt.duplicate(true);
+	}
 	const Variant ok = receipt["ok"];
 	const String counter = ok.get_type() == Variant::NIL ? String("unknown_receipt_count") : !bool(ok) ? String("failed_receipt_count")
 																									   : String();
@@ -1008,7 +1039,7 @@ bool AIChatDock::_design_return_allowed(int p_parent, const Dictionary &p_messag
 		if (candidate.is_empty() || delegation.get("candidate_root", "") != candidate.get("source_root", "") ||
 				delegation.get("candidate_branch", "") != candidate.get("branch", "") || delegation.get("candidate_base_sha", "") != candidate.get("base_sha", "") ||
 				delegation.get("parent_snapshot", "") != snapshot_id || (!game_review && !_validate_engine_candidate(error)) ||
-				bool(batch.get("review_source_unverified", false)) || !review_files_current(root, batch.get("review_files", Dictionary())) ||
+				(!game_review && bool(batch.get("review_source_unverified", false))) || !review_files_current(root, batch.get("review_files", Dictionary())) ||
 				String(delegation.get("candidate_head", "")).is_empty() || delegation["candidate_head"] != review_head(root)) {
 			return false;
 		}
@@ -1032,6 +1063,11 @@ bool AIChatDock::_queue_design_parent_result(int p_parent) {
 	result.erase("review_source_manifest");
 	result["source"] = "current_host_design_batch";
 	result["business_accepted"] = Variant();
+	if (bool(batch.get("read_only_review", false))) {
+		// Returning a diagnostic permits the authorized parent to repair or retry;
+		// it neither verifies incomplete source evidence nor grants acceptance.
+		result["review_result"] = bool(batch.get("review_source_unverified", false)) ? "source_unverified" : "report_only";
+	}
 	result["host_runtime"] = _current_host_runtime_metadata();
 	Dictionary children = result["children"];
 	// Evidence files retain the complete bounded child window. Inline only the
@@ -1689,6 +1725,10 @@ void AIChatDock::_sub_agent_dispatch() {
 		if (paused) {
 			return;
 		}
+		if (!bool(batch.get("read_only_review", false)) && !_persist_serial_dependency_preflight(id)) {
+			_append(TTR("Error"), "Dependency provenance is unavailable, changed, or its batch storage is full. Preserve the original evidence, check storage, and resume with a fresh live review; dispatch remains suspended.");
+			return;
+		}
 		_agent_selected(_agent_index(id));
 		if (active_agent != id) {
 			return;
@@ -1722,6 +1762,86 @@ void AIChatDock::_sub_agent_dispatch() {
 		_queue_design_parent_result(parent);
 		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
 	}
+}
+
+bool AIChatDock::_persist_serial_dependency_preflight(int p_child) {
+	const int parent = sub_agents[p_child]["parent"];
+	const Array orders = _read_design(parent).get("orders", Array());
+	const int order_index = int(sub_agents[p_child].get("work_order", 0)) - 1;
+	if (sub_agents[p_child].get("source", "") != "design" || order_index < 0 || order_index >= orders.size()) {
+		return false;
+	}
+	const Array dependencies = Dictionary(orders[order_index]).get("dependencies", Array());
+	Array upstream;
+	String directory;
+	for (const Variant &number : dependencies) {
+		for (const KeyValue<int, Dictionary> &entry : sub_agents) {
+			if (int(entry.value.get("parent", -1)) != parent || entry.value.get("source", "") != "design" || int(entry.value.get("number", -1)) != int(number)) {
+				continue;
+			}
+			const Dictionary acceptance = entry.value.get("acceptance", Dictionary());
+			if (!acceptance.has("decision_sha256")) {
+				continue; // Preserve the explicit manual acceptance contract.
+			}
+			const int reviewer = String(acceptance.get("reviewer", "-1")).to_int();
+			if (!acceptance_reviews.has(reviewer) || !_automatic_acceptance_current(entry.key)) {
+				return false;
+			}
+			Dictionary source;
+			source["order"] = number;
+			source["candidate_check"] = acceptance_bridge_results[entry.key]["provenance"];
+			source["decision"] = acceptance_reviews[reviewer]["verified_decision"];
+			source["verified_response"] = acceptance_reviews[reviewer]["verified_response"];
+			source["decision_sha256"] = acceptance["decision_sha256"];
+			directory = String(Dictionary(source["candidate_check"])["path"]).get_base_dir();
+			upstream.push_back(source);
+		}
+	}
+	if (upstream.is_empty()) {
+		return true;
+	}
+	Dictionary dispatch;
+	dispatch["dependency_preflight"] = upstream;
+	dispatch["child"] = p_child;
+	dispatch["batch_token"] = design_batches[parent]["token"];
+	dispatch["issue_number"] = sub_agents[p_child]["issue_number"];
+	dispatch["request_id"] = sub_agents[p_child]["request_id"];
+	const String bytes = JSON::stringify(dispatch);
+	if (bytes.utf8().length() > 64 * 1024 * 1024) {
+		return false;
+	}
+	Ref<DirAccess> dir = DirAccess::open(directory);
+	if (dir.is_null() || dir->get_files().size() >= 254) {
+		return false;
+	}
+	uint64_t total = bytes.utf8().length() + 1024 * 1024; // Reserve the actual-start linkage.
+	for (const String &name : dir->get_files()) {
+		Ref<FileAccess> existing = FileAccess::open(directory.path_join(name), FileAccess::READ);
+		if (existing.is_null()) {
+			return false;
+		}
+		total += existing->get_length();
+	}
+	if (total > 256 * 1024 * 1024) {
+		return false;
+	}
+	const String path = directory.path_join("dispatch-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(OS::get_singleton()->get_ticks_usec()) + ".json");
+	Ref<FileAccess> file = FileAccess::open(path, FileAccess::WRITE);
+	if (file.is_null()) {
+		return false;
+	}
+	file->store_string(bytes);
+	file->flush();
+	const bool stored = file->get_error() == OK;
+	file.unref();
+	if (!stored || FileAccess::get_sha256(path) != bytes.sha256_text()) {
+		return false;
+	}
+	Dictionary reference;
+	reference["path"] = path;
+	reference["sha256"] = bytes.sha256_text();
+	sub_agents[p_child]["dependency_dispatch"] = reference;
+	return true;
 }
 
 bool AIChatDock::_dispatch_parallel_sub_agents() {
@@ -1764,6 +1884,7 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 			worker["prompt"] = String(worker["prompt"]) + "\n" + String(entry.value.get("repair_prompt", ""));
 		}
 		Array upstream;
+		Array prompt_upstream;
 		const Array design_orders = _read_design(dispatch_parent).get("orders", Array());
 		const Array dependencies = Dictionary(design_orders[int(entry.value["work_order"]) - 1]).get("dependencies", Array());
 		for (const Variant &number : dependencies) {
@@ -1784,6 +1905,10 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 				source["decision_sha256"] = acceptance["decision_sha256"];
 				source["terminal_receipt"] = predecessor.value["terminal_receipt"];
 				source["criteria"] = decision["criteria"];
+				source["candidate_check"] = acceptance_bridge_results[predecessor.key]["provenance"];
+				prompt_upstream.push_back(source.duplicate(true));
+				source["decision"] = decision;
+				source["verified_response"] = acceptance_reviews[reviewer]["verified_response"];
 				upstream.push_back(source);
 			}
 		}
@@ -1791,8 +1916,9 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 			if (upstream.size() != dependencies.size()) {
 				return true;
 			}
-			worker["prompt"] = String(worker["prompt"]) + U"\n以下是已独立验收且当前仍匹配的上游来源，只允许读取这些绑定工作副本及证据；仅修改本工单自己的工作副本。按实际需求整合这些产物，不得改写上游。\nHOST_ACCEPTED_UPSTREAM=" + JSON::stringify(upstream);
+			worker["prompt"] = String(worker["prompt"]) + U"\n以下是已独立验收且当前仍匹配的上游来源，只允许读取这些绑定工作副本及证据；仅修改本工单自己的工作副本。按实际需求整合这些产物，不得改写上游。\nHOST_ACCEPTED_UPSTREAM=" + JSON::stringify(prompt_upstream);
 		}
+		worker["dependency_preflight"] = upstream;
 		workers.push_back(worker);
 	}
 	if (workers.is_empty()) {
@@ -1945,16 +2071,25 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 	if (file.is_null()) {
 		return true;
 	}
-	file->store_string(JSON::stringify(dispatch_request));
+	const String dispatch_json = JSON::stringify(dispatch_request);
+	if (dispatch_json.utf8().length() > 64 * 1024 * 1024) {
+		_append(TTR("Error"), "Dependency dispatch evidence exceeds 64 MiB; dispatch suspended.");
+		return true;
+	}
+	file->store_string(dispatch_json);
 	file->flush();
 	if (file->get_error() != OK) {
 		return true;
 	}
 	file.unref();
+	if (FileAccess::get_sha256(request_file) != dispatch_json.sha256_text()) {
+		return true;
+	}
 	List<String> args;
 	args.push_back(_engine_root().path_join("tools/godot_parallel/runner.mjs"));
 	args.push_back(request_file);
 	args.push_back(sub_agent_parallel_output);
+	args.push_back(dispatch_json.sha256_text());
 	if (OS::get_singleton()->create_process(GongGongRuntimeConfig::path(runtime, "node"), args, &sub_agent_parallel_pid) != OK) {
 		sub_agent_parallel_pid = -1;
 		_append(TTR("Error"), U"并行执行器未启动；派发意图已保留，需对账。");
@@ -2485,6 +2620,7 @@ Dictionary AIChatDock::_acceptance_bridge(const String &p_operation, const Dicti
 	job["nonce"] = nonce;
 	job["stem"] = stem;
 	job["operation"] = p_operation;
+	job["request_json"] = JSON::stringify(acceptance_request);
 	job["parent"] = parent;
 	job["token"] = design_batches[parent]["token"];
 	job["started"] = int64_t(OS::get_singleton()->get_ticks_msec());
@@ -2518,9 +2654,11 @@ void AIChatDock::_poll_acceptance_bridge() {
 		const String stem = job["stem"];
 		Dictionary response;
 		String diagnostic = "missing_or_expired_bridge_result";
+		String response_json;
 		Ref<FileAccess> file = FileAccess::open(stem + ".result", FileAccess::READ);
 		if (current && !expired && file.is_valid() && file->get_length() <= 16 * 1024 * 1024) {
-			const Variant parsed = JSON::parse_string(file->get_as_utf8_string());
+			response_json = file->get_as_utf8_string();
+			const Variant parsed = JSON::parse_string(response_json);
 			if (parsed.get_type() == Variant::DICTIONARY) {
 				const Dictionary value = parsed;
 				diagnostic = value.get("error", "bridge_rejected");
@@ -2530,6 +2668,56 @@ void AIChatDock::_poll_acceptance_bridge() {
 			}
 		}
 		file.unref();
+		Dictionary provenance;
+		if (!response.is_empty() && job["operation"] == Variant("acceptance-current")) {
+			// Private audit material only. Never load this file as live authority.
+			const String directory = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-dependency-evidence").path_join(String(job["token"]).sha256_text());
+			Dictionary record;
+			record["schema_version"] = 1;
+			record["request_json"] = job["request_json"];
+			record["response_json"] = response_json;
+			record["observed_unix_time"] = Time::get_singleton()->get_unix_time_from_system();
+			record["actor"] = entry.key;
+			record["batch_token"] = job["token"];
+			const String bytes = JSON::stringify(record);
+			bool available = bytes.utf8().length() <= 32 * 1024 * 1024 && DirAccess::make_dir_recursive_absolute(directory) == OK;
+			Ref<DirAccess> dir = DirAccess::open(directory);
+			uint64_t total = bytes.utf8().length();
+			int count = 0;
+			if (dir.is_valid()) {
+				for (const String &name : dir->get_files()) {
+					Ref<FileAccess> existing = FileAccess::open(directory.path_join(name), FileAccess::READ);
+					if (existing.is_null()) {
+						available = false;
+						break;
+					}
+					total += existing->get_length();
+					count++;
+				}
+			} else {
+				available = false;
+			}
+			available = available && count < 256 && total <= 256 * 1024 * 1024;
+			const String path = directory.path_join(String(job["nonce"]) + ".json");
+			Ref<FileAccess> receipt = available ? FileAccess::open(path, FileAccess::WRITE) : Ref<FileAccess>();
+			if (receipt.is_valid()) {
+				receipt->store_string(bytes);
+				receipt->flush();
+				available = receipt->get_error() == OK;
+				receipt.unref();
+				available = available && FileAccess::get_sha256(path) == bytes.sha256_text();
+			} else {
+				available = false;
+			}
+			if (available) {
+				provenance["path"] = path;
+				provenance["sha256"] = bytes.sha256_text();
+				provenance["request_nonce"] = job["nonce"];
+			} else {
+				response.clear();
+				diagnostic = "dependency_evidence_persist_failed_or_capacity_exceeded: preserve original receipts, check batch storage, then resume with a fresh live review";
+			}
+		}
 		DirAccess::remove_absolute(stem + ".request.live");
 		DirAccess::remove_absolute(stem + ".request");
 		if (!response.is_empty()) {
@@ -2539,6 +2727,7 @@ void AIChatDock::_poll_acceptance_bridge() {
 		result["key"] = job["key"];
 		result["operation"] = job["operation"];
 		result["response"] = response;
+		result["provenance"] = provenance;
 		result["diagnostic"] = diagnostic;
 		acceptance_bridge_results.insert(entry.key, result);
 		finished.push_back(entry.key);
@@ -3013,7 +3202,8 @@ bool AIChatDock::_automatic_acceptance_current(int p_producer) const {
 	Dictionary current_request;
 	current_request["candidate"] = candidate;
 	const Dictionary current = const_cast<AIChatDock *>(this)->_acceptance_bridge("acceptance-current", current_request, candidate["root"], p_producer);
-	if (current.is_empty() || current.get("candidate_sha256", "") != candidate.get("files_sha256", Variant())) {
+	const Dictionary provenance = acceptance_bridge_results.has(p_producer) ? Dictionary(acceptance_bridge_results[p_producer].get("provenance", Dictionary())) : Dictionary();
+	if (current.is_empty() || provenance.is_empty() || FileAccess::get_sha256(provenance.get("path", "")) != String(provenance.get("sha256", "")) || provenance.get("request_nonce", "") != current.get("request_nonce", Variant()) || current.get("candidate_sha256", "") != candidate.get("files_sha256", Variant())) {
 		return false;
 	}
 

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-ebdf924944c3d0cbef112127fca2ca1a808bc63e8259ca3eec885f2c482bb65f",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/896",
+  "occurred_at": "2026-11-12T07:55:25.407135+00:00",
+  "evidence_refs": [
+    "request-896-20261112-readback",
+    "learn-b764de79dc605f37fdfe3cef0c10941eedd17152c22e8dc2494a96f8d0092099"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 13,
+    "previous": "42c3df882a57053e0a2242cae92f7bcf3f1051b85b10c7fee4a19bda07c4620b",
+    "action": "applied",
+    "details": {
+      "task": "Issue #896: retain actual live dependency current requests/responses and bind them to real native dispatch registration without disk authority restoration.",
+      "observed": "Strict build, 1566 native cases, 66 runner tests, actual serial/parallel dispatch, stale and permission rejection, cold recovery, and bounded storage failure passed. Missing/tampered/mismatched check references fail closed; 2000-entry candidate remains private and prompt keeps compact references. Historical missing evidence remains unknown. Failure event observation does not wait for unrelated reviews to complete; original failed observer attempts retained. Root integration found concurrent unpublished revision11 from Issue899 with the same event filename. Both original worktrees and exact fork bytes are preserved; this fresh append rebases only the feedback onto merged revision12, without altering original records or claiming combined-candidate testing already passed."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-dependency-preflight-896.json",
+        "sha256": "b9d5552cf3c8982cfa87ea0f0e0863db05b5d1a79203623f558c4a4b832e6cf9"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-dependency-preflight-evidence-20261112/request-896-20261112-readback.json",
+      "sha256": "d15bb1c5afc000e7be806960422ce431020500a1b9337fa3ef8a294895f467c0"
+    }
+  },
+  "sha256": "14b8f3d475973ba3b97acdf7a57e3347f51553dfc47770d77157dcd4ea021df8"
+}

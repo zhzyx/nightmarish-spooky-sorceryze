@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b769570f6cb6f1f5bdec6a4418680230f6d24790",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "93538cb5f45af524908dd2b857f921a7910c895e60065f8fb6cc2bf6068a2736",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "7813a30245c65427094934fd29590b98c1a1dd96",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "private review891-native-unit-r4.json and preserved earlier attempts; main890 independent-game-runtime890-corrected.json",
+    "diagnosis": "Root review fixture setup failed: native suite requires repository cwd and tests/data adjacent to executable plus explicit trusted Python for RuntimeConfig tests. Correct same-binary run passed1567 cases435685 assertions with3skipped. Independent Player fixture initially ran inside integrated InputMap; correct unchanged original independent project replay passed3466 assertions, HUD19 and integration60 also passed. No product implementation changes inferred from these setup failures; all originals retained.",
+    "next_action": "Continue exact candidate delivery and installed long-command replay; retain overall editor acceptance unknowns. Record reusable fixture setup method against immutable review evidence.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T00:21:06.450698+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T06:38:04.503151+00:00",
+  "sha256": "0f68df4fea9e539d2178a5f066b1ce859c47eb794df2b5c681d0e7edbdbe03ad"
+}

@@ -457,6 +457,21 @@ func _run():
 		_finish()
 		return
 	if mode.begins_with("review-stale-"):
+		if mode == "review-stale-permission":
+			if not await _wait_file("review-parent-drift-request", 15.0):
+				_finish()
+				return
+			dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = false
+			_file("review-parent-drift-applied")
+			await _wait_marker("REVIEW_CHILD_ACTUAL_READ_OK")
+			await create_timer(1.0).timeout
+			_check(not "DESIGN_BATCH_PARENT_VERIFIED_OK" in _text(), "Revoked tools resumed the parent")
+			_check(dock.get_meta("queued_message_count", -1) == 0, "Revoked review queued a live return")
+			dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
+			await create_timer(1.0).timeout
+			_check(not "DESIGN_BATCH_PARENT_VERIFIED_OK" in _text(), "Restoring tools replayed a revoked return")
+			_finish()
+			return
 		if mode == "review-stale-parent":
 			if not await _wait_file("review-parent-drift-request", 15.0):
 				_finish()
