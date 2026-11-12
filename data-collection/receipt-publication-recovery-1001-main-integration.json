@@ -1,0 +1,40 @@
+{
+  "request_id": "kuafu-run-43286058093-attempt-1",
+  "issue_number": 1001,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+  "integration_base": "c074db21be98784ff1288f1f2d99c793ba156395",
+  "prior_candidate": {
+    "pr": 1013,
+    "signed_head": "93803b04b016e4f681af0048eea6009c32e7dfc6",
+    "all_applicable_checks_passed": true,
+    "readback_sha256": "138a6d32ad5e64c9fd1d52410ec45c68dc7fe34738e5073e4d424a27735cf6c9",
+    "scope": "Old69a7 base source accepted; not replacement candidate CI evidence"
+  },
+  "reviewed_source_sha256_unchanged": {
+    "customizations/components/godot-host/bridge.py": "cd7f15289902058bafdf860edc8f1d3191ecfbbdea96e17f95a67524525ccc52",
+    "customizations/components/godot-host/test_bridge.py": "d0d1822b0d55ceffbad633022cc04fa529a9e548e621f60e741b9fdc10c2434c",
+    "drivers/windows/file_access_windows.cpp": "1db1490ed726078758ed9b60a33e7aab5b428f067f4a6d3c8fc1ce16c22a9370",
+    "editor/docks/ai_chat_dock.h": "2b2a5ecce2913fe673202c4ca48b0d356fd90fb170eade7845f939335f09adcb",
+    "editor/docks/ai_chat_gonggong.cpp": "ee68473f963edef5726e93d5e5504bc7849acd3270c38ab4670ba73bb81fb5aa",
+    "editor/docks/ai_chat_receipt.h": "1aaf6c32fa71658c52b7f3b89a3d95e9fcd0aa22d47260b9bddfda3d2c5564ad",
+    "tests/editor/run_requirements_intake.py": "988152bc6b9ebd3ff9caa6fb34b5404a22017e558b09cb27242f8664d2da8cc8",
+    "tests/editor/receipt_diagnostics.py": "ebfc0a54f58a9f2ec1abc730ff4d4823b42389bfbd69195c083fa609ce80bfac",
+    "tests/editor/test_receipt_diagnostics.py": "076d9ddb6fddaf837a41fd07748d1ec4ed33f7d70fa494a534d27e456a5fbbbd",
+    "tests/editor/test_ai_chat_receipt.cpp": "3b0a12a83bae6317d223abe664e15798038d3fb23471b0dcc483d8367df94d63"
+  },
+  "integrated_native": {
+    "editor_sha256": "617c5dd79c24aa700d8daf749cfcd5d8547812c308b018f10d16914005882aef",
+    "build_log_sha256": "85873516ae8b08b70aad40560d253b3950559dc52ea8ad18556173b8970fe326",
+    "native_test_log_sha256": "884c85bc1368a5a552a70a5c20ee625877ac9b2de4cda7aa0b38077759587ba8",
+    "receipt_cases": 11,
+    "receipt_assertions": 522,
+    "requirements_report_sha256": "1ad8e01afe71102c2098e115a10306cdf720ccc3b7fa47d64fc187a89fa793bc",
+    "requirements_ok": true,
+    "requirements_cases": 10
+  },
+  "limits": [
+    "OriginalCIinitialcauseunknown",
+    "Replacement exact CI and post-main recovery still required",
+    "No effective editor installation replacement"
+  ]
+}
