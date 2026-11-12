@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3b492e4602c59d4861dbe46048922224b9c79eeb",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-design-contract-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a5cda9d6c74737fb13d8f58676e30777b1316bb96c6ca5c98f85b40b2fac6919",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+    "action": "delivery",
+    "detection_head": "a861735f109051ea3342dda1895b7ad3db49ad4f",
+    "context_sha256": "a8a5573085b3f1568a2a30652b9d770fe3fb1b2bdf9662cce91cb9c6141e0784",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+    "evidence": "Formal gate stopped before commit: Collection source/receipt must be staged with current bytes: editor-design-contract-943-installed.json. Windows-written CRLF source receipts normalized to LF in index while immutable method references bind original bytes.",
+    "diagnosis": "Evidence packaging mismatch, not native product failure. Original tested receipt bytes and method chain must remain intact; repository already uses exact-path byte-preservation attributes for immutable evidence.",
+    "next_action": "Independently review two exact .gitattributes entries preserving only the installed943 JSON artifacts; restage and verify raw index bytes match both reviewed SHA256s, then rerun unchanged formal delivery. Retain failed submission log and method corrections.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T13:44:30.977441+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T13:48:25.860221+00:00",
+  "sha256": "c0141dd5ab927c40ca2acef77605f7be7aea1ca0464b011076c9255dd5cd331a"
+}
