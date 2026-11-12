@@ -98,7 +98,7 @@ M1 增加 `--require-sources`；M2 增加 `--require-link-manifest --link-manife
 - [x] 空源码树返回 `no_sources`，`--require-sources` 失败，不产生 vacuous success。
 - [x] 所有测试只使用临时目录，不修改现有 Godot 文件；相关单元测试和语法检查通过。
 - [x] 设计与实际实现、命令、覆盖范围和未验证事项一致，实际验证证据写入 `data-collection/`。
-- [ ] 正式工单门禁、提交后 Git 数据核验、精确候选 CI 和 main 回读完成；远端 Issue 按实际验收状态收尾。
+- [x] 正式工单门禁、提交后 Git 数据核验、精确候选 CI 和 main 回读完成；远端 Issue 按实际验收状态收尾。
 
 ## 验证与采集证据
 
@@ -109,4 +109,12 @@ M1 增加 `--require-sources`；M2 增加 `--require-link-manifest --link-manife
 - 当前仓库基线返回 `no_sources`，同时明确 `godot_free_runtime_verified=false`；没有真实 `next_runtime`、真实链接清单、符号审计或干净环境运行结果。
 - Windows 验证由新增专用 CI 执行，远端结果在取得前保持未知。既有 Godot 编译是否由通用工作流触发不影响本单“不修改 Godot 运行行为”的范围。
 
-实际命令、输入摘要和结果见 `data-collection/engine-next-build-contract-verification-20261112.json`。真实工单绑定事件见 `gonggong-diting-data/events/gonggong-workspace/engine-next-build-contract-20261112/request-882-engine-next-build-contract.json`，来源索引位于 `data-collection/requests/engine-next-build-contract-20261112/`。正式门禁、提交、PR、CI 与 main 回读在发生后追加，不预填完成。
+实际命令、输入摘要和结果见 `data-collection/engine-next-build-contract-verification-20261112.json`。真实工单绑定事件见 `gonggong-diting-data/events/gonggong-workspace/engine-next-build-contract-20261112/request-882-engine-next-build-contract.json`，来源索引位于 `data-collection/requests/engine-next-build-contract-20261112/`。
+
+## 整合与主线交付回执
+
+- 候选随后无冲突整合到 `979dfe277c6bc8460e9a174a148a6c2bf6f58cf5`，21 项测试、Ruff 和正式门禁再次通过；网络阻塞及恢复证据见 `data-collection/engine-next-build-contract-integration-20261112.json`。
+- PR [#900](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/900) 的本地候选为 `1bf68230524ac146cf5dbdac9cb6530ff77952d2`，签发提交为 `9cb6d12cbcc31a81133071e3cea012ee45122736`；专用 Windows/macOS CI、静态检查、工单关联和 Windows 编辑器检查全部通过。
+- PR #900 于 2026-11-12T07:16:46Z 合入，远端 `main` 为 `35e3bbe0fc92a16d17e51556a544a528d87ce4ec`，其树与已测候选树 `df4f4213f4ad1b6b5e806052ab59f9be0ebe8da6` 完全一致。
+- main 上专用 CI 运行 `43174085538` 和通用 CI 运行 `43174085445` 均成功；交付后 21 项测试、源码基线和提交态数据核验通过。
+- 完整交付证据见 `data-collection/engine-next-build-contract-delivery-20261112.json`。本次仅完成构建契约与护栏，不宣称 `next_runtime` 已实现，也不宣称真实链接器、符号和干净环境运行已经验收。

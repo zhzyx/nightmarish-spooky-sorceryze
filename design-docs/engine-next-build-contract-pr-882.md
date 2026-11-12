@@ -11,7 +11,7 @@
 - 新增需求设计、本地验证证据、真实 Diting 请求/验证事件和来源索引。
 - 不修改 Godot 编辑器、模板、资源格式、运行逻辑或现有编译入口。回退移除本 PR 新增文件即可。
 
-目标基线：`979dfe277c6bc8460e9a174a148a6c2bf6f58cf5`。目标分支：`main`。
+目标基线：`35e3bbe0fc92a16d17e51556a544a528d87ce4ec`。目标分支：`main`。
 
 ## 验证与数据
 
@@ -21,9 +21,11 @@
 - 正式本地 Issue 门禁通过；最终候选由签发入口重新绑定并记录，`module_build_impact=[]`。
 - 证据：`data-collection/engine-next-build-contract-verification-20261112.json`；真实事件位于 `gonggong-diting-data/events/gonggong-workspace/engine-next-build-contract-20261112/`。
 - 本单为独立 host tool 与 CI 护栏，无框架或 Godot native 实现变更；未把责任者自检描述为独立人工审查。
+- PR #900 已合入为 `35e3bbe0fc92a16d17e51556a544a528d87ce4ec`；PR 与 main 的专用 CI、通用 CI 均通过，主线树与已测候选树一致。交付后测试和提交态数据核验通过，见 `data-collection/engine-next-build-contract-delivery-20261112.json`。
+- 本次候选只追加设计溯源、交付证据和 request_end 事件，不改变已验收实现。
 
 ## 未验证项与交付状态
 
 - 尚无 `next_runtime` 可执行程序、真实链接器生成清单、符号审计或干净环境运行；这些属于后续 M1/M2。
-- Windows 结果由本 PR 的专用 CI 验证；远端 CI 与 main 回读完成前不关闭 Issue。
+- 原实现交付验收已完成；本收尾 PR 合入后关闭 #882 和排障单 #884，并回读终态。
 - 当前执行责任：Kimi Work 会话与已验证协作者 `kaiyunxue`。无模型用量或外部服务用量声明。
