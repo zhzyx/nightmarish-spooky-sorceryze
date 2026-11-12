@@ -4,6 +4,45 @@ import json
 import os
 import urllib.parse
 import urllib.request
+from typing import Literal, TypedDict
+
+MODEL_ID_MAX_BYTES = 512
+
+
+class ModelProvenance(TypedDict):
+    requested_model: str
+    observed_model: str | None
+    protocol: str
+    observed_model_source: str | None
+    observed_model_status: Literal["unavailable", "invalid", "provider_reported"]
+    model_identity_verified: Literal[False]
+
+
+def bounded_model(value: object) -> str | None:
+    """Keep exact printable identifiers; never coerce or truncate identity."""
+    if not isinstance(value, str) or not value or value != value.strip() or not value.isprintable():
+        return None
+    try:
+        return value if len(value.encode("utf-8")) <= MODEL_ID_MAX_BYTES else None
+    except UnicodeEncodeError:
+        return None
+
+
+def model_provenance(profile, observed: object = None) -> ModelProvenance:
+    requested = bounded_model(profile.get("model"))
+    if requested is None:
+        raise ValueError("Model must be a nonempty printable identifier of at most 512 UTF-8 bytes")
+    model = bounded_model(observed)
+    return {
+        "requested_model": requested,
+        "observed_model": model,
+        "protocol": profile["protocol"],
+        "observed_model_source": "response.model" if model is not None else None,
+        "observed_model_status": "provider_reported"
+        if model is not None
+        else ("unavailable" if observed is None else "invalid"),
+        "model_identity_verified": False,
+    }
 
 
 class TransportUnknown(RuntimeError):
@@ -20,6 +59,7 @@ def canonical(value):
 
 
 def call(profile, messages, output_limit):
+    provenance = model_provenance(profile)
     protocol = profile["protocol"]
     endpoint = profile["endpoint"]
     url = urllib.parse.urlsplit(endpoint)
@@ -29,7 +69,7 @@ def call(profile, messages, output_limit):
         raise ValueError("HTTPS required outside loopback")
     if profile.get("system_role", True) is False:
         messages = [{"role": "user", "content": "\n\n".join(m["role"] + ":\n" + m["content"] for m in messages)}]
-    body = {"model": profile["model"], "messages": messages, "stream": False}
+    body = {"model": provenance["requested_model"], "messages": messages, "stream": False}
     if protocol == "chat-completions":
         parameter = profile.get("output_parameter", "max_tokens")
         if parameter not in {"max_tokens", "max_completion_tokens"}:
@@ -104,6 +144,7 @@ def call(profile, messages, output_limit):
             if usage.get(subset) is not None and usage.get(total) is not None and usage[subset] > usage[total]:
                 raise ValueError("Usage subset exceeds total")
         return {
+            **model_provenance(profile, data.get("model")),
             "text": text,
             "finish_reason": finish,
             "usage": usage,

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "issue_number": 1004,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+  "request_id": "host-http-model-provenance-20261113",
+  "occurred_at": "2026-11-12T19:57:53.152322+00:00",
+  "path_base": "repository_root",
+  "incident": "70c6b986ce9c05753eb002b24a136a727d450cfd89b289346d98666eff06188f",
+  "failure": "New uncommitted request event used document paths in evidence_refs; storage.load correctly rejected them.",
+  "correction": "evidence_refs=[]; document paths remain in payload with path_base=repository_root. Actual diting_files.event validates and computes checksum; record confirms idempotent recorded_file.",
+  "corrected_event": "gonggong-diting-data/events/gonggong-workspace/host-http-model-provenance-20261113/request-1004-host-http-model-provenance-20261113.json",
+  "corrected_event_sha256": "ecb18a8f2f135196de9da6d83226fb35d489c3675213150e462a4239203e6353",
+  "validation": {
+    "storage_validate": {
+      "valid": true,
+      "records": 8838
+    },
+    "storage_git_check": {
+      "command": "diting_files.py git-check --repo <this-worktree>",
+      "exit_code": 0,
+      "stdout": "{\"git_state\": \"tracked\", \"files\": 8845, \"records\": 8724, \"remote_merge_verified\": false}",
+      "stderr": "",
+      "index_scope": "Temporary GIT_INDEX_FILE initialized from HEAD then staged only current #1004 events; not formal delivery or committed verification"
+    },
+    "actual_index_unchanged": true
+  },
+  "preserved": "Host implementation, existing committed events and pending dispatch envelope left unchanged. Actual terminal report retry and independent review remain root responsibility.",
+  "cleanup": "Temporary candidate index removed by TemporaryDirectory; no permanent index mutation."
+}

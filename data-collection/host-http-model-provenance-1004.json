@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "issue_number": 1004,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+  "parent_issue": 978,
+  "request_id": "host-http-model-provenance-20261113",
+  "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+  "baseline": "308bc83c19ae7cd1811496cca0e7062e6b30dab0",
+  "recorded_at": "2026-11-12T19:48:39.562728+00:00",
+  "path_base": "repository_root",
+  "operator": "Sail-Li",
+  "worker": "/root/sinan_03552b5b08deb741",
+  "scope": "Host HTTP adapter and existing consumers only; synthetic validation, no real provider requests or credential reads",
+  "incident": {
+    "id": "329eaa08125cebc761bb613d09dbdae28c235e99e755fbb0edf90c78a333a084",
+    "received": true,
+    "assessment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004#issuecomment-6834100747"
+  },
+  "contract": {
+    "requested_model": "Required exact printable string, no surrounding whitespace, at most 512 UTF-8 bytes; reject before dispatch if invalid",
+    "observed_model": "Optional top-level response.model, same bounds; missing/null unavailable, malformed invalid, both null without coercion/truncation",
+    "protocol": "Host-selected existing protocol",
+    "observed_model_source": "response.model for valid provider-reported value; otherwise null",
+    "model_identity_verified": false,
+    "alias_policy": "Preserve different values and reasonable aliases; no automatic rejection or new admission"
+  },
+  "consumer_trace": [
+    {
+      "consumer": "evaluate.evaluate",
+      "preservation": "results[].response retains full receipt; all three protocols asserted"
+    },
+    {
+      "consumer": "runner._run",
+      "preservation": "call_end stores full response; unknown response stores only known request and null observation"
+    },
+    {
+      "consumer": "runner._recover / terminal replay",
+      "preservation": "Durable call_end unchanged; no redispatch; interrupted calls get known request and null observation"
+    },
+    {
+      "consumer": "diting.export",
+      "preservation": "Frozen usage.model remains requested configuration. Test parses metering_ref, derives job via runner.jid_for with actual tenant/task, selects matching events.job+seq and reads full receipt",
+      "limitation": "Standalone telemetry export omits observed identity; retain private runtime.sqlite with telemetry. No frozen schema edit."
+    }
+  ],
+  "tests": [
+    {
+      "command": "python3 -m unittest discover -s customizations/platforms/ai-access/host-http/runtime -p test_adapters.py -v",
+      "exit_code": 0,
+      "passed": 4,
+      "coverage": "Three protocols; same/different/alias/exact byte bound/multibyte model; missing/null/malformed/overlong/control/surrogate; forged provenance ignored; invalid request blocked before network; invalid response reconciliation"
+    },
+    {
+      "command": "GONGGONG_PYTHON=<host-python> python3 <repository>/customizations/platforms/ai-access/host-http/runtime/test_runtime.py",
+      "working_directory": "data-collection/receipts/host-http-model-provenance-20261113",
+      "environment": "PATH includes supplied Node/Python; PYTHONDONTWRITEBYTECODE=1; synthetic host key provisioned only inside test process",
+      "exit_code": 0,
+      "synthetic_only": true,
+      "checks": [
+        {
+          "name": "chat-completions evaluation/journal/telemetry reference provenance + replay/recovery",
+          "pass": true
+        },
+        {
+          "name": "ollama-chat evaluation/journal/telemetry reference provenance + replay/recovery",
+          "pass": true
+        },
+        {
+          "name": "gonggong-json evaluation/journal/telemetry reference provenance + replay/recovery",
+          "pass": true
+        },
+        {
+          "name": "missing/malformed optional model identity retained as unknown without rejecting valid output",
+          "pass": true
+        },
+        {
+          "name": "malformed response reconciliation does not invent observed identity",
+          "pass": true
+        },
+        {
+          "name": "interrupted-call recovery preserves request identity and unknown observation",
+          "pass": true
+        },
+        {
+          "name": "kuafu admitted context to local telemetry",
+          "pass": true
+        },
+        {
+          "name": "diting admitted context to local telemetry",
+          "pass": true
+        },
+        {
+          "name": "rejected output fallback, quality/rework and once-only skill attribution",
+          "pass": true
+        },
+        {
+          "name": "bounded autonomous resource read",
+          "pass": true
+        },
+        {
+          "name": "host planned multi-step workflow",
+          "pass": true
+        },
+        {
+          "name": "changed profile rejected before network",
+          "pass": true
+        },
+        {
+          "name": "standalone CLI authorization and execution without Codex SDK",
+          "pass": true
+        }
+      ],
+      "passed": 13,
+      "real_models_tested": false
+    },
+    {
+      "command": "ruff format customizations/platforms/ai-access/host-http/runtime",
+      "exit_code": 0
+    },
+    {
+      "command": "ruff check --no-fix customizations/platforms/ai-access/host-http/runtime",
+      "exit_code": 0,
+      "result": "All checks passed"
+    },
+    {
+      "command": "mypy --cache-dir=<owned-temporary-cache> customizations/platforms/ai-access/host-http/runtime",
+      "exit_code": 0,
+      "result": "Success: no issues found in 6 source files"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "corrected_validation_setup": [
+    "Initial runtime invocation omitted supplied Node PATH; then supplied GONGGONG_PYTHON because current framework subprocess defaults to python. Final run used both explicitly.",
+    "New response override fixture required explicit heterogeneous dictionary annotation for mypy.",
+    "Initial test queried logical task ID as SQL job; corrected to existing runner.jid_for tenant/task mapping and documented real reference resolution.",
+    "Recovery fixture initially targeted an already-finalized job; corrected to simulate interrupted finalization after durable completed event."
+  ],
+  "source_sha256": {
+    "customizations/platforms/ai-access/host-http/runtime/adapters.py": "d251de6a7c187caa6a5b3cb786485a396c58cdad0dbdf57b7d69548e8833dcc1",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "7ccc47b132adf52c3bd0dbdd133f315ad79bd74b9b8218d0573a6ebbaf13ab7f",
+    "customizations/platforms/ai-access/host-http/runtime/test_adapters.py": "721ed5e808cbb4c97e3cad5ccb8502173d34abaedeeb54ed7164f8a403fb60eb",
+    "customizations/platforms/ai-access/host-http/runtime/test_runtime.py": "8f0afdd4aeef5d694771131ae8dc1b190a8098b301a060b7747dfa045291323b",
+    "customizations/platforms/ai-access/host-http/runtime/README.md": "3a3ce05335894aeb3d48faf00246662cddea27e86e8820c99b14c53a419ac303"
+  },
+  "limitations": [
+    "Synthetic local transports only; no real account, provider route or weight verification",
+    "No streaming/tools/other protocol acceptance",
+    "Independent review, exact candidate CI/main delivery and Issue closure remain root responsibility",
+    "Parent #978 remaining acceptance unchanged"
+  ],
+  "cleanup": {
+    "temporary_framework_copies": "Removed by TemporaryDirectory on every test exit, including failed attempts",
+    "synthetic_http_server": "shutdown/server_close executed by finally",
+    "mypy_caches": "Removed owned cache in receipts and initial /tmp cache",
+    "retained": "Implementation, public design/evidence/request and Kuafu events; private integration result retained for root review",
+    "worktree_and_branch": "Retained for independent review and undelivered candidate; root owns final delivery and removal"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5eb006ee135aa80b1699ccb12aa487674cdda31f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "host-http-model-provenance-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "70c6b986ce9c05753eb002b24a136a727d450cfd89b289346d98666eff06188f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+    "action": "dispatch",
+    "detection_head": "308bc83c19ae7cd1811496cca0e7062e6b30dab0",
+    "context_sha256": "e14e2bb7be85337606307c22563e631b406659e7f69779867ecd26600ba05b73",
+    "operator": "Sail-Li",
+    "worker": "/root/sinan_03552b5b08deb741",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "gonggong-diting-data/events/gonggong-workspace/host-http-model-provenance-20261113/request-1004-host-http-model-provenance-20261113.json",
+    "diagnosis": "The newly authored uncommitted request event incorrectly used repository document paths as evidence_refs, which accepts only event IDs. This blocked storage.load and terminal dispatch reporting. Corrected refs to an empty list, retained document paths in payload with repository_root base, and used the actual storage.event and record entrypoints to validate and generate checksum; full storage validate passes.",
+    "next_action": "Run storage git-check using an isolated candidate index without changing delivery index, retain pending dispatch envelope, then root retries actual terminal-report delivery and independent review.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T19:53:17.717967+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li delegated native worker /root/sinan_03552b5b08deb741; root owns terminal-report retry and delivery",
+    "continuable": "Only the new uncommitted request event corrected; implementation, committed events and pending dispatch envelope unchanged."
+  },
+  "occurred_at": "2026-11-12T19:57:17.368435+00:00",
+  "sha256": "c64cd1b982f9f121b965aabc02c9abe5225bd946d766c9d8ee4ba7f9dfd3f8e6"
+}
