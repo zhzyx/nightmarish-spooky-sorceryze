@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-923dd7ac54fd61ec526fae8be7e4c4300740b724",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-priest-head-proportion-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/955",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0598d5502c4fb5f2b62e07c26e34f6ab82164ac7b4a208437ea1ce837c1823a0",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/955",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/955",
+    "action": "user-report",
+    "detection_head": "bb4d0d5565a33547b50490baa61d39b23cb41e89",
+    "context_sha256": "5ea7b4015af6fd267f798a0e7c71fe98419fc35bb866cdf351d5f6dde1e970df",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-kaiyunxue",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/955",
+    "evidence": "data-collection/maliang-priest-head-proportion-20261112-validation.json",
+    "diagnosis": "用户指出全身头部比例偏大，近景改善不能替代全身验收。最终按世界颈部基准 neck_y=0.34 转换到减面后节点本地基准，头部整体缩放 0.90，比例约 14.5%。结果 SHA-256 f9cae5780696a8c5d88fa765d66295ffbf9900a6df58fe0c31c685fdc62556d7，严格零面积三角形为 0；全身、背面、正脸、斜侧面和原生保存重开均通过。",
+    "next_action": "提交比例修正与 human-model-acceptance.md 验收规范及验证回执。保留当前人物的专项结论，不把 0.9 或 14.5% 当作所有角色的统一标准。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T14:26:51.114967+00:00",
+    "attempted": "先确认比例问题，再修正 GLB 块结构、索引和坐标基准；随后检查几何、全身、面部、背面、材质、模板恢复和原生重开。",
+    "repair_owner": "kimi-work-kaiyunxue 已完成比例修正与验收文档，源模型未覆盖。",
+    "continuable": "最终比例修正版引擎已打开且未自动提交新任务；可提交证据并关闭当前比例工单。"
+  },
+  "occurred_at": "2026-11-12T14:54:56.226837+00:00",
+  "sha256": "0c780614b2a7b9212b556b3c94430df96b5743cec1408c9e16c82365abbd1e94"
+}
