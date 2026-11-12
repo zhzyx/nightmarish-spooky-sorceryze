@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0dfb98ef6f8545fbc73d8f5924fe5c4e9ccf37df",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-bracket-stack-growth-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/916",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "11d69e2518678542489f3906dd0edd99bbf40a7d2bcb7a504d8ab60e5f26ae97",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/916",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/916",
+    "action": "validation",
+    "detection_head": "494e4a84951f650a1a0b9b6e68068df99bae9846",
+    "context_sha256": "392b7a69fd074ca23f5669a7613b0cc4910d4db71143f6d114ad8d58c6174555",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/916",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43204805989/job/131137156328",
+    "diagnosis": "PR930 static check rejected new comment before pragma once. Clang-format and native local regressions had passed, but header_guards.py requires the guard immediately after copyright. Moved comment below pragma; local header-guards and clang-format now pass. Native skipped CI is not passing.",
+    "next_action": "Read exact strict rebuild and affected tests, independent comment-only review, sign replacement candidate and validate complete applicable CI then installed consumers.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T10:30:29.553789+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": "Same authorized repair proceeds; no CI recovery claim yet."
+  },
+  "occurred_at": "2026-11-12T11:00:12.518206+00:00",
+  "sha256": "2abea0073cb71ebc92c7d8ab97b9a58a9486254ca59160c8db6908269586f1a6"
+}

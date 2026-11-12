@@ -36,3 +36,12 @@ Independent read-only review verified the actual regenerated header, all native
 inputs, logs and binaries. Additive evidence is
 `data-collection/editor-bracket-stack-916-main924.json`. Exact new CI/main and
 installed consumer acceptance remain pending; preceding evidence is unchanged.
+
+PR930 header-guards rejected a comment before `#pragma once`. The comment
+was moved below the guard without semantic change; the corresponding guard,
+copyright, file-format and clang-format checks now pass. Main PR928 was
+integrated without conflicting writes, and the combined candidate strictly
+rebuilt and passed the two affected regressions. Independent comment-only
+review found no new issue. Additive evidence:
+`data-collection/editor-bracket-stack-916-guard.json`. New exact CI and installed
+acceptance remain required.

@@ -28,9 +28,9 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-// Included by script_iterator.cpp so this test uses the module's private dependencies.
 #pragma once
 
+// Included by script_iterator.cpp so this test uses the module's private dependencies.
 #include "../script_iterator.h"
 
 #include "tests/test_macros.h"
