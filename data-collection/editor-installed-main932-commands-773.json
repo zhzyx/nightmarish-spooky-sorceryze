@@ -1,0 +1,102 @@
+{
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "related_issue": 891,
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "path_base": "Repository root for public paths; raw logs remain in private parent acceptance receipts",
+  "installed_source_commit": "23412df4cff43f3579adb90524a396d2a4b9e82f",
+  "installed_engine_sha256": "794d977a65c9c6e5f5ec818825d10218368b90b0a151d0e511e423c0c40ee2a7",
+  "installed_engine_unchanged": true,
+  "runner_sha256": "2bb62527b61394df2088149c90a68bbab6f6fae4afbae6a04d3801a8445254da",
+  "checks": {
+    "completed_at": "2026-11-12T12:09:01.038866+00:00",
+    "exit_code": 0,
+    "native_phase_count": 9,
+    "cases": [
+      {
+        "name": "short",
+        "exit_code": 0,
+        "timed_out": false,
+        "guard_state": "verified",
+        "commands_replayed": false,
+        "restored_count": 0.0
+      },
+      {
+        "name": "near",
+        "exit_code": 0,
+        "timed_out": false,
+        "guard_state": "verified",
+        "commands_replayed": false,
+        "restored_count": 0.0
+      },
+      {
+        "name": "long",
+        "exit_code": 7,
+        "timed_out": false,
+        "guard_state": "verified",
+        "commands_replayed": false,
+        "restored_count": 0.0
+      },
+      {
+        "name": "throw",
+        "exit_code": 1,
+        "timed_out": false,
+        "guard_state": "verified",
+        "commands_replayed": false,
+        "restored_count": 0.0
+      },
+      {
+        "name": "timeout",
+        "exit_code": 143,
+        "timed_out": true,
+        "guard_state": "verified",
+        "commands_replayed": false,
+        "restored_count": 0.0
+      },
+      {
+        "name": "limit",
+        "rejected_before_execution": true,
+        "reason": "Explicit 12000-character input bound with separately approved command guidance"
+      },
+      {
+        "name": "source",
+        "exit_code": 76,
+        "timed_out": false,
+        "guard_state": "violation",
+        "commands_replayed": false,
+        "restored_count": 1.0
+      },
+      {
+        "name": "short",
+        "exit_code": 0,
+        "timed_out": false,
+        "guard_state": "verified",
+        "commands_replayed": false,
+        "restored_count": 0.0
+      },
+      {
+        "name": "failstart",
+        "exit_code": 127,
+        "timed_out": false,
+        "guard_state": "verified",
+        "commands_replayed": false,
+        "restored_count": 0.0
+      }
+    ],
+    "actual_cancel_process_exited": true,
+    "native_suite_marker": true
+  },
+  "preserved_failure": {
+    "stage": "isolation before editor launch",
+    "reason": "Inherited GONGGONG_WORKSPACE was rejected by the existing private editor isolation helper",
+    "log_sha256": "13e65fa19aaab38e4ffc4da53716b9f9628a9dc97b34c82d4e077a094277afa4",
+    "correction": "Removed inherited workspace only in the child test environment; kept unchanged fixture and native binary"
+  },
+  "log_sha256": "2d1a107b00fc70d09f60d3c2b924410caca8c8481b8d32d4a227ccb871c08fc9",
+  "limits": [
+    "The fixture uses offline Issue and model transport, while native tool execution, source guard, PowerShell process, cancellation and temporary-file lifecycle are real.",
+    "Actual R11 model did not submit the requested original long command; Issue2 replay remains unknown. This fixture is not reported as that model execution or original production-scene acceptance.",
+    "Existing fixture teardown RID/object leak warnings remain in the raw log; this does not assert a clean whole-editor shutdown.",
+    "Parent773 remains open; full editor production acceptance continues separately."
+  ]
+}

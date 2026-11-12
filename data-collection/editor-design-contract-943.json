@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+  "request_id": "editor-design-contract-20261112",
+  "parent_issue": 773,
+  "tested_base": "52204f9c4c622d7afd590d79b9272e4bf5872784",
+  "state": "local_native_validation_complete_delivery_pending",
+  "path_base": "Repository root; private raw logs under ignored bin/943-validation, preserved locally, not published as game evidence.",
+  "change": "Expose the existing production Markdown contract with a pending native confirmation template; return actionable diagnostics without relaxing parsing or authorization.",
+  "placement": "Existing native editor code and tests; no new module or framework definition. Rebuild native prompt/parser/UI inputs. Rollback to previously verified editor binary, retaining projects and receipts.",
+  "native_and_test_inputs": {
+    "editor/docks/ai_chat_dock.cpp": "240fd279a57617654df279c44bccd6ab3bd0f3a33a48c448d6ee8e1c22e8dd53",
+    "editor/docks/ai_chat_dock.h": "3b407571550a069297ddde1e7149a2d19b3c830b075d9a1f30d717902551f7f2",
+    "editor/docks/ai_chat_sub_agents.cpp": "0da3e808e9773ceb82f8c211e2bd6fb5322f967c1507e59ad880b0ac3c8cbe10",
+    "editor/docks/ai_chat_sub_agents.h": "e2e4821e57b8c63e918f98265fccb0491a87e1f9d6e45fc458b9bd5194fd6b71",
+    "tests/editor/test_ai_chat_tools.cpp": "200833009c097f693baaa6685cf067dc942566d7cebc6fa94e3115287fd01b20",
+    "tests/editor/design_batch.gd": "5fff6d43df74ecb1f470edf7e225ac8fa3cbe5eb816c02d6af8f2e31910cf922",
+    "tests/editor/run_design_batch.py": "7d96fe6ec65124ccbc6cbf53499ec8cb93444eb394a5e1cbf236f1595a4cc484",
+    "tests/editor/run_native_acceptance.py": "09a71efe6deab271e7823a3339c8eba56670edf9884f3a8479cff96bdd06c4b5"
+  },
+  "build": {
+    "exit_code": 0,
+    "flags": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no tests=yes accesskit=no d3d12=no angle=no warnings=extra werror=yes cache_limit=8 -j4",
+    "environment": "GONGGONG_NATIVE_SOURCE_ARCHIVE=1; MSYSTEM empty; GONGGONG_TEST_PYTHON set to existing project runtime",
+    "duration_seconds": 88.78,
+    "binary_sha256": "dfad0e27b1ec75c4ea4971984e15bd836b74475409cef8982ef44aaa38c9e375"
+  },
+  "native_unit": {
+    "filter": "*[AIChat]*,*[NativeAcceptance]*",
+    "exit_code": 0,
+    "cases": 94,
+    "assertions": 1718
+  },
+  "design_normal": {
+    "exit_code": 0,
+    "checks": "Actual production button reports missing confirmation, missing production section, no numeric orders and invalid dependency; malformed designs neither show confirmation nor dispatch; stale candidate and pending heading remain rejected; normal manual dependency acceptance retained."
+  },
+  "native_acceptance": {
+    "scenario": "pass",
+    "case": "normal",
+    "exit_code": 0,
+    "final_status": "native_acceptance_passed",
+    "accepted_criteria": [
+      "A",
+      "B"
+    ],
+    "child1_rounds": 3,
+    "child2_rounds": 3,
+    "parent_returns": 1,
+    "boundary": "Offline isolated model and authority fixtures, real native UI/parser/independent acceptance execution. Intermediate transport_fixture_ok=false belongs to ordinary manual acceptance assumptions; final native scenario assertions pass."
+  },
+  "python_checks": "ruff format --check and ruff check passed for both changed Python runners; git diff --check passed.",
+  "preserved_failures": [
+    {
+      "artifact": "design-normal.log",
+      "reason": "Bundled runtime Python lacks pip._vendor.distlib required by fixture launcher; reran with existing build Python."
+    },
+    {
+      "artifact": "acceptance-pass",
+      "reason": "Default normal fixture renumbered orders 1/2 to 2/4 but kept injected dependency 1; strict parser correctly rejected nonexistent dependency. Fixed fixture reference only."
+    },
+    {
+      "artifact": "acceptance-pass-cold",
+      "reason": "Cold case intentionally stops production and does not satisfy pass scenario completion assertions; retained unsuccessful scenario selection."
+    },
+    {
+      "artifact": "acceptance-pass-fixed",
+      "reason": "Manual dependency acceptance helper requires waiting for user acceptance, incompatible with native automatic independent acceptance; ordinary normal keeps full manual helper, native acceptance fixture selects its automatic completion path."
+    }
+  ],
+  "private_log_sha256": {
+    "design-normal-final": "c42f3ed67100bc138d550b4133abe4b68f7318c62c5eeea3543a8af122b417e9",
+    "build.log": "dc2a265546f138430acec1f54af4de225dcea2cab310632e03161887dd65e686",
+    "native-unit.log": "13215bd94638a9f959fb49b6bf5ff8a7c66a6603f48aecb526c10e4443c389f0",
+    "design-normal.log": "094106d54ab7e621e60047b9b566ba55ae7209a441a8dd7c9d286e6c42d48246",
+    "design-normal-retry": "a0f87db98ad2b3b26464a492f7310d9ce74fc348134a35f5a1daec170d9ed38e",
+    "acceptance-pass": "69a40207694813bc48c2f75c2f2f05e61194fc843dd9e32f073dee937fc10d63",
+    "acceptance-pass-cold": "750fd0e1b4f216c5301bfba40ed7febec3936469ac4125e5ece36ef76ab2a1fb",
+    "acceptance-pass-fixed": "825b69f63de6936c56fea8acfc3974df9420554cafb4c2e17f2e60480f91aa32",
+    "acceptance-pass-final": "5cb553b1c8fd8653d941957fc9b709bd95f0ced655f39437e6c004d04554fc92",
+    "ruff-format.log": "97d85b4b6c185a05396e2d09a3c304ff0f7cc77f8b7b7bb7989ec6cd875b3898",
+    "ruff-check.log": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0"
+  },
+  "remaining": [
+    "Independent review of final Python fixture changes by root reviewer",
+    "Formal gate, commit/push/CI and exact remote main readback",
+    "Installed consumer verification by root"
+  ],
+  "limits": "No actual live model generation is claimed. No private game was edited or inspected by this worker. This issue does not complete parent #773."
+}

@@ -714,6 +714,46 @@ TEST_CASE("[AIChat] Requirement context ignores malformed records and bounds ret
 }
 
 TEST_CASE("[Editor][AIChat] Sub-agent work orders come only from a finalized design") {
+	const String strObserved = U"# 新游戏\n## 4. 生产工单\n### 工单 A\n- 依赖：无\n### 工单 B\n- 依赖：工单 A\n### 工单 C\n";
+	const Dictionary mapObserved = AIChatSubAgents::parse_work_orders(strObserved);
+	CHECK_FALSE(bool(mapObserved["confirmation_section"]));
+	CHECK(Array(mapObserved["orders"]).is_empty());
+	CHECK(String(mapObserved["diagnostics"]).contains(U"缺少定版小节"));
+	CHECK(String(mapObserved["diagnostics"]).contains(U"## 设计定版确认"));
+	CHECK(String(mapObserved["diagnostics"]).contains(U"缺少生产工单小节"));
+
+	const String strHeadingsFixed = strObserved.replace(U"## 4. 生产工单", U"## 设计定版确认\n待操作者确认\n## 生产工单");
+	const Dictionary mapHeadingsFixed = AIChatSubAgents::parse_work_orders(strHeadingsFixed);
+	CHECK(bool(mapHeadingsFixed["confirmation_section"]));
+	CHECK(Array(mapHeadingsFixed["orders"]).is_empty());
+	CHECK(String(mapHeadingsFixed["diagnostics"]).contains(U"没有数字工单"));
+	CHECK(String(mapHeadingsFixed["diagnostics"]).contains(U"1. 基础功能"));
+
+	const String strTemplate = String(AIChatSubAgents::DESIGN_TEMPLATE);
+	const Dictionary mapTemplate = AIChatSubAgents::parse_work_orders(strTemplate);
+	CHECK(bool(mapTemplate["valid"]));
+	CHECK(bool(mapTemplate["confirmation_section"]));
+	CHECK(String(mapTemplate["diagnostics"]).is_empty());
+	CHECK_FALSE(mapTemplate.has("approval"));
+	CHECK_FALSE(mapTemplate.has("binding"));
+	CHECK(strTemplate.contains(U"本文不代表批准"));
+	const Array arrOrders = mapTemplate["orders"];
+	REQUIRE(arrOrders.size() == 2);
+	CHECK(Array(Dictionary(arrOrders[0])["dependencies"]).is_empty());
+	CHECK(Array(Dictionary(arrOrders[1])["dependencies"]).size() == 1);
+	CHECK(bool(Dictionary(arrOrders[0])["acceptance_criteria_valid"]));
+	CHECK(bool(Dictionary(arrOrders[1])["acceptance_criteria_valid"]));
+	for (const String &strInvalid : { String(U"工单 2"), String(U"工单 3"), String(U"工单 A"), String(U"工单 1–3") }) {
+		const Dictionary mapInvalid = AIChatSubAgents::parse_work_orders(strTemplate.replace(U"- 依赖：工单 1", String(U"- 依赖：") + strInvalid));
+		CHECK_FALSE(bool(mapInvalid["valid"]));
+		CHECK(String(mapInvalid["diagnostics"]).contains(U"工单 2 的依赖无效"));
+		CHECK(String(mapInvalid["diagnostics"]).contains(U"- 依赖：无"));
+	}
+	const Dictionary mapPendingHeading = AIChatSubAgents::parse_work_orders(strTemplate.replace(U"## 设计定版确认", U"## 设计定版确认（待批准）"));
+	CHECK_FALSE(bool(mapPendingHeading["confirmation_section"]));
+	CHECK(String(mapPendingHeading["diagnostics"]).contains(U"缺少定版小节"));
+	CHECK_FALSE(bool(AIChatSubAgents::parse_work_orders(strTemplate.replace(U"## 设计定版确认", U"用户已确认"))["confirmation_section"]));
+
 	const String document = String(U"# 标题\r\n\r\n## 设计定版确认（2026-11-04）\r\n\r\n- 确认\r\n\r\n## 生产工单（拆分）\r\n\r\n（说明行）\r\n\r\n1. 第一张\r\n   - 目标：A\r\n   - 依赖：无。\r\n\r\n2. 第二张\r\n   - 依赖：工单 1。\r\n\r\n## 验证与采集证据\r\n\r\n1. 不是工单\r\n");
 	const Dictionary parsed = AIChatSubAgents::parse_work_orders(document);
 	CHECK(bool(parsed["confirmation_section"]));

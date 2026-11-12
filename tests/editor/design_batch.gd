@@ -238,6 +238,17 @@ func _confirm_fixture_design(confirmation):
 			await create_timer(0.05).timeout
 		spawn.pressed.emit()
 		_check(not confirmation.visible and tabs.tab_count == 1, "Draft heading offered production dispatch")
+		_check(_text().contains("缺少定版小节"), "Missing actionable confirmation diagnostic")
+		var malformed_designs := [
+			["## 设计定版确认\n待确认\n## 4. 生产工单\n### 工单 A\n", "缺少生产工单小节"],
+			["## 设计定版确认\n待确认\n## 生产工单\n### 工单 A\n### 工单 B\n### 工单 C\n", "没有数字工单"],
+			["## 设计定版确认\n待确认\n## 生产工单\n1. 基础\n- 依赖：工单 2\n", "工单 1 的依赖无效"],
+		]
+		for malformed in malformed_designs:
+			FileAccess.open(path, FileAccess.WRITE).store_string(malformed[0])
+			spawn.pressed.emit()
+			_check(not confirmation.visible and tabs.tab_count == 1, "Malformed design offered production dispatch")
+			_check(_text().contains(malformed[1]), "Missing actionable design diagnostic: " + malformed[1])
 		FileAccess.open(path, FileAccess.WRITE).store_buffer(before)
 		spawn.pressed.emit()
 		return

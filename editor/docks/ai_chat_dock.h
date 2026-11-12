@@ -729,7 +729,7 @@ class AIChatDock : public EditorDock {
 	Label *design_summary = nullptr;
 	LineEdit *design_evidence = nullptr;
 	Dictionary pending_design_action;
-	Dictionary _read_design(int p_parent) const;
+	Dictionary _read_design(int p_parent, String *out_pDiagnostics = nullptr) const;
 	bool _design_child_ready(int p_child) const;
 	bool _prepare_manual_design_attempt();
 	void _confirm_design_action();

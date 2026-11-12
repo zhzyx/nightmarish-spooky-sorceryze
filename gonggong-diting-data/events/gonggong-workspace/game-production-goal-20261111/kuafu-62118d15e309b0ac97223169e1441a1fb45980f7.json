@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-62118d15e309b0ac97223169e1441a1fb45980f7",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d41bff8ea5c86751640811f5a8b05329d387dd2f57e43aed89072bcaabc966e8",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "52204f9c4c622d7afd590d79b9272e4bf5872784",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "Actual editor command moved 2017 untracked baseline collisions including dataset.json and work-items.json; tool-end receipt flush failed before next command. Source audit confirms guard is restricted to engine_candidate. Exact saved originals were restored and editor subsequently completed normal ff-only alignment.",
+    "diagnosis": "Ordinary game tasks have no engine_candidate guard; per-command receipt metadata can disappear during preparation. Existing guard also lacks work-items.json coverage. Recovery completed from verified private backup without overwriting changed files; source protection remains missing.",
+    "next_action": "Create or reuse a scoped parent773 source bug for ordinary game receipt metadata protection, missing-only recovery, and ordinary command plus legitimate ff regression coverage; preserve all private evidence and other workers.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T12:35:27.419853+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T12:55:51.030306+00:00",
+  "sha256": "babbb4e50494e5f42e3099129730060e1708cec44908c8cdc7ce5be8367dfca8"
+}

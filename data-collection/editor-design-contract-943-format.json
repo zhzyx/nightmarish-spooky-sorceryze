@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+  "request_id": "editor-design-contract-20261112",
+  "previous_evidence": {
+    "path": "data-collection/editor-design-contract-943.json",
+    "sha256": "020cd9957fe4e3b9cdfc5bdf3489a749ea9e3c696b31cd445ea5054f15b57a98",
+    "status": "Preserved prior candidate validation, including prior native acceptance integration."
+  },
+  "path_base": "Repository root; raw logs resolve under ignored bin/943-validation.",
+  "failure": {
+    "artifact": "root-format-original-snapshot.log",
+    "finding": "Root reproduced clang-format --dry-run --Werror failures on frozen original header and native test: new Allman function/test/loop conflict with existing formatter. Both file checks exited 1.",
+    "not_failure": "root-format-before-correction.log actually ran after correction and exited 0."
+  },
+  "correction": "Replace the new template function with constexpr char32_t string constant and explicit String conversions; merge all regression assertions into the existing finalized-design parser TEST_CASE using its local style. No parser acceptance, template bytes, prompt, UI flow or assertions were removed; no clang-format suppression or broad migration.",
+  "changed_inputs": {
+    "editor/docks/ai_chat_dock.cpp": "ddae5222be7fb7dfb336391e8b4f8cec4a846299bdd369cb4b02b3c22a3db623",
+    "editor/docks/ai_chat_sub_agents.h": "b23e4b836d8690b543466530c6631f8b8a8ee1363bda9fd60a737ddcaef53d2b",
+    "tests/editor/test_ai_chat_tools.cpp": "3232f9bf7b7cdb3f243745bfb9bf43dbf3a0c9181a8cd33f66c7d68d56cadb97"
+  },
+  "format": {
+    "command": "clang-format --dry-run --Werror editor/docks/ai_chat_dock.cpp editor/docks/ai_chat_dock.h editor/docks/ai_chat_sub_agents.cpp editor/docks/ai_chat_sub_agents.h tests/editor/test_ai_chat_tools.cpp",
+    "exit_code": 0
+  },
+  "build": {
+    "exit_code": 0,
+    "duration_seconds": 19.52,
+    "flags": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no tests=yes accesskit=no d3d12=no angle=no warnings=extra werror=yes cache_limit=8 -j4",
+    "environment": "GONGGONG_NATIVE_SOURCE_ARCHIVE=1; MSYSTEM empty; designated project runtime GONGGONG_TEST_PYTHON",
+    "binary_sha256": "1fe576a30469fe6414850d61f32b996754c42f5f50a66e51fbad42ee394af129"
+  },
+  "native_unit": {
+    "filter": "*[AIChat]*,*[NativeAcceptance]*",
+    "exit_code": 0,
+    "cases": 93,
+    "assertions": 1718,
+    "coverage": "All previous 1718 assertions retained; case count reduced by merging the new regression into existing parser case."
+  },
+  "design_consumer": {
+    "case": "normal",
+    "exit_code": 0,
+    "ok": true,
+    "errors": [],
+    "child1_rounds": 3,
+    "child2_rounds": 3,
+    "consult_rounds": 1,
+    "retry_rounds": 3,
+    "parent_returns": 1,
+    "checks": "Current binary consumed unchanged design fixture: actionable diagnostics, stale/pending confirmation rejection, valid dispatch, manual dependency acceptance and return."
+  },
+  "native_acceptance_boundary": "Independent native acceptance integration previously passed on binary dfad0e27b1ec75c4ea4971984e15bd836b74475409cef8982ef44aaa38c9e375, retained in previous evidence. Formatting compatibility changes affect constant storage and test grouping only. Current binary reran native acceptance parser tests and design consumer; full independent acceptance integration not rerun.",
+  "log_sha256": {
+    "clang-format-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build-format-final.log": "857793881476d39eb2f2083e2370899c4847db947a2e7d2de4db8e7b4a421fbb",
+    "native-unit-format-final.log": "b0af696cdad1562e3ce32f120128457ac5482e7ea4f022b7f080d0e696ef910b",
+    "design-normal-format-final": "e53ba105f7914a89b815edd4979bf73bebdca5865f6afea326f2a965c3ff1075",
+    "root-format-original-snapshot.log": "c75c68b26668d779a0ae29f2e6a39fe0e326c06e7b02540efb2c236b1c40511d"
+  },
+  "remaining": "Root independent diff review, formal delivery, remote main/CI readback and installed consumer verification. Parent #773 remains incomplete."
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "request-943-20261112-readback",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-design-contract-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T12:12:03.656582+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "title": "Expose the editor production design format and actionable validation errors",
+    "issue": 943,
+    "parent_issue": 773,
+    "source_updated_at": "2026-11-12T12:10:14Z",
+    "request": "<!-- gonggong-request:editor-design-contract-20261112 -->\r\n\r\n需求文档：`design-docs/editor-design-contract-20261112.md`\r\n\r\n[查看主线设计（合入后可用）](https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/main/design-docs/editor-design-contract-20261112.md)\r\n\r\n# Make editor production design format discoverable and failures actionable\r\n\r\nRequest: `editor-design-contract-20261112`; parent #773. Paths in this document resolve against this repository root.\r\n\r\nThe actual installed editor generated a detailed new game requirement with `## 4. 生产工单` and `### 工单 A/B/C`, without the exact confirmation heading. The native production parser requires `## 生产工单`, top-level numbered items, explicit dependencies and a recognized confirmation section. Current model guidance documents criterion lines but omits this structural contract. The generic failed-design message does not identify the missing section or usable repair. Source review confirmed this mismatch; the current game design is being corrected through ordinary editor chat and remains unapproved.\r\n\r\nScope: make the existing exact parser contract available in the model design guidance, supply concise actionable diagnostics for malformed designs, and preserve explicit native design confirmation and dependency authorization. Do not relax governance, infer approval from document text, accept arbitrary Markdown, alter other workers or modify the private game from this worktree.\r\n\r\nAcceptance:\r\n\r\n- [ ] Model design guidance includes the actual confirmation heading, production section, numbered work orders, independent/dependent examples and unique criterion IDs. The template clearly remains pending native user confirmation.\r\n- [ ] Actual parser/read-design diagnostics distinguish missing confirmation, missing production section, no numbered work orders and invalid dependencies, with practical correction hints. Existing valid designs remain accepted; malformed dependencies remain rejected.\r\n- [ ] A meaningful native regression exercises the observed natural Markdown forms and verifies diagnostics, valid template parsing and retained confirmation boundaries. Appropriate existing design/acceptance tests and a strict Windows editor build pass.\r\n- [ ] Independent review, formal delivery, exact CI/main readback and installed consumer verification are recorded. A corrected game design or this bug fix does not complete parent #773.\r\n\r\nPlacement: native changes to existing editor C++ prompt/parser/UI code; no new module. Rebuild affected native inputs. The interface remains normal chat plus the existing work-order production button and confirmation dialog. Rollback restores the prior verified editor binary while retaining projects, designs and all receipts.\r\n\r\nAuthorization: current user's continuous Godot editor completion goal under #773. Root owns delivery and live consumer validation; an isolated implementation worker may change only this worktree, with a separate reviewer. Preserve failures and distinguish source findings, fixture results and actual live editor observations.\r\n\r\n\r\n执行授权来源（由调用宿主核实，不代替候选准入）：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773\r\n\r\n\r\n<!-- gonggong-host-git:Sail-Li -->\r\n",
+    "issue_body_sha256": "232832299a516e56cca6ffe080c156a7315dcf9993879fcea0892f4ac9da4148",
+    "scope": "Existing editor design prompt and actionable parser diagnostics; actual live generated design could not match the production entry."
+  },
+  "sha256": "a1b20c427563c2d74a6e15820e836ff6578b1168e4ee614aa14c1454db299204"
+}
