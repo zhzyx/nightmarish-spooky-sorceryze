@@ -11,7 +11,7 @@ import {captureCandidate,validateDecision,projectAcceptance,parallelRegistry} fr
 import {dispatchEvent} from '../../platforms/process-management/yuanheng-local/sinan/dispatch.mjs';
 const digest = v=>createHash('sha256').update(v).digest('hex');
 function fixture(t, submitted=true) {
-  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'acceptance-776-'));
+  const dir=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'acceptance-776-')));
   t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
   const root=path.join(dir,'repo');fs.mkdirSync(root);
   const git=(...args)=>execFileSync('git',['-C',root,...args],{stdio:'pipe',encoding:'utf8'}).trim();

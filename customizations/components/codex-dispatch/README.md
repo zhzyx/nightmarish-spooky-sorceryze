@@ -25,3 +25,5 @@ native 回调接受原生工具参数，返回工具的解析后对象（或 str
 验证：`node --test customizations/components/codex-dispatch/adapter.test.mjs`。测试使用明确的模拟原生回调，覆盖并发、模型参数、跨进程状态重载、重复派发、回执失联、完成补位、锁和 chat 权限；不能作为真实 Codex 生产派发回执。
 
 模型配置参考 [OpenAI 官方子 Agent 文档](https://learn.chatgpt.com/docs/agent-configuration/subagents)。具体可用工具、型号覆盖及建聊约束以当前宿主实际暴露的接口为准，本适配器不固定供应商型号。
+
+GitHub 连接由已安装的 `issue-workorders/github_runtime.mjs` 经当前配置 `python` 调用同目录 Python 解析／传输实现。优先级为显式 `config.gh`、显式环境 `GONGGONG_GH`，然后沿共享运行时的安装目录、PATH、固定位置规则；显式空值、null、缺失或不可执行路径拒绝，不回退。裸命令只在传入 PATH 按原名查找。一次会话固定绝对 CLI，并用于权限／工单回读、intake 和上报的子进程环境；新会话重新读取配置，父进程环境与账号不变。GitHub 请求最多等待 120 秒，桥接有额外 5 秒退出期限；错误不回显 CLI stderr，未知写入结果必须先回读远端再重试。工具依赖从安装文件位置加载，目标工作区只提供数据；打包或回退须同时保留 JS 桥接、Python 桥接与 `github_runtime.py`。

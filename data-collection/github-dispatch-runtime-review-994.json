@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/sinan_ddfed4afa23385db",
+  "reviewed_at": "2026-11-12T18:42:57.736969+00:00",
+  "candidate_head": "c55e823a691286afa69949a0985015fb9375094a",
+  "decision": "approve_bounded_candidate",
+  "findings": [],
+  "reviewed_boundaries": [
+    "explicit config.gh overrides GONGGONG_GH; invalid explicit selections fail closed",
+    "discovery delegates installed Python implementation; archived relocation and Python isolation",
+    "same pinned absolute CLI for permission/source reads, intake, report environment",
+    "sanitized request errors and finite deadlines; unknown writes require readback",
+    "source revision, effective permission, claim ownership and terminal receipt assertions retained",
+    "report adapter loads its installation; repository dispatch requires bound trusted checkout"
+  ],
+  "limits": [
+    "Windows executable/PowerShell behavior was inspected and platform-independent simulated resolver tests passed, but no Windows host run occurred; two Windows-only JS tests skipped.",
+    "No live remote write, native worker launch or 120-second outer-limit failure was induced; synthetic transport timeout and redaction cases executed.",
+    "This review is not formal gate, CI, main delivery or business acceptance; root retains delivery/Issue close duties.",
+    "Approval is tied to the recorded input bytes; later production edits require focused re-review."
+  ],
+  "input_sha256": {
+    "customizations/components/codex-dispatch/README.md": "b9d912eb307a7b2dc399450abacf02a19fec40b0e665d80c8c2f7596dee66d31",
+    "customizations/components/codex-dispatch/operator.mjs": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "customizations/components/codex-dispatch/operator.test.mjs": "5384c51f2b2a2f17981945fd0715812c0cab5edf9f027e38087b3c3dca82a4a1",
+    "customizations/components/codex-dispatch/report.py": "f10419c7fe0bc2825480b0d0339e11162186b1df2696d63f63a940b34f702bae",
+    "customizations/components/issue-workorders/github_runtime.mjs": "7d3c5b00e25f29ece2bca5564df2d2be2ed5c03574feca449fce4f6176779dd8",
+    "customizations/components/issue-workorders/github_runtime.test.mjs": "ef631fb420a5bb5cfcea7099cf0b9de066e00d066a73a494245b218b9c1d4f18",
+    "customizations/components/issue-workorders/github_runtime_bridge.py": "eb004066f16431ef1abbf7713ecbf6da70a962cc2d24b64102be3732c1360ea1",
+    "customizations/components/issue-workorders/test_github_runtime.py": "0fd439d490b3c4de532a2be397bde09f5bba0b5379b941588b51c03008c2e0ba",
+    "customizations/components/repository-dispatch/README.md": "7131e0168f0a2f536debafcdf844df0550647034bc86570cd4e0476f23734ded",
+    "customizations/components/repository-dispatch/acceptance.test.mjs": "52201bb3f89daf77ba779f9ba09801a32c6262b80b5d16c008057f98e2a9fcec",
+    "customizations/components/repository-dispatch/session.mjs": "aeeddc8a3f31a613f718209f1e5531204d0fc9ff4075c8acd0163134847b8311",
+    "customizations/components/repository-dispatch/session.test.mjs": "809beea59625e7663b8cf33bec5cbe54d402939edb7134fe5874fff8ae1fdb54",
+    "data-collection/github-dispatch-runtime-selection-994.json": "1609030e1b45520f137ed07f234e02a14d60d47d061a5674e54425295e81e524",
+    "design-docs/github-dispatch-runtime-selection-994.md": "7c5a48832a7422739e909b86e67ba0cb65921a67467e5584d177956dcbe3fa74",
+    "gonggong-diting-data/events/gonggong-workspace/github-dispatch-runtime-selection-20261113/dispatch-88d6ebfdf1be409bbac9fcc1e61b82f3.json": "b045a788f31a47570a62379309d25a273cd43d18d8ff57dc85f0caf8cfae97ce",
+    "gonggong-diting-data/events/gonggong-workspace/github-dispatch-runtime-selection-20261113/dispatch-bbed1bdc1bf140bf84f13d74c565c74b.json": "205973850ff1333c6f0351725b9f2265f83b68dc8ec300fb8a057bb3ea75c1c8",
+    "gonggong-diting-data/events/gonggong-workspace/github-dispatch-runtime-selection-20261113/dispatch-ecb7c45fa67942a397bcff370908f39f.json": "dc8b4e458529629400ed8f14d548f9517a472e8bf9601e41944e9c89ad81c64d",
+    "gonggong-diting-data/events/gonggong-workspace/github-dispatch-runtime-selection-20261113/request-github-dispatch-runtime-selection-20261113.json": "7858553733e8df6d007796a6fd0a079b7883c756f24f9833047b3fd1f7417b07"
+  },
+  "issue_number": 994,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/994",
+  "request_id": "github-dispatch-runtime-selection-20261113",
+  "validation": {
+    "js_passed": 72,
+    "js_windows_skipped": 2,
+    "python_passed": 78,
+    "real_read_only_gui_path_recovered": true
+  },
+  "delivery": {
+    "state": "pending_exact_ci_and_main"
+  }
+}

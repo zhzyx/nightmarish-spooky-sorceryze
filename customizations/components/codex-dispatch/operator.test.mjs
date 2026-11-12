@@ -51,7 +51,7 @@ test('native session rechecks effective write permission and can reconcile an ex
   `);
   const setPermission = (permission,login=operator) => save('viewer.json',{data:{viewer:{login},
     repository:{nameWithOwner:repository,viewerPermission:permission}}});
-  const config = {...fixture.options,workspace,operator,gh:process.execPath,defaultChatModel:'model',
+  const config = {...fixture.options,workspace,operator,python:process.env.GONGGONG_PYTHON || (process.platform === 'win32' ? 'python' : 'python3'),gh:process.execPath,defaultChatModel:'model',
     requests:[{ticket:fixture.a.ticket,authorityRef:fixture.options.authorityRef}]};
   setPermission('READ');
   await assert.rejects(openSession(config),/write permission/);
@@ -152,4 +152,34 @@ test('a verified unstarted terminal prevents a delayed original launch',async t=
   const f=setup(t),bridge=new NativeToolBridge(path.join(f.root,'native'),'fixture-only');
   await f.runtime.compareAndStart(f.a);await f.runtime.verifyNeverLaunched(f.a,{},bridge.root);
   await assert.rejects(f.runtime.beforeLaunch(f.a),/terminal/);
+});
+
+test('GUI PATH environment selection reaches authenticated openSession and real installed reporting',async t=>{
+  const f=setup(t), workspace=f.root;
+  execFileSync('git',['init','-q',workspace]);
+  fs.mkdirSync(path.join(workspace,'.github'));
+  fs.writeFileSync(path.join(workspace,'.github/labels.json'),JSON.stringify([{name:'type:development'}]));
+  fs.writeFileSync(path.join(workspace,'work-items.json'),JSON.stringify({tenant_id:'gonggong-workspace',repository:'test/repo'}));
+  fs.writeFileSync(path.join(workspace,'api'),`console.log(JSON.stringify({data:{viewer:{login:'operator'},repository:{nameWithOwner:'test/repo',viewerPermission:'WRITE'}}}));`);
+  fs.mkdirSync(path.join(workspace,'gonggong-diting-data'));
+  fs.writeFileSync(path.join(workspace,'gonggong-diting-data/dataset.json'),JSON.stringify({schema_version:1,name:'gonggong-diting-data',origin_framework:'gonggong',dataset_id:'00000000-0000-4000-8000-000000000001'}));
+  const malicious=path.join(workspace,'customizations/components/godot-host');fs.mkdirSync(malicious,{recursive:true});
+  const marker=path.join(workspace,'project-code-executed');
+  fs.writeFileSync(path.join(malicious,'bridge.py'),`open(${JSON.stringify(marker)},'w').write('bad')\nraise RuntimeError('target bridge executed')`);
+  const python=execFileSync(process.env.GONGGONG_PYTHON || (process.platform==='win32'?'python':'python3'),
+    ['-c','import sys; print(sys.executable)'],{encoding:'utf8'}).trim();
+  const config={...f.options,workspace,operator:'operator',defaultChatModel:'model',python,requests:[]};
+  const code=`import {openSession} from ${JSON.stringify(new URL('./operator.mjs',import.meta.url).href)};
+    const c=${JSON.stringify(config)};const s=await openSession(c);
+    try {const report=await s.runtime.report({state:'fixture',assignment:{ticket:'github:test/repo#1'}});
+      console.log(JSON.stringify({gh:s.github.gh,report,active:s.runtime.active().length}));}finally{s.bridge.close();}`;
+  // Child-only GUI-like PATH: never alter this test runner's or user's environment.
+  const env={...process.env,GONGGONG_GH:process.execPath,PATH:process.platform==='win32'?path.dirname(execFileSync('where',['git'],{encoding:'utf8'}).trim().split('\r\n')[0])+';'+process.env.SystemRoot+'/System32':'/usr/bin:/bin'};
+  const result=JSON.parse(execFileSync(process.execPath,['--input-type=module','-e',code],{cwd:workspace,env,encoding:'utf8'}));
+  assert.equal(result.gh,process.execPath);
+  assert.equal(result.report.ok,true);
+  assert.equal(result.report.state,'recorded_file');
+  assert.equal(result.report.receipts.length,1);
+  assert.equal(result.active,0);
+  assert.equal(fs.existsSync(marker),false);
 });
