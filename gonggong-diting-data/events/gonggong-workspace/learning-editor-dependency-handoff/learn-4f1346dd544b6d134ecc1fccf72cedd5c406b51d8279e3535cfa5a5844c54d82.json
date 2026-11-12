@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-4f1346dd544b6d134ecc1fccf72cedd5c406b51d8279e3535cfa5a5844c54d82",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/899",
+  "occurred_at": "2026-11-12T07:19:13.256980+00:00",
+  "evidence_refs": [
+    "request-899-20261112-readback",
+    "learn-dac7fe29955ada7e40a03a6507cd07990b6fe08fb8316a5eb886bfd1f0f90350"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 11,
+    "previous": "2e3accdadb1bd5c6c030caefe1adfd592f18ce5bee371baab64fe9b8c8c40284",
+    "action": "applied",
+    "details": {
+      "task": "Issue #899 ordinary-game review failure diagnostic return.",
+      "observed": "Real missing read returns exactly one bound unverified diagnostic with business_accepted=null. Successful-read bytes, HEAD, link, branch, Git identity and parent binding drift block return; revoked permissions block parent wake; cold restore sends zero requests. Diagnostic transport does not release acceptance."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-review-failure-return-899.json",
+        "sha256": "f9530b03a859ef493efcde8ae5445fdb8e6260a305d637da7f6a3802e00ba795"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-review-failure-return-20261112/request-899-20261112-readback.json",
+      "sha256": "73a460e7d934b707bcb29eb2a374ddef4cea74ab61d66e50870b94dc8605931c"
+    }
+  },
+  "sha256": "823e9a667b424f0c9c514dbedb95268ddccea3b5fa972b629b51a244e93de72c"
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "request-903-20261112-readback",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-install-stage-git-ignore-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T07:43:22.033977+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/903",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "title": "忽略编辑器安装暂存目录，避免 Git 扫描占用待替换二进制",
+    "issue": 903,
+    "parent_issue": 773,
+    "source_updated_at": "2026-11-12T07:41:11Z",
+    "request": "<!-- gonggong-request:editor-install-stage-git-ignore-20261112 -->\n\n父项 #773，故障链 #807。当前操作者 Sail-Li，在既有编辑器安装/生产验收授权内处理。\n\n官方安装器在原子替换暂存 EXE 时多次出现共享占用，旧文件和清单回滚均核对完整。main895 安装失败现场的 Windows Restart Manager 捕获 Git for Windows PID20648 占用安装器的 .editor-install-<GUID>/godot.windows.editor.x86_64.exe；无正式安装编辑器进程运行。仓库 .gitignore 已排除 bin、versions、installed.local.json 和 .editor-install.lock，却没有排除安装器实际生成的临时目录，因此编辑器/宿主 Git 扫描可以发现暂存二进制。\n\n当前责任者仅在本安装 .git/info/exclude 追加相同暂存目录前缀作为本地恢复；另一次网络重置单独留证并恢复既有代理后，未经修改的官方安装入口成功完成 main979dfe27。此恢复支持该诊断，不宣称能解释所有历史占用或所有占用来源。\n\n范围：将安装器自有暂存目录的精确忽略规则纳入仓库默认配置，保留原子替换、回滚和占用拒绝行为；不杀进程、不绕过真正的文件锁、不扩大忽略业务目录或用户内容。\n\n验收：\n- [ ] 规则覆盖 tools/install_gonggong_editor.ps1 生成的 /project/godot/.editor-install-<GUID>/，不吞掉 project/games 或普通源码。\n- [ ] 在无当前 .git/info/exclude 恢复规则的独立 Git fixture 核对原配置可见、候选配置确实由仓库.gitignore排除；保留实际命令与结果。\n- [ ] 独立审查及正式门禁/精确静态CI/main完成；正式仓库规则生效后移除本次本地恢复块（保留原先用户配置），复验官方安装入口，核对实际清单/二进制/回滚边界。\n\n<!-- gonggong-host-git:Sail-Li -->\n",
+    "issue_body_sha256": "5b4f8d4f241e025007669136f0e23f0a24f43dab17c2ccef8b77df545640689f",
+    "scope": "Authorized editor production failure repair; original failed evidence retained"
+  },
+  "sha256": "d3645cbd6ccbb5d7dc39be17694d7202751547db1dd8182c71d8d04f1f9e5e83"
+}

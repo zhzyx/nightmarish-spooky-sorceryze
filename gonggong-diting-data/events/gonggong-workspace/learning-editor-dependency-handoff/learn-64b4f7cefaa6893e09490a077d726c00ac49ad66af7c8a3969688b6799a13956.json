@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-64b4f7cefaa6893e09490a077d726c00ac49ad66af7c8a3969688b6799a13956",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "occurred_at": "2026-11-12T08:48:24.754244+00:00",
+  "evidence_refs": [
+    "kuafu-34811f38a489f0155ddc6908189dd7744d178255",
+    "learn-ebdf924944c3d0cbef112127fca2ca1a808bc63e8259ca3eec885f2c482bb65f"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 14,
+    "previous": "14b8f3d475973ba3b97acdf7a57e3347f51553dfc47770d77157dcd4ea021df8",
+    "action": "applied",
+    "details": {
+      "task": "Parent773 combined editor continuation source-binding review before delivery.",
+      "observed": "Comparing exact committed inputs against the preserved stage manifest detected an evidence-generator omission after staging: unstaged-only enumeration omitted8 of9 hashes. Preserve original receipt and append the verified9-input binding. Validate candidate evidence against the complete index/commit, including already staged inputs; unstaged diff alone is insufficient. Code and tests are unchanged, and installed consumer acceptance remains pending."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-continuation-combined-773-input-binding.json",
+        "sha256": "a2804f84b85d4db6b040c764e001976bade803513f9141d35b222c040bcc383b"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/kuafu-34811f38a489f0155ddc6908189dd7744d178255.json",
+      "sha256": "7dc9057dac328eb5e77a7737be2225475234c75ae6d4571c81210a6aa5b668db"
+    }
+  },
+  "sha256": "bd79f20b8b8ec0d8f3e96d0711fb98f2a799402b98bbe4bcbb2763587b663b84"
+}

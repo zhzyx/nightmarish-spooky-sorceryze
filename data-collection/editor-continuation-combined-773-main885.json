@@ -1,0 +1,71 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "request_id": "game-production-goal-20261111",
+  "base": "8dc87bab2dcb81d23ead7c03c7a5f49a9760bafe",
+  "rebased_source": "07bddc093dd99bc3db6080cc87a4312b8c58d253",
+  "original_source": "026ebf15f0a1de09936c33ff648706ea96b93e01",
+  "source_inputs_unchanged": true,
+  "input_sha256": {
+    ".gitignore": "51dad606ab90d521abad7086f63523828da32c5e16daffaedc189a2c6cc5b4dc",
+    "editor/docks/ai_chat_dock.h": "3212b871d2b0219d4248e8abe399de80171cbff05fd9d959af24cf9336d0aa56",
+    "editor/docks/ai_chat_sub_agents.cpp": "8cdd43126e63bd55172b339b74ec45e0b9f9f4c90808ca12754f5f6ffd2aa7f5",
+    "tests/editor/design_batch.gd": "b0dd367db78f0268d1c55fef3922415c3c3396ded0367a3362031acf932e1550",
+    "tests/editor/native_acceptance_parallel.py": "fabb6248a5e0247048e6b8be36e4608ee8d8671c7ec5120f14145cdf975b385a",
+    "tests/editor/run_design_batch.py": "c16db662202f95dbeda3bc5a29ab2d476a5c7ccad919eef7f8602d1f43498b8a",
+    "tests/editor/run_native_acceptance.py": "df887b3b02373bd6cf3f8f6c6203e4aaeb93e15774f19fbd25a267fbdae27cde",
+    "tools/godot_parallel/runner.mjs": "39d8fc3277df0a0e838b434b471014e393976eb39a851a4c795669d84859c4c5",
+    "tools/godot_parallel/preflight.test.mjs": "c91cf2632df252a454658e48258a1234f47bddbd4c5806fb0e9f702220ce4218"
+  },
+  "upstream": {
+    "pull_request": 906,
+    "issue": 885,
+    "files": 18,
+    "overlap": [],
+    "scope": "Direct native sculpt provider and embedded resources, docs and evidence; owner kaiyunxue."
+  },
+  "strict_native_build": {
+    "ok": true,
+    "log_sha256": "1e021bf9a0ec51e39e5e22b75cc9361f8fc9b4babfcdfd5d5d3f157c69510843"
+  },
+  "binary": {
+    "console_sha256": "9c633069378dd930a1df3497d60a5e5a227f5105f61f2f8ff16029b181a1ceb7",
+    "engine_sha256": "333011abf5332c952ccf00d56d1b8c2585167d7a9b2a1cecdfceefcccf611227"
+  },
+  "native_suite": {
+    "ok": true,
+    "cases": 1567,
+    "assertions": 435685,
+    "skipped": 3,
+    "log_sha256": "dd1619b7420a4f45ffbdf28ff9384cdd033e44591972721a5166f3266bc53057"
+  },
+  "native_scenarios": {
+    "parallel": {
+      "ok": true,
+      "report_sha256": "fbf11857298d014b1e1e298c3cf4de6af40f8882279652ee842cbd601617671f"
+    },
+    "rollover": {
+      "ok": true,
+      "report_sha256": "b1b1e0abdea4bc2f1a64c302de9cda36fc9c637b063cf81a04e8c70fedadceae"
+    }
+  },
+  "upstream_provider_unit_tests": {
+    "ok": true,
+    "tests": 12,
+    "log_sha256": "99a2ab836cfc4a5ad2dc677c141b3c88c3345921f411e5283625572b9ff65dc2",
+    "runtime": "Existing Python3.12 pythonw with Pillow12.3.0; synthetic provider tests only, no paid requests."
+  },
+  "initial_setup_failures": {
+    "fixture": "First invocation used embedded Python without pip; stopped before host scenario. Rerun uses established build-test interpreter.",
+    "provider": "First import used wrong working directory; next attempts used python.exe and an environment without Pillow, whereas the Windows provider requires pythonw. Existing bundled Python3.12 pythonw with Pillow passed. Optional dependency downloads stopped once existing suitable runtime was verified. Original failure logs retained."
+  },
+  "independent_review": {
+    "implementation": "Original independent code review and rollover correction confirmed; unchanged nine inputs independently rechecked against source026ebf15 and stage manifest.",
+    "supplemental_worker": "/root/sinan_a626d7a49d97a8b8",
+    "limits": "Reviewer did not independently read remote signed object; root formal signer and CI verify actual signed candidate."
+  },
+  "remaining": [
+    "Exact signed replacement CI/main",
+    "Formal installation and real-project continuation",
+    "Parent773 and children not closed by local tests"
+  ]
+}

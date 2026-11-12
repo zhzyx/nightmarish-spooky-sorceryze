@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e45bdfd4ab2fb3642bcfb1d4157fc02b263ab01b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e2e2b85ea3bcb558ae712a42fff7b61afc2dcedf035a17d25cc794ed22713899",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "delivery",
+    "detection_head": "07bddc093dd99bc3db6080cc87a4312b8c58d253",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/911",
+    "diagnosis": "Main advanced8dc87bab to42e04327 through PR911. Exactly3 docs/evidence files changed, with no candidate overlap or executable input changes. Preserved staged5 evidence files in owned stash then rebased source cleanly and restored exact files. The prior main885 strict build,1567 native cases, native parallel/rollover checks and12 synthetic provider tests remain applicable to identical implementation inputs; no repeated tests claimed.",
+    "next_action": "Sign exact candidate on42e04327 and verify replacement PR CI/main. Parent and installed consumer acceptance remain open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T09:03:25.652807+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T09:05:42.493302+00:00",
+  "sha256": "578153d3878ce89d05b881aa5487086e3d212e5b8dd0984a69cd7ecc4f17bab1"
+}

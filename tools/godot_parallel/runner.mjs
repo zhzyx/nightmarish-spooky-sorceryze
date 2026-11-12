@@ -10,6 +10,23 @@ import {repairIdentity,ticketPath,verifyRepair,previousResource,repairReceipts} 
 
 const read = p => JSON.parse(fs.readFileSync(p, 'utf8'));
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+// Audit-only input from the live editor. This never replaces ledger readiness.
+export function verifyDependencyPreflight(sources) {
+  if (sources === undefined) return; // Older non-editor callers retain their contract.
+  if (!Array.isArray(sources) || sources.length > 256 || Buffer.byteLength(JSON.stringify(sources)) > 64 * 1024 * 1024) throw Error('Invalid dependency preflight size');
+  for (const source of sources) {
+    const ref = source.candidate_check;
+    if (!ref || !path.isAbsolute(ref.path) || fs.statSync(ref.path).size > 32 * 1024 * 1024) throw Error('Missing bounded dependency check');
+    const bytes = fs.readFileSync(ref.path);
+    if (digest(bytes) !== ref.sha256) throw Error('Dependency check changed');
+    const record = JSON.parse(bytes);
+    const request = JSON.parse(record.request_json), response = JSON.parse(record.response_json);
+    if (record.schema_version !== 1 || response.ok !== true || request.request_nonce !== ref.request_nonce || response.request_nonce !== ref.request_nonce ||
+        response.candidate_sha256 !== request.candidate.files_sha256 ||
+        JSON.stringify(request.candidate) !== JSON.stringify(source.verified_response.current_candidate) ||
+        source.verified_response.decision_sha256 !== source.decision_sha256 || source.decision.verdict !== 'pass') throw Error('Dependency check binding differs');
+  }
+}
 function sidecar(file, value) {
   durable(file,value,true);
   return {path:file,sha256:digest(fs.readFileSync(file))};
@@ -230,6 +247,7 @@ export async function run(request, config, output, runtime = {}) {
         verifyDesign(request, job);
         const boundEditor = editorRuntime(request);
         if (job.repairOf) verifyRepair(request,job);
+        verifyDependencyPreflight(job.dependency_preflight);
         record.execution_id=crypto.randomUUID();
         record.worker_id=job.workerId??`parallel:${record.execution_id}`;
         record.issue_number=request.issue;
@@ -243,6 +261,8 @@ export async function run(request, config, output, runtime = {}) {
           worker_backend:job.launch.backend,requested_model:job.model.id,authority_ref:config.authorityRef,
           ...(boundEditor ? {editor_runtime:boundEditor} : {}),
           ...(job.repairOf?{repair_of:job.repairOf}:{}),
+          dependency_preflight:job.dependency_preflight??[],
+          ...(runtime.dispatchReference ? {dispatch_request:runtime.dispatchReference} : {}),
           prepared_receipt:record.reportingPrepared
         });
         record.base_sha=initial.head;
@@ -362,7 +382,9 @@ if (process.argv[1] && path.resolve(process.argv[1])===fileURLToPath(import.meta
       const job = require('../codebuddy_cli/node_modules/@tencent-ai/codebuddy-code/bin/native/win32-'+process.arch+'/job-object.node');
       if (!job.ensureKillOnCloseJob()) throw Error('Process tree boundary unavailable');
     }
-    const request=read(process.argv[2]);
-    await run(request,read(request.config),process.argv[3]);
+    const bytes = fs.readFileSync(process.argv[2]);
+    if (bytes.length > 64 * 1024 * 1024 || (process.argv[4] && digest(bytes) !== process.argv[4])) throw Error('Dispatch request changed or exceeds bound');
+    const request=JSON.parse(bytes);
+    await run(request,read(request.config),process.argv[3], {dispatchReference:{path:path.resolve(process.argv[2]),sha256:digest(bytes)}});
   } catch(error) {console.error(error.message);process.exitCode=1;}
 }

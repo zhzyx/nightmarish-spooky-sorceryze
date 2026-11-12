@@ -1,0 +1,32 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "request_id": "game-production-goal-20261111",
+  "correction_of": {
+    "path": "data-collection/editor-continuation-combined-773.json",
+    "sha256": "880c9a6316488dfac93bd1725516961e365680c920b1e28066a39e95154d476c"
+  },
+  "reason": "The original receipt generator enumerated unstaged files. A rerun after staging omitted eight source hashes. This additive correction binds all nine tested implementation and fixture inputs; the historical receipt is unchanged.",
+  "tested_base": "55e41ffb6dbe537c8bfc1fa2450ffc20fc1a040e",
+  "source_commit": "026ebf15f0a1de09936c33ff648706ea96b93e01",
+  "signed_commit": "e106c0cde21e0fa4f166d0a519eb4a6656e329f9",
+  "tree": "1bf967566c07c8a4be039954f42f0c62d74c7f15",
+  "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/909",
+  "input_sha256": {
+    ".gitignore": "51dad606ab90d521abad7086f63523828da32c5e16daffaedc189a2c6cc5b4dc",
+    "editor/docks/ai_chat_dock.h": "3212b871d2b0219d4248e8abe399de80171cbff05fd9d959af24cf9336d0aa56",
+    "editor/docks/ai_chat_sub_agents.cpp": "8cdd43126e63bd55172b339b74ec45e0b9f9f4c90808ca12754f5f6ffd2aa7f5",
+    "tests/editor/design_batch.gd": "b0dd367db78f0268d1c55fef3922415c3c3396ded0367a3362031acf932e1550",
+    "tests/editor/native_acceptance_parallel.py": "fabb6248a5e0247048e6b8be36e4608ee8d8671c7ec5120f14145cdf975b385a",
+    "tests/editor/run_design_batch.py": "c16db662202f95dbeda3bc5a29ab2d476a5c7ccad919eef7f8602d1f43498b8a",
+    "tests/editor/run_native_acceptance.py": "df887b3b02373bd6cf3f8f6c6203e4aaeb93e15774f19fbd25a267fbdae27cde",
+    "tools/godot_parallel/runner.mjs": "39d8fc3277df0a0e838b434b471014e393976eb39a851a4c795669d84859c4c5",
+    "tools/godot_parallel/preflight.test.mjs": "c91cf2632df252a454658e48258a1234f47bddbd4c5806fb0e9f702220ce4218"
+  },
+  "cross_check": "All nine working file hashes equal their committed source bytes and the preserved pre-submit stage receipt. No implementation or test input changed.",
+  "validation": "Original strict build, native suite, runner, rollover and revocation results retain their original binary/source scope. This correction does not rerun or expand those claims.",
+  "remaining": [
+    "Replacement exact-candidate CI/main and installation",
+    "Installed real-project continuation validation",
+    "Parent773 full editor acceptance remains open"
+  ]
+}

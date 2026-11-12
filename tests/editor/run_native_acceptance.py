@@ -35,6 +35,7 @@ if SCENARIO not in {
     "parallel-integration",
     "parallel-config-drift",
     "parallel-self-review",
+    "parallel-preflight-failure",
     "repair",
     "receipt-tamper",
     "receipt-as-evidence",
@@ -149,6 +150,10 @@ def native_run(command, *args, **kwargs):
         )
         if SCENARIO.startswith("parallel"):
             parallel.prepare(env)
+            if SCENARIO == "parallel-preflight-failure":
+                blocked = Path(command[0]).parent / "editor_data/cache/gonggong-dependency-evidence"
+                blocked.parent.mkdir(parents=True, exist_ok=True)
+                blocked.write_bytes(b"Actual storage obstruction; do not replace old evidence")
             batch.os.environ["NATIVE_PARALLEL_NODE"] = env["DESIGN_BATCH_NODE"]
             batch.os.environ["NATIVE_PARALLEL_PYTHON"] = env["DESIGN_BATCH_PYTHON"]
         kwargs["env"] = env
@@ -208,6 +213,11 @@ def fixture_copyfile(source, target, *args, **kwargs):
             'settings.set_setting("ai_chat/parallel_work_orders_config", "")',
             'settings.set_setting("ai_chat/parallel_work_orders_config", OS.get_environment("NATIVE_PARALLEL_CONFIG"))',
         )
+        if SCENARIO == "parallel-preflight-failure":
+            script = script.replace(
+                '_wait_marker("DESIGN_BATCH_PARENT_VERIFIED_OK")',
+                '_wait_marker("dependency_evidence_persist_failed_or_capacity_exceeded", 90.0, false)',
+            )
         Path(target).write_text(script, encoding="utf8")
     if Path(source).name == "design_batch.gd" and SCENARIO == "parallel-integration":
         script = Path(target).read_text(encoding="utf8")
@@ -595,6 +605,12 @@ class DiagnosticDirectory(TemporaryDirectory[str]):
                     diagnostics.append({"path": str(file.relative_to(root)), "body": file.read_text(encoding="utf8")})
             for file in (root / "isolated-editor/editor_data/cache").glob("gonggong-acceptance*.result"):
                 diagnostics.append({"path": str(file.relative_to(root)), "body": file.read_text(encoding="utf8")})
+            for file in (root / "isolated-editor/editor_data/cache/gonggong-dependency-evidence").rglob("*.json"):
+                diagnostics.append({
+                    "path": str(file.relative_to(root)),
+                    "sha256": batch.hashlib.sha256(file.read_bytes()).hexdigest(),
+                    "body": file.read_text(encoding="utf8"),
+                })
             for file in (root / "isolated-editor/editor_data/cache").glob("gonggong-project-integration*.result"):
                 diagnostics.append({"path": str(file.relative_to(root)), "body": file.read_text(encoding="utf8")})
             for file in (root / "original/samples/project/.godot/editor/ai_chat_snapshots").glob("*acceptance.json"):
@@ -691,6 +707,40 @@ if __name__ == "__main__":
             and len(ledgers) == 3
             and all(s["tasks"][0]["status"] == "done" for s in ledgers)
         )
+        if SCENARIO == "parallel":
+            registrations = [
+                batch.json.loads(item["body"]) for item in diagnostics if item["path"].endswith(".registration.json")
+            ]
+            downstream = [item for item in registrations if item.get("order") == 3]
+            checks = {
+                item["sha256"]: batch.json.loads(item["body"])
+                for item in diagnostics
+                if "gonggong-dependency-evidence" in item["path"] and "sha256" in item
+            }
+            assert len(downstream) == 1, "Actual downstream registration required"
+            request_ref = downstream[0]["dispatch_request"]
+            requests = [
+                batch.json.loads(item["body"])
+                for item in diagnostics
+                if batch.hashlib.sha256(item["body"].encode()).hexdigest() == request_ref["sha256"]
+            ]
+            assert len(requests) == 1, "Registration must reference actual durable dispatch bytes"
+            sources = downstream[0]["dependency_preflight"]
+            assert (
+                next(worker for worker in requests[0]["workers"] if worker["order"] == 3)["dependency_preflight"]
+                == sources
+            )
+            assert len(sources) == 2, "Both actual upstream checks must survive registration"
+            for source in sources:
+                ref = source["candidate_check"]
+                record = checks[ref["sha256"]]
+                request = batch.json.loads(record["request_json"])
+                response = batch.json.loads(record["response_json"])
+                assert request["request_nonce"] == response["request_nonce"] == ref["request_nonce"]
+                assert response["ok"] is True
+                assert request["candidate"] == source["verified_response"]["current_candidate"]
+                assert response["candidate_sha256"] == request["candidate"]["files_sha256"]
+                assert source["decision"]["verdict"] == "pass"
         counts = {
             "A": 2
             if SCENARIO in {"parallel-repair", "parallel-evidence-completion", "parallel-evidence-exhausted"}
@@ -754,6 +804,20 @@ if __name__ == "__main__":
                 and not any(d["producer"] == 1 for d in decisions)
                 and any(s["tasks"][0]["owner"] == "4" and s["tasks"][0]["status"] == "running" for s in ledgers)
             )
+        if SCENARIO == "parallel-preflight-failure":
+            valid = (
+                not result["errors"]
+                and result["editor"]["ok"]
+                and len(accepted) >= 1
+                and not starts["C"]
+                and starts["A"]
+                and starts["B"]
+                and not any(
+                    item["path"].endswith(".registration.json") and batch.json.loads(item["body"]).get("order") == 3
+                    for item in diagnostics
+                )
+                and not any("gonggong-dependency-evidence" in item["path"] for item in diagnostics)
+            )
         result["external_events"] = events
         result["external_parent_returns"] = len(parallel.returns)
     elif SCENARIO in {"pass", "repair"}:
@@ -766,6 +830,10 @@ if __name__ == "__main__":
             and len(accepted) == 2
             and len([r for r in review_calls if r["completed"]]) == 2
         )
+        if SCENARIO == "pass":
+            started = [batch.json.loads(item["body"]) for item in diagnostics if item["path"].endswith(".started.json")]
+            assert len(started) == 1 and started[0]["conversation_id"] and started[0]["generation"] >= 0
+            assert any(item.get("sha256") == started[0]["dispatch"]["sha256"] for item in diagnostics)
         if SCENARIO == "repair":
             valid = (
                 not result["errors"]

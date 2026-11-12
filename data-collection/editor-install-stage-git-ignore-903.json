@@ -1,0 +1,138 @@
+{
+  "issue": 903,
+  "result": "passed",
+  "baseline_revision": "55e41ffb6dbe537c8bfc1fa2450ffc20fc1a040e",
+  "fixture_info_exclude": "absent throughout",
+  "config": "GIT_* inherited variables removed; system/global config disabled; core.excludesFile=NUL; init --template=",
+  "baseline_ignore_sha256": "0d2f3d811609b09dccedb46c2e061f256e5d7d888228c4c12905a063011fef04",
+  "candidate_ignore_lf_sha256": "51dad606ab90d521abad7086f63523828da32c5e16daffaedc189a2c6cc5b4dc",
+  "ignored": [
+    "project/godot/.editor-install-36faf1ba7fa04a099a54db7439f41f9f/godot.windows.editor.x86_64.exe",
+    "project/godot/.editor-install-00000000000000000000000000000000/installed.local.json",
+    "project/godot/.editor-install-ffffffffffffffffffffffffffffffff/godot.windows.editor.x86_64.exe.prev"
+  ],
+  "visible": [
+    "project/games/game/main.gd",
+    "project/games/.editor-install-user/main.gd",
+    "project/godot/main.gd",
+    "editor/issue903_source.cpp",
+    "project/godot/.editor-install-file",
+    "nested/project/godot/.editor-install-user/main.gd"
+  ],
+  "commands": [
+    {
+      "command": [
+        "git",
+        "-c",
+        "core.excludesFile=nul",
+        "init",
+        "--template="
+      ],
+      "exit": 0,
+      "stdout": "Initialized empty Git repository in <isolated fixture>/.git/\n",
+      "stderr": "hint: Using 'master' as the name for the initial branch. This default branch name\nhint: will change to \"main\" in Git 3.0. To configure the initial branch name\nhint: to use in all of your new repositories, which will suppress this warning,\nhint: call:\nhint:\nhint: \tgit config --global init.defaultBranch <name>\nhint:\nhint: Names commonly chosen instead of 'master' are 'main', 'trunk' and\nhint: 'development'. The just-created branch can be renamed via this command:\nhint:\nhint: \tgit branch -m <name>\nhint:\nhint: Disable this message with \"git config set advice.defaultBranchName false\"\n"
+    },
+    {
+      "command": [
+        "git",
+        "-c",
+        "core.excludesFile=nul",
+        "ls-files",
+        "--others",
+        "--exclude-standard"
+      ],
+      "exit": 0,
+      "stdout": ".gitignore\neditor/issue903_source.cpp\nnested/project/godot/.editor-install-user/main.gd\nproject/games/.editor-install-user/main.gd\nproject/games/game/main.gd\nproject/godot/.editor-install-00000000000000000000000000000000/installed.local.json\nproject/godot/.editor-install-36faf1ba7fa04a099a54db7439f41f9f/godot.windows.editor.x86_64.exe\nproject/godot/.editor-install-ffffffffffffffffffffffffffffffff/godot.windows.editor.x86_64.exe.prev\nproject/godot/.editor-install-file\nproject/godot/main.gd\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "-c",
+        "core.excludesFile=nul",
+        "check-ignore",
+        "-v",
+        "--",
+        "project/godot/.editor-install-36faf1ba7fa04a099a54db7439f41f9f/godot.windows.editor.x86_64.exe",
+        "project/godot/.editor-install-00000000000000000000000000000000/installed.local.json",
+        "project/godot/.editor-install-ffffffffffffffffffffffffffffffff/godot.windows.editor.x86_64.exe.prev"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "-c",
+        "core.excludesFile=nul",
+        "ls-files",
+        "--others",
+        "--exclude-standard"
+      ],
+      "exit": 0,
+      "stdout": ".gitignore\neditor/issue903_source.cpp\nnested/project/godot/.editor-install-user/main.gd\nproject/games/.editor-install-user/main.gd\nproject/games/game/main.gd\nproject/godot/.editor-install-file\nproject/godot/main.gd\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "-c",
+        "core.excludesFile=nul",
+        "check-ignore",
+        "-v",
+        "--",
+        "project/godot/.editor-install-36faf1ba7fa04a099a54db7439f41f9f/godot.windows.editor.x86_64.exe",
+        "project/godot/.editor-install-00000000000000000000000000000000/installed.local.json",
+        "project/godot/.editor-install-ffffffffffffffffffffffffffffffff/godot.windows.editor.x86_64.exe.prev"
+      ],
+      "exit": 0,
+      "stdout": ".gitignore:439:/project/godot/.editor-install-*/\tproject/godot/.editor-install-36faf1ba7fa04a099a54db7439f41f9f/godot.windows.editor.x86_64.exe\n.gitignore:439:/project/godot/.editor-install-*/\tproject/godot/.editor-install-00000000000000000000000000000000/installed.local.json\n.gitignore:439:/project/godot/.editor-install-*/\tproject/godot/.editor-install-ffffffffffffffffffffffffffffffff/godot.windows.editor.x86_64.exe.prev\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "-c",
+        "core.excludesFile=nul",
+        "check-ignore",
+        "-v",
+        "--",
+        "project/games/game/main.gd",
+        "project/games/.editor-install-user/main.gd",
+        "project/godot/main.gd",
+        "editor/issue903_source.cpp",
+        "project/godot/.editor-install-file",
+        "nested/project/godot/.editor-install-user/main.gd"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "-c",
+        "core.excludesFile=nul",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "55e41ffb6dbe537c8bfc1fa2450ffc20fc1a040e\n",
+      "stderr": ""
+    }
+  ],
+  "path_base": "repository_root",
+  "run_command": "py -X utf8 bin/903-validation/validate_ignore.py",
+  "scope": "Git ignore-only regression; no native rebuild or official installation performed by this worker.",
+  "pending": [
+    "Independent review and formal delivery",
+    "Remove only owned local exclude workaround after main delivery and replay official installer; verify manifest, binaries, rollback boundaries"
+  ],
+  "original_probe": {
+    "path_base": "parent task private receipts (not published)",
+    "file": "install895-probe.log",
+    "sha256": "037c35663b401dcd8447349fba16a1d73961c48090f7ae8e446aa0807ae10d28",
+    "observed": "Restart Manager reported Git for Windows PID 20648; stage executable listed; instantaneous delete_access probes true. Does not prove continuous or every historical lock."
+  }
+}

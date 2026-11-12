@@ -1,0 +1,133 @@
+{
+  "issue": 773,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "request_id": "game-production-goal-20261111",
+  "children": [
+    896,
+    899,
+    903
+  ],
+  "recorded_at": "2026-11-12T08:35:18.276486+00:00",
+  "base": "55e41ffb6dbe537c8bfc1fa2450ffc20fc1a040e",
+  "scope": "Existing Godot native continuation and runner provenance; repository installer staging ignore. Parent complete-editor production goal remains open.",
+  "input_sha256": {
+    "tools/godot_parallel/preflight.test.mjs": "c91cf2632df252a454658e48258a1234f47bddbd4c5806fb0e9f702220ce4218"
+  },
+  "final_binary": {
+    "console_sha256": "e465414e8009426fb1b2f54164d3e97cf9dd62029b87e327e465745eeb362b4b",
+    "engine_sha256": "4a9c988f6c488939b97ce1ff01ca4b97d938265a8e6ffe1e2db3bad4feac4f81"
+  },
+  "strict_build": {
+    "passed": true,
+    "warnings": "extra",
+    "werror": true,
+    "tests": true,
+    "log_sha256": "b21a05778cea6752e248d23aa6896d1045b8842cb18f6816b87b4cd122ce198e"
+  },
+  "native_suite": {
+    "passed": true,
+    "cases": 1567,
+    "assertions": 435685,
+    "skipped": 3,
+    "log_sha256": "03bf2ae179de7999ba618fa2050abca3eb95900567976f40d9cb1708cbfce9b4",
+    "diagnostics": "Existing native test diagnostics retained; not an error-free stderr claim"
+  },
+  "dependency_checks": {
+    "tested_console_sha256": "e7ba7e59b318a3a12521221bccb89c5a05da6a3519c271f3927862d65dc29aed",
+    "tested_engine_sha256": "5beb97df80437839adea2e72abf61097bac50d5b584de29c391ba74ab5802156",
+    "cases": {
+      "parallel": {
+        "ok": true,
+        "report_sha256": "4afd82fdd73771248d46a58f336f31b993ea14d154ee953296a1f03a7a496d0b"
+      },
+      "serial": {
+        "ok": true,
+        "report_sha256": "a6947955d4c0aa05b12c91127f076bf6c74e4ccb8a9cd87dc35f1aaa5e75da96"
+      },
+      "storage-failure": {
+        "ok": true,
+        "report_sha256": "f5fe615636932e7f2ba721ace65ebb116e5c0530cdd5ec5e692947f00884803b"
+      },
+      "cold-integration": {
+        "ok": true,
+        "report_sha256": "6fcf4f0d7b128da6f80f821c4657dda791629cb9e8aee1bf94b8adbde4893029"
+      }
+    },
+    "reuse": "Executed on combined candidate before adding independent bounded first_failed_source_receipt field. Dependency dispatch, acceptance and runner inputs unchanged; final correction affects diagnostic retention only. Python formatting had identical AST."
+  },
+  "runner_suite": {
+    "passed": true,
+    "tests": 66,
+    "log_sha256": "eeeb69b88622ae3e83a9f3a35be90dcbcb6d525f4364d5d3248eace79ef868c3"
+  },
+  "review_rollover": {
+    "before_report_sha256": "664f1cbfb16564f6eef27bbea0a37d8ffd1992577cc6a6ecf846656b8ccf8df2",
+    "before_result": "Source diagnostic lost after preceding non-source failure and receipt window rollover",
+    "after_report_sha256": "b6954a375d21ba940b498437bf6117b11996a75fc8459f26853c1163c242c5ca",
+    "after_ok": true,
+    "receipt_count": 39,
+    "preserved_source_sequence": 3,
+    "window_min_sequence": 16,
+    "parent_return_count": 1,
+    "business_accepted": null,
+    "cold_new_requests": 0,
+    "sidecar_matches": true
+  },
+  "revocation": {
+    "ok": true,
+    "parent_return_count": 0,
+    "report_sha256": "790fb3efe0c8b75cb9ccabb151824a03a2946e9a65924434d8a44c5723c97bf6"
+  },
+  "independent_review": {
+    "worker": "/root/sinan_a626d7a49d97a8b8",
+    "execution": "Native subagent bound to parent Issue773; read-only scope; no implementation edits",
+    "finding": "P2 failed source diagnostic can be evicted after unrelated first failure",
+    "correction": "Independent bounded first_failed_source_receipt; four legal tool batches exercise 39 receipts",
+    "final_result": "No remaining actionable findings in reviewed combined scope; before/after reports independently checked",
+    "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773"
+  },
+  "initial_observer_failures": [
+    {
+      "log": "continuation773-missing-review.log",
+      "cause": "Root selected base engine fixture instead of ordinary-game wrapper; rejected before execution",
+      "log_sha256": "f6039144769502fab8fd275a04a953a5d1642ba12e1585083d57e69a99092416"
+    },
+    {
+      "log": "continuation773-revoked-review-r2.log",
+      "cause": "Root passed review-only native flag to revoked case; rejected before execution",
+      "log_sha256": "369ec0863d4e480e8dca706c8a095db8d2715c6b79de917b5b3acb63c77d07b3"
+    },
+    {
+      "log": "continuation773-rollover-before.log",
+      "cause": "Fixture exceeded actual per-response tool call count; no calls from that batch executed",
+      "log_sha256": "addb2d7db9ab59aacb87e4f0256d4524062834f26ef3a6c5fba749d6838ad5b4"
+    },
+    {
+      "log": "continuation773-rollover-before-r2.log",
+      "cause": "Second batching attempt still exceeded API backend limit8; corrected to four batches7",
+      "log_sha256": "4686001d3478cb46844e2a6712354ddfb4d7d8aded00592621e04b4ef9e6a21a"
+    },
+    {
+      "log": "continuation773-rollover-after.log",
+      "cause": "Native behavior passed but final observer still expected review stage3 instead of7; corrected and rerun passed",
+      "log_sha256": "d2126a869cc917950c9e819c3f1854d6a249c747148d3ebd12d315962f94df91"
+    }
+  ],
+  "method_fork": {
+    "preserved_original_event_sha256": "00898f7500a9db0dd595a6837e24fc5692c99603192b654c91da6e9d6f12f224",
+    "resolution": "899 revision11/12 preserved in combined;896 concurrent unpublished revision11 remains unchanged in original tree/private archive; fresh896 feedback appended revision13 after merged head"
+  },
+  "actual_provider_boundary": {
+    "installed_main": "979dfe277c6bc8460e9a174a148a6c2bf6f58cf5",
+    "long_command_replay": "Read completed but model declined exact long-field transfer; no run_command execution claimed",
+    "queue": "Cold restored queue remained paused; duplicate original test message removed with actual public control, one short test request explicitly resumed"
+  },
+  "remaining": [
+    "Exact candidate CI/main and formal installation",
+    "Installed actual-project dependency provenance and ordinary review continuation",
+    "Issue902 Unicode layout crash; excluded from this candidate",
+    "Issue891 original long-command consumer replay",
+    "Original game INT01 historical evidence unknown and INT07 delivery unfinished",
+    "Full editor support parent773 remains open"
+  ]
+}
