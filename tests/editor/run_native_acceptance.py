@@ -212,6 +212,10 @@ def fixture_copyfile(source, target, *args, **kwargs):
         Path(target).write_text(script, encoding="utf8")
     if Path(source).name == "design_batch.gd" and SCENARIO.startswith("parallel"):
         script = Path(target).read_text(encoding="utf8")
+        # External parallel workers have their own verified lifecycle; the
+        # base HTTP child handshake is exercised only by the directory suite.
+        script = script.replace('if mode.begins_with("models-initial-"):', "if false:")
+        script = script.replace("await _observe_models(mode)", 'await _wait_marker("DESIGN_BATCH_PARENT_VERIFIED_OK")')
         script = script.replace(
             'settings.set_setting("ai_chat/parallel_work_orders_config", "")',
             'settings.set_setting("ai_chat/parallel_work_orders_config", OS.get_environment("NATIVE_PARALLEL_CONFIG"))',

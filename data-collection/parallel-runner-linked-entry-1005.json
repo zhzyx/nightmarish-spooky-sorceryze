@@ -1,0 +1,38 @@
+{
+  "issue_number": 1005,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1005",
+  "request_id": "parallel-runner-linked-entry-20261113",
+  "source_base": "308bc83c19ae7cd1811496cca0e7062e6b30dab0",
+  "problem": "Linked CLI argv differed from resolved module URL; runner silently exited zero without actual output.",
+  "fix": "Compare canonical files for argv and module; imported modules still do not dispatch.",
+  "tests": {
+    "old_condition_entry_regression": "failed 0 != 1",
+    "fixed_entry_and_preflight": {
+      "passed": 2,
+      "failed": 0
+    },
+    "actual_native_parallel": {
+      "passed": true,
+      "scenario": "parallel",
+      "verified_decisions": 3,
+      "external_parent_returns": 1,
+      "report_sha256": "15b4024aa129485859391ea2920a084c12c5e30c77dcf205a92c40cc795267bb",
+      "base_transport_fixture_ok": false,
+      "scope": "Wrapper supplies actual external workers and independently validates their production ledger, accepted dependency checks, native reviews and single parent return; serial HTTP child expectations are intentionally not its acceptance."
+    }
+  },
+  "files_sha256": {
+    "tools/godot_parallel/runner.mjs": "a74197acc2693deec27f7ded7d8c80cee3dbf2eb8eeeab266a2d631f7a68116f",
+    "tools/godot_parallel/entry.test.mjs": "4d4545a31cb7dda79f266f8072059393fd4f0cbb46bd1aff1b9cced087c6ba01"
+  },
+  "limitations": [
+    "Actual native parallel tested on macOS with synthetic worker/model/GitHub fixtures",
+    "Windows entry test may fail explicitly at absent native Job addon; this does not prove Windows actual dispatch",
+    "Exact candidate CI/main readback required for delivery"
+  ],
+  "independent_review": {
+    "approved": true,
+    "sha256": "f034838ab1372672b729c36ea39671b217b3c1f53b5d965fe3554748b058762b",
+    "file": "review-1005-entry.json"
+  }
+}

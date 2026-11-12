@@ -13,8 +13,10 @@ var retry_refused_while_receipt_pending := false
 var model_source_changed_idle := false
 var models_loading_observed := false
 var terminal_receipt_recorded_during_models := false
-var models_stall_observed := false
+var terminal_marker_sha256 := ""
 var models_stop_applied := false
+var business_during_models := false
+var models_cancel_applied := false
 
 func _parallel_batches() -> Array:
 	var batches: Array = []
@@ -135,40 +137,72 @@ func _change_model_source():
 		return
 	field.text = field.text.replace("/v1/", "/v2/")
 	field.text_changed.emit(field.text)
+	var key = dock.get_ai_settings_control().find_child("APIKey", true, false)
+	key.text = "design-batch-isolated-secret"
+	key.text_changed.emit(key.text)
 	_file("model-source-changed")
+	dock.refresh_model_catalog()
 
 func _observe_models(mode: String):
 	if not await _wait_file("models-v2-started"):
 		return
-	models_loading_observed = dock.find_child("Send", true, false).disabled and not dock.find_child("Stop", true, false).disabled
-	_check(models_loading_observed, "Slow model-list request did not hold the native loading controls")
-	var deadline := Time.get_ticks_msec() + 1500
-	while Time.get_ticks_msec() < deadline and dock.get_meta("gonggong_reporting", "") != "recorded_file":
-		await create_timer(0.02).timeout
-	terminal_receipt_recorded_during_models = dock.get_meta("gonggong_reporting", "") == "recorded_file" and dock.find_child("Send", true, false).disabled
-	_check(terminal_receipt_recorded_during_models, "Terminal source receipt did not settle while model loading blocked dispatch")
+	var snapshot: Dictionary = dock.get_model_catalog_snapshot()
+	models_loading_observed = snapshot.get("loading", false) and snapshot.get("state", "") == "loading"
+	_check(models_loading_observed, "Slow directory request was not independently loading")
+	var generation = snapshot.generation
+	if mode == "models-no-live":
+		_check(not dock.find_child("Send", true, false).disabled and dock.find_child("Stop", true, false).disabled, "Directory query blocked idle chat or invented business activity")
+	else:
+		var marker := "models-parent-return-started" if mode.begins_with("models-return-") else "models-child-started"
+		if not await _wait_file(marker):
+			_file("models-release")
+			return
+		business_during_models = dock.get_model_catalog_snapshot().get("loading", false)
+		_check(business_during_models, "Business dispatch waited for the directory response")
+	if not await _wait_file("models-terminal-recorded.json"):
+		_file("models-release")
+		return
+	var marker_path := "res://models-terminal-recorded.json"
+	var marker: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(marker_path))
+	var expected: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://models-expected-terminal.json"))
+	var event: Dictionary = marker.event
+	_check(marker.expected == expected and marker.workspace == expected.workspace and event.kind == "request_end" and event.payload.status == "completed" and event.request_id == expected.request_id and event.source_ref == expected.source_ref and event.agent.id == expected.agent and not event.event_id in expected.excluded_event_ids, "Terminal receipt belongs to another source or prior turn")
+	terminal_marker_sha256 = FileAccess.get_sha256(marker_path)
+	terminal_receipt_recorded_during_models = dock.get_model_catalog_snapshot().get("loading", false)
+	_check(terminal_receipt_recorded_during_models, "Actual source receipt was unavailable while the directory was loading")
 	if mode == "models-initial-stop":
+		_check(not dock.find_child("Stop", true, false).disabled, "Business Stop was unavailable")
 		dock.find_child("Stop", true, false).pressed.emit()
 		models_stop_applied = true
+		snapshot = dock.get_model_catalog_snapshot()
+		_check(snapshot.loading and snapshot.generation == generation, "Business Stop cancelled the independent directory")
+	elif mode == "models-initial-cancel":
+		dock.cancel_model_catalog()
+		models_cancel_applied = true
+		snapshot = dock.get_model_catalog_snapshot()
+		_check(snapshot.state == "cancelled" and not snapshot.loading, "Directory cancellation did not settle")
+		_check(not dock.find_child("Stop", true, false).disabled, "Directory cancellation stopped the business request")
+	_file("models-business-release")
+	_file("models-release")
 	if not await _wait_file("models-v2-finished"):
 		return
-	if OS.get_environment("DESIGN_BATCH_EXPECT_STALLED") == "1":
+	if mode in ["models-initial-stop", "models-no-live"]:
 		await create_timer(1.0).timeout
-		models_stall_observed = dock.find_child("Stop", true, false).disabled and not dock.find_child("Send", true, false).disabled and not "DESIGN_BATCH_PARENT_VERIFIED_OK" in _text()
-		_check(models_stall_observed, "Expected-stall observation was not idle after the model response")
-	elif mode in ["models-initial-stop", "models-no-live"]:
-		await create_timer(1.0).timeout
-		_check(dock.find_child("Stop", true, false).disabled, "Model-list completion started work beyond the live authorization")
+		_check(dock.find_child("Stop", true, false).disabled, "Directory completion started work beyond live authorization")
 		if mode == "models-no-live":
 			var tabs = dock.find_child("AgentTabs", true, false)
-			_check(tabs.tab_count == 1 and dock.get_meta("queued_message_count", -1) == 0, "Model-list completion manufactured work without a live batch")
+			_check(tabs.tab_count == 1 and dock.get_meta("queued_message_count", -1) == 0, "Directory completion manufactured work without a live batch")
 	else:
 		await _wait_marker("DESIGN_BATCH_PARENT_VERIFIED_OK")
-	var status: String = dock.get_ai_settings_control().find_child("ModelStatus", true, false).text
-	if mode.ends_with("-fail"):
-		_check("获取失败" in status, "Model-list failure was not retained in native status")
-	elif mode != "models-initial-stop":
-		_check("已获取" in status, "Successful model-list completion was not retained in native status")
+	var deadline := Time.get_ticks_msec() + 5000
+	while dock.get_model_catalog_snapshot().get("loading", true) and Time.get_ticks_msec() < deadline:
+		await process_frame
+	snapshot = dock.get_model_catalog_snapshot()
+	var expected_state := "cancelled" if mode == "models-initial-cancel" else "failed" if mode.ends_with("-fail") else "ready"
+	_check(snapshot.state == expected_state and not snapshot.loading, "Directory completion state was not retained: " + JSON.stringify(snapshot))
+	_check(FileAccess.get_sha256(marker_path) == terminal_marker_sha256, "Bound terminal receipt changed during directory completion")
+	if expected_state == "ready":
+		_check(snapshot.catalog_current, "Directory response does not belong to the current configuration")
 
 func _wait_file(name: String, seconds := 60.0) -> bool:
 	var deadline := Time.get_ticks_msec() + int(seconds * 1000)
@@ -205,8 +239,10 @@ func _finish():
 		"model_source_changed_idle": model_source_changed_idle,
 		"models_loading_observed": models_loading_observed,
 		"terminal_receipt_recorded_during_models": terminal_receipt_recorded_during_models,
-		"models_stall_observed": models_stall_observed,
+		"terminal_marker_sha256": terminal_marker_sha256,
 		"models_stop_applied": models_stop_applied,
+		"models_cancel_applied": models_cancel_applied,
+		"business_during_models": business_during_models,
 		"model_status": dock.get_ai_settings_control().find_child("ModelStatus", true, false).text,
 		"queue_paused": dock.get_meta("queue_paused", false), "queued_count": dock.get_meta("queued_message_count", -1),
 		"tabs": children, "text": _text(), "reporting": dock.get_meta("gonggong_reporting", ""),
@@ -309,6 +345,7 @@ func _run():
 		await create_timer(0.5).timeout
 		_check(dock.find_child("Stop", true, false).disabled, "Cold review replayed without user resume")
 		dock.get_ai_settings_control().find_child("APIKey", true, false).text = "design-batch-isolated-secret"
+		dock.get_ai_settings_control().find_child("APIKey", true, false).text_changed.emit("design-batch-isolated-secret")
 		dock.find_child("ConsultationOnly", true, false).button_pressed = false
 		dock.find_child("ResumeMessageQueue", true, false).pressed.emit()
 		if OS.get_environment("DESIGN_BATCH_GAME_WORKSPACE") == "1":
@@ -360,6 +397,7 @@ func _run():
 	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("DESIGN_BATCH_ENDPOINT")
 	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "design-batch-fixture"
 	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "design-batch-isolated-secret"
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text_changed.emit("design-batch-isolated-secret")
 	dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("DESIGN_BATCH_NODE")
 	dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("DESIGN_BATCH_SOURCE").path_join("tools/codebuddy_cli/godot_bridge.js")
 	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = OS.get_environment("DESIGN_BATCH_NODE")

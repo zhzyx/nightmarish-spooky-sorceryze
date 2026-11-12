@@ -5,6 +5,10 @@ var dock: Node
 var report := {}
 var failure := ""
 
+func _catalog_ready(dock) -> bool:
+	var snapshot: Dictionary = dock.get_model_catalog_snapshot()
+	return snapshot.get("state", "") == "ready" and snapshot.get("catalog_current", false) and not snapshot.get("loading", true)
+
 func _initialize():
 	_run.call_deferred()
 
@@ -104,9 +108,9 @@ func _run():
 		key.text_changed.emit(key.text)
 		var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false)
 		var catalog_deadline := Time.get_ticks_msec() + 10000
-		while (backend.disabled or not "模型列表已获取" in status.text) and Time.get_ticks_msec() < catalog_deadline:
+		while (backend.disabled or not _catalog_ready(dock)) and Time.get_ticks_msec() < catalog_deadline:
 			await process_frame
-		if not _check(not backend.disabled and "模型列表已获取" in status.text, "Model discovery did not finish before steering probe"):
+		if not _check(not backend.disabled and _catalog_ready(dock), "Model discovery did not finish before steering probe"):
 			_finish()
 			return
 		report["model_discovery_completed"] = true

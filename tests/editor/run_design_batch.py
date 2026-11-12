@@ -85,9 +85,16 @@ CASES = [
     "models-return-ok",
     "models-return-fail",
     "models-initial-stop",
+    "models-initial-cancel",
     "models-no-live",
 ]
-MODELS_WAKE_CASES = {"models-initial-ok", "models-initial-fail", "models-return-ok", "models-return-fail"}
+MODELS_CONTINUE_CASES = {
+    "models-initial-ok",
+    "models-initial-fail",
+    "models-return-ok",
+    "models-return-fail",
+    "models-initial-cancel",
+}
 FINALIZED = "# Offline design batch\n\n## 设计定版确认\nTwo serial fixture work orders are finalized.\n\n## 生产工单\n1. DESIGN_BATCH_CHILD_1 checks its assigned evidence\n2. DESIGN_BATCH_CHILD_2 checks its assigned evidence\n"
 BRIDGE = r"""
 import importlib.util,json,os,sys
@@ -121,8 +128,25 @@ elif action=='flush':
  terminal_pending=any((event:=json.loads(path.read_text())).get('kind')=='request_end' and event.get('payload',{}).get('status')=='completed' for path in pending)
  if flag.exists() and (not terminal_only or terminal_pending): value={'ok':False,'error':'forced_fixture_receipt_failure'}
  else:
+  storage.record_batch(root,pending)
   for path in pending:
-   storage.record(root,path); path.unlink()
+   event=json.loads(path.read_text())
+   path.unlink()
+   project=Path(os.environ['DESIGN_BATCH_PROJECT'])
+   mode=os.environ.get('DESIGN_BATCH_CASE','')
+   expected_path=project/'models-expected-terminal.json'
+   marker=project/'models-terminal-recorded.json'
+   if expected_path.exists() and not marker.exists():
+    expected=json.loads(expected_path.read_text())
+    payload=event.get('payload',{})
+    binding=payload.get('binding',{})
+    if (str(root.resolve())==expected['workspace'] and event.get('kind')=='request_end' and payload.get('status')=='completed'
+        and event.get('event_id') not in expected['excluded_event_ids'] and event.get('request_id')==expected['request_id']
+        and event.get('source_ref')==expected['source_ref'] and event.get('agent',{}).get('id')==expected['agent']
+        and binding.get('delegation',{}).get('work_order')==expected['work_order']):
+     temporary=marker.with_suffix('.tmp')
+     temporary.write_text(json.dumps({'expected':expected,'workspace':str(root.resolve()),'event':event}),encoding='utf-8')
+     temporary.replace(marker)
   value={'ok':True}
 else: value={'ok':False,'error':'fixture_unknown_action'}
 out.write_text(json.dumps(value),encoding='utf-8')
@@ -232,7 +256,7 @@ def main():
     parser.add_argument(
         "--expect-stalled",
         action="store_true",
-        help="Record a reproduced wakeup defect separately; never report feature acceptance",
+        help="Retired blocking-directory option; rejected with an explicit migration error",
     )
     args = parser.parse_args()
     assert not args.task_native_review or args.case == "review"
@@ -241,10 +265,12 @@ def main():
     assert args.case not in {"review-stale-branch", "review-stale-common-dir"} or GAME_WORKSPACE
     # This offline runner binds its own fixture; never inherit a live work order.
     os.environ.pop("GONGGONG_WORKSPACE", None)
-    if args.expect_stalled and args.case not in MODELS_WAKE_CASES:
-        parser.error("--expect-stalled requires one of the four models wakeup cases")
+    if args.expect_stalled:
+        parser.error(
+            "--expect-stalled is retired: this fixture verifies independent directory operations, not the old blocking contract"
+        )
     models_case = args.case.startswith("models-")
-    full_batch = args.case in {"normal", "stale-retry"} or args.case in MODELS_WAKE_CASES
+    full_batch = args.case in {"normal", "stale-retry"} or args.case in MODELS_CONTINUE_CASES
     args.out.parent.mkdir(parents=True, exist_ok=True)
     errors, calls, parent_returns = [], [], []
     http_posts = []
@@ -477,6 +503,22 @@ def main():
                 targets[stage] = Path(owned[0]["source_root"])
             assert targets[stage] != original
             return targets[stage]
+
+        def expect_terminal(stage, prompt):
+            source = candidate("parent" if stage == "warmup" else stage).resolve()
+            prior = list(source.glob(f"gonggong-diting-data/events/fixture/{REQUEST}/*.json"))
+            prior += list((source / ".gonggong-outbox/chat").glob("*.json"))
+            expected = {
+                "stage": stage,
+                "workspace": str(source),
+                "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
+                "excluded_event_ids": [json.loads(path.read_text())["event_id"] for path in prior],
+                "request_id": REQUEST,
+                "source_ref": "https://github.com/example/design-batch/issues/441",
+                "agent": "godot-editor-worker" if stage == "child2" else "yanshi",
+                "work_order": 2 if stage == "child2" else None,
+            }
+            (project / "models-expected-terminal.json").write_text(json.dumps(expected), encoding="utf-8")
 
         def receipts_from_prompt(prompt):
             values = list(json_objects(prompt))
@@ -785,18 +827,13 @@ def main():
                     if target:
                         assert models_case and sum(item["target"] for item in models_requests) == 1
                         assert self.headers.get("Authorization") == "Bearer " + SECRET
-                        if args.case.startswith("models-return-"):
-                            assert stages["child1"] == stages["child2"] == 3 and stages["return"] == 0, (
-                                "Model refresh did not reach the final-child return boundary"
-                            )
-                        elif args.case == "models-no-live":
-                            assert stages["warmup"] == 1 and stages["parent"] == 0
-                        else:
-                            assert stages["parent"] == 1 and stages["child1"] == stages["child2"] == 0, (
-                                "Model refresh did not precede initial child dispatch"
-                            )
+                        assert stages["warmup"] == 1
                         (project / "models-v2-started").touch()
-                        time.sleep(2.0)
+                        deadline = time.monotonic() + 60
+                        while not (project / "models-release").exists() and time.monotonic() < deadline:
+                            time.sleep(0.02)
+                        assert (project / "models-release").exists(), "Directory response release was not observed"
+                        entry["stages_before_response"] = dict(stages)
                     payload = (
                         {"error": {"code": "FIXTURE_MODEL_LIST_FAILURE"}}
                         if status == 500
@@ -811,7 +848,7 @@ def main():
                     self.end_headers()
                     self.wfile.write(data)
                 except (BrokenPipeError, ConnectionResetError):
-                    if args.case != "models-initial-stop":
+                    if args.case != "models-initial-cancel":
                         errors.append("Unexpected disconnected model-list request")
                 except Exception as error:
                     errors.append(repr(error))
@@ -895,6 +932,31 @@ def main():
                     stages[stage] += 1
                     calls.append({"stage": stage, "round": stages[stage]})
                     count = stages[stage]
+                    if (
+                        models_case
+                        and count == 1
+                        and (
+                            stage == "warmup"
+                            and args.case == "models-no-live"
+                            or stage == "parent"
+                            and args.case.startswith("models-initial-")
+                            or stage == "child2"
+                            and args.case.startswith("models-return-")
+                        )
+                    ):
+                        expect_terminal(stage, prompt)
+                    if models_case and stage == "child1" and count == 1:
+                        (project / "models-child-started").touch()
+                        if args.case in {"models-initial-stop", "models-initial-cancel"}:
+                            deadline = time.monotonic() + 60
+                            while not (project / "models-business-release").exists() and time.monotonic() < deadline:
+                                time.sleep(0.02)
+                            assert (project / "models-business-release").exists(), (
+                                "Business response release was not observed"
+                            )
+                    if models_case and stage == "return" and count == 1:
+                        (project / "models-parent-return-started").touch()
+
                     finish = "stop"
                     if stage == "retry":
                         stage = "child1"
@@ -1031,7 +1093,7 @@ def main():
                                     "close-child",
                                     "close-parent",
                                 }
-                                or stage == "child1"
+                                or stage == "child2"
                                 and args.case.startswith("models-return-")
                             ):
                                 (project / "child-final-about-to-return").touch()
@@ -1048,7 +1110,7 @@ def main():
                     else:
                         assert (
                             args.case in {"normal", "failure", "timeout", "stale-retry"}
-                            or args.case in MODELS_WAKE_CASES
+                            or args.case in MODELS_CONTINUE_CASES
                         ), "Cancelled or forbidden batch automatically returned"
                         if count == 1:
                             receipt = receipts_from_prompt(prompt)
@@ -1271,7 +1333,6 @@ def main():
             DESIGN_BATCH_PHASE="initial",
             DESIGN_BATCH_GAME_WORKSPACE="1" if GAME_WORKSPACE else "0",
             DESIGN_BATCH_TASK_NATIVE_REVIEW="1" if args.task_native_review else "0",
-            DESIGN_BATCH_EXPECT_STALLED="1" if args.expect_stalled else "0",
             GONGGONG_GH=str(gh),
             GONGGONG_GIT=shutil.which("git") if os.name == "nt" else str(git_wrapper),
             PATH=str(folder) + os.pathsep + os.environ.get("PATH", ""),
@@ -1442,7 +1503,7 @@ def main():
                 "parallel-failure",
                 "parallel-unknown",
             }
-            or args.case in MODELS_WAKE_CASES
+            or args.case in MODELS_CONTINUE_CASES
         )
         expected_returns = 1 if successful else 0
         ok = (
@@ -1533,7 +1594,8 @@ def main():
         elif args.case == "parent-terminal-failure":
             ok = ok and stages["child1"] == stages["child2"] == 0
         elif args.case in {"models-initial-stop", "models-no-live"}:
-            ok = ok and stages["child1"] == stages["child2"] == stages["return"] == 0
+            ok = ok and stages["child1"] == (0 if args.case == "models-no-live" else 1)
+            ok = ok and stages["child2"] == stages["return"] == 0
             ok = ok and stages["parent"] == (0 if args.case == "models-no-live" else 1)
             if args.case == "models-initial-stop":
                 ok = ok and report.get("models_stop_applied") is True
@@ -1555,33 +1617,47 @@ def main():
             and report.get("model_source_changed_idle") is True
             and report.get("models_loading_observed") is True
             and report.get("terminal_receipt_recorded_during_models") is True
+            and (args.case == "models-no-live" or report.get("business_during_models") is True)
+            and (args.case != "models-initial-cancel" or report.get("models_cancel_applied") is True)
         )
+        terminal_marker = None
+        if models_case:
+            marker_path = project / "models-terminal-recorded.json"
+            if marker_path.is_file():
+                terminal_marker = json.loads(marker_path.read_text())
+                expected = json.loads((project / "models-expected-terminal.json").read_text())
+                event = terminal_marker["event"]
+                stored_path = (
+                    Path(expected["workspace"])
+                    / f"gonggong-diting-data/events/fixture/{REQUEST}/{event['event_id']}.json"
+                )
+                stored = json.loads(stored_path.read_text()) if stored_path.is_file() else {}
+                models_observations_ok = models_observations_ok and (
+                    terminal_marker["expected"] == expected
+                    and terminal_marker["workspace"] == expected["workspace"]
+                    and event["event_id"] not in expected["excluded_event_ids"]
+                    and event["kind"] == "request_end"
+                    and event["payload"]["status"] == "completed"
+                    and event["request_id"] == expected["request_id"]
+                    and event["source_ref"] == expected["source_ref"]
+                    and event["agent"]["id"] == expected["agent"]
+                    and event["payload"]["binding"].get("delegation", {}).get("work_order") == expected["work_order"]
+                    and all(stored.get(key) == value for key, value in event.items())
+                    and report.get("terminal_marker_sha256") == hashlib.sha256(marker_path.read_bytes()).hexdigest()
+                )
+            else:
+                models_observations_ok = False
         ok = ok and models_observations_ok
-        reproduced_stall = False
-        if args.expect_stalled:
-            expected_children = 3 if args.case.startswith("models-return-") else 0
-            reproduced_stall = (
-                result.returncode == 0
-                and report.get("ok") is True
-                and not errors
-                and bool(events)
-                and models_observations_ok
-                and report.get("models_stall_observed") is True
-                and stages["warmup"] == stages["parent"] == 1
-                and stages["child1"] == stages["child2"] == expected_children
-                and stages["return"] == 0
-                and not parent_returns
-            )
-            ok = False
         outcome = {
             "ok": bool(ok),
             "case": args.case,
             "artifact_sha256": artifact_sha256,
             "expect_stalled": args.expect_stalled,
-            "reproduced_stall": bool(reproduced_stall),
-            "verification_status": "reproduced_stall" if reproduced_stall else "accepted" if ok else "failed",
+            "reproduced_stall": False,
+            "verification_status": "accepted" if ok else "failed",
             "startup_isolated": True,
             "models_requests": models_requests,
+            "terminal_marker": terminal_marker,
             "errors": errors,
             "stage_requests": dict(stages),
             "http_post_count": len(http_posts),
@@ -1602,12 +1678,21 @@ def main():
                 {
                     key: value
                     for key, value in outcome.items()
-                    if key not in {"parent_returns", "local_parent_notices", "editor", "restored", "stdout", "stderr"}
+                    if key
+                    not in {
+                        "parent_returns",
+                        "local_parent_notices",
+                        "terminal_marker",
+                        "editor",
+                        "restored",
+                        "stdout",
+                        "stderr",
+                    }
                 },
                 ensure_ascii=False,
             )
         )
-        return 0 if outcome["ok"] or reproduced_stall else 1
+        return 0 if outcome["ok"] else 1
 
 
 if __name__ == "__main__":

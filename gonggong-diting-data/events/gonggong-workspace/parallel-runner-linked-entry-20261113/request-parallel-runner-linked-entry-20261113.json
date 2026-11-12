@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "request-parallel-runner-linked-entry-20261113",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "parallel-runner-linked-entry-20261113",
+  "kind": "request",
+  "occurred_at": "2026-11-12T19:48:30.426901+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1005",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "authorization": "User goal978 authorizes AI/GitHub CLI integration repair; actual issue1005 is linked-entry startup failure discovered during992 native validation.",
+    "issue_number": 1005,
+    "observed_model": null,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "cdd485c2a025dbfaa4da5db51d1945d008d511083f44ab49a740e02147cecbe7"
+}

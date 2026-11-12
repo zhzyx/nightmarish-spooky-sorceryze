@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9c495fe1334e91bfc0c6e9ecd2c88312650a0978",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "model-catalog-recovery-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "96b4b187c8e576b84ef98ef534777f6bedab6d90ba5a9b43bf317fd3797e9d55",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+    "action": "validation",
+    "detection_head": "89c7a2105931bb2e2c6c67a1014cd6ae9bbdd20a",
+    "context_sha256": "2926f41e7c50d3c68a27b7dd2f9e6b037c688a60cbb5eb07dc768ffc58f8f13c",
+    "operator": "Sail-Li",
+    "worker": "/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43287128002/job/131423723632",
+    "diagnosis": "Windows actual native catalog returned successfully; five existing fixture drivers still compare obsolete localized model-list status text. They must consume the new structured catalog state. Root owns this bounded test-contract repair; production readiness is not inferred from this diagnosis.",
+    "next_action": "Replace obsolete readiness text checks with ready/current/not-loading snapshot checks, run actual headless consumers, obtain independent review and exact candidate Windows CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T19:17:14.379877+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T19:18:29.818795+00:00",
+  "sha256": "a941abe702220095d4a7040d7f7f9a32df3870dc7e24933d2751ac602834a74a"
+}

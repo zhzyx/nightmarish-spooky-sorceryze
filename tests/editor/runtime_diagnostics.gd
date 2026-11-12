@@ -4,6 +4,10 @@ extends SceneTree
 var dock: Node
 var failed := false
 
+func _catalog_ready(dock) -> bool:
+	var snapshot: Dictionary = dock.get_model_catalog_snapshot()
+	return snapshot.get("state", "") == "ready" and snapshot.get("catalog_current", false) and not snapshot.get("loading", true)
+
 func require(value: bool, reason: String):
 	if not value:
 		failed = true
@@ -51,9 +55,9 @@ func _run():
 	key.text_changed.emit(key.text)
 	var deadline := Time.get_ticks_msec() + 15000
 	var model_status = controls.find_child("ModelStatus", true, false)
-	while (backend.disabled or not "模型列表已获取" in model_status.text) and Time.get_ticks_msec() < deadline:
+	while (backend.disabled or not _catalog_ready(dock)) and Time.get_ticks_msec() < deadline:
 		await process_frame
-	require(not backend.disabled and "模型列表已获取" in model_status.text, "Local model discovery did not complete")
+	require(not backend.disabled and _catalog_ready(dock), "Local model discovery did not complete")
 	await phase("empty")
 	EditorInterface.play_main_scene()
 	await create_timer(2).timeout

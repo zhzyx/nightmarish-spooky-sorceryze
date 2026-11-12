@@ -8,6 +8,10 @@ var tracking_stop := false
 var last_frame := 0
 var max_frame_gap := 0
 
+func _catalog_ready(dock) -> bool:
+	var snapshot: Dictionary = dock.get_model_catalog_snapshot()
+	return snapshot.get("state", "") == "ready" and snapshot.get("catalog_current", false) and not snapshot.get("loading", true)
+
 func _initialize():
 	process_frame.connect(func():
 		var now := Time.get_ticks_usec()
@@ -196,9 +200,9 @@ func _run():
 		key.text_changed.emit(key.text)
 		var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false)
 		var ready_deadline := Time.get_ticks_msec() + 10000
-		while (backend.disabled or not "模型列表已获取" in status.text) and Time.get_ticks_msec() < ready_deadline:
+		while (backend.disabled or not _catalog_ready(dock)) and Time.get_ticks_msec() < ready_deadline:
 			await process_frame
-		if dock.find_child("Send", true, false).disabled or not "模型列表已获取" in status.text:
+		if dock.find_child("Send", true, false).disabled or not _catalog_ready(dock):
 			push_error("Send remained disabled after local model discovery")
 			quit(1)
 			return
