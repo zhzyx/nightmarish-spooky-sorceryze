@@ -24,21 +24,21 @@ def git(repo, *args):
 
 def authenticated_git(repo, *args):
     # Use the same logged-in CLI even in a fresh clone with no Git credential helper.
-    helper = '!"$GONGGONG_GH" auth git-credential' if os.environ.get("GONGGONG_GH") else "!gh auth git-credential"
+    helper = work_items.github_runtime.credential_helper()
     return git(repo, "-c", "credential.helper=", "-c", "credential.helper=" + helper, *args)
 
 
 def graphql(query, **variables):
-    result = subprocess.run(
-        [os.environ.get("GONGGONG_GH", "gh"), "api", "--hostname", "github.com", "graphql", "--input", "-"],
-        input=json.dumps({"query": query, "variables": variables}),
-        capture_output=True,
-        encoding="utf-8",
-        timeout=120,
+    output = work_items.gh(
+        "api",
+        "--hostname",
+        "github.com",
+        "graphql",
+        "--input",
+        "-",
+        input_value=json.dumps({"query": query, "variables": variables}),
     )
-    if result.returncode:
-        raise ValueError("GitHub request failed: " + result.stderr.strip()[:500] + "; retry to reconcile remote state")
-    return json.loads(result.stdout)["data"]
+    return json.loads(output)["data"]
 
 
 def writer(repository):

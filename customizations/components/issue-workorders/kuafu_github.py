@@ -38,17 +38,17 @@ class GitHub:
 
     def post(self, path, body):
         # Read remote state on the next delivery if a write receipt is lost.
-        result = subprocess.run(
-            ["gh", "api", self.prefix + path, "--method", "POST", "--input", "-"],
-            input=json.dumps(body),
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            timeout=120,
+        return json.loads(
+            gh(
+                "api",
+                self.prefix + path,
+                "--method",
+                "POST",
+                "--input",
+                "-",
+                input_value=json.dumps(body),
+            )
         )
-        if result.returncode:
-            raise RuntimeError(f"GitHub write to {path} was not confirmed; reconcile before retry")
-        return json.loads(result.stdout)
 
 
 def labels(issue):

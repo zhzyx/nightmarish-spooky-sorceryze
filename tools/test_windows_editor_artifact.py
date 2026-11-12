@@ -88,12 +88,14 @@ class WindowsEditorArtifactTests(unittest.TestCase):
             {"artifacts": [dict(name="windows-editor", id=42, expired=False, digest=self.sha)]},
         ]
 
-        def download(cmd, stdout, check):
+        def download(cmd, stdout, check, timeout):
+            self.assertEqual(cmd[0], "/selected host/gh")
             self.assertEqual(cmd[-1], "repos/team/repo/actions/artifacts/42/zip")
             stdout.write(self.source.read_bytes())
 
         with (
             patch.object(artifact, "api", side_effect=responses),
+            patch.object(artifact.github_runtime, "resolve_gh", return_value="/selected host/gh"),
             patch.object(artifact.subprocess, "run", side_effect=download),
         ):
             return artifact.restore("100", self.repo, "main", expected or self.inputs, destination, self.root)
@@ -102,6 +104,35 @@ class WindowsEditorArtifactTests(unittest.TestCase):
         result = self.restore()
         self.assertEqual(result["archive_sha256"], self.sha)
         self.assertEqual((self.root / "bin/godot.windows.editor.x86_64.exe").read_bytes(), self.exe)
+
+    @unittest.skipIf(os.name == "nt", "POSIX executable fixture")
+    def test_explicit_cli_serves_json_and_binary_with_empty_path(self):
+        executable = self.root / "selected host gh"
+        responses = {
+            "repos/team/repo/actions/runs/100": self.run,
+            f"repos/team/repo/compare/{self.run['head_sha']}...main": {"status": "identical"},
+            "repos/team/repo/actions/runs/100/artifacts?name=windows-editor": {
+                "artifacts": [dict(name="windows-editor", id=42, expired=False, digest=self.sha)]
+            },
+        }
+        executable.write_text(
+            f"#!{sys.executable}\nimport sys,json\nfrom pathlib import Path\n"
+            f"responses={responses!r}\n"
+            "assert sys.argv[1]=='api'\n"
+            f"if sys.argv[2].endswith('/zip'): sys.stdout.buffer.write(Path({str(self.source)!r}).read_bytes())\n"
+            "else: print(json.dumps(responses[sys.argv[2]]))\n",
+            encoding="utf-8",
+        )
+        executable.chmod(0o700)
+        with patch.dict(os.environ, GONGGONG_GH=str(executable), PATH=""):
+            result = artifact.restore("100", self.repo, "main", self.inputs, self.root / "bin", self.root)
+        self.assertEqual(result["archive_sha256"], self.sha)
+        self.assertEqual((self.root / "bin/godot.windows.editor.x86_64.exe").read_bytes(), self.exe)
+
+    def test_invalid_explicit_cli_does_not_fall_back(self):
+        with patch.dict(os.environ, GONGGONG_GH=str(self.root / "missing-gh")):
+            with self.assertRaisesRegex(artifact.github_runtime.GitHubCommandError, "configured GONGGONG_GH"):
+                artifact.api("repos/team/repo")
 
     def test_rejects_other_sources(self):
         for field, value in (

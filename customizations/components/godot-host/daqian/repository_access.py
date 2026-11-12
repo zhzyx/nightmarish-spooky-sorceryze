@@ -4,7 +4,6 @@ import hashlib
 import json
 import os
 import re
-import shutil
 import sys
 import tempfile
 import time
@@ -21,17 +20,6 @@ class AccessDenied(ValueError):
 
 class SessionChanged(AccessDenied):
     pass
-
-
-if not os.environ.get("GONGGONG_GH") and not shutil.which("gh"):
-    if os.name == "nt":
-        candidates = [Path(os.environ.get("ProgramFiles", "C:/Program Files")) / "GitHub CLI" / "gh.exe"]
-    else:
-        candidates = [Path.home() / ".local/bin/gh", Path("/opt/homebrew/bin/gh"), Path("/usr/local/bin/gh")]
-    for candidate in candidates:
-        if candidate.is_file() and os.access(candidate, os.X_OK):
-            os.environ["GONGGONG_GH"] = str(candidate)
-            break
 
 
 def configured_login():

@@ -18,6 +18,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 import issue_gate
+import work_items
 import yanluo_progress
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -85,10 +86,10 @@ def validate_grant(grant, key, candidate, repo):
 
 
 class GithubHost:
-    def __init__(self, repo, grant, gh="gh"):
+    def __init__(self, repo, grant, gh=None):
         self.repo = Path(repo).resolve()
         self.grant = grant
-        self.gh = gh
+        self.gh = work_items.github_runtime.resolve_gh(dict(os.environ, GONGGONG_GH=gh) if gh is not None else None)
         self.fd = None
         self.payload = None
         common = Path(self.git("rev-parse", "--git-common-dir").strip())
@@ -98,6 +99,10 @@ class GithubHost:
     def command(self, args, input_value=None):
         env = dict(os.environ)
         env.pop("GONGGONG_HOST_KEY", None)
+        if args[0] == getattr(self, "gh", None):
+            return work_items.gh(
+                *args[1:], env=dict(env, GONGGONG_GH=self.gh), input_value=input_value, cwd=self.repo, timeout=600
+            )
         result = subprocess.run(
             args,
             cwd=self.repo,
@@ -147,7 +152,7 @@ class GithubHost:
         require(sha(Path(__file__).read_bytes()) == self.payload["adapter_sha256"], "Host implementation drift")
         trusted_files = [
             "customizations/components/issue-workorders/" + x
-            for x in ("yanluo_host.py", "yanluo_progress.py", "issue_gate.py", "work_items.py")
+            for x in ("yanluo_host.py", "yanluo_progress.py", "issue_gate.py", "work_items.py", "github_runtime.py")
         ]
         trusted_files += [
             "customizations/components/yanluo/closure.py",
@@ -416,7 +421,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     grant = read_json(args.grant)
     candidate = Candidate(**grant["payload"]["candidate"])
-    host = GithubHost(args.repo, grant, os.environ.get("GONGGONG_GH", "gh"))
+    host = GithubHost(args.repo, grant)
     if args.apply:
         print(
             canonical({

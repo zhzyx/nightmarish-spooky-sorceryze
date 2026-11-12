@@ -493,7 +493,10 @@ class ChatGateTests(unittest.TestCase):
             failed = command[-1].endswith("verify_framework.py") or command[-1] == "yanshi"
             return {"ok": not failed, "exit_code": 1 if failed else 0, "stderr": "admission blocked" if failed else ""}
 
-        with patch.object(bridge, "run", side_effect=check), patch.object(bridge.shutil, "which", return_value="node"):
+        with (
+            patch.object(bridge, "run", side_effect=check),
+            patch.object(bridge._github.shutil, "which", return_value="node"),
+        ):
             result = bridge.diagnose(self.root)
         self.assertFalse(result["ok"])
         self.assertEqual(result["blocking_checks"], ["formal_framework_admission", "local_admission:yanshi"])

@@ -12,7 +12,7 @@ class GateTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         self.issue = {
             "number": 6,
             "html_url": "https://github.com/test/repo/issues/6",

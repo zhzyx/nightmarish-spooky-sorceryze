@@ -2,8 +2,8 @@
 
 import argparse
 import hashlib
+import importlib.util
 import json
-import os
 import re
 import subprocess
 import sys
@@ -27,53 +27,18 @@ def read(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-class GitHubCommandError(ValueError):
-    def __init__(self, status=None, reason=None):
-        self.http_status = status
-        super().__init__(
-            reason
-            or (
-                "GITHUB_HTTP_" + str(status) + ": check repository access and API permissions"
-                if status
-                else "GITHUB_COMMAND: check local gh login and repository access"
-            )
-        )
+_github_spec = importlib.util.spec_from_file_location(
+    "gonggong_github_runtime", Path(__file__).with_name("github_runtime.py")
+)
+if _github_spec is None or _github_spec.loader is None:
+    raise ImportError("Cannot load installed GitHub runtime")
+github_runtime = importlib.util.module_from_spec(_github_spec)
+_github_spec.loader.exec_module(github_runtime)
+GitHubCommandError = github_runtime.GitHubCommandError
 
 
-def gh(*args):
-    try:
-        result = subprocess.run(
-            [os.environ.get("GONGGONG_GH", "gh"), *args], capture_output=True, text=True, encoding="utf-8", timeout=120
-        )
-    except FileNotFoundError:
-        raise GitHubCommandError(
-            reason="GITHUB_RUNTIME: gh executable missing; set GONGGONG_GH to the authenticated host CLI"
-        ) from None
-    except subprocess.TimeoutExpired:
-        raise GitHubCommandError(
-            reason="GITHUB_TIMEOUT: request exceeded 120 seconds; read remote state before retrying a write"
-        ) from None
-    if result.returncode:
-        match = re.search(r"\bHTTP (\d{3})\b", result.stderr or "")
-        stderr = result.stderr or ""
-        dropped = re.search(r"\bEOF\s*$", stderr, re.I) or any(
-            text in stderr.lower()
-            for text in (
-                "error connecting",
-                "connection was reset",
-                "could not resolve",
-                "network is unreachable",
-                "connection refused",
-                "i/o timeout",
-                "tls handshake timeout",
-            )
-        )
-        if not match and dropped:
-            raise GitHubCommandError(
-                reason="GITHUB_NETWORK: connection unavailable; check host network permissions and connectivity; Issue state is unknown"
-            )
-        raise GitHubCommandError(int(match[1]) if match else None)
-    return result.stdout.strip()
+def gh(*args, **kwargs):
+    return github_runtime.run_gh(*args, **kwargs)
 
 
 def config(root):
