@@ -49,3 +49,7 @@ workflow 在编译前执行真实签名/launchd 预检，编译后验证未登�
 实际 run 43120417239 已通过 14 项 macOS/通用登记工具测试（另 1 项非 macOS 拒绝用例跳过）及 6 项验收门禁测试，两个固定官方 PowerShell 包的严格签名检查均通过；剩余失败是验收工具错误要求不同版本维持同一 Identifier。真实 PowerShell 7.6.9/7.7.0 的标识带各自构建 UUID，会随版本改变。升级夹具现以官方固定包摘要、实际 `pwsh --version` 产品/版本回读、同 Team 和不同 CDHash 确认升级，并记录 identifier_changed；生产登记仍精确绑定新标识及摘要，同标识仅改摘要的拒绝用例保留。此调整是对真实供应商升级方式的验收纠偏，不放宽鉴权。
 
 实际macOS run43123215252及43125700093均已完成原生编译、ExternalPeer原生测试及8个真实签名PowerShell请求场景（未登记拒绝、显式登记、角色升降、错误摘要、实际版本升级前后、撤销）。最新回执绑定签发c42411ce，不能外推其他候选的完整Mac流水线。官方Codex应用的Team/id/摘要严格核验成功，但当前唯一应用ChatGPT.app无预期Electron Framework路径，因此无实际Codex后代socket请求，full_signed_anchor_acceptance_ok=false。#843继续保留此项，恢复条件是在授权macOS Codex原生会话中，用相同候选私有headless编辑器取得真实context请求回执；不将终端、任意同UID进程或WindowsCLI生成替代该祖先链。额外Windows归档工具MSI提取被宿主策略拒绝，内建tar不能读DMG；未安装软件、未绕过策略。
+
+实现已随 PR #872 合入 main `e15a49f9b7dbbdbb1b585fc2b68cc3f252d88c8b`。文件复制保护标志故障 #856 与 codesign 命令预检故障 #859 均按真实 macOS 同步骤恢复及主线回读关闭；这不表示 #843 整体验收完成。当前根会话继续协调剩余桌面链，#843/#850/父#840保持开放，无其他执行者接受交接。具体最终运行与状态以 `data-collection/provider-independence-840-delivery.json` 及关联 Issue 时间线为准。
+
+最终 run43131315713 绑定 PR872 精确签发41a47090，全部步骤成功；真实 macOS 编辑器摘要 `a739a5a9eeff5cb7d48316a8f23e41b8e7e7aefdaa5cd9e3f557b02f2cb3896e`。8个真实签名场景全部 passed，完整模型发现和取消回归成功。官方 Codex 应用仍缺测试工具预期的 Electron 子进程入口，codex.state=unavailable、full_signed_anchor_acceptance_ok=false；整轮CI成功只证明其声明的可执行范围，不将缺失桌面链补记通过。

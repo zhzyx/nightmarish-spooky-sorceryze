@@ -28,3 +28,9 @@ py -X utf8 -m unittest discover -s tools/ainative -p test_provider_independence.
 最新验收分工：用户于本次任务中明确“暂时不用验收非 Codex，其他人会验证 Kimi 能力”。因此当前会话不等待真实第三方 API 配置或真实 Kimi 生成质量验收；交付核对保留本地协议、真实固定构造器、旧 Codex 兼容、构建与来源准确性。真实非 Codex 模型效果由后续责任者验证，不能将本机 fixture 或构造器成功表述成真实供应商质量已验证。父会话已报告使用既有只读 Godot 二进制运行新增测试 8/8 通过，含 API fixture→真实 Godot 与 UI 模式保存恢复；最终候选仍应复验。新增单图 API 来源测试明确 sheet_view_evidence.source=api_observed_panels、validated_api_modeling_instructions，且无伪造 CLI thread/usage。
 
 独立审查修订：UI新增模式保存前校验地址、凭据环境变量名、模型ID及本机端口；拒绝含用户密码/query、非法端口、空模型和非本机网格地址，保留已保存配置原始字节。Codex指纹补入provider_common实现摘要，公共行为改变使旧指纹失效。已用 `D:/GongGong/.worktrees/issue-progress/bin/godot.windows.editor.x86_64.console.exe` 只读既有二进制预验新增10项全部通过（13.208秒）；该路径不代表本次最终候选，最终候选构建/复验由父会话负责。Ruff check/format和范围内diff-check通过。
+
+## 主线交付与结束回执
+
+PR #872 已合入 main `e15a49f9b7dbbdbb1b585fc2b68cc3f252d88c8b`。最终实际编辑器 SHA-256 `871e830723fb3d3c946fbdf44af2bfb1443d524a41d35f9c501050e34b45315f` 的10项独立性回归全部通过，含 API fixture 到真实 Godot 构造、设置保存及重开；最终源码与输出对绑定见 `data-collection/provider-independence-840-2d0-binding.json`。既有146项回归通过，3项依赖真实 Blender 的扩大几何覆盖未执行，不计通过，也不以非 Codex 推理免验替代。
+
+用户配置的真实 Codex CLI 已生成五部件有效 GLB，重建 Provider 后恢复 succeeded；产物及 CLI 证据见 `data-collection/provider-independence-840-live.json`。原责任者独立复核代表验证契约已满足，#842 已以 completed 关闭并回读 status:done。Kimi及第三方真实推理质量按用户分工由其他责任者验证；父 #840 的 macOS 桌面宿主链路仍由 #843 保留。

@@ -37,3 +37,7 @@
 这补齐此前未测的 Windows 原生窗口与原请求继续证据；模型、GitHub 仍为 loopback/CLI fixture，无真实外部发布。报告首项旧“AI Agent”标签在同次成功执行后按真实行为更正为 deterministic host setup，并在临时 `label-correction.json` 明示只更正描述、不变更执行与断言结果。最终两份 Python fixture 的 ruff check/format 和三个测试文件 diff check 通过。
 
 直接路径分支补验：独立复核发现 `--runtime-python/node/git` 曾只供未调用的模型 fixture 使用，可能误选 PATH。现为 direct 参数生成隔离 PE 转发源包，显式 Node/Git 路径分别进入可编辑配置和会话配置，Python 从该源包发现；不固定 GONGGONG_PYTHON，仍能实际触发 missing-python 恢复。每个成功部署回执逐项核对预期 Python/Node/Git/gh 路径。清理继承工作区环境后，用相同候选编辑器运行 direct 原生需求流程：全部 11 项通过，`runtime_setup_explicit_paths_verified=true`、`runtime_setup_provider_invoked=false`，同样完成 11 次需求调用、7 次开发调用、5 个隔离工单与 71 条事件。报告为指定临时根内 `direct-requirements-intake.json` 及 stdout/stderr/process/debug 文件。第一次未清理继承 GONGGONG_WORKSPACE 的启动被现有隔离保护主动拒绝，未运行用户工作区；改用完整模拟入口相同的 clean_env 后通过。
+
+## 主线交付与结束回执
+
+PR #872 已合入 main `e15a49f9b7dbbdbb1b585fc2b68cc3f252d88c8b`，签发与主线内容树均为 `b49a20e187af2a6d046e96e2c8eef67af079085a`。最终 Windows CI run43131251293 成功，运行时中断、事务、部署及原请求恢复检查重复通过。正式门禁、独立审查和主线回读完成，#841 已以 completed 关闭并回读 status:done。测试仍使用受控服务与本机工具，不外推为全部供应商安装包或断电时序覆盖。父 #840 的平台剩余项由 #843 保留。
