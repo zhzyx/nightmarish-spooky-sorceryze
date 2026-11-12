@@ -72,8 +72,14 @@ for an introduction to developing on Godot.
 
 The [Contributing docs](https://contributing.godotengine.org/en/latest/index.html)
 also have important information on the [PR workflow](https://contributing.godotengine.org/en/latest/development/workflows/creating_pull_requests.html)
-(with a helpful guide for Git usage), and our [Code style guidelines](https://contributing.godotengine.org/en/latest/development/engine/cpp_usage_guidelines.html)
-which all contributions need to follow.
+(with a helpful guide for Git usage).
+
+For first-party C++ code in this repository, follow the
+[project C++ coding standard](CPP_CODING_STANDARD.md). It applies to new and
+rewritten code. Existing code is replaced gradually and must not be migrated
+through bulk renaming or formatting. The upstream
+[C++ guidelines](https://contributing.godotengine.org/en/latest/development/engine/cpp_usage_guidelines.html)
+remain a reference for topics not covered by the project standard.
 
 ### Be mindful of your commits
 

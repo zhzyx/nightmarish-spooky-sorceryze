@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "request-917-project-cpp-standard-20261112",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "project-cpp-coding-standard-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T10:05:58+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/917",
+  "agent": {
+    "id": "kimi-work-kaiyunxue",
+    "version": "20261112",
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8",
+    "origin": "current-authorized-host"
+  },
+  "payload": {
+    "scope": "将用户确认的命名、大括号和存量逐步替换规则整理为项目级 C++ 编码规范，建立贡献指南入口，不修改存量 C++ 或全局格式配置。",
+    "authorization_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/917",
+    "request_document": "design-docs/project-cpp-coding-standard-20261112.md",
+    "validation": "data-collection/project-cpp-coding-standard-20261112-validation.json",
+    "usage": null,
+    "usage_unknown_reason": "No measured provider usage supplied"
+  },
+  "evidence_refs": [],
+  "sha256": "61f80318e08262571f079e4c10b59990a59fc451a7fc793ce3e974e5b61773dd"
+}
