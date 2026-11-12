@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/916",
+  "request_id": "editor-bracket-stack-growth-20261112",
+  "state": "format_correction_locally_verified",
+  "previous_evidence": {
+    "path": "data-collection/editor-bracket-stack-916.json",
+    "sha256": "60c6f45e957ce18bd1813cf1976df223879f81cc8e939149b445485f136b8a9f"
+  },
+  "failed_signed_candidate": "4ad70cda89482893a00d1578e587acd239b04e4f",
+  "failed_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43200597639/job/131122691792",
+  "failure": "clang-format required one blank separator between the local iterator and tests include groups; native CI jobs skipped, not passed.",
+  "correction": "Only that blank line changed in native code. No semantic change, no formatter/CI rule change.",
+  "native_inputs": {
+    "modules/text_server_adv/SCsub": "c5219cf5c1349d0977ef3a337cebfeedf649a97febcefaf219eec8b3926d4171",
+    "modules/text_server_adv/script_iterator.cpp": "04faf594cbf5e394f1f2f902d67a6205deeb74586ebd6f255bf4fb1451867937",
+    "modules/text_server_adv/test_script_iterator.h": "1811fefd8d07449aa77830c434f51aa8f2507a5201dc62f163dfa45bc95a56eb"
+  },
+  "checks": [
+    {
+      "name": "format-check",
+      "exit_code": 0,
+      "sha256": "5be09f565c76a1938c8441f349093e8406d13c780d234fffde366ae31d159b63"
+    },
+    {
+      "name": "format-build",
+      "exit_code": 0,
+      "sha256": "b256703f38bc10ad356a7a361d21564c6a8194c8d325c460ce7725964f352632"
+    },
+    {
+      "name": "format-regression",
+      "exit_code": 0,
+      "sha256": "e7026bfbd41d5b4a02c253e4023292fdf5f449e957221e61c2da472e8d43f34f"
+    }
+  ],
+  "targeted_native": {
+    "cases_passed": 2,
+    "assertions_passed": 38669,
+    "scope": "Bracket growth and original902 Unicode/emoji/substring regression"
+  },
+  "binary_sha256": {
+    "godot.windows.editor.x86_64.console.exe": "d341b5f3b3f6304a25c3e9961d061bd4d01583e70e73c8ab2fe294d66265b6e4",
+    "godot.windows.editor.x86_64.exe": "ba812252a11775bb05c9a65b9ab91c785f78c7d4bf86d9e6cdcdc70ac1616ae2"
+  },
+  "private_verification_sha256": "845bf003ecc5566b811f035fb649a9c379119b4acfd247cbea639fd9e2e79d2e",
+  "independent_supplement": {
+    "worker": "/root/sinan_6ed88a9afad36cc3",
+    "mode": "read_only",
+    "result": "Exact single blank-line diff verified; no semantic change or new findings."
+  },
+  "limits": [
+    "Original1569-case full-suite evidence remains tied to the preceding candidate. The corrected candidate was rebuilt with the same strict options and reran both affected regressions.",
+    "Exact new signed CI/main and installed consumer validation remain pending; no parent completion claimed.",
+    "Original public evidence and method source remain unchanged. Private raw logs retain local paths and are not published."
+  ]
+}
