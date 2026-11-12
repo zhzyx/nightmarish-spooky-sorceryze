@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "request-882-engine-next-build-contract",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-build-contract-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T03:45:18Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/882",
+  "agent": {
+    "id": "kimi-work-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "action": "record_authorized_issue_binding",
+    "issue_number": 882,
+    "intake_status": "status:in-progress",
+    "scope": "建立 next_runtime 源码、依赖、链接清单和干净环境验收契约，配套离线检查器、负例测试和设计证据；不改变现有 Godot 运行行为。",
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage in host receipt",
+    "design": {
+      "path": "design-docs/engine-next-build-contract-20261112.md",
+      "sha256": "6d8ed2afc79fd7e9578ceb2031b7c976704deef247331cf2514f4833379b1f34"
+    }
+  },
+  "evidence_refs": [],
+  "sha256": "eda4052e0ff061eab89cbf32bc90cac876914e23d664517aa48435efeb620bf3"
+}

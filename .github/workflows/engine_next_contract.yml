@@ -1,0 +1,51 @@
+name: Engine Next build contract
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/engine_next_contract.yml"
+      - "engine_next/**"
+      - "runtime_next/**"
+      - "tools/check_engine_next_contract.py"
+      - "tools/engine_next_contract.json"
+      - "tools/test_check_engine_next_contract.py"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/engine_next_contract.yml"
+      - "engine_next/**"
+      - "runtime_next/**"
+      - "tools/check_engine_next_contract.py"
+      - "tools/engine_next_contract.json"
+      - "tools/test_check_engine_next_contract.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-contract:
+    name: No Godot source dependencies (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-latest
+          - macos-26
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Run contract tests
+        run: python -m unittest tools.test_check_engine_next_contract -v
+
+      - name: Audit current source roots
+        run: python tools/check_engine_next_contract.py --repo .

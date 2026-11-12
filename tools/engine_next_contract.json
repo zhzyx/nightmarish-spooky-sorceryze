@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "contract_id": "engine-next-no-godot-v1",
+  "target": "next_runtime",
+  "source_roots": [
+    "engine_next",
+    "runtime_next"
+  ],
+  "public_header_roots": [
+    "engine_next/include"
+  ],
+  "source_extensions": [
+    ".c",
+    ".cc",
+    ".cpp",
+    ".cxx",
+    ".h",
+    ".hh",
+    ".hpp",
+    ".hxx",
+    ".inc",
+    ".inl",
+    ".m",
+    ".mm"
+  ],
+  "godot_roots": [
+    "core",
+    "drivers",
+    "editor",
+    "godot",
+    "main",
+    "modules",
+    "platform",
+    "scene",
+    "servers"
+  ],
+  "third_party_roots": [],
+  "allowed_angle_include_prefixes": [],
+  "forbidden_cpp_tokens": [
+    "Array",
+    "ClassDB",
+    "Dictionary",
+    "GDExtension",
+    "MultiplayerPeer",
+    "ObjectID",
+    "PackedByteArray",
+    "Ref",
+    "RefCounted",
+    "RenderingServer",
+    "SceneTree",
+    "StringName",
+    "TypedArray",
+    "Variant"
+  ],
+  "forbidden_cpp_prefixes": [
+    "GDCLASS",
+    "GDEXTENSION_",
+    "GDREGISTER_",
+    "GDVIRTUAL",
+    "VARIANT_ENUM_CAST"
+  ],
+  "link": {
+    "allowed_local_roots": [
+      "build/engine_next",
+      "build/runtime_next"
+    ],
+    "allowed_producers": [
+      "linker_response",
+      "scons_link_inputs"
+    ],
+    "allowed_system_libraries": [
+      "c",
+      "c++",
+      "dl",
+      "m",
+      "pthread"
+    ],
+    "forbidden_library_name_fragments": [
+      "godot"
+    ],
+    "forbidden_runtime_names": [
+      "project.godot"
+    ],
+    "forbidden_runtime_suffixes": [
+      ".gd",
+      ".godot",
+      ".import",
+      ".pck",
+      ".res",
+      ".scn",
+      ".tres",
+      ".tscn",
+      ".uid"
+    ]
+  }
+}

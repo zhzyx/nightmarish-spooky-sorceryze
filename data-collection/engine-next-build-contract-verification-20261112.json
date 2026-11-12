@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "kind": "local_verification",
+  "request_id": "engine-next-build-contract-20261112",
+  "issue": 882,
+  "recorded_at": "2026-11-12T04:11:06Z",
+  "base_head": "90c17c9770bac3e0ecc4a9d53bbf9e2e15a730fc",
+  "candidate_state": "uncommitted_worktree",
+  "environment": {
+    "platform": "macOS-15.3.1-arm64-arm-64bit",
+    "architecture": "arm64",
+    "python": "3.12.16"
+  },
+  "inputs": {
+    "tools/check_engine_next_contract.py": "8801be8fcaeef433055bbba19485f9beefee504678afe5903e7ec81e1451bf4f",
+    "tools/test_check_engine_next_contract.py": "ce7aadbde8b3841d14a5fdd713a6d69fc0b5930744ad0afacfd2defd04e50fd4",
+    "tools/engine_next_contract.json": "e4b46dde2406c38311ee4e08ff188f13713a032d47c09f51d1bcb0701fa8d4c4",
+    ".github/workflows/engine_next_contract.yml": "cf9328edf134308f6ed4e4c12f7bd5133379f64cf760b47c1d418a71425df4cb",
+    "design-docs/engine-next-build-contract-20261112.md": "4a005f125fa3c3dfc8955bb2b46488a999327eb45142d41ce08ae92672c308fb"
+  },
+  "checks": [
+    {
+      "command": "python3 -m unittest tools.test_check_engine_next_contract -v",
+      "observed": "21 tests passed; 0 skipped",
+      "passed": true
+    },
+    {
+      "command": "ruff check tools/check_engine_next_contract.py tools/test_check_engine_next_contract.py",
+      "observed": "All checks passed",
+      "passed": true
+    },
+    {
+      "command": "ruff format --check tools/check_engine_next_contract.py tools/test_check_engine_next_contract.py",
+      "observed": "2 files already formatted",
+      "passed": true
+    },
+    {
+      "command": "python3 -m py_compile tools/check_engine_next_contract.py tools/test_check_engine_next_contract.py",
+      "observed": "exit 0",
+      "passed": true
+    },
+    {
+      "command": "Parse tools/engine_next_contract.json as JSON and .github/workflows/engine_next_contract.yml as YAML",
+      "observed": "json_yaml_ok",
+      "passed": true
+    },
+    {
+      "command": "python3 tools/check_engine_next_contract.py --repo .",
+      "observed": "state=no_sources; passed=true; source_files=0; godot_free_runtime_verified=false",
+      "passed": true
+    },
+    {
+      "command": "git diff --check",
+      "observed": "exit 0",
+      "passed": true
+    }
+  ],
+  "coverage": {
+    "source_positive": "Independent sources, standard headers and cyclic local headers",
+    "source_negative": "Direct and transitive Godot includes, unknown and missing includes, escaping paths, symlinks, undeclared third-party roots, forbidden Godot tokens and empty sources",
+    "link_positive": "Declared linker-response producer, objects, library, runtime package, system library and SHA-256",
+    "link_negative": "Godot link input, forbidden runtime assets, missing and changed artifacts, undeclared system library, handwritten producer and duplicate artifacts"
+  },
+  "not_verified": [
+    "No next_runtime executable or real linker-produced manifest exists yet",
+    "No Godot symbol audit or clean-environment runtime test has occurred",
+    "No Windows local run; Windows coverage awaits the dedicated remote CI",
+    "No source provenance or license audit of a future engine implementation has occurred",
+    "Remote CI, formal gate, commit, PR and main readback remain pending at this recording"
+  ],
+  "usage": null,
+  "usage_unknown_reason": "No measured model usage in host receipt"
+}

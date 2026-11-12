@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "delivery_attempts",
+  "request_id": "engine-next-build-contract-20261112",
+  "issue": 882,
+  "bug": 884,
+  "base_head": "90c17c9770bac3e0ecc4a9d53bbf9e2e15a730fc",
+  "attempts": [
+    {
+      "incident": "60823dc4a6236a18a67ea4f30c3fd04cbedc589b0d2bd061d28a21e9b9da0484",
+      "action": "writer_submit",
+      "observed_at": "2026-11-12T04:14:47.866946+00:00",
+      "result": "rejected_before_commit",
+      "evidence": "PR notes contained GongGong-Issue and GongGong-Request even though writer_submit adds them itself",
+      "repair": "Remove the duplicate trailer lines from notes only; preserve implementation and tests",
+      "recovered": true
+    },
+    {
+      "incident": "8f4b83e50cd1ba6203b53977a0f71a423759bcabbf4aac2d9ebe283e0dcd75c8",
+      "action": "authenticated_git_fetch_main",
+      "observed_at": "2026-11-12T04:18:24.573135+00:00",
+      "result": "network_timeout_before_commit",
+      "evidence": "The authenticated fetch and a direct reproduction both failed to connect to github.com port 443 after about 75 seconds",
+      "candidate_state": "HEAD unchanged; FETCH_HEAD absent; staged candidate preserved; no push or PR occurred",
+      "recovery_condition": "A subsequent authenticated fetch of refs/heads/main succeeds and matches the reviewed base"
+    }
+  ],
+  "usage": null,
+  "usage_unknown_reason": "No measured model usage in host receipt"
+}
