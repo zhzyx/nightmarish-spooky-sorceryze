@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1fc131b7c4fd0518477bda74fa6792c7a72db3f1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "workspace-pending-delivery-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/974",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "4f0594039785485f44149a8e8c31eaca67d816339fc7b9d7733932ad0571aa0b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/974",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/976",
+    "action": "dispatch",
+    "detection_head": "309a77fadc74ad9e47df42b4c2b719970b3a7cd0",
+    "context_sha256": "cb6bf890a04ab219b4981a87f984aa249a87d700b313d8a40e141ac76f9940e2",
+    "operator": "Sail-Li",
+    "worker": "Codex current host",
+    "authority_ref": "codex-chat:01a1d066-704f-7893-b453-7356cd7d2039:user-submit-pending",
+    "evidence": "Native launch succeeded: /root/sinan_ae2b1a87bef6800d; exact dispatch receipt 31a602a7-fb49-43a9-979b-dbea330f88ad; prior never-launched reservations released via authorized runtime",
+    "diagnosis": "CLI API timeout before native launch. Existing system proxy restored API transport. Recovery invocation initially used wrong event type and then omitted authorization requests; corrected execution.failed and retained original authorized requests without deleting claims.",
+    "next_action": "Reconcile actual reviewer terminal receipt, publish reviewed artifact and close tracker only after exact PR checks and main readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T15:50:20.584138+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T16:02:29.236510+00:00",
+  "sha256": "bcf6143c121b4032aa063951fdbf8e4f9b2fd692414d532ef6841122f3debe0a"
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "workspace-pending-delivery-20261112",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/974",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "event_id": "workspace-pending-delivery-20261112-request",
+  "kind": "request",
+  "occurred_at": "2026-11-12T16:00:10.769012+00:00",
+  "payload": {
+    "user_request": "review当前工作区内是否存在冗余工作树和未提交改动，对确定不需要的内容进行清理。随后：该提交就提交呗",
+    "scope": "Review historical pending changes; submit referenced final game artifact in isolated candidate; do not take over active issue773 implementation",
+    "design": "design-docs/workspace-pending-delivery-20261112.md",
+    "validation": "data-collection/workspace-pending-delivery-20261112.json",
+    "usage": null
+  },
+  "evidence_refs": []
+}

@@ -1,0 +1,13 @@
+config_version=5
+
+[application]
+config/name="Beacon Run"
+run/main_scene="res://main.tscn"
+
+[display]
+window/size/viewport_width=760
+window/size/viewport_height=440
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.07, 0.09, 0.14, 1)
