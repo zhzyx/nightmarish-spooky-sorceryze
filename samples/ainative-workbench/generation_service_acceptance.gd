@@ -240,8 +240,11 @@ func run():
 	mode("kimi_native")
 	panel.endpoint_edit.text = "https://api.kimi.com/coding/v1"
 	panel.kimi_model_edit.text = "k3-256k"
+	panel.model3d_tool_edit.text = state_path.path_join("fixture-3d/model3d_generation_tool.py")
+	panel.model3d_pythonw_edit.text = state_path.path_join("fixture-3d/pythonw.exe")
 	var kimi_draft = panel.service_draft()
-	check(kimi_draft.endpoint == "https://api.kimi.com/coding/v1" and not kimi_draft.has("cli_path") and not kimi_draft.has("blender_path"), "Kimi Native does not inherit ComfyUI, Codex or Blender configuration")
+	check(kimi_draft.model3d_model == "v3.1" and not kimi_draft.has("cli_path") and not kimi_draft.has("blender_path"), "Kimi Native uses direct Tripo API generation without Codex or Blender")
+	check(panel.kimi_model3d_fields.visible and not panel.kimi_model_edit.visible, "Kimi Native exposes the direct 3D tool instead of the legacy K3 planner")
 	check(panel._generator_provider("text_to_mesh") == "kimi_native" and panel._generator_provider("image_to_mesh") == "kimi_native", "Kimi Native routes both Mesh node kinds")
 	check(panel._generator_provider("text_to_image") == "kimi_work_image" and panel._generator_provider("image_to_image") == "kimi_work_image", "2D nodes route independently to Kimi Work image generation")
 	panel.save_service_settings()
@@ -264,7 +267,7 @@ func run():
 	panel.queue_free()
 	await settle()
 	await new_panel()
-	check(panel.service_saved == kimi_draft and panel.kimi_model_edit.text == "k3-256k" and panel._service_mode() == "kimi_native" and panel.kimi_image_tool_edit.text == kimi_draft.image_tool_path and panel.kimi_image_pythonw_edit.text == kimi_draft.image_pythonw_path, "Kimi composite settings restore through a fresh Workbench")
+	check(panel.service_saved == kimi_draft and panel.kimi_model_edit.text == "k3-256k" and panel._service_mode() == "kimi_native" and panel.kimi_image_tool_edit.text == kimi_draft.image_tool_path and panel.kimi_image_pythonw_edit.text == kimi_draft.image_pythonw_path and panel.model3d_tool_edit.text == kimi_draft.model3d_tool_path and panel.model3d_pythonw_edit.text == kimi_draft.model3d_pythonw_path, "Kimi composite settings restore through a fresh Workbench")
 	# Switching to offline remains usable for real local-copy preview/publication.
 	mode("offline")
 	panel.save_service_settings()

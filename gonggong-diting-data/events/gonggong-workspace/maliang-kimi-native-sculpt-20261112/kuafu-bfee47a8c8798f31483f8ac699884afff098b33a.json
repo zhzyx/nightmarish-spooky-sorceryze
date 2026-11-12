@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-bfee47a8c8798f31483f8ac699884afff098b33a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-native-sculpt-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a25c5fd4a2ea93c83f2cc39e28eec948760bd78536b123d7dffb512816e7def3",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/898",
+    "action": "dependency",
+    "detection_head": "93006dd2bdec4a7c1c2982a254d2fdef9151e7a1",
+    "context_sha256": "79e60be4c6d47f0a82e16fc65e2bc04779178a13342e54be0f31fd296c6f022d",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-kaiyunxue",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+    "evidence": "data-collection/maliang-kimi-native-sculpt-20261112-validation.json",
+    "diagnosis": "The original failure was agent-gw 0.2.6 below the required 0.3.0. The environment now has 0.5.0; a fresh explicit Tripo API retry succeeded with task 5567a16a-a5c7-40db-81f2-a08f81c12085.",
+    "next_action": "Close the dependency bug; retain the original failed job and the successful new job as separate records.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T06:57:56.299460+00:00",
+    "attempted": "ensure-deps could not use --user inside the virtualenv, so the identical 0.5.0 wheel was installed in the current environment. Real GLB and native preview/publication/reopen then passed.",
+    "repair_owner": "kimi-work-kaiyunxue",
+    "continuable": "Dependency incident recovered; product delivery continues through the normal candidate gate."
+  },
+  "occurred_at": "2026-11-12T07:44:19.390651+00:00",
+  "sha256": "62f727f5734597ca454f4ea84c44405186c110ed4d51f9c6e2424e513d5af617"
+}

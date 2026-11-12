@@ -153,12 +153,15 @@ func verify_generation_service_controls():
 	panel.service_choice.select(6)
 	panel.service_choice.item_selected.emit(6)
 	panel.kimi_model_edit.text = 'k3-256k'
+	panel.model3d_tool_edit.text = 'fixture-3d/model3d_generation_tool.py'
+	panel.model3d_pythonw_edit.text = 'fixture-3d/pythonw.exe'
 	var draft = panel.service_draft()
-	check(draft.get('mode') == 'kimi_native' and draft.get('endpoint') == 'https://api.kimi.com/coding/v1' and draft.get('kimi_model') == 'k3-256k', 'Kimi Native edits its semantic provider, official endpoint and model')
+	check(draft.get('mode') == 'kimi_native' and draft.get('model3d_model') == 'v3.1', 'Kimi Native uses direct Tripo API generation')
 	check(not draft.has('cli_path') and not draft.has('blender_path') and draft.image_model.is_empty() and draft.mesh_model.is_empty(), 'Kimi Native does not require Codex, Blender or ComfyUI model settings')
+	check(panel.kimi_model3d_fields.visible and not panel.kimi_model_edit.visible, 'Kimi Native exposes direct 3D settings instead of the legacy K3 planner')
 	check(panel._generator_provider('text_to_mesh') == 'kimi_native' and panel._generator_provider('image_to_mesh') == 'kimi_native', 'both Mesh node kinds route to Kimi Native')
 	check(panel._generator_provider('text_to_image') == 'kimi_work_image' and panel._generator_provider('image_to_image') == 'kimi_work_image', 'both 2D kinds route to the independent Kimi Work image service')
-	check(panel.get('kimi_image_tool_edit') is LineEdit and panel.get('kimi_image_pythonw_edit') is LineEdit, 'native settings expose the local Kimi Work image tool and windowless runtime')
+	check(panel.get('model3d_tool_edit') is LineEdit and panel.get('model3d_pythonw_edit') is LineEdit and panel.get('kimi_image_tool_edit') is LineEdit and panel.get('kimi_image_pythonw_edit') is LineEdit, 'native settings expose independent 3D and 2D tools')
 	panel.save_service_settings()
 	check(panel._service_blocker('text_to_mesh').is_empty() and panel._service_blocker('text_to_image').contains('Kimi Work') and panel._service_blocker('image_to_image').contains('pythonw'), 'missing image tools leave Mesh available and explain the 2D setup')
 	var stored = FileAccess.get_file_as_string(panel.service_config_path)
@@ -170,7 +173,7 @@ func verify_generation_service_controls():
 	root.add_child(restored)
 	restored.hide()
 	await process_frame
-	check(restored._service_mode() == 'kimi_native' and restored.service_saved == draft and restored.kimi_model_edit.text == 'k3-256k', 'Kimi Native settings survive a real Workbench reopen')
+	check(restored._service_mode() == 'kimi_native' and restored.service_saved == draft and restored.kimi_model_edit.text == 'k3-256k' and restored.model3d_tool_edit.text == draft.model3d_tool_path and restored.model3d_pythonw_edit.text == draft.model3d_pythonw_path, 'Kimi Native settings survive a real Workbench reopen')
 	restored.queue_free()
 	await process_frame
 	panel.service_choice.select(0)

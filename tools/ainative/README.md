@@ -134,52 +134,40 @@ their original type. For the generation nodes, edit `seed` in the range
 **0–9,007,199,254,740,991** in Godot. Direct Python/CLI integer inputs keep their
 existing contract and provider range; core validation remains strictly typed.
 
-## Real Kimi Native Mesh provider (#646)
+## Real Kimi Native direct 3D provider (#646, #885)
 
-`kimi_native` adds text-to-Mesh and image-to-Mesh without replacing any existing
-provider. `generate.py --provider` still defaults to `comfy`. The Workbench exposes
-Kimi Native as a separate generation-service choice; choosing it does not require
-ComfyUI, Hunyuan3D, ChatGPT/Codex or Blender configuration.
+New `kimi_native` Mesh tasks use **Tripo API** through the installed Kimi Work
+`model3d_generation` tool and agent-gw. `client.tools.invoke("generate_3d_model", …)`
+returns a new GLB directly; Blender, K3 primitive planning, Codex, ComfyUI and Hunyuan3D
+are not used. #646-era primitive snapshots remain restorable with their original
+provider and immutable artifacts, never as a fallback for a new direct-3D request.
 
-The Native route is deliberately two-stage and is recorded as such:
+The adapter supports text, one ordinary image and 2–4 independent views. Text uses
+`description`, one image uses `image_url`, and multiple views use `multiview`. Separate
+view inputs are ordered front/back for two views, front/right/back for three, and
+front/right/back/left for four. A single explicitly marked three-view sheet is cropped
+into front/right/back panels before upload; it is not sent as one ordinary photograph.
+Cropping uses Pillow when that sheet mode is requested.
 
-1. Kimi receives the modeling instructions and optional source image and returns one
-   strict JSON-Schema primitive plan. Model output is data, never executable code.
-2. The existing fixed `modeling_builder.gd` constructs Godot box, sphere, cylinder,
-   capsule and torus primitives and exports a self-contained GLB. The host independently
-   checks embedded GLB structure, indices, nondegenerate triangles, finite coordinates,
-   TRS/world bounds, vertex/triangle/byte budgets and the native builder receipt before
-   publishing the artifact. It never substitutes an old GLB or another provider's result.
-
-The closed plan allows 1–64 named parts; plan bytes, output bytes (64 MiB), vertices,
-triangles and numeric ranges are bounded. This is basic primitive geometry with opaque
-materials, not direct per-vertex neural generation, texture synthesis, production
-retopology, automatic humanoid rigging or animation. Sampling, seed and mesh-extraction
-parameters do not affect Kimi Native and are recorded as `not_applied` when supplied by
-a generic CLI. Only `text_to_mesh` and `image_to_mesh` are accepted; 2D image nodes,
-multiple images and unsupported context semantics fail explicitly. One PNG or JPEG
-source can be combined with node-level text constraints.
+The direct service does not accept additional text constraints together with image or
+multiview input. Such requests fail explicitly instead of silently dropping the text.
+A three-view marker is used only to select sheet splitting. Generation model `v3.1` is
+the default; the provider also validates the same model, face-limit, texture and quad
+combinations as the installed tool.
 
 ### Local configuration and credentials
 
-Copy `kimi-config.example.json` outside the repository and replace `Godot.exe` with the
-actual local Godot executable. Keep `builder_path` pointed at the trusted built-in
-`modeling_builder.gd`. The configuration has exactly five fields:
-`endpoint`, `model`, `storage`, `godot_path`, `builder_path`. Relative `storage` resolves
-beside the configuration file and contains the durable `kimi-native-jobs.sqlite` plus
-private per-intent receipts. Use a durable location outside the repository.
+Copy `kimi-config.example.json` outside the repository and set absolute paths for
+`model3d_generation_tool.py` and the verified `pythonw.exe` (Windows) or Python 3
+(macOS/Linux). `model` defaults to `v3.1`. Relative `storage` resolves beside the config
+and contains the durable `kimi-native-3d-jobs.sqlite` plus private per-intent receipts.
+Use a durable location outside the repository. The tool, launcher and watcher are
+fingerprinted before generation and checked again by the worker.
 
-Set `AINATIVE_KIMI_CONFIG` to that file for CLI/factory use. Set either `KIMI_API_KEY` or
-`MOONSHOT_API_KEY` in the local user/process environment before launching the CLI or
-Godot. Never put a key in JSON, node parameters, command-line arguments, workflow files,
-logs or evidence. Only the key-owning `--probe` / `--api` Python children read it; the
-parent, persisted configuration, GLB and provenance do not receive it. Connection checks
-use `GET /models` and do not generate content.
-
-The default endpoint is `https://api.kimi.com/coding/v1` and the default model is
-`k3.1-pro`. Only official HTTPS endpoints and an explicit K3/K3.1 model allowlist are
-accepted; discovery does not silently choose another model. Redirects, ambient proxies,
-credential-bearing URLs and arbitrary relay endpoints are rejected.
+Set `AINATIVE_KIMI_CONFIG` to that file for CLI/factory use. Agent-gw SDK authentication
+comes from `KIMI_API_KEY` or `~/.kimi/agent-gw.json`, as supported by the installed
+plugin. The adapter never reads or stores the credential. Local checks inspect only the
+scripts and runtime; they do not upload, call Tripo API or generate content.
 
 ### CLI, recovery and provenance
 
@@ -187,40 +175,34 @@ From the repository root, with the local environment and config already set:
 
 ```powershell
 & $Python tools/ainative/generate.py --provider kimi_native --kind text_to_mesh --prompt 'a small four leg wooden table' --db D:/local-state/art.sqlite --output D:/local-state/text-kimi-package.json
-& $Python tools/ainative/generate.py --provider kimi_native --kind image_to_mesh --source D:/inputs/reference.png --prompt 'match the pictured object structure' --db D:/local-state/art.sqlite --output D:/local-state/image-kimi-package.json
+& $Python tools/ainative/generate.py --provider kimi_native --kind image_to_mesh --source D:/inputs/reference.png --db D:/local-state/art.sqlite --output D:/local-state/image-kimi-package.json
 # Resume/read the same durable run; use a fresh output filename:
 & $Python tools/ainative/generate.py --provider kimi_native --run RUN_ID --db D:/local-state/art.sqlite --output D:/local-state/resumed-package.json
 ```
 
-The CLI prints the run ID before polling and does not start inference services. Each new
-durable modeling intent performs at most one Chat Completions POST. Network loss,
-timeout, an unknown worker exit or an unknown response never causes an automatic second
-POST. Resume with the same run, database and local config; this reads the existing intent
-and terminal result rather than creating a new generation. A deliberate retry is a new,
-explicit user action. Cancellation terminates only processes owned by that intent; it
-does not interrupt shared services or other jobs. Late output cannot overwrite terminal
-state.
+The CLI prints the run ID before polling. Each new intent is committed locally before
+any upload or generation. Network loss, timeout, an unknown worker exit or an unknown
+response never causes an automatic second operation. Resume with the same run, database
+and local config to read the existing intent and terminal result. Cancellation stops
+only owned local processes; late output cannot overwrite terminal state.
 
-Raw prompts, source images, API responses and builder diagnostics remain in private
-storage. Artifact provenance records the model and response ID, request/response/plan/
-GLB hashes, allowed token usage, source hash, builder hash and geometry, plus the two
-stages `kimi_strict_modeling_plan` and `fixed_godot_primitive_construction`. It also
-records `fallback_used=false` and `generated_code_executed=false`. Public summaries must
-omit raw prompts, base64, API keys, full responses and machine-private paths.
+Artifact provenance records `provider=kimi_native`, `service=Tripo API`, the
+`generate_3d_model` operation, generation model, input mode, upstream `task_id` when
+returned, source/view/output hashes, crop boxes, geometry and optional preview hash.
+Signed URLs, raw responses, source images, GLB files and diagnostics stay in private
+storage. `fallback_used=false` and `blender_used=false` are explicit. A loadable GLB or
+nonblank preview does not by itself establish likeness, visual, topology, material,
+rigging, animation or performance quality.
 
-For tests, run `python -m unittest discover -s tools/ainative -p "test_*.py"`; HTTP tests
-use local fixtures and do not prove real inference. Real generation acceptance requires
-both commands above, the private receipts, independent GLB validation, and Godot preview/
-staging/confirmed-publication/process-independent reopen checks. Fit must actually read
-the resulting mesh; a result such as `needs_landmarks` is not an automatic rigging
-success. Keep real rendered screenshots separate from headless geometry receipts. A
-loadable GLB and a nonblank screenshot do not by themselves establish production visual,
-topology, material, rigging, animation or performance quality.
+For tests, run `python -m unittest discover -s tools/ainative -p "test_*.py"`. Synthetic
+workers do not prove real Tripo API inference. Real acceptance requires the private
+`task_id` and receipts, independent GLB validation, native preview/publication/reopen
+checks and separate multi-view visual review.
 
 ## Kimi Work text-to-image and image-to-image (#808)
 
-The `kimi_native` Workbench service mode is a composite route. Mesh nodes keep using
-`kimi_native` and its strict K3.1 Pro planning/Godot-construction boundary. The
+The `kimi_native` Workbench service mode is a composite route. Mesh nodes use
+`kimi_native` and its direct Tripo API `generate_3d_model` boundary. The
 `text_to_image` and `image_to_image` nodes instead use `kimi_work_image`, an independent
 Kimi Work `agent-gw generate_image` v2 service. K3.1 Pro does not directly generate these
 2D images, and this integration neither replaces nor disguises ComfyUI or Codex.

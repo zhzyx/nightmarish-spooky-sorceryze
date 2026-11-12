@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0c294a2510ba1db4cf2203b9e9eaab397d2d0421",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-native-sculpt-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "757ef63fdcc797fbf43bac6b3bc1a880e5482992e41350d868009a5c37749d02",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/904",
+    "action": "validation",
+    "detection_head": "93006dd2bdec4a7c1c2982a254d2fdef9151e7a1",
+    "context_sha256": "71927d58fff61bc87c20c05d3b7a889b17c47747c71279103db129ded4b67610",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-kaiyunxue",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+    "evidence": "gonggong-diting-data/events/gonggong-workspace/maliang-kimi-native-sculpt-20261112/request-885-direct3d-20261112.json",
+    "diagnosis": "After adding issue_url, the next gate required a same-tenant request event with the exact Issue source. A real request event has now been recorded and validated with event sha256 f7b6b3c096c62c5ccc051b35c7d40fd5b4afa6a0e775cfb571d23386ed733be4.",
+    "next_action": "Stage the validated request event and rerun the unchanged formal gate; close #904 only after all evidence checks pass.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T07:50:52.233183+00:00",
+    "attempted": "The first gate lacked issue_url and the second lacked kind=request. Both evidence records have been supplied without altering historical events.",
+    "repair_owner": "kimi-work-kaiyunxue",
+    "continuable": "Evidence chain is now explicit; product delivery can continue once the gate passes."
+  },
+  "occurred_at": "2026-11-12T07:53:28.800033+00:00",
+  "sha256": "a954530d1e08b06642bf791f2b8f68c7857deda13fbd1a278c1d3d292f8655f4"
+}

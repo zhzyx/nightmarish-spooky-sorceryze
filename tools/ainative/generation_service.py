@@ -103,6 +103,9 @@ def settings(value):
         "api_key_env",
         "image_tool_path",
         "image_pythonw_path",
+        "model3d_tool_path",
+        "model3d_pythonw_path",
+        "model3d_model",
         "image_board_godot_path",
         "image_board_builder_path",
     }:
@@ -170,10 +173,17 @@ def settings(value):
     elif "cli_path" in result:
         raise ServiceError("service_config_invalid")
     if result["mode"] == "kimi_native":
-        from kimi_provider import DEFAULT_ENDPOINT, DEFAULT_MODEL, validate_endpoint, validate_model
+        from kimi_provider import (
+            DEFAULT_ENDPOINT,
+            DEFAULT_MODEL,
+            MODEL3D_GENERATE_MODELS,
+            validate_endpoint,
+            validate_model,
+        )
 
         result.setdefault("endpoint", DEFAULT_ENDPOINT)
         result.setdefault("kimi_model", DEFAULT_MODEL)
+        result.setdefault("model3d_model", "v3.1")
         try:
             result["endpoint"] = validate_endpoint(result["endpoint"])
             result["kimi_model"] = validate_model(result["kimi_model"])
@@ -181,14 +191,23 @@ def settings(value):
             raise ServiceError("kimi_endpoint_invalid") from None
         if result["image_model"] or result["mesh_model"]:
             raise ServiceError("service_config_invalid")
-        if not all(isinstance(result.get(key), str) and result[key].strip() for key in ("godot_path", "builder_path")):
-            raise ServiceError("modeling_runtime_missing")
-        for key in ("image_tool_path", "image_pythonw_path"):
+        if not isinstance(result["model3d_model"], str) or result["model3d_model"] not in MODEL3D_GENERATE_MODELS:
+            raise ServiceError("service_config_invalid")
+        for key in ("image_tool_path", "image_pythonw_path", "model3d_tool_path", "model3d_pythonw_path"):
             if key in result:
                 if not isinstance(result[key], str):
                     raise ServiceError("service_config_invalid")
                 result[key] = result[key].strip()
-    elif "kimi_model" in result or any(key in result for key in ("image_tool_path", "image_pythonw_path")):
+    elif "kimi_model" in result or any(
+        key in result
+        for key in (
+            "image_tool_path",
+            "image_pythonw_path",
+            "model3d_tool_path",
+            "model3d_pythonw_path",
+            "model3d_model",
+        )
+    ):
         raise ServiceError("service_config_invalid")
     if result["mode"] == "codex_modeling":
         if not all(isinstance(result.get(key), str) and result[key].strip() for key in ("godot_path", "builder_path")):
@@ -415,21 +434,18 @@ def _probe_api(config):
 
 
 def _probe_kimi(config):
-    from kimi_provider import check_kimi
+    from kimi_provider import check_model3d_tool
     from kimi_work_image_provider import GENERATION_VERSION, check_image_tool
 
-    auth = check_kimi(dict(endpoint=config["endpoint"], model=config["kimi_model"]))
-    runtime = all(Path(config[key]).is_file() for key in ("godot_path", "builder_path"))
-    ready = bool(auth.get("connected") and runtime)
-    code = "" if ready else auth.get("code") or "modeling_runtime_missing"
-    message = (
-        "Kimi 严格建模计划与 Godot 构造器已就绪；检测未生成内容，结果适合有界原语组合。"
-        if ready
-        else auth.get("message", "")
-        if not auth.get("connected")
-        else MESSAGES["modeling_runtime_missing"]
+    model3d_report = check_model3d_tool(config.get("model3d_tool_path", ""), config.get("model3d_pythonw_path", ""))
+    ready = bool(model3d_report.get("connected"))
+    message = model3d_report.get("message", "")
+    mesh = dict(
+        ready=ready,
+        code=model3d_report.get("code", ""),
+        message=message,
+        missing_nodes=[],
     )
-    mesh = dict(ready=ready, code=code, message=message, missing_nodes=[])
     image_report = check_image_tool(config.get("image_tool_path", ""), config.get("image_pythonw_path", ""))
     image_ready = bool(image_report.get("connected"))
     image = dict(
@@ -439,23 +455,19 @@ def _probe_kimi(config):
         missing_nodes=[],
     )
     if ready and image_ready:
-        summary = "网格使用 Kimi 严格建模计划与 Godot 构造器；二维使用独立 Kimi Work 图像服务。检测未生成内容，不调用 ComfyUI、混元或 Codex。"
+        summary = "Mesh 使用 Tripo API 直接生成 GLB；二维使用独立 Kimi Work 图像服务。检测未上传或生成，不调用 Blender、ComfyUI、混元或 Codex。"
     elif image_ready:
         summary = "Kimi Work 图像工具已就绪；Mesh 状态独立显示。检测未上传参考图或生成图像。" + message
     else:
-        summary = (
-            "Kimi 建模与 Godot 构造器已就绪；二维需另行配置 Kimi Work 图像工具，不使用 K3.1 Pro 直接生成图片。"
-            if ready
-            else message
-        )
+        summary = "Tripo API 直接三维工具已就绪；二维需另行配置 Kimi Work 图像工具。" if ready else message
     return dict(
         mode="kimi_native",
         connected=ready or image_ready,
-        kimi=auth,
+        model3d=model3d_report,
         kimi_work_image=image_report,
         models=dict(
             image=["Kimi Work agent-gw generate_image " + GENERATION_VERSION] if image_ready else [],
-            mesh=[config["kimi_model"]] if auth.get("connected") else [],
+            mesh=["Tripo API generate_3d_model v1 (" + config["model3d_model"] + ")"] if ready else [],
         ),
         capabilities=dict(
             text_to_image=dict(image),
@@ -463,8 +475,10 @@ def _probe_kimi(config):
             text_to_mesh=mesh,
             image_to_mesh=dict(mesh),
         ),
-        backend_revision="kimi-native-v1|"
-        + config["kimi_model"]
+        backend_revision="kimi-native-3d-v1|"
+        + config["model3d_model"]
+        + "|"
+        + model3d_report.get("tool_fingerprint", model3d_report.get("code", "unavailable"))
         + "|kimi-work-image-v2|"
         + image_report.get("tool_fingerprint", image_report.get("code", "unavailable")),
         message=summary,
@@ -638,9 +652,10 @@ def register_workflow(registry):
 
 def image_batch_settings(config):
     if config.get("mode") == "kimi_native":
+        builder = config.get("builder_path") or config.get("image_board_builder_path", "")
         board = dict(
-            board_godot_path=config["godot_path"],
-            board_builder_path=str(Path(config["builder_path"]).with_name("image_contact_sheet.gd")),
+            board_godot_path=config.get("godot_path") or config.get("image_board_godot_path", ""),
+            board_builder_path=str(Path(builder).with_name("image_contact_sheet.gd")) if builder else "",
         )
     else:
         board = dict(
@@ -727,7 +742,7 @@ def prepare_provider(config, model, database, run_id):
             node["provider"] = provider_id
         return registry, providers, dict(mode=config["mode"], provider=provider_config)
     if config["mode"] == "kimi_native":
-        from kimi_provider import KimiNativeProvider
+        from kimi_provider import KimiNativeDirectProvider
         from kimi_work_image_provider import KimiWorkImageProvider
 
         report = _probe_kimi(config)
@@ -738,16 +753,15 @@ def prepare_provider(config, model, database, run_id):
         mesh_nodes = [node for node in generated if node["type"].endswith("mesh")]
         image_nodes = [node for node in generated if not node["type"].endswith("mesh")]
         provider_config = dict(
-            endpoint=config["endpoint"],
-            model=config["kimi_model"],
-            storage=str(Path(database).resolve().parent / "kimi-native-state"),
-            godot_path=config["godot_path"],
-            builder_path=config["builder_path"],
+            tool_path=config.get("model3d_tool_path", ""),
+            pythonw_path=config.get("model3d_pythonw_path", ""),
+            storage=str(Path(database).resolve().parent / "kimi-native-3d-state"),
+            model=config["model3d_model"],
         )
         snapshot = dict(mode="kimi_native", provider=provider_config if mesh_nodes else None)
         register_workflow(registry)
         if mesh_nodes:
-            providers["kimi_native"] = KimiNativeProvider(provider_config)
+            providers["kimi_native"] = KimiNativeDirectProvider(provider_config)
         if image_nodes:
             image_config = dict(
                 tool_path=config.get("image_tool_path", ""),
@@ -933,13 +947,14 @@ def restore_provider(snapshot):
         else:
             providers["api-sculpt"] = SculptProvider(snapshot["provider"])
     elif snapshot["mode"] == "kimi_native":
-        from kimi_provider import KimiNativeProvider
+        from kimi_provider import KimiNativeDirectProvider, KimiNativeProvider
         from kimi_work_image_provider import KimiWorkImageProvider
 
         register_workflow(registry)
         # Old Mesh-only snapshots intentionally have no image_provider field.
         if snapshot["provider"] is not None:
-            providers["kimi_native"] = KimiNativeProvider(snapshot["provider"])
+            provider_class = KimiNativeDirectProvider if "tool_path" in snapshot["provider"] else KimiNativeProvider
+            providers["kimi_native"] = provider_class(snapshot["provider"])
         if snapshot.get("image_provider") is not None:
             providers["kimi_work_image"] = KimiWorkImageProvider(snapshot["image_provider"])
     elif snapshot["mode"] == "codex":
