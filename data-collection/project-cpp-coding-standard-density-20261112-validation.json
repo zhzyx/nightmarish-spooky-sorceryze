@@ -1,0 +1,746 @@
+{
+  "schema_version": 1,
+  "request_id": "project-cpp-coding-standard-density-20261112",
+  "issue": 929,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/929",
+  "tenant_id": "gonggong-workspace",
+  "kind": "documentation_density_validation",
+  "occurred_at": "2026-11-12T10:56:56.235981+00:00",
+  "source_base": "2739fc7fb20294e232878a5f29737a09be9d6ac1",
+  "density": {
+    "original_lines": 506,
+    "current_lines": 144,
+    "line_reduction_percent": 71.54,
+    "original_bytes": 16981,
+    "current_bytes": 10052,
+    "byte_reduction_percent": 40.8,
+    "line_limit": 304,
+    "byte_limit": 10188
+  },
+  "documents": {
+    "CPP_CODING_STANDARD.md": {
+      "bytes": 10052,
+      "sha256": "1e259897d18d01bff223639084695dbb1a1384883489d0e4de95f4b1c3845f61"
+    },
+    "design-docs/project-cpp-coding-standard-density-20261112.md": {
+      "bytes": 3477,
+      "sha256": "0ba2b044f83e570dc4fb684ee8176239b5781f6646cc94caafb0457b4f2bc71b"
+    },
+    "data-collection/requests/project-cpp-coding-standard-density-20261112/dad4e6ad-670c-42eb-960d-986d1b25d3ca.json": {
+      "bytes": 899,
+      "sha256": "de75bfcf1cb51922dddcd4d71b8ee780233455da80c05adedcebab83443415b7"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/project-cpp-coding-standard-density-20261112/request-929-project-cpp-density-20261112.json": {
+      "bytes": 1206,
+      "sha256": "188fa0ee3cb218e743b6cb265c5d8f035365ed712d3b01a3c8511f3fe3cdf0e0"
+    }
+  },
+  "checks": [
+    {
+      "name": "density:lines",
+      "status": "passed",
+      "detail": "144 <= 304; original 506"
+    },
+    {
+      "name": "density:bytes",
+      "status": "passed",
+      "detail": "10052 <= 10188; original 16981"
+    },
+    {
+      "name": "density:eof",
+      "status": "passed",
+      "detail": "File ends with LF"
+    },
+    {
+      "name": "density:fences",
+      "status": "passed",
+      "detail": "Balanced code fences"
+    },
+    {
+      "name": "density:trailing_whitespace",
+      "status": "passed",
+      "detail": "None"
+    },
+    {
+      "name": "density:issue",
+      "status": "passed",
+      "detail": "Issue #929 linked"
+    },
+    {
+      "name": "density:contributing_link",
+      "status": "passed",
+      "detail": "Existing contribution entry remains valid"
+    },
+    {
+      "name": "rule:transition:新增文件或模块",
+      "status": "passed",
+      "detail": "Retained: 新增文件或模块"
+    },
+    {
+      "name": "rule:transition:存量文件中新增类或函数",
+      "status": "passed",
+      "detail": "Retained: 存量文件中新增类或函数"
+    },
+    {
+      "name": "rule:transition:存量代码小范围修复",
+      "status": "passed",
+      "detail": "Retained: 存量代码小范围修复"
+    },
+    {
+      "name": "rule:transition:整体重写类、函数或文件",
+      "status": "passed",
+      "detail": "Retained: 整体重写类、函数或文件"
+    },
+    {
+      "name": "rule:transition:即将删除的老代码",
+      "status": "passed",
+      "detail": "Retained: 即将删除的老代码"
+    },
+    {
+      "name": "rule:transition:两种风格",
+      "status": "passed",
+      "detail": "Retained: 两种风格"
+    },
+    {
+      "name": "rule:transition:第三方及上游同步代码",
+      "status": "passed",
+      "detail": "Retained: 第三方及上游同步代码"
+    },
+    {
+      "name": "rule:transition:生成代码修改生成器或模板",
+      "status": "passed",
+      "detail": "Retained: 生成代码修改生成器或模板"
+    },
+    {
+      "name": "rule:transition:外部框架、脚本绑定或对象系统",
+      "status": "passed",
+      "detail": "Retained: 外部框架、脚本绑定或对象系统"
+    },
+    {
+      "name": "rule:language:C++17",
+      "status": "passed",
+      "detail": "Retained: C++17"
+    },
+    {
+      "name": "rule:language:`throw`、`try`、`catch`",
+      "status": "passed",
+      "detail": "Retained: `throw`、`try`、`catch`"
+    },
+    {
+      "name": "rule:language:`nullptr`",
+      "status": "passed",
+      "detail": "Retained: `nullptr`"
+    },
+    {
+      "name": "rule:language:`constexpr`",
+      "status": "passed",
+      "detail": "Retained: `constexpr`"
+    },
+    {
+      "name": "rule:language:`static_assert`",
+      "status": "passed",
+      "detail": "Retained: `static_assert`"
+    },
+    {
+      "name": "rule:language:`override`／`final`",
+      "status": "passed",
+      "detail": "Retained: `override`／`final`"
+    },
+    {
+      "name": "rule:language:`= default`／`= delete`",
+      "status": "passed",
+      "detail": "Retained: `= default`／`= delete`"
+    },
+    {
+      "name": "rule:language:`if constexpr`",
+      "status": "passed",
+      "detail": "Retained: `if constexpr`"
+    },
+    {
+      "name": "rule:language:`std::move`",
+      "status": "passed",
+      "detail": "Retained: `std::move`"
+    },
+    {
+      "name": "rule:language:`auto`",
+      "status": "passed",
+      "detail": "Retained: `auto`"
+    },
+    {
+      "name": "rule:language:`[=]`",
+      "status": "passed",
+      "detail": "Retained: `[=]`"
+    },
+    {
+      "name": "rule:language:`[&]`",
+      "status": "passed",
+      "detail": "Retained: `[&]`"
+    },
+    {
+      "name": "rule:file_type_function:PascalCase，减少下划线",
+      "status": "passed",
+      "detail": "Retained: PascalCase，减少下划线"
+    },
+    {
+      "name": "rule:file_type_function:`TextureCache.h`",
+      "status": "passed",
+      "detail": "Retained: `TextureCache.h`"
+    },
+    {
+      "name": "rule:file_type_function:`RenderDevice.cpp`",
+      "status": "passed",
+      "detail": "Retained: `RenderDevice.cpp`"
+    },
+    {
+      "name": "rule:file_type_function:无下划线的 PascalCase",
+      "status": "passed",
+      "detail": "Retained: 无下划线的 PascalCase"
+    },
+    {
+      "name": "rule:file_type_function:`LoadTexture()`",
+      "status": "passed",
+      "detail": "Retained: `LoadTexture()`"
+    },
+    {
+      "name": "rule:file_type_function:`IsVisible()`",
+      "status": "passed",
+      "detail": "Retained: `IsVisible()`"
+    },
+    {
+      "name": "rule:file_type_function:`HasFocus()`",
+      "status": "passed",
+      "detail": "Retained: `HasFocus()`"
+    },
+    {
+      "name": "rule:file_type_function:`CanDelete()`",
+      "status": "passed",
+      "detail": "Retained: `CanDelete()`"
+    },
+    {
+      "name": "rule:file_type_function:`ShouldUpdate()`",
+      "status": "passed",
+      "detail": "Retained: `ShouldUpdate()`"
+    },
+    {
+      "name": "rule:file_type_function:UPPER_SNAKE_CASE",
+      "status": "passed",
+      "detail": "Retained: UPPER_SNAKE_CASE"
+    },
+    {
+      "name": "rule:file_type_function:`m_` 前缀",
+      "status": "passed",
+      "detail": "Retained: `m_` 前缀"
+    },
+    {
+      "name": "rule:file_type_function:`ElementType`",
+      "status": "passed",
+      "detail": "Retained: `ElementType`"
+    },
+    {
+      "name": "rule:file_type_function:底层类型",
+      "status": "passed",
+      "detail": "Retained: 底层类型"
+    },
+    {
+      "name": "rule:variable_prefixes:`bEnabled`",
+      "status": "passed",
+      "detail": "Retained: `bEnabled`"
+    },
+    {
+      "name": "rule:variable_prefixes:`pParent`",
+      "status": "passed",
+      "detail": "Retained: `pParent`"
+    },
+    {
+      "name": "rule:variable_prefixes:`eProcessMode`",
+      "status": "passed",
+      "detail": "Retained: `eProcessMode`"
+    },
+    {
+      "name": "rule:variable_prefixes:`nCount`",
+      "status": "passed",
+      "detail": "Retained: `nCount`"
+    },
+    {
+      "name": "rule:variable_prefixes:`fDeltaTime`",
+      "status": "passed",
+      "detail": "Retained: `fDeltaTime`"
+    },
+    {
+      "name": "rule:variable_prefixes:`dTimestamp`",
+      "status": "passed",
+      "detail": "Retained: `dTimestamp`"
+    },
+    {
+      "name": "rule:variable_prefixes:`strPath`",
+      "status": "passed",
+      "detail": "Retained: `strPath`"
+    },
+    {
+      "name": "rule:variable_prefixes:`snMethodName`",
+      "status": "passed",
+      "detail": "Retained: `snMethodName`"
+    },
+    {
+      "name": "rule:variable_prefixes:`refTexture`",
+      "status": "passed",
+      "detail": "Retained: `refTexture`"
+    },
+    {
+      "name": "rule:variable_prefixes:`arrChildren`",
+      "status": "passed",
+      "detail": "Retained: `arrChildren`"
+    },
+    {
+      "name": "rule:variable_prefixes:`mapTextures`",
+      "status": "passed",
+      "detail": "Retained: `mapTextures`"
+    },
+    {
+      "name": "rule:variable_prefixes:`setResources`",
+      "status": "passed",
+      "detail": "Retained: `setResources`"
+    },
+    {
+      "name": "rule:variable_prefixes:`vPosition`",
+      "status": "passed",
+      "detail": "Retained: `vPosition`"
+    },
+    {
+      "name": "rule:variable_prefixes:`stConfig`",
+      "status": "passed",
+      "detail": "Retained: `stConfig`"
+    },
+    {
+      "name": "rule:parameters:`in_strPath`",
+      "status": "passed",
+      "detail": "Retained: `in_strPath`"
+    },
+    {
+      "name": "rule:parameters:`in_pNode`",
+      "status": "passed",
+      "detail": "Retained: `in_pNode`"
+    },
+    {
+      "name": "rule:parameters:`in_bEnabled`",
+      "status": "passed",
+      "detail": "Retained: `in_bEnabled`"
+    },
+    {
+      "name": "rule:parameters:`out_nResult`",
+      "status": "passed",
+      "detail": "Retained: `out_nResult`"
+    },
+    {
+      "name": "rule:parameters:`out_bSuccess`",
+      "status": "passed",
+      "detail": "Retained: `out_bSuccess`"
+    },
+    {
+      "name": "rule:parameters:`out_refTexture`",
+      "status": "passed",
+      "detail": "Retained: `out_refTexture`"
+    },
+    {
+      "name": "rule:parameters:不使用 `r_`",
+      "status": "passed",
+      "detail": "Retained: 不使用 `r_`"
+    },
+    {
+      "name": "rule:parameters:后仍须带类型前缀",
+      "status": "passed",
+      "detail": "Retained: 后仍须带类型前缀"
+    },
+    {
+      "name": "rule:braces_format:块级左大括号必须另起一行",
+      "status": "passed",
+      "detail": "Retained: 块级左大括号必须另起一行"
+    },
+    {
+      "name": "rule:braces_format:即使只有一行也必须保留大括号",
+      "status": "passed",
+      "detail": "Retained: 即使只有一行也必须保留大括号"
+    },
+    {
+      "name": "rule:braces_format:不得把执行逻辑写在控制语句所在行",
+      "status": "passed",
+      "detail": "Retained: 不得把执行逻辑写在控制语句所在行"
+    },
+    {
+      "name": "rule:braces_format:`[[fallthrough]]`",
+      "status": "passed",
+      "detail": "Retained: `[[fallthrough]]`"
+    },
+    {
+      "name": "rule:braces_format:if (bEnabled) Update();",
+      "status": "passed",
+      "detail": "Retained: if (bEnabled) Update();"
+    },
+    {
+      "name": "rule:braces_format:class TextureCache\n{",
+      "status": "passed",
+      "detail": "Retained: class TextureCache\n{"
+    },
+    {
+      "name": "rule:braces_format:void TextureCache::SetEnabled(bool in_bEnabled)\n{",
+      "status": "passed",
+      "detail": "Retained: void TextureCache::SetEnabled(bool in_bEnabled)\n{"
+    },
+    {
+      "name": "rule:braces_format:if (bEnabled == in_bEnabled)\n\t{",
+      "status": "passed",
+      "detail": "Retained: if (bEnabled == in_bEnabled)\n\t{"
+    },
+    {
+      "name": "rule:braces_format:`Node *pNode`",
+      "status": "passed",
+      "detail": "Retained: `Node *pNode`"
+    },
+    {
+      "name": "rule:braces_format:`const String &strPath`",
+      "status": "passed",
+      "detail": "Retained: `const String &strPath`"
+    },
+    {
+      "name": "rule:braces_format:文件末尾保留换行",
+      "status": "passed",
+      "detail": "Retained: 文件末尾保留换行"
+    },
+    {
+      "name": "rule:headers_classes:统一版权头",
+      "status": "passed",
+      "detail": "Retained: 统一版权头"
+    },
+    {
+      "name": "rule:headers_classes:`#pragma once`",
+      "status": "passed",
+      "detail": "Retained: `#pragma once`"
+    },
+    {
+      "name": "rule:headers_classes:不依赖传递包含",
+      "status": "passed",
+      "detail": "Retained: 不依赖传递包含"
+    },
+    {
+      "name": "rule:headers_classes:前置声明",
+      "status": "passed",
+      "detail": "Retained: 前置声明"
+    },
+    {
+      "name": "rule:headers_classes:`GDCLASS`",
+      "status": "passed",
+      "detail": "Retained: `GDCLASS`"
+    },
+    {
+      "name": "rule:headers_classes:`public`、`protected`、`private`",
+      "status": "passed",
+      "detail": "Retained: `public`、`protected`、`private`"
+    },
+    {
+      "name": "rule:headers_classes:`override`",
+      "status": "passed",
+      "detail": "Retained: `override`"
+    },
+    {
+      "name": "rule:headers_classes:`final`",
+      "status": "passed",
+      "detail": "Retained: `final`"
+    },
+    {
+      "name": "rule:headers_classes:析构正确",
+      "status": "passed",
+      "detail": "Retained: 析构正确"
+    },
+    {
+      "name": "rule:headers_classes:强制内联须有性能依据",
+      "status": "passed",
+      "detail": "Retained: 强制内联须有性能依据"
+    },
+    {
+      "name": "rule:headers_classes:`using namespace`",
+      "status": "passed",
+      "detail": "Retained: `using namespace`"
+    },
+    {
+      "name": "rule:headers_classes:匿名命名空间",
+      "status": "passed",
+      "detail": "Retained: 匿名命名空间"
+    },
+    {
+      "name": "rule:types_api:明确宽度整数",
+      "status": "passed",
+      "detail": "Retained: 明确宽度整数"
+    },
+    {
+      "name": "rule:types_api:`real_t`",
+      "status": "passed",
+      "detail": "Retained: `real_t`"
+    },
+    {
+      "name": "rule:types_api:`float`／`double`",
+      "status": "passed",
+      "detail": "Retained: `float`／`double`"
+    },
+    {
+      "name": "rule:types_api:`StringName`",
+      "status": "passed",
+      "detail": "Retained: `StringName`"
+    },
+    {
+      "name": "rule:types_api:`Vector`",
+      "status": "passed",
+      "detail": "Retained: `Vector`"
+    },
+    {
+      "name": "rule:types_api:`HashMap`",
+      "status": "passed",
+      "detail": "Retained: `HashMap`"
+    },
+    {
+      "name": "rule:types_api:`HashSet`",
+      "status": "passed",
+      "detail": "Retained: `HashSet`"
+    },
+    {
+      "name": "rule:types_api:不以标准容器替代",
+      "status": "passed",
+      "detail": "Retained: 不以标准容器替代"
+    },
+    {
+      "name": "rule:types_api:翻译机制",
+      "status": "passed",
+      "detail": "Retained: 翻译机制"
+    },
+    {
+      "name": "rule:types_api:大型只读输入用 `const &`",
+      "status": "passed",
+      "detail": "Retained: 大型只读输入用 `const &`"
+    },
+    {
+      "name": "rule:types_api:输出参数用 `out_`",
+      "status": "passed",
+      "detail": "Retained: 输出参数用 `out_`"
+    },
+    {
+      "name": "rule:types_api:空值语义",
+      "status": "passed",
+      "detail": "Retained: 空值语义"
+    },
+    {
+      "name": "rule:types_api:顶层 `const`",
+      "status": "passed",
+      "detail": "Retained: 顶层 `const`"
+    },
+    {
+      "name": "rule:types_api:`bool`／`String` 重载",
+      "status": "passed",
+      "detail": "Retained: `bool`／`String` 重载"
+    },
+    {
+      "name": "rule:types_api:成组可选配置使用结构体",
+      "status": "passed",
+      "detail": "Retained: 成组可选配置使用结构体"
+    },
+    {
+      "name": "rule:types_api:明确单位",
+      "status": "passed",
+      "detail": "Retained: 明确单位"
+    },
+    {
+      "name": "rule:memory_errors:`memnew`、`memdelete`",
+      "status": "passed",
+      "detail": "Retained: `memnew`、`memdelete`"
+    },
+    {
+      "name": "rule:memory_errors:`RefCounted` 优先 `Ref<T>`",
+      "status": "passed",
+      "detail": "Retained: `RefCounted` 优先 `Ref<T>`"
+    },
+    {
+      "name": "rule:memory_errors:场景树对象遵循其所有权",
+      "status": "passed",
+      "detail": "Retained: 场景树对象遵循其所有权"
+    },
+    {
+      "name": "rule:memory_errors:裸指针不表达所有权",
+      "status": "passed",
+      "detail": "Retained: 裸指针不表达所有权"
+    },
+    {
+      "name": "rule:memory_errors:异步任务不保存无生命周期保障",
+      "status": "passed",
+      "detail": "Retained: 异步任务不保存无生命周期保障"
+    },
+    {
+      "name": "rule:memory_errors:`ObjectID`",
+      "status": "passed",
+      "detail": "Retained: `ObjectID`"
+    },
+    {
+      "name": "rule:memory_errors:RID",
+      "status": "passed",
+      "detail": "Retained: RID"
+    },
+    {
+      "name": "rule:memory_errors:可恢复错误返回 `Error`",
+      "status": "passed",
+      "detail": "Retained: 可恢复错误返回 `Error`"
+    },
+    {
+      "name": "rule:memory_errors:`ERR_FAIL_*`",
+      "status": "passed",
+      "detail": "Retained: `ERR_FAIL_*`"
+    },
+    {
+      "name": "rule:memory_errors:`_MSG`",
+      "status": "passed",
+      "detail": "Retained: `_MSG`"
+    },
+    {
+      "name": "rule:memory_errors:严重不变量破坏",
+      "status": "passed",
+      "detail": "Retained: 严重不变量破坏"
+    },
+    {
+      "name": "rule:memory_errors:公共边界验证输入",
+      "status": "passed",
+      "detail": "Retained: 公共边界验证输入"
+    },
+    {
+      "name": "rule:thread_platform:线程亲和性",
+      "status": "passed",
+      "detail": "Retained: 线程亲和性"
+    },
+    {
+      "name": "rule:thread_platform:锁的保护对象、顺序和范围",
+      "status": "passed",
+      "detail": "Retained: 锁的保护对象、顺序和范围"
+    },
+    {
+      "name": "rule:thread_platform:可重入或长阻塞",
+      "status": "passed",
+      "detail": "Retained: 可重入或长阻塞"
+    },
+    {
+      "name": "rule:thread_platform:非允许线程操作场景树或渲染资源",
+      "status": "passed",
+      "detail": "Retained: 非允许线程操作场景树或渲染资源"
+    },
+    {
+      "name": "rule:thread_platform:平台目录或抽象层",
+      "status": "passed",
+      "detail": "Retained: 平台目录或抽象层"
+    },
+    {
+      "name": "rule:thread_platform:能力接口",
+      "status": "passed",
+      "detail": "Retained: 能力接口"
+    },
+    {
+      "name": "rule:thread_platform:集中条件编译",
+      "status": "passed",
+      "detail": "Retained: 集中条件编译"
+    },
+    {
+      "name": "rule:thread_platform:验证受影响平台",
+      "status": "passed",
+      "detail": "Retained: 验证受影响平台"
+    },
+    {
+      "name": "rule:comments_thirdparty:注释解释意图、约束和原因",
+      "status": "passed",
+      "detail": "Retained: 注释解释意图、约束和原因"
+    },
+    {
+      "name": "rule:comments_thirdparty:美式英语",
+      "status": "passed",
+      "detail": "Retained: 美式英语"
+    },
+    {
+      "name": "rule:comments_thirdparty:准确、包容术语",
+      "status": "passed",
+      "detail": "Retained: 准确、包容术语"
+    },
+    {
+      "name": "rule:comments_thirdparty:公共 API 按需说明单位、范围、错误、所有权、空值和线程要求",
+      "status": "passed",
+      "detail": "Retained: 公共 API 按需说明单位、范围、错误、所有权、空值和线程要求"
+    },
+    {
+      "name": "rule:comments_thirdparty:第三方修改最小化",
+      "status": "passed",
+      "detail": "Retained: 第三方修改最小化"
+    },
+    {
+      "name": "rule:comments_thirdparty:来源和补丁",
+      "status": "passed",
+      "detail": "Retained: 来源和补丁"
+    },
+    {
+      "name": "rule:comments_thirdparty:生成文件只改生成源",
+      "status": "passed",
+      "detail": "Retained: 生成文件只改生成源"
+    },
+    {
+      "name": "rule:tools:全局 `.clang-format` 或 `.clang-tidy` 已切换",
+      "status": "passed",
+      "detail": "Retained: 全局 `.clang-format` 或 `.clang-tidy` 已切换"
+    },
+    {
+      "name": "rule:tools:不得批量迁移存量代码",
+      "status": "passed",
+      "detail": "Retained: 不得批量迁移存量代码"
+    },
+    {
+      "name": "rule:tools:人工评审",
+      "status": "passed",
+      "detail": "Retained: 人工评审"
+    },
+    {
+      "name": "rule:tools:自动格式化不得无差别改写存量文件",
+      "status": "passed",
+      "detail": "Retained: 自动格式化不得无差别改写存量文件"
+    },
+    {
+      "name": "rule:tools:现有必需检查仍有效",
+      "status": "passed",
+      "detail": "Retained: 现有必需检查仍有效"
+    },
+    {
+      "name": "rule:tools:不绕过检查",
+      "status": "passed",
+      "detail": "Retained: 不绕过检查"
+    },
+    {
+      "name": "example:no_old_output_prefix",
+      "status": "passed",
+      "detail": "No r_ output parameter example"
+    },
+    {
+      "name": "git:scope",
+      "status": "passed",
+      "detail": "Only the standard and authorized evidence changed"
+    },
+    {
+      "name": "evidence:source_index",
+      "status": "passed",
+      "detail": "Exactly one source index"
+    },
+    {
+      "name": "evidence:request_event",
+      "status": "passed",
+      "detail": "Exactly one request event"
+    }
+  ],
+  "engine_build": {
+    "status": "not_run",
+    "reason": "Documentation-only compression; no C++ behavior or build input changed"
+  },
+  "changed_paths": [
+    "CPP_CODING_STANDARD.md",
+    "data-collection/project-cpp-coding-standard-density-20261112-validation.json",
+    "data-collection/requests/project-cpp-coding-standard-density-20261112/",
+    "design-docs/project-cpp-coding-standard-density-20261112.md",
+    "gonggong-diting-data/events/gonggong-workspace/project-cpp-coding-standard-density-20261112/"
+  ]
+}

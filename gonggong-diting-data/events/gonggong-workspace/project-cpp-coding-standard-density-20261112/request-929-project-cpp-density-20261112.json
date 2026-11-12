@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "request-929-project-cpp-density-20261112",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "project-cpp-coding-standard-density-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T10:54:14+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/929",
+  "agent": {
+    "id": "kimi-work-kaiyunxue",
+    "version": "20261112",
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8",
+    "origin": "current-authorized-host"
+  },
+  "payload": {
+    "scope": "不另建速查页，将项目 C++ 编码规范压缩到原稿行数和字节数均不超过 60%，保留全部强制规则、过渡边界和必要示例。",
+    "authorization_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/929",
+    "request_document": "design-docs/project-cpp-coding-standard-density-20261112.md",
+    "validation": "data-collection/project-cpp-coding-standard-density-20261112-validation.json",
+    "usage": null,
+    "usage_unknown_reason": "No measured provider usage supplied"
+  },
+  "evidence_refs": [],
+  "sha256": "20b67eb94c63db2f8ec3c5d676b6dbd1584ed7402bf0dc911abaaf22a4c4019f"
+}
