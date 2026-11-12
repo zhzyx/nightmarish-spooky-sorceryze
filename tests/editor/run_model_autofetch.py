@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import time
 import zipfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -37,6 +38,14 @@ func events(kind: String) -> int:
         if item is Dictionary and item.get("kind", "") == kind:
             total += 1
     return total
+func fixture_pid_running(pid: int) -> bool:
+    # Godot's process table only knows its direct children; inspect the actual
+    # owned fixture descendant through the POSIX process table instead.
+    var output: Array = []
+    if OS.execute("/bin/ps", ["-p", str(pid), "-o", "stat="], output) != 0:
+        return false
+    var state := "".join(output).strip_edges()
+    return not state.is_empty() and not state.begins_with("Z")
 func finish(ok: bool, reason := ""):
     var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false) if dock != null else null
     var result := {"ok": ok, "case": case_name, "error": reason, "checks": checks, "heartbeat": heartbeat, "model_status": status.text if status != null else "", "user_data": OS.get_user_data_dir()}
@@ -56,9 +65,8 @@ func selected_backend(value: int):
     backend.select(value)
     backend.item_selected.emit(value)
 func catalog_has(id: String) -> bool:
-    var picker = dock.get_ai_settings_control().find_child("ModelPicker", true, false)
-    for i in range(picker.item_count):
-        if str(picker.get_item_metadata(i)) == id:
+    for option in dock.get_model_catalog_snapshot().options:
+        if option.id == id:
             return true
     return false
 func project_model_is(id: String) -> bool:
@@ -85,12 +93,161 @@ func _run():
         finish(false, "missing AI Chat")
         return
     EditorInterface.set_main_screen_editor("AI Chat")
-    if dock.get_ai_settings_control().find_child("RefreshModels", true, false) != null:
-        finish(false, "manual refresh button still exists (old binary or incomplete change)")
+    if not dock.has_method("get_model_catalog_snapshot") or dock.get_ai_settings_control().find_child("RefreshModels", true, false) == null:
+        finish(false, "explicit catalog recovery API/button missing")
         return
-    checks.append("manual refresh button absent")
+    checks.append("explicit catalog recovery API/button available")
     var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false)
-    if case_name == "codex-completed-status-delayed-poll":
+    if case_name == "catalog-process-boundary":
+        if OS.get_name() != "macOS" and OS.get_name() != "Linux":
+            finish(false, "SIGSTOP timeout probe is POSIX-specific")
+            return
+        for attempt in [1, 2]:
+            if attempt == 2:
+                dock.refresh_model_catalog()
+            if not await wait_count("catalog-descendants", attempt):
+                finish(false, "real CLI descendant process did not start")
+                return
+            var event: Dictionary = {}
+            for line in FileAccess.get_file_as_string(OS.get_environment("ACCEPT_EVENTS")).split("\n"):
+                var item = JSON.parse_string(line) if not line.is_empty() else null
+                if item is Dictionary and item.get("kind", "") == "catalog-descendants":
+                    event = item
+            var pids: Array = [int(event.pid), int(event.bridge_pid), int(event.descendant_pid)]
+            if not pids.all(func(pid): return pid > 1 and fixture_pid_running(pid)):
+                finish(false, "descendant ownership fixture did not observe all live PIDs")
+                return
+            if attempt == 1:
+                dock.cancel_model_catalog()
+            else:
+                # Stop the real JS bridge's event loop: its own 30s timer cannot
+                # help. The native 35s deadline must terminate the owned group.
+                if OS.execute("/bin/kill", ["-STOP", str(int(event.bridge_pid))]) != 0:
+                    finish(false, "could not suspend owned bridge for native-timeout probe")
+                    return
+                var timeout_deadline := Time.get_ticks_msec() + 40000
+                while dock.get_model_catalog_snapshot().loading and Time.get_ticks_msec() < timeout_deadline:
+                    await create_timer(0.05).timeout
+                if dock.get_model_catalog_snapshot().state != "failed" or not "超时" in dock.get_model_catalog_snapshot().status:
+                    finish(false, "native timeout did not finish the stalled catalog")
+                    return
+            var deadline := Time.get_ticks_msec() + 5000
+            while pids.any(func(pid): return fixture_pid_running(pid)) and Time.get_ticks_msec() < deadline:
+                await create_timer(0.05).timeout
+            if pids.any(func(pid): return fixture_pid_running(pid)):
+                finish(false, "cancel/timeout left a CLI or descendant PID alive")
+                return
+            checks.append("cancel terminated real bridge, CLI and SIGTERM-ignoring descendant" if attempt == 1 else "native 35s timeout terminated suspended bridge, CLI and SIGTERM-ignoring descendant")
+    elif case_name in ["catalog-recovery", "api-recovery"]:
+        var kind := "codex-model-list" if case_name == "catalog-recovery" else "api-model-list"
+        var selected := "CodexModel" if case_name == "catalog-recovery" else "APIModel"
+        if not await wait_count(kind, 1):
+            finish(false, "initial catalog request did not reach fixture")
+            return
+        var deadline := Time.get_ticks_msec() + 10000
+        while dock.get_model_catalog_snapshot().loading and Time.get_ticks_msec() < deadline:
+            await create_timer(0.05).timeout
+        if dock.get_model_catalog_snapshot().state != "failed" or not await stable_count(kind, 1):
+            finish(false, "failed query must be actionable without an automatic retry loop")
+            return
+        checks.append("fixture counted initial failure; failure did not loop")
+        # The actual UI recovery action must start another request, not a backend signal.
+        dock.get_ai_settings_control().find_child("RefreshModels", true, false).pressed.emit()
+        if not await wait_count(kind, 2):
+            finish(false, "explicit retry was swallowed")
+            return
+        var ai = dock.get_ai_settings_control()
+        var field = ai.find_child(selected, true, false)
+        if not field.editable or ai.find_child("AIBackend", true, false).disabled or dock.find_child("Send", true, false).disabled or dock.find_child("AddAgent", true, false).disabled:
+            finish(false, "catalog blocked independent controls")
+            return
+        field.text = "manual-during-query"
+        field.text_changed.emit(field.text)
+        var tabs = dock.find_child("AgentTabs", true, false)
+        dock.find_child("AddAgent", true, false).pressed.emit()
+        if tabs.tab_count != 2:
+            finish(false, "catalog blocked creation of another session")
+            return
+        tabs.current_tab = 0
+        tabs.tab_changed.emit(0)
+        if dock.get_model_catalog_snapshot().current != "manual-during-query":
+            finish(false, "switching session changed current project selection")
+            return
+        checks.append("pending catalog allows manual selection, new session and switching")
+        dock.find_child("ConsultationOnly", true, false).button_pressed = true
+        ai.find_child("AllowTools", true, false).button_pressed = false
+        dock.find_child("ChatInput", true, false).text = "offline catalog concurrent acceptance"
+        dock.find_child("Send", true, false).pressed.emit()
+        if not await wait_count("codex-offline-chat" if case_name == "catalog-recovery" else "api-chat", 1):
+            finish(false, "query prevented actual inference fixture start")
+            return
+        FileAccess.open(OS.get_environment("ACCEPT_CONTROL") + "/release-catalog", FileAccess.WRITE).store_string("release")
+        deadline = Time.get_ticks_msec() + 5000
+        while dock.get_model_catalog_snapshot().loading and Time.get_ticks_msec() < deadline:
+            await create_timer(0.05).timeout
+        if dock.get_model_catalog_snapshot().state != "ready" or dock.find_child("Stop", true, false).disabled:
+            finish(false, "catalog completion reset active inference busy state")
+            return
+        if dock.get_model_catalog_snapshot().current != "manual-during-query":
+            finish(false, "catalog completion overwrote manual selection")
+            return
+        if not await wait_count("codex-offline-chat-done" if case_name == "catalog-recovery" else "api-chat-done", 1):
+            finish(false, "catalog stole or cancelled inference transport")
+            return
+        deadline = Time.get_ticks_msec() + 5000
+        while not dock.find_child("Stop", true, false).disabled and Time.get_ticks_msec() < deadline:
+            await create_timer(0.05).timeout
+        checks.append("actual inference finished concurrently; catalog completion preserved busy state and selection")
+        var snapshot: Dictionary = dock.get_model_catalog_snapshot()
+        var provider_entries: Array = snapshot.options.filter(func(option): return option.id == "fixture-recovered")
+        if provider_entries.size() != 1 or provider_entries[0].get("source", "").is_empty() or not provider_entries[0].get("reasoning_efforts", []).has("high"):
+            finish(false, "stable snapshot lost source or advertised capability")
+            return
+        if case_name == "api-recovery" and (provider_entries[0].source != "fixture-wire" or snapshot.options.any(func(option): return typeof(option.id) != TYPE_STRING or option.id == "123")):
+            finish(false, "source provenance or typed ID filtering lost")
+            return
+        if provider_entries[0].has("apiKey"):
+            finish(false, "snapshot exported a private provider field")
+            return
+        snapshot.options.clear()
+        if not catalog_has("fixture-recovered"):
+            finish(false, "snapshot mutation modified native catalog")
+            return
+        checks.append("detached stable snapshot retains source and capability")
+        dock.refresh_model_catalog()
+        if not await wait_count(kind, 3):
+            finish(false, "cancellable request did not start")
+            return
+        var previous: int = dock.get_model_catalog_snapshot().generation
+        dock.get_ai_settings_control().find_child("CancelModels", true, false).pressed.emit()
+        if dock.get_model_catalog_snapshot().loading or dock.get_model_catalog_snapshot().state != "cancelled":
+            finish(false, "explicit cancel did not terminate catalog operation")
+            return
+        dock.refresh_model_catalog()
+        if not await wait_count(kind, 4) or not await wait_backend_ready("fixture-current"):
+            finish(false, "cancelled query could not retry")
+            return
+        if dock.get_model_catalog_snapshot().generation <= previous or dock.get_model_catalog_snapshot().current != "manual-during-query":
+            finish(false, "retry generation or current selection invalid")
+            return
+        await create_timer(3.5).timeout
+        if catalog_has("fixture-cancelled") or not catalog_has("fixture-current"):
+            finish(false, "cancelled late result contaminated current catalog")
+            return
+        checks.append("cancel and retry counted separately; cancelled late response cannot replace current catalog")
+        dock.refresh_model_catalog()
+        if not await wait_count(kind, 5):
+            finish(false, "configuration race request did not start")
+            return
+        OS.set_environment("OPENAI_BASE_URL", "https://changed.invalid/v1")
+        if not await wait_count(kind, 6) or not await wait_backend_ready("fixture-new-environment"):
+            finish(false, "changed effective environment did not isolate pending result and refresh")
+            return
+        if catalog_has("fixture-old-environment") or dock.get_model_catalog_snapshot().current != "manual-during-query":
+            finish(false, "old environment result contaminated catalog or selection")
+            return
+        checks.append("environment identity change rejected late result and refreshed current source")
+    elif case_name == "codex-completed-status-delayed-poll":
         # Hold the event loop until the actual subprocess has completed, then
         # delay the native poll beyond its deadline without changing any clock.
         var deadline := Time.get_ticks_msec() + 3000
@@ -248,6 +405,16 @@ func _run():
                 finish(false, "refresh displaced the active chat")
                 return
             checks.append("busy chat finished and pending login event survived")
+    elif case_name == "external-status-config-change":
+        if not await wait_count("codex-login-status", 2, 18.0) or not await wait_count("codex-model-list", 1, 18.0) or not await wait_backend_ready("fixture-codex"):
+            finish(false, "external runtime edit left stale login status or never queried the current source")
+            return
+        var snap = dock.get_model_catalog_snapshot()
+        var refresh = dock.get_ai_settings_control().find_child("RefreshModels", true, false)
+        if snap.state != "ready" or snap.loading or refresh.disabled or not await stable_count("codex-model-list", 1):
+            finish(false, "current-source recovery left refresh disabled or duplicated discovery")
+            return
+        checks.append("external runtime file edit during login-status check recovered current catalog and explicit refresh without UI signals")
     elif case_name == "codex-status-config-change":
         if not await wait_count("codex-login-status", 1):
             finish(false, "initial auth-status process did not start")
@@ -311,18 +478,25 @@ func _run():
     finish(true)
 """
 
-FAKE_CODEX = r"""import json, os, sys, time
+FAKE_CODEX = r"""import json, os, sys, time, signal, subprocess
 from pathlib import Path
 state = Path(__STATE__)
 case = __CASE__
-def event(kind):
+def event(kind, **extra):
     fd = os.open(state / 'events.jsonl', os.O_CREAT | os.O_WRONLY | os.O_APPEND, 0o600)
     entry_pid = os.getppid() if os.name == 'nt' else os.getpid()
-    os.write(fd, (json.dumps({'kind': kind, 'pid': os.getpid(), 'entry_pid': entry_pid})+'\n').encode('utf-8')); os.close(fd)
+    os.write(fd, (json.dumps({'kind': kind, 'pid': os.getpid(), 'entry_pid': entry_pid, **extra})+'\n').encode('utf-8')); os.close(fd)
 a=sys.argv[1:]
 if a[:2]==['login','status']:
     event('codex-login-status')
     if case in ['codex-status-timeout','codex-status-config-change']: time.sleep(90)
+    if case=='external-status-config-change':
+        time.sleep(.2)
+        config=Path(__CONFIG_PATH__)
+        temporary=config.with_suffix('.changed.tmp')
+        temporary.write_text(json.dumps({'schema_version':1,'runtimes':{'codex':__ALT_CODEX__,'node':__NODE__}}))
+        temporary.replace(config)
+        time.sleep(.2)
     if case=='codex-status-login-race' and not (state/'logged-in').exists(): time.sleep(4); sys.exit(1)
     if case=='session-catalog-freshness' and (state/'refresh-login').exists(): sys.exit(0)
     sys.exit(0 if (state/'logged-in').exists() else 1)
@@ -337,6 +511,22 @@ if a and a[0]=='app-server':
         if p.get('method')=='initialize': result={}
         elif p.get('method')=='model/list':
             event('codex-model-list')
+            if case=='catalog-process-boundary':
+                signal.signal(signal.SIGTERM, signal.SIG_IGN)
+                descendant = subprocess.Popen([sys.executable, '-c', 'import signal,time; signal.signal(signal.SIGTERM,signal.SIG_IGN); time.sleep(90)', str(state)], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                event('catalog-descendants', bridge_pid=os.getppid(), descendant_pid=descendant.pid)
+                while True: time.sleep(1)
+            if case=='catalog-recovery':
+                count = sum(json.loads(line)['kind']=='codex-model-list' for line in (state/'events.jsonl').read_text().splitlines())
+                if count==1:
+                    print(json.dumps({'id':p['id'],'error':{'code':-32603,'message':'offline catalog failure'}}),flush=True);continue
+                if count==2:
+                    deadline=time.monotonic()+15
+                    while not (state/'release-catalog').exists() and time.monotonic()<deadline: time.sleep(.02)
+                if count in [3,5]: time.sleep(3)
+                model = {2:'fixture-recovered',3:'fixture-cancelled',4:'fixture-current',5:'fixture-old-environment',6:'fixture-new-environment'}.get(count,'unexpected-duplicate')
+                result={'data':[{'id':model,'model':model,'displayName':'Offline Codex','supportedReasoningEfforts':[{'reasoningEffort':'high'}]}],'nextCursor':None}
+                print(json.dumps({'id':p['id'],'result':result}),flush=True);continue
             if case=='codex-catalog-failure':
                 print(json.dumps({'id':p['id'],'error':{'code':-32603,'message':'offline catalog failure'}}),flush=True);continue
             model = 'fixture-codex'
@@ -378,6 +568,9 @@ process.stdin.on('data', chunk => {
 """
 
 CASES = [
+    "catalog-process-boundary",
+    "catalog-recovery",
+    "api-recovery",
     "codex-startup",
     "codex-completed-status-delayed-poll",
     "session-reuse",
@@ -388,6 +581,7 @@ CASES = [
     "codex-status-timeout",
     "codex-catalog-failure",
     "codex-status-config-change",
+    "external-status-config-change",
     "codex-status-login-race",
     "api-chat-startup",
     "api-responses-startup",
@@ -508,21 +702,71 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
                 with lock:
                     with (state / "events.jsonl").open("a", encoding="utf-8") as stream:
                         stream.write(json.dumps({"kind": "api-model-list"}) + "\n")
-                body = json.dumps({"data": [{"id": "fixture-api"}]}).encode("utf-8")
+                code = 200
+                model = "fixture-api"
+                if case == "api-recovery":
+                    count = sum(
+                        json.loads(line)["kind"] == "api-model-list"
+                        for line in (state / "events.jsonl").read_text().splitlines()
+                    )
+                    code = 503 if count == 1 else 200
+                    if count == 2:
+                        deadline = time.monotonic() + 15
+                        while not (state / "release-catalog").exists() and time.monotonic() < deadline:
+                            time.sleep(0.02)
+                    if count in (3, 5):
+                        time.sleep(3)
+                    model = {
+                        2: "fixture-recovered",
+                        3: "fixture-cancelled",
+                        4: "fixture-current",
+                        5: "fixture-old-environment",
+                        6: "fixture-new-environment",
+                    }.get(count, "unexpected-duplicate")
+                body = json.dumps({
+                    "data": [
+                        {
+                            "id": model,
+                            "reasoning_efforts": ["high"],
+                            "source": "fixture-wire",
+                            "apiKey": "fixture-private-provider-field",
+                        },
+                        {"id": 123},
+                    ]
+                }).encode("utf-8")
+                self.send_response(code)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                try:
+                    self.wfile.write(body)
+                except (BrokenPipeError, ConnectionResetError):
+                    pass
+
+            def do_POST(self):
+                if case != "api-recovery":
+                    self.send_error(500, "Unexpected inference request in offline model-list fixture")
+                    return
+                self.rfile.read(int(self.headers["Content-Length"]))
+                with lock, (state / "events.jsonl").open("a") as stream:
+                    stream.write(json.dumps({"kind": "api-chat"}) + "\n")
+                time.sleep(2.5)
+                body = json.dumps({
+                    "choices": [{"message": {"role": "assistant", "content": "OFFLINE_CHAT_FINISHED"}}]
+                }).encode()
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json")
                 self.send_header("Content-Length", str(len(body)))
                 self.end_headers()
                 self.wfile.write(body)
-
-            def do_POST(self):
-                self.send_error(500, "Unexpected inference request in offline model-list fixture")
+                with lock, (state / "events.jsonl").open("a") as stream:
+                    stream.write(json.dumps({"kind": "api-chat-done"}) + "\n")
 
         server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
         threading.Thread(target=server.serve_forever, daemon=True).start()
         backend = (
             0
-            if case == "api-chat-startup"
+            if case in ("api-chat-startup", "api-recovery")
             else 3
             if case == "api-responses-startup"
             else 1
@@ -595,6 +839,7 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
                 )
             },
             "ACCEPT_CASE": case,
+            "ACCEPT_CONTROL": str(state),
             "ACCEPT_ALT_CODEX": str(alt_codex),
             "ACCEPT_EVENTS": str(state / "events.jsonl"),
             "ACCEPT_RESULT": str(output),
@@ -668,14 +913,15 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
             if (state / "events.jsonl").exists():
                 for line in (state / "events.jsonl").read_text(encoding="utf-8").splitlines():
                     try:
-                        pid = json.loads(line).get("pid")
-                        if not isinstance(pid, int):
-                            continue
-                        probe = subprocess.run(
-                            ["/bin/ps", "-p", str(pid), "-o", "command="], capture_output=True, text=True
-                        )
-                        if probe.returncode == 0 and str(root) in probe.stdout:
-                            os.kill(pid, signal.SIGTERM)
+                        event = json.loads(line)
+                        for pid in (event.get("pid"), event.get("bridge_pid"), event.get("descendant_pid")):
+                            if not isinstance(pid, int):
+                                continue
+                            probe = subprocess.run(
+                                ["/bin/ps", "-p", str(pid), "-o", "command="], capture_output=True, text=True
+                            )
+                            if probe.returncode == 0 and str(root) in probe.stdout:
+                                os.kill(pid, signal.SIGKILL)
                     except (ValueError, OSError):
                         pass
 
@@ -698,6 +944,9 @@ def main():
     checked_sources = [
         "editor/docks/ai_chat_dock.cpp",
         "editor/docks/ai_chat_dock.h",
+        "editor/docks/daqian/workspace.gd",
+        "editor/docks/daqian/model_settings.gd",
+        "tests/editor/run_model_autofetch.py",
         "tools/codex_cli/godot_bridge.js",
         "tools/codex_cli/attach_job.ps1",
         "tools/codebuddy_cli/godot_bridge.js",
@@ -711,7 +960,7 @@ def main():
         binary_sha = hashlib.sha256(binary.read_bytes()).hexdigest()
         if a.expected_sha and a.expected_sha != binary_sha:
             raise RuntimeError("Host artifact digest changed before independent validation")
-        for case in a.case or CASES:
+        for case in a.case or [case for case in CASES if case != "catalog-process-boundary" or os.name != "nt"]:
             result = run_case(binary, source, a.node.resolve(), case, a.windows_job_boundary)
             results.append(result)
             print(json.dumps(result, ensure_ascii=False), flush=True)
@@ -719,6 +968,8 @@ def main():
             report = {
                 "binary_sha256": binary_sha,
                 "source_sha256": hashes,
+                "issue_number": 992,
+                "request_id": "model-catalog-recovery-20261113",
                 "source_unchanged": current == hashes,
                 "provider": "Offline CLI/HTTP fixtures; real editor binary; no real inference",
                 "isolated_settings": True,

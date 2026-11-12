@@ -1239,7 +1239,7 @@ int AIChatDock::_create_sub_agent(int p_parent, const String &p_title, const Dic
 }
 
 void AIChatDock::_add_sub_agent() {
-	if (!gonggong_recovered_result.is_empty() || busy || models_loading || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed) {
+	if (!gonggong_recovered_result.is_empty() || busy || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed) {
 		return;
 	}
 	const int parent = active_agent;
@@ -1389,7 +1389,7 @@ void AIChatDock::_confirm_design_action() {
 }
 
 void AIChatDock::_spawn_sub_agents_pressed() {
-	if (!gonggong_recovered_result.is_empty() || busy || models_loading || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || scheduled_agents.has(active_agent)) {
+	if (!gonggong_recovered_result.is_empty() || busy || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || scheduled_agents.has(active_agent)) {
 		return;
 	}
 	if (sub_agents.has(active_agent) && sub_agents[active_agent].has("terminal_receipt") && !sub_agents[active_agent].has("acceptance") && gonggong_receipt_pid < 0) {
@@ -1612,7 +1612,7 @@ bool AIChatDock::_resume_work_order_agents(int p_parent, const String &p_request
 }
 
 void AIChatDock::_sub_agent_dispatch() {
-	if (!is_inside_tree() || !history_loaded || history_restoring || !history_writable || busy || models_loading || engine_build_pid >= 0 || engine_restart_requested || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty() || !issue_guide_state.is_empty()) {
+	if (!is_inside_tree() || !history_loaded || history_restoring || !history_writable || busy || engine_build_pid >= 0 || engine_restart_requested || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty() || !issue_guide_state.is_empty()) {
 		return;
 	}
 	if (gonggong_receipt_pid < 0 && !queue_paused && queued_messages.is_empty()) {
@@ -1935,7 +1935,7 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 		return false;
 	}
 	if (config.is_empty()) {
-		const String signature = _model_config_signature(runtime) + ":" + GongGongRuntimeConfig::path(runtime, "workflow_python") + ":" + _active_model_field()->get_text() + ":" + production_capacity->get_text() + ":" + String(Dictionary(workers[0])["designSha256"]);
+		const String signature = GetModelCatalogIdentity(runtime) + ":" + GongGongRuntimeConfig::path(runtime, "workflow_python") + ":" + _active_model_field()->get_text() + ":" + production_capacity->get_text() + ":" + String(Dictionary(workers[0])["designSha256"]);
 		if (String(design_batches[dispatch_parent].get("production_signature", "")) == signature) {
 			config = design_batches[dispatch_parent].get("production_config", "");
 		}
@@ -1945,7 +1945,7 @@ bool AIChatDock::_dispatch_parallel_sub_agents() {
 				return true;
 			}
 			const String selected_model = _active_model_field()->get_text().strip_edges();
-			const Array catalog = discovered_model_catalogs.get(_model_config_signature(runtime), Array());
+			const Array catalog = discovered_model_catalogs.get(GetModelCatalogIdentity(runtime), Array());
 			const String capacity = production_capacity->get_text().strip_edges();
 			if ((backend->get_selected() != 1 && backend->get_selected() != 2) || selected_model.is_empty() || catalog.is_empty() || !capacity.is_valid_int() || capacity.to_int() < 1) {
 				_append(TTR("Error"), U"选择已连接的 Codex/CodeBuddy CLI，刷新并选择实际发现的模型，填写正整数容量后继续落地。普通串行会话仍可用，本次未降级执行。");
@@ -2409,7 +2409,7 @@ void AIChatDock::_refresh_sub_agents() {
 	for (const KeyValue<int, Dictionary> &entry : acceptance_bridge_jobs) {
 		acceptance_pending = acceptance_pending || int(entry.value.get("parent", -1)) == root;
 	}
-	stop_button->set_disabled(!parallel_continuation && !acceptance_pending && !busy && pending_external_editor_message.is_empty() && !models_loading && !snapshot_restoring && gonggong_recovered_result.is_empty() && (observed_command_owner.is_empty() || observed_command_owner != conversation_id));
+	stop_button->set_disabled(!parallel_continuation && !acceptance_pending && !busy && pending_external_editor_message.is_empty() && !snapshot_restoring && gonggong_recovered_result.is_empty() && (observed_command_owner.is_empty() || observed_command_owner != conversation_id));
 	const Vector<int> children = _sub_agent_children(root, false);
 	bool resumable = false;
 	sub_agent_tabs->set_block_signals(true);
@@ -2431,7 +2431,7 @@ void AIChatDock::_refresh_sub_agents() {
 		}
 	}
 	sub_agent_tabs->set_block_signals(false);
-	const bool locked = busy || models_loading || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty();
+	const bool locked = busy || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty();
 	const bool child = sub_agents.has(active_agent);
 	add_sub_agent->set_disabled(locked || child || !history_writable || children.size() >= AIChatSubAgents::MAX_CHILDREN_PER_PARENT || sub_agents.size() >= AIChatSubAgents::MAX_CHILDREN || agent_tabs->get_tab_count() >= 256);
 	add_sub_agent->set_tooltip_text(child ? U"子会话不能再派生子会话；请切回父会话后新建。" : U"在当前父会话窗口内新建一个子会话。子会话不能再派生子会话。");

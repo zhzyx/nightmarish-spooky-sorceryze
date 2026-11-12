@@ -395,7 +395,7 @@ void AIChatDock::_route_chat_layout() {
 }
 
 void AIChatDock::_workspace_selected(int p_index) {
-	if (p_index == 0 && scheduled_agents.has(active_agent) && !busy && !models_loading && engine_build_pid < 0) {
+	if (p_index == 0 && scheduled_agents.has(active_agent) && !busy && engine_build_pid < 0) {
 		const int index = _agent_index(last_manual_agent);
 		if (index >= 0) {
 			_agent_selected(index);
@@ -631,7 +631,7 @@ void AIChatDock::_scheduler_tick() {
 }
 
 void AIChatDock::_scheduler_dispatch() {
-	if (!is_inside_tree() || !history_loaded || history_restoring || busy || models_loading || engine_build_pid >= 0 || engine_restart_requested || (!queue_paused && !queued_messages.is_empty())) {
+	if (!is_inside_tree() || !history_loaded || history_restoring || busy || engine_build_pid >= 0 || engine_restart_requested || (!queue_paused && !queued_messages.is_empty())) {
 		return;
 	}
 	// Stable Agent creation order is the scheduler's FIFO, not HashMap order.
@@ -665,11 +665,11 @@ void AIChatDock::_scheduler_finished() {
 		_cancel_cli();
 		set_process(process_id >= 0 || sub_agent_parallel_pid >= 0);
 	}
-	if (!busy && !models_loading && engine_build_pid < 0 && _manual_agent_count() == 0) {
+	if (!busy && engine_build_pid < 0 && _manual_agent_count() == 0) {
 		_add_agent();
 	}
 	_refresh_schedules();
-	if (!busy && !models_loading && engine_build_pid < 0 && workspace_pages->get_current_tab() == 0 && scheduled_agents.has(active_agent)) {
+	if (!busy && engine_build_pid < 0 && workspace_pages->get_current_tab() == 0 && scheduled_agents.has(active_agent)) {
 		const int index = _agent_index(last_manual_agent);
 		if (index >= 0) {
 			_agent_selected(index);
@@ -701,7 +701,7 @@ void AIChatDock::_timer_agent_close(int p_index) {
 
 void AIChatDock::_scheduled_agent_removed(int p_id) {
 	scheduled_agents.erase(p_id);
-	if (_manual_agent_count() == 0 && !busy && !models_loading && engine_build_pid < 0) {
+	if (_manual_agent_count() == 0 && !busy && engine_build_pid < 0) {
 		_add_agent();
 	}
 	_refresh_schedules();

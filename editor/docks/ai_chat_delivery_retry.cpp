@@ -47,7 +47,7 @@ String AIChatDock::_delivery_retry_blocked_reason() const {
 	if (sub_agents.has(active_agent) || scheduled_agents.has(active_agent)) {
 		return "parent_session_required";
 	}
-	if (busy || process_id >= 0 || candidate_pid >= 0 || models_loading || engine_build_pid >= 0 || engine_restart_requested || engine_restart_armed || !delivery_retry_route.is_empty()) {
+	if (busy || process_id >= 0 || candidate_pid >= 0 || engine_build_pid >= 0 || engine_restart_requested || engine_restart_armed || !delivery_retry_route.is_empty()) {
 		return "editor_busy";
 	}
 	if (history_restoring || !history_writable || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty()) {

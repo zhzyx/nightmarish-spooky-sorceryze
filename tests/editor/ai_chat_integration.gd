@@ -1,17 +1,10 @@
 @tool
 extends SceneTree
 
-func _refresh_models(chat: Node):
-	# A real connection edit now replaces the removed manual refresh action.
-	# Normalization retains the fixture credential/executable used on the wire.
-	var backend = chat.get_ai_settings_control().find_child("AIBackend", true, false)
-	var field = chat.get_environment_settings_control().find_child("CLINode", true, false) if backend.selected in [1, 2] else chat.get_ai_settings_control().find_child("APIKey", true, false)
-	field.text = field.text.get_base_dir() + "/./" + field.text.get_file() if backend.selected in [1, 2] else field.text + " "
-	var status = chat.get_ai_settings_control().find_child("ModelStatus", true, false)
-	var previous_status = status.text
-	field.text_changed.emit(field.text)
-	var deadline = Time.get_ticks_msec() + 5000
-	while not backend.disabled and status.text == previous_status and Time.get_ticks_msec() < deadline:
+func _refresh_models(chat: Node, wait_for_completion := true):
+	chat.refresh_model_catalog()
+	var deadline := Time.get_ticks_msec() + 40000
+	while wait_for_completion and chat.get_model_catalog_snapshot().loading and Time.get_ticks_msec() < deadline:
 		await process_frame
 
 func _chat_setting(chat: Node, name: String) -> Control:
@@ -1118,16 +1111,16 @@ func _run():
 	var previous_endpoint = query_endpoint.text
 	if backend.selected == 0:
 		query_endpoint.text = previous_endpoint.replace("/v1/chat/", "/v1/slow-models/chat/")
-	await _refresh_models(dock)
+	await _refresh_models(dock, false)
 	for field in ["APIEndpoint", "APIKey", "APIModel", "CLINode", "CLIBridge", "CLIEntry", "CLIModel"]:
-		if not _check(not _chat_setting(dock, field).editable, "Connection field remained editable during model refresh: " + field):
+		if not _check(_chat_setting(dock, field).editable, "Catalog blocked independent connection field: " + field):
 			quit(1)
 			return
 	if not _check(message_list.find_child("WorkProcess", true, false) == null, "Model refresh altered a finished work process"):
 		quit(1)
 		return
 	await create_timer(0.1).timeout
-	stop_button.pressed.emit()
+	dock.cancel_model_catalog()
 	if not _check(_chat_text() == old_chat and message_list.find_child("WorkProcess", true, false) == null and query_endpoint.editable and model_field.editable, "Canceling model refresh altered chat or did not unlock configuration"):
 		quit(1)
 		return
@@ -1230,9 +1223,10 @@ func _run():
 		return
 	var approval_count = approvals
 	var chat_before_refresh = _chat_text()
-	await _refresh_models(dock)
-	stop_button.pressed.emit()
-	if not _check(not dock.get_node("AIToolDetails").visible and progress_status.text.begins_with("就绪") and approvals == approval_count and _chat_text() == chat_before_refresh, "Model refresh cancellation lost details, conversation or approval state"):
+	var details_before_refresh = dock.get_node("AIToolDetails").visible
+	await _refresh_models(dock, false)
+	dock.cancel_model_catalog()
+	if not _check(dock.get_node("AIToolDetails").visible == details_before_refresh and progress_status.text.begins_with("就绪") and approvals == approval_count and _chat_text() == chat_before_refresh, "Model refresh cancellation lost details, conversation or approval state"):
 		quit(1)
 		return
 	dock.get_node("AIToolDetails").hide()

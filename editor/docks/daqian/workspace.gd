@@ -602,7 +602,7 @@ func _build_canvas_chat() -> void:
 
 func _load_canvas_models() -> void:
 	if is_instance_valid(chat):
-		canvas_panel.load_models(chat.get_daqian_models())
+		canvas_panel.load_models(chat.get_model_catalog_snapshot())
 
 
 func _canvas_scope() -> String:
@@ -644,7 +644,7 @@ func _send_canvas_message() -> void:
 	canvas_panel.remember_model()
 	_load_canvas_models()
 	var selection: Dictionary = canvas_panel.model_selection()
-	if _needs_model(chat.get_daqian_models(), selection):
+	if _needs_model(chat.get_model_catalog_snapshot(), selection):
 		canvas_panel.append_line(_canvas_scope(), "请先在 AI 对话配置可用模型。")
 		return
 	var direct := _direct_binding()
@@ -1015,7 +1015,7 @@ func _attach_stage_controls(id: String, card: GraphNode) -> void:
 	var key := _routing_key(binding)
 	var epoch := selection_epoch
 	var action := _issue_action(binding)
-	if id == "wf-routing" and binding.get("status") in ["planned", "in-progress", "in-review"] and is_instance_valid(chat) and chat.has_method("get_daqian_models"):
+	if id == "wf-routing" and binding.get("status") in ["planned", "in-progress", "in-review"] and is_instance_valid(chat) and chat.has_method("get_model_catalog_snapshot"):
 		_add_card_model(card, binding, key, epoch)
 	if id != _issue_action_stage(action.get("kind", "")):
 		return
@@ -1053,7 +1053,7 @@ func _add_card_model(card: GraphNode, binding: Dictionary, key: String, epoch: i
 	card.add_child(apply)
 	var style_model := func():
 		var action := _issue_action(binding)
-		var catalog: Dictionary = chat.get_daqian_models()
+		var catalog: Dictionary = chat.get_model_catalog_snapshot()
 		var selection: Dictionary = saved.get("execution_models", {}).get(binding.url, {"backend":catalog.backend, "id":catalog.current})
 		var required: bool = action.get("kind") in ["judge", "retry", "resume", "start"] and _needs_model(catalog, selection)
 		if required or editor._node_state(card.name) == "completed" or saved.get("execution_models", {}).has(binding.url):
@@ -1061,7 +1061,7 @@ func _add_card_model(card: GraphNode, binding: Dictionary, key: String, epoch: i
 				editor.mark_action(control, required)
 	style_model.call()
 	var populate := func():
-		var catalog: Dictionary = chat.get_daqian_models()
+		var catalog: Dictionary = chat.get_model_catalog_snapshot()
 		var stored: Dictionary = saved.get("execution_models", {}).get(binding.url, {})
 		var choice: String = stored.get("id", catalog.current) if stored.get("backend") == catalog.backend else catalog.current
 		if picker.item_count and picker.get_meta("backend") == catalog.backend:
@@ -1083,7 +1083,7 @@ func _add_card_model(card: GraphNode, binding: Dictionary, key: String, epoch: i
 	apply.pressed.connect(func():
 		if not _card_binding_matches(card, key, epoch) or _direct_binding().get("status") not in ["planned", "in-progress", "in-review"]:
 			return
-		var backend: int = chat.get_daqian_models().backend
+		var backend: int = chat.get_model_catalog_snapshot().backend
 		if backend != picker.get_meta("backend"):
 			populate.call()
 			notice.text = "连接后端已改变，请重新选择模型。"
@@ -1126,7 +1126,7 @@ func _apply_issue_model() -> void:
 		return
 	if source != current or principal != actor or root != _repo() or binding != _conversation_binding():
 		return
-	var catalog: Dictionary = chat.get_daqian_models()
+	var catalog: Dictionary = chat.get_model_catalog_snapshot()
 	var selection := {"backend":catalog.backend, "id":str(catalog.current).strip_edges()}
 	if selection.backend in [0, 3] and selection.id.is_empty():
 		notice.text = "请选择模型，或在连接设置中填写模型 ID。"
@@ -3678,7 +3678,7 @@ func _judge_requirement(binding: Dictionary, answer := "", retry := false, expec
 			if not error.is_empty():
 				result.error = error
 			else:
-				var catalog: Dictionary = chat.get_daqian_models()
+				var catalog: Dictionary = chat.get_model_catalog_snapshot()
 				var selection: Dictionary = saved.get("execution_models", {}).get(url, {"backend":catalog.backend, "id":catalog.current})
 				if _needs_model(catalog, selection):
 					result.error = "请选择此工单的推进模型。"
@@ -4000,7 +4000,7 @@ func _start_or_view_direct(binding: Dictionary, operation := "", turn := {}) -> 
 	if started and operation.is_empty():
 		_mount_conversation(binding)
 		return
-	var catalog: Dictionary = chat.get_daqian_models()
+	var catalog: Dictionary = chat.get_model_catalog_snapshot()
 	var selection: Dictionary = saved.get("execution_models", {}).get(url, {"backend":catalog.backend, "id":catalog.current})
 	if _needs_model(catalog, selection) and (not started or not operation.is_empty()):
 		if background:
@@ -4112,8 +4112,8 @@ func _open_publish() -> void:
 	if not editor.draft.nodes.has("requirement"):
 		notice.text = "草稿缺少需求节点"
 		return
-	var available := is_instance_valid(chat) and chat.has_method("get_daqian_models")
-	var catalog: Dictionary = chat.get_daqian_models() if available else {"backend":-1, "options":[], "current":""}
+	var available := is_instance_valid(chat) and chat.has_method("get_model_catalog_snapshot")
+	var catalog: Dictionary = chat.get_model_catalog_snapshot() if available else {"backend":-1, "options":[], "current":""}
 	publish_backend = catalog.backend
 	var pending: Dictionary = saved.get("direct_pending", {}).get(current, {})
 	category.clear()
@@ -4851,7 +4851,7 @@ func _chat_action(action: String) -> void:
 		message = "仅推演。按共工偃师的需求结构整理以下需求，只输出 JSON 对象，scope、acceptance、questions 各为字符串数组。列出适用步骤和真实需要决定的问题。\n" + message
 	_save()
 	if action == "preview":
-		var catalog: Dictionary = chat.get_daqian_models()
+		var catalog: Dictionary = chat.get_model_catalog_snapshot()
 		var selection: Dictionary = saved.get("execution_models", {}).get(binding.get("url", current), {"backend":catalog.backend, "id":catalog.current})
 		if _needs_model(catalog, selection):
 			_mount_conversation(binding, action)

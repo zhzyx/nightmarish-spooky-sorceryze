@@ -211,7 +211,7 @@ Dictionary AIChatDock::_chat_extended_host_action(const Dictionary &p_args, bool
 		return result;
 	}
 
-	if (busy || models_loading || history_restoring || snapshot_restoring || snapshot_transaction_failed || engine_build_pid >= 0 || engine_restart_requested || !gonggong_recovered_result.is_empty() || (daqian_chat_host.is_valid() && action != "chat_host_send_message") || !history_writable || input->has_ime_text()) {
+	if (busy || history_restoring || snapshot_restoring || snapshot_transaction_failed || engine_build_pid >= 0 || engine_restart_requested || !gonggong_recovered_result.is_empty() || (daqian_chat_host.is_valid() && action != "chat_host_send_message") || !history_writable || input->has_ime_text()) {
 		result["error"] = daqian_chat_host.is_valid() ? "host_chat_mounted" : "chat_mutation_unavailable";
 		return result;
 	}

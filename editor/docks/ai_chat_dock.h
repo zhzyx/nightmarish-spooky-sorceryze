@@ -397,22 +397,35 @@ class AIChatDock : public EditorDock {
 	void _runtime_field_changed(const String &p_value, const String &p_field);
 	void _model_config_changed(const String &p_text);
 	void _model_config_timeout();
-	String _model_config_signature(const Dictionary &p_runtime = Dictionary()) const;
+	String GetModelCatalogIdentity(const Dictionary &mapRuntime = Dictionary()) const;
 	Label *model_status = nullptr;
 	HTTPRequest *model_request = nullptr;
 	bool models_loading = false;
-	bool cli_listing_models = false;
+	Button *pCatalogRefresh = nullptr;
+	Button *pCatalogCancel = nullptr;
+	Timer *pCatalogTimer = nullptr;
+	int64_t nCatalogPid = -1;
+	uint64_t nCatalogStarted = 0;
+	uint64_t nCatalogGeneration = 0;
+	static uint64_t nCatalogAccountGeneration;
+	Ref<FileAccess> refCatalogStdout;
+	Ref<FileAccess> refCatalogStderr;
+	PackedByteArray arrCatalogOutput;
+	String strCatalogState = "idle";
+	void SetModelCatalogStatus(const String &strState, const String &strMessage);
+	void PollModelCatalog();
+	void ReleaseModelCatalogTransport();
 	String model_request_key;
 	String model_request_config;
 	Array model_catalog;
 	String model_catalog_config;
 	Dictionary discovered_model_catalogs;
 
-	void _refresh_models();
+	void StartModelCatalog();
 	void _refresh_codex_models_on_start();
 	void _start_codex_status_check(uint8_t p_sources);
 	void _poll_codex_login();
-	void _models_completed(int p_result, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, uint64_t p_generation);
+	void CompleteModelCatalog(int nResult, int nCode, const PackedStringArray &arrHeaders, const PackedByteArray &arrBody, uint64_t nGeneration);
 	void _apply_models(const Array &p_models);
 	LineEdit *_active_model_field() const;
 	void _sync_model_picker();
@@ -571,8 +584,6 @@ class AIChatDock : public EditorDock {
 		String model;
 		String cli_model;
 		String codex_model;
-		Array model_catalog;
-		String model_catalog_config;
 		int backend = 1;
 		int scroll = 0;
 		bool follow_latest = true;
@@ -600,8 +611,6 @@ class AIChatDock : public EditorDock {
 	int pending_rename_agent = -1;
 	int active_agent = 0;
 	int next_agent = 1;
-	AgentSession model_query_session;
-	bool cli_suspended_for_models = false;
 
 	// Periodic tasks share the single executor, but own separate Agent histories.
 	TabContainer *workspace_pages = nullptr;
@@ -758,7 +767,6 @@ class AIChatDock : public EditorDock {
 	void _sub_agent_removed(int p_id);
 	String _parent_context_result() const;
 
-	void _restore_cli_after_models();
 	AgentSession _capture_agent() const;
 	void _restore_agent(const AgentSession &p_session);
 	void _agent_selected(int p_index);
@@ -812,7 +820,6 @@ class AIChatDock : public EditorDock {
 	void _apply_pending_steering();
 	void _request_completion();
 	void _request_completed(int p_result, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, uint64_t p_generation);
-	void _cancel_model_query();
 	void _stop();
 	void _next_tool(uint64_t p_session);
 	void _read_batch_item(uint64_t p_session);
@@ -860,6 +867,10 @@ protected:
 	void _notification(int p_what);
 
 public:
+	// Main-thread APIs. Snapshots are detached, contain no credentials, and never select a model.
+	Dictionary GetModelCatalogSnapshot() const;
+	void RefreshModelCatalog();
+	void CancelModelCatalog();
 	Dictionary get_runtime_configuration() const;
 	String get_production_workspace() const { return _workflow_root(); }
 	String get_installed_host_root() const { return _engine_root(); }

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3135ad25a2f01f55843ae5b6957d94bcf5e1bbf1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "model-catalog-recovery-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "1da7af5936e83a38a2c846c4ef42e31341098718534f38d62b95c061c95137b6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+    "action": "validation",
+    "detection_head": "c55e823a691286afa69949a0985015fb9375094a",
+    "context_sha256": "f38abeef882a575aaa7c1269e0622f09d7f13a1a4c6c76061557d85a3b524414",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-integration",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "data-collection/receipts/ai-integration-refactor-20261112/catalog992-review/external-status-config-race.json",
+    "diagnosis": "Independent review reproduced external runtime-file change while Codex login-status child is pending. Stale result discarded without status/button recovery; checking remains although operation ended. Root owns mismatch branch repair and regression without UI text_changed. Deferred catalog source mismatch has same recovery requirement.",
+    "next_action": "Prove new external-file fixture fails old binary, rebuild corrected candidate, run affected catalog matrix and independent followup, then exactCI/main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T18:57:08.680760+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T18:57:44.278232+00:00",
+  "sha256": "877c4e21e0d82078634514f85610e077215ed220d6b330508a5f93bed4bfd84b"
+}

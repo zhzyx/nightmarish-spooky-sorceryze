@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8ddc96c691aa73efabfc94096c62720fd59c344b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "model-catalog-recovery-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "1c0dd5b5b34d00cd96e5f315485a8662703cff047319b438644a4d30aeac62d6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/992",
+    "action": "validation",
+    "detection_head": "a3b1ef65968f9f7d9dcdf701ae5e76feb94d9c3f",
+    "context_sha256": "f38abeef882a575aaa7c1269e0622f09d7f13a1a4c6c76061557d85a3b524414",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-integration",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "data-collection/model-catalog-recovery-992.json",
+    "diagnosis": "Official npm bootstrap integrity verified. Locked CodeBuddy dependency download hit registry idle timeout; bounded retry reused cache and completed102packages without lockfile changes. Full CodeBuddy39tests passed on frozen candidate, allfixtureprocesses terminal.",
+    "next_action": "Dependency failure recovered locally; continue independent review and exact candidate CI/main delivery. Preserve build dependencies until final acceptance, then clean only owned temporary bootstrap/cache.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T18:29:11.746264+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T18:53:21.219250+00:00",
+  "sha256": "14e499cc94cdd2baeef143ef11f0cecd226a5299b5cf27c60ad5be0a70f6821e"
+}

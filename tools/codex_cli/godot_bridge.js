@@ -288,16 +288,17 @@ async function run(entry, request, onProgress, workflowPython) {
 // Read-only discovery: no thread, turn or inference request is created.
 // TODO: app-server lacks exec's --ignore-user-config flag. Verify provider
 // parity for custom CLI configurations before enabling non-default providers.
-async function listModels(entry, { timeoutMs = 30000 } = {}) {
+async function listModels(entry, { timeoutMs = 30000, hostProcessGroup = false } = {}) {
+    if (hostProcessGroup) attachJob();
     if (!path.isAbsolute(entry) || !fs.existsSync(entry)) throw bridgeError('CLI_NOT_FOUND');
     const javascript = entry.endsWith('.js') || entry.endsWith('.mjs');
-    const child = spawn(javascript ? process.execPath : entry, javascript ? [entry, 'app-server'] : ['app-server'], { windowsHide: true, detached: process.platform !== 'win32',
+    const child = spawn(javascript ? process.execPath : entry, javascript ? [entry, 'app-server'] : ['app-server'], { windowsHide: true, detached: process.platform !== 'win32' && !hostProcessGroup,
         cwd: os.tmpdir(), stdio: ['pipe', 'pipe', 'pipe'] });
     const stop = () => {
         if (!child.pid) return;
         try {
             if (process.platform === 'win32') spawnSync('taskkill', ['/pid', String(child.pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' });
-            else process.kill(-child.pid, 'SIGKILL');
+            else process.kill(hostProcessGroup ? child.pid : -child.pid, 'SIGKILL');
         } catch (_) {}
     };
     const terminate = () => { stop(); process.exit(130); };
@@ -417,6 +418,19 @@ async function serve(entry, python) {
 
 module.exports = { proxyEnvironment, listModels, prepareImages, argumentsFor, promptFor, completion, run, SCHEMA, validateRequest };
 if (require.main === module) {
+    const hostModelGroup = process.argv[2] === 'models' && process.argv[4] === '--host-process-group';
+    if (hostModelGroup) {
+        // The native host starts a session and owns its whole process group.
+        // Keep that leader alive after the JSON line so it can kill the tree
+        // without racing PID reuse. EOF also cleans up after an editor crash.
+        process.stdin.once('end', () => {
+            if (process.platform !== 'win32') {
+                try { process.kill(-process.pid, 'SIGKILL'); } catch (_) {}
+            }
+            process.exit();
+        });
+        process.stdin.resume();
+    }
     if (process.argv[2] === 'session') {
         serve(process.argv[3], process.argv[4]).catch(() => {process.exitCode=1;});
     } else if (!['chat', 'models'].includes(process.argv[2])) {
@@ -425,8 +439,8 @@ if (require.main === module) {
     } else {
         const onProgress = process.argv[5] === '--progress' ? activity =>
             process.stdout.write(JSON.stringify({ event: 'codex_progress', activity }) + '\n') : null;
-        (process.argv[2] === 'models' ? listModels(process.argv[3]) : run(process.argv[3], process.argv[4], onProgress, process.argv[6])).then(
-            result => process.stdout.write(JSON.stringify(result)),
+        (process.argv[2] === 'models' ? listModels(process.argv[3], { hostProcessGroup: hostModelGroup }) : run(process.argv[3], process.argv[4], onProgress, process.argv[6])).then(
+            result => process.stdout.write(JSON.stringify(result) + (hostModelGroup ? '\n' : '')),
             error => {
                 const safe = serializeError(error);
                 safe.message = safe.message.replaceAll('CodeBuddy', 'Codex');
@@ -439,7 +453,7 @@ if (require.main === module) {
                         occurred_at: new Date().toISOString(), ...safe,
                     }), { mode: 0o600, flag: 'wx' }); } catch (_) {}
                 }
-                process.stdout.write(JSON.stringify({ error: safe }));
+                process.stdout.write(JSON.stringify({ error: safe }) + (hostModelGroup ? '\n' : ''));
                 process.exitCode = 1;
             });
     }

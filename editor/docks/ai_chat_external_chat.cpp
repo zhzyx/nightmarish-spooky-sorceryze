@@ -139,9 +139,6 @@ String AIChatDock::_chat_instruction_blocked_reason(bool p_force_consultation) c
 	if (agent_close_confirmation && agent_close_confirmation->is_visible() && pending_close_agent == active_agent) {
 		return "parent_close_pending";
 	}
-	if (models_loading) {
-		return "models_loading";
-	}
 	if (snapshot_restoring || snapshot_transaction_failed) {
 		return "snapshot_unavailable";
 	}

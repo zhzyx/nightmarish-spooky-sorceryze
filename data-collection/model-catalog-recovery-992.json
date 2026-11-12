@@ -1,0 +1,535 @@
+{
+  "schema_version": 1,
+  "issue_number": 992,
+  "request_id": "model-catalog-recovery-20261113",
+  "path_base": "repository_root",
+  "state": "review_ready",
+  "source_revision": "a3b1ef65968f9f7d9dcdf701ae5e76feb94d9c3f",
+  "binary": {
+    "path": "bin/godot.macos.editor.dev.arm64",
+    "sha256": "e7ce0fc5a565ee4e93d382117083c8e027f8adcf4afc35cd0711961f18610c73"
+  },
+  "changed_source_sha256": {
+    "editor/docks/ai_chat_delivery_retry.cpp": "7418a59b2c7c8c5272cb3734c0afff63002adb2bcc9ab89a7ecd5053162409ca",
+    "editor/docks/ai_chat_dock.cpp": "8df4de3f9707e745adecced69424769657078d7b7c01d8500bb854af75da316a",
+    "editor/docks/ai_chat_dock.h": "96aa4c183fbfe135d2904e8e4cde32f2b4d272a96fa59bd1fa6d8342839f5de0",
+    "editor/docks/ai_chat_external_chat.cpp": "ad0d944c8e1c197268feac627f3b577526ccdcd8919bad4a1ceec79a4703e9e3",
+    "editor/docks/ai_chat_host_commands.cpp": "81a810abd6d8c173aaf5751714bd7ab4a4e6c8478d0b3fe299333b60a51a0cdb",
+    "editor/docks/ai_chat_scheduler.cpp": "cf1627388996f1a4e83c1630d97323595740f0930e8f05e56fd2f63d222646e0",
+    "editor/docks/ai_chat_sub_agents.cpp": "5cb4e075d8f2649c4bb3cc1a3c0d99cf25f00896eb2441571960454a8ee61981",
+    "editor/docks/daqian/model_settings.gd": "3ba642493ed7053e9612d28bf2490a0bafaef9b3c6ec30435bc767b391b4eeca",
+    "editor/docks/daqian/workspace.gd": "44ce0866665a32ae5dacc1db6eabdce062afd2c534e138f6beb2d6ca7802c962",
+    "tests/editor/ai_chat_http_cancel.gd": "7ae22b0624221709d06c41cb22d1fb2027ca820b63db9c18628de5ab1054ee5a",
+    "tests/editor/ai_chat_integration.gd": "aeeecedc46df8ea33ffe206882941f5e95e847e3d20f5ba6a076dc0637cdbfd1",
+    "tests/editor/daqian_canvas_chat.gd": "b5903d1fc8fcb207508488c41204f355f65e00cb28808694ce28da5cd41b19ec",
+    "tests/editor/model_picker.gd": "a7ca4d6f99f78b0a9215eb2552c837bb084b9d631a90647b675441a4f84287cc",
+    "tests/editor/run_ai_chat_http_cancel.py": "ec08d441d3e97430a2f27254147c70a82b8606d94d4719e8fc56013ed30a4f57",
+    "tests/editor/run_daqian_graph.py": "b42cc51b832a9e26275e3aa2634f2ccef93196a0c2df8c60061b0d78f3945791",
+    "tests/editor/run_model_autofetch.py": "0d60564e00f29599cedf42da73ef55a1fa6fbe2425b12e9faa17699d21d28de2",
+    "tests/editor/run_model_picker.py": "ed00e13e257bfffbc6a24a94492cfcdcc4e725ecb731d5799fa161740095ec0f",
+    "tools/codebuddy_cli/godot_bridge.js": "29c4907589ed6255bb05b15b8cb6fe40be0127c2e21d80fe33b8a3b616eaab3f",
+    "tools/codex_cli/godot_bridge.js": "979edef52c67a77c448365aaddf5a6ef0b9fcae37824eda527f611fdab368bfd"
+  },
+  "contract": [
+    "Independent catalog HTTP/CLI transport, timer and generation; no inference state reuse",
+    "Explicit refresh/cancel/retry; automatic events deduplicated without failure retry loops",
+    "Typed IDs, source provenance, capabilities and manual/empty model choice preserved",
+    "Effective runtime/connection/environment identity and editor-local shared login generation reject stale responses",
+    "Native process-group protocol retains the leader through terminal JSON and tears down owned CLI descendants",
+    "Stable detached snapshot consumed by Tianshu; widget traversal and unused per-session catalog copies removed"
+  ],
+  "limitations": [
+    "Synthetic CLI/HTTP fixtures are not proof of real provider account availability or all-provider inference",
+    "Windows process/job boundary requires its platform CI; POSIX process-boundary fixture is measured locally",
+    "External CLI credential-file/account changes are not automatically detected; no raw CLI credential files were read",
+    "Issue971 session/node model persistence remains owned by its original operator; remote delivery belongs to root",
+    "Full legacy ai_chat_integration matrix was not rerun; targeted native catalog, HTTP, model picker, project configuration and Tianshu regressions passed"
+  ],
+  "validation": {
+    "build": {
+      "passed": true,
+      "command": "scons platform=macos target=editor dev_build=yes arch=arm64 vulkan=no accesskit=no -j8",
+      "evidence": {
+        "path": "bin/catalog-build-final-snapshot.log",
+        "sha256": "96f9dff63a8442cf6217e50d80ebff60de3dded3016d1f91057d56d13f2831f4"
+      }
+    },
+    "catalog": {
+      "passed": true,
+      "case_count": 18,
+      "source_unchanged": true,
+      "evidence": {
+        "path": "data-collection/receipts/model-catalog-recovery-20261113/catalog-final.json",
+        "sha256": "baac364db1c27009308bca19af99be2a414e8a924612d4d8e50d46e6dec6b799"
+      },
+      "cases": [
+        {
+          "case": "catalog-process-boundary",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "cancel terminated real bridge, CLI and SIGTERM-ignoring descendant",
+            "native 35s timeout terminated suspended bridge, CLI and SIGTERM-ignoring descendant"
+          ],
+          "event_counts": {
+            "codex-login-status": 1,
+            "codex-model-list": 2,
+            "catalog-descendants": 2
+          },
+          "process_boundaries": [
+            {
+              "kind": "catalog-descendants",
+              "pid": 29337,
+              "entry_pid": 29337,
+              "bridge_pid": 29336,
+              "descendant_pid": 29338
+            },
+            {
+              "kind": "catalog-descendants",
+              "pid": 29358,
+              "entry_pid": 29358,
+              "bridge_pid": 29357,
+              "descendant_pid": 29359
+            }
+          ]
+        },
+        {
+          "case": "catalog-recovery",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "fixture counted initial failure; failure did not loop",
+            "pending catalog allows manual selection, new session and switching",
+            "actual inference finished concurrently; catalog completion preserved busy state and selection",
+            "detached stable snapshot retains source and capability",
+            "cancel and retry counted separately; cancelled late response cannot replace current catalog",
+            "environment identity change rejected late result and refreshed current source"
+          ],
+          "event_counts": {
+            "codex-login-status": 2,
+            "codex-model-list": 6,
+            "codex-offline-chat": 1,
+            "codex-offline-chat-done": 1
+          }
+        },
+        {
+          "case": "api-recovery",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "fixture counted initial failure; failure did not loop",
+            "pending catalog allows manual selection, new session and switching",
+            "actual inference finished concurrently; catalog completion preserved busy state and selection",
+            "detached stable snapshot retains source and capability",
+            "cancel and retry counted separately; cancelled late response cannot replace current catalog",
+            "environment identity change rejected late result and refreshed current source"
+          ],
+          "event_counts": {
+            "api-model-list": 6,
+            "api-chat": 1,
+            "api-chat-done": 1
+          }
+        },
+        {
+          "case": "codex-startup",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "startup fetched advertised Codex model once"
+          ],
+          "event_counts": {
+            "codex-login-status": 1,
+            "codex-model-list": 1
+          }
+        },
+        {
+          "case": "codex-completed-status-delayed-poll",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "successful status subprocess finished before delayed native poll",
+            "completed exit result survived an eleven second UI pause; catalog fetched once"
+          ],
+          "event_counts": {
+            "codex-login-status": 1,
+            "codex-model-list": 1
+          }
+        },
+        {
+          "case": "session-reuse",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "ordinary sessions share project selection and metadata in both directions while retaining separate drafts",
+            "new session reused catalog without query; config change invalidated old catalog"
+          ],
+          "event_counts": {
+            "codex-login-status": 1,
+            "codex-model-list": 1
+          }
+        },
+        {
+          "case": "session-catalog-freshness",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "same-connection login refresh replaced archived C1 with C2 in both sessions and preserved project selection without duplicate discovery"
+          ],
+          "event_counts": {
+            "codex-login-status": 2,
+            "codex-model-list": 2,
+            "codex-login-start": 1,
+            "codex-login-success": 1
+          }
+        },
+        {
+          "case": "shared-config-inflight",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "external shared-config edit during in-flight C1 query retained only C2 catalog"
+          ],
+          "event_counts": {
+            "codex-login-status": 2,
+            "codex-model-list": 2
+          }
+        },
+        {
+          "case": "codex-login",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "login completed, catalog eventually fetched exactly once"
+          ],
+          "event_counts": {
+            "codex-login-status": 2,
+            "codex-login-start": 1,
+            "codex-login-success": 1,
+            "codex-model-list": 1
+          }
+        },
+        {
+          "case": "codex-busy-login",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "login completed, catalog eventually fetched exactly once",
+            "busy chat finished and pending login event survived"
+          ],
+          "event_counts": {
+            "codex-login-status": 2,
+            "codex-login-start": 1,
+            "codex-offline-chat": 1,
+            "codex-login-success": 1,
+            "codex-model-list": 1,
+            "codex-offline-chat-done": 1
+          }
+        },
+        {
+          "case": "codex-status-timeout",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "UI heartbeat continued during bounded auth-status timeout"
+          ],
+          "event_counts": {
+            "codex-login-status": 1
+          }
+        },
+        {
+          "case": "codex-catalog-failure",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "catalog failure visible without retry loop"
+          ],
+          "event_counts": {
+            "codex-login-status": 1,
+            "codex-model-list": 1
+          }
+        },
+        {
+          "case": "codex-status-config-change",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "changed config superseded a pending stale auth-status check"
+          ],
+          "event_counts": {
+            "codex-login-status": 2,
+            "codex-model-list": 1
+          }
+        },
+        {
+          "case": "codex-status-login-race",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "login completed, catalog eventually fetched exactly once",
+            "successful login superseded an older auth-status failure"
+          ],
+          "event_counts": {
+            "codex-login-status": 2,
+            "codex-login-start": 1,
+            "codex-login-success": 1,
+            "codex-model-list": 1
+          }
+        },
+        {
+          "case": "api-chat-startup",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "configured backend startup enumerated once"
+          ],
+          "event_counts": {
+            "api-model-list": 1
+          }
+        },
+        {
+          "case": "api-responses-startup",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "configured backend startup enumerated once"
+          ],
+          "event_counts": {
+            "api-model-list": 1
+          }
+        },
+        {
+          "case": "codebuddy-startup",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "configured backend startup enumerated once"
+          ],
+          "event_counts": {
+            "codebuddy-model-list": 1
+          }
+        },
+        {
+          "case": "backend-switch",
+          "ok": true,
+          "returncode": 0,
+          "checks": [
+            "explicit catalog recovery API/button available",
+            "all configured backend switches repopulated catalog once"
+          ],
+          "event_counts": {
+            "codex-login-status": 1,
+            "codex-model-list": 1,
+            "api-model-list": 2,
+            "codebuddy-model-list": 1
+          }
+        }
+      ]
+    },
+    "picker": {
+      "checks": [
+        "actual Codex model/list populated picker",
+        "high effort selectable",
+        "session switch preserves model capabilities and high selection",
+        "unsupported ultra disabled, new model uses default",
+        "invalid path reports cause and allows retry",
+        "both API modes honor declared efforts, reject numeric IDs and keep unknown models at default",
+        "CodeBuddy unknown capability uses default with TODO"
+      ],
+      "error": "",
+      "ok": true,
+      "api_catalog_requests": [
+        "/v1/models",
+        "/v1/models"
+      ],
+      "codex_catalog_requests": 1,
+      "real_provider": false,
+      "tested_binary_sha256": "e7ce0fc5a565ee4e93d382117083c8e027f8adcf4afc35cd0711961f18610c73",
+      "evidence": {
+        "path": "data-collection/receipts/model-catalog-recovery-20261113/picker-final.json",
+        "sha256": "ce34fb39f4b740019c3f66e4dfd8267566cc35a891bee6c876724000f0a2012e"
+      }
+    },
+    "http_catalog_cancel": {
+      "passed": true,
+      "stop_call_seconds": 0.000148,
+      "max_frame_gap_seconds": 0.008843,
+      "recovery_max_frame_gap_seconds": 0.035566,
+      "late_models_rejected": true,
+      "models_recovered": true,
+      "stale_response_absent": true,
+      "evidence": {
+        "path": "data-collection/receipts/model-catalog-recovery-20261113/http-cancel-final.json",
+        "sha256": "ddb90271605b6091705fb6085ea154d7b5d424fa3a501dfa67c3dc7cecf2e439"
+      }
+    },
+    "project_ai_configuration": {
+      "passed": true,
+      "modes": [
+        "full",
+        "reopen",
+        "other",
+        "child",
+        "scheduled"
+      ],
+      "secret_on_disk": false,
+      "project_sources_clean": true,
+      "evidence": {
+        "path": "data-collection/receipts/model-catalog-recovery-20261113/project-config-final.json",
+        "sha256": "07c0b311946bd5325cf9656b559ef8c0b6e0e6f4e8fb9afe3c210b6d6e8971ea"
+      }
+    },
+    "daqian_graph": {
+      "state": "passed",
+      "editor_sha256": "e7ce0fc5a565ee4e93d382117083c8e027f8adcf4afc35cd0711961f18610c73",
+      "scenario": "graph",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board",
+      "evidence": {
+        "path": "data-collection/receipts/model-catalog-recovery-20261113/daqian-graph-final.json",
+        "sha256": "9eeb7e1a9622256fd2e02dae8a0679cbffbaa8895948141a1f39a0d4cfd68188"
+      }
+    },
+    "daqian_canvas": {
+      "passed": true,
+      "marker": "DAQIAN_CANVAS_CHAT_OK",
+      "tested_binary_sha256": "e7ce0fc5a565ee4e93d382117083c8e027f8adcf4afc35cd0711961f18610c73",
+      "evidence": {
+        "path": "data-collection/receipts/model-catalog-recovery-20261113/canvas-final.log",
+        "sha256": "ae88135c00382dadadd9f3e862d628983986d65324e101cf116e80e356272f10"
+      }
+    },
+    "codex_bridge": {
+      "passed": true,
+      "tests": 22,
+      "failed": 0,
+      "evidence": {
+        "path": "bin/catalog-js-final.log",
+        "sha256": "6ce023a74b16fa1667b7e6d9105139a32fa45162d7095099088c5c47b98722de"
+      }
+    },
+    "codebuddy_bridge": {
+      "passed": true,
+      "tests": 39,
+      "failed": 0,
+      "evidence": {
+        "path": "bin/codebuddy-js-verified.log",
+        "sha256": "bf068226af0ef88982589d96e4858d7adcaf62e07b2f896eeed5df33deb88d19"
+      }
+    },
+    "style": {
+      "passed": true,
+      "checks": [
+        "ruff check",
+        "ruff format --check",
+        "clang-format --dry-run --Werror",
+        "git diff --check"
+      ],
+      "evidence": {
+        "path": "data-collection/receipts/model-catalog-recovery-20261113/style-final.json",
+        "sha256": "bce6461cd3707a3930d05b77f1099c74bb416f16773484a5f4e15e93d38441b6"
+      }
+    }
+  },
+  "cleanup": {
+    "removed": [
+      "bin/edit_catalog.py",
+      "bin/edit_catalog_tests.py",
+      "bin/edit_catalog_boundary_test.py",
+      "bin/catalog_functions.txt",
+      "tests/editor/__pycache__ generated bytecode",
+      "three source .gd.uid files created by exploratory symlink graph fixture"
+    ],
+    "isolated_catalog_fixture_roots_removed": 18,
+    "recorded_catalog_fixture_pids_not_running": 54,
+    "retained": [
+      "candidate source/worktree, native binary/build objects and failure/success receipts for independent review and root delivery",
+      "private verified npm tool/cache and task-local locked CodeBuddy dependencies for reproducible independent tests; remove after root delivery"
+    ],
+    "other_worktrees_or_active_installations_modified": false
+  },
+  "test_dependencies": {
+    "npm": {
+      "name": "npm",
+      "version": "10.9.4",
+      "engines": {
+        "node": "^18.17.0 || >=20.5.0"
+      },
+      "tarball": "https://registry.npmjs.org/npm/-/npm-10.9.4.tgz",
+      "integrity": "sha512-OnUG836FwboQIbqtefDNlyR0gTHzIfwRfE3DuiNewBvnMnWEpB0VEXwBlFVgqpNzIgYo/MHh3d2Hel/pszapAA==",
+      "sha256": "4bfba8a0c823024d1926ec9d97a37a00eb60fd2adf44b3d34a686fc32e8f51e4",
+      "integrity_verified": true
+    },
+    "install_command": "node bin/npm-tool/package/bin/npm-cli.js ci --prefix tools/codebuddy_cli --ignore-scripts --no-audit --no-fund --prefer-offline --fetch-timeout=600000 --fetch-retries=2 --cache bin/npm-cache --userconfig <repository_root>/bin/npm-user.rc --globalconfig <repository_root>/bin/npm-global.rc",
+    "install_evidence": {
+      "path": "bin/codebuddy-dependency-install-4.log",
+      "sha256": "7522e3211fdbdb761f1740ac4665ce938f52b801a4bd795dd2a4f09ca2414274"
+    },
+    "lockfile_unchanged": true
+  },
+  "resolved_validation_incidents": [
+    {
+      "incident_id": "83f994584bfe6ae8d00360de4da56bb9984878b2fe6049bb4d49f543ebb55d2d",
+      "cause": "two missed native helper rename call sites",
+      "failure": {
+        "path": "bin/catalog-build.log",
+        "sha256": "00fe196ca6a3322872eb3efe485c819c3de42e9bffae11631b600a315a23a676"
+      },
+      "recovery": {
+        "path": "bin/catalog-build-final-snapshot.log",
+        "sha256": "96f9dff63a8442cf6217e50d80ebff60de3dded3016d1f91057d56d13f2831f4"
+      }
+    },
+    {
+      "incident_id": "843bd2636fbdf3ffed95d48141d59f270d012dd2786ff64497d9fceb5c5c0f80",
+      "cause": "isolated graph fixture lacked actual installed host layout",
+      "failure": {
+        "path": "bin/daqian-graph-tests.log",
+        "sha256": "72209a5d4ed07f3431319a30e216bdb70c93e84e962f20dfc88ddcb3f0ba2e00"
+      },
+      "recovery": {
+        "path": "data-collection/receipts/model-catalog-recovery-20261113/daqian-graph-final.json",
+        "sha256": "9eeb7e1a9622256fd2e02dae8a0679cbffbaa8895948141a1f39a0d4cfd68188"
+      }
+    },
+    {
+      "incident_id": "85adcf707f387bf5566d3a72f654a0d9f3d76af58eba7d8db164ecd8a0bd22f5",
+      "cause": "CodeBuddy full JS suite required pinned local dependencies",
+      "failure": {
+        "path": "bin/codebuddy-js-tests.log",
+        "sha256": "d7a903224ae8479b6077527047d19e83bc6a708cf6449ec6f79f66ea5974a619"
+      },
+      "recovery": {
+        "path": "bin/codebuddy-js-verified.log",
+        "sha256": "bf068226af0ef88982589d96e4858d7adcaf62e07b2f896eeed5df33deb88d19"
+      }
+    },
+    {
+      "incident_id": "1c0dd5b5b34d00cd96e5f315485a8662703cff047319b438644a4d30aeac62d6",
+      "cause": "official registry package download EIDLETIMEOUT",
+      "failure": {
+        "path": "bin/codebuddy-dependency-install-3.log",
+        "sha256": "6345c8c343e1c20f1a104a7845964baaa222f9d76f75e4dd28c18cc23ca6e179"
+      },
+      "recovery": {
+        "path": "bin/codebuddy-dependency-install-4.log",
+        "sha256": "7522e3211fdbdb761f1740ac4665ce938f52b801a4bd795dd2a4f09ca2414274"
+      }
+    }
+  ]
+}
