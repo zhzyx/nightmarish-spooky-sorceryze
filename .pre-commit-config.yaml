@@ -223,6 +223,8 @@ repos:
             data-collection/editor-game-workspace-821-failures\.json|
             data-collection/editor-game-workspace-821-final\.json|
             data-collection/editor-task-authorization-820\.json|
+            data-collection/editor-design-contract-943-installed\.json|
+            data-collection/editor-design-contract-943-template-installed\.json|
             data-collection/editor-production-build-placement-concurrent-773\.json|
               data-collection/maliang-gpt-modeling-20261108-host-snapshot\.json|
             .*\.test\.txt|
