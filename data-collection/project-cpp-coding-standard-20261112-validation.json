@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "request_id": "project-cpp-coding-standard-20261112",
+  "issue": 917,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/917",
+  "tenant_id": "gonggong-workspace",
+  "kind": "documentation_validation",
+  "occurred_at": "2026-11-12T10:12:00.333506+00:00",
+  "source_base": "19ab72a51600ab603834e1494c7fdb2eb96ab245",
+  "documents": {
+    "CPP_CODING_STANDARD.md": {
+      "bytes": 16981,
+      "sha256": "1c1d528d3991ec2398f1e633b214ed769da9fe10c19705049ebb3be3b148da8f"
+    },
+    "CONTRIBUTING.md": {
+      "bytes": 11534,
+      "sha256": "d4cfafd1ac338ad7e5815508f7408f660b818723f55ad9ca0c74ad5187884480"
+    },
+    "design-docs/project-cpp-coding-standard-20261112.md": {
+      "bytes": 4860,
+      "sha256": "cb8eefa6d4b8b41de145cad6b09a7c7338933bfcfd1ac6caf2915b0b619bad99"
+    },
+    "data-collection/requests/project-cpp-coding-standard-20261112/13b256bb-b1ec-4ad0-b744-4652136301c5.json": {
+      "bytes": 885,
+      "sha256": "0c2fdddc98366733fa7edcfc69da4f19f233868f8651bbddbaf759afced39cda"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/project-cpp-coding-standard-20261112/request-917-project-cpp-standard-20261112.json": {
+      "bytes": 1199,
+      "sha256": "e7f0e9e02eab4a12408aef6998335e0fa4fb5a42580a623bc6e6115893ab1930"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/project-cpp-coding-standard-20261112/kuafu-52626614bcf068cf9ddbbaddbf6a526feba68819.json": {
+      "bytes": 2031,
+      "sha256": "993db100fe2cef7ad2d6504355c9004722e8e3d5327e83ed6b26509222499b82"
+    }
+  },
+  "checks": [
+    {
+      "name": "CPP_CODING_STANDARD.md:utf8",
+      "status": "passed",
+      "detail": "UTF-8 decoded"
+    },
+    {
+      "name": "CPP_CODING_STANDARD.md:eof_newline",
+      "status": "passed",
+      "detail": "File ends with LF"
+    },
+    {
+      "name": "CPP_CODING_STANDARD.md:trailing_whitespace",
+      "status": "passed",
+      "detail": "No trailing whitespace"
+    },
+    {
+      "name": "CPP_CODING_STANDARD.md:code_fences",
+      "status": "passed",
+      "detail": "Balanced fenced code blocks"
+    },
+    {
+      "name": "CONTRIBUTING.md:utf8",
+      "status": "passed",
+      "detail": "UTF-8 decoded"
+    },
+    {
+      "name": "CONTRIBUTING.md:eof_newline",
+      "status": "passed",
+      "detail": "File ends with LF"
+    },
+    {
+      "name": "CONTRIBUTING.md:trailing_whitespace",
+      "status": "passed",
+      "detail": "No trailing whitespace"
+    },
+    {
+      "name": "CONTRIBUTING.md:code_fences",
+      "status": "passed",
+      "detail": "Balanced fenced code blocks"
+    },
+    {
+      "name": "CONTRIBUTING.md:link:CPP_CODING_STANDARD.md",
+      "status": "passed",
+      "detail": "Relative link target exists"
+    },
+    {
+      "name": "design-docs/project-cpp-coding-standard-20261112.md:utf8",
+      "status": "passed",
+      "detail": "UTF-8 decoded"
+    },
+    {
+      "name": "design-docs/project-cpp-coding-standard-20261112.md:eof_newline",
+      "status": "passed",
+      "detail": "File ends with LF"
+    },
+    {
+      "name": "design-docs/project-cpp-coding-standard-20261112.md:trailing_whitespace",
+      "status": "passed",
+      "detail": "No trailing whitespace"
+    },
+    {
+      "name": "design-docs/project-cpp-coding-standard-20261112.md:code_fences",
+      "status": "passed",
+      "detail": "Balanced fenced code blocks"
+    },
+    {
+      "name": "standard:legacy_transition",
+      "status": "passed",
+      "detail": "Required rule/example present: 存量代码不批量迁移"
+    },
+    {
+      "name": "standard:bool_prefix",
+      "status": "passed",
+      "detail": "Required rule/example present: bool bEnabled = true;"
+    },
+    {
+      "name": "standard:pointer_prefix",
+      "status": "passed",
+      "detail": "Required rule/example present: Node *pParent = nullptr;"
+    },
+    {
+      "name": "standard:enum_prefix",
+      "status": "passed",
+      "detail": "Required rule/example present: ProcessMode eProcessMode"
+    },
+    {
+      "name": "standard:integer_prefix",
+      "status": "passed",
+      "detail": "Required rule/example present: int32_t nTextureCount"
+    },
+    {
+      "name": "standard:function_pascal_case",
+      "status": "passed",
+      "detail": "Required rule/example present: void SetEnabled(bool bEnabled);"
+    },
+    {
+      "name": "standard:input_parameter",
+      "status": "passed",
+      "detail": "Required rule/example present: const String &in_strPath"
+    },
+    {
+      "name": "standard:output_parameter",
+      "status": "passed",
+      "detail": "Required rule/example present: Ref<Texture2D> &out_refTexture"
+    },
+    {
+      "name": "standard:allman_function",
+      "status": "passed",
+      "detail": "Required rule/example present: void TextureCache::SetEnabled(bool in_bEnabled)\n{"
+    },
+    {
+      "name": "standard:allman_if",
+      "status": "passed",
+      "detail": "Required rule/example present: if (bEnabled == in_bEnabled)\n\t{"
+    },
+    {
+      "name": "standard:mandatory_braces",
+      "status": "passed",
+      "detail": "Required rule/example present: 所有控制块必须保留大括号"
+    },
+    {
+      "name": "standard:no_inline_control",
+      "status": "passed",
+      "detail": "Required rule/example present: 不在 `if`、`for`、`while` 等语句所在行直接编写执行逻辑"
+    },
+    {
+      "name": "standard:tool_transition",
+      "status": "passed",
+      "detail": "Required rule/example present: 本规范合入不代表全局 `.clang-format` 或 `.clang-tidy` 已同步切换"
+    },
+    {
+      "name": "standard:no_old_output_prefix_example",
+      "status": "passed",
+      "detail": "No r_ output parameter example"
+    },
+    {
+      "name": "contributing:project_link",
+      "status": "passed",
+      "detail": "Project standard linked"
+    },
+    {
+      "name": "design:issue",
+      "status": "passed",
+      "detail": "Issue #917 linked"
+    },
+    {
+      "name": "design:stable_marker",
+      "status": "passed",
+      "detail": "Stable request marker present"
+    },
+    {
+      "name": "git:scope",
+      "status": "passed",
+      "detail": "Only authorized documentation and evidence changed"
+    },
+    {
+      "name": "evidence:source_index",
+      "status": "passed",
+      "detail": "Exactly one request source index"
+    },
+    {
+      "name": "evidence:request_event",
+      "status": "passed",
+      "detail": "Exactly one request event"
+    }
+  ],
+  "intake": {
+    "issue": 917,
+    "status": "passed_with_explicit_tenant",
+    "initial_failure": "Host tenant must match work-items.json",
+    "incident": "277afa00d7f6672767bb8cd7d6e3f1788b463a970c52ce3b7065c7123bc13252",
+    "recovery": "Reran intake with --tenant gonggong-workspace and received the open in-progress Issue"
+  },
+  "prek": {
+    "status": "unavailable",
+    "detail": "prek executable and Python module are not installed; equivalent local structural, whitespace and link checks performed instead"
+  },
+  "engine_build": {
+    "status": "not_run",
+    "reason": "Documentation-only change; no C++ behavior or build input changed"
+  },
+  "changed_paths": [
+    "CONTRIBUTING.md",
+    "CPP_CODING_STANDARD.md",
+    "data-collection/project-cpp-coding-standard-20261112-validation.json",
+    "data-collection/requests/project-cpp-coding-standard-20261112/",
+    "design-docs/project-cpp-coding-standard-20261112.md",
+    "gonggong-diting-data/events/gonggong-workspace/project-cpp-coding-standard-20261112/"
+  ]
+}

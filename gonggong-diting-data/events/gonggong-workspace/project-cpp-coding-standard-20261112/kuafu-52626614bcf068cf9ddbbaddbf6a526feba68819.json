@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-52626614bcf068cf9ddbbaddbf6a526feba68819",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "project-cpp-coding-standard-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/917",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "277afa00d7f6672767bb8cd7d6e3f1788b463a970c52ce3b7065c7123bc13252",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/917",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/918",
+    "action": "intake",
+    "detection_head": "19ab72a51600ab603834e1494c7fdb2eb96ab245",
+    "context_sha256": "3cb537163aff9820e7857c77b402985d0111115e728ac239337e0fc761eadbd5",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-kaiyunxue",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/917",
+    "evidence": "data-collection/project-cpp-coding-standard-20261112-validation.json",
+    "diagnosis": "The first intake omitted the explicit tenant. Repeating the original intake with --tenant gonggong-workspace returned Issue #917 as open and in-progress; no repository or permission defect remains.",
+    "next_action": "Record the successful recovery, close blocker #918, and continue the authorized documentation delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T10:00:00.927874+00:00",
+    "attempted": "The failed command was rerun with only the explicit tenant added; the actual intake then passed.",
+    "repair_owner": "kimi-work-kaiyunxue",
+    "continuable": "The blocker is resolved and the documentation task can proceed."
+  },
+  "occurred_at": "2026-11-12T10:09:52.625906+00:00",
+  "sha256": "258f9293a01c5e12cdc84e5192f8c044a6e43822c9d8b13f44f206f8a4a47a0c"
+}
