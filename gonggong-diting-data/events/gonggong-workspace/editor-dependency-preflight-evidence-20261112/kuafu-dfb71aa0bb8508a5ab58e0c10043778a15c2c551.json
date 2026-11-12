@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-dfb71aa0bb8508a5ab58e0c10043778a15c2c551",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-dependency-preflight-evidence-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/896",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "cb67fea42813355a545dfdc0a69c5f5c82486afc778a39acdcd8d66699e85d05",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/896",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/896",
+    "action": "intake",
+    "detection_head": "29b505b3dce817053e31597ed22408fd9122c48e",
+    "context_sha256": "534f00a9233cac3b720d3eac82a32f2671b67004bf0d903ee788143c24a08baf",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/896",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/896",
+    "diagnosis": "Initial intake rejected missing workspace:gonggong label; exact Issue label corrected and intake-only operation reverified. Source implementation and business acceptance remain separately tracked.",
+    "next_action": "Integrate completed native dependency provenance candidate with independent review, exact CI/main and installed acceptance; preserve original missing historical evidence.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T06:48:00.617935+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T07:59:04.696497+00:00",
+  "sha256": "4dd4a4d9a0ca9df09fcf82555fa6c5be815ae2c4e20ed2a76eec2995452284ab"
+}

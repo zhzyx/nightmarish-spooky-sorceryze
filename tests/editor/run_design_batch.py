@@ -56,6 +56,7 @@ CASES = [
     "review-stale-branch",
     "review-stale-common-dir",
     "review-stale-parent",
+    "review-stale-permission",
     "review-stop",
     "review-parent-stop",
     "normal",
@@ -220,6 +221,10 @@ def main():
     parser.add_argument("--node", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--case", choices=CASES, default="normal")
+    parser.add_argument(
+        "--review-missing-read", action="store_true", help="Retain a real failed source read in ordinary review"
+    )
+    parser.add_argument("--review-receipt-rollover", action="store_true")
     parser.add_argument("--game-project-root", action="store_true", help="Put the ordinary game at its repository root")
     parser.add_argument(
         "--task-native-review", action="store_true", help="Authorize parent native operations before read-only review"
@@ -231,6 +236,7 @@ def main():
     )
     args = parser.parse_args()
     assert not args.task_native_review or args.case == "review"
+    assert not args.review_receipt_rollover or (args.review_missing_read and args.case == "review")
     assert not args.game_project_root or GAME_WORKSPACE
     assert args.case not in {"review-stale-branch", "review-stale-common-dir"} or GAME_WORKSPACE
     # This offline runner binds its own fixture; never inherit a live work order.
@@ -530,6 +536,18 @@ def main():
                         (project / "review-running").touch()
                         time.sleep(2.0)
                     message = tool_call(stage + "-context", "get_parent_context", {})
+                    if args.review_receipt_rollover:
+                        message["tool_calls"].append(
+                            tool_call(stage + "-prior-denial", "run_command", {"command": "echo MUST_NOT_RUN"})[
+                                "tool_calls"
+                            ][0]
+                        )
+                    if args.review_missing_read:
+                        message["tool_calls"].append(
+                            tool_call(
+                                stage + "-missing", "read_file", {"path": str(targets["parent"] / "scope-summary.json")}
+                            )["tool_calls"][0]
+                        )
                     message["tool_calls"].append(
                         tool_call(stage + "-read", "read_file", {"path": str(targets["parent"] / "fixture-input.txt")})[
                             "tool_calls"
@@ -560,6 +578,8 @@ def main():
                         )
                     return message
                 if stages[stage] == 2:
+                    if args.review_missing_read:
+                        assert results[stage + "-missing"].startswith("Error:"), results
                     assert json.loads(results[stage + "-chunk"])["content"] == "😀"
                     context = json.loads(results[stage + "-context"])
                     assert context["ok"] and context["untrusted"] and context["request_id"] == REQUEST, context
@@ -590,7 +610,35 @@ def main():
                             tool_call(stage + "-deny-" + name, name, arguments)["tool_calls"][0]
                         )
                     return message
-                assert stages[stage] == 3
+                if args.review_receipt_rollover and stages[stage] in {3, 4, 5, 6}:
+                    message = {"role": "assistant", "content": "Read-only receipt window regression", "tool_calls": []}
+                    for index in range(7 if stages[stage] < 6 else 5):
+                        message["tool_calls"].append(
+                            tool_call(stage + f"-rollover-{stages[stage]}-{index}", "get_parent_context", {})[
+                                "tool_calls"
+                            ][0]
+                        )
+                    if stages[stage] == 6:
+                        message["tool_calls"].append(
+                            tool_call(
+                                stage + "-final-read",
+                                "read_file",
+                                {"path": str(targets["parent"] / "fixture-input.txt")},
+                            )["tool_calls"][0]
+                        )
+                        message["tool_calls"].append(
+                            tool_call(
+                                stage + "-final-chunk",
+                                "read_script",
+                                {
+                                    "path": str(targets["parent"] / "long-review.jsonl"),
+                                    "char_offset": 300010,
+                                    "char_limit": 1,
+                                },
+                            )["tool_calls"][0]
+                        )
+                    return message
+                assert stages[stage] == (7 if args.review_receipt_rollover else 3)
                 if args.case.startswith("review-stale-"):
                     root = targets["parent"]
                     excerpt = root / "review-data/excerpt.txt"
@@ -610,7 +658,7 @@ def main():
                         git_dir.rename(root / ".git-original")
                         git_dir.write_text("gitdir: " + str(alternative).replace("\\", "/") + "\n", encoding="utf8")
                         assert git(root, "rev-parse", "HEAD") == before
-                    elif args.case == "review-stale-parent":
+                    elif args.case in {"review-stale-parent", "review-stale-permission"}:
                         (project / "review-parent-drift-request").touch()
                         deadline = time.monotonic() + 10
                         while not (project / "review-parent-drift-applied").exists() and time.monotonic() < deadline:
@@ -678,7 +726,20 @@ def main():
                 assert chunk_read["read_mode"] == "character_range" and chunk_read["returned_characters"] == 1
                 assert chunk_read["char_offset"] == 300010 and chunk_read["next_char_offset"] == 300011
                 assert chunk_read["candidate_relative_path"] == "long-review.jsonl" and chunk_read["truncated"]
-                assert child["receipt_count"] == 9 and child["failed_receipt_count"] == 6
+                assert child["receipt_count"] == 9 + int(args.review_missing_read) + 29 * int(
+                    args.review_receipt_rollover
+                )
+                assert child["failed_receipt_count"] == 6 + int(args.review_missing_read) + int(
+                    args.review_receipt_rollover
+                )
+                if args.review_missing_read:
+                    assert receipt["review_result"] == "source_unverified"
+                    failure = child["first_failed_source_receipt"]
+                    assert failure["tool"] == "read_file" and failure["ok"] is False
+                    assert failure["diagnostic"].startswith("Error:")
+                    if args.review_receipt_rollover:
+                        assert child["first_unverified_receipt"]["tool"] == "run_command"
+                        assert all(r["sequence"] > failure["sequence"] for r in child["receipts"])
                 assert (
                     child["child_report"]["untrusted"] is True
                     and child["child_report"]["text"] == "REVIEW_CHILD_ACTUAL_READ_OK"
@@ -695,7 +756,9 @@ def main():
                     "path": "fixture-input.txt",
                     "raw_sha256": actual_read["raw_file_sha256"],
                 }
-                assert sidecar["review_source_unverified"] is False
+                assert sidecar["review_source_unverified"] is args.review_missing_read
+                if args.review_missing_read:
+                    assert sidecar["first_failed_source_receipt"] == child["first_failed_source_receipt"]
                 return tool_call("review-parent-receipt", "read_file", {"path": ref["path"]})
             assert "REVIEW_CHILD_ACTUAL_READ_OK" in results["review-parent-receipt"]
             assert len(bindings()) == (0 if GAME_WORKSPACE else 1)
@@ -1429,7 +1492,7 @@ def main():
             ok = (
                 ok
                 and stages["parent"] == 2
-                and stages["review"] == 3
+                and stages["review"] == (7 if args.review_receipt_rollover else 3)
                 and stages["return"] == 2
                 and stages["tamper"] == (0 if GAME_WORKSPACE else 3)
                 and restored is not None

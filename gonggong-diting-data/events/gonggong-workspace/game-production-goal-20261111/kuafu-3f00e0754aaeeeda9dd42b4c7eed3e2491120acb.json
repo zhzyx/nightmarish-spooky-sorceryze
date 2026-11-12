@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3f00e0754aaeeeda9dd42b4c7eed3e2491120acb",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "93538cb5f45af524908dd2b857f921a7910c895e60065f8fb6cc2bf6068a2736",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "7813a30245c65427094934fd29590b98c1a1dd96",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/902",
+    "diagnosis": "Actual editor production verification identified missing historical dependency-current receipts (#896), dropped unverified ordinary review return (#899), installation staging visible to Git scans (#903; Restart Manager multi-path observation is transient, not proof of persistent lock), and reproducible native Unicode layout crash/errors (#902). Installer rollback retained exact old bytes; existing proxy recovered separate network reset. Cold-restored messages remained explicitly paused; no command execution inferred from queue. Actual provider read long command but declined exact transfer, so long-command consumer replay remains incomplete.",
+    "next_action": "Current operator retains parent responsibility. Integrate and test 896/899/903, finish isolated Unicode repair902, deliver exact reviewed candidates through CI/main, then installed original-flow revalidation. Preserve unknown original INT01 and pending game delivery; no parent completion claim.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T00:21:06.450698+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T07:59:23.104633+00:00",
+  "sha256": "49feeec4e411151098e5f709e6b139c0079316d069d06a680a28e9d16c808115"
+}

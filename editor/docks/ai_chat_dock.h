@@ -692,6 +692,7 @@ class AIChatDock : public EditorDock {
 	bool _start_acceptance_review(int p_producer);
 	bool _finish_acceptance_review(int p_reviewer, const Array &p_history);
 	bool _automatic_acceptance_current(int p_producer) const;
+	bool _persist_serial_dependency_preflight(int p_child);
 	int design_child_starting = -1;
 	int design_parent_starting = -1;
 	uint64_t design_last_blocked_generation = UINT64_MAX;

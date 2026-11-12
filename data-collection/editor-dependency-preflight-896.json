@@ -1,0 +1,264 @@
+{
+  "issue": 896,
+  "parent": 773,
+  "scope": "Native dependency preflight provenance; no backfill of old production runs",
+  "recorded_at": "2026-11-12T07:25:42.063918+00:00",
+  "base_revision": "29b505b3dce817053e31597ed22408fd9122c48e",
+  "placement": "existing_native_and_host_tool_extension_no_new_module",
+  "input_blobs": {
+    "editor/docks/ai_chat_dock.h": {
+      "git_blob": "ad830994bab37617f5532c30f3fb2c4199a5e2ec",
+      "sha256": "700e55f01e8f110483aa7c0ecfa6bd77346b310b30f5468b0ac69ea07b5d5f9a"
+    },
+    "editor/docks/ai_chat_sub_agents.cpp": {
+      "git_blob": "b7e56f4732e9285189fd88dde8b29014e7f05d41",
+      "sha256": "4f6590efd5c2886534f11448465033b8f73ac1fe44d7ba0952b82f4910a8294b"
+    },
+    "tools/godot_parallel/runner.mjs": {
+      "git_blob": "cabab9f858b18bbac4308cf26ddb89a44a412261",
+      "sha256": "39d8fc3277df0a0e838b434b471014e393976eb39a851a4c795669d84859c4c5"
+    },
+    "tools/godot_parallel/preflight.test.mjs": {
+      "git_blob": "b513cdcd1492b544bacb468f2d83080cd2682e0a",
+      "sha256": "c91cf2632df252a454658e48258a1234f47bddbd4c5806fb0e9f702220ce4218"
+    },
+    "tests/editor/run_native_acceptance.py": {
+      "git_blob": "129bc215f681a4f56c0dde3f15f98e3bace61696",
+      "sha256": "dadb31d8de8251c9aad2874a6ee4ce278db362fc4ed83b00c87a81bf5fc66660"
+    },
+    "tests/editor/native_acceptance_parallel.py": {
+      "git_blob": "c38a144263a911acdc2a85f13f8892cf49df1912",
+      "sha256": "fabb6248a5e0247048e6b8be36e4608ee8d8671c7ec5120f14145cdf975b385a"
+    }
+  },
+  "build": {
+    "passed": true,
+    "command": "python -X utf8 -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no tests=yes accesskit=no d3d12=no angle=no warnings=extra werror=yes cache_path=<shared-native-cache> cache_limit=8 -j6",
+    "environment": [
+      "GONGGONG_NATIVE_SOURCE_ARCHIVE=1",
+      "MSYSTEM empty",
+      "GONGGONG_TEST_PYTHON=<installed runtime Python>",
+      "GONGGONG_WORKSPACE cleared"
+    ],
+    "native_invalidation": "Changed ai_chat_sub_agents.cpp compiled and editor linked; build-5.log retained",
+    "log_sha256": "a7185189bd0cfe925c4b846d25b7d2cf6485d8a489565461a9a69e89ea65133f",
+    "executable_sha256": "c68d0476ca41fcc44f230cf0bf089e10c2024f05240a3fdb395914d163d6dbb7"
+  },
+  "native_suite": {
+    "command": "bin/godot.windows.editor.x86_64.console.exe --headless --test",
+    "source_cwd": ".",
+    "passed": true,
+    "cases": 1566,
+    "assertions": 435682,
+    "skipped": 3,
+    "log_sha256": "37460c3100531eeb0f4871aa47a8c3f784eec1e6e89a11c0ed6765418c14bb36"
+  },
+  "runner_suite": {
+    "command": "node --test tools/godot_parallel/preflight.test.mjs tests/editor/test_parallel_work_orders.mjs",
+    "passed": true,
+    "tests": 66,
+    "log_sha256": "30974a98330be52d11aa4333b0f723f23a8f4b988e641f8459d5d73cf38505b9",
+    "large_manifest_recheck": {
+      "command": "node --test tools/godot_parallel/preflight.test.mjs",
+      "entries": 2000,
+      "passed": true,
+      "log_sha256": "8c2dbe7d88d600dc79f21021393e2740adffa773087021d85acd39787ca73960"
+    }
+  },
+  "native_command": "python -X utf8 tests/editor/run_native_acceptance.py --godot <candidate> --node <node> --scenario <scenario> --case models-initial-ok --out <private-report>",
+  "checks": [
+    {
+      "name": "parallel-final",
+      "scenario": "parallel",
+      "passed": true,
+      "native_editor_ok": true,
+      "binary_sha256": "c68d0476ca41fcc44f230cf0bf089e10c2024f05240a3fdb395914d163d6dbb7",
+      "report_sha256": "770f5c0a8290edb0706fd9c04a7dc4e668401d2c1c142b26aefd1ac72fa4282b",
+      "private_report": "bin/896-validation/parallel-final.json",
+      "verified_criteria": [
+        {
+          "producer": 1,
+          "decision_sha256": "268cd5ed2e4027e33c47823bd59e45bdddff843e9310a683b9c44df99eec687f",
+          "criteria": [
+            "A"
+          ]
+        },
+        {
+          "producer": 2,
+          "decision_sha256": "4482b32431df5612dd1b7d267a675c2e020024e3664b796a2f8862a7c32d113a",
+          "criteria": [
+            "B"
+          ]
+        },
+        {
+          "producer": 3,
+          "decision_sha256": "3b0d17e734d95025eb6c5c4b77c053b24b4391dcc821d54caa30617c51e344e8",
+          "criteria": [
+            "C"
+          ]
+        }
+      ],
+      "observation": "Actual native fixture with isolated model/GitHub authority transports; native acceptance verdict is the final field, base transport fixture expects a different manual flow."
+    },
+    {
+      "name": "serial-final",
+      "scenario": "pass",
+      "passed": true,
+      "native_editor_ok": true,
+      "binary_sha256": "c68d0476ca41fcc44f230cf0bf089e10c2024f05240a3fdb395914d163d6dbb7",
+      "report_sha256": "09c8372b27d297ae9b6e6db3831bba6a6ca78bb25386d0ef7aff77230f3239f9",
+      "private_report": "bin/896-validation/serial-final.json",
+      "verified_criteria": [
+        {
+          "producer": 1,
+          "decision_sha256": "24838be4d8eaf590453566762ac9eb9bb910cd2ecc7a8785edf23d8f0249c304",
+          "criteria": [
+            "A"
+          ]
+        },
+        {
+          "producer": 2,
+          "decision_sha256": "dab91769ff6fe1caf3a059d401c08a5ff9fa26420b0b02b2ecbb85fcbbd5b277",
+          "criteria": [
+            "B"
+          ]
+        }
+      ],
+      "observation": "Actual native fixture with isolated model/GitHub authority transports; native acceptance verdict is the final field, base transport fixture expects a different manual flow."
+    },
+    {
+      "name": "stale-final",
+      "scenario": "stale",
+      "passed": true,
+      "native_editor_ok": false,
+      "binary_sha256": "c68d0476ca41fcc44f230cf0bf089e10c2024f05240a3fdb395914d163d6dbb7",
+      "report_sha256": "cc9ea2b8db4ded4fbd93f4cf2f1e9c3d3cdfed5a31d777e3690efd0f9a4cdf6f",
+      "private_report": "bin/896-validation/stale-final.json",
+      "verified_criteria": [],
+      "observation": "Actual native fixture with isolated model/GitHub authority transports; native acceptance verdict is the final field, base transport fixture expects a different manual flow."
+    },
+    {
+      "name": "no-permission-final",
+      "scenario": "no-permission",
+      "passed": true,
+      "native_editor_ok": false,
+      "binary_sha256": "c68d0476ca41fcc44f230cf0bf089e10c2024f05240a3fdb395914d163d6dbb7",
+      "report_sha256": "27d6a42d6472f98c4098b007bd4d7d33c82c84e0171a2bd99dc1fdcf0873cba7",
+      "private_report": "bin/896-validation/no-permission-final.json",
+      "verified_criteria": [],
+      "observation": "Actual native fixture with isolated model/GitHub authority transports; native acceptance verdict is the final field, base transport fixture expects a different manual flow."
+    },
+    {
+      "name": "parallel-integration-final",
+      "scenario": "parallel-integration",
+      "passed": true,
+      "native_editor_ok": true,
+      "binary_sha256": "c68d0476ca41fcc44f230cf0bf089e10c2024f05240a3fdb395914d163d6dbb7",
+      "report_sha256": "c54c886692355e623b113c9088971602732db5498180bbf952b89e7b59c91c52",
+      "private_report": "bin/896-validation/parallel-integration-final.json",
+      "verified_criteria": [
+        {
+          "producer": 1,
+          "decision_sha256": "fe66be8acfc868f1ecbc1da7d93f67ab40154e91b160654063adf2d2ad3146f4",
+          "criteria": [
+            "A"
+          ]
+        },
+        {
+          "producer": 2,
+          "decision_sha256": "c010d79658094a59c2fa35efa9d7e9045d7d60a08a324d1f83a89516991782a4",
+          "criteria": [
+            "B"
+          ]
+        },
+        {
+          "producer": 3,
+          "decision_sha256": "6ce2a4b8cc292642d10fb241618078436c2cc5ac288422e5e8fbe15b85c9f454",
+          "criteria": [
+            "C"
+          ]
+        }
+      ],
+      "observation": "Actual native fixture with isolated model/GitHub authority transports; native acceptance verdict is the final field, base transport fixture expects a different manual flow."
+    },
+    {
+      "name": "storage-failure-observer",
+      "scenario": "parallel-preflight-failure",
+      "passed": true,
+      "native_editor_ok": true,
+      "binary_sha256": "c68d0476ca41fcc44f230cf0bf089e10c2024f05240a3fdb395914d163d6dbb7",
+      "report_sha256": "6f9b91b4bc00111018b250a0002ee43d609ee7dcd3f22e2bf0501dfed319b95b",
+      "private_report": "bin/896-validation/storage-failure-observer.json",
+      "verified_criteria": [
+        {
+          "producer": 1,
+          "decision_sha256": "712700bbabdc532c7143358c82bc634129ae346a1e80eea36e7cbc0d0644e450",
+          "criteria": [
+            "A"
+          ]
+        }
+      ],
+      "observation": "Actual native fixture with isolated model/GitHub authority transports; native acceptance verdict is the final field, base transport fixture expects a different manual flow."
+    }
+  ],
+  "failure_originals": [
+    {
+      "private_path": "bin/896-validation/build-1.log",
+      "sha256": "00cfaf32dc78b061a5469200460497d5006c2e476f7803bc6dcbdcc4c9457870"
+    },
+    {
+      "private_path": "bin/896-validation/build-2.log",
+      "sha256": "15cb9c7ae5e2508bd724d73a30c0c27a297d2ff346df76d173c9532a58511ffd"
+    },
+    {
+      "private_path": "bin/896-validation/parallel.log",
+      "sha256": "8aa740c1e47aa7e0d286bbc9056d4993dbeefd332a31a744e781a4d7fd9a0c71"
+    },
+    {
+      "private_path": "bin/896-validation/pass.log",
+      "sha256": "8aa740c1e47aa7e0d286bbc9056d4993dbeefd332a31a744e781a4d7fd9a0c71"
+    },
+    {
+      "private_path": "bin/896-validation/parallel-retry.log",
+      "sha256": "a1485905cd2bb9b82df4e8583a62de3b562ddaf4256a128b6ec4a6ddf453b4ab"
+    },
+    {
+      "private_path": "bin/896-validation/pass-retry.json",
+      "sha256": "df3beba0e2c8e924e349fec46383d3de0c69937a70ffe372e98960a0a34bd8c3"
+    },
+    {
+      "private_path": "bin/896-validation/stale.json",
+      "sha256": "d8f30e3ee5e74d8a3e032f073c7ad57cf24b097cb37d659b0e043f7fe3998dd7"
+    },
+    {
+      "private_path": "bin/896-validation/storage-failure.json",
+      "sha256": "32f9e9fc8145c2bd1a1e4a26d01d05378e5281292e2fb023cf4f83e326ab7f7b"
+    },
+    {
+      "private_path": "bin/896-validation/storage-failure-final.json",
+      "sha256": "ea95c750fa4e575e70d7fe085af2baf03eb38a7bdae5808cce2280aa599e41e7"
+    }
+  ],
+  "failure_analysis": [
+    "Automatic review rejected compound mutation/build command with blocked by policy; separated source edit and build succeeded.",
+    "Build 1 lacked Time include; build 2 exposed erroneous first-match source edit; corrected, strict build passes.",
+    "Runtime Python lacks pip fixture packager; selected existing build Python. Parallel fixture additionally requires trusted installed job-object.node.",
+    "Legacy normal fixture stops at manual design drift before creating children; current models-initial-ok entry covers actual dispatch.",
+    "Storage failure originally waited for idle after a blocking event and then required both independent reviews complete. Final observer waits for actual failure event, requires editor.ok, preserves at least one actual accepted upstream and requires no downstream registration; old attempts retained."
+  ],
+  "bounds": {
+    "namespace": "private editor cache / batch token digest",
+    "current_record_bytes": 33554432,
+    "dispatch_record_bytes": 67108864,
+    "batch_records": 256,
+    "batch_bytes": 268435456,
+    "on_full": "retain old evidence, block affected batch with recovery instruction; new live batch uses separate namespace"
+  },
+  "review_correction": "Private manifests stay in structured registration/request; model prompt contains compact source/criteria/check references. Native external worker asserts no full decision or verified_response in prompt.",
+  "limitations": [
+    "Fixture identity/model transports do not establish real provider business acceptance.",
+    "Formal installed real-project follow-up, independent review, exact-candidate admission/CI/main remain root delivery responsibility.",
+    "Private audit evidence can be removed by cache management; missing/tampered references block the live consumer and never restore authority.",
+    "Old historical current results were removed and remain unknown."
+  ]
+}

@@ -1,0 +1,179 @@
+{
+  "issue": 899,
+  "parent_issue": 773,
+  "request_id": "editor-review-failure-return-20261112",
+  "authority": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/899",
+  "source_base": "979dfe27",
+  "scope": "Existing ordinary game native review failure diagnostic return; no business acceptance or original game acceptance.",
+  "source_sha256": {
+    "editor/docks/ai_chat_sub_agents.cpp": "93887f46b86b996ab3126a423be11d53c57e46aa0c82132a92392ce9043c740a",
+    "tests/editor/run_design_batch.py": "240f2d1d7f685f88cfb68caaa52fc3b0352f46608ca58a4f87e45214a4853e26",
+    "tests/editor/design_batch.gd": "e170662c070cb9e5fd66cf928155262219ba74176542341b400a2f497e170024",
+    "design-docs/editor-review-failure-return-899.md": "473bdd3f6b1b48fac916e080cbdd1721e2ee7e7706ec32df3b8cacbfb6a6b807"
+  },
+  "binary_sha256": "b1a57be8b21a88b7f8807ee364cfe68b1128bd75dc9afe7ca7a51b38d2974e87",
+  "strict_build": {
+    "exit_code": 0,
+    "warnings": "extra",
+    "werror": true,
+    "tests": true
+  },
+  "full_unit_suite": {
+    "exit_code": 0,
+    "cases_passed": 1567,
+    "assertions_passed": 435685,
+    "skipped": 3
+  },
+  "native_cases": {
+    "review": {
+      "ok": true,
+      "parent_return_count": 1,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 2,
+        "review": 3,
+        "return": 2
+      },
+      "receipt_files": 1,
+      "cold_new_requests": 0,
+      "business_accepted": null,
+      "review_result": "report_only",
+      "failed_receipt_count": 6,
+      "unknown_receipt_count": 0
+    },
+    "missing-read": {
+      "ok": true,
+      "parent_return_count": 1,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 2,
+        "review": 3,
+        "return": 2
+      },
+      "receipt_files": 1,
+      "cold_new_requests": 0,
+      "business_accepted": null,
+      "review_result": "source_unverified",
+      "failed_receipt_count": 7,
+      "unknown_receipt_count": 0
+    },
+    "review-stale-bytes": {
+      "ok": true,
+      "parent_return_count": 0,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 2,
+        "review": 3
+      },
+      "receipt_files": 1
+    },
+    "review-stale-head": {
+      "ok": true,
+      "parent_return_count": 0,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 2,
+        "review": 3
+      },
+      "receipt_files": 1
+    },
+    "review-stale-parent": {
+      "ok": true,
+      "parent_return_count": 0,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 2,
+        "review": 3
+      },
+      "receipt_files": 1
+    },
+    "review-stale-permission": {
+      "ok": true,
+      "parent_return_count": 0,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 2,
+        "review": 3
+      },
+      "receipt_files": 1
+    },
+    "review-stale-link": {
+      "ok": true,
+      "parent_return_count": 0,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 2,
+        "review": 3
+      },
+      "receipt_files": 1
+    },
+    "review-stale-branch": {
+      "ok": true,
+      "parent_return_count": 0,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 2,
+        "review": 3
+      },
+      "receipt_files": 1
+    },
+    "review-stale-common-dir": {
+      "ok": true,
+      "parent_return_count": 0,
+      "stage_requests": {
+        "warmup": 1,
+        "parent": 2,
+        "review": 3
+      },
+      "receipt_files": 1
+    }
+  },
+  "initial_failures": [
+    {
+      "case": "review-stale-permission",
+      "exit_code": 1,
+      "cause": "Fixture expected stale UI, but revoked tools stop parent wake before stale-message consumption.",
+      "observed_parent_returns": 0,
+      "resolution": "Assert real child completion, zero parent continuation and zero live queue; rerun passes."
+    }
+  ],
+  "original_failure": {
+    "reviewer": 14,
+    "failed_reads": 1,
+    "unknown_receipts": 0,
+    "successful_read_manifest_entries": 61,
+    "changed_manifest_entries": 0,
+    "result": "Original opaque refusal retained as parent-provided diagnosis, not replayed or accepted."
+  },
+  "private_logs_relative_to_worktree": "bin/899-validation",
+  "log_sha256": {
+    "build.log": "c8b06bb7382c0c811aa98db2b966f7998ae6b753be8bb68aff83d29fd7e7f2d7",
+    "missing-read.log": "6f540df6c5df9f6f40a8e3a7b3b121003755248f5b3a3a85d6045c0c984595c9",
+    "review-stale-branch.log": "900b8631664ad8c26fd054e003e401e57c21123e47c2472f34a3193fb11e7935",
+    "review-stale-bytes.log": "8b36087a9fe043aa78e0bb108e9edf5fb0bff0139c94021a9c272836f652ce24",
+    "review-stale-common-dir.log": "299ed231169a7223ca8caa769959f70442ffb5b9c22af4c887821c80f580f8d5",
+    "review-stale-head.log": "df86ff3c9a59076bbbb3729ddc2411e4c847a37e34304b627e588e807c5fc7d2",
+    "review-stale-link.log": "1828e2dee495aaef818ee676f554885243b73c45d6bb6ec68c3e8bf0a4f29cdb",
+    "review-stale-parent.log": "38eb615130d177e9ca7f571400b4d188d69178548ea714572be394cddf523406",
+    "review-stale-permission-initial-failure.log": "084da7d65dcf7c0948463963d5441b5449e9c2e2a1e98137c15d32e3112a45ea",
+    "review-stale-permission.log": "46eb80b07456c30f5958082e498ef21573bf80270af161f7b9dd6e93cd7a3eb1",
+    "review.log": "6f540df6c5df9f6f40a8e3a7b3b121003755248f5b3a3a85d6045c0c984595c9",
+    "unit-full.log": "8537ade2c608a8ebf0c40875660daf563a4990ff80b088a9dd3b02215163c661"
+  },
+  "report_sha256": {
+    "missing-read.json": "781b83e7d0094e0d2856cd58f427e8bac15feee385ed7c67efb8c5660a53b5f1",
+    "review-stale-branch.json": "234c6eda4eab993afafec8e41d70d11d8e87215cf79256b9cb0219bd165575b1",
+    "review-stale-bytes.json": "575f3557be8a8968a511067c6cc3de0e3bfc6a27d27f98a42a6a4285e4817d9d",
+    "review-stale-common-dir.json": "277843136c86f1cfecb0bf15dbc4d1e27effe470bfcbaac93ee153520baf679c",
+    "review-stale-head.json": "dced0e32fcd3e12b134633e78b2b711fb08b0c83813307f1330296628a1936c0",
+    "review-stale-link.json": "c933092d1cbcae3f46554edb83e652283e340672e5ac5ec2032d225faad781ff",
+    "review-stale-parent.json": "881c0b183d113dfe33d21d9b8245c5943410286269e9c4f7acfd36ddba047578",
+    "review-stale-permission-initial-failure.json": "ed5eab75583000558f8644017e3f04805c6145d98697c2e764e63d0338137a53",
+    "review-stale-permission.json": "25815df35182f490076a5946fd5f2a2cb057fa564dc6de50d35cd128eef08a86",
+    "review.json": "cffe81959c6aa2f7d42b5a13daed3e598eecdc28a2ee81dfa4aaab1938414b40"
+  },
+  "remaining": [
+    "Independent review and exact candidate delivery gates owned by parent session.",
+    "Installed real-project revalidation after delivery; original game and #773 remain unaccepted."
+  ]
+}

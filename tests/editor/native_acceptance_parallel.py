@@ -69,6 +69,7 @@ fs.writeFileSync('received-prompt.txt',prompt);
 if(name==='C') {
   const upstream=JSON.parse(prompt.split('HOST_ACCEPTED_UPSTREAM=')[1].split('\\n')[0]);
   if(upstream.length!==2||upstream.some(s=>!fs.existsSync(s.root)||!fs.existsSync(s.decision_path)||!s.criteria.length))throw Error('Missing accepted upstream');
+  if(upstream.some(s=>s.decision||s.verified_response||!s.candidate_check))throw Error('Prompt must contain compact check references, not private manifests');
   for(const source of upstream)for(const criterion of source.criteria)for(const evidence of criterion.evidence) {
     if(!fs.readFileSync(path.join(source.root,evidence.path),'utf8').includes('UNTRUSTED_FIXTURE_FILE') && evidence.path==='fixture-input.txt')throw Error('Upstream bytes missing');
   }

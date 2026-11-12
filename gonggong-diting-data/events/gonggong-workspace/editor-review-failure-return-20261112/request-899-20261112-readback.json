@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "request-899-20261112-readback",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-review-failure-return-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T07:04:24.130489+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/899",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "title": "普通只读审查失败诊断回传父会话并继续修正",
+    "issue": 899,
+    "parent_issue": 773,
+    "source_updated_at": "2026-11-12T07:00:55Z",
+    "request": "<!-- gonggong-request:editor-review-failure-return-20261112 -->\n\n父项 #773，故障链 #807。当前 Sail-Li / Codex 会话在原用户授权内修复编辑器自主审查/返修接续；不接管他人工作副本。\n\n真实普通游戏的只读审查14完成了报告，指出缺失证据、归档索引和未完成交付。其间一次 read_file 读取不存在的 scope-summary.json 失败，随后读了实际 summary.json，最终报告明确保留读取限制。宿主设置 review_source_unverified=true、failed_receipt_count=1，随后把完成回传以通用“子工单回传已失效或当前权限不允许接续”拒绝，父会话不能继续处理实际发现。此轮没有 root 补充消息或候选改写；独立核对61项成功读取的源文件摘要全部仍匹配，unknown_receipt_count=0。原报告和私有工具回执均保留，未当作批准。\n\n代码路径：_record_sub_agent_tool 对失败读取保留不可验证状态；_design_return_allowed 对只读 review_source_unverified 拒绝整个回传。保留失败和禁止据此批准是必要的，但失败诊断本身也被拦截，使普通审查发现问题后无法自主返修。\n\n范围：让当前授权及父子身份仍有效的普通只读审查，把真实完成/失败/未验证诊断通过已有父通知路径送回，明确 business_accepted=null/不通过及原因，供父会话修正或重新审查。不得把不完整审查变成业务批准，不降低自动独立验收、来源漂移、撤权、过期、冷启动或工具权限边界。优先复用现有返回分类与证据结构；没有当前权限仍停止受影响操作。\n\n验收：\n- [ ] 真实 native 普通游戏审查中出现失败读取，之后完成带限制的报告；父会话自动收到同一真实回执的失败/未验证诊断，可继续已授权修正，无需再次催促；原失败不隐藏。\n- [ ] 成功源文件摘要仍核对；缺失、越界、篡改或候选变化不能被报告内容提升为通过或直接整合批准，撤权/身份代次漂移等仍拒绝过期操作。\n- [ ] 冷启动不重放审查或伪造 live authority；失败回传保持幂等、绑定父子/候选/真实执行来源，诊断能说明具体失败层级而非笼统权限提示。\n- [ ] 覆盖正向返回、失败/缺证、来源漂移、权限撤回和恢复等相关 native 路径；独立审查、严格构建、正式门禁及精确CI/main通过。\n- [ ] 正式安装后以真实项目复验失败报告→父会话修正的连续流程；父项 #773 及未验收游戏仍保持开放。\n\n<!-- gonggong-host-git:Sail-Li -->\n",
+    "issue_body_sha256": "69d9f374a6870652e9a61b415d6c98a64bb97c5509f2e0991614b65169f06231",
+    "scope": "Authorized original parent repair; failures remain unaccepted"
+  },
+  "sha256": "73a460e7d934b707bcb29eb2a374ddef4cea74ab61d66e50870b94dc8605931c"
+}
