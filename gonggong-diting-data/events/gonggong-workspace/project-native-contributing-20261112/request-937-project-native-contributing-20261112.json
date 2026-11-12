@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "request-937-project-native-contributing-20261112",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "project-native-contributing-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T11:41:21+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/937",
+  "agent": {
+    "id": "kimi-work-kaiyunxue",
+    "version": "20261112",
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8",
+    "origin": "current-authorized-host"
+  },
+  "payload": {
+    "scope": "将根目录贡献指南完整替换为项目自有版本，移除上游社区、翻译、提案和团队落款，保留项目规范、验证、交付、第三方与归属边界。",
+    "authorization_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/937",
+    "request_document": "design-docs/project-native-contributing-20261112.md",
+    "validation": "data-collection/project-native-contributing-20261112-validation.json",
+    "usage": null,
+    "usage_unknown_reason": "No measured provider usage supplied"
+  },
+  "evidence_refs": [],
+  "sha256": "5be68ba2e28de80978c0320d8af08f883a482749ef0e7bf29f640f133e9f2227"
+}

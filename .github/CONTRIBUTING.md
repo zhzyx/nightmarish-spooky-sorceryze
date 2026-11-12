@@ -5,7 +5,7 @@
 设计定版后按 [父子 Issue 与尾项结转规则](../customizations/components/issue-workorders/issue-lifecycle.md) 拆分：子项独立提交、验收和关闭，父项逐项核对后关闭。阎罗合入时审查少量尾项，完整承接并留存文档映射后可结转关闭旧单。
 
 
-本约定适用于本仓库的所有贡献者：人工、IDE/CLI/引擎宿主、Agent、外部协作者；覆盖需求、设计、开发、缺陷、研究、测试、文档、维护及资产。技术细节沿用根目录 CONTRIBUTING.md 的 Godot 指南；本仓库分支及治理以本入口为准。
+本约定适用于本仓库的所有贡献者：人工、IDE/CLI/引擎宿主、Agent、外部协作者；覆盖需求、设计、开发、缺陷、研究、测试、文档、维护及资产。技术细节遵循根目录 CONTRIBUTING.md 的项目贡献指南；本仓库分支及治理以本入口为准。
 
 任务开始与范围变更遵循 [执行范围与验证成本](../customizations/components/issue-workorders/execution-policy.md)，在原需求文档记录最小验证计划、证据复用依据和完成条件；不另造状态账本。
 
