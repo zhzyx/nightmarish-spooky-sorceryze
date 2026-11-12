@@ -1,0 +1,439 @@
+{
+  "issue": 840,
+  "request_id": "provider-independence-20261112",
+  "observed_at": "2026-11-12T15:02:52.205682+00:00",
+  "delivery": {
+    "headRefOid": "41a47090f4614cbdd3d5164881c58edc5d48bb19",
+    "mergeCommit": {
+      "oid": "e15a49f9b7dbbdbb1b585fc2b68cc3f252d88c8b"
+    },
+    "mergedAt": "2026-11-12T01:07:44Z",
+    "mergedBy": {
+      "id": "U_kgDOFOKx7w",
+      "is_bot": false,
+      "login": "Sail-Li",
+      "name": ""
+    },
+    "state": "MERGED",
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/872"
+  },
+  "delivered_tree": "b49a20e187af2a6d046e96e2c8eef67af079085a",
+  "windows_ci": {
+    "conclusion": "success",
+    "headSha": "41a47090f4614cbdd3d5164881c58edc5d48bb19",
+    "status": "completed",
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43131251293"
+  },
+  "macos_ci": {
+    "conclusion": "success",
+    "headSha": "41a47090f4614cbdd3d5164881c58edc5d48bb19",
+    "jobs": [
+      {
+        "completedAt": "2026-11-12T01:42:36Z",
+        "conclusion": "success",
+        "databaseId": 130895882031,
+        "name": "Editor (target=editor)",
+        "startedAt": "2026-11-12T00:59:41Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-11-12T00:59:43Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-11-12T00:59:42Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T00:59:57Z",
+            "conclusion": "success",
+            "name": "Checkout",
+            "number": 2,
+            "startedAt": "2026-11-12T00:59:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T00:59:58Z",
+            "conclusion": "success",
+            "name": "Restore Godot build cache",
+            "number": 3,
+            "startedAt": "2026-11-12T00:59:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:02:07Z",
+            "conclusion": "success",
+            "name": "Setup Python and SCons",
+            "number": 4,
+            "startedAt": "2026-11-12T00:59:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:02:17Z",
+            "conclusion": "success",
+            "name": "Preflight real signed external host and launchd",
+            "number": 5,
+            "startedAt": "2026-11-12T01:02:07Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:02:21Z",
+            "conclusion": "success",
+            "name": "Download pre-built ANGLE",
+            "number": 6,
+            "startedAt": "2026-11-12T01:02:17Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:02:24Z",
+            "conclusion": "success",
+            "name": "Download pre-built AccessKit",
+            "number": 7,
+            "startedAt": "2026-11-12T01:02:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:03:32Z",
+            "conclusion": "success",
+            "name": "Setup Vulkan SDK",
+            "number": 8,
+            "startedAt": "2026-11-12T01:02:24Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:03:32Z",
+            "conclusion": "skipped",
+            "name": "Compilation (x86_64)",
+            "number": 9,
+            "startedAt": "2026-11-12T01:03:32Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:33:01Z",
+            "conclusion": "success",
+            "name": "Compilation (arm64)",
+            "number": 10,
+            "startedAt": "2026-11-12T01:03:32Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:34:16Z",
+            "conclusion": "success",
+            "name": "Verify Tianshu package switching on arm64",
+            "number": 11,
+            "startedAt": "2026-11-12T01:33:01Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:34:17Z",
+            "conclusion": "success",
+            "name": "Verify external host trust on macOS",
+            "number": 12,
+            "startedAt": "2026-11-12T01:34:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:35:43Z",
+            "conclusion": "success",
+            "name": "Verify real signed external hosts without GUI or model calls",
+            "number": 13,
+            "startedAt": "2026-11-12T01:34:17Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:35:46Z",
+            "conclusion": "success",
+            "name": "Upload real signed host acceptance evidence",
+            "number": 14,
+            "startedAt": "2026-11-12T01:35:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:37:43Z",
+            "conclusion": "success",
+            "name": "Verify Tianshu creator navigation on arm64",
+            "number": 15,
+            "startedAt": "2026-11-12T01:35:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:39:44Z",
+            "conclusion": "success",
+            "name": "Verify Tianshu work-order interactions on arm64",
+            "number": 16,
+            "startedAt": "2026-11-12T01:37:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:42:31Z",
+            "conclusion": "success",
+            "name": "Verify automatic model discovery and cancellation",
+            "number": 17,
+            "startedAt": "2026-11-12T01:39:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:42:31Z",
+            "conclusion": "skipped",
+            "name": "Save Godot build cache",
+            "number": 18,
+            "startedAt": "2026-11-12T01:42:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:42:31Z",
+            "conclusion": "skipped",
+            "name": "Prepare artifact",
+            "number": 19,
+            "startedAt": "2026-11-12T01:42:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:42:31Z",
+            "conclusion": "skipped",
+            "name": "Upload artifact",
+            "number": 20,
+            "startedAt": "2026-11-12T01:42:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:42:31Z",
+            "conclusion": "skipped",
+            "name": "Unit tests",
+            "number": 21,
+            "startedAt": "2026-11-12T01:42:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:42:31Z",
+            "conclusion": "success",
+            "name": "Post Setup Python and SCons",
+            "number": 41,
+            "startedAt": "2026-11-12T01:42:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:42:32Z",
+            "conclusion": "success",
+            "name": "Post Checkout",
+            "number": 42,
+            "startedAt": "2026-11-12T01:42:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-12T01:42:34Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 43,
+            "startedAt": "2026-11-12T01:42:32Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43131315713/job/130895882031"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43131315713"
+  },
+  "issues": [
+    {
+      "labels": [
+        "type:requirement",
+        "status:in-progress",
+        "workspace:gonggong"
+      ],
+      "number": 840,
+      "state": "OPEN",
+      "stateReason": "",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840"
+    },
+    {
+      "labels": [
+        "type:development",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "number": 841,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/841"
+    },
+    {
+      "labels": [
+        "type:development",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "number": 842,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/842"
+    },
+    {
+      "labels": [
+        "type:development",
+        "status:in-progress",
+        "workspace:gonggong"
+      ],
+      "number": 843,
+      "state": "OPEN",
+      "stateReason": "",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/843"
+    },
+    {
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "number": 844,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/844"
+    },
+    {
+      "labels": [
+        "type:bug",
+        "status:planned",
+        "workspace:gonggong"
+      ],
+      "number": 850,
+      "state": "OPEN",
+      "stateReason": "",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/850"
+    },
+    {
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "number": 856,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/856"
+    },
+    {
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "number": 859,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/859"
+    },
+    {
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "number": 871,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/871"
+    }
+  ],
+  "windows_local": {
+    "binding": "data-collection/provider-independence-840-2d0-binding.json",
+    "native_cases_passed": 88,
+    "native_assertions": 1598,
+    "pipe_cases_passed": 2,
+    "pipe_assertions": 18,
+    "startup_checks_passed": 30,
+    "connection_memory_checks_passed": 38,
+    "model_discovery_cases_passed": 15,
+    "asset_independence_cases_passed": 10
+  },
+  "configured_codex_cli": {
+    "state": "real_generation_and_reopen_passed",
+    "evidence": "data-collection/provider-independence-840-live.json",
+    "result_sha256": "08842b82afde8c7df176718522882ed29ff62f55e9a207780862d53968f7266c",
+    "scope": "Explicit configured CLI, five-part table, real Godot GLB, durable succeeded recovery. Not a claim that all Codex generation modes or final candidate inference were retested."
+  },
+  "remaining": [
+    {
+      "issue": 843,
+      "state": "unknown",
+      "acceptance": "Real macOS Codex desktop descendant chain issues an authorized context request to the same-candidate private headless editor.",
+      "resume_condition": "Authorized macOS Codex native session or a verified legitimate silent child entry for the current official app.",
+      "coordinator": "current root session; no external execution handoff accepted",
+      "static_signature_is_not_chain_acceptance": true
+    }
+  ],
+  "coverage_limits": [
+    "Non-Codex real inference and Kimi quality excluded from this session acceptance by explicit user instruction; other testers will validate.",
+    "Three actual Blender expanded geometry tests unexecuted; not counted as passed or covered by the inference waiver.",
+    "Windows runtime fixtures do not cover all vendor installers, hardware platforms or power-loss timings.",
+    "Windows host activation adapter returned not_applicable; no claim that the user running editor was switched."
+  ],
+  "archive_inspection": {
+    "msi_extraction": "automatic policy rejection before execution; no installation or bypass",
+    "existing_tar_fallback": "Unrecognized archive format for official Codex DMG",
+    "scope": "Supplementary package inspection; does not invalidate delivered code or configured CLI generation evidence"
+  },
+  "macos_signed_host_report": {
+    "sha256": "b5d4d7dacc2756e22018daefc4597039084688624210c3f9674fb35c3c1a8c44",
+    "editor_sha256": "a739a5a9eeff5cb7d48316a8f23e41b8e7e7aefdaa5cd9e3f557b02f2cb3896e",
+    "ok": true,
+    "non_codex_host_ok": true,
+    "full_signed_anchor_acceptance_ok": false,
+    "codex": {
+      "state": "unavailable",
+      "reason": "[Errno 2] No such file or directory: '/private/var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T/gonggong-host-acceptance-0c9h5273/ChatGPT.app/Contents/Frameworks/Electron Framework.framework/Electron Framework'"
+    },
+    "cases": [
+      {
+        "name": "unregistered_signed_host_rejected",
+        "expected_authorized": false,
+        "observed_authorized": false,
+        "passed": true
+      },
+      {
+        "name": "explicit_signed_host_authorized",
+        "expected_authorized": true,
+        "observed_authorized": true,
+        "passed": true
+      },
+      {
+        "name": "host_downgraded_to_helper_rejected",
+        "expected_authorized": false,
+        "observed_authorized": false,
+        "passed": true
+      },
+      {
+        "name": "helper_upgraded_to_host_authorized",
+        "expected_authorized": true,
+        "observed_authorized": true,
+        "passed": true
+      },
+      {
+        "name": "wrong_cdhash_policy_rejected",
+        "expected_authorized": false,
+        "observed_authorized": false,
+        "passed": true
+      },
+      {
+        "name": "actual_new_signed_version_rejected_before_registration",
+        "expected_authorized": false,
+        "observed_authorized": false,
+        "passed": true
+      },
+      {
+        "name": "actual_new_signed_version_authorized_after_registration",
+        "expected_authorized": true,
+        "observed_authorized": true,
+        "passed": true
+      },
+      {
+        "name": "revoked_original_host_rejected",
+        "expected_authorized": false,
+        "observed_authorized": false,
+        "passed": true
+      }
+    ],
+    "artifact_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43131315713"
+  }
+}

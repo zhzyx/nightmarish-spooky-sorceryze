@@ -96,3 +96,13 @@ macOS 补充真实签名链验收工具和对应 workflow，详见子项设计�
 主线 `2d0ad5b2795f609f1729b48b4aac050e05d09f92`（#867连接状态记忆）已无冲突整合；独立核查无Codex前置，历史成功不替代当前连接验证。新构建AIChat88项1598断言通过，启动30项、跨进程连接记忆38项通过。模型发现15场景完整通过；两条旧session测试按#828普通会话共享项目模型的契约修正，保留草稿隔离、catalog复用/失效/C1C2/去重；Windows测试包装器PID与attach_job.ps1依赖补齐，生产执行与隔离代码未改。见 `data-collection/provider-independence-840-2d0.json`。
 
 macOS run43125700093（签发c42411ce）原生编译/ExternalPeer及8个真实供应商签名请求场景通过，末尾模型发现因上述两条陈旧fixture失败；修正后的Mac复验仍需独立回执。官方Codex应用真实静态签名通过，但缺少测试脚本假定的Electron后台子进程入口，未取得实际桌面完整祖先链请求；#843与父#840的这一验收保持开放，Windows已配置CLI真实生成成功不能替代。业务实现可以交付，未完成项不能写done。
+
+## 主线交付与验收状态
+
+PR #872 于 2026-11-12T01:07:44Z 由 Sail-Li 合入 main `e15a49f9b7dbbdbb1b585fc2b68cc3f252d88c8b`。精确签发 `41a47090f4614cbdd3d5164881c58edc5d48bb19` 与主线内容树均为 `b49a20e187af2a6d046e96e2c8eef67af079085a`，已回读远端；Windows CI run43131251293 成功，1564项/435914断言通过、3项明确跳过，并重复通过运行时中断恢复。用户当前编辑器未自动切换，当前宿主激活适配器回执为 not_applicable。
+
+#841 与 #842 已逐项复核并以 completed 关闭，status:done 已回读。完整交付回执见 `data-collection/provider-independence-840-delivery.json`。用户配置的 Codex CLI 保持可用，真实生成与恢复证据见 live 回执；未配置 CLI 不构成通用配置、本机网格和其他模型路径的启动前置。非 Codex/Kimi 真实推理质量按用户明确分工由其他验证者负责；3项实际 Blender 扩展测试未执行，不能计通过。
+
+#843 和父 #840 继续开放，剩余唯一必需平台验收为真实 macOS Codex 桌面后代链向相同候选私有 headless 编辑器发送授权 context 请求。当前会话持有协调责任，未取得其他执行者接收，不虚构移交。恢复需要授权 macOS Codex 原生会话，或官方应用中经验证的合法静默子进程入口；当前 Windows CLI、静态签名和其他已注册宿主均不代替它。#850 保留实际条件及尝试证据，用户在当前会话收到具体提醒，不新增定时扫描。
+
+最终 macOS run43131315713（精确签发41a47090）整轮成功：arm64编译、包切换、ExternalPeer、8个真实签名宿主场景、导航、工单交互及模型发现/取消全部通过。报告实际编辑器 SHA-256 为 `a739a5a9eeff5cb7d48316a8f23e41b8e7e7aefdaa5cd9e3f557b02f2cb3896e`；non_codex_host_ok=true，full_signed_anchor_acceptance_ok=false。旧模型夹具故障 #871 及聚合故障 #844 已逐项追加恢复证据并 completed 关闭，不改变 #843/#850/#840 的剩余状态。
