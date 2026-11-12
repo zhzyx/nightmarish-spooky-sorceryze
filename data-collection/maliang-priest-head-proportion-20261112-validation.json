@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-priest-head-proportion-20261112-validation",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-priest-head-proportion-20261112",
+  "kind": "step",
+  "occurred_at": "2026-11-12T14:47:23Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/955",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/955",
+  "agent": {"id": "kimi-work-kaiyunxue", "version": "20261112", "origin": "current-authorized-host"},
+  "payload": {
+    "source": {
+      "file_role": "decimated refined priest before proportion correction",
+      "sha256": "3a82cc56b0fbee9fde718ba596688355d16cbe7e4353cfc10a220fc654e8fa5c",
+      "not_overwritten": true
+    },
+    "result": {
+      "file_role": "separate head90 GLB and embedded adjustment template",
+      "sha256": "f9cae5780696a8c5d88fa765d66295ffbf9900a6df58fe0c31c685fdc62556d7",
+      "bytes": 39638400,
+      "vertices": 635471,
+      "triangles": 1200135,
+      "strict_zero_area_triangles": 0,
+      "head_triangles": 387548,
+      "head_height_ratio": 0.14505269368271562,
+      "scale": 0.9,
+      "neck_y": 0.34,
+      "local_neck_pivot": [-0.030569089576601982, -0.09895345926284788, -0.023940416052937508],
+      "source_not_overwritten": true
+    },
+    "checks": {
+      "glb_structure_and_indices": "passed",
+      "independent_validate_mesh": "passed",
+      "full_body_front_three_quarter_and_back_rendered": true,
+      "face_front_and_three_quarter_rendered": true,
+      "native_publication_and_reopen": "passed",
+      "template_restore_and_run_preflight": "passed",
+      "template_embeds_exact_result_sha256": true,
+      "startup_generation_submitted": false
+    },
+    "visual_review": {
+      "proportion": "more natural than the previous larger head; no obvious top-heavy silhouette in reviewed views",
+      "face": "reference-related facial features retained in reviewed front and three-quarter closeups",
+      "neck_and_material": "no obvious seam, texture-index mismatch or clothing material covering the face in reviewed views",
+      "robe_armor_pose_preserved": true
+    },
+    "acceptance_document": "human-model-acceptance.md; includes head proportion, facial surface, coordinates, geometry, material, pose, multi-view, native loading, publication/reopen and evidence boundaries",
+    "limits": [
+      "The 0.9 scale and 14.5% ratio are specific to this character, not universal beauty standards",
+      "No claim of universal automatic head replacement, perfect identity, seamless production topology, rigging or animation",
+      "Large GLB, embedded template, reference photo, signed URLs, credentials and raw API responses are not committed"
+    ]
+  }
+}

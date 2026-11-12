@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-human-model-acceptance",
+  "event_id": "learn-fdf1712e5d8f0b89ad0326827ef5c1b9c5b5eb867439fc6fc8ac88b14d834723",
+  "kind": "analysis",
+  "agent": {
+    "id": "kimi-work-kaiyunxue",
+    "version": "20261112",
+    "definition_sha256": "1201ca0ea4682eff7e014b70c71645dde1c3e47d0ea13a29eef605d8b5e70a5c",
+    "origin": "current-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/955",
+  "occurred_at": "2026-11-12T14:55:35Z",
+  "evidence_refs": [
+    "request-955-head-proportion-20261112"
+  ],
+  "payload": {
+    "scope": "human-model-acceptance",
+    "lesson": "full-body-proportion-and-detail-review",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "验收人形模型时先核对来源、GLB结构、坐标和几何，再同时检查全身比例、面部近景、材质、多视角及原生保存重开。头身比例使用颈部基准和全身高度计算，不把固定比例或微三角形数量当作通过依据。",
+      "when": "头身替换、比例调整或材质微调的人形角色，尤其存在减面后原点变化、世界与本地坐标变换、头颈接缝或材质索引变化时。",
+      "counterexample": "只看近景或服务预览、用世界Y直接缩放本地顶点、把微三角形当破洞、忽略索引和材质映射、宣称未测试的绑骨动画或通用能力。",
+      "trial_plan": "读取最终GLB回执、严格几何统计、原生重开结果和模板摘要，要求源文件未覆盖、比例约14.5%、严格零面积为0、原生重开通过、模板源摘要一致，并查看全身、正脸、斜侧面和背面截图。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/maliang-priest-head-proportion-20261112-validation.json",
+        "sha256": "7cd34a7ab3e9ccbd9cfd80019b11094fb11dde1c382ac38a92df7f49184d7a23"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/maliang-priest-head-proportion-20261112/request-955-head-proportion-20261112.json",
+      "sha256": "a209f0d393a36a837eabfb8a34a46ec71bf7c0c03b9b7cc99ff544a94c6408b6"
+    }
+  },
+  "sha256": "9c945895491594ea2a549b0a5f87c4ef5f1b7d2ea34b49af113b73af5458e7d4"
+}
