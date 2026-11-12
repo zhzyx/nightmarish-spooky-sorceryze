@@ -1,0 +1,78 @@
+{
+  "issue": 857,
+  "request_id": "startup-config-sync-20261112",
+  "path_base": "repository root",
+  "base": "7813a30245c65427094934fd29590b98c1a1dd96",
+  "supersedes": "data-collection/startup-config-sync-857-integrated.json",
+  "correction": "Normalize two test descriptions to repository spelling; preserve both original immutable evidence files with exact-path codespell exceptions. No runtime code changed.",
+  "inputs": {
+    "pyproject.toml": "86bd7f2e2d0410148ee964be90f0ab116fe4f2e4f50d163547780f53ead6bdcc",
+    "tests/editor/startup_checks.gd": "72f7135bb714e88be896bf86efa3343abde6bf47b81582ebdd3d92210c190080"
+  },
+  "failed_ci": {
+    "pr": 864,
+    "head": "b9e4e9f6f0d6d68884d88d8c7e826c48b500b331",
+    "run": 43121580558,
+    "job": 130863112426,
+    "only_failure": "codespell normalized two test descriptions and their immutable copies; other static hooks passed"
+  },
+  "binary_sha256": "7e3f09f8a5b9ff6201b1ad53b327d749aecd77c71987fc0a009e2f434f8a95fe",
+  "startup": {
+    "checks": [
+      "native startup coordinator is installed",
+      "headless startup does not perform remote checks",
+      "settings exposes retry action",
+      "settings exposes separate status rows",
+      "missing model workspace yields actionable configuration status",
+      "missing configuration releases model refresh guard",
+      "in-flight check rejects duplicate invocation and disables retry",
+      "startup check completes within deadline",
+      "one run refreshes catalog once",
+      "native Git bridge reports non-repository without mutation",
+      "real loopback API success marks connection available",
+      "catalog result is reported independently",
+      "background check does not navigate settings",
+      "completed check re-enables retry",
+      "startup check completes within deadline",
+      "API failure is distinct from successful catalog refresh",
+      "API failure does not suppress catalog result",
+      "cancel stops coordinator and model refresh",
+      "cancel stops native AI probe",
+      "late cancelled response cannot restore green",
+      "canceling startup preserves newer manual connection probe",
+      "cancelled startup check can be retried",
+      "editing configuration revokes startup success summary",
+      "one-click model refresh awaits actual helper completion",
+      "real model dialog publishes successful model refresh receipt: { \"status\": \"refreshed\", \"message\": \"已刷新天枢模型发现结果，请在个人模型库查看各来源详情。\" }",
+      "canceling identity stage preserves manual model operation",
+      "manual model operation completes after startup cancellation",
+      "real model refresh is asynchronous",
+      "cancelled model refresh cannot apply late helper result",
+      "model refresh cancellation stops provider descendants"
+    ],
+    "failures": [],
+    "passed": true
+  },
+  "strict_errors": [],
+  "secret_on_disk": false,
+  "reused_verification": {
+    "source": "data-collection/startup-config-sync-857-integrated.json",
+    "reason": "Same runtime source and binary; all implementation hashes remain identical. Only test descriptions and exact receipt spelling exceptions changed.",
+    "native_layout": 272,
+    "project_ai": 62,
+    "git": 18,
+    "upstream_diagnostics": "existing business assertions passed"
+  },
+  "static": "Full candidate codespell and git diff --check passed",
+  "independent_review": {
+    "reviewer": "/root/sinan_cb209c364d0f667f",
+    "status": "passed",
+    "findings": [],
+    "evidence": "Both receipt bytes equal HEAD; two exact paths only, no global ignore; test assertions unchanged; reported hashes match inputs"
+  },
+  "kuafu": {
+    "bug": 862,
+    "incident": "7ee265ba4336ff6d22bb3860ce4d0bd8af6fd9cfe268e0e8fbdf6b36088649ce"
+  },
+  "delivery": "pending new exact-candidate CI and main readback"
+}

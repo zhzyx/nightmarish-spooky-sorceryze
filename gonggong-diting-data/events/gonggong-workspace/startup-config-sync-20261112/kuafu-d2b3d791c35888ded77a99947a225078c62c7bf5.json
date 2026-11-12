@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d2b3d791c35888ded77a99947a225078c62c7bf5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "startup-config-sync-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/857",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7ee265ba4336ff6d22bb3860ce4d0bd8af6fd9cfe268e0e8fbdf6b36088649ce",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/857",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/862",
+    "action": "validation",
+    "detection_head": "c02a984754b2b2ac3692c5e760eb320cefedadd2",
+    "context_sha256": "7e0bb1fdc40faff9fc06b9a5d4342dd811eefd13641d7481148b7dcd5966f6b4",
+    "operator": "Sail-Li",
+    "worker": "codex-root-startup-config",
+    "authority_ref": "codex-user-startup-config-sync-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43121580558/job/130863112426; corrected same-binary startup30 report",
+    "diagnosis": "Only US-English label normalization failed; all other static hooks passed. Corrected two test descriptions and preserved original immutable JSON receipts through exact file skips following existing policy. Full candidate codespell now passes and native startup30 repeats successfully; runtime implementation unchanged.",
+    "next_action": "Independent targeted review then append correction evidence, formal submit and fresh exact-candidate CI; original failure retained.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T23:42:45.811141+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T23:43:49.653355+00:00",
+  "sha256": "d3ed47ece4f49f0095497f1d2094084019c398b008b004b8e88b046541112233"
+}

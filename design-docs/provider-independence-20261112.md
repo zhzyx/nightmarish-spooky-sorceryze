@@ -88,3 +88,7 @@ macOS 补充真实签名链验收工具和对应 workflow，详见子项设计�
 保留的真实 Codex 依赖只属于用户主动选择的 Codex CLI/图像/建模/原生 Agent 适配器，配置后应正常使用。核心启动、通用配置、API 及其他供应商路径不以该 CLI 为前置。#810 并行入口和 #808 Kimi 真实能力保持原责任分工，不因本次名称复核接管其在途工作。
 
 后续主线 #845 合入至 `7813a30245c65427094934fd29590b98c1a1dd96`，无冲突整合并经独立只读组合审查。新原生候选重新编译，88 项/1598 断言通过；新增调试功能的真实双实例扩展回归通过，CodeBuddy 39 项通过。具体输入摘要、二进制及平台复验边界见 `data-collection/provider-independence-840-7813.json`；旧平台失败仍保留原始运行，不当作新候选通过。
+
+主线随后推进至 `c7a335efde36144ede5d9443bf84bcb17706dd99`（#857 启动 Git/模型配置检查）。无冲突整合后独立审查确认：API 后端不要求 Codex，缺 CLI 不阻断其他模型来源，宿主鉴权未变。Windows 启动实测的 30 项业务断言通过，但严格日志检测复现正常子进程退出后 `FileAccessWindowsPipe::get_length` 将排空管道的 `ERROR_BROKEN_PIPE` 报成引擎错误。父项 #840 的集成修复仅对该错误返回零，其他 PeekNamedPipe 失败继续诊断，保留 GDScript 最终输出读取。新增真实匿名管道尾部数据/EOF无错误、非管道句柄仍报错的原生回归；原有严格启动验收不放宽。依据 [Microsoft PeekNamedPipe](https://learn.microsoft.com/en-us/windows/win32/api/namedpipeapi/nf-namedpipeapi-peeknamedpipe) 与 [管道句柄继承说明](https://learn.microsoft.com/en-us/windows/win32/ipc/pipe-handle-inheritance)，实际复验与输入绑定另行记录。
+
+上述集成修复复验通过：新二进制原生 AIChat 88项/1598断言、真实 Windows 管道2项/18断言通过；原严格启动验收30项通过，errors为空、无测试凭据落盘。见 `data-collection/provider-independence-840-c7a.json`。签名升级夹具、生产宿主名单和现有Codex适配器不受此Windows修复修改。

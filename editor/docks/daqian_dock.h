@@ -31,6 +31,9 @@
 #pragma once
 
 class EditorDock;
+class Node;
+
+Node *create_gonggong_startup_checks();
 
 EditorDock *create_daqian_dock();
 

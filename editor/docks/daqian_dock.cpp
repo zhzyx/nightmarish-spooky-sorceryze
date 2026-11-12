@@ -30,22 +30,25 @@
 
 #include "daqian_dock.h"
 
+#include "core/config/engine.h"
 #include "core/crypto/crypto_core.h"
 #include "core/io/file_access.h"
 #include "core/io/json.h"
+#include "core/object/callable_mp.h"
 #include "core/object/class_db.h"
 #include "core/object/script_language.h"
 #include "core/os/os.h"
 #include "editor/docks/daqian_board.gen.h"
 #include "editor/docks/daqian_scripts.gen.h"
 #include "editor/docks/editor_dock.h"
+#include "editor/docks/gonggong_process.h"
+#include "editor/docks/startup_checks.gen.h"
+#include "main/main.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/label.h"
 
 #ifdef MACOS_ENABLED
-#include "core/config/engine.h"
 #include "editor/docks/gonggong_validation.gen.h"
-#include "main/main.h"
 #endif
 
 static String editor_script_source(const char *const *p_source) {
@@ -142,6 +145,19 @@ void install_gonggong_startup_validation(Node *p_editor) {
 }
 #endif
 
+Node *create_gonggong_startup_checks() {
+	Ref<Script> script = load_editor_script(daqian_startup_checks);
+	Ref<Script> git = load_editor_script(daqian_startup_git);
+	ERR_FAIL_COND_V(script.is_null() || git.is_null(), nullptr);
+	Node *checks = memnew(Node);
+	checks->set_name("StartupConfigurationChecks");
+	checks->set_script(script);
+	checks->set("git_script", git);
+	checks->set("git_helper_source", editor_script_source(daqian_startup_git_helper));
+	checks->set("automatic_enabled", !Engine::get_singleton()->is_recovery_mode_hint() && !Main::is_cmdline_tool());
+	return checks;
+}
+
 EditorDock *create_daqian_dock() {
 	EditorDock *dock = memnew(EditorDock);
 	dock->set_name("Daqian");
@@ -187,6 +203,7 @@ EditorDock *create_daqian_dock() {
 	VBoxContainer *content = memnew(VBoxContainer);
 	content->set_name("DaqianWorkspace");
 	content->set_script(workspace);
+	content->set("process_stopper", callable_mp_static(&stop_gonggong_process));
 	content->set("board_bundle_base64", editor_script_source(daqian_board_base64));
 	content->set("board_bundle_sha256", daqian_board_sha256);
 	content->set("details_script", details);
