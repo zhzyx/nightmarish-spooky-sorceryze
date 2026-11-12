@@ -1,0 +1,404 @@
+{
+  "schema_version": 1,
+  "request_id": "deterministic-continuation-20261112",
+  "issue_number": 953,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/953",
+  "captured_at": "2026-11-12T14:43:18.334402+00:00",
+  "append_to": "data-collection/deterministic-continuation-953.json",
+  "user_clarification": "No historical example available; reported failure is stopping after one stage before full Issue closure.",
+  "short_task_experiment": {
+    "input": "修复当前项目的订单汇总，使它符合 README 中已有约定。保留测试文件，用现有数据生成 summary.json，再运行项目测试并在 NOTES.md 写明变更及验证结果。请直接完成这个本地任务；只操作当前目录，不联网，不做 Git 操作。",
+    "policy": "读取事实 → 执行 → 验证 → 核对剩余验收 → 继续下一已授权步骤。目标明确、已有授权、工具可用且结果可验证时直接行动；常规可逆实现沿用项目惯例，不询问是否继续。能由工具查明的信息先查，不猜测也不转问用户。仅缺少影响正确性或权限且无法自行取得的必要输入时提问，并继续独立项。只读、暂停、预算、工具审批和用户保留决定继续有效。回合结束、计划或阶段性成功不等于业务完成；结束前核对真实证据，继续可执行未完成项。相同失败无新证据时转排障，未知副作用先回读，不盲目重试。",
+    "inputs_sha256": {
+      "invoice.py": "c33c7df49c6ba4db2e120d828ceca50c8577880d86f5ef10288871a6ad006437",
+      "test_invoice.py": "390453cf75540021cc3f58403feeda2268cc7af51586748ccaaadc9b5cc9014e",
+      "orders.json": "327be5805a5a7386c95bf51962013ad92d0790b68354d376839d7aff1b090317",
+      "README.md": "8719d4b8398a7beae25d9edd49937f820feb5c0347fcf9e00149ae35cccb06dd"
+    },
+    "results": [
+      {
+        "requested_model": "gpt-6-astra",
+        "observed_model": null,
+        "requested_effort": "high",
+        "observed_effort": null,
+        "contract": false,
+        "exit_code": 0,
+        "timed_out": false,
+        "duration_seconds": 85.572,
+        "turn_completed": true,
+        "parent_test_pass": true,
+        "test_file_unchanged": true,
+        "artifacts_pass": true,
+        "completed_without_human_followup": true,
+        "usage_receipts": [
+          {
+            "input_tokens": 80164,
+            "cached_input_tokens": 71168,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1307,
+            "reasoning_output_tokens": 34
+          }
+        ],
+        "event_types": [
+          "item.completed",
+          "item.started",
+          "thread.started",
+          "turn.completed",
+          "turn.started"
+        ]
+      },
+      {
+        "requested_model": "gpt-6-astra",
+        "observed_model": null,
+        "requested_effort": "high",
+        "observed_effort": null,
+        "contract": true,
+        "exit_code": 0,
+        "timed_out": false,
+        "duration_seconds": 93.713,
+        "turn_completed": true,
+        "parent_test_pass": true,
+        "test_file_unchanged": true,
+        "artifacts_pass": true,
+        "completed_without_human_followup": true,
+        "usage_receipts": [
+          {
+            "input_tokens": 80679,
+            "cached_input_tokens": 76032,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1627,
+            "reasoning_output_tokens": 22
+          }
+        ],
+        "event_types": [
+          "item.completed",
+          "item.started",
+          "thread.started",
+          "turn.completed",
+          "turn.started"
+        ]
+      },
+      {
+        "requested_model": "gpt-6.1-sol",
+        "observed_model": null,
+        "requested_effort": "high",
+        "observed_effort": null,
+        "contract": false,
+        "exit_code": 0,
+        "timed_out": false,
+        "duration_seconds": 76.563,
+        "turn_completed": true,
+        "parent_test_pass": true,
+        "test_file_unchanged": true,
+        "artifacts_pass": true,
+        "completed_without_human_followup": true,
+        "usage_receipts": [
+          {
+            "input_tokens": 79134,
+            "cached_input_tokens": 71040,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1316,
+            "reasoning_output_tokens": 54
+          }
+        ],
+        "event_types": [
+          "item.completed",
+          "item.started",
+          "thread.started",
+          "turn.completed",
+          "turn.started"
+        ]
+      },
+      {
+        "requested_model": "gpt-6.1-sol",
+        "observed_model": null,
+        "requested_effort": "high",
+        "observed_effort": null,
+        "contract": true,
+        "exit_code": 0,
+        "timed_out": false,
+        "duration_seconds": 80.572,
+        "turn_completed": true,
+        "parent_test_pass": true,
+        "test_file_unchanged": true,
+        "artifacts_pass": true,
+        "completed_without_human_followup": true,
+        "usage_receipts": [
+          {
+            "input_tokens": 95635,
+            "cached_input_tokens": 76928,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1689,
+            "reasoning_output_tokens": 98
+          }
+        ],
+        "event_types": [
+          "item.completed",
+          "item.started",
+          "thread.started",
+          "turn.completed",
+          "turn.started"
+        ]
+      },
+      {
+        "requested_model": "gpt-6.1-sol",
+        "observed_model": null,
+        "requested_effort": "low",
+        "observed_effort": null,
+        "contract": false,
+        "exit_code": 0,
+        "timed_out": false,
+        "duration_seconds": 54.253,
+        "turn_completed": true,
+        "parent_test_pass": true,
+        "test_file_unchanged": true,
+        "artifacts_pass": true,
+        "completed_without_human_followup": true,
+        "usage_receipts": [
+          {
+            "input_tokens": 65138,
+            "cached_input_tokens": 51456,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 950,
+            "reasoning_output_tokens": 0
+          }
+        ],
+        "event_types": [
+          "item.completed",
+          "item.started",
+          "thread.started",
+          "turn.completed",
+          "turn.started"
+        ]
+      },
+      {
+        "requested_model": "gpt-6.1-sol",
+        "observed_model": null,
+        "requested_effort": "low",
+        "observed_effort": null,
+        "contract": true,
+        "exit_code": 0,
+        "timed_out": false,
+        "duration_seconds": 70.315,
+        "turn_completed": true,
+        "parent_test_pass": true,
+        "test_file_unchanged": true,
+        "artifacts_pass": true,
+        "completed_without_human_followup": true,
+        "usage_receipts": [
+          {
+            "input_tokens": 66527,
+            "cached_input_tokens": 48512,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1012,
+            "reasoning_output_tokens": 0
+          }
+        ],
+        "event_types": [
+          "item.completed",
+          "item.started",
+          "thread.started",
+          "turn.completed",
+          "turn.started"
+        ]
+      }
+    ],
+    "conclusion": "All six isolated short-task runs completed. No evidence of policy benefit or effort-caused stalls on this sample. This does not test the full Issue lifecycle.",
+    "limitations": [
+      "One task per arm; no statistical completion-rate claim",
+      "Requested model and effort only; actual routing metadata not exposed by this CLI event extraction",
+      "Kimi not tested; no credential access or model change for another operator",
+      "Isolated CLI workload, not a replay of reported desktop or Godot stalls"
+    ]
+  },
+  "controlled_stop_experiment": {
+    "experiment": "controlled intermediate stop; not a reproduction of a spontaneous model stall",
+    "input": "这是已授权的隔离宿主接续测试，完整目标是在当前目录创建 stage1.txt 和 stage2.txt，两者内容均为 verified 并读取验证。不联网、不操作其他目录、不改 hook 或计数/回执文件。为模拟阶段结束，本轮先只完成 stage1.txt，汇报第一阶段并结束本轮；第二阶段等待宿主在后续回合发来接续事件。这不是取消整体目标。",
+    "hook_sha256": "69db1e1f22045e743361a8f2bd9795c8c1a39ecf3244254609b745812bb8c08c",
+    "results": [
+      {
+        "hook_enabled": false,
+        "requested_model": "gpt-6.1-sol",
+        "requested_effort": "low",
+        "exit_code": 0,
+        "timeout": false,
+        "duration_seconds": 35.218,
+        "stage1": true,
+        "stage2": false,
+        "event_types": [
+          "item.completed",
+          "item.started",
+          "thread.started",
+          "turn.completed",
+          "turn.started"
+        ],
+        "agent_messages": [
+          "我会先在当前目录创建 stage1.txt，写入 `verified` 并读取验证，然后汇报第一阶段结果，等待后续接续事件。",
+          "第一阶段完成：已在当前目录创建 `stage1.txt`，读取确认内容为 `verified`。尚未创建 `stage2.txt`，等待宿主后续回合的接续事件。"
+        ],
+        "hook_events": []
+      },
+      {
+        "hook_enabled": true,
+        "requested_model": "gpt-6.1-sol",
+        "requested_effort": "low",
+        "exit_code": 0,
+        "timeout": false,
+        "duration_seconds": 48.78,
+        "stage1": true,
+        "stage2": true,
+        "event_types": [
+          "item.completed",
+          "item.started",
+          "thread.started",
+          "turn.completed",
+          "turn.started"
+        ],
+        "agent_messages": [
+          "我会仅在当前目录创建并读取验证 stage1.txt，然后结束本轮，等待后续接续事件再处理第二阶段。",
+          "第一阶段已完成：已创建 stage1.txt，并读取确认内容为 `verified`。本轮结束，第二阶段等待宿主后续接续事件。",
+          "我会创建 stage2.txt，并实际读取两个阶段文件，核验内容均为 `verified`。",
+          "第二阶段已完成。已实际读取并核验 stage1.txt 和 stage2.txt，两者内容均为 `verified`。整体目标已完成。"
+        ],
+        "hook_events": [
+          {
+            "hook_event_name": "Stop",
+            "stop_hook_active": false,
+            "output": {
+              "decision": "block",
+              "reason": "本隔离测试整体授权目标仍有第二阶段：在当前目录写 stage2.txt，内容为 verified，再实际读取两个阶段文件核验。请立即完成，不要再次确认；不要修改 hook 文件或计数器，不操作其他目录。"
+            },
+            "turn_id_sha256": "1424e2386fd04ac5c84bc9952800d8a4794de86adc3efa1cebfa754676b1e57a"
+          },
+          {
+            "hook_event_name": "Stop",
+            "stop_hook_active": true,
+            "output": {},
+            "turn_id_sha256": "1424e2386fd04ac5c84bc9952800d8a4794de86adc3efa1cebfa754676b1e57a"
+          }
+        ],
+        "hook_script_unchanged": true
+      }
+    ],
+    "trust": "Only this reviewed isolated invocation bypassed persisted hook trust. Sandbox and tool approval unchanged. No global configuration or trust entry modified."
+  },
+  "hook_probe_source": "import json\nimport sys\nfrom pathlib import Path\n\n# Reviewed isolated capability probe, never a production authority or acceptance source.\nroot = Path(__file__).resolve().parent\n\ndef read(name, limit):\n    path = root / name\n    if path.is_symlink():\n        raise ValueError('symlink rejected')\n    if not path.exists():\n        return None\n    if not path.is_file() or path.stat().st_size > limit:\n        raise ValueError('invalid bounded file')\n    return path.read_text()\n\ntry:\n    event = json.loads(sys.stdin.read(65537))\n    result = {}\n    if event.get('hook_event_name') == 'Stop':\n        value = read('hook-invocations.json', 16)\n        count = json.loads(value) if value is not None else 0\n        if type(count) is not int or not 0 <= count <= 100:\n            raise ValueError('invalid count')\n        valid = lambda name: (read(name, 64) or '').strip() == 'verified'\n        if valid('stage1.txt') and not valid('stage2.txt') and count < 2:\n            result = {'decision': 'block', 'reason': '本隔离测试整体授权目标仍有第二阶段：在当前目录写 stage2.txt，内容为 verified，再实际读取两个阶段文件核验。请立即完成，不要再次确认；不要修改 hook 文件或计数器，不操作其他目录。'}\n        (root / 'hook-invocations.json').write_text(json.dumps(count + 1))\n        audit = root / ('hook-event-' + str(count) + '.json')\n        # Never replace prior evidence or follow a model-created link.\n        with audit.open('x') as stream:\n            json.dump({'hook_event_name': event.get('hook_event_name'), 'turn_id': event.get('turn_id'), 'stop_hook_active': event.get('stop_hook_active'), 'output': result}, stream, ensure_ascii=False)\n    print(json.dumps(result, ensure_ascii=False))\nexcept (OSError, ValueError, TypeError):\n    print('{}')\n",
+  "delivery_readback": {
+    "pr": 957,
+    "state": "MERGED",
+    "head": "a2b3df783d97f461ac324bc0e6103c6939c867e7",
+    "merge_commit": "34498a33d500475a3538fb99a8e47dd516d2e5d1",
+    "merged_at": "2026-11-12T14:32:35Z",
+    "main_contains_head": true,
+    "checks": [
+      {
+        "name": "issue-association",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237812843/job/131249831393"
+      },
+      {
+        "name": "📊 Static checks / Code style, file formatting, and docs",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237812824/job/131249835598"
+      },
+      {
+        "name": "📊 Static checks / Code style, file formatting, and docs",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237771219/job/131249711893"
+      },
+      {
+        "name": "🤖 Android",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237812824/job/131250118706"
+      },
+      {
+        "name": "🤖 Android",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237771219/job/131249941189"
+      },
+      {
+        "name": "🍏 iOS",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237812824/job/131250119696"
+      },
+      {
+        "name": "🍏 iOS",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237771219/job/131249940120"
+      },
+      {
+        "name": "🐧 Linux",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237812824/job/131250120344"
+      },
+      {
+        "name": "🐧 Linux",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237771219/job/131249940645"
+      },
+      {
+        "name": "🍎 macOS",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237812824/job/131250118689"
+      },
+      {
+        "name": "🍎 macOS",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237771219/job/131249941478"
+      },
+      {
+        "name": "Compile affected Windows engine targets",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237812824/job/131250120000"
+      },
+      {
+        "name": "Compile affected Windows engine targets",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237771219/job/131249940897"
+      },
+      {
+        "name": "Compile affected Metal targets",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237812824/job/131250118554"
+      },
+      {
+        "name": "Compile affected Metal targets",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237771219/job/131249942404"
+      },
+      {
+        "name": "🌐 Web",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237812824/job/131250118681"
+      },
+      {
+        "name": "🌐 Web",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237771219/job/131249941314"
+      },
+      {
+        "name": "🏁 Windows",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237771219/job/131249941132"
+      },
+      {
+        "name": "🏁 Windows / Editor (target=editor)",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43237812824/job/131250119589"
+      }
+    ],
+    "ordering_note": "The authorized gh --auto request merged immediately under current branch rules while the Windows job was still running. Remaining checks subsequently passed; future delivery must verify required protection before using auto merge."
+  },
+  "conclusion": "A synchronous stop-time host check can continue an intentionally stopped intermediate stage without another human message. Proven only in this isolated Codex CLI probe, not a production cross-host deployment or historical-stall reproduction.",
+  "production_status": {
+    "prompt_contract": "merged",
+    "forced_continuation": "not_installed",
+    "kimi": "not_tested",
+    "historical_root_cause": "unknown"
+  },
+  "official_sources": [
+    "https://learn.chatgpt.com/docs/hooks",
+    "https://learn.chatgpt.com/docs/long-running-work",
+    "https://developers.openai.com/api/docs/guides/latest-model"
+  ]
+}

@@ -26,3 +26,28 @@
 文档依据：2026-11-12 回读 [OpenAI 模型指南](https://developers.openai.com/api/docs/guides/latest-model)，其主动性章节建议明确持续执行及必要提问边界；不能据此推导 Astra/Sol/Kimi 的本次行为差异。优先验证执行约定与宿主闭环，再单独对比 effort，不盲目将所有请求拉满。
 
 本轮验证：44 项 Python bridge 测试、17 项 Node adapter 测试通过，2 项 Windows 专用测试在 macOS 跳过。另将 chat 实际生成的隔离测试委托交给真实框架渲染器，确认策略完整返回、工具仍禁用且 outcome-only 续聊指纹不变。独立原生审查 `/root/review_continuation_953` 未发现阻断问题。记录见 [验证证据](../data-collection/deterministic-continuation-953.json)。原生 handoff 覆盖 spawn_agent/create_thread；native.launchAgent 分支及未使用该 bridge 的第三方宿主不在此覆盖范围。提示词效果与跨模型完成率仍未实测；本轮交付不能作为原现象已彻底消失的证明。
+
+## 补充实验与更适合阶段停顿的方案
+
+用户随后明确：历史样本暂不可提供；现象是完成一个步骤后结束，没有一直推进到 Issue 结束。因此短任务成功不能代替完整工单生命周期验收。
+
+第一轮提示词改动通过 [PR #957](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/957) 合入 `34498a33d500475a3538fb99a8e47dd516d2e5d1`，main 包含精确签发候选；适用 CI 最终全部通过。自动合入请求在当前分支规则下直接完成时，Windows 作业尚在运行，随后通过；本次顺序偏差保留，后续不得在未核实所需保护项时用 auto 请求代替等待检查。
+
+隔离 CLI 对照固定订单汇总修复、输入、工具权限与本地验收；请求 Astra/high、Sol/high、Sol/low，各有原指令和新增约定两组，总计 6 次全部通过，且没有人工接力。每组仅一个任务，不能推导总体完成率、effort 因果或提示词收益。CLI 未返回实际路由与生效 effort 元数据，保存请求参数与原用量回执。Kimi 未实测。
+
+随后按 [Codex 官方 Stop hook 协议](https://learn.chatgpt.com/docs/hooks) 做了两个受控阶段结束实验，请求 Sol/low：完整目标明确授权两个阶段，但第一回合被要求仅完成第一阶段并等待宿主事件。无 hook 的对照只产生第一阶段；有同步 hook 的实验记录到真实 Stop 返回 `decision=block`，模型继续完成第二阶段，下一次 Stop 的 `stop_hook_active=true` 且 hook 返回空对象允许结束。两个文件由外部脚本核验，hook 源码摘要未变。探针独立只读审查后使用一次性 hook 信任选项，保留 workspace-write 和原工具审批，没有写全局配置或信任库。探针只证明受控宿主续跑能力，不是原故障复现，也不是生产权限或验收来源。[追加的原始结果与探针源码](../data-collection/deterministic-continuation-953-experiments.json)保留所有边界，早期未测记录不改写。
+
+独立审查实际 CLI 与 hook 日志后确认：两次 Stop 属于同一个 turn_id，是同一次 CLI turn 内的自动接续，不是新建另一个 turn。第二次允许结束的依据是第二阶段文件满足条件，stop_hook_active 仅为观测字段，不是验收条件。原始日志没有人工追加第二条消息。
+
+建议生产接入复用既有执行账本和事件入口，在模型准备结束时做确定性判定：
+
+| 权威状态 | 宿主行为 |
+| --- | --- |
+| 原验收全部满足、所需交付已回读、工单结束语义正确 | 允许结束；不能只检查模型措辞或 Issue 的 closed 字段 |
+| 仍有已授权、依赖已满足且可执行的步骤 | 自动继续既有执行入口；提供具体下一动作与未满足的验收，不发模糊“继续” |
+| 已有工作者或 CI 运行，结果未知 | 保留原占用与运行标识，等待对应完成事件；不重复调用模型或重发有副作用动作 |
+| 缺少无法查明的必要输入或真实审批 | 一次汇总具体问题，只挂起受影响项 |
+| 用户暂停/取消、权限撤销、预算耗尽 | 停止受影响执行；hook 不产生新授权 |
+| 相同证据下反复停止或失败，没有进展 | 有界续跑后转夸父，保留回执；不无限重试或擅自切换模型 |
+
+Codex 原生宿主可使用同步 Stop hook；Godot/HTTP/Kimi 等入口须在其真实回合完成事件上执行等价检查，不假定支持 Codex hook 格式。同步回合检查不等于 CI 完成事件已经接通。状态必须由有权宿主从原来源回读并绑定 session、Issue/request、候选与授权，不能直接信任模型自己写的 done 标记或缺少绑定的本地 JSON。生产 hook 仍需宿主按具体定义审核和信任。本仓库当前只交付提示词干预、诊断和受控实验，尚未安装全入口强制续跑；#953 保持开放跟踪实际业务效果与接入。
