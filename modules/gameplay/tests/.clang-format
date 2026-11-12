@@ -1,0 +1,4 @@
+# Apply the project C++ standard to newly added prediction tests only.
+BasedOnStyle: InheritParentConfig
+BreakBeforeBraces: Allman
+SortIncludes: Never
