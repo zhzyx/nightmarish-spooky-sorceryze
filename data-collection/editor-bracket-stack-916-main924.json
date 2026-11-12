@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/916",
+  "request_id": "editor-bracket-stack-growth-20261112",
+  "state": "main924_policy_adaptation_locally_verified",
+  "main_baseline": "2739fc7fb20294e232878a5f29737a09be9d6ac1",
+  "previous_evidence": [
+    {
+      "path": "data-collection/editor-bracket-stack-916.json",
+      "sha256": "60c6f45e957ce18bd1813cf1976df223879f81cc8e939149b445485f136b8a9f"
+    },
+    {
+      "path": "data-collection/editor-bracket-stack-916-format.json",
+      "sha256": "c19cc29d4834acc9673fcdef229d078181423fee9627418e484f726c7ab52c79"
+    }
+  ],
+  "policy": {
+    "path": "CPP_CODING_STANDARD.md",
+    "sha256": "1c1d528d3991ec2398f1e633b214ed769da9fe10c19705049ebb3be3b148da8f",
+    "adaptation": "Rename new test header to PascalCase, apply typed variable names and Allman braces. A directory-scoped inherited clang-format changes only brace style for new internal tests. Existing module style and required CI stay intact."
+  },
+  "failed_attempt": {
+    "log_sha256": "1e7fac2d94112b07813236bbb34ced19ea817d299b85ab3834d6124d1437b6ef",
+    "diagnosis": "The tests directory is auto-collected by modules/SCsub into test_main without module-private HarfBuzz includes; strict build failed with missing hb-icu.h.",
+    "correction": "Use internal_tests, included only from script_iterator.cpp under TESTS_ENABLED; no generated file edited."
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "policy-r2-format-check",
+        "exit_code": 0,
+        "sha256": "d912cd9f526fa29c7ed9cff3a039a4bec26168a9e6ccd47efc1afdfce4bdfd90"
+      },
+      {
+        "name": "policy-r2-build",
+        "exit_code": 0,
+        "sha256": "e85f47b0556b0e36ac66438061ae2ab2fb8bfdef0b9bd107663dcf982e9576f4"
+      },
+      {
+        "name": "policy-r2-regression",
+        "exit_code": 0,
+        "sha256": "a659f223fcda8c297449b3ad7cb920b8937f7068ca563ddbd169c033080c33bb"
+      }
+    ],
+    "native_inputs": {
+      "modules/text_server_adv/SCsub": "c5219cf5c1349d0977ef3a337cebfeedf649a97febcefaf219eec8b3926d4171",
+      "modules/text_server_adv/script_iterator.cpp": "a25f859866f8648cb86ad91f097c3a00c4fb4b4b192cace9fa195da71c295cef",
+      "modules/text_server_adv/internal_tests/TestScriptIterator.h": "1d0c6b1e0aa6c6230ae721539d97bc604879d0efa36f9821d3b515e87c048f15",
+      "modules/text_server_adv/internal_tests/.clang-format": "23aac7a4c50b28f5cda35fb3877dc739eec6bd968bd3454b3b8cf0b845b1a3f2"
+    },
+    "binary_sha256": {
+      "godot.windows.editor.x86_64.console.exe": "437b8896013e4b56e56606ffad7da94c33f41cb410da54357b745995186aecbf",
+      "godot.windows.editor.x86_64.exe": "d4c9b28985cbbf37a5e05077cc7d433a8e22d1abc597f62d8ecb1c14386914a5"
+    },
+    "source_head": "6ef4bdc9c389792a53f0e12e47829c4efe011560"
+  },
+  "registration": {
+    "generated_header_sha256": "d61a575062130532ccbcefeb8ed58fcc673fc047bb743e0a840d713eef3c5376",
+    "private_test_absent_from_global_generated_header": true,
+    "bracket_log_sha256": "a8c100041f080079adc507a9648fad18d2753c3504d84102cf538cbf2bb4fd6f",
+    "cases_passed": 1,
+    "assertions_passed": 40
+  },
+  "combined_regression": {
+    "cases_passed": 2,
+    "assertions_passed": 38669
+  },
+  "independent_review": {
+    "worker": "/root/sinan_6ed88a9afad36cc3",
+    "mode": "read_only",
+    "result": "No new findings. Policy scope, test semantics and registration reviewed; final four inputs, three check logs, both binaries and regenerated header verified against actual files."
+  },
+  "limits": [
+    "The earlier full 1569-case suite remains tied to its previous candidate; this policy adaptation was strictly rebuilt and reran affected regressions.",
+    "Exact signed CI/main and installed consumers remain pending. Parent773 is not complete.",
+    "Private raw logs retain local paths and are not published; prior immutable evidence is preserved."
+  ]
+}

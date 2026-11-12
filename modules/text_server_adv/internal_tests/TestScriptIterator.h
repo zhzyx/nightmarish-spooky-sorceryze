@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  test_script_iterator.h                                                */
+/*  TestScriptIterator.h                                                  */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -28,43 +28,49 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
+// Included by script_iterator.cpp so this test uses the module's private dependencies.
 #pragma once
 
-#include "script_iterator.h"
+#include "../script_iterator.h"
 
 #include "tests/test_macros.h"
 
-namespace TestScriptIterator {
+namespace TestScriptIterator
+{
 
-TEST_CASE("[TextServer] Bracket pairing survives stack growth") {
+TEST_CASE("[TextServer] Bracket pairing survives stack growth")
+{
 	// 128 entries fit locally; 129 moves to the heap; 257 grows it again.
-	for (int outer_depth : { 1, 127, 128, 256 }) {
-		CAPTURE(outer_depth);
-		String opening;
-		String closing;
-		for (int i = 0; i < outer_depth; i++) {
-			opening += (i % 2 == 0) ? "(" : "[";
-			closing = String((i % 2 == 0) ? ")" : "]") + closing;
+	for (int nOuterDepth : { 1, 127, 128, 256 })
+	{
+		CAPTURE(nOuterDepth);
+		String strOpening;
+		String strClosing;
+		for (int nIndex = 0; nIndex < nOuterDepth; nIndex++)
+		{
+			strOpening += (nIndex % 2 == 0) ? "(" : "[";
+			strClosing = String((nIndex % 2 == 0) ? ")" : "]") + strClosing;
 		}
 		// The inner Greek bracket triggers growth while the outer Latin
 		// brackets are still live. Their closers must return to Latin.
-		const String latin = opening + "a";
-		const String greek = U"α{β}";
-		const String text = latin + greek + closing;
-		const ScriptIterator iterator(text, 0, text.length());
-		REQUIRE(iterator.script_ranges.size() == 3);
-		if (iterator.script_ranges.size() != 3) {
+		const String strLatin = strOpening + "a";
+		const String strGreek = U"α{β}";
+		const String strText = strLatin + strGreek + strClosing;
+		const ScriptIterator scriptIterator(strText, 0, strText.length());
+		REQUIRE(scriptIterator.script_ranges.size() == 3);
+		if (scriptIterator.script_ranges.size() != 3)
+		{
 			continue;
 		}
-		CHECK(iterator.script_ranges[0].start == 0);
-		CHECK(iterator.script_ranges[0].end == latin.length());
-		CHECK(iterator.script_ranges[0].script == HB_SCRIPT_LATIN);
-		CHECK(iterator.script_ranges[1].start == latin.length());
-		CHECK(iterator.script_ranges[1].end == latin.length() + greek.length());
-		CHECK(iterator.script_ranges[1].script == HB_SCRIPT_GREEK);
-		CHECK(iterator.script_ranges[2].start == latin.length() + greek.length());
-		CHECK(iterator.script_ranges[2].end == text.length());
-		CHECK(iterator.script_ranges[2].script == HB_SCRIPT_LATIN);
+		CHECK(scriptIterator.script_ranges[0].start == 0);
+		CHECK(scriptIterator.script_ranges[0].end == strLatin.length());
+		CHECK(scriptIterator.script_ranges[0].script == HB_SCRIPT_LATIN);
+		CHECK(scriptIterator.script_ranges[1].start == strLatin.length());
+		CHECK(scriptIterator.script_ranges[1].end == strLatin.length() + strGreek.length());
+		CHECK(scriptIterator.script_ranges[1].script == HB_SCRIPT_GREEK);
+		CHECK(scriptIterator.script_ranges[2].start == strLatin.length() + strGreek.length());
+		CHECK(scriptIterator.script_ranges[2].end == strText.length());
+		CHECK(scriptIterator.script_ranges[2].script == HB_SCRIPT_LATIN);
 	}
 }
 

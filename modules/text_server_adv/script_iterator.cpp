@@ -31,7 +31,7 @@
 #include "script_iterator.h"
 
 #ifdef TESTS_ENABLED
-#include "test_script_iterator.h"
+#include "internal_tests/TestScriptIterator.h"
 #endif
 
 // This implementation is derived from ICU: icu4c/source/extra/scrptrun/scrptrun.cpp

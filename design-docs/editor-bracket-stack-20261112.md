@@ -24,3 +24,15 @@ assertions, and the full suite passed 1,569 cases / 474,354 assertions with
 excluded from the growth reproduction claim. Test registration requires the
 module's `tests=yes` build define; production builds exclude the test header.
 Independent review, exact delivery and installation are separate remaining steps.
+
+Main PR924 introduced the new C++ coding standard before delivery. The new test
+now resides in `internal_tests/TestScriptIterator.h`, with a directory-scoped
+formatter override and unchanged assertions. An initial placement in `tests`
+failed strict compilation because automatic test collection lacks the module
+private includes; that attempt is retained. The corrected strict build and
+both affected regressions pass (2 cases / 38,669 assertions), and bracket-only
+execution confirms 1 case / 40 assertions with no duplicate registration.
+Independent read-only review verified the actual regenerated header, all native
+inputs, logs and binaries. Additive evidence is
+`data-collection/editor-bracket-stack-916-main924.json`. Exact new CI/main and
+installed consumer acceptance remain pending; preceding evidence is unchanged.
