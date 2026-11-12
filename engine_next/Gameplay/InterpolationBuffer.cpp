@@ -114,7 +114,7 @@ Status InterpolationBuffer::AddSample(const PredictionState &in_stState)
 		}
 	}
 
-	const std::vector<PredictionState>::difference_type nOffset = static_cast<std::vector<PredictionState>::difference_type>(nInsertAt);
+	const std::deque<PredictionState>::difference_type nOffset = static_cast<std::deque<PredictionState>::difference_type>(nInsertAt);
 	arrSamples.insert(arrSamples.begin() + nOffset, in_stState);
 	while (arrSamples.size() > nMaxSamples)
 	{

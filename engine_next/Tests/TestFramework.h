@@ -99,10 +99,10 @@ inline std::uint32_t FloatBits(float fValue)
 
 #define ENGINE_NEXT_TEST_JOIN_IMPL(m_Left, m_Right) m_Left##m_Right
 #define ENGINE_NEXT_TEST_JOIN(m_Left, m_Right) ENGINE_NEXT_TEST_JOIN_IMPL(m_Left, m_Right)
-#define ENGINE_NEXT_TEST_IMPL(m_Name, m_Index)                                                                 \
-	static void ENGINE_NEXT_TEST_JOIN(TestFunction_, m_Index)();                                                \
-	static const bool ENGINE_NEXT_TEST_JOIN(bRegistered_, m_Index) =                                            \
-		EngineNext::Tests::RegisterTest(m_Name, &ENGINE_NEXT_TEST_JOIN(TestFunction_, m_Index));                \
+#define ENGINE_NEXT_TEST_IMPL(m_Name, m_Index) \
+	static void ENGINE_NEXT_TEST_JOIN(TestFunction_, m_Index)(); \
+	static const bool ENGINE_NEXT_TEST_JOIN(bRegistered_, m_Index) = \
+			EngineNext::Tests::RegisterTest(m_Name, &ENGINE_NEXT_TEST_JOIN(TestFunction_, m_Index)); \
 	static void ENGINE_NEXT_TEST_JOIN(TestFunction_, m_Index)()
 #define ENGINE_NEXT_TEST(m_Name) ENGINE_NEXT_TEST_IMPL(m_Name, __COUNTER__)
 #define ENGINE_NEXT_CHECK(m_Condition) EngineNext::Tests::Check(static_cast<bool>(m_Condition), #m_Condition, __FILE__, __LINE__)

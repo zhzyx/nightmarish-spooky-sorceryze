@@ -24,14 +24,15 @@
 - 契约工具 22 项测试、构建工具 7 项测试通过；真实目标为 `sources_passed＋link_passed`。
 - 旧 Godot 编辑器实际构建成功，shared golden 和性能基线共 2 个用例、19 条断言通过。
 - 原生输入变化与回退实验通过：原生键、库、程序和 checksum 随真实输入变化，恢复后测试和 Trace 回到基线。
-- 性能实测：旧 Godot 模型／插值中位 11076／249647 µs，独立 Release 为 4888／284214 µs，checksum 一致。
+- 性能实测：旧 Godot 模型／插值中位 10931／250816 µs，最终独立 Release 为 4935／169291 µs，checksum 一致；deque 消除了满容量淘汰时的完整数组搬运。
+- Ruff 0.17.1 lint／format、clang-format 18.1.8、CODEOWNERS 和包含路径校验均已在本地通过。
 - 新增模块 `build-impact` 门禁和完整正式工单门禁通过。
 
-详细证据见 `data-collection/engine-next-gameplay-core-m1-verification-20261112.json` 与 `data-collection/engine-next-gameplay-core-m1-build-impact.json`。
+详细证据见 `data-collection/engine-next-gameplay-core-m1-verification-20261112-r2.json` 与 `data-collection/engine-next-gameplay-core-m1-build-impact-r2.json`；初版回执保持不变。
 
 ## 待远端与后续验收
 
 - Windows MSVC 由本 PR 的专用 `windows-latest` 作业实际验证，本地未宣称通过。
 - 两个平台的精确候选 CI、main 回读在取得真实回执后记录。
 - PR B 才切换四个 Godot 兼容壳，并复用本 PR 的相同 golden 完成差分与完整 Gameplay 回归。
-- Ruff 可执行文件当前不可用，未把该项记为通过；Python 语法编译、JSON 解析和 Git 差异检查已执行。
+- 初始候选的静态检查曾发现归属、包含和格式问题，已逐项修复并复验；更新后的精确候选 CI 与 main 回读单独记录。

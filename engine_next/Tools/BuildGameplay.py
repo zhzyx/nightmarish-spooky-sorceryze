@@ -144,21 +144,21 @@ def compiler_command(args, source, object_path, dependency_path):
         ]
         if args.sanitize:
             command.extend(["-fsanitize=address,undefined", "-fno-omit-frame-pointer"])
-        command.extend(
-            [
-                "-I",
-                include,
-                "-I",
-                tests,
-                "-MMD",
-                "-MF",
-                dependency_path,
-                "-c",
-                source,
-                "-o",
-                object_path,
-            ]
-        )
+        command.extend([
+            "-I",
+            args.repo,
+            "-I",
+            include,
+            "-I",
+            tests,
+            "-MMD",
+            "-MF",
+            dependency_path,
+            "-c",
+            source,
+            "-o",
+            object_path,
+        ])
         return command
     return [
         args.cl,
@@ -173,6 +173,8 @@ def compiler_command(args, source, object_path, dependency_path):
         "/Zc:__cplusplus",
         "/utf-8",
         "/showIncludes",
+        "/I",
+        args.repo,
         "/I",
         include,
         "/I",
@@ -193,7 +195,11 @@ def audit_archive(args):
         ]
     else:
         output = run([args.lib, "/NOLOGO", "/LIST", args.library], cwd=args.repo)
-        members = [line.strip() for line in output.decode("utf-8", errors="replace").splitlines() if line.strip().endswith(".obj")]
+        members = [
+            line.strip()
+            for line in output.decode("utf-8", errors="replace").splitlines()
+            if line.strip().endswith(".obj")
+        ]
     expected = sorted(object_name(source, ".o" if args.compiler == "clang" else ".obj") for source in CORE_SOURCES)
     if sorted(Path(member).name for member in members) != expected:
         raise ValueError("Unexpected archive members: " + repr(members))
@@ -226,7 +232,9 @@ def audit_dynamic_dependencies(args):
         unexpected = [value for value in dependencies if Path(value).name not in allowed]
     else:
         output = run([args.dumpbin, "/NOLOGO", "/DEPENDENTS", args.executable], cwd=args.repo)
-        dependencies = sorted(set(re.findall(r"([A-Za-z0-9_.-]+\.dll)", output.decode("utf-8", errors="replace"), re.IGNORECASE)))
+        dependencies = sorted(
+            set(re.findall(r"([A-Za-z0-9_.-]+\.dll)", output.decode("utf-8", errors="replace"), re.IGNORECASE))
+        )
         allowed = {
             "kernel32.dll",
             "msvcp140.dll",
@@ -237,7 +245,11 @@ def audit_dynamic_dependencies(args):
             "ucrtbase.dll",
             "ucrtbased.dll",
         }
-        unexpected = [value for value in dependencies if value.lower() not in allowed and not value.lower().startswith("api-ms-win-")]
+        unexpected = [
+            value
+            for value in dependencies
+            if value.lower() not in allowed and not value.lower().startswith("api-ms-win-")
+        ]
     if unexpected:
         raise ValueError("Unexpected dynamic dependencies: " + ", ".join(unexpected))
     return dependencies
@@ -272,13 +284,21 @@ def build(args):
         args.ar = shutil.which("ar")
         args.nm = shutil.which("nm")
         args.otool = shutil.which("otool")
-        missing = [name for name, value in (("clang++", args.clangxx), ("ar", args.ar), ("nm", args.nm), ("otool", args.otool)) if not value]
+        missing = [
+            name
+            for name, value in (("clang++", args.clangxx), ("ar", args.ar), ("nm", args.nm), ("otool", args.otool))
+            if not value
+        ]
     else:
         args.cl = shutil.which("cl")
         args.lib = shutil.which("lib")
         args.link = shutil.which("link")
         args.dumpbin = shutil.which("dumpbin")
-        missing = [name for name, value in (("cl", args.cl), ("lib", args.lib), ("link", args.link), ("dumpbin", args.dumpbin)) if not value]
+        missing = [
+            name
+            for name, value in (("cl", args.cl), ("lib", args.lib), ("link", args.link), ("dumpbin", args.dumpbin))
+            if not value
+        ]
     if missing:
         raise ValueError("Missing compiler tools: " + ", ".join(missing))
 
@@ -296,10 +316,14 @@ def build(args):
         source = object_dir / ("PublicHeader" + str(index) + ".cpp")
         source.write_text('#include "' + header + '"\n', encoding="utf-8")
         object_path = object_dir / ("PublicHeader" + str(index) + suffix)
-        compile_source(args, source, object_path, object_dir / ("PublicHeader" + str(index) + ".d"), include_audit, commands)
+        compile_source(
+            args, source, object_path, object_dir / ("PublicHeader" + str(index) + ".d"), include_audit, commands
+        )
         header_objects.append(object_path)
 
-    args.library = args.build_dir / ("libEngineNextGameplay.a" if args.compiler == "clang" else "EngineNextGameplay.lib")
+    args.library = args.build_dir / (
+        "libEngineNextGameplay.a" if args.compiler == "clang" else "EngineNextGameplay.lib"
+    )
     if args.compiler == "clang":
         archive_command = [args.ar, "-rcs", args.library, *core_objects]
     else:
@@ -313,7 +337,9 @@ def build(args):
         compile_source(args, source, object_path, object_dir / (Path(source).stem + ".d"), include_audit, commands)
         test_objects.append(object_path)
 
-    args.executable = args.build_dir / ("EngineNextGameplayTests.exe" if args.compiler == "msvc" or os.name == "nt" else "EngineNextGameplayTests")
+    args.executable = args.build_dir / (
+        "EngineNextGameplayTests.exe" if args.compiler == "msvc" or os.name == "nt" else "EngineNextGameplayTests"
+    )
     response = args.build_dir / "Link.rsp"
     response_values = [*test_objects, args.library]
     if args.compiler == "clang":
@@ -347,27 +373,33 @@ def build(args):
     test_summary = "not_run"
     clean_summary = "not_run"
     if args.run_tests:
-        test_summary = run([args.executable, "--trace-output", trace_path], cwd=args.build_dir, env=args.tool_environment).decode("utf-8").strip()
+        test_summary = (
+            run([args.executable, "--trace-output", trace_path], cwd=args.build_dir, env=args.tool_environment)
+            .decode("utf-8")
+            .strip()
+        )
         clean_dir = args.build_dir / "CleanRun"
         clean_dir.mkdir(exist_ok=True)
         clean_executable = clean_dir / args.executable.name
         shutil.copy2(args.executable, clean_executable)
-        clean_summary = run(
-            [clean_executable, "--trace-output", clean_trace_path],
-            cwd=clean_dir,
-            env=args.tool_environment,
-        ).decode("utf-8").strip()
+        clean_summary = (
+            run(
+                [clean_executable, "--trace-output", clean_trace_path],
+                cwd=clean_dir,
+                env=args.tool_environment,
+            )
+            .decode("utf-8")
+            .strip()
+        )
         if trace_path.read_bytes() != clean_trace_path.read_bytes():
             raise ValueError("Clean-environment trace differs from the build-directory trace")
 
-    native_inputs = sorted(
-        [
-            *CORE_SOURCES,
-            *TEST_SOURCES,
-            *["engine_next/include/" + header for header in PUBLIC_HEADERS],
-            "engine_next/Tools/BuildGameplay.py",
-        ]
-    )
+    native_inputs = sorted([
+        *CORE_SOURCES,
+        *TEST_SOURCES,
+        *["engine_next/include/" + header for header in PUBLIC_HEADERS],
+        "engine_next/Tools/BuildGameplay.py",
+    ])
     native_identity = {
         "compiler": args.compiler,
         "sanitize": args.sanitize,
@@ -401,7 +433,19 @@ def build(args):
     }
     report_path = args.build_dir / "BuildReport.json"
     report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({"passed": True, "report": repository_name(args.repo, report_path), "manifest": repository_name(args.repo, manifest_path), "test_summary": test_summary, "clean_run_summary": clean_summary, "trace_sha256": report["trace_sha256"]}, indent=2))
+    print(
+        json.dumps(
+            {
+                "passed": True,
+                "report": repository_name(args.repo, report_path),
+                "manifest": repository_name(args.repo, manifest_path),
+                "test_summary": test_summary,
+                "clean_run_summary": clean_summary,
+                "trace_sha256": report["trace_sha256"],
+            },
+            indent=2,
+        )
+    )
     return report
 
 

@@ -110,7 +110,16 @@ class EngineNextContractTests(unittest.TestCase):
         self.assertTrue(result["passed"], result["violations"])
 
     def test_godot_macros_and_types_are_rejected(self):
-        for token in ("GDCLASS", "GDVIRTUAL0", "GDREGISTER_CLASS", "Variant", "RefCounted", "StringName", "Node", "Resource"):
+        for token in (
+            "GDCLASS",
+            "GDVIRTUAL0",
+            "GDREGISTER_CLASS",
+            "Variant",
+            "RefCounted",
+            "StringName",
+            "Node",
+            "Resource",
+        ):
             with self.subTest(token=token):
                 self.write("engine_next/main.cpp", token + "\n")
                 result = audit_sources(self.root, self.contract, True)

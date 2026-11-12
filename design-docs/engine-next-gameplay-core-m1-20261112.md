@@ -141,7 +141,7 @@ python tools/check_engine_next_contract.py --repo . --require-sources --require-
 
 `engine_next/build-impact.json` 分类为 `native`：代码同时参与独立静态库和 legacy `module_gameplay` 原生编译，没有可替换运行包。
 
-`data-collection/engine-next-gameplay-core-m1-build-impact.json` 的 `input_blobs` 覆盖全部内核文件及实际 Godot 消费者、共享 Trace、构建脚本、契约和工作流。`checks` 至少包含：
+`data-collection/engine-next-gameplay-core-m1-build-impact-r2.json` 的 `input_blobs` 覆盖全部内核文件及实际 Godot 消费者、共享 Trace、构建脚本、契约和工作流。`checks` 至少包含：
 
 - `native_invalidation`：临时改变真实内核输入，确认对象、库和测试程序重建，并观察探针行为变化。
 - `rollback`：恢复原 blob，重建并恢复原 Trace 和行为。

@@ -51,7 +51,9 @@ class BuildGameplayTests(unittest.TestCase):
 
     def test_depfile_accepts_generated_header_probes(self):
         generated = self.write("build/engine_next/probe/PublicHeader0.cpp")
-        depfile = self.write("build/engine_next/probe/PublicHeader0.d", "PublicHeader0.o: build/engine_next/probe/PublicHeader0.cpp\n")
+        depfile = self.write(
+            "build/engine_next/probe/PublicHeader0.d", "PublicHeader0.o: build/engine_next/probe/PublicHeader0.cpp\n"
+        )
         self.assertEqual(parse_depfile(self.root, depfile), [str(generated)])
 
     def test_godot_and_undeclared_includes_are_rejected(self):

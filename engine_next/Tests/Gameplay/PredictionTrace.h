@@ -86,7 +86,8 @@ inline TraceState GetInitialState()
 
 inline const std::vector<TraceState> &GetBufferSamples()
 {
-	static const std::vector<TraceState> arrSamples = [] {
+	static const std::vector<TraceState> arrSamples = []
+	{
 		TraceState stFirst;
 		stFirst.fPositionX = 20.0F;
 		stFirst.fVelocityX = 10.0F;

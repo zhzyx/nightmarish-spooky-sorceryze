@@ -28,8 +28,8 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "../TestFramework.h"
-#include "PredictionTrace.h"
+#include "engine_next/Tests/TestFramework.h"
+#include "engine_next/Tests/Gameplay/PredictionTrace.h"
 
 #include "EngineNext/Gameplay/InterpolationBuffer.h"
 #include "EngineNext/Gameplay/PredictionModel.h"

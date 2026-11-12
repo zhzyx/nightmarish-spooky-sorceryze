@@ -28,7 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "TestFramework.h"
+#include "engine_next/Tests/TestFramework.h"
 
 #include <cstring>
 #include <iostream>

@@ -35,8 +35,8 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <deque>
 #include <optional>
-#include <vector>
 
 namespace EngineNext::Gameplay
 {
@@ -59,7 +59,7 @@ struct InterpolationResult
 
 class InterpolationBuffer
 {
-	std::vector<PredictionState> arrSamples;
+	std::deque<PredictionState> arrSamples;
 	std::size_t nMaxSamples = 32;
 	std::uint64_t nInterpolationDelayMsec = 100;
 	std::uint64_t nStaleAfterMsec = 500;
