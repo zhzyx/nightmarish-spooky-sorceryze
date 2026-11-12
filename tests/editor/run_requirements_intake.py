@@ -35,6 +35,10 @@ if op=='api':
  path=args[0]
  if path=='user': value={'login':'fixture-worker','id':123}
  elif path=='repos/'+repo: value={'full_name':repo,'permissions':{'push':True}}
+ elif '/labels?' in path:
+  labels=json.loads((r/'.github/labels.json').read_text())+json.loads((r/'.github/status-labels.json').read_text())
+  labels.append({'name':'workspace:gonggong'})
+  value=[labels] if '--slurp' in args else labels
  elif '/issues?' in path: value=[issues] if '--slurp' in args else issues
  elif '/comments' in path: value=[[]]
  else: value=next(x for x in issues if x['number']==int(path.split('/')[-1]))
@@ -150,8 +154,9 @@ def main():
         # putting SConstruct in the workspace would request an engine checkout.
         installation = isolated_editor.parent
         shutil.copyfile(ROOT / "SConstruct", installation / "SConstruct")
-        for directory in ("customizations", "tools", "integrations"):
+        for directory in ("framework", "customizations", "tools", "integrations"):
             shutil.copytree(root / directory, installation / directory)
+        shutil.copyfile(root / "CURRENT_FRAMEWORK.json", installation / "CURRENT_FRAMEWORK.json")
         if args.portable_chat:
             (installation / "customizations/components/godot-host/bridge.py").unlink()
             (installation / "integrations/gonggong/frozen-distribution.json").unlink()
@@ -390,6 +395,12 @@ def main():
                 {
                     "requests": requests,
                     "catalog_requests": catalog_requests,
+                    "github_calls": [
+                        json.loads(line)
+                        for line in (root / "fake-gh-calls.log").read_text(encoding="utf-8").splitlines()
+                    ]
+                    if (root / "fake-gh-calls.log").is_file()
+                    else [],
                     "setup_reports": [
                         {"name": p.name, "result": json.loads(p.read_text(encoding="utf-8-sig"))}
                         for p in (installation / "editor_data").rglob("gonggong-setup-*.json")

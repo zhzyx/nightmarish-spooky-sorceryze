@@ -70,3 +70,15 @@ PR #799 因局部变量遮蔽触发 MSVC C4458 /WX 失败，14处局部标识符
 当前仍需完成真实模型的全部标准、阻断启动后的有界接续、最终 main 与有效安装验收，并逐项收口 #773 的完整编辑器能力。测试中的小游戏仅用于验收，不缩小产品范围。
 
 最新主线的启动检查、连接记忆和可选生成服务已纳入同一候选。模型库从安装目录加载工具、以当前游戏项目核对授权；窄屏设置与跨重启生产恢复重新验证。组合结果、独立审查及保留的失败见 [主线整合追加回执](../data-collection/editor-production-main-integration-773.json)，此回执不代替有效安装和父工单整体验收。
+
+## 正常生产实测发现的后续子项
+
+2026-11-12 由原责任者 Sail-Li / Codex 当前会话在 #773 原授权内拆分并回读 GitHub 原生父子关系。下列子项分别交付，依赖本次生产与恢复基础合入后的最新 main；共享实现由合契整合，父项仍承担真实账号完整流程及有效安装验收。
+
+| 子项 | 稳定需求 ID | 独立验收范围 |
+| --- | --- | --- |
+| [#876](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/876) | editor-evidence-completion-20261112 | 已核实运输、身份与候选后的验收缺证可有界补验；保留原 unknown 与新执行谱系，重新独立审查后才释放依赖。身份未知、漂移或活跃工作者不得自动重启。 |
+| [#877](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/877) | editor-blocked-dispatch-retry-20261112 | 启动前明确阻塞停止无条件重试，编辑器可观察并明确恢复；保留未知占用，允许其他独立就绪项推进，验证重复点击与重启。 |
+| [#878](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/878) | editor-game-independent-review-20261112 | 普通游戏父会话能委托绑定实际项目、工单和授权的只读审查；提供宿主核实的独立性事实，拒绝任意候选与漂移，保留引擎路径回归。 |
+
+三个子项均需原生正反例、独立审查、正式门禁、精确 CI 和 main 回读。尚未完成的业务标准不因子项登记而计为通过。环境恢复测试修正及原始失败见 [追加回执](../data-collection/editor-production-runtime-fixture-773.json)；该受控测试不替代上述真实产品验收。
