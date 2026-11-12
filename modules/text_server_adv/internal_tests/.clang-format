@@ -1,0 +1,3 @@
+# Scope the new C++ standard to internal tests; preserve existing module formatting.
+BasedOnStyle: InheritParentConfig
+BreakBeforeBraces: Allman

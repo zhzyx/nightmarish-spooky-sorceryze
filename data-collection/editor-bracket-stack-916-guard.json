@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/916",
+  "request_id": "editor-bracket-stack-growth-20261112",
+  "state": "header_guard_correction_and_main928_locally_verified",
+  "main_baseline": "df490bf6daee43f090f2af2cc4da7329271e1e37",
+  "previous_evidence": {
+    "path": "data-collection/editor-bracket-stack-916-main924.json",
+    "sha256": "f026a58f24e227baec2a437cfc5dc64825b2260c0d7e39ccbd5d10a54cf2cc4f"
+  },
+  "failed_candidate": "a32de1bdacee1e61723398aad6a9b519d75a6733",
+  "failed_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43204805989/job/131137156328",
+  "failure_log_sha256": "46313972874ac8987a5f15c3e74587e7ed0d0705caae0947401f5444a5031ff4",
+  "correction": "Move the module-registration comment from before pragma once to after it, as required by header_guards.py. No native semantic change or check bypass.",
+  "upstream": "PR928 adds model-adjust node support;17 upstream files have no write overlap. Combined candidate strictly rebuilt, including regenerated AI-native embedded bundle.",
+  "verification": {
+    "checks": [
+      {
+        "name": "main928-format-check",
+        "exit_code": 0,
+        "sha256": "8234d11f5abc1e708fd3d37dc42155bd1ff636aab0458c62b329f28740a11759"
+      },
+      {
+        "name": "main928-build",
+        "exit_code": 0,
+        "sha256": "a2abf1563491121380c574b32147a4323f2aba50be52500d2ac69afbec0361d8"
+      },
+      {
+        "name": "main928-regression",
+        "exit_code": 0,
+        "sha256": "5c9420463a20beaf3044dde59ead380496679f0f1651261de0bde712a50c31f6"
+      }
+    ],
+    "native_inputs": {
+      "modules/text_server_adv/SCsub": "c5219cf5c1349d0977ef3a337cebfeedf649a97febcefaf219eec8b3926d4171",
+      "modules/text_server_adv/script_iterator.cpp": "a25f859866f8648cb86ad91f097c3a00c4fb4b4b192cace9fa195da71c295cef",
+      "modules/text_server_adv/internal_tests/TestScriptIterator.h": "b9540c2264e4412a9faa466904ba1fa00c9eec37e9bab1b858182812f9934890",
+      "modules/text_server_adv/internal_tests/.clang-format": "23aac7a4c50b28f5cda35fb3877dc739eec6bd968bd3454b3b8cf0b845b1a3f2"
+    },
+    "binary_sha256": {
+      "godot.windows.editor.x86_64.console.exe": "b759960ee52f1b314994e622c780fd7c7a9033b9241a7671bad15f83c051e8fe",
+      "godot.windows.editor.x86_64.exe": "8ff71a8bf2b2d9506027ac882cabedf28539ee2e6dc955db7dc8ce1b25414242"
+    },
+    "source_head": "31dfc20437a90f9b311d02c8eef14ac552c52425"
+  },
+  "local_static": [
+    {
+      "check": "header_guards.py",
+      "exit_code": 0,
+      "changed_files": false
+    },
+    {
+      "check": "copyright_headers.py",
+      "exit_code": 0,
+      "changed_files": false
+    },
+    {
+      "check": "file_format.py",
+      "exit_code": 0,
+      "changed_files": false
+    }
+  ],
+  "independent_review": {
+    "worker": "/root/sinan_6ed88a9afad36cc3",
+    "mode": "read_only",
+    "finding": "Confirmed exact comment move only; no semantic change and no new findings.",
+    "header_sha256": "b9540c2264e4412a9faa466904ba1fa00c9eec37e9bab1b858182812f9934890"
+  },
+  "limits": [
+    "Both affected regressions pass2cases/38669assertions on the rebased combined candidate; previous full-suite evidence remains tied to preceding native input.",
+    "New signed CI/main and installed consumer verification remain pending. Parent773 remains open.",
+    "Earlier failures remain preserved; skipped native CI is not reported as passing."
+  ]
+}

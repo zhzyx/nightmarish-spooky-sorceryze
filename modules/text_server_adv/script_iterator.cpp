@@ -30,6 +30,10 @@
 
 #include "script_iterator.h"
 
+#ifdef TESTS_ENABLED
+#include "internal_tests/TestScriptIterator.h"
+#endif
+
 // This implementation is derived from ICU: icu4c/source/extra/scrptrun/scrptrun.cpp
 
 inline constexpr UChar32 ZERO_WIDTH_JOINER = 0x200d;
@@ -134,6 +138,7 @@ ScriptIterator::ScriptIterator(const String &p_string, int p_start, int p_length
 						paren_size += PAREN_STACK_DEPTH;
 						if (paren_stack == starter_paren_stack) {
 							paren_stack = static_cast<ParenStackEntry *>(memalloc(paren_size * sizeof(ParenStackEntry)));
+							memcpy(paren_stack, starter_paren_stack, sizeof(starter_paren_stack));
 						} else {
 							paren_stack = static_cast<ParenStackEntry *>(memrealloc(paren_stack, paren_size * sizeof(ParenStackEntry)));
 						}
