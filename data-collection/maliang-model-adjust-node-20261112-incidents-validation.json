@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-model-adjust-node-20261112-incidents-validation",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-model-adjust-node-20261112",
+  "kind": "step",
+  "occurred_at": "2026-11-12T11:41:31Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+  "agent": {
+    "id": "kimi-work-kaiyunxue",
+    "version": "20261112",
+    "origin": "current-authorized-host"
+  },
+  "payload": {
+    "scope": "Two remaining delivery-incident recovery records and their matching evidence; no implementation changes",
+    "original_business_pull_request": 928,
+    "previous_recovery_pull_request": 936,
+    "previous_recovery_merge_commit": "8789801187f2054c377550709c9f9900503cdd01",
+    "previous_recovery_main_tree": "ffe6463283453a09c705d8fbc31f4f3266943efa",
+    "previous_recovery_checks": "Issue association and static checks passed; exact signed head merged",
+    "recovered_incidents": [
+      {
+        "incident": "31b50d1baf9f9f8e9e6b230090cd27e2bc927f16a39a399179d6070d2a2086c8",
+        "failure": "submission notes missing before candidate creation",
+        "recovery": "notes recreated, immutable evidence preserved, formal gate and PR #936 merge verified",
+        "event": "gonggong-diting-data/events/gonggong-workspace/maliang-model-adjust-node-20261112/kuafu-012fc2322d297894382a5edca685d654e1fe3b31.json"
+      },
+      {
+        "incident": "e37dae913e73b94be775d3db34d3da1c22868fbe85147450d909fd58cc06dea9",
+        "failure": "Git fetch connection failed before local candidate creation",
+        "recovery": "same formal gate, identical tree, GitHub API signature chain, CI and main readback retained",
+        "event": "gonggong-diting-data/events/gonggong-workspace/maliang-model-adjust-node-20261112/kuafu-611f2025c29ca988a82fc24bdaff49407b386246.json"
+      }
+    ],
+    "supplemental_candidate_base": "8789801187f2054c377550709c9f9900503cdd01",
+    "implementation_or_history_evidence_modified": false,
+    "new_model_inference_required": false,
+    "credentials_signed_urls_or_large_models_committed": false
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-012fc2322d297894382a5edca685d654e1fe3b31",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-model-adjust-node-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "31b50d1baf9f9f8e9e6b230090cd27e2bc927f16a39a399179d6070d2a2086c8",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/926",
+    "action": "delivery",
+    "detection_head": "df490bf6daee43f090f2af2cc4da7329271e1e37",
+    "context_sha256": "bcfd8e23fe61a8b7ccb38fbdbd11de8a025fbd660b326710e85cbd8230fb986d",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-kaiyunxue",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/936",
+    "diagnosis": "补充提交首次因说明文件缺失停止，未创建本地提交或 PR。已重建说明，并按门禁修正为独立恢复验证 JSON，历史证据保持不变。正式门禁通过后，经 GitHub API 签名链创建 PR #936，全部检查通过并合入 main=8789801187f2054c377550709c9f9900503cdd01。",
+    "next_action": "将本次判断及另一 Git 传输事故的恢复事件一并追加到证据 PR，再关闭跟踪单与业务工单。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T11:06:11.040053+00:00",
+    "attempted": "重建说明、固定事件与恢复验证两个路径、重跑正式门禁、核验签名与 CI，最后回读 PR 和 main。",
+    "repair_owner": "kimi-work-kaiyunxue 已修正提交材料并完成恢复交付。",
+    "continuable": "说明缺失已恢复；剩余为追加本次事件及权威关单回读。"
+  },
+  "occurred_at": "2026-11-12T11:40:30.093905+00:00",
+  "sha256": "424756cd009d0ccaa6952ab0ae06b6081f3227df0a6fb5a8fec5ec09dabb3788"
+}
