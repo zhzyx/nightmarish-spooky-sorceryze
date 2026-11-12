@@ -18,6 +18,7 @@ from pathlib import Path
 
 from comfy_provider import digest, register, validate_embedded_glb
 from extensions import NodeRegistry, canonical, require, validate_invocation
+from owned_process import implementation_fingerprint, run_owned
 from provider_common import DurableProvider, _creationflags, _environment, validate_png
 
 
@@ -419,6 +420,7 @@ class ModelingProvider(DurableProvider):
         builder = Path(config["builder_path"])
         self.fingerprint = digest([
             self.config,
+            implementation_fingerprint(),
             hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
             hashlib.sha256(Path(__file__).with_name("provider_common.py").read_bytes()).hexdigest(),
             hashlib.sha256(Path(__file__).with_name("api_planner.py").read_bytes()).hexdigest()
@@ -561,45 +563,21 @@ class ModelingProvider(DurableProvider):
         timeout_code, output_code = error_codes or (
             ("cli_timeout", "cli_output_invalid") if label == "cli" else ("builder_timeout", "builder_failed")
         )
-        if not self._active(key, label):
-            return None
         with (
             (directory / (label + ".stdout")).open("xb") as stdout,
             (directory / (label + ".stderr")).open("xb") as stderr,
         ):
-            process = subprocess.Popen(
+            return run_owned(
                 arguments,
-                stdin=stdin if stdin is not None else subprocess.DEVNULL,
                 stdout=stdout,
                 stderr=stderr,
                 env=_cli_environment() if label == "cli" else _environment(),
-                creationflags=_creationflags(),
+                limit=MAX_EVENTS_BYTES,
+                timeout=timeout,
+                stdin=stdin,
+                active=lambda: self._active(key, label),
+                fail=lambda reason: self.finish(key, "failed", timeout_code if reason == "timeout" else output_code),
             )
-            deadline = time.monotonic() + timeout
-            try:
-                while process.poll() is None:
-                    if not self._active(key):
-                        process.terminate()
-                        return None
-                    if time.monotonic() > deadline:
-                        self.finish(key, "failed", timeout_code)
-                        process.terminate()
-                        return None
-                    if (directory / (label + ".stdout")).stat().st_size > MAX_EVENTS_BYTES or (
-                        directory / (label + ".stderr")
-                    ).stat().st_size > MAX_EVENTS_BYTES:
-                        self.finish(key, "failed", output_code)
-                        process.terminate()
-                        return None
-                    time.sleep(0.1)
-            finally:
-                if process.poll() is None:
-                    try:
-                        process.wait(timeout=5)
-                    except subprocess.TimeoutExpired:
-                        process.kill()
-                process.wait()
-        return process.returncode
 
     def _instructions(self, key, plan, directory):
         arguments = [

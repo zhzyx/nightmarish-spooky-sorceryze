@@ -31,6 +31,7 @@ from modeling_provider import (
 from modeling_provider import (
     MESSAGES as MODELING_MESSAGES,
 )
+from owned_process import implementation_fingerprint, owned_scope, run_owned
 from provider_common import _creationflags, _environment, validate_jpeg, validate_png
 
 VERSION = "1"
@@ -616,7 +617,11 @@ class KimiNativeDirectProvider(ModelingProvider):
         self.database = self.storage / self.DATABASE_NAME
         with self.db() as db:
             db.execute("CREATE TABLE IF NOT EXISTS jobs(key TEXT PRIMARY KEY, body TEXT NOT NULL)")
-        self.fingerprint = digest([self.config, hashlib.sha256(Path(__file__).read_bytes()).hexdigest()])
+        self.fingerprint = digest([
+            self.config,
+            hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            implementation_fingerprint(),
+        ])
 
     def describe(self):
         return dict(
@@ -855,34 +860,21 @@ class KimiNativeDirectProvider(ModelingProvider):
 
     def _run_owned(self, key, arguments, log_name, stage, timeout, directory):
         with (directory / log_name).open("xb") as log:
-            process = subprocess.Popen(
+            return run_owned(
                 arguments,
-                stdin=subprocess.DEVNULL,
                 stdout=log,
-                stderr=subprocess.STDOUT,
                 env=self._environment(directory),
-                creationflags=_creationflags(),
-                start_new_session=os.name != "nt",
+                limit=MAX_LOG_BYTES,
+                timeout=timeout,
+                active=lambda: (
+                    self._active(key, stage)
+                    and (getattr(self, "_generation_scope", None) is None or self._generation_scope.active())
+                ),
+                fail=lambda reason: self.finish(
+                    key, "failed", "image_timeout" if reason == "timeout" else "model3d_output_invalid"
+                ),
+                scope=getattr(self, "_generation_scope", None) if stage.endswith("_launch") else None,
             )
-        deadline = time.monotonic() + timeout
-        try:
-            while process.poll() is None:
-                if not self._active(key, stage):
-                    process.terminate()
-                    return None
-                if time.monotonic() > deadline:
-                    self.finish(key, "failed", "image_timeout")
-                    process.terminate()
-                    return None
-                time.sleep(0.2)
-        finally:
-            if process.poll() is None:
-                try:
-                    process.wait(timeout=5)
-                except subprocess.TimeoutExpired:
-                    process.kill()
-            process.wait()
-        return process.returncode
 
     def _prepare_sources(self, plan, directory):
         originals = []
@@ -973,6 +965,7 @@ class KimiNativeDirectProvider(ModelingProvider):
             )
         return prepared
 
+    @owned_scope
     def _adjust(self, key, plan, directory):
         record = self.read(key)
         require(
@@ -1185,6 +1178,7 @@ class KimiNativeDirectProvider(ModelingProvider):
             ),
         )
 
+    @owned_scope
     def _cli(self, key, plan, directory):
         if plan.get("operation") == "texture_3d_model":
             return self._adjust(key, plan, directory)

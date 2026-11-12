@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c78db041530660edf849a9fb21626ecb327a0ae8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "generation-owned-process-recovery-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fa212642632efb0301b5c5337889e1fc523d1ce935818c7f12d8769b56a85900",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+    "action": "validation",
+    "detection_head": "f0aad0ba34db222643fd1a3600515fa604064f16",
+    "context_sha256": "20ec446eac7c199b7250f3d9350955928140f1aa96a121e55f9112040ab7132a",
+    "operator": "Sail-Li",
+    "worker": "/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43302770346",
+    "diagnosis": "Exact candidate CI codespell found one module docstring word signalled. Corrected to signaled; executable AST excluding module docstring identical. Embedded source hash changes, so rebuilding and rerunning actual native bundle verification before new candidate.",
+    "next_action": "Preserve prior CI and committed receipts; append exact new source/binary evidence and independent bounded spelling review, then replacement PR exact checks.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T20:45:44.440331+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T20:45:55.651736+00:00",
+  "sha256": "01a4962f2d1c657f7702052184f0d50db0d1fc98526c58d417f839b2cc91d1de"
+}

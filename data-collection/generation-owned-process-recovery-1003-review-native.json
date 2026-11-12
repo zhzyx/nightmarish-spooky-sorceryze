@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "issue_number": 1003,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+  "path_base": "repository_root",
+  "integration_main": "69a7a624a6d0f932bf02ebcc33d60427193629f3",
+  "reviewer": "/root/sinan_842f663439fe6bd0",
+  "review_disposition": "source_scope_approved",
+  "review_report_sha256": "df3befe0d7f1185cc5655a57e73a0abea5246bfeacf6d1c81f7b691ca8439ecc",
+  "review_source_sha256": {
+    "tools/ainative/owned_process.py": "026b776fb92d38968afacf4c93ae19b2b263783a3b668e59397e05cae09f4b19",
+    "tools/ainative/test_owned_process.py": "363f3fa973927690bd96f5c68ef6a05df1176611922cb29bd5af83b3464d19fe",
+    "tools/ainative/modeling_provider.py": "5900500fa390fb90712e3d47573337a7f3b56a089df6dd120607c50f31f1420d",
+    "tools/ainative/kimi_provider.py": "97b1f72733ab521415e25aaab97ca50f150a5f133a016d7e3f64bc86769c3d23",
+    "tools/ainative/kimi_work_image_provider.py": "8508aa39b6b2db219f29189b1a6534dd7c5f2b5030951bb2d4816163a0bd9762",
+    "tools/ainative/motion_jobs.py": "64108e782707a0e51597c035ca3c169f4aaaa13157796e628f48615a6d07a6c3",
+    "tools/ainative/motion_provider.py": "e07475fd8c65d463d010b24b65bab5c26fd4e4f70afa08884e98817d0f4bb845",
+    "tools/ainative/test_motion_provider.py": "987a4df1ef83a0cb544362c63c735861b670b45d4c8a4f15fd035bc929f1e964",
+    "tools/ainative/sculpt_provider.py": "6bd7e8e4a7410c2723f8a987068b94f9102014c55e5a2b3ce4d29284bb55eeaa",
+    "editor/SCsub": "3c6c16b20e8635226cd1004506fe06cb383b15f108f512dfbdd9d40b17c0c542",
+    "editor/ainative/builders.py": "2185b5313bc68b94f87aceee41bf70c60d34d90c6a99a8b7ddd55d7f1fdc6804"
+  },
+  "review_checks": {
+    "total": 141,
+    "passed": 111,
+    "skipped": 30,
+    "correction": "One reviewer test hardcoded python command absent in PATH; own alias to specified Python restored affected test, original failure retained."
+  },
+  "native_acceptance": {
+    "state": "passed",
+    "editor_sha256": "7dfa08450f20a385ec83426201e6fbec7a64e8ffe32b2c65661be666d58c3ecd",
+    "scope": "Native AINative editor entry, bundled host, Mesh Copy preview/publication, synthetic rigging, isolated project state and relocated runtime scripts; no AI inference",
+    "installed_bundle_matches_source": true,
+    "bundle_version": "a7c4a92dcfc530b2624ccc98962aa397a696c983b07df6ebd7df246171afb880",
+    "project_state_isolated": true,
+    "same_engine_bundle": true,
+    "project_sources_unchanged": true
+  },
+  "native_run_count": 4,
+  "native_report_sha256": "c6cffefb220797099ddd39ede7365d22f4c9357dc593202bddbce4734795a76f",
+  "embedded_owned_process_sha256": "026b776fb92d38968afacf4c93ae19b2b263783a3b668e59397e05cae09f4b19",
+  "embedded_windows_helper_sha256": "954f3ff03f33e9950372fd5908eab6a8d90c83affe88022b9cb3323ec3fcd246",
+  "cleanup": "Isolated headless native fixture directories/processes completed and removed by runner; no active editor installation replaced. Candidate worktree/binary/evidence retained pending exact CI/main.",
+  "limitations": [
+    "No real Windows Job kernel or paid provider inference executed on this macOS host",
+    "Local cancellation does not prove remote cancellation; trusted POSIX descendants must not detach themselves",
+    "Exact remote CI/main and Issue closure pending"
+  ],
+  "request_id": "generation-owned-process-recovery-20261113",
+  "private_log_archive": {
+    "reason": "Raw logs created by this task had been placed outside private receipts; relocated before publication without changing bytes",
+    "files": [
+      {
+        "from": "data-collection/generation-owned-process-recovery-1003-final-tests.log",
+        "to": "data-collection/receipts/generation-owned-process-recovery-1003/raw-logs/generation-owned-process-recovery-1003-final-tests.log",
+        "sha256": "65ed820c7c4a66ea9c277f035a59d18605b9cda27b693e0047f0510dd22b03b7"
+      },
+      {
+        "from": "data-collection/generation-owned-process-recovery-1003-targeted-final.log",
+        "to": "data-collection/receipts/generation-owned-process-recovery-1003/raw-logs/generation-owned-process-recovery-1003-targeted-final.log",
+        "sha256": "d855e1a1cab4f2b6aaae0fa4e75cc8e8ad2af624dd6110d65d1a8040ac3284a2"
+      },
+      {
+        "from": "data-collection/generation-owned-process-recovery-1003-targeted.log",
+        "to": "data-collection/receipts/generation-owned-process-recovery-1003/raw-logs/generation-owned-process-recovery-1003-targeted.log",
+        "sha256": "8f28e7a7364bf3086454df3e58c193597ee312febd73a247532c2a2725875a05"
+      },
+      {
+        "from": "data-collection/generation-owned-process-recovery-1003-tests.log",
+        "to": "data-collection/receipts/generation-owned-process-recovery-1003/raw-logs/generation-owned-process-recovery-1003-tests.log",
+        "sha256": "e262c78578bdda4f1fbb26a89529b2b45e838d7e3f998e631dd171d0a1e5542f"
+      },
+      {
+        "from": "data-collection/generation1003-review-final-suite.log",
+        "to": "data-collection/receipts/generation-owned-process-recovery-1003/raw-logs/generation1003-review-final-suite.log",
+        "sha256": "96fb42cd307bc28a893033ce016f6fa5e3c0d4cb6b7b71b140f69f2782e5b0cf"
+      },
+      {
+        "from": "data-collection/generation1003-review-fix-final.log",
+        "to": "data-collection/receipts/generation-owned-process-recovery-1003/raw-logs/generation1003-review-fix-final.log",
+        "sha256": "ae32c94c67c89c2847a6bc395aa5466f19b48b1b3faf24b6a51257e60e98990c"
+      },
+      {
+        "from": "data-collection/generation1003-review-fix-suite.log",
+        "to": "data-collection/receipts/generation-owned-process-recovery-1003/raw-logs/generation1003-review-fix-suite.log",
+        "sha256": "78ddd36bada9fab6ffa797c5e7370284688e8d95ed7509bec7f77974f5c3786f"
+      },
+      {
+        "from": "data-collection/generation1003-review-fix-tests.log",
+        "to": "data-collection/receipts/generation-owned-process-recovery-1003/raw-logs/generation1003-review-fix-tests.log",
+        "sha256": "311ba734b44d9829f870aa9b414345b909dfa784da33e96f26f6d3ed8eb208b4"
+      },
+      {
+        "from": "data-collection/generation1003-review-kuafu-receive.log",
+        "to": "data-collection/receipts/generation-owned-process-recovery-1003/raw-logs/generation1003-review-kuafu-receive.log",
+        "sha256": "680e8327600ad2226d07d2f4da8f84c4d879da3a743a513ea00d8957c8488271"
+      }
+    ]
+  },
+  "final_auxiliary_review": {
+    "reviewer": "/root/sinan_842f663439fe6bd0",
+    "verdict": "approved",
+    "sha256": "f123ee7327c7244659ff778eeafd98c95cd76428bc7d9bb6a7c4c97ddb0a9956",
+    "scope": "11 exact implementation hashes, 9 byte-preserved private raw logs, source/index equality, exact rebuilt binary and all 77 installed bundle files; 4 real headless runs"
+  }
+}

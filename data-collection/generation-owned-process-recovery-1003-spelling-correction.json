@@ -1,0 +1,44 @@
+{
+  "request_id": "generation-owned-process-recovery-20261113",
+  "issue_number": 1003,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+  "correction": "PR1010 exact CI 43302770346 codespell failed on module docstring signalled. Replaced only with signaled; AST excluding module docstring identical. Prior committed receipts preserved.",
+  "source": {
+    "file": "tools/ainative/owned_process.py",
+    "line": 7,
+    "before": "signalled",
+    "after": "signaled",
+    "only_tracked_change": true,
+    "exact_bytes_are_single_word_replacement": true,
+    "ast_excluding_module_docstring_identical": true,
+    "before_sha256": "026b776fb92d38968afacf4c93ae19b2b263783a3b668e59397e05cae09f4b19",
+    "after_sha256": "ea63942861a60b032b43b1412ec47437b6a29da2abbe5e52857b7900078b3ccf"
+  },
+  "native": {
+    "state": "passed",
+    "runs": 4,
+    "all_successful": true,
+    "editor_sha256": "714e33aa91f1e3fc56bba82428a8044522602345af71322f8a95a2a4457eb72e",
+    "actual_binary_digest_verified": true,
+    "bundle_version": "27cc0b1079aa2cbb243a74212a357b52f88d070297896006f6330d87f6acb3a3",
+    "all_bundle_files_match_source_and_native_observation": 77,
+    "bundle_changed_files": [
+      "tools/owned_process.py"
+    ],
+    "private_report_sha256": "02676e9c8a9507da910e4349fe74f97c1fa3b5a43f70d0b11f7eff6441c53dce",
+    "incremental_build_log_sha256": "92bd4243d15530766978188dc52fc82a98ce26d266313da9f2bd4c210c5d4bdb",
+    "build_completed": true
+  },
+  "independent_review": {
+    "worker": "/root/sinan_842f663439fe6bd0",
+    "sha256": "4000572c7b1f9a6ace08101c71b14f896dba248d9f4adbfe008d26c9764c4cf5",
+    "disposition": "approved_docstring_correction_and_bound_native_evidence"
+  },
+  "limits": [
+    "Read-only evidence check of root-executed macOS native runs; no new native execution or broad suite rerun was required for this docstring-only change.",
+    "No Windows kernel, real model, paid inference, account or remote acceptance claim.",
+    "CI run 43302770346 codespell failure is root-provided context; this review verifies the correction and its byte/AST/native bindings, not remote rerun completion.",
+    "New correction receipt, CI completion, main delivery and Issue closure remain root delivery work."
+  ],
+  "incident": "fa212642632efb0301b5c5337889e1fc523d1ce935818c7f12d8769b56a85900"
+}

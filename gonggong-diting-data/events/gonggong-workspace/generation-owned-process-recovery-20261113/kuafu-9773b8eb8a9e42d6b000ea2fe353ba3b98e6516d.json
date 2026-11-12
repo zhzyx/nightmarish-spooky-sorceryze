@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9773b8eb8a9e42d6b000ea2fe353ba3b98e6516d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "generation-owned-process-recovery-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "686f4cdc186b7efcaba3f097ae99cf0e3811541392b42517fb3f341d2a634d36",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+    "action": "validation",
+    "detection_head": "c75438f4da4df9c87b7b6b5a43f603a58f373c18",
+    "context_sha256": "20ec446eac7c199b7250f3d9350955928140f1aa96a121e55f9112040ab7132a",
+    "operator": "Sail-Li",
+    "worker": "/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43304937567/job/131485591710",
+    "diagnosis": "Product spelling was corrected; codespell now rejects the exact original spelling quoted in two immutable correction records. Preserve their bytes and narrowly exclude only these two historical evidence paths using the existing repository convention. Product code remains checked.",
+    "next_action": "Independent review exact two-path exclusion and verify codespell before replacement candidate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T20:56:21.604720+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T20:56:32.960333+00:00",
+  "sha256": "672456cb460c343fa33a9564b2e9e27bf8862dc33f234950fc611974e5579fba"
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "request-generation-owned-process-recovery-20261113",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "generation-owned-process-recovery-20261113",
+  "kind": "request",
+  "occurred_at": "2026-11-12T20:40:19.825961+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "authorization": "codex-user-ai-github-integration-refactor-20261112",
+    "issue_number": 1003,
+    "path_base": "repository_root",
+    "design": "design-docs/generation-owned-process-recovery-20261113.md",
+    "recording_note": "Late explicit request-event recording for already authorized original scope; existing dispatch/validation events preserved, not a new authorization",
+    "observed_model": null,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "c35222327c0ead788a69b1a2be37693548b79adecaa22473a4d2160a914ede05"
+}

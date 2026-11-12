@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-22c0b536df84067cf7c46f38de2673767a078234",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "generation-owned-process-recovery-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "38ebecd7f3f260fc470153f18ab9e4787640a946bf83c159b19da8915838eb27",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+    "action": "delivery",
+    "detection_head": "69a7a624a6d0f932bf02ebcc33d60427193629f3",
+    "context_sha256": "20ec446eac7c199b7250f3d9350955928140f1aa96a121e55f9112040ab7132a",
+    "operator": "Sail-Li",
+    "worker": "/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+    "diagnosis": "Formal gate correctly rejected evidence binding: author receipt issue field is a hash-formatted string, while new native review receipt omitted request_id. Added exact stable request_id to new uncommitted native receipt with numeric issue_number and issue_url. Implementation and reviewed hashes unchanged.",
+    "next_action": "Restage exact evidence and new assessment, rerun formal submission then exact CI and main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T20:30:14.822689+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T20:31:52.746992+00:00",
+  "sha256": "ab38f1f58e1c87edc95e0a52c775c063536e4cadbf607edc2bbd9c8f19c461a2"
+}

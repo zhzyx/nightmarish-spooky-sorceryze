@@ -5,10 +5,33 @@ import json
 from pathlib import Path
 
 
+def _source_path(source):
+    # SCons Nodes can stringify relative to the active SConscript directory.
+    return Path(source.get_abspath()) if hasattr(source, "get_abspath") else Path(str(source))
+
+
+def bundle_sources(sources):
+    """Close the host-tool dependency graph before SCons records its inputs."""
+    sources = list(sources)
+    selected = {_source_path(source).resolve() for source in sources}
+    for source in list(sources):
+        path = _source_path(source)
+        if path.name != "owned_process.py":
+            continue
+        folder = path.parent
+        if folder.name == "ainative" and folder.parent.name == "tools":
+            folder = folder.parent
+        helper = folder / "editor_provenance_process.py"
+        if helper.resolve() not in selected:
+            sources.append(str(helper.resolve()))
+            selected.add(helper.resolve())
+    return sources
+
+
 def bundle_files(sources):
     files = {}
-    for source in sources:
-        path = Path(str(source))
+    for source in bundle_sources(sources):
+        path = _source_path(source)
         text = path.read_text(encoding="utf-8")
         if path.suffix == ".gd":
             # Sibling references work in both the installed editor bundle and

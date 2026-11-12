@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c445421770d6d36c8cde8e483fe81a9e6f4755c3",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "generation-owned-process-recovery-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ed44fe65effe69e711217ef473b8448d944461237b8b8515dc5407116b8fe513",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+    "action": "validation",
+    "detection_head": "308bc83c19ae7cd1811496cca0e7062e6b30dab0",
+    "context_sha256": "680e8327600ad2226d07d2f4da8f84c4d879da3a743a513ea00d8957c8488271",
+    "operator": "Sail-Li",
+    "worker": "/root/sinan_6d39b3ab904e5da2",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+    "diagnosis": "Independent review deterministically reproduces missing Windows Job helper in flattened embedded bundle and retained launch return before output observation.",
+    "next_action": "Include actual shared helper in SCons dependency closure and bundle, resolve fingerprint/load consistently; synchronize pipe observation with output pumping before returning retained launch; same reviewer rechecks exact new source.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T20:08:58.350908+00:00",
+    "attempted": null,
+    "repair_owner": "/root/sinan_6d39b3ab904e5da2",
+    "continuable": "Authorized isolated source and synthetic tests continue; no paid models or deployment."
+  },
+  "occurred_at": "2026-11-12T20:09:40.364602+00:00",
+  "sha256": "cccaf90a44532030b181bfbd7334776e3ed676a617d4b3e7929267457ced0b4c"
+}
