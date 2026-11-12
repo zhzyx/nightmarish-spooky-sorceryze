@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-611f2025c29ca988a82fc24bdaff49407b386246",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-model-adjust-node-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e37dae913e73b94be775d3db34d3da1c22868fbe85147450d909fd58cc06dea9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/926",
+    "action": "delivery",
+    "detection_head": "df490bf6daee43f090f2af2cc4da7329271e1e37",
+    "context_sha256": "bcfd8e23fe61a8b7ccb38fbdbd11de8a025fbd660b326710e85cbd8230fb986d",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-kaiyunxue",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/936",
+    "diagnosis": "writer_submit 在提交前的 main Git fetch 因 github.com:443 连接失败停止，未创建提交或 PR。使用同一本地正式门禁、GitHub API 相同内容树与签名提交链完成 PR #936，未绕过 Issue、CI 或分支保护。检查通过后合入 main=8789801187f2054c377550709c9f9900503cdd01。",
+    "next_action": "提交两条事故的恢复事件及配套验证，回读 main 后关闭 #926 和 #913。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T11:08:08.672927+00:00",
+    "attempted": "同一受信 Git 命令诊断确认连接失败；改用 API 仅作传输替代，门禁、签名、PR 检查及 main 回读均保留。",
+    "repair_owner": "kimi-work-kaiyunxue 已完成 API 传输恢复及合入核验。",
+    "continuable": "Git 传输故障已有完整恢复回执；剩余为事件提交和关单。"
+  },
+  "occurred_at": "2026-11-12T11:40:39.668569+00:00",
+  "sha256": "804ab9bfcf34fde9e5dfb955b386d376c0efca244ee5086b242df3c5692dbbc9"
+}
