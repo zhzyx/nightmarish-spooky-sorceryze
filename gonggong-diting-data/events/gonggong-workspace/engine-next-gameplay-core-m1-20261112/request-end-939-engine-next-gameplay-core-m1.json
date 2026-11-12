@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "request-end-939-engine-next-gameplay-core-m1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-gameplay-core-m1-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T16:28:04Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/939",
+  "agent": {
+    "id": "kimi-work-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "001b75e999158305bfc9f66c7b071cfe07f769b480088fc863e0e646d44be541",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "action": "complete_acceptance_and_close",
+    "issue_number": 939,
+    "state": "done",
+    "scope": "Both PRs merged. Independent C++17 core, Godot compatibility adapters, dual-platform CI, full Gameplay regression, API structure, native rollback and main readback are complete; broader next_runtime scope remains excluded.",
+    "delivery": {
+      "path": "data-collection/engine-next-gameplay-core-m1-delivery-20261112.json",
+      "sha256": "59184234f336d6ef4a82a84ea90fe6ff5359a7170f82ea6fe35193e75eba3d84"
+    },
+    "design": {
+      "path": "design-docs/engine-next-gameplay-core-m1-20261112.md",
+      "sha256": "f85d2948e9ab0c4dfa40e3a7ffd75b7cd9a11604b10f513b375c045d08f6ad52"
+    },
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage in host receipt"
+  },
+  "evidence_refs": [
+    "request-939-engine-next-gameplay-core-m1",
+    "step-939-godot-adapter-verified"
+  ],
+  "sha256": "930713e77aaed63b16fdc3d0c6f8c3b25e4f21ea30b25555896d7b62d11b90a4"
+}

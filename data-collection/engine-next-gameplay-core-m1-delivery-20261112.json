@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "delivery",
+  "request_id": "engine-next-gameplay-core-m1-20261112",
+  "issue": 939,
+  "recorded_at": "2026-11-12T16:28:04Z",
+  "main": "b720e9c582678c1e13481d5e898676218aa6c5de",
+  "pull_requests": [
+    {
+      "number": 970,
+      "signed_head": "890f765f76b11f226462b289ce251e410341ae7f",
+      "merge_commit": "309a77fadc74ad9e47df42b4c2b719970b3a7cd0",
+      "merged_at": "2026-11-12T15:28:54Z",
+      "scope": "Independent Engine Next Gameplay core, tests, build contract, CI and legacy golden"
+    },
+    {
+      "number": 983,
+      "signed_head": "2d72409bd37d505757cc9dec106435aa93ebbd87",
+      "merge_commit": "b720e9c582678c1e13481d5e898676218aa6c5de",
+      "merged_at": "2026-11-12T16:18:26Z",
+      "scope": "Godot compatibility adapters, SCsub integration and full Gameplay regression"
+    }
+  ],
+  "main_checks": {
+    "windows_msvc": "SUCCESS, actions/job/131318580435",
+    "macos_clang": "SUCCESS, actions/job/131318579488",
+    "static_checks": "SUCCESS, actions/job/131318580526",
+    "windows_editor": "SUCCESS, actions/job/131318964531"
+  },
+  "final_acceptance": {
+    "standalone": "12 tests and 200131 checks passed in build and clean directories; sources_passed and link_passed",
+    "godot_gameplay": "28 cases and 4835 assertions passed, including shared golden, overflow behavior and real ENet integration",
+    "api": "All four API structures identical to the baseline; make_rst reported no XML warning or error",
+    "native_rollback": "Changed default produced checksum 3344215809; restored default produced 3325757522 with full regression passing",
+    "performance": "Legacy model/buffer medians 10931/250816 us; final Godot adapter 5946/177944 us; standalone 4907/164486 us",
+    "static_validation": "Ruff, clang-format, CODEOWNERS, include validation and codespell passed without bulk formatting legacy files"
+  },
+  "acceptance_items": [
+    {"id": "independent-cpp17", "state": "done", "evidence": "data-collection/engine-next-gameplay-core-m1-verification-20261112-r6.json"},
+    {"id": "windows-macos-build", "state": "done", "evidence": "PRs 970/983 and main checks"},
+    {"id": "required-sources-and-link", "state": "done", "evidence": "build/engine_next/clang-release/LinkManifest.json and dedicated CI"},
+    {"id": "legacy-differential", "state": "done", "evidence": "Shared PredictionTrace golden and 23 targeted assertions"},
+    {"id": "godot-api-regression", "state": "done", "evidence": "28 cases, 4835 assertions and four identical API structures"},
+    {"id": "determinism-errors-performance", "state": "done", "evidence": "Clean-run trace, transactional overflow and paired benchmarks"},
+    {"id": "build-impact-rollback", "state": "done", "evidence": "data-collection/engine-next-gameplay-core-m1-build-impact-r6.json"},
+    {"id": "gates-ci-main-issue", "state": "done", "evidence": "Formal gates, committed-data checks, exact candidate CI, main readback and this delivery record"}
+  ],
+  "not_in_scope": [
+    "Complete next_runtime executable, renderer, GDScript, scene format or editor",
+    "GameplayClientPrediction, GameplayServerPrediction, GameplayNetworkPrediction or MultiplayerPeer migration",
+    "Session, World, ReplicationGraph or Relevancy migration",
+    "Bit-identical behavior with a double-precision Godot real_t build"
+  ],
+  "usage": null,
+  "usage_unknown_reason": "No measured model usage in host receipt"
+}
