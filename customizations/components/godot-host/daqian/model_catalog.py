@@ -37,10 +37,24 @@ def database(folder=None):
     db.execute(
         "CREATE TABLE IF NOT EXISTS evaluations(id TEXT NOT NULL, task TEXT NOT NULL, scope TEXT NOT NULL, score REAL, evidence TEXT NOT NULL, PRIMARY KEY(id,task,scope))"
     )
+    db.execute(
+        "CREATE TABLE IF NOT EXISTS credential_revisions(id TEXT PRIMARY KEY, revision TEXT NOT NULL, ready INTEGER NOT NULL)"
+    )
     return db
 
 
+def credential_revision(db, profile_id):
+    row = db.execute("SELECT revision, ready FROM credential_revisions WHERE id=?", (profile_id,)).fetchone()
+    if row and not row[1]:
+        raise ValueError("凭据正在保存或上次保存未完成，请重新保存后验证")
+    return row[0] if row else ""
+
+
 def add(db, config, key, vault=secret):
+    return _save_profile(db, config, key, vault)[0]
+
+
+def _save_profile(db, config, key, vault, *, only_if_missing=False):
     if set(config) != {"name", "model", "endpoint", "protocol"} or not all(
         isinstance(v, str) and v.strip() == v and v and len(v) <= 2048 for v in config.values()
     ):
@@ -51,12 +65,29 @@ def add(db, config, key, vault=secret):
     if config["protocol"] == "gemini-generate-content" and "{model}" not in config["endpoint"]:
         raise ValueError("Gemini 接口地址需要 {model} 占位符")
     key_id = identity(config)
-    if not key:
-        raise ValueError("请提供本机凭据")
-    vault(key_id, key)
+    revision = secrets.token_hex(16)
+    # Publish a durable pending generation before touching the external vault.
+    # Readers reject pending credentials; an in-flight probe cannot revive old
+    # proof. Failed external writes stay pending until an explicit save retries.
     with db:
+        db.execute("BEGIN IMMEDIATE")
+        if only_if_missing:
+            if db.execute("SELECT 1 FROM profiles WHERE id=?", (key_id,)).fetchone():
+                return key_id, False
+            credential_revision(db, key_id)
+        if not key:
+            raise ValueError("请提供本机凭据")
+        db.execute("DELETE FROM evaluations WHERE id=? AND scope='live'", (key_id,))
+        db.execute("INSERT OR REPLACE INTO credential_revisions VALUES(?,?,0)", (key_id, revision))
+    with db:
+        db.execute("BEGIN IMMEDIATE")
+        current = db.execute("SELECT revision FROM credential_revisions WHERE id=?", (key_id,)).fetchone()
+        if current != (revision,):
+            raise ValueError("凭据配置已被另一次保存更新，请重新回读")
+        vault(key_id, key)
         db.execute("INSERT OR IGNORE INTO profiles VALUES(?,?)", (key_id, json.dumps(config, ensure_ascii=False)))
-    return key_id
+        db.execute("UPDATE credential_revisions SET ready=1 WHERE id=? AND revision=?", (key_id, revision))
+    return key_id, True
 
 
 # Only a provider's explicit model and matching credential are imported.
@@ -100,13 +131,8 @@ def connect_local(db, settings, vault=secret):
             continue
         config = {"name": label, "protocol": protocol, "endpoint": url, "model": model}
         try:
-            with db:
-                db.execute("BEGIN IMMEDIATE")
-                if db.execute("SELECT 1 FROM profiles WHERE id=?", (identity(config),)).fetchone():
-                    row["existing"] = 1
-                else:
-                    add(db, config, key, vault)
-                    row["added"] = 1
+            _, added = _save_profile(db, config, key, vault, only_if_missing=True)
+            row["added"], row["existing"] = int(added), int(not added)
             row["models"] = [model]
             row["candidate"] = identity(config)
         except (ValueError, OSError):
@@ -128,13 +154,8 @@ def connect_local(db, settings, vault=secret):
         sources.append(row)
         try:
             endpoint(url)
-            with db:
-                db.execute("BEGIN IMMEDIATE")
-                if db.execute("SELECT 1 FROM profiles WHERE id=?", (identity(config),)).fetchone():
-                    row["existing"] = 1
-                else:
-                    add(db, config, settings.get("editor_key", ""), vault)
-                    row["added"] = 1
+            _, added = _save_profile(db, config, settings.get("editor_key", ""), vault, only_if_missing=True)
+            row["added"], row["existing"] = int(added), int(not added)
             row["candidate"] = identity(config)
         except (ValueError, OSError) as error:
             row["note"] = str(error) if isinstance(error, ValueError) else "系统凭据存储写入失败"
@@ -142,11 +163,25 @@ def connect_local(db, settings, vault=secret):
 
 
 def connect_and_verify(db, settings):
+    selected_backend = settings.get("backend", "")
+    selected_source = {"0": "AI Chat", "1": "CodeBuddy", "2": "Codex", "3": "AI Chat"}.get(selected_backend)
+    if selected_backend and selected_source is None:
+        raise ValueError("当前连接方式无效，请重新选择后验证")
     sources = connect_local(db, settings)
     registered = profiles(db)
     proven = {row["id"] for row in sinan_catalog(db, ["text"])}
-    preferred = {"0": "AI Chat", "1": "CodeBuddy", "2": "Codex", "3": "AI Chat"}.get(settings.get("backend"))
-    for row in sorted(sources, key=lambda source: source["name"] != preferred):
+    # Discovery may enumerate every source, but an explicit connection choice
+    # authorizes verification of that source only, including on failure.
+    candidates = [row for row in sources if row["name"] == selected_source] if selected_source else sources
+    if selected_source and not candidates:
+        sources.append({
+            "name": selected_source,
+            "candidate": "",
+            "added": 0,
+            "existing": 0,
+            "note": "当前选择的连接尚未配置完整，请填写模型、接口地址和凭据后重试",
+        })
+    for row in candidates:
         candidate = row.get("candidate")
         if candidate not in registered:
             continue
@@ -156,10 +191,20 @@ def connect_and_verify(db, settings):
             break
         challenge = "DAQIAN-" + secrets.token_hex(8)
         try:
+            revision = credential_revision(db, candidate)
             response = invoke(registered[candidate], "Reply only with this exact string: " + challenge, [])
             if response["text"].strip() != challenge:
                 raise ValueError("验证回复与预期不符")
-            record_evaluation(db, candidate, "text", "live", True, [True], identity([candidate, challenge]))
+            record_evaluation(
+                db,
+                candidate,
+                "text",
+                "live",
+                True,
+                [True],
+                identity([candidate, challenge]),
+                expected_revision=revision,
+            )
             row["note"] = f"{model} · 文本验证通过，可用于任务"
             break
         except (ValueError, OSError) as error:
@@ -171,7 +216,7 @@ def profiles(db):
     return {i: json.loads(config) for i, config in db.execute("SELECT id,config FROM profiles ORDER BY id")}
 
 
-def record_evaluation(db, profile_id, task, scope, qualified, outcomes, evidence):
+def record_evaluation(db, profile_id, task, scope, qualified, outcomes, evidence, *, expected_revision=None):
     """Called by the running evaluation harness, after comparing expected/observed outputs."""
     if (
         profile_id not in profiles(db)
@@ -182,13 +227,17 @@ def record_evaluation(db, profile_id, task, scope, qualified, outcomes, evidence
         raise ValueError("评测必须关联确切配置、范围与证据")
     if not all(type(v) is bool for v in outcomes):
         raise ValueError("评测结果无效")
-    if not qualified:
-        with db:
-            db.execute("DELETE FROM evaluations WHERE id=? AND task=? AND scope=?", (profile_id, task, scope))
-        return
     score = sum(outcomes) / len(outcomes) if outcomes else None
     with db:
-        db.execute("INSERT OR REPLACE INTO evaluations VALUES(?,?,?,?,?)", (profile_id, task, scope, score, evidence))
+        db.execute("BEGIN IMMEDIATE")
+        if scope == "live" and (expected_revision is None or credential_revision(db, profile_id) != expected_revision):
+            raise ValueError("凭据已更新，旧验证结果已失效，请重新验证")
+        if not qualified:
+            db.execute("DELETE FROM evaluations WHERE id=? AND task=? AND scope=?", (profile_id, task, scope))
+        else:
+            db.execute(
+                "INSERT OR REPLACE INTO evaluations VALUES(?,?,?,?,?)", (profile_id, task, scope, score, evidence)
+            )
 
 
 def sinan_catalog(db, tasks, scope="live", preferred=""):
