@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b9b32451bec63d1093d927f31bd4c7a8611196ca",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-priest-face-fidelity-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/944",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "4e4f7459cafbfe7ec0a5925bd5f6178cb687ff113bf1f2676d35ece3e53dd1a0",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/944",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/944",
+    "action": "user-report",
+    "detection_head": "bb4d0d5565a33547b50490baa61d39b23cb41e89",
+    "context_sha256": "e1550916f1f2273c4b9519c00650133927cbbce5b5549014fa2254916f308262",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-kaiyunxue",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/944",
+    "evidence": "data-collection/maliang-priest-face-fidelity-20261112-validation.json",
+    "diagnosis": "用户实测脸型偏离与脸颊异常成立。原三视图面部参考有限，严格零面积和法线缺失均为 0，宽泛微三角形阈值不能当破洞。高清头部任务 e7a0f650-6611-48b4-9452-2f0f625decb3 改善面部；独立衔接修正索引和材质映射；decimate 任务 407a808c-4a7f-48ee-8a65-f0322e3b200d 最终 635471 顶点、1200135 三角形、39638180 bytes，原生近景和保存重开通过。",
+    "next_action": "提交当前人物的修复验证与模板证据。仅宣称该样例改善，不承诺通用自动头部替换、完美相似或生产无缝拓扑。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T12:14:00.975651+00:00",
+    "attempted": "正脸和斜侧面渲染、严格几何统计、独立头部生成、头身比例与材质衔接、减面、模板恢复及原生保存重开。",
+    "repair_owner": "kimi-work-kaiyunxue 已完成当前人物的专项修复并保留原文件。",
+    "continuable": "修复版引擎已打开且未自动提交新任务；证据 PR 和关单可继续。"
+  },
+  "occurred_at": "2026-11-12T13:14:46.843801+00:00",
+  "sha256": "eb751dbb69e1db4e0c7ffb30654624a448f2f76aadb7a19c40471144cc008690"
+}
