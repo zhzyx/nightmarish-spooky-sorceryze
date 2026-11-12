@@ -1,0 +1,289 @@
+{
+  "schema_version": 1,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "request_id": "game-production-goal-20261111",
+  "state": "main932_installed_consumers_verified_parent_open",
+  "engine_delivery": {
+    "pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/932",
+    "signed_head": "1271bb356d070fa4dd23fbaf448789268a535806",
+    "main": "23412df4cff43f3579adb90524a396d2a4b9e82f",
+    "merged_at": "2026-11-12T11:11:52Z",
+    "checks": [
+      {
+        "name": "issue-association",
+        "conclusion": "SUCCESS"
+      },
+      {
+        "name": "📊 Static checks / Code style, file formatting, and docs",
+        "conclusion": "SUCCESS"
+      },
+      {
+        "name": "📊 Static checks / Code style, file formatting, and docs",
+        "conclusion": "SUCCESS"
+      },
+      {
+        "name": "🤖 Android",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🤖 Android",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🍏 iOS",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🍏 iOS",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🐧 Linux",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🐧 Linux",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🍎 macOS",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🍎 macOS",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "Compile affected Windows engine targets",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "Compile affected Windows engine targets",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "Compile affected Metal targets",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "Compile affected Metal targets",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🌐 Web",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🌐 Web",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🏁 Windows",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🏁 Windows / Editor (target=editor)",
+        "conclusion": "SUCCESS"
+      }
+    ]
+  },
+  "installation": {
+    "main": "23412df4cff43f3579adb90524a396d2a4b9e82f",
+    "files": [
+      {
+        "bytes": 242688,
+        "sha256": "9ba6ff6860fe2d47fc6a7df5c1537697ee55f4b150ec85a20e626535e21982da",
+        "path": "bin/godot.windows.editor.x86_64.console.exe"
+      },
+      {
+        "bytes": 176509952,
+        "sha256": "794d977a65c9c6e5f5ec818825d10218368b90b0a151d0e511e423c0c40ee2a7",
+        "path": "bin/godot.windows.editor.x86_64.exe"
+      },
+      {
+        "bytes": 67422,
+        "sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+        "path": "bin/tianshu-ui.json"
+      }
+    ],
+    "build_receipt_sha256": "fe458fa56273846c2534e93a877ed7207360b1a34eeb7e05ae0676ddbb96f23b",
+    "source_digest": "8ff16eb4f58e4bd3880bf057d822cd5fbb18846c648e44cf2106eaa44339bdd1",
+    "clean_source": true,
+    "aichat_cases_passed": 90,
+    "aichat_assertions_passed": 1672,
+    "build_log_sha256": "e56ff96d34c838cfadae85a144d42583eb964b02d93fcaeda0d27c4e86987eec",
+    "installer_log_sha256": "993f56f05a5700526678e298a6ef63c9e8abf90b1258f4871d4c1c50cff1b1dc",
+    "owned_acceptance_installation_update_sha256": "8622215bfda955de86a094f1e002b7f4e3b67d9eae105489c9b82c2d5ad56dc2"
+  },
+  "bracket916": {
+    "native_cases_passed": 2,
+    "native_assertions_passed": 38669,
+    "native_log_sha256": "809b4a59b1e504644a9e1a7135fe2cf2be31d6f915e158c49dc74e5a24056299",
+    "ui": {
+      "installed932-bracket-ui": {
+        "process": {
+          "ok": true,
+          "exit_code": 0,
+          "binary_sha256": "9ba6ff6860fe2d47fc6a7df5c1537697ee55f4b150ec85a20e626535e21982da",
+          "binary_files": {
+            "godot.windows.editor.x86_64.console.exe": "9ba6ff6860fe2d47fc6a7df5c1537697ee55f4b150ec85a20e626535e21982da",
+            "godot.windows.editor.x86_64.exe": "794d977a65c9c6e5f5ec818825d10218368b90b0a151d0e511e423c0c40ee2a7"
+          },
+          "input_file_sha256": "748ed62cf985f36c3c5dba0dd398182103f83a4224dca5b1fb37985ad98fa08c"
+        },
+        "result_sha256": "cc3657bb434d2f13c66faf4f9f8215613e274ce8d8488d66aeffa34d5c024b99",
+        "cases": [
+          {
+            "case": 0,
+            "characters": 1047,
+            "lines": 16,
+            "sha256": "fda688ff83941523b4e2a58b1dab6fb1e8e002b7b72b177a380bdda0dff4205a",
+            "surface": "TextEdit"
+          },
+          {
+            "case": 1,
+            "characters": 17,
+            "lines": 1,
+            "sha256": "9eefbe06a48ed83cceeb19a82254d99bcbc2e9eac386e674c789702e675161c8",
+            "surface": "TextEdit"
+          },
+          {
+            "case": 2,
+            "characters": 16200,
+            "lines": 579,
+            "sha256": "4baff1c181a0760ae6608da48c1d3726aa7e498350aea24cee9028593a3732b5",
+            "surface": "TextEdit"
+          },
+          {
+            "case": 3,
+            "characters": 35,
+            "lines": 2,
+            "sha256": "0d10218c77b52e58ecc8dd1ae30435f911fb1d13a7389d2ad3f22cf7f874891c",
+            "surface": "TextEdit"
+          },
+          {
+            "case": 0,
+            "characters": 1047,
+            "lines": 16,
+            "sha256": "fda688ff83941523b4e2a58b1dab6fb1e8e002b7b72b177a380bdda0dff4205a",
+            "surface": "RichTextLabel"
+          },
+          {
+            "case": 1,
+            "characters": 17,
+            "lines": 1,
+            "sha256": "9eefbe06a48ed83cceeb19a82254d99bcbc2e9eac386e674c789702e675161c8",
+            "surface": "RichTextLabel"
+          },
+          {
+            "case": 2,
+            "characters": 16200,
+            "lines": 541,
+            "sha256": "4baff1c181a0760ae6608da48c1d3726aa7e498350aea24cee9028593a3732b5",
+            "surface": "RichTextLabel"
+          },
+          {
+            "case": 3,
+            "characters": 35,
+            "lines": 2,
+            "sha256": "0d10218c77b52e58ecc8dd1ae30435f911fb1d13a7389d2ad3f22cf7f874891c",
+            "surface": "RichTextLabel"
+          }
+        ]
+      },
+      "installed932-original-ui": {
+        "process": {
+          "ok": true,
+          "exit_code": 0,
+          "binary_sha256": "9ba6ff6860fe2d47fc6a7df5c1537697ee55f4b150ec85a20e626535e21982da",
+          "binary_files": {
+            "godot.windows.editor.x86_64.console.exe": "9ba6ff6860fe2d47fc6a7df5c1537697ee55f4b150ec85a20e626535e21982da",
+            "godot.windows.editor.x86_64.exe": "794d977a65c9c6e5f5ec818825d10218368b90b0a151d0e511e423c0c40ee2a7"
+          },
+          "input_file_sha256": "2eba29140c782c77cf0e4f79bc86688c7c1730930e846fd6b3842083e359419d"
+        },
+        "result_sha256": "ecb8800d28e865d285061c5e9cd7a8aabd31842994f96f4cce116fde8f156d84",
+        "cases": [
+          {
+            "case": 0,
+            "characters": 11361,
+            "lines": 358,
+            "sha256": "9b1d98551b733f7779d98d9b8f6388a36e666a8034b6e8993fada3bb71e16a6b",
+            "surface": "TextEdit"
+          },
+          {
+            "case": 1,
+            "characters": 17,
+            "lines": 1,
+            "sha256": "9eefbe06a48ed83cceeb19a82254d99bcbc2e9eac386e674c789702e675161c8",
+            "surface": "TextEdit"
+          },
+          {
+            "case": 2,
+            "characters": 16200,
+            "lines": 579,
+            "sha256": "4baff1c181a0760ae6608da48c1d3726aa7e498350aea24cee9028593a3732b5",
+            "surface": "TextEdit"
+          },
+          {
+            "case": 3,
+            "characters": 35,
+            "lines": 2,
+            "sha256": "0d10218c77b52e58ecc8dd1ae30435f911fb1d13a7389d2ad3f22cf7f874891c",
+            "surface": "TextEdit"
+          },
+          {
+            "case": 0,
+            "characters": 11361,
+            "lines": 357,
+            "sha256": "9b1d98551b733f7779d98d9b8f6388a36e666a8034b6e8993fada3bb71e16a6b",
+            "surface": "RichTextLabel"
+          },
+          {
+            "case": 1,
+            "characters": 17,
+            "lines": 1,
+            "sha256": "9eefbe06a48ed83cceeb19a82254d99bcbc2e9eac386e674c789702e675161c8",
+            "surface": "RichTextLabel"
+          },
+          {
+            "case": 2,
+            "characters": 16200,
+            "lines": 541,
+            "sha256": "4baff1c181a0760ae6608da48c1d3726aa7e498350aea24cee9028593a3732b5",
+            "surface": "RichTextLabel"
+          },
+          {
+            "case": 3,
+            "characters": 35,
+            "lines": 2,
+            "sha256": "0d10218c77b52e58ecc8dd1ae30435f911fb1d13a7389d2ad3f22cf7f874891c",
+            "surface": "RichTextLabel"
+          }
+        ]
+      }
+    },
+    "scope": "Installed TextEdit and RichTextLabel tested with ordinary/first-growth/later-growth mixed-script brackets and original902 long Unicode input; exact installed binary hashes checked before and after. Source old-failure/fixed/full-suite evidence remains linked through prior reports."
+  },
+  "ordinary_game_delivery": {
+    "proof_sha256": "1af007686bcba7b7456d9bdc7aadff7b0130da93587334a1a97d1d7bc38d5a1e",
+    "binding": "Public work-order opening selected the correct original game Issue1; new ordinary review18 retained63actual tool receipts,0failed,source_unverified=false,business_accepted=null.",
+    "git": "Actual editor parent completed formal gate, committed check, signed PR and normal exact-head merge; independent root readback verified signature, matching tree, ancestry and remote main.",
+    "ci": "Private game has no configured Actions or checks; not configured/not run, never CI pass. Root corrected the applicable-CI decision before editor parent continued.",
+    "limits": [
+      "Original game Issue1 stays open; historical INT01preflight raw evidence is missing and cannot be backfilled.",
+      "INT06 headless editor geometry evidence is delivered, not pixel visual judgment. Git delivery occurred but does not alone approve every INT07business criterion.",
+      "Late context-binding change message is preserved. Root steering and public work-order opening were involved; no uninterrupted fully autonomous completion claim.",
+      "Postmerge game receipts are outside that delivered game tree; primary game working copy is not asserted synchronized to remote main."
+    ]
+  },
+  "remaining": [
+    "Cold restart and a different new requirement in the installed editor.",
+    "#896 actual new dependent production batch with persistent request/response and downstream registration evidence.",
+    "#891 original long-command actual tool execution; text input/layout alone is not execution.",
+    "Existing generated asset into actual game import, node reference and running consumer.",
+    "Native scene/script operations beyond currently tested whitelist: inspect advertised normal UI paths before claiming a missing implementation.",
+    "#559 specific unsupported subsets remain with original owner; no takeover or all-UI claim."
+  ],
+  "parent_complete": false
+}

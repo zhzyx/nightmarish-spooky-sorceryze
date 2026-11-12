@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1a9ad2aa240e5fe2ad531f82126e86fea743864f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "030904bc431d5743c816a99f688dbada1a54e5390fadd1e70d5f5f46f14bdf18",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "a3a2334a60ce56890418efdb7bd282e692fb76ae",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43208506835/job/131149705663",
+    "diagnosis": "Evidence-only PR935 failed the American-English spelling check. Corrected one word in the installed acceptance summary. No runtime or acceptance-fact changes. Initial raw assessment quotes the failing spelling and is retained in private receipts; this publication preserves the actual failure and correction without repeating the rejected token.",
+    "next_action": "Verify exact replacement evidence CI/main; close fully accepted916 while parent773 stays open. Installed checks are unchanged and need no rerun.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T11:26:21.048150+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": "Actual installed cold-start and long-command consumer verification continue."
+  },
+  "occurred_at": "2026-11-12T11:28:08.110177+00:00",
+  "sha256": "40d0166f0485be2dc8b28b85d92b8a27591dcf8f22ba75a75adc68107e5072d7"
+}

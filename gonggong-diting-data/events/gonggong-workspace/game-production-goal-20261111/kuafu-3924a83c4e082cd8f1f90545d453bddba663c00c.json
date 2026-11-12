@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3924a83c4e082cd8f1f90545d453bddba663c00c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c7e36791fea0366ec0caf979e4f9de559d0062711586eda1504affaa0981e9f4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "delivery",
+    "detection_head": "1e2254483695d37ea0ac6bd4e52094fd07d73296",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/935",
+    "diagnosis": "The formal gate rejects in-place modification of a collection report already committed in the failed source candidate. That candidate was never merged. Preserve failed PR935, original source branch and reviewed raw report; build a fresh isolated candidate from current trusted main containing the corrected new report and reviewed design changes. No existing main collection record is rewritten.",
+    "next_action": "Run the unchanged formal gate and signed submission on the new candidate, then verify exact CI/main before closing916. Preserve historical hashes and all original failure receipts.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T11:33:39.589559+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": "Other actual installed consumer checks remain independently executable."
+  },
+  "occurred_at": "2026-11-12T11:36:37.664000+00:00",
+  "sha256": "d5a79d6f766efc644dd58f2b11aaa744d07a6951e218910402e871a835ebc2fe"
+}

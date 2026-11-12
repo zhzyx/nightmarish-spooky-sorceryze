@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c5724f63869467213605bcfc3f66379bc9755ef2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "125fdb17d5a5ae3c3ce40a990bc6e0caa7dde409d1b0090d1477a6bdcb289a74",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "delivery",
+    "detection_head": "f8f9bbc9eb7243616ad6200df0de6e468da46267",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/compare/2432af5ea0a7bc74fe995c785d3dd723c4326a6f..8789801187f2054c377550709c9f9900503cdd01",
+    "diagnosis": "Retry found main advanced from2432af5e to87898011. Two upstream documentation/evidence files changed without candidate overlap; clean own source was rebased. Installed932 evidence still names actual23412df4 binaries; no new build or runtime verification is inferred.",
+    "next_action": "Sign current rebased exact candidate, verify real static/association CI and main receipt, then close916 while parent773 remains open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T11:41:11.343106+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": "Installed editor consumer acceptance continues independently."
+  },
+  "occurred_at": "2026-11-12T11:43:20.063378+00:00",
+  "sha256": "5bd826995d386d89c81e724918ca1d9673d143a73da10ab5f12f17c6b6335075"
+}
