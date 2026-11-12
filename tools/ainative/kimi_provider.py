@@ -1087,7 +1087,7 @@ class KimiNativeDirectProvider(ModelingProvider):
         self.finish(key, "succeeded", result=dict(schema_version=1, artifacts=[model]))
 
 
-_MODEL3D_WORKERS = []
+_MODEL3D_WORKERS: list[subprocess.Popen[bytes]] = []
 
 
 def _provider_class(config):
