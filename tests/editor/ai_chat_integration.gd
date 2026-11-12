@@ -53,7 +53,7 @@ func _chat_busy() -> bool:
 	return not root.find_child("AI Chat", true, false).find_child("Stop", true, false).disabled
 
 func _wait_idle(reject := false) -> bool:
-	var deadline = Time.get_ticks_msec() + 25000
+	var deadline = Time.get_ticks_msec() + (90000 if OS.get_environment("AI_CHAT_WINDOWS_COMMANDS") == "1" else 25000)
 	while _chat_busy() and Time.get_ticks_msec() < deadline:
 		var active_tab = agent_tabs.current_tab
 		for index in agent_tabs.tab_count:
@@ -126,8 +126,19 @@ func _check_workflow_session(dock: Node) -> bool:
 func _check_agent_sessions(dock: Node) -> bool:
 	return _check(_last_snapshot_button() == null and not dock.find_children("RestoreSessionSnapshot", "Button", true, false).is_empty(), "A second Agent must not inherit another Agent's local snapshots")
 
+func _command_pid_alive(pid: int) -> bool:
+	# OS.is_process_running only knows direct Godot children on Windows. The
+	# PowerShell child belongs to the real provenance guard, so query its handle.
+	var probe = "import ctypes,sys; k=ctypes.WinDLL('kernel32',use_last_error=True); k.OpenProcess.restype=ctypes.c_void_p; k.GetExitCodeProcess.argtypes=[ctypes.c_void_p,ctypes.POINTER(ctypes.c_ulong)]; k.CloseHandle.argtypes=[ctypes.c_void_p]; h=k.OpenProcess(0x1000,False,int(sys.argv[1])); c=ctypes.c_ulong(); alive=bool(h and k.GetExitCodeProcess(h,ctypes.byref(c)) and c.value==259); k.CloseHandle(h) if h else None; sys.exit(0 if alive else 1)"
+	return OS.execute(OS.get_environment("AI_CHAT_TEST_PYTHON"), ["-c", probe, str(pid)]) == 0
+
 func _phase(name: String, marker: String, reject := false) -> bool:
 	chat_input.text = "case:" + name
+	if OS.get_environment("AI_CHAT_WINDOWS_COMMANDS") == "1":
+		send_button.pressed.emit()
+		var idle = await _wait_idle(reject)
+		print("WINDOWS_COMMAND_PHASE ", name, " passed=", idle and marker in _chat_text())
+		return idle and _check(marker in _chat_text(), "Missing response marker: " + marker)
 	var code = KEY_ENTER if name == "workflow" else KEY_KP_ENTER
 	_chat_key(code)
 	if not _check(chat_input.text.is_empty() and "正在等待 AI" in progress_status.text, "Enter did not send and clear the input immediately"):
@@ -337,7 +348,7 @@ func _run_schedules(dock: Node) -> bool:
 	return true
 
 func _queue_wait(dock: Node) -> bool:
-	var deadline = Time.get_ticks_msec() + 25000
+	var deadline = Time.get_ticks_msec() + (90000 if OS.get_environment("AI_CHAT_WINDOWS_COMMANDS") == "1" else 25000)
 	while (_chat_busy() or (dock.get_meta("queued_message_count", 0) > 0 and not dock.get_meta("queue_paused", false))) and Time.get_ticks_msec() < deadline:
 		await process_frame
 	return _check(not _chat_busy(), "Queued operation did not finish")
@@ -555,7 +566,7 @@ func _run_cleanup():
 		dock.get_ai_settings_control().find_child("CLIModel", true, false).text = "mock-model"
 	chat_input.text = "case:cleanup_round"
 	send_button.pressed.emit()
-	var deadline = Time.get_ticks_msec() + 25000
+	var deadline = Time.get_ticks_msec() + (90000 if OS.get_environment("AI_CHAT_WINDOWS_COMMANDS") == "1" else 25000)
 	var saw_details = false
 	while _chat_busy() and Time.get_ticks_msec() < deadline:
 		if message_list.find_children("WorkProcess", "RichTextLabel", true, false).size() >= 2 and "已读取文件" in _chat_text():
@@ -925,7 +936,7 @@ func _run():
 	if not OS.get_environment("AI_CHAT_QUEUE_STAGE").is_empty():
 		quit(0 if await _run_message_queue(dock) else 1)
 		return
-	if not _check_chat_keys():
+	if OS.get_environment("AI_CHAT_WINDOWS_COMMANDS") != "1" and not _check_chat_keys():
 		quit(1)
 		return
 	var settings_page = root.find_child("UnifiedSettings", true, false) as Control
@@ -989,6 +1000,46 @@ func _run():
 			quit(1)
 			return
 		endpoint.text = configured_url
+	if OS.get_environment("AI_CHAT_WINDOWS_COMMANDS") == "1":
+		dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = true
+		for kind in ([] if OS.get_environment("AI_CHAT_WINDOWS_CANCEL_ONLY") == "1" else ["short", "near", "long", "throw", "timeout", "limit", "source"]):
+			if not await _phase("win_command_" + kind, kind.to_upper() + "_COMMAND_OK"):
+				quit(1)
+				return
+		chat_input.text = "case:win_command_cancel"
+		send_button.pressed.emit()
+		var marker = OS.get_environment("AI_CHAT_TEST_EXTERNAL").path_join("工作 ' quoted/started")
+		var deadline = Time.get_ticks_msec() + 90000
+		while not FileAccess.file_exists(marker) and Time.get_ticks_msec() < deadline:
+			await process_frame
+		if not _check(FileAccess.file_exists(marker), "Long cancellation command did not start"):
+			quit(1)
+			return
+		var command_pid = FileAccess.get_file_as_string(marker).to_int()
+		if not _check(command_pid > 0 and _command_pid_alive(command_pid), "Cancellation marker must identify the running PowerShell process"):
+			quit(1)
+			return
+		stop_button.pressed.emit()
+		deadline = Time.get_ticks_msec() + 20000
+		while _command_pid_alive(command_pid) and Time.get_ticks_msec() < deadline:
+			await create_timer(0.1).timeout
+		if not _check(not _command_pid_alive(command_pid), "Stopped command process is still alive"):
+			quit(1)
+			return
+		print("WINDOWS_COMMAND_CANCEL_PROCESS_EXITED")
+		if not await _phase("win_command_short", "SHORT_COMMAND_OK") or not _check(not FileAccess.file_exists(marker.get_base_dir().path_join("unexpected")), "Cancelled command continued"):
+			quit(1)
+			return
+		var system_root = OS.get_environment("SystemRoot")
+		OS.set_environment("SystemRoot", OS.get_environment("AI_CHAT_TEST_EXTERNAL").path_join("missing-system-root"))
+		var failed_safely = await _phase("win_command_failstart", "FAILSTART_COMMAND_OK")
+		OS.set_environment("SystemRoot", system_root)
+		if not failed_safely:
+			quit(1)
+			return
+		print("WINDOWS_COMMANDS_OK")
+		quit(0)
+		return
 	var filesystem = EditorInterface.get_resource_filesystem()
 	while filesystem.is_scanning():
 		await process_frame

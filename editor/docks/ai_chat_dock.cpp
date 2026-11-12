@@ -99,7 +99,46 @@
 #include <unistd.h>
 #endif
 
+#ifdef WINDOWS_ENABLED
+#include "platform/windows/os_windows.h"
+
+#include <windows.h>
+#endif
+
 namespace {
+#ifdef WINDOWS_ENABLED
+// The open handle owns the file, prevents replacement/writes and removes it even
+// when the editor exits. CREATE_NEW never opens or truncates a pre-existing path.
+class CommandScriptFile : public RefCounted {
+	HANDLE handle = INVALID_HANDLE_VALUE;
+
+public:
+	String path;
+	bool create(const String &p_script) {
+		for (int attempt = 0; attempt < 32; attempt++) {
+			path = OS::get_singleton()->get_temp_path().path_join("godot-command-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()) + "-" + itos(attempt) + ".ps1");
+			handle = CreateFileW((LPCWSTR)path.utf16().get_data(), GENERIC_READ | GENERIC_WRITE | 0x00010000 /* DELETE access; Godot undefines DELETE. */, FILE_SHARE_READ, nullptr, CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+			if (handle != INVALID_HANDLE_VALUE) {
+				break;
+			}
+			if (GetLastError() != ERROR_FILE_EXISTS && GetLastError() != ERROR_ALREADY_EXISTS) {
+				return false;
+			}
+		}
+		if (handle == INVALID_HANDLE_VALUE) {
+			return false;
+		}
+		const CharString bytes = p_script.utf8();
+		DWORD written = 0;
+		return WriteFile(handle, bytes.get_data(), bytes.length(), &written, nullptr) && written == DWORD(bytes.length()) && FlushFileBuffers(handle);
+	}
+	~CommandScriptFile() {
+		if (handle != INVALID_HANDLE_VALUE) {
+			CloseHandle(handle);
+		}
+	}
+};
+#endif
 Variant redact_snapshot_value(const Variant &p_value, const Callable &p_redact, int p_depth = 0, bool p_data_keys = false) {
 	// Keep typed message fields and JSON tool results valid. Redacting serialized
 	// JSON can replace boolean tokens when a credential happens to be "true".
@@ -3313,7 +3352,7 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 		Variant timeout = arguments.get("timeout_seconds", 600);
 		String error;
 		if (command.get_type() != Variant::STRING || String(command).strip_edges().is_empty() || String(command).length() > 12000 || cwd.get_type() != Variant::STRING || (timeout.get_type() != Variant::INT && timeout.get_type() != Variant::FLOAT) || double(timeout) != int(timeout) || int(timeout) < 1 || int(timeout) > 3600 || !AIChatTools::resolve_directory(cwd, String(cwd).begins_with("res://") ? ProjectSettings::get_singleton()->get_resource_path() : workspace, pending_cwd, error)) {
-			_finish_tool("Error: A command of at most 12,000 characters, an accessible working directory and a timeout from 1 to 3600 seconds are required. " + error);
+			_finish_tool("Error: A command of at most 12,000 characters (split larger work into separately approved commands), an accessible working directory and a timeout from 1 to 3600 seconds are required. " + error);
 			return;
 		}
 		if (!_validate_engine_candidate(error) || !AIChatHostRuntime::production_path(pending_cwd, workspace, ProjectSettings::get_singleton()->get_resource_path(), error)) {
@@ -3437,6 +3476,7 @@ void AIChatDock::_tool_after_receipt(uint64_t p_session) {
 }
 
 void AIChatDock::_finish_tool(const String &p_result, bool p_file_success, bool p_structured_state, const String &p_read_sha256) {
+	process_command_file.unref();
 	if (restoring_command_offer) {
 		// A missing cwd or a changed binding is a failed revalidation, not a
 		// result for the original command. Keep the rest of its batch paused.
@@ -7418,7 +7458,23 @@ void AIChatDock::_start_process() {
 		executable = OS::get_singleton()->get_environment("SystemRoot").path_join("System32/WindowsPowerShell/v1.0/powershell.exe");
 		const String cwd_literal = pending_cwd.replace("'", "''");
 		const String wrapper = "[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false); $OutputEncoding = [Console]::OutputEncoding; $ErrorActionPreference = 'Stop'; try { Set-Location -LiteralPath '" + cwd_literal + "'; [Environment]::CurrentDirectory = (Get-Location).ProviderPath; $global:LASTEXITCODE = 0; & {\n" + pending_command + "\n}; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; exit 0 } catch { [Console]::Error.WriteLine($_.ToString()); exit 1 }";
-		const Char16String utf16 = wrapper.utf16();
+		// Leave room for the source guard's Python executable and binding arguments.
+		// The exact approved wrapper is loaded as a script block, as with -Command;
+		// do not use -File (different exit semantics and execution-policy behavior).
+		String launch_script = wrapper;
+		if (wrapper.utf16().length() > 4000) {
+			Ref<CommandScriptFile> file;
+			file.instantiate();
+			process_command_file = file;
+			if (!file->create(wrapper)) {
+				_finish_tool("Error: could not create the owned Windows command script. No command was started. Check the current user's temporary-directory access and free space, then retry the approved command.");
+				return;
+			}
+			// Share the owner's write/delete access, while the owner denies all
+			// other writers and deleters for the entire command lifetime.
+			launch_script = "& (& { $f = [System.IO.File]::Open('" + file->path.replace("'", "''") + "', [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::ReadWrite -bor [System.IO.FileShare]::Delete); try { $r = [System.IO.StreamReader]::new($f, [System.Text.Encoding]::UTF8); $s = $r.ReadToEnd() } finally { $f.Dispose() }; [ScriptBlock]::Create($s) })";
+		}
+		const Char16String utf16 = launch_script.utf16();
 		PackedByteArray bytes;
 		bytes.resize(utf16.length() * 2);
 		for (int i = 0; i < utf16.length(); i++) {
@@ -7488,6 +7544,13 @@ void AIChatDock::_start_process() {
 		executable = guard["python"];
 		arguments = guarded;
 	}
+#ifdef WINDOWS_ENABLED
+	// Measure the exact OS quoting and absolute-path normalization, including NUL.
+	if (static_cast<OS_Windows *>(OS::get_singleton())->get_process_command_line_length(executable, arguments) > 32767) {
+		_finish_tool("Error: Windows command launch exceeds the 32,767 UTF-16-unit limit after source-protection arguments. No command was started. Use a shorter workspace/temporary-directory path or split the work into separately approved commands.");
+		return;
+	}
+#endif
 	Dictionary process = OS::get_singleton()->execute_with_pipe(executable, arguments, false);
 	if (!process.has("pid") || !process.has("stdio") || !process.has("stderr")) {
 		_finish_tool("Error: Could not start the headless process with output capture on this platform.");
@@ -7583,6 +7646,7 @@ void AIChatDock::_poll_process() {
 	process_id = -1;
 	process_stdout.unref();
 	process_stderr.unref();
+	process_command_file.unref();
 	set_process(sub_agent_parallel_pid >= 0);
 	Dictionary result;
 	result["exit_code"] = exit_code;
@@ -7685,6 +7749,7 @@ void AIChatDock::_stop() {
 		process_id = -1;
 		process_stdout.unref();
 		process_stderr.unref();
+		process_command_file.unref();
 		_finish_delivery_retry("{}");
 		return;
 	}
@@ -7771,6 +7836,7 @@ void AIChatDock::_stop() {
 	}
 	process_stdout.unref();
 	process_stderr.unref();
+	process_command_file.unref();
 	_cancel_cli();
 	set_process(sub_agent_parallel_pid >= 0);
 	// Stop also disowns a self-update in flight, so no later restart answers a

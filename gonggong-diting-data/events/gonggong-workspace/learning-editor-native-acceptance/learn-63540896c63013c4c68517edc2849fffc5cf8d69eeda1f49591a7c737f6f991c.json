@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-63540896c63013c4c68517edc2849fffc5cf8d69eeda1f49591a7c737f6f991c",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/891",
+  "occurred_at": "2026-11-12T06:29:28.326195+00:00",
+  "evidence_refs": [
+    "request-891-20261112-readback"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "windows-command-wire-budget",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Budget the final Windows UTF-16 command line using the actual CRT quoting and guard arguments; transport large approved wrappers through exclusively owned delete-on-close files, isolate loader variables, and observe the real guard-child PID when verifying cancellation.",
+      "when": "Native Windows tools carry approved PowerShell command bodies through EncodedCommand and optional source-protection wrappers.",
+      "counterexample": "Source character limits do not bound Base64 UTF-16 wire size; Godot is_process_running does not observe the guard grandchild, and a one-second absent-marker check does not establish cancellation.",
+      "trial_plan": "On the next same-domain authorized task, reproduce above-wire-limit Unicode/cwd/output/exit through the actual guarded native loop, attempt file overwrite/delete, remove protected source, and observe child live-before/dead-after cancel; preserve failures and compare exact source/binary hashes."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-windows-command-length-891.json",
+        "sha256": "4ec8d5bbb2ce3601704464ca17654fb8af59cad662f35e3c5cd13695dcf84141"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-windows-command-length-20261112/request-891-20261112-readback.json",
+      "sha256": "5d446e2c64f3fa040ece691000aca16a0ae86473735e7b7c370bfae892e9702e"
+    }
+  },
+  "sha256": "4d1e74d371d7df0ecce176d2752cd27a8d0fcdab503635c42cce7419698a8c9c"
+}

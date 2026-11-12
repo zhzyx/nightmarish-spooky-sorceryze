@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-591c6aa9d553f419639d3b3269e43b3522c818636d364f100a6884166a219283",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/891",
+  "occurred_at": "2026-11-12T06:44:00.726782+00:00",
+  "evidence_refs": [
+    "request-891-20261112-readback",
+    "learn-5df9778808b50f09b449da6717a4e0acdc5dda65976a80438b76acaca81c3a9a"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "native-suite-fixture-layout",
+    "revision": 2,
+    "previous": "d33542cde75b6969dcd49465c32d7895973345a2089801a9c1a0e34fce566a99",
+    "action": "revise",
+    "details": {
+      "method": "Before a full native suite, preserve the required repository cwd, binary-adjacent tests/data layout, and explicit tested Python executable. Reuse the established runner environment; keep private editor copies for UI fixtures whose own fixture tree is prepared.",
+      "when": "Running Godot native tests on Windows from isolated worktrees or copied editor binaries.",
+      "counterexample": "Changing cwd alone does not fix Crypto fixtures resolved relative to the executable. A PATH python alias can start but fail RuntimeConfig child probes. These setup failures are not implementation regressions or passing validation.",
+      "trial_plan": "On the next same-domain native suite, capture the cwd, executable fixture layout and explicit Python before launch; run the full same-binary suite and verify all applicable assertions while retaining diagnostics."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-windows-command-review-891.json",
+        "sha256": "7c253373cd06f74c7fc0da6b3a6886f20fc4618971771ff97f2b3d4e789e17f8"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-windows-command-length-20261112/request-891-20261112-readback.json",
+      "sha256": "5d446e2c64f3fa040ece691000aca16a0ae86473735e7b7c370bfae892e9702e"
+    }
+  },
+  "sha256": "378e3afe4a4bd1d4b32993f0d87eaffd112f7841e88801decad2751a8d773848"
+}

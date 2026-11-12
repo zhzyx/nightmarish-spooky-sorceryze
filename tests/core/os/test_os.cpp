@@ -40,7 +40,30 @@ TEST_FORCE_LINK(test_os)
 #include "tests/test_utils.h"
 #endif
 
+#ifdef WINDOWS_ENABLED
+#include "platform/windows/os_windows.h"
+#endif
+
 namespace TestOS {
+
+#ifdef WINDOWS_ENABLED
+TEST_CASE("[OS] Windows command length includes quoting UTF16 and terminator") {
+	const OS_Windows *os = static_cast<OS_Windows *>(OS::get_singleton());
+	List<String> arguments;
+	arguments.push_back("");
+	arguments.push_back(U"中文😀");
+	arguments.push_back("space ");
+	arguments.push_back("a\"b");
+	arguments.push_back(R"(space \)");
+	// x.exe + NUL (6), then space + each encoded argument: 2, 4, 8, 6, 10.
+	CHECK(os->get_process_command_line_length("x.exe", arguments) == 41);
+	arguments.clear();
+	arguments.push_back(String("a").repeat(32760));
+	CHECK(os->get_process_command_line_length("x.exe", arguments) == 32767);
+	arguments.front()->get() += "a";
+	CHECK(os->get_process_command_line_length("x.exe", arguments) == 32768);
+}
+#endif
 
 #ifdef MACOS_ENABLED
 class RestartStateGuard {

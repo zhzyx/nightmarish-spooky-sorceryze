@@ -525,6 +525,7 @@ class AIChatDock : public EditorDock {
 	uint64_t process_started = 0;
 	Ref<FileAccess> process_stdout;
 	Ref<FileAccess> process_stderr;
+	Ref<RefCounted> process_command_file;
 	PackedByteArray stdout_output;
 	PackedByteArray stderr_output;
 	bool output_truncated = false;

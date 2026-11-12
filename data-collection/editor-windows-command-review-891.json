@@ -1,0 +1,67 @@
+{
+  "issue_number": 891,
+  "request_id": "editor-windows-command-length-20261112",
+  "reviewer": "root current operator; implementation by native child sinan_6fa964a729c97865",
+  "source_and_binary_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "fa6d1b70abd3cde4b8d92c7a2bc9249928e68449bc05429589c6b088c5efa2fd",
+    "editor/docks/ai_chat_dock.h": "b5859cdfb2d76246ecbcb506ecba622c53b6e2091b28c1dd525a47a1780a7336",
+    "platform/windows/os_windows.cpp": "cb2e8e522706482339c896ca7abd499be4df11cf1ee5099a9f9e2f4e05997ad3",
+    "platform/windows/os_windows.h": "9112a429f0bf15a3b3662ae128d6c0363928f95a7879412a197045d0d42a839c",
+    "tests/core/os/test_os.cpp": "a783c885a37132671626d68a1b7d4a5211e34d019d32edfe11b716abb2c0fddb",
+    "tests/editor/ai_chat_integration.gd": "eaff7de1f84fa6c86017aae1e01ebb090df1dc91af4c51152a55cbbc0e314e94",
+    "tests/editor/run_ai_chat_integration.py": "2bb62527b61394df2088149c90a68bbab6f6fae4afbae6a04d3801a8445254da",
+    "design-docs/editor-windows-command-length.md": "d7a355512975625a54e8fb5083f364c8b590d35c2ece63162688eeb726f58474",
+    "bin/godot.windows.editor.x86_64.exe": "27a005afebdd77f3078a3de6b600f4b223c78530f13f49a4f3e16560beaba29e",
+    "bin/godot.windows.editor.x86_64.console.exe": "8768ac39506f7dc5b5b769d75b26a218615b570168702977dc8889727e17eb0b"
+  },
+  "worker_receipt_sha256": "23485c8e628ed4f0636ea3612b1e00575d0c6e6c227545236ab33edec3c64d22",
+  "review": {
+    "scope": "Complete native implementation and actual test changes, approved command/guard/lifetime boundaries, exact quoting, Unicode and helper scope",
+    "findings_corrected": [
+      "Use actual Windows quoting and fix_path instead of a conservative multiplier that rejected valid commands",
+      "Isolate loader variables from the approved wrapper scope",
+      "Observe actual guard-child Windows process termination, not a one-second missing-file check or Godot direct-child process_map"
+    ],
+    "reviewer_production_edits": false
+  },
+  "combined_main": "29b505b3dce817053e31597ed22408fd9122c48e",
+  "upstream_integration": "Fast-forward after actual worker handoff; main892 evidence and main894 Maliang provider changes have no overlap with this native candidate. Exact worker source/binary hashes remained unchanged.",
+  "independent_tests": {
+    "native_cases": 1567,
+    "native_assertions": 435685,
+    "native_skipped": 3,
+    "native_exit_code": 0,
+    "native_log_sha256": "d3a1e0604bbbc9d3a0f6ad915107db0326f845d6d755339e6116183231285be9",
+    "guarded_native_loop_exit_code": 0,
+    "guarded_native_loop_passed": true,
+    "actual_cancel_process_exited": true,
+    "guarded_native_loop_log_sha256": "e0ad41876e2108c7dccdfc896ac2b12380009c3ab11a19ebf77ffcb43a23dbc7"
+  },
+  "diagnostic_boundaries": [
+    "Native unit emits existing Object/EditorSettings/draw diagnostics despite passing assertions; raw log retained.",
+    "Headless native UI fixture emits shutdown RID/ObjectDB diagnostics; complete output retained, no claim of zero diagnostics.",
+    "Full platform guard suite retains Windows-inapplicable POSIX, symlink-privilege and macOS-profile failures in worker receipt."
+  ],
+  "review_setup_failures": [
+    {
+      "attempt": "native-r1",
+      "reason": "Temporary cwd omitted repository tests/data; test setup rejected and teardown crashed.",
+      "sha256": "9c99f2dac710310a721af85e4b0c77c1d1aeea35d821190d5e71a10dfd67c563"
+    },
+    {
+      "attempt": "native-r2",
+      "reason": "Correct cwd alone was insufficient: Crypto fixtures also resolve adjacent to binary; copied binary lacked tests/data.",
+      "sha256": "05236af929ab3b9fe43e8adeedf416a56a86ac4e752bddb23a52c4c504fe1832"
+    },
+    {
+      "attempt": "native-r3",
+      "reason": "Omitted explicit trusted Python; three existing RuntimeConfig process tests failed. Same source/binary passed complete suite with GONGGONG_TEST_PYTHON.",
+      "sha256": "5b6590ea00d8a454ec7516615d539b6f686b5e94e29dc91fbbae4a069114fc27"
+    }
+  ],
+  "delivery_boundary": "Local combined candidate reviewed and tested; precise signed CI/main, installed replay and closure are subsequent facts. Parent773 remains open.",
+  "evidence_formatting": {
+    "original_worker_receipt_sha256": "4ec8d5bbb2ce3601704464ca17654fb8af59cad662f35e3c5cd13695dcf84141",
+    "change": "Only CRLF to LF in public worker receipt; original exact bytes retained in private before-format891. Parsed content unchanged. Both learning proposals revised to the formatted immutable evidence; old events preserved."
+  }
+}
