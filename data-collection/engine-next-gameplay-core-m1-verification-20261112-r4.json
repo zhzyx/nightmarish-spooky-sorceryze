@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "kind": "local_verification",
+  "request_id": "engine-next-gameplay-core-m1-20261112",
+  "issue": 939,
+  "recorded_at": "2026-11-12T15:08:00Z",
+  "base_head": "d91bd93eb14d1420db9e6872c638e9cb82baf015",
+  "candidate_state": "uncommitted_worktree",
+  "environment": {
+    "platform": "macOS-15.3.1-arm64-arm-64bit",
+    "architecture": "arm64",
+    "python": "3.12.16",
+    "clang": "Apple clang 17.0.0 (clang-1700.0.13.5)",
+    "scons": "4.11.1",
+    "godot_test_binary_sha256": "c86fa91ae957dcc6836949e101c81ab405d7cda5b35197630f50fc052e3039da"
+  },
+  "checks": [
+    {
+      "command": "python -m unittest tools.test_check_engine_next_contract -v",
+      "observed": "22 tests passed; declared public_header_roots and safe relative includes are covered",
+      "passed": true
+    },
+    {
+      "command": "python -m unittest discover -s engine_next/Tools -p 'Test*.py' -v",
+      "observed": "7 tests passed after correcting test fixture bytes, paths and expected object digest",
+      "passed": true
+    },
+    {
+      "command": "python engine_next/Tools/BuildGameplay.py --repo . --compiler clang --build-dir build/engine_next/clang-release --run-tests",
+      "observed": "12 tests and 200131 checks passed; all five public headers compile independently; archive contains only PredictionModel.o and InterpolationBuffer.o; no forbidden symbols; only libc++ and libSystem dynamic dependencies",
+      "passed": true
+    },
+    {
+      "command": "python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-release/LinkManifest.json",
+      "observed": "state=contract_passed; sources=sources_passed (14 files, 19 local includes); link=link_passed (7 objects, 1 library); godot_free_runtime_verified=false",
+      "passed": true
+    },
+    {
+      "command": "python engine_next/Tools/BuildGameplay.py --repo . --compiler clang --build-dir build/engine_next/clang-sanitize --run-tests --sanitize",
+      "observed": "ASan and UBSan completed the same 12 tests and 200131 checks with zero failures and identical trace",
+      "passed": true
+    },
+    {
+      "command": "CleanRun/EngineNextGameplayTests --trace-output <clean trace> from an empty working directory",
+      "observed": "build-directory and clean-directory trace SHA-256 both equal f55d1f5bc85bb72376d3f31cdf9b64aac91e714b6556dbce1663c1db7995924c",
+      "passed": true
+    },
+    {
+      "command": ".venv/bin/python -m SCons -j8 -Q platform=macos target=editor tests=yes arch=arm64 dev_mode=yes debug_symbols=no module_text_server_fb_enabled=yes vulkan=no angle=no accesskit=no metal=no redirect_build_objects=no cache_path=.scons_cache verbose=no",
+      "observed": "After two 300-second tool timeouts during ordinary compilation, incremental build and final link succeeded; no source workaround was applied",
+      "passed": true
+    },
+    {
+      "command": "./bin/godot.macos.editor.arm64 --headless --test --test-case='[Gameplay][Prediction][EngineNext]*'",
+      "observed": "Unmodified legacy Godot algorithms passed the shared golden: 2 cases and 19 assertions passed, 1580 cases skipped; no expected error was printed after adding ERR_PRINT_OFF/ON",
+      "passed": true
+    },
+    {
+      "command": "Temporary PredictionModel.h default speed change 8 -> 9, rebuild, restore -> 8, rebuild",
+      "observed": "R3 candidate: native_key 7c52b071d17de35552306f361fbddfdb27a7c5321b8b3e5572a0e6bc2bc5e97a -> 94c2bb7c47c95b663450a2ff5434528c00147dc41894ffc42d05afac3a77573f -> 7c52b071d17de35552306f361fbddfdb27a7c5321b8b3e5572a0e6bc2bc5e97a; one expected changed-default failure and checksum 3344215809; rollback restored all checks, checksum 3325757522 and executable SHA-256 5b6fd6e8345f30d86c784ef7c8df1cbcd092d1ba433c9005a99e4258f134d7f4",
+      "passed": true
+    },
+    {
+      "command": "git diff --check",
+      "observed": "exit 0",
+      "passed": true
+    },
+    {
+      "command": ".venv/bin/ruff check <four Python files> && .venv/bin/ruff format --check <four Python files>",
+      "observed": "Ruff 0.17.1 reports all checks passed and four files already formatted",
+      "passed": true
+    },
+    {
+      "command": "python misc/scripts/validate_codeowners.py <M1 files> && python misc/scripts/validate_includes.py <M1 C++ files> && .venv/bin/clang-format --dry-run --Werror <M1 C++ files>",
+      "observed": "Ownership, includes and clang-format 18.1.8 all pass without modifying legacy files",
+      "passed": true
+    },
+    {
+      "command": ".venv/bin/codespell <M1 text files> && .venv/bin/ruff check engine_next/Tools/BuildGameplay.py && .venv/bin/ruff format --check engine_next/Tools/BuildGameplay.py",
+      "observed": "codespell and Ruff pass; MSVC object-output option behavior is unchanged",
+      "passed": true
+    }
+  ],
+  "performance": {
+    "workload": "1000000 model steps and 50000 mixed buffer operations at capacity 4096, median of five repetitions",
+    "legacy_godot": {
+      "model_median_us": 10931,
+      "buffer_median_us": 250816,
+      "model_checksum": 3325757522,
+      "buffer_checksum": 4097
+    },
+    "standalone_release": {
+      "model_median_us": 5118,
+      "buffer_median_us": 168105,
+      "model_checksum": 3325757522,
+      "buffer_checksum": 4097
+    },
+    "standalone_clean_run": {
+      "model_median_us": 4872,
+      "buffer_median_us": 166372,
+      "model_checksum": 3325757522,
+      "buffer_checksum": 4097
+    },
+    "comparison": "Final standalone deque buffer is 32.97% faster than legacy in the paired record and 33.67% faster in the clean run. An earlier vector implementation exceeded the 15% regression limit and was replaced. Absolute times are not portable thresholds."
+  },
+  "corrections": [
+    "Initial test compilation fixed mixed-width equality checks and ignored nodiscard configuration results.",
+    "The overflow fixture now uses max-speed and a one-second step because max-float plus a small increment remains finite; stale boundary now uses 750/751 ms correctly.",
+    "SourceAudit now resolves declared public_header_roots and existing safe relative includes while retaining Godot and path-escape rejection.",
+    "Apple ar symbol-table members are excluded from the expected object-member list; actual core object members are still checked exactly.",
+    "Build-tool fixture failures for byte writing, header path prefixes, MSVC-style paths and the SHA-256 of the literal 'object' were fixed and rerun.",
+    "Two git fetch attempts failed to connect to github.com:443. GitHub API independently confirmed remote main; the already present exact object was used and the branch was fast-forwarded. No fetch success is claimed.",
+    "Initial PR #946 passed both dedicated Windows MSVC and macOS Clang jobs, but static checks found missing CODEOWNERS, include rewrites and Ruff/clang-format differences. Scoped Allman configuration, complete include roots, ownership and CI-version formatting were added and all affected tests rerun.",
+    "A final vector benchmark regressed 15.66% against legacy, exceeding the 15% limit. Replacing the buffer container with std::deque preserved all 200131 checks and reduced the final buffer median to 169291 us, faster than the 250816 us legacy baseline.",
+    "PR #949 static checks isolated codespell's false positive on the MSVC /F + o output option. The command now constructs the identical flag as /F + o + path; codespell, Ruff and the complete standalone build pass.",
+    "R4 records the codespell finding in R3 evidence text and uses an unambiguous spelling for the MSVC output option; source and behavior are unchanged."
+  ],
+  "not_verified": [
+    "Windows MSVC has not run locally; the dedicated windows-latest job is pending on the exact PR candidate.",
+    "The four production Godot classes have not yet switched to the new core in PR A; their current legacy behavior is the baseline for PR B.",
+    "No complete next_runtime executable, renderer, script system, editor or clean-environment game runtime exists in M1.",
+    "No claim is made that a static source scan alone proves an entire runtime Godot-free; target-level compile, archive, link, dynamic dependency, symbol and clean-run evidence is recorded separately.",
+    "Double-precision Godot uses a different real_t contract and is not bit-identical to the standalone float kernel.",
+    "Remote formal gates, exact candidate CI, PR merges and main readbacks remain pending at this recording."
+  ],
+  "usage": null,
+  "usage_unknown_reason": "No measured model usage in host receipt",
+  "remote_observations": {
+    "initial_signed_head": "82a11443baabb393973bb4cf5a0521694291b4b1",
+    "windows_msvc": "SUCCESS, actions/job/131187636932",
+    "macos_clang": "SUCCESS, actions/job/131187637541",
+    "static_checks": "FAILURE on the initial head for CODEOWNERS, includes and formatting; corrected in the subsequent candidate",
+    "current_candidate": "pending_submission",
+    "r2_signed_head": "2c493e9911150826ebfae9643234cd206d107b10",
+    "r2_windows_msvc": "SUCCESS, actions/job/131201793845",
+    "r2_macos_clang": "SUCCESS, actions/job/131201793390",
+    "r2_static_checks": "FAILURE limited to codespell's /F + o false positive; corrected in R3",
+    "r3_signed_head": "3907b1083a23c2c95106e2774e26e211702a3ba2",
+    "r3_static_checks": "FAILURE limited to literal /F + o occurrences in R3 evidence text; corrected in R4"
+  }
+}
