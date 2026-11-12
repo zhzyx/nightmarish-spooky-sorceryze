@@ -4,7 +4,7 @@ POSIX commands get a private session. The leader is observed with WNOWAIT and
 kept unreaped until cleanup, pinning its process-group identity even after exit.
 Windows assigns the suspended command to a kill-on-close Job before resuming.
 Launch/watch workflows retain the launch owner in a scope; persisted PIDs are
-never adopted or signalled. This does not cancel remote service work, and POSIX
+never adopted or signaled. This does not cancel remote service work, and POSIX
 commands must not deliberately escape their session with setsid/setpgid.
 """
 
