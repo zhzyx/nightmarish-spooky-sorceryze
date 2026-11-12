@@ -43,6 +43,7 @@
 #include "editor/docks/editor_dock.h"
 #include "editor/docks/gonggong_process.h"
 #include "editor/docks/startup_checks.gen.h"
+#include "editor/settings/editor_settings.h"
 #include "main/main.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/label.h"
@@ -153,6 +154,9 @@ Node *create_gonggong_startup_checks() {
 	checks->set_name("StartupConfigurationChecks");
 	checks->set_script(script);
 	checks->set("git_script", git);
+	checks->set("metadata_saver", callable_mp(EditorSettings::get_singleton(), &EditorSettings::save_project_metadata));
+	checks->set("memory_script", load_editor_script(daqian_session_memory));
+	checks->set("memory_helper_source", editor_script_source(daqian_session_credentials));
 	checks->set("git_helper_source", editor_script_source(daqian_startup_git_helper));
 	checks->set("automatic_enabled", !Engine::get_singleton()->is_recovery_mode_hint() && !Main::is_cmdline_tool());
 	return checks;

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "startup-session-memory-20261112-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "startup-session-memory-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T00:24:20.264725+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/867",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "87b82d26b741a04d787155b012076b32cdf14fcbec3ff51823fe83751ce89462",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Remember last verified connection locally, restore endpoint-bound API credentials from the native user credential store before startup verification; preserve existing Git and CLI login reuse and offer clear controls.",
+    "authorization_ref": "codex-user-startup-session-memory-20261112",
+    "design": "design-docs/startup-session-memory-20261112.md",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "64db54aee3581cf5ce2097f308caa5865972d5404650bf87bfa8dad2f7b4a46d"
+}
