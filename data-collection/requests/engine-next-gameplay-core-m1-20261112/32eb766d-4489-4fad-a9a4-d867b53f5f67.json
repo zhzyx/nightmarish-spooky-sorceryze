@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "engine-next-gameplay-core-m1-20261112",
+  "collected_at": "2026-11-12T16:30:00.517683+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-gameplay-core-m1-20261112/kuafu-7db0b0345456f101dacd71fe869110542682504c.json",
+      "sha256": "b9bda69be898f5b3ea896f0e9b8b496d8a91fb92172aece0143654bb1f49f065",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-7db0b0345456f101dacd71fe869110542682504c",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-gameplay-core-m1-20261112/kuafu-d0f5a9e0c946717f739f1aac99b813ee6e342df9.json",
+      "sha256": "1000706bba9a02960505e95802aa16954f5642aeb9add8904923a39bcd611da9",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-d0f5a9e0c946717f739f1aac99b813ee6e342df9",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-gameplay-core-m1-20261112/kuafu-de8098fc892744f897b63f59899539b50d9c4006.json",
+      "sha256": "5f07c735b4dc47e6700eb3693e7112ffd0a9399389945078134ae40c8fa66d8c",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-de8098fc892744f897b63f59899539b50d9c4006",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-gameplay-core-m1-20261112/request-939-engine-next-gameplay-core-m1.json",
+      "sha256": "98e0d389d3b853c9024b110cfa44356bd720083bb98745fe2f8ff55e0b266a9d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "request-939-engine-next-gameplay-core-m1",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-gameplay-core-m1-20261112/request-end-939-engine-next-gameplay-core-m1.json",
+      "sha256": "ed06e29de37c0bcb063db7b6cae08d87df6950f1142e02492e7ef9c65b23b43d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "request-end-939-engine-next-gameplay-core-m1",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-gameplay-core-m1-20261112/step-939-godot-adapter-verified.json",
+      "sha256": "a3d92b5c47640cab3288cd9abc00f4f2b865761d5ba9beda4edec6d3dd6fc224",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "step-939-godot-adapter-verified",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 939,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/939"
+}

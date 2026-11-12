@@ -167,11 +167,21 @@ Release 下执行 100 万次固定步长模拟和容量 4096 的 5 万次混合�
 
 ## 验收清单
 
-- [ ] 新内核只使用标准 C++17，公共头无 Godot 类型、宏或包含。
-- [ ] 独立静态库和测试程序在 Windows MSVC、macOS Clang 实际编译、链接和运行通过。
-- [ ] `--require-sources` 和真实链接清单进入专用 CI，空树及伪造依赖失败。
-- [ ] 共享 Trace 对旧实现 golden 差分通过，合法输入结果一致，异常修正单独留证。
-- [ ] 四个 Godot 类脚本 API 保持兼容，现有 Gameplay 测试和 doctool 通过。
-- [ ] 确定性、异常输入、容量和性能验收完成，未验证事项明确保留。
-- [ ] `build-impact.json`、构建失效、恢复和回退证据覆盖精确候选输入。
-- [ ] 两个 PR 的正式门禁、提交后 Git 数据核验、精确候选 CI、main 回读及 Issue 收尾完成。
+- [x] 新内核只使用标准 C++17，公共头无 Godot 类型、宏或包含。
+- [x] 独立静态库和测试程序在 Windows MSVC、macOS Clang 实际编译、链接和运行通过。
+- [x] `--require-sources` 和真实链接清单进入专用 CI，空树及伪造依赖失败。
+- [x] 共享 Trace 对旧实现 golden 差分通过，合法输入结果一致，异常修正单独留证。
+- [x] 四个 Godot 类脚本 API 保持兼容，现有 Gameplay 测试和 doctool 通过。
+- [x] 确定性、异常输入、容量和性能验收完成，未验证事项明确保留。
+- [x] `build-impact.json`、构建失效、恢复和回退证据覆盖精确候选输入。
+- [x] 两个 PR 的正式门禁、提交后 Git 数据核验、精确候选 CI、main 回读及 Issue 收尾完成。
+
+
+## 最终交付回执
+
+- PR A [#970](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/970) 于 2026-11-12T15:28:54Z 合入，merge commit 为 `309a77fadc74ad9e47df42b4c2b719970b3a7cd0`。
+- PR B [#983](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/983) 于 2026-11-12T16:18:26Z 合入，merge commit 为 `b720e9c582678c1e13481d5e898676218aa6c5de`。
+- main 上专用 Windows／macOS 构建、静态检查和 Windows 编辑器检查全部通过；独立目标再次为 12 个用例、200131 条检查，完整 Gameplay 为 28 个用例、4835 条断言。
+- 四个 Godot 类的 API 结构均与基线一致；共享 Trace、溢出事务性行为和真实 ENet 集成均通过。
+- 最终验证与交付证据见 `data-collection/engine-next-gameplay-core-m1-verification-20261112-r6.json`、`data-collection/engine-next-gameplay-core-m1-build-impact-r6.json` 和 `data-collection/engine-next-gameplay-core-m1-delivery-20261112.json`。
+- 完整 `next_runtime`、渲染器、脚本系统和编辑器不在 M1 范围；本单仅完成第一批真正独立的 Gameplay 内核与 Godot 兼容壳。
