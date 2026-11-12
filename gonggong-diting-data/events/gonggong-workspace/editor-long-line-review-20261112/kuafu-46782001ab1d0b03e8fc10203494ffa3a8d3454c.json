@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-46782001ab1d0b03e8fc10203494ffa3a8d3454c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-long-line-review-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/886",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b7399ce0ef32281e1dde9aa4fc0b236dc41d67ed51ad4aa2b296a2445c61ba8e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/886",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/886",
+    "action": "delivery",
+    "detection_head": "93006dd2bdec4a7c1c2982a254d2fdef9151e7a1",
+    "context_sha256": "81dd779e677ca44bd946da6133ec2a9a055ad95fe04144bec17f940008a62ec6",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/886",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/886",
+    "diagnosis": "The staged child contains dispatch and review evidence but no request-kind event bound to the exact Issue URL; intake-only validates authority but does not create that event. Root read back the actual authorized Issue and recorded its request through the trusted Diting adapter. No implementation or gate exception changed.",
+    "next_action": "Stage the new request and incident event, rerun the same formal writer submission and verify exact candidate CI; preserve the parent acceptance as open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T05:03:38.538450+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T05:12:40.417961+00:00",
+  "sha256": "b0c535c0829538c093d7c289398a932a9cdfbdded8a5cfd17ede6233b52c70bf"
+}

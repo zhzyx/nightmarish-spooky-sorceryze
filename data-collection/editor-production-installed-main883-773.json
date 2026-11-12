@@ -1,0 +1,271 @@
+{
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "main_delivery": {
+    "pr": {
+      "headRefOid": "4a81245710e733ab7cc9dd48115605ffa27f7c14",
+      "mergeCommit": {
+        "oid": "93006dd2bdec4a7c1c2982a254d2fdef9151e7a1"
+      },
+      "mergedAt": "2026-11-12T04:19:28Z",
+      "mergedBy": {
+        "id": "U_kgDOFOKx7w",
+        "is_bot": false,
+        "login": "Sail-Li",
+        "name": ""
+      },
+      "state": "MERGED"
+    },
+    "main": "93006dd2bdec4a7c1c2982a254d2fdef9151e7a1"
+  },
+  "installed_manifest": {
+    "files": [
+      {
+        "bytes": 242688,
+        "path": "bin/godot.windows.editor.x86_64.console.exe",
+        "sha256": "6f84602aa30c0ac6555c9b642013c1cd0570b24898eac324fb988656bb33d634"
+      },
+      {
+        "bytes": 176384512,
+        "path": "bin/godot.windows.editor.x86_64.exe",
+        "sha256": "74ece6d3022e5119233db95982c416f834c69f341fd77eff666b05f9a282c2f7"
+      },
+      {
+        "bytes": 67422,
+        "path": "bin/tianshu-ui.json",
+        "sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462"
+      }
+    ],
+    "main_revision": "93006dd2bdec4a7c1c2982a254d2fdef9151e7a1"
+  },
+  "backup_and_rollback": "Prior installed main879 files were verified and backed up. Three transient file-in-use attempts rolled back and were verified unchanged. Diagnostic-only target logging around the same official replacement logic then succeeded; owner remained unknown.",
+  "installed_followup_cases": {
+    "evidence": {
+      "ok": true,
+      "report_sha256": "cfdd67c07adb4750124d3ebddc6c95946b2d4c44cf4f49eccb62730bd85b2d3b"
+    },
+    "blocked-cold": {
+      "ok": true,
+      "report_sha256": "c1a39fc2bdd6402e60f068948a9b1a56688ba043c1ab9aaf4b1ab82a1f39a896"
+    },
+    "game-review": {
+      "ok": true,
+      "report_sha256": "3889264d5c10e1445ee83c67ba47d6198337bc9614117fa86166a4edb644fdf6"
+    }
+  },
+  "closed_children": [
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOVegMdc8AAAADAiCYiQ",
+          "name": "type:bug",
+          "description": "缺陷修复",
+          "color": "D73A4A"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAoJx5g",
+          "name": "status:done",
+          "description": "完成：验收通过且交付范围有据",
+          "color": "0E8A16"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAsMSPg",
+          "name": "workspace:gonggong",
+          "description": "共工统一工作区及其已接入子模块",
+          "color": "0E8A16"
+        }
+      ],
+      "number": 876,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/876"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOVegMdc8AAAADAiCYiQ",
+          "name": "type:bug",
+          "description": "缺陷修复",
+          "color": "D73A4A"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAoJx5g",
+          "name": "status:done",
+          "description": "完成：验收通过且交付范围有据",
+          "color": "0E8A16"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAsMSPg",
+          "name": "workspace:gonggong",
+          "description": "共工统一工作区及其已接入子模块",
+          "color": "0E8A16"
+        }
+      ],
+      "number": 877,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/877"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOVegMdc8AAAADAiCYiQ",
+          "name": "type:bug",
+          "description": "缺陷修复",
+          "color": "D73A4A"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAoJx5g",
+          "name": "status:done",
+          "description": "完成：验收通过且交付范围有据",
+          "color": "0E8A16"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAsMSPg",
+          "name": "workspace:gonggong",
+          "description": "共工统一工作区及其已接入子模块",
+          "color": "0E8A16"
+        }
+      ],
+      "number": 878,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/878"
+    }
+  ],
+  "scene_resources_export": {
+    "ok": true,
+    "checks": [
+      "native metadata references reject structural edits; scalar metadata permits normal move and undo",
+      "script storage references reject structural edits without getters or broken paths",
+      "subtree move, owners, native animation paths, undo and redo",
+      "subtree delete and exact owner/animation restoration",
+      "script-attached native property edit and undo",
+      "script-shadowed native rename/add/remove/reparent/move/owner with undo and redo",
+      "instance editable override, protected internal structure, instance-root subtree move",
+      "native resource assignment/undo and explicit resource export",
+      "unchanged-version Gradient content staleness; nested script/cycle rejection and fresh save",
+      "persistent signal connect/disconnect and undo without method invocation",
+      "script-shadowed native connect/disconnect with undo and redo",
+      "native history branch rejects approval even when UndoRedo version and scene values repeat",
+      "run project and scene approvals bind history epoch when numeric version repeats",
+      "stale property and resource file hash rejection",
+      "no preview loading; loader delete/replace/old-value mutation rejected after confirmation",
+      "native texture reimport/scan and actual import metadata",
+      "PCK approval binds actual imported artifact contents",
+      "native preset project pack export with actual output hash",
+      "native ZIP export succeeds through project destination with actual archive validation",
+      "disabled macOS signing accepts empty native collections and rejects nonempty credential collections",
+      "PCK binds global class cache; editor receipts preserve approval validity",
+      "application export missing templates is a real failure, no download",
+      "path/tool/consultation boundaries",
+      "inherited property override and local addition; inherited structure protected"
+    ],
+    "report_sha256": "82152e25574a2c9847d64ef257dcd5ff2e61a36c4ace2a30b4df9e222c2d284b"
+  },
+  "tianshu": {
+    "passed": true,
+    "report_sha256": "dd934f8e4b01307fe0fd7006baa35a2031243b94ade1645f767c63a4cb1ae9a2",
+    "scope": "Actual native workbench, not a live model request."
+  },
+  "runtime_diagnostics": {
+    "ok": true,
+    "report_sha256": "ccc6a53c7c9839002616307834a6eb0486dfd0998233bb08a2bbf197ca1225a2",
+    "scope": "Actual two-instance debugger errors/warnings/history/stale session controls in isolated fixture."
+  },
+  "real_modeling": {
+    "ok": true,
+    "provider": "actual authenticated Codex CLI through native Maliang controls",
+    "checks": [
+      {
+        "label": "native Maliang entry exists",
+        "passed": true
+      },
+      {
+        "label": "native bundled workbench loaded",
+        "passed": true
+      },
+      {
+        "label": "GPT instruction modeling mode available",
+        "passed": true
+      },
+      {
+        "label": "dedicated CLI modeling config saved",
+        "passed": true
+      },
+      {
+        "label": "ComfyUI runtime is neither visible nor started",
+        "passed": true
+      },
+      {
+        "label": "native host operation completed",
+        "passed": true
+      },
+      {
+        "label": "CLI modeling capability ready without mesh server",
+        "passed": true
+      },
+      {
+        "label": "node modeling prompt accepted",
+        "passed": true
+      },
+      {
+        "label": "linked node workflow saved",
+        "passed": true
+      },
+      {
+        "label": "native host operation completed",
+        "passed": true
+      },
+      {
+        "label": "real CLI modeling and connected copy nodes succeed",
+        "passed": true
+      },
+      {
+        "label": "generated GLB loaded in downstream node preview",
+        "passed": true
+      },
+      {
+        "label": "node result retained in preview history",
+        "passed": true
+      },
+      {
+        "label": "generated Mesh contains actual vertices",
+        "passed": true
+      },
+      {
+        "label": "mesh scene publication reviewed",
+        "passed": true
+      },
+      {
+        "label": "native host operation completed",
+        "passed": true
+      },
+      {
+        "label": "generated scene published",
+        "passed": true
+      },
+      {
+        "label": "workflow reopen preserves both nodes and edge",
+        "passed": true
+      },
+      {
+        "label": "saved output reopens without another CLI request",
+        "passed": true
+      }
+    ],
+    "vertices": 3270,
+    "report_sha256": "f7e83047826a09f709bcd3b079a5756d5abd9144408e763974e244e4c052c9eb",
+    "glb_sha256": "1d0f38eb02d81c6227c3a49d6e91446caa1c8a15e6a8f16dd7534e784dc5dafe",
+    "scope": "Real model output, downstream copy preview, scene publication and workflow reopen without another request; not yet integrated into original live game."
+  },
+  "remaining": [
+    "Original ordinary-game PC-05/HUD-04 independent acceptance and downstream integration remain blocked.",
+    "Root read-only diagnosis and parent actual source audit explain Git checkout newline representation; this does not itself grant acceptance.",
+    "Long-line review defect is tracked in886.",
+    "Actual Windows executable export rejected inactive unsigned defaults;888 owns repair. PCK/ZIP is not application export.",
+    "Original real game run/fix, cold resume and next requirement still required.",
+    "Issue559 original-owner eight concrete remaining operation subsets preserved."
+  ],
+  "parent_complete": false
+}

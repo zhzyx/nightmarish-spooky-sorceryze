@@ -117,6 +117,54 @@ Ref<DirAccess> make_temporary_directory(const String &p_prefix = "godot_ai_chat"
 	return directory;
 }
 
+TEST_CASE("[AIChat] Character excerpts preserve long JSONL Unicode and raw file provenance") {
+	Ref<DirAccess> root = make_temporary_directory();
+	REQUIRE(root.is_valid());
+	const String path = root->get_current_dir().path_join("long.jsonl");
+	const String original = "{\"text\":\"" + String("x").repeat(300000) + String::chr(0x4e2d) + String::chr(0x1f600) + "\"}\n";
+	Ref<FileAccess> file = FileAccess::open(path, FileAccess::WRITE);
+	REQUIRE(file.is_valid());
+	file->store_string(original);
+	file.unref();
+	String error;
+	String digest;
+	Dictionary result;
+	String joined;
+	int offset = 0;
+	while (offset < original.length()) {
+		REQUIRE(AIChatTools::read_script_range(path, offset, 32768, result, error, &digest, true));
+		CHECK(digest == FileAccess::get_sha256(path));
+		CHECK(int(result["total_characters"]) == original.length());
+		joined += String(result["content"]);
+		offset = result["next_char_offset"];
+	}
+	CHECK(joined == original);
+	REQUIRE(AIChatTools::read_script_range(path, 300009, 1, result, error, &digest, true));
+	CHECK(String(result["content"]) == String::chr(0x4e2d));
+	REQUIRE(AIChatTools::read_script_range(path, 300010, 1, result, error, &digest, true));
+	CHECK(String(result["content"]) == String::chr(0x1f600));
+	REQUIRE(AIChatTools::read_script_range(path, original.length(), 1, result, error, &digest, true));
+	CHECK(int(result["returned_characters"]) == 0);
+	CHECK_FALSE(bool(result["has_more"]));
+	CHECK_FALSE(AIChatTools::read_script_range(path, -1, 1, result, error, nullptr, true));
+	CHECK_FALSE(AIChatTools::read_script_range(path, 0, 0, result, error, nullptr, true));
+	CHECK_FALSE(AIChatTools::read_script_range(path, 0, 32769, result, error, nullptr, true));
+	CHECK_FALSE(AIChatTools::read_script(path, joined, error));
+	CHECK_FALSE(AIChatTools::read_script_range(path, 1, 1, result, error));
+	file = FileAccess::open(path, FileAccess::WRITE);
+	file->store_string("changed");
+	file.unref();
+	const String previous = digest;
+	REQUIRE(AIChatTools::read_script_range(path, 0, 2, result, error, &digest, true));
+	CHECK(digest != previous);
+	CHECK(digest == FileAccess::get_sha256(path));
+	file = FileAccess::open(path, FileAccess::WRITE);
+	file.unref();
+	REQUIRE(AIChatTools::read_script_range(path, 0, 1, result, error, &digest, true));
+	CHECK(int(result["total_characters"]) == 0);
+	CHECK_FALSE(bool(result["truncated"]));
+}
+
 TEST_CASE("[AIChat] CLI login shell quoting preserves literal paths") {
 	CHECK(AIChatCLILogin::shell_quote("/tmp/Node runtime/node") == "'/tmp/Node runtime/node'");
 	CHECK(AIChatCLILogin::shell_quote("/tmp/user's CLI") == "'/tmp/user'\\''s CLI'");
