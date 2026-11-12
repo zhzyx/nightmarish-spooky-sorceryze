@@ -1,0 +1,19 @@
+{
+  "issue_number": 1001,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+  "request_id": "kuafu-run-43286058093-attempt-1",
+  "path_base": "repository_root",
+  "validation_report": "data-collection/receipt-publication-recovery-1001.json",
+  "validation_report_sha256": "6c0962ed47c931a26b369536c0aa3fc07f5940a19524aaa0d827c5aa5fec75ec",
+  "request_event": "request-1001-receipt-recovery-20261113",
+  "validation_event": "validation-1001-receipt-recovery-20261113",
+  "native_build_selection": {
+    "source": "tests/SCsub",
+    "selected": "editor/test_ai_chat_receipt.cpp",
+    "recursive_glob_observed": true,
+    "force_link_macro": "TEST_FORCE_LINK(test_ai_chat_receipt)",
+    "filter": "--headless --test --test-case=*Receipt*,*receipt*",
+    "executed": false
+  },
+  "immutable_evidence": "Original recorded event inputs and validation report preserved. This gate binding supplies explicit issue_number and issue_url."
+}

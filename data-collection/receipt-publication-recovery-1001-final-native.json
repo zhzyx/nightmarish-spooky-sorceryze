@@ -1,0 +1,77 @@
+{
+  "request_id": "kuafu-run-43286058093-attempt-1",
+  "issue_number": 1001,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+  "base_commit": "69a7a624a6d0f932bf02ebcc33d60427193629f3",
+  "correction": "Apply actual repository clang-format and standard header/pragma rules. Root initial dispatch style instruction was incorrect; user policy not overridden. Independent inverse reconstruction matches all five previously approved C++ source hashes.",
+  "mechanical_review_sha256": "e835ba006a5a3fdff5f4dde564557b07e9757d8699e4389e92e3f5b8e6213d95",
+  "build_log_sha256": "73fb18f122c060f638049d99598c3f173a71f605029de0c376aafd810f557490",
+  "native_test_log_sha256": "884c85bc1368a5a552a70a5c20ee625877ac9b2de4cda7aa0b38077759587ba8",
+  "native_cases": 11,
+  "native_assertions": 522,
+  "requirements_result": {
+    "ok": true,
+    "native_page": true,
+    "runtime_setup_and_resume": false,
+    "runtime_setup_provider_invoked": null,
+    "runtime_setup_explicit_paths_verified": false,
+    "runtime_setup_source_kind": "supplied package",
+    "catalog_requests": [
+      "/v1/models",
+      "/v1/models"
+    ],
+    "bootstrap_runtime_configuration": "private installation JSON; mutable fields, no Python/Node/Codex override",
+    "windows_owned_process_cleanup": "not applicable",
+    "actual_native_read_tool_roundtrips": 1,
+    "actual_yanshi_admission": true,
+    "model_and_github": "isolated loopback/CLI fixtures only",
+    "requirements_calls": 11,
+    "development_calls": 7,
+    "issues_created": 5,
+    "events": 71,
+    "git_check": {
+      "git_state": "committed",
+      "files": 74,
+      "records": 71,
+      "remote_merge_verified": false
+    },
+    "cases": [
+      "new requirement",
+      "supplement during intake amends the same Issue before the first development request",
+      "followup reuses Issue",
+      "installed chat and flush with stale workspace launcher",
+      "new requirement while bound",
+      "same text new turn still classified",
+      "cancel before publication",
+      "model API repair then explicit retry",
+      "GitHub auth repair before model call",
+      "clarification pauses and resumes the same requirement"
+    ],
+    "editor_sha256": "37e2c2a96bf8c7eb526cfdaea1e6f3546fe0bfaa290991864335b6ca0f25bed8",
+    "fixture_events_imported": false
+  },
+  "requirements_report_sha256": "43b2755bb7919ada7cbbcbf1362966d0e1a7628391e4c3af7b85c31779072b3b",
+  "source_sha256": {
+    "customizations/components/godot-host/bridge.py": "cd7f15289902058bafdf860edc8f1d3191ecfbbdea96e17f95a67524525ccc52",
+    "customizations/components/godot-host/test_bridge.py": "d0d1822b0d55ceffbad633022cc04fa529a9e548e621f60e741b9fdc10c2434c",
+    "drivers/windows/file_access_windows.cpp": "1db1490ed726078758ed9b60a33e7aab5b428f067f4a6d3c8fc1ce16c22a9370",
+    "editor/docks/ai_chat_dock.h": "2b2a5ecce2913fe673202c4ca48b0d356fd90fb170eade7845f939335f09adcb",
+    "editor/docks/ai_chat_gonggong.cpp": "ee68473f963edef5726e93d5e5504bc7849acd3270c38ab4670ba73bb81fb5aa",
+    "editor/docks/ai_chat_receipt.h": "1aaf6c32fa71658c52b7f3b89a3d95e9fcd0aa22d47260b9bddfda3d2c5564ad",
+    "tests/editor/run_requirements_intake.py": "988152bc6b9ebd3ff9caa6fb34b5404a22017e558b09cb27242f8664d2da8cc8",
+    "tests/editor/receipt_diagnostics.py": "ebfc0a54f58a9f2ec1abc730ff4d4823b42389bfbd69195c083fa609ce80bfac",
+    "tests/editor/test_receipt_diagnostics.py": "076d9ddb6fddaf837a41fd07748d1ec4ed33f7d70fa494a534d27e456a5fbbbd",
+    "tests/editor/test_ai_chat_receipt.cpp": "3b0a12a83bae6317d223abe664e15798038d3fb23471b0dcc483d8367df94d63"
+  },
+  "validation": [
+    "Pinned clang-format and copyright/header rules idempotent",
+    "Ruff and mypy five Python files passed",
+    "Read-only codespell 2.4.2 candidate files passed",
+    "git diff --check passed"
+  ],
+  "limits": [
+    "Original Windows CI initiating cause unknown; exact candidate Windows original recovery and native sharing-lock tests still required.",
+    "No real model/account calls or effective installation replacement."
+  ],
+  "incident": "0459d637fdbac90c65b4cb917935be3712ef8c617c87a7bd931de608bd1e7daf"
+}

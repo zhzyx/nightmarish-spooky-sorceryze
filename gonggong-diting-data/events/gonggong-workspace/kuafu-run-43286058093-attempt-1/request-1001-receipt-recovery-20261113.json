@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "request-1001-receipt-recovery-20261113",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-run-43286058093-attempt-1",
+  "kind": "request",
+  "occurred_at": "2026-11-12T20:31:40.618007+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [
+    "kuafu-c1e888c5cf507367088a17c36085f9cb91ef7e85"
+  ],
+  "payload": {
+    "issue": 1001,
+    "original_issue": 994,
+    "title": "夸父阻塞跟踪：原工单 #994",
+    "source_updated_at": "2026-11-12T20:29:41Z",
+    "issue_body_sha256": "63590277cb4c9b4aea72ce760bd298ad2a040a4fba6e0e479912810c559eb946",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "worker": "/root/sinan_461345fc9274c7b2",
+    "baseline": "c6b7baa72f63c36a2fcd4063c8ed84300ee343fe",
+    "path_base": "repository_root",
+    "design": "design-docs/receipt-publication-recovery-1001.md",
+    "scope": "Repair confirmed final receipt publication and diagnostic preservation defects without replaying completed actions; original Windows CI initiating cause remains unproven; parent owns exact-candidate native validation and delivery."
+  },
+  "sha256": "ff0a7e92ee15cfc28d4672e645422093fb67ba6777116203a738efbf31076e1e"
+}

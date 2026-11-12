@@ -1,0 +1,95 @@
+{
+  "issue": 1001,
+  "request_id": "kuafu-run-43286058093-attempt-1",
+  "path_base": "repository_root",
+  "baseline": "c6b7baa72f63c36a2fcd4063c8ed84300ee343fe",
+  "recorded_at": "2026-11-12T20:32:49.567131+00:00",
+  "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+  "worker": "/root/sinan_461345fc9274c7b2",
+  "original_failure": {
+    "candidate": "308bc83c19ae7cd1811496cca0e7062e6b30dab0",
+    "run": 43286058093,
+    "initiating_cause": "unproven",
+    "latest_baseline_run": 43296439174,
+    "latest_baseline_conclusion": "passed; not causal evidence"
+  },
+  "input_sha256": {
+    "customizations/components/godot-host/bridge.py": "cd7f15289902058bafdf860edc8f1d3191ecfbbdea96e17f95a67524525ccc52",
+    "customizations/components/godot-host/test_bridge.py": "d0d1822b0d55ceffbad633022cc04fa529a9e548e621f60e741b9fdc10c2434c",
+    "drivers/windows/file_access_windows.cpp": "ba3cbb1cadbf3aa402b4b1ac0a36e08733a2c3f0c7457fe5efce056755d985ad",
+    "editor/docks/ai_chat_dock.h": "2b2a5ecce2913fe673202c4ca48b0d356fd90fb170eade7845f939335f09adcb",
+    "editor/docks/ai_chat_gonggong.cpp": "09fbfd4d1bbcd23e8ef6736f97794421523757300d42f5dc3136b5ad4b764795",
+    "editor/docks/ai_chat_receipt.h": "5c40cf4e54c56643fa84a5fa69bf270b39ba58b7075bdbdd13fe2c1fd2160801",
+    "tests/editor/run_requirements_intake.py": "54876ff1966a7c4958d8605d4a401104ea538884d0e8fde19441944243004b51",
+    "tests/editor/receipt_diagnostics.py": "8968405575f3527f2fcf87510c5364b02dee502b265e2577eb18e221df898557",
+    "tests/editor/test_receipt_diagnostics.py": "0b5533e5e1c6ae4905beb2e362a10ed707e612df66586056697c446a173241fd",
+    "tests/editor/test_ai_chat_receipt.cpp": "98899ee3e77cb4f3e20aa08fcd17928b812b26b8b0fbb456a86b3545b6968faa"
+  },
+  "checks": [
+    {
+      "command": "python3.14 -m unittest discover -s customizations/components/godot-host -p test_bridge.py",
+      "exit_code": 0,
+      "passed": true,
+      "output": "................................................\n----------------------------------------------------------------------\nRan 48 tests in 2.501s\n\nOK"
+    },
+    {
+      "command": "python3.14 -m unittest discover -s tests/editor -p test_receipt_diagnostics.py",
+      "exit_code": 0,
+      "passed": true,
+      "output": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.010s\n\nOK"
+    },
+    {
+      "command": "ruff check customizations/components/godot-host/bridge.py customizations/components/godot-host/test_bridge.py tests/editor/run_requirements_intake.py tests/editor/receipt_diagnostics.py tests/editor/test_receipt_diagnostics.py",
+      "exit_code": 0,
+      "passed": true,
+      "output": "All checks passed!"
+    },
+    {
+      "command": "ruff format --check customizations/components/godot-host/bridge.py customizations/components/godot-host/test_bridge.py tests/editor/run_requirements_intake.py tests/editor/receipt_diagnostics.py tests/editor/test_receipt_diagnostics.py",
+      "exit_code": 0,
+      "passed": true,
+      "output": "5 files already formatted"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "passed": true,
+      "output": ""
+    },
+    {
+      "command": "python3.14 misc/scripts/file_format.py customizations/components/godot-host/bridge.py customizations/components/godot-host/test_bridge.py drivers/windows/file_access_windows.cpp editor/docks/ai_chat_dock.h editor/docks/ai_chat_gonggong.cpp editor/docks/ai_chat_receipt.h tests/editor/run_requirements_intake.py tests/editor/receipt_diagnostics.py tests/editor/test_receipt_diagnostics.py tests/editor/test_ai_chat_receipt.cpp",
+      "exit_code": 0,
+      "passed": true,
+      "output": ""
+    }
+  ],
+  "coverage": [
+    "One transient Windows sharing or lock publication failure completes with exactly one storage action",
+    "Persistent lock stops after six attempts and retains complete ok:true temporary receipt",
+    "Permanent/non-Windows denial does not retry; write failure emits bounded metadata",
+    "Fixture output survives TemporaryDirectory cleanup with sanitized parse/exit/tmp/outbox metadata",
+    "Export count/size/unreadable/malformed-field boundaries tested"
+  ],
+  "native_tests_added": [
+    "Malformed JSON, invalid typed results and missing files retain private evidence",
+    "Transient-only count/deadline retry policy",
+    "Windows actual exclusive file handle then successful original-byte read after release"
+  ],
+  "remaining": [
+    "Native compile and execution not performed by this worker",
+    "Exact candidate Windows requirements-intake and CI owned by parent",
+    "Independent review, formal gate, commit/push/main delivery and Issue acceptance owned by parent",
+    "Original failed run initiating cause remains unknown"
+  ],
+  "cleanup": {
+    "temporary_python_fixtures": "Removed by TemporaryDirectory contexts",
+    "processes_started": "Only bounded test/validation CLI subprocesses; all observed terminal",
+    "apps_or_settings_changed": false,
+    "worktree": "Retained with undelivered edits for parent integration",
+    "private_original_evidence": "Read-only; unchanged"
+  },
+  "method_recall": [
+    "editor-dependency-handoff/bind-consumer-release",
+    "editor-dependency-handoff/await-terminal-observers"
+  ]
+}
