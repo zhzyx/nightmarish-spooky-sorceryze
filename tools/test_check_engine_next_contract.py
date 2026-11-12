@@ -74,6 +74,15 @@ class EngineNextContractTests(unittest.TestCase):
         self.assertEqual(result["source_files"], 3)
         self.assertEqual(result["local_includes"], 2)
 
+    def test_declared_public_root_and_safe_relative_include_pass(self):
+        self.write("engine_next/Tests/Gameplay/Main.cpp", '#include "../Framework.h"\n#include "Types.h"\n')
+        self.write("engine_next/Tests/Framework.h", "#pragma once\n")
+        self.write("engine_next/include/Types.h", '#pragma once\n#include "Detail.h"\n')
+        self.write("engine_next/include/Detail.h", "#pragma once\n")
+        result = audit_sources(self.root, self.contract, True)
+        self.assertTrue(result["passed"], result["violations"])
+        self.assertEqual(result["local_includes"], 3)
+
     def test_direct_godot_includes_are_rejected(self):
         for directive in ('#include "core/object/object.h"', "#include <scene/main/node.h>"):
             with self.subTest(directive=directive):
@@ -101,7 +110,7 @@ class EngineNextContractTests(unittest.TestCase):
         self.assertTrue(result["passed"], result["violations"])
 
     def test_godot_macros_and_types_are_rejected(self):
-        for token in ("GDCLASS", "GDVIRTUAL0", "GDREGISTER_CLASS", "Variant", "RefCounted", "StringName"):
+        for token in ("GDCLASS", "GDVIRTUAL0", "GDREGISTER_CLASS", "Variant", "RefCounted", "StringName", "Node", "Resource"):
             with self.subTest(token=token):
                 self.write("engine_next/main.cpp", token + "\n")
                 result = audit_sources(self.root, self.contract, True)

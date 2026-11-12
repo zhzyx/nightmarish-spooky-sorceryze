@@ -429,25 +429,34 @@ class SourceAudit:
             candidates = [normalized_target]
         else:
             parent = PurePosixPath(source).parent.as_posix()
-            candidates = [posixpath.normpath(posixpath.join(parent, target)), normalized_target]
+            candidates = [posixpath.normpath(posixpath.join(parent, target))]
+            candidates.extend(
+                posixpath.normpath(posixpath.join(public_root, target))
+                for public_root in self.contract["public_header_roots"]
+            )
+            candidates.append(normalized_target)
         candidates = list(dict.fromkeys(candidates))
-        for candidate in candidates:
-            if self.classify(candidate) in {"include_path_escape", "godot_include"}:
-                self.violations.append(
-                    violation(self.classify(candidate), source, line_number, include=target, resolved=candidate)
-                )
-                return
         selected = None
+        fallback = None
         for candidate in candidates:
+            classification = self.classify(candidate)
             path = self.root / candidate
             if path.exists() or path.is_symlink():
                 selected = candidate
                 break
+            if fallback is None and classification in {"include_path_escape", "godot_include"}:
+                fallback = (candidate, classification)
         if selected is None:
-            code = "unknown_angle_include" if delimiter == "<" else "missing_include"
-            self.violations.append(violation(code, source, line_number, include=target))
+            if fallback is not None:
+                candidate, code = fallback
+                self.violations.append(violation(code, source, line_number, include=target, resolved=candidate))
+            else:
+                code = "unknown_angle_include" if delimiter == "<" else "missing_include"
+                self.violations.append(violation(code, source, line_number, include=target))
             return
         classification = self.classify(selected)
+        if classification == "undeclared_local_include" and normalized_target.startswith("../"):
+            classification = "include_path_escape"
         if classification != "allowed":
             self.violations.append(violation(classification, source, line_number, include=target, resolved=selected))
             return
