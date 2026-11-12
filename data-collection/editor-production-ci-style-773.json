@@ -1,0 +1,60 @@
+{
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "prior_candidate": "f8e55e2d5b058dfd578dc94a083e86fa344cff3d",
+  "prior_signed_commit": "c9e06a7607aca94c002972167322db14507087be",
+  "failure": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43137542355/job/130916385514",
+  "failure_log_sha256": "4591dee7688778ee47d371973e57929cedf2f867adb79b552c9bcf013e21b5e8",
+  "correction": "Qualified includes needed the subsequent clang-format regrouping. Prior local sequence omitted C++ formatter after include validator. Exact CI changes applied; no runtime statements changed.",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.h": "e6ff50370dced4260d31ebd0d6b421172e0ff05380f0d3f40e1bb01e3adf62af",
+    "editor/docks/ai_chat_task_authorization.cpp": "849c0a31ec2a643d99b1c41db7e0de5544116a85f6a8b3299bc6bc43a9dbd021"
+  },
+  "checks": [
+    {
+      "name": "clang-before",
+      "exit": 0,
+      "seconds": 1.04
+    },
+    {
+      "name": "includes",
+      "exit": 0,
+      "seconds": 0.08
+    },
+    {
+      "name": "clang-after",
+      "exit": 0,
+      "seconds": 1.04
+    },
+    {
+      "name": "strict-build",
+      "exit": 0,
+      "seconds": 25.75
+    },
+    {
+      "name": "native-full",
+      "exit": 0,
+      "seconds": 34.37
+    }
+  ],
+  "stable_sources_sha256": "37325c8e33cb78bee9c55a1ceb6c1e2b14843331291a9dc07674d0b6f773b9d3",
+  "native_suite": {
+    "cases": 1565,
+    "assertions": 435630,
+    "failed": 0,
+    "skipped": 3
+  },
+  "binary_sha256": "993e6a01ceeedd65ac00a17ec6b215517247e2def0e4a2fd310b6f9346832578",
+  "engine_sha256": "cf75e27a58fb672d9be63572cd6ea3f5d4da5d1df9362dc94c0a30d5143501d6",
+  "independent_review": {
+    "worker": "sinan_9d91609256de8b70",
+    "event": "actual FINAL_ANSWER",
+    "scope": "two include groups and original CI output",
+    "result": "No blockers; source-only review"
+  },
+  "previous_evidence": {
+    "path": "data-collection/editor-production-ci-correction-773.json",
+    "sha256": "705891fb8ea12da59603bbc5da40f1ecfa7548bca072b4beb848990d8041f1a6"
+  },
+  "remote_status": "Replacement whole-PR CI and main delivery pending at evidence creation; parent #773 remains open."
+}

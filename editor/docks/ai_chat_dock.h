@@ -30,12 +30,11 @@
 
 #pragma once
 
-#include "editor/docks/ai_chat_task_authorization.h"
-
 #include "core/io/file_access.h"
 #include "core/os/thread.h"
 #include "core/templates/safe_refcount.h"
 #include "editor/docks/ai_chat_resume.h"
+#include "editor/docks/ai_chat_task_authorization.h"
 #include "editor/docks/editor_dock.h"
 
 class AIChatEditorControl;

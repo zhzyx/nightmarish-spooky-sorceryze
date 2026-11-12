@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-build-validation",
+  "event_id": "learn-70d6be4dd07857fa4b96364f41381a797853cbd8f58b70cb1c369e77cc23c8ed",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "occurred_at": "2026-11-12T02:02:32.672141+00:00",
+  "evidence_refs": [
+    "kuafu-a2eaa8354daccde590c560628b3e324aef006d36",
+    "learn-f684088e592527702423c6b78ce1f6c7d9d327675a211d92151215aa0786ab2f"
+  ],
+  "payload": {
+    "scope": "build-validation",
+    "lesson": "validate-whole-signed-candidate",
+    "revision": 2,
+    "previous": "686d7dc1828a82204dbc6f21dfef66c11edb14fc74724d8eaa74f88f40af1bb6",
+    "action": "revise",
+    "details": {
+      "method": "Run static checks for the complete candidate diff against the observed target main, and require the whole-PR CI result for the exact signed head; an identical-tree signature commit can have a passing empty-diff branch run. When any hook rewrites source, rerun interacting format/include checks to a stable source digest before signing.",
+      "when": "The writer signs a same-tree delivery commit and CI scopes checks by changed files.",
+      "counterexample": "A branch build that explicitly checks the full target diff can be sufficient for that scope; compiler-only and empty signature diffs cannot establish whole-PR static validation.",
+      "trial_plan": "For the corrected candidate, run clang-format dry-run, include validation and another clang dry-run across the full target diff; require unchanged source hashes and exact signed-head whole-PR CI pass. Retain both earlier CI failures and verify target main separately."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-production-ci-style-773.json",
+        "sha256": "7e0ab54db8e4af8f28109c31ec409da4ccb7620c478ce297a1b74333afe98225"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/kuafu-a2eaa8354daccde590c560628b3e324aef006d36.json",
+      "sha256": "58cb31c7e59b558344b14949622ddf64927b9cd1c3f2f7b5c1f10528d3a5a98a"
+    }
+  },
+  "sha256": "0762ed92790968c24b077adb53ce0fa37c153b9e481b214a837b7f41606e7883"
+}
