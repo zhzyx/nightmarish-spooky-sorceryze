@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "request_id": "editor-task-cleanup-20261112",
+  "issue_number": 954,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/954",
+  "platform": "macOS arm64",
+  "result": "current_editor_restored_and_obsolete_artifacts_retired",
+  "model_directory_count": 8,
+  "current_editor_backend": 2,
+  "current_editor_models": 8,
+  "paused_queue_unchanged": true,
+  "inference_sent": false,
+  "archive_groups_moved_to_trash": 7,
+  "archive_bytes": 1183880901,
+  "portable_markers_retired": 2,
+  "future_launch_project_reference": "retained workspace project",
+  "shortcut_shell_syntax": "passed",
+  "fresh_editor_launch_tested": false,
+  "active_portable_settings_preserved": true,
+  "other_worktrees_modified": false,
+  "disk_space_reclaimed_claimed": false,
+  "private_receipt_sha256": "6b116cda0d6f4419948a35620acddccd457048e2fdb40b619ef7eb317b886f4c",
+  "review": {
+    "worker": "/root/cleanup_review",
+    "status": "no_blocking_findings",
+    "inputs": {
+      "AGENTS.md": "001b75e999158305bfc9f66c7b071cfe07f769b480088fc863e0e646d44be541",
+      "customizations/platforms/process-management/repository/execution-policy.md": "ebd40981e599e50c514f0e5c83edc931826f7571d266cd00eba820fab6b694e5"
+    },
+    "limitation": "private cleanup inventory independently checked; live UI readback performed by task owner; no editor restart"
+  },
+  "usage": null,
+  "integration": {
+    "previous_base": "a861735f109051ea3342dda1895b7ad3db49ad4f",
+    "base": "34498a33d500475a3538fb99a8e47dd516d2e5d1",
+    "upstream_issue": 953,
+    "scope": "preserved deterministic continuation and task cleanup rules",
+    "task_diff_unchanged": true
+  }
+}

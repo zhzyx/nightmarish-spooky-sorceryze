@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-62eafeb1f64affc4c6e0c22750aa08bf9524a363",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "requirement-19ed97c7bb322899b63c9967d26ba957",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/483",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5e2b4abb9094fe84217e21a5846f2d8c9b8e229fdbecdc4703e3c74b2ce2c49f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/483",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/954",
+    "action": "user-report",
+    "detection_head": "a2a119d51af1259555fd8ce3f9cc42c2bdb96404",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "Sail-Li",
+    "worker": "codex-01a1d015-cleanup",
+    "authority_ref": "codex-user-20261112-cleanup",
+    "evidence": "issue954-current-editor-model-readback-20261112",
+    "diagnosis": "便携模式读取独立测试设置，缺少Node和Codex路径且后端为默认API。统一运行配置并经用户确认后，当前编辑器显示8个模型，暂停队列摘要不变。",
+    "next_action": "在#954交付清理规则和证据，活动设置保留到退出事件。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T14:19:44.287539+00:00",
+    "attempted": "真实目录查询、配置回读、原生确认、当前消费者回读、旧包可恢复迁移",
+    "repair_owner": "Sail-Li",
+    "continuable": "规则交付与任务收尾"
+  },
+  "occurred_at": "2026-11-12T14:31:57.881489+00:00",
+  "sha256": "3eaf24bd964eb5cdb2b5d16927f72222fc7f2a7bf198c23c25f39b80bd03a3d3"
+}
