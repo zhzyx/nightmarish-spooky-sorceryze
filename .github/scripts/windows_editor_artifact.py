@@ -14,6 +14,10 @@ from pathlib import Path, PurePosixPath
 
 RECEIPT = "windows-editor-inputs.json"
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "customizations/components/issue-workorders"))
+
+# isort: split
+import github_runtime  # noqa: E402
 
 WORKFLOWS = {".github/workflows/runner.yml", ".github/workflows/windows_builds.yml"}
 
@@ -24,7 +28,7 @@ def digest(path):
 
 
 def api(path):
-    return json.loads(subprocess.check_output(["gh", "api", path]))
+    return json.loads(github_runtime.run_gh("api", path))
 
 
 def source_identity(root, flags, env):
@@ -115,7 +119,12 @@ def restore(run_id, repo, branch, expected, destination, scratch):
     item = matches[0]
     archive = scratch / "editor.zip"
     with archive.open("wb") as out:
-        subprocess.run(["gh", "api", f"repos/{repo}/actions/artifacts/{int(item['id'])}/zip"], stdout=out, check=True)
+        subprocess.run(
+            [github_runtime.resolve_gh(), "api", f"repos/{repo}/actions/artifacts/{int(item['id'])}/zip"],
+            stdout=out,
+            check=True,
+            timeout=600,
+        )
     checksum = "sha256:" + digest(archive)
     if item.get("digest") != checksum:
         raise ValueError("Artifact archive failed SHA-256 verification")
@@ -182,11 +191,11 @@ def main():
                 with tempfile.TemporaryDirectory(dir=env["RUNNER_TEMP"]) as folder:
                     hit = restore(run_id, repo, branch, expected, destination, Path(folder))
                 break
-            except (KeyError, ValueError, zipfile.BadZipFile, subprocess.CalledProcessError) as error:
+            except (KeyError, ValueError, OSError, zipfile.BadZipFile, subprocess.SubprocessError) as error:
                 if requested:
                     raise
                 print(f"Source run {run_id} unavailable: {error}")
-    except subprocess.CalledProcessError:
+    except (github_runtime.GitHubCommandError, subprocess.SubprocessError):
         if requested:
             raise
         print("Source run lookup unavailable; compiling locally")

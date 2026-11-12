@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "request-github-cli-runtime-unification-20261113",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "github-cli-runtime-unification-20261113",
+  "kind": "request",
+  "occurred_at": "2026-11-12T17:26:26.696189+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/989",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "authorization": "User authorized full AI/GitHub integration refactor; actual child989 covers unified CLI discovery and host transport under parent978",
+    "issue_number": 989,
+    "observed_model": null,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "02ed986f50aa784b15571a095e4684eb90f8228569e0125e189aaf732fd8e6f2"
+}

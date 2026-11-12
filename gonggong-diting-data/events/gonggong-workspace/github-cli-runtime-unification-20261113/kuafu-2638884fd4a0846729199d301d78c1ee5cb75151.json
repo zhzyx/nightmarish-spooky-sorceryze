@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2638884fd4a0846729199d301d78c1ee5cb75151",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "github-cli-runtime-unification-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/989",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "284734ca033111fab5892d59f8af32c1eb178a54ec988025dc1102f0cce32bf4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/989",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/989",
+    "action": "validation",
+    "detection_head": "9af0927ac3a830d61ec99635b88d29a35d2e37bd",
+    "context_sha256": "ace3b8b65efa123a2b6b180d8e7d8f9678ff5c8604ed945395a3f0ce7f740bf7",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-refactor",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43269653076/job/131362462046",
+    "diagnosis": "CI mypy found optional ModuleType.__file__ passed to Path. Validate installed module source-file presence before recording bytes; mypy2.4 now passes all16 changed Python files. Integrated review also restored exact bare CLI command compatibility without fixed-location fallback or implicit Windows cwd. Independent followup accepted;288 tests pass.",
+    "next_action": "Submit corrected exact candidate, supersede unmerged PR993, require all CI and latest main readback before acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T17:32:30.660925+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T17:34:12.704325+00:00",
+  "sha256": "05569fa38396fbd9650b3700dd0659d2c58e87b3f5abf70bf523ba8f5fb75085"
+}

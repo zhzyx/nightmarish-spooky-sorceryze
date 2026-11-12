@@ -1,0 +1,295 @@
+{
+  "schema_version": 1,
+  "request_id": "github-cli-runtime-unification-20261113",
+  "issue_number": 989,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/989",
+  "parent_issue": 978,
+  "observed_at": "2026-11-12T17:07:35.041506+00:00",
+  "scope": "Python host implementation handoff; not remote delivery or complete parent acceptance",
+  "source_head": "0010a548ad5b52ef268e28c5e9c2c6b9a4ae26e2",
+  "platform": "Darwin arm64",
+  "python": "3.14.3",
+  "tests": [
+    {
+      "command": "python3 -m unittest discover -s customizations/components/issue-workorders -p test_github_runtime.py",
+      "passed": true,
+      "tests": 14,
+      "skipped": 0,
+      "summary": "..............\n----------------------------------------------------------------------\nRan 14 tests in 1.433s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/issue-workorders -p test_work_items.py",
+      "passed": true,
+      "tests": 14,
+      "skipped": 0,
+      "summary": "..............\n----------------------------------------------------------------------\nRan 14 tests in 0.013s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/issue-workorders -p test_writer_submit.py",
+      "passed": true,
+      "tests": 10,
+      "skipped": 0,
+      "summary": "..........\n----------------------------------------------------------------------\nRan 10 tests in 2.712s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/issue-workorders -p test_yanluo_host.py",
+      "passed": true,
+      "tests": 12,
+      "skipped": 0,
+      "summary": "............\n----------------------------------------------------------------------\nRan 12 tests in 0.001s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/issue-workorders -p test_kuafu_github.py",
+      "passed": true,
+      "tests": 23,
+      "skipped": 0,
+      "summary": ".......................\n----------------------------------------------------------------------\nRan 23 tests in 0.116s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/issue-workorders -p test_module_build_impact.py",
+      "passed": true,
+      "tests": 4,
+      "skipped": 0,
+      "summary": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.773s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/issue-workorders -p test_issue_gate.py",
+      "passed": true,
+      "tests": 17,
+      "skipped": 0,
+      "summary": ".................\n----------------------------------------------------------------------\nRan 17 tests in 0.158s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/issue-workorders -p test_host_intake.py",
+      "passed": true,
+      "tests": 4,
+      "skipped": 0,
+      "summary": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.482s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/godot-host -p test_issue_guide.py",
+      "passed": true,
+      "tests": 13,
+      "skipped": 0,
+      "summary": ".............\n----------------------------------------------------------------------\nRan 13 tests in 0.028s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/godot-host -p test_bridge.py",
+      "passed": true,
+      "tests": 44,
+      "skipped": 0,
+      "summary": "............................................\n----------------------------------------------------------------------\nRan 44 tests in 2.543s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/godot-host -p test_direct_issue.py",
+      "passed": true,
+      "tests": 25,
+      "skipped": 0,
+      "summary": ".........................\n----------------------------------------------------------------------\nRan 25 tests in 2.233s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/godot-host -p test_requirements_agent.py",
+      "passed": true,
+      "tests": 35,
+      "skipped": 0,
+      "summary": "...................................\n----------------------------------------------------------------------\nRan 35 tests in 1.328s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/godot-host -p test_acceptance.py",
+      "passed": true,
+      "tests": 8,
+      "skipped": 0,
+      "summary": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.880s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p test_editor_candidate_activation.py",
+      "passed": true,
+      "tests": 16,
+      "skipped": 0,
+      "summary": "................\n----------------------------------------------------------------------\nRan 16 tests in 2.548s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p test_writer_native_activation.py",
+      "passed": true,
+      "tests": 3,
+      "skipped": 0,
+      "summary": "...\n----------------------------------------------------------------------\nRan 3 tests in 3.908s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p test_editor_delivery_finalize.py",
+      "passed": true,
+      "tests": 15,
+      "skipped": 0,
+      "summary": "...............\n----------------------------------------------------------------------\nRan 15 tests in 5.141s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p test_gonggong_runtime_config.py",
+      "passed": true,
+      "tests": 9,
+      "skipped": 0,
+      "summary": ".........\n----------------------------------------------------------------------\nRan 9 tests in 0.011s\n\nOK"
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p test_verification_efficiency.py",
+      "passed": true,
+      "tests": 11,
+      "skipped": 0,
+      "summary": "...........\n----------------------------------------------------------------------\nRan 11 tests in 1.361s\n\nOK"
+    }
+  ],
+  "inputs": {
+    "customizations/components/godot-host/bridge.py": {
+      "sha256": "9aba31357c8d5286629b98265d2470de32897a53fe3acce4a4261e2ac7f88aef",
+      "git_blob": "f4de7cf818eae1e5c634e0646ae45b65d467c61e"
+    },
+    "customizations/components/godot-host/daqian/repository_access.py": {
+      "sha256": "64ae02bff6cdf49a6aec4b46c8a1f2c8cf8ce09f5fd7ca3be8bf0b384e64994d",
+      "git_blob": "547f4f7c7147a0fdf4243c4604e2820bea66dc50"
+    },
+    "customizations/components/godot-host/test_bridge.py": {
+      "sha256": "2cdccec033ffc3428be1a65bf32d8014ab5c00034f60cec9a689d0049b23cdb7",
+      "git_blob": "a25447048a30ea24c83e2223fa26b4be59d76b20"
+    },
+    "customizations/components/godot-host/test_issue_guide.py": {
+      "sha256": "140aa8015e6baf41bbb6aa97287e4165972796c3d7d8b7494003a8f36535af83",
+      "git_blob": "59ad8f8b06c6567069d184659bb7984bf3a058ad"
+    },
+    "customizations/components/issue-workorders/README.md": {
+      "sha256": "60c66dcc177030a9ac6b89ef2d7e10ec218ee6f3d6466a5a815a5b52495135ff",
+      "git_blob": "eed2660f8d3c654988605e76f1117007e9cc19f0"
+    },
+    "customizations/components/issue-workorders/github_runtime.py": {
+      "sha256": "e953fa7a5d42552c8fad1fdffb0be1000d2ab3a24edb260f4d8540195b80f83e",
+      "git_blob": "c58aafbb497da717e01fb0df5408b719f1956fee"
+    },
+    "customizations/components/issue-workorders/issue_gate.py": {
+      "sha256": "f0ea82ceb105d0cc2caaccdff4344dc30a066b1cccd040c821e33a96c9e9fdbb",
+      "git_blob": "b3f362d3b0c130136b6d68d08964581a36817f40"
+    },
+    "customizations/components/issue-workorders/kuafu_github.py": {
+      "sha256": "eb09032b53418d0834a366b930aa22cd901b096b596a29c23be92c049b90c858",
+      "git_blob": "1af10b42e79e9f84eae0b356c4c382879da70971"
+    },
+    "customizations/components/issue-workorders/test_github_runtime.py": {
+      "sha256": "c16e4e5d0f2bf387117210bb5aad0c874636e99b0a2f844eb1c31ac5727f5b6b",
+      "git_blob": "f3cf61816cb659da7cf9b23fe03c52158cb3c129"
+    },
+    "customizations/components/issue-workorders/test_issue_gate.py": {
+      "sha256": "ca0c39dca003fc3d5d8fb179bb78237f6eccdcf9233c343385d36c1365b92faa",
+      "git_blob": "b0739e855517336d3a4dca2c407a4d5f2ded3cc3"
+    },
+    "customizations/components/issue-workorders/work_items.py": {
+      "sha256": "a650b8bc3a1e7bbcc2aaf24890141d231e02dca01f3ba177c4fc5d3dc5d9babe",
+      "git_blob": "9cec2b635e5d32e5bd2bc701ef804d7e71dd6f76"
+    },
+    "customizations/components/issue-workorders/writer_submit.py": {
+      "sha256": "5bc74581b817b7fdc40ce3ab91b71d8848ff1f533dbdc5219016e72267d8562a",
+      "git_blob": "46122eb6c08afb5a239c22bb333e86e809895462"
+    },
+    "customizations/components/issue-workorders/yanluo_host.py": {
+      "sha256": "def8f7226065e7adefeae344d903fd3f8220cb8f8e1244dd66d3be7b272701ff",
+      "git_blob": "9b854926c95fe57212e06154254fb21a2716380a"
+    },
+    "design-docs/github-cli-runtime-unification-989.md": {
+      "sha256": "8699d916cb31bc37cc610eb0b69f8f592352ad68164d71170941cec629fc9491",
+      "git_blob": "bb11b6d3ce395fd0ebf1d06f385502a53296c446"
+    },
+    "tools/editor_candidate_activation.py": {
+      "sha256": "0fbb63b45d9d57b6cae6c0d7f313dc7461380e5176163032b0f9fd7aabe6a648",
+      "git_blob": "4c588fcf162fc99925c8a145939b30fc4427a979"
+    },
+    "tools/test_verification_efficiency.py": {
+      "sha256": "1f659c9816ff05978c1f8ecd1744409b0084c0257ae7c267287b3026d94e8143",
+      "git_blob": "addc8a3103d89aa0fc757a84c8db72036f27a863"
+    }
+  },
+  "original_reproduction": {
+    "command": "PATH=/usr/bin:/bin; unset GONGGONG_GH; work_items.gh(version) before/after import repository_access",
+    "passed": true,
+    "observed": {
+      "before": "gh version 2.89.0 (2026-03-26)",
+      "after": "gh version 2.89.0 (2026-03-26)",
+      "environment_unchanged": true
+    }
+  },
+  "test_count": 277,
+  "skipped_count": 0,
+  "all_passed": true,
+  "not_claimed": [
+    "Windows native execution (platform-specific path policy is synthetic)",
+    "independent review and exact candidate grant",
+    "commit/push/CI/main/Issue closure",
+    "parent978 native/JS/PowerShell acceptance"
+  ],
+  "root_followup": [
+    ".github/scripts/windows_editor_artifact.py shared CLI selection and regression",
+    "formal gate and independent review",
+    "new grant trusted_files includes github_runtime.py"
+  ],
+  "cleanup": {
+    "temporary_test_repositories": "TemporaryDirectory contexts removed",
+    "worktree_and_uncommitted_candidate": "retained for parent delivery",
+    "installed_app_and_global_auth": "not changed",
+    "bytecode_files_removed": [
+      "customizations/components/issue-workorders/__pycache__/issue_gate.cpython-314.pyc",
+      "customizations/components/issue-workorders/__pycache__/yanluo_progress.cpython-314.pyc",
+      "customizations/components/issue-workorders/__pycache__/github_runtime.cpython-314.pyc",
+      "customizations/components/issue-workorders/__pycache__/work_items.cpython-314.pyc",
+      "customizations/components/issue-workorders/__pycache__/writer_submit.cpython-314.pyc",
+      "customizations/components/issue-workorders/__pycache__/issue_events.cpython-314.pyc",
+      "customizations/components/issue-workorders/__pycache__/kuafu_incident.cpython-314.pyc",
+      "customizations/components/godot-host/__pycache__/bridge.cpython-314.pyc",
+      "customizations/components/godot-host/__pycache__/workspace_paths.cpython-314.pyc",
+      "customizations/components/godot-host/__pycache__/environment_igniter.cpython-314.pyc",
+      "tools/__pycache__/gonggong_runtime_config.cpython-314.pyc",
+      "tools/__pycache__/editor_engine_candidate.cpython-314.pyc",
+      "tools/__pycache__/editor_candidate_activation.cpython-314.pyc"
+    ],
+    "retained_caches": "Root-level .ruff_cache if present belongs to parent cleanup scope; not claimed removed"
+  },
+  "initial_failures": [
+    {
+      "test": "test_github_runtime archive fixture",
+      "cause": "macOS /var and /private/var refer to same directory",
+      "resolution": "canonicalize temporary fixture root"
+    },
+    {
+      "test": "test_issue_gate other origin fixture",
+      "cause": "noncanonical temporary root failed before origin assertion",
+      "resolution": "canonicalize temporary fixture root"
+    },
+    {
+      "test": "test_verification_efficiency candidate tool fixture",
+      "cause": "stale expectation that candidate code can replace installed validator",
+      "resolution": "assert trusted installed validator remains; preserve invalid data clears cache assertion"
+    },
+    {
+      "test": "test_bridge doctor fixture",
+      "cause": "monkeypatch referenced removed independent shutil resolver",
+      "resolution": "patch shared resolver dependency"
+    },
+    {
+      "test": "test_acceptance actual CLI fixture",
+      "cause": "Node absent from shell PATH",
+      "resolution": "use provided host Node in test environment"
+    }
+  ],
+  "static_checks": [
+    {
+      "command": "git diff --check",
+      "passed": true
+    },
+    {
+      "command": "ruff check --no-fix (14 changed Python implementation/test files)",
+      "passed": true
+    }
+  ],
+  "build_boundary": {
+    "placement": "host_tool within existing issue-workorders component",
+    "new_module_registration": false,
+    "native_inputs_changed": false,
+    "source_archive_import": "test_archived_host_imports_dependency_and_relocates_runtime passed for work_items and bridge",
+    "cli_replacement": "test_install_after_failed_probe_and_replacement_are_visible passed",
+    "rollback": "restore consumers/helper as same reviewed source candidate; no installed app switched"
+  }
+}

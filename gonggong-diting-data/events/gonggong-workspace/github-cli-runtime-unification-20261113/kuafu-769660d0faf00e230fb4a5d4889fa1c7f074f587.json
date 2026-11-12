@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-769660d0faf00e230fb4a5d4889fa1c7f074f587",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "github-cli-runtime-unification-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/989",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ec3e0545ca05f479ba2abbb58b41af9ff9ae8c5e0e120f6792e9d78e63d3fc12",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/989",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/989",
+    "action": "intake",
+    "detection_head": "0010a548ad5b52ef268e28c5e9c2c6b9a4ae26e2",
+    "context_sha256": "ace3b8b65efa123a2b6b180d8e7d8f9678ff5c8604ed945395a3f0ce7f740bf7",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-refactor",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Issue989 actual intake-only command and readback, source updated2026-11-12T16:37:43Z",
+    "diagnosis": "Worker repeated intake without required explicit tenant. Root had already passed exact-worktree intake with --tenant gonggong-workspace; worker corrected argument and received successful readback. No repository authorization or product defect.",
+    "next_action": "Continue authorized isolated runtime consolidation. Synthetic tests set GONGGONG_KUAFU_LOCAL_ONLY=1; do not repeat identical intake.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T16:52:17.978820+00:00",
+    "attempted": null,
+    "repair_owner": "/root/sinan_c8a3e555bec56d88",
+    "continuable": "Issue989 implementation and verification"
+  },
+  "occurred_at": "2026-11-12T16:55:07.806303+00:00",
+  "sha256": "9fe57c79f8cf0a20000d6ddd354096d6eae72258a39d449fe52b68e05b5d52df"
+}

@@ -10,6 +10,10 @@ Windows 推荐从任务隔离工作树执行 `./tools/run_issue_gate.ps1 -Issue 
 
 `WORKTREE_UNSTAGED` 表示工作文件与 index 不同，尚未执行框架准入；在基于已回读主线的独立工作树组装当前任务，不为通过门禁暂存别人的文件。`GIT_PERMISSION`、`GIT_LOCK`、`GITHUB_NETWORK`、`GITHUB_HTTP_*`、`*_TIMEOUT` 分别处理权限、占用、网络、API 权限及未知超时。错误不回显子进程原始输出或凭据；不能将网络不可用或工具缺失报成批准拒绝。
 
+Python 宿主的 GitHub CLI 解析与传输统一位于本组件 `github_runtime.py`。优先级为显式 `GONGGONG_GH`、实际安装根 `project/runtime/gh/bin/`、调用环境的 PATH、当前平台的固定安装位置。安装根来自助手文件本身；工单仓库、候选 `source_root` 与用户打开的项目只提供数据，不成为工具搜索根。显式值为空、文件缺失或不可执行时返回 `GITHUB_RUNTIME`，不改选另一 CLI；配置相对路径以调用进程 cwd 解析。解析不缓存、不修改环境或登录账号，安装后下一次调用立即可见。桥接保留 `find_gh` 的可用性探测接口，实际认证探测保留运行、网络与超时错误，不把这些错误写成未登录。
+
+`work_items.gh` 同时支持 argv 与 `input_value`，工单读写、签发 GraphQL、夸父写入及候选激活沿用此入口。Git 凭据助手使用同一解析结果并按 Git shell 规则引用路径，不写全局 Git 配置。阎罗在当前实例绑定已解析的 CLI，并把新助手纳入 `trusted_files`；旧 grant 清单缺项时拒绝，需要按实际候选重新核验和签发，不能改写历史批准。常驻门禁发现已加载的工单或 GitHub 助手字节变化时要求重启会话。边界与隔离验证见 [#989 设计](../../../design-docs/github-cli-runtime-unification-989.md)。
+
 交付分别记录 commit SHA、push 回执、精确候选 CI、main 接收和回读、Issue 状态。每条命令失败立即保留该阶段，不让后续成功覆盖退出码。push 成功但 fetch/readback 失败标记 `published_readback_pending`，恢复先按 SHA 回读远端，不重复提交/推送。已有阎罗 journal 按相同原则续接；不改写批准定义，不新增后台发布器。
 
 偃师定版后的父子工单拆分、按子项提交关闭、阎罗少量尾项结转及文档追溯，统一遵循 [Issue 生命周期](issue-lifecycle.md)。设计内使用 [拆分模板](../../../design-docs/templates/issue-breakdown.md)；原生子项关系和远端状态必须实际写入并回读。

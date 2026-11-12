@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c81d623ac10c24b05259247d2f17437a686e40ff",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "github-cli-runtime-unification-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/989",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "9ab15a5af67aecef4cd7ff89363c740fc1369c52e91724fb229c034cf5dfcdd0",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/989",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/989",
+    "action": "delivery",
+    "detection_head": "9af0927ac3a830d61ec99635b88d29a35d2e37bd",
+    "context_sha256": "ace3b8b65efa123a2b6b180d8e7d8f9678ff5c8604ed945395a3f0ce7f740bf7",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-refactor",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "data-collection/github-cli-runtime-followup-989.json",
+    "diagnosis": "Followup validation attempted to update an already committed collection evidence file. Restored original bytes and appended the actual288-test followup as a new evidence record; implementation unchanged. No remote merge occurred.",
+    "next_action": "Stage restored original and appended correction, rerun formal writer submission; retain exact source and CI history.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T17:34:45.990160+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T17:36:30.442401+00:00",
+  "sha256": "18badaafdf1f88382ceb15f2e73a396988f04144b6cc19565857e1441e047099"
+}

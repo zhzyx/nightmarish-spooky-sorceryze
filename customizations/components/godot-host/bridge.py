@@ -8,7 +8,6 @@ import os
 import re
 import runpy
 import shlex
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -214,35 +213,21 @@ def enqueue(root, event):
     temporary.replace(pending)
 
 
+_github_spec = importlib.util.spec_from_file_location(
+    "gonggong_github_runtime", Path(__file__).resolve().parents[1] / "issue-workorders/github_runtime.py"
+)
+if _github_spec is None or _github_spec.loader is None:
+    raise ImportError("Cannot load installed GitHub runtime")
+_github = importlib.util.module_from_spec(_github_spec)
+_github_spec.loader.exec_module(_github)
+
+
 def find_gh(env, root=None):
-    """GUI-launched hosts often lack the user's shell PATH; never guess beyond fixed install locations."""
-    configured = env.get("GONGGONG_GH")
-    if configured:
-        return configured if Path(configured).is_file() else None
-    if root is not None:
-        local = Path(root) / "project/runtime/gh/bin/gh.exe"
-        if local.is_file():
-            return str(local)
-    found = shutil.which("gh", path=env.get("PATH"))
-    if found:
-        return found
+    """Compatibility probe; root selects project data, never an executable source."""
     try:
-        home = Path.home()
-    except RuntimeError:
-        home = None
-    candidates = [Path("/opt/homebrew/bin/gh"), Path("/usr/local/bin/gh")]
-    if home is not None:
-        candidates.insert(0, home / ".local/bin/gh")
-    for candidate in candidates:
-        if candidate.is_file() and os.access(candidate, os.X_OK):
-            return str(candidate)
-    candidates = [Path(os.environ.get("ProgramFiles", "C:/Program Files")) / "GitHub CLI/gh.exe"]
-    if home is not None:
-        candidates += sorted((home / "Documents/Codex/tools/github-cli").glob("*/bin/gh.exe"), reverse=True)
-    for candidate in candidates:
-        if candidate.is_file():
-            return str(candidate)
-    return None
+        return _github.resolve_gh(env)
+    except _github.GitHubCommandError:
+        return None
 
 
 def host_environment(root):
@@ -260,7 +245,7 @@ def host_environment(root):
     # Never let a deployed legacy environment hide a later field edit.
     if snapshot is not None:
         env = _runtime.child_environment(snapshot, env)
-    gh = find_gh(env, root)
+    gh = _github.resolve_gh(env) if "GONGGONG_GH" in env else find_gh(env, root)
     if gh:
         env["GONGGONG_GH"] = gh
     node = env.get("GONGGONG_NODE")
@@ -830,20 +815,14 @@ def create_command(fields):
 
 
 def gh_authenticated(gh, env):
-    """Read-only `gh auth status`; logging in stays an interactive user action in a terminal."""
+    """Read authentication status; runtime/network failures retain their own reason."""
     try:
-        result = subprocess.run(
-            [gh, "auth", "status", "--hostname", "github.com"],
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            env=env,
-            timeout=30,
-        )
-    except (OSError, subprocess.TimeoutExpired):
-        return False
-    return result.returncode == 0
+        _github.run_gh("auth", "status", "--hostname", "github.com", env=dict(env, GONGGONG_GH=gh), timeout=30)
+    except _github.GitHubCommandError as error:
+        if str(error).startswith("GITHUB_COMMAND:") or error.http_status == 401:
+            return False
+        raise
+    return True
 
 
 def login_command(gh):

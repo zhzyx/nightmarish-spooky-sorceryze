@@ -109,17 +109,28 @@ class IssueGuideTests(unittest.TestCase):
         self.assertEqual((started["ok"], started["error"], started["login_command"]), expected)
         self.assertFalse(started["remote_changed"])
 
-    def test_auth_status_is_read_only_and_failure_means_unauthenticated(self):
+    def test_auth_status_distinguishes_authentication_from_runtime_failure(self):
         from types import SimpleNamespace
 
-        with patch.object(
-            bridge.subprocess,
-            "run",
-            side_effect=[SimpleNamespace(returncode=1), SimpleNamespace(returncode=0), OSError("missing")],
-        ) as run:
+        with (
+            patch.object(bridge._github, "resolve_gh", side_effect=lambda env: env["GONGGONG_GH"]),
+            patch.object(
+                bridge.subprocess,
+                "run",
+                side_effect=[
+                    SimpleNamespace(returncode=1, stderr="login required", stdout=""),
+                    SimpleNamespace(returncode=0, stdout=""),
+                    OSError("invalid executable"),
+                    SimpleNamespace(returncode=1, stderr="EOF", stdout=""),
+                ],
+            ) as run,
+        ):
             self.assertFalse(bridge.gh_authenticated("gh", {}))
             self.assertTrue(bridge.gh_authenticated("gh", {}))
-            self.assertFalse(bridge.gh_authenticated("missing", {}))
+            with self.assertRaisesRegex(bridge._github.GitHubCommandError, "^GITHUB_RUNTIME:"):
+                bridge.gh_authenticated("missing", {})
+            with self.assertRaisesRegex(bridge._github.GitHubCommandError, "^GITHUB_NETWORK:"):
+                bridge.gh_authenticated("gh", {})
         self.assertEqual(run.call_args_list[0].args[0], ["gh", "auth", "status", "--hostname", "github.com"])
         self.assertEqual(run.call_args_list[1].args[0], ["gh", "auth", "status", "--hostname", "github.com"])
 
@@ -254,7 +265,10 @@ class IssueGuideTests(unittest.TestCase):
         tool = self.root / "project/runtime/gh/bin/gh.exe"
         tool.parent.mkdir(parents=True)
         tool.write_bytes(b"isolated fixture; never executed")
-        self.assertEqual(bridge.find_gh({"PATH": ""}, self.root), str(tool))
+        tool.chmod(0o755)
+        # Only the installed host root is a trusted executable source.
+        with patch.object(bridge._github, "INSTALLATION", self.root):
+            self.assertEqual(bridge.find_gh({"PATH": ""}, Path("untrusted-project")), str(tool))
         missing = str(self.root / "explicitly-missing-gh")
         self.assertIsNone(bridge.find_gh({"GONGGONG_GH": missing, "PATH": ""}, self.root))
 

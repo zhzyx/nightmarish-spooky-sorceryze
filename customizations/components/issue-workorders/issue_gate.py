@@ -18,6 +18,11 @@ BATCH_RELATIVE = "customizations/platforms/development/git/git_batch.py"
 BATCH_PATH = INSTALLATION / BATCH_RELATIVE
 BATCH_SOURCE = BATCH_PATH.read_bytes()
 GATE_SOURCE = Path(__file__).read_bytes()
+GITHUB_SOURCES = {}
+for module in (work_items, work_items.github_runtime):
+    if not module.__file__:
+        raise ValueError("Installed GitHub dependency must have a source file")
+    GITHUB_SOURCES[Path(module.__file__)] = Path(module.__file__).read_bytes()
 REGISTRATION = INSTALLATION / "integrations/gonggong/frozen-distribution.json"
 if (
     hashlib.sha256(BATCH_SOURCE).hexdigest()
@@ -602,7 +607,11 @@ class VerificationSession:
         self.events = {}
 
     def check_runtime(self):
-        if Path(__file__).read_bytes() != GATE_SOURCE or BATCH_PATH.read_bytes() != BATCH_SOURCE:
+        if (
+            Path(__file__).read_bytes() != GATE_SOURCE
+            or BATCH_PATH.read_bytes() != BATCH_SOURCE
+            or any(not path.is_file() or path.read_bytes() != source for path, source in GITHUB_SOURCES.items())
+        ):
             self.events.clear()
             raise ValueError("Gate implementation changed; restart the verification session")
 

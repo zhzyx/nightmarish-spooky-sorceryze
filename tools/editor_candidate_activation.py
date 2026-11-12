@@ -611,9 +611,7 @@ def main():
 
         # GitHub associates commits with their PRs; no user-selected path/branch/PR is needed.
         head = git(root, "rev-parse", "HEAD")
-        prs = json.loads(
-            command([os.environ.get("GONGGONG_GH", "gh"), "api", f"repos/{repository}/commits/{head}/pulls"])
-        )
+        prs = json.loads(writer_submit.work_items.gh("api", f"repos/{repository}/commits/{head}/pulls"))
         accepted = [p for p in prs if p.get("merged_at") and p.get("base", {}).get("ref") == "main"]
         if len(accepted) != 1:
             raise ActivationError("activation_main_receipt_missing")

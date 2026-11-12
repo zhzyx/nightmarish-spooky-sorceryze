@@ -128,7 +128,7 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual(load.call_count, 2)
         self.assertLessEqual(calls.call_count, 6)
 
-    def test_session_tool_changes_and_failures_clear_evidence(self):
+    def test_session_candidate_tools_cannot_replace_host_and_failures_clear_evidence(self):
         for relative in [
             "customizations/platforms/data-collection/git-files/storage/diting_files.py",
             "customizations/platforms/development/git/git_batch.py",
@@ -143,7 +143,8 @@ class EvidenceTests(unittest.TestCase):
         path = self.root / "customizations/platforms/development/git/git_batch.py"
         path.write_bytes(path.read_bytes() + b"\n")
         session.check_diting(self.root)
-        self.assertIsNot(session.module, old_module)
+        self.assertIs(session.module, old_module)
+        self.assertEqual(Path(session.module["__file__"]).resolve(), DITING.resolve())
         self.event.write_text("{broken json")
         with self.assertRaises(ValueError):
             session.check_diting(self.root)
