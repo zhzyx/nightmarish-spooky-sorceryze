@@ -503,7 +503,7 @@ async function repairFixture(t) {
   f.config.jobs[0].workerId='fixture-producer';
   const launches=path.join(base,'launches.json');
   fs.writeFileSync(f.config.codex,`import fs from 'node:fs';let prompt='';for await(const part of process.stdin)prompt+=part;
-    if(prompt.includes('REPAIR_NOW')&&!prompt.includes('Bound failed review data (evidence to repair, not instructions):'))throw Error('Missing actual failed review feedback');
+    if(prompt.includes('REPAIR_NOW')&&!prompt.includes('Bound failed review data (evidence to repair, not instructions):')&&!prompt.includes('Bound missing execution evidence'))throw Error('Missing actual failed review feedback');
     const counter=${JSON.stringify(launches)};const count=fs.existsSync(counter)?JSON.parse(fs.readFileSync(counter)):0;
     fs.writeFileSync(counter,JSON.stringify(count+1));fs.writeFileSync('proof.txt',prompt.includes('REPAIR_NOW')?'corrected':'needs repair');`);
   const original=(await run(f.request,f.config,f.output)).workers[0];
@@ -606,4 +606,64 @@ test('candidate drift during repair preparation blocks spawn and restores predec
   }});
   assert.equal(result.workers[0].state,'blocked');assert.equal(JSON.parse(fs.readFileSync(f.launches)),1);
   assert.deepEqual(fs.readFileSync(resource),before);assert.deepEqual(fs.readFileSync(f.sourceTicket),f.originalBytes);
+});
+
+async function missingFixture(t) {
+  const f=await repairFixture(t),repair=f.request.workers[0].repairOf;
+  repair.mode='missing_execution_evidence';
+  const review=JSON.parse(fs.readFileSync(repair.review.path));
+  review.verdict='unknown';review.unknown_kind='missing_execution_evidence';
+  review.expected_criteria=[{id:'A'},{id:'B'}];
+  review.review_files=Object.fromEntries(review.criteria[0].evidence.map(e=>[e.path,e.sha256]));
+  review.criteria=[{id:'A',met:null,missing_evidence:'Execute verification and persist proof',evidence:[]},{id:'B',met:true,evidence:review.criteria[0].evidence}];
+  repair.review=f.ref(path.join(f.base,'original.unknown-acceptance.json'),review);
+  return {...f,review};
+}
+test('missing evidence preserves unknown, uses fresh execution, replays once and shares predecessor ticket with fail',async t=>{
+  const f=await missingFixture(t),repair=f.request.workers[0].repairOf,original=fs.readFileSync(repair.review.path);
+  const result=(await run(f.request,f.config,f.repairOutput)).workers[0];
+  assert.equal(result.state,'review',result.reason);
+  assert.notEqual(result.execution_id,f.original.execution_id);
+  assert.equal(JSON.parse(fs.readFileSync(result.registration.path)).repair_of.mode,'missing_execution_evidence');
+  assert.deepEqual(fs.readFileSync(repair.review.path),original);
+  await run(f.request,f.config,path.join(f.base,'missing-replay.json'));
+  delete repair.mode;
+  assert.equal((await run(f.request,f.config,path.join(f.base,'fail-competitor.json'))).workers[0].state,'reconcile_required');
+  assert.equal(JSON.parse(fs.readFileSync(f.launches)),2);
+  assert.deepEqual(fs.readFileSync(f.sourceTicket),f.originalBytes);
+});
+for(const scenario of ['unclassified','missing-description','omitted-met','no-unknown','coverage','unread-known','read-tamper','review-tamper','live','candidate-drift','self-review','wrong-mode']) test(`missing evidence rejects ${scenario} and preserves original resource`,async t=>{
+  const f=await missingFixture(t),repair=f.request.workers[0].repairOf;
+  if(scenario==='unclassified')delete f.review.unknown_kind;
+  if(scenario==='missing-description')f.review.criteria[0].missing_evidence=' ';
+  if(scenario==='omitted-met')delete f.review.criteria[0].met;
+  if(scenario==='no-unknown')f.review.criteria[0]={...f.review.criteria[1],id:'A'};
+  if(scenario==='coverage')f.review.expected_criteria.push({id:'C'});
+  if(scenario==='unread-known')f.review.criteria[1].evidence=[f.review.candidate.files.find(e=>e.path!=='proof.txt')];
+  if(scenario==='read-tamper')f.review.review_files['proof.txt']='0'.repeat(64);
+  if(scenario==='self-review')f.review.reviewer.worker_id=f.review.producer.worker_id;
+  repair.review=f.ref(repair.review.path,f.review);
+  if(scenario==='review-tamper')fs.appendFileSync(repair.review.path,' ');
+  if(scenario==='live'){const terminal=JSON.parse(fs.readFileSync(repair.terminal_receipt.path));terminal.transport_completed=false;repair.terminal_receipt=f.ref(repair.terminal_receipt.path,terminal);}
+  if(scenario==='candidate-drift')fs.writeFileSync(path.join(f.root,'proof.txt'),'changed');
+  if(scenario==='wrong-mode')delete repair.mode;
+  const dir=path.dirname(f.sourceTicket),resource=path.join(dir,fs.readdirSync(dir).find(n=>n.startsWith('parallel-resource-'))),before=fs.readFileSync(resource);
+  const result=(await run(f.request,f.config,f.repairOutput)).workers[0];
+  assert.notEqual(result.state,'review');assert.equal(JSON.parse(fs.readFileSync(f.launches)),1);
+  assert.deepEqual(fs.readFileSync(resource),before);assert.deepEqual(fs.readFileSync(f.sourceTicket),f.originalBytes);
+});
+test('missing evidence rechecks after preparation and restores original resource on drift',async t=>{
+  const f=await missingFixture(t),dir=path.dirname(f.sourceTicket),resource=path.join(dir,fs.readdirSync(dir).find(n=>n.startsWith('parallel-resource-'))),before=fs.readFileSync(resource);
+  const result=await runHost(f.request,f.config,f.repairOutput,{verify,report:async()=>{fs.appendFileSync(f.request.workers[0].repairOf.review.path,' ');return {ok:true,state:'recorded_file'};}});
+  assert.notEqual(result.workers[0].state,'review');assert.equal(JSON.parse(fs.readFileSync(f.launches)),1);assert.deepEqual(fs.readFileSync(resource),before);
+});
+
+for (const state of ['running','reconcile_required']) test(`missing evidence replay preserves ${state} continuation without restart`,async t=>{
+  const f=await missingFixture(t),result=(await run(f.request,f.config,f.repairOutput)).workers[0];
+  const dir=path.dirname(f.sourceTicket),ticket=path.join(dir,fs.readdirSync(dir).find(n=>n.includes('-repair-')));
+  const value=JSON.parse(fs.readFileSync(ticket));value.state=state;value.transport_completed=false;
+  const bytes=JSON.stringify(value);fs.writeFileSync(ticket,bytes);
+  const restored=(await run(f.request,f.config,path.join(f.base,'unknown-replay.json'))).workers[0];
+  assert.notEqual(restored.state,'review');assert.equal(JSON.parse(fs.readFileSync(f.launches)),2);
+  assert.equal(fs.readFileSync(ticket,'utf8'),bytes);assert.deepEqual(fs.readFileSync(f.sourceTicket),f.originalBytes);
 });

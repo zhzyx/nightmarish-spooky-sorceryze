@@ -76,7 +76,7 @@ if(name==='C') {
 const event=phase=>fs.appendFileSync(new URL('./worker-events.jsonl',import.meta.url),JSON.stringify({name,phase,pid:process.pid,time:Date.now()})+'\\n');
 event('start');await new Promise(r=>setTimeout(r,1200));
 fs.writeFileSync('fixture-input.txt','UNTRUSTED_FIXTURE_FILE actual external '+name+' execution\\n');
-if(prompt.includes('Bound failed review data'))fs.writeFileSync('repair-evidence.txt','actual repaired execution');
+if((prompt.includes('Bound failed review data')||prompt.includes('Bound missing execution evidence')))fs.writeFileSync('repair-evidence.txt','actual repaired execution');
 event('finish');console.log('Actual fixture worker completed '+name);
 """,
         encoding="utf8",
@@ -165,6 +165,10 @@ def diagnostics():
     for path in folder.glob("godot-candidate-*/data-collection/outbox/parallel-*"):
         if path.is_file() and path.suffix == ".json":
             result.append({"path": str(path.relative_to(folder)), "body": path.read_text(encoding="utf8")})
+    # Worktree executions share the original repository's common directory;
+    # their durable ticket lineage is stored beside that directory.
+    for path in (folder / "original/data-collection/outbox").glob("parallel-ticket-*.json"):
+        result.append({"path": str(path.relative_to(folder)), "body": path.read_text(encoding="utf8")})
     path = folder / "worker-events.jsonl"
     if path.exists():
         result.append({"path": "worker-events", "body": path.read_text(encoding="utf8")})

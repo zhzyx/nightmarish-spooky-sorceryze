@@ -1,0 +1,262 @@
+{
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "main_revision": "bb4d0d5565a33547b50490baa61d39b23cb41e89",
+  "pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/879",
+  "signed_commit": "90572521673187844b0fbe91672bcd9fdea7d1f4",
+  "installation": {
+    "source_root": "../..",
+    "workspace": "../..",
+    "schema_version": 2,
+    "files": [
+      {
+        "sha256": "22a2ca6c780d5e68109da37d5cf8ef8d3898eabf337b8dd19653ec64e7d51f6a",
+        "path": "bin/godot.windows.editor.x86_64.console.exe",
+        "bytes": 242688
+      },
+      {
+        "sha256": "8bf8ab407935b552ace14da1e40f1fe612033d2db5bdf0394fead9e86fa6c1c5",
+        "path": "bin/godot.windows.editor.x86_64.exe",
+        "bytes": 176282624
+      },
+      {
+        "sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+        "path": "bin/tianshu-ui.json",
+        "bytes": 67422
+      }
+    ],
+    "console_editor": "bin/godot.windows.editor.x86_64.console.exe",
+    "path_base": "installation_directory",
+    "default_editor": "bin/godot.windows.editor.x86_64.exe",
+    "main_revision": "bb4d0d5565a33547b50490baa61d39b23cb41e89"
+  },
+  "ci": [
+    {
+      "name": "issue-association",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141587161/job/130929592742"
+    },
+    {
+      "name": "📊 Static checks / Code style, file formatting, and docs",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141587400/job/130929590855"
+    },
+    {
+      "name": "📊 Static checks / Code style, file formatting, and docs",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141572434/job/130929563213"
+    },
+    {
+      "name": "🤖 Android",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141587400/job/130929860870"
+    },
+    {
+      "name": "🤖 Android",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141572434/job/130929706420"
+    },
+    {
+      "name": "🍏 iOS",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141587400/job/130929861871"
+    },
+    {
+      "name": "🍏 iOS",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141572434/job/130929705538"
+    },
+    {
+      "name": "🐧 Linux",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141587400/job/130929861084"
+    },
+    {
+      "name": "🐧 Linux",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141572434/job/130929705562"
+    },
+    {
+      "name": "🍎 macOS",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141587400/job/130929861829"
+    },
+    {
+      "name": "🍎 macOS",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141572434/job/130929705624"
+    },
+    {
+      "name": "Compile affected Windows engine targets",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141587400/job/130929861490"
+    },
+    {
+      "name": "Compile affected Windows engine targets",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141572434/job/130929706550"
+    },
+    {
+      "name": "Compile affected Metal targets",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141587400/job/130929861440"
+    },
+    {
+      "name": "Compile affected Metal targets",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141572434/job/130929706034"
+    },
+    {
+      "name": "🌐 Web",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141587400/job/130929861393"
+    },
+    {
+      "name": "🌐 Web",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141572434/job/130929705699"
+    },
+    {
+      "name": "🏁 Windows",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141572434/job/130929706830"
+    },
+    {
+      "name": "🏁 Windows / Editor (target=editor)",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43141587400/job/130929860479"
+    }
+  ],
+  "installed_native_aichat": {
+    "cases": 89,
+    "assertions": 1620,
+    "failed": 0,
+    "log_sha256": "2980c9bc3a85bceed7789a9701d9ad24b366b190cb9320e0ccf6b3598bdeb32d"
+  },
+  "ordinary_game_cold_review_recovery": {
+    "ok": true,
+    "report_sha256": "19ace9e1ba2350cb14027cee39f4513e19a71e9e6fb4974a705cb8e1d026e971",
+    "scope": "Controlled transports; actual installed editor, production worktrees, review recovery, integration, run and rollback."
+  },
+  "closed_children": [
+    {
+      "closedAt": "2026-11-12T02:56:42Z",
+      "labels": [
+        {
+          "id": "LA_kwDOVegMdc8AAAADAiCYGg",
+          "name": "type:development",
+          "description": "功能开发与引擎集成",
+          "color": "1D76DB"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAoJx5g",
+          "name": "status:done",
+          "description": "完成：验收通过且交付范围有据",
+          "color": "0E8A16"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAsMSPg",
+          "name": "workspace:gonggong",
+          "description": "共工统一工作区及其已接入子模块",
+          "color": "0E8A16"
+        }
+      ],
+      "number": 810,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/810"
+    },
+    {
+      "closedAt": "2026-11-12T02:56:52Z",
+      "labels": [
+        {
+          "id": "LA_kwDOVegMdc8AAAADAiCYGg",
+          "name": "type:development",
+          "description": "功能开发与引擎集成",
+          "color": "1D76DB"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAoJx5g",
+          "name": "status:done",
+          "description": "完成：验收通过且交付范围有据",
+          "color": "0E8A16"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAsMSPg",
+          "name": "workspace:gonggong",
+          "description": "共工统一工作区及其已接入子模块",
+          "color": "0E8A16"
+        }
+      ],
+      "number": 821,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/821"
+    },
+    {
+      "closedAt": "2026-11-12T02:57:01Z",
+      "labels": [
+        {
+          "id": "LA_kwDOVegMdc8AAAADAiCYGg",
+          "name": "type:development",
+          "description": "功能开发与引擎集成",
+          "color": "1D76DB"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAoJx5g",
+          "name": "status:done",
+          "description": "完成：验收通过且交付范围有据",
+          "color": "0E8A16"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAsMSPg",
+          "name": "workspace:gonggong",
+          "description": "共工统一工作区及其已接入子模块",
+          "color": "0E8A16"
+        }
+      ],
+      "number": 820,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/820"
+    },
+    {
+      "closedAt": "2026-11-12T02:57:11Z",
+      "labels": [
+        {
+          "id": "LA_kwDOVegMdc8AAAADAiCYGg",
+          "name": "type:development",
+          "description": "功能开发与引擎集成",
+          "color": "1D76DB"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAoJx5g",
+          "name": "status:done",
+          "description": "完成：验收通过且交付范围有据",
+          "color": "0E8A16"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAsMSPg",
+          "name": "workspace:gonggong",
+          "description": "共工统一工作区及其已接入子模块",
+          "color": "0E8A16"
+        }
+      ],
+      "number": 811,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/811"
+    }
+  ],
+  "retained_failures": {
+    "first_install": "File replacement was temporarily occupied. Official rollback verified all old hashes; official retry succeeded. Owner and cause remain unknown.",
+    "wrong_cold_fixture": "An initial --case cold invocation exercised the wrong wrapper mode and failed; the intended --review-recovery cold scenario subsequently passed."
+  },
+  "parent_acceptance": "open: actual-provider complete production and full editor scope are still pending; no total-completion claim",
+  "remaining_issues": [
+    876,
+    877,
+    878,
+    559
+  ]
+}

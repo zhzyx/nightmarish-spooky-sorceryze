@@ -1,0 +1,397 @@
+{
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "child_issues": [
+    876,
+    877,
+    878
+  ],
+  "candidate_base": "90c17c9770bac3e0ecc4a9d53bbf9e2e15a730fc",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "f215adabe944412161f1798ee5f46653a25189b5bedc911be3d7a7192f67791f",
+    "editor/docks/ai_chat_dock.h": "79736703a90ae3dcbcb63c791706361343a9e589802a5bac353d74e64cd1b1cd",
+    "editor/docks/ai_chat_engine_candidate.cpp": "6919271f8fc7a6879a7cbb9b512b14e4e2d09087eb99286294577538f4a53800",
+    "editor/docks/ai_chat_sub_agents.cpp": "ca009be06fa72f0d25ccf7a96c47d7d290e64c7e70b173d16bf8a9295fc491b8",
+    "tests/editor/ainative_builtin.gd": "abddbe28a7bf0bffee17052f5fdaa537ce605b0a0fa5353617f06f18d69728ec",
+    "tests/editor/design_batch.gd": "8d236f71138649c25e36b265eb822d9a6f8e03fe4fe86713ff4890426caf5938",
+    "tests/editor/native_acceptance_parallel.py": "05edf1458a244d907e2fb05e65c5b3766919be27ec2b2adcc6e6824a58a22e90",
+    "tests/editor/run_design_batch.py": "8da27684b640cb9a7ab044d1b69cae9dfa485d305904ea2182a599a714a166c1",
+    "tests/editor/run_game_readonly_review.py": "1de51704c6ffe0c89a2398eabfe59e9a2a32fdcee030c473f309a4d2946637bb",
+    "tests/editor/run_native_acceptance.py": "91f1d7c0b3cdeae5e13fa80cf5bb51bfaa8239b1f306cc1d2575151498c9c38b",
+    "tests/editor/test_parallel_work_orders.mjs": "09be8b2eb7c1e09e71cf7fd4fe9b3e144160e1960d970cb5218c8d8144070a89",
+    "tools/godot_parallel/repair.mjs": "e084856aac219061636e1093c23b6b14d1dba1dc10e7f3e95644f25192a418db",
+    "tools/godot_parallel/runner.mjs": "207fa32e44b4037a579ab6e0e210dbbcd0d1eba7c9edf3148974cecbc193bc2d"
+  },
+  "initial_targeted_binary": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+  "native_cases": [
+    {
+      "case": "engine:parallel-blocked",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "f3c038e30666ea1593203262c05652a9652c1be3bbded6475661100893b63bc6",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333"
+    },
+    {
+      "case": "game:review",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "9bbda34d2fe2cd822016394d4d101c0091421d1471b02d5f175e6f72fff3b075",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "restored": {
+        "ok": true,
+        "new_requests": 0
+      },
+      "http_post_count": 8
+    },
+    {
+      "case": "engine:parallel-blocked-dependency",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "3ab5da9ba550ff4ea1c85583591d4f7852cfffb542ddf33babe26ff76fc8f889",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333"
+    },
+    {
+      "case": "engine:parallel-blocked-model",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "039bdfbceafb7e2c284d8240f9ad8a3f574186f73a8f0eaa027b1b8716ac4591",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333"
+    },
+    {
+      "case": "engine:parallel-blocked-unknown",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "bcc34d70aeb1405397588ff790892010196adb69cefb5a1a3b58f3b2fed84ef7",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333"
+    },
+    {
+      "case": "engine:parallel-blocked-tampered",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "80c893b743b963dc7cceaa889593513935164409ac7bc8795e00487df83cbb43",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333"
+    },
+    {
+      "case": "engine:parallel-blocked-live",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "22f8a7b0c7291214928b91e95eb0c3c627fd3e62488eac565963fb165451a761",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333"
+    },
+    {
+      "case": "engine:parallel-blocked-stale",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "e217f0178877f279b6d11d542a0bdcb0f8395a207901b66929c927aa3c5e0c63",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333"
+    },
+    {
+      "case": "game:review-stale-head",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "010bad6b6b51244e73b28c98532e01e22c3649d9ec7b8d401a8e66682f43fbea",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333"
+    },
+    {
+      "case": "engine:parallel-blocked-prefix",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "b40df69fdeb3a4056ae16f50f545a357b712150aa5e4b5db7f934a244f98f073",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333"
+    },
+    {
+      "case": "engine:parallel-blocked-cold",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "5ce4479d489002f6c890231704927bfb16a316b8953a3ae74549741c7df76d14",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "restored": {
+        "ok": true,
+        "new_requests": 0
+      },
+      "http_post_count": 2
+    },
+    {
+      "case": "game:review-stale-link",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "3225c8ead1796b2b0b67c6c1878b484ab3f0a925ccc65571aa56d9eef03898e0",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333"
+    },
+    {
+      "case": "game:review-stale-branch",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "8ca4c90a487822467398cc31d3b490b56898bdf59821812e79e1aa6016b28454",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333"
+    },
+    {
+      "case": "game:review-stale-common-dir",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "7d7925e1041ba1335fd4ad0e0bfadb1b0321e3777a851340544d419efb8a17eb",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333"
+    },
+    {
+      "case": "game:review:root",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "5f02990cd3109b4b5f277892edbedceba5feebcfe44edf499336827f20732911",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "restored": {
+        "ok": true,
+        "new_requests": 0
+      },
+      "http_post_count": 8
+    },
+    {
+      "case": "native:parallel-evidence-exhausted",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "0bfe990a4ddc6844fbec30b6c1801a19cceaf8e1099582381ccae1b865b2d284",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "accepted_producers": 1,
+      "parent_returns": 1
+    },
+    {
+      "case": "native:parallel-evidence-completion",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "7c0f348fbe24a41f1f134d892bcce9f9b8366dfb056dae42d6815bbe0a1a1199",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "accepted_producers": 3,
+      "parent_returns": 1
+    },
+    {
+      "case": "native:parallel-repair",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "cf69a081418c62441889f1059ce86e2c0648b1a2e146d990543e394e7531b704",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "accepted_producers": 3,
+      "parent_returns": 1
+    },
+    {
+      "case": "native:parallel-config-drift",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "e35309af80dd8afa14299e924b852ef41cca832915470c4c5c8ee2c37ff6b262",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "accepted_producers": 0,
+      "parent_returns": 1
+    },
+    {
+      "case": "native:parallel",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "45952e7dedbc4baf81629f73387b65639bcb5e9bc2ac68d89f171ada3370ef6f",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "accepted_producers": 3,
+      "parent_returns": 1
+    },
+    {
+      "case": "engine:review",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "fd168b61e5ef20cc6245b3a88ddf17d01d743127237c065abbb157f6e2a59e6a",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "restored": {
+        "ok": true,
+        "new_requests": 3
+      },
+      "http_post_count": 11
+    },
+    {
+      "case": "game:review-stale-bytes",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "2e13f2f0ec115557bcb66ff04e58f08b46ad447f561f564666cb7d59c0e65965",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "http_post_count": 6
+    },
+    {
+      "case": "game:review-parent-stop",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "c8cb5fe272ace453dcf799c1399169342f606d2c72fddb305cbe111bbbda2fd5",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "http_post_count": 3
+    },
+    {
+      "case": "game:review-stop",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "91cef2b165025fb74ed3d50fe0505b37a0f49c5d493e5c1e3297a5dfc3c6ec83",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "http_post_count": 4
+    },
+    {
+      "case": "game:review-stale-parent",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "8e7ef206bd4952e8015e980a07e32be65c5096a7b2d30b497a2775e6ce5f3a8e",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "http_post_count": 6
+    },
+    {
+      "case": "native:auxiliary-tamper",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "1b96f966d06705e39c424c4e5889f95768e7ef540ca3cd2d66c9c43602e9059d",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "accepted_producers": 0,
+      "http_post_count": 5
+    },
+    {
+      "case": "native:receipt-tamper",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "fbd11dfaf760f1e289baad6a77f8fbb8d9c6a560e6d4f81db798b03e13dbc98f",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "accepted_producers": 0,
+      "http_post_count": 5
+    },
+    {
+      "case": "native:unknown",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "b39b3c03825e3eeb19d7b1b22d67d6b176fddb5f4e0d34a85d91ad37f05856c0",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "accepted_producers": 0,
+      "http_post_count": 5
+    },
+    {
+      "case": "native:auxiliary-as-evidence",
+      "ok": true,
+      "exit": 0,
+      "report_sha256": "2df41a17e41786c1cb67ddbf92b014548235e6b7b5e4990791a0b61ff9e67502",
+      "binary_sha256": "8e95bb778663cff8d45d8771dae5b5bf2deef2f96f1f76be0a142dccc178d333",
+      "accepted_producers": 0,
+      "http_post_count": 5
+    }
+  ],
+  "node_parallel_suite": {
+    "cases": 65,
+    "passed": 65,
+    "log_sha256": "52ef39297db32764ba05b93876f65c6511744fb1c6922387b5538a5a181c985b"
+  },
+  "final_combination": {
+    "main_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/881",
+    "owned_bytes_unchanged": true,
+    "pre_merge_manifest_sha256": "e45c6a36f680476bbf5077d399a851155a897cd778358aef21ce8e4b82a7eacf",
+    "strict_build_exit": 0,
+    "strict_build_log_sha256": "90e521a3cfaccd9d1b6cbb1d30436e839a5b0b879b1e241ebee2875eca214449",
+    "binary_sha256": "8400f52e51c60267d4d5ba9ea8eb404b3be5343a476d6b880e5429c335786e13",
+    "engine_sha256": "39157a006ce858d426ac8f89d71746f7e974a1669378c39760c3291aded8ffe6",
+    "checks": [
+      {
+        "name": "package",
+        "exit": 0,
+        "ok": null,
+        "seconds": 0.06
+      },
+      {
+        "name": "native-full",
+        "exit": 0,
+        "ok": null,
+        "seconds": 34.53
+      },
+      {
+        "name": "game-review",
+        "exit": 0,
+        "ok": true,
+        "seconds": 17.98
+      },
+      {
+        "name": "blocked-cold",
+        "exit": 0,
+        "ok": true,
+        "seconds": 21.36
+      },
+      {
+        "name": "evidence",
+        "exit": 0,
+        "ok": true,
+        "seconds": 82.31
+      },
+      {
+        "name": "ainative-builtin-corrected",
+        "exit": 0,
+        "state": "passed",
+        "worker": "sinan_ffaab9b445c1d22f"
+      }
+    ],
+    "native_log_sha256": "e330856971655e88bfda68ef205127a6f6786d65e32159a75f0ebeb29532c392",
+    "native_summary": [
+      "[doctest] test cases:   1565 |   1565 passed | 0 failed | 3 skipped",
+      "[doctest] assertions: 435630 | 435630 passed | 0 failed |"
+    ],
+    "ainative_state": "passed",
+    "ainative_report_sha256": "38298dce12fc5245c215f7461c57b76dfadec0934b2acca0afb9c77d1217ed51"
+  },
+  "static_checks": {
+    "python": "ruff check, ruff format, mypy: four changed files passed",
+    "cpp": "clang dry-run, include validator, repeated clang dry-run passed",
+    "scope": "Complete owned diff against observed target main; copyright/header/file format/CODEOWNERS passed"
+  },
+  "independent_reviews": [
+    {
+      "worker": "sinan_b3da3d4aea60fa84",
+      "scope": "876/878 source and fixtures",
+      "finding": "Game cold review must reject, not replay; corrected and native tested."
+    },
+    {
+      "worker": "sinan_c49eac3b0d72b532",
+      "scope": "877 exact blocked classifier and fixtures",
+      "finding": "Cold request count was literal zero; actual POST ingress now measured, cold delta zero tested."
+    },
+    {
+      "worker": "sinan_4ab2b98ea9bd7811",
+      "scope": "Active parent storage correction and fixture followup",
+      "finding": "Review POST count bypassed serial list; common cold expectation conflicted. Ingress instrumentation and case-specific expectations corrected; engine delta three and game delta zero verified."
+    }
+  ],
+  "review_evidence": "Actual collaboration FINAL_ANSWER, native host reconciliation completed; reviewers did not implement changes. Source review is separate from root-run native verification.",
+  "retained_failures": [
+    {
+      "kind": "strict build",
+      "reason": "Ambiguous String/Variant conditional fixed with explicit conversion."
+    },
+    {
+      "kind": "fixture transport",
+      "reason": "Installed adapter became authoritative; offline requirement/context/flush transport moved there, without replacing actual runner or acceptance."
+    },
+    {
+      "kind": "native game return",
+      "reason": "Active parent is removed from cached agent_sessions. Candidate verification now uses live parent state and only requires cached non-active parents."
+    },
+    {
+      "kind": "fixtures",
+      "reason": "Absolute job config, cancellable blocked state observer, actual POST counting, immutable pre-drift byte hash and Windows cancel connection semantics corrected."
+    },
+    {
+      "kind": "native unit invocation",
+      "reason": "An invocation omitted GONGGONG_TEST_PYTHON and failed three existing lock tests. Correct runtime supplied; complete same-binary suite passed."
+    }
+  ],
+  "ainative_fixture_correction": {
+    "initial_check": {
+      "name": "ainative-builtin",
+      "exit": 1,
+      "ok": null,
+      "seconds": 7.36
+    },
+    "initial_report_sha256": "b6402e63bfdc5521f51438e79c3ba57cb86893e5d91df2dad1e25c3b0af4a736",
+    "worker": "sinan_ffaab9b445c1d22f",
+    "actual_final_event": true,
+    "scope": "Test-only correction: named current settings pages, exact ten modes, explicit offline save, actual file-picker signal instead of read-only text assignment. Real Executor success, bundle match and portable publication remain required.",
+    "checks": [
+      128,
+      83,
+      22,
+      5
+    ]
+  },
+  "delivery_status": "Candidate verified; exact signed CI/main and installed followup readback pending at evidence creation.",
+  "remaining_scope": "Parent773 stays open. Actual-provider normal editor production, complete editor coverage and original-owner issue559 remaining operation subsets are not established by these controlled tests."
+}

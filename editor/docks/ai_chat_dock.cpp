@@ -2531,7 +2531,7 @@ void AIChatDock::_request_completion() {
 				_set_busy(false);
 				return;
 			}
-			gonggong_context += "\nHost review delegation (independence unknown): " + JSON::stringify(delegation);
+			gonggong_context += "\nHost review delegation (host-verified execution identities; not a business acceptance): " + JSON::stringify(delegation);
 		}
 		set_meta("gonggong_status", "consultation_only");
 		_send_completion_after_receipt();
