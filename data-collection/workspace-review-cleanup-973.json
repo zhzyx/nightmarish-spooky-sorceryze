@@ -1,0 +1,399 @@
+{
+  "request_id": "workspace-review-cleanup-20261112",
+  "baseline": "309a77fadc74ad9e47df42b4c2b719970b3a7cd0",
+  "review_scope": "Git delivery/retention review of every original worktree and unique uncommitted code hunks; not a rerun of all historical business acceptance",
+  "original_worktrees": 52,
+  "removed_worktrees": 19,
+  "removed_local_branches": 19,
+  "removed_untracked_remote_duplicate_events": 34,
+  "retained_original_worktrees": 33,
+  "archived_receipt_and_config_files": 247,
+  "retained_unique_file_digest_checks": 402,
+  "post_cleanup_errors": [],
+  "removed_allocated_kib_before": 24702328,
+  "disk_usage_scope": "Sum of du allocation before deletion; not an observed net filesystem free-space delta",
+  "reviewer": "/root/sinan_253e9faa12f37dce",
+  "review_receipt": "collaboration-terminal:/root/sinan_253e9faa12f37dce",
+  "independent_findings": [],
+  "incident": {
+    "issue": 975,
+    "cause": "Cleanup helper incorrectly expected an empty flush lock; bridge intentionally writes b'0'",
+    "resolution": "Only exact chat/.flush.lock with empty or single-zero content; actual nonblocking exclusive flock held through removal; resume verifies removed path and registration absent",
+    "original_operation_retested": true
+  },
+  "private_archive_path_base": "original main worktree root",
+  "private_archive": "data-collection/receipts/ai-integration-refactor-20261112",
+  "worktrees": [
+    {
+      "name": "nightmarish-spooky-sorceryze",
+      "head": "a2a119d51af1259555fd8ce3f9cc42c2bdb96404",
+      "dirty_count": 58,
+      "unique_commits": 0,
+      "decision": "保留主工作区；两处规则为旧树补装，3份原需求与独有事件仍有追溯用途"
+    },
+    {
+      "name": "godot-candidate-01f4412e1ee4cd33d614c47b",
+      "head": "1f6ea3e74244275efafc484d7cf324d9feea5c4a",
+      "dirty_count": 55,
+      "unique_commits": 0,
+      "decision": "保留；引擎候选绑定及独有需求、事件"
+    },
+    {
+      "name": "nightmarish-spooky-sorceryze-daqian",
+      "head": "ced0368bb2dd2a5d2199c1f3ec46760a3406dead",
+      "dirty_count": 7,
+      "unique_commits": 0,
+      "decision": "保留；实际进程引用"
+    },
+    {
+      "name": "before300-ai49-after680-20261110",
+      "head": "6297eb5ca6c1a221724911a1bb00ec85e456dbc1",
+      "dirty_count": 0,
+      "unique_commits": 1,
+      "decision": "保留；1 个独有提交，补丁等价/整体验收或交接未完整确认"
+    },
+    {
+      "name": "before300-ai49-delivery-20261110",
+      "head": "730ec455fdad5d9834c22a515f3ba7bece35b2da",
+      "dirty_count": 3,
+      "unique_commits": 2,
+      "decision": "保留；2 个独有提交，补丁等价/整体验收或交接未完整确认"
+    },
+    {
+      "name": "before300-ai49-eec633-20261110",
+      "head": "b44a43750975b0c85cb484573f573f0e7584d3a4",
+      "dirty_count": 1,
+      "unique_commits": 2,
+      "decision": "保留；2 个独有提交，补丁等价/整体验收或交接未完整确认"
+    },
+    {
+      "name": "before300-ai49-handoff-20261110",
+      "head": "9132b7cfccf97a8d05ffd66fe1651a1a2717e11f",
+      "dirty_count": 41,
+      "unique_commits": 0,
+      "decision": "保留；41 项未提交/未跟踪内容，包含独有证据或待核实历史组合"
+    },
+    {
+      "name": "before300-ai49-main35b-20261110",
+      "head": "35bde7b4a27a842352b8da40151340a03d0fce1c",
+      "dirty_count": 65,
+      "unique_commits": 0,
+      "decision": "保留；65 项未提交/未跟踪内容，包含独有证据或待核实历史组合"
+    },
+    {
+      "name": "before300-ai49-main5f-20261110",
+      "head": "5f018f6d70865017c96537cdf626b450c4b60fa9",
+      "dirty_count": 44,
+      "unique_commits": 0,
+      "decision": "保留；44 项未提交/未跟踪内容，包含独有证据或待核实历史组合"
+    },
+    {
+      "name": "before300-final-20261110",
+      "head": "a7b1a95439966292e7099db64c6ee78282889da2",
+      "dirty_count": 110,
+      "unique_commits": 0,
+      "decision": "保留；110 项未提交/未跟踪内容，包含独有证据或待核实历史组合"
+    },
+    {
+      "name": "before300-final-62e450-20261110",
+      "head": "0282c624d460015608e097d6196c25467372984f",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #691"
+    },
+    {
+      "name": "before300-final-a681-20261110",
+      "head": "a6816c3d5aafa57e3b79ba88fc8850d50b2ec5bd",
+      "dirty_count": 119,
+      "unique_commits": 0,
+      "decision": "保留；119 项未提交/未跟踪内容，包含独有证据或待核实历史组合"
+    },
+    {
+      "name": "before300-final-receipts-20261110",
+      "head": "b886337a4c0a1d6ff3b714aaac0d4f1b85a9a5a0",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #694"
+    },
+    {
+      "name": "before300-main-dde25-20261110",
+      "head": "77008947e01b1133d9f87d377fee157e749835b6",
+      "dirty_count": 1,
+      "unique_commits": 1,
+      "decision": "保留；1 个独有提交，补丁等价/整体验收或交接未完整确认"
+    },
+    {
+      "name": "before300-main2746-20261110",
+      "head": "274605813c6fa2df1c65cb11d9de04a9da34e8a4",
+      "dirty_count": 52,
+      "unique_commits": 0,
+      "decision": "保留；52 项未提交/未跟踪内容，包含独有证据或待核实历史组合"
+    },
+    {
+      "name": "before300-main5f018-20261110",
+      "head": "bc30ec092d0e7331a56d2d3751ef00cc836b448b",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #667"
+    },
+    {
+      "name": "before300-main9132-20261110",
+      "head": "c6dcecbed94be736e0b4f2c75a9ad3587bfd880f",
+      "dirty_count": 0,
+      "unique_commits": 3,
+      "decision": "保留；3 个独有提交，补丁等价/整体验收或交接未完整确认"
+    },
+    {
+      "name": "before300-sail",
+      "head": "7c7a684840d7ef054fa5fa5be1df4041d120d1f0",
+      "dirty_count": 11,
+      "unique_commits": 1,
+      "decision": "保留；1 个独有提交，补丁等价/整体验收或交接未完整确认"
+    },
+    {
+      "name": "before300-stop92-20261110",
+      "head": "9b98886b5a89fbd418398cebc9068c67da3e2e87",
+      "dirty_count": 13,
+      "unique_commits": 1,
+      "decision": "保留；1 个独有提交，补丁等价/整体验收或交接未完整确认"
+    },
+    {
+      "name": "before300-stop92-final-20261110",
+      "head": "eec6330c141021b15ea93e86a6abdb5ce199421f",
+      "dirty_count": 105,
+      "unique_commits": 0,
+      "decision": "保留；105 项未提交/未跟踪内容，包含独有证据或待核实历史组合"
+    },
+    {
+      "name": "daqian-ai-entry",
+      "head": "50ddc5d5487114dda1abac0b2a22e035240e0f57",
+      "dirty_count": 0,
+      "unique_commits": 1,
+      "decision": "保留；1 个独有提交，补丁等价/整体验收或交接未完整确认"
+    },
+    {
+      "name": "daqian-input",
+      "head": "1da2d675e3be47d9ff4521de184cc8c05e09d17c",
+      "dirty_count": 0,
+      "unique_commits": 2,
+      "decision": "保留；2 个独有提交，补丁等价/整体验收或交接未完整确认"
+    },
+    {
+      "name": "daqian-multi-issue",
+      "head": "1da2d675e3be47d9ff4521de184cc8c05e09d17c",
+      "dirty_count": 8,
+      "unique_commits": 2,
+      "decision": "保留；2 个独有提交，补丁等价/整体验收或交接未完整确认"
+    },
+    {
+      "name": "daqian-publish-readback",
+      "head": "6ef21d0ac4b40e02c64c9ff9d5d52ce93b348224",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #425"
+    },
+    {
+      "name": "daqian-worker-progress",
+      "head": "8072fdfc9b0db3c970a1f81b444bd9073ddb713d",
+      "dirty_count": 152,
+      "unique_commits": 0,
+      "decision": "保留；152 项未提交/未跟踪内容，包含独有证据或待核实历史组合"
+    },
+    {
+      "name": "editor-layout-20261112",
+      "head": "566a87fa3ec7973affb13c3ef38f64c49d0fde8b",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #852"
+    },
+    {
+      "name": "engine-module-build",
+      "head": "1ae9a41405cdc8f6c5dedc01b8d6368f5292b374",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #742"
+    },
+    {
+      "name": "git-bot-actions-20261110",
+      "head": "8c5825a0b512861c71842a519dbe1f486d8375ba",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "保留；原工单 #426 已重开，恢复职责尚未结束"
+    },
+    {
+      "name": "git-bot-disposition-20261110",
+      "head": "42cdfb5c792d0af72fac937d63b3c58d362011de",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "保留；原工单 #426 已重开，恢复职责尚未结束"
+    },
+    {
+      "name": "issue-160-portable",
+      "head": "10cb566b49d29720683b6be656f8d970e6c9e2db",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #171"
+    },
+    {
+      "name": "issue-195-ai-chat-animation",
+      "head": "e9dd3931d66ad244b88723d32455ca2c6cf4ecf2",
+      "dirty_count": 3,
+      "unique_commits": 0,
+      "decision": "保留；3 项未提交/未跟踪内容，包含独有证据或待核实历史组合"
+    },
+    {
+      "name": "macos-471-completion",
+      "head": "7baa7a790cafa3dcc6fb9f02e1bea34413856f79",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #512"
+    },
+    {
+      "name": "macos-471-native",
+      "head": "559848f53009a0a0c57adbf5155131ab1f82e8dd",
+      "dirty_count": 3,
+      "unique_commits": 1,
+      "decision": "保留；实际进程引用，且存在未释放工作者认领"
+    },
+    {
+      "name": "macos-tianshu-493",
+      "head": "429957b641b6b041a791b86a69ab98df20969c96",
+      "dirty_count": 2,
+      "unique_commits": 0,
+      "decision": "保留；2 项未提交/未跟踪内容，包含独有证据或待核实历史组合"
+    },
+    {
+      "name": "project-ai-config-20261112",
+      "head": "42f943f62f3d86c1344c282e3f7e0974cf8d0620",
+      "dirty_count": 1,
+      "unique_commits": 1,
+      "decision": "保留；1 个独有提交，补丁等价/整体验收或交接未完整确认"
+    },
+    {
+      "name": "render-auto-build",
+      "head": "1b0368b718c8bd8132e7fb49da655c4932d5a14e",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #745"
+    },
+    {
+      "name": "runtime-compilation-20261111",
+      "head": "bf9a360f1122fa91646f9d7b9ee1829953558386",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #802"
+    },
+    {
+      "name": "runtime-native-20261111",
+      "head": "206addbd0bc5347899c1f9c8d23ab8500250d8c9",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #805"
+    },
+    {
+      "name": "startup-account-restore-20261112",
+      "head": "2d0ad5b2795f609f1729b48b4aac050e05d09f92",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #870"
+    },
+    {
+      "name": "startup-config-sync-20261112",
+      "head": "ab7d37073536f7ac68e47c1a508f567cee2bb8f6",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #865"
+    },
+    {
+      "name": "startup-session-memory-20261112",
+      "head": "538ebd3f0b2aeb7382ee8ca674b44a4a6112eb1f",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #870"
+    },
+    {
+      "name": "tianshu-3d-20261112",
+      "head": "325fdb12c388de0821bd51d33a63bd867b2e7137",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #816"
+    },
+    {
+      "name": "tianshu-3d-actions-20261112",
+      "head": "28427c00272303053f0ed4764604f448269c53fa",
+      "dirty_count": 1,
+      "unique_commits": 1,
+      "decision": "保留；分别对应在途 PR #831、#847、#829"
+    },
+    {
+      "name": "tianshu-3d-new-task-fix-20261112",
+      "head": "1f6ea3e74244275efafc484d7cf324d9feea5c4a",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #822"
+    },
+    {
+      "name": "tianshu-3d-send-20261112",
+      "head": "b5bdd60282cf18ab4f172888d49208110e258bea",
+      "dirty_count": 0,
+      "unique_commits": 1,
+      "decision": "保留；分别对应在途 PR #831、#847、#829"
+    },
+    {
+      "name": "tianshu-blue-wave-20261112",
+      "head": "c811b583d4f709f697161280ed285c08793c90ef",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #839"
+    },
+    {
+      "name": "tianshu-godot-delivery",
+      "head": "0e974e010667df8a5968ebcd2003b9b3f66284bf",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #434"
+    },
+    {
+      "name": "tianshu-main-integration",
+      "head": "fca60ad9d79b2b0fbb688fdda8cba55082f16f0b",
+      "dirty_count": 1,
+      "unique_commits": 1,
+      "decision": "保留；1 个独有提交，补丁等价/整体验收或交接未完整确认"
+    },
+    {
+      "name": "tianshu-product-delivery",
+      "head": "5026ac8f3466503974eac93161fc0797c714a286",
+      "dirty_count": 68,
+      "unique_commits": 0,
+      "decision": "保留；68 项未提交/未跟踪内容，包含独有证据或待核实历史组合"
+    },
+    {
+      "name": "tianshu-resume-status-20261112",
+      "head": "f5e2743d94f132e546166b562e0b7f828b1f7705",
+      "dirty_count": 0,
+      "unique_commits": 1,
+      "decision": "保留；分别对应在途 PR #831、#847、#829"
+    },
+    {
+      "name": "tianshu-wave-with-3d-20261112",
+      "head": "28427c00272303053f0ed4764604f448269c53fa",
+      "dirty_count": 12,
+      "unique_commits": 1,
+      "decision": "保留；引擎候选启动二进制引用、未提交组合及未合入父提交"
+    },
+    {
+      "name": "tianshu-workflow-labels",
+      "head": "7e072e579081ab53463b451b55a11999ebbfaf67",
+      "dirty_count": 0,
+      "unique_commits": 0,
+      "decision": "已清理；main 包含精确 HEAD、Issue completed、无占用；PR #437"
+    }
+  ],
+  "method_recall": {
+    "scope": "editor-dependency-handoff",
+    "applicability": "terminal observations and actual delivery bytes must be verified before resource release",
+    "counterexample": "Issue closure alone cannot authorize deleting dirty/in-flight worktrees"
+  },
+  "issue_number": 973,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/973"
+}

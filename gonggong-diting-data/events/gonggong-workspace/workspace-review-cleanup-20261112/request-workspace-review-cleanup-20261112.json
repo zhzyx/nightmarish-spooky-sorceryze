@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "request-workspace-review-cleanup-20261112",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "workspace-review-cleanup-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T15:52:20.046518+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/973",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "authorization": "Explicit current user request to review uncommitted changes and all worktrees and remove unnecessary copies",
+    "issue_number": 973,
+    "observed_model": null,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "7f6edc32fc78aa0bbc27ae1be8e08c0346faf831a0009cd0a6be47764ea06791"
+}
