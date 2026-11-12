@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "issue_number": 1004,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004",
+  "request_id": "host-http-model-provenance-20261113",
+  "path_base": "repository_root",
+  "occurred_at": "2026-11-12T20:15:02.202171+00:00",
+  "source_head": "c692ca6652fb707f185517cb3c372a0b82dbbfb4",
+  "failed_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1007",
+  "failed_signed_candidate": "bb591aaef0ddd5b47d61d1224fbc7a1ce036b694",
+  "incident": "be47dcc0743f2e86faa9c7a726059f8fa6f09ebaee3a11c433a94bc5c9ab3d4c",
+  "ci_log_sha256": "0be5f385b380c0fe55d1311d462c1e329da120ed83faac9ad7b470be48c1595d",
+  "ci_failure": "GongGong offline snapshot check failed: Platform file set or digest mismatch: customizations/platforms/ai-access/host-http/runtime",
+  "root_cause": "The host HTTP implementation changed and gained test_adapters.py, but its existing host_packages file/digest registration was not updated. Earlier runtime tests did not cover this distribution consumer.",
+  "change_scope": {
+    "file": "integrations/gonggong/frozen-distribution.json",
+    "json_path": "host_packages.customizations/platforms/ai-access/host-http/runtime",
+    "only_package_updated": true,
+    "frozen_files_approvals_and_other_package_entries_unchanged": true
+  },
+  "entries": [
+    {
+      "path": "adapters.py",
+      "before": "01734fe348a710e0b451a5cdc1b659ce4ebbb75ebe0d636060220057723e3ec8",
+      "after": "d251de6a7c187caa6a5b3cb786485a396c58cdad0dbdf57b7d69548e8833dcc1"
+    },
+    {
+      "path": "README.md",
+      "before": "6f487cf93f8d164c40e6f081a7b685ec57f6b47b6eb23eb2af966d27a13b8620",
+      "after": "3a3ce05335894aeb3d48faf00246662cddea27e86e8820c99b14c53a419ac303"
+    },
+    {
+      "path": "runner.py",
+      "before": "0c050e96431f5a346009c11656a2de426d1f5bb142f9704e7c6775510584a1bb",
+      "after": "7ccc47b132adf52c3bd0dbdd133f315ad79bd74b9b8218d0573a6ebbaf13ab7f"
+    },
+    {
+      "path": "test_adapters.py",
+      "before": null,
+      "after": "721ed5e808cbb4c97e3cad5ccb8502173d34abaedeeb54ed7164f8a403fb60eb"
+    },
+    {
+      "path": "test_runtime.py",
+      "before": "b3b0f29c18673df6750a42fd4d469d40d81d6a13b59fce07648d3c1aced8f93d",
+      "after": "8f0afdd4aeef5d694771131ae8dc1b190a8098b301a060b7747dfa045291323b"
+    }
+  ],
+  "validation": {
+    "command": "PATH=<supplied-Node-and-Python> PYTHONDONTWRITEBYTECODE=1 python3 tools/check_gonggong_distribution.py --repo <this-worktree>",
+    "mode": "Normal offline check; no --candidate bypass",
+    "before": {
+      "exit_code": 1,
+      "stderr": "GongGong offline snapshot check failed: Platform file set or digest mismatch: customizations/platforms/ai-access/host-http/runtime"
+    },
+    "after": {
+      "exit_code": 0,
+      "result": {
+        "agent_execution_authorized": false,
+        "authority_authenticated": false,
+        "diting_extension_syntax_checked": true,
+        "frozen_files": 256,
+        "live_upstream_verified": false,
+        "ok": true,
+        "scope": "offline_registered_snapshot_consistency_only",
+        "syntax": {
+          "javascript": 16,
+          "json": 158,
+          "python": 25
+        }
+      }
+    },
+    "registration_other_fields_deep_equal": true,
+    "git_diff_check": {
+      "exit_code": 0
+    }
+  },
+  "registration_sha256": "a34c602ef1db2863e2910ee0594e8baf377087b36be4cf3176d6410b4f58dc90",
+  "independent_review": "Required by registration contract; root will obtain review after this correction. This receipt is local validation only.",
+  "limitations": "Does not claim new remote CI success, real-provider acceptance, authenticated approval, or delivery. Root remains publisher and owns superseding PR1007.",
+  "cleanup": "No temporary fixtures or application settings created; no commits, pushes or dispatch session drivers run.",
+  "kuafu_assessment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1004#issuecomment-6834812841"
+}
