@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-81434d12a0f5f0717de65891c172682a8bdecb2d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-run-43286058093-attempt-1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "1901b04c3a7c0bc884cd8770aba6817c5d7a608e54670131b99013e1d3a1bc7f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+    "action": "validation",
+    "detection_head": "c6b7baa72f63c36a2fcd4063c8ed84300ee343fe",
+    "context_sha256": "07758a3aab33a61e6b1f874a118721ed31bf53a489cc80d783bedee71cc6b574",
+    "operator": "Sail-Li",
+    "worker": "/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "/Users/oracle/Documents/GitHub/nightmarish-spooky-sorceryze/data-collection/receipts/ai-integration-refactor-20261112/main1001-review/review-initial.json",
+    "diagnosis": "Independent review reproduced escaped unpaired surrogate identity aborting diagnostic hashing and bypassing server cleanup. Root owns bounded identity hashing and nested-finally cleanup correction. Initial receive failed because Node was absent from this command PATH; corrected explicit verified Node PATH. Original CI root cause remains unknown.",
+    "next_action": "Run malformed identity reproduction and targeted tests; independent re-review before delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T20:52:28.262038+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T20:54:12.031605+00:00",
+  "sha256": "4c279dacb1547932a9aeed0ef6f91a79c6bf43da3a6133ed9e36aeaa90151326"
+}

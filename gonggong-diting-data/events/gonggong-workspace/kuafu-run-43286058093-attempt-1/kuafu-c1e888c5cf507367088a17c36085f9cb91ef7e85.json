@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c1e888c5cf507367088a17c36085f9cb91ef7e85",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-run-43286058093-attempt-1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0d0da8e15c74314965160d573635f68469d814e22a457872afc0fffa510bd6d9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+    "action": "validation",
+    "detection_head": "c6b7baa72f63c36a2fcd4063c8ed84300ee343fe",
+    "context_sha256": "74bc3100434478f9f70702adee10808ac1e05f03ae7aec9d4d4ac335f4f72766",
+    "operator": "Sail-Li",
+    "worker": "/root/sinan_461345fc9274c7b2",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+    "diagnosis": "Isolated c6b7baa publication fault reproduces lost final receipt after action completion. Native reader loses parse evidence and exit status. Original Windows run 43286058093 initiating cause remains unproven; c6b7baa CI43296439174 passed.",
+    "next_action": "Repair bounded publication and precise read diagnostics in assigned isolated worktree; parent owns independent review and exact candidate Windows verification.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T20:22:13.739866+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li via delegated native worker /root/sinan_461345fc9274c7b2",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T20:22:55.069934+00:00",
+  "sha256": "f7dc296290c7648cde3cb1bbe4678d98ec7c6aefea1146dfd5a96728c7724200"
+}

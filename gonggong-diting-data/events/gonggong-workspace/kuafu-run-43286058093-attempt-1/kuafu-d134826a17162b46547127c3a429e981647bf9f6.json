@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d134826a17162b46547127c3a429e981647bf9f6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-run-43286058093-attempt-1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "4b0b8423efe867caf64db993619bcbbe910c5b5f1d83be9e460d233719f5ddf2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+    "action": "intake",
+    "detection_head": "c6b7baa72f63c36a2fcd4063c8ed84300ee343fe",
+    "context_sha256": "74bc3100434478f9f70702adee10808ac1e05f03ae7aec9d4d4ac335f4f72766",
+    "operator": "Sail-Li",
+    "worker": "/root/sinan_461345fc9274c7b2",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Issue1001 intake-only passed after explicit tenant gonggong-workspace",
+    "diagnosis": "Initial local command omitted required tenant, triggering Host tenant must match work-items.json. Configuration-only invocation error; corrected explicit tenant and same intake passed. Unrelated to original Windows failure.",
+    "next_action": "Continue authorized receipt transport repair; no gate bypass or source repair needed for this local invocation.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T20:21:56.380612+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li delegated worker /root/sinan_461345fc9274c7b2",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T20:29:38.569435+00:00",
+  "sha256": "7eb8dc6f8de5c6d5b9cd95dcce694189cc32723a06d1055d728dac6687760fd0"
+}

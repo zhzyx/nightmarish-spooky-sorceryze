@@ -1133,6 +1133,44 @@ def execute(workspace, action, tenant):
     return result
 
 
+def publish_result(path, content):
+    """Retry transport only; the completed action must never be replayed here."""
+    temporary = path.with_suffix(".tmp")
+    stage = "write"
+    attempts = 0
+    try:
+        temporary.write_text(content, encoding="utf-8")
+        stage = "replace"
+        deadline = time.monotonic() + 1.0
+        while True:
+            attempts += 1
+            try:
+                temporary.replace(path)
+                return True
+            except OSError as error:
+                # Access denied (5/EACCES) is not evidence of a transient lock.
+                # winerror survives only on genuine Windows OS errors (or fixtures).
+                if getattr(error, "winerror", None) not in (32, 33) or attempts >= 6:
+                    raise
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise
+                time.sleep(min(0.1, remaining))
+    except OSError as error:
+        # Do not print exception text or result contents: both can contain private
+        # paths, credentials or user data. Keep the temporary bytes for diagnosis.
+        diagnostic = {
+            "status": "receipt_publication_failed",
+            "stage": stage,
+            "attempts": attempts,
+            "errno": error.errno,
+            "winerror": getattr(error, "winerror", None),
+            "temporary_retained": temporary.is_file(),
+        }
+        sys.stderr.write(json.dumps(diagnostic, sort_keys=True) + "\n")
+        return False
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -1200,9 +1238,8 @@ def main():
         result.setdefault("reconcile_required", True)
     content = json.dumps(result, ensure_ascii=False, indent=2)
     if args.out:
-        temporary = args.out.with_suffix(".tmp")
-        temporary.write_text(content, encoding="utf-8")
-        temporary.replace(args.out)
+        if not publish_result(args.out, content):
+            return 2
     else:
         sys.stdout.buffer.write((content + "\n").encode("utf-8"))
     return 0 if result["ok"] else 1
