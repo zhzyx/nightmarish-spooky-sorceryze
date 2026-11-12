@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "request_id": "github-cli-runtime-unification-20261113",
+  "issue_number": 989,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/989",
+  "parent_issue": 978,
+  "baseline": "a3b1ef65968f9f7d9dcdf701ae5e76feb94d9c3f",
+  "scope": "Integrated candidate prior to submission; remote delivery is not yet claimed",
+  "tests": [
+    {
+      "command": "python3 -m unittest discover -s customizations/components/issue-workorders -p test_github_runtime.py",
+      "passed": true,
+      "count": 16
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/issue-workorders -p test_work_items.py",
+      "passed": true,
+      "count": 14
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/issue-workorders -p test_writer_submit.py",
+      "passed": true,
+      "count": 10
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/issue-workorders -p test_yanluo_host.py",
+      "passed": true,
+      "count": 12
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/issue-workorders -p test_kuafu_github.py",
+      "passed": true,
+      "count": 23
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/issue-workorders -p test_module_build_impact.py",
+      "passed": true,
+      "count": 4
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/issue-workorders -p test_issue_gate.py",
+      "passed": true,
+      "count": 17
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/issue-workorders -p test_host_intake.py",
+      "passed": true,
+      "count": 4
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/godot-host -p test_issue_guide.py",
+      "passed": true,
+      "count": 13
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/godot-host -p test_bridge.py",
+      "passed": true,
+      "count": 44
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/godot-host -p test_direct_issue.py",
+      "passed": true,
+      "count": 25
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/godot-host -p test_requirements_agent.py",
+      "passed": true,
+      "count": 35
+    },
+    {
+      "command": "python3 -m unittest discover -s customizations/components/godot-host -p test_acceptance.py",
+      "passed": true,
+      "count": 8
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p test_editor_candidate_activation.py",
+      "passed": true,
+      "count": 16
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p test_writer_native_activation.py",
+      "passed": true,
+      "count": 3
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p test_editor_delivery_finalize.py",
+      "passed": true,
+      "count": 15
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p test_gonggong_runtime_config.py",
+      "passed": true,
+      "count": 9
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p test_verification_efficiency.py",
+      "passed": true,
+      "count": 11
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p test_windows_editor_artifact.py",
+      "passed": true,
+      "count": 9
+    }
+  ],
+  "passed": 288,
+  "skipped": 0,
+  "platform": "Darwin arm64 Python3.14",
+  "independent_review": {
+    "worker": "/root/sinan_9a030f237a8a824e",
+    "reference": "collaboration-terminal:/root/sinan_9a030f237a8a824e",
+    "findings": [
+      {
+        "issue": "Windows PATH executable fixture lacked .exe",
+        "fixed": "Select gh.exe on Windows and gh on POSIX",
+        "reviewed_closed": true
+      },
+      {
+        "issue": "POSIX home fixed installation subprocess fixture was not isolated on Windows",
+        "fixed": "Explicit Windows skip; separate Windows path-policy synthetic test retained",
+        "reviewed_closed": true
+      }
+    ],
+    "conclusion": "No blocking production defect found; both fixture findings closed",
+    "independent_tests": 23
+  },
+  "root_supplement": {
+    "json": "windows_editor_artifact uses shared sanitized transport",
+    "binary": "resolves same selected CLI, preserves raw bytes/digest validation, bounded download",
+    "regression": "Actual executable fixture with empty PATH serves JSON and ZIP; invalid explicit choice fails closed"
+  },
+  "formatting": {
+    "initial_check": "Six Python files needed ruff formatting",
+    "fixed": true,
+    "ast_unchanged": true
+  },
+  "inputs": {
+    ".github/scripts/windows_editor_artifact.py": "062d4a97ceede77d35b7f2a37a574058cbfb572a56bdb02c4d13fe15b3d55332",
+    "customizations/components/godot-host/bridge.py": "9aba31357c8d5286629b98265d2470de32897a53fe3acce4a4261e2ac7f88aef",
+    "customizations/components/godot-host/daqian/repository_access.py": "64ae02bff6cdf49a6aec4b46c8a1f2c8cf8ce09f5fd7ca3be8bf0b384e64994d",
+    "customizations/components/godot-host/test_bridge.py": "2c0d8d69382ca5f5f4725090261b18f43cdb376bbb38fa908cd671d08111ae49",
+    "customizations/components/godot-host/test_issue_guide.py": "140aa8015e6baf41bbb6aa97287e4165972796c3d7d8b7494003a8f36535af83",
+    "customizations/components/issue-workorders/README.md": "60c66dcc177030a9ac6b89ef2d7e10ec218ee6f3d6466a5a815a5b52495135ff",
+    "customizations/components/issue-workorders/issue_gate.py": "76f7396aad0f5d780b041f8efb2de0381036e42321712d2f04a6662637738af6",
+    "customizations/components/issue-workorders/kuafu_github.py": "804a765500ba423744a8e6980ce0a6808b13df70987a13ed52c1025a3dccb276",
+    "customizations/components/issue-workorders/test_issue_gate.py": "ca0c39dca003fc3d5d8fb179bb78237f6eccdcf9233c343385d36c1365b92faa",
+    "customizations/components/issue-workorders/work_items.py": "c2318989bc39ce163bd89714251ff75fdff6c4a8bcbc52232f92b0df256834db",
+    "customizations/components/issue-workorders/writer_submit.py": "f2a3a8c8bf0fb55ff54505b2a2fcbf2433763c72bf3f3e3f6498ef79d14970e6",
+    "customizations/components/issue-workorders/yanluo_host.py": "def8f7226065e7adefeae344d903fd3f8220cb8f8e1244dd66d3be7b272701ff",
+    "tools/editor_candidate_activation.py": "4f1f1be49b998eef12c2ff3e045bf2a657e05c1e3f34f5dcd76d4766f486a9aa",
+    "tools/test_verification_efficiency.py": "1f659c9816ff05978c1f8ecd1744409b0084c0257ae7c267287b3026d94e8143",
+    "tools/test_windows_editor_artifact.py": "cf894d1f079827aab59fdc2276db94f565b161635832d9136ec0c560fc6603cc",
+    "customizations/components/issue-workorders/github_runtime.py": "ae29a22140a86356e1c887eb67f0c81de15e1ad21e45eddadeef1f6800abfa34",
+    "customizations/components/issue-workorders/test_github_runtime.py": "c6777ab43cd3d994e9b0bb9866c8282ef46d203b260bfcf54626de109c37d6bf",
+    "design-docs/github-cli-runtime-unification-989.md": "c0d2b54618ce7c5b9ec2c30b27c6043d43f6cde4acc02368eb07a8c545d89b2e"
+  },
+  "delivery_path": "Authenticated collaborator PR path per yanluo.md; no private host grant required for this path",
+  "not_claimed": [
+    "Windows native Python execution; platform policies are synthetic",
+    "Full parent978 acceptance",
+    "Remote commit/push/CI/main acceptance at this pre-submit record"
+  ],
+  "cleanup": {
+    "temporary_test_directories": "Removed by TemporaryDirectory contexts",
+    "active_candidate_and_review_evidence": "Retained for delivery",
+    "other_worktrees_and_installed_apps": "Untouched"
+  },
+  "source_head_before_followup": "9af0927ac3a830d61ec99635b88d29a35d2e37bd",
+  "followup": {
+    "CI": "PR993 mypy rejected optional ModuleType.__file__; now check nonempty before Path",
+    "compatibility": "Existing JS intake passes GONGGONG_GH=gh. Exact command now resolved only on supplied PATH; invalid names never fall back; Windows uses supplied PATHEXT without implicit cwd",
+    "independent_review": "same reviewer final followup accepted; runtime16 + gate17 independent pass",
+    "actual_cli": "GONGGONG_GH=gh with installed CLI on PATH now returns gh version2.89.0"
+  },
+  "static_checks": {
+    "mypy_2_4_0": "16 changed Python files passed",
+    "ruff_check": "16 passed",
+    "ruff_format": "16 passed",
+    "git_diff_check": "passed"
+  }
+}

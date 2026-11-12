@@ -16,7 +16,7 @@
 
 ## 接口与消费者
 
-解析顺序为显式 `GONGGONG_GH` → 可信宿主安装的 `project/runtime/gh/bin/gh[.exe]` → 调用环境 PATH → 当前平台固定安装位置。显式空值、缺失、非可执行文件均失败，不能回退；相对显式路径按调用进程 cwd 转绝对路径。缺 PATH 不借用父进程默认路径。POSIX 固定位置为用户 `.local/bin`、Homebrew 和 `/usr/local/bin`；Windows 为传入环境的 ProgramFiles/GitHub CLI 及既有用户 Codex tools 安装。Windows 路径不在 POSIX 当前目录下被当成相对安装根。
+解析顺序为显式 `GONGGONG_GH` → 可信宿主安装的 `project/runtime/gh/bin/gh[.exe]` → 调用环境 PATH → 当前平台固定安装位置。显式裸命令名仅在传入 PATH 查找该名称；显式空值、缺失、非可执行文件均失败，不能回退到安装目录或另一名称。带目录的相对显式路径按调用进程 cwd 转绝对路径。Windows 使用传入 PATHEXT，不隐式加入当前目录。缺 PATH 不借用父进程默认路径。POSIX 固定位置为用户 `.local/bin`、Homebrew 和 `/usr/local/bin`；Windows 为传入环境的 ProgramFiles/GitHub CLI 及既有用户 Codex tools 安装。Windows 路径不在 POSIX 当前目录下被当成相对安装根。
 
 | 消费者 | 行为 |
 | --- | --- |
@@ -51,3 +51,5 @@
 独立平台 `customizations/platforms/work-management/github/git-issue/issue_create.py` 提供显式 `--gh` 接口，module.json 默认禁用且等待精确迁移准入；README 写入示例已明确传路径。此次只读搜索未找到生产 Python/JS/C++ 宿主调用者，不反向引入 repository components 依赖。原生账号可用性、JS 与 PowerShell 宿主入口由父 #978 的相应范围承担。
 
 测试临时目录均由 TemporaryDirectory 回收。保留本隔离工作树、未提交候选及必要来源/验证证据供根会话接收；有效安装、其他工作树及别人的临时资源未动。
+
+后续集成复查发现 repository-dispatch 的既有 `GONGGONG_GH=gh` 调用契约，已补精确裸命令解析及失效不回退测试。PR #993 的静态检查发现 `ModuleType.__file__` 可为空的类型缺口，改为验证源文件存在再记录摘要，不忽略类型错误。两项 Windows fixture 问题已独立复核关闭。最新回归和候选摘要见最终证据；原 PR 不作为通过交付回执。

@@ -80,6 +80,27 @@ class RuntimeTests(unittest.TestCase):
             with self.assertRaisesRegex(runtime.GitHubCommandError, "not executable"):
                 runtime.resolve_gh(dict(self.env, GONGGONG_GH=str(path)))
 
+    def test_explicit_command_name_resolves_only_that_name_on_supplied_path(self):
+        name = "gh.exe" if os.name == "nt" else "gh"
+        chosen = self.executable(self.root / "selected bin" / name)
+        self.executable(self.installation / "project/runtime/gh/bin" / name)
+        self.executable(self.home / ".local/bin/gh")
+        env = dict(self.env, PATH=str(chosen.parent), GONGGONG_GH="gh")
+        self.assertEqual(runtime.resolve_gh(env), str(chosen))
+        chosen.unlink()
+        with self.assertRaisesRegex(runtime.GitHubCommandError, "configured.*missing"):
+            runtime.resolve_gh(env)
+        with self.assertRaisesRegex(runtime.GitHubCommandError, "configured.*missing"):
+            runtime.resolve_gh(dict(env, GONGGONG_GH="another-gh"))
+
+    def test_windows_command_search_uses_supplied_extensions_without_implicit_cwd(self):
+        chosen = self.executable(self.root / "selected bin/gh.fixture")
+        with patch.object(runtime, "WINDOWS", True), patch.dict(os.environ, PATHEXT=".EXE"):
+            env = dict(self.env, PATH=str(chosen.parent), PATHEXT=".FIXTURE", GONGGONG_GH="gh")
+            self.assertEqual(runtime.resolve_gh(env), str(chosen))
+            self.assertIsNone(runtime.command_on_path("gh", dict(env, PATH="")))
+            self.assertIsNone(runtime.command_on_path("gh", dict(env, PATHEXT=".EXE")))
+
     def test_missing_path_does_not_inherit_process_path(self):
         path = self.executable(self.root / "ambient bin/gh")
         with (

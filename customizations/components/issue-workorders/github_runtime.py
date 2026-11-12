@@ -50,16 +50,36 @@ def fixed_locations(env):
     return candidates
 
 
+def command_on_path(name, env):
+    search_path = env.get("PATH", "")
+    if not WINDOWS:
+        return shutil.which(name, path=search_path)
+    # Windows shutil.which may prepend cwd and reads ambient PATHEXT. Only
+    # directories/extensions explicitly belonging to this child environment count.
+    extensions = [ext for ext in env.get("PATHEXT", ".COM;.EXE;.BAT;.CMD").split(";") if ext]
+    names = [name] if any(name.lower().endswith(ext.lower()) for ext in extensions) else []
+    names += [name + ext.lower() for ext in extensions]
+    for folder in search_path.split(os.pathsep) if search_path else []:
+        for candidate_name in names:
+            candidate = Path(folder) / candidate_name
+            if executable(candidate):
+                return str(candidate)
+    return None
+
+
 def resolve_gh(env=None):
     """Resolve explicit selection, installed project runtime, PATH, then fixed locations.
 
-    GONGGONG_GH denotes a file (relative paths use the caller's working directory).
+    GONGGONG_GH denotes a file or an exact command name on the supplied PATH.
+    Relative file paths use the caller's working directory.
     An explicitly present but invalid/empty selection fails closed; it never selects
     another CLI, credentials directory, account or target project's executable.
     """
     env = os.environ if env is None else env
     if "GONGGONG_GH" in env:
         configured = env["GONGGONG_GH"]
+        if configured and not Path(configured).is_absolute() and not any(c in configured for c in ("/", "\\")):
+            configured = command_on_path(configured, env)
         if not configured or not Path(configured).is_file():
             raise GitHubCommandError(reason="GITHUB_RUNTIME: configured GONGGONG_GH executable is missing")
         if not executable(Path(configured)):
@@ -70,7 +90,7 @@ def resolve_gh(env=None):
         if executable(local):
             return str(local)
     # A missing PATH is empty, not the current process's/default search path.
-    found = shutil.which("gh", path=env.get("PATH", ""))
+    found = command_on_path("gh", env)
     if found:
         return str(Path(found).absolute())
     for candidate in fixed_locations(env):
