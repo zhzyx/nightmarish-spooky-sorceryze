@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3797b876bfda71be7b220f23f29d11c822c726e0",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-model-adjust-node-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "144cb1ea26ef026fe5f7b68cf300598a354165310a0b36139eb83e4c9fa9821c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/926",
+    "action": "delivery",
+    "detection_head": "3e2e655abb851143608a4e73f3124aeff9c675f5",
+    "context_sha256": "bcfd8e23fe61a8b7ccb38fbdbd11de8a025fbd660b326710e85cbd8230fb986d",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-kaiyunxue",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/927",
+    "diagnosis": "签发时远端 main 已从 3e2e655a 推进到 2739fc7f，新增 7 个编码规范及证据文件，与本单无路径重叠。已整合该 main、保持完整候选暂存并重跑签发，候选 4b64fbd46b82ca2766cca6c2cb327df2c7af75ef 获得 recovery_candidate，PR #927 已创建。",
+    "next_action": "把本次恢复事件纳入同一最终候选后，核对精确签名 head 的 CI、main 合入和业务验收。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T10:43:35.475735+00:00",
+    "attempted": "首次 writer_submit 因 base_advanced 拒绝；整合 origin/main=2739fc7f 后重跑同一 writer_submit 成功创建 PR #927。",
+    "repair_owner": "kimi-work-kaiyunxue 已完成主线整合和重新签发，继续负责 CI 与 main 回读。",
+    "continuable": "本地签发热障已恢复；远端检查、合入及业务关闭按最终 head 分别验收。"
+  },
+  "occurred_at": "2026-11-12T10:47:02.232565+00:00",
+  "sha256": "5bae21f4fe705e65996cbaea8e150d9df23e9752c037154be1155eca9b6e6eae"
+}
