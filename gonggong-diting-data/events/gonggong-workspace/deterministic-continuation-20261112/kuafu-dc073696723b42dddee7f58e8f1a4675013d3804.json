@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-dc073696723b42dddee7f58e8f1a4675013d3804",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "deterministic-continuation-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/953",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "28ad95558e4e42acd2b353899cd1c10f67f7238d922d43748c8a8d4cb04cc17b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/953",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/953",
+    "action": "delivery",
+    "detection_head": "1c65ef28dd1bf3e8357c1758ef5356c4cb3b4ef9",
+    "context_sha256": "83e6b835af6bf15071bc8d8cfc01dcb4d456a6a8eb5291be54eb3eb937a62364",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session-953",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/953",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/960",
+    "diagnosis": "签发后主线从34498a33推进至d3513405，入口保留PR并要求重新对账；差异8文件，与本次3份补充证据无重叠。新增上游规则是任务收尾清理，已读取。",
+    "next_action": "已在自有隔离分支将证据提交rebase到新main，重新门禁签发；新PR确认后关闭旧PR960，检查通过再合入。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T14:45:13.695302+00:00",
+    "attempted": "真实fetch、差异回读和rebase成功，无冲突。",
+    "repair_owner": "codex-current-session-953",
+    "continuable": "纯文档证据交付与本任务临时资源归档清理。"
+  },
+  "occurred_at": "2026-11-12T14:47:33.649590+00:00",
+  "sha256": "4c2f50e14f7624cb4ed2140ac51f29ae0569540556e7b6737d4885c91a47f485"
+}

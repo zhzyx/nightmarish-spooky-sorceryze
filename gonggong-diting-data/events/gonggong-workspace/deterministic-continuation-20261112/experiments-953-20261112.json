@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "experiments-953-20261112",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "deterministic-continuation-20261112",
+  "kind": "step",
+  "occurred_at": "2026-11-12T14:43:18.346757+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/953",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "issue_number": 953,
+    "evidence": "data-collection/deterministic-continuation-953-experiments.json",
+    "evidence_sha256": "51f73f16c5c365e26c0da0640947cf3e7d94220139d28f32eeb30f7eaa404026",
+    "short_task_runs": 6,
+    "controlled_stop_runs": 2,
+    "model_routing": "requested configuration; actual route metadata not returned",
+    "result": "A synchronous stop-time host check can continue an intentionally stopped intermediate stage without another human message. Proven only in this isolated Codex CLI probe, not a production cross-host deployment or historical-stall reproduction.",
+    "production_status": {
+      "prompt_contract": "merged",
+      "forced_continuation": "not_installed",
+      "kimi": "not_tested",
+      "historical_root_cause": "unknown"
+    }
+  },
+  "sha256": "180cc161cd4d8ddc103adf4109d8c9b0467b19a75f6d628228629452e7437318"
+}
