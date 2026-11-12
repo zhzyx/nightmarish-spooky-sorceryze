@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-0fa4e1489aabc9761770402ab6c1a04e72267bcbac0f082bddcc46d51579c088",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+  "occurred_at": "2026-11-12T13:17:07.983688+00:00",
+  "evidence_refs": [
+    "request-943-20261112-readback",
+    "learn-98c6aaf65571c3be0afa51cf9e7e8eed659edd3a535ae21bddcfc29f97c37bf1"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "bind-design-template-to-parser",
+    "revision": 2,
+    "previous": "fae1ee7269457a231145e2ed3a267bab8bb41e5bf6e65ecec02dfc44a77a9df5",
+    "action": "verify",
+    "details": {
+      "test": "Execute unchanged run_design_batch normal scenario on formally installed main947 with actual native controls; fixture transport only. This is the previously proposed installed consumer trial.",
+      "expected": "Installed native production button reports actionable malformed-design errors, rejects pending/stale confirmation and completes valid design dependency handoff without bypassing authorization.",
+      "observed": "Installed native production button reports actionable malformed-design errors, rejects pending/stale confirmation and completes valid design dependency handoff without bypassing authorization."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-design-contract-943-installed.json",
+        "sha256": "5f1cc154068fe38b3160aa21e9575965c1f812c1e2db0e34d4a442fbd994cbff"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-design-contract-20261112/request-943-20261112-readback.json",
+      "sha256": "a1b20c427563c2d74a6e15820e836ff6578b1168e4ee614aa14c1454db299204"
+    }
+  },
+  "sha256": "6c3b5411c6e38db2516621c9133cff361985e9b73d89fd493db7f4c0210b3e7b"
+}
