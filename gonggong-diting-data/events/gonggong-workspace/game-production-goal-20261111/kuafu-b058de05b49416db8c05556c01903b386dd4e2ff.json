@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b058de05b49416db8c05556c01903b386dd4e2ff",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2bd1a54d06a11f6f859a471df52aefcd035480421b51a8f8c0501f2533bd4286",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "delivery",
+    "detection_head": "026ebf15f0a1de09936c33ff648706ea96b93e01",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/906",
+    "diagnosis": "Main advanced from55e41ffb to8dc87bab through owner kaiyunxue PR906 Issue885.18 upstream files implement native sculpt provider/resources; no overlapping continuation candidate paths. Original source026ebf and staged3 evidence files preserved. Rebased own candidate cleanly to07bddc09 and restored exact evidence files. Strict native rebuild and1567-case suite pass; actual parallel/rollover fixture checks in progress. Initial extra tests used Python without pip/Pillow and were rejected; original logs retained, correct build-test interpreter selected.",
+    "next_action": "Current operator completes targeted revalidation, records new main binding, signs replacement candidate and coordinates superseded PR909; no change to other owner worktrees or Issue885 acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T08:49:14.254996+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T08:55:21.105041+00:00",
+  "sha256": "0fd034b041bd9e6d740a4e9153a0bcc0dc4a1a824df1c9ae04cba480edf5c75d"
+}

@@ -1,0 +1,18 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "request_id": "game-production-goal-20261111",
+  "base": "42e04327b051921382f5a842b291a90bcea5b510",
+  "rebased_source": "6e36dc358ae167f8123433c4755bc80958d23bf7",
+  "prior_tested_base": "8dc87bab2dcb81d23ead7c03c7a5f49a9760bafe",
+  "upstream_files": [
+    "data-collection/maliang-kimi-native-sculpt-20261112-final-validation.json",
+    "design-docs/maliang-kimi-native-sculpt-20261112.md",
+    "gonggong-diting-data/events/gonggong-workspace/maliang-kimi-native-sculpt-20261112/kuafu-7054bb6b3c831f1de1c7b802220da5557932d568.json"
+  ],
+  "executable_delta": [],
+  "validation_reuse": "PR911 adds docs and evidence only. All candidate implementation and fixture bytes remain identical to main885 record; preserve prior build/scenario/provider results without claiming new execution.",
+  "remaining": [
+    "Replacement signed CI/main",
+    "Formal installation and actual consumer acceptance"
+  ]
+}
