@@ -1,0 +1,156 @@
+{
+  "issue": 1003,
+  "parent_issue": 978,
+  "request_id": "generation-owned-process-recovery-20261113",
+  "source_commit": "308bc83c19ae7cd1811496cca0e7062e6b30dab0",
+  "authority": "codex-user-ai-github-integration-refactor-20261112",
+  "worker": "/root/sinan_6d39b3ab904e5da2",
+  "path_base": "repository_root",
+  "status": "local_validation_passed_pending_independent_review_and_delivery",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "python": "3.14.3",
+  "checks": [
+    {
+      "name": "actual_process_and_generation_regression",
+      "tests": 141,
+      "passed": 111,
+      "skipped": 30,
+      "failed": 0,
+      "raw_log": "data-collection/receipts/generation-owned-process-recovery-1003/raw-logs/generation1003-review-final-suite.log",
+      "modules": [
+        "test_owned_process",
+        "test_motion_provider",
+        "test_motion",
+        "test_modeling_provider",
+        "test_kimi_work_image_provider",
+        "test_kimi_provider",
+        "test_kimi_direct_provider",
+        "test_sculpt_provider",
+        "test_provider_independence",
+        "test_generation_service",
+        "tests.editor.test_ainative_bundle"
+      ]
+    },
+    {
+      "name": "ruff",
+      "scope": [
+        "tools/ainative/owned_process.py",
+        "tools/ainative/test_owned_process.py",
+        "tools/ainative/modeling_provider.py",
+        "tools/ainative/kimi_provider.py",
+        "tools/ainative/kimi_work_image_provider.py",
+        "tools/ainative/motion_jobs.py",
+        "tools/ainative/motion_provider.py",
+        "tools/ainative/test_motion_provider.py",
+        "tools/ainative/sculpt_provider.py",
+        "editor/SCsub",
+        "editor/ainative/builders.py"
+      ],
+      "result": "passed"
+    },
+    {
+      "name": "mypy --follow-imports=silent",
+      "scope": [
+        "tools/ainative/owned_process.py",
+        "tools/ainative/modeling_provider.py",
+        "tools/ainative/kimi_provider.py",
+        "tools/ainative/kimi_work_image_provider.py",
+        "tools/ainative/motion_jobs.py",
+        "tools/ainative/motion_provider.py",
+        "tools/ainative/sculpt_provider.py",
+        "editor/ainative/builders.py"
+      ],
+      "result": "passed"
+    }
+  ],
+  "native_coverage": {
+    "darwin": "actual process groups, WNOWAIT leader pinning, zombie-only group EPERM, libproc creation identity and actual child exit recovery tested",
+    "windows": "suspended creation, assign-before-resume and assignment failure tested with API doubles only; real Windows kernel not tested",
+    "posix_escape": "setsid/setpgid escape and externally killed owner are outside trusted CLI lifecycle guarantee"
+  },
+  "output_limit": "retained files capped per stream at existing provider limit; over-limit and read errors fail without retry",
+  "remote_semantics": "Local owned process cleanup does not prove remote cancellation; original intent/unknown/no automatic replay unchanged",
+  "initial_failure_resolution": [
+    "Initial tree tests did not cover zombie-only direct children; broader regression found Darwin killpg EPERM. Added actual short-child regression and verified OS numeric group/Z-state query.",
+    "First broad run lacked PATH python and optional Pillow; rerun prepended explicit task tools and supplied isolated Pillow12.0.0; no shared environment changed."
+  ],
+  "cleanup": {
+    "owned_processes": "All actual fixtures ended; no task-owned live processes found in final process snapshot. Direct handles reaped and temporary directories automatically removed.",
+    "private_logs": "Original failed candidate, independent-review remediation and final raw logs retained privately; task temporary directories removed and actual process snapshot contains no task-owned live process.",
+    "test_dependency": "Pillow12.0.0 isolated target data-collection/receipts/generation-owned-process-recovery-1003/deps retained until independent reviewer accepts; no shared tool-venv mutation.",
+    "worktree": "Retained with uncommitted candidate for root integrator; not delivered or disposable yet.",
+    "apps_configs": "No app bundles, native GUI, production configuration or credential changes."
+  },
+  "source_sha256": {
+    "tools/ainative/owned_process.py": "026b776fb92d38968afacf4c93ae19b2b263783a3b668e59397e05cae09f4b19",
+    "tools/ainative/test_owned_process.py": "363f3fa973927690bd96f5c68ef6a05df1176611922cb29bd5af83b3464d19fe",
+    "tools/ainative/modeling_provider.py": "5900500fa390fb90712e3d47573337a7f3b56a089df6dd120607c50f31f1420d",
+    "tools/ainative/kimi_provider.py": "97b1f72733ab521415e25aaab97ca50f150a5f133a016d7e3f64bc86769c3d23",
+    "tools/ainative/kimi_work_image_provider.py": "8508aa39b6b2db219f29189b1a6534dd7c5f2b5030951bb2d4816163a0bd9762",
+    "tools/ainative/motion_jobs.py": "64108e782707a0e51597c035ca3c169f4aaaa13157796e628f48615a6d07a6c3",
+    "tools/ainative/motion_provider.py": "e07475fd8c65d463d010b24b65bab5c26fd4e4f70afa08884e98817d0f4bb845",
+    "tools/ainative/test_motion_provider.py": "987a4df1ef83a0cb544362c63c735861b670b45d4c8a4f15fd035bc929f1e964",
+    "tools/ainative/sculpt_provider.py": "6bd7e8e4a7410c2723f8a987068b94f9102014c55e5a2b3ce4d29284bb55eeaa",
+    "editor/SCsub": "3c6c16b20e8635226cd1004506fe06cb383b15f108f512dfbdd9d40b17c0c542",
+    "editor/ainative/builders.py": "2185b5313bc68b94f87aceee41bf70c60d34d90c6a99a8b7ddd55d7f1fdc6804"
+  },
+  "learning_recall": {
+    "scope": "editor-dependency-handoff",
+    "applied": "await-terminal-observers: require command exit, output drain and owned cleanup before accepting terminal success; exact source evidence retained for independent review",
+    "other_methods": "No editor review workflow or dependency acceptance changed."
+  },
+  "independent_review": "Initial changes_required remediated; same reviewer exact-source recheck pending.",
+  "delivery": "No commit, push, PR, merge or issue closure performed by worker.",
+  "previous_candidate_checks": [
+    {
+      "name": "actual_process_and_generation_regression",
+      "tests": 137,
+      "passed": 107,
+      "skipped": 30,
+      "failed": 0,
+      "raw_log": "data-collection/receipts/generation-owned-process-recovery-1003/raw-logs/generation-owned-process-recovery-1003-final-tests.log"
+    },
+    {
+      "name": "ruff",
+      "files": 9,
+      "result": "passed"
+    },
+    {
+      "name": "mypy --follow-imports=silent",
+      "files": 7,
+      "result": "passed"
+    }
+  ],
+  "previous_candidate_source_sha256": {
+    "tools/ainative/owned_process.py": "dd3cff641bf6c714417e37f13fe62e28fa6e6d22563afea0d440ec39060badd2",
+    "tools/ainative/test_owned_process.py": "c2d0b708c0338b51314389e906e5f160c1eb53eacece8cd997b77f2b705f4c37",
+    "tools/ainative/modeling_provider.py": "5900500fa390fb90712e3d47573337a7f3b56a089df6dd120607c50f31f1420d",
+    "tools/ainative/kimi_provider.py": "97b1f72733ab521415e25aaab97ca50f150a5f133a016d7e3f64bc86769c3d23",
+    "tools/ainative/kimi_work_image_provider.py": "8508aa39b6b2db219f29189b1a6534dd7c5f2b5030951bb2d4816163a0bd9762",
+    "tools/ainative/motion_jobs.py": "64108e782707a0e51597c035ca3c169f4aaaa13157796e628f48615a6d07a6c3",
+    "tools/ainative/motion_provider.py": "e07475fd8c65d463d010b24b65bab5c26fd4e4f70afa08884e98817d0f4bb845",
+    "tools/ainative/test_motion_provider.py": "987a4df1ef83a0cb544362c63c735861b670b45d4c8a4f15fd035bc929f1e964",
+    "tools/ainative/sculpt_provider.py": "6bd7e8e4a7410c2723f8a987068b94f9102014c55e5a2b3ce4d29284bb55eeaa"
+  },
+  "review_remediation": {
+    "reviewer": "/root/sinan_842f663439fe6bd0",
+    "prior_disposition": "changes_required",
+    "new_disposition": "pending_same_reviewer_recheck",
+    "review_report": {
+      "path": "data-collection/receipts/ai-integration-refactor-20261112/generation1003-review/report.json",
+      "path_base": "parent coordinator main working copy, not this isolated worktree"
+    },
+    "r1": "Actual SCsub sources close over committed Job helper as explicit SCons input; generated bundle flattens helper beside owned_process. Fingerprint and import use same layout resolver. Actual source selection/build-header/extracted-file regression passes; absent helper fails closed.",
+    "r2": "Locked nonblocking output pumping synchronizes in-flight writes and allows parent to drain available launcher bytes after direct exit, independent of delayed drain-thread scheduling. Does not wait for EOF or kill valid descendants. Delayed-thread regression observes complete markers and child survives watch before scope cleanup.",
+    "windows_pipe": "PeekNamedPipe pending/empty/EOF/unknown-error API contracts tested with doubles; actual Windows kernel remains untested.",
+    "kuafu_incident": "ed44fe65effe69e711217ef473b8448d944461237b8b8515dc5407116b8fe513",
+    "helper_unchanged_sha256": "954f3ff03f33e9950372fd5908eab6a8d90c83affe88022b9cb3323ec3fcd246",
+    "integrator_main": "Parent reports c6b7baa72f63c36a2fcd4063c8ed84300ee343fe as current main; this worktree remains on original source and has not merged it."
+  },
+  "build_boundary": {
+    "classification": "Host Python plus embedded editor resource dependency closure",
+    "validated": "Actual SCsub source selection and build_bundle header action, flattened extracted bundle fingerprint/import, dependency changed/missing checks. Existing bundle dependency-closure test passes.",
+    "not_validated": "No native editor rebuild, installed binary update/rollback or Windows kernel run performed by this worker.",
+    "required_delivery": "Root integrator must regenerate/rebuild embedded editor bundle for installed use; existing binaries remain unchanged. Whole accepted bundle/source candidate rollback, no partial helper swap claimed."
+  }
+}

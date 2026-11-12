@@ -23,6 +23,7 @@ from comfy_provider import digest, register
 from extensions import NodeRegistry, canonical, require, validate_invocation
 from modeling_provider import ModelingProvider, resolve_cli, validate_mesh
 from organic_detail import expand_patterns
+from owned_process import implementation_fingerprint
 from period_groom import MAX_GROOM_TRIANGLES, MAX_GROOM_VERTICES, resolve_period_groom
 from provider_common import _creationflags, _environment, validate_jpeg, validate_png
 from sculpt_builder import (
@@ -333,6 +334,7 @@ class SculptProvider(ModelingProvider):
             self.config,
             hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
             hashlib.sha256(Path(modeling_provider.__file__).read_bytes()).hexdigest(),
+            implementation_fingerprint(),
             hashlib.sha256(Path(provider_common.__file__).read_bytes()).hexdigest(),
             hashlib.sha256(Path(__file__).with_name("api_planner.py").read_bytes()).hexdigest()
             if "planner" in config

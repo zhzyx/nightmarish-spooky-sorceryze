@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e2239a88ebfc64b436f9acc7dd55ebc69f233dba",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "generation-owned-process-recovery-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8e856f1fc6bd2652a24efba9a8a4ce26e9c9388a36705c5e652bd3a3ce5db0db",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+    "action": "delivery",
+    "detection_head": "69a7a624a6d0f932bf02ebcc33d60427193629f3",
+    "context_sha256": "20ec446eac7c199b7250f3d9350955928140f1aa96a121e55f9112040ab7132a",
+    "operator": "Sail-Li",
+    "worker": "/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+    "diagnosis": "Formal gate correctly rejected task raw logs outside private receipts even though Git ignored them. Archived nine own untracked logs byte-for-byte under data-collection/receipts/generation-owned-process-recovery-1003/raw-logs and recorded SHA256 plus updated uncommitted evidence references. No committed record removed or rewritten.",
+    "next_action": "Independent auxiliary evidence review then restage and rerun exact formal gate; implementation remains unchanged.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T20:33:38.910522+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T20:34:59.019638+00:00",
+  "sha256": "d83ed1a9a9a89b6ee1ecd5f8203182492739aa9548e6ca44c10a3e500a9ead33"
+}

@@ -25,6 +25,7 @@ from codex_provider import (
 )
 from comfy_provider import DEFAULTS, digest, register
 from extensions import NodeRegistry, canonical, require, validate_invocation
+from owned_process import implementation_fingerprint, owned_scope, run_owned
 
 VERSION = "1"
 GENERATION_VERSION = "v2"
@@ -146,7 +147,11 @@ class KimiWorkImageProvider(CodexProvider):
         self.database = self.storage / self.DATABASE_NAME
         with self.db() as db:
             db.execute("CREATE TABLE IF NOT EXISTS jobs(key TEXT PRIMARY KEY, body TEXT NOT NULL)")
-        self.fingerprint = digest([self.config, hashlib.sha256(Path(__file__).read_bytes()).hexdigest()])
+        self.fingerprint = digest([
+            self.config,
+            hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            implementation_fingerprint(),
+        ])
 
     def _job_directory(self, key):
         # Keep the full 256-bit idempotency key in SQLite and in the compact
@@ -332,34 +337,21 @@ class KimiWorkImageProvider(CodexProvider):
 
     def _run_owned(self, key, arguments, log_name, stage, timeout, directory):
         with (directory / log_name).open("xb") as log:
-            process = subprocess.Popen(
+            return run_owned(
                 arguments,
-                stdin=subprocess.DEVNULL,
                 stdout=log,
-                stderr=subprocess.STDOUT,
                 env=self._environment(directory),
-                creationflags=_creationflags(),
-                start_new_session=os.name != "nt",
+                limit=MAX_LOG_BYTES,
+                timeout=timeout,
+                active=lambda: (
+                    self._active(key, stage)
+                    and (getattr(self, "_generation_scope", None) is None or self._generation_scope.active())
+                ),
+                fail=lambda reason: self.finish(
+                    key, "failed", "image_timeout" if reason == "timeout" else "image_output_invalid"
+                ),
+                scope=getattr(self, "_generation_scope", None) if stage.endswith("_launch") else None,
             )
-        deadline = time.monotonic() + timeout
-        try:
-            while process.poll() is None:
-                if not self._active(key, stage):
-                    process.terminate()
-                    return None
-                if time.monotonic() > deadline:
-                    self.finish(key, "failed", "image_timeout")
-                    process.terminate()
-                    return None
-                time.sleep(0.2)
-        finally:
-            if process.poll() is None:
-                try:
-                    process.wait(timeout=5)
-                except subprocess.TimeoutExpired:
-                    process.kill()
-            process.wait()
-        return process.returncode
 
     def _reference_urls(self, key, plan, directory):
         urls = []
@@ -391,6 +383,7 @@ class KimiWorkImageProvider(CodexProvider):
             urls.append(url)
         return urls
 
+    @owned_scope
     def _cli(self, key, plan, directory):
         record = self.read(key)
         # The parent already validated the windowless interpreter. The worker

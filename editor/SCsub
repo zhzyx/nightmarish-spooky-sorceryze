@@ -17,6 +17,7 @@ if env.editor_build:
     ]
     ainative_sources += [node for node in Glob("#tools/ainative/*.py") if not node.name.startswith("test_")]
     ainative_sources += [node for node in Glob("#tools/ainative/image_contact_sheet.gd")]
+    ainative_sources = ainative_builders.bundle_sources(ainative_sources)
     env.CommandNoCache(
         "ainative/bundle.gen.h",
         ainative_sources,
