@@ -1,0 +1,16 @@
+{
+  "request_id": "generation-owned-process-recovery-20261113",
+  "issue_number": 1003,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003",
+  "correction": "Preserve immutable quoted historical typo evidence while continuing to spell-check product code. Exactly two existing committed evidence paths excluded using the repository convention.",
+  "configuration_sha256": "9135b0348da91a989755af7487e6b26da18448ca39bb56ed2c4239f21c3e44c0",
+  "independent_review_sha256": "32aa80a2c6aa4c3fb811fea085e4499dea4eed6a16845f5438c7e7f9b273f349",
+  "codespell": {
+    "version": "2.4.2",
+    "result": "passed",
+    "log_sha256": "3c696c094e2a1323fa00cf0974a861af0cd6824b1672248c1d12791a70a61e4e",
+    "scope": "all changed tracked and untracked candidate files; write-changes disabled in private equivalent config"
+  },
+  "runtime_source_and_native": "unchanged from approved spelling correction; no new runtime validation required",
+  "incident": "686f4cdc186b7efcaba3f097ae99cf0e3811541392b42517fb3f341d2a634d36"
+}

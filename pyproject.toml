@@ -71,6 +71,9 @@ skip = [
 	"COPYRIGHT.txt",
 	"core/input/gamecontrollerdb.txt",
 	"core/string/locales.h",
+	# Preserve exact quoted spelling and hashes in the immutable #1003 correction evidence.
+	"data-collection/generation-owned-process-recovery-1003-spelling-correction.json",
+	"gonggong-diting-data/events/gonggong-workspace/generation-owned-process-recovery-20261113/kuafu-c78db041530660edf849a9fb21626ecb327a0ae8.json",
 	# Preserve the signed diagnostic wording in the #750 Kuafu receipt.
 	"gonggong-diting-data/events/gonggong-workspace/editor-model-path-audit/kuafu-b833f22b0b1c6683cda4338118658a41535fa0da.json",
 	# Preserve the exact original startup test receipts; corrected labels are recorded separately.
