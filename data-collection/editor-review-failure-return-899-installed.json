@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/899",
+  "request_id": "editor-review-failure-return-20261112",
+  "parent_issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "state": "installed_failure_report_return_verified",
+  "installed_main": "3a714a6d6b337e47f1047c6af2342ca05c956a08",
+  "installed_evidence": "data-collection/editor-installed-main914-773.json",
+  "console_sha256": "dd82690d5f53170a6acc85db1f62134967af8b17112ee357a728c1a2b8451676",
+  "engine_sha256": "eee3db7ca6996ea84fb837de296e9c696800b59b814d1fa3a6407e3de503590f",
+  "actual_consumer": {
+    "host": "Installed native Godot editor, original ordinary game project, actual connected Codex CLI account",
+    "child_id": 15,
+    "child_snapshot": "9603b5ef671d5df48deb75f941c7ae1c",
+    "parent_followup_snapshot": "c1930fbfd114258a9ff034e01d517621",
+    "raw_receipt_sha256": "cd89c18cdf1370f834c03505b62cc90306df397c4ebdccd700182258d2706323",
+    "payload_sha256": "0e2cb8495cc4a960639dec6a991747af04334629b697fc80b475da2efbef270d",
+    "observed_history_sha256": "06c139d44bfa0ca1266504b8dc15f89c092ee7a6da80631058bf8021e9ff891a",
+    "live_parent_observer_sha256": "289ebcabcbec805ecfe665d637a039b3c7871cd0d1f127c29a5683c103d8b1c4",
+    "parent_file_change_journal_sha256": "3dc73b79ed59d14d460a47f176154267b3b7429389beadae8b48863db9554bc3",
+    "independent_verification_sha256": "51738630e48e13208351ec978f8c4f271a02467630b4f24770a78ac8a7ee6bf1",
+    "tool_receipt_count": 133,
+    "failed_receipt_count": 2,
+    "unknown_receipt_count": 0,
+    "first_failed_source_sequence": 2,
+    "first_failed_source_diagnostic": "Error: The parent directory must exist and the target must be a file.",
+    "successful_source_hashes_rechecked": 66,
+    "successful_source_hashes_changed": 0,
+    "parent_return_count": 1,
+    "parent_receipt_reference_and_common_fields_match": true,
+    "transport_completed": true,
+    "review_result": "source_unverified",
+    "reporting_blocked": false,
+    "business_accepted": null,
+    "observed_followup": "Without a further root message after review completion, the live editor UI observer recorded the parent recovering the report, checking candidate/index bytes, preserving failures, writing audit/followup scripts and executing commands. Its snapshot file-change journal records those new scripts. Independent readback of the resulting formal-gate artifact found local_checks_passed. This combines live UI observation, the host file journal and artifact readback; no durable provider execution trace is claimed. This is continuation, not business approval or remote delivery.",
+    "followup_artifacts_sha256": {
+      "audit.py": "1ff0b4f24e0005b25922d9714b314a29c68b5241794e4b68d1d28fd8c4611760",
+      "followup.py": "574402f15165d334c8ba392921601922df13dd3023ff20cec4b44a010c33aa55",
+      "formal-gate-r4.json": "f43be042725cdb8cf8baef1f294c85896308e6ff80f7293b783f1d66365c2be1",
+      "provenance-followup.json": "74a7cba296e89293cbc079c738696d2e12f09bf3d8bd4d7ccc4eb050ad0383e4"
+    }
+  },
+  "earlier_validation": [
+    "data-collection/editor-review-failure-return-899.json",
+    "data-collection/editor-review-failure-return-899-final.json",
+    "data-collection/editor-continuation-combined-773.json",
+    "data-collection/editor-continuation-combined-773-input-binding.json",
+    "data-collection/editor-continuation-combined-773-main885.json"
+  ],
+  "limits": [
+    "The actual review inherited the host's private test Issue 2 binding while its text requested original game Issue 1. Its report explicitly identified this mismatch. This receipt proves failure-diagnostic delivery and parent continuation only; it grants no Issue 1 candidate or business approval.",
+    "The first failed source receipt survived the 24-entry terminal receipt window. Absence from that window does not erase earlier failures.",
+    "The raw report digest covers the original complete report. Rendered or redacted text recovered by a parent may have a different digest and does not replace the original.",
+    "This live observation does not claim cold-start replay testing. The earlier native current-authority, source-drift, revocation and cold-start tests retain their own candidate-bound scope.",
+    "The original game and parent Issue 773 remain open. Original INT-01 historical evidence remains unknown; Git delivery and the task-binding issue are separate unfinished work.",
+    "Private game contents, account configuration and raw local paths remain in local receipts. No service, model response, source receipt or acceptance state was mocked."
+  ]
+}

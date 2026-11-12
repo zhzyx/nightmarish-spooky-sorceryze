@@ -33,3 +33,13 @@ compiled input. Rebuild the editor for deployment or rollback; no new runtime
 module or host interface is introduced. Installed real-project revalidation,
 independent review, exact-candidate CI and main delivery remain the parent
 session's responsibility.
+
+Installed main `3a714a6d6b337e47f1047c6af2342ca05c956a08` now has an
+actual-provider observation in
+`data-collection/editor-review-failure-return-899-installed.json`: review 15
+retained two failed reads and 133 tool receipts, returned once with
+`source_unverified` and no business approval, and the parent automatically
+continued candidate checks and the formal local gate. An independent host
+readback verified all 66 successful source hashes and the returned receipt
+reference. The separate private Issue binding mismatch remains explicit;
+this result does not approve the original game's candidate or close #773.
