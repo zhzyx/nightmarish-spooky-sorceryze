@@ -279,12 +279,17 @@ print(json.dumps([work_items.github_runtime.resolve_gh(), bridge.find_gh(dict(os
         components = []
         for name in ("node", "git"):
             tool = self.executable(other.parent / name)
-            components.append({"id": name, "path": str(tool),
-                               "sha256": hashlib.sha256(tool.read_bytes()).hexdigest()})
+            components.append({"id": name, "path": str(tool), "sha256": hashlib.sha256(tool.read_bytes()).hexdigest()})
         state = self.installation / "project/runtime/state/installed.json"
         state.parent.mkdir(parents=True)
-        state.write_text(json.dumps({"schema_version": 1, "authorized": True,
-                                     "path_base": "workspace_root", "components": components}))
+        state.write_text(
+            json.dumps({
+                "schema_version": 1,
+                "authorized": True,
+                "path_base": "workspace_root",
+                "components": components,
+            })
+        )
         supplied = {**self.env, "GONGGONG_GH": str(selected)}
         with (
             patch.object(bridge, "__file__", str(self.installation / "customizations/components/godot-host/bridge.py")),

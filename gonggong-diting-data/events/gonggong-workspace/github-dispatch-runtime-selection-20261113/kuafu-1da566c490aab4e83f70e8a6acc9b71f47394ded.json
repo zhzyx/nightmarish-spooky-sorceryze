@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1da566c490aab4e83f70e8a6acc9b71f47394ded",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "github-dispatch-runtime-selection-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/994",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2d0b88ee6f1b155dcca213bcdd29aea8b2655a9ac9a2610c50059f0e0e39cd4d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/994",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/994",
+    "action": "validation",
+    "detection_head": "85a0361609c7b62e8d1c528ac5401130ccc23cae",
+    "context_sha256": "99a870b4ad485350c924b64f84280b21a6828744381fdc25e37b66b4e8c5a021",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-integration",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43283251789/job/131409808307",
+    "diagnosis": "CI ruff-format modified two Python files. Local ruff lint and mypy were successful but did not establish formatter compliance for report.py and test_github_runtime.py. Root applied pinned ruff0.17.1; both ASTs remain identical.",
+    "next_action": "Re-run affected tests and independent formatting-only review; append correction evidence, sign replacement candidate, verify exact CI and main before closing994.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T18:50:26.086218+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T18:51:25.132364+00:00",
+  "sha256": "93825a49244fe0afca2034a986bc83837ab9f84576b25bc960e775f56f891323"
+}

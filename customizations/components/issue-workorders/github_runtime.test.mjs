@@ -7,7 +7,9 @@ import {execFileSync} from 'node:child_process';
 import {pathToFileURL, fileURLToPath} from 'node:url';
 import {githubRuntime} from './github_runtime.mjs';
 
-const python = process.env.GONGGONG_PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
+// Freeze the test interpreter before deliberately removing PATH in child fixtures.
+const python = execFileSync(process.env.GONGGONG_PYTHON || (process.platform === 'win32' ? 'python' : 'python3'),
+  ['-c','import sys; print(sys.executable)'],{encoding:'utf8'}).trim();
 function fixture(t) {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'github-js-')));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));

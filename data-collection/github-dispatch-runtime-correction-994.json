@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "issue_number": 994,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/994",
+  "request_id": "github-dispatch-runtime-selection-20261113",
+  "failed_candidate": "85a0361609c7b62e8d1c528ac5401130ccc23cae",
+  "failed_signed_candidate": "ab922e5b419d3b6e15e7356e1483aa84a4f9b404",
+  "failed_pr": 998,
+  "failure_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43283251789/job/131409808307",
+  "incident": "2d0b88ee6f1b155dcca213bcdd29aea8b2655a9ac9a2610c50059f0e0e39cd4d",
+  "correction": [
+    "Pinned ruff0.17.1 formatted report.py and test_github_runtime.py; AST equality verified for each before/after. Earlier lint/mypy passage did not establish format compliance.",
+    "New GUI/emptyPATH tests now resolve sys.executable before altering child PATH; without explicit GONGGONG_PYTHON root reproduced2fixturefailures and recovered15/15 without weakening assertions."
+  ],
+  "independent_review": {
+    "reviewer": "/root/sinan_ddfed4afa23385db",
+    "formatting": "approved identical AST",
+    "fixture": "approved, independently15/15withoutGONGGONG_PYTHON"
+  },
+  "verification": {
+    "python_runtime": {
+      "passed": 17
+    },
+    "affected_js": {
+      "passed": 15,
+      "skipped": 0
+    },
+    "ruff_check": "passed",
+    "ruff_format_check": "3filespassed",
+    "previous_full_suite": "72 JS pass /2Windows skips,78Python passed on original semantic candidate; original evidence preserved"
+  },
+  "input_sha256": {
+    "customizations/components/codex-dispatch/report.py": "5af077f8fa4735fcb6cf5215109524f2346f72b36f1ad3da3b419c6772319ba7",
+    "customizations/components/issue-workorders/test_github_runtime.py": "aa33165130ad2ccbfa567c2248ad4aa916e0ddb11f4952e98cfb887d83994279",
+    "customizations/components/codex-dispatch/operator.test.mjs": "9dc9f47904f733472d62f185d5e3fdd497e0c64e78d9dd235a611ee2a98264f3",
+    "customizations/components/issue-workorders/github_runtime.test.mjs": "37807ee4fc31390b2f6428f5e02533ad456425d0f019cad57186dfdbb05ee82b"
+  },
+  "delivery": "pending replacement exactCI/main"
+}

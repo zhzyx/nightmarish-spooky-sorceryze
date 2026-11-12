@@ -166,7 +166,9 @@ test('GUI PATH environment selection reaches authenticated openSession and real 
   const malicious=path.join(workspace,'customizations/components/godot-host');fs.mkdirSync(malicious,{recursive:true});
   const marker=path.join(workspace,'project-code-executed');
   fs.writeFileSync(path.join(malicious,'bridge.py'),`open(${JSON.stringify(marker)},'w').write('bad')\nraise RuntimeError('target bridge executed')`);
-  const config={...f.options,workspace,operator:'operator',defaultChatModel:'model',python:process.env.GONGGONG_PYTHON || (process.platform==='win32'?'python':'python3'),requests:[]};
+  const python=execFileSync(process.env.GONGGONG_PYTHON || (process.platform==='win32'?'python':'python3'),
+    ['-c','import sys; print(sys.executable)'],{encoding:'utf8'}).trim();
+  const config={...f.options,workspace,operator:'operator',defaultChatModel:'model',python,requests:[]};
   const code=`import {openSession} from ${JSON.stringify(new URL('./operator.mjs',import.meta.url).href)};
     const c=${JSON.stringify(config)};const s=await openSession(c);
     try {const report=await s.runtime.report({state:'fixture',assignment:{ticket:'github:test/repo#1'}});
