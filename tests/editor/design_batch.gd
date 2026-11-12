@@ -16,6 +16,54 @@ var terminal_receipt_recorded_during_models := false
 var models_stall_observed := false
 var models_stop_applied := false
 
+func _parallel_batches() -> Array:
+	var batches: Array = []
+	if FileAccess.file_exists("res://parallel-batches.jsonl"):
+		for line in FileAccess.get_file_as_string("res://parallel-batches.jsonl").strip_edges().split("\n"):
+			batches.append(JSON.parse_string(line))
+	return batches
+
+func _blocked_retry(mode: String, cold := false):
+	await create_timer(2.0).timeout
+	_check(_parallel_batches().size() == 1, "Idle or cold blocked task automatically launched another runner")
+	if mode == "parallel-blocked-cold" and not cold:
+		return
+	var original: Dictionary = _parallel_batches()[0]
+	var original_bytes := FileAccess.get_file_as_bytes(original.output)
+	if mode == "parallel-blocked-tampered":
+		FileAccess.open(original.output, FileAccess.WRITE).store_string("{}")
+	elif mode == "parallel-blocked-live":
+		FileAccess.open(original.output + ".running", FileAccess.WRITE).store_string("occupied")
+	var spawn = dock.find_child("SpawnWorkOrderAgents", true, false)
+	# Multiple clicks before the deferred dispatcher runs authorize one attempt.
+	for click in range(4):
+		spawn.pressed.emit()
+	if mode in ["parallel-blocked-tampered", "parallel-blocked-live", "parallel-blocked-prefix"]:
+		await create_timer(2.0).timeout
+		_check(_parallel_batches().size() == 1, "Unknown or invalid receipt was retried")
+		return
+	var deadline := Time.get_ticks_msec() + 15000
+	while _parallel_batches().size() < 2 and Time.get_ticks_msec() < deadline:
+		await create_timer(0.05).timeout
+	if not _check(_parallel_batches().size() == 2, "Explicit Continue did not start exactly one retry"):
+		return
+	for click in range(4):
+		spawn.pressed.emit()
+	await create_timer(0.5).timeout
+	_check(_parallel_batches().size() == 2, "Repeated Continue started concurrent attempts")
+	var retry: Dictionary = _parallel_batches()[1]
+	_check(retry.batchId != original.batchId, "Retry reused its old execution identity")
+	if mode == "parallel-blocked-unknown":
+		_check(retry.workers.size() == 1 and retry.workers[0].order == 1, "Unknown sibling blocked safe retry or was itself rerun")
+	_file("parallel-retry-release")
+	await create_timer(3.0).timeout
+	_check(_parallel_batches().size() == 2, "Retry blocked result automatically looped")
+	_check(FileAccess.get_file_as_bytes(original.output) == original_bytes, "Original runner receipt changed")
+	if mode == "parallel-blocked-stale":
+		spawn.pressed.emit()
+		await create_timer(2.0).timeout
+		_check(_parallel_batches().size() == 2, "Missing new receipt reused an earlier blocked receipt")
+
 func _work_event(_workspace: String, _binding: Dictionary, _worker: String, kind: String, _phase: String, status: String):
 	# This public lifecycle signal precedes the host's deferred completion
 	# callback. Schedule a normal control action first, then let completion run.
@@ -130,10 +178,10 @@ func _wait_file(name: String, seconds := 60.0) -> bool:
 		await create_timer(0.05).timeout
 	return _check(false, "Missing fixture coordination file: " + name)
 
-func _wait_marker(marker: String, seconds := 90.0) -> bool:
+func _wait_marker(marker: String, seconds := 90.0, require_idle := true) -> bool:
 	var deadline := Time.get_ticks_msec() + int(seconds * 1000)
 	while Time.get_ticks_msec() < deadline:
-		if marker in _text() and dock.find_child("Stop", true, false).disabled:
+		if marker in _text() and (not require_idle or dock.find_child("Stop", true, false).disabled):
 			# Completion callbacks and the asynchronous evidence writer get an idle
 			# boundary before the next user action changes conversations.
 			await create_timer(0.3).timeout
@@ -252,7 +300,10 @@ func _run():
 		dock.get_ai_settings_control().find_child("APIKey", true, false).text = "design-batch-isolated-secret"
 		dock.find_child("ConsultationOnly", true, false).button_pressed = false
 		dock.find_child("ResumeMessageQueue", true, false).pressed.emit()
-		await _wait_marker("REVIEW_TAMPER_ACTUAL_READ_OK")
+		if OS.get_environment("DESIGN_BATCH_GAME_WORKSPACE") == "1":
+			await _wait_marker("无法核实只读审查的父委托、工单或候选")
+		else:
+			await _wait_marker("REVIEW_TAMPER_ACTUAL_READ_OK")
 		_finish()
 		return
 	if OS.get_environment("DESIGN_BATCH_PHASE") == "restore":
@@ -280,7 +331,7 @@ func _run():
 	settings.set_setting("gonggong/request_id", "design-batch-global-sentinel")
 	settings.set_setting("ai_chat/parallel_work_orders_config", "")
 	if mode.begins_with("parallel-"):
-		settings.set_setting("ai_chat/parallel_work_orders_config", "res://private-fixture-only.json")
+		settings.set_setting("ai_chat/parallel_work_orders_config", ProjectSettings.globalize_path("res://private-fixture-only.json"))
 	# The private fixture's operator confirms the specific design shown by the host.
 	var design_confirmation = dock.find_child("WorkOrderConfirmation", true, false)
 	design_confirmation.visibility_changed.connect(func():
@@ -306,6 +357,11 @@ func _run():
 	dock.get_ai_settings_control().find_child("AutoApplyFileChanges", true, false).button_pressed = true
 	dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = true
 	dock.find_child("ConsultationOnly", true, false).button_pressed = false
+	if OS.get_environment("DESIGN_BATCH_PHASE") == "blocked-restore":
+		dock.find_child("ResumeMessageQueue", true, false).pressed.emit()
+		await _blocked_retry(mode, true)
+		_finish()
+		return
 	if dock.get_ai_settings_control().find_child("RefreshModels", true, false) == null:
 		# The private settings file already binds READY to the loopback server.
 		# Wait for that startup query instead of losing the warmup queue behind it.
@@ -383,6 +439,11 @@ func _run():
 			tabs.tab_close_pressed.emit(0)
 			dock.find_child("AgentCloseConfirmation", true, false).get_ok_button().pressed.emit()
 		_file("parallel-release")
+		if mode.begins_with("parallel-blocked"):
+			await _wait_marker("并行执行器已结束", 30.0, false)
+			await _blocked_retry(mode)
+			_finish()
+			return
 		if mode == "parallel-stop":
 			await _wait_file("parallel-cancelled")
 		if mode in ["parallel-normal", "parallel-failure", "parallel-unknown"]:
@@ -396,6 +457,23 @@ func _run():
 		_finish()
 		return
 	if mode.begins_with("review-stale-"):
+		if mode == "review-stale-parent":
+			if not await _wait_file("review-parent-drift-request", 15.0):
+				_finish()
+				return
+			var bindings: Dictionary = settings.get_project_metadata("daqian", "bindings", {})
+			var owner := "a".repeat(32)
+			if not _check(bindings.has(owner), "Original parent binding missing"):
+				_finish()
+				return
+			bindings[owner]["request_id"] = "changed-review-parent"
+			settings.set_project_metadata("daqian", "bindings", bindings)
+			_file("review-parent-drift-applied")
+			await create_timer(3.0).timeout
+			_check(dock.find_child("Stop", true, false).disabled, "Changed parent left review running")
+			_check(not "DESIGN_BATCH_PARENT_VERIFIED_OK" in _text(), "Changed parent consumed old review")
+			_finish()
+			return
 		await _wait_marker("子工单回传已失效")
 		_check(dock.get_meta("queued_message_count", -1) == 0, "Stale review is still queued")
 		_finish()

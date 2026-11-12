@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-6eca81d23d283983ca6a302777550967a1c92203",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "93538cb5f45af524908dd2b857f921a7910c895e60065f8fb6cc2bf6068a2736",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "7813a30245c65427094934fd29590b98c1a1dd96",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "Native builtin full 128+83+22+5 assertions passed; original and diagnostic failures retained; final report SHA256 38298dce12fc5245c215f7461c57b76dfadec0934b2acca0afb9c77d1217ed51, candidate console SHA256 8400f52e51c60267d4d5ba9ea8eb404b3be5343a476d6b880e5429c335786e13.",
+    "diagnosis": "Test fixture drift after unified settings/service controls: stable named pages, ten exact modes, saved offline provider reset, source-picker signal instead of read-only text assignment. Runtime unchanged; Executor success and isolated bundled-consumer checks preserved.",
+    "next_action": "Root reviewed test-only correction. Deliver followup candidate through formal gate and exact signed CI; continue real account editor acceptance. Parent773 remains open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T00:21:06.450698+00:00",
+    "attempted": null,
+    "repair_owner": "Current operator and completed native agent sinan_ffaab9b445c1d22f",
+    "continuable": "All local core and native builtin checks pass; formal delivery and real-provider acceptance continue."
+  },
+  "occurred_at": "2026-11-12T04:08:47.256034+00:00",
+  "sha256": "1434511d1c6d7d9d1c2573b53684a52160fb43171cf812fe677ee21a65e7f009"
+}

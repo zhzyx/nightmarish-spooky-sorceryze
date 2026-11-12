@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-2f0d9212478db59f6cea277422eb8c0f101d51c884c3eab5d4f9bc65fb3880ad",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "occurred_at": "2026-11-12T04:10:36.534385+00:00",
+  "evidence_refs": [
+    "kuafu-6eca81d23d283983ca6a302777550967a1c92203",
+    "learn-c39704a00715d3e867e79dede2b7a1735f2252a7f7a26f7af580b1ebedf7c01b"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 14,
+    "previous": "28b861b99f6db2bd6bf29426cb1dcaf0f93599164e8b0318f967376ab54fb678",
+    "action": "applied",
+    "details": {
+      "task": "#773 followup integration on main 90c17c9: verify the actual bundled editor consumers after main881, including native AINative settings and source selection.",
+      "observed": "Strict Windows build and full 1565 native tests passed. Actual builtin fixture exposed stale tab indices, service modes, saved provider and read-only source-display manipulation. Test-only correction follows stable named pages, restores saved offline state and emits actual source-picker selection; unchanged Executor success contract passed all 128+83+22+5 assertions. Original failures retained. This supports this Windows installed consumer only, not all providers or complete game production."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-production-followups-773.json",
+        "sha256": "9a6ee35577811d0ce1dc0de8287dd97489b6d1a133ba4b3457b89cb106776186"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/kuafu-6eca81d23d283983ca6a302777550967a1c92203.json",
+      "sha256": "1434511d1c6d7d9d1c2573b53684a52160fb43171cf812fe677ee21a65e7f009"
+    }
+  },
+  "sha256": "27da084c4d967e402e32e60f3a3cc8c4550b66defa655810834f6232f522db2d"
+}

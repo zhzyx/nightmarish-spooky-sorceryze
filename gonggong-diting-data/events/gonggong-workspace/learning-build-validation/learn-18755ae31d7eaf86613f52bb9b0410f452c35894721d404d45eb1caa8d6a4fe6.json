@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-build-validation",
+  "event_id": "learn-18755ae31d7eaf86613f52bb9b0410f452c35894721d404d45eb1caa8d6a4fe6",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "occurred_at": "2026-11-12T03:46:44.199863+00:00",
+  "evidence_refs": [
+    "kuafu-68649410f3b4f0f301a1d0b741d9e791d212dd62",
+    "learn-70d6be4dd07857fa4b96364f41381a797853cbd8f58b70cb1c369e77cc23c8ed"
+  ],
+  "payload": {
+    "scope": "build-validation",
+    "lesson": "validate-whole-signed-candidate",
+    "revision": 3,
+    "previous": "0762ed92790968c24b077adb53ce0fa37c153b9e481b214a837b7f41606e7883",
+    "action": "verify",
+    "details": {
+      "test": "Compare stable complete-candidate style proof to PR879 exact signed head 90572521673187844b0fbe91672bcd9fdea7d1f4 whole-PR checks and authoritative installed-main receipt.",
+      "expected": "Full target diff has stable clang/include formatting; both applicable signed-head static checks and native/runtime CI succeeded; remote main bb4d0d5565a33547b50490baa61d39b23cb41e89 and installed bytes were read back. Earlier failed candidates remain separate evidence.",
+      "observed": "Full target diff has stable clang/include formatting; both applicable signed-head static checks and native/runtime CI succeeded; remote main bb4d0d5565a33547b50490baa61d39b23cb41e89 and installed bytes were read back. Earlier failed candidates remain separate evidence."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-production-ci-style-773.json",
+        "sha256": "7e0ab54db8e4af8f28109c31ec409da4ccb7620c478ce297a1b74333afe98225"
+      },
+      {
+        "path": "data-collection/editor-production-runtime-fixture-773.json",
+        "sha256": "8379d64279940cd0520ddb92a577bd4ac03fc4dec8c536dde01f76eec78a084c"
+      },
+      {
+        "path": "data-collection/editor-production-installed-main879-773.json",
+        "sha256": "34f6fe95de7b5628e2e0dde42c6485c2058d6a2f556cc5552119b426175b4dcb"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/kuafu-68649410f3b4f0f301a1d0b741d9e791d212dd62.json",
+      "sha256": "65310d0c83696f38d7f047c915079d02468f8876c01f21d8daa4f56195edfbe3"
+    }
+  },
+  "sha256": "d79efa029058ebfa9db30e3b3b0e804ed6d2c8d1df90cbe11a490a8552496f24"
+}

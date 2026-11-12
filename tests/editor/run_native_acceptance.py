@@ -30,6 +30,8 @@ if SCENARIO not in {
     "cancel-verify",
     "parallel",
     "parallel-repair",
+    "parallel-evidence-completion",
+    "parallel-evidence-exhausted",
     "parallel-integration",
     "parallel-config-drift",
     "parallel-self-review",
@@ -42,7 +44,7 @@ if SCENARIO not in {
 }:
     raise SystemExit("Unknown native acceptance scenario")
 
-if SCENARIO == "parallel-integration" and "--case" not in sys.argv:
+if SCENARIO.startswith("parallel") and "--case" not in sys.argv:
     sys.argv.extend(["--case", "models-initial-ok"])
 
 batch.BRIDGE = batch.BRIDGE.replace("'tenant_id':'fixture'", "'tenant_id':'gonggong-workspace'")
@@ -191,6 +193,8 @@ def fixture_copyfile(source, target, *args, **kwargs):
         "repair",
         "parallel",
         "parallel-repair",
+        "parallel-evidence-completion",
+        "parallel-evidence-exhausted",
         "parallel-integration",
     }:
         # Independent review and a repair add real processes to the base batch.
@@ -448,7 +452,10 @@ class AcceptanceServer(ThreadingHTTPServer):
             results = [m["content"] for m in body["messages"] if m["role"] == "tool"]
             repair_evidence = criteria[0]["id"] == "A" and (
                 (SCENARIO == "repair" and any(r["completed"] for r in repair_calls))
-                or (SCENARIO == "parallel-repair" and (root / "repair-evidence.txt").exists())
+                or (
+                    SCENARIO in {"parallel-repair", "parallel-evidence-completion", "parallel-evidence-exhausted"}
+                    and (root / "repair-evidence.txt").exists()
+                )
             )
             if not results:
                 if not auxiliary.exists():
@@ -523,7 +530,11 @@ class AcceptanceServer(ThreadingHTTPServer):
                     auxiliary.write_text("changed after successful contextual read", encoding="utf8")
                 failing = criteria[0]["id"] == "A" and (
                     (SCENARIO == "repair" and not any(r["completed"] for r in repair_calls))
-                    or (SCENARIO == "parallel-repair" and not (root / "repair-evidence.txt").exists())
+                    or (
+                        SCENARIO in {"parallel-repair", "parallel-evidence-completion"}
+                        and not (root / "repair-evidence.txt").exists()
+                    )
+                    or SCENARIO == "parallel-evidence-exhausted"
                 )
                 verdict = {
                     "verdict": "unknown" if SCENARIO == "unknown" else "fail" if failing else "pass",
@@ -549,6 +560,12 @@ class AcceptanceServer(ThreadingHTTPServer):
                         for c in criteria
                     ],
                 }
+                if SCENARIO in {"parallel-evidence-completion", "parallel-evidence-exhausted"} and failing:
+                    verdict["verdict"] = "unknown"
+                    verdict["unknown_kind"] = "missing_execution_evidence"
+                    for criterion in verdict["criteria"]:
+                        criterion["met"] = None
+                        criterion["missing_evidence"] = "Run assigned verification and persist repair-evidence.txt"
                 message = {"role": "assistant", "content": batch.json.dumps(verdict)}
             review_calls.append({"root": str(root), "criteria": criteria, "completed": bool(results)})
             data = batch.json.dumps({"choices": [{"message": message, "finish_reason": "stop"}]}).encode()
@@ -580,7 +597,7 @@ class DiagnosticDirectory(TemporaryDirectory[str]):
                 diagnostics.append({"path": str(file.relative_to(root)), "body": file.read_text(encoding="utf8")})
             for file in (root / "isolated-editor/editor_data/cache").glob("gonggong-project-integration*.result"):
                 diagnostics.append({"path": str(file.relative_to(root)), "body": file.read_text(encoding="utf8")})
-            for file in (root / "original/samples/project/.godot/editor/ai_chat_snapshots").glob("*.acceptance.json"):
+            for file in (root / "original/samples/project/.godot/editor/ai_chat_snapshots").glob("*acceptance.json"):
                 diagnostics.append({
                     "path": str(file.relative_to(root)),
                     "sha256": batch.hashlib.sha256(file.read_bytes()).hexdigest(),
@@ -674,12 +691,53 @@ if __name__ == "__main__":
             and len(ledgers) == 3
             and all(s["tasks"][0]["status"] == "done" for s in ledgers)
         )
-        counts = {"A": 2 if SCENARIO == "parallel-repair" else 1, "B": 1, "C": 1}
+        counts = {
+            "A": 2
+            if SCENARIO in {"parallel-repair", "parallel-evidence-completion", "parallel-evidence-exhausted"}
+            else 1,
+            "B": 1,
+            "C": 1,
+        }
         valid = valid and all(len(starts[n]) == len(finishes[n]) == counts[n] for n in "ABC")
         if valid:
             valid = max(starts[n][0]["time"] for n in "AB") < min(finishes[n][0]["time"] for n in "AB") and starts["C"][
                 0
             ]["time"] > max(finishes[n][-1]["time"] for n in "AB")
+        if SCENARIO == "parallel-evidence-completion":
+            originals = [
+                batch.json.loads(d["body"]) for d in diagnostics if d["path"].endswith(".unknown-acceptance.json")
+            ]
+            continuations = [
+                batch.json.loads(d["body"])
+                for d in diagnostics
+                if "parallel-ticket-" in d["path"] and "-repair-" in d["path"]
+            ]
+            valid = valid and len(originals) == 1 and len(continuations) == 1
+            if valid:
+                original, continuation = originals[0], continuations[0]
+                valid = (
+                    original["verdict"] == "unknown"
+                    and original["unknown_kind"] == "missing_execution_evidence"
+                    and original["criteria"][0]["met"] is None
+                )
+                valid = (
+                    valid
+                    and continuation["repair_of"]["mode"] == "missing_execution_evidence"
+                    and continuation["execution_id"] != original["producer"]["execution_id"]
+                )
+                valid = (
+                    valid and len([r for r in review_calls if r["completed"] and r["criteria"][0]["id"] == "A"]) == 2
+                )
+        if SCENARIO == "parallel-evidence-exhausted":
+            valid = (
+                not result["errors"]
+                and len(parallel.returns) == 1
+                and len(starts["A"]) == len(finishes["A"]) == 2
+                and len(starts["B"]) == len(finishes["B"]) == 1
+                and not starts["C"]
+                and len(accepted) == 1
+                and len([r for r in review_calls if r["completed"] and r["criteria"][0]["id"] == "A"]) == 2
+            )
         if SCENARIO == "parallel-config-drift":
             valid = (
                 not result["errors"]

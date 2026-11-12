@@ -43,6 +43,9 @@
 #include "scene/main/timer.h"
 
 String AIChatDock::_candidate_root() const {
+	if (game_review_contexts.has(active_agent)) {
+		return Dictionary(game_review_contexts[active_agent]["candidate"])["source_root"];
+	}
 	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
 	return candidate.get("source_root", ProjectSettings::get_singleton()->get_resource_path());
 }

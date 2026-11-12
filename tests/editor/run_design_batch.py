@@ -31,6 +31,15 @@ GAME_WORKSPACE = False
 REQUEST = "design-batch-fixture"
 SECRET = "design-batch-isolated-secret"
 CASES = [
+    "parallel-blocked",
+    "parallel-blocked-model",
+    "parallel-blocked-dependency",
+    "parallel-blocked-unknown",
+    "parallel-blocked-stale",
+    "parallel-blocked-tampered",
+    "parallel-blocked-live",
+    "parallel-blocked-cold",
+    "parallel-blocked-prefix",
     "parallel-normal",
     "parallel-failure",
     "parallel-unknown",
@@ -44,6 +53,9 @@ CASES = [
     "review-stale-head",
     "review-stale-bytes",
     "review-stale-link",
+    "review-stale-branch",
+    "review-stale-common-dir",
+    "review-stale-parent",
     "review-stop",
     "review-parent-stop",
     "normal",
@@ -121,9 +133,22 @@ PARALLEL_RUNNER = r"""
 import fs from 'node:fs';
 const request = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
 const output = process.argv[3], project = process.env.DESIGN_BATCH_PROJECT;
+const log = project + '/parallel-batches.jsonl';
+const attempt = fs.existsSync(log) ? fs.readFileSync(log,'utf8').trim().split('\n').length + 1 : 1;
+fs.appendFileSync(log, JSON.stringify({...request,output,attempt})+'\n');
 fs.writeFileSync(project + '/parallel-started', JSON.stringify(request));
-while (!fs.existsSync(project + '/parallel-release')) await new Promise(r=>setTimeout(r,25));
+while (!fs.existsSync(project + '/parallel-release') || (attempt > 1 && !fs.existsSync(project + '/parallel-retry-release'))) await new Promise(r=>setTimeout(r,25));
 const mode = process.env.DESIGN_BATCH_CASE;
+if (mode.startsWith('parallel-blocked')) {
+ if (mode === 'parallel-blocked-stale' && attempt > 1) process.exit(0);
+ const workers = request.workers.map(w=>({...w,issue:request.issue,state:
+  mode==='parallel-blocked-unknown' && w.order===2 ? 'reconcile_required' :
+  mode==='parallel-blocked-prefix' ? 'blocked_unknown' :
+  mode==='parallel-blocked-model' ? 'blocked_model' :
+  mode==='parallel-blocked-dependency' ? 'blocked_dependency' : 'blocked'}));
+ fs.writeFileSync(output,JSON.stringify({...request,workers}));
+ process.exit(0);
+}
 if (mode === 'parallel-unknown') process.exit(0);
 const state = mode === 'parallel-failure' ? 'reconcile_required' : 'review';
 const workers = request.workers.map(w=> {
@@ -195,6 +220,7 @@ def main():
     parser.add_argument("--node", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--case", choices=CASES, default="normal")
+    parser.add_argument("--game-project-root", action="store_true", help="Put the ordinary game at its repository root")
     parser.add_argument(
         "--task-native-review", action="store_true", help="Authorize parent native operations before read-only review"
     )
@@ -205,6 +231,8 @@ def main():
     )
     args = parser.parse_args()
     assert not args.task_native_review or args.case == "review"
+    assert not args.game_project_root or GAME_WORKSPACE
+    assert args.case not in {"review-stale-branch", "review-stale-common-dir"} or GAME_WORKSPACE
     # This offline runner binds its own fixture; never inherit a live work order.
     os.environ.pop("GONGGONG_WORKSPACE", None)
     if args.expect_stalled and args.case not in MODELS_WAKE_CASES:
@@ -213,6 +241,7 @@ def main():
     full_batch = args.case in {"normal", "stale-retry"} or args.case in MODELS_WAKE_CASES
     args.out.parent.mkdir(parents=True, exist_ok=True)
     errors, calls, parent_returns = [], [], []
+    http_posts = []
     models_requests = []
     stages = Counter()
     report, restored = {}, None
@@ -257,14 +286,22 @@ def main():
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content, encoding="utf-8")
         git(original, "add", ".")
+        original_excerpt_sha256 = hashlib.sha256((original / "review-data/excerpt.txt").read_bytes()).hexdigest()
         git(original, "commit", "-m", "offline design fixture")
         git(original, "push", "origin", "main")
         git(original, "checkout", "-b", "existing-owner")
-        project = original / "samples/project"
-        project.mkdir(parents=True)
+        project = original if args.game_project_root else original / "samples/project"
+        project.mkdir(parents=True, exist_ok=True)
         (project / "project.godot").write_text(
             'config_version=5\n[application]\nconfig/name="Design Batch Fixture"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n'
         )
+        fixture_jobs = []
+        if args.case.startswith("parallel-"):
+            for order in (1, 2):
+                worker_root = folder / ("blocked-worker-" + str(order))
+                worker_root.mkdir()
+                fixture_jobs.append({"order": order, "worktree": str(worker_root)})
+        (project / "private-fixture-only.json").write_text(json.dumps({"jobs": fixture_jobs}), encoding="utf8")
         shutil.copyfile(Path(__file__).with_name("design_batch.gd"), project / "gate.gd")
         if args.case.startswith("review"):
             # A previously blocked external design child remains waiting after
@@ -366,6 +403,19 @@ def main():
             )
         else:
             (folder / "tools").symlink_to(ROOT / "tools", target_is_directory=True)
+        # Requirement/context/reporting transports belong to the isolated
+        # installed adapter. Preserve real setup, runner and acceptance actions.
+        bridge_entry = installation / "customizations/components/godot-host/bridge.py"
+        if bridge_entry.exists():
+            assert bridge_entry.resolve().is_relative_to(folder)
+            entry_text = bridge_entry.read_text(encoding="utf8")
+            marker = 'if __name__ == "__main__":'
+            assert entry_text.count(marker) == 1
+            transport = (
+                "if __name__ == '__main__' and sys.argv[1] in {'issue-agent', 'chat', 'flush'}:\n"
+                "    exec(" + repr(BRIDGE) + ")\n    sys.exit(0)\n\n"
+            )
+            bridge_entry.write_text(entry_text.replace(marker, transport + marker), encoding="utf8")
         artifact_sha256 = hashlib.sha256(binary.read_bytes()).hexdigest()
         targets = {}
 
@@ -466,8 +516,11 @@ def main():
                 }, names
                 system = body["messages"][0]["content"]
                 assert "Host review delegation" in system and '"execution_role":"read_only_reviewer"' in system
-                assert '"independence":"unknown"' in system and '"parent_governance_sha256"' in system
-                assert len(bindings()) == 1, "Read-only child created a production candidate"
+                assert (
+                    '"independence":"distinct_host_execution_contexts"' in system
+                    and '"parent_governance_sha256"' in system
+                )
+                assert len(bindings()) == (0 if GAME_WORKSPACE else 1), "Read-only child created a production candidate"
                 assert not list(targets["parent"].glob("data-collection/outbox/parallel-*.json")), (
                     "Review dispatched a production CLI batch"
                 )
@@ -531,6 +584,27 @@ def main():
                     assert json.loads(results[stage + "-excerpt"])["content"].strip() == "first line"
                     if args.case == "review-stale-head":
                         git(root, "commit", "--allow-empty", "-m", "Advance fixture HEAD without changing content")
+                    elif args.case == "review-stale-branch":
+                        before = git(root, "rev-parse", "HEAD")
+                        git(root, "checkout", "-b", "changed-review-branch")
+                        assert git(root, "rev-parse", "HEAD") == before
+                    elif args.case == "review-stale-common-dir":
+                        before = git(root, "rev-parse", "HEAD")
+                        git_dir = root / ".git"
+                        assert git_dir.is_dir() and root.is_relative_to(folder)
+                        alternative = folder / "redirected-git-dir"
+                        shutil.copytree(git_dir, alternative)
+                        git_dir.rename(root / ".git-original")
+                        git_dir.write_text("gitdir: " + str(alternative).replace("\\", "/") + "\n", encoding="utf8")
+                        assert git(root, "rev-parse", "HEAD") == before
+                    elif args.case == "review-stale-parent":
+                        (project / "review-parent-drift-request").touch()
+                        deadline = time.monotonic() + 10
+                        while not (project / "review-parent-drift-applied").exists() and time.monotonic() < deadline:
+                            time.sleep(0.02)
+                        assert (project / "review-parent-drift-applied").exists(), (
+                            "Parent binding drift was not applied"
+                        )
                     elif args.case == "review-stale-bytes":
                         excerpt.write_bytes(excerpt.read_bytes().replace(b"unobserved", b"unreviewed"))
                     else:
@@ -566,7 +640,11 @@ def main():
                 assert child["transport_completed"] is True and child["state"] == "completed"
                 assert Path(child["host_bound_source_root"]) == Path(child["workspace"]) == targets["parent"]
                 delegation = child["delegation"]
-                assert delegation["execution_role"] == "read_only_reviewer" and delegation["independence"] == "unknown"
+                assert delegation["execution_role"] == "read_only_reviewer"
+                assert delegation["independence"] == "distinct_host_execution_contexts"
+                assert delegation["reviewer_conversation_id"] == delegation["child_conversation"]
+                assert delegation["child_conversation"] != delegation["parent_conversation"]
+                assert delegation["business_accepted"] is None
                 assert delegation["request_id"] == REQUEST and delegation["issue_number"] == 441
                 assert delegation["scope_sha256"] == hashlib.sha256(b"REVIEW_CHILD_READ_ONLY").hexdigest()
                 assert delegation["parent_snapshot"] == receipt["snapshot_id"]
@@ -598,7 +676,7 @@ def main():
                 assert sidecar["review_source_unverified"] is False
                 return tool_call("review-parent-receipt", "read_file", {"path": ref["path"]})
             assert "REVIEW_CHILD_ACTUAL_READ_OK" in results["review-parent-receipt"]
-            assert len(bindings()) == 1
+            assert len(bindings()) == (0 if GAME_WORKSPACE else 1)
             return {"role": "assistant", "content": "DESIGN_BATCH_PARENT_VERIFIED_OK"}
 
         class Handler(BaseHTTPRequestHandler):
@@ -656,6 +734,7 @@ def main():
                     self.send_error(500)
 
             def do_POST(self):
+                http_posts.append(self.path)
                 try:
                     assert self.path in {"/v1/chat/completions", "/v2/chat/completions"}, self.path
                     body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
@@ -1041,6 +1120,9 @@ def main():
                     self.wfile.write(data)
                 except (BrokenPipeError, ConnectionResetError):
                     pass
+                except ConnectionAbortedError as error:
+                    if args.case not in {"review-stop", "review-parent-stop"}:
+                        errors.append(repr(error))
                 except Exception as error:
                     errors.append(repr(error))
                     traceback.print_exc()
@@ -1101,6 +1183,7 @@ def main():
             DESIGN_BATCH_CASE=args.case,
             DESIGN_BATCH_PROJECT=str(project),
             DESIGN_BATCH_PHASE="initial",
+            DESIGN_BATCH_GAME_WORKSPACE="1" if GAME_WORKSPACE else "0",
             DESIGN_BATCH_TASK_NATIVE_REVIEW="1" if args.task_native_review else "0",
             DESIGN_BATCH_EXPECT_STALLED="1" if args.expect_stalled else "0",
             GONGGONG_GH=str(gh),
@@ -1112,6 +1195,27 @@ def main():
             result = subprocess.run(command, env=env, capture_output=True, text=True, timeout=240)
             report_path = project / "design-batch-report.json"
             report = json.loads(report_path.read_text()) if report_path.exists() else {}
+            if args.case == "parallel-blocked-cold" and result.returncode == 0 and report.get("ok"):
+                history_path = project / ".godot/editor/ai_chat_history.json"
+                history = json.loads(history_path.read_text())
+                blocked = [a["sub_agent"] for a in history["agents"] if a.get("sub_agent", {}).get("parallel_external")]
+                assert len(blocked) == 2 and all(a["state"] == "interrupted" for a in blocked)
+                # Simulate old persisted waiting+blocked history, retaining its
+                # real output and identity. Startup must normalize it again.
+                for child in blocked:
+                    child["state"] = "waiting"
+                    child.pop("parallel_output_sha256", None)
+                history_path.write_text(json.dumps(history))
+                env["DESIGN_BATCH_PHASE"] = "blocked-restore"
+                prior = len(http_posts)
+                second = subprocess.run(command, env=env, capture_output=True, text=True, timeout=60)
+                restored = {
+                    "exit_code": second.returncode,
+                    "editor": json.loads(report_path.read_text()),
+                    "new_requests": len(http_posts) - prior,
+                    "stdout": second.stdout[-4000:],
+                    "stderr": second.stderr[-4000:],
+                }
             if args.case == "review" and result.returncode == 0 and report.get("ok"):
                 # Tamper only this exited private fixture's saved queue. The
                 # user explicitly resumes it through its normal native button.
@@ -1127,17 +1231,18 @@ def main():
                 history["active_agent"] = child["id"]
                 history_path.write_text(json.dumps(history))
                 env["DESIGN_BATCH_PHASE"] = "review-restore"
+                prior = len(http_posts)
                 second = subprocess.run(command, env=env, capture_output=True, text=True, timeout=60)
                 restored = {
                     "exit_code": second.returncode,
                     "editor": json.loads(report_path.read_text()),
-                    "new_requests": 0,
+                    "new_requests": len(http_posts) - prior,
                 }
-                assert stages["tamper"] == 3
+                assert stages["tamper"] == (0 if GAME_WORKSPACE else 3)
                 audit = (folder / "bridge-audit.txt").read_text().splitlines()
                 assert audit.count("issue-agent") == 2, "A read-only child reentered production intake"
             if args.case == "cold" and result.returncode == 0:
-                prior = len(calls)
+                prior = len(http_posts)
                 # A saved host token is data, not live authorization. Seed one
                 # only after the private editor exited; ordinary queued user
                 # input must survive paused while this marker is discarded.
@@ -1159,7 +1264,7 @@ def main():
                 restored = {
                     "exit_code": second.returncode,
                     "editor": json.loads(report_path.read_text()) if report_path.exists() else {},
-                    "new_requests": len(calls) - prior,
+                    "new_requests": len(http_posts) - prior,
                     "stdout": second.stdout[-4000:],
                     "stderr": second.stderr[-4000:],
                 }
@@ -1175,8 +1280,8 @@ def main():
             server.shutdown()
         events = [
             path
-            for entry in bindings()
-            for path in Path(entry["source_root"]).glob(f"gonggong-diting-data/events/fixture/{REQUEST}/*.json")
+            for source_root in ([original] if GAME_WORKSPACE else [Path(entry["source_root"]) for entry in bindings()])
+            for path in source_root.glob(f"gonggong-diting-data/events/fixture/{REQUEST}/*.json")
         ]
         receipt_files = list((project / ".godot/editor").rglob("*.tool-receipts.json"))
         preserved_execution_receipts = []
@@ -1263,6 +1368,20 @@ def main():
         )
         if args.case.startswith("parallel-"):
             ok = ok and stages["child1"] == stages["child2"] == 0
+            if args.case.startswith("parallel-blocked"):
+                batches_path = project / "parallel-batches.jsonl"
+                batches = (
+                    [json.loads(line) for line in batches_path.read_text().splitlines()]
+                    if batches_path.exists()
+                    else []
+                )
+                expected_batches = (
+                    1
+                    if args.case in {"parallel-blocked-tampered", "parallel-blocked-live", "parallel-blocked-prefix"}
+                    else 2
+                )
+                ok = ok and len(batches) == expected_batches
+                report["runner_batches"] = batches
             if args.case == "parallel-receipt-failure":
                 history = json.loads((project / ".godot/editor/ai_chat_history.json").read_text())
                 assert any(
@@ -1273,18 +1392,16 @@ def main():
             ok = ok and not parent_returns and stages["return"] == 0 and stages["review"] == 3
             assert len(receipt_files) == 1
             preserved = json.loads(json.loads(receipt_files[0].read_text(encoding="utf8"))["payload"])
-            assert (
-                preserved["child_report"]["text"] == "REVIEW_CHILD_ACTUAL_READ_OK"
-                and preserved["business_accepted"] is None
-            )
+            assert preserved["business_accepted"] is None
+            if args.case == "review-stale-parent":
+                assert "child_report" not in preserved, "Changed parent received a completed child report"
+            else:
+                assert preserved["child_report"]["text"] == "REVIEW_CHILD_ACTUAL_READ_OK"
             excerpt = next(item for item in preserved["receipts"] if item.get("read_mode") == "line_range")
-            assert (
-                excerpt["raw_file_sha256"]
-                == hashlib.sha256((original / "review-data/excerpt.txt").read_bytes()).hexdigest()
-            )
+            assert excerpt["raw_file_sha256"] == original_excerpt_sha256
             assert (excerpt["requested_offset"], excerpt["requested_limit"]) == (1, 1)
         elif args.case in {"review-stop", "review-parent-stop"}:
-            ok = ok and not parent_returns and stages["return"] == 0 and len(bindings()) == 1
+            ok = ok and not parent_returns and stages["return"] == 0 and len(bindings()) == (0 if GAME_WORKSPACE else 1)
             ok = ok and stages["review"] == (1 if args.case == "review-stop" else 0)
         elif args.case == "review":
             ok = (
@@ -1292,7 +1409,11 @@ def main():
                 and stages["parent"] == 2
                 and stages["review"] == 3
                 and stages["return"] == 2
-                and stages["tamper"] == 3
+                and stages["tamper"] == (0 if GAME_WORKSPACE else 3)
+                and restored is not None
+                and restored["exit_code"] == 0
+                and restored["editor"].get("ok")
+                and restored["new_requests"] == (0 if GAME_WORKSPACE else 3)
             )
         elif successful:
             ok = ok and stages["return"] == 3 and stages["child1"] == 3 and stages["child2"] == (3 if full_batch else 0)
@@ -1333,7 +1454,13 @@ def main():
         else:
             ok = ok and stages["child1"] == 2 and stages["child2"] == 0
         if restored is not None:
-            ok = ok and restored["exit_code"] == 0 and restored["editor"].get("ok") and restored["new_requests"] == 0
+            expected_requests = 3 if args.case == "review" and not GAME_WORKSPACE else 0
+            ok = (
+                ok
+                and restored["exit_code"] == 0
+                and restored["editor"].get("ok")
+                and restored["new_requests"] == expected_requests
+            )
         target_models = [item for item in models_requests if item["target"]]
         models_observations_ok = (
             not models_case
@@ -1371,6 +1498,7 @@ def main():
             "models_requests": models_requests,
             "errors": errors,
             "stage_requests": dict(stages),
+            "http_post_count": len(http_posts),
             "parent_return_count": len(parent_returns),
             "parent_returns": parent_returns,
             "local_parent_notices": local_parent_notices,

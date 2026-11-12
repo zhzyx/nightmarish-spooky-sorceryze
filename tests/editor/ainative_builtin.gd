@@ -141,7 +141,7 @@ func verify_generation_service_controls():
 	if not check(panel.get("service_choice") is OptionButton and panel.has_method("check_service"), 'bundled editor exposes generation service setup controls'): return
 	var service_modes: Array = []
 	for i in panel.service_choice.item_count: service_modes.append(panel.service_choice.get_item_metadata(i))
-	check(service_modes == ["offline", "comfy", "legacy", "codex", "codex_modeling", "codex_sculpt", "kimi_native"], 'bundled service picker preserves all existing modes and adds Kimi Native')
+	check(service_modes == ["offline", "comfy", "legacy", "codex", "codex_modeling", "codex_sculpt", "kimi_native", "local_mesh", "api_modeling", "api_sculpt"], 'bundled service picker preserves all ten supported service modes')
 	check(panel.get('cli_path_edit') is LineEdit and panel.get('managed_comfy_panel') is VBoxContainer, 'bundled CLI and local Mesh management controls are installed')
 	check(panel.service_config_path.get_base_dir() == panel.state_dir and panel.service_config_path.get_file() == "generation-service.json", 'bundled service configuration is private machine state')
 	check(panel._service_mode() == "offline" and panel.service_saved.is_empty(), 'fresh native project does not claim a real generation service')
@@ -175,6 +175,11 @@ func verify_generation_service_controls():
 	await process_frame
 	panel.service_choice.select(0)
 	panel.service_choice.item_selected.emit(0)
+	# Changing the draft picker does not replace the saved provider used by jobs.
+	# Restore the controlled offline fixture before any actual Mesh execution.
+	panel.save_service_settings()
+	var offline = JSON.parse_string(FileAccess.get_file_as_string(panel.service_config_path))
+	check(panel._service_mode() == 'offline' and panel.service_saved.get('mode') == 'offline' and offline is Dictionary and offline.get('mode') == 'offline', 'service setup fixture restores the saved offline provider before execution')
 
 func verify_context_controls():
 	check(panel.get("context_menu") is PopupMenu and panel.has_method("show_context_menu"), 'bundled editor exposes contextual editing')
@@ -275,11 +280,15 @@ func verify_settings_navigation(dock: Control):
 	check(settings_page.is_ancestor_of(sections.ai) and settings_page.is_ancestor_of(sections.environment) and not panel.is_ancestor_of(sections.ai),'native settings owns the unique 马良 forms')
 	panel.native_buttons.settings.pressed.emit()
 	await settle()
-	check(settings_page.is_visible_in_tree() and categories.current_tab==1 and panel.python_edit.is_visible_in_tree() and sections.environment.is_ancestor_of(panel.cli_path_edit) and not panel.native_sections.machine.visible,'old local settings action navigates to central environment')
+	check(settings_page.is_visible_in_tree() and categories.get_current_tab_control().name=='ArtEnvironmentSettingsPage' and sections.environment.is_visible_in_tree() and sections.environment.is_ancestor_of(panel.cli_path_edit) and sections.environment.is_ancestor_of(panel.python_edit) and not panel.native_sections.machine.visible,'local settings action navigates to central art environment')
+	var advanced_visible = panel.service_advanced.visible
+	panel.service_advanced.show()
+	check(panel.python_edit.is_visible_in_tree(), 'advanced art runtime reveals the existing Python control')
+	panel.service_advanced.visible = advanced_visible
 	panel.service_settings_section = 'ai'
 	panel.open_service_settings()
 	await settle()
-	check(settings_page.is_visible_in_tree() and categories.current_tab==0 and panel.service_choice.is_visible_in_tree() and sections.ai==panel.service_fields,'service configuration navigates to the existing AI form')
+	check(settings_page.is_visible_in_tree() and categories.get_current_tab_control().name=='ArtAISettingsPage' and panel.service_choice.is_visible_in_tree() and sections.ai==panel.service_fields,'service configuration navigates to the existing art AI form')
 	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
 	await settle()
 	check(panel.graph.is_visible_in_tree() and panel.native_buttons.mesh.button_pressed and not settings_page.is_visible_in_tree(),'returning from settings preserves the active business section')
@@ -380,7 +389,9 @@ func verify_importer_conversion():
 func verify_mesh():
 	var source = ProjectSettings.globalize_path('res://fixture.glb')
 	var before = FileAccess.get_sha256(source)
-	panel.source_edit.text = source
+	# Source fields are display-only; the picker owns the node's source paths.
+	panel.source_picker.file_selected.emit(source)
+	check(panel.nodes[0].source == source and panel.source_edit.text == source, 'offline Mesh fixture is selected through the real source picker')
 	panel.params_edit.text = '{"delay":0.15,"fail":false}'
 	panel.factory_edit.text = 'editor_demo:factory'
 	var heartbeat = panel.heartbeat
@@ -390,6 +401,7 @@ func verify_mesh():
 	if not check(node_action != null, "bundled graph has explicit node preview action"): return
 	node_action.pressed.emit()
 	if not await wait_idle(): return
+	details.mesh_execution = {'current':panel.current.duplicate(true), 'status':panel.status.text, 'selected':panel.selected_id, 'nodes':panel.nodes.duplicate(true)}
 	if not check(panel.current.get('state')=='succeeded','offline Copy Mesh run reaches real Executor success'): return
 	check(panel.heartbeat>heartbeat+5,'editor heartbeat advances during provider execution')
 	check(panel.preview_node == panel.selected_id and panel.preview_history.get(panel.selected_id, []).size() == 1, "bundled node action automatically previews and records its result")

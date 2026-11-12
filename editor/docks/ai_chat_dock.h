@@ -673,6 +673,9 @@ class AIChatDock : public EditorDock {
 	// Live dispatch ownership never comes from saved chat history.
 	HashMap<int, Dictionary> design_batches;
 	HashMap<int, Dictionary> acceptance_reviews;
+	// Live host-created read-only bindings; never restored as production authority.
+	HashMap<int, Dictionary> game_review_contexts;
+	Dictionary _game_review_candidate(int p_reviewer) const;
 	Dictionary _design_child_context(int p_child) const;
 	HashMap<int, Dictionary> acceptance_bridge_jobs;
 	HashMap<int, Dictionary> acceptance_bridge_results;
