@@ -475,3 +475,6 @@ __pycache__/
 
 # Local build tooling; not another framework or release input.
 /project/build-support/
+
+# Engine Next standalone objects, link evidence and clean-run copies.
+/build/engine_next/

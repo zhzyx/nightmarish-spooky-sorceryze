@@ -1,0 +1,7 @@
+{
+  "placement": "native",
+  "reason": "Engine Next Gameplay 源文件直接参与独立静态库和测试程序编译链接；后续 Godot 兼容壳也按显式源文件消费同一实现，没有可独立替换的运行包或嵌入资源。",
+  "host_contract": "公共 C++17 头位于 engine_next/include/EngineNext/Gameplay；独立目标只允许 engine_next 源文件与标准 C++ 运行库，Godot 类型仅允许位于 modules/gameplay 兼容适配器。真实对象、链接 response、库成员、动态依赖和干净目录 Trace 共同构成目标级边界证据。",
+  "rollback": "Godot 尚未切换时移除 engine_next 新增目标即可，不改变旧行为。切换后先恢复 modules/gameplay 原兼容文件和 SCsub，使旧实现恢复；独立内核可保留为未消费目标。原生输入恢复后必须重新构建并复核原 Trace。",
+  "evidence": "data-collection/engine-next-gameplay-core-m1-build-impact-r4.json"
+}

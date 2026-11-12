@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7db0b0345456f101dacd71fe869110542682504c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-gameplay-core-m1-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/939",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6852c6d165dffe164e04fe484d53cbc7be05b6359265a1520077467e548097ca",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/939",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/945",
+    "action": "delivery",
+    "detection_head": "52204f9c4c622d7afd590d79b9272e4bf5872784",
+    "context_sha256": "21964fda45a9967192626da05754d25e4466a2b75621d159eed34d8cc801c541",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-current-operator-host",
+    "authority_ref": "用户于 2026-11-12 19:41 明确落地，当前会话负责 M1 交付与故障复验",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/946",
+    "diagnosis": "签发工具要求 notes-file 不含 GongGong-Issue/GongGong-Request 行，因为工具会自行添加；首次失败未产生提交或 PR。移除重复关联行后正式门禁重过，同一候选已提交并签发 PR #946。",
+    "next_action": "回读 PR #946 的精确签发 head、双平台 CI 和 main 合入回执；只有全部目标检查通过才继续 PR B。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T12:35:21.035501+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T12:38:25.648071+00:00",
+  "sha256": "88f0ba19526a2184367bcf5532e1732463f2c7a93318aeb9c55f0cd099e58215"
+}

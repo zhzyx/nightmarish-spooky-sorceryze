@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-de8098fc892744f897b63f59899539b50d9c4006",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-gameplay-core-m1-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/939",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "44d4d3e0593303eb402e3aa0e3d3ad534f6c1fd95aa287a95b17e6fc0ba19a6e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/939",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/945",
+    "action": "delivery",
+    "detection_head": "0abf11eecc738580874f891d4281d6b0f956cf75",
+    "context_sha256": "21964fda45a9967192626da05754d25e4466a2b75621d159eed34d8cc801c541",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-current-operator-host",
+    "authority_ref": "用户于 2026-11-12 19:41 明确落地，当前会话负责 M1 交付与故障复验",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/949",
+    "diagnosis": "Apple Git 对 GitHub 的 fetch 持续连接失败；curl IPv4 可用而 IPv6 超时。libgit2 成功获取同一 main 对象。仅替换 writer_submit 的 fetch 传输，完整门禁、提交后核验、GitHub 签名和 PR 回读均未绕过，PR #949 已生成。",
+    "next_action": "后续 fetch/push 继续使用已验证的 libgit2 局部传输适配，逐条核对 PR #949 的精确候选 CI 和 main 回读；不宣称系统网络已修复。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T12:55:55.495976+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T13:05:33.427033+00:00",
+  "sha256": "2f7c08fb95619b7e7c0d98f01937f1161b47feb6ed09fcc13c5cfa9107eb0e60"
+}
