@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1cfd63e678e95b571d74bd68090d3d0f9369f69d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-model-adjust-node-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "13f13300ef7c36833b1c50b1945e95770e12eed75bb9bba37f4fd032b66742ed",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/926",
+    "action": "validation",
+    "detection_head": "3e2e655abb851143608a4e73f3124aeff9c675f5",
+    "context_sha256": "bcfd8e23fe61a8b7ccb38fbdbd11de8a025fbd660b326710e85cbd8230fb986d",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-kaiyunxue",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+    "diagnosis": "首次正式门禁在未暂存工作树上运行，按设计返回 WORKTREE_UNSTAGED；不是模型或 Tripo API 故障。已仅暂存本单实现与证据，在相同 HEAD 3e2e655abb851143608a4e73f3124aeff9c675f5 和完整候选 index 61040edd48645dc2274a26a5e7ceae4c94697753c37b8cbc887f491f37097c97 上重跑原门禁，获得 local_checks_passed 与 recovery_candidate。",
+    "next_action": "按已固定的候选执行协作者签发、PR、精确 head CI 和 main 回读；本次本地门禁流程已恢复，无需修改无关代码。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T10:39:26.317173+00:00",
+    "attempted": "先按未暂存候选运行 issue_gate 被拒绝；随后只暂存本单文件并以相同 base-ref 重跑，门禁通过。",
+    "repair_owner": "kimi-work-kaiyunxue 已修正候选暂存状态并继续负责交付。",
+    "continuable": "本地门禁可继续；远端 CI、main 与业务工单关闭分别回读。"
+  },
+  "occurred_at": "2026-11-12T10:43:05.808583+00:00",
+  "sha256": "6a40f46377382dfc8a8554cfe25464da38e4bda66be3f7f0cda4a9f3e950b182"
+}

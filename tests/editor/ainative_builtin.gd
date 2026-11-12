@@ -83,7 +83,7 @@ func run():
 	check(panel.native_buttons.mesh.button_pressed and panel.graph.is_visible_in_tree(),'Mesh generation is the default native page')
 	var kinds = []
 	for i in panel.generator_choice.item_count: kinds.append(panel.generator_choice.get_item_metadata(i))
-	check(kinds==['text_to_image','image_to_image','image_to_mesh','text_to_mesh'],'all four generation node kinds are available')
+	check(kinds==['text_to_image','image_to_image','image_to_mesh','text_to_mesh','model_adjust'],'all five generation and adjustment node kinds are available')
 	for i in panel.generator_choice.item_count:
 		panel.generator_choice.select(i)
 		panel.add_generator()
@@ -159,7 +159,7 @@ func verify_generation_service_controls():
 	check(draft.get('mode') == 'kimi_native' and draft.get('model3d_model') == 'v3.1', 'Kimi Native uses direct Tripo API generation')
 	check(not draft.has('cli_path') and not draft.has('blender_path') and draft.image_model.is_empty() and draft.mesh_model.is_empty(), 'Kimi Native does not require Codex, Blender or ComfyUI model settings')
 	check(panel.kimi_model3d_fields.visible and not panel.kimi_model_edit.visible, 'Kimi Native exposes direct 3D settings instead of the legacy K3 planner')
-	check(panel._generator_provider('text_to_mesh') == 'kimi_native' and panel._generator_provider('image_to_mesh') == 'kimi_native', 'both Mesh node kinds route to Kimi Native')
+	check(panel._generator_provider('text_to_mesh') == 'kimi_native' and panel._generator_provider('image_to_mesh') == 'kimi_native' and panel._generator_provider('model_adjust') == 'kimi_native', 'both Mesh generation kinds and model adjustment route to Kimi Native')
 	check(panel._generator_provider('text_to_image') == 'kimi_work_image' and panel._generator_provider('image_to_image') == 'kimi_work_image', 'both 2D kinds route to the independent Kimi Work image service')
 	check(panel.get('model3d_tool_edit') is LineEdit and panel.get('model3d_pythonw_edit') is LineEdit and panel.get('kimi_image_tool_edit') is LineEdit and panel.get('kimi_image_pythonw_edit') is LineEdit, 'native settings expose independent 3D and 2D tools')
 	panel.save_service_settings()
@@ -236,6 +236,29 @@ func verify_file_pickers():
 	panel.context_clear.pressed.emit()
 	check(data.source.is_empty() and data.image_context.is_empty() and data.source_paths.is_empty() and data.image_context_paths.is_empty() and panel.source_edit.text.is_empty() and panel.context_edit.text.is_empty(), 'clear actions remove picked source and reference images without legacy fallback restoring them')
 	panel.delete_node()
+	panel.generator_choice.select(3)
+	panel.add_generator()
+	var upstream = panel.nodes.back()
+	panel.generator_choice.select(4)
+	panel.add_generator()
+	data = panel.nodes.back()
+	check(data.type == 'model_adjust' and data.parameters.prompt.is_empty() and panel.output_kind(data) == 2, 'model adjustment starts with optional guidance and a Mesh output')
+	check(panel.source_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILE and panel.context_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILES, 'model adjustment takes one source model and ordered reference images')
+	check(str(panel.source_picker.filters).contains('*.glb') and str(panel.source_picker.filters).contains('*.gltf') and not str(panel.source_picker.filters).contains('*.png'), 'model adjustment source picker accepts models rather than images')
+	var model_source = ProjectSettings.globalize_path('res://fixture.glb')
+	panel.source_picker.file_selected.emit(model_source)
+	panel.context_picker.files_selected.emit(PackedStringArray([source, source, source, source]))
+	check(data.source == model_source and data.image_context_paths.size() == 4, 'source model and four optional guidance images update the node')
+	panel.connect_nodes(str(upstream.id), 0, str(data.id), 0)
+	check(panel.edges.any(func(edge): return edge.from == upstream.id and edge.to == data.id), 'generated Mesh output can feed model adjustment')
+	var adjustment_id = data.id
+	panel.path_edit.text = ProjectSettings.globalize_path('user://model-adjustment-workflow.json')
+	panel.save_graph()
+	panel.open_graph()
+	panel.select_node(adjustment_id)
+	data = panel.nodes.filter(func(node): return node.id == adjustment_id)[0]
+	check(data.source_snapshots.size() == 1 and data.image_context_snapshots.size() == 4 and data.parameters.prompt.is_empty(), 'model and guidance snapshots survive workflow save and reopen with optional text intact')
+	check(panel.edges.any(func(edge): return edge.from == upstream.id and edge.to == adjustment_id), 'Mesh to model adjustment connection survives save and reopen')
 	panel.select_node(original)
 
 func settle():

@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-model-adjust-node-20261112-validation",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-model-adjust-node-20261112",
+  "kind": "step",
+  "occurred_at": "2026-11-12T10:37:22Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/913",
+  "agent": {
+    "id": "kimi-work-kaiyunxue",
+    "version": "20261112",
+    "origin": "current-authorized-host"
+  },
+  "payload": {
+    "implementation": {
+      "provider": "kimi_native",
+      "service": "Tripo API",
+      "operation": "texture_3d_model",
+      "texture_model": "v3.5",
+      "source_required": true,
+      "text_optional": true,
+      "images_optional": true,
+      "guidance_modes": ["none", "text", "text_style_image", "image", "four_images"],
+      "four_image_order": ["front", "left", "back", "right"],
+      "source_modes": ["upstream_task_id", "local_model_url_upload"],
+      "source_formats": ["glb", "embedded_gltf"],
+      "output": "distinct_new_glb_artifact",
+      "original_model_not_overwritten": true,
+      "blender_used": false,
+      "unsupported_provider_rejected": true,
+      "workflow_snapshots_include_model_and_guidance": true,
+      "local_model_url_real_service_validation": "synthetic_only"
+    },
+    "real_adjustments": [
+      {
+        "guidance_mode": "text",
+        "source_task_id": "5567a16a-a5c7-40db-81f2-a08f81c12085",
+        "adjusted_task_id": "ab54cc09-65b4-46fd-8ed8-36de68bfe8aa",
+        "source_sha256": "bcc799074cfbbfee4cd013c3cb070bca3976e09474bbe1f4e6cb6ede4ef76b2c",
+        "adjusted_sha256": "2da31f61adef63b0da321ac1045bb9ef6b5d4c8dd80f368fed29e53460ced48e",
+        "glb_bytes": 48389228,
+        "vertices": 778552,
+        "triangles": 1497506,
+        "preview_sha256": "6e53ba60ccc426c024345fd37aa702c41ca459ed1cb532a0c57faffb9cb019e6",
+        "original_model_not_overwritten": true,
+        "blender_used": false,
+        "visual_review": "Geometry and T-pose retained, but the white robe changed broadly to dark/red/gold; the preservation instruction was not fully followed"
+      },
+      {
+        "guidance_mode": "text_style_image",
+        "source_task_id": "5567a16a-a5c7-40db-81f2-a08f81c12085",
+        "adjusted_task_id": "53c26924-7c67-4b3f-9477-1878fdb968c3",
+        "source_sha256": "bcc799074cfbbfee4cd013c3cb070bca3976e09474bbe1f4e6cb6ede4ef76b2c",
+        "style_image_sha256": "c28dc6030821fb7daeed4953f6fcd9304215bd76e67452efbac5f5ce40fefa6f",
+        "adjusted_sha256": "3caba1c9e658b9326c4f8e0c24640319341f08dc0edba524472c61f9c86aa463",
+        "glb_bytes": 48569872,
+        "vertices": 778552,
+        "triangles": 1497506,
+        "bounds_equal_to_source": true,
+        "preview_sha256": "1b92c362c99edb760f05560f15047d2bd3b4f563abd469ab0410779ed3dfdc67",
+        "original_model_not_overwritten": true,
+        "blender_used": false,
+        "visual_review": "White robe, silhouette and T-pose are retained and the overall appearance is closer to the instruction; shoulder/chest motifs still repainted, so exact local-only texture editing is not claimed"
+      }
+    ],
+    "tests": {
+      "direct3d_synthetic_and_executor": {"tests": 12, "failures": 0, "errors": 0},
+      "kimi_service": {"tests": 9, "failures": 0, "errors": 0},
+      "related_service_regression": {"tests": 62, "failures": 0, "errors": 0, "skipped": 2},
+      "workbench_gui": {"tests": 1, "failures": 0, "errors": 0},
+      "full_discovery": {
+        "tests": 414,
+        "failures": 1,
+        "errors": 1,
+        "skipped": 71,
+        "unrelated_baseline": "Only the two previously documented MotionProvider recovery failures occurred; no MotionProvider file changed and they are not counted as passing coverage"
+      },
+      "ruff": {"version": "0.17.1", "check": "passed", "format": "passed"},
+      "mypy": {"result": "Success: no issues found in 6 source files"},
+      "py_compile": "passed"
+    },
+    "native": {
+      "integrated_main": "2739fc7fb20294e232878a5f29737a09be9d6ac1",
+      "engine_inputs_unchanged_since_built_main_3e2e655a": true,
+      "candidate_executable_sha256": "303eaf31aa21161c768771e6d8e70a0a703fbca79a2dc5aa8d5d30986ef8f4d1",
+      "candidate_bundle_version": "68f6c01522c412c7b67bb1fc903a9af2a624fbf004b6006afa149cadd4fef119",
+      "installed_bundle_matches_source": true,
+      "builtin_acceptance": {
+        "state": "passed",
+        "runs": ["mesh-and-rig", "independent-project", "sample-addon-compatibility", "relocated-runtime"],
+        "project_state_isolated": true,
+        "same_engine_bundle": true,
+        "project_sources_unchanged": true
+      },
+      "real_adjusted_glb": {
+        "loaded_on_final_candidate": true,
+        "published_and_reopened": true,
+        "vertices": 778552,
+        "adjusted_sha256": "3caba1c9e658b9326c4f8e0c24640319341f08dc0edba524472c61f9c86aa463",
+        "source_bytes_unchanged": true,
+        "capture_status": "unavailable_headless_dummy; service-returned preview was inspected separately"
+      }
+    },
+    "compatibility_and_rollback": {
+      "old_executable_sha256": "3ac58678242f0e42713a80b7a09adc2fc5c821971d9c009286c34fe9664b3110",
+      "new_contract_on_old_binary": "expected_failure: only four generation node kinds and no model_adjust route",
+      "legacy_contract_on_same_old_binary": "passed",
+      "rollback_runs": ["mesh-and-rig", "independent-project", "sample-addon-compatibility", "relocated-runtime"],
+      "same_old_binary_used_for_both_checks": true
+    },
+    "visual_review": {
+      "both_service_previews_inspected": true,
+      "second_result_selected_for_delivery": true,
+      "status": "real_texture_processing_passed_with_appearance_limitations",
+      "exact_local_texture_mask_or_topology_editing_claimed": false,
+      "production_visual_topology_rigging_animation_acceptance_claimed": false
+    },
+    "module_boundary": {
+      "placement": "existing host_tool with runtime_package distribution",
+      "new_business_module_or_agent": false,
+      "embedded_bundle_regenerated_and_linked": true,
+      "incompatible_old_contract_and_legacy_rollback_checked": true
+    },
+    "public_evidence_exclusions": {
+      "credentials": true,
+      "signed_urls": true,
+      "raw_api_responses": true,
+      "source_or_adjusted_glb_committed": false,
+      "local_private_paths_in_public_payload": false
+    }
+  }
+}

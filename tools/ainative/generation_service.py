@@ -22,7 +22,7 @@ from pathlib import Path
 from kimi_work_image_provider import MESSAGES as KIMI_WORK_IMAGE_MESSAGES
 from multi_image_provider import MESSAGES as MULTI_IMAGE_MESSAGES
 
-KINDS = ("text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh")
+KINDS = ("text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust")
 IMAGE_NODES = {"CheckpointLoaderSimple", "CLIPTextEncode", "EmptyLatentImage", "KSampler", "VAEDecode", "SaveImage"}
 MESH_NODES = {
     "LoadImage",
@@ -106,6 +106,7 @@ def settings(value):
         "model3d_tool_path",
         "model3d_pythonw_path",
         "model3d_model",
+        "texture_model",
         "image_board_godot_path",
         "image_board_builder_path",
     }:
@@ -177,6 +178,7 @@ def settings(value):
             DEFAULT_ENDPOINT,
             DEFAULT_MODEL,
             MODEL3D_GENERATE_MODELS,
+            MODEL3D_TEXTURE_MODELS,
             validate_endpoint,
             validate_model,
         )
@@ -184,6 +186,7 @@ def settings(value):
         result.setdefault("endpoint", DEFAULT_ENDPOINT)
         result.setdefault("kimi_model", DEFAULT_MODEL)
         result.setdefault("model3d_model", "v3.1")
+        result.setdefault("texture_model", "v3.5")
         try:
             result["endpoint"] = validate_endpoint(result["endpoint"])
             result["kimi_model"] = validate_model(result["kimi_model"])
@@ -192,6 +195,8 @@ def settings(value):
         if result["image_model"] or result["mesh_model"]:
             raise ServiceError("service_config_invalid")
         if not isinstance(result["model3d_model"], str) or result["model3d_model"] not in MODEL3D_GENERATE_MODELS:
+            raise ServiceError("service_config_invalid")
+        if not isinstance(result["texture_model"], str) or result["texture_model"] not in MODEL3D_TEXTURE_MODELS:
             raise ServiceError("service_config_invalid")
         for key in ("image_tool_path", "image_pythonw_path", "model3d_tool_path", "model3d_pythonw_path"):
             if key in result:
@@ -206,6 +211,7 @@ def settings(value):
             "model3d_tool_path",
             "model3d_pythonw_path",
             "model3d_model",
+            "texture_model",
         )
     ):
         raise ServiceError("service_config_invalid")
@@ -474,9 +480,12 @@ def _probe_kimi(config):
             image_to_image=dict(image),
             text_to_mesh=mesh,
             image_to_mesh=dict(mesh),
+            model_adjust=dict(mesh),
         ),
         backend_revision="kimi-native-3d-v1|"
         + config["model3d_model"]
+        + "|texture_3d_model|"
+        + config["texture_model"]
         + "|"
         + model3d_report.get("tool_fingerprint", model3d_report.get("code", "unavailable"))
         + "|kimi-work-image-v2|"
@@ -692,7 +701,7 @@ def check_inputs(model):
         if not isinstance(source_paths, list) or not isinstance(context_paths, list):
             raise ServiceError("source_invalid")
         if (
-            kind.startswith("image_")
+            (kind.startswith("image_") or kind == "model_adjust")
             and not incoming
             and not source
             and not any(source_paths)
@@ -702,12 +711,17 @@ def check_inputs(model):
             raise ServiceError("source_missing")
         if kind == "copy" and len(source_paths) + len(context_paths) > 1:
             raise ServiceError("source_invalid")
-        for path in [*source_paths, *context_paths]:
-            if not isinstance(path, str) or path and not Path(path).is_file():
-                raise ServiceError("source_missing")
-            if kind != "copy" and path and Path(path).suffix.lower() not in (".png", ".jpg", ".jpeg"):
-                raise ServiceError("source_invalid")
-        if kind in KINDS and kind != "image_to_mesh":
+        if kind == "model_adjust" and len([path for path in source_paths if path]) > 1:
+            raise ServiceError("source_invalid")
+        for field, paths in (("source", source_paths), ("image_context", context_paths)):
+            for path in paths:
+                if not isinstance(path, str) or path and not Path(path).is_file():
+                    raise ServiceError("source_missing")
+                model_source = kind == "model_adjust" and field == "source"
+                allowed = (".glb", ".gltf") if model_source else (".png", ".jpg", ".jpeg")
+                if kind != "copy" and path and Path(path).suffix.lower() not in allowed:
+                    raise ServiceError("source_invalid")
+        if kind in KINDS and kind not in ("image_to_mesh", "model_adjust"):
             prompt = str(node.get("parameters", {}).get("prompt", "")) + str(node.get("text", ""))
             if not prompt.strip():
                 raise ServiceError("prompt_missing")
@@ -719,6 +733,8 @@ def prepare_provider(config, model, database, run_id):
 
     registry, providers = factory()
     generated = [node for node in model["nodes"] if node.get("type", "copy") in KINDS]
+    if any(node["type"] == "model_adjust" and config["mode"] != "kimi_native" for node in generated):
+        raise ServiceError("node_unsupported")
     if not generated:
         return registry, providers, {"mode": "offline"}
     if config["mode"] in ("api_modeling", "api_sculpt"):
@@ -750,13 +766,16 @@ def prepare_provider(config, model, database, run_id):
             capability_report = report["capabilities"][node["type"]]
             if not capability_report["ready"]:
                 raise ServiceError(capability_report.get("code") or "service_not_configured")
-        mesh_nodes = [node for node in generated if node["type"].endswith("mesh")]
-        image_nodes = [node for node in generated if not node["type"].endswith("mesh")]
+        mesh_nodes = [node for node in generated if node["type"].endswith("mesh") or node["type"] == "model_adjust"]
+        image_nodes = [
+            node for node in generated if not (node["type"].endswith("mesh") or node["type"] == "model_adjust")
+        ]
         provider_config = dict(
             tool_path=config.get("model3d_tool_path", ""),
             pythonw_path=config.get("model3d_pythonw_path", ""),
             storage=str(Path(database).resolve().parent / "kimi-native-3d-state"),
             model=config["model3d_model"],
+            texture_model=config.get("texture_model", "v3.5"),
         )
         snapshot = dict(mode="kimi_native", provider=provider_config if mesh_nodes else None)
         register_workflow(registry)
@@ -771,7 +790,9 @@ def prepare_provider(config, model, database, run_id):
             providers["kimi_work_image"] = KimiWorkImageProvider(image_config)
             snapshot["image_provider"] = image_config
         for node in generated:
-            node["provider"] = "kimi_native" if node["type"].endswith("mesh") else "kimi_work_image"
+            node["provider"] = (
+                "kimi_native" if node["type"].endswith("mesh") or node["type"] == "model_adjust" else "kimi_work_image"
+            )
         return registry, providers, snapshot
     if config["mode"] == "codex_sculpt":
         from codex_provider import CodexProvider, check_cli

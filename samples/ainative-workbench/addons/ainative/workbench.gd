@@ -125,10 +125,13 @@ const CONTEXT_SAVE = 9
 const CONTEXT_OPEN = 10
 const CONTEXT_RUN_ALL = 11
 const CONTEXT_HISTORY = 12
-const NODE_KINDS = ["text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "copy"]
+const NODE_KINDS = ["text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust", "copy"]
 
 func node_label(kind: String) -> String:
-	return {"copy":"离线复制", "text_to_image":"文字生成图像", "image_to_image":"图像生成图像", "image_to_mesh":"图像生成网格", "text_to_mesh":"文字生成网格"}.get(kind,kind)
+	return {"copy":"离线复制", "text_to_image":"文字生成图像", "image_to_image":"图像生成图像", "image_to_mesh":"图像生成网格", "text_to_mesh":"文字生成网格", "model_adjust":"模型调整"}.get(kind,kind)
+
+func _is_mesh_kind(kind: String) -> bool:
+	return kind in ["text_to_mesh", "image_to_mesh", "model_adjust"]
 
 func state_label(value: String) -> String:
 	return {"pending":"等待中", "queued":"排队中", "ready":"就绪", "running":"运行中", "succeeded":"已成功", "failed":"已失败", "cancelled":"已取消", "blocked":"受阻", "reconcile":"待查询提交结果", "skipped":"已跳过"}.get(value,value)
@@ -167,13 +170,15 @@ func _show_file_picker(picker: FileDialog, selected_path: String):
 
 func _configure_source_picker(kind: String):
 	var copy = kind == "copy"
+	var adjust = kind == "model_adjust"
 	var multiple = kind in ["text_to_image", "image_to_image"]
-	source_picker.title = "选择源图像或模型" if copy else "选择源图像（可多选）"
-	source_picker.filters = PackedStringArray(["*.png,*.jpg,*.jpeg,*.glb,*.gltf ; 图像 / 网格" if copy else "*.png,*.jpg,*.jpeg ; PNG / JPEG 图像"])
+	source_picker.title = "选择已生成模型（GLB / 内嵌 glTF）" if adjust else "选择源图像或模型" if copy else "选择源图像（可多选）"
+	source_picker.filters = PackedStringArray(["*.glb,*.gltf ; GLB / 内嵌 glTF 模型" if adjust else "*.png,*.jpg,*.jpeg,*.glb,*.gltf ; 图像 / 网格" if copy else "*.png,*.jpg,*.jpeg ; PNG / JPEG 图像"])
 	source_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILES if multiple else FileDialog.FILE_MODE_OPEN_FILE
-	context_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILES if multiple else FileDialog.FILE_MODE_OPEN_FILE
-	source_browse.text = "选择文件…" if copy else "选择图片…"
-	source_edit.placeholder_text = "未选择源图像或模型" if copy else "未选择源图像，可多选"
+	context_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILES if multiple or adjust else FileDialog.FILE_MODE_OPEN_FILE
+	source_browse.text = "选择模型…" if adjust else "选择文件…" if copy else "选择图片…"
+	source_edit.placeholder_text = "必须选择已生成模型" if adjust else "未选择源图像或模型" if copy else "未选择源图像，可多选"
+	context_edit.placeholder_text = "微调参考图（可选，单图或四视角）" if adjust else "未选择参考图像（可选）"
 
 func _node_paths(data: Dictionary, field: String) -> Array:
 	var paths: Array = data.get(field + "_paths", []).duplicate()
@@ -578,12 +583,12 @@ func add_node():
 func add_generator():
 	var kind = generator_choice.get_item_metadata(generator_choice.selected)
 	var id = "n" + str(Time.get_ticks_usec())
-	nodes.append({"id": id, "type": kind, "version": "1", "provider": _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"prompt": "" if kind == "image_to_mesh" else "白色背景上的小型石雕", "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45})
+	nodes.append({"id": id, "type": kind, "version": "1", "provider": _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45})
 	rebuild()
 	select_node(id)
 
 func output_kind(data: Dictionary) -> int:
-	return 2 if data.get("type", "copy").ends_with("mesh") else 0 if data.get("type", "copy") == "copy" else 1
+	return 2 if data.get("type", "copy") in ["text_to_mesh", "image_to_mesh", "model_adjust"] else 0 if data.get("type", "copy") == "copy" else 1
 
 func rebuild():
 	graph.clear_connections()
@@ -664,8 +669,9 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 	if source_node.is_empty() or target_node.is_empty(): return
 	var target_kind = target_node[0].get("type", "copy")
 	if target_kind.begins_with("text_"): return
-	if target_kind != "copy" and output_kind(source_node[0]) != 1:
-		status.text = "生成节点需要连接图像输出"
+	var required_output = 2 if target_kind == "model_adjust" else 1
+	if target_kind != "copy" and output_kind(source_node[0]) != required_output:
+		status.text = "模型调整需要连接已生成模型" if target_kind == "model_adjust" else "生成节点需要连接图像输出"
 		return
 	var output = "image_set" if from_port == 1 else "result"
 	if output == "image_set" and (target_kind != "image_to_image" or not source_node[0].get("type", "copy") in ["text_to_image", "image_to_image"]):
@@ -792,7 +798,7 @@ func _valid_workflow_edge(edge: Dictionary, by_id: Dictionary) -> bool:
 	var output = edge.get("output", "result")
 	if output == "image_set":
 		return source_kind in ["text_to_image", "image_to_image"] and target_kind == "image_to_image"
-	return output == "result" and (target_kind == "copy" or output_kind(by_id[edge.from]) == 1)
+	return output == "result" and (target_kind == "copy" or output_kind(by_id[edge.from]) == (2 if target_kind == "model_adjust" else 1))
 
 func open_graph():
 	_invalidate_context()
@@ -1307,7 +1313,7 @@ func node_run_blocker(id: String) -> String:
 		if kind in ["text_to_image", "image_to_image"] and _node_paths(data, "source").size() + _node_paths(data, "image_context").size() > 8:
 			return "源图与参考图合计每次最多 8 张（" + str(next_id) + "）"
 		var prompt = str(data.get("parameters", {}).get("prompt", "")) + "\n" + str(data.get("text", ""))
-		if not kind in ["copy", "image_to_mesh"] and prompt.strip_edges().is_empty():
+		if not kind in ["copy", "image_to_mesh", "model_adjust"] and prompt.strip_edges().is_empty():
 			return "请先填写生成提示词（" + str(next_id) + "）"
 		var service_reason = _service_blocker(kind, data)
 		if not service_reason.is_empty(): return service_reason
@@ -1429,7 +1435,7 @@ func _history_context_action(index: int):
 func filter_node_picker(text: String):
 	node_picker_list.clear()
 	var search = text.strip_edges().to_lower()
-	for group in [["图像生成", ["text_to_image", "image_to_image"]], ["网格生成", ["image_to_mesh", "text_to_mesh"]], ["离线工具", ["copy"]]]:
+	for group in [["图像生成", ["text_to_image", "image_to_image"]], ["网格生成", ["image_to_mesh", "text_to_mesh"]], ["模型处理", ["model_adjust"]], ["离线工具", ["copy"]]]:
 		var matches: Array = []
 		for kind in group[1]:
 			if search.is_empty() or search in (node_label(kind) + " " + kind + " " + group[0]).to_lower(): matches.append(kind)
@@ -1456,7 +1462,7 @@ func create_context_node(kind: String):
 	var position = (context_position + graph.scroll_offset) / graph.zoom
 	var id = "n" + str(Time.get_ticks_usec())
 	while not nodes.filter(func(n): return n.id == id).is_empty(): id += "x"
-	var data = {"id": id, "type": kind, "version": "1", "provider": "local-copy" if kind == "copy" else _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "" if kind == "image_to_mesh" else "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
+	var data = {"id": id, "type": kind, "version": "1", "provider": "local-copy" if kind == "copy" else _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
 	nodes.append(data)
 	node_picker.hide()
 	context_menu.hide()
@@ -1766,6 +1772,7 @@ func _restore_service_settings(settings: ConfigFile):
 					service_saved[field] = str(loaded.get(field, fallback))
 					control.text = service_saved[field]
 				service_saved['model3d_model'] = str(loaded.get('model3d_model', 'v3.1'))
+				service_saved['texture_model'] = str(loaded.get('texture_model', 'v3.5'))
 			endpoint_edit.text = service_saved.endpoint
 			_set_model_options(image_model_choice, [], service_saved.image_model, false)
 			_set_model_options(mesh_model_choice, [], service_saved.mesh_model, false)
@@ -1782,18 +1789,18 @@ func _generator_description(data: Dictionary) -> String:
 	if kind == 'copy': return '本机离线复制'
 	if _service_mode() in ['api_modeling', 'api_sculpt']: return node_label(kind) + '（自选 API 语义规划）'
 	if _service_mode() == 'local_mesh': return node_label(kind) + '（本机网格）'
-	if _service_mode() == 'kimi_native': return node_label(kind) + ('（Kimi Native / Tripo API 直接 3D）' if kind.ends_with('mesh') else '（Kimi Work 图像服务）')
-	if _service_mode() == 'codex_sculpt': return node_label(kind) + ('（GPT CLI 指令 / Blender）' if kind.ends_with('mesh') else '（GPT CLI）')
-	if _service_mode() == 'codex_modeling': return node_label(kind) + ('（GPT CLI 指令 / Godot）' if kind.ends_with('mesh') else '（GPT CLI）')
+	if _service_mode() == 'kimi_native': return node_label(kind) + ('（Kimi Native / Tripo API 直接 3D）' if _is_mesh_kind(kind) else '（Kimi Work 图像服务）')
+	if _service_mode() == 'codex_sculpt': return node_label(kind) + ('（GPT CLI 指令 / Blender）' if _is_mesh_kind(kind) else '（GPT CLI）')
+	if _service_mode() == 'codex_modeling': return node_label(kind) + ('（GPT CLI 指令 / Godot）' if _is_mesh_kind(kind) else '（GPT CLI）')
 	return node_label(kind) + ('（Codex CLI / 本机模型）' if _service_mode() in ['codex', 'local_mesh'] else '（ComfyUI）')
 
 func _generator_provider(kind: String) -> String:
 	if _service_mode() == 'api_modeling': return 'api-modeling'
 	if _service_mode() == 'api_sculpt': return 'api-sculpt'
 	if _service_mode() == 'local_mesh': return 'comfy'
-	if _service_mode() == 'kimi_native': return 'kimi_native' if kind.ends_with('mesh') else 'kimi_work_image'
-	if _service_mode() == 'codex_sculpt': return 'codex-sculpt' if kind.ends_with('mesh') else 'codex'
-	if _service_mode() == 'codex_modeling': return 'codex-modeling' if kind.ends_with('mesh') else 'codex'
+	if _service_mode() == 'kimi_native': return 'kimi_native' if _is_mesh_kind(kind) else 'kimi_work_image'
+	if _service_mode() == 'codex_sculpt': return 'codex-sculpt' if _is_mesh_kind(kind) else 'codex'
+	if _service_mode() == 'codex_modeling': return 'codex-modeling' if _is_mesh_kind(kind) else 'codex'
 	return 'comfy'
 
 func _service_mode() -> String:
@@ -1834,6 +1841,7 @@ func service_draft() -> Dictionary:
 		value['model3d_tool_path'] = model3d_tool_edit.text.strip_edges()
 		value['model3d_pythonw_path'] = model3d_pythonw_edit.text.strip_edges()
 		value['model3d_model'] = str(service_saved.get('model3d_model', 'v3.1'))
+		value['texture_model'] = str(service_saved.get('texture_model', 'v3.5'))
 	if value.mode in ['codex_sculpt', 'api_sculpt']:
 		if value.mode == 'codex_sculpt': value.endpoint = ''
 		value.mesh_model = ''
@@ -1931,10 +1939,10 @@ func _update_service_summary():
 		elif mode == 'offline': label.text = node_label(kind) + '：不可用，尚未连接真实生成服务'
 		elif mode == 'legacy': label.text = node_label(kind) + '：由已有高级配置检查'
 		elif api_mode:
-			label.text = node_label(kind) + ('：待核对配置 · 自选 API 与 ' + ('Blender' if sculpt_mode else 'Godot') if kind.ends_with('mesh') else '：不可用 · 语义规划仅生成网格')
+			label.text = node_label(kind) + ('：待核对配置 · 自选 API 与 ' + ('Blender' if sculpt_mode else 'Godot') if _is_mesh_kind(kind) else '：不可用 · 语义规划仅生成网格')
 		elif mode == 'local_mesh':
 			label.text = node_label(kind) + ('：待检测 · 本机模型' if kind == 'image_to_mesh' else '：不可用 · 仅直接图生网格')
-		else: label.text = node_label(kind) + ('：待检测 · Kimi Work 独立图像服务' if kimi_mode and not kind.ends_with('mesh') else '：待检测 · Tripo API 直接三维' if kimi_mode else '：待检测 · GPT 指令与 Blender 连续表面' if sculpt_mode and kind.ends_with('mesh') else '：待检测 · GPT 指令与 Godot 构造' if modeling_mode and kind.ends_with('mesh') else '：待检测')
+		else: label.text = node_label(kind) + ('：待检测 · Kimi Work 独立图像服务' if kimi_mode and not _is_mesh_kind(kind) else '：待检测 · Tripo API 直接三维' if kimi_mode else '：待检测 · GPT 指令与 Blender 连续表面' if sculpt_mode and _is_mesh_kind(kind) else '：待检测 · GPT 指令与 Godot 构造' if modeling_mode and _is_mesh_kind(kind) else '：待检测')
 
 func _using_legacy_service() -> bool:
 	return _service_mode() == "legacy" or (factory_edit != null and not factory_edit.text in ["editor_demo:factory", "comfy_provider:factory"])
@@ -2050,19 +2058,21 @@ func _apply_service_check(data: Dictionary, checked_draft: Dictionary):
 
 func _service_blocker(kind: String, data: Dictionary = {}) -> String:
 	if kind == "copy" or _using_legacy_service(): return ""
-	if kind.ends_with('mesh') and managed_comfy_panel != null and _service_mode() in ['codex', 'local_mesh']:
+	if _is_mesh_kind(kind) and managed_comfy_panel != null and _service_mode() in ['codex', 'local_mesh']:
 		var bundle_problem: String = managed_comfy_panel.bundled_mesh_blocker()
 		if not bundle_problem.is_empty(): return bundle_problem
 	if _service_mode() not in ['comfy', 'codex', 'codex_modeling', 'codex_sculpt', 'kimi_native', 'local_mesh', 'api_modeling', 'api_sculpt']:
 		return "当前为离线复制模式，无法生成图像或网格。请点击“配置生成服务”连接真实服务。"
+	if kind == 'model_adjust' and _service_mode() != 'kimi_native':
+		return '模型调整目前使用 Kimi Native / Tripo API，请先在 AI 设置中选择 Kimi Native。'
 	if service_saved.is_empty() or service_draft() != service_saved:
 		return "生成服务设置尚未保存。请在 AI 设置中检测连接、选择模型并保存。"
-	if _service_mode() in ['api_modeling', 'api_sculpt'] and not kind.ends_with('mesh'):
+	if _service_mode() in ['api_modeling', 'api_sculpt'] and not _is_mesh_kind(kind):
 		return '当前语义建模模式仅支持文字生成网格和图像生成网格。'
-	if _service_mode() == 'kimi_native' and kind.ends_with('mesh'):
+	if _service_mode() == 'kimi_native' and _is_mesh_kind(kind):
 		if str(service_saved.get('model3d_tool_path', '')).is_empty() or str(service_saved.get('model3d_pythonw_path', '')).is_empty():
 			return '请在 AI 设置中配置 Kimi Work 的 model3d_generation_tool.py 和已验证的运行时，再保存并检测。Mesh 使用 Tripo API 直接生成，无需 Blender。'
-	if _service_mode() == 'kimi_native' and not kind.ends_with('mesh'):
+	if _service_mode() == 'kimi_native' and not _is_mesh_kind(kind):
 		if str(service_saved.get('image_tool_path', '')).is_empty() or str(service_saved.get('image_pythonw_path', '')).is_empty():
 			return '请在 AI 设置中配置 Kimi Work 的 image_generation_tool.py 和已验证的 pythonw，再保存并检测。二维使用独立图像服务，不调用 K3.1 Pro 直接出图。'
 	var effective_prompt = (str(data.get("parameters", {}).get("prompt", "")) + "\n" + str(data.get("text", ""))).strip_edges()

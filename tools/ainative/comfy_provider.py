@@ -21,7 +21,7 @@ from pathlib import Path
 
 from extensions import canonical, require, validate_invocation
 
-KINDS = ("text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh")
+KINDS = ("text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust")
 VERSION = "1"
 DEFAULTS = dict(
     prompt="",
@@ -44,12 +44,20 @@ def register(registry):
         for k, v in DEFAULTS.items()
     }
     for kind in KINDS:
+        output_type = "mesh" if kind.endswith("mesh") or kind == "model_adjust" else "image"
+        inputs = (
+            {"source": {"types": ["mesh"], "required": True}}
+            if kind == "model_adjust"
+            else {"source": {"types": ["image"], "required": True}}
+            if kind.startswith("image_")
+            else {}
+        )
         registry.register(
             dict(
                 id=kind,
                 version=VERSION,
-                inputs={"source": {"types": ["image"], "required": True}} if kind.startswith("image_") else {},
-                outputs={"result": {"types": ["mesh" if kind.endswith("mesh") else "image"], "required": True}},
+                inputs=inputs,
+                outputs={"result": {"types": [output_type], "required": True}},
                 context_types=["text", "image"],
                 parameters={"properties": props},
                 capabilities=[kind],

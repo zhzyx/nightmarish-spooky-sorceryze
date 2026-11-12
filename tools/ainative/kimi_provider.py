@@ -479,6 +479,7 @@ class KimiNativeProvider(ModelingProvider):
 
 MODEL3D_GATEWAY_VERSION = "v1"
 MODEL3D_GENERATE_MODELS = frozenset(("v3.1", "v3.0", "v2.5", "p1", "p2"))
+MODEL3D_TEXTURE_MODELS = frozenset(("v3.5", "v3.0", "v2.5"))
 MODEL3D_TEXTURE_QUALITIES = frozenset(("fast", "standard", "detailed", "extreme"))
 MODEL3D_TIMEOUT = 1500
 MAX_MODEL3D_BYTES = 64 * 1024 * 1024
@@ -497,6 +498,8 @@ MODEL3D_MESSAGES = dict(
     model3d_result_unknown="Tripo API 任务回执不明；已保留原意图，不会自动重复生成。",
     model3d_sheet_unsupported="三视图裁切需要 Pillow 支持的 PNG/JPEG 图片，且宽高必须足够。",
     unsupported_image_text_constraints="Tripo API 的直接图片／多视图生成不接受额外文字约束；请只保留三视图标记或留空。",
+    model_adjust_source_missing="模型调整节点必须提供一个已生成的 GLB 或内嵌 glTF 模型。",
+    model_adjust_guidance_invalid="模型调整引导方式无效：文字+风格图必须有文字；四图引导必须包含 front/left/back/right 全部视角。",
     prompt_required="请填写文字建模描述，或提供参考图。",
     invalid_input="输入图片、文字或三维生成参数无效。",
     unsupported_multiple_image_constraints="Tripo API 直接生成最多支持四张独立视角图片。",
@@ -601,8 +604,9 @@ class KimiNativeDirectProvider(ModelingProvider):
     def __init__(self, config):
         require(
             isinstance(config, dict)
-            and set(config) == self.CONFIG_KEYS
+            and set(config) in (self.CONFIG_KEYS, self.CONFIG_KEYS | {"texture_model"})
             and config.get("model") in MODEL3D_GENERATE_MODELS
+            and config.get("texture_model", "v3.5") in MODEL3D_TEXTURE_MODELS
             and all(isinstance(value, str) for value in config.values()),
             "model3d_tool_invalid",
         )
@@ -620,7 +624,7 @@ class KimiNativeDirectProvider(ModelingProvider):
             version=VERSION,
             model="Tripo API generate_3d_model " + MODEL3D_GATEWAY_VERSION + " (" + self.config["model"] + ")",
             model_version=self.fingerprint,
-            capabilities=["text_to_mesh", "image_to_mesh"],
+            capabilities=["text_to_mesh", "image_to_mesh", "model_adjust"],
             context_types=["text", "image"],
             available=True,
         )
@@ -634,6 +638,8 @@ class KimiNativeDirectProvider(ModelingProvider):
         return self.write(key, **values)["terminal"]
 
     def plan(self, request, manifest):
+        if request["node"] == "model_adjust":
+            return self._adjust_plan(request, manifest)
         kind = request["node"]
         require(kind in ("text_to_mesh", "image_to_mesh"), "invalid_input")
         refs = list(request["inputs"].values()) + [
@@ -712,6 +718,129 @@ class KimiNativeDirectProvider(ModelingProvider):
             parameters=parameters,
             input_mode=input_mode,
             view_order=view_order,
+            original_parameters=json.loads(canonical(request["parameters"])),
+        )
+
+    def _adjust_plan(self, request, manifest):
+        require(request["node"] == "model_adjust", "invalid_input")
+        reference = request["inputs"].get("source")
+        require(
+            isinstance(reference, dict) and reference.get("id") and reference.get("revision"),
+            "model_adjust_source_missing",
+        )
+        source_model = next(
+            (
+                artifact
+                for artifact in manifest["artifacts"]
+                if artifact["id"] == reference["id"] and artifact["revision"] == reference["revision"]
+            ),
+            None,
+        )
+        require(source_model is not None and source_model["type"] == "mesh", "model_adjust_source_missing")
+        payload = source_model["payload"]
+        extension = payload["extension"].lower()
+        require(extension in (".glb", ".gltf"), "model_adjust_source_missing")
+        data = base64.b64decode(payload["content_base64"], validate=True)
+        require(
+            0 < len(data) <= MAX_MODEL3D_BYTES and hashlib.sha256(data).hexdigest() == payload["content_sha256"],
+            "model_adjust_source_missing",
+        )
+        source_geometry = validate_mesh(data) if extension == ".glb" else None
+        if extension == ".gltf":
+            try:
+                document = json.loads(data)
+            except (UnicodeError, json.JSONDecodeError):
+                raise ValueError("model_adjust_source_missing") from None
+
+            def embedded(value):
+                if isinstance(value, dict):
+                    if "uri" in value:
+                        require(
+                            isinstance(value["uri"], str) and value["uri"].startswith("data:"),
+                            "model_adjust_source_missing",
+                        )
+                    for child in value.values():
+                        embedded(child)
+                elif isinstance(value, list):
+                    for child in value:
+                        embedded(child)
+
+            require(
+                document.get("asset", {}).get("version") == "2.0" and bool(document.get("meshes")),
+                "model_adjust_source_missing",
+            )
+            embedded(document)
+        source_provenance = payload.get("provenance", {})
+        require(isinstance(source_provenance, dict), "invalid_input")
+        source_task_id = source_provenance.get("task_id")
+        require(
+            source_task_id is None
+            or isinstance(source_task_id, str)
+            and 0 < len(source_task_id) <= 200
+            and not any(ord(character) < 32 for character in source_task_id),
+            "invalid_input",
+        )
+        prompt = "\n".join(
+            [str(request["parameters"].get("prompt", ""))]
+            + [context["text"] for context in request["context"] if "text" in context]
+        ).strip()
+        require(len(prompt.encode("utf-8")) <= 32768, "invalid_input")
+        for context in request["context"]:
+            reference = context["role"] in ("reference", "instruction") and context["strength"] == "reference"
+            instruction = "text" in context and context["role"] == "instruction" and context["strength"] == "constraint"
+            require(context["scope"] == "node" and (reference or instruction), "unsupported_context_semantics")
+        guidance_sources = []
+        for context in request["context"]:
+            if "artifact" not in context:
+                continue
+            source = next(
+                (
+                    artifact
+                    for artifact in manifest["artifacts"]
+                    if artifact["id"] == context["artifact"]["id"]
+                    and artifact["revision"] == context["artifact"]["revision"]
+                ),
+                None,
+            )
+            require(source is not None and source["type"] == "image", "model_adjust_guidance_invalid")
+            payload = source["payload"]
+            data = base64.b64decode(payload["content_base64"], validate=True)
+            require(
+                0 < len(data) <= MAX_MODEL3D_SOURCE_BYTES
+                and hashlib.sha256(data).hexdigest() == payload["content_sha256"]
+                and payload["extension"].lower() in (".png", ".jpg", ".jpeg"),
+                "model_adjust_guidance_invalid",
+            )
+            if payload["extension"].lower() == ".png":
+                validate_png(data)
+            else:
+                validate_jpeg(data)
+            guidance_sources.append(source)
+        require(len(guidance_sources) <= 4 and len(guidance_sources) not in (2, 3), "model_adjust_guidance_invalid")
+        require(not prompt or len(guidance_sources) != 4, "model_adjust_guidance_invalid")
+        if prompt and len(guidance_sources) == 1:
+            guidance_mode = "text_style_image"
+        elif prompt:
+            guidance_mode = "text"
+        elif len(guidance_sources) == 1:
+            guidance_mode = "image"
+        elif len(guidance_sources) == 4:
+            guidance_mode = "four_images"
+        else:
+            guidance_mode = "none"
+        no_delight = request["parameters"].get("no_delight", False)
+        texture_model = self.config.get("texture_model", "v3.5")
+        require(type(no_delight) is bool and (not no_delight or texture_model == "v3.5"), "invalid_input")
+        return dict(
+            operation="texture_3d_model",
+            prompt=prompt,
+            context=json.loads(canonical(request["context"])),
+            source_model=source_model,
+            source_task_id=source_task_id,
+            source_geometry=source_geometry,
+            guidance_sources=guidance_sources,
+            guidance_mode=guidance_mode,
+            parameters=dict(model=texture_model, no_delight=no_delight),
             original_parameters=json.loads(canonical(request["parameters"])),
         )
 
@@ -798,11 +927,11 @@ class KimiNativeDirectProvider(ModelingProvider):
                 )
         return prepared
 
-    def _reference_urls(self, key, prepared, directory):
+    def _reference_urls(self, key, prepared, directory, prefix="upload"):
         urls = []
         tool = Path(self.config["tool_path"]).resolve()
         for index, item in enumerate(prepared):
-            log_name = "upload-" + str(index) + ".log"
+            log_name = prefix + "-" + str(index) + ".log"
             code = self._run_owned(
                 key,
                 [self.config["pythonw_path"], "-u", str(tool), "image-to-url", "--image-path", str(item["path"])],
@@ -825,7 +954,240 @@ class KimiNativeDirectProvider(ModelingProvider):
             urls.append(url)
         return urls
 
+    def _prepare_guidance(self, plan, directory):
+        prepared = []
+        for index, source in enumerate(plan["guidance_sources"]):
+            payload = source["payload"]
+            path = directory / ("guide-" + str(index) + payload["extension"].lower())
+            with path.open("xb") as output:
+                output.write(base64.b64decode(payload["content_base64"], validate=True))
+            view = ("front", "left", "back", "right")[index] if len(plan["guidance_sources"]) == 4 else "image"
+            prepared.append(
+                dict(
+                    view=view,
+                    path=path,
+                    source_sha256=payload["content_sha256"],
+                    output_sha256=payload["content_sha256"],
+                    crop_box=None,
+                )
+            )
+        return prepared
+
+    def _adjust(self, key, plan, directory):
+        record = self.read(key)
+        require(
+            _model3d_tool_fingerprint(self.config["tool_path"]) == record["model3d_report"]["tool_fingerprint"],
+            "model3d_tool_invalid",
+        )
+        if not self._active(key, "prepare"):
+            return None
+        source_payload = plan["source_model"]["payload"]
+        source_path = directory / ("source-model" + source_payload["extension"].lower())
+        with source_path.open("xb") as output:
+            output.write(base64.b64decode(source_payload["content_base64"], validate=True))
+        source_url = None
+        source_url_sha256 = None
+        if plan["source_task_id"] is None:
+            original = [
+                dict(
+                    view=None,
+                    path=source_path,
+                    source_sha256=source_payload["content_sha256"],
+                    output_sha256=source_payload["content_sha256"],
+                    crop_box=None,
+                )
+            ]
+            original_urls = self._reference_urls(key, original, directory, prefix="model")
+            if original_urls is None:
+                return None
+            source_url = original_urls[0]
+            source_url_sha256 = digest(source_url)
+        prepared = self._prepare_guidance(plan, directory)
+        reference_urls = self._reference_urls(key, prepared, directory, prefix="guide")
+        if reference_urls is None:
+            return None
+        root = Path(self.config["tool_path"]).resolve().parent
+        requested = directory / "adjusted.glb"
+        arguments = [self.config["pythonw_path"], "-u", str(root / "model3d_generation_launch.py"), "texture"]
+        if plan["source_task_id"] is not None:
+            arguments.extend(["--task-id", plan["source_task_id"]])
+        else:
+            arguments.extend(["--model-url", source_url])
+        mode = plan["guidance_mode"]
+        if mode in ("text", "text_style_image"):
+            arguments.extend(["--prompt", plan["prompt"]])
+            if mode == "text_style_image":
+                arguments.extend(["--style-image-url", reference_urls[0]])
+        elif mode == "image":
+            arguments.extend(["--image-url", reference_urls[0]])
+        elif mode == "four_images":
+            for item, url in zip(prepared, reference_urls):
+                arguments.extend(["--" + item["view"] + "-url", url])
+        parameters = plan["parameters"]
+        arguments.extend(["--model", parameters["model"]])
+        if parameters["no_delight"]:
+            arguments.append("--no-delight")
+        arguments.extend(["--output", str(requested)])
+        started_ns = time.time_ns()
+        code = self._run_owned(key, arguments, "launch.log", "model3d_launch", 45, directory)
+        if code is None:
+            return None
+        launch_log = (directory / "launch.log").read_text(encoding="utf-8", errors="replace")
+        require(code == 0, "model3d_launch_failed")
+        log_path = Path(_saved_path(launch_log, "Job log: ")).resolve()
+        pid_path = Path(_saved_path(launch_log, "Job PID file: ")).resolve()
+        require(log_path.is_file() and pid_path.is_file(), "model3d_launch_failed")
+        require(log_path.is_relative_to(directory) and pid_path.is_relative_to(directory), "model3d_launch_failed")
+        code = self._run_owned(
+            key,
+            [
+                self.config["pythonw_path"],
+                "-u",
+                str(root / "model3d_generation_watch.py"),
+                "--log-file",
+                str(log_path),
+                "--pid-file",
+                str(pid_path),
+                "--interval-seconds",
+                "5",
+            ],
+            "watch.log",
+            "model3d_generation",
+            MODEL3D_TIMEOUT,
+            directory,
+        )
+        if code is None:
+            return None
+        watch_log = (directory / "watch.log").read_text(encoding="utf-8", errors="replace")
+        if "Missing dependency:" in watch_log or "agent-gw" in watch_log and "required; found" in watch_log:
+            raise ValueError("model3d_dependency_missing")
+        generation_log = log_path.read_text(encoding="utf-8", errors="replace")
+        require(len(generation_log) <= MAX_LOG_BYTES, "model3d_output_invalid")
+        if code != 0:
+            known_failure = any(
+                marker in generation_log
+                for marker in (
+                    "Error running texture:",
+                    "Error generating 3D model:",
+                    "Error: ",
+                    "failed to download generated file from",
+                )
+            )
+            raise ValueError("model3d_generation_failed" if known_failure else "model3d_result_unknown")
+        reported = Path(_saved_path(watch_log, "done: ")).resolve()
+        require(
+            reported == requested.resolve()
+            and reported.is_file()
+            and not reported.is_symlink()
+            and reported.suffix.lower() == ".glb",
+            "model3d_output_invalid",
+        )
+        stat = reported.stat()
+        require(
+            stat.st_nlink == 1
+            and 0 < stat.st_size <= MAX_MODEL3D_BYTES
+            and stat.st_mtime_ns >= started_ns
+            and getattr(stat, "st_birthtime_ns", stat.st_ctime_ns) >= started_ns,
+            "model3d_output_invalid",
+        )
+        data = reported.read_bytes()
+        geometry = validate_mesh(data)
+        sha = hashlib.sha256(data).hexdigest()
+        task_ids = [
+            line.removeprefix("upstream task_id:").strip()
+            for line in generation_log.splitlines()
+            if line.startswith("upstream task_id:")
+        ]
+        require(len(task_ids) <= 1 and all(task_ids), "model3d_output_invalid")
+        task_id = task_ids[0] if task_ids else None
+        preview = reported.with_suffix(".preview.png")
+        preview_sha = None
+        if preview.is_file() and not preview.is_symlink():
+            try:
+                preview_data = preview.read_bytes()
+                require(len(preview_data) <= MAX_MODEL3D_SOURCE_BYTES, "model3d_output_invalid")
+                validate_png(preview_data)
+                preview_sha = hashlib.sha256(preview_data).hexdigest()
+            except ValueError:
+                preview_sha = None
+        view_sources = [
+            {
+                name: item[name]
+                for name in ("view", "source_sha256", "output_sha256", "crop_box", "reference_url_sha256")
+            }
+            for item in prepared
+        ]
+        source_sha = source_payload["content_sha256"]
+        receipt = dict(
+            output_path=str(reported),
+            output_sha256=sha,
+            source_model_sha256=source_sha,
+            source_task_id=plan["source_task_id"],
+            source_model_url_sha256=source_url_sha256,
+            source_geometry=plan["source_geometry"],
+            view_sources=view_sources,
+            guidance_mode=mode,
+            geometry=geometry,
+            task_id=task_id,
+            preview_sha256=preview_sha,
+            tool_fingerprint=record["model3d_report"]["tool_fingerprint"],
+            service="Tripo API",
+            operation="texture_3d_model",
+            generation_version=MODEL3D_GATEWAY_VERSION,
+            generation_model=parameters["model"],
+        )
+        self.write(key, model3d_receipt=receipt)
+        provenance = dict(
+            provider="kimi_native",
+            service="Tripo API",
+            operation="texture_3d_model",
+            generation_version=MODEL3D_GATEWAY_VERSION,
+            generation_model=parameters["model"],
+            auth_mode="kimi_work_sdk_credentials",
+            origin="new_glb_from_completed_model3d_texture_worker",
+            task_id=task_id,
+            source_task_id=plan["source_task_id"],
+            source_model_sha256=source_sha,
+            source_model_url_sha256=source_url_sha256,
+            source_artifact_id=plan["source_model"]["id"],
+            source_artifact_revision=plan["source_model"]["revision"],
+            source_geometry=plan["source_geometry"],
+            view_sources=view_sources,
+            guidance_mode=mode,
+            prompt_application=mode,
+            prompt_sha256=digest(plan["prompt"]) if plan["prompt"] else None,
+            output_sha256=sha,
+            preview_sha256=preview_sha,
+            geometry=geometry,
+            effective_parameters={name: parameters[name] for name in parameters},
+            tool_fingerprint=record["model3d_report"]["tool_fingerprint"],
+            receipt_sha256=digest(receipt),
+            parameters_not_applied={
+                name: "not_applied"
+                for name in sorted(plan["original_parameters"])
+                if name not in {"prompt", *parameters.keys()}
+            },
+            original_model_not_overwritten=True,
+            fallback_used=False,
+            blender_used=False,
+            generated_code_executed=False,
+        )
+        return dict(
+            id="kimi-native-texture-" + key,
+            revision=sha,
+            type="mesh",
+            payload=dict(
+                content_base64=base64.b64encode(data).decode(),
+                content_sha256=sha,
+                extension=".glb",
+                bytes=len(data),
+                provenance=provenance,
+            ),
+        )
+
     def _cli(self, key, plan, directory):
+        if plan.get("operation") == "texture_3d_model":
+            return self._adjust(key, plan, directory)
         record = self.read(key)
         require(
             _model3d_tool_fingerprint(self.config["tool_path"]) == record["model3d_report"]["tool_fingerprint"],
@@ -1082,7 +1444,14 @@ class KimiNativeDirectProvider(ModelingProvider):
         self.write(
             key,
             model3d_stage=model,
-            stages=[dict(stage="tripo_generate_3d_model", artifact_sha256=model["revision"])],
+            stages=[
+                dict(
+                    stage="tripo_texture_3d_model"
+                    if record["plan"].get("operation") == "texture_3d_model"
+                    else "tripo_generate_3d_model",
+                    artifact_sha256=model["revision"],
+                )
+            ],
         )
         self.finish(key, "succeeded", result=dict(schema_version=1, artifacts=[model]))
 
