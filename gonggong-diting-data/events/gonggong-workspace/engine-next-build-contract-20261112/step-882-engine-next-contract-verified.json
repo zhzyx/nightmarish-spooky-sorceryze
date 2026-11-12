@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "event_id": "step-882-engine-next-contract-verified",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-build-contract-20261112",
+  "kind": "step",
+  "occurred_at": "2026-11-12T04:11:51Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/882",
+  "agent": {
+    "id": "kimi-work-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "action": "local_contract_verification",
+    "issue_number": 882,
+    "state": "local_checks_passed_delivery_pending",
+    "tests": 21,
+    "skipped": 0,
+    "design": {
+      "path": "design-docs/engine-next-build-contract-20261112.md",
+      "sha256": "4a005f125fa3c3dfc8955bb2b46488a999327eb45142d41ce08ae92672c308fb"
+    },
+    "verification": {
+      "path": "data-collection/engine-next-build-contract-verification-20261112.json",
+      "sha256": "419736f05e0084933a25c6a7f0a8773625c3dd542a3e6e86b9a440fd1962e91a"
+    },
+    "runtime_godot_free_verified": false,
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage in host receipt"
+  },
+  "evidence_refs": [
+    "request-882-engine-next-build-contract"
+  ],
+  "sha256": "192780e513004eba74d4cd2219060de0dd7c40d90ad40c48203d1aca04f6e764"
+}

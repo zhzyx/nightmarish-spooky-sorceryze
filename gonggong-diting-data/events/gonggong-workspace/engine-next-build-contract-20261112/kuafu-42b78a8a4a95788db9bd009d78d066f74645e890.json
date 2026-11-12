@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-42b78a8a4a95788db9bd009d78d066f74645e890",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-build-contract-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/882",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "60823dc4a6236a18a67ea4f30c3fd04cbedc589b0d2bd061d28a21e9b9da0484",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/882",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/884",
+    "action": "delivery",
+    "detection_head": "90c17c9770bac3e0ecc4a9d53bbf9e2e15a730fc",
+    "context_sha256": "946225c8609020a193d3a37acf944b76c549fcd29919debc2f1e77907328db02",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-current-operator",
+    "authority_ref": "2026-11-12 用户明确继续无 Godot 构建契约，Issue #882",
+    "evidence": "design-docs/engine-next-build-contract-pr-882.md",
+    "diagnosis": "writer_submit 自动添加 GongGong-Issue 和 GongGong-Request；PR notes 又手工包含这两行，触发入口校验拒绝。失败发生在提交前，未创建提交或 PR。",
+    "next_action": "移除 notes 中重复的两行关联字段，重新暂存、运行正式门禁并复用同一候选签发。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T04:14:47.866946+00:00",
+    "attempted": "核对实际参数、notes 文件、writer_submit 校验和候选状态；确认 head 未移动。",
+    "repair_owner": "kimi-work-current-operator",
+    "continuable": "仅修正 PR notes 包装，不改变构建契约实现或验证范围。"
+  },
+  "occurred_at": "2026-11-12T04:16:28.128948+00:00",
+  "sha256": "977d778b47e4c807cee89bd9eda1db7a6209eec91354cd8ac400154aa32ffa30"
+}

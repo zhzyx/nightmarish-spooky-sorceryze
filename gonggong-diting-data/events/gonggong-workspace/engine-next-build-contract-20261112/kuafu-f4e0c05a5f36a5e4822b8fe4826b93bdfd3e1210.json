@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f4e0c05a5f36a5e4822b8fe4826b93bdfd3e1210",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-build-contract-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/882",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8f4b83e50cd1ba6203b53977a0f71a423759bcabbf4aac2d9ebe283e0dcd75c8",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/882",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/884",
+    "action": "delivery",
+    "detection_head": "90c17c9770bac3e0ecc4a9d53bbf9e2e15a730fc",
+    "context_sha256": "946225c8609020a193d3a37acf944b76c549fcd29919debc2f1e77907328db02",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-current-operator",
+    "authority_ref": "2026-11-12 用户明确继续无 Godot 构建契约，Issue #882",
+    "evidence": "data-collection/engine-next-build-contract-integration-20261112.json",
+    "diagnosis": "原签发失败为 github.com:443 连接超时，未形成提交、FETCH_HEAD 或 PR。恢复后 HTTPS fetch 成功，候选已快进到 979dfe27 且没有文件重叠。",
+    "next_action": "复用恢复后的同一候选完成最终门禁和 writer_submit，随后核对精确候选 CI 与 main。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T04:18:24.573135+00:00",
+    "attempted": "核对 HEAD/index/FETCH_HEAD；复现原网络失败；验证 SSH 无可用私钥后保留 HTTPS 恢复条件；恢复后完成 21 项测试、Ruff 和正式门禁。",
+    "repair_owner": "kimi-work-current-operator",
+    "continuable": "实现和验证范围未变，仅整合最新主线并恢复交付。"
+  },
+  "occurred_at": "2026-11-12T07:07:15.896046+00:00",
+  "sha256": "9c45ee662126929e3fe9c500af99d7be9db5bd23b80e16e413f649d39a7e421c"
+}

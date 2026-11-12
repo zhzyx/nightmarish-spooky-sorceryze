@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "kind": "main_integration_and_incident_recovery",
+  "request_id": "engine-next-build-contract-20261112",
+  "issue": 882,
+  "bug": 884,
+  "recorded_at": "2026-11-12T07:05:49Z",
+  "previous_base": "90c17c9770bac3e0ecc4a9d53bbf9e2e15a730fc",
+  "integrated_base": "979dfe277c6bc8460e9a174a148a6c2bf6f58cf5",
+  "recovery": {
+    "incident": "8f4b83e50cd1ba6203b53977a0f71a423759bcabbf4aac2d9ebe283e0dcd75c8",
+    "blocked_action": "authenticated_git_fetch_main",
+    "observed": "git fetch origin main succeeded and origin/main matched the GitHub API main commit 979dfe277c6bc8460e9a174a148a6c2bf6f58cf5",
+    "ssh_fallback": "Official GitHub Ed25519 host key matched, but no usable SSH private key was available; SSH was not used for delivery",
+    "candidate_overlap": "No paths in the candidate were changed by the new main commits",
+    "integration": "Staged candidate was preserved, the task branch fast-forwarded without conflicts, and the staged index was restored"
+  },
+  "checks": [
+    {
+      "command": "python3 -m unittest tools.test_check_engine_next_contract -v",
+      "observed": "21 tests passed; 0 skipped",
+      "passed": true
+    },
+    {
+      "command": "ruff check and ruff format --check for the two Python files",
+      "observed": "All checks passed; 2 files already formatted",
+      "passed": true
+    },
+    {
+      "command": "python3 tools/check_engine_next_contract.py --repo .",
+      "observed": "state=no_sources; passed=true; godot_free_runtime_verified=false",
+      "passed": true
+    },
+    {
+      "command": "diting_files.py validate --repo . and git diff --cached --check",
+      "observed": "dataset valid; diff check passed",
+      "passed": true
+    },
+    {
+      "command": "issue_gate.py --issue 882 --request-id engine-next-build-contract-20261112 --base-ref origin/main",
+      "observed": "local_checks_passed; content_sha256=10c802b856330dfe01dfc043c16f3519541127c9b017a26793455dd7122e795b; module_build_impact=[]",
+      "passed": true
+    }
+  ],
+  "implementation_inputs": {
+    "tools/check_engine_next_contract.py": "8801be8fcaeef433055bbba19485f9beefee504678afe5903e7ec81e1451bf4f",
+    "tools/test_check_engine_next_contract.py": "ce7aadbde8b3841d14a5fdd713a6d69fc0b5930744ad0afacfd2defd04e50fd4",
+    "tools/engine_next_contract.json": "e4b46dde2406c38311ee4e08ff188f13713a032d47c09f51d1bcb0701fa8d4c4",
+    ".github/workflows/engine_next_contract.yml": "cf9328edf134308f6ed4e4c12f7bd5133379f64cf760b47c1d418a71425df4cb"
+  },
+  "usage": null,
+  "usage_unknown_reason": "No measured model usage in host receipt"
+}
