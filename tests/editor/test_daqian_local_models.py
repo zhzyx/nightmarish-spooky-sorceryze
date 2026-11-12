@@ -7,12 +7,13 @@ from contextlib import ExitStack, closing
 from pathlib import Path
 from unittest.mock import patch
 
-import local_models
-import model_catalog as catalog
-from model_api import invoke
-
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "customizations/components/godot-host/daqian"))
+
+# isort: split
+import local_models  # noqa: E402
+import model_catalog as catalog  # noqa: E402
+from model_api import invoke  # noqa: E402
 
 
 class LocalModels(unittest.TestCase):
@@ -57,7 +58,16 @@ class LocalModels(unittest.TestCase):
             self.assertEqual(len(secrets), 1)
             self.assertFalse(catalog.sinan_catalog(self.db, ["text"]))
             profile_id = next(iter(catalog.profiles(self.db)))
-            catalog.record_evaluation(self.db, profile_id, "text", "live", True, [True], "test-evidence")
+            catalog.record_evaluation(
+                self.db,
+                profile_id,
+                "text",
+                "live",
+                True,
+                [True],
+                "test-evidence",
+                expected_revision=catalog.credential_revision(self.db, profile_id),
+            )
             second = catalog.connect_local(self.db, {}, lambda *_: self.fail("overwrote existing credential"))
             self.assertEqual([row["existing"] for row in second], [1, 1, 1])
             self.assertEqual(catalog.sinan_catalog(self.db, ["text"])[0]["id"], profile_id)
@@ -103,6 +113,43 @@ class LocalModels(unittest.TestCase):
             rows = catalog.connect_and_verify(self.db, {"backend": "2"})
         self.assertIn("验证回复", rows[0]["note"])
         self.assertEqual(catalog.sinan_catalog(self.db, ["text"]), [])
+
+    def test_selected_provider_failure_does_not_verify_another_provider(self):
+        self.cache.write_text('{"models":[{"slug":"chosen"}]}')
+        calls = []
+
+        def fail_selected(profile, *_):
+            calls.append(profile["name"])
+            raise ValueError("selected provider is offline")
+
+        with (
+            patch.object(local_models, "run_json", return_value={"models": [{"id": "other"}]}),
+            patch.object(catalog, "invoke", side_effect=fail_selected),
+        ):
+            rows = catalog.connect_and_verify(self.db, {"backend": "2"})
+        self.assertEqual(calls, ["Codex"])
+        self.assertIn("offline", next(row for row in rows if row["name"] == "Codex")["note"])
+        self.assertEqual(len(catalog.profiles(self.db)), 2)  # Discovery remains independent.
+        self.assertEqual(catalog.sinan_catalog(self.db, ["text"]), [])
+
+    def test_missing_selected_api_configuration_never_uses_discovered_cli(self):
+        self.cache.write_text('{"models":[{"slug":"available-but-not-selected"}]}')
+        with (
+            patch.object(local_models, "run_json", return_value={"models": []}),
+            patch.object(catalog, "invoke") as invoke,
+        ):
+            rows = catalog.connect_and_verify(self.db, {"backend": "3"})
+        invoke.assert_not_called()
+        selected = next(row for row in rows if row["name"] == "AI Chat")
+        self.assertFalse(selected["candidate"])
+        self.assertIn("配置", selected["note"])
+
+    def test_unknown_explicit_backend_does_not_discover_or_invoke(self):
+        with patch.object(catalog, "connect_local") as discover, patch.object(catalog, "invoke") as invoke:
+            with self.assertRaisesRegex(ValueError, "连接方式"):
+                catalog.connect_and_verify(self.db, {"backend": "unknown"})
+        discover.assert_not_called()
+        invoke.assert_not_called()
 
     def test_source_failures_are_independent(self):
         self.cache.write_text("{")
