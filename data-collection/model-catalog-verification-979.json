@@ -1,0 +1,46 @@
+{
+  "issue_number": 979,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/979",
+  "request_id": "model-catalog-verification-isolation-20261113",
+  "parent_issue_number": 978,
+  "baseline": "08fe645a2296f8145185c9ea087fd4ab3ac345ed",
+  "tests": {
+    "command": "PYTHONPATH=customizations/components/godot-host/daqian:tests/editor python3 -m unittest test_daqian_models test_daqian_local_models -q",
+    "passed": 20,
+    "scope": "isolated SQLite, synthetic credential vault and provider responses; no paid calls or real credential reads",
+    "direct_entrypoints": "env -u PYTHONPATH python3 -B tests/editor/test_daqian_models.py -q:7 passed; test_daqian_local_models.py:13 passed"
+  },
+  "review": {
+    "agent": "/root/sinan_098d3f8b3911efe8",
+    "receipt": "collaboration-terminal:/root/sinan_098d3f8b3911efe8",
+    "initial_findings": [
+      "late old-credential verification restored proof during replacement",
+      "first-import nested transaction released exclusivity before vault write"
+    ],
+    "resolution": "durable credential revision pending/ready plus compare-on-publication; atomic first import with pending protection",
+    "final_blocking_findings": [],
+    "additional_verified": [
+      "legacy database migration",
+      "overlapping explicit saves reject obsolete write",
+      "inter-phase first-import pending then retry existing",
+      "test path bootstrap remains before local imports after formatter; both direct entrypoints verified"
+    ]
+  },
+  "files": {
+    "customizations/components/godot-host/daqian/model_catalog.py": "a3f3451f0076fb325bab47b082ab1b06feee960a0b471f2103ce0dd4d9f97f75",
+    "tests/editor/test_daqian_models.py": "bd6b096bfc46219c1d5a9ad4275a2c8c88af10cb5854081e9ceb987e50818829",
+    "tests/editor/test_daqian_local_models.py": "873f21a98060b79d1645a516a105a9481f46087b89bac889b34716d190fa5c7f"
+  },
+  "limitations": [
+    "Not a native editor or real provider acceptance",
+    "CLI account-change/cache lifecycle remains parent978 scope"
+  ],
+  "temporary_resources": "Unit test temporary databases and files removed by context managers; active refactor worktree and private dispatch/review receipts retained for parent978",
+  "format": {
+    "version": "ruff 0.17.1",
+    "check": "passed after import ordering fixes",
+    "format": "passed"
+  },
+  "delivery_base": "b720e9c582678c1e13481d5e898676218aa6c5de",
+  "base_integration": "Fast-forward unrelated Gameplay/BeaconRun main changes; reviewed model source hashes unchanged"
+}
