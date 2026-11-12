@@ -3,6 +3,11 @@ extends Node
 
 signal checks_finished
 
+var metadata_saver: Callable
+var memory_script: Script
+var memory_helper_source := ""
+var connection_memory: Node
+var prior_summary: Label
 var git_script: Script
 var git_helper_source := ""
 var status_host: Control
@@ -43,6 +48,20 @@ func _ready() -> void:
 		cancel_button.text = "取消"
 		cancel_button.pressed.connect(cancel_checks)
 		actions.add_child(cancel_button)
+		prior_summary = Label.new()
+		prior_summary.name = "LastStartupChecks"
+		prior_summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		status_host.add_child(prior_summary)
+		var prior: Dictionary = EditorInterface.get_editor_settings().get_project_metadata("startup_checks", "last_run", {})
+		if not prior.is_empty():
+			prior_summary.text = "上次检查（历史记录，当前状态以本次验证为准） · %s\nGit：%s · AI：%s · 模型库：%s" % [str(prior.get("time", "")), str(prior.get("git", "")), str(prior.get("ai", "")), str(prior.get("catalog", ""))]
+	if memory_script:
+		connection_memory = Node.new()
+		connection_memory.name = "AIConnectionMemory"
+		connection_memory.set_script(memory_script)
+		connection_memory.helper_source = memory_helper_source
+		connection_memory.metadata_saver = metadata_saver
+		add_child(connection_memory)
 	_render()
 	_start_automatic.call_deferred()
 
@@ -88,6 +107,10 @@ func run_checks() -> void:
 	generation += 1
 	var current := generation
 	ai_finished = false
+	_render()
+	if is_instance_valid(connection_memory):
+		await connection_memory.restore()
+		if generation != current: return
 	_set_result("git", {"status":"checking", "message":"正在检查当前项目并获取远端更新…"})
 	_check_ai(current)
 	var runtime: Dictionary = chat.get_runtime_configuration().get("executables", {}) if is_instance_valid(chat) else {}
@@ -104,6 +127,12 @@ func run_checks() -> void:
 		await get_tree().create_timer(0.1).timeout
 	if generation != current:
 		return
+	var record := {"time":Time.get_datetime_string_from_system(false, true)}
+	for key in statuses:
+		record[key] = str(statuses[key].status)
+	var settings := EditorInterface.get_editor_settings()
+	settings.set_project_metadata("startup_checks", "last_run", record)
+
 	running = false
 	synchronizer = null
 	_render()
@@ -162,6 +191,8 @@ func _refresh_catalog(current: int) -> void:
 
 func cancel_checks() -> void:
 	generation += 1
+	if is_instance_valid(connection_memory):
+		connection_memory.epoch += 1
 	if synchronizer:
 		synchronizer.cancel()
 	if running:

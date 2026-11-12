@@ -1,0 +1,28 @@
+{
+  "issue": 840,
+  "current_build_receipt": {
+    "worktree": "D:\\GongGong\\.worktrees\\provider-independence-20261112",
+    "revision": "3f666c4d6fa04d765d762f49a449c8be527ad413",
+    "source_digest": "4d1be1b3a04b97af587ea7e249011a742645967d43297b94eaf0f51feb30d045",
+    "clean_source": false,
+    "console_sha256": "ee5f1bda7057e17eeb1d560a86fc6f0d9bb701294a9d15779da182fcfb942539",
+    "native": {
+      "status": "built",
+      "key": "f2e276adedf9f46c284c96e5220f6d95135340968bb78fffbb004301cbca3391",
+      "reason": "",
+      "artifact_sha256": "871e830723fb3d3c946fbdf44af2bfb1443d524a41d35f9c501050e34b45315f",
+      "producer_head": "3f666c4d6fa04d765d762f49a449c8be527ad413",
+      "consumer_head": "3f666c4d6fa04d765d762f49a449c8be527ad413",
+      "outputs": {
+        "bin/godot.windows.editor.x86_64.exe": "871e830723fb3d3c946fbdf44af2bfb1443d524a41d35f9c501050e34b45315f",
+        "bin/godot.windows.editor.x86_64.console.exe": "ee5f1bda7057e17eeb1d560a86fc6f0d9bb701294a9d15779da182fcfb942539"
+      }
+    },
+    "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "aichat": "passed"
+  },
+  "outputs_unchanged_from_prior_validation": true,
+  "full_model_fixture_cases_passed": 15,
+  "model_test_entry_console_sha256": "ee5f1bda7057e17eeb1d560a86fc6f0d9bb701294a9d15779da182fcfb942539",
+  "binding_note": "Final fixture-only changes followed by native wrapper verification; current build output pair exactly matches startup, memory and complete model-discovery validation. Prior immutable source receipt retained."
+}

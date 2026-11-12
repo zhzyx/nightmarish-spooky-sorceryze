@@ -1,0 +1,258 @@
+{
+  "issue": 840,
+  "integrated_main": "2d0ad5b2795f609f1729b48b4aac050e05d09f92",
+  "native_build": {
+    "worktree": "D:\\GongGong\\.worktrees\\provider-independence-20261112",
+    "revision": "3f666c4d6fa04d765d762f49a449c8be527ad413",
+    "source_digest": "c118d4fac9e20ac56e3fd26bdf090bf0ab95062608f29e2442e0f91a2a2af0b2",
+    "clean_source": false,
+    "console_sha256": "ee5f1bda7057e17eeb1d560a86fc6f0d9bb701294a9d15779da182fcfb942539",
+    "native": {
+      "status": "built",
+      "key": "4e060c310baf47d7e119f36a74b000ca70d16667bceea28ff6ec4d2e8cc5ee5e",
+      "reason": "",
+      "artifact_sha256": "871e830723fb3d3c946fbdf44af2bfb1443d524a41d35f9c501050e34b45315f",
+      "producer_head": "3f666c4d6fa04d765d762f49a449c8be527ad413",
+      "consumer_head": "3f666c4d6fa04d765d762f49a449c8be527ad413",
+      "outputs": {
+        "bin/godot.windows.editor.x86_64.exe": "871e830723fb3d3c946fbdf44af2bfb1443d524a41d35f9c501050e34b45315f",
+        "bin/godot.windows.editor.x86_64.console.exe": "ee5f1bda7057e17eeb1d560a86fc6f0d9bb701294a9d15779da182fcfb942539"
+      }
+    },
+    "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "aichat": "passed"
+  },
+  "native_tests": {
+    "passed": 88,
+    "assertions": 1598
+  },
+  "model_discovery": {
+    "ok": true,
+    "cases": [
+      {
+        "case": "codex-startup",
+        "ok": true,
+        "checks": [
+          "manual refresh button absent",
+          "startup fetched advertised Codex model once"
+        ]
+      },
+      {
+        "case": "codex-completed-status-delayed-poll",
+        "ok": true,
+        "checks": [
+          "manual refresh button absent",
+          "successful status subprocess finished before delayed native poll",
+          "completed exit result survived an eleven second UI pause; catalog fetched once"
+        ]
+      },
+      {
+        "case": "session-reuse",
+        "ok": true,
+        "checks": [
+          "manual refresh button absent",
+          "ordinary sessions share project selection and metadata in both directions while retaining separate drafts",
+          "new session reused catalog without query; config change invalidated old catalog"
+        ]
+      },
+      {
+        "case": "session-catalog-freshness",
+        "ok": true,
+        "checks": [
+          "manual refresh button absent",
+          "same-connection login refresh replaced archived C1 with C2 in both sessions and preserved project selection without duplicate discovery"
+        ]
+      },
+      {
+        "case": "shared-config-inflight",
+        "ok": true,
+        "checks": [
+          "manual refresh button absent",
+          "external shared-config edit during in-flight C1 query retained only C2 catalog"
+        ]
+      },
+      {
+        "case": "codex-login",
+        "ok": true,
+        "checks": [
+          "manual refresh button absent",
+          "login completed, catalog eventually fetched exactly once"
+        ]
+      },
+      {
+        "case": "codex-busy-login",
+        "ok": true,
+        "checks": [
+          "manual refresh button absent",
+          "login completed, catalog eventually fetched exactly once",
+          "busy chat finished and pending login event survived"
+        ]
+      },
+      {
+        "case": "codex-status-timeout",
+        "ok": true,
+        "checks": [
+          "manual refresh button absent",
+          "UI heartbeat continued during bounded auth-status timeout"
+        ]
+      },
+      {
+        "case": "codex-catalog-failure",
+        "ok": true,
+        "checks": [
+          "manual refresh button absent",
+          "catalog failure visible without retry loop"
+        ]
+      },
+      {
+        "case": "codex-status-config-change",
+        "ok": true,
+        "checks": [
+          "manual refresh button absent",
+          "changed config superseded a pending stale auth-status check"
+        ]
+      },
+      {
+        "case": "codex-status-login-race",
+        "ok": true,
+        "checks": [
+          "manual refresh button absent",
+          "login completed, catalog eventually fetched exactly once",
+          "successful login superseded an older auth-status failure"
+        ]
+      },
+      {
+        "case": "api-chat-startup",
+        "ok": true,
+        "checks": [
+          "manual refresh button absent",
+          "configured backend startup enumerated once"
+        ]
+      },
+      {
+        "case": "api-responses-startup",
+        "ok": true,
+        "checks": [
+          "manual refresh button absent",
+          "configured backend startup enumerated once"
+        ]
+      },
+      {
+        "case": "codebuddy-startup",
+        "ok": true,
+        "checks": [
+          "manual refresh button absent",
+          "configured backend startup enumerated once"
+        ]
+      },
+      {
+        "case": "backend-switch",
+        "ok": true,
+        "checks": [
+          "manual refresh button absent",
+          "all configured backend switches repopulated catalog once"
+        ]
+      }
+    ],
+    "source_unchanged": true,
+    "source_sha256": {
+      "editor/docks/ai_chat_dock.cpp": "f7f5769b8d99605b81da83b21380ce5f328e906abfcad07c1e1e2e42b87a9322",
+      "editor/docks/ai_chat_dock.h": "f6f92e685cc32d96d72cbf8a4775e92ab6c4b5d969bdabf7ccc2cb2313d24f4a",
+      "tools/codex_cli/godot_bridge.js": "aa1a436de7acd977199763f15e52484d93287a1bb49a148ae9f28e2f88a62976",
+      "tools/codex_cli/attach_job.ps1": "a9ffeaaa6812381ba6c43a49f2cd70a089e74fdf0e3d7e66d87bf894292d7d76",
+      "tools/codebuddy_cli/godot_bridge.js": "d87d60636c905d3f4beafc25d8363ebe4372df526672a3d6aad1406a89b38450"
+    },
+    "entry_console_sha256": "ee5f1bda7057e17eeb1d560a86fc6f0d9bb701294a9d15779da182fcfb942539",
+    "sibling_engine_sha256": "871e830723fb3d3c946fbdf44af2bfb1443d524a41d35f9c501050e34b45315f",
+    "fixture_changes": [
+      "Match ordinary conversation project-shared model selection while preserving independent drafts and all catalog freshness/dedup assertions",
+      "Observe actual distlib PE entry PID for native exit-code check while retaining Python child PID",
+      "Copy and hash the real independent Codex Windows attach_job.ps1 boundary helper"
+    ]
+  },
+  "startup": {
+    "passed": true,
+    "checks": 30,
+    "errors": [],
+    "secret_on_disk": false
+  },
+  "connection_memory": {
+    "stages": 4,
+    "checks": 38,
+    "strict_errors": [],
+    "secret_on_disk": false,
+    "store_empty_after_forget": true
+  },
+  "macos_previous_candidate": {
+    "run": 43125700093,
+    "candidate": "c42411ce3ef6c8138da5e31d1e7e420682a80612",
+    "native_compilation": "passed",
+    "native_external_peer_tests": "passed",
+    "real_signed_host_cases": [
+      {
+        "name": "unregistered_signed_host_rejected",
+        "expected_authorized": false,
+        "passed": true
+      },
+      {
+        "name": "explicit_signed_host_authorized",
+        "expected_authorized": true,
+        "passed": true
+      },
+      {
+        "name": "host_downgraded_to_helper_rejected",
+        "expected_authorized": false,
+        "passed": true
+      },
+      {
+        "name": "helper_upgraded_to_host_authorized",
+        "expected_authorized": true,
+        "passed": true
+      },
+      {
+        "name": "wrong_cdhash_policy_rejected",
+        "expected_authorized": false,
+        "passed": true
+      },
+      {
+        "name": "actual_new_signed_version_rejected_before_registration",
+        "expected_authorized": false,
+        "passed": true
+      },
+      {
+        "name": "actual_new_signed_version_authorized_after_registration",
+        "expected_authorized": true,
+        "passed": true
+      },
+      {
+        "name": "revoked_original_host_rejected",
+        "expected_authorized": false,
+        "passed": true
+      }
+    ],
+    "non_codex_host_ok": true,
+    "remaining_workflow_failure": "two old ordinary-session fixtures expected independent model choices; corrected and tested on current Windows binary; Mac recheck pending",
+    "codex_desktop_static_signature": "passed exact Team2DC432GLL2 identifier com.openai.codex",
+    "codex_desktop_real_chain": "unavailable: official app has no assumed Electron Framework silent entry",
+    "full_signed_anchor_acceptance_ok": false
+  },
+  "independent_reviewers": [
+    "/root/sinan_c0fe010abbc02e98",
+    "/root/sinan_ce2e0b89751f97de"
+  ],
+  "source_blobs": {
+    "tests/editor/run_model_autofetch.py": "6eda75ba3760e07b87095ee9a5e1b92ab53c236c",
+    "editor/docks/ai_chat_dock.cpp": "2caf9c4d539031ef2bc2599b8f5872bd6428f2fb",
+    "editor/docks/ai_chat_external_peer.cpp": "a085264e5d1599769bcc1a6ec94ba85dc2b274ec",
+    "editor/docks/ai_chat_external_peer.h": "9bb64b54f13f2c110d9d251aaf3de48250e3dc4a",
+    "tools/editor_trusted_hosts.py": "98c0e980cf903597e3b353d9dfa0b7b82d255e21",
+    "tools/run_macos_external_host_acceptance.py": "b7ac4bc0b0adb3f74930fa31d0ebc799b6a0be98",
+    "editor/docks/daqian/session_memory.gd": "cd88538541c5be363e5af93184a7e5a47bfd7420",
+    "customizations/components/godot-host/session_credentials.py": "cb257b58bae5ef3473cab210aca18f090237d589"
+  },
+  "acceptance_remaining": [
+    "Current-candidate Mac workflow recheck after fixture correction",
+    "Actual macOS Codex desktop ancestry/socket request from authorized native session; Windows CLI real generation does not substitute"
+  ],
+  "non_codex_real_inference": "deferred by user; Kimi ability assigned to others"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c7265aa2561f96eb652f02f8e4cd439292d231fa",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "provider-host-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/843",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "9917418ac77949c901a9dfde768b2f9fd8620901a0b8008061b15547d76f5bdd",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/843",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/850",
+    "action": "validation",
+    "detection_head": "3f666c4d6fa04d765d762f49a449c8be527ad413",
+    "context_sha256": "726e59e073e0590740f83beab5e0c62e6bc8263ca34d5eea1b262059cee8686c",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "Issue843 explicit host compatibility acceptance",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43123215252 macos-signed-host-acceptance artifact",
+    "diagnosis": "Eight real signed non-Codex ancestry cases passed; official Codex identity signature passed but assumed Electron silent child entry absent, so full desktop chain unverified. Windows archive MSI extraction was tool-policy rejected, existing tar unsupported; no GUI or install performed. CLI generation success is separate evidence.",
+    "next_action": "Deliver validated implementation with remaining Mac desktop compatibility acceptance explicitly open; require actual authorized macOS Codex session or supported silent entry before closing full scope.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T00:36:59.394864+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T00:40:43.956709+00:00",
+  "sha256": "b1c4884dc566be3dd2b39ed62fdd1d9e599559cd748706fa9ed98e89e3ee4d4b"
+}

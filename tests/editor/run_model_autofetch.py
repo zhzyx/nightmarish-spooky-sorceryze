@@ -4,6 +4,7 @@ All project/config/artifacts live in a temporary self-contained editor copy.
 
 import argparse
 import hashlib
+import io
 import json
 import os
 import shutil
@@ -12,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import zipfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -59,6 +61,9 @@ func catalog_has(id: String) -> bool:
         if str(picker.get_item_metadata(i)) == id:
             return true
     return false
+func project_model_is(id: String) -> bool:
+    var field = dock.get_ai_settings_control().find_child("CodexModel", true, false)
+    return field.text == id and EditorInterface.get_editor_settings().get_project_metadata("ai_chat", "codex_model", "") == id
 func wait_backend_ready(id: String, seconds := 15.0) -> bool:
     var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
     var deadline := Time.get_ticks_msec() + int(seconds * 1000.0)
@@ -100,7 +105,9 @@ func _run():
                 continue
             var event = JSON.parse_string(line)
             if event is Dictionary and event.get("kind", "") == "codex-login-status":
-                status_pid = int(event.get("pid", 0))
+                # On Windows the editor owns the PE launcher's process handle;
+                # the Python interpreter recording this event is its child.
+                status_pid = int(event.get("entry_pid", 0))
         if status_pid < 2:
             finish(false, "actual fixture status PID missing")
             return
@@ -131,26 +138,32 @@ func _run():
         if not await wait_count("codex-model-list", 1) or not await wait_backend_ready("fixture-codex"):
             finish(false, "initial Codex catalog missing")
             return
-        var picker = dock.get_ai_settings_control().find_child("ModelPicker", true, false)
         var field = dock.get_ai_settings_control().find_child("CodexModel", true, false)
         var tabs = dock.find_child("AgentTabs", true, false)
+        var draft = dock.find_child("ChatInput", true, false)
+        draft.text = "session A draft"
         field.text = "parent-choice"
         field.text_changed.emit(field.text)
         dock.find_child("AddAgent", true, false).pressed.emit()
-        if tabs.tab_count != 2 or not catalog_has("fixture-codex"):
-            finish(false, "new session did not reuse discovered catalog")
+        if tabs.tab_count != 2 or not catalog_has("fixture-codex") or not project_model_is("parent-choice") or not draft.text.is_empty():
+            finish(false, "new session did not reuse project selection/catalog with a separate draft")
             return
+        draft.text = "session B draft"
         field.text = "child-choice"
         field.text_changed.emit(field.text)
         tabs.current_tab = 0
         tabs.tab_changed.emit(0)
-        if field.text != "parent-choice" or not catalog_has("fixture-codex"):
-            finish(false, "parent selection or catalog lost")
+        # AddAgent creates ordinary conversations, which share project AI settings.
+        # Their drafts stay separate; execution-child overrides are a different path.
+        if not project_model_is("child-choice") or not catalog_has("fixture-codex") or draft.text != "session A draft":
+            finish(false, "A lost latest project selection/catalog or its own draft")
             return
+        field.text = "updated-project-choice"
+        field.text_changed.emit(field.text)
         tabs.current_tab = 1
         tabs.tab_changed.emit(1)
-        if field.text != "child-choice" or not catalog_has("fixture-codex"):
-            finish(false, "child selection or catalog lost")
+        if not project_model_is("updated-project-choice") or not catalog_has("fixture-codex") or draft.text != "session B draft":
+            finish(false, "B lost updated project selection/catalog or its own draft")
             return
         if not await stable_count("codex-model-list", 1):
             finish(false, "session creation triggered duplicate discovery")
@@ -161,7 +174,8 @@ func _run():
         if catalog_has("fixture-codex"):
             finish(false, "old catalog remained after connection changed")
             return
-        checks.append("new session reused catalog without query; selections stayed independent; config change invalidated old catalog")
+        checks.append("ordinary sessions share project selection and metadata in both directions while retaining separate drafts")
+        checks.append("new session reused catalog without query; config change invalidated old catalog")
     elif case_name == "session-catalog-freshness":
         if not await wait_count("codex-model-list", 1) or not await wait_backend_ready("fixture-codex-old"):
             finish(false, "initial catalog C1 missing")
@@ -171,8 +185,8 @@ func _run():
         field.text = "parent-choice"
         field.text_changed.emit(field.text)
         dock.find_child("AddAgent", true, false).pressed.emit()
-        if tabs.tab_count != 2 or not catalog_has("fixture-codex-old"):
-            finish(false, "B did not reuse C1")
+        if tabs.tab_count != 2 or not catalog_has("fixture-codex-old") or not project_model_is("parent-choice"):
+            finish(false, "B did not reuse C1 and project selection")
             return
         field.text = "child-choice"
         field.text_changed.emit(field.text)
@@ -182,15 +196,18 @@ func _run():
             return
         tabs.current_tab = 0
         tabs.tab_changed.emit(0)
-        if field.text != "parent-choice" or not catalog_has("fixture-codex-new") or catalog_has("fixture-codex-old"):
-            finish(false, "A restored stale C1 instead of latest C2 or lost its selection")
+        if not project_model_is("child-choice") or not catalog_has("fixture-codex-new") or catalog_has("fixture-codex-old"):
+            finish(false, "A restored stale C1 instead of latest C2 or lost project selection")
             return
         tabs.current_tab = 1
         tabs.tab_changed.emit(1)
-        if field.text != "child-choice" or not catalog_has("fixture-codex-new"):
-            finish(false, "B lost C2 or its independent selection")
+        if not project_model_is("child-choice") or not catalog_has("fixture-codex-new") or catalog_has("fixture-codex-old"):
+            finish(false, "B lost C2 or project selection")
             return
-        checks.append("same-connection login refresh replaced archived C1 with C2; independent choices survived")
+        if not await stable_count("codex-model-list", 2):
+            finish(false, "switching sessions duplicated the login catalog refresh")
+            return
+        checks.append("same-connection login refresh replaced archived C1 with C2 in both sessions and preserved project selection without duplicate discovery")
     elif case_name == "shared-config-inflight":
         if not await wait_count("codex-model-list", 2, 20.0) or not await wait_backend_ready("fixture-codex-new"):
             finish(false, "shared C2 change did not trigger a current-connection query")
@@ -300,7 +317,8 @@ state = Path(__STATE__)
 case = __CASE__
 def event(kind):
     fd = os.open(state / 'events.jsonl', os.O_CREAT | os.O_WRONLY | os.O_APPEND, 0o600)
-    os.write(fd, (json.dumps({'kind': kind, 'pid': os.getpid()})+'\n').encode('utf-8')); os.close(fd)
+    entry_pid = os.getppid() if os.name == 'nt' else os.getpid()
+    os.write(fd, (json.dumps({'kind': kind, 'pid': os.getpid(), 'entry_pid': entry_pid})+'\n').encode('utf-8')); os.close(fd)
 a=sys.argv[1:]
 if a[:2]==['login','status']:
     event('codex-login-status')
@@ -388,6 +406,24 @@ def private_editor(binary, directory):
             os.environ["GONGGONG_WORKSPACE"] = binding
 
 
+def fixture_program(path, script):
+    if os.name == "nt":
+        # Match the existing native Python fixture launcher used by design-batch.
+        # Windows CreateProcess cannot execute a Unix shebang script directly.
+        from pip._vendor.distlib.scripts import ScriptMaker
+
+        launcher = ScriptMaker(None, None)._get_launcher("t")
+        archive = io.BytesIO()
+        with zipfile.ZipFile(archive, "w") as zipped:
+            zipped.writestr("__main__.py", script)
+        path = path.with_suffix(".exe")
+        path.write_bytes(launcher + ('#!"' + sys.executable + '"\n').encode() + archive.getvalue())
+    else:
+        path.write_text("#!" + sys.executable + "\n" + script, encoding="utf-8")
+        path.chmod(0o700)
+    return path
+
+
 def run_case(binary, source, node, case, windows_job_boundary=None):
     with tempfile.TemporaryDirectory(prefix="issue387-independent-") as folder:
         root = Path(folder).resolve()
@@ -400,6 +436,10 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
             target.mkdir(parents=True)
             for bridge in (source / "tools" / name).glob("*.js"):
                 shutil.copy2(bridge, target / bridge.name)
+        if os.name == "nt":
+            # Standalone Codex establishes its real Windows process boundary with
+            # this helper when the optional CodeBuddy native module is absent.
+            shutil.copy2(source / "tools/codex_cli/attach_job.ps1", root / "tools/codex_cli/attach_job.ps1")
         boundary_receipt = None
         if os.name == "nt" and case in ("codebuddy-startup", "backend-switch"):
             relative_boundary = Path(
@@ -434,38 +474,28 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
             (state / "logged-in").touch()
         config_file = root / "bin/editor_data/gonggong/config.json"
         config_file.parent.mkdir(parents=True, exist_ok=True)
-        config_file.write_text(
-            json.dumps({"schema_version": 1, "runtimes": {"codex": str(root / "fake-codex"), "node": str(node)}}),
-            encoding="utf-8",
-        )
-        codex = root / "fake-codex"
-        codex.write_text(
-            "#!"
-            + sys.executable
-            + "\n"
-            + FAKE_CODEX
+        codex = fixture_program(
+            root / "fake-codex",
+            FAKE_CODEX
             .replace("__STATE__", repr(str(state)))
             .replace("__CASE__", repr(case))
             .replace("__CONFIG_PATH__", repr(str(config_file)))
             .replace("__ALT_CODEX__", repr(str(root / "fake-codex-fixed")))
             .replace("__NODE__", repr(str(node))),
-            encoding="utf-8",
         )
-        codex.chmod(0o755)
-        alt_codex = root / "fake-codex-fixed"
-        alt_codex.write_text(
-            "#!"
-            + sys.executable
-            + "\n"
-            + FAKE_CODEX
+        alt_codex = fixture_program(
+            root / "fake-codex-fixed",
+            FAKE_CODEX
             .replace("__STATE__", repr(str(state)))
             .replace("__CASE__", repr("shared-config-current" if case == "shared-config-inflight" else "codex-startup"))
             .replace("__CONFIG_PATH__", repr(str(config_file)))
             .replace("__ALT_CODEX__", repr(str(root / "fake-codex-fixed")))
             .replace("__NODE__", repr(str(node))),
+        )
+        config_file.write_text(
+            json.dumps({"schema_version": 1, "runtimes": {"codex": str(codex), "node": str(node)}}),
             encoding="utf-8",
         )
-        alt_codex.chmod(0o755)
         codebuddy = root / "fake-codebuddy.js"
         codebuddy.write_text(FAKE_CODEBUDDY.replace("__STATE__", json.dumps(str(state))), encoding="utf-8")
         lock = threading.Lock()
@@ -669,6 +699,7 @@ def main():
         "editor/docks/ai_chat_dock.cpp",
         "editor/docks/ai_chat_dock.h",
         "tools/codex_cli/godot_bridge.js",
+        "tools/codex_cli/attach_job.ps1",
         "tools/codebuddy_cli/godot_bridge.js",
     ]
     hashes = {name: hashlib.sha256((source / name).read_bytes()).hexdigest() for name in checked_sources}

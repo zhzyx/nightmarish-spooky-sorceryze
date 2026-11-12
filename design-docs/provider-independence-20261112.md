@@ -92,3 +92,7 @@ macOS 补充真实签名链验收工具和对应 workflow，详见子项设计�
 主线随后推进至 `c7a335efde36144ede5d9443bf84bcb17706dd99`（#857 启动 Git/模型配置检查）。无冲突整合后独立审查确认：API 后端不要求 Codex，缺 CLI 不阻断其他模型来源，宿主鉴权未变。Windows 启动实测的 30 项业务断言通过，但严格日志检测复现正常子进程退出后 `FileAccessWindowsPipe::get_length` 将排空管道的 `ERROR_BROKEN_PIPE` 报成引擎错误。父项 #840 的集成修复仅对该错误返回零，其他 PeekNamedPipe 失败继续诊断，保留 GDScript 最终输出读取。新增真实匿名管道尾部数据/EOF无错误、非管道句柄仍报错的原生回归；原有严格启动验收不放宽。依据 [Microsoft PeekNamedPipe](https://learn.microsoft.com/en-us/windows/win32/api/namedpipeapi/nf-namedpipeapi-peeknamedpipe) 与 [管道句柄继承说明](https://learn.microsoft.com/en-us/windows/win32/ipc/pipe-handle-inheritance)，实际复验与输入绑定另行记录。
 
 上述集成修复复验通过：新二进制原生 AIChat 88项/1598断言、真实 Windows 管道2项/18断言通过；原严格启动验收30项通过，errors为空、无测试凭据落盘。见 `data-collection/provider-independence-840-c7a.json`。签名升级夹具、生产宿主名单和现有Codex适配器不受此Windows修复修改。
+
+主线 `2d0ad5b2795f609f1729b48b4aac050e05d09f92`（#867连接状态记忆）已无冲突整合；独立核查无Codex前置，历史成功不替代当前连接验证。新构建AIChat88项1598断言通过，启动30项、跨进程连接记忆38项通过。模型发现15场景完整通过；两条旧session测试按#828普通会话共享项目模型的契约修正，保留草稿隔离、catalog复用/失效/C1C2/去重；Windows测试包装器PID与attach_job.ps1依赖补齐，生产执行与隔离代码未改。见 `data-collection/provider-independence-840-2d0.json`。
+
+macOS run43125700093（签发c42411ce）原生编译/ExternalPeer及8个真实供应商签名请求场景通过，末尾模型发现因上述两条陈旧fixture失败；修正后的Mac复验仍需独立回执。官方Codex应用真实静态签名通过，但缺少测试脚本假定的Electron后台子进程入口，未取得实际桌面完整祖先链请求；#843与父#840的这一验收保持开放，Windows已配置CLI真实生成成功不能替代。业务实现可以交付，未完成项不能写done。

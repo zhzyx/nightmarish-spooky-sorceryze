@@ -47,3 +47,5 @@ workflow 在编译前执行真实签名/launchd 预检，编译后验证未登�
 命令语义依据 [Apple Code Signing Tasks](https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html) 与 codesign 手册：文本 requirement 需字面前缀；通用程序各架构分别签名。登记时保留全部架构完整性核验，按实际观察到的 Team ID/identifier/CDHash 找到唯一对应架构，仅对该架构执行精确摘要要求；不依赖 Python 的 Rosetta 架构猜测，也不把其他架构自动加入信任登记。
 
 实际 run 43120417239 已通过 14 项 macOS/通用登记工具测试（另 1 项非 macOS 拒绝用例跳过）及 6 项验收门禁测试，两个固定官方 PowerShell 包的严格签名检查均通过；剩余失败是验收工具错误要求不同版本维持同一 Identifier。真实 PowerShell 7.6.9/7.7.0 的标识带各自构建 UUID，会随版本改变。升级夹具现以官方固定包摘要、实际 `pwsh --version` 产品/版本回读、同 Team 和不同 CDHash 确认升级，并记录 identifier_changed；生产登记仍精确绑定新标识及摘要，同标识仅改摘要的拒绝用例保留。此调整是对真实供应商升级方式的验收纠偏，不放宽鉴权。
+
+实际macOS run43123215252及43125700093均已完成原生编译、ExternalPeer原生测试及8个真实签名PowerShell请求场景（未登记拒绝、显式登记、角色升降、错误摘要、实际版本升级前后、撤销）。最新回执绑定签发c42411ce，不能外推其他候选的完整Mac流水线。官方Codex应用的Team/id/摘要严格核验成功，但当前唯一应用ChatGPT.app无预期Electron Framework路径，因此无实际Codex后代socket请求，full_signed_anchor_acceptance_ok=false。#843继续保留此项，恢复条件是在授权macOS Codex原生会话中，用相同候选私有headless编辑器取得真实context请求回执；不将终端、任意同UID进程或WindowsCLI生成替代该祖先链。额外Windows归档工具MSI提取被宿主策略拒绝，内建tar不能读DMG；未安装软件、未绕过策略。
