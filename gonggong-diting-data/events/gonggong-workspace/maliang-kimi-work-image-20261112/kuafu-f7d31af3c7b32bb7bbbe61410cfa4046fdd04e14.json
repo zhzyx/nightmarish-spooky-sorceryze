@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f7d31af3c7b32bb7bbbe61410cfa4046fdd04e14",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-work-image-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/808",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a0be42a062af46fbfa6cdbe0f45a15d15fe7e2d98a3e8080746457c118284788",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/808",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/809",
+    "action": "validation",
+    "detection_head": "1a544eeade1fa067356f15d70856c79e3b09224c",
+    "context_sha256": "d6d31ec2fcf3b72447717b9640bec9403e6e6157fe0e460b5160d6b58aeebf2b",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-main",
+    "authority_ref": "user-request-20261112-issue-808",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43165363201/job/131005862293",
+    "diagnosis": "PR 事件仅 ruff format 失败；tests/editor/run_ainative_builtin.py 存在字符串引号与生成表达式的格式差异，未合入 main，图像流程与真实验收结果未受影响。",
+    "next_action": "由 kimi-work-main 按 CI 差异修复格式，重跑 38 项协议测试、资源包测试及四项原生验收，再签发新候选并核对精确 head 的 CI 与 PR 合入。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T06:05:10.992372+00:00",
+    "attempted": "已回读失败作业的 hook 输出；其余已报告 hooks 通过，未尝试合并或绕过检查。",
+    "repair_owner": "kimi-work-main",
+    "continuable": "本地格式修复、定向回归和新候选签发可继续；原候选停止合入。"
+  },
+  "occurred_at": "2026-11-12T06:09:20.500583+00:00",
+  "sha256": "c931fde4e51770127716610577293bd48bee4a28492459ddcaa4aae01f91c0f2"
+}

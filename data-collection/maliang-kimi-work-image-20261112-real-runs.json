@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-kimi-work-image-20261112",
+  "issue_number": 808,
+  "state": "accepted_pending_formal_delivery",
+  "date": "2026-11-12",
+  "editor_sha256": "164fc3e8e8302e2e4fa26dfbe89c5ac861663dcb9c58c3edbf5e15caee40e914",
+  "provider": "kimi_work_image",
+  "service": "Kimi Work agent-gw generate_image",
+  "mesh_model_used_for_images": false,
+  "evidence_scope": "Sanitized lifecycle receipts only; no credentials, private URLs, absolute private paths or raw generation logs.",
+  "attempts": [
+    {
+      "run_id": "89dfcddccd9d48b8be0bccd52a7bdb2e",
+      "kind": "text_to_image",
+      "result": "local_preflight_failed",
+      "child_stage": "intent",
+      "child_job_id": "b152dadd540b2c1d959681c174bf60614fb41faeddeeaea0c66a4238c481be1f",
+      "external_upload_or_generation": false,
+      "observed_defect": "Resolved Path passed to a string-only local check; Windows task directory creation failed."
+    },
+    {
+      "run_id": "1b20e6d510f44f0693bf10de6aa7bfd4",
+      "kind": "text_to_image",
+      "result": "local_launch_failed",
+      "child_stage": "image_launch",
+      "child_job_ids": [
+        "007195bee600100d3c97a6dc9e25d81865cf2ac31c1647bbd7fdaa9fd244beda",
+        "fa0d47f15bb47f499befeff6b6ecefae0aef914aeec4c1c89a7ad5b16c3df784"
+      ],
+      "launcher_error_class": "WinError 3",
+      "worker_started": false,
+      "external_upload_or_generation": false,
+      "observed_defect": "Private launcher temporary log path exceeded the host path limit."
+    }
+  ],
+  "fixes": [
+    "Normalize the resolved local image-tool path to the declared string interface.",
+    "Preserve the full idempotency key in SQLite and an exact identity receipt when a compact local directory is necessary.",
+    "Include the launcher's private descendant paths in the Windows boundary check; stop on identity collisions.",
+    "Shorten only the isolated acceptance cache's physical path while retaining its original logical path and run identity.",
+    "Serialize the concurrent Fake fixture's shared JSONL writes; production generation and result bytes were not changed by this test fix."
+  ],
+  "successful_runs": [
+    {
+      "kind": "text_to_image",
+      "run_id": "4d4b56041a1044e88c1109eb8458ce7e",
+      "node_id": "n6923474",
+      "state": "succeeded",
+      "input_adaptation": "text_only",
+      "ordered_input_count": 0,
+      "independent_output_count": 2,
+      "contact_sheet_used_as_output": false,
+      "outputs": [
+        {
+          "index": 0,
+          "label": "正面",
+          "width": 1024,
+          "height": 1024,
+          "bytes": 1265512,
+          "sha256": "57ef3c5d79c2364c3c2b05f2ba417fe8b417fbe35acd5683ff07cd22b353cc4d",
+          "editor_screenshot": "text-member-1-editor.png"
+        },
+        {
+          "index": 1,
+          "label": "三分之四侧面",
+          "width": 1024,
+          "height": 1024,
+          "bytes": 1130501,
+          "sha256": "83234fbcdf27e15f9204591466b7aea957f8157d27db26f6e8957800a7d6922a",
+          "editor_screenshot": "text-member-2-editor.png"
+        }
+      ]
+    },
+    {
+      "kind": "image_to_image",
+      "run_id": "6529acdf611d42fd8a84856a05637d70",
+      "node_id": "n5623997",
+      "state": "succeeded",
+      "input_adaptation": "ordered_native_multi_reference",
+      "ordered_inputs": [
+        {
+          "index": 0,
+          "label": "正面",
+          "bytes": 73853,
+          "sha256": "d7da9f08e2b2d318fd0ec7a3cabb5eac273eaf4a0c1f40692791958f8bce4ab1"
+        },
+        {
+          "index": 1,
+          "label": "三分之四侧面",
+          "bytes": 67144,
+          "sha256": "1202f5616d47faa26c9fa296e6047d74dace658c6b0f59539d66bc2938990eea"
+        }
+      ],
+      "independent_output_count": 2,
+      "contact_sheet_used_as_output": false,
+      "outputs": [
+        {
+          "index": 0,
+          "label": "正面",
+          "width": 1024,
+          "height": 1024,
+          "bytes": 475127,
+          "sha256": "79628a807be52ecb6a97bfa2defbb8367b886e1810518829295a4f0f8ca317cf",
+          "editor_screenshot": "image-member-1-editor.png"
+        },
+        {
+          "index": 1,
+          "label": "三分之四侧面",
+          "width": 1024,
+          "height": 1024,
+          "bytes": 434016,
+          "sha256": "63792381a4dcad9b563a13de81535e4c6b19bad80f232d753592028fee9eb35d",
+          "editor_screenshot": "image-member-2-editor.png"
+        }
+      ],
+      "publication": {
+        "selected_output_index": 1,
+        "resource_sha256": "3bb9d9afd47fdab1ee6122404b965563d1fd0f8e3668850f6523aac02a5c2132",
+        "pixels_sha256": "f4e43d9fbd8ef5fd8664b48df6efa78f3845c5e4193d1e3fc97dcd7ba997595f",
+        "matches_second_member_pixels": true,
+        "editor_screenshot": "image-published-editor.png"
+      }
+    }
+  ],
+  "restoration": {
+    "state": "restored",
+    "run_ids": [
+      "4d4b56041a1044e88c1109eb8458ce7e",
+      "6529acdf611d42fd8a84856a05637d70"
+    ],
+    "member_tokens_artifacts_and_bytes_unchanged": true,
+    "published_pixels_unchanged": true,
+    "call_audit_unchanged": true,
+    "before_and_after": {
+      "upload_log_count": 4,
+      "launch_log_count": 6,
+      "generated_file_count": 4,
+      "provider_job_count": 7,
+      "succeeded_provider_job_count": 4
+    },
+    "launch_count_explanation": "Six launch receipts comprise two confirmed local launch failures and four successful image tasks; the earlier intent failure has no launch receipt.",
+    "restore_editor_screenshots": [
+      "text-restore-member-1-editor.png",
+      "text-restore-member-2-editor.png",
+      "image-restore-member-1-editor.png",
+      "image-restore-member-2-editor.png"
+    ],
+    "visual_review": "All original and restored member screenshots show the selected real preview in the native Godot Maliang editor; no contact sheet or source image was substituted."
+  },
+  "local_tests": {
+    "related_protocol_and_host_suite": "38 passed in each of two consecutive final runs",
+    "native_bundle_consistency": "1 passed",
+    "fake_inference_only": true
+  },
+  "native_acceptance": {
+    "state": "passed",
+    "report": "native-multi-final.json",
+    "same_editor_sha256": true,
+    "installed_bundle_matches_source": true,
+    "project_sources_unchanged": true,
+    "project_state_isolated": true,
+    "scenarios": [
+      "mesh-and-rig",
+      "independent-project",
+      "sample-addon-compatibility",
+      "relocated-runtime"
+    ],
+    "known_exit_rid_objectdb_leaks_remain": true
+  },
+  "completed_real_acceptance": true,
+  "pending": [
+    "formal exact-candidate review, PR and remote main delivery"
+  ],
+  "comfy_ui_real_multi_image_inference": false,
+  "codex_real_multi_image_inference": false,
+  "service_boundary": "Kimi Work generate_image is an independent 2D image service, not K3.1 Pro mesh planning or direct image output from K3.1 Pro."
+}
