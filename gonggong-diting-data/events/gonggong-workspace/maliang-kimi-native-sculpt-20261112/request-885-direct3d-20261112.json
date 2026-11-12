@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "request-885-direct3d-20261112",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-native-sculpt-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T07:52:15+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+  "agent": {
+    "id": "kimi-work-kaiyunxue",
+    "version": "20261112",
+    "definition_sha256": "1201ca0ea4682eff7e014b70c71645dde1c3e47d0ea13a29eef605d8b5e70a5c",
+    "origin": "current-authorized-host"
+  },
+  "payload": {
+    "scope": "Enable Kimi Native direct Tripo API text, image and multiview GLB generation without Blender, including front/right/back sheet splitting, durable recovery and native preview",
+    "authorization_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+    "validation": "data-collection/maliang-kimi-native-sculpt-20261112-validation.json",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "f7b6b3c096c62c5ccc051b35c7d40fd5b4afa6a0e775cfb571d23386ed733be4"
+}

@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-kimi-native-sculpt-20261112-validation",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-native-sculpt-20261112",
+  "kind": "step",
+  "occurred_at": "2026-11-12T15:39:18+08:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+  "agent": {
+    "id": "kimi-work-kaiyunxue",
+    "version": "20261112",
+    "origin": "current-authorized-host"
+  },
+  "payload": {
+    "implementation": {
+      "provider": "kimi_native",
+      "service": "Tripo API",
+      "operation": "generate_3d_model",
+      "direct_glb": true,
+      "blender_used": false,
+      "codex_used": false,
+      "comfyui_or_hunyuan_used": false,
+      "new_primitive_fallback": false,
+      "legacy_primitive_snapshot_restore": true,
+      "input_modes": ["text", "image", "multiview", "multiview_sheet"],
+      "three_view_order": ["front", "right", "back"],
+      "durable_intent_cancellation_and_reopen": true
+    },
+    "real_generation": {
+      "task_id": "5567a16a-a5c7-40db-81f2-a08f81c12085",
+      "generation_model": "v3.1",
+      "input_mode": "multiview_sheet",
+      "source_sha256": "9bbbcfb47c4f653d43a2596860c28f81403297748e4290ec620a6df815b1a03d",
+      "view_output_sha256": {
+        "front": "853233828619c5a7c2ce17c5847568d3b21062b4128ea4875ced2219b852988d",
+        "right": "4ca94d8147f91aeabcc94a6a8d61b8d365eb07e272cfaebf2e6dee3c88c91026",
+        "back": "d3c407d1aa65f82ddad1eaa02dfeee9d1154a5960c0c3d4dc40e5da7a7a28049"
+      },
+      "glb_sha256": "bcc799074cfbbfee4cd013c3cb070bca3976e09474bbe1f4e6cb6ede4ef76b2c",
+      "glb_bytes": 47089392,
+      "vertices": 778552,
+      "triangles": 1497506,
+      "preview_sha256": "c28dc6030821fb7daeed4953f6fcd9304215bd76e67452efbac5f5ce40fefa6f",
+      "initial_dependency_failure": "agent-gw 0.2.6; first upload rejected before generation",
+      "dependency_repair": "upgraded to agent-gw 0.5.0; fresh idempotency key used for one explicit retry",
+      "signed_urls_and_original_assets_committed": false
+    },
+    "tests": {
+      "direct3d_synthetic": {"tests": 5, "failures": 0, "errors": 0},
+      "kimi_service": {"tests": 7, "failures": 0, "errors": 0},
+      "kimi_work_image": {"tests": 7, "failures": 0, "errors": 0},
+      "multi_image": {"tests": 8, "failures": 0, "errors": 0},
+      "legacy_kimi_provider": {"tests": 13, "failures": 0, "errors": 0, "skipped": 1},
+      "service_suite": {"tests": 33, "failures": 0, "errors": 0},
+      "provider_independence": {"tests": 10, "failures": 0, "errors": 0, "skipped": 2},
+      "workbench_gui": {"tests": 1, "failures": 0, "errors": 0},
+      "full_discovery": {
+        "tests": 404,
+        "failures": 1,
+        "errors": 1,
+        "skipped": 66,
+        "unrelated_baseline": "Both MotionProvider cases fail identically on the unmodified original main; they are not counted as this request's passing coverage"
+      },
+      "ruff": {"version": "0.17.1", "check": "passed", "format": "passed"}
+    },
+    "native": {
+      "real_glb_loaded": true,
+      "publication_reloaded": true,
+      "reopened_vertices": 778552,
+      "source_glb_unchanged": true,
+      "capture_status": "unavailable_headless_dummy",
+      "builtin_acceptance": {
+        "state": "passed",
+        "runs": ["mesh-and-rig", "independent-project", "sample-addon-compatibility", "relocated-runtime"],
+        "installed_bundle_matches_source": true,
+        "project_state_isolated": true,
+        "same_engine_bundle": true,
+        "project_sources_unchanged": true
+      }
+    },
+    "package_update_and_rollback": {
+      "integrated_main": "55e41ffb6dbe537c8bfc1fa2450ffc20fc1a040e",
+      "candidate_executable_sha256": "210d94bdd9b84368122daf8efc8f2db0f0be8234f6480639d19e7665d955cc65",
+      "baseline_executable_sha256": "9fa2f6b05f498bd3d3aaad0284ea05f2a8595b84b51e05ddea93c5dff5aed20c",
+      "candidate_bundle_version": "0453427a8ada8302b9976666019dfbbdc1d523a0a8bcb74f02d366cf10c14145",
+      "candidate_native_acceptance": "passed",
+      "baseline_incompatible_check": "old binary lacks model3d_tool_edit and source_picker as expected",
+      "rollback_observation": "legacy Kimi settings and offline Mesh preview still run; the full legacy suite has four unrelated baseline failures and is not claimed as a full rollback pass"
+    },
+    "visual_review": {
+      "preview_inspected": true,
+      "observation": "Generated priest preserves the white/gold robe silhouette, shoulder armor, belt accessories, T-pose and recognizable face rather than primitive blocks",
+      "status": "improved_real_result_not_production_visual_acceptance",
+      "native_screenshot": "unavailable_headless_dummy; service-returned preview was inspected instead"
+    },
+    "module_boundary": {
+      "placement": "host_tool with existing runtime_package distribution",
+      "new_business_module_or_agent": false,
+      "embedded_bundle_regenerated_and_linked": true,
+      "same_binary_update_and_baseline_incompatibility_checked": true
+    }
+  }
+}

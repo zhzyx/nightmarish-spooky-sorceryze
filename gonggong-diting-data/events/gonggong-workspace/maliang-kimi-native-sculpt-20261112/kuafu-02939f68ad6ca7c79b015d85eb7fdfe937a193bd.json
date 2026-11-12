@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-02939f68ad6ca7c79b015d85eb7fdfe937a193bd",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-native-sculpt-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "28c4ba3f0e7ed3ff3590adb56361f747f27aaeab31005222d395a9bb8e1cafe7",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/887",
+    "action": "validation",
+    "detection_head": "93006dd2bdec4a7c1c2982a254d2fdef9151e7a1",
+    "context_sha256": "6ddced999fb0d98eb61f5aaa2acbeb93a35f62254a6e2a304c8c436923c80ec2",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-kaiyunxue",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+    "evidence": "issue_gate intake returned: Issue stable request ID does not match unambiguously; #885 now contains the exact gonggong-request marker",
+    "diagnosis": "New issue #885 lacked the machine-readable gonggong-request marker for maliang-kimi-native-sculpt-20261112; no product code was involved.",
+    "next_action": "Rerun the same intake-only command and record the result before development.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T04:30:08.615226+00:00",
+    "attempted": "Created isolated worktree at origin/main 93006dd2; initial intake rejected missing metadata; added the exact request marker to #885.",
+    "repair_owner": "kimi-work-kaiyunxue",
+    "continuable": "Only the original intake repetition remains; development is paused until it passes."
+  },
+  "occurred_at": "2026-11-12T04:31:57.957149+00:00",
+  "sha256": "20ffe181c7c245701f2dab4b55e46660f5cce9c7385d5149a830c227a2b30852"
+}

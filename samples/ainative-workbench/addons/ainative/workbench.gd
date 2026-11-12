@@ -83,6 +83,9 @@ var endpoint_edit: LineEdit
 var kimi_model_edit: LineEdit
 var kimi_model_label: Label
 var kimi_auth_label: Label
+var kimi_model3d_fields: VBoxContainer
+var model3d_tool_edit: LineEdit
+var model3d_pythonw_edit: LineEdit
 var kimi_image_fields: VBoxContainer
 var kimi_image_tool_edit: LineEdit
 var kimi_image_pythonw_edit: LineEdit
@@ -1573,7 +1576,7 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	service_choice.fit_to_longest_item = false
 	service_choice.clip_text = true
 	service_choice.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	for choice in [["offline", "离线复制演示（不调用模型）"], ["comfy", "ComfyUI 图像与网格生成"], ["legacy", "兼容已有服务配置（高级）"], ['codex', 'Codex CLI 图像 + 本机网格（沿用当前登录额度）'], ['codex_modeling', 'GPT CLI 图像与指令建模（无需 ComfyUI）'], ['codex_sculpt', 'GPT CLI 图像与复杂网格建模（Blender）'], ['kimi_native', 'Kimi Native Mesh + Kimi Work 二维图像'], ['local_mesh', '本机图生网格（无需 CLI）'], ['api_modeling', '自选 API 语义建模（Godot）'], ['api_sculpt', '自选 API 语义建模（Blender）']]:
+	for choice in [["offline", "离线复制演示（不调用模型）"], ["comfy", "ComfyUI 图像与网格生成"], ["legacy", "兼容已有服务配置（高级）"], ['codex', 'Codex CLI 图像 + 本机网格（沿用当前登录额度）'], ['codex_modeling', 'GPT CLI 图像与指令建模（无需 ComfyUI）'], ['codex_sculpt', 'GPT CLI 图像与复杂网格建模（Blender）'], ['kimi_native', 'Kimi Native 直接 3D（Tripo API）+ Kimi Work 二维图像'], ['local_mesh', '本机图生网格（无需 CLI）'], ['api_modeling', '自选 API 语义建模（Godot）'], ['api_sculpt', '自选 API 语义建模（Blender）']]:
 		service_choice.add_item(choice[1])
 		service_choice.set_item_metadata(service_choice.item_count - 1, choice[0])
 	service_fields.add_child(service_choice)
@@ -1616,9 +1619,43 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	service_fields.add_child(kimi_model_label)
 	kimi_model_edit = line(service_fields, 'Kimi 模型，例如 k3.1-pro', 'k3.1-pro')
 	kimi_auth_label = Label.new()
-	kimi_auth_label.text = 'Mesh：Kimi 模型生成严格建模计划，固定 Godot 构造器执行。二维：独立 Kimi Work 图像服务，不是 K3.1 Pro 直接输出图片。两类凭据都不写入工作流或日志。'
+	kimi_auth_label.text = 'Mesh：Kimi Work 通过 Tripo API 直接生成 GLB，无需 Blender 或 K3 原语规划。二维：独立 Kimi Work 图像服务。凭据由 agent-gw SDK 管理，不写入工作流或日志。'
 	kimi_auth_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	service_fields.add_child(kimi_auth_label)
+	kimi_model3d_fields = VBoxContainer.new()
+	kimi_model3d_fields.name = 'KimiWorkModel3DSettings'
+	service_fields.add_child(kimi_model3d_fields)
+	var model3d_label = Label.new()
+	model3d_label.text = 'Tripo API 直接三维（generate_3d_model）'
+	kimi_model3d_fields.add_child(model3d_label)
+	var model3d_tool_default = OS.get_environment('KIMI_WORK_MODEL3D_TOOL') if OS.has_environment('KIMI_WORK_MODEL3D_TOOL') else str(settings.get_value('service', 'model3d_tool_path', ''))
+	var model3d_pythonw_default = OS.get_environment('KIMI_WORK_MODEL3D_PYTHONW') if OS.has_environment('KIMI_WORK_MODEL3D_PYTHONW') else str(settings.get_value('service', 'model3d_pythonw_path', ''))
+	model3d_tool_edit = line(kimi_model3d_fields, 'Kimi Work 3D 工具 model3d_generation_tool.py', model3d_tool_default)
+	model3d_pythonw_edit = line(kimi_model3d_fields, '3D 插件已验证的 pythonw.exe（macOS／Linux 为 Python 3）', model3d_pythonw_default)
+	var model3d_tool_picker = FileDialog.new()
+	model3d_tool_picker.title = '选择 Kimi Work 3D 工具'
+	model3d_tool_picker.access = FileDialog.ACCESS_FILESYSTEM
+	model3d_tool_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	model3d_tool_picker.use_native_dialog = true
+	model3d_tool_picker.filters = PackedStringArray(['model3d_generation_tool.py'])
+	model3d_tool_picker.file_selected.connect(func(path): model3d_tool_edit.text = path; _service_settings_changed())
+	kimi_model3d_fields.add_child(model3d_tool_picker)
+	button(kimi_model3d_fields, '选择 3D 工具…', func(): model3d_tool_picker.popup_centered_ratio(0.7))
+	var model3d_pythonw_picker = FileDialog.new()
+	model3d_pythonw_picker.title = '选择 3D 插件已验证的运行时'
+	model3d_pythonw_picker.access = FileDialog.ACCESS_FILESYSTEM
+	model3d_pythonw_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	model3d_pythonw_picker.use_native_dialog = true
+	model3d_pythonw_picker.filters = PackedStringArray(['pythonw.exe', 'python3', 'python'])
+	model3d_pythonw_picker.file_selected.connect(func(path): model3d_pythonw_edit.text = path; _service_settings_changed())
+	kimi_model3d_fields.add_child(model3d_pythonw_picker)
+	button(kimi_model3d_fields, '选择 3D 运行时…', func(): model3d_pythonw_picker.popup_centered_ratio(0.7))
+	var model3d_hint = Label.new()
+	model3d_hint.text = '直接生成 GLB，支持文字、单图与 2–4 视图；三视图整图按正面／右侧／背面裁切。工具路径仅保存在本机设置。'
+	model3d_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	kimi_model3d_fields.add_child(model3d_hint)
+	model3d_tool_edit.text_changed.connect(func(_text): _service_settings_changed())
+	model3d_pythonw_edit.text_changed.connect(func(_text): _service_settings_changed())
 	kimi_image_fields = VBoxContainer.new()
 	kimi_image_fields.name = 'KimiWorkImageSettings'
 	service_fields.add_child(kimi_image_fields)
@@ -1723,6 +1760,12 @@ func _restore_service_settings(settings: ConfigFile):
 					var control: LineEdit = kimi_image_tool_edit if field == 'image_tool_path' else kimi_image_pythonw_edit
 					service_saved[field] = str(loaded.get(field, control.text))
 					control.text = service_saved[field]
+				for field in ['model3d_tool_path', 'model3d_pythonw_path']:
+					var control: LineEdit = model3d_tool_edit if field == 'model3d_tool_path' else model3d_pythonw_edit
+					var fallback = service_saved.get('image_pythonw_path', control.text) if field == 'model3d_pythonw_path' else control.text
+					service_saved[field] = str(loaded.get(field, fallback))
+					control.text = service_saved[field]
+				service_saved['model3d_model'] = str(loaded.get('model3d_model', 'v3.1'))
 			endpoint_edit.text = service_saved.endpoint
 			_set_model_options(image_model_choice, [], service_saved.image_model, false)
 			_set_model_options(mesh_model_choice, [], service_saved.mesh_model, false)
@@ -1739,7 +1782,7 @@ func _generator_description(data: Dictionary) -> String:
 	if kind == 'copy': return '本机离线复制'
 	if _service_mode() in ['api_modeling', 'api_sculpt']: return node_label(kind) + '（自选 API 语义规划）'
 	if _service_mode() == 'local_mesh': return node_label(kind) + '（本机网格）'
-	if _service_mode() == 'kimi_native': return node_label(kind) + ('（Kimi Native / Godot 原语）' if kind.ends_with('mesh') else '（Kimi Work 图像服务）')
+	if _service_mode() == 'kimi_native': return node_label(kind) + ('（Kimi Native / Tripo API 直接 3D）' if kind.ends_with('mesh') else '（Kimi Work 图像服务）')
 	if _service_mode() == 'codex_sculpt': return node_label(kind) + ('（GPT CLI 指令 / Blender）' if kind.ends_with('mesh') else '（GPT CLI）')
 	if _service_mode() == 'codex_modeling': return node_label(kind) + ('（GPT CLI 指令 / Godot）' if kind.ends_with('mesh') else '（GPT CLI）')
 	return node_label(kind) + ('（Codex CLI / 本机模型）' if _service_mode() in ['codex', 'local_mesh'] else '（ComfyUI）')
@@ -1788,6 +1831,9 @@ func service_draft() -> Dictionary:
 		value['kimi_model'] = kimi_model_edit.text.strip_edges()
 		value['image_tool_path'] = kimi_image_tool_edit.text.strip_edges()
 		value['image_pythonw_path'] = kimi_image_pythonw_edit.text.strip_edges()
+		value['model3d_tool_path'] = model3d_tool_edit.text.strip_edges()
+		value['model3d_pythonw_path'] = model3d_pythonw_edit.text.strip_edges()
+		value['model3d_model'] = str(service_saved.get('model3d_model', 'v3.1'))
 	if value.mode in ['codex_sculpt', 'api_sculpt']:
 		if value.mode == 'codex_sculpt': value.endpoint = ''
 		value.mesh_model = ''
@@ -1852,10 +1898,11 @@ func _update_service_summary():
 	endpoint_edit.visible = not cli_mode
 	endpoint_edit.editable = mode in ['comfy', 'kimi_native', 'local_mesh', 'api_modeling', 'api_sculpt']
 	kimi_model_label.text = 'API 模型 ID' if mode in ['api_modeling', 'api_sculpt'] else 'Kimi 模型'
-	kimi_auth_label.text = '凭据环境变量：' + str(service_saved.get('api_key_env', 'AINATIVE_API_KEY')) + '；检测仅核对本机配置，运行时验证接口。' if mode in ['api_modeling', 'api_sculpt'] else '凭据从 KIMI_API_KEY 或 MOONSHOT_API_KEY 环境变量读取。'
-	kimi_model_label.visible = kimi_mode or api_mode
-	kimi_model_edit.visible = kimi_mode or api_mode
+	kimi_auth_label.text = '凭据环境变量：' + str(service_saved.get('api_key_env', 'AINATIVE_API_KEY')) + '；检测仅核对本机配置，运行时验证接口。' if mode in ['api_modeling', 'api_sculpt'] else 'Tripo API 与 Kimi Work 凭据由 agent-gw SDK 管理，不写入工作流或日志。'
+	kimi_model_label.visible = api_mode
+	kimi_model_edit.visible = api_mode
 	kimi_auth_label.visible = kimi_mode or api_mode
+	if kimi_model3d_fields != null: kimi_model3d_fields.visible = kimi_mode
 	if kimi_image_fields != null: kimi_image_fields.visible = kimi_mode
 	image_model_choice.visible = not modeling_mode and not kimi_mode
 	mesh_model_choice.visible = not modeling_mode and not kimi_mode
@@ -1873,7 +1920,7 @@ func _update_service_summary():
 		elif api_mode:
 			service_status.text = '自选 API 规划结构，' + ('Blender' if sculpt_mode else 'Godot') + ' 构造网格；已恢复设置，待核对配置。'
 		elif kimi_mode:
-			service_status.text = 'Kimi Native 负责 Mesh，Kimi Work 图像服务负责二维；已恢复设置，待检测。'
+			service_status.text = 'Tripo API 直接生成 GLB，无需 Blender；Kimi Work 图像服务负责二维。'
 		elif modeling_mode:
 			service_status.text = 'GPT CLI 规划三维结构，Blender 构造连续表面；已恢复设置，待检测。' if sculpt_mode else 'GPT CLI 输出建模指令，Godot 构造网格；已恢复设置，待检测。'
 		else:
@@ -1887,7 +1934,7 @@ func _update_service_summary():
 			label.text = node_label(kind) + ('：待核对配置 · 自选 API 与 ' + ('Blender' if sculpt_mode else 'Godot') if kind.ends_with('mesh') else '：不可用 · 语义规划仅生成网格')
 		elif mode == 'local_mesh':
 			label.text = node_label(kind) + ('：待检测 · 本机模型' if kind == 'image_to_mesh' else '：不可用 · 仅直接图生网格')
-		else: label.text = node_label(kind) + ('：待检测 · Kimi Work 独立图像服务' if kimi_mode and not kind.ends_with('mesh') else '：待检测 · Kimi 严格计划与 Godot 原语' if kimi_mode else '：待检测 · GPT 指令与 Blender 连续表面' if sculpt_mode and kind.ends_with('mesh') else '：待检测 · GPT 指令与 Godot 构造' if modeling_mode and kind.ends_with('mesh') else '：待检测')
+		else: label.text = node_label(kind) + ('：待检测 · Kimi Work 独立图像服务' if kimi_mode and not kind.ends_with('mesh') else '：待检测 · Tripo API 直接三维' if kimi_mode else '：待检测 · GPT 指令与 Blender 连续表面' if sculpt_mode and kind.ends_with('mesh') else '：待检测 · GPT 指令与 Godot 构造' if modeling_mode and kind.ends_with('mesh') else '：待检测')
 
 func _using_legacy_service() -> bool:
 	return _service_mode() == "legacy" or (factory_edit != null and not factory_edit.text in ["editor_demo:factory", "comfy_provider:factory"])
@@ -1968,7 +2015,7 @@ func save_service_settings():
 		_show_run_problem("服务配置已写入，但运行环境设置保存失败，请检查用户目录。")
 		return
 	_update_service_summary()
-	service_status.text = ('已保存自选 API 设置；' + ('Blender' if draft.mode == 'api_sculpt' else 'Godot') + ' 构造网格。') if draft.mode in ['api_modeling', 'api_sculpt'] else '已保存本机图生网格设置；无需 CLI。' if draft.mode == 'local_mesh' else '已保存 Kimi 复合设置；Mesh 由 Kimi Native 构造，二维由独立 Kimi Work 图像服务生成；本机路径不进入工作流。' if draft.mode == 'kimi_native' else '已保存 GPT CLI 与 Blender 建模设置；无需 ComfyUI 或三维生成模型。' if draft.mode == 'codex_sculpt' else '已保存 GPT CLI 指令建模设置；网格由 Godot 构造，无需 ComfyUI。' if draft.mode == 'codex_modeling' else '已保存 CLI 图像与本机网格设置；图像沿用当前 CLI 登录额度。' if draft.mode == 'codex' else "已保存生成服务设置；检测通过后可明确查看各类生成能力。" if draft.mode == "comfy" else "已保存离线复制模式；该模式不调用生成模型。"
+	service_status.text = ('已保存自选 API 设置；' + ('Blender' if draft.mode == 'api_sculpt' else 'Godot') + ' 构造网格。') if draft.mode in ['api_modeling', 'api_sculpt'] else '已保存本机图生网格设置；无需 CLI。' if draft.mode == 'local_mesh' else '已保存 Kimi 复合设置；Mesh 由 Tripo API 直接生成且无需 Blender，二维由独立 Kimi Work 图像服务生成；本机路径不进入工作流。' if draft.mode == 'kimi_native' else '已保存 GPT CLI 与 Blender 建模设置；无需 ComfyUI 或三维生成模型。' if draft.mode == 'codex_sculpt' else '已保存 GPT CLI 指令建模设置；网格由 Godot 构造，无需 ComfyUI。' if draft.mode == 'codex_modeling' else '已保存 CLI 图像与本机网格设置；图像沿用当前 CLI 登录额度。' if draft.mode == 'codex' else "已保存生成服务设置；检测通过后可明确查看各类生成能力。" if draft.mode == "comfy" else "已保存离线复制模式；该模式不调用生成模型。"
 	if status != null: status.text = service_status.text
 	if service_config_link != null: service_config_link.hide()
 
@@ -1979,7 +2026,7 @@ func check_service():
 	if _service_mode() == "legacy":
 		service_status.text = "旧配置由原服务适配器检查。选择 ComfyUI 可在本界面检测地址与模型。"
 		return
-	service_status.text = '正在核对 API 配置、凭据环境变量与构造器；不检测远端生成能力…' if _service_mode() in ['api_modeling', 'api_sculpt'] else '正在分别检测 Kimi Native Mesh 与 Kimi Work 二维图像工具；不会上传或生成…' if _service_mode() == 'kimi_native' else "正在检测 Codex CLI 与 Blender 建模环境；不会发起生成…" if _service_mode() == 'codex_sculpt' else "正在检测 Codex CLI 与 Godot 建模环境；不会发起生成…" if _service_mode() == 'codex_modeling' else "正在检测连接、节点和模型列表；不会生成内容或下载模型…"
+	service_status.text = '正在核对 API 配置、凭据环境变量与构造器；不检测远端生成能力…' if _service_mode() in ['api_modeling', 'api_sculpt'] else '正在分别检测 Tripo API 直接三维工具与 Kimi Work 二维图像工具；不会上传或生成…' if _service_mode() == 'kimi_native' else "正在检测 Codex CLI 与 Blender 建模环境；不会发起生成…" if _service_mode() == 'codex_sculpt' else "正在检测 Codex CLI 与 Godot 建模环境；不会发起生成…" if _service_mode() == 'codex_modeling' else "正在检测连接、节点和模型列表；不会生成内容或下载模型…"
 	launch("service-check", {"service":service_draft()})
 
 func _apply_service_check(data: Dictionary, checked_draft: Dictionary):
@@ -2012,6 +2059,9 @@ func _service_blocker(kind: String, data: Dictionary = {}) -> String:
 		return "生成服务设置尚未保存。请在 AI 设置中检测连接、选择模型并保存。"
 	if _service_mode() in ['api_modeling', 'api_sculpt'] and not kind.ends_with('mesh'):
 		return '当前语义建模模式仅支持文字生成网格和图像生成网格。'
+	if _service_mode() == 'kimi_native' and kind.ends_with('mesh'):
+		if str(service_saved.get('model3d_tool_path', '')).is_empty() or str(service_saved.get('model3d_pythonw_path', '')).is_empty():
+			return '请在 AI 设置中配置 Kimi Work 的 model3d_generation_tool.py 和已验证的运行时，再保存并检测。Mesh 使用 Tripo API 直接生成，无需 Blender。'
 	if _service_mode() == 'kimi_native' and not kind.ends_with('mesh'):
 		if str(service_saved.get('image_tool_path', '')).is_empty() or str(service_saved.get('image_pythonw_path', '')).is_empty():
 			return '请在 AI 设置中配置 Kimi Work 的 image_generation_tool.py 和已验证的 pythonw，再保存并检测。二维使用独立图像服务，不调用 K3.1 Pro 直接出图。'

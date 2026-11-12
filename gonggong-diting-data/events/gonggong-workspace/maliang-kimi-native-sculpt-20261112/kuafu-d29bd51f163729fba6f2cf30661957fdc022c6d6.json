@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d29bd51f163729fba6f2cf30661957fdc022c6d6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-native-sculpt-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e26e44c40df61c4b5b6486d5428613abe0fe069b988fa2f9d1dbcc31eb8ed06a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/904",
+    "action": "validation",
+    "detection_head": "93006dd2bdec4a7c1c2982a254d2fdef9151e7a1",
+    "context_sha256": "71927d58fff61bc87c20c05d3b7a889b17c47747c71279103db129ded4b67610",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-kaiyunxue",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/885",
+    "evidence": "issue_gate: PR_EVIDENCE_BINDING requires matching data-collection evidence with request_id and issue_url",
+    "diagnosis": "The validation JSON had request_id but lacked issue_url, so the gate could not bind the Diting event to this PR. The exact issue URL has been added and staged.",
+    "next_action": "Rerun the unchanged formal pre-commit gate and close the metadata bug only after it passes.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T07:48:53.457675+00:00",
+    "attempted": "Staged implementation, design and evidence, then ran the formal gate; it rejected only the evidence binding field before commit.",
+    "repair_owner": "kimi-work-kaiyunxue",
+    "continuable": "Evidence metadata corrected; no product code or model retry is needed."
+  },
+  "occurred_at": "2026-11-12T07:50:26.082985+00:00",
+  "sha256": "909b9e2a1280939173af7a81e8db46a602b8d4795cbf0108a84104b73cfed1b9"
+}

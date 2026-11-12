@@ -81,7 +81,9 @@ def check_image_tool(tool_path, pythonw_path):
             raise ValueError("image_not_configured")
         tool = _resolved_file(tool_path, ".py", "image_tool_missing")
         fingerprint = _tool_fingerprint(str(tool))
-        runtime = _resolved_file(pythonw_path, ".exe" if os.name == "nt" else "", "image_runtime_missing")
+        require(isinstance(pythonw_path, str) and Path(pythonw_path).is_absolute(), "image_runtime_missing")
+        runtime = Path(pythonw_path).expanduser().resolve()
+        require(runtime.is_file(), "image_runtime_missing")
         require(os.name != "nt" or runtime.name.lower() == "pythonw.exe", "image_runtime_missing")
         return dict(
             connected=True,
@@ -324,6 +326,8 @@ class KimiWorkImageProvider(CodexProvider):
         if directory is not None:
             # The plugin launcher creates its job directory beneath this private root.
             env["TEMP"] = env["TMP"] = str(directory / "runtime")
+            if os.name != "nt":
+                env["TMPDIR"] = str(directory / "runtime")
         return env
 
     def _run_owned(self, key, arguments, log_name, stage, timeout, directory):
