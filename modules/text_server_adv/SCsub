@@ -8,6 +8,9 @@ Import("env_modules")
 
 env_text_server_adv = env_modules.Clone()
 
+if env["tests"]:
+    env_text_server_adv.Append(CPPDEFINES=["TESTS_ENABLED"])
+
 # Thirdparty source files
 
 thirdparty_obj = []
