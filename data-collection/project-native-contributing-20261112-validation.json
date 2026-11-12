@@ -1,0 +1,336 @@
+{
+  "schema_version": 1,
+  "request_id": "project-native-contributing-20261112",
+  "issue": 937,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/937",
+  "tenant_id": "gonggong-workspace",
+  "kind": "project_contributing_validation",
+  "occurred_at": "2026-11-12T11:50:25.930492+00:00",
+  "prepared_base": "be916fb659ef081d59560f40502eb967e00c8f16",
+  "documents": {
+    "CONTRIBUTING.md": {
+      "bytes": 3210,
+      "sha256": "a2e30842962bc1d02de68fa8b70e9187f6b7b401e223954b20d9eada06350d41"
+    },
+    ".github/CONTRIBUTING.md": {
+      "bytes": 5720,
+      "sha256": "740f794e7f0045504fa95ab38e5769e4bdee30991cfb9cd664b42ed2c268d61d"
+    },
+    "design-docs/project-native-contributing-20261112.md": {
+      "bytes": 3156,
+      "sha256": "0478138d3a276b5e5b16fbccb702795b9839c77d3852d481285dd5439094c58e"
+    },
+    "data-collection/requests/project-native-contributing-20261112/0e524ca2-cc40-4bed-8ea5-9f4acb49fd7c.json": {
+      "bytes": 899,
+      "sha256": "487e407b1149fdcc93024d474cb20cbe6acc838ab561e09a57f0310aedf4f502"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/project-native-contributing-20261112/request-937-project-native-contributing-20261112.json": {
+      "bytes": 1214,
+      "sha256": "3bfbf870d8ab1923d22ebc8d3cad60f089c02ec4aea361ebbc7fa296096e9a1d"
+    }
+  },
+  "checks": [
+    {
+      "name": "CONTRIBUTING.md:eof",
+      "status": "passed",
+      "detail": "File ends with LF"
+    },
+    {
+      "name": "CONTRIBUTING.md:fences",
+      "status": "passed",
+      "detail": "Balanced code fences"
+    },
+    {
+      "name": "CONTRIBUTING.md:trailing",
+      "status": "passed",
+      "detail": "None"
+    },
+    {
+      "name": "CONTRIBUTING.md:link:.github/CONTRIBUTING.md",
+      "status": "passed",
+      "detail": "Relative link exists"
+    },
+    {
+      "name": "CONTRIBUTING.md:link:AGENTS.md",
+      "status": "passed",
+      "detail": "Relative link exists"
+    },
+    {
+      "name": "CONTRIBUTING.md:link:CPP_CODING_STANDARD.md",
+      "status": "passed",
+      "detail": "Relative link exists"
+    },
+    {
+      "name": "CONTRIBUTING.md:link:.github/PULL_REQUEST_TEMPLATE.md",
+      "status": "passed",
+      "detail": "Relative link exists"
+    },
+    {
+      "name": "CONTRIBUTING.md:link:CPP_CODING_STANDARD.md",
+      "status": "passed",
+      "detail": "Relative link exists"
+    },
+    {
+      "name": "CONTRIBUTING.md:link:.github/CONTRIBUTING.md",
+      "status": "passed",
+      "detail": "Relative link exists"
+    },
+    {
+      "name": "CONTRIBUTING.md:link:design-docs/",
+      "status": "passed",
+      "detail": "Relative link exists"
+    },
+    {
+      "name": "CONTRIBUTING.md:link:work-items.json",
+      "status": "passed",
+      "detail": "Relative link exists"
+    },
+    {
+      "name": ".github/CONTRIBUTING.md:eof",
+      "status": "passed",
+      "detail": "File ends with LF"
+    },
+    {
+      "name": ".github/CONTRIBUTING.md:fences",
+      "status": "passed",
+      "detail": "Balanced code fences"
+    },
+    {
+      "name": ".github/CONTRIBUTING.md:trailing",
+      "status": "passed",
+      "detail": "None"
+    },
+    {
+      "name": ".github/CONTRIBUTING.md:link:../customizations/components/issue-workorders/yanluo.md",
+      "status": "passed",
+      "detail": "Relative link exists"
+    },
+    {
+      "name": ".github/CONTRIBUTING.md:link:../customizations/components/issue-workorders/issue-lifecycle.md",
+      "status": "passed",
+      "detail": "Relative link exists"
+    },
+    {
+      "name": ".github/CONTRIBUTING.md:link:../customizations/components/issue-workorders/execution-policy.md",
+      "status": "passed",
+      "detail": "Relative link exists"
+    },
+    {
+      "name": ".github/CONTRIBUTING.md:link:../customizations/components/godot-host/HOST_PROTOCOL.md",
+      "status": "passed",
+      "detail": "Relative link exists"
+    },
+    {
+      "name": "design-docs/project-native-contributing-20261112.md:eof",
+      "status": "passed",
+      "detail": "File ends with LF"
+    },
+    {
+      "name": "design-docs/project-native-contributing-20261112.md:fences",
+      "status": "passed",
+      "detail": "Balanced code fences"
+    },
+    {
+      "name": "design-docs/project-native-contributing-20261112.md:trailing",
+      "status": "passed",
+      "detail": "None"
+    },
+    {
+      "name": "guide:no_godot",
+      "status": "passed",
+      "detail": "No Godot or godotengine residue"
+    },
+    {
+      "name": "guide:no_upstream_signature",
+      "status": "passed",
+      "detail": "No upstream team signature"
+    },
+    {
+      "name": "guide:no_upstream_web_flow",
+      "status": "passed",
+      "detail": "No external community or proposal links"
+    },
+    {
+      "name": "guide:concise",
+      "status": "passed",
+      "detail": "49 <= 60 lines"
+    },
+    {
+      "name": "guide:required:独立架构",
+      "status": "passed",
+      "detail": "Required project guidance retained: 独立架构"
+    },
+    {
+      "name": "guide:required:减少不必要的上游依赖",
+      "status": "passed",
+      "detail": "Required project guidance retained: 减少不必要的上游依赖"
+    },
+    {
+      "name": "guide:required:不维护上游社区流程或文档外壳",
+      "status": "passed",
+      "detail": "Required project guidance retained: 不维护上游社区流程或文档外壳"
+    },
+    {
+      "name": "guide:required:仓库协作入口",
+      "status": "passed",
+      "detail": "Required project guidance retained: 仓库协作入口"
+    },
+    {
+      "name": "guide:required:最新 `main`",
+      "status": "passed",
+      "detail": "Required project guidance retained: 最新 `main`"
+    },
+    {
+      "name": "guide:required:项目 C++ 编码规范",
+      "status": "passed",
+      "detail": "Required project guidance retained: 项目 C++ 编码规范"
+    },
+    {
+      "name": "guide:required:新增和整体重写代码必须执行",
+      "status": "passed",
+      "detail": "Required project guidance retained: 新增和整体重写代码必须执行"
+    },
+    {
+      "name": "guide:required:不做全库批量迁移",
+      "status": "passed",
+      "detail": "Required project guidance retained: 不做全库批量迁移"
+    },
+    {
+      "name": "guide:required:不新增无边界的上游依赖",
+      "status": "passed",
+      "detail": "Required project guidance retained: 不新增无边界的上游依赖"
+    },
+    {
+      "name": "guide:required:生成代码只修改生成器或模板",
+      "status": "passed",
+      "detail": "Required project guidance retained: 生成代码只修改生成器或模板"
+    },
+    {
+      "name": "guide:required:第三方代码保持上游风格",
+      "status": "passed",
+      "detail": "Required project guidance retained: 第三方代码保持上游风格"
+    },
+    {
+      "name": "guide:required:`thirdparty/README.md`",
+      "status": "passed",
+      "detail": "Required project guidance retained: `thirdparty/README.md`"
+    },
+    {
+      "name": "guide:required:`AUTHORS.md`",
+      "status": "passed",
+      "detail": "Required project guidance retained: `AUTHORS.md`"
+    },
+    {
+      "name": "guide:required:`COPYRIGHT.txt`",
+      "status": "passed",
+      "detail": "Required project guidance retained: `COPYRIGHT.txt`"
+    },
+    {
+      "name": "guide:required:`LICENSE.txt`",
+      "status": "passed",
+      "detail": "Required project guidance retained: `LICENSE.txt`"
+    },
+    {
+      "name": "guide:required:纯文档变更不机械触发引擎构建",
+      "status": "passed",
+      "detail": "Required project guidance retained: 纯文档变更不机械触发引擎构建"
+    },
+    {
+      "name": "guide:required:回归测试",
+      "status": "passed",
+      "detail": "Required project guidance retained: 回归测试"
+    },
+    {
+      "name": "guide:required:未验证项",
+      "status": "passed",
+      "detail": "Required project guidance retained: 未验证项"
+    },
+    {
+      "name": "guide:required:PR 模板",
+      "status": "passed",
+      "detail": "Required project guidance retained: PR 模板"
+    },
+    {
+      "name": "guide:required:不重复提交或发布",
+      "status": "passed",
+      "detail": "Required project guidance retained: 不重复提交或发布"
+    },
+    {
+      "name": "guide:required:远端回读完成",
+      "status": "passed",
+      "detail": "Required project guidance retained: 远端回读完成"
+    },
+    {
+      "name": "guide:required:工单配置",
+      "status": "passed",
+      "detail": "Required project guidance retained: 工单配置"
+    },
+    {
+      "name": "github:project_reference",
+      "status": "passed",
+      "detail": "Root guide described as project guide"
+    },
+    {
+      "name": "github:no_old_reference",
+      "status": "passed",
+      "detail": "Old upstream reference removed"
+    },
+    {
+      "name": "design:issue",
+      "status": "passed",
+      "detail": "Issue #937 linked"
+    },
+    {
+      "name": "git:scope",
+      "status": "passed",
+      "detail": "Only authorized guides and evidence changed"
+    },
+    {
+      "name": "git:unchanged:AUTHORS.md",
+      "status": "passed",
+      "detail": "Unchanged: AUTHORS.md"
+    },
+    {
+      "name": "git:unchanged:COPYRIGHT.txt",
+      "status": "passed",
+      "detail": "Unchanged: COPYRIGHT.txt"
+    },
+    {
+      "name": "git:unchanged:LICENSE.txt",
+      "status": "passed",
+      "detail": "Unchanged: LICENSE.txt"
+    },
+    {
+      "name": "git:unchanged:thirdparty/README.md",
+      "status": "passed",
+      "detail": "Unchanged: thirdparty/README.md"
+    },
+    {
+      "name": "git:unchanged:CPP_CODING_STANDARD.md",
+      "status": "passed",
+      "detail": "Unchanged: CPP_CODING_STANDARD.md"
+    },
+    {
+      "name": "evidence:source_index",
+      "status": "passed",
+      "detail": "Exactly one source index"
+    },
+    {
+      "name": "evidence:request_event",
+      "status": "passed",
+      "detail": "Exactly one request event"
+    }
+  ],
+  "engine_build": {
+    "status": "not_run",
+    "reason": "Documentation-only replacement; no C++ behavior or build input changed"
+  },
+  "changed_paths": [
+    ".github/CONTRIBUTING.md",
+    "CONTRIBUTING.md",
+    "data-collection/project-native-contributing-20261112-validation.json",
+    "data-collection/requests/project-native-contributing-20261112/0e524ca2-cc40-4bed-8ea5-9f4acb49fd7c.json",
+    "design-docs/project-native-contributing-20261112.md",
+    "gonggong-diting-data/events/gonggong-workspace/project-native-contributing-20261112/request-937-project-native-contributing-20261112.json"
+  ]
+}
