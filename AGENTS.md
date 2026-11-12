@@ -18,6 +18,8 @@
 
 Windows 工单门禁使用 tools/run_issue_gate.ps1 探测可执行 Python，见接入层 README；PR 证据预检绑定已回读目标分支与完整候选 index。新任务从当前主线隔离，保留其他工作树；按 commit/push/CI/main 回读分别记录失败，发布回执未知先回读，不重复发布。
 
+每次任务完成后，当前责任者在同次收尾中按[任务临时资源清理](customizations/platforms/process-management/repository/execution-policy.md#任务临时资源清理)清理本任务产生的临时文件、废弃应用包与测试设置、临时分支和 worktree。先核实交付与工作者终态并归档必要证据，再清理归属明确且无在途占用的对象；保留未交付改动、有效安装与配置、必要回退版本和其他任务资源。记录实际清理及保留原因，未清理项不能报成已完成。不新增定时扫描。
+
 接到用户明确需求后，按 customizations/components/issue-workorders/execution-policy.md 连续执行；本地必要验证通过即在同次任务中自动开始提交、推送与 main 合入推进，不等待用户再次说“提交”“合入”或“继续”。远端 main 回读及全部已验收关联工单关闭属于交付；已有授权不重复询问。用户明确限定本地或草稿范围时遵循其限制。只在真实必要决定、权限/准入缺失或范围变化时挂起受影响步骤；保留必要独立审查和精确候选准入。
 
 所有当前仓库协作人均为关键可提交角色；有实际合入权限的协作人可用本人账号按阎罗入口的 PR 路径完成交付，不需要所有者另行签发。当前 Git 交付由阎罗承担提交前校验、全部适用核查通过后的 main 交付、状态记录和目标 Issue 关闭；入口见 customizations/components/issue-workorders/yanluo.md，定义批准由 customizations/host-agents.json 的 approval 字段定位。合契负责候选整合与冲突处理，司南负责派发、依赖与跨工单协调；现有在途发布须明确交接，不抢占其他工作副本。main 合入后，阎罗按完整验收项复核进度；大部分完成或仅少模块未支持时创建/复用关联剩余 Issue，保留未知与未完成范围，原单未满足整体验收不得标为完成；尾项承接核实后的结转关闭按 issue-lifecycle.md 执行。由真实事件触发，不新增定时扫描。
