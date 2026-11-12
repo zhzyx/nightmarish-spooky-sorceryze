@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-821095173e54b39087b7a71f0e507172ff9de183",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-work-image-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/808",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "96e8585aea1dc66887f0effb3e85e9a5dee599123cee5f659b92042e7269e773",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/808",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/809",
+    "action": "validation",
+    "detection_head": "93006dd2bdec4a7c1c2982a254d2fdef9151e7a1",
+    "context_sha256": "d6d31ec2fcf3b72447717b9640bec9403e6e6157fe0e460b5160d6b58aeebf2b",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-main",
+    "authority_ref": "user-request-20261112-issue-808",
+    "evidence": "data-collection/maliang-kimi-work-image-20261112-real-runs.json",
+    "diagnosis": "The native run exposed a string-only local tool check and Windows private-task path limits before any image result; the second failure had no detached worker.",
+    "next_action": "Run the corrected embedded provider in the original isolated native workflow, preserve prior failed receipts, and verify real independent images before delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T05:11:31.727526+00:00",
+    "attempted": "Reproduced the local path failure and bounded launcher WinError 3 without reading private URLs or raw generation logs.",
+    "repair_owner": "kimi-work-main",
+    "continuable": "Local regression tests pass and the rebuilt native workflow is being verified; remote image results remain unknown."
+  },
+  "occurred_at": "2026-11-12T05:32:05.864688+00:00",
+  "sha256": "1e21c845d34acee8950755fc6625a12a3baee7f8c77caa3e10035c3a33e61555"
+}

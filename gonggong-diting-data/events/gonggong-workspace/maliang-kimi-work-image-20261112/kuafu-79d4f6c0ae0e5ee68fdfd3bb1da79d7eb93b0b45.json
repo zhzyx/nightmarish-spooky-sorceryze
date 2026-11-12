@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-79d4f6c0ae0e5ee68fdfd3bb1da79d7eb93b0b45",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-work-image-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/808",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d2ba016bf391b4f6d28d2454286e15e8f3fd1bffd196d5789064d1b7792f6e93",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/808",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/809",
+    "action": "intake",
+    "detection_head": "93006dd2bdec4a7c1c2982a254d2fdef9151e7a1",
+    "context_sha256": "51cd1c748203912419f1319322dd3d7a817eb44e9d0a8391d0e12091e010b1b6",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-main",
+    "authority_ref": "用户当前对话授权继续完成 #808；工单门禁已回读本机写权限",
+    "evidence": "本机 incident d2ba016bf391b4f6d28d2454286e15e8f3fd1bffd196d5789064d1b7792f6e93 的检测与原操作复验回执",
+    "diagnosis": "已安装 gh 未进入 PATH，属于本机工具发现问题，不是业务权限拒绝；补充 GONGGONG_GH 后原 intake 成功。",
+    "next_action": "保存原操作恢复回执，继续 #808 真实多图验收与正式候选交付。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T04:28:36.708095+00:00",
+    "attempted": "从历史命令定位已安装 CLI，未读取认证文件；同工作树、同 HEAD、空 index 重跑 intake 成功。",
+    "repair_owner": "kimi-work-main（本机命令环境）",
+    "continuable": "真实图像生成、原生预览、发布恢复及回归。"
+  },
+  "occurred_at": "2026-11-12T04:51:22.736619+00:00",
+  "sha256": "47f0e37b01fd08283f86183fb5899a42eafe110e6e1dc44be4af884648a45d75"
+}

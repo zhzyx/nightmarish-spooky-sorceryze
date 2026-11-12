@@ -1,6 +1,7 @@
 """Exercise the native AINative editor in addon-free, isolated test projects."""
 
 import argparse
+import difflib
 import hashlib
 import json
 import os
@@ -64,7 +65,23 @@ def main():
             encoding="utf-8",
         )
         projects = [base / "project-a", base / "project-b"]
-        definition = 'config_version=5\n[application]\nconfig/name="AINative Native Acceptance"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n'
+        # Use Godot's canonical baseline, including its automatically persisted version feature.
+        # The full renderer saves this metadata; the semantic sources must still remain untouched.
+        definition = (
+            '; Engine configuration file.\n'
+            "; It's best edited using the editor UI and not directly,\n"
+            '; since the parameters that go here are not all obvious.\n'
+            ';\n'
+            '; Format:\n'
+            ';   [section] ; section goes between []\n'
+            ';   param=value ; assign values to parameters\n\n'
+            'config_version=5\n\n'
+            '[application]\n\n'
+            'config/name="AINative Native Acceptance"\n'
+            'config/features=PackedStringArray("4.8")\n\n'
+            '[rendering]\n\n'
+            'renderer/rendering_method="gl_compatibility"\n'
+        )
         for project in projects:
             project.mkdir()
             (project / "project.godot").write_text(definition, encoding="utf-8")
@@ -171,10 +188,23 @@ def main():
             if bundles.is_dir():
                 bundles.rename(bundles.with_name("bundles-hidden-during-runtime-test"))
             runtime_ok, _ = run("relocated-runtime", projects[1], "runtime", editor=False)
-            intact = all(
-                (project / "project.godot").read_text(encoding="utf-8") == definition
-                and not (project / "addons").exists()
+            result["project_integrity"] = {
+                project.name: {
+                    "definition_unchanged": (project / "project.godot").read_text(encoding="utf-8") == definition,
+                    "definition_diff": list(
+                        difflib.unified_diff(
+                            definition.splitlines(),
+                            (project / "project.godot").read_text(encoding="utf-8").splitlines(),
+                            lineterm="",
+                        )
+                    ),
+                    "addons_absent": not (project / "addons").exists(),
+                }
                 for project in projects
+            }
+            intact = all(
+                item["definition_unchanged"] and item["addons_absent"]
+                for item in result["project_integrity"].values()
             )
             result["project_sources_unchanged"] = intact
             result["state"] = (

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5d453142464d39c5490edef70e718dca35b79921",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-work-image-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/808",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b6862ac2aa1fdbf90f4f379b6331bb131765c30d45e2599eadcfc6b28ee1f390",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/808",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/809",
+    "action": "delivery",
+    "detection_head": "a5aca6ad97f9a1b81221db8dc17ac1bfb8f258cc",
+    "context_sha256": "d6d31ec2fcf3b72447717b9640bec9403e6e6157fe0e460b5160d6b58aeebf2b",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-main",
+    "authority_ref": "user-request-20261112-issue-808",
+    "evidence": "data-collection/maliang-kimi-work-image-20261112-real-runs.json",
+    "diagnosis": "The delivery evidence used an integer issue field, while the enforced PR binding requires issue_url or integer issue_number; the gate stopped before commit or PR creation.",
+    "next_action": "Bind issue_number 808, restage the exact evidence file, rerun the original writer_submit operation, and preserve the resulting candidate receipt.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T05:58:04.320888+00:00",
+    "attempted": "Read the enforced predicate and directly verified matching_event and matching_collection after the metadata correction.",
+    "repair_owner": "kimi-work-main",
+    "continuable": "Business generation, restoration and native regression remain passed; only the delivery evidence schema blocked submission."
+  },
+  "occurred_at": "2026-11-12T06:00:57.654184+00:00",
+  "sha256": "52e55873921d86eb2bfe71db15387dafbc1432efa2d75a4813127c9b7950a65c"
+}
