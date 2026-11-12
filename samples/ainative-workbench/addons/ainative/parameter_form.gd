@@ -11,6 +11,7 @@ const NUMBERS = {
 }
 var raw_edit: TextEdit
 var prompt_edit: TextEdit
+var outputs_edit: TextEdit
 var advanced_toggle: Button
 var advanced_box: VBoxContainer
 var developer_box: VBoxContainer
@@ -26,6 +27,7 @@ var _developer = false
 var _display_text: Dictionary = {}
 var _shown_prompt = ""
 var _dirty_numbers: Dictionary = {}
+var _dirty_outputs = false
 var _cli_mode = false
 var _modeling_mode = false
 var _sculpt_mode = false
@@ -44,6 +46,17 @@ func _init():
 	prompt_edit.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 	add_child(prompt_edit)
 	prompt_edit.text_changed.connect(func(): _set_parameter("prompt", prompt_edit.text))
+	var outputs_label = Label.new()
+	outputs_label.text = "输出数量，或每行一个视角／变体标签"
+	add_child(outputs_label)
+	rows.outputs = outputs_label
+	outputs_edit = TextEdit.new()
+	outputs_edit.name = "ImageOutputSpecifications"
+	outputs_edit.placeholder_text = "例如：2\n或：\n正面\n三分之四侧面"
+	outputs_edit.tooltip_text = "每张图独立生成、校验和预览；多视图拼板不算多张输出。最多 8 张。"
+	outputs_edit.custom_minimum_size.y = 65
+	add_child(outputs_edit)
+	outputs_edit.text_changed.connect(_update_output_specs)
 	copy_hint = Label.new()
 	copy_hint.text = "直接预览输入图像或模型，无需生成参数。"
 	copy_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -137,6 +150,39 @@ func _number_field(parent: Node, key: String):
 		if not _loading: _dirty_numbers[key] = true
 	)
 
+func _output_specifications(parameters: Dictionary):
+	var count = parameters.get("output_count", 1)
+	var labels = parameters.get("output_labels", [])
+	var valid = count is int or (count is float and count == floor(count))
+	if not valid or count < 1 or count > 8 or not labels is Array:
+		return null
+	var normalized: Array = []
+	for label in labels:
+		if not label is String or label.strip_edges() != label or label.is_empty() or label.length() > 80 or normalized.has(label):
+			return null
+		normalized.append(label)
+	if not normalized.is_empty() and normalized.size() != count: return null
+	return {"count":int(count), "labels":normalized}
+
+func _update_output_specs():
+	if _loading or not kind in ["text_to_image", "image_to_image"]: return
+	var content = outputs_edit.text.strip_edges()
+	var count = 1
+	var labels: Array = []
+	if content.is_valid_int():
+		count = content.to_int()
+	elif not content.is_empty():
+		for item in content.split("\n", false):
+			var label = item.strip_edges()
+			if not label.is_empty(): labels.append(label)
+		count = labels.size()
+	_dirty_outputs = _output_specifications({"output_count":count, "output_labels":labels}) == null
+	if _dirty_outputs:
+		_set_error("请输入 1～8 的输出数量，或每行一个非空且不重复的视角／变体标签")
+		return
+	_set_parameter("output_count", count)
+	_set_parameter("output_labels", labels)
+
 func configure(node_kind: String, parameters: Dictionary):
 	kind = node_kind
 	_loading = true
@@ -153,6 +199,8 @@ func configure(node_kind: String, parameters: Dictionary):
 	rows.prompt.text = "提示词（可选，填写后先重绘图像）" if kind == "image_to_mesh" else "提示词"
 	rows.prompt.visible = image_stage
 	prompt_edit.visible = image_stage
+	rows.outputs.visible = kind in ["text_to_image", "image_to_image"]
+	outputs_edit.visible = rows.outputs.visible
 	copy_hint.visible = not generator
 	advanced_toggle.visible = generator
 	rows.width.visible = image_stage
@@ -185,13 +233,28 @@ func set_kimi_mode(enabled: bool):
 	_kimi_mode = enabled
 	_apply_cli_controls()
 
+func _kimi_image_mode() -> bool:
+	return _kimi_mode and kind in ['text_to_image', 'image_to_image']
+
 func _apply_cli_controls():
 	var generator = kind != 'copy'
 	var instruction_mode = _modeling_mode or _kimi_mode
 	var modeling_mesh = instruction_mode and kind.ends_with('mesh')
+	for key in ['width', 'height']:
+		controls[key].custom_arrow_step = 16 if _kimi_image_mode() else 8
+		controls[key].max_value = 3840 if _kimi_image_mode() else NUMBERS[key][2]
+	if _kimi_image_mode():
+		var parameters = _parse_raw()
+		if parameters is Dictionary and (not parameters.has('width') or not parameters.has('height')):
+			parameters['width'] = int(parameters.get('width', 1024))
+			parameters['height'] = int(parameters.get('height', 1024))
+			_loading = true
+			raw_edit.text = JSON.stringify(parameters, '', true, true)
+			_loading = false
+			_raw_changed()
 	cli_hint.visible = (_cli_mode or instruction_mode) and generator
-	cli_hint.text = ('自选 API 返回严格规划，' + ('Blender' if _sculpt_mode else 'Godot') + ' 固定构造器生成网格；请预览检查形态与隐藏面。') if _api_mode else 'Kimi 是唯一语义建模模型，根据描述或参考图返回严格建模计划，固定 Godot 构造器生成基础形状与材质；采样、随机种子和网格提取参数不适用。' if _kimi_mode else 'GPT 根据描述和参考图规划完整三维形态与隐藏面，Blender 构造连续表面；请预览检查人物比例、有机结构及背面。无需 ComfyUI 或三维生成模型。' if modeling_mesh and _sculpt_mode else 'GPT 根据描述或参考图输出建模指令，Godot 构造基础形状与材质；无需 ComfyUI 或三维模型。复杂人物和有机造型的效果仍需验证。' if modeling_mesh else 'CLI 图像按提示词及参考图生成；尺寸为目标要求，会采用支持的接近尺寸。图像不使用本机模型的随机种子、采样步数或重绘强度。'
-	rows.prompt.text = ('建模要求（可选，结合源图推断结构）' if instruction_mode else '提示词（可选，填写后先重绘图像）') if kind == 'image_to_mesh' else ('建模要求' if modeling_mesh else '提示词')
+	cli_hint.text = ('自选 API 返回严格规划，' + ('Blender' if _sculpt_mode else 'Godot') + ' 固定构造器生成网格；请预览检查形态与隐藏面。') if _api_mode else 'Kimi Work 独立图像服务根据提示词与可选参考图生成二维图片；下方宽高是实际请求尺寸，须为 16 的倍数。随机种子、采样步数和 denoise 不适用，不是 K3.1 Pro 直接输出图片。' if _kimi_image_mode() else 'Kimi 是唯一语义建模模型，根据描述或参考图返回严格建模计划，固定 Godot 构造器生成基础形状与材质；采样、随机种子和网格提取参数不适用。' if _kimi_mode else 'GPT 根据描述和参考图规划完整三维形态与隐藏面，Blender 构造连续表面；请预览检查人物比例、有机结构及背面。无需 ComfyUI 或三维生成模型。' if modeling_mesh and _sculpt_mode else 'GPT 根据描述或参考图输出建模指令，Godot 构造基础形状与材质；无需 ComfyUI 或三维模型。复杂人物和有机造型的效果仍需验证。' if modeling_mesh else 'CLI 图像按提示词及参考图生成；尺寸为目标要求，会采用支持的接近尺寸。图像不使用本机模型的随机种子、采样步数或重绘强度。'
+	rows.prompt.text = ('建模要求（可选，结合源图推断结构）' if instruction_mode else '提示词（可选，填写后先重绘图像）') if kind == 'image_to_mesh' else ('图生图要求' if _kimi_image_mode() and kind == 'image_to_image' else '生图要求' if _kimi_image_mode() else '建模要求' if modeling_mesh else '提示词')
 	for key in ['width', 'height']:
 		rows[key].visible = generator and not modeling_mesh
 	for key in ['mesh_steps', 'mesh_resolution', 'octree_resolution', 'mesh_threshold', 'mesh_algorithm']:
@@ -243,6 +306,7 @@ func _raw_changed():
 		return
 	_loading = true
 	_dirty_numbers.clear()
+	_dirty_outputs = false
 	var prompt = str(parameters.get("prompt", ""))
 	if prompt_edit.text != prompt: prompt_edit.text = prompt
 	_shown_prompt = prompt
@@ -260,6 +324,9 @@ func _raw_changed():
 			_display_text[key] = controls[key].get_line_edit().text
 	var algorithm = str(parameters.get("mesh_algorithm", DEFAULTS.mesh_algorithm))
 	controls.mesh_algorithm.select(0 if algorithm == "surface net" else 1 if algorithm == "basic" else -1)
+	var specifications = _output_specifications(parameters)
+	if specifications != null and kind in ["text_to_image", "image_to_image"]:
+		outputs_edit.text = "\n".join(specifications.labels) if not specifications.labels.is_empty() else str(specifications.count)
 	_loading = false
 	_set_error("")
 
@@ -286,6 +353,10 @@ func parameters():
 		_set_error("参数格式无效，请修正开发者选项中的参数对象")
 		return null
 	if kind == "copy": return result
+	if kind in ["text_to_image", "image_to_image"]:
+		if _dirty_outputs or _output_specifications(result) == null:
+			_set_error("输出数量须为 1～8 的整数；每行一个非空、不重复且不超过 80 字的标签")
+			return null
 	if result.has("prompt") and not result.prompt is String:
 		_set_error("提示词必须是文字")
 		return null
@@ -297,11 +368,19 @@ func parameters():
 		if valid:
 			valid = is_finite(value)
 			if key == "denoise": valid = valid and value > 0 and value < 1
+			elif _kimi_image_mode() and key in ['width', 'height']: valid = valid and value >= 64 and value <= 3840
 			else: valid = valid and value >= spec[1] and value <= spec[2]
 		if valid and key not in ["denoise", "mesh_threshold"]: valid = value == floor(value)
-		if valid and key in ["width", "height"]: valid = int(value) % 8 == 0
+		if valid and key in ["width", "height"]: valid = int(value) % (16 if _kimi_image_mode() else 8) == 0
 		if not valid:
 			_set_error(str(spec[0]) + "超出允许范围，或数值格式无效")
+			return null
+	if _kimi_image_mode():
+		var pixels = int(result.get('width', 1024)) * int(result.get('height', 1024))
+		var shortest = mini(int(result.get('width', 1024)), int(result.get('height', 1024)))
+		var longest = maxi(int(result.get('width', 1024)), int(result.get('height', 1024)))
+		if pixels < 655360 or pixels > 8294400 or longest > shortest * 3:
+			_set_error('Kimi Work 图像总像素须在 655360～8294400 之间，宽高比不得超过 3:1')
 			return null
 	if result.has("mesh_algorithm") and result.mesh_algorithm not in ["surface net", "basic"]:
 		_set_error("请选择支持的表面提取方式")

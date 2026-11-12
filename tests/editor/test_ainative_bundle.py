@@ -19,10 +19,15 @@ class AINativeBundleTests(unittest.TestCase):
             p for p in (ROOT / "samples/ainative-workbench/addons/ainative").glob("*.gd") if p.name != "plugin.gd"
         ]
         sources += [p for p in (ROOT / "tools/ainative").glob("*.py") if not p.name.startswith("test_")]
+        sources += [ROOT / "tools/ainative/image_contact_sheet.gd"]
         files = bundle_files(sources)
         manifest = json.loads(files["manifest.json"])
         self.assertIn("tools/editor_host.py", files)
         self.assertIn("tools/portable_scene.py", files)
+        self.assertIn("tools/kimi_work_image_provider.py", files)
+        self.assertIn("tools/multi_image_provider.py", files)
+        self.assertIn("scripts/image_contact_sheet.gd", files)
+        self.assertIn("kimi_work_image", files["tools/generation_service.py"])
         self.assertNotIn("scripts/plugin.gd", files)
         for name, text in files.items():
             if not name.startswith("scripts/"):

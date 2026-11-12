@@ -92,6 +92,7 @@ func run():
 	panel.generator_choice.select(2)
 	panel.select_node(panel.nodes[0].id)
 	await verify_context_controls()
+	verify_file_pickers()
 	verify_chinese_controls()
 	await verify_settings_navigation(dock)
 	await verify_generation_service_controls()
@@ -156,8 +157,10 @@ func verify_generation_service_controls():
 	check(draft.get('mode') == 'kimi_native' and draft.get('endpoint') == 'https://api.kimi.com/coding/v1' and draft.get('kimi_model') == 'k3-256k', 'Kimi Native edits its semantic provider, official endpoint and model')
 	check(not draft.has('cli_path') and not draft.has('blender_path') and draft.image_model.is_empty() and draft.mesh_model.is_empty(), 'Kimi Native does not require Codex, Blender or ComfyUI model settings')
 	check(panel._generator_provider('text_to_mesh') == 'kimi_native' and panel._generator_provider('image_to_mesh') == 'kimi_native', 'both Mesh node kinds route to Kimi Native')
+	check(panel._generator_provider('text_to_image') == 'kimi_work_image' and panel._generator_provider('image_to_image') == 'kimi_work_image', 'both 2D kinds route to the independent Kimi Work image service')
+	check(panel.get('kimi_image_tool_edit') is LineEdit and panel.get('kimi_image_pythonw_edit') is LineEdit, 'native settings expose the local Kimi Work image tool and windowless runtime')
 	panel.save_service_settings()
-	check(panel._service_blocker('text_to_image').contains('不支持二维图像') and panel._service_blocker('image_to_image').contains('不支持二维图像'), 'Kimi Native explicitly rejects image-generation nodes')
+	check(panel._service_blocker('text_to_mesh').is_empty() and panel._service_blocker('text_to_image').contains('Kimi Work') and panel._service_blocker('image_to_image').contains('pythonw'), 'missing image tools leave Mesh available and explain the 2D setup')
 	var stored = FileAccess.get_file_as_string(panel.service_config_path)
 	check(panel.service_saved == draft and not stored.contains('api_key') and not stored.contains('authorization') and not stored.contains('secret') and not stored.contains('password'), 'Kimi Native saves settings without API credentials')
 	var restored = panel.get_script().new()
@@ -194,6 +197,38 @@ func verify_context_controls():
 	check(panel.nodes.size() == before and not panel.nodes.any(func(n): return n.id == added), 'bundled context-created node retains normal delete behavior')
 	panel.select_node(panel.nodes[0].id)
 	await process_frame
+
+func verify_file_pickers():
+	check(panel.source_picker is FileDialog and panel.context_picker is FileDialog, 'source and reference inputs provide file pickers')
+	if not panel.source_picker is FileDialog or not panel.context_picker is FileDialog: return
+	check(panel.source_picker.access == FileDialog.ACCESS_FILESYSTEM and panel.context_picker.access == FileDialog.ACCESS_FILESYSTEM, 'source and reference pickers browse the machine filesystem')
+	check(panel.source_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILE and panel.context_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILE, 'offline Copy keeps single-file source and reference pickers')
+	check(panel.source_picker.use_native_dialog and panel.context_picker.use_native_dialog, 'source and reference pickers use the system resource manager')
+	check(not panel.source_edit.editable and not panel.context_edit.editable, 'image inputs no longer require manually typing paths')
+	check(str(panel.source_picker.filters).contains('*.glb') and str(panel.source_picker.filters).contains('*.gltf'), 'offline Copy retains Mesh file selection')
+	var original = panel.selected_id
+	panel.generator_choice.select(1)
+	panel.add_generator()
+	var data = panel.nodes.back()
+	check(data.type == 'image_to_image' and panel.source_browse.text == '选择图片…', 'image generation presents an image selection action')
+	check(panel.source_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILES and panel.context_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILES, 'image generation source and reference pickers accept ordered multiple files')
+	check(str(panel.source_picker.filters).contains('*.png') and str(panel.source_picker.filters).contains('*.jpg') and str(panel.source_picker.filters).contains('*.jpeg') and not str(panel.source_picker.filters).contains('*.glb'), 'image generation filters the source picker to supported images')
+	check(str(panel.context_picker.filters).contains('*.png') and not str(panel.context_picker.filters).contains('*.glb'), 'reference picker only accepts supported images')
+	var source = ProjectSettings.globalize_path('res://fixture.png')
+	data.source_snapshot = {'content_base64':'old'}
+	data.image_context_snapshot = {'content_base64':'old'}
+	panel.source_picker.file_selected.emit(source)
+	check(panel.source_edit.text == source and data.source == source and not data.has('source_snapshot'), 'picked source image updates the existing node contract and replaces its stale snapshot')
+	panel.context_picker.file_selected.emit(source)
+	check(panel.context_edit.text == source and data.image_context == source and not data.has('image_context_snapshot'), 'picked reference image updates the existing node contract and replaces its stale snapshot')
+	panel.source_picker.files_selected.emit(PackedStringArray([source, source]))
+	check(data.source_paths.size() == 2 and data.source == source and panel.source_edit.text.contains(' ; '), 'multiple picked sources retain ordered paths and the primary source')
+	check(panel.apply_fields() and panel.model().nodes.back().source == source and panel.model().nodes.back().image_context == source, 'picked images flow through the existing apply and serialization path')
+	panel.source_clear.pressed.emit()
+	panel.context_clear.pressed.emit()
+	check(data.source.is_empty() and data.image_context.is_empty() and data.source_paths.is_empty() and data.image_context_paths.is_empty() and panel.source_edit.text.is_empty() and panel.context_edit.text.is_empty(), 'clear actions remove picked source and reference images without legacy fallback restoring them')
+	panel.delete_node()
+	panel.select_node(original)
 
 func settle():
 	for i in 8: await process_frame

@@ -30,6 +30,7 @@ def main():
     sources = [
         p for p in (repository / "samples/ainative-workbench/addons/ainative").glob("*.gd") if p.name != "plugin.gd"
     ] + [p for p in (repository / "tools/ainative").glob("*.py") if not p.name.startswith("test_")]
+    sources.append(repository / "tools/ainative/image_contact_sheet.gd")
     expected_bundle = runpy.run_path(str(repository / "editor/ainative/builders.py"))["bundle_files"](sources)
     expected_hashes = {name: hashlib.sha256(text.encode("utf-8")).hexdigest() for name, text in expected_bundle.items()}
     bundle_digest = hashlib.sha256()

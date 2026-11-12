@@ -216,3 +216,41 @@ the resulting mesh; a result such as `needs_landmarks` is not an automatic riggi
 success. Keep real rendered screenshots separate from headless geometry receipts. A
 loadable GLB and a nonblank screenshot do not by themselves establish production visual,
 topology, material, rigging, animation or performance quality.
+
+## Kimi Work text-to-image and image-to-image (#808)
+
+The `kimi_native` Workbench service mode is a composite route. Mesh nodes keep using
+`kimi_native` and its strict K3.1 Pro planning/Godot-construction boundary. The
+`text_to_image` and `image_to_image` nodes instead use `kimi_work_image`, an independent
+Kimi Work `agent-gw generate_image` v2 service. K3.1 Pro does not directly generate these
+2D images, and this integration neither replaces nor disguises ComfyUI or Codex.
+
+In AI settings, select the installed plugin's `scripts/image_generation_tool.py` and the
+windowless `pythonw.exe` returned by the official `resolve_image_powershell.sh` resolver.
+The two local paths can also provide initial values through `KIMI_WORK_IMAGE_TOOL` and
+`KIMI_WORK_IMAGE_PYTHONW`; saved machine settings take precedence when reopening. They
+stay in private local configuration and run-scoped SQLite snapshots, never workflow JSON.
+Kimi Work SDK authentication remains with the SDK. No credential is read by discovery,
+stored in node data, printed in public logs or committed as evidence.
+
+Discovery checks only the local scripts and runtime. It does not upload, generate or claim
+that credentials/quota/network are valid. Mesh and image capabilities are reported
+independently, so an absent image tool does not disable a working Mesh route. Actual
+2D requests default to 1024×1024; both dimensions must be multiples of 16, at most 3840,
+with 655,360–8,294,400 pixels and aspect ratio no greater than 3:1. Seed, sampling steps
+and denoise are not applied and are hidden for these nodes.
+
+An image edit accepts one PNG/JPEG source or reference. On an actual run, the official
+`image-to-url` command uploads it before generation; this is not part of discovery.
+Launcher and watcher use the configured windowless interpreter, with an intent persisted
+before upload or generation. A timeout, network error or unknown receipt is never
+silently retried. Cancelling fixes the local terminal state but cannot promise to revoke
+a remote request. Restore continues the existing durable record rather than replaying it.
+
+Only a new output file from that intent is accepted, after complete PNG/JPEG decoding,
+dimension and SHA-256 validation. Image edits cannot return the unchanged input bytes.
+Provenance identifies `kimi_work_image`, generation v2, input/output hashes, dimensions,
+tool fingerprint and controls not applied; reference URLs and raw logs remain private.
+Tests use synthetic local tools. They do not establish real image quality or prove a real
+generation; native-editor acceptance must retain the real run IDs, artifact files,
+provenance summaries and rendered Workbench screenshots separately.

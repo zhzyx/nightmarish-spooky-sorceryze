@@ -19,6 +19,9 @@ import urllib.request
 from contextlib import closing
 from pathlib import Path
 
+from kimi_work_image_provider import MESSAGES as KIMI_WORK_IMAGE_MESSAGES
+from multi_image_provider import MESSAGES as MULTI_IMAGE_MESSAGES
+
 KINDS = ("text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh")
 IMAGE_NODES = {"CheckpointLoaderSimple", "CLIPTextEncode", "EmptyLatentImage", "KSampler", "VAEDecode", "SaveImage"}
 MESH_NODES = {
@@ -63,6 +66,9 @@ MESSAGES = {
     "kimi_unreachable": "无法连接 Kimi 官方接口；请检查网络后重试，系统不会自动重复提交。",
     "api_timeout": "Kimi 建模请求超时；远程回执可能不明，不会自动重发。",
 }
+# Keep image-tool failures actionable without replacing generic routing errors.
+MESSAGES.update({key: value for key, value in KIMI_WORK_IMAGE_MESSAGES.items() if key not in MESSAGES})
+MESSAGES.update(MULTI_IMAGE_MESSAGES)
 
 
 class ServiceError(ValueError):
@@ -95,6 +101,10 @@ def settings(value):
         "kimi_model",
         "api_model",
         "api_key_env",
+        "image_tool_path",
+        "image_pythonw_path",
+        "image_board_godot_path",
+        "image_board_builder_path",
     }:
         raise ServiceError("service_config_invalid")
     result = dict(schema_version=1, mode="offline", endpoint="http://127.0.0.1:8188", image_model="", mesh_model="")
@@ -118,6 +128,11 @@ def settings(value):
         raise ServiceError("service_config_invalid")
     if not all(isinstance(result[key], str) for key in ("endpoint", "image_model", "mesh_model")):
         raise ServiceError("service_config_invalid")
+    for key in ("image_board_godot_path", "image_board_builder_path"):
+        if key in result:
+            if not isinstance(result[key], str):
+                raise ServiceError("service_config_invalid")
+            result[key] = result[key].strip()
     for key in ("image_model", "mesh_model"):
         name = result[key]
         if name and (
@@ -168,7 +183,12 @@ def settings(value):
             raise ServiceError("service_config_invalid")
         if not all(isinstance(result.get(key), str) and result[key].strip() for key in ("godot_path", "builder_path")):
             raise ServiceError("modeling_runtime_missing")
-    elif "kimi_model" in result:
+        for key in ("image_tool_path", "image_pythonw_path"):
+            if key in result:
+                if not isinstance(result[key], str):
+                    raise ServiceError("service_config_invalid")
+                result[key] = result[key].strip()
+    elif "kimi_model" in result or any(key in result for key in ("image_tool_path", "image_pythonw_path")):
         raise ServiceError("service_config_invalid")
     if result["mode"] == "codex_modeling":
         if not all(isinstance(result.get(key), str) and result[key].strip() for key in ("godot_path", "builder_path")):
@@ -396,6 +416,7 @@ def _probe_api(config):
 
 def _probe_kimi(config):
     from kimi_provider import check_kimi
+    from kimi_work_image_provider import GENERATION_VERSION, check_image_tool
 
     auth = check_kimi(dict(endpoint=config["endpoint"], model=config["kimi_model"]))
     runtime = all(Path(config[key]).is_file() for key in ("godot_path", "builder_path"))
@@ -409,27 +430,44 @@ def _probe_kimi(config):
         else MESSAGES["modeling_runtime_missing"]
     )
     mesh = dict(ready=ready, code=code, message=message, missing_nodes=[])
+    image_report = check_image_tool(config.get("image_tool_path", ""), config.get("image_pythonw_path", ""))
+    image_ready = bool(image_report.get("connected"))
     image = dict(
-        ready=False,
-        code="node_unsupported",
-        message="Kimi Native 仅提供文字／图片生成网格，不生成二维图像。",
+        ready=image_ready,
+        code=image_report.get("code", ""),
+        message=image_report.get("message", MESSAGES["image_tool_invalid"]),
         missing_nodes=[],
     )
+    if ready and image_ready:
+        summary = "网格使用 Kimi 严格建模计划与 Godot 构造器；二维使用独立 Kimi Work 图像服务。检测未生成内容，不调用 ComfyUI、混元或 Codex。"
+    elif image_ready:
+        summary = "Kimi Work 图像工具已就绪；Mesh 状态独立显示。检测未上传参考图或生成图像。" + message
+    else:
+        summary = (
+            "Kimi 建模与 Godot 构造器已就绪；二维需另行配置 Kimi Work 图像工具，不使用 K3.1 Pro 直接生成图片。"
+            if ready
+            else message
+        )
     return dict(
         mode="kimi_native",
-        connected=ready,
+        connected=ready or image_ready,
         kimi=auth,
-        models=dict(image=[], mesh=[config["kimi_model"]] if auth.get("connected") else []),
+        kimi_work_image=image_report,
+        models=dict(
+            image=["Kimi Work agent-gw generate_image " + GENERATION_VERSION] if image_ready else [],
+            mesh=[config["kimi_model"]] if auth.get("connected") else [],
+        ),
         capabilities=dict(
             text_to_image=dict(image),
             image_to_image=dict(image),
             text_to_mesh=mesh,
             image_to_mesh=dict(mesh),
         ),
-        backend_revision="kimi-native-v1|" + config["kimi_model"],
-        message="Kimi 是唯一语义建模模型；网格由固定 Godot 构造器生成，不调用 ComfyUI、混元或 Codex。"
-        if ready
-        else message,
+        backend_revision="kimi-native-v1|"
+        + config["kimi_model"]
+        + "|kimi-work-image-v2|"
+        + image_report.get("tool_fingerprint", image_report.get("code", "unavailable")),
+        message=summary,
     )
 
 
@@ -592,6 +630,41 @@ def _probe_codex(config, *, inspect_cli=True):
     return report, info
 
 
+def register_workflow(registry):
+    from multi_image_provider import register_images
+
+    register_images(registry)
+
+
+def image_batch_settings(config):
+    if config.get("mode") == "kimi_native":
+        board = dict(
+            board_godot_path=config["godot_path"],
+            board_builder_path=str(Path(config["builder_path"]).with_name("image_contact_sheet.gd")),
+        )
+    else:
+        board = dict(
+            board_godot_path=config.get("image_board_godot_path", ""),
+            board_builder_path=config.get("image_board_builder_path", ""),
+        )
+    return dict(enabled=True, board_config=board)
+
+
+def adapt_image_providers(providers, database, batch):
+    if not batch or not batch.get("enabled"):
+        return providers
+    from multi_image_provider import MultiImageProvider
+
+    for name in ("comfy", "codex", "kimi_work_image"):
+        if name in providers:
+            providers[name] = MultiImageProvider(
+                providers[name],
+                Path(database).resolve().parent / "multi-image-state" / name,
+                batch.get("board_config", {}),
+            )
+    return providers
+
+
 def check_inputs(model):
     for node in model["nodes"]:
         kind = node.get("type", "copy")
@@ -599,13 +672,19 @@ def check_inputs(model):
             raise ServiceError("node_unsupported")
         incoming = [edge for edge in model["edges"] if edge["to"] == node["id"]]
         source = node.get("source", "")
-        if kind.startswith("image_") and not incoming and not source and not node.get("source_snapshot"):
-            raise ServiceError("source_missing")
-        for field in ("source", "image_context"):
-            if node.get(field) and not Path(node[field]).is_file():
-                raise ServiceError("source_missing")
-        if source and kind.startswith("image_") and Path(source).suffix.lower() not in (".png", ".jpg", ".jpeg"):
+        source_paths = node.get("source_paths", [source] if source else [])
+        context_paths = node.get("image_context_paths", [])
+        if not isinstance(source_paths, list) or not isinstance(context_paths, list):
             raise ServiceError("source_invalid")
+        if kind.startswith("image_") and not incoming and not source and not any(source_paths) and not node.get("source_snapshot") and not node.get("source_snapshots"):
+            raise ServiceError("source_missing")
+        if kind == "copy" and len(source_paths) + len(context_paths) > 1:
+            raise ServiceError("source_invalid")
+        for path in [*source_paths, *context_paths]:
+            if not isinstance(path, str) or path and not Path(path).is_file():
+                raise ServiceError("source_missing")
+            if kind != "copy" and path and Path(path).suffix.lower() not in (".png", ".jpg", ".jpeg"):
+                raise ServiceError("source_invalid")
         if kind in KINDS and kind != "image_to_mesh":
             prompt = str(node.get("parameters", {}).get("prompt", "")) + str(node.get("text", ""))
             if not prompt.strip():
@@ -642,14 +721,15 @@ def prepare_provider(config, model, database, run_id):
         return registry, providers, dict(mode=config["mode"], provider=provider_config)
     if config["mode"] == "kimi_native":
         from kimi_provider import KimiNativeProvider
+        from kimi_work_image_provider import KimiWorkImageProvider
 
-        if any(not node["type"].endswith("mesh") for node in generated):
-            raise ServiceError("node_unsupported")
         report = _probe_kimi(config)
         for node in generated:
             capability_report = report["capabilities"][node["type"]]
             if not capability_report["ready"]:
                 raise ServiceError(capability_report.get("code") or "service_not_configured")
+        mesh_nodes = [node for node in generated if node["type"].endswith("mesh")]
+        image_nodes = [node for node in generated if not node["type"].endswith("mesh")]
         provider_config = dict(
             endpoint=config["endpoint"],
             model=config["kimi_model"],
@@ -657,11 +737,21 @@ def prepare_provider(config, model, database, run_id):
             godot_path=config["godot_path"],
             builder_path=config["builder_path"],
         )
-        register(registry)
-        providers["kimi_native"] = KimiNativeProvider(provider_config)
+        snapshot = dict(mode="kimi_native", provider=provider_config if mesh_nodes else None)
+        register_workflow(registry)
+        if mesh_nodes:
+            providers["kimi_native"] = KimiNativeProvider(provider_config)
+        if image_nodes:
+            image_config = dict(
+                tool_path=config.get("image_tool_path", ""),
+                pythonw_path=config.get("image_pythonw_path", ""),
+                storage=str(Path(database).resolve().parent / "kimi-work-image-state"),
+            )
+            providers["kimi_work_image"] = KimiWorkImageProvider(image_config)
+            snapshot["image_provider"] = image_config
         for node in generated:
-            node["provider"] = "kimi_native"
-        return registry, providers, dict(mode="kimi_native", provider=provider_config)
+            node["provider"] = "kimi_native" if node["type"].endswith("mesh") else "kimi_work_image"
+        return registry, providers, snapshot
     if config["mode"] == "codex_sculpt":
         from codex_provider import CodexProvider, check_cli
 
@@ -674,7 +764,7 @@ def prepare_provider(config, model, database, run_id):
             image_report = check_cli(config["cli_path"])
             if not image_report.get("connected"):
                 raise ServiceError(image_report.get("code") or "cli_image_unavailable")
-            register(registry)
+            register_workflow(registry)
             providers["codex"] = CodexProvider(image_config)
             for node in generated:
                 node["provider"] = "codex"
@@ -696,7 +786,7 @@ def prepare_provider(config, model, database, run_id):
             blender_path=runtime["executable"] if runtime else config["blender_path"],
             builder_path=config["builder_path"],
         )
-        register(registry)
+        register_workflow(registry)
         providers["codex-sculpt"] = SculptProvider(provider_config)
         providers["codex"] = CodexProvider(image_config)
         for node in generated:
@@ -720,7 +810,7 @@ def prepare_provider(config, model, database, run_id):
         image_config = dict(
             cli_path=config["cli_path"], storage=str(Path(database).resolve().parent / "codex-state"), mesh_config=None
         )
-        register(registry)
+        register_workflow(registry)
         providers["codex-modeling"] = ModelingProvider(provider_config)
         providers["codex"] = CodexProvider(image_config)
         for node in generated:
@@ -757,7 +847,7 @@ def prepare_provider(config, model, database, run_id):
         provider_config = dict(
             cli_path=config["cli_path"], storage=str(Path(database).resolve().parent / "codex-state"), mesh_config=mesh
         )
-        register(registry)
+        register_workflow(registry)
         providers["codex"] = CodexProvider(provider_config)
         for node in generated:
             node["provider"] = "codex"
@@ -771,7 +861,19 @@ def prepare_provider(config, model, database, run_id):
         kind = node["type"]
         prompt = str(node.get("parameters", {}).get("prompt", "")) + str(node.get("text", ""))
         uses_image_edit = kind != "image_to_mesh" or bool(prompt.strip())
-        has_reference = bool(node.get("image_context") or node.get("image_context_snapshot"))
+        has_reference = any(
+            node.get(field)
+            for field in (
+                "source",
+                "source_snapshot",
+                "source_paths",
+                "source_snapshots",
+                "image_context",
+                "image_context_snapshot",
+                "image_context_paths",
+                "image_context_snapshots",
+            )
+        )
         image_conditioning = uses_image_edit and (kind.startswith("image_") or has_reference)
         ready = capability(kind, config, info, report["models"], extra_image=image_conditioning)
         if not ready["ready"]:
@@ -782,7 +884,7 @@ def prepare_provider(config, model, database, run_id):
         checkpoints={role: dict(name=config[role + "_model"], sha256=None) for role in ("image", "mesh")},
         backend_revision=report["backend_revision"] + "|unverified-weights;run=" + run_id,
     )
-    register(registry)
+    register_workflow(registry)
     providers["comfy"] = (LocalMeshProvider if config["mode"] == "local_mesh" else ComfyProvider)(provider_config)
     return registry, providers, dict(mode=config["mode"], provider=provider_config)
 
@@ -810,7 +912,7 @@ def restore_provider(snapshot):
 
     registry, providers = factory()
     if snapshot["mode"] in ("comfy", "local_mesh"):
-        register(registry)
+        register_workflow(registry)
         providers["comfy"] = (LocalMeshProvider if snapshot["mode"] == "local_mesh" else ComfyProvider)(
             snapshot["provider"]
         )
@@ -818,32 +920,37 @@ def restore_provider(snapshot):
         from modeling_provider import ModelingProvider
         from sculpt_provider import SculptProvider
 
-        register(registry)
+        register_workflow(registry)
         if snapshot["mode"] == "api_modeling":
             providers["api-modeling"] = ModelingProvider(snapshot["provider"])
         else:
             providers["api-sculpt"] = SculptProvider(snapshot["provider"])
     elif snapshot["mode"] == "kimi_native":
         from kimi_provider import KimiNativeProvider
+        from kimi_work_image_provider import KimiWorkImageProvider
 
-        register(registry)
-        providers["kimi_native"] = KimiNativeProvider(snapshot["provider"])
+        register_workflow(registry)
+        # Old Mesh-only snapshots intentionally have no image_provider field.
+        if snapshot["provider"] is not None:
+            providers["kimi_native"] = KimiNativeProvider(snapshot["provider"])
+        if snapshot.get("image_provider") is not None:
+            providers["kimi_work_image"] = KimiWorkImageProvider(snapshot["image_provider"])
     elif snapshot["mode"] == "codex":
         from codex_provider import CodexProvider
 
-        register(registry)
+        register_workflow(registry)
         providers["codex"] = CodexProvider(snapshot["provider"])
     elif snapshot["mode"] == "codex_modeling":
         from codex_provider import CodexProvider
         from modeling_provider import ModelingProvider
 
-        register(registry)
+        register_workflow(registry)
         providers["codex-modeling"] = ModelingProvider(snapshot["provider"])
         providers["codex"] = CodexProvider(snapshot["image_provider"])
     elif snapshot["mode"] == "codex_sculpt":
         from codex_provider import CodexProvider
 
-        register(registry)
+        register_workflow(registry)
         if snapshot["provider"] is not None:
             try:
                 from sculpt_provider import SculptProvider
@@ -851,6 +958,14 @@ def restore_provider(snapshot):
                 raise ServiceError("sculpt_runtime_missing") from None
             providers["codex-sculpt"] = SculptProvider(snapshot["provider"])
         providers["codex"] = CodexProvider(snapshot["image_provider"])
+    if snapshot.get("image_batch", {}).get("enabled"):
+        batch = snapshot["image_batch"]
+        stored = snapshot.get("provider") or snapshot.get("image_provider") or {}
+        storage = stored.get("storage", str(Path.cwd()))
+        # New runs persist the exact parent state location. Legacy fallback is
+        # retained only for snapshots written before multi-image support.
+        database = batch.get("database", str(Path(storage) / "restore.sqlite"))
+        providers = adapt_image_providers(providers, database, batch)
     return registry, providers
 
 
@@ -866,7 +981,7 @@ def failure(error):
             "invalid GLB": "source_invalid",
             "unregistered node version": "node_unsupported",
         }
-        code = known.get(str(error), code)
+        code = known.get(str(error), str(error) if str(error) in MULTI_IMAGE_MESSAGES else code)
     return dict(
         ok=False,
         error=code,

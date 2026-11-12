@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "event_id": "host-context-58b4746b035f47c39347953704d74c79",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-kimi-work-image-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T02:47:21.788652+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/808",
+  "agent": {
+    "id": "gonggong-host-adapter",
+    "version": "1.2.1",
+    "definition_sha256": "eba2ca0eee027dfae57826453d1a1901baa8a127fa0e2af954f0255fc3888f2d",
+    "origin": "gonggong-host-adapter"
+  },
+  "payload": {
+    "framework_version": "0.10.0",
+    "requested_agent": "yanshi",
+    "host": {
+      "id": "kimi-work-cli",
+      "kind": "cli"
+    },
+    "issue": {
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/808",
+      "number": 808,
+      "type": "type:development",
+      "status": "status:in-progress",
+      "updated_at": "2026-11-12T02:41:35Z"
+    },
+    "candidate_digest": "a0ac6d16523065678b74ae61c4db8bd4a5ee2ce335e44bfe2437c9f3aa5a058b",
+    "context_accepted": true,
+    "outcome_sha256": "b019e33cba81993b169b10dc16d4e3ad13d2131d252d119d336c8223287c1015",
+    "input_tokens": null,
+    "output_tokens": null,
+    "reason": "Not measured; context assembly is not model execution"
+  },
+  "evidence_refs": [],
+  "sha256": "325c3a210f73f9baf9a07fb3761d42e0a21d26790bd23c0a19cd33f5e38a6537"
+}
