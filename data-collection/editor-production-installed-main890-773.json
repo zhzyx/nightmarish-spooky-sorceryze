@@ -1,0 +1,323 @@
+{
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "parent_complete": false,
+  "deliveries": [
+    {
+      "number": 889,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/889",
+      "state": "MERGED",
+      "headRefOid": "59c60f663c04fab04ad9c97bb8dc8fddc38d6f32",
+      "mergeCommit": {
+        "oid": "3ab68f74d05ea5bded8432638c4cf25c82452d6e"
+      },
+      "remote_main": "3ab68f74d05ea5bded8432638c4cf25c82452d6e"
+    },
+    {
+      "number": 890,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/890",
+      "state": "MERGED",
+      "headRefOid": "efa5cd3d190ee3c106fbaf4b754b7d4d7f71a081",
+      "mergeCommit": {
+        "oid": "a5aca6ad97f9a1b81221db8dc17ac1bfb8f258cc"
+      },
+      "remote_main": "a5aca6ad97f9a1b81221db8dc17ac1bfb8f258cc"
+    }
+  ],
+  "installed_manifest": {
+    "workspace": "../..",
+    "schema_version": 2,
+    "path_base": "installation_directory",
+    "source_root": "../..",
+    "default_editor": "bin/godot.windows.editor.x86_64.exe",
+    "main_revision": "a5aca6ad97f9a1b81221db8dc17ac1bfb8f258cc",
+    "console_editor": "bin/godot.windows.editor.x86_64.console.exe",
+    "files": [
+      {
+        "sha256": "f60622e7f137d99510b841505d4e55e0a0530da5410e389a6a04e4ff399643f7",
+        "path": "bin/godot.windows.editor.x86_64.console.exe",
+        "bytes": 242688
+      },
+      {
+        "sha256": "d3c8c8a6ec6ff9b62bb680026b714a92aad139e0ed3664d82491740b96c9dc6c",
+        "path": "bin/godot.windows.editor.x86_64.exe",
+        "bytes": 176404480
+      },
+      {
+        "sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+        "path": "bin/tianshu-ui.json",
+        "bytes": 67422
+      }
+    ]
+  },
+  "clean_main_build": {
+    "revision": "a5aca6ad97f9a1b81221db8dc17ac1bfb8f258cc",
+    "aichat": "passed",
+    "receipt_sha256": "3031fb680a3f85cf9d53e39ed667b4e424d692b7657f280e1d9582ed99b20131",
+    "log_sha256": "b5f8fcb298855bbc5a50b9741588b03eccf0c5d690a44aee9736d6ca7a1cf996"
+  },
+  "installation_recovery": {
+    "first_attempt": "sharing violation at atomic replacement; previous main883 files and manifest verified unchanged after rollback",
+    "diagnostic_attempt": "Same installer atomic replacement/rollback with target logging and source lock probe succeeded; installation hashes match clean main build",
+    "owner": "unknown; no installed engine processes/Restart Manager owners; target DELETE access probes passed",
+    "original_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostic_log_sha256": "feec9b67bbd6ba1e159b361a2f63aa09164fc3966285a8e54c4cafd8e6b827c5"
+  },
+  "installed_validation": {
+    "long_file_reads": {
+      "ok": true,
+      "cases": 49,
+      "report_sha256": "db6ea02ca4ceacd53bd6bf2a898f24ddcb309babe70db5358ef7e13b61bda7d0"
+    },
+    "ordinary_game_read_only_review": {
+      "ok": true,
+      "report_sha256": "04f8c065d7125b568a32b383acc1cff4de7b9130e2d1501683d809d23a48d170"
+    },
+    "scene_resource_export": {
+      "ok": true,
+      "checks": [
+        "native metadata references reject structural edits; scalar metadata permits normal move and undo",
+        "script storage references reject structural edits without getters or broken paths",
+        "subtree move, owners, native animation paths, undo and redo",
+        "subtree delete and exact owner/animation restoration",
+        "script-attached native property edit and undo",
+        "script-shadowed native rename/add/remove/reparent/move/owner with undo and redo",
+        "instance editable override, protected internal structure, instance-root subtree move",
+        "native resource assignment/undo and explicit resource export",
+        "unchanged-version Gradient content staleness; nested script/cycle rejection and fresh save",
+        "persistent signal connect/disconnect and undo without method invocation",
+        "script-shadowed native connect/disconnect with undo and redo",
+        "native history branch rejects approval even when UndoRedo version and scene values repeat",
+        "run project and scene approvals bind history epoch when numeric version repeats",
+        "stale property and resource file hash rejection",
+        "no preview loading; loader delete/replace/old-value mutation rejected after confirmation",
+        "native texture reimport/scan and actual import metadata",
+        "PCK approval binds actual imported artifact contents",
+        "native preset project pack export with actual output hash",
+        "native ZIP export succeeds through project destination with actual archive validation",
+        "disabled macOS signing accepts empty native collections and rejects nonempty credential collections",
+        "Windows enabled signing, credentials, custom options, encryption and wrong types rejected",
+        "Windows unsigned defaults accepted; exact preset file drift invalidates confirmation",
+        "Windows missing template remains an actual export failure",
+        "Windows EXE and adjacent PCK hashes validated; actual exported application emits runtime marker without errors",
+        "PCK binds global class cache; editor receipts preserve approval validity",
+        "application export missing templates is a real failure, no download",
+        "path/tool/consultation boundaries",
+        "inherited property override and local addition; inherited structure protected"
+      ],
+      "report_sha256": "ff81a9d44fc5f8ee57678d93789089bee3ac1b2b93031960908af8474832c8fc",
+      "template_sha256": "b1cf35cd69fc23a92461a8e63ff64046bc07b461eaf9d255eca3407d6a8f32ae",
+      "exe_sha256": "b1cf35cd69fc23a92461a8e63ff64046bc07b461eaf9d255eca3407d6a8f32ae",
+      "pck_sha256": "32e913b5b5784b8db2fdb159b1ef74466125d876c4de62dd4a37609e909a910a",
+      "runtime": {
+        "exit_code": 0,
+        "stdout": "Godot Engine v4.8.beta.custom_build.93006dd2b (2026-11-12 04:19:28 UTC) - https://godotengine.org\n\nSCENE_COMPLETION_EXPORTED_APPLICATION_OK\n",
+        "stderr": ""
+      },
+      "isolation": "Only exported EXE/PCK copied outside source project before execution; actual Gradient load plus marker checked"
+    }
+  },
+  "closed_children": [
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOVegMdc8AAAADAiCYiQ",
+          "name": "type:bug",
+          "description": "缺陷修复",
+          "color": "D73A4A"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAoJx5g",
+          "name": "status:done",
+          "description": "完成：验收通过且交付范围有据",
+          "color": "0E8A16"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAsMSPg",
+          "name": "workspace:gonggong",
+          "description": "共工统一工作区及其已接入子模块",
+          "color": "0E8A16"
+        }
+      ],
+      "number": 886,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/886"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOVegMdc8AAAADAiCYiQ",
+          "name": "type:bug",
+          "description": "缺陷修复",
+          "color": "D73A4A"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAoJx5g",
+          "name": "status:done",
+          "description": "完成：验收通过且交付范围有据",
+          "color": "0E8A16"
+        },
+        {
+          "id": "LA_kwDOVegMdc8AAAADAsMSPg",
+          "name": "workspace:gonggong",
+          "description": "共工统一工作区及其已接入子模块",
+          "color": "0E8A16"
+        }
+      ],
+      "number": 888,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/888"
+    }
+  ],
+  "real_provider_continuation": {
+    "provider": "actual connected Codex CLI, gpt-6.1-sol, configured capacity2",
+    "pilot_source": "336f20e7f4cf852e2581239eb78ea94dba5a32c7",
+    "pilot_console_sha256": "567f2b48052f37d142fcd44771aa8b63d0d77eefccf1bca641feae3f903dba2b",
+    "scope": "Isolated acceptance pilot uses verified886 source; separate from current published main890 install",
+    "decisions": [
+      {
+        "reviewer_index": 9,
+        "verdict": "pass",
+        "criteria": [
+          {
+            "id": "PC-01",
+            "met": true,
+            "missing_evidence": null
+          },
+          {
+            "id": "PC-02",
+            "met": true,
+            "missing_evidence": null
+          },
+          {
+            "id": "PC-03",
+            "met": true,
+            "missing_evidence": null
+          },
+          {
+            "id": "PC-04",
+            "met": true,
+            "missing_evidence": null
+          },
+          {
+            "id": "PC-05",
+            "met": true,
+            "missing_evidence": null
+          }
+        ]
+      },
+      {
+        "reviewer_index": 10,
+        "verdict": "fail",
+        "criteria": [
+          {
+            "id": "HUD-01",
+            "met": true,
+            "missing_evidence": null
+          },
+          {
+            "id": "HUD-02",
+            "met": true,
+            "missing_evidence": null
+          },
+          {
+            "id": "HUD-03",
+            "met": true,
+            "missing_evidence": null
+          },
+          {
+            "id": "HUD-04",
+            "met": false,
+            "missing_evidence": null
+          }
+        ]
+      },
+      {
+        "reviewer_index": 11,
+        "verdict": "pass",
+        "criteria": [
+          {
+            "id": "HUD-01",
+            "met": true,
+            "missing_evidence": null
+          },
+          {
+            "id": "HUD-02",
+            "met": true,
+            "missing_evidence": null
+          },
+          {
+            "id": "HUD-03",
+            "met": true,
+            "missing_evidence": null
+          },
+          {
+            "id": "HUD-04",
+            "met": true,
+            "missing_evidence": null
+          }
+        ]
+      },
+      {
+        "reviewer_index": 12,
+        "verdict": "unknown",
+        "criteria": [
+          {
+            "id": "INT-01",
+            "met": null,
+            "missing_evidence": "已读取两份绑定独立pass决定，整合脚本哈希与上游一致；但dependencies.json的实际逐项磁盘核验发生在整合运行之后。尚缺可复核的派发前逐项结论、候选标识及文件哈希核验记录，以及覆盖整合范围的完整差异记录，不能以派发提示中的匹配声明替代。"
+          },
+          {
+            "id": "INT-02",
+            "met": true,
+            "missing_evidence": null
+          },
+          {
+            "id": "INT-03",
+            "met": true,
+            "missing_evidence": null
+          },
+          {
+            "id": "INT-04",
+            "met": true,
+            "missing_evidence": null
+          },
+          {
+            "id": "INT-05",
+            "met": true,
+            "missing_evidence": null
+          },
+          {
+            "id": "INT-06",
+            "met": null,
+            "missing_evidence": "源码及运行断言支持原生方形、无外部素材和布局边界：HUD底部80，角色可达顶部84；但未保存编辑器打开真实主场景后的观察或经批准截图。运行记录明确标记visual_editor_observation为unknown，不能替代视觉验收。"
+          },
+          {
+            "id": "INT-07",
+            "met": null,
+            "missing_evidence": "尚缺适用Issue gate的成功核验、该次交付的Diting持久化核验、完整范围及提交材料脱敏检查、提交后git-check结果和push/merge分别记录。现有dataset.json不能证明本次交付已持久化；git diff --check也不能替代提交后git-check。未发生流程继续待完成。"
+          }
+        ]
+      }
+    ],
+    "actual_character_range_reads": 6,
+    "tool_receipt_sha256": "c986a08090a71b8e1798261a2b405a2c4f5e9b76510fe73cf86ce9099882b38b",
+    "hud_repair_execution": "e18f61bb-72aa-4c10-bb80-11f67a964c07",
+    "dependent_integration_execution": "b793bab9-ecd7-44d1-bf30-980a4ea91e49",
+    "integration": "Actual directional-key mapping defect corrected by original worker; 60 final functional assertions passed; independent INT02-05 passed, INT01/06/07 unknown retained",
+    "long_command_failure": {
+      "actual_utf16_command_line_units": 32773,
+      "child_issue": 891,
+      "state": "isolated native worker dispatched; current parent can save script then invoke a short command"
+    }
+  },
+  "remaining": [
+    "Real original INT01 dispatch-time evidence, INT06 editor observation, INT07 delivery evidence and fresh independent acceptance",
+    "Original integrated project application/run/diagnostics and next new requirement after cold reopen",
+    "Actual generated Maliang asset still needs inclusion in original game",
+    "Native long Windows command repair891 and original replay",
+    "Issue559 original-owner eight concrete remaining editor-operation subsets; no takeover or full coverage claim"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0a09a4e19166f849f8a18a4c27738e119ef3cd1b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "93538cb5f45af524908dd2b857f921a7910c895e60065f8fb6cc2bf6068a2736",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "7813a30245c65427094934fd29590b98c1a1dd96",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/891",
+    "diagnosis": "Real ordinary-game parent run_command failed before process launch. Native editor log preserves exact PowerShell EncodedCommand invocation: 32773 UTF-16 command-line units, exceeding the Windows limit. The native UI reports only generic headless-process startup failure. This is independent of original game candidate acceptance; original command/log retained.",
+    "next_action": "Dispatch isolated child891 for bounded long-script execution preserving approval, source protection, output/exit and cleanup semantics; root continues existing game evidence and exact main delivery. Do not re-run or rewrite unknown original workers.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T00:21:06.450698+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T05:46:55.649331+00:00",
+  "sha256": "2e4e627dd121d5924269338b5c7f0d3e0c66b1955eab25024a49f3e561cf0c62"
+}
