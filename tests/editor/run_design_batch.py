@@ -98,7 +98,7 @@ args=sys.argv[1:]; action=args[0]; root=Path(args[args.index('--workspace')+1]);
 if os.environ.get('DESIGN_BATCH_CASE','').startswith('review'):
  with open(os.environ['DESIGN_BATCH_BRIDGE_AUDIT'],'a') as audit: audit.write(action+'\n')
 request=json.loads(Path(args[args.index('--request')+1]).read_text()) if '--request' in args else {}
-reporting={'tenant_id':'fixture','request_ref':'design-batch-fixture','source_ref':'https://github.com/example/design-batch/issues/441','agent':{'id':'yanshi','version':'1','definition_sha256':'0'*64,'origin':'offline-fixture'}}
+reporting={'actor':'fixture','tenant_id':'fixture','request_ref':'design-batch-fixture','source_ref':'https://github.com/example/design-batch/issues/441','agent':{'id':'yanshi','version':'1','definition_sha256':'0'*64,'origin':'offline-fixture'}}
 if action=='issue-agent':
  (root/'design-docs').mkdir(exist_ok=True)
  text='# Offline fixture warmup\n' if 'DESIGN_BATCH_WARMUP' in request.get('outcome','') else os.environ['DESIGN_BATCH_FINALIZED']

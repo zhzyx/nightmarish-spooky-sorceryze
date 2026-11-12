@@ -85,7 +85,7 @@ bool AIChatDock::_recover_active_provenance(String &r_error, const Dictionary &p
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
 	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
 	if (candidate.is_empty()) {
-		return true;
+		return gonggong_reporting.is_empty() || !GetGameReceiptGuard(r_error, runtime, false).is_empty();
 	}
 	const String pending = String(candidate.get("common_dir", "")).path_join("gonggong-provenance-guards").path_join(String(candidate.get("binding_path", "")).get_file().get_basename()).path_join("pending");
 	if (!DirAccess::dir_exists_absolute(pending)) {

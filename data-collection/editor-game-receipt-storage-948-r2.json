@@ -1,0 +1,111 @@
+{
+  "issue_number": 948,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+  "request_id": "editor-game-receipt-storage-20261112",
+  "base": "d91bd93eb14d1420db9e6872c638e9cb82baf015",
+  "reason": "Append-only correction for root final clang-format rejection; prior r1 report and method-learning evidence remain unchanged.",
+  "input_blobs": {
+    "editor/docks/receipts/GameReceiptGuard.cpp": "deae389c3b2eedaf37b012038a23da944ecc68ca",
+    "editor/docks/receipts/.clang-format": "980236c92a6820d2c2eaa646bed3e2fe7fbfa8e6",
+    "editor/docks/receipts/README.md": "675a117d438e28fb128ae7db16a80e3559c90882",
+    "editor/docks/SCsub": "446f7aa380120e30bbd24502c6e2b193e145a53b",
+    "editor/docks/ai_chat_dock.h": "35be6e7aa101cda236c7895224c469d7eacf026c",
+    "editor/docks/ai_chat_dock.cpp": "aca0d45d281ce9a4f7e53852edefd6abdd877990",
+    "editor/docks/ai_chat_engine_candidate.cpp": "48b25eb725a47c4ab89c534a735635c7b95c021f",
+    "editor/docks/ai_chat_gonggong.cpp": "1c0ec7f0f9c0c2bc540545e50a63d2b62acc7b2b",
+    "editor/docks/ai_chat_host_runtime.h": "25808b8eb134581f67bcffdad1851dd262ade637",
+    "editor/docks/gonggong_runtime_config.h": "d8d562111c25457906bf4b9683d38c81de2b154d",
+    "tools/editor_provenance_guard.py": "e5ccc29e1cc16fd75d857028ac906d95d8277b18",
+    ".clang-format": "5d932e013f29ad5722b30592660097cade5388d9",
+    "CPP_CODING_STANDARD.md": "e12af95ae971e7fae6dbbeabdd9aada824b3e899",
+    "tests/editor/run_game_receipt_storage.py": "ea37668d758f2c87c99a02477f56d085842a60ca",
+    "tests/editor/run_game_receipt_restart.py": "44b2dd3c145507e94ac8368d23ae9876096f3766",
+    "tests/editor/native_game_integration.py": "4486f1619445d6f68c51da52f62acfff276200a0",
+    "tests/editor/run_native_production_setup.py": "541e3f2ed156bd2a32ba87766e3fbb4a44165ddb"
+  },
+  "source_sha256": {
+    "editor/docks/receipts/GameReceiptGuard.cpp": "1a61d78c67f122724ecb599b61e410378862be87683b9899e79a81d709140a0d",
+    "editor/docks/receipts/.clang-format": "80e3f12172224b4df9038dab0d861bb75d087f30578e5f4b095157943a91a8e3",
+    "editor/docks/receipts/README.md": "3ee6f0b6e7d209c51adc6f48e58ff38851e03f7c50b7e0daa76fb3cb2f179055",
+    "editor/docks/SCsub": "caba7d0b56eef14d50bbb822a9da4d7b777ec9b08adb3dbd70ff098f0b60506f",
+    "editor/docks/ai_chat_dock.h": "1f732642623d5824aa3cbd1a67b75d2f04d87dc2f3a7d92d562c1e6afa339568",
+    "editor/docks/ai_chat_dock.cpp": "2abbbe2bf0b2ddfc8040d70501b7b1e389bcd2c5013ec9f7298550382680576b",
+    "editor/docks/ai_chat_engine_candidate.cpp": "8daceab754fc214da98760ce62768eca59f166513c01a24549fcb4cc7e6e5196",
+    "editor/docks/ai_chat_gonggong.cpp": "6fd61a5dcdca36f06e2e5d187fcdcfd376c1ae25da28bbeee022517acc4edbd5",
+    "editor/docks/ai_chat_host_runtime.h": "87eb30355cc36aa63a1fe572976a0f9fda2833d42dcad8509900fc685ab58926",
+    "editor/docks/gonggong_runtime_config.h": "0080b760750acf5a609c982173e5bf58c851ac61a22045868be72f96b2e70345",
+    "tools/editor_provenance_guard.py": "f6344b8626a45dd644ca36c47da9e070ee5c5d54b6fe497740bdf05dadbfbd98",
+    ".clang-format": "a441b8146ecf2d15235758a2edb3a3abb56aacc39c646acb23983bb4fa4cb792",
+    "CPP_CODING_STANDARD.md": "1e259897d18d01bff223639084695dbb1a1384883489d0e4de95f4b1c3845f61",
+    "tests/editor/run_game_receipt_storage.py": "bd2c238a21acd96bbfe71535eaacda878e50c6885018feef152cd5ad24ce139f",
+    "tests/editor/run_game_receipt_restart.py": "4d726b332f5adf8323cfb13d90fd858d658a4c869649feb7dd42685e2dd1918d",
+    "tests/editor/native_game_integration.py": "5bedd6c2e9ceffcfd59eb3930fee1857c77e61e58559c332d7318aa97e8dcbe9",
+    "tests/editor/run_native_production_setup.py": "b2c510a2c18869cb9aa3a06da04d90b929ba2aaa4926197015f0b31d68ec21dd"
+  },
+  "before_executable_sha256": "e7764aaed344d0698af3b1b1a563c0b954a9e5c72f2f814e6dcf1e3f922e350a",
+  "after_executable_sha256": "cd6bc3d4634ca43202f737d5b93c5d2e630d561f36d971daa3df73770165b0c0",
+  "checks": {
+    "native_invalidation": {
+      "command": "python -m SCons -j4 cache_path=D:/GongGong/.git/gonggong-native-cache warnings=extra werror=yes tests=yes accesskit=no d3d12=no angle=no platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no",
+      "observed": "build-06 compiled editor/docks/receipts/GameReceiptGuard.cpp, rebuilt changed host users, relinked editor; 32.63s exit0. New binary passed metadata restore/next tool and exact cold restart consumers. Final copyright-header fix then build-07 recompiled the native unit and linked successfully (18.54s); final native-09 and native-restart-09 passed on the recorded final artifact.",
+      "passed": true
+    },
+    "format": {
+      "command": "clang-format 22.1.5 --dry-run --Werror four changed legacy files and receipts/GameReceiptGuard.cpp",
+      "observed": "exit0 with inherited Allman config scoped to new native unit; legacy small changes follow original format.",
+      "passed": true
+    },
+    "ordinary_native_consumer": {
+      "command": "tests/editor/run_game_receipt_storage.py --backend codex",
+      "observed": "native-09 production_setup=true; actual guard restored both metadata files, exit0, next rollback succeeded, original concurrent worker and four bound receipt assertions retained. Generic serial design diagnostics remain false as disclosed by the existing fixture.",
+      "passed": true
+    },
+    "ordinary_cold_restart": {
+      "command": "tests/editor/run_game_receipt_restart.py",
+      "observed": "native-restart-09 exit0; no engine candidate, one execution/result, preserved queue, repeated journal does not replay.",
+      "passed": true
+    },
+    "static_hooks": {
+      "command": "copyright_headers.py; validate_includes.py; header_guards.py; file_format.py; clang-format --dry-run --Werror; ruff check and format --check; mypy; codespell_lib; validate_codeowners.py --unowned",
+      "observed": "All passed on the final source. New header aligned by actual repository copyright tool. Mypy reports no issues in six Python sources. First codespell module invocation name failed; corrected entry passed, both logs retained.",
+      "passed": true
+    }
+  },
+  "logs": {
+    "build-06.log": "44c98507168fe191f5a1bec0edcbe0153766f002b0f003df777c66a3644bb9d8",
+    "clang-r2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "native-08.log": "15ebd976f4a955acc5ba88f53db093f794a68dff0f52f4b35017e630c2b7558e",
+    "native-08.json": "69b4903b6a5e994bca793595e590096bf2393f43f7b59d98e6142c3c184f387c",
+    "native-restart-08.log": "c47ff27ad935e95222103b4a085d634e83b37899c1b430e32b11d732ff367744",
+    "kuafu-receive-r2.log": "e7a4b850fdf14915f2c40036177176ef9f100bf2708ebfd6ce4c43977a7431e3",
+    "kuafu-receive-r2-retry.log": "e6ad03cff6cd07ed3571fd093d671fef6dcf3cf4668107ef164c304e0766647e",
+    "build-07.log": "71bb829f480b465fd81b656c7f6e7ff063649343bed3fc99ea809894991b186b",
+    "native-09.log": "7e9e1f52f06b26a0fe16461b02d30f38f992a28734e783efb927fd9d8d923b61",
+    "native-09.json": "70b1d52a3f398c9dad27e745ae725c6dbad3ed127bdf3b9e76121dc4c2928b49",
+    "native-restart-09.log": "b9471b4e20b9992d085da910666d3157a1cedc8e226ee8addb50bb4075a27cc4",
+    "copyright-r2-fix.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "copyright-r2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "includes-r2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "header-guards-r2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "file-format-r2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ruff-r2.log": "3988f9ff5ef9ae2e4f35eca9875e388626819272f9b9e91dba0cea3503e19aca",
+    "clang-r2-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mypy-r2.log": "90377c8fd97127580c93ac5740d596c9ebc9db94dafa6560ee11fe16b4460c62",
+    "codespell-r2.log": "4d7f7f126fca0b16e9f10bb7e15e05459c0a9b395aefe83717997bf5e27125f3",
+    "codespell-r2-retry.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "codeowners-r2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "kuafu-assess-r2.log": "964bc1606de23f929d76fc0a8e776964e5ca6ada6c1457f8dd5cbdf9148bb84f"
+  },
+  "incident": "549117d818d866ba1dae3b93ef60056556fa27502e57729f2ff4bd011f7538d7",
+  "remaining": [
+    "final independent review",
+    "formal gate and exact CI/main",
+    "installed-consumer replay"
+  ],
+  "kuafu": {
+    "incident": "549117d818d866ba1dae3b93ef60056556fa27502e57729f2ff4bd011f7538d7",
+    "event": "gonggong-diting-data/events/gonggong-workspace/editor-game-receipt-storage-20261112/kuafu-ae48f0edf6b2b677245e1e8177f19195cf98c2f6.json",
+    "event_sha256": "3fcddf54c99f2608efe91fd1012ccbf7675fa5ba3bbed592ac87a74a2642b874",
+    "timeline": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948#issuecomment-6826208148"
+  }
+}

@@ -193,6 +193,7 @@ class AIChatDock : public EditorDock {
 	String _workflow_root(int p_agent = -1) const;
 	bool _validate_engine_candidate(String &r_error, const String &p_review_owner = String()) const;
 	bool _recover_active_provenance(String &r_error, const Dictionary &p_runtime = Dictionary()) const;
+	Dictionary GetGameReceiptGuard(String &out_strError, const Dictionary &mapRuntime, bool bPrepare, const Dictionary &mapReporting = Dictionary()) const;
 
 	String engine_status_path;
 	String engine_log_path;
@@ -696,9 +697,13 @@ class AIChatDock : public EditorDock {
 	int design_child_starting = -1;
 	int design_parent_starting = -1;
 	uint64_t design_last_blocked_generation = UINT64_MAX;
-	void _register_design_batch(int p_parent, const String &p_request_id, int64_t p_issue, int p_review = -1);
+	void _register_design_batch(int p_parent, const String &p_request_id, int64_t p_issue, int p_review = -1, bool p_preserve_interrupted = false);
 	bool _is_review_child() const;
 	Dictionary _child_delegation() const;
+	String ProductionControl(const Dictionary &mapArguments);
+	void CompleteProductionControl(int nProducer);
+	String ProductionEligibility(int nProducer) const;
+	void UpdateProductionOperation(int nProducer, const Dictionary &mapContext, const String &strState, const String &strReason);
 	String _delegate_review(const Dictionary &p_arguments);
 	void _cancel_design_batch(int p_agent);
 	bool _design_parent_matches(int p_parent, const Dictionary &p_batch) const;

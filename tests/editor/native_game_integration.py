@@ -106,7 +106,7 @@ def install(batch, acceptance, observed):
                     else:
                         producers = value("list")["producers"]
                         assert len([p for p in producers if p["live_independent_acceptance"]]) == 2, producers
-                        producer = next(p["producer_id"] for p in producers if p["work_order"] == 1)
+                        producer = min(producers, key=lambda item: item["work_order"])["producer_id"]
                         message = None
                         for action, state in (("plan", "planned"), ("apply", "applied")):
                             if "ordinary-" + action not in result:

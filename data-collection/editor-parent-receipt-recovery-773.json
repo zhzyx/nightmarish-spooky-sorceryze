@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "issue_number": 773,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "request_id": "game-production-goal-20261111",
+  "child_issue": 948,
+  "child_request_id": "editor-game-receipt-storage-20261112",
+  "state": "local_implementation_and_independent_review_complete_delivery_pending",
+  "observed": "An ordinary game command moved receipt configuration away before tool-end flushing. The child fix captures host-validated ordinary-task metadata outside the mutable workspace, restores only missing trusted originals, and recovers an exact completed command without replay.",
+  "validation": "The final local strict Windows build and relevant static checks passed. Native controlled transports exercised actual recovery of two metadata files, retained concurrent worker and bound receipt checks, continued the next rollback, and recovered after restart with one execution/result and preserved queue. These are native fixture results, not online business acceptance.",
+  "independent_review": "The original cold-recovery and junction findings were corrected. Independent final-r2 review matched 25 frozen files and 23 raw logs, checked module inputs and equivalent native extraction, and found no new source/evidence blocker.",
+  "child_evidence": {
+    "path": "data-collection/editor-game-receipt-storage-948-r2.json",
+    "sha256": "0fa25797635098465c93d8ac020ba7a667241bcaa13a205114910cf1b2444200"
+  },
+  "integration": "Current main 34498a33d500475a3538fb99a8e47dd516d2e5d1 was incorporated with no overlap and all frozen implementation/evidence bytes unchanged. Original owned work was retained in a private stash; no foreign worktree was changed.",
+  "remaining": ["formal gate and exact CI/main", "installed consumer replay", "parent production acceptance"],
+  "boundary": "Native worker completion is not final delivery. Child 948 and parent 773 remain open. The original live game and its worker history were not externally modified to manufacture a pass.",
+  "path_base": "Repository root; raw test logs and stash identifiers remain in host-private storage."
+}

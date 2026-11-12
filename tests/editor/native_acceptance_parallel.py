@@ -82,6 +82,14 @@ event('finish');console.log('Actual fixture worker completed '+name);
 """,
         encoding="utf8",
     )
+    if scenario == "parallel-parent-continuation":
+        worker.write_text(
+            worker.read_text(encoding="utf8").replace(
+                "if((prompt.includes('Bound failed review data')||prompt.includes('Bound missing execution evidence')))",
+                "if(prompt.includes('Bound failed review data')){if(!prompt.includes('PARENT_MISSING_INPUT_951'))throw Error('Supplemental input not delivered');if(fs.existsSync('repair-evidence.txt'))fs.writeFileSync('final-evidence.txt','Actual second bounded execution consumed PARENT_MISSING_INPUT_951');}\nif((prompt.includes('Bound failed review data')||prompt.includes('Bound missing execution evidence')))",
+            ),
+            encoding="utf8",
+        )
     if scenario == "parallel-integration":
         game_script = 'extends SceneTree\nfunc _initialize():\n\tprint("NATIVE_INTEGRATION_EXECUTED:" + FileAccess.get_file_as_string("res://production-output.txt"))\n\tquit()\n'
         worker.write_text(

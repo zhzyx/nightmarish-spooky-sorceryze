@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "issue_number": 773,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "request_id": "game-production-goal-20261111",
+  "children": [
+    943,
+    948,
+    951
+  ],
+  "baseline": "08fe645a2296f8145185c9ea087fd4ab3ac345ed",
+  "scope": "Joint native editor implementation and controlled Windows consumers; actual installed provider/game continuation remains open. The game is an acceptance sample, not the scope of editor support.",
+  "input_blobs": {
+    ".clang-format": "5d932e013f29ad5722b30592660097cade5388d9",
+    "CPP_CODING_STANDARD.md": "e12af95ae971e7fae6dbbeabdd9aada824b3e899",
+    "customizations/components/godot-host/acceptance.py": "af8d8eff86d5b6a5fc75dd0379fb4dc53b00d7ac",
+    "editor/docks/SCsub": "047eb8e616beeab76fcdb7dc7269d911d2edb08d",
+    "editor/docks/ai_chat_dock.cpp": "bdc0429866109af902ac60f4d060edc72ed13085",
+    "editor/docks/ai_chat_dock.h": "398d47e122a1189a32974a069456cf103e24ae32",
+    "editor/docks/ai_chat_engine_candidate.cpp": "48b25eb725a47c4ab89c534a735635c7b95c021f",
+    "editor/docks/ai_chat_gonggong.cpp": "1c0ec7f0f9c0c2bc540545e50a63d2b62acc7b2b",
+    "editor/docks/ai_chat_host_runtime.h": "25808b8eb134581f67bcffdad1851dd262ade637",
+    "editor/docks/ai_chat_sub_agent_receipts.h": "a5c78b20a7306633a180461d1dafd7f40f6aa9ad",
+    "editor/docks/ai_chat_sub_agents.cpp": "c1e8561565d8a477b92e34abc5ad5a2de242f8fc",
+    "editor/docks/gonggong_runtime_config.h": "d8d562111c25457906bf4b9683d38c81de2b154d",
+    "editor/docks/production/.clang-format": "0b0dae686b4498cff4bee26fdfa55b1e51cd2e55",
+    "editor/docks/production/ProductionControl.cpp": "9c915608376e8b911cce2605ebf7776b22639e93",
+    "editor/docks/receipts/.clang-format": "980236c92a6820d2c2eaa646bed3e2fe7fbfa8e6",
+    "editor/docks/receipts/GameReceiptGuard.cpp": "deae389c3b2eedaf37b012038a23da944ecc68ca",
+    "editor/docks/receipts/README.md": "675a117d438e28fb128ae7db16a80e3559c90882",
+    "platform/windows/console_wrapper_windows.cpp": "68641d9fb64084e88dba1b76a09edd37930962a9",
+    "tests/editor/editor_test_isolation.py": "64454905252603c91b24211ebf022d4ed45a8049",
+    "tests/editor/mock_codebuddy_cli.js": "730e4796e8f6a905c80611d2a03db2a10e641ba9",
+    "tests/editor/native_acceptance_parallel.py": "a1c6e2d810e8ce0d15f48daf7920745a2bd58cb4",
+    "tests/editor/native_game_integration.py": "4486f1619445d6f68c51da52f62acfff276200a0",
+    "tests/editor/run_design_batch.py": "5a194e9c06782c646fc46163a423086e53adff1f",
+    "tests/editor/run_game_receipt_restart.py": "8d30c3cf00576c477bc59c5ffc330dfe0e889b67",
+    "tests/editor/run_game_receipt_storage.py": "7e7c1facf18890956a42a92603ef7e8b0efc8b4a",
+    "tests/editor/run_native_acceptance.py": "f6f9006264deb884822151f2421699b8983fd4a3",
+    "tests/editor/run_native_production_setup.py": "541e3f2ed156bd2a32ba87766e3fbb4a44165ddb",
+    "tests/editor/test_codebuddy_acp.js": "29e1666d074cfcc7421ec344ba3be0414b51ee77",
+    "tests/editor/test_codex_bridge.js": "1d0144b486b0363a06a4fd652c316ce7edbc1501",
+    "tests/editor/test_parallel_work_orders.mjs": "55c3f4e31f62ece4063382383378dba87b4e0258",
+    "tools/codebuddy_cli/godot_acp.js": "09904c4634a2b653edba01910aabe482a623332e",
+    "tools/codebuddy_cli/godot_bridge.js": "ce5fc382f3428628908d26b9fe47d2d26b551872",
+    "tools/codebuddy_cli/godot_terminal.js": "b6b3986c0eb7b7c5cdfbeedd5e76a14b2b83e8db",
+    "tools/editor_provenance_guard.py": "e5ccc29e1cc16fd75d857028ac906d95d8277b18",
+    "tools/godot_parallel/repair.mjs": "41fbc1fc3622d1da4ac71dcae3382047aaeccace",
+    "tools/gonggong_bridge.py": "1e1459420fc3f43ba9af6fb0f9d3a1074f393125"
+  },
+  "original_reports_unchanged": {
+    "data-collection\\editor-game-receipt-storage-948-r2.json": "0fa25797635098465c93d8ac020ba7a667241bcaa13a205114910cf1b2444200",
+    "data-collection\\editor-parent-production-continuation-951.json": "94b24c96516a2d77c529e7f79f3f5bc9a1070c01741436d92e107bdbb1cc23e3"
+  },
+  "artifacts": {
+    "consumer_base": "1b7ddb6ff4dcdc16871901bc730d680fb52ee5de",
+    "consumer_engine_sha256": "d92a429a257820836f6731dd8716564081811afda6d0aaf46ee0d98be5f360f6",
+    "consumer_console_sha256": "10cdd61b5bc0096e808c4054874fb32376c71c87141882e927d1cb58a418f1fe",
+    "current_engine_sha256": "e79f68c1e81691cce7410eee75cb95431435d9d45b97d9ce0adf14780dc7ebc9",
+    "current_console_sha256": "2a19392b7b159f9dcbc0525ab173811903c576b7dd337b253e75007ca20a675b"
+  },
+  "checks": {
+    "native_invalidation": {
+      "command": "python -m SCons platform=windows target=editor arch=x86_64 warnings=extra werror=yes tests=yes accesskit=no d3d12=no angle=no -j4; native production and receipt consumers",
+      "observed": "Combining SCsub and AIChatDock native inputs recompiled both ProductionControl.cpp and GameReceiptGuard.cpp plus host users and relinked the editor (28.08s, exit 0). Four parent scenarios and game receipt recovery passed on that pair. Incorporating unrelated main #970/#977 preserved every owned source byte; the second strict build regenerated module test includes, compiled tests/test_main.cpp and relinked (19.05s, exit 0). Current-main native 93 cases/1718 assertions and direct-editor ordinary command crash recovery passed. Runtime implementation inputs did not change between the two pairs.",
+      "passed": true
+    },
+    "parent_continuation": {
+      "command": "run_native_acceptance.py --scenario parallel-parent-{continuation,restart,cancel,repair-cancel}",
+      "observed": {
+        "continuation": {
+          "passed": true,
+          "receipt_sha256": "cf7d6a1e151ad958b97221f84c6b6aabb49c406e2816286b7f288fe37bdfde5c",
+          "accepted_producers": [
+            1,
+            2,
+            3
+          ]
+        },
+        "restart": {
+          "passed": true,
+          "receipt_sha256": "31e08bc0152312e7b4d25688c84163b97fc02478b57b7a28806eeaa464736976",
+          "accepted_producers": [
+            1,
+            2,
+            3
+          ]
+        },
+        "cancel": {
+          "passed": true,
+          "receipt_sha256": "f35289b3e75c8d6ba9e917f9a552d88c66c42ef4752b6ddd04e5b7d42ee7d191",
+          "accepted_producers": []
+        },
+        "repair-cancel": {
+          "passed": true,
+          "receipt_sha256": "46dfbbba43b3e537f6c572b2f745bfc695b6dd98e892326d18a213b7775c37ee",
+          "accepted_producers": [
+            2
+          ]
+        }
+      },
+      "passed": true
+    },
+    "game_receipt_storage": {
+      "command": "run_game_receipt_storage.py --backend codex --godot <joint console pair>",
+      "observed": {
+        "receipt_sha256": "d5a848e665a11721a41a7f608bf18d9dfc592ca3c365aa6ed20a179a515d08d7",
+        "metadata_restored": 2,
+        "commands_replayed": false,
+        "next_rollback": true
+      },
+      "passed": true
+    },
+    "command_crash_recovery": {
+      "command": "run_game_receipt_restart.py --godot <direct current editor .exe>",
+      "observed": "Original command runs once; original call receives one result, queue survives, metadata is restored and a repeated journal is not replayed. Console-wrapper input now exits 2 before starting, because killing that wrapper kills its full process Job.",
+      "passed": true
+    },
+    "bridges": {
+      "command": "node --test test_codex_bridge.js; node --test --test-name-pattern <three CodeBuddy boundaries> test_codebuddy_acp.js",
+      "observed": "Codex 19/19 including all four production actions and unadvertised/read-only rejection; CodeBuddy 3/3 including native continuation receipt. These are controlled protocol consumers, not online provider acceptance.",
+      "passed": true
+    },
+    "python_receipts": {
+      "command": "python -m unittest discover -s tools -p test_editor_game_receipts.py",
+      "observed": "12 tests: 11 passed, one file-symlink privilege skip; real Windows junction cases passed.",
+      "passed": true
+    }
+  },
+  "integration": {
+    "shared_paths": [
+      "editor/docks/SCsub",
+      "editor/docks/ai_chat_dock.cpp",
+      "editor/docks/ai_chat_dock.h"
+    ],
+    "resolution": "Three-way merge retained both native source globs, both host declarations and guard/production entry paths. Only SCsub required text resolution.",
+    "main_integration_sha256": "89023aadaa3cd7c07785b62cbb84e4709bf3f353a45a5b123b1afff525312d14"
+  },
+  "independent_review": [
+    "agent:/root/sinan_2781543502fa02d3: final #951 source/controlled consumers and joint fixture/Codex delta approved",
+    "agent:/root/sinan_65c894021a8fdc52: final #948 and shared joint native paths approved; final joint evidence review follows"
+  ],
+  "fixture_corrections": [
+    "Use Python with pip for isolated launcher generation and complete pinned ACP SDK/zod/native dependencies.",
+    "Put actor in the shared controlled authority response; do not weaken host reporting validation.",
+    "Select the existing Codex complete-game transport explicitly.",
+    "Use the editor executable for command-crash recovery. Console wrapper shutdown correctly leaves command outcome unknown after killing its child tree; it is not an editor-only crash."
+  ],
+  "preserved_failures": {
+    "joint773-parent-continuation.log": "b9b8b668efd4c20aeac1c94bd10185b6427f6c058e4f1ef0102af70b5d65da73",
+    "joint773-parent-continuation-r2.json": "539c7fd208b852756827e389f828a62f965c158968c95061b75cc3e66e599124",
+    "joint773-receipt-storage.log": "2716f648a5e60a24baf7e2a7403a2f55a725e8296014b31a5320f11c1b0256de",
+    "joint773-receipt-storage-r2.json": "47091cf506070556fbb82158b097b60a6917b8f5f2fb427c54f3ccb356b02af4",
+    "joint773-codebuddy-continuation.log": "d5a1223d9141258302cd499d53c0ce6e7a9cac6d618cd1871fe639327771a176",
+    "joint773-codebuddy-continuation-r2.log": "f35e2bf8afa39c8edb46958e061018060f90c7ee580b0b5550113fb2b8acf313",
+    "joint773-receipt-restart-r3.log": "33f4da6d99347c21bf4925489ca9cc9fcfa6131bd7064f2bb1d9349eecfdbca6",
+    "joint773-receipt-restart-r4.log": "52299154d349ebdfe2b9ae7e6aefef54182f13aeb265aa8111b0ae73aa5dbf48",
+    "joint773-receipt-restart-standalone-r5.log": "e3c0c25b80d2da64f665343486c6876ea821c188ae7398c7e6723637eaeef55d"
+  },
+  "raw_logs": {
+    "joint773-build-1.log": "56da885b5f4ab170c7888133653600946bc3ffeedae9ddd9aa1e4af93df3a238",
+    "joint773-build-main977.log": "f141c88261cbd4eb0a7db0597aee754b6867749f1647d6e293822c10e35e6c3c",
+    "joint773-native-main977-console.log": "0c8527310a0d26a78e788ce6c0825280876fcfdb028cba3330c99f0be904ec17",
+    "joint773-receipt-restart-engine-r6.log": "7b77d64f87919dcd46055cd01ce58dda15087b0d4d0a6e3b6c19812a9d7d35b9",
+    "joint773-receipt-restart-main977.log": "160402a90f0e15aaae6061bbdaa21e08438ebc7a0d3d5776e5e0c5a6c500c1f1",
+    "joint773-restart-wrapper-rejection.log": "1e575bacf032de5f03a0418ee9c9a555a21e6b640ea3be80f88c0b4222a9c9cb",
+    "joint773-codex-bridge.log": "6dcce5f21eeb0bff0a898bbb783b7f89e1ab65d1de4614a2c50dc769c7e68bbb",
+    "joint773-codebuddy-continuation-r3.log": "ea0e185358b644e1a64e49071b3492eb07fd0cb0c4cf7f789bc97058fcd30f6a",
+    "joint773-receipt-python-r2.log": "370077fee958d7edf118d2a5c48e43433e2734f29cd0ad8d3cdddeaafeeba2ac",
+    "joint773-static-clang.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "joint773-static-ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "joint773-static-ruff-format.log": "5b9f70ad96522f492ef846065642c069b5627379aff2ab3f74acd2e3b9ecfe34",
+    "joint773-static-file-format.log": "3962706218270f0548a067c588195313be2c55ef66f3738bf600ce280ff49798",
+    "joint773-static-copyright.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "joint773-static-headers.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "joint773-static-codespell.log": "16ae7c82039194c8e479ab07429d41c56892d71325a9bee8af24ca6d91b4717b"
+  },
+  "static_scope": "All changed C++/Python formatting, headers, file format and spelling checked. Exact #943 immutable CRLF evidence keeps existing narrow exclusions. One immutable #951 method event keeps its British spelling and original digest through a single-path codespell exclusion; no source-code checks are excluded. Static spelling initially rewrote that event; original bytes were restored from the frozen child source before staging.",
+  "limits": [
+    "Generic reused serial fixture diagnostics are false in parallel-specific consumers; only their explicit native scenario assertions count.",
+    "Current candidate CI, formal main installation and real original game/provider continuation are pending.",
+    "Parent #773 remains open; no child Issue is closed solely by this report.",
+    "Private original failed fixture, original worktrees and raw logs are retained for parent acceptance and audit; unrelated worker reservations are preserved."
+  ]
+}
