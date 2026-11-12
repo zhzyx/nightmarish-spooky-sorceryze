@@ -114,7 +114,7 @@ try {
         if (Probe $name $local) { $paths[$name] = $local; continue }
         if ($provided[$name]) {
             $candidate = [IO.Path]::GetFullPath($provided[$name])
-            if (-not (Probe $name $candidate)) { throw ('AI-selected component failed execution check: ' + $name) }
+            if (-not (Probe $name $candidate)) { throw ('Selected component failed execution check: ' + $name) }
             $paths[$name] = $candidate
             continue
         }

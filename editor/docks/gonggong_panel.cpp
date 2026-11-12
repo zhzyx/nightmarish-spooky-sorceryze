@@ -137,10 +137,10 @@ GongGongPanel::GongGongPanel(bool p_check_environment) {
 	setup_dialog->set_name("GongGongRuntimeSetup");
 	// Keep configuration available alongside independent editor approvals.
 	setup_dialog->set_exclusive(false);
-	setup_dialog->set_title(U"独立 AI 配置 Agent");
+	setup_dialog->set_title(U"运行环境配置");
 	setup_dialog->set_force_native(true);
 	setup_dialog->set_min_size(Size2i(760, 480));
-	setup_dialog->set_ok_button_text(U"重新运行 AI 配置 Agent");
+	setup_dialog->set_ok_button_text(U"重新配置运行环境");
 	setup_dialog->get_cancel_button()->hide();
 	VBoxContainer *setup_fields = memnew(VBoxContainer);
 	setup_dialog->add_child(setup_fields);
@@ -373,7 +373,7 @@ void GongGongPanel::open_setup() {
 
 void GongGongPanel::set_setup_status(const String &p_status) {
 	const String context = String(U"上下文\n工作区：") + workspace->get_text().strip_edges() + "\n" + setup_missing->get_text() +
-			U"\n执行通道：独立 Codex 配置 Agent（绕开共工需求、工单与桥接流程）\n原需求：已保留，配置成功后自动继续\n\n实时进度\n" + p_status;
+			U"\n执行通道：宿主确定性配置（无需模型账号，保留治理校验）\n原需求：已保留，配置成功后自动继续\n\n实时进度\n" + p_status;
 	if (setup_progress) {
 		setup_progress->set_text(context);
 	}
@@ -486,7 +486,7 @@ void GongGongPanel::run_setup(bool p_rollback) {
 	const String host_root = GongGongHostPaths::engine_source();
 	const String script = host_root.path_join(p_rollback ? "tools/configure_gonggong_runtime.ps1" : "tools/run_gonggong_config_agent.ps1");
 	if (!host_root.is_absolute_path() || !FileAccess::exists(script)) {
-		set_setup_status(p_rollback ? U"失败：当前工作区缺少运行库回退脚本。" : U"失败：当前工作区缺少独立 AI 配置 Agent 启动脚本。");
+		set_setup_status(p_rollback ? U"失败：当前工作区缺少运行库回退脚本。" : U"失败：当前工作区缺少运行环境配置启动脚本。");
 		return;
 	}
 	const String shell = OS::get_singleton()->get_environment("SystemRoot").path_join("System32/WindowsPowerShell/v1.0/powershell.exe");
@@ -505,16 +505,6 @@ void GongGongPanel::run_setup(bool p_rollback) {
 	} else {
 		args.push_back("-Progress");
 		args.push_back(setup_progress_path);
-		const String codex = GongGongRuntimeConfig::path(current_runtime, "codex");
-		const String codex_model = EditorSettings::get_singleton()->get_project_metadata("ai_chat", "codex_model", EDITOR_GET("ai_chat/codex_model"));
-		if (!codex.strip_edges().is_empty()) {
-			args.push_back("-Codex");
-			args.push_back(codex.strip_edges());
-		}
-		if (!codex_model.strip_edges().is_empty()) {
-			args.push_back("-Model");
-			args.push_back(codex_model.strip_edges());
-		}
 		setup_previous["workspace"] = EDITOR_GET("gonggong/workspace");
 		const Dictionary configured = current_runtime.get("configured", Dictionary());
 		setup_previous["python"] = configured.get("workflow_python", "");
@@ -616,7 +606,7 @@ void GongGongPanel::poll() {
 		}
 		if (!bool(result.get("ok", false))) {
 			const String last_stage = setup_last_progress.is_empty() ? String() : String(U"\n最后阶段：") + setup_last_progress;
-			set_setup_status(String(U"[失败] AI 配置 Agent 尚未完成环境配置，原需求仍保留。\n") + String(result.get("error", U"配置 Agent 未返回结果")) + last_stage + U"\n结果：" + result_path + U"\n进度记录：" + setup_progress_path);
+			set_setup_status(String(U"[失败] 运行环境配置尚未完成，原需求仍保留。\n") + String(result.get("error", U"配置程序未返回结果")) + last_stage + U"\n结果：" + result_path + U"\n进度记录：" + setup_progress_path);
 			return;
 		}
 		if (setup_rolling_back) {

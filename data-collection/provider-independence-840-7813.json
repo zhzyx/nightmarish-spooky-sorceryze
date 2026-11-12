@@ -1,0 +1,71 @@
+{
+  "issue": 840,
+  "children": [
+    841,
+    842,
+    843
+  ],
+  "integrated_main": "7813a30245c65427094934fd29590b98c1a1dd96",
+  "native_build": {
+    "worktree": "D:\\GongGong\\.worktrees\\provider-independence-20261112",
+    "revision": "3b30f06d8f86bd63475febcd3c2c7bf00b5ec9be",
+    "source_digest": "daa0240512ea8d5ffe32532816d4ff33484889b77e80e00b749705ea6f399f5d",
+    "clean_source": false,
+    "console_sha256": "bd0b2eb31efbc79fa0deb652b6d9d893fa0304a891ecf829f2b7fc083770411c",
+    "native": {
+      "status": "built",
+      "key": "8e13393850f496a69c65e7d5388fa58af4d210e2c32674c5d7fb690110cbebb3",
+      "reason": "",
+      "artifact_sha256": "1d0872f2b566253910b1b3659b9becee6bd76ea5178a8b532821e3b83f33a7c4",
+      "producer_head": "3b30f06d8f86bd63475febcd3c2c7bf00b5ec9be",
+      "consumer_head": "3b30f06d8f86bd63475febcd3c2c7bf00b5ec9be",
+      "outputs": {
+        "bin/godot.windows.editor.x86_64.exe": "1d0872f2b566253910b1b3659b9becee6bd76ea5178a8b532821e3b83f33a7c4",
+        "bin/godot.windows.editor.x86_64.console.exe": "bd0b2eb31efbc79fa0deb652b6d9d893fa0304a891ecf829f2b7fc083770411c"
+      }
+    },
+    "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "aichat": "passed"
+  },
+  "native_tests": {
+    "passed": 88,
+    "assertions": 1598
+  },
+  "runtime_diagnostics": {
+    "ok": true,
+    "instances": 2,
+    "extended": true,
+    "binary_sha256": "1d0872f2b566253910b1b3659b9becee6bd76ea5178a8b532821e3b83f33a7c4",
+    "initial_attempt": "test isolation rejected inherited GONGGONG_WORKSPACE; process-local environment cleared before successful recheck"
+  },
+  "codebuddy_tests": {
+    "passed": 39,
+    "dependency_versions": {
+      "@agentclientprotocol/sdk": "1.9.0",
+      "@tencent-ai/codebuddy-code": "2.176.0"
+    },
+    "setup": "Copied existing matching dependencies to isolated worktree; no package or lockfile changes"
+  },
+  "macos_prior_run": {
+    "run": 43120417239,
+    "candidate": "6a30874a3cd359776db1c92adc46b589df7360bb",
+    "host_tests_passed": 14,
+    "non_macos_case_skipped": 1,
+    "acceptance_gate_tests_passed": 6,
+    "both_official_vendor_signatures": "passed",
+    "remaining_failure": "fixture incorrectly required stable identifier across actual product versions"
+  },
+  "fixture_fix": "Require actual PowerShell product/version receipts, pinned package version, same vendor and changed CDHash; record identifier changes without weakening production trust",
+  "local_acceptance_gate_tests_passed": 8,
+  "independent_review": "/root/sinan_c0fe010abbc02e98",
+  "codebuddy_wording": "Correct own CONTEXT_COMPACTED label from Codex to CodeBuddy; no behavior change",
+  "macos_full_chain": "pending exact signed candidate CI",
+  "non_codex_real_inference": "deferred by user; Kimi capability assigned to others",
+  "source_blobs": {
+    "tools/run_macos_external_host_acceptance.py": "b7ac4bc0b0adb3f74930fa31d0ebc799b6a0be98",
+    "tools/test_macos_external_host_acceptance.py": "cf4424eeda17d75452c78960a387cf60cd0ec4c2",
+    "tools/codebuddy_cli/godot_bridge.js": "5b207272a0d987c6d132f420e007780bdf4d8c3a",
+    "editor/docks/ai_chat_dock.cpp": "7123349bad69af2e1b3534276eb7d2d12cc0e8a0",
+    "editor/debugger/script_editor_debugger.cpp": "da90f0ccc9c97bf8cb685a0dff80a708ab8d000b"
+  }
+}

@@ -140,12 +140,11 @@ def main():
         assert agent_value["agent"]["policy_hashes"]
         assert all(Path(agent_value[k]).is_file() for k in ["python", "node", "git", "gh"])
         assert agent_value["github"]["ok"] is False and agent_value["github"]["error"] == "gh_unauthenticated"
-        cases += ["governed host model step selects and validates a complete runtime package"]
-        assert selector_marker.is_file()
-        assert agent_value["agent"]["summary"].endswith("中文")
+        cases += ["governed deterministic host selects and validates a complete runtime package"]
+        assert not selector_marker.exists()
+        assert agent_value["agent"]["provider_started"] is False
         foundation = root / "framework/FOUNDATION.md"
         original_policy = foundation.read_bytes()
-        selector_marker.unlink()
         try:
             foundation.write_bytes(original_policy + b"\nchanged fixture policy")
             blocked = subprocess.run(agent.args, env=agent_env, capture_output=True, timeout=180)
@@ -155,7 +154,7 @@ def main():
             assert blocked_value["agent"]["provider_started"] is False and not selector_marker.exists()
         finally:
             foundation.write_bytes(original_policy)
-        cases += ["changed host policy blocks model invocation before native selector starts"]
+        cases += ["changed host policy blocks configuration before deployment"]
         core = root / "framework/upstream/yuanheng/core.md"
         moved_core = core.with_suffix(".fixture-backup")
         core.rename(moved_core)
@@ -167,7 +166,7 @@ def main():
             assert blocked_value["agent"]["provider_started"] is False and not selector_marker.exists()
         finally:
             moved_core.rename(core)
-        cases += ["missing host policy blocks model invocation before native selector starts"]
+        cases += ["missing host policy blocks configuration before deployment"]
         launcher = root / "tools/launch_gonggong_editor.ps1"
         shutil.copyfile(ROOT / "tools/launch_gonggong_editor.ps1", launcher)
         editor = root / "project/godot/bin/godot.windows.editor.x86_64.exe"

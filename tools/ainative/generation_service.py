@@ -93,6 +93,8 @@ def settings(value):
         "builder_path",
         "blender_path",
         "kimi_model",
+        "api_model",
+        "api_key_env",
     }:
         raise ServiceError("service_config_invalid")
     result = dict(schema_version=1, mode="offline", endpoint="http://127.0.0.1:8188", image_model="", mesh_model="")
@@ -100,7 +102,18 @@ def settings(value):
     if (
         result["schema_version"] != 1
         or isinstance(result["schema_version"], bool)
-        or result["mode"] not in ("offline", "comfy", "codex", "codex_modeling", "codex_sculpt", "kimi_native")
+        or result["mode"]
+        not in (
+            "offline",
+            "comfy",
+            "codex",
+            "codex_modeling",
+            "codex_sculpt",
+            "kimi_native",
+            "local_mesh",
+            "api_modeling",
+            "api_sculpt",
+        )
     ):
         raise ServiceError("service_config_invalid")
     if not all(isinstance(result[key], str) for key in ("endpoint", "image_model", "mesh_model")):
@@ -111,6 +124,30 @@ def settings(value):
             name.startswith(("/", "\\")) or ".." in name.replace("\\", "/").split("/") or any(ord(c) < 32 for c in name)
         ):
             raise ServiceError("service_config_invalid")
+    if result["mode"] in ("api_modeling", "api_sculpt"):
+        from api_planner import validate_config
+
+        try:
+            validate_config(
+                dict(endpoint=result["endpoint"], model=result.get("api_model"), key_env=result.get("api_key_env"))
+            )
+        except ValueError:
+            raise ServiceError("service_config_invalid") from None
+        runtime = "godot_path" if result["mode"] == "api_modeling" else "blender_path"
+        if not all(isinstance(result.get(k), str) and result[k].strip() for k in (runtime, "builder_path")):
+            raise ServiceError("modeling_runtime_missing")
+        if (
+            any(
+                k in result
+                for k in ("cli_path", "kimi_model", "blender_path" if runtime == "godot_path" else "godot_path")
+            )
+            or result["image_model"]
+            or result["mesh_model"]
+        ):
+            raise ServiceError("service_config_invalid")
+        return result
+    if "api_model" in result or "api_key_env" in result:
+        raise ServiceError("service_config_invalid")
     if result["mode"] in ("codex", "codex_modeling", "codex_sculpt"):
         result.setdefault("cli_path", "codex")
         if not isinstance(result["cli_path"], str) or not result["cli_path"].strip():
@@ -149,7 +186,7 @@ def settings(value):
         raise ServiceError("service_config_invalid")
     elif result["mode"] != "kimi_native" and "blender_path" in result:
         raise ServiceError("service_config_invalid")
-    if result["mode"] in ("comfy", "codex"):
+    if result["mode"] in ("comfy", "codex", "local_mesh"):
         try:
             url = urllib.parse.urlsplit(result["endpoint"].strip())
             valid = (
@@ -167,7 +204,7 @@ def settings(value):
         if not valid:
             raise ServiceError("service_address_invalid")
         result["endpoint"] = result["endpoint"].strip().rstrip("/")
-        if result["mode"] == "codex" and (
+        if result["mode"] in ("codex", "local_mesh") and (
             url.hostname not in ("127.0.0.1", "localhost", "::1") or url.scheme != "http"
         ):
             raise ServiceError("service_address_invalid")
@@ -218,6 +255,13 @@ def model_names(info, node):
 
 
 def capability(kind, config, info, models, extra_image=False):
+    if config["mode"] == "local_mesh" and (kind != "image_to_mesh" or extra_image):
+        return dict(
+            ready=False,
+            code="service_not_configured",
+            message="本机网格仅接受直接图生网格，不提供重绘。",
+            missing_nodes=[],
+        )
     required = set(MESH_NODES if kind == "image_to_mesh" else IMAGE_NODES)
     if kind == "image_to_image":
         required.discard("EmptyLatentImage")
@@ -245,11 +289,23 @@ def _probe_service(value):
     reported_mode = value.get("mode", "comfy") if isinstance(value, dict) else "comfy"
     fallback_mode = (
         reported_mode
-        if reported_mode in ("comfy", "codex", "codex_modeling", "codex_sculpt", "kimi_native")
+        if reported_mode
+        in (
+            "comfy",
+            "codex",
+            "codex_modeling",
+            "codex_sculpt",
+            "kimi_native",
+            "local_mesh",
+            "api_modeling",
+            "api_sculpt",
+        )
         else "comfy"
     )
     try:
         config = settings(value)
+        if config["mode"] in ("api_modeling", "api_sculpt"):
+            return _probe_api(config), {}
         if config["mode"] == "kimi_native":
             return _probe_kimi(config), {}
         if config["mode"] == "codex_sculpt":
@@ -285,7 +341,7 @@ def _probe_service(value):
         except ServiceError:
             pass
         result = dict(
-            mode="comfy",
+            mode=config["mode"],
             connected=True,
             models=models,
             capabilities={kind: capability(kind, config, info, models) for kind in KINDS},
@@ -308,6 +364,34 @@ def _probe_service(value):
 
 def check_service(value):
     return _probe_service(value)[0]
+
+
+def _probe_api(config):
+    from api_planner import check_configuration
+    from modeling_provider import MESSAGES as API_MESSAGES
+
+    auth = check_configuration(
+        dict(endpoint=config["endpoint"], model=config["api_model"], key_env=config["api_key_env"])
+    )
+    runtime = "godot_path" if config["mode"] == "api_modeling" else "blender_path"
+    ready = auth["connected"] and Path(config[runtime]).is_file() and Path(config["builder_path"]).is_file()
+    code = "" if ready else auth["code"] or "modeling_runtime_missing"
+    return dict(
+        mode=config["mode"],
+        connected=ready,
+        code=code,
+        models=dict(image=[], mesh=[]),
+        backend_revision="configured-api-v1",
+        message="仅核对本机配置；API 可达性和生成能力以任务回执为准。",
+        capabilities={
+            kind: dict(
+                ready=ready and kind.endswith("mesh"),
+                code=code if kind.endswith("mesh") else "service_not_configured",
+                message=API_MESSAGES.get(code, MESSAGES.get(code, "仅支持语义建模")),
+            )
+            for kind in KINDS
+        },
+    )
 
 
 def _probe_kimi(config):
@@ -529,13 +613,33 @@ def check_inputs(model):
 
 
 def prepare_provider(config, model, database, run_id):
-    from comfy_provider import ComfyProvider, register
+    from comfy_provider import ComfyProvider, LocalMeshProvider, register
     from editor_demo import factory
 
     registry, providers = factory()
     generated = [node for node in model["nodes"] if node.get("type", "copy") in KINDS]
     if not generated:
         return registry, providers, {"mode": "offline"}
+    if config["mode"] in ("api_modeling", "api_sculpt"):
+        report = _probe_api(config)
+        if not report["connected"] or any(not node["type"].endswith("mesh") for node in generated):
+            raise ServiceError(report.get("code") or "service_not_configured")
+        from modeling_provider import ModelingProvider
+        from sculpt_provider import SculptProvider
+
+        provider_id = "api-modeling" if config["mode"] == "api_modeling" else "api-sculpt"
+        runtime = "godot_path" if config["mode"] == "api_modeling" else "blender_path"
+        provider_config = dict(
+            planner=dict(endpoint=config["endpoint"], model=config["api_model"], key_env=config["api_key_env"]),
+            storage=str(Path(database).resolve().parent / (provider_id + "-state")),
+            builder_path=config["builder_path"],
+        )
+        provider_config[runtime] = config[runtime]
+        register(registry)
+        providers[provider_id] = (ModelingProvider if runtime == "godot_path" else SculptProvider)(provider_config)
+        for node in generated:
+            node["provider"] = provider_id
+        return registry, providers, dict(mode=config["mode"], provider=provider_config)
     if config["mode"] == "kimi_native":
         from kimi_provider import KimiNativeProvider
 
@@ -658,7 +762,7 @@ def prepare_provider(config, model, database, run_id):
         for node in generated:
             node["provider"] = "codex"
         return registry, providers, dict(mode="codex", provider=provider_config)
-    if config["mode"] != "comfy":
+    if config["mode"] not in ("comfy", "local_mesh"):
         raise ServiceError("service_not_configured")
     report, info = _probe_service(config)
     if not report["connected"]:
@@ -679,8 +783,8 @@ def prepare_provider(config, model, database, run_id):
         backend_revision=report["backend_revision"] + "|unverified-weights;run=" + run_id,
     )
     register(registry)
-    providers["comfy"] = ComfyProvider(provider_config)
-    return registry, providers, dict(mode="comfy", provider=provider_config)
+    providers["comfy"] = (LocalMeshProvider if config["mode"] == "local_mesh" else ComfyProvider)(provider_config)
+    return registry, providers, dict(mode=config["mode"], provider=provider_config)
 
 
 def save_run_service(database, run_id, snapshot):
@@ -701,13 +805,24 @@ def run_service(database, run_id):
 
 
 def restore_provider(snapshot):
-    from comfy_provider import ComfyProvider, register
+    from comfy_provider import ComfyProvider, LocalMeshProvider, register
     from editor_demo import factory
 
     registry, providers = factory()
-    if snapshot["mode"] == "comfy":
+    if snapshot["mode"] in ("comfy", "local_mesh"):
         register(registry)
-        providers["comfy"] = ComfyProvider(snapshot["provider"])
+        providers["comfy"] = (LocalMeshProvider if snapshot["mode"] == "local_mesh" else ComfyProvider)(
+            snapshot["provider"]
+        )
+    elif snapshot["mode"] in ("api_modeling", "api_sculpt"):
+        from modeling_provider import ModelingProvider
+        from sculpt_provider import SculptProvider
+
+        register(registry)
+        if snapshot["mode"] == "api_modeling":
+            providers["api-modeling"] = ModelingProvider(snapshot["provider"])
+        else:
+            providers["api-sculpt"] = SculptProvider(snapshot["provider"])
     elif snapshot["mode"] == "kimi_native":
         from kimi_provider import KimiNativeProvider
 

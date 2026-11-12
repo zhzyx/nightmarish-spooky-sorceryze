@@ -68,7 +68,7 @@ class EditorCliTests(unittest.TestCase):
         self.assertNotEqual(first["revision"], second["revision"])
         self.assertEqual(len(self.calls), 2)
         self.assertIn("tools/package_tianshu_ui.py", self.calls[0])
-        self.assertIn("--test-case=[AIChat]*", self.calls[1])
+        self.assertIn("--test-case=*[AIChat]*", self.calls[1])
         receipts = [json.loads(p.read_text()) for p in (self.root / "bin/gonggong-build-receipts").glob("*.json")]
         self.assertCountEqual([r["revision"] for r in receipts], [first["revision"], second["revision"]])
 

@@ -76,6 +76,45 @@ TEST_CASE("[Editor][AIChat][ExternalPeer] Stable kernel chain requires the offic
 	CHECK_FALSE(bool(Peer::validate_chain(changed, changed, 501, 90)["ok"]));
 }
 
+TEST_CASE("[Editor][AIChat][ExternalPeer] Registered hosts retain full chain restrictions") {
+	Vector<Peer::Process> chain = normal_chain();
+	chain.write[1].code = Peer::REGISTERED_HELPER;
+	chain.write[2].code = Peer::REGISTERED_HOST;
+	Dictionary result = Peer::validate_chain(chain, chain, 501, 90);
+	CHECK(bool(result["ok"]));
+	CHECK(int(result["trusted_host_pid"]) == 60);
+	SUBCASE("helper cannot supply host authority") {
+		chain.write[2].code = Peer::REGISTERED_HELPER;
+	}
+	SUBCASE("unregistered same-user helper is denied") {
+		chain.write[1].code = Peer::UNKNOWN;
+	}
+	SUBCASE("UID mismatch is denied") {
+		chain.write[0].saved_uid = 502;
+	}
+	SUBCASE("truncated ancestry is denied") {
+		chain.write[2].ppid = 42;
+	}
+	CHECK_FALSE(bool(Peer::validate_chain(chain, chain, 501, 90)["ok"]));
+}
+
+TEST_CASE("[Editor][AIChat][ExternalPeer] Registered code and revocation changes fail closed") {
+	Vector<Peer::Process> before = normal_chain();
+	before.write[1].code = Peer::REGISTERED_HELPER;
+	before.write[2].code = Peer::REGISTERED_HOST;
+	Vector<Peer::Process> after = before;
+	SUBCASE("host code changes") {
+		after.write[2].fingerprint = "updated-version-needs-registration";
+	}
+	SUBCASE("host trust revoked") {
+		after.write[2].code = Peer::UNKNOWN;
+	}
+	SUBCASE("PID reused") {
+		after.write[2].birth_sec++;
+	}
+	CHECK_FALSE(bool(Peer::validate_chain(before, after, 501, 90)["ok"]));
+}
+
 TEST_CASE("[Editor][AIChat][ExternalPeer] Ancestor identity and permissions fail closed") {
 	const Vector<Peer::Process> original = normal_chain();
 	Vector<Peer::Process> before = original;

@@ -85,11 +85,11 @@ func initialize(workbench, settings: ConfigFile):
 	autostart.toggled.connect(func(_enabled): save_local())
 	notice = Label.new()
 	notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	notice.text = '已有图片可直接生成网格。生成或重绘图片使用已登录的 Codex CLI。'
+	notice.text = '已有图片可直接生成网格，无需 CLI。生成或重绘图片请另选图像服务。'
 	add_child(notice)
 	if default_bundle and autostart.button_pressed:
 		restore_bundle = true
-		host.service_choice.select(3) # Codex images and local image-to-mesh.
+		host.service_choice.select(7) # Explicit local image-to-mesh; no CLI dependency.
 		host._service_settings_changed()
 	if runtime_path.text.is_empty() and ((fresh and host.bundled_runtime.has('error')) or _saved_bundle_selected()):
 		var reason = host.bundled_runtime.get('error', '当前引擎缺少已选择的 Hunyuan3D 运行库，请恢复完整发行包。')
@@ -97,7 +97,7 @@ func initialize(workbench, settings: ConfigFile):
 	if using_bundle():
 		host.visibility_changed.connect(_resume_on_show)
 		if not (default_bundle or _saved_bundle_selected()): return
-	if autostart.button_pressed and host._service_mode() == 'codex' and not runtime_path.text.is_empty():
+	if autostart.button_pressed and host._service_mode() in ['codex', 'local_mesh'] and not runtime_path.text.is_empty():
 		_restore_connection.call_deferred(host.service_draft(), runtime_path.text)
 
 func using_bundle() -> bool:
@@ -109,7 +109,7 @@ func _uses_native_host() -> bool:
 
 func _saved_bundle_selected() -> bool:
 	return (restore_bundle and not bundled_endpoint.is_empty()
-			and host.service_saved.get('mode') == 'codex'
+			and host.service_saved.get('mode') in ['codex', 'local_mesh']
 			and host.service_saved.get('mesh_model') == BUNDLED_MODEL
 			and host.service_saved.get('endpoint') == bundled_endpoint
 			and host.service_saved == host.service_draft())
@@ -121,7 +121,7 @@ func _resume_on_show():
 func _restore_connection(draft: Dictionary, path: String):
 	if not autostart.button_pressed or not host.is_inside_tree() or host.is_graph_busy(): return
 	if using_bundle() and not _uses_native_host(): return
-	if host._service_mode() != 'codex' or host.service_draft() != draft or runtime_path.text != path: return
+	if host._service_mode() not in ['codex', 'local_mesh'] or host.service_draft() != draft or runtime_path.text != path: return
 	if lease_runtime == path and not lease_path.is_empty() and FileAccess.file_exists(lease_path): return
 	operate('start')
 
@@ -165,7 +165,7 @@ func operate(action: String):
 	host.launch('managed-comfy', request)
 
 func completed(data: Dictionary, request: Dictionary):
-	var changed = (host._service_mode() != 'codex' or requested_service != host.service_draft()
+	var changed = (host._service_mode() not in ['codex', 'local_mesh'] or requested_service != host.service_draft()
 			or requested_host != host.host_edit.text or requested_python != host.python_edit.text)
 	if request.get('runtime_root', '') != runtime_path.text.strip_edges() or (request.get('action') in ['start', 'inspect'] and changed):
 		if data.get('owned', false) and not str(data.get('lease_path', '')).is_empty():
@@ -205,7 +205,7 @@ func failed(message: String):
 	host._show_run_problem(message, 'environment')
 
 func bundled_mesh_blocker() -> String:
-	if not restore_bundle or host._service_mode() != 'codex': return ''
+	if not restore_bundle or host._service_mode() not in ['codex', 'local_mesh']: return ''
 	if not host.service_saved.is_empty() and not _saved_bundle_selected(): return ''
 	if host.service_saved.is_empty() and not using_bundle(): return ''
 	if host.bundled_runtime.has('root') and lease_runtime == host.bundled_runtime.root and not lease_path.is_empty() and FileAccess.file_exists(lease_path): return ''
@@ -218,7 +218,7 @@ func open_log():
 
 func _process(delta):
 	if lease_path.is_empty(): return
-	if host._service_mode() != 'codex':
+	if host._service_mode() not in ['codex', 'local_mesh']:
 		release_connection()
 		return
 	heartbeat_elapsed += delta

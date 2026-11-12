@@ -36,7 +36,74 @@ TEST_FORCE_LINK(test_file_access)
 #include "core/io/file_access.h"
 #include "tests/test_utils.h"
 
+#ifdef WINDOWS_ENABLED
+#include "drivers/windows/file_access_windows_pipe.h"
+#endif
+
 namespace TestFileAccess {
+
+#ifdef WINDOWS_ENABLED
+struct PipeErrorObserver {
+	int errors = 0;
+	ErrorHandlerList handler;
+	PipeErrorObserver() {
+		handler.userdata = &errors;
+		handler.errfunc = [](void *p_data, const char *, const char *, int, const char *, const char *, bool, ErrorHandlerType) {
+			(*static_cast<int *>(p_data))++;
+		};
+		add_error_handler(&handler);
+	}
+	~PipeErrorObserver() { remove_error_handler(&handler); }
+};
+
+TEST_CASE("[FileAccess][WindowsPipe] Writer EOF preserves buffered output without an error") {
+	HANDLE reader = nullptr;
+	HANDLE writer = nullptr;
+	REQUIRE(CreatePipe(&reader, &writer, nullptr, 4096));
+	struct WriterOwner {
+		HANDLE handle;
+		~WriterOwner() {
+			if (handle) {
+				CloseHandle(handle);
+			}
+		}
+	} owner{ writer };
+	Ref<FileAccessWindowsPipe> pipe;
+	pipe.instantiate();
+	REQUIRE(pipe->open_existing(reader, reader, true) == OK);
+	PipeErrorObserver observer;
+	CHECK(pipe->get_length() == 0);
+	const uint8_t payload[] = { 1, 2, 3 };
+	DWORD written = 0;
+	REQUIRE(WriteFile(writer, payload, sizeof(payload), &written, nullptr));
+	REQUIRE(written == sizeof(payload));
+	REQUIRE(CloseHandle(writer));
+	owner.handle = nullptr;
+	CHECK(pipe->get_length() == sizeof(payload));
+	uint8_t output[3] = {};
+	CHECK(pipe->get_buffer(output, sizeof(output)) == sizeof(output));
+	CHECK(output[0] == 1);
+	CHECK(output[1] == 2);
+	CHECK(output[2] == 3);
+	CHECK(pipe->get_length() == 0);
+	CHECK(pipe->get_length() == 0);
+	CHECK(observer.errors == 0);
+}
+
+TEST_CASE("[FileAccess][WindowsPipe] Non-pipe handle errors remain visible") {
+	HANDLE event = CreateEventW(nullptr, true, false, nullptr);
+	REQUIRE(event != nullptr);
+	Ref<FileAccessWindowsPipe> pipe;
+	pipe.instantiate();
+	REQUIRE(pipe->open_existing(event, event, true) == OK);
+	PipeErrorObserver observer;
+	ERR_PRINT_OFF;
+	const uint64_t length = pipe->get_length();
+	ERR_PRINT_ON;
+	CHECK(length == 0);
+	CHECK(observer.errors == 1);
+}
+#endif
 
 TEST_CASE("[FileAccess] Same-directory replacement preserves destination on failure") {
 	Error err;

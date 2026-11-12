@@ -44,6 +44,8 @@ public:
 		OPENAI_CLI,
 		OPENAI_DESKTOP,
 		GODOT,
+		REGISTERED_HOST,
+		REGISTERED_HELPER,
 	};
 
 	struct Process {

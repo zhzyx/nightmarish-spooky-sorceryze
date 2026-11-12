@@ -1,0 +1,64 @@
+{
+  "issue": 840,
+  "integrated_main": "c7a335efde36144ede5d9443bf84bcb17706dd99",
+  "native_build": {
+    "worktree": "D:\\GongGong\\.worktrees\\provider-independence-20261112",
+    "revision": "833fc9bdb40577ebce0d2704196d00be0c7d5538",
+    "source_digest": "9f7c92f159c0a1eadc6f365c0ca5d4ffb09431e3bd406ae7eb3aed0ad1e87d5d",
+    "clean_source": false,
+    "console_sha256": "5931446b70974b49032825599a1f704a3b4d479d18e5f6d8e2d1e7c8e4fdff17",
+    "native": {
+      "status": "built",
+      "key": "cd9c026673f1b9e7d8174ec1f4eb901bc491f06994c3d2a8fbd1f497d073283a",
+      "reason": "",
+      "artifact_sha256": "9e6c7f0fc13dceec9665970fb6e54db16e4542ef7f9de656087fae12c7f7922a",
+      "producer_head": "833fc9bdb40577ebce0d2704196d00be0c7d5538",
+      "consumer_head": "833fc9bdb40577ebce0d2704196d00be0c7d5538",
+      "outputs": {
+        "bin/godot.windows.editor.x86_64.exe": "9e6c7f0fc13dceec9665970fb6e54db16e4542ef7f9de656087fae12c7f7922a",
+        "bin/godot.windows.editor.x86_64.console.exe": "5931446b70974b49032825599a1f704a3b4d479d18e5f6d8e2d1e7c8e4fdff17"
+      }
+    },
+    "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "aichat": "passed"
+  },
+  "native_tests": {
+    "aichat_passed": 88,
+    "aichat_assertions": 1598,
+    "windows_pipe_passed": 2,
+    "windows_pipe_assertions": 18
+  },
+  "startup_regression": {
+    "passed": true,
+    "checks": 30,
+    "errors": [],
+    "secret_on_disk": false,
+    "binary_sha256": "9e6c7f0fc13dceec9665970fb6e54db16e4542ef7f9de656087fae12c7f7922a",
+    "initial_errors": [
+      "ERROR: Condition \"!PeekNamedPipe(fd[0], nullptr, 0, nullptr, &buf_rem, nullptr)\" is true. Returning: 0"
+    ],
+    "strict_gate_unchanged": true
+  },
+  "repair": "Treat only ERROR_BROKEN_PIPE as zero remaining bytes after final pipe drain; other API errors still emit diagnostics",
+  "independent_review": "/root/sinan_c0fe010abbc02e98",
+  "previous_windows_ci": {
+    "run": 43123180329,
+    "state": "success",
+    "candidate": "ea31b992e7083da4bbd72cf9647c4cd9de3046fc"
+  },
+  "previous_macos_preflight": {
+    "run": 43123215252,
+    "state": "passed_actual_vendor_signatures_versions_and_launchd",
+    "full_run": "still_running_on_previous_candidate"
+  },
+  "current_exact_candidate_ci": "pending signed submission",
+  "source_blobs": {
+    "drivers/windows/file_access_windows_pipe.cpp": "bc5d1493e963952316074fb47959bcd602021297",
+    "tests/core/io/test_file_access.cpp": "794203d64d81417da0e973f6cef84fcb8914c637",
+    "editor/docks/daqian/model_settings.gd": "28c2c4d31ba16e6380366cd32e73f41eead813d6",
+    "editor/docks/daqian/startup_checks.gd": "a11190e677c8b64735d6895115e670c57b99deb5",
+    "editor/docks/daqian/startup_git.gd": "1a4ad2df98db36f923cfc2b5d236663be01b0847",
+    "editor/docks/ai_chat_external_peer.cpp": "a085264e5d1599769bcc1a6ec94ba85dc2b274ec",
+    "editor/docks/ai_chat_dock.cpp": "7dc42cf0f702cb42d51892da38a42f4a3f5385d2"
+  }
+}

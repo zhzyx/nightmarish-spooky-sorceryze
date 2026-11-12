@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e8101067b00ae1d9273f1cd8cf499585d54dcdad",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "provider-independence-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b7f2ce181bc2ddf81853e1c9d8e07eb661244a11a04f5f5e76f76de706da1ba0",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/844",
+    "action": "validation",
+    "detection_head": "42be6c18f40c952f305fd72d8809d23e5a2d8ab0",
+    "context_sha256": "61104106c745d8b62350066d75bf7a56af8eca10989ffcebd8fc8b450020b8b5",
+    "operator": "Sail-Li",
+    "worker": "/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43111628663/job/130828852261",
+    "diagnosis": "file-format normalized immutable CRLF validation evidence already bound by learning revision 12; exact file exclusion now matches existing .gitattributes rule and independent review verified blob preservation; no production code changed",
+    "next_action": "Run original file-format check on eligible files, submit corrected candidate and verify actual replacement CI before declaring recovery",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T22:31:29.655481+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T22:31:59.969450+00:00",
+  "sha256": "09d08332740ae4f6b432f9865312cf4cac5ae15bf13de85f1d403077fe30eb6f"
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-287e2235f8c3cc1a0c3fbec46d33185f1069f255d8e9dcf2334f5b4f57a3f2eb",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+  "occurred_at": "2026-11-12T00:53:47.905325+00:00",
+  "evidence_refs": [
+    "provider-independence-20261112-request"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "check-fixture-against-accepted-config-contract",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "整合改变配置归属的已接受上游设计时，先回读设计及实际存储/传播入口，再校准旧验收夹具；保留独立状态、过期结果拒绝与查询去重断言，并用同一真实二进制对比修正前后。平台包装器要记录执行入口与实际子进程身份，并复制完整受测边界依赖。",
+      "when": "普通会话从会话级选择迁移为项目共享配置，或跨平台执行夹具新增包装器而旧测试继续使用子进程PID查询宿主退出码。",
+      "counterexample": "当前实现偏离已接受设计时应修复生产，不可改测试迎合错误；仅删除失败断言、替换进程隔离或不保留前失败证据不能证明修复。",
+      "trial_plan": "在隔离副本按已接受项目配置契约运行旧/新夹具；同二进制旧独立选择预期应失败，新共享metadata与独立草稿应通过；故意恢复旧catalog、增加重复查询或遗漏Windows边界helper时新夹具必须失败。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/provider-independence-840-2d0.json",
+        "sha256": "7a8f17f6cf642db2f190b25c38e7cfd529c6816c013b052882ccbfa10f42f9be"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/provider-independence-20261112/provider-independence-20261112-request.json",
+      "sha256": "8ae982f87edaeefa321dde77ef1ac129429b842560a2839d679c9ec4a2bb8290"
+    }
+  },
+  "sha256": "f874b8990eeb4dbe255dec61501016e70486c0021acb57a4f179582e6f95794d"
+}

@@ -94,7 +94,8 @@ func run():
 		return
 	var available_modes: Array = []
 	for i in panel.service_choice.item_count: available_modes.append(panel.service_choice.get_item_metadata(i))
-	check(available_modes == ["offline","comfy","legacy","codex","codex_modeling","codex_sculpt","kimi_native"], "settings preserve existing services and expose Kimi Native")
+	for expected_mode in ["offline", "comfy", "legacy", "codex", "codex_modeling", "codex_sculpt", "kimi_native", "local_mesh", "api_modeling", "api_sculpt"]:
+		check(expected_mode in available_modes, "settings expose service mode: " + expected_mode)
 	check(panel._service_mode() == "offline" and panel.service_saved.is_empty(), "a fresh project starts without a claimed real generation service")
 	check(panel.service_status.text.contains("离线") and panel.service_capability_labels.copy.text.contains("可用"), "fresh settings clearly show offline copying availability")
 	set_node("text_to_image", "", "fixture prompt; do not submit")
@@ -240,7 +241,13 @@ func run():
 	check(kimi_draft.endpoint == "https://api.kimi.com/coding/v1" and not kimi_draft.has("cli_path") and not kimi_draft.has("blender_path"), "Kimi Native does not inherit ComfyUI, Codex or Blender configuration")
 	check(panel._generator_provider("text_to_mesh") == "kimi_native" and panel._generator_provider("image_to_mesh") == "kimi_native", "Kimi Native routes both Mesh node kinds")
 	panel.save_service_settings()
-	check(panel._service_blocker("text_to_image").contains("不支持二维图像") and panel._service_blocker("image_to_image").contains("不支持二维图像"), "Kimi Native explicitly rejects 2D image-generation nodes")
+	check(panel._service_blocker("text_to_mesh").is_empty(), "saved Kimi configuration permits its mesh node kind before runtime authentication")
+	for unsupported_kind in ["text_to_image", "image_to_image"]:
+		set_node(unsupported_kind, "", "fixture prompt; do not submit")
+		serial = panel.serial
+		check(not panel._service_blocker(unsupported_kind).is_empty(), "Kimi rejects unsupported node: " + unsupported_kind)
+		panel.run_node_preview("fixture")
+		check(panel.serial == serial and panel.jobs.is_empty(), "unsupported Kimi node is rejected before subprocess creation: " + unsupported_kind)
 	var kimi_json = FileAccess.get_file_as_string(panel.service_config_path)
 	check(panel.service_saved == kimi_draft and not kimi_json.contains("api_key") and not kimi_json.contains("secret") and not kimi_json.contains("authorization"), "Kimi Native saves model identity without credentials")
 	panel.queue_free()

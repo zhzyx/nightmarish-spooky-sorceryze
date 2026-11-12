@@ -107,7 +107,12 @@ uint64_t FileAccessWindowsPipe::get_length() const {
 	ERR_FAIL_COND_V_MSG(fd[0] == nullptr, -1, "Pipe must be opened before use.");
 
 	DWORD buf_rem = 0;
-	ERR_FAIL_COND_V(!PeekNamedPipe(fd[0], nullptr, 0, nullptr, &buf_rem, nullptr), 0);
+	if (!PeekNamedPipe(fd[0], nullptr, 0, nullptr, &buf_rem, nullptr)) {
+		const DWORD error = GetLastError();
+		// A drained pipe whose writer exited has no remaining bytes.
+		ERR_FAIL_COND_V(error != ERROR_BROKEN_PIPE, 0);
+		return 0;
+	}
 	return buf_rem;
 }
 

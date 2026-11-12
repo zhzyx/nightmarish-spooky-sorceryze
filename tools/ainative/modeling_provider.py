@@ -16,9 +16,22 @@ import sys
 import time
 from pathlib import Path
 
-from codex_provider import CodexProvider, _creationflags, _environment, resolve_cli, validate_png
 from comfy_provider import digest, register, validate_embedded_glb
 from extensions import NodeRegistry, canonical, require, validate_invocation
+from provider_common import DurableProvider, _creationflags, _environment, validate_png
+
+
+def resolve_cli(path):
+    from codex_provider import resolve_cli as resolve
+
+    return resolve(path)
+
+
+def _cli_environment():
+    from codex_provider import _environment as environment
+
+    return environment()
+
 
 VERSION = "1"
 MAX_PLAN_BYTES = 256 * 1024
@@ -46,6 +59,16 @@ MESSAGES = {
     "invalid_input": "输入图像内容或摘要无效。",
     "worker_failed": "建模工作进程失败；私有回执已保留，未自动重试。",
 }
+MESSAGES.update({
+    name: message
+    for name, message in (
+        ("api_config_invalid", "API 地址、模型或凭据环境变量配置无效。"),
+        ("api_key_missing", "未检测到指定的 API 凭据环境变量。"),
+        ("api_output_invalid", "API 返回的规划不符合协议，未执行生成代码。"),
+        ("api_execution_failed", "API 请求失败或回执未知，未自动重试。"),
+        ("api_timeout", "API 请求超时，已停止本任务进程，未自动重试。"),
+    )
+})
 _WORKERS: list[subprocess.Popen[bytes]] = []
 
 
@@ -140,7 +163,7 @@ def check_modeling_cli(path):
                 [cli, "--no-daemon", *arguments],
                 stdin=subprocess.DEVNULL,
                 capture_output=True,
-                env=_environment(),
+                env=_cli_environment(),
                 timeout=15,
                 creationflags=_creationflags(),
             )
@@ -368,14 +391,25 @@ def validate_mesh(data):
     )
 
 
-class ModelingProvider(CodexProvider):
+class ModelingProvider(DurableProvider):
     CONFIG_KEYS = frozenset(("cli_path", "storage", "godot_path", "builder_path"))
     DATABASE_NAME = "modeling-jobs.sqlite"
     MESSAGES = MESSAGES
 
     def __init__(self, config):
-        require(isinstance(config, dict) and set(config) == self.CONFIG_KEYS, "invalid modeling config")
-        require(all(isinstance(value, str) and value.strip() for value in config.values()), "invalid modeling config")
+        require(
+            isinstance(config, dict)
+            and set(config) in (self.CONFIG_KEYS, (self.CONFIG_KEYS - {"cli_path"}) | {"planner"}),
+            "invalid modeling config",
+        )
+        require(
+            all(isinstance(value, str) and value.strip() for name, value in config.items() if name != "planner"),
+            "invalid modeling config",
+        )
+        if "planner" in config:
+            from api_planner import validate_config
+
+            validate_config(config["planner"])
         self.config = json.loads(canonical(config))
         self.storage = Path(config["storage"]).expanduser().resolve()
         self.storage.mkdir(parents=True, exist_ok=True)
@@ -386,14 +420,20 @@ class ModelingProvider(CodexProvider):
         self.fingerprint = digest([
             self.config,
             hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            hashlib.sha256(Path(__file__).with_name("provider_common.py").read_bytes()).hexdigest(),
+            hashlib.sha256(Path(__file__).with_name("api_planner.py").read_bytes()).hexdigest()
+            if "planner" in config
+            else None,
             hashlib.sha256(builder.read_bytes()).hexdigest() if builder.is_file() else None,
         ])
 
     def describe(self):
         return dict(
-            id="codex-modeling",
+            id="api-modeling" if "planner" in self.config else "codex-modeling",
             version=VERSION,
-            model="Codex CLI modeling instructions + Godot primitives",
+            model=self.config["planner"]["model"]
+            if "planner" in self.config
+            else "Codex CLI modeling instructions + Godot primitives",
             model_version=self.fingerprint,
             capabilities=["text_to_mesh", "image_to_mesh"],
             context_types=["text", "image"],
@@ -404,6 +444,10 @@ class ModelingProvider(CodexProvider):
         return Path(__file__).resolve()
 
     def check_authentication(self):
+        if "planner" in self.config:
+            from api_planner import check_configuration
+
+            return check_configuration(self.config["planner"])
         return check_modeling_cli(self.config["cli_path"])
 
     def finish(self, key, state, code=None, result=None):
@@ -528,7 +572,7 @@ class ModelingProvider(CodexProvider):
                 stdin=stdin if stdin is not None else subprocess.DEVNULL,
                 stdout=stdout,
                 stderr=stderr,
-                env=_environment(),
+                env=_cli_environment() if label == "cli" else _environment(),
                 creationflags=_creationflags(),
             )
             deadline = time.monotonic() + timeout
@@ -559,7 +603,7 @@ class ModelingProvider(CodexProvider):
 
     def _instructions(self, key, plan, directory):
         arguments = [
-            resolve_cli(self.config["cli_path"]),
+            resolve_cli(self.config["cli_path"]) if "planner" not in self.config else "",
             "--no-daemon",
             "exec",
             "--json",
@@ -617,6 +661,18 @@ class ModelingProvider(CodexProvider):
         )
         (directory / "schema.json").write_text(canonical(modeling_schema()), encoding="utf-8")
         (directory / "prompt.txt").write_text(prompt, encoding="utf-8")
+        if "planner" in self.config:
+            from api_planner import instructions
+
+            outcome = instructions(self, key, directory, arguments)
+            if outcome is None:
+                return None
+            response, receipt = outcome
+            validated = validate_plan(response)
+            receipt["instructions_sha256"] = digest(validated)
+            self.write(key, instruction_receipt=receipt)
+            (directory / "validated-plan.json").write_text(canonical(validated), encoding="utf-8")
+            return validated, receipt
         with (directory / "prompt.txt").open("rb") as source:
             exit_code = self._run_owned(key, arguments, directory, "cli", stdin=source)
         if exit_code is None:
@@ -697,7 +753,7 @@ class ModelingProvider(CodexProvider):
 
     def _artifact(self, key, record, instructions, instruction_receipt, builder_receipt, data, sha):
         return dict(
-            id="codex-modeling-" + key,
+            id=self.describe()["id"] + "-" + key,
             revision=sha,
             type="mesh",
             payload=dict(
@@ -706,9 +762,9 @@ class ModelingProvider(CodexProvider):
                 extension=".glb",
                 bytes=len(data),
                 provenance=dict(
-                    provider="codex-modeling",
+                    provider=self.describe()["id"],
                     cli_version=record["cli_report"]["version"],
-                    auth_mode="chatgpt",
+                    auth_mode="api_key" if "planner" in self.config else "chatgpt",
                     execution="validated_declarative_primitives_in_godot",
                     instructions_sha256=digest(instructions),
                     instruction_receipt=instruction_receipt,

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "provider-host-20261112-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "provider-host-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-11T22:00:47.498536+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/843",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee"
+  },
+  "payload": {
+    "scope": "host",
+    "authorization_ref": "当前用户明确要求全部执行处理和修复",
+    "design": "design-docs/provider-host-20261112.md",
+    "parent_issue": 840,
+    "acceptance_update": "用户明确暂不验收非Codex真实生成，Kimi由其他人验证；本地协议、构建器、配置、兼容和权限验证继续。",
+    "usage": null,
+    "usage_unknown_reason": "Actual tool token/cost usage not exposed"
+  },
+  "evidence_refs": [],
+  "sha256": "d6dd41c64779799bc7cc64fa9a26078f69e548f65d04b4f1cb34f5504b31adaf"
+}

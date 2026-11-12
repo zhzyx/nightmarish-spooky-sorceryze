@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-40aa5499dc266562f0085381ad41ab0a28eff7bc05a20e41052a3ce385009c8d",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/840",
+  "occurred_at": "2026-11-11T22:17:21.152095+00:00",
+  "evidence_refs": [
+    "provider-independence-20261112-request",
+    "learn-54cea5e5f90f9807a997cf117756808a46fe8972aa6e2c24b884569d3e8d1383"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 12,
+    "previous": "3ce7dd2c38273e543185a55e9ba9a700707847614c8b5891cfd6042f06e6eaf7",
+    "action": "applied",
+    "details": {
+      "task": "#840: provider independence, embedded Python and GDScript plus native host authentication",
+      "observed": "Followed editor/SCsub through bundle.gen.h and observed regeneration, plugin compilation and editor relink. Final Windows candidate passed 88 native cases. Active logs inside the checkout invalidated the conservative cache; moving diagnostic outputs outside the checkout restored stable-input verification. No cache checks bypassed; macOS and real provider scope kept separate."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/provider-independence-840.json",
+        "sha256": "3055b1bfb48679a8f139672b2ef43427d746c1f91475c578fbab3456dc0c5394"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/provider-independence-20261112/provider-independence-20261112-request.json",
+      "sha256": "8ae982f87edaeefa321dde77ef1ac129429b842560a2839d679c9ec4a2bb8290"
+    }
+  },
+  "sha256": "dbe01294da69c07425c9e519d2c9a609f1df4463bbda416aa592f0735c69ce28"
+}

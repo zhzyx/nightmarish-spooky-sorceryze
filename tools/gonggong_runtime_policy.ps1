@@ -1,4 +1,4 @@
-# Trusted installed-host context for one bounded model data-selection step.
+# Trusted installed-host context for one bounded deterministic runtime-selection step.
 # These hashes are part of the reviewed host implementation, not a workspace lock.
 $script:RuntimePolicyHostRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $script:RuntimePolicyPins = @'
@@ -57,7 +57,7 @@ function Read-RuntimeHostPolicy([string]$OperationId, [string]$InventoryHash) {
         delegation=$false
         publication_authority=$false
         framework_operation_authority=$false
-        consumption='one provider invocation; no automatic retry; actual usage unknown'
+        consumption='deterministic local selection; no model/provider invocation or usage'
         acceptance='existing host revalidates paths and alone applies the original user-requested setup'
     }
     $context = ''

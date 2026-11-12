@@ -16,6 +16,7 @@ import uuid
 from pathlib import Path
 
 from editor_test_isolation import copy_editor
+from run_runtime_setup_simulation import make_package
 from runtime_policy_fixture import copy_runtime_policy
 from runtime_selector_fixture import native_selector
 
@@ -297,13 +298,35 @@ def main():
         )
         for name in ("GONGGONG_PYTHON", "GONGGONG_NODE", "GONGGONG_CODEX"):
             env.pop(name, None)
-        bootstrap_runtimes = {"workflow_python": sys.executable, "node": shutil.which("node")}
+        bootstrap_runtimes = {"workflow_python": sys.executable, "node": shutil.which("node"), "codex": ""}
+        selector_marker = None
+        expected_runtime_paths = None
         assert bootstrap_runtimes["node"], "Native fixture needs the existing host Node"
         env["GONGGONG_GIT"] = shutil.which("git")
         assert env["GONGGONG_GIT"], "Native fixture needs the existing host Git"
         if args.runtime_source or direct_runtime:
-            runtime_source = args.runtime_source.resolve() if args.runtime_source else None
-            env["GONGGONG_RUNTIME_SOURCE"] = str(runtime_source) if runtime_source else ""
+            if direct_runtime:
+                # Keep workflow_python mutable so the scene can trigger missing Python.
+                # The explicit source package exposes a launcher for the requested Python
+                # to deterministic discovery without a persistent environment override.
+                runtime_source = root / "direct-runtime-source"
+                direct_paths = {
+                    "python": args.runtime_python.resolve(strict=True),
+                    "node": args.runtime_node.resolve(strict=True),
+                    "git": args.runtime_git.resolve(strict=True),
+                }
+                make_package(runtime_source, direct_paths)
+                bootstrap_runtimes["node"] = str(direct_paths["node"])
+                env["GONGGONG_GIT"] = str(direct_paths["git"])
+            else:
+                runtime_source = args.runtime_source.resolve()
+            env["GONGGONG_RUNTIME_SOURCE"] = str(runtime_source)
+            expected_runtime_paths = {
+                "python": str(runtime_source / "python/python.exe"),
+                "node": bootstrap_runtimes["node"],
+                "git": env["GONGGONG_GIT"],
+                "gh": env["GONGGONG_GH"],
+            }
             env["GONGGONG_TEST_RUNTIME_PYTHON"] = (
                 str(args.runtime_python.resolve()) if direct_runtime else str(runtime_source / "python/python.exe")
             )
@@ -313,7 +336,7 @@ def main():
             env["GONGGONG_TEST_RUNTIME_GIT"] = (
                 str(args.runtime_git.resolve()) if direct_runtime else str(runtime_source / "git/cmd/git.exe")
             )
-            fake_codex, _marker = native_selector(
+            fake_codex, selector_marker = native_selector(
                 root / "native-selector",
                 {
                     "python": env["GONGGONG_TEST_RUNTIME_PYTHON"],
@@ -322,8 +345,10 @@ def main():
                     "gh": env["GONGGONG_GH"],
                 },
             )
-            env["GONGGONG_TEST_CODEX"] = str(fake_codex)
-            bootstrap_runtimes["codex"] = str(fake_codex)
+            # A discoverable trap proves generic setup never invokes a provider.
+            # It is not configured as an editor runtime or used to enable the scenario.
+            env["CODEX_EXE"] = str(fake_codex)
+            env["GONGGONG_TEST_RUNTIME_SETUP"] = "1"
 
         # The panel checks runtime readiness in its constructor's deferred work.
         # Establish the valid bootstrap before the editor starts, then let the
@@ -379,6 +404,24 @@ def main():
             encoding="utf-8",
         )
         assert result.returncode == 0 and b"REQUIREMENTS_AGENT_NATIVE_OK" in result.stdout, result.stdout[-3500:]
+        if selector_marker is not None:
+            assert not selector_marker.exists(), "Generic setup invoked the Codex trap"
+            setup_results = [
+                json.loads(path.read_text(encoding="utf-8-sig"))
+                for path in (installation / "editor_data").rglob("gonggong-setup-*.json")
+                if not path.name.endswith(".progress.json")
+            ]
+            configured = [value for value in setup_results if value.get("state") == "configured"]
+            assert configured, "Missing actual successful runtime deployment receipt"
+            assert all(value["agent"]["provider_started"] is False for value in configured)
+            for value in configured:
+                for component, expected in expected_runtime_paths.items():
+                    assert Path(value[component]).resolve() == Path(expected).resolve(), (
+                        "Runtime selection did not use the explicit fixture path",
+                        component,
+                        value[component],
+                        expected,
+                    )
         issues = json.loads((root / "fake-issues.json").read_text())
         assert len(issues) == 5, issues
         documents = list((root / "design-docs").glob("*.md"))
@@ -428,6 +471,11 @@ def main():
             "ok": True,
             "native_page": True,
             "runtime_setup_and_resume": bool(args.runtime_source or direct_runtime),
+            "runtime_setup_provider_invoked": False if selector_marker is not None else None,
+            "runtime_setup_explicit_paths_verified": expected_runtime_paths is not None,
+            "runtime_setup_source_kind": "compiled launchers to explicit binaries"
+            if direct_runtime
+            else "supplied package",
             "catalog_requests": catalog_requests,
             "bootstrap_runtime_configuration": "private installation JSON; mutable fields, no Python/Node/Codex override",
             "windows_owned_process_cleanup": "verified Job empty" if os.name == "nt" else "not applicable",
@@ -457,7 +505,7 @@ def main():
             "fixture_events_imported": False,
         }
         if args.runtime_source or direct_runtime:
-            report["cases"].insert(0, "missing runtime starts an independent AI Agent and resumes the original request")
+            report["cases"].insert(0, "missing runtime runs deterministic host setup and resumes the original request")
         args.out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(json.dumps(report))
 
