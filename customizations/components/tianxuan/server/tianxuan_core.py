@@ -29,6 +29,10 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS sessions (
   token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS invites (
+  token_hash TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, email TEXT NOT NULL, role TEXT NOT NULL,
+  created_by TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL, accepted_at TEXT
+);
 CREATE TABLE IF NOT EXISTS spaces (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, name TEXT NOT NULL, slug TEXT NOT NULL, created_at TEXT NOT NULL
 );
@@ -332,8 +336,86 @@ class Tianxuan:
         self.db.commit()
         return {"user_id": user_id, "role": role}
 
-    # ---------- 文曲：文档 ----------
+    def create_invite(self, actor: str, email: str, role: str = "editor", ttl_seconds: int = 604_800) -> dict[str, Any]:
+        if self.role_of(actor) != "admin":
+            raise PermissionDenied("only admin can invite members")
+        if role not in {"admin", "editor", "viewer"}:
+            raise TianxuanError("role must be admin, editor or viewer")
+        if not email.strip():
+            raise TianxuanError("email is required")
+        code = "txi_" + uuid.uuid4().hex + uuid.uuid4().hex
+        now = datetime.now(timezone.utc)
+        expires = now + timedelta(seconds=ttl_seconds)
+        self.db.execute(
+            "INSERT INTO invites (token_hash, tenant_id, email, role, created_by, created_at, expires_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (
+                _token_hash(code),
+                self._tenant_of(actor),
+                email.lower(),
+                role,
+                actor,
+                now.isoformat(timespec="seconds"),
+                expires.isoformat(timespec="seconds"),
+            ),
+        )
+        self.db.commit()
+        return {
+            "code": code,
+            "email": email.lower(),
+            "role": role,
+            "expires_at": expires.isoformat(timespec="seconds"),
+        }
 
+    def accept_invite(self, code: str, password: str, name: str = "") -> dict[str, Any]:
+        token_hash = _token_hash(code)
+        row = self.db.execute("SELECT * FROM invites WHERE token_hash = ?", (token_hash,)).fetchone()
+        if row is None or row["accepted_at"] is not None:
+            raise TianxuanError("invite is invalid or already used")
+        try:
+            expires = datetime.fromisoformat(row["expires_at"])
+        except ValueError as error:
+            raise TianxuanError("invite has an invalid expiry") from error
+        if expires <= datetime.now(timezone.utc):
+            raise TianxuanError("invite has expired")
+        if not password:
+            raise TianxuanError("password is required")
+        salt = uuid.uuid4().hex
+        user_id = _id("usr")
+        display_name = name or row["email"].split("@")[0]
+        try:
+            self.db.execute(
+                "INSERT INTO users (id, tenant_id, email, name, password_hash, salt, role, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    user_id,
+                    row["tenant_id"],
+                    row["email"],
+                    display_name,
+                    _hash_password(password, salt),
+                    salt,
+                    row["role"],
+                    _now(),
+                ),
+            )
+            self.db.execute(
+                "UPDATE invites SET accepted_at = ? WHERE token_hash = ?",
+                (_now(), token_hash),
+            )
+        except sqlite3.IntegrityError as error:
+            self.db.rollback()
+            raise TianxuanError("email is already registered") from error
+        self._event(row["tenant_id"], "user.invited", row["created_by"], user_id, {"role": row["role"]})
+        self.db.commit()
+        return {
+            "user_id": user_id,
+            "tenant_id": row["tenant_id"],
+            "email": row["email"],
+            "name": display_name,
+            "role": row["role"],
+        }
+
+    # ---------- 文曲：文档 ----------
     def create_doc(
         self,
         actor: str,
