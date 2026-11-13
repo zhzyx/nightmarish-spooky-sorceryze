@@ -3,8 +3,13 @@
   "version": "0.1.0",
   "candidate_digest": "f5a3c422149a6ba9a6ceca8ef5dd10e4f51bce8077d5c6a2d88789ec2abb7c86",
   "state": "pending_admission",
-  "review": "data-collection/tianxuan-agents-review-20261114.json",
+  "review": "data-collection/tianxuan-agents-review2-20261114.json",
   "approved": false,
   "approver": null,
-  "note": "Candidate only; no admission, execution authority or tool permission is granted."
+  "note": "Candidate only; no admission, execution authority or tool permission is granted.",
+  "review_history": [
+    "data-collection/tianxuan-agents-review-20261114.json",
+    "data-collection/tianxuan-agents-review2-20261114.json"
+  ],
+  "review_current_commit": "dad9ef6d"
 }

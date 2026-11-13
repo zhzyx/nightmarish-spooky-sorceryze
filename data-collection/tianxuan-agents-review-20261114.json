@@ -25,11 +25,17 @@
     "wenqu doc-authoring omitted request_id from frontmatter"
   ],
   "digests_after_remediation": {
+    "wenqu": "fadc5a88ab1487a870f590de6e22ea4ec890bc097e936014ae7f70079a8bef81",
+    "duobao": "2e10f40366415f527f35f4ca20c647d786d554351027174ce6a6106042d7c7b0",
+    "sinan-workorders": "3a770b107f263a0896dc5976d6763a3b8df86ca011521a474c13d2f1585ac1c5"
+  },
+  "approval": null,
+  "review_pass": null,
+  "note": "Independent review record, not an approval. The first review's blockers were addressed in 526ae131 and reviewed again; admission remains pending.",
+  "digests_current_at_dad9ef6d": {
     "wenqu": "f5a3c422149a6ba9a6ceca8ef5dd10e4f51bce8077d5c6a2d88789ec2abb7c86",
     "duobao": "83a0455896f4ec821ea2674f7845c7a38c1dc4f4577692277bc40511dc49c4c2",
     "sinan-workorders": "e77011ad30006fb4f0537f3881786e40f1e1d2c157a3e4b4b644ee5e9b76d71a"
   },
-  "approval": null,
-  "review_pass": null,
-  "note": "Independent review record, not an approval. The first review's blockers were addressed in 526ae131 and reviewed again; admission remains pending."
+  "current_commit": "dad9ef6d"
 }
