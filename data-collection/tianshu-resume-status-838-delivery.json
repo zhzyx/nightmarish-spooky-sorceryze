@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "issue": 838,
+  "parent_issue": 978,
+  "request_id": "kuafu-local-827-74ce4f03babbaacaf1a22f529bc7da5c4ae1561a8a0867ca47f89d1c4d2be391",
+  "recorded_at": "2026-11-13T10:27:44.112067+00:00",
+  "operator": "Sail-Li",
+  "authority": "Explicit user handoff to current session for838; original broad AI/GitHub refactor and workspace review/cleanup",
+  "delivery": {
+    "pr": 1044,
+    "source": "94a9eb0581e1da810c24341f86ea6dc44ea05158",
+    "signed_commit": "47efd7a2d2af3a033092d1f72cb7d1b650975e91",
+    "tree": "b57bbbeefc99dcf201f14e76aabadb996622c760",
+    "main": "c827551e86ad37551302a6df3dc37d4d63a3638c",
+    "pr_ci": 43405856095,
+    "main_ci": 43407287865,
+    "both_ci": "success",
+    "main_contains_source": true,
+    "main_tree_matches_signed_candidate": true,
+    "closed_at": "2026-11-13T10:25:11Z",
+    "issue_state": "closed",
+    "state_reason": "completed",
+    "status": "status:done",
+    "old_pr847": "closed as superseded; not merged"
+  },
+  "acceptance": {
+    "manual_bound_recovery": "passed",
+    "direct_actor_revision_confirmation_preserved": "passed",
+    "automatic_initial_and_child_return_status_rejected": "passed",
+    "normal_parent_completion": "passed controlled fixture",
+    "other_rejections_recovery_cancel": "passed",
+    "macos_native_scenarios": 9,
+    "macos_native_units": {
+      "cases": 4,
+      "assertions": 74
+    },
+    "bridge_units": 49,
+    "windows_pr_and_main": {
+      "cases_passed": 1578,
+      "assertions_passed": 474797,
+      "cases_skipped": 3,
+      "reasoning_full_reopen_legacy": true,
+      "runtime_interruption_and_requirements_recovery": true
+    },
+    "independent_review": "no blocking findings after P2 automatic-parent fix; original review retained"
+  },
+  "cleanup": {
+    "new_removed_worktrees": [
+      "ai-chat-status-recovery-integration-20261113",
+      "tianshu-resume-status-20261112"
+    ],
+    "new_removed_count": 2,
+    "cumulative_removed_count": 27,
+    "remaining_worktree_count": 34,
+    "deleted_local_branches": [
+      "codex/ai-chat-status-recovery-integration-20261113",
+      "codex/tianshu-status-recovery-delivery-20261113"
+    ],
+    "deleted_remote_branches": [
+      "codex/submit/Sail-Li/838/94a9eb0581e1da810c24341f86ea6dc44ea05158",
+      "codex/submit/Sail-Li/838/f5e2743d94f132e546166b562e0b7f828b1f7705"
+    ],
+    "retained_original_branch": "codex/tianshu-resume-status-20261112 (f5e source is not a main ancestor)",
+    "preserved": "Original unstaged/index patches, exact source copies, 6334 original private evidence files in verified archive, current68cb native binary and UI, earlier1038 rollback, all other task resources",
+    "effective_installation_changed": false,
+    "original_dirty_root_unchanged": true
+  },
+  "limits": [
+    "Original827 preview and production acceptance still belongs to original responsibility chain; parent978 open",
+    "Controlled model/GitHub fixtures are not real provider inference or production writes",
+    "Skipped graph/cross-provider/consultation CI jobs are not passed",
+    "No effective installation update",
+    "Historical collection records unchanged; this is append-only delivery evidence"
+  ],
+  "private_receipt_resolution_base": "Host-private evidence in the original shared checkout: resolve git rev-parse --path-format=absolute --git-common-dir from the candidate worktree, take its parent, then append data-collection/receipts/ai-integration-refactor-20261112. Not the linked candidate worktree root; private receipts are retained by the host, not shipped in Git.",
+  "private_receipts_sha256": {
+    "issue838-user-handoff-accepted.json": "8fd65bc57ae73e4cbf229b0cf01c7f738a251b2331c3654a86a2e52bcf30917d",
+    "issue838-handoff-readback.json": "f0f9de162957fa6b5029deab3c11955b409a0e83ab8ae27cb98bcc47a28a5ea6",
+    "issue838-staged-review-verification.json": "6252dcc2b6a0c7b5f9099a019078d2a99979133a5269d8a462f856e509bb9bc3",
+    "issue838-current-review-reconciled.json": "0d76327eebe1192111b46ece32d254aafd5425c8f82b232d4d6e724f3dd264b3",
+    "issue838-writer-submit.json": "307fcfc8f327709002c66dc17e217c56f79cf4e8d595cc416e6ec1874fbaa0c8",
+    "issue838-pr1044-signature.json": "1407a4aff8ca97a4367cb79ec35ee54477638900d6c007b495691715ab8d7024",
+    "issue838-pr1044-ci.json": "584474d3a72bd5fffb6cfee620b8b49d573ea1cc137583f8a09b3eda049e2509",
+    "issue838-pr1044-merged.json": "8f1cb3a4c1be80f737dbf02d9079734c0efbb1fee2371f7b8f6801b8566536bc",
+    "issue838-main-readback.json": "9471ecf9b72c9ffdcc131326b995a754df269abcf0a66cc181a218f5a915d509",
+    "issue838-main-ci.json": "b71cb0ab1c33c28e74387bbd224f3a051931fb7b507f5ef3fa7a80fc58d241e6",
+    "issue838-pr1044-windows.log": "fc5c14103abb379316d0dc0b11045ec3b43a7314857c6509677abab1a5e8c0b6",
+    "issue838-main-windows.log": "4b94489fed69250d053292b9e45f5c7eadd71f3801b6b9dac26cd596fc6809f4",
+    "issue838-main-reasoning/native.json": "cddb46546040ee2d441da5fb0a93d33c165882c638ce0ee18fb955e9a8fa631e",
+    "issue838-main-runtime/summary.json": "6d18b91f50a557e39d4fc9fe2ca52e737b42191906ea6422bf72d9e9fce805b8",
+    "issue838-main-runtime/runtime-setup.json": "33f65dd6f76e19eaf13163c5ed359eefb914f8459ecb7b6e448641f991c801c0",
+    "issue838-main-runtime/requirements-intake.json": "e025648fc7a4978301d9396f57636f8a40caf80211752028a62b9471c96d3d30",
+    "issue838-closed-readback.json": "c1d6373e0017910c45fc659677c0a13911e146c1f3daddbf222193b17dec21e4",
+    "issue838-old847-closed-readback.json": "5cda8eeb97a188050f45e3af66c165324fc50dd3ff319e7ea2ade5a8811e65c5",
+    "issue838-cleanup.json": "c545f05edd494eea78bfc9ce4c5280954935ff2506482ff54299c32eed91406e",
+    "issue838-remote-cleanup.json": "194688647441971be68dd33bc0d1c653cfb6cee30319d9b59df76c2f221624ba",
+    "issue838-validated-binary-preserved.json": "3d89b7f6dc8063d311da5628c232e9897b91df921bf84137614ac901651f971e",
+    "issue838-retired-candidates-archive/tianshu-resume-status-20261112/private-evidence-archive.json": "f60acf82a2480d3420284e907a9b5a839f68ff1277d692868deb7c2da8b42423",
+    "../issue838-current-review-20261113/final-review.json": "b6c085bc78a82b5c42d0d54998eefdb80935b7c609363b6ff72d70ca895d46fb"
+  }
+}
