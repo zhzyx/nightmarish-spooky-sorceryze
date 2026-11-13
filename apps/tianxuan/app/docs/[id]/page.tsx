@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { DocComments } from "@/components/DocComments";
 import { DocEditor } from "@/components/DocEditor";
 import { DocSharing } from "@/components/DocSharing";
 import { fetchDoc } from "@/lib/api";
@@ -58,6 +59,7 @@ export default async function DocPage({ params }: DocPageProps) {
             version={liveDoc.version}
           />
           <DocSharing docId={liveDoc.id} initialVisibility={liveDoc.visibility} />
+          <DocComments docId={liveDoc.id} />
         </div>
       );
     } catch {
