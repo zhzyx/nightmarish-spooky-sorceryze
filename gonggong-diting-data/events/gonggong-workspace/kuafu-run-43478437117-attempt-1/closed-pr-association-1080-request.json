@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "closed-pr-association-1080-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-run-43478437117-attempt-1",
+  "kind": "request",
+  "occurred_at": "2026-11-13T18:46:42.579186+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1080",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "001b75e999158305bfc9f66c7b071cfe07f769b480088fc863e0e646d44be541",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Fix trusted issue-association late events for closed PRs; source failures1080 and1083",
+    "authorization_ref": "Explicit user AI/GitHub review/refactor goal and accepted825/830 delivery handoffs",
+    "operator": "Sail-Li",
+    "design": "design-docs/closed-pr-association-20261114.md",
+    "validation": "data-collection/closed-pr-association-1080.json",
+    "observation": "Current authorized takeover and real issue readback, not a reconstruction of the original remote bot event",
+    "usage": null,
+    "usage_unknown_reason": "Actual model usage not collected"
+  },
+  "evidence_refs": [],
+  "sha256": "5838c7b876bfa7709b137c9e83a98e9a727112bf7332fdc5025c148c4ed46e3c"
+}
