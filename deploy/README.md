@@ -131,6 +131,7 @@ contains no credentials. See `.env.example` for the commented version.
 | --- | --- | --- | --- |
 | `TIANXUAN_HTTP_PORT` | `8080` | proxy | Host port mapped to nginx port 80 |
 | `TIANXUAN_DB` | `/data/tianxuan.db` | api | SQLite file path inside the container |
+| `TIANXUAN_GATEWAY_DB` | `/data/tianxuan_gateway.db` | api | BYOK model-gateway usage/budget SQLite path |
 | `TIANXUAN_REPO_ROOT` | `/data/repos` | api | Directory with bare Git repositories used by requirement commits |
 | `TIANXUAN_GITEA_URL` | empty | api | External Gitea/Forgejo base URL; empty disables the integration |
 | `TIANXUAN_GITEA_TOKEN` | empty | api | Gitea token (keep in `.env`, never commit) |

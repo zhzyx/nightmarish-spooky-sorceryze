@@ -21,6 +21,9 @@ services:
     environment:
       TIANXUAN_DB: "${TIANXUAN_DB:-/data/tianxuan.db}"
       TIANXUAN_REPO_ROOT: "${TIANXUAN_REPO_ROOT:-/data/repos}"
+      # BYOK model-gateway usage/budget store; kept on the volume so usage
+      # survives container restarts. Empty/unset means the image default.
+      TIANXUAN_GATEWAY_DB: "${TIANXUAN_GATEWAY_DB:-/data/tianxuan_gateway.db}"
       # Optional external Gitea/Forgejo integration. Leave empty to disable it;
       # the API then reports Gitea as unconfigured instead of failing to boot.
       TIANXUAN_GITEA_URL: "${TIANXUAN_GITEA_URL:-}"
