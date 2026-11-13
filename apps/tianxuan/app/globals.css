@@ -8907,3 +8907,30 @@ input[type="search"]::-webkit-search-cancel-button {
     transition-duration: 0.01ms !important;
   }
 }
+
+.api-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--muted, #8a8f98);
+}
+
+.api-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.api-status-online .api-status-dot {
+  background: #58c39a;
+  box-shadow: 0 0 0 3px rgb(88 195 154 / 18%);
+}
+
+.api-status-offline .api-status-dot {
+  background: #d98a6a;
+}
