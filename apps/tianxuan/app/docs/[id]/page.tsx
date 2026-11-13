@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DocEditor } from "@/components/DocEditor";
-import { fetchDoc, type ApiDocDetail } from "@/lib/api";
-import { docs, getDoc, getDocContent } from "@/lib/data";
+import { fetchDoc } from "@/lib/api";
+import { docs, getDoc, getDocContent, type DocRecord } from "@/lib/data";
 
 interface DocPageProps {
   params: {
@@ -22,19 +22,6 @@ export function generateMetadata({ params }: DocPageProps): Metadata {
   };
 }
 
-function LiveDoc({ doc }: { doc: ApiDocDetail }) {
-  return (
-    <article className="panel" style={{ padding: 28 }}>
-      <p className="section-kicker">LIVE API</p>
-      <h1>{doc.title}</h1>
-      <p className="section-note">
-        v{doc.version} · {doc.kind}
-      </p>
-      <pre style={{ whiteSpace: "pre-wrap", fontFamily: "inherit", lineHeight: 1.8 }}>{doc.body_md}</pre>
-    </article>
-  );
-}
-
 export default async function DocPage({ params }: DocPageProps) {
   const doc = getDoc(params.id);
   if (doc) {
@@ -49,9 +36,28 @@ export default async function DocPage({ params }: DocPageProps) {
   if (actor) {
     try {
       const liveDoc = await fetchDoc(params.id, actor);
+      const record: DocRecord = {
+        id: liveDoc.id,
+        title: liveDoc.title,
+        spaceId: "live",
+        spaceName: "实时",
+        kind: "记录",
+        excerpt: "",
+        updated: "",
+        updatedBy: "",
+        readTime: "",
+        tags: [],
+        words: liveDoc.body_md.length,
+        version: liveDoc.version,
+      };
       return (
         <div className="page-stack doc-detail-page">
-          <LiveDoc doc={liveDoc} />
+          <DocEditor
+            key={liveDoc.id}
+            doc={record}
+            initialContent={liveDoc.body_md}
+            version={liveDoc.version}
+          />
         </div>
       );
     } catch {

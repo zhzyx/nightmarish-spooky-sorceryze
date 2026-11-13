@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { Icon, type IconName } from "@/components/Icon";
+import { MergeConflict, mergeDoc } from "@/lib/api";
 import type { DocRecord } from "@/lib/data";
 
 type EditorMode = "split" | "write" | "preview";
@@ -251,14 +252,17 @@ function renderMarkdown(markdown: string): ReactNode[] {
 export interface DocEditorProps {
   doc: DocRecord;
   initialContent: string;
+  version?: number;
 }
 
-export function DocEditor({ doc, initialContent }: DocEditorProps) {
+export function DocEditor({ doc, initialContent, version: initialVersion }: DocEditorProps) {
   const [mode, setMode] = useState<EditorMode>("split");
   const [title, setTitle] = useState(doc.title);
   const [markdown, setMarkdown] = useState(initialContent);
   const [saveState, setSaveState] = useState<SaveState>("saved");
   const [restored, setRestored] = useState(false);
+  const [version, setVersion] = useState(initialVersion ?? doc.version ?? 1);
+  const [syncNote, setSyncNote] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -313,7 +317,7 @@ export function DocEditor({ doc, initialContent }: DocEditorProps) {
     setSaveState("dirty");
   }
 
-  function persistNow() {
+  async function persistNow() {
     try {
       window.localStorage.setItem(
         `tianxuan:draft:${doc.id}`,
@@ -322,7 +326,27 @@ export function DocEditor({ doc, initialContent }: DocEditorProps) {
     } catch {
       // The visible state still reflects the local draft.
     }
-    setSaveState("saved");
+    const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR ?? "";
+    if (!actor || !doc.id.startsWith("doc_")) {
+      setSaveState("saved");
+      setSyncNote("已保存至本设备");
+      return;
+    }
+    setSaveState("saving");
+    try {
+      const result = await mergeDoc(doc.id, actor, initialContent, markdown, version);
+      setVersion(result.doc.version);
+      setSaveState("saved");
+      setSyncNote(`已同步到服务器 · v${result.doc.version}`);
+    } catch (error) {
+      if (error instanceof MergeConflict) {
+        setSaveState("dirty");
+        setSyncNote(`远端有冲突（${error.conflicts.length} 处），本地草稿保留`);
+      } else {
+        setSaveState("saved");
+        setSyncNote("后端不可达，已保存至本设备");
+      }
+    }
   }
 
   function applyFormat(before: string, after: string, placeholder: string) {
@@ -392,6 +416,7 @@ export function DocEditor({ doc, initialContent }: DocEditorProps) {
             <span className="save-dot" aria-hidden="true" />
             {saveCopy}
           </span>
+          {syncNote ? <span className="section-note">{syncNote}</span> : null}
           <span className="doc-meta-separator" aria-hidden="true" />
           <span>最后编辑：{doc.updated}</span>
         </div>

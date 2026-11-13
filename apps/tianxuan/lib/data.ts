@@ -26,6 +26,7 @@ export interface DocRecord {
   readTime: string;
   tags: string[];
   words: number;
+  version?: number;
   content?: string;
 }
 
