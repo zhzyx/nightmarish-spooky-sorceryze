@@ -1226,11 +1226,13 @@ int AIChatDock::_create_sub_agent(int p_parent, const String &p_title, const Dic
 		session.model = parent.model;
 		session.cli_model = parent.cli_model;
 		session.codex_model = parent.codex_model;
+		session.reasoning_preferences = parent.reasoning_preferences.duplicate(true);
 		session.backend = parent.backend;
 	} else {
 		session.model = model->get_text();
 		session.cli_model = cli_model->get_text();
 		session.codex_model = codex_model->get_text();
+		session.reasoning_preferences = reasoning_preferences.duplicate(true);
 		session.backend = backend->get_selected();
 	}
 	session.message_list = memnew(VBoxContainer);

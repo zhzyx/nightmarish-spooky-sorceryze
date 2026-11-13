@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b9d91503a0514bf4a60c53cdbfe951a167f5d57e",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d7b70fabbb0bb50e48373866deb132a485735c86fa108023b64dff5df0c0b860",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/217",
+    "action": "validation",
+    "detection_head": "1ba44e0271e44bf30a43188b2d1a1df4574fa7bf",
+    "context_sha256": "c250f35a766024960c063f1c178d56920ea1e9b8c900359d4d92e32252a6fe96",
+    "operator": "Sail-Li",
+    "worker": "codex-root-model217-isolated-acceptance",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Current main1ba44e isolated native live test: eight models; empty-effort actual consultation succeeded25.882s, matching UI and persisted reply; first failed fixture before inference archived",
+    "diagnosis": "Private fixture searched detached AllowTools under wrong ancestor. Correct settings control lookup recovers real default send; no product bug attributed to this fixture error. Original #217 publisher ownership unchanged.",
+    "next_action": "Continue independent acceptance. Separate actual same-model session preference defect now tracked by #1038; original #217 remains open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T07:57:47.604300+00:00",
+    "attempted": "Initial invalid lookup stopped with no inference; owned editor and temp root removed. Corrected one real request succeeded, zero tools and no project input.",
+    "repair_owner": "codex-root-current-isolated-acceptance",
+    "continuable": "Scope limited to model and effort acceptance; original publisher worktrees unchanged."
+  },
+  "occurred_at": "2026-11-13T08:06:43.458343+00:00",
+  "sha256": "fb394d3f537a05350afede472a47fde98582194dae2657f5778eb7203f95f253"
+}

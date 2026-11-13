@@ -384,6 +384,7 @@ class AIChatDock : public EditorDock {
 	VBoxContainer *codex_model_settings = nullptr;
 	OptionButton *model_picker = nullptr;
 	OptionButton *reasoning_picker = nullptr;
+	Dictionary reasoning_preferences;
 	void _sync_reasoning_picker();
 	void _reasoning_selected(int p_index);
 	String _reasoning_effort() const;
@@ -591,6 +592,7 @@ class AIChatDock : public EditorDock {
 		String model;
 		String cli_model;
 		String codex_model;
+		Dictionary reasoning_preferences;
 		int backend = 1;
 		int scroll = 0;
 		bool follow_latest = true;

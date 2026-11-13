@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "issue_number": 1038,
+  "request_id": "session-reasoning-isolation-20261113",
+  "source_path": "design-docs/session-reasoning-isolation-20261113.md",
+  "source_sha256": "20ad3d3a88998d4e059e0261e9a86fd3dc336c3d12951d718f743b4d426cd7a9",
+  "recorded_at": "2026-11-13T08:16:07.561277+00:00",
+  "base_main": "1ba44e0271e44bf30a43188b2d1a1df4574fa7bf",
+  "state": "local_validation_passed_pending_independent_review_and_delivery",
+  "implementation": {
+    "scope": "Per-session deep-copied reasoning preferences; history and legacy migration; existing child/scheduled/worker snapshot inheritance",
+    "input_sha256": {
+      "editor/docks/ai_chat_dock.cpp": "8efcac8b1316f2de406172a6e2341eb0684444dad59b9cb3235f76ad54a38aec",
+      "editor/docks/ai_chat_dock.h": "8ea36849e6ab6f86e4996f6cd6fa193d71c40970b9157d6d370bd389824559b8",
+      "editor/docks/ai_chat_scheduler.cpp": "6dc7e5b3fb5ad1b3180d0cdefcec99a234c1d8a54bc35a40178448315bd61d14",
+      "editor/docks/ai_chat_sub_agents.cpp": "003318c71418ad5a81a6ae48b86bc75e192089ee979d0ccae5d98f7ee2b8b3c3",
+      "tests/editor/reasoning_sessions.gd": "f50bbc4638500708d9253fd5331eee28f2104a09333daf9083f9bdacc235b2d4",
+      "tests/editor/run_reasoning_sessions.py": "fc4359b0b7c7d9f0ea3b5886ff06954cf3744a205543b61823b2d9981401283b",
+      ".github/workflows/windows_builds.yml": "c74e79f848c12cd24a6d768501bf785683a0176ca37e16c7676a1fa9ee90645f"
+    },
+    "native_binary_sha256": "b6b621d28ab4a31682468aa912b782b5f8ad743bb29d92a22cd6a5db40b1e99c"
+  },
+  "baseline": {
+    "independent_review": "model217-acceptance-review-20261113/report.json",
+    "review_sha256": "df35da54055746bd3a68c2726707511fb31dbbef90580a2b6280b8cb01bec0d6",
+    "defect": "Same model: session B default overwrites A medium; project-global preferences absent from AgentSession/history",
+    "repeated_native_failure": true,
+    "original_971_history_preserved": true
+  },
+  "validation": {
+    "native": "Full, reopen and legacy phases passed; seven actual controlled native-to-CLI wires, all five fixed efforts plus two automatic default fallbacks; distinct reply for each model/effort",
+    "model_picker": "8 checks passed; synthetic provider",
+    "project_ai_configuration": "5 modes passed; isolated synthetic service",
+    "node_codex_models": "4 tests passed",
+    "windows_exact_candidate": "pending CI; new native reasoning runner added to MSVC editor CI",
+    "review_correction": "Independent review found Windows cwd cleanup ordering and false-success risk in the new runner before CI. Inner contextlib.chdir now restores cwd before TemporaryDirectory cleanup, exceptions force ok=false and success requires directory removal. Corrected full/reopen/legacy run passed; pre-correction report retained."
+  },
+  "live_provider_evidence": {
+    "source": "pre-repair main1ba44e, binary dcad14cd6457c992109ef6a1ad58303de167e96ecacca4ac487674f2c1ea90ea",
+    "catalog_models": 8,
+    "all_advertised_effort_ui_mappings_checked": true,
+    "actual_default_consultation": true,
+    "requested_model": "gpt-6.1-sol",
+    "observed_model": null,
+    "provider_request_id": null,
+    "elapsed_ms": 25882,
+    "reasoning_effort": "",
+    "tool_count": 0,
+    "original_request_inputs": "synthetic arithmetic only",
+    "ui_and_persisted_reply_matched": true,
+    "limitation": "One real default call before session repair; not every-model/every-effort inference or user effective installation acceptance"
+  },
+  "cleanup": {
+    "native_private_directories_removed": true,
+    "owned_process_cleanup": "current regression uses existing run_owned lifecycle; no persisted PID adoption",
+    "restored_retained_ui_package": {
+      "source": "same product source at main1ba44e; default package version1",
+      "sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "reason": "Earlier binary preservation omitted companion package; AI Chat path worked, Tianshu UI missing warning was real. Recovered package is included in current private copies."
+    },
+    "effective_installation_changed": false,
+    "temporary_fixture_body_file_removed": true,
+    "original_dirty_root_and_foreign_worktrees_unchanged": true,
+    "retained_binary_update": "Operational checkout build cache now contains repaired b6b621d2 native candidate. Main1ba44e validated dcad14cd rollback binary and matching recovered UI package remain in private validated-editors/bound1024-ca0; effective installation untouched."
+  },
+  "limits": [
+    "Original #217 publisher cross-device terminal/handoff unknown; no local claim does not prove no remote worker. Original referenced design file absent in scoped search.",
+    "Existing RID/ObjectDB shutdown diagnostics remain; no zero-error/no-leak claim.",
+    "No real inference in controlled regression; Windows runner outcome pending.",
+    "Parent #978 and original #217 remain open."
+  ],
+  "private_receipt_resolution_base": "Repository root data-collection/receipts/ai-integration-refactor-20261112",
+  "private_receipts": [
+    {
+      "path": "model217-live-native.json",
+      "sha256": "e4496bdf745540ff58f2dab7d207a8da54efbd0141c866edd017efdeac86b026"
+    },
+    {
+      "path": "model217-live-native.py",
+      "sha256": "fddb85b1ab7f392e3a3ca812e5311f855b8767c69d02d649fabd770aea186676"
+    },
+    {
+      "path": "model217-live-native.gd",
+      "sha256": "d7b2c4f2675b059de5bf6db32b41f1e33e183bcddb70a26d6f79f8cc47db9244"
+    },
+    {
+      "path": "model217-live-native.json.initial-fixture-failure",
+      "sha256": "6ec1b697d04c2d01be1846dd3ab95d2d9801d274033e6b64d8a676e1e01f03ca"
+    },
+    {
+      "path": "model217-wire-native.json.initial-session-failure",
+      "sha256": "3448a51f6db703946d29684cbff7e8eea66f8eea7b04cecfb97efa1d487e5c97"
+    },
+    {
+      "path": "model217-wire-native.json",
+      "sha256": "ffcffd5e6ef4aa8243751ec27b7d5a42168c08520cf4cf1d84df7b28ec2b4eed"
+    },
+    {
+      "path": "session1038-native-final.json",
+      "sha256": "bc7fe4c396d35574be4d82cdb85ba9d75f741ae231557d5dbf69838935937cb5"
+    },
+    {
+      "path": "session1038-model-picker.json",
+      "sha256": "78b4c59bc5951d96c8e927946c76902ffb1f1478cbe79f03f8bf2ac65912e10d"
+    },
+    {
+      "path": "session1038-project-config.json",
+      "sha256": "9add9690ee4f09d90a707a1f8a30924ca53d03acc8ed0a47006ea0901232910b"
+    },
+    {
+      "path": "session1038-node-models.log",
+      "sha256": "e66c8cb31849e5a50dd78d8d135ef3ad08f27c2ed17db123e006fae7b48c20bc"
+    }
+  ]
+}

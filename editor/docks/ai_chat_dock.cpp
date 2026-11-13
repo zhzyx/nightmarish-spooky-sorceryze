@@ -667,6 +667,7 @@ void AIChatDock::_save_history() {
 		agent["model"] = state.model;
 		agent["cli_model"] = state.cli_model;
 		agent["codex_model"] = state.codex_model;
+		agent["reasoning_preferences"] = state.reasoning_preferences.duplicate(true);
 		agent["backend"] = state.backend;
 		agent["scroll"] = state.scroll;
 		agent["follow_latest"] = state.follow_latest;
@@ -1059,6 +1060,10 @@ void AIChatDock::_load_history() {
 			state.model = agent["model"];
 			state.cli_model = agent["cli_model"];
 			state.codex_model = agent.get("codex_model", "");
+			const Variant saved_preferences = agent.get("reasoning_preferences", EditorSettings::get_singleton()->get_project_metadata("ai_chat", "reasoning_preferences", Dictionary()));
+			if (saved_preferences.get_type() == Variant::DICTIONARY) {
+				state.reasoning_preferences = Dictionary(saved_preferences).duplicate(true);
+			}
 			state.backend = agent["backend"];
 			state.scroll = agent.get("scroll", 0);
 			state.follow_latest = agent.get("follow_latest", true);
@@ -4346,6 +4351,7 @@ AIChatDock::AgentSession AIChatDock::_capture_agent() const {
 	state.model = model->get_text();
 	state.cli_model = cli_model->get_text();
 	state.codex_model = codex_model->get_text();
+	state.reasoning_preferences = reasoning_preferences.duplicate(true);
 	state.backend = backend->get_selected();
 	state.scroll = chat_follow_latest ? chat_scroll->get_v_scroll() : chat_scroll_position;
 	state.follow_latest = chat_follow_latest;
@@ -4392,6 +4398,7 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 	model->set_text(p_session.model);
 	cli_model->set_text(p_session.cli_model);
 	codex_model->set_text(p_session.codex_model);
+	reasoning_preferences = p_session.reasoning_preferences.duplicate(true);
 	backend->select(p_session.backend);
 	http_settings->set_visible(p_session.backend == 0 || p_session.backend == 3);
 	codex_settings->set_visible(p_session.backend == 2);
@@ -4458,6 +4465,7 @@ void AIChatDock::_agent_selected(int p_index) {
 		state.model = model->get_text();
 		state.cli_model = cli_model->get_text();
 		state.codex_model = codex_model->get_text();
+		state.reasoning_preferences = reasoning_preferences.duplicate(true);
 		state.backend = backend->get_selected();
 		state.message_list = memnew(VBoxContainer);
 		state.message_list->set_h_size_flags(SIZE_EXPAND_FILL);
@@ -4629,6 +4637,7 @@ void AIChatDock::_close_agent() {
 			state.model = model->get_text();
 			state.cli_model = cli_model->get_text();
 			state.codex_model = codex_model->get_text();
+			state.reasoning_preferences = reasoning_preferences.duplicate(true);
 			state.backend = backend->get_selected();
 			state.message_list = memnew(VBoxContainer);
 			state.message_list->set_h_size_flags(SIZE_EXPAND_FILL);
@@ -4807,6 +4816,7 @@ AIChatDock *AIChatDock::_ensure_issue_worker(const String &p_key) {
 	worker->model->set_text(model->get_text());
 	worker->cli_model->set_text(cli_model->get_text());
 	worker->codex_model->set_text(codex_model->get_text());
+	worker->reasoning_preferences = reasoning_preferences.duplicate(true);
 	worker->cli_bridge->set_text(cli_bridge->get_text());
 	worker->cli_entry->set_text(cli_entry->get_text());
 	auto share_option = [](BaseButton *p_setting, BaseButton *p_copy) {
@@ -5497,9 +5507,9 @@ void AIChatDock::_sync_reasoning_picker() {
 			}
 		}
 	}
-	const Dictionary preferences = EditorSettings::get_singleton()->get_project_metadata("ai_chat", "reasoning_preferences", Dictionary());
 	const String key = itos(backend->get_selected()) + ":" + current;
-	const String saved = preferences.get(key, "");
+	const Variant saved_value = reasoning_preferences.get(key, "");
+	const String saved = saved_value.get_type() == Variant::STRING ? String(saved_value) : String();
 	reasoning_picker->clear();
 	reasoning_picker->add_item(U"模型默认");
 	reasoning_picker->set_item_metadata(0, String());
@@ -5536,10 +5546,9 @@ void AIChatDock::_reasoning_selected(int p_index) {
 		_sync_reasoning_picker();
 		return;
 	}
-	Dictionary preferences = EditorSettings::get_singleton()->get_project_metadata("ai_chat", "reasoning_preferences", Dictionary());
 	const String key = itos(backend->get_selected()) + ":" + _active_model_field()->get_text().strip_edges();
-	preferences[key] = reasoning_picker->get_item_metadata(p_index);
-	EditorSettings::get_singleton()->set_project_metadata("ai_chat", "reasoning_preferences", preferences);
+	reasoning_preferences[key] = reasoning_picker->get_item_metadata(p_index);
+	_queue_history_save();
 	_project_ai_configuration_changed();
 	_update_settings_summary();
 }
@@ -6009,7 +6018,7 @@ Dictionary AIChatDock::get_ai_configuration() const {
 	configuration["cli_entry"] = cli_entry->get_text().strip_edges();
 	configuration["codex_model"] = codex_model->get_text().strip_edges();
 	configuration["reasoning_effort"] = _reasoning_effort();
-	configuration["reasoning_preferences"] = EditorSettings::get_singleton()->get_project_metadata("ai_chat", "reasoning_preferences", Dictionary());
+	configuration["reasoning_preferences"] = reasoning_preferences.duplicate(true);
 	configuration["credential_present"] = !GetAiCredential().is_empty();
 	configuration["credential_source"] = GetAiCredential().is_empty() ? String() : strCredentialSource;
 	return configuration;
@@ -8327,13 +8336,14 @@ AIChatDock::AIChatDock(const String &p_session_directory) {
 	EDITOR_DEF("ai_chat/codex_entry", "");
 	EDITOR_DEF("ai_chat/codex_model", "");
 	EDITOR_DEF("ai_chat/reasoning_preferences", Dictionary());
-	// Only shared access configuration migrates; model choices stay in session history.
+	// Preserve the legacy project preference only as a one-time session seed.
 	if (!bool(EditorSettings::get_singleton()->get_project_metadata("ai_chat", "project_configuration_initialized", false))) {
 		for (const char *key : { "endpoint", "reasoning_preferences" }) {
 			EditorSettings::get_singleton()->set_project_metadata("ai_chat", key, EditorSettings::get_singleton()->get_setting(String("ai_chat/") + key));
 		}
 		EditorSettings::get_singleton()->set_project_metadata("ai_chat", "project_configuration_initialized", true);
 	}
+	reasoning_preferences = Dictionary(EditorSettings::get_singleton()->get_project_metadata("ai_chat", "reasoning_preferences", Dictionary())).duplicate(true);
 	// Recorded at every version switch so a bad rebuild has somewhere to go back to.
 	EDITOR_DEF("ai_chat/rollback_executable", "");
 

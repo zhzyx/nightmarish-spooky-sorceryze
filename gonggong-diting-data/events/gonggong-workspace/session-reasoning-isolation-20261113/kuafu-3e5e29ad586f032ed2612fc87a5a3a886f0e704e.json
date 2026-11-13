@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3e5e29ad586f032ed2612fc87a5a3a886f0e704e",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "session-reasoning-isolation-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1038",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2762ed2c8e3c4b2cc375adfd0b27e0c020fa40d194ad4f6fe5028e38f658daa1",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1038",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1038",
+    "action": "validation",
+    "detection_head": "1ba44e0271e44bf30a43188b2d1a1df4574fa7bf",
+    "context_sha256": "6ff437ed71faac9a6d8c4d2a9abd070f1d08a37eaa78534fc1720be1a1c888df",
+    "operator": "Sail-Li",
+    "worker": "codex-root-session-reasoning-isolation",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Independent review df35da54 confirmed global backend:model preferences; two controlled native baseline runs fail same-session isolation after seven exact wire checks; local repaired binary b6b621d2 passes full/reopen/legacy phases",
+    "diagnosis": "Reasoning preferences were shared project metadata and absent from AgentSession/history. Scope of #971 includes per-session reasoning; preserve its delivery history, fix separately under #1038.",
+    "next_action": "Finish independent candidate review, formal gate, exact PR CI including new native Windows reasoning fixture, main readback and #1038 acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T08:06:34.779150+00:00",
+    "attempted": "Captured actual failure before edits. Repaired session dictionaries and history with legacy migration and snapshot inheritance. Mac native 3 phases now pass, true provider default-send evidence remains bound to pre-repair main1ba44e.",
+    "repair_owner": "codex-root-session-reasoning-isolation",
+    "continuable": "Original #217 ownership and remaining parent #978 acceptance unchanged; no effective installation changes."
+  },
+  "occurred_at": "2026-11-13T08:14:59.262024+00:00",
+  "sha256": "63959c467b62d4293495e1f12ece48a72dbbd40cdcca5906b5a8d1acb41c3467"
+}
