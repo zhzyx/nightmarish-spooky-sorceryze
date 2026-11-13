@@ -18,3 +18,10 @@ CI 只使用校验和固定的官方 Blender 4.5.11 LTS Windows x64 ZIP，解压
 写入范围为新的 `.github/workflows/blender_geometry_windows.yml`、`tests/editor/run_blender_geometry.py` 及针对运行器的必要失败路径验证、本文和本子项采集事件。无需产品实现修改；若实际测试发现产品缺陷，先保留精确复现并按父需求范围修复、复验。既有通用 CI 门禁不放宽，原 #830/#825/#948/#951 等任务责任及有效安装仍保留。
 
 路径以仓库根为基准。官方运行时来源为 https://download.blender.org/release/Blender4.5/ ，ZIP 的 SHA256 为 `e11d3a8e4d4249be5a7db4a9325c1f670037d4233467c3b0bda181001efe44d3`，取自同目录 `blender-4.5.11.sha256` 并与此前已验证官方清单交叉核对。原始外部清单、下载及故障证据仅存宿主私有 receipts；生产代码与历史采集记录不覆写。
+
+
+## 2026-11-13 原 Windows 路径验收
+
+PR [#1061](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1061) 已合入 main `481f0e820437f5e5d9218ee11ee2fe551109d86d`。签发候选 `1bf798e153e52397e8f4fbe4d6884cd0c066fd69` 的几何作业 [43425883079](https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43425883079) 和主线作业 [43428105337](https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43428105337) 均实际执行原三项 C# 夹具测试，3 run、0 skip/error/failure。两轮各核验90份源码与75份产物、原生回执和GLB；正常TLS取得的完整归档分别匹配GitHub服务器SHA256，用户配置/进程、便携运行时及两条临时防火墙规则均清理成功。适用通用Windows CI同时通过；范围跳过不计执行。
+
+公开摘要见 `data-collection/blender-windows-geometry-accepted-1059.json`；原始归档及摘要按其中明确基准解析。该结果补齐#840此前缺失的Windows三项几何验证，不代表真实供应商质量、所有人物场景或有效用户安装，原#840及父#978整体范围继续保留。收尾对最终证据独立核验与正式补交，关联工单须在最后回读后办理关闭。
