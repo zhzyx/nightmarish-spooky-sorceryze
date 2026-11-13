@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e19f1024b5c1541155d1155eda30894fca73cc9b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-repo-root-validation-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1122",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5b07bed0ca619f1cd5b8f0477543c0e6b0bb3ee2644ef37d708a5de40c715a50",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1122",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1122",
+    "action": "validation",
+    "detection_head": "f83f680a7570a69ed678dd14e73e0a9de96e74db",
+    "context_sha256": "5f9fec2143b2af4424b1d4b1291e1b4defb9dd50125901b5c50b267a48362472",
+    "operator": "Sail-Li",
+    "worker": "codex:/root:git-paths-integration",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Independent review R1122-1 and current combined candidate product SHA256 4bccebe90e7f52f24ffb19a2a681dc449a64a11754615ba352b9500cf4d73fec; 21 local Git regression tests pass",
+    "diagnosis": "Root-path output was normalized by subprocess text universal-newline mode, rejecting CR/CRLF POSIX root names. Root owns source repair. Added opt-in raw capture for root probe only and regression for CR, CRLF, LF and trailing separators; existing text behavior preserved. Ruff and mypy pass. Initial receive lacked node PATH; re-entered same incident with verified PATH, no new incident.",
+    "next_action": "Independent exact combined-candidate review; then formal gates and latest-main CI/publication by current Yanluo operator. Windows/Linux native boundary behavior remains unverified.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T21:04:37.189886+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T21:06:54.541619+00:00",
+  "sha256": "ebd4915f45347571308ba99b6cce6971c954aa1ba2d478dbef7727209ab413c2"
+}

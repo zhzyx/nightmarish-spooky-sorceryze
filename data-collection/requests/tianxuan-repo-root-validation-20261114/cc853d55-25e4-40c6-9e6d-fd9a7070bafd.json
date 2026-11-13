@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "tianxuan-repo-root-validation-20261114",
+  "collected_at": "2026-11-13T21:14:22.626448+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-repo-root-validation-20261114/dispatch-0d9300a2392841d2a53c92eba1e0b0bd.json",
+      "sha256": "f6efbc4d47843e13ad50db34692b3432ad93c928b102142fd8f387f31e0399f5",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-0d9300a2392841d2a53c92eba1e0b0bd",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-repo-root-validation-20261114/dispatch-1327a93760184a68915d9d897dad9597.json",
+      "sha256": "2bd73e7a9f3919c6071bc82f7c57b27bbdc3e5fca572b5cccc9457e4c4565e66",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-1327a93760184a68915d9d897dad9597",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-repo-root-validation-20261114/dispatch-8234d6e4fc964432b0cb8fa25a72e5f5.json",
+      "sha256": "480f2455503ac53bf7ac4df0359d9108e590b86c21df11317fbbb82aa50b026b",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-8234d6e4fc964432b0cb8fa25a72e5f5",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-repo-root-validation-20261114/dispatch-9eca6afd2c4d4b0abb98988fc92d3a67.json",
+      "sha256": "dc548e060a00ce0306c31353db954c9c333cb4f2d1f24d44e74f2b54f174dee8",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-9eca6afd2c4d4b0abb98988fc92d3a67",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-repo-root-validation-20261114/dispatch-c794f2704e4c4ddbbd7214ea52eeec00.json",
+      "sha256": "5cda58bc623c088c5791d11782028e19da867d135b77bade3c3c2e4320058e8a",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-c794f2704e4c4ddbbd7214ea52eeec00",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-repo-root-validation-20261114/dispatch-caa17b3285184b999090bb361bde5a6d.json",
+      "sha256": "2582fe222f8844f65b367513d6ddfa0980a007c68fb123f0595756270ac89175",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-caa17b3285184b999090bb361bde5a6d",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-repo-root-validation-20261114/kuafu-c1b2b4b61db704dfacc603dba37d60695f8ae5ae.json",
+      "sha256": "f652732eb0264478f950b54cbdc795bcc15cdacd01761917b84da9d18dff881e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-c1b2b4b61db704dfacc603dba37d60695f8ae5ae",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-repo-root-validation-20261114/kuafu-e19f1024b5c1541155d1155eda30894fca73cc9b.json",
+      "sha256": "34042f4c5b6dda4bb49ec81477e43e3b86a3f4a0b236030a7be552978de91887",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-e19f1024b5c1541155d1155eda30894fca73cc9b",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-repo-root-validation-20261114/tianxuan-repo-root-validation-1122-request.json",
+      "sha256": "1b36afc3ea6d6ce969da9556d924b0e3ddbeb49e0f4c0d6f216d8c3133590d71",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "tianxuan-repo-root-validation-1122-request",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1122,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1122"
+}

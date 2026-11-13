@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-bbe2001356a4d32bb0cc97bf832c5f30d65d037e",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-audit-tx-01-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1115",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "765295a5e2d00e38845b1fb935d0429e92ce5f02fc069b9f7ad71eb7dea099cf",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1115",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1115",
+    "action": "delivery",
+    "detection_head": "cd28fb53d8d4fceb27558a5ff7acb5294df32d9a",
+    "context_sha256": "9dd42ff63e01bfebc89c87e97fa6e90be6552e3045091474d74c85fb2a4effc5",
+    "operator": "Sail-Li",
+    "worker": "codex:/root:issue1115-independent-repair",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "PR1124 all checks success; premerge main627d49f1 differs from verifiedffd5b0eb; upstreamPR1121 changes4server files with no1115 write overlap; no mergecommand executed",
+    "diagnosis": "Concurrent publisher advanced main between successful candidate checks and final premerge read. Guard stopped before merge; exact1124 success remains historical. User explicitly directed Yanluo to manage merge and coordination, so current authorized host owns publication sequencing rather than asking user for chat routing.",
+    "next_action": "Receive1122 implementation completion and independent review; Heqi integrates related Git path boundary fixes1115/1122 on currentmain with preserved original evidence; Yanluo runs exact gates/CI and serial publication. Existing1085/1086 candidates remain original owners; publish coordination through authorized repository messages.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T20:48:36.157887+00:00",
+    "attempted": null,
+    "repair_owner": "Current root as authorized Yanluo host for1115/1122 and1080/1083 publication; no global queue or foreign worktree takeover claimed",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T20:51:51.271925+00:00",
+  "sha256": "67c9db1785150a9213c1ef35689af3de5354dd1c9045fc00adb4d6215837fd58"
+}

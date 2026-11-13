@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "issue_number": 1115,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1115",
+  "request_id": "tianxuan-audit-tx-01-20261114",
+  "parent_issues": [
+    978,
+    1085
+  ],
+  "base": "ffd5b0eb4f987594c253d31558346785faf11825",
+  "scope": "Independent repair of already delivered Git adapter; no takeover of1085 active candidates",
+  "reviewed_files": {
+    "customizations/components/tianxuan/duobao/git_service.py": "a0af5430ad7b406d1f0c2b629bceafbf8172eef23d130919154cdc4ff6af0771",
+    "customizations/components/tianxuan/duobao/test_admin_paths.py": "f86c67db99ae0e41655d343f462eb2d031c0476e8f9c7f59d28a7455a46bac1c"
+  },
+  "verification": {
+    "isolated_targeted_tests": 5,
+    "isolated_original_git_tests": 8,
+    "current_main_integration_tests": {
+      "result": "passed",
+      "count": 13,
+      "base": "ffd5b0eb4f987594c253d31558346785faf11825",
+      "source_files_equal_reviewed_v2": true
+    },
+    "independent_review": {
+      "reviewer": "/root/sinan_dddac7f91ab60742",
+      "sha256": "33d1d94d701b2b57a9c40941daa14334bc46377f791180b2b9a704d08cb85c8e",
+      "result": "No remaining blocking findings within reviewed v2 scope",
+      "native_terminal_reconciled": true
+    },
+    "exact_ci_main_delivery": "pending",
+    "ruff": "passed",
+    "ruff_format": "passed",
+    "mypy": "passed",
+    "diff_check": "passed"
+  },
+  "limits": [
+    "macOS local synthetic Git; real Git hosting, model service and production untested",
+    "Native Windows/NTFS/HFS filesystem acceptance not claimed; alias model not remotely constructible junction proof",
+    "Inherited repository-ancestor discovery bug tracked independently as1122",
+    "No complete Git sandbox or hostile local concurrent-writer isolation claimed"
+  ],
+  "private_receipt_base": "Parent of git rev-parse --path-format=absolute --git-common-dir, then data-collection/receipts/ai-integration-refactor-20261112",
+  "private_evidence": {
+    "issue1115-proposal-independent-review/review.json": "33d1d94d701b2b57a9c40941daa14334bc46377f791180b2b9a704d08cb85c8e",
+    "issue1115-proposal-review-reconciled.json": "ae039e3e5db64097de99e7881c021a9de83ad1941ca47c1478a5b3ac6c7fa66a",
+    "issue1115-isolated-proposal/validation-v1.json": "0826031e7b0a5194c630de136064d9f845f11af439eb58e16a8834f632944271",
+    "issue1115-isolated-proposal/validation.json": "6a712bc22e929bbdfda924c3c4626eaae8e45f088df4909f3d6ab97a9e124bda",
+    "issue1115-isolated-proposal/admin-path-tests-v2.log": "245b5c1eccf9cb57ec7449597f8ce00082d396b8e5a261227c25e353169c026d",
+    "issue1115-isolated-proposal/existing-git-tests-v2.log": "4ba01d2606fd5e473644d4bba5fd711ae3849d27dd2cbe60bf84396eddebff14",
+    "issue1115-current-main-tests.log": "c2b407bd62ed4e21cd747cc37ad0580b4aea966a5370ad9759bd86cd9892fc75",
+    "issue1115-intake-passed.json": "c0d5904d6553f3f6f3d14c708adc70beeb78ec5469a0ff37832e30e97227f82b",
+    "issue1115-intake-failure-assessed.json": "472b70ea2b3ae73492999f6d33f75a9b213828764eed0c977550401318c64f67"
+  }
+}
