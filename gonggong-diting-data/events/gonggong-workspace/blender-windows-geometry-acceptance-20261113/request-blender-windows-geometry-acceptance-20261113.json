@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "request-blender-windows-geometry-acceptance-20261113",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "blender-windows-geometry-acceptance-20261113",
+  "kind": "request",
+  "occurred_at": "2026-11-13T12:00:02.036213+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1059",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "001b75e999158305bfc9f66c7b071cfe07f769b480088fc863e0e646d44be541",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "authorization_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "authorization": "User explicitly requested continuous full AI/GitHub integration audit and refactor, including discovered in-scope defects and authorized delivery",
+    "issue_number": 1059,
+    "current_continuation": "Parent978 follow-up: execute original three840 Blender geometry tests on real Windows C# fixture, add bounded source-triggered CI and fail on skips; preserve other publishers and quality acceptance",
+    "recording_boundary": "Current repair/validation/delivery request event from live user mandate; not backdated initial intake or acceptance. External host policy fingerprint uses current checkout AGENTS.md.",
+    "observed_model": null,
+    "usage": null,
+    "host_policy_path": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "f0523486f18e547efac6201a084942eadabe230a65b53f4273404a960e7efb4a"
+}

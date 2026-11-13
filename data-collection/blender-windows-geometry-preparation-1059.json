@@ -1,0 +1,71 @@
+{
+  "recorded_at": "2026-11-13T12:25:42.984354+00:00",
+  "base_main": "da9bfac7b5036f24d9657179d394dc2db3a66526",
+  "observed_model": null,
+  "usage": null,
+  "request_id": "blender-windows-geometry-acceptance-20261113",
+  "issue_number": 1059,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1059",
+  "new_events": [
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/blender-windows-geometry-acceptance-20261113/dispatch-1eed9fda3260458e8e10c0ebfdbe19d6.json",
+      "sha256": "a628153c07a01955c12ae2cf5deaca1a0845bbad6fcfc2f2833f3fd8778cfdc7"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/blender-windows-geometry-acceptance-20261113/dispatch-7d9cc3ac3e1d4e2aa2a8c22f6b58af5a.json",
+      "sha256": "a79001cd2ee36f14ced779a6f67814e1deeff87a829500332394e07cab7323a8"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/blender-windows-geometry-acceptance-20261113/dispatch-a9792364862840c8ab477a72ec05f239.json",
+      "sha256": "f0f906f0a745c7c46b7577e7bb33e90c84c4d2a571963deb19787983f00b0dc7"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/blender-windows-geometry-acceptance-20261113/kuafu-72fed3c9b99e9d280807916a1212bdd72fefea96.json",
+      "sha256": "fe5003951b5e223822fc89b0b30a8485d90610e1ddcfb4297503f275ae53412d"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/blender-windows-geometry-acceptance-20261113/request-blender-windows-geometry-acceptance-20261113.json",
+      "sha256": "f6b6df8e2aff1de76225f0755602e0f3919862185c8885d170d4680ff0b70910"
+    }
+  ],
+  "scope": "New Windows-only runner and source-triggered CI for three original840 C# fixture/real Blender tests; original production and test bodies unchanged",
+  "source_files": {
+    ".github/workflows/blender_geometry_windows.yml": "f22e6a8ecff6db0f649bd76c93426ce055760a7926b04b8f40428083f4289928",
+    "tests/editor/run_blender_geometry.py": "e57272461599a93986de87ddc86a471035a6db5d91588d6d1d116d10f0f39437",
+    "tests/editor/test_run_blender_geometry.py": "a6a3778cf7957501e01ba2f798bcbbf324db73c741a680cb0fccf5e54264c53c",
+    "design-docs/blender-windows-geometry-acceptance-20261113.md": "5c911cdfc3e1e8497abf080143d8ba990a18c01013554fe6493912a29943dc95"
+  },
+  "local_validation": {
+    "unit_tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "ruff": "passed",
+    "mypy": "passed",
+    "workflow_yaml": "parsed with Ruby Psych",
+    "codespell": "passed",
+    "macos_actual_entry": "rejected as designed; no Windows coverage"
+  },
+  "review_fixes": [
+    "Official runtime header includes LTS; original fixture entry regression added",
+    "Bounded worker900s leaves cleanup/upload time in30min job",
+    "Firewall removal errors/residual rules fail job and are retained",
+    "Runtime cleanup receipt and final runner.log SHA retained before artifact upload"
+  ],
+  "windows_acceptance": {
+    "state": "pending_exact_candidate_CI",
+    "required_tests_run": 3,
+    "required_skipped": 0
+  },
+  "limits": [
+    "No real model or supplier quality claim",
+    "No effective user installation changes",
+    "Parent978 and original840 remain open"
+  ],
+  "independent_review": {
+    "worker": "/root/sinan_40e7dccf33fcc51c",
+    "path": "blender-windows-review/review.json",
+    "sha256": "0b38674137c2f21dab2b505556f216fd4ea265b5f25fad31afb8c173eec7b910",
+    "state": "passed_with_actual_Windows_CI_still_required"
+  }
+}

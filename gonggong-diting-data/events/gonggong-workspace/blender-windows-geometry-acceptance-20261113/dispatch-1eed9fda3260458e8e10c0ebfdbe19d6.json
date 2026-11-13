@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "event_id": "dispatch-1eed9fda3260458e8e10c0ebfdbe19d6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "blender-windows-geometry-acceptance-20261113",
+  "kind": "handoff",
+  "occurred_at": "2026-11-13T12:03:16.834840+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1059",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "record": {
+      "ticket": "github:zhzyx/nightmarish-spooky-sorceryze#1059",
+      "reservation_key": "1302a82385ce4eb01a05d907b521e7d11629383db38e09571b756c3da37bae70",
+      "state": "running",
+      "stage": null,
+      "record_sha256": "dd4061714333e57cb56fe9822eac6d27811dee6ebe5afa538825b1fcefcee921",
+      "source_revision": "384be0247873f2131662b085dd3836d93a31c4bf9690ae440e4c1a689223afe1",
+      "planned_model": "GPT-6",
+      "requested_model": null,
+      "worker_id": "/root/sinan_d91b0d7da9ca5fab",
+      "receipt_reference": "agent:/root/sinan_d91b0d7da9ca5fab",
+      "setup_pending": false,
+      "observed_model": null
+    },
+    "usage": null,
+    "usage_unknown_reason": "native tool usage not exposed"
+  },
+  "evidence_refs": [],
+  "sha256": "3adcd945fe3585f64437c4b0af1692edc0a0270cdcc39831fde2a4f878e946ae"
+}

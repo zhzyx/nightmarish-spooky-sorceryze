@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-72fed3c9b99e9d280807916a1212bdd72fefea96",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "blender-windows-geometry-acceptance-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1059",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3f42eea6fc30f5b9c042f253b27dd42087bb670c9993c975aa86229aede0afd5",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1059",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1060",
+    "action": "intake",
+    "detection_head": "da9bfac7b5036f24d9657179d394dc2db3a66526",
+    "context_sha256": "0e2e1ad30453c6b0538dbc4150defd92f0542bda00bba97af5c576facc934fa3",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1060",
+    "diagnosis": "Caller omitted required stable request and tenant parameters. Same1059 intake succeeded after supplying actual work-items binding; correct fail-closed gate unchanged. Independent from TLS fault.",
+    "next_action": "Continue1059 delivery after local11 tests and independent review; actual Windows3 acceptance still required.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T12:04:08.830938+00:00",
+    "attempted": null,
+    "repair_owner": "codex:/root",
+    "continuable": "Original host preparation operation reverified; Windows business acceptance remains separate"
+  },
+  "occurred_at": "2026-11-13T12:24:36.898392+00:00",
+  "sha256": "c14e224c35d6b40af9f44869d6f1d1418cf72e48e59bc49f17d0d5e0c4958ce8"
+}
