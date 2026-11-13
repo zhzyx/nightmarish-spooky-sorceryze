@@ -25,6 +25,21 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class MemberCreateRequest(BaseModel):
+    """管理员在租户内添加成员。"""
+
+    email: str
+    password: str
+    name: str = ""
+    role: str = "editor"
+
+
+class RoleUpdateRequest(BaseModel):
+    """修改成员角色。"""
+
+    role: str
+
+
 class DocCreateRequest(BaseModel):
     """创建文曲 Markdown 文档。"""
 

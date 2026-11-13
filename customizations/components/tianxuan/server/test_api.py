@@ -87,6 +87,7 @@ def test_register_and_login(client: TestClient, account: dict[str, str]):
         "tenant_id": account["tenant_id"],
         "email": "owner@example.com",
         "name": "Owner",
+        "role": "admin",
     }
 
     assert (

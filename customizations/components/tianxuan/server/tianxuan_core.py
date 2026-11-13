@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS tenants (
 );
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, email TEXT UNIQUE NOT NULL,
-  name TEXT NOT NULL, password_hash TEXT NOT NULL, salt TEXT NOT NULL, created_at TEXT NOT NULL
+  name TEXT NOT NULL, password_hash TEXT NOT NULL, salt TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'editor', created_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS sessions (
   token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL
@@ -90,6 +91,10 @@ class TransitionRejected(TianxuanError):
     """Raised when an issue transition is not allowed."""
 
 
+class PermissionDenied(TianxuanError):
+    """Raised when the actor's role does not allow the operation."""
+
+
 class UnknownTool(TianxuanError):
     """Raised when an AI tool name is not registered."""
 
@@ -151,7 +156,13 @@ class Tianxuan:
         self.db.row_factory = sqlite3.Row
         self.db.executescript(SCHEMA)
         self._migrate_sessions()
+        self._migrate_users()
         self.db.commit()
+
+    def _migrate_users(self) -> None:
+        columns = {row[1] for row in self.db.execute("PRAGMA table_info(users)")}
+        if columns and "role" not in columns:
+            self.db.execute("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'editor'")
 
     def _migrate_sessions(self) -> None:
         columns = {row[1] for row in self.db.execute("PRAGMA table_info(sessions)")}
@@ -183,8 +194,8 @@ class Tianxuan:
                 (space_id, tenant_id, "默认空间", "default", now),
             )
             self.db.execute(
-                "INSERT INTO users (id, tenant_id, email, name, password_hash, salt, created_at) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO users (id, tenant_id, email, name, password_hash, salt, role, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, 'admin', ?)",
                 (
                     user_id,
                     tenant_id,
@@ -208,7 +219,13 @@ class Tianxuan:
             return None
         if _hash_password(password, row["salt"]) != row["password_hash"]:
             return None
-        return {"user_id": row["id"], "tenant_id": row["tenant_id"], "email": row["email"], "name": row["name"]}
+        return {
+            "user_id": row["id"],
+            "tenant_id": row["tenant_id"],
+            "email": row["email"],
+            "name": row["name"],
+            "role": row["role"],
+        }
 
     def issue_session(self, user_id: str, ttl_seconds: int = 86_400) -> str:
         token = "txs_" + uuid.uuid4().hex + uuid.uuid4().hex
@@ -246,6 +263,75 @@ class Tianxuan:
         self.db.commit()
         return cursor.rowcount > 0
 
+    def role_of(self, actor: str) -> str:
+        row = self.db.execute("SELECT role FROM users WHERE id = ?", (actor,)).fetchone()
+        if row is None:
+            raise NotFound(f"user not found: {actor}")
+        return str(row["role"])
+
+    def _require_editor(self, actor: str) -> None:
+        if self.role_of(actor) == "viewer":
+            raise PermissionDenied("viewer cannot modify content")
+
+    def list_members(self, actor: str) -> list[dict[str, Any]]:
+        rows = self.db.execute(
+            "SELECT id, email, name, role FROM users WHERE tenant_id = ? ORDER BY created_at, id",
+            (self._tenant_of(actor),),
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+    def add_member(self, actor: str, email: str, password: str, name: str = "", role: str = "editor") -> dict[str, Any]:
+        if self.role_of(actor) != "admin":
+            raise PermissionDenied("only admin can add members")
+        if role not in {"admin", "editor", "viewer"}:
+            raise TianxuanError("role must be admin, editor or viewer")
+        if not email.strip() or not password:
+            raise TianxuanError("email and password are required")
+        tenant_id = self._tenant_of(actor)
+        salt = uuid.uuid4().hex
+        user_id = _id("usr")
+        display_name = name or email.split("@")[0]
+        try:
+            self.db.execute(
+                "INSERT INTO users (id, tenant_id, email, name, password_hash, salt, role, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    user_id,
+                    tenant_id,
+                    email.lower(),
+                    display_name,
+                    _hash_password(password, salt),
+                    salt,
+                    role,
+                    _now(),
+                ),
+            )
+        except sqlite3.IntegrityError as error:
+            self.db.rollback()
+            raise TianxuanError(f"member rejected: {error}") from error
+        self._event(tenant_id, "user.added", actor, user_id, {"role": role})
+        self.db.commit()
+        return {
+            "user_id": user_id,
+            "tenant_id": tenant_id,
+            "email": email.lower(),
+            "name": display_name,
+            "role": role,
+        }
+
+    def set_role(self, actor: str, user_id: str, role: str) -> dict[str, Any]:
+        if self.role_of(actor) != "admin":
+            raise PermissionDenied("only admin can change roles")
+        if role not in {"admin", "editor", "viewer"}:
+            raise TianxuanError("role must be admin, editor or viewer")
+        row = self.db.execute("SELECT tenant_id FROM users WHERE id = ?", (user_id,)).fetchone()
+        if row is None or row["tenant_id"] != self._tenant_of(actor):
+            raise NotFound(f"user not found: {user_id}")
+        self.db.execute("UPDATE users SET role = ? WHERE id = ?", (role, user_id))
+        self._event(self._tenant_of(actor), "user.role_changed", actor, user_id, {"role": role})
+        self.db.commit()
+        return {"user_id": user_id, "role": role}
+
     # ---------- 文曲：文档 ----------
 
     def create_doc(
@@ -258,6 +344,7 @@ class Tianxuan:
         request_id: str | None = None,
         space_id: str | None = None,
     ) -> dict[str, Any]:
+        self._require_editor(actor)
         tenant_id = self._tenant_of(actor)
         space_id = (
             space_id
@@ -288,6 +375,7 @@ class Tianxuan:
         title: str | None = None,
         status: str | None = None,
     ) -> dict[str, Any]:
+        self._require_editor(actor)
         doc = self.get_doc(doc_id)
         if doc["version"] != expected_version:
             raise VersionConflict(f"expected version {expected_version}, found {doc['version']}")
@@ -361,6 +449,7 @@ class Tianxuan:
     # ---------- 文曲：评论 ----------
 
     def add_comment(self, actor: str, doc_id: str, body: str, parent_id: str | None = None) -> dict[str, Any]:
+        self._require_editor(actor)
         document = self.get_doc(doc_id)
         if not body.strip():
             raise TianxuanError("comment body is required")
@@ -396,6 +485,7 @@ class Tianxuan:
         return [dict(row) | {"resolved": bool(row["resolved"])} for row in rows]
 
     def resolve_comment(self, actor: str, comment_id: str, resolved: bool = True) -> dict[str, Any]:
+        self._require_editor(actor)
         comment = self.get_comment(comment_id)
         now = _now()
         self.db.execute(
@@ -437,6 +527,7 @@ class Tianxuan:
         parent_id: str | None = None,
         body_md: str = "",
     ) -> dict[str, Any]:
+        self._require_editor(actor)
         tenant_id = self._tenant_of(actor)
         number = self.db.execute(
             "SELECT COALESCE(MAX(number), 0) + 1 FROM issues WHERE tenant_id = ?", (tenant_id,)
@@ -484,6 +575,7 @@ class Tianxuan:
         return [dict(row) for row in rows]
 
     def transition_issue(self, actor: str, issue_id: str, to_status: str) -> dict[str, Any]:
+        self._require_editor(actor)
         issue = self.get_issue(issue_id)
         current = issue["status"]
         if to_status not in ISSUE_TRANSITIONS.get(current, set()):
@@ -496,6 +588,7 @@ class Tianxuan:
         return self.get_issue(issue_id)
 
     def plan_tickets(self, actor: str, requirement_id: str, tickets: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        self._require_editor(actor)
         requirement = self.get_doc(requirement_id)
         if requirement["kind"] != "requirement":
             raise TianxuanError("tickets can only be planned from a requirement document")
