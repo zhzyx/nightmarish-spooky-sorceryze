@@ -152,7 +152,7 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 		}
 		std::string strValue;
 		if (strArgument == "--manual-ticks" || strArgument == "--fixed-step-ms" || strArgument == "--seed" ||
-				strArgument == "--port" || strArgument == "--duration-ms")
+			strArgument == "--port" || strArgument == "--duration-ms")
 		{
 			if (!ParseValue(in_arrArguments, nIndex, strValue))
 			{
@@ -190,7 +190,7 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 				stParsed.bNetworkMode = true;
 				bNetworkEndpointProvided = true;
 				if ((strArgument == "--bind" && stParsed.eRole != RuntimeRole::Server) ||
-						(strArgument == "--connect" && stParsed.eRole != RuntimeRole::Client))
+					(strArgument == "--connect" && stParsed.eRole != RuntimeRole::Client))
 				{
 					return RuntimeStatus::InvalidParameter;
 				}
@@ -204,7 +204,7 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 		return RuntimeStatus::InvalidParameter;
 	}
 	if (stParsed.bNetworkMode &&
-			(!bNetworkEndpointProvided || (stParsed.eRole == RuntimeRole::Client && stParsed.nPort == 0)))
+		(!bNetworkEndpointProvided || (stParsed.eRole == RuntimeRole::Client && stParsed.nPort == 0)))
 	{
 		return RuntimeStatus::InvalidParameter;
 	}

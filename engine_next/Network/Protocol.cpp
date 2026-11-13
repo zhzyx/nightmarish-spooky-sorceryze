@@ -122,8 +122,8 @@ bool IsValidType(std::uint16_t nType) noexcept
 Runtime::RuntimeStatus EncodeFrame(const FrameHeader &in_stHeader, const std::vector<std::uint8_t> &in_arrPayload, std::vector<std::uint8_t> &out_arrFrame)
 {
 	if (in_stHeader.nFlags != 0 || in_stHeader.nMessageSequence == 0 ||
-			!IsValidType(static_cast<std::uint16_t>(in_stHeader.eType)) ||
-			in_arrPayload.size() > MAX_PACKET_BYTES - FRAME_HEADER_BYTES)
+		!IsValidType(static_cast<std::uint16_t>(in_stHeader.eType)) ||
+		in_arrPayload.size() > MAX_PACKET_BYTES - FRAME_HEADER_BYTES)
 	{
 		return Runtime::RuntimeStatus::InvalidParameter;
 	}
