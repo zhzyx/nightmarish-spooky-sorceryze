@@ -39,11 +39,19 @@ from wenqu_bridge import classify as classify_markdown
 from wenqu_bridge import search as search_documents
 
 
-def _require_actor(x_actor: str | None = Header(default=None, alias="X-Actor")) -> str:
-    """读取并规范化当前 actor；缺失时按客户端错误处理。"""
+def _require_actor(
+    request: Request,
+    x_actor: str | None = Header(default=None, alias="X-Actor"),
+    authorization: str | None = Header(default=None),
+) -> str:
+    """读取 actor：优先 Bearer 会话 token，兼容临时 X-Actor。"""
     actor = (x_actor or "").strip()
+    if not actor and authorization:
+        scheme, _, token = authorization.partition(" ")
+        if scheme.lower() == "bearer" and token.strip():
+            actor = request.app.state.store.user_for_token(token.strip()) or ""
     if not actor:
-        raise HTTPException(status_code=400, detail="X-Actor header is required")
+        raise HTTPException(status_code=400, detail="X-Actor header or Bearer token is required")
     return actor
 
 
@@ -157,6 +165,14 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
         if account is None:
             raise HTTPException(status_code=401, detail="invalid email or password")
         return account  # type: ignore[no-any-return]
+
+    @app.post("/api/v1/auth/session")
+    def create_session(payload: LoginRequest) -> dict[str, str]:
+        account = store.authenticate(payload.email, payload.password)
+        if account is None:
+            raise HTTPException(status_code=401, detail="invalid email or password")
+        token = store.issue_session(account["user_id"])
+        return {**account, "token": token}  # type: ignore[no-any-return]
 
     # ---------- 文曲：文档 ----------
 

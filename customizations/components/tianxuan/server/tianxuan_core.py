@@ -25,6 +25,9 @@ CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, email TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL, password_hash TEXT NOT NULL, salt TEXT NOT NULL, created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS sessions (
+  token TEXT PRIMARY KEY, user_id TEXT NOT NULL, created_at TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS spaces (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, name TEXT NOT NULL, slug TEXT NOT NULL, created_at TEXT NOT NULL
 );
@@ -192,6 +195,21 @@ class Tianxuan:
         if _hash_password(password, row["salt"]) != row["password_hash"]:
             return None
         return {"user_id": row["id"], "tenant_id": row["tenant_id"], "email": row["email"], "name": row["name"]}
+
+    def issue_session(self, user_id: str) -> str:
+        token = "txs_" + uuid.uuid4().hex + uuid.uuid4().hex
+        self.db.execute(
+            "INSERT INTO sessions (token, user_id, created_at) VALUES (?, ?, ?)",
+            (token, user_id, _now()),
+        )
+        self.db.commit()
+        return token
+
+    def user_for_token(self, token: str) -> str | None:
+        row = self.db.execute("SELECT user_id FROM sessions WHERE token = ?", (token,)).fetchone()
+        if row is None:
+            return None
+        return str(row["user_id"])
 
     # ---------- 文曲：文档 ----------
 
