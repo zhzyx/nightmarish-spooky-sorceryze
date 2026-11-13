@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-6909ae22cd24c67d210d4a7fd3ba3b0da41bb188",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "per-ai-model-selection-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c8802291e77c4502f924edbf2ab8862a6f595cebe407909da9d49fdc3681dac2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/972",
+    "action": "delivery",
+    "detection_head": "5ed330534ea99b3d8246ed8cd54688658dabb636",
+    "context_sha256": "e904557e352b63525d216dd00f91948b1a05c7f4d32faf9c7d4b881495e75964",
+    "operator": "kaiyunxue",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "Issue #971 最终恢复事件入库",
+    "evidence": "PR_EVIDENCE_BINDING：新增 Diting 事件需要同 PR 的 data-collection JSON 绑定 request_id 与 Issue #971",
+    "diagnosis": "原功能 PR 的证据文件已在 main，但每个新增事件 PR 必须携带匹配的数据采集证据；当前暂存仅有事件，未提交或推送。不是产品回归。",
+    "next_action": "新增仅描述本次恢复事件的 data-collection JSON，列出事件文件、原合并提交与未改产品代码边界，再重跑正式入口。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T06:40:23.677698+00:00",
+    "attempted": "已临时重开原单，两个恢复事件暂存且 diff check 通过；证据绑定门禁拒绝，未生成新 PR",
+    "repair_owner": "kaiyunxue",
+    "continuable": "功能交付及 CI 证据保持有效，仅补交审计证据"
+  },
+  "occurred_at": "2026-11-13T06:41:51.972054+00:00",
+  "sha256": "1f7d8ab9bba1151460474070b5cc8a969d1b94b0d07b0a83d5e2f408e3b028b9"
+}

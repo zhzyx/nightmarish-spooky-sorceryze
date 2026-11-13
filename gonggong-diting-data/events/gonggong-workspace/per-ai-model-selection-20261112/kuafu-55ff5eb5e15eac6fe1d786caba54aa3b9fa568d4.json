@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-55ff5eb5e15eac6fe1d786caba54aa3b9fa568d4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "per-ai-model-selection-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "19768c0df3aa6ecef12ebd2a107ecac8cad8546209db8c8a6b8e8bb0f80e85fe",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/972",
+    "action": "delivery",
+    "detection_head": "5ed330534ea99b3d8246ed8cd54688658dabb636",
+    "context_sha256": "e904557e352b63525d216dd00f91948b1a05c7f4d32faf9c7d4b881495e75964",
+    "operator": "kaiyunxue",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "Issue #971 最终恢复事件入库",
+    "evidence": "writer_submit 返回 Issue is not open；候选仅新增 kuafu-ef717ecf5eb0a73bca89e3fd1d452664bf0687a6.json",
+    "diagnosis": "功能 PR #1034 已合入且原单已完成；合入后生成的恢复事件仍需按仓库审计规则进入 Git，正式入口拒绝已关闭 Issue。不是产品回归。",
+    "next_action": "临时重开 #971 和 #972，仅交付恢复事件；合入并回读后恢复 done/completed。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T06:38:01.669338+00:00",
+    "attempted": "已同步 main 5ed330534ea99b3d8246ed8cd54688658dabb636，暂存唯一事件文件并通过 diff check；正式入口因原单关闭停止，未提交或推送",
+    "repair_owner": "kaiyunxue",
+    "continuable": "产品实现与既有 CI 不变，只需完成事件补交"
+  },
+  "occurred_at": "2026-11-13T06:39:07.826505+00:00",
+  "sha256": "67ee5f895a4f76cf6ea91213dd6920481dfd46cc8320e38f2e0f8b7201acbf14"
+}

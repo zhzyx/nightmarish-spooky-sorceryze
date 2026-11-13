@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "quality_recovery",
+  "request_id": "per-ai-model-selection-20261112",
+  "issue_number": 971,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+  "bug_number": 972,
+  "recorded_at": "2026-11-13T06:43:00Z",
+  "base_head": "5ed330534ea99b3d8246ed8cd54688658dabb636",
+  "original_delivery": {
+    "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1034",
+    "signed_head": "548f8b2fb23f9f007c01e5b0a4850081d28e17f0",
+    "merge_commit": "5ed330534ea99b3d8246ed8cd54688658dabb636"
+  },
+  "event_files": [
+    "gonggong-diting-data/events/gonggong-workspace/per-ai-model-selection-20261112/kuafu-55ff5eb5e15eac6fe1d786caba54aa3b9fa568d4.json",
+    "gonggong-diting-data/events/gonggong-workspace/per-ai-model-selection-20261112/kuafu-6909ae22cd24c67d210d4a7fd3ba3b0da41bb188.json",
+    "gonggong-diting-data/events/gonggong-workspace/per-ai-model-selection-20261112/kuafu-ef717ecf5eb0a73bca89e3fd1d452664bf0687a6.json"
+  ],
+  "checks": [
+    {
+      "scope": "Original product delivery",
+      "observed": "PR #1034 issue association, both static checks and Windows Editor CI succeeded; the exact signed head was merged and main was read back",
+      "passed": true
+    },
+    {
+      "scope": "This recovery-only supplement",
+      "observed": "Only Diting recovery events and this binding record are changed; product code, tests and prior verification conclusions are unchanged",
+      "passed": true
+    }
+  ],
+  "not_verified": [
+    "No product tests were rerun for this event-only supplement; original validation remains bound to PR #1034",
+    "The legacy c074db21 dev_build=yes intermittent startup crash remains without a confirmed root cause and is not claimed as fixed",
+    "No real paid provider generation or non-Windows runtime verification was performed"
+  ],
+  "usage": null,
+  "usage_unknown_reason": "The host supplied no measured model token or cost receipt"
+}
