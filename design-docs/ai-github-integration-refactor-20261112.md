@@ -205,3 +205,16 @@ PR #1036 已合入 main `1a47861ed118da8b14f23fd0129e0b8bba4544b5`，完整 PR C
 独立核查及两次本地受控原生复现发现：同模型会话 A medium 会被 B 默认覆盖。原因是项目级 `reasoning_preferences` 未进入会话快照与历史。新关联 [#1038](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1038) 独立修复；不改写原 #971 交付、不接管 #217 发布者。当前修复本地完整／重开／旧记录迁移、七条原生 CLI 参数、模型选择器及项目配置回归通过；独立修复审查与精确候选 Windows CI／main 仍待交付。详见[修复设计](session-reasoning-isolation-20261113.md)及[验收来源](../data-collection/session-reasoning-isolation-1038.json)。
 
 原 #217 文档路径在本轮当前 main、可见 refs 历史和 36 棵本机工作树无命中；本机持久认领无 #217，不据此推断跨设备工作者终态。原单正文与后续设计保持溯源；#217、#978 尚未整体关闭。私有原生验证资产已从相同产品源码恢复缺失天枢 UI 配套包；此前 AI Chat 通过不代表天枢已验证。
+
+
+## 2026-11-13 修复后账号与 Blender 几何补验
+
+在 main `722a7309c157e6f2665a152fecde57276284175f` 上完成两项此前缺失的补验，证据为 `data-collection/ai-integration-postfix-native-acceptance-978.json`。本次只追加证据及文档，不修改产品代码。真实 Codex 账号使用已验收 #838 main 的原生编辑器；c827 至 722a 的 editor/tools/tests 没有变化，未混入尚待交接的 #830 候选。8 个目录模型逐一核对强度能力及切换，无效路径明确失败后可恢复；默认强度、关闭工具的原生咨询在 20.038 秒内返回正确答案并保存，临时目录及已观察进程清理完成。requested_model 为 gpt-6.1-sol，实际服务型号及 request ID 未回传，仍为 unknown。
+
+#840 原回执的三项 Blender 缺口已准确定位：rounded_loft_cups、organic_mesh_receipt_and_recovery、character_retains_original_and_expanded_receipts。三项原方法 AST/断言未改，使用当前代码和官方 Blender 4.5.11 LTS arm64，3/3 通过、零跳过，耗时 12.734 秒；生成 GLB、几何原生回执、输入及摘要保留。只替换受 Windows C# 编译限制的离线 CLI 测试夹具，未调用真实供应商，也不将此当作 Windows C# 路由或全部人物质量验收。运行禁止网络、使用私有 HOME/config/tmp；完成后卸载只读 DMG 并删除下载及临时运行环境，保留约16 MB审计证据。
+
+#830 最新 main 的隔离构建、63 项路由和侧栏/重启已通过；原发布责任交接仍待单独答复。18 份源码/证据文件和二进制补丁已按摘要保存，原工作树保持。本次复用现有自有工作副本准备上述父单证据，没有新建工作树。#217/#840/#978 的整体状态及原有效安装、其他平台、业务/责任边界未据此关闭；此前原候选尚未运行的记录作为历史证据保留。
+
+模型目录和强度以客户端/账号返回值为准，目录不代替每个型号的实际调用权限；依据 [OpenAI App Server 模型目录说明](https://learn.chatgpt.com/docs/app-server#list-models-modellist) 和 [官方目录与推理验收边界](https://developers.openai.com/siwc/token-sharing-open-source/codex-app-server)。本次实际请求只支持该次调用结论。
+
+交付准备时 main 已由其他责任者的 PR #1052 推进到 `bc2efa392ccef0059bab8a007845946a624b78eb`。已正常快进整合；新增的独立 Engine Next M2 运行时/构建契约与本次 AI、Blender 输入无交叉，沿用上述722a实际证据，未声称在新基线上重复运行。最终门禁和精确候选 CI 仍绑定实际交付对象。

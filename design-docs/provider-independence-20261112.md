@@ -106,3 +106,10 @@ PR #872 于 2026-11-12T01:07:44Z 由 Sail-Li 合入 main `e15a49f9b7dbbdbb1b585f
 #843 和父 #840 继续开放，剩余唯一必需平台验收为真实 macOS Codex 桌面后代链向相同候选私有 headless 编辑器发送授权 context 请求。当前会话持有协调责任，未取得其他执行者接收，不虚构移交。恢复需要授权 macOS Codex 原生会话，或官方应用中经验证的合法静默子进程入口；当前 Windows CLI、静态签名和其他已注册宿主均不代替它。#850 保留实际条件及尝试证据，用户在当前会话收到具体提醒，不新增定时扫描。
 
 最终 macOS run43131315713（精确签发41a47090）整轮成功：arm64编译、包切换、ExternalPeer、8个真实签名宿主场景、导航、工单交互及模型发现/取消全部通过。报告实际编辑器 SHA-256 为 `a739a5a9eeff5cb7d48316a8f23e41b8e7e7aefdaa5cd9e3f557b02f2cb3896e`；non_codex_host_ok=true，full_signed_anchor_acceptance_ok=false。旧模型夹具故障 #871 及聚合故障 #844 已逐项追加恢复证据并 completed 关闭，不改变 #843/#850/#840 的剩余状态。
+
+
+## 2026-11-13 父 #978 补做原三项 Blender 验收
+
+原 `provider-independence-840-delivery.json` 的三项未执行几何测试，在 main722a 上通过实际 Blender 4.5.11 LTS arm64 补验：圆润放样杯体严格回执、有机单体网格及恢复、人物原始/展开计划双回执，共3项、零跳过。原测试方法及断言与原输入 blob `b4d441ede7ba64cbe27364e551fd6bbb9bf99467` 一致；仅将 Windows C# 离线 CLI 夹具替换为私有 macOS Python 等价分支。使用当前代码的实际 Blender 结果不能倒写为旧候选当时已经运行。
+
+生成文件、原生回执和原始/展开计划摘要已保留，证据见 `data-collection/ai-integration-postfix-native-acceptance-978.json`；临时安装及运行配置已移除。这补齐了列出的实际几何测试范围，不覆盖 Windows C# 路由、真实供应商推理质量、其他人物测试或用户视觉验收。非Codex/Kimi质量由原用户交给其他人验证的决定继续有效，不能外推为父 #978 全部模型免验。原 #840 发布责任及整体收尾仍须按原验收核对。
