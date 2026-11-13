@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "issue_number": 1080,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1080",
+  "request_id": "kuafu-run-43478437117-attempt-1",
+  "parent_issue": 978,
+  "source_run": 43478437117,
+  "source_candidate": "e9e41955e4d6bf60a9d32f6377cf537243eb0825",
+  "source_conclusion": "failure",
+  "root_cause": "Late edited event checked closed PR831 against completed Issue830; current PR state was not considered.",
+  "change": "Return with explicit not-applicable summary for API-read closed PRs before issue validation. All open/reopened PR association requirements remain.",
+  "verification": {
+    "reliability_tests": 10,
+    "lifecycle_fixtures": 10,
+    "original_workflow_failed_closed_cases": 3,
+    "ruff_check": "passed",
+    "ruff_format": "passed",
+    "diff_check": "passed",
+    "independent_review": {
+      "result": "no_blocking_findings",
+      "reviewer": "/root/sinan_94f4b0272a328685",
+      "sha256": "eda6f3cd1c1827f74db3c43f548c789f09013a7269d656c0e515579b3568620e",
+      "scope": "Four file bytes bound in review; this review-reference addition follows that snapshot."
+    },
+    "exact_pr_main_delivery": "pending",
+    "mypy": "passed"
+  },
+  "limits": [
+    "Original run remains failed; this does not revalidate the obsolete candidate.",
+    "Local actual-script API fixtures do not claim a live GitHub late-event replay.",
+    "No PR checkout or untrusted-code execution added to pull_request_target."
+  ],
+  "private_receipt_resolution_base": "Parent of git rev-parse --path-format=absolute --git-common-dir, then data-collection/receipts/ai-integration-refactor-20261112.",
+  "private_receipts_sha256": {
+    "issue1080-original-run.json": "7e1e8d7baa785f6a31122011fb58693e120e4a9c235cb4dce21cb0b4c1a61e5c",
+    "issue1080-original-jobs.json": "3bf5f5c3275d9f869324ef4c2dcbe1f4e087b20827e8c9b8a25030e70d38adf1",
+    "issue1080-original-job.log": "6e2dc114c37752b30f9dcb1c28b7bfe0d3140c8c27a34ca522f4c56c9ae46686",
+    "issue1080-old-pr831.json": "d307bc25db2a547e5f211f3946e13d8240b16be18b195e0fcee3fd3d2398b123",
+    "issue1080-tests.log": "f9c57da880d5cd627e7284e0669d6aa2203b45c36f245489c92c37f18a4dbd08",
+    "issue1080-before-regression.log": "00579aeaac5fff441fe5fd044d3914f311fb03d1b662e4fae6c630cbf72d5563",
+    "issue1080-kuafu-assessed.json": "2ef3716ea4b5c81b6ecfd67ccc7ca2649c9e4528c8ffc2636a563fbde674e908",
+    "issue1083-original-run.json": "0c89abe6f0abe983e2a7ddb7aa0294e0e9d9c456153df98a26a7e7366d8a5810",
+    "issue1083-original-job.log": "9f5bb4e02326bab7f757c419982498362ef1fdfe7977f799128b2d9efc535f5f",
+    "issue1083-old-pr829.json": "de9f23ee264a1d17f163dec64bcacafb955983801443677884dfa1c7fa05cdf2",
+    "issue1080-independent-review/review.json": "eda6f3cd1c1827f74db3c43f548c789f09013a7269d656c0e515579b3568620e",
+    "issue1080-review-reconciled.json": "bd22cb5677158e1120db68a8b912b0e338b3cbf54fc93ec15b96b8612c48cc44",
+    "issue1080-reconcile-error-assessed.json": "9b58cafc872ed977d29234483127f2da777b2b09a6fafad594d28176041d5836"
+  },
+  "related_incidents": [
+    {
+      "issue": 1083,
+      "run": 43481953366,
+      "candidate": "633aef30a8f40c73391c1a63ebdde7d3ffe6b535",
+      "pr": 829,
+      "pr_closed_at": "2026-11-13T18:22:03Z",
+      "run_created_at": "2026-11-13T18:22:08Z",
+      "original_conclusion": "failure",
+      "diagnosis": "Same closed-PR lifecycle defect after accepted825 evidence delivery through1081; no827 production takeover."
+    }
+  ],
+  "operator_recovery": "Review reconciliation initially used ticket.changed; corrected to actual execution.finished and verified terminal worker without respawn or claim deletion. Private receipt retained."
+}
