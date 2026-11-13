@@ -1,0 +1,15 @@
+{
+  "request_id": "agent-docs-routing-20261114",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1082",
+  "kind": "validation_correction",
+  "corrects": "PR #1095 head c15b3323f764a6978f3ba6ceab19a3f368f2b1be 的 validate-codeowners 失败",
+  "failed_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43486226419",
+  "change": ".github/CODEOWNERS 新增 /Markdown/ 的所有权登记",
+  "check": {
+    "command": "python misc/scripts/validate_codeowners.py --unowned $(git diff --name-only HEAD)",
+    "scope": "与 CI 一致，仅检查当前候选的全部变更文件",
+    "status": "passed",
+    "problems": 0
+  },
+  "historical_evidence_preserved": true
+}

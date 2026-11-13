@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d90d8d61bb0c4fa73352100da8d3e749bd0301e3",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "agent-docs-routing-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1082",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d3c5a1b0d5bd599094985849d4434d613d5f3035f4b732afae97b86b791c3a77",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1082",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1084",
+    "action": "validation",
+    "detection_head": "c1b5f740caf5b2a2455466d0372728740a11a584",
+    "context_sha256": "57bd277207b513ee6cae2776e7fd86eeec43f1dad598da54302a062706578a8c",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-agent-docs-routing-1082",
+    "authority_ref": "用户对 agent-docs-routing-20261114 的明确提交与 main 交付授权",
+    "evidence": "data-collection/agent-docs-routing-20261114-validation.json",
+    "diagnosis": "PR #1095 的 pull_request 静态检查报告 15 份新增 Markdown 文档 UNOWNED；根文件规则不覆盖该新目录。已为 /Markdown/ 登记仓库责任人与 buildsystem，并按 CI 相同范围定向复验全部变更文件，结果通过。",
+    "next_action": "把 CODEOWNERS 修复和诊断证据追加到同一 PR，等待新精确 head 的全部检查。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T18:50:08.258366+00:00",
+    "attempted": "已复现远端日志中的 UNOWNED；全仓库本地检查另有历史未拥有文件，因此按 CI 的变更文件范围定向复验，当前候选全部通过。",
+    "repair_owner": "kimi-work-agent-docs-routing-1082",
+    "continuable": "保留 PR #1095，追加修复后继续 CI、合入和 main 回读。"
+  },
+  "occurred_at": "2026-11-13T18:51:34.244898+00:00",
+  "sha256": "d5e3f5289b23e43bda12dc960c763844a530d303cdd5057409f807ff2650a88c"
+}
