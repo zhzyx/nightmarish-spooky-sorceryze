@@ -1,0 +1,89 @@
+# Self-hosted Tianxuan stack: FastAPI + Next.js + nginx.
+#
+# Run from this directory (the file that this README lives next to):
+#   cp .env.example .env      # then edit the non-secret settings
+#   docker compose --env-file .env up -d --build
+#
+# No credentials are stored in this file. Everything sensitive is read from the
+# environment / .env file, and deploy/.env is git-ignored (only .env.example is
+# committed).
+
+name: tianxuan
+
+services:
+  api:
+    build:
+      # Repository root: the API imports the sibling wenqu/duobao modules.
+      context: ..
+      dockerfile: deploy/Dockerfile.api
+    image: tianxuan-api:local
+    restart: unless-stopped
+    environment:
+      TIANXUAN_DB: "${TIANXUAN_DB:-/data/tianxuan.db}"
+      TIANXUAN_REPO_ROOT: "${TIANXUAN_REPO_ROOT:-/data/repos}"
+      # Optional external Gitea/Forgejo integration. Leave empty to disable it;
+      # the API then reports Gitea as unconfigured instead of failing to boot.
+      TIANXUAN_GITEA_URL: "${TIANXUAN_GITEA_URL:-}"
+      TIANXUAN_GITEA_TOKEN: "${TIANXUAN_GITEA_TOKEN:-}"
+      TIANXUAN_GITEA_OWNER: "${TIANXUAN_GITEA_OWNER:-}"
+    volumes:
+      - tianxuan-data:/data
+    expose:
+      - "8000"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=3).read()"
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  web:
+    build:
+      # The Next.js app is its own build context.
+      context: ../apps/tianxuan
+      dockerfile: ../../deploy/Dockerfile.web
+      args:
+        # NEXT_PUBLIC_* values are baked into the browser bundle by `next build`.
+        # Empty API base = same origin, i.e. /api/... through the proxy below.
+        NEXT_PUBLIC_TIANXUAN_API_BASE: "${NEXT_PUBLIC_TIANXUAN_API_BASE:-}"
+        NEXT_PUBLIC_TIANXUAN_ACTOR: "${NEXT_PUBLIC_TIANXUAN_ACTOR:-}"
+    image: tianxuan-web:local
+    restart: unless-stopped
+    environment:
+      # Runtime (server-side) actor for the live panels on /docs and /repos.
+      TIANXUAN_ACTOR: "${TIANXUAN_ACTOR:-}"
+    expose:
+      - "3000"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  proxy:
+    image: nginx:alpine
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_started
+    ports:
+      - "${TIANXUAN_HTTP_PORT:-8080}:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+
+volumes:
+  tianxuan-data:
+    # Explicit name keeps backup/restore commands independent of the Compose
+    # project name.
+    name: tianxuan-data
