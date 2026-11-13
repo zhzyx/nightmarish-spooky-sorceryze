@@ -62,6 +62,16 @@ class RequirementCreateRequest(BaseModel):
     acceptance: str
 
 
+class RequirementCommitRequest(BaseModel):
+    """把需求 Markdown 提交到受控本地 Git 仓库。"""
+
+    repo: str
+    branch: str = "main"
+    message: str | None = None
+    author_name: str = "Tianxuan"
+    author_email: str = "tianxuan@example.invalid"
+
+
 class TicketSpec(BaseModel):
     """需求下的一张工单。"""
 

@@ -10,8 +10,11 @@ actor 约定：需要身份的端点从请求头 ``X-Actor`` 读取用户 ID（�
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
 from typing import Annotated, Any
 
+from duobao_bridge import GitService, GitServiceError
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 from gateway import ModelGateway, create_model_router
@@ -24,6 +27,7 @@ from schemas import (
     IssueTransitionRequest,
     LoginRequest,
     RegisterRequest,
+    RequirementCommitRequest,
     RequirementCreateRequest,
     TicketsRequest,
 )
@@ -72,6 +76,36 @@ class DocRooms:
                 await peer.send_json(payload)
             except (RuntimeError, WebSocketDisconnect):
                 self.leave(doc_id, peer)
+
+
+def _find_requirement(store: Tianxuan, actor: str, request_id: str) -> dict[str, Any]:
+    for row in store.list_docs(actor):
+        document = store.get_doc(row["id"])
+        if document["request_id"] == request_id and document["kind"] == "requirement":
+            return document  # type: ignore[no-any-return]
+    raise NotFound(f"requirement not found: {request_id}")
+
+
+def _requirement_markdown(requirement: dict[str, Any], issues: list[dict[str, Any]]) -> str:
+    lines = [
+        "---",
+        f"request_id: {requirement['request_id']}",
+        "kind: requirement",
+        f"lang: {requirement['lang']}",
+        f"doc_id: {requirement['id']}",
+        f"version: {requirement['version']}",
+        "---",
+        "",
+        requirement["body_md"].rstrip(),
+        "",
+        "## 工单",
+        "",
+    ]
+    if not issues:
+        lines.append("（暂无工单）")
+    for issue in issues:
+        lines.append(f"- [ ] #{issue['number']} {issue['title']} ({issue['status']})")
+    return "\n".join(lines).rstrip() + "\n"
 
 
 def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
@@ -255,6 +289,40 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
             if document["id"] in links or document["title"] in links:
                 backlinks.append({"doc_id": other["id"], "title": other["title"]})
         return {"outgoing": outgoing, "backlinks": backlinks}
+
+    # ---------- 偃师：需求导出与落库 ----------
+
+    @app.get("/api/v1/requirements/{request_id}/export")
+    def export_requirement(request_id: str, actor: ActorDep) -> dict[str, str]:
+        requirement = _find_requirement(store, actor, request_id)
+        issues = store.list_issues(actor, requirement_id=requirement["id"])
+        return {"filename": f"{request_id}.md", "markdown": _requirement_markdown(requirement, issues)}
+
+    @app.post("/api/v1/requirements/{request_id}/commit")
+    def commit_requirement(request_id: str, payload: RequirementCommitRequest, actor: ActorDep) -> dict[str, str]:
+        requirement = _find_requirement(store, actor, request_id)
+        issues = store.list_issues(actor, requirement_id=requirement["id"])
+        markdown = _requirement_markdown(requirement, issues)
+        root = os.environ.get("TIANXUAN_REPO_ROOT", "").strip()
+        if not root:
+            raise HTTPException(status_code=400, detail="TIANXUAN_REPO_ROOT is not configured")
+        root_path = Path(root).resolve()
+        repo_path = (root_path / payload.repo).resolve()
+        if not repo_path.is_relative_to(root_path):
+            raise HTTPException(status_code=400, detail="repo escapes TIANXUAN_REPO_ROOT")
+        relative = f"design/{request_id}.md"
+        try:
+            sha = GitService().commit(
+                repo_path,
+                payload.branch,
+                payload.message or f"docs: add requirement {request_id}",
+                {relative: markdown},
+                payload.author_name,
+                payload.author_email,
+            )
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=f"commit failed: {error}") from error
+        return {"commit": sha, "path": relative, "branch": payload.branch}
 
     # ---------- 文曲：评论 ----------
 
