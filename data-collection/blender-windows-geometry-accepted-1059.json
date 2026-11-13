@@ -1,0 +1,150 @@
+{
+  "request_id": "blender-windows-geometry-acceptance-20261113",
+  "issue_number": 1059,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1059",
+  "recorded_at": "2026-11-13T13:15:46.614302+00:00",
+  "scope": "Completed original Windows C# fixture / real Blender acceptance for exact PR1061 and main481f; final evidence delivery remains separate",
+  "product_delivery": {
+    "pr": 1061,
+    "candidate": "4bedfeb8a83b7e29732bd877ff3242375e817e17",
+    "signed_head": "1bf798e153e52397e8f4fbe4d6884cd0c066fd69",
+    "main": "481f0e820437f5e5d9218ee11ee2fe551109d86d",
+    "pr_general_ci": 43425882817,
+    "main_general_ci": 43428105533,
+    "applicable_ci": "success; platform and scope skips not counted as execution"
+  },
+  "measurements": [
+    {
+      "stage": "pr",
+      "run_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43425883079",
+      "head": "1bf798e153e52397e8f4fbe4d6884cd0c066fd69",
+      "checkout_revision": "bb4efa7856fe3ebc4fe7b0ef07f07c528454dbdd",
+      "tests": {
+        "tests_run": 3,
+        "names": [
+          "test_synthetic_cli_real_rounded_loft_cups_reaches_strict_receipt_gate",
+          "test_synthetic_cli_real_blender_organic_mesh_receipt_and_recovery",
+          "test_synthetic_cli_real_character_retains_original_and_expanded_receipts"
+        ],
+        "failures": [],
+        "errors": [],
+        "skipped": [],
+        "expected_failures": [],
+        "unexpected_successes": []
+      },
+      "original_csharp_fixture": true,
+      "blender_version": "Blender 4.5.11 LTS",
+      "blender_executable_sha256": "0949e462f677c3e341913a838c6e2f54cc1c811ccb6f281ae9b3ff5926a2b255",
+      "csharp_compiler_sha256": "46809206887326d2d24db1eff1f3064de972c3451abe766b49111450a5e08e00",
+      "source_files_verified": 90,
+      "artifact_files_verified": 75,
+      "glbs_verified": 3,
+      "result_sha256": "c1a286674ddaa3b4922083b2f55831eefea274dd1968da4da398e1f3822806a3",
+      "archive_id": 14038360540,
+      "archive_bytes": 13877647,
+      "archive_sha256": "7b3a7eec66418bfcea7e5e6ffc0e7549da748823e2a742fdbc2f28601b9b4d24",
+      "server_digest_matched": true,
+      "cleanup": {
+        "processes_quiet": true,
+        "temporary_removed": true,
+        "forced_process_termination": false
+      },
+      "portable_runtime_removed": true,
+      "firewall_rules_removed": true,
+      "firewall_rules_count": 2
+    },
+    {
+      "stage": "main",
+      "run_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43428105337",
+      "head": "481f0e820437f5e5d9218ee11ee2fe551109d86d",
+      "checkout_revision": "481f0e820437f5e5d9218ee11ee2fe551109d86d",
+      "tests": {
+        "tests_run": 3,
+        "names": [
+          "test_synthetic_cli_real_rounded_loft_cups_reaches_strict_receipt_gate",
+          "test_synthetic_cli_real_blender_organic_mesh_receipt_and_recovery",
+          "test_synthetic_cli_real_character_retains_original_and_expanded_receipts"
+        ],
+        "failures": [],
+        "errors": [],
+        "skipped": [],
+        "expected_failures": [],
+        "unexpected_successes": []
+      },
+      "original_csharp_fixture": true,
+      "blender_version": "Blender 4.5.11 LTS",
+      "blender_executable_sha256": "0949e462f677c3e341913a838c6e2f54cc1c811ccb6f281ae9b3ff5926a2b255",
+      "csharp_compiler_sha256": "46809206887326d2d24db1eff1f3064de972c3451abe766b49111450a5e08e00",
+      "source_files_verified": 90,
+      "artifact_files_verified": 75,
+      "glbs_verified": 3,
+      "result_sha256": "1db3e354b423f32330c57acc119a6b56441306563e1bfe918161774ae13edaa2",
+      "archive_id": 14038113756,
+      "archive_bytes": 13877847,
+      "archive_sha256": "f356cddc72eaf06d8237ab1ffa6d26ecf232f132877839ec18a972286d14ff92",
+      "server_digest_matched": true,
+      "cleanup": {
+        "processes_quiet": true,
+        "temporary_removed": true,
+        "forced_process_termination": false
+      },
+      "portable_runtime_removed": true,
+      "firewall_rules_removed": true,
+      "firewall_rules_count": 2
+    }
+  ],
+  "evidence_resolution": "Parent of absolute Git common directory, then data-collection/receipts/ai-integration-refactor-20261112; retained ZIP archives contain all original artifact paths",
+  "evidence_sha256": {
+    "blender-windows-pr1061-acceptance.json": "0116716c42cc5b424aced0b9bbf15c5deea6a290df0ef58d43de4a7e6a02a66b",
+    "blender-windows-main481f-acceptance.json": "d2dffb4c3c44fe382ca98cf94db3661e276b5c53fcbf63e1400cf86ed9e5c2ea",
+    "blender-windows-pr1061-ranged.zip": "7b3a7eec66418bfcea7e5e6ffc0e7549da748823e2a742fdbc2f28601b9b4d24",
+    "blender-windows-main481f-ranged.zip": "f356cddc72eaf06d8237ab1ffa6d26ecf232f132877839ec18a972286d14ff92",
+    "blender-windows-pr1061-ranged-download.json": "8cb409116a3033d00cb17dc3fac636eacdd3c3490685b6d57d976f68445d3391",
+    "blender-windows-main481f-ranged-download.json": "6e97e9a7e0e4f98ec330488bd57fb80b6041664a2396e2c05b479ff979bba9dd",
+    "verify-blender-windows-artifacts.py": "f9a5b61aaafca095caed0174485d3af3bf7301046de9f4dd48b0ebdf08bf05ab",
+    "download-github-artifact-ranges.py": "66858ab21ffcd6e85463805e6df7aa5e98f5906b045ffe33c81721d3fd76947e",
+    "blender-windows-artifact-download-stall.json": "0013ebbdbd41b16865c8384f8fc6ac8f5d9e974e28b54e8b59dcc719ff778a0b",
+    "blender-windows-artifact-assessed.json": "c590102869cf796439fa1ecf073466f03d7397c12ee105e83c42bd0493047956",
+    "blender-windows-artifact-condition.json": "34bf8b788c5a67bfbb0b1ef9ad30a2b849fbfae1e9a0824bf34ea7c28109c584",
+    "blender-windows-pr1061-merged.json": "4bf5c624f1a5e635ab06d43aae96f3a619f43643a1424ce59a9fb91c440e07c0",
+    "blender-windows-pr1061-final-status.json": "5825f34a3bd8493559df0466f6c1d66080f8979b114bc4821ced30fa363ff431",
+    "blender-windows-main-runs.json": "276815e2fd2798af6c0fde846278fb7b34ba008f938152734ddf8383db68c690",
+    "blender-windows-download-cleanup.json": "8ddaedd785d13818ebda805d86aee0ba35e8ea62f9686c868f7e3a1a894f4337"
+  },
+  "new_events": [
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/blender-windows-geometry-acceptance-20261113/kuafu-ce6a6ff7873f8dbd4d00c367b8d2abdfc9324641.json",
+      "sha256": "c7bfdff952edb30482600a910232aed474b81ce50e629121cf3361ccfb76bf40"
+    }
+  ],
+  "host_recovery": {
+    "bug": 1060,
+    "initial_evidence": "data-collection/blender-windows-host-recovery-1060.json",
+    "artifact_readback": "Owned gh read-only transfer stopped after326 seconds without local files; bounded single TLS stream made partial progress then timed out; six normal-TLS range transfers recovered each complete immutable archive with server digest and ZIP integrity verification",
+    "generic_gh_repair_claimed": false,
+    "original_assessment_snapshot": "original_operation_reverified=false and consumption=null remain historical assessment values; later actual artifact verification is recorded separately",
+    "github_api_credentials_forwarded_to_blob": false,
+    "operator_host_global_configuration_changed": false
+  },
+  "cleanup": {
+    "already_removed_download_temporaries_bytes": 15365814,
+    "remaining_until_final_review": [
+      "main range chunks",
+      "duplicate extracted archive directories",
+      "merged temporary local/remote delivery branches"
+    ],
+    "retained_necessary": [
+      "original PR/main ZIP archives and verification receipts",
+      "active combined goal worktree",
+      "other publishers and unhanded-off830 candidate"
+    ]
+  },
+  "limits": [
+    "Fixed offline C# plans, not real model inference or supplier quality",
+    "GitHub-hosted Windows, not an effective user installation",
+    "Parent978 and original840 whole acceptance remain open",
+    "830 delivery handoff not received; no other working copy changed"
+  ],
+  "observed_model": null,
+  "usage": null
+}

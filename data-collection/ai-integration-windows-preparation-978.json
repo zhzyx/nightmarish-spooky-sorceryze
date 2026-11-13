@@ -1,0 +1,24 @@
+{
+  "recorded_at": "2026-11-13T12:25:42.984354+00:00",
+  "base_main": "da9bfac7b5036f24d9657179d394dc2db3a66526",
+  "observed_model": null,
+  "usage": null,
+  "request_id": "ai-github-integration-refactor-20261112",
+  "issue_number": 978,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "new_events": [
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-7cf74c18987509cfe71044a2f095b4bb95ddc407.json",
+      "sha256": "97f09310db20127e55d0b16514f53b8b762de4a7c2de2450ea45954dd636b9d1"
+    }
+  ],
+  "scope": "Parent978 continuation of Windows original geometry acceptance; actual host incident assessment recorded",
+  "related_issues": [
+    1059,
+    1060
+  ],
+  "overall_goal": "in_progress",
+  "windows_acceptance": "pending",
+  "other_ownership": "830 handoff still pending; no other publisher worktree touched",
+  "cleanup": "Owned local unit temporaries and mypy cache removed; review evidence retained; worktree cleanup waits delivery"
+}

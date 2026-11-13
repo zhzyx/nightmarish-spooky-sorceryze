@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ce6a6ff7873f8dbd4d00c367b8d2abdfc9324641",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "blender-windows-geometry-acceptance-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1059",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "70ff5e1e57628e9b417539e24ba7bbcfe56bdcba7bca1baa9e5545664b66cdcb",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1059",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1060",
+    "action": "validation",
+    "detection_head": "4bedfeb8a83b7e29732bd877ff3242375e817e17",
+    "context_sha256": "0e2e1ad30453c6b0538dbc4150defd92f0542bda00bba97af5c576facc934fa3",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43425883079",
+    "diagnosis": "Readback host transport was slow: owned gh download had no local artifact after326s; bounded single HTTPS stream made partial progress then timed out. Six bounded parallel HTTPS ranges recovered exact13877647-byte immutable artifact14038360540; full archive SHA256 matched GitHub digest7b3a7eec66418bfcea7e5e6ffc0e7549da748823e2a742fdbc2f28601b9b4d24. Original Windows C# three tests zero skips,90 source hashes,75 artifacts and cleanup verified. No TLS bypass or claim of generic gh repair.",
+    "next_action": "Continue1061 authoritative main readback and same Windows workflow acceptance; retain artifact host recovery separately from geometry result and keep978 overall goal open",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T12:39:33.638832+00:00",
+    "attempted": null,
+    "repair_owner": "codex:/root",
+    "continuable": "Exact PR artifact readback succeeded; main rerun still pending"
+  },
+  "occurred_at": "2026-11-13T13:09:42.500842+00:00",
+  "sha256": "a6a20a2d4f89fa3a59068835a113af3b044be2d78c4f0ab089d74b5f152cf171"
+}

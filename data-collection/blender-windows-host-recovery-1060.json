@@ -1,0 +1,50 @@
+{
+  "recorded_at": "2026-11-13T12:25:42.984354+00:00",
+  "base_main": "da9bfac7b5036f24d9657179d394dc2db3a66526",
+  "observed_model": null,
+  "usage": null,
+  "request_id": "blender-checksum-host-tls-20261113",
+  "issue_number": 1060,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1060",
+  "new_events": [
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/blender-checksum-host-tls-20261113/request-blender-checksum-host-tls-20261113.json",
+      "sha256": "de32ef297ace5a5da7eeeaa2ba35ee21aebcda3c0982db9f575527f870b5c127"
+    }
+  ],
+  "scope": "Bounded host preparation recovery; normal TLS maintained, same Python operation reverified with process-only system CA, corrected caller intake and complete remote issue dedup",
+  "evidence_resolution": "Parent of absolute Git common directory, then data-collection/receipts/ai-integration-refactor-20261112",
+  "evidence_sha256": {
+    "blender-windows-official-4.5.11.sha256": "20e26000afe5c307678f3bd11c069c77a8c9b4af92f40900a5c8450e221dbc6e",
+    "blender-windows-checksum-curl.log": "9ceb9e69c5be7bc708462f8d0e4ec3bd8020fb248e3beeb585d3669e6d1f1add",
+    "blender-windows-source-lookup.json": "78758731520bf606ebc254ee5ce482f19776c860599b45d849ded815e46476bc",
+    "blender-windows-tls-python-recovered.json": "bae9b121598f6cea8d630af80a3b3050e48b2d67200686285ad2e8bac6c6d578",
+    "blender-tls-bug-created.log": "e8442596a4f03b328cc8a08385c0a3e412087f518c8f079ae31df4b9cb88b906",
+    "blender-tls-bug-created-retry.log": "e8442596a4f03b328cc8a08385c0a3e412087f518c8f079ae31df4b9cb88b906",
+    "blender-tls-create-timeout-readback.json": "7e7d3f91d015db5b18177f7a5f6ddcb5d07b2b1f83e88ee3b75661b38deb9c10",
+    "blender-tls-create-retry-readback.json": "7e7d3f91d015db5b18177f7a5f6ddcb5d07b2b1f83e88ee3b75661b38deb9c10",
+    "blender-tls-pagewise-recovery.py": "9ab200592d1d68c23a7e884d0361bd81ce1f38ecd96d2fa6c5dc4e090ce7f342",
+    "blender-tls-complete-issue-pages.json": "c20fcefc1a3a5c1a4a05c5f54adea66d7420faa07eba6160d5f08bc9813cd2da",
+    "blender-tls-bug-pagewise-created.json": "92c6a2db052ad973c462f5d2940845655e1e0f27a9b24303e00d6f87f0cf95de",
+    "blender-tls-bug-pagewise-created.log": "81110a1b7748247eda97a8d9f9c11e4717022a08704bf96650476a061433fc4a",
+    "blender-tls1060-intake.json": "9e76b46ca829f938e807bdea7e93adb864189d31ac6a284db88681c0a242f029",
+    "blender-windows-runner/validation.json": "c5599eb9a2726eb94ca10ce5f95ec0607d51705221a587fed606a2c7c9808db8",
+    "blender-tls-1060-assessed.json": "543c9ca4b333c4bae77e9251b1a4a9610cd9e9399b0ae52228cd7d0f3e1cbfb3",
+    "blender-intake-1060-assessed.json": "778bf390c7a3a356d79f9fad69bef297b91a220c53039ad94e038b760ee4d243"
+  },
+  "results": {
+    "same_python_url_reverified": true,
+    "system_curl_normal_tls": true,
+    "persisted_configuration": false,
+    "same_intake_correct_parameters_passed": true,
+    "issue_creation": "one confirmed1060 after complete11-page read",
+    "prior_timeouts": "original subprocess unknown; no claim of exact phase diagnosis",
+    "original_development_bug_link": "correctly rejected before1060 real bug receive"
+  },
+  "limits": [
+    "No global Python installation repair",
+    "Web tool402 itself not repaired",
+    "No generic pagination product fix",
+    "No Windows geometry acceptance from host prerequisites"
+  ]
+}
