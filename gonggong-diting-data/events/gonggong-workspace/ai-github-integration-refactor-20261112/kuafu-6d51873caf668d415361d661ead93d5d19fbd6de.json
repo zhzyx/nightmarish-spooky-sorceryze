@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-6d51873caf668d415361d661ead93d5d19fbd6de",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "13c3430445782f57c972e6b55596895c2b76e3bfa07f3f9c6f266af0b90b836f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1072",
+    "action": "delivery",
+    "detection_head": "d78054420a4034ec44013372cc55893b1c854b58",
+    "context_sha256": "c39241435184861609b9657437d85bfbdbf6f9a654204e81a8c59ef359be7d9c",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-integration",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1071",
+    "diagnosis": "提交前检查正确拒绝旧main基线d780。另一发布者PR1071推进到8b3b，共65个路径，与本批5个暂存路径无交叉；共享AI/GitHub接入和审查输入未改变。没有提交或推送本批候选。此为并发基线整合，不把正确保护判为产品缺陷。",
+    "next_action": "当前root在自己的工作副本正常快进8b3b并核对原暂存内容及必要归档摘要，然后重跑同一writer_submit正式签发，沿精确CI/main交付关闭1072；原#978继续，#833队列未知保持，用户现已明确移交#830。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T15:57:27.113254+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T16:03:44.359099+00:00",
+  "sha256": "ce724f4782d968e740f4b1665b722b0e084352e284f699cdacbed539f3346bca"
+}
