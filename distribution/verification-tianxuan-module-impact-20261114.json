@@ -1,22 +1,26 @@
 {
-  "module": "customizations/components/tianxuan",
-  "measured_at": "2026-11-14",
-  "host": "Tianxuan domain core (stdlib + SQLite)",
-  "input_blobs": {
-    "customizations/components/tianxuan/module.json": "6d82f3a5808614ed029c15a1f2fb7042e92734df",
-    "customizations/components/tianxuan/README.md": "150cbdda530f9da4ab7be8184aa946edd57a0d94",
-    "customizations/components/tianxuan/server/README.md": "e21624c6029d038720a105c36a128ad261f4a628",
-    "customizations/components/tianxuan/server/tianxuan_core.py": "6fbe5621c0cf20948760505ce75258e9cd13a104",
-    "customizations/components/tianxuan/server/test_tianxuan_core.py": "e8fdb029e01278b38de9b40e501eb9617066b0da",
-    "customizations/components/tianxuan/wenqu/README.md": "9cf2fea6aab8b95b6e6a27758896ca7715d145ee",
-    "customizations/components/tianxuan/duobao/README.md": "eadd685f6620d44c0496d744d2814ba0fe68aeae",
-    "customizations/components/tianxuan/sinan-workorders/README.md": "e3a280a38857a1993ba49a2f4bdcd9590ea1fc94"
-  },
-  "checks": {
-    "host_behavior": {
-      "command": "python -m unittest discover -s customizations/components/tianxuan/server -p \"test_*.py\" -v",
-      "observed": "7 tests, OK (0.23 s): register/authenticate, doc version conflict, AI machine view headings/links, requirement->tickets->progress (3 issues, 33%), illegal transition rejected, AI tool dispatch and event log.",
-      "passed": true
-    }
-  }
+    "module":  "customizations/components/tianxuan",
+    "measured_at":  "2026-11-14",
+    "host":  "Tianxuan domain core + FastAPI transport adapter",
+    "input_blobs":  {
+                        "customizations/components/tianxuan/README.md":  "150cbdda530f9da4ab7be8184aa946edd57a0d94",
+                        "customizations/components/tianxuan/duobao/README.md":  "eadd685f6620d44c0496d744d2814ba0fe68aeae",
+                        "customizations/components/tianxuan/module.json":  "6d82f3a5808614ed029c15a1f2fb7042e92734df",
+                        "customizations/components/tianxuan/server/README.md":  "e21624c6029d038720a105c36a128ad261f4a628",
+                        "customizations/components/tianxuan/server/api.py":  "fea2670954aef6e00229d6b207f35ee911f66a5b",
+                        "customizations/components/tianxuan/server/requirements.txt":  "2522ad0eaab29149c7f3cec5d10c2f36452dadc6",
+                        "customizations/components/tianxuan/server/schemas.py":  "e2183d0ba7e4f4fe8419458ce7348708fe7f0d91",
+                        "customizations/components/tianxuan/server/test_api.py":  "b46b5cc884b6e592fbb1437cf29d3095328992e8",
+                        "customizations/components/tianxuan/server/test_tianxuan_core.py":  "e8fdb029e01278b38de9b40e501eb9617066b0da",
+                        "customizations/components/tianxuan/server/tianxuan_core.py":  "6fbe5621c0cf20948760505ce75258e9cd13a104",
+                        "customizations/components/tianxuan/sinan-workorders/README.md":  "e3a280a38857a1993ba49a2f4bdcd9590ea1fc94",
+                        "customizations/components/tianxuan/wenqu/README.md":  "9cf2fea6aab8b95b6e6a27758896ca7715d145ee"
+                    },
+    "checks":  {
+                   "host_behavior":  {
+                                         "command":  "python -m pytest customizations/components/tianxuan/server/test_api.py -q",
+                                         "observed":  "9 tests passed; core unittest 7 tests OK; api/schemas compile OK",
+                                         "passed":  true
+                                     }
+               }
 }
