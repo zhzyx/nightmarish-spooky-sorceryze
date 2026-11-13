@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8950529ff884dc3116fe2b1aec7786862e55b829",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "issue-binding-history-checkpoint-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1075",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b1bbcee0f8e2bc44e1eea030aca41ec2634dc6fa13df2921841bbb3a69548a1a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1075",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1075",
+    "action": "validation",
+    "detection_head": "4eacf441827cf6a3446811bebec8d59b1c04b118",
+    "context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-integration",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "issue1075-native-status-diagnose-traceback-and-direct-corrected",
+    "diagnosis": "原scope1075兼容回归揭示主线既有GameReceiptGuard通过Unix OS::execute捕获模式把JSON交给popen，json.loads失败；不是1075 checkpoint引入。旧fixture已补齐真实helper、外部private数据目录、私有mac cache，direct拒绝/重试4次只读0模型0事件已通过。单独新bug1077承接argv缺陷。",
+    "next_action": "1077用真实无shell参数传递并复验原status路径，保留保护与错误边界；1075独立审查已通过但830整体验收仍等待该阻断修复。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T16:56:50.119480+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T17:01:50.711966+00:00",
+  "sha256": "7e2ab6f2d36a6a82f9b1ade78162754958d72a0696d2e4b9e6683b2fbd942bfe"
+}

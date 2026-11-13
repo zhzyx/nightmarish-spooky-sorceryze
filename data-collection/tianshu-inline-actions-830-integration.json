@@ -1,0 +1,82 @@
+{
+  "issue_number": 830,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+  "request_id": "tianshu-3d-inline-actions-20261112",
+  "parent_issue": 978,
+  "base_main": "c074db21be98784ff1288f1f2d99c793ba156395",
+  "original_pr": 831,
+  "original_source": "28427c00272303053f0ed4764604f448269c53fa",
+  "original_signed": "e9e41955e4d6bf60a9d32f6377cf537243eb0825",
+  "source_inputs": {
+    "editor/docks/daqian/spatial_workbench.gd": "1aefe441d87a9c8c9dcd60c0af046b03e157b0f40b2363cc213e25fd3f64551c",
+    "editor/docks/daqian/workspace.gd": "e60bfeb85ec9c7923685f4171a9c9cbc7871c60292282be2cad9efc404f999ef",
+    "tests/editor/tianshu_spatial.gd": "e0cbaf1fcf2697c564bc00d24c9344f7bd8f7cd016dbd3febad29af309bab959",
+    "tests/editor/run_tianshu_spatial.py": "59913710a1901e719aeea14850d7e56034e9e1405d92934b6c9441371c4286cb"
+  },
+  "binary_sha256": "0b0dfce1526ad869868e9687d421c2e1897c7e294317cd8ccc92ad67249fd680",
+  "historical_receipt": "data-collection/tianshu-inline-actions-830.json remains byte-identical to original source; current proof is separate",
+  "immutable_event_conflict": {
+    "path": "gonggong-diting-data/events/gonggong-workspace/learning-godot-build-placement/learn-40aa5499dc266562f0085381ad41ab0a28eff7bc05a20e41052a3ce385009c8d.json",
+    "main_file_sha256": "86990ff08643fbaf5aa799324296fddaff579d38dd2e47410a08728a131f66f2",
+    "incoming_file_sha256": "2999ff981511de70c0ddde92fe243e36926c05c4df71ec2b48c8cb61ca2b6394",
+    "disposition": "Keep main840 event byte-identical. Preserve incoming830 event in signed original source plus private contribution archive. Both are distinct events with a colliding identifier, not equivalent duplicates. No historical content rewritten.",
+    "incoming_source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/28427c00272303053f0ed4764604f448269c53fa/gonggong-diting-data/events/gonggong-workspace/learning-godot-build-placement/learn-40aa5499dc266562f0085381ad41ab0a28eff7bc05a20e41052a3ce385009c8d.json"
+  },
+  "changes": [
+    "Integrate831 inline details/reply/approval controls and native tests onto c074",
+    "Use installed host board helper in read_issue_details; selected project remains data input",
+    "Add embedded actual-method regression for distinct installed/project roots, selected Issue, expected actor, editor session, offline and unverified rejection"
+  ],
+  "validation": {
+    "native_main_gap_confirmed": true,
+    "original_integration_native_and_restart": true,
+    "host_origin_regression_before_fix": false,
+    "fixed_native_interaction_and_restart": true,
+    "fixed_report_sha256": "cceb76e5f87ad3c45ea2fff8c40ad9551c86826450e95dc47f2e178f624c238a",
+    "synthetic_transport": true,
+    "actual_model_or_github_operations": false,
+    "existing_exit_RID_ObjectDB_diagnostics": true
+  },
+  "independent_review": {
+    "verdict": "approved_for_isolated_preparation_scope",
+    "reviewer": "/root/sinan_ced14c03c2e0b773",
+    "report_sha256": "35267d81f248f18f4bfb5ad503314e743f91199be8c4fc5faf516a1945dbc472",
+    "actual_worker_terminal_verified": true,
+    "shared_methods_equal": 214,
+    "native_routing_checks": 63,
+    "sidebar_and_restart": "passed",
+    "publication_handoff": false
+  },
+  "delivery": "isolated_prepared_with_reviewed_shared_fix; original publisher retained; no commit or PR replacement",
+  "limitations": [
+    "isolated preparation only; original830publisher retains delivery",
+    "existing worktrees/PR831/production installation untouched",
+    "tests synthetic permission/read/write ports, actualnative controls/chatmount/source; no actualmodel/GitHuboperations",
+    "visual focus/pixels andWindows/Linux untested",
+    "mainhold971 unchanged; user838handoff answer pending"
+  ],
+  "cleanup": "Private baseline and native interaction/restart test copies removed by their context managers; own candidate/build cache retained for review and eventual handoff; original worktrees preserved.",
+  "shared_fix_integration": {
+    "issue_number": 1017,
+    "fix_source_sha256": "a30e56fcd1f3bf1489902529a7a2591859c596e44997c98814ecfa4b9424e137",
+    "independent_fix_review_sha256": "c76edd945364c26ab76d8ec0a4fb28c9138c450ef80fc09dcabd8c9470786dcd",
+    "combined_native_report_sha256": "89a386bbaaca32f23ca15cd82eaadc77abf30d519e37fdac3573c0df04da1859",
+    "combined_routing_report_sha256": "fcb0c0f71e35b3d5290e34ada164c7a5abd7af8b9b65161176d8a331c2617833",
+    "actual_embedded_methods_match_reviewed_fix": 11,
+    "routing_checks_passed": 63,
+    "scope": "Shared graph/watch/debug fix plus issue-caller epoch and retained watcher diagnosis applied to own830 isolated candidate; native sidebar and restart pass. No original publisher checkout modified.",
+    "remaining": "Original feature publication handoff, exact candidate CI/main and production consumer remain pending.",
+    "fix_source_commit": "410a4e7cd8192f15fd7c461b60a85d812edd8e10",
+    "fix_pr": 1018
+  },
+  "previous_independent_review": {
+    "verdict": "changes_requested",
+    "report_sha256": "55a0a0d624fd701cf5442d68b8fb276bd097943a70fe270b573e137f6c51433d",
+    "findings": [
+      "P1 shared graph helper resolves project implementation",
+      "P2 stale graph denial clears same-identity newer connection"
+    ],
+    "shared_fix_issue": 1017,
+    "actual_worker_terminal_verified": true
+  }
+}

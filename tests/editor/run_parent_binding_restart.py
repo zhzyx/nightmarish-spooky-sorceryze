@@ -28,6 +28,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument(
+        "--checkpoint-failure", action="store_true", help="Fail history writes, then retry the saved binding"
+    )
     args = parser.parse_args()
     if args.godot.name.endswith(".console.exe"):
         parser.error("Use the engine .exe directly; the console wrapper owns a kill-on-close Job")
@@ -131,14 +134,16 @@ def main():
             GONGGONG_GH=sys.executable,
             GONGGONG_GIT=shutil.which("git"),
             GONGGONG_TEST_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
+            GONGGONG_TEST_CHECKPOINT_FAILURE="1" if args.checkpoint_failure else "0",
             GONGGONG_FRAMEWORK_SOURCE=str(root / "absent-upstream"),
         )
         for name in ("GONGGONG_PYTHON", "GONGGONG_NODE", "GONGGONG_CODEX", "OPENAI_API_KEY", "GODOT_AI_API_KEY"):
             env.pop(name, None)
-        for name in ("APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME"):
+        for name in ("HOME", "APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_CACHE_HOME"):
             path = root / "private" / name
             path.mkdir(parents=True)
             env[name] = str(path)
+        (Path(env["HOME"]) / "Library/Caches").mkdir(parents=True)
         config = installation / "editor_data/gonggong/config.json"
         config.parent.mkdir(parents=True)
         config.write_text(
@@ -170,6 +175,10 @@ def main():
                     before = json.loads((root / "binding-before.json").read_text(encoding="utf-8"))
                     assert len(calls) == 1 and calls[0]["existing_issue"] is None, calls
                     assert before["binding"]["request_id"].startswith("requirement-"), before
+                    if args.checkpoint_failure:
+                        assert before.get("checkpoint_failure_verified"), before
+                        gh_calls = [json.loads(line) for line in (root / "fake-gh-calls.log").read_text().splitlines()]
+                        assert sum(op == "issue" and args[0] == "create" for op, args in gh_calls) == 1, gh_calls
                 finally:
                     if child.poll() is None:
                         child.kill()
@@ -186,6 +195,7 @@ def main():
                 "public_parent_requirement": True,
                 "model_and_github": "isolated loopback/CLI fixtures only",
                 "ordinary_requirements_calls": len(calls),
+                "checkpoint_failure_tested": args.checkpoint_failure,
                 "warm": before,
                 "cold": cold,
                 "cold_exit_code": result.returncode,

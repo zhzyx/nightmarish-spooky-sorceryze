@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "issue-binding-history-checkpoint-20261114",
+  "collected_at": "2026-11-13T17:19:37.670454+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/issue-binding-history-checkpoint-20261114/dispatch-058371d3bedf440ab1970bf96c0b3b5b.json",
+      "sha256": "12b70f3c8dacb3a41270319ce4ff620a6d548c4bbbd2c985e2b1c1be16366848",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-058371d3bedf440ab1970bf96c0b3b5b",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/issue-binding-history-checkpoint-20261114/dispatch-9a60ce706c4447a7bbf9f5c09970837f.json",
+      "sha256": "5a3d9b48b9e498257f6a7f0b9a1e178ea3ee618f68e9b2c4ac6486248050b581",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-9a60ce706c4447a7bbf9f5c09970837f",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/issue-binding-history-checkpoint-20261114/dispatch-a69ddf94ca05432fb76c29f4eb41ddcd.json",
+      "sha256": "5bbd21abcde503d30b62e2bd523cc497a48f0e052b9b6217eaa6cf41c9b82114",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-a69ddf94ca05432fb76c29f4eb41ddcd",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/issue-binding-history-checkpoint-20261114/dispatch-eb5641bb26cd4430bed2670f196cc836.json",
+      "sha256": "11c439cc952d3fca69f4ba3b629618d12f8af08f0bed16691ea5145d27406bb3",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-eb5641bb26cd4430bed2670f196cc836",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/issue-binding-history-checkpoint-20261114/kuafu-8950529ff884dc3116fe2b1aec7786862e55b829.json",
+      "sha256": "b568b76feea66b1371606596a0e3b50191183ae5076e3ebf594f413fc351f7c5",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-8950529ff884dc3116fe2b1aec7786862e55b829",
+      "origin": "authenticated_host_role"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a6a917d3eddbf0579aac611c254e24a7f01ba695",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-3d-inline-actions-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "9ba0e9aef27f731c0c317e99d79a76dfe6bb98fabdf5ea95e6095efd46537fac",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+    "action": "validation",
+    "detection_head": "c074db21be98784ff1288f1f2d99c793ba156395",
+    "context_sha256": "4a0e8634ea1512e4b6b4a0792f439bc31e01f0d303cd2302882f030c8c852039",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Signed PR83128427c integration on c074: one add/add learning-event conflict; original source and main event blobs archived with SHA256; workspace.gd merged cleanly, new helper read_issue_details inspected",
+    "diagnosis": "Immutable learning event has the same ID but different task830 and840 payloads. Keep current main event byte-identical, preserve incoming original in signed source and private contribution archive, and append current integration provenance. No source-code conflict remains; no original publisher transfer inferred.",
+    "next_action": "Complete isolated native build and interaction/restart regression, independent review of source and historical evidence handling; original publication responsibility and971 main coordination remain unchanged.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T23:06:13.972744+00:00",
+    "attempted": "830 intake passed; trusted writer inspect831 passed; exact incoming/main conflict snapshots preserved; isolated cherry-pick conflict resolved without committing or modifying original worktrees.",
+    "repair_owner": "Sail-Li current root isolated integration preparation; original830 publisher retains delivery",
+    "continuable": "Yes isolated build/review; replacement or main delivery requires actual ownership handoff"
+  },
+  "occurred_at": "2026-11-12T23:08:14.164700+00:00",
+  "sha256": "8f4aeb474fdd5736113a616299468705c95fe3f3e3d176ef840fa2c829f0d0ce"
+}

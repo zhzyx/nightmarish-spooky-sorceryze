@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "tianshu-3d-inline-actions-20261112",
+  "collected_at": "2026-11-11T20:40:21.590319+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-inline-actions-20261112/dispatch-94fb0f083de04d788ae66b781bea12d4.json",
+      "sha256": "cd44255f6727b9c7681a60e8b73dc74d3859f1da595f2262195371400a63678b",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-94fb0f083de04d788ae66b781bea12d4",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-inline-actions-20261112/tianshu-3d-inline-actions-20261112-request.json",
+      "sha256": "d321fd7683547cb61ea5e8a78e0bbc005dd2162f24b17ca4135c5a2b101e31f8",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "tianshu-3d-inline-actions-20261112-request",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 830,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830"
+}

@@ -145,7 +145,8 @@ class AIChatDock : public EditorDock {
 	void _poll_issue_guide();
 	void _clear_issue_guide_files();
 	void _cancel_issue_guide(const String &p_notice);
-	void _issue_guide_bind(int64_t p_number, const String &p_request_id);
+	bool _issue_guide_bind(int64_t p_number, const String &p_request_id);
+	void _complete_issue_guide_binding(const String &p_action, const Dictionary &p_result);
 	void _issue_guide_retry();
 
 	// Local environment igniter: python/node/git gaps become a host-local guide

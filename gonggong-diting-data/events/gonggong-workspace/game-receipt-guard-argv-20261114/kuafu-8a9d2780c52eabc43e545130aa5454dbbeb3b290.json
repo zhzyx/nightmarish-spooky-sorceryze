@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8a9d2780c52eabc43e545130aa5454dbbeb3b290",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-receipt-guard-argv-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1077",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "af3425293fdf94eab8af600a4dfd8303dc91cc9263b0ff708ed0881ad976275c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1077",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1077",
+    "action": "validation",
+    "detection_head": "4eacf441827cf6a3446811bebec8d59b1c04b118",
+    "context_sha256": "3cc5431425f7eeb8942eb3ece9dcbdc84a5393137476ba6809c2c0d5b5f85e17",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-integration",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "issue1075-status-diagnose-json-argv-and-current-host-context",
+    "diagnosis": "原生状态引导明确Start后触发main既有GameReceiptGuard；完整私有traceback证明JSONDecodeError来自json.loads(args.game_reporting)。OS_Unix::execute捕获stdout分支使用popen拼接双引号，JSON嵌套引号被shell移除；路径也有同类风险。旧测试漏拷helper与private目录问题另已修正，direct拒绝回归通过。1075原事件b1bbcee0使用旧宿主留下空context摘要，不能作为当前有效角色接单证明；其历史保留，本单当前接单已读取非空准入context并由本记录承接真实根因。",
+    "next_action": "由隔离原生Agent实现1077的无shell argv、有限输出/执行时间与真实进程回收，随后原状态、手动同单绑定、特殊路径及错误定向验证，独立审查/精确CI/main交付。1075历史修复证据保持，830未完成前不关闭。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T17:04:07.613768+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T17:06:17.620089+00:00",
+  "sha256": "e9da30a08b21116373c8dd63f679fc511477a1b94a7aa8c210746e2ebf87cfea"
+}

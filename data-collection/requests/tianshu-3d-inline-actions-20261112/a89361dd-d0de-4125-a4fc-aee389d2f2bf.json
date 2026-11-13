@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "tianshu-3d-inline-actions-20261112",
+  "collected_at": "2026-11-13T17:19:37.670418+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-inline-actions-20261112/dispatch-3b93667296aa4cd6bd04a43fb2c2aa89.json",
+      "sha256": "480d466450978349831a7f97f362d4715a01ed873dfcf549e06bd3edb05e01e6",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-3b93667296aa4cd6bd04a43fb2c2aa89",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-inline-actions-20261112/dispatch-7ebf80691d894a008bf9d6babcef3c27.json",
+      "sha256": "1124e8218d3ce9aedfab4d190f98584d3375a780c90a65b9e2be518535bce7ee",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-7ebf80691d894a008bf9d6babcef3c27",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-inline-actions-20261112/dispatch-8ad700087b8b4844a86b82dfc14a9dc2.json",
+      "sha256": "d1462da2ea3a578af09e6a749d66885908e09bf6570ed95991e9041d4278ae3b",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-8ad700087b8b4844a86b82dfc14a9dc2",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-inline-actions-20261112/dispatch-94fb0f083de04d788ae66b781bea12d4.json",
+      "sha256": "cd44255f6727b9c7681a60e8b73dc74d3859f1da595f2262195371400a63678b",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-94fb0f083de04d788ae66b781bea12d4",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-inline-actions-20261112/kuafu-182d631677c9d23f5a9b890c3e0cfba3ccc56413.json",
+      "sha256": "868851bf154e70d993f21cc40f7accbbfda29ab99a299ccac9dbfddd9c76c6c4",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-182d631677c9d23f5a9b890c3e0cfba3ccc56413",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-inline-actions-20261112/kuafu-1c7a2ddba10817e1a36749bfaa5ef589b3ddf95f.json",
+      "sha256": "814a53b9a4153480f2c65e0fbf2189d86642b009b1d4fcfc861ab58eb8164f25",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-1c7a2ddba10817e1a36749bfaa5ef589b3ddf95f",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-inline-actions-20261112/kuafu-691e33570368ee053e5342dbd29cbccbe1c56c7a.json",
+      "sha256": "4807a0c297d4e1e9cc07dbeeb117d21bb7b4df191c19ba3c6485d2bc8d653998",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-691e33570368ee053e5342dbd29cbccbe1c56c7a",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-inline-actions-20261112/kuafu-a6a917d3eddbf0579aac611c254e24a7f01ba695.json",
+      "sha256": "cf9700053e48927210cb6566c579c8e89ad985b81418a9c73057ca7c8570dc04",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-a6a917d3eddbf0579aac611c254e24a7f01ba695",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-inline-actions-20261112/kuafu-ae6c446cfc5727f9966a64b33e0a1a57d0e4f53f.json",
+      "sha256": "41174e3f56536bd154ce3bcbd98432ae833afa4e3fbb76a32b018ca613e2de7e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-ae6c446cfc5727f9966a64b33e0a1a57d0e4f53f",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-inline-actions-20261112/tianshu-3d-inline-actions-20261112-request.json",
+      "sha256": "d321fd7683547cb61ea5e8a78e0bbc005dd2162f24b17ca4135c5a2b101e31f8",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "tianshu-3d-inline-actions-20261112-request",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 830,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830"
+}

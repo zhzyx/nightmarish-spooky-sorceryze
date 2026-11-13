@@ -813,8 +813,9 @@ void AIChatDock::_poll_history_save() {
 }
 
 void AIChatDock::_flush_history() {
-	// Only shutdown/restart waits for disk. Normal input, turns and tab changes
-	// remain asynchronous. Drain an older snapshot before saving the latest one.
+	// Recovery boundaries (shutdown/restart and Issue binding) wait for disk.
+	// Normal input, turns and tab changes remain asynchronous. Drain an older
+	// snapshot before saving the latest one.
 	if (history_save_job) {
 		if (history_save_job->thread.is_started()) {
 			history_save_job->thread.wait_to_finish();

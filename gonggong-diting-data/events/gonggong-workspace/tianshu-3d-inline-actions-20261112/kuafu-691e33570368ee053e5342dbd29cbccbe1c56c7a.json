@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-691e33570368ee053e5342dbd29cbccbe1c56c7a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-3d-inline-actions-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "935343e734eee3e4418b976248be2990b5ce16f4306b1d772f2884731f25a824",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+    "action": "validation",
+    "detection_head": "4eacf441827cf6a3446811bebec8d59b1c04b118",
+    "context_sha256": "24477f30aa23ef3ebb31a92f5746148eae6fe957c7a82b654cbafd55748f61eb",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-integration",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "issue830-parent-history-repro-original-assertions-and-postkill-history",
+    "diagnosis": "两次原生强制终止/冷启动失败；第二次保留终止后原始磁盘历史，确认原conversation未落盘而metadata绑定已保存。_issue_guide_bind同步保存绑定，聊天history仅由异步timer处理，形成可复现中断窗口。原接单830关联新bug1075，当前已接收830会话负责隔离修复，不接管951/773生产候选。",
+    "next_action": "按新bug1075复用现有history写入机制，在发布绑定前完成最新原会话检查点；保存失败保留原输入与已建Issue身份并明确本地重试，防止重复建单。原不放宽的中断测试、保存失败/重试及旧手动引导回归后独立核查及精确CI交付。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T16:27:35.740476+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T16:41:31.727400+00:00",
+  "sha256": "6dab5683d6ec975799dbb35e1d90ac94f1805c7fd801e2e4fd3425ffa878982d"
+}

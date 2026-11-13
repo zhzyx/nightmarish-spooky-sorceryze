@@ -31,6 +31,15 @@ var next_check := 0
 var pending_sources := {}
 var mapping := VBoxContainer.new()
 var actions := HFlowContainer.new()
+var drawer := VBoxContainer.new()
+var inspector
+var operation_panel
+var question_box := VBoxContainer.new()
+var reply_controls := 0
+var detail_binding := {}
+var detail_snapshot := {}
+var answer_drafts := {}
+var submitting := false
 
 func button(parent: Control, text: String, action: Callable) -> Button:
 	var control := Button.new()
@@ -66,7 +75,7 @@ func build(owner_workspace) -> void:
 	feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	panel.add_child(feedback)
 	rows.custom_minimum_size.y = 110 * panel.get_theme_default_base_scale()
-	rows.item_selected.connect(func(_index): generation += 1; draw_details())
+	rows.item_selected.connect(func(_index): generation += 1; close_detail(); draw_details())
 	panel.add_child(rows)
 	details.custom_minimum_size.y = 100 * panel.get_theme_default_base_scale()
 	details.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -74,9 +83,37 @@ func build(owner_workspace) -> void:
 	panel.add_child(details)
 	panel.add_child(actions)
 	button(actions, "工单详情", open_detail)
+	button(actions, "答复 / 推进", open_response)
 	button(actions, "工单聊天", open_chat.bind(false))
 	button(actions, "新任务", open_chat.bind(true))
 	button(actions, "关联与内容…", func(): mapping.visible = not mapping.visible)
+	panel.add_child(drawer)
+	drawer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	drawer.hide()
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	drawer.add_child(scroll)
+	var content := VBoxContainer.new()
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(content)
+	inspector = workspace.inspector_script.new()
+	content.add_child(inspector)
+	inspector.field.custom_minimum_size.y = 180
+	inspector.relations.custom_minimum_size.y = 65
+	# Design is read-only here; mutations continue through the existing workbench.
+	inspector.save.hide()
+	inspector.revert.hide()
+	inspector.reload_requested.connect(open_detail)
+	question_box.name = "InlineQuestions"
+	content.add_child(question_box)
+	operation_panel = workspace.details_script.new()
+	content.add_child(operation_panel)
+	operation_panel.build()
+	operation_panel.custom_minimum_size.x = 0
+	operation_panel.card_requested.connect(confirm_operation)
+	operation_panel.status_changed.connect(show_feedback)
+	operation_panel.operation_checked.connect(func(): workspace.refresh(); close_detail())
 	panel.add_child(mapping)
 	mapping.hide()
 	picker.fit_to_longest_item = false
@@ -269,6 +306,7 @@ func update_view(force := false) -> void:
 		rows.add_item("#%s · 待回读" % item.number)
 		if url == previous: rows.select(rows.item_count - 1)
 	if rows.item_count > 0 and rows.get_selected_items().is_empty(): rows.select(0)
+	if not detail_binding.is_empty() and detail_binding != action_binding(): close_detail()
 	draw_details()
 
 func draw_details() -> void:
@@ -332,13 +370,171 @@ func register_content() -> void:
 	if not entry.contents.has(path): entry.contents.append(path)
 	if save_links(candidate): output_path.clear()
 
-func open_detail() -> void:
+func action_binding() -> Dictionary:
 	var item := selected_issue()
-	if item.is_empty(): return
+	return {"root":workspace._repo(), "actor":workspace.actor.duplicate(true), "epoch":generation,
+		"model":selection.duplicate(true), "url":item.get("url", ""), "request":item.get("request", ""),
+		"updated":item.get("updated", ""), "source":item.get("source_sha256", "")}
+
+func binding_current(binding: Dictionary) -> bool:
+	return panel.is_visible_in_tree() and describe_selection() == selection and binding == action_binding()
+
+func close_detail() -> void:
+	detail_binding = {}
+	detail_snapshot = {}
+	drawer.hide()
+	if not owns_chat: details.show()
+	if is_instance_valid(operation_panel): operation_panel.dismiss()
+
+func open_detail() -> Dictionary:
+	var item := selected_issue().duplicate(true)
+	if item.is_empty() or item.get("unverified", false):
+		show_feedback("请刷新并选择已回读的工单。")
+		return {}
 	close_chat()
-	workspace.get_parent().make_visible()
-	workspace._show_board()
-	workspace._preview_board_issue(item.url)
+	var binding := action_binding()
+	detail_binding = binding
+	drawer.show()
+	details.hide()
+	mapping.hide()
+	inspector.show()
+	inspector.show_overview()
+	inspector.summary.text = "#%s · %s" % [item.number, item.title]
+	inspector.issue_link.hide()
+	var preview: Dictionary = item.get("design_document", {}).duplicate(true)
+	preview.editable = false
+	inspector.set_document(preview)
+	inspector.set_related([], "正在读取关联工单…", workspace.graph_script.FlowCanvas.state_text)
+	inspector.feedback.text = "正在读取工单详情…"
+	clear_questions()
+	if workspace.offline or workspace.actor.is_empty():
+		inspector.feedback.text = "离线快照 · 连接后刷新详情并答复"
+		return {}
+	var result: Dictionary = await workspace.read_issue_details(item)
+	if not binding_current(binding) or detail_binding != binding: return {}
+	var document: Dictionary = result.get("document", preview).duplicate(true)
+	document.editable = false
+	inspector.set_document(document)
+	inspector.set_related(result.get("related", []), "暂无已核实的关联工单", workspace.graph_script.FlowCanvas.state_text)
+	inspector.feedback.text = str(result.get("error", result.get("warning", "")))
+	var snapshot: Dictionary = await workspace.read_graph(item.url)
+	if not binding_current(binding) or detail_binding != binding: return {}
+	detail_snapshot = snapshot
+	draw_questions()
+	var operation: Dictionary = workspace._pending_operation(item)
+	if not operation.is_empty():
+		operation_panel.display(item, operation, workspace.chat.render_daqian_markdown)
+		operation_panel.details_confirm.text = "确认此操作"
+	show_feedback(str(snapshot.error) if snapshot.has("error") else "可在此查看详情、提交答复，或进入下方工单聊天继续推进。")
+
+	return binding
+
+func clear_questions() -> void:
+	reply_controls = 0
+	for child in question_box.get_children():
+		question_box.remove_child(child)
+		child.queue_free()
+
+func draft_key(id: String) -> String:
+	return JSON.stringify([detail_binding.get("root"), detail_binding.get("actor"), detail_binding.get("model", {}).get("key"), detail_binding.get("url"), detail_binding.get("request"), detail_snapshot.get("revision", ""), id])
+
+func draw_questions() -> void:
+	clear_questions()
+	var context: Dictionary = detail_snapshot.get("context", {})
+	for id in context.get("questions", {}):
+		if context.get("answers", {}).has(id): continue
+		var request: Dictionary = context.questions[id]
+		var prompt := Label.new()
+		prompt.text = str(request.get("prompt", "待你答复"))
+		prompt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		question_box.add_child(prompt)
+		if not context.get("can_answer", false): continue
+		reply_controls += 1
+		if request.get("kind") == "image":
+			button(question_box, "在工单聊天中答复图片问题", open_chat.bind(false))
+			continue
+		var key := draft_key(id)
+		var send := Button.new()
+		send.text = "提交答复"
+		send.name = "SubmitInlineReply"
+		var options: Array = request.get("options", [])
+		if not options.is_empty():
+			var choose := OptionButton.new()
+			choose.name = "InlineAnswer"
+			choose.disabled = submitting
+			choose.add_item("请选择")
+			for option in options:
+				choose.add_item(str(option))
+				if answer_drafts.get(key, "") == option: choose.select(choose.item_count - 1)
+			choose.item_selected.connect(func(index):
+				answer_drafts[key] = choose.get_item_text(index) if index else ""
+				send.disabled = submitting or index == 0)
+			question_box.add_child(choose)
+		else:
+			var input := TextEdit.new()
+			input.name = "InlineAnswer"
+			input.editable = not submitting
+			input.placeholder_text = "你的答复"
+			input.custom_minimum_size.y = 65
+			input.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+			input.text = str(answer_drafts.get(key, ""))
+			input.text_changed.connect(func():
+				answer_drafts[key] = input.text
+				send.disabled = submitting or input.text.strip_edges().is_empty())
+			question_box.add_child(input)
+		send.disabled = submitting or str(answer_drafts.get(key, "")).strip_edges().is_empty() or (not options.is_empty() and answer_drafts.get(key) not in options)
+		send.pressed.connect(submit_answer.bind(str(id)))
+		question_box.add_child(send)
+
+func submit_answer(id: String) -> void:
+	var binding := detail_binding.duplicate(true)
+	var snapshot := detail_snapshot.duplicate(true)
+	var key := draft_key(id)
+	var answer: String = str(answer_drafts.get(key, "")).strip_edges()
+	var context: Dictionary = snapshot.get("context", {})
+	var options: Array = context.get("questions", {}).get(id, {}).get("options", [])
+	if submitting or not binding_current(binding) or not context.get("can_answer", false) or not context.get("questions", {}).has(id) or context.get("answers", {}).has(id) or answer.is_empty() or (not options.is_empty() and answer not in options): return
+	submitting = true
+	draw_questions()
+	show_feedback("正在核对身份并提交答复…")
+	var allowed: bool = await workspace._fresh_access()
+	if not allowed or not binding_current(binding) or detail_binding != binding:
+		submitting = false
+		if drawer.visible: draw_questions()
+		if detail_binding == binding:
+			show_feedback("答复未发送；身份或模型工单已改变，草稿保留。" + workspace.notice.text)
+		return
+	var result: Dictionary = await workspace._graph_command(binding.url, "answer", {"revision":snapshot.get("revision", ""), "node":id, "value":answer})
+	submitting = false
+	if not binding_current(binding) or detail_binding != binding:
+		if drawer.visible: draw_questions()
+		return
+	if not result.get("ok", false):
+		draw_questions()
+		show_feedback(str(result.get("error", "未收到答复回执，草稿已保留；请刷新核对。")))
+		return
+	answer_drafts.erase(key)
+	detail_snapshot.context = result.get("context", context)
+	draw_questions()
+	workspace.refresh()
+	show_feedback("已记录答复。可点击「答复 / 推进」在原工单聊天继续。")
+
+func open_response() -> void:
+	var binding: Dictionary = await open_detail()
+	if binding.is_empty() or detail_binding != binding or not binding_current(binding): return
+	if operation_panel.visible or reply_controls > 0: return
+	await open_chat(false)
+
+func approval_binding() -> Dictionary:
+	var result := action_binding()
+	result.visible = panel.is_visible_in_tree() and describe_selection() == selection
+	result.token = workspace._pending_operation(selected_issue()).get("token", "") if drawer.visible else ""
+	return result
+
+func confirm_operation(token: String) -> void:
+	var url: String = selected_issue().get("url", "")
+	await operation_panel.confirm(token, approval_binding, workspace._board_command, workspace._pending_operation,
+		func(verified_token): return workspace.chat.confirm_daqian_issue_approval(url, verified_token))
 
 func show_feedback(message: String) -> void:
 	action_feedback = message
@@ -426,6 +622,7 @@ func chat_unmounted() -> void:
 	actions.show()
 
 func close_chat() -> void:
+	close_detail()
 	if owns_chat:
 		action_feedback = ""
 		feedback.text = ""

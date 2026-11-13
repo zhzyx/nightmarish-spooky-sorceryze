@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-182d631677c9d23f5a9b890c3e0cfba3ccc56413",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-3d-inline-actions-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "9ba0e9aef27f731c0c317e99d79a76dfe6bb98fabdf5ea95e6095efd46537fac",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+    "action": "validation",
+    "detection_head": "c074db21be98784ff1288f1f2d99c793ba156395",
+    "context_sha256": "4a0e8634ea1512e4b6b4a0792f439bc31e01f0d303cd2302882f030c8c852039",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Shared fix PR1018 signed0ffa442760f4402194d1feb9a6bab5f1ccdc730f exact CI43337087799 passed; isolated830 final independent review35267d81f248f18f4bfb5ad503314e743f91199be8c4fc5faf516a1945dbc472",
+    "diagnosis": "共享来源、图拒绝代次、打开工单调用方代次和监听提示覆盖已在1017候选修复。应用到本会话830隔离候选后，214个共享方法与已审查源码一致，63项原生路由及侧栏/重启独立检查通过，原贡献和不可变冲突证据完整保留。",
+    "next_action": "本地整合准备与独立复验已完成；原830发布者接收并按精确候选CI/main和真实消费者验收接续，或取得用户明确交接。现有PR831和原工作树未修改，不据此次准备关闭830；971主线协调约定继续。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T23:06:13.972744+00:00",
+    "attempted": "最终本机私有headless消费者通过；实际工作者终态已回读释放，测试私有资源与本次Python缓存已清理。",
+    "repair_owner": "Shared1017 correction owned by current root; original830 publisher retains feature delivery",
+    "continuable": "保留已验证隔离候选与证据，发布交接和线上验收仍未完成。"
+  },
+  "occurred_at": "2026-11-13T00:38:51.577289+00:00",
+  "sha256": "8a1ea08f2c6999283677574f9c69060d6917aaa2afffb376cb1a866b5ba0d776"
+}

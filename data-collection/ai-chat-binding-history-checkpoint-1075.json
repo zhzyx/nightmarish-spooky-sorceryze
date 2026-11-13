@@ -1,0 +1,56 @@
+{
+  "issue": 1075,
+  "request_id": "issue-binding-history-checkpoint-20261114",
+  "parent_issues": [
+    830,
+    978
+  ],
+  "baseline": "4eacf441827cf6a3446811bebec8d59b1c04b118",
+  "status": "local_repair_verified_pending_delivery",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "af808f2836792270c312de2aeb29f330cd6fc8c23902efcc5cc3a33e6f1d2244",
+    "editor/docks/ai_chat_dock.h": "a9a37d72c02a3bf207973180db233da872f515911a02d9bf03c5261f0d612d97",
+    "editor/docks/ai_chat_gonggong.cpp": "f0904bf2f5a65c22737e2087702d73ac04dda2076544cf9304ed479778b5afd3"
+  },
+  "binary_sha256": "6069b164702a066b059c36cf2f728fb7026493d36da1fa189798c1593b795556",
+  "validation": {
+    "macos_build": "passed",
+    "original_crash_cold_test": "passed with original runner and scene assertions",
+    "enhanced_original_input_restore": "passed",
+    "actual_write_failure_local_retry": "passed; old history unchanged; confirm/start/rebind rejected; exactly one requirement call and one Issue creation",
+    "sidebars": "63 routing assertions and native spatial/restart passed",
+    "direct_status_retry": "4 reads, zero model requests, zero development events",
+    "legacy_unbound_guide": "not passed; old fixture targets an entry superseded by requirements intake; no product change inferred",
+    "status_send": "blocked by preexisting GameReceiptGuard shell JSON defect; tracked separately by #1077",
+    "windows_ci": "pending",
+    "main_delivery": "pending"
+  },
+  "evidence_sha256": {
+    "issue1075-native/build-to-source.json": "b739b65b62a339ff774dd92c029280ebe206b1cc86670b7eae5b3e05f05f8397",
+    "issue1075-native/original-binding.json": "d8fe17ed9b64c29b2abcb0dbcff19bacb311a2476e1504e5a0751e78338bd164",
+    "issue1075-native/current-binding.json": "0018a38bc1c209ea05bc46826508e77c969869f748c0c92247cbb2249d1b18c7",
+    "issue1075-native/after-fix-failure.json": "55bdd4231361be89cbdccc3aa37bea2e116f0433be9b0c4e4453c795e496afaf",
+    "issue1075-native/direct-corrected.log": "2330dcad201245ea7b4a9dc19159d66fa232919bb4acc3f591357ae28a6bf01e",
+    "issue1075-independent-review/review.json": "a67bd479c1c8d45ac30bc61f2447551e3725d9dce319940116ef602cc53f8954"
+  },
+  "independent_review": {
+    "worker": "/root/sinan_32666a4dee4bc7da",
+    "findings": [],
+    "scope": "1075 source and current macOS evidence; 830 delivery remains blocked by 1077"
+  },
+  "limits": [
+    "No claim of original #951/#773 installed production recovery",
+    "Pending local failure receipt stays in memory; a continuously unwritable disk cannot persist new state through forced termination",
+    "Existing project metadata write failure handling is unchanged"
+  ],
+  "delivery_scope": "1075 repair does not close parent 830 or goal 978 before their complete acceptance",
+  "issue_number": 1075,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1075",
+  "current_integrated_validation": {
+    "base_main": "22ba06d9543c16ca5e91c0a5c8a4c8fc2545a4f4",
+    "binary_sha256": "6809794003840249d0d46642f7ea5cb3b4e15cda5b52b6afd550c9f5f0743fcd",
+    "binding_failure_retry_and_cold_restore": "passed",
+    "separate1077_guard_repair": "passed native and independent review",
+    "delivery": "pending CI and main"
+  }
+}

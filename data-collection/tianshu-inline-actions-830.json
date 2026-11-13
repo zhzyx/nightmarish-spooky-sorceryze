@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "issue_number": 830,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+  "request_id": "tianshu-3d-inline-actions-20261112",
+  "base": "1f6ea3e74244275efafc484d7cf324d9feea5c4a",
+  "platform": "macOS arm64",
+  "binary_sha256": "85c3fbe4682dd6649788ba81955251b95a2e23ef825dd5d865e3f54d13cc2d23",
+  "inputs": {
+    "editor/docks/daqian/spatial_workbench.gd": "1aefe441d87a9c8c9dcd60c0af046b03e157b0f40b2363cc213e25fd3f64551c",
+    "editor/docks/daqian/workspace.gd": "a806099d9530f913baab8733f099a3e50e49707fee9f6d185d00e8f303681fce",
+    "tests/editor/tianshu_spatial.gd": "a5249a7adf8e8c6d4883dec062596295a117da55fbfc03d402ad0b5c13b9667a"
+  },
+  "native_consumer": "spatial_workbench.gd and workspace.gd are embedded by editor/SCsub into daqian_scripts.gen.h; rebuilt editor, no external plugin or hot reload claimed",
+  "build": "SCons macos editor dev_build=yes debug_symbols=no optimize=none tests=yes vulkan=no opengl3=yes metal=yes; exit 0",
+  "acceptance": {
+    "passed": true,
+    "restart_passed": true,
+    "checks": [
+      "3D inline read-only design inspector and linked content",
+      "revision-bound choice reply with actual graph API adapter",
+      "failed reply preserves draft; close/reopen restores draft",
+      "model/account/board change and canceled await invalidate old operations",
+      "native original conversation chat mounted inline without auto send",
+      "pending operation uses existing module; view does not execute; stale token and closed drawer rejected; explicit confirmed token executed once",
+      "scrollable detail drawer preserves viewport at 1440 and 1100 pixels",
+      "original model binding/new-task/authentication regression and persisted restart"
+    ]
+  },
+  "independent_review": {
+    "worker": "/root/sinan_f292730374a5239f",
+    "result": "No blocking findings after stale view, invocation binding and in-flight draft fixes",
+    "scope": "Read-only code review; reviewer did not independently execute tests"
+  },
+  "limits": [
+    "Isolated transport fixtures; no production answer sent for #827",
+    "Pixel appearance/native focus/actual high-DPI and other platforms not verified",
+    "Known sandbox app_userdata/certificate and shutdown RID warnings remain; no GDScript errors"
+  ],
+  "usage": null
+}
