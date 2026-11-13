@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
 import { RepoBrowser } from "@/components/RepoBrowser";
+import { fetchRepos, type ApiRepo } from "@/lib/api";
 import { repos } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "代码仓库",
 };
+
+export const dynamic = "force-dynamic";
 
 const stats = [
   { label: "组织仓库", value: "04", note: "2 个活跃分支", icon: "repos" as const },
@@ -15,7 +18,17 @@ const stats = [
   { label: "合入冲突", value: "00", note: "队列运行正常", icon: "checkCircle" as const },
 ];
 
-export default function ReposPage() {
+export default async function ReposPage() {
+  const actor = process.env.TIANXUAN_ACTOR ?? "";
+  let liveRepos: ApiRepo[] | null = null;
+  if (actor) {
+    try {
+      liveRepos = await fetchRepos(actor);
+    } catch {
+      liveRepos = null;
+    }
+  }
+
   return (
     <div className="page-stack repos-page">
       <header className="page-header">
@@ -42,6 +55,30 @@ export default function ReposPage() {
           </Link>
         </div>
       </header>
+
+      {liveRepos && liveRepos.length > 0 ? (
+        <section className="panel" aria-labelledby="live-repos-title">
+          <div className="section-heading">
+            <div>
+              <p className="section-kicker">GITEA · LIVE</p>
+              <h2 id="live-repos-title">实时仓库</h2>
+            </div>
+            <span className="section-note">{liveRepos.length} 个仓库来自 Gitea</span>
+          </div>
+          <div className="reading-list">
+            {liveRepos.slice(0, 8).map((repo) => (
+              <div className="reading-item" key={repo.full_name}>
+                <span className="reading-index">{repo.private ? "私" : "公"}</span>
+                <span className="reading-copy">
+                  <strong>{repo.full_name}</strong>
+                  <span>默认分支 {repo.default_branch}</span>
+                </span>
+                <Icon name="repos" size={14} />
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="repo-stat-strip" aria-label="仓库概览">
         {stats.map((stat) => (
