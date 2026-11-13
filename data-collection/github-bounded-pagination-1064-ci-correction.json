@@ -1,0 +1,37 @@
+{
+  "request_id": "github-bounded-pagination-20261113",
+  "issue_number": 1064,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1064",
+  "ci_repair": {
+    "failed_pr": 1068,
+    "failed_signed_head": "0d961b3ef4d1f8156dca8ce202b814dcb7b667b9",
+    "failed_run": 43444974064,
+    "failure": "Three mypy errors for unchecked Optional ModuleSpec/loader in new optional adapter import; local mypy step omitted",
+    "repair": "Explicitly reject missing spec/loader before module_from_spec/exec_module; two added lines",
+    "local_revalidation": "mypy all5 changed Python files passed; optional11 tests passed; ruff passed",
+    "incident": "aba0393d1f4d6d1b5d916b4ef60b6c447724f8ae96f115655a764c96e1891e04",
+    "independent_delta_review": {
+      "state": "passed",
+      "worker": "/root/sinan_210dae5c2612c558",
+      "sha256": "6c2ed7e0732c758bb9216a9a8a1f3d349696649ad3508377f5968e7be228e2ae",
+      "findings": [],
+      "original_review_inputs": "9of10 unchanged; issue_create only2line guard",
+      "checks": "mypy5files; optional11tests; both null spec/loader rejects without module/subprocess side effects"
+    },
+    "delivery": "Original failed candidate not merged; corrected exact candidate/signature/CI required"
+  },
+  "source_sha256": {
+    "customizations/components/issue-workorders/github_runtime.py": "8bd992d8a6b210b0382c817c1e7cf8f51aee52e9a8aa8c90cb76ac0c4c621d69",
+    "customizations/components/issue-workorders/github_runtime.mjs": "ece5e5b488254b75dea01b02144003cb3b8b49bf33986c6199107c103e970633",
+    "customizations/components/issue-workorders/github_runtime_bridge.py": "8d3118129dc746829f4391e60d5be05111a1807791d3aff2aedb3061fff4d6fd",
+    "customizations/platforms/work-management/github/git-issue/issue_create.py": "9114fa5e9dd53881e264d32c4e90d96eb36a134dcd89e9964d31f7c9aa7742da"
+  },
+  "corrects": {
+    "path": "data-collection/github-bounded-pagination-1064.json",
+    "original_sha256": "e568229121c45bee40ff517d8556564630a59ef3942f406bee02200ce42cd2f4",
+    "original_commit": "b5df37a693df250f91e60a7733fb337a98b89639",
+    "scope": "Append CI failure and corrected adapter evidence; original committed prepublication receipt is immutable"
+  },
+  "validation_boundary": "Original147 local passes and original39 independent checks retained; corrected2line adapter guard covered by mypy5files, optional11 and independent rejection tests. New exact CI/main remains pending.",
+  "collection_guard_recovery": "Attempt to update the previously committed original receipt was rejected before commit. Original bytes restored; correction appended in this new file."
+}

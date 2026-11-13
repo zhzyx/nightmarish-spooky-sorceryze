@@ -12,6 +12,8 @@ from pathlib import Path
 _RUNTIME_PATH = Path(__file__).resolve().parents[4] / "components/issue-workorders/github_runtime.py"
 _RUNTIME_SHA = hashlib.sha256(_RUNTIME_PATH.read_bytes()).hexdigest()
 _runtime_spec = importlib.util.spec_from_file_location("git_issue_github_runtime", _RUNTIME_PATH)
+if _runtime_spec is None or _runtime_spec.loader is None:
+    raise ImportError("Cannot load installed GitHub runtime")
 github_runtime = importlib.util.module_from_spec(_runtime_spec)
 _runtime_spec.loader.exec_module(github_runtime)
 
