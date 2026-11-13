@@ -27,6 +27,9 @@ class _FakeGitea:
     def get_repo(self, owner: str, name: str) -> dict[str, Any]:
         return {"full_name": f"{owner}/{name}", "owner": owner, "name": name}
 
+    def list_repos(self, owner: str | None = None, limit: int = 50) -> list[dict[str, Any]]:
+        return [{"full_name": f"{owner or 'me'}/demo", "limit": limit}]
+
 
 def _setup() -> tuple[TestClient, dict[str, str]]:
     store = Tianxuan(":memory:")
@@ -61,3 +64,7 @@ def test_create_and_get_repo_with_fake_client(monkeypatch) -> None:
 
     fetched = client.get("/api/v1/repos/owner/demo", headers=headers).json()
     assert fetched["full_name"] == "owner/demo"
+
+    listed = client.get("/api/v1/repos?owner=owner&limit=10", headers=headers).json()["repos"]
+    assert listed[0]["full_name"] == "owner/demo"
+    assert listed[0]["limit"] == 10

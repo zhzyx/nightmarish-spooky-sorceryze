@@ -376,6 +376,19 @@ class GiteaClient:
         )
         return _normalize_repo(payload)
 
+    def list_repos(self, owner: str | None = None, limit: int = 50) -> list[dict[str, Any]]:
+        """列出当前用户或指定 owner 的仓库。"""
+        if owner is None:
+            path = "/api/v1/user/repos"
+        else:
+            path = f"/api/v1/users/{_validate_segment(owner, 'owner')}/repos"
+        if not isinstance(limit, int) or isinstance(limit, bool) or not 1 <= limit <= 100:
+            raise GiteaValidationError("limit must be an integer between 1 and 100")
+        payload = self._request("GET", path, params={"limit": str(limit)})
+        if not isinstance(payload, list):
+            raise GiteaError(0, f"GET {path} returned an unexpected payload")
+        return [_normalize_repo(item) for item in payload]
+
     def get_repo(self, owner: str, name: str) -> dict[str, Any]:
         """按 owner/name 读取仓库。"""
         owner = _validate_segment(owner, "repository owner")

@@ -194,6 +194,36 @@ def test_create_repo_forwards_private_and_default_branch(make_client: ClientFact
     assert repo["default_branch"] == "develop"
 
 
+def test_list_repos_for_current_user(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "GET"
+        assert request.url.path == "/api/v1/user/repos"
+        assert request.url.query == b"limit=50"
+        assert_authorized(request)
+        return httpx.Response(200, json=[REPO_PAYLOAD])
+
+    client, requests = make_client(handler)
+    repos = client.list_repos()
+
+    assert repos == [EXPECTED_REPO]
+    assert TOKEN not in str(repos)
+    assert len(requests) == 1
+
+
+def test_list_repos_for_owner_and_limit(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "GET"
+        assert request.url.path == "/api/v1/users/octo/repos"
+        assert request.url.query == b"limit=10"
+        assert_authorized(request)
+        return httpx.Response(200, json=[{**REPO_PAYLOAD, "name": "other"}])
+
+    client, _ = make_client(handler)
+    repos = client.list_repos("octo", 10)
+
+    assert repos[0]["name"] == "other"
+
+
 def test_get_repo_returns_normalized_payload(make_client: ClientFactory) -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.method == "GET"

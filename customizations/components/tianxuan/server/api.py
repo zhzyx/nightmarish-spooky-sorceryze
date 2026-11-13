@@ -459,6 +459,19 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
             "owner": os.environ.get("TIANXUAN_GITEA_OWNER", ""),
         }
 
+    @app.get("/api/v1/repos")
+    def list_repos(
+        actor: ActorDep,
+        owner: str | None = Query(default=None),
+        limit: int = Query(default=50, ge=1, le=100),
+    ) -> dict[str, list[dict[str, Any]]]:
+        client = _gitea_client()
+        try:
+            with client:
+                return {"repos": client.list_repos(owner, limit)}
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
     @app.post("/api/v1/repos")
     def create_repo(payload: RepoCreateRequest, actor: ActorDep) -> dict[str, Any]:
         client = _gitea_client()
