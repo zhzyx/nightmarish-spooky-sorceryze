@@ -95,6 +95,28 @@ class ApiTests(unittest.TestCase):
         self.assertNotIn("fixture-only", "".join(p.read_text() for p in directory.glob("*.json")))
         self.assertEqual(self.provider.describe()["id"], "api-modeling")
 
+    def test_explicit_gpt_api_is_rejected_before_auth_or_request(self):
+        from api_planner import validate_config
+
+        for endpoint, model in (
+            ("https://api.openai.com/v1", "custom-deployment"),
+            ("https://eu.api.openai.com/v1", "custom-deployment"),
+            ("https://tenant.openai.azure.com/v1", "custom-deployment"),
+            ("https://other.example/v1", "openai/gpt-5.1"),
+            ("https://other.example/v1", "GPT-5.1-codex"),
+            ("https://other.example/v1", "chatgpt-4o-latest"),
+            ("https://other.example/v1", "ft:gpt-4.1-mini:account:model:id"),
+        ):
+            planner = dict(self.config["planner"], endpoint=endpoint, model=model)
+            with self.subTest(model=model, endpoint=endpoint):
+                with self.assertRaisesRegex(ValueError, "gpt_modeling_retired"):
+                    validate_config(planner)
+                with self.assertRaisesRegex(ValueError, "gpt_modeling_retired"):
+                    ModelingProvider(dict(self.config, planner=planner))
+        self.assertEqual(self.calls, [])
+        for model in ("deepseek-v3", "kimi-k2", "domain-gpt-tool", "gpt-neox-20b"):
+            validate_config(dict(self.config["planner"], model=model))
+
     def test_invalid_semantics_fails_after_one_request(self):
         self.responses = {"execute": "arbitrary code"}
         plan, directory = self.seed()

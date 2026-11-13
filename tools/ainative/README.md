@@ -134,6 +134,14 @@ their original type. For the generation nodes, edit `seed` in the range
 **0–9,007,199,254,740,991** in Godot. Direct Python/CLI integer inputs keep their
 existing contract and provider range; core validation remains strictly typed.
 
+## 网格生成的后端选择
+
+Codex CLI 提供二维图像能力。「Codex CLI 图像 + 本机网格」由本机三维后端生成 Mesh。文字生成网格需要先由 CLI 出图，图生网格可直接使用参考图。ComfyUI／混元三维、Kimi Native／Tripo 和本机网格模式可直接配置各自的网格后端。
+
+自选 API 模式 `api_modeling` 和 `api_sculpt` 接受支持严格 JSON Schema 的 Chat Completions 端点。用户需在本机指定端点、模型与凭据的环境变量名。Godot 或 Blender 固定构造器校验并使用返回的计划。该模式拒绝可识别的官方 OpenAI／Azure OpenAI 端点及明确的 GPT 型号。服务端自行定义的代理别名无法用来判断实际供应商。
+
+升级时，旧 `codex_modeling` 和 `codex_sculpt` 设置可恢复 Codex 生图配置。旧工作流中的 `codex-modeling` 和 `codex-sculpt` 网格节点会返回 `gpt_modeling_retired`，需选择新网格后端并重新连接节点。已生成的资产和工作流数据可继续使用。撤除范围见 [#1079 设计](../../design-docs/maliang-remove-gpt-mesh-20261114.md)。
+
 ## Real Kimi Native direct 3D provider (#646, #885)
 
 New `kimi_native` Mesh tasks use **Tripo API** through the installed Kimi Work

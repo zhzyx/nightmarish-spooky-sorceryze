@@ -29,7 +29,6 @@ var _shown_prompt = ""
 var _dirty_numbers: Dictionary = {}
 var _dirty_outputs = false
 var _cli_mode = false
-var _modeling_mode = false
 var _sculpt_mode = false
 var _kimi_mode = false
 var _api_mode = false
@@ -217,10 +216,6 @@ func set_cli_mode(enabled: bool):
 	_cli_mode = enabled
 	_apply_cli_controls()
 
-func set_modeling_mode(enabled: bool):
-	_modeling_mode = enabled
-	_apply_cli_controls()
-
 func set_sculpt_mode(enabled: bool):
 	_sculpt_mode = enabled
 	_apply_cli_controls()
@@ -241,7 +236,7 @@ func _is_mesh_kind(value: String) -> bool:
 
 func _apply_cli_controls():
 	var generator = kind != 'copy'
-	var instruction_mode = _modeling_mode or _kimi_mode
+	var instruction_mode = _api_mode or _kimi_mode
 	var modeling_mesh = instruction_mode and _is_mesh_kind(kind)
 	for key in ['width', 'height']:
 		controls[key].custom_arrow_step = 16 if _kimi_image_mode() else 8
@@ -256,7 +251,7 @@ func _apply_cli_controls():
 			_loading = false
 			_raw_changed()
 	cli_hint.visible = (_cli_mode or instruction_mode) and generator
-	cli_hint.text = ('自选 API 返回严格规划，' + ('Blender' if _sculpt_mode else 'Godot') + ' 固定构造器生成网格；请预览检查形态与隐藏面。') if _api_mode else 'Kimi Work 独立图像服务根据提示词与可选参考图生成二维图片；下方宽高是实际请求尺寸，须为 16 的倍数。随机种子、采样步数和 denoise 不适用，不是 K3.1 Pro 直接输出图片。' if _kimi_image_mode() else 'Kimi Work 通过 Tripo API 根据描述、单图或 2–4 视图直接生成 GLB，无需 Blender 或 K3 原语规划；三视图整图按正面／右侧／背面裁切，额外图文混合约束会明确拒绝。' if _kimi_mode else 'GPT 根据描述和参考图规划完整三维形态与隐藏面，Blender 构造连续表面；请预览检查人物比例、有机结构及背面。无需 ComfyUI 或三维生成模型。' if modeling_mesh and _sculpt_mode else 'GPT 根据描述或参考图输出建模指令，Godot 构造基础形状与材质；无需 ComfyUI 或三维模型。复杂人物和有机造型的效果仍需验证。' if modeling_mesh else 'CLI 图像按提示词及参考图生成；尺寸为目标要求，会采用支持的接近尺寸。图像不使用本机模型的随机种子、采样步数或重绘强度。'
+	cli_hint.text = ('自选 API 返回严格规划，' + ('Blender' if _sculpt_mode else 'Godot') + ' 固定构造器生成网格；请预览检查形态与隐藏面。') if _api_mode else 'Kimi Work 独立图像服务根据提示词与可选参考图生成二维图片；下方宽高是实际请求尺寸，须为 16 的倍数。随机种子、采样步数和 denoise 不适用，不是 K3.1 Pro 直接输出图片。' if _kimi_image_mode() else 'Kimi Work 通过 Tripo API 根据描述、单图或 2–4 视图直接生成 GLB，无需 Blender 或 K3 原语规划；三视图整图按正面／右侧／背面裁切，额外图文混合约束会明确拒绝。' if _kimi_mode else 'CLI 图像按提示词及参考图生成；尺寸为目标要求，会采用支持的接近尺寸。图像不使用本机模型的随机种子、采样步数或重绘强度。'
 	if kind == 'model_adjust': cli_hint.text = '基于原模型和可选文字／图片上下文，通过 Tripo API texture_3d_model 输出新 GLB。原模型必须提供；文字+风格图需同时有文字，四图引导需包含全部视角。'
 	rows.prompt.text = '微调要求（可选）' if kind == 'model_adjust' else ('建模要求（可选，结合源图推断结构）' if instruction_mode else '提示词（可选，填写后先重绘图像）') if kind == 'image_to_mesh' else ('图生图要求' if _kimi_image_mode() and kind == 'image_to_image' else '生图要求' if _kimi_image_mode() else '建模要求' if modeling_mesh else '提示词')
 	for key in ['width', 'height']:

@@ -164,45 +164,11 @@ class PerNodeModelTests(unittest.TestCase):
         )
         self.assertEqual(model["nodes"][3]["provider"], "codex_4")
 
-    def test_modeling_and_sculpt_nodes_keep_distinct_cli_models(self):
-        for mode, probe, prefix in (
-            ("codex_modeling", "_probe_modeling", "codex-modeling"),
-            ("codex_sculpt", "_probe_sculpt", "codex-sculpt"),
-        ):
-            with self.subTest(mode=mode):
-                config = dict(mode=mode, cli_path="fixture-cli", image_model="builtin", mesh_model="")
-                if mode == "codex_modeling":
-                    config.update(godot_path="fixture-godot", builder_path="fixture-builder")
-                else:
-                    config.update(
-                        blender_path="fixture-blender", builder_path=str(Path(__file__).with_name("sculpt_builder.py"))
-                    )
-                report = dict(
-                    capabilities={"text_to_mesh": {"ready": True}},
-                    runtime={"executable": "fixture-blender"},
-                )
-                model = dict(
-                    nodes=[
-                        dict(id="a", type="text_to_mesh", model=mode + "-a", parameters={"prompt": "a"}),
-                        dict(id="b", type="text_to_mesh", model=mode + "-b", parameters={"prompt": "b"}),
-                    ],
-                    edges=[],
-                )
-                with patch("generation_service." + probe, return_value=report):
-                    _, providers, snapshot = prepare_provider(config, model, self.root / (mode + ".sqlite"), "1" * 32)
-                selected = {value.config["model"] for key, value in providers.items() if key.startswith(prefix)}
-                self.assertEqual(selected, {mode + "-a", mode + "-b"})
-                self.assertEqual(set(snapshot["provider_types"].values()), {prefix})
-                model["nodes"][0]["model"] = "changed-after-freeze"
-                self.assertEqual(snapshot["providers"][prefix]["model"], mode + "-a")
-
     def test_model_adjust_migrates_as_mesh_not_as_cli_image(self):
         from generation_service import _migrate_node_models
 
         for mode, expected in (
             ("codex", "mesh-a"),
-            ("codex_modeling", ""),
-            ("codex_sculpt", ""),
             ("comfy", "mesh-a"),
             ("kimi_native", "v3.1"),
         ):

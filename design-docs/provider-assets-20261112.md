@@ -1,5 +1,7 @@
 # 资产生成的后端独立与公共基础解耦
 
+> 2026-11-14 更新：马良独立 GPT 网格入口按 [#1079 设计](maliang-remove-gpt-mesh-20261114.md) 撤除。下文的 Codex 建模兼容描述和验证结果对应当时的交付。
+
 父需求：provider-independence-20261112。用户于 2026-11-12 明确要求执行并修复全部已审计 Codex 强依赖，授权当前会话持续交付。
 
 范围：马良本机图生网格独立模式；Godot/Blender 语义规划接入明确配置的非 Codex API；将通用任务及图像/进程辅助从 Codex Provider 提取，Kimi 不导入 Codex 专属模块；保留既有配置、快照、取消和不可变结果。无 CLI 环境的代表成功与失败回归；网络用本机协议服务，不冒充真实生成质量。保留 Codex 专用模式，不默认选择它；Comfy 承担已有非 Codex 二维路线，不抢占 #808 Kimi Work 图像。写入责任 tools/ainative、samples/ainative-workbench/addons/ainative 和本设计。嵌入代码需原生构建消费核验。Windows x64 主验收，跨平台未知保留。主线接收与完整验收后关闭。

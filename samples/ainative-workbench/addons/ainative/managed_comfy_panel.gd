@@ -89,7 +89,7 @@ func initialize(workbench, settings: ConfigFile):
 	add_child(notice)
 	if default_bundle and autostart.button_pressed:
 		restore_bundle = true
-		host.service_choice.select(7) # Explicit local image-to-mesh; no CLI dependency.
+		host.select_service_mode('local_mesh')
 		host._service_settings_changed()
 	if runtime_path.text.is_empty() and ((fresh and host.bundled_runtime.has('error')) or _saved_bundle_selected()):
 		var reason = host.bundled_runtime.get('error', '当前引擎缺少已选择的 Hunyuan3D 运行库，请恢复完整发行包。')

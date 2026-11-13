@@ -82,6 +82,47 @@ func configure_valid():
 	panel.check_service()
 	await idle()
 
+func check_retired_gpt_mesh():
+	var config = panel.service_config_path
+	for legacy_mode in ["codex_modeling", "codex_sculpt"]:
+		var old = {"schema_version": 1, "mode": legacy_mode, "cli_path": "fixture-codex.exe", "endpoint": valid_endpoint, "mesh_model": mesh_model}
+		var config_file = FileAccess.open(config, FileAccess.WRITE)
+		config_file.store_string(JSON.stringify(old))
+		config_file.close()
+		var local = ConfigFile.new()
+		local.set_value("managed_comfy", "autostart", true)
+		local.set_value("managed_comfy", "runtime_root", state_path)
+		local.save(state_path.path_join("local.cfg"))
+		panel.queue_free()
+		await process_frame
+		await new_panel()
+		check(panel._service_mode() == "codex" and panel.cli_path_edit.text == old.cli_path, "old " + legacy_mode + " settings retain Codex CLI image login")
+		check(panel.service_saved == panel.service_draft() and panel.service_saved.mesh_model.is_empty() and panel.service_saved.endpoint == "http://127.0.0.1:8188", "legacy mesh defaults are cleared without inheriting its endpoint")
+		check(panel.jobs.is_empty() and panel.managed_comfy_panel.lease_path.is_empty() and not panel.managed_comfy_panel.autostart.button_pressed, "migrating legacy settings starts no mesh service")
+		check(JSON.parse_string(FileAccess.get_file_as_string(config)).mode == legacy_mode, "opening legacy settings does not overwrite the original file")
+		set_node("text_to_image", "", "fixture prompt; do not submit")
+		check(panel.nodes[0].provider == "codex" and panel.node_run_blocker("fixture").is_empty(), "Codex image generation remains eligible after migration")
+	var historical = {"id": "old_mesh", "type": "text_to_mesh", "version": "1", "provider": "codex-sculpt_2", "source": "", "image_context": "", "text": "old constraints", "parameters": {"prompt": "historical model"}, "x": 20, "y": 20}
+	var next = {"id": "old_copy", "type": "copy", "version": "1", "provider": "local-copy", "source": "", "image_context": "", "text": "", "parameters": {"delay": 0, "fail": false}, "x": 300, "y": 20}
+	var connections = [{"from": historical.id, "to": next.id, "input": "source", "output": "result"}]
+	panel.path_edit.text = state_path.path_join("old-workflow.json")
+	var graph_file = FileAccess.open(panel.path_edit.text, FileAccess.WRITE)
+	graph_file.store_string(JSON.stringify({"format": 1, "nodes": [historical, next], "edges": connections}))
+	graph_file.close()
+	panel.open_graph()
+	check(panel.nodes.size() == 2 and panel.nodes[0].provider == historical.provider and panel.nodes[0].parameters == historical.parameters and panel.edges == connections, "opening preserves retired nodes, inputs and links")
+	check(panel.status.text.contains("已下线") and panel.node_run_blocker(historical.id).contains("已下线") and panel.node_run_blocker(next.id).contains("已下线"), "retired model nodes and dependents explain why they cannot run")
+	var before = panel.serial
+	panel.run_node_preview(next.id)
+	check(panel.serial == before and panel.jobs.is_empty(), "running a dependent of a retired node starts no subprocess")
+	mode("comfy")
+	check(panel.node_run_blocker(historical.id).contains("已下线"), "changing mesh services does not reassign retired nodes")
+	DirAccess.remove_absolute(config)
+	DirAccess.remove_absolute(state_path.path_join("local.cfg"))
+	panel.queue_free()
+	await process_frame
+	await new_panel()
+
 func run():
 	root.size = Vector2i(1440,1000)
 	var state_override = OS.get_environment("AINATIVE_SERVICE_TEST_STATE")
@@ -96,8 +137,7 @@ func run():
 		return
 	var available_modes: Array = []
 	for i in panel.service_choice.item_count: available_modes.append(panel.service_choice.get_item_metadata(i))
-	for expected_mode in ["offline", "comfy", "legacy", "codex", "codex_modeling", "codex_sculpt", "kimi_native", "local_mesh", "api_modeling", "api_sculpt"]:
-		check(expected_mode in available_modes, "settings expose service mode: " + expected_mode)
+	check(available_modes == ["offline", "comfy", "legacy", "codex", "kimi_native", "local_mesh", "api_modeling", "api_sculpt"], "settings retain image and independent mesh services")
 	check(panel._service_mode() == "offline" and panel.service_saved.is_empty(), "a fresh project starts without a claimed real generation service")
 	check(panel.service_status.text.contains("离线") and panel.service_capability_labels.copy.text.contains("可用"), "fresh settings clearly show offline copying availability")
 	set_node("text_to_image", "", "fixture prompt; do not submit")
@@ -108,6 +148,8 @@ func run():
 	panel.service_config_link.pressed.emit()
 	await settle()
 	check(settings_requests.back() == 'ai' and not panel.native_sections.machine.visible, "configuration entry navigates to central AI settings without reopening an editable business form")
+	await check_retired_gpt_mesh()
+	set_node("text_to_image", "", "fixture prompt; do not submit")
 	check(traffic().is_empty(), "opening settings and rejecting unconfigured generation makes no HTTP calls")
 	mode("comfy")
 	panel.endpoint_edit.text = valid_endpoint

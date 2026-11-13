@@ -17,6 +17,19 @@ MAX_RESPONSE = 16 * 1024 * 1024
 MAX_REQUEST = 48 * 1024 * 1024
 
 
+def _is_openai_model(model):
+    model = model.casefold()
+    if model.startswith("openai/"):
+        return True
+    model = model.removeprefix("ft:").split(":", 1)[0]
+    return (
+        re.fullmatch(
+            r"(?:chatgpt(?:-[0-9][a-z0-9]*(?:[.-][a-z0-9]+)*)?|gpt-(?:[0-9][a-z0-9]*|oss)(?:[.-][a-z0-9]+)*)", model
+        )
+        is not None
+    )
+
+
 def validate_config(config):
     require(isinstance(config, dict) and set(config) == {"endpoint", "model", "key_env"}, "api_config_invalid")
     require(all(isinstance(v, str) and v.strip() == v and v for v in config.values()), "api_config_invalid")
@@ -40,6 +53,13 @@ def validate_config(config):
     )
     require(re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", config["key_env"]) is not None, "api_config_invalid")
     require(len(config["model"]) <= 256 and not any(ord(c) < 32 for c in config["model"]), "api_config_invalid")
+    host = url.hostname.rstrip(".").lower()
+    require(
+        host != "api.openai.com"
+        and not host.endswith((".api.openai.com", ".openai.azure.com", ".openai.azure.us", ".openai.azure.cn"))
+        and not _is_openai_model(config["model"]),
+        "gpt_modeling_retired",
+    )
     return config
 
 
@@ -66,6 +86,7 @@ def perform(config, directory):
     require(bool(key), "api_key_missing")
     raw = (directory / "api-request.json").read_bytes()
     require(len(raw) <= MAX_REQUEST, "invalid_input")
+    require(json.loads(raw)["model"] == config["model"], "api_config_invalid")
     request = urllib.request.Request(
         config["endpoint"].rstrip("/") + "/chat/completions",
         data=raw,
@@ -82,6 +103,9 @@ def perform(config, directory):
         isinstance(value, dict) and isinstance(value.get("choices"), list) and len(value["choices"]) == 1,
         "api_output_invalid",
     )
+    observed_model = value.get("model")
+    if isinstance(observed_model, str):
+        require(not _is_openai_model(observed_model), "gpt_modeling_retired")
     choice = value["choices"][0]
     require(choice.get("finish_reason") == "stop" and isinstance(choice.get("message"), dict), "api_output_invalid")
     message = choice["message"]
@@ -104,19 +128,17 @@ def perform(config, directory):
     (directory / "api-receipt.json").write_text(canonical(receipt), encoding="utf-8")
 
 
-def instructions(provider, key, directory, arguments):
-    config = provider.config["planner"]
+def instructions(provider, key, directory, images):
+    config = validate_config(provider.config["planner"])
     content = [dict(type="text", text=(directory / "prompt.txt").read_text(encoding="utf-8"))]
-    for index, argument in enumerate(arguments):
-        if argument == "--image":
-            path = Path(arguments[index + 1])
-            mime = "image/png" if path.suffix.lower() == ".png" else "image/jpeg"
-            content.append(
-                dict(
-                    type="image_url",
-                    image_url=dict(url="data:" + mime + ";base64," + base64.b64encode(path.read_bytes()).decode()),
-                )
+    for path in images:
+        mime = "image/png" if path.suffix.lower() == ".png" else "image/jpeg"
+        content.append(
+            dict(
+                type="image_url",
+                image_url=dict(url="data:" + mime + ";base64," + base64.b64encode(path.read_bytes()).decode()),
             )
+        )
     body = dict(
         model=config["model"],
         messages=[dict(role="user", content=content)],

@@ -8,11 +8,7 @@ cross-run reuse under an unverified model identity.
 
 import ipaddress
 import json
-import os
-import re
-import shutil
 import sqlite3
-import subprocess
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -22,6 +18,8 @@ from pathlib import Path
 from kimi_work_image_provider import MESSAGES as KIMI_WORK_IMAGE_MESSAGES
 from multi_image_provider import MESSAGES as MULTI_IMAGE_MESSAGES
 
+RETIRED_MODELING_MODES = frozenset(("codex_modeling", "codex_sculpt"))
+RETIRED_MODELING_PROVIDERS = frozenset(("codex-modeling", "codex-sculpt"))
 KINDS = ("text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust")
 IMAGE_NODES = {"CheckpointLoaderSimple", "CLIPTextEncode", "EmptyLatentImage", "KSampler", "VAEDecode", "SaveImage"}
 MESH_NODES = {
@@ -42,7 +40,7 @@ MESSAGES = {
     "cli_image_unavailable": "当前 Codex CLI 未提供内置图像生成能力，请更新或检查已有账号的功能。",
     "cli_unavailable": "未找到可用的 Codex CLI。请选择本机已安装的 Codex 程序。",
     "cli_login_required": "Codex CLI 需要使用你已有的 ChatGPT 登录；请先完成 CLI 登录，再检测连接。",
-    "service_not_configured": "尚未配置真实生成服务。请打开“本机设置”，选择 GPT CLI 网格建模或其他生成方式，检测并保存；离线复制仍可使用。",
+    "service_not_configured": "尚未配置真实生成服务。请打开“本机设置”，选择可用生成服务，检测并保存；离线复制仍可使用。",
     "service_config_invalid": "生成设置无效。请在“本机设置”检查生成方式及其所需的本机程序或服务参数并保存。",
     "service_address_invalid": "服务地址无效。请填写 http:// 或 https:// 服务根地址，不要包含账号、密码、查询参数或接口路径。",
     "service_unreachable": "无法连接 ComfyUI。请确认服务已启动、地址与端口正确，再点击“检测连接与模型”。",
@@ -57,7 +55,7 @@ MESSAGES = {
     "run_service_missing": "本次运行的生成服务快照缺失，不能安全恢复。请保留当前记录并重新创建运行。",
     "editor_command_failed": "操作未完成。请检查节点输入与本机设置；本机诊断已记录不含凭据的错误类别。",
     "modeling_runtime_missing": "指令建模需要有效的 Godot 程序和内置构造工具，请使用包含该功能的马良引擎。",
-    "sculpt_runtime_missing": "复杂网格构造器尚未就绪，请在设置的环境页选择 Blender 4 或更高版本，并检查内置构造工具。",
+    "gpt_modeling_retired": "GPT 单独生成网格已下线。可查看已生成的结果；如需重新生成，请新建网格节点并选择可用的网格后端。",
     "kimi_key_missing": "未检测到 KIMI_API_KEY（或 MOONSHOT_API_KEY）环境变量；请在本机设置后重启马良。",
     "kimi_endpoint_invalid": "Kimi 服务地址或模型不受支持；只允许官方 HTTPS 建模接口。",
     "kimi_auth_required": "Kimi 接口未接受当前凭据；请检查密钥产品与接口是否匹配。",
@@ -118,11 +116,10 @@ def settings(value):
         or isinstance(result["schema_version"], bool)
         or result["mode"]
         not in (
+            *RETIRED_MODELING_MODES,
             "offline",
             "comfy",
             "codex",
-            "codex_modeling",
-            "codex_sculpt",
             "kimi_native",
             "local_mesh",
             "api_modeling",
@@ -130,6 +127,10 @@ def settings(value):
         )
     ):
         raise ServiceError("service_config_invalid")
+    if result["mode"] in RETIRED_MODELING_MODES:
+        result.update(mode="codex", endpoint="http://127.0.0.1:8188", image_model="builtin", mesh_model="")
+        for key in ("godot_path", "builder_path", "blender_path"):
+            result.pop(key, None)
     if result["mode"] == "kimi_native":
         # Current settings select direct SDK tools, never the historical K3 planner.
         # Normalize old saved route values before validation; snapshots and the
@@ -156,8 +157,9 @@ def settings(value):
             validate_config(
                 dict(endpoint=result["endpoint"], model=result.get("api_model"), key_env=result.get("api_key_env"))
             )
-        except ValueError:
-            raise ServiceError("service_config_invalid") from None
+        except ValueError as error:
+            code = "gpt_modeling_retired" if str(error) == "gpt_modeling_retired" else "service_config_invalid"
+            raise ServiceError(code) from None
         runtime = "godot_path" if result["mode"] == "api_modeling" else "blender_path"
         if not all(isinstance(result.get(k), str) and result[k].strip() for k in (runtime, "builder_path")):
             raise ServiceError("modeling_runtime_missing")
@@ -173,7 +175,7 @@ def settings(value):
         return result
     if "api_model" in result or "api_key_env" in result:
         raise ServiceError("service_config_invalid")
-    if result["mode"] in ("codex", "codex_modeling", "codex_sculpt"):
+    if result["mode"] == "codex":
         result.setdefault("cli_path", "codex")
         if not isinstance(result["cli_path"], str) or not result["cli_path"].strip():
             raise ServiceError("cli_unavailable")
@@ -207,19 +209,7 @@ def settings(value):
         )
     ):
         raise ServiceError("service_config_invalid")
-    if result["mode"] == "codex_modeling":
-        if not all(isinstance(result.get(key), str) and result[key].strip() for key in ("godot_path", "builder_path")):
-            raise ServiceError("modeling_runtime_missing")
-        if "blender_path" in result:
-            raise ServiceError("service_config_invalid")
-    elif result["mode"] == "codex_sculpt":
-        if not all(
-            isinstance(result.get(key), str) and result[key].strip() for key in ("blender_path", "builder_path")
-        ):
-            raise ServiceError("sculpt_runtime_missing")
-        if "godot_path" in result:
-            raise ServiceError("service_config_invalid")
-    elif result["mode"] != "kimi_native" and any(key in result for key in ("godot_path", "builder_path")):
+    if result["mode"] != "kimi_native" and any(key in result for key in ("godot_path", "builder_path")):
         raise ServiceError("service_config_invalid")
     elif result["mode"] != "kimi_native" and "blender_path" in result:
         raise ServiceError("service_config_invalid")
@@ -332,8 +322,6 @@ def _probe_service(value):
         in (
             "comfy",
             "codex",
-            "codex_modeling",
-            "codex_sculpt",
             "kimi_native",
             "local_mesh",
             "api_modeling",
@@ -347,10 +335,6 @@ def _probe_service(value):
             return _probe_api(config), {}
         if config["mode"] == "kimi_native":
             return _probe_kimi(config), {}
-        if config["mode"] == "codex_sculpt":
-            return _probe_sculpt(config), {}
-        if config["mode"] == "codex_modeling":
-            return _probe_modeling(config), {}
         if config["mode"] == "codex":
             return _probe_codex(config)
         if config["mode"] == "offline":
@@ -413,9 +397,13 @@ def _probe_api(config):
     from api_planner import check_configuration
     from modeling_provider import MESSAGES as API_MESSAGES
 
-    auth = check_configuration(
-        dict(endpoint=config["endpoint"], model=config["api_model"], key_env=config["api_key_env"])
-    )
+    try:
+        auth = check_configuration(
+            dict(endpoint=config["endpoint"], model=config["api_model"], key_env=config["api_key_env"])
+        )
+    except ValueError as error:
+        code = "gpt_modeling_retired" if str(error) == "gpt_modeling_retired" else "service_config_invalid"
+        raise ServiceError(code) from None
     runtime = "godot_path" if config["mode"] == "api_modeling" else "blender_path"
     ready = auth["connected"] and Path(config[runtime]).is_file() and Path(config["builder_path"]).is_file()
     code = "" if ready else auth["code"] or "modeling_runtime_missing"
@@ -489,119 +477,6 @@ def _probe_kimi(config):
         + "|kimi-work-image-v2|"
         + image_report.get("tool_fingerprint", image_report.get("code", "unavailable")),
         message=summary,
-    )
-
-
-def _probe_modeling(config):
-    from codex_provider import check_cli
-    from modeling_provider import check_modeling_cli
-
-    cli = check_modeling_cli(config["cli_path"])
-    image_cli = check_cli(config["cli_path"])
-    runtime = all(Path(config[key]).is_file() for key in ("godot_path", "builder_path"))
-    ready = cli.get("connected", False) and runtime
-    mesh = dict(
-        ready=ready,
-        code="" if ready else cli.get("code") or "modeling_runtime_missing",
-        message="GPT 建模指令与 Godot 构造器已就绪；适合原语组合，复杂人物与有机造型尚未验证。"
-        if ready
-        else cli.get("message", "")
-        if not cli.get("connected")
-        else MESSAGES["modeling_runtime_missing"],
-        missing_nodes=[],
-    )
-    image = dict(
-        ready=image_cli.get("connected", False),
-        code=image_cli.get("code", ""),
-        message=image_cli.get("message", ""),
-        missing_nodes=[],
-    )
-    return dict(
-        mode="codex_modeling",
-        connected=ready,
-        cli=cli,
-        models=dict(image=["builtin"], mesh=[]),
-        capabilities=dict(text_to_image=image, image_to_image=image, text_to_mesh=mesh, image_to_mesh=mesh),
-        backend_revision=cli.get("version", "") + "|godot-modeling-v1",
-        message="图像由 Codex CLI 生成；网格由 GPT 建模指令和 Godot 构造，无需 ComfyUI 或三维 AI 权重。",
-    )
-
-
-def _blender_runtime(config):
-    executable = shutil.which(config["blender_path"])
-    builder = Path(config["builder_path"])
-    if (
-        not executable
-        or not builder.is_file()
-        or not all(
-            builder.with_name(name).is_file()
-            for name in (
-                "anatomy_base.py",
-                "anatomy_body.py",
-                "character_detail.py",
-                "organic_detail.py",
-                "period_groom.py",
-                "anatomy_calibration.py",
-            )
-        )
-    ):
-        return None
-    try:
-        from sculpt_provider import load_operator_calibration
-
-        load_operator_calibration(builder)
-        process = subprocess.run(
-            [executable, "--version"],
-            stdin=subprocess.DEVNULL,
-            capture_output=True,
-            timeout=15,
-            creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
-        )
-        match = re.search(rb"Blender\s+(\d+)\.(\d+)", process.stdout)
-        if process.returncode != 0 or not match or int(match.group(1)) < 4:
-            return None
-        return dict(executable=str(Path(executable).resolve()), version=match.group(0).decode("ascii"))
-    except (OSError, ValueError, SyntaxError, ImportError, subprocess.TimeoutExpired):
-        return None
-
-
-def _probe_sculpt(config):
-    from codex_provider import check_cli
-    from modeling_provider import check_modeling_cli
-
-    runtime = _blender_runtime(config)
-    cli = (
-        check_modeling_cli(config["cli_path"])
-        if runtime
-        else dict(connected=False, code="sculpt_runtime_missing", message=MESSAGES["sculpt_runtime_missing"])
-    )
-    image_cli = check_cli(config["cli_path"])
-    ready = bool(cli.get("connected") and runtime)
-    mesh = dict(
-        ready=ready,
-        code="" if ready else cli.get("code") or "sculpt_runtime_missing",
-        message="GPT 建模计划与 Blender 构造器已连接；具体人物、有机形态和遮挡补全结果需运行后检查。"
-        if ready
-        else cli.get("message", "")
-        if not cli.get("connected")
-        else MESSAGES["sculpt_runtime_missing"],
-        missing_nodes=[],
-    )
-    image = dict(
-        ready=image_cli.get("connected", False),
-        code=image_cli.get("code", ""),
-        message=image_cli.get("message", ""),
-        missing_nodes=[],
-    )
-    return dict(
-        mode="codex_sculpt",
-        connected=ready,
-        cli=cli,
-        runtime=runtime,
-        models=dict(image=["builtin"], mesh=[]),
-        capabilities=dict(text_to_image=image, image_to_image=image, text_to_mesh=mesh, image_to_mesh=mesh),
-        backend_revision=cli.get("version", "") + "|sculpt-v2|" + (runtime["version"] if runtime else "unavailable"),
-        message="图像和建模规划使用 GPT CLI；Blender 在本机执行控制网格、放样和表面融合，无需 ComfyUI 或三维 AI 权重。",
     )
 
 
@@ -729,21 +604,32 @@ def check_inputs(model):
                 raise ServiceError("prompt_missing")
 
 
+def retired_modeling_provider(value):
+    if not isinstance(value, str):
+        return False
+    if value in RETIRED_MODELING_PROVIDERS:
+        return True
+    name, _, suffix = value.rpartition("_")
+    return name in RETIRED_MODELING_PROVIDERS and suffix.isdecimal()
+
+
+def reject_retired_modeling_nodes(nodes):
+    if any(node.get("type", "").endswith("mesh") and retired_modeling_provider(node.get("provider")) for node in nodes):
+        raise ServiceError("gpt_modeling_retired")
+
+
 def _migrate_node_models(node, config):
     """Accept legacy graphs once; new empty node choices never consult other nodes."""
     kind = node["type"]
     mode = config["mode"]
     if mode == "offline" and "model" not in node:
         return
-    cli_mode = mode in ("codex", "codex_modeling", "codex_sculpt")
     mesh_kind = kind.endswith("mesh") or kind == "model_adjust"
     if "model" not in node:
         if mode == "kimi_native":
             node["model"] = config.get("model3d_model", "v3.1") if mesh_kind else ""
-        elif cli_mode and not mesh_kind:
+        elif mode == "codex" and not mesh_kind:
             node["model"] = config.get("image_model", "") or "builtin"
-        elif mode in ("codex_modeling", "codex_sculpt") and mesh_kind:
-            node["model"] = ""
         else:
             node["model"] = config.get("mesh_model" if mesh_kind else "image_model", "")
     if kind.endswith("mesh") and "image_model" not in node:
@@ -771,9 +657,7 @@ def _provider_snapshot(mode, providers, provider_types, legacy_provider=None, le
         legacy_provider = next(iter(providers.values()))
     if mode not in ("comfy", "kimi_native", "codex") or len(providers) == 1:
         snapshot["provider"] = legacy_provider
-    if mode in ("codex_modeling", "codex_sculpt") or (
-        mode == "kimi_native" and legacy_image is not None and len(providers) == 1
-    ):
+    if mode == "kimi_native" and legacy_image is not None and len(providers) == 1:
         snapshot["image_provider"] = legacy_image
     return snapshot
 
@@ -784,6 +668,11 @@ def prepare_provider(config, model, database, run_id):
 
     registry, providers = factory()
     generated = [node for node in model["nodes"] if node.get("type", "copy") in KINDS]
+    reject_retired_modeling_nodes(generated)
+    if config["mode"] in RETIRED_MODELING_MODES:
+        config = settings(config)
+        if any(node["type"].endswith("mesh") for node in generated):
+            raise ServiceError("gpt_modeling_retired")
     if any(node["type"] == "model_adjust" and config["mode"] != "kimi_native" for node in generated):
         raise ServiceError("node_unsupported")
     if not generated:
@@ -869,92 +758,6 @@ def prepare_provider(config, model, database, run_id):
             registry,
             providers,
             _provider_snapshot("kimi_native", snapshots, provider_types, legacy_mesh, legacy_image),
-        )
-
-    if config["mode"] in ("codex_modeling", "codex_sculpt"):
-        from codex_provider import CodexProvider, check_cli
-        from modeling_provider import ModelingProvider
-
-        sculpt = config["mode"] == "codex_sculpt"
-        mesh_nodes = [node for node in generated if node["type"].endswith("mesh")]
-        if not mesh_nodes:
-            report = check_cli(config["cli_path"])
-            if not report.get("connected"):
-                raise ServiceError(report.get("code") or "cli_image_unavailable")
-        else:
-            report = _probe_sculpt(config) if sculpt else _probe_modeling(config)
-            for node in generated:
-                ready = report["capabilities"][node["type"]]
-                if not ready["ready"]:
-                    raise ServiceError(ready.get("code", "service_not_configured"))
-        SculptProvider = None
-        if sculpt and mesh_nodes:
-            try:
-                from sculpt_provider import SculptProvider
-            except ImportError:
-                raise ServiceError("sculpt_runtime_missing") from None
-        register_workflow(registry)
-        for node in generated:
-            mesh_node = node["type"].endswith("mesh")
-            selected = node["model"].strip()
-            if not mesh_node and not selected:
-                raise ServiceError("image_model_missing")
-            if mesh_node:
-                key = next(
-                    (
-                        name
-                        for name, value in snapshots.items()
-                        if value.get("model", "") == selected and provider_types[name] != "codex"
-                    ),
-                    None,
-                )
-                if key is None:
-                    kind = "codex-sculpt" if sculpt else "codex-modeling"
-                    key = _provider_key(providers, kind)
-                    snapshots[key] = dict(cli_path=config["cli_path"], model=selected)
-                    if sculpt:
-                        runtime = report["runtime"]
-                        snapshots[key].update(
-                            storage=str(storage / "sculpt-state"),
-                            blender_path=runtime["executable"],
-                            builder_path=config["builder_path"],
-                        )
-                        providers[key] = SculptProvider(snapshots[key])
-                    else:
-                        snapshots[key].update(
-                            storage=str(storage / "modeling-state"),
-                            godot_path=config["godot_path"],
-                            builder_path=config["builder_path"],
-                        )
-                        providers[key] = ModelingProvider(snapshots[key])
-                    provider_types[key] = kind
-            else:
-                cli_model = "" if selected == "builtin" else selected
-                key = next(
-                    (
-                        name
-                        for name, value in snapshots.items()
-                        if provider_types[name] == "codex" and value.get("model", "") == cli_model
-                    ),
-                    None,
-                )
-                if key is None:
-                    key = _provider_key(providers, "codex")
-                    snapshots[key] = dict(
-                        cli_path=config["cli_path"],
-                        model=cli_model,
-                        storage=str(storage / "codex-state"),
-                        mesh_config=None,
-                    )
-                    provider_types[key] = "codex"
-                    providers[key] = CodexProvider(snapshots[key])
-            node["provider"] = key
-        legacy_mesh = next((value for key, value in snapshots.items() if provider_types[key] != "codex"), None)
-        legacy_image = next((value for key, value in snapshots.items() if provider_types[key] == "codex"), None)
-        return (
-            registry,
-            providers,
-            _provider_snapshot(config["mode"], snapshots, provider_types, legacy_mesh, legacy_image),
         )
 
     if config["mode"] == "codex":
@@ -1116,16 +919,8 @@ def restore_provider(snapshot):
                 from codex_provider import CodexProvider
 
                 providers[key] = CodexProvider(config)
-            elif kind == "codex-modeling":
-                from modeling_provider import ModelingProvider
-
-                providers[key] = ModelingProvider(config)
-            elif kind == "codex-sculpt":
-                try:
-                    from sculpt_provider import SculptProvider
-                except ImportError:
-                    raise ServiceError("sculpt_runtime_missing") from None
-                providers[key] = SculptProvider(config)
+            elif kind in RETIRED_MODELING_PROVIDERS:
+                continue
             else:
                 raise ServiceError("run_service_missing")
     elif snapshot["mode"] in ("comfy", "local_mesh"):
@@ -1158,23 +953,10 @@ def restore_provider(snapshot):
 
         register_workflow(registry)
         providers["codex"] = CodexProvider(snapshot["provider"])
-    elif snapshot["mode"] == "codex_modeling":
-        from codex_provider import CodexProvider
-        from modeling_provider import ModelingProvider
-
-        register_workflow(registry)
-        providers["codex-modeling"] = ModelingProvider(snapshot["provider"])
-        providers["codex"] = CodexProvider(snapshot["image_provider"])
-    elif snapshot["mode"] == "codex_sculpt":
+    elif snapshot["mode"] in RETIRED_MODELING_MODES and snapshot.get("image_provider") is not None:
         from codex_provider import CodexProvider
 
         register_workflow(registry)
-        if snapshot["provider"] is not None:
-            try:
-                from sculpt_provider import SculptProvider
-            except ImportError:
-                raise ServiceError("sculpt_runtime_missing") from None
-            providers["codex-sculpt"] = SculptProvider(snapshot["provider"])
         providers["codex"] = CodexProvider(snapshot["image_provider"])
     if snapshot.get("image_batch", {}).get("enabled"):
         batch = snapshot["image_batch"]

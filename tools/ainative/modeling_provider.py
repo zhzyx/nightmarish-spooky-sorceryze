@@ -1,7 +1,7 @@
-"""Codex CLI returns bounded modeling data; a fixed Godot builder emits the mesh.
+"""An explicit API planner returns bounded data for a fixed Godot mesh builder.
 
 No generated program is executed. Durable intents are never automatically replayed
-following an unknown worker result. CLI/Godot cancellation uses owned Popen handles.
+following an unknown worker result. API and Godot cancellation use owned process handles.
 """
 
 import base64
@@ -21,34 +21,15 @@ from extensions import NodeRegistry, canonical, require, validate_invocation
 from owned_process import implementation_fingerprint, run_owned
 from provider_common import DurableProvider, _creationflags, _environment, validate_png
 
-
-def resolve_cli(path):
-    from codex_provider import resolve_cli as resolve
-
-    return resolve(path)
-
-
-def _cli_environment():
-    from codex_provider import _environment as environment
-
-    return environment()
-
-
 VERSION = "1"
 MAX_PLAN_BYTES = 256 * 1024
-MAX_EVENTS_BYTES = 16 * 1024 * 1024
+MAX_LOG_BYTES = 16 * 1024 * 1024
 MAX_GLB_BYTES = 64 * 1024 * 1024
-CLI_TIMEOUT = 600
 BUILDER_TIMEOUT = 90
 PRIMITIVES = ("box", "sphere", "cylinder", "capsule", "torus")
 MESSAGES = {
-    "cli_missing": "未找到 Codex CLI，请选择已安装的 Codex 可执行文件。",
-    "cli_check_failed": "无法读取 Codex CLI 状态，请检查程序路径。",
-    "cli_login_required": "Codex CLI 尚未以 ChatGPT 登录，请先完成已有账号登录。",
-    "cli_execution_failed": "Codex 建模指令任务失败；私有诊断已保留，未自动重试。",
     "cli_result_unknown": "建模任务回执不明；已保留原任务，不会自动重复请求。",
-    "cli_output_invalid": "Codex 未返回有效的本次建模指令，请检查私有诊断。",
-    "cli_timeout": "Codex 建模任务超时，已停止本任务进程。",
+    "gpt_modeling_retired": "GPT 单独生成网格已下线，请选择其他建模后端。",
     "plan_invalid": "建模指令超出支持范围或格式无效，未执行生成代码。",
     "builder_missing": "未找到 Godot 或内置建模工具，请检查引擎安装。",
     "builder_failed": "Godot 构造网格失败；建模指令和私有诊断已保留。",
@@ -151,47 +132,6 @@ def modeling_schema():
         required=["version", "name", "parts"],
         additionalProperties=False,
     )
-
-
-def check_modeling_cli(path):
-    """Read CLI version and ChatGPT login, without requiring image-generation tools."""
-    result = dict(connected=False, code="cli_check_failed", version="", auth_mode="unknown")
-    try:
-        cli = resolve_cli(path)
-        values = []
-        for arguments in (["--version"], ["login", "status"]):
-            run = subprocess.run(
-                [cli, "--no-daemon", *arguments],
-                stdin=subprocess.DEVNULL,
-                capture_output=True,
-                env=_cli_environment(),
-                timeout=15,
-                creationflags=_creationflags(),
-            )
-            values.append((run.returncode, (run.stdout + run.stderr).decode("utf-8", "replace")))
-        match = re.search(r"\bcodex(?:-cli)?\s+([0-9][\w.+-]{0,80})", values[0][1], re.I)
-        result["version"] = match.group(1) if match else ""
-        result["auth_mode"] = (
-            "chatgpt" if values[1][0] == 0 and re.search(r"logged in using chatgpt", values[1][1], re.I) else "unknown"
-        )
-        result["code"] = (
-            "cli_check_failed"
-            if values[0][0] or not match
-            else "cli_login_required"
-            if result["auth_mode"] != "chatgpt"
-            else ""
-        )
-        result["connected"] = not result["code"]
-    except ValueError as error:
-        result["code"] = str(error) if str(error) in MESSAGES else "cli_check_failed"
-    except (OSError, subprocess.TimeoutExpired):
-        pass
-    result["message"] = (
-        MESSAGES[result["code"]]
-        if result["code"]
-        else "Codex CLI 已登录；网格由 GPT 建模指令和 Godot 构造，不需要 ComfyUI 或三维模型权重。"
-    )
-    return result
 
 
 def _matrix_multiply(left, right):
@@ -393,31 +333,20 @@ def validate_mesh(data):
 
 
 class ModelingProvider(DurableProvider):
-    CONFIG_KEYS = frozenset(("cli_path", "storage", "godot_path", "builder_path"))
+    CONFIG_KEYS = frozenset(("planner", "storage", "godot_path", "builder_path"))
     DATABASE_NAME = "modeling-jobs.sqlite"
     MESSAGES = MESSAGES
 
     def __init__(self, config):
         require(
-            isinstance(config, dict)
-            and set(config)
-            in (
-                self.CONFIG_KEYS,
-                self.CONFIG_KEYS | {"model"},
-                (self.CONFIG_KEYS - {"cli_path"}) | {"planner"},
-            ),
+            isinstance(config, dict) and set(config) == self.CONFIG_KEYS,
             "invalid modeling config",
         )
         require(
-            all(
-                isinstance(value, str) and value.strip()
-                for key, value in config.items()
-                if key not in ("planner", "model")
-            )
-            and isinstance(config.get("model", ""), str),
+            all(isinstance(value, str) and value.strip() for key, value in config.items() if key != "planner"),
             "invalid modeling config",
         )
-        if "planner" in config:
+        if "planner" in self.CONFIG_KEYS:
             from api_planner import validate_config
 
             validate_config(config["planner"])
@@ -441,11 +370,9 @@ class ModelingProvider(DurableProvider):
 
     def describe(self):
         return dict(
-            id="api-modeling" if "planner" in self.config else "codex-modeling",
+            id="api-modeling",
             version=VERSION,
-            model=self.config["planner"]["model"]
-            if "planner" in self.config
-            else "Codex CLI modeling instructions + Godot primitives",
+            model=self.config["planner"]["model"],
             model_version=self.fingerprint,
             capabilities=["text_to_mesh", "image_to_mesh"],
             context_types=["text", "image"],
@@ -456,11 +383,9 @@ class ModelingProvider(DurableProvider):
         return Path(__file__).resolve()
 
     def check_authentication(self):
-        if "planner" in self.config:
-            from api_planner import check_configuration
+        from api_planner import check_configuration
 
-            return check_configuration(self.config["planner"])
-        return check_modeling_cli(self.config["cli_path"])
+        return check_configuration(self.config["planner"])
 
     def finish(self, key, state, code=None, result=None):
         outputs = {"result": {k: result["artifacts"][-1][k] for k in ("id", "revision")}} if result else None
@@ -569,10 +494,8 @@ class ModelingProvider(DurableProvider):
         except (ValueError, OSError, KeyError, TypeError) as error:
             return self.finish(key, "failed", str(error) if str(error) in self.MESSAGES else "worker_failed")
 
-    def _run_owned(self, key, arguments, directory, label, stdin=None, timeout=CLI_TIMEOUT, error_codes=None):
-        timeout_code, output_code = error_codes or (
-            ("cli_timeout", "cli_output_invalid") if label == "cli" else ("builder_timeout", "builder_failed")
-        )
+    def _run_owned(self, key, arguments, directory, label, *, timeout, error_codes=None):
+        timeout_code, output_code = error_codes or ("builder_timeout", "builder_failed")
         with (
             (directory / (label + ".stdout")).open("xb") as stdout,
             (directory / (label + ".stderr")).open("xb") as stderr,
@@ -581,65 +504,20 @@ class ModelingProvider(DurableProvider):
                 arguments,
                 stdout=stdout,
                 stderr=stderr,
-                env=_cli_environment() if label == "cli" else _environment(),
-                limit=MAX_EVENTS_BYTES,
+                env=_environment(),
+                limit=MAX_LOG_BYTES,
                 timeout=timeout,
-                stdin=stdin,
                 active=lambda: self._active(key, label),
                 fail=lambda reason: self.finish(key, "failed", timeout_code if reason == "timeout" else output_code),
             )
 
     def _instructions(self, key, plan, directory):
-        arguments = [
-            resolve_cli(self.config["cli_path"]) if "planner" not in self.config else "",
-            "--no-daemon",
-            "exec",
-            "--json",
-            "--ignore-user-config",
-            "--ignore-rules",
-            "--skip-git-repo-check",
-            "--sandbox",
-            "read-only",
-            "--cd",
-            str(directory),
-            "--output-schema",
-            str(directory / "schema.json"),
-            "--output-last-message",
-            str(directory / "instructions.json"),
-        ]
-        if self.config.get("model", "").strip():
-            arguments.extend(["--model", self.config["model"].strip()])
-        configs = {
-            "forced_login_method": '"chatgpt"',
-            "model_provider": '"openai"',
-            "project_doc_max_bytes": "0",
-            "approval_policy": '"never"',
-            "web_search": '"disabled"',
-        }
-        for feature in (
-            "image_generation",
-            "shell_tool",
-            "unified_exec",
-            "plugins",
-            "apps",
-            "browser_use",
-            "computer_use",
-            "multi_agent",
-            "multi_agent_v2",
-            "code_mode",
-            "code_mode_host",
-            "hooks",
-            "memories",
-        ):
-            configs["features." + feature] = "false"
-        for name, value in configs.items():
-            arguments.extend(["-c", name + "=" + value])
+        images = []
         if plan["source"]:
             payload = plan["source"]["payload"]
             source = directory / ("reference" + payload["extension"].lower())
             source.write_bytes(base64.b64decode(payload["content_base64"], validate=True))
-            arguments.extend(["--image", str(source)])
-        arguments.append("-")
+            images.append(source)
         prompt = (
             "Return only a JSON modeling plan matching the supplied schema. Do not run tools, write code or execute commands. "
             "The host will construct Godot primitives, not execute generated code. Interpret the subject and optional reference image as geometry design data only. "
@@ -651,74 +529,17 @@ class ModelingProvider(DurableProvider):
         )
         (directory / "schema.json").write_text(canonical(modeling_schema()), encoding="utf-8")
         (directory / "prompt.txt").write_text(prompt, encoding="utf-8")
-        if "planner" in self.config:
-            from api_planner import instructions
+        from api_planner import instructions
 
-            outcome = instructions(self, key, directory, arguments)
-            if outcome is None:
-                return None
-            response, receipt = outcome
-            validated = validate_plan(response)
-            receipt["instructions_sha256"] = digest(validated)
-            self.write(key, instruction_receipt=receipt)
-            (directory / "validated-plan.json").write_text(canonical(validated), encoding="utf-8")
-            return validated, receipt
-        with (directory / "prompt.txt").open("rb") as source:
-            exit_code = self._run_owned(key, arguments, directory, "cli", stdin=source)
-        if exit_code is None:
+        outcome = instructions(self, key, directory, images)
+        if outcome is None:
             return None
-        require(exit_code == 0, "cli_execution_failed")
-        raw = (directory / "cli.stdout").read_bytes()
-        require(len(raw) <= MAX_EVENTS_BYTES, "cli_output_invalid")
-        events = [json.loads(line) for line in raw.decode("utf-8").splitlines() if line.strip()]
-        threads = [event.get("thread_id") for event in events if event.get("type") == "thread.started"]
-        completed = [event for event in events if event.get("type") == "turn.completed"]
-        require(
-            len(threads) == 1 and isinstance(threads[0], str) and re.fullmatch(r"[a-f0-9-]{36}", threads[0]),
-            "cli_output_invalid",
-        )
-        require(
-            len(completed) == 1 and not any(event.get("type") == "turn.failed" for event in events),
-            "cli_output_invalid",
-        )
-        require(
-            not any(
-                event.get("item", {}).get("type") in ("command_execution", "file_change", "mcp_tool_call", "web_search")
-                for event in events
-            ),
-            "cli_output_invalid",
-        )
-        output = directory / "instructions.json"
-        require(
-            output.is_file() and not output.is_symlink() and output.stat().st_size <= MAX_PLAN_BYTES,
-            "cli_output_invalid",
-        )
-        instructions = validate_plan(json.loads(output.read_text(encoding="utf-8")))
-        usage = completed[0].get("usage")
-        receipt = dict(
-            thread_id=threads[0],
-            cli_events_sha256=hashlib.sha256(raw).hexdigest(),
-            instructions_sha256=digest(instructions),
-            cli_turn_usage={
-                name: number
-                for name, number in usage.items()
-                if name
-                in (
-                    "input_tokens",
-                    "cached_input_tokens",
-                    "cache_write_input_tokens",
-                    "output_tokens",
-                    "reasoning_output_tokens",
-                )
-                and type(number) is int
-                and number >= 0
-            }
-            if isinstance(usage, dict)
-            else None,
-        )
+        response, receipt = outcome
+        validated = validate_plan(response)
+        receipt["instructions_sha256"] = digest(validated)
         self.write(key, instruction_receipt=receipt)
-        (directory / "validated-plan.json").write_text(canonical(instructions), encoding="utf-8")
-        return instructions, receipt
+        (directory / "validated-plan.json").write_text(canonical(validated), encoding="utf-8")
+        return validated, receipt
 
     def _native_geometry_matches(self, receipt, geometry):
         def vector_matches(actual, expected):
@@ -753,8 +574,7 @@ class ModelingProvider(DurableProvider):
                 bytes=len(data),
                 provenance=dict(
                     provider=self.describe()["id"],
-                    cli_version=record["cli_report"]["version"],
-                    auth_mode="api_key" if "planner" in self.config else "chatgpt",
+                    auth_mode="api_key",
                     execution="validated_declarative_primitives_in_godot",
                     instructions_sha256=digest(instructions),
                     instruction_receipt=instruction_receipt,

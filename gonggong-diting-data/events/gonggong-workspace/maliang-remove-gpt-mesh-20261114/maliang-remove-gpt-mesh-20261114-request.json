@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-remove-gpt-mesh-20261114-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-remove-gpt-mesh-20261114",
+  "kind": "request",
+  "occurred_at": "2026-11-13T18:11:44.383092+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1079",
+  "agent": {
+    "id": "codex-native-host",
+    "version": "20261108",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00cef3b92d1e371bad442d1db669104f4aa0fa12cb10a8f2ed3297a8beb36e27"
+  },
+  "payload": {
+    "intent": "User cancelled issues 543 and 556 and explicitly requested removal of standalone GPT mesh generation while preserving other services."
+  },
+  "evidence_refs": [],
+  "sha256": "ac16c53cc09ce627122a3c8d0c0d8af552d6eb667a359866719daf6899f4f7d0"
+}

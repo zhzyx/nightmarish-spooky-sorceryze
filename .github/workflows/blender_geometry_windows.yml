@@ -69,7 +69,7 @@ jobs:
           } finally {
             $receipt | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 (Join-Path $evidence 'runtime-download.json')
           }
-      - name: Run the original three tests with Python and Blender outbound access blocked
+      - name: Run three geometry tests with Python and Blender outbound access blocked
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -78,15 +78,15 @@ jobs:
           $rules = @()
           $result = 1
           try {
-            # Only this disposable GitHub-hosted VM is affected. The C# CLI is
-            # the original fixed offline fixture; no real provider is invoked.
+            # The fixed fixture serves only a loopback request. The disposable
+            # runner blocks external requests from Python and Blender.
             Set-NetFirewallProfile -Profile Domain,Private,Public -Enabled True
             foreach ($program in @($python, $env:AINATIVE_TEST_BLENDER)) {
               $rule = "Blender-geometry-$([guid]::NewGuid())"
-              New-NetFirewallRule -Name $rule -DisplayName $rule -Direction Outbound -Action Block -Program $program -Profile Any | Out-Null
+              New-NetFirewallRule -Name $rule -DisplayName $rule -Direction Outbound -Action Block -Program $program -Profile Any -RemoteAddress Internet,Intranet | Out-Null
               $rules += $rule
             }
-            @{python_and_blender_outbound_blocked=$true; original_cli_fixture='fixed_offline_csharp'; runner_commit=$env:GITHUB_SHA} |
+            @{python_and_blender_outbound_blocked=$true; planner_fixture='loopback_chat_completions'; runner_commit=$env:GITHUB_SHA} |
               ConvertTo-Json | Set-Content -Encoding utf8 (Join-Path $evidence 'execution-scope.json')
             python tests/editor/run_blender_geometry.py --blender "$env:AINATIVE_TEST_BLENDER" --output "$evidence" *> (Join-Path $evidence 'runner.log')
             $result = $LASTEXITCODE

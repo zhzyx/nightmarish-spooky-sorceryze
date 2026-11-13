@@ -305,7 +305,11 @@ class Executor:
         if selected is None:
             return self.status(run_id)
         node_id, node, action = selected
-        provider = self.providers[node["provider"]]
+        provider = self.providers.get(node["provider"])
+        if provider is None and action == "cancel":
+            # The provider may have been retired after this run was saved.
+            # Cancel remains local and the next step can notify other providers.
+            return self.status(run_id)
         snapshot, result, error = None, None, None
         raw = None
         validating_result = False
