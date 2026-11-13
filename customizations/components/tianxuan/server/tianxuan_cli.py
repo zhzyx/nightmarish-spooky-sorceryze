@@ -97,7 +97,7 @@ def _error_detail(response: httpx.Response) -> str:
         payload = response.json()
     except ValueError:
         text = response.text.strip()
-        return text or response.reason_phrase
+        return str(text or response.reason_phrase)
     if isinstance(payload, dict):
         detail = payload.get("detail")
         if isinstance(detail, str):
