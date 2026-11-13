@@ -14,6 +14,7 @@ from typing import Annotated, Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
+from gateway import ModelGateway, create_model_router
 from schemas import (
     DocCreateRequest,
     DocUpdateRequest,
@@ -37,10 +38,13 @@ def _require_actor(x_actor: str | None = Header(default=None, alias="X-Actor")) 
 ActorDep = Annotated[str, Depends(_require_actor)]
 
 
-def create_app(store: Tianxuan) -> FastAPI:
-    """为给定领域核心实例构建 HTTP 应用。"""
+def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
+    """为给定领域核心实例构建 HTTP 应用；可选的模型网关挂载到同一应用。"""
     app = FastAPI(title="Tianxuan API", version="0.1.0")
     app.state.store = store
+    app.state.gateway = gateway
+    if gateway is not None:
+        app.include_router(create_model_router(gateway))
 
     # ---------- 领域异常 -> HTTP 状态码 ----------
     # Starlette 按异常的 MRO 查找处理器，VersionConflict/TransitionRejected
