@@ -78,6 +78,7 @@ docker compose --env-file .env up -d --build
 | 变量 | 用途 |
 | --- | --- |
 | `TIANXUAN_DB` | SQLite 文件路径，默认 `tianxuan.db` |
+| `TIANXUAN_GATEWAY_DB` | 模型网关用量/预算 SQLite，默认 `:memory:`（重启清空） |
 | `TIANXUAN_REPO_ROOT` | 需求落库 Git 仓库根（`design/{request_id}.md`） |
 | `TIANXUAN_GITEA_URL` / `TIANXUAN_GITEA_TOKEN` | Gitea/Forgejo 地址与 token |
 | `TIANXUAN_GITEA_OWNER` | 默认仓库 owner（可选） |
