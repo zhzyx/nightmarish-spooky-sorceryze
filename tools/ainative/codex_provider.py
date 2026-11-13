@@ -131,7 +131,8 @@ class CodexProvider(DurableProvider):
     def __init__(self, config):
         require(
             isinstance(config, dict)
-            and set(config) in ({"cli_path", "storage", "mesh_config"}, {"cli_path", "storage", "mesh_config", "model"}),
+            and set(config)
+            in ({"cli_path", "storage", "mesh_config"}, {"cli_path", "storage", "mesh_config", "model"}),
             "invalid CLI config",
         )
         self.config = json.loads(canonical(config))

@@ -771,7 +771,9 @@ def _provider_snapshot(mode, providers, provider_types, legacy_provider=None, le
         legacy_provider = next(iter(providers.values()))
     if mode not in ("comfy", "kimi_native", "codex") or len(providers) == 1:
         snapshot["provider"] = legacy_provider
-    if mode in ("codex_modeling", "codex_sculpt") or (mode == "kimi_native" and legacy_image is not None and len(providers) == 1):
+    if mode in ("codex_modeling", "codex_sculpt") or (
+        mode == "kimi_native" and legacy_image is not None and len(providers) == 1
+    ):
         snapshot["image_provider"] = legacy_image
     return snapshot
 
@@ -860,8 +862,14 @@ def prepare_provider(config, model, database, run_id):
                     providers[key] = KimiWorkImageProvider(snapshots[key])
             node["provider"] = key
         legacy_mesh = next((value for key, value in snapshots.items() if provider_types[key] == "kimi_native"), None)
-        legacy_image = next((value for key, value in snapshots.items() if provider_types[key] == "kimi_work_image"), None)
-        return registry, providers, _provider_snapshot("kimi_native", snapshots, provider_types, legacy_mesh, legacy_image)
+        legacy_image = next(
+            (value for key, value in snapshots.items() if provider_types[key] == "kimi_work_image"), None
+        )
+        return (
+            registry,
+            providers,
+            _provider_snapshot("kimi_native", snapshots, provider_types, legacy_mesh, legacy_image),
+        )
 
     if config["mode"] in ("codex_modeling", "codex_sculpt"):
         from codex_provider import CodexProvider, check_cli
@@ -892,7 +900,14 @@ def prepare_provider(config, model, database, run_id):
             if not mesh_node and not selected:
                 raise ServiceError("image_model_missing")
             if mesh_node:
-                key = next((name for name, value in snapshots.items() if value.get("model", "") == selected and provider_types[name] != "codex"), None)
+                key = next(
+                    (
+                        name
+                        for name, value in snapshots.items()
+                        if value.get("model", "") == selected and provider_types[name] != "codex"
+                    ),
+                    None,
+                )
                 if key is None:
                     kind = "codex-sculpt" if sculpt else "codex-modeling"
                     key = _provider_key(providers, kind)
@@ -900,31 +915,47 @@ def prepare_provider(config, model, database, run_id):
                     if sculpt:
                         runtime = report["runtime"]
                         snapshots[key].update(
-                            storage=str(storage / "sculpt-state"), blender_path=runtime["executable"],
+                            storage=str(storage / "sculpt-state"),
+                            blender_path=runtime["executable"],
                             builder_path=config["builder_path"],
                         )
                         providers[key] = SculptProvider(snapshots[key])
                     else:
                         snapshots[key].update(
-                            storage=str(storage / "modeling-state"), godot_path=config["godot_path"],
+                            storage=str(storage / "modeling-state"),
+                            godot_path=config["godot_path"],
                             builder_path=config["builder_path"],
                         )
                         providers[key] = ModelingProvider(snapshots[key])
                     provider_types[key] = kind
             else:
                 cli_model = "" if selected == "builtin" else selected
-                key = next((name for name, value in snapshots.items() if provider_types[name] == "codex" and value.get("model", "") == cli_model), None)
+                key = next(
+                    (
+                        name
+                        for name, value in snapshots.items()
+                        if provider_types[name] == "codex" and value.get("model", "") == cli_model
+                    ),
+                    None,
+                )
                 if key is None:
                     key = _provider_key(providers, "codex")
                     snapshots[key] = dict(
-                        cli_path=config["cli_path"], model=cli_model, storage=str(storage / "codex-state"), mesh_config=None
+                        cli_path=config["cli_path"],
+                        model=cli_model,
+                        storage=str(storage / "codex-state"),
+                        mesh_config=None,
                     )
                     provider_types[key] = "codex"
                     providers[key] = CodexProvider(snapshots[key])
             node["provider"] = key
         legacy_mesh = next((value for key, value in snapshots.items() if provider_types[key] != "codex"), None)
         legacy_image = next((value for key, value in snapshots.items() if provider_types[key] == "codex"), None)
-        return registry, providers, _provider_snapshot(config["mode"], snapshots, provider_types, legacy_mesh, legacy_image)
+        return (
+            registry,
+            providers,
+            _provider_snapshot(config["mode"], snapshots, provider_types, legacy_mesh, legacy_image),
+        )
 
     if config["mode"] == "codex":
         from codex_provider import CodexProvider
@@ -960,11 +991,17 @@ def prepare_provider(config, model, database, run_id):
             mesh = None
             if mesh_node:
                 mesh = dict(
-                    endpoint=config["endpoint"], storage=str(storage / "comfy-state"),
+                    endpoint=config["endpoint"],
+                    storage=str(storage / "comfy-state"),
                     checkpoints={"image": dict(name="", sha256=None), "mesh": dict(name=selected, sha256=None)},
                     backend_revision=report["backend_revision"] + "|unverified-weights;run=" + run_id,
                 )
-            candidate = dict(cli_path=config["cli_path"], model=cli_model.strip(), storage=str(storage / "codex-state"), mesh_config=mesh)
+            candidate = dict(
+                cli_path=config["cli_path"],
+                model=cli_model.strip(),
+                storage=str(storage / "codex-state"),
+                mesh_config=mesh,
+            )
             key = next((name for name, value in snapshots.items() if value == candidate), None)
             if key is None:
                 key = _provider_key(providers, "codex")
@@ -1008,19 +1045,32 @@ def prepare_provider(config, model, database, run_id):
         ready = capability(kind, effective, info, report["models"], extra_image=image_conditioning)
         if not ready["ready"]:
             raise ServiceError(ready["code"], missing_nodes=ready["missing_nodes"])
-        key = next((name for name, value in snapshots.items() if value["image_model"] == effective["image_model"] and value["mesh_model"] == effective["mesh_model"]), None)
+        key = next(
+            (
+                name
+                for name, value in snapshots.items()
+                if value["image_model"] == effective["image_model"] and value["mesh_model"] == effective["mesh_model"]
+            ),
+            None,
+        )
         if key is None:
             key = _provider_key(providers, "comfy")
             provider_config = dict(
-                endpoint=config["endpoint"], storage=str(storage / "comfy-state"),
+                endpoint=config["endpoint"],
+                storage=str(storage / "comfy-state"),
                 checkpoints={role: dict(name=effective[role + "_model"], sha256=None) for role in ("image", "mesh")},
                 backend_revision=report["backend_revision"] + "|unverified-weights;run=" + run_id,
             )
-            snapshots[key] = dict(provider_config, image_model=effective["image_model"], mesh_model=effective["mesh_model"])
+            snapshots[key] = dict(
+                provider_config, image_model=effective["image_model"], mesh_model=effective["mesh_model"]
+            )
             provider_types[key] = config["mode"]
             providers[key] = (LocalMeshProvider if config["mode"] == "local_mesh" else ComfyProvider)(provider_config)
         node["provider"] = key
-    frozen = {key: {name: value for name, value in config.items() if name not in ("image_model", "mesh_model")} for key, config in snapshots.items()}
+    frozen = {
+        key: {name: value for name, value in config.items() if name not in ("image_model", "mesh_model")}
+        for key, config in snapshots.items()
+    }
     return registry, providers, _provider_snapshot(config["mode"], frozen, provider_types)
 
 

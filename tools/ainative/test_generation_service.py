@@ -147,7 +147,11 @@ class ServiceTests(unittest.TestCase):
         self.assertTrue(report["capabilities"]["text_to_image"]["ready"])
         self.info["SaveGLB"] = {}
         self.info["CheckpointLoaderSimple"]["input"]["required"]["ckpt_name"] = [[]]
-        report = check_service({**self.config, "image_model": "removed.safetensors", "mesh_model": "removed.safetensors"})
+        report = check_service({
+            **self.config,
+            "image_model": "removed.safetensors",
+            "mesh_model": "removed.safetensors",
+        })
         self.assertEqual(report["models"], {"image": [], "mesh": ["mesh.safetensors"]})
         self.assertTrue(report["capabilities"]["text_to_image"]["ready"])
         self.assertTrue(report["capabilities"]["text_to_mesh"]["ready"])

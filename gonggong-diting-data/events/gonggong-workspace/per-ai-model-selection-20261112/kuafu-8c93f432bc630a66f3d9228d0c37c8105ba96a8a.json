@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8c93f432bc630a66f3d9228d0c37c8105ba96a8a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "per-ai-model-selection-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e9086b90a4666a5c75e8e1f2319bec40cec0eb2c10d86732c239d5592ac1e092",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/972",
+    "action": "validation",
+    "detection_head": "27002066bb2592b384861c07131278d0afb8e92d",
+    "context_sha256": "c698c4bb9ea5fcd872ed57489cf5ec8632c0675e3c5cf0907bce2be95705df8b",
+    "operator": "kaiyunxue",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "Issue #971 精确候选 CI 修复与复验",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43376041637",
+    "diagnosis": "PR 1032 的 pull_request 静态检查由 ruff-format 拒绝：10 files reformatted, 14 unchanged；同日志中 clang-format、ruff check、mypy、codespell 等已通过，另一静态检查运行也通过。需要按仓库固定 Ruff 0.17.1 格式化候选 Python 文件。",
+    "next_action": "安装 Ruff 0.17.1，仅格式化本需求变更的 Python 文件，审查差异并重跑相关测试与静态检查；通过正式门禁生成新精确 head 后等待 CI。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T06:05:21.424145+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T06:06:36.678853+00:00",
+  "sha256": "5a94c28d9249f880abc294335d659a93c448570cbf27698c16cf4d82131e177f"
+}

@@ -409,7 +409,11 @@ class ModelingProvider(DurableProvider):
             "invalid modeling config",
         )
         require(
-            all(isinstance(value, str) and value.strip() for key, value in config.items() if key not in ("planner", "model"))
+            all(
+                isinstance(value, str) and value.strip()
+                for key, value in config.items()
+                if key not in ("planner", "model")
+            )
             and isinstance(config.get("model", ""), str),
             "invalid modeling config",
         )

@@ -660,7 +660,16 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
             .replace("__STATE__", repr(str(state)))
             .replace("__CASE__", repr(case))
             .replace("__CONFIG_PATH__", repr(str(config_file)))
-            .replace("__ALT_CODEX__", repr(str((root / "fake-codex-fixed").with_suffix(".exe") if os.name == "nt" else root / "fake-codex-fixed")))
+            .replace(
+                "__ALT_CODEX__",
+                repr(
+                    str(
+                        (root / "fake-codex-fixed").with_suffix(".exe")
+                        if os.name == "nt"
+                        else root / "fake-codex-fixed"
+                    )
+                ),
+            )
             .replace("__NODE__", repr(str(node))),
         )
         alt_codex = fixture_program(
@@ -669,7 +678,16 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
             .replace("__STATE__", repr(str(state)))
             .replace("__CASE__", repr("shared-config-current" if case == "shared-config-inflight" else "codex-startup"))
             .replace("__CONFIG_PATH__", repr(str(config_file)))
-            .replace("__ALT_CODEX__", repr(str((root / "fake-codex-fixed").with_suffix(".exe") if os.name == "nt" else root / "fake-codex-fixed")))
+            .replace(
+                "__ALT_CODEX__",
+                repr(
+                    str(
+                        (root / "fake-codex-fixed").with_suffix(".exe")
+                        if os.name == "nt"
+                        else root / "fake-codex-fixed"
+                    )
+                ),
+            )
             .replace("__NODE__", repr(str(node))),
         )
         config_file.write_text(

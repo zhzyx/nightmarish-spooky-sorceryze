@@ -54,13 +54,13 @@ with tempfile.TemporaryDirectory(prefix="model-picker-") as folder:
     editor = copy_editor(a.godot, root / "bin")
     configuration = root / "bin/editor_data/gonggong/config.json"
     configuration.parent.mkdir(parents=True)
-    configuration.write_text(
-        json.dumps({"schema_version": 1, "runtimes": {"codex": a.codex}}), encoding="utf-8"
-    )
+    configuration.write_text(json.dumps({"schema_version": 1, "runtimes": {"codex": a.codex}}), encoding="utf-8")
     (root / "SConstruct").touch()
     if os.name == "nt":
         # Directory junctions do not require the Windows symbolic-link privilege.
-        subprocess.run(["cmd.exe", "/c", "mklink", "/J", str(root / "tools"), str(ROOT / "tools")], check=True, capture_output=True)
+        subprocess.run(
+            ["cmd.exe", "/c", "mklink", "/J", str(root / "tools"), str(ROOT / "tools")], check=True, capture_output=True
+        )
     else:
         (root / "tools").symlink_to(ROOT / "tools", target_is_directory=True)
     project = root / "project"

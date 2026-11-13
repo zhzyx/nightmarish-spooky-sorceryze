@@ -48,7 +48,9 @@ class PerNodeModelTests(unittest.TestCase):
         with patch("generation_service._probe_service", return_value=(self.report, self.info)):
             _, providers, snapshot = prepare_provider(self.config, model, self.root / "runs.sqlite", "a" * 32)
         self.assertNotEqual(model["nodes"][0]["provider"], model["nodes"][1]["provider"])
-        checkpoints = [value.config["checkpoints"]["image"]["name"] for key, value in providers.items() if key.startswith("comfy")]
+        checkpoints = [
+            value.config["checkpoints"]["image"]["name"] for key, value in providers.items() if key.startswith("comfy")
+        ]
         self.assertEqual(set(checkpoints), {"image-a", "image-b"})
         self.assertEqual(snapshot["providers"]["comfy"]["checkpoints"]["image"]["name"], "image-a")
         _, restored = restore_provider(snapshot)
@@ -115,26 +117,36 @@ class PerNodeModelTests(unittest.TestCase):
             {value.config["model"] for key, value in providers.items() if key.startswith("kimi_native")},
             {"v3.1", "v3.0"},
         )
-        self.assertTrue(all(isinstance(value, KimiNativeDirectProvider) for key, value in providers.items() if key.startswith("kimi_native")))
+        self.assertTrue(
+            all(
+                isinstance(value, KimiNativeDirectProvider)
+                for key, value in providers.items()
+                if key.startswith("kimi_native")
+            )
+        )
         self.assertEqual(len(snapshot["providers"]), 2)
         _, restored = restore_provider(snapshot)
         self.assertEqual(
-            {
-                value.config["model"]
-                for key, value in restored.items()
-                if key.startswith("kimi_native")
-            },
+            {value.config["model"] for key, value in restored.items() if key.startswith("kimi_native")},
             {"v3.1", "v3.0"},
         )
 
     def test_codex_nodes_freeze_independent_image_and_mesh_models(self):
-        config = dict(mode="codex", cli_path="fixture-cli", endpoint="http://127.0.0.1:8188", image_model="builtin", mesh_model="mesh-a")
+        config = dict(
+            mode="codex",
+            cli_path="fixture-cli",
+            endpoint="http://127.0.0.1:8188",
+            image_model="builtin",
+            mesh_model="mesh-a",
+        )
         report = dict(connected=True, models={"mesh": ["mesh-a", "mesh-b"]}, backend_revision="fixture")
         model = dict(
             nodes=[
                 dict(id="a", type="text_to_image", model="image-cli-a", parameters={"prompt": "a"}),
                 dict(id="b", type="text_to_image", model="image-cli-b", parameters={"prompt": "b"}),
-                dict(id="c", type="text_to_mesh", model="mesh-a", image_model="image-cli-a", parameters={"prompt": "c"}),
+                dict(
+                    id="c", type="text_to_mesh", model="mesh-a", image_model="image-cli-a", parameters={"prompt": "c"}
+                ),
                 dict(id="d", type="text_to_mesh", model="mesh-b", image_model="builtin", parameters={"prompt": "d"}),
             ],
             edges=[],
@@ -162,7 +174,9 @@ class PerNodeModelTests(unittest.TestCase):
                 if mode == "codex_modeling":
                     config.update(godot_path="fixture-godot", builder_path="fixture-builder")
                 else:
-                    config.update(blender_path="fixture-blender", builder_path=str(Path(__file__).with_name("sculpt_builder.py")))
+                    config.update(
+                        blender_path="fixture-blender", builder_path=str(Path(__file__).with_name("sculpt_builder.py"))
+                    )
                 report = dict(
                     capabilities={"text_to_mesh": {"ready": True}},
                     runtime={"executable": "fixture-blender"},
@@ -176,16 +190,11 @@ class PerNodeModelTests(unittest.TestCase):
                 )
                 with patch("generation_service." + probe, return_value=report):
                     _, providers, snapshot = prepare_provider(config, model, self.root / (mode + ".sqlite"), "1" * 32)
-                selected = {
-                    value.config["model"]
-                    for key, value in providers.items()
-                    if key.startswith(prefix)
-                }
+                selected = {value.config["model"] for key, value in providers.items() if key.startswith(prefix)}
                 self.assertEqual(selected, {mode + "-a", mode + "-b"})
                 self.assertEqual(set(snapshot["provider_types"].values()), {prefix})
                 model["nodes"][0]["model"] = "changed-after-freeze"
                 self.assertEqual(snapshot["providers"][prefix]["model"], mode + "-a")
-
 
     def test_model_adjust_migrates_as_mesh_not_as_cli_image(self):
         from generation_service import _migrate_node_models

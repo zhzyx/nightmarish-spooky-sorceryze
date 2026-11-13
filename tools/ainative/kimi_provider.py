@@ -177,7 +177,11 @@ def probe(config):
         return dict(
             connected=connected,
             code=code,
-            message="Kimi 官方接口已连接，模型目录已发现；检测未发起生成。" if connected and not model else "Kimi 官方接口与所选模型已连接；检测未发起生成。" if connected else MESSAGES[code],
+            message="Kimi 官方接口已连接，模型目录已发现；检测未发起生成。"
+            if connected and not model
+            else "Kimi 官方接口与所选模型已连接；检测未发起生成。"
+            if connected
+            else MESSAGES[code],
             auth_mode="environment_api_key",
             endpoint=endpoint,
             requested_model=model,

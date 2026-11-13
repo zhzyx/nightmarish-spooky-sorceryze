@@ -238,7 +238,9 @@ class KimiServiceTests(unittest.TestCase):
             [node["provider"] for node in model["nodes"]], ["kimi_native", "kimi_work_image", "kimi_work_image"]
         )
         self.assertEqual(set(snapshot), {"mode", "providers", "provider_types"})
-        self.assertEqual(snapshot["provider_types"], {"kimi_native": "kimi_native", "kimi_work_image": "kimi_work_image"})
+        self.assertEqual(
+            snapshot["provider_types"], {"kimi_native": "kimi_native", "kimi_work_image": "kimi_work_image"}
+        )
         self.assertIsInstance(providers["kimi_native"], KimiNativeDirectProvider)
         self.assertIsInstance(providers["kimi_work_image"], KimiWorkImageProvider)
         self.assertNotIn("api_key", json.dumps(snapshot))
