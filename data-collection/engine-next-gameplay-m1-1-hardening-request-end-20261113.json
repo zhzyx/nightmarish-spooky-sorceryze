@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "event_id": "request-end-1025-engine-next-m1-1-hardening",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-gameplay-m1-1-hardening-20261113",
+  "kind": "request_end",
+  "occurred_at": "2026-11-13T07:44:34Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1025",
+  "agent": {
+    "id": "kimi-work-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "001b75e999158305bfc9f66c7b071cfe07f769b480088fc863e0e646d44be541",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "action": "main_delivery_acceptance_completed",
+    "issue_number": 1025,
+    "state": "main_verified_issue_closure_pending",
+    "pull_request": 1028,
+    "signed_head": "5f4362e373ca23ca7277bf0e56ef43c378caa713",
+    "merge_commit": "d5a77b1d539a9b92a1b81fc84c4df447dab82a7d",
+    "design": {
+      "path": "design-docs/engine-next-gameplay-m1-1-hardening-20261113.md",
+      "sha256": "2da4e464b2f38bfbd81e4706fa03acafa103a8f48edd3a686e094f89b5307079"
+    },
+    "delivery": {
+      "path": "data-collection/engine-next-gameplay-m1-1-hardening-delivery-20261113.json",
+      "sha256": "8b93ae48253b094d344b0bb3bb687e6333ae76bdfdb62d5d4c8e9fb8279d734a"
+    },
+    "acceptance": {
+      "extreme_interpolation": "done",
+      "golden_and_performance": "done",
+      "complete_legacy_rollback_and_restore": "done",
+      "candidate_and_main_ci": "done",
+      "main_readback": "done",
+      "next_runtime_godot_free": "not_claimed"
+    },
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage in host receipt"
+  },
+  "evidence_refs": [
+    "request-1025-engine-next-m1-1-hardening",
+    "kuafu-848887df9025d58568d51b95523e81de48dc54e5",
+    "kuafu-898417cbb2fa2129463b534656bc0c245404475e"
+  ]
+}

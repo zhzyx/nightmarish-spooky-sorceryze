@@ -65,7 +65,16 @@
 
 ## 验收清单
 
-- [ ] 极端有限输入在 float 快速路径失败时进入 double 修复，失败明确返回 `numeric_error` 且无 `state`。
-- [ ] 正常 golden 位模式不变，失败无部分更新，时间和性能边界通过。
-- [ ] legacy 与 M1.1 两方向真实重建、消费者、产物和回归证据完整。
-- [ ] 独立构建、完整回归、API、双平台 CI、正式门禁和 main 回读完成，交付证据与 Issue 收尾完成。
+- [x] 极端有限输入在 float 快速路径失败时进入 double 修复，失败明确返回 `numeric_error` 且无 `state`。
+- [x] 正常 golden 位模式不变，失败无部分更新，时间和性能边界通过。
+- [x] legacy 与 M1.1 两方向真实重建、消费者、产物和回归证据完整。
+- [x] 独立构建、完整回归、API、双平台 CI、正式门禁和 main 回读完成，交付证据与 Issue 收尾完成。
+
+## 主线交付回执
+
+- PR [#1028](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1028) 于 2026-11-13T05:05:34Z 合入，merge commit 为 `d5a77b1d539a9b92a1b81fc84c4df447dab82a7d`；签发 head 为 `5f4362e373ca23ca7277bf0e56ef43c378caa713`。
+- 候选与 main 的 Windows MSVC、macOS Clang、静态检查和 Windows 编辑器检查全部通过；独立目标为 16 个用例、200161 条检查，完整 Gameplay 为 29 个用例、4846 条断言。
+- 正常 Trace 摘要保持 `f55d1f5bc85bb72376d3f31cdf9b64aac91e714b6556dbce1663c1db7995924c`；极端有限位置与速度得到有限插值，无法表示的结果明确返回 `numeric_error` 且不包含 `state`。
+- 完整 legacy 回退排除了全部 `engine_next` 和适配器消费者，恢复 M1.1 后重新包含两个内核实现和适配器；恢复后的编辑器 SHA-256 与回退前完全一致。
+- 最终验证、构建边界和交付证据分别见 `data-collection/engine-next-gameplay-m1-1-hardening-verification-20261113-r8.json`、`data-collection/engine-next-gameplay-m1-1-hardening-build-impact-r7.json` 和 `data-collection/engine-next-gameplay-m1-1-hardening-delivery-20261113.json`。
+- 本次收尾候选只追加设计完成状态、交付回执和 `request_end`，不改变已验收实现，不启动 M2。

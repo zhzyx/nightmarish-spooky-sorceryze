@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "event_id": "request-end-1025-engine-next-m1-1-hardening-r2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-gameplay-m1-1-hardening-20261113",
+  "kind": "request_end",
+  "occurred_at": "2026-11-13T08:03:41Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1025",
+  "agent": {
+    "id": "kimi-work-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "001b75e999158305bfc9f66c7b071cfe07f769b480088fc863e0e646d44be541",
+    "origin": "external-authorized-host"
+  },
+  "supersedes": "request-end-1025-engine-next-m1-1-hardening",
+  "payload": {
+    "action": "main_delivery_acceptance_completed_with_evidence_correction",
+    "issue_number": 1025,
+    "state": "main_verified_issue_closure_pending",
+    "pull_request": 1028,
+    "signed_head": "5f4362e373ca23ca7277bf0e56ef43c378caa713",
+    "merge_commit": "d5a77b1d539a9b92a1b81fc84c4df447dab82a7d",
+    "correction": "Restore the original R7 evidence, append remote observations in the new R8 file, and supersede the prior request_end to bind the corrected references",
+    "design": {
+      "path": "design-docs/engine-next-gameplay-m1-1-hardening-20261113.md",
+      "sha256": "7ba6d63c063b87489545569f04699e1bd109868108b96d2b2731a21c31924808"
+    },
+    "delivery": {
+      "path": "data-collection/engine-next-gameplay-m1-1-hardening-delivery-20261113.json",
+      "sha256": "aa447a2bc73ed7b834b72345b175933ffd279ff5d3005d26821875734c7bd5fd"
+    },
+    "verification": {
+      "path": "data-collection/engine-next-gameplay-m1-1-hardening-verification-20261113-r8.json",
+      "sha256": "2bcec2a49e8987d1948b7088b1c56a5d9256c04a28909aade2eed7bee059e987"
+    },
+    "acceptance": {
+      "extreme_interpolation": "done",
+      "golden_and_performance": "done",
+      "complete_legacy_rollback_and_restore": "done",
+      "candidate_and_main_ci": "done",
+      "main_readback": "done",
+      "next_runtime_godot_free": "not_claimed"
+    },
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage in host receipt"
+  },
+  "evidence_refs": [
+    "request-end-1025-engine-next-m1-1-hardening",
+    "kuafu-ffbdc87654eeb40962104f867c9135a8eb4916e6"
+  ]
+}
