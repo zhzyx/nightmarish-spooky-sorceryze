@@ -7,6 +7,6 @@ _WENQU_DIR = Path(__file__).resolve().parents[1] / "wenqu"
 if str(_WENQU_DIR) not in sys.path:
     sys.path.insert(0, str(_WENQU_DIR))
 
-from wenqu import build_ai_index, classify, export_markdown, search  # noqa: E402
+from wenqu import build_ai_index, classify, export_markdown, merge_offline, search  # noqa: E402
 
-__all__ = ["build_ai_index", "classify", "export_markdown", "search"]
+__all__ = ["build_ai_index", "classify", "export_markdown", "merge_offline", "search"]

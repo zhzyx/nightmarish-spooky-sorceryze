@@ -12,13 +12,14 @@ from __future__ import annotations
 
 from typing import Annotated, Any
 
-from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 from gateway import ModelGateway, create_model_router
 from schemas import (
     CommentCreateRequest,
     CommentResolveRequest,
     DocCreateRequest,
+    DocMergeRequest,
     DocUpdateRequest,
     IssueTransitionRequest,
     LoginRequest,
@@ -28,7 +29,7 @@ from schemas import (
 )
 from tianxuan_core import NotFound, Tianxuan, TianxuanError, TransitionRejected, VersionConflict
 from wenqu_bridge import classify as classify_markdown
-from wenqu_bridge import export_markdown
+from wenqu_bridge import export_markdown, merge_offline
 from wenqu_bridge import search as search_documents
 
 
@@ -43,11 +44,42 @@ def _require_actor(x_actor: str | None = Header(default=None, alias="X-Actor")) 
 ActorDep = Annotated[str, Depends(_require_actor)]
 
 
+class DocRooms:
+    """单进程文档房间：连接、成员与广播；跨进程 fan-out 由部署层负责。"""
+
+    def __init__(self) -> None:
+        self._peers: dict[str, set[WebSocket]] = {}
+        self._actors: dict[WebSocket, str] = {}
+
+    def join(self, doc_id: str, websocket: WebSocket, actor: str) -> None:
+        self._peers.setdefault(doc_id, set()).add(websocket)
+        self._actors[websocket] = actor
+
+    def leave(self, doc_id: str, websocket: WebSocket) -> None:
+        peers = self._peers.get(doc_id)
+        if peers is not None:
+            peers.discard(websocket)
+            if not peers:
+                self._peers.pop(doc_id, None)
+        self._actors.pop(websocket, None)
+
+    def actors(self, doc_id: str) -> list[str]:
+        return sorted(self._actors.get(peer, "") for peer in self._peers.get(doc_id, ()))
+
+    async def broadcast(self, doc_id: str, payload: dict[str, Any]) -> None:
+        for peer in list(self._peers.get(doc_id, ())):
+            try:
+                await peer.send_json(payload)
+            except (RuntimeError, WebSocketDisconnect):
+                self.leave(doc_id, peer)
+
+
 def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
     """为给定领域核心实例构建 HTTP 应用；可选的模型网关挂载到同一应用。"""
     app = FastAPI(title="Tianxuan API", version="0.1.0")
     app.state.store = store
     app.state.gateway = gateway
+    rooms = DocRooms()
     if gateway is not None:
         app.include_router(create_model_router(gateway))
 
@@ -182,6 +214,27 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
     def classify_doc(doc_id: str) -> dict[str, list[str]]:
         return {"tags": classify_markdown(store.get_doc(doc_id)["body_md"])}
 
+    # ---------- 文曲：离线草稿合并 ----------
+
+    @app.post("/api/v1/docs/{doc_id}/merge")
+    def merge_doc(doc_id: str, payload: DocMergeRequest, actor: ActorDep) -> Any:
+        document = store.get_doc(doc_id)
+        if document["version"] == payload.expected_version:
+            updated = store.update_doc(actor, doc_id, payload.local_md, payload.expected_version)
+            return {"status": "applied", "doc": updated}
+        merged_md, conflicts = merge_offline(payload.base_md, payload.local_md, document["body_md"])
+        if conflicts:
+            return JSONResponse(
+                status_code=409,
+                content={
+                    "status": "conflict",
+                    "conflicts": conflicts,
+                    "remote_version": document["version"],
+                },
+            )
+        updated = store.update_doc(actor, doc_id, merged_md, document["version"])
+        return {"status": "merged", "doc": updated, "remote_version": document["version"]}
+
     # ---------- 文曲：评论 ----------
 
     @app.post("/api/v1/docs/{doc_id}/comments")
@@ -195,5 +248,57 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
     @app.patch("/api/v1/comments/{comment_id}")
     def resolve_comment(comment_id: str, payload: CommentResolveRequest, actor: ActorDep) -> dict[str, Any]:
         return store.resolve_comment(actor, comment_id, payload.resolved)  # type: ignore[no-any-return]
+
+    # ---------- 文曲：实时协同 ----------
+
+    @app.websocket("/api/v1/ws/docs/{doc_id}")
+    async def doc_room(websocket: WebSocket, doc_id: str) -> None:
+        actor = websocket.query_params.get("actor", "").strip()
+        if not actor:
+            await websocket.close(code=4401)
+            return
+        try:
+            document = store.get_doc(doc_id)
+        except NotFound:
+            await websocket.close(code=4404)
+            return
+        await websocket.accept()
+        rooms.join(doc_id, websocket, actor)
+        try:
+            await websocket.send_json({"type": "snapshot", "doc": document})
+            await rooms.broadcast(doc_id, {"type": "presence", "actors": rooms.actors(doc_id)})
+            while True:
+                message = await websocket.receive_json()
+                kind = message.get("type")
+                if kind == "ping":
+                    await websocket.send_json({"type": "pong"})
+                elif kind == "update":
+                    try:
+                        updated = store.update_doc(
+                            actor,
+                            doc_id,
+                            str(message.get("body_md", "")),
+                            int(message.get("expected_version", 0)),
+                        )
+                    except (NotFound, VersionConflict, TianxuanError) as error:
+                        await websocket.send_json({
+                            "type": "error",
+                            "code": type(error).__name__,
+                            "message": str(error),
+                        })
+                        continue
+                    await rooms.broadcast(doc_id, {"type": "updated", "doc": updated, "actor": actor})
+                else:
+                    await websocket.send_json({
+                        "type": "error",
+                        "code": "unknown_message",
+                        "message": f"unsupported type: {kind}",
+                    })
+        except WebSocketDisconnect:
+            pass
+        finally:
+            rooms.leave(doc_id, websocket)
+            if rooms.actors(doc_id):
+                await rooms.broadcast(doc_id, {"type": "presence", "actors": rooms.actors(doc_id)})
 
     return app

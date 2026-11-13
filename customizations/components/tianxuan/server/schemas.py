@@ -44,6 +44,14 @@ class DocUpdateRequest(BaseModel):
     status: str | None = None
 
 
+class DocMergeRequest(BaseModel):
+    """离线草稿三方合并：base 为编辑起点，local 为本地草稿。"""
+
+    base_md: str
+    local_md: str
+    expected_version: int
+
+
 class RequirementCreateRequest(BaseModel):
     """创建偃师需求文档。"""
 
