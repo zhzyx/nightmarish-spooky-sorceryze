@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7b6eb01f8cd1525ae0596227961d1beb6e08236c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-requirements-json-diagnostics-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1070",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e1b5bdce32303ae7b2d2355df991206ed3bbce1757b210273aa95fb825ba6ba6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1070",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1070",
+    "action": "validation",
+    "detection_head": "d78054420a4034ec44013372cc55893b1c854b58",
+    "context_sha256": "9e7607430a204f8ad5e67ccd7bf680f45d4019d7e1bd2fbd28845f8157ada719",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1070",
+    "diagnosis": "Formal gate correctly refused source reports using integer issue rather than supported issue_number. Existing implementation and tests are unaffected. The current responsible operator appended an explicit authoritative issue_number/request_id delivery map with six exact report hashes and lengths, preserving all earlier evidence. Initial parent-event hypothesis was corrected by reading check_pr_evidence.",
+    "next_action": "Independently review the appended binding and event, freeze the complete candidate index, then rerun the same formal gate. Commit only after a successful gate and exact independent approval; continue CI/main and original installed-session retry separately.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T15:53:44.855519+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T15:57:51.040394+00:00",
+  "sha256": "1437c614a52c4a5e05ac600a51b6155f9cc18c3118a744e650ff62f9b1977b57"
+}

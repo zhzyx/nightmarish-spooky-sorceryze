@@ -64,6 +64,68 @@ def needs_clarification(value):
     return not value["title"].strip() or not value["goal"].strip() or not value["scope"] or not value["acceptance"]
 
 
+class ResponseFailure(ValueError):
+    """Only structural diagnostics may cross the model-output boundary."""
+
+    def __init__(self, stage, code, text=None, *, parse_error=None, exit_code=None):
+        self.diagnostic = {"stage": stage, "code": code}
+        if isinstance(text, str):
+            try:
+                raw = text.encode("utf-8")
+            except UnicodeEncodeError:
+                # An unpaired surrogate has no UTF-8 encoding. Do not invent
+                # bytes/hash by replacing it, or echo the encoder's message.
+                self.diagnostic["output_characters"] = len(text)
+            else:
+                self.diagnostic.update(output_bytes=len(raw), output_sha256=hashlib.sha256(raw).hexdigest())
+        if parse_error is not None:
+            self.diagnostic.update(position=parse_error.pos, line=parse_error.lineno, column=parse_error.colno)
+        if exit_code is not None:
+            self.diagnostic["exit_code"] = exit_code
+        super().__init__(
+            f"Requirements response rejected ({stage}/{code}); check the model response format, then explicitly retry. Original attempt retained."
+        )
+
+
+def response_json(text, stage):
+    if not isinstance(text, str):
+        raise ResponseFailure(stage, "invalid_type")
+    if not text.strip():
+        raise ResponseFailure(stage, "empty", text)
+    try:
+        size = len(text.encode("utf-8"))
+    except UnicodeEncodeError:
+        raise ResponseFailure(stage, "invalid_encoding", text) from None
+    if size > 2 * 1024 * 1024:
+        raise ResponseFailure(stage, "oversized", text)
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as error:
+        raise ResponseFailure(stage, "invalid_json", text, parse_error=error) from None
+    except (ValueError, RecursionError):
+        # Integer digit limits and nesting limits are parser failures too.
+        raise ResponseFailure(stage, "invalid_json", text) from None
+
+
+def cli_response(stdout):
+    envelope = response_json(stdout, "cli_envelope_json")
+    if not isinstance(envelope, dict) or not isinstance(envelope.get("choices"), list) or len(envelope["choices"]) != 1:
+        raise ResponseFailure("cli_envelope_shape", "invalid_shape", stdout)
+    choice = envelope["choices"][0]
+    if not isinstance(choice, dict) or not isinstance(choice.get("message"), dict):
+        raise ResponseFailure("cli_envelope_shape", "invalid_shape", stdout)
+    message = choice["message"]
+    if message.get("refusal") is not None:
+        raise ResponseFailure("cli_envelope_shape", "refusal", stdout)
+    if any(message.get(key) not in (None, []) for key in ("tool_calls", "function_call", "actions")):
+        raise ResponseFailure("cli_envelope_shape", "actions_forbidden", stdout)
+    if choice.get("finish_reason") != "stop":
+        raise ResponseFailure("cli_envelope_shape", "nonstop", stdout)
+    if not isinstance(message.get("content"), str):
+        raise ResponseFailure("proposal_json", "invalid_type", stdout)
+    return {"text": message["content"], "finish_reason": "stop", "usage": {}}
+
+
 def proposal(value, categories, *, allow_incomplete=False):
     if not isinstance(value, dict) or set(value) != {
         "decision",
@@ -95,6 +157,10 @@ def proposal(value, categories, *, allow_incomplete=False):
         raise ValueError("Requirements must include scope and acceptance")
     if re.search(r"\b(?:sk-[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9_]{12,})", json.dumps(value)):
         raise ValueError("Remove credentials from requirements before publication")
+    try:
+        json.dumps(value, ensure_ascii=False).encode("utf-8")
+    except UnicodeEncodeError:
+        raise ValueError("Requirements contain invalid Unicode") from None
     return value
 
 
@@ -127,7 +193,7 @@ def revision_comments(design, digest):
         yield marker, f"{marker}\n\n{heading}\n\n{chunk}"
 
 
-def complete(root, request, profile, messages, env, *, agent_id="yanshi"):
+def complete(root, request, profile, messages, env, *, agent_id="yanshi", requirements_categories=None):
     if request.get("backend") == "responses":
         endpoint = (
             profile["endpoint"].rstrip("/").removesuffix("/chat/completions").removesuffix("/responses") + "/responses"
@@ -231,22 +297,66 @@ def complete(root, request, profile, messages, env, *, agent_id="yanshi"):
             "agent_id": agent_id,
             "tool_context": {"permission_enabled": False, "tool_rounds": 0, "max_tool_rounds": None},
         }
-        if request.get("backend") == "codebuddy":
+        if requirements_categories is not None and request.get("backend") == "codex":
+            payload["response_format"] = "json"
+            payload["requirements_contract"] = {"categories": requirements_categories}
+        elif request.get("backend") == "codebuddy":
             payload["response_format"] = "json"
         else:
             payload["messages"][0]["content"] += (
                 "\nFor the CLI envelope put the requirement JSON string in content and return actions: []."
             )
         path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
-        result = subprocess.run(
-            [node, str(bridge), "chat", entry, str(path)],
-            cwd=root,
-            env=env,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            timeout=210,
-        )
+        try:
+            result = subprocess.run(
+                [node, str(bridge), "chat", entry, str(path)],
+                cwd=root,
+                env=env,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                timeout=210,
+            )
+        except subprocess.TimeoutExpired:
+            if requirements_categories is not None:
+                raise ResponseFailure("cli_transport", "timeout") from None
+            raise
+        except UnicodeDecodeError:
+            if requirements_categories is not None:
+                raise ResponseFailure("cli_envelope_json", "invalid_encoding") from None
+            raise
+    if requirements_categories is not None:
+        if result.returncode:
+            # Never echo stderr or provider-controlled error.message. Only this
+            # narrow bridge diagnostic contract is eligible for retention.
+            try:
+                diagnostic = json.loads(result.stdout)["error"]["requirements_diagnostic"]
+            except (ValueError, KeyError, TypeError, RecursionError):
+                diagnostic = None
+            if (
+                isinstance(diagnostic, dict)
+                and set(diagnostic) == {"stage", "code", "output_bytes", "output_sha256", "utf16_position"}
+                and isinstance(diagnostic["stage"], str)
+                and isinstance(diagnostic["code"], str)
+                and diagnostic["stage"] in {"codex_data_json", "codex_data_shape"}
+                and diagnostic["code"] in {"empty", "invalid_json", "invalid_shape", "refusal", "actions_forbidden"}
+                and type(diagnostic["output_bytes"]) is int
+                and 0 <= diagnostic["output_bytes"] <= 2 * 1024 * 1024
+                and isinstance(diagnostic["output_sha256"], str)
+                and re.fullmatch("[0-9a-f]{64}", diagnostic["output_sha256"])
+                and (
+                    diagnostic["utf16_position"] is None
+                    or (
+                        type(diagnostic["utf16_position"]) is int
+                        and 0 <= diagnostic["utf16_position"] <= diagnostic["output_bytes"]
+                    )
+                )
+            ):
+                error = ResponseFailure(diagnostic["stage"], diagnostic["code"])
+                error.diagnostic = diagnostic
+                raise error
+            raise ResponseFailure("cli_transport", "process_failed", result.stdout, exit_code=result.returncode)
+        return cli_response(result.stdout)
     if result.returncode:
         detail = ""
         error_code = ""
@@ -511,7 +621,31 @@ def _intake(root, request, bridge):
                     },
                 ],
                 env,
+                requirements_categories=categories,
             )
+            if result.get("finish_reason") != "stop":
+                raise ResponseFailure("model_completion", "nonstop")
+            parsed_proposal = response_json(result.get("text"), "proposal_json")
+            if isinstance(parsed_proposal, dict):
+                if "refusal" in parsed_proposal:
+                    raise ResponseFailure("proposal_schema", "refusal", result["text"])
+                if any(key in parsed_proposal for key in ("actions", "tool_calls", "function_call")):
+                    raise ResponseFailure("proposal_schema", "actions_forbidden", result["text"])
+            try:
+                design = proposal(parsed_proposal, categories, allow_incomplete=True)
+            except (ValueError, TypeError) as error:
+                code = {
+                    "Remove credentials from requirements before publication": "credentials_forbidden",
+                    "Requirements contain invalid Unicode": "invalid_encoding",
+                }.get(str(error), "invalid_shape")
+                raise ResponseFailure("proposal_schema", code, result["text"]) from None
+        except ResponseFailure as error:
+            phase = (
+                "model_transport_failed" if error.diagnostic["stage"] == "cli_transport" else "model_response_invalid"
+            )
+            saved.update(phase=phase, failure=error.diagnostic)
+            save(journal, saved)
+            raise
         except RuntimeError:
             raise ValueError(
                 "Requirements model API failed; check endpoint, model and credentials before explicitly retrying; prior attempt retained"
@@ -521,9 +655,6 @@ def _intake(root, request, bridge):
                 os.environ.pop("GONGGONG_REQUIREMENTS_KEY", None)
             else:
                 os.environ["GONGGONG_REQUIREMENTS_KEY"] = previous_key
-        if result["finish_reason"] != "stop":
-            raise ValueError("Requirements model response incomplete; reconcile retained attempt")
-        design = proposal(json.loads(result["text"]), categories, allow_incomplete=True)
         agent = next(
             a
             for a in json.loads((framework / "framework-manifest.json").read_text(encoding="utf-8"))["agents"]

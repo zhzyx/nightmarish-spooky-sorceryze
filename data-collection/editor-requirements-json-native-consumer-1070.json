@@ -1,0 +1,825 @@
+{
+  "schema_version": 1,
+  "kind": "installed_binary_isolated_host_update_rollback_native_consumer",
+  "issues": [
+    773,
+    1070
+  ],
+  "ok": true,
+  "baseline": {
+    "main": "ec582b134ad48e4c3eab02bafbe901886ac303b4",
+    "host_source_root_role": "clean W checkout at ec582b134ad48e4c3eab02bafbe901886ac303b4",
+    "formal_engine_sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+    "installed_files_before": [
+      {
+        "installed_relative_path": "bin/godot.windows.editor.x86_64.console.exe",
+        "sha256": "9bda558e450358f5f2da3309df8a1e1b52e42970548eef4d2c3f34f4a3fe40c1",
+        "bytes": 242688
+      },
+      {
+        "installed_relative_path": "bin/godot.windows.editor.x86_64.exe",
+        "sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+        "bytes": 176806400
+      },
+      {
+        "installed_relative_path": "bin/tianshu-ui.json",
+        "sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+        "bytes": 67422
+      }
+    ],
+    "installed_files_after": [
+      {
+        "installed_relative_path": "bin/godot.windows.editor.x86_64.console.exe",
+        "sha256": "9bda558e450358f5f2da3309df8a1e1b52e42970548eef4d2c3f34f4a3fe40c1",
+        "bytes": 242688
+      },
+      {
+        "installed_relative_path": "bin/godot.windows.editor.x86_64.exe",
+        "sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+        "bytes": 176806400
+      },
+      {
+        "installed_relative_path": "bin/tianshu-ui.json",
+        "sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+        "bytes": 67422
+      }
+    ],
+    "unchanged": true
+  },
+  "candidate": {
+    "source_before": {
+      "customizations/components/godot-host/requirements_agent.py": {
+        "repository_path": "customizations/components/godot-host/requirements_agent.py",
+        "sha256": "fdcb7b87c59653940ac8ee03ab5b507a6ff51024dc97d7e90425717b08c4d9f5",
+        "bytes": 39794
+      },
+      "tools/codex_cli/godot_bridge.js": {
+        "repository_path": "tools/codex_cli/godot_bridge.js",
+        "sha256": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab",
+        "bytes": 31268
+      }
+    },
+    "source_after": {
+      "customizations/components/godot-host/requirements_agent.py": {
+        "repository_path": "customizations/components/godot-host/requirements_agent.py",
+        "sha256": "fdcb7b87c59653940ac8ee03ab5b507a6ff51024dc97d7e90425717b08c4d9f5",
+        "bytes": 39794
+      },
+      "tools/codex_cli/godot_bridge.js": {
+        "repository_path": "tools/codex_cli/godot_bridge.js",
+        "sha256": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab",
+        "bytes": 31268
+      }
+    },
+    "unchanged": true,
+    "replacement_count": 2,
+    "copies_frozen_before_launch": [
+      {
+        "logical_artifact": "native1070-update-rollback-b69e7ce1/frozen-inputs/customizations/components/godot-host/requirements_agent.py",
+        "sha256": "fdcb7b87c59653940ac8ee03ab5b507a6ff51024dc97d7e90425717b08c4d9f5",
+        "bytes": 39794
+      },
+      {
+        "logical_artifact": "native1070-update-rollback-b69e7ce1/frozen-inputs/native1070-cli.js",
+        "sha256": "2f50018e84cf89c2352a4838752d6ffd79b0ab3debb1fd608f2b72d5eedf67d1",
+        "bytes": 2894
+      },
+      {
+        "logical_artifact": "native1070-update-rollback-b69e7ce1/frozen-inputs/native1070-send.gd",
+        "sha256": "2e8a0c9529d0fcbbba3e0806d31ae205c83f5b585de398a6c334604af8f03844",
+        "bytes": 2661
+      },
+      {
+        "logical_artifact": "native1070-update-rollback-b69e7ce1/frozen-inputs/run-native1070-update-rollback.py",
+        "sha256": "5ad813858c98839590fb3f63fae840da4246821b5177012e9935fa52f4b75d8b",
+        "bytes": 12767
+      },
+      {
+        "logical_artifact": "native1070-update-rollback-b69e7ce1/frozen-inputs/tools/codex_cli/godot_bridge.js",
+        "sha256": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab",
+        "bytes": 31268
+      }
+    ],
+    "no_native_rebuild": true,
+    "rollback_exact": true
+  },
+  "consumer_chain": [
+    "Public native UI configured to owned offline Codex CLI; ordinary project without existing Issue uses actual Send.",
+    "Installed bridge.py dynamically loads adjacent requirements_agent.py.",
+    "Python invokes actual tools/codex_cli/godot_bridge.js; bridge writes and passes actual --output-schema to offline CLI.",
+    "Offline CLI emits protocol events only; it does not contact a provider, execute tools, write journals or fabricate native results.",
+    "Actual Node validates output; Python validates proposal and persists its own fresh journal; native callback displays clarification or failure."
+  ],
+  "host_closure": {
+    "record": {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/host-inputs.json",
+      "sha256": "6cf5805de68c3247247519b20252c3dee29e3298316c83335c80cad1d17ab570",
+      "bytes": 204632
+    },
+    "files": 645,
+    "matched_to_clean_1066_W": 644,
+    "external_existing_dependency": [
+      {
+        "relative": "tools/codebuddy_cli/node_modules/@tencent-ai/codebuddy-code/bin/native/win32-x64/job-object.node",
+        "sha256": "0f7411dbaed36fb0b353193ab92e39fd225490196dce82543631e13b16d1a586",
+        "bytes": 287744
+      }
+    ],
+    "delta": "Only the two candidate product files replaced in one isolated installation; rollback restores exact baseline bytes. Each stage starts a new ordinary project and requirements journal.",
+    "main_drift_boundary": "Later remote main d7805442 / PR1069 GH pagination is outside this fixed 1066 host closure. This result is not validation of the newer publication chain or a new installed release."
+  },
+  "phases": [
+    {
+      "phase": "baseline",
+      "result": {
+        "logical_artifact": "native1070-update-rollback-b69e7ce1/baseline/result.json",
+        "sha256": "e9c350c71184b42b2daa3b9983d3aee7acaeb17ffb419e8f32665ef335c88993",
+        "bytes": 7136
+      },
+      "exit_code": 0,
+      "expected_outcome_observed": true,
+      "native_stage": "native_send_completed",
+      "journal_phase": "model_attempted",
+      "diagnostic": null,
+      "cli_calls": 1,
+      "data_only_schema": false,
+      "schema_required": [
+        "content",
+        "actions"
+      ],
+      "agent_id": "yanshi",
+      "available_tools_count": 0,
+      "permission_enabled": false,
+      "protocol_checked": true,
+      "no_publication": true,
+      "private_sentinel_absent_from_consumers": true,
+      "applied_host_files_before": {
+        "customizations/components/godot-host/requirements_agent.py": {
+          "isolated_installation_relative_path": "customizations/components/godot-host/requirements_agent.py",
+          "sha256": "96ae570e8aafaf211c8566482c9e661288bd8635405ce72080a8095c189e20e5",
+          "bytes": 32807
+        },
+        "tools/codex_cli/godot_bridge.js": {
+          "isolated_installation_relative_path": "tools/codex_cli/godot_bridge.js",
+          "sha256": "4403f2eba17dfb9ca78b0f64c983e8ed79adec3f1a2c2517c125fa423fb5c803",
+          "bytes": 27650
+        }
+      },
+      "applied_host_files_after": {
+        "customizations/components/godot-host/requirements_agent.py": {
+          "isolated_installation_relative_path": "customizations/components/godot-host/requirements_agent.py",
+          "sha256": "96ae570e8aafaf211c8566482c9e661288bd8635405ce72080a8095c189e20e5",
+          "bytes": 32807
+        },
+        "tools/codex_cli/godot_bridge.js": {
+          "isolated_installation_relative_path": "tools/codex_cli/godot_bridge.js",
+          "sha256": "4403f2eba17dfb9ca78b0f64c983e8ed79adec3f1a2c2517c125fa423fb5c803",
+          "bytes": 27650
+        }
+      },
+      "engine_sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+      "candidate_source_unchanged": true
+    },
+    {
+      "phase": "candidate",
+      "result": {
+        "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate/result.json",
+        "sha256": "28e6fab710a5ef32b755cb526f679952a36c63d2ab64a5f61e8795eab1ca2669",
+        "bytes": 7431
+      },
+      "exit_code": 0,
+      "expected_outcome_observed": true,
+      "native_stage": "native_send_completed",
+      "journal_phase": "clarification_required",
+      "diagnostic": null,
+      "cli_calls": 1,
+      "data_only_schema": true,
+      "schema_required": [
+        "decision",
+        "title",
+        "category",
+        "goal",
+        "scope",
+        "acceptance",
+        "questions"
+      ],
+      "agent_id": "yanshi",
+      "available_tools_count": 0,
+      "permission_enabled": false,
+      "protocol_checked": true,
+      "no_publication": true,
+      "private_sentinel_absent_from_consumers": true,
+      "applied_host_files_before": {
+        "customizations/components/godot-host/requirements_agent.py": {
+          "isolated_installation_relative_path": "customizations/components/godot-host/requirements_agent.py",
+          "sha256": "fdcb7b87c59653940ac8ee03ab5b507a6ff51024dc97d7e90425717b08c4d9f5",
+          "bytes": 39794
+        },
+        "tools/codex_cli/godot_bridge.js": {
+          "isolated_installation_relative_path": "tools/codex_cli/godot_bridge.js",
+          "sha256": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab",
+          "bytes": 31268
+        }
+      },
+      "applied_host_files_after": {
+        "customizations/components/godot-host/requirements_agent.py": {
+          "isolated_installation_relative_path": "customizations/components/godot-host/requirements_agent.py",
+          "sha256": "fdcb7b87c59653940ac8ee03ab5b507a6ff51024dc97d7e90425717b08c4d9f5",
+          "bytes": 39794
+        },
+        "tools/codex_cli/godot_bridge.js": {
+          "isolated_installation_relative_path": "tools/codex_cli/godot_bridge.js",
+          "sha256": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab",
+          "bytes": 31268
+        }
+      },
+      "engine_sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+      "candidate_source_unchanged": true
+    },
+    {
+      "phase": "candidate-malformed",
+      "result": {
+        "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate-malformed/result.json",
+        "sha256": "70b3cf4438e4794ef25627293472d390a442038336baf18d9f083a55ff642c0f",
+        "bytes": 7574
+      },
+      "exit_code": 0,
+      "expected_outcome_observed": true,
+      "native_stage": "native_send_completed",
+      "journal_phase": "model_response_invalid",
+      "diagnostic": {
+        "stage": "codex_data_json",
+        "code": "invalid_json",
+        "utf16_position": null,
+        "output_bytes": 56,
+        "output_sha256": "75ca7f95cb2e33648fbdd70d6087ac9aa2cb05abf13aa02f9524bcd5a15f30aa"
+      },
+      "cli_calls": 1,
+      "data_only_schema": true,
+      "schema_required": [
+        "decision",
+        "title",
+        "category",
+        "goal",
+        "scope",
+        "acceptance",
+        "questions"
+      ],
+      "agent_id": "yanshi",
+      "available_tools_count": 0,
+      "permission_enabled": false,
+      "protocol_checked": true,
+      "no_publication": true,
+      "private_sentinel_absent_from_consumers": true,
+      "applied_host_files_before": {
+        "customizations/components/godot-host/requirements_agent.py": {
+          "isolated_installation_relative_path": "customizations/components/godot-host/requirements_agent.py",
+          "sha256": "fdcb7b87c59653940ac8ee03ab5b507a6ff51024dc97d7e90425717b08c4d9f5",
+          "bytes": 39794
+        },
+        "tools/codex_cli/godot_bridge.js": {
+          "isolated_installation_relative_path": "tools/codex_cli/godot_bridge.js",
+          "sha256": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab",
+          "bytes": 31268
+        }
+      },
+      "applied_host_files_after": {
+        "customizations/components/godot-host/requirements_agent.py": {
+          "isolated_installation_relative_path": "customizations/components/godot-host/requirements_agent.py",
+          "sha256": "fdcb7b87c59653940ac8ee03ab5b507a6ff51024dc97d7e90425717b08c4d9f5",
+          "bytes": 39794
+        },
+        "tools/codex_cli/godot_bridge.js": {
+          "isolated_installation_relative_path": "tools/codex_cli/godot_bridge.js",
+          "sha256": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab",
+          "bytes": 31268
+        }
+      },
+      "engine_sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+      "candidate_source_unchanged": true
+    },
+    {
+      "phase": "candidate-surrogate",
+      "result": {
+        "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate-surrogate/result.json",
+        "sha256": "2124502a9cb73da608c53f3899676531eb703b651de6c11dab2214ca0430e848",
+        "bytes": 7549
+      },
+      "exit_code": 0,
+      "expected_outcome_observed": true,
+      "native_stage": "native_send_completed",
+      "journal_phase": "model_response_invalid",
+      "diagnostic": {
+        "stage": "proposal_schema",
+        "code": "invalid_encoding",
+        "output_bytes": 141,
+        "output_sha256": "5be9792a1302341bf44e79e41063bf38bcd404b4f0d396fd22f919d3253e8410"
+      },
+      "cli_calls": 1,
+      "data_only_schema": true,
+      "schema_required": [
+        "decision",
+        "title",
+        "category",
+        "goal",
+        "scope",
+        "acceptance",
+        "questions"
+      ],
+      "agent_id": "yanshi",
+      "available_tools_count": 0,
+      "permission_enabled": false,
+      "protocol_checked": true,
+      "no_publication": true,
+      "private_sentinel_absent_from_consumers": true,
+      "applied_host_files_before": {
+        "customizations/components/godot-host/requirements_agent.py": {
+          "isolated_installation_relative_path": "customizations/components/godot-host/requirements_agent.py",
+          "sha256": "fdcb7b87c59653940ac8ee03ab5b507a6ff51024dc97d7e90425717b08c4d9f5",
+          "bytes": 39794
+        },
+        "tools/codex_cli/godot_bridge.js": {
+          "isolated_installation_relative_path": "tools/codex_cli/godot_bridge.js",
+          "sha256": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab",
+          "bytes": 31268
+        }
+      },
+      "applied_host_files_after": {
+        "customizations/components/godot-host/requirements_agent.py": {
+          "isolated_installation_relative_path": "customizations/components/godot-host/requirements_agent.py",
+          "sha256": "fdcb7b87c59653940ac8ee03ab5b507a6ff51024dc97d7e90425717b08c4d9f5",
+          "bytes": 39794
+        },
+        "tools/codex_cli/godot_bridge.js": {
+          "isolated_installation_relative_path": "tools/codex_cli/godot_bridge.js",
+          "sha256": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab",
+          "bytes": 31268
+        }
+      },
+      "engine_sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+      "candidate_source_unchanged": true
+    },
+    {
+      "phase": "rollback",
+      "result": {
+        "logical_artifact": "native1070-update-rollback-b69e7ce1/rollback/result.json",
+        "sha256": "8b68d28c02fbaeb419989a86fb9f7d07831306ff99199097a66f4a6f46a0bc9d",
+        "bytes": 7136
+      },
+      "exit_code": 0,
+      "expected_outcome_observed": true,
+      "native_stage": "native_send_completed",
+      "journal_phase": "model_attempted",
+      "diagnostic": null,
+      "cli_calls": 1,
+      "data_only_schema": false,
+      "schema_required": [
+        "content",
+        "actions"
+      ],
+      "agent_id": "yanshi",
+      "available_tools_count": 0,
+      "permission_enabled": false,
+      "protocol_checked": true,
+      "no_publication": true,
+      "private_sentinel_absent_from_consumers": true,
+      "applied_host_files_before": {
+        "customizations/components/godot-host/requirements_agent.py": {
+          "isolated_installation_relative_path": "customizations/components/godot-host/requirements_agent.py",
+          "sha256": "96ae570e8aafaf211c8566482c9e661288bd8635405ce72080a8095c189e20e5",
+          "bytes": 32807
+        },
+        "tools/codex_cli/godot_bridge.js": {
+          "isolated_installation_relative_path": "tools/codex_cli/godot_bridge.js",
+          "sha256": "4403f2eba17dfb9ca78b0f64c983e8ed79adec3f1a2c2517c125fa423fb5c803",
+          "bytes": 27650
+        }
+      },
+      "applied_host_files_after": {
+        "customizations/components/godot-host/requirements_agent.py": {
+          "isolated_installation_relative_path": "customizations/components/godot-host/requirements_agent.py",
+          "sha256": "96ae570e8aafaf211c8566482c9e661288bd8635405ce72080a8095c189e20e5",
+          "bytes": 32807
+        },
+        "tools/codex_cli/godot_bridge.js": {
+          "isolated_installation_relative_path": "tools/codex_cli/godot_bridge.js",
+          "sha256": "4403f2eba17dfb9ca78b0f64c983e8ed79adec3f1a2c2517c125fa423fb5c803",
+          "bytes": 27650
+        }
+      },
+      "engine_sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+      "candidate_source_unchanged": true
+    }
+  ],
+  "counterexample_provenance": "Legacy double JSON is deliberately supplied by the offline CLI inside valid legacy content/actions envelope. Typed candidate uses the same schema-adaptive fixture to return the exact data object; malformed and escaped-surrogate cases are deliberately injected privacy sentinels. None is claimed to recover original r17 response bytes.",
+  "prior_round": {
+    "report": {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/result.json",
+      "sha256": "659a05c1bce14841a5b85b695da2d9d3d1c7825960ce3659a43c378bed9ed1b9",
+      "bytes": 5495
+    },
+    "scope": "Four phases passed with old Python853ad371 and same JS3e841dc9; retained without relabeling as final fdcb7b87 validation. The final round independently reruns all phases and adds the escaped-surrogate case."
+  },
+  "retained_diagnostics": [
+    {
+      "category": "headless_image_null",
+      "message": "Condition p_image.is_null() is true."
+    },
+    {
+      "category": "offline_cli_login_probe",
+      "message": "Native login-status probe could not directly execute the offline JS fixture. This is not a provider authentication test; actual discovery and requirements protocol ran through Node."
+    },
+    {
+      "category": "fixture_teardown",
+      "message": "Canvas/CanvasItem RID and ObjectDB leak diagnostics retained in private stderr logs."
+    }
+  ],
+  "scope_limits": [
+    "Controlled native mechanism consumer, not real provider selection or original parent20 production status.",
+    "No real GitHub writes; fixture confirms no issue publication and no tool permissions in every phase.",
+    "Candidate success is clarification_required, not implementation, Issue creation, design confirmation, worker dispatch, or business acceptance.",
+    "Formal installation was read and copied only; original G/L/r17 and W/J product sources were not modified.",
+    "Fixture SceneTree.quit and WindowsJob cleanup are test teardown, not normal semantic quit acceptance.",
+    "No claim that later main GH pagination, CI, signed candidate, installation update or original intake retry is complete."
+  ],
+  "artifacts": [
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/baseline/cli-wire.jsonl",
+      "sha256": "b06f9474b2639b5e3eeb3266f62e719ad27e95f0dbc567e55d04f24b64af78ad",
+      "bytes": 1421
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/baseline/github-calls.json",
+      "sha256": "c605cd88d8a0e4396c2490b1bc6d737271f304d37fd0c12e83f52e3e4e4ecbfa",
+      "bytes": 599
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/baseline/journal-requirement-77e4e0ce97960788498f9b1a09ec6437.json",
+      "sha256": "aa309ed35f800ee03661da221582c97ae7ae1a1e88cd0374bc4a5eab78898837",
+      "bytes": 212
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/baseline/observation.json",
+      "sha256": "ad65d6982f932bbc51b16a3571a69d241b27350d244f07f510ae75935b80f40c",
+      "bytes": 1287
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/baseline/result.json",
+      "sha256": "e9c350c71184b42b2daa3b9983d3aee7acaeb17ffb419e8f32665ef335c88993",
+      "bytes": 7136
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/baseline/stderr.log",
+      "sha256": "a7ad44562e7755676372629f874824b4d8f035c753da76a17b90fddbbdacd81a",
+      "bytes": 1087
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/baseline/stdout.log",
+      "sha256": "4b52df4c01ae8d0fc9e6336cc7870ea010751c6bf546326ca270705b85c23915",
+      "bytes": 1822
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate/cli-wire.jsonl",
+      "sha256": "72ef92e142004dafa87c249d03e83c935461b2a93afb7501e6b727efe3986df1",
+      "bytes": 1445
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate/github-calls.json",
+      "sha256": "c605cd88d8a0e4396c2490b1bc6d737271f304d37fd0c12e83f52e3e4e4ecbfa",
+      "bytes": 599
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate/journal-requirement-3dc82c362f7979ab07e727d883c66a73.json",
+      "sha256": "9b6041df5807eacd51b849d2ac0e4f191641a09c2aa31ba9f41436944ced10f7",
+      "bytes": 526
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate/observation.json",
+      "sha256": "a66c9d88ccfbedc666acb2fae8e37e812f84126d2a4879b43c59740a346a5795",
+      "bytes": 1105
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate/result.json",
+      "sha256": "28e6fab710a5ef32b755cb526f679952a36c63d2ab64a5f61e8795eab1ca2669",
+      "bytes": 7431
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate/stderr.log",
+      "sha256": "a7ad44562e7755676372629f874824b4d8f035c753da76a17b90fddbbdacd81a",
+      "bytes": 1087
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate/stdout.log",
+      "sha256": "4b52df4c01ae8d0fc9e6336cc7870ea010751c6bf546326ca270705b85c23915",
+      "bytes": 1822
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate-malformed/cli-wire.jsonl",
+      "sha256": "0f94d5bcb016d3ea29513b58d86d213dee12ac452ec65bbe32eb0b83c2248675",
+      "bytes": 1438
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate-malformed/github-calls.json",
+      "sha256": "c605cd88d8a0e4396c2490b1bc6d737271f304d37fd0c12e83f52e3e4e4ecbfa",
+      "bytes": 599
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate-malformed/journal-requirement-c9fa11f260aaf4dfc160abf1f6c491a4.json",
+      "sha256": "e63f067fe20c3f9af0b999f56814cc1bdaa0d4602dad51c3c387e9c79272a47b",
+      "bytes": 413
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate-malformed/observation.json",
+      "sha256": "c5b109d6f0a55dd090a0c41f7433d8847f8fb1d3f1230ca40b3ef85609f085dc",
+      "bytes": 1394
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate-malformed/result.json",
+      "sha256": "70b3cf4438e4794ef25627293472d390a442038336baf18d9f083a55ff642c0f",
+      "bytes": 7574
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate-malformed/stderr.log",
+      "sha256": "a7ad44562e7755676372629f874824b4d8f035c753da76a17b90fddbbdacd81a",
+      "bytes": 1087
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate-malformed/stdout.log",
+      "sha256": "4b52df4c01ae8d0fc9e6336cc7870ea010751c6bf546326ca270705b85c23915",
+      "bytes": 1822
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate-surrogate/cli-wire.jsonl",
+      "sha256": "2439e3b4b595309531791bc477ee2bfe7e3185f3c21ba3930a47d641c7d07708",
+      "bytes": 1439
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate-surrogate/github-calls.json",
+      "sha256": "c605cd88d8a0e4396c2490b1bc6d737271f304d37fd0c12e83f52e3e4e4ecbfa",
+      "bytes": 599
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate-surrogate/journal-requirement-f5333d8c943d3c6924d3767517da35c7.json",
+      "sha256": "f535f10f6d5112498a5efe6da7fd5d36d67cb30dd94dd0385dd2df4e86867a39",
+      "bytes": 394
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate-surrogate/observation.json",
+      "sha256": "180f7678bc80416446ae964375776b350ba8d433229ade83094612dbcf1f8f0c",
+      "bytes": 1398
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate-surrogate/result.json",
+      "sha256": "2124502a9cb73da608c53f3899676531eb703b651de6c11dab2214ca0430e848",
+      "bytes": 7549
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate-surrogate/stderr.log",
+      "sha256": "a7ad44562e7755676372629f874824b4d8f035c753da76a17b90fddbbdacd81a",
+      "bytes": 1087
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/candidate-surrogate/stdout.log",
+      "sha256": "4b52df4c01ae8d0fc9e6336cc7870ea010751c6bf546326ca270705b85c23915",
+      "bytes": 1822
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/frozen-inputs/customizations/components/godot-host/requirements_agent.py",
+      "sha256": "fdcb7b87c59653940ac8ee03ab5b507a6ff51024dc97d7e90425717b08c4d9f5",
+      "bytes": 39794
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/frozen-inputs/native1070-cli.js",
+      "sha256": "2f50018e84cf89c2352a4838752d6ffd79b0ab3debb1fd608f2b72d5eedf67d1",
+      "bytes": 2894
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/frozen-inputs/native1070-send.gd",
+      "sha256": "2e8a0c9529d0fcbbba3e0806d31ae205c83f5b585de398a6c334604af8f03844",
+      "bytes": 2661
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/frozen-inputs/run-native1070-update-rollback.py",
+      "sha256": "5ad813858c98839590fb3f63fae840da4246821b5177012e9935fa52f4b75d8b",
+      "bytes": 12767
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/frozen-inputs/tools/codex_cli/godot_bridge.js",
+      "sha256": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab",
+      "bytes": 31268
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/host-inputs.json",
+      "sha256": "6cf5805de68c3247247519b20252c3dee29e3298316c83335c80cad1d17ab570",
+      "bytes": 204632
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/result.json",
+      "sha256": "2f3ce3928b5b78b617166063c35982fc7a83035843c93fa025f3577f48b0671d",
+      "bytes": 7471
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/rollback/cli-wire.jsonl",
+      "sha256": "40478312d2d0b341d564a84ce2096c9ff2f07ddeaa84a18c5196afb98f49469f",
+      "bytes": 1421
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/rollback/github-calls.json",
+      "sha256": "c605cd88d8a0e4396c2490b1bc6d737271f304d37fd0c12e83f52e3e4e4ecbfa",
+      "bytes": 599
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/rollback/journal-requirement-50da05835d7f53c1f54cd24cfa15e81b.json",
+      "sha256": "26f6af13f9d7004163e76cd1d3b4497169e6276fa91aa9d7a72872cefd39424a",
+      "bytes": 212
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/rollback/observation.json",
+      "sha256": "ad65d6982f932bbc51b16a3571a69d241b27350d244f07f510ae75935b80f40c",
+      "bytes": 1287
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/rollback/result.json",
+      "sha256": "8b68d28c02fbaeb419989a86fb9f7d07831306ff99199097a66f4a6f46a0bc9d",
+      "bytes": 7136
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/rollback/stderr.log",
+      "sha256": "a7ad44562e7755676372629f874824b4d8f035c753da76a17b90fddbbdacd81a",
+      "bytes": 1087
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-b69e7ce1/rollback/stdout.log",
+      "sha256": "4b52df4c01ae8d0fc9e6336cc7870ea010751c6bf546326ca270705b85c23915",
+      "bytes": 1822
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/baseline/cli-wire.jsonl",
+      "sha256": "1f1a6de1ce82592a629c579893d2a5944120227f335d9307bb19f124d7fd0b96",
+      "bytes": 1348
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/baseline/journal-requirement-fd85abf4fcdaeb02e50f533d2b40df91.json",
+      "sha256": "9a2a5984ced45b6e3245977d1b28e06f63475f8529cd307e33fc41440ad10b3a",
+      "bytes": 212
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/baseline/observation.json",
+      "sha256": "ad65d6982f932bbc51b16a3571a69d241b27350d244f07f510ae75935b80f40c",
+      "bytes": 1287
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/baseline/result.json",
+      "sha256": "71d8f35217a1d593c6240cc20210c4453b0dac1846099a5bb0c36fd3402ca3b5",
+      "bytes": 6952
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/baseline/stderr.log",
+      "sha256": "b2b48d438ad6140543fb9bd0df3c4663f2119640cfe2e6d77d807f7a6e8dad4b",
+      "bytes": 1087
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/baseline/stdout.log",
+      "sha256": "4b52df4c01ae8d0fc9e6336cc7870ea010751c6bf546326ca270705b85c23915",
+      "bytes": 1822
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/candidate/cli-wire.jsonl",
+      "sha256": "231cc7c3386668a827cfbee33bac35cf294db8f98bf9ef9efc0ee899c133f871",
+      "bytes": 1372
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/candidate/journal-requirement-c2a111be8c9b2b3fd08259806d9c99c2.json",
+      "sha256": "956f851416b2637971a0165b2458d8e30f9d62ccd063e09ce00d36442ea7e643",
+      "bytes": 526
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/candidate/observation.json",
+      "sha256": "a66c9d88ccfbedc666acb2fae8e37e812f84126d2a4879b43c59740a346a5795",
+      "bytes": 1105
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/candidate/result.json",
+      "sha256": "18594678f7246ef5b7c2e69047e896cbe9624566abeb828161fbbd9228e7124b",
+      "bytes": 7247
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/candidate/stderr.log",
+      "sha256": "b2b48d438ad6140543fb9bd0df3c4663f2119640cfe2e6d77d807f7a6e8dad4b",
+      "bytes": 1087
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/candidate/stdout.log",
+      "sha256": "4b52df4c01ae8d0fc9e6336cc7870ea010751c6bf546326ca270705b85c23915",
+      "bytes": 1822
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/candidate-malformed/cli-wire.jsonl",
+      "sha256": "3dc9b1df21ac5606b3eab29edd6eac08354964688f5cfa9e5cc9510ada67bb53",
+      "bytes": 1365
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/candidate-malformed/journal-requirement-ee9a5894b1af8efa503586c8b8f2a737.json",
+      "sha256": "48f13d07eb06d5211b56a0281abc32f797c7e2125bca763d6b11d3067233bdd8",
+      "bytes": 413
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/candidate-malformed/observation.json",
+      "sha256": "c5b109d6f0a55dd090a0c41f7433d8847f8fb1d3f1230ca40b3ef85609f085dc",
+      "bytes": 1394
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/candidate-malformed/result.json",
+      "sha256": "52b212440963e6a9979a00797c7c1bcdf3c8323eed22b0181f05b44c07a1e84c",
+      "bytes": 7390
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/candidate-malformed/stderr.log",
+      "sha256": "b2b48d438ad6140543fb9bd0df3c4663f2119640cfe2e6d77d807f7a6e8dad4b",
+      "bytes": 1087
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/candidate-malformed/stdout.log",
+      "sha256": "4b52df4c01ae8d0fc9e6336cc7870ea010751c6bf546326ca270705b85c23915",
+      "bytes": 1822
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/host-inputs.json",
+      "sha256": "88444449cb62736deca3a73794a904be5f59b4308c1ff2fa2b54fdb12d00f7e4",
+      "bytes": 204632
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/result.json",
+      "sha256": "659a05c1bce14841a5b85b695da2d9d3d1c7825960ce3659a43c378bed9ed1b9",
+      "bytes": 5495
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/rollback/cli-wire.jsonl",
+      "sha256": "df7644e1ed4a8f85b8baa9e0546068bcb2aab4de9ef9ddf9043f44bace784636",
+      "bytes": 1348
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/rollback/journal-requirement-35c1f9f05674b9bbaa6b40fab2b2bcbb.json",
+      "sha256": "31300ee7c53f17855fd9e4293d0917347730f046b35661df0d5fefbd0738cdf4",
+      "bytes": 212
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/rollback/observation.json",
+      "sha256": "ad65d6982f932bbc51b16a3571a69d241b27350d244f07f510ae75935b80f40c",
+      "bytes": 1287
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/rollback/result.json",
+      "sha256": "2115d797f92d7c77aeb2ea4dff5c5caf9fea91218bb49cc6ee50ee10c82b59de",
+      "bytes": 6952
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/rollback/stderr.log",
+      "sha256": "b2b48d438ad6140543fb9bd0df3c4663f2119640cfe2e6d77d807f7a6e8dad4b",
+      "bytes": 1087
+    },
+    {
+      "logical_artifact": "native1070-update-rollback-cd7184c6/rollback/stdout.log",
+      "sha256": "4b52df4c01ae8d0fc9e6336cc7870ea010751c6bf546326ca270705b85c23915",
+      "bytes": 1822
+    },
+    {
+      "logical_artifact": "native1070-r1-run-native1070-update-rollback.py",
+      "sha256": "636ac59c19dace283fffe1dc15f23e10ab7036b65763172f5e5c1131e890f847",
+      "bytes": 10617
+    },
+    {
+      "logical_artifact": "native1070-r1-native1070-cli.js",
+      "sha256": "37bb770814748c3ba5c6b1bf3d5fd1b9f7c6182148e47df5f4b2bceecb3ee816",
+      "bytes": 2537
+    },
+    {
+      "logical_artifact": "native1070-r1-native1070-send.gd",
+      "sha256": "2e8a0c9529d0fcbbba3e0806d31ae205c83f5b585de398a6c334604af8f03844",
+      "bytes": 2661
+    }
+  ],
+  "artifact_resolution": "logical_artifact resolves under the private parent-773 evidence directory; artifacts are held privately and are not assumed available from this public repository path. repository_path resolves at the pinned baseline main or exact candidate SHA as specified. installed_relative_path resolves under the formal installation root; isolated_installation_relative_path under the owned temporary copy. No private raw logs/configuration/history are attached.",
+  "private_source_report": {
+    "logical_artifact": "requirements-json-1070-native-update-rollback-summary.json",
+    "sha256": "ac26fe19c25c044d8da6e0be547901933639efa939d2248aca8c56ca0f71fa4d",
+    "bytes": 36717
+  },
+  "execution": {
+    "fixture_entry": "run-native1070-update-rollback.py",
+    "private_invocation": "python -X utf8 -B <private-evidence-root>/run-native1070-update-rollback.py",
+    "native_entry": [
+      "<copied-installed-direct-editor>",
+      "--headless",
+      "--audio-driver",
+      "Dummy",
+      "--editor",
+      "--path",
+      "<new-owned-project>",
+      "--script",
+      "res://probe.gd"
+    ],
+    "actor": "Owned isolated fixture; no real provider or user interaction",
+    "successful_requirement_output": "Incomplete seven-field proposal requests clarification, so no Issue publication or development command follows."
+  }
+}

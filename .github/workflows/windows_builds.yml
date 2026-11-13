@@ -222,6 +222,11 @@ jobs:
         run: |
           npm ci --prefix tools/codebuddy_cli --ignore-scripts --no-audit --no-fund
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          New-Item -ItemType Directory -Force parent-recovery-report | Out-Null
+          python -X utf8 -m unittest discover -s customizations/components/godot-host -p test_requirements_agent.py -v *> parent-recovery-report/requirements-json-tests.log
+          if ($LASTEXITCODE -ne 0) { Get-Content parent-recovery-report/requirements-json-tests.log; exit $LASTEXITCODE }
+          node --test tests/editor/test_codex_bridge.js *> parent-recovery-report/codex-json-tests.log
+          if ($LASTEXITCODE -ne 0) { Get-Content parent-recovery-report/codex-json-tests.log; exit $LASTEXITCODE }
           $env:NATIVE_ACCEPTANCE_JOB_OBJECT = (Resolve-Path tools/codebuddy_cli/node_modules/@tencent-ai/codebuddy-code/bin/native/win32-x64/job-object.node).Path
           $editor = '${{ matrix.bin }}'.Replace('.console.exe', '.exe')
           python -X utf8 tests/editor/run_native_acceptance.py --godot $editor --node (Get-Command node).Source --scenario parallel-parent-restart --restore-confirmation --out parent-recovery-report/confirmation.json

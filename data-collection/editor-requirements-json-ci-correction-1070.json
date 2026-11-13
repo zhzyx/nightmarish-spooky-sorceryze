@@ -1,0 +1,74 @@
+{
+  "issue": 1070,
+  "request_id": "editor-requirements-json-diagnostics-20261113",
+  "recorded_at": "2026-11-13T16:31:33.756808+00:00",
+  "source_head": "54cb27015062671bc8621c338d283cde6896bd4d",
+  "failed_pr": 1073,
+  "failed_signed_candidate": "6327a2df8e124158acb6b0d74f666b66707eb7ef",
+  "ci_failure": {
+    "python_version": "3.15.2",
+    "log_basename": "pr1073-ci-failed.log",
+    "log_sha256": "c499c31888e9d4b9f9c7f053ddee376c7ee7645e6deda8d98caa87f7f46fe8be",
+    "failed_assertion": "assertRaises(RecursionError) around json.loads of a 10,000-level array",
+    "result": "42 tests: 41 passed, one fixture-precondition failure. Later Node and native-confirmation commands were skipped; no product crash established."
+  },
+  "test_input": {
+    "path": "customizations/components/godot-host/test_requirements_agent.py",
+    "sha256": "0d0f4ced01c51644f7f68b711a04d00b7ee8ce4ede6c3f1ecc90a97d5d82195f"
+  },
+  "product_inputs_unchanged": {
+    "customizations/components/godot-host/requirements_agent.py": "fdcb7b87c59653940ac8ee03ab5b507a6ff51024dc97d7e90425717b08c4d9f5",
+    "tools/codex_cli/godot_bridge.js": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab"
+  },
+  "correction": "Keep the same deep-array and long-integer real inputs. Independently observe whether the active decoder accepts a non-object or raises ValueError/RecursionError. Require the actual intake to reject at the corresponding exact schema or parser stage. Separately inject only those two decoder-limit exceptions for the exact model-returned raw payload after the actual adapter callback; other JSON loads remain real. Every case checks the precise failure journal, model call count, absent proposal and zero Issue/comment publication. Bare and escaped Unicode protection remains covered. No deeper fixed threshold, skip or interpreter downgrade added.",
+  "checks": [
+    {
+      "runtime": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+      "passed": 42,
+      "failed": 0,
+      "log_basename": "python312.log",
+      "log_sha256": "9695224b2358d2a4244200625cfa320331f4f9fd9efa9308136244786499efcf",
+      "decoder_observation": {
+        "nested_10000": {
+          "decoder": "limited",
+          "exception": "RecursionError",
+          "expected_intake_stage": "proposal_json"
+        },
+        "integer_4301": {
+          "decoder": "limited",
+          "exception": "ValueError",
+          "expected_intake_stage": "proposal_json"
+        }
+      },
+      "decoder_evidence_sha256": "c8942a120c56ee2430f792d13a00d756f03abeb0fa9275128773004e75735c06"
+    },
+    {
+      "runtime": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+      "passed": 42,
+      "failed": 0,
+      "log_basename": "python314.log",
+      "log_sha256": "489f1dd75303b631192c704a1371c69a7b8f5e24255c80e1d811603f27265eee",
+      "decoder_observation": {
+        "nested_10000": {
+          "decoder": "accepted",
+          "type": "list",
+          "expected_intake_stage": "proposal_schema"
+        },
+        "integer_4301": {
+          "decoder": "limited",
+          "exception": "ValueError",
+          "expected_intake_stage": "proposal_json"
+        }
+      },
+      "decoder_evidence_sha256": "ca586517a0cebf9f3a4389a0c7a1c0d69149fc7083c66bd765e92886d0186e0c"
+    }
+  ],
+  "static_checks": [
+    "Ruff check and format --check passed",
+    "mypy one changed test file passed",
+    "repository file_format unchanged; LF",
+    "git diff --check passed"
+  ],
+  "prior_evidence_preserved": "All committed reports and method revision 1/2 remain unchanged. No provider, native five-stage consumer or original r17 operation was rerun; the product input bytes remain identical. Overlay remains unexecuted.",
+  "pending": "Exact-candidate Python3.15 CI, independent review and root-owned delivery remain required; local 3.12/3.14 evidence is not a 3.15 pass."
+}

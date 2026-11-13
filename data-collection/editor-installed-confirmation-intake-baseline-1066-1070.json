@@ -1,0 +1,717 @@
+{
+  "schema_version": 1,
+  "issue_number": 1070,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1070",
+  "parent_issue_number": 773,
+  "related_issue_numbers": [
+    948,
+    951
+  ],
+  "parent_request_id": "game-production-goal-20261111",
+  "recorded_at_utc": "2026-11-13T14:57:19.621534+00:00",
+  "state": "installed_1066_baseline_original_confirmation_restored_first_intake_failed",
+  "path_base": {
+    "logical_artifact": "Relative to the authorized parent773 host-private evidence root P. SHA256/bytes identify retained original evidence; private raw files are not attached or published. No personal absolute path is required to resolve the public record.",
+    "repository_relative_path": "Repository root at installed_main_revision, not the later1070 candidate.",
+    "installation_relative_path": "Formal installation root resolved by installed.local.json.",
+    "workspace_and_operator_hashes": "SHA256 of the exact UTF-8 values captured by native approval; plaintext private workspace/operator omitted."
+  },
+  "cutoff": "R17 ack5 first intake failure only. A later retry, its journal or outcome requires a separate append-only record. This evidence does not replace or count later attempts.",
+  "scope": "Actual formal installation and root-owned original-game design reconfirmation on the installed1066 binary. First subsequent status request failed during requirements intake before a successful production_control result. No new product tests or production actions were run by this report conversion.",
+  "installed_main_revision": "ec582b134ad48e4c3eab02bafbe901886ac303b4",
+  "delivery": {
+    "pull_request": 1066,
+    "head": "acd334de70e61614f156a19850681c39c71f6a6c",
+    "base_at_premerge": "2acecd196a1968cdf71e43419d22bd83a262552f",
+    "main": "ec582b134ad48e4c3eab02bafbe901886ac303b4",
+    "merged_at": "2026-11-13T14:33:54Z",
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1066",
+    "actual_premerge_checks": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:21:55Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441972288/job/131941606753",
+        "name": "issue-association",
+        "startedAt": "2026-11-13T14:21:42Z",
+        "status": "COMPLETED",
+        "workflowName": "GongGong Issue association"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:15Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441972771/job/131941603340",
+        "name": "📊 Static checks / Code style, file formatting, and docs",
+        "startedAt": "2026-11-13T14:21:42Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:00Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441949055/job/131941549839",
+        "name": "📊 Static checks / Code style, file formatting, and docs",
+        "startedAt": "2026-11-13T14:21:36Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:15Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441972771/job/131941920444",
+        "name": "🤖 Android",
+        "startedAt": "2026-11-13T14:22:15Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:00Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441949055/job/131941786670",
+        "name": "🤖 Android",
+        "startedAt": "2026-11-13T14:22:00Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:15Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441972771/job/131941920914",
+        "name": "🍏 iOS",
+        "startedAt": "2026-11-13T14:22:15Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:00Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441949055/job/131941786646",
+        "name": "🍏 iOS",
+        "startedAt": "2026-11-13T14:22:00Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:15Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441972771/job/131941921707",
+        "name": "🐧 Linux",
+        "startedAt": "2026-11-13T14:22:15Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:00Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441949055/job/131941786798",
+        "name": "🐧 Linux",
+        "startedAt": "2026-11-13T14:22:00Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:15Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441972771/job/131941920724",
+        "name": "🍎 macOS",
+        "startedAt": "2026-11-13T14:22:15Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:00Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441949055/job/131941787248",
+        "name": "🍎 macOS",
+        "startedAt": "2026-11-13T14:22:00Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:15Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441972771/job/131941921521",
+        "name": "Compile affected Windows engine targets",
+        "startedAt": "2026-11-13T14:22:15Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:00Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441949055/job/131941788191",
+        "name": "Compile affected Windows engine targets",
+        "startedAt": "2026-11-13T14:22:00Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:15Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441972771/job/131941921531",
+        "name": "Compile affected Metal targets",
+        "startedAt": "2026-11-13T14:22:15Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:00Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441949055/job/131941786417",
+        "name": "Compile affected Metal targets",
+        "startedAt": "2026-11-13T14:22:00Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:15Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441972771/job/131941921659",
+        "name": "🌐 Web",
+        "startedAt": "2026-11-13T14:22:15Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:00Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441949055/job/131941786473",
+        "name": "🌐 Web",
+        "startedAt": "2026-11-13T14:22:00Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:22:00Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441949055/job/131941788841",
+        "name": "🏁 Windows",
+        "startedAt": "2026-11-13T14:22:00Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-13T14:33:45Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43441972771/job/131941919593",
+        "name": "🏁 Windows / Editor (target=editor)",
+        "startedAt": "2026-11-13T14:22:17Z",
+        "status": "COMPLETED",
+        "workflowName": "🔗 GHA"
+      }
+    ],
+    "skipped_checks_are_not_passed": true
+  },
+  "main_input_blobs": {
+    "customizations/components/godot-host/requirements_agent.py": {
+      "git_blob": "833b3f6d43deb0b88c792fc3ec2ed9d1a1541312",
+      "git_blob_content_sha256": "96ae570e8aafaf211c8566482c9e661288bd8635405ce72080a8095c189e20e5"
+    },
+    "customizations/components/godot-host/bridge.py": {
+      "git_blob": "1b7556815ac5c518ff9b798cefb17d2caa497b39",
+      "git_blob_content_sha256": "2d00a2acbeccdf9cc5b88e731c4eb635457b7edd5107e02e75950ab90869b3c0"
+    },
+    "tools/codex_cli/godot_bridge.js": {
+      "git_blob": "03447eeb8e5780a3555d352a07c8974c07ec7922",
+      "git_blob_content_sha256": "4403f2eba17dfb9ca78b0f64c983e8ed79adec3f1a2c2517c125fa423fb5c803"
+    },
+    "tools/codex_cli/action_schema.js": {
+      "git_blob": "8e952a2a8973b5643da434631c4283339a5977b9",
+      "git_blob_content_sha256": "7cf1850023f2c1f2aca6a95c8c1d427936b7c5d871a40208b3e1e19fa52461c7"
+    },
+    "tools/codebuddy_cli/godot_bridge.js": {
+      "git_blob": "19e5e03bc701870d76e42da97f4d12a816c629bb",
+      "git_blob_content_sha256": "44d3c4ccb5b13e5601419c7478f2dc9fe02d888e63df186897ab7c16f6b902bc"
+    },
+    "editor/docks/ai_chat_sub_agents.cpp": {
+      "git_blob": "30b58d6ce9319ff911b7ab73e23ba36789e82e13",
+      "git_blob_content_sha256": "28011f8ff3e2d7202ad54dd44c6fe49dfb9ce1bbd2019b30388e72787a288b6e"
+    },
+    "editor/docks/ai_chat_gonggong.cpp": {
+      "git_blob": "c037766f31f0670362df88bafc46d56835020790",
+      "git_blob_content_sha256": "6e6e65213b32f551cc899256cc689217513c3349f1f9412baa26db47f5a41a8b"
+    }
+  },
+  "formal_build": {
+    "receipt": {
+      "logical_artifact": "production1066-baseline-private-originals/clean-build-receipt.json",
+      "sha256": "f99fca81f435c8140381f09b0d978e25734eea7d1285fff19a08a3b00450c591",
+      "bytes": 1073
+    },
+    "revision": "ec582b134ad48e4c3eab02bafbe901886ac303b4",
+    "clean_source": true,
+    "source_digest": "6ef78d0cf4c255c3619b00f0fd826e18c01fd9f2b94b660557fdc0607e49f0bb",
+    "native": {
+      "status": "built",
+      "key": "28f0200eef13e0801b6898dd143959989389e784586515d200423b666fd548d8",
+      "reason": "",
+      "artifact_sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+      "producer_head": "ec582b134ad48e4c3eab02bafbe901886ac303b4",
+      "consumer_head": "ec582b134ad48e4c3eab02bafbe901886ac303b4",
+      "outputs": {
+        "bin/godot.windows.editor.x86_64.exe": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+        "bin/godot.windows.editor.x86_64.console.exe": "9bda558e450358f5f2da3309df8a1e1b52e42970548eef4d2c3f34f4a3fe40c1"
+      }
+    },
+    "console_sha256": "9bda558e450358f5f2da3309df8a1e1b52e42970548eef4d2c3f34f4a3fe40c1",
+    "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "native_test_cases_passed": 99,
+    "assertions_passed": 1795,
+    "test_cases_skipped": 1486,
+    "log": {
+      "logical_artifact": "build-formal-production-1066.log",
+      "sha256": "f99509e285e5a034d5c8d4a9f77b5ac5bd5e3dbe98f2c486ce62f2149c270f7e",
+      "bytes": 2170
+    },
+    "diagnostics_retained": [
+      "Two Object freed/unreferenced while signal emitted errors",
+      "EditorSettings not instantiated warning/error in test harness"
+    ],
+    "interpretation": "Strict clean-main build/relink completed and selected native tests report SUCCESS. Log is not warning-free or full-suite/runtime acceptance."
+  },
+  "formal_installation": {
+    "manifest": {
+      "logical_artifact": "production1066-baseline-private-originals/installed.local.json",
+      "sha256": "4f598938534dc2f1de2a8a573c53c47444522fde30b917dfd3cbf12240f0c52d",
+      "bytes": 857
+    },
+    "inventory": [
+      {
+        "installation_relative_path": "bin/godot.windows.editor.x86_64.console.exe",
+        "sha256": "9bda558e450358f5f2da3309df8a1e1b52e42970548eef4d2c3f34f4a3fe40c1",
+        "bytes": 242688
+      },
+      {
+        "installation_relative_path": "bin/godot.windows.editor.x86_64.exe",
+        "sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+        "bytes": 176806400
+      },
+      {
+        "installation_relative_path": "bin/tianshu-ui.json",
+        "sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+        "bytes": 67422
+      }
+    ],
+    "actual_files_rehashed_and_build_receipt_matched": true,
+    "success_log": {
+      "logical_artifact": "install-production1066.log",
+      "sha256": "d82cea44308abdf582d674ece0b7ee7d2084ea649980940ec8fe1b09704cbca8",
+      "bytes": 586
+    }
+  },
+  "primary_advance": {
+    "record": {
+      "logical_artifact": "primary-production1066-advance.json",
+      "sha256": "186d935f8a243bab1ec74b1f445a3c6cdaad0e5e1aed9314be157ee27f82400f",
+      "bytes": 275
+    },
+    "preserved_files": [
+      {
+        "repository_relative_path": "project/games/BeaconRun-773-final/game.gd",
+        "sha256": "27d4ca5491b280b7e17ea7503a5299107878edd28cb5a8294158ba0ac145efe8",
+        "backup_and_current_match": true
+      },
+      {
+        "repository_relative_path": "project/games/BeaconRun-773-final/main.tscn",
+        "sha256": "bd5fcbadb544b81731d31ac8672a9b2354ec4f09aab2bbad56f60927dea30e0d",
+        "backup_and_current_match": true
+      },
+      {
+        "repository_relative_path": "project/games/BeaconRun-773-final/project.godot",
+        "sha256": "5beda02f6a56e0c1682501424e86100e9ec7ca54db9f5851c98e8085ef9a3724",
+        "backup_and_current_match": true
+      },
+      {
+        "repository_relative_path": "project/games/BeaconRun-773-final/verification.txt",
+        "sha256": "a7fd53e086ca80d0ee4335cd57263f2cf588bb5904349fd5ee45112b561c2d4c",
+        "backup_and_current_match": true
+      },
+      {
+        "repository_relative_path": "project/games/BeaconRun-773-final/verify.gd",
+        "sha256": "6d8c154b9bc213f95e29cfe9a83c901116571f8cba4ae9de0ef6c63e23b56b51",
+        "backup_and_current_match": true
+      },
+      {
+        "repository_relative_path": "project/games/BeaconRun-773/beacon.gd",
+        "sha256": "47429e13813191168fef5bfa910e1551966f5dc4f9da8983681499ae916955da",
+        "backup_and_current_match": true
+      },
+      {
+        "repository_relative_path": "project/games/BeaconRun-773/beacon.tscn",
+        "sha256": "88a3d1a4fad6732e30dbcf3bf44d410d1e7ee85bad01e5f5f9cba0e53f317cbd",
+        "backup_and_current_match": true
+      },
+      {
+        "repository_relative_path": "project/games/BeaconRun-773/game.gd",
+        "sha256": "8597735703123fb8c4f5669a5109e49e7048815ef0fdd8b72e30941cdc73718d",
+        "backup_and_current_match": true
+      },
+      {
+        "repository_relative_path": "project/games/BeaconRun-773/main.tscn",
+        "sha256": "4bc844cb63fda533a7292285fd9d14866df736704fcd3320af8b086f4d72d870",
+        "backup_and_current_match": true
+      },
+      {
+        "repository_relative_path": "project/games/BeaconRun-773/player.gd",
+        "sha256": "3947cc759f0bb2fbf082203bf9b17b0eaddbf5a08ca00cc5b91fb42c6eee41e7",
+        "backup_and_current_match": true
+      },
+      {
+        "repository_relative_path": "project/games/BeaconRun-773/player.tscn",
+        "sha256": "92a08ead2948b0c46e47295befe87aecab79fecf68fc1aab67a7eb03b27450de",
+        "backup_and_current_match": true
+      },
+      {
+        "repository_relative_path": "project/games/BeaconRun-773/project.godot",
+        "sha256": "d6e1bd77ace07dd7a46c8d6a61f152692c59dc39905807ce0c4acf5247c41beb",
+        "backup_and_current_match": true
+      },
+      {
+        "repository_relative_path": "project/games/BeaconRun-773/verification.txt",
+        "sha256": "a7fd53e086ca80d0ee4335cd57263f2cf588bb5904349fd5ee45112b561c2d4c",
+        "backup_and_current_match": true
+      },
+      {
+        "repository_relative_path": "project/games/BeaconRun-773/verify.gd",
+        "sha256": "544abf65cd11f59f1cdc39e1bb05eec3fccd9916fa122c4a443a447653fafd5b",
+        "backup_and_current_match": true
+      }
+    ],
+    "count": 14,
+    "scope": "These named local artifacts only, not a claim that all possible primary local changes were audited."
+  },
+  "live_upgrade": {
+    "record": {
+      "logical_artifact": "live-upgrade-production1066.json",
+      "sha256": "d056905a93086b87e3ca6daab1faf8382a9f1e2447918a3432250a1f4e7bb487",
+      "bytes": 1234
+    },
+    "changes": [
+      {
+        "path": ".github/workflows/blender_geometry_windows.yml",
+        "before": null,
+        "after": "f22e6a8ecff6db0f649bd76c93426ce055760a7926b04b8f40428083f4289928"
+      },
+      {
+        "path": ".github/workflows/windows_builds.yml",
+        "before": "c74e79f848c12cd24a6d768501bf785683a0176ca37e16c7676a1fa9ee90645f",
+        "after": "d748fd7990856807e57bb2e4e84d7927d95a11513ec8577caa9eb6bb4b269664"
+      },
+      {
+        "path": "isolated-editor/godot.windows.editor.x86_64.console.exe",
+        "before": "c313911af189a808b5200b61b48c7ea6d6285378e7d6db712df9ee34b6ee5d9d",
+        "after": "9bda558e450358f5f2da3309df8a1e1b52e42970548eef4d2c3f34f4a3fe40c1"
+      },
+      {
+        "path": "isolated-editor/godot.windows.editor.x86_64.exe",
+        "before": "63a356e5679302b842ca14a4ddcdb9a463dc642c59c0fa4d5323e755d1c44148",
+        "after": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9"
+      }
+    ],
+    "recorded_stopped_before_change": true,
+    "prior_r16_exit_code": 0,
+    "source_and_formal_inventory_pairs_rehashed": 686,
+    "launch_recursive_host_entries_rehashed": 689,
+    "inventory_count_explanation": "686 is the exact tracked host-input plus formal3 inventory update set; launch records689 files in recursive host directories, including retained extras. These are different sets and neither count is substituted for the other.",
+    "full_inventory_evidence": {
+      "logical_artifact": "production1066-installed-original-confirmation-draft.json",
+      "sha256": "c56bdfb11a033f514a36f08f2bb8c91feb1984feb3fa8349112c13b532371bb9",
+      "bytes": 159265
+    },
+    "engine_sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+    "console_sha256": "9bda558e450358f5f2da3309df8a1e1b52e42970548eef4d2c3f34f4a3fe40c1",
+    "mocked_services": [],
+    "launch": {
+      "logical_artifact": "live-actual-r17/launch.json",
+      "sha256": "8d78cf7f6c5fa406f79fe77b9604fc499ac8fa4f4e17e49e6d8f22369cc98723",
+      "bytes": 85627
+    }
+  },
+  "original_design_reconfirmation": {
+    "parent_id": 20,
+    "conversation_id_sha256": "4158814193863a6dafd766d57a60e820fba7b95d6a7f66a6d2729d81e298f0a5",
+    "original_game_issue_number": 4,
+    "original_request_id": "requirement-93e081af388f1c586c3cf933ab87fa32",
+    "native_popup": {
+      "name": "WorkOrderConfirmation",
+      "title": "重新确认原设计",
+      "ok_disabled": false,
+      "raw_design_summary_utf8_sha256": "d93072a0557c2d4f2efd55a232dfd73bb924a2aac4f6ee204f1a375fdf382a31",
+      "meaning": "Local original-design confirmation was missing. The original operator could reconfirm the displayed original issue/request/workspace/design SHA. Only confirmation would be saved; production required a later explicit continuation."
+    },
+    "actual_control": {
+      "name": "confirm",
+      "control": "WorkOrderConfirmation",
+      "expected_parent": 20,
+      "expected_summary_sha256": "d93072a0557c2d4f2efd55a232dfd73bb924a2aac4f6ee204f1a375fdf382a31"
+    },
+    "actual_after_confirmation": "Original operator reconfirmed and saved original design; no work item started; explicit further continuation required.",
+    "persisted_metadata_observation": {
+      "record_key": "f15680998b3f42fc7500b82969066f68a37f05ede1baa27bee62ff4e6f9ba8c3",
+      "binding": {
+        "issue_number": "4",
+        "request_id": "requirement-93e081af388f1c586c3cf933ab87fa32",
+        "sha256": "0fb85b803cc0cc6b3a704e6782e65cb84c490b94fc43e6979cf98c97132e6b6b"
+      },
+      "workspace_utf8_sha256": "3a3c403bcbdb56293dfe92d5eeb07ca08ba5d00681653c4b052511637deb0cf3",
+      "operator_utf8_sha256": "9f20a297898f25e3a3a025fb18cb1e5aa2300c128cea2f60e3a8476d3034480a",
+      "operator_matches_original_captured_approval": true,
+      "before_metadata_sha256": "d0fdea73495685914a92914ffbb87dd8bdf6ea77ecf60680de85df9221d90289",
+      "after_metadata_sha256": "10f69bfb29e371c546d19f1d483e0b52027f34ebb8844adf87642e64621bbd1b",
+      "observed_current_metadata_matches_after": true,
+      "addition_evidence": "Native recovery popup requires missing confirmation before showing; guarded actual OK reports persistence readback. Current disk metadata equals exact after-confirm SHA and contains expected original approval. Before audit retained whole-file hash only, not full metadata bytes; no claim of a complete raw metadata diff or that no unrelated metadata field changed."
+    },
+    "source": {
+      "path": "editor/docks/ai_chat_sub_agents.cpp",
+      "blob": "30b58d6ce9319ff911b7ab73e23ba36789e82e13",
+      "lines": [
+        1562,
+        1619,
+        1625,
+        1627,
+        1632
+      ]
+    },
+    "static_comparison": {
+      "parent_identity": true,
+      "children": true,
+      "receipt_hashes": true,
+      "registration_hashes": true,
+      "external_receipts_not_read": true,
+      "excluded_linked_or_external_registration_paths": true
+    },
+    "static_unchanged": true,
+    "children_sha256": "509a6fbdfad6ab9e9f5e8f9598bc3a701009c768c073177e99ecbe75951ce56b",
+    "children": {
+      "21": {
+        "parent": 20.0,
+        "state": "review",
+        "terminal_receipt_sha256": "36cca4e2ec8f0170eccb565a8f98f14adf68d1c4618c77347f1e8599dd9d7556"
+      },
+      "22": {
+        "parent": 20.0,
+        "state": "review",
+        "terminal_receipt_sha256": "dd0004b6ffb45d12a8090b548baae3e277bd0c2a30707b1b0263fe3061208810"
+      },
+      "23": {
+        "parent": 20.0,
+        "state": "interrupted",
+        "terminal_receipt_sha256": null
+      },
+      "24": {
+        "parent": 20.0,
+        "state": "completed",
+        "terminal_receipt_sha256": null
+      },
+      "25": {
+        "parent": 20.0,
+        "state": "completed",
+        "terminal_receipt_sha256": null
+      }
+    },
+    "known_receipts_count": 5,
+    "registrations_count": 6,
+    "known_receipts_and_registrations_rehashed_at_draft_time": true,
+    "scope": "Preservation of all five captured child dictionaries, five known project-local receipts and six project-local registration files during confirmation interval. A/B remain review, C remains interrupted; no changed registration or C dispatch evidence. External worker trees/processes and unrelated external transcripts were not independently scanned.",
+    "before": {
+      "logical_artifact": "r17-before-confirm.json",
+      "sha256": "ceb1f3b1291a3fc3ab135555e3cf5a825085221e05d41f9c70dc9d67a5122b44",
+      "bytes": 4443899
+    },
+    "after": {
+      "logical_artifact": "r17-after-confirm.json",
+      "sha256": "a5ad2676bd682882fcbe98687ff3a1fafd172cfaca674041beda05520d566d7d",
+      "bytes": 4444161
+    }
+  },
+  "first_status_attempt": {
+    "requested_tool": "production_control",
+    "requested_arguments": {
+      "action": "status"
+    },
+    "request_ack": {
+      "logical_artifact": "live-actual-r17/ack-4.json",
+      "sha256": "d2e5f479966ae81faa70fed20fd1524e2cbe0fe8e90d228690c243338a5cfdbf",
+      "bytes": 345304
+    },
+    "failure_ack": {
+      "logical_artifact": "live-actual-r17/ack-5.json",
+      "sha256": "0805c9e99681cd2dd9c5a4d1a1e49275a1dcddcc782eda2158d48ec5367d9812",
+      "bytes": 345564
+    },
+    "stage": "Yanshi requirements intake before development execution",
+    "actual_error": "Extra data: line 3 column 1 (char 286)",
+    "production_control_success_observed": false,
+    "kuafu_incident": "ccc79b36f5fa1a2fc43e790b3a3f6b6ff801e22c4665406b791b246e78c3394e",
+    "kuafu_received_evidence": {
+      "logical_artifact": "r17-intake-failure-received.json",
+      "sha256": "3eb61c70a807ca88aee36e3c3837d57bf9c43a0b6ad462225df6f3712ea88d9f",
+      "bytes": 880
+    },
+    "diagnosis_at_cutoff": "Actual source/raw-output and remote-effect readback remained pending; parse failure does not establish that no remote request took effect.",
+    "later_retry_included": false
+  },
+  "private_original_references": [
+    {
+      "logical_artifact": "pr1066-premerge.json",
+      "sha256": "3a60e4b50250f491833d000c3e2ac663677f35637cb5387043a23aa8b21c7f83",
+      "bytes": 7944
+    },
+    {
+      "logical_artifact": "pr1066-merged.json",
+      "sha256": "64eee219b9f0d6af1b7bb62dcf070791b1b04faed3afb0ec337e53c94f54a0f6",
+      "bytes": 8177
+    },
+    {
+      "logical_artifact": "build-formal-production-1066.log",
+      "sha256": "f99509e285e5a034d5c8d4a9f77b5ac5bd5e3dbe98f2c486ce62f2149c270f7e",
+      "bytes": 2170
+    },
+    {
+      "logical_artifact": "install-production1066.log",
+      "sha256": "d82cea44308abdf582d674ece0b7ee7d2084ea649980940ec8fe1b09704cbca8",
+      "bytes": 586
+    },
+    {
+      "logical_artifact": "primary-production1066-advance.json",
+      "sha256": "186d935f8a243bab1ec74b1f445a3c6cdaad0e5e1aed9314be157ee27f82400f",
+      "bytes": 275
+    },
+    {
+      "logical_artifact": "primary-before-production1066/manifest.json",
+      "sha256": "309ad808a58a5e64b916a3d073d3b4d66d0e90aff981d9278cf14ef695d78d79",
+      "bytes": 1788
+    },
+    {
+      "logical_artifact": "live-upgrade-production1066.json",
+      "sha256": "d056905a93086b87e3ca6daab1faf8382a9f1e2447918a3432250a1f4e7bb487",
+      "bytes": 1234
+    },
+    {
+      "logical_artifact": "live-installation-before-production1066/manifest.json",
+      "sha256": "f8a55d6f10c329aa9b7b86b73e20ce987c246ada10466cb674e77cdd2a41284a",
+      "bytes": 895
+    },
+    {
+      "logical_artifact": "live-actual-r16/exit.json",
+      "sha256": "81868a6e94ffc0178bf833deb1c9013d9fab4ee95ddb876a5e8ec4f1d26376d2",
+      "bytes": 21
+    },
+    {
+      "logical_artifact": "live-actual-r17/launch.json",
+      "sha256": "8d78cf7f6c5fa406f79fe77b9604fc499ac8fa4f4e17e49e6d8f22369cc98723",
+      "bytes": 85627
+    },
+    {
+      "logical_artifact": "live-actual-r17/process.json",
+      "sha256": "b6ba86199b9a190f4b77f415c044c124ee387c89017222a7a1654019756fe4fe",
+      "bytes": 461
+    },
+    {
+      "logical_artifact": "live-actual-r17/ready.json",
+      "sha256": "502fce21219d6f1108b9a73200041728d6a58596ade6bc2e292245bd10b27ca0",
+      "bytes": 342405
+    },
+    {
+      "logical_artifact": "live-actual-r17/driver-source.gd",
+      "sha256": "c9137890ad9aec98e6735c28a0181e94bfa8425af94bd5b77fbbdfda05280129",
+      "bytes": 13917
+    },
+    {
+      "logical_artifact": "live-actual-r17/ack-1.json",
+      "sha256": "4197f69e45064ef37f30248bf63064c2bb3474d5a1ace039fd13a9195f204676",
+      "bytes": 345185
+    },
+    {
+      "logical_artifact": "live-actual-r17/ack-2.json",
+      "sha256": "17360ec4cafbdcf366e45837c064babe98d6f0591c8ca9f97507716da79466a7",
+      "bytes": 344697
+    },
+    {
+      "logical_artifact": "live-actual-r17/ack-4.json",
+      "sha256": "d2e5f479966ae81faa70fed20fd1524e2cbe0fe8e90d228690c243338a5cfdbf",
+      "bytes": 345304
+    },
+    {
+      "logical_artifact": "live-actual-r17/ack-5.json",
+      "sha256": "0805c9e99681cd2dd9c5a4d1a1e49275a1dcddcc782eda2158d48ec5367d9812",
+      "bytes": 345564
+    },
+    {
+      "logical_artifact": "r17-confirm-ready.json",
+      "sha256": "21e36b1a2e7c28f1294e9520372c25be0a58522610882e220a9fa56fc57ba770",
+      "bytes": 229
+    },
+    {
+      "logical_artifact": "r17-before-confirm.json",
+      "sha256": "ceb1f3b1291a3fc3ab135555e3cf5a825085221e05d41f9c70dc9d67a5122b44",
+      "bytes": 4443899
+    },
+    {
+      "logical_artifact": "r17-after-confirm.json",
+      "sha256": "a5ad2676bd682882fcbe98687ff3a1fafd172cfaca674041beda05520d566d7d",
+      "bytes": 4444161
+    },
+    {
+      "logical_artifact": "r17-intake-failure-received.json",
+      "sha256": "3eb61c70a807ca88aee36e3c3837d57bf9c43a0b6ad462225df6f3712ea88d9f",
+      "bytes": 880
+    },
+    {
+      "logical_artifact": "r17-intake-failure-detect.log",
+      "sha256": "583e9cc7f5006a413d60a3390c3105d9ceba8d43d0b87f3d0778b39d49459037",
+      "bytes": 415
+    },
+    {
+      "logical_artifact": "r17-intake-failure-receive.log",
+      "sha256": "ddc10ef9c6ca66bea55ce381e3e121607b7881c13fe9e25517fb2505f9e579c2",
+      "bytes": 6132
+    },
+    {
+      "logical_artifact": "parent-recovery-prepare-confirm.py",
+      "sha256": "e6971c293fc345a723ff097c1cbcd9cbab33c04852d42b3cac5dd53dff22d969",
+      "bytes": 2982
+    },
+    {
+      "logical_artifact": "parent-recovery-static-audit.py",
+      "sha256": "a057f6a50243634470de89aba2c81b6c448606621464507c15fae3a434edbda5",
+      "bytes": 5828
+    },
+    {
+      "logical_artifact": "upgrade-live-production.py",
+      "sha256": "ccd94f0cb8a246c442f130375e29e1a2c832ff47f8f2ceccb9412bd897b07e62",
+      "bytes": 3155
+    },
+    {
+      "logical_artifact": "production1066-installed-original-confirmation-draft.json",
+      "sha256": "c56bdfb11a033f514a36f08f2bb8c91feb1984feb3fa8349112c13b532371bb9",
+      "bytes": 159265
+    }
+  ],
+  "redaction": "Only selected technical fields and hashes are published. No machine paths, account configuration, historical conversation text, raw model output or private issue journal is included. Hashes reference retained private originals; this is not a replacement of those originals.",
+  "remaining_unknown": [
+    "First post-confirmation production status request failed during intake; there is no successful production_control result at this cutoff.",
+    "No resumed production, repair budget use, C dispatch, A/B new acceptance or original parent business completion is claimed.",
+    "No claim of complete raw before/after metadata diff: the before audit retained a whole-file hash, and expected native approval was read back after confirmation.",
+    "Current candidate1070 source behavior, same-binary update/rollback, CI/main/install and original failing intake recovery are not established by this1066 baseline.",
+    "This report does not close1070,951,948 or parent773. Later retry failures or success must be appended with exact new observations."
+  ]
+}

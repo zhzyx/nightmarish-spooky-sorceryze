@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-a4122abc2392582269dc817a2bd0cc3d15f50796e813f0fe39c36def5eec68d4",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1070",
+  "occurred_at": "2026-11-13T16:31:33.765808+00:00",
+  "evidence_refs": [
+    "kuafu-695aaf8b8f035bcf3bf719b5302f51237503cee3",
+    "learn-7ac110075539ac326e9b1608c89179d803ea61d6ce622803d1c93b8a4f6d36a5"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "validate-data-contract-at-source-boundary",
+    "revision": 3,
+    "previous": "24f1aaa9a9ab96b4918096d60aae2003fbab91d647b3581a6a6f2978e92ac4b7",
+    "action": "revise",
+    "details": {
+      "method": "For a no-tools data consumer, explicitly bind the producer to the typed payload schema and retain bounded stage-specific diagnostics before temporary output cleanup. Verify the real producer receives the schema, not only a parser helper. Derive offsets only from structured parser fields; quoted exception messages are untrusted. Check UTF-8 validity both before and after JSON decoding. Observe the current interpreter independently before asserting a parser-limit stage. A fixed syntactically valid stress input may instead reach safe schema rejection. Exercise defensive exception branches separately with an exact-payload fault after the real adapter callback.",
+      "when": "A successful transport envelope contains an unconstrained string that a downstream consumer must parse as a separate strict data document.",
+      "counterexample": "Ordinary chat intentionally returns prose and action envelopes, while routing uses a different data schema. Do not apply a requirements schema to all no-tools calls; do not infer the parse layer of an old failure whose raw output is gone. A parser can accept escaped invalid Unicode even when the original wire is ASCII; runtime C decoder depth limits can differ from Python recursion settings. PR1073 Python3.15.2 accepted 10,000 nested arrays that Python3.12.14 rejects; Python3.14.3 also accepts this input. A locally proven depth limit is not a portable CI precondition.",
+      "trial_plan": "On a future pre-registered cross-runtime isolated trial, retain fixed deep-array, long-integer and invalid-Unicode inputs. Independently observe each runtime decoder, then require exact intake parser-stage or schema-stage rejection, with fixed private diagnostics, known adapter-call boundary and no publication. Independently inject RecursionError and integer-limit ValueError for the exact returned raw payload; delegate other JSON loads to the real parser. Also exercise malformed quoted-position data and valid typed/shared-chat controls. Do not infer a limit from a previous runtime, skip an accepting runtime, enlarge depth until it fails or retrospectively mark this revision verified."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-requirements-json-ci-correction-1070.json",
+        "sha256": "9b0c100062ce6e173d050515132a7243e551fdfe327bc37faa3751a692426f52"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-requirements-json-diagnostics-20261113/kuafu-695aaf8b8f035bcf3bf719b5302f51237503cee3.json",
+      "sha256": "a6a5162f6c4445c0d2b75670da45031e41f1c5c056be03493f66cf8d90b123b1"
+    }
+  },
+  "sha256": "63e47e4cd085cbc58f11edb04a6fb6e4105249127f7bccfa1cd531b2ca8f52e6"
+}

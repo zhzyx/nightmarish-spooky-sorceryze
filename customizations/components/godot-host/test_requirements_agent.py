@@ -500,11 +500,14 @@ class RequirementsTests(unittest.TestCase):
                 self.assertEqual(payload["available_tools"], [])
                 self.assertFalse(payload["tool_context"]["permission_enabled"])
                 self.assertEqual(payload["agent_id"], expected_agent)
-                if backend == "codebuddy":
+                if backend == "codebuddy" or expected_agent == "yanshi":
                     self.assertEqual(payload["response_format"], "json")
                     self.assertNotIn("For the CLI envelope", payload["messages"][0]["content"])
+                    if backend == "codex":
+                        self.assertEqual(payload["requirements_contract"], {"categories": ["requirement"]})
                 else:
                     self.assertNotIn("response_format", payload)
+                    self.assertNotIn("requirements_contract", payload)
                     self.assertIn("For the CLI envelope", payload["messages"][0]["content"])
                 return subprocess.CompletedProcess(
                     args,
@@ -524,6 +527,252 @@ class RequirementsTests(unittest.TestCase):
         )
         self.assertEqual(routed["finish_reason"], "stop")
         self.adapter.call.assert_not_called()
+
+    def test_invalid_response_journal_preserves_identity_and_requires_explicit_retry(self):
+        secret = "ghp_" + "x" * 24
+        self.adapter.call.side_effect = lambda *args: {
+            "text": '{}\n\n{"private":"' + secret + '"}',
+            "finish_reason": "stop",
+        }
+        with self.assertRaises(module.ResponseFailure) as caught:
+            self.invoke()
+        diagnostic = caught.exception.diagnostic
+        self.assertEqual((diagnostic["stage"], diagnostic["code"]), ("proposal_json", "invalid_json"))
+        self.assertEqual((diagnostic["position"], diagnostic["line"], diagnostic["column"]), (4, 3, 1))
+        journal = next((self.root / ".gonggong-outbox/requirements").glob("*.json"))
+        original = journal.read_bytes()
+        saved = json.loads(original)
+        self.assertEqual(saved["phase"], "model_response_invalid")
+        self.assertEqual(saved["failure"], diagnostic)
+        self.assertNotIn(secret, str(caught.exception) + original.decode())
+        self.assertEqual(self.adapter.call.call_count, 1)  # Actual transport callback preceded failure.
+        self.work.issue.assert_not_called()
+        self.assertEqual(self.comments, [])
+        with self.assertRaisesRegex(ValueError, "reconciliation"):
+            self.invoke()
+        self.assertEqual(self.adapter.call.call_count, 1)
+        self.request["retry_authorized"] = True
+        self.adapter.call.side_effect = lambda *args: {
+            "text": json.dumps(self.design),
+            "finish_reason": "stop",
+            "usage": {},
+        }
+        self.assertTrue(self.invoke()["ready"])
+        archive = next(journal.parent.glob("*attempt*.json"))
+        self.assertEqual(archive.read_bytes(), original)
+        self.assertEqual(json.loads(journal.read_bytes())["request_sha256"], saved["request_sha256"])
+
+    def test_proposal_failure_stages_do_not_publish(self):
+        for index, (text, finish, stage, code) in enumerate([
+            ("", "stop", "proposal_json", "empty"),
+            ("  ", "stop", "proposal_json", "empty"),
+            ("private prose", "stop", "proposal_json", "invalid_json"),
+            (None, "stop", "proposal_json", "invalid_type"),
+            ('{"refusal":"private"}', "stop", "proposal_schema", "refusal"),
+            ('{"actions":[]}', "stop", "proposal_schema", "actions_forbidden"),
+            ("{}", "stop", "proposal_schema", "invalid_shape"),
+            ("{}", "length", "model_completion", "nonstop"),
+        ]):
+            with self.subTest(stage=stage, code=code, index=index):
+                self.request["outcome"] = "separate synthetic request " + str(index)
+                self.adapter.call.side_effect = lambda *args: {"text": text, "finish_reason": finish}
+                with self.assertRaises(module.ResponseFailure) as caught:
+                    self.invoke()
+                self.assertEqual(
+                    (caught.exception.diagnostic["stage"], caught.exception.diagnostic["code"]), (stage, code)
+                )
+                self.assertNotIn("private", str(caught.exception))
+        self.work.issue.assert_not_called()
+        self.assertEqual(self.comments, [])
+
+    def test_cli_envelope_failures_are_structural_and_private(self):
+        valid = {"choices": [{"message": {"content": "{}"}, "finish_reason": "stop"}]}
+        cases = [
+            ("{}\n{}", "cli_envelope_json", "invalid_json"),
+            ("", "cli_envelope_json", "empty"),
+            ('{"choices":[]}', "cli_envelope_shape", "invalid_shape"),
+        ]
+        for field, value, code in [
+            ("refusal", "private", "refusal"),
+            ("tool_calls", [{"private": 1}], "actions_forbidden"),
+            ("function_call", {}, "actions_forbidden"),
+            ("content", None, "invalid_type"),
+        ]:
+            envelope = json.loads(json.dumps(valid))
+            envelope["choices"][0]["message"][field] = value
+            cases.append((
+                json.dumps(envelope),
+                "proposal_json" if code == "invalid_type" else "cli_envelope_shape",
+                code,
+            ))
+        envelope = json.loads(json.dumps(valid))
+        envelope["choices"][0]["finish_reason"] = "tool_calls"
+        cases.append((json.dumps(envelope), "cli_envelope_shape", "nonstop"))
+        for raw, stage, code in cases:
+            with self.subTest(stage=stage, code=code):
+                with self.assertRaises(module.ResponseFailure) as caught:
+                    module.cli_response(raw)
+                self.assertEqual(
+                    (caught.exception.diagnostic["stage"], caught.exception.diagnostic["code"]), (stage, code)
+                )
+                self.assertNotIn("private", str(caught.exception))
+        self.assertEqual(module.cli_response(json.dumps(valid))["text"], "{}")
+
+    def test_actual_complete_failure_stages_reach_journal_without_private_output(self):
+        import sys
+
+        entry = self.root / "entry.js"
+        entry.write_text("// synthetic transport", encoding="utf-8")
+        self.request.update(backend="codex", cli_node=sys.executable, cli_entry=str(entry), cli_model="fixture")
+        original = module.subprocess.run.side_effect
+        native_diagnostic = {
+            "stage": "codex_data_json",
+            "code": "invalid_json",
+            "output_bytes": 12,
+            "output_sha256": "a" * 64,
+            "utf16_position": 3,
+        }
+        cases = [
+            (0, "{}\n{}", "cli_envelope_json", "invalid_json"),
+            (0, "", "cli_envelope_json", "empty"),
+            (0, '{"choices":[]}', "cli_envelope_shape", "invalid_shape"),
+            (
+                1,
+                json.dumps({"error": {"requirements_diagnostic": native_diagnostic, "message": "private-token"}}),
+                "codex_data_json",
+                "invalid_json",
+            ),
+            (
+                1,
+                json.dumps({"error": {"requirements_diagnostic": {**native_diagnostic, "stage": ["private-token"]}}}),
+                "cli_transport",
+                "process_failed",
+            ),
+            (1, "private-token", "cli_transport", "process_failed"),
+            (None, "private-token", "cli_transport", "timeout"),
+        ]
+        calls = []
+        for index, (exit_code, raw, stage, code) in enumerate(cases):
+
+            def transport(args, **kwargs):
+                if any(str(arg).endswith("godot_bridge.js") for arg in args):
+                    calls.append(args)
+                    if exit_code is None:
+                        raise subprocess.TimeoutExpired(args, 210, output="private-token", stderr="private-token")
+                    return subprocess.CompletedProcess(args, exit_code, raw, "private-token")
+                return original(args, **kwargs)
+
+            module.subprocess.run.side_effect = transport
+            self.request["outcome"] = "transport stage " + str(index)
+            with self.subTest(stage=stage, index=index):
+                with self.assertRaises(module.ResponseFailure) as caught:
+                    self.invoke()
+                self.assertEqual(
+                    (caught.exception.diagnostic["stage"], caught.exception.diagnostic["code"]), (stage, code)
+                )
+                self.assertEqual(len(calls), index + 1)
+                self.assertNotIn("private-token", str(caught.exception))
+        journals = list((self.root / ".gonggong-outbox/requirements").glob("*.json"))
+        self.assertEqual(len(journals), len(cases))
+        for journal in journals:
+            self.assertNotIn("private-token", journal.read_text(encoding="utf-8"))
+            record = json.loads(journal.read_bytes())
+            self.assertEqual(
+                record["phase"],
+                "model_transport_failed" if record["failure"]["stage"] == "cli_transport" else "model_response_invalid",
+            )
+        self.work.issue.assert_not_called()
+        self.assertEqual(self.comments, [])
+
+    def test_cancel_after_real_transport_return_never_publishes(self):
+        cancel = self.root / "active-request"
+        cancel.write_text("active", encoding="utf-8")
+        self.request["_cancel_path"] = str(cancel)
+
+        def cancelled(*args):
+            cancel.unlink()
+            return {"text": json.dumps(self.design), "finish_reason": "stop", "usage": {}}
+
+        self.adapter.call.side_effect = cancelled
+        with self.assertRaisesRegex(ValueError, "cancelled"):
+            self.invoke()
+        self.assertEqual(self.adapter.call.call_count, 1)
+        self.work.issue.assert_not_called()
+        self.assertEqual(self.comments, [])
+
+    def test_parser_limits_and_invalid_unicode_keep_failure_journal(self):
+        nested = "[" * 10000 + "0" + "]" * 10000
+        long_integer = "9" * 4301
+        real_loads = json.loads
+        cases = []
+        for text in (nested, long_integer):
+            # Interpreter versions may accept these valid JSON documents. The
+            # requirement schema must still reject their non-object values.
+            try:
+                parsed = real_loads(text)
+            except (ValueError, RecursionError):
+                cases.append((text, "proposal_json", "invalid_json", None))
+            else:
+                self.assertNotIsInstance(parsed, dict)
+                cases.append((text, "proposal_schema", "invalid_shape", None))
+        cases.append(("\ud800", "proposal_json", "invalid_encoding", None))
+        # Exercise both defensive catch paths independently of interpreter
+        # limits, only after the actual adapter returns this exact payload.
+        cases.extend([
+            (nested, "proposal_json", "invalid_json", RecursionError),
+            (long_integer, "proposal_json", "invalid_json", ValueError),
+        ])
+        journals = self.root / ".gonggong-outbox/requirements"
+        for index, (text, stage, code, parser_error) in enumerate(cases):
+            self.request["outcome"] = "parser limit " + str(index)
+            self.adapter.call.side_effect = lambda *args: {"text": text, "finish_reason": "stop"}
+            before = set(journals.glob("*.json"))
+
+            def limited_loads(raw, *args, **kwargs):
+                if raw == text:
+                    self.assertEqual(self.adapter.call.call_count, index + 1)
+                    raise parser_error("synthetic decoder limit")
+                return real_loads(raw, *args, **kwargs)
+
+            context = patch.object(module.json, "loads", side_effect=limited_loads) if parser_error else nullcontext()
+            with self.subTest(stage=stage, code=code, controlled_limit=parser_error, index=index), context:
+                with self.assertRaises(module.ResponseFailure) as caught:
+                    self.invoke()
+                diagnostic = caught.exception.diagnostic
+                self.assertEqual((diagnostic["stage"], diagnostic["code"]), (stage, code))
+                self.assertEqual(self.adapter.call.call_count, index + 1)
+                self.assertNotIn("position", diagnostic)
+                if code == "invalid_encoding":
+                    self.assertEqual(diagnostic["output_characters"], 1)
+                    self.assertNotIn("output_bytes", diagnostic)
+                    self.assertNotIn("output_sha256", diagnostic)
+                new_journals = set(journals.glob("*.json")) - before
+                self.assertEqual(len(new_journals), 1)
+                record = real_loads(new_journals.pop().read_bytes())
+                self.assertEqual(record["phase"], "model_response_invalid")
+                self.assertEqual(record["failure"], diagnostic)
+                self.assertNotIn("proposal", record)
+                self.work.issue.assert_not_called()
+                self.assertEqual(self.comments, [])
+        self.assertEqual(len(list(journals.glob("*.json"))), len(cases))
+
+    def test_escaped_surrogate_in_valid_fields_is_rejected_before_journal_proposal(self):
+        text = json.dumps({**self.design, "title": "\ud800"}, ensure_ascii=True)
+        self.assertTrue(text.isascii())  # The actual wire is valid UTF-8 JSON.
+        self.adapter.call.side_effect = lambda *args: {"text": text, "finish_reason": "stop", "usage": {}}
+        with self.assertRaises(module.ResponseFailure) as caught:
+            self.invoke()
+        diagnostic = caught.exception.diagnostic
+        self.assertEqual((diagnostic["stage"], diagnostic["code"]), ("proposal_schema", "invalid_encoding"))
+        self.assertEqual(diagnostic["output_bytes"], len(text.encode("utf-8")))
+        self.assertEqual(self.adapter.call.call_count, 1)
+        journal = next((self.root / ".gonggong-outbox/requirements").glob("*.json"))
+        saved = json.loads(journal.read_bytes())
+        self.assertEqual(saved["failure"], diagnostic)
+        self.assertEqual(saved["phase"], "model_response_invalid")
+        self.assertNotIn("proposal", saved)
+        self.work.issue.assert_not_called()
+        self.assertEqual(self.comments, [])
 
 
 class ResponsesTransportTests(unittest.TestCase):

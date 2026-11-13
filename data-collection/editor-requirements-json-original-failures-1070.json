@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1070",
+  "parent_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "blocked_original_continuation": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "scope": "Two actual requirements-entry failures in the original installed session after successful explicit original-design reconfirmation. No successful production status, repair, acceptance or new worker dispatch is inferred.",
+  "source_main": "ec582b134ad48e4c3eab02bafbe901886ac303b4",
+  "engine_sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+  "source_inputs": [
+    {
+      "path": "customizations/components/godot-host/requirements_agent.py",
+      "source_revision": "ec582b134ad48e4c3eab02bafbe901886ac303b4",
+      "git_blob": "833b3f6d43deb0b88c792fc3ec2ed9d1a1541312",
+      "installed_sha256": "96ae570e8aafaf211c8566482c9e661288bd8635405ce72080a8095c189e20e5"
+    },
+    {
+      "path": "tools/codex_cli/godot_bridge.js",
+      "source_revision": "ec582b134ad48e4c3eab02bafbe901886ac303b4",
+      "git_blob": "03447eeb8e5780a3555d352a07c8974c07ec7922",
+      "installed_sha256": "4403f2eba17dfb9ca78b0f64c983e8ed79adec3f1a2c2517c125fa423fb5c803"
+    }
+  ],
+  "original_request_digest": "5eef8849f39858cf6b48f9016aafa41590e00b4c4e1ac12a12bfb83e2447304a",
+  "attempts": [
+    {
+      "attempt": 1,
+      "visible_error": "Extra data: line 3 column 1 (char 286)",
+      "request_ack": {
+        "logical_artifact": "live-actual-r17/ack-4.json",
+        "sha256": "d2e5f479966ae81faa70fed20fd1524e2cbe0fe8e90d228690c243338a5cfdbf",
+        "bytes": 345304
+      },
+      "failure_ack": {
+        "logical_artifact": "live-actual-r17/ack-5.json",
+        "sha256": "0805c9e99681cd2dd9c5a4d1a1e49275a1dcddcc782eda2158d48ec5367d9812",
+        "bytes": 345564
+      },
+      "journal": {
+        "phase": "model_attempted",
+        "occurred_at": "2026-11-13T14:43:09.635885+00:00",
+        "request_sha256": "5eef8849f39858cf6b48f9016aafa41590e00b4c4e1ac12a12bfb83e2447304a",
+        "evidence": {
+          "logical_artifact": "requirements-json-original-attempts-1070/requirement-5eef8849f39858cf6b48f9016aafa415-attempt-1794581498929249900.json",
+          "sha256": "0cf789cd710e2432ac87a9435d14a34070f1f381eb130005ed6afea403d93a3a",
+          "bytes": 212
+        }
+      }
+    },
+    {
+      "attempt": 2,
+      "visible_error": "Expecting value: line 1 column 1 (char 0)",
+      "action": "One explicit retry through the existing original-parent entry; no new design confirmation or Spawn action",
+      "request_ack": {
+        "logical_artifact": "live-actual-r17/ack-7.json",
+        "sha256": "26460fda8a3ede4fbc5b1e2b69e2160ad2b649ad8915024bfa82568de983a993",
+        "bytes": 345641
+      },
+      "failure_ack": {
+        "logical_artifact": "live-actual-r17/ack-8.json",
+        "sha256": "cfbc9218a51101212f1eee2a7c0913cb2396007b6557a51b810a9ac8159e995b",
+        "bytes": 345904
+      },
+      "journal": {
+        "phase": "model_attempted",
+        "occurred_at": "2026-11-13T14:51:38.930242+00:00",
+        "request_sha256": "5eef8849f39858cf6b48f9016aafa41590e00b4c4e1ac12a12bfb83e2447304a",
+        "evidence": {
+          "logical_artifact": "requirements-json-original-attempts-1070/requirement-5eef8849f39858cf6b48f9016aafa415.json",
+          "sha256": "4dcba7fed8e1eafb0bf073585f34349831b54af38e67df6c75bcb78ad3188921",
+          "bytes": 212
+        }
+      }
+    }
+  ],
+  "failure_boundary": {
+    "observed": "Both attempts retained model_attempted, and the native UI returned to idle with requirements execution paused.",
+    "source_order": "The adapter parses the CLI envelope and then the proposal before saving proposal_ready and entering Issue/comment publication. These failed attempts did not reach that host publication branch.",
+    "unknown": "The temporary CLI/model output was cleaned up by the existing host lifecycle. The original bytes and exact outer-versus-inner failing parse are not established. Synthetic malformed-content tests cannot identify what the real provider returned.",
+    "production_tool_receipt_observed": false,
+    "automatic_retry_used": false
+  },
+  "observation_limits": {
+    "first_status_observer": {
+      "logical_artifact": "r17-first-status-observer-failure.json",
+      "sha256": "578617d348aa5f2639b90c82706f6ffcd4e2427064037d6a90a55e040ea365b0",
+      "bytes": 56
+    },
+    "rearm_refusal": {
+      "logical_artifact": "live-actual-r17/ack-6.json",
+      "sha256": "d1e3bb1ccc2215489c1ad05ba51c090a1191f7d55d8cd56fba824bbe6be0a311",
+      "bytes": 345607
+    },
+    "explanation": "The first observer ended without a production tool. The existing single-use private observer refused rearming; that refusal is preserved and no successful second tool capture is claimed."
+  },
+  "path_base": "logical_artifact values resolve from the owning host private parent773 receipt directory. Original private acknowledgments and journals are hash-bound, not embedded; no machine paths, account configuration or conversation text are published.",
+  "next": "Deliver strict data-only requirements output and bounded stage diagnostics under1070; then explicitly retry the original request. Preserve all original worker/candidate/terminal/review records and independently validate production under951."
+}
