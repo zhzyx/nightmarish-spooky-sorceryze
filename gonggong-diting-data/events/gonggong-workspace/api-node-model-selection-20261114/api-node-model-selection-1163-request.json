@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "api-node-model-selection-1163-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "api-node-model-selection-20261114",
+  "kind": "request",
+  "occurred_at": "2026-11-13T23:32:23.306473+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1163",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "bad67dcc35d525783bfb12bc7e4363cfdfb0cc1da7c2dcb19ca7e3106806bc2c",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Actual per-node model selection and immutable provider snapshots for API modeling and sculpting; remove duplicate global model UI",
+    "authorization_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "operator": "Sail-Li",
+    "design": "design-docs/api-node-model-selection-20261114.md",
+    "validation": "data-collection/api-node-model-selection-1163.json",
+    "observation": "Authorized repair of delivered971 contract; no takeover of1086 candidate",
+    "usage": null,
+    "usage_unknown_reason": "Actual model usage not collected"
+  },
+  "evidence_refs": [],
+  "sha256": "b54e150919d9421b12003ed2f937d4094ac70c3755f4a9681e902e3c132e8140"
+}
