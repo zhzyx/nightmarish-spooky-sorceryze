@@ -2463,6 +2463,9 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 	snapshot_state["version"] = 1;
 	snapshot_state["conversation_id"] = conversation_id;
 	snapshot_state["id"] = snapshot_id;
+	// Parent stages and completion notices remain automatic across async intake.
+	// A fresh manual turn clears the previous snapshot and records false here.
+	snapshot_state["host_generated_turn"] = design_parent_starting == active_agent;
 	if (!p_daqian_selection.is_empty()) {
 		// Environment setup and clarification can resume this intake after the model picker is edited.
 		snapshot_state["daqian_model"] = String(p_daqian_selection["id"]).strip_edges();

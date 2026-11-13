@@ -63,9 +63,16 @@ public:
 		return p_number >= 1 && is_request_id(p_request_id);
 	}
 
-	// Only a missing/invalid local binding is guided; real intake rejections stay visible errors.
+	// Missing/invalid local bindings use the binding guide, not status recovery.
 	static bool is_binding_error(const String &p_error) {
 		return p_error.begins_with("Missing host request: request_id") || p_error.begins_with("Before development, create/reuse a real Issue");
+	}
+
+	static bool is_status_error(const String &p_error) {
+		// Match only the gate's status rejection and the bridge's bounded read receipt.
+		// This offers a manual decision; issue-start still validates the actual state.
+		return p_error == "Issue intake rejected: Issue requires exactly one active status label; read attempts=1" ||
+				p_error == "Issue intake rejected: Issue requires exactly one active status label; read attempts=2";
 	}
 
 	// Accepts "#22 request-id", "22 request-id" and an optional leading "绑定"/"bind".

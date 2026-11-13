@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-602f47d62ae6fae49464e42a7b04f74419fa9753",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-local-827-74ce4f03babbaacaf1a22f529bc7da5c4ae1561a8a0867ca47f89d1c4d2be391",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/838",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6e51163dfb06dc0d93f7e09e14abe309fa00c2283b6077d5fea2a0811c4f89f2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/838",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/838",
+    "action": "validation",
+    "detection_head": "c074db21be98784ff1288f1f2d99c793ba156395",
+    "context_sha256": "7e1eea6140290cc66e3d34bceba7156da0892cc8be0dd678bb635a6548ba3327",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Isolated c074 integration; final binary6d722d17686bb19dc32c815a762af95763da8c24802c06c6287aa2a8f490c72a; separate new tianshu-resume-status-838-integration.json preserves historical receipt",
+    "diagnosis": "Local-only trusted envelope compatibility fixed. Independent review additionally reproduced direct-prefix generic Start missing actor/revision and early request-write failure falling back to that generic path. Both corrected without weakening strict Start. Final independent source/hash checks and native legacy plus injected-failure direct recovery passed with no blocking findings in isolated scope.",
+    "next_action": "Current user has been asked to designate838 publication responsibility explicitly. Until response or original handoff, retain prepared isolated candidate and original847/worktrees. After handoff use fresh exact candidate CI/main; honor971 integration coordination and separate original827 business acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T22:36:46.622575+00:00",
+    "attempted": "45bridge tests,4native74assertions, original legacy/direct/retry-failure native scenarios and adjacent rejection/cancel checks passed; two original independent changes-requested reports and private fixture assertion failures retained.",
+    "repair_owner": "Sail-Li current root isolated preparation and validation; original838 publisher remains delivery owner pending explicit handoff",
+    "continuable": "Independent work can continue; replacing847 and its main delivery waits for ownership handoff, and971 main coordination remains in effect"
+  },
+  "occurred_at": "2026-11-12T23:01:45.261858+00:00",
+  "sha256": "7c3286b458cc0cdf3c6b7276214ade3b55ef8395955d84f3bcd63421fd3056f1"
+}

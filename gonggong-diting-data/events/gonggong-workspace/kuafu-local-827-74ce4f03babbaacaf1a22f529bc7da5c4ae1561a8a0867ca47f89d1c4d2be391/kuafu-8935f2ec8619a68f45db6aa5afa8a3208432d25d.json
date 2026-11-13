@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8935f2ec8619a68f45db6aa5afa8a3208432d25d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-local-827-74ce4f03babbaacaf1a22f529bc7da5c4ae1561a8a0867ca47f89d1c4d2be391",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/838",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fcdc04b6f9fbcfcb0cd936952e4f8b3e52e5d9ae99d9294f41079a51e1cdda88",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/838",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/838",
+    "action": "validation",
+    "detection_head": "e9684f34cfc4fded923d43f4469d32a0096a8af3",
+    "context_sha256": "7e1eea6140290cc66e3d34bceba7156da0892cc8be0dd678bb635a6548ba3327",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Current main integration native f63e6ffe: parent-status-initial and parent-status-return both failed with Automatic parent entered manual Issue status guide; actual auto snapshots host_generated_turn absent/false; initial0parent model stages, return1stage then0post-return calls.",
+    "diagnosis": "Async status handling lost transient design_parent_starting provenance. Both initial bound-parent stage and completion notice use role=user but are host-generated. Added snapshot host_generated_turn from trusted launch state before persistence and excluded true from manual guide. Initial regression fixture misread payload/sha256 snapshot envelope; both owned test editors terminated and failures archived, corrected parser then reproduced actual bug on both native paths.",
+    "next_action": "Rebuild and rerun two negative native cases plus ordinary successful parent completion and manual recovery regressions. Independent reviewer must recheck final bytes; do not publish until passes. Original847 and827 scope preserved.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T09:39:09.187838+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T09:47:59.716961+00:00",
+  "sha256": "b6c370ed95b43ff9c883ef582501ea95bc45fd26f24dd4973848f3bc32a2c141"
+}

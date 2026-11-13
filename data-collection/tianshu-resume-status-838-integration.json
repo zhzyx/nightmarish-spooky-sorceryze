@@ -1,0 +1,69 @@
+{
+  "issue_number": 838,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/838",
+  "request_id": "kuafu-local-827-74ce4f03babbaacaf1a22f529bc7da5c4ae1561a8a0867ca47f89d1c4d2be391",
+  "parent_issue": 978,
+  "base_main": "c074db21be98784ff1288f1f2d99c793ba156395",
+  "original_pr": 847,
+  "original_source": "f5e2743d94f132e546166b562e0b7f828b1f7705",
+  "historical_receipt": "data-collection/tianshu-resume-status-838.json remains byte-identical to original source; this document appends current integration proof",
+  "source_inputs": {
+    "editor/docks/ai_chat_gonggong.cpp": "2afdba28b19b63de5540683b2c9dc1f19650bd6417ce206b23d7abbcca1f24c3",
+    "editor/docks/ai_chat_issue_guide.h": "f1ffd20ed987c009fb28e2ada51659ca6170a3c6c3c00c75e8290ce87eb8f544",
+    "tests/editor/test_ai_chat_tools.cpp": "ec87ae0e23aae4d84d257fd547c8621a1354939bcf4758b4bfc43b463cb6bae3",
+    "tests/editor/gonggong_chat_gate.gd": "b0e8df590bcd9bf16794507279d61ff775f8fdecdca8736e868959b9458e63d1",
+    "tests/editor/run_gonggong_chat_gate.py": "68ca25a72bcf8b8bc693f54c1ef7a921c86d8efb4b667aee656afa420afa92cf",
+    "customizations/components/godot-host/bridge.py": "a1fa4d6bafd2f18d34092f138a4b02d0048a87fd5fa7353722310f2808d0f806",
+    "customizations/components/godot-host/test_bridge.py": "da998062963c59d3ee14f4748174ca86b3c50313d068e970273fedc30b12fef8"
+  },
+  "binary_sha256": "6d722d17686bb19dc32c815a762af95763da8c24802c06c6287aa2a8f490c72a",
+  "baseline": {
+    "initial": "local_only trusted envelope classified local failure; exit1",
+    "after_bridge_classification_fix": "exact status error displayed but current main native lacks guide; exit1"
+  },
+  "changes": [
+    "Integrate original precise manual bound status recovery on c074",
+    "Accept only existing trusted local_only envelope in bridge classification; arbitrary stderr remains private",
+    "Resolve independent R1: daqian-direct status recovery preserves verified account/revision Start on board; generic Start or rebind cannot replace that step",
+    "Preserve the direct confirmation path if retry fails before launching its intake process"
+  ],
+  "validation": {
+    "legacy_status": "passed;one explicit edit/originalmodelrequest",
+    "direct_status": "passed;three original42reads,0writes0model",
+    "direct_retry_before_launch_failure": "passed final root runner; cache restored, subsequent genericStart/rebind refused, retry rereads original, cancel preserves message;4readonlyGraphQL calls including accountrepo list,0writes/model/events"
+  },
+  "bridge_tests": 45,
+  "prior_adjacent_tests": [
+    "rejected passed",
+    "recovery_rejected passed",
+    "cancel passed"
+  ],
+  "log_sha256": {
+    "legacy838-final-issue_guide_status.log": "0ba614e098cc3d910a36d0297322922ecfb05ce72f6f552a0da29762c28317a1",
+    "legacy838-final-issue_guide_status_direct.log": "95b7ad11c549196e96622bf9a01461bc2ee89a75d35d4eead36680ec3c661ce9",
+    "legacy838-final-direct-retry.log": "2753b1572062a3fc0bd01c7fcb56009b688ba758694fce8ec48ffae6f8ab8420",
+    "legacy838-retry-recovery-build.log": "3b1aef9955668f91777e93811de5e9a192ee2f505ebe35908071493ef8a6e7f2"
+  },
+  "independent_review": {
+    "initial": "changes_requested P2 R1; native direct-prefix reproduction confirmed",
+    "initial_report_sha256": "4242e57d9531ecbaf7b7fc0a8106a3132055aab63a8ff493c07b43ec0ce37c3d",
+    "followup": "approved_with_limits; R1 and R1-followup resolved; independent final legacy and request-write-failure recovery native tests passed",
+    "second_report_sha256": "5e0f6490110db63e67188f4b25a063dafc04d6f82ad368dc68fa431a387a22fa",
+    "second": "changes_requested R1-followup: early request-write failure fell back to generic status guide; corrected with native fault injection",
+    "final_report_sha256": "42ec98e062c10495ebf984e78007db52bb8b5e543242935c32cbb63e5f6664b8",
+    "worker": "/root/sinan_83615cc0c72fb53d"
+  },
+  "delivery": "isolated_prepared_handoff_required; no new commit or PR/main publication",
+  "limitations": [
+    "isolated synthetic native proof only; no actual account/model operations",
+    "existing verified board Start not newly end-to-end exercised; stricter checks preserved",
+    "original publisher retains responsibility; no commit/publish/main; hold971 unchanged",
+    "Independent final review passed for isolated scope; existing verified board Start itself not repeated E2E; original publishing handoff and main pending"
+  ],
+  "cleanup": "Three root-owned failed fixtures removed after28 necessary diagnostic/source/state files and manifests archived/verified. Original worktrees unchanged; candidate retained pending handoff.",
+  "fixture_recovery": [
+    "First safety path comparison rejected /var vs canonical /private/var before fault; runner now resolves temporary root",
+    "Next two runs reached native success but Python assertion incorrectly rejected legitimate read-only account/repository GraphQL refresh; diagnostics preserved. Revised assertions require only query operations, at least3Issue reads all42, no writes/model/events.",
+    "After root pass only GDScript private-root slash normalization added for Windows separator compatibility; independent final source rerun pending."
+  ]
+}

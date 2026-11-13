@@ -361,7 +361,7 @@ def intake_failure_reason(stderr):
             and prefix["action"] == "intake"
             and prefix["next_action"]
             == "The active host must invoke Kuafu now: receive, investigate, then assess with the actual worker and bug."
-            and isinstance(prefix["dispatch"], dict)
+            and (isinstance(prefix["dispatch"], dict) or prefix["dispatch"] == "local_only")
         ):
             reason = lines[1].strip()
     match = re.match(r"GITHUB_(HTTP_\d{3}|NETWORK|TIMEOUT|RUNTIME|COMMAND)\b", reason)

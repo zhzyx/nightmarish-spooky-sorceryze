@@ -28,6 +28,8 @@ PARENT_SCENARIOS = {
     "parent-delivery-bypass",
     "parent-delivery-no-progress",
     "parent-cold",
+    "parent-status-initial",
+    "parent-status-return",
 }
 PARENT_STOP_SCENARIOS = {"parent-stop", "parent-tools-off", "parent-consultation"}
 PARENT_STOP_SCENARIOS |= {name + "-authorize" for name in tuple(PARENT_STOP_SCENARIOS)}
@@ -105,6 +107,22 @@ if SCENARIO == "empty":
     batch.FINALIZED = batch.FINALIZED.replace(
         "- 验收: A | fixture-input.txt contains UNTRUSTED_FIXTURE_FILE and execution succeeds\n", ""
     )
+if SCENARIO in {"parent-status-initial", "parent-status-return"}:
+    # Inject only the status response at an actual automatic parent's intake.
+    # The binding, native turn start, snapshot and async consumer remain real.
+    marker = "BOUND_PARENT_STAGE" if SCENARIO == "parent-status-initial" else "current_host_design_batch"
+    injection = (
+        "if action=='chat' and 'delegation' not in request and " + repr(marker) + " in request.get('outcome',''):\n"
+        " project=Path(os.environ['DESIGN_BATCH_PROJECT'])\n"
+        " snapshots=[json.loads(json.loads(p.read_text())['payload']) for p in (project/'.godot/editor/ai_chat_snapshots').glob('*.json')]\n"
+        " current=[s for s in snapshots if s.get('summary')==request['outcome'][:160]]\n"
+        " assert len(current)==1, 'Expected exact automatic turn snapshot'\n"
+        " receipt={'issue_number':request['issue_number'],'request_id':request['request_id'],'snapshot_id':current[0]['id'],'host_generated_turn':current[0].get('host_generated_turn',False),'scope':'synthetic intake status rejection after actual native automatic turn start'}\n"
+        " (project/'native-parent-status-rejected.json').write_text(json.dumps(receipt))\n"
+        " value={'ok':False,'error':'Issue intake rejected: Issue requires exactly one active status label; read attempts=1'}\n"
+        " out.write_text(json.dumps(value));sys.exit(0)\n"
+    )
+    batch.BRIDGE = batch.BRIDGE.replace("reporting={'tenant_id':", injection + "reporting={'tenant_id':")
 if SCENARIO.startswith("parallel"):
     import native_acceptance_parallel as parallel
 
@@ -406,6 +424,25 @@ func _parent_cancel_boundary():
 		_check(not dock.get_meta("parent_business_accepted", false), "Cancelled parent was accepted")
 		_file("native-parent-cancelled")
 		_finish()
+"""
+        Path(target).write_text(script, encoding="utf8")
+    if Path(source).name == "design_batch.gd" and SCENARIO in {"parent-status-initial", "parent-status-return"}:
+        script = Path(target).read_text(encoding="utf8")
+        script = script.replace(
+            "func _initialize():", "func _initialize():\n\tprocess_frame.connect(_parent_status_boundary)"
+        )
+        script += """
+var parent_status_finished := false
+func _parent_status_boundary():
+	if parent_status_finished or not is_instance_valid(dock):
+		return
+	if not FileAccess.file_exists("res://native-parent-status-rejected.json") or not dock.find_child("Stop", true, false).disabled:
+		return
+	parent_status_finished = true
+	_check(dock.get_meta("gonggong_status", "") == "blocked", "Automatic parent entered manual Issue status guide")
+	_check(not dock.get_meta("parent_business_accepted", false), "Rejected automatic parent was accepted")
+	_file("native-parent-status-held")
+	_finish()
 """
         Path(target).write_text(script, encoding="utf8")
     if Path(source).name == "design_batch.gd" and SCENARIO == "parent-cli":
@@ -929,6 +966,11 @@ class DiagnosticDirectory(TemporaryDirectory[str]):
                 diagnostics.append({"path": "parent-cancelled", "body": "actual native permission/Stop boundary"})
             if (root / "original/samples/project/native-parent-no-progress").exists():
                 diagnostics.append({"path": "parent-no-progress", "body": "actual held native control boundary"})
+            status_receipt = root / "original/samples/project/native-parent-status-rejected.json"
+            if status_receipt.exists():
+                diagnostics.append({"path": "parent-status-rejection", "body": status_receipt.read_text()})
+            if (root / "original/samples/project/native-parent-status-held").exists():
+                diagnostics.append({"path": "parent-status-held", "body": "actual rejected automatic parent"})
             if SCENARIO == "parent-delivery-no-progress":
                 for file in (root / "original/.git/gonggong-kuafu").glob("*/detected.json"):
                     diagnostics.append({
@@ -1244,6 +1286,27 @@ if __name__ == "__main__":
             if SCENARIO == "parent-finalize-timeout":
                 result["native_timeout_observed"] = parent_delivery.timeout_observed(diagnostics)
                 valid = valid and result["native_timeout_observed"]
+        elif SCENARIO in {"parent-status-initial", "parent-status-return"}:
+            expected_stages = 0 if SCENARIO == "parent-status-initial" else 1
+            status_receipts = [
+                batch.json.loads(x["body"]) for x in diagnostics if x["path"] == "parent-status-rejection"
+            ]
+            valid = (
+                not result["errors"]
+                and result["editor"].get("ok")
+                and not result["editor"].get("parent_business_accepted")
+                and len(status_receipts) == 1
+                and status_receipts[0]["host_generated_turn"] is True
+                and status_receipts[0]["issue_number"] == 441
+                and status_receipts[0]["request_id"] == "design-batch-fixture"
+                and any(x["path"] == "parent-status-held" for x in diagnostics)
+                and result["parent_return_count"] == 0
+                and len(accepted) == (0 if SCENARIO == "parent-status-initial" else 2)
+                and stages.get("child1", 0)
+                == stages.get("child2", 0)
+                == (0 if SCENARIO == "parent-status-initial" else 3)
+            )
+            result["automatic_parent_status_receipts"] = status_receipts
         elif SCENARIO == "parent-delivery-no-progress":
             expected_stages = 3
             blockers = [

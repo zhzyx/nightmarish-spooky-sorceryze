@@ -1,0 +1,55 @@
+{
+  "issue": 838,
+  "original_issue": 827,
+  "scope": "manual bound chat exact active-status rejection recovery",
+  "source_inputs": {
+    "editor/docks/ai_chat_gonggong.cpp": "95425d12819808831d720656451e97e29b46415c6157246aa429cbe3b67ecc9a",
+    "editor/docks/ai_chat_issue_guide.h": "f1ffd20ed987c009fb28e2ada51659ca6170a3c6c3c00c75e8290ce87eb8f544",
+    "tests/editor/test_ai_chat_tools.cpp": "3578ae4da00d0b5e13504961aba178d0699306e5e0648b2558aac70d5e00457a",
+    "tests/editor/gonggong_chat_gate.gd": "dd8c05babd7798df4c798116127c195aea4a8e92873e8cee8df56b411bfe68db",
+    "tests/editor/run_gonggong_chat_gate.py": "e65061cadeee734863ef612cec39e5e2e4e02511252426cd62e4ec1dab29bb13"
+  },
+  "native_status_recovery": {
+    "passed": true,
+    "log_sha256": "869111c4777613df3dc3baa5a1b2c1357f4dfbc183c9c2791a6ce2841b2d4773",
+    "model_requests": 1,
+    "issue_edits": 1,
+    "issue_created": false,
+    "retry_rechecks_original_issue": true,
+    "no_status_change_before_explicit_start": true,
+    "original_message_preserved": true,
+    "context_and_transport": "private synthetic fixture",
+    "local_tools_enabled": false
+  },
+  "unit": {
+    "cases": 4,
+    "assertions": 74,
+    "passed": true,
+    "log_sha256": "70cca4f2cde79249030eb919743c8461465461f7782bea17dc5b00a324026eec"
+  },
+  "independent_review": {
+    "worker": "sinan_b2c6102b0ae8f064",
+    "result": "no blocking source findings",
+    "boundary": "read-only; native final run observed afterward by root; suggested retry-read assertion added and passed"
+  },
+  "live_original_task": {
+    "status_recovery": "existing issue-start validated original #827; intake-only passed",
+    "user_resend_confirmed": true,
+    "native_write_receipt": "Hero SphereMesh and rainbow ShaderMaterial saved by original native chat after user approval",
+    "production_acceptance": "preview confirmation and original worker completion receipt still pending; #827 not closed"
+  },
+  "known_limits": [
+    "Native tools/candidate production flow excluded from synthetic gate test; existing native user task separately demonstrated approved file write.",
+    "Old unbound issue_guide scenario predates current automatic requirements intake and failed before tested status-recovery entry; retained as separate fixture limitation.",
+    "Linux/Windows runtime and unattended exclusion paths not exercised end-to-end."
+  ],
+  "delivery": "pending exact candidate CI and main readback",
+  "usage": null,
+  "build": {
+    "binary_sha256": "e9cab3e081288abbbdc43cf81f942f3df043333044280ae16496e4c46f87bfaa",
+    "platform": "macOS arm64",
+    "passed": true,
+    "log_sha256": "d18fbfd134748da9ae9a67364c2c5ba9be28c38cb4327b09faeef983e23a8249"
+  },
+  "base_main": "c811b583d4f709f697161280ed285c08793c90ef"
+}

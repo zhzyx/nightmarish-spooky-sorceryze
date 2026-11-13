@@ -32,8 +32,25 @@ if args[:2] == ["auth", "status"]:
     if not logged_in:
         sys.stderr.write("You are not logged into any GitHub hosts.\n")
     sys.exit(0 if logged_in else 1)
+elif args[:2] == ["api", "graphql"]:
+    row = state["issues"].get("42")
+    viewer = {"login": "fixture-user", "databaseId": 1, "repositories": {
+        "nodes": [{"nameWithOwner": "test/repo", "databaseId": 2}], "pageInfo": {"hasNextPage": False}
+    }}
+    issue = None if row is None else {
+        "number": 42, "title": row["title"], "state": row["state"].upper(), "url": row["html_url"],
+        "updatedAt": row["updated_at"], "body": row["body"],
+        "labels": {"nodes": row["labels"], "pageInfo": {"hasNextPage": False}},
+    }
+    out = json.dumps({"data": {"viewer": viewer, "repository": {
+        "nameWithOwner": "test/repo", "databaseId": 2, "viewerPermission": "WRITE", "issue": issue
+    }}})
 elif args[:1] == ["api"] and "/issues?" in args[1]:
     out = json.dumps([list(state["issues"].values())])
+elif args[:1] == ["api"] and args[1].endswith("/actions/workflows/kuafu-blockers.yml"):
+    out = "active"
+elif args[:2] == ["workflow", "run"]:
+    out = "ISOLATED_KUAFU_DISPATCH"
 elif args[:1] == ["api"]:
     issue = state["issues"].get(args[1].rsplit("/", 1)[1])
     if issue is None:
@@ -116,6 +133,9 @@ def main():
             "issue_guide",
             "issue_guide_cancel",
             "issue_guide_login",
+            "issue_guide_status",
+            "issue_guide_status_direct",
+            "issue_guide_status_direct_retry_failure",
         ],
         default="rejected",
     )
@@ -183,7 +203,7 @@ def main():
     thread.start()
     try:
         with tempfile.TemporaryDirectory(prefix="gonggong-gate-") as temporary:
-            root = Path(temporary)
+            root = Path(temporary).resolve()
             shutil.copytree(ROOT / "framework", root / "framework", ignore=shutil.ignore_patterns("__pycache__"))
             shutil.copytree(
                 ROOT / "customizations/components/godot-host",
@@ -193,7 +213,11 @@ def main():
             platforms = "customizations/platforms"
             shutil.copytree(ROOT / platforms, root / platforms, ignore=shutil.ignore_patterns("__pycache__"))
             (root / "tools").mkdir()
-            for relative in ("tools/check_gonggong_distribution.py", "integrations/gonggong/frozen-distribution.json"):
+            for relative in (
+                "tools/check_gonggong_distribution.py",
+                "tools/gonggong_runtime_config.py",
+                "integrations/gonggong/frozen-distribution.json",
+            ):
                 (root / relative).parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(ROOT / relative, root / relative)
             shutil.copyfile(ROOT / "tools/gonggong_bridge.py", root / "tools/gonggong_bridge.py")
@@ -249,6 +273,26 @@ def main():
             subprocess.run(["git", "init", "--quiet", str(root)], check=True)
             guided = args.mode.startswith("issue_guide")
             fixtures = prepare_issue_guide(root, args.mode != "issue_guide_login") if guided else None
+            if args.mode.startswith("issue_guide_status"):
+                direct_status = args.mode.startswith("issue_guide_status_direct")
+                request_id = "daqian-direct-0123456789abcdef0123" if direct_status else "guide-e2e-1"
+                status = "status:planned" if direct_status else "status:needs-decision"
+                (fixtures / "gh-state.json").write_text(
+                    json.dumps({
+                        "calls": [],
+                        "issues": {
+                            "42": {
+                                "number": 42,
+                                "html_url": "https://github.com/test/repo/issues/42",
+                                "state": "open",
+                                "body": "<!-- gonggong-request:" + request_id + " -->",
+                                "title": "Existing bound task",
+                                "labels": [{"name": n} for n in ("type:requirement", status, "workspace:gonggong")],
+                                "updated_at": "2026-11-03T00:00:00Z",
+                            }
+                        },
+                    })
+                )
             if not guided:
                 shutil.copytree(
                     ROOT / "customizations/components/issue-workorders",
@@ -324,6 +368,9 @@ def main():
                 check=True,
             )
             isolated_editor = macos_editor(args.godot, root / "isolated-editor")
+            if args.mode.startswith("issue_guide_status") and sys.platform == "darwin":
+                # Bind receipt flushing to the private fixture installation.
+                (root / "SConstruct").write_text("# isolated native gate fixture\n")
             project = root / "project"
             project.mkdir()
             if not guided:
@@ -446,6 +493,9 @@ def main():
                 "issue_guide": "GONGGONG_CHAT_ISSUE_GUIDE_OK",
                 "issue_guide_cancel": "GONGGONG_CHAT_ISSUE_GUIDE_CANCEL_OK",
                 "issue_guide_login": "GONGGONG_CHAT_ISSUE_GUIDE_OK",
+                "issue_guide_status": "GONGGONG_CHAT_ISSUE_GUIDE_OK",
+                "issue_guide_status_direct": "GONGGONG_CHAT_ISSUE_GUIDE_OK",
+                "issue_guide_status_direct_retry_failure": "GONGGONG_CHAT_ISSUE_GUIDE_OK",
             }[args.mode]
             if result.returncode or marker not in result.stdout:
                 debug = ROOT / ".godot-integration-local" / ("native-failure-" + root.name)
@@ -573,7 +623,20 @@ def check_issue_guide(root, mode, requests):
     state_path = root / "fixtures/gh-state.json"
     state = json.loads(state_path.read_text(encoding="utf-8")) if state_path.exists() else {"issues": {}, "calls": []}
     events = [json.loads(p.read_text(encoding="utf-8")) for p in (root / "gonggong-diting-data/events").rglob("*.json")]
-    if mode == "issue_guide_cancel":
+    if mode.startswith("issue_guide_status_direct"):
+        assert not requests, "Direct status recovery reached the model"
+        # The editor may also refresh its read-only repository/account list.
+        assert all(
+            c[:2] == ["api", "graphql"] and any(field.startswith("query=query(") for field in c) for c in state["calls"]
+        ), state["calls"]
+        issue_reads = [c for c in state["calls"] if any(field.startswith("number=") for field in c)]
+        assert len(issue_reads) >= 3 and all("number=42" in c for c in issue_reads), issue_reads
+        assert state["issues"]["42"]["labels"] == [
+            {"name": n} for n in ("type:requirement", "status:planned", "workspace:gonggong")
+        ]
+        assert not (root / "design-docs").exists()
+        assert not events, "Unstarted direct task wrote development receipts"
+    elif mode == "issue_guide_cancel":
         assert not requests, "Cancelled guide reached the model endpoint"
         assert not state["calls"], "Cancelled guide called GitHub"
         assert not (root / "design-docs").exists()
@@ -585,9 +648,24 @@ def check_issue_guide(root, mode, requests):
         assert users == ["Isolated GongGong gate validation"], users
         guide_replies = ("新建", "默认", "guide-e2e-1", "确认", "开始")
         assert not any(m.get("content") in guide_replies for m in requests[0]["messages"]), "Guide reply leaked"
-        document = (root / "design-docs/guide-e2e-1.md").read_text(encoding="utf-8")
-        assert "<!-- gonggong-request:guide-e2e-1 -->" in document
-        assert "> Isolated GongGong gate validation" in document
+        if mode == "issue_guide_status":
+            assert not any(c[:2] == ["issue", "create"] for c in state["calls"]), "Recovery created a new Issue"
+            assert sum(c[:3] == ["issue", "edit", "42"] for c in state["calls"]) == 1
+            before_start = json.loads((root / "fixtures/before-start.json").read_text())
+            before_retry = json.loads((root / "fixtures/before-retry.json").read_text())
+            assert any(
+                c[:2] == ["api", "graphql"] and "number=42" in c
+                for c in before_start["calls"][len(before_retry["calls"]) :]
+            ), "Retry did not re-read bound Issue"
+            assert not any(c[:2] in (["issue", "edit"], ["issue", "create"]) for c in before_start["calls"])
+            assert before_start["issues"]["42"]["labels"] == [
+                {"name": n} for n in ("type:requirement", "status:needs-decision", "workspace:gonggong")
+            ]
+            assert not (root / "design-docs").exists()
+        else:
+            document = (root / "design-docs/guide-e2e-1.md").read_text(encoding="utf-8")
+            assert "<!-- gonggong-request:guide-e2e-1 -->" in document
+            assert "> Isolated GongGong gate validation" in document
         issue = state["issues"]["42"]
         assert sorted(label["name"] for label in issue["labels"]) == [
             "status:in-progress",
