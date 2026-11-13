@@ -6,10 +6,21 @@ import {
   requirements,
   type RequirementStatus,
 } from "@/lib/data";
+import {
+  fetchRequirementProgress,
+  fetchRequirements,
+  type ApiRequirement,
+  type ApiRequirementProgress,
+} from "@/lib/requirements-api";
 
 export const metadata: Metadata = {
   title: "需求",
 };
+
+// 实时需求依赖每次请求的 TIANXUAN_ACTOR，禁用静态化。
+export const dynamic = "force-dynamic";
+
+const LIVE_REQUIREMENT_LIMIT = 8;
 
 const statusClass: Record<RequirementStatus, string> = {
   澄清中: "is-clarifying",
@@ -42,7 +53,47 @@ const flowSteps = [
   },
 ];
 
-export default function RequirementsPage() {
+/** 把后端百分比收敛到 0–100 的整数，避免异常值撑破进度条。 */
+function normalizePercent(progress: ApiRequirementProgress | null | undefined): number {
+  const percent = Number(progress?.percent);
+  if (!Number.isFinite(percent)) {
+    return 0;
+  }
+  return Math.min(100, Math.max(0, Math.round(percent)));
+}
+
+/**
+ * 读取实时需求：先取列表，再并行为前 8 条回读详情（进度与 request_id）。
+ *
+ * 任意一次请求失败都会向上抛出，由页面静默回退到示例数据。
+ */
+async function loadLiveRequirements(actor: string): Promise<ApiRequirement[]> {
+  const listed = await fetchRequirements(actor);
+  const head = listed.slice(0, LIVE_REQUIREMENT_LIMIT);
+  return Promise.all(
+    head.map(async (requirement) => {
+      const detail = await fetchRequirementProgress(actor, requirement.id);
+      return {
+        ...requirement,
+        request_id: detail.request_id ?? requirement.request_id ?? null,
+        progress: detail.progress ?? requirement.progress ?? null,
+      };
+    }),
+  );
+}
+
+export default async function RequirementsPage() {
+  const actor = process.env.TIANXUAN_ACTOR?.trim() ?? "";
+  let liveRequirements: ApiRequirement[] = [];
+  if (actor) {
+    try {
+      liveRequirements = await loadLiveRequirements(actor);
+    } catch {
+      // 后端不可用时静默回退到示例数据，保持页面结构与文案不变。
+      liveRequirements = [];
+    }
+  }
+
   const clarifying = requirements.filter((requirement) => requirement.status === "澄清中").length;
   const drafted = requirements.filter((requirement) => requirement.status === "已成稿").length;
   const accepted = requirements.filter((requirement) => requirement.status === "已验收").length;
@@ -80,6 +131,45 @@ export default function RequirementsPage() {
           </Link>
         </div>
       </header>
+
+      {liveRequirements.length > 0 ? (
+        <section className="panel" aria-labelledby="live-requirements-title">
+          <header className="panel-head">
+            <div>
+              <p className="section-kicker">LIVE API</p>
+              <h2 id="live-requirements-title">实时需求</h2>
+            </div>
+            <span className="section-note">{liveRequirements.length} 条来自后端 · 含工单进度</span>
+          </header>
+
+          <div className="reading-list live-list">
+            {liveRequirements.map((requirement, index) => {
+              const percent = normalizePercent(requirement.progress);
+              return (
+                <Link className="reading-item" href={`/docs/${requirement.id}`} key={requirement.id}>
+                  <span className="reading-index">{String(index + 1).padStart(2, "0")}</span>
+                  <span className="reading-copy">
+                    <strong>{requirement.title}</strong>
+                    <span>
+                      {requirement.request_id ? `请求 ${requirement.request_id} · ` : ""}
+                      v{requirement.version} · {requirement.status}
+                    </span>
+                    <span className="meter" aria-hidden="true">
+                      <span style={{ width: `${percent}%` }} />
+                    </span>
+                    <span>
+                      {requirement.progress
+                        ? `${requirement.progress.done}/${requirement.progress.total} 工单 · ${percent}%`
+                        : "进度待回读"}
+                    </span>
+                  </span>
+                  <Icon name="chevronRight" size={14} />
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
 
       <section className="requirement-hero">
         <div className="requirement-hero-copy">
