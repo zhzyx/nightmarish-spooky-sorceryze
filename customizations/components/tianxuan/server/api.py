@@ -311,17 +311,19 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
         return {"results": search_documents(documents, q)[:limit]}
 
     @app.get("/api/v1/docs/{doc_id}/export")
-    def export_doc(doc_id: str) -> dict[str, str]:
-        document = store.get_doc(doc_id)
+    def export_doc(doc_id: str, actor: ActorDep) -> dict[str, str]:
+        document = store.get_doc_shared(actor, doc_id)
         return {"filename": f"{doc_id}.md", "markdown": export_markdown(document)}
 
     @app.get("/api/v1/docs/{doc_id}/ai-view")
-    def ai_view(doc_id: str) -> dict[str, Any]:
+    def ai_view(doc_id: str, actor: ActorDep) -> dict[str, Any]:
+        store.get_doc_shared(actor, doc_id)
         return store.ai_view(doc_id)  # type: ignore[no-any-return]
 
     @app.post("/api/v1/docs/{doc_id}/classify")
-    def classify_doc(doc_id: str) -> dict[str, list[str]]:
-        return {"tags": classify_markdown(store.get_doc(doc_id)["body_md"])}
+    def classify_doc(doc_id: str, actor: ActorDep) -> dict[str, list[str]]:
+        document = store.get_doc_shared(actor, doc_id)
+        return {"tags": classify_markdown(document["body_md"])}
 
     # ---------- 文曲：离线草稿合并 ----------
 
