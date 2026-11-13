@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ae6c446cfc5727f9966a64b33e0a1a57d0e4f53f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-3d-inline-actions-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "9ba0e9aef27f731c0c317e99d79a76dfe6bb98fabdf5ea95e6095efd46537fac",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+    "action": "validation",
+    "detection_head": "c074db21be98784ff1288f1f2d99c793ba156395",
+    "context_sha256": "4a0e8634ea1512e4b6b4a0792f439bc31e01f0d303cd2302882f030c8c852039",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Independent embedded graph method review on c074 plus isolated830; source28427c00272303053f0ed4764604f448269c53fa preserved; shared correction issue1017",
+    "diagnosis": "独立审查要求修改：图命令从项目取 graph_host.py；同身份同仓库重连后，旧拒绝可清除较新连接。两项在 main 已存在，进度监听和调试的项目脚本来源另经静态确认。既有侧栏测试通过不能作为整体验收。",
+    "next_action": "当前 root 通过真实司南子 Agent 在独立 #1017 修复三个共享宿主来源和迟到拒绝，再整合隔离830候选并独立复验；不接管原发布工作树。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T23:06:13.972744+00:00",
+    "attempted": "真实原生方法探针复现 read/answer 选项目脚本和旧代拒绝误清理；13项图/计划/工单帮助器测试通过。",
+    "repair_owner": "Sail-Li / codex:/root for shared1017; original830 publisher retains delivery",
+    "continuable": "真实1017工作者已接收，实现继续。"
+  },
+  "occurred_at": "2026-11-12T23:32:20.550752+00:00",
+  "sha256": "55d48d76c82be6b6f1f41190d49b2106685c61eb3cf0604dc7e65a7a1ad80812"
+}

@@ -1,0 +1,145 @@
+{
+  "issue_number": 1077,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1077",
+  "request_id": "game-receipt-guard-argv-20261114",
+  "parent_issues": [
+    1075,
+    830,
+    978
+  ],
+  "base_main": "22ba06d9543c16ca5e91c0a5c8a4c8fc2545a4f4",
+  "source_sha256": {
+    "editor/docks/receipts/GameReceiptGuard.cpp": "263abff2b491936ec31a15aad29b68a383f1f1918e4873c97aaf11894c1995c0"
+  },
+  "native_binary_sha256": "6809794003840249d0d46642f7ea5cb3b4e15cda5b52b6afd550c9f5f0743fcd",
+  "status": "local_native_and_independent_review_passed_pending_delivery",
+  "implementation": "Existing native pipe API receives literal argv; stdout/stderr drained fairly with a 4MiB total cap and 300-second execution budget; abnormal cleanup reuses host kill and preserves unknown exit-code semantics",
+  "native_cases": [
+    {
+      "name": "status",
+      "exit_code": 0,
+      "seconds": 14.0
+    },
+    {
+      "name": "status-quoted",
+      "exit_code": 0,
+      "seconds": 15.92
+    },
+    {
+      "name": "nonzero",
+      "exit_code": 0,
+      "seconds": 12.24
+    },
+    {
+      "name": "invalid-json",
+      "exit_code": 0,
+      "seconds": 15.11
+    },
+    {
+      "name": "output-limit",
+      "exit_code": 0,
+      "seconds": 11.7
+    },
+    {
+      "name": "binding-failure",
+      "exit_code": 0,
+      "seconds": 16.57
+    }
+  ],
+  "native_evidence_sha256": {
+    "issue1077-native/build-to-source.json": "0a191bd47a3b565815e54cd8f6017026d3ffc40ff0627f4d1a0abd2fcd872f32",
+    "issue1077-native/results.json": "458402f524afe6756bd9d1114a0bd4e4dd14d061e87281961f794913dae33c10",
+    "issue1077-native/status.stdout.log": "7ee3ff62727a914ba6bc705d6130909aae6f4d45cf9686fbac5b7664e0ff88d0",
+    "issue1077-native/status-quoted.stdout.log": "b292cfb9bafe939a80191906030bfeae89d0ec37187e1eaf7f1a08e40ff744fb",
+    "issue1077-native/nonzero.stdout.log": "fe5fec16a31c48063bde2eacc0073baad72b3b9c70b9aef094b952634f6cadc9",
+    "issue1077-native/invalid-json.stdout.log": "8315e4d3969531aeae941d3ffa068e8f72ca471b8a7f032df6296f9e7a2c6062",
+    "issue1077-native/output-limit.stdout.log": "28ad0ebc1d7151f3669d628c9d51f4ee5299d0b9e863e3ebedc4c13816b8c454",
+    "issue1077-native/binding-failure.json": "bfcb6135f6f5b6c50122b9e3c574380cf154606c32e6774e5428fb2f72438b5d"
+  },
+  "boundaries": [
+    "Controlled model and GitHub fixture traffic only",
+    "No current Windows/Linux runtime proof before exact CI",
+    "300-second timeout branch reviewed in source, not waited in a native test",
+    "Host kill is reused; no absolute cleanup bound under OS failure claimed",
+    "Original legacy unbound guide fixture is not a passing case; current status/manual rebind and direct rejection paths are separately verified"
+  ],
+  "kuafu": {
+    "incident": "af3425293fdf94eab8af600a4dfd8303dc91cc9263b0ff708ed0881ad976275c",
+    "original_incident": "b1bbcee0f8e2bc44e1eea030aca41ec2634dc6fa13df2921841bbb3a69548a1a",
+    "correction": "Original legacy-host receipt had empty role context and is not current intake proof; current-host child intake read a nonempty admitted context; old evidence retained"
+  },
+  "ci": "pending",
+  "main_delivery": "pending",
+  "independent_review": {
+    "worker": "/root/sinan_c04047f282bbd587",
+    "sha256": "75b82b4154c1cc5b7e8490b9bad563c9d84b6bdff6d855f79dfa4bf02cfcc55b",
+    "findings": []
+  },
+  "additional_validation": {
+    "stdout_and_stderr_flood": "passed; helper exited",
+    "nonzero_stderr_capture": "passed; exit7 rejected and stderr preserved",
+    "direct_status_retry": "passed after explicitly isolating cache and local diagnostic mode; four read-only calls, zero models/diting; earlier failures retained"
+  },
+  "test_isolation_corrections": [
+    "Complete private installed guard dependencies",
+    "Receipt before-images outside mutable workspace",
+    "Private cache path explicitly scoped instead of inherited outer cache",
+    "Local-only diagnostic dispatch explicitly set in fixture instead of relying on outer wrapper"
+  ],
+  "final_exact_tests": {
+    "results": [
+      {
+        "name": "status",
+        "exit_code": 0,
+        "seconds": 13.0
+      },
+      {
+        "name": "status-quoted",
+        "exit_code": 0,
+        "seconds": 15.52
+      },
+      {
+        "name": "nonzero",
+        "exit_code": 0,
+        "seconds": 11.79
+      },
+      {
+        "name": "invalid-json",
+        "exit_code": 0,
+        "seconds": 14.1
+      },
+      {
+        "name": "output-limit",
+        "exit_code": 0,
+        "seconds": 11.76
+      },
+      {
+        "name": "direct-retry",
+        "exit_code": 0,
+        "seconds": 11.47
+      }
+    ],
+    "input_sha256": {
+      "tests/editor/run_gonggong_chat_gate.py": "cb2c6b0a3ac566dd2a370d9936cfe905dc0564267047ec454ad09e84e9f31bfe",
+      "tests/editor/gonggong_chat_gate.gd": "60529efa3e13edeb1b8fecd1a92ba40e6ec1a885e0e8e9e8bb524080aa17c101",
+      "editor/docks/receipts/GameReceiptGuard.cpp": "263abff2b491936ec31a15aad29b68a383f1f1918e4873c97aaf11894c1995c0",
+      "bin/godot.macos.editor.dev.arm64": "6809794003840249d0d46642f7ea5cb3b4e15cda5b52b6afd550c9f5f0743fcd"
+    },
+    "results_sha256": "6809202d0c4d1a206e9ab932a08e39004b258767178775743300ba3395627cbf",
+    "logs_sha256": {
+      "direct-retry.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "direct-retry.stdout.log": "460cf1a6292b653a4c8527ab5c4170bf64025886bfbd9aa503da9dca69a8bd5a",
+      "invalid-json.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "invalid-json.stdout.log": "52bfc867f85cd8028d460daf9db2f552ac1585a07e5c8046495153b0846071cb",
+      "nonzero.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nonzero.stdout.log": "f8973bfc40f8b28ecffa1a27ba9608ad996f9b8405522c819814ba1dfcc96849",
+      "output-limit.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output-limit.stdout.log": "adcdf8d6a627b4b5b7cbe52b9bb6fad6840bdc47b59a18c4c8024dda6a4e4128",
+      "status-quoted.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status-quoted.stdout.log": "6377657a611f1a9c80d739bf0139d5e6217d24f4a2fe63ed065d5439b0a63fa0",
+      "status.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status.stdout.log": "a31ef5090d50864b185fa848fbd540e6353cdfc2d6ef33e5842ce23cc3f190c4"
+    },
+    "all_inputs_unchanged_after_runs": true
+  }
+}

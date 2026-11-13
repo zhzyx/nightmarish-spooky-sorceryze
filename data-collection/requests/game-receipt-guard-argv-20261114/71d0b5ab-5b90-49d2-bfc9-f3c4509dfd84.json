@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "game-receipt-guard-argv-20261114",
+  "collected_at": "2026-11-13T17:22:51.335309+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/game-receipt-guard-argv-20261114/dispatch-0ce78bad3c154769b4965648fb110c3c.json",
+      "sha256": "5844a45e4f019e1caed2b4f41e813d1986fe2e671f56871dbc309aa34728c6c1",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-0ce78bad3c154769b4965648fb110c3c",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/game-receipt-guard-argv-20261114/dispatch-30061c039a074145bea0f01373379865.json",
+      "sha256": "f64b496e9bed1b84ac35576db56311ce4477a0e7dedaf0e45ab1c6ca983f1f97",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-30061c039a074145bea0f01373379865",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/game-receipt-guard-argv-20261114/dispatch-8181187900f74035a4a3e9a99db4b545.json",
+      "sha256": "2c1f09fae05f8820c4ec454e5888ef508d690b937489d7d0eb403eb0659939fd",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-8181187900f74035a4a3e9a99db4b545",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/game-receipt-guard-argv-20261114/dispatch-b0a56d76589d48c2bb388c510e035852.json",
+      "sha256": "2685f7389ec2a40b3af121900e384a42b9c5d95f056da7b47d76e8716af76fbb",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-b0a56d76589d48c2bb388c510e035852",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/game-receipt-guard-argv-20261114/kuafu-8a9d2780c52eabc43e545130aa5454dbbeb3b290.json",
+      "sha256": "15ec3d952ff1bb0834ab34d3f968e6685ce95d84dc50593911b2a817584aa681",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-8a9d2780c52eabc43e545130aa5454dbbeb3b290",
+      "origin": "authenticated_host_role"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot"
+}

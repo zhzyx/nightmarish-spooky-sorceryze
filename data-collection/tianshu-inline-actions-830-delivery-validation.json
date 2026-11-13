@@ -1,0 +1,42 @@
+{
+  "issue_number": 830,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+  "request_id": "tianshu-3d-inline-actions-20261112",
+  "parent_issue": 978,
+  "base_main": "22ba06d9543c16ca5e91c0a5c8a4c8fc2545a4f4",
+  "handoff": "User explicitly assigned original PR831 delivery to this conversation; no repeated approval required",
+  "original_pr": 831,
+  "original_source": "28427c00272303053f0ed4764604f448269c53fa",
+  "replaces_preparation_status": "Historical preparation receipts remain unchanged; current handoff and validation supersede their pending state",
+  "binary_sha256": "6809794003840249d0d46642f7ea5cb3b4e15cda5b52b6afd550c9f5f0743fcd",
+  "source_sha256": {
+    "editor/docks/daqian/spatial_workbench.gd": "1aefe441d87a9c8c9dcd60c0af046b03e157b0f40b2363cc213e25fd3f64551c",
+    "editor/docks/daqian/workspace.gd": "e60bfeb85ec9c7923685f4171a9c9cbc7871c60292282be2cad9efc404f999ef",
+    "tests/editor/tianshu_spatial.gd": "e0cbaf1fcf2697c564bc00d24c9344f7bd8f7cd016dbd3febad29af309bab959"
+  },
+  "acceptance": {
+    "inline_model_issue_details": "passed in native spatial fixture",
+    "inline_reply_and_existing_chat": "passed in routing/spatial fixture",
+    "structured_answers_and_explicit_confirmation": "passed; no automatic approval",
+    "stale_target_receipts_failure_and_draft": "passed in routing/spatial fixture",
+    "macos_native_build_and_headless_controls": "passed"
+  },
+  "current_native_reports": {
+    "issue1077-native/sidebars/routing-native.json": "c9185fee2fb2f306589bb56c08366cc6798766ff326c7ac705a8d9068325fafd",
+    "issue1077-native/sidebars/spatial-native.json": "6071c39167beabb70e800452520f11bc5680d45c3558ef1bdc32455c167d89ef",
+    "issue1077-native/sidebars/test-execution.json": "680f1fcc2ab583a19954e94e85859aa93ef95e2b4c9f4e6c2ee97de40891b5eb"
+  },
+  "discovered_repairs": [
+    1075,
+    1077
+  ],
+  "verification_scope": "Headless actual controls/signals, controlled model/GitHub; no effective installation switch, pixels/focus, other-platform runtime, or #827 production acceptance",
+  "independent_review": {
+    "status": "passed",
+    "worker": "/root/sinan_c04047f282bbd587",
+    "sha256": "75b82b4154c1cc5b7e8490b9bad563c9d84b6bdff6d855f79dfa4bf02cfcc55b",
+    "earlier_1075_sha256": "a67bd479c1c8d45ac30bc61f2447551e3725d9dce319940116ef602cc53f8954"
+  },
+  "ci": "pending",
+  "main_delivery": "pending"
+}

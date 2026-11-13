@@ -215,6 +215,8 @@ jobs:
         run: |
           $editor = '${{ matrix.bin }}'.Replace('.console.exe', '.exe')
           python -X utf8 tests/editor/run_parent_binding_restart.py --godot $editor --out parent-recovery-report/binding.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -X utf8 tests/editor/run_parent_binding_restart.py --godot $editor --checkpoint-failure --out parent-recovery-report/binding-save-failure.json
 
       - name: Original design reconfirmation and independent continuation
         if: matrix.compiler == 'msvc' && matrix.target == 'editor'

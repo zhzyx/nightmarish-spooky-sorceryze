@@ -932,6 +932,16 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 		_append(TTR("Editor"), U"工单引导正在处理上一步，请稍候；回复 `取消` 可放弃。");
 		return;
 	}
+	if (issue_guide_state == "binding_save_error") {
+		if (AIChatIssueGuide::is_retry(p_text)) {
+			const String action = issue_guide_fields["pending_binding_action"];
+			const Dictionary result = issue_guide_fields["pending_binding_result"];
+			_complete_issue_guide_binding(action, result);
+		} else {
+			_append(TTR("Editor"), U"聊天记录尚未保存，工单绑定与开发执行保持暂停。请修复磁盘空间或写入权限后回复“重试”，仅重试本地保存；不会重新建单或确认工单状态。");
+		}
+		return;
+	}
 	if (issue_guide_state == "environment_setup") {
 		const Dictionary runtime = GongGongRuntimeConfig::read_effective();
 		if (gonggong_panel && gonggong_panel->ensure_environment_with_snapshot(runtime)) {
@@ -978,8 +988,10 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 	int64_t number = 0;
 	String request_id;
 	if (AIChatIssueGuide::parse_binding(p_text, number, request_id)) {
-		_issue_guide_bind(number, request_id);
-		_issue_guide_retry();
+		Dictionary binding;
+		binding["issue_number"] = number;
+		binding["request_id"] = request_id;
+		_complete_issue_guide_binding("manual", binding);
 		return;
 	}
 	const String text = p_text.strip_edges();
@@ -1213,36 +1225,7 @@ void AIChatDock::_poll_issue_guide() {
 			_set_busy(false);
 			return;
 		}
-		_issue_guide_bind(number, request_id);
-		_append(TTR("Editor"), String(U"Yanshi / ClarifyFeature 已整理需求并关联真实工单：") + String(result.get("url", "")));
-		Dictionary design;
-		for (const String &field : { String("scope"), String("acceptance"), String("questions") }) {
-			const Variant values = result.get(field, Variant());
-			if (values.get_type() == Variant::ARRAY) {
-				design[field] = values;
-			}
-		}
-		const bool ready = result["ready"];
-		_emit_daqian_requirement_phase(ready ? "ready" : "questions", design);
-		if (!ready) {
-			issue_guide_state = "agent_questions";
-			for (const Variant &question : Array(design.get("questions", Array()))) {
-				_append(U"Yanshi", question);
-			}
-			_set_busy(false);
-			return;
-		}
-		if (last_user_content(messages) != issue_guide_outcome) {
-			Dictionary clarified;
-			clarified["role"] = "user";
-			clarified["content"] = issue_guide_outcome;
-			messages.push_back(clarified);
-		}
-		issue_agent_checked = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, last_user_content(messages), _work_order_binding("issue_number"), _work_order_binding("request_id"));
-		// Continue the same busy turn; toggling idle here pauses already queued
-		// requirements and falsely closes the active reply before development.
-		issue_guide_state = "retrying";
-		_request_completion();
+		_complete_issue_guide_binding("issue-agent", result);
 		return;
 	}
 	issue_guide_state = guide_state_before(issue_guide_action);
@@ -1259,11 +1242,10 @@ void AIChatDock::_poll_issue_guide() {
 	} else if (issue_guide_action == "issue-create") {
 		const int64_t number = ok ? int64_t(result.get("number", 0)) : 0;
 		if (ok && number >= 1) {
-			_issue_guide_bind(number, issue_guide_fields["request_id"]);
-			const String found = String(result.get("state", "")) == "existing" ? String(U"找到同一需求 ID 的已有") : String(U"已创建");
-			_append(TTR("Editor"), vformat(U"%s Issue #%d：%s ，并已写入 GongGong 页绑定。", found, number, String(result.get("url", ""))));
-			issue_guide_state = "await_status";
-			_issue_guide_prompt();
+			Dictionary binding = result.duplicate(true);
+			binding["issue_number"] = number;
+			binding["request_id"] = issue_guide_fields["request_id"];
+			_complete_issue_guide_binding("issue-create", binding);
 		} else if (error == "gh_unavailable") {
 			_append(TTR("Error"), String(U"本机未找到 GitHub CLI（gh），未创建远程 Issue。可在有仓库写权限的环境中于工作区根目录执行：\n\n```\n") + String(result.get("command", "")) + "\n```\n\n" + vformat(U"创建后回复 `#编号 %s` 绑定；或安装并登录 gh 后回复 `确认` 重试。", String(issue_guide_fields["request_id"])));
 		} else if (error == "gh_unauthenticated") {
@@ -1329,7 +1311,22 @@ void AIChatDock::_cancel_issue_guide(const String &p_notice) {
 	}
 }
 
-void AIChatDock::_issue_guide_bind(int64_t p_number, const String &p_request_id) {
+bool AIChatDock::_issue_guide_bind(int64_t p_number, const String &p_request_id) {
+	// Metadata and daqian_issue_bound are externally visible recovery routes.
+	// Publish neither until the original conversation and latest input can be
+	// found in history. A queued older snapshot must finish before this one.
+	if (!history_loaded || history_restoring || !history_writable || conversation_id.is_empty()) {
+		return false;
+	}
+	const String owner = conversation_id;
+	const String snapshot = snapshot_id;
+	const uint64_t generation = issue_guide_generation;
+	_queue_history_save();
+	_flush_history();
+	if (history_save_error || history_dirty || history_save_job || !history_primary_valid ||
+			!history_loaded || history_restoring || !history_writable || conversation_id != owner || snapshot_id != snapshot || issue_guide_generation != generation) {
+		return false;
+	}
 	if (_work_order_binding("issue_number").to_int() != p_number || _work_order_binding("request_id") != p_request_id) {
 		_revoke_native_task();
 	}
@@ -1362,6 +1359,79 @@ void AIChatDock::_issue_guide_bind(int64_t p_number, const String &p_request_id)
 	if (bound.has("source")) {
 		emit_signal("daqian_issue_bound", bound["source"], p_number, p_request_id);
 	}
+	return true;
+}
+
+void AIChatDock::_complete_issue_guide_binding(const String &p_action, const Dictionary &p_result) {
+	const int64_t number = p_result["issue_number"];
+	const String request_id = p_result["request_id"];
+	// Retain the successful remote receipt across a local disk failure. Retrying
+	// this state never sends issue-agent/create/start again.
+	issue_guide_fields["pending_binding_action"] = p_action;
+	issue_guide_fields["pending_binding_result"] = p_result;
+	if (p_action == "issue-agent" && bool(p_result["ready"]) && last_user_content(messages) != issue_guide_outcome) {
+		Dictionary clarified;
+		clarified["role"] = "user";
+		clarified["content"] = issue_guide_outcome;
+		messages.push_back(clarified);
+	}
+	const String owner = conversation_id;
+	const String snapshot = snapshot_id;
+	const uint64_t generation = issue_guide_generation;
+	const bool bound = _issue_guide_bind(number, request_id);
+	// History completion and binding signals can call back into the host. Never
+	// resume or report an old receipt in a cancelled/switched conversation.
+	if (conversation_id != owner || snapshot_id != snapshot || issue_guide_generation != generation) {
+		return;
+	}
+	if (!bound) {
+		issue_guide_state = "binding_save_error";
+		_emit_daqian_requirement_phase("error");
+		_append(TTR("Error"), vformat(U"聊天记录保存失败，尚未发布工单绑定。已取得工单 #%d（`%s`），原消息和工单回执仍保留；旧记录未主动清空。请修复磁盘空间或写入权限后回复“重试”，仅重试本地保存，不会重新建单或自动确认。", number, request_id));
+		_set_busy(false);
+		return;
+	}
+	issue_guide_fields.erase("pending_binding_action");
+	issue_guide_fields.erase("pending_binding_result");
+	if (p_action == "manual") {
+		_issue_guide_retry();
+		return;
+	}
+	if (p_action == "issue-create") {
+		const String found = String(p_result.get("state", "")) == "existing" ? String(U"找到同一需求 ID 的已有") : String(U"已创建");
+		_append(TTR("Editor"), vformat(U"%s Issue #%d：%s ，并已写入 GongGong 页绑定。", found, number, String(p_result.get("url", ""))));
+		issue_guide_state = "await_status";
+		_issue_guide_prompt();
+		return;
+	}
+	_append(TTR("Editor"), String(U"Yanshi / ClarifyFeature 已整理需求并关联真实工单：") + String(p_result.get("url", "")));
+	Dictionary design;
+	for (const String &field : { String("scope"), String("acceptance"), String("questions") }) {
+		const Variant values = p_result.get(field, Variant());
+		if (values.get_type() == Variant::ARRAY) {
+			design[field] = values;
+		}
+	}
+	const bool ready = p_result["ready"];
+	_emit_daqian_requirement_phase(ready ? "ready" : "questions", design);
+	if (!ready) {
+		issue_guide_state = "agent_questions";
+		for (const Variant &question : Array(design.get("questions", Array()))) {
+			_append(U"Yanshi", question);
+		}
+		_set_busy(false);
+		return;
+	}
+	issue_agent_checked = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, last_user_content(messages), _work_order_binding("issue_number"), _work_order_binding("request_id"));
+	if (!busy) {
+		// A failed local checkpoint paused the turn; resume the retained result.
+		_issue_guide_retry();
+		return;
+	}
+	// A successful first attempt continues the same busy turn without pausing
+	// already queued requirements or falsely closing the active reply.
+	issue_guide_state = "retrying";
+	_request_completion();
 }
 
 void AIChatDock::_issue_guide_retry() {

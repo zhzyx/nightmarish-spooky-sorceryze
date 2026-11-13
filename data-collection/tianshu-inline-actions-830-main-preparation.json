@@ -1,0 +1,55 @@
+{
+  "issue_number": 830,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+  "request_id": "tianshu-3d-inline-actions-20261112",
+  "parent_issue": 978,
+  "base_main": "722a7309c157e6f2665a152fecde57276284175f",
+  "publication": "prepared_pending_explicit_handoff",
+  "original_pr": 831,
+  "original_source": "28427c00272303053f0ed4764604f448269c53fa",
+  "source_sha256": {
+    "editor/docks/daqian/spatial_workbench.gd": "1aefe441d87a9c8c9dcd60c0af046b03e157b0f40b2363cc213e25fd3f64551c",
+    "editor/docks/daqian/workspace.gd": "e60bfeb85ec9c7923685f4171a9c9cbc7871c60292282be2cad9efc404f999ef",
+    "tests/editor/tianshu_spatial.gd": "e0cbaf1fcf2697c564bc00d24c9344f7bd8f7cd016dbd3febad29af309bab959"
+  },
+  "prior_independent_review_sha256": "35267d81f248f18f4bfb5ad503314e743f91199be8c4fc5faf516a1945dbc472",
+  "review_reuse": "All three product/test files match prior final independently approved isolated candidate; shared1017 already main, only 7 workspace lines remain in current diff. Current main build/routing/sidebar/restart executed again. This is not publication approval.",
+  "native_validation": {
+    "binary_sha256": "eca4875b825588d306cbdab7abf4f71de3e079a320f6e9c24a26088e24b1b2e9",
+    "routing_checks": 63,
+    "routing_ok": true,
+    "spatial_passed": true,
+    "restart_exit_code": 0,
+    "scope": "Actual headless macOS native fixture checks on main722a plus reviewed830 product; not production account, UI pixel/focus, or Windows proof",
+    "logs_include": "existing fixture shutdown RID/ObjectDB and already-exited-child diagnostics retained; assertion sets and restart pass",
+    "evidence": "issue830-current-native"
+  },
+  "historical_evidence": "data-collection/tianshu-inline-actions-830-integration.json retains c074 preparation snapshot without rewriting its historical status",
+  "current_status": "838 delivered by explicit handoff; 830 handoff still pending;971 previous self-imposed hold was withdrawn, original external responsibilities retained",
+  "build_recovery": {
+    "incident": "64da708eec370f6b31562a5335cc49fb6a2892b608038be1b6e2eea2202a0b02",
+    "initial": "missing prior vulkan=no accesskit=no flags; stopped at SDK check before compilation",
+    "recovery": "restored known build configuration, build passed; no product correction"
+  },
+  "private_receipts": {
+    "base": "parent directory of git rev-parse --path-format=absolute --git-common-dir, then data-collection/receipts/ai-integration-refactor-20261112",
+    "paths": [
+      "issue830-current-main-preparation.json",
+      "issue830-current-native/routing-native.json",
+      "issue830-current-native/spatial-native.json",
+      "issue830-current-main-build.log",
+      "issue830-current-main-build-recovered.log"
+    ]
+  },
+  "limits": [
+    "No production account/GitHub write performed by this feature fixture",
+    "No Windows/Linux current candidate execution",
+    "No effective installation switch or pixel/focus validation",
+    "No original827 production acceptance",
+    "Original830publisher and PR831 unchanged"
+  ],
+  "native_report_sha256": {
+    "routing-native.json": "dc094910a97cab6b37fa2838b8da583a44f4f630def9901dae41546fda5503c1",
+    "spatial-native.json": "82511f43f21442286f70007b045d990f123a6d760b308bd33f1e06a6409796ec"
+  }
+}

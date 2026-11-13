@@ -1,0 +1,17 @@
+{
+  "issue_number": 978,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "scope": "Original830 source contribution and parent dispatch evidence integrated under explicit user handoff; child persistence1075 and argv1077 defects remain separate acceptance records",
+  "child_issues": [
+    830,
+    1075,
+    1077
+  ],
+  "parent_goal": "active; other retained task/production/platform boundaries are not closed by this delivery",
+  "evidence": [
+    "data-collection/tianshu-inline-actions-830-delivery-validation.json",
+    "data-collection/ai-chat-binding-history-checkpoint-1075.json",
+    "data-collection/game-receipt-guard-argv-1077.json"
+  ]
+}

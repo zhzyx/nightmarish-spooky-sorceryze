@@ -113,7 +113,11 @@ def prepare_issue_guide(root, logged_in=True):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--godot", type=Path, required=True)
+    parser.add_argument(
+        "--quoted-paths", action="store_true", help="Exercise literal quotes and shell syntax in POSIX paths"
+    )
     parser.add_argument("--receipt-delay", type=float, default=0)
+    parser.add_argument("--guard-fault", choices=("nonzero", "invalid-json", "output-limit"))
     parser.add_argument("--max-frame-gap", type=float)
     parser.add_argument(
         "--mode",
@@ -140,6 +144,10 @@ def main():
         default="rejected",
     )
     args = parser.parse_args()
+    if args.quoted_paths and os.name == "nt":
+        parser.error("Quoted-path validation requires POSIX filenames")
+    if args.guard_fault and (args.mode != "issue_guide_status" or sys.platform != "darwin"):
+        parser.error("Guard fault validation requires the isolated macOS status fixture")
     requests = []
 
     class Handler(http.server.BaseHTTPRequestHandler):
@@ -202,7 +210,12 @@ def main():
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
-        with tempfile.TemporaryDirectory(prefix="gonggong-gate-") as temporary:
+        with (
+            tempfile.TemporaryDirectory(
+                prefix="gonggong gate '$(false)-" if args.quoted_paths else "gonggong-gate-"
+            ) as temporary,
+            tempfile.TemporaryDirectory(prefix="gonggong-gate-private-") as private,
+        ):
             root = Path(temporary).resolve()
             shutil.copytree(ROOT / "framework", root / "framework", ignore=shutil.ignore_patterns("__pycache__"))
             shutil.copytree(
@@ -371,6 +384,25 @@ def main():
             if args.mode.startswith("issue_guide_status") and sys.platform == "darwin":
                 # Bind receipt flushing to the private fixture installation.
                 (root / "SConstruct").write_text("# isolated native gate fixture\n")
+                for name in (
+                    "editor_provenance_guard.py",
+                    "editor_engine_candidate.py",
+                    "editor_provenance_process.py",
+                ):
+                    shutil.copyfile(ROOT / "tools" / name, root / "tools" / name)
+                if args.guard_fault:
+                    fault = {
+                        "nonzero": 'print("{\\"ok\\":true}"); print("fixture-guard-stderr", file=sys.stderr); sys.exit(7)',
+                        "invalid-json": 'print("invalid fixture JSON")',
+                        "output-limit": 'while True:\n os.write(1, b"x" * 8192)\n os.write(2, b"y" * 8192)',
+                    }[args.guard_fault]
+                    (root / "tools/editor_provenance_guard.py").write_text(
+                        "import os,sys\nfrom pathlib import Path\n"
+                        'Path(os.environ["GONGGONG_TEST_WORKSPACE"]).joinpath("guard-fixture-pid").write_text(str(os.getpid()))\n'
+                        + fault
+                        + "\n",
+                        encoding="utf-8",
+                    )
             project = root / "project"
             project.mkdir()
             if not guided:
@@ -418,13 +450,12 @@ def main():
                 GONGGONG_PYTHON=sys.executable,
                 GONGGONG_WORKSPACE=str(root),
                 GONGGONG_TEST_MODE="accepted" if args.mode == "admitted" else args.mode,
+                GONGGONG_TEST_GUARD_FAULT=args.guard_fault or "",
+                GONGGONG_KUAFU_LOCAL_ONLY="1",
                 GONGGONG_TEST_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
             )
             # Isolate user settings, so tests cannot change real accounts or projects.
-            for name in ("APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME"):
-                env[name] = str(root / name)
-                (root / name).mkdir()
-            for name in ("APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "HOME"):
+            for name in ("APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_CACHE_HOME", "HOME"):
                 folder = root / ("isolated-" + name)
                 folder.mkdir()
                 env[name] = str(folder)
@@ -446,8 +477,11 @@ def main():
                 # macOS editor settings live under HOME; the guide writes the Issue binding there.
                 env["HOME"] = str(root / "home")
                 (root / "home").mkdir()
+                (root / "home/Library/Caches").mkdir(parents=True)
                 env["GONGGONG_GH"] = str(fixtures / "gh")
                 env["GONGGONG_NODE"] = str(fixtures / "node")
+            # Receipt protection stores before-images outside the mutable workspace.
+            env["LOCALAPPDATA"] = str(Path(private).resolve())
             result = subprocess.run(
                 [
                     str(isolated_editor),
@@ -516,6 +550,21 @@ def main():
                 )
                 return 0
             if guided:
+                if args.guard_fault:
+                    assert not requests, "Failed receipt protection reached the model"
+                    pid = int((root / "guard-fixture-pid").read_text())
+                    try:
+                        os.kill(pid, 0)
+                    except ProcessLookupError:
+                        pass
+                    else:
+                        raise AssertionError("Owned guard fixture survived its terminal receipt")
+                    state = json.loads((fixtures / "gh-state.json").read_text())
+                    assert sum(c[:3] == ["issue", "edit", "42"] for c in state["calls"]) == 1
+                    print(
+                        json.dumps({"guard_fault": args.guard_fault, "model_requests": 0, "owned_helper_exited": True})
+                    )
+                    return 0
                 return check_issue_guide(root, args.mode, requests)
             if args.mode in ("accepted", "admitted", "tool", "recovery_cancel", "receipt_retry"):
                 assert len(requests) == (2 if args.mode == "tool" else 1)

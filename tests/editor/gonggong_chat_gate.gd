@@ -46,6 +46,18 @@ func _run_issue_guide(dock, mode):
 		await create_timer(0.1).timeout
 		# Retry re-reads the same rejected Issue; it is not permission to start.
 		var fixture = OS.get_environment("GONGGONG_TEST_WORKSPACE").path_join("fixtures")
+		if not direct_status:
+			# Reusing the same binding exercises the manual history checkpoint.
+			# It must return to the status gate without implicitly starting work.
+			_reply(dock, "#42 guide-e2e-1")
+			var rebound := false
+			for attempt in range(400):
+				await create_timer(0.05).timeout
+				if dock.get_meta("gonggong_status", "") == "issue_guide" and dock.find_child("Send", true, false).text == "发送":
+					rebound = true
+					break
+			if not rebound:
+				return false
 		var before_retry = JSON.parse_string(FileAccess.get_file_as_string(fixture.path_join("gh-state.json")))
 		DirAccess.copy_absolute(fixture.path_join("gh-state.json"), fixture.path_join("before-retry.json"))
 		_reply(dock, "已更新")
@@ -104,6 +116,14 @@ func _run_issue_guide(dock, mode):
 			_reply(dock, "取消")
 			return _shown(dock, "已退出工单引导") and _shown(dock, "Isolated GongGong gate validation")
 		_reply(dock, "开始")
+		var guard_fault := OS.get_environment("GONGGONG_TEST_GUARD_FAULT")
+		if not guard_fault.is_empty():
+			var diagnostic := "stage=output_limit" if guard_fault == "output-limit" else ("stage=json_parse" if guard_fault == "invalid-json" else "nExitCode=7")
+			if not await _wait_shown(dock, diagnostic, 40.0):
+				return false
+			if guard_fault == "nonzero" and not _shown(dock, "stderr=fixture-guard-stderr"):
+				return false
+			return not _shown(dock, "GONGGONG_FIXTURE_REPLY")
 		if not await _wait_shown(dock, "GONGGONG_FIXTURE_REPLY", 40.0):
 			return false
 		for attempt in range(200):
