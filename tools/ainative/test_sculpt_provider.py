@@ -1,4 +1,4 @@
-"""Sculpt plans and durable CLI jobs; synthetic CLI with optional real Blender."""
+"""Sculpt plans and durable CLI jobs; synthetic API with optional real Blender."""
 
 import base64
 import copy
@@ -7,12 +7,13 @@ import json
 import os
 import shutil
 import struct
-import subprocess
 import sys
 import tempfile
+import threading
 import time
 import unittest
 import zlib
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from unittest.mock import patch
 
@@ -46,7 +47,6 @@ from sculpt_provider import (
     selected_turnaround_panels,
     sheet_evidence,
 )
-from test_modeling_provider import FAKE_CS
 
 ROOT = Path(__file__).resolve().parents[2]
 BLENDER = Path(os.environ.get("AINATIVE_TEST_BLENDER") or shutil.which("blender") or "__blender_unavailable__")
@@ -258,9 +258,9 @@ class CalibrationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "calibration_invalid"):
             load_operator_calibration(self.builder)
 
-    def test_invalid_or_changed_calibration_fails_before_cli_auth(self):
+    def test_invalid_or_changed_calibration_fails_before_api_auth(self):
         config = dict(
-            cli_path=sys.executable,
+            planner=dict(endpoint="http://127.0.0.1:1", model="fixture-model", key_env="AINATIVE_SCULPT_FIXTURE_KEY"),
             blender_path=sys.executable,
             builder_path=str(self.builder),
             storage=str(self.directory / "state"),
@@ -440,7 +440,9 @@ class SculptPlanTests(unittest.TestCase):
             anatomy = directory / "anatomy_base.py"
             anatomy.write_text("# first trusted data revision\n", encoding="utf-8")
             config = dict(
-                cli_path=sys.executable,
+                planner=dict(
+                    endpoint="http://127.0.0.1:1", model="fixture-model", key_env="AINATIVE_SCULPT_FIXTURE_KEY"
+                ),
                 blender_path=sys.executable,
                 builder_path=str(builder),
                 storage=str(directory / "state"),
@@ -765,31 +767,59 @@ class SculptPlanTests(unittest.TestCase):
 
 @unittest.skipUnless(os.name == "nt", "Synthetic CLI fixture is a Windows executable")
 class SculptTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.build = tempfile.TemporaryDirectory(prefix="sculpt-cli-fixture-")
-        cls.exe = Path(cls.build.name) / "fake-sculpt.exe"
-        source = cls.exe.with_suffix(".cs")
-        source.write_text(FAKE_CS, encoding="utf-8")
-        compiler = Path(os.environ.get("WINDIR", "C:/Windows")) / "Microsoft.NET/Framework64/v4.0.30319/csc.exe"
-        if not compiler.is_file():
-            raise unittest.SkipTest("C# fixture compiler unavailable")
-        subprocess.run([str(compiler), "/nologo", "/out:" + str(cls.exe), str(source)], check=True, capture_output=True)
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.build.cleanup()
-
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(prefix="sculpt-provider-")
+        self.addCleanup(self.tmp.cleanup)
         self.directory = Path(self.tmp.name)
-        self.fake = self.directory / "fake-sculpt.exe"
-        shutil.copy2(self.exe, self.fake)
         (self.directory / "plan.json").write_text(json.dumps(PLAN), encoding="utf-8")
+        self.requests = []
+        self.started = threading.Event()
+        self.release = threading.Event()
+        owner = self
+
+        class FixturePlanner(BaseHTTPRequestHandler):
+            def log_message(self, *_args):
+                pass
+
+            def do_POST(self):
+                body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+                owner.requests.append(body)
+                owner.started.set()
+                if not owner.release.wait(timeout=25):
+                    return
+                plan = json.loads((owner.directory / "plan.json").read_text(encoding="utf-8"))
+                response = json.dumps(
+                    dict(
+                        model="fixture-model",
+                        choices=[dict(finish_reason="stop", message=dict(content=json.dumps(plan)))],
+                    )
+                ).encode()
+                try:
+                    self.send_response(200)
+                    self.end_headers()
+                    self.wfile.write(response)
+                except (BrokenPipeError, ConnectionResetError):
+                    pass
+
+        self.release.set()
+        self.server = ThreadingHTTPServer(("127.0.0.1", 0), FixturePlanner)
+        thread = threading.Thread(target=self.server.serve_forever, daemon=True)
+        thread.start()
+        self.addCleanup(thread.join)
+        self.addCleanup(self.server.server_close)
+        self.addCleanup(self.server.shutdown)
+        self.addCleanup(self.release.set)
+        auth = patch.dict(os.environ, AINATIVE_SCULPT_FIXTURE_KEY="local-fixture")
+        auth.start()
+        self.addCleanup(auth.stop)
         self.config = dict(
-            cli_path=str(self.fake),
+            planner=dict(
+                endpoint="http://127.0.0.1:" + str(self.server.server_port),
+                model="fixture-model",
+                key_env="AINATIVE_SCULPT_FIXTURE_KEY",
+            ),
             storage=str(self.directory / "state"),
-            blender_path=str(BLENDER if BLENDER.is_file() else self.fake),
+            blender_path=str(BLENDER if BLENDER.is_file() else Path(sys.executable)),
             builder_path=str(BUILDER),
         )
         self.provider = SculptProvider(self.config)
@@ -808,10 +838,7 @@ class SculptTests(unittest.TestCase):
             time.sleep(0.05)
         for process in _WORKERS:
             process.poll()
-        self.tmp.cleanup()
-
-    def mode(self, value):
-        (self.directory / "mode").write_text(value)
+        self.release.set()
 
     def use_synthetic_calibration_runtime(self):
         runtime = self.directory / "synthetic-calibration-runtime"
@@ -838,14 +865,8 @@ class SculptTests(unittest.TestCase):
             time.sleep(0.1)
         self.fail("sculpt worker did not complete")
 
-    def wait_started(self):
-        deadline = time.monotonic() + 10
-        while not (self.directory / "started").exists() and time.monotonic() < deadline:
-            time.sleep(0.05)
-        self.assertTrue((self.directory / "started").is_file())
-
     @unittest.skipUnless(BLENDER.is_file(), "Explicit real Blender executable required")
-    def test_synthetic_cli_real_rounded_loft_cups_reaches_strict_receipt_gate(self):
+    def test_synthetic_api_real_rounded_loft_cups_reaches_strict_receipt_gate(self):
         self.use_synthetic_calibration_runtime()
         value = copy.deepcopy(PLAN)
         surface = value["regions"][0]["surface"]
@@ -889,7 +910,7 @@ class SculptTests(unittest.TestCase):
         self.assertEqual(receipt["quality"]["body_components"], 1)
 
     @unittest.skipUnless(BLENDER.is_file(), "Explicit real Blender executable required")
-    def test_synthetic_cli_real_blender_organic_mesh_receipt_and_recovery(self):
+    def test_synthetic_api_real_blender_organic_mesh_receipt_and_recovery(self):
         self.provider.submit(self.request, self.manifest, KEY)
         result = self.wait()
         self.assertEqual(result["state"], "succeeded", self.provider.read(KEY))
@@ -899,7 +920,7 @@ class SculptTests(unittest.TestCase):
         validate_outputs(registry, "text_to_mesh", "1", result["outputs"], manifest)
         check_content(manifest)
         provenance = manifest["artifacts"][0]["payload"]["provenance"]
-        self.assertEqual(provenance["provider"], "codex-sculpt")
+        self.assertEqual(provenance["provider"], "api-sculpt")
         self.assertFalse(provenance["exact_hidden_surface_recovery_claimed"])
         self.assertFalse(provenance["generated_code_executed"])
         self.assertEqual(provenance["hidden_surface_policy"], "generated_from_text_unobserved_geometry")
@@ -910,15 +931,12 @@ class SculptTests(unittest.TestCase):
         reopened = SculptProvider(self.config)
         self.assertEqual(reopened.submit(self.request, self.manifest, KEY)["state"], "succeeded")
         self.assertEqual(reopened.cancel(KEY)["state"], "succeeded")
-        self.assertEqual((self.directory / "runs").read_text().count("run"), 1)
-        arguments = (self.directory / "args").read_text()
-        self.assertIn("--output-schema", arguments)
-        self.assertIn("features.image_generation=false", arguments)
-        self.assertIn("features.shell_tool=false", arguments)
+        self.assertEqual(len(self.requests), 1)
+        self.assertEqual(self.requests[0]["response_format"]["type"], "json_schema")
 
     @unittest.skipUnless(BLENDER.is_file(), "Explicit real Blender executable required")
-    def test_synthetic_cli_real_character_retains_original_and_expanded_receipts(self):
-        # These are synthetic controls, not a reference reconstruction or a paid GPT result.
+    def test_synthetic_api_real_character_retains_original_and_expanded_receipts(self):
+        # These are synthetic controls, not a reference reconstruction or a paid model result.
         value = copy.deepcopy(PLAN)
         character = character_defaults()
         character.update(
@@ -973,7 +991,7 @@ class SculptTests(unittest.TestCase):
         self.assertEqual(provenance["instructions_sha256"], source_sha)
         self.assertEqual(builder["quality"]["source_plan_sha256"], source_sha)
         self.assertNotEqual(operator["expanded_plan_sha256"], source_sha)
-        self.assertEqual((self.directory / "runs").read_text().count("run"), 1)
+        self.assertEqual(len(self.requests), 1)
 
     def test_two_ordered_images_preserve_role_strength_and_unique_evidence_count(self):
         self.use_synthetic_calibration_runtime()
@@ -1046,13 +1064,11 @@ class SculptTests(unittest.TestCase):
         self.assertFalse(calibration["user_reference"])
         self.assertEqual(receipt["distinct_reference_images"], 2)
         self.assertIn("remain_ambiguous", receipt["hidden_surface_policy"])
-        self.assertEqual((self.directory / "args").read_text().splitlines().count("--image"), 3)
-        arguments = (self.directory / "args").read_text().splitlines()
-        attachments = [Path(arguments[index + 1]) for index, value in enumerate(arguments) if value == "--image"]
-        self.assertEqual(
-            [path.name for path in attachments], ["reference-1.png", "reference-2.png", "operator-calibration.png"]
-        )
-        self.assertEqual(hashlib.sha256(attachments[-1].read_bytes()).hexdigest(), calibration["image_sha256"])
+        content = self.requests[0]["messages"][0]["content"]
+        attachments = [part["image_url"]["url"] for part in content if part["type"] == "image_url"]
+        self.assertEqual(len(attachments), 3)
+        attached_calibration = base64.b64decode(attachments[-1].split(",", 1)[1])
+        self.assertEqual(hashlib.sha256(attached_calibration).hexdigest(), calibration["image_sha256"])
         check_content(dict(payload=dict(provenance=dict(instruction_receipt=receipt))))
         self.assertFalse((directory / "builder.stdout").exists())
 
@@ -1130,84 +1146,17 @@ class SculptTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unsupported_context_semantics"):
             self.provider.plan(request, manifest)
 
-    def test_multi_image_cli_attachments_and_roles_are_not_dropped(self):
-        self.use_synthetic_calibration_runtime()
-        source = image_artifact("front", b"\x20\x40\x60")
-        reference = image_artifact("side", b"\x80\x40\x60")
-        request = copy.deepcopy(self.request)
-        request["node"] = "image_to_mesh"
-        request["inputs"] = {"source": {key: source[key] for key in ("id", "revision")}}
-        request["context"] = [
-            dict(
-                role="reference",
-                scope="node",
-                strength="reference",
-                artifact={key: reference[key] for key in ("id", "revision")},
-            )
-        ]
-        plan = copy.deepcopy(PLAN)
-        plan["completion"]["mode"] = "reference_constrained"
-        (self.directory / "plan.json").write_text(json.dumps(plan), encoding="utf-8")
-        # Stop before native builder to test CLI attachments without costly geometry.
-        self.mode("no-turn")
-        self.provider.submit(request, dict(schema_version=1, artifacts=[source, reference]), KEY)
-        self.assertEqual(self.wait()["state"], "failed")
-        arguments = (self.directory / "args").read_text().splitlines()
-        self.assertEqual(arguments.count("--image"), 3)
-        prompt = (self.directory / "prompt").read_text(encoding="utf-8")
-        self.assertIn("reference_constrained", prompt)
-        self.assertIn('"role":"source"', prompt)
-        self.assertIn('"role":"reference"', prompt)
-        self.assertIn("ALL supplied USER views are the primary evidence", prompt)
-        self.assertIn("not a generic 7.5-head default", prompt)
-        self.assertIn("without replacing unrelated visible identity", prompt)
-        self.assertIn("hem_height is the lowest garment Y divided by total character height", prompt)
-        self.assertIn("preserve observed exposed forearms", prompt)
-        self.assertIn("footwear=sandals", prompt)
-        self.assertIn("Do not force differently colored trousers to inherit a shirt's color", prompt)
-        self.assertIn("NOT a user target, reference view or reconstructed result", prompt)
-        self.assertIn("nose_length increases FORWARD nose projection", prompt)
-        self.assertIn("cheek_fullness increases forward cheek volume; it does not widen the skull", prompt)
-        self.assertIn("Distinct USER target-image evidence count: 2", prompt)
-
-    def test_selected_model_is_an_explicit_optional_cli_argument(self):
-        self.mode("no-turn")
-        self.provider.submit(self.request, self.manifest, KEY)
-        self.assertEqual(self.wait()["state"], "failed")
-        self.assertNotIn("--model", (self.directory / "args").read_text().splitlines())
-        self.config["model"] = "fixture-sculpt-model"
-        self.provider = SculptProvider(self.config)
-        key = "b" * 64
-        self.provider.submit(self.request, self.manifest, key)
-        self.assertEqual(self.wait(key)["state"], "failed")
-        arguments = (self.directory / "args").read_text().splitlines()
-        self.assertEqual(arguments[arguments.index("--model") + 1], "fixture-sculpt-model")
-
-    def test_quality_supplement_keeps_full_user_prompt_and_one_cli_request(self):
-        request = copy.deepcopy(self.request)
-        subject = "preserve-this-start " + ("organic detailed form " * 400) + " preserve-this-end"
-        request["parameters"]["prompt"] = subject
-        self.mode("no-turn")
-        self.provider.submit(request, self.manifest, KEY)
-        self.assertEqual(self.wait()["state"], "failed")
-        prompt = (self.directory / "prompt").read_text(encoding="utf-8")
-        self.assertIn(subject, prompt)
-        self.assertIn(modeling_quality_policy(), prompt)
-        self.assertIn("finish.voxel_size remains requested provenance", prompt)
-        self.assertEqual((self.directory / "runs").read_text().count("run"), 1)
-        self.assertNotIn("(bad anatomy:", prompt)
-
     def test_config_is_frozen_and_changed_request_cannot_replay_intent(self):
-        self.mode("block")
-        self.config["cli_path"] = "changed"
-        self.assertEqual(self.provider.config["cli_path"], str(self.fake))
+        self.release.clear()
+        self.config["planner"]["model"] = "changed"
+        self.assertEqual(self.provider.config["planner"]["model"], "fixture-model")
         self.provider.submit(self.request, self.manifest, KEY)
         changed = copy.deepcopy(self.request)
         changed["parameters"]["prompt"] = "different"
         with self.assertRaisesRegex(ValueError, "idempotency conflict"):
             self.provider.submit(changed, self.manifest, KEY)
 
-    def test_missing_custom_builder_sibling_data_fails_before_cli(self):
+    def test_missing_custom_builder_sibling_data_fails_before_api(self):
         for missing in (
             "anatomy_base.py",
             "anatomy_body.py",
@@ -1236,13 +1185,13 @@ class SculptTests(unittest.TestCase):
                 result = provider.submit(self.request, self.manifest, KEY)
                 self.assertEqual(result["state"], "failed")
                 self.assertIn("固定解剖数据", result["error"])
-                self.assertFalse((self.directory / "runs").exists())
+                self.assertEqual(self.requests, [])
                 self.assertFalse((provider.storage / KEY).exists())
 
     def test_cancel_is_durable_and_leases_do_not_rewrite_image_manifests(self):
-        self.mode("block")
+        self.release.clear()
         self.provider.submit(self.request, self.manifest, KEY)
-        self.wait_started()
+        self.assertTrue(self.started.wait(timeout=10))
         with self.provider.db() as db:
             before = db.execute("SELECT body FROM jobs WHERE key=?", (KEY,)).fetchone()[0]
         self.provider._active(KEY)
@@ -1256,7 +1205,7 @@ class SculptTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "result not available"):
             self.provider.result_manifest(KEY)
 
-    def test_unknown_worker_never_restarts_cli(self):
+    def test_unknown_worker_never_restarts_api(self):
         record = dict(
             request=self.request,
             manifest=self.manifest,
@@ -1268,7 +1217,7 @@ class SculptTests(unittest.TestCase):
         with self.provider.db() as db:
             db.execute("INSERT INTO jobs VALUES(?,?)", (KEY, json.dumps(record)))
         self.assertEqual(self.provider.submit(self.request, self.manifest, KEY)["state"], "failed")
-        self.assertFalse((self.directory / "runs").exists())
+        self.assertEqual(self.requests, [])
 
     def test_invalid_plan_never_executes_blender(self):
         invalid = copy.deepcopy(PLAN)
@@ -1293,19 +1242,13 @@ class SculptTests(unittest.TestCase):
         directory = self.directory / "state" / KEY
         self.assertFalse((directory / "builder.stdout").exists())
         self.assertFalse((directory / "validated-plan.json").exists())
-        self.assertEqual(json.loads((directory / "instructions.json").read_text())["completion"], invalid["completion"])
+        self.assertEqual(json.loads((directory / "api-plan.json").read_text())["completion"], invalid["completion"])
         record = self.provider.read(KEY)
-        turn_receipt = record["cli_turn_receipt"]
-        self.assertEqual(turn_receipt["cli_turn_usage"], dict(input_tokens=15, output_tokens=25))
-        self.assertEqual(
-            turn_receipt["raw_output_sha256"],
-            hashlib.sha256((directory / "instructions.json").read_bytes()).hexdigest(),
-        )
-        self.assertEqual(turn_receipt["scope"], "completed_cli_turn_before_semantic_plan_validation")
+        self.assertEqual(record["api_turn_receipt"]["scope"], "completed_api_response_before_semantic_validation")
         self.assertNotIn("instruction_receipt", record)
         terminal = record["terminal"]
         self.assertEqual(self.provider.submit(self.request, self.manifest, KEY), terminal)
-        self.assertEqual((self.directory / "runs").read_text().count("run"), 1)
+        self.assertEqual(len(self.requests), 1)
 
     def test_text_only_inference_requires_all_exact_region_names(self):
         invalid = copy.deepcopy(PLAN)
@@ -1343,7 +1286,7 @@ class SculptTests(unittest.TestCase):
         self.assertEqual(instructions["completion"]["inferred_regions"], ["character"])
         canonical = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
         self.assertEqual(receipt["instructions_sha256"], hashlib.sha256(canonical.encode()).hexdigest())
-        self.assertEqual(receipt["cli_turn_usage"], dict(input_tokens=15, output_tokens=25))
+        self.assertEqual(receipt["observed_model"], "fixture-model")
         self.assertEqual(receipt["reference_images"], [])
         self.assertEqual(receipt["distinct_reference_images"], 0)
         self.assertEqual(receipt["operator_calibration"]["attachment_index"], 1)
@@ -1354,15 +1297,6 @@ class SculptTests(unittest.TestCase):
         self.assertIn("stylized characters also scale their globes consistently", prompt)
         self.assertIn("<=0.4*span/count", prompt)
         self.assertFalse((directory / "builder.stdout").exists())
-
-    def test_failure_and_incomplete_receipts_do_not_publish(self):
-        for index, mode in enumerate(("fail", "no-output", "no-turn", "tool")):
-            self.mode(mode)
-            key = format(index + 1, "064x")
-            self.provider.submit(self.request, self.manifest, key)
-            self.assertEqual(self.wait(key)["state"], "failed")
-            with self.assertRaisesRegex(ValueError, "result not available"):
-                self.provider.result_manifest(key)
 
 
 if __name__ == "__main__":

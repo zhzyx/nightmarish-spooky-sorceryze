@@ -1,6 +1,7 @@
 """Kimi direct-3D routing with local tools; no AI inference or other provider calls."""
 
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -26,6 +27,11 @@ class KimiServiceTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(prefix="kimi-service-fixture-")
         self.root = Path(self.tmp.name)
+        if os.name == "nt":
+            self.pythonw = self.root / "pythonw.exe"
+            self.pythonw.touch()  # Service discovery checks the path without invoking it.
+        else:
+            self.pythonw = Path(sys.executable)
         self.tool = self.root / "model3d_generation_tool.py"
         self.tool.write_text("# fixture\n", encoding="utf-8")
         (self.root / "model3d_generation_launch.py").write_text("# fixture\n", encoding="utf-8")
@@ -38,7 +44,7 @@ class KimiServiceTests(unittest.TestCase):
             "mesh_model": "",
             "kimi_model": DEFAULT_MODEL,
             "model3d_tool_path": str(self.tool),
-            "model3d_pythonw_path": sys.executable,
+            "model3d_pythonw_path": str(self.pythonw),
             "model3d_model": "v3.1",
         }
         self.config = settings(self.value)
@@ -135,7 +141,6 @@ class KimiServiceTests(unittest.TestCase):
     def test_mesh_stays_ready_when_image_tool_is_absent_or_invalid(self):
         with (
             patch("codex_provider.check_cli", side_effect=AssertionError("Codex probe called")),
-            patch("modeling_provider.check_modeling_cli", side_effect=AssertionError("Modeling CLI probe called")),
             patch("generation_service.read_endpoint", side_effect=AssertionError("ComfyUI probe called")),
         ):
             for value in (self.value, self.image_value(), {**self.value, "kimi_model": "retired-legacy-model"}):

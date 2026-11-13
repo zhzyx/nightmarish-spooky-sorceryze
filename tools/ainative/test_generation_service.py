@@ -23,6 +23,8 @@ from generation_service import (
     check_service,
     failure,
     load_settings,
+    prepare_provider,
+    restore_provider,
     run_service,
     settings,
 )
@@ -92,6 +94,44 @@ class ServiceTests(unittest.TestCase):
 
     def model(self, kind="text_to_image"):
         return dict(nodes=[dict(id="gen", type=kind, provider="comfy", parameters={"prompt": "a stone owl"})], edges=[])
+
+    def test_retired_modeling_settings_keep_images_and_disable_old_mesh_runs(self):
+        for mode, provider in (("codex_modeling", "codex-modeling"), ("codex_sculpt", "codex-sculpt")):
+            with self.subTest(mode=mode):
+                self.file.write_text(
+                    json.dumps(
+                        dict(
+                            mode=mode,
+                            cli_path="fixture-codex",
+                            endpoint=self.config["endpoint"],
+                            mesh_model="old-mesh",
+                            builder_path="old-builder",
+                        )
+                    )
+                )
+                config = load_settings(self.file)
+                self.assertEqual(config["mode"], "codex")
+                self.assertEqual(config["cli_path"], "fixture-codex")
+                self.assertEqual(config["image_model"], "builtin")
+                self.assertEqual(config["mesh_model"], "")
+                self.assertNotIn("builder_path", config)
+                model = self.model("text_to_mesh")
+                model["nodes"][0]["provider"] = provider + "_2"
+                with self.assertRaisesRegex(ServiceError, "GPT 单独生成网格已下线"):
+                    prepare_provider(self.config, model, self.args.db, "retired")
+                image = dict(cli_path="fixture-codex", storage=str(self.root / "images"), mesh_config=None)
+                for snapshot in (
+                    dict(mode=mode, provider={}, image_provider=image),
+                    dict(
+                        mode=mode,
+                        providers={provider: {}, "codex": image},
+                        provider_types={provider: provider, "codex": "codex"},
+                    ),
+                ):
+                    _, restored = restore_provider(snapshot)
+                    self.assertNotIn(provider, restored)
+                    self.assertIn("codex", restored)
+        self.assertEqual(self.requests, [])
 
     def test_detection_get_only_discovery_no_model_autoselection(self):
         report = check_service(self.config)

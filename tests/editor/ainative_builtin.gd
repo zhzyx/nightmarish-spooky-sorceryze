@@ -141,7 +141,7 @@ func verify_generation_service_controls():
 	if not check(panel.get("service_choice") is OptionButton and panel.has_method("check_service"), 'bundled editor exposes generation service setup controls'): return
 	var service_modes: Array = []
 	for i in panel.service_choice.item_count: service_modes.append(panel.service_choice.get_item_metadata(i))
-	check(service_modes == ["offline", "comfy", "legacy", "codex", "codex_modeling", "codex_sculpt", "kimi_native", "local_mesh", "api_modeling", "api_sculpt"], 'bundled service picker preserves all ten supported service modes')
+	check(service_modes == ["offline", "comfy", "legacy", "codex", "kimi_native", "local_mesh", "api_modeling", "api_sculpt"], 'bundled service picker preserves the eight supported service modes')
 	check(panel.get('cli_path_edit') is LineEdit and panel.get('managed_comfy_panel') is VBoxContainer, 'bundled CLI and local Mesh management controls are installed')
 	check(panel.service_config_path.get_base_dir() == panel.state_dir and panel.service_config_path.get_file() == "generation-service.json", 'bundled service configuration is private machine state')
 	check(panel._service_mode() == "offline" and panel.service_saved.is_empty(), 'fresh native project does not claim a real generation service')
@@ -150,12 +150,14 @@ func verify_generation_service_controls():
 	if not await wait_idle(): return
 	check(panel.serial == serial + 1 and panel.service_report.get("mode") == "offline" and not panel.service_report.get("connected", true), 'bundled read-only service check reaches its Python implementation')
 	check(not panel.service_report.get("capabilities", {}).get("text_to_image", {}).get("ready", true) and not FileAccess.file_exists(panel.service_config_path), 'checking offline mode neither invents generation readiness nor writes configuration')
-	panel.service_choice.select(6)
-	panel.service_choice.item_selected.emit(6)
+	panel.select_service_mode('kimi_native')
+	panel.service_choice.item_selected.emit(panel.service_choice.selected)
 	panel.kimi_model_edit.text = 'obsolete-language-model'
 	panel.endpoint_edit.text = 'https://obsolete.invalid/v1'
 	panel.model3d_tool_edit.text = 'fixture-3d/model3d_generation_tool.py'
 	panel.model3d_pythonw_edit.text = 'fixture-3d/pythonw.exe'
+	panel.kimi_image_tool_edit.text = ''
+	panel.kimi_image_pythonw_edit.text = ''
 	var draft = panel.service_draft()
 	check(draft.get('mode') == 'kimi_native' and draft.get('model3d_model') == 'v3.1', 'Kimi Native uses direct Tripo API generation')
 	check(not draft.has('cli_path') and not draft.has('blender_path') and draft.image_model.is_empty() and draft.mesh_model.is_empty(), 'Kimi Native does not require Codex, Blender or ComfyUI model settings')
@@ -164,7 +166,7 @@ func verify_generation_service_controls():
 	check(panel._generator_provider('text_to_image') == 'kimi_work_image' and panel._generator_provider('image_to_image') == 'kimi_work_image', 'both 2D kinds route to the independent Kimi Work image service')
 	check(panel.get('model3d_tool_edit') is LineEdit and panel.get('model3d_pythonw_edit') is LineEdit and panel.get('kimi_image_tool_edit') is LineEdit and panel.get('kimi_image_pythonw_edit') is LineEdit, 'native settings expose independent 3D and 2D tools')
 	panel.save_service_settings()
-	check(panel._service_blocker('text_to_mesh').is_empty() and panel._service_blocker('text_to_image').contains('Kimi Work') and panel._service_blocker('image_to_image').contains('pythonw'), 'missing image tools leave Mesh available and explain the 2D setup')
+	check(panel._service_blocker('text_to_mesh', {'model': 'v3.1'}).is_empty() and panel._service_blocker('text_to_image').contains('Kimi Work') and panel._service_blocker('image_to_image').contains('pythonw'), 'missing image tools leave Mesh available and explain the 2D setup')
 	var stored = FileAccess.get_file_as_string(panel.service_config_path)
 	check(panel.service_saved == draft and not stored.contains('api_key') and not stored.contains('authorization') and not stored.contains('secret') and not stored.contains('password'), 'Kimi Native saves settings without API credentials')
 	var restored = panel.get_script().new()

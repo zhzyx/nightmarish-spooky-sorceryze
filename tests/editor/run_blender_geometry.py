@@ -1,4 +1,4 @@
-"""Run the three unchanged Windows C# / real Blender acceptance tests.
+"""Run three real Blender acceptance cases against a local API fixture.
 
 The parent owns a Windows Job containing the worker and all its descendants.
 Only fixture data is used; outbound firewall policy belongs to the CI workflow.
@@ -24,9 +24,9 @@ ROOT = Path(__file__).resolve().parents[2]
 VERSION = "4.5.11"
 TIMEOUT = 900
 TEST_NAMES = (
-    "test_synthetic_cli_real_rounded_loft_cups_reaches_strict_receipt_gate",
-    "test_synthetic_cli_real_blender_organic_mesh_receipt_and_recovery",
-    "test_synthetic_cli_real_character_retains_original_and_expanded_receipts",
+    "test_synthetic_api_real_rounded_loft_cups_reaches_strict_receipt_gate",
+    "test_synthetic_api_real_blender_organic_mesh_receipt_and_recovery",
+    "test_synthetic_api_real_character_retains_original_and_expanded_receipts",
 )
 
 
@@ -53,10 +53,6 @@ def preflight(blender):
         raise RuntimeError("Real Windows x64 is required; this acceptance cannot be skipped")
     if not blender.is_absolute() or not blender.is_file() or blender.suffix.lower() != ".exe":
         raise RuntimeError("--blender must name an existing absolute Blender .exe")
-    compiler = Path(os.environ.get("WINDIR", "C:/Windows")) / "Microsoft.NET/Framework64/v4.0.30319/csc.exe"
-    if not compiler.is_file():
-        raise RuntimeError("The original Windows C# fixture compiler is unavailable")
-    return compiler
 
 
 def isolated_environment(directory, blender):
@@ -80,7 +76,6 @@ def isolated_environment(directory, blender):
         "TEMP": "temp",
         "TMP": "temp",
         "TMPDIR": "temp",
-        "CODEX_HOME": "home/.codex",
         "BLENDER_USER_CONFIG": "blender/config",
         "BLENDER_USER_SCRIPTS": "blender/scripts",
         "BLENDER_USER_DATAFILES": "blender/datafiles",
@@ -127,7 +122,7 @@ class AcceptanceResult(unittest.TextTestResult):
 
     def _exc_info_to_string(self, err, test):
         detail = super()._exc_info_to_string(err, test)
-        # The unchanged C# fixture captures compiler diagnostics in the exception.
+        # Include captured subprocess diagnostics when present.
         for name in ("stdout", "stderr"):
             value = getattr(err[1], name, None)
             if value:
@@ -166,8 +161,8 @@ def accepted(summary):
 def worker(blender, output):
     report = dict(success=False, diagnostics=[])
     try:
-        compiler = preflight(blender)
-        report["runtime"] = dict(executable_sha256=digest(blender), compiler_sha256=digest(compiler))
+        preflight(blender)
+        report["runtime"] = dict(executable_sha256=digest(blender))
         # The parent Job also owns this version probe, including timeout cleanup.
         version = subprocess.run([str(blender), "--version"], capture_output=True, timeout=30, check=False)
         (output / "blender-version.stdout").write_bytes(version.stdout)
@@ -180,13 +175,12 @@ def worker(blender, output):
         import test_sculpt_provider as original
 
         class CapturingTests(original.SculptTests):
-            # Inherit the original setUpClass, setUp, and test bodies verbatim.
             def tearDown(self):
                 try:
                     destination = output / "tests" / self._testMethodName
                     copy_evidence(self.directory, destination)
                     destination.mkdir(parents=True, exist_ok=True)
-                    write_json(destination / "fixture.json", dict(executable_sha256=digest(self.exe)))
+                    write_json(destination / "fixture.json", dict(planner="loopback_chat_completions"))
                     record = self.provider.read(original.KEY)
                     write_json(destination / "job-record.json", record)
                     if record.get("terminal", {}).get("state") == "succeeded":
@@ -277,7 +271,7 @@ def run(blender, output):
         expected_blender_version=VERSION,
         diagnostics=[],
         cleanup=dict(processes_quiet=True, temporary_removed=True),
-        scope="Synthetic offline C# plans and real Blender geometry; no real model quality claim",
+        scope="Fixed loopback API plans and real Blender geometry; no real model quality claim",
     )
     temporary = None
     try:
@@ -296,7 +290,7 @@ def run(blender, output):
         result = json.loads((output / "worker-result.json").read_text(encoding="utf-8"))
         report["worker"] = result
         if report["worker_returncode"] != 0 or not result.get("success") or not accepted(result.get("tests", {})):
-            raise RuntimeError("Three original tests must execute with zero failures, errors, or skips")
+            raise RuntimeError("Three geometry tests must execute with zero failures, errors, or skips")
         if report["source"] != source_evidence():
             raise RuntimeError("Source inputs changed during acceptance")
         report["success"] = not report["diagnostics"]

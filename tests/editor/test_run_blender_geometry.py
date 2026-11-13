@@ -65,7 +65,7 @@ class RunnerTests(unittest.TestCase):
                 env = runner.isolated_environment(directory, directory / "blender.exe")
             self.assertNotIn("OPENAI_API_KEY", env)
             self.assertNotIn("GH_TOKEN", env)
-            for key in ("HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TEMP", "CODEX_HOME", "BLENDER_USER_CONFIG"):
+            for key in ("HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TEMP", "BLENDER_USER_CONFIG"):
                 self.assertTrue(Path(env[key]).is_relative_to(directory))
                 self.assertTrue(Path(env[key]).is_dir())
 
