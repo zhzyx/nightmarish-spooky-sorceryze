@@ -317,7 +317,12 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
         limit: int = Query(default=20, ge=1, le=100),
     ) -> dict[str, list[dict[str, Any]]]:
         documents = [store.get_doc(row["id"]) for row in store.list_docs(actor)]
-        return {"results": search_documents(documents, q)[:limit]}
+        by_id = {document["id"]: document for document in documents}
+        results = []
+        for item in search_documents(documents, q)[:limit]:
+            document = by_id.get(item["id"], {})
+            results.append({**item, "title": document.get("title", ""), "kind": document.get("kind", "doc")})
+        return {"results": results}
 
     @app.get("/api/v1/docs/{doc_id}/export")
     def export_doc(doc_id: str, actor: ActorDep) -> dict[str, str]:

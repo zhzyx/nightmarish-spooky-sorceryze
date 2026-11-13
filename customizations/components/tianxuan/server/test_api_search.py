@@ -37,6 +37,8 @@ def test_search_export_ai_view_and_classify() -> None:
 
     results = client.get("/api/v1/search", headers=headers, params={"q": "天璇"}).json()["results"]
     assert [item["id"] for item in results] == [doc["id"]]
+    assert results[0]["title"] == "天璇检索"
+    assert results[0]["kind"] == "doc"
 
     export = client.get(f"/api/v1/docs/{doc['id']}/export", headers=headers).json()
     assert export["filename"] == f"{doc['id']}.md"
