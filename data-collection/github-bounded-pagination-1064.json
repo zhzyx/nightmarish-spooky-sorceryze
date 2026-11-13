@@ -1,0 +1,83 @@
+{
+  "request_id": "github-bounded-pagination-20261113",
+  "issue_number": 1064,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1064",
+  "recorded_at": "2026-11-13T14:29:12.306085+00:00",
+  "baseline": "2acecd196a1968cdf71e43419d22bd83a262552f",
+  "original_failure": {
+    "operation": "guarded work_items.issue existing1060 full all-state pagination",
+    "seconds": 120.013,
+    "writes_attempted": 0,
+    "phase_sha256": "4eb5940d4f1d0eca167d9bdce6ed4db5f6ab415a0f76fa3fd199b02260727eae"
+  },
+  "policy": {
+    "default_request_seconds": 120,
+    "recognized_rest_get_pagination_total_seconds": 600,
+    "explicit_timeout": "whole command; never multiplied per page",
+    "optional_git_issue_nonpagination_seconds": 90,
+    "bridge_max_bytes": 67108864,
+    "pagination_implementation": "one original gh process; no new page/auth/Link implementation or automatic retry",
+    "optional_adapter_plan": "Binds adapter and loaded shared runtime digest; changed disk dependency rejects until restart"
+  },
+  "live_revalidation": {
+    "seconds": 119.158,
+    "stdout_utf8_bytes": 7025191,
+    "result": "existing1060",
+    "writes_attempted": 0,
+    "phase_sha256": "460c68970d03a5f14b89771fbb5dc4512748205b3774155f33f72c179adb882d",
+    "limitation": "This successful network read did not exceed120s; deterministic scaled deadline fixtures establish operation policy. Underlying network cause unknown; source subsequently received formatting-only changes."
+  },
+  "local_checks": {
+    "python_runtime": {
+      "passed": 21
+    },
+    "optional_git_issue": {
+      "passed": 11
+    },
+    "js_bridge": {
+      "passed": 7
+    },
+    "python_callers": {
+      "passed": 54
+    },
+    "dispatch": {
+      "passed": 54,
+      "skipped": 2,
+      "total": 56
+    },
+    "large_js_response": "2Mi Unicode characters plus terminal field; complete result over old4MiB; bounded overflow separately rejected"
+  },
+  "source_sha256": {
+    "customizations/components/issue-workorders/github_runtime.py": "8bd992d8a6b210b0382c817c1e7cf8f51aee52e9a8aa8c90cb76ac0c4c621d69",
+    "customizations/components/issue-workorders/github_runtime.mjs": "ece5e5b488254b75dea01b02144003cb3b8b49bf33986c6199107c103e970633",
+    "customizations/components/issue-workorders/github_runtime_bridge.py": "8d3118129dc746829f4391e60d5be05111a1807791d3aff2aedb3061fff4d6fd",
+    "customizations/platforms/work-management/github/git-issue/issue_create.py": "b2ffcad2f1630fedbb399758f192c6d310ee00674741b3f51d3f1f1c7ab078b3"
+  },
+  "independent_review": {
+    "state": "passed",
+    "worker": "/root/sinan_f3b30fe2b802ea6c",
+    "sha256": "acb504a788b828b32d941270eba91a4392a604eeac1b5021d04b424c2b8f3116",
+    "findings": [],
+    "scope": "final source candidate; exact CI/main pending"
+  },
+  "delivery": {
+    "state": "not_submitted"
+  },
+  "limits": [
+    "Not a repair of the underlying network or infinite pagination size",
+    "Graph board SSH180s operation and singleIssue binding120s limits remain separate",
+    "No effective installation or model/account configuration changed",
+    "No claim of parent978 complete"
+  ],
+  "private_evidence_base": "Actual Git common directory parent / data-collection/receipts/ai-integration-refactor-20261112",
+  "main_integration": {
+    "previous_base": "2acecd196a1968cdf71e43419d22bd83a262552f",
+    "integrated_base": "ec582b134ad48e4c3eab02bafbe901886ac303b4",
+    "method": "git merge --ff-only FETCH_HEAD",
+    "review_source_all_unchanged": true,
+    "shared_host_framework_dependencies_unchanged": true,
+    "targeted_evidence_reused": "147passed2skipped; independent39passed; exact new candidate CI still required",
+    "upstream_changed_files": 31,
+    "incident": "0bf57ab0cdc23a43626d1baa1f4c2f9b463284494ca47166dfaf30a1d1a134e3"
+  }
+}

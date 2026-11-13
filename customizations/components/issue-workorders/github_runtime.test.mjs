@@ -77,8 +77,48 @@ test('request transport bounds hangs, sanitizes HTTP/network/JSON errors and kee
   for(const [mode,code] of [['secret','GITHUB_HTTP_403'],['network','GITHUB_NETWORK'],['invalid','GITHUB_RESPONSE']]){
     await assert.rejects(errors.json(['api',mode]),error=>error.message.includes(code)&&!error.message.includes('fixture-token-secret')&&/read remote state/.test(error.message));
   }
-  for(const timeoutMs of [0,Infinity,120001])await assert.rejects(githubRuntime(f.config,{env:f.env,timeoutMs}),/timeout/);
+  for(const timeoutMs of [0,Infinity,600001])await assert.rejects(githubRuntime(f.config,{env:f.env,timeoutMs}),/timeout/);
   await assert.rejects(githubRuntime({...f.config,python:path.join(f.root,'missing-secret-python')},{env:f.env}),error=>/GITHUB_RUNTIME/.test(error.message)&&!error.message.includes('missing-secret-python'));
+});
+
+function privatePolicy(f, {request = 0.15, pagination = 2, buffer} = {}) {
+  const folder = path.join(f.root,'private policy');fs.mkdirSync(folder);
+  for(const name of ['github_runtime.mjs','github_runtime.py','github_runtime_bridge.py']) {
+    let source=fs.readFileSync(fileURLToPath(new URL(name,import.meta.url)),'utf8');
+    if(name==='github_runtime.py'){
+      source=source.replace('DEFAULT_TIMEOUT = 120',`DEFAULT_TIMEOUT = ${request}`)
+        .replace('PAGINATION_TIMEOUT = 600',`PAGINATION_TIMEOUT = ${pagination}`);
+      if(buffer)source=source.replace('BRIDGE_MAX_BUFFER = 64 * 1024 * 1024',`BRIDGE_MAX_BUFFER = ${buffer}`);
+    }
+    fs.writeFileSync(path.join(folder,name),source);
+  }
+  return import(pathToFileURL(path.join(folder,'github_runtime.mjs')));
+}
+
+test('default bridge defers read classification to Python; explicit deadlines and writes stay bounded',async t=>{
+  const f=fixture(t),{githubRuntime:bounded}=await privatePolicy(f);
+  fs.writeFileSync(path.join(f.root,'api'),`setTimeout(()=>console.log('[[1],[2]]'),400);`);
+  const read=['api','repos/a/b/issues','--paginate','--slurp'];
+  const runtime=await bounded(f.config,{env:f.env});
+  assert.deepEqual(await runtime.json(read),[[1],[2]]);
+  for(const args of [['api','user'],[...read,'-X','POST'],[...read,'-f','title=x'],['api','graphql','--paginate']]) {
+    await assert.rejects(runtime.text(args),/GITHUB_TIMEOUT/);
+  }
+  const short=await bounded(f.config,{env:f.env,timeoutMs:150});
+  await assert.rejects(short.text(read),/GITHUB_TIMEOUT/);
+  const explicit=await bounded(f.config,{env:f.env,timeoutMs:1500});
+  assert.deepEqual(await explicit.json(read),[[1],[2]]);
+});
+
+test('bridge preserves complete Unicode results above old 4MiB cap and rejects overflow without partial success',async t=>{
+  const f=fixture(t);
+  fs.writeFileSync(path.join(f.root,'api'),`console.log(JSON.stringify({text:'页'.repeat(2*1024*1024),last:11}));`);
+  const runtime=await githubRuntime(f.config,{env:f.env});
+  const result=await runtime.json(['api','fixture','--paginate','--slurp']);
+  assert.equal(result.text.length,2*1024*1024);assert.equal(result.last,11);
+  const {githubRuntime:bounded}=await privatePolicy(f,{buffer:128*1024});
+  const limited=await bounded(f.config,{env:f.env});
+  await assert.rejects(limited.json(['api','fixture','--paginate','--slurp']),/GITHUB_RUNTIME: host bridge response exceeds output limit/);
 });
 
 test('git-archived bridge relocates with Python dependency; target project cannot provide tools',async t=>{

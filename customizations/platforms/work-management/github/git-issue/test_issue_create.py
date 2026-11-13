@@ -1,8 +1,35 @@
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import issue_create as m
+
+
+class TransportTests(unittest.TestCase):
+    def test_selected_cli_and_single_request_budget_survive_shared_transport_migration(self):
+        with tempfile.TemporaryDirectory() as directory:
+            executable = Path(directory) / "selected gh"
+            executable.write_text("fixture")
+            executable.chmod(0o755)
+            api = m.GitHub(str(executable))
+            with patch.object(
+                m.github_runtime.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, "[[1],[2]]", "")
+            ) as run:
+                self.assertEqual(api.call("api", "--paginate", "--slurp", "repos/a/b/issues"), "[[1],[2]]")
+                self.assertEqual(run.call_args.kwargs["timeout"], 600)
+                self.assertEqual(run.call_args.args[0][0], str(executable))
+                api.call("issue", "create")
+                self.assertEqual(run.call_args.kwargs["timeout"], 90)
+            with patch.object(
+                m.github_runtime.subprocess,
+                "run",
+                side_effect=subprocess.TimeoutExpired("fixture", 600, output="partial"),
+            ) as run:
+                with self.assertRaises(m.github_runtime.GitHubCommandError):
+                    api.find({"repository": "a/b", "marker": "fixture"})
+                run.assert_called_once()
 
 
 class Fake:
@@ -65,6 +92,26 @@ class Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "current adapter"):
             m.execute(self.p, self.settings, self.root, self.api, lambda e: True)
         self.assertEqual(self.api.creates, 0)
+
+    def test_plan_binds_shared_runtime_and_refuses_changed_loaded_dependency(self):
+        import hashlib
+
+        self.assertEqual(
+            self.p["adapter_sha256"],
+            m.digest({
+                "adapter": hashlib.sha256(Path(m.__file__).read_bytes()).hexdigest(),
+                "github_runtime": hashlib.sha256(m._RUNTIME_PATH.read_bytes()).hexdigest(),
+            }),
+        )
+        changed = self.root / "changed-runtime.py"
+        changed.write_text("different installed dependency")
+        with patch.object(m, "_RUNTIME_PATH", changed):
+            with self.assertRaisesRegex(ValueError, "runtime changed; restart"):
+                m.execute(self.p, self.settings, self.root, self.api, lambda e: True)
+            with self.assertRaisesRegex(ValueError, "runtime changed; restart"):
+                m.adapter_digest()
+        self.assertEqual(self.api.creates, 0)
+        self.assertFalse((self.root / "data-collection/git-issue").exists())
 
     def test_disabled(self):
         self.settings["enabled"] = False

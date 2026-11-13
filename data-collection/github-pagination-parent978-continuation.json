@@ -1,0 +1,13 @@
+{
+  "request_id": "ai-github-integration-refactor-20261112",
+  "issue_number": 978,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "recorded_at": "2026-11-13T14:29:12.306085+00:00",
+  "continuation": "Independent19call pagination audit and120.013s original read failure led to bug1064; current candidate validation proceeds, parent remains incomplete",
+  "audit_sha256": "1724989e8afaaa0f8c6d3a7741c7e651f00afe49b389c9b4f0e82dc1a2a4ba7e",
+  "audit_worker": "/root/sinan_920d49aa4ffe5c33",
+  "worker_terminal": "completed; native bridge reconciled against actual collaboration.list_agents",
+  "incident": "ccbe0bd84776e720a445f052e1297d8543832b8912302b9e4eeb7a8c2144cdfc",
+  "acceptance": "Pending1064 exact candidate review/CI/main; prior accepted work unchanged",
+  "consumption": null
+}

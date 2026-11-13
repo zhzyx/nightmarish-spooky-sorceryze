@@ -2,12 +2,18 @@
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 import re
-import subprocess
 import tempfile
 from pathlib import Path
+
+_RUNTIME_PATH = Path(__file__).resolve().parents[4] / "components/issue-workorders/github_runtime.py"
+_RUNTIME_SHA = hashlib.sha256(_RUNTIME_PATH.read_bytes()).hexdigest()
+_runtime_spec = importlib.util.spec_from_file_location("git_issue_github_runtime", _RUNTIME_PATH)
+github_runtime = importlib.util.module_from_spec(_runtime_spec)
+_runtime_spec.loader.exec_module(github_runtime)
 
 
 def read(p):
@@ -19,7 +25,9 @@ def digest(v):
 
 
 def adapter_digest():
-    return hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+    if hashlib.sha256(_RUNTIME_PATH.read_bytes()).hexdigest() != _RUNTIME_SHA:
+        raise ValueError("Installed GitHub runtime changed; restart before selecting or executing a plan")
+    return digest({"adapter": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "github_runtime": _RUNTIME_SHA})
 
 
 def plan(request, workspace):
@@ -74,10 +82,10 @@ class GitHub:
         self.executable = executable
 
     def call(self, *args):
-        r = subprocess.run([self.executable, *args], capture_output=True, text=True, encoding="utf-8", timeout=90)
-        if r.returncode:
-            raise RuntimeError(r.stderr.strip())
-        return r.stdout.strip()
+        # Keep this adapter's explicit CLI and original single-request/write budget.
+        # Native REST pagination uses the installed shared operation policy.
+        timeout = None if github_runtime.read_only_pagination(args) else 90
+        return github_runtime.run_gh(*args, env={**os.environ, "GONGGONG_GH": self.executable}, timeout=timeout)
 
     def actor(self):
         return json.loads(self.call("api", "user"))["login"]
