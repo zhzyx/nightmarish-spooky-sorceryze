@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "tianxuan-repo-root-validation-1122-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-repo-root-validation-20261114",
+  "kind": "request",
+  "occurred_at": "2026-11-13T21:09:21.207145+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1122",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "bad67dcc35d525783bfb12bc7e4363cfdfb0cc1da7c2dcb19ca7e3106806bc2c",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Repair repository ancestor discovery and preserve exact root path output",
+    "authorization_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "operator": "Sail-Li",
+    "design": "design-docs/tianxuan-repo-root-validation-1122.md",
+    "validation": "data-collection/tianxuan-git-paths-integration-1115-1122.json",
+    "observation": "Current authenticated issue readback and explicit unique repair ownership; no existing publication takeover",
+    "usage": null,
+    "usage_unknown_reason": "Actual model usage not collected"
+  },
+  "evidence_refs": [],
+  "sha256": "b2f2fea105860338622541089c7c376a311f54f7c1ea882735ea60864a3c02ed"
+}

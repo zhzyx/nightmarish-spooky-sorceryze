@@ -118,7 +118,7 @@ def test_document_create_get_and_version_conflict(client: TestClient, auth: dict
     assert doc["kind"] == "doc"
     assert doc["status"] == "draft"
 
-    fetched = client.get(f"/api/v1/docs/{doc['id']}")
+    fetched = client.get(f"/api/v1/docs/{doc['id']}", headers=auth)
     assert fetched.status_code == 200
     assert fetched.json()["body_md"] == doc["body_md"]
 
@@ -143,7 +143,7 @@ def test_document_create_get_and_version_conflict(client: TestClient, auth: dict
     assert stale.status_code == 409
     assert "version" in stale.json()["detail"]
     # 冲突不会落库：版本与正文保持第二次更新的结果。
-    assert client.get(f"/api/v1/docs/{doc['id']}").json()["version"] == 2
+    assert client.get(f"/api/v1/docs/{doc['id']}", headers=auth).json()["version"] == 2
 
 
 def test_docs_list_filters_by_kind(client: TestClient, auth: dict[str, str]):
@@ -196,7 +196,7 @@ def test_requirement_tickets_transition_and_progress(client: TestClient, auth: d
     rejected = client.patch(f"/api/v1/issues/{child['id']}", headers=auth, json={"to_status": "in-progress"})
     assert rejected.status_code == 409
 
-    progress = client.get(f"/api/v1/docs/{requirement['id']}").json()["progress"]
+    progress = client.get(f"/api/v1/docs/{requirement['id']}", headers=auth).json()["progress"]
     assert progress == {"total": 3, "done": 1, "percent": 33}
 
 
@@ -232,7 +232,7 @@ def test_transition_from_backlog_is_rejected(client: TestClient, auth: dict[str,
 
 
 def test_unknown_objects_return_404(client: TestClient, auth: dict[str, str]):
-    assert client.get("/api/v1/docs/doc_missing").status_code == 404
+    assert client.get("/api/v1/docs/doc_missing", headers=auth).status_code == 404
     assert (
         client.patch("/api/v1/docs/doc_missing", headers=auth, json={"body_md": "x", "expected_version": 1}).status_code
         == 404
@@ -266,7 +266,8 @@ def test_actor_header_is_required(client: TestClient, auth: dict[str, str]):
     assert client.get("/api/v1/events", headers={"X-Actor": "  "}).status_code == 400
     assert client.post("/api/v1/docs", json={"title": "无 actor"}).status_code == 400
 
-    # 单文档读取在当前切片不要求 actor，健康检查同样匿名。
+    # 单文档读取现在同样需要 actor；健康检查匿名。
     doc = client.post("/api/v1/docs", headers=auth, json={"title": "免 actor 读取"}).json()
-    assert client.get(f"/api/v1/docs/{doc['id']}").status_code == 200
+    assert client.get(f"/api/v1/docs/{doc['id']}").status_code == 400
+    assert client.get(f"/api/v1/docs/{doc['id']}", headers=auth).status_code == 200
     assert client.get("/api/v1/health").status_code == 200

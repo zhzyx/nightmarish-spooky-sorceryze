@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "tianxuan-git-admin-paths-1115-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-audit-tx-01-20261114",
+  "kind": "request",
+  "occurred_at": "2026-11-13T20:32:28.499020+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1115",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "bad67dcc35d525783bfb12bc7e4363cfdfb0cc1da7c2dcb19ca7e3106806bc2c",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Independently repair Git administration path input defect1115 in delivered Tianxuan adapter",
+    "authorization_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "operator": "Sail-Li",
+    "design": "design-docs/tianxuan-git-admin-paths-1115.md",
+    "validation": "data-collection/tianxuan-git-admin-paths-1115.json",
+    "observation": "Current authenticated issue readback and explicit unique repair ownership; no existing publication takeover",
+    "usage": null,
+    "usage_unknown_reason": "Actual model usage not collected"
+  },
+  "evidence_refs": [],
+  "sha256": "14d94cd5cefd8152ec03c51d944caeaedfe2755b239d7968ce415dd3c65dabe7"
+}

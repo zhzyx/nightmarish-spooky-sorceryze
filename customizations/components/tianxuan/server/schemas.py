@@ -104,6 +104,19 @@ class DocPatchRequest(BaseModel):
     patches: list[DocPatchOperation]
 
 
+class DocVisibilityRequest(BaseModel):
+    """切换文档可见性：tenant 或 private。"""
+
+    visibility: str
+
+
+class DocShareRequest(BaseModel):
+    """把私有文档共享给同租户成员。"""
+
+    user_id: str
+    permission: str = "read"
+
+
 class RequirementCreateRequest(BaseModel):
     """创建偃师需求文档。"""
 

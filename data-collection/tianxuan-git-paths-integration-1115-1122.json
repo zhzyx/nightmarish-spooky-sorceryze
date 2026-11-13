@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "issues": [
+    1115,
+    1122
+  ],
+  "base": "ec91084725ff34bc7f486a25be8804d078491f4e",
+  "state": "local_validation_and_independent_review_passed",
+  "files": {
+    "git_service.py": "4bccebe90e7f52f24ffb19a2a681dc449a64a11754615ba352b9500cf4d73fec",
+    "test_admin_paths.py": "f86c67db99ae0e41655d343f462eb2d031c0476e8f9c7f59d28a7455a46bac1c",
+    "test_git_service_repo_root.py": "1b4d13586518f2f84a0379f1be01333ee41677a1df7f696880b466a297dc8bbd",
+    "test_git_service.py": "e1e0e60b292f497daebd12211e347c84940baafbce3276751b70dce059b16299"
+  },
+  "verification": {
+    "local_git_tests": {
+      "passed": 21,
+      "original": 8,
+      "admin_paths": 5,
+      "repo_root": 8,
+      "platform": "macOS arm64",
+      "network": "local file protocol only"
+    },
+    "ruff": "passed",
+    "mypy": "passed",
+    "independent_review": {
+      "result": "passed_no_remaining_blockers",
+      "reviewer": "/root/sinan_6fb6c24870afdb45",
+      "sha256": "60fc62ad0a4d5696b8e94d8d06bed486a2decd30dce4453478ed7548f1b827b1",
+      "reviewed_source_base": "f83f680a7570a69ed678dd14e73e0a9de96e74db",
+      "product_test_bytes_equal_on_current_base": true,
+      "native_terminal_reconciled": true,
+      "independent_regression_tests": 21,
+      "additional_public_status_boundaries": 16
+    },
+    "ci": "pending",
+    "main_delivery": "pending",
+    "current_main_integration": {
+      "base": "b3a05c4f765ce9ee9b615456b4e67ae86e32af1e",
+      "tests": 21,
+      "result": "passed",
+      "new_main_changes": "Original PR1123 delivered; no overlapping Git adapter product/test changes",
+      "latest_base_readback": {
+        "base": "ec91084725ff34bc7f486a25be8804d078491f4e",
+        "reviewed_product_and_tests_byte_identical": true,
+        "previous_pr1131_all_ci": "passed for df7257d05a5d6380bf611dc56d42a97a544c1a72; not reused as new-head CI",
+        "latest_full_integration_ci": "pending",
+        "publication_window": "User explicitly stopped other work and directed priority merge"
+      }
+    }
+  },
+  "review_history": {
+    "1115_review_sha256": "33d1d94d701b2b57a9c40941daa14334bc46377f791180b2b9a704d08cb85c8e",
+    "1122_v1": "changes_requested_R1122-1_CR_CRLF_path_normalization",
+    "1122_correction": "Root probe alone captures raw output; original text mode preserved elsewhere"
+  },
+  "private_receipt_base": "Parent of git rev-parse --path-format=absolute --git-common-dir, then data-collection/receipts/ai-integration-refactor-20261112",
+  "private_evidence": {
+    "combined-git-paths-tests-v2.log": "50443864dfd983c691ff3e759187e0ce2041c622147b2ad1d7d868b78fb5ff28",
+    "issue1122-independent-review/review.json": "c9b7b71ba9c58d8e37598171a96b0dd36934e73abafde2bd87980589b14cd62c",
+    "issue1122-newline-assessed.json": "6e52e8bbeefce4af88e937eb0ada82da1de67f4274d9de6e00b90b9d72329be9",
+    "combined-git-paths-main-b3-tests.log": "e09c931455941d0134f61a8a5bb9f6102b9e35c403a948de9318256d8441a7ca",
+    "combined-git-paths-main-integration.json": "3d17ee7d4235b7b10f0992b254e3731559dc12a6bc762f82573971e2ef39b14e",
+    "combined-git-paths-review-reconciled.json": "a093eeb88ab9ee7b894147e7a46e4b8a7fbf91e99eb9632d3994308a89dc7726",
+    "combined-git-paths-independent-review-v2/review.json": "60fc62ad0a4d5696b8e94d8d06bed486a2decd30dce4453478ed7548f1b827b1",
+    "combined-git-paths-format.json": "1eb2fea977ab86a77817dae33d4183d364f7b19f1582f5162e6c0552b8db67e3"
+  },
+  "limits": [
+    "No real Git hosting or model service exercised",
+    "Native Windows/Linux root boundary tests pending; POSIX CR/LF name tests are skipped on Windows",
+    "No complete Git configuration sandbox or hostile concurrent writer isolation claimed"
+  ]
+}

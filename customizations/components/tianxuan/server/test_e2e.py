@@ -69,7 +69,7 @@ def test_closed_loop() -> None:
         assert moved.status_code == 200, moved.text
         assert moved.json()["status"] == status
 
-    document = client.get(f"/api/v1/docs/{doc_id}").json()
+    document = client.get(f"/api/v1/docs/{doc_id}", headers=headers).json()
     assert document["progress"] == {"total": 3, "done": 1, "percent": 33}
 
     index = build_ai_index(document["body_md"])

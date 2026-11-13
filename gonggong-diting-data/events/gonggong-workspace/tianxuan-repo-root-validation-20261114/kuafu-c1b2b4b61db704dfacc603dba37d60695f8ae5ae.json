@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c1b2b4b61db704dfacc603dba37d60695f8ae5ae",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-repo-root-validation-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1122",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a281cfb3f6256f19d03a61715224a070937ba0c60f2473a8c3085ab9bae8aa1a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1122",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1122",
+    "action": "intake",
+    "detection_head": "53d9c6dfc7fd98ebb836487e338cab119cca40de",
+    "context_sha256": "5f9fec2143b2af4424b1d4b1291e1b4defb9dd50125901b5c50b267a48362472",
+    "operator": "Sail-Li",
+    "worker": "codex:/root:git-paths-integration",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Independent reviewer intake log reports Host tenant must match work-items.json; same reviewer retry with tenant gonggong-workspace",
+    "diagnosis": "Review invocation omitted required tenant parameter; product source unaffected. Root received existing incident; reviewer must bind actual tenant and read original Issue before review.",
+    "next_action": "Verify original intake retry log and finish exact candidate independent review; preserve first failed invocation.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T21:08:44.675376+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T21:10:39.801811+00:00",
+  "sha256": "b3efc58d066535bc159d7823cc059441df14eee658365226b7337c1b205c9b02"
+}

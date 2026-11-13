@@ -26,7 +26,9 @@ from schemas import (
     DocCreateRequest,
     DocMergeRequest,
     DocPatchRequest,
+    DocShareRequest,
     DocUpdateRequest,
+    DocVisibilityRequest,
     InviteAcceptRequest,
     InviteCreateRequest,
     IssueTransitionRequest,
@@ -242,8 +244,8 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
         )
 
     @app.get("/api/v1/docs/{doc_id}")
-    def get_doc(doc_id: str) -> dict[str, Any]:
-        return store.get_doc(doc_id)  # type: ignore[no-any-return]
+    def get_doc(doc_id: str, actor: ActorDep) -> dict[str, Any]:
+        return store.get_doc_shared(actor, doc_id)  # type: ignore[no-any-return]
 
     @app.patch("/api/v1/docs/{doc_id}")
     def update_doc(doc_id: str, payload: DocUpdateRequest, actor: ActorDep) -> dict[str, Any]:
@@ -325,7 +327,7 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
 
     @app.post("/api/v1/docs/{doc_id}/merge")
     def merge_doc(doc_id: str, payload: DocMergeRequest, actor: ActorDep) -> Any:
-        document = store.get_doc(doc_id)
+        document = store.get_doc_shared(actor, doc_id, write=True)
         if document["version"] == payload.expected_version:
             updated = store.update_doc(actor, doc_id, payload.local_md, payload.expected_version)
             return {"status": "applied", "doc": updated}
@@ -346,7 +348,7 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
 
     @app.get("/api/v1/docs/{doc_id}/links")
     def doc_links(doc_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
-        document = store.get_doc(doc_id)
+        document = store.get_doc_shared(actor, doc_id)
         documents = [store.get_doc(row["id"]) for row in store.list_docs(actor)]
         by_title = {item["title"]: item["id"] for item in documents}
         by_title.update({item["id"]: item["id"] for item in documents})
@@ -410,7 +412,7 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
 
     @app.post("/api/v1/docs/{doc_id}/patch")
     def patch_doc(doc_id: str, payload: DocPatchRequest, actor: ActorDep) -> dict[str, Any]:
-        document = store.get_doc(doc_id)
+        document = store.get_doc_shared(actor, doc_id, write=True)
         if document["version"] != payload.expected_version:
             raise VersionConflict(
                 f"version mismatch: expected {payload.expected_version}, current {document['version']}"
@@ -431,12 +433,12 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
 
     @app.get("/api/v1/docs/{doc_id}/versions")
     def list_versions(doc_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
-        store.get_doc(doc_id)
+        store.get_doc_shared(actor, doc_id)
         return {"versions": store.versions(doc_id)}
 
     @app.get("/api/v1/docs/{doc_id}/versions/{version}")
     def get_version(doc_id: str, version: int, actor: ActorDep) -> dict[str, Any]:
-        store.get_doc(doc_id)
+        store.get_doc_shared(actor, doc_id)
         return store.version(doc_id, version)  # type: ignore[no-any-return]
 
     @app.get("/api/v1/docs/{doc_id}/diff")
@@ -446,7 +448,7 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
         from_version: int = Query(ge=1),
         to_version: int = Query(ge=1),
     ) -> dict[str, str]:
-        store.get_doc(doc_id)
+        store.get_doc_shared(actor, doc_id)
         before = store.version(doc_id, from_version)["body_md"]
         after = store.version(doc_id, to_version)["body_md"]
         diff = "\n".join(
@@ -502,6 +504,24 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
         except GiteaError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 
+    # ---------- 文曲：可见性与共享 ----------
+
+    @app.patch("/api/v1/docs/{doc_id}/visibility")
+    def set_visibility(doc_id: str, payload: DocVisibilityRequest, actor: ActorDep) -> dict[str, Any]:
+        return store.set_visibility(actor, doc_id, payload.visibility)  # type: ignore[no-any-return]
+
+    @app.post("/api/v1/docs/{doc_id}/shares")
+    def share_doc(doc_id: str, payload: DocShareRequest, actor: ActorDep) -> dict[str, Any]:
+        return store.share_doc(actor, doc_id, payload.user_id, payload.permission)  # type: ignore[no-any-return]
+
+    @app.get("/api/v1/docs/{doc_id}/shares")
+    def list_doc_shares(doc_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        return {"shares": store.list_shares(actor, doc_id)}
+
+    @app.delete("/api/v1/docs/{doc_id}/shares/{user_id}")
+    def unshare_doc(doc_id: str, user_id: str, actor: ActorDep) -> dict[str, Any]:
+        return store.unshare_doc(actor, doc_id, user_id)  # type: ignore[no-any-return]
+
     # ---------- 文曲：评论 ----------
 
     @app.post("/api/v1/docs/{doc_id}/comments")
@@ -525,9 +545,12 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
             await websocket.close(code=4401)
             return
         try:
-            document = store.get_doc(doc_id)
+            document = store.get_doc_shared(actor, doc_id)
         except NotFound:
             await websocket.close(code=4404)
+            return
+        except PermissionDenied:
+            await websocket.close(code=4403)
             return
         await websocket.accept()
         rooms.join(doc_id, websocket, actor)
