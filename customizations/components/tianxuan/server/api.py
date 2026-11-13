@@ -27,6 +27,8 @@ from schemas import (
     DocMergeRequest,
     DocPatchRequest,
     DocUpdateRequest,
+    InviteAcceptRequest,
+    InviteCreateRequest,
     IssueTransitionRequest,
     LoginRequest,
     MemberCreateRequest,
@@ -213,6 +215,14 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
     @app.patch("/api/v1/users/{user_id}/role")
     def set_role(user_id: str, payload: RoleUpdateRequest, actor: ActorDep) -> dict[str, Any]:
         return store.set_role(actor, user_id, payload.role)  # type: ignore[no-any-return]
+
+    @app.post("/api/v1/invites")
+    def create_invite(payload: InviteCreateRequest, actor: ActorDep) -> dict[str, Any]:
+        return store.create_invite(actor, payload.email, payload.role)  # type: ignore[no-any-return]
+
+    @app.post("/api/v1/invites/accept")
+    def accept_invite(payload: InviteAcceptRequest) -> dict[str, Any]:
+        return store.accept_invite(payload.code, payload.password, payload.name)  # type: ignore[no-any-return]
 
     # ---------- 文曲：文档 ----------
 

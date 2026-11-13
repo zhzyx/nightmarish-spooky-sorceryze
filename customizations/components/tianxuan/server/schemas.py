@@ -40,6 +40,21 @@ class RoleUpdateRequest(BaseModel):
     role: str
 
 
+class InviteCreateRequest(BaseModel):
+    """管理员创建邀请。"""
+
+    email: str
+    role: str = "editor"
+
+
+class InviteAcceptRequest(BaseModel):
+    """受邀者凭邀请码加入租户。"""
+
+    code: str
+    password: str
+    name: str = ""
+
+
 class RepoCreateRequest(BaseModel):
     """在 Gitea 中创建仓库。"""
 
