@@ -21,7 +21,7 @@ from git_service import (
     ValidationError,
 )
 
-GIT_EXECUTABLE = r"D:\GongGong\project\runtime\git\cmd\git.exe"
+GIT_EXECUTABLE = os.environ.get("GIT_EXECUTABLE", r"D:\GongGong\project\runtime\git\cmd\git.exe")
 AUTHOR_NAME = "Sail-Li"
 AUTHOR_EMAIL = "ruilimerlin@gmail.com"
 SHA_PATTERN = r"^[0-9a-f]{40}$"
