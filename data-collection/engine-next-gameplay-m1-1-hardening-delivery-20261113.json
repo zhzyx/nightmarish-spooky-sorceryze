@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "delivery",
+  "request_id": "engine-next-gameplay-m1-1-hardening-20261113",
+  "issue": 1025,
+  "recorded_at": "2026-11-13T07:13:16.904554Z",
+  "main": "d5a77b1d539a9b92a1b81fc84c4df447dab82a7d",
+  "pull_requests": [
+    {
+      "number": 1028,
+      "signed_head": "5f4362e373ca23ca7277bf0e56ef43c378caa713",
+      "merge_commit": "d5a77b1d539a9b92a1b81fc84c4df447dab82a7d",
+      "merged_at": "2026-11-13T05:05:34Z",
+      "scope": "Extreme finite interpolation repair, numeric_error semantics, dual-side tests and complete legacy rollback/restoration evidence"
+    }
+  ],
+  "candidate_checks": {
+    "windows_msvc": "SUCCESS, actions/job/131699766190; 16 tests and 200161 checks; sources_passed/link_passed/contract_passed",
+    "macos_clang": "SUCCESS, actions/job/131699765817; 16 tests and 200161 checks; sources_passed/link_passed/contract_passed",
+    "static_checks": "SUCCESS, actions/job/131699765937",
+    "windows_editor": "SUCCESS, actions/job/131699918055",
+    "issue_association": "SUCCESS, actions/job/131699767096"
+  },
+  "main_checks": {
+    "windows_msvc": "SUCCESS, actions/job/131702376939",
+    "macos_clang": "SUCCESS, actions/job/131702377259",
+    "static_checks": "SUCCESS, actions/job/131702378173",
+    "windows_editor": "SUCCESS, actions/job/131702602538"
+  },
+  "final_acceptance": {
+    "standalone": "16 tests and 200161 checks passed in build and clean directories on local Clang, candidate/main Windows MSVC and macOS Clang; sources_passed and link_passed; godot_free_runtime_verified=false",
+    "extreme_numeric": "Double intermediates repair finite extreme position and velocity inputs; direct TryLerp tests reject unrepresentable float results without partial output; numeric_error has no state",
+    "godot_gameplay": "29 cases and 4846 assertions passed, including extreme finite interpolation, exact shared golden and real ENet integration",
+    "api": "All four API structures identical to the baseline after excluding documentation text; make_rst reported no XML warning or error",
+    "complete_legacy_rollback": "Legacy consumers excluded all engine_next and adapter files; 2 targeted cases/19 assertions and 27 complete cases/4831 assertions passed; executable SHA-256=bc216cc63e20ddea191d82407034907699c2bfbc7acd1e9207e80da2734691eb",
+    "restored_m1_1": "Restored consumers included both core implementations and the adapter; 4 targeted cases/34 assertions and 29 complete cases/4846 assertions passed; executable SHA-256=ec9d6dddcedf6011c35773e31fe97720740e6cd56695aaca1c528345280dc40b exactly matched the pre-rollback candidate",
+    "performance": "Paired legacy model/buffer medians were 11063/250529 us; restored M1.1 Godot values were 5896/180045 us; standalone release values were 4889/166698 us; checksums were unchanged and the 15% regression threshold passed",
+    "static_validation": "Ruff, clang-format, CODEOWNERS, include validation, codespell and diff checks passed without bulk formatting legacy files",
+    "sanitizer": "ASan and UBSan passed all 16 tests and 200161 checks with the same trace digest"
+  },
+  "acceptance_items": [
+    {
+      "id": "extreme-interpolation",
+      "state": "done",
+      "evidence": "data-collection/engine-next-gameplay-m1-1-hardening-verification-20261113-r8.json"
+    },
+    {
+      "id": "golden-determinism-errors-performance",
+      "state": "done",
+      "evidence": "data-collection/engine-next-gameplay-m1-1-hardening-verification-20261113-r8.json; identical trace digest and checksums; paired medians"
+    },
+    {
+      "id": "complete-legacy-and-restoration",
+      "state": "done",
+      "evidence": "data-collection/engine-next-gameplay-m1-1-hardening-build-impact-r7.json; exact blobs, consumers, executable hashes and both regression results"
+    },
+    {
+      "id": "independent-build-and-contract",
+      "state": "done",
+      "evidence": "Candidate and main Windows/macOS Engine Next jobs; require-sources and require-link-manifest passed"
+    },
+    {
+      "id": "godot-api-and-regression",
+      "state": "done",
+      "evidence": "29 cases, 4846 assertions and four identical API structures"
+    },
+    {
+      "id": "build-impact",
+      "state": "done",
+      "evidence": "data-collection/engine-next-gameplay-m1-1-hardening-build-impact-r7.json; native invalidation, complete legacy rollback and M1.1 restoration are separate checks"
+    },
+    {
+      "id": "gates-ci-main",
+      "state": "done",
+      "evidence": "Formal local gates, committed-data checks, exact candidate CI, PR #1028, main readback and this delivery record"
+    }
+  ],
+  "receipt_followthrough": "After this receipt record itself merges, close Issue #1025 with done/completed and close resolved environment bug #1026, then read back both states; do not claim those actions before their actual receipts",
+  "not_in_scope": [
+    "M2, complete next_runtime, renderer, GDScript, scene format, editor-independent runtime or dynamic-library hot update",
+    "GameplayClientPrediction, GameplayServerPrediction, GameplayNetworkPrediction or MultiplayerPeer migration",
+    "Session, World, ReplicationGraph or Relevancy migration",
+    "Bit-identical behavior with a double-precision Godot real_t build"
+  ],
+  "usage": null,
+  "usage_unknown_reason": "No measured model usage in host receipt"
+}

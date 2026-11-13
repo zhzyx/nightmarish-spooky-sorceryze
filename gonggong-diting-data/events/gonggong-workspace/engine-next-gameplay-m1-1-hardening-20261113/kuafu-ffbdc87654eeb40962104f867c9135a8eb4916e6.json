@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ffbdc87654eeb40962104f867c9135a8eb4916e6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-gameplay-m1-1-hardening-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1025",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "59b9b3970ff07633d0012adcf15455d9e59a486288cc5c05380513b912eeddda",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1025",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1026",
+    "action": "validation",
+    "detection_head": "1a47861ed118da8b14f23fd0129e0b8bba4544b5",
+    "context_sha256": "3784b660f5faff486a8365c7779479f152474008dad3f85620d26f3c39a7b0af",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-current-operator",
+    "authority_ref": "2026-11-13 用户明确要求进行 M1.1 工单收尾",
+    "evidence": "data-collection/engine-next-gameplay-m1-1-hardening-verification-20261113-r8.json",
+    "diagnosis": "正式门禁拒绝直接修改既有 R7 采集证据。新增远端检查应放入新 R8，而不是修改 R7；原 request_end 也需要以更正事件替代以绑定更新后的文件摘要。",
+    "next_action": "恢复 R7 原件，以 R8 保存追加证据，更新交付和设计引用，追加 request_end 更正事件，再运行同一正式门禁。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T07:46:43.286296+00:00",
+    "attempted": "已保留 R8 全部新增内容并恢复 R7；已更新交付、设计和 PR 说明引用，原 request_end 保留并由后续更正事件 supersede。",
+    "repair_owner": "kimi-work-current-operator",
+    "continuable": "仅修复证据不可变性，M1.1 实现、测试和 main 合入结果不变。"
+  },
+  "occurred_at": "2026-11-13T08:03:01.414439+00:00",
+  "sha256": "0ee1080669ff44229fce43b337eb11a5460ab8c292bdf3044160b18b5ce4ca58"
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "engine-next-gameplay-m1-1-hardening-20261113",
+  "collected_at": "2026-11-13T07:46:26.824828+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-gameplay-m1-1-hardening-20261113/kuafu-848887df9025d58568d51b95523e81de48dc54e5.json",
+      "sha256": "ba0bb982519f4d8a884c409237958b49b6fd86d16d630223bb77a0e2a9eeb5ad",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-848887df9025d58568d51b95523e81de48dc54e5",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-gameplay-m1-1-hardening-20261113/kuafu-898417cbb2fa2129463b534656bc0c245404475e.json",
+      "sha256": "ed7f79a53d5108416780036b44a437defbd4cd732fe35e8512458ceaf76cb037",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-898417cbb2fa2129463b534656bc0c245404475e",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-gameplay-m1-1-hardening-20261113/request-1025-engine-next-m1-1-hardening.json",
+      "sha256": "476532ab8abf55c1c06267c885e7d9976cd46f47c32f37ddad83e0417b63ec64",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "request-1025-engine-next-m1-1-hardening",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-gameplay-m1-1-hardening-20261113/request-end-1025-engine-next-m1-1-hardening.json",
+      "sha256": "73991aa5b9648f540dd346c5b4a3d9290cf9050aeb63dc5367a756adbbd122f1",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "request-end-1025-engine-next-m1-1-hardening",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1025,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1025"
+}

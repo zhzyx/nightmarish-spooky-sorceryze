@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "kind": "local_verification",
+  "request_id": "engine-next-gameplay-m1-1-hardening-20261113",
+  "issue": 1025,
+  "recorded_at": "2026-11-13T04:49:09.436991Z",
+  "base_head": "ad79c25d9cdae8a635fdf74ff957336799903a10",
+  "candidate_state": "staged_worktree",
+  "environment": {
+    "platform": "macOS-15.3.1-arm64-arm-64bit",
+    "architecture": "arm64",
+    "python": "3.12.16",
+    "clang": "Apple clang version 17.0.0 (clang-1700.0.13.5)",
+    "scons": "4.11.1",
+    "legacy_godot_test_binary_sha256": "bc216cc63e20ddea191d82407034907699c2bfbc7acd1e9207e80da2734691eb",
+    "candidate_and_restored_godot_test_binary_sha256": "ec9d6dddcedf6011c35773e31fe97720740e6cd56695aaca1c528345280dc40b"
+  },
+  "checks": [
+    {
+      "command": "python engine_next/Tools/BuildGameplay.py --repo . --compiler clang --build-dir build/engine_next/clang-release --run-tests",
+      "observed": "16 tests and 200161 checks passed in build and clean directories; public headers compile independently; trace SHA-256 is f55d1f5bc85bb72376d3f31cdf9b64aac91e714b6556dbce1663c1db7995924c",
+      "passed": true
+    },
+    {
+      "command": "python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-release/LinkManifest.json",
+      "observed": "state=contract_passed; sources=sources_passed (14 files, 19 local includes); link=link_passed (7 objects, 1 library); godot_free_runtime_verified=false",
+      "passed": true
+    },
+    {
+      "command": "python engine_next/Tools/BuildGameplay.py --repo . --compiler clang --build-dir build/engine_next/clang-sanitize --run-tests --sanitize",
+      "observed": "ASan and UBSan passed all 16 tests and 200161 checks in build and clean directories with the same trace SHA-256",
+      "passed": true
+    },
+    {
+      "command": "python -m unittest tools.test_check_engine_next_contract -v && python -m unittest discover -s engine_next/Tools -p 'TestBuildGameplay.py' -v",
+      "observed": "22 contract tests and 7 build-tool tests passed",
+      "passed": true
+    },
+    {
+      "command": "./bin/godot.macos.editor.arm64 --headless --test --test-case='[Gameplay][Prediction][EngineNext]*' && ./bin/godot.macos.editor.arm64 --headless --test --test-case='[Gameplay]*'",
+      "observed": "Restored M1.1 passed 4 targeted cases and 34 assertions plus 29 complete Gameplay cases and 4846 assertions; extreme finite positions and velocities interpolate to finite zero values",
+      "passed": true
+    },
+    {
+      "command": "python build/engine_next/ComparePredictionApi.py && python doc/tools/make_rst.py --dry-run doc/classes modules platform",
+      "observed": "All four API structures are identical after removing documentation text; make_rst reported no XML warning or error; 282 existing code-sample parity diagnostics are outside this candidate",
+      "passed": true
+    },
+    {
+      "command": "clang-format, validate_includes.py, validate_codeowners.py, Ruff, codespell and git diff --cached --check",
+      "observed": "All static checks passed without bulk-formatting legacy files or changing the golden trace",
+      "passed": true
+    },
+    {
+      "command": "Full legacy rollback and exact M1.1 restoration with real Godot rebuilds",
+      "observed": "Legacy consumed no engine_next or adapter sources and passed 27 cases/4831 assertions; restored M1.1 consumed both core sources and the adapter and passed 29 cases/4846 assertions; restored executable SHA-256 exactly matched the pre-rollback candidate",
+      "passed": true
+    },
+    {
+      "command": "python customizations/components/issue-workorders/issue_gate.py --repo . --issue 1025 --request-id engine-next-gameplay-m1-1-hardening-20261113 --base-ref origin/main",
+      "observed": "state=local_checks_passed; matching_event=true; matching_collection=true; module_build_impact=[engine_next]",
+      "passed": true
+    },
+    {
+      "command": "Read exact candidate and main GitHub checks for PR #1028 and d5a77b1d539a9b92a1b81fc84c4df447dab82a7d",
+      "observed": "Candidate and main Windows MSVC and macOS Clang jobs passed 16 tests/200161 checks with sources_passed, link_passed and contract_passed; candidate and main static checks and Windows editor jobs succeeded",
+      "passed": true
+    }
+  ],
+  "performance": {
+    "workload": "1000000 model steps and 50000 mixed buffer operations at capacity 4096, median of five repetitions on the same machine",
+    "legacy_godot": {
+      "model_median_us": 11063,
+      "buffer_median_us": 250529,
+      "model_checksum": 3325757522,
+      "buffer_checksum": 4097
+    },
+    "restored_m1_1_godot": {
+      "model_median_us": 5896,
+      "buffer_median_us": 180045,
+      "model_checksum": 3325757522,
+      "buffer_checksum": 4097
+    },
+    "standalone_release": {
+      "model_median_us": 4889,
+      "buffer_median_us": 166698,
+      "model_checksum": 3325757522,
+      "buffer_checksum": 4097
+    },
+    "standalone_clean_run": {
+      "model_median_us": 4885,
+      "buffer_median_us": 167866,
+      "model_checksum": 3325757522,
+      "buffer_checksum": 4097
+    },
+    "change_percent": {
+      "model": -46.71,
+      "buffer": -28.13
+    },
+    "comparison": "Both restored M1.1 Godot workloads were faster than the paired legacy baseline; the 15% regression threshold passed and checksums were identical"
+  },
+  "legacy_rollback": {
+    "candidate_tree": "457c879509e3679716983c6c6df9af9d85cd2b0d",
+    "candidate_patch_sha256": "a1a378566b78e54c14f0511d82b0895220566aa2c983722c893c22ba3ef0e93a",
+    "candidate_executable_sha256": "ec9d6dddcedf6011c35773e31fe97720740e6cd56695aaca1c528345280dc40b",
+    "legacy_blobs": {
+      "modules/gameplay/gameplay_prediction.h": "1c8f533ec5f9fd386dfee651e9b1b97282286c12",
+      "modules/gameplay/gameplay_prediction.cpp": "119182c8964ff7ef11718ecf089fd516a23de67d",
+      "modules/gameplay/SCsub": "273a080a51316b61cb68513a168370a458f0e4e3",
+      "modules/gameplay/tests/TestPredictionCore.h": "0f7759428be8e358c7a95fdff060a7ac8fcf79b0"
+    },
+    "legacy_executable_sha256": "bc216cc63e20ddea191d82407034907699c2bfbc7acd1e9207e80da2734691eb",
+    "legacy_module_inputs": [
+      "modules/gameplay/gameplay_entity.cpp",
+      "modules/gameplay/gameplay_match.cpp",
+      "modules/gameplay/gameplay_prediction.cpp",
+      "modules/gameplay/gameplay_relevancy.cpp",
+      "modules/gameplay/gameplay_replication.cpp",
+      "modules/gameplay/gameplay_server.cpp",
+      "modules/gameplay/gameplay_session.cpp",
+      "modules/gameplay/gameplay_subsystem.cpp",
+      "modules/gameplay/register_types.cpp"
+    ],
+    "restored_module_inputs": [
+      "engine_next/Gameplay/InterpolationBuffer.cpp",
+      "engine_next/Gameplay/PredictionModel.cpp",
+      "modules/gameplay/adapters/GameplayPredictionCore.cpp",
+      "modules/gameplay/gameplay_entity.cpp",
+      "modules/gameplay/gameplay_match.cpp",
+      "modules/gameplay/gameplay_prediction.cpp",
+      "modules/gameplay/gameplay_relevancy.cpp",
+      "modules/gameplay/gameplay_replication.cpp",
+      "modules/gameplay/gameplay_server.cpp",
+      "modules/gameplay/gameplay_session.cpp",
+      "modules/gameplay/gameplay_subsystem.cpp",
+      "modules/gameplay/register_types.cpp"
+    ],
+    "build_command": ".venv/bin/python -m SCons -j8 -Q platform=macos target=editor tests=yes arch=arm64 dev_mode=yes debug_symbols=no module_text_server_fb_enabled=yes vulkan=no angle=no accesskit=no metal=no redirect_build_objects=no cache_path=.scons_cache verbose=no",
+    "legacy_results": {
+      "targeted": "2 cases and 19 assertions passed, including the exact shared golden",
+      "complete_gameplay": "27 cases and 4831 assertions passed"
+    },
+    "restored_results": {
+      "targeted": "4 cases and 34 assertions passed, including the exact shared golden and extreme finite interpolation",
+      "complete_gameplay": "29 cases and 4846 assertions passed",
+      "workspace": "The saved candidate tree was restored exactly; git write-tree matched and git diff was empty before the restored build",
+      "executable_identity": "The restored editor SHA-256 equals the pre-rollback candidate editor SHA-256"
+    }
+  },
+  "corrections": [
+    "The direct out-of-range test uses mathematically representable double intermediates but an unrepresentable float result; the earlier incorrect expected value was rejected before compilation",
+    "Godot tests exercise only naturally reachable extreme finite interpolation; numeric_error remains a defensive core branch because legal [0,1] interpolation weights always have a finite double result",
+    "The initial Godot build found two missing direct parent commit objects in the local Git object store; signed GitHub payloads were reconstructed byte-exactly and their SHA-1 values verified before the same build and tests passed",
+    "A complete history refetch exceeded the 300 second tool limit and was stopped; no result from that fetch was counted as evidence",
+    "The formal gate required additional recent commit and tree objects up to the existing local history intersection; each distinct missing object was reconstructed from GitHub metadata, SHA-verified, and the unmodified gate then passed"
+  ],
+  "incident": {
+    "id": "468f14e10727d4420581fb9ccf7da9a9d8e9dd6a32f78e77cf7f8adfa3dd40e2",
+    "bug": 1026,
+    "resolution": "Environment-only Git object repair; candidate Godot build and complete Gameplay suite subsequently passed"
+  },
+  "not_verified": [
+    "No complete next_runtime executable, renderer, script system, editor-independent game runtime, M2 or dynamic-library hot update is claimed",
+    "Double-precision Godot uses a different real_t contract and is not bit-identical to the standalone float kernel",
+    "This record does not claim that its own separate receipt PR has merged or that Issue closure has already occurred"
+  ],
+  "usage": null,
+  "usage_unknown_reason": "No measured model usage in host receipt",
+  "remote_observations": {
+    "pull_request": 1028,
+    "signed_head": "5f4362e373ca23ca7277bf0e56ef43c378caa713",
+    "merge_commit": "d5a77b1d539a9b92a1b81fc84c4df447dab82a7d",
+    "merged_at": "2026-11-13T05:05:34Z",
+    "candidate_windows_msvc": "SUCCESS, actions/job/131699766190; 16 tests and 200161 checks; contract_passed",
+    "candidate_macos_clang": "SUCCESS, actions/job/131699765817; 16 tests and 200161 checks; contract_passed",
+    "candidate_static_checks": "SUCCESS, actions/job/131699765937",
+    "candidate_windows_editor": "SUCCESS, actions/job/131699918055",
+    "main_windows_msvc": "SUCCESS, actions/job/131702376939",
+    "main_macos_clang": "SUCCESS, actions/job/131702377259",
+    "main_static_checks": "SUCCESS, actions/job/131702378173",
+    "main_windows_editor": "SUCCESS, actions/job/131702602538",
+    "main_readback": "origin/main=d5a77b1d539a9b92a1b81fc84c4df447dab82a7d; signed candidate is an ancestor; implementation and evidence paths are identical to the verified signed candidate",
+    "current_candidate": "merged; final receipt candidate is separate"
+  },
+  "gate_incident": {
+    "id": "f59470227c5d45f711699bfec49c75488120c7e8bfb8c3fd7c68a829e5647020",
+    "bug": 1026,
+    "resolution": "The same formal gate reported operation_reverified and local_checks_passed after exact history repair"
+  }
+}
