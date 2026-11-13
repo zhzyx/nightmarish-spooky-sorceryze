@@ -208,7 +208,7 @@ class AdapterProcessTests(unittest.TestCase):
                     started = time.monotonic()
                     try:
                         with (
-                            patch("modeling_provider.MAX_EVENTS_BYTES", 4096),
+                            patch("modeling_provider.MAX_LOG_BYTES", 4096),
                             patch("kimi_work_image_provider.MAX_LOG_BYTES", 4096),
                             patch("kimi_provider.MAX_LOG_BYTES", 4096),
                         ):

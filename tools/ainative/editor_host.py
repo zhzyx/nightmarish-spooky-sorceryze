@@ -23,7 +23,9 @@ from generation_service import (
     image_batch_settings,
     load_settings,
     prepare_provider,
+    reject_retired_modeling_nodes,
     restore_provider,
+    retired_modeling_provider,
     run_service,
     save_run_service,
 )
@@ -271,6 +273,7 @@ def dispatch(args, request):
     if args.command == "create":
         model = target_graph(request["model"], request["target"]) if "target" in request else request["model"]
         safe(model)
+        reject_retired_modeling_nodes(model["nodes"])
         check_inputs(model)
         if service_path:
             run_id = uuid.uuid4().hex
@@ -303,6 +306,18 @@ def dispatch(args, request):
                 # local settings row; a created run always has frozen identity.
                 save_run_service(args.db, run_id, runtime_service)
             return {"run_id": host.create(graph, manifest, run_id=run_id)}
+        if args.command in ("step", "retry"):
+            run = host.status(request["run"])
+            if args.command == "retry":
+                nodes = [run["nodes"][request["node"]]]
+            elif run["state"] == "cancelled":
+                nodes = []
+            else:
+                nodes = [
+                    node for node in run["nodes"].values() if node["state"] not in ("succeeded", "failed", "cancelled")
+                ]
+            if any(retired_modeling_provider(node.get("provider")) for node in nodes):
+                raise ServiceError("gpt_modeling_retired")
         if args.command == "retry":
             host.retry(request["run"], request["node"])
             return host.status(request["run"])
