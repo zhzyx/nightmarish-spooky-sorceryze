@@ -31,6 +31,7 @@ from schemas import (
     DocVisibilityRequest,
     InviteAcceptRequest,
     InviteCreateRequest,
+    IssueCommentCreateRequest,
     IssueTransitionRequest,
     LoginRequest,
     MemberCreateRequest,
@@ -292,6 +293,14 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
     @app.patch("/api/v1/issues/{issue_id}")
     def transition_issue(issue_id: str, payload: IssueTransitionRequest, actor: ActorDep) -> dict[str, Any]:
         return store.transition_issue(actor, issue_id, payload.to_status)  # type: ignore[no-any-return]
+
+    @app.post("/api/v1/issues/{issue_id}/comments")
+    def create_issue_comment(issue_id: str, payload: IssueCommentCreateRequest, actor: ActorDep) -> dict[str, Any]:
+        return store.add_issue_comment(actor, issue_id, payload.body)  # type: ignore[no-any-return]
+
+    @app.get("/api/v1/issues/{issue_id}/comments")
+    def list_issue_comments(issue_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        return {"comments": store.list_issue_comments(actor, issue_id)}
 
     # ---------- 事件流 ----------
 

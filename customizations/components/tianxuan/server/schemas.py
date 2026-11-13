@@ -158,6 +158,12 @@ class IssueTransitionRequest(BaseModel):
     to_status: str
 
 
+class IssueCommentCreateRequest(BaseModel):
+    """司南工单评论；正文非空由领域层校验。"""
+
+    body: str
+
+
 class CommentCreateRequest(BaseModel):
     """文曲文档评论。"""
 
