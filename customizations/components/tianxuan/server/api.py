@@ -25,6 +25,9 @@ from schemas import (
     TicketsRequest,
 )
 from tianxuan_core import NotFound, Tianxuan, TianxuanError, TransitionRejected, VersionConflict
+from wenqu_bridge import classify as classify_markdown
+from wenqu_bridge import export_markdown
+from wenqu_bridge import search as search_documents
 
 
 def _require_actor(x_actor: str | None = Header(default=None, alias="X-Actor")) -> str:
@@ -152,5 +155,29 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
     @app.get("/api/v1/events")
     def list_events(actor: ActorDep, limit: int = Query(default=100, ge=1, le=500)) -> dict[str, list[dict[str, Any]]]:
         return {"events": store.events(actor, limit)}
+
+    # ---------- 文曲：检索、导出、AI 视图、归类 ----------
+
+    @app.get("/api/v1/search")
+    def search_docs(
+        actor: ActorDep,
+        q: str = Query(min_length=1),
+        limit: int = Query(default=20, ge=1, le=100),
+    ) -> dict[str, list[dict[str, Any]]]:
+        documents = [store.get_doc(row["id"]) for row in store.list_docs(actor)]
+        return {"results": search_documents(documents, q)[:limit]}
+
+    @app.get("/api/v1/docs/{doc_id}/export")
+    def export_doc(doc_id: str) -> dict[str, str]:
+        document = store.get_doc(doc_id)
+        return {"filename": f"{doc_id}.md", "markdown": export_markdown(document)}
+
+    @app.get("/api/v1/docs/{doc_id}/ai-view")
+    def ai_view(doc_id: str) -> dict[str, Any]:
+        return store.ai_view(doc_id)  # type: ignore[no-any-return]
+
+    @app.post("/api/v1/docs/{doc_id}/classify")
+    def classify_doc(doc_id: str) -> dict[str, list[str]]:
+        return {"tags": classify_markdown(store.get_doc(doc_id)["body_md"])}
 
     return app
