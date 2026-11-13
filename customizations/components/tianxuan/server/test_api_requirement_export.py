@@ -93,7 +93,7 @@ def test_commit_rejects_escaping_repo(monkeypatch: pytest.MonkeyPatch, tmp_path:
 
 
 def test_commit_writes_markdown_to_bare_repo(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    git = os.environ.get("GIT_EXECUTABLE") or shutil.which("git")
+    git = os.environ.get("GIT_EXECUTABLE") or shutil.which("git") or ""
     if not git:
         pytest.skip("git executable not available")
     monkeypatch.setenv("GIT_EXECUTABLE", git)
