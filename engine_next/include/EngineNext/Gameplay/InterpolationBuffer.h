@@ -49,6 +49,7 @@ enum class InterpolationStatus : std::uint8_t
 	Interpolated = 3,
 	Held = 4,
 	StaleHeld = 5,
+	NumericError = 6,
 };
 
 struct InterpolationResult

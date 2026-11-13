@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "request-1025-engine-next-m1-1-hardening",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-gameplay-m1-1-hardening-20261113",
+  "kind": "request",
+  "occurred_at": "2026-11-13T04:16:13Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1025",
+  "agent": {
+    "id": "kimi-work-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "001b75e999158305bfc9f66c7b071cfe07f769b480088fc863e0e646d44be541",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "action": "record_authorized_issue_binding",
+    "issue_number": 1025,
+    "intake_status": "status:in-progress",
+    "scope": "补齐插值极端数值保护、完整 legacy 回退与 M1.1 恢复证据，保持正常 golden 和现有 API，不启动 M2。",
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage in host receipt",
+    "design": {
+      "path": "design-docs/engine-next-gameplay-m1-1-hardening-20261113.md",
+      "sha256": "04da2e0052d61df5d711068099affc191804af77a05216a004c94444ed8060c3"
+    }
+  },
+  "evidence_refs": [],
+  "sha256": "77dd5f9e3310978847dda7a7f75e5d197695b18a56850100bbb3feb70687e9f5"
+}

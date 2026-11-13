@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-848887df9025d58568d51b95523e81de48dc54e5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-gameplay-m1-1-hardening-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1025",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f59470227c5d45f711699bfec49c75488120c7e8bfb8c3fd7c68a829e5647020",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1025",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1026",
+    "action": "validation",
+    "detection_head": "ad79c25d9cdae8a635fdf74ff957336799903a10",
+    "context_sha256": "72b6c7f0e279860e2f6191a36e3c3d46f95117cc636f2c9661dd38e7650a4fc3",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-main",
+    "authority_ref": "user attachment and Issue #1025",
+    "evidence": "data-collection/engine-next-gameplay-m1-1-hardening-verification-20261113-r7.json",
+    "diagnosis": "The local object store also lacked recent delivery commits and root trees needed by the trusted framework history query. Every distinct missing object was reconstructed and SHA-verified up to an existing local intersection.",
+    "next_action": "The unmodified formal gate now reports operation_reverified and local_checks_passed; proceed with the exact candidate submission.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T04:49:28.814061+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T04:56:28.295770+00:00",
+  "sha256": "ade051f22b3206881deb556576704e9e7fbf62533a4dcbd96f06dca19498e60d"
+}

@@ -193,6 +193,39 @@ TEST_CASE("[Gameplay][Prediction][EngineNext] Core adapter rejects overflow with
 	CHECK_EQ(refState->get_confirmed_sequence(), 0U);
 }
 
+TEST_CASE("[Gameplay][Prediction][EngineNext] Core adapter interpolates extreme finite samples")
+{
+	const float fMax = std::numeric_limits<float>::max();
+	Ref<GameplayInterpolationBuffer> refBuffer;
+	refBuffer.instantiate();
+	refBuffer->set_interpolation_delay_msec(0);
+	Ref<GameplayPredictionState> refFirst;
+	refFirst.instantiate();
+	refFirst->set_position(Vector3(-fMax, 0.0F, 0.0F));
+	refFirst->set_velocity(Vector3(-fMax, -fMax, -fMax));
+	refFirst->set_confirmed_sequence(1);
+	refFirst->set_server_time_msec(100);
+	Ref<GameplayPredictionState> refSecond;
+	refSecond.instantiate();
+	refSecond->set_position(Vector3(fMax, 0.0F, 0.0F));
+	refSecond->set_velocity(Vector3(fMax, fMax, fMax));
+	refSecond->set_confirmed_sequence(2);
+	refSecond->set_server_time_msec(200);
+	CHECK_EQ(refBuffer->add_sample(refFirst), OK);
+	CHECK_EQ(refBuffer->add_sample(refSecond), OK);
+	const Dictionary dictResult = refBuffer->sample(150);
+	CHECK_EQ(dictResult.get("status", String()), String("interpolated"));
+	REQUIRE(dictResult.has("state"));
+	const Ref<GameplayPredictionState> refResult = dictResult["state"];
+	REQUIRE(refResult.is_valid());
+	CHECK(refResult->get_position().is_finite());
+	CHECK(refResult->get_velocity().is_finite());
+	CHECK(refResult->get_position().is_equal_approx(Vector3()));
+	CHECK(refResult->get_velocity().is_equal_approx(Vector3()));
+	CHECK_EQ(refResult->get_confirmed_sequence(), 2U);
+	CHECK_EQ(refResult->get_server_time_msec(), 150U);
+}
+
 static int64_t MeasureLegacyModel(uint32_t &out_nChecksum)
 {
 	using Clock = std::chrono::steady_clock;

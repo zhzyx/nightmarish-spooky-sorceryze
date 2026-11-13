@@ -100,6 +100,8 @@ String ToGodotStatus(EngineNext::Gameplay::InterpolationStatus eStatus)
 			return "held";
 		case EngineNext::Gameplay::InterpolationStatus::StaleHeld:
 			return "stale_held";
+		case EngineNext::Gameplay::InterpolationStatus::NumericError:
+			return "numeric_error";
 	}
 	return "empty";
 }

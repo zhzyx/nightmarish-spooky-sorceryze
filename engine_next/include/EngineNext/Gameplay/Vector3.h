@@ -74,4 +74,42 @@ struct Vector3
 	};
 }
 
+[[nodiscard]] inline bool TryLerpComponent(float fFrom, float fTo, float fWeight, float &out_fResult)
+{
+	const float fDelta = fTo - fFrom;
+	const float fOffset = fDelta * fWeight;
+	const float fFastResult = fFrom + fOffset;
+	if (std::isfinite(fDelta) && std::isfinite(fOffset) && std::isfinite(fFastResult))
+	{
+		out_fResult = fFastResult;
+		return true;
+	}
+
+	const double dDelta = static_cast<double>(fTo) - static_cast<double>(fFrom);
+	const double dOffset = dDelta * static_cast<double>(fWeight);
+	const double dResult = static_cast<double>(fFrom) + dOffset;
+	if (!std::isfinite(dResult))
+	{
+		return false;
+	}
+	const float fResult = static_cast<float>(dResult);
+	if (!std::isfinite(fResult))
+	{
+		return false;
+	}
+	out_fResult = fResult;
+	return true;
+}
+
+[[nodiscard]] inline bool TryLerp(const Vector3 &vFrom, const Vector3 &vTo, float fWeight, Vector3 &out_vResult)
+{
+	Vector3 vResult;
+	if (!TryLerpComponent(vFrom.fX, vTo.fX, fWeight, vResult.fX) || !TryLerpComponent(vFrom.fY, vTo.fY, fWeight, vResult.fY) || !TryLerpComponent(vFrom.fZ, vTo.fZ, fWeight, vResult.fZ))
+	{
+		return false;
+	}
+	out_vResult = vResult;
+	return true;
+}
+
 } // namespace EngineNext::Gameplay
