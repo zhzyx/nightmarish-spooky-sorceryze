@@ -1,0 +1,67 @@
+# Tianxuan FastAPI service (self-hosted).
+#
+# BUILD CONTEXT MUST BE THE REPOSITORY ROOT.
+# The server imports its sibling modules (`wenqu`, `duobao`) through the
+# bridge modules inside `server/`, so those directories must be present in the
+# image with their repository-relative layout preserved.
+#
+# Build directly, from the repository root:
+#   docker build -f deploy/Dockerfile.api -t tianxuan-api .
+#
+# Or through Compose, from the `deploy/` directory:
+#   docker compose --env-file .env build api
+
+FROM python:3.12-slim
+
+# `PYTHONPATH` points at the three import roots:
+#   server/ -> api, main, schemas, tianxuan_core, gateway, *_bridge
+#   wenqu/  -> wenqu
+#   duobao/ -> git_service, gitea_client
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONPATH=/app/customizations/components/tianxuan/server:/app/customizations/components/tianxuan/wenqu:/app/customizations/components/tianxuan/duobao \
+    TIANXUAN_DB=/data/tianxuan.db \
+    TIANXUAN_REPO_ROOT=/data/repos
+
+# The duobao GitService shells out to the system `git` CLI; ca-certificates is
+# needed for HTTPS calls to an external Gitea/Forgejo.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Fixed uid/gid so a bind-mounted /data directory can be prepared on the host
+# with: chown -R 10001:10001 <host-dir>
+RUN groupadd --gid 10001 tianxuan \
+    && useradd --uid 10001 --gid tianxuan --create-home --shell /usr/sbin/nologin tianxuan
+
+WORKDIR /app
+
+# Keep the repository layout intact: the bridge modules resolve their siblings
+# with Path(__file__).resolve().parents[1] / "wenqu" and "duobao".
+COPY customizations/components/tianxuan/server/ /app/customizations/components/tianxuan/server/
+COPY customizations/components/tianxuan/wenqu/ /app/customizations/components/tianxuan/wenqu/
+COPY customizations/components/tianxuan/duobao/ /app/customizations/components/tianxuan/duobao/
+
+RUN python -m pip install --no-cache-dir \
+        -r /app/customizations/components/tianxuan/server/requirements.txt
+
+# Persistent state lives on one volume: SQLite database + optional local Git
+# repositories used by requirement commits. A freshly created named volume
+# inherits this ownership from the image.
+RUN mkdir -p /data/repos \
+    && chown -R tianxuan:tianxuan /data
+
+USER tianxuan
+
+WORKDIR /app/customizations/components/tianxuan/server
+
+EXPOSE 8000
+
+# Deliberately a single uvicorn worker:
+#   - WebSocket document rooms are kept in process memory, so multiple workers
+#     would not see each other's subscribers;
+#   - the SQLite deployment is single-writer.
+# Put more API capacity behind a real database first; see deploy/README.md.
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips=*"]
