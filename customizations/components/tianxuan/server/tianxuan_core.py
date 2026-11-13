@@ -33,6 +33,10 @@ CREATE TABLE IF NOT EXISTS invites (
   token_hash TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, email TEXT NOT NULL, role TEXT NOT NULL,
   created_by TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL, accepted_at TEXT
 );
+CREATE TABLE IF NOT EXISTS doc_shares (
+  doc_id TEXT NOT NULL, user_id TEXT NOT NULL, permission TEXT NOT NULL,
+  created_by TEXT NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY (doc_id, user_id)
+);
 CREATE TABLE IF NOT EXISTS spaces (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, name TEXT NOT NULL, slug TEXT NOT NULL, created_at TEXT NOT NULL
 );
@@ -41,6 +45,7 @@ CREATE TABLE IF NOT EXISTS docs (
   title TEXT NOT NULL, body_md TEXT NOT NULL, lang TEXT NOT NULL DEFAULT 'zh',
   kind TEXT NOT NULL DEFAULT 'doc', request_id TEXT, tags TEXT NOT NULL DEFAULT '[]',
   status TEXT NOT NULL DEFAULT 'draft', progress TEXT NOT NULL DEFAULT '{}',
+  visibility TEXT NOT NULL DEFAULT 'tenant',
   version INTEGER NOT NULL DEFAULT 1, created_by TEXT NOT NULL,
   created_at TEXT NOT NULL, updated_at TEXT NOT NULL
 );
@@ -161,7 +166,13 @@ class Tianxuan:
         self.db.executescript(SCHEMA)
         self._migrate_sessions()
         self._migrate_users()
+        self._migrate_docs()
         self.db.commit()
+
+    def _migrate_docs(self) -> None:
+        columns = {row[1] for row in self.db.execute("PRAGMA table_info(docs)")}
+        if columns and "visibility" not in columns:
+            self.db.execute("ALTER TABLE docs ADD COLUMN visibility TEXT NOT NULL DEFAULT 'tenant'")
 
     def _migrate_users(self) -> None:
         columns = {row[1] for row in self.db.execute("PRAGMA table_info(users)")}
@@ -459,6 +470,8 @@ class Tianxuan:
     ) -> dict[str, Any]:
         self._require_editor(actor)
         doc = self.get_doc(doc_id)
+        if not self._can_write(actor, doc):
+            raise PermissionDenied("no write access to document")
         if doc["version"] != expected_version:
             raise VersionConflict(f"expected version {expected_version}, found {doc['version']}")
         version = expected_version + 1
@@ -487,11 +500,94 @@ class Tianxuan:
         tenant_id = self._tenant_of(actor)
         sql = "SELECT id, title, kind, status, tags, version, updated_at FROM docs WHERE tenant_id = ?"
         args: list[str] = [tenant_id]
+        if self.role_of(actor) != "admin":
+            sql += (
+                " AND (visibility = 'tenant' OR created_by = ?"
+                " OR id IN (SELECT doc_id FROM doc_shares WHERE user_id = ?))"
+            )
+            args.extend([actor, actor])
         if kind:
             sql += " AND kind = ?"
             args.append(kind)
         rows = self.db.execute(sql + " ORDER BY updated_at DESC", args).fetchall()
         return [dict(row) | {"tags": json.loads(row["tags"])} for row in rows]
+
+    def _is_admin(self, actor: str) -> bool:
+        return self.role_of(actor) == "admin"
+
+    def _can_read(self, actor: str, doc: dict[str, Any]) -> bool:
+        if doc["created_by"] == actor or self._is_admin(actor):
+            return True
+        if doc["visibility"] == "tenant":
+            return True
+        row = self.db.execute(
+            "SELECT 1 FROM doc_shares WHERE doc_id = ? AND user_id = ?", (doc["id"], actor)
+        ).fetchone()
+        return row is not None
+
+    def _can_write(self, actor: str, doc: dict[str, Any]) -> bool:
+        if doc["created_by"] == actor or self._is_admin(actor):
+            return True
+        row = self.db.execute(
+            "SELECT permission FROM doc_shares WHERE doc_id = ? AND user_id = ?", (doc["id"], actor)
+        ).fetchone()
+        if row is not None and row["permission"] == "write":
+            return True
+        return doc["visibility"] == "tenant" and self.role_of(actor) != "viewer"
+
+    def get_doc_shared(self, actor: str, doc_id: str, *, write: bool = False) -> dict[str, Any]:
+        doc = self.get_doc(doc_id)
+        allowed = self._can_write(actor, doc) if write else self._can_read(actor, doc)
+        if not allowed:
+            raise PermissionDenied(f"no access to document: {doc_id}")
+        return doc
+
+    def set_visibility(self, actor: str, doc_id: str, visibility: str) -> dict[str, Any]:
+        if visibility not in {"tenant", "private"}:
+            raise TianxuanError("visibility must be tenant or private")
+        doc = self.get_doc(doc_id)
+        if doc["created_by"] != actor and not self._is_admin(actor):
+            raise PermissionDenied("only the owner or an admin can change visibility")
+        self.db.execute("UPDATE docs SET visibility = ?, updated_at = ? WHERE id = ?", (visibility, _now(), doc_id))
+        self._event(doc["tenant_id"], "doc.visibility_changed", actor, doc_id, {"visibility": visibility})
+        self.db.commit()
+        return self.get_doc(doc_id)
+
+    def share_doc(self, actor: str, doc_id: str, user_id: str, permission: str = "read") -> dict[str, Any]:
+        if permission not in {"read", "write"}:
+            raise TianxuanError("permission must be read or write")
+        doc = self.get_doc(doc_id)
+        if doc["created_by"] != actor and not self._is_admin(actor):
+            raise PermissionDenied("only the owner or an admin can share")
+        target = self.db.execute("SELECT tenant_id FROM users WHERE id = ?", (user_id,)).fetchone()
+        if target is None or target["tenant_id"] != doc["tenant_id"]:
+            raise NotFound(f"user not found: {user_id}")
+        self.db.execute(
+            "INSERT INTO doc_shares (doc_id, user_id, permission, created_by, created_at) VALUES (?, ?, ?, ?, ?) "
+            "ON CONFLICT(doc_id, user_id) DO UPDATE SET permission = excluded.permission",
+            (doc_id, user_id, permission, actor, _now()),
+        )
+        self._event(doc["tenant_id"], "doc.shared", actor, doc_id, {"user_id": user_id, "permission": permission})
+        self.db.commit()
+        return {"doc_id": doc_id, "user_id": user_id, "permission": permission}
+
+    def unshare_doc(self, actor: str, doc_id: str, user_id: str) -> dict[str, Any]:
+        doc = self.get_doc(doc_id)
+        if doc["created_by"] != actor and not self._is_admin(actor):
+            raise PermissionDenied("only the owner or an admin can unshare")
+        self.db.execute("DELETE FROM doc_shares WHERE doc_id = ? AND user_id = ?", (doc_id, user_id))
+        self._event(doc["tenant_id"], "doc.unshared", actor, doc_id, {"user_id": user_id})
+        self.db.commit()
+        return {"doc_id": doc_id, "user_id": user_id, "removed": True}
+
+    def list_shares(self, actor: str, doc_id: str) -> list[dict[str, Any]]:
+        doc = self.get_doc(doc_id)
+        if doc["created_by"] != actor and not self._is_admin(actor):
+            raise PermissionDenied("only the owner or an admin can list shares")
+        rows = self.db.execute(
+            "SELECT user_id, permission, created_at FROM doc_shares WHERE doc_id = ? ORDER BY created_at", (doc_id,)
+        ).fetchall()
+        return [dict(row) for row in rows]
 
     def ai_view(self, doc_id: str) -> dict[str, Any]:
         doc = self.get_doc(doc_id)
@@ -533,6 +629,8 @@ class Tianxuan:
     def add_comment(self, actor: str, doc_id: str, body: str, parent_id: str | None = None) -> dict[str, Any]:
         self._require_editor(actor)
         document = self.get_doc(doc_id)
+        if not self._can_read(actor, document):
+            raise PermissionDenied(f"no access to document: {doc_id}")
         if not body.strip():
             raise TianxuanError("comment body is required")
         if parent_id is not None:
@@ -560,6 +658,8 @@ class Tianxuan:
 
     def list_comments(self, actor: str, doc_id: str) -> list[dict[str, Any]]:
         document = self.get_doc(doc_id)
+        if not self._can_read(actor, document):
+            raise PermissionDenied(f"no access to document: {doc_id}")
         rows = self.db.execute(
             "SELECT * FROM comments WHERE tenant_id = ? AND doc_id = ? ORDER BY created_at, id",
             (document["tenant_id"], doc_id),
@@ -569,6 +669,9 @@ class Tianxuan:
     def resolve_comment(self, actor: str, comment_id: str, resolved: bool = True) -> dict[str, Any]:
         self._require_editor(actor)
         comment = self.get_comment(comment_id)
+        document = self.get_doc(comment["doc_id"])
+        if not self._can_write(actor, document):
+            raise PermissionDenied("no write access to document")
         now = _now()
         self.db.execute(
             "UPDATE comments SET resolved = ?, resolved_at = ? WHERE id = ?",
