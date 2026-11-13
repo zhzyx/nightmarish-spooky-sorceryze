@@ -296,6 +296,15 @@ class Tianxuan:
         ).fetchall()
         return [dict(row) for row in rows]
 
+    def version(self, doc_id: str, version: int) -> dict[str, Any]:
+        row = self.db.execute(
+            "SELECT version, body_md, author, created_at FROM doc_versions WHERE doc_id = ? AND version = ?",
+            (doc_id, version),
+        ).fetchone()
+        if row is None:
+            raise NotFound(f"version not found: {doc_id}@{version}")
+        return dict(row)
+
     # ---------- 文曲：评论 ----------
 
     def add_comment(self, actor: str, doc_id: str, body: str, parent_id: str | None = None) -> dict[str, Any]:
