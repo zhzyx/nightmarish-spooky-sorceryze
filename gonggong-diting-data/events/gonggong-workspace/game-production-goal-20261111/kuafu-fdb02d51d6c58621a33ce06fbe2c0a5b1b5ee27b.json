@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fdb02d51d6c58621a33ce06fbe2c0a5b1b5ee27b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b3696958a5dcfde176ecc917942c1b587152cbfa39c48b74c02cb166ec9e6a19",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "a504f748fbfde27d37759c7ca81d656cdf41323c",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1065",
+    "diagnosis": "Independent remaining-acceptance review found selected_results.bytes retained the pre-LF length 3344 while the referenced attachment was 3241 bytes. Its SHA256 and actual result content were already correct. Corrected only the report length to the actual byte count; original attachment, implementation and native test inputs are unchanged. Prior review had verified digest replacements but omitted this explicit length field.",
+    "next_action": "Independently verify the corrected report and all explicit length references in the four normalized reports, sign a new exact candidate, retain the old PR and CI evidence as superseded, then verify new CI/main before installation.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T14:08:20.970913+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": "Independent installed long-command validation and original-parent recovery preparation continue without touching the game state."
+  },
+  "occurred_at": "2026-11-13T14:08:51.666417+00:00",
+  "sha256": "a10bb927729d3d7171f62059882297cf5f7d9ac17003b4927d266f3f053ca7f6"
+}

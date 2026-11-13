@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-59c2e21f386b1ea30953493312127d1715cfab02",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "069c08ec7d4a76dd420b8ab511a4d4fac6e467cc43d2745a1b7befd0ae15f0a0",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "validation",
+    "detection_head": "a504f748fbfde27d37759c7ca81d656cdf41323c",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1065",
+    "diagnosis": "Formal validation and then writer correctly rejected an attempted in-place correction to committed collection reports. No new commit or publication resulted. Restored both reports to exact committed bytes and appended a separate correction for selected_results.bytes from 3344 to the measured 3241. Product and test inputs are unchanged. Earlier preparation events are retained as historical attempts, not applied delivery.",
+    "next_action": "Review the append-only correction and exact full candidate, rerun the formal gate, inspect its result before invoking writer, then verify replacement CI/main and installation.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T14:12:23.775176+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": "Installed long-command checks and private original-parent recovery preparation continue independently."
+  },
+  "occurred_at": "2026-11-13T14:16:46.121928+00:00",
+  "sha256": "51f58524044432a7d534f58226fb511eda1cfb665300dfe49d16c6255039cf78"
+}
