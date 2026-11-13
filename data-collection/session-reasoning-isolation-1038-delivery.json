@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "issue_number": 978,
+  "request_id": "ai-github-integration-refactor-20261112",
+  "related_issue_number": 1038,
+  "resolution_base": "repository root",
+  "source_evidence_path": "data-collection/session-reasoning-isolation-1038.json",
+  "source_evidence_sha256": "1f9441b1f03c9e4bb5c57ed573d63592de30b45d35bf341a5135e06d17326489",
+  "scope": "Append-only delivery correction to the unchanged source validation snapshot; parent978 and original217 remain open.",
+  "delivery_result": {
+    "recorded_at": "2026-11-13T09:06:12.905948+00:00",
+    "state": "main_accepted_issue_closed_completed",
+    "pr": 1040,
+    "source": "36d91f4a7e2ec64f2c129dfdb36fd7cadfb9c0d5",
+    "signed": "31d8203ee3f6df66f445aecd3db250b0c8c7f420",
+    "main": "c393b4786ccc5692435e8ae555248d44e102cbfc",
+    "tree": "605875711c1f6a3630f77370fd0864d5779294c0",
+    "signed_and_source_ancestors_verified": true,
+    "operator": "Sail-Li",
+    "merged_at": "2026-11-13T08:52:01Z",
+    "independent_review": {
+      "path": "../session1038-final-review-20261113/review.json",
+      "sha256": "f0a49c00f74920d7b430f33b176e5eb88cf5bcb6c308ea0e4eb9b3bedece04d8",
+      "result": "approved; runner cleanup finding repaired before CI",
+      "worker_terminal_verified": true
+    },
+    "ci": {
+      "pr_run": 43394746902,
+      "main_run": 43396592994,
+      "conclusion": "success",
+      "windows_tests_passed": 1577,
+      "windows_assertions_passed": 474777,
+      "windows_tests_skipped": 3,
+      "main_native_editor_sha256": "9e929c843fdcdd8c0247a8461818389aab06654179156fc16e98d3d076c24993",
+      "main_native_phases": [
+        "full",
+        "reopen",
+        "legacy"
+      ],
+      "controlled_cli_invocations": 7,
+      "exact_wire_verified": true,
+      "private_directory_removed": true,
+      "runtime_setup_ok": true,
+      "requirements_intake_ok": true,
+      "skipped_not_passed": [
+        "Tianshu native graph",
+        "cross-provider loopback",
+        "native consultation",
+        "other platform jobs"
+      ]
+    },
+    "issue": {
+      "number": 1038,
+      "state": "closed",
+      "state_reason": "completed",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "closed_at": "2026-11-13T09:02:53Z"
+    },
+    "cleanup": {
+      "local_branch_removed": "codex/session-reasoning-isolation-20261113",
+      "remote_branch_removed": "codex/submit/Sail-Li/1038/36d91f4a7e2ec64f2c129dfdb36fd7cadfb9c0d5",
+      "exact_remote_head_verified": true,
+      "current_worktree_retained": true,
+      "worktrees_retained": 36,
+      "reason": "Operational parent978 checkout, active or unaccepted foreign tasks and user editor stay protected; necessary evidence and validated rollback preserved",
+      "effective_installation_changed": false
+    },
+    "host_permission": {
+      "connector_write": "403 Resource not accessible by integration",
+      "existing_authorized_cli": "Sail-Li succeeded and independently read back closed/completed",
+      "connector_permission_repaired": false,
+      "product_regression": false
+    },
+    "remaining_scope": "Parent978 and original217 remain open; no handoff inferred, no installation acceptance or all-provider inference claimed.",
+    "private_receipts": [
+      {
+        "path": "session1038-pr1040-merged.json",
+        "sha256": "5d4d3e0dd186a6515390fd822fe106e3e6231daae6198145741aa7ecc7addefa"
+      },
+      {
+        "path": "session1038-pr1040-reasoning/native.json",
+        "sha256": "b5bf978d119df4900b7118c06c1ba815200fb021e90b75753ff02365893610f5"
+      },
+      {
+        "path": "session1038-main-ci.json",
+        "sha256": "f91a762ef337195ab7d63ecd3dab65826089bd520e111464498dfed5b1b8265e"
+      },
+      {
+        "path": "session1038-main-reasoning/native.json",
+        "sha256": "87c99c96e39692527eebf61d15219dd210ca4af8c510f3312a6286fa717034c2"
+      },
+      {
+        "path": "session1038-main-runtime/summary.json",
+        "sha256": "5279d458cb66c5f2679138bc2496ad834d9a1e3ba9fb9412df40510a93bb6d0b"
+      },
+      {
+        "path": "session1038-main-runtime/runtime-setup.json",
+        "sha256": "33f65dd6f76e19eaf13163c5ed359eefb914f8459ecb7b6e448641f991c801c0"
+      },
+      {
+        "path": "session1038-main-runtime/requirements-intake.json",
+        "sha256": "0d36f62dcabb43502bef95c260b530258c01e63da2347027d810866992442066"
+      },
+      {
+        "path": "session1038-main-windows.log",
+        "sha256": "58fe5d7da313e47430bd9ad8ae4987fc9d352fedfa1bd16d697af2e7266d9e71"
+      },
+      {
+        "path": "session1038-issue-closed-readback.json",
+        "sha256": "30efcc34fbc4f666bcacd086387d4e18500f88d060fdf801796d3e3feac1e590"
+      },
+      {
+        "path": "session1038-cleanup.json",
+        "sha256": "501dc252bda41566e573a5a0ee283dc7b36620851e0cbe8d68a705459d751e35"
+      },
+      {
+        "path": "session1038-connector-permission-failure.json",
+        "sha256": "723f4f57ce8d4bb856686e6a59e8520f75993ca6619090e1c8df9413e1747abd"
+      }
+    ]
+  },
+  "metadata_gate_recovery": "Formal gate rejected attempted modifications of two historical collection JSON files before commit/publication. Restored exact HEAD bytes and appended this new delivery receipt; original failed gate retained.",
+  "private_receipt_resolution_base": "Repository root data-collection/receipts/ai-integration-refactor-20261112"
+}
