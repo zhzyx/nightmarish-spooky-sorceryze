@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2cd56091501e5eacd7f4a5e451c3931b0bfe1e3c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "bound-production-continuation-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "dac37d431728182df63fcd285f492d4b922068a6781437195c63f8d14d62e245",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1027",
+    "action": "delivery",
+    "detection_head": "a57a95537a4c7ae7a126b24f9a66760665374ef5",
+    "context_sha256": "dd965e3a04b30bc372e9c5233129c21175c617449a65875633141558328415ee",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1033",
+    "diagnosis": "Writer network failure occurred after push of sourcea57a95537a4c7ae7a126b24f9a66760665374ef5. Before retry, authenticated exact remote ref readback confirmed unchanged source head and no PR. Same candidate resumed without new commit or push; GitHub signed503c7b9f2fa131cccedd90260d9528db263b1443 with identical treed5e5d018ad785e2afb2bd6daa89b1f0a12d7e52a and createdPR1033. Original operation_reverified receipt recorded by writer.",
+    "next_action": "Verify exact fullPR CI43377757303, current main and concurrent1032 overlapping delivery; merge only approved current candidate, then reconcile actual incidents and issue acceptance. Network recovery alone does not mean main or business completion.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T06:16:02.636965+00:00",
+    "attempted": "Failed receipt retained; exact branch and noPR readback, authenticated receive and condition recorded, same writer invocation succeeded with committed-data check and source/head/tree proof.",
+    "repair_owner": "Sail-Li / codex-root",
+    "continuable": "Own1033 CI in progress; original1031 closed as superseded after replacement readback. Foreign1032 publisher retains own candidate."
+  },
+  "occurred_at": "2026-11-13T06:20:40.672677+00:00",
+  "sha256": "7b41521299766c11b2809a48b562711284599d989103551e14c1b77ba3623cb3"
+}

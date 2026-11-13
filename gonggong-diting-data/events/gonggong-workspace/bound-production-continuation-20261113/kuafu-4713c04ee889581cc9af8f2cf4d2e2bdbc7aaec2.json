@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4713c04ee889581cc9af8f2cf4d2e2bdbc7aaec2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "bound-production-continuation-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8c7b71d24751e9fc4c68a33354850be4affdfd98d911504e0caf8b0ffdcc364c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/953",
+    "action": "validation",
+    "detection_head": "ad79c25d9cdae8a635fdf74ff957336799903a10",
+    "context_sha256": "518ac0715c3dbbbc236af439e8b55aed3d87e1532c1a8bf2ff1db75a43ff287d",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "receipt:bound-continuation-host-tool-update-revert-private-refusal",
+    "diagnosis": "Issue 1024 native validation: normal, early-delivery recovery and cold-authority isolation passed on binary c47f2477. Eight cancellation cases failed in fixture GDScript parsing before execution; CLI fixture incorrectly simulated a configuration reset during binding. Those fixture errors are corrected pending rerun. Separately, the installed-adapter refusal probe reproduced an actual UI defect: refusal revoked execution and dispatched no child, but Stop remained enabled after bind failed with busy=false. No acceptance or full completion is claimed.",
+    "next_action": "Implementation owner repairs refusal and early-exit UI cleanup; root rebuilds and runs corrected boundary matrix plus same-binary adapter baseline/refusal/restoration, then independent review and normal delivery gates.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T03:30:32.355148+00:00",
+    "attempted": "Original reports retained; native adapter returned PRIVATE_HOST_TOOL_REFUSAL, actual observer failed Refused bind left an active request; private snapshot removed and production adapter/binary remained unchanged.",
+    "repair_owner": "Existing Issue 1024 native implementation worker sinan_77012d34150ee8d6; root owns verification and delivery.",
+    "continuable": "Other implementation checks and evidence review continue; Issue 953 and parent 978 remain open."
+  },
+  "occurred_at": "2026-11-13T04:08:54.994844+00:00",
+  "sha256": "1e1583ad941b578411840b877eb6650741236fdd2aecc8619a7003c43e0f9c1d"
+}

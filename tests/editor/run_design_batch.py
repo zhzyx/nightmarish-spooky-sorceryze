@@ -28,6 +28,8 @@ from editor_test_isolation import copy_editor
 
 ROOT = Path(__file__).resolve().parents[2]
 GAME_WORKSPACE = False
+EVENT_TENANT = "fixture"
+INDEPENDENT_ACCEPTANCE = False
 REQUEST = "design-batch-fixture"
 SECRET = "design-batch-isolated-secret"
 CASES = [
@@ -1428,7 +1430,7 @@ def main():
         events = [
             path
             for source_root in ([original] if GAME_WORKSPACE else [Path(entry["source_root"]) for entry in bindings()])
-            for path in source_root.glob(f"gonggong-diting-data/events/fixture/{REQUEST}/*.json")
+            for path in source_root.glob(f"gonggong-diting-data/events/{EVENT_TENANT}/{REQUEST}/*.json")
         ]
         receipt_files = list((project / ".godot/editor").rglob("*.tool-receipts.json"))
         preserved_execution_receipts = []
@@ -1564,7 +1566,7 @@ def main():
             )
         elif successful:
             ok = ok and stages["return"] == 3 and stages["child1"] == 3 and stages["child2"] == (3 if full_batch else 0)
-            if args.case == "normal":
+            if args.case == "normal" and not INDEPENDENT_ACCEPTANCE:
                 ok = ok and stages["retry"] == 3 and stages["consult"] == 1
             if args.case == "stale-retry":
                 ok = (

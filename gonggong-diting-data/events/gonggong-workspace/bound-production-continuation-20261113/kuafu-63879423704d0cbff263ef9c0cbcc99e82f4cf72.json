@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-63879423704d0cbff263ef9c0cbcc99e82f4cf72",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "bound-production-continuation-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "df6a7c8f6183f2b6a6983e43f013a946924ee099a5530c04d215dc486d538d86",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1027",
+    "action": "validation",
+    "detection_head": "ca0badd8f82715dac6f6205f5f97e2086cac35b6",
+    "context_sha256": "dd965e3a04b30bc372e9c5233129c21175c617449a65875633141558328415ee",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+    "diagnosis": "最新 main 整合复验发现两项测试适配缺陷：model-picker 可选 Codex 参数为空仍解析路径，并把 null 写入隔离运行时配置；parent-cli 注入脚本三处仍从旧设置页找已移回会话区的控件。当前责任者已在本任务候选修复这两处测试适配，未修改生产模型路由或降低验收。模型选择默认隔离模式八项、项目设置五场景、HTTP/CLI 完整任务接续、真实 finalizer 和 Stop 回执均通过。另进程测试首次命令缺模块导入路径，按原脚本正确启动后 11 项通过。初始失败和恢复回执分别保留。",
+    "next_action": "独立增量审查核实整合与测试适配；新精确候选重新正式门禁、签发和 Windows CI，核验 main 与全部原验收后再收尾。当前本地通过不代替远端验收。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T06:51:06.053585+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T06:55:07.694708+00:00",
+  "sha256": "ecd73c10d1ca54662d983e923fe1133c37bc3d39ad97e7b1ee8850d86759711a"
+}

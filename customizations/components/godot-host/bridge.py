@@ -493,7 +493,7 @@ def chat(root, request, tenant):
         raise ValueError("Missing host permission state")
     delegation = worker_delegation(request, host, agent_id)
     direct = request["request_id"].startswith("daqian-direct-")
-    issue = issue_binding(root, request, tenant)
+    issue = issue_binding(root, dict(request, daqian_bound=True), tenant)
     source = issue.pop("verified_issue_source", {})
     if direct or request.get("daqian_bound") is True:
         routing, api = direct_adapter()
@@ -652,6 +652,13 @@ def chat(root, request, tenant):
         result["model_execution_started"] = False
         if result["ok"]:
             result["reporting"] = binding
+            if source and not delegation:
+                spec = importlib.util.spec_from_file_location(
+                    "gonggong_parent_completion", Path(__file__).with_name("parent_completion.py")
+                )
+                parent_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(parent_module)
+                result["parent_confirmation_source"] = parent_module.authority_snapshot(source)
             result["admission_scope"] = "context_checked; model execution and reporting are host responsibilities"
         return result
 
@@ -1080,7 +1087,24 @@ ENVIRONMENT_ACTIONS = {
 }
 
 
+def parent_completion_action(root, request, delivery=False, readback=False):
+    spec = importlib.util.spec_from_file_location(
+        "gonggong_parent_completion", Path(__file__).with_name("parent_completion.py")
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    from types import SimpleNamespace
+
+    host = SimpleNamespace(host_environment=host_environment, find_gh=find_gh, issue_binding=issue_binding)
+    if readback:
+        return module.readback_delivery(root, request)
+    return module.finalize(host, root, request) if delivery else module.execute(host, root, request)
+
+
 GUIDE_ACTIONS = {
+    "parent-completion": parent_completion_action,
+    "parent-delivery": lambda root, request: parent_completion_action(root, request, delivery=True),
+    "parent-delivery-readback": lambda root, request: parent_completion_action(root, request, readback=True),
     "project-integration": project_integration_action,
     "acceptance-current": lambda root, request: acceptance_action(root, request, current=True),
     "acceptance-capture": lambda root, request: acceptance_action(root, request, True),

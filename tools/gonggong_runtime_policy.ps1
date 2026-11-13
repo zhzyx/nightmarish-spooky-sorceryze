@@ -12,7 +12,7 @@ $script:RuntimePolicyPins = @'
   "framework/specs/model-runtime.md": "a25cb86c8c4f8ec479e34a9e131c280680ba06280d0fd1e02f7e275b936a0e6a",
   "framework/upstream/yuanheng/core.md": "13baad2a5bcf0ff72c10fd2cc7481894179e66f03617e2db0f1221694073c202",
   "framework/upstream/yuanheng/agents/yuanheng.md": "bb2eb701555ee0d391efcb013075f3bd9e59ba1648e18b8a400a29794db4c00b",
-  "customizations/components/godot-host/README.md": "66a0acf47cbef976d4572bfd4e8f7e3bbb26e534e41860c20db435c880d1c434"
+  "customizations/components/godot-host/README.md": "e5baca4f2f95558dd8147ee741675484ed423f8701baa30c4de7d9956e673c65"
 }
 '@ | ConvertFrom-Json
 
