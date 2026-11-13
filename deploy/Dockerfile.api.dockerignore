@@ -5,7 +5,7 @@
 # "<Dockerfile-name>.dockerignore" convention next to the Dockerfile). Docker's
 # legacy builder ignores it; the build then still works, it is only slower.
 #
-# Keep only what the API image COPYs, so the huge game/editor tree does not get
+# Keep only what the API image copies, so the huge game/editor tree does not get
 # sent to the builder on every build.
 
 .git
