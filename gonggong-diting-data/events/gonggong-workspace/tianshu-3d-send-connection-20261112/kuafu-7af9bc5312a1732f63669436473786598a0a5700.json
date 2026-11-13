@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7af9bc5312a1732f63669436473786598a0a5700",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-3d-send-connection-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/825",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c680499a57d0ff666fd9d46dc5fe81d7deee0c13545a8afe114e669bc854e1a9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/825",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/825",
+    "action": "validation",
+    "detection_head": "432cd7591a2c015cffd04252a8aa526e9226beee",
+    "context_sha256": "228a87858c3d701c2aaa4f5a5fb504ad41bfad220e7e9ca76ac305da10a626cd",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "diagnosis": "One gh GET of parent978 before preparing its progress update failed with net/http TLS handshake timeout. No write had been attempted. A subsequent identical read succeeded and proved the intended update marker absent; the prepared update was then applied once and read back with978 still open. Transport cause is unknown; no TLS verification disabled, credentials changed, product code changed or recovery825 invalidated.",
+    "next_action": "Proceed with already reviewed825 evidence candidate, formal gate and exact CI/main. Preserve original timeout and actual read/update receipts; do not repeat an unknown write.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T18:12:42.868013+00:00",
+    "attempted": "Initial GET exit1; repeat GET exit0; one PATCH and authoritative GET succeeded.",
+    "repair_owner": "Sail-Li current Codex root",
+    "continuable": "Candidate review and public evidence were unaffected; parent progress is now updated."
+  },
+  "occurred_at": "2026-11-13T18:14:31.549440+00:00",
+  "sha256": "3c9ea70aafbabe88b3389e7829205cea10e69fec50ccfb33c243a1039d1c5028"
+}

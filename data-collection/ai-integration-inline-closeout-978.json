@@ -1,0 +1,19 @@
+{
+  "request_id": "ai-github-integration-refactor-20261112",
+  "issue_number": 978,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "source_issues": [
+    830,
+    1075,
+    1077,
+    825
+  ],
+  "source_delivery_evidence": {
+    "data-collection/tianshu-inline-actions-830-delivery.json": "6d3d9e5e5f3fc96ebe72448f743ba7cd52b4485c122eb40d3b357dfba8d195da",
+    "data-collection/tianshu-send-recovery-825-handoff-validation.json": "e16d2585121db2bc0d5628a38c78c5d0a43a9335c8205f64944ed17b14fb62de"
+  },
+  "path_resolution_base": "Repository checkout root for public evidence; host-private path base is defined inside each record.",
+  "parent_acceptance": "in_progress; remaining original production/effective installation/provider/platform scopes retained",
+  "operator_recovery": "Closeout invocation omitted --issue, then used requirement as bug and a PATH without Node. Correct original intake and current admitted-role receive succeeded; actual failures retained and assessed without new product failure claim.",
+  "immutable_history": "Original source indexes and events are preserved. Current acceptance and cleanup are appended, not retroactively substituted."
+}

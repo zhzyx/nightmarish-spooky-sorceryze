@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1bab520d059e27324a4bb8d68dc1e4725b56b409",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "59bb9b9de40327e636349103a03fe0fc1324396d06774413a815b3044ad00c62",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1075",
+    "action": "validation",
+    "detection_head": "432cd7591a2c015cffd04252a8aa526e9226beee",
+    "context_sha256": "3c7d516ef5c2d8b674fb7bbe2bbb7af76384469d01988ce2fc630091b477a8f8",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1078",
+    "diagnosis": "Closeout intake invocation omitted required --issue and argparse rejected before mutation. Repeating with issue978 and the original request succeeded. Kuafu first rejected requirement978 as a bug, then the unconfigured process PATH lacked node; binding the affected child bug1075 and using the existing verified Node/Python/gh PATH loaded the nonempty admitted role successfully. These are operator invocation errors in closeout, not new product failures or regression of1075. PR1078 is merged and PR CI passed; main CI remains pending.",
+    "next_action": "Continue main CI readback and original830/1075/1077 acceptance; retain raw failures and normal recovery, publish closeout evidence under parent978.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T17:45:31.894995+00:00",
+    "attempted": "Corrected original intake succeeded; current trusted receive completed with nonempty context.",
+    "repair_owner": "Sail-Li current Codex root",
+    "continuable": "Main CI and archived ownership cleanup preparation continue."
+  },
+  "occurred_at": "2026-11-13T17:47:53.961598+00:00",
+  "sha256": "bbd902ff50e816eec476e591d292012a0668a863b9bcf4efc7b9abefcd326e45"
+}

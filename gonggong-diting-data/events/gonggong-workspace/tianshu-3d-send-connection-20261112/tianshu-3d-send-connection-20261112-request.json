@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-3d-send-connection-20261112-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-3d-send-connection-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-11T20:21:44.649054+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/825",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Restore failed native 3D task sending via user-selected logged-in Codex, retaining queued message",
+    "authorization_ref": "User selected Codex and approved exact native switch and resume operations",
+    "design": "design-docs/tianshu-3d-send-connection-20261112.md",
+    "validation": "data-collection/tianshu-send-recovery-825.json",
+    "usage": null,
+    "usage_unknown_reason": "Actual model token/cost usage not collected"
+  },
+  "evidence_refs": [],
+  "sha256": "4d4380da6bb722a607ec460b08b2ba3366e52888117aebbe057f066fe38ea5c1"
+}

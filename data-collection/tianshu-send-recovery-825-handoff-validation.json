@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "issue_number": 825,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/825",
+  "request_id": "tianshu-3d-send-connection-20261112",
+  "parent_issue": 978,
+  "recorded_at": "2026-11-13T18:05:29.997629+00:00",
+  "authority": "Current user explicitly transferred original PR829 evidence delivery to this session",
+  "source": "b5bdd60282cf18ab4f172888d49208110e258bea",
+  "original_signed_head": "633aef30a8f40c73391c1a63ebdde7d3ffe6b535",
+  "integration_base": "432cd7591a2c015cffd04252a8aa526e9226beee",
+  "original_files_sha256": {
+    "data-collection/requests/tianshu-3d-send-connection-20261112/a5dcb88d-3161-406c-8ed8-767f1547c888.json": "113544c3e9ab28c12d93ae31ba3205a87628532c4a5e83ec878edfddf359486c",
+    "data-collection/requests/tianshu-3d-send-connection-20261112/d733b575-7d07-4c38-9c9f-59a5b9ee3b1e.json": "19580ba76d5edbf35a4fb72089c8788887700a05b3446f06b4ceb42b6d5c5751",
+    "data-collection/tianshu-send-recovery-825.json": "0d1892f5312cb7e0fd4e94a98beed6f10a00eb98ed294f187175199141d70323",
+    "design-docs/tianshu-3d-send-connection-20261112.md": "3bd8ee0b497531024af5fdfe9a4f9ae98f83adabfe082b0e18896c1cea439fc3",
+    "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-send-connection-20261112/kuafu-0e816066ecbd77c3737f440b19da72cf8db5617a.json": "d7d4091cf16da48d3d90657b03b15f33dc0bed201e93d01f68dc84ea6199d7cf",
+    "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-send-connection-20261112/kuafu-296dc73cdfc53f07606d3d7c0b239247b0aa2d00.json": "c03bdcc1b050e5509a7fe48bece3de2b2cdbef928b0ef8f12dfea305ff15f55a",
+    "gonggong-diting-data/events/gonggong-workspace/tianshu-3d-send-connection-20261112/tianshu-3d-send-connection-20261112-request.json": "1a016fc376e5b7b5fce6054650fca50a47c3b3e4def2bf2e62d4d640df739592"
+  },
+  "integration": "Seven original public files preserved byte-for-byte; no current-main path overlap; no product source changes",
+  "historical_acceptance": {
+    "backend_switch": "Actual native completed, same conversation/session and queued-task hash, backend0 to2",
+    "original_queue": "Actual native completed; original queue1 to0; preserved matching task snapshot",
+    "model_round_trip": "Original persisted conversation retains real assistant/tool handling and Yanshi827 creation/clarification; no new inference in this review",
+    "asset_binding": "Direct original asset-work.json confirms Hero to827 and original request id"
+  },
+  "current_827_boundary": "The later production graph records answered rainbow color and current Issue is in-progress. Original native project saved a sphere; preview confirmation/complete production remains with its original responsibility chain. Historical825 waiting-for-style fields describe their original observation time, not current827 status.",
+  "independent_review": {
+    "sha256": "f86190531683db41aa90f3332e73b64a12d86efda725f6c05dd04a96940ee16d",
+    "findings": "No blocking evidence/integrity/privacy/main-overlap findings after original history and direct binding supplied",
+    "original_input_files": 36
+  },
+  "private_receipt_resolution_base": "Private receipts resolve from the parent of git rev-parse --path-format=absolute --git-common-dir, then data-collection/receipts/ai-integration-refactor-20261112. Not the linked worktree root. Public source paths resolve from repository checkout root.",
+  "private_receipts_sha256": {
+    "issue825-user-handoff-accepted.json": "3c8c3712f49df0c51cdea28e034732e92b5e42d6bb7465f3637f5c4682a82d00",
+    "issue825-handoff-readback.json": "40c6860511a95d4567eb4154ebe44e01646962d173d197768eb59a66e9a41c12",
+    "issue825-handoff-intake.json": "803241c2c49f54ae8f44d54da7ba1a23892bed2b008eb334e690ffac45b2e5c5",
+    "issue825-independent-review/review.json": "f86190531683db41aa90f3332e73b64a12d86efda725f6c05dd04a96940ee16d",
+    "issue825-original-files-integrated.json": "8216b370b2826ea5101c92cf10c5755c4be7cf078afbd5d006a62a75f859c040",
+    "issue825-prepared-review/pr829-inspect.json": "c13d2490dd5dfb26c13ce49f4ec9f22171134a768958b2e3cb4e15651ebbf76a",
+    "issue825-prepared-review/private-receipt-manifest.json": "d2857c716e9aa391dad817602c4fc9334a73b23a6c22ec05aa380864cbe62db3",
+    "issue825-prepared-review/private-original-conversation-readback.json": "fee078fb435fed8af89e4496bd0d2b46857bf4cfd98290c86fa96296a7a2112c",
+    "issue825-prepared-review/private-original-project-metadata.cfg": "a6786689f60cf91eeb925f7073336cc3d7ca7f8bd0954c227b683db3b271d48f",
+    "issue825-prepared-review/private-original-asset-work.json": "09617aebc914319f8c0138cacb4daa3c7ae13f76ddf512bc7ae138fdc20bb0fb"
+  },
+  "delivery_boundary": "Formal gate, exact signed candidate CI/main readback and original825 closure are separate from this evidence validation. No827 production action authorized by this handoff."
+}
