@@ -1,0 +1,597 @@
+{
+  "clean_source": {
+    "contract_state": "contract_passed",
+    "drain_faults_passed": true,
+    "file_count": 85,
+    "godot_roots_present": [],
+    "handshake_passed": true,
+    "manifest_sha256": "2bcfd8f5654bec1fd5db373fbe57f0fd416456820d9ac01b851eeef1935fdf7f",
+    "native_key": "bfa8edd91db4d63e4053b2cf8ed47252812c79f693a57fe8e9161804d1760db5",
+    "trace_sha256": {
+      "client-A.jsonl": "c2d53e38a384ce351c2c54f54d8caaa69fd5fd24e9be625ba77a1ce7997e45e5",
+      "client-B.jsonl": "ab9edf9547364077bef9b92e908f2eb1933b9be81a64935f2b2359d36ca2f7cd",
+      "server.jsonl": "1d34bcce29d496e440eead59329406e2d74153e6aa038bbeafa6af9e7e71b560"
+    }
+  },
+  "commands": [
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr4-integration --run-tests",
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr4-integration-sanitize --run-tests --sanitize",
+    "python engine_next/Tools/BuildGameplay.py --repo . --compiler clang --build-dir build/engine_next/clang-m1-pr4-integration --run-tests",
+    "python engine_next/Tools/ExportCleanSource.py --repo . --output build/engine_next/clean-m2-pr4-integration, then BuildRuntime.py --run-tests in the exported tree",
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr4-invalidation; launch next_server; restore and build clang-m2-pr4-restored"
+  ],
+  "contracts": {
+    "clean_source": {
+      "EngineNextRuntimeTests": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-integration/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-integration",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-integration/build/engine_next/clang-release/EngineNextRuntimeTestsLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "result": {
+          "contract_id": "engine-next-no-godot-v1",
+          "godot_free_runtime_verified": false,
+          "link": {
+            "libraries": 1,
+            "objects": 31,
+            "passed": true,
+            "runtime_files": 0,
+            "state": "link_passed"
+          },
+          "passed": true,
+          "schema_version": 1,
+          "scope": "source_and_declared_link_manifest_only",
+          "sources": {
+            "local_includes": 104,
+            "passed": true,
+            "source_files": 69,
+            "state": "sources_passed"
+          },
+          "state": "contract_passed",
+          "target": "next_runtime",
+          "verification_boundary": "A real target must still bind linker-produced inputs, symbols and a clean-environment run.",
+          "violations": []
+        }
+      },
+      "next_client": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-integration/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-integration",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-integration/build/engine_next/clang-release/next_clientLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "result": {
+          "contract_id": "engine-next-no-godot-v1",
+          "godot_free_runtime_verified": false,
+          "link": {
+            "libraries": 1,
+            "objects": 24,
+            "passed": true,
+            "runtime_files": 0,
+            "state": "link_passed"
+          },
+          "passed": true,
+          "schema_version": 1,
+          "scope": "source_and_declared_link_manifest_only",
+          "sources": {
+            "local_includes": 104,
+            "passed": true,
+            "source_files": 69,
+            "state": "sources_passed"
+          },
+          "state": "contract_passed",
+          "target": "next_runtime",
+          "verification_boundary": "A real target must still bind linker-produced inputs, symbols and a clean-environment run.",
+          "violations": []
+        }
+      },
+      "next_server": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-integration/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-integration",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-integration/build/engine_next/clang-release/next_serverLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "result": {
+          "contract_id": "engine-next-no-godot-v1",
+          "godot_free_runtime_verified": false,
+          "link": {
+            "libraries": 1,
+            "objects": 24,
+            "passed": true,
+            "runtime_files": 0,
+            "state": "link_passed"
+          },
+          "passed": true,
+          "schema_version": 1,
+          "scope": "source_and_declared_link_manifest_only",
+          "sources": {
+            "local_includes": 104,
+            "passed": true,
+            "source_files": 69,
+            "state": "sources_passed"
+          },
+          "state": "contract_passed",
+          "target": "next_runtime",
+          "verification_boundary": "A real target must still bind linker-produced inputs, symbols and a clean-environment run.",
+          "violations": []
+        }
+      }
+    },
+    "m1": {
+      "command": [
+        "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+        "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/tools/check_engine_next_contract.py",
+        "--repo",
+        "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4",
+        "--require-sources",
+        "--link-manifest",
+        "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clang-m1-pr4-integration/LinkManifest.json",
+        "--require-link-manifest"
+      ],
+      "result": {
+        "contract_id": "engine-next-no-godot-v1",
+        "godot_free_runtime_verified": false,
+        "link": {
+          "libraries": 1,
+          "objects": 7,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "passed": true,
+        "schema_version": 1,
+        "scope": "source_and_declared_link_manifest_only",
+        "sources": {
+          "local_includes": 104,
+          "passed": true,
+          "source_files": 69,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed",
+        "target": "next_runtime",
+        "verification_boundary": "A real target must still bind linker-produced inputs, symbols and a clean-environment run.",
+        "violations": []
+      }
+    },
+    "runtime": {
+      "EngineNextRuntimeTests": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clang-m2-pr4-integration/EngineNextRuntimeTestsLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "result": {
+          "contract_id": "engine-next-no-godot-v1",
+          "godot_free_runtime_verified": false,
+          "link": {
+            "libraries": 1,
+            "objects": 31,
+            "passed": true,
+            "runtime_files": 0,
+            "state": "link_passed"
+          },
+          "passed": true,
+          "schema_version": 1,
+          "scope": "source_and_declared_link_manifest_only",
+          "sources": {
+            "local_includes": 104,
+            "passed": true,
+            "source_files": 69,
+            "state": "sources_passed"
+          },
+          "state": "contract_passed",
+          "target": "next_runtime",
+          "verification_boundary": "A real target must still bind linker-produced inputs, symbols and a clean-environment run.",
+          "violations": []
+        }
+      },
+      "next_client": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clang-m2-pr4-integration/next_clientLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "result": {
+          "contract_id": "engine-next-no-godot-v1",
+          "godot_free_runtime_verified": false,
+          "link": {
+            "libraries": 1,
+            "objects": 24,
+            "passed": true,
+            "runtime_files": 0,
+            "state": "link_passed"
+          },
+          "passed": true,
+          "schema_version": 1,
+          "scope": "source_and_declared_link_manifest_only",
+          "sources": {
+            "local_includes": 104,
+            "passed": true,
+            "source_files": 69,
+            "state": "sources_passed"
+          },
+          "state": "contract_passed",
+          "target": "next_runtime",
+          "verification_boundary": "A real target must still bind linker-produced inputs, symbols and a clean-environment run.",
+          "violations": []
+        }
+      },
+      "next_server": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clang-m2-pr4-integration/next_serverLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "result": {
+          "contract_id": "engine-next-no-godot-v1",
+          "godot_free_runtime_verified": false,
+          "link": {
+            "libraries": 1,
+            "objects": 24,
+            "passed": true,
+            "runtime_files": 0,
+            "state": "link_passed"
+          },
+          "passed": true,
+          "schema_version": 1,
+          "scope": "source_and_declared_link_manifest_only",
+          "sources": {
+            "local_includes": 104,
+            "passed": true,
+            "source_files": 69,
+            "state": "sources_passed"
+          },
+          "state": "contract_passed",
+          "target": "next_runtime",
+          "verification_boundary": "A real target must still bind linker-produced inputs, symbols and a clean-environment run.",
+          "violations": []
+        }
+      }
+    }
+  },
+  "drain_faults": {
+    "clients": [
+      {
+        "client_id": "A",
+        "returncode": 0
+      },
+      {
+        "client_id": "B",
+        "returncode": 1
+      },
+      {
+        "client_id": "C",
+        "returncode": 1
+      }
+    ],
+    "drain_acks": [
+      {
+        "peer_id": "3",
+        "session_id": "1"
+      }
+    ],
+    "drain_completes": [
+      {
+        "acknowledged": "1",
+        "forced": "1",
+        "notified": "2",
+        "resumed": "1"
+      }
+    ],
+    "drain_rejects": [
+      {
+        "fatal": "0",
+        "peer_id": "4",
+        "reason": "8",
+        "type": "1"
+      }
+    ],
+    "drain_timeouts": [
+      {
+        "peer_id": "2"
+      }
+    ],
+    "expected_failure": true,
+    "late_rejects": [
+      {
+        "fatal": "0",
+        "reason": "8"
+      }
+    ],
+    "passed": true,
+    "server_returncode": 1,
+    "trace_sha256": {
+      "fault-client-A.jsonl": "2bdfaece70e56350177e997833a9d4b1dbec69e7f691e73fc7bed87fa98571fc",
+      "fault-client-B.jsonl": "ecb6c6e657f58267b1174be937b8e077f0f0c28e783e86114e6a0cc3fc0c46ca",
+      "fault-client-C.jsonl": "a79b68f1978a3e0a4b93900f5d2f27ce3a1d822563c8e36e69fb35207ad8f999",
+      "fault-server.jsonl": "ba5843a8b1a29ff9aaa9dba405f8e6e2355e94fde0d18e79b399f636400fe64f"
+    }
+  },
+  "godot_free_runtime_verified": false,
+  "handshake": {
+    "client_resumes": [
+      {
+        "confirmed": 9,
+        "entity_id": 2,
+        "error": 0.384,
+        "session_id": 2
+      }
+    ],
+    "clients": [
+      {
+        "client_id": "A",
+        "returncode": 0,
+        "stderr": ""
+      },
+      {
+        "client_id": "B",
+        "returncode": 0,
+        "stderr": ""
+      }
+    ],
+    "drain_acks": [
+      {
+        "peer_id": 2,
+        "session_id": 1
+      },
+      {
+        "peer_id": 3,
+        "session_id": 2
+      }
+    ],
+    "drain_begins": [
+      {
+        "deadline_tick": 250,
+        "peers": 2
+      }
+    ],
+    "drain_completes": [
+      {
+        "acknowledged": 2,
+        "forced": 0,
+        "notified": 2,
+        "resumed": 1
+      }
+    ],
+    "impairments": [
+      {
+        "client_id": "A",
+        "dropped_input": 1,
+        "dropped_loss": 0,
+        "dropped_overflow": 0,
+        "high_water": 6
+      },
+      {
+        "client_id": "B",
+        "dropped_input": 0,
+        "dropped_loss": 0,
+        "dropped_overflow": 0,
+        "high_water": 0
+      }
+    ],
+    "passed": true,
+    "predictions": [
+      {
+        "confirmed": 24,
+        "corrections": 12,
+        "history": 0,
+        "position_x": 3.072,
+        "retransmissions": 48
+      }
+    ],
+    "remotes": [
+      {
+        "entity_id": 2,
+        "position_x": 0.016,
+        "samples": 3,
+        "server_time": 50,
+        "status": "interpolated"
+      },
+      {
+        "entity_id": 2,
+        "position_x": 1.152,
+        "samples": 4,
+        "server_time": 192,
+        "status": "stale_held"
+      },
+      {
+        "entity_id": 2,
+        "position_x": 1.25949,
+        "samples": 5,
+        "server_time": 716,
+        "status": "interpolated"
+      }
+    ],
+    "server_resumes": [
+      {
+        "confirmed": 9,
+        "entity_id": 2,
+        "peer_id": 3,
+        "session_id": 2
+      }
+    ],
+    "server_returncode": 0,
+    "server_sessions": [
+      {
+        "entity_id": 1,
+        "peer_id": 2,
+        "session_id": 1
+      },
+      {
+        "entity_id": 2,
+        "peer_id": 1,
+        "session_id": 2
+      }
+    ],
+    "trace_sha256": {
+      "client-A.jsonl": "c2d53e38a384ce351c2c54f54d8caaa69fd5fd24e9be625ba77a1ce7997e45e5",
+      "client-B.jsonl": "ab9edf9547364077bef9b92e908f2eb1933b9be81a64935f2b2359d36ca2f7cd",
+      "server.jsonl": "1d34bcce29d496e440eead59329406e2d74153e6aa038bbeafa6af9e7e71b560"
+    }
+  },
+  "integration_base": "f83f680a7570a69ed678dd14e73e0a9de96e74db",
+  "issue_number": 1042,
+  "m1_regression": {
+    "clean_run_summary": "ENGINE_NEXT_BENCHMARK model_steps=1000000 buffer_operations=50000 buffer_capacity=4096 repetitions=5 model_median_us=4967 buffer_median_us=165623 model_checksum=3325757522 buffer_checksum=4097\nENGINE_NEXT_TEST_SUMMARY tests=16 checks=200161 failures=0",
+    "contract_state": "contract_passed",
+    "test_summary": "ENGINE_NEXT_BENCHMARK model_steps=1000000 buffer_operations=50000 buffer_capacity=4096 repetitions=5 model_median_us=4856 buffer_median_us=162176 model_checksum=3325757522 buffer_checksum=4097\nENGINE_NEXT_TEST_SUMMARY tests=16 checks=200161 failures=0",
+    "trace_sha256": "f55d1f5bc85bb72376d3f31cdf9b64aac91e714b6556dbce1663c1db7995924c"
+  },
+  "native_invalidation": {
+    "before_default_ticks": 1,
+    "before_native_key": "bfa8edd91db4d63e4053b2cf8ed47252812c79f693a57fe8e9161804d1760db5",
+    "changed_default_ticks": 2,
+    "changed_native_key": "f0849f2929de506064b97e32010c34a144e4ce5ca81799e98ba1b91c67f7f9c0",
+    "input": "engine_next/include/EngineNext/Runtime/RuntimeConfig.h",
+    "key_changed": true,
+    "restored": true,
+    "restored_default_ticks": 1,
+    "restored_native_key": "bfa8edd91db4d63e4053b2cf8ed47252812c79f693a57fe8e9161804d1760db5"
+  },
+  "platform": {
+    "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.5)",
+    "machine": "arm64",
+    "system": "Darwin",
+    "version": "macOS-15.3.1-arm64-arm-64bit"
+  },
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "runtime": {
+    "archive_members": [
+      "callbacks-f34564fffb77.o",
+      "compress-48eeab6d39eb.o",
+      "host-e2a86d64053e.o",
+      "list-19b825331579.o",
+      "packet-283e90f39233.o",
+      "peer-700bb676de1c.o",
+      "protocol-68e61ddde0b0.o",
+      "unix-b141a2d297e3.o",
+      "PredictionModel-5a357cf38997.o",
+      "InterpolationBuffer-166ffe10fb79.o",
+      "PredictionReconciler-08c766e9b2a5.o",
+      "Clock-c5e01cdd2d0c.o",
+      "FixedStepLoop-0c30f3ebe17a.o",
+      "World-ae038771d982.o",
+      "Trace-067678dcf50f.o",
+      "RuntimeConfig-ac28ea2836d0.o",
+      "RuntimeHost-1ec74b5d1c67.o",
+      "Protocol-07cac1f4dd8f.o",
+      "EnetTransport-a21198ce06b1.o",
+      "ImpairmentTransport-8885a57a3972.o",
+      "SessionManager-1b22215cabf0.o",
+      "ServerRuntime-4843e15ad2c6.o",
+      "ClientRuntime-98084eaa3664.o"
+    ],
+    "clean_test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=20 checks=250 failures=0",
+    "contract_state": "contract_passed",
+    "local_includes": 104,
+    "native_key": "bfa8edd91db4d63e4053b2cf8ed47252812c79f693a57fe8e9161804d1760db5",
+    "source_files": 69,
+    "targets": [
+      {
+        "dynamic_dependencies": [
+          "/usr/lib/libc++.1.dylib",
+          "/usr/lib/libSystem.B.dylib"
+        ],
+        "libraries": 1,
+        "name": "next_server",
+        "objects": 24,
+        "symbol_audit": {
+          "command": [
+            "/usr/bin/nm",
+            "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clang-m2-pr4-integration/next_server"
+          ],
+          "forbidden": []
+        }
+      },
+      {
+        "dynamic_dependencies": [
+          "/usr/lib/libc++.1.dylib",
+          "/usr/lib/libSystem.B.dylib"
+        ],
+        "libraries": 1,
+        "name": "next_client",
+        "objects": 24,
+        "symbol_audit": {
+          "command": [
+            "/usr/bin/nm",
+            "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clang-m2-pr4-integration/next_client"
+          ],
+          "forbidden": []
+        }
+      },
+      {
+        "dynamic_dependencies": [
+          "/usr/lib/libc++.1.dylib",
+          "/usr/lib/libSystem.B.dylib"
+        ],
+        "libraries": 1,
+        "name": "EngineNextRuntimeTests",
+        "objects": 31,
+        "symbol_audit": {
+          "command": [
+            "/usr/bin/nm",
+            "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clang-m2-pr4-integration/EngineNextRuntimeTests"
+          ],
+          "forbidden": []
+        }
+      }
+    ],
+    "test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=20 checks=250 failures=0"
+  },
+  "sanitizer": {
+    "drain_faults_passed": true,
+    "handshake_passed": true,
+    "native_key": "e8f78cca8cdbe321e15b702617cf830c9bed3f19226721db99d869bba0f8b452",
+    "test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=20 checks=250 failures=0",
+    "trace_sha256": {
+      "client-A.jsonl": "18a61b6b260c063ea6b00398e10be33837101a8d3632e2674c5d6c16414d07f0",
+      "client-B.jsonl": "2d4ba380c0fc506ebc031b53934b151918220520f7a6f3c14bf5ae55520c6531",
+      "server.jsonl": "b80f50f847a80c5935401fbb00f16ff284906f3dc4fc4679a1a41d588ebd5933"
+    }
+  },
+  "schema_version": 1,
+  "slice": "pr4_reconnect_impairment_graceful_drain",
+  "static_validation": {
+    "build_tool_tests": "11 passed",
+    "clang_format": "22.1.5 --dry-run --Werror passed on changed first-party C++ files",
+    "codespell": "2.4.2 --ignore-words-list=ENXT passed on staged first-party files; upstream directory excluded",
+    "contract_unit_tests": "23 passed",
+    "git_diff_cached_check": "passed",
+    "ruff": "0.17.1 check and format passed on runtime build and acceptance scripts"
+  },
+  "unverified": [
+    "Windows MSVC and Linux x86_64 require exact-candidate CI receipts",
+    "Real three-process 10000-tick stability, complete network queue high-water marks and release package inspection remain in PR5",
+    "Legacy Godot shared PredictionReconciler adaptation and complete legacy regression remain in PR5",
+    "M2 issue 1042 remains open"
+  ]
+}

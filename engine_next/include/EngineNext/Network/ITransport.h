@@ -66,6 +66,7 @@ public:
 	[[nodiscard]] virtual Runtime::RuntimeStatus Poll(std::vector<TransportEvent> &out_arrEvents) = 0;
 	[[nodiscard]] virtual Runtime::RuntimeStatus Send(PeerId in_nPeerId, std::uint8_t nChannelId, bool bReliable, const std::vector<std::uint8_t> &in_arrPayload) = 0;
 	[[nodiscard]] virtual Runtime::RuntimeStatus Disconnect(PeerId in_nPeerId) = 0;
+	[[nodiscard]] virtual Runtime::RuntimeStatus DisconnectLater(PeerId in_nPeerId) = 0;
 	[[nodiscard]] virtual std::uint16_t GetBoundPort() const noexcept = 0;
 	[[nodiscard]] virtual bool IsRunning() const noexcept = 0;
 	virtual void Stop() noexcept = 0;

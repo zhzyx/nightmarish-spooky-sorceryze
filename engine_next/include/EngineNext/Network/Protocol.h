@@ -99,6 +99,16 @@ struct Snapshot
 	Gameplay::Vector3 vVelocity{};
 };
 
+enum class DisconnectReason : std::uint16_t
+{
+	ClientLeaving = 1,
+	ServerDraining = 2,
+	DrainAcknowledge = 3,
+	DrainComplete = 4,
+};
+
+inline constexpr std::uint16_t REJECT_SERVER_DRAINING = 8;
+
 struct Disconnect
 {
 	std::uint16_t nReason = 0;
@@ -125,6 +135,8 @@ struct ErrorReject
 [[nodiscard]] std::vector<std::uint8_t> EncodeSnapshot(const Snapshot &in_stSnapshot);
 [[nodiscard]] Runtime::RuntimeStatus DecodeSnapshot(const std::uint8_t *pData, std::size_t nSize, Snapshot &out_stSnapshot) noexcept;
 [[nodiscard]] std::vector<std::uint8_t> EncodeDisconnect(const Disconnect &in_stDisconnect);
+[[nodiscard]] Runtime::RuntimeStatus DecodeDisconnect(const std::uint8_t *pData, std::size_t nSize, Disconnect &out_stDisconnect) noexcept;
 [[nodiscard]] std::vector<std::uint8_t> EncodeErrorReject(const ErrorReject &in_stError);
+[[nodiscard]] Runtime::RuntimeStatus DecodeErrorReject(const std::uint8_t *pData, std::size_t nSize, ErrorReject &out_stError) noexcept;
 
 } // namespace EngineNext::Network

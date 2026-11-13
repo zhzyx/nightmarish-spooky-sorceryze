@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-144a96d30c3e71596983bcd70dd0d524db10cf95",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c58aea83beb1a137db0385920762e8f1c5533b1e5378da3ad6c54e35a1d6af80",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1138",
+    "action": "delivery",
+    "detection_head": "375d5314a7d9438413feb91efa9be292335e8fde",
+    "context_sha256": "83683561569980cc1b134f764d99dccbfb590ac09b5cc3c538f5fcfe31724b50",
+    "operator": "kaiyunxue",
+    "worker": "kaiyunxue/kimi-work",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "evidence": "data-collection/engine-next-headless-runtime-m2-pr4-integration-r2.json",
+    "diagnosis": "writer_submit 签发前回读发现 main 连续前进；上游变更与本切片无重叠，属于长验证与共享主线并发推进的基线竞态，不是 Engine Next 运行时回归。",
+    "next_action": "当前责任者整合最新 main，重跑真实三进程闭环与模块门禁并立即重试原签发；以精确候选 CI 和 main 回读恢复交付。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T21:29:54.596452+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T21:35:06.351375+00:00",
+  "sha256": "03d7f74b6c36211b98266cb0fe69512a04d691e9d8c282e3e419413666a32ccf"
+}

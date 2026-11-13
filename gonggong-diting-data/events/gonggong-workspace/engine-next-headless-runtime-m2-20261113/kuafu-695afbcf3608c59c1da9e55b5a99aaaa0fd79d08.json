@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-695afbcf3608c59c1da9e55b5a99aaaa0fd79d08",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "06b05c9098e4e686c0045b0c626f67f577e5c0591c4012f7131e9544a0485ba5",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1138",
+    "action": "delivery",
+    "detection_head": "f53807752fe864b8f623700970a62258fce655f1",
+    "context_sha256": "83683561569980cc1b134f764d99dccbfb590ac09b5cc3c538f5fcfe31724b50",
+    "operator": "kaiyunxue",
+    "worker": "kaiyunxue/kimi-work",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "evidence": "data-collection/engine-next-headless-runtime-m2-pr4-build-impact-r10.json",
+    "diagnosis": "上一修订为消除拼写问题删除了已进入候选的历史证据，违反来源与回执只能追加纠正的约束；运行时与主线内容未受影响。",
+    "next_action": "恢复 r7 原件，新增修正版证据，并只对这一不可变历史文件做精确 codespell 排除；不得全局忽略该单词或删除来源记录。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T21:58:33.509590+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T22:00:13.500892+00:00",
+  "sha256": "14fb5ed007c7b9f8d9ef1f3ca133d9705a9bd1fb21895f69e8e8d8109fb832b1"
+}
