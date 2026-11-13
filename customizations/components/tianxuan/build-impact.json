@@ -1,0 +1,7 @@
+{
+  "placement": "host_tool",
+  "reason": "Tianxuan is a host-side online management module: its domain core and future FastAPI/Next.js adapters run in the host process, are not linked into the Godot engine, and are not a replaceable in-engine package.",
+  "host_contract": "GongGong host protocol v1 (tools/gonggong_bridge.py); framework agents yanshi/sinan/kuafu/diting/heqi; shared Diting receipt contract",
+  "rollback": "Disable module invocation; keep existing Issues, design docs and events; restore the previous verified server build before resuming writes; never delete data.",
+  "evidence": "distribution/verification-tianxuan-module-impact-20261114.json"
+}

@@ -1,0 +1,15 @@
+{
+  "kind": "product_module",
+  "id": "tianxuan",
+  "display_name": "天璇",
+  "version": "0.1.0",
+  "path_base": "repository_root",
+  "path": "customizations/components/tianxuan",
+  "ownership": "gonggong_customization",
+  "placement": "host_tool",
+  "entry": "server/tianxuan_core.py",
+  "state": "candidate_pending_implementation_and_admission",
+  "runtime_connected": false,
+  "host_contract": "GongGong host protocol v1; tools/gonggong_bridge.py; framework agents yanshi/sinan/kuafu/diting/heqi",
+  "rollback": "Disable module invocation; keep existing Issues, design docs and events; never delete data; restore the previous verified server build before resuming writes."
+}
