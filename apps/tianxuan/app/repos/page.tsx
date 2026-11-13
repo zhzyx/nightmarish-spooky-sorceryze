@@ -65,7 +65,7 @@ export default async function ReposPage() {
             </div>
             <span className="section-note">{liveRepos.length} 个仓库来自 Gitea</span>
           </div>
-          <div className="reading-list">
+          <div className="reading-list live-list">
             {liveRepos.slice(0, 8).map((repo) => (
               <div className="reading-item" key={repo.full_name}>
                 <span className="reading-index">{repo.private ? "私" : "公"}</span>
