@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-efea1a664e0453a22dccd7072560e32cf516f48a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8a08d986bf90f4d697817cd472bad31034c25048f345b32f9e3046684edc91d9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1046",
+    "action": "delivery",
+    "detection_head": "c827551e86ad37551302a6df3dc37d4d63a3638c",
+    "context_sha256": "c1c0b7c1900647158e6b10e3c165ccc460298dc12227b331ce428e6db65f7529",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-current-operator",
+    "authority_ref": "2026-11-13 用户明确要求按最新项目 C++ 规范落地 M2，并沿仓库授权连续执行",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1047",
+    "diagnosis": "PR 说明文件重复手写了签发工具自动添加的 GongGong-Issue 和 GongGong-Request 字段，入口按既有校验拒绝。",
+    "next_action": "移除重复字段并同步证据 blob 后，原 writer_submit 已成功创建 PR #1047；继续核对精确候选 CI，不修改提交规则。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T10:24:46.359578+00:00",
+    "attempted": "仅删除说明中的两个重复字段并更新其 blob；原提交入口随后通过正式门禁、提交后 git-check 和签发。",
+    "repair_owner": "当前 Kimi Work 会话",
+    "continuable": "精确候选 CI、main 合入和后续 M2 切片继续。"
+  },
+  "occurred_at": "2026-11-13T10:27:22.246705+00:00",
+  "sha256": "82b6b936b841f8bb341852ad62f26d91e5eeb95623cff226f0dc6c86ad7b207b"
+}

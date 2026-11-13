@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "request-1042-engine-next-headless-runtime-m2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "kind": "request",
+  "occurred_at": "2026-11-13T10:17:57Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+  "agent": {
+    "id": "kimi-work-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "action": "record_authorized_issue_binding",
+    "issue_number": 1042,
+    "intake_status": "status:in-progress",
+    "scope": "按最新项目 C++17 规范，以五个顺序纵向 PR 交付独立 next_server、两个真实 next_client 的完整无 Godot 玩法闭环；第一片先完成独立构建、固定 tick、World、RuntimeHost、Trace 和真实链接证据。",
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage in host receipt",
+    "design": {
+      "path": "design-docs/engine-next-headless-runtime-m2-20261113.md",
+      "sha256": "8d8cff2888c4b951b01e3d3bc1ad943393c0a2f100714614296e01c7a35ce75b"
+    }
+  },
+  "evidence_refs": []
+}

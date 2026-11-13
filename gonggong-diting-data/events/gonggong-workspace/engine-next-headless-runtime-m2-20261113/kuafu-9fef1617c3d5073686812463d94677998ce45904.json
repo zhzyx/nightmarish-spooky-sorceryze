@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9fef1617c3d5073686812463d94677998ce45904",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c20f622c359c182c014056880d0633e5ebaf0b6cbef7681d580aec01d83d55d6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1048",
+    "action": "delivery",
+    "detection_head": "1f685d9ab0be476e6aeaa059ce2bdee0cedcf65d",
+    "context_sha256": "012f362df0992adb7c64d351f9c9061eece321bef3ead19fdd6a104f4d5ec246",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-current-operator",
+    "authority_ref": "2026-11-13 用户明确要求按最新项目 C++ 规范落地 M2，并沿仓库授权连续执行",
+    "evidence": "受信命令 git fetch https://github.com/zhzyx/nightmarish-spooky-sorceryze.git refs/heads/main 返回 Failed to connect to github.com port 443 after 75014 ms",
+    "diagnosis": "R1 writer_submit 在认证 fetch main 阶段遇到网络连接超时，尚未创建提交或 PR；与候选编译和静态检查无关。",
+    "next_action": "保留同一候选和原提交入口，待连接恢复后定向复验；不得直推 main 或伪造签发回执。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T10:36:18.882913+00:00",
+    "attempted": "在相同工作树以相同认证 helper 复现原始 fetch，得到明确 443 连接超时；没有修改凭据、门禁或候选。",
+    "repair_owner": "当前 Kimi Work 会话在网络恢复后续办",
+    "continuable": "本地证据整理可继续；新 PR、CI 和合入暂待原 fetch 复验。"
+  },
+  "occurred_at": "2026-11-13T10:39:25.764534+00:00",
+  "sha256": "8a2c799bc357e3a177227a35f747d81e3fb8e9cb0ed61e1a91b30ac6d0e70362"
+}

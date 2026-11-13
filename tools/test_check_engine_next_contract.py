@@ -62,7 +62,7 @@ class EngineNextContractTests(unittest.TestCase):
     def test_independent_sources_and_transitive_local_headers_pass(self):
         self.write(
             "engine_next/main.cpp",
-            '#include <cstdint>\n#include <vector>\n#include "engine_next/include/types.h"\nint main() { return 0; }\n',
+            '#include <cstdint>\n#include <charconv>\n#include <vector>\n#include "engine_next/include/types.h"\nint main() { return 0; }\n',
         )
         self.write(
             "engine_next/include/types.h",

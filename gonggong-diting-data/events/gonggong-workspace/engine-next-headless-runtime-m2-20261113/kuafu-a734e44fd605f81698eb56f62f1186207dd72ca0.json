@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a734e44fd605f81698eb56f62f1186207dd72ca0",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3da72c7f049d88e93322f56cb2fab6cca347b00c022baa963fad8acb92afb4b9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1043",
+    "action": "intake",
+    "detection_head": "e9684f34cfc4fded923d43f4469d32a0096a8af3",
+    "context_sha256": "a6da8197dd6a5c9b2c453005ec30b0919bcea839e0660e03ed91e1432d4536cb",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-current-operator",
+    "authority_ref": "2026-11-13 用户明确要求按最新项目 C++ 规范落地 M2，并沿仓库授权连续执行",
+    "evidence": "本地 issue_gate.py --intake-only 显式传入 gonggong-workspace 后返回 #1042、type:development、status:in-progress",
+    "diagnosis": "首次 intake 使用命令默认租户，和 work-items.json 的 gonggong-workspace 不一致；不是权限、代码或许可证故障。",
+    "next_action": "保留正确租户参数继续 M2；原 intake 已成功，关闭本参数配错跟踪单，不影响后续候选正式门禁。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T09:45:59.620548+00:00",
+    "attempted": "仅补充已有 --tenant gonggong-workspace 参数后重跑，原 intake 已成功；未修改门禁或工单配置。",
+    "repair_owner": "当前 Kimi Work 会话",
+    "continuable": "M2 设计、独立构建和运行时实现均可继续。"
+  },
+  "occurred_at": "2026-11-13T09:49:02.205400+00:00",
+  "sha256": "9556ded72729385f00b92d212c67c8ccb5839addfc2e49772a0c769e7abc7eaa"
+}

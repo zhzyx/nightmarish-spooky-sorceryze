@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "issue_number": 1042,
+  "kind": "static_check_correction",
+  "config_path": ".pre-commit-config.yaml",
+  "config_blob": "23627dfb07a607f67725494c928b22f2a2591ca6",
+  "reason": "The previous protocol abbreviation ENXT remains in an immutable Kuafu event and in the historical PR notes. It cannot be rewritten without violating append-only evidence.",
+  "scope": "Ignore only the protocol abbreviation ENXT in codespell; every other spelling, Ruff, clang-format and runtime check remains enabled.",
+  "checks": {
+    "codespell": {
+      "command": "codespell 2.4.2 --ignore-words-list=ENXT on the M2 design, PR notes, request events and Engine Next tools",
+      "observed": "passed with no corrections",
+      "passed": true
+    },
+    "ruff": {
+      "command": "Ruff 0.17.1 check and format from the R1 candidate",
+      "observed": "passed and unchanged by this configuration-only correction",
+      "passed": true
+    },
+    "native_revalidation_required": false
+  },
+  "new_candidate_ci_required": true
+}

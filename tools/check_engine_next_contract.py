@@ -24,6 +24,7 @@ STANDARD_ANGLE_INCLUDES = frozenset({
     "cfenv",
     "cfloat",
     "chrono",
+    "charconv",
     "cinttypes",
     "climits",
     "cmath",
