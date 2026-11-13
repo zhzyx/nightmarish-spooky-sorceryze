@@ -53,3 +53,11 @@ workflow 在编译前执行真实签名/launchd 预检，编译后验证未登�
 实现已随 PR #872 合入 main `e15a49f9b7dbbdbb1b585fc2b68cc3f252d88c8b`。文件复制保护标志故障 #856 与 codesign 命令预检故障 #859 均按真实 macOS 同步骤恢复及主线回读关闭；这不表示 #843 整体验收完成。当前根会话继续协调剩余桌面链，#843/#850/父#840保持开放，无其他执行者接受交接。具体最终运行与状态以 `data-collection/provider-independence-840-delivery.json` 及关联 Issue 时间线为准。
 
 最终 run43131315713 绑定 PR872 精确签发41a47090，全部步骤成功；真实 macOS 编辑器摘要 `a739a5a9eeff5cb7d48316a8f23e41b8e7e7aefdaa5cd9e3f557b02f2cb3896e`。8个真实签名场景全部 passed，完整模型发现和取消回归成功。官方 Codex 应用仍缺测试工具预期的 Electron 子进程入口，codex.state=unavailable、full_signed_anchor_acceptance_ok=false；整轮CI成功只证明其声明的可执行范围，不将缺失桌面链补记通过。
+
+## 2026-11-13 真实 Codex 桌面链补验
+
+稳定剩余项 `provider-host-macos-codex-desktop-chain` 已在实际 macOS Codex 原生会话完成。私有 headless 编辑器接收 Apple Python 客户端的只读 context：`ok=true`、`authenticated_desktop_peer=true`，客户端 PID8212、编辑器 PID8196、真实桌面锚 PID10630 一致。没有登记额外信任项。私有工程和两个自有进程已清理，活动安装未替换。
+
+二进制属于 #997 源候选5acada242，摘要及独立核验见 `data-collection/provider-host-843-codex-desktop-acceptance.json`；七个原生鉴权、桥接、客户端及隔离输入与已交付 main c074db21 逐字节一致。独立审查14项通过，补足原报告没有真实桌面后代请求的缺口；不改写先前 `full_signed_anchor_acceptance_ok=false` 的历史结果。私有工程没有工单业务授权，`instruction_available=false` 符合预期；本验收仅覆盖宿主 context，不宣称业务 submit 或模型推理授权。
+
+原有8个真实非 Codex签名链及拒绝/撤销证据沿 PR872 原精确候选保留。#843/#850 的最终关闭待本追加证据进入主线后回读，父 #840 的其他范围仍分别核对。

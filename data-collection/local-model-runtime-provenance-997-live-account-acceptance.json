@@ -1,0 +1,90 @@
+{
+  "request_id": "local-model-runtime-provenance-20261113",
+  "issue_number": 997,
+  "source_candidate": "5acada24257288ab44134e02adfd7dc64a7f567a",
+  "signed_candidate": "298121e2a9ec1a6d8a4bcebdcb015d07cf2dd2f1",
+  "ci_run": 43310224867,
+  "windows_job": 131504307072,
+  "windows_process_adapter_tests": {
+    "run": 9,
+    "passed": 8,
+    "skipped": 1,
+    "skip_scope": "POSIX-only test",
+    "elapsed_seconds": 13.728
+  },
+  "live_catalog": {
+    "models": 8,
+    "real_native_editor_first_retry_restart": true,
+    "inference_authorized_by_directory": false
+  },
+  "real_text": {
+    "scope": "Single actual ChatGPT-authenticated CLI text challenge through candidate invoke_cli, no available tools or business input; no credential contents read by test",
+    "source_candidate": "5acada24257288ab44134e02adfd7dc64a7f567a",
+    "requested_model": "gpt-6.1-sol",
+    "catalog_default": true,
+    "challenge_sha256": "aeb77affd2a55bf39e6a22fc8ed79f8d1c9228ef3174e5fec1212fdd3ad2e405",
+    "source_revision_before": "db56cb54d1c9bf42b733d9bb5696552c1f75292b70a161625ced4887ec92f5a6",
+    "ok": true,
+    "observed_model": null,
+    "provider_request_id_available": false,
+    "reply_sha256": "aeb77affd2a55bf39e6a22fc8ed79f8d1c9228ef3174e5fec1212fdd3ad2e405",
+    "elapsed_seconds": 13.355,
+    "source_revision_unchanged": true
+  },
+  "private_artifact_sha256": {
+    "local997-windows-job.log": "d6d09c35f2aaa761523435679d81e01608fef62f6aaeb0ebc5a25cb613be0150",
+    "local997-real-codex-text.json": "4e8861e00894bd5434c0d6f448ffc35ddea1642df8734b9e9281604d06774c15",
+    "local997-real-codex-catalog.json": "1ab9ed36391c3c1fed900e29abaaa35930420b8e5aad0bd9a23eaaa6f7627f93",
+    "local997-real-codex-catalog-efforts.json": "7b880322cca7371b16e7b78599e82ea210ca520a050cb8c314e95847171ee17f",
+    "live-native-catalog.gd": "3bee176be32772dd2dedaa009558d60a757151d3500815ba7acf3692cc662992",
+    "live-native-catalog.py": "fd693effbd882746a72a49d1519ccfd1702acee73cba76e095f332ade3e32c54",
+    "live-native-catalog.json": "6f22bf4ddf9b1887df03d0600efd934d91c88b6e764190e48c4247591b2d38cb",
+    "live-native-catalog-first.log": "9a1bfe74dec423c42c795e48785c2ef891cdedbac3061d9c7a37dfb09102832e",
+    "live-native-catalog-restart.log": "10fa09581af4d862959a40bae0256a81303d103f3701824423fd7257042be5ce"
+  },
+  "limits": [
+    "Candidate evidence only; not effective user installation acceptance or completed main delivery.",
+    "Requested CLI model is known; actual observed model and provider request ID remain unavailable.",
+    "Native editor directory query is separate from CLI text request; no native production send claimed.",
+    "Independent review accepts the bounded native directory evidence; main integration waits for original971 release event.",
+    "Native headless script shutdown retains RID/ObjectDB leak diagnostics also present in previous picker fixture; exit0 is not a claim of diagnostic-free shutdown.",
+    "CLI text invocation was root exec_command session1402; only result JSON was retained, not a standalone replayable invocation script. Independent review must distinguish receipt consistency from rerun.",
+    "Original one-off fixture only asserted options>1. Saved actual snapshots were independently checked and subsequently strictly validated as eight unique codex_model_list entries, ready/current, not manual placeholders."
+  ],
+  "independent_review": {
+    "worker": "/root/sinan_a76843a94a4c40b0",
+    "sha256": "2a9b4158abdeafcd22998b03ea6cd881c5d9b60ed9d304eeaa686bbcbd9fb846",
+    "verdict": "bounded_acceptance_native_catalog_retry_restart; CLI_text_receipt_consistency_only",
+    "new_product_defect_demonstrated": false
+  },
+  "strict_snapshot_validation": {
+    "scope": "Post-execution strict validation of original saved native snapshots; not a rerun or modification of initial test",
+    "artifact_sha256": "6f22bf4ddf9b1887df03d0600efd934d91c88b6e764190e48c4247591b2d38cb",
+    "checks": [
+      {
+        "generation": 4,
+        "ready": true,
+        "unique_real_model_list_entries": 8,
+        "all_have_declared_efforts": true,
+        "manual_entries": 0
+      },
+      {
+        "generation": 8,
+        "ready": true,
+        "unique_real_model_list_entries": 8,
+        "all_have_declared_efforts": true,
+        "manual_entries": 0
+      },
+      {
+        "generation": 3,
+        "ready": true,
+        "unique_real_model_list_entries": 8,
+        "all_have_declared_efforts": true,
+        "manual_entries": 0
+      }
+    ],
+    "invalid_path_has_only_default": true,
+    "first_generation_monotonic": true,
+    "reviewer_also_verified_actual_stronger_snapshot": true
+  }
+}

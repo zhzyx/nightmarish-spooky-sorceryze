@@ -1,0 +1,83 @@
+{
+  "state": "passed_readonly_authenticated_desktop_context",
+  "issue_numbers": [
+    840,
+    843
+  ],
+  "candidate_editor_sha256": "3ddaec42ad12d0c124ee29b9120e818606e3a27e37c41fcdca589ba7cec8a4b7",
+  "source_candidate": "5acada24257288ab44134e02adfd7dc64a7f567a",
+  "actual_client_pid": 8212,
+  "actual_engine_pid": 8196,
+  "authenticated_desktop_peer": true,
+  "trusted_desktop_pid": 10630,
+  "client_executable": "/usr/bin/python3",
+  "main_external_peer_source": "c074db21be98784ff1288f1f2d99c793ba156395",
+  "private_artifact_sha256": {
+    "codex-desktop-context-ready.json": "5a1b5fc22948ff56fac2ea05e658b7dee9b5e35eb4f50dd3baf539e5e5e7c591",
+    "codex-desktop-context-reply.json": "e7ac4ac21473f9a9001ab12178bc99781c553e449bd2dd0aee425bd8c941815e",
+    "codex-desktop-context-client.pid": "242203966b4dc4ed9c93c0f063f7428739895020fb4684f3980f174d197c9246",
+    "codex-desktop-context-cleanup.json": "916547b93b78b3cc6aeffb8a71eb8afe6e10cc677442ff65b85e8a3c2f3f627e",
+    "codex-desktop-context-host.py": "191c76000035ca3a8cd4ea0c729633bd0ef25839bca28f4584c9e76b65b486fe"
+  },
+  "cleanup": {
+    "engine_stopped": true,
+    "private_project_removed": true,
+    "trust_registry_absent_before_and_after": true,
+    "active_install_unchanged": true
+  },
+  "limits": [
+    "Context only. Private fixture has no authorized workorder binding, so business instruction availability remains false as expected.",
+    "No submit, production model invocation or real business acceptance; source integration and Issue scope must be independently reconciled."
+  ],
+  "request_id": "provider-host-20261112",
+  "issue_number": 843,
+  "stable_acceptance_key": "provider-host-macos-codex-desktop-chain",
+  "independent_review_sha256": "19474dac673ea5cf4f74b7c5fee971384d5c14d0b13ed845e915f624cb3cd12c",
+  "independent_review_verdict": "pass_for_remaining_readonly_authenticated_desktop_context_criterion",
+  "delivered_implementation": "PR872 main e15a49f9b7dbbdbb1b585fc2b68cc3f252d88c8b; ancestor of current c074db21be98784ff1288f1f2d99c793ba156395",
+  "previous_platform_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/843#issuecomment-6827261802",
+  "source_equivalence": [
+    {
+      "path": "editor/docks/ai_chat_external_peer.cpp",
+      "main_sha256": "3be06faef3626a3b9cb0242d6c25b44f6c57d3b7d71ae623ed44583593a51ca3",
+      "candidate_sha256": "3be06faef3626a3b9cb0242d6c25b44f6c57d3b7d71ae623ed44583593a51ca3",
+      "same_main_candidate_worktree": true
+    },
+    {
+      "path": "editor/docks/ai_chat_external_peer.h",
+      "main_sha256": "8395ba4289f1a512268ebdaa4848be73c3d779c552a0416df1ea434ae4a5dc2b",
+      "candidate_sha256": "8395ba4289f1a512268ebdaa4848be73c3d779c552a0416df1ea434ae4a5dc2b",
+      "same_main_candidate_worktree": true
+    },
+    {
+      "path": "editor/docks/ai_chat_editor_instruction_bridge.cpp",
+      "main_sha256": "8bae63c87c8b16f69d46b1bfe6a55506fc8d5140ada0fcb719898064a4142db6",
+      "candidate_sha256": "8bae63c87c8b16f69d46b1bfe6a55506fc8d5140ada0fcb719898064a4142db6",
+      "same_main_candidate_worktree": true
+    },
+    {
+      "path": "editor/docks/ai_chat_dock.cpp",
+      "main_sha256": "785219570fa9af7792efdff02ad6a3b85da3145b174cc9c097255d93ca93ff0e",
+      "candidate_sha256": "785219570fa9af7792efdff02ad6a3b85da3145b174cc9c097255d93ca93ff0e",
+      "same_main_candidate_worktree": true
+    },
+    {
+      "path": "editor/docks/ai_chat_dock.h",
+      "main_sha256": "96aa4c183fbfe135d2904e8e4cde32f2b4d272a96fa59bd1fa6d8342839f5de0",
+      "candidate_sha256": "96aa4c183fbfe135d2904e8e4cde32f2b4d272a96fa59bd1fa6d8342839f5de0",
+      "same_main_candidate_worktree": true
+    },
+    {
+      "path": "tools/editor_instruction_client.py",
+      "main_sha256": "b8031511b5f56a79b03d9a88753213f250efc2074c88d2e953fcffb8f7d588bf",
+      "candidate_sha256": "b8031511b5f56a79b03d9a88753213f250efc2074c88d2e953fcffb8f7d588bf",
+      "same_main_candidate_worktree": true
+    },
+    {
+      "path": "tests/editor/editor_test_isolation.py",
+      "main_sha256": "77d231c0058ce634168e4cd34014bf256d4089b8669c4a8d0a596999b950c74f",
+      "candidate_sha256": "77d231c0058ce634168e4cd34014bf256d4089b8669c4a8d0a596999b950c74f",
+      "same_main_candidate_worktree": true
+    }
+  ]
+}

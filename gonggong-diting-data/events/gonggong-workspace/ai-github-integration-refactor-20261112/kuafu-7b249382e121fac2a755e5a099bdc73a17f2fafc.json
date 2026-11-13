@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7b249382e121fac2a755e5a099bdc73a17f2fafc",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "4d95fb5556e7c616b174a63a5e64ad21f3690c0c8eb4b3bf440bfe339732b50b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+    "action": "validation",
+    "detection_head": "5acada24257288ab44134e02adfd7dc64a7f567a",
+    "context_sha256": "1b8b03519abdf60ab02b1ea822dfcb2b5a386243a4daf52b8173ece9e9a4b8bc",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "PR988 head c943a2dafb3b2d2ece630faa9dee449f4e8468ce CI43260473376/job131330459768 artifact13964316193",
+    "diagnosis": "1572项原生单元测试通过；requirements-intake 在第二次完成前失败，原生日志两次 game_receipt_guard_failed 空诊断和 JSON 解析失败。原候选 GetGameReceiptGuard 同步执行 Python 后解析 stdout；工件未给启动返回、退出码或 stderr，根因仍未知，不能证明属于1001。",
+    "next_action": "原948/951发布者在原责任链整合当前 main 后，对 requirements-intake 和实际安装消费者定向复验；必要时补足有界子进程诊断。当前978仅作隔离审阅并保留原候选和工件，不改动其他工作副本或替代签发。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T23:34:54.460424+00:00",
+    "attempted": "回读精确PR、CI作业和原始runtime artifact，确认受控模型两次回包及夹具工单8001；未运行真实生产请求。",
+    "repair_owner": "Original PR988 publisher / #948 responsibility chain; current978 root owns audit only",
+    "continuable": "可继续1017共享宿主修复；旧候选恢复需原发布链接续或明确交接。"
+  },
+  "occurred_at": "2026-11-12T23:37:13.300373+00:00",
+  "sha256": "da86211f44ddef0d07720e9c2fd211d86d92a3548434e62ac5c1e0f4b411bfb1"
+}
