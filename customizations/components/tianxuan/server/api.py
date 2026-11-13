@@ -35,6 +35,8 @@ from schemas import (
     IssueTransitionRequest,
     LoginRequest,
     MemberCreateRequest,
+    PullRequestCreateRequest,
+    PullRequestMergeRequest,
     RegisterRequest,
     RepoCreateRequest,
     RequirementCommitRequest,
@@ -528,6 +530,62 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
         try:
             with client:
                 return client.get_repo(owner, name)  # type: ignore[no-any-return]
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.get("/api/v1/repos/{owner}/{name}/branches")
+    def list_repo_branches(owner: str, name: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        client = _gitea_client()
+        try:
+            with client:
+                return {"branches": client.list_branches(owner, name)}
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.get("/api/v1/repos/{owner}/{name}/pulls")
+    def list_repo_pulls(
+        owner: str,
+        name: str,
+        actor: ActorDep,
+        state: str = Query(default="open"),
+    ) -> dict[str, list[dict[str, Any]]]:
+        client = _gitea_client()
+        try:
+            with client:
+                return {"pulls": client.list_pull_requests(owner, name, state)}
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/repos/{owner}/{name}/pulls")
+    def create_repo_pull(
+        owner: str,
+        name: str,
+        payload: PullRequestCreateRequest,
+        actor: ActorDep,
+    ) -> dict[str, Any]:
+        client = _gitea_client()
+        try:
+            with client:
+                return client.create_pull_request(  # type: ignore[no-any-return]
+                    owner, name, payload.title, payload.head, payload.base, payload.body
+                )
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/repos/{owner}/{name}/pulls/{number}/merge")
+    def merge_repo_pull(
+        owner: str,
+        name: str,
+        number: int,
+        payload: PullRequestMergeRequest,
+        actor: ActorDep,
+    ) -> dict[str, Any]:
+        client = _gitea_client()
+        try:
+            with client:
+                return client.merge_pull_request(  # type: ignore[no-any-return]
+                    owner, name, number, payload.method
+                )
         except GiteaError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 

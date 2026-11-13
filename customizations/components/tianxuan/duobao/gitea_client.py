@@ -227,6 +227,21 @@ def _branch_field(value: Any) -> str:
     return ""
 
 
+def _normalize_branch(payload: Any) -> dict[str, Any]:
+    if not isinstance(payload, dict):
+        raise GiteaError(0, "unexpected branch response: expected a JSON object")
+    name = payload.get("name")
+    if not isinstance(name, str) or not name:
+        raise GiteaError(0, "unexpected branch response: missing name")
+    commit = payload.get("commit")
+    commit_sha = commit.get("id") if isinstance(commit, dict) else None
+    return {
+        "name": name,
+        "protected": bool(payload.get("protected", False)),
+        "commit_sha": commit_sha if isinstance(commit_sha, str) else "",
+    }
+
+
 def _normalize_pull_request(payload: Any) -> dict[str, Any]:
     """把 PR 响应裁剪为 ``number/title/state/html_url/head/base``。"""
     data = _mapping(payload, "pull request")
@@ -398,6 +413,29 @@ class GiteaClient:
     # ------------------------------------------------------------------
     # Pull Request
     # ------------------------------------------------------------------
+    def list_branches(self, owner: str, repo: str) -> list[dict[str, Any]]:
+        """列出仓库分支。"""
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        payload = self._request("GET", f"/api/v1/repos/{owner}/{repo}/branches")
+        if not isinstance(payload, list):
+            raise GiteaError(0, "unexpected branches response: expected a JSON array")
+        return [_normalize_branch(item) for item in payload]
+
+    def list_pull_requests(self, owner: str, repo: str, state: str = "open") -> list[dict[str, Any]]:
+        """列出 Pull Request；``state`` 支持 ``open``/``closed``/``all``。"""
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        state = _validate_choice(state, _ISSUE_STATES, "pull request state")
+        payload = self._request(
+            "GET",
+            f"/api/v1/repos/{owner}/{repo}/pulls",
+            params={"state": state},
+        )
+        if not isinstance(payload, list):
+            raise GiteaError(0, "unexpected pulls response: expected a JSON array")
+        return [_normalize_pull_request(item) for item in payload]
+
     def create_pull_request(
         self,
         owner: str,

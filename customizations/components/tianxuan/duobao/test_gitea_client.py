@@ -194,6 +194,43 @@ def test_create_repo_forwards_private_and_default_branch(make_client: ClientFact
     assert repo["default_branch"] == "develop"
 
 
+def test_list_branches(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "GET"
+        assert request.url.path == "/api/v1/repos/owner/demo/branches"
+        assert request.headers["Authorization"] == f"token {TOKEN}"
+        return httpx.Response(200, json=[{"name": "main", "protected": True, "commit": {"id": "abc123"}}])
+
+    client, _ = make_client(handler)
+    assert client.list_branches("owner", "demo") == [{"name": "main", "protected": True, "commit_sha": "abc123"}]
+
+
+def test_list_pull_requests_filters_state(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "GET"
+        assert request.url.path == "/api/v1/repos/owner/demo/pulls"
+        assert request.url.query == b"state=all"
+        return httpx.Response(
+            200,
+            json=[
+                {
+                    "number": 3,
+                    "title": "feat",
+                    "state": "open",
+                    "html_url": "https://gitea.example/owner/demo/pulls/3",
+                    "head": {"ref": "feature", "sha": "abc123"},
+                    "base": {"ref": "main", "sha": "def456"},
+                }
+            ],
+        )
+
+    client, _ = make_client(handler)
+    pulls = client.list_pull_requests("owner", "demo", "all")
+    assert pulls[0]["number"] == 3
+    assert pulls[0]["state"] == "open"
+    assert pulls[0]["head"] == "feature"
+
+
 def test_list_repos_for_current_user(make_client: ClientFactory) -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.method == "GET"

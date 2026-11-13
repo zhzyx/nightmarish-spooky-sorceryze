@@ -63,6 +63,21 @@ class RepoCreateRequest(BaseModel):
     default_branch: str = "main"
 
 
+class PullRequestCreateRequest(BaseModel):
+    """在 Gitea 仓库内创建 Pull Request。"""
+
+    title: str
+    head: str
+    base: str
+    body: str = ""
+
+
+class PullRequestMergeRequest(BaseModel):
+    """合并 Pull Request 的方式。"""
+
+    method: str = "merge"
+
+
 class DocCreateRequest(BaseModel):
     """创建文曲 Markdown 文档。"""
 

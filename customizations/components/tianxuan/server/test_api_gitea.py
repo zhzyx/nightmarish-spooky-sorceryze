@@ -30,6 +30,26 @@ class _FakeGitea:
     def list_repos(self, owner: str | None = None, limit: int = 50) -> list[dict[str, Any]]:
         return [{"full_name": f"{owner or 'me'}/demo", "limit": limit}]
 
+    def list_branches(self, owner: str, repo: str) -> list[dict[str, Any]]:
+        return [{"name": "main", "protected": False, "commit_sha": "abc123"}]
+
+    def list_pull_requests(self, owner: str, repo: str, state: str = "open") -> list[dict[str, Any]]:
+        return [{"number": 1, "title": "demo", "state": state}]
+
+    def create_pull_request(
+        self,
+        owner: str,
+        repo: str,
+        title: str,
+        head: str,
+        base: str,
+        body: str = "",
+    ) -> dict[str, Any]:
+        return {"number": 2, "title": title, "head": head, "base": base, "body": body}
+
+    def merge_pull_request(self, owner: str, repo: str, number: int, method: str = "merge") -> dict[str, Any]:
+        return {"number": number, "merged": True, "method": method}
+
 
 def _setup() -> tuple[TestClient, dict[str, str]]:
     store = Tianxuan(":memory:")
@@ -68,3 +88,31 @@ def test_create_and_get_repo_with_fake_client(monkeypatch) -> None:
     listed = client.get("/api/v1/repos?owner=owner&limit=10", headers=headers).json()["repos"]
     assert listed[0]["full_name"] == "owner/demo"
     assert listed[0]["limit"] == 10
+
+
+def test_repo_branches_and_pull_requests_with_fake_client(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_GITEA_URL", "http://gitea.example")
+    monkeypatch.setenv("TIANXUAN_GITEA_TOKEN", "secret")
+    monkeypatch.setattr(api_module, "GiteaClient", _FakeGitea)
+    client, headers = _setup()
+
+    branches = client.get("/api/v1/repos/owner/demo/branches", headers=headers).json()["branches"]
+    assert branches == [{"name": "main", "protected": False, "commit_sha": "abc123"}]
+
+    pulls = client.get("/api/v1/repos/owner/demo/pulls", headers=headers, params={"state": "all"}).json()["pulls"]
+    assert pulls[0]["state"] == "all"
+
+    created = client.post(
+        "/api/v1/repos/owner/demo/pulls",
+        headers=headers,
+        json={"title": "feat", "head": "feature", "base": "main", "body": "demo"},
+    ).json()
+    assert created["number"] == 2
+    assert created["head"] == "feature"
+
+    merged = client.post(
+        "/api/v1/repos/owner/demo/pulls/2/merge",
+        headers=headers,
+        json={"method": "squash"},
+    ).json()
+    assert merged == {"number": 2, "merged": True, "method": "squash"}
