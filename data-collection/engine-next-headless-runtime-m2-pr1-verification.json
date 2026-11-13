@@ -1,0 +1,225 @@
+{
+  "base_commit": "c827551e86ad37551302a6df3dc37d4d63a3638c",
+  "build_tool_tests": {
+    "count": 11,
+    "failures": 0
+  },
+  "clean_source": {
+    "contract_state": "contract_passed",
+    "file_count": 43,
+    "godot_roots_present": [],
+    "manifest": "build/engine_next/clean-m2-pr1Manifest.json",
+    "manifest_sha256": "360987f60f6ec9e8eef07f00134d5d2cbdc12c6e4c7d018097d95e326fe0fac9",
+    "native_key": "6e51d895b7cce7918bfe6c910591ea22ffb05fb8186e43a819534cace912d505",
+    "root": "build/engine_next/clean-m2-pr1",
+    "targets": [
+      {
+        "artifact": {
+          "path": "build/engine_next/clang-release/next_server",
+          "sha256": "907cfe95debd7b26b5b83875bddafac449e78b2ad46c7b55ba0835974fdbb8c9"
+        },
+        "clean_summary": "ENGINE_NEXT_RUNTIME role=server ticks=4 status=ok",
+        "dynamic_dependencies": [
+          "/usr/lib/libc++.1.dylib",
+          "/usr/lib/libSystem.B.dylib"
+        ],
+        "manifest": "build/engine_next/clang-release/next_serverLinkManifest.json",
+        "name": "next_server",
+        "summary": "ENGINE_NEXT_RUNTIME role=server ticks=4 status=ok",
+        "trace_sha256": "412743f8f3f474ee6933c67fcbda8563de17480994697bf8b7f45f550ae819f3"
+      },
+      {
+        "artifact": {
+          "path": "build/engine_next/clang-release/next_client",
+          "sha256": "8623342c85d16b3e41cfb29b954a6f90e78ad05a2af7a176d8e004ff53db168b"
+        },
+        "clean_summary": "ENGINE_NEXT_RUNTIME role=client client_id=A ticks=4 status=ok",
+        "dynamic_dependencies": [
+          "/usr/lib/libc++.1.dylib",
+          "/usr/lib/libSystem.B.dylib"
+        ],
+        "manifest": "build/engine_next/clang-release/next_clientLinkManifest.json",
+        "name": "next_client",
+        "summary": "ENGINE_NEXT_RUNTIME role=client client_id=A ticks=4 status=ok",
+        "trace_sha256": "412743f8f3f474ee6933c67fcbda8563de17480994697bf8b7f45f550ae819f3"
+      },
+      {
+        "artifact": {
+          "path": "build/engine_next/clang-release/EngineNextRuntimeTests",
+          "sha256": "147b0093de6087190d7e09ae232fce0e8dc8b834eba48530d5b2b36b89d365a0"
+        },
+        "clean_summary": "ENGINE_NEXT_TEST_SUMMARY tests=5 checks=74 failures=0",
+        "dynamic_dependencies": [
+          "/usr/lib/libc++.1.dylib",
+          "/usr/lib/libSystem.B.dylib"
+        ],
+        "manifest": "build/engine_next/clang-release/EngineNextRuntimeTestsLinkManifest.json",
+        "name": "EngineNextRuntimeTests",
+        "summary": "ENGINE_NEXT_TEST_SUMMARY tests=5 checks=74 failures=0",
+        "trace_sha256": null
+      }
+    ]
+  },
+  "contract_tests": {
+    "count": 22,
+    "failures": 0
+  },
+  "godot_free_runtime_verified": false,
+  "input_index_tree_before_evidence": "aedd5ecb6a87c5e3b2498be0fa8ea5f8cf3b8226",
+  "issue_number": 1042,
+  "m1_regression": {
+    "clean_run_summary": "ENGINE_NEXT_BENCHMARK model_steps=1000000 buffer_operations=50000 buffer_capacity=4096 repetitions=5 model_median_us=4889 buffer_median_us=166488 model_checksum=3325757522 buffer_checksum=4097\nENGINE_NEXT_TEST_SUMMARY tests=16 checks=200161 failures=0",
+    "contract_state": "contract_passed",
+    "test_summary": "ENGINE_NEXT_BENCHMARK model_steps=1000000 buffer_operations=50000 buffer_capacity=4096 repetitions=5 model_median_us=4861 buffer_median_us=165693 model_checksum=3325757522 buffer_checksum=4097\nENGINE_NEXT_TEST_SUMMARY tests=16 checks=200161 failures=0",
+    "trace_sha256": "f55d1f5bc85bb72376d3f31cdf9b64aac91e714b6556dbce1663c1db7995924c"
+  },
+  "native_invalidation": {
+    "before_default_ticks": 1,
+    "before_native_key": "6e51d895b7cce7918bfe6c910591ea22ffb05fb8186e43a819534cace912d505",
+    "changed_default_ticks": 2,
+    "changed_native_key": "8d4ef7898efd7b3d9fba745a2acf8b64515e32325c17eb97f79971b468dd1b0b",
+    "input": "engine_next/include/EngineNext/Runtime/RuntimeConfig.h",
+    "key_changed": true,
+    "restored": true,
+    "restored_default_ticks": 1,
+    "restored_native_key": "6e51d895b7cce7918bfe6c910591ea22ffb05fb8186e43a819534cace912d505"
+  },
+  "platform": {
+    "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.5)",
+    "machine": "arm64",
+    "python": "3.12.16",
+    "system": "Darwin",
+    "version": "macOS-15.3.1-arm64-arm-64bit"
+  },
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "runtime": {
+    "archive_members": [
+      "PredictionModel.o",
+      "InterpolationBuffer.o",
+      "Clock.o",
+      "FixedStepLoop.o",
+      "World.o",
+      "Trace.o",
+      "RuntimeConfig.o",
+      "RuntimeHost.o"
+    ],
+    "contract_state": "contract_passed",
+    "local_includes": 48,
+    "native_key": "6e51d895b7cce7918bfe6c910591ea22ffb05fb8186e43a819534cace912d505",
+    "source_files": 34,
+    "targets": [
+      {
+        "artifact": {
+          "path": "build/engine_next/clang-m2-pr1/next_server",
+          "sha256": "907cfe95debd7b26b5b83875bddafac449e78b2ad46c7b55ba0835974fdbb8c9"
+        },
+        "clean_summary": "ENGINE_NEXT_RUNTIME role=server ticks=4 status=ok",
+        "dynamic_dependencies": [
+          "/usr/lib/libc++.1.dylib",
+          "/usr/lib/libSystem.B.dylib"
+        ],
+        "manifest": "build/engine_next/clang-m2-pr1/next_serverLinkManifest.json",
+        "name": "next_server",
+        "summary": "ENGINE_NEXT_RUNTIME role=server ticks=4 status=ok",
+        "trace_sha256": "412743f8f3f474ee6933c67fcbda8563de17480994697bf8b7f45f550ae819f3"
+      },
+      {
+        "artifact": {
+          "path": "build/engine_next/clang-m2-pr1/next_client",
+          "sha256": "8623342c85d16b3e41cfb29b954a6f90e78ad05a2af7a176d8e004ff53db168b"
+        },
+        "clean_summary": "ENGINE_NEXT_RUNTIME role=client client_id=A ticks=4 status=ok",
+        "dynamic_dependencies": [
+          "/usr/lib/libc++.1.dylib",
+          "/usr/lib/libSystem.B.dylib"
+        ],
+        "manifest": "build/engine_next/clang-m2-pr1/next_clientLinkManifest.json",
+        "name": "next_client",
+        "summary": "ENGINE_NEXT_RUNTIME role=client client_id=A ticks=4 status=ok",
+        "trace_sha256": "412743f8f3f474ee6933c67fcbda8563de17480994697bf8b7f45f550ae819f3"
+      },
+      {
+        "artifact": {
+          "path": "build/engine_next/clang-m2-pr1/EngineNextRuntimeTests",
+          "sha256": "a5c9386bffc076422da902bd23bc8d5a52fe2b0a3a366297c1d966d486117938"
+        },
+        "clean_summary": "ENGINE_NEXT_TEST_SUMMARY tests=5 checks=74 failures=0",
+        "dynamic_dependencies": [
+          "/usr/lib/libc++.1.dylib",
+          "/usr/lib/libSystem.B.dylib"
+        ],
+        "manifest": "build/engine_next/clang-m2-pr1/EngineNextRuntimeTestsLinkManifest.json",
+        "name": "EngineNextRuntimeTests",
+        "summary": "ENGINE_NEXT_TEST_SUMMARY tests=5 checks=74 failures=0",
+        "trace_sha256": null
+      }
+    ]
+  },
+  "sanitizer": {
+    "native_key": "354f3b789149b4f0820fee3696d541905a89c9c6f10c033c56804862f744e73a",
+    "targets": [
+      {
+        "artifact": {
+          "path": "build/engine_next/clang-m2-pr1-sanitize/next_server",
+          "sha256": "dfd3d3b4d97bdaed4cfb957acc0ee667bfdabd108a20b1351c354773325e8f2a"
+        },
+        "clean_summary": "ENGINE_NEXT_RUNTIME role=server ticks=4 status=ok",
+        "dynamic_dependencies": [
+          "/usr/lib/libc++.1.dylib",
+          "@rpath/libclang_rt.asan_osx_dynamic.dylib",
+          "/usr/lib/libSystem.B.dylib"
+        ],
+        "manifest": "build/engine_next/clang-m2-pr1-sanitize/next_serverLinkManifest.json",
+        "name": "next_server",
+        "summary": "ENGINE_NEXT_RUNTIME role=server ticks=4 status=ok",
+        "trace_sha256": "412743f8f3f474ee6933c67fcbda8563de17480994697bf8b7f45f550ae819f3"
+      },
+      {
+        "artifact": {
+          "path": "build/engine_next/clang-m2-pr1-sanitize/next_client",
+          "sha256": "2106f31a4357f786899284e254bab6c7e8a4d0b03df7555a0e20be7d1c6a790d"
+        },
+        "clean_summary": "ENGINE_NEXT_RUNTIME role=client client_id=A ticks=4 status=ok",
+        "dynamic_dependencies": [
+          "/usr/lib/libc++.1.dylib",
+          "@rpath/libclang_rt.asan_osx_dynamic.dylib",
+          "/usr/lib/libSystem.B.dylib"
+        ],
+        "manifest": "build/engine_next/clang-m2-pr1-sanitize/next_clientLinkManifest.json",
+        "name": "next_client",
+        "summary": "ENGINE_NEXT_RUNTIME role=client client_id=A ticks=4 status=ok",
+        "trace_sha256": "412743f8f3f474ee6933c67fcbda8563de17480994697bf8b7f45f550ae819f3"
+      },
+      {
+        "artifact": {
+          "path": "build/engine_next/clang-m2-pr1-sanitize/EngineNextRuntimeTests",
+          "sha256": "dc1b821d977ea2f0bfd2bdbba0773158c984f68624bbaec370c835555be7f5f3"
+        },
+        "clean_summary": "ENGINE_NEXT_TEST_SUMMARY tests=5 checks=74 failures=0",
+        "dynamic_dependencies": [
+          "/usr/lib/libc++.1.dylib",
+          "@rpath/libclang_rt.asan_osx_dynamic.dylib",
+          "/usr/lib/libSystem.B.dylib"
+        ],
+        "manifest": "build/engine_next/clang-m2-pr1-sanitize/EngineNextRuntimeTestsLinkManifest.json",
+        "name": "EngineNextRuntimeTests",
+        "summary": "ENGINE_NEXT_TEST_SUMMARY tests=5 checks=74 failures=0",
+        "trace_sha256": null
+      }
+    ]
+  },
+  "schema_version": 1,
+  "slice": "pr1_independent_build_fixed_step_runtime",
+  "standalone_runtime_slice_verified": true,
+  "static_validation": {
+    "clang_format": "not_available_locally",
+    "compiler_policy": "C++17, -Wall -Wextra -Werror -pedantic, no exceptions",
+    "git_diff_cached_check": "passed",
+    "ruff": "not_available_locally"
+  },
+  "unverified": [
+    "Windows MSVC has not run locally and awaits exact-candidate CI.",
+    "Linux x86_64 has not been built or run in this slice.",
+    "ENet, protocol, sessions, prediction networking and the full M2 loop are not in this slice."
+  ]
+}

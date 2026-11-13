@@ -60,9 +60,25 @@ jobs:
           call "%VSROOT%\VC\Auxiliary\Build\vcvars64.bat"
           python engine_next/Tools/BuildGameplay.py --repo . --compiler msvc --build-dir build/engine_next/msvc-release --run-tests
           python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-release/LinkManifest.json
+          python engine_next/Tools/BuildRuntime.py --repo . --compiler msvc --build-dir build/engine_next/msvc-runtime --run-tests
+          python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-runtime/next_serverLinkManifest.json
+          python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-runtime/next_clientLinkManifest.json
+          python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-runtime/EngineNextRuntimeTestsLinkManifest.json
+          python engine_next/Tools/ExportCleanSource.py --repo . --output build/engine_next/clean-runtime-source
+          python build/engine_next/clean-runtime-source/engine_next/Tools/BuildRuntime.py --repo build/engine_next/clean-runtime-source --compiler msvc --build-dir build/engine_next/msvc-runtime --run-tests
+          python build/engine_next/clean-runtime-source/tools/check_engine_next_contract.py --repo build/engine_next/clean-runtime-source --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-runtime/next_serverLinkManifest.json
+          python build/engine_next/clean-runtime-source/tools/check_engine_next_contract.py --repo build/engine_next/clean-runtime-source --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-runtime/next_clientLinkManifest.json
 
       - name: Build and audit standalone tests (Clang)
         if: runner.os == 'macOS'
         run: |
           python3 engine_next/Tools/BuildGameplay.py --repo . --compiler clang --build-dir build/engine_next/clang-release --run-tests
           python3 tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-release/LinkManifest.json
+          python3 engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-runtime --run-tests
+          python3 tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-runtime/next_serverLinkManifest.json
+          python3 tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-runtime/next_clientLinkManifest.json
+          python3 tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-runtime/EngineNextRuntimeTestsLinkManifest.json
+          python3 engine_next/Tools/ExportCleanSource.py --repo . --output build/engine_next/clean-runtime-source
+          python3 build/engine_next/clean-runtime-source/engine_next/Tools/BuildRuntime.py --repo build/engine_next/clean-runtime-source --compiler clang --build-dir build/engine_next/clang-runtime --run-tests
+          python3 build/engine_next/clean-runtime-source/tools/check_engine_next_contract.py --repo build/engine_next/clean-runtime-source --require-sources --require-link-manifest --link-manifest build/engine_next/clang-runtime/next_serverLinkManifest.json
+          python3 build/engine_next/clean-runtime-source/tools/check_engine_next_contract.py --repo build/engine_next/clean-runtime-source --require-sources --require-link-manifest --link-manifest build/engine_next/clang-runtime/next_clientLinkManifest.json
