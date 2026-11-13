@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
+import { fetchDocs, type ApiDoc } from "@/lib/api";
 import {
   docs,
   getDoc,
@@ -14,6 +15,8 @@ import {
 export const metadata: Metadata = {
   title: "文档",
 };
+
+export const dynamic = "force-dynamic";
 
 function countTree(nodes: PageTreeNode[]): number {
   return nodes.reduce((total, node) => total + 1 + (node.children ? countTree(node.children) : 0), 0);
@@ -50,7 +53,17 @@ function renderTreePage(page: PageTreeNode) {
   );
 }
 
-export default function DocsPage() {
+export default async function DocsPage() {
+  const actor = process.env.TIANXUAN_ACTOR ?? "";
+  let liveDocs: ApiDoc[] | null = null;
+  if (actor) {
+    try {
+      liveDocs = await fetchDocs(actor);
+    } catch {
+      liveDocs = null;
+    }
+  }
+
   const recentDocs = recentDocIds
     .map((id) => getDoc(id))
     .filter((doc): doc is DocRecord => Boolean(doc));
@@ -81,6 +94,30 @@ export default function DocsPage() {
           </Link>
         </div>
       </header>
+
+      {liveDocs && liveDocs.length > 0 ? (
+        <section className="panel" aria-labelledby="live-docs-title">
+          <div className="section-heading">
+            <div>
+              <p className="section-kicker">LIVE API</p>
+              <h2 id="live-docs-title">实时文档</h2>
+            </div>
+            <span className="section-note">{liveDocs.length} 篇来自后端</span>
+          </div>
+          <div className="reading-list">
+            {liveDocs.slice(0, 8).map((doc) => (
+              <Link className="reading-item" href={`/docs/${doc.id}`} key={doc.id}>
+                <span className="reading-index">{doc.kind.slice(0, 1)}</span>
+                <span className="reading-copy">
+                  <strong>{doc.title}</strong>
+                  <span>v{doc.version} · {doc.kind}</span>
+                </span>
+                <Icon name="chevronRight" size={14} />
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section aria-labelledby="space-list-title">
         <div className="section-heading">
