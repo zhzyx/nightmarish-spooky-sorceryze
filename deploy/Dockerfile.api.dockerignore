@@ -1,0 +1,53 @@
+# Build context for deploy/Dockerfile.api is the repository root, because the
+# FastAPI service imports sibling modules from customizations/components/tianxuan.
+#
+# BuildKit automatically applies this file to deploy/Dockerfile.api (the
+# "<Dockerfile-name>.dockerignore" convention next to the Dockerfile). Docker's
+# legacy builder ignores it; the build then still works, it is only slower.
+#
+# Keep only what the API image copies, so the huge game/editor tree does not get
+# sent to the builder on every build.
+
+.git
+.github
+apps
+archive
+core
+data-collection
+design-docs
+distribution
+doc
+drivers
+editor
+engine_next
+framework
+gonggong-diting-data
+integrations
+Markdown
+misc
+modules
+olympus-hermes-data
+platform
+project
+releases
+samples
+scene
+servers
+tests
+thirdparty
+tools
+
+# Other customization components/platforms are not imported by the API.
+customizations/components/codex-dispatch
+customizations/components/godot-host
+customizations/components/issue-workorders
+customizations/components/repository-dispatch
+customizations/components/yanluo
+customizations/platforms
+
+# Generated Python artifacts.
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.venv
+**/venv
