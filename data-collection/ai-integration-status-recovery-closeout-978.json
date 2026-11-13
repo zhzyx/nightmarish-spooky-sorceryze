@@ -1,0 +1,13 @@
+{
+  "request_id": "ai-github-integration-refactor-20261112",
+  "issue_number": 978,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "source_issue": 838,
+  "source_request_id": "kuafu-local-827-74ce4f03babbaacaf1a22f529bc7da5c4ae1561a8a0867ca47f89d1c4d2be391",
+  "source_delivery_evidence": "data-collection/tianshu-resume-status-838-delivery.json",
+  "source_delivery_evidence_sha256": "64ddd8488239b9fc5d59e35426e7cda8a6ac9aedc83951ebac3a20b5cf8d2438",
+  "path_resolution_base": "Repository checkout root for source_delivery_evidence; private receipt base is specified inside that source record.",
+  "purpose": "Bind parent978 dispatch and closeout evidence to the independently reviewed838 delivery/cleanup record without modifying its historical or reviewed payload.",
+  "parent_acceptance": "in_progress; original827 and other remaining scope unchanged",
+  "gate_correction": "PR_EVIDENCE_BINDING correctly rejected the initial child-only evidence mapping before commit; this adds the required parent request and Issue binding."
+}
