@@ -24,11 +24,11 @@ func _run():
 		return
 	EditorInterface.set_main_screen_editor("AI Chat")
 	var input := dock.find_child("ChatInput", true, false) as TextEdit
-	var backend := dock.get_ai_settings_control().find_child("AIBackend", true, false) as OptionButton
+	var backend := dock.find_child("AIBackend", true, false) as OptionButton
 	backend.select(0)
 	backend.item_selected.emit(0)
 	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("AI_THEME_ENDPOINT")
-	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "theme-fixture"
+	dock.find_child("APIModel", true, false).text = "theme-fixture"
 	var key := dock.get_ai_settings_control().find_child("APIKey", true, false) as LineEdit
 	key.text = "theme-fixture-key"
 	key.text_changed.emit(key.text)

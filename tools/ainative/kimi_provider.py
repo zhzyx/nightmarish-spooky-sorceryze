@@ -144,10 +144,10 @@ def _public_usage(value):
 
 
 def probe(config):
-    """Sanitized /models probe; this function runs without a parent-process key."""
+    """Sanitized /models discovery; an optional model only selects runtime validation."""
     try:
         endpoint = validate_endpoint(config.get("endpoint"))
-        model = validate_model(config.get("model"))
+        model = validate_model(config.get("model")) if config.get("model") else ""
         key = _key()
         request = urllib.request.Request(
             endpoint + "/models", headers={"Authorization": "Bearer " + key, "Accept": "application/json"}, method="GET"
@@ -172,12 +172,12 @@ def probe(config):
         models = sorted({
             entry.get("id") for entry in entries if isinstance(entry, dict) and isinstance(entry.get("id"), str)
         })
-        connected = model in models
+        connected = not model or model in models
         code = "" if connected else "kimi_model_unavailable"
         return dict(
             connected=connected,
             code=code,
-            message="Kimi 官方接口与所选模型已连接；检测未发起生成。" if connected else MESSAGES[code],
+            message="Kimi 官方接口已连接，模型目录已发现；检测未发起生成。" if connected and not model else "Kimi 官方接口与所选模型已连接；检测未发起生成。" if connected else MESSAGES[code],
             auth_mode="environment_api_key",
             endpoint=endpoint,
             requested_model=model,
@@ -200,7 +200,8 @@ def check_kimi(config):
     """Run authentication/discovery in a key-owning child, returning no raw HTTP data."""
     try:
         validate_endpoint(config.get("endpoint"))
-        validate_model(config.get("model"))
+        if config.get("model"):
+            validate_model(config.get("model"))
         completed = subprocess.run(
             [sys.executable, "-X", "utf8", str(Path(__file__).resolve()), "--probe", canonical(config)],
             stdin=subprocess.DEVNULL,

@@ -243,7 +243,7 @@ func _finish():
 		"models_stop_applied": models_stop_applied,
 		"models_cancel_applied": models_cancel_applied,
 		"business_during_models": business_during_models,
-		"model_status": dock.get_ai_settings_control().find_child("ModelStatus", true, false).text,
+		"model_status": dock.find_child("ModelStatus", true, false).text,
 		"queue_paused": dock.get_meta("queue_paused", false), "queued_count": dock.get_meta("queued_message_count", -1),
 		"tabs": children, "text": _text(), "reporting": dock.get_meta("gonggong_reporting", ""),
 	}
@@ -390,12 +390,12 @@ func _run():
 	var setup = dock.find_child("GongGongRuntimeSetup", true, false)
 	if setup != null:
 		setup.hide()
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
 	if backend.selected != 0:
 		backend.select(0)
 		backend.item_selected.emit(0)
 	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("DESIGN_BATCH_ENDPOINT")
-	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "design-batch-fixture"
+	dock.find_child("APIModel", true, false).text = "design-batch-fixture"
 	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "design-batch-isolated-secret"
 	dock.get_ai_settings_control().find_child("APIKey", true, false).text_changed.emit("design-batch-isolated-secret")
 	dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("DESIGN_BATCH_NODE")
@@ -411,7 +411,7 @@ func _run():
 		await _blocked_retry(mode, true)
 		_finish()
 		return
-	if dock.get_ai_settings_control().find_child("RefreshModels", true, false) == null:
+	if dock.find_child("RefreshModels", true, false) == null:
 		# The private settings file already binds READY to the loopback server.
 		# Wait for that startup query instead of losing the warmup queue behind it.
 		if not await _wait_file("models-v1-finished"):

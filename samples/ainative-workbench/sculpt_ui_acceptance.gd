@@ -33,7 +33,7 @@ func run():
 	else: OS.unset_environment('BLENDER_EXECUTABLE')
 	var modes: Array = []
 	for i in panel.service_choice.item_count: modes.append(panel.service_choice.get_item_metadata(i))
-	check(modes == ['offline','comfy','legacy','codex','codex_modeling','codex_sculpt'], 'new sculpt mode preserves all existing service identifiers and indices')
+	check(modes == ['offline','comfy','legacy','codex','codex_modeling','codex_sculpt','kimi_native','local_mesh','api_modeling','api_sculpt'], 'sculpt mode preserves every current service identifier and index')
 	select_mode('codex_sculpt')
 	panel.endpoint_edit.text = 'invalid ignored address'
 	panel.cli_path_edit.text = 'codex-test-program'
@@ -63,7 +63,7 @@ func run():
 		panel.add_generator()
 		var kind = panel.nodes.back().type
 		var form = panel.parameter_form
-		var mesh = kind.ends_with('mesh')
+		var mesh = panel._is_mesh_kind(kind)
 		check(form.prompt_edit.visible and form.rows.width.visible == not mesh and form.rows.height.visible == not mesh, 'modeling form shows useful prompt and image-size controls: ' + kind)
 		check(not form.advanced_toggle.visible and not form.rows.seed.visible and not form.rows.steps.visible and not form.rows.denoise.visible, 'modeling form hides sampling controls: ' + kind)
 		var samplers_hidden = true
@@ -72,6 +72,9 @@ func run():
 		check(samplers_hidden, 'modeling form hides three-dimensional inference sampler controls: ' + kind)
 		check(not form.developer_box.visible and not panel.params_edit.is_visible_in_tree(), 'normal modeling form keeps JSON hidden: ' + kind)
 		check(panel.nodes.back().provider == ('codex-sculpt' if mesh else 'codex'), 'new graph node records correct modeling or image provider: ' + kind)
+		check(panel.node_model_edit.visible and panel.node_model_edit.text == ('' if mesh else 'builtin'), 'each sculpt node owns its model choice: ' + kind)
+		panel.node_model_edit.text = 'fixture-' + kind
+		check(panel.apply_fields() and panel.nodes.back().model == 'fixture-' + kind, 'node model edit persists without changing service access settings: ' + kind)
 		if kind == 'image_to_mesh':
 			check(form.rows.prompt.text.contains('建模要求') and not form.rows.prompt.text.contains('重绘'), 'image-to-mesh prompt describes modeling constraints without image redraw')
 			panel.service_report = {'capabilities':{'image_to_mesh':{'ready':true},'image_to_image':{'ready':false}}}
@@ -86,25 +89,28 @@ func run():
 		check(node_button != null, 'node retains explicit run-and-preview action: ' + kind)
 	var ids: Array = []
 	for node in panel.nodes: ids.append(node.id)
-	panel.nodes[0].source = ProjectSettings.globalize_path('res://fixtures/sample.png')
+	panel.nodes[1].source = ProjectSettings.globalize_path('res://fixtures/sample.png')
 	var context_path = folder.path_join('second-reference.png')
 	DirAccess.copy_absolute(ProjectSettings.globalize_path('res://fixtures/sample.png'), context_path)
 	panel.select_node(ids[3])
-	panel.source_edit.text = ProjectSettings.globalize_path('res://fixtures/sample.png')
-	panel.context_edit.text = context_path
+	panel._set_node_file('source', ProjectSettings.globalize_path('res://fixtures/sample.png'))
+	panel._set_node_file('image_context', context_path)
 	panel.text_edit.text = 'Preserve front features; infer a complete back, arms and hands'
 	check(panel.apply_fields(), 'source image, second reference and text context are applied through existing controls')
-	check(panel.nodes[3].source == panel.source_edit.text and panel.nodes[3].image_context == context_path, 'both image fields remain independent on the same sculpt node')
-	panel.edges = [{'from':ids[0],'to':ids[1]}]
+	check(panel._node_paths(panel.nodes[3], 'source') == [ProjectSettings.globalize_path('res://fixtures/sample.png')] and panel._node_paths(panel.nodes[3], 'image_context') == [context_path], 'both image fields remain independent on the same sculpt node')
+	panel.edges = [{'from':ids[1],'to':ids[2]}]
 	panel.path_edit.text = folder.path_join('sculpt-workflow.json')
 	check(panel.apply_fields(), 'editing modeling nodes keeps parameter validation')
 	panel.save_graph()
+	check(FileAccess.file_exists(panel.path_edit.text), 'sculpt workflow saves successfully: ' + panel.status.text)
 	var workflow = FileAccess.get_file_as_string(panel.path_edit.text)
 	check(not workflow.contains('godot_path') and not workflow.contains('builder_path') and not workflow.contains('codex-test-program') and not workflow.contains('selected-blender-test-program') and not workflow.contains('blender_path'), 'shareable workflow never includes local executables or builder paths')
 	panel.open_graph()
-	check(panel.nodes.size() == 5 and panel.edges == [{'from':ids[0],'to':ids[1]}], 'workflow serialization preserves all node types and graph connections')
-	check(panel.nodes[0].has('source_snapshot'), 'workflow retains embedded input snapshots')
-	check(panel.nodes[3].has('source_snapshot') and panel.nodes[3].has('image_context_snapshot'), 'workflow embeds source and second reference snapshots for sculpt nodes')
+	check(panel.status.text == '已重新打开工作流', 'sculpt workflow reopens successfully: ' + panel.status.text)
+	check(panel.nodes.size() == 6 and panel.edges == [{'from':ids[1],'to':ids[2]}], 'workflow serialization preserves all node types and graph connections')
+	check(panel.nodes[1].model == 'fixture-text_to_image' and panel.nodes[4].model == 'fixture-text_to_mesh', 'workflow reopening preserves independent sculpt node models')
+	check(panel.nodes[1].get('source_snapshots', []).size() == 1, 'workflow retains embedded input snapshots')
+	check(panel.nodes[3].get('source_snapshots', []).size() == 1 and panel.nodes[3].get('image_context_snapshots', []).size() == 1, 'workflow embeds source and second reference snapshots for sculpt nodes')
 	check(panel.nodes[3].text == 'Preserve front features; infer a complete back, arms and hands', 'workflow retains full natural-language context for hidden surfaces')
 	reopened = load('res://addons/ainative/workbench.gd').new()
 	reopened.state_dir = folder
@@ -119,10 +125,11 @@ func run():
 	check(panel.parameter_form.cli_hint.text.contains('Godot') and not panel.parameter_form.cli_hint.text.contains('Blender'), 'form description switches back to the original modeling route')
 	select_mode('codex')
 	panel.select_node(ids[4])
-	check(panel.managed_comfy_panel.visible and panel.mesh_model_choice.visible and not panel.endpoint_edit.visible, 'legacy Codex local-model settings remain available')
+	check(panel.managed_comfy_panel.visible and not panel.mesh_model_choice.visible and not panel.endpoint_edit.visible and panel.node_model_edit.visible, 'Codex keeps local runtime settings while mesh selection stays on the node')
 	check(panel.parameter_form.rows.mesh_steps.visible and panel.parameter_form.rows.seed.visible and panel.parameter_form.advanced_toggle.visible, 'legacy Codex mesh sampling controls return after switching modes')
 	select_mode('comfy')
-	check(panel.endpoint_edit.visible and panel.endpoint_edit.editable and panel.image_model_choice.visible, 'Comfy settings remain compatible and independent')
+	panel.select_node(ids[1])
+	check(panel.endpoint_edit.visible and panel.endpoint_edit.editable and not panel.image_model_choice.visible and panel.node_model_edit.visible, 'Comfy access settings remain independent from node model selection')
 	check(panel.parameter_form.rows.steps.visible and panel.parameter_form.rows.denoise.visible == false, 'standard sampler controls return after leaving modeling mode')
 	var receipt = OS.get_environment('AINATIVE_TEST_RECEIPT')
 	if not receipt.is_empty():

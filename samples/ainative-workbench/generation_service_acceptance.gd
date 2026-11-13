@@ -64,7 +64,9 @@ func new_panel():
 	panel.host_edit.text = ProjectSettings.globalize_path("res://../../tools/ainative/editor_host.py")
 
 func set_node(kind: String, source: String, prompt: String = ""):
-	panel.nodes = [{"id":"fixture", "type":kind, "version":"1", "provider":"local-copy" if kind == "copy" else "comfy", "source":source, "image_context":"", "text":"", "parameters":{"delay":0.0,"fail":false} if kind == "copy" else {"prompt":prompt,"seed":1}, "x":40,"y":60}]
+	var data = {"id":"fixture", "type":kind, "version":"1", "provider":"local-copy" if kind == "copy" else panel._generator_provider(kind), "source":source, "image_context":"", "text":"", "parameters":{"delay":0.0,"fail":false} if kind == "copy" else {"prompt":prompt,"seed":1}, "x":40,"y":60}
+	panel._migrate_node_models(data, panel.service_draft())
+	panel.nodes = [data]
 	panel.edges = []
 	panel.rebuild()
 	panel.select_node("fixture")
@@ -119,7 +121,7 @@ func run():
 	var meshes: Array = []
 	for i in panel.mesh_model_choice.item_count: meshes.append(panel.mesh_model_choice.get_item_metadata(i))
 	check(images.has(image_model) and meshes.has(mesh_model), "both model selectors contain names reported by the fixture")
-	check(not panel.service_report.capabilities.text_to_image.ready and panel.service_capability_labels.text_to_image.text.contains("不可用"), "detected but unselected models do not claim generation readiness")
+	check(panel.service_report.capabilities.text_to_image.ready and panel.service_capability_labels.text_to_image.text.contains("就绪"), "discovery reports service capabilities without requiring a global model selection")
 	select_model(panel.image_model_choice, image_model)
 	select_model(panel.mesh_model_choice, mesh_model)
 	panel.save_service_settings()
@@ -127,16 +129,39 @@ func run():
 	var config = JSON.parse_string(FileAccess.get_file_as_string(panel.service_config_path))
 	var expected_config = {"schema_version":1,"mode":"comfy","endpoint":valid_endpoint,"image_model":image_model,"mesh_model":mesh_model}
 	expected_config.merge(panel._image_board_runtime())
-	check(same_settings(config, expected_config), "saved configuration exactly records the endpoint, models and trusted board runtime")
+	check(same_settings(config, expected_config), "saved access configuration retains legacy defaults only for workflow migration and records trusted board runtime")
 	check(expected_config.image_board_godot_path.is_absolute_path() and expected_config.image_board_builder_path.is_absolute_path() and FileAccess.file_exists(expected_config.image_board_godot_path) and FileAccess.file_exists(expected_config.image_board_builder_path), "saved reference-board Godot and builder paths are absolute and executable/readable")
 	check(panel.factory_edit.text == "editor_demo:factory" and panel._uses_gui_service(), "explicit GUI settings select the managed adapter without a custom factory or environment variable")
+	panel.context_node_ids = ["fixture"]
+	panel.context_model = JSON.stringify(panel.model(), "", true, true)
+	panel.context_run = panel.run_id
+	panel.context_inspected_id = panel.selected_id
+	panel.context_selection = panel._graph_selected_ids()
+	var copied_ids = panel.duplicate_context_nodes()
+	check(copied_ids.size() == 1 and panel.nodes[1].model == image_model, "duplicating a node preserves its independent model")
+	var secondary_model = "fixture-image-secondary.safetensors"
+	panel.node_model_edit.text = secondary_model
+	check(panel.apply_fields() and panel.nodes[0].model == image_model and panel.nodes[1].model == secondary_model, "editing one node model does not change its sibling or service defaults")
+	check(panel.graph.get_node(NodePath(str(panel.nodes[1].id) + '/GeneratorDescription')).text.contains(secondary_model), "the graph immediately describes the node's own selected model")
 	panel.path_edit.text = state_path.path_join("workflow.json")
 	panel.save_graph()
 	var graph_text = FileAccess.get_file_as_string(panel.path_edit.text)
-	check(not graph_text.contains(valid_endpoint) and not graph_text.contains(image_model) and not graph_text.contains("service_config"), "workflow serialization excludes machine service settings")
+	check(not graph_text.contains(valid_endpoint) and graph_text.contains(image_model) and graph_text.contains(secondary_model) and not graph_text.contains("service_config"), "workflow stores node models but excludes machine service settings")
+	panel.open_graph()
+	check(panel.nodes[0].model == image_model and panel.nodes[1].model == secondary_model, "distinct node models survive save and reopen")
+	var legacy_graph = JSON.parse_string(graph_text)
+	for node in legacy_graph.nodes:
+		node.erase("model")
+		node.erase("image_model")
+	panel.path_edit.text = state_path.path_join("legacy-workflow.json")
+	var legacy_file = FileAccess.open(panel.path_edit.text, FileAccess.WRITE)
+	legacy_file.store_string(JSON.stringify(legacy_graph))
+	legacy_file.close()
+	panel.open_graph()
+	check(panel.nodes[0].model == image_model and panel.nodes[1].model == image_model, "legacy nodes migrate once from their former service defaults")
 	panel.check_service()
 	await idle()
-	check(panel.service_report.capabilities.text_to_image.ready and panel.service_report.capabilities.image_to_mesh.ready, "selected fixture models enable the corresponding discovered capabilities")
+	check(panel.service_report.capabilities.text_to_image.ready and panel.service_report.capabilities.image_to_mesh.ready, "detected capabilities remain ready independently of node selection")
 	check(panel.service_capability_labels.text_to_image.text.contains("就绪") and panel.service_capability_labels.image_to_mesh.text.contains("就绪"), "capability readiness is shown separately for image and mesh types")
 	var saved_config = config.duplicate(true)
 	panel.queue_free()
@@ -177,10 +202,10 @@ func run():
 	panel.endpoint_edit.text = OS.get_environment("AINATIVE_SERVICE_TEST_MISSING_ENDPOINT")
 	panel.check_service()
 	await idle()
-	check(panel.service_report.capabilities.text_to_image.code == "image_model_missing" and panel.service_report.capabilities.image_to_mesh.code == "mesh_model_missing", "missing model lists report the specific image and mesh requirements")
-	check(panel.service_capability_labels.text_to_image.text.contains("模型") and not panel.service_report.capabilities.text_to_mesh.ready, "missing models leave affected capabilities unavailable with a repair hint")
+	check(panel.service_report.models.image.is_empty() and panel.service_report.models.mesh.is_empty(), "an empty service model catalog is reported without inventing a default")
+	check(panel.service_report.capabilities.text_to_image.ready and panel.service_report.capabilities.image_to_mesh.ready, "capability detection does not depend on a model being selected")
 	await configure_valid()
-	check(panel._service_blocker("text_to_image").is_empty() and panel._service_blocker("image_to_mesh").is_empty(), "corrected detected and saved settings recover service eligibility without restarting")
+	check(panel._service_blocker("text_to_image", {"model":image_model}).is_empty() and panel._service_blocker("image_to_mesh", {"model":mesh_model}).is_empty(), "corrected detected settings and explicit node models recover service eligibility without restarting")
 	# A mesh-only configuration is sufficient until an explicit redraw prompt is supplied.
 	select_model(panel.image_model_choice, "")
 	panel.save_service_settings()
@@ -250,7 +275,7 @@ func run():
 	check(kimi_draft.endpoint == "" and not kimi_draft.has("kimi_model"), "direct draft discards obsolete route values")
 	check(panel.kimi_auth_label.text.contains("尚未验证") and panel.kimi_auth_label.text.contains("agent-gw SDK"), "local readiness does not claim SDK account authorization")
 	panel.save_service_settings()
-	check(panel._service_blocker("text_to_mesh").is_empty() and panel._service_blocker("model_adjust").is_empty() and panel._service_blocker("text_to_image").contains("Kimi Work") and panel._service_blocker("image_to_image").contains("pythonw"), "missing image tools do not block Mesh generation or adjustment and explain the independent 2D configuration")
+	check(panel._service_blocker("text_to_mesh", {"model":"v3.1"}).is_empty() and panel._service_blocker("model_adjust", {"model":"v3.1"}).is_empty() and panel._service_blocker("text_to_image").contains("Kimi Work") and panel._service_blocker("image_to_image").contains("pythonw"), "missing image tools do not block Mesh generation or adjustment and explain the independent 2D configuration")
 	panel.kimi_image_tool_edit.text = state_path.path_join("fixture-only/image_generation_tool.py")
 	panel.kimi_image_pythonw_edit.text = state_path.path_join("fixture-only/pythonw.exe")
 	kimi_draft = panel.service_draft()
@@ -262,15 +287,27 @@ func run():
 	check(panel.parameter_form.parameters().get("width") == 1024 and panel.parameter_form.parameters().get("height") == 1024 and not panel.parameter_form.rows.seed.visible, "Kimi Work images expose effective default dimensions and hide unsupported sampling")
 	panel.parameter_form.controls.width.value = 1536
 	check(panel.apply_fields() and panel.nodes[0].parameters.width == 1536 and panel.parameter_form.controls.width.custom_arrow_step == 16, "Kimi Work image widths use real 16-pixel controls beyond the legacy 1024 limit")
+	set_node("text_to_mesh", "", "first fixture node")
+	check(panel.nodes[0].provider == "kimi_native" and panel.node_model_edit.text == "v3.1", "Tripo node initializes its own model from the legacy default")
+	for i in panel.generator_choice.item_count:
+		if panel.generator_choice.get_item_metadata(i) == "text_to_mesh": panel.generator_choice.select(i)
+	panel.add_generator()
+	panel.node_model_edit.text = "v3.0"
+	check(panel.apply_fields() and panel.nodes[0].model == "v3.1" and panel.nodes[1].model == "v3.0", "two Tripo nodes keep independent model identifiers")
 	panel.path_edit.text = state_path.path_join("kimi-composite-workflow.json")
 	panel.save_graph()
 	var workflow_text = FileAccess.get_file_as_string(panel.path_edit.text)
-	check(not workflow_text.contains("fixture-only") and not workflow_text.contains("generation-service.json"), "machine image-tool paths never enter workflow serialization")
+	check(not workflow_text.contains("fixture-only") and not workflow_text.contains("generation-service.json") and workflow_text.contains("v3.0"), "machine image-tool paths never enter workflow serialization and node models persist")
+	var tripo_nodes = panel.nodes.duplicate(true)
+	tripo_nodes[0].id = "tripo_first"
 	set_node("model_adjust", ProjectSettings.globalize_path("res://fixtures/sample.glb"))
 	panel.nodes[0].provider = panel._generator_provider("model_adjust")
 	panel.context_picker.file_selected.emit(ProjectSettings.globalize_path("res://fixtures/sample.png"))
 	check(panel.source_browse.text == "选择模型…" and str(panel.source_picker.filters).contains("*.glb") and not str(panel.source_picker.filters).contains("*.png"), "model adjustment selects a GLB or embedded glTF rather than an image source")
 	check(panel.parameter_form.rows.prompt.text.contains("可选") and panel.nodes[0].parameters.prompt.is_empty() and panel.node_run_blocker("fixture").is_empty(), "model adjustment accepts its required source and one image with optional text without submitting a job")
+	panel.nodes.append_array(tripo_nodes)
+	panel.rebuild()
+	panel.select_node("fixture")
 	panel.save_graph()
 	# Simulate a pre-migration saved file. Loading must preserve the selected SDKs.
 	var old_kimi_config = kimi_draft.duplicate(true)
@@ -292,6 +329,7 @@ func run():
 	panel.select_node("fixture")
 	check(panel.nodes[0].type == "model_adjust" and panel.nodes[0].provider == "kimi_native" and panel.output_kind(panel.nodes[0]) == 2, "model adjustment node and Mesh output survive a real Workbench reopen")
 	check(panel.nodes[0].source_snapshots.size() == 1 and panel.nodes[0].image_context_snapshots.size() == 1 and panel.nodes[0].parameters.prompt.is_empty() and panel.node_run_blocker("fixture").is_empty(), "source model, guidance image and optional text survive save and reopen")
+	check(panel.nodes[1].model == "v3.1" and panel.nodes[2].model == "v3.0", "Tripo node models survive workflow reopening independently of access settings")
 	# Switching to offline remains usable for real local-copy preview/publication.
 	mode("offline")
 	panel.save_service_settings()

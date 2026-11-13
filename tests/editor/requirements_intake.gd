@@ -56,15 +56,15 @@ func _run():
 		return
 	settings.set_setting("gonggong/issue_number", "")
 	settings.set_setting("gonggong/request_id", "")
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
 	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("GONGGONG_TEST_ENDPOINT")
-	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "fixture"
+	dock.find_child("APIModel", true, false).text = "fixture"
 	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "intake-unit-session-secret"
 	var key = dock.get_ai_settings_control().find_child("APIKey", true, false)
 	key.text_changed.emit(key.text)
-	var model_status = dock.get_ai_settings_control().find_child("ModelStatus", true, false)
+	var model_status = dock.find_child("ModelStatus", true, false)
 	var ready_deadline := Time.get_ticks_msec() + 15000
 	while (backend.disabled or not _catalog_ready(dock)) and Time.get_ticks_msec() < ready_deadline:
 		await process_frame

@@ -37,7 +37,9 @@ func check(condition: bool, label: String) -> bool:
 
 func field(name: String) -> Node:
 	var value = ai.find_child(name, true, false)
-	return value if value != null else environment.find_child(name, true, false)
+	if value == null:
+		value = environment.find_child(name, true, false)
+	return value if value != null else chat.find_child(name, true, false)
 
 func edit_field(name: String, value: String):
 	var control = field(name)
@@ -176,8 +178,10 @@ func run():
 	var art_sections = workbench.get_settings_sections()
 	check(art_sections.ai.get_parent().name == 'ArtAISettingsSlot' and art_sections.environment.get_parent().name == 'ArtEnvironmentSettingsSlot', 'artist getters refer to the actual centralized controls')
 	check(workspace.get_model_settings_control().get_parent().name == 'ModelCatalogSettingsSlot', 'personal model catalog shares the central AI page')
-	for name in ['AIBackend','ModelPicker','APIEndpoint','APIModel','APIKey','CLIModel','CodexModel','AllowTools','AutoExecuteCommands']:
-		check(ai.find_children(name, '', true, false).size() == 1 and chat.find_child(name, true, false) == null, 'single centralized chat AI control: ' + name)
+	for name in ['APIEndpoint','APIKey','AllowTools','AutoExecuteCommands']:
+		check(ai.find_children(name, '', true, false).size() == 1 and chat.find_child(name, true, false) == null, 'single centralized chat access control: ' + name)
+	for name in ['AIBackend','ModelPicker','APIModel','CLIModel','CodexModel']:
+		check(chat.find_children(name, '', true, false).size() == 1 and ai.find_child(name, true, false) == null, 'single per-conversation model control: ' + name)
 	for name in ['CLINode','CLIBridge','CLIEntry','CodexEntry','EngineBuildPython','EngineBuildArguments','GongGongWorkspace','GongGongPython','GongGongTenant']:
 		check(environment.find_children(name, '', true, false).size() == 1 and chat.find_child(name, true, false) == null, 'single centralized environment control: ' + name)
 	check(chat.find_child('ChatSettingsDialog', true, false) == null and chat.find_child('AdvancedSettingsScroll', true, false) == null, 'business chat no longer owns a settings popup')
@@ -255,19 +259,28 @@ func verify_model_catalog():
 	# The helper is a private synthetic executable; it records input and never contacts a provider.
 	catalog.user_id = 'fixture-user'
 	catalog.chat = chat
-	catalog.authorize_embedded(chat.get_production_workspace())
-	field('APIKey').text = 'synthetic-session-only-key'
 	field('APIEndpoint').text = OS.get_environment('UNIFIED_ENDPOINT')
+	field('APIEndpoint').text_changed.emit(field('APIEndpoint').text)
+	field('APIKey').text = 'synthetic-session-only-key'
+	field('APIKey').text_changed.emit(field('APIKey').text)
 	field('APIModel').text = 'live-unsaved-model'
 	edit_field('CLINode', OS.get_environment('UNIFIED_ALT_NODE'))
 	field('CLIEntry').text = 'live-unsaved-buddy'
 	edit_field('CodexEntry', OS.get_environment('UNIFIED_CHAT_CLI'))
 	field('CodexModel').text = 'live-unsaved-codex'
+	# Runtime edits revoke the previous environment's authorization. Authorize
+	# only after deferred environment observation has settled as well.
+	await get_tree().process_frame
+	await get_tree().process_frame
+	catalog.user_id = 'fixture-user'
+	catalog.authorize_embedded(chat.get_production_workspace())
 	catalog._connect_local()
 	var deadline = Time.get_ticks_msec() + 12000
 	while catalog.pending and Time.get_ticks_msec() < deadline:
 		await get_tree().create_timer(0.025).timeout
-	var capture = JSON.parse_string(FileAccess.get_file_as_string(OS.get_environment('UNIFIED_MODEL_CAPTURE')))
+	details.catalog_status = catalog.info.text
+	details.catalog_capture_created = FileAccess.file_exists(OS.get_environment('UNIFIED_MODEL_CAPTURE'))
+	var capture = JSON.parse_string(FileAccess.get_file_as_string(OS.get_environment('UNIFIED_MODEL_CAPTURE'))) if details.catalog_capture_created else {}
 	check(capture is Dictionary and capture.get('authorized_workspace') == chat.get_production_workspace() and chat.get_production_workspace() != chat.get_installed_host_root(), 'catalog uses installed helper with separate game workspace authorization')
 	check(capture is Dictionary and capture.get('endpoint') == field('APIEndpoint').text and capture.get('editor_key') == field('APIKey').text and capture.get('model') == 'live-unsaved-model', 'catalog identifies current unsaved endpoint model and session key consistently')
 	var runtime: Dictionary = chat.get_runtime_configuration()
@@ -422,6 +435,8 @@ func verify_cross_window_environment():
 	workspace._check_environment_changed()
 
 func verify_persistence():
+	var settings = EditorInterface.get_editor_settings()
+	var previous_global_model = settings.get_setting('ai_chat/model')
 	field('APIKey').text = 'synthetic-session-only-key'
 	field('APIModel').text = 'persisted-unified-model'
 	field('EngineBuildArguments').text = 'debug_symbols=yes'
@@ -431,8 +446,7 @@ func verify_persistence():
 	workbench.save_settings()
 	workbench.managed_comfy_panel.runtime_path.text = OS.get_environment('UNIFIED_MESH_RUNTIME')
 	workbench.managed_comfy_panel.save_local()
-	var settings = EditorInterface.get_editor_settings()
-	check(settings.get_project_metadata('ai_chat', 'model', '') == 'persisted-unified-model' and settings.get_setting('ai_chat/build_arguments') == 'debug_symbols=yes', 'central chat save persists project model and host build settings')
+	check(settings.get_setting('ai_chat/model') == previous_global_model and settings.get_setting('ai_chat/build_arguments') == 'debug_symbols=yes', 'central chat save preserves access settings without writing a global session model')
 	check(not settings.has_setting('ai_chat/api_key'), 'central chat save never creates a persisted API key')
 	# A different writer may have updated the JSON while this form still holds
 	# older text. Neither Save action may publish a stale group of runtime values.

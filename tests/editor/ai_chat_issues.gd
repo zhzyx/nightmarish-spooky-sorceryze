@@ -42,7 +42,7 @@ func run():
 	settings.set_setting("gonggong/workspace", workspace)
 	settings.set_project_metadata("daqian_access", workspace.sha256_text(), {"actor":{
 		"repo_id":"fixture", "user_id":"tester", "repo":"fixture/concurrency"}})
-	var controls = dock.get_ai_settings_control()
+	var controls = dock
 	if OS.get_environment("STEERING_CODEX") == "1":
 		selected_backend = 2
 		controls.find_child("CodexModel", true, false).text = "fixture"

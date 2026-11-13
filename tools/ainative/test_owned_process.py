@@ -392,9 +392,11 @@ class EmbeddedBundleTests(unittest.TestCase):
             # must invalidate the emitted source/hash bundle.
             header = installed / "bundle.gen.h"
             captured["action"]([header], captured["sources"], None)
-            self.assertIn("tools/editor_provenance_process.py", header.read_text())
+            self.assertIn("tools/editor_provenance_process.py", header.read_text(encoding="utf-8"))
             before = module.implementation_fingerprint()
-            installed_helper.write_text(installed_helper.read_text() + "\n# isolated revision\n")
+            installed_helper.write_text(
+                installed_helper.read_text(encoding="utf-8") + "\n# isolated revision\n", encoding="utf-8"
+            )
             self.assertNotEqual(module.implementation_fingerprint(), before)
             installed_helper.unlink()
             with self.assertRaises(FileNotFoundError):

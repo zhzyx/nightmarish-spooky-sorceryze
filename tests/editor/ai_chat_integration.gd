@@ -125,7 +125,19 @@ func _command_pid_alive(pid: int) -> bool:
 	var probe = "import ctypes,sys; k=ctypes.WinDLL('kernel32',use_last_error=True); k.OpenProcess.restype=ctypes.c_void_p; k.GetExitCodeProcess.argtypes=[ctypes.c_void_p,ctypes.POINTER(ctypes.c_ulong)]; k.CloseHandle.argtypes=[ctypes.c_void_p]; h=k.OpenProcess(0x1000,False,int(sys.argv[1])); c=ctypes.c_ulong(); alive=bool(h and k.GetExitCodeProcess(h,ctypes.byref(c)) and c.value==259); k.CloseHandle(h) if h else None; sys.exit(0 if alive else 1)"
 	return OS.execute(OS.get_environment("AI_CHAT_TEST_PYTHON"), ["-c", probe, str(pid)]) == 0
 
+func _wait_send_ready() -> bool:
+	var dock = root.find_child("AI Chat", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
+	var send = dock.find_child("Send", true, false)
+	var deadline = Time.get_ticks_msec() + 40000
+	while (backend.disabled or send.disabled) and Time.get_ticks_msec() < deadline:
+		await process_frame
+	var status = dock.find_child("ModelStatus", true, false)
+	return _check(not backend.disabled and not send.disabled, "Model loading did not re-enable chat sending: " + status.text)
+
 func _phase(name: String, marker: String, reject := false) -> bool:
+	if not await _wait_send_ready():
+		return false
 	chat_input.text = "case:" + name
 	if OS.get_environment("AI_CHAT_WINDOWS_COMMANDS") == "1":
 		send_button.pressed.emit()
@@ -469,6 +481,7 @@ func _run_history_performance():
 		quit(0)
 		return
 	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "test-secret"
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text_changed.emit("test-secret")
 	# Drain startup persistence before measuring saves caused by user input.
 	if not await _wait_saved_history(dock):
 		quit(1)
@@ -546,17 +559,18 @@ func _run_cleanup():
 		print("AI_CHAT_CLEANUP_RESTORE_OK")
 		quit(0)
 		return
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
 	backend.select(1 if OS.get_environment("AI_CHAT_TEST_BACKEND") == "cli" else 0)
 	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
-	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "mock-model"
+	dock.find_child("APIModel", true, false).text = "mock-model"
 	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "test-secret"
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text_changed.emit("test-secret")
 	if backend.selected == 1:
 		dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
 		dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
 		dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
 		dock.get_environment_settings_control().find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
-		dock.get_ai_settings_control().find_child("CLIModel", true, false).text = "mock-model"
+		dock.find_child("CLIModel", true, false).text = "mock-model"
 	chat_input.text = "case:cleanup_round"
 	send_button.pressed.emit()
 	var deadline = Time.get_ticks_msec() + (90000 if OS.get_environment("AI_CHAT_WINDOWS_COMMANDS") == "1" else 25000)
@@ -603,6 +617,9 @@ func _run_history():
 	var key = dock.get_ai_settings_control().find_child("APIKey", true, false)
 	var history_path = "res://.godot/editor/ai_chat_history.json"
 	var thumbnails = dock.find_child("ImageAttachments", true, false)
+	# History persistence uses a read-only loopback fixture; requirement intake
+	# and write authorization are covered by their own native work-order tests.
+	dock.find_child("ConsultationOnly", true, false).button_pressed = true
 	if stage == "corrupt":
 		if not _check("暂停本次运行的自动保存" in _chat_text() and agent_tabs.tab_count == 1, "Invalid history was not protected"):
 			quit(1)
@@ -613,6 +630,10 @@ func _run_history():
 		quit(0)
 		return
 	if stage != "seed":
+		var restored_model = dock.find_child("CLIModel" if OS.get_environment("AI_CHAT_TEST_BACKEND") == "cli" else "APIModel", true, false)
+		if not _check(restored_model.text == "history-model-b", "Restart did not restore Agent B's independent model"):
+			quit(1)
+			return
 		if not _check(key.text.is_empty() and agent_tabs.tab_count == 2 and agent_tabs.current_tab == 1 and chat_input.text == "历史草稿 B" and "HISTORY_B_SEED_OK" in _chat_text() and "HISTORY_A_SEED_OK" not in _chat_text() and not _chat_busy() and not dialog.visible and dock.find_child("Undo", true, false) == null, "Startup did not restore the active Agent safely"):
 			quit(1)
 			return
@@ -621,6 +642,9 @@ func _run_history():
 			return
 		agent_tabs.current_tab = 0
 		message_list = dock.find_child("Messages", true, false)
+		if not _check(restored_model.text == "history-model-a", "Restart did not restore Agent A's independent model"):
+			quit(1)
+			return
 		if not _check(chat_input.text == "历史草稿 A [REDACTED]" and thumbnails.find_children("ImageThumbnail", "Button", true, false).size() == 1 and message_list.find_children("ImageThumbnail", "Button", true, false).size() == 1 and "HISTORY_A_SEED_OK" in _chat_text() and "HISTORY_B_SEED_OK" not in _chat_text(), "Agent A text, images or draft was not restored"):
 			quit(1)
 			return
@@ -629,8 +653,10 @@ func _run_history():
 			return
 	key.text = "test-secret"
 	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
-	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "mock-model"
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	key.text_changed.emit(key.text)
+	if stage == "seed":
+		dock.find_child("APIModel", true, false).text = "mock-model"
+	var backend = dock.find_child("AIBackend", true, false)
 	var expected_backend = 1 if OS.get_environment("AI_CHAT_TEST_BACKEND") == "cli" else 0
 	if stage == "seed":
 		backend.select(expected_backend)
@@ -644,8 +670,11 @@ func _run_history():
 		dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
 		dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
 		dock.get_environment_settings_control().find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
-		dock.get_ai_settings_control().find_child("CLIModel", true, false).text = "mock-model"
+		dock.find_child("CLIModel", true, false).text = "mock-model"
 	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
+	if not await _wait_send_ready():
+		quit(1)
+		return
 	if stage == "seed":
 		var image = Image.create(16, 8, false, Image.FORMAT_RGB8)
 		image.fill(Color(0.2, 0.4, 0.6))
@@ -654,7 +683,7 @@ func _run_history():
 		picker.files_selected.emit(PackedStringArray([ProjectSettings.globalize_path("res://history_image.png")]))
 		chat_input.text = "case:history_a_seed\n中文对话 test-secret"
 		send_button.pressed.emit()
-		if not await _wait_idle() or not _check("HISTORY_A_SEED_OK" in _chat_text(), "History seed response missing"):
+		if not await _wait_idle() or not _check("HISTORY_A_SEED_OK" in _chat_text(), "History seed response missing; status=" + progress_status.text + "; draft=" + chat_input.text + "; chat=" + _chat_text()):
 			quit(1)
 			return
 		chat_input.text = "历史草稿 A test-secret"
@@ -665,6 +694,21 @@ func _run_history():
 			quit(1)
 			return
 		chat_input.text = "历史草稿 B"
+		var session_model = dock.find_child("CLIModel" if expected_backend == 1 else "APIModel", true, false)
+		session_model.text = "history-model-b"
+		session_model.text_changed.emit(session_model.text)
+		agent_tabs.current_tab = 0
+		session_model.text = "history-model-a"
+		session_model.text_changed.emit(session_model.text)
+		agent_tabs.current_tab = 1
+		if not _check(session_model.text == "history-model-b", "Agent B model was overwritten by Agent A"):
+			quit(1)
+			return
+		agent_tabs.current_tab = 0
+		if not _check(session_model.text == "history-model-a", "Agent A model was overwritten by Agent B"):
+			quit(1)
+			return
+		agent_tabs.current_tab = 1
 		if not await _wait_saved_history(dock):
 			quit(1)
 			return
@@ -744,18 +788,19 @@ func _run_agent_close():
 		quit(0)
 		return
 	var cli = OS.get_environment("AI_CHAT_TEST_BACKEND") == "cli"
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
 	backend.select(1 if cli else 0)
 	backend.item_selected.emit(backend.selected)
 	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
-	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "mock-model"
+	dock.find_child("APIModel", true, false).text = "mock-model"
 	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "test-secret"
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text_changed.emit("test-secret")
 	if cli:
 		dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
 		dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
 		dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
 		dock.get_environment_settings_control().find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
-		dock.get_ai_settings_control().find_child("CLIModel", true, false).text = "mock-model"
+		dock.find_child("CLIModel", true, false).text = "mock-model"
 	if not await _phase("agent_a_seed", "AGENT_A_SECRET"):
 		quit(1)
 		return
@@ -893,16 +938,17 @@ func _run():
 		quit(1)
 		return
 	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
-	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "mock-model"
+	dock.find_child("APIModel", true, false).text = "mock-model"
 	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "test-secret"
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text_changed.emit("test-secret")
+	var backend = dock.find_child("AIBackend", true, false)
 	if OS.get_environment("AI_CHAT_TEST_BACKEND") == "cli":
 		backend.select(1)
 		dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
 		dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
 		dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
 		dock.get_environment_settings_control().find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
-		dock.get_ai_settings_control().find_child("CLIModel", true, false).text = "mock-model"
+		dock.find_child("CLIModel", true, false).text = "mock-model"
 	else:
 		backend.select(0)
 	backend.item_selected.emit(backend.selected)
@@ -952,15 +998,15 @@ func _run():
 		if not _check(not settings_page.is_visible_in_tree() and not settings_toggle.toggle_mode and chat_input.is_visible_in_tree() and dock.get_ai_settings_control() == ai_settings, "Returning from settings must restore the composer and retain the same form"):
 			quit(1)
 			return
-	var picker = dock.get_ai_settings_control().find_child("ModelPicker", true, false)
+	var picker = dock.find_child("ModelPicker", true, false)
 	await _refresh_models(dock)
-	if not await _wait_idle() or not _check("已获取" in dock.get_ai_settings_control().find_child("ModelStatus", true, false).text, "Model enumeration failed"):
+	if not await _wait_idle() or not _check("已获取" in dock.find_child("ModelStatus", true, false).text, "Model enumeration failed"):
 		quit(1)
 		return
 	if not _check(picker.get_item_count() >= 2 and picker.get_item_metadata(picker.selected) == "mock-model", "Model list or retained selection is incorrect"):
 		quit(1)
 		return
-	var model_field = dock.get_ai_settings_control().find_child("CLIModel", true, false) if backend.selected == 1 else dock.get_ai_settings_control().find_child("APIModel", true, false)
+	var model_field = dock.find_child("CLIModel", true, false) if backend.selected == 1 else dock.find_child("APIModel", true, false)
 	var catalog_size = picker.item_count
 	for manual_id in ["a", "ab", "abc"]:
 		model_field.text = manual_id
@@ -977,7 +1023,7 @@ func _run():
 		if picker.get_item_metadata(i) == "mock-alternative":
 			picker.select(i)
 			picker.item_selected.emit(i)
-			if not _check((dock.get_ai_settings_control().find_child("CLIModel", true, false) if backend.selected == 1 else dock.get_ai_settings_control().find_child("APIModel", true, false)).text == "mock-alternative", "Model selection did not update the request configuration"):
+			if not _check((dock.find_child("CLIModel", true, false) if backend.selected == 1 else dock.find_child("APIModel", true, false)).text == "mock-alternative", "Model selection did not update the request configuration"):
 				quit(1)
 				return
 	for i in picker.item_count:
@@ -989,7 +1035,7 @@ func _run():
 		var configured_url = endpoint.text
 		endpoint.text = configured_url.replace("/v1/chat/", "/v1/no-list/chat/")
 		await _refresh_models(dock)
-		if not await _wait_idle() or not _check("失败" in dock.get_ai_settings_control().find_child("ModelStatus", true, false).text and picker.get_item_metadata(picker.selected) == "mock-model" and not "private-model-error" in _chat_text(), "Model enumeration fallback did not preserve selection or leaked diagnostics"):
+		if not await _wait_idle() or not _check("失败" in dock.find_child("ModelStatus", true, false).text and picker.get_item_metadata(picker.selected) == "mock-model" and not "private-model-error" in _chat_text(), "Model enumeration fallback did not preserve selection or leaked diagnostics"):
 			quit(1)
 			return
 		endpoint.text = configured_url

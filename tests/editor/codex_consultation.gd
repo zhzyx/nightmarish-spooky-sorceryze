@@ -38,7 +38,7 @@ func _run():
 	root.find_child("AI Chat", true, false).set_runtime_field("workflow_python", "missing-python")
 	settings.set_setting("gonggong/issue_number", "")
 	settings.set_setting("gonggong/request_id", "")
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
 	backend.select(2)
 	backend.item_selected.emit(2)
 	dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("CONSULT_BRIDGE")

@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "kind": "local_verification",
+  "request_id": "per-ai-model-selection-20261112",
+  "issue_number": 971,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+  "recorded_at": "2026-11-13T06:01:31Z",
+  "base_head": "d5a77b1d539a9b92a1b81fc84c4df447dab82a7d",
+  "candidate_state": "staged_worktree",
+  "environment": {
+    "platform": "Windows x86_64",
+    "compiler": "MSVC Visual Studio 14.5, Windows SDK 10.0.26100.0",
+    "godot": "4.8.beta.custom_build.d5a77b1d5",
+    "editor_sha256": "77a1299e55fcd99d1906e06a553a0f0c0e2f43138b8105dff62cc4a778b54aae",
+    "editor_bytes": 163343360,
+    "build_options": "platform=windows target=editor arch=x86_64 dev_build=no debug_symbols=no d3d12=no accesskit=no use_llvm=no -j16"
+  },
+  "checks": [
+    {
+      "scope": "tools/ainative eight specified unittest modules using real pythonw.exe",
+      "observed": "137 tests: 132 passed and 5 conditionally skipped",
+      "passed": true
+    },
+    {
+      "scope": "native model picker and project AI configuration",
+      "observed": "8 model-picker groups passed; full/reopen/other/child/scheduled all passed with offline fixtures",
+      "passed": true
+    },
+    {
+      "scope": "native unified settings and credential binding",
+      "observed": "full/reopen settings passed with no strict script errors; openai, godot-unbound, godot-other, godot-bound and openai-official passed",
+      "passed": true
+    },
+    {
+      "scope": "AI Chat history and model catalog cancellation",
+      "observed": "seed/restore/backup/corrupt passed with independent history-model-a/history-model-b requests; models cancellation, late-response rejection and recovery passed with native exit 0",
+      "passed": true
+    },
+    {
+      "scope": "model catalog autofetch and design batch",
+      "observed": "16 executable catalog scenarios and all 7 requested design-batch model scenarios passed",
+      "passed": true
+    },
+    {
+      "scope": "Maliang native workbench",
+      "observed": "Modeling 67, Sculpt 78, unified settings 28 and generation service 104 checks passed",
+      "passed": true
+    },
+    {
+      "scope": "process and startup regression",
+      "observed": "owned-process and motion modules: 17 tests, 16 passed and 1 conditionally skipped; the final standard candidate passed 5 consecutive isolated editor startups",
+      "passed": true
+    },
+    {
+      "scope": "final report cross-check",
+      "observed": "verify_final_reports.py passed; every final native report with an artifact digest binds the editor_sha256 recorded in this file",
+      "passed": true
+    }
+  ],
+  "event_bindings": {
+    "request": "gonggong-diting-data/events/gonggong-workspace/per-ai-model-selection-20261112/request-per-ai-model-selection-20261112.json",
+    "tenant_id": "gonggong-workspace"
+  },
+  "gate_recovery": [
+    {
+      "incident": "a22d61a0bc554f4b51cfa38a40473c4f65a28ac09bc748bf00bde92e9718fefc",
+      "observed": "Explicit tenant gonggong-workspace corrected the intake mismatch; the same intake then passed"
+    },
+    {
+      "incident": "858862ec30d955e99dba0cfe027f2cc2bf336531c91789631979629fc5db8e65",
+      "observed": "Two completed nested build worktrees caused the directory snapshot rejection; both were removed and the directory scan passed while reports and the candidate binary were retained"
+    },
+    {
+      "incident": "e9d0f0a64b318a1cc32b314e35e1376e3a84a800b2621ff77b9d66a5b19803e5",
+      "observed": "This collection file supplies the required same-PR request_id and Issue #971 binding; formal delivery recheck remains pending at this recording"
+    }
+  ],
+  "not_verified": [
+    "No real paid provider generation was invoked; offline fixtures do not prove model quality, account availability or generation quality",
+    "codebuddy-startup and backend-switch were not counted because a trusted job-object.node module is unavailable",
+    "test_kimi_direct_provider.py is outside the passed scope",
+    "Non-Windows platforms were not exercised",
+    "The legacy c074db21 dev_build=yes intermittent startup crash has no confirmed root cause and is not claimed as fixed",
+    "Formal gate, exact candidate CI, PR merge, main readback and Issue closure remain pending at this recording"
+  ],
+  "usage": null,
+  "usage_unknown_reason": "The host supplied no measured model token or cost receipt"
+}

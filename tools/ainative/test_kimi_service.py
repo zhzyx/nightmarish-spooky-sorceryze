@@ -129,7 +129,7 @@ class KimiServiceTests(unittest.TestCase):
         board = settings({**self.value, "godot_path": "board-runtime", "builder_path": "/fixture/modeling_builder.gd"})
         self.assertEqual(
             image_batch_settings(board)["board_config"],
-            {"board_godot_path": "board-runtime", "board_builder_path": "/fixture/image_contact_sheet.gd"},
+            {"board_godot_path": "board-runtime", "board_builder_path": str(Path("/fixture/image_contact_sheet.gd"))},
         )
 
     def test_mesh_stays_ready_when_image_tool_is_absent_or_invalid(self):
@@ -138,7 +138,7 @@ class KimiServiceTests(unittest.TestCase):
             patch("modeling_provider.check_modeling_cli", side_effect=AssertionError("Modeling CLI probe called")),
             patch("generation_service.read_endpoint", side_effect=AssertionError("ComfyUI probe called")),
         ):
-            for value in (self.value, self.image_value()):
+            for value in (self.value, self.image_value(), {**self.value, "kimi_model": "retired-legacy-model"}):
                 report = check_service(value)
                 self.assertTrue(report["connected"])
                 self.assertTrue(report["capabilities"]["text_to_mesh"]["ready"])
@@ -147,8 +147,9 @@ class KimiServiceTests(unittest.TestCase):
                 self.assertIn(
                     report["capabilities"]["image_to_image"]["code"], ("image_not_configured", "image_tool_missing")
                 )
-                self.assertEqual(report["models"], {"image": [], "mesh": ["Tripo API generate_3d_model v1 (v3.1)"]})
+                self.assertEqual(report["models"], {"image": [], "mesh": ["p1", "p2", "v2.5", "v3.0", "v3.1"]})
                 self.assertEqual(report["model3d"]["service"], "Tripo API")
+                self.assertNotIn("retired-legacy-model", report["backend_revision"])
 
     def test_independent_image_discovery_does_not_call_legacy_backends(self):
         with (
@@ -175,8 +176,9 @@ class KimiServiceTests(unittest.TestCase):
                 self.config, self.model(), self.root / "executor.sqlite", "a" * 32
             )
         self.assertEqual(snapshot["mode"], "kimi_native")
-        self.assertEqual(set(snapshot), {"mode", "provider"})
+        self.assertEqual(set(snapshot), {"mode", "provider", "providers", "provider_types"})
         self.assertEqual(snapshot["provider"]["model"], "v3.1")
+        self.assertEqual(snapshot["providers"]["kimi_native"]["model"], "v3.1")
         self.assertEqual(snapshot["provider"]["tool_path"], str(self.tool))
         self.assertNotIn("api_key", json.dumps(snapshot))
         self.assertNotIn("fixture-secret", json.dumps(snapshot))
@@ -235,7 +237,8 @@ class KimiServiceTests(unittest.TestCase):
         self.assertEqual(
             [node["provider"] for node in model["nodes"]], ["kimi_native", "kimi_work_image", "kimi_work_image"]
         )
-        self.assertEqual(set(snapshot), {"mode", "provider", "image_provider"})
+        self.assertEqual(set(snapshot), {"mode", "providers", "provider_types"})
+        self.assertEqual(snapshot["provider_types"], {"kimi_native": "kimi_native", "kimi_work_image": "kimi_work_image"})
         self.assertIsInstance(providers["kimi_native"], KimiNativeDirectProvider)
         self.assertIsInstance(providers["kimi_work_image"], KimiWorkImageProvider)
         self.assertNotIn("api_key", json.dumps(snapshot))

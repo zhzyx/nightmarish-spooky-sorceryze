@@ -45,11 +45,11 @@ func _run():
 	root.find_child("AI Chat", true, false).set_runtime_field("workflow_python", "missing-python")
 	settings.set_setting("gonggong/issue_number", "")
 	settings.set_setting("gonggong/request_id", "")
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
 	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("GONGGONG_TEST_ENDPOINT")
-	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "fixture"
+	dock.find_child("APIModel", true, false).text = "fixture"
 	for name in ["AllowTools", "AutoApplyFileChanges", "AutoExecuteCommands", "EngineAutoRestart"]:
 		_chat_setting(dock, name).button_pressed = true
 	# Windows guides to central environment settings; macOS rejects missing workspace configuration.

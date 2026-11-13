@@ -288,6 +288,18 @@ class CodexTests(unittest.TestCase):
         self.p.submit(self.request, self.manifest, KEY)
         self.assertEqual((self.directory / "runs").read_text().count("run"), 1)
 
+    def test_selected_model_is_an_explicit_optional_cli_argument(self):
+        self.p.submit(self.request, self.manifest, KEY)
+        self.assertEqual(self.wait()["state"], "succeeded")
+        self.assertNotIn("--model", (self.directory / "args").read_text().splitlines())
+        self.config["model"] = "fixture-codex-model"
+        self.p = CodexProvider(self.config)
+        key = "b" * 64
+        self.p.submit(self.request, self.manifest, key)
+        self.assertEqual(self.wait(key)["state"], "succeeded")
+        arguments = (self.directory / "args").read_text().splitlines()
+        self.assertEqual(arguments[arguments.index("--model") + 1], "fixture-codex-model")
+
     def test_refuses_bad_old_foreign_ambiguous_or_missing_png(self):
         for index, mode in enumerate(("old", "wrong-thread", "corrupt", "multiple", "no-output", "existing")):
             with self.subTest(mode=mode):

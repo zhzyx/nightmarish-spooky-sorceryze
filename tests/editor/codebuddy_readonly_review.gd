@@ -59,10 +59,10 @@ func run() -> void:
 	if setup:
 		setup.hide()
 	var ai = dock.get_ai_settings_control()
-	ai.find_child("APIKey", true, false).text = "private-offline-fixture"
-	ai.find_child("AllowTools", true, false).button_pressed = true
-	ai.find_child("AutoApplyFileChanges", true, false).button_pressed = true
-	ai.find_child("AutoExecuteCommands", true, false).button_pressed = true
+	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "private-offline-fixture"
+	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
+	dock.get_ai_settings_control().find_child("AutoApplyFileChanges", true, false).button_pressed = true
+	dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = true
 	dock.find_child("ConsultationOnly", true, false).button_pressed = false
 	for unused in 600:
 		if not send_button.disabled:
@@ -119,8 +119,8 @@ func run() -> void:
 					var environment = dock.get_environment_settings_control()
 					environment.find_child("CLIBridge", true, false).text = OS.get_environment("CODEBUDDY_REVIEW_BRIDGE")
 					environment.find_child("CLIEntry", true, false).text = OS.get_environment("CODEBUDDY_REVIEW_ENTRY")
-					ai.find_child("CLIModel", true, false).text = "mock-model"
-					var backend = ai.find_child("AIBackend", true, false)
+					dock.find_child("CLIModel", true, false).text = "mock-model"
+					var backend = dock.find_child("AIBackend", true, false)
 					backend.select(1)
 					backend.item_selected.emit(1)
 					for unused in 1000:

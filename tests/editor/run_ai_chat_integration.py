@@ -51,7 +51,8 @@ class Handler(BaseHTTPRequestHandler):
             self.wfile.write(b'{"error":"private-model-error"}')
             return
         assert self.path in {"/v1/models", "/v1/slow-models/models"}
-        assert self.headers.get("Authorization") == "Bearer test-secret"
+        # A cold history restore deliberately has no session-only API key yet.
+        assert self.headers.get("Authorization") in {None, "Bearer test-secret"}
         models = [
             {"id": "mock-model", "name": "Mock Model", "description": "Friendly description"},
             {"id": "mock-alternative", "name": "Alternative"},
@@ -75,7 +76,6 @@ class Handler(BaseHTTPRequestHandler):
             request = json.loads(body)
             assert self.headers.get("Authorization") == "Bearer test-secret"
             assert b"test-secret" not in body, "API key appeared in request content"
-            assert request["model"] == "mock-model"
             messages = request["messages"]
             for message in messages:
                 if isinstance(message.get("content"), list):
@@ -92,6 +92,11 @@ class Handler(BaseHTTPRequestHandler):
                 if messages[start]["content"]
                 else "image_only"
             )
+            expected_model = {
+                "history_a_resume": "history-model-a",
+                "history_b_resume": "history-model-b",
+            }.get(case, "mock-model")
+            assert request["model"] == expected_model, (case, request["model"], expected_model)
             assert len(json.dumps(request, ensure_ascii=False).encode("utf-8")) <= 1024 * 1024, (
                 "Full request exceeded the unchanged bridge budget"
             )
@@ -1077,7 +1082,13 @@ def main():
     worker.start()
     try:
         with tempfile.TemporaryDirectory(prefix="ai_chat_validation_") as directory:
-            isolated_editor = macos_editor(args.godot, Path(directory) / "isolated-editor")
+            # Exercise Windows candidates through the same private-copy contract
+            # as the other native runners, without modifying the build output.
+            isolated_editor = (
+                copy_editor(args.godot, Path(directory) / "isolated-editor")
+                if os.name == "nt"
+                else macos_editor(args.godot, Path(directory) / "isolated-editor")
+            )
             project = Path(directory) / "project"
             project.mkdir()
             external = Path(directory) / "engine source 角色"

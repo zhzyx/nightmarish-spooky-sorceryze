@@ -847,7 +847,7 @@ def main():
                     self.send_header("Content-Length", str(len(data)))
                     self.end_headers()
                     self.wfile.write(data)
-                except (BrokenPipeError, ConnectionResetError):
+                except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
                     if args.case != "models-initial-cancel":
                         errors.append("Unexpected disconnected model-list request")
                 except Exception as error:
@@ -1268,7 +1268,7 @@ def main():
                 except (BrokenPipeError, ConnectionResetError):
                     pass
                 except ConnectionAbortedError as error:
-                    if args.case not in {"review-stop", "review-parent-stop"}:
+                    if args.case not in {"review-stop", "review-parent-stop", "models-initial-stop"}:
                         errors.append(repr(error))
                 except Exception as error:
                     errors.append(repr(error))

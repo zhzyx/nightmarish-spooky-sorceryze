@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-41d6fe840937e6ab36b7c6dc504ade9dbe9621d1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "per-ai-model-selection-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a22d61a0bc554f4b51cfa38a40473c4f65a28ac09bc748bf00bde92e9718fefc",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/972",
+    "action": "intake",
+    "detection_head": "ad79c25d9cdae8a635fdf74ff957336799903a10",
+    "context_sha256": "b398099293e7ea17454b221bfbe6b5e5f35bb1310f8040fcb1a1b7867e0e4349",
+    "operator": "kaiyunxue",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "Issue #971 用户明确授权的最新主线重新接单",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+    "diagnosis": "重新 intake 未显式指定宿主租户，报 Host tenant must match work-items.json；并非需求实现或权限失效。首次 receive 还暴露当前 shell 的 Windows Node 路径缺少扩展名，已改用仓库可信 Node。",
+    "next_action": "以 --tenant gonggong-workspace 重跑同一 intake；成功后整合 origin/main d5a77b1d，重建并全量复验候选。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T05:30:38.602210+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T05:32:01.462987+00:00",
+  "sha256": "7d3746057257f680c16e28ec20372c9968966ebd428792c1c31bfb025c421506"
+}

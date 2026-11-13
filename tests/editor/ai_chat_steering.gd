@@ -69,7 +69,7 @@ func _run():
 		var saved := _history()
 		if not saved.get("agents", []).is_empty():
 			report["snapshot"] = saved.agents[0].get("snapshot_id", "")
-		var ai = dock.get_ai_settings_control()
+		var ai = dock
 		report["restored_backend"] = ai.find_child("AIBackend", true, false).selected
 		report["restored_endpoint"] = ai.find_child("APIEndpoint", true, false).text
 		report["restored_model"] = ai.find_child("APIModel", true, false).text
@@ -82,12 +82,12 @@ func _run():
 	if setup != null:
 		setup.hide()
 	EditorInterface.set_main_screen_editor("AI Chat")
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
 	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("STEERING_ENDPOINT")
 	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "isolated-fixture-key"
-	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "fixture"
+	dock.find_child("APIModel", true, false).text = "fixture"
 	if OS.get_environment("STEERING_CODEX") == "1":
 		backend.select(2)
 		backend.item_selected.emit(2)
@@ -96,7 +96,7 @@ func _run():
 		dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("STEERING_BRIDGE")
 		dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = OS.get_environment("STEERING_CODEX_ENTRY")
 		dock.get_environment_settings_control().find_child("CodexEntry", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CodexEntry", true, false).text)
-		dock.get_ai_settings_control().find_child("CodexModel", true, false).text = "fixture"
+		dock.find_child("CodexModel", true, false).text = "fixture"
 	var consultation = dock.find_child("ConsultationOnly", true, false)
 	consultation.button_pressed = true
 	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = false
@@ -106,7 +106,7 @@ func _run():
 		# it runs. Complete that initialization before exercising busy input.
 		var key = dock.get_ai_settings_control().find_child("APIKey", true, false)
 		key.text_changed.emit(key.text)
-		var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false)
+		var status = dock.find_child("ModelStatus", true, false)
 		var catalog_deadline := Time.get_ticks_msec() + 10000
 		while (backend.disabled or not _catalog_ready(dock)) and Time.get_ticks_msec() < catalog_deadline:
 			await process_frame

@@ -59,7 +59,7 @@ func run() -> void:
 	check(panel.editor.canvas.has_node("wf-workorder") and not panel.editor.canvas.has_node("wf-analysis"), "Direct draft incorrectly attributed to Yanshi")
 	panel.publish_cancel.pressed.emit()
 	panel.chat = chat
-	var backend = chat.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = chat.find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
 	chat.get_ai_settings_control().find_child("APIEndpoint", true, false).text = "http://127.0.0.1:1/v1/chat/completions"
@@ -131,7 +131,7 @@ func run() -> void:
 	panel.current = source
 	panel.board.issues = previous
 	panel._update_direct_action()
-	chat.get_ai_settings_control().find_child("APIModel", true, false).text = "different-current-model"
+	chat.find_child("APIModel", true, false).text = "different-current-model"
 	var stale := canvas_turn(panel, binding, "继续推进")
 	stale.direct_key += "-old"
 	await panel._finish_canvas_turn(stale, '{"route":"execute","text":"继续"}')

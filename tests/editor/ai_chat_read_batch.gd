@@ -40,7 +40,7 @@ func run():
 	chat = root.find_child("AI Chat", true, false)
 	EditorInterface.get_editor_settings().set_setting("gonggong/workspace", OS.get_environment("DAQIAN_TEST_REPO"))
 	chat.set_runtime_field("workflow_python",OS.get_environment("DAQIAN_TEST_PYTHON"))
-	var ai = chat.get_ai_settings_control()
+	var ai = chat
 	var backend = ai.find_child("AIBackend", true, false)
 	var backend_id := 1 if mode == "acp" else 2
 	backend.select(backend_id)

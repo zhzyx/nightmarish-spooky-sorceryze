@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-6914cf97aaae9f74ce2626cbc5dc306d09bba4d8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "per-ai-model-selection-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "858862ec30d955e99dba0cfe027f2cc2bf336531c91789631979629fc5db8e65",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/972",
+    "action": "delivery",
+    "detection_head": "d5a77b1d539a9b92a1b81fc84c4df447dab82a7d",
+    "context_sha256": "3cbbd339dd051b975c6be69037dc4cbe7f02b16f8693efd91ef38565b03b9d81",
+    "operator": "kaiyunxue",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "Issue #971 用户明确授权的正式交付",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+    "diagnosis": "正式 delivery 快照把 .native-test-runtime 下两个已完成的嵌套 Git worktree 识别为目录型条目，因此拒绝 Submodules/directories；暂存区全部为普通文件，未发生提交，产品代码与测试未失败。",
+    "next_action": "移除 baseline-c074 与 candidate-ad79 两个已完成构建的 worktree，保留独立候选二进制和报告；确认目录型快照条目消失后重跑原 delivery 门禁。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T05:54:41.981729+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T05:58:50.209296+00:00",
+  "sha256": "81d769ee05bab8cc7192a82ff2bc77358cd8f8e0ab816dfd401d187b7d495085"
+}

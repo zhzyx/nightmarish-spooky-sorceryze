@@ -130,11 +130,14 @@ def check_cli(path):
 class CodexProvider(DurableProvider):
     def __init__(self, config):
         require(
-            isinstance(config, dict) and set(config) == {"cli_path", "storage", "mesh_config"}, "invalid CLI config"
+            isinstance(config, dict)
+            and set(config) in ({"cli_path", "storage", "mesh_config"}, {"cli_path", "storage", "mesh_config", "model"}),
+            "invalid CLI config",
         )
         self.config = json.loads(canonical(config))
         # Resolve on submit/check, allowing durable jobs to be read if CLI moved.
         require(isinstance(config["cli_path"], str), "invalid CLI path")
+        require(isinstance(config.get("model", ""), str), "invalid CLI model")
         self.storage = Path(config["storage"]).expanduser().resolve()
         self.storage.mkdir(parents=True, exist_ok=True)
         self.database = self.storage / "codex-jobs.sqlite"
@@ -304,6 +307,8 @@ class CodexProvider(DurableProvider):
             "--cd",
             str(directory),
         ]
+        if self.config.get("model", "").strip():
+            arguments.extend(["--model", self.config["model"].strip()])
         configs = {
             "forced_login_method": '"chatgpt"',
             "model_provider": '"openai"',

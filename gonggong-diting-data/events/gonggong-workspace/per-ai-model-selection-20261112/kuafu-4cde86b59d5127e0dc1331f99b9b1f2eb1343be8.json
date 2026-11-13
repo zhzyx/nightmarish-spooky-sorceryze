@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4cde86b59d5127e0dc1331f99b9b1f2eb1343be8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "per-ai-model-selection-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e9d0f0a64b318a1cc32b314e35e1376e3a84a800b2621ff77b9d66a5b19803e5",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/972",
+    "action": "delivery",
+    "detection_head": "d5a77b1d539a9b92a1b81fc84c4df447dab82a7d",
+    "context_sha256": "3cbbd339dd051b975c6be69037dc4cbe7f02b16f8693efd91ef38565b03b9d81",
+    "operator": "kaiyunxue",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "Issue #971 用户明确授权的正式交付",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+    "diagnosis": "候选已包含 request 与夸父 Diting 事件，但没有同 PR 的 data-collection JSON 绑定 request_id 与 Issue #971，因此 PR_EVIDENCE_BINDING 拒绝；未提交，产品验证结果未变。",
+    "next_action": "新增 data-collection/per-ai-model-selection-verification-20261113.json，记录真实候选哈希、测试计数、Issue URL 和未验证边界，暂存后重跑原 delivery。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T06:00:01.270067+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T06:01:26.191082+00:00",
+  "sha256": "2f42fc3bbf8b7bb579169eaeeef9cd85c8e546fd9cb7c4d0ef626accff7ae7e5"
+}

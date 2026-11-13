@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f0f1d020c5911a5ed5710bb924e1703b828273ef",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "per-ai-model-selection-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "4c0f4b0e61b02787e8acffc60530ae0895c018cd1392342c7d0d2de451cf3dc4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/972",
+    "action": "delivery",
+    "detection_head": "b720e9c582678c1e13481d5e898676218aa6c5de",
+    "context_sha256": "99d91fe94041f2d89cd0d40218778db062832bfc8fa008613df25bedfd926d52",
+    "operator": "kaiyunxue",
+    "worker": "kaiyunxue",
+    "authority_ref": "用户明确要求继续完成 Issue #971 的正式交付",
+    "evidence": "writer_submit 回读基线 b720e9c582678c1e13481d5e898676218aa6c5de、最新 main c55e823a691286afa69949a0985015fb9375094a，4 个重叠路径，未提交未创建 PR",
+    "diagnosis": "远端 main 在本地验证期间前进并修改 AI Chat 重叠文件；签发入口按精确候选保护停止，需要整合与重新验证，当前没有证据表明是产品回归",
+    "next_action": "由 kaiyunxue 整合最新 main，解决重叠，重新构建并复验后重跑同一正式签发入口",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T18:21:10.089812+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T18:22:38.213249+00:00",
+  "sha256": "0703cc227c464fab94a89e5125036c6478737c92c0b17793b131cda8f44e3f6f"
+}

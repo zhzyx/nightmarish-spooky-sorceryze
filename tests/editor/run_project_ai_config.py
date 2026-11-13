@@ -35,7 +35,7 @@ def main():
             self.end_headers()
             try:
                 self.wfile.write(body)
-            except (BrokenPipeError, ConnectionResetError):
+            except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
                 pass  # An obsolete probe is deliberately cancelled.
 
         def do_GET(self):

@@ -43,7 +43,7 @@ func run() -> void:
 	if consultation:
 		# Match an explicitly selected new parent, not the never-selected ctor slot.
 		dock.find_child("AddAgent", true, false).pressed.emit()
-	var ai = dock.get_ai_settings_control()
+	var ai = dock
 	ai.find_child("APIEndpoint", true, false).text = OS.get_environment("DESIGN_BATCH_ENDPOINT")
 	ai.find_child("APIModel", true, false).text = "external-chat-fixture"
 	ai.find_child("APIKey", true, false).text = "isolated-external-fixture"

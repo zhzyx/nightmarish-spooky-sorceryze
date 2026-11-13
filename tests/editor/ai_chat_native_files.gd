@@ -237,7 +237,7 @@ func _run_snapshots() -> bool:
 		return false
 	dock.get_ai_settings_control().find_child("AllowTools", true, false).set_pressed_no_signal(true)
 	dock.get_ai_settings_control().find_child("AutoApplyFileChanges", true, false).set_pressed_no_signal(true)
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
 	var cli = OS.get_environment("AI_CHAT_TEST_BACKEND") == "cli"
 	backend.select(1 if cli else 0)
 	backend.item_selected.emit(backend.selected)
@@ -246,10 +246,10 @@ func _run_snapshots() -> bool:
 		dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
 		dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
 		dock.get_environment_settings_control().find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
-		dock.get_ai_settings_control().find_child("CLIModel", true, false).text = "mock-model"
+		dock.find_child("CLIModel", true, false).text = "mock-model"
 	else:
 		dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
-		dock.get_ai_settings_control().find_child("APIModel", true, false).text = "mock-model"
+		dock.find_child("APIModel", true, false).text = "mock-model"
 		dock.get_ai_settings_control().find_child("APIKey", true, false).text = "test-secret"
 	var before = "extends SceneTree\n\nfunc _initialize():\n\tquit(0)\n"
 	var after = OS.get_environment("AI_CHAT_EXPECTED_AFTER")
@@ -559,14 +559,14 @@ func _run():
 	# Approval cases must not depend on the editor's automation defaults.
 	dock.get_ai_settings_control().find_child("AutoApplyFileChanges", true, false).set_pressed_no_signal(false)
 	dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).set_pressed_no_signal(false)
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
 	backend.select(1)
 	backend.item_selected.emit(1)
 	dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
 	dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
 	dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
 	dock.get_environment_settings_control().find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
-	dock.get_ai_settings_control().find_child("CLIModel", true, false).text = "mock-model"
+	dock.find_child("CLIModel", true, false).text = "mock-model"
 	var tools = dock.get_ai_settings_control().find_child("AllowTools", true, false)
 	tools.button_pressed = true
 	# A legacy saved opt-in must no longer enable automatic attachment.

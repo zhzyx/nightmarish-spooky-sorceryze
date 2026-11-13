@@ -100,7 +100,8 @@ class ServiceTests(unittest.TestCase):
         self.assertTrue(all(state["ready"] for state in report["capabilities"].values()))
         report = check_service({**self.config, "image_model": "", "mesh_model": ""})
         self.assertTrue(report["connected"])
-        self.assertFalse(any(state["ready"] for state in report["capabilities"].values()))
+        self.assertTrue(all(state["ready"] for state in report["capabilities"].values()))
+        self.assertEqual(report["models"]["mesh"], ["mesh.safetensors"])
         self.assertTrue(all(method == "GET" for method, _ in self.requests))
         self.assertFalse(any(route in ("/prompt", "/upload/image") for _, route in self.requests))
 
@@ -144,9 +145,13 @@ class ServiceTests(unittest.TestCase):
         self.assertEqual(report["capabilities"]["image_to_mesh"]["code"], "service_nodes_missing")
         self.assertIn("SaveGLB", report["capabilities"]["image_to_mesh"]["missing_nodes"])
         self.assertTrue(report["capabilities"]["text_to_image"]["ready"])
+        self.info["SaveGLB"] = {}
         self.info["CheckpointLoaderSimple"]["input"]["required"]["ckpt_name"] = [[]]
-        report = check_service(self.config)
-        self.assertEqual(report["capabilities"]["text_to_image"]["code"], "image_model_missing")
+        report = check_service({**self.config, "image_model": "removed.safetensors", "mesh_model": "removed.safetensors"})
+        self.assertEqual(report["models"], {"image": [], "mesh": ["mesh.safetensors"]})
+        self.assertTrue(report["capabilities"]["text_to_image"]["ready"])
+        self.assertTrue(report["capabilities"]["text_to_mesh"]["ready"])
+        self.assertTrue(report["capabilities"]["image_to_mesh"]["ready"])
 
     def test_frozen_settings_run_identity_and_no_fake_hashes(self):
         first = dispatch(self.args, {"model": self.model()})["run_id"]

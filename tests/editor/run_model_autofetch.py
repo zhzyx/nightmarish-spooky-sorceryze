@@ -47,7 +47,7 @@ func fixture_pid_running(pid: int) -> bool:
     var state := "".join(output).strip_edges()
     return not state.is_empty() and not state.begins_with("Z")
 func finish(ok: bool, reason := ""):
-    var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false) if dock != null else null
+    var status = dock.find_child("ModelStatus", true, false) if dock != null else null
     var result := {"ok": ok, "case": case_name, "error": reason, "checks": checks, "heartbeat": heartbeat, "model_status": status.text if status != null else "", "user_data": OS.get_user_data_dir()}
     FileAccess.open(OS.get_environment("ACCEPT_RESULT"), FileAccess.WRITE).store_string(JSON.stringify(result))
     print("MODEL_ACCEPTANCE_RESULT=", JSON.stringify(result))
@@ -61,7 +61,7 @@ func stable_count(kind: String, count: int) -> bool:
     await create_timer(1.5).timeout
     return events(kind) == count
 func selected_backend(value: int):
-    var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+    var backend = dock.find_child("AIBackend", true, false)
     backend.select(value)
     backend.item_selected.emit(value)
 func catalog_has(id: String) -> bool:
@@ -69,11 +69,11 @@ func catalog_has(id: String) -> bool:
         if option.id == id:
             return true
     return false
-func project_model_is(id: String) -> bool:
-    var field = dock.get_ai_settings_control().find_child("CodexModel", true, false)
-    return field.text == id and EditorInterface.get_editor_settings().get_project_metadata("ai_chat", "codex_model", "") == id
+func session_model_is(id: String) -> bool:
+    var field = dock.find_child("CodexModel", true, false)
+    return field.text == id
 func wait_backend_ready(id: String, seconds := 15.0) -> bool:
-    var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+    var backend = dock.find_child("AIBackend", true, false)
     var deadline := Time.get_ticks_msec() + int(seconds * 1000.0)
     while Time.get_ticks_msec() < deadline:
         if backend != null and not backend.disabled and catalog_has(id):
@@ -93,11 +93,11 @@ func _run():
         finish(false, "missing AI Chat")
         return
     EditorInterface.set_main_screen_editor("AI Chat")
-    if not dock.has_method("get_model_catalog_snapshot") or dock.get_ai_settings_control().find_child("RefreshModels", true, false) == null:
+    if not dock.has_method("get_model_catalog_snapshot") or dock.find_child("RefreshModels", true, false) == null:
         finish(false, "explicit catalog recovery API/button missing")
         return
-    checks.append("explicit catalog recovery API/button available")
-    var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false)
+    checks.append("explicit catalog recovery API/button available in the session workspace")
+    var status = dock.find_child("ModelStatus", true, false)
     if case_name == "catalog-process-boundary":
         if OS.get_name() != "macOS" and OS.get_name() != "Linux":
             finish(false, "SIGSTOP timeout probe is POSIX-specific")
@@ -152,13 +152,13 @@ func _run():
             return
         checks.append("fixture counted initial failure; failure did not loop")
         # The actual UI recovery action must start another request, not a backend signal.
-        dock.get_ai_settings_control().find_child("RefreshModels", true, false).pressed.emit()
+        dock.find_child("RefreshModels", true, false).pressed.emit()
         if not await wait_count(kind, 2):
             finish(false, "explicit retry was swallowed")
             return
         var ai = dock.get_ai_settings_control()
-        var field = ai.find_child(selected, true, false)
-        if not field.editable or ai.find_child("AIBackend", true, false).disabled or dock.find_child("Send", true, false).disabled or dock.find_child("AddAgent", true, false).disabled:
+        var field = dock.find_child(selected, true, false)
+        if not field.editable or dock.find_child("AIBackend", true, false).disabled or dock.find_child("Send", true, false).disabled or dock.find_child("AddAgent", true, false).disabled:
             finish(false, "catalog blocked independent controls")
             return
         field.text = "manual-during-query"
@@ -219,7 +219,7 @@ func _run():
             finish(false, "cancellable request did not start")
             return
         var previous: int = dock.get_model_catalog_snapshot().generation
-        dock.get_ai_settings_control().find_child("CancelModels", true, false).pressed.emit()
+        dock.find_child("CancelModels", true, false).pressed.emit()
         if dock.get_model_catalog_snapshot().loading or dock.get_model_catalog_snapshot().state != "cancelled":
             finish(false, "explicit cancel did not terminate catalog operation")
             return
@@ -248,33 +248,16 @@ func _run():
             return
         checks.append("environment identity change rejected late result and refreshed current source")
     elif case_name == "codex-completed-status-delayed-poll":
-        # Hold the event loop until the actual subprocess has completed, then
-        # delay the native poll beyond its deadline without changing any clock.
+        # Wait for the fixture's explicit successful-exit marker, then delay the
+        # native poll beyond its deadline without changing any clock. The fixture
+        # launcher need not be a direct child registered in this Godot process.
         var deadline := Time.get_ticks_msec() + 3000
-        while events("codex-login-status") < 1 and Time.get_ticks_msec() < deadline:
+        while events("codex-login-status-exit-0") < 1 and Time.get_ticks_msec() < deadline:
             OS.delay_msec(10)
-        if events("codex-login-status") != 1 or events("codex-model-list") != 0:
-            finish(false, "status subprocess was not started before delayed poll")
+        if events("codex-login-status") != 1 or events("codex-login-status-exit-0") != 1 or events("codex-model-list") != 0:
+            finish(false, "successful status subprocess did not reach its exit path before delayed poll")
             return
-        var status_pid := 0
-        for line in FileAccess.get_file_as_string(OS.get_environment("ACCEPT_EVENTS")).split("\n"):
-            if line.is_empty():
-                continue
-            var event = JSON.parse_string(line)
-            if event is Dictionary and event.get("kind", "") == "codex-login-status":
-                # On Windows the editor owns the PE launcher's process handle;
-                # the Python interpreter recording this event is its child.
-                status_pid = int(event.get("entry_pid", 0))
-        if status_pid < 2:
-            finish(false, "actual fixture status PID missing")
-            return
-        deadline = Time.get_ticks_msec() + 3000
-        while OS.is_process_running(status_pid) and Time.get_ticks_msec() < deadline:
-            OS.delay_msec(10)
-        if OS.is_process_running(status_pid) or OS.get_process_exit_code(status_pid) != 0:
-            finish(false, "successful status child did not finish before delayed poll")
-            return
-        checks.append("successful status subprocess finished before delayed native poll")
+        checks.append("successful status subprocess reached its exit path before delayed native poll")
         OS.delay_msec(11000)
         if not await wait_count("codex-model-list", 1) or not await wait_backend_ready("fixture-codex"):
             finish(false, "completed status result lost after delayed native poll")
@@ -295,32 +278,31 @@ func _run():
         if not await wait_count("codex-model-list", 1) or not await wait_backend_ready("fixture-codex"):
             finish(false, "initial Codex catalog missing")
             return
-        var field = dock.get_ai_settings_control().find_child("CodexModel", true, false)
+        var picker = dock.find_child("ModelPicker", true, false)
+        var field = dock.find_child("CodexModel", true, false)
         var tabs = dock.find_child("AgentTabs", true, false)
         var draft = dock.find_child("ChatInput", true, false)
         draft.text = "session A draft"
         field.text = "parent-choice"
         field.text_changed.emit(field.text)
         dock.find_child("AddAgent", true, false).pressed.emit()
-        if tabs.tab_count != 2 or not catalog_has("fixture-codex") or not project_model_is("parent-choice") or not draft.text.is_empty():
-            finish(false, "new session did not reuse project selection/catalog with a separate draft")
+        if tabs.tab_count != 2 or not catalog_has("fixture-codex") or not session_model_is("parent-choice") or not draft.text.is_empty():
+            finish(false, "new session did not inherit an independent initial selection/catalog with a separate draft")
             return
         draft.text = "session B draft"
         field.text = "child-choice"
         field.text_changed.emit(field.text)
         tabs.current_tab = 0
         tabs.tab_changed.emit(0)
-        # AddAgent creates ordinary conversations, which share project AI settings.
-        # Their drafts stay separate; execution-child overrides are a different path.
-        if not project_model_is("child-choice") or not catalog_has("fixture-codex") or draft.text != "session A draft":
-            finish(false, "A lost latest project selection/catalog or its own draft")
+        if not session_model_is("parent-choice") or not catalog_has("fixture-codex") or draft.text != "session A draft":
+            finish(false, "A lost its own selection/catalog or draft after B changed model")
             return
-        field.text = "updated-project-choice"
+        field.text = "updated-parent-choice"
         field.text_changed.emit(field.text)
         tabs.current_tab = 1
         tabs.tab_changed.emit(1)
-        if not project_model_is("updated-project-choice") or not catalog_has("fixture-codex") or draft.text != "session B draft":
-            finish(false, "B lost updated project selection/catalog or its own draft")
+        if not session_model_is("child-choice") or not catalog_has("fixture-codex") or draft.text != "session B draft":
+            finish(false, "B lost its own selection/catalog or draft after A changed model")
             return
         if not await stable_count("codex-model-list", 1):
             finish(false, "session creation triggered duplicate discovery")
@@ -331,19 +313,19 @@ func _run():
         if catalog_has("fixture-codex"):
             finish(false, "old catalog remained after connection changed")
             return
-        checks.append("ordinary sessions share project selection and metadata in both directions while retaining separate drafts")
+        checks.append("ordinary sessions inherit once then preserve independent selections and drafts in both directions")
         checks.append("new session reused catalog without query; config change invalidated old catalog")
     elif case_name == "session-catalog-freshness":
         if not await wait_count("codex-model-list", 1) or not await wait_backend_ready("fixture-codex-old"):
             finish(false, "initial catalog C1 missing")
             return
-        var field = dock.get_ai_settings_control().find_child("CodexModel", true, false)
+        var field = dock.find_child("CodexModel", true, false)
         var tabs = dock.find_child("AgentTabs", true, false)
         field.text = "parent-choice"
         field.text_changed.emit(field.text)
         dock.find_child("AddAgent", true, false).pressed.emit()
-        if tabs.tab_count != 2 or not catalog_has("fixture-codex-old") or not project_model_is("parent-choice"):
-            finish(false, "B did not reuse C1 and project selection")
+        if tabs.tab_count != 2 or not catalog_has("fixture-codex-old") or not session_model_is("parent-choice"):
+            finish(false, "B did not inherit C1 and its initial independent selection")
             return
         field.text = "child-choice"
         field.text_changed.emit(field.text)
@@ -353,18 +335,18 @@ func _run():
             return
         tabs.current_tab = 0
         tabs.tab_changed.emit(0)
-        if not project_model_is("child-choice") or not catalog_has("fixture-codex-new") or catalog_has("fixture-codex-old"):
-            finish(false, "A restored stale C1 instead of latest C2 or lost project selection")
+        if not session_model_is("parent-choice") or not catalog_has("fixture-codex-new") or catalog_has("fixture-codex-old"):
+            finish(false, "A restored stale C1 or lost its independent selection")
             return
         tabs.current_tab = 1
         tabs.tab_changed.emit(1)
-        if not project_model_is("child-choice") or not catalog_has("fixture-codex-new") or catalog_has("fixture-codex-old"):
-            finish(false, "B lost C2 or project selection")
+        if not session_model_is("child-choice") or not catalog_has("fixture-codex-new") or catalog_has("fixture-codex-old"):
+            finish(false, "B lost C2 or its independent selection")
             return
         if not await stable_count("codex-model-list", 2):
             finish(false, "switching sessions duplicated the login catalog refresh")
             return
-        checks.append("same-connection login refresh replaced archived C1 with C2 in both sessions and preserved project selection without duplicate discovery")
+        checks.append("same-connection login refresh replaced archived C1 with C2 in both sessions and preserved independent selections without duplicate discovery")
     elif case_name == "shared-config-inflight":
         if not await wait_count("codex-model-list", 2, 20.0) or not await wait_backend_ready("fixture-codex-new"):
             finish(false, "shared C2 change did not trigger a current-connection query")
@@ -410,7 +392,7 @@ func _run():
             finish(false, "external runtime edit left stale login status or never queried the current source")
             return
         var snap = dock.get_model_catalog_snapshot()
-        var refresh = dock.get_ai_settings_control().find_child("RefreshModels", true, false)
+        var refresh = dock.find_child("RefreshModels", true, false)
         if snap.state != "ready" or snap.loading or refresh.disabled or not await stable_count("codex-model-list", 1):
             finish(false, "current-source recovery left refresh disabled or duplicated discovery")
             return
@@ -446,10 +428,11 @@ func _run():
         if not await wait_count("codex-model-list", 1) or not await stable_count("codex-model-list", 1):
             finish(false, "failure caused repeated model queries")
             return
-        dock.find_child("AdvancedToggle", true, false).pressed.emit()
+        # Model status belongs to the conversation, not the centralized access
+        # settings page. The AI Chat main screen is already active in this fixture.
         await process_frame
         if "已获取" in status.text or catalog_has("fixture-codex") or status.text.is_empty() or not status.is_visible_in_tree():
-            finish(false, "catalog failure not visibly distinguished from success after opening AI settings")
+            finish(false, "catalog failure not visibly distinguished from success in the conversation")
             return
         checks.append("catalog failure visible without retry loop")
     elif case_name in ["api-chat-startup", "api-responses-startup", "codebuddy-startup"]:
@@ -499,6 +482,9 @@ if a[:2]==['login','status']:
         time.sleep(.2)
     if case=='codex-status-login-race' and not (state/'logged-in').exists(): time.sleep(4); sys.exit(1)
     if case=='session-catalog-freshness' and (state/'refresh-login').exists(): sys.exit(0)
+    if case=='codex-completed-status-delayed-poll':
+        if not (state/'logged-in').exists(): sys.exit(1)
+        event('codex-login-status-exit-0'); sys.exit(0)
     sys.exit(0 if (state/'logged-in').exists() else 1)
 if a and a[0]=='login':
     event('codex-login-start')
@@ -674,7 +660,7 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
             .replace("__STATE__", repr(str(state)))
             .replace("__CASE__", repr(case))
             .replace("__CONFIG_PATH__", repr(str(config_file)))
-            .replace("__ALT_CODEX__", repr(str(root / "fake-codex-fixed")))
+            .replace("__ALT_CODEX__", repr(str((root / "fake-codex-fixed").with_suffix(".exe") if os.name == "nt" else root / "fake-codex-fixed")))
             .replace("__NODE__", repr(str(node))),
         )
         alt_codex = fixture_program(
@@ -683,7 +669,7 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
             .replace("__STATE__", repr(str(state)))
             .replace("__CASE__", repr("shared-config-current" if case == "shared-config-inflight" else "codex-startup"))
             .replace("__CONFIG_PATH__", repr(str(config_file)))
-            .replace("__ALT_CODEX__", repr(str(root / "fake-codex-fixed")))
+            .replace("__ALT_CODEX__", repr(str((root / "fake-codex-fixed").with_suffix(".exe") if os.name == "nt" else root / "fake-codex-fixed")))
             .replace("__NODE__", repr(str(node))),
         )
         config_file.write_text(
@@ -895,11 +881,21 @@ def run_case(binary, source, node, case, windows_job_boundary=None):
             if not result["ok"]:
                 result["diagnostic_tail"] = (run.stdout + run.stderr)[-4000:]
             return result
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as error:
+            streams = []
+            for stream in (error.stdout, error.stderr):
+                if stream:
+                    streams.append(stream.decode("utf-8", errors="replace") if isinstance(stream, bytes) else stream)
             return {
                 "ok": False,
                 "case": case,
                 "error": "Editor acceptance timed out; responsiveness or operation did not finish",
+                "diagnostic_tail": "".join(streams)[-6000:],
+                "events": (
+                    [json.loads(line) for line in (state / "events.jsonl").read_text(encoding="utf-8").splitlines()]
+                    if (state / "events.jsonl").exists()
+                    else []
+                ),
             }
         finally:
             server.shutdown()

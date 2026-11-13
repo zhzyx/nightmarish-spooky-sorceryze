@@ -80,7 +80,7 @@ func run():
 	var settings = EditorInterface.get_editor_settings()
 	settings.set_setting("gonggong/workspace", OS.get_environment("DAQIAN_TEST_REPO"))
 	chat.set_runtime_field("workflow_python", OS.get_environment("DAQIAN_TEST_PYTHON"))
-	var controls = chat.get_ai_settings_control()
+	var controls = chat
 	controls.find_child("APIEndpoint", true, false).text = OS.get_environment("DAQIAN_TEST_ENDPOINT")
 	controls.find_child("APIModel", true, false).text = "fixture"
 	controls.find_child("AutoExecuteCommands", true, false).button_pressed = false

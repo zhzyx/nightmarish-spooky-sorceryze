@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-254c51a93008a5ff5eaa01b7139e5c785efe9c88",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "per-ai-model-selection-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8e2ac69825b0025697097fc33c9ce5e8ababed839e38e6100d8861f0dfa2893a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/972",
+    "action": "validation",
+    "detection_head": "c074db21be98784ff1288f1f2d99c793ba156395",
+    "context_sha256": "a97982f92b5c25ddb25a2906a862d3bc2a773564966d316b4a5f2339e2e5b4e3",
+    "operator": "kaiyunxue",
+    "worker": "kaiyunxue",
+    "authority_ref": "Issue #971 用户明确需求与自动交付授权",
+    "evidence": ".native-test-runtime/model-picker-c074-serial.json：c074db21 同一候选六路并发与单项串行均返回 3221225477，报告 ok=false、error=no result，未产生目录请求",
+    "diagnosis": "AI Chat 原生测试进程在业务断言前访问冲突；串行复现排除了单纯并发干扰，当前根因仍待原生堆栈定位，不能记为产品验收通过",
+    "next_action": "由 kaiyunxue 保留候选和证据，隔离最小启动场景并取得崩溃堆栈，修复后按原命令串行复验",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T00:03:23.618698+00:00",
+    "attempted": "六路并发失败后检查无残留测试进程；随后单独运行 run_model_picker 仍以相同返回码失败；未绕过或补记未执行测试",
+    "repair_owner": "kaiyunxue",
+    "continuable": "可继续原生崩溃定位；其余 AI Chat 验收待修复后串行复验，已完成的 Python 与马良报告另行回读"
+  },
+  "occurred_at": "2026-11-13T00:05:08.638971+00:00",
+  "sha256": "0739fcfade3e1c010a51c25f0a4f2713debd4f63fd7a0f3b7b4cd8062970f2c6"
+}
