@@ -1,0 +1,26 @@
+{
+  "request_id": "worktree-cleanup-main-integration-20261113",
+  "issue_number": 1072,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1072",
+  "parent_issue": 978,
+  "incident": "13c3430445782f57c972e6b55596895c2b76e3bfa07f3f9c6f266af0b90b836f",
+  "original_baseline": "d78054420a4034ec44013372cc55893b1c854b58",
+  "integrated_main": "8b3b59d8adcd7568688003624a503500a86add29",
+  "upstream_pr": 1071,
+  "upstream_paths": 65,
+  "overlap": [],
+  "original_staged_patch_preserved": true,
+  "integration_evidence": "retained-worktree-main-integration.json",
+  "path_base": "Private evidence paths resolve under data-collection/receipts/ai-integration-refactor-20261112 in the original main worktree. Public repository paths resolve from repository root.",
+  "diagnosis": "Expected pre-signing base guard stopped an obsolete baseline before commit or push. Current root integrated another publisher's reviewed main changes without modifying their candidate or changing cleanup results.",
+  "resolution_scope": "Metadata/documentation candidate only; re-run original writer_submit and verify exact PR/main CI. Source review and cleanup have passed; publication verification remains pending in this pre-submit snapshot.",
+  "related_cleanup_evidence": "data-collection/ai-integration-retained-worktree-cleanup-978.json",
+  "parent_boundary": "978 remains in progress; newly authorized830 will continue after this delivery. Unknown833 historical queue is not closed.",
+  "local_preparation_correction": {
+    "incident": "85488514bf17a9c032056b9c9fbb681940bd0c33d47b087ef00b78623dc29ab4",
+    "cause": "Private staging helper expected five new paths instead of the actual four and exited before git add; the shell then continued without fail-fast.",
+    "effect": "Writer correctly rejected WORKTREE_UNSTAGED before admission, commit or push. No publication occurred.",
+    "correction": "Use the explicit owned file list and fail-fast execution; check empty working-tree diff before invoking original writer.",
+    "collection": "1072 has no actual Diting events; the collector correctly rejected an empty index. Real dispatch/incident events are978-scoped and collected under978. No empty index was manufactured."
+  }
+}
