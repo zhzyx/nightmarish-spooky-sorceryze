@@ -145,6 +145,15 @@ class BuildScopeTests(unittest.TestCase):
                 self.assertEqual(plan([(path, True)])[0], "full")
         self.assertEqual(plan([("modules/bmp/new_file.cpp", False)])[0], "full")
 
+    def test_host_integration_planner_preserves_mixed_native_coverage(self):
+        host = "customizations/platforms/development/git/heqi/integration_plan.py"
+        native = "core/object/object.cpp"
+        self.assertEqual(plan([(host, True)])[0], "skip")
+        self.assertEqual(plan([(host, True), (native, True)])[:2], ("modules", [native]))
+        self.assertEqual(plan([(host, True), ("core/object/object.h", True)])[0], "full")
+        self.assertEqual(plan([("customizations/platforms/development/git/heqi/new.py", False)])[0], "full")
+        self.assertEqual(plan([("customizations/components/godot-host/session_credentials.py", True)])[0], "full")
+
 
 if __name__ == "__main__":
     unittest.main()

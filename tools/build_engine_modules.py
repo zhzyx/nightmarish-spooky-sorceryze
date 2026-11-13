@@ -52,6 +52,15 @@ def plan(files):
     sources = set()
     for name, modified in files:
         path = PurePosixPath(name)
+        # These exact host CLI inputs have their own Windows/Linux workflow and
+        # no SCons consumer. Unknown additions still require full integration.
+        if name in {
+            "customizations/platforms/development/git/heqi/integration_plan.py",
+            "customizations/platforms/development/git/heqi/test_integration_plan.py",
+            "customizations/platforms/development/git/heqi/concurrent-issue.md",
+            ".github/workflows/integration-plan.yml",
+        }:
+            continue
         if name in {"README.md", "AGENTS.md", "CONTRIBUTING.md"}:
             continue
         if path.parts[0] == "design-docs" and path.suffix == ".md":

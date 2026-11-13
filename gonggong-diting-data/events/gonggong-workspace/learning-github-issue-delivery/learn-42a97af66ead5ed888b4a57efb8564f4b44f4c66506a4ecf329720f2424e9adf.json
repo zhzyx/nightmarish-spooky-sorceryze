@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-github-issue-delivery",
+  "event_id": "learn-42a97af66ead5ed888b4a57efb8564f4b44f4c66506a4ecf329720f2424e9adf",
+  "kind": "analysis",
+  "agent": {
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "id": "codex-current-operator-host",
+    "origin": "external-authorized-host",
+    "version": "0.1.0"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1151",
+  "occurred_at": "2026-11-13T22:53:21.3873336+00:00",
+  "evidence_refs": [
+    "request-1151-concurrent-integration"
+  ],
+  "payload": {
+    "scope": "github-issue-delivery",
+    "lesson": "stage-canonical-evidence-bytes",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "trial_plan": "In an isolated temporary Git repository with text eol=lf, stage CRLF JSON and demonstrate mismatch; write LF JSON and restage, then require identical worktree/index bytes.",
+      "counterexample": "Do not rewrite historical events or unrelated files. Binary evidence and signed bytes may require a different Git attribute contract.",
+      "when": "Windows-generated new JSON evidence in repositories with Git newline normalization and exact-byte evidence gates.",
+      "method": "Generate new evidence with explicit UTF-8 LF, stage it, then compare worktree bytes with the indexed blob before running the expensive full gate."
+    },
+    "evidence": [
+      {
+        "sha256": "770858273dc47cecf1c6627e4c7e9cd06a72111fe2275abaf1bb818ccbc9a863",
+        "path": "data-collection/concurrent-ci-baseline-1151.json"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/concurrent-integration-20261114/request-1151-concurrent-integration.json",
+      "sha256": "4e97fa79737d02a778e0041e56e75b27e2dba9c9f9406f87185a70ac35083320"
+    }
+  },
+  "sha256": "f60ec808c2f65c6f33b186824183b0873a1bf22a587f63d888ef50cfa79dc34c"
+}

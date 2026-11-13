@@ -34,4 +34,10 @@ Issue：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1151
 
 ## 尚未验收
 
+第二批候选减少签发分支 staging/signature 两次 push 与 PR 的重复静态检查：仅跳过 `push` 到 `refs/heads/codex/submit/`，PR/main/manual/merge_group/tag 仍沿原有启用条件。实际旧 push 运行 43522243343 的静态作业耗时 21 秒；这是一个样本，不外推总吞吐。
+
+已核对 SConstruct、SCsub 和 builders 中的实际 customizations 引用。仅四个明确独立的合契 CLI/测试/说明/专用 workflow 路径加入引擎构建排除，未知新增路径、混合原生实现、头文件和嵌入脚本仍按原规则验证。该路由修改自身仍触发完整 CI，不用待审排除绕过自身验收。7 项构建路由测试及 9 种 workflow 表达式条件通过；独立核查者 /root/sinan_b39efaa5c949ae7c 未发现阻断缺陷。远端优化结果尚待回读。
+
+当前已认证身份 viewerPermission=WRITE，GitHub GraphQL main mergeQueue=null。尚无已启用服务端合并队列的证据；本任务未修改远端分支保护或假定具备管理权限。准备并行不取消最终分支更新的串行约束。
+
 当前工具不自动合入、不证明语义兼容、不证明提升真实 CI 吞吐。剩余：完整依赖消费审计、真实并发/排队基准、受影响构建路由优化、发布接入与恢复试验、精确候选 CI、main 回读和整体验收。不得以本工具通过测试关闭整体需求。
