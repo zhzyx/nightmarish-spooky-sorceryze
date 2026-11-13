@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-06179117af0081177655c60bad2184aa9c622bf9",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-run-43478437117-attempt-1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1080",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ecb388eff1ef88a0726e610feadaff074059d16054af9fbebb252e14537ae605",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1080",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1080",
+    "action": "delivery",
+    "detection_head": "d26a46d149313f170a216bdbaf99d43283811a1a",
+    "context_sha256": "04efe099b26c54ee8c833efb986bf69b6d334d31eb01dc935578735a08cc21f9",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "main-b138d6e42bf2d237ed0879335e2fe95cf3b61509-integrated",
+    "diagnosis": "PR1093 exact CI succeeded, then premerge main check detected another publisher merged PR1087. No merge attempted. Integrated from new main in own branch; all12 prior scoped files identical, zero overlap with12 upstream module files, actual10 reliability tests pass.",
+    "next_action": "Sign new exact candidate, await its CI, preserve old source/PR until replacement readback; no takeover of1085 or1086.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T19:02:20.290523+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T19:03:06.217525+00:00",
+  "sha256": "8975d0fa98391b5220023aa51cabb3b5ce34e68f710e71c15cfbbba9d22377d3"
+}
