@@ -57,6 +57,8 @@ class PredictionReconciler
 
 public:
 	[[nodiscard]] bool SetInitialState(const PredictionState &in_stState) noexcept;
+	// Resume keeps the next local sequence, discards untransported history and rebases on authority.
+	[[nodiscard]] bool RestoreAfterReconnect(const PredictionState &in_stState, float &out_fPositionError) noexcept;
 	[[nodiscard]] bool PredictInput(const Vector3 &in_vMovement, PredictionInput &out_stInput) noexcept;
 	[[nodiscard]] bool ApplyAuthoritativeState(const PredictionState &in_stState, float &out_fPositionError) noexcept;
 	[[nodiscard]] const PredictionState &GetPredictedState() const noexcept;

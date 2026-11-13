@@ -66,3 +66,34 @@ ENGINE_NEXT_TEST("Runtime arguments are explicit, bounded and role checked")
 	ENGINE_NEXT_CHECK_EQ(EngineNext::Runtime::ParseArguments({ "--help" }, stConfig), EngineNext::Runtime::RuntimeStatus::Ok);
 	ENGINE_NEXT_CHECK(stConfig.bHelpRequested);
 }
+
+ENGINE_NEXT_TEST("Reconnect impairment and drain arguments are bounded and role checked")
+{
+	EngineNext::Runtime::RuntimeConfig stConfig;
+	stConfig.eRole = EngineNext::Runtime::RuntimeRole::Server;
+	ENGINE_NEXT_CHECK_EQ(EngineNext::Runtime::ParseArguments({ "--drain-after-ms", "3000" }, stConfig), EngineNext::Runtime::RuntimeStatus::Ok);
+	ENGINE_NEXT_CHECK_EQ(stConfig.nDrainAfterMsec, 3000U);
+	ENGINE_NEXT_CHECK_EQ(EngineNext::Runtime::ParseArguments({ "--m2-reconnect" }, stConfig), EngineNext::Runtime::RuntimeStatus::InvalidParameter);
+	ENGINE_NEXT_CHECK_EQ(EngineNext::Runtime::ParseArguments({ "--impairment-loss-permille", "1001" }, stConfig), EngineNext::Runtime::RuntimeStatus::InvalidParameter);
+	ENGINE_NEXT_CHECK_EQ(EngineNext::Runtime::ParseArguments({ "--impairment-queue-capacity", "0" }, stConfig), EngineNext::Runtime::RuntimeStatus::InvalidParameter);
+	stConfig.eRole = EngineNext::Runtime::RuntimeRole::Client;
+	ENGINE_NEXT_CHECK_EQ(
+			EngineNext::Runtime::ParseArguments({ "--m2-reconnect", "--drop-first-input", "--impairment-delay-ms", "8", "--impairment-jitter-ms", "3", "--impairment-queue-capacity", "16" }, stConfig),
+			EngineNext::Runtime::RuntimeStatus::Ok);
+	ENGINE_NEXT_CHECK(stConfig.bReconnectTest);
+	ENGINE_NEXT_CHECK(stConfig.bDropFirstInput);
+	ENGINE_NEXT_CHECK_EQ(stConfig.nImpairmentDelayMsec, 8ULL);
+	ENGINE_NEXT_CHECK_EQ(stConfig.nImpairmentJitterMsec, 3ULL);
+	ENGINE_NEXT_CHECK_EQ(stConfig.nImpairmentQueueCapacity, 16U);
+	ENGINE_NEXT_CHECK_EQ(EngineNext::Runtime::ParseArguments({ "--drain-after-ms", "3000" }, stConfig), EngineNext::Runtime::RuntimeStatus::InvalidParameter);
+}
+
+ENGINE_NEXT_TEST("Drain acknowledgement fault injection is client only")
+{
+	EngineNext::Runtime::RuntimeConfig stConfig;
+	stConfig.eRole = EngineNext::Runtime::RuntimeRole::Client;
+	ENGINE_NEXT_CHECK_EQ(EngineNext::Runtime::ParseArguments({ "--withhold-drain-ack" }, stConfig), EngineNext::Runtime::RuntimeStatus::Ok);
+	ENGINE_NEXT_CHECK(stConfig.bWithholdDrainAck);
+	stConfig.eRole = EngineNext::Runtime::RuntimeRole::Server;
+	ENGINE_NEXT_CHECK_EQ(EngineNext::Runtime::ParseArguments({ "--withhold-drain-ack" }, stConfig), EngineNext::Runtime::RuntimeStatus::InvalidParameter);
+}

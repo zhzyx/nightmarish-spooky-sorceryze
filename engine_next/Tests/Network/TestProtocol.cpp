@@ -106,6 +106,22 @@ ENGINE_NEXT_TEST("Protocol rejects bad versions, lengths, flags, sequences and o
 	ENGINE_NEXT_CHECK_EQ(EngineNext::Network::DecodeHeader(arrFrame.data(), arrFrame.size(), stHeader), EngineNext::Runtime::RuntimeStatus::InvalidParameter);
 }
 
+ENGINE_NEXT_TEST("Protocol disconnect carries drain deadline and acknowledgement")
+{
+	EngineNext::Network::Disconnect stDisconnect;
+	stDisconnect.nReason = static_cast<std::uint16_t>(EngineNext::Network::DisconnectReason::DrainAcknowledge);
+	stDisconnect.nAcknowledgeSequence = 17;
+	stDisconnect.nDrainDeadlineTick = 200;
+	const std::vector<std::uint8_t> arrPayload = EngineNext::Network::EncodeDisconnect(stDisconnect);
+	ENGINE_NEXT_CHECK_EQ(arrPayload.size(), 18ULL);
+	EngineNext::Network::Disconnect stDecoded;
+	ENGINE_NEXT_CHECK_EQ(EngineNext::Network::DecodeDisconnect(arrPayload.data(), arrPayload.size(), stDecoded), EngineNext::Runtime::RuntimeStatus::Ok);
+	ENGINE_NEXT_CHECK_EQ(stDecoded.nReason, 3U);
+	ENGINE_NEXT_CHECK_EQ(stDecoded.nAcknowledgeSequence, 17ULL);
+	ENGINE_NEXT_CHECK_EQ(stDecoded.nDrainDeadlineTick, 200ULL);
+	ENGINE_NEXT_CHECK_EQ(EngineNext::Network::DecodeDisconnect(arrPayload.data(), arrPayload.size() - 1, stDecoded), EngineNext::Runtime::RuntimeStatus::InvalidParameter);
+}
+
 ENGINE_NEXT_TEST("Session creation keeps peer, session and entity identities separate")
 {
 	EngineNext::Runtime::World stWorld;
@@ -127,4 +143,82 @@ ENGINE_NEXT_TEST("Session creation keeps peer, session and entity identities sep
 	ENGINE_NEXT_CHECK(stSessions.RemoveSession(11));
 	ENGINE_NEXT_CHECK(!stSessions.RemoveSession(11));
 	ENGINE_NEXT_CHECK_EQ(stWorld.Count(), 1ULL);
+}
+
+ENGINE_NEXT_TEST("Reconnect preserves identity and authority rotates tokens and rejects replay")
+{
+	EngineNext::Runtime::World stWorld;
+	EngineNext::Network::SessionManager stSessions(stWorld, 41);
+	EngineNext::Network::ClientHello stHello;
+	EngineNext::Network::ServerWelcome stWelcome;
+	std::uint64_t nSessionId = 0;
+	ENGINE_NEXT_CHECK_EQ(stSessions.CreateSession(1, stHello, stWelcome, nSessionId), EngineNext::Runtime::RuntimeStatus::Ok);
+	EngineNext::Gameplay::PredictionState *pState = stWorld.Find(EngineNext::Runtime::EntityId{ nSessionId });
+	ENGINE_NEXT_CHECK(pState != nullptr);
+	pState->vPosition = { 1.536F, 0.0F, 0.0F };
+	pState->nConfirmedSequence = 12;
+	pState->nServerTimeMsec = 192;
+	ENGINE_NEXT_CHECK(stSessions.DisconnectSession(1, 100));
+	ENGINE_NEXT_CHECK_EQ(stSessions.GetDisconnectedCount(), 1U);
+	ENGINE_NEXT_CHECK(stSessions.IsEntityDisconnected(nSessionId));
+	ENGINE_NEXT_CHECK(stSessions.GetSession(1) == nullptr);
+	EngineNext::Network::ClientHello stResume;
+	stResume.nResumeSessionId = nSessionId;
+	stResume.arrResumeToken = stWelcome.arrResumeToken;
+	stResume.arrResumeToken[0] ^= 1U;
+	ENGINE_NEXT_CHECK_EQ(stSessions.ResumeSession(2, stResume, 200, stWelcome, nSessionId), EngineNext::Runtime::RuntimeStatus::InvalidParameter);
+	stResume.arrResumeToken = stWelcome.arrResumeToken;
+	ENGINE_NEXT_CHECK_EQ(stSessions.ResumeSession(2, stResume, 200, stWelcome, nSessionId), EngineNext::Runtime::RuntimeStatus::Ok);
+	ENGINE_NEXT_CHECK_EQ(nSessionId, 1ULL);
+	ENGINE_NEXT_CHECK_EQ(stWelcome.nEntityId, 1ULL);
+	ENGINE_NEXT_CHECK_EQ(stWelcome.nConfirmedInputSequence, 12ULL);
+	ENGINE_NEXT_CHECK_FLOAT(stWelcome.vPosition.fX, 1.536F);
+	ENGINE_NEXT_CHECK(stWelcome.arrResumeToken != stResume.arrResumeToken);
+	ENGINE_NEXT_CHECK_EQ(stSessions.GetDisconnectedCount(), 0U);
+	ENGINE_NEXT_CHECK(!stSessions.IsEntityDisconnected(1));
+	ENGINE_NEXT_CHECK(stSessions.GetSession(2) != nullptr);
+	ENGINE_NEXT_CHECK_EQ(stWorld.Count(), 1U);
+	ENGINE_NEXT_CHECK_EQ(stSessions.ResumeSession(3, stResume, 201, stWelcome, nSessionId), EngineNext::Runtime::RuntimeStatus::AlreadyExists);
+	ENGINE_NEXT_CHECK_EQ(stWorld.Count(), 1U);
+}
+
+ENGINE_NEXT_TEST("Disconnected sessions expire exactly at the grace deadline")
+{
+	EngineNext::Runtime::World stWorld;
+	EngineNext::Network::SessionManager stSessions(stWorld, 7);
+	EngineNext::Network::ClientHello stHello;
+	EngineNext::Network::ServerWelcome stWelcome;
+	std::uint64_t nSessionId = 0;
+	ENGINE_NEXT_CHECK_EQ(stSessions.CreateSession(1, stHello, stWelcome, nSessionId), EngineNext::Runtime::RuntimeStatus::Ok);
+	ENGINE_NEXT_CHECK(stSessions.DisconnectSession(1, 100));
+	stHello.nResumeSessionId = nSessionId;
+	stHello.arrResumeToken = stWelcome.arrResumeToken;
+	ENGINE_NEXT_CHECK_EQ(stSessions.ResumeSession(2, stHello, 5100, stWelcome, nSessionId), EngineNext::Runtime::RuntimeStatus::InvalidParameter);
+	std::vector<EngineNext::Runtime::EntityId> arrExpired;
+	ENGINE_NEXT_CHECK_EQ(stSessions.ExpireDisconnected(5099, arrExpired), 0U);
+	ENGINE_NEXT_CHECK_EQ(stWorld.Count(), 1U);
+	ENGINE_NEXT_CHECK_EQ(stSessions.ExpireDisconnected(5100, arrExpired), 1U);
+	ENGINE_NEXT_CHECK_EQ(arrExpired.size(), 1U);
+	ENGINE_NEXT_CHECK_EQ(arrExpired[0].nValue, nSessionId);
+	ENGINE_NEXT_CHECK_EQ(stWorld.Count(), 0U);
+	ENGINE_NEXT_CHECK_EQ(stSessions.GetDisconnectedCount(), 0U);
+}
+
+ENGINE_NEXT_TEST("Protocol decodes nonfatal draining rejects and validates flags")
+{
+	EngineNext::Network::ErrorReject stReject;
+	stReject.nRejectedType = static_cast<std::uint16_t>(EngineNext::Network::MessageType::ClientHello);
+	stReject.nReason = EngineNext::Network::REJECT_SERVER_DRAINING;
+	stReject.nFatal = 0;
+	stReject.nRejectedSequence = 9;
+	const std::vector<std::uint8_t> arrPayload = EngineNext::Network::EncodeErrorReject(stReject);
+	EngineNext::Network::ErrorReject stDecoded;
+	ENGINE_NEXT_CHECK_EQ(EngineNext::Network::DecodeErrorReject(arrPayload.data(), arrPayload.size(), stDecoded), EngineNext::Runtime::RuntimeStatus::Ok);
+	ENGINE_NEXT_CHECK_EQ(stDecoded.nRejectedType, 1U);
+	ENGINE_NEXT_CHECK_EQ(stDecoded.nReason, 8U);
+	ENGINE_NEXT_CHECK_EQ(stDecoded.nFatal, 0U);
+	ENGINE_NEXT_CHECK_EQ(stDecoded.nRejectedSequence, 9ULL);
+	std::vector<std::uint8_t> arrInvalid = arrPayload;
+	arrInvalid[4] = 2;
+	ENGINE_NEXT_CHECK_EQ(EngineNext::Network::DecodeErrorReject(arrInvalid.data(), arrInvalid.size(), stDecoded), EngineNext::Runtime::RuntimeStatus::InvalidParameter);
 }

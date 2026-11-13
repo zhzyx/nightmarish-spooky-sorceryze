@@ -1,4 +1,4 @@
-"""Run one real next_server and two real next_client processes over UDP."""
+"""Run reconnect, packet loss, interpolation recovery and drain over real UDP."""
 
 import argparse
 import hashlib
@@ -30,6 +30,11 @@ def popen(command, cwd, env):
     )
 
 
+def parse_lines(lines, pattern):
+    expression = re.compile(pattern)
+    return [match.groupdict() for line in lines if (match := expression.fullmatch(line))]
+
+
 def run_handshake(server, client, report_path):
     report_path = Path(report_path).resolve()
     report_path.parent.mkdir(parents=True, exist_ok=True)
@@ -52,7 +57,11 @@ def run_handshake(server, client, report_path):
                 "--port",
                 "0",
                 "--duration-ms",
-                "5000",
+                "8000",
+                "--drain-after-ms",
+                "3000",
+                "--drain-timeout-ms",
+                "1000",
                 "--seed",
                 "41",
                 "--trace-output",
@@ -97,14 +106,25 @@ def run_handshake(server, client, report_path):
                 "--port",
                 str(port),
                 "--duration-ms",
-                "5000",
+                "7000",
                 "--seed",
                 "101" if client_id == "A" else "202",
                 "--client-id",
                 client_id,
+                "--m2-reconnect",
                 "--trace-output",
                 report_path.parent / f"client-{client_id}.jsonl",
             ]
+            if client_id == "A":
+                command.extend([
+                    "--drop-first-input",
+                    "--impairment-delay-ms",
+                    "8",
+                    "--impairment-jitter-ms",
+                    "3",
+                    "--impairment-queue-capacity",
+                    "16",
+                ])
             clients.append((client_id, popen(command, report_path.parent, env)))
 
         client_results = []
@@ -123,83 +143,157 @@ def run_handshake(server, client, report_path):
         result["server_stdout"] = lines
         result["server_stderr"] = errors
         result["clients"] = client_results
-
+        client_lines = {item["client_id"]: item["stdout"].splitlines() for item in client_results}
         welcomes = []
         for client_result in client_results:
-            for line in client_result["stdout"].splitlines():
-                match = re.fullmatch(
-                    r"ENGINE_NEXT_CLIENT_WELCOME client_id=(\S+) session_id=(\d+) entity_id=(\d+)",
-                    line,
-                )
-                if match:
-                    welcomes.append({
-                        "client_id": match.group(1),
-                        "session_id": int(match.group(2)),
-                        "entity_id": int(match.group(3)),
-                    })
-        sessions = []
-        for line in lines:
-            match = re.fullmatch(r"ENGINE_NEXT_SESSION peer_id=(\d+) session_id=(\d+) entity_id=(\d+)", line)
-            if match:
-                sessions.append({
-                    "peer_id": int(match.group(1)),
-                    "session_id": int(match.group(2)),
-                    "entity_id": int(match.group(3)),
-                })
-        predictions = []
-        remotes = []
+            for match in parse_lines(
+                client_result["stdout"].splitlines(),
+                r"ENGINE_NEXT_CLIENT_WELCOME client_id=(?P<client_id>\S+) session_id=(?P<session_id>\d+) entity_id=(?P<entity_id>\d+) resumed=(?P<resumed>[01])",
+            ):
+                match["session_id"] = int(match["session_id"])
+                match["entity_id"] = int(match["entity_id"])
+                match["resumed"] = int(match["resumed"])
+                welcomes.append(match)
+        sessions = parse_lines(
+            lines,
+            r"ENGINE_NEXT_SESSION peer_id=(?P<peer_id>\d+) session_id=(?P<session_id>\d+) entity_id=(?P<entity_id>\d+)",
+        )
+        resumes = parse_lines(
+            lines,
+            r"ENGINE_NEXT_RESUME peer_id=(?P<peer_id>\d+) session_id=(?P<session_id>\d+) entity_id=(?P<entity_id>\d+) confirmed=(?P<confirmed>\d+)",
+        )
+        for collection in (sessions, resumes):
+            for item in collection:
+                for name, value in item.items():
+                    item[name] = int(value)
+        predictions = parse_lines(
+            client_lines["A"],
+            r"ENGINE_NEXT_CLIENT_PREDICTION client_id=A confirmed=(?P<confirmed>\d+) position_x=(?P<position_x>[\d.eE+-]+) history=(?P<history>\d+) corrections=(?P<corrections>\d+) retransmissions=(?P<retransmissions>\d+)",
+        )
+        remotes = parse_lines(
+            client_lines["B"],
+            r"ENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=(?P<entity_id>\d+) position_x=(?P<position_x>[\d.eE+-]+) status=(?P<status>\w+) samples=(?P<samples>\d+) server_time=(?P<server_time>\d+)",
+        )
+        client_resumes = parse_lines(
+            client_lines["A"],
+            r"ENGINE_NEXT_CLIENT_RESUME client_id=A session_id=(?P<session_id>\d+) entity_id=(?P<entity_id>\d+) confirmed=(?P<confirmed>\d+) error=(?P<error>[\d.eE+-]+)",
+        )
+        client_drains = []
         for client_result in client_results:
-            for line in client_result["stdout"].splitlines():
-                match = re.fullmatch(
-                    r"ENGINE_NEXT_CLIENT_PREDICTION client_id=A confirmed=(\d+) position_x=([\d.eE+-]+) history=(\d+) corrections=(\d+)",
-                    line,
+            client_drains.extend(
+                parse_lines(
+                    client_result["stdout"].splitlines(),
+                    r"ENGINE_NEXT_CLIENT_DRAIN client_id=(?P<client_id>\S+) deadline_tick=(?P<deadline_tick>\d+)",
                 )
-                if match:
-                    predictions.append({
-                        "confirmed": int(match.group(1)),
-                        "position_x": float(match.group(2)),
-                        "history": int(match.group(3)),
-                        "corrections": int(match.group(4)),
-                    })
-                match = re.fullmatch(
-                    r"ENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=(\d+) position_x=([\d.eE+-]+) status=(\w+) samples=(\d+)",
-                    line,
+            )
+        drain_begins = parse_lines(
+            lines, r"ENGINE_NEXT_DRAIN_BEGIN peers=(?P<peers>\d+) deadline_tick=(?P<deadline_tick>\d+)"
+        )
+        drain_acks = parse_lines(
+            lines, r"ENGINE_NEXT_DRAIN_ACK peer_id=(?P<peer_id>\d+) session_id=(?P<session_id>\d+)"
+        )
+        drain_completes = parse_lines(
+            lines,
+            r"ENGINE_NEXT_DRAIN_COMPLETE notified=(?P<notified>\d+) acknowledged=(?P<acknowledged>\d+) forced=(?P<forced>\d+) resumed=(?P<resumed>\d+)",
+        )
+        impairments = []
+        for client_result in client_results:
+            impairments.extend(
+                parse_lines(
+                    client_result["stdout"].splitlines(),
+                    r"ENGINE_NEXT_IMPAIRMENT client_id=(?P<client_id>\S+) dropped_input=(?P<dropped_input>\d+) dropped_loss=(?P<dropped_loss>\d+) dropped_overflow=(?P<dropped_overflow>\d+) high_water=(?P<high_water>\d+)",
                 )
-                if match:
-                    remotes.append({
-                        "entity_id": int(match.group(1)),
-                        "position_x": float(match.group(2)),
-                        "status": match.group(3),
-                        "samples": int(match.group(4)),
-                    })
-        result["welcomes"] = welcomes
-        result["server_sessions"] = sessions
-        result["predictions"] = predictions
-        result["remotes"] = remotes
+            )
+        for collection, names in (
+            (predictions, ("confirmed", "position_x", "history", "corrections", "retransmissions")),
+            (remotes, ("entity_id", "position_x", "samples", "server_time")),
+            (client_resumes, ("session_id", "entity_id", "confirmed", "error")),
+            (client_drains, ("deadline_tick",)),
+            (drain_begins, ("peers", "deadline_tick")),
+            (drain_acks, ("peer_id", "session_id")),
+            (drain_completes, ("notified", "acknowledged", "forced", "resumed")),
+            (impairments, ("dropped_input", "dropped_loss", "dropped_overflow", "high_water")),
+        ):
+            for item in collection:
+                for name in names:
+                    item[name] = float(item[name]) if name in {"position_x", "error"} else int(item[name])
+        initial_welcomes = [item for item in welcomes if item["resumed"] == 0]
+        resumed_welcomes = [item for item in welcomes if item["resumed"] == 1]
+        a_initial = next((item for item in initial_welcomes if item["client_id"] == "A"), {})
+        impairment_a = next((item for item in impairments if item["client_id"] == "A"), {})
+        result.update({
+            "welcomes": welcomes,
+            "server_sessions": sessions,
+            "server_resumes": resumes,
+            "client_resumes": client_resumes,
+            "predictions": predictions,
+            "remotes": remotes,
+            "client_drains": client_drains,
+            "drain_begins": drain_begins,
+            "drain_acks": drain_acks,
+            "drain_completes": drain_completes,
+            "impairments": impairments,
+        })
         valid = (
             server_process.returncode == 0
             and all(item["returncode"] == 0 and not item["stderr"] for item in client_results)
             and not errors
-            and len(welcomes) == 2
+            and len(initial_welcomes) == 2
+            and len(resumed_welcomes) == 1
+            and resumed_welcomes[0]["client_id"] == "A"
+            and resumed_welcomes[0]["session_id"] == a_initial.get("session_id")
+            and resumed_welcomes[0]["entity_id"] == a_initial.get("entity_id")
             and len(sessions) == 2
-            and len({item["session_id"] for item in welcomes}) == 2
-            and len({item["entity_id"] for item in welcomes}) == 2
+            and len({item["session_id"] for item in sessions}) == 2
+            and len({item["entity_id"] for item in sessions}) == 2
             and len({item["peer_id"] for item in sessions}) == 2
-            and {(item["session_id"], item["entity_id"]) for item in welcomes}
+            and {(item["session_id"], item["entity_id"]) for item in initial_welcomes}
             == {(item["session_id"], item["entity_id"]) for item in sessions}
+            and len(resumes) == 1
+            and resumes[0]["peer_id"] not in {item["peer_id"] for item in sessions}
+            and resumes[0]["session_id"] == a_initial.get("session_id")
+            and resumes[0]["entity_id"] == a_initial.get("entity_id")
+            and 0 <= resumes[0]["confirmed"] <= 12
+            and len(client_resumes) == 1
+            and client_resumes[0]["session_id"] == resumes[0]["session_id"]
+            and client_resumes[0]["entity_id"] == resumes[0]["entity_id"]
+            and client_resumes[0]["confirmed"] == resumes[0]["confirmed"]
             and len(predictions) == 1
             and predictions[0]["confirmed"] == 24
             and predictions[0]["history"] == 0
             and abs(predictions[0]["position_x"] - 3.072) < 0.001
-            and len(remotes) == 1
-            and remotes[0]["entity_id"] in {item["entity_id"] for item in sessions}
-            and remotes[0]["position_x"] > 0
+            and predictions[0]["corrections"] >= 1
+            and predictions[0]["retransmissions"] >= 1
+            and len(remotes) == 3
             and remotes[0]["status"] in {"interpolated", "held"}
-            and remotes[0]["samples"] >= 2
+            and remotes[1]["status"] == "stale_held"
+            and remotes[2]["status"] in {"interpolated", "held"}
+            and remotes[2]["server_time"] > remotes[1]["server_time"]
+            and all(
+                item["entity_id"] == a_initial.get("entity_id") and item["position_x"] > 0 and item["samples"] >= 2
+                for item in remotes
+            )
+            and len(client_drains) == 2
+            and {item["client_id"] for item in client_drains} == {"A", "B"}
+            and len(drain_begins) == 1
+            and drain_begins[0]["peers"] == 2
+            and all(item["deadline_tick"] == drain_begins[0]["deadline_tick"] for item in client_drains)
+            and len(drain_acks) == 2
+            and len({item["session_id"] for item in drain_acks}) == 2
+            and len(drain_completes) == 1
+            and drain_completes[0]["notified"] == 2
+            and drain_completes[0]["acknowledged"] == 2
+            and drain_completes[0]["forced"] == 0
+            and drain_completes[0]["resumed"] == 1
+            and impairment_a.get("dropped_input") == 1
+            and impairment_a.get("dropped_overflow") == 0
+            and 0 < impairment_a.get("high_water", 0) <= 16
         )
         result["passed"] = valid
         if not valid:
-            raise RuntimeError("Two-client handshake validation failed: " + json.dumps(result))
+            raise RuntimeError(
+                "Reconnect, loss, interpolation recovery or drain validation failed: " + json.dumps(result)
+            )
         result["trace_sha256"] = {
             name: digest(report_path.parent / name) for name in ("server.jsonl", "client-A.jsonl", "client-B.jsonl")
         }
@@ -234,7 +328,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         result = run_handshake(args.server, args.client, args.report)
-        print("ENGINE_NEXT_HANDSHAKE clients=2 distinct_sessions=2 distinct_entities=2 status=ok")
+        print("ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok")
         print(json.dumps({"report": str(args.report), "trace_sha256": result["trace_sha256"]}, indent=2))
         return 0
     except (OSError, RuntimeError, subprocess.SubprocessError) as error:

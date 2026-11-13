@@ -105,6 +105,98 @@ std::size_t SessionManager::GetSessionCount() const noexcept
 	return mapSessions.size();
 }
 
+std::size_t SessionManager::GetDisconnectedCount() const noexcept
+{
+	return mapDisconnected.size();
+}
+
+bool SessionManager::IsEntityDisconnected(std::uint64_t nEntityId) const noexcept
+{
+	for (const std::pair<const std::uint64_t, DisconnectedSession> &stEntry : mapDisconnected)
+	{
+		if (stEntry.second.stSession.stEntityId.nValue == nEntityId)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool SessionManager::DisconnectSession(PeerId in_nPeerId, std::uint64_t nNowMsec) noexcept
+{
+	const std::map<PeerId, Session>::iterator stIterator = mapSessions.find(in_nPeerId);
+	if (stIterator == mapSessions.end())
+	{
+		return false;
+	}
+	DisconnectedSession stDisconnected{ stIterator->second, nNowMsec + 5000 };
+	mapDisconnected.emplace(stDisconnected.stSession.nSessionId, stDisconnected);
+	mapSessions.erase(stIterator);
+	return true;
+}
+
+Runtime::RuntimeStatus SessionManager::ResumeSession(PeerId in_nPeerId, const ClientHello &in_stHello, std::uint64_t nNowMsec, ServerWelcome &out_stWelcome, std::uint64_t &out_nSessionId)
+{
+	if (in_nPeerId == 0 || in_stHello.nResumeSessionId == 0)
+	{
+		return Runtime::RuntimeStatus::InvalidParameter;
+	}
+	if (mapSessions.find(in_nPeerId) != mapSessions.end())
+	{
+		return Runtime::RuntimeStatus::AlreadyExists;
+	}
+	for (const std::pair<const PeerId, Session> &stEntry : mapSessions)
+	{
+		if (stEntry.second.nSessionId == in_stHello.nResumeSessionId)
+		{
+			return Runtime::RuntimeStatus::AlreadyExists;
+		}
+	}
+	const std::map<std::uint64_t, DisconnectedSession>::iterator stDisconnected = mapDisconnected.find(in_stHello.nResumeSessionId);
+	if (stDisconnected == mapDisconnected.end() || stDisconnected->second.nGraceDeadlineMsec <= nNowMsec ||
+		stDisconnected->second.stSession.arrResumeToken != in_stHello.arrResumeToken)
+	{
+		return Runtime::RuntimeStatus::InvalidParameter;
+	}
+	const Gameplay::PredictionState *pState = pWorld->Find(stDisconnected->second.stSession.stEntityId);
+	if (pState == nullptr)
+	{
+		return Runtime::RuntimeStatus::InvalidState;
+	}
+	Session stSession = stDisconnected->second.stSession;
+	stSession.nPeerId = in_nPeerId;
+	FillToken(stSession.arrResumeToken);
+	mapDisconnected.erase(stDisconnected);
+	mapSessions.emplace(in_nPeerId, stSession);
+
+	out_stWelcome = ServerWelcome{};
+	out_stWelcome.nEntityId = stSession.stEntityId.nValue;
+	out_stWelcome.arrResumeToken = stSession.arrResumeToken;
+	out_stWelcome.nServerTick = pState->nServerTimeMsec / 16;
+	out_stWelcome.nConfirmedInputSequence = pState->nConfirmedSequence;
+	out_stWelcome.vPosition = pState->vPosition;
+	out_stWelcome.vVelocity = pState->vVelocity;
+	out_nSessionId = stSession.nSessionId;
+	return Runtime::RuntimeStatus::Ok;
+}
+
+std::size_t SessionManager::ExpireDisconnected(std::uint64_t nNowMsec, std::vector<Runtime::EntityId> &out_arrExpired) noexcept
+{
+	out_arrExpired.clear();
+	for (std::map<std::uint64_t, DisconnectedSession>::iterator stIterator = mapDisconnected.begin(); stIterator != mapDisconnected.end();)
+	{
+		if (stIterator->second.nGraceDeadlineMsec > nNowMsec)
+		{
+			++stIterator;
+			continue;
+		}
+		out_arrExpired.push_back(stIterator->second.stSession.stEntityId);
+		(void)pWorld->Destroy(stIterator->second.stSession.stEntityId);
+		stIterator = mapDisconnected.erase(stIterator);
+	}
+	return out_arrExpired.size();
+}
+
 bool SessionManager::RemoveSession(PeerId in_nPeerId) noexcept
 {
 	const std::map<PeerId, Session>::iterator stIterator = mapSessions.find(in_nPeerId);
