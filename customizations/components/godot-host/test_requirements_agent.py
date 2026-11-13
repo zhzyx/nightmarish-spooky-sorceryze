@@ -701,42 +701,60 @@ class RequirementsTests(unittest.TestCase):
         self.assertEqual(self.comments, [])
 
     def test_parser_limits_and_invalid_unicode_keep_failure_journal(self):
-        import sys
-
         nested = "[" * 10000 + "0" + "]" * 10000
-        # The C decoder's limit is not sys.getrecursionlimit() on Python 3.12.
-        with self.assertRaises(RecursionError):
-            json.loads(nested)
-        cases = [(nested, "invalid_json"), ("\ud800", "invalid_encoding")]
-        digit_limit = getattr(sys, "get_int_max_str_digits", lambda: 0)()
-        if digit_limit:
-            cases.append(("9" * (digit_limit + 1), "invalid_json"))
-        for index, (text, code) in enumerate(cases):
+        long_integer = "9" * 4301
+        real_loads = json.loads
+        cases = []
+        for text in (nested, long_integer):
+            # Interpreter versions may accept these valid JSON documents. The
+            # requirement schema must still reject their non-object values.
+            try:
+                parsed = real_loads(text)
+            except (ValueError, RecursionError):
+                cases.append((text, "proposal_json", "invalid_json", None))
+            else:
+                self.assertNotIsInstance(parsed, dict)
+                cases.append((text, "proposal_schema", "invalid_shape", None))
+        cases.append(("\ud800", "proposal_json", "invalid_encoding", None))
+        # Exercise both defensive catch paths independently of interpreter
+        # limits, only after the actual adapter returns this exact payload.
+        cases.extend([
+            (nested, "proposal_json", "invalid_json", RecursionError),
+            (long_integer, "proposal_json", "invalid_json", ValueError),
+        ])
+        journals = self.root / ".gonggong-outbox/requirements"
+        for index, (text, stage, code, parser_error) in enumerate(cases):
             self.request["outcome"] = "parser limit " + str(index)
             self.adapter.call.side_effect = lambda *args: {"text": text, "finish_reason": "stop"}
-            with self.subTest(code=code, index=index):
+            before = set(journals.glob("*.json"))
+
+            def limited_loads(raw, *args, **kwargs):
+                if raw == text:
+                    self.assertEqual(self.adapter.call.call_count, index + 1)
+                    raise parser_error("synthetic decoder limit")
+                return real_loads(raw, *args, **kwargs)
+
+            context = patch.object(module.json, "loads", side_effect=limited_loads) if parser_error else nullcontext()
+            with self.subTest(stage=stage, code=code, controlled_limit=parser_error, index=index), context:
                 with self.assertRaises(module.ResponseFailure) as caught:
                     self.invoke()
                 diagnostic = caught.exception.diagnostic
-                self.assertEqual((diagnostic["stage"], diagnostic["code"]), ("proposal_json", code))
+                self.assertEqual((diagnostic["stage"], diagnostic["code"]), (stage, code))
                 self.assertEqual(self.adapter.call.call_count, index + 1)
                 self.assertNotIn("position", diagnostic)
                 if code == "invalid_encoding":
                     self.assertEqual(diagnostic["output_characters"], 1)
                     self.assertNotIn("output_bytes", diagnostic)
                     self.assertNotIn("output_sha256", diagnostic)
-        records = [
-            json.loads(path.read_bytes()) for path in (self.root / ".gonggong-outbox/requirements").glob("*.json")
-        ]
-        self.assertEqual(len(records), len(cases))
-        self.assertTrue(
-            all(
-                record["phase"] == "model_response_invalid" and record["failure"]["stage"] == "proposal_json"
-                for record in records
-            )
-        )
-        self.work.issue.assert_not_called()
-        self.assertEqual(self.comments, [])
+                new_journals = set(journals.glob("*.json")) - before
+                self.assertEqual(len(new_journals), 1)
+                record = real_loads(new_journals.pop().read_bytes())
+                self.assertEqual(record["phase"], "model_response_invalid")
+                self.assertEqual(record["failure"], diagnostic)
+                self.assertNotIn("proposal", record)
+                self.work.issue.assert_not_called()
+                self.assertEqual(self.comments, [])
+        self.assertEqual(len(list(journals.glob("*.json"))), len(cases))
 
     def test_escaped_surrogate_in_valid_fields_is_rejected_before_journal_proposal(self):
         text = json.dumps({**self.design, "title": "\ud800"}, ensure_ascii=True)
