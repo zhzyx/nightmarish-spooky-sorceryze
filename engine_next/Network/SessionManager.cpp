@@ -95,6 +95,11 @@ const Session *SessionManager::GetSession(PeerId in_nPeerId) const noexcept
 	return stIterator == mapSessions.end() ? nullptr : &stIterator->second;
 }
 
+const std::map<PeerId, Session> &SessionManager::GetSessions() const noexcept
+{
+	return mapSessions;
+}
+
 std::size_t SessionManager::GetSessionCount() const noexcept
 {
 	return mapSessions.size();

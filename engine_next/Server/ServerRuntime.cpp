@@ -31,9 +31,11 @@
 #include "engine_next/Server/ServerRuntime.h"
 
 #include "engine_next/Network/SessionManager.h"
+#include "engine_next/include/EngineNext/Gameplay/PredictionModel.h"
 #include "engine_next/include/EngineNext/Runtime/Clock.h"
 
 #include <chrono>
+#include <deque>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -43,6 +45,12 @@ namespace EngineNext::Runtime
 {
 namespace
 {
+
+struct EntityInputQueue
+{
+	std::deque<Gameplay::PredictionInput> arrInputs;
+	std::uint64_t nLastProcessedSequence = 0;
+};
 
 std::uint64_t NextSequence(std::map<Network::PeerId, std::uint64_t> &mapSequences, Network::PeerId nPeerId)
 {
@@ -80,6 +88,27 @@ void Reject(Network::ITransport &in_stTransport, Network::PeerId nPeerId, std::m
 	(void)in_stTransport.Disconnect(nPeerId);
 }
 
+RuntimeStatus SendSnapshot(Network::ITransport &in_stTransport, const Network::Session &in_stRecipient, std::uint64_t nEntityId, std::uint64_t nServerTick, const Gameplay::PredictionState &in_stState, std::uint64_t nLastProcessed)
+{
+	Network::Snapshot stSnapshot;
+	stSnapshot.nServerTick = nServerTick;
+	stSnapshot.nEntityId = nEntityId;
+	stSnapshot.nLastProcessedInputSequence = nLastProcessed;
+	stSnapshot.vPosition = in_stState.vPosition;
+	stSnapshot.vVelocity = in_stState.vVelocity;
+	Network::FrameHeader stHeader;
+	stHeader.eType = Network::MessageType::Snapshot;
+	stHeader.nMessageSequence = nServerTick;
+	stHeader.nSessionId = in_stRecipient.nSessionId;
+	std::vector<std::uint8_t> arrFrame;
+	const RuntimeStatus eEncodeStatus = Network::EncodeFrame(stHeader, Network::EncodeSnapshot(stSnapshot), arrFrame);
+	if (eEncodeStatus != RuntimeStatus::Ok)
+	{
+		return eEncodeStatus;
+	}
+	return in_stTransport.Send(in_stRecipient.nPeerId, 1, true, arrFrame);
+}
+
 } // namespace
 
 RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
@@ -107,6 +136,8 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 	FixedStepBatch stPrimeBatch;
 	(void)stHost.GetFixedStepLoop().Advance(stClock.NowMsec(), stPrimeBatch);
 	std::map<Network::PeerId, std::uint64_t> mapSequences;
+	std::map<std::uint64_t, EntityInputQueue> mapInputQueues;
+	Gameplay::PredictionModel stModel;
 	const std::uint64_t nStartedMsec = stClock.NowMsec();
 	std::uint32_t nWelcomed = 0;
 	std::cout << "ENGINE_NEXT_SERVER_READY port=" << pTransport->GetBoundPort() << '\n'
@@ -124,6 +155,11 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 		{
 			if (stEvent.eType == Network::TransportEventType::Disconnected)
 			{
+				const Network::Session *pSession = stSessions.GetSession(stEvent.nPeerId);
+				if (pSession != nullptr)
+				{
+					mapInputQueues.erase(pSession->stEntityId.nValue);
+				}
 				if (stSessions.RemoveSession(stEvent.nPeerId))
 				{
 					std::cout << "ENGINE_NEXT_DISCONNECT peer_id=" << stEvent.nPeerId << '\n';
@@ -148,10 +184,45 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 				if (pSession != nullptr && pSession->nSessionId == stHeader.nSessionId)
 				{
 					const Runtime::EntityId stEntityId = pSession->stEntityId;
+					mapInputQueues.erase(stEntityId.nValue);
 					(void)stSessions.RemoveSession(stEvent.nPeerId);
 					(void)stHost.RecordTrace(stHost.GetFixedStepLoop().GetTick(), "session_disconnected", stEntityId, stHeader.nSessionId);
 					std::cout << "ENGINE_NEXT_DISCONNECT peer_id=" << stEvent.nPeerId << '\n';
 				}
+				continue;
+			}
+			if (stHeader.eType == Network::MessageType::Input)
+			{
+				const Network::Session *pSession = stSessions.GetSession(stEvent.nPeerId);
+				Network::InputCommand stCommand;
+				const RuntimeStatus eInputStatus = Network::DecodeInputCommand(
+						stEvent.arrPayload.data() + Network::FRAME_HEADER_BYTES,
+						stHeader.nPayloadBytes,
+						stCommand);
+				if (pSession == nullptr || pSession->nSessionId != stHeader.nSessionId ||
+					pSession->stEntityId.nValue != stCommand.nEntityId || eInputStatus != RuntimeStatus::Ok)
+				{
+					Reject(*pTransport, stEvent.nPeerId, mapSequences, stHeader, 6);
+					continue;
+				}
+				EntityInputQueue &stQueue = mapInputQueues[stCommand.nEntityId];
+				if (stCommand.stInput.nSequence <= stQueue.nLastProcessedSequence)
+				{
+					const Gameplay::PredictionState *pState = stHost.GetWorld().Find(pSession->stEntityId);
+					eStatus = SendSnapshot(*pTransport, *pSession, pSession->stEntityId.nValue, stHost.GetFixedStepLoop().GetTick(), *pState, stQueue.nLastProcessedSequence);
+					if (eStatus != RuntimeStatus::Ok)
+					{
+						break;
+					}
+					continue;
+				}
+				if (stCommand.stInput.nSequence > stQueue.nLastProcessedSequence + 32 ||
+					stQueue.arrInputs.size() >= 64 || stCommand.stInput.nStepMsec != stModel.GetFixedStepMsec())
+				{
+					Reject(*pTransport, stEvent.nPeerId, mapSequences, stHeader, 7);
+					continue;
+				}
+				stQueue.arrInputs.push_back(stCommand.stInput);
 				continue;
 			}
 			if (stEvent.nChannelId != 0 || stHeader.eType != Network::MessageType::ClientHello)
@@ -195,6 +266,59 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 		}
 		FixedStepBatch stBatch;
 		eStatus = stHost.GetFixedStepLoop().Advance(stClock.NowMsec(), stBatch);
+		if (eStatus != RuntimeStatus::Ok)
+		{
+			break;
+		}
+		for (std::uint32_t nStep = 0; nStep < stBatch.nStepCount; ++nStep)
+		{
+			const std::uint64_t nTick = stBatch.nFirstTick + nStep;
+			for (std::pair<const std::uint64_t, EntityInputQueue> &stEntry : mapInputQueues)
+			{
+				EntityInputQueue &stQueue = stEntry.second;
+				if (stQueue.arrInputs.empty())
+				{
+					continue;
+				}
+				const Gameplay::PredictionInput stInput = stQueue.arrInputs.front();
+				stQueue.arrInputs.pop_front();
+				Gameplay::PredictionState *pState = stHost.GetWorld().Find(Runtime::EntityId{ stEntry.first });
+				if (pState == nullptr || stModel.Simulate(*pState, stInput) != Gameplay::Status::Ok)
+				{
+					return RuntimeStatus::InvalidState;
+				}
+				pState->nServerTimeMsec = nTick * stModel.GetFixedStepMsec();
+				stQueue.nLastProcessedSequence = stInput.nSequence;
+			}
+			if (nTick % 3 != 0)
+			{
+				continue;
+			}
+			for (const std::pair<const Runtime::EntityId, Gameplay::PredictionState> &stEntity : stHost.GetWorld().GetEntities())
+			{
+				const std::uint64_t nOwnerEntityId = stEntity.first.nValue;
+				const Gameplay::PredictionState &stState = stEntity.second;
+				const EntityInputQueue &stQueue = mapInputQueues[nOwnerEntityId];
+				for (const std::pair<const Network::PeerId, Network::Session> &stRecipientEntry : stSessions.GetSessions())
+				{
+					const Network::Session &stRecipient = stRecipientEntry.second;
+					eStatus = SendSnapshot(*pTransport, stRecipient, nOwnerEntityId, nTick, stState, stQueue.nLastProcessedSequence);
+					(void)stHost.RecordTrace(nTick, "snapshot", Runtime::EntityId{ nOwnerEntityId }, stRecipient.nSessionId);
+					if (eStatus != RuntimeStatus::Ok)
+					{
+						break;
+					}
+				}
+				if (eStatus != RuntimeStatus::Ok)
+				{
+					break;
+				}
+			}
+			if (eStatus != RuntimeStatus::Ok)
+			{
+				break;
+			}
+		}
 		if (eStatus != RuntimeStatus::Ok)
 		{
 			break;

@@ -26,6 +26,7 @@ LIBRARY_SOURCES = [
     *ENET_SOURCES,
     "engine_next/Gameplay/PredictionModel.cpp",
     "engine_next/Gameplay/InterpolationBuffer.cpp",
+    "engine_next/Gameplay/PredictionReconciler.cpp",
     "engine_next/Runtime/Clock.cpp",
     "engine_next/Runtime/FixedStepLoop.cpp",
     "engine_next/Runtime/World.cpp",
@@ -45,6 +46,7 @@ TEST_SOURCES = [
     "engine_next/Tests/Runtime/TestRuntimeConfig.cpp",
     "engine_next/Tests/Runtime/TestRuntimeHost.cpp",
     "engine_next/Tests/Network/TestProtocol.cpp",
+    "engine_next/Tests/Gameplay/TestPredictionReconciler.cpp",
 ]
 APP_SOURCES = {
     "next_server": ["engine_next/Apps/NextServerMain.cpp"],
@@ -57,6 +59,7 @@ PUBLIC_HEADERS = [
     "EngineNext/Gameplay/PredictionTypes.h",
     "EngineNext/Gameplay/PredictionModel.h",
     "EngineNext/Gameplay/InterpolationBuffer.h",
+    "EngineNext/Gameplay/PredictionReconciler.h",
     "EngineNext/Runtime/Types.h",
     "EngineNext/Runtime/Clock.h",
     "EngineNext/Runtime/FixedStepLoop.h",
