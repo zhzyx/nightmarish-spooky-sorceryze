@@ -16,12 +16,13 @@
 - 覆盖仓库创建、提交、分支、`log`、`diff`、`status` 与合并；合并支持 `--no-ff`、`--ff`、`--ff-only`。
 - 冲突时抛出 `MergeConflict`（含冲突路径）并中止临时克隆中的合并，裸仓库保持原状。
 - ref、仓库名与文件路径先校验，拒绝 `..`、绝对路径、shell 元字符；子进程固定 `shell=False`。
+- 提交输入拒绝 `.git` 管理路径及其代表性平台别名；全部目标预检后才写入，拒绝符号链接、可检测的 junction 和解析后的管理目录路径。Git 命令显式禁用 hooks、fsmonitor 和提交签名。
 
 ```sh
 python -m unittest discover -s customizations/components/tianxuan/duobao -p "test_*.py" -v
 ```
 
-`test_git_service.py` 显式使用 `D:\GongGong\project\runtime\git\cmd\git.exe`，覆盖创建仓库与首次提交、分支与列表、log、diff、快进合并、冲突合并的干净回退，以及非法 ref/路径拒绝。
+`test_git_service.py` 使用 `GIT_EXECUTABLE` 环境变量指定测试 Git，未设置时保留既有 Windows 路径。覆盖创建仓库与首次提交、分支与列表、log、diff、快进合并、冲突合并的干净回退，以及非法 ref/路径拒绝。`test_admin_paths.py` 验证管理路径拒绝、完整写入前预检和正常文件兼容；目录别名模型不代替 Windows 文件系统实测。
 
 ## 规划
 
