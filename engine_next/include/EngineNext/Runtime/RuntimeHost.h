@@ -57,6 +57,7 @@ public:
 	[[nodiscard]] World &GetWorld() noexcept;
 	[[nodiscard]] FixedStepLoop &GetFixedStepLoop() noexcept;
 	[[nodiscard]] ManualClock &GetManualClock() noexcept;
+	[[nodiscard]] RuntimeStatus RecordTrace(std::uint64_t nTick, const std::string &in_strEvent, EntityId in_stEntityId = {}, std::uint64_t nValue = 0);
 	[[nodiscard]] bool IsInitialized() const noexcept;
 	void Shutdown() noexcept;
 };

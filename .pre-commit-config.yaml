@@ -82,7 +82,7 @@ repos:
     hooks:
       - id: codespell
         # Preserve the immutable method event's original British spelling and digest.
-        exclude: ^(tools/maliang_hunyuan/HUNYUAN-NOTICE|gonggong-diting-data/events/gonggong-workspace/learning-editor-native-acceptance/learn-d0f5f7cb3cb8f40b893ef245b74bd92266302362e4028e1354cb48b40c71adc1\.json)$
+        exclude: ^(tools/maliang_hunyuan/HUNYUAN-NOTICE|gonggong-diting-data/events/gonggong-workspace/learning-editor-native-acceptance/learn-d0f5f7cb3cb8f40b893ef245b74bd92266302362e4028e1354cb48b40c71adc1\.json|engine_next/thirdparty/)$
         additional_dependencies: [tomli]
         args: ["--ignore-words-list=ENXT"]
 

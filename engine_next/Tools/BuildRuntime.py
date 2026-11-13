@@ -11,7 +11,19 @@ from pathlib import Path
 
 import BuildGameplay as BuildSupport
 
+ENET_SOURCES = [
+    "engine_next/thirdparty/enet/callbacks.c",
+    "engine_next/thirdparty/enet/compress.c",
+    "engine_next/thirdparty/enet/host.c",
+    "engine_next/thirdparty/enet/list.c",
+    "engine_next/thirdparty/enet/packet.c",
+    "engine_next/thirdparty/enet/peer.c",
+    "engine_next/thirdparty/enet/protocol.c",
+    "engine_next/thirdparty/enet/unix.c",
+    "engine_next/thirdparty/enet/win32.c",
+]
 LIBRARY_SOURCES = [
+    *ENET_SOURCES,
     "engine_next/Gameplay/PredictionModel.cpp",
     "engine_next/Gameplay/InterpolationBuffer.cpp",
     "engine_next/Runtime/Clock.cpp",
@@ -20,6 +32,11 @@ LIBRARY_SOURCES = [
     "engine_next/Runtime/Trace.cpp",
     "engine_next/Runtime/RuntimeConfig.cpp",
     "engine_next/Runtime/RuntimeHost.cpp",
+    "engine_next/Network/Protocol.cpp",
+    "engine_next/Network/EnetTransport.cpp",
+    "engine_next/Network/SessionManager.cpp",
+    "engine_next/Server/ServerRuntime.cpp",
+    "engine_next/Client/ClientRuntime.cpp",
 ]
 TEST_SOURCES = [
     "engine_next/Tests/RuntimeTestMain.cpp",
@@ -27,6 +44,7 @@ TEST_SOURCES = [
     "engine_next/Tests/Runtime/TestWorld.cpp",
     "engine_next/Tests/Runtime/TestRuntimeConfig.cpp",
     "engine_next/Tests/Runtime/TestRuntimeHost.cpp",
+    "engine_next/Tests/Network/TestProtocol.cpp",
 ]
 APP_SOURCES = {
     "next_server": ["engine_next/Apps/NextServerMain.cpp"],
@@ -46,15 +64,23 @@ PUBLIC_HEADERS = [
     "EngineNext/Runtime/Trace.h",
     "EngineNext/Runtime/RuntimeConfig.h",
     "EngineNext/Runtime/RuntimeHost.h",
+    "EngineNext/Network/ITransport.h",
+    "EngineNext/Network/Protocol.h",
 ]
 BUILD_SUPPORT_SOURCES = [
     "engine_next/Tools/BuildGameplay.py",
     "engine_next/Tools/BuildRuntime.py",
+    "engine_next/Tools/RunM2Handshake.py",
 ]
 BuildSupport.ALLOWED_REPOSITORY_INPUTS = (
     "engine_next/",
     "build/engine_next/",
 )
+
+
+def runtime_object_name(source, suffix):
+    path_digest = hashlib.sha256(source.encode("utf-8")).hexdigest()[:12]
+    return Path(source).stem + "-" + path_digest + suffix
 
 
 def audit_archive(args, sources):
@@ -73,7 +99,7 @@ def audit_archive(args, sources):
             if line.strip().endswith(".obj")
         ]
     expected = sorted(
-        BuildSupport.object_name(source, ".o" if args.compiler == "clang" else ".obj") for source in sources
+        runtime_object_name(source, ".o" if args.compiler == "clang" else ".obj") for source in sources
     )
     if sorted(Path(member).name for member in members) != expected:
         raise ValueError("Unexpected archive members: " + repr(members))
@@ -132,11 +158,16 @@ def configure_toolchain(args):
     args.tool_environment["VSLANG"] = "1033"
     if args.compiler == "clang":
         args.clangxx = shutil.which("clang++")
+        args.clang = shutil.which("clang")
         args.ar = shutil.which("ar")
         args.nm = shutil.which("nm")
         args.otool = shutil.which("otool") if sys.platform == "darwin" else None
         args.ldd = shutil.which("ldd") if sys.platform != "darwin" else None
-        missing = [name for name, value in (("clang++", args.clangxx), ("ar", args.ar), ("nm", args.nm)) if not value]
+        missing = [
+            name
+            for name, value in (("clang++", args.clangxx), ("clang", args.clang), ("ar", args.ar), ("nm", args.nm))
+            if not value
+        ]
         if sys.platform == "darwin" and not args.otool:
             missing.append("otool")
         if sys.platform != "darwin" and not args.ldd:
@@ -155,18 +186,91 @@ def configure_toolchain(args):
         raise ValueError("Missing compiler tools: " + ", ".join(missing))
 
 
+def compiler_command_with_enet(args, source, object_path, dependency_path):
+    command = BuildSupport.compiler_command(args, source, object_path, dependency_path)
+    include = args.repo / "engine_next/thirdparty/enet/include"
+    if args.compiler == "clang":
+        index = command.index("-c")
+        command[index:index] = ["-I", include]
+    else:
+        index = command.index("/c")
+        command[index:index] = ["/I", include]
+    return command
+
+
+def compile_c_source(args, source, object_path, dependency_path, include_audit, commands):
+    source_path = args.repo / source
+    include = args.repo / "engine_next/thirdparty/enet/include"
+    if args.compiler == "clang":
+        command = [
+            args.clang,
+            "-std=c99",
+            "-O1" if args.sanitize else "-O2",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-Wno-unused-parameter",
+            "-pedantic",
+            "-ffp-contract=off",
+            "-I",
+            args.repo,
+            "-I",
+            include,
+            "-MMD",
+            "-MF",
+            dependency_path,
+            "-c",
+            source_path,
+            "-o",
+            object_path,
+        ]
+        if args.sanitize:
+            command.extend(["-fsanitize=address,undefined", "-fno-omit-frame-pointer"])
+    else:
+        command = [
+            args.cl,
+            "/nologo",
+            "/TC",
+            "/std:c17",
+            "/O2",
+            "/W4",
+            "/WX",
+            "/wd4100",
+            "/fp:strict",
+            "/showIncludes",
+            "/I",
+            args.repo,
+            "/I",
+            include,
+            "/c",
+            source_path,
+            "/F" + "o" + str(object_path),
+        ]
+    output = BuildSupport.run(command, cwd=args.repo, env=args.tool_environment)
+    commands.append([str(value) for value in command])
+    if args.compiler == "clang":
+        includes = BuildSupport.parse_depfile(args.repo, dependency_path)
+    else:
+        includes = BuildSupport.parse_msvc_includes(args.repo, output)
+    include_audit[source] = includes
+
+
 def compile_sources(args, sources, object_dir, suffix, include_audit, commands):
     objects = []
     for source in sources:
-        object_path = object_dir / BuildSupport.object_name(source, suffix)
-        BuildSupport.compile_source(
-            args,
-            source,
-            object_path,
-            object_dir / (Path(source).stem + ".d"),
-            include_audit,
-            commands,
-        )
+        object_path = object_dir / runtime_object_name(source, suffix)
+        dependency_path = object_dir / runtime_object_name(source, ".d")
+        if source.endswith(".c"):
+            compile_c_source(args, source, object_path, dependency_path, include_audit, commands)
+        else:
+            command = compiler_command_with_enet(args, source, object_path, dependency_path)
+            output = BuildSupport.run(command, cwd=args.repo, env=args.tool_environment)
+            commands.append([str(value) for value in command])
+            if args.compiler == "clang":
+                includes = BuildSupport.parse_depfile(args.repo, dependency_path)
+            else:
+                includes = BuildSupport.parse_msvc_includes(args.repo, output)
+            include_audit[source] = includes
         objects.append(object_path)
     return objects
 
@@ -181,7 +285,7 @@ def link_target(args, name, sources, library, library_objects, object_dir, suffi
         if args.sanitize:
             response_values.append("-fsanitize=address,undefined")
     else:
-        response_values.extend(["/OUT:" + str(executable), "/INCREMENTAL:NO"])
+        response_values.extend(["ws2_32.lib", "winmm.lib", "/OUT:" + str(executable), "/INCREMENTAL:NO"])
     response.write_text(
         BuildSupport.quoted_response(response_values, windows=args.compiler == "msvc"),
         encoding="utf-8",
@@ -193,6 +297,9 @@ def link_target(args, name, sources, library, library_objects, object_dir, suffi
     BuildSupport.run(link_command, cwd=args.repo, env=args.tool_environment)
     commands.append([str(value) for value in link_command])
 
+    system_libraries = ["c++"] if args.compiler == "msvc" or sys.platform == "darwin" else ["stdc++", "gcc_s", "c", "m"]
+    if args.compiler == "msvc":
+        system_libraries.extend(["ws2_32", "winmm"])
     manifest = {
         "schema_version": 1,
         "target": "next_runtime",
@@ -200,9 +307,7 @@ def link_target(args, name, sources, library, library_objects, object_dir, suffi
         "objects": [BuildSupport.artifact(args.repo, path) for path in [*library_objects, *target_objects]],
         "libraries": [BuildSupport.artifact(args.repo, library)],
         "runtime_files": [],
-        "system_libraries": ["c++"]
-        if args.compiler == "msvc" or sys.platform == "darwin"
-        else ["stdc++", "gcc_s", "c", "m"],
+        "system_libraries": system_libraries,
     }
     manifest_path = args.build_dir / (name + "LinkManifest.json")
     manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -235,6 +340,29 @@ def run_target(args, target, directory, trace_directory):
     )
 
 
+def run_handshake(args, targets, directory):
+    executables = {target["name"]: directory / target["executable"].name for target in targets}
+    return (
+        BuildSupport
+        .run(
+            [
+                sys.executable,
+                args.repo / "engine_next/Tools/RunM2Handshake.py",
+                "--server",
+                executables["next_server"],
+                "--client",
+                executables["next_client"],
+                "--report",
+                directory / "HandshakeReport.json",
+            ],
+            cwd=args.repo,
+            env=args.tool_environment,
+        )
+        .decode("utf-8")
+        .strip()
+    )
+
+
 def run_acceptance(args, targets):
     summaries = {}
     clean_summaries = {}
@@ -252,7 +380,13 @@ def run_acceptance(args, targets):
             if trace_path.read_bytes() != clean_trace_path.read_bytes():
                 raise ValueError("Clean-environment trace differs: " + target["name"])
             traces[target["name"]] = BuildSupport.digest(trace_path)
-    return {"summaries": summaries, "clean_summaries": clean_summaries, "trace_sha256": traces}
+    return {
+        "summaries": summaries,
+        "clean_summaries": clean_summaries,
+        "trace_sha256": traces,
+        "handshake": run_handshake(args, targets, args.build_dir),
+        "clean_handshake": run_handshake(args, targets, clean_dir),
+    }
 
 
 def build(args):
@@ -270,7 +404,13 @@ def build(args):
     suffix = ".o" if args.compiler == "clang" else ".obj"
     commands = []
     include_audit = {}
-    library_objects = compile_sources(args, LIBRARY_SOURCES, object_dir, suffix, include_audit, commands)
+    library_sources = [
+        source
+        for source in LIBRARY_SOURCES
+        if not (args.compiler == "msvc" and source.endswith("/unix.c"))
+        and not (args.compiler == "clang" and source.endswith("/win32.c"))
+    ]
+    library_objects = compile_sources(args, library_sources, object_dir, suffix, include_audit, commands)
 
     header_objects = []
     for index, header in enumerate(PUBLIC_HEADERS):
@@ -287,6 +427,7 @@ def build(args):
         header_objects.append(object_dir / ("PublicHeader" + str(index) + suffix))
 
     args.library = args.build_dir / ("libEngineNextRuntime.a" if args.compiler == "clang" else "EngineNextRuntime.lib")
+    args.library.unlink(missing_ok=True)
     if args.compiler == "clang":
         archive_command = [args.ar, "-rcs", args.library, *library_objects]
     else:
@@ -319,8 +460,14 @@ def build(args):
         }
     )
 
+    third_party_inputs = sorted(
+        path.relative_to(args.repo).as_posix()
+        for path in (args.repo / "engine_next/thirdparty/enet").rglob("*")
+        if path.is_file()
+    )
     native_inputs = sorted([
-        *LIBRARY_SOURCES,
+        *library_sources,
+        *third_party_inputs,
         *TEST_SOURCES,
         *APP_SOURCES["next_server"],
         *APP_SOURCES["next_client"],
@@ -360,9 +507,11 @@ def build(args):
         "public_headers": PUBLIC_HEADERS,
         "public_header_objects": [str(path) for path in header_objects],
         "include_audit": include_audit,
-        "archive_members": audit_archive(args, LIBRARY_SOURCES),
+        "archive_members": audit_archive(args, library_sources),
         "library": BuildSupport.artifact(args.repo, args.library),
         "targets": target_reports,
+        "handshake": acceptance.get("handshake", "not_run"),
+        "clean_handshake": acceptance.get("clean_handshake", "not_run"),
     }
     report_path = args.build_dir / "RuntimeBuildReport.json"
     report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -375,6 +524,8 @@ def build(args):
                 "summaries": acceptance["summaries"],
                 "clean_summaries": acceptance["clean_summaries"],
                 "trace_sha256": acceptance["trace_sha256"],
+                "handshake": acceptance.get("handshake", "not_run"),
+                "clean_handshake": acceptance.get("clean_handshake", "not_run"),
             },
             indent=2,
         )

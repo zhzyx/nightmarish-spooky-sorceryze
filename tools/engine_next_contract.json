@@ -7,7 +7,8 @@
     "runtime_next"
   ],
   "public_header_roots": [
-    "engine_next/include"
+    "engine_next/include",
+    "engine_next/thirdparty/enet/include"
   ],
   "source_extensions": [
     ".c",
@@ -34,8 +35,23 @@
     "scene",
     "servers"
   ],
-  "third_party_roots": [],
-  "allowed_angle_include_prefixes": [],
+  "third_party_roots": [
+    "engine_next/thirdparty/enet"
+  ],
+  "allowed_angle_include_prefixes": [
+    "enet/",
+    "sys/",
+    "arpa/",
+    "netinet/",
+    "unistd.h",
+    "winsock2.h",
+    "windows.h",
+    "mmsystem.h",
+    "ws2tcpip.h",
+    "fcntl.h",
+    "poll.h",
+    "netdb.h"
+  ],
   "forbidden_cpp_tokens": [
     "Array",
     "ClassDB",
@@ -75,7 +91,11 @@
       "c++",
       "dl",
       "m",
-      "pthread"
+      "pthread",
+      "stdc++",
+      "gcc_s",
+      "ws2_32",
+      "winmm"
     ],
     "forbidden_library_name_fragments": [
       "godot"

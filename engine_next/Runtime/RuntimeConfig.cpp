@@ -73,6 +73,67 @@ bool IsValidClientId(const std::string &in_strValue) noexcept
 	return true;
 }
 
+bool ParseValue(const std::vector<std::string> &in_arrArguments, std::size_t &inout_nIndex, std::string &out_strValue)
+{
+	if (inout_nIndex + 1 >= in_arrArguments.size())
+	{
+		return false;
+	}
+	out_strValue = in_arrArguments[++inout_nIndex];
+	return true;
+}
+
+RuntimeStatus ParseUnsignedOption(const std::string &in_strArgument, const std::string &in_strValue, RuntimeConfig &out_stConfig)
+{
+	std::uint64_t nValue = 0;
+	if (!ParseUnsigned(in_strValue, nValue))
+	{
+		return RuntimeStatus::InvalidParameter;
+	}
+	if (in_strArgument == "--manual-ticks")
+	{
+		if (nValue == 0)
+		{
+			return RuntimeStatus::InvalidParameter;
+		}
+		out_stConfig.nManualTicks = nValue;
+		return RuntimeStatus::Ok;
+	}
+	if (in_strArgument == "--fixed-step-ms")
+	{
+		if (nValue == 0 || nValue > 1000)
+		{
+			return RuntimeStatus::InvalidParameter;
+		}
+		out_stConfig.nFixedStepMsec = static_cast<std::uint32_t>(nValue);
+		return RuntimeStatus::Ok;
+	}
+	if (in_strArgument == "--seed")
+	{
+		if (nValue == 0)
+		{
+			return RuntimeStatus::InvalidParameter;
+		}
+		out_stConfig.nSeed = nValue;
+		return RuntimeStatus::Ok;
+	}
+	if (in_strArgument == "--port")
+	{
+		if (nValue > 65535)
+		{
+			return RuntimeStatus::InvalidParameter;
+		}
+		out_stConfig.nPort = static_cast<std::uint16_t>(nValue);
+		return RuntimeStatus::Ok;
+	}
+	if (nValue == 0 || nValue > 60000)
+	{
+		return RuntimeStatus::InvalidParameter;
+	}
+	out_stConfig.nDurationMsec = static_cast<std::uint32_t>(nValue);
+	return RuntimeStatus::Ok;
+}
+
 } // namespace
 
 RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, RuntimeConfig &out_stConfig)
@@ -80,6 +141,7 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 	RuntimeConfig stParsed;
 	stParsed.eRole = out_stConfig.eRole;
 	bool bClientIdProvided = false;
+	bool bNetworkEndpointProvided = false;
 	for (std::size_t nIndex = 0; nIndex < in_arrArguments.size(); ++nIndex)
 	{
 		const std::string &strArgument = in_arrArguments[nIndex];
@@ -88,48 +150,24 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 			stParsed.bHelpRequested = true;
 			continue;
 		}
-		auto ReadValue = [&nIndex, &in_arrArguments](std::string &out_strValue) -> bool
-		{
-			if (nIndex + 1 >= in_arrArguments.size())
-			{
-				return false;
-			}
-			out_strValue = in_arrArguments[++nIndex];
-			return true;
-		};
 		std::string strValue;
-		if (strArgument == "--manual-ticks" || strArgument == "--fixed-step-ms" || strArgument == "--seed")
+		if (strArgument == "--manual-ticks" || strArgument == "--fixed-step-ms" || strArgument == "--seed" ||
+				strArgument == "--port" || strArgument == "--duration-ms")
 		{
-			if (!ReadValue(strValue))
+			if (!ParseValue(in_arrArguments, nIndex, strValue))
 			{
 				return RuntimeStatus::InvalidParameter;
 			}
-			std::uint64_t nValue = 0;
-			if (!ParseUnsigned(strValue, nValue) || nValue == 0)
+			const RuntimeStatus eStatus = ParseUnsignedOption(strArgument, strValue, stParsed);
+			if (eStatus != RuntimeStatus::Ok)
 			{
-				return RuntimeStatus::InvalidParameter;
-			}
-			if (strArgument == "--manual-ticks")
-			{
-				stParsed.nManualTicks = nValue;
-			}
-			else if (strArgument == "--fixed-step-ms")
-			{
-				if (nValue > 1000)
-				{
-					return RuntimeStatus::InvalidParameter;
-				}
-				stParsed.nFixedStepMsec = static_cast<std::uint32_t>(nValue);
-			}
-			else
-			{
-				stParsed.nSeed = nValue;
+				return eStatus;
 			}
 			continue;
 		}
-		if (strArgument == "--trace-output" || strArgument == "--client-id")
+		if (strArgument == "--trace-output" || strArgument == "--client-id" || strArgument == "--bind" || strArgument == "--connect")
 		{
-			if (!ReadValue(strValue) || strValue.empty())
+			if (!ParseValue(in_arrArguments, nIndex, strValue) || strValue.empty())
 			{
 				return RuntimeStatus::InvalidParameter;
 			}
@@ -137,7 +175,7 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 			{
 				stParsed.strTracePath = strValue;
 			}
-			else
+			else if (strArgument == "--client-id")
 			{
 				if (!IsValidClientId(strValue))
 				{
@@ -146,11 +184,27 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 				stParsed.strClientId = strValue;
 				bClientIdProvided = true;
 			}
+			else
+			{
+				stParsed.strBindAddress = strValue;
+				stParsed.bNetworkMode = true;
+				bNetworkEndpointProvided = true;
+				if ((strArgument == "--bind" && stParsed.eRole != RuntimeRole::Server) ||
+						(strArgument == "--connect" && stParsed.eRole != RuntimeRole::Client))
+				{
+					return RuntimeStatus::InvalidParameter;
+				}
+			}
 			continue;
 		}
 		return RuntimeStatus::InvalidParameter;
 	}
 	if (stParsed.eRole == RuntimeRole::Server && bClientIdProvided)
+	{
+		return RuntimeStatus::InvalidParameter;
+	}
+	if (stParsed.bNetworkMode &&
+			(!bNetworkEndpointProvided || (stParsed.eRole == RuntimeRole::Client && stParsed.nPort == 0)))
 	{
 		return RuntimeStatus::InvalidParameter;
 	}

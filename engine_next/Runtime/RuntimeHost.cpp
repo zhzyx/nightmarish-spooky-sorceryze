@@ -133,6 +133,11 @@ ManualClock &RuntimeHost::GetManualClock() noexcept
 	return stManualClock;
 }
 
+RuntimeStatus RuntimeHost::RecordTrace(std::uint64_t nTick, const std::string &in_strEvent, EntityId in_stEntityId, std::uint64_t nValue)
+{
+	return stTrace.Record(nTick, in_strEvent, in_stEntityId, nValue);
+}
+
 bool RuntimeHost::IsInitialized() const noexcept
 {
 	return bInitialized;
