@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ef717ecf5eb0a73bca89e3fd1d452664bf0687a6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "per-ai-model-selection-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e9086b90a4666a5c75e8e1f2319bec40cec0eb2c10d86732c239d5592ac1e092",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/972",
+    "action": "validation",
+    "detection_head": "27002066bb2592b384861c07131278d0afb8e92d",
+    "context_sha256": "c698c4bb9ea5fcd872ed57489cf5ec8632c0675e3c5cf0907bce2be95705df8b",
+    "operator": "kaiyunxue",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "Issue #971 精确候选 CI 修复与复验",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1034；合并提交 5ed330534ea99b3d8246ed8cd54688658dabb636",
+    "diagnosis": "旧 PR #1032 的 Ruff 格式失败已修复；新候选的两条静态检查与 Windows Editor CI 成功，原交付阻塞解除并已合入 main。此结论不覆盖旧 c074 dev_build 随机启动崩溃。",
+    "next_action": "保存恢复回执并关闭本次 #972 交付阻塞跟踪；#971 按独立业务验收关闭。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T06:05:21.424145+00:00",
+    "attempted": "Ruff 0.17.1 format/check、137 项 Python、17 项进程、8 组模型选择器、16 个目录场景及四组马良回归；随后 PR #1034 CI 全部通过并合入",
+    "repair_owner": "kaiyunxue",
+    "continuable": "无剩余本次签发或 CI 阻塞；保留真实供应商、非 Windows 和旧 dev_build 问题边界"
+  },
+  "occurred_at": "2026-11-13T06:33:41.598459+00:00",
+  "sha256": "e8f3f55035cfb96872cc62ffe0d6a635e77c5e54499a89e0b9b9d7a436e62344"
+}
