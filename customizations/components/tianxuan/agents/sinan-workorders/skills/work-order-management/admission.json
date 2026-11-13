@@ -2,9 +2,21 @@
   "skill_id": "sinan-work-order-management",
   "version": "0.1.0",
   "parent_agent": "sinan-workorders",
-  "state": "parent_scoped_pending",
-  "approved": false,
-  "approver": null,
-  "note": "Skill admission is parent-scoped; pending with the parent agent.",
-  "candidate_digest": "e77011ad30006fb4f0537f3881786e40f1e1d2c157a3e4b4b644ee5e9b76d71a"
+  "state": "parent_admitted",
+  "approved": true,
+  "approver": "zhzyx",
+  "note": "Parent-scoped skill; admitted with its parent agent, host authority still required.",
+  "candidate_digest": "e77011ad30006fb4f0537f3881786e40f1e1d2c157a3e4b4b644ee5e9b76d71a",
+  "approved_at": "2026-11-13T23:48:21.855190+00:00",
+  "approval": {
+    "approver_id": "zhzyx",
+    "authority_ref": "session: user approved all three candidates (agent_admission question)",
+    "decision_evidence_ref": "session: user approved all three candidates (agent_admission question)",
+    "approved_at": "2026-11-13T23:48:21.855190+00:00",
+    "valid_until_or_task_end": "bound_candidate_only",
+    "revocation_ref": null,
+    "superseded_by": null,
+    "expires_at": null,
+    "limits": "Exact candidate digest only; every invocation still requires host authority, Issue scope and reporting; no model credentials or standing runtime are granted."
+  }
 }
