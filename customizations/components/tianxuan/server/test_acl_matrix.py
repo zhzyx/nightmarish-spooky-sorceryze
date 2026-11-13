@@ -16,6 +16,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from typing import Any
 
 import pytest
@@ -34,7 +35,7 @@ PATCHED_MD = MERGED_MD.replace("离线补充", "补丁补充")
 
 
 @pytest.fixture()
-def client() -> TestClient:
+def client() -> Iterator[TestClient]:
     with TestClient(create_app(Tianxuan(":memory:"))) as test_client:
         yield test_client
 
@@ -66,7 +67,7 @@ def _add_member(client: TestClient, admin: dict[str, str], email: str, role: str
         json={"email": email, "password": MEMBER_PASSWORD, "role": role},
     )
     assert response.status_code == 200, response.text
-    return response.json()
+    return response.json()  # type: ignore[no-any-return]
 
 
 def _member_session(client: TestClient, email: str) -> dict[str, str]:
@@ -76,7 +77,7 @@ def _member_session(client: TestClient, email: str) -> dict[str, str]:
 def _create_doc(client: TestClient, headers: dict[str, str], title: str, body: str = BASE_MD) -> dict[str, Any]:
     response = client.post("/api/v1/docs", headers=headers, json={"title": title, "body_md": body})
     assert response.status_code == 200, response.text
-    return response.json()
+    return response.json()  # type: ignore[no-any-return]
 
 
 def _make_private(client: TestClient, headers: dict[str, str], doc_id: str) -> None:
