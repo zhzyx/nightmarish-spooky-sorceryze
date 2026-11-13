@@ -1716,24 +1716,24 @@ bool AIChatDock::_start_parent_completion(int p_parent, const String &p_operatio
 	if (order.size() != Array(doc["orders"]).size()) {
 		return false;
 	}
-	Dictionary input = _parent_completion_observations(p_parent);
-	if (input.is_empty() || bool(input.get("pending_current", false))) {
+	Dictionary completion_request = _parent_completion_observations(p_parent);
+	if (completion_request.is_empty() || bool(completion_request.get("pending_current", false))) {
 		return false;
 	}
-	input["operation"] = p_operation;
-	input["owner"] = owner;
-	input["confirmation_source"] = confirmation_source;
-	input["issue_number"] = batch["issue_number"];
-	input["request_id"] = batch["request_id"];
-	input["design"] = doc["binding"];
-	input["orders"] = doc["orders"];
-	input["binding"] = batch.get("parent_contract", Dictionary());
-	input["no_progress"] = batch.get("parent_no_progress", 0);
+	completion_request["operation"] = p_operation;
+	completion_request["owner"] = owner;
+	completion_request["confirmation_source"] = confirmation_source;
+	completion_request["issue_number"] = batch["issue_number"];
+	completion_request["request_id"] = batch["request_id"];
+	completion_request["design"] = doc["binding"];
+	completion_request["orders"] = doc["orders"];
+	completion_request["binding"] = batch.get("parent_contract", Dictionary());
+	completion_request["no_progress"] = batch.get("parent_no_progress", 0);
 	if (p_operation == "authorize") {
 		const Dictionary check = batch["parent_check"];
-		input["checked_candidate"] = check["candidate"];
-		input["checked_facts"] = check["facts_sha256"];
-		input["checked_action"] = check["action"];
+		completion_request["checked_candidate"] = check["candidate"];
+		completion_request["checked_facts"] = check["facts_sha256"];
+		completion_request["checked_action"] = check["action"];
 	}
 	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
 	const String python = GongGongRuntimeConfig::path(runtime, "workflow_python");
@@ -1743,8 +1743,8 @@ bool AIChatDock::_start_parent_completion(int p_parent, const String &p_operatio
 	}
 	const String nonce = itos(OS::get_singleton()->get_process_id()) + "-" + itos(OS::get_singleton()->get_ticks_usec());
 	const String stem = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-parent-" + nonce);
-	input["request_nonce"] = nonce;
-	input["host_liveness_path"] = stem + ".live";
+	completion_request["request_nonce"] = nonce;
+	completion_request["host_liveness_path"] = stem + ".live";
 	Dictionary live;
 	live["active"] = true;
 	live["request_nonce"] = nonce;
@@ -1754,7 +1754,7 @@ bool AIChatDock::_start_parent_completion(int p_parent, const String &p_operatio
 			DirAccess::remove_absolute(stem + ".live");
 			return false;
 		}
-		file->store_string(JSON::stringify(suffix == ".live" ? live : input));
+		file->store_string(JSON::stringify(suffix == ".live" ? live : completion_request));
 		file->flush();
 		if (file->get_error() != OK) {
 			DirAccess::remove_absolute(stem + ".live");
@@ -1779,8 +1779,8 @@ bool AIChatDock::_start_parent_completion(int p_parent, const String &p_operatio
 	parent_completion_job["nonce"] = nonce;
 	parent_completion_job["stem"] = stem;
 	parent_completion_job["operation"] = p_operation;
-	parent_completion_job["observations"] = input["observations"];
-	parent_completion_job["request"] = input;
+	parent_completion_job["observations"] = completion_request["observations"];
+	parent_completion_job["request"] = completion_request;
 	parent_completion_job["started"] = int64_t(OS::get_singleton()->get_ticks_msec());
 	if (!parent_completion_timer) {
 		parent_completion_timer = memnew(Timer);
