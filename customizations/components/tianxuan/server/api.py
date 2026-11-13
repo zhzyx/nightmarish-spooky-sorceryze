@@ -10,6 +10,7 @@ actor 约定：需要身份的端点从请求头 ``X-Actor`` 读取用户 ID（�
 
 from __future__ import annotations
 
+import difflib
 import os
 from pathlib import Path
 from typing import Annotated, Any
@@ -359,6 +360,39 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
                 raise TianxuanError(f"patch target is ambiguous ({occurrences} matches): {operation.find!r}")
             body = body.replace(operation.find, operation.replace, 1)
         return store.update_doc(actor, doc_id, body, payload.expected_version)  # type: ignore[no-any-return]
+
+    # ---------- 文曲：版本历史与差异 ----------
+
+    @app.get("/api/v1/docs/{doc_id}/versions")
+    def list_versions(doc_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        store.get_doc(doc_id)
+        return {"versions": store.versions(doc_id)}
+
+    @app.get("/api/v1/docs/{doc_id}/versions/{version}")
+    def get_version(doc_id: str, version: int, actor: ActorDep) -> dict[str, Any]:
+        store.get_doc(doc_id)
+        return store.version(doc_id, version)  # type: ignore[no-any-return]
+
+    @app.get("/api/v1/docs/{doc_id}/diff")
+    def diff_versions(
+        doc_id: str,
+        actor: ActorDep,
+        from_version: int = Query(ge=1),
+        to_version: int = Query(ge=1),
+    ) -> dict[str, str]:
+        store.get_doc(doc_id)
+        before = store.version(doc_id, from_version)["body_md"]
+        after = store.version(doc_id, to_version)["body_md"]
+        diff = "\n".join(
+            difflib.unified_diff(
+                before.splitlines(),
+                after.splitlines(),
+                fromfile=f"v{from_version}",
+                tofile=f"v{to_version}",
+                lineterm="",
+            )
+        )
+        return {"diff": diff}
 
     # ---------- 文曲：评论 ----------
 
