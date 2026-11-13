@@ -19,6 +19,7 @@ from schemas import (
     CommentCreateRequest,
     CommentResolveRequest,
     DocCreateRequest,
+    DocMergeRequest,
     DocUpdateRequest,
     IssueTransitionRequest,
     LoginRequest,
@@ -28,7 +29,7 @@ from schemas import (
 )
 from tianxuan_core import NotFound, Tianxuan, TianxuanError, TransitionRejected, VersionConflict
 from wenqu_bridge import classify as classify_markdown
-from wenqu_bridge import export_markdown
+from wenqu_bridge import export_markdown, merge_offline
 from wenqu_bridge import search as search_documents
 
 
@@ -212,6 +213,27 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
     @app.post("/api/v1/docs/{doc_id}/classify")
     def classify_doc(doc_id: str) -> dict[str, list[str]]:
         return {"tags": classify_markdown(store.get_doc(doc_id)["body_md"])}
+
+    # ---------- 文曲：离线草稿合并 ----------
+
+    @app.post("/api/v1/docs/{doc_id}/merge")
+    def merge_doc(doc_id: str, payload: DocMergeRequest, actor: ActorDep) -> Any:
+        document = store.get_doc(doc_id)
+        if document["version"] == payload.expected_version:
+            updated = store.update_doc(actor, doc_id, payload.local_md, payload.expected_version)
+            return {"status": "applied", "doc": updated}
+        merged_md, conflicts = merge_offline(payload.base_md, payload.local_md, document["body_md"])
+        if conflicts:
+            return JSONResponse(
+                status_code=409,
+                content={
+                    "status": "conflict",
+                    "conflicts": conflicts,
+                    "remote_version": document["version"],
+                },
+            )
+        updated = store.update_doc(actor, doc_id, merged_md, document["version"])
+        return {"status": "merged", "doc": updated, "remote_version": document["version"]}
 
     # ---------- 文曲：评论 ----------
 
