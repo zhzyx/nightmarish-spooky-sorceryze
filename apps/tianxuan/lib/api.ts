@@ -25,6 +25,43 @@ export interface ApiDocDetail extends ApiDoc {
   body_md: string;
 }
 
+export class MergeConflict extends Error {
+  conflicts: string[];
+
+  constructor(conflicts: string[]) {
+    super("merge conflict");
+    this.conflicts = conflicts;
+  }
+}
+
+export interface ApiMergeResult {
+  status: "applied" | "merged";
+  doc: ApiDocDetail;
+  remote_version?: number;
+}
+
+export async function mergeDoc(
+  id: string,
+  actor: string,
+  base_md: string,
+  local_md: string,
+  expected_version: number,
+): Promise<ApiMergeResult> {
+  const response = await fetch(`${API_BASE}/api/v1/docs/${encodeURIComponent(id)}/merge`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Actor": actor },
+    body: JSON.stringify({ base_md, local_md, expected_version }),
+  });
+  if (response.status === 409) {
+    const body = (await response.json()) as { conflicts?: string[] };
+    throw new MergeConflict(body.conflicts ?? []);
+  }
+  if (!response.ok) {
+    throw new Error(`merge failed: ${response.status}`);
+  }
+  return (await response.json()) as ApiMergeResult;
+}
+
 export async function fetchDocs(actor: string): Promise<ApiDoc[]> {
   const response = await fetch(`${API_BASE}/api/v1/docs`, {
     headers: { "X-Actor": actor },
