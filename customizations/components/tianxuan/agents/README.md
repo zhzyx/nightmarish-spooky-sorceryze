@@ -10,7 +10,7 @@
 
 ## 状态
 
-全部为 `candidate_pending_review`，`runtime_connected: false`。
+已于 2026-11-14 由仓库所有者按精确候选摘要批准准入；`runtime_connected` 仍为 false，每次调用仍需真实宿主授权、工单范围与 reporting。批准记录见 `data-collection/tianxuan-agents-approval-20261114.json`。
 
 ## 准入前置
 
