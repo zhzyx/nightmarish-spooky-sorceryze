@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
+import { LocalGitRepos } from "@/components/LocalGitRepos";
 import { RepoBrowser } from "@/components/RepoBrowser";
 import { fetchRepos, type ApiRepo } from "@/lib/api";
 import { repos } from "@/lib/data";
@@ -55,6 +56,8 @@ export default async function ReposPage() {
           </Link>
         </div>
       </header>
+
+      <LocalGitRepos />
 
       {liveRepos && liveRepos.length > 0 ? (
         <section className="panel" aria-labelledby="live-repos-title">
