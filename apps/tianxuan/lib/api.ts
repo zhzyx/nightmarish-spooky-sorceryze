@@ -1,3 +1,7 @@
+function apiBase(): string {
+  return typeof window === "undefined" ? API_BASE : "";
+}
+
 export const API_BASE =
   process.env.NEXT_PUBLIC_TIANXUAN_API_BASE?.replace(/\/$/, "") ?? "http://127.0.0.1:8000";
 
@@ -14,7 +18,7 @@ export interface ApiDoc {
 }
 
 export async function fetchHealth(signal?: AbortSignal): Promise<ApiHealth> {
-  const response = await fetch(`${API_BASE}/api/v1/health`, { cache: "no-store", signal });
+  const response = await fetch(`${apiBase()}/api/v1/health`, { cache: "no-store", signal });
   if (!response.ok) {
     throw new Error(`health request failed: ${response.status}`);
   }
@@ -48,7 +52,7 @@ export async function mergeDoc(
   local_md: string,
   expected_version: number,
 ): Promise<ApiMergeResult> {
-  const response = await fetch(`${API_BASE}/api/v1/docs/${encodeURIComponent(id)}/merge`, {
+  const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(id)}/merge`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Actor": actor },
     body: JSON.stringify({ base_md, local_md, expected_version }),
@@ -71,7 +75,7 @@ export interface ApiRepo {
 }
 
 export async function fetchRepos(actor: string): Promise<ApiRepo[]> {
-  const response = await fetch(`${API_BASE}/api/v1/repos`, {
+  const response = await fetch(`${apiBase()}/api/v1/repos`, {
     headers: { "X-Actor": actor },
     cache: "no-store",
   });
@@ -83,7 +87,7 @@ export async function fetchRepos(actor: string): Promise<ApiRepo[]> {
 }
 
 export async function fetchDocs(actor: string): Promise<ApiDoc[]> {
-  const response = await fetch(`${API_BASE}/api/v1/docs`, {
+  const response = await fetch(`${apiBase()}/api/v1/docs`, {
     headers: { "X-Actor": actor },
     cache: "no-store",
   });
@@ -95,7 +99,7 @@ export async function fetchDocs(actor: string): Promise<ApiDoc[]> {
 }
 
 export async function fetchDoc(id: string, actor: string): Promise<ApiDocDetail> {
-  const response = await fetch(`${API_BASE}/api/v1/docs/${encodeURIComponent(id)}`, {
+  const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(id)}`, {
     headers: { "X-Actor": actor },
     cache: "no-store",
   });
@@ -116,7 +120,7 @@ export interface ApiShare {
 }
 
 export async function fetchShares(id: string, actor: string): Promise<ApiShare[]> {
-  const response = await fetch(`${API_BASE}/api/v1/docs/${encodeURIComponent(id)}/shares`, {
+  const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(id)}/shares`, {
     headers: { "X-Actor": actor },
     cache: "no-store",
   });
@@ -132,7 +136,7 @@ export async function setDocVisibility(
   actor: string,
   visibility: DocVisibility,
 ): Promise<ApiDocDetail> {
-  const response = await fetch(`${API_BASE}/api/v1/docs/${encodeURIComponent(id)}/visibility`, {
+  const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(id)}/visibility`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json", "X-Actor": actor },
     body: JSON.stringify({ visibility }),
@@ -149,7 +153,7 @@ export async function shareDoc(
   userId: string,
   permission: SharePermission,
 ): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/v1/docs/${encodeURIComponent(id)}/shares`, {
+  const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(id)}/shares`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Actor": actor },
     body: JSON.stringify({ user_id: userId, permission }),
@@ -161,7 +165,7 @@ export async function shareDoc(
 
 export async function unshareDoc(id: string, actor: string, userId: string): Promise<void> {
   const response = await fetch(
-    `${API_BASE}/api/v1/docs/${encodeURIComponent(id)}/shares/${encodeURIComponent(userId)}`,
+    `${apiBase()}/api/v1/docs/${encodeURIComponent(id)}/shares/${encodeURIComponent(userId)}`,
     {
       method: "DELETE",
       headers: { "X-Actor": actor },

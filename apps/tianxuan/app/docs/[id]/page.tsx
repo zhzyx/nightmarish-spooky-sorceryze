@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { DocEditor } from "@/components/DocEditor";
 import { DocSharing } from "@/components/DocSharing";
 import { fetchDoc } from "@/lib/api";
-import { docs, getDoc, getDocContent, type DocRecord } from "@/lib/data";
+import { getDoc, getDocContent, type DocRecord } from "@/lib/data";
 
 interface DocPageProps {
   params: {
@@ -11,9 +11,7 @@ interface DocPageProps {
   };
 }
 
-export function generateStaticParams() {
-  return docs.map((doc) => ({ id: doc.id }));
-}
+export const dynamic = "force-dynamic";
 
 export function generateMetadata({ params }: DocPageProps): Metadata {
   const doc = getDoc(params.id);
