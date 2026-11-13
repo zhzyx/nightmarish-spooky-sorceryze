@@ -292,8 +292,9 @@ function normalizeResult(result, toolsAllowed, unavailableReason = 'permission_d
 
 async function main() {
     const mode = process.argv[2];
-    const hostModelGroup = mode === 'models' && process.argv[4] === '--host-process-group';
-    if (hostModelGroup) {
+    const hostProcessGroup = (mode === 'models' && process.argv[4] === '--host-process-group')
+        || (mode === 'chat' && process.argv[5] === '--host-process-group');
+    if (hostProcessGroup) {
         process.stdin.once('end', () => {
             if (process.platform !== 'win32') {
                 try { process.kill(-process.pid, 'SIGKILL'); } catch (_) {}
@@ -390,7 +391,7 @@ async function main() {
         if (failed) throw bridgeError(failed, code);
         if (mode === 'models') {
             if (!modelsResult) throw bridgeError('EMPTY_RESPONSE', code);
-            process.stdout.write(JSON.stringify(modelsResult) + (hostModelGroup ? '\n' : ''));
+            process.stdout.write(JSON.stringify(modelsResult) + (hostProcessGroup ? '\n' : ''));
             return;
         }
         if (mode === 'chat' && stdoutFd >= 0) {
@@ -409,7 +410,7 @@ async function main() {
         }
         let result;
         try { result = JSON.parse(text); } catch (_) { throw bridgeError('INVALID_RESPONSE'); }
-        process.stdout.write(JSON.stringify(normalizeResult(result, input.available_tools.length > 0, input.tool_context?.permission_enabled && input.tool_context.tool_rounds >= input.tool_context.max_tool_rounds ? 'round_limit_reached' : 'permission_disabled', input.response_format)));
+        process.stdout.write(JSON.stringify(normalizeResult(result, input.available_tools.length > 0, input.tool_context?.permission_enabled && input.tool_context.tool_rounds >= input.tool_context.max_tool_rounds ? 'round_limit_reached' : 'permission_disabled', input.response_format)) + (hostProcessGroup ? '\n' : ''));
     } finally {
         clearTimeout(timer);
         removeDirectory();
@@ -419,7 +420,9 @@ async function main() {
 module.exports = { cliEnvironment, safeArguments, sessionArguments, modelArguments, normalizeModels, buildPrompt, validateInput, sessionInstructions, normalizeResult, classifyDiagnostics, safeDiagnostics, serializeError, bridgeError, ACTIONS, SCHEMA };
 if (require.main === module) {
     main().catch(error => {
-        process.stdout.write(JSON.stringify({ error: serializeError(error) }) + (process.argv[2] === 'models' && process.argv[4] === '--host-process-group' ? '\n' : ''));
+        const hostProcessGroup = (process.argv[2] === 'models' && process.argv[4] === '--host-process-group')
+            || (process.argv[2] === 'chat' && process.argv[5] === '--host-process-group');
+        process.stdout.write(JSON.stringify({ error: serializeError(error) }) + (hostProcessGroup ? '\n' : ''));
         process.exitCode = 1;
     });
 }

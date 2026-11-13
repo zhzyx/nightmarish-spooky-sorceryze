@@ -1,0 +1,238 @@
+{
+  "schema_version": 1,
+  "request_id": "installed-host-command-routing-20261113",
+  "issue_number": 1017,
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1017",
+  "parent_issue": 978,
+  "related_issue": 830,
+  "recorded_at": "2026-11-12T23:44:35.899460+00:00",
+  "status": "independently_reviewed_local_candidate_pending_exact_ci_and_main",
+  "base_revision": "c074db21be98784ff1288f1f2d99c793ba156395",
+  "source_sha256": {
+    "editor/docks/daqian/workspace.gd": "a30e56fcd1f3bf1489902529a7a2591859c596e44997c98814ecfa4b9424e137",
+    "tests/editor/run_installed_host_routing.py": "295097eebc3d2962aad4a9b66f55797042d5e2c4ce5601fdca2295d269992e38",
+    "tests/editor/installed_host_routing.gd": "2960e7c7374abce2a5aa28aa680701d7249d7a894c0c0603fa6f6122cd3f6277"
+  },
+  "changes": [
+    "Graph, progress watcher and debug entry points resolve helpers only under the absolute installed host root; no project fallback.",
+    "Project, Issue, actor, editor session, request and receipt-directory arguments remain data.",
+    "Late graph denials may clear access only when the captured project root, complete actor snapshot and scope_epoch still match.",
+    "Missing installed components report actionable functional errors; a repaired watcher can retry on explicit refresh.",
+    "Bind _open_issue at both await boundaries to scope_epoch as well as selection/root/actor; actual _set_project reproduces scope change with selection unchanged.",
+    "Retain watcher_error across board notice rendering; clear it on connection stop or successful watcher start; repaired component retry removes stale error."
+  ],
+  "baseline_reproduction": {
+    "built_current_main": true,
+    "editor_sha256": "04f5799fd6f16fc436a96213fb93afd9fed94b4f1ffed808b741022b87731806",
+    "project_helper_selected": true,
+    "stale_same_actor_epoch_denial_forget_count": 1
+  },
+  "build": {
+    "platform": "macOS arm64",
+    "flags": [
+      "platform=macos",
+      "target=editor",
+      "dev_build=yes",
+      "arch=arm64",
+      "vulkan=no",
+      "accesskit=no",
+      "tests=yes",
+      "-j8"
+    ],
+    "status": "passed",
+    "editor_sha256": "c839c5a2f7c13d63b2fa68d1540bf8f037e61448094fc83dac0f22458a4d88ad",
+    "cache": "APFS copies of own #1001 cache into isolated #1017 checkout; original cache read-only; SCons rebuilt candidate dependencies."
+  },
+  "native": {
+    "mode": "private headless editor copy and settings",
+    "status": "passed",
+    "checks": [
+      "native method matches candidate: _installed_daqian_entry",
+      "native method matches candidate: _graph_command",
+      "native method matches candidate: _access_denied",
+      "native method matches candidate: _host_command",
+      "native method matches candidate: _host_result",
+      "native method matches candidate: _start_progress_watch",
+      "native method matches candidate: _start_debug",
+      "native method matches candidate: _update_board_sync_notice",
+      "native method matches candidate: _set_project",
+      "native method matches candidate: _open_issue",
+      "native method matches candidate: read_graph",
+      "denial test actually awaits transport: root",
+      "late denial context: root",
+      "denial returned to original request: root",
+      "denial test actually awaits transport: actor",
+      "late denial context: actor",
+      "denial returned to original request: actor",
+      "denial test actually awaits transport: epoch",
+      "late denial context: epoch",
+      "denial returned to original request: epoch",
+      "denial test actually awaits transport: unchanged",
+      "late denial context: unchanged",
+      "denial returned to original request: unchanged",
+      "issue caller awaits graph transport: scope",
+      "actual project scope switch keeps issue selection",
+      "issue caller respects current access scope: scope",
+      "issue caller awaits graph transport: actor_repository",
+      "issue caller respects current access scope: actor_repository",
+      "issue caller awaits graph transport: unchanged",
+      "issue caller respects current access scope: unchanged",
+      "scope switch before graph launch retires old request",
+      "offline rejects before transport",
+      "missing actor rejects before transport",
+      "invalid Issue rejects: 42",
+      "invalid Issue rejects: 0",
+      "invalid Issue rejects: no",
+      "relative project rejects before transport",
+      "missing or invalid installed host rejects without project fallback: ",
+      "missing or invalid installed host rejects without project fallback: relative-host",
+      "missing or invalid installed host rejects without project fallback: missing-host",
+      "real Python uses installed graph helper: read",
+      "graph preserves project/Issue/actor/session/request: read",
+      "real Python uses installed graph helper: answer",
+      "graph preserves project/Issue/actor/session/request: answer",
+      "real Python uses installed graph helper: apply",
+      "graph preserves project/Issue/actor/session/request: apply",
+      "graph works without project helper: read",
+      "graph works without project helper: answer",
+      "graph works without project helper: apply",
+      "actual watcher launches",
+      "installed watcher wins over conflicting project helper",
+      "real watcher observes configured receipt directory and source-events",
+      "actual debug process launches",
+      "installed debug runs real loopback Node/Python task with bound Issue",
+      "missing graph helper has actionable error",
+      "missing watcher rejects with actionable error",
+      "board sync preserves missing watcher diagnosis",
+      "missing debug helper rejects with actionable error",
+      "explicit refresh retries restored watcher without project helper",
+      "successful watcher retry clears stale diagnosis",
+      "retried watcher is real installed implementation",
+      "debug launches without project helper",
+      "debug completes loopback task without project helper"
+    ],
+    "check_count": 63,
+    "graph_scope": "Actual embedded GDScript methods and actual Python process/file transport, with distinguishable controlled graph_host.py substitutes. No online graph business execution.",
+    "watch_scope": "Actual installed watch_progress.mjs via actual embedded launch; source-events notifications from configured private receipt directory.",
+    "debug_scope": "Actual installed debug_session.mjs/execution.mjs/worker.py/model_api.py plus installed protocol adapter and dispatcher; real Node/Python task completed via local synthetic HTTP Responses fixture.",
+    "helper_processes_quiet": true,
+    "private_fixture_removed": true,
+    "shutdown_diagnostics": "Editor reports existing-style RID/ObjectDB shutdown warnings; no script parse/runtime error in passing receipt."
+  },
+  "supporting_tests": [
+    {
+      "suite": "tests/editor/test_daqian_watch_progress.mjs",
+      "passed": 2
+    },
+    {
+      "suite": "tests/editor/test_daqian_answers.py",
+      "passed": 3
+    },
+    {
+      "suite": "tests/editor/test_daqian_board.py",
+      "passed": 5
+    },
+    {
+      "suite": "ruff check and format --check on new Python runner",
+      "status": "passed"
+    },
+    {
+      "suite": "runner TimeoutExpired report contract",
+      "status": "passed",
+      "scope": "Injected before native launch; retained diagnostic output and recovery directory verified. Test-owned directory then removed. Does not prove detached-process cleanup on a real timeout."
+    },
+    {
+      "suite": "mypy new Python runner",
+      "status": "passed"
+    },
+    {
+      "suite": "codespell changed source/tests/design/evidence",
+      "status": "passed"
+    }
+  ],
+  "failed_attempts": [
+    {
+      "attempt": "First native fixture compile",
+      "cause": "Fixture header used spaces while extracted methods use tabs",
+      "correction": "Normalize fixture header indentation; candidate product source unchanged."
+    },
+    {
+      "attempt": "Initial controlled debug run",
+      "cause": "Private installed fixture omitted model_api dependency http_protocols.py",
+      "correction": "Copy actual installed protocol module; real loopback completed afterward."
+    }
+  ],
+  "cleanup": {
+    "removed": [
+      "tests/editor/__pycache__",
+      "tools/__pycache__",
+      "All completed private native fixture directories and settings",
+      "Injected timeout contract fixture after confirming no process launch"
+    ],
+    "retained": [
+      "Isolated #1017 checkout and own cached objects/binary for independent review and parent integration",
+      "Raw build/test receipts including failed fixture attempts"
+    ],
+    "retention_reason": "Candidate not yet delivered; parent owns final integration and post-delivery cleanup.",
+    "timeout_policy": "A real editor timeout records output and retains private files with detached-helper cleanup explicitly unverified."
+  },
+  "limits": [
+    "macOS arm64 only; Windows and Linux not exercised.",
+    "No live GitHub authorization or write, model inference, user desktop, current installation switch, commit, push or PR in this delegated task.",
+    "Graph helpers are controlled substitutes; supplied Python business-unit tests do not prove online account behavior.",
+    "UI pixel/focus/layout behavior and real timeout descendant cleanup are outside this receipt.",
+    "Independent review, exact-candidate CI, main merge and consumer acceptance remain parent responsibility."
+  ],
+  "private_receipts": {
+    "resolution_base": "Primary repository checkout, not this isolated worktree",
+    "directory": "data-collection/receipts/ai-integration-refactor-20261112/installed-host-routing-1017",
+    "sha256": {
+      "build-baseline.log": "64b119fa9641755995a9228217579f72e01eea6a956f74020a64a18d296a362b",
+      "build-candidate.log": "dcde661fd0e741a8acfc64efa5ae75e1d2e672876e5038542e63b152ba212161",
+      "graph-method-probe.json": "39b2d1d01e8e59e4cc0ad027f61087c39fbd5e262cb74e7490a8402a536a8f28",
+      "native-routing.json": "2db2aa63ee70e47e81709d2c83debb1c048d07291ab6e05100c3329b314ad69c",
+      "watch-node.log": "5a33f142bc791b965ed8667118d59e921b3071a238a711c3ea725ad66ba6d271",
+      "graph-python.log": "372ee57a30b8a8b17bb056a0814266786a922da7dcf4139f4f9a2457745d6424",
+      "graph-board-python.log": "357761de973a080051958068d7b5f0deecdc3b826c553a14de7fe86480760eff",
+      "timeout-report-contract.json": "6d7d50bb475cb0e11a0d321f7c7e99f79c14536a1aaa0bd1db5c484d0779af3d",
+      "build-review-fixes.log": "12d45a9ba5b9ef60982ea6ee4b2fcea5d18c855b213cb3d6c4b825ad9ec18027",
+      "native-review-fixes.json": "edd493680ff7b2282145f5b3fa68cc69a5e004ab8e3116757aad870de488c0ed",
+      "first-public-evidence.json": "daccce07d7e6058afe380d1f8ea29814b045befad772a5424bbc9c83278c5adc"
+    }
+  },
+  "previous_candidate": {
+    "source_sha256": {
+      "editor/docks/daqian/workspace.gd": "ab4bf21fb2d5f88cdd2822735ab8adb9adcd56439e8ee0c2df309f351e8935ca",
+      "tests/editor/run_installed_host_routing.py": "295097eebc3d2962aad4a9b66f55797042d5e2c4ce5601fdca2295d269992e38",
+      "tests/editor/installed_host_routing.gd": "de9ca6fda6e532d43d7050c9abf489646e403fcb31aa1c269d49e733311e03c7"
+    },
+    "editor_sha256": "a7eeca3f6b67331f1669cdf3c01d967e5ab170ed2262f9354d7e3c830d7aa06f",
+    "native_checks": 49,
+    "initial_review_verdict": "changes_requested",
+    "initial_review_sha256": "ad7a1d70518dac136fdf0e14e1b263d200d31ffe90111c80d957e3369eca239a"
+  },
+  "review_corrections": [
+    "Bind _open_issue at both await boundaries to scope_epoch as well as selection/root/actor; actual _set_project reproduces scope change with selection unchanged.",
+    "Retain watcher_error across board notice rendering; clear it on connection stop or successful watcher start; repaired component retry removes stale error."
+  ],
+  "independent_review": {
+    "verdict": "approved_for_reviewed_candidate_scope",
+    "reviewer": "/root/sinan_ec180ca25f78ee7e",
+    "report_sha256": "c76edd945364c26ab76d8ec0a4fb28c9138c450ef80fc09dcabd8c9470786dcd",
+    "reviewed_source_sha256": "a30e56fcd1f3bf1489902529a7a2591859c596e44997c98814ecfa4b9424e137",
+    "reviewed_public_receipt_sha256": "f2c164655d6d9980ca2f4cc73d6ae33fda0702d2032cd79b0901fab20fea44c4",
+    "checks": 63,
+    "resolved_findings": [
+      "R1 issue caller scope guard",
+      "R2 retained watcher diagnosis"
+    ],
+    "actual_terminal_verified": true,
+    "limits": [
+      "macOS arm64 headless private copies only; no Windows/Linux or pixel/focus/high-DPI UI validation",
+      "No production install switch, live GitHub/SSH mutation, paid inference, repository edits/commit/push/CI/main/Issue closure",
+      "Explicit refresh recovery is exercised via its actual launch and notice methods; no full live GitHub-backed refresh was performed",
+      "Review approves exact listed implementation/test/binary candidate within these limits. Final integration, exact candidate CI, main/consumer verification and complete business acceptance remain parent responsibility.",
+      "Original830/838 publisher ownership and mainhold971 remain unchanged"
+    ]
+  }
+}

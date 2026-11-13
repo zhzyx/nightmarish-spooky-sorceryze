@@ -11,6 +11,8 @@ from generation_service import (
     ServiceError,
     check_inputs,
     check_service,
+    image_batch_settings,
+    load_settings,
     prepare_provider,
     restore_provider,
     settings,
@@ -73,6 +75,62 @@ class KimiServiceTests(unittest.TestCase):
             "generation_version": "v2",
             "tool_fingerprint": "fixture-image-tool-fingerprint",
         }
+
+    def test_obsolete_route_values_normalize_without_affecting_direct_consumers(self):
+        expected = settings(self.value)
+        self.assertEqual(expected["endpoint"], "")
+        self.assertNotIn("kimi_model", expected)
+        # Old invalid strings and malformed stale JSON fields are inert, not routes.
+        for endpoint, model in (("https://obsolete.invalid/v1", "retired"), (None, {}), (17, [])):
+            with self.subTest(endpoint=endpoint, model=model):
+                old = {**self.value, "endpoint": endpoint, "kimi_model": model}
+                path = self.root / "saved-service.json"
+                path.write_text(json.dumps(old), encoding="utf-8")
+                normalized = load_settings(path)
+                self.assertEqual(normalized, expected)
+                self.assertEqual(settings(normalized), normalized)
+                self.assertEqual(check_service(old), check_service(expected))
+                self.assertEqual(json.loads(path.read_text()), old)  # read does not rewrite user state
+                _, providers, snapshot = prepare_provider(normalized, self.model(), self.root / "old.sqlite", "1" * 32)
+                self.assertIsInstance(providers["kimi_native"], KimiNativeDirectProvider)
+                self.assertEqual(snapshot["provider"]["model"], "v3.1")
+                self.assertEqual(snapshot["provider"]["texture_model"], "v3.5")
+                self.assertNotIn("endpoint", snapshot["provider"])
+                self.assertNotIn("kimi_model", snapshot["provider"])
+                _, restored = restore_provider(snapshot)
+                self.assertEqual(restored["kimi_native"].config, providers["kimi_native"].config)
+                path.write_text(json.dumps(normalized), encoding="utf-8")
+                self.assertEqual(load_settings(path), expected)
+        self.assertEqual(settings({"mode": "kimi_native"})["endpoint"], "")
+
+    def test_actual_models_runtime_paths_and_other_service_routes_still_validate(self):
+        for field in (
+            "model3d_model",
+            "texture_model",
+            "image_tool_path",
+            "image_pythonw_path",
+            "model3d_tool_path",
+            "model3d_pythonw_path",
+        ):
+            with self.subTest(field=field), self.assertRaises(ServiceError):
+                settings({**self.value, field: {"invalid": True}})
+        for field in ("model3d_model", "texture_model"):
+            with self.subTest(field=field), self.assertRaises(ServiceError):
+                settings({**self.value, field: "unsupported"})
+        missing = check_service({**self.value, "model3d_pythonw_path": str(self.root / "absent-python")})
+        self.assertEqual(missing["capabilities"]["text_to_mesh"]["code"], "model3d_runtime_missing")
+        self.assertEqual(missing["model3d"]["auth_mode"], "kimi_work_sdk_credentials")
+        for mode in ("comfy", "codex", "local_mesh"):
+            with self.subTest(mode=mode), self.assertRaises(ServiceError):
+                settings({"mode": mode, "endpoint": "https://user:secret@obsolete.invalid/v1"})
+        for mode in ("api_modeling", "api_sculpt"):
+            with self.subTest(mode=mode), self.assertRaises(ServiceError):
+                settings({"mode": mode, "endpoint": "file:///invalid", "api_model": "model", "api_key_env": "KEY"})
+        board = settings({**self.value, "godot_path": "board-runtime", "builder_path": "/fixture/modeling_builder.gd"})
+        self.assertEqual(
+            image_batch_settings(board)["board_config"],
+            {"board_godot_path": "board-runtime", "board_builder_path": "/fixture/image_contact_sheet.gd"},
+        )
 
     def test_mesh_stays_ready_when_image_tool_is_absent_or_invalid(self):
         with (
@@ -151,6 +209,12 @@ class KimiServiceTests(unittest.TestCase):
         _, providers = restore_provider(snapshot)
         self.assertIsInstance(providers["kimi_native"], KimiNativeProvider)
         self.assertNotIsInstance(providers["kimi_native"], KimiNativeDirectProvider)
+        self.assertEqual(providers["kimi_native"].config["endpoint"], DEFAULT_ENDPOINT)
+        self.assertEqual(providers["kimi_native"].config["model"], DEFAULT_MODEL)
+        for field in ("endpoint", "model"):
+            broken = {**snapshot, "provider": {**snapshot["provider"], field: "invalid"}}
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                restore_provider(broken)
 
     def test_mixed_nodes_route_and_composite_snapshot_restores(self):
         model = {
@@ -216,8 +280,6 @@ class KimiServiceTests(unittest.TestCase):
             settings({**self.value, "cli_path": "codex"})
         with self.assertRaises(ServiceError):
             settings({**self.value, "api_key": "forbidden"})
-        with self.assertRaises(ServiceError):
-            settings({**self.value, "endpoint": "https://example.com/coding/v1"})
         with self.assertRaises(ServiceError):
             settings({**self.value, "model3d_model": "unsupported"})
 

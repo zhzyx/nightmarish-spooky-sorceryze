@@ -86,6 +86,10 @@ class AIChatDock : public EditorDock {
 	Dictionary gonggong_running_steps;
 	Timer *gonggong_receipt_timer = nullptr;
 	int64_t gonggong_receipt_pid = -1;
+	bool bGongGongReceiptExited = false;
+	int iGongGongReceiptExitCode = -1;
+	uint32_t uGongGongReceiptReadAttempts = 0;
+	uint64_t uGongGongReceiptReadDeadline = 0;
 	String gonggong_receipt_path;
 	uint64_t gonggong_receipt_generation = 0;
 	String gonggong_recovered_result;

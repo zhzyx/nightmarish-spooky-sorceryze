@@ -1,0 +1,25 @@
+# Direct generation configuration independence (#1009)
+
+Parent #978; source https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1009. Authorized operator Sail-Li, authority `codex-user-ai-github-integration-refactor-20261112`; isolated delegated implementation on baseline `69a7a624a6d0f932bf02ebcc33d60427193629f3`. All relative paths resolve from repository root.
+
+## Consumer trace and decision
+
+`generation_service.settings` feeds load/probe/run creation. In current `kimi_native` mode, `_probe_kimi` checks the two local SDK tool bundles. `prepare_provider` selects `KimiNativeDirectProvider` with 3D tool/runtime/storage/model/texture_model and `KimiWorkImageProvider` with image tool/runtime/storage. Neither consumes language endpoint or kimi_model. Existing schema version 1 settings keep mode kimi_native, normalize endpoint to the empty string and discard kimi_model, including malformed obsolete JSON values, before common validation. This is idempotent; load does not rewrite disk, explicit UI save persists normalized fields. Unknown config keys, actual model IDs and tool/runtime value types remain rejected. No alternate provider is silently selected.
+
+`image_batch_settings` still consumes godot_path/builder_path for multi-image contact sheets; those runtime fields and image_board fallbacks must remain. Actual model3d_model/texture_model, tool/runtime paths, capability checks, and SDK-owned credentials are unchanged. Comfy, local_mesh, Codex and custom API endpoints retain their existing validation.
+
+`restore_provider` consumes durable run snapshots, not current service settings. Existing tool_path snapshots restore the direct provider; historical endpoint/model/Godot-builder snapshots restore `KimiNativeProvider` and still validate the original endpoint/model. Explicit legacy `kimi_provider.factory` likewise remains unchanged. Historical runs never migrate to a different provider, and settings normalization cannot repair an invalid historical snapshot. Recovery for a missing SDK tool/runtime is to configure the actual path and rerun the local probe; account/network/quota failure remains determined by task receipts.
+
+Workbench removes the obsolete address from the direct-mode form, strips the same fields from saved-state reconstruction and drafts, removes only its historical K3 save guard, and states that local detection has not verified account authorization, quota or network. API model/address controls remain available in their applicable modes. Existing local settings files are preserved until explicit save.
+
+## Verification and boundary
+
+Python regression covers old invalid routes, canonical load/save/reload, actual capability checks, direct snapshot restoration, legacy snapshot identity and rejection, and actual model/runtime/service constraints. Headless Workbench regression loads this candidate script, saves stale hidden values, reopens a pre-migration file, checks normalized drafts and persistence, and checks auth status wording. Local HTTP and SDK fixtures never invoke real accounts/models. The borrowed #1003 binary runs source GDScript; it does not embed this candidate UI. Independent review, exact CI/main delivery and final integrated binary validation remain the parent coordinator's responsibility. No #971 worker, worktree, session/node acceptance or #1003 provider implementation is claimed.
+
+Method recall `editor-dependency-handoff` applies: return exact candidate bytes and observed test scope, never equate borrowed binary/transport with downstream integrated acceptance. No framework or frozen governance changes.
+
+## Local results (2026-11-13)
+
+56 Python regressions completed: 55 pass, one Windows MAX_PATH-only skip on macOS. Real fixed-builder headless synthetic-plan test included; no model calls. Candidate Workbench source headless interaction: 96/96; isolated unified settings: 26/26. Ruff format/check and mypy pass. First added JSON persistence assertion compared JSON float schema_version against an integer dictionary; changed to the existing same_settings canonical helper, then all 96 checks passed. First broad Python invocation missed the fixture PYTHON executable and was rerun with an explicit trusted interpreter; unified-settings invocation initially lacked required CLI arguments, then passed with explicit binary/report. These fixture/setup failures are preserved separately and are not claimed as product regressions or original passing runs.
+
+Test state directories, copied unified-settings project, synthetic tools/databases and spawned test processes were owned by test TemporaryDirectory/process contexts and cleaned after completion. The candidate worktree/branch and necessary receipts remain for independent review and parent delivery; no commit, push, activation, foreign-worktree mutation or installed settings change occurred. Public validation summary is `data-collection/generation-provider-config-independence-1009-validation.json`; raw logs remain local under `data-collection/receipts/generation-provider-config-independence-1009/`.

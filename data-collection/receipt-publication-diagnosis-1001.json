@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "issue_number": 1001,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+  "request_id": "kuafu-run-43286058093-attempt-1",
+  "path_base": "repository_root",
+  "original_issue": 994,
+  "reviewer": "/root/sinan_212c4f648d9b31b2",
+  "original_failure": {
+    "run": 43286058093,
+    "job": 131419908558,
+    "step": 19,
+    "revision": "308bc83c19ae7cd1811496cca0e7062e6b30dab0",
+    "state": "failure preserved; initiating cause unproven"
+  },
+  "diagnosis": "Confirmed receipt transport/diagnostic robustness defect; original CI root cause remains unknown. Existing evidence cannot discriminate child startup/import failure, uncaught publication failure, native file read failure or other abnormal process termination.",
+  "confirmed_facts": [
+    "runtime-setup passed, including deployment and rollback cases; requirements-intake failed with Missing native intake completion 2.",
+    "First production model turn and tool continuation completed INTAKE_WORK_REPLY_1. Second Refine current feature was classified continue, associated with issue8001, then blocked before a second production-model request.",
+    "Native stdout exact diagnostic: GongGong 文件回执失败，队列已保留。未收到可读取的投递结果。",
+    "That fallback is emitted when receipt result has no true ok and empty error; it is compatible with missing/unreadable/invalid file or a JSON dictionary missing those fields.",
+    "C++ poll clears process PID without retrieving exit code; if file exists it reads/parses once and unconditionally removes it, including invalid JSON; it does not capture child stderr.",
+    "bridge.py catches operational exceptions during action execution, but final out-file write/replace occurs outside that catch, with no retry.",
+    "Debug artifact stores requests, GitHub calls, setup reports and requirements journals only. It omits chat outbox, final receipt/tmp files and receipt-process exit/stderr; temporary fixture tree is then removed."
+  ],
+  "reproduction": "One injected Path.replace PermissionError leaves successful temporary result, missing final file after events stored; no action replay. Synthetic local mechanism, original initiating cause unknown.",
+  "private_report_sha256": "6a95b4fba48c114995ee6b5f07e3b7fdff93427f11a8b90ca21e24116363dc70",
+  "current_state": "Isolated implementation and native validation in progress under1001; original failure and unknown cause retained. Parent978 open."
+}

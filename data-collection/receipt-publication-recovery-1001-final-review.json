@@ -1,0 +1,86 @@
+{
+  "request_id": "kuafu-run-43286058093-attempt-1",
+  "issue_number": 1001,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+  "original_ci_cause": "unknown; synthetic publication failure and independent diagnostic failure are confirmed separate cases",
+  "diagnostic_correction": "Hash unpaired surrogate identity bytes deterministically without exporting them; nested finally ensures shutdown and close even on diagnostic failures",
+  "independent_review": {
+    "worker": "/root/sinan_48be6ecabea24dfb",
+    "initial_sha256": "d78507a7d315edbd0b51865ce6c5b996cfe01d5772f86a3b6ffdf5177471f33f",
+    "final_sha256": "58d7c21a3c2303ae0c694f2626b07de6f929af2eb9a3dce6c437e4ddc47ed062",
+    "disposition": "bounded_source_approval",
+    "diagnostic_tests_passed": 4,
+    "cleanup_failure_injection": [
+      "normal",
+      "collector error",
+      "write error",
+      "shutdown error"
+    ]
+  },
+  "native_macos": {
+    "editor_sha256": "ebfdd525261b035d0b86501973f85a439b8bad832b986409ecb2bae715ff31cd",
+    "build_log_sha256": "3e19031b9b120ee99203743226224bb0c0ea496b210f5965630cc5d610b25fc6",
+    "native_test_log_sha256": "884c85bc1368a5a552a70a5c20ee625877ac9b2de4cda7aa0b38077759587ba8",
+    "receipt_test_cases": 11,
+    "assertions": 522,
+    "requirements_report_sha256": "3fa983078e2d7f49e651f93e6a43d4de627fad5525a259ccec1364a158815f2c",
+    "requirements_result": {
+      "ok": true,
+      "native_page": true,
+      "runtime_setup_and_resume": false,
+      "runtime_setup_provider_invoked": null,
+      "runtime_setup_explicit_paths_verified": false,
+      "runtime_setup_source_kind": "supplied package",
+      "catalog_requests": [
+        "/v1/models",
+        "/v1/models"
+      ],
+      "bootstrap_runtime_configuration": "private installation JSON; mutable fields, no Python/Node/Codex override",
+      "windows_owned_process_cleanup": "not applicable",
+      "actual_native_read_tool_roundtrips": 1,
+      "actual_yanshi_admission": true,
+      "model_and_github": "isolated loopback/CLI fixtures only",
+      "requirements_calls": 11,
+      "development_calls": 7,
+      "issues_created": 5,
+      "events": 71,
+      "git_check": {
+        "git_state": "committed",
+        "files": 74,
+        "records": 71,
+        "remote_merge_verified": false
+      },
+      "cases": [
+        "new requirement",
+        "supplement during intake amends the same Issue before the first development request",
+        "followup reuses Issue",
+        "installed chat and flush with stale workspace launcher",
+        "new requirement while bound",
+        "same text new turn still classified",
+        "cancel before publication",
+        "model API repair then explicit retry",
+        "GitHub auth repair before model call",
+        "clarification pauses and resumes the same requirement"
+      ],
+      "editor_sha256": "ebfdd525261b035d0b86501973f85a439b8bad832b986409ecb2bae715ff31cd",
+      "fixture_events_imported": false
+    }
+  },
+  "input_sha256": {
+    "customizations/components/godot-host/bridge.py": "cd7f15289902058bafdf860edc8f1d3191ecfbbdea96e17f95a67524525ccc52",
+    "customizations/components/godot-host/test_bridge.py": "d0d1822b0d55ceffbad633022cc04fa529a9e548e621f60e741b9fdc10c2434c",
+    "drivers/windows/file_access_windows.cpp": "259211e46402063c3de36c5ff11ee25041db72c7d8f54344a0b3cc5efc575630",
+    "editor/docks/ai_chat_dock.h": "2b2a5ecce2913fe673202c4ca48b0d356fd90fb170eade7845f939335f09adcb",
+    "editor/docks/ai_chat_gonggong.cpp": "09fbfd4d1bbcd23e8ef6736f97794421523757300d42f5dc3136b5ad4b764795",
+    "editor/docks/ai_chat_receipt.h": "d68c32182714c95910aa0aab52988895e27265c0b8408484c6432d7b19b0f242",
+    "tests/editor/run_requirements_intake.py": "988152bc6b9ebd3ff9caa6fb34b5404a22017e558b09cb27242f8664d2da8cc8",
+    "tests/editor/receipt_diagnostics.py": "ebfc0a54f58a9f2ec1abc730ff4d4823b42389bfbd69195c083fa609ce80bfac",
+    "tests/editor/test_receipt_diagnostics.py": "076d9ddb6fddaf837a41fd07748d1ec4ed33f7d70fa494a534d27e456a5fbbbd",
+    "tests/editor/test_ai_chat_receipt.cpp": "cef53e4c81566ea5314ab1d69eff58a51543cada962d3650311f0c02651565c3"
+  },
+  "limits": [
+    "Windows original runtime setup recovery and native sharing-lock tests require exact candidate CI; macOS does not substitute.",
+    "No live accounts or external inference; no effective install replacement."
+  ],
+  "incident": "1901b04c3a7c0bc884cd8770aba6817c5d7a608e54670131b99013e1d3a1bc7f"
+}

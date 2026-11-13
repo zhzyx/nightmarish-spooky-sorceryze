@@ -60,6 +60,84 @@ class BridgeOutputTests(unittest.TestCase):
                     self.assertIn(request.name, response["error"])
 
 
+class ReceiptPublicationTests(unittest.TestCase):
+    def run_publication(self, failures, winerror=32):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            output = root / "result.json"
+            envelope = {"event_id": "event", "tenant_id": "tenant", "request_id": "request", "source_ref": "issue"}
+            bridge.enqueue(root, envelope)
+            original_replace = Path.replace
+            calls = []
+
+            def replace(path, destination):
+                calls.append(path)
+                if len(calls) <= failures:
+                    error = PermissionError(13, "PRIVATE-USER-DATA")
+                    error.winerror = winerror
+                    raise error
+                return original_replace(path, destination)
+
+            import io
+
+            stderr = io.StringIO()
+            with (
+                patch.object(sys, "argv", ["bridge", "flush", "--workspace", str(root), "--out", str(output)]),
+                patch.object(bridge, "storage_entry", return_value="storage.py"),
+                patch.object(bridge, "host_environment", return_value={}),
+                patch.object(
+                    bridge.subprocess,
+                    "run",
+                    side_effect=lambda *a, **kw: types.SimpleNamespace(
+                        returncode=0, stdout=batch_receipt(kw), stderr=""
+                    ),
+                ) as action,
+                patch.object(Path, "replace", replace),
+                patch.object(bridge.time, "sleep") as sleep,
+                patch.object(sys, "stderr", stderr),
+            ):
+                code = bridge.main()
+            self.assertEqual(action.call_count, 1, "Receipt recovery must not replay the completed action")
+            self.assertFalse((root / ".gonggong-outbox/chat/event.json").exists())
+            self.assertNotIn("PRIVATE-USER-DATA", stderr.getvalue())
+            self.assertNotIn(str(root), stderr.getvalue())
+            if output.with_suffix(".tmp").exists():
+                self.assertTrue(json.loads(output.with_suffix(".tmp").read_text())["ok"])
+            return (
+                code,
+                len(calls),
+                sleep.call_count,
+                output.exists(),
+                output.with_suffix(".tmp").exists(),
+                stderr.getvalue(),
+            )
+
+    def test_single_transient_sharing_and_lock_failure_recovers_without_replay(self):
+        for winerror in (32, 33):
+            with self.subTest(winerror=winerror):
+                self.assertEqual(self.run_publication(1, winerror)[:5], (0, 2, 1, True, False))
+
+    def test_persistent_lock_is_bounded_and_preserves_temporary_receipt(self):
+        result = self.run_publication(99)
+        self.assertEqual(result[:5], (2, 6, 5, False, True))
+        self.assertEqual(json.loads(result[5])["status"], "receipt_publication_failed")
+
+    def test_permanent_denial_and_non_windows_permission_are_not_retried(self):
+        for winerror in (5, None):
+            with self.subTest(winerror=winerror):
+                self.assertEqual(self.run_publication(1, winerror)[:5], (2, 1, 0, False, True))
+
+    def test_write_failure_is_bounded_and_sanitized(self):
+        import io
+
+        with tempfile.TemporaryDirectory() as directory, patch.object(sys, "stderr", io.StringIO()) as stderr:
+            self.assertFalse(bridge.publish_result(Path(directory) / "missing/result.json", "PRIVATE-USER-DATA"))
+            report = json.loads(stderr.getvalue())
+            self.assertEqual(report["stage"], "write")
+            self.assertEqual(report["attempts"], 0)
+            self.assertNotIn("PRIVATE-USER-DATA", stderr.getvalue())
+
+
 class IssueIntakeRecoveryTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()

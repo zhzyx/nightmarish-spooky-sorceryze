@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "issue": 978,
+  "request_id": "ai-github-integration-refactor-20261112",
+  "occurred_at": "2026-11-13T01:53:22.992450+00:00",
+  "path_base": "repository_root",
+  "base": "c074db21be98784ff1288f1f2d99c793ba156395",
+  "initial_reviewed_index_tree": "22b7bbf3b935e3d897c8a77726fb4e4adfbc4276",
+  "contributions": [
+    {
+      "issue": 1001,
+      "pr": 1014,
+      "source": "4a1c4833d3e3e8c37858352d3215b3f0305beddb"
+    },
+    {
+      "issue": 997,
+      "pr": 1015,
+      "source": "5acada24257288ab44134e02adfd7dc64a7f567a"
+    },
+    {
+      "issue": 1009,
+      "pr": 1016,
+      "source": "526b4ea8ca12f995f57700f16ae43fcb5e37ee99"
+    },
+    {
+      "issue": 1017,
+      "pr": 1018,
+      "source": "410a4e7cd8192f15fd7c461b60a85d812edd8e10"
+    },
+    {
+      "issue": 978,
+      "pr": 1019,
+      "source": "f2326398cf7f24e6c33a78767fb5e973737726e3"
+    }
+  ],
+  "contribution_manifest_sha256": "9a0fc0f6f7f81e548c00b088450e35b109c7881c23c54fa895957b1168db2f16",
+  "conflict_resolution": {
+    "path": "design-docs/ai-github-integration-refactor-20261112.md",
+    "versions": {
+      "1": "91cd622ae50ea33d169851c8070cc0cc3ffd08d83ae0f91e8eb38eee7f6be06d",
+      "2": "10562734d1fe3ad0e9c7e46397091dd1766cf89813b12790db3fe90d89cc94a9",
+      "3": "3ec9274ed3fe123b20a9689d681cbbcea24d6edd90ffb287d18688c148a253ca"
+    },
+    "selected_source": "f2326398cf7f24e6c33a78767fb5e973737726e3",
+    "reason": "Own later reviewed evidence design preserves earlier997 audit and adds subsequent progress plus precise unmerged-source links. No product-source conflict."
+  },
+  "build": {
+    "exit_code": 0,
+    "binary_sha256": "c00970ceefb52da7db5544aeea8ea39d9e8494277ea5933abe4140c0d3ec8c88",
+    "log_sha256": "f140e57d8a0782c7c34611237b352af26635604b347921f5b7c9b26235e0d801",
+    "platform": "macos arm64 editor dev tests; vulkan=no accesskit=no"
+  },
+  "native_validation": {
+    "binary_sha256": "c00970ceefb52da7db5544aeea8ea39d9e8494277ea5933abe4140c0d3ec8c88",
+    "private_root": "/var/folders/z9/470shgl13vb8x0qmv2dn42580000gn/T/combined-owned-native-13nunhke",
+    "cases": [
+      {
+        "name": "receipt-unit",
+        "exit_code": 0,
+        "runner_pid": 29781
+      },
+      {
+        "name": "model-picker",
+        "exit_code": 0,
+        "runner_pid": 29789
+      },
+      {
+        "name": "ainative-bundle",
+        "exit_code": 0,
+        "runner_pid": 29809
+      },
+      {
+        "name": "installed-host-routing",
+        "exit_code": 0,
+        "runner_pid": 29907
+      },
+      {
+        "name": "requirements-intake",
+        "exit_code": 0,
+        "runner_pid": 29938
+      }
+    ],
+    "all_passed": true,
+    "scope": "Combined-candidate controlled native consumers; no real provider, external GitHub write or effective installation.",
+    "private_root_removed": true,
+    "failure_cleanup_policy": "On failure preserve outer private HOME/fixture for ownership-aware inspection; do not claim all detached descendants terminated."
+  },
+  "native_evidence": {
+    "summary.json": "7efa983696e3c4dc6b694a47b3e01c7851e57c4e08d2f10e97a8998eef14b210",
+    "requirements-intake.log": "85ae99aa25a90ed5a9a3b036ded87cedfb123489e6446e5644c083ffe2447ae0",
+    "ainative-bundle.log": "9e8cbf726d35a8eb062db3952052c4f7d3fdcb79c9e17ca5c45111b7e74be821",
+    "requirements-intake.receipts.json": "0afec3f9c5035a0d6ff33a3e515b0835ebcd61b067536e924149cdc762cf76f9",
+    "installed-host-routing.log": "b5f5cd05fc887bf9822edff6ec5c011af851c69f9d4820229ea303cd007e5627",
+    "requirements-intake.stdout.log": "8b03085bbe72eee0461e70d86d84e41a2fd0796d216444b1b18eddd03a500b36",
+    "requirements-intake.json": "9e1f4b473ebca433f437383d6a9b3cfcedb74eb5dd14b780ec98b696d3ec7e4b",
+    "ainative-bundle.json": "72d24410c7cb8b6c56d385d692316a94292dafccc19f8de3af9853ebb1450d8f",
+    "requirements-intake.debug.json": "f903f1f31aff1281a8123e4a6a1f4820c2c0c8e4e7908970e13804f6b4a014ab",
+    "installed-host-routing.json": "b5f5cd05fc887bf9822edff6ec5c011af851c69f9d4820229ea303cd007e5627",
+    "receipt-unit.log": "884c85bc1368a5a552a70a5c20ee625877ac9b2de4cda7aa0b38077759587ba8",
+    "requirements-intake.stderr.log": "d4f65a7e6a02eec2c46d614f01ec65457f6a4e3a9001fe99a50271d892f866df",
+    "model-picker.json": "ce34fb39f4b740019c3f66e4dfd8267566cc35a891bee6c876724000f0a2012e",
+    "model-picker.log": "d90a7a231a295e1944d92679c2d98276c04ea271eb1a833b9c9497fa387cea08"
+  },
+  "independent_review": {
+    "worker": "/root/sinan_456d2e3cf42fcb93",
+    "state": "source_approved_final_evidence_review_separate",
+    "scope": "118-path contribution equality, semantic combination, nine Python suites and three Node suites; final supplemental evidence review follows",
+    "review_sha256": "6469df3a07040c2738c6bbaf27669eab4449a8dd28ab2f63c3744aa3f19a1513",
+    "python": {
+      "total": 136,
+      "passed": 130,
+      "windows_skipped": 6
+    },
+    "node": {
+      "passed": 61,
+      "initial_fixture_failure": 5,
+      "recovery": "isolated byte-identical fixtures with pinned shared dependencies; source unchanged"
+    }
+  },
+  "publication_policy": {
+    "own_delivery_main_hold": false,
+    "supersedes_historical_main_hold": true,
+    "notice": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971#issuecomment-6841182322",
+    "foreign_publication_handoffs": [
+      830,
+      838
+    ],
+    "foreign_worktrees_or_occupancy_released": false
+  },
+  "limitations": [
+    "Native consumers use controlled fixtures; no effective installation changed.",
+    "Existing RID/ObjectDB diagnostics remain in raw logs; no leak-free claim.",
+    "Combined Windows exact-candidate CI and remote main delivery pending.",
+    "Parent978 full acceptance remains open; foreign971 Windows source failure,830/838 publication handoffs and other recorded remaining contracts are not closed by this integration."
+  ]
+}

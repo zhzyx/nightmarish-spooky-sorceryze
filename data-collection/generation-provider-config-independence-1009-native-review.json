@@ -1,0 +1,45 @@
+{
+  "request_id": "generation-provider-config-independence-20261113",
+  "issue_number": 1009,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1009",
+  "integration_base": "c074db21be98784ff1288f1f2d99c793ba156395",
+  "native": {
+    "editor_sha256": "6de9c036407f332d6ff17253b1abe50bcc8f4027928df3fa917cf205caa8b88d",
+    "bundle_version": "aa108f482221c8043b0fcd8c828273a712780ef78fba410f482664c785b02a76",
+    "installed_bundle_matches_source": true,
+    "same_engine_bundle": true,
+    "project_state_isolated": true,
+    "project_sources_unchanged": true,
+    "runs": [
+      {
+        "name": "mesh-and-rig",
+        "passed": true
+      },
+      {
+        "name": "independent-project",
+        "passed": true
+      },
+      {
+        "name": "sample-addon-compatibility",
+        "passed": true
+      },
+      {
+        "name": "relocated-runtime",
+        "passed": true
+      }
+    ],
+    "bundle_file_count": 77,
+    "report_sha256": "00011063f59d12e3bd4bd0c53b6ca94cbc3f2e37bc25eb0d1e508310032516f3",
+    "shared_process_helper_sha256": "954f3ff03f33e9950372fd5908eab6a8d90c83affe88022b9cb3323ec3fcd246"
+  },
+  "limits": [
+    "MacOS headless isolated synthetic fixtures only, no external inference or account certification",
+    "Exact candidate WindowsCI and main delivery remain pending",
+    "No effective installation replaced; prior failure evidence retained"
+  ],
+  "independent_review_sha256": "6ee18389de2f1456284431b7aee437e8ec9c19d75c1f3b5587bbfc8d396d1257",
+  "native_fixture_review_sha256": "ffaac5e0e6407a199f6404a7ed2ade4fc309e95d9c0c551f56bf1025bee91fca",
+  "fixture_correction": "Old native fixture expected obsolete hidden language model field restored; now asserts removed route fields and preserved real Tripo runtime/tool paths.",
+  "initial_failure_report_sha256": "a5f581610761d533fb8f24bde2159a8b7e334d0f4e45f09a4c386f824034bfaf",
+  "incident": "2f156458c33bd46c907d1d357b41269b38b7b9ef0b71d81720c834a59807a755"
+}

@@ -16,6 +16,7 @@ import uuid
 from pathlib import Path
 
 from editor_test_isolation import copy_editor
+from receipt_diagnostics import collect_receipt_diagnostics
 from run_runtime_setup_simulation import make_package
 from runtime_policy_fixture import copy_runtime_policy
 from runtime_selector_fixture import native_selector
@@ -370,6 +371,7 @@ def main():
         for name in ["APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME"]:
             env[name] = str(root / name)
             (root / name).mkdir()
+        args.out.parent.mkdir(parents=True, exist_ok=True)
         try:
             result = run_editor(
                 [
@@ -385,9 +387,18 @@ def main():
                 env,
             )
         finally:
-            server.shutdown()
-            server.server_close()
-        args.out.parent.mkdir(parents=True, exist_ok=True)
+            # Also runs on timeout/startup failure, before TemporaryDirectory removes
+            # private receipt bytes. Only bounded metadata enters the public artifact.
+            try:
+                args.out.with_suffix(".receipts.json").write_text(
+                    json.dumps(collect_receipt_diagnostics(root, installation), ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8",
+                )
+            finally:
+                try:
+                    server.shutdown()
+                finally:
+                    server.server_close()
         args.out.with_suffix(".stdout.log").write_bytes(result.stdout)
         args.out.with_suffix(".stderr.log").write_bytes(result.stderr)
         args.out.with_suffix(".debug.json").write_text(

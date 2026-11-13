@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "event_id": "combined-owned-integration-978-20261113",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "correction",
+  "occurred_at": "2026-11-13T01:53:22.992450+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "action": "integrate five owned candidates and withdraw self-imposed blanket main hold",
+    "base": "c074db21be98784ff1288f1f2d99c793ba156395",
+    "initial_index_tree": "22b7bbf3b935e3d897c8a77726fb4e4adfbc4276",
+    "contributions": [
+      {
+        "issue": 1001,
+        "pr": 1014,
+        "source": "4a1c4833d3e3e8c37858352d3215b3f0305beddb"
+      },
+      {
+        "issue": 997,
+        "pr": 1015,
+        "source": "5acada24257288ab44134e02adfd7dc64a7f567a"
+      },
+      {
+        "issue": 1009,
+        "pr": 1016,
+        "source": "526b4ea8ca12f995f57700f16ae43fcb5e37ee99"
+      },
+      {
+        "issue": 1017,
+        "pr": 1018,
+        "source": "410a4e7cd8192f15fd7c461b60a85d812edd8e10"
+      },
+      {
+        "issue": 978,
+        "pr": 1019,
+        "source": "f2326398cf7f24e6c33a78767fb5e973737726e3"
+      }
+    ],
+    "validation_receipt": "data-collection/ai-integration-combined-delivery-978.json",
+    "notice": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971#issuecomment-6841182322",
+    "foreign_takeover": false,
+    "usage": null,
+    "usage_unknown_reason": "native host does not expose measured usage"
+  },
+  "evidence_refs": [],
+  "sha256": "f8a7df1edb0de0b10a32eb878a7ff4c1c4556be22185f138cf37074088075c35"
+}

@@ -56,6 +56,7 @@ var layer_positions := {false:{}, true:{}}
 var layer_events := {false:{}, true:{}}
 var hidden_detail_changed := false
 var watch_config := {}
+var watcher_error := ""
 var layer_discovery := {}
 var layer_full_after := {false:0, true:0}
 var delta_busy := false
@@ -1385,6 +1386,14 @@ func _host_root() -> String:
 	return str(source.get_installed_host_root()) if is_instance_valid(source) and source.has_method("get_installed_host_root") else ""
 
 
+func _installed_daqian_entry(filename: String) -> String:
+	var root := _host_root()
+	if not root.is_absolute_path():
+		return ""
+	var entry := root.path_join("customizations/components/godot-host/daqian").path_join(filename)
+	return entry if FileAccess.file_exists(entry) else ""
+
+
 func _repo() -> String:
 	var source = chat if is_instance_valid(chat) else get_tree().root.find_child("AI Chat", true, false)
 	if is_instance_valid(source) and source.has_method("get_production_workspace"):
@@ -1896,7 +1905,10 @@ func _sync_board_edges(rows: Array, generation: int) -> bool:
 
 func _update_board_sync_notice() -> void:
 	if current.is_empty():
-		notice.text = "上次同步  %s" % str(board.verified_at).replace("T", " ") if board.has("verified_at") else "跟进工单或创建需求以开始"
+		if not watcher_error.is_empty():
+			notice.text = watcher_error
+		else:
+			notice.text = "上次同步  %s" % str(board.verified_at).replace("T", " ") if board.has("verified_at") else "跟进工单或创建需求以开始"
 
 
 func _update_dock_title(waiting_inputs: int) -> void:
@@ -2692,6 +2704,7 @@ func _stop_progress_watch() -> void:
 	layer_discovery.clear()
 	hidden_detail_changed = false
 	watch_config = {}
+	watcher_error = ""
 	if not watcher.is_empty() and OS.is_process_running(watcher.pid):
 		OS.kill(watcher.pid)
 	watcher = {}
@@ -2710,11 +2723,20 @@ func _stop_progress_watch() -> void:
 func _start_progress_watch(config: Dictionary) -> void:
 	if watcher_exited or not watcher.is_empty() or config.is_empty():
 		return
-	var entry := _repo().path_join("customizations/components/godot-host/daqian/watch_progress.mjs")
-	if FileAccess.file_exists(entry):
-		progress_directory = config.directory
-		watch_config = config
-		watcher = OS.execute_with_pipe(config.node, [entry, config.directory, "--source-events"], false)
+	var entry := _installed_daqian_entry("watch_progress.mjs")
+	if entry.is_empty():
+		watcher_error = "安装宿主的进度监听组件缺失，请修复编辑器宿主安装后重新连接。"
+		notice.text = watcher_error
+		return
+	progress_directory = config.directory
+	watch_config = config
+	watcher = OS.execute_with_pipe(config.node, [entry, config.directory, "--source-events"], false)
+	if watcher.is_empty():
+		watcher_error = "无法启动进度监听宿主，请核对 Node 可执行路径后重新连接。"
+		notice.text = watcher_error
+	else:
+		watcher_error = ""
+		_update_board_sync_notice()
 
 
 func _list_zoom_input(event: InputEvent) -> void:
@@ -3281,16 +3303,17 @@ func _open_issue(item: Dictionary) -> void:
 	var principal := actor.duplicate()
 	_show_issue(item.url, snapshot)
 	var epoch := selection_epoch
+	var board_epoch := scope_epoch
 	var revision: String = editor.revision
 	notice.text = "已显示快照，正在读取 #" + str(item.number) + " 的最新流程…"
 	var port: Object = host if is_instance_valid(host) else self
 	# Present the local snapshot before starting another host process. Rapid
 	# navigation can retire this selection before it incurs any host work.
 	await get_tree().process_frame
-	if epoch != selection_epoch or current != item.url or scope != _repo() or principal != actor:
+	if epoch != selection_epoch or board_epoch != scope_epoch or current != item.url or scope != _repo() or principal != actor:
 		return
 	var live: Dictionary = await port.read_graph(item.url)
-	if epoch != selection_epoch or current != item.url or scope != _repo() or principal != actor:
+	if epoch != selection_epoch or board_epoch != scope_epoch or current != item.url or scope != _repo() or principal != actor:
 		return
 	if live.get("denied",false):
 		_forget(str(live.error))
@@ -4430,14 +4453,17 @@ func _graph_command(id: String, action: String, request: Dictionary) -> Dictiona
 	var expected := "https://github.com/" + str(board.get("repo", "")) + "/issues/" + number
 	if id != expected or not number.is_valid_int() or int(number) <= 0:
 		return {"error":"工单与当前绑定仓库不匹配"}
-	var path := _repo().path_join("customizations/components/godot-host/daqian/graph_host.py")
-	if not _repo().is_absolute_path() or not FileAccess.file_exists(path):
-		return {"error":"未连接工单流程宿主"}
-	var args := PackedStringArray([path, "--repo",_repo(),"--number",number,"--expected-user",actor.user_id,"--editor-session",editor_session,action])
 	var root := _repo()
-	var principal := actor.duplicate()
+	if not root.is_absolute_path():
+		return {"error":"请在「工作区连接」中绑定有效的项目目录。"}
+	var path := _installed_daqian_entry("graph_host.py")
+	if path.is_empty():
+		return {"error":"安装宿主的工单流程组件缺失，请修复编辑器宿主安装后重新连接。"}
+	var principal := actor.duplicate(true)
+	var epoch := scope_epoch
+	var args := PackedStringArray([path, "--repo",root,"--number",number,"--expected-user",principal.user_id,"--editor-session",editor_session,action])
 	var response: Dictionary = await _host_command(args, "--result", request)
-	if response.get("denied",false) and principal == actor:
+	if response.get("denied",false) and root == _repo() and principal == actor and epoch == scope_epoch:
 		_access_denied(root,principal.user_id,str(response.get("error","工单访问已失效")))
 	return response
 
@@ -4983,9 +5009,12 @@ func _start_debug() -> void:
 	if error:
 		notice.text = error
 		return
-	var path := _repo().path_join("customizations/components/godot-host/daqian/debug_session.mjs")
-	if not _repo().is_absolute_path() or not FileAccess.file_exists(path):
-		notice.text = "请在「工作区连接」中绑定包含天枢调试宿主的仓库。"
+	if not _repo().is_absolute_path():
+		notice.text = "请在「工作区连接」中绑定有效的项目目录。"
+		return
+	var path := _installed_daqian_entry("debug_session.mjs")
+	if path.is_empty():
+		notice.text = "安装宿主的调试组件缺失，请修复编辑器宿主安装后重新连接。"
 		return
 	var settings := EditorInterface.get_editor_settings()
 	var runtime := _runtime_paths()

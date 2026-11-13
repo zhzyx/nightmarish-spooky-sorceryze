@@ -130,6 +130,12 @@ def settings(value):
         )
     ):
         raise ServiceError("service_config_invalid")
+    if result["mode"] == "kimi_native":
+        # Current settings select direct SDK tools, never the historical K3 planner.
+        # Normalize old saved route values before validation; snapshots and the
+        # explicit legacy factory retain their original provider/configuration.
+        result["endpoint"] = ""
+        result.pop("kimi_model", None)
     if not all(isinstance(result[key], str) for key in ("endpoint", "image_model", "mesh_model")):
         raise ServiceError("service_config_invalid")
     for key in ("image_board_godot_path", "image_board_builder_path"):
@@ -174,24 +180,10 @@ def settings(value):
     elif "cli_path" in result:
         raise ServiceError("service_config_invalid")
     if result["mode"] == "kimi_native":
-        from kimi_provider import (
-            DEFAULT_ENDPOINT,
-            DEFAULT_MODEL,
-            MODEL3D_GENERATE_MODELS,
-            MODEL3D_TEXTURE_MODELS,
-            validate_endpoint,
-            validate_model,
-        )
+        from kimi_provider import MODEL3D_GENERATE_MODELS, MODEL3D_TEXTURE_MODELS
 
-        result.setdefault("endpoint", DEFAULT_ENDPOINT)
-        result.setdefault("kimi_model", DEFAULT_MODEL)
         result.setdefault("model3d_model", "v3.1")
         result.setdefault("texture_model", "v3.5")
-        try:
-            result["endpoint"] = validate_endpoint(result["endpoint"])
-            result["kimi_model"] = validate_model(result["kimi_model"])
-        except ValueError:
-            raise ServiceError("kimi_endpoint_invalid") from None
         if result["image_model"] or result["mesh_model"]:
             raise ServiceError("service_config_invalid")
         if not isinstance(result["model3d_model"], str) or result["model3d_model"] not in MODEL3D_GENERATE_MODELS:

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b1dbd618f44f75a6e5aca353226a67ecd4ba8298",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "39100fa3ea217d67d629c660a00524132885178fc9f486912d42489068b1d0c2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/996",
+    "action": "validation",
+    "detection_head": "5acada24257288ab44134e02adfd7dc64a7f567a",
+    "context_sha256": "2fea5dacfa7de992f65771d9119d562d00a69f610d6ead177fe2cf620631fc91",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "live-native-catalog.json and initial-fixture-failure retained artifacts; source5acada242, binary3ddaec42",
+    "diagnosis": "Private GDScript test incorrectly called unbound EditorSettings.save. Removed that fixture-only call and used normal editor shutdown persistence. Real native directory, invalid path diagnosis, explicit recovery, and private editor restart all passed; production source unchanged.",
+    "next_action": "Independent review of actual account evidence; preserve initial fixture failure. Candidate remains pending coordinated main delivery and effective consumer acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T21:55:34.784845+00:00",
+    "attempted": "Stopped own failed fixture process; temporary project removed; corrected fixture completed two editor runs exit0 and removed private project.",
+    "repair_owner": "Sail-Li codex:/root private test harness",
+    "continuable": "Yes, account proof review and remaining source reconciliation."
+  },
+  "occurred_at": "2026-11-12T21:57:22.191342+00:00",
+  "sha256": "2ff304c63a50cbe104fc76adc93212f03a417c6447677a3e1e4be986eeeee164"
+}

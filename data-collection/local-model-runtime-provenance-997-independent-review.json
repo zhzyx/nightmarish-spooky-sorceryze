@@ -1,0 +1,21 @@
+{
+  "request_id": "local-model-runtime-provenance-20261113",
+  "issue_number": 997,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/997",
+  "independent_review": {
+    "worker": "/root/sinan_3c144f3ef24a0805",
+    "initial_sha256": "d2194858ad8baf57aeb6e6a081527ff3ccedd75d38234dede587b6758c2f1435",
+    "followup_sha256": "b27ca8b175609610695aabd2261a49b2b69bda944749b0b1ac799c117b8e4545",
+    "auxiliary_sha256": "b80a8f5d7665932ff3f65d02a234be3c4f7714b6a76e136d63ba5494ef7c5452",
+    "disposition": "approved"
+  },
+  "corrections": [
+    "Connection action captures selected revision and credential before verification, rejects concurrent profile changes, and never replaces it with a later key.",
+    "Tests select protocol explicitly rather than relying on unordered runtime hashes."
+  ],
+  "limits": [
+    "Actual macOS process and loopback fixtures only; no real provider authorization or Windows kernel acceptance.",
+    "Parent978 and foreign971 remain open; source family inventory is not a claim that every implementation is semantically verified."
+  ],
+  "source_report": "data-collection/local-model-runtime-provenance-997.json"
+}

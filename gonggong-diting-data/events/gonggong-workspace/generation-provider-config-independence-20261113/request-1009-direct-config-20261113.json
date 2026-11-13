@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "request-1009-direct-config-20261113",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "generation-provider-config-independence-20261113",
+  "kind": "request",
+  "occurred_at": "2026-11-12T20:38:36.276601+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1009",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "path_base": "repository_root",
+    "design_doc": "design-docs/generation-provider-config-independence-20261113.md",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "scope": "Current direct SDK generation settings and UI; no provider or historical snapshot route switch",
+    "source_head": "69a7a624a6d0f932bf02ebcc33d60427193629f3",
+    "owner": "/root/sinan_6bc51a2bd43052ae"
+  },
+  "evidence_refs": [
+    "dispatch-9c0449eb116b46849a08bec1c30db27e",
+    "kuafu-a90ae3c0beff71537de9032346729c148a7dc8bd"
+  ],
+  "sha256": "08f2afa73b472f74c525a85ef12b5f51b6ebede6b7dd4df699c4ad1833da64eb"
+}

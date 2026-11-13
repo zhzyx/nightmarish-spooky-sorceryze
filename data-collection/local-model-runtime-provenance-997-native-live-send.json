@@ -1,0 +1,80 @@
+{
+  "request_id": "local-model-runtime-provenance-20261113",
+  "issue_number": 997,
+  "related_issues": [
+    217,
+    954,
+    978
+  ],
+  "execution": {
+    "scope": "One actual native headless tools-off consultation using advertised default model and default reasoning; no business/project inputs",
+    "source_candidate": "5acada24257288ab44134e02adfd7dc64a7f567a",
+    "observed_model": null,
+    "provider_request_id": null,
+    "request_observed": true,
+    "ok": true,
+    "binary_sha256": "3ddaec42ad12d0c124ee29b9120e818606e3a27e37c41fcdca589ba7cec8a4b7",
+    "fixture_sha256": {
+      "live-native-send.py": "035faaef0cd55fd1c2ddf4a3f791409c5f53aa8d960dc43d8915f475e4ccdf2f",
+      "live-native-send.gd": "0927ef7fe38a88488dcd65dd03e10cf1cd75cbdb02fd70b8ca8e15780d5b25ad"
+    },
+    "bridge_sha256": "4403f2eba17dfb9ca78b0f64c983e8ed79adec3f1a2c2517c125fa423fb5c803",
+    "engine_pid": 10285,
+    "engine_pgid": 10285,
+    "request_summary": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "",
+      "available_tools_count": 0,
+      "consultation_only": true,
+      "writes_allowed": false,
+      "execution_allowed": false
+    },
+    "exit_code": 0,
+    "native": {
+      "busy_finished": true,
+      "catalog_model_count": 8,
+      "checks": [],
+      "consultation_only": true,
+      "default_reasoning_selected": true,
+      "elapsed_ms": 12305,
+      "error": "",
+      "expected_reply_visible": true,
+      "ok": true,
+      "requested_model": "gpt-6.1-sol",
+      "status": "就绪 · 本地工具已关闭，仅对话。",
+      "tools_allowed": false
+    },
+    "persisted_expected_assistant_reply": true,
+    "assistant_reply_count": 1,
+    "history_sha256": "dfe814439577cbdf55bc6afcba4cef9c7e04975b9fe4e5cef1899445f4254db3",
+    "engine_terminal": true,
+    "observed_chat_bridge_pids": [
+      10338
+    ],
+    "observed_chat_bridge_pids_still_present": [],
+    "private_directory_removed": true
+  },
+  "independent_review": {
+    "worker": "/root/sinan_26177ee126642a14",
+    "verdict": "bounded_native_live_send_evidence_accepted_with_limits",
+    "sha256": "243086567c8765971bffc62121956fdf9b040767c95712895303b779169ff7a2",
+    "reexecuted_inference": false
+  },
+  "private_evidence_sha256": {
+    "live-native-send.py": "035faaef0cd55fd1c2ddf4a3f791409c5f53aa8d960dc43d8915f475e4ccdf2f",
+    "live-native-send.gd": "0927ef7fe38a88488dcd65dd03e10cf1cd75cbdb02fd70b8ca8e15780d5b25ad",
+    "live-native-send.json": "2871f3e326df418f110657e20387ded9deefe2bcc81aa0df96deb6b5351b569a",
+    "live-native-send.log": "fe5ce82ba154a29497be381e648e00467284fd298e5ac907b981288a1ba10c33",
+    "live-native-send.gd.initial-fixture-failure": "7b5ad433b8da95d8dc7ac95a69dce2d0ba51fccce13d240258095a7b8830e4dc",
+    "live-native-send.json.initial-fixture-failure": "17bf206259528a8c1c3431392df53911efbc223fe920bcc4c072004a9e991387",
+    "live-native-send.log.initial-fixture-failure": "7ccce76f3a857841aed624831aac4846b40c9a83bd1f3076145a87a8168f6d75"
+  },
+  "limits": [
+    "One current macOS private native consultation, advertised default model with default empty reasoning. No all-model, all-effort or Windows live-account certification.",
+    "Actual request packet summary was observed from a direct editor child bridge. No wrapper or mock substituted the CLI.",
+    "Source is pending997 candidate, not main integration or effective user installation. Original217 session isolation still depends on971.",
+    "Observed model and provider request ID remain unknown.",
+    "Shutdown log includes RID/ObjectDB diagnostics; normal process exit is not a leak-free lifecycle claim.",
+    "Recorded process cleanup covers editor and observed direct chat bridge; no complete descendant identity inventory claimed."
+  ]
+}

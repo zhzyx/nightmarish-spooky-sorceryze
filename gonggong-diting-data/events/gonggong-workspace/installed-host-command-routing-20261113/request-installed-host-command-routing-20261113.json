@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "request-installed-host-command-routing-20261113",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "installed-host-command-routing-20261113",
+  "kind": "request",
+  "occurred_at": "2026-11-12T23:21:53.240758+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1017",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "authorization": "Current user full AI/GitHub integration refactor goal978; independent830review reproduced shared main graph helper source and stale denial defects, root confirmed adjacent watcher/debug sources. Root owns this new correction without taking over original830publication.",
+    "issue_number": 1017,
+    "observed_model": null,
+    "usage": null,
+    "related_issues": [
+      978,
+      830
+    ]
+  },
+  "evidence_refs": [],
+  "sha256": "dbd9c362f70ae54901cb898e8c4debb979ee9ddcf7976fdbadf194fc5ca230b3"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a90ae3c0beff71537de9032346729c148a7dc8bd",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "generation-provider-config-independence-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1009",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6c8db5773340e731e61bf2c4a95cde0ae0956fe6b923a511126c577bb064b83c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1009",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1009",
+    "action": "validation",
+    "detection_head": "69a7a624a6d0f932bf02ebcc33d60427193629f3",
+    "context_sha256": "f6d8c5232a053d57351628039bf6bca0b84b283e8912296858893cb2068a5fbc",
+    "operator": "Sail-Li",
+    "worker": "/root/sinan_6bc51a2bd43052ae",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "github:zhzyx/nightmarish-spooky-sorceryze#1009",
+    "diagnosis": "Reproduced current settings rejecting obsolete endpoint/model with kimi_endpoint_invalid; current prepare_provider forwards only SDK tool paths and exact 3D/texture IDs. Legacy factory and historical planner snapshots still consume endpoint/model. Unique implementation owner is delegated isolated Issue1009 worker; no foreign worktree or provider implementation changes.",
+    "next_action": "Normalize current direct settings and UI without changing legacy factory/snapshot restoration; test save/restore/capability and exact model/runtime validation locally without account calls, then return candidate for independent review.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T20:34:06.672019+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T20:34:51.159461+00:00",
+  "sha256": "280c749a0687b6c38195ec4258c7f928057a5f7188589ed38ebd6de4e3a4930c"
+}
