@@ -1,6 +1,6 @@
 # 天璇产品 Agent 候选 · 审查与整改记录
 
-本目录定义三个产品级 Agent 候选与三个 Skill 候选，均**未准入、未启用**。本文件记录两轮独立审查与整改，不构成批准。
+本目录定义三个产品级 Agent 候选与三个 Skill 候选，均**未准入、未启用**。本文件记录三轮独立审查与整改，不构成批准。
 
 ## 审查记录
 
@@ -8,10 +8,11 @@
 | --- | --- | --- | --- |
 | 第 1 轮 | `b7353f0a` | 6 项 `needs_changes` | `data-collection/tianxuan-agents-review-20261114.json` |
 | 第 2 轮 | `526ae131` | 6 项 `needs_changes` | `data-collection/tianxuan-agents-review2-20261114.json` |
+| 第 3 轮 | `5ec9f646`（摘要建立于 `dad9ef6d`） | **6 项 `pass`（A–G）** | `data-collection/tianxuan-agents-review3-20261114.json` |
 
-两轮均由独立子 Agent 只读审查，对照 `framework/FOUNDATION.md`、`gonggong-check`、`specs/governance-review.md`、元衡上游与现有核心 Agent。
+三轮均由独立子 Agent 只读审查，对照 `framework/FOUNDATION.md`、`gonggong-check`、`specs/governance-review.md`、元衡上游与现有核心 Agent。第三轮 pass 不等于准入。
 
-## 整改 2（本轮）
+## 整改 2–3（本轮）
 
 1. **候选摘要可复现**：按 `framework/tools/admission.mjs` 的算法（按路径 ordinal 排序、`path + NUL + 文件 SHA256 + LF`、显式 `candidate_files`）重算摘要：
    - 文曲 `f5a3c422149a6ba9a6ceca8ef5dd10e4f51bce8077d5c6a2d88789ec2abb7c86`
@@ -37,7 +38,7 @@
 
 ## 仍未完成
 
-- 需对同一组摘要做第 4 轮独立审查（整改 3 未改候选文件、摘要不变），并由授权批准人签署精确候选的 review pass。
+- 第三轮复审已在 `5ec9f646` 通过 A–G；待授权批准人签署精确候选的 review pass。
 - 历史 `b7353f0a` 未经准入即合入 main，需所有者决定如何记录或回退；不追溯授权。
 - 完整请求取消流程尚未实现；仅状态机取消边有测试。
 - 真实宿主身份、工具权限、模型凭据与生产执行授权仍由宿主核验。
