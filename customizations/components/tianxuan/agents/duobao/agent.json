@@ -12,9 +12,22 @@
     "customizations/components/tianxuan/agents/duobao/skills/repo-review/SKILL.md"
   ],
   "reporting": "customizations/components/tianxuan/agents/duobao/reporting.json",
+  "component": "customizations/components/tianxuan/agents/duobao/component.json",
+  "admission": "customizations/components/tianxuan/agents/duobao/admission.json",
+  "candidate_digest": "83a0455896f4ec821ea2674f7845c7a38c1dc4f4577692277bc40511dc49c4c2",
   "host_required_for_execution": true,
   "scope": "authorized_repository_branch_commit_pull_request_review_and_concurrent_merge_coordination",
-  "state": "candidate_pending_exact_review",
+  "state": "candidate_pending_review",
   "admission_pass": null,
-  "runtime_connected": false
+  "runtime_connected": false,
+  "candidate_files": [
+    "customizations/components/tianxuan/agents/duobao/AGENT.md",
+    "customizations/components/tianxuan/agents/duobao/component.json",
+    "customizations/components/tianxuan/agents/duobao/reporting-binding.template.json",
+    "customizations/components/tianxuan/agents/duobao/reporting.json",
+    "customizations/components/tianxuan/agents/duobao/skills/repo-review/SKILL.md",
+    "customizations/components/tianxuan/agents/duobao/skills/repo-review/component.json",
+    "customizations/components/tianxuan/agents/duobao/skills/repo-review/reporting-binding.template.json",
+    "customizations/components/tianxuan/agents/duobao/skills/repo-review/reporting.json"
+  ]
 }

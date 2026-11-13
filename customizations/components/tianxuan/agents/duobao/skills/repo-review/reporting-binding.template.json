@@ -1,0 +1,10 @@
+{
+    "template":  true,
+    "tenant_id":  null,
+    "source_ref":  null,
+    "agent_snapshot_ref":  null,
+    "request_ref":  null,
+    "outbox_path":  null,
+    "sink_ref":  null,
+    "authority_ref":  null
+}

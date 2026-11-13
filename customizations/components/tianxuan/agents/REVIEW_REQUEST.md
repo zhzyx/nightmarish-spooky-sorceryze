@@ -1,32 +1,48 @@
-# 天璇产品 Agent 候选 · 审查请求
+# 天璇产品 Agent 候选 · 审查与整改记录
 
-本目录新增三个产品级 Agent 候选，均未准入、未启用。
+本目录定义三个产品级 Agent 候选与三个 Skill 候选，均**未准入、未启用**。本文件记录三轮独立审查与整改，不构成批准。
 
-## 候选
+## 审查记录
 
-| ID | 名称 | 定义 | Skill |
+| 轮次 | 审查对象 | 结论 | 记录 |
 | --- | --- | --- | --- |
-| `wenqu` | 文曲 | `wenqu/AGENT.md` + `wenqu/agent.json` | `wenqu/skills/doc-authoring/SKILL.md` |
-| `duobao` | 多宝 | `duobao/AGENT.md` + `duobao/agent.json` | `duobao/skills/repo-review/SKILL.md` |
-| `sinan-workorders` | 司南·工单 | `sinan-workorders/AGENT.md` + `sinan-workorders/agent.json` | `sinan-workorders/skills/work-order-management/SKILL.md` |
+| 第 1 轮 | `b7353f0a` | 6 项 `needs_changes` | `data-collection/tianxuan-agents-review-20261114.json` |
+| 第 2 轮 | `526ae131` | 6 项 `needs_changes` | `data-collection/tianxuan-agents-review2-20261114.json` |
+| 第 3 轮 | `5ec9f646`（摘要建立于 `dad9ef6d`） | **6 项 `pass`（A–G）** | `data-collection/tianxuan-agents-review3-20261114.json` |
+
+三轮均由独立子 Agent 只读审查，对照 `framework/FOUNDATION.md`、`gonggong-check`、`specs/governance-review.md`、元衡上游与现有核心 Agent。第三轮 pass 不等于准入。
+
+## 整改 2–3（本轮）
+
+1. **候选摘要可复现**：按 `framework/tools/admission.mjs` 的算法（按路径 ordinal 排序、`path + NUL + 文件 SHA256 + LF`、显式 `candidate_files`）重算摘要：
+   - 文曲 `f5a3c422149a6ba9a6ceca8ef5dd10e4f51bce8077d5c6a2d88789ec2abb7c86`
+   - 多宝 `83a0455896f4ec821ea2674f7845c7a38c1dc4f4577692277bc40511dc49c4c2`
+   - 司南·工单 `e77011ad30006fb4f0537f3881786e40f1e1d2c157a3e4b4b644ee5e9b76d71a`
+2. **注册不污染签名宿主登记**：撤回对 `customizations/host-agents.json` 的修改（其哈希被 `yanluo_host.py` 的 `host_registry_sha256` 固定，改动会使在途签名授权漂移），改为产品级 `agents/host-registry.json`，并说明原因。
+3. **证据纠偏**：
+   - 服务端 34 passed；文曲 23；多宝 8 tests + 25 subtests；Gitea 83；全量 148 + 25 subtests
+   - 整改 2 未新增测试；整改 3 新增 1 个取消迁移测试，其余只引用现有测试；不把“补充测试”写成事实
+   - 取消：状态机 `cancelled` 边已由 `test_cancelled_transition_is_terminal` 覆盖；完整请求取消流程仍未实现
+   - 未知回执不重发：只有契约与现有派发测试，不是本候选的测试
+   - `plan_tickets` 属于核心 `tianxuan_core`，不属于本候选；候选只验证状态迁移与进度聚合
+4. **司南边界**：`agent.json` 的 scope 移除 `dependencies`；来源创建、派发、依赖与验收仍归核心司南与有权验收者。
+5. **Skill 准入记录**：三个 Skill 各新增 `admission.json`，标明 `parent_scoped_pending`。
+6. **组件契约**：六个 `component.json` 补 `binding_template`，与 `create-component.py` 输出一致。
+
+## 当前状态
+
+- reporting：6/6 profile 通过 `framework/tools/reporting.mjs --component`
+- 注册：`agents/host-registry.json` 三条 candidate 条目，`approval: null`
+- `admission.json`：`approved: false`、`approver: null`
+- `review_pass: null`，不存在任何批准记录
+
+## 仍未完成
+
+- 第三轮复审已在 `5ec9f646` 通过 A–G；待授权批准人签署精确候选的 review pass。
+- 历史 `b7353f0a` 未经准入即合入 main，需所有者决定如何记录或回退；不追溯授权。
+- 完整请求取消流程尚未实现；仅状态机取消边有测试。
+- 真实宿主身份、工具权限、模型凭据与生产执行授权仍由宿主核验。
 
 ## 审查入口
 
-按 `framework/skills/gonggong-check/SKILL.md`：
-
-1. 读取 `framework/AGENTS.md`、`framework/FOUNDATION.md`、`framework/foundation.lock.json`、`framework/upstream/yuanheng/core.md` 与 `framework/upstream/yuanheng/agents/yuanheng.md`。
-2. 按 `framework/specs/governance-review.md` 核对边界、元衡原则与指令精简度。
-3. 用 `framework/templates/review-pass.json` 记录 review pass，绑定精确候选摘要与范围。
-4. 取得真实授权后才可启用；自评不是批准。
-
-## 本次未覆盖
-
-- 未修改 `framework/AGENTS.md`、`framework/framework-manifest.json` 或核心 Agent 列表。
-- 未产生生产工具权限、模型凭据或远端写入。
-- `reporting.json` 为候选模板，`runtime_connected: false`；实际绑定由宿主在启用时完成。
-
-## 证据
-
-- 定义文件与 JSON 在本目录。
-- 领域核心测试：`customizations/components/tianxuan/server/test_tianxuan_core.py`。
-- 审查结果待补充；在获得 review pass 之前，这些 Agent 只能作为候选存在。
+按 `framework/skills/gonggong-check/SKILL.md`，读取冻结纲领、元衡上游与 `specs/governance-review.md`；用 `framework/templates/review-pass.json` 记录 review pass，绑定精确候选摘要与范围。自评不是批准。

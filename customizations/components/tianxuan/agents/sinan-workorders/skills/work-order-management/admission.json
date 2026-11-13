@@ -1,0 +1,10 @@
+{
+  "skill_id": "sinan-work-order-management",
+  "version": "0.1.0",
+  "parent_agent": "sinan-workorders",
+  "state": "parent_scoped_pending",
+  "approved": false,
+  "approver": null,
+  "note": "Skill admission is parent-scoped; pending with the parent agent.",
+  "candidate_digest": "e77011ad30006fb4f0537f3881786e40f1e1d2c157a3e4b4b644ee5e9b76d71a"
+}

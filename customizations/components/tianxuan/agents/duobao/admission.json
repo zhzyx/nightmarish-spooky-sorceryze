@@ -1,0 +1,16 @@
+{
+  "agent_id": "duobao",
+  "version": "0.1.0",
+  "candidate_digest": "83a0455896f4ec821ea2674f7845c7a38c1dc4f4577692277bc40511dc49c4c2",
+  "state": "pending_admission",
+  "review": "data-collection/tianxuan-agents-review3-20261114.json",
+  "approved": false,
+  "approver": null,
+  "note": "Candidate only; no admission, execution authority or tool permission is granted.",
+  "review_history": [
+    "data-collection/tianxuan-agents-review-20261114.json",
+    "data-collection/tianxuan-agents-review2-20261114.json",
+    "data-collection/tianxuan-agents-review3-20261114.json"
+  ],
+  "candidate_digest_commit": "dad9ef6d"
+}

@@ -12,10 +12,22 @@
     "customizations/components/tianxuan/agents/sinan-workorders/skills/work-order-management/SKILL.md"
   ],
   "reporting": "customizations/components/tianxuan/agents/sinan-workorders/reporting.json",
+  "component": "customizations/components/tianxuan/agents/sinan-workorders/component.json",
+  "admission": "customizations/components/tianxuan/agents/sinan-workorders/admission.json",
+  "candidate_digest": "e77011ad30006fb4f0537f3881786e40f1e1d2c157a3e4b4b644ee5e9b76d71a",
   "host_required_for_execution": true,
-  "scope": "authorized_work_order_model_status_machine_dependencies_board_and_event_progress",
-  "state": "candidate_pending_exact_review",
+  "scope": "authorized_work_order_model_status_machine_board_and_event_progress",
+  "state": "candidate_pending_review",
   "admission_pass": null,
   "runtime_connected": false,
-  "extends": "sinan"
+  "candidate_files": [
+    "customizations/components/tianxuan/agents/sinan-workorders/AGENT.md",
+    "customizations/components/tianxuan/agents/sinan-workorders/component.json",
+    "customizations/components/tianxuan/agents/sinan-workorders/reporting-binding.template.json",
+    "customizations/components/tianxuan/agents/sinan-workorders/reporting.json",
+    "customizations/components/tianxuan/agents/sinan-workorders/skills/work-order-management/SKILL.md",
+    "customizations/components/tianxuan/agents/sinan-workorders/skills/work-order-management/component.json",
+    "customizations/components/tianxuan/agents/sinan-workorders/skills/work-order-management/reporting-binding.template.json",
+    "customizations/components/tianxuan/agents/sinan-workorders/skills/work-order-management/reporting.json"
+  ]
 }

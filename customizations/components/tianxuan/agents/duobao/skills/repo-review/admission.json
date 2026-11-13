@@ -1,0 +1,10 @@
+{
+  "skill_id": "duobao-repo-review",
+  "version": "0.1.0",
+  "parent_agent": "duobao",
+  "state": "parent_scoped_pending",
+  "approved": false,
+  "approver": null,
+  "note": "Skill admission is parent-scoped; pending with the parent agent.",
+  "candidate_digest": "83a0455896f4ec821ea2674f7845c7a38c1dc4f4577692277bc40511dc49c4c2"
+}

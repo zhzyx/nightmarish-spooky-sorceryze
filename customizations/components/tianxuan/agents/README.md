@@ -10,7 +10,7 @@
 
 ## 状态
 
-全部为 `candidate_pending_exact_review`，`runtime_connected: false`。
+全部为 `candidate_pending_review`，`runtime_connected: false`。
 
 ## 准入前置
 
