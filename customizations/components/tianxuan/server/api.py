@@ -16,6 +16,8 @@ from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
 from gateway import ModelGateway, create_model_router
 from schemas import (
+    CommentCreateRequest,
+    CommentResolveRequest,
     DocCreateRequest,
     DocUpdateRequest,
     IssueTransitionRequest,
@@ -179,5 +181,19 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
     @app.post("/api/v1/docs/{doc_id}/classify")
     def classify_doc(doc_id: str) -> dict[str, list[str]]:
         return {"tags": classify_markdown(store.get_doc(doc_id)["body_md"])}
+
+    # ---------- 文曲：评论 ----------
+
+    @app.post("/api/v1/docs/{doc_id}/comments")
+    def create_comment(doc_id: str, payload: CommentCreateRequest, actor: ActorDep) -> dict[str, Any]:
+        return store.add_comment(actor, doc_id, payload.body, payload.parent_id)  # type: ignore[no-any-return]
+
+    @app.get("/api/v1/docs/{doc_id}/comments")
+    def list_comments(doc_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        return {"comments": store.list_comments(actor, doc_id)}
+
+    @app.patch("/api/v1/comments/{comment_id}")
+    def resolve_comment(comment_id: str, payload: CommentResolveRequest, actor: ActorDep) -> dict[str, Any]:
+        return store.resolve_comment(actor, comment_id, payload.resolved)  # type: ignore[no-any-return]
 
     return app

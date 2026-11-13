@@ -73,3 +73,16 @@ class IssueTransitionRequest(BaseModel):
     """司南工单状态迁移。"""
 
     to_status: str
+
+
+class CommentCreateRequest(BaseModel):
+    """文曲文档评论。"""
+
+    body: str
+    parent_id: str | None = None
+
+
+class CommentResolveRequest(BaseModel):
+    """标记评论已解决或重新打开。"""
+
+    resolved: bool = True
