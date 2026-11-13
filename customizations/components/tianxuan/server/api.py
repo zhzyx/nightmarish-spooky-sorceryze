@@ -28,12 +28,14 @@ from schemas import (
     DocUpdateRequest,
     IssueTransitionRequest,
     LoginRequest,
+    MemberCreateRequest,
     RegisterRequest,
     RequirementCommitRequest,
     RequirementCreateRequest,
+    RoleUpdateRequest,
     TicketsRequest,
 )
-from tianxuan_core import NotFound, Tianxuan, TianxuanError, TransitionRejected, VersionConflict
+from tianxuan_core import NotFound, PermissionDenied, Tianxuan, TianxuanError, TransitionRejected, VersionConflict
 from wenqu_bridge import build_ai_index, export_markdown, merge_offline
 from wenqu_bridge import classify as classify_markdown
 from wenqu_bridge import search as search_documents
@@ -143,6 +145,10 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
     def _transition_rejected(_request: Request, exc: TransitionRejected) -> JSONResponse:
         return JSONResponse(status_code=409, content={"detail": str(exc)})
 
+    @app.exception_handler(PermissionDenied)
+    def _permission_denied(_request: Request, exc: PermissionDenied) -> JSONResponse:
+        return JSONResponse(status_code=403, content={"detail": str(exc)})
+
     @app.exception_handler(TianxuanError)
     def _domain_error(_request: Request, exc: TianxuanError) -> JSONResponse:
         return JSONResponse(status_code=400, content={"detail": str(exc)})
@@ -180,6 +186,20 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
         if scheme.lower() != "bearer" or not token.strip():
             raise HTTPException(status_code=400, detail="Bearer token is required")
         return {"revoked": store.revoke_session(token.strip())}
+
+    # ---------- 成员与角色 ----------
+
+    @app.get("/api/v1/users")
+    def list_members(actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        return {"users": store.list_members(actor)}
+
+    @app.post("/api/v1/users")
+    def add_member(payload: MemberCreateRequest, actor: ActorDep) -> dict[str, Any]:
+        return store.add_member(actor, payload.email, payload.password, payload.name, payload.role)  # type: ignore[no-any-return]
+
+    @app.patch("/api/v1/users/{user_id}/role")
+    def set_role(user_id: str, payload: RoleUpdateRequest, actor: ActorDep) -> dict[str, Any]:
+        return store.set_role(actor, user_id, payload.role)  # type: ignore[no-any-return]
 
     # ---------- 文曲：文档 ----------
 
