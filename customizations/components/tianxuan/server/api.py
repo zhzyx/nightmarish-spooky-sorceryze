@@ -174,6 +174,13 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
         token = store.issue_session(account["user_id"])
         return {**account, "token": token}  # type: ignore[no-any-return]
 
+    @app.post("/api/v1/auth/logout")
+    def logout(authorization: str | None = Header(default=None)) -> dict[str, bool]:
+        scheme, _, token = (authorization or "").partition(" ")
+        if scheme.lower() != "bearer" or not token.strip():
+            raise HTTPException(status_code=400, detail="Bearer token is required")
+        return {"revoked": store.revoke_session(token.strip())}
+
     # ---------- 文曲：文档 ----------
 
     @app.get("/api/v1/docs")

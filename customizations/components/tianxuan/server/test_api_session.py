@@ -61,3 +61,28 @@ def test_invalid_bearer_and_missing_identity() -> None:
 def test_login_rejects_bad_password() -> None:
     client, _ = _setup()
     assert client.post("/api/v1/auth/login", json={"email": EMAIL, "password": "wrong"}).status_code == 401
+
+
+def test_logout_revokes_token() -> None:
+    client, _ = _setup()
+    token = _token(client)
+    assert client.get("/api/v1/docs", headers={"Authorization": f"Bearer {token}"}).status_code == 200
+
+    logout = client.post("/api/v1/auth/logout", headers={"Authorization": f"Bearer {token}"})
+    assert logout.status_code == 200
+    assert logout.json()["revoked"] is True
+
+    denied = client.get("/api/v1/docs", headers={"Authorization": f"Bearer {token}"})
+    assert denied.status_code == 400
+
+
+def test_tokens_are_hashed_and_expire() -> None:
+    store = Tianxuan(":memory:")
+    account = store.register("哈希工坊", "hash@example.com", "secret-pass", "Owner")
+    token = store.issue_session(account["user_id"], ttl_seconds=-1)
+
+    row = store.db.execute("SELECT token_hash FROM sessions").fetchone()
+    assert row is not None
+    assert row["token_hash"] != token
+    assert len(row["token_hash"]) == 64
+    assert store.user_for_token(token) is None
