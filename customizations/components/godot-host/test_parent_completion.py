@@ -20,6 +20,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location("parent_completion", Path(__file__).with_name("parent_completion.py"))
+assert spec is not None and spec.loader is not None
 parent = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(parent)
 

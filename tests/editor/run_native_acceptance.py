@@ -204,7 +204,7 @@ _original_run = batch.subprocess.run
 integration_restore_report: dict[str, Any] = {}
 integration_restarting = False
 integration_binary = ""
-parent_cold_report = {}
+parent_cold_report: dict[str, Any] = {}
 
 
 def native_run(command, *args, **kwargs):

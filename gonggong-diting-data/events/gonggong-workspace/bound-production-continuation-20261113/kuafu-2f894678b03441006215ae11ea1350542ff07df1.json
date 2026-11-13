@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2f894678b03441006215ae11ea1350542ff07df1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "bound-production-continuation-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c402290099129a7bb6c8d4d27b6312f5f30981db3fe8b8d1f549d637e183b193",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/953",
+    "action": "validation",
+    "detection_head": "fceb8fb8934565bd266f254cbb7cf3b1a24e59ab",
+    "context_sha256": "518ac0715c3dbbbc236af439e8b55aed3d87e1532c1a8bf2ff1db75a43ff287d",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43372415664",
+    "diagnosis": "PR1029 exact signed candidate c421b0fce98d2cc1ef4326e7213a2c6b610465bd failed static CI:4 mypy errors in two test files plus codespell changing original British spelling in a hashed incident receipt. Root adds precise test typing/loader guards and one exact receipt skip using existing immutable-evidence convention; original incident bytes retained. Local mypy8 files and codespell42 files now pass with no spellchecker mutations. No production runtime delta.",
+    "next_action": "Independent review the narrow3file repair and factual event, repeat full applicable static gate, sign replacement exact candidate, rerunCI and only then merge/close issues. Preserve failedPR evidence and close supersededPR only after replacement identified.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T05:32:54.704622+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T05:35:27.511737+00:00",
+  "sha256": "7b0388303f54d8c8f7c9093308576f56349b1fda7badab799b458b5773b8b6f2"
+}
