@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "agent-docs-routing-20261114",
+  "collected_at": "2026-11-13T18:39:41.333599+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/agent-docs-routing-20261114/agent-docs-routing-20261114-request.json",
+      "sha256": "532dc7af0268fa8a049218bc1979e2814b61b5a9791d85a428c2e24ba241fe5d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "agent-docs-routing-20261114-request",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/agent-docs-routing-20261114/github-3bc75bb67203f5cfdd6003bf95692b683010824fc942dc2e20258014aa45ddc7.json",
+      "sha256": "79d9d3277d985fe9ee0e8b9c23b9d6a020108f7af68d7137cd95239da323a6ec",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "github-3bc75bb67203f5cfdd6003bf95692b683010824fc942dc2e20258014aa45ddc7",
+      "origin": "explicit-github-issue-event-intake"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/agent-docs-routing-20261114/kuafu-283b6dc9378aaf7ca236be11bfa0950baa4c5aae.json",
+      "sha256": "6f4a5fdd5640fd6caf7bf62e55ca3153ea9e96a359091a375c20e59a9c6e3b18",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-283b6dc9378aaf7ca236be11bfa0950baa4c5aae",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/agent-docs-routing-20261114/kuafu-9ca53b005ddc0ed8e40a723b932d5a557f3b174d.json",
+      "sha256": "fc553017e707daf42d4f546c3500f240adf6883ea6d8c5f8e6731ac200a59f82",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-9ca53b005ddc0ed8e40a723b932d5a557f3b174d",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/agent-docs-routing-20261114/kuafu-ca2ffd84c276988f1b3de8fbfd984195085c6ee2.json",
+      "sha256": "0625334c8e49663cb7827b7c3f14493d33a5d61fbbe4a83f0746e9366a72301c",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-ca2ffd84c276988f1b3de8fbfd984195085c6ee2",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/agent-docs-routing-20261114/kuafu-f13b568e746eb19a605e938f76fd0ef8ed1e2560.json",
+      "sha256": "0dc6b98ab159b380f1f59b6fec7fa9087a09f0241ab61828ec168a75f1bcced5",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-f13b568e746eb19a605e938f76fd0ef8ed1e2560",
+      "origin": "authenticated_host_role"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1082,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1082"
+}

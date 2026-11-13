@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-283b6dc9378aaf7ca236be11bfa0950baa4c5aae",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "agent-docs-routing-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1082",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ccb213f4a0eaac6f2a199ac9b630f0b5230f6815327444289b41ae83a04be7df",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1082",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1084",
+    "action": "delivery",
+    "detection_head": "d3177311f67720fc5ef32a399f2398ce2ab0fb67",
+    "context_sha256": "57bd277207b513ee6cae2776e7fd86eeec43f1dad598da54302a062706578a8c",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-agent-docs-routing-1082",
+    "authority_ref": "用户对 agent-docs-routing-20261114 的明确提交与 main 交付授权",
+    "evidence": "design-docs/agent-docs-routing-submit-notes-20261114.md",
+    "diagnosis": "框架校验器调用 PATH 中的 node 时发生 WinError 2；改用宿主已安装桌面运行时后，独立完整性校验通过，候选与框架文件均未改变。",
+    "next_action": "仅为当前提交进程适配 node 可执行文件，保持同一候选并重跑正式门禁和提交入口。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T18:33:05.073024+00:00",
+    "attempted": "正式提交在框架校验处停止；直接运行校验器复现 WinError 2，运行时适配后返回 approved_file_integrity。",
+    "repair_owner": "kimi-work-agent-docs-routing-1082",
+    "continuable": "文档候选与验证范围不变，可继续原提交、CI 和 main 回读。"
+  },
+  "occurred_at": "2026-11-13T18:34:35.410468+00:00",
+  "sha256": "25c35bcfd4ba8d48c70495951b3a528e98c12ae5c03c6eda36688ed8dcc3af50"
+}

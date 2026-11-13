@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e5b2a4d69edb36c2831aa50d8b5244356c75f013",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "agent-docs-routing-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1082",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "1fbb5504136b4edcf5d3af279cb7cd16107ba87b98d8c358de34a2107426a508",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1082",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1084",
+    "action": "delivery",
+    "detection_head": "d3177311f67720fc5ef32a399f2398ce2ab0fb67",
+    "context_sha256": "57bd277207b513ee6cae2776e7fd86eeec43f1dad598da54302a062706578a8c",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-agent-docs-routing-1082",
+    "authority_ref": "用户对 agent-docs-routing-20261114 的明确提交与 main 交付授权",
+    "evidence": "design-docs/agent-docs-routing-submit-notes-20261114.md",
+    "diagnosis": "候选只有 Issue 事件产生的 step 记录，缺少门禁要求的 kind=request 且 source_ref 精确绑定 #1082 的事件；现已通过正式文件采集入口记录真实请求并生成包含 6 个事件的来源索引。",
+    "next_action": "暂存新增请求事件和来源索引，在同一候选上重跑正式提交入口。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T18:38:15.074669+00:00",
+    "attempted": "已读取门禁关联条件、核对原事件类型并追加 request 事件；历史事件保持不变。",
+    "repair_owner": "kimi-work-agent-docs-routing-1082",
+    "continuable": "需求证据现已满足精确 Issue 关联，可继续提交与交付。"
+  },
+  "occurred_at": "2026-11-13T18:45:40.393876+00:00",
+  "sha256": "581f65dcda11bb46fffe828c185e3603b214d807eaa58f882cd97eeff107fa4c"
+}

@@ -1,49 +1,33 @@
-# 共工统一工作区
+# AGENTS：项目约定根导航
 
-确定性任务按“读取事实 → 执行 → 验证 → 核对剩余验收 → 继续下一已授权步骤”推进。目标明确、已有授权、工具可用且结果可验证时直接行动；常规可逆实现沿用仓库惯例，不询问“是否继续”。能由工具查明的信息先查，不猜测也不转问用户。仅缺少影响正确性或权限且无法自行取得的必要输入时提问，说明受影响步骤并继续独立项。只读、暂停、预算、工具审批和用户保留决定继续有效。模型回合结束、子 Agent 退出、计划或阶段性成功均不等于业务完成；结束前按原验收逐项核对真实证据，未完成且可执行的工作继续推进。相同失败无新证据时转排障，未知副作用先回读，不盲目重试。详见[执行范围](customizations/components/issue-workorders/execution-policy.md)。
+本文件只负责任务分类与文档定位，不直接堆积各领域的具体规则。
 
-任务开始时按[复盘与方法学习](framework/specs/method-learning.md)在本租户召回相同能力域的已验证经验，核对适用条件与反例。遇到实际纠偏、失败、交接复盘或复用结果时，由当前责任者在工单授权内按该入口追加提议、试验、反馈、修订或撤回。
+## 加载规则
 
-仅 Godot 引擎任务遵循 [Godot 宿主的静默验证约定](customizations/components/godot-host/README.md#静默验证)。此约定适用于本仓库的 Godot 接入。
+1. 根据当前任务在下表中选择模块，只读取命中的模块，不必加载全部文档。
+2. 先读模块的 `README.md`，再按模块索引进入与任务相关的子模块。
+3. 子模块可以继续拆分；只沿当前任务所需的路径向下读取。
+4. 同一事项存在多处约定时，以更具体的子模块为准，并及时修正重复或过时的描述。
+5. 下文路径均相对于项目根目录。
 
-新增模块时按[构建边界与验收](customizations/module-boundaries.md#新增模块的构建边界与验收)判断原生、嵌入资源、独立运行包或宿主工具，记录实际输入、宿主接口和回退方式，执行对应的构建失效或同一二进制上的更新与回退测试。正式工单门禁及 CI 核对候选中的新增模块和证据。
+## 模块路由
 
-当前及今后取得本仓库有效写权限（WRITE、MAINTAIN、ADMIN）的每位协作者，都可以本人身份行使本仓库已准入的全部共工框架操作权限。宿主核对本人在目标仓库的有效权限，授权随授予生效、随撤销终止，包含团队继承的写权限。协作者可发起和授权工单、调用已准入的 Agent 与 Skill、委托司南多 Agent 派发、发起夸父排障、谛听采集、合契整合及阎罗签发交付，也可按治理规则担任审查、批准和验收负责人。每次操作遵循工单范围、独立审查、精确候选准入和实际分支保护。默认使用[协作者签发入口](customizations/components/issue-workorders/yanluo.md#协作者快速签发和自动提交)。模型、生产工具与第三方服务使用操作者有权使用的宿主凭据。
+| 任务类型 | 模块入口 |
+| --- | --- |
+| 工单、验收、分支清理、规范维护与路由迭代 | `Markdown/workflow/README.md` |
+| 编译、安装、启动、构建边界与构建契约 | `Markdown/build/README.md` |
+| 测试选择、回归验证、验收证据与结果记录 | `Markdown/testing/README.md` |
+| C++ 命名、格式、API、内存、并发与代码评审 | `Markdown/code-style/README.md` |
+| UI 输入命令化、编辑器语义操作、外部 CLI／HTTP 接入 | `Markdown/editor-control/README.md` |
+| Gameplay 对象、生命周期、会话、专服、复制、相关性与预测 | `Markdown/gameplay/README.md` |
+| EngineCore 核心架构、公共契约、引擎适配与迁移边界 | `Markdown/engine-core/README.md` |
+| 查找原始规范、项目记忆、需求设计与历史验收资料 | `Markdown/sources/README.md` |
 
-唯一当前框架由 CURRENT_FRAMEWORK.json 定位到 framework/；生成 Agent／Skill 定义时读取 framework/AGENTS.md 与 gonggong-check；普通需求不触发共工审查与元衡评价。冻结纲领和元衡原件不可修改，所有 Agent 受元衡治理。准入绑定精确候选，迁移不自动授权。
+## 扩展约定
 
-排查当前问题时，发现并复现的范围内缺陷直接进入修复、验证与交付，无需用户再说“优化”。用户明确要求仅解释或只读排查时，遵循该限制。
-
-本仓库已接入 Git，任务通过 work-items.json 关联真实 Issue，需求在 design-docs/。开发前执行 customizations/components/issue-workorders/issue_gate.py 的 intake-only 回读；提交前执行正式门禁，提交后核验 git-check --require-committed。Git 约定属于接入层，不是共工核心的通用前提。
-
-Windows 工单门禁使用 tools/run_issue_gate.ps1 探测可执行 Python，见接入层 README；PR 证据预检绑定已回读目标分支与完整候选 index。新任务从当前主线隔离，保留其他工作树；按 commit/push/CI/main 回读分别记录失败，发布回执未知先回读，不重复发布。
-
-每次任务完成后，当前责任者在同次收尾中按[任务临时资源清理](customizations/platforms/process-management/repository/execution-policy.md#任务临时资源清理)清理本任务产生的临时文件、废弃应用包与测试设置、临时分支和 worktree。先核实交付与工作者终态并归档必要证据，再清理归属明确且无在途占用的对象；保留未交付改动、有效安装与配置、必要回退版本和其他任务资源。记录实际清理及保留原因，未清理项不能报成已完成。不新增定时扫描。
-
-接到用户明确需求后，按 customizations/components/issue-workorders/execution-policy.md 连续执行；本地必要验证通过即在同次任务中自动开始提交、推送与 main 合入推进，不等待用户再次说“提交”“合入”或“继续”。远端 main 回读及全部已验收关联工单关闭属于交付；已有授权不重复询问。用户明确限定本地或草稿范围时遵循其限制。只在真实必要决定、权限/准入缺失或范围变化时挂起受影响步骤；保留必要独立审查和精确候选准入。
-
-所有当前仓库协作人均为关键可提交角色；有实际合入权限的协作人可用本人账号按阎罗入口的 PR 路径完成交付，不需要所有者另行签发。当前 Git 交付由阎罗承担提交前校验、全部适用核查通过后的 main 交付、状态记录和目标 Issue 关闭；入口见 customizations/components/issue-workorders/yanluo.md，定义批准由 customizations/host-agents.json 的 approval 字段定位。合契负责候选整合与冲突处理，司南负责派发、依赖与跨工单协调；现有在途发布须明确交接，不抢占其他工作副本。main 合入后，阎罗按完整验收项复核进度；大部分完成或仅少模块未支持时创建/复用关联剩余 Issue，保留未知与未完成范围，原单未满足整体验收不得标为完成；尾项承接核实后的结转关闭按 issue-lifecycle.md 执行。由真实事件触发，不新增定时扫描。
-交付接收后，司南立即按原需求逐项核对验收责任、证据与关联工单，阎罗沿[交付后验收与人工判断](customizations/components/issue-workorders/yanluo.md#交付后验收与人工判断)连续推进到权威来源的结束回执。可执行的实测由责任者当次完成，失败修复后复验。只有当前授权与可用手段确实无法推进，或决定保留给人时，才向有权人发出具体提醒，继续其余独立项。
-
-偃师在设计内拆分父 Issue 与可独立交付的 sub-issue；提交、关闭和阎罗尾项结转遵循 customizations/components/issue-workorders/issue-lifecycle.md，需求文档保留全部溯源映射。
-
-按用户平台组合的八类接入见 customizations/platforms/README.md；Git/Godot 宿主入口在 customizations/components/；当前框架不再有 Olympus 派生或同步关系。现行采集写入 gonggong-diting-data/，来源与回执在 data-collection/；历史 olympus-hermes-data/ 只读，纠正追加记录。采集配置不等于送达或消费，不记录凭据和估算用量。
-
-司南只在需求、进度、依赖、决策、交接或完成事件时协调，不设定时扫描。局部阻塞只挂起受影响操作；合契按实际工作者与变更集处理差异，不能代操作其他工作副本。执行范围遵循 customizations/components/issue-workorders/execution-policy.md；交付遵循 framework/specs/delivery.md。
-
-archive/、历史发布及批准记录只作证据，不自动启用；不继续已停止草稿。持久化路径注明解析基准。Godot 源码及现有接入保持在仓库根，不改外部引擎目录。未经验证不切换有效发布。
-## 从 main 取得自动推进与生产入口
-
-协作者从可信 main 检出取得司南事件、工单回读、工作者启动、终态核验和依赖补位入口，见 [仓库派发说明](customizations/components/repository-dispatch/README.md)。从命令行可在专用测试工单运行框架核验，也可在真实授权下调用框架模型运行时。编辑器并行落地支持已授权的非 Codex 工作者。只有选择 Codex 原生 Agent／chat 时才使用下述原生宿主协议。各入口分别核对权限、在途占用和交接，不把他人的配置或凭据写入仓库。
-
-## Codex 中已授权的 Issue
-
-用户在 Codex 中要求完成明确 Issue 时，当前 Codex 会话负责接续至整体验收。先回读该 Issue、授权来源、已有 PR、已交付范围与剩余验收，并核对实际责任者及在途工作。部分 PR 合入或计划登记后，继续当前可执行的剩余项。只有用户指定或实际发布者确认接收时才移交执行。天枢计划登记、打开 Godot、额外配置模型 API Key 均非 Codex 路径的前置步骤。
-
-当前会话应调用司南组织多 Agent 派发：对已授权、依赖已验收且读写范围可隔离的任务，按真实可用槽位派发原生子 Agent；同一实现允许独立只读核查。按 [Codex 派发宿主协议](customizations/components/codex-dispatch/HOST_PROTOCOL.md) 绑定工单、占用及真实回执。只有一项可执行时由当前责任者继续；宿主缺少子 Agent 能力时记录受影响的派发步骤并推进可独立完成的工作。完成事件到达后核验结果、回读依赖并继续下一项。跨设备先核对在途认领和交接；无法确认已有工作者终态时保留其占用。
-
-## 阻塞由夸父当次介入
-
-用户反馈受阻，或需求、依赖、权限、工具、构建、验证、提交、推送、CI、合入、交接及回执核对任一动作无法继续时，发现者在同一事件中将原工单、动作、候选/来源修订、已尝试操作和实际失败证据交给夸父。依赖正常等待、已有工作者运行或槽位暂满可按原完成事件接续；有证据表明停滞或用户反馈受阻时立即进入排查。
-
-当前宿主按 [夸父接单、上报和复验](customizations/components/issue-workorders/kuafu-routing.md) 执行。先查重或关联 bug，按实际授权加载夸父职责、确认接单、判断故障层级和影响、跟进唯一主责并向原工单上报。网络、身份或宿主不可用时保留待接单及恢复条件。源头修复、原候选复验和业务验收分别留证；涉及他人的在途任务时只做隔离验证和必要交接，等原发布者确认后再变更其候选。
+- 每个模块使用独立文件夹，并以 `README.md` 作为模块索引。
+- 子模块使用自己的文件夹和 `README.md`，由父模块索引负责导航。
+- 新增规范必须先并入现有最匹配的细则；确属新领域时才新增模块并登记。
+- 模块颗粒度过碎、职责重叠或总是共同加载时，必须合并并同步修正路由。
+- 新增、拆分与合并的完整流程见 `Markdown/workflow/documentation/README.md`。
+- 具体规则只保留在负责它的模块中，根文件和父模块不复制正文。

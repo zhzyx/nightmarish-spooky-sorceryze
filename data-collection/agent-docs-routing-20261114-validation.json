@@ -1,0 +1,38 @@
+{
+  "request_id": "agent-docs-routing-20261114",
+  "issue": 1082,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1082",
+  "scope": "documentation",
+  "base_commit": "d3177311f67720fc5ef32a399f2398ce2ab0fb67",
+  "checks": [
+    {
+      "name": "markdown_links_and_format",
+      "status": "passed",
+      "files": 18,
+      "paths_checked": 63,
+      "problems": 0
+    },
+    {
+      "name": "original_agents_preserved",
+      "status": "passed",
+      "original_lines": 49,
+      "migrated_lines": 49,
+      "comparison": "exact after adjusting relative Markdown link prefixes"
+    },
+    {
+      "name": "git_diff_check",
+      "status": "passed"
+    }
+  ],
+  "engine_build": {
+    "status": "not_run",
+    "reason": "Only AGENTS.md, Markdown documentation, requirement metadata and evidence changed; no engine or tool code changed."
+  },
+  "business_tests": {
+    "status": "not_applicable",
+    "reason": "Documentation-only routing change; link, format and original-rule coverage checks are the affected validation."
+  },
+  "remote_delivery": {
+    "status": "pending"
+  }
+}

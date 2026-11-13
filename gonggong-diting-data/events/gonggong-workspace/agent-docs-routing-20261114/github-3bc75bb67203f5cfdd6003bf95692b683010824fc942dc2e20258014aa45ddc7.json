@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "event_id": "github-3bc75bb67203f5cfdd6003bf95692b683010824fc942dc2e20258014aa45ddc7",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "agent-docs-routing-20261114",
+  "kind": "step",
+  "occurred_at": "2026-11-13T18:21:36.246875+00:00",
+  "source_ref": "github:zhzyx/nightmarish-spooky-sorceryze:issue:1082:event:36060250917",
+  "agent": {
+    "id": "kimi-work-agent-docs-routing-1082",
+    "version": "not-reported-by-host",
+    "definition_sha256": "bad67dcc35d525783bfb12bc7e4363cfdfb0cc1da7c2dcb19ca7e3106806bc2c",
+    "origin": "explicit-github-issue-event-intake"
+  },
+  "payload": {
+    "remote_identity": {
+      "repository": "zhzyx/nightmarish-spooky-sorceryze",
+      "issue": 1082,
+      "event_id": 36060250917
+    },
+    "binding": {
+      "host_id": "kimi-work-agent-docs-routing-1082",
+      "tenant_id": "gonggong-workspace",
+      "request_id": "agent-docs-routing-20261114",
+      "definition_sha256": "bad67dcc35d525783bfb12bc7e4363cfdfb0cc1da7c2dcb19ca7e3106806bc2c"
+    },
+    "mapping": {
+      "lifecycle": "open",
+      "category": "type:documentation",
+      "status": "status:in-progress",
+      "assignees": [],
+      "host_git_account": "kaiyunxue",
+      "host_account_source": "issue_body_claim_unverified",
+      "dependencies": [],
+      "dependency_coverage": "explicit_markers_only",
+      "decision_required": false,
+      "coordination": "associate_only_no_dispatch",
+      "parent_auto_close": false,
+      "processed_workspace": "gonggong",
+      "other_workspace_processed": false
+    },
+    "remote_event": {
+      "id": 36060250917,
+      "node_id": "LE_lADOVegMdc8AAAABfB8bzM8AAAAIZVvDJQ",
+      "event": "labeled",
+      "created_at": "2026-11-13T18:19:12Z"
+    },
+    "remote_event_actor_login": "kaiyunxue",
+    "revision_marker": {
+      "key": "3bc75bb67203f5cfdd6003bf95692b683010824fc942dc2e20258014aa45ddc7",
+      "issue_updated_at": "2026-11-13T18:19:11Z",
+      "issue_body_sha256": "29c66ca42f6f13cd5b578d3529a4a04ac56c3e21e04097d932acb985d4315c37",
+      "recognition": "observed_event_and_current_issue_snapshot; no_atomic_remote_update_claim"
+    },
+    "issue_updated_at": "2026-11-13T18:19:11Z",
+    "issue_body_sha256": "29c66ca42f6f13cd5b578d3529a4a04ac56c3e21e04097d932acb985d4315c37",
+    "observed_at": "2026-11-13T18:21:36.246875+00:00",
+    "snapshot_scope": "Issue state at explicit read time, not reconstructed historical state",
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_reason": "Not measured",
+    "sinan_source_registered": false,
+    "diting_consumption_confirmed": false,
+    "host_authority_authenticated": false
+  },
+  "evidence_refs": [],
+  "sha256": "ddb33c7851720e62051a82d215f2b96bd8153e2b99d03d808b3555cc1e135704"
+}

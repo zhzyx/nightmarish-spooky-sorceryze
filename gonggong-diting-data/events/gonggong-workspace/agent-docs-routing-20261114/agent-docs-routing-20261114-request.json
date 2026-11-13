@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "agent-docs-routing-20261114-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "agent-docs-routing-20261114",
+  "kind": "request",
+  "occurred_at": "2026-11-13T18:39:24Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1082",
+  "agent": {
+    "id": "kimi-work-agent-docs-routing-1082",
+    "version": "not-reported-by-host",
+    "definition_sha256": "bad67dcc35d525783bfb12bc7e4363cfdfb0cc1da7c2dcb19ca7e3106806bc2c",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "event": "request.created",
+    "scope": "将根 AGENTS.md 改为模块化文档路由，汇聚既有规范并保留 Gameplay 与 EngineCore 模块及路由迭代规则。",
+    "authorization_ref": "用户明确要求收集散落 Markdown 规范、建立模块路由并提交推送到 main。",
+    "design": "design-docs/agent-docs-routing-20261114.md",
+    "validation": "data-collection/agent-docs-routing-20261114-validation.json",
+    "usage": null,
+    "usage_unknown_reason": "Actual model token/cost usage not collected"
+  },
+  "evidence_refs": [],
+  "sha256": "d9f5ea59fe93d917e887dcf40e41d5842e5cf599b74cb8a35f96178a95dfb2d3"
+}
