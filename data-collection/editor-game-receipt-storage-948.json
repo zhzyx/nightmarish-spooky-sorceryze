@@ -1,0 +1,92 @@
+{
+  "request_id": "editor-game-receipt-storage-20261112",
+  "issue": 948,
+  "base": "d91bd93eb14d1420db9e6872c638e9cb82baf015",
+  "scope": "ordinary game metadata availability; no engine candidate; no business acceptance",
+  "sources": {
+    "editor/docks/ai_chat_dock.cpp": "b382d593eea085cc367489f57eba93502273de445a5e52557d9affd8b2447070",
+    "editor/docks/ai_chat_dock.h": "9644673bb05a073e2b04367ad870c71b3359a1df0b7ed9daa94748f3e6b569e9",
+    "editor/docks/ai_chat_engine_candidate.cpp": "b138c354859d0777690b95cc3a38aa5c85d13a91d33fa33ea41a68139191e2a2",
+    "editor/docks/ai_chat_gonggong.cpp": "85f7a136410c182644cb212933fe60a17a58b6c9d6b9bd2299b4e778b2d8ca43",
+    "tools/editor_provenance_guard.py": "f6344b8626a45dd644ca36c47da9e070ee5c5d54b6fe497740bdf05dadbfbd98",
+    "tools/test_editor_game_receipts.py": "520806d88a08edbe967e939882737bed9d180d4866acd0ec624018338bdff694",
+    "tests/editor/run_game_receipt_storage.py": "bd2c238a21acd96bbfe71535eaacda878e50c6885018feef152cd5ad24ce139f",
+    "tests/editor/run_game_receipt_restart.py": "4d726b332f5adf8323cfb13d90fd858d658a4c869649feb7dd42685e2dd1918d",
+    "tests/editor/native_game_integration.py": "5bedd6c2e9ceffcfd59eb3930fee1857c77e61e58559c332d7318aa97e8dcbe9",
+    "tests/editor/run_native_production_setup.py": "b2c510a2c18869cb9aa3a06da04d90b929ba2aaa4926197015f0b31d68ec21dd"
+  },
+  "binary_sha256": "e7764aaed344d0698af3b1b1a563c0b954a9e5c72f2f814e6dcf1e3f922e350a",
+  "checks": {
+    "strict_windows_build": "build-04 passed after main integration; build-05 final LF source recheck passed",
+    "python": "python-06: 12 tests, 11 passed and 1 unavailable file-symlink privilege skip; actual Windows junction tests passed",
+    "native_restart": "native-restart-07 exit0; no engine candidate, once execution/result, preserved queued message, repeated journal no replay",
+    "native_pipeline": "native-07 overall native_production_setup=true, actual metadata restored_count=2, exit0 and next rollback succeeded; all original concurrency and 4 bound-receipt checks retained"
+  },
+  "remaining": [
+    "independent final review",
+    "formal gate",
+    "exact CI/main",
+    "installed consumer and original failure flow replay"
+  ],
+  "raw_logs": {
+    "bin/948-validation/build-01.log": "2d99154e8d37fbc80e15ab5425214f3e690dc6fce1ab59024018f3e2f9be9ecf",
+    "bin/948-validation/build-02.log": "9e6728d258ea2d8df24b280040e060d488bce0ab3c1202c9b72e498092e3495a",
+    "bin/948-validation/build-03.log": "da17b13023579d59bce96cff8a81aeab0d19e17e0a0c96357963353fca24860b",
+    "bin/948-validation/build-04.log": "fbc6e5905417a322f83388ee74addbf1f4788f2926fa60160ae2a821c4e335d0",
+    "bin/948-validation/build-05.log": "97aed85fc0f1a764dd3d1c7bd87059c4088781ac773d7a44b8410426abed7dc7",
+    "bin/948-validation/engine-guard-01.log": "3525ebee9e72c75926cf3d286f226f94a3429eecfb1275820d9fc7691547ab29",
+    "bin/948-validation/formatter-install.log": "0256c88facdd0e71c6e075fda27c9d5866b7b516c4eb32a3ca0b00ea0802afe4",
+    "bin/948-validation/integration.json": "766f3ec883d213e884529f6c96a162947aa94de0dba80a265d31fcb4d0253167",
+    "bin/948-validation/method-recall-native.json": "82bf23102e07e1594367023847bea25af2bc54e2bf331bbe46d68ef6649407e2",
+    "bin/948-validation/native-01.diagnostics-report.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "bin/948-validation/native-01.log": "1142cd00e6fee571ba478fd65f54c4fc382a52288b624895cb7823879a9549b6",
+    "bin/948-validation/native-02.diagnostics-report.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "bin/948-validation/native-02.log": "c52788ff7c3e3f21288e77f792fff0f278453b5389d619baceb9d2228b20b9b4",
+    "bin/948-validation/native-03.diagnostics-report.json": "71156588da16b22463395c325f4511b99cadfa8d5f3780eabb938881c85a1d67",
+    "bin/948-validation/native-03.json": "dbcbc0a5e4683ac4300fa22694bc1c2b54bc9d0ce966f49860222e9909a746c0",
+    "bin/948-validation/native-03.log": "9405629039095689244c6c046a7b2b2010dc48141d86b7fca41c2c949f3891c1",
+    "bin/948-validation/native-04.diagnostics-report.json": "b4519c4026aeef63b676af14c24141006204682e4146af21cc516a6f04bc8f55",
+    "bin/948-validation/native-04.json": "a87f3c37636a15e7cd410f873691b52392dd17914e3bf96ddb87d72b0d19e87d",
+    "bin/948-validation/native-04.log": "d759496c4e0786411e2c4621eed075f14730b063b2728c1b6d502be62079a741",
+    "bin/948-validation/native-05.diagnostics-report.json": "8ba302ee0c9a47b26ec39c3d262107481224f17f655e4734510f88187a1665f4",
+    "bin/948-validation/native-05.json": "63e90f4a45758ac8e751b0c67b5af526b1db689c7b82988f542b6d8b30fbdcab",
+    "bin/948-validation/native-05.log": "b293e0e168b680ab294167cf4c88912cddc8f65e368dd8ab47a528a8707f5dde",
+    "bin/948-validation/native-06-assertions.json": "b50fbc30d36d017b6e5b8dad7af2d8c0e305690ee8230da2e22d82ee06ee84a0",
+    "bin/948-validation/native-06.diagnostics-report.json": "1371da7745c1a2d716d790c73857500b861c36818725a9533d46b990c64fe002",
+    "bin/948-validation/native-06.json": "903b6d52248a40f5b5e4d55ce65252795807bf759c8761659af876122c6ac78f",
+    "bin/948-validation/native-06.log": "b293e0e168b680ab294167cf4c88912cddc8f65e368dd8ab47a528a8707f5dde",
+    "bin/948-validation/native-07.diagnostics-report.json": "df2f5b69b65b5c16b049ef90874c62716df3683b7bbf1769933897fa765757d9",
+    "bin/948-validation/native-07.json": "3198b4c0a5b8fe10483a8738933d4be9be5e3faf2c0bba1f633de222f42c24c9",
+    "bin/948-validation/native-07.log": "ad13dfd7b8ad56ae3ccc3ebec2cd760a1f422f06c03942cd266b0e40d1150095",
+    "bin/948-validation/native-restart-01.log": "580144a0bcc7204ff7408ff795378188c13d92e6fa1fe4e2f30b05004bfa16b2",
+    "bin/948-validation/native-restart-02.log": "e94b6dfdf3ce387a26efa31d207391be725c67cb6e7d3a348c0425f12a5ae969",
+    "bin/948-validation/native-restart-03.log": "36f8bc46397ab99a6b77e7b3a78e71f604d8d58151ee89a7a0ff610513846fac",
+    "bin/948-validation/native-restart-04.log": "058e981a739656d60495329a53c9c5f73df333d97be93172c9221ff0e61d9d42",
+    "bin/948-validation/native-restart-05.log": "259c403c2f7c58ad0a3cb40b5c6ca590093de865c666faf0ac701539d5e8ae0b",
+    "bin/948-validation/native-restart-06.log": "5d1c926ea00ac84f996e656e0a7d2174f1d326a1e24c52ed976f7ede8fca073c",
+    "bin/948-validation/native-restart-07.log": "3a89ce9cff3dd0a4ec98f9bc335949f755f4517c2aadba10047ae7f1844a5920",
+    "bin/948-validation/python-01.log": "d6bbc23e55a563265435cf0276020b8c33dd0b7b53dc7d57d956a46b74f49cc4",
+    "bin/948-validation/python-02.log": "7485f2833534ecde1be29442a0c179d75c31f165a1b6c803e1c2d2a6cec22ac0",
+    "bin/948-validation/python-03.log": "7e28c7882ebbd7a3d17b84d494abc42d7a6781e67d8cdbbde9a40cc8a1d0cc93",
+    "bin/948-validation/python-04.log": "61bb194cb1e569d9b3a2e81581a6e73b0297641b05a4e6e2d12eb6761f957f01",
+    "bin/948-validation/python-05.log": "e43f195332620fee9b53c1bbde8f91b4ef16d4d6a25ed1d60c0c93da37b0ed04",
+    "bin/948-validation/python-06.log": "b3ffff860614a896ebda30f55e1d75f7abf70d007949eaa4dda71dc6fd1f5440"
+  },
+  "native_scope": {
+    "production_setup_ok": true,
+    "generic_design_batch_diagnostics_ok": false,
+    "generic_diagnostics_explanation": "The reused serial design-batch oracle is diagnostic only in the existing production-setup runner; its complete independent production scope passed. Native-06 earlier production setup failure is separately retained, not relabeled."
+  },
+  "fixture_corrections": [
+    "native_game_integration selects the first actual returned work-order number instead of hard-coded 1 (normal parser fixture uses 2/4).",
+    "run_native_production_setup removes the normal serial parser probe dependency injected after FINALIZED assembly, retaining its existing concurrency and four bound receipt checks."
+  ],
+  "failed_attempts": [
+    "native-01 missing pip in workflow Python",
+    "native-02 missing required explicit job-object fixture environment",
+    "native-03/05 hard-coded producer 1 StopIteration; native-04 CodeBuddy fixture review transport unavailable",
+    "native-06 recovered metadata and executed rollback, but serial dependency defeated original production concurrency/receipt checks",
+    "native-restart-01..06 fixture host adapter/diagnostic preparation failures, never counted as command recovery success",
+    "engine-guard-01: 41 tests, 4 Windows platform-incompatible checks, 6 platform skips; raw failure evidence retained"
+  ]
+}

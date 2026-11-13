@@ -1,0 +1,7 @@
+{
+  "placement": "native",
+  "reason": "ProductionControl.cpp is compiled by editor/docks/SCsub into the existing Godot editor; this is an implementation unit of the existing host, with no independent service or Agent definition.",
+  "host_contract": "Existing authorized AIChatDock production_control task tool and CodeBuddy native action facade; existing design batch, acceptance-current, independent review and repair lineage.",
+  "rollback": "Restore the previous verified editor installation; preserve project history, original terminals, candidates, approvals and attempts. Pending parent operations are interrupted on restart and require a new explicit identity.",
+  "evidence": "data-collection/editor-production-recovery-main1041-773.json"
+}

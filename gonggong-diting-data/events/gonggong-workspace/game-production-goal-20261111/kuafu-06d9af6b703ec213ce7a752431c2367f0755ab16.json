@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-06d9af6b703ec213ce7a752431c2367f0755ab16",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "71081b908d0bca2061c6ae209492aa966592aa0e8b6a7341c009b7938124dc47",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+    "action": "validation",
+    "detection_head": "1b7ddb6ff4dcdc16871901bc730d680fb52ee5de",
+    "context_sha256": "04a66840a4d223a2afa97da2ebaaa2756c853f8e4b6788c5939ab93a8b73c5a2",
+    "operator": "Sail-Li",
+    "worker": "agent:/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "local:joint773-receipt-restart-r4.log;local:joint773-receipt-restart-engine-r6.log;source:platform/windows/console_wrapper_windows.cpp",
+    "diagnosis": "Independent source analysis identified that the crash fixture killed the Windows console wrapper, whose kill-on-close Job also terminates the editor guard and command. This is not a venv failure; standalone Python with the same wrapper also failed. Direct editor executable replay passed ordinary command restart with one original execution. Retained failed terminals correctly stayed unknown; product authority and recovery logic were not weakened.",
+    "next_action": "Bind both wrapper and editor hashes for passed combined consumers. Reject console-wrapper input to the command-crash fixture, retain failed logs and preserved diagnostic fixture, independently review the small test-boundary correction, then finish current-main integration and exact-candidate CI. Parent game business acceptance remains open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T15:42:02.190966+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T16:04:23.893956+00:00",
+  "sha256": "e7dc8061e64b6e7e892ce133733f62285e91e11f30244a825a7cc83bb4fa1d48"
+}

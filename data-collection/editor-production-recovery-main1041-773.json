@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "issue_number": 773,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "request_id": "game-production-goal-20261111",
+  "child_issues": [
+    943,
+    948,
+    951
+  ],
+  "baseline": "e9684f34cfc4fded923d43f4469d32a0096a8af3",
+  "scope": "Integrated Godot production recovery and continuation on main1041; controlled local evidence, not installed original game or remote delivery acceptance.",
+  "input_blobs": {
+    ".clang-format": "5d932e013f29ad5722b30592660097cade5388d9",
+    "CPP_CODING_STANDARD.md": "e12af95ae971e7fae6dbbeabdd9aada824b3e899",
+    "customizations/components/godot-host/acceptance.py": "af8d8eff86d5b6a5fc75dd0379fb4dc53b00d7ac",
+    "customizations/components/godot-host/bridge.py": "7ba9cdef953107335db1f274c129109d4da4bad0",
+    "customizations/components/godot-host/test_bridge.py": "99fcabc922e72d3ccb84cae13d02f510dfacb65e",
+    "editor/docks/SCsub": "047eb8e616beeab76fcdb7dc7269d911d2edb08d",
+    "editor/docks/ai_chat_dock.cpp": "4fd7c0783f630b6e192dfd4609265a979159de1a",
+    "editor/docks/ai_chat_dock.h": "481058eb931c4f2396e2d9bdabcc875d56115c82",
+    "editor/docks/ai_chat_engine_candidate.cpp": "48b25eb725a47c4ab89c534a735635c7b95c021f",
+    "editor/docks/ai_chat_gonggong.cpp": "e75e5f6da2655faa91358481ed309407861a2b14",
+    "editor/docks/ai_chat_host_runtime.h": "25808b8eb134581f67bcffdad1851dd262ade637",
+    "editor/docks/ai_chat_sub_agent_receipts.h": "a5c78b20a7306633a180461d1dafd7f40f6aa9ad",
+    "editor/docks/ai_chat_sub_agents.cpp": "1c084506ab0c61976787e719b09f1daee4bce773",
+    "editor/docks/gonggong_runtime_config.h": "d8d562111c25457906bf4b9683d38c81de2b154d",
+    "editor/docks/production/.clang-format": "0b0dae686b4498cff4bee26fdfa55b1e51cd2e55",
+    "editor/docks/production/ParentGate.h": "f1a87c65034e09136f7043d85518e188120f8b4c",
+    "editor/docks/production/ProductionControl.cpp": "f151c3f2667cfb767f7a880339a16cc3c7d7f3bb",
+    "editor/docks/receipts/.clang-format": "980236c92a6820d2c2eaa646bed3e2fe7fbfa8e6",
+    "editor/docks/receipts/GameReceiptGuard.cpp": "deae389c3b2eedaf37b012038a23da944ecc68ca",
+    "editor/docks/receipts/README.md": "675a117d438e28fb128ae7db16a80e3559c90882",
+    "platform/windows/console_wrapper_windows.cpp": "68641d9fb64084e88dba1b76a09edd37930962a9",
+    "tests/editor/daqian_node_approval.gd": "3fe95e5d2c7550002d61bdf282750f1cb88cc9c8",
+    "tests/editor/design_batch.gd": "11a335be18c2414e31685c82c9818b2cb148df95",
+    "tests/editor/editor_test_isolation.py": "64454905252603c91b24211ebf022d4ed45a8049",
+    "tests/editor/mock_codebuddy_cli.js": "730e4796e8f6a905c80611d2a03db2a10e641ba9",
+    "tests/editor/native_acceptance_parallel.py": "a1c6e2d810e8ce0d15f48daf7920745a2bd58cb4",
+    "tests/editor/native_game_integration.py": "4486f1619445d6f68c51da52f62acfff276200a0",
+    "tests/editor/native_parent_delivery.py": "22b9e6cf680f2e638026dd7b63725ae77e5f3052",
+    "tests/editor/production/.clang-format": "0b0dae686b4498cff4bee26fdfa55b1e51cd2e55",
+    "tests/editor/production/ProductionParentGateTests.cpp": "983f76a2aad786c943f63ec57878e31483528940",
+    "tests/editor/run_design_batch.py": "862a7fa901beca981af338332219baa66606f495",
+    "tests/editor/run_game_receipt_restart.py": "8d30c3cf00576c477bc59c5ffc330dfe0e889b67",
+    "tests/editor/run_game_receipt_storage.py": "7e7c1facf18890956a42a92603ef7e8b0efc8b4a",
+    "tests/editor/run_native_acceptance.py": "2ba1182f488d47b00c029393e86fe5fb22e4de0c",
+    "tests/editor/run_native_production_setup.py": "541e3f2ed156bd2a32ba87766e3fbb4a44165ddb",
+    "tests/editor/run_requirements_intake.py": "c88c5da950bf27af58dfce7925ad45aced5668ec",
+    "tests/editor/test_codebuddy_acp.js": "29e1666d074cfcc7421ec344ba3be0414b51ee77",
+    "tests/editor/test_codex_bridge.js": "1d0144b486b0363a06a4fd652c316ce7edbc1501",
+    "tests/editor/test_parallel_work_orders.mjs": "55c3f4e31f62ece4063382383378dba87b4e0258",
+    "tools/codebuddy_cli/godot_acp.js": "09904c4634a2b653edba01910aabe482a623332e",
+    "tools/codebuddy_cli/godot_bridge.js": "19e5e03bc701870d76e42da97f4d12a816c629bb",
+    "tools/codebuddy_cli/godot_terminal.js": "b6b3986c0eb7b7c5cdfbeedd5e76a14b2b83e8db",
+    "tools/editor_engine_candidate.py": "4d52c5d6eb6a6316bc7d14ec0c5198b450d967ae",
+    "tools/editor_provenance_guard.py": "e5ccc29e1cc16fd75d857028ac906d95d8277b18",
+    "tools/editor_provenance_process.py": "1792895eca6d3ff29467380ea4f3be4fd9236fcd",
+    "tools/godot_parallel/repair.mjs": "41fbc1fc3622d1da4ac71dcae3382047aaeccace",
+    "tools/gonggong_bridge.py": "1e1459420fc3f43ba9af6fb0f9d3a1074f393125"
+  },
+  "prior_reports": [
+    {
+      "path": "data-collection/editor-production-recovery-joint-773-r2.json",
+      "sha256": "33e3c9ccbe13451b0be309a506bf361da5ef031ec7a9b5def2317578cffc2a34"
+    },
+    {
+      "path": "data-collection/editor-production-recovery-main983-773.json",
+      "sha256": "310b07accbc4e6633a8d4e64c0087ed32b331565d7052683290948ff7c383282"
+    }
+  ],
+  "build": {
+    "source_digest": "64248712f68e13c1f5b3ff7c40a38e5bceab934c79fafe436a6d3b2ae228d76f",
+    "clean_source": false,
+    "engine_sha256": "9d5af80d888b3def04e6a301003eac276515fbd234fd6d53eb558ad4beee81fd",
+    "console_sha256": "6aefbfb0831109b03f4d4ea8615031a6999d60aed7470a5dbb20071c79390cfe",
+    "receipt_sha256": "126570efc367fb1ae055ee24f6f45ec6ebeb839de4f73548ad575f1bce0563c2"
+  },
+  "checks": {
+    "continuation": {
+      "passed": true,
+      "report": "joint773-parent-continuation-main1041-r4.json",
+      "report_sha256": "a5ccddbfd3a7337f7d85a38e024a48ab9d893728dc308e4dccc008831e43350e",
+      "log_sha256": "b523336d394ea9ecfe9006a712e3160de032cfe5b2df3b6819405b972fce0498",
+      "transport_fixture_ok": false,
+      "scope": "Native parallel consumer only; generic serial fixture diagnostics excluded"
+    },
+    "repair-cancel": {
+      "passed": true,
+      "report": "joint773-parent-repair-cancel-main1041-r4.json",
+      "report_sha256": "7e9c913f3aaa6e9f4ab638afa759c484845c71f5025b00326dbf007c25d55a83",
+      "log_sha256": "e19585511a7b93d3a3f80b8af105556634672fb737cd4f6cfba533886d09e898",
+      "transport_fixture_ok": false,
+      "scope": "Native parallel consumer only; generic serial fixture diagnostics excluded"
+    },
+    "command_restart": {
+      "passed": true,
+      "engine_sha256": "9d5af80d888b3def04e6a301003eac276515fbd234fd6d53eb558ad4beee81fd",
+      "log_sha256": "53670a6552ea4ec9147a9254995725e7b40c72a8f4886930ab76b1e4395c7e5c",
+      "scope": "Actual direct-editor crash, one command result, metadata recovery, preserved queue; controlled model"
+    },
+    "runtime_recovery": {
+      "passed": true,
+      "summary_sha256": "4b937feb06ba76f6edebfcafeddbdb56cb9be5546842a385a8d8970341808625",
+      "intake_sha256": "56259beeb1d376b33c00ac9a6660ae4ca17ca7cc0d02ca3365698e450e069b56",
+      "scope": "Three real process interruption cases, runtime configuration and native intake; controlled model/GitHub. Earlier main1041 binary, before ParentGate native changes."
+    },
+    "native_invalidation": {
+      "passed": true,
+      "command": "Strict Windows SCons build with tests=yes followed by native AIChat suite",
+      "observed": "ParentGate source and automatically discovered test translation unit compiled; final rebuild compiles the second-stage callback correction; 98 cases and 1775 assertions pass.",
+      "log_sha256": "1926a79e012a207862d1f3e806783e48ebd90da1b516d85d911a43e4d4d2d128"
+    }
+  },
+  "corrections": [
+    "Supply missing installed guard dependencies in the intake fixture; bind ordinary reporting to the verified actor and preserve REST affiliation fallback.",
+    "Keep private fixture application storage outside the mutable game root; explicitly decode labels as UTF-8 and supply controlled GraphQL authority responses.",
+    "Preserve both upstream parent-finalization and producer-continuation test branches during three-way integration.",
+    "Check complete-task parent gates at proposal, producer currentness and every reviewer currentness callback, including failed callbacks; preserve parent state and budget.",
+    "Select the model picker from its actual mounted conversation view."
+  ],
+  "preserved_failures": [
+    "PR988 Windows compiled and unit tests passed; runtime intake failed because installed fixture tools were missing.",
+    "Subsequent local runs exposed locale decoding, missing ordinary actor and relocated ModelPicker failures; original logs retained privately.",
+    "Independent review found second-stage success and failure paths could change a held parent; both corrected before final tests."
+  ],
+  "limitations": [
+    "Four ParentGate native unit cases exercise the runtime policy; they do not establish an end-to-end opt-in held-state race consumer.",
+    "Cold continuation on the earlier main1041-r2 binary passed; final binary repeats warm repair and second-stage cancellation.",
+    "Model and GitHub ports are controlled fixtures; original real-provider game is still pending.",
+    "Exact replacement PR CI, main delivery, formal installation and child/business acceptance remain pending."
+  ]
+}

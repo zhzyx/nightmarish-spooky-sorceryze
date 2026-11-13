@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-85aa6a4995f293b37f4f96f35fd2836ff831cc1d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "46e93cbb774f7d4868b42ef03971d53f8d9fa048c6cda65627a086a4fe0d1094",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "action": "validation",
+    "detection_head": "72b53345090485547933449268a9fb61bbfe65e4",
+    "context_sha256": "474b5d6dafd9ced9ceb20a4d721691f3525b361ebfcf4d3dbb3c6606aeafd62a",
+    "operator": "Sail-Li",
+    "worker": "agent:/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43258774680;local:joint773-mypy-r2.log",
+    "diagnosis": "PR static checks found three unannotated empty mutable containers in the native acceptance fixture. The root local static batch omitted mypy; prior source review and consumer success did not cover this required check. Added precise dict/list/set annotations only. The exact nine changed Python files now pass installed mypy 2.4.0, and Ruff check/format pass. Native product source is unchanged.",
+    "next_action": "Append joint input-binding evidence for the typed fixture without altering original reports, independently review the three-line type metadata delta and evidence pointers, then submit a new exact signed candidate and require all PR CI. Retain failed PR984/985 and do not mark their skipped Windows jobs passed.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T16:29:55.703212+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T16:31:45.929080+00:00",
+  "sha256": "0b14243c653760aed300dedfe395079a37b22646b4b6813419f4c1181c90a357"
+}

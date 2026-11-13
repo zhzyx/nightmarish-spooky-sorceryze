@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "issue_number": 773,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "request_id": "game-production-goal-20261111",
+  "child_issue_number": 951,
+  "baseline": "b720e9c582678c1e13481d5e898676218aa6c5de",
+  "scope": "Append-only correction for the required mypy check; native implementation and exercised control flow are unchanged. CI and installed business acceptance remain separate.",
+  "input_blobs": {
+    ".clang-format": "5d932e013f29ad5722b30592660097cade5388d9",
+    "CPP_CODING_STANDARD.md": "e12af95ae971e7fae6dbbeabdd9aada824b3e899",
+    "customizations/components/godot-host/acceptance.py": "af8d8eff86d5b6a5fc75dd0379fb4dc53b00d7ac",
+    "editor/docks/SCsub": "047eb8e616beeab76fcdb7dc7269d911d2edb08d",
+    "editor/docks/ai_chat_dock.cpp": "bdc0429866109af902ac60f4d060edc72ed13085",
+    "editor/docks/ai_chat_dock.h": "398d47e122a1189a32974a069456cf103e24ae32",
+    "editor/docks/ai_chat_engine_candidate.cpp": "48b25eb725a47c4ab89c534a735635c7b95c021f",
+    "editor/docks/ai_chat_gonggong.cpp": "1c0ec7f0f9c0c2bc540545e50a63d2b62acc7b2b",
+    "editor/docks/ai_chat_host_runtime.h": "25808b8eb134581f67bcffdad1851dd262ade637",
+    "editor/docks/ai_chat_sub_agent_receipts.h": "a5c78b20a7306633a180461d1dafd7f40f6aa9ad",
+    "editor/docks/ai_chat_sub_agents.cpp": "c1e8561565d8a477b92e34abc5ad5a2de242f8fc",
+    "editor/docks/gonggong_runtime_config.h": "d8d562111c25457906bf4b9683d38c81de2b154d",
+    "editor/docks/production/.clang-format": "0b0dae686b4498cff4bee26fdfa55b1e51cd2e55",
+    "editor/docks/production/ProductionControl.cpp": "9c915608376e8b911cce2605ebf7776b22639e93",
+    "editor/docks/receipts/.clang-format": "980236c92a6820d2c2eaa646bed3e2fe7fbfa8e6",
+    "editor/docks/receipts/GameReceiptGuard.cpp": "deae389c3b2eedaf37b012038a23da944ecc68ca",
+    "editor/docks/receipts/README.md": "675a117d438e28fb128ae7db16a80e3559c90882",
+    "platform/windows/console_wrapper_windows.cpp": "68641d9fb64084e88dba1b76a09edd37930962a9",
+    "tests/editor/editor_test_isolation.py": "64454905252603c91b24211ebf022d4ed45a8049",
+    "tests/editor/mock_codebuddy_cli.js": "730e4796e8f6a905c80611d2a03db2a10e641ba9",
+    "tests/editor/native_acceptance_parallel.py": "a1c6e2d810e8ce0d15f48daf7920745a2bd58cb4",
+    "tests/editor/native_game_integration.py": "4486f1619445d6f68c51da52f62acfff276200a0",
+    "tests/editor/run_design_batch.py": "5a194e9c06782c646fc46163a423086e53adff1f",
+    "tests/editor/run_game_receipt_restart.py": "8d30c3cf00576c477bc59c5ffc330dfe0e889b67",
+    "tests/editor/run_game_receipt_storage.py": "7e7c1facf18890956a42a92603ef7e8b0efc8b4a",
+    "tests/editor/run_native_acceptance.py": "58eaf76305cd6edbd3955ca5a3f90d7ceb876cf1",
+    "tests/editor/run_native_production_setup.py": "541e3f2ed156bd2a32ba87766e3fbb4a44165ddb",
+    "tests/editor/test_codebuddy_acp.js": "29e1666d074cfcc7421ec344ba3be0414b51ee77",
+    "tests/editor/test_codex_bridge.js": "1d0144b486b0363a06a4fd652c316ce7edbc1501",
+    "tests/editor/test_parallel_work_orders.mjs": "55c3f4e31f62ece4063382383378dba87b4e0258",
+    "tools/codebuddy_cli/godot_acp.js": "09904c4634a2b653edba01910aabe482a623332e",
+    "tools/codebuddy_cli/godot_bridge.js": "ce5fc382f3428628908d26b9fe47d2d26b551872",
+    "tools/codebuddy_cli/godot_terminal.js": "b6b3986c0eb7b7c5cdfbeedd5e76a14b2b83e8db",
+    "tools/editor_provenance_guard.py": "e5ccc29e1cc16fd75d857028ac906d95d8277b18",
+    "tools/godot_parallel/repair.mjs": "41fbc1fc3622d1da4ac71dcae3382047aaeccace",
+    "tools/gonggong_bridge.py": "1e1459420fc3f43ba9af6fb0f9d3a1074f393125"
+  },
+  "prior_evidence": [
+    {
+      "path": "data-collection/editor-production-recovery-joint-773.json",
+      "sha256": "537c4ad478084d65a5a4379606dc6c0d7f841d8384980a89ca9b715e11d34792"
+    },
+    {
+      "path": "data-collection/editor-production-recovery-main983-773.json",
+      "sha256": "310b07accbc4e6633a8d4e64c0087ed32b331565d7052683290948ff7c383282"
+    }
+  ],
+  "checks": {
+    "native_invalidation": {
+      "command": "Retain measured native invalidation and consumers in the prior exact-input reports; compare every native module/host input with those reports; strict main983 rebuild and native regression.",
+      "observed": "All native inputs retain their tested Git blobs. Only run_native_acceptance.py differs: three empty containers gain dict[str, Any], list[dict[str, Any]] and set[str] annotations. Removing annotation metadata gives identical Python AST; commands, assertions, fixtures and decisions are unchanged. The prior strict native rebuild and 100-case/1889-assertion/current direct-editor recovery evidence remain applicable to the same native implementation.",
+      "passed": true
+    },
+    "python_types": {
+      "command": "python -m mypy <all nine changed Python files>",
+      "observed": "Success: no issues found in 9 source files; installed mypy 2.4.0. Ruff check and format also pass.",
+      "log_sha256": "f645b10e21546f038559fbaaffb91f957d61ada15bed410cfd1fd85e15524598",
+      "passed": true
+    },
+    "annotation_delta": {
+      "command": "Normalize AnnAssign to Assign and compare ast.dump before/after, excluding location metadata.",
+      "observed": "Equal except runtime annotation metadata; Any is already imported, built-in generic types are supported by the required Python.",
+      "passed": true
+    }
+  },
+  "preserved_failures": {
+    "pr984_static_log_sha256": "5c172fb3daef724666f046cb88cb76fb7a06731965c3700ff58fa1acccbe6e4f",
+    "pr985_static_log_sha256": "d1cce098275cc1c7fe029c2854f2c0ed673911a5195822147b30fafe233e4fcc",
+    "reason": "Required mypy was omitted from the root local static batch; the PR check found three missing container annotations. Windows jobs skipped after static failure are not passes."
+  },
+  "remaining": [
+    "Independent review of this annotation-only delta and evidence pointers.",
+    "Replacement exact PR CI and main readback.",
+    "Formal installed editor and original real-provider/game continuation; parent #773 stays open."
+  ]
+}
