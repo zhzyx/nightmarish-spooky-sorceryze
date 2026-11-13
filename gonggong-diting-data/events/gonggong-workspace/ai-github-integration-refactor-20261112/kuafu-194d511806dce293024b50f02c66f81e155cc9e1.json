@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-194d511806dce293024b50f02c66f81e155cc9e1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "64da708eec370f6b31562a5335cc49fb6a2892b608038be1b6e2eea2202a0b02",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+    "action": "validation",
+    "detection_head": "722a7309c157e6f2665a152fecde57276284175f",
+    "context_sha256": "9841cd1e10b0bceca1a6edeb94350abf457fe68bf5f1f869d5da9dbbd764a2b2",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+    "diagnosis": "Current isolated integration main722a applies reviewed3source files cleanly, remaining workspace diff only read_issue_details. Initial build omitted known successful local vulkan=no/accesskit=no configuration and stopped at missing SDK before compiling; persisted SCons environment verifies these existing settings. Restore same validated flags; no SDK download or production-source change required.",
+    "next_action": "Rebuild private candidate with prior exact headless-compatible flags, run native sidebar/restart and shared routing regression, preserve original publisher and await explicit user handoff before publication.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T10:53:44.400937+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T10:54:03.928999+00:00",
+  "sha256": "568b64969d9ce441f6a0e80b54360a8367a7e56fe15806fe6756888659d703ff"
+}

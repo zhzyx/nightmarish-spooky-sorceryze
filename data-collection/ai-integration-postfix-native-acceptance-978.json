@@ -1,0 +1,218 @@
+{
+  "request_id": "ai-github-integration-refactor-20261112",
+  "issue_number": 978,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "base_main": "722a7309c157e6f2665a152fecde57276284175f",
+  "recorded_at": "2026-11-13T11:11:57.752332+00:00",
+  "scope": "Post-fix real native Codex account and exact three previously unexecuted840 Blender geometry tests; evidence-only delivery, no product changes",
+  "native_account": {
+    "request_id": "ai-github-integration-refactor-20261112",
+    "issue_number": 978,
+    "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "related_issue": 217,
+    "recorded_at": "2026-11-13T11:06:41.289046+00:00",
+    "kind": "post_fix_actual_native_account_acceptance",
+    "source_candidate": "722a7309c157e6f2665a152fecde57276284175f",
+    "binary_source_commit": "c827551e86ad37551302a6df3dc37d4d63a3638c",
+    "binary_sha256": "68cb8841eaf0632c6c5ed6c9ca21a91c7af63e933ffd74968e04d840dd878fd1",
+    "source_mapping": "main722a has no editor/tools/tests changes since accepted838 main; current uncommitted830 GDScript not used by this copied binary",
+    "fixture_mapping": {
+      "gd_sha256": "d7b2c4f2675b059de5bf6db32b41f1e33e183bcddb70a26d6f79f8cc47db9244",
+      "unchanged_from_prior_test": true,
+      "driver_changes": "Use already accepted838 main binary, separate output names, add source mapping; no product edits or test assertions removed"
+    },
+    "actual": {
+      "catalog_count": 8,
+      "catalog_sources": "codex_model_list; all model capability rows inspected",
+      "fixed_options": [
+        "",
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max",
+        "ultra"
+      ],
+      "mapping": "Five original217 named efforts preserved, plus default and low",
+      "fresh_model_selection": "default selected, unsupported values disabled with explanations",
+      "invalid_path": "failed with actionable error, correction and explicit retry restored catalog",
+      "requested_model": "gpt-6.1-sol",
+      "reasoning_effort": "",
+      "available_tools_count": 0,
+      "consultation_only": true,
+      "writes_allowed": false,
+      "execution_allowed": false,
+      "arithmetic_reply": "1275",
+      "visible_and_persisted": true,
+      "send_elapsed_ms": 20038,
+      "native_ok": true,
+      "exit_code": 0
+    },
+    "observed_model": null,
+    "provider_request_id": null,
+    "cleanup": {
+      "engine_terminal": true,
+      "observed_chat_bridge_pids_still_present": [],
+      "private_directory_removed": true
+    },
+    "official_docs": [
+      {
+        "url": "https://learn.chatgpt.com/docs/app-server#list-models-modellist",
+        "basis": "Use returned client/account model list and supported reasoning effort declarations rather than hard-coded service capabilities"
+      },
+      {
+        "url": "https://developers.openai.com/siwc/token-sharing-open-source/codex-app-server",
+        "basis": "Catalog is not entitlement; actual completed request supports access for that request only"
+      }
+    ],
+    "evidence_resolution": "Resolve repository root from parent of absolute Git common dir, then data-collection/receipts/ai-integration-refactor-20261112",
+    "evidence_sha256": {
+      "model217-post838-live-native.py": "1da1919c15dbe0cce3c8a16fceb8587bbcf4bd911a799ae0ddfbebe9d5f53f9b",
+      "model217-post838-live-native.gd": "d7b2c4f2675b059de5bf6db32b41f1e33e183bcddb70a26d6f79f8cc47db9244",
+      "model217-post838-live-native.json": "9262e0816e81ffb494893f80e812b3c90670093618131273dd2ce47104fdb325",
+      "model217-post838-live-native.log": "1e8fb264271ed7f055bfb9aba58bc8ed9c17246a11d58666d08e4251ed23ac04"
+    },
+    "limits": [
+      "One actual native account request only, not every listed model/effort success",
+      "Current copied macOS editor, not effective user installation or Windows",
+      "Unchanged prior test assertions; not an independent rerun by another reviewer",
+      "Original217 source document/ownership unresolved; this does not close217",
+      "Current worktree830 preparation not part of copied main binary",
+      "Existing headless teardown diagnostics retained in original log; success is functional not proof of zero leaks"
+    ]
+  },
+  "blender_geometry": {
+    "observed_at": "2026-11-13T11:08:12.684063+00:00",
+    "parent_issue": 978,
+    "original_issue": 840,
+    "child_issue": 842,
+    "source_head": "722a7309c157e6f2665a152fecde57276284175f",
+    "scope": "Exact three original Blender-gated SculptTests on current main inputs. Private native macOS acceptance only.",
+    "original_evidence": [
+      "data-collection/provider-independence-840-delivery.json:coverage_limits[1]",
+      "data-collection/provider-independence-840.json:input_blobs[tools/ainative/test_sculpt_provider.py]",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/842#issuecomment-6811393242"
+    ],
+    "tests_run": 3,
+    "passed": 3,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "test_methods_unchanged_from_original_ast": true,
+    "production_files_modified": false,
+    "source_files_unchanged_at_completion": true,
+    "network_disabled": true,
+    "provider_inference_performed": false,
+    "windows_csharp_fixture_route_covered": false,
+    "runtime": "Official Blender 4.5.11 LTS arm64, build 4db51e9d1e1e",
+    "runtime_executable_sha256": "8156431a9b9ec1daf49bccea4bd92f327f6efc1ca330d5103881580f3e7773ef",
+    "runtime_package_sha256": "1fad76c7da9451c7d6db99f1a5ed3c0a1a461d0aa07bf2b639e2fb4804ca4f13",
+    "cases": [
+      {
+        "test": "test_synthetic_cli_real_blender_organic_mesh_receipt_and_recovery",
+        "receipt_sha256": "887c87bd951e5b2b683e37a2629f68c06007a9c300bf5063704b424030d09d4b",
+        "output_sha256": "7963a2da66ec7f44986365c042e7a6c4b5de7a48576cbf12b0aaf5b7b352e433",
+        "bytes": 48600,
+        "vertices": 1320,
+        "triangles": 2636,
+        "body_components": 1,
+        "body_manifold": true,
+        "blender_version": "4.5.11 LTS",
+        "source_plan_sha256": "ea8d097aaa6ad0df66e87abe1332f98d3fda11605dd63d7bb3c09b32b00c6dd0",
+        "expanded_plan_sha256": "ea8d097aaa6ad0df66e87abe1332f98d3fda11605dd63d7bb3c09b32b00c6dd0",
+        "generated_cups": 0,
+        "native_receipt": "results/test_synthetic_cli_real_blender_organic_mesh_receipt_and_recovery/state/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/result.glb.receipt.json"
+      },
+      {
+        "test": "test_synthetic_cli_real_character_retains_original_and_expanded_receipts",
+        "receipt_sha256": "fabe888ddf4344913bb6a171cb6f4c7a3478008cf6c4758349bfb65ae5faebe6",
+        "output_sha256": "7e4b3d6d022fa7f0b56acbdf77455d97f4373ccfe1ceec6ad07c2f863e692832",
+        "bytes": 4024824,
+        "vertices": 111480,
+        "triangles": 222896,
+        "body_components": 1,
+        "body_manifold": true,
+        "blender_version": "4.5.11 LTS",
+        "source_plan_sha256": "7bd2b47483590cb36dc89d0091e73560127d879eee870eeaf6bc76822ccb0536",
+        "expanded_plan_sha256": "47f9597ca27626dce9e1926f0850f965232c52b44c8222ad8c4cbeda6c1d4c19",
+        "generated_cups": 0,
+        "native_receipt": "results/test_synthetic_cli_real_character_retains_original_and_expanded_receipts/state/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/result.glb.receipt.json"
+      },
+      {
+        "test": "test_synthetic_cli_real_rounded_loft_cups_reaches_strict_receipt_gate",
+        "receipt_sha256": "e44d96f9c584ee8c2b6295b9e5fd6c3644d1e85c731ccdeebe5368fce04ff805",
+        "output_sha256": "3bc7acac727557631bded633db52d890391cf5fb7d1c1fc019767da29d8fb9ca",
+        "bytes": 88472,
+        "vertices": 2320,
+        "triangles": 4612,
+        "body_components": 1,
+        "body_manifold": true,
+        "blender_version": "4.5.11 LTS",
+        "source_plan_sha256": "19586b11f0db725c69cddc293f8a58b0447953bdc6ca833090664dc2f5ce2552",
+        "expanded_plan_sha256": "77687ca844bc0444c6663ca63e414e1ec3387bc41ac512ada90046ef5b62dde7",
+        "generated_cups": 6,
+        "native_receipt": "results/test_synthetic_cli_real_rounded_loft_cups_reaches_strict_receipt_gate/state/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/result.glb.receipt.json"
+      }
+    ],
+    "limits": [
+      "Offline fixed plan/CLI fixture; no Codex, Kimi or other provider inference/quality acceptance.",
+      "Original Windows C# CLI fixture compilation/execution not covered; portable fixture success/version/login branches replace only setUpClass.",
+      "No rendered human visual/reference-reconstruction acceptance; no unrelated avatar suite coverage claimed.",
+      "Results support listed current source hashes; not a historical execution of old #840 candidate.",
+      "No GitHub write, Issue closure or production deployment performed by this worker."
+    ]
+  },
+  "blender_cleanup": {
+    "observed_at": "2026-11-13T11:08:32.239082+00:00",
+    "dmg_detached": true,
+    "active_owned_processes": [],
+    "download_and_isolated_home_config_tmp_removed": true,
+    "removed_file_bytes": 308255028,
+    "runtime_path_absent": true,
+    "retained": [
+      "16 MB private generated outputs, plans, SQLite state, native receipts and execution logs for audit; not an active runtime installation",
+      "Original/current test copies and private fixture adapter for exact scope/reproduction",
+      "Source, official package, executable and results hashes"
+    ],
+    "other_worktrees_and_global_settings_untouched": true
+  },
+  "blender_evidence": {
+    "base": "parent of absolute Git common directory, then data-collection/receipts/ai-integration-refactor-20261112/blender840-current-acceptance",
+    "sha256": {
+      "acceptance-summary.json": "a6cb986669568a83f44859ecf3ae1cdbd080284dafe721d15d6da0b724460ff8",
+      "test-result.json": "40110bc9529f31859a8380eefa87bce41bdf0b83d7de97b83ba0b3c544219dd5",
+      "run_acceptance.py": "ff2edbc59cb221c5e3474b0d92686718e475a27ab684df0b2d5bedb494ff7f79",
+      "portable-fixture.py": "eef98f704d62857bd3962f6c3cdf47d4b0c7aca198e2265f6a34f53602b68f0d",
+      "source-sha256.json": "c086037cfc58490171ffbef58fc92fa52a0b32f2ca6720bf05797e8a2b8ee823",
+      "evidence-manifest.json": "76ac7c3fe8edc8f5c659eeb3b87adca66c1e0f2a9b7c9ce032ed18e976c8648d",
+      "cleanup.json": "03ed08d11d94575f4d33da438acb6f830ef4f4567e53cf29d6210f7b89dc0879",
+      "scope.json": "072a0eca9b10b3d7032039f8de6b842cd02190882c4b2f823585e4904c126ecb",
+      "command.json": "031fea9fc2bb05d1c00b5787e135e48002294db8381db64e55e55dcdd4c2d713"
+    }
+  },
+  "worker": {
+    "id": "/root/sinan_225a13ff519187a9",
+    "actual_terminal_verified": true,
+    "reconciliation": "blender840-acceptance-reconciled.json"
+  },
+  "remaining": {
+    "830": "Fresh722a isolated candidate build63routing/sidebar/restart pass; originalpublisherhandoffpending.18 exact files plus binarypatch preserved privately; originalworktrees unchanged. No830feature in this evidence candidate.",
+    "217": "Current product functionality covered within stated actual/synthetic evidence; originalsource document and publicationownership unresolved, Issue not closed",
+    "840": "Actual three geometry gaps now covered in macOS portable CLI fixture; Windows C# fixture route and real provider/model quality not covered; originaluser deferred nonCodex/Kimi quality tootherowners, not generalized to978",
+    "978": "Broad refactor remains open with original platform/account/install/production/ownership gaps"
+  },
+  "delivery_base_mapping": {
+    "target_main": "bc2efa392ccef0059bab8a007845946a624b78eb",
+    "changed_paths_since_test_source": 45,
+    "source": "PR1052 independent Engine Next M2 runtime, contract and own evidence",
+    "no_changed_relevant_input_paths": true,
+    "scope_checked": [
+      "editor",
+      "tools/codex_cli",
+      "tools/ainative",
+      "tests/editor",
+      "customizations/components/godot-host"
+    ],
+    "policy": "Reuse actual722a test evidence without calling it a rerun on bc2; exact candidate formal gates/CI still required"
+  }
+}
