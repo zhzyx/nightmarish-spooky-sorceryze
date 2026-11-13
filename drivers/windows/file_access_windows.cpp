@@ -44,6 +44,7 @@
 #include <tchar.h>
 
 #include <cerrno>
+#include <cstdlib>
 #include <cwchar>
 
 #ifdef _MSC_VER
@@ -215,9 +216,18 @@ Error FileAccessWindows::open_internal(const String &p_path, int p_mode_flags) {
 		path = tmpfile;
 	}
 
+	_set_doserrno(0);
 	f = _wfsopen((LPCWSTR)(path.utf16().get_data()), mode_string, is_backup_save_enabled() ? ((p_mode_flags == READ) ? _SH_DENYWR : _SH_DENYRW) : _SH_DENYNO);
 
 	if (f == nullptr) {
+		// Preserve only known transient Windows sharing/lock conflicts. EACCES
+		// alone also represents permanent denial and must not invite retries.
+		unsigned long ulWindowsError = 0;
+		_get_doserrno(&ulWindowsError);
+		if (ulWindowsError == ERROR_SHARING_VIOLATION || ulWindowsError == ERROR_LOCK_VIOLATION) {
+			last_error = ERR_BUSY;
+			return last_error;
+		}
 		switch (errno) {
 			case ENOENT: {
 				last_error = ERR_FILE_NOT_FOUND;

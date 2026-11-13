@@ -1,0 +1,55 @@
+{
+  "issue_number": 1001,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+  "request_id": "kuafu-run-43286058093-attempt-1",
+  "path_base": "repository_root",
+  "recorded_at": "2026-11-12T20:38:31.152979+00:00",
+  "previous_report": "data-collection/receipt-publication-recovery-1001.json",
+  "previous_report_sha256": "6c0962ed47c931a26b369536c0aa3fc07f5940a19524aaa0d827c5aa5fec75ec",
+  "native_failure": {
+    "host": "parent macOS tests=yes build",
+    "log_sha256": "d77a6ec196fed8d6062b7638788a32c6508783571595af1bd72d6b788caf3e7d",
+    "error": "editor/docks/ai_chat_receipt.h:74: no member named 'parse_utf8' in 'String'",
+    "relation_to_original_windows_run": "New candidate compile failure only; original Windows initiating cause remains unproven"
+  },
+  "correction": [
+    "Use actual String::append_utf8 and reject non-OK Error; explicit length fits int due 1MiB limit",
+    "Reject raw NUL before decoding so a valid prefix cannot hide trailing bytes",
+    "Add native invalid-UTF8 and raw-NUL evidence-retention case",
+    "Include cstdlib explicitly for Windows CRT doserrno declarations"
+  ],
+  "input_sha256": {
+    "customizations/components/godot-host/bridge.py": "cd7f15289902058bafdf860edc8f1d3191ecfbbdea96e17f95a67524525ccc52",
+    "customizations/components/godot-host/test_bridge.py": "d0d1822b0d55ceffbad633022cc04fa529a9e548e621f60e741b9fdc10c2434c",
+    "drivers/windows/file_access_windows.cpp": "259211e46402063c3de36c5ff11ee25041db72c7d8f54344a0b3cc5efc575630",
+    "editor/docks/ai_chat_dock.h": "2b2a5ecce2913fe673202c4ca48b0d356fd90fb170eade7845f939335f09adcb",
+    "editor/docks/ai_chat_gonggong.cpp": "09fbfd4d1bbcd23e8ef6736f97794421523757300d42f5dc3136b5ad4b764795",
+    "editor/docks/ai_chat_receipt.h": "d68c32182714c95910aa0aab52988895e27265c0b8408484c6432d7b19b0f242",
+    "tests/editor/run_requirements_intake.py": "54876ff1966a7c4958d8605d4a401104ea538884d0e8fde19441944243004b51",
+    "tests/editor/receipt_diagnostics.py": "8968405575f3527f2fcf87510c5364b02dee502b265e2577eb18e221df898557",
+    "tests/editor/test_receipt_diagnostics.py": "0b5533e5e1c6ae4905beb2e362a10ed707e612df66586056697c446a173241fd",
+    "tests/editor/test_ai_chat_receipt.cpp": "cef53e4c81566ea5314ab1d69eff58a51543cada962d3650311f0c02651565c3"
+  },
+  "source_api_review": [
+    "core/string/ustring.h:554 append_utf8 returns Error",
+    "core/string/ustring.cpp:1756 decoder returns ERR_INVALID_DATA, stops at NUL",
+    "core/templates/vector.h:148 find uses signed Size and -1 sentinel",
+    "core/io/file_access.h buffer/length/error signatures",
+    "core/os/time.h get_ticks_msec",
+    "tests/core/io/test_file_access.cpp existing WINDOWS_ENABLED guard and Win32 handle conventions"
+  ],
+  "checks": [
+    {
+      "command": "file_format.py changed C++ inputs",
+      "passed": true
+    },
+    {
+      "command": "git diff --check",
+      "passed": true
+    }
+  ],
+  "unchanged_python_checks": "Previous 48+3 and lint results remain scoped to identical Python hashes; no repeat needed",
+  "native_execution": "Parent rebuild and test pending; no native success claimed",
+  "incident": "b940cac5b6ba985391a46abc17b4f3dbbbcc84a17d221f3aa9882258455e162c",
+  "cleanup": "No temporary fixture/process/app created by this correction. Undelivered worktree and original evidence retained."
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "request-local-model-runtime-provenance-20261113",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "local-model-runtime-provenance-20261113",
+  "kind": "request",
+  "occurred_at": "2026-11-12T17:59:11.220420+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/997",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "authorization": "User authorized full AI/GitHub refactor; independent provider audit confirmed997 personal-model source, cache, validation and process-boundary defects under parent978",
+    "issue_number": 997,
+    "observed_model": null,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "b9f42a53b5963e829a6fe191ed84b696fef4621fb8d3315e8765ce3dba1314a4"
+}

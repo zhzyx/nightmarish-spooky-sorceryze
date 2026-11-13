@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-42a633dbeead8d86930ed4968e2b771a0e30e07b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-run-43286058093-attempt-1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0d0da8e15c74314965160d573635f68469d814e22a457872afc0fffa510bd6d9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+    "action": "validation",
+    "detection_head": "c6b7baa72f63c36a2fcd4063c8ed84300ee343fe",
+    "context_sha256": "74bc3100434478f9f70702adee10808ac1e05f03ae7aec9d4d4ac335f4f72766",
+    "operator": "Sail-Li",
+    "worker": "/root/sinan_461345fc9274c7b2",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "data-collection/receipt-publication-recovery-1001.json; validation-1001-receipt-recovery-20261113",
+    "diagnosis": "Confirmed publication and diagnostic defects repaired in isolated candidate; 48 bridge and 3 diagnostic tests pass. Native exact-candidate validation remains with parent. Initial validation event kind test was rejected; read supported schema and recorded corrected analysis through storage API. Original Windows initiating cause remains unproven.",
+    "next_action": "Parent independently reviews and compiles final native candidate, executes Windows regression and normal delivery gates.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T20:22:13.739866+00:00",
+    "attempted": "Python bridge and diagnostic tests, ruff check/format, file-format and diff-check passed; no native execution by this worker.",
+    "repair_owner": "Sail-Li delegated worker /root/sinan_461345fc9274c7b2",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T20:33:39.798340+00:00",
+  "sha256": "c5dfff6f581848686ff16bd22b22a3403a05e8ed6ef233072948320d65052303"
+}

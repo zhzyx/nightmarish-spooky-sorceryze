@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8c4eaa3b14bb1e05f2abb70d35247c6c5125de02",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "generation-provider-config-independence-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1009",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2f156458c33bd46c907d1d357b41269b38b7b9ef0b71d81720c834a59807a755",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1009",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1009",
+    "action": "validation",
+    "detection_head": "c074db21be98784ff1288f1f2d99c793ba156395",
+    "context_sha256": "113463d58322a5f4a3ba12585e59190544defeb0b7cbb585de83ff410d8f9b0e",
+    "operator": "Sail-Li",
+    "worker": "/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "/Users/oracle/Documents/GitHub/nightmarish-spooky-sorceryze/data-collection/receipts/ai-integration-refactor-20261112/generation1009-native-builtins.json",
+    "diagnosis": "Native installed-bundle fixture still required the obsolete language-model field to survive reopening, conflicting with reviewed direct-provider normalization. Update fixture to assert unused endpoint/model removal, hidden input, and preservation of actual Tripo tool paths. No product source change required.",
+    "next_action": "Independent fixture review; rebuild after1003 integration and rerun actual installed-bundle acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T21:12:28.146459+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T21:12:39.388928+00:00",
+  "sha256": "8bfc14189afd9cb7824a2bc506da675a9e2e5c9098564009fad82164a47326d2"
+}

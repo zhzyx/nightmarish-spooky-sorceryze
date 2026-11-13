@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-77977359338a4bf2bed48808c1b140ff32ee70e7",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-run-43286058093-attempt-1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0459d637fdbac90c65b4cb917935be3712ef8c617c87a7bd931de608bd1e7daf",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+    "action": "validation",
+    "detection_head": "69a7a624a6d0f932bf02ebcc33d60427193629f3",
+    "context_sha256": "07758a3aab33a61e6b1f874a118721ed31bf53a489cc80d783bedee71cc6b574",
+    "operator": "Sail-Li",
+    "worker": "/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "local:pinned-clang-format-22.1.5-and-header-preflight",
+    "diagnosis": "Root dispatch requested a brace layout incompatible with actual repository clang-format policy; no applicable AGENTS instruction requires that layout. Apply repository formatter, standard copyright header and pragma guard to new files, keeping implementation semantics.",
+    "next_action": "Independent mechanical review and native rebuild/test before formal submission.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T21:02:50.829028+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T21:03:02.666723+00:00",
+  "sha256": "5233a9095e95785f64c6f4f3f37ea4f4bd4b9eb99833f71793fdda86eda80eda"
+}

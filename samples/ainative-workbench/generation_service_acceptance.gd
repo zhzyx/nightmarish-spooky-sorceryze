@@ -238,15 +238,17 @@ func run():
 	check(panel.serial == serial and panel.service_status.text.contains("旧配置"), "legacy check points to the configured adapter without sending managed HTTP discovery")
 	# Kimi configuration is local-only here; no discovery or inference is submitted.
 	mode("kimi_native")
-	panel.endpoint_edit.text = "https://api.kimi.com/coding/v1"
-	panel.kimi_model_edit.text = "k3-256k"
+	panel.endpoint_edit.text = "https://obsolete.invalid/v1"
+	panel.kimi_model_edit.text = "retired-language-model"
 	panel.model3d_tool_edit.text = state_path.path_join("fixture-3d/model3d_generation_tool.py")
 	panel.model3d_pythonw_edit.text = state_path.path_join("fixture-3d/pythonw.exe")
 	var kimi_draft = panel.service_draft()
 	check(kimi_draft.model3d_model == "v3.1" and kimi_draft.texture_model == "v3.5" and not kimi_draft.has("cli_path") and not kimi_draft.has("blender_path"), "Kimi Native uses direct Tripo API generation and adjustment without Codex or Blender")
-	check(panel.kimi_model3d_fields.visible and not panel.kimi_model_edit.visible, "Kimi Native exposes the direct 3D tool instead of the legacy K3 planner")
+	check(panel.kimi_model3d_fields.visible and not panel.kimi_model_edit.visible and not panel.endpoint_edit.visible and not panel.endpoint_edit.editable, "Kimi Native exposes the direct 3D tool instead of the legacy K3 planner")
 	check(panel._generator_provider("text_to_mesh") == "kimi_native" and panel._generator_provider("image_to_mesh") == "kimi_native" and panel._generator_provider("model_adjust") == "kimi_native", "Kimi Native routes both Mesh generation kinds and model adjustment")
 	check(panel._generator_provider("text_to_image") == "kimi_work_image" and panel._generator_provider("image_to_image") == "kimi_work_image", "2D nodes route independently to Kimi Work image generation")
+	check(kimi_draft.endpoint == "" and not kimi_draft.has("kimi_model"), "direct draft discards obsolete route values")
+	check(panel.kimi_auth_label.text.contains("尚未验证") and panel.kimi_auth_label.text.contains("agent-gw SDK"), "local readiness does not claim SDK account authorization")
 	panel.save_service_settings()
 	check(panel._service_blocker("text_to_mesh").is_empty() and panel._service_blocker("model_adjust").is_empty() and panel._service_blocker("text_to_image").contains("Kimi Work") and panel._service_blocker("image_to_image").contains("pythonw"), "missing image tools do not block Mesh generation or adjustment and explain the independent 2D configuration")
 	panel.kimi_image_tool_edit.text = state_path.path_join("fixture-only/image_generation_tool.py")
@@ -270,10 +272,21 @@ func run():
 	check(panel.source_browse.text == "选择模型…" and str(panel.source_picker.filters).contains("*.glb") and not str(panel.source_picker.filters).contains("*.png"), "model adjustment selects a GLB or embedded glTF rather than an image source")
 	check(panel.parameter_form.rows.prompt.text.contains("可选") and panel.nodes[0].parameters.prompt.is_empty() and panel.node_run_blocker("fixture").is_empty(), "model adjustment accepts its required source and one image with optional text without submitting a job")
 	panel.save_graph()
+	# Simulate a pre-migration saved file. Loading must preserve the selected SDKs.
+	var old_kimi_config = kimi_draft.duplicate(true)
+	old_kimi_config.endpoint = "https://obsolete.invalid/v1"
+	old_kimi_config.kimi_model = "retired-language-model"
+	var old_kimi_file = FileAccess.open(panel.service_config_path, FileAccess.WRITE)
+	old_kimi_file.store_string(JSON.stringify(old_kimi_config))
+	old_kimi_file.close()
 	panel.queue_free()
 	await settle()
 	await new_panel()
-	check(panel.service_saved == kimi_draft and panel.service_saved.texture_model == "v3.5" and panel.kimi_model_edit.text == "k3-256k" and panel._service_mode() == "kimi_native" and panel.kimi_image_tool_edit.text == kimi_draft.image_tool_path and panel.kimi_image_pythonw_edit.text == kimi_draft.image_pythonw_path and panel.model3d_tool_edit.text == kimi_draft.model3d_tool_path and panel.model3d_pythonw_edit.text == kimi_draft.model3d_pythonw_path, "Kimi composite settings and texture model restore through a fresh Workbench")
+	check(panel.service_saved == kimi_draft and panel.service_saved.texture_model == "v3.5" and panel.service_saved.endpoint == "" and not panel.service_saved.has("kimi_model") and panel._service_mode() == "kimi_native" and panel.kimi_image_tool_edit.text == kimi_draft.image_tool_path and panel.kimi_image_pythonw_edit.text == kimi_draft.image_pythonw_path and panel.model3d_tool_edit.text == kimi_draft.model3d_tool_path and panel.model3d_pythonw_edit.text == kimi_draft.model3d_pythonw_path, "Kimi composite settings and texture model restore through a fresh Workbench")
+	check(panel.service_draft() == panel.service_saved and not panel.endpoint_edit.visible, "old config restores a normalized saved draft without a false unsaved state")
+	panel.save_service_settings()
+	var normalized_kimi = JSON.parse_string(FileAccess.get_file_as_string(panel.service_config_path))
+	check(same_settings(normalized_kimi, kimi_draft) and not normalized_kimi.has("kimi_model"), "explicit save persists normalized current settings")
 	panel.path_edit.text = state_path.path_join("kimi-composite-workflow.json")
 	panel.open_graph()
 	panel.select_node("fixture")

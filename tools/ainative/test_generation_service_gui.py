@@ -86,6 +86,7 @@ class ServiceGuiTests(unittest.TestCase):
 
             env = dict(os.environ)
             env["AINATIVE_PYTHON"] = sys.executable
+            env["AINATIVE_SERVICE_TEST_STATE"] = str(folder / "state")
             env.pop("AINATIVE_PROVIDER_FACTORY", None)
             env.pop("AINATIVE_COMFY_CONFIG", None)
             env["AINATIVE_SERVICE_TEST_ENDPOINT"] = start("valid")

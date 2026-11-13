@@ -37,6 +37,7 @@
 #include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/ai_chat_host_runtime.h"
 #include "editor/docks/ai_chat_issue_guide.h"
+#include "editor/docks/ai_chat_receipt.h"
 #include "editor/docks/ai_chat_requirement_context.h"
 #include "editor/docks/ai_chat_resume.h"
 #include "editor/docks/gonggong_engine_origin.h"
@@ -161,21 +162,51 @@ void AIChatDock::_flush_gonggong(const Callable &p_continuation) {
 }
 
 void AIChatDock::_poll_gonggong_receipt() {
-	if (OS::get_singleton()->is_process_running(gonggong_receipt_pid)) {
+	if (!bGongGongReceiptExited) {
+		if (OS::get_singleton()->is_process_running(gonggong_receipt_pid)) {
+			return;
+		}
+		iGongGongReceiptExitCode = OS::get_singleton()->get_process_exit_code(gonggong_receipt_pid);
+		bGongGongReceiptExited = true;
+		uGongGongReceiptReadDeadline = Time::get_singleton()->get_ticks_msec() + 1000;
+	}
+	++uGongGongReceiptReadAttempts;
+	Dictionary dictResult = AIChatReceipt::Read(gonggong_receipt_path);
+	const Error eRead = Error(int(dictResult.get("receipt_io_error", OK)));
+	if (AIChatReceipt::CanRetry(eRead, uGongGongReceiptReadAttempts, Time::get_singleton()->get_ticks_msec(), uGongGongReceiptReadDeadline)) {
+		// Retain the PID and generation while waiting, so no queued batch starts.
 		return;
 	}
 	gonggong_receipt_timer->stop();
 	gonggong_receipt_pid = -1;
-	Variant parsed;
-	if (FileAccess::exists(gonggong_receipt_path)) {
-		parsed = JSON::parse_string(FileAccess::get_file_as_string(gonggong_receipt_path));
+	const String strStatus = dictResult["receipt_status"];
+	Dictionary dictDiagnostic;
+	dictDiagnostic["status"] = strStatus;
+	dictDiagnostic["exit_code"] = iGongGongReceiptExitCode;
+	dictDiagnostic["read_attempts"] = uGongGongReceiptReadAttempts;
+	dictDiagnostic["io_error"] = eRead;
+	dictDiagnostic["parse_line"] = dictResult.get("receipt_parse_line", -1);
+	dictDiagnostic["temporary_present"] = FileAccess::exists(gonggong_receipt_path.get_basename() + ".tmp");
+	set_meta("gonggong_receipt_diagnostic", dictDiagnostic);
+	// Private cache evidence contains metadata only, never raw receipt or stderr.
+	Ref<FileAccess> refDiagnostic = FileAccess::open(gonggong_receipt_path + ".diagnostic.json", FileAccess::WRITE);
+	if (refDiagnostic.is_valid()) {
+		refDiagnostic->store_string(JSON::stringify(dictDiagnostic));
+		refDiagnostic.unref();
+	}
+	if (strStatus != "valid" || iGongGongReceiptExitCode != 0) {
+		const String strActionError = strStatus == "valid" ? _redact(String(dictResult.get("error", ""))).left(160) : String();
+		dictResult["ok"] = false;
+		dictResult["error"] = vformat("receipt_%s; exit=%d; io=%d; attempts=%d; parse_line=%d; temporary=%s",
+									  strStatus == "valid" ? String("process_failed") : strStatus, iGongGongReceiptExitCode, int(eRead),
+									  uGongGongReceiptReadAttempts, int(dictResult.get("receipt_parse_line", -1)), bool(dictDiagnostic["temporary_present"]) ? "present" : "absent") +
+				(strActionError.is_empty() ? String() : "; " + strActionError);
+	} else {
+		// A syntactically valid, typed result was actually consumed.
 		DirAccess::remove_absolute(gonggong_receipt_path);
+		DirAccess::remove_absolute(gonggong_receipt_path + ".diagnostic.json");
 	}
-	Dictionary result;
-	if (parsed.get_type() == Variant::DICTIONARY) {
-		result = parsed;
-	}
-	_finish_gonggong_receipt(result);
+	_finish_gonggong_receipt(dictResult);
 }
 
 void AIChatDock::_finish_gonggong_receipt(const Dictionary &result) {
@@ -210,7 +241,7 @@ void AIChatDock::_finish_gonggong_receipt(const Dictionary &result) {
 	set_meta("gonggong_reporting", ok ? "recorded_file" : "pending_retry");
 	if (!ok) {
 		const String detail = _redact(String(result.get("error", "")).strip_edges()).left(320);
-		_append(TTR("Error"), String(U"GongGong 文件回执失败，队列已保留。") + (detail.is_empty() ? String(U"未收到可读取的投递结果。") : detail));
+		_append(TTR("Error"), String(U"GongGong 文件回执失败，后续执行已阻止。") + (detail.is_empty() ? String(U"未收到可读取的投递结果。") : detail));
 		if (current && continuation.is_valid()) {
 			_set_busy(false);
 		}
@@ -292,6 +323,10 @@ void AIChatDock::_start_gonggong_flush() {
 		return;
 	}
 	gonggong_receipt_pid = pid;
+	bGongGongReceiptExited = false;
+	iGongGongReceiptExitCode = -1;
+	uGongGongReceiptReadAttempts = 0;
+	uGongGongReceiptReadDeadline = 0;
 	_refresh_sub_agents();
 	if (!gonggong_receipt_timer) {
 		gonggong_receipt_timer = memnew(Timer);

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "event_id": "cleanup-1009-direct-config-20261113",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "generation-provider-config-independence-20261113",
+  "kind": "handoff",
+  "occurred_at": "2026-11-12T20:43:25.953702+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1009",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "path_base": "repository_root",
+    "removed": [
+      ".mypy_cache",
+      ".ruff_cache"
+    ],
+    "cleanup_scope": "Task-created local lint caches; fixture and headless subprocess contexts already completed",
+    "retained": [
+      "Undelivered isolated candidate/worktree/branch for independent review and parent delivery",
+      "Necessary public evidence and ignored local diagnostic receipts"
+    ],
+    "unchanged": [
+      "Other worktrees, source providers, active applications and installed settings"
+    ],
+    "next_owner": "Parent coordinator for independent review, exact candidate CI/main delivery and Issue acceptance"
+  },
+  "evidence_refs": [
+    "validation-1009-direct-config-20261113"
+  ],
+  "sha256": "08b5f7a24db7c51d5879bf115eb8b9fb822a1b053fe8d4f2d0635b317f0f2955"
+}

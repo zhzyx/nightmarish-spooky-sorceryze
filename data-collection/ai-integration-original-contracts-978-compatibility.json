@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "issue_number": 978,
+  "request_id": "ai-github-integration-refactor-20261112",
+  "recorded_at": "2026-11-13T00:48:28.571828+00:00",
+  "state": "bounded_local_compatibility_verified_delivery_pending",
+  "contracts": [
+    {
+      "issue_number": 559,
+      "candidate_issue": 997,
+      "candidate_head": "5acada24257288ab44134e02adfd7dc64a7f567a",
+      "editor_sha256": "3ddaec42ad12d0c124ee29b9120e818606e3a27e37c41fcdca589ba7cec8a4b7",
+      "passed_records": 44,
+      "scope": [
+        "Model and advertised reasoning setters",
+        "Runtime paths",
+        "Manual-confirmation and stale-confirmation guards",
+        "Child sessions and controlled schedule/attachment operations"
+      ],
+      "runner_sha256": "16870424eb58efd837fffbbf97a4543b5b0f5978e8b8da7555d2155510d55129",
+      "fixture_sha256": "819b73758e3ac3793aeaf123cf178598a07098f760d730937ed54157b3c1867c",
+      "receipt_sha256": "98e08ebe1a0bc9d0c3f1a5bee0971e581efb06b105a43a4d9f12bb5028a50f94",
+      "log_sha256": "3c2b7c6a682b625e475cff67e710ed821ed4f97409d9293f60af7fb7097bd356",
+      "exit_diagnostics": "Existing RID/ObjectDB leak diagnostics present; passing functional checks do not establish clean shutdown.",
+      "limits": [
+        "Private native confirmations simulate the host; no human approval claimed.",
+        "No production LLM/account, mounted-host successful owner flow, scheduler actual business execution, CodeBuddy provider, OS UI or visual rendering acceptance claimed.",
+        "Positive clipboard image input requires a display; headless verifies explicit unavailability only.",
+        "Nonempty historical snapshot diff viewing/restoration were not exercised; empty history view and foreign snapshot refusal were verified."
+      ],
+      "isolation_and_cleanup": {
+        "self_contained_editor_settings_and_private_project": true,
+        "HOME_isolated": false,
+        "observed_HOME_effect": "Two empty test user-data directories created by this execution, outside TemporaryDirectory. Creation times matched the native run; no recognizable test editor remained. Both removed with rmdir and absence read back.",
+        "private_runner_cleanup": "TemporaryDirectory normal exit and main editor process.wait only; no complete descendant history assertion.",
+        "home_cleanup_receipt_sha256": "0ab765535285aaaa506dfdc7a3f6a0fad9accf3e75b7f0e028ef5ce8fc303f07",
+        "does_not_prove": "No claim of zero host filesystem writes or exhaustive absence of all child processes."
+      }
+    },
+    {
+      "issue_number": 413,
+      "candidate_issue": 1009,
+      "candidate_head": "526b4ea8ca12f995f57700f16ae43fcb5e37ee99",
+      "editor_sha256": "6de9c036407f332d6ff17253b1abe50bcc8f4027928df3fa917cf205caa8b88d",
+      "passed_checks": 37,
+      "inputs": {
+        "samples/ainative-workbench/parameter_form_acceptance.gd": "b9f882f4edc095aad7838653afc5e6010cf1d67040e85f08a0496fa90ae92c4f",
+        "samples/ainative-workbench/addons/ainative/parameter_form.gd": "7e374de9abff41b26bf0d191df8ec2c805d4091e455ade492fb0079f57e53166",
+        "samples/ainative-workbench/addons/ainative/workbench.gd": "875612a8706c734e2cca03b362703eb75499f783b5c20e13c52da4237dee0328"
+      },
+      "scope": [
+        "Hidden raw JSON by default and explicit developer mode",
+        "Unknown-key, legacy and maximum-safe-seed round trips",
+        "Invalid draft rejection and no model execution"
+      ],
+      "receipt_sha256": "5dc24cea84e7d7ad6dab7fad144ad84e4148b70360232a64336264a369175ca2",
+      "log_sha256": "4fa2e682f10df990c81601f53fdec1d61ec32cd905830b5c256e1b92d12c9ae2",
+      "fixture_initial_diagnostic": "First private HOME omitted Library/Caches; functional 37 checks passed but emitted missing-directory diagnostic. Original report/log retained. Creating the private cache directory removes that fixture diagnostic; no product change.",
+      "private_fixture_removed": true,
+      "limits": [
+        "Private headless widgets only; no model inference, account, display or installed-host acceptance."
+      ]
+    }
+  ],
+  "remaining": [
+    "#414 real image/mesh generation requires the original authorized reachable service; current user has not supplied one.",
+    "#971 Windows model-picker access violation remains with the original publisher.",
+    "These tests do not replace source issue acceptance, user installation readback, independent evidence review or main delivery."
+  ]
+}

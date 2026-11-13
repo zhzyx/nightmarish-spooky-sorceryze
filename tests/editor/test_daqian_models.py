@@ -1,3 +1,4 @@
+import io
 import json
 import os
 import sys
@@ -13,11 +14,37 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "customizations/components/godot-host/daqian"))
 
 # isort: split
+import model_api  # noqa: E402
 import model_catalog as catalog  # noqa: E402
 from model_api import result_data  # noqa: E402
 
 
 class Models(unittest.TestCase):
+    def test_malformed_http_json_has_a_recoverable_redacted_error(self):
+        profile = {
+            "name": "fixture",
+            "protocol": "responses",
+            "model": "synthetic",
+            "endpoint": "https://example.invalid/v1/responses",
+        }
+        for packet in ([], None, True, 3, "private-response-marker", {"output": [None], "status": "completed"}):
+            with self.subTest(packet=packet), patch.object(model_api.urllib.request, "build_opener") as opener:
+                opener.return_value.open.return_value = io.BytesIO(json.dumps(packet).encode())
+                with self.assertRaisesRegex(ValueError, "核对原请求后再重试") as failure:
+                    model_api.invoke(profile, "fixture prompt", [], key="synthetic-key")
+                self.assertNotIn("private-response-marker", str(failure.exception))
+                self.assertNotIn("synthetic-key", str(failure.exception))
+
+        packet = {
+            "status": "completed",
+            "output": [{"type": "message", "content": [{"type": "output_text", "text": "fixture result"}]}],
+        }
+        with patch.object(model_api.urllib.request, "build_opener") as opener:
+            opener.return_value.open.return_value = io.BytesIO(json.dumps(packet).encode())
+            self.assertEqual(
+                model_api.invoke(profile, "fixture prompt", [], key="synthetic-key")["text"], "fixture result"
+            )
+
     def test_saving_credentials_revokes_live_evidence_but_keeps_synthetic_results(self):
         with tempfile.TemporaryDirectory() as directory, closing(catalog.database(directory)) as db:
             profile = {
@@ -88,9 +115,14 @@ class Models(unittest.TestCase):
             }
             vault = {}
             profile_id = catalog.add(db, profile, "old-synthetic-key", vault.__setitem__)
-            settings = {"backend": "3", "model": profile["model"], "endpoint": profile["endpoint"]}
+            settings = {
+                "backend": "3",
+                "model": profile["model"],
+                "endpoint": profile["endpoint"],
+                "editor_key": "old-synthetic-key",
+            }
 
-            def late_response(_profile, prompt, _messages):
+            def late_response(_profile, prompt, _messages, **options):
                 with closing(catalog.database(directory)) as writer:
                     catalog.add(writer, profile, "replacement-synthetic-key", vault.__setitem__)
                 return {"text": prompt.split()[-1]}
@@ -100,7 +132,7 @@ class Models(unittest.TestCase):
                 patch.object(catalog, "discover_cli", return_value=[]),
                 patch.object(catalog, "invoke", side_effect=late_response),
             ):
-                rows = catalog.connect_and_verify(db, settings)
+                rows = catalog.connect_and_verify(db, settings, vault.__setitem__)
             self.assertIn("旧验证结果已失效", rows[0]["note"])
             self.assertEqual(catalog.sinan_catalog(db, ["text"]), [])
             self.assertEqual(vault[profile_id], "replacement-synthetic-key")

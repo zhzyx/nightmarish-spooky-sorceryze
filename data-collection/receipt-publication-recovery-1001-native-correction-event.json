@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-run-43286058093-attempt-1",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "event_id": "correction-1001-native-utf8-api-20261113",
+  "kind": "correction",
+  "occurred_at": "2026-11-12T20:38:31.152979+00:00",
+  "evidence_refs": [
+    "validation-1001-receipt-recovery-20261113"
+  ],
+  "payload": {
+    "path_base": "repository_root",
+    "report": "data-collection/receipt-publication-recovery-1001-native-correction.json",
+    "report_sha256": "71b4a0c272df02d6b1c5715ac38c49ee32ceb790f3139d847a4ed5ee729faa19",
+    "state": "native_api_corrected_rebuild_pending"
+  }
+}

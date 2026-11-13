@@ -418,8 +418,9 @@ async function serve(entry, python) {
 
 module.exports = { proxyEnvironment, listModels, prepareImages, argumentsFor, promptFor, completion, run, SCHEMA, validateRequest };
 if (require.main === module) {
-    const hostModelGroup = process.argv[2] === 'models' && process.argv[4] === '--host-process-group';
-    if (hostModelGroup) {
+    const hostProcessGroup = (process.argv[2] === 'models' && process.argv[4] === '--host-process-group')
+        || (process.argv[2] === 'chat' && process.argv[5] === '--host-process-group');
+    if (hostProcessGroup) {
         // The native host starts a session and owns its whole process group.
         // Keep that leader alive after the JSON line so it can kill the tree
         // without racing PID reuse. EOF also cleans up after an editor crash.
@@ -439,8 +440,8 @@ if (require.main === module) {
     } else {
         const onProgress = process.argv[5] === '--progress' ? activity =>
             process.stdout.write(JSON.stringify({ event: 'codex_progress', activity }) + '\n') : null;
-        (process.argv[2] === 'models' ? listModels(process.argv[3], { hostProcessGroup: hostModelGroup }) : run(process.argv[3], process.argv[4], onProgress, process.argv[6])).then(
-            result => process.stdout.write(JSON.stringify(result) + (hostModelGroup ? '\n' : '')),
+        (process.argv[2] === 'models' ? listModels(process.argv[3], { hostProcessGroup: hostProcessGroup }) : run(process.argv[3], process.argv[4], onProgress, process.argv[6])).then(
+            result => process.stdout.write(JSON.stringify(result) + (hostProcessGroup ? '\n' : '')),
             error => {
                 const safe = serializeError(error);
                 safe.message = safe.message.replaceAll('CodeBuddy', 'Codex');
@@ -453,7 +454,7 @@ if (require.main === module) {
                         occurred_at: new Date().toISOString(), ...safe,
                     }), { mode: 0o600, flag: 'wx' }); } catch (_) {}
                 }
-                process.stdout.write(JSON.stringify({ error: safe }) + (hostModelGroup ? '\n' : ''));
+                process.stdout.write(JSON.stringify({ error: safe }) + (hostProcessGroup ? '\n' : ''));
                 process.exitCode = 1;
             });
     }
