@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Icon, type IconName } from "@/components/Icon";
+import { ApiStatus } from "@/components/ApiStatus";
 import { spaces } from "@/lib/data";
 
 interface NavItem {
@@ -174,6 +175,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
               <small>演示数据 · 不计量真实调用</small>
             </div>
+            <ApiStatus />
             <Link className="profile-card" href="/settings">
               <span className="avatar avatar-jade">S</span>
               <span className="profile-copy">
