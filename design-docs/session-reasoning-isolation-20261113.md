@@ -2,6 +2,16 @@
 
 <!-- gonggong-request:session-reasoning-isolation-20261113 -->
 
+## 2026-11-13 当前验收与清理
+
+[PR #1040](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1040) 已合入 main `c393b4786ccc5692435e8ae555248d44e102cbfc`，签发提交 `31d8203ee3f6df66f445aecd3db250b0c8c7f420` 与 source `36d91f4a7e2ec64f2c129dfdb36fd7cadfb9c0d5` 均已进入主线，合并树与签发树相同。独立审查通过，审查发现的 Windows 测试临时目录清理顺序问题已修复。正式门禁、提交后核验、精确 PR CI `43394746902` 和 main CI `43396592994` 通过。
+
+macOS 隔离实测及 Windows PR/main 均通过 full、reopen、legacy 三阶段和 7 条受控 CLI 请求，覆盖同模型会话独立、关闭其他会话、重启恢复、旧历史迁移、五档传参及两种自动默认回退。main Windows 1577 项测试、474777 个断言通过，3 项跳过；部署中断和原需求恢复实际通过。图、跨提供方及咨询步骤被跳过，不计为通过。新会话、子工作者和已有调度快照复制经独立源码审查；没有为本次新增定时任务。
+
+#1038 已以 status:done / completed 关闭并回读。连接器写入返回 403 后，使用本人已授权 Sail-Li CLI 完成关单；限制属于连接器权限，未宣称其权限已修复。已删除本次已合入的本地修复分支及远端签发分支，原生临时目录清理通过；当前总任务工作树、必要回退构建、审计证据和其他任务保留，现存 36 棵工作树。有效安装及用户运行中的根工作区未变更。
+
+完整来源与摘要见 [追加交付回执](../data-collection/session-reasoning-isolation-1038-delivery.json) 的 `delivery_result`；前述本地验证快照与下方复现历史保留原意，不再代表当前待交付状态。真实默认推理只绑定修复前 main1ba44e 的单次原始回执；新回归使用受控 CLI。#217 和父 #978 的剩余范围及原发布责任保持开放。
+
 来源为用户授权的 AI／GitHub 接入整体验收 [#978](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978)。关联模型与强度缺陷 [#217](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/217) 及已经交付的逐会话模型选择 [#971](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971)。本任务由当前 Codex 会话在自有隔离候选推进；不接管原 #217 工作副本或改写 #971 历史验收。
 
 ## 已复现的问题
