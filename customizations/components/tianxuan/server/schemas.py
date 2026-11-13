@@ -40,6 +40,14 @@ class RoleUpdateRequest(BaseModel):
     role: str
 
 
+class RepoCreateRequest(BaseModel):
+    """在 Gitea 中创建仓库。"""
+
+    name: str
+    private: bool = True
+    default_branch: str = "main"
+
+
 class DocCreateRequest(BaseModel):
     """创建文曲 Markdown 文档。"""
 

@@ -19,6 +19,7 @@ from duobao_bridge import GitService, GitServiceError
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 from gateway import ModelGateway, create_model_router
+from gitea_bridge import GiteaClient, GiteaError
 from schemas import (
     CommentCreateRequest,
     CommentResolveRequest,
@@ -30,6 +31,7 @@ from schemas import (
     LoginRequest,
     MemberCreateRequest,
     RegisterRequest,
+    RepoCreateRequest,
     RequirementCommitRequest,
     RequirementCreateRequest,
     RoleUpdateRequest,
@@ -118,6 +120,17 @@ def _requirement_markdown(requirement: dict[str, Any], issues: list[dict[str, An
     for issue in issues:
         lines.append(f"- [ ] #{issue['number']} {issue['title']} ({issue['status']})")
     return "\n".join(lines).rstrip() + "\n"
+
+
+def _gitea_client() -> GiteaClient:
+    base_url = os.environ.get("TIANXUAN_GITEA_URL", "").strip()
+    token = os.environ.get("TIANXUAN_GITEA_TOKEN", "").strip()
+    if not base_url or not token:
+        raise HTTPException(
+            status_code=400,
+            detail="TIANXUAN_GITEA_URL and TIANXUAN_GITEA_TOKEN are required",
+        )
+    return GiteaClient(base_url, token)
 
 
 def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
@@ -436,6 +449,48 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
             )
         )
         return {"diff": diff}
+
+    # ---------- 多宝：Gitea 仓库接入 ----------
+
+    @app.get("/api/v1/gitea/status")
+    def gitea_status() -> dict[str, Any]:
+        return {
+            "configured": bool(os.environ.get("TIANXUAN_GITEA_URL") and os.environ.get("TIANXUAN_GITEA_TOKEN")),
+            "owner": os.environ.get("TIANXUAN_GITEA_OWNER", ""),
+        }
+
+    @app.get("/api/v1/repos")
+    def list_repos(
+        actor: ActorDep,
+        owner: str | None = Query(default=None),
+        limit: int = Query(default=50, ge=1, le=100),
+    ) -> dict[str, list[dict[str, Any]]]:
+        client = _gitea_client()
+        try:
+            with client:
+                return {"repos": client.list_repos(owner, limit)}
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/repos")
+    def create_repo(payload: RepoCreateRequest, actor: ActorDep) -> dict[str, Any]:
+        client = _gitea_client()
+        try:
+            with client:
+                return client.create_repo(  # type: ignore[no-any-return]
+                    payload.name, payload.private, payload.default_branch
+                )
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.get("/api/v1/repos/{owner}/{name}")
+    def get_repo(owner: str, name: str, actor: ActorDep) -> dict[str, Any]:
+        client = _gitea_client()
+        try:
+            with client:
+                return client.get_repo(owner, name)  # type: ignore[no-any-return]
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
 
     # ---------- 文曲：评论 ----------
 
