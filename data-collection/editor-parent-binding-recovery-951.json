@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "issue": 951,
+  "parent_issue": 773,
+  "scope": "Parent Issue binding and explicit original-design confirmation durability/recovery",
+  "source_baseline": "da9bfac7b5036f24d9657179d394dc2db3a66526",
+  "source_freeze": "C++/test/workflow blobs below; later main1061 integration and formal wrapper verification belong to root delivery",
+  "created_at": "2026-11-13T13:12:08.541950+00:00",
+  "sources": [
+    {
+      "path": "editor/docks/ai_chat_gonggong.cpp",
+      "sha256": "6e6e65213b32f551cc899256cc689217513c3349f1f9412baa26db47f5a41a8b",
+      "git_blob": "c037766f31f0670362df88bafc46d56835020790"
+    },
+    {
+      "path": "editor/docks/ai_chat_sub_agents.cpp",
+      "sha256": "28011f8ff3e2d7202ad54dd44c6fe49dfb9ce1bbd2019b30388e72787a288b6e",
+      "git_blob": "30b58d6ce9319ff911b7ab73e23ba36789e82e13"
+    },
+    {
+      "path": "tests/editor/run_parent_binding_restart.py",
+      "sha256": "8d7d867e31719f50f05ac1d69678edc21baa7ae397c6eabe83e6d743855ab217",
+      "git_blob": "dc85fe1d850c2aa8e2f891db0a1791a9e78f1c21"
+    },
+    {
+      "path": "tests/editor/parent_binding_restart.gd",
+      "sha256": "3262e612637301f6b67a5676c441a22bced60d5e4e10776f2a434b143eb32474",
+      "git_blob": "1e01396d884086516ba82f969e05a321e1c5528c"
+    },
+    {
+      "path": "tests/editor/design_confirmation_recovery.gd",
+      "sha256": "1324170e3280d73f88b907a60292685b08435dd6768da3e63b3e3a2a85f4ca3e",
+      "git_blob": "c5d1817a77ec5c5e2f66619735b66bfa899b78e3"
+    },
+    {
+      "path": "tests/editor/run_native_acceptance.py",
+      "sha256": "6e2afbe641be74dd85d78700fe6c4c3b0b9535cf61fc9c557ffd64bf203c9a62",
+      "git_blob": "9fc34ed77c3443350d8c2742272134aa113c38c7"
+    },
+    {
+      "path": ".github/workflows/windows_builds.yml",
+      "sha256": "d748fd7990856807e57bb2e4e84d7927d95a11513ec8577caa9eb6bb4b269664",
+      "git_blob": "63d5361709314b4bb8219953285594613fee9205"
+    }
+  ],
+  "defect": {
+    "confirmed": "Requirement binding, initial design confirmation, manual acceptance and independent acceptance changed cached project metadata without immediate save. Parent history and metadata have different persistence paths.",
+    "historical_limit": "The original live request was proven to contain Issue 0 and its parent metadata binding was absent. The missing flush is reproducible; the historical shutdown sequence is unknown, so it is not asserted as the sole cause of the old incident.",
+    "authority": "No identity or approval reconstructed from chat. Existing children require the original actor, exact current binding/design and equal complete approvals; conflicts and live/unknown occupancy reject. Recovery confirmation writes only its original local confirmation, with independent disk reread, and requires a later explicit production action."
+  },
+  "build": {
+    "kind": "direct strict SCons, not the formal build wrapper or AIChat unit suite",
+    "command": "python -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no accesskit=no d3d12=no angle=no warnings=extra werror=yes tests=yes -j4",
+    "source_archive_mode": true,
+    "shared_cache": true,
+    "exit_code": 0,
+    "evidence": {
+      "path": "bin/951-validation/parent-binding-build-6.log",
+      "sha256": "7dc605c334bba350233e4e52920b9087f83c54c45befae59c7d0644315c8f40f"
+    },
+    "editor_sha256": "e39e5a732112335ef0fb029b51567e119f9bf26220df0468cb35c0e8f6ffc4af",
+    "formal_wrapper_and_source_receipt": "pending root integration; not claimed here"
+  },
+  "verification": {
+    "old_vs_new_binding": {
+      "old_editor_sha256": "63a356e5679302b842ca14a4ddcdb9a463dc642c59c0fa4d5323e755d1c44148",
+      "old_durable_before_crash": false,
+      "old_cold_binding_restored": false,
+      "old_parent_history_survived": true,
+      "new_durable_before_crash": true,
+      "new_cold_binding_restored": true,
+      "new_parent_history_survived": true,
+      "method": "Actual public ordinary requirement, real native intake with offline model/GitHub ports; force-kill the direct editor process, cold reopen the same isolated project; no graceful shutdown save. Owned Windows Job cleans fixture descendants.",
+      "evidence": [
+        {
+          "path": "bin/951-validation/parent-binding-old-3.json",
+          "sha256": "b2094398a1afced689bb922dd64f39f5e90e8b74b2d859342964aee6d8d561b2"
+        },
+        {
+          "path": "bin/951-validation/parent-binding-final-6.json",
+          "sha256": "0f07715014f7d1183d81c7a407da58111ed0d42b5d5ee0bad1441e8c8c0bcde7"
+        }
+      ]
+    },
+    "recovery": {
+      "ok": true,
+      "editor_ok": true,
+      "assertions": {
+        "actor_drift": true,
+        "cache_conflict": true,
+        "cancel": true,
+        "children_unchanged": true,
+        "design_drift": true,
+        "disk_conflict": true,
+        "failed_save_no_grant": true,
+        "live_request_started": true,
+        "never_started_c_preserved": true,
+        "ok": true,
+        "parent_switch": true,
+        "same_approval_persisted": true,
+        "storage_obstruction": true,
+        "tools_off": true
+      },
+      "fresh_operation_state": "context_recorded",
+      "waiting_sibling_after_confirmation": "interrupted",
+      "verified_decision_count": 3,
+      "evidence": {
+        "path": "bin/951-validation/confirmation-recovery-9.json",
+        "sha256": "9844a50112e9ed464ff287292fe9e8362d7c1b5466e7d3844e54c4a7b1e4a09b"
+      },
+      "interpretation": "Actual source-read failure remains retained; reconfirmation itself leaves all producer/review records unchanged. Following explicit continuation, fresh input dispatch, repair and independent acceptance allow dependency C. Final native JSON is authoritative; generic underlying HTTP batch counters are superseded by the external-worker scenario assertions."
+    },
+    "manual_confirmation_and_acceptance": {
+      "ok": true,
+      "case": "normal",
+      "parent_return_count": 1,
+      "evidence": {
+        "path": "bin/951-validation/design-manual-final-6.json",
+        "sha256": "e2fd06b3a9c130fda15f4e122a98d3fda168e0071a62673b50bc16be9fe8c72a"
+      }
+    },
+    "static": {
+      "clang_format_dry_run_werror": "passed: both changed C++ files",
+      "ruff_check_and_format": "passed: both Python files",
+      "mypy": "passed: two source files",
+      "file_format": "passed: seven changed source/test/workflow files, LF",
+      "git_diff_check": "passed"
+    },
+    "continuous_regression": {
+      "workflow": ".github/workflows/windows_builds.yml",
+      "jobs": "Windows MSVC editor; direct exe; locked CodeBuddy dependency installation for job-object; reports uploaded with always()",
+      "commands": [
+        "python -X utf8 tests/editor/run_parent_binding_restart.py --godot <direct-editor.exe> --out parent-recovery-report/binding.json",
+        "python -X utf8 tests/editor/run_native_acceptance.py --godot <direct-editor.exe> --node <node.exe> --scenario parallel-parent-restart --restore-confirmation --out parent-recovery-report/confirmation.json"
+      ],
+      "ci_result": "not run in this local implementation task"
+    }
+  },
+  "failed_attempts_preserved": [
+    {
+      "path": "bin/951-validation/parent-binding-old-1.log",
+      "sha256": "24eaebee7e9ee15162a833c8087c5dec4b167817e99d6914f17f6786767efa00",
+      "interpretation": "Fixture rejected inherited workspace before editor launch; isolated environment corrected."
+    },
+    {
+      "path": "bin/951-validation/parent-binding-old-2.log",
+      "sha256": "0eb4eab816256719da210001e23def7fd86f3f7e5fbcd27cdaba1b57a689bc63",
+      "interpretation": "Incomplete proposal asked clarification without binding; corrected fixture to a complete real intake proposal."
+    },
+    {
+      "path": "bin/951-validation/parent-binding-old-3.json",
+      "sha256": "b2094398a1afced689bb922dd64f39f5e90e8b74b2d859342964aee6d8d561b2",
+      "interpretation": "Expected old-1054 negative: memory binding existed, disk binding absent; cold parent history survived but binding did not."
+    },
+    {
+      "path": "bin/951-validation/parent-binding-build-2.log",
+      "sha256": "289980d431880b3eea5bdb8946ce6872518679517543e5b0d0a037ed85ec7efa",
+      "interpretation": "Compile failure: HashMap.get has no default-value overload; corrected before build 3."
+    },
+    {
+      "path": "bin/951-validation/confirmation-recovery-1.log",
+      "sha256": "98d75260354b827b7f76f343783e594c902d473c0e6d65ebaa1c0d0ff7cf7f8a",
+      "interpretation": "Fixture read cold history before normalization persisted; missing summary was secondary."
+    },
+    {
+      "path": "bin/951-validation/confirmation-recovery-2.log",
+      "sha256": "9c501682d9af7951510ee008b21715aaf4c2eacf38e59412d5fb9c491387e363",
+      "interpretation": "Same initial fixture observation failure, with captured cold diagnostics."
+    },
+    {
+      "path": "bin/951-validation/confirmation-recovery-3.log",
+      "sha256": "4c76fddaa27549088d5fd48a3f81bd7bf3f0b39e067114832b6379af2191df6c",
+      "interpretation": "Recovery refused; tab_changed was not the bound public selection signal."
+    },
+    {
+      "path": "bin/951-validation/confirmation-recovery-4.log",
+      "sha256": "cd02894b9ebbe089a3d8583a657e1e56da125417e0292ad77b029f4062dc5ab3",
+      "interpretation": "Actual recovery bug: Variant numeric comparison rejected restored FLOAT versus parsed INT; fixed using the existing design-check integer comparison."
+    },
+    {
+      "path": "bin/951-validation/confirmation-recovery-5.log",
+      "sha256": "321936cc8efb0af57cf0c1d553d59ac5b20301784f056489fef6b2e3e504d299",
+      "interpretation": "Real popup reached; fixture read deferred cancellation visibility too early and used wrong AllowTools owner."
+    },
+    {
+      "path": "bin/951-validation/confirmation-recovery-6.log",
+      "sha256": "977c5a44bdbb03aa928b537413cee06e8830c189efac516a253458e13cf32d6f",
+      "interpretation": "GDScript type inference parse failure before editor history or model dispatch; explicit bool corrected, check-only passed."
+    },
+    {
+      "path": "bin/951-validation/confirmation-recovery-7.log",
+      "sha256": "c2f28f712acdb8c94ea33684532120f22ad45c35145bbfa9eab54ff767cb7431",
+      "interpretation": "Live request started and was rejected; subsequent save test did not reach save because terminal reporting was still queued. Corrected observation to recorded_file and enabled public button."
+    },
+    {
+      "path": "bin/951-validation/confirmation-recovery-8.json",
+      "sha256": "16e9f7f3e519d6392b374236156af5010f347fb05bf8ca9f85162649b555985b",
+      "interpretation": "First complete passing recovery matrix and continuation; final r9 additionally guards every new pressed signal with enabled checks."
+    }
+  ],
+  "method_recall": {
+    "scopes": [
+      "editor-native-acceptance",
+      "editor-dependency-handoff"
+    ],
+    "applied_condition": "Assert the actual asynchronous operation started before testing rejection: live POST marker and busy state; readable read-only metadata reaches real save failure. A directory rejected during load is a separate pre-save case. Wait for the current native reporting completion and enabled continuation control, not only Stop becoming disabled.",
+    "proposal_only": "A new durability lesson is proposed separately; prior experiments are not retrospectively promoted to a pre-registered verified method."
+  },
+  "limitations": [
+    "No physical power-loss or fsync guarantee tested; this is forced process termination and cold editor startup.",
+    "No original game, original history, or live editor controls were modified by this subtask.",
+    "Root owns independent review, integrated wrapper/AIChat suite, exact-candidate CI/main, installation and actual original-game recovery."
+  ]
+}

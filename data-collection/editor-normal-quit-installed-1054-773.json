@@ -1,0 +1,1055 @@
+{
+  "schema_version": 1,
+  "parent_issue": 773,
+  "related_issue": 559,
+  "recorded_at_utc": "2026-11-13T13:19:48.523663+00:00",
+  "status": "three_existing_native_normal_quit_consumers_passed",
+  "scope": "Controlled isolated Windows headless projects using copied formal1054 direct engine. Existing local HTTP editor-control and native menu/save/cancel consumers. No model/provider request or original game/live editor interaction; confirmation signals are fixture simulation, not real human approval. No559 implementation ownership or reservation transfer.",
+  "installed_main": "da9bfac7b5036f24d9657179d394dc2db3a66526",
+  "installed_files_before": [
+    {
+      "sha256": "c313911af189a808b5200b61b48c7ea6d6285378e7d6db712df9ee34b6ee5d9d",
+      "bytes": 242688,
+      "installation_relative_path": "bin/godot.windows.editor.x86_64.console.exe"
+    },
+    {
+      "sha256": "63a356e5679302b842ca14a4ddcdb9a463dc642c59c0fa4d5323e755d1c44148",
+      "bytes": 176777216,
+      "installation_relative_path": "bin/godot.windows.editor.x86_64.exe"
+    },
+    {
+      "sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "bytes": 67422,
+      "installation_relative_path": "bin/tianshu-ui.json"
+    }
+  ],
+  "installed_files_after": [
+    {
+      "sha256": "c313911af189a808b5200b61b48c7ea6d6285378e7d6db712df9ee34b6ee5d9d",
+      "bytes": 242688,
+      "installation_relative_path": "bin/godot.windows.editor.x86_64.console.exe"
+    },
+    {
+      "sha256": "63a356e5679302b842ca14a4ddcdb9a463dc642c59c0fa4d5323e755d1c44148",
+      "bytes": 176777216,
+      "installation_relative_path": "bin/godot.windows.editor.x86_64.exe"
+    },
+    {
+      "sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "bytes": 67422,
+      "installation_relative_path": "bin/tianshu-ui.json"
+    }
+  ],
+  "installed_hashes_stable": true,
+  "final_raw_report": {
+    "sha256": "192f7bdd9bf0ac7efe935bcfad844a37818815c25c436c1308866f1ef1599c8d",
+    "bytes": 16062,
+    "logical_artifact": "normal-quit-installed1054-e98380d9/result.json"
+  },
+  "actual_command_chain": [
+    "EditorClient.capabilities and native MenuBar discovery identify real Scene menu/Quit item; no hardcoded item index or native menu option invocation.",
+    "read_menubar_menus -> open_menubar_menu -> actual AIFileApproval OK -> read_menu_items(offset discovered index,limit1) -> activate_menu_item -> actual AIFileApproval OK.",
+    "Native EditorNode::_menu_confirm_current save-dialog connection identifies unsaved protection, separate from unrelated runtime-setup prompt.",
+    "First native Cancel preserves process, dirty in-memory state and original disk hashes; repeat same menu chain then native Save proceeds to normal process exit0 and actual file/plugin persistence."
+  ],
+  "source_inputs": [
+    {
+      "sha256": "8ece101ff5daf18c9e87c6a170a9b6f4757456768665f738ac81f3a4a6218673",
+      "bytes": 4961,
+      "logical_artifact": "normal-quit-installed1054-e98380d9/normal-quit-probe.gd"
+    },
+    {
+      "sha256": "0a7affdf7a62cb63c22c893a0db2d2162715f9db275a2b92c8f701b3db7658ac",
+      "bytes": 716,
+      "logical_artifact": "normal-quit-installed1054-e98380d9/normal-quit-plugin.gd"
+    },
+    {
+      "sha256": "c475c94aca8698d10721e1967ccb5231a2c32bc431ee3174d7130a4d12716650",
+      "bytes": 14280,
+      "logical_artifact": "normal-quit-installed1054-e98380d9/run-normal-quit-probe.py"
+    }
+  ],
+  "main_consumer_source_blobs": {
+    "tools/editor_control_client.py": "7a0c4de0e736716c07e6f62022de92f8a25c8982",
+    "editor/docks/ai_chat_editor_complex_actions.cpp": "a8fa2e33ae82b96f75ef0a30c1941e69018ca293",
+    "editor/editor_node.cpp": "ef47c68ca55531541bab9934550c74e107857d20",
+    "core/object/undo_redo.cpp": "a468426f6303d3f134716159eda153dc5bd1f10d",
+    "editor/editor_undo_redo_manager.cpp": "7ef8d6a6aff98219a2b5ac4ac8dfc67e5c02096d",
+    "tests/editor/editor_test_isolation.py": "64454905252603c91b24211ebf022d4ed45a8049",
+    "tools/editor_provenance_process.py": "1792895eca6d3ff29467380ea4f3be4fd9236fcd"
+  },
+  "cases": [
+    {
+      "case": "scene",
+      "ok": true,
+      "normal_exit_observed": true,
+      "exit_code": 0,
+      "failure_cleanup_used": false,
+      "discovery": {
+        "bar_target": "plugin.owned_quit_bar",
+        "menu_index": 0,
+        "menu_name": "Scene",
+        "menu_path": "/root/@EditorNode@21867/@Panel@14/@VBoxContainer@16/@EditorTitleBar@17/@MenuBar@5184/Scene",
+        "ok": true,
+        "quit_index": 23,
+        "quit_item_id": 18,
+        "quit_item_text": "Quit"
+      },
+      "cancel_preserved": {
+        "scene": "ChangedRoot",
+        "unsaved_scenes": [
+          "res://fixture.tscn"
+        ],
+        "resource_roughness": null,
+        "plugin_dirty": false,
+        "plugin_saved": false,
+        "scene_sha256": "8bfd4e5aad591866c10783f7550edd67731c2279b555e3d29dbdcef98c308e09",
+        "resource_sha256": "f0edb71fa666b21a8d0f9566b85874b97f6471cae83bc6e579529e18c2963270"
+      },
+      "native_save_dialog": "场景“res://fixture.tscn”有未保存的修改。\n场景已打开：4 秒前。\n\n是否在关闭前保存？",
+      "originals": {
+        "fixture.tscn": {
+          "sha256": "8bfd4e5aad591866c10783f7550edd67731c2279b555e3d29dbdcef98c308e09",
+          "bytes": 61,
+          "isolated_project_relative_path": "fixture.tscn"
+        },
+        "material.tres": {
+          "sha256": "f0edb71fa666b21a8d0f9566b85874b97f6471cae83bc6e579529e18c2963270",
+          "bytes": 79,
+          "isolated_project_relative_path": "material.tres"
+        }
+      },
+      "saved": {
+        "fixture.tscn": {
+          "sha256": "3efb92249b49fa18be545ba4fd1c95af5c7b97728a00a9c34b33ebc94bbcac71",
+          "bytes": 105,
+          "isolated_project_relative_path": "fixture.tscn"
+        },
+        "material.tres": {
+          "sha256": "f0edb71fa666b21a8d0f9566b85874b97f6471cae83bc6e579529e18c2963270",
+          "bytes": 79,
+          "isolated_project_relative_path": "material.tres"
+        }
+      },
+      "plugin_save_callback": null,
+      "plugin_unload": {
+        "dirty_at_unload": false,
+        "unloaded": true
+      },
+      "raw_result": {
+        "sha256": "f307f31c2cb8ed2f51178fcde7f37db5da94c8c125a01715acddf31929beeff9",
+        "bytes": 4159,
+        "logical_artifact": "normal-quit-installed1054-e98380d9/scene/result.json"
+      },
+      "http_request_results": {
+        "sha256": "3845ff2a2c9bac1e9ef48d5ace0cb1a2e5de0e522b5b0dbca7a0c5c29777ebc9",
+        "bytes": 21583,
+        "logical_artifact": "normal-quit-installed1054-e98380d9/scene/requests.json"
+      },
+      "raw_logs": [
+        {
+          "sha256": "71e156ae3d857e01f4a38a3f9601a98ff8a8c4e77aff0a343286342fdb199af9",
+          "bytes": 2455,
+          "logical_artifact": "normal-quit-installed1054-e98380d9/scene/stdout.log"
+        },
+        {
+          "sha256": "e583c0f4c92ab1b1b28037509defab70657e6dd7b978a013bbe7f1319a4bea25",
+          "bytes": 685,
+          "logical_artifact": "normal-quit-installed1054-e98380d9/scene/stderr.log"
+        }
+      ],
+      "copied_engine": {
+        "sha256": "63a356e5679302b842ca14a4ddcdb9a463dc642c59c0fa4d5323e755d1c44148",
+        "bytes": 176777216
+      },
+      "cancel_process_alive": true,
+      "cancel_original_files_unchanged": true,
+      "observed_http_route": [
+        {
+          "response": {
+            "ok": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "9434fee0421e451080a60300604f68e6",
+            "operation": {
+              "action": "read_menubar_menus",
+              "target": "plugin.owned_quit_bar"
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": false,
+            "confirmation_required": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "awaiting_confirmation"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "86bf6dfe61084b08aeaec0ca0383b514",
+            "operation": {
+              "action": "open_menubar_menu",
+              "target": "plugin.owned_quit_bar",
+              "index": 0
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": true,
+            "requested": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request_status": "86bf6dfe61084b08aeaec0ca0383b514"
+        },
+        {
+          "response": {
+            "ok": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "d425fb9afaa9400e8e43675634cbefdc",
+            "operation": {
+              "action": "read_menu_items",
+              "target": "editor.d3b8f91317c327ed69c11220f08b63a4",
+              "limit": 1,
+              "offset": 23
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": false,
+            "confirmation_required": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "awaiting_confirmation"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "ea146f38a51a425e8a2fb1c4ecaad84d",
+            "operation": {
+              "action": "activate_menu_item",
+              "target": "editor.d3b8f91317c327ed69c11220f08b63a4",
+              "index": 23
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": true,
+            "requested": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request_status": "ea146f38a51a425e8a2fb1c4ecaad84d"
+        },
+        {
+          "response": {
+            "ok": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "d9d51ddca9dc40b1bcf55776021b1777",
+            "operation": {
+              "action": "read_menubar_menus",
+              "target": "plugin.owned_quit_bar"
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": false,
+            "confirmation_required": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "awaiting_confirmation"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "717ac324038f47c8b106750cc8d3e227",
+            "operation": {
+              "action": "open_menubar_menu",
+              "target": "plugin.owned_quit_bar",
+              "index": 0
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": true,
+            "requested": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request_status": "717ac324038f47c8b106750cc8d3e227"
+        },
+        {
+          "response": {
+            "ok": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "fa52a1136ef2423e9e10d597836517a7",
+            "operation": {
+              "action": "read_menu_items",
+              "target": "editor.d3b8f91317c327ed69c11220f08b63a4",
+              "limit": 1,
+              "offset": 23
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": false,
+            "confirmation_required": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "awaiting_confirmation"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "3b9a9b5859aa432ca9fed0684bd8435f",
+            "operation": {
+              "action": "activate_menu_item",
+              "target": "editor.d3b8f91317c327ed69c11220f08b63a4",
+              "index": 23
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": true,
+            "requested": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request_status": "3b9a9b5859aa432ca9fed0684bd8435f"
+        }
+      ],
+      "persistence_observation": "fixture.tscn serialized node name ChangedRoot; disk SHA changed only after Save."
+    },
+    {
+      "case": "resource",
+      "ok": true,
+      "normal_exit_observed": true,
+      "exit_code": 0,
+      "failure_cleanup_used": false,
+      "discovery": {
+        "bar_target": "plugin.owned_quit_bar",
+        "menu_index": 0,
+        "menu_name": "Scene",
+        "menu_path": "/root/@EditorNode@21867/@Panel@14/@VBoxContainer@16/@EditorTitleBar@17/@MenuBar@5184/Scene",
+        "ok": true,
+        "quit_index": 23,
+        "quit_item_id": 18,
+        "quit_item_text": "Quit"
+      },
+      "cancel_preserved": {
+        "scene": "OriginalRoot",
+        "unsaved_scenes": [],
+        "resource_roughness": 0.25,
+        "plugin_dirty": false,
+        "plugin_saved": false,
+        "scene_sha256": "8bfd4e5aad591866c10783f7550edd67731c2279b555e3d29dbdcef98c308e09",
+        "resource_sha256": "f0edb71fa666b21a8d0f9566b85874b97f6471cae83bc6e579529e18c2963270"
+      },
+      "native_save_dialog": "是否在关闭前保存已修改的资源？",
+      "originals": {
+        "fixture.tscn": {
+          "sha256": "8bfd4e5aad591866c10783f7550edd67731c2279b555e3d29dbdcef98c308e09",
+          "bytes": 61,
+          "isolated_project_relative_path": "fixture.tscn"
+        },
+        "material.tres": {
+          "sha256": "f0edb71fa666b21a8d0f9566b85874b97f6471cae83bc6e579529e18c2963270",
+          "bytes": 79,
+          "isolated_project_relative_path": "material.tres"
+        }
+      },
+      "saved": {
+        "fixture.tscn": {
+          "sha256": "8bfd4e5aad591866c10783f7550edd67731c2279b555e3d29dbdcef98c308e09",
+          "bytes": 61,
+          "isolated_project_relative_path": "fixture.tscn"
+        },
+        "material.tres": {
+          "sha256": "ab3b21b7b9c94447a51cca80134c0f4f4fa0dd0378a9a553fea3bc25b7b3d96f",
+          "bytes": 103,
+          "isolated_project_relative_path": "material.tres"
+        }
+      },
+      "plugin_save_callback": null,
+      "plugin_unload": {
+        "dirty_at_unload": false,
+        "unloaded": true
+      },
+      "raw_result": {
+        "sha256": "38c97231ce2ef605013b0a7b0ad89192bf103bece1cf81a0f4e2c3c5ef4b5d5e",
+        "bytes": 4025,
+        "logical_artifact": "normal-quit-installed1054-e98380d9/resource/result.json"
+      },
+      "http_request_results": {
+        "sha256": "5fe97a13e082b854c55fdab1baecdf33258992e1be22167c09592d20e2180db0",
+        "bytes": 21535,
+        "logical_artifact": "normal-quit-installed1054-e98380d9/resource/requests.json"
+      },
+      "raw_logs": [
+        {
+          "sha256": "c90f03174efa14e969d89a473a0d75edc8a22ec6ea3b6858dba2f07cd6c280ae",
+          "bytes": 2102,
+          "logical_artifact": "normal-quit-installed1054-e98380d9/resource/stdout.log"
+        },
+        {
+          "sha256": "e583c0f4c92ab1b1b28037509defab70657e6dd7b978a013bbe7f1319a4bea25",
+          "bytes": 685,
+          "logical_artifact": "normal-quit-installed1054-e98380d9/resource/stderr.log"
+        }
+      ],
+      "copied_engine": {
+        "sha256": "63a356e5679302b842ca14a4ddcdb9a463dc642c59c0fa4d5323e755d1c44148",
+        "bytes": 176777216
+      },
+      "cancel_process_alive": true,
+      "cancel_original_files_unchanged": true,
+      "observed_http_route": [
+        {
+          "response": {
+            "ok": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "b5a94f4fc404417aa17aee3b2b9e2051",
+            "operation": {
+              "action": "read_menubar_menus",
+              "target": "plugin.owned_quit_bar"
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": false,
+            "confirmation_required": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "awaiting_confirmation"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "3899c1ed1fe04d5a93aa74d60b5965f4",
+            "operation": {
+              "action": "open_menubar_menu",
+              "target": "plugin.owned_quit_bar",
+              "index": 0
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": true,
+            "requested": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request_status": "3899c1ed1fe04d5a93aa74d60b5965f4"
+        },
+        {
+          "response": {
+            "ok": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "f3296af195664e1fb89c48dc5fb4e23f",
+            "operation": {
+              "action": "read_menu_items",
+              "target": "editor.d3b8f91317c327ed69c11220f08b63a4",
+              "limit": 1,
+              "offset": 23
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": false,
+            "confirmation_required": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "awaiting_confirmation"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "0f1d12260535481faee8d872e3d0707a",
+            "operation": {
+              "action": "activate_menu_item",
+              "target": "editor.d3b8f91317c327ed69c11220f08b63a4",
+              "index": 23
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": true,
+            "requested": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request_status": "0f1d12260535481faee8d872e3d0707a"
+        },
+        {
+          "response": {
+            "ok": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "e6f5909755c34a94a8303abe56fc3341",
+            "operation": {
+              "action": "read_menubar_menus",
+              "target": "plugin.owned_quit_bar"
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": false,
+            "confirmation_required": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "awaiting_confirmation"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "d90b96da5a13471792501b38f8945949",
+            "operation": {
+              "action": "open_menubar_menu",
+              "target": "plugin.owned_quit_bar",
+              "index": 0
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": true,
+            "requested": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request_status": "d90b96da5a13471792501b38f8945949"
+        },
+        {
+          "response": {
+            "ok": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "77135fe4c8d741c696b0cd0035dd34db",
+            "operation": {
+              "action": "read_menu_items",
+              "target": "editor.d3b8f91317c327ed69c11220f08b63a4",
+              "limit": 1,
+              "offset": 23
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": false,
+            "confirmation_required": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "awaiting_confirmation"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "3c7ca9a989794f91b1860721f2dee55d",
+            "operation": {
+              "action": "activate_menu_item",
+              "target": "editor.d3b8f91317c327ed69c11220f08b63a4",
+              "index": 23
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": true,
+            "requested": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request_status": "3c7ca9a989794f91b1860721f2dee55d"
+        }
+      ],
+      "persistence_observation": "material.tres serialized roughness = 0.25; disk SHA changed only after Save."
+    },
+    {
+      "case": "plugin",
+      "ok": true,
+      "normal_exit_observed": true,
+      "exit_code": 0,
+      "failure_cleanup_used": false,
+      "discovery": {
+        "bar_target": "plugin.owned_quit_bar",
+        "menu_index": 0,
+        "menu_name": "Scene",
+        "menu_path": "/root/@EditorNode@21867/@Panel@14/@VBoxContainer@16/@EditorTitleBar@17/@MenuBar@5184/Scene",
+        "ok": true,
+        "quit_index": 23,
+        "quit_item_id": 18,
+        "quit_item_text": "Quit"
+      },
+      "cancel_preserved": {
+        "scene": "OriginalRoot",
+        "unsaved_scenes": [],
+        "resource_roughness": null,
+        "plugin_dirty": true,
+        "plugin_saved": false,
+        "scene_sha256": "8bfd4e5aad591866c10783f7550edd67731c2279b555e3d29dbdcef98c308e09",
+        "resource_sha256": "f0edb71fa666b21a8d0f9566b85874b97f6471cae83bc6e579529e18c2963270"
+      },
+      "native_save_dialog": "OWNED_PLUGIN_UNSAVED_PROTECTION",
+      "originals": {
+        "fixture.tscn": {
+          "sha256": "8bfd4e5aad591866c10783f7550edd67731c2279b555e3d29dbdcef98c308e09",
+          "bytes": 61,
+          "isolated_project_relative_path": "fixture.tscn"
+        },
+        "material.tres": {
+          "sha256": "f0edb71fa666b21a8d0f9566b85874b97f6471cae83bc6e579529e18c2963270",
+          "bytes": 79,
+          "isolated_project_relative_path": "material.tres"
+        }
+      },
+      "saved": {
+        "fixture.tscn": {
+          "sha256": "8bfd4e5aad591866c10783f7550edd67731c2279b555e3d29dbdcef98c308e09",
+          "bytes": 61,
+          "isolated_project_relative_path": "fixture.tscn"
+        },
+        "material.tres": {
+          "sha256": "f0edb71fa666b21a8d0f9566b85874b97f6471cae83bc6e579529e18c2963270",
+          "bytes": 79,
+          "isolated_project_relative_path": "material.tres"
+        }
+      },
+      "plugin_save_callback": {
+        "saved_by_native_plugin_callback": true,
+        "was_dirty": true
+      },
+      "plugin_unload": {
+        "dirty_at_unload": false,
+        "unloaded": true
+      },
+      "raw_result": {
+        "sha256": "5ad3e1d2cb95df8e3da810b71e82ce5fdf1ce6c19ecc7bbb87e924264ae64415",
+        "bytes": 4110,
+        "logical_artifact": "normal-quit-installed1054-e98380d9/plugin/result.json"
+      },
+      "http_request_results": {
+        "sha256": "d414c38770dca14168042ce19b53a43729c2fb4f5cf4175fde49e62b3dd26edc",
+        "bytes": 21583,
+        "logical_artifact": "normal-quit-installed1054-e98380d9/plugin/requests.json"
+      },
+      "raw_logs": [
+        {
+          "sha256": "c90f03174efa14e969d89a473a0d75edc8a22ec6ea3b6858dba2f07cd6c280ae",
+          "bytes": 2102,
+          "logical_artifact": "normal-quit-installed1054-e98380d9/plugin/stdout.log"
+        },
+        {
+          "sha256": "e583c0f4c92ab1b1b28037509defab70657e6dd7b978a013bbe7f1319a4bea25",
+          "bytes": 685,
+          "logical_artifact": "normal-quit-installed1054-e98380d9/plugin/stderr.log"
+        }
+      ],
+      "copied_engine": {
+        "sha256": "63a356e5679302b842ca14a4ddcdb9a463dc642c59c0fa4d5323e755d1c44148",
+        "bytes": 176777216
+      },
+      "cancel_process_alive": true,
+      "cancel_original_files_unchanged": true,
+      "observed_http_route": [
+        {
+          "response": {
+            "ok": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "45adadef7e004a748b26dea710a20ab0",
+            "operation": {
+              "action": "read_menubar_menus",
+              "target": "plugin.owned_quit_bar"
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": false,
+            "confirmation_required": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "awaiting_confirmation"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "8380839b2c7d4f5194746af7e8f8a80d",
+            "operation": {
+              "action": "open_menubar_menu",
+              "target": "plugin.owned_quit_bar",
+              "index": 0
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": true,
+            "requested": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request_status": "8380839b2c7d4f5194746af7e8f8a80d"
+        },
+        {
+          "response": {
+            "ok": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "dc5b4593ad0748d282dd47d711fbebef",
+            "operation": {
+              "action": "read_menu_items",
+              "target": "editor.d3b8f91317c327ed69c11220f08b63a4",
+              "limit": 1,
+              "offset": 23
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": false,
+            "confirmation_required": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "awaiting_confirmation"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "ec037643403e43448c380da1606d2a02",
+            "operation": {
+              "action": "activate_menu_item",
+              "target": "editor.d3b8f91317c327ed69c11220f08b63a4",
+              "index": 23
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": true,
+            "requested": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request_status": "ec037643403e43448c380da1606d2a02"
+        },
+        {
+          "response": {
+            "ok": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "bcf26e4c6ed04a8490b2d72be3a44937",
+            "operation": {
+              "action": "read_menubar_menus",
+              "target": "plugin.owned_quit_bar"
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": false,
+            "confirmation_required": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "awaiting_confirmation"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "9ab56f06103c4140af8b69aaf4908847",
+            "operation": {
+              "action": "open_menubar_menu",
+              "target": "plugin.owned_quit_bar",
+              "index": 0
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": true,
+            "requested": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request_status": "9ab56f06103c4140af8b69aaf4908847"
+        },
+        {
+          "response": {
+            "ok": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "6f415c45e6464823ac1d663138d3c98d",
+            "operation": {
+              "action": "read_menu_items",
+              "target": "editor.d3b8f91317c327ed69c11220f08b63a4",
+              "limit": 1,
+              "offset": 23
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": false,
+            "confirmation_required": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "awaiting_confirmation"
+          },
+          "request": {
+            "intent": "engine_operation",
+            "source": "owned-normal-quit",
+            "request_id": "9c714b4485934cabb3c9d24c14bb0bb2",
+            "operation": {
+              "action": "activate_menu_item",
+              "target": "editor.d3b8f91317c327ed69c11220f08b63a4",
+              "index": 23
+            }
+          }
+        },
+        {
+          "response": {
+            "ok": true,
+            "requested": true,
+            "route": "engine_control",
+            "routed": true,
+            "routing_status": "completed"
+          },
+          "request_status": "9c714b4485934cabb3c9d24c14bb0bb2"
+        }
+      ],
+      "persistence_observation": "plugin-saved.json records saved_by_native_plugin_callback=true, was_dirty=true; native unload observes dirty_at_unload=false."
+    }
+  ],
+  "preserved_failures": [
+    {
+      "report": {
+        "sha256": "b16feeb66a06837bbca7976d695c7609894ac1dc8376b769e94dc26c0b3c65bc",
+        "bytes": 10266,
+        "logical_artifact": "normal-quit-installed1054-9eea5a4e/result.json"
+      },
+      "reason": "Private command sequence formatted as 1.0 in GDScript acknowledgment filename while Python awaited 1. Corrected integer formatting; no native quit attempted.",
+      "not_counted_as_pass": true
+    },
+    {
+      "report": {
+        "sha256": "d3f74af58af28fd8926ecf630e38d35d2bed9b52fafa748ff81c964341ab4e51",
+        "bytes": 14740,
+        "logical_artifact": "normal-quit-installed1054-12e29e9d/result.json"
+      },
+      "reason": "Private discovery requested limit 100 despite the bridge two-digit page limit; request rejected before quit. Corrected to 20 with pagination.",
+      "not_counted_as_pass": true
+    },
+    {
+      "report": {
+        "sha256": "ffde1fab83ee8ad9d0010fa187a83ecdca6c87fc30ce10470051ed6860fb081c",
+        "bytes": 12301,
+        "logical_artifact": "normal-quit-installed1054-662dd6db/result.json"
+      },
+      "reason": "Menu response stopped at its byte budget with next_offset 14; private code incorrectly indexed 23 directly. Corrected targeted read with the actually discovered item index and limit 1.",
+      "not_counted_as_pass": true
+    },
+    {
+      "report": {
+        "sha256": "3656c135826a4c71a97233f394d8cc79a66d4e05872e8d6c9c14593791c59d3b",
+        "bytes": 13933,
+        "logical_artifact": "normal-quit-installed1054-9d95aafe/result.json"
+      },
+      "reason": "Native protection dialogs were already reached, but oracle counted unrelated GongGongRuntimeSetup popup as second save dialog and assumed English. Corrected identity to actual EditorNode::_menu_confirm_current connection and preserved localized text.",
+      "not_counted_as_pass": true
+    }
+  ],
+  "remaining_unknown": [
+    "Three independent finite cases do not establish every plugin, every resource, simultaneous dirty-owner combinations, save failure/retry, unnamed scenes or unsaved script editor variants.",
+    "GUI/macOS native menu visibility/focus and hardware shutdown interactions were not exercised; headless semantic/menu behavior is the tested scope.",
+    "Discard-without-saving was not tested and is not inferred from Cancel or Save.",
+    "Existing native normal-quit consumer evidence narrows this subset; it does not close559 or parent773 and does not transfer the original owners work.",
+    "No claim of all 15 command families or all eight original #559 residual subsets being complete. Existing owner and reservation remain unchanged."
+  ],
+  "cleanup_boundary": "Only failed preliminary runs used owned WindowsJob cleanup. Final three cases each exited normally before cleanup, failure_cleanup_used=false; no SceneTree.quit/SIGINT/kill is present as success oracle in the fixture. Native EditorNode internally quits after completing normal shutdown.",
+  "issue_number": 773,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "request_id": "game-production-goal-20261111",
+  "related_issue_number": 559,
+  "installed_delivery_pr": 1054,
+  "path_base": {
+    "logical_artifact": "Authorized parent773 host-private evidence root; relative names identify retained originals by SHA256. Private raw logs and fixture scripts are not public attachments.",
+    "installation_relative_path": "Formal installation root resolved from installed.local.json; inventory was checked against that manifest before and after the run.",
+    "isolated_project_relative_path": "Fresh per-case system temporary project owned by this fixture, separate from the original game and user editor.",
+    "source_paths": "Repository root at installed_main; source references describe the tested installation, not any later candidate.",
+    "command_placeholders": "<private-fixture> resolves to the exact three hashed private fixture inputs; <isolated-editor> is copy_editor output from the verified installed direct exe; <isolated-project> is a new temporary project."
+  },
+  "private_summary": {
+    "logical_artifact": "normal-quit-installed1054-summary.json",
+    "sha256": "020b5cf521cadb506debfbf1bd53fbaa326030eb7ba1e28f70bbe45ed30150e9",
+    "bytes": 18052
+  },
+  "reproduction": {
+    "fixture_command": [
+      "<python>",
+      "-X",
+      "utf8",
+      "-B",
+      "<private-fixture>/run-normal-quit-probe.py"
+    ],
+    "actual_editor_arguments": [
+      "<isolated-editor>",
+      "--headless",
+      "--audio-driver",
+      "Dummy",
+      "--editor",
+      "--path",
+      "<isolated-project>",
+      "--script",
+      "res://test.gd"
+    ],
+    "environment": "PYTHONUTF8=1; GODOT_AI_API_KEY empty; isolated editor endpoint empty; WindowsJob helper resolved from the authorized host. No provider requests.",
+    "confirmation": "AllowTools=true, AutoExecuteCommands=false in isolated editor settings. Fixture presses actual AIFileApproval OK and native save/cancel buttons. This is simulated confirmation, not actual human consent or provider behavior.",
+    "menu_registration": "The fixture discovers the existing native MenuBar/Scene/Quit item and registers that same object through public AIChatEditorControl.register_target as plugin.owned_quit_bar. No replacement menu or direct EditorNode private quit invocation.",
+    "resource_setup": "Scene rename plus EditorInterface.mark_scene_as_unsaved; external StandardMaterial3D roughness changed using EditorUndoRedoManager; self-owned EditorPlugin implements _get_unsaved_status and _save_external_data."
+  },
+  "source_route": [
+    {
+      "path": "editor/docks/ai_chat_editor_complex_actions.cpp",
+      "line": 1080,
+      "behavior": "Confirmed activate_menu_item invokes the actual PopupMenu activation."
+    },
+    {
+      "path": "editor/editor_node.cpp",
+      "line": 3836,
+      "behavior": "SCENE_QUIT enters native unsaved scene/resource/plugin protection."
+    },
+    {
+      "path": "editor/editor_node.cpp",
+      "line": 3890,
+      "behavior": "Modified external resource protection."
+    },
+    {
+      "path": "editor/editor_node.cpp",
+      "line": 3905,
+      "behavior": "Plugin unsaved status protection."
+    },
+    {
+      "path": "editor/editor_node.cpp",
+      "line": 2439,
+      "behavior": "Save edited external resources; plugin external data callback is included in the normal save path."
+    },
+    {
+      "path": "editor/editor_node.cpp",
+      "line": 4311,
+      "behavior": "Normal editor exit unloads addons and eventually quits internally after protections; fixture does not call SceneTree.quit."
+    },
+    {
+      "path": "editor/editor_node.cpp",
+      "line": 9498,
+      "behavior": "Native save confirmation connects to EditorNode::_menu_confirm_current; fixture uses this identity to distinguish unrelated dialogs."
+    }
+  ],
+  "validation_scope": {
+    "passed_cases": 3,
+    "failed_preliminary_runs_retained": 4,
+    "product_source_changed": false,
+    "formal_installation_changed": false,
+    "original_game_or_user_editor_touched": false,
+    "provider_invoked": false,
+    "ownership_or_reservation_transferred": false,
+    "issue_559_closed": false,
+    "parent_773_business_acceptance": false,
+    "later_candidate_ci_or_installation_acceptance": false,
+    "runtime_setup_prompt": "An unrelated GongGongRuntimeSetup configuration prompt remained observable in the isolated installation. It was recorded separately and was not mistaken for native save protection or evidence of configured production runtime."
+  },
+  "evidence_integrity": {
+    "private_artifact_references_rehashed": 20,
+    "main_blob_references_rechecked": 7,
+    "public_redaction": "Machine filesystem paths replaced by explicit resolution bases; UI node paths and res:// fixture paths are retained. No private account configuration or large raw logs copied."
+  }
+}

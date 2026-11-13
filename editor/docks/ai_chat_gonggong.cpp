@@ -1350,6 +1350,7 @@ void AIChatDock::_issue_guide_bind(int64_t p_number, const String &p_request_id)
 	bound["request_id"] = p_request_id;
 	bindings[conversation_id] = bound;
 	settings->set_project_metadata("daqian", "bindings", bindings);
+	settings->save_project_metadata();
 	if (sub_agents.has(active_agent)) {
 		Dictionary child = sub_agents[active_agent];
 		child["issue_number"] = p_number;

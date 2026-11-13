@@ -37,6 +37,9 @@ PARENT_STOP_SCENARIOS |= {"parent-delivery-tools-off", "parent-delivery-tools-of
 PARENT_SCENARIOS |= PARENT_STOP_SCENARIOS
 PARENT_SCENARIOS |= parent_delivery.SCENARIOS
 SCENARIO = "pass"
+RESTORE_CONFIRMATION = "--restore-confirmation" in sys.argv
+if RESTORE_CONFIRMATION:
+    sys.argv.remove("--restore-confirmation")
 if "--scenario" in sys.argv:
     at = sys.argv.index("--scenario")
     SCENARIO = sys.argv[at + 1]
@@ -48,6 +51,8 @@ PARENT_BOUNDARY = (
 )
 if PARENT_BOUNDARY:
     SCENARIO = "parallel-parent-continuation"
+if RESTORE_CONFIRMATION and PARENT_BOUNDARY != "restart":
+    raise SystemExit("--restore-confirmation requires --scenario parallel-parent-restart")
 boundary_receipts: dict[str, Any] = {}
 if SCENARIO not in PARENT_SCENARIOS | {
     "pass",
@@ -371,6 +376,14 @@ process.stdin.on('end', () => {
             )
             integration_restarting = True
             completed = _original_run(command, *args, **restore_kwargs)
+            if RESTORE_CONFIRMATION:
+                if not (project / "confirmation-recovery.json").is_file():
+                    print(completed.stdout, completed.stderr)
+                    report = batch.json.loads((project / "design-batch-report.json").read_text(encoding="utf8"))
+                    raise AssertionError("Native confirmation recovery did not finish: " + report.get("failure", ""))
+                recovery = batch.json.loads((project / "confirmation-recovery.json").read_text(encoding="utf8"))
+                assert recovery["ok"], recovery
+                boundary_receipts["confirmation_recovery"] = recovery
         else:
             assert operation["state"] == "cancelled", operation
     if (
@@ -581,6 +594,20 @@ func _parent_boundary_951():
             1,
         )
         Path(target).write_bytes(script.encode("utf8"))
+        if RESTORE_CONFIRMATION:
+            script += Path(__file__).with_name("design_confirmation_recovery.gd").read_text(encoding="utf8")
+            anchor = '\t\t_send("PRODUCTION_COLD_STATUS_951")'
+            assert script.count(anchor) == 1
+            script = script.replace(
+                anchor, "\t\tif not await _restore_design_confirmation_951():\n\t\t\t_finish()\n\t\t\treturn\n" + anchor
+            )
+            anchor = "\tconfirmation.get_ok_button().pressed.emit()\n\nfunc _verify_dependency_handoff():"
+            assert script.count(anchor) == 1
+            script = script.replace(
+                anchor,
+                "\tconfirmation.get_ok_button().pressed.emit()\n\t_assert_initial_confirmation_951()\n\nfunc _verify_dependency_handoff():",
+            )
+            Path(target).write_bytes(script.encode("utf8"))
     if Path(source).name == "design_batch.gd" and SCENARIO == "parallel-integration":
         script = Path(target).read_text(encoding="utf8")
         script = script.replace(
@@ -655,6 +682,21 @@ class AcceptanceServer(ThreadingHTTPServer):
             raw = instance.rfile.read(int(instance.headers["Content-Length"]))
             body = batch.json.loads(raw)
             prompt = next((m.get("content", "") for m in reversed(body["messages"]) if m["role"] == "user"), "")
+            if RESTORE_CONFIRMATION and prompt == "RECOVERY_LIVE_PROBE_951":
+                project = parallel.folder / "original/samples/project"
+                (project / "recovery-live-started").touch()
+                deadline = batch.time.monotonic() + 30
+                while not (project / "recovery-live-release").exists() and batch.time.monotonic() < deadline:
+                    batch.time.sleep(0.02)
+                assert (project / "recovery-live-release").exists(), "Live confirmation probe never released"
+                message = {"role": "assistant", "content": "RECOVERY_LIVE_PROBE_FINISHED"}
+                data = batch.json.dumps({"choices": [{"message": message, "finish_reason": "stop"}]}).encode()
+                instance.send_response(200)
+                instance.send_header("Content-Type", "application/json")
+                instance.send_header("Content-Length", str(len(data)))
+                instance.end_headers()
+                instance.wfile.write(data)
+                return
             if SCENARIO in parent_delivery.SCENARIOS:
                 message = parent_delivery.model_response(batch, prompt, body)
                 if message is not None:

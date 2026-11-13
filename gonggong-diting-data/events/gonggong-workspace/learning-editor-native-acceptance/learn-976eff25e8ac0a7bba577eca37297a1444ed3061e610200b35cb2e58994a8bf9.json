@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-976eff25e8ac0a7bba577eca37297a1444ed3061e610200b35cb2e58994a8bf9",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "occurred_at": "2026-11-13T13:12:08.548951+00:00",
+  "evidence_refs": [
+    "kuafu-cd37d1dd5f560d4e219b868837a43c18ac68f8e6"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "persist-authority-before-reporting-success",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Persist scoped binding, design confirmation and acceptance before reporting success or dispatch; verify the exact section/key through a fresh disk reader. Preserve old cached authority on failed save. Recover missing authority only by an explicit original-owner confirmation, without replaying workers or clearing failures.",
+      "when": "An editor keeps authoritative task or design state in a lazily saved metadata cache separately from chat history and must survive interrupted shutdown.",
+      "counterexample": "A graceful shutdown can flush the cache and hide the defect; reading the same cache is not persistence evidence. Stop becoming idle does not prove terminal reporting finished. A read failure before save does not test save-failure rollback. Physical power-loss durability needs separate storage guarantees.",
+      "trial_plan": "On a future integrated installed candidate, bind through the ordinary public requirement entry, force-kill the direct editor before graceful shutdown, and cold-read the same parent binding. Reconfirm a missing exact original approval without dispatch, inject readable read-only metadata during the confirmation dialog, and require actual save failure with unchanged disk/cache/children; separately reject conflict, foreign/live/stale ownership. Record a new prospective result before considering verification."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-parent-binding-recovery-951.json",
+        "sha256": "030ac7f5db265a5dc291ec01ab735e594ce01e0d6ad09198cd690815c71ffe93"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/kuafu-cd37d1dd5f560d4e219b868837a43c18ac68f8e6.json",
+      "sha256": "2be534a11943d98ff068f6c72e57cb5b839878d19f42781a73152dc9afb485f5"
+    }
+  },
+  "sha256": "a9b1f5adbca542d94ed78ba177e631b44e6cd6ef30e6f9757e3bf2c8931a7daf"
+}

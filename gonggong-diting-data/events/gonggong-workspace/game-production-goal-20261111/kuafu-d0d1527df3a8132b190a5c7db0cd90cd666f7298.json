@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d0d1527df3a8132b190a5c7db0cd90cd666f7298",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "01b7bd25d833e4b94af359ae2d1e8a0e317522aa5b0079a896a66497bcb051de",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "action": "validation",
+    "detection_head": "da9bfac7b5036f24d9657179d394dc2db3a66526",
+    "context_sha256": "c9903adb800c23d20ad58148f6ea518ae9d5f81bfcea6bc825bdd8dc293bb2a8",
+    "operator": "Sail-Li",
+    "worker": "codex-root-kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "data-collection/editor-parent-recovery-main1061-773.json",
+    "diagnosis": "The old installed editor loses an unflushed ordinary parent binding after forced termination in an isolated public-entry reproduction. The candidate persists bindings and validates design/acceptance persistence; an explicit original-actor reconfirmation path preserves existing children and does not dispatch them. Initial recovery code incorrectly compared JSON FLOAT order numbers to parsed INT values; corrected conversion matches the existing readiness guard. All original failed fixtures are retained, including incorrect UI cancellation/receipt timing and a parse failure. Historical metadata loss in the original project remains unproven.",
+    "next_action": "Freeze full reviewed candidate, run formal gate, submit/push and verify exact CI/main, install verified bytes, then use the normal editor reconfirmation and production controls on the original batch.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T12:13:51.852856+00:00",
+    "attempted": "Independently reviewed source and refusal boundaries; integrated unchanged source onto main481f; complete build wrapper passed 99 cases/1795 assertions. Exact new binary passed binding crash/cold and full reconfirmation/continuation consumers, including real write failure without cached or disk grant, actual live request rejection, parent switch, and three independent fixture acceptances. First wrapper rejected changing ignored validation inputs; serialized retry passed with eight source input hashes unchanged.",
+    "repair_owner": "codex-root-and-sinan-99",
+    "continuable": "Local exact candidate validation passed. This is not yet main delivery, formal installation, or original real-provider batch acceptance."
+  },
+  "occurred_at": "2026-11-13T13:29:55.898708+00:00",
+  "sha256": "175474ac5734dc7cb0f10de7f22650907117f6780c331d5ff86afdf1fdc7e270"
+}
