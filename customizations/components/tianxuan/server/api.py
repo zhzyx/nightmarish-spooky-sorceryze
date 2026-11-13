@@ -210,9 +210,14 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
 
     @app.get("/api/v1/issues")
     def list_issues(
-        actor: ActorDep, requirement_id: str | None = Query(default=None)
+        actor: ActorDep,
+        status: str | None = Query(default=None),
+        requirement_id: str | None = Query(default=None),
     ) -> dict[str, list[dict[str, Any]]]:
-        return {"issues": store.list_issues(actor, requirement_id)}
+        issues = store.list_issues(actor, requirement_id)
+        if status is not None:
+            issues = [issue for issue in issues if issue["status"] == status]
+        return {"issues": issues}
 
     @app.patch("/api/v1/issues/{issue_id}")
     def transition_issue(issue_id: str, payload: IssueTransitionRequest, actor: ActorDep) -> dict[str, Any]:
@@ -323,6 +328,15 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
         except (GitServiceError, OSError) as error:
             raise HTTPException(status_code=400, detail=f"commit failed: {error}") from error
         return {"commit": sha, "path": relative, "branch": payload.branch}
+
+    # ---------- 司南：看板 ----------
+
+    @app.get("/api/v1/board")
+    def issue_board(actor: ActorDep) -> dict[str, dict[str, list[dict[str, Any]]]]:
+        columns: dict[str, list[dict[str, Any]]] = {}
+        for issue in store.list_issues(actor):
+            columns.setdefault(issue["status"], []).append(issue)
+        return {"columns": columns}
 
     # ---------- 文曲：评论 ----------
 
