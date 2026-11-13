@@ -69,6 +69,11 @@ CREATE TABLE IF NOT EXISTS comments (
   created_at TEXT NOT NULL, resolved_at TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_comments_doc ON comments(doc_id, created_at);
+CREATE TABLE IF NOT EXISTS issue_comments (
+  id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, issue_id TEXT NOT NULL,
+  author TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_issue_comments_issue ON issue_comments(issue_id, created_at);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_docs_request ON docs(tenant_id, request_id)
   WHERE request_id IS NOT NULL;
 """
@@ -758,6 +763,44 @@ class Tianxuan:
             args.append(requirement_id)
         rows = self.db.execute(sql + " ORDER BY number", args).fetchall()
         return [dict(row) for row in rows]
+
+    # ---------- 司南：工单评论 ----------
+
+    def add_issue_comment(self, actor: str, issue_id: str, body: str) -> dict[str, Any]:
+        self._require_editor(actor)
+        if not body.strip():
+            raise TianxuanError("issue comment body is required")
+        issue = self._require_tenant_issue(actor, issue_id)
+        comment_id = _id("icmt")
+        now = _now()
+        self.db.execute(
+            "INSERT INTO issue_comments (id, tenant_id, issue_id, author, body, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+            (comment_id, issue["tenant_id"], issue_id, actor, body, now),
+        )
+        self._event(issue["tenant_id"], "issue.comment_added", actor, comment_id, {"issue_id": issue_id})
+        self.db.commit()
+        return self.get_issue_comment(comment_id)
+
+    def get_issue_comment(self, comment_id: str) -> dict[str, Any]:
+        row = self.db.execute("SELECT * FROM issue_comments WHERE id = ?", (comment_id,)).fetchone()
+        if row is None:
+            raise NotFound(f"issue comment not found: {comment_id}")
+        return dict(row)
+
+    def list_issue_comments(self, actor: str, issue_id: str) -> list[dict[str, Any]]:
+        issue = self._require_tenant_issue(actor, issue_id)
+        rows = self.db.execute(
+            "SELECT * FROM issue_comments WHERE tenant_id = ? AND issue_id = ? ORDER BY created_at, id",
+            (issue["tenant_id"], issue_id),
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+    def _require_tenant_issue(self, actor: str, issue_id: str) -> dict[str, Any]:
+        issue = self.get_issue(issue_id)
+        # 跨租户按不存在处理，避免通过评论接口探测其他租户的工单 ID。
+        if issue["tenant_id"] != self._tenant_of(actor):
+            raise NotFound(f"issue not found: {issue_id}")
+        return issue
 
     def transition_issue(self, actor: str, issue_id: str, to_status: str) -> dict[str, Any]:
         self._require_editor(actor)

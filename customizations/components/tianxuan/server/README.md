@@ -4,7 +4,7 @@
 
 `tianxuan_core.py`：标准库 + SQLite 的领域核心，可独立测试，不依赖网络与第三方包。
 
-覆盖：注册/登录、文曲文档与版本、需求文档、司南工单与状态机、进度同步、事件流、AI 工具入口。
+覆盖：注册/登录、文曲文档与版本、需求文档、司南工单与状态机、工单评论、进度同步、事件流、AI 工具入口。
 
 ```sh
 python -m unittest discover -s customizations/components/tianxuan/server -p "test_*.py" -v
