@@ -230,6 +230,42 @@ export async function resolveComment(
   return (await response.json()) as ApiComment;
 }
 
+export interface ApiVersion {
+  version: number;
+  author: string;
+  created_at: string;
+}
+
+export async function fetchVersions(docId: string, actor: string): Promise<ApiVersion[]> {
+  const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(docId)}/versions`, {
+    headers: { "X-Actor": actor },
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`versions request failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { versions?: ApiVersion[] };
+  return body.versions ?? [];
+}
+
+export async function fetchDocDiff(
+  docId: string,
+  actor: string,
+  from: number,
+  to: number,
+): Promise<string> {
+  const query = `from_version=${encodeURIComponent(String(from))}&to_version=${encodeURIComponent(String(to))}`;
+  const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(docId)}/diff?${query}`, {
+    headers: { "X-Actor": actor },
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`doc diff request failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { diff?: string };
+  return body.diff ?? "";
+}
+
 export interface ApiGiteaStatus {
   configured: boolean;
   owner: string;
