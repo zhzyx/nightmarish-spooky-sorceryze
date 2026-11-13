@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9a5699df8ee9aec705774b6660ab488883a66270",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "session-reasoning-isolation-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1038",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a7390dc1211c98a94ebec38d88755956140dade5ef6cc3a5be7f92f11553b648",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1038",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1038",
+    "action": "delivery",
+    "detection_head": "c8c3e86856f15c307dbd5eff4770b4e564c8fcc8",
+    "context_sha256": "6ff437ed71faac9a6d8c4d2a9abd070f1d08a37eaa78534fc1720be1a1c888df",
+    "operator": "Sail-Li",
+    "worker": "codex-root-session-reasoning-isolation",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "writer_submit rejected PR notes before submit because root included reserved GongGong-Issue/Request markers. Parser requires notes without those markers and constructs authoritative association itself. Local source c8c3e868 remains committed; no remote request issued by failed call.",
+    "diagnosis": "Caller input error; notes incorrectly included automatic association fields. Preserved original notes and stderr, removed only two private notes markers; actual Issue/request args unchanged.",
+    "next_action": "Commit this diagnostic event through formal gate, then retry signed submission with corrected notes. Do not bypass association validation or repeat an unknown remote write.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T08:31:21.384017+00:00",
+    "attempted": "Read exact writer_submit pre-submit require condition; confirmed failure occurred before submit. Corrected private notes with no product-source or review-byte change.",
+    "repair_owner": "codex-root-current-host",
+    "continuable": "Product review and native regressions remain valid; original217/parent978 acceptance unchanged."
+  },
+  "occurred_at": "2026-11-13T08:33:08.006641+00:00",
+  "sha256": "7da05a4d63ea7e5f8e369293124c8ccdda139bc37f53476fd21cfda15d27678d"
+}
