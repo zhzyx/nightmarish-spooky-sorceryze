@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "independent_review",
+  "reviewed_at": "2026-11-14",
+  "scope": "tianxuan agent and skill candidates",
+  "candidate_commit": "b7353f0a",
+  "base_commit": "bb6236c7",
+  "reviewer": "independent_subagent_review",
+  "verdicts": {
+    "agent:wenqu": "needs_changes",
+    "agent:duobao": "needs_changes",
+    "agent:sinan-workorders": "needs_changes",
+    "skill:wenqu-doc-authoring": "needs_changes",
+    "skill:duobao-repo-review": "needs_changes",
+    "skill:sinan-work-order-management": "needs_changes"
+  },
+  "blockers": [
+    "reporting profiles used framework-prefixed paths, missing events, entry fingerprint and dependency set",
+    "no component.json, host registration, candidate digest or admission record",
+    "candidate merged while admission_pass was null; merge cannot be retroactively authorized",
+    "sinan-workorders boundary duplicated core source creation and acceptance decisions",
+    "no representative task/failure/cancel/recovery evidence at definition level",
+    "wenqu doc-authoring omitted request_id from frontmatter"
+  ],
+  "digests": {
+    "wenqu": "6e50eaf77c3d555c10754bde6193e56d34c6e5d792f5f3388ef2fff9ffa9bcaf",
+    "duobao": "ffcc54c830b035d3e9e8429d7192921d8a46559aba52775f018b65a274fb8f6e",
+    "sinan-workorders": "54800f5d9d2b6d0a18c91621d6e2af968748d1e42633ff609015e0a8744ef8a8"
+  },
+  "approval": null,
+  "review_pass": null,
+  "note": "Independent review record, not an approval. Admission remains pending until a new independent review matches the corrected digests and an authorized approver signs the exact candidate."
+}

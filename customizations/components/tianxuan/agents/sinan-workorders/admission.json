@@ -1,0 +1,10 @@
+{
+  "agent_id": "sinan-workorders",
+  "version": "0.1.0",
+  "candidate_digest": "54800f5d9d2b6d0a18c91621d6e2af968748d1e42633ff609015e0a8744ef8a8",
+  "state": "pending_independent_admission",
+  "review": "data-collection/tianxuan-agents-review-20261114.json",
+  "approved": false,
+  "approver": null,
+  "note": "Candidate only; no admission, execution authority or tool permission is granted."
+}

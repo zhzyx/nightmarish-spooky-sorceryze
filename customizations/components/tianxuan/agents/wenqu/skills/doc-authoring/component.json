@@ -1,0 +1,9 @@
+{
+    "kind":  "skill",
+    "id":  "wenqu-doc-authoring",
+    "version":  "0.1.0",
+    "entry":  "SKILL.md",
+    "governance_root":  "yuanheng",
+    "state":  "candidate_pending_review",
+    "reporting":  "reporting.json"
+}

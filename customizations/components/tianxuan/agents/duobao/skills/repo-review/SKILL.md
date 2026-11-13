@@ -11,4 +11,4 @@ For concurrent merges, isolate each candidate in its own worktree, verify the me
 
 On unknown remote state, read back the original ref before retrying. Do not force-push protected branches.
 
-Report through the shared Diting binding; local receipts are not delivery.
+The host authenticates identity, tool permission and actual authority; this skill grants no execution authority and cannot approve its own admission. Report through the shared Diting binding; local receipts are not delivery.

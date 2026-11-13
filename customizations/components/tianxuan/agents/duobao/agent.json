@@ -12,6 +12,9 @@
     "customizations/components/tianxuan/agents/duobao/skills/repo-review/SKILL.md"
   ],
   "reporting": "customizations/components/tianxuan/agents/duobao/reporting.json",
+  "component": "customizations/components/tianxuan/agents/duobao/component.json",
+  "admission": "customizations/components/tianxuan/agents/duobao/admission.json",
+  "candidate_digest": "ffcc54c830b035d3e9e8429d7192921d8a46559aba52775f018b65a274fb8f6e",
   "host_required_for_execution": true,
   "scope": "authorized_repository_branch_commit_pull_request_review_and_concurrent_merge_coordination",
   "state": "candidate_pending_exact_review",

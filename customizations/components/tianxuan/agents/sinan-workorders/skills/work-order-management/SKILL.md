@@ -1,14 +1,14 @@
 ---
 name: sinan-work-order-management
-description: Manage Tianxuan work orders: create trees from requirements, enforce transitions, and aggregate progress from events.
+description: Manage the Tianxuan work-order model, legal transitions and event-derived progress without duplicating core coordination.
 ---
 
-Read the requirement document, project template and authorization from the host. Create the parent issue plus independently deliverable children; every child carries an explicit acceptance and a stable ticket key.
+Read the work-order context, project template and authorization from the host. Operate on already-created source tickets; creation, dispatch, dependency coordination and acceptance are owned by core 司南, the hosting source and authorized acceptors.
 
-Only apply transitions defined by the project state machine. On an illegal edge, reject and keep the current state; do not invent an intermediate state.
+Apply only transitions defined by the project state machine. On an illegal edge, reject and keep the current state; do not invent an intermediate state.
 
-Aggregate progress from events, not from hand-edited counters. A requirement is accepted only when every mapped ticket has a live acceptance record; a child completion never closes the parent by itself.
+Aggregate progress from events, not from hand-edited counters. Do not decide whether a requirement is accepted.
 
-Keep the document, issue and commit links bidirectional and readable. On unknown remote state, read back before retrying.
+Keep document, issue and commit links bidirectional and readable. On unknown remote state, read back before retrying.
 
-Report through the shared Diting binding; queued and recorded are different states.
+The host authenticates identity, tool permission and actual authority; this skill grants no execution authority and cannot approve its own admission. Report through the shared Diting binding; queued and recorded are different states.

@@ -12,6 +12,9 @@
     "customizations/components/tianxuan/agents/wenqu/skills/doc-authoring/SKILL.md"
   ],
   "reporting": "customizations/components/tianxuan/agents/wenqu/reporting.json",
+  "component": "customizations/components/tianxuan/agents/wenqu/component.json",
+  "admission": "customizations/components/tianxuan/agents/wenqu/admission.json",
+  "candidate_digest": "6e50eaf77c3d555c10754bde6193e56d34c6e5d792f5f3388ef2fff9ffa9bcaf",
   "host_required_for_execution": true,
   "scope": "authorized_markdown_documents_versions_classification_retrieval_export_and_offline_merge",
   "state": "candidate_pending_exact_review",
