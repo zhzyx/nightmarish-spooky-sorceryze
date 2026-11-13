@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "issue": 943,
+  "parent_issue": 773,
+  "request_id": "editor-design-contract-20261112",
+  "state": "main_delivered_and_installed_design_consumer_passed",
+  "main_revision": "d91bd93eb14d1420db9e6872c638e9cb82baf015",
+  "pull_request": 947,
+  "signed_head": "5bc2643a95bd401ac131c70abfa3fcb28797e5cd",
+  "source_candidate": "c416139360971f84bd04e433bb51835147053b5b",
+  "candidate_tree": "afcb68e6450b306ebebeff2ea83d29b1361449b5",
+  "validation": {
+    "exact_candidate_ci": "Issue association, two static-check runs and Windows Editor passed before normal non-admin merge; remote main read back.",
+    "formal_main_build": {
+      "clean_source": true,
+      "aichat_cases": 90,
+      "aichat_assertions": 1707,
+      "build_receipt_sha256": "0e7592dbec3797c1cf28f70a216bfe32af17484755b9a2c009b28be73e765ce7"
+    },
+    "installed_files": [
+      {
+        "bytes": 242688,
+        "path": "bin/godot.windows.editor.x86_64.console.exe",
+        "sha256": "9d234f16c2943e4c52811ffde681d34d8e5bdf568409c4c465818edc3cfe4d75"
+      },
+      {
+        "bytes": 176526336,
+        "path": "bin/godot.windows.editor.x86_64.exe",
+        "sha256": "ff4164c95eed803d2b10376c305a6153ad366484d98371ee38b556ce2b7ed601"
+      },
+      {
+        "bytes": 67422,
+        "path": "bin/tianshu-ui.json",
+        "sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462"
+      }
+    ],
+    "installed_consumer": {
+      "exit_code": 0,
+      "ok": true,
+      "runner_sha256": "7d96fe6ec65124ccbc6cbf53499ec8cb93444eb394a5e1cbf236f1595a4cc484",
+      "log_sha256": "c498a4b99dc9560ce7a91ae2d692bcbada2ebb8079c96dbe7a37957e9b1e6eb5",
+      "report_sha256": "2a4489aa3192a655dc9d2b9efd1d4592f6a717eab0ffea4c48dde01678e8b5bf",
+      "completed_at": "2026-11-12T13:17:07.983688+00:00",
+      "checks": [
+        "Malformed confirmation/production headings, missing numeric orders and invalid dependencies report actionable corrections through the actual native production button.",
+        "Malformed/pending/stale designs do not dispatch; explicit native confirmation remains required.",
+        "Valid design executes both children with dependency handoff and one parent return."
+      ]
+    },
+    "independent_review": "Source, fixture correction and final format-compatible diff approved by independent reviewer sinan_cc79f295cc8bd330; original and final source hashes remain in the two source reports."
+  },
+  "rollback": "Previous installed main932 files and manifest were hash-verified and retained privately before installation. No live game worker or candidate was restarted or replaced.",
+  "path_base": "Repository root for public evidence; raw logs, installation inventory and build receipt are retained in host-private storage. No private game/source paths published.",
+  "boundary": "Offline model and Issue fixtures with the real formally installed editor. Actual live model design success, existing parallel-batch repair and original long-command model replay are not claimed. Parent773 remains open; missing-only ordinary game receipt recovery continues under948."
+}

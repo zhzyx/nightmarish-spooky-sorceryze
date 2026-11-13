@@ -35,10 +35,18 @@ MAX_PROFILE = 200000
 MAX_REGEX = 768
 STORE = "gonggong-provenance-guards"
 _EVENT_MODULE = None
+GAME_STORE = "gonggong-game-receipt-bindings"
+GAME_METADATA = {"work-items.json", "gonggong-diting-data/dataset.json"}
 
 
 class GuardError(ValueError):
     pass
+
+
+def linked(path):
+    return path.is_symlink() or (
+        os.name == "nt" and path.exists() and bool(path.lstat().st_file_attributes & stat.FILE_ATTRIBUTE_REPARSE_POINT)
+    )
 
 
 def events_module():
@@ -64,7 +72,7 @@ def checked(root, name):
     for item in (path, *path.parents):
         if item == root:
             break
-        if item.is_symlink():
+        if linked(item):
             raise GuardError("provenance_path_linked")
     if path.exists() and not path.is_file():
         raise GuardError("provenance_path_conflict")
@@ -72,7 +80,7 @@ def checked(root, name):
 
 
 def read_bytes(path, limit=MAX_FILE):
-    if path.is_symlink() or not path.is_file() or path.stat().st_size > limit:
+    if linked(path) or not path.is_file() or path.stat().st_size > limit:
         raise GuardError("provenance_file_invalid_or_oversized")
     data = path.read_bytes()
     if len(data) > limit:
@@ -91,9 +99,15 @@ def read_json(path, limit=MAX_FILE):
 
 def bound(binding_path):
     path = Path(binding_path).absolute()
-    if path.is_symlink() or path.resolve() != path:
+    if linked(path) or path.resolve() != path:
         raise GuardError("provenance_binding_invalid")
     binding = read_json(path)
+    if isinstance(binding, dict) and binding.get("kind") == "game_receipts":
+        expected, digest = game_identity(binding["source_root"], binding["reporting"])
+        if path != Path(expected["binding_path"]) or binding != dict(expected, dataset_id=binding.get("dataset_id")):
+            raise GuardError("provenance_binding_invalid")
+        uuid.UUID(binding["dataset_id"])
+        return binding, digest
     if not isinstance(binding, dict) or binding.get("state") != "prepared":
         raise GuardError("provenance_binding_invalid")
     source = Path(binding.get("source_root", ""))
@@ -130,12 +144,116 @@ def bound(binding_path):
     return dict(expected, base_sha=binding["base_sha"], binding_path=str(path), tenant_id=tenant), digest
 
 
+def game_identity(workspace, reporting):
+    # Reporting is supplied by the host after its real Issue/actor gate. This
+    # binding grants no authority and deliberately does not resolve settings:
+    # they may be missing at the exact moment recovery is required.
+    root = Path(workspace).absolute()
+    if root.resolve() != root or linked(root) or not root.is_dir():
+        raise GuardError("provenance_workspace_invalid")
+    if Path(candidates.git(root, "rev-parse", "--show-toplevel").stdout.strip()).resolve() != root:
+        raise GuardError("provenance_workspace_invalid")
+    source = reporting.get("source_ref", "")
+    match = re.fullmatch(r"https://github.com/([\w.-]+/[\w.-]+)/issues/([1-9][0-9]*)", source)
+    request, owner, tenant = (reporting.get(key, "") for key in ("request_ref", "actor", "tenant_id"))
+    if (
+        not match
+        or not isinstance(owner, str)
+        or not owner
+        or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", request)
+        or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,95}", tenant)
+    ):
+        raise GuardError("provenance_reporting_invalid")
+    repository = match[1]
+    origin = candidates.git(root, "config", "--get", "remote.origin.url").stdout.strip()
+    if origin.lower() not in {
+        f"{prefix}{repository}{suffix}".lower()
+        for prefix in ("https://github.com/", "git@github.com:", "ssh://git@github.com/")
+        for suffix in ("", ".git")
+    }:
+        raise GuardError("provenance_origin_mismatch")
+    common = (root / candidates.git(root, "rev-parse", "--git-common-dir").stdout.strip()).resolve()
+    # Ordinary repositories keep .git inside the mutable workspace. Store the
+    # binding/snapshots in the OS user's private application directory instead.
+    private = Path(os.environ.get("LOCALAPPDATA", str(Path.home() / ".local/share"))).absolute() / GAME_STORE
+    if private.resolve() != private:
+        raise GuardError("provenance_private_path_linked")
+    if private == root or root in private.parents:
+        raise GuardError("provenance_private_path_invalid")
+    scope = {key: reporting[key] for key in ("source_ref", "request_ref", "actor", "tenant_id")}
+    digest = fingerprint(json.dumps([str(root), str(common), scope], sort_keys=True).encode())[:32]
+    binding = dict(
+        kind="game_receipts",
+        source_root=str(root),
+        common_dir=str(private),
+        git_common_dir=str(common),
+        repository=repository,
+        origin=origin,
+        issue=int(match[2]),
+        request_id=request,
+        owner=owner,
+        tenant_id=tenant,
+        reporting=scope,
+        binding_path=str(private / (digest + ".json")),
+    )
+    return binding, digest
+
+
+def validate_game_metadata(name, data, binding):
+    value = json.loads(data)
+    if not isinstance(value, dict):
+        raise GuardError("provenance_metadata_invalid")
+    if name == "work-items.json":
+        valid = value.get("repository") == binding["repository"] and value.get("tenant_id") == binding["tenant_id"]
+    else:
+        valid = (
+            value.get("schema_version") == 1
+            and value.get("name") == "gonggong-diting-data"
+            and value.get("origin_framework") == "gonggong"
+            and value.get("dataset_id") == binding["dataset_id"]
+        )
+    if not valid:
+        raise GuardError("provenance_metadata_identity_changed")
+
+
+def game_binding(workspace, reporting, prepare=False):
+    expected, digest = game_identity(workspace, reporting)
+    path = Path(expected["binding_path"])
+    if linked(path) or linked(path.parent) or path.parent.resolve() != path.parent:
+        raise GuardError("provenance_private_path_linked")
+    if path.exists():
+        binding, _ = bound(path)
+        result = recover(path)
+        if not result["ok"]:
+            return result
+    elif not prepare:
+        return {"ok": True, "state": "ready"}
+    else:
+        root = Path(expected["source_root"])
+        dataset = read_json(checked(root, "gonggong-diting-data/dataset.json"))
+        uuid.UUID(dataset["dataset_id"])
+        binding = dict(expected, dataset_id=dataset["dataset_id"])
+        for name in GAME_METADATA:
+            validate_game_metadata(name, read_bytes(checked(root, name)), binding)
+        path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+        with candidates.binding_lock(path.with_suffix(".lock")):
+            if path.exists():
+                if bound(path)[0] != binding:
+                    raise GuardError("provenance_binding_conflict")
+            else:
+                candidates.atomic_json(path, binding)
+    if prepare:
+        for name in GAME_METADATA:
+            validate_game_metadata(name, read_bytes(checked(Path(workspace), name)), binding)
+    return {"ok": True, "binding_path": str(path)}
+
+
 def directory(root, relative):
     path = root / relative
     for item in (path, *path.parents):
         if item == root:
             break
-        if item.is_symlink():
+        if linked(item):
             raise GuardError("provenance_path_linked")
     if path.exists() and not path.is_dir():
         raise GuardError("provenance_path_conflict")
@@ -153,7 +271,7 @@ def walk_json(root, relative):
             seen += 1
             if seen > MAX_SCAN:
                 raise GuardError("provenance_scan_limit")
-            if path.is_symlink():
+            if linked(path):
                 raise GuardError("provenance_path_linked")
         for name in names:
             if name.endswith(".json"):
@@ -213,6 +331,13 @@ def capture_entries(binding):
         if event is not None:
             item["event"] = {key: event[key] for key in ("tenant_id", "request_id", "event_id", "sha256")}
         entries[name] = item
+
+    if binding.get("kind") == "game_receipts":
+        for name in sorted(GAME_METADATA):
+            path = checked(root, name)
+            validate_game_metadata(name, read_bytes(path), binding)
+            add(path, "metadata")
+        return entries
 
     add(root / "design-docs" / (request + ".md"), "doc")
     # Dataset metadata is immutable too; otherwise an apparently stored event
@@ -311,7 +436,7 @@ def guard_folder(binding, digest):
     common = Path(binding["common_dir"])
     folder = common / STORE / digest
     for path in (common / STORE, folder):
-        if path.is_symlink():
+        if linked(path):
             raise GuardError("provenance_private_path_linked")
         path.mkdir(mode=0o700, exist_ok=True)
     return folder
@@ -349,7 +474,7 @@ def capture(binding, digest):
         "created_at": time.time(),
     }
     pending = guard_folder(binding, digest) / "pending"
-    if pending.is_symlink():
+    if linked(pending):
         raise GuardError("provenance_private_path_linked")
     pending.mkdir(mode=0o700, exist_ok=True)
     path = pending / (record["token"] + ".json")
@@ -384,11 +509,11 @@ def checkpoint_sync(binding, digest, seed=None, create=False):
     # available for a detached descendant's later deletion.
     with checkpoint_lock(binding, digest) as folder:
         pending = folder / "pending"
-        if pending.is_symlink():
+        if linked(pending):
             raise GuardError("provenance_private_path_linked")
         token = checkpoint_token(digest)
         path = pending / (token + ".json")
-        if path.is_symlink():
+        if linked(path):
             raise GuardError("provenance_journal_invalid")
         with outbox_snapshot(Path(binding["source_root"])):
             if path.exists():
@@ -422,7 +547,7 @@ def checkpoint_sync(binding, digest, seed=None, create=False):
                         if name not in retained and name not in result["consumed"]:
                             retained[name] = item
                 for name, item in fresh.items():
-                    if name not in retained or item["kind"] == "doc":
+                    if name not in retained or item["kind"] in {"doc", "metadata"}:
                         retained[name] = item
                 if len(retained) > MAX_FILES or sum(len(entry_bytes(item)) for item in retained.values()) > MAX_TOTAL:
                     raise GuardError("provenance_snapshot_limit")
@@ -510,7 +635,11 @@ def verify_record(path, record, binding):
 def validate_entry_scope(name, item, data, binding):
     request, tenant = binding["request_id"], binding["tenant_id"]
     relative = Path(name)
-    if item["kind"] == "doc":
+    if item["kind"] == "metadata":
+        valid = binding.get("kind") == "game_receipts" and name in GAME_METADATA
+        if valid:
+            validate_game_metadata(name, data, binding)
+    elif item["kind"] == "doc":
         valid = name == "design-docs/" + request + ".md"
     elif item["kind"] == "pending":
         value = events_module().event(json.loads(data))
@@ -552,7 +681,7 @@ def verify_record_locked(path, record, binding):
         if (
             not isinstance(name, str)
             or not isinstance(item, dict)
-            or item.get("kind") not in {"doc", "immutable", "pending"}
+            or item.get("kind") not in {"doc", "immutable", "pending", "metadata"}
         ):
             raise GuardError("provenance_journal_invalid")
         data = entry_bytes(item)
@@ -564,7 +693,9 @@ def verify_record_locked(path, record, binding):
             destination = checked(root, name)
             if destination.exists():
                 current = read_bytes(destination)
-                if item["kind"] != "doc" and fingerprint(current) != item["sha256"]:
+                if item["kind"] == "metadata":
+                    validate_game_metadata(name, current, binding)
+                elif item["kind"] != "doc" and fingerprint(current) != item["sha256"]:
                     violations.append({"path": name, "reason": "content_changed"})
             else:
                 delivered = False
@@ -588,7 +719,8 @@ def verify_record_locked(path, record, binding):
     record["restored"] = restored
     record["consumed"] = consumed
     record["checked_at"] = time.time()
-    return {"ok": not violations, "violations": violations, "restored": restored, "consumed": consumed}
+    ok = not violations or (binding.get("kind") == "game_receipts" and all(item.get("restored") for item in violations))
+    return {"ok": ok, "violations": violations, "restored": restored, "consumed": consumed}
 
 
 def profile_for(base, record):
@@ -676,7 +808,7 @@ def profile_for(base, record):
 
 def archive(path, record):
     closed = path.parent.parent / "closed"
-    if closed.is_symlink():
+    if linked(closed):
         raise GuardError("provenance_private_path_linked")
     closed.mkdir(mode=0o700, exist_ok=True)
     candidates.atomic_json(path, record)
@@ -713,7 +845,7 @@ def cancel_path(value, source):
     if value is None:
         return None
     path = Path(value)
-    if not path.is_absolute() or path.resolve() != path or path.is_symlink() or not path.parent.is_dir():
+    if not path.is_absolute() or path.resolve() != path or linked(path) or not path.parent.is_dir():
         raise GuardError("provenance_cancel_path_invalid")
     if path == source or source in path.parents:
         raise GuardError("provenance_cancel_path_invalid")
@@ -1009,7 +1141,7 @@ def recover(binding_path):
     fixed = checkpoint_token(digest) + ".json"
     pending, active, blockers = [], [], []
     for path in sorted(folder.glob("*.json")):
-        if path.is_symlink():
+        if linked(path):
             raise GuardError("provenance_journal_invalid")
         record = read_json(path, 192 * 1024 * 1024)
         if not isinstance(record, dict) or record.get("binding") != binding:
@@ -1095,8 +1227,8 @@ def completed_command(binding_path, result_path, invocation):
     if not isinstance(token, str) or not re.fullmatch("[a-f0-9]{32}", token):
         raise GuardError("command_outcome_unknown")
     folder = guard_folder(binding, digest)
-    closed = folder / "closed" / (token + ".json")
-    pending = folder / "pending" / (token + ".json")
+    closed = directory(folder, Path("closed")) / (token + ".json")
+    pending = directory(folder, Path("pending")) / (token + ".json")
     record = read_json(closed if closed.exists() else pending)
     if (
         not isinstance(invocation, str)
@@ -1131,11 +1263,15 @@ def completed_command(binding_path, result_path, invocation):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--binding", required=True, type=Path)
+    parser.add_argument("--binding", type=Path)
+    parser.add_argument("--game-workspace", type=Path)
+    parser.add_argument("--game-reporting")
     action = parser.add_mutually_exclusive_group(required=True)
     action.add_argument("--run", action="store_true")
     action.add_argument("--recover", action="store_true")
     action.add_argument("--completed-command", type=Path)
+    action.add_argument("--prepare-game", action="store_true")
+    action.add_argument("--recover-game", action="store_true")
     parser.add_argument("--invocation")
     parser.add_argument("--profile")
     parser.add_argument("--timeout-seconds", type=float)
@@ -1144,6 +1280,10 @@ def main():
     parser.add_argument("argv", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     try:
+        if args.prepare_game or args.recover_game:
+            result = game_binding(args.game_workspace, json.loads(args.game_reporting), args.prepare_game)
+            print(json.dumps(result), flush=True)
+            return 0 if result["ok"] else EXIT_VIOLATION
         if args.completed_command:
             print(json.dumps(completed_command(args.binding, args.completed_command, args.invocation)), flush=True)
             return 0
@@ -1168,7 +1308,7 @@ def main():
             publish_result(args.result, result)
         except Exception:
             result["result_write_failed"] = True
-        if args.recover:
+        if args.recover or args.prepare_game or args.recover_game:
             print(json.dumps(result), flush=True)
         else:
             emit(result)

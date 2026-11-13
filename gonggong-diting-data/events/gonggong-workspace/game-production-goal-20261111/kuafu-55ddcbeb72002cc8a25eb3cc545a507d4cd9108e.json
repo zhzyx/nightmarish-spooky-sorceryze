@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-55ddcbeb72002cc8a25eb3cc545a507d4cd9108e",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "25daa3f43acd9c17f81d69a63d5bac35946ed96c56382bc59209f20c6cf846bb",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+    "action": "validation",
+    "detection_head": "322e4449aca7f9e3500d62117d68cc73a273a77d",
+    "context_sha256": "c9fdd98866bafc5e144db4ee3e90a0cc100217d546d1f478632944c6cf56a676",
+    "operator": "Sail-Li",
+    "worker": "codex-root-kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "data-collection/editor-production-recovery-main1052-773.json",
+    "diagnosis": "Integrated current main1052 and added bounded native guard execution diagnostics without retries or relaxed checks. Strict build 99 cases/1795 assertions, full runtime recovery, command restart, and independent injected empty-output rejection passed. The injection retained two existing recover boundaries, then observed stable invocation count and zero development/tool calls. Initial private oracle mistakes and the module report field mismatch are retained; the report now satisfies native_invalidation and both module gates pass. The original CI empty stdout root cause remains unknown.",
+    "next_action": "Independent final candidate review, formal submission and exact replacement CI. Require real CI/main and formal installation before original game continuation; keep parent773 and incomplete child acceptance open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T11:00:41.869052+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T11:20:15.682089+00:00",
+  "sha256": "84f1d2bf850dca866cc8d793fc71a87f81558d0eb3e8dba4708174b31080175a"
+}

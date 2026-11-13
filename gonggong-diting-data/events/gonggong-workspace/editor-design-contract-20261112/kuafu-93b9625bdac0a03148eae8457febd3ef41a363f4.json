@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-93b9625bdac0a03148eae8457febd3ef41a363f4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-design-contract-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c20848194b4491e708c8b0494abaf1924622d21ca9fa8e79fb72a94ed2e424c7",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+    "action": "delivery",
+    "detection_head": "a861735f109051ea3342dda1895b7ad3db49ad4f",
+    "context_sha256": "2464afcffe8f5bfec1de5cae0999a5c569f5e86611bc82183b74e4ef8eb136af",
+    "operator": "Sail-Li",
+    "worker": "agent:/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+    "evidence": "data-collection/editor-design-contract-943-delivery-binding.json",
+    "diagnosis": "Installed evidence used numeric issue; the candidate evidence gate requires integer issue_number or a URL in issue/issue_url. No source or validation failure. Original immutable reports remain unchanged; added an explicit child request/issue binding with reviewed report hashes.",
+    "next_action": "Independently review the additional binding and retry the original formal submission with unchanged installed receipts; verify candidate CI and main before closing Issue 943.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T14:00:05.719680+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T14:11:02.033997+00:00",
+  "sha256": "56249051b9c35d19271c04bfe8ddff941c7918b2d776d32fba7cbfeb025959a2"
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "request-948-20261112-readback",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-game-receipt-storage-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T13:03:42.935986+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "title": "Protect ordinary game task receipt metadata across editor commands",
+    "issue": 948,
+    "parent_issue": 773,
+    "source_updated_at": "2026-11-12T13:01:29Z",
+    "request": "<!-- gonggong-request:editor-game-receipt-storage-20261112 -->\n<!-- gonggong-host-git:Sail-Li -->\n\nParent #773; related incident chain #807. Design: `design-docs/editor-game-receipt-storage-20261112.md` (repository-root relative).\n\nDuring actual editor game production, an authorized command moved untracked baseline collisions to a private backup before a normal fast-forward. It also moved `work-items.json` and `gonggong-diting-data/dataset.json`. Tool-end receipt flushing failed before the next command could restore or advance the workspace. Exact original files were recovered from a verified private backup, and the editor subsequently completed the fast-forward. No game implementation or receipt result was fabricated.\n\nSource audit: native provenance wrapping currently depends on an engine candidate; ordinary game tasks do not have one. The existing guard also does not capture work-items.json, and resolving a new binding requires that file. Source metadata protection must be available for ordinary game commands without manufacturing an engine candidate.\n\nAcceptance:\n- [ ] Ordinary game commands capture the minimum host-validated receipt/binding metadata needed for recovery in private storage outside mutable command paths, scoped to the actual workspace, requirement and operator.\n- [ ] On missing metadata, recover only trusted missing originals before recording the tool result; preserve changed files/conflicts, foreign workers, queue history and original command diagnostics. Never silently replay commands or forge authority/events.\n- [ ] Legitimate one-command fast-forward/configuration updates remain possible; availability protection must not turn arbitrary configuration bytes into immutable source governance.\n- [ ] Regression tests cover an ordinary task without engine_candidate, missing dataset and work-items, failed/canceled command paths, changed-file conflicts, invalid/symlink boundaries and legitimate fast-forward. Run relevant native integration to verify flush/next-step behavior.\n- [ ] Independent review, formal gate, exact CI/main, installed consumer verification and original failure-flow recovery are recorded. Parent #773 remains incomplete.\n\nAuthorization: current user's continuous Godot editor completion goal, including necessary editor lifecycle and automatic delivery. Current root owns recovery/delivery; preserve other workers and private evidence. No frozen framework/Agent definition changes.\n",
+    "issue_body_sha256": "1691021491fb59dcc212627a72d11cae5dfe99854ea9f7c419e4c80e2ca0e720",
+    "scope": "Ordinary game command receipt metadata availability and missing-only recovery"
+  },
+  "sha256": "8c4d9d03039034e0a0d31b2124ae639fb75413221728c93486aac37bca0d764c"
+}

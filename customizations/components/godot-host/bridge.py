@@ -495,11 +495,20 @@ def chat(root, request, tenant):
     direct = request["request_id"].startswith("daqian-direct-")
     issue = issue_binding(root, dict(request, daqian_bound=True), tenant)
     source = issue.pop("verified_issue_source", {})
-    if direct or request.get("daqian_bound") is True:
+    principal = source.get("actor")
+    if direct or request.get("daqian_bound") is True or not principal:
         routing, api = direct_adapter()
-        # Public READ access is not membership. For read-only/legacy bindings use the
-        # explicit affiliation check, including its identity and pagination checks.
-        principal = source.get("actor") or routing.direct_issue.publish_collaborator(root)
+        # Reuse the intake actor when available. REST/legacy sources retain the
+        # existing affiliation check; public READ access is not membership.
+        principal = principal or routing.direct_issue.publish_collaborator(root)
+    if (
+        not isinstance(principal, dict)
+        or not isinstance(principal.get("user_id"), str)
+        or not principal["user_id"].strip()
+    ):
+        raise ValueError("Verified Issue collaborator identity is unavailable")
+    if source:
+        source["actor"] = principal
     receipt_scope = {"tenant_id": tenant, "request_id": request["request_id"], "source_ref": issue["url"]}
     flush(root, receipt_scope)  # Required predecessors in this request must have receipts.
     binding = {
@@ -572,6 +581,8 @@ def chat(root, request, tenant):
     elif request.get("daqian_bound") is True:
         binding["actor"] = principal["user_id"]
         binding["source_sha256"] = routing.digest([issue["url"], request["request_id"], issue["updated_at"]])
+    else:
+        binding["actor"] = principal["user_id"]
     env = host_environment(root)
     environment_missing = _igniter.missing_components(root, env)
     node = env.get("GONGGONG_NODE", "" if env.get("GONGGONG_RUNTIME_CONFIG") else "node")

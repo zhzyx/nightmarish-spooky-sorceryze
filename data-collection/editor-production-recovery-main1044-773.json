@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "issue_number": 773,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "request_id": "game-production-goal-20261111",
+  "baseline": "c827551e86ad37551302a6df3dc37d4d63a3638c",
+  "source_commit": "3f0bdf49e803cc7ad96e03b90495ff6859a11467",
+  "scope": "Current-main integration after PR1045 passed all applicable CI but main advanced with PR1044 before merge; no prior reports rewritten.",
+  "input_blobs": {
+    ".clang-format": "5d932e013f29ad5722b30592660097cade5388d9",
+    "CPP_CODING_STANDARD.md": "e12af95ae971e7fae6dbbeabdd9aada824b3e899",
+    "customizations/components/godot-host/acceptance.py": "af8d8eff86d5b6a5fc75dd0379fb4dc53b00d7ac",
+    "customizations/components/godot-host/bridge.py": "1b7556815ac5c518ff9b798cefb17d2caa497b39",
+    "customizations/components/godot-host/test_bridge.py": "c91b9b406baa6eb025e3d1ad88c89f6957c7d850",
+    "editor/docks/SCsub": "047eb8e616beeab76fcdb7dc7269d911d2edb08d",
+    "editor/docks/ai_chat_dock.cpp": "1efac58a2d91c453cc2350c7151434a1032a6c67",
+    "editor/docks/ai_chat_dock.h": "481058eb931c4f2396e2d9bdabcc875d56115c82",
+    "editor/docks/ai_chat_engine_candidate.cpp": "48b25eb725a47c4ab89c534a735635c7b95c021f",
+    "editor/docks/ai_chat_gonggong.cpp": "a7bea621cfdcffb89479a5d989f2844ddc753516",
+    "editor/docks/ai_chat_host_runtime.h": "25808b8eb134581f67bcffdad1851dd262ade637",
+    "editor/docks/ai_chat_issue_guide.h": "d058fe95405afa84a22a9f79d1f16543fc4dd9d9",
+    "editor/docks/ai_chat_sub_agent_receipts.h": "a5c78b20a7306633a180461d1dafd7f40f6aa9ad",
+    "editor/docks/ai_chat_sub_agents.cpp": "1c084506ab0c61976787e719b09f1daee4bce773",
+    "editor/docks/gonggong_runtime_config.h": "d8d562111c25457906bf4b9683d38c81de2b154d",
+    "editor/docks/production/.clang-format": "0b0dae686b4498cff4bee26fdfa55b1e51cd2e55",
+    "editor/docks/production/ParentGate.h": "f1a87c65034e09136f7043d85518e188120f8b4c",
+    "editor/docks/production/ProductionControl.cpp": "f151c3f2667cfb767f7a880339a16cc3c7d7f3bb",
+    "editor/docks/receipts/.clang-format": "980236c92a6820d2c2eaa646bed3e2fe7fbfa8e6",
+    "editor/docks/receipts/GameReceiptGuard.cpp": "deae389c3b2eedaf37b012038a23da944ecc68ca",
+    "editor/docks/receipts/README.md": "675a117d438e28fb128ae7db16a80e3559c90882",
+    "platform/windows/console_wrapper_windows.cpp": "68641d9fb64084e88dba1b76a09edd37930962a9",
+    "tests/editor/daqian_node_approval.gd": "3fe95e5d2c7550002d61bdf282750f1cb88cc9c8",
+    "tests/editor/design_batch.gd": "11a335be18c2414e31685c82c9818b2cb148df95",
+    "tests/editor/editor_test_isolation.py": "64454905252603c91b24211ebf022d4ed45a8049",
+    "tests/editor/mock_codebuddy_cli.js": "730e4796e8f6a905c80611d2a03db2a10e641ba9",
+    "tests/editor/native_acceptance_parallel.py": "a1c6e2d810e8ce0d15f48daf7920745a2bd58cb4",
+    "tests/editor/native_game_integration.py": "4486f1619445d6f68c51da52f62acfff276200a0",
+    "tests/editor/native_parent_delivery.py": "22b9e6cf680f2e638026dd7b63725ae77e5f3052",
+    "tests/editor/production/.clang-format": "0b0dae686b4498cff4bee26fdfa55b1e51cd2e55",
+    "tests/editor/production/ProductionParentGateTests.cpp": "983f76a2aad786c943f63ec57878e31483528940",
+    "tests/editor/run_design_batch.py": "e5fc526d999603b739165550e622c4a642bfcc9a",
+    "tests/editor/run_game_receipt_restart.py": "8d30c3cf00576c477bc59c5ffc330dfe0e889b67",
+    "tests/editor/run_game_receipt_storage.py": "7e7c1facf18890956a42a92603ef7e8b0efc8b4a",
+    "tests/editor/run_native_acceptance.py": "ab519dacfced3de2cdbf237bc56346a70ab254f4",
+    "tests/editor/run_native_production_setup.py": "541e3f2ed156bd2a32ba87766e3fbb4a44165ddb",
+    "tests/editor/run_requirements_intake.py": "c88c5da950bf27af58dfce7925ad45aced5668ec",
+    "tests/editor/test_ai_chat_tools.cpp": "be4d047bfb451c5d817ea3a1b019a0040d8ca5c8",
+    "tests/editor/test_codebuddy_acp.js": "29e1666d074cfcc7421ec344ba3be0414b51ee77",
+    "tests/editor/test_codex_bridge.js": "1d0144b486b0363a06a4fd652c316ce7edbc1501",
+    "tests/editor/test_parallel_work_orders.mjs": "55c3f4e31f62ece4063382383378dba87b4e0258",
+    "tools/codebuddy_cli/godot_acp.js": "09904c4634a2b653edba01910aabe482a623332e",
+    "tools/codebuddy_cli/godot_bridge.js": "19e5e03bc701870d76e42da97f4d12a816c629bb",
+    "tools/codebuddy_cli/godot_terminal.js": "b6b3986c0eb7b7c5cdfbeedd5e76a14b2b83e8db",
+    "tools/editor_engine_candidate.py": "4d52c5d6eb6a6316bc7d14ec0c5198b450d967ae",
+    "tools/editor_provenance_guard.py": "e5ccc29e1cc16fd75d857028ac906d95d8277b18",
+    "tools/editor_provenance_process.py": "1792895eca6d3ff29467380ea4f3be4fd9236fcd",
+    "tools/godot_parallel/repair.mjs": "41fbc1fc3622d1da4ac71dcae3382047aaeccace",
+    "tools/gonggong_bridge.py": "1e1459420fc3f43ba9af6fb0f9d3a1074f393125"
+  },
+  "prior_report": {
+    "path": "data-collection/editor-production-recovery-main1041-773.json",
+    "sha256": "a819162c47093de6dc315a9312daf0f3deda3116533bb09c65389a81e84fca9f"
+  },
+  "build": {
+    "engine_sha256": "a74e85c2c0e0252de063c556737b91fb4390741e0cb4af2b57560dc4ecf0ee2d",
+    "console_sha256": "a8cb4a7e514cc4f2857efa01b72c8874df4432bce3670c5778eb88a474a1943f",
+    "receipt_sha256": "87ec9f9fa02613e701bab41a3ef6659868a7f4e9a06a756180793c42dda1397c",
+    "clean_source": false
+  },
+  "checks": {
+    "parent-status-initial": {
+      "passed": true,
+      "report": "joint773-parent-status-initial-main1044-r3.json",
+      "report_sha256": "4f335f2f87dec56be9041ea703e7268d99bfce0b25196ab98a63e0b99c148b46",
+      "log_sha256": "4a6137d9f603d2af09da013b9f135ea1ff35df31d49ed8ba613191f9a0537c44",
+      "scope": "Actual native turn/control consumers with controlled transport; generic serial diagnostics excluded"
+    },
+    "parent-status-return": {
+      "passed": true,
+      "report": "joint773-parent-status-return-main1044-r3.json",
+      "report_sha256": "32b578b7ea11c415732ec0ac762ce53048861096b461d3d1781683d900e69a81",
+      "log_sha256": "0680b6a8ab061046e171a5ec25626973f6efa37a9d117d4bf8e6272d427d32ac",
+      "scope": "Actual native turn/control consumers with controlled transport; generic serial diagnostics excluded"
+    },
+    "parallel-parent-continuation": {
+      "passed": true,
+      "report": "joint773-parallel-parent-continuation-main1044-r3.json",
+      "report_sha256": "654c618f31d4d6f8cf5ead82b8ed79c6a1a18c51f55cc097ae01e93e104e1c58",
+      "log_sha256": "421709f21e683623dbf5a6f4baef59e13a9545110523986e52a5a7fbd03af0b9",
+      "scope": "Actual native turn/control consumers with controlled transport; generic serial diagnostics excluded"
+    },
+    "command_restart": {
+      "passed": true,
+      "engine_sha256": "a74e85c2c0e0252de063c556737b91fb4390741e0cb4af2b57560dc4ecf0ee2d",
+      "log_sha256": "cdb4b1a742a6478444272b41975c81d0c53f9e5602bfbe5c2d9d881d3de5d407"
+    },
+    "native_invalidation": {
+      "passed": true,
+      "command": "Strict Windows native rebuild and AIChat suite",
+      "observed": "Changed shared dock/context and Issue guide compiled; 99 cases and 1795 assertions pass.",
+      "log_sha256": "cea106a472bb8b5c0c348d67800f419a52771864b011c81918fcafd18b58eee8"
+    },
+    "bridge_regression": {
+      "passed": true,
+      "tests": 52,
+      "log_sha256": "75082e715d845d2dd1e5efc880d40ef2a4ca3353580758653f3be3066abc6f46"
+    }
+  },
+  "integration": "Five shared files merged without textual conflict. Independent review found the new automatic-parent status fixture anchor silently missed reporting after actor was added. It now matches the unique newline/reporting assignment, asserts one match and retains actor and all acceptance assertions. This test-only correction followed the native build and was exercised by both automatic-parent status consumers; native source bytes were unchanged during these runs.",
+  "previous_ci": {
+    "pr": 1045,
+    "head": "cee1e477ec1fa6432edc0b633bf212c1eefe4c45",
+    "run": 43406691665,
+    "result": "success; not reused as replacement-candidate CI"
+  },
+  "preserved_failure": "The first automatic-parent status invocations incorrectly selected models-initial-ok and failed its unrelated directory-response-release wait. With normal selected, strict raw-byte design verification exposed fixture LF contract versus Windows CRLF write_text bytes. The fixture now writes the exact UTF-8 bytes used to prepare its contract. Product byte validation and acceptance assertions are unchanged; both failed rounds remain retained. Final three consumers use this corrected fixture.",
+  "limitations": [
+    "Controlled consumers do not establish original online-provider game acceptance.",
+    "Prior cold/runtime/cancellation evidence remains bound to its measured binary in the referenced report.",
+    "Replacement exact PR CI, main readback, formal installation and child/business acceptance remain pending."
+  ]
+}

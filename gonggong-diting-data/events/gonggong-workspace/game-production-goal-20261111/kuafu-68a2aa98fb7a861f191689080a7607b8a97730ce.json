@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-68a2aa98fb7a861f191689080a7607b8a97730ce",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6cd03bf4c36daade64d242b73cb6a77057c0838e4b93da9b2258ed71b7a9006b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+    "action": "validation",
+    "detection_head": "9e2074a11bc9cf0f90c53635a658e5920901633f",
+    "context_sha256": "a1d3901a497372bb546cb34613f5f6b2b8fb66e2aa31627087fe189d9795f53e",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "Issue#773 user authorization and AGENTS.md continuous delivery",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43260473376/job/131330459768",
+    "diagnosis": "Missing installed fixture guard dependency confirmed; after supplying it the original requirements flow exposes missing actor in ordinary non-direct bridge reporting. Current root owns correction. Latest main integration retains both production continuation and upstream parent-finalization tests; independent check pending.",
+    "next_action": "Bind ordinary reporting to the verified host actor, preserve private storage outside the mutable fixture, rerun original recovery and merged parent scenarios before exact candidate delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T16:50:33.886862+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T09:33:41.640922+00:00",
+  "sha256": "6d8ad074cb0a5cc1578ac1c1908a6ded862a4e635eb7f1090cc657ff123a796d"
+}

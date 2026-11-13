@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-d0f5f7cb3cb8f40b893ef245b74bd92266302362e4028e1354cb48b40c71adc1",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "occurred_at": "2026-11-12T15:20:26.680601+00:00",
+  "evidence_refs": [
+    "dispatch-05355980f97e4e5e855a79f70bcbbf52"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "continuation-operation-boundaries",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Exercise actual continuation cancellation at each asynchronous currentness phase and cold restart through a new operation ID to final downstream acceptance; require explicit terminal operation receipts and preserve original history.",
+      "when": "A parent production operation spans producer and reviewer currentness jobs or survives an editor restart.",
+      "counterexample": "Cancelling only the first validation phase can miss a later orphan operation; status eligibility or an overall fixture success flag does not prove the new operation dispatched or its dependency resumed.",
+      "trial_plan": "Repeat isolated native fixtures that stop during producer and reviewer validation, assert no parent repair budget or extra launch, restart an in-flight operation, require new-ID context_recorded, then explicitly resume the previously waiting sibling and require fresh acceptance before its first dispatch."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-parent-production-continuation-951.json",
+        "sha256": "94b24c96516a2d77c529e7f79f3f5bc9a1070c01741436d92e107bdbb1cc23e3"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-parent-production-continuation-20261112/dispatch-05355980f97e4e5e855a79f70bcbbf52.json",
+      "sha256": "d43fca7648911654c04db64b4268e0489da7657f086d03592f2f45bcce59d8d6"
+    }
+  },
+  "sha256": "951a3835542b5086aede471306b05fa90decc3d28fd9fda5d05b2403478535be"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f87d8ba21860d97ac33f88f600a53c7b18f52ade",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6cd03bf4c36daade64d242b73cb6a77057c0838e4b93da9b2258ed71b7a9006b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+    "action": "validation",
+    "detection_head": "9e2074a11bc9cf0f90c53635a658e5920901633f",
+    "context_sha256": "a1d3901a497372bb546cb34613f5f6b2b8fb66e2aa31627087fe189d9795f53e",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "Issue#773 user authorization and AGENTS.md continuous delivery",
+    "evidence": "local-receipt:joint773-runtime-main1041-r4/summary.json; source:e9684f34cfc4fded923d43f4469d32a0096a8af3",
+    "diagnosis": "Complete Windows runtime interruption and original requirements recovery now passes on the integrated native build after installed dependency closure, trusted ordinary actor binding and outside-workspace private fixture storage. Three real interruption cases, runtime configuration cases and native intake/tool continuation passed using controlled providers. Independent integration review found separate parent-completion gate races in producer and reviewer currentness stages; implementation and targeted verification continue under parent773/child951.",
+    "next_action": "Finish second-stage parent gate fix, independently review it, rebuild and run cold/warm continuation and repair cancellation consumers; update exact input evidence and complete required CI before installation or business closure.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T16:50:33.886862+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T09:51:03.989308+00:00",
+  "sha256": "78be6a75486e8b2e800024b4cdd7f21e30959f153396680ae10df308976750a9"
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "issue_number": 943,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+  "request_id": "editor-design-contract-20261112",
+  "state": "installed_evidence_preparing_delivery",
+  "evidence": [
+    {"path": "data-collection/editor-design-contract-943-installed.json", "sha256": "5f1cc154068fe38b3160aa21e9575965c1f812c1e2db0e34d4a442fbd994cbff"},
+    {"path": "data-collection/editor-design-contract-943-template-installed.json", "sha256": "ff9cbb571226f6e0ed2a1a497516cd5750aae48f8ad8b72345fe70455f94b238"}
+  ],
+  "packaging_correction": "The gate accepts issue_number as an integer or issue/issue_url as a URL. Prior immutable installed reports used numeric issue. This additional binding supplies the supported explicit fields without changing their reviewed bytes. Original failed gate receipts are retained.",
+  "boundary": "This binding is not a new test result or delivery receipt. The referenced reports describe the installed consumer scope; parent 773 remains incomplete.",
+  "path_base": "Repository root"
+}
