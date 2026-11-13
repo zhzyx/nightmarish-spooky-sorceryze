@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7cf74c18987509cfe71044a2f095b4bb95ddc407",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e5c701014bac40233c866da7ccaff674cc6b4d2fba420d1eb0a62589fe59db8a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1060",
+    "action": "validation",
+    "detection_head": "da9bfac7b5036f24d9657179d394dc2db3a66526",
+    "context_sha256": "52759f35adf945cecc6a30d7ac24b7668c584f77c17f1379a0134641b54f9e4a",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1060",
+    "diagnosis": "Host preparation failure: web fetch402 and Python3.14 default CA certificate verification failure. System curl normal TLS and same Python URL with process-only system CA both succeeded; checksum bytes match SHA25620e26000afe5c307678f3bd11c069c77a8c9b4af92f40900a5c8450e221dbc6e. No product or global installation repair claimed.",
+    "next_action": "Continue1059 independent review and exact Windows CI; retain actual host recovery evidence under1060 and keep parent978 open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T11:58:52.371297+00:00",
+    "attempted": null,
+    "repair_owner": "codex:/root",
+    "continuable": "Original host preparation operation reverified; Windows business acceptance remains separate"
+  },
+  "occurred_at": "2026-11-13T12:24:18.183302+00:00",
+  "sha256": "b44688b1a9e0a8f4d4bcf690450036b9319797ecba1ae26f61999722fb1740df"
+}

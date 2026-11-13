@@ -1,0 +1,136 @@
+name: Blender geometry on Windows
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/blender_geometry_windows.yml"
+      - "tests/editor/run_blender_geometry.py"
+      - "tests/editor/test_run_blender_geometry.py"
+      - "tools/ainative/**"
+      - "tools/editor_provenance_process.py"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/blender_geometry_windows.yml"
+      - "tests/editor/run_blender_geometry.py"
+      - "tests/editor/test_run_blender_geometry.py"
+      - "tools/ainative/**"
+      - "tools/editor_provenance_process.py"
+  merge_group:
+
+permissions:
+  contents: read
+
+jobs:
+  geometry:
+    name: Original Windows CLI and real Blender geometry
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONIOENCODING: utf8
+      BLENDER_VERSION: "4.5.11"
+      BLENDER_PACKAGE_SHA256: e11d3a8e4d4249be5a7db4a9325c1f670037d4233467c3b0bda181001efe44d3
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Check the acceptance runner's failure paths
+        shell: pwsh
+        run: |
+          python tests/editor/test_run_blender_geometry.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Obtain the checksum-pinned official portable runtime
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $runtime = Join-Path $env:RUNNER_TEMP 'Blender geometry runtime'
+          $evidence = Join-Path $env:RUNNER_TEMP 'Blender geometry evidence'
+          New-Item -ItemType Directory -Force -Path $runtime, $evidence | Out-Null
+          $package = "blender-$env:BLENDER_VERSION-windows-x64.zip"
+          $url = "https://download.blender.org/release/Blender4.5/$package"
+          $archive = Join-Path $runtime $package
+          $receipt = @{url=$url; expected_sha256=$env:BLENDER_PACKAGE_SHA256; verified=$false}
+          try {
+            Invoke-WebRequest -Uri $url -OutFile $archive -TimeoutSec 600
+            $receipt.observed_sha256 = (Get-FileHash -Algorithm SHA256 $archive).Hash.ToLowerInvariant()
+            if ($receipt.observed_sha256 -ne $env:BLENDER_PACKAGE_SHA256) { throw 'Official Blender ZIP checksum mismatch.' }
+            $receipt.verified = $true
+            Expand-Archive -LiteralPath $archive -DestinationPath $runtime
+            $blender = Join-Path $runtime "blender-$env:BLENDER_VERSION-windows-x64/blender.exe"
+            if (!(Test-Path -LiteralPath $blender -PathType Leaf)) { throw 'Verified archive has no expected Blender executable.' }
+            "AINATIVE_TEST_BLENDER=$blender" >> $env:GITHUB_ENV
+          } catch {
+            $receipt.error = $_.Exception.Message
+            throw
+          } finally {
+            $receipt | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 (Join-Path $evidence 'runtime-download.json')
+          }
+      - name: Run the original three tests with Python and Blender outbound access blocked
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $evidence = Join-Path $env:RUNNER_TEMP 'Blender geometry evidence'
+          $python = (Get-Command python).Source
+          $rules = @()
+          $result = 1
+          try {
+            # Only this disposable GitHub-hosted VM is affected. The C# CLI is
+            # the original fixed offline fixture; no real provider is invoked.
+            Set-NetFirewallProfile -Profile Domain,Private,Public -Enabled True
+            foreach ($program in @($python, $env:AINATIVE_TEST_BLENDER)) {
+              $rule = "Blender-geometry-$([guid]::NewGuid())"
+              New-NetFirewallRule -Name $rule -DisplayName $rule -Direction Outbound -Action Block -Program $program -Profile Any | Out-Null
+              $rules += $rule
+            }
+            @{python_and_blender_outbound_blocked=$true; original_cli_fixture='fixed_offline_csharp'; runner_commit=$env:GITHUB_SHA} |
+              ConvertTo-Json | Set-Content -Encoding utf8 (Join-Path $evidence 'execution-scope.json')
+            python tests/editor/run_blender_geometry.py --blender "$env:AINATIVE_TEST_BLENDER" --output "$evidence" *> (Join-Path $evidence 'runner.log')
+            $result = $LASTEXITCODE
+          } finally {
+            $cleanupErrors = @()
+            foreach ($rule in $rules) {
+              try { Remove-NetFirewallRule -Name $rule -ErrorAction Stop }
+              catch { $cleanupErrors += $_.Exception.Message }
+            }
+            try {
+              $remaining = @(Get-NetFirewallRule -ErrorAction Stop | Where-Object { $_.Name -in $rules })
+              if ($remaining.Count -ne 0) { $cleanupErrors += 'Owned outbound rules remain.' }
+            } catch { $cleanupErrors += $_.Exception.Message }
+            @{owned_rule_count=$rules.Count; removed=($cleanupErrors.Count -eq 0); errors=$cleanupErrors} |
+              ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 (Join-Path $evidence 'firewall-cleanup.json')
+            if ($cleanupErrors.Count -ne 0) { $result = 1 }
+          }
+          if ($result -ne 0) { Get-Content (Join-Path $evidence 'runner.log') -ErrorAction Continue; exit $result }
+      - name: Finalize diagnostics and remove this job's portable runtime
+        if: always()
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $runtime = Join-Path $env:RUNNER_TEMP 'Blender geometry runtime'
+          $evidence = Join-Path $env:RUNNER_TEMP 'Blender geometry evidence'
+          New-Item -ItemType Directory -Force -Path $evidence | Out-Null
+          $receipt = @{portable_runtime_removed=$false}
+          try {
+            if (Test-Path -LiteralPath $runtime) { Remove-Item -LiteralPath $runtime -Recurse -Force }
+            if (Test-Path -LiteralPath $runtime) { throw 'Temporary Blender runtime remains.' }
+            $receipt.portable_runtime_removed = $true
+            $log = Join-Path $evidence 'runner.log'
+            if (Test-Path -LiteralPath $log) { $receipt.runner_log_sha256 = (Get-FileHash -Algorithm SHA256 $log).Hash.ToLowerInvariant() }
+          } catch {
+            $receipt.error = $_.Exception.Message
+            throw
+          } finally {
+            $receipt | ConvertTo-Json | Set-Content -Encoding utf8 (Join-Path $evidence 'workflow-cleanup.json')
+          }
+      - name: Retain exact-candidate geometry receipts and failure diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: blender-windows-geometry-${{ github.sha }}
+          path: ${{ runner.temp }}/Blender geometry evidence/
+          if-no-files-found: error
+          retention-days: 14
