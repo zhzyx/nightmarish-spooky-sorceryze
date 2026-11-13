@@ -127,3 +127,25 @@ def test_only_owner_or_admin_can_change_sharing() -> None:
         == 403
     )
     assert other["user_id"] != editor["user_id"]
+
+
+def test_private_read_helpers_require_access() -> None:
+    client, admin = _setup()
+    viewer = _member(client, admin, "reader@example.com", "viewer")
+    viewer_headers = {"Authorization": f"Bearer {_token(client, 'reader@example.com')}"}
+
+    document = client.post("/api/v1/docs", headers=admin, json={"title": "私有只读", "body_md": "# 私有\n"}).json()
+    client.patch(f"/api/v1/docs/{document['id']}/visibility", headers=admin, json={"visibility": "private"})
+
+    assert client.get(f"/api/v1/docs/{document['id']}/export", headers=viewer_headers).status_code == 403
+    assert client.get(f"/api/v1/docs/{document['id']}/ai-view", headers=viewer_headers).status_code == 403
+    assert client.post(f"/api/v1/docs/{document['id']}/classify", headers=viewer_headers).status_code == 403
+
+    client.post(
+        f"/api/v1/docs/{document['id']}/shares",
+        headers=admin,
+        json={"user_id": viewer["user_id"], "permission": "read"},
+    )
+    assert client.get(f"/api/v1/docs/{document['id']}/export", headers=viewer_headers).status_code == 200
+    assert client.get(f"/api/v1/docs/{document['id']}/ai-view", headers=viewer_headers).status_code == 200
+    assert client.post(f"/api/v1/docs/{document['id']}/classify", headers=viewer_headers).status_code == 200
