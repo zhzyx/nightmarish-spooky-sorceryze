@@ -12,10 +12,14 @@ import {
   type DocRecord,
   type Tone,
 } from "@/lib/data";
+import { fetchSearch, type ApiSearchResult } from "@/lib/search-api";
 
 export const metadata: Metadata = {
   title: "全局搜索",
 };
+
+// 实时检索依赖每次请求的 q 与 TIANXUAN_ACTOR，禁用静态化。
+export const dynamic = "force-dynamic";
 
 type SearchType = "all" | "docs" | "issues" | "repos" | "requirements";
 
@@ -81,7 +85,52 @@ function buildSearchHref(query: string, type: SearchType): string {
   return suffix ? `/search?${suffix}` : "/search";
 }
 
-export default function SearchPage({
+function LiveSearchResults({ query, results }: { query: string; results: ApiSearchResult[] }) {
+  return (
+    <section aria-labelledby="live-search-title" className="live-search-section">
+      <div className="search-summary-row live-search-head">
+        <p>
+          <strong id="live-search-title">实时结果</strong>
+          <span>文曲检索 API · {results.length} 条</span>
+        </p>
+        <span className="search-index-tag">
+          <span className="live-dot" aria-hidden="true" />
+          实时索引
+        </span>
+      </div>
+
+      {results.length > 0 ? (
+        <div className="search-results-list">
+          {results.map((result) => (
+            <Link
+              className="search-result"
+              href={`/docs/${encodeURIComponent(result.id)}`}
+              key={result.id}
+            >
+              <span className="search-result-icon tone-jade">
+                <Icon name="file" size={17} />
+              </span>
+              <span className="search-result-body">
+                <span className="search-result-head">
+                  <span className="search-result-kind">{result.kind ?? "文档"}</span>
+                  <strong>{highlight(result.title ?? result.id, query)}</strong>
+                </span>
+                {result.snippet ? (
+                  <span className="search-result-excerpt">{highlight(result.snippet, query)}</span>
+                ) : null}
+              </span>
+              <Icon className="search-result-arrow" name="arrowRight" size={15} />
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <p className="live-search-empty">实时索引没有匹配的文档。</p>
+      )}
+    </section>
+  );
+}
+
+export default async function SearchPage({
   searchParams,
 }: {
   searchParams: { q?: string; type?: string };
@@ -96,6 +145,17 @@ export default function SearchPage({
       ? typeParam
       : "all";
   const needle = query.toLowerCase();
+
+  const actor = process.env.TIANXUAN_ACTOR?.trim() ?? "";
+  let liveResults: ApiSearchResult[] | null = null;
+  if (query && actor) {
+    try {
+      liveResults = await fetchSearch(actor, query);
+    } catch {
+      // 实时检索不可用时静默回退到本地示例结果。
+      liveResults = null;
+    }
+  }
 
   const docResults: SearchResult[] = docs
     .filter((doc) =>
@@ -271,6 +331,10 @@ export default function SearchPage({
 
           <div className="search-results-layout">
             <div className="search-main">
+              {liveResults !== null ? (
+                <LiveSearchResults query={query} results={liveResults} />
+              ) : null}
+
               {visibleResults.length > 0 ? (
                 <>
                   <section className="ai-answer" aria-labelledby="ai-answer-title">
@@ -325,7 +389,7 @@ export default function SearchPage({
                     ))}
                   </div>
                 </>
-              ) : (
+              ) : liveResults === null || liveResults.length === 0 ? (
                 <EmptyState
                   actionHref="/search"
                   actionLabel="清除搜索"
@@ -333,7 +397,7 @@ export default function SearchPage({
                   eyebrow="DITING · NO MATCH"
                   title="没有找到对应的线索"
                 />
-              )}
+              ) : null}
             </div>
 
             <aside className="search-aside">
