@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DocEditor } from "@/components/DocEditor";
+import { DocSharing } from "@/components/DocSharing";
 import { fetchDoc } from "@/lib/api";
-import { docs, getDoc, getDocContent, type DocRecord } from "@/lib/data";
+import { getDoc, getDocContent, type DocRecord } from "@/lib/data";
 
 interface DocPageProps {
   params: {
@@ -10,9 +11,7 @@ interface DocPageProps {
   };
 }
 
-export function generateStaticParams() {
-  return docs.map((doc) => ({ id: doc.id }));
-}
+export const dynamic = "force-dynamic";
 
 export function generateMetadata({ params }: DocPageProps): Metadata {
   const doc = getDoc(params.id);
@@ -58,6 +57,7 @@ export default async function DocPage({ params }: DocPageProps) {
             initialContent={liveDoc.body_md}
             version={liveDoc.version}
           />
+          <DocSharing docId={liveDoc.id} initialVisibility={liveDoc.visibility} />
         </div>
       );
     } catch {
