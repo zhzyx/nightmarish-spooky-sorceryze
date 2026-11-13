@@ -6,6 +6,7 @@
 安全边界：
 
 - ref、仓库名与文件路径先做本地校验，拒绝 ``..``、绝对路径和 shell 元字符；
+- 提交输入不得指定 Git 管理路径或平台别名；写入前拒绝路径中的符号链接；
 - 子进程清理继承的 ``GIT_DIR`` 等环境变量，统一关闭交互提示、签名与钩子；
 - 合并冲突在临时克隆中检测并 ``--abort``，裸仓库不会停留在半完成状态，
   失败时以 :class:`MergeConflict` 返回冲突路径。
@@ -20,6 +21,7 @@ import os
 import re
 import subprocess
 import tempfile
+import unicodedata
 from collections.abc import Mapping
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
@@ -65,6 +67,12 @@ _BASE_CONFIG_OPTIONS = (
     "gc.auto=0",
     "-c",
     "advice.detachedHead=false",
+    "-c",
+    f"core.hooksPath={os.devnull}",
+    "-c",
+    "core.fsmonitor=false",
+    "-c",
+    "commit.gpgsign=false",
 )
 
 #: 写入类操作固定 LF 换行，保证不同宿主上结果一致。
@@ -184,6 +192,12 @@ def _validate_file_path(path: str, *, label: str = "file path") -> str:
         raise ValidationError(f"{label} must not contain empty, '.' or '..' segments: {path!r}")
     if any(part != part.strip() for part in parts):
         raise ValidationError(f"{label} has leading/trailing whitespace: {path!r}")
+    for part in parts:
+        # Reserve case, trailing-dot/space and format-character aliases too.
+        # This deliberately applies on every host, including case-sensitive ones.
+        portable = "".join(char for char in part if unicodedata.category(char) != "Cf")
+        if portable.rstrip(" .").casefold() == ".git":
+            raise ValidationError(f"{label} targets Git administration: {path!r}")
     return path
 
 
@@ -308,7 +322,6 @@ class GitService:
         author_email: str,
     ) -> str:
         """在临时克隆中写入文件并提交，推送到裸仓库后返回提交 SHA。"""
-        repo_path, _ = self._repo_path(repo, require_bare=True)
         branch = _validate_branch_name(branch)
         message = _validate_message(message)
         name, email = _validate_identity(author_name, author_email)
@@ -322,16 +335,30 @@ class GitService:
             staged[relative] = content
         if not staged:
             raise ValidationError("commit requires at least one file")
+        # Reject the entire input before even probing a repository with Git.
+        repo_path, _ = self._repo_path(repo, require_bare=True)
 
         with tempfile.TemporaryDirectory(prefix="duobao-commit-") as temporary:
             worktree = Path(temporary) / "worktree"
             self._clone(repo_path, worktree)
             self._checkout_branch(worktree, branch)
             worktree_root = worktree.resolve()
-            for relative, content in staged.items():
+            destinations: dict[str, Path] = {}
+            for relative in staged:
                 destination = worktree.joinpath(*relative.split("/"))
-                if not destination.resolve().is_relative_to(worktree_root):
+                current = worktree
+                for part in relative.split("/"):
+                    current = current / part
+                    if current.is_symlink() or getattr(current, "is_junction", lambda: False)():
+                        raise ValidationError(f"file path follows a link: {relative!r}")
+                resolved = destination.resolve()
+                if not resolved.is_relative_to(worktree_root):
                     raise ValidationError(f"file path escapes the worktree: {relative!r}")
+                _validate_file_path(resolved.relative_to(worktree_root).as_posix())
+                destinations[relative] = destination
+            # Check all destinations before writing any input into the clone.
+            for relative, content in staged.items():
+                destination = destinations[relative]
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 with open(destination, "w", encoding="utf-8", newline="\n") as handle:
                     handle.write(content)
@@ -564,6 +591,7 @@ class GitService:
         *,
         check: bool = True,
         line_endings: bool = True,
+        preserve_newlines: bool = False,
     ) -> subprocess.CompletedProcess[str]:
         config_options = list(_BASE_CONFIG_OPTIONS)
         if line_endings:
@@ -573,8 +601,8 @@ class GitService:
             completed = subprocess.run(
                 command,
                 capture_output=True,
-                text=True,
-                encoding="utf-8",
+                text=not preserve_newlines,
+                encoding=None if preserve_newlines else "utf-8",
                 shell=False,
                 env=self._environment(),
             )
@@ -582,6 +610,13 @@ class GitService:
             raise GitServiceError(f"git executable was not found: {self.git_executable}") from error
         except OSError as error:
             raise GitServiceError(f"failed to start git executable {self.git_executable!r}: {error}") from error
+        if preserve_newlines:
+            completed = subprocess.CompletedProcess(
+                completed.args,
+                completed.returncode,
+                completed.stdout.decode("utf-8"),
+                completed.stderr.decode("utf-8"),
+            )
         if check and completed.returncode != 0:
             raise GitCommandError(
                 command,
@@ -622,6 +657,16 @@ class GitService:
         if probe.returncode != 0:
             raise GitServiceError(f"not a git repository: {resolved}")
         bare = probe.stdout.strip().lower() == "true"
+        # rev-parse discovers parent repositories too; the caller must supply
+        # the actual bare root or worktree root, not one of its subdirectories.
+        root_probe = self._run(
+            ["-C", str(resolved), "rev-parse", "--absolute-git-dir" if bare else "--show-toplevel"],
+            check=False,
+            preserve_newlines=True,
+        )
+        root = root_probe.stdout.removesuffix("\n")
+        if root_probe.returncode != 0 or not root or Path(root).resolve() != resolved:
+            raise GitServiceError(f"not a git repository root: {resolved}")
         if require_bare and not bare:
             raise GitServiceError(f"repository is not bare: {resolved}")
         return resolved, bare
