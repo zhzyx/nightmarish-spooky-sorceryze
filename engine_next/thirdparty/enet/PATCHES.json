@@ -1,0 +1,11 @@
+{
+  "patches": [
+    {
+      "file": "protocol.c",
+      "upstream": "v1.3.18@2662c0de09e36f2a2030ccc2c528a3e4c9e8138a",
+      "kind": "undefined_behavior_fix",
+      "reason": "UBSan reports null-pointer member access when computing the sentTime offset on three protocol paths",
+      "change": "Include <stddef.h> and replace &((ENetProtocolHeader *) 0)->sentTime with offsetof(ENetProtocolHeader, sentTime); protocol layout and runtime behavior are unchanged"
+    }
+  ]
+}

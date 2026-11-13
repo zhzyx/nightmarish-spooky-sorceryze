@@ -1,0 +1,15 @@
+{
+  "name": "ENet",
+  "version": "v1.3.18",
+  "source": "https://github.com/lsalzman/enet",
+  "commit": "2662c0de09e36f2a2030ccc2c528a3e4c9e8138a",
+  "license": "MIT",
+  "license_file": "LICENSE",
+  "source_layout": "Upstream root C sources and include/enet headers only; no Godot socket adapter or MultiplayerPeer code",
+  "excluded_godot_inputs": [
+    "thirdparty/enet/enet_godot.cpp",
+    "thirdparty/enet/enet/enet_godot.h",
+    "thirdparty/enet/enet/enet_godot_ext.h",
+    "thirdparty/enet/patches/0001-godot-socket.patch"
+  ]
+}

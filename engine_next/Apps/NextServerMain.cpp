@@ -28,6 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
+#include "engine_next/Server/ServerRuntime.h"
 #include "engine_next/include/EngineNext/Runtime/RuntimeHost.h"
 
 #include <iostream>
@@ -62,6 +63,17 @@ int main(int nArgumentCount, char **ppArguments)
 	if (stConfig.bHelpRequested)
 	{
 		PrintUsage();
+		return 0;
+	}
+	if (stConfig.bNetworkMode)
+	{
+		eStatus = EngineNext::Runtime::RunServer(stConfig);
+		if (eStatus != EngineNext::Runtime::RuntimeStatus::Ok)
+		{
+			std::cerr << "Server network runtime failed with status " << static_cast<int>(eStatus) << '\n';
+			return 1;
+		}
+		std::cout << "ENGINE_NEXT_RUNTIME role=server network=ok status=ok\n";
 		return 0;
 	}
 

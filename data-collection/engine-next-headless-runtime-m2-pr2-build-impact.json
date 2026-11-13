@@ -1,0 +1,139 @@
+{
+  "checks": {
+    "clean_source_build": {
+      "command": "ExportCleanSource.py then build and run both contract checks in the exported tree",
+      "observed": "77 declared files without Godot roots rebuilt all targets and completed the same real UDP handshake; both contracts passed",
+      "passed": true
+    },
+    "link_manifests": {
+      "command": "Link all targets through actual response files and audit their generated manifests",
+      "observed": "All manifests passed with 22, 22 and 27 objects respectively and one runtime library each; no forbidden symbols or unexpected dynamic dependencies",
+      "passed": true
+    },
+    "m1_regression": {
+      "command": "python engine_next/Tools/BuildGameplay.py --repo . --compiler clang --build-dir build/engine_next/clang-m1-pr2-regression --run-tests and its contract check",
+      "observed": "16 tests and 200161 checks passed in build and clean directories; trace sha256=f55d1f5bc85bb72376d3f31cdf9b64aac91e714b6556dbce1663c1db7995924c; contract_passed",
+      "passed": true
+    },
+    "native_invalidation": {
+      "command": "Change RuntimeConfig.h nManualTicks from 1 to 2, rebuild with BuildRuntime.py --run-tests, and launch next_server without arguments",
+      "observed": "native_key changed from 7b334b32eed0ebc1dc543ab33fe3aa3842d97d775f8f30c51bba11188556a7d7 to 56b0f1e1811203deeda1c7013892ca6e939116fc6e29f72f6760e8933ab02baa and default behavior changed from 1 to 2 ticks; all tests and the real handshake passed",
+      "passed": true
+    },
+    "real_udp_handshake": {
+      "command": "python engine_next/Tools/RunM2Handshake.py --server <next_server> --client <next_client> --report <HandshakeReport.json>",
+      "observed": "One server and two independent clients produced two distinct PeerIds, SessionIds and EntityIds with matching client/server records, zero return codes and empty stderr",
+      "passed": true
+    },
+    "rollback": {
+      "command": "Restore RuntimeConfig.h nManualTicks to 1, rebuild and repeat tests and default launch",
+      "observed": "native_key and default 1-tick behavior restored; 8 tests/116 checks and both UDP handshakes passed",
+      "passed": true
+    },
+    "sanitizer": {
+      "command": "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr2-sanitize --run-tests --sanitize",
+      "observed": "ASan and UBSan completed all tests and the real UDP handshake with zero failures after the offsetof upstream patch",
+      "passed": true
+    },
+    "source_contract": {
+      "command": "python -m unittest tools.test_check_engine_next_contract -v and three check_engine_next_contract.py --require-sources --require-link-manifest invocations",
+      "observed": "23 tests passed; 63 source files and 88 local includes passed; all three combined states were contract_passed",
+      "passed": true
+    },
+    "static_validation": {
+      "command": "git diff --cached --check, Ruff 0.17.1, codespell 2.4.2 on first-party paths and strict C99/C++17 warnings as errors",
+      "observed": "All checks passed; upstream spelling and whitespace were not rewritten, and the only upstream code patch is the recorded offsetof UB fix",
+      "passed": true
+    }
+  },
+  "input_blobs": {
+    ".github/workflows/engine_next_contract.yml": "45c9f916e091b550a4c13c1ac06e2edfecdfc986",
+    ".pre-commit-config.yaml": "bc74f1b68744b6f5fe1b588fdc21014678102e86",
+    "CPP_CODING_STANDARD.md": "e12af95ae971e7fae6dbbeabdd9aada824b3e899",
+    "design-docs/engine-next-headless-runtime-m2-20261113.md": "b1a5304015cf07815946eaf80902ac694f4b39ce",
+    "design-docs/engine-next-headless-runtime-m2-pr2.md": "71abc86041516237beb49bbc6ad0b237c079e426",
+    "engine_next/.clang-format": "e0971d7ef926fa5a8150d59663b99458c5eebdb7",
+    "engine_next/Apps/NextClientMain.cpp": "66b0a56495c2c6c34f7c52c9c9d24ae1de35542a",
+    "engine_next/Apps/NextServerMain.cpp": "311a9a7d5341c44c6b921a9cb65e2b00c4b66d85",
+    "engine_next/Client/ClientRuntime.cpp": "bebedb87c44311f1c557a57d12298908ee2cadfa",
+    "engine_next/Client/ClientRuntime.h": "50cbc3f602f168b14d356ea10571180aedd10c51",
+    "engine_next/Gameplay/InterpolationBuffer.cpp": "ee62277ad8f0b2e5dd673d1dae1b4aacaf44a9d9",
+    "engine_next/Gameplay/PredictionModel.cpp": "f8588e175b3c6dac0627680144631435e7df26f3",
+    "engine_next/Network/EnetTransport.cpp": "1881f4ad01765e1cf9755a90da464e7a2713fce7",
+    "engine_next/Network/Protocol.cpp": "68dc08261699c748e9cd626736d29bec86f5b348",
+    "engine_next/Network/SessionManager.cpp": "7802299af7704976f0b243c6b17e02c7deb0a21f",
+    "engine_next/Network/SessionManager.h": "cfaf4d725b785b8d6e15c373216b21bf843af32b",
+    "engine_next/Runtime/Clock.cpp": "783f041a080628ce6d227a14288a6868e2088fdc",
+    "engine_next/Runtime/FixedStepLoop.cpp": "8b3e820974b9d3809e041c90c79117d3c09d9799",
+    "engine_next/Runtime/RuntimeConfig.cpp": "a732f39682dbd7ce9571a6e36fd9c595e52946cc",
+    "engine_next/Runtime/RuntimeHost.cpp": "c8776790b8af1659e1014264d80a03ac0c10f24a",
+    "engine_next/Runtime/Trace.cpp": "619d567f5a9452cf3166adb1948512ea7c601db1",
+    "engine_next/Runtime/World.cpp": "4f414fcb996cebd7cdf396f85870e705f3f3a419",
+    "engine_next/Server/ServerRuntime.cpp": "6ce35fbac25bd39c39ea1adb2527721fffa21512",
+    "engine_next/Server/ServerRuntime.h": "e38f73128d8de5d45e542200a4b3350c596c856a",
+    "engine_next/Tests/Gameplay/PredictionTrace.h": "7c626157dfb51e582e869e70b717a0e8c2f6c340",
+    "engine_next/Tests/Gameplay/TestInterpolationBuffer.cpp": "1aa3fa65e667afb0312e5e176bcf13e903fb4bd9",
+    "engine_next/Tests/Gameplay/TestPredictionBenchmark.cpp": "9cb87923f33249d73fa2d64c8755f3a3b4742aad",
+    "engine_next/Tests/Gameplay/TestPredictionModel.cpp": "7d030188b834bcc4268e20ef9f28b405e931ecf7",
+    "engine_next/Tests/Gameplay/TestPredictionTrace.cpp": "eda497d437454547f59085055b5f4c6b86b57cf0",
+    "engine_next/Tests/Network/TestProtocol.cpp": "eb9774f72840330b325d914479f1bba0f4e5a399",
+    "engine_next/Tests/Runtime/TestClockAndFixedStep.cpp": "f8a954bde62d550908318d3e25a1af599252a0de",
+    "engine_next/Tests/Runtime/TestRuntimeConfig.cpp": "45d60364cd6e109e26698f712ca3476c166f18cc",
+    "engine_next/Tests/Runtime/TestRuntimeHost.cpp": "36a836eec158ccff027c3f77ef10801f99996cb5",
+    "engine_next/Tests/Runtime/TestWorld.cpp": "af3221c68c01b57920a0e5f67e0a3caf7f58198d",
+    "engine_next/Tests/RuntimeTestMain.cpp": "ca62c2960eb71ed945c7687a8e7ce952511666a6",
+    "engine_next/Tests/TestFramework.h": "9d6d3ec745e9c1c14f404d1a49249b61fcd02fa3",
+    "engine_next/Tests/TestMain.cpp": "6d6eaf2efa73aade8aee5385deac83a198593f5b",
+    "engine_next/Tools/BuildGameplay.py": "bfc78a94041cab54ec1e3aa825af3f991b5b2311",
+    "engine_next/Tools/BuildRuntime.py": "94ebd83c896048f9fbf00b4d34b9cc2a8e17d74e",
+    "engine_next/Tools/ExportCleanSource.py": "dea219457bab513748b0f07fda9fe13f8815aaa3",
+    "engine_next/Tools/RunM2Handshake.py": "811a8774e237ea264199a9967dd82c50da14a66b",
+    "engine_next/Tools/TestBuildGameplay.py": "bdf90f03394414391a75ec91e895843f3e71ae8a",
+    "engine_next/Tools/TestBuildRuntime.py": "2dd2e785ae6de7497f9847a01efb1f40bae6e55a",
+    "engine_next/include/EngineNext/Gameplay/InterpolationBuffer.h": "80c2bca83ee9ec543241180342a56f7d78e9fa43",
+    "engine_next/include/EngineNext/Gameplay/PredictionModel.h": "b7f8a39277252b632be45859504c95292e8c9247",
+    "engine_next/include/EngineNext/Gameplay/PredictionTypes.h": "2c5fa35f47bc7b0f5d951744c6f2a76c4f756137",
+    "engine_next/include/EngineNext/Gameplay/Status.h": "adcfbff2025352f67c88840cf63a2b360c53a98c",
+    "engine_next/include/EngineNext/Gameplay/Vector3.h": "08ab807b2c540e017a22e4a3463a9114d0bdb3e8",
+    "engine_next/include/EngineNext/Network/ITransport.h": "f9bd2652bf525780e43e519f6923f3227f5b6dc2",
+    "engine_next/include/EngineNext/Network/Protocol.h": "9deb6b26636cf52a6c4f59f2bdb31a9ece28a811",
+    "engine_next/include/EngineNext/Runtime/Clock.h": "9d90e4bd7937594a9cce71255e228a9043427dcb",
+    "engine_next/include/EngineNext/Runtime/FixedStepLoop.h": "36bf9d8c01e6ef464cf2e104d48334e21633205b",
+    "engine_next/include/EngineNext/Runtime/RuntimeConfig.h": "6e7ac2e0c590c966d7b6e8b3e9e8c6a189599814",
+    "engine_next/include/EngineNext/Runtime/RuntimeHost.h": "4b96603898055cd718723196af419490e918d208",
+    "engine_next/include/EngineNext/Runtime/Trace.h": "7154d7b05cc2495de3513b83e4a8b6cefb3b7ee2",
+    "engine_next/include/EngineNext/Runtime/Types.h": "96bf7a36621b1e83c7ceceef173d95e4934abe7d",
+    "engine_next/include/EngineNext/Runtime/World.h": "0d6c457fb30ece3b6f90b16d4ac74cc0c0bfb839",
+    "engine_next/thirdparty/enet/.gitattributes": "79155d38e40dc5a280b832e8ecb857b6fdde62a6",
+    "engine_next/thirdparty/enet/LICENSE": "ec14b3f09b72315c6e774c4aae144a90affe3bc0",
+    "engine_next/thirdparty/enet/PATCHES.json": "97e9b675cfaf42dc01e624310a8f5ee2df265674",
+    "engine_next/thirdparty/enet/README": "3b6318b22a223fabaaf9beedee1dce06cd727f3b",
+    "engine_next/thirdparty/enet/UPSTREAM.json": "f0c95768a960203fb6bb52951f151544f11682ec",
+    "engine_next/thirdparty/enet/callbacks.c": "b3990af1fb91951cd7bf17f57e0108b9c27319e1",
+    "engine_next/thirdparty/enet/compress.c": "784489a7877cca4e6f13bb57a856434d2a0a60be",
+    "engine_next/thirdparty/enet/host.c": "fff946a392c1e2bf9a1ec50bf957e98d048d76c5",
+    "engine_next/thirdparty/enet/include/enet/callbacks.h": "340a4a9896b0860da09112b6ebe48a617254089d",
+    "engine_next/thirdparty/enet/include/enet/enet.h": "30010187633fa1e31cba58a1d066669e789054a8",
+    "engine_next/thirdparty/enet/include/enet/list.h": "d7b2600848ff0cdc67838ecc7d6a1e7471b66aef",
+    "engine_next/thirdparty/enet/include/enet/protocol.h": "f8c73d8a668c7a73bf41b9d793ec539b1c0df376",
+    "engine_next/thirdparty/enet/include/enet/time.h": "c82a5460351bc2f160124f89cc91458ddd84a649",
+    "engine_next/thirdparty/enet/include/enet/types.h": "ab010a4b13ddd439e807db5ffcda6ead134b8fef",
+    "engine_next/thirdparty/enet/include/enet/unix.h": "b55be33103d0d3cad4c7b96ea69b72b7e2dadb3a",
+    "engine_next/thirdparty/enet/include/enet/utility.h": "b04bb7a5b3584149617e72c5623eaee883043a53",
+    "engine_next/thirdparty/enet/include/enet/win32.h": "6fbd7c02c8df884b1f71c1d760d9a1bd8d0e4e53",
+    "engine_next/thirdparty/enet/list.c": "1c1a8dfaafc9119a68c599ed90a90600fa65d8c1",
+    "engine_next/thirdparty/enet/packet.c": "d51c6404049fc08d9f7548176f288d77a53b33eb",
+    "engine_next/thirdparty/enet/peer.c": "a7ac012079adacd49fb0c007635d40b1fd2ccfef",
+    "engine_next/thirdparty/enet/protocol.c": "cfd07ad835cf5c8c65870a360d8a0ca24a609aa9",
+    "engine_next/thirdparty/enet/unix.c": "66692169c1360c891492b785bbf73ca8ab83470d",
+    "engine_next/thirdparty/enet/win32.c": "f395c09b1920e369a61a85a649320b27177daf10",
+    "tools/check_engine_next_contract.py": "69427ec1654694feafcc36ef59c9a85b552b12f6",
+    "tools/engine_next_contract.json": "20d5f1e22af292c4794544e5a60ee3b35915fb41",
+    "tools/test_check_engine_next_contract.py": "15594ddb55910c78ba4f170e271072553183b547"
+  },
+  "issue_number": 1042,
+  "measurements": [
+    "data-collection/engine-next-headless-runtime-m2-pr2-verification.json"
+  ],
+  "request_id": "engine-next-headless-runtime-m2-20261113"
+}

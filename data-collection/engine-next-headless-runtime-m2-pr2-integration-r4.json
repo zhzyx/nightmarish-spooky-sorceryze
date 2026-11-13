@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "issue_number": 1042,
+  "kind": "main_integration",
+  "previous_candidate": "db0aec019053abf298f4cbc946236f15eb356323",
+  "integration_base": "d78054420a4034ec44013372cc55893b1c854b58",
+  "integration_merge_commit": "28a9bd9fd6a888818540b25dcccc703fe7935200",
+  "upstream_change_count": 58,
+  "overlapping_write_paths": [],
+  "resolution": "Preserved the R4 candidate with git stash --staged, merged the latest main with the current collaborator identity, and restored the same candidate index",
+  "native_revalidation_required": false,
+  "candidate_gate_revalidation_required": true
+}

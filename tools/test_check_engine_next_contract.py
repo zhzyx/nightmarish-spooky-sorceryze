@@ -139,6 +139,12 @@ class EngineNextContractTests(unittest.TestCase):
         result = audit_sources(self.root, self.contract, True)
         self.assertIn("undeclared_local_include", {item["code"] for item in result["violations"]})
 
+    def test_engine_next_third_party_root_and_enet_angle_include_pass(self):
+        self.write("engine_next/main.cpp", '#include "enet/enet.h"\n')
+        self.write("engine_next/thirdparty/enet/include/enet/enet.h", "// upstream ENet\n")
+        result = audit_sources(self.root, self.contract, True)
+        self.assertTrue(result["passed"], result["violations"])
+
     def test_escaping_local_include_is_rejected(self):
         self.write("engine_next/core/main.cpp", '#include "../../outside.h"\n')
         self.write("outside.h", "// outside\n")

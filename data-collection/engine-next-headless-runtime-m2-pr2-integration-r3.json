@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "issue_number": 1042,
+  "kind": "main_integration",
+  "previous_candidate": "6f101d88a055cce009b90ef7e61eb4981d617f93",
+  "integration_base": "2acecd196a1968cdf71e43419d22bd83a262552f",
+  "integration_merge_commit": "c62531edda506026ea1174892d62c6f0ff303d37",
+  "upstream_change_count": 20,
+  "overlapping_write_paths": [],
+  "resolution": "Preserved the staged R3 candidate with git stash --staged, merged origin/main with the current collaborator identity, and restored the same index without changing the R3 source or evidence bytes",
+  "native_revalidation_required": false,
+  "candidate_gate_revalidation_required": true
+}

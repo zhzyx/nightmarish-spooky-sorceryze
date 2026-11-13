@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "issue_number": 1042,
+  "kind": "main_integration",
+  "previous_base": "bc2efa392ccef0059bab8a007845946a624b78eb",
+  "integration_base": "da9bfac7b5036f24d9657179d394dc2db3a66526",
+  "upstream_change_count": 97,
+  "overlapping_write_paths": [
+    ".pre-commit-config.yaml"
+  ],
+  "resolution": "Fast-forwarded all upstream changes, then restored the new immutable method-event codespell exclusion and appended engine_next/thirdparty/ without removing either upstream rule or the ENXT narrow ignore",
+  "config_blob": "bc74f1b68744b6f5fe1b588fdc21014678102e86",
+  "native_revalidation_required": false,
+  "candidate_gate_revalidation_required": true
+}

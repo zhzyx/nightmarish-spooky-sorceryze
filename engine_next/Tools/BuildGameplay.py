@@ -245,6 +245,8 @@ def audit_dynamic_dependencies(args):
             "vcruntime140d.dll",
             "ucrtbase.dll",
             "ucrtbased.dll",
+            "ws2_32.dll",
+            "winmm.dll",
         }
         unexpected = [
             value

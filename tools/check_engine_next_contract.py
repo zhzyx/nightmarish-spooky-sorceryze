@@ -217,8 +217,8 @@ def validate_contract(document):
         for value in values:
             _relative(value, key)
     for value in document["third_party_roots"]:
-        if not _inside(value, "thirdparty"):
-            raise ValueError("Third-party roots must be below thirdparty/")
+        if not _inside(value, "thirdparty") and not _inside(value, "engine_next/thirdparty"):
+            raise ValueError("Third-party roots must be below thirdparty/ or engine_next/thirdparty/")
     extensions = _strings(document, "source_extensions", allow_empty=False)
     if any(not value.startswith(".") or value != value.lower() for value in extensions):
         raise ValueError("Source extensions must be lowercase suffixes")
