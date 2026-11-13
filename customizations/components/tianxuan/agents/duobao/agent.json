@@ -1,0 +1,20 @@
+{
+  "id": "duobao",
+  "name": "多宝",
+  "kind": "independent_agent",
+  "version": "0.1.0",
+  "entry": "customizations/components/tianxuan/agents/duobao/AGENT.md",
+  "path_base": "repository_root",
+  "governance_root": "yuanheng",
+  "framework_root": "framework",
+  "review_skill": "framework/skills/gonggong-check/SKILL.md",
+  "supporting_skills": [
+    "customizations/components/tianxuan/agents/duobao/skills/repo-review/SKILL.md"
+  ],
+  "reporting": "customizations/components/tianxuan/agents/duobao/reporting.json",
+  "host_required_for_execution": true,
+  "scope": "authorized_repository_branch_commit_pull_request_review_and_concurrent_merge_coordination",
+  "state": "candidate_pending_exact_review",
+  "admission_pass": null,
+  "runtime_connected": false
+}

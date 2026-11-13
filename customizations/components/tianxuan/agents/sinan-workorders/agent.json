@@ -1,0 +1,21 @@
+{
+  "id": "sinan-workorders",
+  "name": "司南·工单",
+  "kind": "independent_agent",
+  "version": "0.1.0",
+  "entry": "customizations/components/tianxuan/agents/sinan-workorders/AGENT.md",
+  "path_base": "repository_root",
+  "governance_root": "yuanheng",
+  "framework_root": "framework",
+  "review_skill": "framework/skills/gonggong-check/SKILL.md",
+  "supporting_skills": [
+    "customizations/components/tianxuan/agents/sinan-workorders/skills/work-order-management/SKILL.md"
+  ],
+  "reporting": "customizations/components/tianxuan/agents/sinan-workorders/reporting.json",
+  "host_required_for_execution": true,
+  "scope": "authorized_work_order_model_status_machine_dependencies_board_and_event_progress",
+  "state": "candidate_pending_exact_review",
+  "admission_pass": null,
+  "runtime_connected": false,
+  "extends": "sinan"
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "component": {
+    "kind": "agent",
+    "id": "duobao",
+    "version": "0.1.0",
+    "entry": "customizations/components/tianxuan/agents/duobao/AGENT.md"
+  },
+  "required": true,
+  "policy": "framework/contracts/diting-reporting.json",
+  "policy_id": "diting-reporting-1",
+  "reporter": "framework/tools/diting-report.py",
+  "events": ["request", "step", "message", "handoff", "coverage", "request_end"],
+  "runtime_binding": "host_required",
+  "runtime_connected": false
+}
