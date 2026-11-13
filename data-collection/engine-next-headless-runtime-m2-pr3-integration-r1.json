@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "issue_number": 1042,
+  "kind": "main_integration",
+  "previous_base": "4eacf441827cf6a3446811bebec8d59b1c04b118",
+  "integration_base": "cd2a5be3d38d79ea2e86f2dc8ba6ebc3afc0a88d",
+  "upstream_change_count": 193,
+  "overlapping_write_paths": [],
+  "resolution": "Preserved the PR3 candidate with git stash --staged, fast-forwarded to the current origin/main, and restored the identical candidate index",
+  "native_revalidation_required": false,
+  "candidate_gate_revalidation_required": true
+}

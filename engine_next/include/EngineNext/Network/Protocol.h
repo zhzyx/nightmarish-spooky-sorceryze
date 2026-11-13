@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "engine_next/include/EngineNext/Gameplay/Vector3.h"
+#include "engine_next/include/EngineNext/Gameplay/PredictionTypes.h"
 #include "engine_next/include/EngineNext/Runtime/Types.h"
 
 #include <array>
@@ -84,6 +84,21 @@ struct ServerWelcome
 	Gameplay::Vector3 vVelocity{};
 };
 
+struct InputCommand
+{
+	std::uint64_t nEntityId = 0;
+	Gameplay::PredictionInput stInput;
+};
+
+struct Snapshot
+{
+	std::uint64_t nServerTick = 0;
+	std::uint64_t nEntityId = 0;
+	std::uint64_t nLastProcessedInputSequence = 0;
+	Gameplay::Vector3 vPosition{};
+	Gameplay::Vector3 vVelocity{};
+};
+
 struct Disconnect
 {
 	std::uint16_t nReason = 0;
@@ -105,6 +120,10 @@ struct ErrorReject
 [[nodiscard]] Runtime::RuntimeStatus DecodeClientHello(const std::uint8_t *pData, std::size_t nSize, ClientHello &out_stHello) noexcept;
 [[nodiscard]] std::vector<std::uint8_t> EncodeServerWelcome(const ServerWelcome &in_stWelcome);
 [[nodiscard]] Runtime::RuntimeStatus DecodeServerWelcome(const std::uint8_t *pData, std::size_t nSize, ServerWelcome &out_stWelcome) noexcept;
+[[nodiscard]] std::vector<std::uint8_t> EncodeInputCommand(const InputCommand &in_stCommand);
+[[nodiscard]] Runtime::RuntimeStatus DecodeInputCommand(const std::uint8_t *pData, std::size_t nSize, InputCommand &out_stCommand) noexcept;
+[[nodiscard]] std::vector<std::uint8_t> EncodeSnapshot(const Snapshot &in_stSnapshot);
+[[nodiscard]] Runtime::RuntimeStatus DecodeSnapshot(const std::uint8_t *pData, std::size_t nSize, Snapshot &out_stSnapshot) noexcept;
 [[nodiscard]] std::vector<std::uint8_t> EncodeDisconnect(const Disconnect &in_stDisconnect);
 [[nodiscard]] std::vector<std::uint8_t> EncodeErrorReject(const ErrorReject &in_stError);
 

@@ -221,6 +221,66 @@ Runtime::RuntimeStatus DecodeServerWelcome(const std::uint8_t *pData, std::size_
 	return bValid ? Runtime::RuntimeStatus::Ok : Runtime::RuntimeStatus::InvalidParameter;
 }
 
+std::vector<std::uint8_t> EncodeInputCommand(const InputCommand &in_stCommand)
+{
+	std::vector<std::uint8_t> arrPayload;
+	arrPayload.reserve(32);
+	Write64(in_stCommand.nEntityId, arrPayload);
+	Write64(in_stCommand.stInput.nSequence, arrPayload);
+	Write32(in_stCommand.stInput.nStepMsec, arrPayload);
+	WriteFloat(in_stCommand.stInput.vMovementInput.fX, arrPayload);
+	WriteFloat(in_stCommand.stInput.vMovementInput.fY, arrPayload);
+	WriteFloat(in_stCommand.stInput.vMovementInput.fZ, arrPayload);
+	return arrPayload;
+}
+
+Runtime::RuntimeStatus DecodeInputCommand(const std::uint8_t *pData, std::size_t nSize, InputCommand &out_stCommand) noexcept
+{
+	if (pData == nullptr || nSize != 32)
+	{
+		return Runtime::RuntimeStatus::InvalidParameter;
+	}
+	out_stCommand.nEntityId = Read64(pData);
+	out_stCommand.stInput.nSequence = Read64(pData + 8);
+	out_stCommand.stInput.nStepMsec = Read32(pData + 16);
+	out_stCommand.stInput.vMovementInput = Gameplay::Vector3{ ReadFloat(pData + 20), ReadFloat(pData + 24), ReadFloat(pData + 28) };
+	const bool bValid = out_stCommand.nEntityId != 0 && out_stCommand.stInput.nSequence != 0 &&
+			out_stCommand.stInput.nStepMsec > 0 && out_stCommand.stInput.nStepMsec <= 1000 &&
+			IsFinite(out_stCommand.stInput.vMovementInput) && out_stCommand.stInput.vMovementInput.LengthSquared() <= 1.000001F;
+	return bValid ? Runtime::RuntimeStatus::Ok : Runtime::RuntimeStatus::InvalidParameter;
+}
+
+std::vector<std::uint8_t> EncodeSnapshot(const Snapshot &in_stSnapshot)
+{
+	std::vector<std::uint8_t> arrPayload;
+	arrPayload.reserve(48);
+	Write64(in_stSnapshot.nServerTick, arrPayload);
+	Write64(in_stSnapshot.nEntityId, arrPayload);
+	Write64(in_stSnapshot.nLastProcessedInputSequence, arrPayload);
+	WriteFloat(in_stSnapshot.vPosition.fX, arrPayload);
+	WriteFloat(in_stSnapshot.vPosition.fY, arrPayload);
+	WriteFloat(in_stSnapshot.vPosition.fZ, arrPayload);
+	WriteFloat(in_stSnapshot.vVelocity.fX, arrPayload);
+	WriteFloat(in_stSnapshot.vVelocity.fY, arrPayload);
+	WriteFloat(in_stSnapshot.vVelocity.fZ, arrPayload);
+	return arrPayload;
+}
+
+Runtime::RuntimeStatus DecodeSnapshot(const std::uint8_t *pData, std::size_t nSize, Snapshot &out_stSnapshot) noexcept
+{
+	if (pData == nullptr || nSize != 48)
+	{
+		return Runtime::RuntimeStatus::InvalidParameter;
+	}
+	out_stSnapshot.nServerTick = Read64(pData);
+	out_stSnapshot.nEntityId = Read64(pData + 8);
+	out_stSnapshot.nLastProcessedInputSequence = Read64(pData + 16);
+	out_stSnapshot.vPosition = Gameplay::Vector3{ ReadFloat(pData + 24), ReadFloat(pData + 28), ReadFloat(pData + 32) };
+	out_stSnapshot.vVelocity = Gameplay::Vector3{ ReadFloat(pData + 36), ReadFloat(pData + 40), ReadFloat(pData + 44) };
+	const bool bValid = out_stSnapshot.nEntityId != 0 && IsFinite(out_stSnapshot.vPosition) && IsFinite(out_stSnapshot.vVelocity);
+	return bValid ? Runtime::RuntimeStatus::Ok : Runtime::RuntimeStatus::InvalidParameter;
+}
+
 std::vector<std::uint8_t> EncodeDisconnect(const Disconnect &in_stDisconnect)
 {
 	std::vector<std::uint8_t> arrPayload;

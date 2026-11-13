@@ -146,8 +146,36 @@ def run_handshake(server, client, report_path):
                     "session_id": int(match.group(2)),
                     "entity_id": int(match.group(3)),
                 })
+        predictions = []
+        remotes = []
+        for client_result in client_results:
+            for line in client_result["stdout"].splitlines():
+                match = re.fullmatch(
+                    r"ENGINE_NEXT_CLIENT_PREDICTION client_id=A confirmed=(\d+) position_x=([\d.eE+-]+) history=(\d+) corrections=(\d+)",
+                    line,
+                )
+                if match:
+                    predictions.append({
+                        "confirmed": int(match.group(1)),
+                        "position_x": float(match.group(2)),
+                        "history": int(match.group(3)),
+                        "corrections": int(match.group(4)),
+                    })
+                match = re.fullmatch(
+                    r"ENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=(\d+) position_x=([\d.eE+-]+) status=(\w+) samples=(\d+)",
+                    line,
+                )
+                if match:
+                    remotes.append({
+                        "entity_id": int(match.group(1)),
+                        "position_x": float(match.group(2)),
+                        "status": match.group(3),
+                        "samples": int(match.group(4)),
+                    })
         result["welcomes"] = welcomes
         result["server_sessions"] = sessions
+        result["predictions"] = predictions
+        result["remotes"] = remotes
         valid = (
             server_process.returncode == 0
             and all(item["returncode"] == 0 and not item["stderr"] for item in client_results)
@@ -159,6 +187,15 @@ def run_handshake(server, client, report_path):
             and len({item["peer_id"] for item in sessions}) == 2
             and {(item["session_id"], item["entity_id"]) for item in welcomes}
             == {(item["session_id"], item["entity_id"]) for item in sessions}
+            and len(predictions) == 1
+            and predictions[0]["confirmed"] == 24
+            and predictions[0]["history"] == 0
+            and abs(predictions[0]["position_x"] - 3.072) < 0.001
+            and len(remotes) == 1
+            and remotes[0]["entity_id"] in {item["entity_id"] for item in sessions}
+            and remotes[0]["position_x"] > 0
+            and remotes[0]["status"] in {"interpolated", "held"}
+            and remotes[0]["samples"] >= 2
         )
         result["passed"] = valid
         if not valid:

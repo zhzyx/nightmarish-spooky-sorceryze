@@ -61,6 +61,7 @@ public:
 	SessionManager(Runtime::World &in_stWorld, std::uint64_t nSeed);
 	[[nodiscard]] Runtime::RuntimeStatus CreateSession(PeerId in_nPeerId, const ClientHello &in_stHello, ServerWelcome &out_stWelcome, std::uint64_t &out_nSessionId);
 	[[nodiscard]] const Session *GetSession(PeerId in_nPeerId) const noexcept;
+	[[nodiscard]] const std::map<PeerId, Session> &GetSessions() const noexcept;
 	[[nodiscard]] std::size_t GetSessionCount() const noexcept;
 	[[nodiscard]] bool RemoveSession(PeerId in_nPeerId) noexcept;
 };

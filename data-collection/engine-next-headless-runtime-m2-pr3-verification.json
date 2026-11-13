@@ -1,0 +1,150 @@
+{
+  "authoritative_movement_verified": true,
+  "clean_source": {
+    "clean_handshake": "ENGINE_NEXT_HANDSHAKE clients=2 distinct_sessions=2 distinct_entities=2 status=ok\n{\n  \"report\": \"/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr2/.worktrees/engine-next-headless-runtime-m2-pr3/build/engine_next/clean-m2-pr3/build/engine_next/clang-release/CleanRun/HandshakeReport.json\",\n  \"trace_sha256\": {\n    \"server.jsonl\": \"874a0701bd716a4d480a7ecac2d6036cce4da32e5c034645812fe431d191afd5\",\n    \"client-A.jsonl\": \"30fb4cc7abf2a89a635c1b86c61be1f6a1699453dba4d155973d8c1133ef86d7\",\n    \"client-B.jsonl\": \"369416126ef7a1eada019480bbbb783cfb293edfbd1d30a5494e08cfbddc7b2d\"\n  }\n}",
+    "contract_state": "contract_passed",
+    "file_count": 81,
+    "godot_roots_present": [],
+    "handshake": "ENGINE_NEXT_HANDSHAKE clients=2 distinct_sessions=2 distinct_entities=2 status=ok\n{\n  \"report\": \"/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr2/.worktrees/engine-next-headless-runtime-m2-pr3/build/engine_next/clean-m2-pr3/build/engine_next/clang-release/HandshakeReport.json\",\n  \"trace_sha256\": {\n    \"server.jsonl\": \"874a0701bd716a4d480a7ecac2d6036cce4da32e5c034645812fe431d191afd5\",\n    \"client-A.jsonl\": \"30fb4cc7abf2a89a635c1b86c61be1f6a1699453dba4d155973d8c1133ef86d7\",\n    \"client-B.jsonl\": \"369416126ef7a1eada019480bbbb783cfb293edfbd1d30a5494e08cfbddc7b2d\"\n  }\n}",
+    "manifest_sha256": "e654c5a825a636a51e7c3510c3ce3cf4a6c66ae04ce8c3ee5709b8f5ebf12ebc",
+    "native_key": "3fac2c4becd823ab30631848ed6a4df2e9b49c267b79c373645b15cbfa553d41"
+  },
+  "godot_free_runtime_verified": false,
+  "handshake": {
+    "clients": [
+      {
+        "client_id": "A",
+        "returncode": 0,
+        "stderr": ""
+      },
+      {
+        "client_id": "B",
+        "returncode": 0,
+        "stderr": ""
+      }
+    ],
+    "passed": true,
+    "predictions": [
+      {
+        "confirmed": 24,
+        "corrections": 0,
+        "history": 0,
+        "position_x": 3.072
+      }
+    ],
+    "remotes": [
+      {
+        "entity_id": 1,
+        "position_x": 0.4,
+        "samples": 5,
+        "status": "interpolated"
+      }
+    ],
+    "server_returncode": 0,
+    "server_sessions": [
+      {
+        "entity_id": 1,
+        "peer_id": 1,
+        "session_id": 1
+      },
+      {
+        "entity_id": 2,
+        "peer_id": 2,
+        "session_id": 2
+      }
+    ],
+    "server_stderr": [],
+    "trace_sha256": {
+      "client-A.jsonl": "30fb4cc7abf2a89a635c1b86c61be1f6a1699453dba4d155973d8c1133ef86d7",
+      "client-B.jsonl": "369416126ef7a1eada019480bbbb783cfb293edfbd1d30a5494e08cfbddc7b2d",
+      "server.jsonl": "874a0701bd716a4d480a7ecac2d6036cce4da32e5c034645812fe431d191afd5"
+    },
+    "welcomes": [
+      {
+        "client_id": "A",
+        "entity_id": 1,
+        "session_id": 1
+      },
+      {
+        "client_id": "B",
+        "entity_id": 2,
+        "session_id": 2
+      }
+    ]
+  },
+  "integration_base": "4eacf441827cf6a3446811bebec8d59b1c04b118",
+  "issue_number": 1042,
+  "m1_regression": {
+    "clean_run_summary": "ENGINE_NEXT_BENCHMARK model_steps=1000000 buffer_operations=50000 buffer_capacity=4096 repetitions=5 model_median_us=4959 buffer_median_us=163918 model_checksum=3325757522 buffer_checksum=4097\nENGINE_NEXT_TEST_SUMMARY tests=16 checks=200161 failures=0",
+    "contract_state": "contract_passed",
+    "test_summary": "ENGINE_NEXT_BENCHMARK model_steps=1000000 buffer_operations=50000 buffer_capacity=4096 repetitions=5 model_median_us=4902 buffer_median_us=165636 model_checksum=3325757522 buffer_checksum=4097\nENGINE_NEXT_TEST_SUMMARY tests=16 checks=200161 failures=0",
+    "trace_sha256": "f55d1f5bc85bb72376d3f31cdf9b64aac91e714b6556dbce1663c1db7995924c"
+  },
+  "native_invalidation": {
+    "before_default_ticks": 1,
+    "before_native_key": "3fac2c4becd823ab30631848ed6a4df2e9b49c267b79c373645b15cbfa553d41",
+    "changed_default_ticks": 2,
+    "changed_native_key": "393136dac100bde0b6b7a970757c11b823b36ffe1024c5bb67b4d45db5821aad",
+    "input": "engine_next/include/EngineNext/Runtime/RuntimeConfig.h",
+    "key_changed": true,
+    "restored": true,
+    "restored_default_ticks": 1,
+    "restored_native_key": "3fac2c4becd823ab30631848ed6a4df2e9b49c267b79c373645b15cbfa553d41"
+  },
+  "platform": {
+    "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.5)",
+    "machine": "arm64",
+    "system": "Darwin",
+    "version": "macOS-15.3.1-arm64-arm-64bit"
+  },
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "runtime": {
+    "archive_members": [
+      "callbacks-f34564fffb77.o",
+      "compress-48eeab6d39eb.o",
+      "host-e2a86d64053e.o",
+      "list-19b825331579.o",
+      "packet-283e90f39233.o",
+      "peer-700bb676de1c.o",
+      "protocol-68e61ddde0b0.o",
+      "unix-b141a2d297e3.o",
+      "PredictionModel-5a357cf38997.o",
+      "InterpolationBuffer-166ffe10fb79.o",
+      "PredictionReconciler-08c766e9b2a5.o",
+      "Clock-c5e01cdd2d0c.o",
+      "FixedStepLoop-0c30f3ebe17a.o",
+      "World-ae038771d982.o",
+      "Trace-067678dcf50f.o",
+      "RuntimeConfig-ac28ea2836d0.o",
+      "RuntimeHost-1ec74b5d1c67.o",
+      "Protocol-07cac1f4dd8f.o",
+      "EnetTransport-a21198ce06b1.o",
+      "SessionManager-1b22215cabf0.o",
+      "ServerRuntime-4843e15ad2c6.o",
+      "ClientRuntime-98084eaa3664.o"
+    ],
+    "clean_test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=10 checks=141 failures=0",
+    "contract_state": "contract_passed",
+    "local_includes": 96,
+    "native_key": "3fac2c4becd823ab30631848ed6a4df2e9b49c267b79c373645b15cbfa553d41",
+    "source_files": 66,
+    "test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=10 checks=141 failures=0"
+  },
+  "sanitizer": {
+    "handshake": "ENGINE_NEXT_HANDSHAKE clients=2 distinct_sessions=2 distinct_entities=2 status=ok\n{\n  \"report\": \"/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr2/.worktrees/engine-next-headless-runtime-m2-pr3/build/engine_next/clang-m2-pr3-sanitize/HandshakeReport.json\",\n  \"trace_sha256\": {\n    \"server.jsonl\": \"17ef35123c3e4be389fe50d2ed250b1fb2ffa4d417edfeab9ec6d9d41b36d0f7\",\n    \"client-A.jsonl\": \"30fb4cc7abf2a89a635c1b86c61be1f6a1699453dba4d155973d8c1133ef86d7\",\n    \"client-B.jsonl\": \"369416126ef7a1eada019480bbbb783cfb293edfbd1d30a5494e08cfbddc7b2d\"\n  }\n}",
+    "native_key": "50557c3d24705e8209053bc94ac2bbd820e1cd08f17a8ca39d18a5a84b284847",
+    "test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=10 checks=141 failures=0"
+  },
+  "schema_version": 1,
+  "slice": "pr3_authoritative_movement_prediction_interpolation",
+  "static_validation": {
+    "clang_format": "22.1.5 passed on first-party files",
+    "codespell": "2.4.2 passed on first-party paths; upstream directory excluded",
+    "git_diff_cached_check": "passed",
+    "ruff": "0.17.1 check and format passed"
+  },
+  "unverified": [
+    "Windows MSVC and Linux x86_64 require exact-candidate CI receipts",
+    "Impairment-driven correction, reconnect, stale_held, graceful drain and 10000-tick stability are not in this slice"
+  ]
+}
