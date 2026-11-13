@@ -38,3 +38,10 @@
 - 仅对上游 C 编译单元增加 `/wd5287`，并按 CI 的 clang-format 22.1.5 处理第一方文件，不改变告警策略或上游实现。
 - 本机运行时测试、三份契约、Sanitizer、真实 UDP 握手和 78 文件干净源码树再次通过。
 - R2 继续采用追加证据，新精确候选的 Windows、macOS 和静态 CI 必须重新回读。
+
+## R3 Winsock 弃用 API 修正
+
+- PR #1062 的静态检查和 macOS 已通过，Windows 剩余 `win32.c` 的 C4996：`gethostbyname`／`gethostbyaddr` 弃用告警。
+- 按 MSVC 提示，仅为上游 ENet 的 C 编译单元定义 `_WINSOCK_DEPRECATED_NO_WARNINGS`，不全局关闭弃用告警，也不改变上游网络实现。
+- 本机运行时测试、三份契约、Sanitizer、真实 UDP 握手和 78 文件干净源码树再次通过。
+- R3 继续追加证据，新精确候选的 Windows、macOS 和静态 CI 必须重新回读。
