@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-e83532f98164a9e5cf2392952b6bca61f0c38798589e682b0e2b5191e8759de8",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "occurred_at": "2026-11-13T14:10:41.324979+00:00",
+  "evidence_refs": [
+    "kuafu-d0d1527df3a8132b190a5c7db0cd90cd666f7298",
+    "learn-6dabe8e2ac66d376e4e3af46fcc8190d839d695e3e3995e11d93dd1db2bffcc2"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "isolate-validation-output-during-build",
+    "revision": 2,
+    "previous": "ab8f94d39b4b5f0438b96061a093905eae7a461f61bd4fe350431a57849bdc15",
+    "action": "revise",
+    "details": {
+      "method": "Keep parallel validation outputs and type-checker caches outside the frozen build workspace when conservative native-input detection includes unclassified ignored files. Snapshot source inputs before and after, and record a guard rejection separately from compiler or test success. This revision refreshes only the evidence binding after a referenced report byte-count correction; the proposed method and unexecuted paired trial remain unchanged.",
+      "when": "Windows Godot native wrapper builds combined with concurrent validation or evidence preparation in the same checkout.",
+      "counterexample": "Unchanged tracked source hashes alone do not prove unchanged build inputs: ignored nested output and cache files can participate. This does not justify excluding real generator inputs or relaxing the guard.",
+      "trial_plan": "In a future isolated paired experiment, change one controlled ignored validation file during a build and require guard rejection; move equivalent validation output outside the checkout and require stable key and successful wrapper with identical source inputs. Record full key-input differences before considering this proposal verified."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-parent-recovery-main1061-773.json",
+        "sha256": "37d15fad0e78a460f8e5cbb6b8e995334c874a56a1bc849c4bb2f17fc505426c"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/kuafu-d0d1527df3a8132b190a5c7db0cd90cd666f7298.json",
+      "sha256": "175474ac5734dc7cb0f10de7f22650907117f6780c331d5ff86afdf1fdc7e270"
+    }
+  },
+  "sha256": "cecccdaf720e0f362ff817ee467b571dd0bbf5e713ad66f8dfef4fc2970541ca"
+}

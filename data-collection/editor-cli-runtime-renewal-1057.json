@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "issue": 1057,
+  "parent_issue": 773,
+  "request_id": "editor-cli-runtime-renewal-20261113",
+  "path_base": "Repository paths resolve from repository root; private receipt names resolve only within the owning acceptance host receipt directory. Private paths and account configuration are not published.",
+  "installed_main": "da9bfac7b5036f24d9657179d394dc2db3a66526",
+  "engine_sha256": "63a356e5679302b842ca14a4ddcdb9a463dc642c59c0fa4d5323e755d1c44148",
+  "problem": "The saved Windows CLI path referenced a removed application package. The registered replacement package contained a working executable.",
+  "runtime_repair": {
+    "entry": "AIChatDock.set_runtime_field(codex, verified replacement executable), then public RefreshModels button",
+    "configuration_changed_fields": [
+      "/runtimes/codex"
+    ],
+    "old_executable_exists": false,
+    "replacement_executable_exists": true,
+    "replacement_executable_sha256": "83f5c2dd2ac2902e0d96ba5d8ccdd27d513f57df4a9ab73e06a5a518028e9a2f",
+    "actual_cli_version": "codex-cli 0.167.0-alpha.4.1",
+    "version_readback_exit_code": 0,
+    "public_setter_acknowledged": true,
+    "catalog": {
+      "backend": 2,
+      "state": "ready",
+      "catalog_current": true,
+      "current": "gpt-6.1-sol",
+      "loading": false
+    },
+    "discovered_model_count": 8,
+    "no_backend_reselection": true
+  },
+  "original_parent": {
+    "parent_id": 20,
+    "conversation_id": "31716a3785fe5e847f49e75b41f8478b",
+    "game_issue": "https://github.com/Sail-Li/gonggong-editor-production-acceptance/issues/4",
+    "request_id": "requirement-93e081af388f1c586c3cf933ab87fa32",
+    "binding_recovery": "Cold parent lacked saved Issue binding. Existing public LineEdit controls restored the current open original Issue and exact request ID; a separate 951 fix owns durable binding and design confirmation.",
+    "numeric_input_correction": "First driver input displayed 4.0 because JSON numbers are floating point in GDScript. No request was sent then. A second public edit set literal 4 before sending the status request; both acknowledgments are retained.",
+    "status_request": {
+      "action": "status",
+      "read_only": true
+    },
+    "observed_parent_reply": "Earlier r14 model status text agreed with persisted producer state but its full tool result was removed by normal completed-turn cleanup. A later separately captured r16 public tool detail now independently proves a real status result; no original producer was continued or accepted.",
+    "parent_idle_after_request": true,
+    "original_terminal_sha256": {
+      "21": "36cca4e2ec8f0170eccb565a8f98f14adf68d1c4618c77347f1e8599dd9d7556",
+      "22": "dd0004b6ffb45d12a8090b548baae3e277bd0c2a30707b1b0263fe3061208810"
+    },
+    "dependent_23": "Interrupted, no original execution or terminal; not dispatched by this runtime repair.",
+    "tool_status_observation": {
+      "observation": "A new r16 request was captured from the real public AIToolDetails dialog during the actual tool turn, before normal completed-turn cleanup. This does not retroactively create a receipt for r14 or r15.",
+      "entry": "Existing displayed RichTextLabel metadata link, then read-only TextEdit and normal dialog OK button",
+      "arguments": {
+        "action": "status"
+      },
+      "result": {
+        "items": [
+          {
+            "accepted": false,
+            "automatic_repairs": 0.0,
+            "blocked_reason": "producer_not_known_unaccepted_terminal",
+            "candidate_sha256": "07eb70b038b8470ba9e2d9b3f78a93b1b69a6c918b0c52d5b9b570e51fecb3ed",
+            "eligible_actions": [],
+            "execution_id": "4352edd7-48c4-470b-871a-ba266a0cbe1e",
+            "operations": [],
+            "parent_repairs": 0.0,
+            "producer_id": 21.0,
+            "state": "review",
+            "work_order": 1.0
+          },
+          {
+            "accepted": false,
+            "automatic_repairs": 0.0,
+            "blocked_reason": "producer_not_known_unaccepted_terminal",
+            "candidate_sha256": "87bcc4684f21bd90180d44da498ac3fae2d04aa6c678e3e256ef566fae06b849",
+            "eligible_actions": [],
+            "execution_id": "ab1d1e60-6d94-41d9-9c42-94b9fdad0894",
+            "operations": [],
+            "parent_repairs": 0.0,
+            "producer_id": 22.0,
+            "state": "review",
+            "work_order": 2.0
+          },
+          {
+            "accepted": false,
+            "automatic_repairs": 0.0,
+            "blocked_reason": "producer_not_known_unaccepted_terminal",
+            "candidate_sha256": "",
+            "eligible_actions": [],
+            "execution_id": "",
+            "operations": [],
+            "parent_repairs": 0.0,
+            "producer_id": 23.0,
+            "state": "interrupted",
+            "work_order": 3.0
+          }
+        ],
+        "ok": true
+      },
+      "raw_detail_sha256": "0cfd5bc6fde6b6a432189f1b3c4cf7e4dcafe915d061e0cd3aa3a8eaef04882c",
+      "result_sha256": "d1a014d837c0d94178415f10f99a41e69964f5fa1d56c72e3937c14a4c6cb970",
+      "same_parent_id": 20,
+      "same_model": {
+        "metadata": "gpt-6.1-sol",
+        "selected": 1,
+        "text": "GPT-6.1-Sol"
+      },
+      "actual_tool_success": true,
+      "business_acceptance": false
+    }
+  },
+  "scope": "Real account and formally installed editor in the original owned acceptance installation. The driver calls public controls/API; no provider response, game implementation, history, terminal or approval receipt is injected.",
+  "remaining": [
+    "Independent review and evidence delivery.",
+    "Issue951 explicit design reconfirmation, producer repair/review and downstream acceptance.",
+    "Parent773 full Godot editor production scope remains open."
+  ],
+  "rollback": "Original runtime configuration is retained byte-for-byte privately. The removed old executable is unavailable; restoring its path is not claimed to restore a usable runtime.",
+  "raw_receipts": [
+    {
+      "private_receipt_name": "cli-renewal-config-before.json",
+      "sha256": "01330b22964e17214eafbdd88b02c6354156abe9b91785cc5c2c7939b7dd8138",
+      "bytes": 330
+    },
+    {
+      "private_receipt_name": "live-actual-r13/launch.json",
+      "sha256": "317b2cea3b029a177f77788b087fd39be9ea322f7817a9eb7e5e8dd407e959b2",
+      "bytes": 85505
+    },
+    {
+      "private_receipt_name": "live-actual-r13/ready.json",
+      "sha256": "b1e4fd421a2954c9f0a86e6c049a91992db26010b89baecbdcb588bdfaf23a97",
+      "bytes": 336964
+    },
+    {
+      "private_receipt_name": "live-actual-r13/ack-1.json",
+      "sha256": "4935a324569cb12819db30464099258cbb4b687b0f46c17f82f1bee0b1e2e71d",
+      "bytes": 336988
+    },
+    {
+      "private_receipt_name": "live-actual-r13/ack-2.json",
+      "sha256": "d043a8438564a1459f660500c23df72289262708fec726a204503aee3a0a9d5f",
+      "bytes": 339020
+    },
+    {
+      "private_receipt_name": "live-actual-r13/ack-3.json",
+      "sha256": "ccdb7ad6e730ead6c157e37263379bc4e5c30a803d82916290f35f2a273e7db7",
+      "bytes": 339037
+    },
+    {
+      "private_receipt_name": "live-actual-r13/ack-5.json",
+      "sha256": "f6ae6aa9b4b63c8a735678794b71e1c2d17e9d80bac69a3c30882e69038ae450",
+      "bytes": 339923
+    },
+    {
+      "private_receipt_name": "live-actual-r13/exit.json",
+      "sha256": "81868a6e94ffc0178bf833deb1c9013d9fab4ee95ddb876a5e8ec4f1d26376d2",
+      "bytes": 21
+    },
+    {
+      "private_receipt_name": "live-actual-r14/launch.json",
+      "sha256": "316d1f155f05cf69b2041925b2de773d456c9aa607089e06464e4cf4f2dad924",
+      "bytes": 85505
+    },
+    {
+      "private_receipt_name": "live-actual-r14/ready.json",
+      "sha256": "53ce7c4a81d2c3698971dbc1d5c78118178d0c8e7f5c284ac8ade75cfb2b717d",
+      "bytes": 337803
+    },
+    {
+      "private_receipt_name": "live-actual-r14/ack-1.json",
+      "sha256": "d2b202635db60db633146d1b85991e7457a0686f2e18185942994615ed50dbf8",
+      "bytes": 340020
+    },
+    {
+      "private_receipt_name": "live-actual-r14/ack-2.json",
+      "sha256": "0fac66a64f846a3e3a6750d9b75977e6952e6aaa38fab83dfbdebaadc6f74a00",
+      "bytes": 340019
+    },
+    {
+      "private_receipt_name": "live-actual-r14/ack-3.json",
+      "sha256": "40ddc3c194514d1da0af9b01dcd51522a5517783e2736c419339ef25b7e1ee6c",
+      "bytes": 340625
+    },
+    {
+      "private_receipt_name": "live-actual-r14/ack-5.json",
+      "sha256": "a95fcdbc64a28213ef3946fcca1bfd3a246f47e248bab0a409680a685f5f8bd4",
+      "bytes": 341386
+    },
+    {
+      "private_receipt_name": "cli-renewal-version-readback.json",
+      "sha256": "9fedeed3e4f4d062e522ba2a5ca50d9148860a15749d1e5db5b3a07e39d42409",
+      "bytes": 499
+    },
+    {
+      "private_receipt_name": "production-status-detail-capture-r15-original.gd",
+      "sha256": "26e1dc6e2dbd9f57547f8a600a01f26b6166906f7598af1d9cf9a3a05b73adf3",
+      "bytes": 6837
+    },
+    {
+      "private_receipt_name": "production-status-detail-helper-r16-diagnosis.json",
+      "sha256": "c5e11771e331e47afb85680a066e33b11a19daaca60e12dbc19c5ce3e4aac8fb",
+      "bytes": 5083
+    },
+    {
+      "private_receipt_name": "native-detail-handler-probe-d1ed6c4f/result.json",
+      "sha256": "2f3345680ccb297a46d802b25dc0f6ca8888fe0da7d20ce3f4b82413b29d658c",
+      "bytes": 4748
+    },
+    {
+      "private_receipt_name": "live-actual-r15/status-observation-state.json",
+      "sha256": "578617d348aa5f2639b90c82706f6ffcd4e2427064037d6a90a55e040ea365b0",
+      "bytes": 56
+    },
+    {
+      "private_receipt_name": "live-actual-r16/launch.json",
+      "sha256": "213f0f5d98a281e2b98605936b0b019161ed8f384eed81f90a4a94a8421e0bc3",
+      "bytes": 85505
+    },
+    {
+      "private_receipt_name": "live-actual-r16/ready.json",
+      "sha256": "cfc12d06bfcb10c3406663d421bc96d7728baaabea85ca5b8ad475374484e662",
+      "bytes": 340828
+    },
+    {
+      "private_receipt_name": "live-actual-r16/ack-1.json",
+      "sha256": "53dc346af1c99c23db472dd957da8552f987f8cc57b37bd238931e7ebd616329",
+      "bytes": 343120
+    },
+    {
+      "private_receipt_name": "live-actual-r16/ack-2.json",
+      "sha256": "fb16b38ed5068808fc314cf131d59a6bbf46c3fc0b8064430517a5e370c64f59",
+      "bytes": 343604
+    },
+    {
+      "private_receipt_name": "live-actual-r16/status-observation-state.json",
+      "sha256": "4947e4f496a3121991ed467132a46d85e3a78987250c89cab55171465cc2c68e",
+      "bytes": 262
+    },
+    {
+      "private_receipt_name": "live-actual-r16/production-status-detail.json",
+      "sha256": "71f38486852f259a3ecba23fb45b19c04f0c15184a2d48f9ea3bd537f3005fa7",
+      "bytes": 3992
+    }
+  ],
+  "observation_fixture_failures": "The r15 observer rejected the native custom Callable method spelling and captured no full result. Its failure and original helper bytes remain preserved. An isolated no-provider probe verified the exact native handler and refusal behavior before r16; that helper is private acceptance instrumentation, not a product change."
+}

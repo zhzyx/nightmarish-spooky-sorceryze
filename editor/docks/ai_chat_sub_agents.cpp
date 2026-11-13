@@ -32,6 +32,7 @@
 
 #include "core/config/project_settings.h"
 #include "core/crypto/crypto_core.h"
+#include "core/io/config_file.h"
 #include "core/io/dir_access.h"
 #include "core/io/file_access.h"
 #include "core/io/json.h"
@@ -1397,9 +1398,23 @@ void AIChatDock::_confirm_design_action() {
 	const int parent = action.get("parent", -1);
 	const int child = action.get("child", -1);
 	const String actor = local_design_operator();
+	const Variant absent = "missing-design-metadata:" + itos(Time::get_singleton()->get_ticks_usec()) + ":" + itos(get_instance_id());
 	if (actor.is_empty() || parent != _sub_agent_root(active_agent) || busy || !history_writable || !allow_tools->is_pressed() || consultation_only->is_pressed() ||
 			action.get("binding", Dictionary()) != _read_design(parent).get("binding", Variant())) {
 		_append(TTR("Editor"), U"操作者、权限或设计版本已变化，请重新核对后确认。");
+		return;
+	}
+	if (bool(action.get("restore_confirmation", false))) {
+		Dictionary children;
+		for (int id : _sub_agent_children(parent, false)) {
+			children[id] = sub_agents[id];
+		}
+		if (parent != active_agent || conversation_id != String(action.get("conversation_id", "")) || snapshot_id != String(action.get("snapshot_id", "")) ||
+				children != Dictionary(action.get("children", Dictionary()))) {
+			_append(TTR("Editor"), U"原父会话或工单记录已变化，请重新核对后确认。");
+			return;
+		}
+		_spawn_work_order_agents(parent, true, action.get("approval", Dictionary()));
 		return;
 	}
 	if (child >= 0) {
@@ -1414,7 +1429,17 @@ void AIChatDock::_confirm_design_action() {
 		acceptance["receipt"] = action["receipt"];
 		acceptance["evidence"] = evidence;
 		acceptance["number"] = itos(int(sub_agents[child]["number"]));
+		const Variant previous = EditorSettings::get_singleton()->get_project_metadata("design_acceptances", design_record_key(action["binding"], parent, child), absent);
 		EditorSettings::get_singleton()->set_project_metadata("design_acceptances", design_record_key(action["binding"], parent, child), acceptance);
+		EditorSettings::get_singleton()->save_project_metadata();
+		Ref<ConfigFile> persisted;
+		persisted.instantiate();
+		if (persisted->load(EditorPaths::get_singleton()->get_project_settings_dir().path_join("project_metadata.cfg")) != OK ||
+				!persisted->has_section_key("design_acceptances", design_record_key(action["binding"], parent, child)) || persisted->get_value("design_acceptances", design_record_key(action["binding"], parent, child)) != Variant(acceptance)) {
+			EditorSettings::get_singleton()->set_project_metadata("design_acceptances", design_record_key(action["binding"], parent, child), previous == absent ? Variant() : previous);
+			_append(TTR("Editor"), U"验收记录未能保存到本机，未放行后续工单。");
+			return;
+		}
 		sub_agents[child]["acceptance"] = acceptance;
 		_append(TTR("Editor"), U"已记录该工单的验收证据，继续检查后续依赖。");
 		_queue_history_save();
@@ -1426,6 +1451,8 @@ void AIChatDock::_confirm_design_action() {
 		return;
 	}
 	Dictionary approval;
+	const bool had_parent_confirmation = parent_confirmed_designs.has(parent);
+	const Dictionary previous_parent_confirmation = had_parent_confirmation ? parent_confirmed_designs[parent] : Dictionary();
 	approval["binding"] = action["binding"];
 	approval["operator"] = actor;
 	if (bool(_read_design(parent).get("parent_completion_requested", false))) {
@@ -1436,7 +1463,22 @@ void AIChatDock::_confirm_design_action() {
 		approval["parent_confirmation_source"] = parent_confirmation_sources[parent];
 		parent_confirmed_designs.insert(parent, approval.duplicate(true));
 	}
+	const Variant previous = EditorSettings::get_singleton()->get_project_metadata("design_confirmations", design_record_key(action["binding"], parent), absent);
 	EditorSettings::get_singleton()->set_project_metadata("design_confirmations", design_record_key(action["binding"], parent), approval);
+	EditorSettings::get_singleton()->save_project_metadata();
+	Ref<ConfigFile> persisted;
+	persisted.instantiate();
+	if (persisted->load(EditorPaths::get_singleton()->get_project_settings_dir().path_join("project_metadata.cfg")) != OK ||
+			!persisted->has_section_key("design_confirmations", design_record_key(action["binding"], parent)) || persisted->get_value("design_confirmations", design_record_key(action["binding"], parent)) != Variant(approval)) {
+		EditorSettings::get_singleton()->set_project_metadata("design_confirmations", design_record_key(action["binding"], parent), previous == absent ? Variant() : previous);
+		if (had_parent_confirmation) {
+			parent_confirmed_designs.insert(parent, previous_parent_confirmation);
+		} else {
+			parent_confirmed_designs.erase(parent);
+		}
+		_append(TTR("Editor"), U"设计确认未能保存到本机，未启动生产工单。");
+		return;
+	}
 	_spawn_work_order_agents(parent, true, approval);
 }
 
@@ -1485,13 +1527,111 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit, const D
 	const Vector<int> existing = _sub_agent_children(p_parent, true, request_id);
 	if (!existing.is_empty()) {
 		if (p_explicit) {
-			const Dictionary binding = _read_design(p_parent).get("binding", Dictionary());
+			const Dictionary parsed = _read_design(p_parent);
+			const Dictionary binding = parsed.get("binding", Dictionary());
 			for (int id : existing) {
 				const Dictionary approval = sub_agents[id].get("design_approval", Dictionary());
 				if (binding.is_empty() || approval.get("binding", Variant()) != Variant(binding)) {
 					_append(TTR("Editor"), U"原工单缺少该设计版本的定版记录。请恢复已确认版本，或核对并关闭旧工单子会话后重新定版派发。");
 					return false;
 				}
+			}
+			EditorSettings *settings = EditorSettings::get_singleton();
+			const String key = design_record_key(binding, p_parent);
+			const Variant absent = "missing-design-metadata:" + itos(Time::get_singleton()->get_ticks_usec()) + ":" + itos(get_instance_id());
+			const Variant recorded = settings->get_project_metadata("design_confirmations", key, absent);
+			const Dictionary approval = sub_agents[existing[0]].get("design_approval", Dictionary());
+			if (!p_approval.is_empty() && recorded != absent) {
+				_append(TTR("Editor"), U"本机确认记录在对话框打开后发生变化，未恢复或启动生产。请重新核对。");
+				return false;
+			}
+			if (recorded != absent && recorded != Variant(approval)) {
+				_append(TTR("Editor"), U"本机设计确认与原工单冲突，未覆盖记录或继续生产。");
+				return false;
+			}
+			if (recorded == absent) {
+				const String actor = local_design_operator();
+				const Array orders = parsed.get("orders", Array());
+				Ref<ConfigFile> disk;
+				disk.instantiate();
+				const String path = EditorPaths::get_singleton()->get_project_settings_dir().path_join("project_metadata.cfg");
+				const Error loaded = disk->load(path);
+				bool eligible = p_parent == active_agent && !busy && !queue_paused && queued_messages.is_empty() && history_writable && !snapshot_restoring && !snapshot_transaction_failed && engine_build_pid < 0 && !engine_restart_requested &&
+						!actor.is_empty() && approval.get("operator", "") == actor && existing.size() == orders.size() &&
+						gonggong_receipt_pid < 0 && sub_agent_parallel_pid < 0 && production_integration_job.is_empty() && parent_completion_job.is_empty() &&
+						(loaded == OK || loaded == ERR_FILE_NOT_FOUND) && !disk->has_section_key("design_confirmations", key);
+				Dictionary children;
+				HashSet<int> indices;
+				for (int id : _sub_agent_children(p_parent, false)) {
+					const Dictionary info = sub_agents[id];
+					children[id] = info.duplicate(true);
+					const String state = info.get("state", "");
+					const bool never_started = (state == "waiting" || (state == "interrupted" && info.get("state_before_restore", "") == "waiting")) &&
+							!info.has("parallel_assignment") && !info.has("execution_id") && !info.has("terminal_receipt") && !bool(info.get("parallel_external", false)) &&
+							!info.has("parallel_receipt") && !info.has("parallel_output") && !info.has("produced_candidate");
+					bool terminal = (state == "review" || state == "completed") && receipt_available(info.get("terminal_receipt", Dictionary()));
+					if (info.get("source", "") == "review" && state == "completed" && agent_sessions.has(id)) {
+						const AgentSession &session = agent_sessions[id];
+						const Ref<FileAccess> receipt = FileAccess::open(_snapshot_path(session.snapshot_id) + ".tool-receipts.json", FileAccess::READ);
+						if (receipt.is_valid() && receipt->get_length() <= 16 * 1024 * 1024) {
+							const Variant parsed_receipt = JSON::parse_string(receipt->get_as_utf8_string());
+							const Dictionary envelope = parsed_receipt.get_type() == Variant::DICTIONARY ? Dictionary(parsed_receipt) : Dictionary();
+							const String payload = envelope.get("payload", "");
+							const Variant parsed_payload = payload.is_empty() ? Variant() : JSON::parse_string(payload);
+							const Dictionary observed = parsed_payload.get_type() == Variant::DICTIONARY ? Dictionary(parsed_payload) : Dictionary();
+							terminal = !payload.is_empty() && payload.sha256_text() == String(envelope.get("sha256", "")) &&
+									observed.get("source", "") == "current_host_design_batch" && int(observed.get("child_id", -1)) == id &&
+									observed.get("state", "") == "completed" && observed.get("transport_completed", Variant()) == Variant(true) &&
+									observed.get("conversation_id", "") == session.conversation_id && observed.get("snapshot_id", "") == session.snapshot_id;
+						}
+					}
+					eligible = eligible && (never_started || terminal) &&
+							!info.has("pending_parent_operation") && info.get("request_id", "") == request_id && int64_t(info.get("issue_number", 0)) == issue;
+					if (info.get("source", "") == "design") {
+						const int index = int(info.get("work_order", 0)) - 1;
+						eligible = eligible && info.get("design_approval", Dictionary()) == Variant(approval) && index >= 0 && index < orders.size() && !indices.has(index);
+						indices.insert(index);
+						if (index >= 0 && index < orders.size()) {
+							const Dictionary order = orders[index];
+							eligible = eligible && int(info.get("number", 0)) == int(order.get("number", -1)) && info.get("title", "") == order.get("title", "");
+						}
+					}
+				}
+				for (const KeyValue<int, Dictionary> &job : acceptance_bridge_jobs) {
+					eligible = eligible && int(job.value.get("parent", -1)) != p_parent && !children.has(job.key);
+				}
+				if (bool(parsed.get("parent_completion_requested", false))) {
+					eligible = eligible && parent_confirmation_sources.has(p_parent) && approval.get("parent_confirmation_source", Variant()) == Variant(parent_confirmation_sources[p_parent]);
+				}
+				if (!eligible || (!p_approval.is_empty() && p_approval != approval)) {
+					_append(TTR("Editor"), U"本机缺少原设计确认，但原操作者、来源、工单或在途状态尚不能核实。未恢复确认，也未派发生产；请核对原父会话及真实终态。");
+					return false;
+				}
+				if (p_approval.is_empty()) {
+					pending_design_action.clear();
+					pending_design_action["restore_confirmation"] = true;
+					pending_design_action["parent"] = p_parent;
+					pending_design_action["binding"] = binding;
+					pending_design_action["approval"] = approval.duplicate(true);
+					pending_design_action["children"] = children;
+					pending_design_action["conversation_id"] = conversation_id;
+					pending_design_action["snapshot_id"] = snapshot_id;
+					design_summary->set_text(vformat(U"本机缺少已有工单的设计确认。由原操作者 %s 重新确认原版本？\nIssue #%d · %s\n%s\nSHA-256 %s\n\n本次仅保存确认记录。原工单、终态、审查与验收记录保持原样；随后需要再次显式继续生产。", actor, issue, request_id, String(binding["workspace"]), String(binding["sha256"])));
+					design_evidence->hide();
+					design_dialog->set_title(U"重新确认原设计");
+					design_dialog->popup_centered();
+					return false;
+				}
+				settings->set_project_metadata("design_confirmations", key, approval);
+				settings->save_project_metadata();
+				if (disk->load(path) != OK || !disk->has_section_key("design_confirmations", key) || disk->get_value("design_confirmations", key) != Variant(approval)) {
+					settings->set_project_metadata("design_confirmations", key, Variant());
+					_append(TTR("Editor"), U"原设计确认未能保存并回读，未恢复生产权限。请检查本机项目元数据目录。");
+					return false;
+				}
+				_append(TTR("Editor"), U"原操作者已重新确认并保存原设计版本；未启动任何工单。请核对后再次显式继续生产。");
+				_refresh_sub_agents();
+				return false;
 			}
 		}
 		return p_explicit && _resume_work_order_agents(p_parent, request_id);
@@ -3297,7 +3437,17 @@ bool AIChatDock::_finish_acceptance_review(int p_reviewer, const Array &p_histor
 	acceptance["reviewer"] = itos(p_reviewer);
 	context["verified_decision"] = decision;
 	context["verified_response"] = verified;
+	const Variant absent = "missing-design-metadata:" + itos(Time::get_singleton()->get_ticks_usec()) + ":" + itos(get_instance_id());
+	const Variant previous = EditorSettings::get_singleton()->get_project_metadata("design_acceptances", design_record_key(context["binding"], parent, producer), absent);
 	EditorSettings::get_singleton()->set_project_metadata("design_acceptances", design_record_key(context["binding"], parent, producer), acceptance);
+	EditorSettings::get_singleton()->save_project_metadata();
+	Ref<ConfigFile> persisted;
+	persisted.instantiate();
+	if (persisted->load(EditorPaths::get_singleton()->get_project_settings_dir().path_join("project_metadata.cfg")) != OK ||
+			!persisted->has_section_key("design_acceptances", design_record_key(context["binding"], parent, producer)) || persisted->get_value("design_acceptances", design_record_key(context["binding"], parent, producer)) != Variant(acceptance)) {
+		EditorSettings::get_singleton()->set_project_metadata("design_acceptances", design_record_key(context["binding"], parent, producer), previous == absent ? Variant() : previous);
+		return rejected("acceptance_persist_failed");
+	}
 	sub_agents[producer]["acceptance"] = acceptance;
 	_queue_history_save();
 	_save_history();

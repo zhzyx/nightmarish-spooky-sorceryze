@@ -209,6 +209,31 @@ jobs:
           path: runtime-report/*
           if-no-files-found: warn
 
+      - name: Parent binding survives interrupted editor shutdown
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor'
+        timeout-minutes: 5
+        run: |
+          $editor = '${{ matrix.bin }}'.Replace('.console.exe', '.exe')
+          python -X utf8 tests/editor/run_parent_binding_restart.py --godot $editor --out parent-recovery-report/binding.json
+
+      - name: Original design reconfirmation and independent continuation
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor'
+        timeout-minutes: 15
+        run: |
+          npm ci --prefix tools/codebuddy_cli --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:NATIVE_ACCEPTANCE_JOB_OBJECT = (Resolve-Path tools/codebuddy_cli/node_modules/@tencent-ai/codebuddy-code/bin/native/win32-x64/job-object.node).Path
+          $editor = '${{ matrix.bin }}'.Replace('.console.exe', '.exe')
+          python -X utf8 tests/editor/run_native_acceptance.py --godot $editor --node (Get-Command node).Source --scenario parallel-parent-restart --restore-confirmation --out parent-recovery-report/confirmation.json
+
+      - name: Upload parent recovery reports
+        if: always() && matrix.compiler == 'msvc' && matrix.target == 'editor'
+        uses: actions/upload-artifact@v7
+        with:
+          name: parent-binding-design-recovery
+          path: parent-recovery-report/*
+          if-no-files-found: warn
+
       - name: Tianshu native editor graph
         if: matrix.compiler == 'msvc' && matrix.target == 'editor' && github.event_name == 'workflow_dispatch' && (inputs.editor_only || inputs.daqian_build_run)
         run: |

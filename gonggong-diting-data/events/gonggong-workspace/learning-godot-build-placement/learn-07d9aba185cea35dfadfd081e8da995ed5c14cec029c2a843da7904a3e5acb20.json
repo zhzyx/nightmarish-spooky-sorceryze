@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-07d9aba185cea35dfadfd081e8da995ed5c14cec029c2a843da7904a3e5acb20",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "occurred_at": "2026-11-13T14:17:39.512957+00:00",
+  "evidence_refs": [
+    "kuafu-d0d1527df3a8132b190a5c7db0cd90cd666f7298",
+    "learn-e83532f98164a9e5cf2392952b6bca61f0c38798589e682b0e2b5191e8759de8"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "isolate-validation-output-during-build",
+    "revision": 3,
+    "previous": "cecccdaf720e0f362ff817ee467b571dd0bbf5e713ad66f8dfef4fc2970541ca",
+    "action": "revise",
+    "details": {
+      "method": "Keep parallel validation outputs and type-checker caches outside the frozen build workspace when conservative native-input detection includes unclassified ignored files. Snapshot source inputs before and after, and record a guard rejection separately from compiler or test success. This revision retains the original committed build report and binds its append-only length correction. The rejected in-place evidence-binding attempt remains historical; the proposed build method and unexecuted paired trial remain unchanged.",
+      "when": "Windows Godot native wrapper builds combined with concurrent validation or evidence preparation in the same checkout.",
+      "counterexample": "Unchanged tracked source hashes alone do not prove unchanged build inputs: ignored nested output and cache files can participate. This does not justify excluding real generator inputs or relaxing the guard.",
+      "trial_plan": "In a future isolated paired experiment, change one controlled ignored validation file during a build and require guard rejection; move equivalent validation output outside the checkout and require stable key and successful wrapper with identical source inputs. Record full key-input differences before considering this proposal verified."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-parent-recovery-main1061-773.json",
+        "sha256": "f3f62a307f769c9bf890764900fe19a93d9a5498dfe9a1425a726a508ecd609e"
+      },
+      {
+        "path": "data-collection/editor-installed-production-consumers-1054-773-length-correction.json",
+        "sha256": "f30c649ab2ff9962982c9f889e58d20a113f873b732b626997beca21b2b1bfd6"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/kuafu-d0d1527df3a8132b190a5c7db0cd90cd666f7298.json",
+      "sha256": "175474ac5734dc7cb0f10de7f22650907117f6780c331d5ff86afdf1fdc7e270"
+    }
+  },
+  "sha256": "9be5f49f30a3cf81852a9b01eab381a316d807ef8db0173eac3fc1dfa46bebce"
+}

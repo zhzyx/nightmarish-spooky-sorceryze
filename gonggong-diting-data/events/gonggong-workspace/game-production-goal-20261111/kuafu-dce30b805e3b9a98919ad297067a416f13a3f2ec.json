@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-dce30b805e3b9a98919ad297067a416f13a3f2ec",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c119dc2a406a50610308260e6137a2562c2e15c71efbe0032768f413c1e01293",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "delivery",
+    "detection_head": "481f0e820437f5e5d9218ee11ee2fe551109d86d",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/compare/481f0e820437f5e5d9218ee11ee2fe551109d86d...2acecd196a1968cdf71e43419d22bd83a262552f",
+    "diagnosis": "Writer correctly refused before signing because main advanced. Independent review found six documentation/evidence-only upstream files, no overlap with the reviewed 24-file candidate or eight implementation/fixture inputs. Fast-forward integration preserved all 24 file hashes. Existing native test evidence remains bound to actual 481f baseline; no new-baseline test execution is claimed.",
+    "next_action": "Bind independent review and formal gates to the new exact full index, then submit and verify CI/main before installing and exercising original production confirmation recovery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T13:41:32.730992+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": "Independent remaining acceptance planning continues; original game state and worker occupancy remain preserved."
+  },
+  "occurred_at": "2026-11-13T13:52:43.852441+00:00",
+  "sha256": "c464f526284726a08cd23aa74f907d3e31ca9bfdd06b801df99540133d526cc3"
+}

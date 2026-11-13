@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-eb6cbae8a59e6f8499b59e9b833d5cccc1fefe8b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3273a6572ebfadbb605b61e4b24c766e307d5b36a2e625ca956b98b58e6a8756",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+    "action": "delivery",
+    "detection_head": "a504f748fbfde27d37759c7ca81d656cdf41323c",
+    "context_sha256": "4ca80452a4693157b947e886ad72b242bb5e27502758d72f29ca95e7f41da09e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1065",
+    "diagnosis": "Formal validation and then writer correctly rejected an attempted in-place correction to committed collection reports. No new commit or publication resulted. Restored both reports to exact committed bytes and appended a separate correction for selected_results.bytes from 3344 to the measured 3241. Product and test inputs are unchanged. Earlier preparation events are retained as historical attempts, not applied delivery.",
+    "next_action": "Review the append-only correction and exact full candidate, rerun the formal gate, inspect its result before invoking writer, then verify replacement CI/main and installation.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T14:13:40.426330+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": "Installed long-command checks and private original-parent recovery preparation continue independently."
+  },
+  "occurred_at": "2026-11-13T14:17:19.593011+00:00",
+  "sha256": "164d0177ea762958666d0e93bacff5bee847d19ad12134eaf9e4c612956c1361"
+}
