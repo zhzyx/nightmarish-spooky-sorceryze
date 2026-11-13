@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "request_id": "ai-github-integration-refactor-20261112",
+  "issue_number": 978,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "source_sha256": "4b82634e784d9e9c5cfa8666a1bd2dd1f6abddda998b1aded1a54d02a39828f6",
+  "recorded_at": "2026-11-13T07:30:43.761422+00:00",
+  "delivery": {
+    "pull_request": 1036,
+    "source": "98a347eb7447ff00c56f2f22d19f84b548af81d6",
+    "signed": "197970b8fcc1e3adc375eeb9d7704a0ba3106c40",
+    "main": "1a47861ed118da8b14f23fd0129e0b8bba4544b5",
+    "tree": "50158588f8797698145c270a33f84aa349672996",
+    "merged_at": "2026-11-13T07:11:06Z",
+    "operator": "Sail-Li",
+    "pr_ci": 43382558673,
+    "main_ci": 43383911571,
+    "ci": "success",
+    "exact_review_tree_matched": true
+  },
+  "accepted_issues": {
+    "1024": {
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-13T07:23:29Z",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024"
+    },
+    "1022": {
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-13T07:23:36Z",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1022"
+    },
+    "1027": {
+      "state": "closed",
+      "state_reason": "completed",
+      "closed_at": "2026-11-13T07:23:41Z",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1027"
+    }
+  },
+  "additional_source_readback": {
+    "issue": 971,
+    "state": "closed",
+    "state_reason": "completed",
+    "closed_at": "2026-11-13T06:45:25Z",
+    "delivered_by": "original publisher kaiyunxue via PR1034/1035",
+    "no_worktree_takeover": true
+  },
+  "scope": "Explicitly bound complete-mapped native parent continuation; actual HTTP/CLI callbacks, installed host checks, existing independent acceptance/finalizer and cancellation ownership. Controlled providers/account/remote ports in native fixtures; not universal provider behavior or every host.",
+  "validation": {
+    "unique_python_node_tests": 142,
+    "windows_native_tests_passed": 1577,
+    "windows_native_assertions_passed": 474777,
+    "windows_native_tests_skipped": 3,
+    "windows_runtime_setup_and_native_intake": "PR and main actual artifact receipts ok",
+    "main_integration": "four overlap files preserved; default model-picker fixture and three CLI fixture control lookups fixed",
+    "local_incremental": "model-picker8, project-config5 modes, HTTP/CLI continuation, finalizer/Stop and owned-process11 passed",
+    "independent_review_sha256": "7bc33f80a65dbc899e3801446e18859ee0b200a311221b87b34e71607cbd3c42"
+  },
+  "cleanup": {
+    "worktrees_removed": [
+      ".worktrees/ai-integration-refactor-20261112",
+      ".worktrees/bound-production-continuation-20261113"
+    ],
+    "normal_remove": true,
+    "old997_dirty_files_archived": 33,
+    "own_remote_branches_removed": 5,
+    "own_local_branches_removed": [
+      "codex/bound-production-continuation-main-20261113"
+    ],
+    "own_stashes_archived_and_removed": 2,
+    "native_temporary_roots_absent": 5,
+    "retained_nonancestor_branches": [
+      "codex/local-model-runtime-provenance-20261113",
+      "codex/bound-production-continuation-20261113"
+    ],
+    "retained": "original dirty root, foreign worktrees/claims, audit evidence, prior rollback binary, separately preserved current validated binary, operational checkout and other-task stash",
+    "effective_installation_changed": false,
+    "physical_space_freed": null,
+    "physical_space_unknown_reason": "Allocated size and copy-on-write sharing do not prove physical reclaimed bytes"
+  },
+  "receipt_resolution_base": "Repository root data-collection/receipts/ai-integration-refactor-20261112 (private evidence, not included as public raw logs)",
+  "private_evidence": [
+    {
+      "path": "bound-pr1036-main-acceptance.json",
+      "sha256": "8ec6f2c371e1ed3bbff7832a0b0b6b952d08c5d7e01a041f5d29194e23a43d13"
+    },
+    {
+      "path": "bound-pr1036-main-ci-success.json",
+      "sha256": "bcbdd66b40baefb1cef6011647dfe4ab0a581b5f0843225c24b7e8bc237992bb"
+    },
+    {
+      "path": "bound-pr1036-ci-success.json",
+      "sha256": "6f9d1b77d369973fce951a661f97d6a25d7e899ba069e52ef27ffb5de9b854c6"
+    },
+    {
+      "path": "bound-main-ca0-final-review-coverage.json",
+      "sha256": "fe7eecb6a9511efc171a4b511e3b5e7d626c5316e04e3599635a8a866e1acff1"
+    },
+    {
+      "path": "bound-main-ca0-validation-recovered.json",
+      "sha256": "14020e52d56faa7e5e9a41a2496d7bb815c150a1c3e250ade9c113a69742d1ea"
+    },
+    {
+      "path": "old997-post1024-cleanup-completed.json",
+      "sha256": "5823885063cbdea93182cd258f91d4da9a50b714d695052935f5c6b867e88b30"
+    },
+    {
+      "path": "bound1024-worktree-cleanup-completed.json",
+      "sha256": "558f8fb0281257f1b0ae53aefe6d3f02d7f0380a0527b0c692e034e7b292e45f"
+    },
+    {
+      "path": "bound1024-remote-cleanup-completed.json",
+      "sha256": "7941f97046f0de1e8f82972c7a6b80286edce8f7eac40685b5888352f31e77bf"
+    },
+    {
+      "path": "bound1024-stash-cleanup-completed.json",
+      "sha256": "34d435940a3ab92f0f8c1a29c8276ca139d8458d4eac84055374f5c36148f9ba"
+    },
+    {
+      "path": "bound-main-ca0-native-cleanup-check.json",
+      "sha256": "b8ef9cdd47b3e870e498140bb218b5db3d5e97651af217167c35f73ad2833dd8"
+    },
+    {
+      "path": "bound-issue1024-closed-readback.json",
+      "sha256": "33798010fc7b19bbe2d483c405b5780412953b1650d883afe91be6f1c6397454"
+    },
+    {
+      "path": "bound-issue1022-closed-readback.json",
+      "sha256": "108045fcb2ae2ff8c0042e65245dbb9872eba557bc64123a5f17d875bd3c25ef"
+    },
+    {
+      "path": "bound-issue1027-closed-readback.json",
+      "sha256": "eb05d8f999ea4e81b6562107e86af9d07920379afa7471a1a0d2cecee262bf06"
+    }
+  ],
+  "remaining": {
+    "parent_953": "open: other hosts and actual provider/model behavior or task-wide evidence remain; this delivery covers the explicitly mapped Godot native parent path",
+    "parent_978": "open: original publisher handoffs830/838, original production948/951 and actual account/device/effective-installation/image/mesh acceptance remain",
+    "deferred": "593 deferred and561 stopped remain unchanged"
+  },
+  "historical_records": "Previously committed pending fields remain historical snapshots; this record supplies subsequent main/CI/closure/cleanup results without rewriting them.",
+  "source_path": "design-docs/ai-github-integration-refactor-20261112.md",
+  "source_revision": "1a47861ed118da8b14f23fd0129e0b8bba4544b5"
+}
