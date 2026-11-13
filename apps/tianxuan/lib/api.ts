@@ -176,6 +176,19 @@ export async function unshareDoc(id: string, actor: string, userId: string): Pro
   }
 }
 
+export interface ApiGiteaStatus {
+  configured: boolean;
+  owner: string;
+}
+
+export async function fetchGiteaStatus(): Promise<ApiGiteaStatus> {
+  const response = await fetch(`${apiBase()}/api/v1/gitea/status`, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`gitea status failed: ${response.status}`);
+  }
+  return (await response.json()) as ApiGiteaStatus;
+}
+
 export interface ApiIssue {
   id: string;
   title: string;
