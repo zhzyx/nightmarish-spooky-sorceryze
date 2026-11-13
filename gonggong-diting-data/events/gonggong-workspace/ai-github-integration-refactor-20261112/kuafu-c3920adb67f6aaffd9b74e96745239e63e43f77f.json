@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c3920adb67f6aaffd9b74e96745239e63e43f77f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "94bc76772a47bf7627bca389503f665c5c044bfdbcd30ba5a89ed1fe9745c44e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1022",
+    "action": "intake",
+    "detection_head": "1a47861ed118da8b14f23fd0129e0b8bba4544b5",
+    "context_sha256": "60dd12ffc19facec7bfa7948eab70ed88fc4d7703c4bb2eaae14399d259bd470",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "diagnosis": "更新父需求记录前，当前责任者调用 intake-only 遗漏必需的 tenant 参数，门禁正确拒绝 Host tenant must match work-items.json。已回读实际 tenant_id=gonggong-workspace，显式传入后同一父工单/稳定需求回读成功。未修改产品源码或放宽门禁，未产生重复提交或用户资料写入。关联既有宿主调用格式问题 #1022，仅记录这次已恢复调用，不重开其已验收原范围。",
+    "next_action": "在 #978 原授权下完成交付回读与清理记录的独立审查和正式提交；保留此次遗漏参数失败及修正参数后的成功回执，不将其当作模型故障或原失败命令无修改重跑。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T07:28:02.718627+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T07:31:39.118738+00:00",
+  "sha256": "b758d619efb9e49e6d293f11b023a83725314176fe1df07dd0f3c1eed7beebb2"
+}
