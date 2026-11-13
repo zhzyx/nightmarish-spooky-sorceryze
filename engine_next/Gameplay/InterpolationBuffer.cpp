@@ -148,8 +148,12 @@ InterpolationResult InterpolationBuffer::Sample(std::uint64_t nNowMsec) const no
 			const std::uint64_t nSpan = stNext.nServerTimeMsec - stPrevious.nServerTimeMsec;
 			const float fWeight = nSpan == 0 ? 1.0F : static_cast<float>(nTargetTime - stPrevious.nServerTimeMsec) / static_cast<float>(nSpan);
 			PredictionState stInterpolated;
-			stInterpolated.vPosition = Lerp(stPrevious.vPosition, stNext.vPosition, fWeight);
-			stInterpolated.vVelocity = Lerp(stPrevious.vVelocity, stNext.vVelocity, fWeight);
+			if (!TryLerp(stPrevious.vPosition, stNext.vPosition, fWeight, stInterpolated.vPosition) || !TryLerp(stPrevious.vVelocity, stNext.vVelocity, fWeight, stInterpolated.vVelocity))
+			{
+				stResult.eStatus = InterpolationStatus::NumericError;
+				stResult.stState.reset();
+				return stResult;
+			}
 			stInterpolated.nConfirmedSequence = stNext.nConfirmedSequence;
 			stInterpolated.nServerTimeMsec = nTargetTime;
 			stResult.eStatus = InterpolationStatus::Interpolated;

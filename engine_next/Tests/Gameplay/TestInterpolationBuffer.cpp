@@ -145,3 +145,76 @@ ENGINE_NEXT_TEST("Interpolation buffer avoids timestamp underflow and extrapolat
 	ENGINE_NEXT_CHECK_EQ(stHeld.eStatus, InterpolationStatus::StaleHeld);
 	ENGINE_NEXT_CHECK_EQ(stHeld.stState->nServerTimeMsec, 1U);
 }
+
+ENGINE_NEXT_TEST("TryLerp repairs extreme finite endpoints with double intermediates")
+{
+	const float fMax = std::numeric_limits<float>::max();
+	const EngineNext::Gameplay::Vector3 vFrom{ -fMax, fMax, -fMax };
+	const EngineNext::Gameplay::Vector3 vTo{ fMax, -fMax, fMax };
+	EngineNext::Gameplay::Vector3 vResult;
+	ENGINE_NEXT_CHECK(EngineNext::Gameplay::TryLerp(vFrom, vTo, 0.5F, vResult));
+	ENGINE_NEXT_CHECK_FLOAT(vResult.fX, 0.0F);
+	ENGINE_NEXT_CHECK_FLOAT(vResult.fY, 0.0F);
+	ENGINE_NEXT_CHECK_FLOAT(vResult.fZ, 0.0F);
+
+	const EngineNext::Gameplay::Vector3 vFastFrom{ 1.25F, -2.5F, 3.75F };
+	const EngineNext::Gameplay::Vector3 vFastTo{ 4.5F, 6.25F, -8.0F };
+	const EngineNext::Gameplay::Vector3 vExpected = EngineNext::Gameplay::Lerp(vFastFrom, vFastTo, 0.375F);
+	ENGINE_NEXT_CHECK(EngineNext::Gameplay::TryLerp(vFastFrom, vFastTo, 0.375F, vResult));
+	ENGINE_NEXT_CHECK_FLOAT(vResult.fX, vExpected.fX);
+	ENGINE_NEXT_CHECK_FLOAT(vResult.fY, vExpected.fY);
+	ENGINE_NEXT_CHECK_FLOAT(vResult.fZ, vExpected.fZ);
+}
+
+ENGINE_NEXT_TEST("TryLerp rejects results outside float range without partial output")
+{
+	const float fMax = std::numeric_limits<float>::max();
+	const EngineNext::Gameplay::Vector3 vFrom{ fMax, fMax, fMax };
+	const EngineNext::Gameplay::Vector3 vTo{ -fMax, -fMax, -fMax };
+	EngineNext::Gameplay::Vector3 vResult{ 42.0F, 42.0F, 42.0F };
+	ENGINE_NEXT_CHECK(!EngineNext::Gameplay::TryLerp(vFrom, vTo, 1.5F, vResult));
+	ENGINE_NEXT_CHECK_FLOAT(vResult.fX, 42.0F);
+	ENGINE_NEXT_CHECK_FLOAT(vResult.fY, 42.0F);
+	ENGINE_NEXT_CHECK_FLOAT(vResult.fZ, 42.0F);
+
+	float fComponent = 42.0F;
+	ENGINE_NEXT_CHECK(!EngineNext::Gameplay::TryLerpComponent(fMax, 0.0F, -1.0F, fComponent));
+	ENGINE_NEXT_CHECK_FLOAT(fComponent, 42.0F);
+}
+
+ENGINE_NEXT_TEST("Interpolation buffer repairs position overflow")
+{
+	const float fMax = std::numeric_limits<float>::max();
+	InterpolationBuffer stBuffer;
+	ENGINE_NEXT_CHECK(stBuffer.SetInterpolationDelayMsec(0));
+	PredictionState stFirst = MakeState(-fMax, 1, 100);
+	PredictionState stSecond = MakeState(fMax, 2, 200);
+	stSecond.vVelocity = { -10.0F, 0.0F, 0.0F };
+	ENGINE_NEXT_CHECK_EQ(stBuffer.AddSample(stFirst), Status::Ok);
+	ENGINE_NEXT_CHECK_EQ(stBuffer.AddSample(stSecond), Status::Ok);
+	const InterpolationResult stResult = stBuffer.Sample(150);
+	ENGINE_NEXT_CHECK_EQ(stResult.eStatus, InterpolationStatus::Interpolated);
+	ENGINE_NEXT_CHECK(stResult.stState.has_value());
+	ENGINE_NEXT_CHECK_FLOAT(stResult.stState->vPosition.fX, 0.0F);
+	ENGINE_NEXT_CHECK_FLOAT(stResult.stState->vVelocity.fX, 0.0F);
+}
+
+ENGINE_NEXT_TEST("Interpolation buffer repairs velocity overflow")
+{
+	const float fMax = std::numeric_limits<float>::max();
+	InterpolationBuffer stBuffer;
+	ENGINE_NEXT_CHECK(stBuffer.SetInterpolationDelayMsec(0));
+	PredictionState stFirst = MakeState(1.0F, 1, 100);
+	stFirst.vVelocity = { -fMax, -fMax, -fMax };
+	PredictionState stSecond = MakeState(3.0F, 2, 200);
+	stSecond.vVelocity = { fMax, fMax, fMax };
+	ENGINE_NEXT_CHECK_EQ(stBuffer.AddSample(stFirst), Status::Ok);
+	ENGINE_NEXT_CHECK_EQ(stBuffer.AddSample(stSecond), Status::Ok);
+	const InterpolationResult stResult = stBuffer.Sample(150);
+	ENGINE_NEXT_CHECK_EQ(stResult.eStatus, InterpolationStatus::Interpolated);
+	ENGINE_NEXT_CHECK(stResult.stState.has_value());
+	ENGINE_NEXT_CHECK_FLOAT(stResult.stState->vPosition.fX, 2.0F);
+	ENGINE_NEXT_CHECK_FLOAT(stResult.stState->vVelocity.fX, 0.0F);
+	ENGINE_NEXT_CHECK_FLOAT(stResult.stState->vVelocity.fY, 0.0F);
+	ENGINE_NEXT_CHECK_FLOAT(stResult.stState->vVelocity.fZ, 0.0F);
+}

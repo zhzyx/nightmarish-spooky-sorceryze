@@ -10,7 +10,7 @@
 		<method name="add_sample"><return type="int" enum="Error" /><param index="0" name="state" type="GameplayPredictionState" /><description>Inserts a finite sample by server time and evicts the oldest sample above the limit.</description></method>
 		<method name="clear"><return type="void" /><description>Removes all samples.</description></method>
 		<method name="get_sample_count" qualifiers="const"><return type="int" /><description>Returns the current bounded sample count.</description></method>
-		<method name="sample" qualifiers="const"><return type="Dictionary" /><param index="0" name="now_msec" type="int" /><description>Returns a status and, when available, a copied or interpolated state.</description></method>
+		<method name="sample" qualifiers="const"><return type="Dictionary" /><param index="0" name="now_msec" type="int" /><description>Returns a Dictionary with a status of empty, single_sample, before_range, interpolated, held, stale_held, or numeric_error. The empty and numeric_error results have no state; every other status includes a copied or interpolated GameplayPredictionState. numeric_error reports that interpolation could not produce a finite result, and no partial position or velocity is returned.</description></method>
 	</methods>
 	<members>
 		<member name="interpolation_delay_msec" type="int" setter="set_interpolation_delay_msec" getter="get_interpolation_delay_msec" default="100">Time kept behind the local clock when sampling.</member>
