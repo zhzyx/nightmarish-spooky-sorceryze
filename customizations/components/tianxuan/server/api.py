@@ -533,6 +533,28 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
     def unshare_doc(doc_id: str, user_id: str, actor: ActorDep) -> dict[str, Any]:
         return store.unshare_doc(actor, doc_id, user_id)  # type: ignore[no-any-return]
 
+    @app.get("/api/v1/requirements/{request_id}/git-file")
+    def requirement_git_file(
+        request_id: str,
+        actor: ActorDep,
+        repo: str = Query(min_length=1),
+        ref: str = Query(min_length=1),
+    ) -> dict[str, str]:
+        _find_requirement(store, actor, request_id)
+        root = os.environ.get("TIANXUAN_REPO_ROOT", "").strip()
+        if not root:
+            raise HTTPException(status_code=400, detail="TIANXUAN_REPO_ROOT is not configured")
+        root_path = Path(root).resolve()
+        repo_path = (root_path / repo).resolve()
+        if not repo_path.is_relative_to(root_path):
+            raise HTTPException(status_code=400, detail="repo escapes TIANXUAN_REPO_ROOT")
+        relative = f"design/{request_id}.md"
+        try:
+            markdown = GitService().read_file(repo_path, ref, relative)
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=f"read failed: {error}") from error
+        return {"path": relative, "ref": ref, "markdown": markdown}
+
     # ---------- 文曲：评论 ----------
 
     @app.post("/api/v1/docs/{doc_id}/comments")

@@ -473,6 +473,19 @@ class GitService:
             "--",
         ]).stdout
 
+    def read_file(self, repo: str | os.PathLike[str], ref: str, relative: str) -> str:
+        """读取裸仓库指定 ref 下的文件文本，精确保留换行。"""
+        repo_path, _ = self._repo_path(repo, require_bare=True)
+        if not isinstance(ref, str) or not ref.strip() or any(ch in ref for ch in "\0\r\n"):
+            raise ValidationError("ref must be a non-empty single-line string")
+        revision = ref.strip()
+        file_path = _validate_file_path(relative)
+        completed = self._run(
+            ["-C", str(repo_path), "show", f"{revision}:{file_path}"],
+            preserve_newlines=True,
+        )
+        return completed.stdout
+
     def status(self, repo: str | os.PathLike[str]) -> dict[str, Any]:
         """返回仓库状态摘要。
 
