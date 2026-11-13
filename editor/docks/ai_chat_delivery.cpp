@@ -210,15 +210,15 @@ bool AIChatDock::_delivery_process_arguments(String &r_executable, List<String> 
 		_clear_delivery_files();
 		return false;
 	}
-	const String selected_worker = mapped_parent ? _engine_root().path_join("tools/gonggong_bridge.py") : worker;
+	const String delivery_worker = mapped_parent ? _engine_root().path_join("tools/gonggong_bridge.py") : worker;
 	if (mapped_parent) {
 		r_arguments.push_back("-I");
-		r_arguments.push_back(selected_worker);
+		r_arguments.push_back(delivery_worker);
 		r_arguments.push_back("parent-delivery");
 		r_arguments.push_back("--workspace");
 		r_arguments.push_back(_candidate_root());
 	} else {
-		for (const String &argument : { String("-I"), selected_worker, String("--source-root"), _candidate_root() }) {
+		for (const String &argument : { String("-I"), delivery_worker, String("--source-root"), _candidate_root() }) {
 			r_arguments.push_back(argument);
 		}
 	}
