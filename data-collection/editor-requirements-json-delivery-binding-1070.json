@@ -1,0 +1,49 @@
+{
+  "issue_number": 1070,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1070",
+  "request_id": "editor-requirements-json-diagnostics-20261113",
+  "parent_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "source_base": "d78054420a4034ec44013372cc55893b1c854b58",
+  "scope": "Deliver the original installed failures and the independently reviewed requirements response protocol repair under the existing parent authorization.",
+  "reports": [
+    {
+      "path": "data-collection/editor-installed-confirmation-intake-baseline-1066-1070.json",
+      "sha256": "8b316ccca11ed577ec8996899c2a27105aca2a98c848ce2f24ac7e5a58f01604",
+      "bytes": 31780
+    },
+    {
+      "path": "data-collection/editor-requirements-json-original-failures-1070.json",
+      "sha256": "5de6086c00c636a33ca362bb7fc180c2589cd832210f928da0f524861c22efb5",
+      "bytes": 5406
+    },
+    {
+      "path": "data-collection/editor-requirements-json-source-validation-1070.json",
+      "sha256": "0eebf5962209952325d7968ed5aac512af7f94c3b1478952609940f339301141",
+      "bytes": 5290
+    },
+    {
+      "path": "data-collection/editor-requirements-json-source-validation-r2-1070.json",
+      "sha256": "103628192a3bc1ea37a0a2c6b27147917b55fbb4401f75f5270c1fddbd88864f",
+      "bytes": 5565
+    },
+    {
+      "path": "data-collection/editor-requirements-json-main-integration-1070.json",
+      "sha256": "efe8ef57633d6872f0b892df720d3617ca1762ebce4a779d22f5dec8895db35b",
+      "bytes": 5610
+    },
+    {
+      "path": "data-collection/editor-requirements-json-native-consumer-1070.json",
+      "sha256": "ca44f1aa2e7b8436a9f0d60d5f532fedabede06a901a7051a1caf747d873c6a1",
+      "bytes": 35836
+    }
+  ],
+  "gate_correction": {
+    "incident": "e1b5bdce32303ae7b2d2355df991206ed3bbce1757b210273aa95fb825ba6ba6",
+    "failed_stage": "PR_EVIDENCE_BINDING",
+    "log_sha256": "0d18adaebd7ff756b5dac22fab4411fa6241bc8e22b6eb68b35cc25825fd6fbe",
+    "cause": "Source reports use integer issue, while the existing gate accepts an Issue URL in issue/issue_url or integer issue_number. Append the exact authoritative issue_number and request_id; preserve all earlier reports and gate rules.",
+    "original_candidate_tree": "e04001d2346ef7cea8ebca53fa95add61c7b7a57",
+    "revalidation": "Pending corrected complete index and original formal gate; no commit or publication was attempted after the failed gate."
+  },
+  "boundaries": "Original r17 retry, complete new-main installation and #951/#773 business acceptance remain pending; source checks do not complete the parent goal."
+}

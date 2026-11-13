@@ -1,0 +1,92 @@
+{
+  "issue": 1070,
+  "request_id": "editor-requirements-json-diagnostics-20261113",
+  "source_base": "ec582b134ad48e4c3eab02bafbe901886ac303b4",
+  "recorded_at": "2026-11-13T15:25:18.383435+00:00",
+  "scope": "Existing host-tool JSON requirement contract and bounded diagnostics; no new module, native engine source or authority",
+  "source_inputs": {
+    "customizations/components/godot-host/requirements_agent.py": "eab3476d9fc5f973f964e26a5a2c3d375663f7b6dcd82e95cc559362e6c559bb",
+    "tools/codex_cli/godot_bridge.js": "16813b4c177c1da905919630aa09eab456c87880f603700d909f4e3b612ecf85",
+    "customizations/components/godot-host/test_requirements_agent.py": "6448663458ea0d6138598cc49c236f0986a0580158a5bcdc86fad1cfe2dfa5ad",
+    "tests/editor/test_codex_bridge.js": "5e4a2bcc72ab035f0d773a895c8f4bc4b7ec054aa188b186908584c9fa972b18",
+    ".github/workflows/windows_builds.yml": "384290f5970b26b3d8f769f7edcb21ebb0c6f20442126f1e4fadbd6fd072f6d5",
+    "design-docs/editor-requirements-json-diagnostics-20261113.md": "1a6e446df0f4ee899295d9d94b34f29b2bfbbc760c5c9d763095dededb986b64"
+  },
+  "checks": [
+    {
+      "name": "requirements adapter",
+      "passed": 40,
+      "failed": 0,
+      "log_basename": "python-3.log",
+      "log_sha256": "1e27900577ced2e1ebf0b0ec56d61b8097a362c428190b16f31ed691fc61635a"
+    },
+    {
+      "name": "Codex bridge including actual fake-CLI schema consumer",
+      "passed": 21,
+      "failed": 0,
+      "log_basename": "node-2.log",
+      "log_sha256": "b9571d79f7da27a301ff83379af387bcad7c9ca15569eaf6375e32c636625b34"
+    },
+    {
+      "name": "existing direct issue and Sinan coordination",
+      "passed": 25,
+      "failed": 0,
+      "log_basename": "routing-2.log",
+      "log_sha256": "2d3bdddda4637adb499eab5e4a837d83f27b5abf4811c2a91ef1f33a5b7e1e06"
+    },
+    {
+      "name": "CodeBuddy data-only JSON boundaries",
+      "passed": 2,
+      "failed": 0,
+      "log_basename": "codebuddy-json-2.log",
+      "log_sha256": "7be7781d1b0013161d1b80f42f194f343ca307dc2cd2a20a164c56703c10e316"
+    }
+  ],
+  "static_checks": [
+    "Ruff check and format --check: passed",
+    "mypy: 2 files passed",
+    "repository file_format: 6 files unchanged",
+    "git diff --check: passed"
+  ],
+  "failure_preservation": [
+    {
+      "log_basename": "routing-1.log",
+      "sha256": "b0281afc5a8f851fedc2bba09c88d720f4dcc47a2a487e40928c779cb967ff8c",
+      "result": "exit 5: incorrect test filename pattern selected zero tests; not counted; replaced by actual existing test_direct_issue.py suite"
+    },
+    {
+      "log_basename": "codebuddy-1.log",
+      "sha256": "89a767e6efa51d2a3fe2ab9c9b2f5fce9827a7f7d8bdfe711acd23e28fde4f87",
+      "result": "34/39 passed, five failures from incomplete local dependency setup: pinned CLI dist and ACP SDK missing. CodeBuddy implementation unchanged; focused JSON boundary tests passed separately. No full-suite success claimed."
+    }
+  ],
+  "real_cli_protocol": {
+    "result_sha256": "c854796973aae48f45dbe772e36fcc49da275393e1e93149f1afc788796f3945",
+    "cli_version": "codex-cli 0.167.0-alpha.4.1",
+    "passed": true,
+    "finish_reason": "stop",
+    "typed_fields": 7,
+    "tool_calls": 0,
+    "source_stable_before_after": true,
+    "scope": "Root-owned one synthetic typed protocol request only; no intake, GitHub publication, original game or original-session acceptance"
+  },
+  "privacy": "Diagnostics contain fixed stage/code, bounded structural metadata and SHA256 only. Python JSON offsets are Unicode code points; optional V8 offsets explicitly use UTF-16 and remain null when unknown. No model output, credentials, stderr, original transcript or private path is retained in this public evidence.",
+  "regressions": [
+    "Malformed outer envelope distinguished from invalid inner proposal and invalid typed Codex data",
+    "Empty/plain/multi-document JSON rejected without taking a prefix",
+    "Refusal and prohibited actions rejected; ordinary chat/Sinan contracts preserved",
+    "Model callback or fake CLI start observed before post-return failure/cancellation assertions",
+    "Failed attempts preserve request digest and archive exact previous bytes on explicit retry",
+    "Unknown publication reconciliation remains fail-closed; no automatic model retry",
+    "CLI transport failure remains distinct from returned invalid response"
+  ],
+  "ci": "The existing Windows MSVC editor step runs both changed test suites after pinned npm ci; logs join the existing always-uploaded parent-recovery artifact. CI has not run on this candidate yet.",
+  "original_failure_boundary": "The two original r17 raw outputs were already cleaned up. Their exact parse layer remains unknown; synthetic reproductions and new diagnostics do not recover old output.",
+  "pending": [
+    "Independent source review",
+    "Formal gates and exact-candidate CI/main delivery",
+    "Installed native consumer update/rollback and original-session explicit retry owned by root",
+    "Original production acceptance remains separate under #951/#773"
+  ],
+  "retained_resources": "Private failure logs and source-validation evidence retained. J pinned job-object dependency retained for candidate consumers. Test-created temporary CLI fixtures cleaned by their finally blocks; no live installation or game changed."
+}

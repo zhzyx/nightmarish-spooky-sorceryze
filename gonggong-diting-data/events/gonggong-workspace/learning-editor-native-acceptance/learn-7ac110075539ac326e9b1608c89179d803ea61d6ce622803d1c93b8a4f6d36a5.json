@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-7ac110075539ac326e9b1608c89179d803ea61d6ce622803d1c93b8a4f6d36a5",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1070",
+  "occurred_at": "2026-11-13T15:42:19.186524+00:00",
+  "evidence_refs": [
+    "request-1070-20261113-readback",
+    "learn-168b966123ba0ed71211eb222bd92a0087c61478f4a03784925c680998a28f1f"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "validate-data-contract-at-source-boundary",
+    "revision": 2,
+    "previous": "1d1d17449984fc3d704e46c78150407cff14dacab5ebed19c6072b1cb0576c70",
+    "action": "revise",
+    "details": {
+      "method": "For a no-tools data consumer, explicitly bind the producer to the typed payload schema and retain bounded stage-specific diagnostics before temporary output cleanup. Verify the real producer receives the schema, not only a parser helper. Derive offsets only from structured parser fields; quoted exception messages are untrusted. Check UTF-8 validity both before and after JSON decoding.",
+      "when": "A successful transport envelope contains an unconstrained string that a downstream consumer must parse as a separate strict data document.",
+      "counterexample": "Ordinary chat intentionally returns prose and action envelopes, while routing uses a different data schema. Do not apply a requirements schema to all no-tools calls; do not infer the parse layer of an old failure whose raw output is gone. A parser can accept escaped invalid Unicode even when the original wire is ASCII; runtime C decoder depth limits can differ from Python recursion settings.",
+      "trial_plan": "On a future pre-registered isolated consumer trial, inject malformed envelope JSON, multiple data documents, empty data, refusal and tool-bearing output at their distinct real process boundaries. Require exact failure stages and digest retention, zero publication, byte-preserving explicit-retry archive, and successful original shared-chat/routing controls; any missing stage or unintended action refutes the method. Include a malformed payload containing position N, a precondition-proven parser-limit case and an ASCII JSON wire with an escaped lone surrogate; none may bypass the fixed failure stage or fabricate a position/hash."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-requirements-json-source-validation-r2-1070.json",
+        "sha256": "103628192a3bc1ea37a0a2c6b27147917b55fbb4401f75f5270c1fddbd88864f"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-requirements-json-diagnostics-20261113/request-1070-20261113-readback.json",
+      "sha256": "c3fbc3d9ff6f0d8b9935bc6789d1d74d1c2eb04793b9f9e146f99399b0a20a9c"
+    }
+  },
+  "sha256": "24f1aaa9a9ab96b4918096d60aae2003fbab91d647b3581a6a6f2978e92ac4b7"
+}

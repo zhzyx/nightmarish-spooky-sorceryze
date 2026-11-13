@@ -1,0 +1,68 @@
+{
+  "issue": 1070,
+  "request_id": "editor-requirements-json-diagnostics-20261113",
+  "recorded_at": "2026-11-13T15:46:00.676564+00:00",
+  "source_base": "d78054420a4034ec44013372cc55893b1c854b58",
+  "previous_base": "ec582b134ad48e4c3eab02bafbe901886ac303b4",
+  "integration_evidence_sha256": "3fb21233eb4b4559af43a205e11fd20f8075b0f34d8fbea14770945824e7b75a",
+  "previous_source_report": {
+    "path": "data-collection/editor-requirements-json-source-validation-r2-1070.json",
+    "sha256": "103628192a3bc1ea37a0a2c6b27147917b55fbb4401f75f5270c1fddbd88864f"
+  },
+  "owned_six_inputs_unchanged": {
+    "customizations/components/godot-host/requirements_agent.py": "fdcb7b87c59653940ac8ee03ab5b507a6ff51024dc97d7e90425717b08c4d9f5",
+    "tools/codex_cli/godot_bridge.js": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab",
+    "customizations/components/godot-host/test_requirements_agent.py": "8f3e012c08e2856bc77eb1ecda665694fb63cbba8a971990b6b265ff91fdd44b",
+    "tests/editor/test_codex_bridge.js": "2359f3354c3e1ac6cb878c893a097df55fa8206c66ab0e71d7292f727505d812",
+    ".github/workflows/windows_builds.yml": "384290f5970b26b3d8f769f7edcb21ebb0c6f20442126f1e4fadbd6fd072f6d5",
+    "design-docs/editor-requirements-json-diagnostics-20261113.md": "66f7cd46f3a6d78e4da37bcc7a9f4adb1674b2b64e8b27af8717833aed15a977"
+  },
+  "upstream_changed_files": [
+    "customizations/components/issue-workorders/README.md",
+    "customizations/components/issue-workorders/github_runtime.mjs",
+    "customizations/components/issue-workorders/github_runtime.py",
+    "customizations/components/issue-workorders/github_runtime.test.mjs",
+    "customizations/components/issue-workorders/github_runtime_bridge.py",
+    "customizations/components/issue-workorders/test_github_runtime.py",
+    "customizations/platforms/work-management/github/git-issue/README.md",
+    "customizations/platforms/work-management/github/git-issue/issue_create.py",
+    "customizations/platforms/work-management/github/git-issue/test_issue_create.py",
+    "data-collection/github-bounded-pagination-1064-ci-correction.json",
+    "data-collection/github-bounded-pagination-1064.json",
+    "data-collection/github-pagination-parent978-continuation.json",
+    "data-collection/requests/ai-github-integration-refactor-20261112/61a82692-e804-42cc-9ff1-6f4043122f14.json",
+    "data-collection/requests/github-bounded-pagination-20261113/0beb85bf-a8dc-4dc1-81e2-e35842e82eb2.json",
+    "data-collection/requests/github-bounded-pagination-20261113/7137d8c0-40a3-4526-898c-d3831ecd13f8.json",
+    "design-docs/github-bounded-pagination-20261113.md",
+    "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-2147ff8105db423291273548c73be58f.json",
+    "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-945b4a76b522452c9a289e22dd83ab6b.json",
+    "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-fcffa9e86ca3d0e6b54b5e5b659788963f41ed26.json",
+    "gonggong-diting-data/events/gonggong-workspace/github-bounded-pagination-20261113/dispatch-33e9623f156c4962b6790887f5b173ec.json",
+    "gonggong-diting-data/events/gonggong-workspace/github-bounded-pagination-20261113/dispatch-3812788430cd42549982bf6ff4bf819f.json",
+    "gonggong-diting-data/events/gonggong-workspace/github-bounded-pagination-20261113/dispatch-4d66b4a2604b42928f523b97da7afb0c.json",
+    "gonggong-diting-data/events/gonggong-workspace/github-bounded-pagination-20261113/dispatch-b00f42e1ac654c4ba12d9a9d131d22fd.json",
+    "gonggong-diting-data/events/gonggong-workspace/github-bounded-pagination-20261113/kuafu-30975f8e13ceea31b5e49069ef11dcc1e8303f93.json",
+    "gonggong-diting-data/events/gonggong-workspace/github-bounded-pagination-20261113/kuafu-8242fb782b84f1b414ea2e5e144291631fef0174.json",
+    "gonggong-diting-data/events/gonggong-workspace/github-bounded-pagination-20261113/kuafu-cf672e780eb64fbb58667c0c15a6bddc704c0f78.json",
+    "gonggong-diting-data/events/gonggong-workspace/github-bounded-pagination-20261113/request-github-bounded-pagination-20261113.json"
+  ],
+  "checks": [
+    {
+      "command": "python -X utf8 -m unittest discover -s customizations/components/godot-host -p test_requirements_agent.py -v",
+      "passed": 42,
+      "failed": 0,
+      "log_basename": "requirements-main1069.log",
+      "log_sha256": "7d96200d7ba8e797a3a33b0651537fc39caafe7bb158f10b8a77d4cf8af6a984"
+    },
+    {
+      "command": "python -X utf8 -m unittest discover -s customizations/components/godot-host -p test_direct_issue.py -v",
+      "passed": 25,
+      "failed": 0,
+      "log_basename": "direct-issue-main1069.log",
+      "log_sha256": "b5305fe2657846d95d4c8d94f74f3c1e88369d73562e44f0166f440dd27aeae2"
+    }
+  ],
+  "scope": "Targeted Python regression after PR1069 shared GitHub runtime integration; Node21 was not repeated because its inputs are unchanged. No implementation modified.",
+  "evidence_boundary": "The earlier same-binary baseline/candidate/malformed/rollback consumer used the ec582 host dependency closure. It does not establish installed-consumer behavior for the new shared GitHub runtime. These 42+25 tests validate the affected local integration only. Exact-candidate CI and the subsequent installed-host verification must cover the new complete dependency closure; neither is claimed by this report.",
+  "original_session": "No original game, history, journals, live editor controls or provider requests were changed or invoked. Existing reports and immutable method events remain unchanged."
+}

@@ -4,6 +4,7 @@
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const { createHash } = require('node:crypto');
 const { spawn, spawnSync } = require('node:child_process');
 const { StringDecoder } = require('node:string_decoder');
 const { outputSchemaFor, argumentsForHost } = require('./action_schema');
@@ -14,6 +15,15 @@ const READ_TOOLS = new Set(['read_file', 'read_script', 'read_logs', 'list_scrip
 
 function validateRequest(raw) {
     const input = validateInput(raw);
+    if (raw.requirements_contract !== undefined) {
+        const contract = raw.requirements_contract;
+        if (raw.agent_id !== 'yanshi' || raw.response_format !== 'json' || input.available_tools.length
+            || input.tool_context.permission_enabled || !contract || typeof contract !== 'object' || Array.isArray(contract)
+            || Object.keys(contract).length !== 1 || !Array.isArray(contract.categories)
+            || !contract.categories.length || contract.categories.length > 64
+            || contract.categories.some(value => typeof value !== 'string' || !value.trim() || value.length > 80)
+            || new Set(contract.categories).size !== contract.categories.length) throw bridgeError('INVALID_REQUEST');
+    }
     const context = raw.tool_context || {};
     if (context.consultation_only !== undefined && typeof context.consultation_only !== 'boolean') throw bridgeError('INVALID_REQUEST');
     if (context.consultation_only) {
@@ -35,6 +45,42 @@ const SCHEMA = {
         } },
     },
 };
+
+function requirementsSchema(input) {
+    return {
+        type: 'object', additionalProperties: false,
+        required: ['decision', 'title', 'category', 'goal', 'scope', 'acceptance', 'questions'],
+        properties: {
+            decision: { type: 'string', enum: ['new', 'continue'] },
+            title: { type: 'string', maxLength: 120 },
+            category: { type: 'string', enum: input.requirements_contract.categories },
+            goal: { type: 'string', maxLength: 4000 },
+            ...Object.fromEntries(['scope', 'acceptance', 'questions'].map(key => [key,
+                { type: 'array', maxItems: 20, items: { type: 'string', minLength: 1, maxLength: 2000 } }])),
+        },
+    };
+}
+
+function requirementsCompletion(text, input) {
+    const fail = (stage, code, position = null) => {
+        const error = bridgeError('INVALID_DATA_RESPONSE');
+        error.requirementsDiagnostic = { stage, code, utf16_position: position, output_bytes: Buffer.byteLength(text, 'utf8'),
+            output_sha256: createHash('sha256').update(text, 'utf8').digest('hex') };
+        throw error;
+    };
+    if (!text.trim()) fail('codex_data_json', 'empty', 0);
+    let value;
+    try { value = JSON.parse(text); } catch (_) {
+        // V8's message can quote private output, including strings resembling
+        // an offset. No structured offset is exposed, so retain unknown.
+        fail('codex_data_json', 'invalid_json');
+    }
+    if (!value || typeof value !== 'object' || Array.isArray(value)) fail('codex_data_shape', 'invalid_shape');
+    if (value && Object.hasOwn(value, 'refusal')) fail('codex_data_shape', 'refusal');
+    if (value && ['actions', 'tool_calls', 'function_call'].some(key => Object.hasOwn(value, key))) fail('codex_data_shape', 'actions_forbidden');
+    try { argumentsForHost(value, requirementsSchema(input)); } catch (_) { fail('codex_data_shape', 'invalid_shape'); }
+    return { choices: [{ message: { role: 'assistant', content: JSON.stringify(value) }, finish_reason: 'stop' }] };
+}
 
 function argumentsFor(model, schema, images = [], effort = '', environment = process.env) {
     const args = ['exec', '--json', '--ephemeral', '--ignore-user-config', '--ignore-rules',
@@ -70,6 +116,12 @@ function prepareImages(input, directory) {
 }
 
 function promptFor(input) {
+    if (input.requirements_contract) {
+        return 'This is a data-only requirements response. Return exactly the requirement object described by the output schema. '
+            + 'Do not wrap it in content/actions, Markdown or a JSON string. Tools and execution are disabled. '
+            + 'Preserve unknowns in questions; do not invent approvals or acceptance results. '
+            + 'The host separately verifies the Issue and proposal before any publication.\n' + JSON.stringify(input);
+    }
     return 'You are the Godot editor assistant. Reply in the user language. Native tools are disabled. '
         + 'Use only the available_tools in the following host data by returning actions. '
         + 'Follow the supplied output schema: use an object for typed action.arguments; only tools whose arguments schema is a string use a JSON-encoded object. '
@@ -88,6 +140,7 @@ function promptFor(input) {
 }
 
 function completion(text, input) {
+    if (input.requirements_contract) return requirementsCompletion(text, validateRequest(input));
     let envelope;
     let reason = 'response_json';
     let actionIndex = -1;
@@ -211,7 +264,7 @@ async function run(entry, request, onProgress, workflowPython) {
     process.once('exit', cleanup);
     try {
         const schema = path.join(directory, 'response.schema.json');
-        fs.writeFileSync(schema, JSON.stringify(outputSchemaFor(input, SCHEMA)), { mode: 0o600 });
+        fs.writeFileSync(schema, JSON.stringify(input.requirements_contract ? requirementsSchema(input) : outputSchemaFor(input, SCHEMA)), { mode: 0o600 });
         const prepared = prepareImages(input, directory);
         const args = argumentsFor(input.model, schema, prepared.images, input.reasoning_effort);
         // JS entry support is useful for npm installations and offline protocol tests.
@@ -271,7 +324,7 @@ async function run(entry, request, onProgress, workflowPython) {
         if (failure === 'PROCESS_EXIT') failure = classifyDiagnostics(stderr + '\n' + lastError);
         if (failure) throw bridgeError(failure, code);
         if (code !== 0) throw bridgeError(classifyDiagnostics(stderr + '\n' + lastError), code);
-        if (!done || !result) throw bridgeError(lastError ? classifyDiagnostics(lastError) : 'EMPTY_RESPONSE');
+        if (!done || (!result && !input.requirements_contract)) throw bridgeError(lastError ? classifyDiagnostics(lastError) : 'EMPTY_RESPONSE');
         if (Buffer.byteLength(result) > LIMIT) throw bridgeError('OUTPUT_LIMIT');
         return completion(result, input);
     } finally {
@@ -445,6 +498,7 @@ if (require.main === module) {
             error => {
                 const safe = serializeError(error);
                 safe.message = safe.message.replaceAll('CodeBuddy', 'Codex');
+                if (error.requirementsDiagnostic) safe.requirements_diagnostic = error.requirementsDiagnostic;
                 if (error.validationReason) {
                     safe.validation_reason = error.validationReason;
                     safe.action_index = error.actionIndex;

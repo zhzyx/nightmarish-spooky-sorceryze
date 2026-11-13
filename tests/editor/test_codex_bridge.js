@@ -8,6 +8,87 @@ const input = {
     tool_context: { permission_enabled: true, tool_rounds: 0, max_tool_rounds: null },
 };
 
+const requirementInput = () => ({ model: '', agent_id: 'yanshi', messages: [{ role: 'user', content: 'synthetic intake' }],
+    available_tools: [], tool_context: { permission_enabled: false, tool_rounds: 0, max_tool_rounds: null },
+    response_format: 'json', requirements_contract: { categories: ['requirement'] } });
+const requirementData = () => ({ decision: 'continue', title: 'Synthetic', category: 'requirement', goal: 'Test data',
+    scope: ['input'], acceptance: ['observable result'], questions: [] });
+
+test('requirements data contract is explicit, closed and cannot enable tools', () => {
+    const configured = requirementInput();
+    assert.deepEqual(validateRequest(configured).requirements_contract, configured.requirements_contract);
+    for (const override of [{ agent_id: 'sinan' }, { response_format: undefined }, { response_format: 'text' },
+        { tool_context: { ...configured.tool_context, permission_enabled: true } }, { available_tools: input.available_tools },
+        { requirements_contract: { categories: [] } }, { requirements_contract: { categories: ['requirement'], extra: true } }]) {
+        assert.throws(() => validateRequest({ ...configured, ...override }), { bridgeCode: 'INVALID_REQUEST' });
+    }
+    assert.deepEqual(JSON.parse(completion(JSON.stringify(requirementData()), configured).choices[0].message.content), requirementData());
+    for (const [text, stage, code] of [
+        ['', 'codex_data_json', 'empty'], ['  ', 'codex_data_json', 'empty'],
+        ['position 7', 'codex_data_json', 'invalid_json'],
+        ['{}\n{}', 'codex_data_json', 'invalid_json'], ['private-token', 'codex_data_json', 'invalid_json'],
+        [JSON.stringify({ refusal: 'private-token' }), 'codex_data_shape', 'refusal'],
+        [JSON.stringify({ ...requirementData(), actions: [] }), 'codex_data_shape', 'actions_forbidden'],
+        [JSON.stringify({ ...requirementData(), actions: [{ name: 'run_command' }] }), 'codex_data_shape', 'actions_forbidden'],
+        [JSON.stringify({ ...requirementData(), category: 'foreign' }), 'codex_data_shape', 'invalid_shape'],
+        [JSON.stringify(JSON.stringify(requirementData())), 'codex_data_shape', 'invalid_shape'],
+    ]) {
+        assert.throws(() => completion(text, configured), error => {
+            assert.equal(error.requirementsDiagnostic.stage, stage);
+            assert.equal(error.requirementsDiagnostic.code, code);
+            assert.equal(error.requirementsDiagnostic.output_bytes, Buffer.byteLength(text));
+            assert.equal(error.requirementsDiagnostic.utf16_position, code === 'empty' ? 0 : null);
+            assert(!JSON.stringify(error).includes('private-token'));
+            return true;
+        });
+    }
+    // Shared no-tools chat/Sinan still uses the original envelope, not Yanshi's seven fields.
+    const ordinary = { ...configured, requirements_contract: undefined, response_format: undefined, agent_id: 'sinan' };
+    assert.equal(completion('{"content":"routing data","actions":[]}', ordinary).choices[0].message.content, 'routing data');
+});
+
+test('requirements CLI actually receives typed schema and reports bounded data failures', () => {
+    const fs = require('node:fs');
+    const os = require('node:os');
+    const path = require('node:path');
+    const { spawnSync } = require('node:child_process');
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'godot-requirements-contract-'));
+    try {
+        const request = path.join(directory, 'request.json');
+        const entry = path.join(directory, 'mock.js');
+        const started = path.join(directory, 'started.json');
+        fs.writeFileSync(request, JSON.stringify(requirementInput()));
+        for (const [text, code] of [[JSON.stringify(requirementData()), null], ['', 'empty'], ['{}\n{}', 'invalid_json'],
+            ['{"refusal":"private-token"}', 'refusal']]) {
+            fs.writeFileSync(entry, `const fs=require('node:fs');const assert=require('node:assert/strict');
+                const schema=JSON.parse(fs.readFileSync(process.argv[process.argv.indexOf('--output-schema')+1],'utf8'));
+                assert.deepEqual(schema.required,['decision','title','category','goal','scope','acceptance','questions']);
+                assert.equal(schema.additionalProperties,false);assert.equal(schema.properties.content,undefined);
+                assert.deepEqual(schema.properties.category.enum,['requirement']);
+                fs.writeFileSync(${JSON.stringify(started)},JSON.stringify({schema_checked:true}));
+                process.stdin.resume();process.stdin.on('end',()=>{
+                    process.stderr.write('private-token');
+                    for(const event of [{type:'item.completed',item:{type:'agent_message',text:${JSON.stringify(text)}}},{type:'turn.completed'}])
+                        process.stdout.write(JSON.stringify(event)+'\\n');
+                });`);
+            fs.rmSync(started, { force: true });
+            const result = spawnSync(process.execPath, [path.resolve(__dirname, '../../tools/codex_cli/godot_bridge.js'), 'chat', entry, request],
+                { encoding: 'utf8', timeout: 30000, windowsHide: true });
+            assert.deepEqual(JSON.parse(fs.readFileSync(started, 'utf8')), { schema_checked: true });
+            assert(!result.stdout.includes('private-token'));
+            const packet = JSON.parse(result.stdout);
+            if (code) {
+                assert.equal(result.status, 1);
+                assert.equal(packet.error.requirements_diagnostic.code, code);
+                assert.match(packet.error.requirements_diagnostic.output_sha256, /^[0-9a-f]{64}$/);
+            } else {
+                assert.equal(result.status, 0);
+                assert.deepEqual(JSON.parse(packet.choices[0].message.content), requirementData());
+            }
+        }
+    } finally { fs.rmSync(directory, { recursive: true, force: true }); }
+});
+
 test('consultation distinguishes malformed tools, version skew and disallowed writes', () => {
     const tool_context = { ...input.tool_context, consultation_only: true, writes_allowed: false, execution_allowed: false };
     for (const [tool, code] of [[null, 'INVALID_REQUEST'], [{ function: { name: 'future_read_tool' } }, 'UNSUPPORTED_HOST_TOOL'],

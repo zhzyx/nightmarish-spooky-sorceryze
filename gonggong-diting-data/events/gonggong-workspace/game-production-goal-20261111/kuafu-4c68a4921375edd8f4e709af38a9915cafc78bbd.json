@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4c68a4921375edd8f4e709af38a9915cafc78bbd",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ccc79b36f5fa1a2fc43e790b3a3f6b6ff801e22c4665406b791b246e78c3394e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "action": "validation",
+    "detection_head": "2a2a1b1b81462f93217cf64a7a510a4172636aad",
+    "context_sha256": "cddba3532d7c13a3af3653f2299ad525ab1b260f28c84d1e9445f670eaf61ed3",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1066",
+    "diagnosis": "Installed original-design reconfirmation succeeded through the public dialog and preserved all original children, terminal and registration records. The following read-only status request stopped during requirements JSON parsing with Extra data. Actual journal remained model_attempted. Source order places proposal_ready and Issue/comment publication after this parsing, so this failed attempt did not reach that host publication branch. Raw CLI and model output had already been cleaned up; outer CLI envelope versus inner proposal parse cannot be uniquely established. Inner model content is a hypothesis, not a demonstrated cause. Original failure and observer miss are retained.",
+    "next_action": "One explicit retry has been sent through the original parent retry entry, preserving original request digest and archiving its failed attempt. Observe actual result before any further action; do not repeat confirmation or dispatch and do not count a model summary as a captured tool receipt.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T14:46:46.548982+00:00",
+    "attempted": null,
+    "repair_owner": "codex-current-operator-host",
+    "continuable": "Already completed child acceptance943 and1057 is independent; original production951 remains open."
+  },
+  "occurred_at": "2026-11-13T14:53:06.938674+00:00",
+  "sha256": "de9e8a8dd4f56064821a604b4f2b4087e8ba83d51fe714af45d7912a194e5939"
+}
