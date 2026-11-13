@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "issue_number": 1042,
+  "kind": "main_integration",
+  "previous_candidate": "2bef8592cb9047f23402035910110fedca6c0642",
+  "integration_merge_commit": "b613999bf81291e1298e2703f4c29ee245c8396b",
+  "integration_base": "722a7309c157e6f2665a152fecde57276284175f",
+  "upstream_change_count": 10,
+  "overlapping_write_paths": [],
+  "upstream_paths": [
+    "data-collection/ai-integration-status-recovery-closeout-978.json",
+    "data-collection/tianshu-resume-status-838-delivery.json",
+    "design-docs/ai-github-integration-refactor-20261112.md",
+    "design-docs/tianshu-resume-status-838.md",
+    "design-docs/workspace-review-cleanup-20261112.md",
+    "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/"
+  ],
+  "network_recovery": {
+    "observed": "Direct authenticated Git fetch to GitHub 443 timed out repeatedly; the same trusted command succeeded with http.family=IPv4 without changing credentials or gates",
+    "passed": true
+  },
+  "checks": {
+    "upstream_overlap_review": {
+      "observed": "The writer handoff and local three-way diff contained no Engine Next or candidate write-path overlap",
+      "passed": true
+    },
+    "native_revalidation_required": false,
+    "candidate_gate_revalidation_required": true
+  },
+  "notes": "R1 runtime behavior and native input blobs are unchanged by the main integration. Exact-candidate gate, signing and CI must still be reread."
+}
