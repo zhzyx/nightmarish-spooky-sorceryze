@@ -62,6 +62,25 @@ export async function mergeDoc(
   return (await response.json()) as ApiMergeResult;
 }
 
+export interface ApiRepo {
+  name: string;
+  full_name: string;
+  private: boolean;
+  default_branch: string;
+}
+
+export async function fetchRepos(actor: string): Promise<ApiRepo[]> {
+  const response = await fetch(`${API_BASE}/api/v1/repos`, {
+    headers: { "X-Actor": actor },
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`repos request failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { repos?: ApiRepo[] };
+  return body.repos ?? [];
+}
+
 export async function fetchDocs(actor: string): Promise<ApiDoc[]> {
   const response = await fetch(`${API_BASE}/api/v1/docs`, {
     headers: { "X-Actor": actor },
