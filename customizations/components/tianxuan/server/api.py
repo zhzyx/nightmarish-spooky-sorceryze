@@ -23,6 +23,7 @@ from schemas import (
     CommentResolveRequest,
     DocCreateRequest,
     DocMergeRequest,
+    DocPatchRequest,
     DocUpdateRequest,
     IssueTransitionRequest,
     LoginRequest,
@@ -337,6 +338,27 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
         for issue in store.list_issues(actor):
             columns.setdefault(issue["status"], []).append(issue)
         return {"columns": columns}
+
+    # ---------- 文曲：AI 结构化补丁 ----------
+
+    @app.post("/api/v1/docs/{doc_id}/patch")
+    def patch_doc(doc_id: str, payload: DocPatchRequest, actor: ActorDep) -> dict[str, Any]:
+        document = store.get_doc(doc_id)
+        if document["version"] != payload.expected_version:
+            raise VersionConflict(
+                f"version mismatch: expected {payload.expected_version}, current {document['version']}"
+            )
+        body = document["body_md"]
+        for operation in payload.patches:
+            if not operation.find:
+                raise TianxuanError("patch find must not be empty")
+            occurrences = body.count(operation.find)
+            if occurrences == 0:
+                raise TianxuanError(f"patch target not found: {operation.find!r}")
+            if occurrences > 1:
+                raise TianxuanError(f"patch target is ambiguous ({occurrences} matches): {operation.find!r}")
+            body = body.replace(operation.find, operation.replace, 1)
+        return store.update_doc(actor, doc_id, body, payload.expected_version)  # type: ignore[no-any-return]
 
     # ---------- 文曲：评论 ----------
 

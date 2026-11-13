@@ -52,6 +52,20 @@ class DocMergeRequest(BaseModel):
     expected_version: int
 
 
+class DocPatchOperation(BaseModel):
+    """单次唯一匹配的文本替换。"""
+
+    find: str
+    replace: str
+
+
+class DocPatchRequest(BaseModel):
+    """按版本号对文档做结构化补丁，供 AI 以最小 token 编辑。"""
+
+    expected_version: int
+    patches: list[DocPatchOperation]
+
+
 class RequirementCreateRequest(BaseModel):
     """创建偃师需求文档。"""
 
