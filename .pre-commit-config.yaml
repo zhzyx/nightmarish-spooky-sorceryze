@@ -81,7 +81,8 @@ repos:
     rev: v2.4.2
     hooks:
       - id: codespell
-        exclude: ^tools/maliang_hunyuan/HUNYUAN-NOTICE$
+        # Preserve the immutable method event's original British spelling and digest.
+        exclude: ^(tools/maliang_hunyuan/HUNYUAN-NOTICE|gonggong-diting-data/events/gonggong-workspace/learning-editor-native-acceptance/learn-d0f5f7cb3cb8f40b893ef245b74bd92266302362e4028e1354cb48b40c71adc1\.json)$
         additional_dependencies: [tomli]
         args: ["--ignore-words-list=ENXT"]
 
@@ -224,6 +225,8 @@ repos:
             data-collection/editor-game-workspace-821-failures\.json|
             data-collection/editor-game-workspace-821-final\.json|
             data-collection/editor-task-authorization-820\.json|
+            data-collection/editor-design-contract-943-installed\.json|
+            data-collection/editor-design-contract-943-template-installed\.json|
             data-collection/editor-production-build-placement-concurrent-773\.json|
               data-collection/maliang-gpt-modeling-20261108-host-snapshot\.json|
             .*\.test\.txt|

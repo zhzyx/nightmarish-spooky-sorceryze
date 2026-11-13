@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-30636d15f032cb1587b1f91943411643bda5f808",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-design-contract-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8a28f0db66d5a26450168d6defc36bb911b047a4703557ab5ca61635bd8d7b8d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+    "action": "validation",
+    "detection_head": "0dced53c8ae8a165ba040100798170a3438ad097",
+    "context_sha256": "2464afcffe8f5bfec1de5cae0999a5c569f5e86611bc82183b74e4ef8eb136af",
+    "operator": "Sail-Li",
+    "worker": "agent:/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43234919995/job/131239603900",
+    "diagnosis": "PR 952 static file-format hook rewrote only the two immutable CRLF installed-consumer reports. Git attributes already preserve their reviewed byte hashes, but the existing exact-path immutable evidence format exclusion also needs these two paths. Other checks including issue association passed. Keep original reports and failed CI.",
+    "next_action": "Independently review the two exact file-format exclusions following existing immutable evidence conventions, verify original hashes and remaining formatting checks, then issue the corrected signed candidate and require its full CI/main readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T14:18:37.178013+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T14:21:05.992828+00:00",
+  "sha256": "c1ebd5b660e7d014f73e0da5953aff83206a81db21222497ec22f18503c75e91"
+}

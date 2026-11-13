@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-eb327673fec89483a0b3ca2d686fb712005749d3",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7bd5d109876f1009eecafa221f10cd94fb79bb7218f787c016dd5b7ba2522fb7",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+    "action": "delivery",
+    "detection_head": "3f0bdf49e803cc7ad96e03b90495ff6859a11467",
+    "context_sha256": "a1d3901a497372bb546cb34613f5f6b2b8fb66e2aa31627087fe189d9795f53e",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "Issue#773 user authorization and AGENTS.md continuous delivery",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1045; https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1044",
+    "diagnosis": "PR1045 complete CI passed. Independent PR1044 advanced main to c827551e before exact-base merge. Source3f0bdf49 is preserved and applied without conflict on the current main; shared bridge, dock/context and acceptance fixture deltas require integration review and targeted rebuild/consumers. No merge or installed acceptance claimed.",
+    "next_action": "Complete current-main source review, rebuild and targeted automatic-parent status and continuation checks; append exact input evidence and submit a replacement signed candidate, then recheck CI and main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T10:16:12.496335+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T10:18:37.042725+00:00",
+  "sha256": "7451eca0e535dfed610e1deba6e6367d3ada041eaa6c92e01bfda8d3f13840da"
+}

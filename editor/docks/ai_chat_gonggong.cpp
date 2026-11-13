@@ -468,7 +468,7 @@ void AIChatDock::_begin_gonggong_context() {
 	gonggong_governance_digest = String();
 	gonggong_generation = session_generation;
 	String candidate_error;
-	if (snapshot_state.has("engine_candidate") && (!_validate_engine_candidate(candidate_error) || !_recover_active_provenance(candidate_error, runtime))) {
+	if (!_recover_active_provenance(candidate_error, runtime) || (snapshot_state.has("engine_candidate") && !_validate_engine_candidate(candidate_error))) {
 		_append(TTR("Error"), candidate_error);
 		_set_busy(false);
 		return;

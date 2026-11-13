@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-45a49ef765b5135ccd9d6a608b7b0d357433abe72fa0cf69aeec888bf1283613",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "occurred_at": "2026-11-13T10:34:40.638979+00:00",
+  "evidence_refs": [
+    "kuafu-da285aca69b15877ea8ba53d076cf3ec92bc58bc"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "fixture-design-byte-contract",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Prepare the fixture contract digest and write its design from the same explicit UTF-8 bytes. Keep native raw-byte validation, and assert unique textual injection anchors when combining fixtures.",
+      "when": "Integrating a Windows native design-confirmation consumer with parent contracts or restoring an original design after malformed-input checks.",
+      "counterexample": "Path.write_text can translate LF to CRLF while the contract hashes LF; a previous normalized string rewrite can accidentally hide the mismatch. Loosening the product hash check would mask the real boundary.",
+      "trial_plan": "In a future isolated consumer, confirm exact UTF-8 design bytes, then alter only line endings after confirmation and require rejection without dispatch; restore the original bytes, confirm anew, and require successful native continuation. Treat this proposal as a candidate until that explicit two-direction trial is recorded."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-production-recovery-main1044-773.json",
+        "sha256": "797b072327729c868a3bd59e07e203c4a5c7d6b352e600f8052efce86fa93df8"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/game-production-goal-20261111/kuafu-da285aca69b15877ea8ba53d076cf3ec92bc58bc.json",
+      "sha256": "4d756bf39bbfc82b1b9cc7b5fee61031bbb62b0e79dab89d8007c93a0f7e1377"
+    }
+  },
+  "sha256": "e262e3c66f3a7d0e0a07c1a40443f9165fffa64c80c41d8717555fa9b223d0f2"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-da285aca69b15877ea8ba53d076cf3ec92bc58bc",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7bd5d109876f1009eecafa221f10cd94fb79bb7218f787c016dd5b7ba2522fb7",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+    "action": "delivery",
+    "detection_head": "3f0bdf49e803cc7ad96e03b90495ff6859a11467",
+    "context_sha256": "a1d3901a497372bb546cb34613f5f6b2b8fb66e2aa31627087fe189d9795f53e",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "Issue#773 user authorization and AGENTS.md continuous delivery",
+    "evidence": "source:c827551e86ad37551302a6df3dc37d4d63a3638c; local-consumers:joint773-parent-status-initial-main1044-r2.json and joint773-parent-status-return-main1044-r2.json",
+    "diagnosis": "Current-main rebuild passes 99 native tests and 1795 assertions; bridge passes 52; native warm production and direct-editor crash recovery pass. New upstream automatic-parent fixture first missed its reporting anchor after actor addition; a unique checked anchor fixes injection. Correct normal-case consumers then expose LF contract digest versus Windows CRLF fixture write_text. Independent read-only diagnosis confirms strict raw-byte product checks correctly reject. Fixture now writes exact UTF8 bytes; product checks remain unchanged.",
+    "next_action": "Complete all three corrected main1044-r3 consumers, independent delta/evidence review and replacement exact candidate CI/main delivery. Preserve failed wrong-case and byte-mismatch runs without calling them product acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T10:16:12.496335+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T10:32:45.083421+00:00",
+  "sha256": "4d756bf39bbfc82b1b9cc7b5fee61031bbb62b0e79dab89d8007c93a0f7e1377"
+}

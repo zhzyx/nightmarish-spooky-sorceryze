@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "issue": 943,
+  "parent_issue": 773,
+  "main_revision": "d91bd93eb14d1420db9e6872c638e9cb82baf015",
+  "binary_sha256": "ff4164c95eed803d2b10376c305a6153ad366484d98371ee38b556ce2b7ed601",
+  "template_sha256": "80b6fed7f7982cc6bcb1ca7f44e95313cc13612cb528a3e265d5493e45f1ba75",
+  "header_sha256": "b23e4b836d8690b543466530c6631f8b8a8ee1363bda9fd60a737ddcaef53d2b",
+  "scope": "Extract exact UTF-32 source template into UTF-8 test input; consume it through the formally installed editor production button in an isolated fixture. No production model or Issue service.",
+  "result": {
+    "ok": true,
+    "editor_ok": true,
+    "failure": "",
+    "checks": [
+      "Exact template opens native design confirmation with both original numbered titles and matching document SHA.",
+      "Pending template creates no child before native confirmation; cancel creates no child.",
+      "Same fixture retains malformed-design diagnostics, stale-confirmation rejection and original manual dependency/parent-return checks."
+    ]
+  },
+  "preserved_failure": {
+    "report_ok": false,
+    "reason": "Initial probe incorrectly expected criterion identifiers in a dialog that displays numbered titles and the document hash. Product template parsing/confirmation succeeded; the extra unsupported UI assertion failed.",
+    "wrapper_exit_code": 0,
+    "exit_boundary": "Initial private wrapper discarded the runner return code. Its JSON result remains authoritative failure. Revised wrapper propagates the code and verifies the existing dialog contract; no product source changed."
+  },
+  "hashes": {
+    "check-installed947-template.py": "1ffaba5bef6c2797b70ebf04184f43a83096501d6c4ced65978651a51b36dbf5",
+    "installed947-template-probe.gd": "8634bffddbba126c0c4ea80d58cd80566d03c763853f0b651da2fd3667ade575",
+    "installed947-template.log": "86f4777fd378145984d55e01e5f8f1b53a2c60325257f5f8cfda515c427567ec",
+    "installed947-template-consumer.json": "951c1153ca872e1901c0e319a3f8e32f1c7800c1d77317871b3756607df00d08",
+    "check-installed947-template-r2.py": "b867b617631783a4ad18d045263c551da285dc54827449e401f518534651c818",
+    "installed947-template-r2-probe.gd": "6c803e30c16ee39c2029cf8a13efa0c36f5bc2bf305212c7aaba54604e76125f",
+    "installed947-template-r2.log": "95672c39409af7ac03ea95d9b2a4338594e9cd15c928d00df3624ef3f5f34388",
+    "installed947-template-r2-consumer.json": "ff3f025d6d95527e307bb22c6f5c826445b07f8430ab9ae02bee16f8cdd41f1a"
+  },
+  "method_status": "The initial method verification overreached its normal fixture evidence and was counterexampled. This supplemental result fills the product UI evidence gap. A revised method remains candidate for the next planned reuse trial; no retroactive verified state is claimed.",
+  "path_base": "Public source paths resolve from repository root; raw fixture scripts/logs/reports are host-private and identified by hashes.",
+  "boundary": "Template confirmation/cancel and existing fixture flows; not canonical-template business production, online model behavior or parent773 completion."
+}

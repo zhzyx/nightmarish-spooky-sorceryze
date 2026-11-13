@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "issue_number": 773,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "request_id": "game-production-goal-20261111",
+  "baseline": "b720e9c582678c1e13481d5e898676218aa6c5de",
+  "prior_source": "68269d324d721601783580297a267258f78389cb",
+  "prior_signed_source": "37a6f6e1615bdef46e0fdee11e32d7491efb856f",
+  "prior_pr": 984,
+  "original_joint_report": {
+    "path": "data-collection/editor-production-recovery-joint-773.json",
+    "sha256": "537c4ad478084d65a5a4379606dc6c0d7f841d8384980a89ca9b715e11d34792"
+  },
+  "integration": "All 68 prior candidate files retain exact Git blobs and raw bytes after a three-way application onto main. Upstream #983 changes the separate Gameplay implementation/adapter, with no overlapping editor production inputs. Original PR984 remains unmerged pending replacement delivery.",
+  "upstream_paths": [
+    "data-collection/engine-next-gameplay-core-m1-build-impact-r5.json",
+    "data-collection/engine-next-gameplay-core-m1-build-impact-r6.json",
+    "data-collection/engine-next-gameplay-core-m1-verification-20261112-r5.json",
+    "data-collection/engine-next-gameplay-core-m1-verification-20261112-r6.json",
+    "data-collection/requests/engine-next-gameplay-core-m1-20261112/6c9d6fb4-77fd-4ace-9bde-8d391c3f26e9.json",
+    "design-docs/engine-next-gameplay-core-m1-20261112.md",
+    "design-docs/engine-next-gameplay-core-m1-pr-b-939.md",
+    "engine_next/Gameplay/InterpolationBuffer.cpp",
+    "engine_next/Gameplay/PredictionModel.cpp",
+    "engine_next/Tests/Gameplay/TestInterpolationBuffer.cpp",
+    "engine_next/Tests/Gameplay/TestPredictionBenchmark.cpp",
+    "engine_next/Tests/Gameplay/TestPredictionModel.cpp",
+    "engine_next/Tests/Gameplay/TestPredictionTrace.cpp",
+    "engine_next/build-impact.json",
+    "engine_next/include/EngineNext/Gameplay/InterpolationBuffer.h",
+    "engine_next/include/EngineNext/Gameplay/PredictionModel.h",
+    "engine_next/include/EngineNext/Gameplay/PredictionTypes.h",
+    "gonggong-diting-data/events/gonggong-workspace/engine-next-gameplay-core-m1-20261112/step-939-godot-adapter-verified.json",
+    "modules/gameplay/SCsub",
+    "modules/gameplay/adapters/.clang-format",
+    "modules/gameplay/adapters/GameplayPredictionCore.cpp",
+    "modules/gameplay/adapters/GameplayPredictionCore.h",
+    "modules/gameplay/gameplay_prediction.cpp",
+    "modules/gameplay/gameplay_prediction.h",
+    "modules/gameplay/tests/TestPredictionCore.h"
+  ],
+  "engine_sha256": "7fc74d47e46f7911049b153747cdf5dc49f39dc37c4b41006dd134c6aa359592",
+  "console_sha256": "0b4928460a0a8172077e443cb8e35252d42437deaa6a863cccd5fd41e47e084c",
+  "checks": {
+    "strict_build": {
+      "passed": true,
+      "observed": "Changed upstream Gameplay adapter/core and module rebuilt and editor relinked; warnings=extra werror=yes tests=yes, exit 0, 15.49s.",
+      "log_sha256": "bd4a9ab2e50f90b82fc06ec279cdcceaf3a7f1623620a43b718bfe0af30abe01"
+    },
+    "native": {
+      "passed": true,
+      "command": "godot.console.exe --headless --test --test-case=*AIChat*,*NativeAcceptance*,*Gameplay*Prediction*",
+      "observed": "100 cases and 1889 assertions passed, 0 failed.",
+      "log_sha256": "eb5cee784fd35335f92255b86870335441e8a761ac9ee26266a51948c0382843"
+    },
+    "ordinary_crash_recovery": {
+      "passed": true,
+      "command": "run_game_receipt_restart.py --godot <direct editor .exe>",
+      "observed": "ORDINARY_GAME_COMMAND_RESTART_OK; original one execution/result and queued work retained without replay.",
+      "log_sha256": "a137ce8666c023ec79ed66e50fb0ee2352ff76ee65eabe31cac14bcb4e2a9063"
+    }
+  },
+  "remaining": [
+    "Replacement exact candidate CI and main readback.",
+    "Formal main installation, original real-provider production continuation and parent complete acceptance."
+  ],
+  "retention": "Original source branch, signed PR984, prior reports, private stashes, live game session and unrelated worker reservations remain preserved."
+}
