@@ -14,7 +14,7 @@ import json
 import re
 import sqlite3
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 SCHEMA = """
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS users (
   name TEXT NOT NULL, password_hash TEXT NOT NULL, salt TEXT NOT NULL, created_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS sessions (
-  token TEXT PRIMARY KEY, user_id TEXT NOT NULL, created_at TEXT NOT NULL
+  token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS spaces (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, name TEXT NOT NULL, slug TEXT NOT NULL, created_at TEXT NOT NULL
@@ -106,6 +106,10 @@ def _hash_password(password: str, salt: str) -> str:
     return hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt.encode("utf-8"), 120_000).hex()
 
 
+def _token_hash(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
 def classify(text: str) -> list[str]:
     """AI 优先的轻量归类：规则先行，模型结果可覆盖。"""
     tags: set[str] = set()
@@ -146,7 +150,17 @@ class Tianxuan:
         self.db = sqlite3.connect(db_path, check_same_thread=False)
         self.db.row_factory = sqlite3.Row
         self.db.executescript(SCHEMA)
+        self._migrate_sessions()
         self.db.commit()
+
+    def _migrate_sessions(self) -> None:
+        columns = {row[1] for row in self.db.execute("PRAGMA table_info(sessions)")}
+        if columns and "token_hash" not in columns:
+            self.db.execute("DROP TABLE sessions")
+            self.db.execute(
+                "CREATE TABLE sessions (token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL, "
+                "created_at TEXT NOT NULL, expires_at TEXT NOT NULL)"
+            )
 
     # ---------- 租户与身份 ----------
 
@@ -196,20 +210,41 @@ class Tianxuan:
             return None
         return {"user_id": row["id"], "tenant_id": row["tenant_id"], "email": row["email"], "name": row["name"]}
 
-    def issue_session(self, user_id: str) -> str:
+    def issue_session(self, user_id: str, ttl_seconds: int = 86_400) -> str:
         token = "txs_" + uuid.uuid4().hex + uuid.uuid4().hex
+        now = datetime.now(timezone.utc)
+        expires = now + timedelta(seconds=ttl_seconds)
         self.db.execute(
-            "INSERT INTO sessions (token, user_id, created_at) VALUES (?, ?, ?)",
-            (token, user_id, _now()),
+            "INSERT INTO sessions (token_hash, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)",
+            (
+                _token_hash(token),
+                user_id,
+                now.isoformat(timespec="seconds"),
+                expires.isoformat(timespec="seconds"),
+            ),
         )
         self.db.commit()
         return token
 
     def user_for_token(self, token: str) -> str | None:
-        row = self.db.execute("SELECT user_id FROM sessions WHERE token = ?", (token,)).fetchone()
+        token_hash = _token_hash(token)
+        row = self.db.execute("SELECT user_id, expires_at FROM sessions WHERE token_hash = ?", (token_hash,)).fetchone()
         if row is None:
             return None
+        try:
+            expires = datetime.fromisoformat(row["expires_at"])
+        except ValueError:
+            expires = datetime.now(timezone.utc)
+        if expires <= datetime.now(timezone.utc):
+            self.db.execute("DELETE FROM sessions WHERE token_hash = ?", (token_hash,))
+            self.db.commit()
+            return None
         return str(row["user_id"])
+
+    def revoke_session(self, token: str) -> bool:
+        cursor = self.db.execute("DELETE FROM sessions WHERE token_hash = ?", (_token_hash(token),))
+        self.db.commit()
+        return cursor.rowcount > 0
 
     # ---------- 文曲：文档 ----------
 
