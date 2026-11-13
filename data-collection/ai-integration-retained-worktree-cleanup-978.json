@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "request_id": "ai-github-integration-refactor-20261112",
+  "issue_number": 978,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "related_issues": [
+    973,
+    828,
+    833
+  ],
+  "baseline": "d78054420a4034ec44013372cc55893b1c854b58",
+  "observed_at": "2026-11-13T15:55:02.353110+00:00",
+  "scope": "Incremental retention review of all 34 local worktrees and removal of one independently verified obsolete project-AI-config worktree. Reuses the original source review; does not rerun every historical business acceptance.",
+  "path_base": "Repository paths resolve from repository root. private_receipts resolve under data-collection/receipts/ai-integration-refactor-20261112 in the original main worktree; absolute local paths, configuration values and process arguments remain private.",
+  "original_preserved_worktree_heads_changed": [],
+  "removed_worktree": "project-ai-config-20261112",
+  "removed_worktrees_this_round": 1,
+  "cumulative_removed_worktrees": 28,
+  "remaining_worktrees": 33,
+  "retained_source_commit": "42f943f62f3d86c1344c282e3f7e0974cf8d0620",
+  "retained_source_branch": "codex/project-ai-config-20261112",
+  "original_delivery": {
+    "issue828": "closed/completed; six of six original acceptance items recorded",
+    "superseded_pr832": "closed, not merged; original signed candidate and remote branch preserved",
+    "successor_pr852": "merged at 5903fb96fee73c0d68967bf953abcd0a5d265fcb; ancestor of baseline",
+    "source_patch_equivalence": "git cherry baseline HEAD reports minus for the one original commit",
+    "owner_confirmation": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/833#issuecomment-6809066338"
+  },
+  "independent_review": {
+    "worker": "/root/sinan_328f250f0209ee8a",
+    "private_receipt": "retained-worktree-review/review.json",
+    "sha256": "4329e517ca6f10a1f472e99b46f740af63bef83238dddd01cb900b6e6c8ed5c3",
+    "blocking_findings": [],
+    "actual_terminal_verified": true,
+    "reservation_reconciled": true
+  },
+  "preservation": {
+    "files": 11,
+    "bytes": 174517603,
+    "contents": "Eight private receipts, one unique fault event, UI snapshot and original native executable. Hashes and sizes matched before and after removal. Original branch/commit remains available to reconstruct the old path.",
+    "private_archive": "project828-retained-worktree-archive",
+    "archive_manifest": "retained-worktree-current-review.json",
+    "original_queue_833": "Still OPEN; actual run43097980046 remains queued with null conclusion on this readback. Underlying queue cause remains unknown. No old candidate was republished.",
+    "other_worktrees": {
+      "retained_unique_content_checked": 920,
+      "other_worktree_head_and_content_errors": [],
+      "source": "retained-worktree-current-review.json"
+    }
+  },
+  "cleanup": {
+    "method": "Archived and rehashed the one untracked event, removed its source copy, verified clean, then ordinary git worktree remove without force.",
+    "allocated_kib_before": 2320484,
+    "space_note": "Worktree allocation before deletion, not a measured net filesystem free-space increase.",
+    "ignored_files_classified": 4682,
+    "unknown_ignored_files": 0,
+    "active_process_or_open_file_matches": 0,
+    "active_original_reservations": 0,
+    "effective_startup_reference_matches": 0,
+    "final_path_absent": true,
+    "final_registration_absent": true,
+    "retained_branch_verified": true,
+    "removed_local_branches": 0,
+    "removed_remote_branches": 0,
+    "effective_installation_changed": false
+  },
+  "acceptance_boundary": "This completes only the reviewed cleanup operation. Parent978 remains OPEN. User has now explicitly transferred830 delivery to this root; its prepared candidate is next. Original production/installed-consumer/service/platform acceptance and unknown833 queue diagnosis retain their requirements.",
+  "delivery_integration": {
+    "issue": 1072,
+    "actual_new_main": "8b3b59d8adcd7568688003624a503500a86add29",
+    "upstream_pr": 1071,
+    "upstream_paths": 65,
+    "overlapping_paths": 0,
+    "reviewed_evidence_bytes_preserved_during_fast_forward": true,
+    "new_user_handoff": "Current user explicitly transferred830 delivery after the cleanup review; no further handoff question is required."
+  }
+}

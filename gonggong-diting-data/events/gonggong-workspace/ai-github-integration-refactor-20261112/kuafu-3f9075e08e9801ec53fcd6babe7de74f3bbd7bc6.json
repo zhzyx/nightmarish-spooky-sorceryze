@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3f9075e08e9801ec53fcd6babe7de74f3bbd7bc6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "85488514bf17a9c032056b9c9fbb681940bd0c33d47b087ef00b78623dc29ab4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1072",
+    "action": "delivery",
+    "detection_head": "8b3b59d8adcd7568688003624a503500a86add29",
+    "context_sha256": "c39241435184861609b9657437d85bfbdbf6f9a654204e81a8c59ef359be7d9c",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-integration",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1072",
+    "diagnosis": "root私有暂存脚本误将4个新文件断言为5个，脚本提前退出，后续shell未设fail-fast仍调用writer_submit。门禁在准入、提交与推送前正确拒绝WORKTREE_UNSTAGED；没有发布副作用。此为本地准备错误，产品与清理结果未变。另一次对1072无实际事件的collect被正确拒绝，没有伪造空索引。",
+    "next_action": "使用明确文件清单和fail-fast命令重新暂存当前任务；实际1072关联证据随本批提交，真实谛听事件仅绑定978并重新采集；核对index/worktree一致后重跑原writer_submit，精确CI/main回读后验收1072。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T16:06:11.912388+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T16:07:21.412346+00:00",
+  "sha256": "c41752e9a2885e0ca2e45502a1b4a40d2a1a7051c4b15a122393cdbd23917e6c"
+}
