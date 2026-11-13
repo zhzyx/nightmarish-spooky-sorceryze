@@ -28,8 +28,8 @@ from schemas import (
     TicketsRequest,
 )
 from tianxuan_core import NotFound, Tianxuan, TianxuanError, TransitionRejected, VersionConflict
+from wenqu_bridge import build_ai_index, export_markdown, merge_offline
 from wenqu_bridge import classify as classify_markdown
-from wenqu_bridge import export_markdown, merge_offline
 from wenqu_bridge import search as search_documents
 
 
@@ -234,6 +234,27 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
             )
         updated = store.update_doc(actor, doc_id, merged_md, document["version"])
         return {"status": "merged", "doc": updated, "remote_version": document["version"]}
+
+    # ---------- 文曲：文档链接与反向链接 ----------
+
+    @app.get("/api/v1/docs/{doc_id}/links")
+    def doc_links(doc_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        document = store.get_doc(doc_id)
+        documents = [store.get_doc(row["id"]) for row in store.list_docs(actor)]
+        by_title = {item["title"]: item["id"] for item in documents}
+        by_title.update({item["id"]: item["id"] for item in documents})
+        outgoing = []
+        for target in build_ai_index(document["body_md"])["links"]:
+            target_id = by_title.get(target)
+            outgoing.append({"target": target, "doc_id": target_id, "resolved": target_id is not None})
+        backlinks = []
+        for other in documents:
+            if other["id"] == doc_id:
+                continue
+            links = set(build_ai_index(other["body_md"])["links"])
+            if document["id"] in links or document["title"] in links:
+                backlinks.append({"doc_id": other["id"], "title": other["title"]})
+        return {"outgoing": outgoing, "backlinks": backlinks}
 
     # ---------- 文曲：评论 ----------
 
