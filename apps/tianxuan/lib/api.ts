@@ -176,6 +176,73 @@ export async function unshareDoc(id: string, actor: string, userId: string): Pro
   }
 }
 
+export interface ApiComment {
+  id: string;
+  doc_id: string;
+  author: string;
+  body: string;
+  resolved: boolean;
+  created_at: string;
+  resolved_at: string | null;
+}
+
+export async function fetchComments(docId: string, actor: string): Promise<ApiComment[]> {
+  const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(docId)}/comments`, {
+    headers: { "X-Actor": actor },
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`comments request failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { comments?: ApiComment[] };
+  return body.comments ?? [];
+}
+
+export async function addComment(
+  docId: string,
+  actor: string,
+  body: string,
+): Promise<ApiComment> {
+  const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(docId)}/comments`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Actor": actor },
+    body: JSON.stringify({ body }),
+  });
+  if (!response.ok) {
+    throw new Error(`comment create failed: ${response.status}`);
+  }
+  return (await response.json()) as ApiComment;
+}
+
+export async function resolveComment(
+  commentId: string,
+  actor: string,
+  resolved: boolean,
+): Promise<ApiComment> {
+  const response = await fetch(`${apiBase()}/api/v1/comments/${encodeURIComponent(commentId)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", "X-Actor": actor },
+    body: JSON.stringify({ resolved }),
+  });
+  if (!response.ok) {
+    throw new Error(`comment resolve failed: ${response.status}`);
+  }
+  return (await response.json()) as ApiComment;
+}
+
+export interface ApiGiteaStatus {
+  configured: boolean;
+  owner: string;
+}
+
+export async function fetchGiteaStatus(): Promise<ApiGiteaStatus> {
+  const response = await fetch(`${apiBase()}/api/v1/gitea/status`, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`gitea status failed: ${response.status}`);
+  }
+  return (await response.json()) as ApiGiteaStatus;
+}
+
 export interface ApiIssue {
   id: string;
   title: string;

@@ -32,6 +32,7 @@
 
 #include "engine_next/include/EngineNext/Runtime/Types.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -49,7 +50,16 @@ struct RuntimeConfig
 	std::string strTracePath;
 	std::string strBindAddress = "127.0.0.1";
 	std::uint16_t nPort = 0;
-	std::uint32_t nDurationMsec = 5000;
+	std::uint32_t nDurationMsec = 8000;
+	std::uint32_t nDrainAfterMsec = 0;
+	std::uint32_t nDrainTimeoutMsec = 1000;
+	std::uint64_t nImpairmentDelayMsec = 0;
+	std::uint64_t nImpairmentJitterMsec = 0;
+	std::uint32_t nImpairmentLossPermille = 0;
+	std::size_t nImpairmentQueueCapacity = 64;
+	bool bDropFirstInput = false;
+	bool bReconnectTest = false;
+	bool bWithholdDrainAck = false;
 	bool bNetworkMode = false;
 	bool bHelpRequested = false;
 };

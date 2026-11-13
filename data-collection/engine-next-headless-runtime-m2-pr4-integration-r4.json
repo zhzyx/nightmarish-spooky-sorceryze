@@ -1,0 +1,196 @@
+{
+  "affected_test_selection": "No Engine Next input changed between the tested base and this integration; retain the previous full runtime, sanitizer, clean-source and M1 evidence instead of another unrelated full rerun",
+  "bug_issue": 1138,
+  "engine_next_changes_between_bases": [],
+  "incidents": [
+    "c58aea83beb1a137db0385920762e8f1c5533b1e5378da3ad6c54e35a1d6af80",
+    "905fc9a2e1c20fc7737f14ca2e192a0577ff7e68926ccd91521b70bc88b7f669"
+  ],
+  "integration_base": "60acf4ee81a3027b44004ff505af38a05ea6dd23",
+  "integration_gate": {
+    "command": "python customizations/components/issue-workorders/issue_gate.py --repo . --module-impact-only --base-ref origin/main",
+    "execution": "required_after_this_record_and_before_writer_submit_in_the_same_command"
+  },
+  "issue_number": 1042,
+  "native_inputs_unchanged": true,
+  "previous_integration_base": "86e06626b861cb2fa5b02f296ca3fe7658d3a1f7",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "reused_evidence": {
+    "basis": "375d5314a7d9438413feb91efa9be292335e8fde",
+    "clean_source": {
+      "contract_state": "contract_passed",
+      "drain_faults_passed": true,
+      "file_count": 85,
+      "godot_roots_present": [],
+      "handshake_passed": true,
+      "manifest_sha256": "f549a4cfc02b734007a632c52b47f377d44042a6ee0e620a0f2ce470fab2f067",
+      "native_key": "bfa8edd91db4d63e4053b2cf8ed47252812c79f693a57fe8e9161804d1760db5"
+    },
+    "m1_regression": {
+      "contract_state": "contract_passed",
+      "test_summary": "ENGINE_NEXT_BENCHMARK model_steps=1000000 buffer_operations=50000 buffer_capacity=4096 repetitions=5 model_median_us=4852 buffer_median_us=162960 model_checksum=3325757522 buffer_checksum=4097\nENGINE_NEXT_TEST_SUMMARY tests=16 checks=200161 failures=0",
+      "trace_sha256": "f55d1f5bc85bb72376d3f31cdf9b64aac91e714b6556dbce1663c1db7995924c"
+    },
+    "reason": "The complete native_inputs mapping and native_key are byte-identical to the current candidate; unrelated main files changed only",
+    "sanitizer": {
+      "drain_faults_passed": true,
+      "handshake_passed": true,
+      "native_key": "e8f78cca8cdbe321e15b702617cf830c9bed3f19226721db99d869bba0f8b452",
+      "test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=20 checks=250 failures=0"
+    }
+  },
+  "runtime_evidence": {
+    "clean_test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=20 checks=250 failures=0",
+    "contracts": {
+      "EngineNextRuntimeTests": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "tools/check_engine_next_contract.py",
+          "--repo",
+          ".",
+          "--require-sources",
+          "--link-manifest",
+          "build/engine_next/clang-m2-pr4-submit/EngineNextRuntimeTestsLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "link": {
+          "libraries": 1,
+          "objects": 31,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "sources": {
+          "local_includes": 104,
+          "passed": true,
+          "source_files": 69,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed"
+      },
+      "next_client": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "tools/check_engine_next_contract.py",
+          "--repo",
+          ".",
+          "--require-sources",
+          "--link-manifest",
+          "build/engine_next/clang-m2-pr4-submit/next_clientLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "link": {
+          "libraries": 1,
+          "objects": 24,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "sources": {
+          "local_includes": 104,
+          "passed": true,
+          "source_files": 69,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed"
+      },
+      "next_server": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "tools/check_engine_next_contract.py",
+          "--repo",
+          ".",
+          "--require-sources",
+          "--link-manifest",
+          "build/engine_next/clang-m2-pr4-submit/next_serverLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "link": {
+          "libraries": 1,
+          "objects": 24,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "sources": {
+          "local_includes": 104,
+          "passed": true,
+          "source_files": 69,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed"
+      }
+    },
+    "drain_completes": [
+      {
+        "acknowledged": 2,
+        "forced": 0,
+        "notified": 2,
+        "resumed": 1
+      }
+    ],
+    "drain_fault_server_returncode": 1,
+    "drain_faults_passed": true,
+    "handshake_passed": true,
+    "late_rejects": [
+      {
+        "fatal": "0",
+        "reason": "8"
+      }
+    ],
+    "native_key": "bfa8edd91db4d63e4053b2cf8ed47252812c79f693a57fe8e9161804d1760db5",
+    "predictions": [
+      {
+        "confirmed": 24,
+        "corrections": 10,
+        "history": 0,
+        "position_x": 3.072,
+        "retransmissions": 51
+      }
+    ],
+    "remotes": [
+      {
+        "entity_id": 2,
+        "position_x": 0.0106667,
+        "samples": 3,
+        "server_time": 50,
+        "status": "interpolated"
+      },
+      {
+        "entity_id": 2,
+        "position_x": 1.024,
+        "samples": 4,
+        "server_time": 192,
+        "status": "stale_held"
+      },
+      {
+        "entity_id": 2,
+        "position_x": 1.13128,
+        "samples": 5,
+        "server_time": 715,
+        "status": "interpolated"
+      }
+    ],
+    "server_resumes": [
+      {
+        "confirmed": 8,
+        "entity_id": 2,
+        "peer_id": 3,
+        "session_id": 2
+      }
+    ],
+    "test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=20 checks=250 failures=0",
+    "trace_sha256": {
+      "client-A.jsonl": "c9ea7a71698f835aa8118427f191d729f8b551d2d67c3cf77b956a2ed7273e65",
+      "client-B.jsonl": "ab9edf9547364077bef9b92e908f2eb1933b9be81a64935f2b2359d36ca2f7cd",
+      "server.jsonl": "5f203500190c2e9cf6cfacaa709f19a746b4074ab537ca918b6dcabcbb936581"
+    }
+  },
+  "schema_version": 1,
+  "slice": "pr4_unchanged_input_fast_integration",
+  "tested_runtime_basis": "86e06626b861cb2fa5b02f296ca3fe7658d3a1f7",
+  "unverified": [
+    "Exact-candidate CI and main readback are still required before reporting delivery recovery",
+    "M2 issue 1042 remains open for PR5"
+  ]
+}

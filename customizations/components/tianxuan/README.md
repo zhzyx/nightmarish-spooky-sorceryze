@@ -11,10 +11,12 @@
 
 | 路径 | 职责 |
 | --- | --- |
-| `server/` | 领域核心（SQLite）+ FastAPI 适配层 + 演示与启动入口 |
+| `server/` | 领域核心（SQLite）+ FastAPI 适配层 + CLI + 演示与启动入口 |
 | `wenqu/` | 文曲：Markdown 规范化、AI 索引、归类、检索、离线三方合并 |
 | `duobao/` | 多宝：Git CLI 适配、Gitea/Forgejo HTTP 客户端 |
 | `agents/` | 文曲、多宝、司南·工单 Agent/Skill 候选（未准入） |
+| `apps/tianxuan/` | Next.js Web：文档、工单看板、仓库、设置 |
+| `deploy/` | 自托管 Dockerfile、Compose、nginx 与部署说明 |
 
 ## 快速开始
 
@@ -50,6 +52,27 @@ npm run dev
 
 `TIANXUAN_ACTOR` 用于服务端读取真实文档/仓库；`NEXT_PUBLIC_TIANXUAN_ACTOR` 用于浏览器端保存实时文档。两者都应填写已注册用户的 ID。
 
+### CLI（AI / 脚本）
+
+```sh
+cd customizations/components/tianxuan/server
+python tianxuan_cli.py --api http://127.0.0.1:8000 docs list
+python tianxuan_cli.py login --email owner@example.com --password secret-pass
+python tianxuan_cli.py --token <token> docs create --title "CLI 文档" --body "# 标题\n"
+```
+
+支持 `docs list/get/create/patch/merge`、`issues list`、`board`、`requirements create/export`；输出 JSON，错误非零退出。
+
+### Docker Compose
+
+```sh
+cd deploy
+cp .env.example .env
+docker compose --env-file .env up -d --build
+```
+
+详见 [`deploy/README.md`](../../../deploy/README.md)。
+
 ## 环境变量
 
 | 变量 | 用途 |
@@ -64,13 +87,15 @@ npm run dev
 
 ## 当前能力
 
-- 身份：注册、登录、Bearer 会话（哈希存储、24h 过期、吊销）、租户角色（admin/editor/viewer）
+- 身份：注册、登录、Bearer 会话（哈希存储、24h 过期、吊销）、租户角色（admin/editor/viewer）、单次邀请
 - 文曲：Markdown CRUD、版本与统一 diff、评论、链接/反向链接、检索、导出、AI 视图、自动归类、AI 结构化补丁
+- 权限：文档 `tenant/private` 可见性、按用户 read/write 共享；列表与所有读路径按 ACL 过滤
 - 协作：WebSocket 实时房间（快照/presence/更新广播）、离线草稿三方合并、Web 端本地草稿与在线同步
-- 偃师/司南：需求文档、工单树、状态机、看板、进度同步、需求落库 Git Markdown
-- 多宝：本地 Git 提交、Gitea 状态/列表/创建/读取
-- AI：BYOK 模型网关（用量与预算）；AI 工具入口
-- Web：文档列表/详情/编辑、仓库列表、API 连通状态
+- 偃师/司南：需求文档、工单树、状态机、工单评论、看板、进度同步、需求落库 Git Markdown
+- 多宝：本地 Git 提交；Gitea 状态/列表/创建/读取（支持真实 Gitea 实例）
+- AI：BYOK 模型网关（用量与预算）；AI 工具入口；结构化补丁
+- Web：文档列表/详情/编辑/共享、实时文档、实时工单看板、实时仓库、设置页系统状态、API 连通状态
+- 交付：`deploy/` 自托管 Compose；CLI；端到端演示脚本
 
 ## 测试
 
@@ -78,7 +103,7 @@ npm run dev
 python -m pytest customizations/components/tianxuan
 ```
 
-当前 main 基线：**188 passed + 25 subtests**（以实际运行结果为准）。
+当前 server 基线：**109 passed**；全模块以实际运行结果为准。
 
 ## 边界
 
@@ -87,4 +112,5 @@ python -m pytest customizations/components/tianxuan
 - 新增 Agent/Skill（文曲、多宝、司南工单扩展）必须先经 `skills/gonggong-check` 审查并取得精确候选准入。
 - 文档以 Markdown 为唯一权威，AI 阅读优先；人类视图是第二等公民。
 - 验收沿用现有 Agent（司南协调、偃师设计、夸父质量、谛听证据）。
-- 当前认证仍是会话 token + 临时 actor 语义；文档级 ACL 尚未实现。
+- 认证仍是会话 token + 临时 actor 语义；角色为租户级，文档 ACL 已实现，但字段级权限与共享过期尚未实现。
+- 产品 Agent/Skill 仍是候选，未经授权批准人签署不得视为已准入。

@@ -245,7 +245,21 @@ public:
 		{
 			return Runtime::RuntimeStatus::NotFound;
 		}
+		// Put already queued reliable rejects on the wire before ENet resets outgoing queues.
+		enet_host_flush(pHost);
 		enet_peer_disconnect(stPeer->second, 0);
+		enet_host_flush(pHost);
+		return Runtime::RuntimeStatus::Ok;
+	}
+
+	Runtime::RuntimeStatus DisconnectLater(PeerId in_nPeerId) override
+	{
+		const std::map<PeerId, ENetPeer *>::const_iterator stPeer = mapPeers.find(in_nPeerId);
+		if (!bRunning || pHost == nullptr || stPeer == mapPeers.end())
+		{
+			return Runtime::RuntimeStatus::NotFound;
+		}
+		enet_peer_disconnect_later(stPeer->second, 0);
 		enet_host_flush(pHost);
 		return Runtime::RuntimeStatus::Ok;
 	}

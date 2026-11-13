@@ -129,3 +129,20 @@ def test_commit_writes_markdown_to_bare_repo(monkeypatch: pytest.MonkeyPatch, tm
     content = (clone_dir / "design" / "tx-export-1.md").read_text(encoding="utf-8")
     assert "# 导出需求" in content
     assert "实现导出" in content
+
+    expected = client.get("/api/v1/requirements/tx-export-1/export", headers=headers).json()["markdown"]
+    readback = client.get(
+        "/api/v1/requirements/tx-export-1/git-file",
+        headers=headers,
+        params={"repo": repo_name, "ref": body["commit"]},
+    )
+    assert readback.status_code == 200, readback.text
+    assert readback.json()["markdown"] == expected
+    assert readback.json()["path"] == "design/tx-export-1.md"
+
+    missing_ref = client.get(
+        "/api/v1/requirements/tx-export-1/git-file",
+        headers=headers,
+        params={"repo": repo_name, "ref": "deadbeef"},
+    )
+    assert missing_ref.status_code == 400

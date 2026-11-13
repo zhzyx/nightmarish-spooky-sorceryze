@@ -6652,6 +6652,27 @@ input[type="search"]::-webkit-search-cancel-button {
   white-space: nowrap;
 }
 
+.live-search-section {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.search-summary-row.live-search-head p strong {
+  font-size: 13px;
+  letter-spacing: 0.03em;
+}
+
+.live-search-empty {
+  margin: 0;
+  padding: 15px 18px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-lg);
+  background: var(--panel-gradient);
+  color: rgba(138, 145, 153, 0.52);
+  font-size: 9px;
+}
+
 .search-scope-tabs {
   display: flex;
   gap: 3px;
@@ -8933,4 +8954,31 @@ input[type="search"]::-webkit-search-cancel-button {
 
 .api-status-offline .api-status-dot {
   background: #d98a6a;
+}
+
+.live-list .reading-item {
+  border-radius: 9px;
+  padding-inline: 12px;
+}
+
+.live-list .reading-item:hover {
+  background: rgba(245, 242, 234, 0.05);
+}
+
+.live-list .reading-copy strong {
+  color: var(--paper-92);
+  font-size: 12px;
+  letter-spacing: 0.01em;
+}
+
+.live-list .reading-copy span {
+  margin-top: 3px;
+  color: var(--paper-56);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+
+.live-list .reading-index {
+  color: rgba(201, 162, 39, 0.78);
+  font-size: 10px;
 }

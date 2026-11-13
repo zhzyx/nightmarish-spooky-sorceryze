@@ -62,6 +62,30 @@ ENGINE_NEXT_TEST("Reconciler resets to authority and replays only unconfirmed in
 	ENGINE_NEXT_CHECK(!stPrediction.ApplyAuthoritativeState(stAuthority, fError));
 }
 
+ENGINE_NEXT_TEST("Reconciler resume preserves sequence and rebases without replaying lost history")
+{
+	EngineNext::Gameplay::PredictionReconciler stPrediction;
+	ENGINE_NEXT_CHECK(stPrediction.SetInitialState({}));
+	EngineNext::Gameplay::PredictionInput stInput;
+	for (int nIndex = 0; nIndex < 12; ++nIndex)
+	{
+		ENGINE_NEXT_CHECK(stPrediction.PredictInput(EngineNext::Gameplay::Vector3{ 1.0F, 0.0F, 0.0F }, stInput));
+	}
+	EngineNext::Gameplay::PredictionState stAuthority;
+	stAuthority.vPosition = { 1.28F, 0.0F, 0.0F };
+	stAuthority.nConfirmedSequence = 10;
+	float fError = 0.0F;
+	ENGINE_NEXT_CHECK(stPrediction.RestoreAfterReconnect(stAuthority, fError));
+	ENGINE_NEXT_CHECK(fError > 0.25F);
+	ENGINE_NEXT_CHECK_EQ(stPrediction.GetUnconfirmedInputCount(), 0ULL);
+	ENGINE_NEXT_CHECK_EQ(stPrediction.GetLastConfirmedSequence(), 10ULL);
+	ENGINE_NEXT_CHECK(stPrediction.PredictInput(EngineNext::Gameplay::Vector3{ 1.0F, 0.0F, 0.0F }, stInput));
+	ENGINE_NEXT_CHECK_EQ(stInput.nSequence, 13ULL);
+	ENGINE_NEXT_CHECK_EQ(stPrediction.GetCorrectionCount(), 1ULL);
+	stAuthority.nConfirmedSequence = 14;
+	ENGINE_NEXT_CHECK(!stPrediction.RestoreAfterReconnect(stAuthority, fError));
+}
+
 ENGINE_NEXT_TEST("Input and snapshot payloads preserve fixed-step movement and authority")
 {
 	EngineNext::Network::InputCommand stCommand;

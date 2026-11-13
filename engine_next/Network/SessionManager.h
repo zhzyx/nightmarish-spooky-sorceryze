@@ -36,6 +36,7 @@
 
 #include <cstdint>
 #include <map>
+#include <vector>
 
 namespace EngineNext::Network
 {
@@ -51,7 +52,14 @@ struct Session
 class SessionManager
 {
 	Runtime::World *pWorld = nullptr;
+	struct DisconnectedSession
+	{
+		Session stSession;
+		std::uint64_t nGraceDeadlineMsec = 0;
+	};
+
 	std::map<PeerId, Session> mapSessions;
+	std::map<std::uint64_t, DisconnectedSession> mapDisconnected;
 	std::uint64_t nNextSessionId = 1;
 	std::uint64_t nRandomState = 1;
 
@@ -63,6 +71,11 @@ public:
 	[[nodiscard]] const Session *GetSession(PeerId in_nPeerId) const noexcept;
 	[[nodiscard]] const std::map<PeerId, Session> &GetSessions() const noexcept;
 	[[nodiscard]] std::size_t GetSessionCount() const noexcept;
+	[[nodiscard]] std::size_t GetDisconnectedCount() const noexcept;
+	[[nodiscard]] bool IsEntityDisconnected(std::uint64_t nEntityId) const noexcept;
+	[[nodiscard]] bool DisconnectSession(PeerId in_nPeerId, std::uint64_t nNowMsec) noexcept;
+	[[nodiscard]] Runtime::RuntimeStatus ResumeSession(PeerId in_nPeerId, const ClientHello &in_stHello, std::uint64_t nNowMsec, ServerWelcome &out_stWelcome, std::uint64_t &out_nSessionId);
+	[[nodiscard]] std::size_t ExpireDisconnected(std::uint64_t nNowMsec, std::vector<Runtime::EntityId> &out_arrExpired) noexcept;
 	[[nodiscard]] bool RemoveSession(PeerId in_nPeerId) noexcept;
 };
 

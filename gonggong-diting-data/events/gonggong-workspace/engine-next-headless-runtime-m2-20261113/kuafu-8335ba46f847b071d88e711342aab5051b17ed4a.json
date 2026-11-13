@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8335ba46f847b071d88e711342aab5051b17ed4a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d9caf5a03fccf431e228c349cdbeadc13409bbc993e27062615bdcef30d27d51",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1138",
+    "action": "validation",
+    "detection_head": "5877a2a51ae75237ffc9f737313f8e51b811d901",
+    "context_sha256": "83683561569980cc1b134f764d99dccbfb590ac09b5cc3c538f5fcfe31724b50",
+    "operator": "kaiyunxue",
+    "worker": "kaiyunxue/kimi-work",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43515869562/job/132197548747",
+    "diagnosis": "服务器已收齐两份停服确认且正常退出，A 的24步与B的陈旧恢复也完成，但两个客户端均返回失败；具体本地返回点尚未确认，不能按环境波动处理。",
+    "next_action": "增加客户端关闭失败和成功退出日志，重复真实场景定位后修复；保留服务器双确认、客户端零 stderr 和全部玩法断言。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T22:20:18.859401+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T22:21:05.598410+00:00",
+  "sha256": "594771276061e35e072ffbb0c2dd22f5eda6d5c31dffa867789993018ad96592"
+}

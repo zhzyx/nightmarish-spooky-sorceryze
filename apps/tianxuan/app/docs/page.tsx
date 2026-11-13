@@ -104,7 +104,7 @@ export default async function DocsPage() {
             </div>
             <span className="section-note">{liveDocs.length} 篇来自后端</span>
           </div>
-          <div className="reading-list">
+          <div className="reading-list live-list">
             {liveDocs.slice(0, 8).map((doc) => (
               <Link className="reading-item" href={`/docs/${doc.id}`} key={doc.id}>
                 <span className="reading-index">{doc.kind.slice(0, 1)}</span>

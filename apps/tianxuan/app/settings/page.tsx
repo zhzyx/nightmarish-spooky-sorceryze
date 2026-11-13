@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/Icon";
+import { fetchGiteaStatus, fetchHealth, type ApiGiteaStatus } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "设置",
 };
+
+export const dynamic = "force-dynamic";
 
 const settingsNav: { href: string; label: string; icon: IconName }[] = [
   { href: "#profile", label: "个人资料", icon: "users" },
@@ -24,7 +27,22 @@ const members = [
   { name: "多宝", handle: "duobao", role: "Agent · 仓库", tone: "gold", status: "空闲" },
 ];
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const actor = process.env.TIANXUAN_ACTOR ?? "";
+  let apiOnline = false;
+  let gitea: ApiGiteaStatus | null = null;
+  try {
+    await fetchHealth();
+    apiOnline = true;
+  } catch {
+    apiOnline = false;
+  }
+  try {
+    gitea = await fetchGiteaStatus();
+  } catch {
+    gitea = null;
+  }
+
   return (
     <div className="page-stack settings-page">
       <header className="page-header">
@@ -51,6 +69,39 @@ export default function SettingsPage() {
           </Link>
         </div>
       </header>
+
+      <section className="panel" aria-labelledby="system-status-title">
+        <div className="section-heading">
+          <div>
+            <p className="section-kicker">SYSTEM · STATUS</p>
+            <h2 id="system-status-title">系统状态</h2>
+          </div>
+          <span className="section-note">服务端实时读取</span>
+        </div>
+        <div className="reading-list live-list">
+          <div className="reading-item">
+            <span className="reading-index">API</span>
+            <span className="reading-copy">
+              <strong>{apiOnline ? "已连接" : "不可达"}</strong>
+              <span>/api/v1/health</span>
+            </span>
+          </div>
+          <div className="reading-item">
+            <span className="reading-index">Git</span>
+            <span className="reading-copy">
+              <strong>{gitea?.configured ? "Gitea 已配置" : "Gitea 未配置"}</strong>
+              <span>{gitea?.owner ? `owner: ${gitea.owner}` : "设置 TIANXUAN_GITEA_URL / TOKEN"}</span>
+            </span>
+          </div>
+          <div className="reading-item">
+            <span className="reading-index">Actor</span>
+            <span className="reading-copy">
+              <strong>{actor || "未配置"}</strong>
+              <span>TIANXUAN_ACTOR</span>
+            </span>
+          </div>
+        </div>
+      </section>
 
       <div className="settings-layout">
         <nav aria-label="设置分类" className="settings-nav">

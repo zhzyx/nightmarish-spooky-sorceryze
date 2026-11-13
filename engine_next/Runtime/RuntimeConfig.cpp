@@ -126,9 +126,47 @@ RuntimeStatus ParseUnsignedOption(const std::string &in_strArgument, const std::
 		out_stConfig.nPort = static_cast<std::uint16_t>(nValue);
 		return RuntimeStatus::Ok;
 	}
+	if (in_strArgument == "--drain-after-ms")
+	{
+		out_stConfig.nDrainAfterMsec = static_cast<std::uint32_t>(nValue);
+		return RuntimeStatus::Ok;
+	}
 	if (nValue == 0 || nValue > 60000)
 	{
 		return RuntimeStatus::InvalidParameter;
+	}
+	if (in_strArgument == "--drain-timeout-ms")
+	{
+		out_stConfig.nDrainTimeoutMsec = static_cast<std::uint32_t>(nValue);
+		return RuntimeStatus::Ok;
+	}
+	if (in_strArgument == "--impairment-delay-ms")
+	{
+		out_stConfig.nImpairmentDelayMsec = nValue;
+		return RuntimeStatus::Ok;
+	}
+	if (in_strArgument == "--impairment-jitter-ms")
+	{
+		out_stConfig.nImpairmentJitterMsec = nValue;
+		return RuntimeStatus::Ok;
+	}
+	if (in_strArgument == "--impairment-loss-permille")
+	{
+		if (nValue > 1000)
+		{
+			return RuntimeStatus::InvalidParameter;
+		}
+		out_stConfig.nImpairmentLossPermille = static_cast<std::uint32_t>(nValue);
+		return RuntimeStatus::Ok;
+	}
+	if (in_strArgument == "--impairment-queue-capacity")
+	{
+		if (nValue > 4096)
+		{
+			return RuntimeStatus::InvalidParameter;
+		}
+		out_stConfig.nImpairmentQueueCapacity = static_cast<std::size_t>(nValue);
+		return RuntimeStatus::Ok;
 	}
 	out_stConfig.nDurationMsec = static_cast<std::uint32_t>(nValue);
 	return RuntimeStatus::Ok;
@@ -150,9 +188,32 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 			stParsed.bHelpRequested = true;
 			continue;
 		}
+		if (strArgument == "--drop-first-input" || strArgument == "--m2-reconnect" || strArgument == "--withhold-drain-ack")
+		{
+			if (stParsed.eRole != RuntimeRole::Client)
+			{
+				return RuntimeStatus::InvalidParameter;
+			}
+			if (strArgument == "--drop-first-input")
+			{
+				stParsed.bDropFirstInput = true;
+			}
+			else if (strArgument == "--m2-reconnect")
+			{
+				stParsed.bReconnectTest = true;
+			}
+			else
+			{
+				stParsed.bWithholdDrainAck = true;
+			}
+			continue;
+		}
 		std::string strValue;
 		if (strArgument == "--manual-ticks" || strArgument == "--fixed-step-ms" || strArgument == "--seed" ||
-			strArgument == "--port" || strArgument == "--duration-ms")
+			strArgument == "--port" || strArgument == "--duration-ms" || strArgument == "--drain-after-ms" ||
+			strArgument == "--drain-timeout-ms" || strArgument == "--impairment-delay-ms" ||
+			strArgument == "--impairment-jitter-ms" || strArgument == "--impairment-loss-permille" ||
+			strArgument == "--impairment-queue-capacity")
 		{
 			if (!ParseValue(in_arrArguments, nIndex, strValue))
 			{
@@ -205,6 +266,10 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 	}
 	if (stParsed.bNetworkMode &&
 		(!bNetworkEndpointProvided || (stParsed.eRole == RuntimeRole::Client && stParsed.nPort == 0)))
+	{
+		return RuntimeStatus::InvalidParameter;
+	}
+	if (stParsed.eRole == RuntimeRole::Client && (stParsed.nDrainAfterMsec != 0 || stParsed.nDrainTimeoutMsec != 1000))
 	{
 		return RuntimeStatus::InvalidParameter;
 	}

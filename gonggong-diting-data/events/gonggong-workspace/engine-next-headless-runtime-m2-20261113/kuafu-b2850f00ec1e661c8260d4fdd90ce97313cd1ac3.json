@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b2850f00ec1e661c8260d4fdd90ce97313cd1ac3",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "239c080db3b9380a53e23f854e264959f9e9ed33961eccfe7f00c58a3fe9b4f6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1138",
+    "action": "delivery",
+    "detection_head": "cd222b821fc1065eefea37b0e2d4591ae58a472e",
+    "context_sha256": "83683561569980cc1b134f764d99dccbfb590ac09b5cc3c538f5fcfe31724b50",
+    "operator": "kaiyunxue",
+    "worker": "kaiyunxue/kimi-work",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "evidence": "data-collection/engine-next-headless-runtime-m2-pr4-build-impact-r9.json",
+    "diagnosis": "文本和事件完整性检查已经通过，签发前仅发现共享 main 再次前进，两个上游变化与本候选没有重叠。",
+    "next_action": "整合当前 main，直接在新模块证据中绑定 merge-base 和完整输入 blobs，运行门禁后立即重试签发。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T21:56:30.993556+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T21:57:44.404587+00:00",
+  "sha256": "7875a96c6ecedc2d2f0cb9bd7ba79e5425d8c6c2a0553defce0dc1028425cc46"
+}

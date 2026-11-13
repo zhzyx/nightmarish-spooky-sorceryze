@@ -317,7 +317,12 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
         limit: int = Query(default=20, ge=1, le=100),
     ) -> dict[str, list[dict[str, Any]]]:
         documents = [store.get_doc(row["id"]) for row in store.list_docs(actor)]
-        return {"results": search_documents(documents, q)[:limit]}
+        by_id = {document["id"]: document for document in documents}
+        results = []
+        for item in search_documents(documents, q)[:limit]:
+            document = by_id.get(item["id"], {})
+            results.append({**item, "title": document.get("title", ""), "kind": document.get("kind", "doc")})
+        return {"results": results}
 
     @app.get("/api/v1/docs/{doc_id}/export")
     def export_doc(doc_id: str, actor: ActorDep) -> dict[str, str]:
@@ -532,6 +537,28 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
     @app.delete("/api/v1/docs/{doc_id}/shares/{user_id}")
     def unshare_doc(doc_id: str, user_id: str, actor: ActorDep) -> dict[str, Any]:
         return store.unshare_doc(actor, doc_id, user_id)  # type: ignore[no-any-return]
+
+    @app.get("/api/v1/requirements/{request_id}/git-file")
+    def requirement_git_file(
+        request_id: str,
+        actor: ActorDep,
+        repo: str = Query(min_length=1),
+        ref: str = Query(min_length=1),
+    ) -> dict[str, str]:
+        _find_requirement(store, actor, request_id)
+        root = os.environ.get("TIANXUAN_REPO_ROOT", "").strip()
+        if not root:
+            raise HTTPException(status_code=400, detail="TIANXUAN_REPO_ROOT is not configured")
+        root_path = Path(root).resolve()
+        repo_path = (root_path / repo).resolve()
+        if not repo_path.is_relative_to(root_path):
+            raise HTTPException(status_code=400, detail="repo escapes TIANXUAN_REPO_ROOT")
+        relative = f"design/{request_id}.md"
+        try:
+            markdown = GitService().read_file(repo_path, ref, relative)
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=f"read failed: {error}") from error
+        return {"path": relative, "ref": ref, "markdown": markdown}
 
     # ---------- 文曲：评论 ----------
 

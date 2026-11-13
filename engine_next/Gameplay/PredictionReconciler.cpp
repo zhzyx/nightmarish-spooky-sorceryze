@@ -61,6 +61,25 @@ bool PredictionReconciler::SetInitialState(const PredictionState &in_stState) no
 	return true;
 }
 
+bool PredictionReconciler::RestoreAfterReconnect(const PredictionState &in_stState, float &out_fPositionError) noexcept
+{
+	out_fPositionError = 0.0F;
+	if (!in_stState.vPosition.IsFinite() || !in_stState.vVelocity.IsFinite() ||
+		in_stState.nConfirmedSequence >= nNextSequence)
+	{
+		return false;
+	}
+	out_fPositionError = Distance(stPredictedState.vPosition, in_stState.vPosition);
+	stPredictedState = in_stState;
+	arrHistory.clear();
+	nLastConfirmedSequence = in_stState.nConfirmedSequence;
+	if (out_fPositionError > fCorrectionThreshold)
+	{
+		++nCorrectionCount;
+	}
+	return true;
+}
+
 bool PredictionReconciler::PredictInput(const Vector3 &in_vMovement, PredictionInput &out_stInput) noexcept
 {
 	if (!in_vMovement.IsFinite() || in_vMovement.LengthSquared() > 1.000001F || arrHistory.size() >= nMaxHistory)

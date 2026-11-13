@@ -291,6 +291,18 @@ std::vector<std::uint8_t> EncodeDisconnect(const Disconnect &in_stDisconnect)
 	return arrPayload;
 }
 
+Runtime::RuntimeStatus DecodeDisconnect(const std::uint8_t *pData, std::size_t nSize, Disconnect &out_stDisconnect) noexcept
+{
+	if (pData == nullptr || nSize != 18)
+	{
+		return Runtime::RuntimeStatus::InvalidParameter;
+	}
+	out_stDisconnect.nReason = Read16(pData);
+	out_stDisconnect.nAcknowledgeSequence = Read64(pData + 2);
+	out_stDisconnect.nDrainDeadlineTick = Read64(pData + 10);
+	return Runtime::RuntimeStatus::Ok;
+}
+
 std::vector<std::uint8_t> EncodeErrorReject(const ErrorReject &in_stError)
 {
 	std::vector<std::uint8_t> arrPayload;
@@ -300,6 +312,19 @@ std::vector<std::uint8_t> EncodeErrorReject(const ErrorReject &in_stError)
 	Write16(in_stError.nFatal, arrPayload);
 	Write64(in_stError.nRejectedSequence, arrPayload);
 	return arrPayload;
+}
+
+Runtime::RuntimeStatus DecodeErrorReject(const std::uint8_t *pData, std::size_t nSize, ErrorReject &out_stError) noexcept
+{
+	if (pData == nullptr || nSize != 14)
+	{
+		return Runtime::RuntimeStatus::InvalidParameter;
+	}
+	out_stError.nRejectedType = Read16(pData);
+	out_stError.nReason = Read16(pData + 2);
+	out_stError.nFatal = Read16(pData + 4);
+	out_stError.nRejectedSequence = Read64(pData + 6);
+	return out_stError.nFatal <= 1 ? Runtime::RuntimeStatus::Ok : Runtime::RuntimeStatus::InvalidParameter;
 }
 
 } // namespace EngineNext::Network

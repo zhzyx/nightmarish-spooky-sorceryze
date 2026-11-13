@@ -35,6 +35,7 @@ LIBRARY_SOURCES = [
     "engine_next/Runtime/RuntimeHost.cpp",
     "engine_next/Network/Protocol.cpp",
     "engine_next/Network/EnetTransport.cpp",
+    "engine_next/Network/ImpairmentTransport.cpp",
     "engine_next/Network/SessionManager.cpp",
     "engine_next/Server/ServerRuntime.cpp",
     "engine_next/Client/ClientRuntime.cpp",
@@ -46,6 +47,7 @@ TEST_SOURCES = [
     "engine_next/Tests/Runtime/TestRuntimeConfig.cpp",
     "engine_next/Tests/Runtime/TestRuntimeHost.cpp",
     "engine_next/Tests/Network/TestProtocol.cpp",
+    "engine_next/Tests/Network/TestImpairmentTransport.cpp",
     "engine_next/Tests/Gameplay/TestPredictionReconciler.cpp",
 ]
 APP_SOURCES = {
@@ -69,11 +71,13 @@ PUBLIC_HEADERS = [
     "EngineNext/Runtime/RuntimeHost.h",
     "EngineNext/Network/ITransport.h",
     "EngineNext/Network/Protocol.h",
+    "EngineNext/Network/ImpairmentTransport.h",
 ]
 BUILD_SUPPORT_SOURCES = [
     "engine_next/Tools/BuildGameplay.py",
     "engine_next/Tools/BuildRuntime.py",
     "engine_next/Tools/RunM2Handshake.py",
+    "engine_next/Tools/RunM2DrainFaults.py",
 ]
 BuildSupport.ALLOWED_REPOSITORY_INPUTS = (
     "engine_next/",
@@ -367,6 +371,29 @@ def run_handshake(args, targets, directory):
     )
 
 
+def run_drain_faults(args, targets, directory):
+    executables = {target["name"]: directory / target["executable"].name for target in targets}
+    return (
+        BuildSupport
+        .run(
+            [
+                sys.executable,
+                args.repo / "engine_next/Tools/RunM2DrainFaults.py",
+                "--server",
+                executables["next_server"],
+                "--client",
+                executables["next_client"],
+                "--report",
+                directory / "DrainFaultsReport.json",
+            ],
+            cwd=args.repo,
+            env=args.tool_environment,
+        )
+        .decode("utf-8")
+        .strip()
+    )
+
+
 def run_acceptance(args, targets):
     summaries = {}
     clean_summaries = {}
@@ -390,6 +417,8 @@ def run_acceptance(args, targets):
         "trace_sha256": traces,
         "handshake": run_handshake(args, targets, args.build_dir),
         "clean_handshake": run_handshake(args, targets, clean_dir),
+        "drain_faults": run_drain_faults(args, targets, args.build_dir),
+        "clean_drain_faults": run_drain_faults(args, targets, clean_dir),
     }
 
 
@@ -516,6 +545,8 @@ def build(args):
         "targets": target_reports,
         "handshake": acceptance.get("handshake", "not_run"),
         "clean_handshake": acceptance.get("clean_handshake", "not_run"),
+        "drain_faults": acceptance.get("drain_faults", "not_run"),
+        "clean_drain_faults": acceptance.get("clean_drain_faults", "not_run"),
     }
     report_path = args.build_dir / "RuntimeBuildReport.json"
     report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
