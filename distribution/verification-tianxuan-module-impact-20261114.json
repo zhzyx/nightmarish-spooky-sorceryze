@@ -5,7 +5,7 @@
     "input_blobs":  {
                         "customizations/components/tianxuan/README.md":  "150cbdda530f9da4ab7be8184aa946edd57a0d94",
                         "customizations/components/tianxuan/agents/README.md":  "369ffe2a3ff556606262ddfd7418a8cd1c752267",
-                        "customizations/components/tianxuan/agents/REVIEW_REQUEST.md":  "9103e01ec376e2ef820d84e930c74faac0c159a3",
+                        "customizations/components/tianxuan/agents/REVIEW_REQUEST.md":  "2459b951e60eeda43259c2b6c59bfdae05ad693c",
                         "customizations/components/tianxuan/agents/duobao/AGENT.md":  "b9af006c9924083ebfeb9057f3beb33c75ee3ab1",
                         "customizations/components/tianxuan/agents/duobao/admission.json":  "17e7a7d931d3b1dca7aaa7ac03665b9a0d13a364",
                         "customizations/components/tianxuan/agents/duobao/agent.json":  "726adef84cde7e423c2867d291100814cad8a233",
@@ -57,7 +57,7 @@
                         "customizations/components/tianxuan/server/test_api_search.py":  "132440c524090e23c2fa54f8d74a17eda02d28ad",
                         "customizations/components/tianxuan/server/test_e2e.py":  "dd9af9f8c09892127ea5269109cd81bbb56423e4",
                         "customizations/components/tianxuan/server/test_gateway.py":  "e5dffb2516df4964ce5611529048184b30163421",
-                        "customizations/components/tianxuan/server/test_tianxuan_core.py":  "e8fdb029e01278b38de9b40e501eb9617066b0da",
+                        "customizations/components/tianxuan/server/test_tianxuan_core.py":  "0c64f7485945fcec51120054096e364b51d6c62d",
                         "customizations/components/tianxuan/server/tianxuan_core.py":  "6fbe5621c0cf20948760505ce75258e9cd13a104",
                         "customizations/components/tianxuan/server/wenqu_bridge.py":  "b1d733547552ebfc12c281789cb06205a89ad446",
                         "customizations/components/tianxuan/sinan-workorders/README.md":  "e3a280a38857a1993ba49a2f4bdcd9590ea1fc94",
@@ -68,7 +68,7 @@
     "checks":  {
                    "host_behavior":  {
                                          "command":  "python -m pytest customizations/components/tianxuan/server -q",
-                                         "observed":  "33 server tests passed; 6/6 component reporting profiles validated by framework/tools/reporting.mjs --component",
+                                         "observed":  "34 server tests passed; 6/6 component reporting profiles validated by framework/tools/reporting.mjs --component",
                                          "passed":  true
                                      }
                }

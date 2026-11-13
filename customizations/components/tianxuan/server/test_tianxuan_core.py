@@ -78,6 +78,14 @@ class TianxuanCoreTests(unittest.TestCase):
         with self.assertRaises(TransitionRejected):
             self.tx.transition_issue(self.actor, issue["id"], "done")
 
+    def test_cancelled_transition_is_terminal(self):
+        issue = self.tx.create_issue(self.actor, "取消迁移")
+        self.tx.transition_issue(self.actor, issue["id"], "planned")
+        cancelled = self.tx.transition_issue(self.actor, issue["id"], "cancelled")
+        self.assertEqual(cancelled["status"], "cancelled")
+        with self.assertRaises(TransitionRejected):
+            self.tx.transition_issue(self.actor, issue["id"], "in-progress")
+
     def test_events_and_ai_tools(self):
         doc = self.tx.dispatch_tool(self.actor, "doc.create", {"title": "AI 工具文档", "body_md": "# 工具\n\n内容\n"})
         self.assertEqual(doc["title"], "AI 工具文档")
