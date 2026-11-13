@@ -291,7 +291,7 @@ def model_names(info, node):
         return []
 
 
-def capability(kind, config, info, models, extra_image=False):
+def capability(kind, config, info, models, extra_image=False, allow_unselected=False):
     if config["mode"] == "local_mesh" and (kind != "image_to_mesh" or extra_image):
         return dict(
             ready=False,
@@ -310,11 +310,13 @@ def capability(kind, config, info, models, extra_image=False):
         required |= (IMAGE_NODES - {"EmptyLatentImage", "SaveImage"}) | {"LoadImage", "ImageScale", "VAEEncode"}
     missing = sorted(required - set(info))
     code = ""
+    image_missing = not config["image_model"] or config["image_model"] not in models["image"]
+    mesh_missing = not config["mesh_model"] or config["mesh_model"] not in models["mesh"]
     if missing:
         code = "service_nodes_missing"
-    elif (kind != "image_to_mesh" or extra_image) and config["image_model"] not in models["image"]:
+    elif not allow_unselected and (kind != "image_to_mesh" or extra_image) and image_missing:
         code = "image_model_missing"
-    elif kind.endswith("mesh") and config["mesh_model"] not in models["mesh"]:
+    elif not allow_unselected and kind.endswith("mesh") and mesh_missing:
         code = "mesh_model_missing"
     message = MESSAGES[code] if code else "已就绪；模型由服务提供，远端权重摘要未验证。"
     if missing:
@@ -381,8 +383,12 @@ def _probe_service(value):
             mode=config["mode"],
             connected=True,
             models=models,
-            capabilities={kind: capability(kind, config, info, models) for kind in KINDS},
-            variants={"image_to_mesh_redraw": capability("image_to_mesh", config, info, models, extra_image=True)},
+            capabilities={kind: capability(kind, config, info, models, allow_unselected=True) for kind in KINDS},
+            variants={
+                "image_to_mesh_redraw": capability(
+                    "image_to_mesh", config, info, models, extra_image=True, allow_unselected=True
+                )
+            },
             backend_revision=revision,
             message="已连接 ComfyUI；请选择需要的模型并保存。",
         )
@@ -432,7 +438,7 @@ def _probe_api(config):
 
 
 def _probe_kimi(config):
-    from kimi_provider import check_model3d_tool
+    from kimi_provider import MODEL3D_GENERATE_MODELS, check_model3d_tool
     from kimi_work_image_provider import GENERATION_VERSION, check_image_tool
 
     model3d_report = check_model3d_tool(config.get("model3d_tool_path", ""), config.get("model3d_pythonw_path", ""))
@@ -465,7 +471,7 @@ def _probe_kimi(config):
         kimi_work_image=image_report,
         models=dict(
             image=["Kimi Work agent-gw generate_image " + GENERATION_VERSION] if image_ready else [],
-            mesh=["Tripo API generate_3d_model v1 (" + config["model3d_model"] + ")"] if ready else [],
+            mesh=sorted(MODEL3D_GENERATE_MODELS) if ready else [],
         ),
         capabilities=dict(
             text_to_image=dict(image),
@@ -612,7 +618,7 @@ def _probe_codex(config, *, inspect_cli=True):
     mesh_report, info = _probe_service(mesh_config)
     image_ready = bool(cli.get("connected") and cli.get("image_generation"))
     mesh_ready = (
-        capability("image_to_mesh", mesh_config, info, mesh_report.get("models", {}))
+        capability("image_to_mesh", mesh_config, info, mesh_report.get("models", {}), allow_unselected=True)
         if info
         else dict(
             ready=False, code="service_unreachable", message="本机网格模型尚未连接，请启动本机模型。", missing_nodes=[]
@@ -671,13 +677,17 @@ def adapt_image_providers(providers, database, batch):
         return providers
     from multi_image_provider import MultiImageProvider
 
-    for name in ("comfy", "codex", "kimi_work_image"):
-        if name in providers:
-            providers[name] = MultiImageProvider(
-                providers[name],
-                Path(database).resolve().parent / "multi-image-state" / name,
-                batch.get("board_config", {}),
-            )
+    for name in list(providers):
+        base, separator, suffix = name.rpartition("_")
+        if name not in ("comfy", "codex", "kimi_work_image") and not (
+            separator and suffix.isdigit() and base in ("comfy", "codex", "kimi_work_image")
+        ):
+            continue
+        providers[name] = MultiImageProvider(
+            providers[name],
+            Path(database).resolve().parent / "multi-image-state" / name,
+            batch.get("board_config", {}),
+        )
     return providers
 
 
@@ -719,6 +729,55 @@ def check_inputs(model):
                 raise ServiceError("prompt_missing")
 
 
+def _migrate_node_models(node, config):
+    """Accept legacy graphs once; new empty node choices never consult other nodes."""
+    kind = node["type"]
+    mode = config["mode"]
+    if mode == "offline" and "model" not in node:
+        return
+    cli_mode = mode in ("codex", "codex_modeling", "codex_sculpt")
+    mesh_kind = kind.endswith("mesh") or kind == "model_adjust"
+    if "model" not in node:
+        if mode == "kimi_native":
+            node["model"] = config.get("model3d_model", "v3.1") if mesh_kind else ""
+        elif cli_mode and not mesh_kind:
+            node["model"] = config.get("image_model", "") or "builtin"
+        elif mode in ("codex_modeling", "codex_sculpt") and mesh_kind:
+            node["model"] = ""
+        else:
+            node["model"] = config.get("mesh_model" if mesh_kind else "image_model", "")
+    if kind.endswith("mesh") and "image_model" not in node:
+        if mode == "codex":
+            node["image_model"] = config.get("image_model", "") or "builtin"
+        else:
+            node["image_model"] = config.get("image_model", "") if mode == "comfy" else ""
+    if not isinstance(node["model"], str) or not isinstance(node.get("image_model", ""), str):
+        raise ServiceError("service_config_invalid")
+
+
+def _provider_key(providers, prefix):
+    if prefix not in providers:
+        return prefix
+    suffix = 2
+    while prefix + "_" + str(suffix) in providers:
+        suffix += 1
+    return prefix + "_" + str(suffix)
+
+
+def _provider_snapshot(mode, providers, provider_types, legacy_provider=None, legacy_image=None):
+    snapshot = dict(mode=mode, providers=providers, provider_types=provider_types)
+    # Keep the previous fields for existing single-provider integrations.
+    if legacy_provider is None and len(providers) == 1 and not (mode == "kimi_native" and legacy_image is not None):
+        legacy_provider = next(iter(providers.values()))
+    if mode not in ("comfy", "kimi_native", "codex") or len(providers) == 1:
+        snapshot["provider"] = legacy_provider
+    if mode in ("codex_modeling", "codex_sculpt") or (
+        mode == "kimi_native" and legacy_image is not None and len(providers) == 1
+    ):
+        snapshot["image_provider"] = legacy_image
+    return snapshot
+
+
 def prepare_provider(config, model, database, run_id):
     from comfy_provider import ComfyProvider, LocalMeshProvider, register
     from editor_demo import factory
@@ -744,11 +803,16 @@ def prepare_provider(config, model, database, run_id):
             builder_path=config["builder_path"],
         )
         provider_config[runtime] = config[runtime]
-        register(registry)
+        register_workflow(registry)
         providers[provider_id] = (ModelingProvider if runtime == "godot_path" else SculptProvider)(provider_config)
         for node in generated:
             node["provider"] = provider_id
         return registry, providers, dict(mode=config["mode"], provider=provider_config)
+    for node in generated:
+        _migrate_node_models(node, config)
+    snapshots, provider_types = {}, {}
+    storage = Path(database).resolve().parent
+
     if config["mode"] == "kimi_native":
         from kimi_provider import KimiNativeDirectProvider
         from kimi_work_image_provider import KimiWorkImageProvider
@@ -758,98 +822,141 @@ def prepare_provider(config, model, database, run_id):
             capability_report = report["capabilities"][node["type"]]
             if not capability_report["ready"]:
                 raise ServiceError(capability_report.get("code") or "service_not_configured")
-        mesh_nodes = [node for node in generated if node["type"].endswith("mesh") or node["type"] == "model_adjust"]
-        image_nodes = [
-            node for node in generated if not (node["type"].endswith("mesh") or node["type"] == "model_adjust")
-        ]
-        provider_config = dict(
-            tool_path=config.get("model3d_tool_path", ""),
-            pythonw_path=config.get("model3d_pythonw_path", ""),
-            storage=str(Path(database).resolve().parent / "kimi-native-3d-state"),
-            model=config["model3d_model"],
-            texture_model=config.get("texture_model", "v3.5"),
-        )
-        snapshot = dict(mode="kimi_native", provider=provider_config if mesh_nodes else None)
         register_workflow(registry)
-        if mesh_nodes:
-            providers["kimi_native"] = KimiNativeDirectProvider(provider_config)
-        if image_nodes:
-            image_config = dict(
-                tool_path=config.get("image_tool_path", ""),
-                pythonw_path=config.get("image_pythonw_path", ""),
-                storage=str(Path(database).resolve().parent / "kimi-work-image-state"),
-            )
-            providers["kimi_work_image"] = KimiWorkImageProvider(image_config)
-            snapshot["image_provider"] = image_config
         for node in generated:
-            node["provider"] = (
-                "kimi_native" if node["type"].endswith("mesh") or node["type"] == "model_adjust" else "kimi_work_image"
-            )
-        return registry, providers, snapshot
-    if config["mode"] == "codex_sculpt":
+            mesh_node = node["type"].endswith("mesh") or node["type"] == "model_adjust"
+            selected = node["model"].strip()
+            if mesh_node:
+                if selected not in report["models"]["mesh"]:
+                    raise ServiceError("kimi_model_unavailable")
+                key = next(
+                    (
+                        name
+                        for name, value in snapshots.items()
+                        if provider_types[name] == "kimi_native" and value["model"] == selected
+                    ),
+                    None,
+                )
+                if key is None:
+                    key = _provider_key(providers, "kimi_native")
+                    snapshots[key] = dict(
+                        tool_path=config.get("model3d_tool_path", ""),
+                        pythonw_path=config.get("model3d_pythonw_path", ""),
+                        storage=str(storage / "kimi-native-3d-state"),
+                        model=selected,
+                        texture_model=config.get("texture_model", "v3.5"),
+                    )
+                    provider_types[key] = "kimi_native"
+                    providers[key] = KimiNativeDirectProvider(snapshots[key])
+            else:
+                if selected and selected not in report["models"]["image"]:
+                    raise ServiceError("image_model_missing")
+                key = "kimi_work_image"
+                if key not in providers:
+                    snapshots[key] = dict(
+                        tool_path=config.get("image_tool_path", ""),
+                        pythonw_path=config.get("image_pythonw_path", ""),
+                        storage=str(storage / "kimi-work-image-state"),
+                    )
+                    provider_types[key] = "kimi_work_image"
+                    providers[key] = KimiWorkImageProvider(snapshots[key])
+            node["provider"] = key
+        legacy_mesh = next((value for key, value in snapshots.items() if provider_types[key] == "kimi_native"), None)
+        legacy_image = next(
+            (value for key, value in snapshots.items() if provider_types[key] == "kimi_work_image"), None
+        )
+        return (
+            registry,
+            providers,
+            _provider_snapshot("kimi_native", snapshots, provider_types, legacy_mesh, legacy_image),
+        )
+
+    if config["mode"] in ("codex_modeling", "codex_sculpt"):
         from codex_provider import CodexProvider, check_cli
-
-        image_config = dict(
-            cli_path=config["cli_path"], storage=str(Path(database).resolve().parent / "codex-state"), mesh_config=None
-        )
-        if all(not node["type"].endswith("mesh") for node in generated):
-            # A pure image workflow must not import the optional sculpt stack,
-            # probe Blender or persist an unused mesh dependency for reopen.
-            image_report = check_cli(config["cli_path"])
-            if not image_report.get("connected"):
-                raise ServiceError(image_report.get("code") or "cli_image_unavailable")
-            register_workflow(registry)
-            providers["codex"] = CodexProvider(image_config)
-            for node in generated:
-                node["provider"] = "codex"
-            return registry, providers, dict(mode="codex_sculpt", provider=None, image_provider=image_config)
-
-        report = _probe_sculpt(config)
-        for node in generated:
-            capability_report = report["capabilities"][node["type"]]
-            if not capability_report["ready"]:
-                raise ServiceError(capability_report.get("code", "service_not_configured"))
-        try:
-            from sculpt_provider import SculptProvider
-        except ImportError:
-            raise ServiceError("sculpt_runtime_missing") from None
-        runtime = report["runtime"]
-        provider_config = dict(
-            cli_path=config["cli_path"],
-            storage=str(Path(database).resolve().parent / "sculpt-state"),
-            blender_path=runtime["executable"] if runtime else config["blender_path"],
-            builder_path=config["builder_path"],
-        )
-        register_workflow(registry)
-        providers["codex-sculpt"] = SculptProvider(provider_config)
-        providers["codex"] = CodexProvider(image_config)
-        for node in generated:
-            node["provider"] = "codex-sculpt" if node["type"].endswith("mesh") else "codex"
-        return registry, providers, dict(mode="codex_sculpt", provider=provider_config, image_provider=image_config)
-    if config["mode"] == "codex_modeling":
-        from codex_provider import CodexProvider
         from modeling_provider import ModelingProvider
 
-        report = _probe_modeling(config)
-        for node in generated:
-            capability_report = report["capabilities"][node["type"]]
-            if not capability_report["ready"]:
-                raise ServiceError(capability_report.get("code", "service_not_configured"))
-        provider_config = dict(
-            cli_path=config["cli_path"],
-            storage=str(Path(database).resolve().parent / "modeling-state"),
-            godot_path=config["godot_path"],
-            builder_path=config["builder_path"],
-        )
-        image_config = dict(
-            cli_path=config["cli_path"], storage=str(Path(database).resolve().parent / "codex-state"), mesh_config=None
-        )
+        sculpt = config["mode"] == "codex_sculpt"
+        mesh_nodes = [node for node in generated if node["type"].endswith("mesh")]
+        if not mesh_nodes:
+            report = check_cli(config["cli_path"])
+            if not report.get("connected"):
+                raise ServiceError(report.get("code") or "cli_image_unavailable")
+        else:
+            report = _probe_sculpt(config) if sculpt else _probe_modeling(config)
+            for node in generated:
+                ready = report["capabilities"][node["type"]]
+                if not ready["ready"]:
+                    raise ServiceError(ready.get("code", "service_not_configured"))
+        SculptProvider = None
+        if sculpt and mesh_nodes:
+            try:
+                from sculpt_provider import SculptProvider
+            except ImportError:
+                raise ServiceError("sculpt_runtime_missing") from None
         register_workflow(registry)
-        providers["codex-modeling"] = ModelingProvider(provider_config)
-        providers["codex"] = CodexProvider(image_config)
         for node in generated:
-            node["provider"] = "codex-modeling" if node["type"].endswith("mesh") else "codex"
-        return registry, providers, dict(mode="codex_modeling", provider=provider_config, image_provider=image_config)
+            mesh_node = node["type"].endswith("mesh")
+            selected = node["model"].strip()
+            if not mesh_node and not selected:
+                raise ServiceError("image_model_missing")
+            if mesh_node:
+                key = next(
+                    (
+                        name
+                        for name, value in snapshots.items()
+                        if value.get("model", "") == selected and provider_types[name] != "codex"
+                    ),
+                    None,
+                )
+                if key is None:
+                    kind = "codex-sculpt" if sculpt else "codex-modeling"
+                    key = _provider_key(providers, kind)
+                    snapshots[key] = dict(cli_path=config["cli_path"], model=selected)
+                    if sculpt:
+                        runtime = report["runtime"]
+                        snapshots[key].update(
+                            storage=str(storage / "sculpt-state"),
+                            blender_path=runtime["executable"],
+                            builder_path=config["builder_path"],
+                        )
+                        providers[key] = SculptProvider(snapshots[key])
+                    else:
+                        snapshots[key].update(
+                            storage=str(storage / "modeling-state"),
+                            godot_path=config["godot_path"],
+                            builder_path=config["builder_path"],
+                        )
+                        providers[key] = ModelingProvider(snapshots[key])
+                    provider_types[key] = kind
+            else:
+                cli_model = "" if selected == "builtin" else selected
+                key = next(
+                    (
+                        name
+                        for name, value in snapshots.items()
+                        if provider_types[name] == "codex" and value.get("model", "") == cli_model
+                    ),
+                    None,
+                )
+                if key is None:
+                    key = _provider_key(providers, "codex")
+                    snapshots[key] = dict(
+                        cli_path=config["cli_path"],
+                        model=cli_model,
+                        storage=str(storage / "codex-state"),
+                        mesh_config=None,
+                    )
+                    provider_types[key] = "codex"
+                    providers[key] = CodexProvider(snapshots[key])
+            node["provider"] = key
+        legacy_mesh = next((value for key, value in snapshots.items() if provider_types[key] != "codex"), None)
+        legacy_image = next((value for key, value in snapshots.items() if provider_types[key] == "codex"), None)
+        return (
+            registry,
+            providers,
+            _provider_snapshot(config["mode"], snapshots, provider_types, legacy_mesh, legacy_image),
+        )
+
     if config["mode"] == "codex":
         from codex_provider import CodexProvider
 
@@ -860,37 +967,56 @@ def prepare_provider(config, model, database, run_id):
             for node in generated
         )
         report, info = _probe_codex(config, inspect_cli=requires_cli)
+        if not report["connected"]:
+            raise ServiceError(report.get("code") or "service_unreachable")
+        register(registry)
         for node in generated:
             kind = node["type"]
-            ready = report["capabilities"][kind]
+            mesh_node = kind.endswith("mesh")
             prompt = str(node.get("parameters", {}).get("prompt", "")) + str(node.get("text", ""))
-            if kind == "image_to_mesh" and prompt.strip():
-                ready = report["variants"]["image_to_mesh_redraw"]
-            if not ready["ready"]:
-                raise ServiceError(
-                    ready.get("code", "service_not_configured"), missing_nodes=ready.get("missing_nodes", ())
+            redraw = kind == "image_to_mesh" and bool(prompt.strip())
+            selected = node["model"].strip()
+            if not mesh_node and not selected:
+                raise ServiceError("image_model_missing")
+            if mesh_node and selected not in report["models"]["mesh"]:
+                raise ServiceError("mesh_model_missing")
+            uses_auxiliary_image = kind == "text_to_mesh" or redraw
+            auxiliary = node.get("image_model", "").strip()
+            if uses_auxiliary_image and not auxiliary:
+                raise ServiceError("image_model_missing")
+            if uses_auxiliary_image:
+                cli_model = "" if auxiliary == "builtin" else auxiliary
+            else:
+                cli_model = "" if mesh_node or selected == "builtin" else selected
+            mesh = None
+            if mesh_node:
+                mesh = dict(
+                    endpoint=config["endpoint"],
+                    storage=str(storage / "comfy-state"),
+                    checkpoints={"image": dict(name="", sha256=None), "mesh": dict(name=selected, sha256=None)},
+                    backend_revision=report["backend_revision"] + "|unverified-weights;run=" + run_id,
                 )
-        mesh = None
-        if any(node["type"].endswith("mesh") for node in generated):
-            mesh = dict(
-                endpoint=config["endpoint"],
-                storage=str(Path(database).resolve().parent / "comfy-state"),
-                checkpoints={"image": dict(name="", sha256=None), "mesh": dict(name=config["mesh_model"], sha256=None)},
-                backend_revision=report["backend_revision"] + "|unverified-weights;run=" + run_id,
+            candidate = dict(
+                cli_path=config["cli_path"],
+                model=cli_model.strip(),
+                storage=str(storage / "codex-state"),
+                mesh_config=mesh,
             )
-        provider_config = dict(
-            cli_path=config["cli_path"], storage=str(Path(database).resolve().parent / "codex-state"), mesh_config=mesh
-        )
-        register_workflow(registry)
-        providers["codex"] = CodexProvider(provider_config)
-        for node in generated:
-            node["provider"] = "codex"
-        return registry, providers, dict(mode="codex", provider=provider_config)
+            key = next((name for name, value in snapshots.items() if value == candidate), None)
+            if key is None:
+                key = _provider_key(providers, "codex")
+                snapshots[key] = candidate
+                provider_types[key] = "codex"
+                providers[key] = CodexProvider(candidate)
+            node["provider"] = key
+        return registry, providers, _provider_snapshot("codex", snapshots, provider_types)
+
     if config["mode"] not in ("comfy", "local_mesh"):
         raise ServiceError("service_not_configured")
     report, info = _probe_service(config)
     if not report["connected"]:
         raise ServiceError(report.get("code", "service_unreachable"))
+    register_workflow(registry)
     for node in generated:
         kind = node["type"]
         prompt = str(node.get("parameters", {}).get("prompt", "")) + str(node.get("text", ""))
@@ -909,18 +1035,43 @@ def prepare_provider(config, model, database, run_id):
             )
         )
         image_conditioning = uses_image_edit and (kind.startswith("image_") or has_reference)
-        ready = capability(kind, config, info, report["models"], extra_image=image_conditioning)
+        effective = dict(config)
+        if kind.endswith("mesh"):
+            effective["mesh_model"] = node["model"].strip()
+            effective["image_model"] = node.get("image_model", "").strip()
+        else:
+            effective["image_model"] = node["model"].strip()
+            effective["mesh_model"] = ""
+        ready = capability(kind, effective, info, report["models"], extra_image=image_conditioning)
         if not ready["ready"]:
             raise ServiceError(ready["code"], missing_nodes=ready["missing_nodes"])
-    provider_config = dict(
-        endpoint=config["endpoint"],
-        storage=str(Path(database).resolve().parent / "comfy-state"),
-        checkpoints={role: dict(name=config[role + "_model"], sha256=None) for role in ("image", "mesh")},
-        backend_revision=report["backend_revision"] + "|unverified-weights;run=" + run_id,
-    )
-    register_workflow(registry)
-    providers["comfy"] = (LocalMeshProvider if config["mode"] == "local_mesh" else ComfyProvider)(provider_config)
-    return registry, providers, dict(mode=config["mode"], provider=provider_config)
+        key = next(
+            (
+                name
+                for name, value in snapshots.items()
+                if value["image_model"] == effective["image_model"] and value["mesh_model"] == effective["mesh_model"]
+            ),
+            None,
+        )
+        if key is None:
+            key = _provider_key(providers, "comfy")
+            provider_config = dict(
+                endpoint=config["endpoint"],
+                storage=str(storage / "comfy-state"),
+                checkpoints={role: dict(name=effective[role + "_model"], sha256=None) for role in ("image", "mesh")},
+                backend_revision=report["backend_revision"] + "|unverified-weights;run=" + run_id,
+            )
+            snapshots[key] = dict(
+                provider_config, image_model=effective["image_model"], mesh_model=effective["mesh_model"]
+            )
+            provider_types[key] = config["mode"]
+            providers[key] = (LocalMeshProvider if config["mode"] == "local_mesh" else ComfyProvider)(provider_config)
+        node["provider"] = key
+    frozen = {
+        key: {name: value for name, value in config.items() if name not in ("image_model", "mesh_model")}
+        for key, config in snapshots.items()
+    }
+    return registry, providers, _provider_snapshot(config["mode"], frozen, provider_types)
 
 
 def save_run_service(database, run_id, snapshot):
@@ -945,7 +1096,39 @@ def restore_provider(snapshot):
     from editor_demo import factory
 
     registry, providers = factory()
-    if snapshot["mode"] in ("comfy", "local_mesh"):
+    if "providers" in snapshot:
+        register_workflow(registry)
+        for key, config in snapshot["providers"].items():
+            kind = snapshot["provider_types"][key]
+            if kind in ("comfy", "local_mesh"):
+                provider_class = LocalMeshProvider if kind == "local_mesh" else ComfyProvider
+                providers[key] = provider_class(config)
+            elif kind == "kimi_native":
+                from kimi_provider import KimiNativeDirectProvider, KimiNativeProvider
+
+                provider_class = KimiNativeDirectProvider if "tool_path" in config else KimiNativeProvider
+                providers[key] = provider_class(config)
+            elif kind == "kimi_work_image":
+                from kimi_work_image_provider import KimiWorkImageProvider
+
+                providers[key] = KimiWorkImageProvider(config)
+            elif kind == "codex":
+                from codex_provider import CodexProvider
+
+                providers[key] = CodexProvider(config)
+            elif kind == "codex-modeling":
+                from modeling_provider import ModelingProvider
+
+                providers[key] = ModelingProvider(config)
+            elif kind == "codex-sculpt":
+                try:
+                    from sculpt_provider import SculptProvider
+                except ImportError:
+                    raise ServiceError("sculpt_runtime_missing") from None
+                providers[key] = SculptProvider(config)
+            else:
+                raise ServiceError("run_service_missing")
+    elif snapshot["mode"] in ("comfy", "local_mesh"):
         register_workflow(registry)
         providers["comfy"] = (LocalMeshProvider if snapshot["mode"] == "local_mesh" else ComfyProvider)(
             snapshot["provider"]
@@ -996,6 +1179,8 @@ def restore_provider(snapshot):
     if snapshot.get("image_batch", {}).get("enabled"):
         batch = snapshot["image_batch"]
         stored = snapshot.get("provider") or snapshot.get("image_provider") or {}
+        if not stored:
+            stored = next(iter(snapshot.get("providers", {}).values()), {})
         storage = stored.get("storage", str(Path.cwd()))
         # New runs persist the exact parent state location. Legacy fallback is
         # retained only for snapshots written before multi-image support.

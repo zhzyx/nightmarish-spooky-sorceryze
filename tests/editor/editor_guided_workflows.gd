@@ -62,11 +62,11 @@ func run_checks() -> void:
 	root.find_child("AI Chat", true, false).set_runtime_field("workflow_python", OS.get_environment("GONGGONG_PYTHON"))
 	settings.set_setting("gonggong/issue_number", "6")
 	settings.set_setting("gonggong/request_id", "isolated-gate")
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
 	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
-	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "mock-guidance"
+	dock.find_child("APIModel", true, false).text = "mock-guidance"
 	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "mock-key"
 	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
 	dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = false
@@ -77,7 +77,7 @@ func run_checks() -> void:
 		dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
 		dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = OS.get_environment("SEMANTIC_CODEX_ENTRY")
 		dock.get_environment_settings_control().find_child("CodexEntry", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CodexEntry", true, false).text)
-		dock.get_ai_settings_control().find_child("CodexModel", true, false).text = "mock-guidance"
+		dock.find_child("CodexModel", true, false).text = "mock-guidance"
 
 	var searched := await act({ "action": "find_targets", "query": "project settings", "limit": 5 })
 	check(searched.get("targets", []).any(func(item): return item.get("id") == "project_settings"), "Target search did not find Project Settings")

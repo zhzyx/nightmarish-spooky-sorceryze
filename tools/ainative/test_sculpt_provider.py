@@ -1170,6 +1170,19 @@ class SculptTests(unittest.TestCase):
         self.assertIn("cheek_fullness increases forward cheek volume; it does not widen the skull", prompt)
         self.assertIn("Distinct USER target-image evidence count: 2", prompt)
 
+    def test_selected_model_is_an_explicit_optional_cli_argument(self):
+        self.mode("no-turn")
+        self.provider.submit(self.request, self.manifest, KEY)
+        self.assertEqual(self.wait()["state"], "failed")
+        self.assertNotIn("--model", (self.directory / "args").read_text().splitlines())
+        self.config["model"] = "fixture-sculpt-model"
+        self.provider = SculptProvider(self.config)
+        key = "b" * 64
+        self.provider.submit(self.request, self.manifest, key)
+        self.assertEqual(self.wait(key)["state"], "failed")
+        arguments = (self.directory / "args").read_text().splitlines()
+        self.assertEqual(arguments[arguments.index("--model") + 1], "fixture-sculpt-model")
+
     def test_quality_supplement_keeps_full_user_prompt_and_one_cli_request(self):
         request = copy.deepcopy(self.request)
         subject = "preserve-this-start " + ("organic detailed form " * 400) + " preserve-this-end"

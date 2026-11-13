@@ -65,7 +65,11 @@ def installations(settings, runtime_context=None):
     desktop_entries = (
         sorted(desktop.glob("*/codex.exe"), key=lambda p: p.stat().st_mtime, reverse=True) if windows else []
     )
-    bundled_node = Path.home() / ".cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe"
+    try:
+        bundled_node = Path.home() / ".cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe"
+    except RuntimeError:
+        # A deliberately sanitized CLI environment may not expose a user home.
+        bundled_node = None
     node = installed(
         settings.get("cli_node"),
         shutil.which("node"),

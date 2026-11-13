@@ -58,10 +58,10 @@ func run() -> void:
 	var row: Dictionary = panel.board.issues[0]
 	await panel._open_issue(row)
 	# Tianshu owns the task; model configuration uses the shared native settings page.
-	var backend = chat.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = chat.find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
-	chat.get_ai_settings_control().find_child("APIModel", true, false).text = ""
+	chat.find_child("APIModel", true, false).text = ""
 	await panel._start_or_view_direct(row)
 	var route_card: GraphNode = panel.editor.canvas.get_node("wf-routing")
 	check(route_card.get_node("RouteModel").get_theme_stylebox("normal").border_color == Color.WHITE and route_card.get_node("ApplyModel").get_theme_stylebox("normal").border_color == Color.WHITE, "Required model lacks action styling")

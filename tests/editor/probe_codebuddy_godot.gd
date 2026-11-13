@@ -11,14 +11,14 @@ func _run():
 		push_error("CODEBUDDY_GODOT_FAILED: native dock missing")
 		quit(1)
 		return
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
 	backend.select(1)
 	backend.item_selected.emit(1)
 	dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("AI_CHAT_TEST_NODE")
 	dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
 	dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
 	dock.get_environment_settings_control().find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
-	dock.get_ai_settings_control().find_child("CLIModel", true, false).text = "gpt-6.1-sol"
+	dock.find_child("CLIModel", true, false).text = "gpt-6.1-sol"
 	var probe_tools = OS.get_environment("AI_CHAT_PROBE_TOOLS") == "1"
 	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = probe_tools
 	var chat_input = dock.find_child("ChatInput", true, false)

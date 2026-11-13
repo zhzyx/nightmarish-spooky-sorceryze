@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f4577db7ea7ea267d775c6c7442b4f10e4bc52cb",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "per-ai-model-selection-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "bb51b0bd09c822ea28ebb4c1b030694ad85e5b69504f0d35d57ad9a30f48f3e4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/972",
+    "action": "delivery",
+    "detection_head": "308bc83c19ae7cd1811496cca0e7062e6b30dab0",
+    "context_sha256": "a97982f92b5c25ddb25a2906a862d3bc2a773564966d316b4a5f2339e2e5b4e3",
+    "operator": "kaiyunxue",
+    "worker": "kaiyunxue",
+    "authority_ref": "Issue #971 用户明确需求与自动交付授权",
+    "evidence": "writer_submit 在 Formal GongGong verification 停止，未提交未创建 PR；直接复现 WinError 2，补入 POSIX 形式便携 CLI PATH 后 verify_framework.py 返回 approved_file_integrity",
+    "diagnosis": "本次阻塞是 Windows MSYS 启动入口缺少可执行 CLI 的 POSIX PATH，不是产品代码或候选验证失败；门禁按预期隐藏子进程原始输出，需本地可信校验确认原因",
+    "next_action": "由 kaiyunxue 在相同工作树使用已验证的 POSIX PATH 与 GONGGONG_GH 重跑原 writer_submit，继续正式签发及精确候选 CI",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T20:00:14.862287+00:00",
+    "attempted": "运行原 writer_submit；直接运行可信 verify_framework.py 复现；补齐 PATH 后同一校验通过",
+    "repair_owner": "kaiyunxue",
+    "continuable": "是，原候选和暂存内容保持不变，可重跑原签发入口"
+  },
+  "occurred_at": "2026-11-12T20:01:49.454535+00:00",
+  "sha256": "c145acbc0231f29502279d3f4831f09980d44fd5205c3757ee63031bba474662"
+}

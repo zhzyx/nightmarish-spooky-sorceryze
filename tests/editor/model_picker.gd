@@ -26,7 +26,18 @@ func _run():
 	if dock == null:
 		finish(false, "missing dock")
 		return
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
+	# Let the startup HTTP catalog query finish before using the enabled backend
+	# selector, just as a user must. Programmatic selection alone does not replace
+	# the native guard that rejects backend edits while a query is in flight.
+	var until = Time.get_ticks_msec() + 40000
+	while backend.disabled and Time.get_ticks_msec() < until:
+		await create_timer(0.05).timeout
+	if backend.disabled:
+		finish(false, "startup model loading did not finish")
+		return
+	# Node comes from the environment and Codex from the isolated runtime config.
+	# A single backend edit triggers exactly one real model/list request.
 	backend.select(2)
 	backend.item_selected.emit(2)
 	dock.get_environment_settings_control().find_child("CLINode", true, false).text = OS.get_environment("GONGGONG_NODE")
@@ -34,15 +45,16 @@ func _run():
 	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = OS.get_environment("MODEL_TEST_CODEX")
 	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CodexEntry", true, false).text)
 	await _refresh_models(dock)
-	var picker = dock.get_ai_settings_control().find_child("ModelPicker", true, false)
-	var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false)
+	var picker = dock.find_child("ModelPicker", true, false)
+	var status = dock.find_child("ModelStatus", true, false)
 	if picker.item_count < 3:
-		finish(false, "refresh failed: " + status.text)
+		var runtime = dock.get_runtime_configuration()
+		finish(false, "refresh failed: " + status.text + "; runtime=" + JSON.stringify(runtime) + "; CodexEntry=" + dock.get_environment_settings_control().find_child("CodexEntry", true, false).text)
 		return
 	checks.append("actual Codex model/list populated picker")
 	picker.select(1)
 	picker.item_selected.emit(1)
-	var effort = dock.get_ai_settings_control().find_child("ReasoningEffort", true, false)
+	var effort = dock.find_child("ReasoningEffort", true, false)
 	if effort.disabled or effort.is_item_disabled(3):
 		finish(false, "high unavailable for advertised default model")
 		return
@@ -67,18 +79,22 @@ func _run():
 			checks.append("unsupported ultra disabled, new model uses default")
 			break
 	# Bad path must leave refresh retryable and keep chat untouched.
+	var runtime_error = dock.set_runtime_field("codex", "/nonexistent/codex")
+	if not runtime_error.is_empty():
+		finish(false, "cannot prepare invalid Codex runtime: " + runtime_error)
+		return
 	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = "/nonexistent/codex"
 	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CodexEntry", true, false).text)
 	await _refresh_models(dock)
 	if dock.get_model_catalog_snapshot().loading or not "路径" in status.text:
-		finish(false, "invalid path cannot retry")
+		finish(false, "invalid path cannot retry: " + status.text)
 		return
 	checks.append("invalid path reports cause and allows retry")
 	for api_backend in [0, 3]:
 		backend.select(api_backend)
 		backend.item_selected.emit(api_backend)
 		dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("MODEL_TEST_ENDPOINT") + ("/responses" if api_backend == 3 else "/chat/completions")
-		dock.get_ai_settings_control().find_child("APIModel", true, false).text = "fixture-reasoner"
+		dock.find_child("APIModel", true, false).text = "fixture-reasoner"
 		await _refresh_models(dock)
 		if effort.disabled or effort.is_item_disabled(3) or not effort.is_item_disabled(6):
 			finish(false, "API advertised capabilities not respected")
@@ -88,7 +104,7 @@ func _run():
 		if not effort.disabled or effort.selected != 0:
 			finish(false, "unknown API model must keep default")
 			return
-		var manual = dock.get_ai_settings_control().find_child("APIModel", true, false)
+		var manual = dock.find_child("APIModel", true, false)
 		manual.text = ""
 		manual.text_changed.emit(manual.text)
 		if picker.selected != -1 or not dock.get_model_catalog_snapshot().current.is_empty():
@@ -107,8 +123,69 @@ func _run():
 	checks.append("both API modes honor declared efforts, reject numeric IDs and keep unknown models at default")
 	backend.select(1)
 	backend.item_selected.emit(1)
+	until = Time.get_ticks_msec() + 40000
+	while backend.disabled and Time.get_ticks_msec() < until:
+		await process_frame
+	if backend.disabled:
+		finish(false, "CodeBuddy model loading did not finish")
+		return
 	if not effort.disabled or effort.selected != 0:
 		finish(false, "unverified CodeBuddy effort must remain default")
 		return
 	checks.append("CodeBuddy unknown capability uses default with TODO")
+	# Session A remains on CodeBuddy; session B uses an HTTP model. Wait for
+	# asynchronous restoration before every assertion so loading cannot mask a switch.
+	tabs.current_tab = 1
+	tabs.tab_changed.emit(1)
+	until = Time.get_ticks_msec() + 40000
+	while backend.disabled and Time.get_ticks_msec() < until:
+		await process_frame
+	if backend.disabled:
+		finish(false, "model loading blocked independent session backend switch")
+		return
+	backend.select(0)
+	backend.item_selected.emit(0)
+	until = Time.get_ticks_msec() + 40000
+	while backend.disabled and Time.get_ticks_msec() < until:
+		await process_frame
+	if backend.disabled:
+		finish(false, "model loading blocked independent session backend switch")
+		return
+	var endpoint = dock.get_ai_settings_control().find_child("APIEndpoint", true, false)
+	endpoint.text = OS.get_environment("MODEL_TEST_ENDPOINT") + "/chat/completions"
+	endpoint.text_changed.emit(endpoint.text)
+	until = Time.get_ticks_msec() + 40000
+	while backend.disabled and Time.get_ticks_msec() < until:
+		await process_frame
+	if backend.disabled:
+		finish(false, "session B endpoint model loading did not finish")
+		return
+	dock.find_child("APIModel", true, false).text = "independent-http-model-b"
+	dock.find_child("APIModel", true, false).text_changed.emit("independent-http-model-b")
+	if backend.selected != 0 or dock.find_child("APIModel", true, false).text != "independent-http-model-b":
+		finish(false, "session B did not select its independent HTTP model")
+		return
+	tabs.current_tab = 0
+	tabs.tab_changed.emit(0)
+	until = Time.get_ticks_msec() + 40000
+	while backend.disabled and Time.get_ticks_msec() < until:
+		await process_frame
+	if backend.disabled:
+		finish(false, "model loading blocked independent session backend switch")
+		return
+	if backend.selected != 1:
+		finish(false, "session B backend overwrote session A")
+		return
+	tabs.current_tab = 1
+	tabs.tab_changed.emit(1)
+	until = Time.get_ticks_msec() + 40000
+	while backend.disabled and Time.get_ticks_msec() < until:
+		await process_frame
+	if backend.disabled:
+		finish(false, "model loading blocked independent session backend switch")
+		return
+	if backend.selected != 0 or dock.find_child("APIModel", true, false).text != "independent-http-model-b":
+		finish(false, "session A backend or model overwrote session B")
+		return
+	checks.append("two sessions independently preserve different backends and models")
 	finish(true)

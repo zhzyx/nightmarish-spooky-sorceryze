@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ef03f8ab20bd3117a8da3d4ae42c2e5c2d3c58ec",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "per-ai-model-selection-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2b61e31e3ff7d14296392238bb833a59bf735e4d8d235b1ac913e0921b4e4870",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/972",
+    "action": "delivery",
+    "detection_head": "69a7a624a6d0f932bf02ebcc33d60427193629f3",
+    "context_sha256": "a97982f92b5c25ddb25a2906a862d3bc2a773564966d316b4a5f2339e2e5b4e3",
+    "operator": "kaiyunxue",
+    "worker": "kaiyunxue",
+    "authority_ref": "Issue #971 用户明确需求与自动交付授权",
+    "evidence": "writer_submit delivery：基线 69a7a624a6d0f932bf02ebcc33d60427193629f3，远端 main c074db21be98784ff1288f1f2d99c793ba156395，30 个上游提交，重叠 kimi_provider.py、modeling_provider.py、sculpt_provider.py；未提交、未创建 PR",
+    "diagnosis": "签发期间可信 main 再次前进并修改三个马良 Provider 重叠文件；精确候选保护要求重新整合和复验，当前没有证据表明产品测试失败",
+    "next_action": "由 kaiyunxue 整合 c074db21，核对重叠意图，重新构建并复验后重跑同一正式签发入口",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T21:19:17.072805+00:00",
+    "attempted": "已核对门禁返回和重叠路径，没有绕过保护",
+    "repair_owner": "kaiyunxue",
+    "continuable": "是，现有候选改动保留在工作树和索引中，可保存、整合、复验后继续"
+  },
+  "occurred_at": "2026-11-12T21:19:53.230368+00:00",
+  "sha256": "dad632180bd617bc21175605f626cfa0ec6bca4cb22250cf274f55494430aa31"
+}

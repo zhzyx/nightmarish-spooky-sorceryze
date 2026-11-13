@@ -400,11 +400,21 @@ class ModelingProvider(DurableProvider):
     def __init__(self, config):
         require(
             isinstance(config, dict)
-            and set(config) in (self.CONFIG_KEYS, (self.CONFIG_KEYS - {"cli_path"}) | {"planner"}),
+            and set(config)
+            in (
+                self.CONFIG_KEYS,
+                self.CONFIG_KEYS | {"model"},
+                (self.CONFIG_KEYS - {"cli_path"}) | {"planner"},
+            ),
             "invalid modeling config",
         )
         require(
-            all(isinstance(value, str) and value.strip() for name, value in config.items() if name != "planner"),
+            all(
+                isinstance(value, str) and value.strip()
+                for key, value in config.items()
+                if key not in ("planner", "model")
+            )
+            and isinstance(config.get("model", ""), str),
             "invalid modeling config",
         )
         if "planner" in config:
@@ -597,6 +607,8 @@ class ModelingProvider(DurableProvider):
             "--output-last-message",
             str(directory / "instructions.json"),
         ]
+        if self.config.get("model", "").strip():
+            arguments.extend(["--model", self.config["model"].strip()])
         configs = {
             "forced_login_method": '"chatgpt"',
             "model_provider": '"openai"',

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7a785185e814642e5595b01a8e3232f91b499f8a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "per-ai-model-selection-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "bf2f025871a7dc5d60c67ce2a676d7534877c8deda16f1fc9f2bd8a3cd03cde2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/972",
+    "action": "delivery",
+    "detection_head": "308bc83c19ae7cd1811496cca0e7062e6b30dab0",
+    "context_sha256": "a97982f92b5c25ddb25a2906a862d3bc2a773564966d316b4a5f2339e2e5b4e3",
+    "operator": "kaiyunxue",
+    "worker": "kaiyunxue",
+    "authority_ref": "Issue #971 用户明确需求与自动交付授权",
+    "evidence": "可信 diting_files.py git-check 明确列出本需求三个 kuafu 事件为 untracked；writer_submit 未提交未创建 PR",
+    "diagnosis": "门禁要求本需求真实谛听事件已跟踪且暂存，当前事故回执只写入工作树，尚未纳入候选；不是产品回归，也不能删除或忽略这些历史事件",
+    "next_action": "保留并暂存本需求真实事件，核对原始 request 事件的 Issue 来源后重跑 diting git-check 和 writer_submit",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T20:02:19.156057+00:00",
+    "attempted": "接收事故；运行可信 diting_files.py git-check；核对 issue_gate 与 README 的采集交付要求",
+    "repair_owner": "kaiyunxue",
+    "continuable": "是，产品改动和验证结果不变，补齐真实采集交付边界后继续"
+  },
+  "occurred_at": "2026-11-12T20:04:37.358922+00:00",
+  "sha256": "ae904aec605e7e0447b70b3a781578d9687af3499630d1406644eb33e40720a2"
+}

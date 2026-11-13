@@ -621,7 +621,7 @@ void AIChatDock::_save_chat_settings() {
 	settings->set_setting("ai_chat/cli_entry", cli_entry->get_text().strip_edges());
 	settings->set_setting("ai_chat/build_arguments", engine_build_arguments->get_text());
 	_project_ai_configuration_changed();
-	// The API key remains on the existing session-only control, never in settings.
+	// Credentials never enter session history or project metadata.
 	EditorSettings::save();
 	_update_settings_summary();
 }
@@ -1353,6 +1353,9 @@ void AIChatDock::_load_resume() {
 	http_settings->set_visible(backend->get_selected() == 0 || backend->get_selected() == 3);
 	codex_settings->set_visible(backend->get_selected() == 2);
 	cli_settings->set_visible(backend->get_selected() == 1);
+	http_model_settings->set_visible(backend->get_selected() == 0 || backend->get_selected() == 3);
+	codex_model_settings->set_visible(backend->get_selected() == 2);
+	cli_model_settings->set_visible(backend->get_selected() == 1);
 	// Continue only on a channel that can actually send, and never from a headless
 	// verification run. The HTTP key is never stored, so without it the result is
 	// recorded and the user resumes manually.
@@ -4371,23 +4374,16 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 	image_picker->hide();
 	image_dialog->hide();
 	image_preview->set_texture(Ref<Texture2D>());
-	const bool execution_override = sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || !ai_project_settings_owner;
-	if (execution_override) {
-		model->set_text(p_session.model);
-		cli_model->set_text(p_session.cli_model);
-		codex_model->set_text(p_session.codex_model);
-		backend->select(p_session.backend);
-	} else {
-		// Ordinary conversations share the project selection, including after restart.
-		EditorSettings *settings = EditorSettings::get_singleton();
-		model->set_text(settings->get_project_metadata("ai_chat", "model", ""));
-		cli_model->set_text(settings->get_project_metadata("ai_chat", "cli_model", ""));
-		codex_model->set_text(settings->get_project_metadata("ai_chat", "codex_model", ""));
-		backend->select(CLAMP(int(settings->get_project_metadata("ai_chat", "backend", 0)), 0, 3));
-	}
-	http_settings->set_visible(backend->get_selected() == 0 || backend->get_selected() == 3);
-	codex_settings->set_visible(backend->get_selected() == 2);
-	cli_settings->set_visible(backend->get_selected() == 1);
+	model->set_text(p_session.model);
+	cli_model->set_text(p_session.cli_model);
+	codex_model->set_text(p_session.codex_model);
+	backend->select(p_session.backend);
+	http_settings->set_visible(p_session.backend == 0 || p_session.backend == 3);
+	codex_settings->set_visible(p_session.backend == 2);
+	cli_settings->set_visible(p_session.backend == 1);
+	http_model_settings->set_visible(p_session.backend == 0 || p_session.backend == 3);
+	codex_model_settings->set_visible(p_session.backend == 2);
+	cli_model_settings->set_visible(p_session.backend == 1);
 	cli_process_id = p_session.cli_process_id;
 	cli_stdout = p_session.cli_stdout;
 	cli_stderr = p_session.cli_stderr;
@@ -5351,10 +5347,14 @@ void AIChatDock::_backend_changed(int p_backend) {
 	http_settings->set_visible(p_backend == 0 || p_backend == 3);
 	codex_settings->set_visible(p_backend == 2);
 	cli_settings->set_visible(p_backend == 1);
+	http_model_settings->set_visible(p_backend == 0 || p_backend == 3);
+	codex_model_settings->set_visible(p_backend == 2);
+	cli_model_settings->set_visible(p_backend == 1);
 	_sync_model_picker();
 	model_status->set_text(U"连接已切换，正在准备获取模型列表；不支持枚举时可手动填写模型 ID。");
 	_request_model_refresh(2);
 	_project_ai_configuration_changed();
+	_queue_history_save();
 	_append(TTR("Editor"), p_backend == 1 ? String(U"已选择 CodeBuddy 账号。可搜索源码、读写文件并通过 Bash 构建和测试，无需 MCP；文件修改与执行是否需确认取决于自动操作开关。") : String(U"已选择模型 API。切换连接后对话上下文已重置。"));
 }
 
@@ -5436,10 +5436,14 @@ void AIChatDock::_model_selected(int p_index) {
 	_active_model_field()->set_text(id);
 	_sync_reasoning_picker();
 	_project_ai_configuration_changed();
+	_queue_history_save();
 }
 
 void AIChatDock::_model_edited(const String &p_text) {
 	_project_ai_configuration_changed();
+	_update_settings_summary();
+	// Manual edits remain session state even while a catalog query is in flight.
+	_queue_history_save();
 	if (busy) {
 		return;
 	}
@@ -5664,6 +5668,32 @@ void AIChatDock::ReleaseModelCatalogTransport()
 void AIChatDock::CancelModelCatalog()
 {
 	nCatalogGeneration++;
+	if (!is_inside_tree())
+	{
+		// Destruction can occur after child controls have already been freed.
+		// Release only process and stream resources in that state; HTTPRequest
+		// children cancel themselves and no UI or Timer may be dereferenced.
+		model_request = nullptr;
+		if (nCatalogPid >= 0)
+		{
+			stop_gonggong_process(nCatalogPid);
+			nCatalogPid = -1;
+		}
+		if (codex_status_pid >= 0)
+		{
+			OS::get_singleton()->kill(codex_status_pid);
+			codex_status_pid = -1;
+		}
+		refCatalogStdout.unref();
+		refCatalogStderr.unref();
+		arrCatalogOutput.clear();
+		codex_status_sources = 0;
+		pending_model_sources = 0;
+		model_request_key = String();
+		model_request_config = String();
+		models_loading = false;
+		return;
+	}
 	ReleaseModelCatalogTransport();
 	if (codex_status_pid >= 0)
 	{
@@ -6054,10 +6084,9 @@ void AIChatDock::_project_ai_configuration_changed() {
 	}
 	ai_configuration_signature = signature;
 	if (ai_project_settings_owner && !sub_agents.has(active_agent) && !scheduled_agents.has(active_agent)) {
-		const Dictionary configuration = get_ai_configuration();
-		for (const char *key : { "backend", "endpoint", "model", "cli_model", "codex_model" }) {
-			EditorSettings::get_singleton()->set_project_metadata("ai_chat", key, configuration[key]);
-		}
+		// Only shared access configuration is project-scoped. Backend and model
+		// selections belong to each saved conversation, including ordinary tabs.
+		EditorSettings::get_singleton()->set_project_metadata("ai_chat", "endpoint", endpoint->get_text().strip_edges());
 	}
 	_cancel_ai_connection_probe();
 	ai_connection_signature = signature;
@@ -8190,7 +8219,8 @@ void AIChatDock::_notification(int p_what) {
 		_queue_history_save();
 		_flush_history();
 		history_poll_timer->stop();
-		history_loaded = false;
+		// A settings-page reparent can temporarily remove this same dock. READY is
+		// not emitted again on reentry, so retain its loaded state and keep saving.
 		_cancel_all_agents();
 		request_generation++;
 		_revoke_native_task();
@@ -8276,9 +8306,9 @@ AIChatDock::AIChatDock(const String &p_session_directory) {
 	EDITOR_DEF("ai_chat/codex_entry", "");
 	EDITOR_DEF("ai_chat/codex_model", "");
 	EDITOR_DEF("ai_chat/reasoning_preferences", Dictionary());
-	// Only nonsecret model defaults migrate; credentials remain session/host owned.
+	// Only shared access configuration migrates; model choices stay in session history.
 	if (!bool(EditorSettings::get_singleton()->get_project_metadata("ai_chat", "project_configuration_initialized", false))) {
-		for (const char *key : { "backend", "endpoint", "model", "cli_model", "codex_model", "reasoning_preferences" }) {
+		for (const char *key : { "endpoint", "reasoning_preferences" }) {
 			EditorSettings::get_singleton()->set_project_metadata("ai_chat", key, EditorSettings::get_singleton()->get_setting(String("ai_chat/") + key));
 		}
 		EditorSettings::get_singleton()->set_project_metadata("ai_chat", "project_configuration_initialized", true);
@@ -8475,11 +8505,11 @@ void fragment() {
 	environment_settings_control->hide();
 	add_child(environment_settings_control);
 	Label *chat_settings_title = memnew(Label);
-	chat_settings_title->set_text(U"AI Chat · 模型与账号");
+	chat_settings_title->set_text(U"AI Chat · 模型接入");
 	ai_settings_control->add_child(chat_settings_title);
 	HFlowContainer *selector_row = memnew(HFlowContainer);
 	selector_row->set_name("SelectorRow");
-	ai_settings_control->add_child(selector_row);
+	layout->add_child(selector_row);
 	HBoxContainer *connection = memnew(HBoxContainer);
 	connection->set_h_size_flags(SIZE_EXPAND_FILL);
 	selector_row->add_child(connection);
@@ -8497,14 +8527,14 @@ void fragment() {
 	backend->set_fit_to_longest_item(false);
 	backend->set_clip_text(true);
 	backend->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
-	backend->select(CLAMP(int(EditorSettings::get_singleton()->get_project_metadata("ai_chat", "backend", 0)), 0, 3));
+	backend->select(CLAMP(int(EditorSettings::get_singleton()->get_project_metadata("ai_chat", "backend", EDITOR_GET("ai_chat/backend"))), 0, 3));
 	backend->connect("item_selected", callable_mp(this, &AIChatDock::_backend_changed));
 	connection->add_child(backend);
 	HBoxContainer *models = memnew(HBoxContainer);
 	models->set_h_size_flags(SIZE_EXPAND_FILL);
 	selector_row->add_child(models);
 	Label *model_label = memnew(Label);
-	model_label->set_text(U"对话模型");
+	model_label->set_text(U"本会话模型");
 	models->add_child(model_label);
 	model_picker = memnew(OptionButton);
 	model_picker->set_name("ModelPicker");
@@ -8545,8 +8575,6 @@ void fragment() {
 	settings->add_child(http_settings);
 	endpoint = add_field(http_settings, U"对话接口地址（HTTPS 或本机 HTTP）", "APIEndpoint", EditorSettings::get_singleton()->get_project_metadata("ai_chat", "endpoint", "https://api.openai.com/v1/chat/completions"));
 	endpoint->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
-	model = add_field(http_settings, U"手动模型 ID（接口不支持列表时使用）", "APIModel", EditorSettings::get_singleton()->get_project_metadata("ai_chat", "model", ""));
-	model->connect("text_changed", callable_mp(this, &AIChatDock::_model_edited));
 	api_key = add_field(http_settings, U"API 密钥（可在验证成功后记住）", "APIKey", String());
 	api_key->connect("text_changed", callable_mp(this, &AIChatDock::ApiCredentialEdited));
 	api_key->set_secret(true);
@@ -8559,6 +8587,13 @@ void fragment() {
 		// OPENAI_BASE_URL is routing configuration, never credential authorization.
 		BindApiCredential(OS::get_singleton()->get_environment("OPENAI_API_KEY"), "openai_environment", strAudience);
 	}
+	http_model_settings = memnew(VBoxContainer);
+	layout->add_child(http_model_settings);
+	// Releases that stored one project-wide model predate per-conversation
+	// history. Read that value only as the initial session's migration source;
+	// subsequent edits are saved exclusively in the active conversation.
+	model = add_field(http_model_settings, U"本会话手动模型 ID（接口不支持列表时使用）", "APIModel", EditorSettings::get_singleton()->get_project_metadata("ai_chat", "model", EDITOR_GET("ai_chat/model")));
+	model->connect("text_changed", callable_mp(this, &AIChatDock::_model_edited));
 	cli_settings = memnew(VBoxContainer);
 	settings->add_child(cli_settings);
 	Label *environment_title = memnew(Label);
@@ -8570,11 +8605,13 @@ void fragment() {
 	cli_bridge->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
 	cli_entry = add_field(environment_settings_control, U"官方 CodeBuddy CLI 入口路径", "CLIEntry", EDITOR_GET("ai_chat/cli_entry"));
 	cli_entry->connect("text_changed", callable_mp(this, &AIChatDock::_model_config_changed));
-	String saved_model = EditorSettings::get_singleton()->get_project_metadata("ai_chat", "cli_model", "");
+	String saved_model = EditorSettings::get_singleton()->get_project_metadata("ai_chat", "cli_model", EDITOR_GET("ai_chat/cli_model"));
 	if (saved_model == "default-model") {
 		saved_model = "gpt-6.1-sol";
 	}
-	cli_model = add_field(cli_settings, U"手动模型 ID（留空跟随 CLI 默认）", "CLIModel", saved_model);
+	cli_model_settings = memnew(VBoxContainer);
+	layout->add_child(cli_model_settings);
+	cli_model = add_field(cli_model_settings, U"本会话手动模型 ID（留空跟随 CLI 默认）", "CLIModel", saved_model);
 	cli_model->connect("text_changed", callable_mp(this, &AIChatDock::_model_edited));
 	cli_login = memnew(Button);
 	cli_login->set_name("CLILogin");
@@ -8591,7 +8628,9 @@ void fragment() {
 	settings->add_child(codex_settings);
 	codex_entry = add_field(environment_settings_control, U"聊天 Codex 可执行文件绝对路径（codex.exe 或原生二进制）", "CodexEntry", initial_paths.get("codex", ""));
 	codex_entry->connect("text_changed", callable_mp(this, &AIChatDock::_runtime_field_changed).bind(String("codex")));
-	codex_model = add_field(codex_settings, U"Codex 模型 ID（留空使用 CLI 默认）", "CodexModel", EditorSettings::get_singleton()->get_project_metadata("ai_chat", "codex_model", ""));
+	codex_model_settings = memnew(VBoxContainer);
+	layout->add_child(codex_model_settings);
+	codex_model = add_field(codex_model_settings, U"本会话 Codex 模型 ID（留空使用 CLI 默认）", "CodexModel", EditorSettings::get_singleton()->get_project_metadata("ai_chat", "codex_model", EDITOR_GET("ai_chat/codex_model")));
 	codex_model->connect("text_changed", callable_mp(this, &AIChatDock::_model_edited));
 	Label *codex_help = memnew(Label);
 	codex_help->set_text(U"先在终端运行 codex login。需支持 --ignore-user-config 的 Codex CLI；Node 路径沿用 CodeBuddy 配置。");
@@ -8674,9 +8713,9 @@ void fragment() {
 	layout->add_child(action_row);
 	model_status->add_theme_font_size_override("font_size", small_font_size);
 	model_status->set_v_size_flags(SIZE_SHRINK_CENTER);
-	ai_settings_control->add_child(model_status);
+	layout->add_child(model_status);
 	HBoxContainer *pCatalogActions = memnew(HBoxContainer);
-	ai_settings_control->add_child(pCatalogActions);
+	layout->add_child(pCatalogActions);
 	pCatalogRefresh = memnew(Button);
 	pCatalogRefresh->set_name("RefreshModels");
 	pCatalogRefresh->set_text(U"刷新 / 重试模型目录");
@@ -9026,6 +9065,9 @@ void fragment() {
 	http_settings->set_visible(backend->get_selected() == 0 || backend->get_selected() == 3);
 	codex_settings->set_visible(backend->get_selected() == 2);
 	cli_settings->set_visible(backend->get_selected() == 1);
+	http_model_settings->set_visible(backend->get_selected() == 0 || backend->get_selected() == 3);
+	codex_model_settings->set_visible(backend->get_selected() == 2);
+	cli_model_settings->set_visible(backend->get_selected() == 1);
 	_sync_model_picker();
 	model_status->set_text(U"模型列表将在启动或连接配置变化后自动获取；服务不支持枚举时可手动填写模型 ID。");
 	ai_configuration_ready = true;

@@ -16,7 +16,7 @@ func _check(ok: bool, reason: String):
 func _control(name: String) -> Control:
 	if name == "AISettingsPage":
 		return root.find_child("UnifiedSettings", true, false).find_child(name, true, false) as Control
-	if name in ["AIBackend", "APIEndpoint", "APIKey", "APIModel", "ModelPicker", "ReasoningEffort", "SelectorRow", "SaveChatSettings"]:
+	if name in ["APIEndpoint", "APIKey", "SaveChatSettings"]:
 		return dock.get_ai_settings_control().find_child(name, true, false) as Control
 	return dock.find_child(name, true, false) as Control
 
@@ -56,9 +56,9 @@ func _sample(label: String, settings_mode := false):
 	if sub_agents != null:
 		var minimum := sub_agents.get_combined_minimum_size()
 		item["sub_agent_minimum"] = [minimum.x, minimum.y]
-	var names = ["ChatInput", "Send", "Stop", "AddImage", "AdvancedToggle", "ChatScroll", "AgentTabs", "CurrentAIConfiguration", "ActionRow", "ChatComposerPanel"]
+	var names = ["ChatInput", "Send", "Stop", "AddImage", "AdvancedToggle", "ChatScroll", "AgentTabs", "CurrentAIConfiguration", "ActionRow", "ChatComposerPanel", "AIBackend", "ModelPicker", "ReasoningEffort", "SelectorRow"]
 	if settings_mode:
-		names = ["AISettingsPage"] if "scrolled" in label else ["AIBackend", "ModelPicker", "ReasoningEffort", "SelectorRow"]
+		names = ["AISettingsPage"] if "scrolled" in label else ["APIEndpoint", "APIKey"]
 	for name in names:
 		var control := _control(name)
 		_check(control != null, label + ": missing " + name)

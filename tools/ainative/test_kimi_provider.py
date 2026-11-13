@@ -26,6 +26,7 @@ from kimi_provider import (
     KimiNativeProvider,
     factory,
     perform_api,
+    probe,
     request_body,
     validate_endpoint,
 )
@@ -169,6 +170,15 @@ class RequestTests(unittest.TestCase):
         with patch.dict(os.environ, {"KIMI_API_KEY": SECRET}), patch("kimi_provider._opener", return_value=opener):
             code = perform_api({"endpoint": DEFAULT_ENDPOINT, "model": DEFAULT_MODEL}, directory)
         return code, directory, opener
+
+    def test_model_catalog_does_not_require_a_legacy_selection(self):
+        opener = FakeOpener(json.dumps({"data": [{"id": DEFAULT_MODEL}]}).encode())
+        with patch.dict(os.environ, {"KIMI_API_KEY": SECRET}), patch("kimi_provider._opener", return_value=opener):
+            report = probe({"endpoint": DEFAULT_ENDPOINT, "model": ""})
+        self.assertTrue(report["connected"])
+        self.assertEqual(report["requested_model"], "")
+        self.assertEqual(report["available_models"], [DEFAULT_MODEL])
+        self.assertEqual(len(opener.calls), 1)
 
     def test_strict_text_request_and_response_receipt(self):
         body = request_body(self.plan())

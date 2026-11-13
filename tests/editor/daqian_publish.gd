@@ -20,10 +20,10 @@ func run():
 	var dock = root.find_child("Daqian", true, false)
 	var panel = dock.find_child("DaqianWorkspace", true, false)
 	var chat = root.find_child("AI Chat", true, false)
-	var backend = chat.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = chat.find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
-	chat.get_ai_settings_control().find_child("APIModel", true, false).text = "fixture"
+	chat.find_child("APIModel", true, false).text = "fixture"
 	chat.get_ai_settings_control().find_child("APIEndpoint", true, false).text = "http://127.0.0.1:1/v1/chat/completions"
 	dock.get_parent().current_tab = dock.get_parent().get_tab_idx_from_control(dock)
 	await panel.refresh()

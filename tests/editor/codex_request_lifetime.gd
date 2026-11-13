@@ -42,11 +42,11 @@ func _run():
 	root.find_child("AI Chat", true, false).set_runtime_field("workflow_python", OS.get_environment("GONGGONG_PYTHON"))
 	settings.set_setting("gonggong/issue_number", "6")
 	settings.set_setting("gonggong/request_id", "isolated-gate")
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
 	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("LIFETIME_ENDPOINT")
-	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "lifetime-fixture"
+	dock.find_child("APIModel", true, false).text = "lifetime-fixture"
 	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "fixture-key"
 	backend.select(2)
 	backend.item_selected.emit(2)
@@ -54,7 +54,7 @@ func _run():
 	dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
 	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text = folder.path_join("entry.js")
 	dock.get_environment_settings_control().find_child("CodexEntry", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CodexEntry", true, false).text)
-	dock.get_ai_settings_control().find_child("CodexModel", true, false).text = "lifetime-fixture"
+	dock.find_child("CodexModel", true, false).text = "lifetime-fixture"
 	# This fixture only owns transport and temporary-file lifetime. Real work-order
 	# authorization, candidate creation and tool receipts have separate native checks.
 	dock.find_child("ConsultationOnly", true, false).button_pressed = true

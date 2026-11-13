@@ -18,6 +18,8 @@ func check(value: bool, message: String):
 
 func edit(name: String, value: String):
 	var control = ai.find_child(name, true, false)
+	if control == null:
+		control = chat.find_child(name, true, false)
 	control.text = value
 	control.text_changed.emit(value)
 
@@ -49,21 +51,22 @@ func run():
 	var settings = EditorInterface.get_editor_settings()
 	if mode in ['child', 'scheduled']:
 		check(chat.get_ai_configuration().model == 'execution-override', 'active execution session keeps its model on restart: ' + mode)
-		check(settings.get_project_metadata('ai_chat', 'model', '') == 'project-model', 'execution override never rewrites project default: ' + mode)
+		check(settings.get_project_metadata('ai_chat', 'model', '') == '', 'execution override never creates a project model default: ' + mode)
 	elif mode == 'reopen':
-		check(chat.get_ai_configuration().model == 'project-model', 'same project model persists after restart')
+		check(chat.get_ai_configuration().model == 'project-model', 'active session model persists after restart: ' + str(chat.get_ai_configuration()))
 		check(chat.get_ai_configuration().endpoint == OS.get_environment('PROJECT_AI_ENDPOINT') + '/v1/chat/completions', 'project endpoint persists')
 		check(ai.find_child('APIKey', true, false).text.is_empty(), 'session credential is not restored')
 		check(indicator.get_meta('connection_state') != 'available', 'restart requires fresh availability evidence')
 	elif mode == 'other':
-		check(chat.get_ai_configuration().model != 'project-model', 'different project does not inherit project model')
-		check(settings.get_setting('ai_chat/model') != 'project-model', 'project model never overwrites editor global default')
+		check(chat.get_ai_configuration().model != 'project-model', 'different project does not inherit another session model')
+		check(settings.get_setting('ai_chat/model') != 'project-model', 'session model never overwrites editor global default')
 	else:
 		check(indicator.get_meta('connection_state') != 'available', 'model enumeration alone does not show green')
 		edit('APIModel', 'project-model')
 		edit('APIKey', 'project-ai-synthetic-secret')
 		edit('APIEndpoint', OS.get_environment('PROJECT_AI_ENDPOINT') + '/v1/chat/completions')
 		ai.find_child('SaveChatSettings', true, false).pressed.emit()
+		check(settings.get_project_metadata('ai_chat', 'model', '') == '', 'central save does not create a project model default')
 		check(chat.get_ai_configuration().scope == 'project', 'configuration API reports project scope')
 		check(not JSON.stringify(chat.get_ai_configuration()).contains('project-ai-synthetic-secret'), 'shared configuration API excludes credentials')
 		check(chat.get_daqian_models().current == 'project-model', 'Tianshu consumes same project model')
@@ -116,7 +119,7 @@ func verify_cli():
 	check(chat.set_runtime_field('node', OS.get_environment('PROJECT_AI_PYTHON')).is_empty(), 'CLI probe uses isolated fixture runtime')
 	environment.find_child('CLIBridge', true, false).text = OS.get_environment('PROJECT_AI_CLI_BRIDGE')
 	environment.find_child('CLIEntry', true, false).text = OS.get_environment('PROJECT_AI_PYTHON')
-	var backend = ai.find_child('AIBackend', true, false)
+	var backend = chat.find_child('AIBackend', true, false)
 	backend.select(1)
 	backend.item_selected.emit(1)
 	await create_timer(0.8).timeout

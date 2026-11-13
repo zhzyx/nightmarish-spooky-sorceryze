@@ -234,6 +234,19 @@ class ModelingTests(unittest.TestCase):
         self.mode("no-login")
         self.assertEqual(check_modeling_cli(str(self.fake))["code"], "cli_login_required")
 
+    def test_selected_model_is_an_explicit_optional_cli_argument(self):
+        self.mode("no-turn")
+        self.provider.submit(self.request, self.manifest, KEY)
+        self.assertEqual(self.wait()["state"], "failed")
+        self.assertNotIn("--model", (self.directory / "args").read_text().splitlines())
+        self.config["model"] = "fixture-modeling-model"
+        self.provider = ModelingProvider(self.config)
+        key = "b" * 64
+        self.provider.submit(self.request, self.manifest, key)
+        self.assertEqual(self.wait(key)["state"], "failed")
+        arguments = (self.directory / "args").read_text().splitlines()
+        self.assertEqual(arguments[arguments.index("--model") + 1], "fixture-modeling-model")
+
     @unittest.skipUnless(GODOT.is_file() and BUILDER.is_file(), "Real Godot and fixed builder required")
     def test_real_builder_end_to_end_manifest_recovery_and_idempotency(self):
         self.provider.submit(self.request, self.manifest, KEY)

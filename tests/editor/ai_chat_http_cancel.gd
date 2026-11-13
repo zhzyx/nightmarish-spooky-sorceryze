@@ -37,12 +37,12 @@ func _run():
 	if setup != null:
 		setup.hide()
 	EditorInterface.set_main_screen_editor("AI Chat")
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
 	dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("CANCEL_ENDPOINT")
 	dock.get_ai_settings_control().find_child("APIKey", true, false).text = "isolated-fixture-key"
-	dock.get_ai_settings_control().find_child("APIModel", true, false).text = "fixture"
+	dock.find_child("APIModel", true, false).text = "fixture"
 	dock.find_child("ConsultationOnly", true, false).button_pressed = true
 	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = false
 	var mode := OS.get_environment("CANCEL_CASE")
@@ -75,7 +75,7 @@ func _run():
 	last_frame = Time.get_ticks_usec()
 	tracking = true
 	var start := Time.get_ticks_usec()
-	var stop = dock.get_ai_settings_control().find_child("CancelModels", true, false) if mode == "models" else dock.find_child("Stop", true, false)
+	var stop = dock.find_child("CancelModels", true, false) if mode == "models" else dock.find_child("Stop", true, false)
 	var stop_enabled: bool = not stop.disabled
 	var manual := OS.get_environment("CANCEL_MANUAL") == "1"
 	if manual:
@@ -125,11 +125,12 @@ func _run():
 	report["observed_server_release"] = FileAccess.file_exists("res://server-released")
 	report["stale_response_absent"] = not "STALE_CANCELLED_REPLY" in _text()
 	if mode == "models":
+
 		var final_models: Array[String] = []
 		for option in dock.get_model_catalog_snapshot().options:
 			final_models.append(option.id)
 		report["final_model_list"] = final_models
-		report["final_model_selection"] = dock.get_ai_settings_control().find_child("APIModel", true, false).text
+		report["final_model_selection"] = dock.find_child("APIModel", true, false).text
 		report["late_models_rejected"] = "recovered-model" in final_models and not "stale-model" in final_models and report["final_model_selection"] != "stale-model"
 	FileAccess.open("res://cancel-report.json", FileAccess.WRITE).store_string(JSON.stringify(report))
 	print("HTTP_CANCEL_REPORT=", JSON.stringify(report))

@@ -306,12 +306,18 @@ class SculptProvider(ModelingProvider):
             and set(config)
             in (
                 {"cli_path", "storage", "blender_path", "builder_path"},
+                {"cli_path", "storage", "blender_path", "builder_path", "model"},
                 {"planner", "storage", "blender_path", "builder_path"},
             ),
             "invalid sculpt config",
         )
         require(
-            all(isinstance(value, str) and value.strip() for name, value in config.items() if name != "planner"),
+            all(
+                isinstance(value, str) and value.strip()
+                for key, value in config.items()
+                if key not in ("planner", "model")
+            )
+            and isinstance(config.get("model", ""), str),
             "invalid sculpt config",
         )
         if "planner" in config:
@@ -557,6 +563,8 @@ class SculptProvider(ModelingProvider):
             "--output-last-message",
             str(directory / "instructions.json"),
         ]
+        if self.config.get("model", "").strip():
+            arguments.extend(["--model", self.config["model"].strip()])
         configs = {
             "forced_login_method": '"chatgpt"',
             "model_provider": '"openai"',

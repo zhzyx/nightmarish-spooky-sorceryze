@@ -34,7 +34,7 @@ func _run():
 	# successful candidate/guard/finalizer execution proves no legacy fallback.
 	settings.set_setting("gonggong/python", OS.get_environment("DELIVERY_FIXTURE_ROOT").path_join("missing-legacy-python") if central_config else OS.get_environment("DELIVERY_FIXTURE_PYTHON"))
 	settings.set_setting("ai_chat/parallel_work_orders_config", "")
-	var ai = dock.get_ai_settings_control()
+	var ai = dock
 	var environment = dock.get_environment_settings_control()
 	var backend = ai.find_child("AIBackend", true, false)
 	backend.select(0)

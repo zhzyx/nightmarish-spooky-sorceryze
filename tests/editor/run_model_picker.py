@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import os
 import subprocess
 import tempfile
 import threading
@@ -19,6 +20,8 @@ p.add_argument("--node", required=True)
 p.add_argument("--codex", help="Optional executable; default uses an isolated synthetic app-server fixture")
 p.add_argument("--out", type=Path, required=True)
 a = p.parse_args()
+a.node = str(Path(a.node).resolve(strict=True))
+a.codex = str(Path(a.codex).resolve(strict=True))
 
 
 requests: list[str] = []
@@ -49,8 +52,17 @@ threading.Thread(target=server.serve_forever, daemon=True).start()
 with tempfile.TemporaryDirectory(prefix="model-picker-") as folder:
     root = Path(folder)
     editor = copy_editor(a.godot, root / "bin")
+    configuration = root / "bin/editor_data/gonggong/config.json"
+    configuration.parent.mkdir(parents=True)
+    configuration.write_text(json.dumps({"schema_version": 1, "runtimes": {"codex": a.codex}}), encoding="utf-8")
     (root / "SConstruct").touch()
-    (root / "tools").symlink_to(ROOT / "tools", target_is_directory=True)
+    if os.name == "nt":
+        # Directory junctions do not require the Windows symbolic-link privilege.
+        subprocess.run(
+            ["cmd.exe", "/c", "mklink", "/J", str(root / "tools"), str(ROOT / "tools")], check=True, capture_output=True
+        )
+    else:
+        (root / "tools").symlink_to(ROOT / "tools", target_is_directory=True)
     project = root / "project"
     project.mkdir()
     (project / "project.godot").write_text(
@@ -99,7 +111,7 @@ for line in sys.stdin:
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.with_suffix(".log").write_bytes(run.stdout)
     data = (
-        json.loads(result.read_text())
+        json.loads(result.read_text(encoding="utf-8"))
         if result.exists()
         else {"ok": False, "error": "no result", "returncode": run.returncode}
     )
@@ -109,6 +121,6 @@ for line in sys.stdin:
     data["ok"] = (
         data.get("ok", False) and len(requests) >= 2 and (bool(a.codex) or bool(data["codex_catalog_requests"]))
     )
-    a.out.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
+    a.out.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(data, ensure_ascii=False))
     raise SystemExit(0 if data["ok"] and run.returncode == 0 else 1)

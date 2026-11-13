@@ -379,6 +379,9 @@ class AIChatDock : public EditorDock {
 	Label *cli_login_status = nullptr;
 	VBoxContainer *http_settings = nullptr;
 	VBoxContainer *cli_settings = nullptr;
+	VBoxContainer *http_model_settings = nullptr;
+	VBoxContainer *cli_model_settings = nullptr;
+	VBoxContainer *codex_model_settings = nullptr;
 	OptionButton *model_picker = nullptr;
 	OptionButton *reasoning_picker = nullptr;
 	void _sync_reasoning_picker();

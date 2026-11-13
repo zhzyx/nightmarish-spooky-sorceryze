@@ -41,7 +41,7 @@ func run():
 	settings.set_setting("gonggong/issue_number", "")
 	settings.set_setting("gonggong/request_id", "")
 	dock.set_runtime_field("workflow_python", OS.get_environment("TS_PYTHON"))
-	var ai = dock.get_ai_settings_control()
+	var ai = dock
 	var env_ui = dock.get_environment_settings_control()
 	var backend = ai.find_child("AIBackend", true, false)
 	backend.select(2)

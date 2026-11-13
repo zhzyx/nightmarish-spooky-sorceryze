@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "request-per-ai-model-selection-20261112",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "per-ai-model-selection-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-12T15:21:32Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/971",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "AI Chat 每个会话及马良每个节点独立选择模型；设置页仅保留登录、API 地址、CLI 路径与权限等接入配置",
+    "authorization_ref": "2026-11-12 用户明确提出本需求并多次要求继续完成",
+    "issue_number": 971,
+    "design": "design-docs/per-ai-model-selection-20261112.md",
+    "recording_note": "原始用户请求与 Issue 创建时间按权威 Issue 回读补记；正式门禁发现缺少 request 事件时追加，不改写既有事件",
+    "observed_model": null,
+    "usage": null,
+    "usage_unknown_reason": "宿主未提供本任务实际 token 或成本计量"
+  },
+  "evidence_refs": [],
+  "sha256": "fbe296f00758c4f2ac7dafab8dcc037a12dedc0890211af2d918b17bfc1cecb4"
+}

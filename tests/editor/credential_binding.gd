@@ -15,6 +15,8 @@ func check(ok: bool, label: String) -> void:
 
 func edit(field: String, value: String, signal_change := true) -> void:
 	var control = settings.find_child(field, true, false)
+	if control == null:
+		control = chat.find_child(field, true, false)
 	control.text = value
 	if signal_change: control.text_changed.emit(value)
 
@@ -25,15 +27,27 @@ func verify() -> void:
 		await get_tree().create_timer(0.03).timeout
 	check(chat.get_ai_connection_status().state == "available", "loopback connection probe completes")
 
+func wait_send_ready() -> void:
+	var send = chat.find_child("Send", true, false)
+	var deadline := Time.get_ticks_msec() + 15000
+	while send.disabled and Time.get_ticks_msec() < deadline:
+		await get_tree().create_timer(0.03).timeout
+	check(not send.disabled, "startup and catalog refreshes release the send action")
+
 func run() -> void:
 	await get_tree().create_timer(0.5).timeout
 	chat = get_tree().root.find_child("AI Chat", true, false)
 	settings = chat.get_ai_settings_control()
 	var key = settings.find_child("APIKey", true, false)
 	if OS.get_environment("BINDING_CASE") == "openai-official":
-		# Startup uses the CLI backend. Inspect the official audience synchronously,
-		# then leave it before any event loop turn can start an API request.
-		var backend = settings.find_child("AIBackend", true, false)
+		# A real backend switch must wait for the same lock that the UI exposes.
+		# Select the API controls before reading their credential accessor, but do
+		# not emit a change until the official endpoint has been replaced by loopback.
+		var backend = chat.find_child("AIBackend", true, false)
+		var startup_deadline := Time.get_ticks_msec() + 35000
+		while backend.disabled and Time.get_ticks_msec() < startup_deadline:
+			await get_tree().create_timer(0.03).timeout
+		check(not backend.disabled, "startup model discovery releases the backend selector")
 		backend.select(0)
 		if chat.has_method("get_ai_credential"):
 			check(str(chat.get_ai_credential()) == OS.get_environment("BINDING_SECRET"), "OpenAI environment credential authorizes its official service")
@@ -56,6 +70,7 @@ func run() -> void:
 	await verify()
 	chat.find_child("ConsultationOnly", true, false).button_pressed = true
 	chat.find_child("ChatInput", true, false).text = "SYNTHETIC_CREDENTIAL_REQUEST"
+	await wait_send_ready()
 	chat.find_child("Send", true, false).pressed.emit()
 	await get_tree().create_timer(0.8).timeout
 	var endpoint := OS.get_environment("BINDING_ENDPOINT")
@@ -80,6 +95,7 @@ func run() -> void:
 	# must not carry the frozen request key to the replacement service.
 	settings.find_child("AllowTools", true, false).button_pressed = true
 	chat.find_child("ChatInput", true, false).text = "SYNTHETIC_CONTINUATION_REQUEST"
+	await wait_send_ready()
 	chat.find_child("Send", true, false).pressed.emit()
 	await get_tree().create_timer(0.15).timeout
 	edit("APIEndpoint", endpoint + "/continuation-other/chat/completions", false)

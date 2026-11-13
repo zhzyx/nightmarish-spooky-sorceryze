@@ -127,11 +127,11 @@ func run():
         dock.set_runtime_field("node", "relative-node-draft")
         dock.get_environment_settings_control().find_child("CLIBridge",true,false).text = "/missing/bridge.js"
         dock.get_environment_settings_control().find_child("CLIEntry",true,false).text = "/missing/codebuddy.js"
-        var backend = dock.get_ai_settings_control().find_child("AIBackend",true,false)
+        var backend = dock.find_child("AIBackend",true,false)
         backend.select(1)
         backend.item_selected.emit(1)
-        dock.get_ai_settings_control().find_child("CLILogin",true,false).pressed.emit()
-        var login_error: String = dock.get_ai_settings_control().find_child("CLILoginStatus",true,false).text
+        dock.find_child("CLILogin",true,false).pressed.emit()
+        var login_error: String = dock.find_child("CLILoginStatus",true,false).text
         if not "Node.js" in login_error or not "Godot 对话桥接脚本" in login_error or not "CodeBuddy CLI 入口" in login_error:
             finish(false,"invalid CodeBuddy login did not report all runtime paths")
             return

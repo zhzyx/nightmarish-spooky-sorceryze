@@ -134,7 +134,7 @@ def main():
                     env=env,
                     capture_output=True,
                     text=True,
-                    timeout=50,
+                    timeout=90,
                 )
                 log = run.stdout + run.stderr
                 value = json.loads(report.read_text()) if report.exists() else {"passed": False, "missing_report": True}

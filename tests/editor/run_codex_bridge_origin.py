@@ -40,7 +40,7 @@ func _initialize():
     probe.call_deferred()
 func probe():
     var dock = root.find_child("AI Chat", true, false)
-    var status = dock.get_ai_settings_control().find_child("ModelStatus", true, false)
+    var status = dock.find_child("ModelStatus", true, false)
     for i in range(150):
         if FileAccess.file_exists(OS.get_environment("ORIGIN_MARKER")) or "CLI 路径无效" in status.text:
             break

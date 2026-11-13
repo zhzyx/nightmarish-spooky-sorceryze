@@ -54,7 +54,7 @@ func _run():
 	if not _check(dock != null, "AI chat dock missing"):
 		return
 	var cli = OS.get_environment("AI_CHAT_TEST_BACKEND") == "cli"
-	var backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
 	backend.select(1 if cli else 0)
 	backend.item_selected.emit(1 if cli else 0)
 	if cli:
@@ -62,10 +62,10 @@ func _run():
 		dock.get_environment_settings_control().find_child("CLINode", true, false).text_changed.emit(dock.get_environment_settings_control().find_child("CLINode", true, false).text)
 		dock.get_environment_settings_control().find_child("CLIBridge", true, false).text = OS.get_environment("AI_CHAT_TEST_BRIDGE")
 		dock.get_environment_settings_control().find_child("CLIEntry", true, false).text = OS.get_environment("AI_CHAT_TEST_ENTRY")
-		dock.get_ai_settings_control().find_child("CLIModel", true, false).text = "mock-model"
+		dock.find_child("CLIModel", true, false).text = "mock-model"
 	else:
 		dock.get_ai_settings_control().find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
-		dock.get_ai_settings_control().find_child("APIModel", true, false).text = "mock-model"
+		dock.find_child("APIModel", true, false).text = "mock-model"
 		dock.get_ai_settings_control().find_child("APIKey", true, false).text = "test-secret"
 	dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = true
 	chat_input = dock.find_child("ChatInput", true, false)
