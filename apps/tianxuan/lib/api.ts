@@ -175,3 +175,38 @@ export async function unshareDoc(id: string, actor: string, userId: string): Pro
     throw new Error(`unshare request failed: ${response.status}`);
   }
 }
+
+export interface ApiIssue {
+  id: string;
+  title: string;
+  status: string;
+  type: string;
+  priority: string;
+  number: number;
+  requirement_id?: string | null;
+}
+
+export async function fetchIssues(actor: string, status?: string): Promise<ApiIssue[]> {
+  const query = status ? `?status=${encodeURIComponent(status)}` : "";
+  const response = await fetch(`${apiBase()}/api/v1/issues${query}`, {
+    headers: { "X-Actor": actor },
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`issues request failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { issues?: ApiIssue[] };
+  return body.issues ?? [];
+}
+
+export async function fetchBoard(actor: string): Promise<Record<string, ApiIssue[]>> {
+  const response = await fetch(`${apiBase()}/api/v1/board`, {
+    headers: { "X-Actor": actor },
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`board request failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { columns?: Record<string, ApiIssue[]> };
+  return body.columns ?? {};
+}
