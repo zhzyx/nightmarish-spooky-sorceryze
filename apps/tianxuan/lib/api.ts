@@ -21,6 +21,10 @@ export async function fetchHealth(signal?: AbortSignal): Promise<ApiHealth> {
   return (await response.json()) as ApiHealth;
 }
 
+export interface ApiDocDetail extends ApiDoc {
+  body_md: string;
+}
+
 export async function fetchDocs(actor: string): Promise<ApiDoc[]> {
   const response = await fetch(`${API_BASE}/api/v1/docs`, {
     headers: { "X-Actor": actor },
@@ -31,4 +35,15 @@ export async function fetchDocs(actor: string): Promise<ApiDoc[]> {
   }
   const body = (await response.json()) as { docs?: ApiDoc[] };
   return body.docs ?? [];
+}
+
+export async function fetchDoc(id: string, actor: string): Promise<ApiDocDetail> {
+  const response = await fetch(`${API_BASE}/api/v1/docs/${encodeURIComponent(id)}`, {
+    headers: { "X-Actor": actor },
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`doc request failed: ${response.status}`);
+  }
+  return (await response.json()) as ApiDocDetail;
 }
