@@ -14,10 +14,20 @@
   "reporting": "customizations/components/tianxuan/agents/wenqu/reporting.json",
   "component": "customizations/components/tianxuan/agents/wenqu/component.json",
   "admission": "customizations/components/tianxuan/agents/wenqu/admission.json",
-  "candidate_digest": "6e50eaf77c3d555c10754bde6193e56d34c6e5d792f5f3388ef2fff9ffa9bcaf",
+  "candidate_digest": "f5a3c422149a6ba9a6ceca8ef5dd10e4f51bce8077d5c6a2d88789ec2abb7c86",
   "host_required_for_execution": true,
   "scope": "authorized_markdown_documents_versions_classification_retrieval_export_and_offline_merge",
-  "state": "candidate_pending_exact_review",
+  "state": "candidate_pending_review",
   "admission_pass": null,
-  "runtime_connected": false
+  "runtime_connected": false,
+  "candidate_files": [
+    "customizations/components/tianxuan/agents/wenqu/AGENT.md",
+    "customizations/components/tianxuan/agents/wenqu/component.json",
+    "customizations/components/tianxuan/agents/wenqu/reporting-binding.template.json",
+    "customizations/components/tianxuan/agents/wenqu/reporting.json",
+    "customizations/components/tianxuan/agents/wenqu/skills/doc-authoring/SKILL.md",
+    "customizations/components/tianxuan/agents/wenqu/skills/doc-authoring/component.json",
+    "customizations/components/tianxuan/agents/wenqu/skills/doc-authoring/reporting-binding.template.json",
+    "customizations/components/tianxuan/agents/wenqu/skills/doc-authoring/reporting.json"
+  ]
 }

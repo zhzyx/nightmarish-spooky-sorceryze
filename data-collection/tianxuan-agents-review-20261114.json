@@ -1,10 +1,12 @@
 {
   "schema_version": 1,
   "kind": "independent_review",
+  "pass": 1,
   "reviewed_at": "2026-11-14",
-  "scope": "tianxuan agent and skill candidates",
-  "candidate_commit": "b7353f0a",
-  "base_commit": "bb6236c7",
+  "reviewed_commit": "b7353f0a",
+  "reviewed_base": "55852676",
+  "remediation_commit": "526ae131",
+  "scope": "first review of tianxuan agent and skill candidates",
   "reviewer": "independent_subagent_review",
   "verdicts": {
     "agent:wenqu": "needs_changes",
@@ -22,12 +24,12 @@
     "no representative task/failure/cancel/recovery evidence at definition level",
     "wenqu doc-authoring omitted request_id from frontmatter"
   ],
-  "digests": {
-    "wenqu": "6e50eaf77c3d555c10754bde6193e56d34c6e5d792f5f3388ef2fff9ffa9bcaf",
-    "duobao": "ffcc54c830b035d3e9e8429d7192921d8a46559aba52775f018b65a274fb8f6e",
-    "sinan-workorders": "54800f5d9d2b6d0a18c91621d6e2af968748d1e42633ff609015e0a8744ef8a8"
+  "digests_after_remediation": {
+    "wenqu": "f5a3c422149a6ba9a6ceca8ef5dd10e4f51bce8077d5c6a2d88789ec2abb7c86",
+    "duobao": "83a0455896f4ec821ea2674f7845c7a38c1dc4f4577692277bc40511dc49c4c2",
+    "sinan-workorders": "e77011ad30006fb4f0537f3881786e40f1e1d2c157a3e4b4b644ee5e9b76d71a"
   },
   "approval": null,
   "review_pass": null,
-  "note": "Independent review record, not an approval. Admission remains pending until a new independent review matches the corrected digests and an authorized approver signs the exact candidate."
+  "note": "Independent review record, not an approval. The first review's blockers were addressed in 526ae131 and reviewed again; admission remains pending."
 }

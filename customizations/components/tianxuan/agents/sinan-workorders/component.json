@@ -1,9 +1,10 @@
 {
-    "kind":  "agent",
-    "id":  "sinan-workorders",
-    "version":  "0.1.0",
-    "entry":  "AGENT.md",
-    "governance_root":  "yuanheng",
-    "state":  "candidate_pending_review",
-    "reporting":  "reporting.json"
+  "kind": "agent",
+  "id": "sinan-workorders",
+  "version": "0.1.0",
+  "entry": "AGENT.md",
+  "governance_root": "yuanheng",
+  "state": "candidate_pending_review",
+  "reporting": "reporting.json",
+  "binding_template": "reporting-binding.template.json"
 }

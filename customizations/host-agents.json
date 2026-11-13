@@ -19,54 +19,6 @@
       "time_based_invocation": false,
       "background_service_deployed": false,
       "scope": "Current authorized host delegates precommit, main delivery, progress reconciliation and corresponding Issue closure; every task still needs actual acceptance and authority."
-    },
-    {
-      "id": "wenqu",
-      "name": "文曲",
-      "version": "0.1.0",
-      "definition": "customizations/components/tianxuan/agents/wenqu/AGENT.md",
-      "component": "customizations/components/tianxuan/agents/wenqu/component.json",
-      "reporting": "customizations/components/tianxuan/agents/wenqu/reporting.json",
-      "governance_root": "yuanheng",
-      "approval": null,
-      "candidate_digest": "6e50eaf77c3d555c10754bde6193e56d34c6e5d792f5f3388ef2fff9ffa9bcaf",
-      "state": "candidate_pending_exact_review",
-      "invocation": "actual_host_event",
-      "time_based_invocation": false,
-      "background_service_deployed": false,
-      "scope": "Tianxuan Markdown documents: create, version, classify, retrieve, export and offline merge; host authority is required for every invocation."
-    },
-    {
-      "id": "duobao",
-      "name": "多宝",
-      "version": "0.1.0",
-      "definition": "customizations/components/tianxuan/agents/duobao/AGENT.md",
-      "component": "customizations/components/tianxuan/agents/duobao/component.json",
-      "reporting": "customizations/components/tianxuan/agents/duobao/reporting.json",
-      "governance_root": "yuanheng",
-      "approval": null,
-      "candidate_digest": "ffcc54c830b035d3e9e8429d7192921d8a46559aba52775f018b65a274fb8f6e",
-      "state": "candidate_pending_exact_review",
-      "invocation": "actual_host_event",
-      "time_based_invocation": false,
-      "background_service_deployed": false,
-      "scope": "Tianxuan repositories: branches, commits, pull requests, review and concurrent merge coordination; reuses open-source Git and never bypasses protection."
-    },
-    {
-      "id": "sinan-workorders",
-      "name": "司南·工单",
-      "version": "0.1.0",
-      "definition": "customizations/components/tianxuan/agents/sinan-workorders/AGENT.md",
-      "component": "customizations/components/tianxuan/agents/sinan-workorders/component.json",
-      "reporting": "customizations/components/tianxuan/agents/sinan-workorders/reporting.json",
-      "governance_root": "yuanheng",
-      "approval": null,
-      "candidate_digest": "54800f5d9d2b6d0a18c91621d6e2af968748d1e42633ff609015e0a8744ef8a8",
-      "state": "candidate_pending_exact_review",
-      "invocation": "actual_host_event",
-      "time_based_invocation": false,
-      "background_service_deployed": false,
-      "scope": "Tianxuan work-order model, legal transitions and event-derived progress; source creation, dispatch, dependencies and acceptance stay with core Sinan and authorized hosts."
     }
   ]
 }

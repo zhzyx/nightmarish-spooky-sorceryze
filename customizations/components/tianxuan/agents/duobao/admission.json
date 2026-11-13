@@ -1,8 +1,8 @@
 {
   "agent_id": "duobao",
   "version": "0.1.0",
-  "candidate_digest": "ffcc54c830b035d3e9e8429d7192921d8a46559aba52775f018b65a274fb8f6e",
-  "state": "pending_independent_admission",
+  "candidate_digest": "83a0455896f4ec821ea2674f7845c7a38c1dc4f4577692277bc40511dc49c4c2",
+  "state": "pending_admission",
   "review": "data-collection/tianxuan-agents-review-20261114.json",
   "approved": false,
   "approver": null,

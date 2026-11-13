@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "independent_review",
+  "pass": 2,
+  "reviewed_at": "2026-11-14",
+  "reviewed_commit": "526ae131",
+  "scope": "second review of tianxuan agent and skill candidates after remediation 1",
+  "reviewer": "independent_subagent_review",
+  "verdicts": {
+    "agent:wenqu": "needs_changes",
+    "agent:duobao": "needs_changes",
+    "agent:sinan-workorders": "needs_changes",
+    "skill:wenqu-doc-authoring": "needs_changes",
+    "skill:duobao-repo-review": "needs_changes",
+    "skill:sinan-work-order-management": "needs_changes"
+  },
+  "blockers": [
+    "candidate digests not reproducible under the framework's ordinal path sort (claimed values matched readdir/case-insensitive order)",
+    "review record bound the remediated digests to the wrong commit and a non-ancestor base",
+    "evidence counts were false (33 server, 147+25 full, 83 gitea) and remediation added no tests",
+    "no cancellation evidence for the candidate",
+    "sinan-workorders agent.json scope still listed dependencies and the cited representative task creates the ticket tree in core",
+    "adding candidates to customizations/host-agents.json changed its hash and would invalidate signed host grants",
+    "skills had no own admission record",
+    "historical unadmitted merge b7353f0a remains in main"
+  ],
+  "digests_claimed_at_review": {
+    "wenqu": "6e50eaf77c3d555c10754bde6193e56d34c6e5d792f5f3388ef2fff9ffa9bcaf",
+    "duobao": "ffcc54c830b035d3e9e8429d7192921d8a46559aba52775f018b65a274fb8f6e",
+    "sinan-workorders": "54800f5d9d2b6d0a18c91621d6e2af968748d1e42633ff609015e0a8744ef8a8"
+  },
+  "digests_recomputed_ordinal": {
+    "wenqu": "fadc5a88ab1487a870f590de6e22ea4ec890bc097e936014ae7f70079a8bef81",
+    "duobao": "2e10f40366415f527f35f4ca20c647d786d554351027174ce6a6106042d7c7b0",
+    "sinan-workorders": "3a770b107f263a0896dc5976d6763a3b8df86ca011521a474c13d2f1585ac1c5"
+  },
+  "approval": null,
+  "review_pass": null,
+  "note": "Independent review record, not an approval. Remediation 2 recomputes digests with the framework's ordinal algorithm, moves registration out of the signed host registry, corrects evidence counts, removes the sinan dependency scope, and adds skill admission records; admission still requires a new review at the new digests and an authorized approver.",
+  "digests_remediation2": {
+    "wenqu": "f5a3c422149a6ba9a6ceca8ef5dd10e4f51bce8077d5c6a2d88789ec2abb7c86",
+    "duobao": "83a0455896f4ec821ea2674f7845c7a38c1dc4f4577692277bc40511dc49c4c2",
+    "sinan-workorders": "e77011ad30006fb4f0537f3881786e40f1e1d2c157a3e4b4b644ee5e9b76d71a"
+  }
+}

@@ -1,8 +1,8 @@
 {
   "agent_id": "wenqu",
   "version": "0.1.0",
-  "candidate_digest": "6e50eaf77c3d555c10754bde6193e56d34c6e5d792f5f3388ef2fff9ffa9bcaf",
-  "state": "pending_independent_admission",
+  "candidate_digest": "f5a3c422149a6ba9a6ceca8ef5dd10e4f51bce8077d5c6a2d88789ec2abb7c86",
+  "state": "pending_admission",
   "review": "data-collection/tianxuan-agents-review-20261114.json",
   "approved": false,
   "approver": null,

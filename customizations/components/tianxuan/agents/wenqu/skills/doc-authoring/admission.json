@@ -1,0 +1,10 @@
+{
+  "skill_id": "wenqu-doc-authoring",
+  "version": "0.1.0",
+  "parent_agent": "wenqu",
+  "state": "parent_scoped_pending",
+  "approved": false,
+  "approver": null,
+  "note": "Skill admission is parent-scoped; pending with the parent agent.",
+  "candidate_digest": "f5a3c422149a6ba9a6ceca8ef5dd10e4f51bce8077d5c6a2d88789ec2abb7c86"
+}
