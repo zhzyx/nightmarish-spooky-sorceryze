@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8f0068a0ade37d6399b143617621439c1cc618a9",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "bound-production-continuation-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b31a22d288a8822b1e3f22e41393cacb191319939861d3f8162b8c28d9fe0475",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1027",
+    "action": "validation",
+    "detection_head": "a57a95537a4c7ae7a126b24f9a66760665374ef5",
+    "context_sha256": "dd965e3a04b30bc372e9c5233129c21175c617449a65875633141558328415ee",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43377757303/artifacts/14016080391",
+    "diagnosis": "Exact PR1033 static, Windows ownership, MSVC compilation and unit tests pass. Runtime interruption/journal cases pass, but governed setup correctly rejects changed godot-host README against old pinned digest before native intake. README is part of the prior independently approved40file source; this release missed its exact runtime policy pin update. Root changes only that approved README digest, retains other9 pins and all fail-closed/path/foundation/mandate checks.",
+    "next_action": "Independent exact reviewed-source release-pin and operational-event review; next signed candidate must pass actual Windows setup/recovery and fullCI/main before issue closure.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T06:27:22.849080+00:00",
+    "attempted": "Actual downloaded runtime process log identifies README pin mismatch. Mechanical precheck finds exactly1 mismatch among10 pins; after narrow literal update all10 match actual installed-source bytes and full-review manifest. Windows PowerShell consumer rerun remains pending; no protection removed or arbitrary workspace pin refreshed.",
+    "repair_owner": "Sail-Li / codex-root, own1024 source and release coupling",
+    "continuable": "Narrow independent review requested; existing platform runtime-setup checks include tampered/missing policy refusal. No unnecessary C++ rebuild for literal PowerShell pin change."
+  },
+  "occurred_at": "2026-11-13T06:32:07.558174+00:00",
+  "sha256": "0aa19be2260e8297dadf5b29a79d80770a2fb97c6e36a3ff43147e69b6355474"
+}

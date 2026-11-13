@@ -788,6 +788,9 @@ void AIChatDock::_poll_history_save() {
 		}
 	}
 	memdelete(job);
+	if (busy && design_batches.has(active_agent) && bool(design_batches[active_agent].get("parent_wait_current", false))) {
+		_gate_parent_completion();
+	}
 	if (!history_save_error && !history_dirty && !acceptance_reviews.is_empty()) {
 		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
 	}
@@ -2225,7 +2228,11 @@ void AIChatDock::_dispatch_queued_message(int p_agent) {
 		queued_messages.push_front(message);
 		queue_paused = true;
 	} else if (design_return) {
-		design_batches.erase(p_agent);
+		if (design_batches[p_agent].has("parent_contract")) {
+			design_batches[p_agent]["state"] = "parent_return";
+		} else {
+			design_batches.erase(p_agent);
+		}
 	}
 	_refresh_message_queue();
 	_queue_history_save();
@@ -2495,6 +2502,10 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 	const Dictionary previous_native_scope = _native_task_scope();
 	session_generation++;
 	task_native_grant.advance(previous_native_scope, _native_task_scope());
+	if (design_parent_starting == active_agent && design_batches.has(active_agent) && design_batches[active_agent].has("parent_contract")) {
+		design_batches[active_agent]["snapshot_id"] = snapshot_id;
+		design_batches[active_agent]["parent_generation"] = int64_t(session_generation);
+	}
 	if (design_parent_starting == active_agent) {
 		// This is a completion event for the already bound requirement, not a
 		// fresh user requirement. Framework/Issue/provenance gates still run.
@@ -2826,7 +2837,8 @@ void AIChatDock::_send_completion_after_receipt() {
 }
 
 void AIChatDock::_request_completed(int p_result, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_body, uint64_t p_generation) {
-	if (!busy || p_generation != request_generation) {
+	if (!busy || p_generation != request_generation || !parent_completion_job.is_empty() ||
+			(design_batches.has(active_agent) && bool(design_batches[active_agent].get("parent_wait_current", false)))) {
 		return;
 	}
 	if (!_record_gonggong("step", "model-" + itos(tool_rounds), p_result == HTTPRequest::RESULT_SUCCESS && p_code >= 200 && p_code < 300 ? "response_received" : "failed") || !_record_gonggong("message", "model_response", "received_metadata_only")) {
@@ -2965,6 +2977,9 @@ void AIChatDock::_response_after_receipt(int p_result, int p_code, const PackedS
 		}
 		messages.push_back(final);
 		if (complete) {
+			if (_gate_parent_completion()) {
+				return;
+			}
 			if (is_preview_turn) {
 				const String source = daqian_preview_source;
 				daqian_preview_source = String();
@@ -5355,7 +5370,8 @@ void AIChatDock::_backend_changed(int p_backend) {
 	_request_model_refresh(2);
 	_project_ai_configuration_changed();
 	_queue_history_save();
-	_append(TTR("Editor"), p_backend == 1 ? String(U"已选择 CodeBuddy 账号。可搜索源码、读写文件并通过 Bash 构建和测试，无需 MCP；文件修改与执行是否需确认取决于自动操作开关。") : String(U"已选择模型 API。切换连接后对话上下文已重置。"));
+	_append(TTR("Editor"), p_backend == 1 ? String(U"已选择 CodeBuddy 账号。可搜索源码、读写文件并通过 Bash 构建和测试，无需 MCP；文件修改与执行是否需确认取决于自动操作开关。") : p_backend == 2 ? String(U"已选择 Codex 账号（CLI）。切换连接后对话上下文已重置。")
+																																																  : String(U"已选择模型 API。切换连接后对话上下文已重置。"));
 }
 
 LineEdit *AIChatDock::_active_model_field() const {
@@ -7877,6 +7893,11 @@ void AIChatDock::_start_process() {
 }
 
 void AIChatDock::_cancel_process() {
+	// Revoke the inner delivery owner before the outer provenance wrapper is
+	// cancelled. Its archived original request remains available for readback.
+	if (pending_delivery_request.has("parent_completion_guard") && !delivery_request_path.is_empty()) {
+		DirAccess::remove_absolute(delivery_request_path);
+	}
 	if (process_id < 0) {
 		return;
 	}
@@ -9762,6 +9783,7 @@ void AIChatDock::_reject_snapshot_restore() {
 }
 
 AIChatDock::~AIChatDock() {
+	_cancel_parent_completion();
 	// Child nodes may already have been destroyed; release only our process/file resources.
 	ai_connection_request = nullptr;
 	_cancel_ai_connection_probe();

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0567b4bd88dcddd9506ae34f83c3f61970121bf4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "bound-production-continuation-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8c7b71d24751e9fc4c68a33354850be4affdfd98d911504e0caf8b0ffdcc364c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/953",
+    "action": "validation",
+    "detection_head": "ad79c25d9cdae8a635fdf74ff957336799903a10",
+    "context_sha256": "518ac0715c3dbbbc236af439e8b55aed3d87e1532c1a8bf2ff1db75a43ff287d",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "bound-native-finalize-diagnostic-v2",
+    "diagnosis": "Native postacceptance delivery exposed a macOS owned-process cleanup incompatibility: the provenance profile rejects setuid /bin/ps with EPERM. Actual retained worker diagnostic confirms failure before the finalizer starts; a local allow-default profile independently reproduces the OS refusal. Root owns this source repair; prior cancellation fix is not final acceptance.",
+    "next_action": "Replace privileged executable inspection with bounded libproc group and explicit zombie-state readback, retain unknown/refusal behavior, verify real protected commands and native delivery before independent review.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T03:30:32.355148+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T05:07:59.595563+00:00",
+  "sha256": "54a8a721a4dff47f35968f7b6d1a61df4728e00c80c6b5eaa702cb80fc990614"
+}

@@ -21,7 +21,8 @@ p.add_argument("--codex", help="Optional executable; default uses an isolated sy
 p.add_argument("--out", type=Path, required=True)
 a = p.parse_args()
 a.node = str(Path(a.node).resolve(strict=True))
-a.codex = str(Path(a.codex).resolve(strict=True))
+if a.codex:
+    a.codex = str(Path(a.codex).resolve(strict=True))
 
 
 requests: list[str] = []
@@ -54,7 +55,6 @@ with tempfile.TemporaryDirectory(prefix="model-picker-") as folder:
     editor = copy_editor(a.godot, root / "bin")
     configuration = root / "bin/editor_data/gonggong/config.json"
     configuration.parent.mkdir(parents=True)
-    configuration.write_text(json.dumps({"schema_version": 1, "runtimes": {"codex": a.codex}}), encoding="utf-8")
     (root / "SConstruct").touch()
     if os.name == "nt":
         # Directory junctions do not require the Windows symbolic-link privilege.
@@ -83,12 +83,14 @@ for line in sys.stdin:
     print(json.dumps({"id": packet["id"], "result": result}), flush=True)
 """,
     )
+    codex = a.codex or str(fixture.resolve(strict=True))
+    configuration.write_text(json.dumps({"schema_version": 1, "runtimes": {"codex": codex}}), encoding="utf-8")
     events = root / "events.txt"
     result = root / "result.json"
     env = dict(
         sanitized_environment(root),
         GONGGONG_NODE=a.node,
-        MODEL_TEST_CODEX=a.codex or str(fixture),
+        MODEL_TEST_CODEX=codex,
         MODEL_TEST_EVENTS=str(events),
         MODEL_TEST_RESULT=str(result),
         MODEL_TEST_ENDPOINT=f"http://127.0.0.1:{server.server_port}/v1",

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2310a0eb1172918347e4e4d5ce7ad0c1fca1bd8f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "bound-production-continuation-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "294cd5fd24bda0a84bf335d4d45c1946eeeefa8f1bb0ec447673a900b5f0d143",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1027",
+    "action": "delivery",
+    "detection_head": "a57a95537a4c7ae7a126b24f9a66760665374ef5",
+    "context_sha256": "dd965e3a04b30bc372e9c5233129c21175c617449a65875633141558328415ee",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/compare/d5a77b1d539a9b92a1b81fc84c4df447dab82a7d..ca0badd8f",
+    "diagnosis": "签发门禁阻止旧基线候选发布；main 已经由 PR1034/1035 更新，四条本任务路径与上游重叠。原已审查候选及五条未提交差异已完整保留，在本任务新分支整合当前 main。唯一文本冲突同时保留上游会话历史保存与本任务 Codex CLI 状态提示。其他工作树未修改。",
+    "next_action": "当前责任者核对整合差异，重建并复验会话模型、取消和完整任务接续相关路径，完成独立增量审查后重新签发。原失败保留，尚不宣称新候选 CI 或 main 验收通过。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T06:44:13.262095+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T06:46:49.113170+00:00",
+  "sha256": "b13be0b01705517df992f348a35d20815d7e29e8f622c62dbedfbbce4ae447f1"
+}

@@ -59,33 +59,52 @@ def _windows_api():
 
 
 def _darwin_group_quiet(pgid):
-    """Darwin killpg returns EPERM for zombie-only groups; libproc hides zombies.
+    """Verify a pinned group is zombie-only without executing setuid /bin/ps.
 
-    The absolute OS ps path queries only numeric group membership and state.
-    The unreaped leader still pins this PGID; an all-zombie snapshot cannot
-    create more children. Missing, malformed or truncated evidence is unknown.
+    Darwin rejects setuid executables inside the native provenance profile.
+    proc_listpids includes zombies; SHORTBSDINFO requires arg=1 to see them.
+    The unreaped leader pins the group. Missing/truncated evidence is unknown.
+    ABI: Apple's sys/proc_info.h; zombie lookup: xnu/bsd/kern/proc_info.c.
     """
-    result = subprocess.run(
-        ["/bin/ps", "-g", str(pgid), "-o", "pid=,pgid=,stat="],
-        stdin=subprocess.DEVNULL,
-        capture_output=True,
-        timeout=2,
-        env={"PATH": "/usr/bin:/bin", "LC_ALL": "C"},
-    )
-    if result.returncode != 0 or not result.stdout or len(result.stdout) > 1024 * 1024:
-        return False
-    found_leader = False
-    for line in result.stdout.splitlines():
-        fields = line.split()
-        if (
-            len(fields) != 3
-            or not fields[0].isdigit()
-            or fields[1] != str(pgid).encode()
-            or not fields[2].startswith(b"Z")
-        ):
+
+    class ShortBSDInfo(ctypes.Structure):
+        _fields_ = [
+            ("pid", ctypes.c_uint32),
+            ("ppid", ctypes.c_uint32),
+            ("pgid", ctypes.c_uint32),
+            ("status", ctypes.c_uint32),
+            ("comm", ctypes.c_char * 16),
+            ("other", ctypes.c_uint32 * 8),
+        ]
+
+    try:
+        library = ctypes.CDLL("/usr/lib/libproc.dylib", use_errno=True)
+        library.proc_listpids.argtypes = [ctypes.c_uint32, ctypes.c_uint32, ctypes.c_void_p, ctypes.c_int]
+        library.proc_listpids.restype = ctypes.c_int
+        library.proc_pidinfo.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_uint64, ctypes.c_void_p, ctypes.c_int]
+        library.proc_pidinfo.restype = ctypes.c_int
+
+        def members_now():
+            pids = (ctypes.c_int * 4096)()
+            size = library.proc_listpids(2, pgid, pids, ctypes.sizeof(pids))  # PROC_PGRP_ONLY
+            if size <= 0 or size >= ctypes.sizeof(pids) or size % ctypes.sizeof(ctypes.c_int):
+                return set()
+            return set(pids[: size // ctypes.sizeof(ctypes.c_int)])
+
+        members = members_now()
+        if pgid not in members:
             return False
-        found_leader |= int(fields[0]) == pgid
-    return found_leader
+        for pid in members:
+            info = ShortBSDInfo()
+            count = library.proc_pidinfo(pid, 13, 1, ctypes.byref(info), ctypes.sizeof(info))
+            if count != ctypes.sizeof(info) or info.pid != pid or info.pgid != pgid or info.status != 5:  # SZOMB
+                return False
+        # A member could fork between enumeration and its zombie readback.
+        # Once all observed members are zombies they cannot fork again; require
+        # the full membership still matches before calling the group quiet.
+        return members_now() == members
+    except (OSError, AttributeError):
+        return False
 
 
 def _pipe_pending(pipe):

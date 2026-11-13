@@ -706,6 +706,19 @@ class AIChatDock : public EditorDock {
 	HashMap<int, Dictionary> acceptance_bridge_results;
 	Timer *acceptance_bridge_timer = nullptr;
 	Dictionary production_integration_job;
+	// Ephemeral completion owner, separate from intake and child acceptance jobs.
+	Dictionary parent_completion_job;
+	HashMap<int, Dictionary> parent_confirmation_sources;
+	HashMap<int, Dictionary> parent_confirmed_designs;
+	Dictionary parent_delivery_arguments;
+	bool parent_delivery_reentry = false;
+	Timer *parent_completion_timer = nullptr;
+	Dictionary _parent_completion_observations(int p_parent);
+	bool _start_parent_completion(int p_parent, const String &p_operation);
+	bool _gate_parent_completion();
+	void _poll_parent_completion();
+	void _cancel_parent_completion();
+	void _finish_parent_completion(const String &p_action);
 	Timer *production_integration_timer = nullptr;
 	HashMap<int, Dictionary> production_integration_plans;
 	void _integrate_production_result(const Dictionary &p_arguments, bool p_confirmed = false);

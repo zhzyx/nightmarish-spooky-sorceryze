@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-233c72bfffa1dd3850f1524ee16a21e6dac892f2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6c794e783b49baa91894484949e8b589476555fb61056be7b68fe76a398519c5",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1022",
+    "action": "dispatch",
+    "detection_head": "5acada24257288ab44134e02adfd7dc64a7f567a",
+    "context_sha256": "b52e6232ab03abf0a7f80767cdeafa8b87cd687b93abf3ff198a615b6a374811",
+    "operator": "Sail-Li",
+    "worker": "codex-current-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Actual spawn_agent task_name /root/sinan_d481f7558cb229f0; collaboration.list_agents running; native request a80ffd7e-6ee6-4520-b640-aee844e44879; authenticated durable source worker ack readback; P/continuation953-audit-recovered.json",
+    "diagnosis": "Root sent normalized workerReceipt instead of raw spawn tool result; adapter correctly preserved reservation and rejected missing raw identity. Source ack bound actual running worker. Initial recovery wrapper incorrectly tested void ack return; durable readback verified success before reporting. No product source defect or repeated launch.",
+    "next_action": "Verify actual original worker terminal and reconcile same reservation; commit exact recovery evidence and close1022 only after accepted recovery; parent978/953 remain open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T02:22:15.264434+00:00",
+    "attempted": "Read actual native worker state, kept malformed immutable response, authenticated openSession source ack, read exact worker receipt, recorded recovery through shared reporter; original audit continues.",
+    "repair_owner": "Sail-Li",
+    "continuable": "Original independent953 source audit is running; root postdelivery evidence closure proceeds independently."
+  },
+  "occurred_at": "2026-11-13T02:27:58.561280+00:00",
+  "sha256": "d4d39a637c5bc6711297353e35f9dcca6dcaf42c71889ca7c2d4ef93185b8b5a"
+}
