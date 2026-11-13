@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "issue": 978,
+  "request_id": "ai-github-integration-refactor-20261112",
+  "path_base": "repository_root",
+  "observed_at": "2026-11-13T02:25:12.770484+00:00",
+  "delivery": {
+    "pr": 1020,
+    "candidate": "09d084e29bedc05ca3aabfc0bb190cad38eaeea9",
+    "signed_head": "00a9b6225bddc7627ec3d79c1aa3df1bc9ab658b",
+    "main": "1c8124dc7e8b63e6aae6aaf1393de14d91e8b392",
+    "tree": "8b37a077455f8cb33b49fe6c9afa89aa2857dada",
+    "actor": "Sail-Li",
+    "remote_tree_and_parents_verified": true,
+    "pr_ci": 43348617852,
+    "main_ci": 43349596873,
+    "both_ci_conclusion": "success",
+    "independent_final_review_sha256": "9acbc12910e35aa90adaa679cd154e0e2533f142be2441c4e6980e70ec8a8051"
+  },
+  "windows_validation": {
+    "native_tests_passed": 1576,
+    "native_assertions_passed": 474766,
+    "native_tests_skipped": 3,
+    "provenance_process_tests_passed": 20,
+    "generation_owned_process_tests_passed": 8,
+    "generation_owned_process_tests_skipped": 1,
+    "runtime_report_sha256": "4e44d450639c5a50fba99f614ad274242a560cb850bb87bb45e1cc32063b2965",
+    "runtime_scope": "Windows-layout simulation with actual PowerShell, host Python/Node/Git via compiled fixture PE launchers, native editor, loopback model and GitHub fixtures",
+    "runtime_uncovered": [
+      "all power-loss cutpoints",
+      "concurrent deployment",
+      "interruption during rollback",
+      "real model/provider and GitHub publication",
+      "hardware or Linux acceptance"
+    ],
+    "native_read_tool_roundtrips": 1,
+    "graph_cross_provider_consultation_steps_skipped": true
+  },
+  "closed_issues": [
+    {
+      "issue": 997,
+      "state": "closed",
+      "state_reason": "completed",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/997#issuecomment-6841808648"
+    },
+    {
+      "issue": 1009,
+      "state": "closed",
+      "state_reason": "completed",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1009#issuecomment-6841811069"
+    },
+    {
+      "issue": 1017,
+      "state": "closed",
+      "state_reason": "completed",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1017#issuecomment-6841813898"
+    },
+    {
+      "issue": 1001,
+      "state": "closed",
+      "state_reason": "completed",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1001#issuecomment-6841816313"
+    },
+    {
+      "issue": 1003,
+      "state": "closed",
+      "state_reason": "completed",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1003#issuecomment-6841819273"
+    },
+    {
+      "issue": 843,
+      "state": "closed",
+      "state_reason": "completed",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/843#issuecomment-6841821675"
+    },
+    {
+      "issue": 850,
+      "state": "closed",
+      "state_reason": "completed",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/850#issuecomment-6841826117"
+    }
+  ],
+  "superseded_prs": [
+    1014,
+    1015,
+    1016,
+    1018,
+    1019
+  ],
+  "cleanup": {
+    "removed": [
+      {
+        "worktree": ".worktrees/receipt-publication-recovery-20261113",
+        "branch": "codex/receipt-publication-recovery-20261113",
+        "head": "4a1c4833d3e3e8c37858352d3215b3f0305beddb",
+        "allocated_bytes_before": 7222644736
+      },
+      {
+        "worktree": ".worktrees/generation-provider-config-independence-20261113",
+        "branch": "codex/generation-provider-config-independence-20261113",
+        "head": "526b4ea8ca12f995f57700f16ae43fcb5e37ee99",
+        "allocated_bytes_before": 6756012032
+      },
+      {
+        "worktree": ".worktrees/installed-host-command-routing-20261113",
+        "branch": "codex/installed-host-command-routing-20261113",
+        "head": "410a4e7cd8192f15fd7c461b60a85d812edd8e10",
+        "allocated_bytes_before": 7217635328
+      },
+      {
+        "worktree": ".worktrees/ai-integration-acceptance-evidence-20261113",
+        "branch": "codex/ai-integration-acceptance-evidence-20261113",
+        "head": "f2326398cf7f24e6c33a78767fb5e973737726e3",
+        "allocated_bytes_before": 479043584
+      }
+    ],
+    "history_bundle_sha256": "d518a9503c29d815905d7b9a9a789856a72704a8e25e45c626033fac1f70956f",
+    "archived_dirty_old997_files": 29,
+    "uncommitted_source_files_deleted": false,
+    "remote_superseded_branches_deleted": 5,
+    "physical_free_space_delta": null,
+    "retained": [
+      "original dirty root and other task resources",
+      "old997 unique pending records and parent notes",
+      "current combined worktree rollback binary and ongoing evidence closeout",
+      "foreign830/838 c074 integration preparations; new main revalidation required after publishing handoff",
+      "original971 worktree and occupancy; effective installations"
+    ]
+  },
+  "late_events": [
+    {
+      "status": "??",
+      "path": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-112767efc5dd41d989b2916c56d9d5ce.json",
+      "sha256": "71258ed2cbca8cf1be40a3b14327eddfacdd2bb55170c6ddc1c032df56985d81",
+      "same_combined_file": false
+    },
+    {
+      "status": "??",
+      "path": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-c0e52aeb1bfa4d91bc656f2f69aa387a.json",
+      "sha256": "03ebc31fca91e782e429e5bfe8dee9d0fbcf62cd192c413f1c6577bd0eb016a8",
+      "same_combined_file": false
+    },
+    {
+      "status": "??",
+      "path": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-c320bb5bbb414c59b473bd69fb1bd408.json",
+      "sha256": "130c4a2ac1093603a65248694f70b57ba5cb79ba0bcc9056ef35bb75fb05b19d",
+      "same_combined_file": false
+    },
+    {
+      "status": "??",
+      "path": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-e72ed7756fca4f4081a3d21589c47ddf.json",
+      "sha256": "69af8bc8bed659a398611be1e1efcd6a24b5dbb1cd647396d98b36327686502f",
+      "same_combined_file": false
+    }
+  ],
+  "fixture_1021": {
+    "state": "recovered_assessed_event_pending_this_delivery",
+    "incident": "a8fffe54fd24a2c93b2a1fe1b760a28abaf47db1878a010d5ce3dd7eab10071d",
+    "initial_node_failure_cases": 5,
+    "recovery_node_passed": 61,
+    "source_changed": false,
+    "assessment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978#issuecomment-6841564211",
+    "event": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-ed50c2e61431c161d8eb1fcd4407489bc9ce30d9.json"
+  },
+  "remaining": {
+    "971": "Original per-session/per-node model choice and Windows access violation require original publisher candidate/receipt; no takeover.",
+    "830_838": "Prepared isolated candidates await explicit original publication handoff; based on c074, current main integration not yet certified.",
+    "948_951": "Original joint production candidate failure and effective consumer acceptance not replaced by current CI.",
+    "706_522_954_414": "Original Windows account/business, device/effective-install and real image/mesh service acceptance remains bounded by original authority and evidence.",
+    "953": "Production task-continuation integration remains incomplete; current independent source audit is running, no background service or forced continuation installed.",
+    "593_561": "User-deferred/stopped scope remains stopped.",
+    "parent978": "Open; no full completion claim."
+  },
+  "receipt_hashes": {
+    "combined-owned-main-commit.json": "fab9f5afa05dcc1f8dd274820f580fd9c6094b086b73efc341816069dfbd5e82",
+    "combined-owned-main-ci-final.json": "fa22567dfbffb2ebb52bbedb47bede7403b8a267ec3aa9d4b7f378b70fedd569",
+    "combined-owned-pr-ci-final.json": "fe2dadcfbd9de2949f0c4ea1f84b82546c995641c784a69b646da6cd7c637aa1",
+    "combined-owned-merged-pr.json": "e921b44dfe5498731963f5d7c19ded61073a4f9768739f807992166ac6d0e485",
+    "combined-owned-superseded-pr-after.json": "7a3129958cecf78fcbab221c2f9dbb7f1a41ce537bb28a4014a07950b3ca89c8",
+    "combined-owned-issues-closed.json": "8f71a47e6660c87b31261ae694795f3d28111a1680a757af14dd0394d758089c",
+    "combined-owned-cleanup-completed.json": "58650541726b55af353039b51373b37e8eb03b20711f9a2968a884c81136d521",
+    "combined-owned-remote-branch-cleanup.json": "d22bc6ab42ed301a16bbd1fe33dd23f1c91ecf52aeba9a67daf414f02b6b7b1f",
+    "combined-owned-parent-closeout-after.json": "f58747a07fbfe3f73045075a420d9d124f4d59a65429260cf0739bb6996c8e5d"
+  },
+  "receipt_hashes_base": "data-collection/receipts/ai-integration-refactor-20261112",
+  "receipt_hashes_resolution_base": "Original shared repository workspace (parent of the real Git common directory), not a task worktree. These are retained host-private ignored files; hashes do not claim the raw receipts are Git-tracked or available in a fresh clone.",
+  "issue_number": 978
+}

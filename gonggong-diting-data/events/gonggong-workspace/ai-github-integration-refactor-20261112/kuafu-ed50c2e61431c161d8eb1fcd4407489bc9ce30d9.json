@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ed50c2e61431c161d8eb1fcd4407489bc9ce30d9",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a8fffe54fd24a2c93b2a1fe1b760a28abaf47db1878a010d5ce3dd7eab10071d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1021",
+    "action": "dependency",
+    "detection_head": "c074db21be98784ff1288f1f2d99c793ba156395",
+    "context_sha256": "8ede69b6d65f3455d2447c6c48893b3f91abdb9c57d655ec9c1d0b1324399cbd",
+    "operator": "Sail-Li",
+    "worker": "codex-current-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Independent final review sha256:9acbc12910e35aa90adaa679cd154e0e2533f142be2441c4e6980e70ec8a8051; source tree8b37a077455f8cb33b49fe6c9afa89aa2857dada; PR1020 exact signed00a9b6225bddc7627ec3d79c1aa3df1bc9ab658b",
+    "diagnosis": "Host test fixture lacked CodeBuddy and ACP dependencies: five Node cases failed before source assertions. Private byte-identical fixture with existing pinned CodeBuddy2.176.0/ACP1.9.0 passed all61; no product source defect established.",
+    "next_action": "Retain failure/recovery evidence and close only local fixture tracker1021 after assessment readback; parent978 remains open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T01:55:11.865491+00:00",
+    "attempted": "Initial failure preserved; isolated dependency recovery and full three-suite Node rerun completed by independent worker /root/sinan_456d2e3cf42fcb93; private fixture removed.",
+    "repair_owner": "Sail-Li",
+    "continuable": "Own candidate delivery continues; Windows CI remains independently pending."
+  },
+  "occurred_at": "2026-11-13T01:59:46.188641+00:00",
+  "sha256": "16f0a81b66913d48354569df60b6b5c34fd3cf6384869bebfef56cd1648d24c8"
+}
