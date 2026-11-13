@@ -31,6 +31,7 @@
 #include "core/object/callable_mp.h"
 #include "core/os/time.h"
 #include "editor/docks/ai_chat_dock.h"
+#include "editor/settings/editor_settings.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/check_box.h"
@@ -475,6 +476,7 @@ void AIChatDock::_save_schedule() {
 	task["backend"] = backend->get_selected();
 	task["model"] = model->get_text();
 	task["cli_model"] = backend->get_selected() == 2 ? codex_model->get_text() : cli_model->get_text();
+	task["reasoning_preferences"] = reasoning_preferences.duplicate(true);
 	task["next_due"] = int64_t(Time::get_singleton()->get_unix_time_from_system()) + period_seconds(task);
 	if (index < 0) {
 		schedule_tasks.push_back(task);
@@ -581,6 +583,10 @@ bool AIChatDock::_enqueue_schedule(int p_index) {
 	session.model = task["model"];
 	session.cli_model = task["cli_model"];
 	session.codex_model = task["cli_model"];
+	const Variant saved_preferences = task.get("reasoning_preferences", EditorSettings::get_singleton()->get_project_metadata("ai_chat", "reasoning_preferences", Dictionary()));
+	if (saved_preferences.get_type() == Variant::DICTIONARY) {
+		session.reasoning_preferences = Dictionary(saved_preferences).duplicate(true);
+	}
 	session.backend = task["backend"];
 	session.message_list = memnew(VBoxContainer);
 	session.message_list->set_name(vformat("ArchivedMessages%d", id));

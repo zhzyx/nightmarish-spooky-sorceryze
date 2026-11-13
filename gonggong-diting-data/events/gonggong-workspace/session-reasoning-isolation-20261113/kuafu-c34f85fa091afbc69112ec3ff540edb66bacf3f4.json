@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c34f85fa091afbc69112ec3ff540edb66bacf3f4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "session-reasoning-isolation-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1038",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "df01b3d9be49978c45c580020ae0a743dccce1c95cbd2e070489078c7d454040",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1038",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1038",
+    "action": "validation",
+    "detection_head": "1ba44e0271e44bf30a43188b2d1a1df4574fa7bf",
+    "context_sha256": "6ff437ed71faac9a6d8c4d2a9abd070f1d08a37eaa78534fc1720be1a1c888df",
+    "operator": "Sail-Li",
+    "worker": "codex-root-session-reasoning-isolation",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Pre-commit local coverage helper expected execution.finished in the minimized public terminal record; assertion stopped staging. Subsequent gate correctly rejected WORKTREE_UNSTAGED before framework admission. Actual terminal record has terminal_verified and exact worker/reservation.",
+    "diagnosis": "Host invocation/metadata assertion error, not source or product regression. Revalidated actual completed list_agents, reconcile receipt, worker identity and reservation key; all17 independently reviewed source bytes unchanged;18 owned files staged.",
+    "next_action": "Stage this actual diagnostic event with candidate, rerun formal gate; commit only on successful gate. No bypass or forged terminal state.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T08:25:46.321491+00:00",
+    "attempted": "Preserved initial formal-gate stderr. Corrected helper to verify published terminal_verified schema and actual reservation rather than omitted event literal.",
+    "repair_owner": "codex-root-current-host",
+    "continuable": "Independent product approval and native evidence unaffected; publication still pending exact gate and CI."
+  },
+  "occurred_at": "2026-11-13T08:27:11.702150+00:00",
+  "sha256": "42aee01ebec1fdcc9dfca1904b3581585180216781e802615c858576ea5adc24"
+}
