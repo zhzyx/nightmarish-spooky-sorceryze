@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Icon } from "@/components/Icon";
 import { LocalGitRepos } from "@/components/LocalGitRepos";
 import { RepoBrowser } from "@/components/RepoBrowser";
+import { RepoPulls } from "@/components/RepoPulls";
 import { fetchRepos, type ApiRepo } from "@/lib/api";
 import { repos } from "@/lib/data";
 
@@ -58,6 +59,8 @@ export default async function ReposPage() {
       </header>
 
       <LocalGitRepos />
+
+      <RepoPulls />
 
       {liveRepos && liveRepos.length > 0 ? (
         <section className="panel" aria-labelledby="live-repos-title">
