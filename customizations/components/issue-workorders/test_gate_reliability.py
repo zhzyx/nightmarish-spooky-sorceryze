@@ -108,7 +108,7 @@ const fs = require('fs');
 const input = JSON.parse(fs.readFileSync(0, 'utf8'));
 const issue = {number:106, html_url:'https://github.com/test/repo/issues/106', state:'open',
  labels:['workspace:gonggong','type:bug','status:in-progress'], body:'<!-- gonggong-request:req -->'};
-const pr = {number:1, body:'GongGong-Issue: #106\nGongGong-Request: req', base:{sha:'base'}};
+const pr = {number:1, state:'open', body:'GongGong-Issue: #106\nGongGong-Request: req', base:{sha:'base'}};
 const files = input.values.map((v,i)=>({filename:v.path,sha:String(i),status:'added'}));
 const github = {paginate:async()=>files,rest:{
  pulls:{get:async()=>({data:pr}),listFiles:()=>{}},issues:{get:async()=>({data:issue})},
@@ -142,6 +142,59 @@ new AsyncFunction('github','context','core',input.script)(github,
                 ["node", "-e", harness], input=json.dumps({"script": script, "values": values}).encode()
             ).decode()
             self.assertEqual(local, remote, evidence)
+
+    def test_ci_reads_current_pr_state_before_checking_issue(self):
+        workflow = Path(__file__).resolve().parents[3] / ".github/workflows/gonggong-issue-gate.yml"
+        script = textwrap.dedent(workflow.read_text(encoding="utf-8").split("          script: |\n", 1)[1])
+        harness = r"""
+const fs = require('fs');
+const input = JSON.parse(fs.readFileSync(0, 'utf8'));
+const calls = [];
+const summaries = [];
+const pr = {number:1, state:input.currentState, merged:input.merged,
+ body:input.invalidBody ? '' : 'GongGong-Issue: #106\nGongGong-Request: req', base:{sha:'base'}};
+const issue = {number:106, state:input.issueState, pull_request:input.fakeIssue,
+ labels:['workspace:gonggong','type:bug',input.label || 'status:in-progress'],
+ body:'<!-- gonggong-request:req -->'};
+const github = {paginate:async()=>{calls.push('files');return [];},rest:{
+ pulls:{get:async()=>{calls.push('pr');return {data:pr};},listFiles:()=>{}},
+ issues:{get:async()=>{calls.push('issue');return {data:issue};}},
+ repos:{getContent:async()=>{calls.push('labels');return {data:{content:
+ Buffer.from('[{"name":"type:bug"}]').toString('base64')}};}}}};
+const core = {warning:()=>{},summary:{addRaw:(s)=>{summaries.push(s);return {write:async()=>{}};}}};
+const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+new AsyncFunction('github','context','core',input.script)(github,
+ {repo:{owner:'test',repo:'repo'},payload:{action:input.action,
+ pull_request:{number:1,state:input.payloadState}}},core)
+ .then(()=>process.stdout.write(JSON.stringify({result:'passed',calls,summaries})))
+ .catch((e)=>process.stdout.write(JSON.stringify({result:'rejected',calls,error:e.message})));
+"""
+        cases = [
+            # A queued edit can execute after closure; neither old payload nor body grants admission.
+            ({"currentState": "closed", "payloadState": "open", "issueState": "closed"}, "passed", ["pr"]),
+            ({"currentState": "closed", "merged": True, "invalidBody": True}, "passed", ["pr"]),
+            ({"currentState": "closed", "action": "reopened", "issueState": "open"}, "passed", ["pr"]),
+            # Conversely, an old closed payload must not skip a PR that has since reopened.
+            ({"payloadState": "closed", "issueState": "closed"}, "rejected", ["pr", "issue"]),
+            ({"action": "reopened", "issueState": "closed"}, "rejected", ["pr", "issue"]),
+            ({"invalidBody": True}, "rejected", ["pr"]),
+            ({"fakeIssue": {}}, "rejected", ["pr", "issue"]),
+            ({"label": "status:done"}, "rejected", ["pr", "issue", "labels"]),
+            ({}, "passed", ["pr", "issue", "labels", "files"]),
+            ({"action": "reopened"}, "passed", ["pr", "issue", "labels", "files"]),
+        ]
+        for overrides, expected, calls in cases:
+            with self.subTest(overrides=overrides):
+                fixture = dict(script=script, currentState="open", issueState="open", action="edited")
+                fixture.update(overrides)
+                result = json.loads(
+                    subprocess.check_output(["node", "-e", harness], input=json.dumps(fixture).encode())
+                )
+                self.assertEqual(result["result"], expected, result)
+                self.assertEqual(result["calls"], calls)
+                if fixture["currentState"] == "closed":
+                    self.assertIn("not applicable", result["summaries"][0])
+                    self.assertIn("not candidate admission", result["summaries"][0])
 
     def test_dirty_worktree_diagnosis(self):
         self.stage("file", {})
