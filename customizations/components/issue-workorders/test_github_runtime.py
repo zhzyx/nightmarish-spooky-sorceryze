@@ -151,6 +151,128 @@ class RuntimeTests(unittest.TestCase):
                 self.assertEqual(raised.exception.http_status, status)
                 self.assertNotIn("private", str(raised.exception))
 
+    def test_pagination_budget_only_covers_recognized_rest_reads(self):
+        read = ["api", "repos/a/b/issues?state=all", "--paginate", "--slurp"]
+        variants = [
+            read,
+            ["api", "--paginate", "--jq", ".[]|.id", "user/repos"],
+            [*read, "--hostname=fixture.invalid", "-X", "GET"],
+            ["api", "https://fixture.invalid/api/v3/issues", "--paginate"],
+        ]
+        for args in variants:
+            with self.subTest(args=args):
+                self.assertEqual(runtime.request_timeout(args), 600)
+                self.assertEqual(runtime.request_timeout(args, 37), 37)
+                self.assertEqual(runtime.request_timeout(args, 600), 600)
+        unsafe = [
+            read + ["-f", "title=new"],
+            read + ["--input", "-"],
+            read + ["-X", "POST"],
+            read + ["--method=DELETE"],
+            read + ["--unknown"],
+            read + ["extra"],
+            ["api", "graphql", "--paginate"],
+            ["api", "https://fixture.invalid/api/graphql", "--paginate"],
+            ["issue", "create", "--body", "--paginate"],
+            ["api", "user"],
+            ["api", "--paginate", "--jq", "user/repos"],
+        ]
+        for args in unsafe:
+            with self.subTest(args=args):
+                self.assertEqual(runtime.request_timeout(args), 120)
+        self.assertEqual(runtime.request_timeout(read, input_value="{}"), 120)
+        for timeout in (0, -1, True, float("inf"), float("nan"), "600"):
+            with self.assertRaises(runtime.GitHubCommandError):
+                runtime.request_timeout(read, timeout)
+
+    @unittest.skipIf(os.name == "nt", "POSIX synthetic executable")
+    def test_slow_complete_read_survives_single_request_budget_and_stalled_child_is_reaped(self):
+        path = self.executable(
+            self.root / "pager",
+            code="""import json,os,sys,time
+from pathlib import Path
+Path('child.pid').write_text(str(os.getpid()))
+for page in range(11): time.sleep(0.025)
+print(json.dumps([[{'id': i}] for i in range(11)]))
+""",
+        )
+        env = dict(self.env, GONGGONG_GH=str(path))
+        args = ("api", "repos/a/b/issues", "--paginate", "--slurp")
+        with patch.object(runtime, "DEFAULT_TIMEOUT", 0.1), patch.object(runtime, "PAGINATION_TIMEOUT", 2):
+            self.assertEqual(len(json.loads(runtime.run_gh(*args, env=env, cwd=self.root))), 11)
+            for command in (args, ("issue", "create")):
+                with self.assertRaisesRegex(runtime.GitHubCommandError, "GITHUB_TIMEOUT"):
+                    runtime.run_gh(*command, env=env, cwd=self.root, timeout=0.1)
+                pid = int((self.root / "child.pid").read_text())
+                with self.assertRaises(ProcessLookupError):
+                    os.kill(pid, 0)
+
+    def test_native_page_shapes_errors_and_deadlines_are_not_reimplemented(self):
+        path = self.executable(self.root / "pager")
+        env = dict(self.env, GONGGONG_GH=str(path))
+        for output, suffix in (
+            ("[[1],[2]]", ["--slurp"]),
+            ('[{"jobs":[]},{"jobs":[1]}]', ["--slurp"]),
+            ("\n37\n", ["--jq", ".[]|.id"]),
+        ):
+            args = ["api", "fixture", "--paginate", *suffix]
+            with patch.object(
+                runtime.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, output, "")
+            ) as run:
+                self.assertEqual(runtime.run_gh(*args, env=env), output.strip())
+                run.assert_called_once()
+                self.assertEqual(run.call_args.args[0], [str(path), *args])
+                self.assertEqual(run.call_args.kwargs["timeout"], 600)
+                self.assertEqual(run.call_args.kwargs["env"], env)
+        failures = [
+            subprocess.TimeoutExpired("fixture", 600, output="partial"),
+            subprocess.CompletedProcess([], 1, "partial", "HTTP 403"),
+            subprocess.CompletedProcess([], 1, "partial", "EOF"),
+        ]
+        for failure in failures:
+            kwargs = {"side_effect": failure} if isinstance(failure, Exception) else {"return_value": failure}
+            with patch.object(runtime.subprocess, "run", **kwargs) as run:
+                with self.assertRaises(runtime.GitHubCommandError):
+                    runtime.run_gh("api", "fixture", "--paginate", env=env, timeout=23)
+                run.assert_called_once()
+                self.assertEqual(run.call_args.kwargs["timeout"], 23)
+
+    def test_full_scan_must_succeed_before_issue_creation(self):
+        settings = {"repository": "a/b"}
+        doc = self.root / "design-docs/test.md"
+        doc.parent.mkdir()
+        doc.write_text("fixture")
+        late = {"body": "<!-- gonggong-request:fixture-id -->", "html_url": "https://github.com/a/b/issues/1"}
+        complete = [[] for _ in range(10)] + [[late]]
+        for result in (
+            runtime.GitHubCommandError(reason="GITHUB_TIMEOUT: fixture"),
+            "[broken",
+            json.dumps(complete + [[late]]),
+            json.dumps(complete),
+        ):
+
+            def gh(*args, **kwargs):
+                if args == ("api", "user"):
+                    return '{"login":"fixture"}'
+                self.assertEqual(args, ("api", "repos/a/b/issues?state=all&per_page=100", "--paginate", "--slurp"))
+                if isinstance(result, Exception):
+                    raise result
+                return result
+
+            with (
+                patch.object(work_items, "config", return_value=(settings, [{"name": "type:bug"}])),
+                patch.object(work_items, "gh", side_effect=gh) as api,
+            ):
+                if result == json.dumps(complete):
+                    value = work_items.issue(
+                        self.root, "design-docs/test.md", "fixture", "bug", "fixture-id", apply=True
+                    )
+                    self.assertEqual(value["state"], "existing")
+                else:
+                    with self.assertRaises(ValueError):
+                        work_items.issue(self.root, "design-docs/test.md", "fixture", "bug", "fixture-id", apply=True)
+                self.assertEqual(api.call_count, 2)
+
     @unittest.skipIf(os.name == "nt", "POSIX synthetic executable")
     def test_read_graphql_and_write_use_same_cli_and_preserve_input(self):
         path = self.executable(

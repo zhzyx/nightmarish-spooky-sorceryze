@@ -12,6 +12,8 @@ Windows 推荐从任务隔离工作树执行 `./tools/run_issue_gate.ps1 -Issue 
 
 Python 宿主的 GitHub CLI 解析与传输统一位于本组件 `github_runtime.py`。优先级为显式 `GONGGONG_GH`、实际安装根 `project/runtime/gh/bin/`、调用环境的 PATH、当前平台的固定安装位置。安装根来自助手文件本身；工单仓库、候选 `source_root` 与用户打开的项目只提供数据，不成为工具搜索根。显式值为空、文件缺失或不可执行时返回 `GITHUB_RUNTIME`，不改选另一 CLI；配置相对路径以调用进程 cwd 解析。解析不缓存、不修改环境或登录账号，安装后下一次调用立即可见。桥接保留 `find_gh` 的可用性探测接口，实际认证探测保留运行、网络与超时错误，不把这些错误写成未登录。
 
+共享传输对明确的只读 REST `api --paginate` 使用600秒整次默认上限，普通命令仍为120秒。显式 timeout 始终覆盖整条命令，不按页重置；GraphQL、带字段/输入的请求及无法识别的参数仍走普通边界。分页继续由单个原生 gh 进程处理，保持认证、Link、对象页与 jq 语义，只有成功终态才返回完整输出；超时或失败不得当成空列表，也不自动重试写入。JS桥读取Python提供的预算和输出限制，调用方显式 timeoutMs 可取1至600000毫秒；默认请求由Python分类。桥响应空间为64MiB，使用UTF-8 JSON，超过限制明确失败且不返回部分值。该限制不是无限增长保证，较大的数据应使用范围更明确的只读查询。
+
 `work_items.gh` 同时支持 argv 与 `input_value`，工单读写、签发 GraphQL、夸父写入及候选激活沿用此入口。Git 凭据助手使用同一解析结果并按 Git shell 规则引用路径，不写全局 Git 配置。阎罗在当前实例绑定已解析的 CLI，并把新助手纳入 `trusted_files`；旧 grant 清单缺项时拒绝，需要按实际候选重新核验和签发，不能改写历史批准。常驻门禁发现已加载的工单或 GitHub 助手字节变化时要求重启会话。边界与隔离验证见 [#989 设计](../../../design-docs/github-cli-runtime-unification-989.md)。
 
 交付分别记录 commit SHA、push 回执、精确候选 CI、main 接收和回读、Issue 状态。每条命令失败立即保留该阶段，不让后续成功覆盖退出码。push 成功但 fetch/readback 失败标记 `published_readback_pending`，恢复先按 SHA 回读远端，不重复提交/推送。已有阎罗 journal 按相同原则续接；不改写批准定义，不新增后台发布器。
