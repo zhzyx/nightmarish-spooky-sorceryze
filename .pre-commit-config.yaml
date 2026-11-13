@@ -83,6 +83,7 @@ repos:
       - id: codespell
         exclude: ^tools/maliang_hunyuan/HUNYUAN-NOTICE$
         additional_dependencies: [tomli]
+        args: ["--ignore-words-list=ENXT"]
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.37.4
