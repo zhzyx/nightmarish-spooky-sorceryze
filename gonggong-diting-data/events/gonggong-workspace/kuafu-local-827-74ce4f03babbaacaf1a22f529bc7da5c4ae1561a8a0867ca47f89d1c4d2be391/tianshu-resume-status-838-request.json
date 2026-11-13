@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "tianshu-resume-status-838-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-local-827-74ce4f03babbaacaf1a22f529bc7da5c4ae1561a8a0867ca47f89d1c4d2be391",
+  "kind": "request",
+  "occurred_at": "2026-11-11T21:40:00.660214+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/838",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Manual bound native chat recovers exact Issue status rejection through existing explicit Start and retry guide",
+    "authorization_ref": "User reported blocked sending and authorized continuing original model task",
+    "design": "design-docs/tianshu-resume-status-838.md",
+    "validation": "data-collection/tianshu-resume-status-838.json",
+    "usage": null,
+    "usage_unknown_reason": "Actual model token/cost usage not collected"
+  },
+  "evidence_refs": [],
+  "sha256": "27348d0f94ea20005856dbfc13dfb790d2f713e7cfe6cbea189b79da927117de"
+}

@@ -642,6 +642,25 @@ void AIChatDock::_poll_gonggong_context() {
 		if (missing.size() > 0 && _start_igniter(missing)) {
 			return; // Environment gaps enter the local configuration igniter, not "blocked".
 		}
+		const int64_t bound_issue = String(_work_order_binding("issue_number")).to_int();
+		const String bound_request = _work_order_binding("request_id");
+		if (AIChatIssueGuide::is_status_error(error) && AIChatIssueGuide::is_bound(bound_issue, bound_request) &&
+				!scheduled_agents.has(active_agent) && !sub_agents.has(active_agent) && gonggong_recovered_result.is_empty() &&
+				!restoring_command_offer && command_recovery_reporting.is_empty() && !bool(snapshot_state.get("host_generated_turn", false)) &&
+				!last_user_content(messages).strip_edges().is_empty()) {
+			// Preserve the binding and original message. Only a later explicit Start
+			// reply may run issue-start; every retry still passes the normal gate.
+			_cancel_issue_guide(String());
+			issue_guide_fields["issue_number"] = bound_issue;
+			issue_guide_fields["request_id"] = bound_request;
+			issue_guide_outcome = last_user_content(messages);
+			issue_guide_state = bound_request.begins_with("daqian-direct-") ? "await_direct_status" : "await_status";
+			set_meta("gonggong_status", "issue_guide");
+			_append(TTR("Error"), String(U"GongGong 入口校验未通过：") + error);
+			_issue_guide_prompt();
+			_set_busy(false);
+			return;
+		}
 		if (issue_guide_state == "retrying" && _direct_daqian_task()) {
 			set_meta("gonggong_status", "blocked");
 			issue_guide_state = "agent_error";
@@ -887,6 +906,10 @@ void AIChatDock::_issue_guide_prompt() {
 		} else if (!bool(issue_guide_fields.get("gh_authenticated", false))) {
 			text += "\n\n" + AIChatIssueGuide::gh_login_text(issue_guide_fields.get("gh_login_command", ""), U"确认");
 		}
+	} else if (issue_guide_state == "await_direct_status") {
+		text = vformat(U"天枢工单 #%d（`%s`）当前状态不允许发送。请在天枢工单详情中刷新状态，核对当前账号和工单版本，再确认开始；若仍需答复或决策，请先完成对应事项。\n\n"
+					   U"完成后回复 `已更新` 或 `重试`，编辑器将用原消息重新校验原工单；回复 `取消` 退出。",
+				int64_t(issue_guide_fields.get("issue_number", 0)), String(issue_guide_fields.get("request_id", "")));
 	} else if (issue_guide_state == "await_status") {
 		text = vformat(U"已绑定工单 #%d（`%s`）。门禁要求工单为 `status:in-progress` 或 `status:in-review`，且带 `workspace:gonggong` 标签；新工单默认为 `status:needs-decision`，是否开工需人工决定。\n\n"
 					   U"- 确认开工：回复 `开始`，编辑器将把状态从待判断/计划中改为 `status:in-progress`，再用原消息继续\n"
@@ -939,7 +962,18 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 		return;
 	}
 	if (issue_guide_state == "retrying") {
-		issue_guide_state = "await_status"; // The retry ended before reaching intake.
+		// A retry can fail before launching intake. Preserve its confirmation path.
+		issue_guide_state = String(issue_guide_fields.get("request_id", "")).begins_with("daqian-direct-") ? "await_direct_status" : "await_status";
+	}
+	if (issue_guide_state == "await_direct_status") {
+		// Direct intake owns actor/revision-bound Start. A generic reply cannot
+		// replace that confirmation, or rebind the paused direct task.
+		if (AIChatIssueGuide::is_retry(p_text)) {
+			_issue_guide_retry();
+		} else {
+			_issue_guide_prompt();
+		}
+		return;
 	}
 	int64_t number = 0;
 	String request_id;

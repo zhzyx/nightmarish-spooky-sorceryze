@@ -36,6 +36,81 @@ func _wait_shown(dock, needle, seconds = 20.0):
 	return false
 
 func _run_issue_guide(dock, mode):
+	if mode.begins_with("issue_guide_status"):
+		var direct_status = mode.begins_with("issue_guide_status_direct")
+		var prompt = "请在天枢工单详情中刷新状态" if direct_status else "确认开工：回复"
+		if not await _wait_shown(dock, prompt):
+			return false
+		if dock.get_meta("gonggong_status", "") != "issue_guide":
+			return false
+		await create_timer(0.1).timeout
+		# Retry re-reads the same rejected Issue; it is not permission to start.
+		var fixture = OS.get_environment("GONGGONG_TEST_WORKSPACE").path_join("fixtures")
+		var before_retry = JSON.parse_string(FileAccess.get_file_as_string(fixture.path_join("gh-state.json")))
+		DirAccess.copy_absolute(fixture.path_join("gh-state.json"), fixture.path_join("before-retry.json"))
+		_reply(dock, "已更新")
+		var reread = false
+		for attempt in range(400):
+			await create_timer(0.05).timeout
+			var state = JSON.parse_string(FileAccess.get_file_as_string(fixture.path_join("gh-state.json")))
+			if state != null and state.calls.size() > before_retry.calls.size() and dock.get_meta("gonggong_status", "") == "issue_guide" and dock.find_child("Send", true, false).text == "发送":
+				reread = true
+				break
+		if not reread:
+			push_error("Retry did not re-read the same rejected Issue")
+			return false
+		DirAccess.copy_absolute(fixture.path_join("gh-state.json"), fixture.path_join("before-start.json"))
+		if _shown(dock, "GONGGONG_FIXTURE_REPLY"):
+			push_error("Rejected status reached the model before explicit Start")
+			return false
+		if direct_status:
+			if mode == "issue_guide_status_direct_retry_failure":
+				# Fault only this private editor's cache, before the intake child starts.
+				var cache = EditorInterface.get_editor_paths().get_cache_dir()
+				var private_root = OS.get_environment("GONGGONG_TEST_WORKSPACE").replace("\\", "/")
+				if not cache.begins_with(private_root + "/"):
+					return false
+				var saved_cache = cache + ".status-recovery-test"
+				if DirAccess.rename_absolute(cache, saved_cache) != OK:
+					return false
+				var blocked_cache = FileAccess.open(cache, FileAccess.WRITE)
+				if blocked_cache == null:
+					DirAccess.rename_absolute(saved_cache, cache)
+					return false
+				blocked_cache.store_string("isolated request-write failure")
+				blocked_cache.close()
+				_reply(dock, "重试")
+				var failed_before_launch = await _wait_shown(dock, "无法保存 GongGong 校验请求")
+				DirAccess.remove_absolute(cache)
+				var restored = DirAccess.rename_absolute(saved_cache, cache)
+				if not failed_before_launch or restored != OK:
+					return false
+			# Neither generic Start nor a new binding can replace the verified board confirmation.
+			_reply(dock, "开始")
+			_reply(dock, "#43 other-task")
+			if _shown(dock, "确认开工：回复") or _shown(dock, "请重新核对当前账号、工单来源及状态"):
+				return false
+			var calls_before = JSON.parse_string(FileAccess.get_file_as_string(fixture.path_join("gh-state.json"))).calls.size()
+			_reply(dock, "重试")
+			var retry_complete = false
+			for attempt in range(400):
+				await create_timer(0.05).timeout
+				var state = JSON.parse_string(FileAccess.get_file_as_string(fixture.path_join("gh-state.json")))
+				if state.calls.size() > calls_before and dock.get_meta("gonggong_status", "") == "issue_guide" and dock.find_child("Send", true, false).text == "发送":
+					retry_complete = true
+					break
+			if not retry_complete:
+				return false
+			_reply(dock, "取消")
+			return _shown(dock, "已退出工单引导") and _shown(dock, "Isolated GongGong gate validation")
+		_reply(dock, "开始")
+		if not await _wait_shown(dock, "GONGGONG_FIXTURE_REPLY", 40.0):
+			return false
+		for attempt in range(200):
+			if dock.get_meta("gonggong_reporting", "") == "recorded_file":
+				return true
+			await create_timer(0.05).timeout
+		return false
 	# Unbound send must stay in the conversation, without any model request.
 	if not await _wait_shown(dock, "绑定本仓库的真实工单"):
 		return false
@@ -98,6 +173,19 @@ func _run():
 	if not mode.begins_with("issue_guide"):
 		settings.set_setting("gonggong/issue_number", "6")
 		settings.set_setting("gonggong/request_id", "isolated-gate")
+	if mode.begins_with("issue_guide_status"):
+		dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = false
+		# Private account fixture: exercise the real workbench-bound manual send.
+		var workspace = OS.get_environment("GONGGONG_TEST_WORKSPACE")
+		settings.set_project_metadata("daqian_access", workspace.sha256_text(), {"actor": {
+			"repo_id": "fixture-repo", "user_id": "fixture-user", "repo": "test/repo"
+		}})
+		var request_id = "daqian-direct-0123456789abcdef0123" if mode.begins_with("issue_guide_status_direct") else "guide-e2e-1"
+		var error = dock.open_daqian_chat("https://github.com/test/repo/issues/42", 42, request_id, "", false)
+		if not error.is_empty():
+			push_error(error)
+			quit(1)
+			return
 	if not mode.begins_with("recovery"):
 		dock.find_child("ChatInput", true, false).text = "Isolated GongGong gate validation"
 		dock.find_child("Send", true, false).pressed.emit()

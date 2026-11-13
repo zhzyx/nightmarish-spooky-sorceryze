@@ -1,0 +1,280 @@
+{
+  "schema_version": 1,
+  "issue_number": 838,
+  "request_id": "kuafu-local-827-74ce4f03babbaacaf1a22f529bc7da5c4ae1561a8a0867ca47f89d1c4d2be391",
+  "recorded_at": "2026-11-13T09:33:24.608085+00:00",
+  "resolution_base": "repository root",
+  "authority": "Current user explicitly transferred838 delivery to this Codex session; original readback retained privately",
+  "state": "current_main_integrated_local_validation_passed_pending_final_review_and_delivery",
+  "base_main": "e9684f34cfc4fded923d43f4469d32a0096a8af3",
+  "original_pr": 847,
+  "original_source": "f5e2743d94f132e546166b562e0b7f828b1f7705",
+  "isolated_review_base": "c074db21be98784ff1288f1f2d99c793ba156395",
+  "prior_review_sha256": "42ec98e062c10495ebf984e78007db52bb8b5e543242935c32cbb63e5f6664b8",
+  "integration": "Reviewed7-file patch applied cleanly with git three-way merge; current main production continuation/receipt and model-control location changes retained. Current838 sourcebase is latest main; old review reused only for unchanged contributions.",
+  "source_sha256": {
+    "editor/docks/ai_chat_gonggong.cpp": "841903c3c9292986081623f9be47cb4824b37da969e24a33bd881da3a6cd52ea",
+    "editor/docks/ai_chat_issue_guide.h": "f1ffd20ed987c009fb28e2ada51659ca6170a3c6c3c00c75e8290ce87eb8f544",
+    "tests/editor/test_ai_chat_tools.cpp": "ec87ae0e23aae4d84d257fd547c8621a1354939bcf4758b4bfc43b463cb6bae3",
+    "tests/editor/gonggong_chat_gate.gd": "fc2fb1701068ecd427f9a98fda210882c57edc2a45dedbfca0976d97ea00fcb0",
+    "tests/editor/run_gonggong_chat_gate.py": "68ca25a72bcf8b8bc693f54c1ef7a921c86d8efb4b667aee656afa420afa92cf",
+    "customizations/components/godot-host/bridge.py": "d965db0d2da874291e60404d33b31bb92b8998192956fe5038ca26b5c816e7d6",
+    "customizations/components/godot-host/test_bridge.py": "2a6a530870ed1a2fa7232515d5959e228b14f60821c012db4d0be76ba7c29173",
+    "editor/docks/ai_chat_dock.cpp": "b92d17508fcb99e5f6965e09b7906831e46f1d482a265c3d2d0e4d7e7993fbc6",
+    "tests/editor/run_native_acceptance.py": "58000a55a884ffab5ff72eea76b2a9dc7648d7140c0c7026efbf11040ed408ba"
+  },
+  "binary_sha256": "68cb8841eaf0632c6c5ed6c9ca21a91c7af63e933ffd74968e04d840dd878fd1",
+  "main_changes_since_previous_review": [
+    "editor/docks/ai_chat_gonggong.cpp",
+    "customizations/components/godot-host/bridge.py",
+    "customizations/components/godot-host/test_bridge.py",
+    "tests/editor/gonggong_chat_gate.gd"
+  ],
+  "native_tests": [
+    {
+      "mode": "parent-status-initial",
+      "exit_code": 0,
+      "log": "issue838-fixed-parent-status-initial.log",
+      "sha256": "75cba451a25b894d3cd976f07d1ea1b12277396967185f1ee7daac15feee8396"
+    },
+    {
+      "mode": "parent-status-return",
+      "exit_code": 0,
+      "log": "issue838-fixed-parent-status-return.log",
+      "sha256": "949ec2517d7b096e91e9e0d40129231dd38904d3278c999ed807fd641a11bce7"
+    },
+    {
+      "mode": "parent-completion",
+      "exit_code": 0,
+      "log": "issue838-fixed-parent-completion.log",
+      "sha256": "52afb2caf40c818e74d00c9538e44207cbe9bc2e2dc174d1728f5fbd889a3b13"
+    },
+    {
+      "mode": "issue_guide_status",
+      "exit_code": 0,
+      "log": "issue838-fixed-issue_guide_status.log",
+      "sha256": "0f71d9aa8d8b54c268263d93ec253ae9ee7494faa2e2663aa2d65f34d13dad54"
+    },
+    {
+      "mode": "issue_guide_status_direct",
+      "exit_code": 0,
+      "log": "issue838-fixed-issue_guide_status_direct.log",
+      "sha256": "0a4f5a3ea82aff4662ff092ced6de79f6e5724e17610a305d0aff208f7a9a406"
+    },
+    {
+      "mode": "issue_guide_status_direct_retry_failure",
+      "exit_code": 0,
+      "log": "issue838-fixed-issue_guide_status_direct_retry_failure.log",
+      "sha256": "64f0abbc3f24eee5317c9f45e69c46a5d8f5fe431ed8ca64d60d6b369e3df117"
+    },
+    {
+      "mode": "rejected",
+      "exit_code": 0,
+      "log": "issue838-fixed-rejected.log",
+      "sha256": "c0f3abfb7fc76b656ae357701313010c1bca4eec96ac2e892f5b9ed3ccd1be54"
+    },
+    {
+      "mode": "recovery_rejected",
+      "exit_code": 0,
+      "log": "issue838-fixed-recovery_rejected.log",
+      "sha256": "a36eac75eb2b4bb8a8cc5e06d82e0d3a3da7c4d9da7e83d60f9e3048b1f2cf57"
+    },
+    {
+      "mode": "cancel",
+      "exit_code": 0,
+      "log": "issue838-fixed-cancel.log",
+      "sha256": "da688a170800d75f80e46b630003aeac7ebf184d9dd50034839afc5a07c62863"
+    }
+  ],
+  "units": {
+    "native_issue_guide_cases": 4,
+    "native_assertions": 74,
+    "bridge_cases": 49,
+    "result": "passed",
+    "native_evidence": "Repeated4cases74assertions on final binary; bridge49 reused because bridge/test bytes unchanged after initial integration"
+  },
+  "old_workers": "Both original838 native workers have retained terminal_verified and released_after_terminal_verification receipts; original reservation files are history, not unverified live ownership. User explicitly handed off publisher responsibility.",
+  "coordination971": "Issue971 CLOSED/COMPLETED at2026-11-13T06:45:25Z; its delivered changes already in base main. Historical coordination hold not treated as current blocker.",
+  "cleanup": {
+    "six_private_native_runs_exited_successfully": true,
+    "owned_home_removed": true,
+    "observable_test_processes_remaining": 0,
+    "current_operational_checkout_retained": true,
+    "previous_validated1038_binary_and_ui_retained_for_rollback": true,
+    "original_preparation_and_publisher_worktrees_preserved": true,
+    "effective_installation_changed": false,
+    "final_nine_native_runs_exited_successfully": true
+  },
+  "limits": [
+    "Native behavior tested on macOS arm64 with controlled loopback model and GitHub fixtures; no real model inference or business Issue mutation.",
+    "Windows exact new candidate CI pending; old PR847 success not substituted.",
+    "Original827 full production graph/preview acceptance stays with original responsibility; no closure of827/978 implied.",
+    "Current tests route direct-prefix status recovery to existing account/revision-confirmed board Start; this does not prove real-account board completion or installation consumption.",
+    "Retained original diagnostics are historical; no global zero-error/no-leak claim."
+  ],
+  "private_receipt_resolution_base": "Repository root data-collection/receipts/ai-integration-refactor-20261112",
+  "private_receipts": [
+    {
+      "path": "issue838-handoff-readback.json",
+      "sha256": "f0f9de162957fa6b5029deab3c11955b409a0e83ab8ae27cb98bcc47a28a5ea6"
+    },
+    {
+      "path": "issue838-handoff-intake.json",
+      "sha256": "02beee62320620bdc8abacd89230f3d2627771ab41deb682f63073d3dc9ecc66"
+    },
+    {
+      "path": "issue838-user-handoff-accepted.json",
+      "sha256": "8fd65bc57ae73e4cbf229b0cf01c7f738a251b2331c3654a86a2e52bcf30917d"
+    },
+    {
+      "path": "issue838-native-reservation-history.json",
+      "sha256": "c039602b1ef5ea97cd3c6a140599797d24f77cc4fe82fe7d76b057611b0c9c1b"
+    },
+    {
+      "path": "issue838-main971-coordination-readback.json",
+      "sha256": "5a85aef2ceecb6098219d27206d49fdf18351a0ee8d69ba3146ad3cbd8d21769"
+    },
+    {
+      "path": "issue838-current-main-source-overlap.json",
+      "sha256": "039155725cf4392d7c0962ea16d692df289b95a8aa5684be6fb5fb2e528a7849"
+    },
+    {
+      "path": "issue838-current-main-apply.log",
+      "sha256": "37a334327630829d411439b0ca5807bdf7c621782e68a7b1bdec78d1bae7a32e"
+    },
+    {
+      "path": "issue838-historical-source-transfer.json",
+      "sha256": "67584cd0cf973890b0e4117b32dcaefca7baadea596867b4606ea8c73d374758"
+    },
+    {
+      "path": "issue838-main-build.log",
+      "sha256": "9491ed177845f0eab84c20add326b107627df04e2b8d31e14b82a63f154e91e2"
+    },
+    {
+      "path": "issue838-main-bridge-tests.log",
+      "sha256": "742719dfc7d1d4515b4fcd45ef6f673533af0cca19cb235c9cda4542730485e4"
+    },
+    {
+      "path": "issue838-current-native-units.log",
+      "sha256": "75dab3e2732853b0edf56cb9e68d684488112a021a94e96b00364ff7535c53d4"
+    },
+    {
+      "path": "issue838-current-native-runs.json",
+      "sha256": "2c38b4dffede70e28b6bd052b7a6768db2174defd69f109f84852938ebb5b977"
+    },
+    {
+      "path": "issue838-native-cleanup.json",
+      "sha256": "866de93218408c08771b253cb42cb2cb92a36d99c1d439a7b6fe13e3d4720aff"
+    },
+    {
+      "path": "issue838-current-native.py",
+      "sha256": "1776de94c1d88e542965d105b2c0874cea990ff9416c9b4bb7d0519c5c02f245"
+    },
+    {
+      "path": "issue838-parent-initial-baseline.json",
+      "sha256": "7619bacf5d46ce13e85090c65cd2d330fe85e75c9dafa399033c094211b428f8"
+    },
+    {
+      "path": "issue838-parent-return-baseline.json",
+      "sha256": "95e2fc2755003a427fbd87b56d83f2307ce3199d3f01171e7ba41eee03a9cb80"
+    },
+    {
+      "path": "issue838-fixed-parent-status-initial.json",
+      "sha256": "34b229a47bcd51e40552c4e9bdd92274be502ca33d9e37243607f3287a2a4f9d"
+    },
+    {
+      "path": "issue838-fixed-parent-status-return.json",
+      "sha256": "bad21a7fe333f56f9519d012978bcf376717df8c7125c41116f46dddf222fb1a"
+    },
+    {
+      "path": "issue838-fixed-parent-completion.json",
+      "sha256": "304d44c5ed74fc6500a27defe275ff6af51a93bf4416d0bf5667ed907c16c3dc"
+    },
+    {
+      "path": "issue838-fixed-native-runs.json",
+      "sha256": "24b970a245fa72c11ff09e2cb7bbff99810bec41e07a57d5f27310fed65f6e6b"
+    },
+    {
+      "path": "issue838-fixed-native-units.log",
+      "sha256": "75dab3e2732853b0edf56cb9e68d684488112a021a94e96b00364ff7535c53d4"
+    },
+    {
+      "path": "issue838-parent-status-build.log",
+      "sha256": "48430bb6a47be3df311e6e7904b1a2865917a841ec61395fd456fe5ad64060d6"
+    },
+    {
+      "path": "issue838-parent-status-assessed.json",
+      "sha256": "028dcaa4b6401373823c78e151e7118f102a2ce3f56604eec5476d12bdc42edd"
+    },
+    {
+      "path": "issue838-current-main-before-parent-fix.json",
+      "sha256": "16b641184dece3993907604f604d0a847098b6fc488d5d5d4cad4ba21e0a38c2"
+    },
+    {
+      "path": "../issue838-current-review-20261113/review.json",
+      "sha256": "ac8951243a3e4883d76dbb770b9bbe46ee3b1b80a9c3dfc5d26bcae7c15ad9a1"
+    },
+    {
+      "path": "issue838-fixed-native-cleanup.json",
+      "sha256": "87238cad31dda66b366ba3ce42f7138ec8c25e6098b5593b37266b3db9175604"
+    }
+  ],
+  "initial_integration_validation": {
+    "binary_sha256": "f63e6ffe86f55f77de7b63bce3d00c696aa71f7408ac2f037e4d160f21640446",
+    "source_sha256": {
+      "editor/docks/ai_chat_gonggong.cpp": "ada9c432488ab3167c815b8e739d5e3c4cf53bbbdb578dfa9ba8d0b4eb0a158b",
+      "editor/docks/ai_chat_issue_guide.h": "f1ffd20ed987c009fb28e2ada51659ca6170a3c6c3c00c75e8290ce87eb8f544",
+      "tests/editor/test_ai_chat_tools.cpp": "ec87ae0e23aae4d84d257fd547c8621a1354939bcf4758b4bfc43b463cb6bae3",
+      "tests/editor/gonggong_chat_gate.gd": "fc2fb1701068ecd427f9a98fda210882c57edc2a45dedbfca0976d97ea00fcb0",
+      "tests/editor/run_gonggong_chat_gate.py": "68ca25a72bcf8b8bc693f54c1ef7a921c86d8efb4b667aee656afa420afa92cf",
+      "customizations/components/godot-host/bridge.py": "d965db0d2da874291e60404d33b31bb92b8998192956fe5038ca26b5c816e7d6",
+      "customizations/components/godot-host/test_bridge.py": "2a6a530870ed1a2fa7232515d5959e228b14f60821c012db4d0be76ba7c29173"
+    },
+    "native_tests": [
+      {
+        "mode": "issue_guide_status",
+        "exit_code": 0,
+        "log": "issue838-current-issue_guide_status.log",
+        "sha256": "64371eb65294e737e74446afbf1900a9442f4884526310f8268b7cc7d05f3c85"
+      },
+      {
+        "mode": "issue_guide_status_direct",
+        "exit_code": 0,
+        "log": "issue838-current-issue_guide_status_direct.log",
+        "sha256": "fb3ad6ad746a6c405a1951e38f6bc2f842e865ce005b86b0dfdab03e5bd4b1cd"
+      },
+      {
+        "mode": "issue_guide_status_direct_retry_failure",
+        "exit_code": 0,
+        "log": "issue838-current-issue_guide_status_direct_retry_failure.log",
+        "sha256": "e554f2afdf65fca188f3f3c16495ad35281198d62e4a3aa37d244ea29088317a"
+      },
+      {
+        "mode": "rejected",
+        "exit_code": 0,
+        "log": "issue838-current-rejected.log",
+        "sha256": "f28f83302abecd20b1c004bc02d44b91fe3e915b585fad5641f69728aa5319d0"
+      },
+      {
+        "mode": "recovery_rejected",
+        "exit_code": 0,
+        "log": "issue838-current-recovery_rejected.log",
+        "sha256": "b097a2b0bc81e1ee58f3aa36f26a715d9a0625498b2e0ed824064538241b0844"
+      },
+      {
+        "mode": "cancel",
+        "exit_code": 0,
+        "log": "issue838-current-cancel.log",
+        "sha256": "cb40fe9bbe91958b2c5201f983e98ad75659254170619febc3013f773453a1c0"
+      }
+    ],
+    "subsequent_review": "P2: actual automatic parent-stage messages also met manual status recovery guard; review not approved until corrected"
+  },
+  "review_correction": {
+    "finding": "P2 automatic bound parent initial and completion-return stages entered manual Issue status guide after transient design_parent_starting reset",
+    "reproduced": "Both actual native paths failed specifically with Automatic parent entered manual Issue status guide before repair; snapshots lacked persistent host-origin flag",
+    "fix": "Snapshot host_generated_turn saved from trusted design_parent_starting==active_agent before asynchronous intake; manual guide excludes true. Fresh manual turn clears snapshot and records false. Production code never infers source from text.",
+    "tests": "Final actual parent-status-initial and parent-status-return hold correctly, preserve false business acceptance and do not send a rejected parent model request; normal parent-completion still reaches independently verified acceptance; all6 original manual/rejection/cancel scenarios repeated successfully.",
+    "fixture_limit": "Exact status error injected at actual automatic native chat intake; no real GitHub status mutation. Snapshot envelope parser error in first fixture attempt archived separately; not claimed as product reproduction."
+  }
+}

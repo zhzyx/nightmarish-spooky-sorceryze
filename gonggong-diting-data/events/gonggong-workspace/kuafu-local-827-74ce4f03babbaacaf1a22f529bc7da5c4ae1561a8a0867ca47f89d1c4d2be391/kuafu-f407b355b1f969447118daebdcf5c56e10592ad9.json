@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f407b355b1f969447118daebdcf5c56e10592ad9",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-local-827-74ce4f03babbaacaf1a22f529bc7da5c4ae1561a8a0867ca47f89d1c4d2be391",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/838",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6e51163dfb06dc0d93f7e09e14abe309fa00c2283b6077d5fea2a0811c4f89f2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/838",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/838",
+    "action": "validation",
+    "detection_head": "c074db21be98784ff1288f1f2d99c793ba156395",
+    "context_sha256": "7e1eea6140290cc66e3d34bceba7156da0892cc8be0dd678bb635a6548ba3327",
+    "operator": "Sail-Li",
+    "worker": "codex:/root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Isolated c074 plus signed PR847 source; native baseline logs legacy838-baseline-status and legacy838-baseline-status-classified; private original diagnostics retained",
+    "diagnosis": "Two distinct gaps: current main lacks the bound manual-chat status guide from PR847; trusted local-only Kuafu envelope is additionally rejected by the bridge classifier. A narrow local_only compatibility patch passes45 bridge tests. Correctly classified baseline still cannot open the status guide. No original PR publication handoff has been accepted.",
+    "next_action": "Validate the isolated rebuilt PR847 candidate and adjacent rejection paths, obtain independent review, then coordinate original publication ownership before delivery. Preserve original worktrees and current971 main integration hold.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T22:36:46.622575+00:00",
+    "attempted": "Native baseline failed twice with distinct archived diagnostics; original issue838 intake passed. Initial receive lacked Node PATH, corrected receive succeeded.",
+    "repair_owner": "Sail-Li current root owns isolated comparison and compatibility validation only; original838 publisher retains publication responsibility",
+    "continuable": "Yes: isolated build and regression testing; publishing and replacement remain pending original handoff"
+  },
+  "occurred_at": "2026-11-12T22:39:08.837205+00:00",
+  "sha256": "5d41681cce93d1a37f3873be22503963cc98646fefc68f5873fcb983b97bb10d"
+}

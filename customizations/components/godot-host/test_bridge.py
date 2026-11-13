@@ -309,6 +309,12 @@ class IntakeClassificationTests(unittest.TestCase):
             ("GITHUB_NETWORK", True, "GITHUB_NETWORK"),
         )
 
+    def test_local_only_incident_preserves_status_recovery_without_dispatch(self):
+        prefix = json.dumps(dict(self.envelope(), dispatch="local_only"))
+        error = "Issue requires exactly one active status label"
+        self.assertEqual(bridge.intake_failure_reason(prefix + "\n" + error), ("ISSUE_BINDING", False, error))
+        self.assertEqual(bridge.intake_failure_reason(prefix + "\nfixture-private-secret")[0], "INTAKE_LOCAL_FAILURE")
+
     def test_arbitrary_prefix_and_substrings_are_not_unwrapped(self):
         error = "Issue requires exactly one active status label"
         for prefix in (
@@ -317,6 +323,8 @@ class IntakeClassificationTests(unittest.TestCase):
             json.dumps(dict(self.envelope(), action="delivery")),
             json.dumps(dict(self.envelope(), incident="bad")),
             json.dumps(dict(self.envelope(), issue=True)),
+            json.dumps(dict(self.envelope(), dispatch="arbitrary status")),
+            json.dumps(dict(self.envelope(), dispatch=True)),
         ):
             with self.subTest(prefix=prefix):
                 self.assertEqual(bridge.intake_failure_reason(prefix + "\n" + error)[0], "INTAKE_LOCAL_FAILURE")
