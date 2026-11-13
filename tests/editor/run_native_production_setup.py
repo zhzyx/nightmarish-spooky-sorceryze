@@ -118,14 +118,24 @@ func _confirm_normal_setup(confirmation):
 \tvar env = dock.get_environment_settings_control()
 \tenv.find_child("CLIEntry", true, false).text = OS.get_environment("NATIVE_SETUP_CLI")
 \tenv.find_child("CLIBridge", true, false).text = OS.get_environment("NATIVE_SETUP_BRIDGE")
-\tvar backend = ai.find_child("AIBackend", true, false)
+\tvar view = dock.find_child("ChatLayout", true, false)
+\tif not _check(view != null, "Normal setup requires live ChatLayout under AI Chat"):
+\t\t_finish()
+\t\treturn
+\tvar backend = view.find_child("AIBackend", true, false)
+\tif not _check(backend != null, "Normal setup connection selector missing from ChatLayout"):
+\t\t_finish()
+\t\treturn
 \tvar backend_index := 2 if OS.get_environment("NATIVE_SETUP_BACKEND") == "codex" else 1
 \tif backend_index == 2:
 \t\t_check(dock.set_runtime_field("codex", OS.get_environment("NATIVE_SETUP_CLI")).is_empty(), "Cannot set private Codex fixture")
 \t\tenv.find_child("CodexEntry", true, false).text = OS.get_environment("NATIVE_SETUP_CLI")
 \tbackend.select(backend_index)
 \tbackend.item_selected.emit(backend_index)
-\tvar picker = ai.find_child("ModelPicker", true, false)
+\tvar picker = view.find_child("ModelPicker", true, false)
+\tif not _check(picker != null, "Normal setup model selector missing from ChatLayout"):
+\t\t_finish()
+\t\treturn
 \tvar deadline := Time.get_ticks_msec() + 45000
 \tvar found := -1
 \twhile found < 0 and Time.get_ticks_msec() < deadline:

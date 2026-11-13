@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c46a4f033d161c1c50269ec5dca5139269abe5e0",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "867a97eb41736fef10018dc58134c209e262683916fdea71375a4ed1b4fe3bda",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1057",
+    "action": "dependency",
+    "detection_head": "da9bfac7b5036f24d9657179d394dc2db3a66526",
+    "context_sha256": "7aeb48626d6dd0329647a2bf712542cfaa0442c95abf54df663873e9254da2c7",
+    "operator": "Sail-Li",
+    "worker": "codex-root-kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1057",
+    "diagnosis": "The saved CLI executable belonged to a removed Windows package. The registered replacement executable runs and the same editor public runtime setter plus catalog refresh now reports a current ready catalog. Original production status remains blocked: requirement intake received issue 0 because the restored parent has no saved Issue binding. Historical missing binding cause is still under investigation in 951.",
+    "next_action": "Repair and verify parent Issue binding under 951, then retry original status and continue actual production acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T11:49:55.837650+00:00",
+    "attempted": "Verified registered package and executable; updated only the Codex runtime path through the public editor API; refreshed actual account catalog; attempted original parent production status without changing batch receipts.",
+    "repair_owner": "codex-root",
+    "continuable": "CLI discovery recovered; original batch status and business acceptance remain unverified."
+  },
+  "occurred_at": "2026-11-13T12:11:46.575463+00:00",
+  "sha256": "1231e6a4dc375a2bf69e9aa851ec005b11e009bdeea956618d10af6d1e41bbb5"
+}

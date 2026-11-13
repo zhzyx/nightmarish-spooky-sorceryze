@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fcffa9e86ca3d0e6b54b5e5b659788963f41ed26",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ccbe0bd84776e720a445f052e1297d8543832b8912302b9e4eeb7a8c2144cdfc",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1064",
+    "action": "validation",
+    "detection_head": "2acecd196a1968cdf71e43419d22bd83a262552f",
+    "context_sha256": "aa29b5ce196ce859984dd58c0d226755f53b583cb217dbc96f9badf8e3e29c83",
+    "operator": "Sail-Li",
+    "worker": "codex-root-pagination",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Original readonly lookup1060 full issue read failed120.013s; phase sha2564eb5940d4f1d0eca167d9bdce6ed4db5f6ab415a0f76fa3fd199b02260727eae; independent audit19 production calls. New1064 created only after complete11page1063record dedup85.409s.",
+    "diagnosis": "Confirmed full paginated scan shares single-request120s ceiling; JS bridge also has120s/4MiB bounds, optional issue_create repeats90s transport. Underlying network latency remains unknown. No mutation was attempted in the reproduction.",
+    "next_action": "Implement one shared finite REST GET pagination policy while retaining one native gh operation; preserve explicit deadlines, full-read-before-write and no mutation retries; validate original guarded lookup and JS large response, then independent review and exact CI/main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T13:56:53.864092+00:00",
+    "attempted": "Original invocation failed; bounded private pagewise read only recovered new bug creation. Initial receive lacked node in PATH; retried with verified installed Node, no source change or global env mutation.",
+    "repair_owner": "Sail-Li current Codex root / bug1064",
+    "continuable": "Other published tests remain accepted; preserve other publishers and effective installations."
+  },
+  "occurred_at": "2026-11-13T14:01:14.774442+00:00",
+  "sha256": "863753873b0f90778b66e2852fb8b4be2830e836fb548fb889b394d0a463c576"
+}

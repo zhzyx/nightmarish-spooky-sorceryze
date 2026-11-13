@@ -5,15 +5,20 @@ Discovery is uncached so installation/repair is visible to an already running ho
 No import, discovery or request changes the caller's environment or account.
 """
 
+import math
 import os
 import re
 import shlex
 import shutil
 import subprocess
 from pathlib import Path
+from urllib.parse import urlsplit
 
 INSTALLATION = Path(__file__).resolve().parents[3]
 WINDOWS = os.name == "nt"
+DEFAULT_TIMEOUT = 120
+PAGINATION_TIMEOUT = 600
+BRIDGE_MAX_BUFFER = 64 * 1024 * 1024
 
 
 class GitHubCommandError(ValueError):
@@ -110,7 +115,54 @@ def credential_helper(env=None):
     return "!" + shlex.quote(path) + " auth git-credential"
 
 
-def run_gh(*args, env=None, input_value=None, cwd=None, timeout=120):
+def read_only_pagination(args):
+    """Recognize the supported REST GET shape, without rewriting gh arguments.
+
+    Unknown flags, payloads and GraphQL keep the ordinary budget. gh continues to
+    own pagination, Link/host/auth handling, jq and array/object page semantics.
+    """
+    if not args or args[0] != "api":
+        return False
+    flags = {"--paginate", "--slurp", "--include", "-i", "--silent", "--verbose"}
+    values = {"--jq", "-q", "--template", "-t", "--hostname", "--header", "-H", "--preview", "-p", "--cache"}
+    endpoint, methods, paginated = [], [], False
+    iterator = iter(args[1:])
+    for arg in iterator:
+        if not isinstance(arg, str):
+            return False
+        key, separator, value = arg.partition("=")
+        if key in values or key in {"--method", "-X"}:
+            value = value if separator else next(iterator, None)
+            if not isinstance(value, str) or not value:
+                return False
+            if key in {"--method", "-X"}:
+                methods.append(value)
+        elif arg in flags:
+            paginated |= arg == "--paginate"
+        elif arg.startswith("-"):
+            return False
+        else:
+            endpoint.append(arg)
+    if not paginated or len(endpoint) != 1 or any(method != "GET" for method in methods):
+        return False
+    try:
+        path = urlsplit(endpoint[0]).path.rstrip("/")
+    except ValueError:
+        return False
+    return bool(path) and path.rsplit("/", 1)[-1] != "graphql"
+
+
+def request_timeout(args, timeout=None, input_value=None):
+    # An explicit timeout is always the entire operation's deadline, never per page.
+    if timeout is None:
+        return PAGINATION_TIMEOUT if input_value is None and read_only_pagination(args) else DEFAULT_TIMEOUT
+    if isinstance(timeout, bool) or not isinstance(timeout, (int, float)) or not math.isfinite(timeout) or timeout <= 0:
+        raise GitHubCommandError(reason="GITHUB_RUNTIME: invalid request timeout")
+    return timeout
+
+
+def run_gh(*args, env=None, input_value=None, cwd=None, timeout=None):
+    timeout = request_timeout(args, timeout, input_value)
     selected_env = dict(os.environ if env is None else env)
     selected = resolve_gh(selected_env)
     try:

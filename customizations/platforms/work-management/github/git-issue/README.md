@@ -27,3 +27,7 @@ python customizations/platforms/work-management/github/git-issue/issue_create.py
 跨聊天协作只在用户授权范围内通信。当前工作区的宿主接入复用 customizations/components/issue-workorders；本模块只共享输入输出契约，不借用其他执行实例的身份、准入或采集绑定。现有工单的并发编辑、发布、自动监听不在本版本范围。
 
 迁移后的对象须由宿主重新核验。旧批准仅作历史证据。
+
+CLI传输复用安装内 `customizations/components/issue-workorders/github_runtime.py`，仍只采用本模块显式选择的 gh。单次请求及写入保留90秒界限，完整只读分页使用共享600秒总预算；传输错误经过统一脱敏，不改变方案摘要、身份、报告和持久claim约束。部署本可选入口时必须同时包含该共享文件，缺失时失败，不从目标数据工作区加载替代工具。
+
+方案摘要同时绑定本入口和共享传输的源码指纹；已加载的共享文件在磁盘上变化时，旧进程拒绝继续选择/执行计划，须重新启动后重新核验候选。

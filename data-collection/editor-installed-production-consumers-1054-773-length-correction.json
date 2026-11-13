@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "append_only_evidence_correction",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "original_candidate": "a504f748fbfde27d37759c7ca81d656cdf41323c",
+  "corrects": {
+    "path": "data-collection/editor-installed-production-consumers-1054-773.json",
+    "sha256": "34a58cf3a88461a7ed3eeca523c4f1be5bd231d8f8d79b9e1908a33fe2885896",
+    "field": "selected_results.bytes",
+    "recorded_value": 3344,
+    "correct_value": 3241
+  },
+  "attachment": {
+    "path": "data-collection/editor-installed-production-consumers-1054-773-results.json",
+    "sha256": "84b80a9a7d52db5033ed3933a90c7a3142f2537d9e6ad46ca619748c65870da5",
+    "bytes": 3241
+  },
+  "reason": "LF normalization changed the attachment length. Its digest and result content were correct, but the report retained its former CRLF byte count. Independent review initially omitted this length field.",
+  "original_records_preserved": true,
+  "product_test_inputs_and_attachment_unchanged": true,
+  "supersession_scope": "Only the recorded selected_results.bytes value is corrected. This does not replace original consumer runs, assert a new installation, or complete the original production task.",
+  "review": {
+    "explicit_digest_and_length_references_checked": 47,
+    "other_mismatches": 0,
+    "reviewer": "/root/sinan_2781543502fa02d3"
+  },
+  "attempt_preserved": "An in-place report correction and evidence-binding revision were prepared, but both formal validation and writer refused before submission because collection sources are append-only. Those attempts remain in private receipts and immutable Kuafu/method events; current reports retain exact original committed bytes."
+}

@@ -1,0 +1,474 @@
+{
+  "schema_version": 1,
+  "issue_number": 948,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+  "parent_issue_number": 773,
+  "related_issue_numbers": [
+    943,
+    951
+  ],
+  "request_id": "editor-game-receipt-storage-20261112",
+  "recorded_at_utc": "2026-11-13T12:19:22.556520+00:00",
+  "state": "installed_controlled_consumers_passed_with_exact_reviewed_fixture_retest",
+  "path_base": {
+    "public_sources": "repository root; main_input_blobs resolve at installed_main_revision",
+    "installed_inventory": "installation directory from installed.local.json",
+    "logical_artifact": "host-private evidence directory owned by the authorized parent773 run; names and SHA256 identify retained raw bytes without publishing machine paths",
+    "command_placeholders": "<checkout> is installed-main clean source for template/restart; <fixture-checkout> is that same main plus the exact reviewed setup fixture blob; <installed-editor> is inventory direct exe; <private-evidence>, <private-out>, <python>, <node>, <job-object> resolve to host-private validated locations."
+  },
+  "scope": "Real formally installed direct editor copied into owned isolated installations/projects; controlled model and GitHub transports. Exact E fixture source executed without transformation for final storage run. No original game, source/installation mutation, remote write, online model quality or business acceptance asserted.",
+  "installed_main_revision": "da9bfac7b5036f24d9657179d394dc2db3a66526",
+  "delivery": {
+    "pull_request": 1054,
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1054",
+    "head": "fa0c53d5d48f079012fc1160ddb453d21c3c9443",
+    "state": "MERGED",
+    "merged_at": "2026-11-13T11:35:52Z",
+    "merge_receipt": {
+      "logical_artifact": "pr1054-merged.json",
+      "sha256": "543e27d91b2111217d60cfe1f82d5481befa7e517bef677a37836fb5d82d601d",
+      "bytes": 8177
+    },
+    "ci": [
+      {
+        "name": "issue-association",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417265659/job/131858217442"
+      },
+      {
+        "name": "📊 Static checks / Code style, file formatting, and docs",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417265698/job/131858212789"
+      },
+      {
+        "name": "📊 Static checks / Code style, file formatting, and docs",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417248254/job/131858165305"
+      },
+      {
+        "name": "🤖 Android",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417265698/job/131858449284"
+      },
+      {
+        "name": "🤖 Android",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417248254/job/131858332443"
+      },
+      {
+        "name": "🍏 iOS",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417265698/job/131858448532"
+      },
+      {
+        "name": "🍏 iOS",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417248254/job/131858332515"
+      },
+      {
+        "name": "🐧 Linux",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417265698/job/131858449073"
+      },
+      {
+        "name": "🐧 Linux",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417248254/job/131858332114"
+      },
+      {
+        "name": "🍎 macOS",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417265698/job/131858449389"
+      },
+      {
+        "name": "🍎 macOS",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417248254/job/131858333323"
+      },
+      {
+        "name": "Compile affected Windows engine targets",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417265698/job/131858448980"
+      },
+      {
+        "name": "Compile affected Windows engine targets",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417248254/job/131858332648"
+      },
+      {
+        "name": "Compile affected Metal targets",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417265698/job/131858448764"
+      },
+      {
+        "name": "Compile affected Metal targets",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417248254/job/131858332276"
+      },
+      {
+        "name": "🌐 Web",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417265698/job/131858448695"
+      },
+      {
+        "name": "🌐 Web",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417248254/job/131858332965"
+      },
+      {
+        "name": "🏁 Windows",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417248254/job/131858333884"
+      },
+      {
+        "name": "🏁 Windows / Editor (target=editor)",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43417265698/job/131858447085"
+      }
+    ]
+  },
+  "installation": {
+    "manifest": {
+      "sha256": "e9122a3c2e030582e38299f36baa845df3fe0486af7cdcab6ba23f9a0b275580",
+      "bytes": 857,
+      "main_revision": "da9bfac7b5036f24d9657179d394dc2db3a66526"
+    },
+    "files": [
+      {
+        "path": "bin/godot.windows.editor.x86_64.console.exe",
+        "sha256": "c313911af189a808b5200b61b48c7ea6d6285378e7d6db712df9ee34b6ee5d9d",
+        "bytes": 242688
+      },
+      {
+        "path": "bin/godot.windows.editor.x86_64.exe",
+        "sha256": "63a356e5679302b842ca14a4ddcdb9a463dc642c59c0fa4d5323e755d1c44148",
+        "bytes": 176777216
+      },
+      {
+        "path": "bin/tianshu-ui.json",
+        "sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+        "bytes": 67422
+      }
+    ],
+    "validation": "Every declared installed file hash and size, manifest main, direct-editor name, source HEAD and merge receipt checked before/after each run. Template/restart source was clean; final storage permits explicitly recorded dirty E but requires approved fixture blob and 855 measured tracked input hashes/blobs stable. No console wrapper used as the editor."
+  },
+  "main_input_blobs": {
+    "editor/docks/ai_chat_sub_agents.h": "08eb0c428477cad66d2aec864924315cddf338b4",
+    "tests/editor/design_batch.gd": "11a335be18c2414e31685c82c9818b2cb148df95",
+    "tests/editor/run_design_batch.py": "e5fc526d999603b739165550e622c4a642bfcc9a",
+    "tests/editor/run_native_acceptance.py": "ab519dacfced3de2cdbf237bc56346a70ab254f4",
+    "tests/editor/native_acceptance_parallel.py": "a1c6e2d810e8ce0d15f48daf7920745a2bd58cb4",
+    "tests/editor/native_game_integration.py": "4486f1619445d6f68c51da52f62acfff276200a0",
+    "tests/editor/run_native_production_setup.py": "541e3f2ed156bd2a32ba87766e3fbb4a44165ddb",
+    "tests/editor/run_game_receipt_storage.py": "7e7c1facf18890956a42a92603ef7e8b0efc8b4a",
+    "tests/editor/run_game_receipt_restart.py": "8d30c3cf00576c477bc59c5ffc330dfe0e889b67",
+    "tests/editor/run_daqian_node_approval.py": "d745fcb673de8891de1a41f8c2e109473cd0d895",
+    "tests/editor/editor_test_isolation.py": "64454905252603c91b24211ebf022d4ed45a8049",
+    "tools/editor_provenance_process.py": "1792895eca6d3ff29467380ea4f3be4fd9236fcd",
+    "tools/editor_provenance_guard.py": "e5ccc29e1cc16fd75d857028ac906d95d8277b18"
+  },
+  "exact_storage_fixture": {
+    "sha256": "e7268edf54d02c4c05913fdd51cbd01740139c34e86ed2a96579762a175dbc0b",
+    "bytes": 21402,
+    "relative_path": "tests/editor/run_native_production_setup.py",
+    "git_blob": "fd6f2fe89660c0c3f7502497ce3253820b153df8"
+  },
+  "private_runners": [
+    {
+      "logical_artifact": "installed-child-acceptance.py",
+      "sha256": "0aca32c281af4fcdc81ca4784147c87d09191347ed1b959d18eba6372d14583c",
+      "bytes": 8424
+    },
+    {
+      "logical_artifact": "installed-template-consumer.py",
+      "sha256": "e2cea7a0594766208d1718f7e578ed56afbb6255acd08793d80040d523c834f5",
+      "bytes": 3787
+    },
+    {
+      "logical_artifact": "installed-exact-storage-consumer.py",
+      "sha256": "dc8b87443f403bbefb21ac1d398708100eeb83058e81e46a3093dbe0465b8980",
+      "bytes": 10169
+    }
+  ],
+  "commands": {
+    "environment": {
+      "PYTHONUTF8": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "NATIVE_ACCEPTANCE_JOB_OBJECT": "<job-object>",
+      "PATH": "<node-parent> plus existing runtime PATH"
+    },
+    "template_executed": "<python> -X utf8 -B <private-evidence>/installed-child-acceptance.py --pr 1054 --case template --node <node>",
+    "template_consumer": "Private installed-template-consumer.py extracts exact DESIGN_TEMPLATE from main_input_blobs header and inserts confirmation/cancel assertions into original design_batch.gd. It calls run_design_batch.main with --godot <installed-editor> --node <node> --case normal --out <private-out>/consumer.json. This extra canonical-template probe is required; plain normal alone is insufficient.",
+    "restart_executed": "<python> -X utf8 -B <private-evidence>/installed-child-acceptance.py --pr 1054 --case restart --node <node>",
+    "restart_consumer": "<python> -X utf8 -B <checkout>/tests/editor/run_game_receipt_restart.py --godot <installed-editor>",
+    "exact_storage_executed": "<python> -X utf8 -B <private-evidence>/installed-exact-storage-consumer.py --pr 1054 --case storage --node <node>",
+    "exact_storage_consumer": "<python> -X utf8 -B <fixture-checkout>/tests/editor/run_game_receipt_storage.py --godot <installed-editor> --node <node> --backend codex --case models-initial-ok --out <private-out>/consumer.json"
+  },
+  "runs": [
+    {
+      "case": "template",
+      "ok": true,
+      "exit_code": 0,
+      "consumer_oracle_passed": true,
+      "installed_files_stable": true,
+      "raw_result": {
+        "logical_artifact": "installed-pr1054-template-20261113T114113Z-86270b73/result.json",
+        "sha256": "b198f0ee5b32ec569fb18aca6de2b4ed472518c4ff279abf58678ab5ec96ec7f",
+        "bytes": 6204
+      },
+      "raw_artifacts": [
+        {
+          "logical_artifact": "installed-pr1054-template-20261113T114113Z-86270b73/consumer.json",
+          "sha256": "cc57b2717e92f3aa261e9810731fc912fe1c355035ef8cc255f3a20bc4b1e765",
+          "bytes": 24323
+        },
+        {
+          "logical_artifact": "installed-pr1054-template-20261113T114113Z-86270b73/stdout.log",
+          "sha256": "dcbd3cc3b854efc833cb317c195dc3a6aabb97f8367d5ff96bfe17bb83370f40",
+          "bytes": 708
+        },
+        {
+          "logical_artifact": "installed-pr1054-template-20261113T114113Z-86270b73/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "case": "restart",
+      "ok": true,
+      "exit_code": 0,
+      "consumer_oracle_passed": true,
+      "installed_files_stable": true,
+      "raw_result": {
+        "logical_artifact": "installed-pr1054-restart-20261113T114113Z-afe0c38d/result.json",
+        "sha256": "8214179bb5e1de318b483b0f520e993fba1162c640e1fb2c503a0b9d7330e8f6",
+        "bytes": 5182
+      },
+      "raw_artifacts": [
+        {
+          "logical_artifact": "installed-pr1054-restart-20261113T114113Z-afe0c38d/stdout.log",
+          "sha256": "f6d36761a98d0be39b063862c7798b2f484d424cec029db79751c5e207720430",
+          "bytes": 83
+        },
+        {
+          "logical_artifact": "installed-pr1054-restart-20261113T114113Z-afe0c38d/stderr.log",
+          "sha256": "7e4eb6d230f3a5e7478f1b4d1fb76e7b34f5b9b9c631871863deac65bd2f65c9",
+          "bytes": 151
+        }
+      ]
+    },
+    {
+      "case": "storage_initial_failure",
+      "ok": false,
+      "exit_code": 1,
+      "consumer_oracle_passed": false,
+      "installed_files_stable": true,
+      "raw_result": {
+        "logical_artifact": "installed-pr1054-storage-20261113T114113Z-abab8ade/result.json",
+        "sha256": "f3cbcdc48e85ee7cc7955201b443f003b58494a53df65659db70e6304c7063a1",
+        "bytes": 6167
+      },
+      "raw_artifacts": [
+        {
+          "logical_artifact": "installed-pr1054-storage-20261113T114113Z-abab8ade/consumer.json",
+          "sha256": "6d1ded070930018496ad6677a3aba8a2def87b7c17aaa1357f0749bf9c0393fd",
+          "bytes": 8392
+        },
+        {
+          "logical_artifact": "installed-pr1054-storage-20261113T114113Z-abab8ade/stdout.log",
+          "sha256": "fc94c1a00923ec2fe9ed4e989fd914cd3ff617d3573798d493b5284f7868eae7",
+          "bytes": 920
+        },
+        {
+          "logical_artifact": "installed-pr1054-storage-20261113T114113Z-abab8ade/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "case": "storage_private_locator_probe",
+      "ok": true,
+      "exit_code": 0,
+      "consumer_oracle_passed": true,
+      "installed_files_stable": true,
+      "raw_result": {
+        "logical_artifact": "installed-pr1054-storage-20261113T114734Z-9cf2c159/result.json",
+        "sha256": "8817eb7737f7bffb778f2ca837ce1bfd2cd4d8aab11c5cf0788a2082ca770483",
+        "bytes": 6818
+      },
+      "raw_artifacts": [
+        {
+          "logical_artifact": "installed-pr1054-storage-20261113T114734Z-9cf2c159/consumer.json",
+          "sha256": "bd31e6ce0870172447c2706601a80ef2db6bb6b33be9ac80949211df84543583",
+          "bytes": 86782
+        },
+        {
+          "logical_artifact": "installed-pr1054-storage-20261113T114734Z-9cf2c159/stdout.log",
+          "sha256": "10cd5f372725267fc371c423ed86c57d764c65ad56cff11439e0e03086826ead",
+          "bytes": 797
+        },
+        {
+          "logical_artifact": "installed-pr1054-storage-20261113T114734Z-9cf2c159/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "case": "storage_exact_reviewed_source",
+      "ok": true,
+      "exit_code": 0,
+      "consumer_oracle_passed": true,
+      "installed_files_stable": true,
+      "raw_result": {
+        "logical_artifact": "installed-exact-pr1054-storage-20261113T121211Z-eddbe95b/result.json",
+        "sha256": "aa0a11d1180de37b5cb7a5ae48b05716e85e50afc5ec744c7f3949d5746e61d6",
+        "bytes": 7794
+      },
+      "raw_artifacts": [
+        {
+          "logical_artifact": "installed-exact-pr1054-storage-20261113T121211Z-eddbe95b/consumer.json",
+          "sha256": "381b762f4d4c6e75b016e8a309e36b63302d831b38f40da3e226b10c07477cbe",
+          "bytes": 85958
+        },
+        {
+          "logical_artifact": "installed-exact-pr1054-storage-20261113T121211Z-eddbe95b/stdout.log",
+          "sha256": "10cd5f372725267fc371c423ed86c57d764c65ad56cff11439e0e03086826ead",
+          "bytes": 797
+        },
+        {
+          "logical_artifact": "installed-exact-pr1054-storage-20261113T121211Z-eddbe95b/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      ],
+      "fixture_inputs_stable": true,
+      "tracked_input_count": 855,
+      "input_inventory_before": {
+        "logical_artifact": "installed-exact-pr1054-storage-20261113T121211Z-eddbe95b/inputs-before.json",
+        "sha256": "99d7c2d6a7d852c9ff1bbaac44e648470810265d72857f731a3fbd8ace1cd155",
+        "bytes": 307646
+      },
+      "input_inventory_after": {
+        "logical_artifact": "installed-exact-pr1054-storage-20261113T121211Z-eddbe95b/inputs-after.json",
+        "sha256": "99d7c2d6a7d852c9ff1bbaac44e648470810265d72857f731a3fbd8ace1cd155",
+        "bytes": 307646
+      },
+      "worktree_clean": false,
+      "dirty_scope": "Approved production setup fixture edit plus unrelated design/Kuafu documents; recorded privately before/after. All tracked measured fixture/runtime inputs remained unchanged."
+    }
+  ],
+  "selected_results": {
+    "path": "data-collection/editor-installed-production-consumers-1054-773-results.json",
+    "sha256": "84b80a9a7d52db5033ed3933a90c7a3142f2537d9e6ad46ca619748c65870da5",
+    "bytes": 3344
+  },
+  "failure_and_fix": {
+    "fault_layer": "Test CONTROL UI lookup; not a demonstrated receipt recovery engine failure.",
+    "initial_failure": "AIBackend queried below settings control; null.select prevented normal setup and metadata deletion. ModelPicker had the same obsolete ancestor. Subsequent missing-marker timeout was secondary.",
+    "minimal_source_fix": "Resolve dock ChatLayout, then its AIBackend and ModelPicker, with explicit null checks. Original selection, setup confirmation and acceptance oracles unchanged.",
+    "private_probe": "Locator-only private probe passed first; included two informational get_path prints. It was not treated as proof of the exact formal source.",
+    "exact_retest": "Final direct E run uses approved blob fd6f2fe89660c0c3f7502497ce3253820b153df8 without those prints or transformations. All original specialized storage assertions pass.",
+    "review_and_static": "Root supplied reviewer278 approval of fixture source before exact run; AST, Ruff check/format, mypy and diff checks passed. This report still awaits independent review and normal delivery.",
+    "static_receipt": {
+      "logical_artifact": "post1054-storage-fixture-static.json",
+      "sha256": "05020acf11c2405c52aa95baf5ba16e9eff69530faa50debd441b4a5949d28c1",
+      "bytes": 2361
+    },
+    "diagnostic_handoff": {
+      "logical_artifact": "post1054-storage-kuafu948-diagnostic.json",
+      "sha256": "4ab296c154e1aee1ad00f0974e178d194a8e5dba692538db47bf5be39aec6931",
+      "bytes": 4763
+    },
+    "prior_template_counterexample": "Immutable main947 template report preserves an initial unsupported criterion-ID dialog assertion and a wrapper that discarded runner exit status. The revised probe verifies actual numbered titles/document hash and propagates failure; current1054 wrapper also requires native JSON success. No old failed probe is counted as pass."
+  },
+  "issue943_criteria_mapping": [
+    {
+      "criterion": 1,
+      "status": "satisfied_evidence_available",
+      "fact": "Current guidance/template provides required confirmation/production sections, numbered examples, dependency and unique criterion identifiers, while remaining pending native confirmation.",
+      "evidence": [
+        {
+          "path": "data-collection/editor-design-contract-943.json",
+          "sha256": "020cd9957fe4e3b9cdfc5bdf3489a749ea9e3c696b31cd445ea5054f15b57a98",
+          "bytes": 5747
+        },
+        {
+          "path": "data-collection/editor-design-contract-943-format.json",
+          "sha256": "36cccffdf54a6cac29f0fa18d64cd38c10c0d1f007e58bbb69da3412ec811df0",
+          "bytes": 4126
+        }
+      ],
+      "current_confirmation": "Exact current template SHA and two original titles are verified by installed1054 template result; no child before confirmation/cancel."
+    },
+    {
+      "criterion": 2,
+      "status": "satisfied_evidence_available",
+      "fact": "Actual native button diagnoses missing confirmation/production/orders and invalid dependencies; valid designs and explicit confirmation retained.",
+      "evidence": [
+        {
+          "path": "data-collection/editor-design-contract-943-installed.json",
+          "sha256": "5f1cc154068fe38b3160aa21e9575965c1f812c1e2db0e34d4a442fbd994cbff",
+          "bytes": 3165
+        }
+      ],
+      "current_confirmation": "Installed1054 template run retains malformed, stale, manual dependency and one-parent-return assertions."
+    },
+    {
+      "criterion": 3,
+      "status": "satisfied_evidence_available",
+      "fact": "Native regressions and strict Windows build documented at main947 (90 AIChat cases/1707 assertions); main1054 exact-template smoke also passed.",
+      "evidence": [
+        {
+          "path": "data-collection/editor-design-contract-943-installed.json",
+          "sha256": "5f1cc154068fe38b3160aa21e9575965c1f812c1e2db0e34d4a442fbd994cbff",
+          "bytes": 3165
+        },
+        {
+          "path": "data-collection/editor-design-contract-943-template-installed.json",
+          "sha256": "ff9cbb571226f6e0ed2a1a497516cd5750aae48f8ad8b72345fe70455f94b238",
+          "bytes": 3112
+        }
+      ]
+    },
+    {
+      "criterion": 4,
+      "status": "satisfied_evidence_available_pending_authoritative_closeout",
+      "fact": "Original independent source review, PR947 exact CI/main/build/install and current PR1054 merge/CI/installed consumers have evidence. Current report packaging still requires independent review/delivery; this is not a remote Issue closure receipt.",
+      "evidence": [
+        {
+          "path": "data-collection/editor-design-contract-943-installed.json",
+          "sha256": "5f1cc154068fe38b3160aa21e9575965c1f812c1e2db0e34d4a442fbd994cbff",
+          "bytes": 3165
+        },
+        {
+          "path": "data-collection/editor-design-contract-943-delivery-binding.json",
+          "sha256": "efa5e03244c1fa04f52b6bf0a9a02aa53b05996b682a27101f5b1fa731062f72",
+          "bytes": 1075
+        }
+      ]
+    }
+  ],
+  "remaining_acceptance": {
+    "943": "No additional product test gap identified within its design-contract scope after current exact-template install smoke; parent owner must accept evidence and record authoritative lifecycle closeout. Game completion is not an extra criterion for943.",
+    "948": [
+      "Original failed game flow must be recovered through the real current parent/tool/receipt path with preserved old diagnostics/configuration/history. This test does not touch that game.",
+      "Exact fixture correction/report must complete independent report review and normal delivery.",
+      "Original CI empty-output cause remains unknown; injected diagnostics and this UI fixture fix do not establish that root cause."
+    ],
+    "951": [
+      "Use actual installed editor production_control on the original failed game batch: status exact identities, supplement actual missing inputs, fresh independent source review, eligible bounded repair, independent re-review and dependent release.",
+      "Preserve original source-read failure, prior budgets, known terminal/occupancy and parent gate. A new successful fixture or batch does not substitute for original continuation."
+    ],
+    "773": "Full original game/product acceptance remains owned by parent and is not concluded by any controlled consumer here."
+  },
+  "limits": [
+    "storage generic base_diagnostics.ok remains false and is preserved; only unchanged specialized production/storage oracle is counted as pass.",
+    "Restart proves ordinary no-engine_candidate cold command recovery including original invocation, one result, queue preservation, late receipt and duplicate crash-window handling; not a long-running real production model session reconnect.",
+    "Template parses original source template and checks native confirmation/cancel; not online design generation or canonical-template whole-game production.",
+    "Teardown RID/ObjectDB diagnostics remain in private raw logs; no claim of warning-free native shutdown.",
+    "Original reports remain unchanged; new source/report CI and delivery are pending under root coordination."
+  ]
+}

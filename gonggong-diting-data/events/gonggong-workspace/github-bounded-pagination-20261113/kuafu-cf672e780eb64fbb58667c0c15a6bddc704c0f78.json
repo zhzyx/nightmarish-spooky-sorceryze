@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-cf672e780eb64fbb58667c0c15a6bddc704c0f78",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "github-bounded-pagination-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1064",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b04713e9eec67ff10d6c104caf18d47398e8c895cffd44a30b28e09faa606765",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1064",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1064",
+    "action": "delivery",
+    "detection_head": "b5df37a693df250f91e60a7733fb337a98b89639",
+    "context_sha256": "d991d604dd0bc5d351558fd3bb9928aefe1218de7b47d4754a4294ed7c03a38f",
+    "operator": "Sail-Li",
+    "worker": "codex-root-pagination",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Corrected writer_submit before commit rejected modified committed data-collection/github-bounded-pagination-1064.json: Preserve collection sources and receipts; append corrections. OriginalHEAD bytes restored and verified; CI repair evidence appended as new github-bounded-pagination-1064-ci-correction.json.",
+    "diagnosis": "Operator attempted to update historical committed prepublication receipt. Append-only collection guard correctly rejected; no product behavior or remote publication changed.",
+    "next_action": "Stage new correction and actual event only, retain immutable receipt and independent code reviews, rerun formal gate/signing and exact CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T14:51:06.406132+00:00",
+    "attempted": "Saved accurate new CI evidence separately before restoring original staged/worktree receipt; source fix remains2lines and independently approved.",
+    "repair_owner": "Sail-Li current Codex root1064",
+    "continuable": "All prior published/committed events preserved; no other worktree modified."
+  },
+  "occurred_at": "2026-11-13T14:52:58.667534+00:00",
+  "sha256": "08af2f16de3cc7dfc42841a35c350dbb15f3a0d6b49f6a41c234934d76963858"
+}

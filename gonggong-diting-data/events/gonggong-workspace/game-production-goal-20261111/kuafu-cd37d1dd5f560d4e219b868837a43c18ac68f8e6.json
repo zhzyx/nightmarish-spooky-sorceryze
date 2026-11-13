@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-cd37d1dd5f560d4e219b868837a43c18ac68f8e6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "01b7bd25d833e4b94af359ae2d1e8a0e317522aa5b0079a896a66497bcb051de",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "action": "validation",
+    "detection_head": "da9bfac7b5036f24d9657179d394dc2db3a66526",
+    "context_sha256": "c9903adb800c23d20ad58148f6ea518ae9d5f81bfcea6bc825bdd8dc293bb2a8",
+    "operator": "Sail-Li",
+    "worker": "codex-root-kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "diagnosis": "Cold original parent lacked Issue binding and design confirmation metadata while preserving producer terminals. Public Issue fields restored the exact open original binding; actual production status now succeeds and original A/B identities match. Continuation is still rejected because _design_child_ready requires the missing exact design confirmation. Existing continue entry bypasses confirmation when children already exist. The source confirmation and intake binding writes lack immediate project metadata flush, but the historical loss mechanism is not yet proved.",
+    "next_action": "Persist binding and confirmation boundaries; add a normal explicit reconfirmation path preserving original batch identities; reproduce crash/cold behavior and independently test refusal boundaries before delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T12:13:51.852856+00:00",
+    "attempted": "Read original metadata, original terminal byte hashes, current design and source predicates; restored only public Issue fields; requested read-only production status. No game, history, terminal or approval metadata injected.",
+    "repair_owner": "codex-root-and-sinan-99",
+    "continuable": "Runtime/status recovered; original producer continuation remains blocked pending explicit design reconfirmation support."
+  },
+  "occurred_at": "2026-11-13T12:20:19.912454+00:00",
+  "sha256": "2be534a11943d98ff068f6c72e57cb5b839878d19f42781a73152dc9afb485f5"
+}

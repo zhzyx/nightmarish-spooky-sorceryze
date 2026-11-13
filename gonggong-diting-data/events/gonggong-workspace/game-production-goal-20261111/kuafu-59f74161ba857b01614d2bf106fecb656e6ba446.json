@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-59f74161ba857b01614d2bf106fecb656e6ba446",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "867a97eb41736fef10018dc58134c209e262683916fdea71375a4ed1b4fe3bda",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1057",
+    "action": "dependency",
+    "detection_head": "da9bfac7b5036f24d9657179d394dc2db3a66526",
+    "context_sha256": "7aeb48626d6dd0329647a2bf712542cfaa0442c95abf54df663873e9254da2c7",
+    "operator": "Sail-Li",
+    "worker": "codex-root-kuafu",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "data-collection/editor-cli-runtime-renewal-1057.json",
+    "diagnosis": "The runtime replacement now has a recorded executable version query, ready actual-account catalog and a new real production_control status result captured from the existing public native tool-details dialog. The r16 result returns ok=true for the original parent and producers; A/B remain unaccepted review and C interrupted. Earlier r14 full tool JSON was removed by completed-turn cleanup; model text alone was not a full tool receipt. r15 observation failed its private handler-name check and is preserved, not relabeled.",
+    "next_action": "Deliver the independently reviewed environment-recovery evidence; finish Issue951 explicit reconfirmation and verify original production through normal editor entries.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T11:49:55.837650+00:00",
+    "attempted": "Updated only the saved Codex runtime field. Preserved original parent, model and producer terminals. Independently verified the native details handler in an isolated no-provider project, then captured a new status-only tool result without injecting tool output or editing original receipts.",
+    "repair_owner": "codex-root",
+    "continuable": "CLI discovery and original status entry recovered. Actual production continuation remains blocked by missing design confirmation under Issue951, and parent773 remains open."
+  },
+  "occurred_at": "2026-11-13T12:54:52.774646+00:00",
+  "sha256": "642e2f14b15618506b7d3c9849bc485765fe430054643da7a8355c2a51a5f6de"
+}

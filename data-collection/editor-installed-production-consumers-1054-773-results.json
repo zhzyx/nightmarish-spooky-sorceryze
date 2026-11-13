@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "kind": "selected_fields_from_private_raw_results",
+  "redaction": "Selected result fields only; omit personal paths, temporary roots, model payloads, credentials and full native logs. Original bytes are bound separately by SHA256. No selected value changes an original pass/fail.",
+  "template": {
+    "ok": true,
+    "editor_ok": true,
+    "failure": "",
+    "stages": [
+      "DESIGN_BATCH_WARMUP_OK",
+      "exact-canonical-template-native-confirmation-and-cancel",
+      "DESIGN_BATCH_CHILD_CONSULT_OK",
+      "DESIGN_BATCH_PARENT_VERIFIED_OK"
+    ],
+    "parent_return_count": 1,
+    "inputs": {
+      "template_sha256": "80b6fed7f7982cc6bcb1ca7f44e95313cc13612cb528a3e265d5493e45f1ba75",
+      "header_sha256": "b23e4b836d8690b543466530c6631f8b8a8ee1363bda9fd60a737ddcaef53d2b",
+      "original_scene_sha256": "d2dcf04230cc8c2771c5352e971f530bf6e328f23c27be7bea73e231807b3a36",
+      "probe_sha256": "f8b29f789082283a5f349d0c28c34bc66e2c3ae82e09bfa1969a315b46362ba1",
+      "titles": [
+        "1. 实现基础功能",
+        "2. 集成功能"
+      ],
+      "boundary": "Exact source template parsed by installed native confirmation; controlled model/Issue transport, not live game business acceptance."
+    }
+  },
+  "storage_exact": {
+    "ok": true,
+    "game_workspace": true,
+    "complete_game": true,
+    "metadata_recovery": {
+      "cancelled": false,
+      "command_exit_code": 0.0,
+      "commands_replayed": false,
+      "conflicts": [
+        {
+          "path": "gonggong-diting-data/dataset.json",
+          "reason": "missing"
+        },
+        {
+          "path": "work-items.json",
+          "reason": "missing"
+        }
+      ],
+      "consumed_count": 0.0,
+      "details_truncated": false,
+      "ok": true,
+      "restored": [
+        "gonggong-diting-data/dataset.json",
+        "work-items.json"
+      ],
+      "restored_count": 2.0,
+      "state": "verified",
+      "violation_count": 2.0
+    },
+    "rollback_removed_output": true,
+    "bound_receipt_count": 4,
+    "manual_config_absent": true,
+    "generic_base_diagnostics_ok": false,
+    "worker_phases": [
+      {
+        "phase": "start",
+        "time": 1794571949689
+      },
+      {
+        "phase": "start",
+        "time": 1794571949689
+      },
+      {
+        "phase": "finish",
+        "time": 1794571951203
+      },
+      {
+        "phase": "finish",
+        "time": 1794571951203
+      }
+    ]
+  },
+  "restart": {
+    "exit_code": 0,
+    "oracle_passed": true,
+    "stdout_marker": "ORDINARY_GAME_COMMAND_RESTART_OK",
+    "original_stdout": {
+      "logical_artifact": "installed-pr1054-restart-20261113T114113Z-afe0c38d/stdout.log",
+      "sha256": "f6d36761a98d0be39b063862c7798b2f484d424cec029db79751c5e207720430",
+      "bytes": 83
+    }
+  },
+  "initial_storage_failure": {
+    "ok": false,
+    "error": "Attempt to call function 'select' in base 'null instance' on a null instance.",
+    "function": "_confirm_normal_setup",
+    "generated_scene_line": 484,
+    "subsequent_timeout": "Missing native reply: ORDINARY_GAME_INTEGRATION_ROLLED_BACK",
+    "stages": [
+      "DESIGN_BATCH_WARMUP_OK"
+    ],
+    "receipt_metadata_recovery_present": false
+  },
+  "issue_number": 948,
+  "parent_issue_number": 773
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "request-github-bounded-pagination-20261113",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "github-bounded-pagination-20261113",
+  "kind": "request",
+  "occurred_at": "2026-11-13T14:03:32.145848+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1064",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "001b75e999158305bfc9f66c7b071cfe07f769b480088fc863e0e646d44be541",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "authorization_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "authorization": "User authorized continuous full AI/GitHub integration audit, in-scope repair, validation and delivery",
+    "issue_number": 1064,
+    "current_continuation": "Parent978 confirmed120.013s paginated read failure; consolidate bounded native CLI budgets and JS output while preserving fail-closed dedup and no unknown-write retry",
+    "recording_boundary": "Current source repair request; not initial intake or acceptance",
+    "observed_model": null,
+    "usage": null,
+    "host_policy_path": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "afd87daf42c01d784499ceb8f7b9a9d2ae8bb4ec124af31a4aeaa15743c413a6"
+}

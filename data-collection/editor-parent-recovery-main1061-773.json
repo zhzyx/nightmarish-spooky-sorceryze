@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "issue_number": 773,
+  "request_id": "game-production-goal-20261111",
+  "related_issues": [
+    943,
+    948,
+    951,
+    1057
+  ],
+  "baseline": "481f0e820437f5e5d9218ee11ee2fe551109d86d",
+  "scope": "Integrate durable original-parent binding and explicit missing-design reconfirmation with the reviewed installed-consumer fixture correction. Existing Godot host implementation; no new production module or service.",
+  "path_base": "Repository paths resolve from repository root. owning_private_receipts names resolve in the current acceptance host private receipt directory; owning_candidate_checkout names resolve in its isolated checkout. Private raw logs, configuration and project paths are not published.",
+  "input_blobs": {
+    "editor/docks/ai_chat_gonggong.cpp": "c037766f31f0670362df88bafc46d56835020790",
+    "editor/docks/ai_chat_sub_agents.cpp": "30b58d6ce9319ff911b7ab73e23ba36789e82e13",
+    "tests/editor/run_parent_binding_restart.py": "dc85fe1d850c2aa8e2f891db0a1791a9e78f1c21",
+    "tests/editor/parent_binding_restart.gd": "1e01396d884086516ba82f969e05a321e1c5528c",
+    "tests/editor/design_confirmation_recovery.gd": "c5d1817a77ec5c5e2f66619735b66bfa899b78e3",
+    "tests/editor/run_native_acceptance.py": "9fc34ed77c3443350d8c2742272134aa113c38c7",
+    ".github/workflows/windows_builds.yml": "63d5361709314b4bb8219953285594613fee9205",
+    "tests/editor/run_native_production_setup.py": "fd6f2fe89660c0c3f7502497ce3253820b153df8"
+  },
+  "source_integration": {
+    "tested_previous_baseline": "da9bfac7b5036f24d9657179d394dc2db3a66526",
+    "new_main_pr": 1061,
+    "main_delta": "Sixteen newly added independent Blender workflow, Python consumer/tests, documentation and event files; no overlap with the eight frozen contribution inputs and no engine-source changes.",
+    "owned_source_bytes_preserved": true,
+    "previous_reports_preserved": true
+  },
+  "build": {
+    "command": "GONGGONG_NATIVE_SOURCE_ARCHIVE=1 <build-python> -X utf8 tools/build_gonggong_editor.py --jobs 4 --cache-path <shared-native-cache> --cache-limit 8",
+    "revision": "481f0e820437f5e5d9218ee11ee2fe551109d86d",
+    "clean_source": false,
+    "source_digest": "6ef78d0cf4c255c3619b00f0fd826e18c01fd9f2b94b660557fdc0607e49f0bb",
+    "native_cache_status": "built",
+    "native_cache_key": "dd1aec07bb9ca7cdcaa01d8c3235c23a2180dd43f79ae89150549b977fa50ddd",
+    "engine_sha256": "488d4a0d4c22a058703994e391e0ca27b47f341a7c4c8ad37c928b3cc1be1ab9",
+    "console_sha256": "63e7368cf663039068037ddea0201a6a9f2c4ed0f3049e3d72a5d491e0469f76",
+    "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "exit_code": 0,
+    "aichat_cases_passed": 99,
+    "aichat_assertions_passed": 1795,
+    "aichat_failed": 0,
+    "first_attempt": "SCons completed but the wrapper rejected native_build_inputs_changed. All eight frozen contribution source hashes remained unchanged. Mypy cache writes and a nested ignored validation proposal file appeared during the build; native identify includes these unclassified ignored inputs. The complete first key input diff was not captured, so this observation is not a claim of a single fully isolated cause. The serialized second wrapper run passed without relaxing the guard."
+  },
+  "checks": {
+    "binding_crash_recovery": {
+      "command": "<python> -X utf8 -B tests/editor/run_parent_binding_restart.py --godot <exact-wrapper-direct-engine> --out <private-receipts>/parent-recovery-main1061-binding.json",
+      "passed": true,
+      "observed": "Ordinary public parent requirement intake persisted its exact Issue binding before forced editor termination. Cold reopen retained the same binding and parent history.",
+      "durable_before_crash": true,
+      "cold_ok": true,
+      "parent_history_restored": true,
+      "transports": "isolated loopback/CLI fixtures only"
+    },
+    "original_design_reconfirmation": {
+      "command": "NATIVE_ACCEPTANCE_JOB_OBJECT=<verified-package-native-module> <python> -X utf8 -B tests/editor/run_native_acceptance.py --godot <exact-wrapper-direct-engine> --node <node> --scenario parallel-parent-restart --restore-confirmation --out <private-receipts>/parent-recovery-main1061-confirmation.json",
+      "passed": true,
+      "observed": "All recovery refusal/persistence checks passed. Reconfirmation preserved original child records and the never-started dependent; a later explicit continuation completed three independently accepted fixture items.",
+      "matrix": {
+        "actor_drift": true,
+        "cache_conflict": true,
+        "cancel": true,
+        "children_unchanged": true,
+        "design_drift": true,
+        "disk_conflict": true,
+        "failed_save_no_grant": true,
+        "live_request_started": true,
+        "never_started_c_preserved": true,
+        "ok": true,
+        "parent_switch": true,
+        "same_approval_persisted": true,
+        "storage_obstruction": true,
+        "tools_off": true
+      },
+      "independent_verified_decisions": 3,
+      "transports": "Controlled provider and GitHub fixtures; real native editor, process, disk persistence, dispatch and acceptance consumers."
+    },
+    "static": {
+      "passed": true,
+      "command": "clang-format --dry-run --Werror <two changed C++ files>; ruff check and ruff format --check <three changed Python files>; mypy <same three Python files>; git diff --check",
+      "observed": "No formatting, lint, type or whitespace failures. Checks ran against the eight frozen source inputs; codespell is recorded separately for the final full candidate."
+    }
+  },
+  "preserved_evidence": [
+    {
+      "path": "data-collection/editor-parent-binding-recovery-951.json",
+      "sha256": "030ac7f5db265a5dc291ec01ab735e594ce01e0d6ad09198cd690815c71ffe93"
+    },
+    {
+      "path": "data-collection/editor-installed-production-consumers-1054-773.json",
+      "sha256": "34a58cf3a88461a7ed3eeca523c4f1be5bd231d8f8d79b9e1908a33fe2885896"
+    },
+    {
+      "path": "data-collection/editor-installed-production-consumers-1054-773-results.json",
+      "sha256": "84b80a9a7d52db5033ed3933a90c7a3142f2537d9e6ad46ca619748c65870da5"
+    },
+    {
+      "path": "data-collection/editor-cli-runtime-renewal-1057.json",
+      "sha256": "ac436c162962a9eb909ead366db1c7bbfd1063b08bcebd79e5f73aa96070d660"
+    },
+    {
+      "path": "data-collection/editor-command-gap-handoff-773-559.json",
+      "sha256": "dddee8af2ccead2d94a5f207f4565bdc055be78da8d3459e7c040f02299019cc"
+    }
+  ],
+  "private_evidence": [
+    {
+      "path_base": "owning_private_receipts",
+      "path": "pre-main1061-source-freeze.json",
+      "sha256": "382cdf70d849d2b8f852ddb51a5a42dfa97b22e6e430193f46c9ed334d4434c3",
+      "bytes": 913
+    },
+    {
+      "path_base": "owning_private_receipts",
+      "path": "parent-recovery-main1061-build.log",
+      "sha256": "d02d0506b18c31f2a8e08e7c7c0c6c82e8b062884f95810052826dc40cbd06a4",
+      "bytes": 312746
+    },
+    {
+      "path_base": "owning_private_receipts",
+      "path": "parent-recovery-main1061-build-r2.log",
+      "sha256": "48b85ee46cde4208aa8d6af46b9c8d5dbbf53c2ed80cfd3d7086a1580378388e",
+      "bytes": 1715
+    },
+    {
+      "path_base": "owning_private_receipts",
+      "path": "parent-recovery-main1061-inputs-before.json",
+      "sha256": "6e381bfa3056d1bc0986119283802bd7686fc014625b681dc65bff65364c9b5e",
+      "bytes": 1084
+    },
+    {
+      "path_base": "owning_private_receipts",
+      "path": "parent-recovery-main1061-inputs-after.json",
+      "sha256": "f7bb5ea154e5aedf211f6df5b27b66cb76fea89a71e1f6750885317071577dc0",
+      "bytes": 2416
+    },
+    {
+      "path_base": "owning_private_receipts",
+      "path": "parent-recovery-main1061-binding.json",
+      "sha256": "0a720b07ecc24add0e5924ede70c31fb0a1964611438f27814fed359c39f445e",
+      "bytes": 775
+    },
+    {
+      "path_base": "owning_private_receipts",
+      "path": "parent-recovery-main1061-confirmation.json",
+      "sha256": "d7e9bf45c95221379c49f43ad674b11bf2971ae7e43332bcd6366858c4bbddea",
+      "bytes": 80531
+    },
+    {
+      "path_base": "owning_candidate_checkout",
+      "path": "bin/gonggong-build-receipts/3e57ee9059bc4b2aae4bbc75368f8626.json",
+      "sha256": "406d0fe105c9345b2cff7ba41c64aedf103230f67b32b74d395718b981d64380",
+      "bytes": 1079
+    }
+  ],
+  "delivery_boundary": "This is an uncommitted candidate build and controlled native verification, not an installed release. Exact-candidate gate/CI/main, clean formal build/install and original real-provider batch reconfirmation/repair remain required. Parent773 and incomplete child acceptance stay open; old failures and unknown historical metadata-loss cause are retained."
+}
