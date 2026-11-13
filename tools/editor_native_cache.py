@@ -42,12 +42,64 @@ RESTORE_MARKERS = "bin/.gonggong-native-restores"
 PROGRESS = {"GODOT_BUILD_COUNT_ONLY", "GODOT_BUILD_PROGRESS_TOTAL", "GODOT_BUILD_PROGRESS_FILE"}
 
 
-def is_external_data(name, native_sources):
+def host_inputs(root, *, committed=False):
+    """Read an exact, reviewed inventory; the policy itself stays a native input.
+
+    This never makes a placement declaration or a directory wildcard sufficient
+    for reuse. The configured SCons consumers always override these candidates.
+    """
+    path = root / "tools/native_host_inputs.json"
+    if committed:
+        entry = git(root, "ls-tree", "-z", "HEAD", "--", "tools/native_host_inputs.json")
+        if not entry:
+            return frozenset()
+        mode, kind, oid = entry.split(b"\t", 1)[0].split()
+        if mode not in {b"100644", b"100755"} or kind != b"blob":
+            raise CacheUnavailable("non-file host input inventory")
+        raw = git(root, "cat-file", "blob", oid.decode("ascii"))
+    else:
+        if not path.exists():
+            return frozenset()
+        if path.is_symlink():
+            raise CacheUnavailable("linked host input inventory")
+        raw = path.read_bytes()
+    try:
+        policy = json.loads(raw)
+        if (
+            not isinstance(policy, dict)
+            or set(policy) != {"schema_version", "inputs"}
+            or type(policy["schema_version"]) is not int
+            or policy["schema_version"] != 1
+        ):
+            raise ValueError("inventory schema")
+        names = policy["inputs"]
+        if (
+            not isinstance(names, list)
+            or any(
+                not isinstance(name, str)
+                or "\\" in name
+                or any(part in {"", ".", ".."} for part in name.split("/"))
+                or not name.startswith((
+                    "customizations/components/tianxuan/",
+                    "customizations/platforms/development/git/heqi/",
+                ))
+                or Path(name).suffix not in {".py", ".md"}
+                for name in names
+            )
+            or len(set(names)) != len(names)
+        ):
+            raise ValueError("exact host input paths required")
+        return frozenset(names)
+    except (ValueError, TypeError, KeyError) as error:
+        raise CacheUnavailable("invalid host input inventory") from error
+
+
+def is_external_data(name, native_sources, host_files=()):
     """Classified host records/fixtures remain native when a generator consumes them."""
     if name in native_sources:
         return False
     p = Path(name)
-    if name in EXTERNAL_SCRIPTS or name == "work-items.json":
+    if name in host_files or name in EXTERNAL_SCRIPTS or name == "work-items.json":
         return True
     if p.parent.as_posix() == "tests/editor":
         return p.suffix == ".gd" or (p.name.startswith("run_") and p.suffix == ".py")
@@ -266,6 +318,7 @@ def identify(root, options, artifact, env, cancelled=None):
     generated = set(selected["generated"])
     sources = set(selected["sources"])
     native_sources = set(selected["native_sources"])
+    host_files = host_inputs(root)
     tracked = path_list(git(root, "ls-files", "-z"))
     added = path_list(git(root, "ls-files", "--others", "--exclude-standard", "-z"))
     ignored = path_list(git(root, "ls-files", "--others", "--ignored", "--exclude-standard", "-z"))
@@ -273,7 +326,7 @@ def identify(root, options, artifact, env, cancelled=None):
     output = artifact.relative_to(root).as_posix()
     sidecars = {"bin/editor_self_build.lock", output + ".build.json", output + ".candidate.json"}
     for name in sorted(tracked | added | ignored):
-        if is_external_data(name, native_sources):
+        if is_external_data(name, native_sources, host_files):
             continue
         local_state = (
             name in {".scons_node_count", ".scons_env.json"}

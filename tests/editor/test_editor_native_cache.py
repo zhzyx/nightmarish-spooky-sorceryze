@@ -136,6 +136,43 @@ class NativeCacheTests(unittest.TestCase):
         self.probe["native_sources"] = [".scons_node_count"]
         self.assertNotEqual(cache.native_key(self.root, self.opts, self.artifact, self.env), built["key"])
 
+    def test_exact_host_edit_reuses_but_new_file_consumer_and_policy_invalidate(self):
+        name = "customizations/components/tianxuan/server/service.py"
+        host = self.root / name
+        host.parent.mkdir(parents=True)
+        host.write_text("host v1")
+        policy = self.root / "tools/native_host_inputs.json"
+        policy.parent.mkdir()
+        policy.write_text(json.dumps({"schema_version": 1, "inputs": [name]}))
+        self.git("add", ".")
+        self.commit()
+        initial = self.build()
+        host.write_text("host v2")
+        self.commit()
+        self.assertEqual(self.build()["status"], "hit")
+        unknown = host.with_name("new.py")
+        unknown.write_text("not audited")
+        self.assertNotEqual(cache.native_key(self.root, self.opts, self.artifact, self.env), initial["key"])
+        unknown.unlink()
+        self.probe["native_sources"].append(name)
+        native = self.build()
+        self.assertEqual(native["status"], "built")
+        host.write_text("embedded v3")
+        self.assertNotEqual(cache.native_key(self.root, self.opts, self.artifact, self.env), native["key"])
+        self.probe["native_sources"].clear()
+        policy.write_text(json.dumps({"schema_version": 1, "inputs": []}))
+        self.assertNotEqual(cache.native_key(self.root, self.opts, self.artifact, self.env), initial["key"])
+
+    def test_invalid_host_inventory_falls_back_without_publishing_cache(self):
+        path = self.root / "tools/native_host_inputs.json"
+        path.parent.mkdir()
+        for inputs in (["core/object/object.cpp"], ["customizations/components/tianxuan/../native.py"], [42]):
+            path.write_text(json.dumps({"schema_version": 1, "inputs": inputs}))
+            with self.subTest(inputs=inputs):
+                result = self.build(lambda: self.artifact.write_bytes(b"normal build"))
+                self.assertEqual(result["status"], "uncached")
+                self.assertFalse(self.store.exists())
+
     def test_generator_inputs_ignored_headers_toolchain_sdk_and_options_invalidate(self):
         def key():
             return cache.native_key(self.root, self.opts, self.artifact, self.env)

@@ -41,3 +41,13 @@ Issue：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1151
 当前已认证身份 viewerPermission=WRITE，GitHub GraphQL main mergeQueue=null。尚无已启用服务端合并队列的证据；本任务未修改远端分支保护或假定具备管理权限。准备并行不取消最终分支更新的串行约束。
 
 当前工具不自动合入、不证明语义兼容、不证明提升真实 CI 吞吐。剩余：完整依赖消费审计、真实并发/排队基准、受影响构建路由优化、发布接入与恢复试验、精确候选 CI、main 回读和整体验收。不得以本工具通过测试关闭整体需求。
+
+## 原生缓存与宿主代码边界
+
+本批次对两套缓存身份同时加入精确宿主输入清单，限定已核对的 43 个 Tianxuan/合契路径；清单自身始终计入身份，未知文件继续保守计入。SCons 的实际消费者优先级高于排除清单，因此脚本日后被生成器消费会重新触发失效。本地缓存读取工作树，hosted artifact 读取 HEAD blob，未提交策略不会改变后者身份。损坏策略回退普通构建或完整树身份。
+
+Windows 实际图 dry-run 得到 9,362 个原生输入，与 43 个路径交集为空；小型真实 SCons 夹具验证新增消费者时失效。12 项本地缓存、2 项宿主边界及 8 项 artifact 测试通过，1 项 POSIX 夹具在 Windows 跳过。独立审查者 /root/sinan_bf2b42c978b32940 额外验证构建中修改清单拒绝发布；真实 symlink 夹具因 WinError 1314 未验证。新增 Windows/Linux CI 持续执行这些测试，尚待本候选远端结果。证据见 data-collection/concurrent-native-cache-1151.json。
+
+PR #1170 的 Windows 完整构建、路由及 planner 检查已成功，两个签发 push 的重复作业确实 skipped；它尚未合入，main 已变化。这是减少重复工作的实际证据，不是全链路吞吐提升百分比。发布协调已获得用户明确授权；#1080 当前发布者请求优先窗口，本任务不抢占其候选。#951 的等待安排已解除。
+
+剩余验收继续包括：精确新候选的 CI 与 main 回读、真实缓存复用和并发发布收益、其他消费条件及失败恢复；父 Issue 保持进行中。
