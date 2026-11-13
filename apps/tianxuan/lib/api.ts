@@ -23,6 +23,7 @@ export async function fetchHealth(signal?: AbortSignal): Promise<ApiHealth> {
 
 export interface ApiDocDetail extends ApiDoc {
   body_md: string;
+  visibility?: DocVisibility;
 }
 
 export class MergeConflict extends Error {
@@ -102,4 +103,71 @@ export async function fetchDoc(id: string, actor: string): Promise<ApiDocDetail>
     throw new Error(`doc request failed: ${response.status}`);
   }
   return (await response.json()) as ApiDocDetail;
+}
+
+export type DocVisibility = "tenant" | "private";
+
+export type SharePermission = "read" | "write";
+
+export interface ApiShare {
+  user_id: string;
+  permission: SharePermission;
+  created_at: string;
+}
+
+export async function fetchShares(id: string, actor: string): Promise<ApiShare[]> {
+  const response = await fetch(`${API_BASE}/api/v1/docs/${encodeURIComponent(id)}/shares`, {
+    headers: { "X-Actor": actor },
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`shares request failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { shares?: ApiShare[] };
+  return body.shares ?? [];
+}
+
+export async function setDocVisibility(
+  id: string,
+  actor: string,
+  visibility: DocVisibility,
+): Promise<ApiDocDetail> {
+  const response = await fetch(`${API_BASE}/api/v1/docs/${encodeURIComponent(id)}/visibility`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", "X-Actor": actor },
+    body: JSON.stringify({ visibility }),
+  });
+  if (!response.ok) {
+    throw new Error(`visibility update failed: ${response.status}`);
+  }
+  return (await response.json()) as ApiDocDetail;
+}
+
+export async function shareDoc(
+  id: string,
+  actor: string,
+  userId: string,
+  permission: SharePermission,
+): Promise<void> {
+  const response = await fetch(`${API_BASE}/api/v1/docs/${encodeURIComponent(id)}/shares`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Actor": actor },
+    body: JSON.stringify({ user_id: userId, permission }),
+  });
+  if (!response.ok) {
+    throw new Error(`share request failed: ${response.status}`);
+  }
+}
+
+export async function unshareDoc(id: string, actor: string, userId: string): Promise<void> {
+  const response = await fetch(
+    `${API_BASE}/api/v1/docs/${encodeURIComponent(id)}/shares/${encodeURIComponent(userId)}`,
+    {
+      method: "DELETE",
+      headers: { "X-Actor": actor },
+    },
+  );
+  if (!response.ok) {
+    throw new Error(`unshare request failed: ${response.status}`);
+  }
 }
