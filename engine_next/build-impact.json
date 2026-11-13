@@ -3,5 +3,5 @@
   "reason": "Engine Next Gameplay 与 Runtime 源文件直接参与独立静态库、next_server、next_client 和测试程序编译链接；Godot 兼容壳按显式源文件消费共享 Gameplay 实现，没有可独立替换的运行包或嵌入资源。",
   "host_contract": "公共 C++17 头位于 engine_next/include/EngineNext；独立目标只允许 engine_next、明确准入的第三方和标准 C++ 运行库，Godot 类型仅允许位于 modules/gameplay 兼容适配器。真实对象、链接 response、库成员、动态依赖、干净源码树和干净目录 Trace 共同构成目标级边界证据。",
   "rollback": "移除 Engine Next Runtime 新增目标和构建入口即可恢复 M1 独立内核；Godot legacy 不消费 M2 Runtime，行为不变。恢复任何原生输入后必须重新构建并复核 native_key、Trace 和运行时测试。",
-  "evidence": "data-collection/engine-next-headless-runtime-m2-pr2-build-impact.json"
+  "evidence": "data-collection/engine-next-headless-runtime-m2-pr2-build-impact-r1.json"
 }

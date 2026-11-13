@@ -24,3 +24,10 @@
 
 - Windows MSVC 和 Linux x86_64 仍需精确候选 CI 实测，不能由 macOS 结果替代。
 - 本切片不包含权威移动、客户端预测、远端插值、重连或 10,000 tick 长稳；#1042 保持开放并继续第三片。
+
+## R1 Windows 与格式修正
+
+- PR #1056 的 macOS 与 codespell 已通过；Windows 在上游 `compress.c` 的 C4245 处失败，另有 clang-format／Ruff 格式差异。
+- 仅对上游 C 编译单元增加 `/wd4245`，第一方 C++ 保持警告即错误；以 clang-format 18.1.8 和 Ruff 0.17.1 处理第一方文件，没有重写上游源码。
+- 修正后重新完成本机 8 个测试、116 条检查、三份契约、Sanitizer、真实 UDP 握手和 78 文件干净源码树验收。
+- R1 证据采用追加文件，不修改 PR #1056 的原始回执；新精确候选的 Windows、macOS 和静态 CI 仍须重新回读。

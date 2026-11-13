@@ -98,9 +98,7 @@ def audit_archive(args, sources):
             for line in output.decode("utf-8", errors="replace").splitlines()
             if line.strip().endswith(".obj")
         ]
-    expected = sorted(
-        runtime_object_name(source, ".o" if args.compiler == "clang" else ".obj") for source in sources
-    )
+    expected = sorted(runtime_object_name(source, ".o" if args.compiler == "clang" else ".obj") for source in sources)
     if sorted(Path(member).name for member in members) != expected:
         raise ValueError("Unexpected archive members: " + repr(members))
     return members
@@ -236,6 +234,7 @@ def compile_c_source(args, source, object_path, dependency_path, include_audit, 
             "/W4",
             "/WX",
             "/wd4100",
+            "/wd4245",
             "/fp:strict",
             "/showIncludes",
             "/I",

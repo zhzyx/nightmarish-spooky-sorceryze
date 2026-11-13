@@ -54,7 +54,8 @@ void SessionManager::FillToken(ReconnectToken &out_arrToken) noexcept
 Runtime::RuntimeStatus SessionManager::CreateSession(PeerId in_nPeerId, const ClientHello &in_stHello, ServerWelcome &out_stWelcome, std::uint64_t &out_nSessionId)
 {
 	const bool bResumeEmpty = in_stHello.nResumeSessionId == 0 &&
-			std::all_of(in_stHello.arrResumeToken.begin(), in_stHello.arrResumeToken.end(), [](std::uint8_t nValue) { return nValue == 0; });
+			std::all_of(in_stHello.arrResumeToken.begin(), in_stHello.arrResumeToken.end(), [](std::uint8_t nValue)
+					{ return nValue == 0; });
 	if (in_nPeerId == 0 || !bResumeEmpty)
 	{
 		return Runtime::RuntimeStatus::InvalidParameter;

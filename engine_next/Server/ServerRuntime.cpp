@@ -109,7 +109,8 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 	std::map<Network::PeerId, std::uint64_t> mapSequences;
 	const std::uint64_t nStartedMsec = stClock.NowMsec();
 	std::uint32_t nWelcomed = 0;
-	std::cout << "ENGINE_NEXT_SERVER_READY port=" << pTransport->GetBoundPort() << '\n' << std::flush;
+	std::cout << "ENGINE_NEXT_SERVER_READY port=" << pTransport->GetBoundPort() << '\n'
+			  << std::flush;
 
 	while (stClock.NowMsec() - nStartedMsec < in_stConfig.nDurationMsec)
 	{
@@ -184,7 +185,8 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 			++nWelcomed;
 			const Network::Session *pSession = stSessions.GetSession(stEvent.nPeerId);
 			std::cout << "ENGINE_NEXT_SESSION peer_id=" << stEvent.nPeerId << " session_id=" << nSessionId
-					  << " entity_id=" << stWelcome.nEntityId << '\n' << std::flush;
+					  << " entity_id=" << stWelcome.nEntityId << '\n'
+					  << std::flush;
 			(void)stHost.RecordTrace(stHost.GetFixedStepLoop().GetTick(), "session_spawned", pSession->stEntityId, nSessionId);
 		}
 		if (eStatus != RuntimeStatus::Ok)

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-eea8ec17812a9bc920159415955efeb92f89672d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7cc8c59986b3f2334b62254615fe53d892be7b25fb49bdbacd4497cdef4a451e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1055",
+    "action": "delivery",
+    "detection_head": "bc2efa392ccef0059bab8a007845946a624b78eb",
+    "context_sha256": "5ba678d18997c2cbc37f106c5341870a3b0669138cbcac53150deb272efbf3b9",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-current-operator",
+    "authority_ref": "2026-11-13 用户明确要求按最新项目 C++ 规范落地 M2，并沿仓库授权连续执行",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1056",
+    "diagnosis": "main 前进 97 个路径并与 .pre-commit-config.yaml 重叠；双方均需要保留不可变事件和上游第三方例外。",
+    "next_action": "快进全部上游改动后合并两类 codespell 例外，记录 integration-r1 并创建 PR #1056。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T11:40:36.610434+00:00",
+    "attempted": "暂存并恢复新主线配置，再追加 engine_next/thirdparty/，重新绑定 blob 和正式门禁；未覆盖其他主线改动。",
+    "repair_owner": "当前 Kimi Work 会话",
+    "continuable": "精确候选 CI 和 main 回读继续。"
+  },
+  "occurred_at": "2026-11-13T11:44:36.241944+00:00",
+  "sha256": "cc9e1bb8ad1be19c87793a23ebceb2a339ae77a8f778d6457e84116d16b80440"
+}

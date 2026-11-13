@@ -116,7 +116,8 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 				break;
 			}
 			std::cout << "ENGINE_NEXT_CLIENT_WELCOME client_id=" << in_stConfig.strClientId
-					  << " session_id=" << stHeader.nSessionId << " entity_id=" << stWelcome.nEntityId << '\n' << std::flush;
+					  << " session_id=" << stHeader.nSessionId << " entity_id=" << stWelcome.nEntityId << '\n'
+					  << std::flush;
 			(void)stHost.RecordTrace(0, "welcome", Runtime::EntityId{ stWelcome.nEntityId }, stHeader.nSessionId);
 
 			Network::Disconnect stDisconnect;
