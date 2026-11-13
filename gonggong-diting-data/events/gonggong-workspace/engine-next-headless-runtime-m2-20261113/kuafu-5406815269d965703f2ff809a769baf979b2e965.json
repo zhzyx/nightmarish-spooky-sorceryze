@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5406815269d965703f2ff809a769baf979b2e965",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "dc6cdc8c0be87c55e0748d703c803304bb4b3d19fd79537268d24c1e06c62f46",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1048",
+    "action": "validation",
+    "detection_head": "1f685d9ab0be476e6aeaa059ce2bdee0cedcf65d",
+    "context_sha256": "012f362df0992adb7c64d351f9c9061eece321bef3ead19fdd6a104f4d5ec246",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-current-operator",
+    "authority_ref": "2026-11-13 用户明确要求按最新项目 C++ 规范落地 M2，并沿仓库授权连续执行",
+    "evidence": "本地 Ruff 0.17.1 check/format、codespell、11 项构建工具测试、22 项契约测试及完整运行时构建均通过；原失败作业 43409135498",
+    "diagnosis": "CI 静态钩子发现未使用 import、两个 Python 文件格式差异和 ENXT codespell；C++ clang-format 与双平台 Engine Next 构建均通过，运行时无需修改。",
+    "next_action": "以 NEXT 作为协议 magic，应用 Ruff 官方格式并绑定新候选；待新候选静态 CI 成功后关闭 #1048，旧 PR #1047 不合入。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T10:32:18.027666+00:00",
+    "attempted": "删除未使用 import，以 Ruff 0.17.1 修正格式、将 ENXT 改为 NEXT；随后重新完成本机构建、Sanitizer、三份契约和干净源码树运行。",
+    "repair_owner": "当前 Kimi Work 会话",
+    "continuable": "新精确候选提交和 CI 继续；其他 M2 工作不在失败候选上叠加。"
+  },
+  "occurred_at": "2026-11-13T10:33:36.558942+00:00",
+  "sha256": "d526a81b77326e56046270424fe660d10e8ec0c8bfd3d8b39ed2f3167e44fc75"
+}

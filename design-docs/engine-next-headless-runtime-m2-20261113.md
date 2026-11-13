@@ -69,7 +69,7 @@ Godot legacy ─ 仅经兼容壳复用共享 Gameplay 算法，不进入上述�
 
 | 顺序 | 字段 | 类型 | 约束 |
 | --- | --- | --- | --- |
-| 1 | `magic` | 4 字节 | ASCII `ENXT` |
+| 1 | `magic` | 4 字节 | ASCII `NEXT` |
 | 2 | `protocol_version` | `uint16` | 当前为 1 |
 | 3 | `message_type` | `uint16` | 下述六类消息 |
 | 4 | `header_bytes` | `uint16` | 当前为 32 |

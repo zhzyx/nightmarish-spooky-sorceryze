@@ -61,12 +61,17 @@ def main(argv=None):
         args.output = args.repo / args.output
     try:
         result = export_clean_source(args.repo, args.output)
-        print(json.dumps({
-            "passed": True,
-            "root": str(result["root"]),
-            "manifest": str(result["manifest"]),
-            "file_count": result["file_count"],
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "passed": True,
+                    "root": str(result["root"]),
+                    "manifest": str(result["manifest"]),
+                    "file_count": result["file_count"],
+                },
+                indent=2,
+            )
+        )
     except (OSError, ValueError) as error:
         print(json.dumps({"passed": False, "error": str(error)}, indent=2))
         return 1
@@ -75,4 +80,5 @@ def main(argv=None):
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

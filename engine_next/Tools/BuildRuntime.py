@@ -73,8 +73,7 @@ def audit_archive(args, sources):
             if line.strip().endswith(".obj")
         ]
     expected = sorted(
-        BuildSupport.object_name(source, ".o" if args.compiler == "clang" else ".obj")
-        for source in sources
+        BuildSupport.object_name(source, ".o" if args.compiler == "clang" else ".obj") for source in sources
     )
     if sorted(Path(member).name for member in members) != expected:
         raise ValueError("Unexpected archive members: " + repr(members))
@@ -137,11 +136,7 @@ def configure_toolchain(args):
         args.nm = shutil.which("nm")
         args.otool = shutil.which("otool") if sys.platform == "darwin" else None
         args.ldd = shutil.which("ldd") if sys.platform != "darwin" else None
-        missing = [
-            name
-            for name, value in (("clang++", args.clangxx), ("ar", args.ar), ("nm", args.nm))
-            if not value
-        ]
+        missing = [name for name, value in (("clang++", args.clangxx), ("ar", args.ar), ("nm", args.nm)) if not value]
         if sys.platform == "darwin" and not args.otool:
             missing.append("otool")
         if sys.platform != "darwin" and not args.ldd:
@@ -178,9 +173,7 @@ def compile_sources(args, sources, object_dir, suffix, include_audit, commands):
 
 def link_target(args, name, sources, library, library_objects, object_dir, suffix, include_audit, commands):
     target_objects = compile_sources(args, sources, object_dir, suffix, include_audit, commands)
-    executable = args.build_dir / (
-        name + ".exe" if args.compiler == "msvc" or os.name == "nt" else name
-    )
+    executable = args.build_dir / (name + ".exe" if args.compiler == "msvc" or os.name == "nt" else name)
     response = args.build_dir / (name + "Link.rsp")
     response_values = [*target_objects, library]
     if args.compiler == "clang":
@@ -207,7 +200,9 @@ def link_target(args, name, sources, library, library_objects, object_dir, suffi
         "objects": [BuildSupport.artifact(args.repo, path) for path in [*library_objects, *target_objects]],
         "libraries": [BuildSupport.artifact(args.repo, library)],
         "runtime_files": [],
-        "system_libraries": ["c++"] if args.compiler == "msvc" or sys.platform == "darwin" else ["stdc++", "gcc_s", "c", "m"],
+        "system_libraries": ["c++"]
+        if args.compiler == "msvc" or sys.platform == "darwin"
+        else ["stdc++", "gcc_s", "c", "m"],
     }
     manifest_path = args.build_dir / (name + "LinkManifest.json")
     manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -228,11 +223,16 @@ def run_target(args, target, directory, trace_directory):
     if target["name"] == "EngineNextRuntimeTests":
         return BuildSupport.run([executable], cwd=directory, env=args.tool_environment).decode("utf-8").strip()
     trace_path = trace_directory / (target["name"] + ".jsonl")
-    return BuildSupport.run(
-        [executable, "--manual-ticks", "4", "--trace-output", trace_path],
-        cwd=directory,
-        env=args.tool_environment,
-    ).decode("utf-8").strip()
+    return (
+        BuildSupport
+        .run(
+            [executable, "--manual-ticks", "4", "--trace-output", trace_path],
+            cwd=directory,
+            env=args.tool_environment,
+        )
+        .decode("utf-8")
+        .strip()
+    )
 
 
 def run_acceptance(args, targets):
@@ -286,9 +286,7 @@ def build(args):
         )
         header_objects.append(object_dir / ("PublicHeader" + str(index) + suffix))
 
-    args.library = args.build_dir / (
-        "libEngineNextRuntime.a" if args.compiler == "clang" else "EngineNextRuntime.lib"
-    )
+    args.library = args.build_dir / ("libEngineNextRuntime.a" if args.compiler == "clang" else "EngineNextRuntime.lib")
     if args.compiler == "clang":
         archive_command = [args.ar, "-rcs", args.library, *library_objects]
     else:
@@ -298,22 +296,28 @@ def build(args):
 
     targets = []
     for name, sources in APP_SOURCES.items():
-        targets.append(link_target(
-            args,
-            name,
-            sources,
-            args.library,
-            library_objects,
-            object_dir,
-            suffix,
-            include_audit,
-            commands,
-        ))
-    acceptance = run_acceptance(args, targets) if args.run_tests else {
-        "summaries": {},
-        "clean_summaries": {},
-        "trace_sha256": {},
-    }
+        targets.append(
+            link_target(
+                args,
+                name,
+                sources,
+                args.library,
+                library_objects,
+                object_dir,
+                suffix,
+                include_audit,
+                commands,
+            )
+        )
+    acceptance = (
+        run_acceptance(args, targets)
+        if args.run_tests
+        else {
+            "summaries": {},
+            "clean_summaries": {},
+            "trace_sha256": {},
+        }
+    )
 
     native_inputs = sorted([
         *LIBRARY_SOURCES,
@@ -362,14 +366,19 @@ def build(args):
     }
     report_path = args.build_dir / "RuntimeBuildReport.json"
     report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({
-        "passed": True,
-        "report": BuildSupport.repository_name(args.repo, report_path),
-        "manifests": [BuildSupport.repository_name(args.repo, target["manifest"]) for target in targets],
-        "summaries": acceptance["summaries"],
-        "clean_summaries": acceptance["clean_summaries"],
-        "trace_sha256": acceptance["trace_sha256"],
-    }, indent=2))
+    print(
+        json.dumps(
+            {
+                "passed": True,
+                "report": BuildSupport.repository_name(args.repo, report_path),
+                "manifests": [BuildSupport.repository_name(args.repo, target["manifest"]) for target in targets],
+                "summaries": acceptance["summaries"],
+                "clean_summaries": acceptance["clean_summaries"],
+                "trace_sha256": acceptance["trace_sha256"],
+            },
+            indent=2,
+        )
+    )
     return report
 
 
@@ -395,4 +404,5 @@ def main(argv=None):
 
 if __name__ == "__main__":
     import subprocess
+
     sys.exit(main())

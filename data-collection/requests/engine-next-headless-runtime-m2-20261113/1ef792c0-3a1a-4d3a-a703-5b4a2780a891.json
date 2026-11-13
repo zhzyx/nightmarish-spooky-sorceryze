@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "collected_at": "2026-11-13T10:33:51.554334+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-headless-runtime-m2-20261113/kuafu-5406815269d965703f2ff809a769baf979b2e965.json",
+      "sha256": "b9852d65096279256726b4ec4f546ad9ca460f91a370994758a84e29bdf7384c",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-5406815269d965703f2ff809a769baf979b2e965",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-headless-runtime-m2-20261113/kuafu-a734e44fd605f81698eb56f62f1186207dd72ca0.json",
+      "sha256": "39ef3ebd4a89641cd0e3f73d3248333d36f80df058f688542cdbe124f06eceff",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-a734e44fd605f81698eb56f62f1186207dd72ca0",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-headless-runtime-m2-20261113/kuafu-efea1a664e0453a22dccd7072560e32cf516f48a.json",
+      "sha256": "16f076a2bfb833b860feb820871d8673f1b6fe69779d3ab790b294225b1e9f02",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-efea1a664e0453a22dccd7072560e32cf516f48a",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-headless-runtime-m2-20261113/request-1042-engine-next-headless-runtime-m2.json",
+      "sha256": "73982b6b58d75627541023d7cbf32e3ab2b17409b60e345118317c39dc9c5b56",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "request-1042-engine-next-headless-runtime-m2",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1042,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042"
+}
