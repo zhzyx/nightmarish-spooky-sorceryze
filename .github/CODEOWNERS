@@ -532,6 +532,7 @@
 /framework/                                     @zhzyx @godotengine/buildsystem
 /framework/**/tests/                            @zhzyx @godotengine/buildsystem @godotengine/tests
 /framework/**/test/                             @zhzyx @godotengine/buildsystem @godotengine/tests
+/apps/                                        @zhzyx
 /customizations/                              @zhzyx @godotengine/buildsystem
 /data-collection/                             @zhzyx
 /design-docs/                                 @zhzyx
