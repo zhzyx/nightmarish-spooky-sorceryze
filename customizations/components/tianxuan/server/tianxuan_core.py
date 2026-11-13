@@ -50,6 +50,12 @@ CREATE TABLE IF NOT EXISTS events (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, type TEXT NOT NULL, actor TEXT NOT NULL,
   target TEXT NOT NULL, payload TEXT NOT NULL DEFAULT '{}', created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS comments (
+  id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, doc_id TEXT NOT NULL, parent_id TEXT,
+  author TEXT NOT NULL, body TEXT NOT NULL, resolved INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL, resolved_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_comments_doc ON comments(doc_id, created_at);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_docs_request ON docs(tenant_id, request_id)
   WHERE request_id IS NOT NULL;
 """
@@ -289,6 +295,60 @@ class Tianxuan:
             "SELECT version, author, created_at FROM doc_versions WHERE doc_id = ? ORDER BY version", (doc_id,)
         ).fetchall()
         return [dict(row) for row in rows]
+
+    # ---------- 文曲：评论 ----------
+
+    def add_comment(self, actor: str, doc_id: str, body: str, parent_id: str | None = None) -> dict[str, Any]:
+        document = self.get_doc(doc_id)
+        if not body.strip():
+            raise TianxuanError("comment body is required")
+        if parent_id is not None:
+            parent = self.get_comment(parent_id)
+            if parent["doc_id"] != doc_id:
+                raise TianxuanError("parent comment belongs to another document")
+        comment_id = _id("cmt")
+        now = _now()
+        self.db.execute(
+            "INSERT INTO comments (id, tenant_id, doc_id, parent_id, author, body, resolved, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, 0, ?)",
+            (comment_id, document["tenant_id"], doc_id, parent_id, actor, body, now),
+        )
+        self._event(document["tenant_id"], "comment.created", actor, comment_id, {"doc_id": doc_id})
+        self.db.commit()
+        return self.get_comment(comment_id)
+
+    def get_comment(self, comment_id: str) -> dict[str, Any]:
+        row = self.db.execute("SELECT * FROM comments WHERE id = ?", (comment_id,)).fetchone()
+        if row is None:
+            raise NotFound(f"comment not found: {comment_id}")
+        comment = dict(row)
+        comment["resolved"] = bool(comment["resolved"])
+        return comment
+
+    def list_comments(self, actor: str, doc_id: str) -> list[dict[str, Any]]:
+        document = self.get_doc(doc_id)
+        rows = self.db.execute(
+            "SELECT * FROM comments WHERE tenant_id = ? AND doc_id = ? ORDER BY created_at, id",
+            (document["tenant_id"], doc_id),
+        ).fetchall()
+        return [dict(row) | {"resolved": bool(row["resolved"])} for row in rows]
+
+    def resolve_comment(self, actor: str, comment_id: str, resolved: bool = True) -> dict[str, Any]:
+        comment = self.get_comment(comment_id)
+        now = _now()
+        self.db.execute(
+            "UPDATE comments SET resolved = ?, resolved_at = ? WHERE id = ?",
+            (1 if resolved else 0, now if resolved else None, comment_id),
+        )
+        self._event(
+            comment["tenant_id"],
+            "comment.resolved" if resolved else "comment.reopened",
+            actor,
+            comment_id,
+            {},
+        )
+        self.db.commit()
+        return self.get_comment(comment_id)
 
     # ---------- 偃师：需求文档 ----------
 
