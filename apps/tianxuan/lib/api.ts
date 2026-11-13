@@ -5,10 +5,30 @@ export interface ApiHealth {
   status: string;
 }
 
+export interface ApiDoc {
+  id: string;
+  title: string;
+  kind: string;
+  version: number;
+  status: string;
+}
+
 export async function fetchHealth(signal?: AbortSignal): Promise<ApiHealth> {
   const response = await fetch(`${API_BASE}/api/v1/health`, { cache: "no-store", signal });
   if (!response.ok) {
     throw new Error(`health request failed: ${response.status}`);
   }
   return (await response.json()) as ApiHealth;
+}
+
+export async function fetchDocs(actor: string): Promise<ApiDoc[]> {
+  const response = await fetch(`${API_BASE}/api/v1/docs`, {
+    headers: { "X-Actor": actor },
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`docs request failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { docs?: ApiDoc[] };
+  return body.docs ?? [];
 }
