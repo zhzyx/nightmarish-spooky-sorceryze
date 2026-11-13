@@ -218,3 +218,12 @@ PR #1036 已合入 main `1a47861ed118da8b14f23fd0129e0b8bba4544b5`，完整 PR C
 模型目录和强度以客户端/账号返回值为准，目录不代替每个型号的实际调用权限；依据 [OpenAI App Server 模型目录说明](https://learn.chatgpt.com/docs/app-server#list-models-modellist) 和 [官方目录与推理验收边界](https://developers.openai.com/siwc/token-sharing-open-source/codex-app-server)。本次实际请求只支持该次调用结论。
 
 交付准备时 main 已由其他责任者的 PR #1052 推进到 `bc2efa392ccef0059bab8a007845946a624b78eb`。已正常快进整合；新增的独立 Engine Next M2 运行时/构建契约与本次 AI、Blender 输入无交叉，沿用上述722a实际证据，未声称在新基线上重复运行。最终门禁和精确候选 CI 仍绑定实际交付对象。
+
+
+## 2026-11-14 侧栏交付与原发送证据接收
+
+用户明确移交的#830及整合时发现的#1075/#1077已由PR#1078交付main432cd759，精确PR与main CI均通过。原侧栏5/5、63项宿主路由、macOS真实保存故障/重试和argv边界、Windows实际原设计续接及冷恢复均有独立审查与原始回执；三单已done/completed，旧831被替代关闭。两棵原830工作树和五个本轮测试现场已在归档/占用检查后清理，当前31棵、累计移除30棵；其余30棵及902份变更摘要未变。保留原非祖先分支/签发、审计和有效安装。详见data-collection/tianshu-inline-actions-830-delivery.json。
+
+用户另已明确移交#825原PR829的证据交付。七份历史公开文件保持原字节；独立审查结合原会话持久历史和直接Hero→827资产绑定确认原发送恢复，当前main整合无路径覆盖。原827已答复彩虹色并仍in-progress，原生预览确认及整体验收继续由原生产责任链持有；不以本轮证据交付批准生产。新的当前状态说明位于data-collection/tianshu-send-recovery-825-handoff-validation.json。
+
+本父目标保持开放；闭环只针对有实际验收和远端回执的子项。源码/受控原生通过不替代原安装、真实供应商、原设备或生产范围。原历史快照继续保留，本节更新当前责任与已完成范围。

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-296dc73cdfc53f07606d3d7c0b239247b0aa2d00",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-3d-send-connection-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/825",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f5e240175c63875b692232c91f2ad3836a3ddefb36cf515d4cd58001b1efd0ec",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/825",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/825",
+    "action": "user-report",
+    "detection_head": "1f6ea3e74244275efafc484d7cf324d9feea5c4a",
+    "context_sha256": "ab2cc79a4d1f9abbe22ce445c709f68c5fb947433dfd699c5ae2bccb31a5b2c0",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/825",
+    "evidence": "data-collection/tianshu-send-recovery-825.json",
+    "diagnosis": "Recovered with actual native receipts: user approved backend switch to existing logged-in Codex and original queue resume. Actual model processing created Issue 827 and bound it to Hero. Initial API model validation failure no longer occurs.",
+    "next_action": "Publish recovery evidence and close only support bug 825 after main readback. Editor-owned production Issue 827 remains open for user material-style decision; no production completion claimed.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-11T20:14:39.949159+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-11T20:22:30.931166+00:00",
+  "sha256": "304a541e6405677c83f7b3595dd6a5763ed282c9ffb9423ae442ff4bf1dda0e9"
+}

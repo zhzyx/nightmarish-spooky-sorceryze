@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "issue_number": 830,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/830",
+  "request_id": "tianshu-3d-inline-actions-20261112",
+  "parent_issue": 978,
+  "recorded_at": "2026-11-13T18:05:29.993675+00:00",
+  "operator": "Sail-Li",
+  "authority": "Explicit user handoff for830 and broad AI/GitHub refactor/workspace cleanup",
+  "delivery": {
+    "pr": 1078,
+    "pr_state": "MERGED",
+    "source": "2e69c7e61fe09c4ce0987bf6c0e2e3d602ac25e2",
+    "signed": "f3b9b834343b11b23d9474c7feef84d468370fd0",
+    "tree": "47e721e693b91ecec93f824b1beba69a31023c8d",
+    "main": "432cd7591a2c015cffd04252a8aa526e9226beee",
+    "pr_ci": "success",
+    "pr_run": 43472488074,
+    "main_ci": "success",
+    "main_run": 43475358384,
+    "old_pr831_state": "CLOSED",
+    "issues": {
+      "830": "closed_completed_done",
+      "1075": "closed_completed_done",
+      "1077": "closed_completed_done"
+    },
+    "parent978": "open; overall goal still active"
+  },
+  "acceptance": {
+    "original_830_items_passed": 5,
+    "original_830_items_total": 5,
+    "macos_routing_checks": 63,
+    "macos_native": "sidebar detail/reply/explicit confirmation/context invalidation/drafts/restart passed",
+    "related_bugs": {
+      "1075": "history checkpoint, real write-failure refusal/retry and forced-kill cold restoration passed",
+      "1077": "six exact macOS argv/status/refusal/fault cases passed; independent review passed"
+    },
+    "windows_exact_pr_and_main": "Actual compile/unit/reasoning/runtime interruption/parent binding, real save failure and original design continuation passed; three parent reports read back on each run",
+    "independent_reviews": {
+      "1075": "a67bd479c1c8d45ac30bc61f2447551e3725d9dce319940116ef602cc53f8954",
+      "1077": "75b82b4154c1cc5b7e8490b9bad563c9d84b6bdff6d855f79dfa4bf02cfcc55b"
+    }
+  },
+  "cleanup": {
+    "removed_worktrees": [
+      "tianshu-3d-actions-20261112",
+      "tianshu-inline-recovery-integration-20261113"
+    ],
+    "removed_count": 2,
+    "cumulative_removed_count": 30,
+    "remaining_worktree_count": 31,
+    "other_worktrees_unchanged": 30,
+    "other_changed_files_unchanged": 902,
+    "archive_files": 49,
+    "archive_bytes": 466453845,
+    "removed_owned_fixture_directories": 5,
+    "removed_fixture_source_bytes": 1496333718,
+    "fixture_audit_objects_retained": true,
+    "removed_local_branches": [
+      "codex/tianshu-inline-recovery-integration-20261113",
+      "codex/tianshu-inline-actions-delivery-20261114"
+    ],
+    "removed_remote_branch": "codex/submit/Sail-Li/830/2e69c7e61fe09c4ce0987bf6c0e2e3d602ac25e2",
+    "retained_original_branch": "codex/tianshu-3d-actions-20261112; original28427 is not a main ancestor",
+    "retained_original_signed_remote": "Old831 signed candidate retained as necessary nonancestor signature/history evidence",
+    "effective_installation_changed": false,
+    "space_claim": "Counts describe removed objects/source sizes, not measured net free-space gain"
+  },
+  "limits": [
+    "Real screen pixels/focus and unexecuted platforms retain original scope limits",
+    "Controlled fixtures do not prove real provider or original827/951/773 production acceptance",
+    "300-second timeout was source-reviewed, not elapsed-time tested",
+    "Existing shutdown diagnostics retained; no zero-error or leak-free claim",
+    "Parent978 remains active;825 separately accepted by user for evidence delivery, not827 production"
+  ],
+  "private_receipt_resolution_base": "Private receipts resolve from the parent of git rev-parse --path-format=absolute --git-common-dir, then data-collection/receipts/ai-integration-refactor-20261112. Not the linked worktree root. Public source paths resolve from repository checkout root.",
+  "private_receipts_sha256": {
+    "issue830-user-handoff-accepted.json": "63b556e6ed224a62308d4eb31e5490e0f44c42c2211dd734dd7f91a772e46f43",
+    "issue830-main-content-verified.json": "b7f59df4c3e6acba117156c1d8f0d86113ea0ea5b9b779641b600b950d698705",
+    "issue830-pr1078-ci-complete.json": "4f4f8268fcb7ff0cc3b6e1fbe35daa00ace8bb8b2671c32c153f4a45b6b23031",
+    "issue830-main-ci-complete.json": "79b5a5387e047c99ad28e9f7554b2e8fda1c6fb1ec21dce7add0cf22333af27d",
+    "issue830-pr1078-merged.json": "f44cb419235993fe50bf8a6d0deb5cf5a2ef6050a5c3898fa4082d8df8b9341d",
+    "issue830-main-native-artifacts-verified.json": "14152ffff25592d2280c987d56be30834974a31b581dc5efd674be6dc5ee5007",
+    "issue830-closed-readback.json": "19c98c34b4226a9f4be2d01e467cc505beeb4e1927b606ca61a36a03f4eca30b",
+    "issue1075-closed-readback.json": "05cc25e71b7fc139ffd3ea66e402d7eebd9110f9cccfa96a1300faf2a1bea555",
+    "issue1077-closed-readback.json": "f571ba5150891695174a701e32003e57795501c7c701c5886c42140f069fc405",
+    "issue830-old-pr831-closed.json": "9d70a0d5cc0b7bdfe3bc5a11042b50457dab2f4af3a6f8bdae401466e37cc251",
+    "issue830-worktrees-cleanup-completed.json": "cb747c2cde62e26a253ee4a85f0b3b7f7f0a3e7106d265abfec5de5893289ace",
+    "issue830-retirement-archive/manifest.json": "4be2251ba8e77fd71dfa96ff0b616d2f65122f823a6d0043e112959ef7d8ad62",
+    "issue830-fixtures-cleanup-completed.json": "7475a3ddee073c6eb2c959fb20d4a665a60fc754e2771b5b4ec0f046d4dc7e60",
+    "issue830-publication-branches-cleanup.json": "af0832f45c8c05d151ca5cf7ee78cdaba6ecc96fe4d4d69da380a8c6ca2f9704",
+    "issue1075-independent-review/review.json": "a67bd479c1c8d45ac30bc61f2447551e3725d9dce319940116ef602cc53f8954",
+    "issue1077-independent-review/review.json": "75b82b4154c1cc5b7e8490b9bad563c9d84b6bdff6d855f79dfa4bf02cfcc55b",
+    "issue830-closeout-operator-recovery.json": "a193b41e63f1c12df82bd1ac810e01cecfe53f21abe6c9d65c80f32061c420d2"
+  }
+}
