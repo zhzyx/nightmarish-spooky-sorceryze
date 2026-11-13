@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ae48f0edf6b2b677245e1e8177f19195cf98c2f6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-game-receipt-storage-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "549117d818d866ba1dae3b93ef60056556fa27502e57729f2ff4bd011f7538d7",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+    "action": "validation",
+    "detection_head": "d91bd93eb14d1420db9e6872c638e9cb82baf015",
+    "context_sha256": "4a49e46f5856e1733c0901eb6a65cf78623906128a413ba2fa26342dca351924",
+    "operator": "Sail-Li",
+    "worker": "codex:/root/sinan_3f3ba9f72325ebd1",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+    "evidence": "data-collection/editor-game-receipt-storage-948-r2.json",
+    "diagnosis": "New Allman member implementation conflicted with inherited legacy clang-format; scoped native unit and PascalCase/type-prefixed names resolve the actual final-format rejection without broad formatting.",
+    "next_action": "Root independently reviews exact revised source, runs formal gate and CI/main delivery, then installed consumer replay. Local strict native build and metadata/cold-restart consumers passed.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T14:19:33.131894+00:00",
+    "attempted": "Initial receive failed on transient GitHub network; retry authenticated Sail-Li. clang-format dry-run now exit0, strict build06 exit0, native08 and native-restart08 passed.",
+    "repair_owner": "codex:/root/sinan_3f3ba9f72325ebd1",
+    "continuable": "Root delivery and independent review; no commits or push by implementation worker."
+  },
+  "occurred_at": "2026-11-12T14:22:29.177673+00:00",
+  "sha256": "3fcddf54c99f2608efe91fd1012ccbf7675fa5ba3bbed592ac87a74a2642b874"
+}

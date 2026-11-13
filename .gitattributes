@@ -75,3 +75,6 @@ data-collection/editor-game-workspace-821-final.json -text whitespace=cr-at-eol
 data-collection/editor-task-authorization-820.json -text whitespace=cr-at-eol
 # Preserve the unpublished concurrent learning receipt; canonical main revision stays intact.
 data-collection/editor-production-build-placement-concurrent-773.json -text whitespace=cr-at-eol
+# Preserve exact #943 installed receipts referenced by immutable method events.
+data-collection/editor-design-contract-943-installed.json -text whitespace=cr-at-eol
+data-collection/editor-design-contract-943-template-installed.json -text whitespace=cr-at-eol

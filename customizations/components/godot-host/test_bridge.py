@@ -359,7 +359,15 @@ class ChatGateTests(unittest.TestCase):
             "execution_requires_approval": True,
         }
         self.issue_patch = patch.object(
-            bridge, "issue_binding", return_value={"url": "https://github.com/test/repo/issues/6"}
+            bridge,
+            "issue_binding",
+            side_effect=lambda *_: {
+                "url": "https://github.com/test/repo/issues/6",
+                "verified_issue_source": {
+                    "actor": {"user_id": "123", "login": "fixture-worker"},
+                    "row": {"number": 6, "html_url": "https://github.com/test/repo/issues/6", "state": "open"},
+                },
+            },
         )
         self.issue_patch.start()
         self.addCleanup(self.issue_patch.stop)
@@ -395,6 +403,77 @@ class ChatGateTests(unittest.TestCase):
         self.assertTrue(result["ok"])
         self.assertEqual(result["context"], "FRAMEWORK")
         self.assertEqual(run.call_count, 2)
+
+    def test_ordinary_reporting_uses_intake_actor_without_another_remote_read(self):
+        request = dict(self.request, actor="forged", verified_issue_source={"actor": {"user_id": "forged"}})
+        with (
+            patch.object(bridge, "issue_binding", wraps=bridge.issue_binding) as intake,
+            patch.object(bridge, "direct_adapter") as direct,
+            patch.object(bridge.subprocess, "run", side_effect=self.process(True)) as run,
+        ):
+            result = bridge.chat(self.root, request, "test")
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["reporting"]["actor"], "123")
+        self.assertEqual(self.mandates[-1]["reporting"]["actor"], "123")
+        self.assertFalse(self.mandates[-1]["tool_permission"]["tools_enabled"])
+        self.assertEqual(result["parent_confirmation_source"]["actor"]["user_id"], "123")
+        intake.assert_called_once_with(self.root, dict(request, daqian_bound=True), "test")
+        direct.assert_not_called()
+        self.assertEqual(run.call_count, 2, "Only context assembly and receipt persistence may run")
+
+    def test_ordinary_rest_fallback_reuses_collaborator_check_and_rejects_denial(self):
+        from unittest.mock import Mock
+
+        for permitted in (True, False):
+            collaborator = Mock(return_value={"user_id": "456", "login": "rest-worker"})
+            if not permitted:
+                collaborator.side_effect = ValueError("Repository affiliation denied")
+            routing = types.SimpleNamespace(direct_issue=types.SimpleNamespace(publish_collaborator=collaborator))
+            with (
+                self.subTest(permitted=permitted),
+                patch.object(
+                    bridge,
+                    "issue_binding",
+                    return_value={
+                        "url": "https://github.com/test/repo/issues/6",
+                        "verified_issue_source": {"actor": None, "row": {"number": 6, "state": "open"}},
+                    },
+                ) as intake,
+                patch.object(bridge, "direct_adapter", return_value=(routing, None)),
+                patch.object(bridge.subprocess, "run", side_effect=self.process(True)) as run,
+            ):
+                if permitted:
+                    result = bridge.chat(self.root, dict(self.request, actor="forged"), "test")
+                    self.assertTrue(result["ok"])
+                    self.assertEqual(result["reporting"]["actor"], "456")
+                    self.assertEqual(result["parent_confirmation_source"]["actor"]["user_id"], "456")
+                    self.assertEqual(run.call_count, 2)
+                else:
+                    with self.assertRaisesRegex(ValueError, "Repository affiliation denied"):
+                        bridge.chat(self.root, dict(self.request, actor="forged"), "test")
+                    run.assert_not_called()
+                intake.assert_called_once()
+                collaborator.assert_called_once_with(self.root)
+
+    def test_ordinary_missing_verified_actor_cannot_use_request_identity(self):
+        for actor in ({"user_id": ""}, {"user_id": " "}, {"user_id": 123}, "forged"):
+            with (
+                self.subTest(actor=actor),
+                patch.object(
+                    bridge,
+                    "issue_binding",
+                    return_value={
+                        "url": "https://github.com/test/repo/issues/6",
+                        "verified_issue_source": {"actor": actor},
+                    },
+                ),
+                patch.object(bridge, "direct_adapter") as direct,
+                patch.object(bridge.subprocess, "run") as run,
+            ):
+                with self.assertRaisesRegex(ValueError, "Verified Issue collaborator identity is unavailable"):
+                    bridge.chat(self.root, dict(self.request, actor="forged"), "test")
+                direct.assert_not_called()
+                run.assert_not_called()
 
     def test_execution_policy_reaches_renderer_without_granting_tools(self):
         process = self.process(True)

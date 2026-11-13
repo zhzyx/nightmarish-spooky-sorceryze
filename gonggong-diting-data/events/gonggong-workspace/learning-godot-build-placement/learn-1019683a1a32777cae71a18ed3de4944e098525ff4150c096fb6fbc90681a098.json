@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-1019683a1a32777cae71a18ed3de4944e098525ff4150c096fb6fbc90681a098",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+  "occurred_at": "2026-11-12T13:58:06.666863+00:00",
+  "evidence_refs": [
+    "request-948-20261112-readback",
+    "learn-7fdfa2aa88abefd14a211badaf3c1b91f232dfe020be3f71ec54454a7da9b09d"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 17,
+    "previous": "e5e3bd71b4e0163b024ec29c858129e33c5b2e1ca6d4fb17fc85680e01972d5d",
+    "action": "applied",
+    "details": {
+      "task": "Issue #948 ordinary game metadata recovery; follow the actual native command/flush/restart consumers and rebuild native inputs.",
+      "observed": "Strict Windows editor build passed; real ordinary no-candidate cold restart executes once and preserves queue; native complete-game command recovered both metadata files before continuing to rollback. Python source is exercised through the fixture host installation. Installed consumer and CI/main are not asserted by this local evidence."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-game-receipt-storage-948.json",
+        "sha256": "976050ff7b598dd47f4bd4a6aa8a037556db4a138a166e7a513a5137efa97cff"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-game-receipt-storage-20261112/request-948-20261112-readback.json",
+      "sha256": "8c4d9d03039034e0a0d31b2124ae639fb75413221728c93486aac37bca0d764c"
+    }
+  },
+  "sha256": "f15cc9f751fa986f0a5654ac7858958a187146ee7c78483ab27f75e6cefcbdc6"
+}

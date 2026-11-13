@@ -35,9 +35,16 @@ if op=='auth': raise SystemExit(1 if (r/'gh_disabled').exists() else 0)
 if op=='api':
  path=args[0]
  if path=='user': value={'login':'fixture-worker','id':123}
- elif path=='repos/'+repo: value={'full_name':repo,'permissions':{'push':True}}
+ elif path=='repos/'+repo: value={'id':456,'full_name':repo,'permissions':{'push':True}}
+ elif path=='graphql' and any(a.startswith('number=') for a in args):
+  number=int(next(a.split('=',1)[1] for a in args if a.startswith('number=')))
+  issue=next(x for x in issues if x['number']==number)
+  row=dict(issue,state=issue['state'].upper(),url=issue['html_url'],updatedAt=issue['updated_at'],
+           labels={'nodes':issue['labels'],'pageInfo':{'hasNextPage':False}})
+  value={'data':{'viewer':{'login':'fixture-worker','databaseId':123},
+         'repository':{'nameWithOwner':repo,'databaseId':456,'viewerPermission':'WRITE','issue':row}}}
  elif '/labels?' in path:
-  labels=json.loads((r/'.github/labels.json').read_text())+json.loads((r/'.github/status-labels.json').read_text())
+  labels=json.loads((r/'.github/labels.json').read_text(encoding='utf-8'))+json.loads((r/'.github/status-labels.json').read_text(encoding='utf-8'))
   labels.append({'name':'workspace:gonggong'})
   value=[labels] if '--slurp' in args else labels
  elif '/issues?' in path: value=[issues] if '--slurp' in args else issues
@@ -101,7 +108,10 @@ def main():
     normal = 0
     tool_roundtrips = 0
     catalog_requests = []
-    with tempfile.TemporaryDirectory(prefix="requirements-native-") as folder:
+    with (
+        tempfile.TemporaryDirectory(prefix="requirements-native-") as folder,
+        tempfile.TemporaryDirectory(prefix="requirements-private-") as private_folder,
+    ):
         root = Path(folder).resolve()
         shutil.copytree(ROOT / "framework", root / "framework", ignore=shutil.ignore_patterns("__pycache__"))
         shutil.copyfile(ROOT / "CURRENT_FRAMEWORK.json", root / "CURRENT_FRAMEWORK.json")
@@ -157,6 +167,10 @@ def main():
         shutil.copyfile(ROOT / "SConstruct", installation / "SConstruct")
         for directory in ("framework", "customizations", "tools", "integrations"):
             shutil.copytree(root / directory, installation / directory)
+        # Ordinary game commands use the installed receipt guard and its imports.
+        # Keep these host tools out of the deliberately stale workspace launcher.
+        for name in ("editor_provenance_guard.py", "editor_engine_candidate.py", "editor_provenance_process.py"):
+            shutil.copyfile(ROOT / "tools" / name, installation / "tools" / name)
         shutil.copyfile(root / "CURRENT_FRAMEWORK.json", installation / "CURRENT_FRAMEWORK.json")
         if args.portable_chat:
             (installation / "customizations/components/godot-host/bridge.py").unlink()
@@ -369,8 +383,10 @@ def main():
         for name in ["OPENAI_API_KEY", "GODOT_AI_API_KEY"]:
             env.pop(name, None)
         for name in ["APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME"]:
-            env[name] = str(root / name)
-            (root / name).mkdir()
+            # Host receipt backups must remain outside the mutable game workspace.
+            private_path = Path(private_folder).resolve() / name
+            env[name] = str(private_path)
+            private_path.mkdir()
         args.out.parent.mkdir(parents=True, exist_ok=True)
         try:
             result = run_editor(

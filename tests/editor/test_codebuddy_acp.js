@@ -336,3 +336,15 @@ test('Read-only CodeBuddy discovery and script reads stay on typed host requests
     }
     assert.equal(proposal.choices[0].message.content, 'READONLY_HOST_READS_OK');
 });
+
+
+test('CodeBuddy production continuation returns the actual typed host receipt', { timeout: 30000 }, async t => {
+    const tools = [...definitions, ...['run_command', 'production_control'].map(name => ({ function: { name } }))];
+    const submit = await bridge(t, '', 'continuation_parent', { tools });
+    const proposal = await submit([{ role: 'user', content: 'case:production_control' }]);
+    const call = proposal.choices[0].message.tool_calls[0];
+    assert.equal(call.function.name, 'production_control');
+    assert.deepEqual(JSON.parse(call.function.arguments), { action: 'status' });
+    const done = await submit([proposal.choices[0].message, { role: 'tool', tool_call_id: call.id, content: JSON.stringify({ ok: true, items: [] }) }], 1);
+    assert.equal(done.choices[0].message.content, 'PRODUCTION_CONTROL_RECEIPT');
+});

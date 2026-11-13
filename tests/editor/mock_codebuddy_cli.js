@@ -184,6 +184,14 @@ async function main() {
                     await connection.sessionUpdate({ sessionId: session.id, update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'READONLY_PARENT_RETURN_OK' } } });
                     return { stopReason: 'end_turn' };
                 }
+                if (text === 'case:production_control') {
+                    const terminal = await connection.createTerminal({ sessionId: session.id, command: 'godot-host-action production_control ' + JSON.stringify({ action: 'status' }) });
+                    const output = await terminal.currentOutput();
+                    assert.equal(JSON.parse(output.output).ok, true);
+                    await terminal.release();
+                    await connection.sessionUpdate({ sessionId: session.id, update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'PRODUCTION_CONTROL_RECEIPT' } } });
+                    return { stopReason: 'end_turn' };
+                }
                 if (text === 'case:readonly_parent') {
                     const terminal = await connection.createTerminal({ sessionId: session.id, command: 'godot-host-action delegate_review ' + JSON.stringify({ prompt: 'case:readonly_boundary', title: 'CodeBuddy readonly boundary' }) });
                     const output = await terminal.currentOutput();

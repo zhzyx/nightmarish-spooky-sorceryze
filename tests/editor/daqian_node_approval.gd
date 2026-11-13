@@ -82,7 +82,7 @@ func run() -> void:
 	ai_settings.find_child("AutoExecuteCommands", true, false).button_pressed = false
 	ai_settings.find_child("AllowTools", true, false).button_pressed = true
 	endpoint.text_changed.emit(endpoint.text)
-	var picker = ai_settings.find_child("ModelPicker", true, false)
+	var picker = view.find_child("ModelPicker", true, false)
 	var limit := Time.get_ticks_msec() + 10000
 	while not chat.get_daqian_models().options.any(func(option): return option.id == "fixture") and Time.get_ticks_msec() < limit:
 		await create_timer(0.05).timeout

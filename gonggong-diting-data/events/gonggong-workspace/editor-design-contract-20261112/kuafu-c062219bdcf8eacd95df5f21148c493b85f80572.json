@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c062219bdcf8eacd95df5f21148c493b85f80572",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-design-contract-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c32484ee442cb37401aab9786aa584ea4febba6d7db91eef74cdb0345e3d3fc2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+    "action": "delivery",
+    "detection_head": "bf1469dfdbb00d926259d1f8210baebff40bf131",
+    "context_sha256": "2464afcffe8f5bfec1de5cae0999a5c569f5e86611bc82183b74e4ef8eb136af",
+    "operator": "Sail-Li",
+    "worker": "agent:/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/943",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/964",
+    "diagnosis": "PRs 956, 959 and 964 passed exact CI, but unrelated authorized deliveries advanced main before merge. Inspected advances have no overlapping owned paths; no product or CI failure is asserted. Separate evidence builds prolong delivery while reviewed Issue 948 source needs the same native CI.",
+    "next_action": "Integrate unchanged reviewed 943 evidence and independently reviewed 948 source in one isolated current-main candidate under parent 773. Preserve old signed candidates, check combined scope and exact bytes, run formal gate and applicable CI, then normal main merge. Do not change foreign candidates.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T15:08:09.484175+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T15:15:15.004351+00:00",
+  "sha256": "0ab0f7dae658f8157285ce533b8486690e0085870c5e7274cfe2ada2dc81d4c0"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b1d486c816b4d791b2f75b7aba7258bd2cd8fbdf",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3d2d29515caac1f2a831540a887d29a29fdd6a2a777eabc70ad9791ddcf78215",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/948",
+    "action": "delivery",
+    "detection_head": "68269d324d721601783580297a267258f78389cb",
+    "context_sha256": "04a66840a4d223a2afa97da2ebaaa2756c853f8e4b6788c5939ab93a8b73c5a2",
+    "operator": "Sail-Li",
+    "worker": "agent:/root",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/984;local:joint773-main983-integration.json",
+    "diagnosis": "PR984 and signed candidate 37a6f6e1615bdef46e0fdee11e32d7491efb856f were created, then handoff observed current main b720e9c5 after the independently owned Engine Next Gameplay adapter delivery. Retain PR984 unmerged. The 25 upstream paths do not overlap the 68 reviewed joint candidate files. A new isolated branch on b720e9c5 contains exactly the same 68 candidate blobs and raw bytes; original source branch remains retained.",
+    "next_action": "Complete the strict native rebuild for the changed upstream Gameplay adapter and run relevant native/editor recovery checks, append exact current-base verification, then submit/sign the new complete candidate. Require its own CI and main readback; supersede PR984 only after the replacement is actually delivered. Do not operate the other publisher worktree.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-12T16:18:52.440943+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-12T16:21:44.370768+00:00",
+  "sha256": "2123f1eba72ad9c6e95a938014819472d91b229f7eac2ef9d73200b5d716216b"
+}
