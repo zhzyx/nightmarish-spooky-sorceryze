@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fe3470d2adb89622c49dc4d7ce0e91016358ce92",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "bound-production-continuation-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8c7b71d24751e9fc4c68a33354850be4affdfd98d911504e0caf8b0ffdcc364c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/953",
+    "action": "validation",
+    "detection_head": "ad79c25d9cdae8a635fdf74ff957336799903a10",
+    "context_sha256": "518ac0715c3dbbbc236af439e8b55aed3d87e1532c1a8bf2ff1db75a43ff287d",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "receipt:bound-continuation-no-progress-before",
+    "diagnosis": "The 11 native matrix cases and targeted corrected CLI case passed on binary 725f3391. Same-binary installed adapter baseline/refusal/restoration passed, including released Stop controls. Further source review and actual native reproduction found a distinct bounded-stop defect: staged complete_delivery sends a tool-error response back to the model after kuafu_required. The preserved old-binary run made a fourth model-stage request after the configured three-request bound, with one actual local-only Kuafu incident and no business acceptance.",
+    "next_action": "Fix only finite staged proposal handling: useful dispatch_registered rejection may continue; wait, human decision, unknown outcome and Kuafu hold must terminate without another model request. Rebuild and reverify actual bounded stop plus affected normal, bypass and cancellation cases, then independent review and delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T03:30:32.355148+00:00",
+    "attempted": "Old native run exited1 on bounded-count assertion: four actual stage requests and UNEXPECTED_CONTINUE_AFTER_KUAFU; one local blocker receipt and one durable detected record. Original failed CLI fixtures and refusal experiment remain retained separately.",
+    "repair_owner": "Existing Issue1024 implementation worker sinan_77012d34150ee8d6; root executes old/new native validation and delivery.",
+    "continuable": "Other validated scopes retained; source review and delivery continue after corrected bounded-stop verification; parent953/978 remain open."
+  },
+  "occurred_at": "2026-11-13T04:26:21.650506+00:00",
+  "sha256": "92d87ad674fe85d398a8dd503b0a53132fddba4c685277acfff8b515bbeb19b0"
+}

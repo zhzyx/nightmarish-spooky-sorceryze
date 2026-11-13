@@ -55,8 +55,54 @@ void AIChatDock::_clear_delivery_files() {
 }
 
 void AIChatDock::_run_delivery_tool(const Dictionary &p_arguments) {
+	const bool mapped_parent = design_batches.has(active_agent) && design_batches[active_agent].has("parent_contract");
+	if (mapped_parent && !parent_delivery_reentry) {
+		parent_delivery_arguments = p_arguments.duplicate(true);
+		if (!_gate_parent_completion()) {
+			parent_delivery_arguments.clear();
+			_finish_tool("Error: Live original-task completion owner unavailable. No delivery finalization was started.");
+		}
+		return;
+	}
 	const Variant pr = p_arguments.get("pr", Variant());
-	const Variant checklist = p_arguments.get("acceptance_items", Variant());
+	Variant checklist = p_arguments.get("acceptance_items", Variant());
+	Dictionary completion_guard;
+	if (mapped_parent) {
+		const Dictionary batch = design_batches[active_agent];
+		completion_guard = batch.get("parent_authorized_request", Dictionary());
+		Array verified_items;
+		Array decisions;
+		for (const Variant &id : Array(batch["order"])) {
+			const Dictionary info = sub_agents[int(id)];
+			const Dictionary acceptance = info.get("acceptance", Dictionary());
+			const int reviewer = String(acceptance.get("reviewer", "-1")).to_int();
+			if (!acceptance_reviews.has(reviewer) || !acceptance_reviews[reviewer].has("verified_decision")) {
+				_finish_tool("Error: Independent delivery acceptance owner changed.");
+				return;
+			}
+			Dictionary proof;
+			proof["number"] = info["number"];
+			proof["decision_json"] = JSON::stringify(acceptance_reviews[reviewer]["verified_decision"]);
+			proof["decision_sha256"] = acceptance["decision_sha256"];
+			decisions.push_back(proof);
+			const Dictionary contract = Dictionary(batch["parent_contract"])["contract"];
+			for (const Variant &value : Array(contract["criteria"])) {
+				const Dictionary criterion = value;
+				if (int(criterion["order"]) != int(info["number"])) {
+					continue;
+				}
+				Dictionary item;
+				item["id"] = criterion["id"];
+				item["module"] = "registered-order-" + itos(int(info["number"]));
+				item["acceptance"] = criterion["requirement"];
+				item["state"] = "done";
+				item["evidence"] = String(acceptance["evidence"]) + " sha256:" + String(acceptance["decision_file_sha256"]);
+				verified_items.push_back(item);
+			}
+		}
+		completion_guard["live_decisions"] = decisions;
+		checklist = verified_items; // Producer declarations never replace these proofs.
+	}
 	const String candidate = p_arguments.get("candidate", "");
 	const String signed_commit = p_arguments.get("signed_commit", "");
 	if (consultation_turn || consultation_only->is_pressed() || sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || !snapshot_state.has("engine_candidate")) {
@@ -102,6 +148,9 @@ void AIChatDock::_run_delivery_tool(const Dictionary &p_arguments) {
 	pending_delivery_request["expected_candidate"] = candidate;
 	pending_delivery_request["expected_signed_commit"] = signed_commit;
 	pending_delivery_request["acceptance_items"] = checklist;
+	if (mapped_parent) {
+		pending_delivery_request["parent_completion_guard"] = completion_guard;
+	}
 	pending_action = "complete_delivery";
 	process_timeout_seconds = 600;
 	if (auto_execute_commands->is_pressed()) {
@@ -135,6 +184,14 @@ bool AIChatDock::_delivery_process_arguments(String &r_executable, List<String> 
 	const String prefix = EditorPaths::get_singleton()->get_cache_dir().path_join("delivery-finalize-" + itos(OS::get_singleton()->get_process_id()) + "-" + String(pending_delivery_request["nonce"]));
 	delivery_request_path = prefix + ".request.json";
 	delivery_result_path = prefix + ".result.json";
+	const bool mapped_parent = pending_delivery_request.has("parent_completion_guard");
+	if (mapped_parent) {
+		pending_delivery_request["active"] = true;
+		pending_delivery_request["request_nonce"] = pending_delivery_request["nonce"];
+		Dictionary guard = pending_delivery_request["parent_completion_guard"];
+		guard["host_liveness_path"] = delivery_request_path;
+		guard["request_nonce"] = pending_delivery_request["nonce"];
+	}
 	Ref<FileAccess> file = FileAccess::open(delivery_request_path, FileAccess::WRITE);
 	if (file.is_null() || !file->store_string(JSON::stringify(pending_delivery_request))) {
 		_finish_tool("Error: Cannot persist the delivery request.");
@@ -148,7 +205,24 @@ bool AIChatDock::_delivery_process_arguments(String &r_executable, List<String> 
 		return false;
 	}
 	file.unref();
-	for (const String &argument : { String("-I"), worker, String("--source-root"), _candidate_root(), String("--request"), delivery_request_path, String("--out"), delivery_result_path }) {
+	if (mapped_parent && DirAccess::copy_absolute(delivery_request_path, delivery_request_path + ".original.json") != OK) {
+		_finish_tool("Error: Cannot retain the original complete-task delivery request for readback.");
+		_clear_delivery_files();
+		return false;
+	}
+	const String selected_worker = mapped_parent ? _engine_root().path_join("tools/gonggong_bridge.py") : worker;
+	if (mapped_parent) {
+		r_arguments.push_back("-I");
+		r_arguments.push_back(selected_worker);
+		r_arguments.push_back("parent-delivery");
+		r_arguments.push_back("--workspace");
+		r_arguments.push_back(_candidate_root());
+	} else {
+		for (const String &argument : { String("-I"), selected_worker, String("--source-root"), _candidate_root() }) {
+			r_arguments.push_back(argument);
+		}
+	}
+	for (const String &argument : { String("--request"), delivery_request_path, String("--out"), delivery_result_path }) {
 		r_arguments.push_back(argument);
 	}
 	return true;
@@ -228,6 +302,10 @@ void AIChatDock::_finish_delivery() {
 	String text;
 	const bool verified = delivery_receipt.get("completion_verified", Variant()).get_type() == Variant::BOOL && bool(delivery_receipt["completion_verified"]);
 	turn_completed = verified && delivery_receipt.get("ok", Variant()).get_type() == Variant::BOOL && bool(delivery_receipt["ok"]);
+	if (pending_delivery_request.has("parent_completion_guard")) {
+		set_meta("parent_business_accepted", turn_completed);
+		set_meta("parent_completion_state", turn_completed ? "complete" : "readback_required");
+	}
 	if (verified) {
 		const Dictionary facts = delivery_receipt["host_facts"];
 		text = vformat(U"交付已回读：PR #%d 已合入主线 %s，工单 #%d 已以 completed 关闭。业务验收依据为执行 Agent 提交的完整声明与证据。", int(pending_delivery_request["pr"]), String(facts["current_main"]).left(12), int(facts["issue"]));

@@ -13,15 +13,35 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any
 
+import native_parent_delivery as parent_delivery
 import run_design_batch as batch
 
+batch.EVENT_TENANT = "gonggong-workspace"
+batch.INDEPENDENT_ACCEPTANCE = True
+
+PARENT_SCENARIOS = {
+    "parent-completion",
+    "parent-cli",
+    "parent-stop",
+    "parent-tools-off",
+    "parent-consultation",
+    "parent-delivery-bypass",
+    "parent-delivery-no-progress",
+    "parent-cold",
+}
+PARENT_STOP_SCENARIOS = {"parent-stop", "parent-tools-off", "parent-consultation"}
+PARENT_STOP_SCENARIOS |= {name + "-authorize" for name in tuple(PARENT_STOP_SCENARIOS)}
+PARENT_STOP_SCENARIOS |= {"parent-delivery-tools-off", "parent-delivery-tools-off-authorize"}
+PARENT_SCENARIOS |= PARENT_STOP_SCENARIOS
+PARENT_SCENARIOS |= parent_delivery.SCENARIOS
 SCENARIO = "pass"
 if "--scenario" in sys.argv:
     at = sys.argv.index("--scenario")
     SCENARIO = sys.argv[at + 1]
     del sys.argv[at : at + 2]
-if SCENARIO not in {
+if SCENARIO not in PARENT_SCENARIOS | {
     "pass",
+    "parent-completion",
     "unknown",
     "stale",
     "empty",
@@ -67,6 +87,20 @@ batch.FINALIZED = batch.FINALIZED.replace(
     "2. DESIGN_BATCH_CHILD_2 checks its assigned evidence\n",
     "2. DESIGN_BATCH_CHILD_2 checks its assigned evidence\n- 依赖: 1\n- 验收: B | fixture-input.txt was read successfully\n",
 )
+if SCENARIO in PARENT_SCENARIOS:
+    batch.FINALIZED = "<!-- gonggong-parent-completion:v1 -->\n" + batch.FINALIZED
+    # Native confirmation is backed by a genuine installed intake read; only
+    # the GitHub transport is controlled, as in all acceptance fixtures.
+    batch.BRIDGE = batch.BRIDGE.replace(
+        "elif action=='flush':",
+        " if 'delegation' not in request:\n"
+        "  spec=importlib.util.spec_from_file_location('parent_fixture_host',Path(os.environ['DESIGN_BATCH_SOURCE'])/'customizations/components/godot-host/bridge.py'); host=importlib.util.module_from_spec(spec); spec.loader.exec_module(host)\n"
+        "  verified=host.issue_binding(root,dict(request,daqian_bound=True),'gonggong-workspace')['verified_issue_source']\n"
+        "  spec=importlib.util.spec_from_file_location('parent_fixture_contract',Path(os.environ['DESIGN_BATCH_SOURCE'])/'customizations/components/godot-host/parent_completion.py'); parent_host=importlib.util.module_from_spec(spec); spec.loader.exec_module(parent_host)\n"
+        "  value['parent_confirmation_source']=parent_host.authority_snapshot(verified)\n"
+        "elif action=='flush':",
+    )
+
 if SCENARIO == "empty":
     batch.FINALIZED = batch.FINALIZED.replace(
         "- 验收: A | fixture-input.txt contains UNTRUSTED_FIXTURE_FILE and execution succeeds\n", ""
@@ -88,6 +122,70 @@ def authority_program(path, source):
             "if sys.argv[-1].endswith('/permission'): print(json.dumps({'permission':'write'}));sys.exit(0)\n"
             "assert sys.argv[-1].endswith('/441')",
         )
+    if path.name == "fake-gh" and SCENARIO in PARENT_SCENARIOS:
+        finalized = batch.FINALIZED
+        case = sys.argv[sys.argv.index("--case") + 1] if "--case" in sys.argv else "normal"
+        numbers = [1, 2]
+        if case == "normal":
+            finalized = (
+                finalized
+                .replace("1. DESIGN", "2. DESIGN")
+                .replace("2. DESIGN_BATCH_CHILD_2", "4. DESIGN_BATCH_CHILD_2")
+                .replace("- 依赖: 1\n", "- 依赖: 2\n")
+                + "   - 依赖：工单 2。\n"
+            )
+            numbers = [2, 4]
+        contract = {
+            "version": 1,
+            "scope": "complete-original-task",
+            "request_id": "design-batch-fixture",
+            "issue_number": 441,
+            "design_sha256": batch.hashlib.sha256(finalized.encode()).hexdigest(),
+            "criteria": [
+                {
+                    "id": "original-A",
+                    "order": numbers[0],
+                    "criterion": "A",
+                    "requirement": "fixture-input.txt contains UNTRUSTED_FIXTURE_FILE and execution succeeds",
+                    "kind": "acceptance",
+                },
+                {
+                    "id": "original-B",
+                    "order": numbers[1],
+                    "criterion": "B",
+                    "requirement": "fixture-input.txt was read successfully",
+                    "kind": "delivery",
+                },
+            ],
+        }
+        body = (
+            "<!-- gonggong-request:design-batch-fixture -->\n```gonggong-parent-contract\n"
+            + batch.json.dumps(contract)
+            + "\n```\n"
+        )
+        graph = {
+            "data": {
+                "viewer": {"login": "fixture-operator", "databaseId": 77},
+                "repository": {
+                    "nameWithOwner": "example/design-batch",
+                    "databaseId": 88,
+                    "viewerPermission": "WRITE",
+                    "issue": {
+                        "number": 441,
+                        "title": "Native acceptance fixture",
+                        "state": "OPEN",
+                        "url": "https://github.com/example/design-batch/issues/441",
+                        "updatedAt": "2026-11-07T00:00:00Z",
+                        "body": body,
+                        "labels": {
+                            "nodes": [{"name": x} for x in ["type:bug", "status:in-progress", "workspace:gonggong"]],
+                            "pageInfo": {"hasNextPage": False},
+                        },
+                    },
+                },
+            }
+        }
+        source = source.replace("print(json.dumps({'errors':[{}]}))", "print(json.dumps(" + repr(graph) + "))")
     if path.name == "fake-gh" and SCENARIO == "no-permission":
         source = source.replace("'permission':'write'", "'permission':'read'")
     if path.name == "fake-gh" and SCENARIO == "cancel-verify":
@@ -106,10 +204,16 @@ _original_run = batch.subprocess.run
 integration_restore_report: dict[str, Any] = {}
 integration_restarting = False
 integration_binary = ""
+parent_cold_report = {}
 
 
 def native_run(command, *args, **kwargs):
-    global integration_restore_report, integration_restarting, integration_binary
+    global integration_restore_report, integration_restarting, integration_binary, parent_cold_report
+    if SCENARIO in parent_delivery.SCENARIOS and "mklink" in command and Path(command[-2]).name == "tools":
+        batch.shutil.copytree(
+            batch.ROOT / "tools", Path(command[-2]), ignore=batch.shutil.ignore_patterns("node_modules", "__pycache__")
+        )
+        return batch.subprocess.CompletedProcess(command, 0, b"", b"")
     if SCENARIO.startswith("parallel") and "mklink" in command and Path(command[-2]).name == "tools":
         target = Path(command[-2])
         batch.shutil.copytree(
@@ -145,6 +249,43 @@ def native_run(command, *args, **kwargs):
         integration_binary = str(command[0])
         env = dict(env)
         env["NATIVE_ACCEPTANCE_SCENARIO"] = SCENARIO
+        if SCENARIO in parent_delivery.SCENARIOS:
+            parent_delivery.prepare(batch, env, command, SCENARIO)
+            kwargs["timeout"] = 780
+        if SCENARIO == "parent-delivery-no-progress":
+            env["GONGGONG_KUAFU_LOCAL_ONLY"] = "1"
+        if SCENARIO == "parent-cli":
+            entry = Path(env["DESIGN_BATCH_ROOT"]).parent / "parent-model-fixture.js"
+            entry.write_text(
+                """'use strict';
+const fs = require('node:fs');
+if (process.argv.includes('app-server')) process.exit(2); // Controlled exec-only provider; real bridge fallback.
+let text = '';
+process.stdin.setEncoding('utf8');
+process.stdin.on('data', value => text += value);
+process.stdin.on('end', () => {
+  const request = JSON.parse(text.slice(text.indexOf('\\n') + 1));
+  if (!request.messages.some(m => m.role === 'user' && m.content.includes('BOUND_PARENT_STAGE'))) throw Error('Not the bound parent stage');
+  const answer = {content: 'BOUND_PARENT_STAGE_A_FINISHED', actions: []};
+  const events = [{type:'item.completed',item:{type:'agent_message',text:JSON.stringify(answer)}},{type:'turn.completed',usage:{}}];
+  fs.writeFileSync(process.env.NATIVE_PARENT_CLI_LOG, JSON.stringify({request_seen:true, events}));
+  process.stdout.write(events.map(e=>JSON.stringify(e)).join('\\n')+'\\n');
+});
+""",
+                encoding="utf8",
+            )
+            # Runtime configuration requires an executable path on POSIX. Use
+            # the existing executable fixture launcher (native PE on Windows),
+            # forwarding unchanged stdio/arguments to the controlled provider.
+            # The installed Codex bridge and native CLI callback remain real.
+            launcher = _original_program(
+                entry.with_name("parent-model-executable"),
+                "import subprocess,sys\nraise SystemExit(subprocess.call("
+                + repr([env["DESIGN_BATCH_NODE"], str(entry)])
+                + " + sys.argv[1:]))\n",
+            )
+            env["NATIVE_PARENT_CLI_ENTRY"] = str(launcher)
+            env["NATIVE_PARENT_CLI_LOG"] = str(entry.with_suffix(".receipt.json"))
         env["GONGGONG_GIT"] = str(
             Path(env["DESIGN_BATCH_PROJECT"]).parents[2] / ("git.exe" if batch.os.name == "nt" else "git")
         )
@@ -183,6 +324,23 @@ def native_run(command, *args, **kwargs):
         completed = batch.subprocess.CompletedProcess(
             command, restored.returncode, completed.stdout + restored.stdout, completed.stderr + restored.stderr
         )
+    if (
+        SCENARIO == "parent-cold"
+        and env
+        and "DESIGN_BATCH_PROJECT" in env
+        and "--editor" in command
+        and completed.returncode == 0
+    ):
+        report_path = Path(env["DESIGN_BATCH_PROJECT"]) / "design-batch-report.json"
+        first_report = report_path.read_bytes()
+        count = len(parent_stages)
+        cold_kwargs = dict(kwargs, env=dict(kwargs["env"], DESIGN_BATCH_PHASE="parent-cold"))
+        cold = _original_run(command, *args, **cold_kwargs)
+        parent_cold_report = batch.json.loads(report_path.read_text())
+        parent_cold_report["new_parent_stages"] = len(parent_stages) - count
+        parent_cold_report["exit_code"] = cold.returncode
+        report_path.with_name("parent-cold-report.json").write_text(batch.json.dumps(parent_cold_report))
+        report_path.write_bytes(first_report)
     return completed
 
 
@@ -193,8 +351,9 @@ _original_copyfile = batch.shutil.copyfile
 
 def fixture_copyfile(source, target, *args, **kwargs):
     result = _original_copyfile(source, target, *args, **kwargs)
-    if Path(source).name == "design_batch.gd" and SCENARIO in {
+    if Path(source).name == "design_batch.gd" and SCENARIO in PARENT_SCENARIOS | {
         "pass",
+        "parent-completion",
         "repair",
         "parallel",
         "parallel-repair",
@@ -209,6 +368,84 @@ def fixture_copyfile(source, target, *args, **kwargs):
         # This fixture completes through independent native acceptance. The
         # ordinary batch separately tests the manual acceptance/consultation UI.
         script = script.replace("\t\tawait _verify_dependency_handoff()", "\t\tpass")
+        Path(target).write_text(script, encoding="utf8")
+    if Path(source).name == "design_batch.gd" and SCENARIO in PARENT_SCENARIOS:
+        script = Path(target).read_text(encoding="utf8")
+        script = script.replace(
+            '"ok": failure.is_empty(), "failure": failure, "stages": stages,',
+            '"ok": failure.is_empty(), "failure": failure, "stages": stages, "parent_completion_state": dock.get_meta("parent_completion_state", ""), "parent_business_accepted": dock.get_meta("parent_business_accepted", false),',
+        )
+        script = script.replace(
+            '\t\tawait create_timer(1.0).timeout\n\t\tvar tabs = dock.find_child("AgentTabs", true, false)',
+            '\t\tfor attempt in range(1800):\n\t\t\tif dock.get_meta("parent_completion_state", "") == "complete":\n\t\t\t\tbreak\n\t\t\tawait create_timer(0.05).timeout\n\t\t_check(dock.get_meta("parent_business_accepted", false), "Complete contract did not reach independent acceptance")\n\t\tvar tabs = dock.find_child("AgentTabs", true, false)',
+        )
+        Path(target).write_text(script, encoding="utf8")
+    if Path(source).name == "design_batch.gd" and SCENARIO in PARENT_STOP_SCENARIOS:
+        script = Path(target).read_text(encoding="utf8")
+        script = script.replace(
+            "func _initialize():", "func _initialize():\n\tprocess_frame.connect(_parent_cancel_boundary)"
+        )
+        script += """
+var parent_cancelled := false
+var parent_cancel_finished := false
+func _parent_cancel_boundary():
+	if not is_instance_valid(dock) or parent_cancel_finished:
+		return
+	var scenario := OS.get_environment("NATIVE_ACCEPTANCE_SCENARIO")
+	var boundary := "authorize" if scenario.ends_with("-authorize") else "check"
+	if not parent_cancelled and dock.get_meta("parent_completion_state", "") == boundary:
+		parent_cancelled = true
+		if scenario.begins_with("parent-stop"):
+			dock.find_child("Stop", true, false).pressed.emit()
+		elif "tools-off" in scenario:
+			dock.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = false
+		else:
+			dock.find_child("ConsultationOnly", true, false).button_pressed = true
+	if parent_cancelled and dock.find_child("Stop", true, false).disabled:
+		parent_cancel_finished = true
+		_check(not dock.get_meta("parent_business_accepted", false), "Cancelled parent was accepted")
+		_file("native-parent-cancelled")
+		_finish()
+"""
+        Path(target).write_text(script, encoding="utf8")
+    if Path(source).name == "design_batch.gd" and SCENARIO == "parent-cli":
+        script = Path(target).read_text(encoding="utf8")
+        script = script.replace(
+            "\tconfirmation.get_ok_button().pressed.emit()\n\nfunc _verify_dependency_handoff",
+            '\tconfirmation.get_ok_button().pressed.emit()\n\t_check(dock.set_runtime_field("codex", OS.get_environment("NATIVE_PARENT_CLI_ENTRY")).is_empty(), "Cannot bind controlled Codex")\n\tvar selected_backend = dock.get_ai_settings_control().find_child("AIBackend", true, false)\n\tselected_backend.select(2)\n\t# Controlled transport selection; do not simulate a human mid-bind connection reset.\n\tdock.get_ai_settings_control().find_child("CodexModel", true, false).text = "controlled-parent"\n\nfunc _verify_dependency_handoff',
+        )
+        script = script.replace(
+            "func _work_event(_workspace: String, _binding: Dictionary, _worker: String, kind: String, _phase: String, status: String):",
+            'func _work_event(_workspace: String, _binding: Dictionary, _worker: String, kind: String, _phase: String, status: String):\n\tif not parent_cli_restore_scheduled and kind == "request_end" and status == "completed" and dock.get_meta("parent_completion_state", "") == "dispatch_registered":\n\t\tparent_cli_restore_scheduled = true\n\t\t_file("native-parent-cli-completed")\n\t\t_restore_parent_cli_runtime.call_deferred()',
+        )
+        script += '\nvar parent_cli_restore_scheduled := false\nfunc _restore_parent_cli_runtime():\n\t# The terminal signal precedes busy=false; restore only after that owner releases.\n\t_check(dock.find_child("Stop", true, false).disabled, "CLI parent terminal owner has not released")\n\tdock.get_ai_settings_control().find_child("AIBackend", true, false).select(0)\n\t_check(dock.set_runtime_field("codex", OS.get_environment("DESIGN_BATCH_NODE")).is_empty(), "Cannot restore fixture runtime after CLI parent terminal")\n'
+        Path(target).write_text(script, encoding="utf8")
+    if Path(source).name == "design_batch.gd" and SCENARIO == "parent-delivery-no-progress":
+        script = Path(target).read_text(encoding="utf8")
+        script = script.replace(
+            "func _initialize():", "func _initialize():\n\tprocess_frame.connect(_parent_no_progress_boundary)"
+        )
+        script += """
+var parent_no_progress_finished := false
+func _parent_no_progress_boundary():
+	if parent_no_progress_finished or not is_instance_valid(dock):
+		return
+	if dock.get_meta("parent_completion_state", "") != "kuafu_required" or not dock.find_child("Stop", true, false).disabled:
+		return
+	parent_no_progress_finished = true
+	await create_timer(1.0).timeout
+	_check(dock.find_child("Stop", true, false).disabled, "Bounded stop resumed a model request")
+	_check(not dock.get_meta("parent_business_accepted", false), "No-progress parent was accepted")
+	_file("native-parent-no-progress")
+	_finish()
+"""
+        Path(target).write_text(script, encoding="utf8")
+    if Path(source).name == "design_batch.gd" and SCENARIO == "parent-cold":
+        script = Path(target).read_text(encoding="utf8")
+        script = script.replace(
+            '\tif OS.get_environment("DESIGN_BATCH_PHASE") == "blocked-restore":',
+            '\tif OS.get_environment("DESIGN_BATCH_PHASE") == "parent-cold":\n\t\tawait create_timer(2.0).timeout\n\t\t_check(dock.find_child("Stop", true, false).disabled, "Cold history resumed a parent")\n\t\t_check(not dock.get_meta("parent_business_accepted", false), "Cold history restored live acceptance")\n\t\t_finish()\n\t\treturn\n\tif OS.get_environment("DESIGN_BATCH_PHASE") == "blocked-restore":',
+        )
         Path(target).write_text(script, encoding="utf8")
     if Path(source).name == "design_batch.gd" and SCENARIO.startswith("parallel"):
         script = Path(target).read_text(encoding="utf8")
@@ -251,6 +488,8 @@ func _cancel_native_review():
                 '"独立只读验收。" in _text()', 'FileAccess.file_exists("res://verify-transport-running")'
             )
         Path(target).write_text(script, encoding="utf8")
+    if Path(source).name == "design_batch.gd" and SCENARIO in parent_delivery.SCENARIOS:
+        Path(target).write_text(parent_delivery.scene(Path(target).read_text()), encoding="utf8")
     return result
 
 
@@ -264,6 +503,7 @@ failure_notices: list[str] = []
 repair_returns: list[str] = []
 integration_receipts: list[dict[str, Any]] = []
 integration_runtime: dict[str, Any] = {}
+parent_stages: list[str] = []
 
 
 class AcceptanceServer(ThreadingHTTPServer):
@@ -288,6 +528,55 @@ class AcceptanceServer(ThreadingHTTPServer):
             raw = instance.rfile.read(int(instance.headers["Content-Length"]))
             body = batch.json.loads(raw)
             prompt = next((m.get("content", "") for m in reversed(body["messages"]) if m["role"] == "user"), "")
+            if SCENARIO in parent_delivery.SCENARIOS:
+                message = parent_delivery.model_response(batch, prompt, body)
+                if message is not None:
+                    data = batch.json.dumps({"choices": [{"message": message, "finish_reason": "stop"}]}).encode()
+                    instance.send_response(200)
+                    instance.send_header("Content-Type", "application/json")
+                    instance.send_header("Content-Length", str(len(data)))
+                    instance.end_headers()
+                    instance.wfile.write(data)
+                    return
+            if SCENARIO in PARENT_SCENARIOS and isinstance(prompt, str) and "BOUND_PARENT_STAGE" in prompt:
+                parent_stages.append(prompt)
+                message = {"role": "assistant", "content": "BOUND_PARENT_STAGE_A_FINISHED"}
+                if SCENARIO.startswith("parent-delivery-"):
+                    results = [m["content"] for m in body["messages"] if m.get("tool_call_id") == "premature-delivery"]
+                    if not results or SCENARIO == "parent-delivery-no-progress":
+                        message = batch.tool_call(
+                            "premature-delivery-" + str(len(parent_stages))
+                            if SCENARIO == "parent-delivery-no-progress"
+                            else "premature-delivery",
+                            "complete_delivery",
+                            {
+                                "pr": 7,
+                                "candidate": "a" * 40,
+                                "signed_commit": "b" * 40,
+                                "acceptance_items": [
+                                    {
+                                        "id": "producer-done",
+                                        "module": "all",
+                                        "acceptance": "Producer says done",
+                                        "state": "done",
+                                        "evidence": "self declaration",
+                                    }
+                                ],
+                            },
+                        )
+                    else:
+                        assert "independent acceptance is not ready" in str(results), results
+                    if SCENARIO == "parent-delivery-no-progress" and len(parent_stages) > 3:
+                        # Bound the failing fixture itself; a fourth request is
+                        # evidence that the native no-progress stop was bypassed.
+                        message = {"role": "assistant", "content": "UNEXPECTED_CONTINUE_AFTER_KUAFU"}
+                data = batch.json.dumps({"choices": [{"message": message, "finish_reason": "stop"}]}).encode()
+                instance.send_response(200)
+                instance.send_header("Content-Type", "application/json")
+                instance.send_header("Content-Length", str(len(data)))
+                instance.end_headers()
+                instance.wfile.write(data)
+                return
             if isinstance(prompt, str) and (
                 prompt.startswith("独立验收纠正：")
                 or (
@@ -612,6 +901,8 @@ class DiagnosticDirectory(TemporaryDirectory[str]):
                     diagnostics.append({"path": str(file.relative_to(root)), "body": file.read_text(encoding="utf8")})
             for file in (root / "isolated-editor/editor_data/cache").glob("gonggong-acceptance*.result"):
                 diagnostics.append({"path": str(file.relative_to(root)), "body": file.read_text(encoding="utf8")})
+            for file in (root / "isolated-editor/editor_data/cache").glob("gonggong-parent*.result"):
+                diagnostics.append({"path": str(file.relative_to(root)), "body": file.read_text(encoding="utf8")})
             for file in (root / "isolated-editor/editor_data/cache/gonggong-dependency-evidence").rglob("*.json"):
                 diagnostics.append({
                     "path": str(file.relative_to(root)),
@@ -632,6 +923,31 @@ class DiagnosticDirectory(TemporaryDirectory[str]):
                 diagnostics.append({"path": str(file.relative_to(root)), "body": file.read_text(encoding="utf8")})
             if (root / "original/samples/project/native-review-cancelled").exists():
                 diagnostics.append({"path": "cancelled", "body": "actual Stop signal"})
+            for file in root.glob("parent-model-fixture.receipt.json"):
+                diagnostics.append({"path": "parent-cli-receipt", "body": file.read_text(encoding="utf8")})
+            if (root / "original/samples/project/native-parent-cancelled").exists():
+                diagnostics.append({"path": "parent-cancelled", "body": "actual native permission/Stop boundary"})
+            if (root / "original/samples/project/native-parent-no-progress").exists():
+                diagnostics.append({"path": "parent-no-progress", "body": "actual held native control boundary"})
+            if SCENARIO == "parent-delivery-no-progress":
+                for file in (root / "original/.git/gonggong-kuafu").glob("*/detected.json"):
+                    diagnostics.append({
+                        "path": "kuafu-detected/" + file.parent.name,
+                        "body": file.read_text(encoding="utf8"),
+                    })
+            for file in (root / "isolated-editor/editor_data/cache").glob("delivery-finalize*.original.json"):
+                diagnostics.append({"path": str(file.relative_to(root)), "body": file.read_text(encoding="utf8")})
+            if SCENARIO in parent_delivery.SCENARIOS:
+                for file in (root / "isolated-editor/editor_data/cache").glob("delivery-finalize*.retained.json"):
+                    diagnostics.append({"path": str(file.relative_to(root)), "body": file.read_text(encoding="utf8")})
+                diagnostics.append({
+                    "path": "native-finalization",
+                    "body": batch.json.dumps(parent_delivery.collect(root)),
+                })
+                for file in (root / "original/.git/gonggong-delivery-finalization").rglob("*.json"):
+                    diagnostics.append({"path": str(file.relative_to(root)), "body": file.read_text(encoding="utf8")})
+                if (root / "original/samples/project/native-finalize-observed").exists():
+                    diagnostics.append({"path": "native-finalize-observed", "body": "actual native delivery terminal"})
             history = root / "original/samples/project/.godot/editor/ai_chat_history.json"
             if history.exists():
                 diagnostics.append({"path": "history", "body": history.read_text(encoding="utf8")})
@@ -646,7 +962,19 @@ if __name__ == "__main__":
     output = Path(sys.argv[sys.argv.index("--out") + 1])
     result = batch.json.loads(output.read_text(encoding="utf8"))
     diagnostics = batch.json.loads(output.with_suffix(".diagnostics-report.json").read_text(encoding="utf8"))
-    history = batch.json.loads(next(item["body"] for item in diagnostics if item["path"] == "history"))
+    history_entry = next((item for item in diagnostics if item["path"] == "history"), None)
+    if history_entry is None:
+        # A native parse/startup failure may happen before history exists.
+        # Preserve its real report instead of masking it with StopIteration.
+        result.update(
+            ok=False, transport_fixture_ok=result["ok"], verification_status="failed", native_scenario=SCENARIO
+        )
+        result["diagnostic_failure"] = (
+            "Native fixture ended before creating history; inspect original errors/stdout/stderr"
+        )
+        output.write_text(batch.json.dumps(result, ensure_ascii=False, indent=2), encoding="utf8")
+        raise SystemExit(1)
+    history = batch.json.loads(history_entry["body"])
     producers = [a for a in history["agents"] if a.get("sub_agent", {}).get("source") == "design"]
     accepted = [a for a in producers if a["sub_agent"].get("acceptance")]
     decisions = []
@@ -827,7 +1155,7 @@ if __name__ == "__main__":
             )
         result["external_events"] = events
         result["external_parent_returns"] = len(parallel.returns)
-    elif SCENARIO in {"pass", "repair"}:
+    elif SCENARIO in {"pass", "repair"} | PARENT_SCENARIOS:
         valid = (
             not result["errors"]
             and result["editor"]["ok"]
@@ -878,6 +1206,101 @@ if __name__ == "__main__":
         result["integration_receipts"] = integration_receipts
         result["integration_restore"] = integration_restore_report
         result["integration_runtime"] = integration_runtime
+    if SCENARIO in PARENT_SCENARIOS:
+        cli = [item for item in diagnostics if item["path"] == "parent-cli-receipt"]
+        expected_stages = 2 if SCENARIO == "parent-delivery-bypass" else 0 if SCENARIO == "parent-cli" else 1
+        if SCENARIO in parent_delivery.SCENARIOS:
+            receipt = next(batch.json.loads(x["body"]) for x in diagnostics if x["path"] == "native-finalization")
+            original_requests = [
+                batch.json.loads(x["body"])
+                for x in diagnostics
+                if x["path"].endswith(".original.json") and "delivery-finalize" in x["path"]
+            ]
+            valid = (
+                not result["errors"]
+                and result["editor"].get("ok")
+                and len(accepted) == 2
+                and len(original_requests) == 1
+                and {c["id"] for c in original_requests[0]["acceptance_items"]} == {"original-A", "original-B"}
+                and len(original_requests[0]["parent_completion_guard"]["live_decisions"]) == 2
+                and any(x["path"] == "native-finalize-observed" for x in diagnostics)
+                and receipt.get("before_release", {}).get("started") is True
+                and not receipt.get("child_running_after_native_terminal", True)
+                and not receipt.get("late_mutations", True)
+            )
+            if SCENARIO == "parent-finalize":
+                valid = (
+                    valid
+                    and receipt["before_release"]["issue"]["state"] == "CLOSED"
+                    and result["editor"].get("parent_business_accepted") is True
+                )
+            else:
+                valid = (
+                    valid
+                    and receipt["before_release"]["writes"] == []
+                    and not result["editor"].get("parent_business_accepted")
+                )
+            result["native_finalization"] = receipt
+            if SCENARIO == "parent-finalize-timeout":
+                result["native_timeout_observed"] = parent_delivery.timeout_observed(diagnostics)
+                valid = valid and result["native_timeout_observed"]
+        elif SCENARIO == "parent-delivery-no-progress":
+            expected_stages = 3
+            blockers = [
+                batch.json.loads(x["body"])["blocker_receipt"]
+                for x in diagnostics
+                if "gonggong-parent-" in x["path"]
+                and x["path"].endswith(".result")
+                and "blocker_receipt" in batch.json.loads(x["body"])
+            ]
+            detected = [batch.json.loads(x["body"]) for x in diagnostics if x["path"].startswith("kuafu-detected/")]
+            valid = (
+                not result["errors"]
+                and result["editor"].get("ok")
+                and result["editor"].get("parent_completion_state") == "kuafu_required"
+                and not result["editor"].get("parent_business_accepted")
+                and stages.get("child1", 0) == stages.get("child2", 0) == 0
+                and any(x["path"] == "parent-no-progress" for x in diagnostics)
+                and len(blockers) == len(detected) == 1
+                and batch.json.loads(blockers[0]["output"]).get("dispatch") == "local_only"
+                and detected[0]["issue"] == 441
+                and detected[0]["action"] == "dispatch"
+            )
+            result["bounded_stop_receipts"] = {"blockers": blockers, "detected": detected}
+        elif SCENARIO in PARENT_STOP_SCENARIOS:
+            valid = (
+                not result["errors"]
+                and result["editor"].get("ok")
+                and not result["editor"].get("parent_business_accepted")
+                and stages.get("child1", 0) == stages.get("child2", 0) == 0
+                and any(x["path"] == "parent-cancelled" for x in diagnostics)
+            )
+        else:
+            valid = (
+                valid
+                and result["ok"]
+                and result["recorded_event_files"] > 0
+                and result["editor"].get("parent_completion_state") == "complete"
+                and result["editor"].get("parent_business_accepted") is True
+            )
+        valid = valid and len(parent_stages) == expected_stages
+        if SCENARIO == "parent-cli":
+            valid = valid and len(cli) == 1 and batch.json.loads(cli[0]["body"])["request_seen"] is True
+        if SCENARIO == "parent-cold":
+            valid = (
+                valid
+                and parent_cold_report.get("ok")
+                and parent_cold_report.get("new_parent_stages") == 0
+                and parent_cold_report.get("exit_code") == 0
+            )
+            result["parent_cold_report"] = parent_cold_report
+        result["parent_stage_count"] = len(parent_stages)
+        result["parent_cli_receipts"] = cli
+        result["scope"] = (
+            "Actual native mapped completion and installed finalizer/journal; controlled account, signed/main/CI and Issue mutation ports, no real remote writes"
+            if SCENARIO in parent_delivery.SCENARIOS
+            else "Controlled original complete fixture scope: actual command/read delivery, not GitHub merge or provider effectiveness"
+        )
     result["transport_fixture_ok"] = result["ok"]
     result["ok"] = bool(valid)
     result["verification_status"] = "native_acceptance_passed" if valid else "failed"

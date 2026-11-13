@@ -110,7 +110,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       check(fs.realpathSync(root)===fs.realpathSync(candidate.root),'Candidate differs from requested root');
       console.log(JSON.stringify({ok:true,current_candidate:verifiedCurrentCandidate(candidate)}));
     }
-    else if (action === 'verify') {const decision=JSON.parse(fs.readFileSync(0,'utf8'));validateDecision(decision);console.log(JSON.stringify({ok:true,current_candidate:verifiedCurrentCandidate(decision.candidate)}));}
+    else if (action === 'verify' || action === 'verify-finalization') {const decision=JSON.parse(fs.readFileSync(0,'utf8'));const ledger=action==='verify-finalization';validateDecision(decision,ledger);console.log(JSON.stringify({ok:true,current_candidate:verifiedCurrentCandidate(decision.candidate,ledger)}));}
     else if (action === 'project') {
       const input=JSON.parse(fs.readFileSync(0,'utf8'));
       const config=read(input.host_dispatch_config);

@@ -1,0 +1,593 @@
+{
+  "schema_version": 1,
+  "request_id": "bound-production-continuation-20261113",
+  "issue_number": 1024,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+  "parent_issue": 953,
+  "authorization_source": "codex-user-ai-github-integration-refactor-20261112",
+  "source_sha256": "9442206f93951f23e3691566a0837ed0b3cae13b8a305342435f1ce8df673a5f",
+  "owner": "Sail-Li",
+  "workspace_base": "repository root",
+  "implementation_status": "Scoped source repairs and all intended controlled native validations passed, including postacceptance success/Stop/destruction/actual600secondtimeout. Independent final approval, exact candidate CI/main delivery and Issue closure remain pending.",
+  "production_entry": "Original Issue complete contract plus explicit native design confirmation; installed chat intake authenticates original actor and definition; cold approval does not restore live opt-in",
+  "consumer": "AIChatDock common normalized response before cleanup; actual existing sub-agent dispatch and live independent review; complete_delivery rechecks before existing finalizer",
+  "checks": [
+    {
+      "command": "python customizations/components/godot-host/test_parent_completion.py -v",
+      "passed": 22,
+      "failed": 0,
+      "log": "bound-continuation-implementation/parent-formatted.log",
+      "sha256": "d63e9c4bda9cad7f72736d7e04ab922e4ab17d7b971c515b8461943e2fb579f1"
+    },
+    {
+      "command": "python customizations/components/godot-host/test_bridge.py",
+      "passed": 48,
+      "failed": 0,
+      "log": "bound-continuation-implementation/bridge.log",
+      "sha256": "e4af54c3f94d42301aa32995077e82b569301bed5988af407f1571c33dabb54b"
+    },
+    {
+      "command": "python customizations/components/godot-host/test_acceptance.py",
+      "passed": 8,
+      "failed": 0,
+      "log": "bound-continuation-implementation/acceptance-python.log",
+      "sha256": "7c48116fe3d3f4a20b4a79dd815e3a7509d60028b14b1f4a6e0f6e5da1b8c7a1"
+    },
+    {
+      "command": "node --test customizations/components/repository-dispatch/acceptance.test.mjs",
+      "passed": 22,
+      "failed": 0,
+      "log": "bound-continuation-implementation/acceptance-node.log",
+      "sha256": "ed4b65fa9db64aa2f65be8c9e4a87d52a90671803f374826a898d17496fdaad9"
+    },
+    {
+      "command": "python tools/test_editor_delivery_finalize.py",
+      "passed": 15,
+      "failed": 0,
+      "log": "bound-continuation-implementation/editor_delivery_finalize.log",
+      "sha256": "636100eba8575597f58a24739c59632fb8d2d539c89cac1a72c172dd8bc5220f"
+    },
+    {
+      "command": "python tools/test_editor_delivery_retry.py",
+      "passed": 13,
+      "failed": 0,
+      "log": "bound-continuation-implementation/editor_delivery_retry.log",
+      "sha256": "29dc08163919d92f54b29498d42981c9ac4e87e5fedea151ba14f155ed07a347"
+    },
+    {
+      "command": "python customizations/components/godot-host/test_parent_completion.py ParentDeliveryIntegrationTests.test_lost_close_receipt_readback_is_exact_and_zero_mutation_even_after_revocation -v",
+      "passed": 1,
+      "failed": 0,
+      "log": "bound-continuation-implementation/readback-scope.log",
+      "sha256": "552d190c514bd91ac25f091058b61e765b1f9ba4d7f0cd1dd831f425339576fe"
+    },
+    {
+      "command": "python customizations/components/godot-host/test_parent_completion.py -v",
+      "passed": 23,
+      "failed": 0,
+      "log": "bound-continuation-implementation/parent-final.log",
+      "sha256": "fbc8016c7366b237bfca87d699e457906f5798f69f3163222717a6a1ad70f4ff"
+    }
+  ],
+  "native_evidence": {
+    "initial_report": "bound-continuation-native-initial.json",
+    "ready_scenarios": [
+      "parent-completion",
+      "parent-cli",
+      "parent-stop",
+      "parent-tools-off",
+      "parent-consultation",
+      "parent-delivery-bypass",
+      "parent-cold",
+      "parent-stop-authorize",
+      "parent-tools-off-authorize",
+      "parent-consultation-authorize",
+      "parent-delivery-tools-off",
+      "parent-delivery-tools-off-authorize",
+      "parent-delivery-no-progress"
+    ],
+    "status": "All13 intended controlled native cases passed across the exact documented binaries. Final bounded-stop delta affects only staged-delivery handling and native fixture; all5 affected cases reran successfully on b12f. Prior ordinary CLI/Stop/toggle/cold/module results are reused only for unchanged paths, with source-delta manifest preserved.",
+    "intermediate_normal": {
+      "report": "bound-continuation-native-normal.json",
+      "sha256": "a9d436710d731e67b070028396b4d26a623aba4387f807d1657497179b054448",
+      "ok": true,
+      "transport_fixture_ok": true,
+      "recorded_event_files": 140,
+      "parent_business_accepted": true,
+      "scope": "Historical actual fresh-cache chain pass; superseded by successful v2 normal on boundary-fix binary."
+    },
+    "matrix_before_fixture_correction": {
+      "parent-completion": {
+        "report": "bound-native-matrix/parent-completion.json",
+        "sha256": "b7d2fab96fcf0129fe9f729448e39f20e81dc305c8dfd24442e5728cbc36e6b1",
+        "reported_ok": true,
+        "classification": "Historical report retained; superseded by exact v2 result or targeted CLI v4 for this case."
+      },
+      "parent-delivery-bypass": {
+        "report": "bound-native-matrix/parent-delivery-bypass.json",
+        "sha256": "b5af25ae0fbc143fa0eedbb00f2f38c794aa442ec92ae0a2eb500825f062eed8",
+        "reported_ok": true,
+        "classification": "Historical report retained; superseded by exact v2 result or targeted CLI v4 for this case."
+      },
+      "parent-cold": {
+        "report": "bound-native-matrix/parent-cold.json",
+        "sha256": "35e43ffd8d70cb3fb96b432abb8ecaf4e8a4260fda00d80bf7a232dd01027204",
+        "reported_ok": true,
+        "classification": "Historical report retained; superseded by exact v2 result or targeted CLI v4 for this case."
+      },
+      "parent-cli": {
+        "report": "bound-native-matrix/parent-cli.json",
+        "sha256": "49449a7784c7d56c2265c1ad135b7493393eaed5e61105868544776a3eeb348e",
+        "reported_ok": false,
+        "classification": "Historical report retained; superseded by exact v2 result or targeted CLI v4 for this case."
+      },
+      "parent-stop": {
+        "report": "bound-native-matrix/parent-stop.json",
+        "sha256": "556eb249dd03adb7115992f83efd22eb0996940ada8b4f861d7de4e7cf32f9aa",
+        "reported_ok": false,
+        "classification": "Historical report retained; superseded by exact v2 result or targeted CLI v4 for this case."
+      },
+      "parent-tools-off": {
+        "report": "bound-native-matrix/parent-tools-off.json",
+        "sha256": "556eb249dd03adb7115992f83efd22eb0996940ada8b4f861d7de4e7cf32f9aa",
+        "reported_ok": false,
+        "classification": "Historical report retained; superseded by exact v2 result or targeted CLI v4 for this case."
+      },
+      "parent-consultation": {
+        "report": "bound-native-matrix/parent-consultation.json",
+        "sha256": "556eb249dd03adb7115992f83efd22eb0996940ada8b4f861d7de4e7cf32f9aa",
+        "reported_ok": false,
+        "classification": "Historical report retained; superseded by exact v2 result or targeted CLI v4 for this case."
+      },
+      "parent-stop-authorize": {
+        "report": "bound-native-matrix/parent-stop-authorize.json",
+        "sha256": "556eb249dd03adb7115992f83efd22eb0996940ada8b4f861d7de4e7cf32f9aa",
+        "reported_ok": false,
+        "classification": "Historical report retained; superseded by exact v2 result or targeted CLI v4 for this case."
+      },
+      "parent-tools-off-authorize": {
+        "report": "bound-native-matrix/parent-tools-off-authorize.json",
+        "sha256": "556eb249dd03adb7115992f83efd22eb0996940ada8b4f861d7de4e7cf32f9aa",
+        "reported_ok": false,
+        "classification": "Historical report retained; superseded by exact v2 result or targeted CLI v4 for this case."
+      },
+      "parent-consultation-authorize": {
+        "report": "bound-native-matrix/parent-consultation-authorize.json",
+        "sha256": "556eb249dd03adb7115992f83efd22eb0996940ada8b4f861d7de4e7cf32f9aa",
+        "reported_ok": false,
+        "classification": "Historical report retained; superseded by exact v2 result or targeted CLI v4 for this case."
+      },
+      "parent-delivery-tools-off": {
+        "report": "bound-native-matrix/parent-delivery-tools-off.json",
+        "sha256": "556eb249dd03adb7115992f83efd22eb0996940ada8b4f861d7de4e7cf32f9aa",
+        "reported_ok": false,
+        "classification": "Historical report retained; superseded by exact v2 result or targeted CLI v4 for this case."
+      },
+      "parent-delivery-tools-off-authorize": {
+        "report": "bound-native-matrix/parent-delivery-tools-off-authorize.json",
+        "sha256": "556eb249dd03adb7115992f83efd22eb0996940ada8b4f861d7de4e7cf32f9aa",
+        "reported_ok": false,
+        "classification": "Historical report retained; superseded by exact v2 result or targeted CLI v4 for this case."
+      }
+    },
+    "initial_classification": "Historical diagnostic: real stage chain succeeded but wrong-tenant fixture counter failed; corrected fresh-cache and final-binary v2 normal reports supersede this diagnostic.",
+    "finished_v2": {
+      "parent-completion": {
+        "report": "bound-native-matrix-v2/parent-completion.json",
+        "sha256": "ee0ea2859b53fdae09d7a45ed3e71478956ee42cb44bfd90c96b6f03c0e20baa",
+        "ok": true,
+        "errors": [],
+        "recorded_event_files": 140,
+        "parent_business_accepted": true,
+        "parent_completion_state": "complete"
+      },
+      "parent-delivery-bypass": {
+        "report": "bound-native-matrix-v2/parent-delivery-bypass.json",
+        "sha256": "e2721ca79710759d687f5248d61547612d9b17281e8318c1319dee5d55e7dcb6",
+        "ok": true,
+        "errors": [],
+        "recorded_event_files": 158,
+        "parent_business_accepted": true,
+        "parent_completion_state": "complete"
+      },
+      "parent-cold": {
+        "report": "bound-native-matrix-v2/parent-cold.json",
+        "sha256": "5cd37af3bec2f7babf955825d8a1b28cdf63017e6c52726e943ec111e11f5a1a",
+        "ok": true,
+        "errors": [],
+        "recorded_event_files": 140,
+        "parent_business_accepted": true,
+        "parent_completion_state": "complete"
+      },
+      "parent-stop": {
+        "report": "bound-native-matrix-v2/parent-stop.json",
+        "sha256": "572b4790754e2be3f74a723bf43f22936cce3dbbb7a7ebccc0918b178c3a9867",
+        "ok": true,
+        "errors": [],
+        "recorded_event_files": 21,
+        "parent_business_accepted": false,
+        "parent_completion_state": "check"
+      },
+      "parent-tools-off": {
+        "report": "bound-native-matrix-v2/parent-tools-off.json",
+        "sha256": "0a7089ffef75dcd0c88c5a8e5e2ac4c83efb518295740ed2826e697a8a545c10",
+        "ok": true,
+        "errors": [],
+        "recorded_event_files": 21,
+        "parent_business_accepted": false,
+        "parent_completion_state": "readback_required"
+      },
+      "parent-consultation": {
+        "report": "bound-native-matrix-v2/parent-consultation.json",
+        "sha256": "8639080d84715ac504119cf4e07af0720bd99f22f04b974acb881cd4556ad1be",
+        "ok": true,
+        "errors": [],
+        "recorded_event_files": 21,
+        "parent_business_accepted": false,
+        "parent_completion_state": "readback_required"
+      },
+      "parent-stop-authorize": {
+        "report": "bound-native-matrix-v2/parent-stop-authorize.json",
+        "sha256": "c67c31fc9f1512ad50d38cf925d923888a24bdb2dde246d2c77158b5ecb15eba",
+        "ok": true,
+        "errors": [],
+        "recorded_event_files": 21,
+        "parent_business_accepted": false,
+        "parent_completion_state": "authorize"
+      },
+      "parent-tools-off-authorize": {
+        "report": "bound-native-matrix-v2/parent-tools-off-authorize.json",
+        "sha256": "30e5bb5027d6005639c58a8ab8b79dc1ed49d3dff200d9025a333bc34fd0dff9",
+        "ok": true,
+        "errors": [],
+        "recorded_event_files": 21,
+        "parent_business_accepted": false,
+        "parent_completion_state": "readback_required"
+      },
+      "parent-consultation-authorize": {
+        "report": "bound-native-matrix-v2/parent-consultation-authorize.json",
+        "sha256": "1388304319ce4f9768848f7936f27966dda206f954ed8628913b0e41026b58dd",
+        "ok": true,
+        "errors": [],
+        "recorded_event_files": 21,
+        "parent_business_accepted": false,
+        "parent_completion_state": "readback_required"
+      },
+      "parent-delivery-tools-off": {
+        "report": "bound-native-matrix-v2/parent-delivery-tools-off.json",
+        "sha256": "d4066b8774cf65cefd2b2fe5fcce8172a07ac28d792908d9c1bd699387d70206",
+        "ok": true,
+        "errors": [],
+        "recorded_event_files": 23,
+        "parent_business_accepted": false,
+        "parent_completion_state": "readback_required"
+      },
+      "parent-delivery-tools-off-authorize": {
+        "report": "bound-native-matrix-v2/parent-delivery-tools-off-authorize.json",
+        "sha256": "5299af0d5c4fb8a5bbfef9214e58d40477a8253442ef963470a0c7b98a2dd913",
+        "ok": true,
+        "errors": [],
+        "recorded_event_files": 23,
+        "parent_business_accepted": false,
+        "parent_completion_state": "readback_required"
+      },
+      "parent-cli": {
+        "report": "bound-native-matrix-v2/parent-cli.json",
+        "sha256": "359c5021d4fa8c279fc8239abf874cc7e0a4593f80ccd55e36e8201952fb9132",
+        "ok": false,
+        "errors": [],
+        "recorded_event_files": 14,
+        "parent_business_accepted": false,
+        "parent_completion_state": "decision_required"
+      }
+    },
+    "cli_v4": {
+      "report": "bound-continuation-native-cli-v4.json",
+      "sha256": "8d6ade26e126a6dd5b170089938f6989e359d58b55540f506481494c43eb6d35",
+      "ok": true,
+      "binary_sha256": "725f339115fbb462ed4d36b47ae2d3823d10ea4bc4366a1ad05bdbeca759adcf",
+      "transport_fixture_ok": true,
+      "recorded_event_files": 140,
+      "raw_cli_receipt_count": 1,
+      "scope": "Actual executable controlled CLI provider through installed Codex exec bridge and native CLI completion callback, then HTTP children/review. Human mid-bind model switching is outside this fixture."
+    },
+    "final_affected_matrix": {
+      "binary_sha256": "b12fdd311dac10bf36954e17a909f53f76cbce126e2fc43ba22f57c2f2de740c",
+      "cases": {
+        "parent-delivery-no-progress": {
+          "report": "bound-native-bounded-stop-matrix/parent-delivery-no-progress.json",
+          "sha256": "0cdef2f315ab4b2abf8eefb59328f6145c86cb1865a1ca7406fbab271a9b94b2",
+          "ok": true,
+          "errors": [],
+          "parent_stage_count": 3,
+          "recorded_event_files": 36,
+          "parent_business_accepted": false,
+          "parent_completion_state": "kuafu_required"
+        },
+        "parent-completion": {
+          "report": "bound-native-bounded-stop-matrix/parent-completion.json",
+          "sha256": "f0bf1bd5bef5748ade78f8c5a230f1d5d4580f757659b6cc00761cab96519392",
+          "ok": true,
+          "errors": [],
+          "parent_stage_count": 1,
+          "recorded_event_files": 140,
+          "parent_business_accepted": true,
+          "parent_completion_state": "complete"
+        },
+        "parent-delivery-bypass": {
+          "report": "bound-native-bounded-stop-matrix/parent-delivery-bypass.json",
+          "sha256": "0f7ac0e92fa00b20715a4a2925797ea9533e205d2f32843bf04f8c2dec522ad0",
+          "ok": true,
+          "errors": [],
+          "parent_stage_count": 2,
+          "recorded_event_files": 158,
+          "parent_business_accepted": true,
+          "parent_completion_state": "complete"
+        },
+        "parent-delivery-tools-off": {
+          "report": "bound-native-bounded-stop-matrix/parent-delivery-tools-off.json",
+          "sha256": "5e2cd1973ba9f356b9ae75db71965334764f7cf6ed34772315ae59b8e00f95a8",
+          "ok": true,
+          "errors": [],
+          "parent_stage_count": 1,
+          "recorded_event_files": 24,
+          "parent_business_accepted": false,
+          "parent_completion_state": "readback_required"
+        },
+        "parent-delivery-tools-off-authorize": {
+          "report": "bound-native-bounded-stop-matrix/parent-delivery-tools-off-authorize.json",
+          "sha256": "123846c251b6d5456ae6f841689a76e084e46fc8d70046c915423f1377c9bbdc",
+          "ok": true,
+          "errors": [],
+          "parent_stage_count": 1,
+          "recorded_event_files": 24,
+          "parent_business_accepted": false,
+          "parent_completion_state": "readback_required"
+        }
+      }
+    },
+    "reuse_scope": "725f results: ordinary CLI normalized callback, ordinary Stop/tools/consultation at check/authorize, cold state non-restoration, host-tool update/refusal/revert. b12f adds staged held-action terminal handling; normal and all affected staged-delivery cases rerun. No assertion that every older case executed on b12f."
+  },
+  "delivery_integration_scope": "Actual installed Node verifier and actual existing finalizer/journal/activation retry; controlled independent observer snapshots and remote signed/main/CI readbacks. Actual native independent observers tested separately. No real remote writes performed.",
+  "recovery": "Actual finalizer closed controlled Issue then returned unknown; explicit original-account readback after WRITE revocation verified closed result without replay or restoring live owner. Exact nonce/candidate attempt mismatches reject.",
+  "limitations": [
+    "Only explicitly complete-mapped registered native parent flows; arbitrary Issue prose is not inferred complete.",
+    "Native fixture declared command/file delivery does not prove GitHub main delivery.",
+    "Real model-provider behavior, Windows execution and exact candidate CI/main delivery require separate actual results.",
+    "No claim of complete parent #953/#978 acceptance.",
+    "Readback does not restore business acceptance or reactivate installations; unknown outcomes remain unknown.",
+    "Live checks require original Issue open; a criterion requiring that same Issue already closed before independent acceptance is unsupported. Original final closure follows independently verified business/main proofs through existing finalizer."
+  ],
+  "cleanup": {
+    "tests": "Private TemporaryDirectory Git repositories and owned subprocesses cleaned by test fixtures.",
+    "retained": "Implementation, test logs and original diagnostic evidence retained for parent-owned review and delivery. No active installation modified."
+  },
+  "checks_notes": [
+    "Fresh parent suite includes actual local-only Kuafu consumer/deduplication; pending intake remains pending.",
+    "Generated cancellation GDScript tab-only indentation checked through actual fixture mutator after original parse failure; no engine executed by implementation agent.",
+    "CLI fixture controls selected transport without emitting a human mid-bind connection reset; coverage is normalized CLI callback, not user connection-switch continuity."
+  ],
+  "receipt_resolution_base": "All receipt/log references resolve relative to the local private receipt root for ai-integration-refactor-20261112, at shared-repository data-collection/receipts/ai-integration-refactor-20261112. These private receipts are retained locally, not published with this record.",
+  "module_boundary": {
+    "report": "bound-continuation-host-tool-update-revert-v2.json",
+    "sha256": "03330bc810a83a0e2766dd09453892a76e83365bd30480bc1b11f09b790098b4",
+    "ok": true,
+    "binary_sha256": "725f339115fbb462ed4d36b47ae2d3823d10ea4bc4366a1ad05bdbeca759adcf",
+    "source_adapter_sha256": "1b9768dcbe4736cb58d973c986278ef13ac11999cef9955c45c50a68c76b35d2",
+    "production_adapter_unchanged": true,
+    "binary_unchanged": true,
+    "temporary_snapshot_removed": true,
+    "phases": [
+      {
+        "phase": "baseline",
+        "passed": true,
+        "exit_code": 0
+      },
+      {
+        "phase": "private-refusal",
+        "passed": true,
+        "exit_code": 1
+      },
+      {
+        "phase": "restored",
+        "passed": true,
+        "exit_code": 0
+      }
+    ],
+    "scope": "Historical same-binary update/refusal/revert of the original adapter1b976. Current adapter changed for R1; final native installed-consumer results are separate and do not relabel this historical probe."
+  },
+  "native_delivery_gap": "Prior native postacceptance serialization/approval/installed finalizer gap is closed by actual v4 and new-main v6 evidence. Remote account/signed/main/CI/Issue writes and activation remain controlled; no real GitHub or supplier effectiveness claim.",
+  "bounded_staged_delivery_stop": {
+    "before": {
+      "report": "bound-continuation-no-progress-before.json",
+      "sha256": "64a3f454a7f96364a096e2addb348804fbcf70de76978237edc929adab5354d1",
+      "binary_sha256": "725f339115fbb462ed4d36b47ae2d3823d10ea4bc4366a1ad05bdbeca759adcf",
+      "ok": false,
+      "parent_stage_count": 4,
+      "classification": "Actual defect reproduced: fourth model request after actual Kuafu consumer; fixture bounded itself with final text."
+    },
+    "after": {
+      "report": "bound-native-bounded-stop-matrix/parent-delivery-no-progress.json",
+      "sha256": "0cdef2f315ab4b2abf8eefb59328f6145c86cb1865a1ca7406fbab271a9b94b2",
+      "binary_sha256": "b12fdd311dac10bf36954e17a909f53f76cbce126e2fc43ba22f57c2f2de740c",
+      "ok": true,
+      "parent_stage_count": 3,
+      "recorded_event_files": 36,
+      "state": "kuafu_required",
+      "business_accepted": false,
+      "blocker_receipts": 1,
+      "durable_incidents": 1
+    },
+    "source_delta": {
+      "report": "bound-continuation-bounded-stop-validation-source.json",
+      "sha256": "90b43fb7f6ec63d3b842e2621fbac50c6fc135998464d435dd93cb9ba8762d38"
+    },
+    "behavior": "Only dispatch_registered early rejection resumes the model; wait/decision/readback/Kuafu closes unexecuted proposals and uses existing held/terminal path. Actual cancelled tool step preserved; no fake successful execution."
+  },
+  "historical_validation_incidents": [
+    {
+      "report": "bound-continuation-host-tool-update-revert.json",
+      "sha256": "43d10260c9f37941a00637306f694330c95fa3c8241d4f936813f08153e5d4e4",
+      "classification": "Actual bind-refusal UI defect; rejected job stopped but Stop remained enabled. Fixed and v2 passed."
+    },
+    {
+      "report": "bound-continuation-host-tool-update-revert-private-refusal.json",
+      "sha256": "7c9fd77a55eca31caadd1923883e71e9ba72ab811757e1f83e4766320e44c3de",
+      "classification": "Raw private adapter refusal and original Stop-control failure retained."
+    },
+    {
+      "report": "bound-continuation-native-cli-v3.json",
+      "sha256": "ca3c708066eeccdd20b9666f4f726ecd1d17f831967abb76bafd8590ede91d6b",
+      "classification": "Fixture restored provider during synchronous terminal signal before owner unlock; real CLI completed, subsequent HTTP provenance rejected. Deferred fixture restoration v4 passed."
+    }
+  ],
+  "acceptance_trace": {
+    "C1": "Original authenticated full-contract binding, owner/source/criteria exactness and negative cases: parent suite23; native explicit confirmation path.",
+    "C2": "Final b12f parent-completion and parent-delivery-bypass: actual parent A, existing registered dispatch B, independent complete non-Git fixture scope, actual installed bridge.",
+    "C3": "Original normalized CLI v4 and native boundaries retain exact scope; new controlled native postacceptance finalizer v4 covers actual host guard/checklist/approval and subprocess/journal.",
+    "C4": "Parent25 plus currentness boundaries; independent actual nested-owner repro/fix; native executing Stop/destruction/actual600second timeout, all inner processes exited without late writes. Currentmain success confirms final native/installed consumer.",
+    "C5": "Actual final no-progress native consumer once/3 requests; actual private same-binary adapter update/refusal/revert; cold non-restoration; owned descendant cancellation and lost delivery readback.",
+    "C6": "142 unique required Python/Node tests and documented native validations passed; actual formal gate after request-event repair passed. Final independent source approval, final index gates, exact candidate CI/main and closure pending."
+  },
+  "final_static_checks": {
+    "report": "bound-continuation-implementation/final-static-checks.json",
+    "sha256": "7d10e46d338e0fea6f7d8002e7ffd1f577c8091fe974bb63a97c19497e153f9f"
+  },
+  "review_repairs": {
+    "R1": {
+      "problem": "Outer provenance cancellation could orphan the separate finalizer process group, allowing late writes.",
+      "repair": "Native mapped delivery cancellation removes its live request before outer termination; parent adapter signal flags keep nested owner alive through group/Job cleanup.",
+      "independent_before": {
+        "report": "../bound-continuation-independent-review-20261113/delivery-cancel-reproduction.json",
+        "sha256": "b8087e4bf39f451e47cf999e2fbdb395d0ee54fcde1139484a0a44980350b8d2"
+      },
+      "independent_after": {
+        "report": "../bound-continuation-independent-review-20261113/delivery-cancel-reproduction-fixed.json",
+        "sha256": "2e8e522c56546906822d2670b13f3c0602774aaca91b317f46fd615defc4c681"
+      },
+      "review": {
+        "report": "../bound-continuation-independent-review-20261113/review-r1-incremental.json",
+        "sha256": "06e62cf8cc90762dc535d8630936c8e2073228fe0db4eee9533df88a25a98bd5"
+      }
+    },
+    "protected_cleanup": {
+      "problem": "Actual native post-acceptance guard failed before finalizer start because setuid /bin/ps is rejected inside the macOS provenance profile.",
+      "repair": "Bounded libproc group enumeration and explicit zombie readback; require pinned leader and unchanged second member snapshot. Unknown remains refusal.",
+      "primary_source": "https://github.com/apple-oss-distributions/xnu/blob/main/bsd/kern/proc_info.c",
+      "before": {
+        "report": "bound-native-finalize-diagnostic-v2.diagnostics-report.json",
+        "sha256": "73eb1938d872a98c11f8cd4c1b6806703028f222903b2583587b2410df64fc42"
+      },
+      "after": {
+        "report": "bound-native-finalize-libproc-v3.json",
+        "sha256": "4add7239523feec997dd28827d2b938d61ab3089c32a5a8f989da571ca25d2aa"
+      }
+    },
+    "native_postacceptance": [
+      {
+        "report": "bound-native-parent-finalize-v4.json",
+        "sha256": "efdafdbfe6e056fd0cdac713b172061d9b9de700f9be7690ea4db0b9c48699b4",
+        "ok": true,
+        "binary_sha256": "61d83b6a66558ef20aaabdfc31d3039aac19f444f5954ae98f97912cea55fe44",
+        "scenario": "parent-finalize",
+        "child_running_after_native_terminal": false,
+        "late_mutations": false,
+        "controlled_writes": 4,
+        "parent_business_accepted": true
+      },
+      {
+        "report": "bound-native-parent-finalize-stop-v4.json",
+        "sha256": "aea0212464f941d4ab1047f616ed154512e0b1d0460daa6c5a949990923846aa",
+        "ok": true,
+        "binary_sha256": "61d83b6a66558ef20aaabdfc31d3039aac19f444f5954ae98f97912cea55fe44",
+        "scenario": "parent-finalize-stop",
+        "child_running_after_native_terminal": false,
+        "late_mutations": false,
+        "controlled_writes": 0,
+        "parent_business_accepted": false
+      },
+      {
+        "report": "bound-native-parent-finalize-destroy-v4.json",
+        "sha256": "c5c8fcf86b24fa464dcb2865fa369f956bd584f21f3860947c9825588d189e0d",
+        "ok": true,
+        "binary_sha256": "61d83b6a66558ef20aaabdfc31d3039aac19f444f5954ae98f97912cea55fe44",
+        "scenario": "parent-finalize-destroy",
+        "child_running_after_native_terminal": false,
+        "late_mutations": false,
+        "controlled_writes": 0,
+        "parent_business_accepted": false
+      },
+      {
+        "report": "bound-native-finalize-timeout-v4.json",
+        "sha256": "e290193c23269b3e50acd60968b706128dcf26f62aab61fbffd41d30e54720f7",
+        "ok": true,
+        "binary_sha256": "61d83b6a66558ef20aaabdfc31d3039aac19f444f5954ae98f97912cea55fe44",
+        "scenario": "parent-finalize-timeout",
+        "child_running_after_native_terminal": false,
+        "late_mutations": false,
+        "controlled_writes": 0,
+        "parent_business_accepted": false,
+        "native_timeout_observed": true
+      }
+    ],
+    "source": {
+      "report": "bound-continuation-libproc-validation-source.json",
+      "sha256": "f4e5bfd259e9494ba0c545f98151c2e2b31f3f8664207d1bfff5a1998c797396"
+    },
+    "tests": [
+      {
+        "report": "bound-parent25-libproc-configured.log",
+        "sha256": "b311aa1ba5575604331503f5238d72608e7ac8c3870a78091108227420da658f",
+        "passed": 25
+      },
+      {
+        "report": "bound-owned-process-full.log",
+        "sha256": "56caf122837558d3b422fe37da9e25581cd1b1a9a1280b1102de9439f5f531f8",
+        "passed": 11
+      }
+    ],
+    "test_environment_incident": {
+      "report": "bound-parent25-libproc-final.log",
+      "sha256": "284f793c37a5c585c8da99c050b1cc783db589cc6476aee17fb4e1007b17fd78",
+      "classification": "Host invocation omitted configured Node PATH;23 setup failures,2 ownership tests passed. Correctly configured rerun passes25; no product code change for this invocation error."
+    },
+    "current_unique_python_node_tests": 142,
+    "scope": "Parent25 and owned11 current; unchanged bridge48, Python acceptance8, Node acceptance22, finalizer15,retry13 reuse exact original logs. No duplicate focused runs added to count.",
+    "rebuilt_native_success": {
+      "report": "bound-native-finalize-embedded-v5.json",
+      "sha256": "6d98586ad13e0ccfa17d3a50b952b23981680a5d94335cf3d40063f996aabb4d",
+      "ok": true,
+      "binary_sha256": "62b6d319096f4677f05e48715a31d71bac40de71008a27fd18448e568bc4e1f4",
+      "parent_business_accepted": true
+    },
+    "timeout_explicit_verification": {
+      "report": "bound-native-timeout-explicit-verification.json",
+      "sha256": "3781c2c2eac37e263bd84e42b9a18e86d75f4cb7f10df71c364a9181787136e4"
+    },
+    "timeout_boundary": "Native timed_out=true, live request revoked, inner process exited/no writes. Outer guard cancelled=false is not proof of SIGTERM; composed cancellation and Stop evidence stand separately.",
+    "current_main_native_success": {
+      "report": "bound-native-finalize-main-v6.json",
+      "sha256": "702d8f18229a7d69c19b91d7ec7b909b0df0ff6a0839c4b3aed370a86806ed43",
+      "ok": true,
+      "binary_sha256": "605ef761816555036198d0112f32eb5f204c4cd2418b2e58a137e4343fa3abae",
+      "base": "d5a77b1d539a9b92a1b81fc84c4df447dab82a7d",
+      "parent_business_accepted": true
+    },
+    "current_main_source": {
+      "report": "bound-continuation-main-validation-source.json",
+      "sha256": "a247b87ee5c67b1e53cbb987b80a24ea7a87dd7ffdf73c26ef28c3f6382d2dc8"
+    },
+    "main_update": {
+      "report": "bound1024-main-d5a77b1d-preservation-20261113.json",
+      "sha256": "5ae2c8e230f3595f613d0707af3c1946280ab0f6e3dba8564f7b285616a062e6",
+      "restored_exactly": true,
+      "candidate_files": 39
+    },
+    "cleanup": {
+      "report": "bound-native-postacceptance-cleanup-check.json",
+      "sha256": "b962a18105ccc1e07c4162a9606cfd64af2e5b141891dc23bc9a60f970e9a122",
+      "private_fixture_roots_absent": 9,
+      "scope": "Only these9 actual observed private native fixtures; unpublished candidates/rollback and other tasks retained."
+    }
+  }
+}

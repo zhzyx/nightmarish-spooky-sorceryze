@@ -46,6 +46,7 @@
 #include "editor/file_system/editor_paths.h"
 #include "editor/settings/editor_settings.h"
 #include "scene/gui/check_box.h"
+#include "scene/gui/dialogs.h"
 #include "scene/gui/line_edit.h"
 #include "scene/gui/option_button.h"
 #include "scene/gui/text_edit.h"
@@ -671,6 +672,13 @@ void AIChatDock::_poll_gonggong_context() {
 		issue_guide_outcome = String();
 	}
 	gonggong_context = result["context"];
+	if (!sub_agents.has(active_agent) && !scheduled_agents.has(active_agent)) {
+		parent_confirmation_sources.erase(active_agent);
+		const Dictionary source = result.get("parent_confirmation_source", Dictionary());
+		if (!source.is_empty()) {
+			parent_confirmation_sources.insert(active_agent, source);
+		}
+	}
 	gonggong_governance_digest = result.get("governance_sha256", String());
 	set_meta("gonggong_status", "context_ready");
 	if (restoring_command_offer) {
@@ -1628,4 +1636,389 @@ void AIChatDock::_igniter_resume() {
 	session_generation++;
 	_set_busy(true);
 	_request_completion();
+}
+
+// Complete-task continuation is opt-in through the native-confirmed design.
+// These observations are assembled from live scheduler/reviewer ownership, never
+// from an assistant's final text, imported history, or a producer's done flag.
+Dictionary AIChatDock::_parent_completion_observations(int p_parent) {
+	Dictionary result;
+	if (!design_batches.has(p_parent)) {
+		return result;
+	}
+	const Dictionary batch = design_batches[p_parent];
+	const Dictionary children = batch["children"];
+	Array observations;
+	bool pending_current = false;
+	for (const Variant &value : Array(batch["order"])) {
+		const int id = value;
+		if (!sub_agents.has(id) || !children.has(id)) {
+			return Dictionary();
+		}
+		const Dictionary info = sub_agents[id];
+		const Dictionary child = children[id];
+		const Dictionary acceptance = info.get("acceptance", Dictionary());
+		const int reviewer = String(acceptance.get("reviewer", "-1")).to_int();
+		const bool accepted = acceptance.has("decision_sha256") && acceptance_reviews.has(reviewer) &&
+				int(acceptance_reviews[reviewer].get("producer", -1)) == id && acceptance_reviews[reviewer].has("verified_decision") && _automatic_acceptance_current(id);
+		pending_current = pending_current || (!accepted && acceptance.has("decision_sha256") && (acceptance_bridge_jobs.has(id) || (!history_save_error && (history_save_job || history_dirty))));
+		Dictionary observation;
+		observation["number"] = info["number"];
+		observation["worker_id"] = id;
+		observation["state"] = child["state"];
+		observation["accepted"] = accepted;
+		observation["decision_sha256"] = accepted ? acceptance["decision_sha256"] : Variant(String());
+		observation["ready"] = !accepted && !acceptance.has("decision_sha256") && _design_child_ready(id);
+		observation["execution"] = info.get("external_candidate", Dictionary());
+		observation["terminal"] = info.get("terminal_receipt", Dictionary());
+		observations.push_back(observation);
+	}
+	result["observations"] = observations;
+	result["pending_current"] = pending_current;
+	result["unknown_effect"] = process_id >= 0 || !observed_command_owner.is_empty() || !gonggong_recovered_result.is_empty() || !pending_delivery_request.is_empty();
+	result["reserved_decision"] = queue_paused || !queued_messages.is_empty() || confirmation->is_visible() || engine_approval->is_visible() || !allow_tools->is_pressed() || consultation_only->is_pressed();
+	return result;
+}
+
+bool AIChatDock::_start_parent_completion(int p_parent, const String &p_operation) {
+	if (!parent_completion_job.is_empty() || !design_batches.has(p_parent) || p_parent != active_agent || sub_agents.has(p_parent) || scheduled_agents.has(p_parent) ||
+			consultation_turn || consultation_only->is_pressed() || queue_paused || !allow_tools->is_pressed() || !history_writable || snapshot_transaction_failed || snapshot_restoring) {
+		return false;
+	}
+	Dictionary batch = design_batches[p_parent];
+	if (!_design_parent_matches(p_parent, batch) || bool(batch.get("read_only_review", false))) {
+		return false;
+	}
+	const Dictionary doc = _read_design(p_parent);
+	if (doc.is_empty()) {
+		return false;
+	}
+	Dictionary owner;
+	owner["conversation"] = conversation_id;
+	owner["token"] = batch["token"];
+	owner["authority_ref"] = "godot-editor:user-chat:" + conversation_id;
+	const Array order = batch["order"];
+	if (order.is_empty()) {
+		return false;
+	}
+	const Dictionary approval = sub_agents[int(order[0])].get("design_approval", Dictionary());
+	if (!parent_confirmed_designs.has(p_parent) || parent_confirmed_designs[p_parent] != approval) {
+		return false; // Cold history never reconstructs a live native confirmation.
+	}
+	const Dictionary confirmation_source = approval.get("parent_confirmation_source", Dictionary());
+	owner["operator"] = Dictionary(confirmation_source.get("actor", Dictionary())).get("login", "");
+	owner["local_operator"] = approval.get("operator", "");
+	for (const Variant &id : order) {
+		if (sub_agents[int(id)].get("design_approval", Variant()) != Variant(approval) || approval.get("binding", Variant()) != doc.get("binding", Variant())) {
+			return false;
+		}
+	}
+	if (order.size() != Array(doc["orders"]).size()) {
+		return false;
+	}
+	Dictionary input = _parent_completion_observations(p_parent);
+	if (input.is_empty() || bool(input.get("pending_current", false))) {
+		return false;
+	}
+	input["operation"] = p_operation;
+	input["owner"] = owner;
+	input["confirmation_source"] = confirmation_source;
+	input["issue_number"] = batch["issue_number"];
+	input["request_id"] = batch["request_id"];
+	input["design"] = doc["binding"];
+	input["orders"] = doc["orders"];
+	input["binding"] = batch.get("parent_contract", Dictionary());
+	input["no_progress"] = batch.get("parent_no_progress", 0);
+	if (p_operation == "authorize") {
+		const Dictionary check = batch["parent_check"];
+		input["checked_candidate"] = check["candidate"];
+		input["checked_facts"] = check["facts_sha256"];
+		input["checked_action"] = check["action"];
+	}
+	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
+	const String python = GongGongRuntimeConfig::path(runtime, "workflow_python");
+	const String bridge = _engine_root().path_join("tools/gonggong_bridge.py");
+	if (python.is_empty() || !FileAccess::exists(bridge)) {
+		return false;
+	}
+	const String nonce = itos(OS::get_singleton()->get_process_id()) + "-" + itos(OS::get_singleton()->get_ticks_usec());
+	const String stem = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-parent-" + nonce);
+	input["request_nonce"] = nonce;
+	input["host_liveness_path"] = stem + ".live";
+	Dictionary live;
+	live["active"] = true;
+	live["request_nonce"] = nonce;
+	for (const String &suffix : { String(".live"), String(".request") }) {
+		Ref<FileAccess> file = FileAccess::open(stem + suffix, FileAccess::WRITE);
+		if (file.is_null()) {
+			DirAccess::remove_absolute(stem + ".live");
+			return false;
+		}
+		file->store_string(JSON::stringify(suffix == ".live" ? live : input));
+		file->flush();
+		if (file->get_error() != OK) {
+			DirAccess::remove_absolute(stem + ".live");
+			return false;
+		}
+	}
+	List<String> args;
+	for (const String &arg : { bridge, String("parent-completion"), String("--workspace"), String(batch["workspace"]), String("--request"), stem + ".request", String("--out"), stem + ".result" }) {
+		args.push_back(arg);
+	}
+	ProcessID pid = -1;
+	if (OS::get_singleton()->create_process(python, args, &pid) != OK) {
+		DirAccess::remove_absolute(stem + ".live");
+		DirAccess::remove_absolute(stem + ".request");
+		return false;
+	}
+	parent_completion_job["parent"] = p_parent;
+	parent_completion_job["token"] = batch["token"];
+	parent_completion_job["snapshot"] = snapshot_id;
+	parent_completion_job["generation"] = int64_t(session_generation);
+	parent_completion_job["pid"] = int64_t(pid);
+	parent_completion_job["nonce"] = nonce;
+	parent_completion_job["stem"] = stem;
+	parent_completion_job["operation"] = p_operation;
+	parent_completion_job["observations"] = input["observations"];
+	parent_completion_job["request"] = input;
+	parent_completion_job["started"] = int64_t(OS::get_singleton()->get_ticks_msec());
+	if (!parent_completion_timer) {
+		parent_completion_timer = memnew(Timer);
+		parent_completion_timer->set_wait_time(0.1);
+		parent_completion_timer->connect("timeout", callable_mp(this, &AIChatDock::_poll_parent_completion));
+		add_child(parent_completion_timer);
+	}
+	parent_completion_timer->start();
+	_refresh_sub_agents();
+	if (p_operation == "bind") {
+		set_meta("parent_business_accepted", false);
+	}
+	set_meta("parent_completion_state", p_operation);
+	return true;
+}
+
+bool AIChatDock::_gate_parent_completion() {
+	if (consultation_turn || sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || !design_batches.has(active_agent) ||
+			!design_batches[active_agent].has("parent_contract") || _has_pending_steering()) {
+		return false;
+	}
+	if (!parent_completion_job.is_empty()) {
+		return true; // A replay cannot start another check or emit a terminal.
+	}
+	Dictionary batch = design_batches[active_agent];
+	if (int64_t(batch.get("parent_current_generation", -1)) != int64_t(request_generation)) {
+		batch["parent_current_generation"] = int64_t(request_generation);
+		// A previous stage's cache is not a fresh candidate read. Invalidate once
+		// per real model completion, then await actual verifier completion events.
+		for (const Variant &id : Array(batch["order"])) {
+			acceptance_bridge_results.erase(int(id));
+		}
+	}
+	const Dictionary observations = _parent_completion_observations(active_agent);
+	if (bool(observations.get("pending_current", false))) {
+		batch["parent_wait_current"] = true;
+		set_meta("parent_completion_state", "awaiting_current_acceptance");
+		if (history_dirty && !history_save_job) {
+			_save_history();
+		}
+		return true;
+	}
+	batch["parent_wait_current"] = false;
+	if (!_start_parent_completion(active_agent, "check")) {
+		_finish_parent_completion("decision_required");
+	}
+	return true;
+}
+
+void AIChatDock::_cancel_parent_completion() {
+	if (parent_completion_job.is_empty()) {
+		return;
+	}
+	const String stem = parent_completion_job["stem"];
+	// The installed adapter observes this revocation through the existing owned
+	// process helper, which closes its POSIX group / Windows Job. Killing the
+	// Python owner here would prevent that cleanup. Remote outcomes stay unknown.
+	DirAccess::remove_absolute(stem + ".live");
+	// A blocker may have recorded an incident; retain its raw response for readback.
+	DirAccess::remove_absolute(stem + ".request");
+	parent_completion_job.clear();
+	if (parent_completion_timer) {
+		parent_completion_timer->stop();
+	}
+}
+
+void AIChatDock::_finish_parent_completion(const String &p_action) {
+	if (!parent_delivery_arguments.is_empty()) {
+		const Dictionary arguments = parent_delivery_arguments.duplicate(true);
+		parent_delivery_arguments.clear();
+		if (p_action == "complete") {
+			parent_delivery_reentry = true;
+			_run_delivery_tool(arguments);
+			parent_delivery_reentry = false;
+			return;
+		} else if (p_action == "dispatch_registered") {
+			_finish_tool("Error: Original complete-task independent acceptance is not ready (" + p_action + "). No delivery finalization was started.");
+			return;
+		} else {
+			// A human decision, known worker wait, unknown outcome or exhausted
+			// budget cannot authorize another model request through a tool error.
+			// Close these unexecuted proposals without _finish_tool's continuation.
+			const String held = "Error: Tool proposal not executed; original task is held (" + p_action + "). No delivery finalization was started.";
+			bool recorded = true;
+			if (tool_index >= 0 && tool_index < tool_calls.size()) {
+				_record_design_tool_receipt("complete_delivery", held, false, false);
+				recorded = _record_gonggong("step", "tool-" + itos(tool_rounds) + "-" + itos(tool_index), "cancelled") &&
+						_record_gonggong("message", "tool_result", "received_metadata_only");
+				while (tool_index < tool_calls.size()) {
+					_append_tool_message(held, false, false);
+					tool_index++;
+				}
+			}
+			tool_calls.clear();
+			pending_action = String();
+			if (!recorded) {
+				set_meta("parent_completion_state", "readback_required");
+				set_meta("parent_business_accepted", false);
+				if (design_batches.has(active_agent)) {
+					design_batches[active_agent]["state"] = "parent_held";
+				}
+				_set_busy(false);
+				return;
+			}
+		}
+	}
+	set_meta("parent_completion_state", p_action);
+	set_meta("parent_business_accepted", p_action == "complete");
+	if (design_batches.has(active_agent)) {
+		Dictionary batch = design_batches[active_agent];
+		batch["parent_last_action"] = p_action;
+		batch["state"] = p_action == "dispatch_registered" || p_action == "wait_event" ? "running" : "parent_held";
+	}
+	if (p_action != "complete" && p_action != "dispatch_registered" && p_action != "wait_event") {
+		_append(TTR("Editor"), String(U"完整任务尚未验收；已保留当前回答与执行回执：") + p_action);
+	}
+	// This is the model-turn terminal only. The business result above is separate.
+	turn_completed = true;
+	_cleanup_completed_turn();
+	_set_busy(false);
+	if (p_action == "dispatch_registered") {
+		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
+	}
+}
+
+void AIChatDock::_poll_parent_completion() {
+	if (parent_completion_job.is_empty()) {
+		parent_completion_timer->stop();
+		return;
+	}
+	const Dictionary job = parent_completion_job.duplicate(true);
+	const int parent = job["parent"];
+	const bool current = parent == active_agent && design_batches.has(parent) && design_batches[parent].get("token", Variant()) == job["token"] &&
+			int64_t(session_generation) == int64_t(job["generation"]) && snapshot_id == String(job["snapshot"]) &&
+			_design_parent_matches(parent, design_batches[parent]) && !queue_paused && allow_tools->is_pressed() && !consultation_turn && !consultation_only->is_pressed() &&
+			history_writable && !snapshot_restoring && !snapshot_transaction_failed;
+	if (!current || OS::get_singleton()->get_ticks_msec() - uint64_t(int64_t(job["started"])) > 300000) {
+		_cancel_parent_completion();
+		_refresh_sub_agents(); // Bind may have no busy model turn to release controls.
+		if (parent == active_agent && design_batches.has(parent) && design_batches[parent].get("token", Variant()) == job["token"]) {
+			design_batches[parent]["state"] = "parent_held";
+			set_meta("parent_completion_state", "readback_required");
+			set_meta("parent_business_accepted", false);
+		}
+		if (parent == active_agent && int64_t(session_generation) == int64_t(job["generation"]) && busy) {
+			// The held completion path closes a staged proposal without another
+			// model request and preserves any actual or unknown remote outcome.
+			_finish_parent_completion("readback_required");
+		}
+		return;
+	}
+	if (OS::get_singleton()->is_process_running(int64_t(job["pid"]))) {
+		return;
+	}
+	const String stem = job["stem"];
+	Dictionary response;
+	const Variant raw = JSON::parse_string(FileAccess::get_file_as_string(stem + ".result"));
+	if (raw.get_type() == Variant::DICTIONARY) {
+		response = raw;
+	}
+	_cancel_parent_completion();
+	_refresh_sub_agents();
+	Dictionary batch = design_batches[parent];
+	const String operation = job["operation"];
+	if (!bool(response.get("ok", false)) || response.get("request_nonce", Variant()) != job["nonce"] ||
+			_parent_completion_observations(parent).get("observations", Variant()) != job["observations"] || _has_pending_steering()) {
+		batch["state"] = "parent_held";
+		set_meta("parent_completion_state", "decision_required");
+		set_meta("parent_business_accepted", false);
+		_append(TTR("Editor"), String(U"原完整任务校验未通过，未接续：") + _redact(response.get("error", "owner_or_execution_changed")).left(512));
+		if (busy) {
+			_finish_parent_completion("decision_required");
+		}
+		return;
+	}
+	if (operation == "bind") {
+		if (response.get("state", "") != "bound") {
+			batch["state"] = "parent_held";
+			set_meta("parent_completion_state", "unmapped");
+			set_meta("parent_business_accepted", false);
+			_append(TTR("Editor"), U"设计请求完整任务接续，但原 Issue 缺少完整验收映射；尚未启动生产。");
+			return;
+		}
+		batch["parent_contract"] = response["binding"];
+		batch["parent_initial_candidate"] = response["candidate"];
+		batch["state"] = "parent_preflight";
+		// A real parent stage uses the existing production entry: fresh intake,
+		// governance, model permissions and raw tool receipts remain mandatory.
+		Dictionary message;
+		message["role"] = "user";
+		message["content"] = String(U"原完整任务已由宿主绑定并确认。核对原任务、当前候选与已登记生产工单；本阶段结束后宿主将核验并派发可执行项。不要自行宣称完成或重复派发。\nBOUND_PARENT_STAGE\n") + JSON::stringify(Dictionary(response["binding"])["contract"]);
+		message["consultation_only"] = false;
+		design_parent_starting = parent;
+		const bool started = _start_message(message);
+		design_parent_starting = -1;
+		if (!started) {
+			batch["state"] = "parent_held";
+			set_meta("parent_completion_state", "decision_required");
+			set_meta("parent_business_accepted", false);
+			_refresh_sub_agents();
+		}
+		return;
+	}
+	const String action = response.get("action", "decision_required");
+	if (operation == "check") {
+		const String facts = response["progress_sha256"];
+		const String event = itos(session_generation) + ":" + itos(request_generation);
+		if (batch.get("parent_event", "") == Variant(event)) {
+			_finish_parent_completion("wait_event");
+			return;
+		}
+		batch["parent_event"] = event;
+		batch["parent_no_progress"] = batch.get("parent_facts", "") == Variant(facts) ? int(batch.get("parent_no_progress", 0)) + 1 : 0;
+		batch["parent_facts"] = facts;
+		batch["parent_check"] = response;
+		if (action == "kuafu_required" || int(batch["parent_no_progress"]) >= 2) {
+			if (!bool(batch.get("parent_blocker_sent", false))) {
+				batch["parent_blocker_sent"] = true;
+				if (_start_parent_completion(parent, "blocker")) {
+					return;
+				}
+			}
+			_finish_parent_completion("kuafu_required");
+			return;
+		}
+		if (_start_parent_completion(parent, "authorize")) {
+			return;
+		}
+		_finish_parent_completion("decision_required");
+		return;
+	}
+	if (operation == "blocker") {
+		batch["parent_blocker_receipt"] = response.get("blocker_receipt", Dictionary());
+		_finish_parent_completion("kuafu_required");
+		return;
+	}
+	if (operation == "authorize" && action == "complete") {
+		batch["parent_authorized_request"] = job["request"];
+	}
+	_finish_parent_completion(action);
 }

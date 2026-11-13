@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "request-continuation953-native-receipt-recovery-20261113",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "continuation953-native-receipt-recovery-20261113",
+  "kind": "request",
+  "occurred_at": "2026-11-13T04:40:20.814676+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1022",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "authorization_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "authorization": "User explicitly requested continuous full AI/GitHub integration audit and refactor, including discovered in-scope defects and authorized delivery",
+    "issue_number": 1022,
+    "current_continuation": "Continue delivery of independently reviewed native invocation and metadata recovery evidence under original user goal978",
+    "recording_boundary": "Current continuation request recorded after formal gate found absent request-kind source event; not a backdated initial-intake event, implementation acceptance, or delivery receipt",
+    "observed_model": null,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "74a926cab0d10dd71599698a2b7f5df460907467ae2cd5dcbfedf33207e62a00"
+}

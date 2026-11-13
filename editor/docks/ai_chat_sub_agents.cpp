@@ -289,6 +289,13 @@ int AIChatDock::_design_child_parent(int p_child) const {
 }
 
 void AIChatDock::_cancel_design_batch(int p_agent) {
+	if (p_agent == active_agent) {
+		parent_delivery_arguments.clear();
+		parent_delivery_reentry = false;
+	}
+	if (!parent_completion_job.is_empty() && int(parent_completion_job.get("parent", -1)) == p_agent) {
+		_cancel_parent_completion();
+	}
 	if (!production_integration_job.is_empty() && (int(production_integration_job.get("parent", -1)) == p_agent || int(production_integration_job.get("producer", -1)) == p_agent)) {
 		_cancel_production_integration();
 	}
@@ -447,6 +454,14 @@ void AIChatDock::_register_design_batch(int p_parent, const String &p_request_id
 			batch["terminal_receipt"] = terminal;
 		}
 		design_batches.insert(p_parent, batch);
+		const Dictionary doc = _read_design(p_parent);
+		if (p_review < 0 && bool(doc.get("parent_completion_requested", false))) {
+			batch["state"] = "parent_binding";
+			if (!_start_parent_completion(p_parent, "bind")) {
+				batch["state"] = "parent_held";
+				_append(TTR("Editor"), U"完整任务绑定尚未建立，未启动生产；请核对原设计、工单与当前宿主。");
+			}
+		}
 	}
 }
 
@@ -1058,6 +1073,11 @@ bool AIChatDock::_queue_design_parent_result(int p_parent) {
 		return false;
 	}
 	Dictionary result = batch.duplicate(true);
+	for (const Variant &key : result.keys()) {
+		if (String(key).begins_with("parent_")) {
+			result.erase(key); // Private full candidates/authority are not model notices.
+		}
+	}
 	result.erase("state");
 	result.erase("review_files");
 	result.erase("review_source_manifest");
@@ -1287,6 +1307,7 @@ Dictionary AIChatDock::_read_design(int p_parent, String *out_pDiagnostics) cons
 		return Dictionary();
 	}
 	Dictionary doc = AIChatSubAgents::parse_work_orders(String::utf8((const char *)bytes.ptr(), bytes.size()));
+	doc["parent_completion_requested"] = String::utf8((const char *)bytes.ptr(), bytes.size()).contains("<!-- gonggong-parent-completion:v1 -->");
 	if (!bool(doc["confirmation_section"]) || !bool(doc["valid"]) || Array(doc["orders"]).is_empty()) {
 		if (out_pDiagnostics) {
 			*out_pDiagnostics = doc["diagnostics"];
@@ -1384,6 +1405,14 @@ void AIChatDock::_confirm_design_action() {
 	Dictionary approval;
 	approval["binding"] = action["binding"];
 	approval["operator"] = actor;
+	if (bool(_read_design(parent).get("parent_completion_requested", false))) {
+		if (!parent_confirmation_sources.has(parent)) {
+			_append(TTR("Editor"), U"当前会话没有可核实的原工单账户回读。请先在该父会话回读原工单，再确认完整设计；历史记录不能恢复授权。");
+			return;
+		}
+		approval["parent_confirmation_source"] = parent_confirmation_sources[parent];
+		parent_confirmed_designs.insert(parent, approval.duplicate(true));
+	}
 	EditorSettings::get_singleton()->set_project_metadata("design_confirmations", design_record_key(action["binding"], parent), approval);
 	_spawn_work_order_agents(parent, true, approval);
 }
@@ -1472,9 +1501,15 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit, const D
 			pending_design_action["binding"] = binding;
 			pending_design_action["parent"] = p_parent;
 			String summary = vformat(U"确认以下设计定版并派发生产工单？\nIssue #%d · %s\n%s\nSHA-256 %s\n", issue, request_id, String(binding["workspace"]), String(binding["sha256"]));
+			if (bool(parsed.get("parent_completion_requested", false))) {
+				summary += U"\n本设计请求完整任务接续：确认以下全部原始验收与交付要求完整覆盖原需求。宿主还会回读原 Issue 的 gonggong-parent-contract，逐项核对本设计摘要与全部工单映射；缺失或不一致时不启动。\n";
+			}
 			for (const Variant &item : orders) {
 				const Dictionary order = item;
 				summary += vformat("\n%d. %s", int(order["number"]), String(order["title"]).left(80));
+				if (bool(parsed.get("parent_completion_requested", false))) {
+					summary += "\n" + JSON::stringify(order.get("acceptance_criteria", Array()));
+				}
 			}
 			design_summary->set_text(summary);
 			design_evidence->hide();
@@ -1614,6 +1649,10 @@ bool AIChatDock::_resume_work_order_agents(int p_parent, const String &p_request
 void AIChatDock::_sub_agent_dispatch() {
 	if (!is_inside_tree() || !history_loaded || history_restoring || !history_writable || busy || engine_build_pid >= 0 || engine_restart_requested || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty() || !issue_guide_state.is_empty()) {
 		return;
+	}
+	const int completion_parent = _sub_agent_root(active_agent);
+	if (design_batches.has(completion_parent) && String(design_batches[completion_parent].get("state", "")).begins_with("parent_")) {
+		return; // The live parent gate owns preflight, decisions and terminal acceptance.
 	}
 	if (gonggong_receipt_pid < 0 && !queue_paused && queued_messages.is_empty()) {
 		for (const KeyValue<int, Dictionary> &entry : acceptance_reviews) {
@@ -2405,7 +2444,7 @@ void AIChatDock::_refresh_sub_agents() {
 	sub_agent_bar->set_visible(!scheduled);
 	const int root = _sub_agent_root(active_agent);
 	const bool parallel_continuation = design_batches.has(root) && design_batches[root].get("state", "") == "running" && bool(design_batches[root].get("parallel_external", false)) && !queue_paused;
-	bool acceptance_pending = false;
+	bool acceptance_pending = !parent_completion_job.is_empty() && int(parent_completion_job.get("parent", -1)) == root;
 	for (const KeyValue<int, Dictionary> &entry : acceptance_bridge_jobs) {
 		acceptance_pending = acceptance_pending || int(entry.value.get("parent", -1)) == root;
 	}
@@ -2758,6 +2797,9 @@ void AIChatDock::_poll_acceptance_bridge() {
 	}
 	if (acceptance_bridge_jobs.is_empty()) {
 		acceptance_bridge_timer->stop();
+	}
+	if (busy && design_batches.has(active_agent) && bool(design_batches[active_agent].get("parent_wait_current", false))) {
+		_gate_parent_completion(); // Actual verifier completion, never a timer scan.
 	}
 }
 

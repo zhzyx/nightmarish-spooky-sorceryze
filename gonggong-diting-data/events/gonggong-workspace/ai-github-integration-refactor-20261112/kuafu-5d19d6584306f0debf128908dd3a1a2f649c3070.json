@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5d19d6584306f0debf128908dd3a1a2f649c3070",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2fb5251ff78b5ad2e8f0668e947161e60f2eb8fbbe9701fc03c7556e59aacb83",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1022",
+    "action": "delivery",
+    "detection_head": "1c8124dc7e8b63e6aae6aaf1393de14d91e8b392",
+    "context_sha256": "b52e6232ab03abf0a7f80767cdeafa8b87cd687b93abf3ff198a615b6a374811",
+    "operator": "Sail-Li",
+    "worker": "codex-current-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "PR1023 mainad79c25d9cdae8a635fdf74ff957336799903a10 source1357eaad94548bfda61116e4ff6dcd108b0ce1cc exacttreec6b04a7baf312feb1da5df810c5242b83d7817eb and independent metadata review7fbcc80e; corrected receive has real nonempty current trusted context; original empty receipt archived unchanged",
+    "diagnosis": "Evidence needed issue_number integer; fixed only that field and formal gate/committed check/signature/CI/main succeeded. Root also mistakenly used stale original-root Kuafu adapter for receive; it retained empty context from an already-fixed symlink path bug. Empty invalid receipt archived, actual current trusted adapter receive verified current identity and nonempty unchanged governed role. No guard or source framework bypass.",
+    "next_action": "Preserve both distinct1022 incident recoveries and actual worker terminal events in subsequent source evidence; original scoped1021 fixture receipt already delivered by1023 and can close after main CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T02:35:53.999592+00:00",
+    "attempted": "Original failures preserved; numeric metadata delta independently approved. First assess correctly rejected empty-versus-real context drift. Verified old output empty and same actor/mandate, preserved invalid receipt/history, loaded actual current role with fixed installed adapter, then assessed same incident. No new production invocation.",
+    "repair_owner": "Sail-Li",
+    "continuable": "Parent978 continues production953 child implementation;1023 delivered; no global hold."
+  },
+  "occurred_at": "2026-11-13T02:49:05.060279+00:00",
+  "sha256": "b82a54dc6457ee9022868332386ab60f9f2d8a28463cf2f9ee8aedd4b29faf12"
+}

@@ -1,0 +1,74 @@
+{
+  "request_id": "continuation953-native-receipt-recovery-20261113",
+  "issue_number": 1022,
+  "parent_issue": 978,
+  "path_base": "Repository-relative public paths. Private receipt names resolve under the original operator workspace data-collection/receipts/ai-integration-refactor-20261112, retained outside Git; another clone does not contain those files.",
+  "scope": "Recovery of actual operator invocation and metadata errors, not model or product defect fixes.",
+  "incidents": [
+    {
+      "id": "6c794e783b49baa91894484949e8b589476555fb61056be7b68fe76a398519c5",
+      "action": "native spawn receipt normalization",
+      "cause": "Root passed normalized workerReceipt to NativeToolBridge.respond, which requires raw task_name/agent_id. The adapter retained the existing reservation.",
+      "recovery": "Read actual existing native worker; authenticated source ack bound that worker without respawn. Original erroneous response retained. The first recovery script misinterpreted the void ack return, then read durable worker before recording recovery.",
+      "worker": "/root/sinan_d481f7558cb229f0",
+      "terminal": "Actual completed tool state verified by native verify_worker and reconciled; independent source audit and postdelivery review delivered.",
+      "evidence": [
+        {
+          "private_receipt": "continuation953-audit-recovered.json",
+          "sha256": "d7de926c4c34ff2267b3a831c190218e0b07a5afc2176e318f51bab618f8e3d4"
+        },
+        {
+          "private_receipt": "continuation953-audit-reconciled.json",
+          "sha256": "17c5b07c2b1be6975e19e6a547f6ee99d7f99a66fcfae1bfec21028061a63876"
+        }
+      ],
+      "public_assessment": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-233c72bfffa1dd3850f1524ee16a21e6dac892f2.json"
+    },
+    {
+      "id": "2fb5251ff78b5ad2e8f0668e947161e60f2eb8fbbe9701fc03c7556e59aacb83",
+      "action": "postdelivery candidate issue binding",
+      "cause": "Evidence had integer issue:978; the gate expects issue URL or integer issue_number.",
+      "recovery": "Added issue_number:978 only; independent review approved final tree. Formal submission and exact PR/main CI passed.",
+      "delivered_pr": 1023,
+      "source": "1357eaad94548bfda61116e4ff6dcd108b0ce1cc",
+      "signed_head": "6bfaa45e8f099577b615123e72bc93eddfa9ae59",
+      "tree": "c6b04a7baf312feb1da5df810c5242b83d7817eb",
+      "main": "ad79c25d9cdae8a635fdf74ff957336799903a10",
+      "main_gha_run": 43354180253,
+      "evidence": [
+        {
+          "private_receipt": "postdelivery-closeout-merged-pr.json",
+          "sha256": "2287f97e9de6664f12c9dcfd96d5fe90d866899f2a6998ec7c5cd124d515498d"
+        },
+        {
+          "private_receipt": "postdelivery-closeout-main-commit.json",
+          "sha256": "f618ee43ae5bf2d746a288e3cc2bb66dca94605ea18c86398dcf0dc653c28210"
+        },
+        {
+          "private_receipt": "continuation953-source-audit/postdelivery-gate-fix-review.json",
+          "sha256": "7fbcc80e822e89b9d824c54c284dcde66f199dc3265833ff2ed8be14bfb80552"
+        }
+      ],
+      "public_assessment": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-5d19d6584306f0debf128908dd3a1a2f649c3070.json",
+      "assessment_recovery": "Root initially invoked stale original-root adapter, which recorded empty context. Current adapter correctly rejected it. Preserved invalid private record under separate name, reread current admitted context from trusted worktree, and assessed successfully. Frozen framework and original failure evidence were not modified."
+    },
+    {
+      "id": "2e7297b1dcce72f4ef3035bd8e4ead47736d073aba810f4aa77ffb6b64fbebd7",
+      "action": "same Issue 1022 intake",
+      "cause": "Root-created incident issue lacked any active status label; intake correctly rejected it.",
+      "recovery": "After actual source readback, added status:in-progress, preserving type:bug and workspace:gonggong. Same issue/request intake succeeded and emitted operation_reverified.",
+      "evidence": [
+        {
+          "private_receipt": "native-format1022-final-intake-recovered.json",
+          "sha256": "950f453c67d2034cfbdb92ec57a4af3ee5fb8d3c493a3523cb7fca0cab75d979"
+        }
+      ],
+      "public_assessment": "gonggong-diting-data/events/gonggong-workspace/continuation953-native-receipt-recovery-20261113/kuafu-668d7dffc902cc7f338d87dd3f544b1e04fe4f97.json"
+    }
+  ],
+  "limits": [
+    "No provider/model behavior improvement is inferred from these operator corrections.",
+    "Parent 953 and 978 remain incomplete.",
+    "This recovery evidence itself awaits independent review and delivery; Issue 1022 remains open until that acceptance."
+  ]
+}

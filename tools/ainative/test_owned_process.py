@@ -18,7 +18,7 @@ from kimi_provider import KimiNativeDirectProvider
 from kimi_work_image_provider import KimiWorkImageProvider
 from modeling_provider import ModelingProvider
 from motion_jobs import alive, process_identity
-from owned_process import OwnedCommand, OwnedScope, owned_scope, run_owned
+from owned_process import OwnedCommand, OwnedScope, _darwin_group_quiet, owned_scope, run_owned
 
 FIXTURE = r"""
 import os, pathlib, subprocess, sys, time
@@ -49,6 +49,43 @@ else:
 
 
 class AdapterProcessTests(unittest.TestCase):
+    @unittest.skipUnless(sys.platform == "darwin", "Darwin process inspection")
+    def test_group_readback_rejects_live_member_and_accepts_pinned_zombie(self):
+        with tempfile.TemporaryFile() as output:
+            command = OwnedCommand(
+                [sys.executable, "-c", "import time;time.sleep(.5)"],
+                stdout=output,
+                stderr=None,
+                env=None,
+                limit=100,
+            )
+            try:
+                self.assertFalse(_darwin_group_quiet(command.process.pid))
+                deadline = time.monotonic() + 5
+                while command.poll() is None and time.monotonic() < deadline:
+                    time.sleep(0.01)
+                self.assertEqual(command.poll(), 0)
+                self.assertTrue(_darwin_group_quiet(command.process.pid))
+            finally:
+                command.close()
+
+    @unittest.skipUnless(sys.platform == "darwin", "Darwin native provenance profile")
+    def test_owned_cleanup_inside_native_protection_profile(self):
+        code = (
+            "import sys,unittest;sys.path.insert(0," + repr(str(Path(__file__).parent)) + ");"
+            "suite=unittest.defaultTestLoader.loadTestsFromNames(["
+            "'test_owned_process.AdapterProcessTests.test_short_command_without_descendants_reaps_zombie_leader',"
+            "'test_owned_process.AdapterProcessTests.test_group_readback_rejects_live_member_and_accepts_pinned_zombie']);"
+            "sys.exit(not unittest.TextTestRunner().run(suite).wasSuccessful())"
+        )
+        result = subprocess.run(
+            ["/usr/bin/sandbox-exec", "-p", "(version 1)(allow default)", sys.executable, "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=20,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_retained_launch_observes_output_even_when_reader_thread_is_delayed(self):
         # Parent returns only after all launcher markers are visible, while the
         # actual child keeps its inherited pipe open and must remain alive.

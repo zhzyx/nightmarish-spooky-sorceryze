@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0280e948d86f984ff05cd090f29b961d465cc41c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "bound-production-continuation-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8c7b71d24751e9fc4c68a33354850be4affdfd98d911504e0caf8b0ffdcc364c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1024",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/953",
+    "action": "validation",
+    "detection_head": "ad79c25d9cdae8a635fdf74ff957336799903a10",
+    "context_sha256": "518ac0715c3dbbbc236af439e8b55aed3d87e1532c1a8bf2ff1db75a43ff287d",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "private:bound-continuation-native-initial.json and diagnostics-report; original binary 341ef9026288dda8c02cb5e10282284588072e87bcc3ba8f74bfe43704b15d30",
+    "diagnosis": "Initial controlled native parent chain returned two independently verified child decisions and one parent return, but transport_fixture_ok=false and recorded_event_files=0. Source inspection found base fixture collected tenant fixture while installed acceptance emitted gonggong-workspace; actual verified candidate includes those event paths. Do not promote the wrapper success flag to complete validation. Scope is test evidence collection, not real model effectiveness.",
+    "next_action": "Implementation owner fixes explicit event tenant and requires actual base transport evidence; root reruns updated exact native candidate and preserves original report. Other fresh-currentness, cancellation and legitimate finalization checks continue under1024; parent953 remains open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T03:30:32.355148+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T03:33:20.916170+00:00",
+  "sha256": "ec972e9a6cbbcf3b15bffdb619e412336b9d53df1d765dbe260ab80ed8f7ed88"
+}
