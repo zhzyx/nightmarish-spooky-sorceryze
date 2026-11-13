@@ -186,6 +186,14 @@ def run_handshake(server, client, report_path):
                     r"ENGINE_NEXT_CLIENT_DRAIN client_id=(?P<client_id>\S+) deadline_tick=(?P<deadline_tick>\d+)",
                 )
             )
+        client_closes = []
+        for client_result in client_results:
+            client_closes.extend(
+                parse_lines(
+                    client_result["stdout"].splitlines(),
+                    r"ENGINE_NEXT_CLIENT_CLOSE client_id=(?P<client_id>\S+) drain=(?P<drain>[01])",
+                )
+            )
         drain_begins = parse_lines(
             lines, r"ENGINE_NEXT_DRAIN_BEGIN peers=(?P<peers>\d+) deadline_tick=(?P<deadline_tick>\d+)"
         )
@@ -209,6 +217,7 @@ def run_handshake(server, client, report_path):
             (remotes, ("entity_id", "position_x", "samples", "server_time")),
             (client_resumes, ("session_id", "entity_id", "confirmed", "error")),
             (client_drains, ("deadline_tick",)),
+            (client_closes, ("drain",)),
             (drain_begins, ("peers", "deadline_tick")),
             (drain_acks, ("peer_id", "session_id")),
             (drain_completes, ("notified", "acknowledged", "forced", "resumed")),
@@ -229,6 +238,7 @@ def run_handshake(server, client, report_path):
             "predictions": predictions,
             "remotes": remotes,
             "client_drains": client_drains,
+            "client_closes": client_closes,
             "drain_begins": drain_begins,
             "drain_acks": drain_acks,
             "drain_completes": drain_completes,
@@ -275,6 +285,9 @@ def run_handshake(server, client, report_path):
             )
             and len(client_drains) == 2
             and {item["client_id"] for item in client_drains} == {"A", "B"}
+            and len(client_closes) == 2
+            and {item["client_id"] for item in client_closes} == {"A", "B"}
+            and all(item["drain"] == 1 for item in client_closes)
             and len(drain_begins) == 1
             and drain_begins[0]["peers"] == 2
             and all(item["deadline_tick"] == drain_begins[0]["deadline_tick"] for item in client_drains)

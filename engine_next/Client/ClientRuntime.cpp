@@ -163,8 +163,11 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 	bool bClosing = false;
 	bool bDisconnectSent = false;
 	bool bCloseSucceeded = false;
+	bool bCompletionSent = false;
 	std::uint64_t nDisconnectAtMsec = 0;
 	std::uint64_t nCloseDeadlineMsec = 0;
+	std::uint64_t nExpectedDrainAcknowledge = 0;
+	std::uint64_t nDrainDeadlineTick = 0;
 	bool bSucceeded = false;
 	const std::uint64_t nStartedMsec = stClock.NowMsec();
 	while (!bSucceeded && stClock.NowMsec() - nStartedMsec < in_stConfig.nDurationMsec)
@@ -226,13 +229,16 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 			}
 			if (stEvent.eType == Network::TransportEventType::Disconnected)
 			{
-				if (bClosing && bCloseSucceeded)
+				if (bClosing && bCloseSucceeded && (!bDrainReceived || bCompletionSent))
 				{
+					std::cout << "ENGINE_NEXT_CLIENT_CLOSE client_id=" << in_stConfig.strClientId << " drain=" << (bDrainReceived ? 1 : 0) << '\n'
+							  << std::flush;
 					bSucceeded = true;
 					break;
 				}
 				std::cout << "ENGINE_NEXT_CLIENT_TRANSPORT_DISCONNECT client_id=" << in_stConfig.strClientId
-						  << " reconnecting=" << (bReconnecting ? 1 : 0) << " closing=" << (bClosing ? 1 : 0) << '\n'
+						  << " reconnecting=" << (bReconnecting ? 1 : 0) << " closing=" << (bClosing ? 1 : 0)
+						  << " ready=" << (bCloseSucceeded ? 1 : 0) << '\n'
 						  << std::flush;
 				eStatus = RuntimeStatus::IoError;
 				break;
@@ -313,12 +319,42 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 			{
 				Network::Disconnect stDisconnect;
 				if (Network::DecodeDisconnect(stEvent.arrPayload.data() + Network::FRAME_HEADER_BYTES, stHeader.nPayloadBytes, stDisconnect) != RuntimeStatus::Ok ||
-					stHeader.nSessionId != nSessionId || stDisconnect.nReason != static_cast<std::uint16_t>(Network::DisconnectReason::ServerDraining) ||
-					stDisconnect.nDrainDeadlineTick == 0)
+					stHeader.nSessionId != nSessionId)
 				{
 					eStatus = RuntimeStatus::InvalidParameter;
 					break;
 				}
+				if (stDisconnect.nReason == static_cast<std::uint16_t>(Network::DisconnectReason::DrainAcknowledge))
+				{
+					if (!bClosing || !bCloseSucceeded || stDisconnect.nAcknowledgeSequence != nExpectedDrainAcknowledge ||
+						stDisconnect.nDrainDeadlineTick != nDrainDeadlineTick)
+					{
+						eStatus = RuntimeStatus::InvalidState;
+						break;
+					}
+					Network::Disconnect stComplete;
+					stComplete.nReason = static_cast<std::uint16_t>(Network::DisconnectReason::DrainComplete);
+					stComplete.nAcknowledgeSequence = stHeader.nMessageSequence;
+					stComplete.nDrainDeadlineTick = nDrainDeadlineTick;
+					eStatus = SendDisconnect(*pTransport, nSessionId, stComplete);
+					if (eStatus != RuntimeStatus::Ok)
+					{
+						break;
+					}
+					bCompletionSent = true;
+					bDisconnectSent = false;
+					nDisconnectAtMsec = nNowMsec + 32;
+					std::cout << "ENGINE_NEXT_CLIENT_DRAIN_COMPLETE client_id=" << in_stConfig.strClientId << " drain=1\n"
+							  << std::flush;
+					continue;
+				}
+				if (stDisconnect.nReason != static_cast<std::uint16_t>(Network::DisconnectReason::ServerDraining) || stDisconnect.nDrainDeadlineTick == 0)
+				{
+					eStatus = RuntimeStatus::InvalidParameter;
+					break;
+				}
+				nExpectedDrainAcknowledge = stHeader.nMessageSequence;
+				nDrainDeadlineTick = stDisconnect.nDrainDeadlineTick;
 				std::cout << "ENGINE_NEXT_CLIENT_DRAIN client_id=" << in_stConfig.strClientId
 						  << " deadline_tick=" << stDisconnect.nDrainDeadlineTick << '\n'
 						  << std::flush;
@@ -410,6 +446,9 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 				bDisconnectSent = true;
 				if (eStatus != RuntimeStatus::Ok)
 				{
+					std::cout << "ENGINE_NEXT_CLIENT_CLOSE_ERROR client_id=" << in_stConfig.strClientId << " status=" << static_cast<int>(eStatus)
+							  << " drain=" << (bDrainReceived ? 1 : 0) << " ready=" << (bCloseSucceeded ? 1 : 0) << '\n'
+							  << std::flush;
 					break;
 				}
 			}

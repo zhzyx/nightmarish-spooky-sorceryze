@@ -1,0 +1,363 @@
+{
+  "bug_issue": 1138,
+  "clean_source": {
+    "contracts": {
+      "EngineNextRuntimeTests": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-close-protocol/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-close-protocol",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-close-protocol/build/engine_next/clang-release/EngineNextRuntimeTestsLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "link": {
+          "libraries": 1,
+          "objects": 31,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "sources": {
+          "local_includes": 104,
+          "passed": true,
+          "source_files": 69,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed"
+      },
+      "next_client": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-close-protocol/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-close-protocol",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-close-protocol/build/engine_next/clang-release/next_clientLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "link": {
+          "libraries": 1,
+          "objects": 24,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "sources": {
+          "local_includes": 104,
+          "passed": true,
+          "source_files": 69,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed"
+      },
+      "next_server": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-close-protocol/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-close-protocol",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clean-m2-pr4-close-protocol/build/engine_next/clang-release/next_serverLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "link": {
+          "libraries": 1,
+          "objects": 24,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "sources": {
+          "local_includes": 104,
+          "passed": true,
+          "source_files": 69,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed"
+      }
+    },
+    "drain_faults_passed": true,
+    "file_count": 85,
+    "godot_roots_present": [],
+    "handshake_passed": true,
+    "native_key": "8aea5da8e6b80efc23bc9137ee27fde2007f96ef2b662ea52dc40f2fb06422da"
+  },
+  "commands": [
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr4-close-protocol --run-tests",
+    "RunM2Handshake.py repeated 12 times with actual next_server and two next_client processes",
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr4-close-protocol-sanitize --run-tests --sanitize",
+    "ExportCleanSource.py --output build/engine_next/clean-m2-pr4-close-protocol, then BuildRuntime.py --run-tests and all three contract checks in the exported tree",
+    "python engine_next/Tools/BuildGameplay.py --repo . --compiler clang --build-dir build/engine_next/clang-m1-pr4-close-protocol --run-tests",
+    "Temporarily change RuntimeConfig.h nManualTicks from 1 to 2, rebuild and launch; restore and rebuild"
+  ],
+  "failed_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43515869562/job/132197548747",
+  "fix": {
+    "client_success": "Only a matching server response permits DrainComplete; physical disconnect before it cannot succeed",
+    "protocol": "ServerDraining -> client DrainAcknowledge -> server DrainAcknowledge -> client DrainComplete -> server removes session and counts completion",
+    "reason": "The server had received both initial acknowledgments, but clients had no application-level final completion proof and could fail after the server exited",
+    "server_success": "Only DrainComplete removes a session and increments acknowledged; timeout or early disconnect remains failure"
+  },
+  "incident": "d9caf5a03fccf431e228c349cdbeadc13409bbc993e27062615bdcef30d27d51",
+  "integration_base": "65e1fdc9f004bdf0a945f1ea4568b91d5bc4c1c4",
+  "issue_number": 1042,
+  "m1_regression": {
+    "clean_run_summary": "ENGINE_NEXT_BENCHMARK model_steps=1000000 buffer_operations=50000 buffer_capacity=4096 repetitions=5 model_median_us=4961 buffer_median_us=165651 model_checksum=3325757522 buffer_checksum=4097\nENGINE_NEXT_TEST_SUMMARY tests=16 checks=200161 failures=0",
+    "contract": {
+      "command": [
+        "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+        "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/tools/check_engine_next_contract.py",
+        "--repo",
+        "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4",
+        "--require-sources",
+        "--link-manifest",
+        "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clang-m1-pr4-close-protocol/LinkManifest.json",
+        "--require-link-manifest"
+      ],
+      "link": {
+        "libraries": 1,
+        "objects": 7,
+        "passed": true,
+        "runtime_files": 0,
+        "state": "link_passed"
+      },
+      "sources": {
+        "local_includes": 104,
+        "passed": true,
+        "source_files": 69,
+        "state": "sources_passed"
+      },
+      "state": "contract_passed"
+    },
+    "test_summary": "ENGINE_NEXT_BENCHMARK model_steps=1000000 buffer_operations=50000 buffer_capacity=4096 repetitions=5 model_median_us=4956 buffer_median_us=165301 model_checksum=3325757522 buffer_checksum=4097\nENGINE_NEXT_TEST_SUMMARY tests=16 checks=200161 failures=0",
+    "trace_sha256": "f55d1f5bc85bb72376d3f31cdf9b64aac91e714b6556dbce1663c1db7995924c"
+  },
+  "native_invalidation": {
+    "before_default_ticks": 1,
+    "before_native_key": "8aea5da8e6b80efc23bc9137ee27fde2007f96ef2b662ea52dc40f2fb06422da",
+    "changed_default_ticks": 2,
+    "changed_native_key": "c45ee9eb239decdf9a8f6e81dcfd96bca02746c4a88dcac6858c11a9d9c34259",
+    "key_changed": true,
+    "restored": true,
+    "restored_default_ticks": 1,
+    "restored_native_key": "8aea5da8e6b80efc23bc9137ee27fde2007f96ef2b662ea52dc40f2fb06422da"
+  },
+  "negative_drain": {
+    "client_returncodes": {
+      "A": 0,
+      "B": 1,
+      "C": 1
+    },
+    "drain_completes": [
+      {
+        "acknowledged": "1",
+        "forced": "1",
+        "notified": "2",
+        "resumed": "1"
+      }
+    ],
+    "late_rejects": [
+      {
+        "fatal": "0",
+        "reason": "8"
+      }
+    ],
+    "passed": true,
+    "server_returncode": 1
+  },
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "runtime": {
+    "clean_test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=20 checks=250 failures=0",
+    "client_closes": [
+      {
+        "client_id": "A",
+        "drain": 1
+      },
+      {
+        "client_id": "B",
+        "drain": 1
+      }
+    ],
+    "client_returncodes": {
+      "A": 0,
+      "B": 0
+    },
+    "complete_peer_logs": [
+      "ENGINE_NEXT_DRAIN_COMPLETE_PEER peer_id=2 session_id=1",
+      "ENGINE_NEXT_DRAIN_COMPLETE_PEER peer_id=3 session_id=2"
+    ],
+    "contracts": {
+      "EngineNextRuntimeTests": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clang-m2-pr4-close-protocol/EngineNextRuntimeTestsLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "link": {
+          "libraries": 1,
+          "objects": 31,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "sources": {
+          "local_includes": 104,
+          "passed": true,
+          "source_files": 69,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed"
+      },
+      "next_client": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clang-m2-pr4-close-protocol/next_clientLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "link": {
+          "libraries": 1,
+          "objects": 24,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "sources": {
+          "local_includes": 104,
+          "passed": true,
+          "source_files": 69,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed"
+      },
+      "next_server": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr4/build/engine_next/clang-m2-pr4-close-protocol/next_serverLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "link": {
+          "libraries": 1,
+          "objects": 24,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "sources": {
+          "local_includes": 104,
+          "passed": true,
+          "source_files": 69,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed"
+      }
+    },
+    "drain_acks": [
+      {
+        "peer_id": 2,
+        "session_id": 1
+      },
+      {
+        "peer_id": 3,
+        "session_id": 2
+      }
+    ],
+    "drain_completes": [
+      {
+        "acknowledged": 2,
+        "forced": 0,
+        "notified": 2,
+        "resumed": 1
+      }
+    ],
+    "native_key": "8aea5da8e6b80efc23bc9137ee27fde2007f96ef2b662ea52dc40f2fb06422da",
+    "predictions": [
+      {
+        "confirmed": 24,
+        "corrections": 11,
+        "history": 0,
+        "position_x": 3.072,
+        "retransmissions": 45
+      }
+    ],
+    "remotes": [
+      {
+        "entity_id": 2,
+        "position_x": 0.016,
+        "samples": 3,
+        "server_time": 50,
+        "status": "interpolated"
+      },
+      {
+        "entity_id": 2,
+        "position_x": 1.152,
+        "samples": 4,
+        "server_time": 192,
+        "status": "stale_held"
+      },
+      {
+        "entity_id": 2,
+        "position_x": 1.25949,
+        "samples": 5,
+        "server_time": 716,
+        "status": "interpolated"
+      }
+    ],
+    "server_resumes": [
+      {
+        "confirmed": 9,
+        "entity_id": 2,
+        "peer_id": 3,
+        "session_id": 2
+      }
+    ],
+    "server_returncode": 0,
+    "test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=20 checks=250 failures=0",
+    "trace_sha256": {
+      "client-A.jsonl": "7a10da6cefa49c5fe8c33676baaf08be3b031cbeafc45f3b29e4a8f9f530d270",
+      "client-B.jsonl": "a2524e17437ed6aa3ef3091e18f9ef793bfa32302ce349416385e9d2318d788b",
+      "server.jsonl": "1d34bcce29d496e440eead59329406e2d74153e6aa038bbeafa6af9e7e71b560"
+    }
+  },
+  "sanitizer": {
+    "drain_faults_passed": true,
+    "handshake_passed": true,
+    "native_key": "d7e503910f8b1cdaad345107ea182b422c8ba5d6078538c4500f240db43bf319",
+    "test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=20 checks=250 failures=0",
+    "trace_sha256": {
+      "client-A.jsonl": "6daf85c740177a180635054ab2c4237726fdd3c7945e4ba7fb8ab580d35b2492",
+      "client-B.jsonl": "271e12236a4b5584ef30c3c5427af10319352ba2bbcf4c6aaeea6278ac118d2c",
+      "server.jsonl": "b80f50f847a80c5935401fbb00f16ff284906f3dc4fc4679a1a41d588ebd5933"
+    }
+  },
+  "schema_version": 1,
+  "slice": "pr4_three_way_graceful_close",
+  "stress": {
+    "client_close_count": 24,
+    "complete_peer_log_count": 24,
+    "iterations": 12,
+    "passed": 12
+  },
+  "unverified": [
+    "The revised exact PR head still requires Windows and macOS CI and main readback",
+    "M2 issue 1042 remains open for PR5"
+  ]
+}

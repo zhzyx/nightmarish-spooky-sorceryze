@@ -104,6 +104,7 @@ enum class DisconnectReason : std::uint16_t
 	ClientLeaving = 1,
 	ServerDraining = 2,
 	DrainAcknowledge = 3,
+	DrainComplete = 4,
 };
 
 inline constexpr std::uint16_t REJECT_SERVER_DRAINING = 8;

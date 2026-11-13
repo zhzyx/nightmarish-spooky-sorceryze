@@ -59,6 +59,7 @@ struct DrainState
 	std::uint64_t nDeadlineMsec = 0;
 	std::uint64_t nDeadlineTick = 0;
 	std::map<Network::PeerId, std::uint64_t> mapPendingAcknowledges;
+	std::map<Network::PeerId, std::uint64_t> mapCompletionAcknowledges;
 	std::size_t nNotified = 0;
 	std::size_t nAcknowledged = 0;
 	std::size_t nForced = 0;
@@ -254,29 +255,57 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 					continue;
 				}
 				const std::map<Network::PeerId, std::uint64_t>::const_iterator stPending = stDrain.mapPendingAcknowledges.find(stEvent.nPeerId);
+				const std::map<Network::PeerId, std::uint64_t>::const_iterator stCompletion = stDrain.mapCompletionAcknowledges.find(stEvent.nPeerId);
 				const bool bDrainAcknowledge = stDrain.bActive && stPending != stDrain.mapPendingAcknowledges.end() &&
+						stCompletion == stDrain.mapCompletionAcknowledges.end() &&
 						stDisconnect.nReason == static_cast<std::uint16_t>(Network::DisconnectReason::DrainAcknowledge) &&
 						stDisconnect.nAcknowledgeSequence == stPending->second && stDisconnect.nDrainDeadlineTick == stDrain.nDeadlineTick;
+				const bool bDrainComplete = stDrain.bActive && stPending != stDrain.mapPendingAcknowledges.end() &&
+						stCompletion != stDrain.mapCompletionAcknowledges.end() &&
+						stDisconnect.nReason == static_cast<std::uint16_t>(Network::DisconnectReason::DrainComplete) &&
+						stDisconnect.nAcknowledgeSequence == stCompletion->second && stDisconnect.nDrainDeadlineTick == stDrain.nDeadlineTick;
 				const bool bClientLeaving = !stDrain.bActive && stDisconnect.nReason == static_cast<std::uint16_t>(Network::DisconnectReason::ClientLeaving);
-				if (!bDrainAcknowledge && !bClientLeaving)
+				if (!bDrainAcknowledge && !bDrainComplete && !bClientLeaving)
 				{
 					Reject(*pTransport, stEvent.nPeerId, mapSequences, stHeader, 9);
+					continue;
+				}
+				if (bDrainAcknowledge)
+				{
+					Network::Disconnect stResponse;
+					stResponse.nReason = static_cast<std::uint16_t>(Network::DisconnectReason::DrainAcknowledge);
+					stResponse.nAcknowledgeSequence = stHeader.nMessageSequence;
+					stResponse.nDrainDeadlineTick = stDrain.nDeadlineTick;
+					Network::FrameHeader stResponseHeader;
+					stResponseHeader.eType = Network::MessageType::Disconnect;
+					stResponseHeader.nMessageSequence = NextSequence(mapSequences, stEvent.nPeerId);
+					stResponseHeader.nSessionId = stHeader.nSessionId;
+					eStatus = SendFrame(*pTransport, stEvent.nPeerId, stResponseHeader, Network::EncodeDisconnect(stResponse));
+					if (eStatus != RuntimeStatus::Ok)
+					{
+						break;
+					}
+					stDrain.mapCompletionAcknowledges.emplace(stEvent.nPeerId, stResponseHeader.nMessageSequence);
+					std::cout << "ENGINE_NEXT_DRAIN_ACK peer_id=" << stEvent.nPeerId << " session_id=" << stHeader.nSessionId << '\n'
+							  << std::flush;
 					continue;
 				}
 				const Runtime::EntityId stEntityId = pSession->stEntityId;
 				mapInputQueues.erase(stEntityId.nValue);
 				(void)stSessions.RemoveSession(stEvent.nPeerId);
 				(void)stHost.RecordTrace(stHost.GetFixedStepLoop().GetTick(), "session_disconnected", stEntityId, stHeader.nSessionId);
-				(void)pTransport->Disconnect(stEvent.nPeerId);
-				if (bDrainAcknowledge)
+				if (bDrainComplete)
 				{
 					stDrain.mapPendingAcknowledges.erase(stEvent.nPeerId);
+					stDrain.mapCompletionAcknowledges.erase(stEvent.nPeerId);
 					++stDrain.nAcknowledged;
-					std::cout << "ENGINE_NEXT_DRAIN_ACK peer_id=" << stEvent.nPeerId << " session_id=" << stHeader.nSessionId << '\n'
+					(void)pTransport->DisconnectLater(stEvent.nPeerId);
+					std::cout << "ENGINE_NEXT_DRAIN_COMPLETE_PEER peer_id=" << stEvent.nPeerId << " session_id=" << stHeader.nSessionId << '\n'
 							  << std::flush;
 				}
 				else
 				{
+					(void)pTransport->Disconnect(stEvent.nPeerId);
 					std::cout << "ENGINE_NEXT_DISCONNECT peer_id=" << stEvent.nPeerId << " session_id=" << stHeader.nSessionId << '\n'
 							  << std::flush;
 				}
