@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ca2ffd84c276988f1b3de8fbfd984195085c6ee2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "agent-docs-routing-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1082",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "1617b8aa9c5a0a353b3b7d45a791f99c3fa87505b313938f9e3e63c1d25a4ca0",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1082",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1084",
+    "action": "delivery",
+    "detection_head": "d3177311f67720fc5ef32a399f2398ce2ab0fb67",
+    "context_sha256": "57bd277207b513ee6cae2776e7fd86eeec43f1dad598da54302a062706578a8c",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-agent-docs-routing-1082",
+    "authority_ref": "用户对 agent-docs-routing-20261114 的明确提交与 main 交付授权",
+    "evidence": "design-docs/agent-docs-routing-submit-notes-20261114.md",
+    "diagnosis": "Python 隔离子进程不会解析仅有扩展名的 node 命令适配器；改为真实可执行文件后还需保留 Electron 的 ICU 与 V8 同目录资源。补齐资源并设置 ELECTRON_RUN_AS_NODE 后，独立校验返回 approved_file_integrity。",
+    "next_action": "让正式提交继承已实测通过的 PATH 与 ELECTRON_RUN_AS_NODE，再执行同一入口。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T18:36:42.770751+00:00",
+    "attempted": "命令适配器在 shell 可用但 Python 子进程仍失败；真实可执行文件与运行时资源组合已通过 Python 调用和框架完整性两项实测。",
+    "repair_owner": "kimi-work-agent-docs-routing-1082",
+    "continuable": "候选和门禁代码不变，继续正式提交、PR 与 main 回读。"
+  },
+  "occurred_at": "2026-11-13T18:37:49.305011+00:00",
+  "sha256": "a5aa41f0816c2db69f6507fd07134f17b9094a22b91cd741c828bec9d227e6ea"
+}

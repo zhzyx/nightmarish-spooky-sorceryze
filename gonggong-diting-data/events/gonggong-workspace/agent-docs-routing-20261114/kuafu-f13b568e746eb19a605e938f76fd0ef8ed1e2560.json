@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f13b568e746eb19a605e938f76fd0ef8ed1e2560",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "agent-docs-routing-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1082",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "da2a84781dfc7f3e6933b1a74f48d0fe4bc89b4f90c24a2b344fe08d48403b37",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1082",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1084",
+    "action": "delivery",
+    "detection_head": "d3177311f67720fc5ef32a399f2398ce2ab0fb67",
+    "context_sha256": "57bd277207b513ee6cae2776e7fd86eeec43f1dad598da54302a062706578a8c",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-agent-docs-routing-1082",
+    "authority_ref": "用户对 agent-docs-routing-20261114 的明确提交与 main 交付授权",
+    "evidence": "design-docs/agent-docs-routing-submit-notes-20261114.md",
+    "diagnosis": "父进程适配不能传入由门禁启动的隔离 Python 子进程；本地 node.exe 硬链接因 ICU 资源定位失败。改用命令适配器并前置 PATH 后，node 实测返回 v24.21.0。",
+    "next_action": "将已实测可用的命令适配器目录前置到正式提交的 PATH，让全部子进程继承，再执行同一正式入口。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T18:35:25.243874+00:00",
+    "attempted": "父进程适配后正式校验仍失败；已定位到隔离子进程并排除无效硬链接，命令适配器实测通过。",
+    "repair_owner": "kimi-work-agent-docs-routing-1082",
+    "continuable": "不改变候选、门禁或权限，可继续正式提交及远端交付。"
+  },
+  "occurred_at": "2026-11-13T18:36:18.421853+00:00",
+  "sha256": "6a25766fb70b497f8fc6792256b7d32ff4a6c9e9be7835634ad90afcc38cedac"
+}
