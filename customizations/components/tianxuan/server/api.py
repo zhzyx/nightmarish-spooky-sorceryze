@@ -138,6 +138,17 @@ def _gitea_client() -> GiteaClient:
     return GiteaClient(base_url, token)
 
 
+def _repo_under_root(name: str) -> Path:
+    root = os.environ.get("TIANXUAN_REPO_ROOT", "").strip()
+    if not root:
+        raise HTTPException(status_code=400, detail="TIANXUAN_REPO_ROOT is not configured")
+    root_path = Path(root).resolve()
+    candidate = (root_path / name).resolve()
+    if not candidate.is_relative_to(root_path):
+        raise HTTPException(status_code=400, detail="repo escapes TIANXUAN_REPO_ROOT")
+    return candidate
+
+
 def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
     """为给定领域核心实例构建 HTTP 应用；可选的模型网关挂载到同一应用。"""
     app = FastAPI(title="Tianxuan API", version="0.1.0")
@@ -559,6 +570,53 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
         except (GitServiceError, OSError) as error:
             raise HTTPException(status_code=400, detail=f"read failed: {error}") from error
         return {"path": relative, "ref": ref, "markdown": markdown}
+
+    # ---------- 多宝：本地 Git 仓库浏览 ----------
+
+    @app.get("/api/v1/git/repos")
+    def list_git_repos(actor: ActorDep) -> dict[str, list[str]]:
+        root = os.environ.get("TIANXUAN_REPO_ROOT", "").strip()
+        if not root:
+            raise HTTPException(status_code=400, detail="TIANXUAN_REPO_ROOT is not configured")
+        root_path = Path(root)
+        if not root_path.is_dir():
+            return {"repos": []}
+        names = sorted(entry.name for entry in root_path.iterdir() if entry.is_dir() and entry.name.endswith(".git"))
+        return {"repos": names}
+
+    @app.get("/api/v1/git/repos/{name}/branches")
+    def git_branches(name: str, actor: ActorDep) -> dict[str, list[str]]:
+        repo = _repo_under_root(name)
+        try:
+            return {"branches": GitService().list_branches(repo)}
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.get("/api/v1/git/repos/{name}/log")
+    def git_log(
+        name: str,
+        actor: ActorDep,
+        ref: str = Query(default="HEAD", min_length=1),
+        limit: int = Query(default=20, ge=1, le=100),
+    ) -> dict[str, list[dict[str, Any]]]:
+        repo = _repo_under_root(name)
+        try:
+            return {"commits": GitService().log(repo, ref, limit)}
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.get("/api/v1/git/repos/{name}/diff")
+    def git_diff(
+        name: str,
+        actor: ActorDep,
+        a: str = Query(min_length=1),
+        b: str = Query(min_length=1),
+    ) -> dict[str, str]:
+        repo = _repo_under_root(name)
+        try:
+            return {"diff": GitService().diff(repo, a, b)}
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
 
     # ---------- 文曲：评论 ----------
 
