@@ -1,0 +1,158 @@
+{
+  "build_tool_tests": {
+    "count": 11,
+    "failures": 0
+  },
+  "clean_source": {
+    "clean_handshake": "ENGINE_NEXT_HANDSHAKE clients=2 distinct_sessions=2 distinct_entities=2 status=ok\n{\n  \"report\": \"/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr2/build/engine_next/clean-m2-pr2/build/engine_next/clang-release/CleanRun/HandshakeReport.json\",\n  \"trace_sha256\": {\n    \"server.jsonl\": \"befa3b68ba35ac0085357c43b58e07486aadfb97a7d0733712df4287c9b5895f\",\n    \"client-A.jsonl\": \"d0a6fd4d500265225d01d33574a1530c2deb80ea46ee6456f4199f8a68bbd5ed\",\n    \"client-B.jsonl\": \"4ead88f5f6ace041d5434b13f71e9987c01b7684d030e8801a317e09c7a9e07b\"\n  }\n}",
+    "contract_state": "contract_passed",
+    "file_count": 78,
+    "godot_roots_present": [],
+    "handshake": "ENGINE_NEXT_HANDSHAKE clients=2 distinct_sessions=2 distinct_entities=2 status=ok\n{\n  \"report\": \"/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr2/build/engine_next/clean-m2-pr2/build/engine_next/clang-release/HandshakeReport.json\",\n  \"trace_sha256\": {\n    \"server.jsonl\": \"befa3b68ba35ac0085357c43b58e07486aadfb97a7d0733712df4287c9b5895f\",\n    \"client-A.jsonl\": \"6e574f2e22f4a9d7e6a2e10419acd99d5e16e98df095fa18968da0b3da9bf28a\",\n    \"client-B.jsonl\": \"d61bab728dc7ca3b126eae4d657e4bb4c055ef22ecb84c34504bf1d5c23786bb\"\n  }\n}",
+    "manifest_sha256": "f7616838c09569cc113353131485e5b864ae6cd200679552af49a97e63fc165d",
+    "native_key": "43780f896b167e9bd17c36e3765f9b6ad1f0bee4b6c3d514aba0ac9bf86ec25f"
+  },
+  "contract_tests": {
+    "count": 23,
+    "failures": 0
+  },
+  "godot_free_runtime_verified": false,
+  "handshake": {
+    "clients": [
+      {
+        "client_id": "A",
+        "returncode": 0,
+        "stderr": ""
+      },
+      {
+        "client_id": "B",
+        "returncode": 0,
+        "stderr": ""
+      }
+    ],
+    "passed": true,
+    "server_returncode": 0,
+    "server_sessions": [
+      {
+        "entity_id": 1,
+        "peer_id": 1,
+        "session_id": 1
+      },
+      {
+        "entity_id": 2,
+        "peer_id": 2,
+        "session_id": 2
+      }
+    ],
+    "server_stderr": [],
+    "trace_sha256": {
+      "client-A.jsonl": "d0a6fd4d500265225d01d33574a1530c2deb80ea46ee6456f4199f8a68bbd5ed",
+      "client-B.jsonl": "4ead88f5f6ace041d5434b13f71e9987c01b7684d030e8801a317e09c7a9e07b",
+      "server.jsonl": "befa3b68ba35ac0085357c43b58e07486aadfb97a7d0733712df4287c9b5895f"
+    },
+    "welcomes": [
+      {
+        "client_id": "A",
+        "entity_id": 1,
+        "session_id": 1
+      },
+      {
+        "client_id": "B",
+        "entity_id": 2,
+        "session_id": 2
+      }
+    ]
+  },
+  "initial_ci": {
+    "macos_engine_next": "SUCCESS",
+    "pull_request": 1067,
+    "static_checks": "SUCCESS",
+    "windows_engine_next": "Compilation and linking passed; dependency audit rejected WS2_32.dll and WINMM.dll, corrected in the allowlist"
+  },
+  "integration_base": "bc2efa392ccef0059bab8a007845946a624b78eb",
+  "issue_number": 1042,
+  "m1_regression": {
+    "clean_run_summary": "ENGINE_NEXT_BENCHMARK model_steps=1000000 buffer_operations=50000 buffer_capacity=4096 repetitions=5 model_median_us=4958 buffer_median_us=167640 model_checksum=3325757522 buffer_checksum=4097\nENGINE_NEXT_TEST_SUMMARY tests=16 checks=200161 failures=0",
+    "contract_state": "contract_passed",
+    "test_summary": "ENGINE_NEXT_BENCHMARK model_steps=1000000 buffer_operations=50000 buffer_capacity=4096 repetitions=5 model_median_us=4969 buffer_median_us=170697 model_checksum=3325757522 buffer_checksum=4097\nENGINE_NEXT_TEST_SUMMARY tests=16 checks=200161 failures=0",
+    "trace_sha256": "f55d1f5bc85bb72376d3f31cdf9b64aac91e714b6556dbce1663c1db7995924c"
+  },
+  "native_invalidation": {
+    "before_default_ticks": 1,
+    "before_native_key": "7b334b32eed0ebc1dc543ab33fe3aa3842d97d775f8f30c51bba11188556a7d7",
+    "changed_default_ticks": 2,
+    "changed_native_key": "56b0f1e1811203deeda1c7013892ca6e939116fc6e29f72f6760e8933ab02baa",
+    "input": "engine_next/include/EngineNext/Runtime/RuntimeConfig.h",
+    "key_changed": true,
+    "restored": true,
+    "restored_default_ticks": 1,
+    "restored_native_key": "7b334b32eed0ebc1dc543ab33fe3aa3842d97d775f8f30c51bba11188556a7d7"
+  },
+  "platform": {
+    "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.5)",
+    "machine": "arm64",
+    "system": "Darwin",
+    "version": "macOS-15.3.1-arm64-arm-64bit"
+  },
+  "previous_candidate": "db0aec019053abf298f4cbc946236f15eb356323",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "runtime": {
+    "archive_members": [
+      "callbacks-f34564fffb77.o",
+      "compress-48eeab6d39eb.o",
+      "host-e2a86d64053e.o",
+      "list-19b825331579.o",
+      "packet-283e90f39233.o",
+      "peer-700bb676de1c.o",
+      "protocol-68e61ddde0b0.o",
+      "unix-b141a2d297e3.o",
+      "PredictionModel-5a357cf38997.o",
+      "InterpolationBuffer-166ffe10fb79.o",
+      "Clock-c5e01cdd2d0c.o",
+      "FixedStepLoop-0c30f3ebe17a.o",
+      "World-ae038771d982.o",
+      "Trace-067678dcf50f.o",
+      "RuntimeConfig-ac28ea2836d0.o",
+      "RuntimeHost-1ec74b5d1c67.o",
+      "Protocol-07cac1f4dd8f.o",
+      "EnetTransport-a21198ce06b1.o",
+      "SessionManager-1b22215cabf0.o",
+      "ServerRuntime-4843e15ad2c6.o",
+      "ClientRuntime-98084eaa3664.o"
+    ],
+    "clean_test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=8 checks=116 failures=0",
+    "contract_state": "contract_passed",
+    "local_includes": 88,
+    "native_key": "43780f896b167e9bd17c36e3765f9b6ad1f0bee4b6c3d514aba0ac9bf86ec25f",
+    "source_files": 63,
+    "test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=8 checks=116 failures=0"
+  },
+  "sanitizer": {
+    "handshake": "ENGINE_NEXT_HANDSHAKE clients=2 distinct_sessions=2 distinct_entities=2 status=ok\n{\n  \"report\": \"/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr2/build/engine_next/clang-m2-pr2-sanitize/HandshakeReport.json\",\n  \"trace_sha256\": {\n    \"server.jsonl\": \"52f6c427d8e6a3be06ff96517f1d655c43ac615ed7439a703f498cc0637c7ab0\",\n    \"client-A.jsonl\": \"6e574f2e22f4a9d7e6a2e10419acd99d5e16e98df095fa18968da0b3da9bf28a\",\n    \"client-B.jsonl\": \"d61bab728dc7ca3b126eae4d657e4bb4c055ef22ecb84c34504bf1d5c23786bb\"\n  }\n}",
+    "native_key": "af5b410d5d66330f7f6fff0335bc20f6e24ad042fb751c0280c67903d92fc1c7",
+    "test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=8 checks=116 failures=0"
+  },
+  "schema_version": 1,
+  "slice": "pr2_enet_two_client_handshake",
+  "static_validation": {
+    "clang_format": "22.1.5 passed on first-party files",
+    "codespell": "2.4.2 passed on first-party paths; upstream directory excluded",
+    "git_diff_cached_check": "passed",
+    "ruff": "0.17.1 check and format passed",
+    "windows_dynamic_dependencies": "ws2_32.dll and winmm.dll are explicitly allowed system libraries and match the actual link inputs"
+  },
+  "two_client_handshake_verified": true,
+  "unverified": [
+    "The R4 candidate still requires its own Windows, macOS and static CI receipts",
+    "Authoritative movement, prediction, interpolation, reconnect and 10000-tick stability are not in this slice"
+  ],
+  "upstream_enet": {
+    "all_other_files": "Upstream bytes preserved; upstream whitespace attributes and codespell exclusion recorded",
+    "commit": "2662c0de09e36f2a2030ccc2c528a3e4c9e8138a",
+    "godot_adapter_used": false,
+    "license": "MIT",
+    "patch": "Use offsetof(ENetProtocolHeader, sentTime) on three paths to remove UBSan null-pointer member access",
+    "source": "https://github.com/lsalzman/enet",
+    "version": "v1.3.18"
+  }
+}
