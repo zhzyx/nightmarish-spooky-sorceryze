@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-40bb792cc7bf251f52c2d09232edc5b97ec867f3",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "session-reasoning-isolation-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1038",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ace798e405d441fc57032dd507f6901f4036dbb3eac8b919bc488fe1155d8bae",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1038",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1038",
+    "action": "delivery",
+    "detection_head": "0d6f7d4218aae45bafbbd377a9380d236a94b0c6",
+    "context_sha256": "6ff437ed71faac9a6d8c4d2a9abd070f1d08a37eaa78534fc1720be1a1c888df",
+    "operator": "Sail-Li",
+    "worker": "codex-root-session-reasoning-isolation",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "Second metadata commit0d6f7d4 used separate git -m paragraphs for Issue and Request, inserting a blank line. writer_submit requires exact adjacent final trailers; it refused before issue_receipt or any signed-branch write. Both actual identifiers still refer to1038.",
+    "diagnosis": "Caller formatting error; diagnostic says another work order but source identifiers match. Next staged diagnostic will use writer_submit native commit path, which emits its canonical adjacent trailers after formal gate; no history rewrite or validation bypass.",
+    "next_action": "Stage this exact host diagnostic and let writer_submit run formal gate, create canonical local commit, verify committed data and sign once. Read actual result before any further attempt.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T08:34:52.278260+00:00",
+    "attempted": "Read exact submit control flow: gate passed, existing HEAD suffix check failed before remote publication. Preserved0d6f7d4 and original logs; no product byte changes.",
+    "repair_owner": "codex-root-current-host",
+    "continuable": "Independent code review and native evidence unchanged; exact signed candidate and CI still pending."
+  },
+  "occurred_at": "2026-11-13T08:37:07.274296+00:00",
+  "sha256": "6d3c4f386fb64cd7c05608849f1778fb13aaeaf61ab239cc30e9bd7253fe1290"
+}
