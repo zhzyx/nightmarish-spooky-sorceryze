@@ -186,17 +186,21 @@ def sync_tickets(args: argparse.Namespace) -> dict[str, Any]:
         params={"system": args.system, "external_id": args.external_id},
     )
     children = [issue for issue in context.get("issues", []) if isinstance(issue, dict) and issue.get("parent_id")]
-    by_title: dict[str, dict[str, Any]] = {}
+    by_title: dict[str, list[dict[str, Any]]] = {}
     for candidate in children:
-        by_title.setdefault(str(candidate.get("title", "")), candidate)
+        by_title.setdefault(str(candidate.get("title", "")), []).append(candidate)
     path = ["backlog", "planned", "in-progress", "in-review", "done"]
     updated: list[dict[str, Any]] = []
     missing: list[str] = []
     for title in args.done:
-        issue: dict[str, Any] | None = by_title.get(title)
-        if issue is None:
+        candidates = by_title.get(title, [])
+        if not candidates:
             missing.append(title)
             continue
+        if len(candidates) > 1:
+            missing.append(f"{title} (ambiguous)")
+            continue
+        issue: dict[str, Any] = candidates[0]
         status = str(issue.get("status", "backlog"))
         if status == "done":
             updated.append(issue)

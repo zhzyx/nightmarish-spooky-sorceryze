@@ -2,9 +2,16 @@
 
 from __future__ import annotations
 
+import identity
+import pytest
 from api import create_app
 from fastapi.testclient import TestClient
 from tianxuan_core import Tianxuan
+
+
+@pytest.fixture(autouse=True)
+def _reset_attempts() -> None:
+    identity.reset_identity_attempts()
 
 
 def _client() -> tuple[TestClient, dict[str, str], str]:
@@ -120,3 +127,24 @@ def test_non_admin_cannot_link_identity(monkeypatch) -> None:
         json={"provider": "tianshu", "subject": "gh_1", "user_id": user_id},
     )
     assert denied.status_code == 403
+
+
+def test_identity_resolve_is_rate_limited(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_IDENTITY_SECRET", "shared-secret")
+    client, headers, user_id = _client()
+    client.post(
+        "/api/v1/identity/links",
+        headers=headers,
+        json={"provider": "tianshu", "subject": "gh_rate", "user_id": user_id},
+    )
+    for _ in range(30):
+        denied = client.post(
+            "/api/v1/identity/resolve",
+            json={"provider": "tianshu", "subject": "gh_rate", "secret": "wrong"},
+        )
+        assert denied.status_code == 403
+    limited = client.post(
+        "/api/v1/identity/resolve",
+        json={"provider": "tianshu", "subject": "gh_rate", "secret": "shared-secret"},
+    )
+    assert limited.status_code == 429

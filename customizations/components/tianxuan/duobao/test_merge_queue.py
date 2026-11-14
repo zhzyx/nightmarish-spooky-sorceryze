@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import shutil
+import sqlite3
 import sys
 from pathlib import Path
 from typing import Any
@@ -172,3 +173,22 @@ def test_process_next_is_serialized(tmp_path: Path) -> None:
     statuses = [entry["status"] for entry in queue.list_items()]
     assert statuses and all(status == "merged" for status in statuses)
     assert peak == 1
+
+
+def test_transient_error_requeues_then_rejects(tmp_path: Path) -> None:
+    service, repo = _repo(tmp_path)
+    _branch(service, repo, "feature", {"b.md": "# two\n"})
+    queue = MergeQueue(str(tmp_path / "queue.db"), service)
+
+    def boom(item: dict[str, Any]) -> dict[str, Any]:
+        raise sqlite3.OperationalError("database is locked")
+
+    queue._execute = boom  # type: ignore[method-assign]
+    item = queue.enqueue("usr_1", str(repo), "feature", "main", "重试")
+    first = queue.process_next()
+    second = queue.process_next()
+    third = queue.process_next()
+    assert first is not None and first["status"] == "queued" and first["attempts"] == 1
+    assert second is not None and second["status"] == "queued" and second["attempts"] == 2
+    assert third is not None and third["status"] == "rejected" and third["attempts"] == 3
+    assert queue.get(item["id"])["status"] == "rejected"

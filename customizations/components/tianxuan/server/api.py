@@ -20,7 +20,7 @@ from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, Web
 from fastapi.responses import JSONResponse
 from gateway import ModelGateway, create_model_router
 from gitea_bridge import GiteaClient, GiteaError
-from identity import get_identity_adapter
+from identity import allow_identity_attempt, get_identity_adapter
 from schemas import (
     CommentCreateRequest,
     CommentResolveRequest,
@@ -406,7 +406,10 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
         return {"links": store.list_identity_links(actor, provider, subject)}
 
     @app.post("/api/v1/identity/resolve")
-    def resolve_external_identity(payload: IdentityResolveRequest) -> dict[str, Any]:
+    def resolve_external_identity(payload: IdentityResolveRequest, request: Request) -> dict[str, Any]:
+        client_key = payload.subject.strip() or "unknown"
+        if not allow_identity_attempt(payload.provider, client_key):
+            raise HTTPException(status_code=429, detail="too many identity attempts")
         adapter = get_identity_adapter(payload.provider)
         if adapter is None:
             raise HTTPException(status_code=400, detail=f"unknown identity provider: {payload.provider}")
