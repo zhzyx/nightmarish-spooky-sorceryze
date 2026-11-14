@@ -10,6 +10,10 @@ TOOL_FILES = [
     "tools/check_engine_next_contract.py",
     "tools/engine_next_contract.json",
 ]
+PORTABLE_CORE_FILES = [
+    "ai_core/Runtime.h",
+    "ai_core/Runtime.cpp",
+]
 
 
 def digest(path):
@@ -25,6 +29,7 @@ def source_files(repo):
             raise ValueError("Clean source export does not accept symlinks: " + str(path))
         files.append(path.relative_to(repo).as_posix())
     files.extend(TOOL_FILES)
+    files.extend(PORTABLE_CORE_FILES)
     return sorted(files)
 
 

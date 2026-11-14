@@ -14,6 +14,8 @@ V 创建控件、收集输入、渲染 Controller 快照、显示预览，并发
 
 Godot 适配器是 modules/ai_core/AIWorkflowRuntime，在场景初始化阶段注册，编辑器和无界面样例共用。C++ 使用 BeginRun、Publish、Cancel、Snapshot，GDScript 使用同名 snake_case 绑定。适配器是 RefCounted，由 Controller 持有，所有调用在主线程串行执行。
 
+Engine Next 的 M3 中立消费者直接编译本目录的 Runtime.h/.cpp，并由 engine_next/AI/WorkflowSnapshot 提供普通 C++ 快照与规范 JSON 转换。该适配层复用核心的身份、幂等、代次和终态，不复制核心状态机；Godot RefCounted 适配器及 modules/ai_core 不进入 next_asset、next_server 或 next_client 的链接输入。
+
 | 操作 | 输入及结果 |
 | --- | --- |
 | begin_run | workflow、scope、request_id、model、binding，返回新运行或同输入的原运行快照 |

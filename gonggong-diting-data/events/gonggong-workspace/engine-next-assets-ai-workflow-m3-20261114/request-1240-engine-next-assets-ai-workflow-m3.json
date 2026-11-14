@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "request-1240-engine-next-assets-ai-workflow-m3",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "kind": "request",
+  "occurred_at": "2026-11-14T15:28:26Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1240",
+  "agent": {
+    "id": "kimi-work-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "d74996fcafd35dffa6ff914f8cbb14e2b0344659c0a9f424803f294bbc3ce3e8",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "action": "record_authorized_issue_binding",
+    "issue_number": 1240,
+    "intake_status": "status:in-progress",
+    "scope": "用户确认 M3 文件级设计并明确要求开始落地；按五个顺序 PR 完成中立资产、AI 无 View 工作流、M2 与 legacy 同场景消费、干净环境和完整交付。",
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage in host receipt",
+    "design": {
+      "path": "design-docs/engine-next-assets-ai-workflow-m3-20261114.md",
+      "sha256": "4dd4a2a2ec8f09a4f1897905514b8bfbbeb1179209207d9c1a1ecefd6bc31341"
+    }
+  },
+  "evidence_refs": [],
+  "sha256": "3542df09ec665c44c7d5f46f249ba8c9e3ed3800979ecd5eb65d3734db9100f1"
+}

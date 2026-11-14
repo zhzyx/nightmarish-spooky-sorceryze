@@ -34,7 +34,7 @@ class BuildRuntimeTests(unittest.TestCase):
             *BuildRuntime.APP_SOURCES["next_server"],
             *BuildRuntime.APP_SOURCES["next_client"],
         ]:
-            self.assertTrue(source.startswith("engine_next/"), source)
+            self.assertTrue(source.startswith(("engine_next/", "ai_core/")), source)
             self.assertFalse((self.repo / source).is_symlink(), source)
 
     def test_clean_export_contains_only_declared_inputs(self):
@@ -43,13 +43,16 @@ class BuildRuntimeTests(unittest.TestCase):
         self.assertGreater(result["file_count"], 20)
         self.assertTrue((output / "engine_next/Runtime/RuntimeHost.cpp").is_file())
         self.assertTrue((output / "engine_next/Tools/BuildGameplay.py").is_file())
+        self.assertTrue((output / "ai_core/Runtime.cpp").is_file())
         self.assertFalse((output / "core").exists())
         self.assertFalse((output / "modules").exists())
         self.assertFalse((output / "SConstruct").exists())
         manifest = json.loads(result["manifest"].read_text(encoding="utf-8"))
         self.assertEqual(manifest["file_count"], result["file_count"])
         self.assertEqual(manifest["godot_roots_present"], [])
-        self.assertTrue(all(item["path"].startswith(("engine_next/", "tools/")) for item in manifest["files"]))
+        self.assertTrue(
+            all(item["path"].startswith(("engine_next/", "tools/", "ai_core/")) for item in manifest["files"])
+        )
 
     def test_clean_export_refuses_nonempty_output(self):
         output = self.temporary / "Occupied"

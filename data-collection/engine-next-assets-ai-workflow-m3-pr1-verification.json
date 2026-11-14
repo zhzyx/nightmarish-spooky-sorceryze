@@ -1,0 +1,57 @@
+{
+  "base_commit": "2ba2fca6861e8ccc63f31a3778bc0c399bec118c",
+  "checks": {
+    "build_tools": {
+      "command": "python3 engine_next/Tools/TestBuildRuntime.py -v",
+      "observed": "7 tests passed",
+      "passed": true
+    },
+    "clean_source": {
+      "command": "ExportCleanSource.py to m3-pr1-clean-source, copied BuildRuntime.py --run-tests, copied contract checker with real test link manifest",
+      "observed": "107 declared files, no Godot roots; 32 tests/352 checks and M2 handshakes passed in the exported tree; contract_passed",
+      "passed": true
+    },
+    "m1_regression": {
+      "command": "python3 engine_next/Tools/BuildGameplay.py --repo . --compiler clang --build-dir build/engine_next/m3-pr1-m1 --run-tests and real link contract",
+      "observed": "16 tests and 200161 checks passed in build and clean directories; trace SHA-256 f55d1f5bc85bb72376d3f31cdf9b64aac91e714b6556dbce1663c1db7995924c; contract_passed",
+      "passed": true
+    },
+    "runtime_release": {
+      "command": "python3 engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/m3-pr1-clang --run-tests",
+      "observed": "32 tests, 352 checks, zero failures; M2 build/clean handshake and package handshake passed",
+      "passed": true
+    },
+    "sanitizer": {
+      "command": "python3 engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/m3-pr1-sanitize --run-tests --sanitize",
+      "observed": "ASan/UBSan: 32 tests and 352 checks passed; all handshakes passed",
+      "passed": true
+    },
+    "source_contract": {
+      "command": "python3 -m unittest tools.test_check_engine_next_contract -v; three runtime --require-sources --require-link-manifest checks",
+      "observed": "23 contract tests passed; 86 source files and 127 local includes passed; all three manifests contract_passed",
+      "passed": true
+    },
+    "static_validation": {
+      "command": "git diff --cached --check and strict C++17 warnings-as-errors compilation",
+      "observed": "No whitespace errors; strict Clang passed. clang-format was unavailable locally and is not claimed",
+      "passed": true
+    }
+  },
+  "issue_number": 1240,
+  "not_verified": [
+    "Windows x86_64",
+    "Linux x86_64",
+    "M3 package/AI process/M2 scene/legacy behavior",
+    "M3 overall completion"
+  ],
+  "platform": {
+    "compiler": "Clang",
+    "machine": "arm64",
+    "python": "3.12.16",
+    "system": "Darwin"
+  },
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "schema_version": 1,
+  "scope": "Neutral JSON, AssetManifest/SceneDocument v1, neutral AICore snapshots and independent build only; no package, process controller, scene runtime or legacy adapter yet",
+  "slice": "pr1"
+}

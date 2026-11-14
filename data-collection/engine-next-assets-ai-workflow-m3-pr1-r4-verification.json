@@ -1,0 +1,40 @@
+{
+  "base_commit": "2d896aa6a6cbccc8a773eb0d128375779c479e92",
+  "checks": {
+    "format_correction": {
+      "command": "Apply the exact CI clang-format patch from job 132545347381",
+      "observed": "Three files changed formatting only; no semantic edits and no new review round required",
+      "passed": true
+    },
+    "link_contract": {
+      "command": "check_engine_next_contract.py with R4 test link manifest",
+      "observed": "89 sources, 132 includes and 43 objects passed",
+      "passed": true
+    },
+    "runtime_release": {
+      "command": "BuildRuntime.py --build-dir build/engine_next/m3-pr1-r4 --run-tests",
+      "observed": "35 tests/369 checks and all M2 build/clean/package handshakes passed",
+      "passed": true
+    },
+    "whitespace": {
+      "command": "git diff --cached --check",
+      "observed": "No errors",
+      "passed": true
+    }
+  },
+  "issue_number": 1240,
+  "not_verified": [
+    "R4 exact committed candidate static checks",
+    "M3 PR2-5"
+  ],
+  "previous": {
+    "pr": 1270,
+    "result": "Three platform builds passed; clang-format hook required three format-only fixes",
+    "signed_head": "1ae0e11a6b5f993c3a458104f36f577ca95727ff"
+  },
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "review": "data-collection/engine-next-assets-ai-workflow-m3-pr1-r3-review.json",
+  "schema_version": 1,
+  "slice": "pr1-r4",
+  "supersedes": "data-collection/engine-next-assets-ai-workflow-m3-pr1-r3-verification.json"
+}
