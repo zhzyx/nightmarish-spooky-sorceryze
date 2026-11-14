@@ -24,6 +24,29 @@
 - 最终平台修复的原生失效使 native key 从 `716585ca58d162793c5a0510573fd440b0bcbd472ead2e9e71d858ec4e4703a8` 变为 `280b2b45a74cefffc62506b640975555bfc2c7f3ed5e5ac3679c16a17dcf9c0c`，默认 tick 从 1 变为 2；恢复后键和行为完全一致。全部候选 Python 文件通过 `ruff format --check`。
 - 追加证据：`data-collection/engine-next-headless-runtime-m2-pr5-ci-fix.json`。
 
+## 第二轮 CI 修复补充
+
+- Windows 不再把 Shell 语法的伪 `ldd` 当原生程序执行，而是显式通过 `sys.executable` 启动；同一个真实 Python 测试脚本可在 Windows 和 Unix 上覆盖 Linux 动态依赖审核分支。
+- Linux 允许 `/lib64/ld-linux-x86-64.so.2` 等绝对动态加载器路径作为系统运行时，测试夹具包含该实际路径；`BuildGameplay` 与 `BuildRuntime` 使用同一规则，其他非预期依赖仍会被拒绝。
+- 第二轮候选已运行 clang-format 22.1.5、Ruff 0.17.1 与 `ruff format --check`；14 个构建工具测试、21 个运行时测试及 278 条检查再次通过。
+- 最新长稳为 10,312 tick、165.043 秒；服务器输入和 ENet 高水位分别为 4、6，客户端 A 的预测历史、未确认输入及 ENet 高水位分别为 6、6、7，两个客户端正常完成三步停服。
+- 最终原生失效使 native key 从 `34591eb2421c68e789019be6e5f490134d2c57a8c26894c4129d6bbfd3885ce4` 变为 `d7659678e51be04a5e9f6bf8c84e94ecc48910e045d0e2ca59e849ae3c5c1a27`，默认 tick 从 1 变为 2；恢复后键和行为完全一致。
+- 追加证据：`data-collection/engine-next-headless-runtime-m2-pr5-ci2.json`。
+
+## 最终格式与 main 集成复验
+
+- 已整合 main `69ed8de5c273395074fab49d9c48c1dc0baae00e`；主线新增内容不涉及 Engine Next 或 legacy Gameplay 原生输入。
+- 全候选 clang-format 终检发现客户端关闭日志的一处换行问题，修正后重新执行快速、Sanitizer、干净源码树、发布包和长稳验收；第二轮旧原生键不再作为最终键。
+- 最终长稳为 10,312 tick、165.034 秒，服务器输入和 ENet 高水位为 5、6，两个客户端正常关闭。21 个运行时测试、278 条检查及 14 个构建工具测试通过，M1 Trace 保持不变。
+- 最终 native key 为 `428503ae6446583c3b7028fee0337c9a9998cc62f3a450939d70b7cb3ae2a4e5`；配置改为 2 tick 后变为 `1377f902d8eb8912450492da1a6038a6f528c0370c49d94ed3c908696d41fa8c`。失效二进制连续两次输出 2 tick，恢复后连续两次输出 1 tick且键完全恢复。首次构建后启动曾输出 1 tick，作为未复现的过渡异常记录，不据此宣称构建器缺陷。
+- 追加证据：`data-collection/engine-next-headless-runtime-m2-pr5-ci3.json`。
+
+## 签发基线复验
+
+- 首次签发回读发现 main 前进至 `7acdf07ca4c89251527a392c754a536af2094b6a`，新增两个 Duobao 文档提交，与候选写入路径无重叠；阻塞事故为 `9c885a4b1e566963ccce77339644e3cc50eab4982a1c99bce3cfc15cd08ce4c6`。
+- 已在合并提交 `92260105c38c5baef7030bec0790c2ee58ac4dfe` 整合该基线，原生输入未变化，无需重复引擎构建；原 module-impact 门禁已在同一工作树重新通过。
+- 追加证据：`data-collection/engine-next-headless-runtime-m2-pr5-main-7acdf07c-integration.json`。
+
 ## 待验证与证据边界
 
 - Windows、Ubuntu 和 macOS 的精确候选 CI、main 回读及完整 M2 清单核对完成后，才能关闭 #1042。

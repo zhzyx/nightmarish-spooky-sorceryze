@@ -450,7 +450,8 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 				bDisconnectSent = true;
 				if (eStatus == RuntimeStatus::NotFound && bCloseSucceeded && (bCompletionSent || !bDrainReceived))
 				{
-					std::cout << "ENGINE_NEXT_CLIENT_CLOSE_TRANSPORT client_id=" << in_stConfig.strClientId << " already_disconnected=1\n" << std::flush;
+					std::cout << "ENGINE_NEXT_CLIENT_CLOSE_TRANSPORT client_id=" << in_stConfig.strClientId << " already_disconnected=1\n"
+							  << std::flush;
 					bSucceeded = true;
 					eStatus = RuntimeStatus::Ok;
 					break;

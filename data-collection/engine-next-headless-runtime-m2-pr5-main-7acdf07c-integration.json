@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "issue_number": 1042,
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "previous_main": "69ed8de5c273395074fab49d9c48c1dc0baae00e",
+  "integrated_main": "7acdf07ca4c89251527a392c754a536af2094b6a",
+  "merge_commit": "92260105c38c5baef7030bec0790c2ee58ac4dfe",
+  "upstream_commits": [
+    "ed828afe docs(tianxuan): make Duobao the merge authority over Git (#1188)",
+    "7acdf07c Merge pull request #1208 from zhzyx/tianxuan/duobao-authority"
+  ],
+  "upstream_changed_paths": [
+    "customizations/components/tianxuan/README.md",
+    "design-docs/tianxuan-platform-20261114.md"
+  ],
+  "overlapping_write_paths": [],
+  "native_inputs_changed": false,
+  "native_rebuild_required": false,
+  "candidate_verification": "data-collection/engine-next-headless-runtime-m2-pr5-ci3.json",
+  "issue_gate": {
+    "command": "python customizations/components/issue-workorders/issue_gate.py --repo . --module-impact-only --base-ref origin/main",
+    "observed": "{\"reviewed_modules\":[\"engine_next\"]}",
+    "passed": true
+  },
+  "kuafu": {
+    "incident": "9c885a4b1e566963ccce77339644e3cc50eab4982a1c99bce3cfc15cd08ce4c6",
+    "dispatch_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43542223658",
+    "dispatch_conclusion": "success",
+    "event": "gonggong-diting-data/events/gonggong-workspace/engine-next-headless-runtime-m2-20261113/kuafu-fdc17edcb7fc0df490e7a950866794a12ccbbaf8.json",
+    "original_operation_reverified": false
+  },
+  "unverified": [
+    "writer_submit must be rerun on this integrated candidate",
+    "The signed exact PR head still requires Windows, Ubuntu and macOS CI and final main readback"
+  ]
+}

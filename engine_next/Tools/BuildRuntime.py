@@ -148,7 +148,11 @@ def audit_linux_dependencies(args, executable):
     )
     if args.sanitize:
         allowed_prefixes += ("libasan.so.", "libubsan.so.")
-    unexpected = [value for value in dependencies if not value.startswith(allowed_prefixes)]
+    unexpected = [
+        value
+        for value in dependencies
+        if not value.startswith(allowed_prefixes) and not Path(value).name.startswith("ld-linux")
+    ]
     if unexpected:
         raise ValueError("Unexpected dynamic dependencies: " + ", ".join(unexpected))
     return dependencies
