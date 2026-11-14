@@ -1438,15 +1438,22 @@ class Tianxuan:
         rows = self.db.execute(sql, args).fetchall()
         return [dict(row) | {"payload": json.loads(row["payload"])} for row in rows]
 
-    def identity_events(self, actor: str, limit: int = 50) -> list[dict[str, Any]]:
+    def identity_events(self, actor: str, limit: int = 50, event_type: str | None = None) -> list[dict[str, Any]]:
         if self.role_of(actor) != "admin":
             raise PermissionDenied("only admin can read identity events")
+        if event_type is not None and not event_type.startswith("identity."):
+            raise ValueError(f"not an identity event type: {event_type}")
         tenant_id = self._tenant_of(actor)
-        rows = self.db.execute(
-            "SELECT type, actor, target, payload, created_at FROM events "
-            "WHERE tenant_id = ? AND type LIKE 'identity.%' ORDER BY created_at DESC LIMIT ?",
-            (tenant_id, max(1, min(int(limit), 200))),
-        ).fetchall()
+        sql = (
+            "SELECT type, actor, target, payload, created_at FROM events WHERE tenant_id = ? AND type LIKE 'identity.%'"
+        )
+        args: list[Any] = [tenant_id]
+        if event_type:
+            sql += " AND type = ?"
+            args.append(event_type)
+        sql += " ORDER BY created_at DESC LIMIT ?"
+        args.append(max(1, min(int(limit), 200)))
+        rows = self.db.execute(sql, args).fetchall()
         return [dict(row) | {"payload": json.loads(row["payload"])} for row in rows]
 
     def prune_events(self, actor: str, older_than_days: int = 90, type_prefix: str | None = None) -> int:
