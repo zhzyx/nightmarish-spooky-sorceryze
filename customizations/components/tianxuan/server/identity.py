@@ -14,6 +14,7 @@ import json
 import os
 import threading
 import time
+import urllib.request
 from collections import deque
 from typing import Any, Protocol
 
@@ -57,6 +58,75 @@ def _b64url_encode(value: bytes) -> str:
     return base64.urlsafe_b64encode(value).rstrip(b"=").decode("ascii")
 
 
+_SHA256_DIGEST_INFO = bytes.fromhex("3031300d060960864801650304020105000420")
+_JWKS_CACHE: tuple[float, dict[str, Any]] = (0.0, {})
+
+
+def _int_from_b64url(value: str) -> int:
+    return int.from_bytes(_b64url_decode(value), "big")
+
+
+def _load_jwks() -> dict[str, Any]:
+    global _JWKS_CACHE
+    raw = os.environ.get("TIANXUAN_OIDC_JWKS", "")
+    if raw:
+        try:
+            payload = json.loads(raw)
+            return payload if isinstance(payload, dict) else {}
+        except ValueError:
+            return {}
+    url = os.environ.get("TIANXUAN_OIDC_JWKS_URL", "")
+    if not url:
+        return {}
+    now = time.monotonic()
+    cached_at, cached = _JWKS_CACHE
+    if cached and now < cached_at:
+        return cached
+    try:
+        with urllib.request.urlopen(url, timeout=3.0) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except (OSError, ValueError):
+        return cached or {}
+    if not isinstance(payload, dict):
+        return {}
+    _JWKS_CACHE = (now + 300.0, payload)
+    return payload
+
+
+def _rs256_verify(signing_input: bytes, signature: bytes, jwks: dict[str, Any], kid: str) -> bool:
+    keys = jwks.get("keys", [])
+    if not isinstance(keys, list):
+        return False
+    candidates = [
+        key for key in keys if isinstance(key, dict) and key.get("kty") == "RSA" and (not kid or key.get("kid") == kid)
+    ]
+    if kid and not candidates:
+        return False
+    for key in candidates:
+        try:
+            modulus = _int_from_b64url(str(key["n"]))
+            exponent = _int_from_b64url(str(key["e"]))
+        except (KeyError, ValueError, binascii.Error):
+            continue
+        size = (modulus.bit_length() + 7) // 8
+        if len(signature) != size:
+            continue
+        try:
+            decoded = pow(int.from_bytes(signature, "big"), exponent, modulus).to_bytes(size, "big")
+        except (ValueError, OverflowError):
+            continue
+        if decoded[:2] != b"\x00\x01":
+            continue
+        rest = decoded[2:]
+        separator = rest.find(b"\x00")
+        if separator < 8 or any(byte != 0xFF for byte in rest[:separator]):
+            continue
+        expected = _SHA256_DIGEST_INFO + hashlib.sha256(signing_input).digest()
+        if hmac.compare_digest(rest[separator + 1 :], expected):
+            return True
+    return False
+
+
 class OidcJwtIdentityAdapter:
     """HS256 签名的 OIDC/JWT 适配器。
 
@@ -67,8 +137,7 @@ class OidcJwtIdentityAdapter:
     name = "oidc"
 
     def verify(self, subject: str, secret: str) -> bool:
-        signing_key = os.environ.get("TIANXUAN_OIDC_SECRET", "")
-        if not signing_key or not secret:
+        if not secret:
             return False
         parts = secret.split(".")
         if len(parts) != 3:
@@ -79,14 +148,21 @@ class OidcJwtIdentityAdapter:
             signature = _b64url_decode(parts[2])
         except (ValueError, binascii.Error, UnicodeDecodeError):
             return False
-        if not isinstance(header, dict) or header.get("alg") != "HS256":
+        if not isinstance(header, dict):
             return False
-        expected = hmac.new(
-            signing_key.encode("utf-8"),
-            f"{parts[0]}.{parts[1]}".encode("ascii"),
-            hashlib.sha256,
-        ).digest()
-        if not hmac.compare_digest(signature, expected):
+        signing_input = f"{parts[0]}.{parts[1]}".encode("ascii")
+        algorithm = str(header.get("alg", ""))
+        if algorithm == "HS256":
+            signing_key = os.environ.get("TIANXUAN_OIDC_SECRET", "")
+            if not signing_key:
+                return False
+            expected = hmac.new(signing_key.encode("utf-8"), signing_input, hashlib.sha256).digest()
+            if not hmac.compare_digest(signature, expected):
+                return False
+        elif algorithm == "RS256":
+            if not _rs256_verify(signing_input, signature, _load_jwks(), str(header.get("kid", ""))):
+                return False
+        else:
             return False
         if not isinstance(claims, dict) or str(claims.get("sub", "")) != subject:
             return False

@@ -236,3 +236,60 @@ def test_oidc_jwt_signature_and_claims(monkeypatch) -> None:
         ).status_code
         == 403
     )
+
+
+RS256_JWK = {
+    "kty": "RSA",
+    "n": "n0aM4klM0cdstf2qOgNrUuowfOLe4EEUeVQfBk83eYBCTlsxhorlX5obppRaHawJsl7ugjZ6TgoSbzLUyu7XhP3UsP0kp63257EBCuPRfJAxKdOP11GhBbxrVOr5BBCDhq2ewbxKtIGbbC99Sf63e9QmQhAT8qxB6d7ckn6qzP7-_s0yLpzt0otf9Sd1r_r1r4PRcm9dNSBRR0Uset4tA_YkzehGEap9NELHF-Aj8P4nudEd-5UFsgUWk7tBCWXEu3jOOdGV_R-u610q2HzEeA28vqrKeI8peE0h7P5b1Ll6zIDrmNz4T0urI5MbmbGwK8GgGMJLtDg-q1yjrVZtLw",
+    "e": "AQAB",
+    "kid": "test-key-1",
+}
+RS256_TOKEN = (
+    "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InRlc3Qta2V5LTEifQ."
+    "eyJzdWIiOiJvaWRjLXJzIiwiYXVkIjoidGlhbnh1YW4iLCJpc3MiOiJodHRwczovL2lzc3Vlci5leGFtcGxlIiwiZXhwIjo0MTAyNDQ0ODAwfQ."
+    "gjIgGFrrwmS5kkmbke-wx0lnR_cijGQsrfLh3lmKlG24I0WGAIs-fArR_9p1gtHGdI2nku8HrXH_sMLL8F7hjIy19ueNxYrQBtpWdXlEwIT17bIr354wrQnZ5GdoYhEfgXOvT38NI5UstV3X1OYS1JhqSOh3SSDmDQMD39ol5S27q4eU4A8L6AlrZC-We8tGwUFGU-6Qlt6I2XHl3c4i07b4fKrCLr2ixJzuzpgZnggtW18kygWcuIaoB1OliBYIOJlcVcUpUX9iGxRIP0gQh5PvnvpTq5uWpsRinXa-8BpvijcPgmDjoP4XF3Ju5yJ1h1lR_w34SHAaNTJWiaw0Vg"
+)
+
+
+def test_oidc_rs256_jwks(monkeypatch) -> None:
+    import json
+
+    monkeypatch.setenv("TIANXUAN_OIDC_JWKS", json.dumps({"keys": [RS256_JWK]}))
+    monkeypatch.setenv("TIANXUAN_OIDC_AUDIENCE", "tianxuan")
+    monkeypatch.setenv("TIANXUAN_OIDC_ISSUER", "https://issuer.example")
+    client, headers, user_id = _client()
+    client.post(
+        "/api/v1/identity/links",
+        headers=headers,
+        json={"provider": "oidc", "subject": "oidc-rs", "user_id": user_id},
+    )
+    ok = client.post(
+        "/api/v1/identity/resolve",
+        json={"provider": "oidc", "subject": "oidc-rs", "secret": RS256_TOKEN},
+    )
+    assert ok.status_code == 200, ok.text
+
+    header, payload, signature = RS256_TOKEN.split(".")
+    tampered_claims = identity._b64url_encode(  # noqa: SLF001
+        json.dumps({"sub": "oidc-rs", "aud": "tianxuan", "exp": 4102444800}).encode()
+    )
+    tampered = f"{header}.{tampered_claims}.{signature}"
+    assert (
+        client.post(
+            "/api/v1/identity/resolve",
+            json={"provider": "oidc", "subject": "oidc-rs", "secret": tampered},
+        ).status_code
+        == 403
+    )
+
+    none_header = identity._b64url_encode(  # noqa: SLF001
+        json.dumps({"alg": "none", "typ": "JWT"}).encode()
+    )
+    none_token = f"{none_header}.{payload}.{signature}"
+    assert (
+        client.post(
+            "/api/v1/identity/resolve",
+            json={"provider": "oidc", "subject": "oidc-rs", "secret": none_token},
+        ).status_code
+        == 403
+    )
