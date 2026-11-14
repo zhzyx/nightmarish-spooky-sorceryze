@@ -378,6 +378,14 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
             [ticket.model_dump() for ticket in payload.tickets],
         )
 
+    @app.get("/api/v1/docs/{doc_id}/external-links")
+    def doc_external_links(doc_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        return {"links": store.external_links_for(actor, "doc", doc_id)}
+
+    @app.get("/api/v1/issues/{issue_id}/external-links")
+    def issue_external_links(issue_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        return {"links": store.external_links_for(actor, "issue", issue_id)}
+
     # ---------- 事件流 ----------
 
     @app.get("/api/v1/events")

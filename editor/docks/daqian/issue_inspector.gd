@@ -3,6 +3,7 @@ extends VBoxContainer
 
 signal save_requested
 signal reload_requested
+signal tianxuan_requested
 
 var heading := Label.new()
 var summary := Label.new()
@@ -17,6 +18,7 @@ var feedback := Label.new()
 var save := Button.new()
 var revert := Button.new()
 var reload := Button.new()
+var tianxuan := Button.new()
 var document := {}
 var busy := false
 var node_id := ""
@@ -57,6 +59,10 @@ func _ready() -> void:
 	reload.text = "刷新详情"
 	reload.pressed.connect(func(): reload_requested.emit())
 	actions.add_child(reload)
+	tianxuan.text = "天璇"
+	tianxuan.tooltip_text = "读取或发布天璇需求与文档"
+	tianxuan.pressed.connect(func(): tianxuan_requested.emit())
+	actions.add_child(tianxuan)
 	feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	overview.add_child(feedback)
 	var title := Label.new()
@@ -106,6 +112,7 @@ func _buttons() -> void:
 	save.disabled = not field.editable or not dirty()
 	revert.disabled = busy or not dirty()
 	reload.disabled = busy
+	tianxuan.disabled = busy
 	if dirty() and not busy:
 		feedback.text = "有未保存的修改"
 	elif feedback.text == "有未保存的修改":

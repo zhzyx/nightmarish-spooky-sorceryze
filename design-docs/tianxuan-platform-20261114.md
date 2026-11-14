@@ -135,6 +135,7 @@
 - `publish` 从天枢工单创建天璇需求 + 工单树并绑定；重复发布幂等。
 - `context` 返回该外部工单关联的需求、文档与工单，供天枢画布/对话使用。
 - 回执为 JSON 信封 `{ok, data}`，可用 `--result` 写入天枢宿主文件。
+- Tianshu Issue 详情提供「天璇」入口：读取绑定内容，未绑定时可发布需求与工单树。
 
 ### 11. 治理与准入
 - 所有新增 Agent/Skill 生成前与准入前回查 `skills/gonggong-check`；保存 review pass。

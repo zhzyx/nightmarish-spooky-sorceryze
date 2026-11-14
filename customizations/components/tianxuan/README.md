@@ -91,6 +91,7 @@ python tianshu_bridge.py --api http://127.0.0.1:8000 --actor <user_id> \
 - `publish`：创建天璇需求与工单树，并写入外部绑定
 - `link`：把外部工单绑定到已有文档或工单
 - 输出 `{"ok": true, "data": ...}`；`--result <path>` 可直接写天枢宿主回执文件
+- Tianshu 的 Issue 详情新增「天璇」按钮：读取已绑定需求/文档，未绑定时可一键发布需求与工单树
 
 ## 环境变量
 

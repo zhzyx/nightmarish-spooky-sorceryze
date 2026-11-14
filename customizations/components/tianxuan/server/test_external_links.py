@@ -40,6 +40,9 @@ def test_link_and_context_roundtrip() -> None:
     assert linked.status_code == 200, linked.text
     assert linked.json()["target_id"] == doc_id
 
+    reverse = client.get(f"/api/v1/docs/{doc_id}/external-links", headers=headers).json()["links"]
+    assert reverse[0]["external_id"] == EXTERNAL
+
     links = client.get(
         "/api/v1/external-links",
         headers=headers,

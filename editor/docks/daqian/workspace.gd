@@ -513,6 +513,7 @@ func _ready() -> void:
 	editor.draft_changed.connect(_refresh_selected_card)
 	issue_inspector.save_requested.connect(_document_action.bind(true))
 	issue_inspector.reload_requested.connect(_document_action.bind(false))
+	issue_inspector.tianxuan_requested.connect(_open_tianxuan)
 	editor.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	flow_split.hide()
 	_build_operation_details(flow_split)
@@ -1425,6 +1426,117 @@ func _opened() -> void:
 			_mark_layer_event("ready", project_mode)
 		elif Time.get_ticks_msec() >= auto_refresh_after:
 			auto_refresh_pending = true
+
+
+func _tianxuan_command(arguments: Array) -> Dictionary:
+	var root := _host_root()
+	var bridge := root.path_join("customizations/components/tianxuan/server/tianshu_bridge.py")
+	if root.is_empty() or not FileAccess.file_exists(bridge):
+		return {"ok": false, "error": "未找到天璇桥接脚本"}
+	var api := OS.get_environment("TIANXUAN_API")
+	if api.is_empty():
+		api = "http://127.0.0.1:8000"
+	var args := PackedStringArray([bridge, "--api", api, "--actor", str(actor.get("user_id", ""))])
+	for part in arguments:
+		args.append(str(part))
+	return await _host_command(args, "--result", {})
+
+
+func _tianxuan_item() -> Dictionary:
+	if not inspector_sessions.has(inspector_key):
+		return {}
+	return inspector_sessions[inspector_key].get("item", {})
+
+
+func _open_tianxuan() -> void:
+	var item := _tianxuan_item()
+	var url := str(item.get("url", ""))
+	if url.is_empty():
+		issue_inspector.feedback.text = "当前工单没有可互通的外部标识"
+		return
+	if actor.is_empty():
+		issue_inspector.feedback.text = "需先登录工单身份再读取天璇"
+		return
+	var result := await _tianxuan_command(["context", "--external-id", url])
+	if result.get("ok") != true:
+		issue_inspector.feedback.text = "天璇不可达：" + str(result.get("error", "未知错误"))
+		return
+	_show_tianxuan_dialog(url, result.get("data", {}), item)
+
+
+func _show_tianxuan_dialog(url: String, data: Dictionary, item: Dictionary) -> void:
+	var dialog := AcceptDialog.new()
+	dialog.title = "天璇 · Issue #" + str(item.get("number", ""))
+	dialog.ok_button_text = "关闭"
+	dialog.min_size = Vector2i(520, 320)
+	var box := VBoxContainer.new()
+	box.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	dialog.add_child(box)
+	var requirements: Array = []
+	for doc in data.get("documents", []):
+		if str(doc.get("kind", "")) == "requirement":
+			requirements.append(doc)
+	if requirements.is_empty():
+		var empty := Label.new()
+		empty.text = "该工单尚未发布天璇需求。发布后会创建需求、工单树并绑定当前 Issue。"
+		empty.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		box.add_child(empty)
+		var publish := Button.new()
+		publish.text = "发布到天璇"
+		publish.pressed.connect(_publish_tianxuan.bind(url, item))
+		box.add_child(publish)
+	else:
+		for doc in requirements:
+			var doc_id := str(doc.get("id", ""))
+			var open_doc := Button.new()
+			open_doc.text = "打开需求 · " + str(doc.get("title", ""))
+			open_doc.pressed.connect(func():
+				OS.shell_open("http://127.0.0.1:3000/docs/" + doc_id)
+				dialog.hide())
+			box.add_child(open_doc)
+			for issue in data.get("issues", []):
+				if str(issue.get("requirement_id", "")) != doc_id or issue.get("parent_id") in [null, ""]:
+					continue
+				var row := Label.new()
+				row.text = "#" + str(issue.get("number", "")) + "  " + str(issue.get("title", "")) + " · " + str(issue.get("status", ""))
+				row.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+				box.add_child(row)
+		var board := Button.new()
+		board.text = "打开天璇看板"
+		board.pressed.connect(func():
+			OS.shell_open("http://127.0.0.1:3000/issues")
+			dialog.hide())
+		box.add_child(board)
+	add_child(dialog)
+	dialog.confirmed.connect(dialog.queue_free)
+	dialog.close_requested.connect(dialog.queue_free)
+	dialog.popup_centered()
+
+
+func _publish_tianxuan(url: String, item: Dictionary) -> void:
+	var number := str(item.get("number", "0"))
+	var title := str(item.get("title", "天枢需求"))
+	var arguments: Array = [
+		"publish", "--external-id", url,
+		"--request-id", "tianshu-" + number,
+		"--title", title,
+		"--outcome", title,
+		"--scope", "Tianshu issue " + url,
+		"--acceptance", "天璇验收",
+	]
+	var facts: Dictionary = editor.workflow.get("item", {}) if is_instance_valid(editor) else {}
+	var plan: Dictionary = facts.get("plan", {})
+	var nodes: Dictionary = plan.get("nodes", {})
+	for id in nodes:
+		var node: Dictionary = nodes[id]
+		if str(node.get("kind", "")) == "task":
+			arguments.append_array(["--ticket", str(node.get("title", "任务"))])
+	var result := await _tianxuan_command(arguments)
+	if result.get("ok") != true:
+		issue_inspector.feedback.text = "天璇发布失败：" + str(result.get("error", "未知错误"))
+		return
+	var context := await _tianxuan_command(["context", "--external-id", url])
+	_show_tianxuan_dialog(url, context.get("data", {}), item)
 
 
 func _host_root() -> String:
