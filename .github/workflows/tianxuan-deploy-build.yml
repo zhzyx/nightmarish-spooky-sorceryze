@@ -1,0 +1,29 @@
+name: Tianxuan deploy build
+
+on:
+  pull_request:
+    paths:
+      - "deploy/**"
+      - "apps/tianxuan/**"
+      - "customizations/components/tianxuan/**"
+      - ".github/workflows/tianxuan-deploy-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  images:
+    name: Docker images
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build API image
+        run: docker build --pull -f deploy/Dockerfile.api -t tianxuan-api:ci .
+      - name: Build Web image
+        run: docker build --pull -f deploy/Dockerfile.web -t tianxuan-web:ci apps/tianxuan
+      - name: Report image sizes
+        run: |
+          docker image inspect tianxuan-api:ci --format 'api {{.Size}} bytes'
+          docker image inspect tianxuan-web:ci --format 'web {{.Size}} bytes'
