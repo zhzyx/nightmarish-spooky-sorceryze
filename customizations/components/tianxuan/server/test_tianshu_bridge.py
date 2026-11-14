@@ -5,6 +5,9 @@ from __future__ import annotations
 import io
 import json
 import urllib.error
+from email.message import Message
+from typing import Literal
+from urllib.request import Request
 
 import pytest
 import tianshu_bridge
@@ -17,17 +20,17 @@ class _Response:
     def __enter__(self) -> _Response:
         return self
 
-    def __exit__(self, *args: object) -> bool:
+    def __exit__(self, *args: object) -> Literal[False]:
         return False
 
     def read(self) -> bytes:
         return self._body
 
 
-def _capture(monkeypatch: pytest.MonkeyPatch) -> list[urllib.request.Request]:
-    calls: list[urllib.request.Request] = []
+def _capture(monkeypatch: pytest.MonkeyPatch) -> list[Request]:
+    calls: list[Request] = []
 
-    def fake(request: urllib.request.Request, timeout: int) -> _Response:
+    def fake(request: Request, timeout: int) -> _Response:
         calls.append(request)
         return _Response({"system": "tianshu", "external_id": "issue/1", "documents": []})
 
@@ -86,19 +89,21 @@ def test_publish_posts_requirement_and_tickets(monkeypatch, capsys) -> None:
     request = calls[0]
     assert request.get_method() == "POST"
     assert request.full_url.endswith("/api/v1/requirements/from-external")
-    body = json.loads(request.data.decode("utf-8"))
+    payload = request.data
+    assert isinstance(payload, bytes)
+    body = json.loads(payload.decode("utf-8"))
     assert body["external_id"] == "https://github.com/o/r/issues/1"
     assert [ticket["title"] for ticket in body["tickets"]] == ["任务甲", "任务乙"]
     assert json.loads(capsys.readouterr().out)["ok"] is True
 
 
 def test_error_is_reported_and_result_written(monkeypatch, tmp_path, capsys) -> None:
-    def failing(request: urllib.request.Request, timeout: int) -> _Response:
+    def failing(request: Request, timeout: int) -> _Response:
         raise urllib.error.HTTPError(
             request.full_url,
             403,
             "Forbidden",
-            hdrs=None,
+            hdrs=Message(),
             fp=io.BytesIO(b'{"detail":"actor is required"}'),
         )
 
