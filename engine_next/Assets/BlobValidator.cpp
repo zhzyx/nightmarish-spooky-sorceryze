@@ -77,7 +77,7 @@ std::uint32_t Crc32(const std::uint8_t *in_pData, std::size_t in_nBytes)
 bool ValidDimensions(std::uint32_t in_nWidth, std::uint32_t in_nHeight, Diagnostics &out_arrDiagnostics)
 {
 	if (in_nWidth == 0 || in_nHeight == 0 || in_nWidth > 16384 || in_nHeight > 16384 ||
-			static_cast<std::uint64_t>(in_nWidth) * in_nHeight > MAX_PIXELS)
+		static_cast<std::uint64_t>(in_nWidth) * in_nHeight > MAX_PIXELS)
 	{
 		AddDiagnostic(out_arrDiagnostics, "image_dimensions", "$", "invalid dimensions or pixel budget");
 		return false;
@@ -277,7 +277,7 @@ bool ValidateJpeg(const std::vector<std::uint8_t> &in_arrBytes, BlobInfo &out_st
 			}
 			const std::size_t nSpectral = nOffset;
 			if (in_arrBytes[nSpectral - 3] > 63 || in_arrBytes[nSpectral - 3] > in_arrBytes[nSpectral - 2] ||
-					in_arrBytes[nSpectral - 2] > 63 || (in_arrBytes[nSpectral - 1] >> 4U) > 13 || (in_arrBytes[nSpectral - 1] & 0x0FU) > 13)
+				in_arrBytes[nSpectral - 2] > 63 || (in_arrBytes[nSpectral - 1] >> 4U) > 13 || (in_arrBytes[nSpectral - 1] & 0x0FU) > 13)
 			{
 				AddDiagnostic(out_arrDiagnostics, "jpeg_sos", "$", "invalid spectral or approximation parameters");
 				return false;
@@ -461,10 +461,10 @@ bool ValidateAccessorGeometry(const Serialization::JsonValue::Object &in_mapRoot
 		std::int64_t nLength = -1;
 		std::int64_t nStride = 0;
 		if (pView == nullptr || !JsonInteger(*pView, "buffer", -1, nBuffer) || nBuffer != 0 ||
-				!JsonInteger(*pView, "byteOffset", 0, nOffset) || !JsonInteger(*pView, "byteLength", -1, nLength) ||
-				!JsonInteger(*pView, "byteStride", 0, nStride) || nOffset < 0 || nLength < 0 || nStride < 0 ||
-				nOffset % 4 != 0 || nStride % 4 != 0 || static_cast<std::uint64_t>(nOffset) + static_cast<std::uint64_t>(nLength) > nBinaryBytes ||
-				static_cast<std::uint64_t>(nOffset) + static_cast<std::uint64_t>(nLength) > nDeclaredBytes)
+			!JsonInteger(*pView, "byteOffset", 0, nOffset) || !JsonInteger(*pView, "byteLength", -1, nLength) ||
+			!JsonInteger(*pView, "byteStride", 0, nStride) || nOffset < 0 || nLength < 0 || nStride < 0 ||
+			nOffset % 4 != 0 || nStride % 4 != 0 || static_cast<std::uint64_t>(nOffset) + static_cast<std::uint64_t>(nLength) > nBinaryBytes ||
+			static_cast<std::uint64_t>(nOffset) + static_cast<std::uint64_t>(nLength) > nDeclaredBytes)
 		{
 			AddDiagnostic(out_arrDiagnostics, "glb_view_alignment", "$.bufferViews", "invalid bufferView range or alignment");
 			return false;
@@ -481,9 +481,9 @@ bool ValidateAccessorGeometry(const Serialization::JsonValue::Object &in_mapRoot
 		std::int64_t nComponent = 0;
 		std::string strType;
 		if (pAccessor == nullptr || pAccessor->find("sparse") != pAccessor->end() || !JsonInteger(*pAccessor, "bufferView", -1, nView) ||
-				!JsonInteger(*pAccessor, "byteOffset", 0, nOffset) || !JsonInteger(*pAccessor, "count", -1, nCount) ||
-				!JsonInteger(*pAccessor, "componentType", 0, nComponent) || !JsonString(*pAccessor, "type", strType) ||
-				nView < 0 || nView >= static_cast<std::int64_t>(arrViews.size()) || nOffset < 0 || nCount <= 0)
+			!JsonInteger(*pAccessor, "byteOffset", 0, nOffset) || !JsonInteger(*pAccessor, "count", -1, nCount) ||
+			!JsonInteger(*pAccessor, "componentType", 0, nComponent) || !JsonString(*pAccessor, "type", strType) ||
+			nView < 0 || nView >= static_cast<std::int64_t>(arrViews.size()) || nOffset < 0 || nCount <= 0)
 		{
 			AddDiagnostic(out_arrDiagnostics, "glb_accessor_layout", "$.accessors", "invalid or sparse accessor");
 			return false;
@@ -502,7 +502,7 @@ bool ValidateAccessorGeometry(const Serialization::JsonValue::Object &in_mapRoot
 			return false;
 		}
 		if (static_cast<std::uint64_t>(nOffset) > stView.nLength ||
-				static_cast<std::uint64_t>(nCount - 1) > (stView.nLength - static_cast<std::uint64_t>(nOffset)) / nStride)
+			static_cast<std::uint64_t>(nCount - 1) > (stView.nLength - static_cast<std::uint64_t>(nOffset)) / nStride)
 		{
 			AddDiagnostic(out_arrDiagnostics, "glb_accessor_bounds", "$.accessors", "accessor count exceeds bufferView");
 			return false;
@@ -595,7 +595,7 @@ bool ValidateAccessorGeometry(const Serialization::JsonValue::Object &in_mapRoot
 bool ValidateGlb(const std::vector<std::uint8_t> &in_arrBytes, BlobInfo &out_stInfo, Diagnostics &out_arrDiagnostics)
 {
 	if (in_arrBytes.size() < 20 || in_arrBytes.size() > MAX_GLB_BYTES || Read32LE(in_arrBytes.data()) != 0x46546C67U ||
-			Read32LE(in_arrBytes.data() + 4) != 2 || Read32LE(in_arrBytes.data() + 8) != in_arrBytes.size())
+		Read32LE(in_arrBytes.data() + 4) != 2 || Read32LE(in_arrBytes.data() + 8) != in_arrBytes.size())
 	{
 		AddDiagnostic(out_arrDiagnostics, "glb_header", "$", "invalid GLB header, version, length or budget");
 		return false;
@@ -670,9 +670,9 @@ bool ValidateGlb(const std::vector<std::uint8_t> &in_arrBytes, BlobInfo &out_stI
 		const Serialization::JsonValue::Object::const_iterator itOffset = pView == nullptr ? Serialization::JsonValue::Object::const_iterator{} : pView->find("byteOffset");
 		const Serialization::JsonValue::Object::const_iterator itLength = pView == nullptr ? Serialization::JsonValue::Object::const_iterator{} : pView->find("byteLength");
 		if (pView == nullptr || itBuffer == pView->end() || !itBuffer->second.GetInteger(nBuffer) || nBuffer != 0 ||
-				itLength == pView->end() || !itLength->second.GetInteger(nLength) || nLength < 0 ||
-				(itOffset != pView->end() && (!itOffset->second.GetInteger(nOffsetValue) || nOffsetValue < 0)) ||
-				nOffsetValue > static_cast<std::int64_t>(nBinaryBytes) || nLength > static_cast<std::int64_t>(nBinaryBytes) - nOffsetValue)
+			itLength == pView->end() || !itLength->second.GetInteger(nLength) || nLength < 0 ||
+			(itOffset != pView->end() && (!itOffset->second.GetInteger(nOffsetValue) || nOffsetValue < 0)) ||
+			nOffsetValue > static_cast<std::int64_t>(nBinaryBytes) || nLength > static_cast<std::int64_t>(nBinaryBytes) - nOffsetValue)
 		{
 			AddDiagnostic(out_arrDiagnostics, "glb_buffer_view", "$.bufferViews", "bufferView exceeds internal BIN chunk");
 			return false;
@@ -684,8 +684,8 @@ bool ValidateGlb(const std::vector<std::uint8_t> &in_arrBytes, BlobInfo &out_stI
 		std::int64_t nView = 0;
 		std::int64_t nCount = 0;
 		if (pAccessor == nullptr || pAccessor->find("bufferView") == pAccessor->end() ||
-				!pAccessor->at("bufferView").GetInteger(nView) || nView < 0 || nView >= static_cast<std::int64_t>(pViews->size()) ||
-				pAccessor->find("count") == pAccessor->end() || !pAccessor->at("count").GetInteger(nCount) || nCount <= 0)
+			!pAccessor->at("bufferView").GetInteger(nView) || nView < 0 || nView >= static_cast<std::int64_t>(pViews->size()) ||
+			pAccessor->find("count") == pAccessor->end() || !pAccessor->at("count").GetInteger(nCount) || nCount <= 0)
 		{
 			AddDiagnostic(out_arrDiagnostics, "glb_accessor", "$.accessors", "invalid accessor view or count");
 			return false;
@@ -707,7 +707,7 @@ bool ValidateGlb(const std::vector<std::uint8_t> &in_arrBytes, BlobInfo &out_stI
 			const Serialization::JsonValue::Object *pAttributes = pPrimitive == nullptr || itAttributes == pPrimitive->end() ? nullptr : itAttributes->second.GetObject();
 			std::int64_t nPosition = -1;
 			if (pAttributes == nullptr || pAttributes->find("POSITION") == pAttributes->end() ||
-					!pAttributes->at("POSITION").GetInteger(nPosition) || nPosition < 0 || nPosition >= static_cast<std::int64_t>(pAccessors->size()))
+				!pAttributes->at("POSITION").GetInteger(nPosition) || nPosition < 0 || nPosition >= static_cast<std::int64_t>(pAccessors->size()))
 			{
 				AddDiagnostic(out_arrDiagnostics, "glb_position", "$.meshes", "primitive requires a valid POSITION accessor");
 				return false;
@@ -723,7 +723,7 @@ bool ValidateGlb(const std::vector<std::uint8_t> &in_arrBytes, BlobInfo &out_stI
 			{
 				std::int64_t nIndexAccessor = -1;
 				if (!pPrimitive->at("indices").GetInteger(nIndexAccessor) || nIndexAccessor < 0 || nIndexAccessor >= static_cast<std::int64_t>(pAccessors->size()) ||
-						!pAccessors->at(static_cast<std::size_t>(nIndexAccessor)).GetObject()->at("count").GetInteger(nIndices))
+					!pAccessors->at(static_cast<std::size_t>(nIndexAccessor)).GetObject()->at("count").GetInteger(nIndices))
 				{
 					AddDiagnostic(out_arrDiagnostics, "glb_indices", "$.meshes", "invalid index accessor");
 					return false;

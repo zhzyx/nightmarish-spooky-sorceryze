@@ -1,0 +1,35 @@
+{
+  "base_commit": "ed40279916d11d7969d236dffc5e490aa6e3d8a7",
+  "checks": {
+    "format_correction": {
+      "command": "Apply exact CI clang-format patch from job 132564671385",
+      "observed": "Four files changed formatting only; no semantic edits",
+      "passed": true
+    },
+    "link_contract": {
+      "command": "check next_asset R2 real link manifest",
+      "observed": "99 sources, 153 includes and 34 objects passed",
+      "passed": true
+    },
+    "runtime_release": {
+      "command": "BuildRuntime.py --build-dir build/engine_next/m3-pr2-r2 --run-tests",
+      "observed": "43 tests/422 checks and all M2 handshakes passed",
+      "passed": true
+    }
+  },
+  "issue_number": 1240,
+  "not_verified": [
+    "R2 exact candidate static checks",
+    "M3 PR3-5"
+  ],
+  "previous": {
+    "pr": 1276,
+    "result": "Three platform builds passed; clang-format required format-only fixes",
+    "signed_head": "df1278f73966d1034ffeb739a44b37090b3737de"
+  },
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "review": "data-collection/engine-next-assets-ai-workflow-m3-pr2-review.json",
+  "schema_version": 1,
+  "slice": "pr2-r2",
+  "supersedes": "data-collection/engine-next-assets-ai-workflow-m3-pr2-verification.json"
+}

@@ -135,7 +135,7 @@ int main(int in_nArgumentCount, char **in_ppArguments)
 			return Failure(arrDiagnostics);
 		}
 		if (!EngineNext::Assets::ParseBuildRequest(stValue, stRequest, arrDiagnostics) ||
-				!EngineNext::Assets::CompilePackage(mapOptions["--source-root"], stRequest, stPackage, arrDiagnostics))
+			!EngineNext::Assets::CompilePackage(mapOptions["--source-root"], stRequest, stPackage, arrDiagnostics))
 		{
 			return Failure(arrDiagnostics);
 		}
