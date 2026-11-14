@@ -379,7 +379,8 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 				bDrainReceived = true;
 				bClosing = true;
 				bDisconnectSent = false;
-				nDisconnectAtMsec = nNowMsec + 32;
+				// Keep the transport open until the server's acknowledgement lets us send DrainComplete.
+				nDisconnectAtMsec = static_cast<std::uint64_t>(-1);
 				nCloseDeadlineMsec = nNowMsec + 1000;
 				const bool bGameplayComplete = bMove
 						? bPredictionComplete && (!in_stConfig.bReconnectTest || bReconnectComplete)
