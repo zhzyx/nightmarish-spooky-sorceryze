@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c6fb46de7ca0f8dd30611e89a75bf8363bb0df1f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-parent-production-continuation-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2640da7c82b37c987defd9790e5c90ce6d0233d91ed1803fb82da5e8fd1f6bd3",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "action": "validation",
+    "detection_head": "c1056ee916839803cb183f86d1c07a1d5c675779",
+    "context_sha256": "6b96503abb151ccc5ab08174479e34b14cd0c6741cb6a7ba55201a0c6405aec1",
+    "operator": "Sail-Li",
+    "worker": "codex-root-production951",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43542607720/job/132286515662 ; original validation b17eb152041d7c54df2b7432bedfad24b0c1f0344fd52e1ad23a583cbd3e722b ; independent collector audit 634c3111a60bb9d167ae7ebda41ecfc0518358974ec19c728bca0ec98fc3d3a5",
+    "diagnosis": "Baseline and cold passed. Warm initial setup genuinely returned blocked because inputs changed between Git snapshots, before any producer or independent review. Native fixture returned 1 naturally, not an outer timeout. Collector then assumed unavailable original_config and raised a secondary KeyError. Actual changed input remains unknown because warm did not enable the baseline-only Git trace. Six originals and the native result/log are preserved.",
+    "next_action": "Repair failure-only collection and extend real Git passthrough observations to prepared recovery cases in an isolated candidate. Run one bounded warm diagnostic with the exact CI engine; identify the actual changing input before changing production behavior. Preserve strict snapshot guard, success oracle and time limits, then independently review and deliver a corrected exact candidate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T02:12:04.154809+00:00",
+    "attempted": null,
+    "repair_owner": "codex-root-production951/sinan_99def07d3f8a988c",
+    "continuable": "Diagnostic helper repair and isolated validation continue. PR1213 is not merged; publishing wait window released; original installed game and records unchanged."
+  },
+  "occurred_at": "2026-11-14T02:17:31.877918+00:00",
+  "sha256": "64479b29a61bf89b8728af6a88f13451fc10f282a698f66ea077a0f9a2742a34"
+}

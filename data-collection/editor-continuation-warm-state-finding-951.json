@@ -1,0 +1,23 @@
+{
+  "issue": 951,
+  "scope": "Native same-session parent continuation after independent read-only review",
+  "finding": "A completed independent review leaves the dock consultation_turn true. The normal session capture/restore omitted this transient state, so returning to the original production parent retained the reviewer flag and silently rejected explicit Continue and batch registration. The separate delivery-retry reset is not on this path.",
+  "actual_failure": {
+    "case": "prepared-warm-r2",
+    "exit_code": 1,
+    "outer_timeout_seconds": 240,
+    "continue_before_tick": 71789,
+    "continue_synchronous_return_tick": 71798,
+    "history_and_ui_unchanged": true,
+    "native_stderr_empty": true,
+    "report_sha256": "190c76f6dd0402d58afbfd985f11dbcb821a738ca40a9ce87650490eeaf95a7c",
+    "private_archive_manifest_sha256": "a12f18648eb713372252683aeb065afc1affa963f13e515b5a446e5a57739bf3"
+  },
+  "correction": "Capture and restore the consultation flag with its AgentSession; OR with the actual review-child identity. Preserve read-only consultation/review checks rather than clearing authority in the fixture.",
+  "validation_state": "source correction; strict rebuild and warm native recovery pending",
+  "limits": [
+    "A cold restart resets transient state and cannot establish same-session continuation.",
+    "A synchronous pressed signal returning is not proof that resume registered or dispatched.",
+    "The original game and installed editor remain unchanged by this isolated test."
+  ]
+}

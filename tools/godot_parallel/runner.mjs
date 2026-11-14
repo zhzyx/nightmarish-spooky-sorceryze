@@ -117,6 +117,34 @@ function editorRuntime(request) {
   return {executable:fs.realpathSync(runtime.executable), sha256:runtime.sha256};
 }
 
+// A recovered prepared job is not a prior execution or an acceptance receipt.
+// Its original configuration and setup provenance remain fixed at native resume.
+function verifyPreparedJob(request, job) {
+  if (!job.preparedJob) return;
+  const source = job.preparedJob, binding = source.approval?.binding, prepared = source.job;
+  const bound = ref => {
+    if (!ref || !path.isAbsolute(ref.path || '') || !/^[a-f0-9]{64}$/.test(ref.sha256 || '') || fs.statSync(ref.path).size > 32 * 1024 * 1024) throw Error('Prepared job reference unavailable');
+    const bytes = fs.readFileSync(ref.path);
+    if (digest(bytes) !== ref.sha256) throw Error('Prepared job source changed');
+    return JSON.parse(bytes);
+  };
+  if (job.repairOf || source.producer !== job.id || prepared?.order !== job.order || prepared.state !== 'ready' ||
+      binding?.request_id !== request.requestId || Number(binding.issue_number) !== request.issue || binding.sha256 !== job.designSha256 ||
+      binding.workspace !== request.workspace || !source.approval.operator || !source.scope_sha256 ||
+      source.config?.path !== request.config || source.config.sha256 !== request.configSha256) throw Error('Prepared job identity changed');
+  bound(source.config);
+  const setup = bound(source.setup_request), result = bound(source.setup_result), ledger = bound(source.setup_receipt);
+  if (!Array.isArray(source.anchors) || source.anchors.length < 3 || source.anchors.length > 768) throw Error('Prepared job predecessor missing');
+  source.anchors.forEach(bound);
+  if (setup.requestId !== request.requestId || setup.issue !== request.issue || setup.designSha256 !== job.designSha256 ||
+      setup.workspace !== request.workspace || setup.orders.filter(order => order === job.order).length !== 1 ||
+      result.state !== 'ready' || result.config !== request.config || result.receipt !== source.setup_receipt.path ||
+      ledger.designSha256 !== job.designSha256 || ledger.snapshot !== prepared.snapshot ||
+      ledger.jobs.filter(item => item.order === job.order && item.worktree === prepared.worktree && item.branch === prepared.branch && item.common === prepared.common && item.snapshot === prepared.snapshot && item.state === 'ready').length !== 1 ||
+      canonical(prepared.worktree) !== job.cwd || canonical(prepared.common) !== canonical(path.resolve(job.cwd,command('git',['rev-parse','--git-common-dir'],job.cwd))) ||
+      command('git',['symbolic-ref','--short','HEAD'],job.cwd) !== prepared.branch || command('git',['rev-parse','HEAD'],job.cwd) !== prepared.snapshot) throw Error('Prepared job checkout or setup changed');
+}
+
 function restoreTicket(file, record, request, job) {
   try {
     const ticket = read(file);
@@ -199,7 +227,9 @@ export async function run(request, config, output, runtime = {}) {
   for(const job of jobs) {
     const existing=ticketPath(request,job);
     if(fs.existsSync(existing)) {
-      restoreTicket(existing,result.workers.find(w=>w.id===job.id),request,job);
+      const record=result.workers.find(w=>w.id===job.id);
+      if(job.preparedJob) Object.assign(record,{state:'reconcile_required',transport_completed:false,reason:'Prepared job already has an execution ticket'});
+      else restoreTicket(existing,record,request,job);
       job.existing=true;
     }
   }
@@ -216,8 +246,12 @@ export async function run(request, config, output, runtime = {}) {
         fs.mkdirSync(locks,{recursive:true});
         const resourceKey = crypto.createHash('sha256').update(process.platform==='win32'?job.cwd.toLowerCase():job.cwd).digest('hex');
         ticketFile=ticketPath(request,job);
-        if (fs.existsSync(ticketFile)) {restoreTicket(ticketFile,record,request,job);continue;}
+        if (fs.existsSync(ticketFile)) {
+          if(job.preparedJob) throw Error('Prepared job already has an execution ticket');
+          restoreTicket(ticketFile,record,request,job);continue;
+        }
         verifyDesign(request, job);
+        verifyPreparedJob(request, job);
         const repairSource=job.repairOf?verifyRepair(request,job):null;
         record.workerBackend=job.launch.backend;
         try {
@@ -247,6 +281,7 @@ export async function run(request, config, output, runtime = {}) {
         verifyDesign(request, job);
         const boundEditor = editorRuntime(request);
         if (job.repairOf) verifyRepair(request,job);
+        verifyPreparedJob(request,job);
         verifyDependencyPreflight(job.dependency_preflight);
         record.execution_id=crypto.randomUUID();
         record.worker_id=job.workerId??`parallel:${record.execution_id}`;
@@ -386,6 +421,8 @@ if (process.argv[1] && fs.existsSync(process.argv[1]) && fs.realpathSync(process
     const bytes = fs.readFileSync(process.argv[2]);
     if (bytes.length > 64 * 1024 * 1024 || (process.argv[4] && digest(bytes) !== process.argv[4])) throw Error('Dispatch request changed or exceeds bound');
     const request=JSON.parse(bytes);
-    await run(request,read(request.config),process.argv[3], {dispatchReference:{path:path.resolve(process.argv[2]),sha256:digest(bytes)}});
+    const configBytes=fs.readFileSync(request.config);
+    if(Object.hasOwn(request,'configSha256') && (!/^[a-f0-9]{64}$/.test(request.configSha256) || digest(configBytes)!==request.configSha256))throw Error('Dispatch configuration changed');
+    await run(request,JSON.parse(configBytes),process.argv[3], {dispatchReference:{path:path.resolve(process.argv[2]),sha256:digest(bytes)}});
   } catch(error) {console.error(error.message);process.exitCode=1;}
 }

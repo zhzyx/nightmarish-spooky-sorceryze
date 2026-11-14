@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d20e37c3fe1d68d0584ad4269603c20df869550c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-parent-production-continuation-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "780d04bd997e92bf3e5810ca5c287d6194a60c3b89a9d9cb0ef1c7e3a597ee32",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "action": "dispatch",
+    "detection_head": "432cd7591a2c015cffd04252a8aa526e9226beee",
+    "context_sha256": "cc3c315422abe3fff531303479d602ff473cf5c9c84c86ba8e14467aadb40a7e",
+    "operator": "Sail-Li",
+    "worker": "/root",
+    "authority_ref": "User authorized continuous #773 Godot production and editor lifecycle; current root owns original acceptance, delegates read-only diagnosis to native child65, preserves existing workers.",
+    "evidence": "Original installed editor preparation audit SHA256 47ada061fd51136bbd3445b2bba426d7ee3d9e0f0e3e3b2c22b443f41f6b024c; 34 matching requests and 34 blocked results; original owner paused normally.",
+    "diagnosis": "Preparation baseline correctly rejects six generated UID inputs absent from its immutable original tree. Original HEAD and design remain unchanged. Native preparation failure only appends an error and returns; history-save completion defers dispatch while the batch remains running with waiting repairs and no config, causing repeated prepare. A and B have legitimate evidence-completion repair queues, but no new worker execution was started.",
+    "next_action": "Sole candidate implementer fixes persistent preparation failure dispatch gating with explicit bounded recovery and cold-restart tests. Preserve original UID files, baseline receipt, worker ownership and all failed results. Independently review exact candidate and replay original consumer after delivery; preparation recovery remains pending.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T18:32:05.607946+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T18:43:24.863394+00:00",
+  "sha256": "7bc53077b63810a360dc63651ec137487fe31a4fd71223dfc1573453f575aad3"
+}
