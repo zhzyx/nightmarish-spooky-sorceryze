@@ -144,7 +144,7 @@
 - 身份只做“外部主体 → 本地用户”的解析，不与 Git 或某个具体系统绑定。
 - `identity_links` 保存 `(provider, subject) → user_id`；管理员通过 `/api/v1/identity/links` 绑定。
 - `/api/v1/identity/resolve` 由适配器校验凭据后签发天璇会话；核心不感知 GitHub/Tianshu/OIDC 细节。
-- 内置适配器：`static`（仅显式开启）、`tianshu`/`github` 共享密钥、`oidc` HS256 JWT（校验 alg/签名/sub/exp，可选 iss/aud）；后续可替换为 RS256/JWKS 或新增 LDAP/SSO 适配器而不改核心。
+- 内置适配器：`static`（仅显式开启）、`tianshu`/`github` 共享密钥、`oidc` JWT（HS256 或 RS256/JWKS，校验 alg/签名/sub/exp，可选 iss/aud）；后续可替换为 RS256/JWKS 或新增 LDAP/SSO 适配器而不改核心。
 - 天枢桥接优先用 provider/subject 换会话，`--actor`/`--token` 仅作本地调试回退。
 
 ### 12. 治理与准入
