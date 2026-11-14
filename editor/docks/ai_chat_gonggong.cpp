@@ -70,66 +70,19 @@ bool AIChatDock::_record_gonggong(const String &p_kind, const String &p_phase, c
 	if (consultation_turn) {
 		return true;
 	}
-	if (gonggong_reporting.is_empty()) {
+	String strError;
+	const Dictionary mapAgent = gonggong_reporting.get("agent", Dictionary());
+	const String strTitle = vformat("%s · AI Chat #%d", mapAgent.get("id", ""), active_agent);
+	if (!refChatController->RecordWorkOrderEvent(p_kind, p_phase, p_status, _daqian_board_workspace(), strTitle, strError)) {
 		_design_reporting_blocked();
+		if (strError == "event_persistence_failed") {
+			_append(TTR("Error"), U"GongGong 事件无法持久保存，后续模型及工具执行已阻止。");
+		}
 		return false;
 	}
-	Dictionary event;
-	const String id = "godot-event-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec());
-	event["schema_version"] = 1;
-	event["event_id"] = id;
-	event["tenant_id"] = gonggong_reporting["tenant_id"];
-	event["request_id"] = gonggong_reporting["request_ref"];
-	event["source_ref"] = gonggong_reporting["source_ref"];
-	event["agent"] = gonggong_reporting["agent"];
-	event["kind"] = p_kind;
-	event["occurred_at"] = Time::get_singleton()->get_datetime_string_from_system(true) + "Z";
-	event["evidence_refs"] = Array();
-	Dictionary payload;
-	payload["phase"] = p_phase;
-	payload["status"] = p_status;
-	payload["binding"] = gonggong_reporting;
-	payload["input_tokens"] = Variant();
-	payload["output_tokens"] = Variant();
-	payload["reason"] = "Host lifecycle metadata only; provider token usage is not measured by this connector";
-	if (p_kind == "step") {
-		payload["step_key"] = String(gonggong_reporting["request_ref"]) + ":" + p_phase;
-		if (p_status != "running" && gonggong_running_steps.has(p_phase)) {
-			event["supersedes"] = gonggong_running_steps[p_phase];
-		}
+	if (!consultation_turn) {
+		set_meta("gonggong_reporting", "queued");
 	}
-	event["payload"] = payload;
-	const String folder = gonggong_report_root.path_join(".gonggong-outbox/chat");
-	const String pending = folder.path_join(id + ".json");
-	bool stored = DirAccess::make_dir_recursive_absolute(folder) == OK;
-	if (stored) {
-		Ref<FileAccess> file = FileAccess::open(pending + ".tmp", FileAccess::WRITE);
-		stored = file.is_valid() && file->store_string(JSON::stringify(event));
-		if (file.is_valid()) {
-			file->flush();
-			stored = stored && file->get_error() == OK;
-			file.unref();
-		}
-		stored = stored && DirAccess::rename_absolute(pending + ".tmp", pending) == OK;
-	}
-	if (!stored) {
-		_design_reporting_blocked();
-		_append(TTR("Error"), U"GongGong 事件无法持久保存，后续模型及工具执行已阻止。");
-		return false;
-	}
-	if (p_kind == "step") {
-		if (p_status == "running") {
-			gonggong_running_steps[p_phase] = id;
-		} else {
-			gonggong_running_steps.erase(p_phase);
-		}
-	}
-	if (p_kind == "request" || p_kind == "request_end" || p_kind == "step") {
-		const Dictionary agent = gonggong_reporting["agent"];
-		const String board = _daqian_board_workspace();
-		emit_signal("daqian_work_event", board.is_empty() ? gonggong_report_root : board, gonggong_reporting, vformat("%s · AI Chat #%d", agent["id"], active_agent), p_kind, p_phase, p_status);
-	}
-	set_meta("gonggong_reporting", "queued");
 	return true;
 }
 
@@ -163,51 +116,13 @@ void AIChatDock::_flush_gonggong(const Callable &p_continuation) {
 }
 
 void AIChatDock::_poll_gonggong_receipt() {
-	if (!bGongGongReceiptExited) {
-		if (OS::get_singleton()->is_process_running(gonggong_receipt_pid)) {
-			return;
-		}
-		iGongGongReceiptExitCode = OS::get_singleton()->get_process_exit_code(gonggong_receipt_pid);
-		bGongGongReceiptExited = true;
-		uGongGongReceiptReadDeadline = Time::get_singleton()->get_ticks_msec() + 1000;
-	}
-	++uGongGongReceiptReadAttempts;
-	Dictionary dictResult = AIChatReceipt::Read(gonggong_receipt_path);
-	const Error eRead = Error(int(dictResult.get("receipt_io_error", OK)));
-	if (AIChatReceipt::CanRetry(eRead, uGongGongReceiptReadAttempts, Time::get_singleton()->get_ticks_msec(), uGongGongReceiptReadDeadline)) {
-		// Retain the PID and generation while waiting, so no queued batch starts.
+	const Dictionary mapResult = refChatController->PollReceiptFlush(api_key->get_text());
+	if (mapResult.is_empty()) {
 		return;
 	}
 	gonggong_receipt_timer->stop();
-	gonggong_receipt_pid = -1;
-	const String strStatus = dictResult["receipt_status"];
-	Dictionary dictDiagnostic;
-	dictDiagnostic["status"] = strStatus;
-	dictDiagnostic["exit_code"] = iGongGongReceiptExitCode;
-	dictDiagnostic["read_attempts"] = uGongGongReceiptReadAttempts;
-	dictDiagnostic["io_error"] = eRead;
-	dictDiagnostic["parse_line"] = dictResult.get("receipt_parse_line", -1);
-	dictDiagnostic["temporary_present"] = FileAccess::exists(gonggong_receipt_path.get_basename() + ".tmp");
-	set_meta("gonggong_receipt_diagnostic", dictDiagnostic);
-	// Private cache evidence contains metadata only, never raw receipt or stderr.
-	Ref<FileAccess> refDiagnostic = FileAccess::open(gonggong_receipt_path + ".diagnostic.json", FileAccess::WRITE);
-	if (refDiagnostic.is_valid()) {
-		refDiagnostic->store_string(JSON::stringify(dictDiagnostic));
-		refDiagnostic.unref();
-	}
-	if (strStatus != "valid" || iGongGongReceiptExitCode != 0) {
-		const String strActionError = strStatus == "valid" ? _redact(String(dictResult.get("error", ""))).left(160) : String();
-		dictResult["ok"] = false;
-		dictResult["error"] = vformat("receipt_%s; exit=%d; io=%d; attempts=%d; parse_line=%d; temporary=%s",
-									  strStatus == "valid" ? String("process_failed") : strStatus, iGongGongReceiptExitCode, int(eRead),
-									  uGongGongReceiptReadAttempts, int(dictResult.get("receipt_parse_line", -1)), bool(dictDiagnostic["temporary_present"]) ? "present" : "absent") +
-				(strActionError.is_empty() ? String() : "; " + strActionError);
-	} else {
-		// A syntactically valid, typed result was actually consumed.
-		DirAccess::remove_absolute(gonggong_receipt_path);
-		DirAccess::remove_absolute(gonggong_receipt_path + ".diagnostic.json");
-	}
-	_finish_gonggong_receipt(dictResult);
+	set_meta("gonggong_receipt_diagnostic", refChatController->get_meta("gonggong_receipt_diagnostic", Dictionary()));
+	_finish_gonggong_receipt(mapResult);
 }
 
 void AIChatDock::_finish_gonggong_receipt(const Dictionary &result) {
@@ -271,63 +186,18 @@ void AIChatDock::_end_gonggong(const String &p_status) {
 }
 
 void AIChatDock::_start_gonggong_flush() {
-	if (gonggong_receipt_pid >= 0) {
+	if (gonggong_receipt_pid >= 0 || gonggong_receipt_queue.is_empty()) {
 		return;
 	}
-	if (gonggong_receipt_queue.is_empty()) {
-		return;
-	}
-	const Dictionary batch = gonggong_receipt_queue[0];
-	gonggong_receipt_queue.remove_at(0);
-	gonggong_receipt_root = batch["root"];
-	gonggong_receipt_scope = batch["scope"];
-	gonggong_receipt_generation = batch["generation"];
-	gonggong_continuation_generation = gonggong_receipt_generation;
-	gonggong_receipt_continuation = batch["continuation"];
 	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
-	const String workflow_python = GongGongRuntimeConfig::path(runtime, "workflow_python");
-	const String installation = _engine_root();
-	const String receipt_bridge = chat_bridge(installation, gonggong_receipt_root);
-	const bool scoped_protocol = !receipt_bridge.is_empty() && FileAccess::exists(receipt_bridge) &&
-			FileAccess::get_file_as_string(receipt_bridge).contains("gonggong-scoped-batch-receipts-v1");
-	String provenance_error = "receipt_scope_or_installed_bridge_missing";
-	if (workflow_python.is_empty() || installation.is_empty() || receipt_bridge.is_empty() || !FileAccess::exists(receipt_bridge) || gonggong_receipt_root.is_empty() ||
-			String(gonggong_receipt_scope.get("tenant_id", String())).is_empty() ||
-			String(gonggong_receipt_scope.get("request_ref", String())).is_empty() ||
-			String(gonggong_receipt_scope.get("source_ref", String())).is_empty()) {
-		Dictionary failure;
-		failure["ok"] = false;
-		failure["error"] = provenance_error;
-		_finish_gonggong_receipt(failure);
+	const String strInstallation = _engine_root();
+	const String strRoot = Dictionary(gonggong_receipt_queue[0])["root"];
+	const Dictionary mapResult = refChatController->StartReceiptFlush(GongGongRuntimeConfig::path(runtime, "workflow_python"), strInstallation, chat_bridge(strInstallation, strRoot), EditorPaths::get_singleton()->get_cache_dir());
+	if (!mapResult.is_empty()) {
+		_finish_gonggong_receipt(mapResult);
 		return;
 	}
-	gonggong_receipt_path = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-receipt-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()) + ".json");
-	List<String> arguments;
-	for (const String &arg : { receipt_bridge, String("flush"), String("--workspace"), gonggong_receipt_root, String("--out"), gonggong_receipt_path }) {
-		arguments.push_back(arg);
-	}
-	if (scoped_protocol) {
-		arguments.push_back("--receipt-tenant");
-		arguments.push_back(gonggong_receipt_scope.get("tenant_id", String()));
-		arguments.push_back("--receipt-request");
-		arguments.push_back(gonggong_receipt_scope.get("request_ref", String()));
-		arguments.push_back("--receipt-source");
-		arguments.push_back(gonggong_receipt_scope.get("source_ref", String()));
-	}
-	ProcessID pid = 0;
-	if (OS::get_singleton()->create_process(workflow_python, arguments, &pid) != OK) {
-		Dictionary failure;
-		failure["ok"] = false;
-		failure["error"] = "receipt_process_start_failed";
-		_finish_gonggong_receipt(failure);
-		return;
-	}
-	gonggong_receipt_pid = pid;
-	bGongGongReceiptExited = false;
-	iGongGongReceiptExitCode = -1;
-	uGongGongReceiptReadAttempts = 0;
-	uGongGongReceiptReadDeadline = 0;
 	_refresh_sub_agents();
 	if (!gonggong_receipt_timer) {
 		gonggong_receipt_timer = memnew(Timer);
@@ -339,13 +209,7 @@ void AIChatDock::_start_gonggong_flush() {
 }
 
 void AIChatDock::_clear_gonggong_files() {
-	for (const String &path : { gonggong_input_path, gonggong_output_path }) {
-		if (!path.is_empty() && FileAccess::exists(path)) {
-			DirAccess::remove_absolute(path);
-		}
-	}
-	gonggong_input_path = String();
-	gonggong_output_path = String();
+	refChatController->ClearWorkOrderContextFiles();
 }
 
 void AIChatDock::_environment_setup_completed() {
@@ -365,27 +229,7 @@ void AIChatDock::_environment_setup_completed() {
 }
 
 static String last_user_content(const Array &p_messages) {
-	// A steering message amends the current requirement; it cannot replace the
-	// original objective when the host revalidates scope and Issue bindings.
-	int start = -1;
-	for (int i = p_messages.size() - 1; i >= 0; i--) {
-		const Dictionary message = p_messages[i];
-		if (String(message.get("role", "")) == "user" && !bool(message.get("steering", false))) {
-			start = i;
-			break;
-		}
-	}
-	String result;
-	for (int i = MAX(start, 0); i < p_messages.size(); i++) {
-		const Dictionary message = p_messages[i];
-		if (String(message.get("role", "")) == "user") {
-			if (!result.is_empty()) {
-				result += "\n\nAdditional user instructions:\n";
-			}
-			result += String(message.get("content", ""));
-		}
-	}
-	return result;
+	return AIChatController::GetUserOutcome(p_messages);
 }
 
 String AIChatDock::_daqian_board_workspace() const {
@@ -514,7 +358,6 @@ void AIChatDock::_begin_gonggong_context() {
 	}
 	int64_t bound_issue = String(_work_order_binding("issue_number")).to_int();
 	String bound_request = String(_work_order_binding("request_id")).strip_edges();
-	String authority = "godot-editor:user-chat:" + conversation_id;
 	Dictionary delegation;
 	if (sub_agents.has(active_agent)) {
 		delegation = _child_delegation();
@@ -523,57 +366,33 @@ void AIChatDock::_begin_gonggong_context() {
 			_set_busy(false);
 			return;
 		}
-		authority = delegation["authority_ref"];
 	}
 	if (!AIChatIssueGuide::is_bound(bound_issue, bound_request) && _start_issue_guide()) {
 		return;
 	}
-	Dictionary context_input;
-	Dictionary host;
-	host["id"] = "godot-editor";
-	host["kind"] = "engine";
-	context_input["protocol_version"] = 1;
-	context_input["host"] = host;
-	context_input["agent_id"] = direct || !delegation.is_empty() ? "sinan" : "yanshi";
-	if (!delegation.is_empty()) {
-		context_input["delegation"] = delegation;
-	}
-	context_input["issue_number"] = bound_issue;
-	context_input["request_id"] = bound_request;
 	const Dictionary bindings = EditorSettings::get_singleton()->get_project_metadata("daqian", "bindings", Dictionary());
-	const Dictionary entry = bindings.get(conversation_id, Dictionary());
-	if (!String(entry.get("source", "")).is_empty() && entry.get("request_id", "") == bound_request && String(entry.get("issue_number", "")).to_int() == bound_issue) {
-		context_input["daqian_bound"] = true;
-	}
-	context_input["outcome"] = outcome;
-	context_input["authority_ref"] = authority;
-	context_input["project"] = ProjectSettings::get_singleton()->get_resource_path();
-	context_input["tools_enabled"] = allow_tools->is_pressed();
-	context_input["file_changes_require_approval"] = !auto_apply_file_changes->is_pressed();
-	context_input["execution_requires_approval"] = !auto_execute_commands->is_pressed();
-	const String prefix = EditorPaths::get_singleton()->get_cache_dir().path_join("gonggong-chat-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()));
-	gonggong_input_path = prefix + ".request.json";
-	gonggong_output_path = prefix + ".result.json";
-	Ref<FileAccess> file = FileAccess::open(gonggong_input_path, FileAccess::WRITE);
-	if (file.is_null()) {
-		_append(TTR("Error"), U"无法保存 GongGong 校验请求，未发送聊天。");
+	Dictionary mapScope;
+	mapScope["issue_number"] = bound_issue;
+	mapScope["request_id"] = bound_request;
+	mapScope["project"] = ProjectSettings::get_singleton()->get_resource_path();
+	mapScope["direct"] = direct;
+	mapScope["binding"] = bindings.get(conversation_id, Dictionary());
+	Dictionary mapPolicy;
+	mapPolicy["tools_allowed"] = allow_tools->is_pressed();
+	mapPolicy["auto_apply"] = auto_apply_file_changes->is_pressed();
+	mapPolicy["auto_execute"] = auto_execute_commands->is_pressed();
+	const Dictionary context_input = refChatController->BuildWorkOrderInput(mapScope, mapPolicy, delegation);
+	Dictionary mapHost;
+	mapHost["python"] = python;
+	mapHost["bridge"] = bridge;
+	mapHost["workspace"] = root;
+	mapHost["tenant"] = EDITOR_GET("gonggong/tenant");
+	mapHost["cache"] = EditorPaths::get_singleton()->get_cache_dir();
+	if (refChatController->StartWorkOrderContext(context_input, mapHost) != OK) {
+		_append(TTR("Error"), U"无法保存或启动 GongGong 校验，未发送聊天。请检查 Python 路径与缓存目录。");
 		_set_busy(false);
 		return;
 	}
-	file->store_string(JSON::stringify(context_input));
-	file.unref();
-	List<String> args;
-	for (const String &argument : { bridge, String("chat"), String("--workspace"), root, String("--tenant"), String(EDITOR_GET("gonggong/tenant")), String("--request"), gonggong_input_path, String("--out"), gonggong_output_path }) {
-		args.push_back(argument);
-	}
-	ProcessID pid = 0;
-	if (OS::get_singleton()->create_process(python, args, &pid) != OK) {
-		_clear_gonggong_files();
-		_append(TTR("Error"), U"无法启动 GongGong 校验，请检查 Python 路径。");
-		_set_busy(false);
-		return;
-	}
-	gonggong_pid = pid;
 	if (!gonggong_timer) {
 		gonggong_timer = memnew(Timer);
 		gonggong_timer->set_wait_time(0.1);
@@ -585,40 +404,15 @@ void AIChatDock::_begin_gonggong_context() {
 }
 
 void AIChatDock::_poll_gonggong_context() {
-	if (OS::get_singleton()->is_process_running(gonggong_pid)) {
+	Dictionary result;
+	if (!refChatController->PollWorkOrderContext(result)) {
 		return;
 	}
 	gonggong_timer->stop();
-	gonggong_pid = -1;
-	Variant parsed;
-	if (FileAccess::exists(gonggong_output_path)) {
-		parsed = JSON::parse_string(FileAccess::get_file_as_string(gonggong_output_path));
-	}
-	_clear_gonggong_files();
-	Dictionary result;
-	if (parsed.get_type() == Variant::DICTIONARY) {
-		result = parsed;
-	}
 	const bool cancelled = !busy || gonggong_generation != session_generation;
-	if (!cancelled && sub_agents.has(active_agent) && bool(result.get("ok", false))) {
-		const Dictionary binding = result.get("reporting", Dictionary());
-		const Dictionary delegation = _child_delegation();
-		if (delegation.is_empty() || binding.get("delegation", Variant()) != JSON::parse_string(JSON::stringify(delegation)) || Dictionary(binding.get("agent", Dictionary())).get("id", "") != "godot-editor-worker") {
-			_append(TTR("Error"), U"宿主未回读当前子工单的执行角色与父委托，本轮未发送。");
-			_set_busy(false);
-			return;
-		}
-	}
-	if (!cancelled && !command_recovery_reporting.is_empty() && result.get("reporting", Variant()) != command_recovery_reporting) {
-		completed_command_receipt_path = String();
-		command_recovery_reporting.clear();
-		gonggong_recovered_result = String();
-		_append(TTR("Error"), U"原命令的工作者或授权绑定已变化，结果仍保留在中断记录。");
-		_set_busy(false);
-		return;
-	}
-	if (!gonggong_reporting.is_empty() && result.get("reporting", Variant()).get_type() == Variant::DICTIONARY && gonggong_reporting != Dictionary(result["reporting"])) {
-		_append(TTR("Error"), U"GongGong 本轮框架或上报绑定已变化，请结束本轮并重新发送。");
+	const String strBindingError = refChatController->ValidateWorkOrderResult(result, sub_agents.has(active_agent), sub_agents.has(active_agent) ? _child_delegation() : Dictionary());
+	if (!strBindingError.is_empty()) {
+		_append(TTR("Error"), strBindingError);
 		_set_busy(false);
 		return;
 	}

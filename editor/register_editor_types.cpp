@@ -36,6 +36,8 @@
 #include "core/object/class_db.h"
 #include "core/object/script_language.h"
 #include "core/os/os.h"
+#include "editor/AIWorkflowRuntime.h"
+#include "editor/docks/AIChatController.h"
 #include "editor/animation/animation_tree_editor_plugin.h"
 #include "editor/audio/audio_stream_randomizer_editor_plugin.h"
 #include "editor/debugger/debug_adapter/debug_adapter_server.h"
@@ -153,6 +155,9 @@ void register_editor_types() {
 	ResourceSaver::set_timestamp_on_save(true);
 
 	EditorStringNames::create();
+
+	GDREGISTER_CLASS(AIWorkflowRuntime);
+	GDREGISTER_CLASS(AIChatController);
 
 	GDREGISTER_CLASS(EditorPaths);
 	GDREGISTER_ABSTRACT_CLASS(ScenePaint2DEditor);
@@ -329,6 +334,11 @@ void register_editor_types() {
 	ei_singleton.editor_only = true;
 	Engine::get_singleton()->add_singleton(ei_singleton);
 
+	AIWorkflowRuntime *pWorkflowRuntime = memnew(AIWorkflowRuntime);
+	Engine::Singleton stWorkflowSingleton("AIWorkflowRuntime", pWorkflowRuntime);
+	stWorkflowSingleton.editor_only = true;
+	Engine::get_singleton()->add_singleton(stWorkflowSingleton);
+
 	if (RenderingServer::get_singleton()) {
 		// RenderingServer needs to exist for this to succeed.
 		Texture3DEditor::init_shaders();
@@ -353,6 +363,9 @@ void unregister_editor_types() {
 	EditorInspector::set_property_clipboard(EditorInspector::PropertyClipboard::Type::EMPTY, Variant());
 	EditorNode::cleanup();
 	EditorInterface::free();
+
+	Engine::get_singleton()->remove_singleton("AIWorkflowRuntime");
+	memdelete(AIWorkflowRuntime::get_singleton());
 
 	if (EditorPaths::get_singleton()) {
 		EditorPaths::free();

@@ -42,16 +42,33 @@
 #include "editor/settings/editor_settings.h"
 #include "scene/gui/check_box.h"
 #include "scene/gui/dialogs.h"
+#include "scene/gui/line_edit.h"
 #include "scene/gui/text_edit.h"
 
+Dictionary AIChatDock::GetDeliveryScope() const
+{
+	Dictionary mapScope;
+	mapScope["owner"] = conversation_id;
+	mapScope["snapshot_id"] = snapshot_id;
+	mapScope["generation"] = int64_t(session_generation);
+	mapScope["source_root"] = _candidate_root();
+	mapScope["engine_candidate"] = snapshot_state.get("engine_candidate", Dictionary());
+	Dictionary mapValidation;
+	String strError;
+	mapValidation["ok"] = _validate_engine_candidate(strError);
+	mapValidation["error"] = strError;
+	mapScope["candidate_validation"] = mapValidation;
+	mapScope["consultation_turn"] = consultation_turn;
+	mapScope["consultation_only"] = consultation_only->is_pressed();
+	mapScope["is_child"] = sub_agents.has(active_agent);
+	mapScope["is_scheduled"] = scheduled_agents.has(active_agent);
+	mapScope["allow_tools"] = allow_tools->is_pressed();
+	mapScope["auto_execute_commands"] = auto_execute_commands->is_pressed();
+	return mapScope;
+}
+
 void AIChatDock::_clear_delivery_files() {
-	for (const String &path : { delivery_request_path, delivery_result_path }) {
-		if (!path.is_empty() && FileAccess::exists(path)) {
-			DirAccess::remove_absolute(path);
-		}
-	}
-	delivery_request_path = String();
-	delivery_result_path = String();
+	refChatController->GetDeliveryExecution().ClearFiles();
 }
 
 void AIChatDock::_run_delivery_tool(const Dictionary &p_arguments) {
@@ -103,54 +120,18 @@ void AIChatDock::_run_delivery_tool(const Dictionary &p_arguments) {
 		completion_guard["live_decisions"] = decisions;
 		checklist = verified_items; // Producer declarations never replace these proofs.
 	}
-	const String candidate = p_arguments.get("candidate", "");
-	const String signed_commit = p_arguments.get("signed_commit", "");
-	if (consultation_turn || consultation_only->is_pressed() || sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || !snapshot_state.has("engine_candidate")) {
-		_finish_tool("Error: Only the current authorized parent may complete its host-bound work order.");
-		return;
+	Dictionary mapScope = GetDeliveryScope();
+	mapScope["mapped_parent"] = mapped_parent;
+	if (mapped_parent) {
+		mapScope["parent_completion_guard"] = completion_guard;
+		mapScope["verified_acceptance_items"] = checklist;
 	}
-	if ((pr.get_type() != Variant::INT && pr.get_type() != Variant::FLOAT) || !Math::is_finite(double(pr)) || double(pr) < 1 || double(pr) > INT_MAX || double(pr) != Math::floor(double(pr)) || checklist.get_type() != Variant::ARRAY || Array(checklist).is_empty() || Array(checklist).size() > 64 || JSON::stringify(checklist).utf8().length() > 48 * 1024 || candidate.length() != 40 || !candidate.is_valid_hex_number(false) || signed_commit.length() != 40 || !signed_commit.is_valid_hex_number(false)) {
-		_finish_tool("Error: A positive PR, exact candidate/signed SHAs and a complete bounded acceptance checklist are required.");
-		return;
-	}
-	String error;
-	if (!_validate_engine_candidate(error)) {
-		_finish_tool("Error: " + error);
+	const Dictionary mapPrepared = refChatController->GetDeliveryExecution().PrepareDelivery(p_arguments, mapScope);
+	if (!bool(mapPrepared.get("ok", false))) {
+		_finish_tool("Error: " + String(mapPrepared.get("error", "Delivery request preparation failed.")));
 		return;
 	}
 	const Dictionary binding = snapshot_state["engine_candidate"];
-	Dictionary selected_binding;
-	for (const String &key : { String("version"), String("owner"), String("issue"), String("request_id"), String("source_root"), String("branch"), String("base_sha"), String("common_dir"), String("repository"), String("origin"), String("binding_path") }) {
-		selected_binding[key] = binding.get(key, Variant());
-	}
-	// JSON-parsed numbers are floats in Variant; the worker requires integer identities.
-	// Older preparation receipts omit version/origin; use the original journal,
-	// which the fixed worker independently checks against the actual repository.
-	const Dictionary recorded = JSON::parse_string(FileAccess::get_file_as_string(binding.get("binding_path", "")));
-	selected_binding["version"] = int64_t(recorded.get("version", 0));
-	selected_binding["origin"] = recorded.get("origin", Variant());
-	selected_binding["issue"] = int64_t(binding.get("issue", 0));
-	uint8_t bytes[16];
-	if (CryptoCore::generate_random(bytes, sizeof(bytes)) != OK) {
-		_finish_tool("Error: Cannot create delivery request identity.");
-		return;
-	}
-	_clear_delivery_files();
-	pending_delivery_request.clear();
-	pending_delivery_request["schema_version"] = 1;
-	pending_delivery_request["owner"] = conversation_id;
-	pending_delivery_request["snapshot_id"] = snapshot_id;
-	pending_delivery_request["generation"] = int64_t(session_generation);
-	pending_delivery_request["nonce"] = String::hex_encode_buffer(bytes, sizeof(bytes));
-	pending_delivery_request["source_root"] = _candidate_root();
-	pending_delivery_request["binding"] = selected_binding;
-	pending_delivery_request["pr"] = int64_t(pr);
-	pending_delivery_request["expected_candidate"] = candidate;
-	pending_delivery_request["expected_signed_commit"] = signed_commit;
-	pending_delivery_request["acceptance_items"] = checklist;
-	if (mapped_parent) {
-		pending_delivery_request["parent_completion_guard"] = completion_guard;
-	}
 	pending_action = "complete_delivery";
 	process_timeout_seconds = 600;
 	if (auto_execute_commands->is_pressed()) {
@@ -163,126 +144,25 @@ void AIChatDock::_run_delivery_tool(const Dictionary &p_arguments) {
 }
 
 bool AIChatDock::_delivery_process_arguments(String &r_executable, List<String> &r_arguments, const Dictionary &p_runtime) {
-	String error;
-	if (pending_delivery_request.is_empty() || !busy || pending_delivery_request.get("owner", "") != conversation_id || pending_delivery_request.get("snapshot_id", "") != snapshot_id || int64_t(pending_delivery_request["generation"]) != int64_t(session_generation) || pending_delivery_request.get("source_root", "") != _candidate_root() || !_validate_engine_candidate(error)) {
-		_finish_tool("Error: Delivery owner, generation or candidate changed before execution. " + error);
-		return false;
-	}
-	r_executable = GongGongRuntimeConfig::path(p_runtime, "workflow_python");
-	const String worker = _engine_root().path_join(delivery_retry_route.is_empty() ? "tools/editor_delivery_finalize.py" : "tools/editor_delivery_retry.py");
+	Dictionary mapHost;
+	mapHost["scope"] = GetDeliveryScope();
+	mapHost["busy"] = busy;
+	mapHost["workflow_python"] = GongGongRuntimeConfig::path(p_runtime, "workflow_python");
+	mapHost["engine_root"] = _engine_root();
+	mapHost["cache_dir"] = EditorPaths::get_singleton()->get_cache_dir();
 	if (!delivery_retry_route.is_empty()) {
-		const Dictionary route = _get_editor_control()->route_status(delivery_retry_route["request_id"], "desktop.codex");
-		if (!bool(route.get("delivery_retry_started", false)) || bool(route.get("receipt_persistence_failed", false))) {
-			_finish_tool("Error: The terminal retry host-action receipt was not persisted.");
-			return false;
-		}
+		mapHost["retry_route_status"] = _get_editor_control()->route_status(delivery_retry_route["request_id"], "desktop.codex");
 	}
-	if (r_executable.is_empty() || !FileAccess::exists(r_executable) || !FileAccess::exists(worker)) {
-		_finish_tool("Error: The installed delivery worker or workflow Python is missing.");
+	const Dictionary mapPrepared = refChatController->GetDeliveryExecution().BuildProcessArguments(mapHost, r_executable, r_arguments);
+	if (!bool(mapPrepared.get("ok", false))) {
+		_finish_tool("Error: " + String(mapPrepared.get("error", "Delivery request launch failed.")));
 		return false;
-	}
-	const String prefix = EditorPaths::get_singleton()->get_cache_dir().path_join("delivery-finalize-" + itos(OS::get_singleton()->get_process_id()) + "-" + String(pending_delivery_request["nonce"]));
-	delivery_request_path = prefix + ".request.json";
-	delivery_result_path = prefix + ".result.json";
-	const bool mapped_parent = pending_delivery_request.has("parent_completion_guard");
-	if (mapped_parent) {
-		pending_delivery_request["active"] = true;
-		pending_delivery_request["request_nonce"] = pending_delivery_request["nonce"];
-		Dictionary guard = pending_delivery_request["parent_completion_guard"];
-		guard["host_liveness_path"] = delivery_request_path;
-		guard["request_nonce"] = pending_delivery_request["nonce"];
-	}
-	Ref<FileAccess> file = FileAccess::open(delivery_request_path, FileAccess::WRITE);
-	if (file.is_null() || !file->store_string(JSON::stringify(pending_delivery_request))) {
-		_finish_tool("Error: Cannot persist the delivery request.");
-		_clear_delivery_files();
-		return false;
-	}
-	file->flush();
-	if (file->get_error() != OK) {
-		_finish_tool("Error: Cannot flush the delivery request.");
-		_clear_delivery_files();
-		return false;
-	}
-	file.unref();
-	if (mapped_parent && DirAccess::copy_absolute(delivery_request_path, delivery_request_path + ".original.json") != OK) {
-		_finish_tool("Error: Cannot retain the original complete-task delivery request for readback.");
-		_clear_delivery_files();
-		return false;
-	}
-	const String delivery_worker = mapped_parent ? _engine_root().path_join("tools/gonggong_bridge.py") : worker;
-	if (mapped_parent) {
-		r_arguments.push_back("-I");
-		r_arguments.push_back(delivery_worker);
-		r_arguments.push_back("parent-delivery");
-		r_arguments.push_back("--workspace");
-		r_arguments.push_back(_candidate_root());
-	} else {
-		for (const String &argument : { String("-I"), delivery_worker, String("--source-root"), _candidate_root() }) {
-			r_arguments.push_back(argument);
-		}
-	}
-	for (const String &argument : { String("--request"), delivery_request_path, String("--out"), delivery_result_path }) {
-		r_arguments.push_back(argument);
 	}
 	return true;
 }
 
 void AIChatDock::_capture_delivery_result(Dictionary &r_process_result) {
-	r_process_result["ok"] = false;
-	if (!busy || pending_delivery_request.is_empty() || pending_delivery_request.get("owner", "") != conversation_id || pending_delivery_request.get("snapshot_id", "") != snapshot_id || int64_t(pending_delivery_request["generation"]) != int64_t(session_generation)) {
-		_clear_delivery_files();
-		return;
-	}
-	Ref<FileAccess> file = FileAccess::open(delivery_result_path, FileAccess::READ);
-	const int64_t bytes = file.is_valid() ? int64_t(file->get_length()) : -1;
-	const Variant parsed = file.is_valid() && bytes <= 256 * 1024 ? JSON::parse_string(file->get_as_text()) : Variant();
-	file.unref();
-	if (!delivery_retry_route.is_empty() && bytes >= 0 && bytes <= 256 * 1024) {
-		r_process_result["delivery_worker_result_sha256"] = FileAccess::get_sha256(delivery_result_path);
-	}
-	Dictionary result = parsed.get_type() == Variant::DICTIONARY ? Dictionary(parsed) : Dictionary();
-	const Dictionary guard = r_process_result.get("provenance_guard", Dictionary());
-	const bool process_ok = int(r_process_result.get("exit_code", -1)) == 0 && !bool(r_process_result.get("timed_out", true)) && guard.get("ok", Variant()).get_type() == Variant::BOOL && bool(guard["ok"]);
-	const bool matched = AIChatDeliveryReceipt::matches(result, pending_delivery_request);
-	const bool completed = matched && process_ok && AIChatDeliveryReceipt::completed(result, pending_delivery_request);
-	Dictionary diagnostic;
-	if (!completed || result.get("ok", Variant()).get_type() != Variant::BOOL || !bool(result["ok"])) {
-		if (bytes >= 0) {
-			diagnostic["bytes"] = bytes;
-			diagnostic["sha256"] = bytes <= 256 * 1024 ? FileAccess::get_sha256(delivery_result_path) : String();
-			const String retained = delivery_result_path + ".retained.json";
-			if (!FileAccess::exists(retained) && DirAccess::rename_absolute(delivery_result_path, retained) == OK) {
-				diagnostic["path"] = retained;
-				delivery_result_path = String();
-			}
-		}
-	}
-	_clear_delivery_files();
-	if (matched && !diagnostic.is_empty()) {
-		result["private_worker_diagnostic"] = diagnostic;
-	}
-	if (matched && !bool(result["completion_verified"]) && !bool(result["mutations_may_have_started"]) && result.get("stage", "") == "validation" && guard.get("ok", Variant()).get_type() == Variant::BOOL && bool(guard["ok"])) {
-		r_process_result["delivery_finalization"] = result;
-		return; // A pre-mutation rejection can still be corrected in active intake.
-	}
-	if (!completed) {
-		Dictionary unknown;
-		unknown["ok"] = false;
-		unknown["completion_verified"] = false;
-		unknown["error"] = "delivery_readback_unknown; reconcile existing state before any retry";
-		unknown["private_worker_diagnostic"] = diagnostic;
-		if (matched) {
-			unknown["worker_stage"] = _redact(String(result.get("stage", "unknown"))).left(128);
-			unknown["worker_error"] = _redact(String(result.get("error", ""))).left(1000);
-			unknown["private_diagnostic_ref"] = String(result.get("private_diagnostic_ref", ""));
-		}
-		result = unknown;
-	}
-	delivery_receipt = result.duplicate(true);
-	queue_paused = true; // A receipt flush failure must not dispatch queued work.
-	r_process_result["ok"] = completed && result.get("ok", Variant()).get_type() == Variant::BOOL && bool(result["ok"]);
-	r_process_result["delivery_finalization"] = result;
+	r_process_result = refChatController->CaptureDeliveryResult(r_process_result, GetDeliveryScope(), api_key->get_text());
 }
 
 void AIChatDock::_finish_delivery() {

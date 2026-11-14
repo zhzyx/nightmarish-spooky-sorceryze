@@ -74,113 +74,16 @@ String AIChatDock::_delivery_retry_blocked_reason() const {
 }
 
 Dictionary AIChatDock::_pending_delivery_retry() const {
-	Dictionary result;
-	result["ok"] = false;
-	const Dictionary binding = snapshot_state.get("engine_candidate", Dictionary());
-	const String folder = String(binding.get("common_dir", "")).path_join("gonggong-delivery-finalization");
-	const Ref<DirAccess> directory = DirAccess::open(folder);
-	if (directory.is_null()) {
-		result["error"] = "pending_delivery_journal_unavailable";
-		return result;
-	}
-	const PackedStringArray files = directory->get_files();
-	if (files.size() > 1024) {
-		result["error"] = "pending_delivery_ambiguous";
-		return result;
-	}
-	int matches = 0;
-	for (const String &name : files) {
-		if (!name.ends_with(".json")) {
-			continue;
-		}
-		const String path = folder.path_join(name);
-		Ref<FileAccess> file = FileAccess::open(path, FileAccess::READ);
-		if (directory->is_link(name) || file.is_null() || file->get_length() > 256 * 1024) {
-			result["error"] = "pending_delivery_journal_invalid";
-			return result;
-		}
-		const Variant parsed = JSON::parse_string(file->get_as_text());
-		file.unref();
-		if (parsed.get_type() != Variant::DICTIONARY) {
-			result["error"] = "pending_delivery_journal_invalid";
-			return result;
-		}
-		const Dictionary saved = parsed;
-		const Dictionary scope = saved.get("scope", Dictionary());
-		if (scope.get("owner", "") != conversation_id || scope.get("source_root", "") != _candidate_root() || scope.get("issue", Variant()) != binding.get("issue", Variant()) || scope.get("request_id", "") != binding.get("request_id", "")) {
-			continue;
-		}
-		const Dictionary receipt = saved.get("last_receipt", Dictionary());
-		if (receipt.get("snapshot_id", "") != snapshot_id) {
-			continue;
-		}
-		if (receipt.get("completion_verified", Variant()).get_type() != Variant::BOOL || !bool(receipt["completion_verified"]) || receipt.get("ok", Variant()).get_type() != Variant::BOOL || bool(receipt["ok"]) || receipt.get("stage", "") != "activation_pending") {
-			result["error"] = "terminal_state_requires_readback";
-			return result;
-		}
-		const Dictionary facts = receipt.get("host_facts", Dictionary());
-		const String prefix = "https://github.com/" + String(binding.get("repository", "")) + "/pull/";
-		const String url = facts.get("pull_request", "");
-		const String number = url.trim_prefix(prefix);
-		const String candidate = scope.get("candidate", ""), signed_commit = scope.get("signed_commit", "");
-		if (!url.begins_with(prefix) || !number.is_valid_int() || number.to_int() <= 0 || number.to_int() > INT_MAX || number != itos(number.to_int()) || candidate.length() != 40 || !candidate.is_valid_hex_number(false) || signed_commit.length() != 40 || !signed_commit.is_valid_hex_number(false)) {
-			result["error"] = "pending_delivery_journal_invalid";
-			return result;
-		}
-		matches++;
-		result["pr"] = number.to_int();
-		result["expected_candidate"] = candidate;
-		result["expected_signed_commit"] = signed_commit;
-		result["original_journal_sha256"] = FileAccess::get_sha256(path);
-	}
-	result["ok"] = matches == 1;
-	if (matches != 1) {
-		result["error"] = matches == 0 ? "pending_delivery_not_found" : "pending_delivery_ambiguous";
-	}
-	return result;
+	return refChatController->GetDeliveryExecution().PendingRetry(GetDeliveryScope());
 }
 
 Dictionary AIChatDock::_run_delivery_retry(const Dictionary &p_args) {
-	Dictionary result;
-	result["ok"] = false;
-	String error = _delivery_retry_blocked_reason();
-	if (!error.is_empty()) {
-		result["error"] = error;
+	Dictionary mapScope = GetDeliveryScope();
+	mapScope["retry_blocked_reason"] = _delivery_retry_blocked_reason();
+	Dictionary result = refChatController->GetDeliveryExecution().PrepareRetry(p_args, mapScope);
+	if (!bool(result.get("ok", false))) {
 		return result;
 	}
-	const Dictionary selected = _pending_delivery_retry();
-	if (!bool(selected.get("ok", false))) {
-		return selected;
-	}
-	uint8_t nonce[16];
-	if (CryptoCore::generate_random(nonce, sizeof(nonce)) != OK) {
-		result["error"] = "delivery_retry_nonce_unavailable";
-		return result;
-	}
-	const Dictionary binding = snapshot_state["engine_candidate"];
-	Dictionary recorded = JSON::parse_string(FileAccess::get_file_as_string(binding.get("binding_path", "")));
-	// Preserve the recorded integer identities independently of Variant JSON floats.
-	recorded["version"] = int64_t(recorded.get("version", 0));
-	recorded["issue"] = int64_t(recorded.get("issue", 0));
-	recorded["binding_path"] = binding.get("binding_path", "");
-	_clear_delivery_files();
-	delivery_receipt.clear();
-	pending_delivery_request.clear();
-	pending_delivery_request["schema_version"] = 1;
-	pending_delivery_request["kind"] = "native_delivery_retry";
-	pending_delivery_request["engine_pid"] = int64_t(OS::get_singleton()->get_process_id());
-	pending_delivery_request["host_instance_id"] = delivery_retry_instance;
-	pending_delivery_request["owner"] = conversation_id;
-	pending_delivery_request["snapshot_id"] = snapshot_id;
-	pending_delivery_request["generation"] = int64_t(session_generation);
-	pending_delivery_request["nonce"] = String::hex_encode_buffer(nonce, sizeof(nonce));
-	pending_delivery_request["source_root"] = _candidate_root();
-	pending_delivery_request["binding"] = recorded;
-	for (const String &key : { String("pr"), String("expected_candidate"), String("expected_signed_commit"), String("original_journal_sha256") }) {
-		pending_delivery_request[key] = selected[key];
-	}
-	pending_delivery_request["host_action_request_id"] = p_args["host_action_request_id"];
-	delivery_retry_route["request_id"] = p_args["host_action_request_id"];
 	pending_action = "complete_delivery";
 	process_timeout_seconds = 600;
 	queue_paused = true;

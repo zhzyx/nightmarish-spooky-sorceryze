@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "request_id": "ai-unified-framework-20261114",
+  "issue": 1086,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1086",
+  "status": "partial_checkpoint",
+  "user_instruction": "Wrap up existing work; no new implementation scope.",
+  "base": "7acdf07ca4c89251527a392c754a536af2094b6a",
+  "native": {
+    "exit_code": 0,
+    "binary_sha256": "85e8c0b82fb7e5141370e9f56c753972f95201b24b498812ae83b1d4ac4b73be",
+    "passed": true,
+    "command": [
+      "isolated-editor",
+      "--headless",
+      "--test",
+      "--test-case=*[AIWorkflowRuntime]*,*[AIChatController]*,*[AIChatEngineExecution]*,*[AIChatDeliveryExecution]*"
+    ]
+  },
+  "controllers": [
+    {
+      "workflow": "tianshu",
+      "passed": true,
+      "exit_code": 0,
+      "result": [
+        {
+          "checks": 27,
+          "failures": [],
+          "native_runtime": true
+        }
+      ],
+      "binary_sha256": "85e8c0b82fb7e5141370e9f56c753972f95201b24b498812ae83b1d4ac4b73be",
+      "source_sha256": "5f3b9eb32d8f24acd4fdbc0892ab10488e7160eebfa7baebf901dc266a47ec04",
+      "controller_sha256": "cd9cdf6eb51edcc5b5e6b2da6ed55f26b54ff0ef95c4cd69867f4edd6426b622"
+    },
+    {
+      "workflow": "maliang",
+      "passed": true,
+      "exit_code": 0,
+      "result": [
+        {
+          "checks": 8,
+          "failures": [],
+          "native_runtime": true
+        }
+      ],
+      "binary_sha256": "85e8c0b82fb7e5141370e9f56c753972f95201b24b498812ae83b1d4ac4b73be",
+      "source_sha256": "455b37a9dfffe3d17fa8d00cf3cac0548bca3f8bd67652444d0d8bb30298105d",
+      "controller_sha256": "c87f8e8090f9b6b1fc65ff4b81b57f84a0e61969c735eaa51438fd5ceee85898"
+    }
+  ],
+  "remaining": [
+    "AIChat hidden Dock and remaining View-owned background lifecycle",
+    "Independent review of complete candidate and repaired Maliang",
+    "Full compatibility regressions and Windows/MSVC exact CI",
+    "main delivery and whole Issue acceptance"
+  ],
+  "not_claimed": [
+    "Whole 1086 completion",
+    "Provider or production validation",
+    "Active editor installation change"
+  ],
+  "cleanup": {
+    "migration_scripts_removed": 31,
+    "crashed_delivery_fixture_removed": true,
+    "retained": "Uncommitted/incomplete integration worktree and source-bound evidence; other tasks resources preserved."
+  }
+}

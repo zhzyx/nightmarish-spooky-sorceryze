@@ -127,32 +127,15 @@ bool AIChatDock::_recover_active_provenance(String &r_error, const Dictionary &p
 
 bool AIChatDock::_validate_engine_candidate(String &r_error, const String &p_review_owner) const {
 	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
-	if (candidate.is_empty()) {
-		// Non-engine hosts and isolated mock workspaces keep their project behavior.
-		if (!FileAccess::exists(_workflow_root().path_join("SConstruct"))) {
-			return true;
-		}
-		r_error = "candidate_binding_missing: no verified work-order source candidate is active.";
-		return false;
-	}
-	const Dictionary recorded = JSON::parse_string(FileAccess::get_file_as_string(candidate.get("binding_path", "")));
-	for (const String &field : { String("source_root"), String("branch"), String("base_sha"), String("issue"), String("request_id"), String("owner"), String("common_dir") }) {
-		if (!candidate.has(field) || recorded.get(field, Variant()) != candidate[field]) {
-			r_error = "candidate_binding_changed: source ownership must be revalidated before execution.";
-			return false;
-		}
-	}
-	if (String(candidate["owner"]) != (p_review_owner.is_empty() ? conversation_id : p_review_owner) || int64_t(candidate["issue"]) != String(_work_order_binding("issue_number")).to_int() || candidate["request_id"] != _work_order_binding("request_id")) {
-		r_error = "candidate_issue_mismatch: active Issue or conversation changed.";
-		return false;
-	}
-	// Only a live host-created read-only acceptance context may validate a game
-	// worktree without the engine marker. Saved/model-supplied candidate fields
-	// alone never relax engine self-iteration validation.
 	const bool ordinary_review = _is_review_child() && acceptance_reviews.has(active_agent) &&
 			bool(acceptance_reviews[active_agent].get("ordinary_game_candidate", false)) &&
 			acceptance_reviews[active_agent].get("engine_candidate", Variant()) == Variant(candidate);
-	return AIChatHostRuntime::validate_candidate_checkout(candidate, r_error, !ordinary_review);
+	Dictionary mapExpected;
+	mapExpected["workspace"] = _workflow_root();
+	mapExpected["owner"] = p_review_owner.is_empty() ? conversation_id : p_review_owner;
+	mapExpected["issue"] = String(_work_order_binding("issue_number")).to_int();
+	mapExpected["request_id"] = _work_order_binding("request_id");
+	return refChatController->ValidateCandidate(mapExpected, !ordinary_review, r_error);
 }
 
 bool AIChatDock::_ensure_engine_candidate(const Dictionary &p_runtime) {
@@ -180,19 +163,19 @@ bool AIChatDock::_ensure_engine_candidate(const Dictionary &p_runtime) {
 		_set_busy(false);
 		return false;
 	}
-	candidate_result_path = EditorPaths::get_singleton()->get_cache_dir().path_join("engine-candidate-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()) + ".json");
-	List<String> args;
-	for (const String &arg : { worker, String("--workspace"), _workflow_root(), String("--issue"), _work_order_binding("issue_number"), String("--request-id"), _work_order_binding("request_id"), String("--owner"), conversation_id, String("--launch-executable"), OS::get_singleton()->get_executable_path(), String("--out"), candidate_result_path }) {
-		args.push_back(arg);
-	}
-	ProcessID pid;
-	if (OS::get_singleton()->create_process(python, args, &pid) != OK) {
+	Dictionary mapHost;
+	mapHost["cache"] = EditorPaths::get_singleton()->get_cache_dir();
+	mapHost["worker"] = worker;
+	mapHost["python"] = python;
+	mapHost["workspace"] = _workflow_root();
+	mapHost["issue"] = _work_order_binding("issue_number");
+	mapHost["request_id"] = _work_order_binding("request_id");
+	mapHost["launch_executable"] = OS::get_singleton()->get_executable_path();
+	if (refChatController->StartCandidate(mapHost) != OK) {
 		_append(TTR("Error"), U"无法启动隔离候选准备，尚未执行生产修改。");
 		_set_busy(false);
 		return false;
 	}
-	candidate_pid = pid;
-	candidate_generation = session_generation;
 	if (!candidate_timer) {
 		candidate_timer = memnew(Timer);
 		candidate_timer->set_wait_time(0.1);
@@ -205,14 +188,14 @@ bool AIChatDock::_ensure_engine_candidate(const Dictionary &p_runtime) {
 }
 
 void AIChatDock::_poll_engine_candidate() {
-	if (candidate_pid < 0 || OS::get_singleton()->is_process_running(candidate_pid)) {
+	Dictionary mapCompletion;
+	if (!refChatController->PollCandidate(mapCompletion)) {
 		return;
 	}
-	const int exit_code = OS::get_singleton()->get_process_exit_code(candidate_pid);
-	candidate_pid = -1;
 	candidate_timer->stop();
-	const Variant parsed = JSON::parse_string(FileAccess::get_file_as_string(candidate_result_path));
-	if (!busy || candidate_generation != session_generation) {
+	const int exit_code = mapCompletion["exit_code"];
+	const Variant parsed = mapCompletion["result"];
+	if (!bool(mapCompletion["current"])) {
 		return;
 	}
 	if (exit_code != 0 || parsed.get_type() != Variant::DICTIONARY || !bool(Dictionary(parsed).get("ok", false))) {
@@ -234,10 +217,7 @@ void AIChatDock::_poll_engine_candidate() {
 }
 
 void AIChatDock::_cancel_engine_candidate() {
-	if (candidate_pid >= 0) {
-		OS::get_singleton()->kill(candidate_pid);
-		candidate_pid = -1;
-	}
+	refChatController->CancelCandidate();
 	if (candidate_timer) {
 		candidate_timer->stop();
 	}

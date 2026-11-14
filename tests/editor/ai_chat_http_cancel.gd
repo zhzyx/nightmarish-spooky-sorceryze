@@ -95,6 +95,11 @@ func _run():
 		"max_frame_gap_seconds": max_gap_usec / 1000000.0,
 		"stop_disabled_after": stop.disabled,
 		"server_released_at_stop_return": FileAccess.file_exists("res://server-released")}
+	var cancelled_snapshot: Dictionary = dock.get_chat_run_snapshot().get("snapshot", {})
+	if mode != "models":
+		report["controller_cancelled"] = cancelled_snapshot.get("state", "") == "cancelled"
+		var reread: Dictionary = dock.get_chat_run_snapshot().get("snapshot", {})
+		report["controller_query_no_resubmit"] = reread.get("run_id", "") == cancelled_snapshot.get("run_id", "") and reread.get("sequence", 0) == cancelled_snapshot.get("sequence", -1)
 	# A new request must work while the cancelled server request is still delayed.
 	max_gap_usec = 0
 	last_frame = Time.get_ticks_usec()
@@ -105,6 +110,10 @@ func _run():
 	while not "RECOVERY_OK" in _text() and Time.get_ticks_msec() < deadline:
 		await process_frame
 	report["recovery_received"] = "RECOVERY_OK" in _text()
+	var recovery_snapshot: Dictionary = dock.get_chat_run_snapshot().get("snapshot", {})
+	report["controller_recovery_succeeded"] = recovery_snapshot.get("state", "") == "succeeded"
+	if mode != "models":
+		report["controller_new_run_identity"] = recovery_snapshot.get("run_id", "") != cancelled_snapshot.get("run_id", "")
 	report["server_released_at_recovery"] = FileAccess.file_exists("res://server-released")
 	if mode == "models":
 		while not stop.disabled and Time.get_ticks_msec() < deadline:
@@ -134,4 +143,7 @@ func _run():
 		report["late_models_rejected"] = "recovered-model" in final_models and not "stale-model" in final_models and report["final_model_selection"] != "stale-model"
 	FileAccess.open("res://cancel-report.json", FileAccess.WRITE).store_string(JSON.stringify(report))
 	print("HTTP_CANCEL_REPORT=", JSON.stringify(report))
-	quit(0)
+	var controller_ok: bool = report.get("controller_recovery_succeeded", false)
+	if mode != "models":
+		controller_ok = controller_ok and report.get("controller_cancelled", false) and report.get("controller_query_no_resubmit", false) and report.get("controller_new_run_identity", false)
+	quit(0 if controller_ok else 2)

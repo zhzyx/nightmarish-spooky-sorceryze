@@ -185,6 +185,19 @@ jobs:
         timeout-minutes: 5
         run: python tests/editor/run_reasoning_sessions.py --godot ${{ matrix.bin }} --node (Get-Command node).Source --report reasoning-report/native.json
 
+      - name: Native AI workflow Controller contracts
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor'
+        timeout-minutes: 5
+        run: python -X utf8 tests/editor/run_ai_workflow_controllers.py --godot ${{ matrix.bin }} --out ai-workflow-report
+
+      - name: Upload AI workflow Controller reports
+        if: always() && matrix.compiler == 'msvc' && matrix.target == 'editor'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ai-workflow-controller-contracts
+          path: ai-workflow-report/*
+          if-no-files-found: warn
+
       - name: Upload reasoning session report
         if: always() && matrix.compiler == 'msvc' && matrix.target == 'editor'
         uses: actions/upload-artifact@v7

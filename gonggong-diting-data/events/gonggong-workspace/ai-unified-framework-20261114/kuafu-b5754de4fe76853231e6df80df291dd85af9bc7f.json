@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b5754de4fe76853231e6df80df291dd85af9bc7f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-unified-framework-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1086",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c5788b44166505db9910174e6d67f539ecbcccc72c45c9b5444b308d7d8d6806",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1086",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1219",
+    "action": "validation",
+    "detection_head": "7acdf07ca4c89251527a392c754a536af2094b6a",
+    "context_sha256": "6abed34a354bff843e0d4ea5f6beda103c7a8f13993172495ca51a2f21493b60",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-integration",
+    "authority_ref": "codex-user-explicit-1086-handoff-20261114",
+    "evidence": "local-1086-native-build-three-diagnostics",
+    "diagnosis": "当前未交付候选测试引用不存在的头文件及临时Dictionary表达式解析错误，Controller缺少callable_mp直接包含；已修复，实际原生重编进行中。首次命令未沿用本机Metal构建选项，已恢复vulkan=no/accesskit=no；不表示Vulkan已验证。",
+    "next_action": "完成本候选原生构建、headless及独立核查，随1086精确CI和main验证，不把局部编译修复算整体验收。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T02:22:12.654121+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": "本机Metal编译及天枢Controller验证可继续。"
+  },
+  "occurred_at": "2026-11-14T02:29:39.494458+00:00",
+  "sha256": "f7f996df4069c7ba4eec8fff94910605370d3d3e3ca8fda4c61a6b75f788a263"
+}

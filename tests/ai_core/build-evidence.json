@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "issue": 1086,
+  "recorded_at": "2026-11-14T03:27:16.981406+00:00",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "input_blobs": {
+    "ai_core/WorkflowRuntime.h": "00e698abec4d46262026c4def06bfb8d330915cb",
+    "ai_core/WorkflowRuntime.cpp": "d2a39bcfa437035fab9a175b499cd4677d30af87",
+    "ai_core/README.md": "a88bcdbbdd2680e86a2730a1656add13ec4b0b91",
+    "editor/AIWorkflowRuntime.h": "1fa868c976e00363ffe2e9ebbbfe05ca3ce6b5e2",
+    "editor/AIWorkflowRuntime.cpp": "0811dc5d13922edafc1cbe51e83fc429551312ea",
+    "tests/ai_core/WorkflowRuntimeTest.cc": "0948a3139adb53c487da82c4b5f9d1a683c1364b",
+    "tests/editor/TestAIWorkflowRuntime.cpp": "209c323f87d27d7f8b843ef4344332f29eaf908b",
+    "editor/SCsub": "88f17932c4e9413e878cae5ef34a7e6906ec8c43",
+    "editor/register_editor_types.cpp": "5f782bb658c0cbc70f857e41cc5f3caf19a458b3"
+  },
+  "checks": {
+    "standalone_cpp17": {
+      "command": "clang++ -std=c++17 -fno-exceptions -fno-rtti -Wall -Wextra -Werror -pthread -I. ai_core/WorkflowRuntime.cpp tests/ai_core/WorkflowRuntimeTest.cc -o TASK_OUTPUT/WorkflowRuntimeTest; TASK_OUTPUT/WorkflowRuntimeTest",
+      "observed": "PASS: identity, idempotency, isolation, state transitions, cancellation, late events, deduplication, frozen snapshots, recovery boundary, 12-thread linearization",
+      "passed": true
+    },
+    "native_invalidation": {
+      "command": "scons platform=macos target=editor arch=arm64 dev_build=yes tests=yes debug_symbols=no vulkan=no accesskit=no -j8; python3 tests/editor/run_ai_workflow_controllers.py --godot bin/godot.macos.editor.dev.arm64 --out TASK_OUTPUT/native-contracts",
+      "observed": "Changing public model metadata to support image_model caused SCons to compile ai_core/WorkflowRuntime.cpp and TestAIWorkflowRuntime.cpp, rebuild editor archive and relink. Prior native binary rejected the auxiliary model as private_metadata; rebuilt native editor accepted it and the Controller started. Real editor-plugin fixtures passed 26 Tianshu and 8 Maliang assertions with native_runtime=true. This validates macOS SCons dependency invalidation; Windows artifact cache is not claimed.",
+      "passed": true,
+      "before_executable": "aa24a0ae492cc2af1967b9def3aca0d7dfa8110e5b3f0d383177c56ce902b759",
+      "after_executable": "a5be4d64197ecefb4ae665b192b7628fff390a85d6f58956cb639d7f998cdc10"
+    }
+  },
+  "not_executed": [
+    "Windows/MSVC exact candidate",
+    "Final AIChat background owner integration and whole 1086 acceptance",
+    "Provider/production calls"
+  ],
+  "cleanup": {
+    "retained": [
+      "Source-bound native and standalone validation logs; private review binary; active integration worktree"
+    ],
+    "reason": "User requested wrap-up without further expansion. Incomplete integration worktree and source-bound evidence retained for continuation."
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fa0be7fdbc43e7ce277056147b131105bb29b17d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-controller-1086-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1212",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "81d9c0ee1e8c809eec0d722a441de87691c3490dd7a1dff1774600efac7d6057",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1212",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1220",
+    "action": "validation",
+    "detection_head": "7acdf07ca4c89251527a392c754a536af2094b6a",
+    "context_sha256": "752223cf8753da4789f18d775d741db72e3771e28d7dac1926fbcaeb1eede213",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-integration",
+    "authority_ref": "codex-user-explicit-1086-handoff-20261114",
+    "evidence": "independent-review-1212-four-confirmed-findings",
+    "diagnosis": "真实公共核心拒绝领域事件与image_model编码；缺少取消代次隔离及未知传输结果映射。原41项夹具遗漏；独立审查已用原生及真实Executor复现。已改合法事件映射、独立公开image_model字段、运行代次及reconciling结果处理；原41项和原反例根复验通过，原生复验进行中。",
+    "next_action": "完成实际原生四反例并独立复验，纳入1086完整候选CI/main，保留原审查及未知供应商范围。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T02:46:23.568015+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": "当前隔离候选修复与原生测试继续，无需新用户授权。"
+  },
+  "occurred_at": "2026-11-14T02:50:06.172113+00:00",
+  "sha256": "8a8d2dd2df96f33998725d7f21afb4a029aa15a9720279496773e8e0ac4c65cb"
+}

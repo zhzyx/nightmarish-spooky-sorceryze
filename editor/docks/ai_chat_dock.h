@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "AIChatController.h"
 #include "core/io/file_access.h"
 #include "core/os/thread.h"
 #include "core/templates/safe_refcount.h"
@@ -72,40 +73,41 @@ class TextureRect;
 
 class AIChatDock : public EditorDock {
 	GDCLASS(AIChatDock, EditorDock);
+	Ref<AIChatController> refChatController = memnew(AIChatController);
 	Timer *gonggong_timer = nullptr;
-	int64_t gonggong_pid = -1;
-	uint64_t gonggong_generation = 0;
-	bool gonggong_resume = false;
-	String gonggong_context;
-	String gonggong_governance_digest;
-	String gonggong_input_path;
-	String gonggong_output_path;
-	Dictionary gonggong_reporting;
-	String gonggong_report_root;
-	String gonggong_report_python;
-	Dictionary gonggong_running_steps;
+	int64_t &gonggong_pid = refChatController->GetSession().nGonggongPid;
+	uint64_t &gonggong_generation = refChatController->GetSession().nGonggongGeneration;
+	bool &gonggong_resume = refChatController->GetSession().bGonggongResume;
+	String &gonggong_context = refChatController->GetSession().strGonggongContext;
+	String &gonggong_governance_digest = refChatController->GetSession().strGonggongGovernanceDigest;
+	String &gonggong_input_path = refChatController->GetSession().strGonggongInputPath;
+	String &gonggong_output_path = refChatController->GetSession().strGonggongOutputPath;
+	Dictionary &gonggong_reporting = refChatController->GetSession().mapGonggongReporting;
+	String &gonggong_report_root = refChatController->GetSession().strGonggongReportRoot;
+	String &gonggong_report_python = refChatController->GetSession().strGonggongReportPython;
+	Dictionary &gonggong_running_steps = refChatController->GetSession().mapGonggongRunningSteps;
 	Timer *gonggong_receipt_timer = nullptr;
-	int64_t gonggong_receipt_pid = -1;
-	bool bGongGongReceiptExited = false;
-	int iGongGongReceiptExitCode = -1;
-	uint32_t uGongGongReceiptReadAttempts = 0;
-	uint64_t uGongGongReceiptReadDeadline = 0;
-	String gonggong_receipt_path;
-	uint64_t gonggong_receipt_generation = 0;
-	String gonggong_recovered_result;
-	String gonggong_recovery_ack_token;
-	Dictionary command_recovery_reporting;
-	String command_offer_id;
-	String command_offer_path;
-	bool restoring_command_offer = false;
+	int64_t &gonggong_receipt_pid = refChatController->GetSession().nGonggongReceiptPid;
+	bool &bGongGongReceiptExited = refChatController->GetSession().bGongGongReceiptExited;
+	int &iGongGongReceiptExitCode = refChatController->GetSession().nGongGongReceiptExitCode;
+	uint32_t &uGongGongReceiptReadAttempts = refChatController->GetSession().nGongGongReceiptReadAttempts;
+	uint64_t &uGongGongReceiptReadDeadline = refChatController->GetSession().nGongGongReceiptReadDeadline;
+	String &gonggong_receipt_path = refChatController->GetSession().strGonggongReceiptPath;
+	uint64_t &gonggong_receipt_generation = refChatController->GetSession().nGonggongReceiptGeneration;
+	String &gonggong_recovered_result = refChatController->GetSession().strGonggongRecoveredResult;
+	String &gonggong_recovery_ack_token = refChatController->GetSession().strGonggongRecoveryAckToken;
+	Dictionary &command_recovery_reporting = refChatController->GetSession().mapCommandRecoveryReporting;
+	String &command_offer_id = refChatController->GetSession().strCommandOfferId;
+	String &command_offer_path = refChatController->GetSession().strCommandOfferPath;
+	bool &restoring_command_offer = refChatController->GetSession().bRestoringCommandOffer;
 	bool _consume_command_offer();
-	bool gonggong_recovery_can_send = false;
+	bool &gonggong_recovery_can_send = refChatController->GetSession().bGonggongRecoveryCanSend;
 	bool _record_gonggong(const String &p_kind, const String &p_phase, const String &p_status);
-	Callable gonggong_receipt_continuation;
-	uint64_t gonggong_continuation_generation = 0;
-	Array gonggong_receipt_queue;
-	String gonggong_receipt_root;
-	Dictionary gonggong_receipt_scope;
+	Callable &gonggong_receipt_continuation = refChatController->GetSession().callGonggongReceiptContinuation;
+	uint64_t &gonggong_continuation_generation = refChatController->GetSession().nGonggongContinuationGeneration;
+	Array &gonggong_receipt_queue = refChatController->GetSession().arrGonggongReceiptQueue;
+	String &gonggong_receipt_root = refChatController->GetSession().strGonggongReceiptRoot;
+	Dictionary &gonggong_receipt_scope = refChatController->GetSession().mapGonggongReceiptScope;
 	void _flush_gonggong(const Callable &p_continuation);
 	void _start_gonggong_flush();
 	void _send_completion_after_receipt();
@@ -184,12 +186,12 @@ class AIChatDock : public EditorDock {
 	AcceptDialog *engine_log_dialog = nullptr;
 	TextEdit *engine_log_text = nullptr;
 	Timer *engine_build_timer = nullptr;
-	int64_t engine_build_pid = -1;
-	uint64_t engine_build_started = 0;
-	String engine_build_root;
-	int64_t candidate_pid = -1;
-	uint64_t candidate_generation = 0;
-	String candidate_result_path;
+	int64_t &engine_build_pid = refChatController->GetEngineExecution().GetState().nBuildPid;
+	uint64_t &engine_build_started = refChatController->GetEngineExecution().GetState().nBuildStarted;
+	String &engine_build_root = refChatController->GetEngineExecution().GetState().strBuildRoot;
+	int64_t &candidate_pid = refChatController->GetSession().nCandidatePid;
+	uint64_t &candidate_generation = refChatController->GetSession().nCandidateGeneration;
+	String &candidate_result_path = refChatController->GetSession().strCandidateResultPath;
 	Timer *candidate_timer = nullptr;
 	bool _ensure_engine_candidate(const Dictionary &p_runtime = Dictionary());
 	void _poll_engine_candidate();
@@ -200,25 +202,26 @@ class AIChatDock : public EditorDock {
 	bool _recover_active_provenance(String &r_error, const Dictionary &p_runtime = Dictionary()) const;
 	Dictionary GetGameReceiptGuard(String &out_strError, const Dictionary &mapRuntime, bool bPrepare, const Dictionary &mapReporting = Dictionary()) const;
 
-	String engine_status_path;
-	String engine_log_path;
-	String engine_cancel_path;
-	String engine_updated_executable;
-	String engine_dialog_action;
-	bool engine_restart_approved = false;
-	bool engine_restart_requested = false;
+	String &engine_status_path = refChatController->GetEngineExecution().GetState().strStatusPath;
+	String &engine_log_path = refChatController->GetEngineExecution().GetState().strLogPath;
+	String &engine_cancel_path = refChatController->GetEngineExecution().GetState().strCancelPath;
+	String &engine_updated_executable = refChatController->GetEngineExecution().GetState().strUpdatedExecutable;
+	String &engine_dialog_action = refChatController->GetEngineExecution().GetState().strDialogAction;
+	bool &engine_restart_approved = refChatController->GetEngineExecution().GetState().bRestartApproved;
+	bool &engine_restart_requested = refChatController->GetEngineExecution().GetState().bRestartRequested;
 	// A rebuild is modeled as one tool call that spans the process switch: it is
 	// issued here and its result is reported by the newly built editor.
-	String engine_tool_call_id;
-	String engine_tool_name;
-	Dictionary engine_tool_arguments;
-	bool engine_tool_wants_restart = false;
-	String engine_restart_target;
-	String engine_restart_token;
-	int engine_restart_attempt = 0;
-	bool engine_restart_armed = false;
-	uint64_t engine_restart_armed_msec = 0;
+	String &engine_tool_call_id = refChatController->GetEngineExecution().GetState().strToolCallId;
+	String &engine_tool_name = refChatController->GetEngineExecution().GetState().strToolName;
+	Dictionary &engine_tool_arguments = refChatController->GetEngineExecution().GetState().mapToolArguments;
+	bool &engine_tool_wants_restart = refChatController->GetEngineExecution().GetState().bToolWantsRestart;
+	String &engine_restart_target = refChatController->GetEngineExecution().GetState().strRestartTarget;
+	String &engine_restart_token = refChatController->GetEngineExecution().GetState().strRestartToken;
+	int &engine_restart_attempt = refChatController->GetEngineExecution().GetState().nRestartAttempt;
+	bool &engine_restart_armed = refChatController->GetEngineExecution().GetState().bRestartArmed;
+	uint64_t &engine_restart_armed_msec = refChatController->GetEngineExecution().GetState().nRestartArmedMsec;
 	void _build_engine();
+	Dictionary GetEngineHostSnapshot() const;
 	void _start_engine_build();
 	void _poll_engine_build();
 	void _cancel_engine_build();
@@ -274,7 +277,7 @@ class AIChatDock : public EditorDock {
 	String strCredentialAudience;
 	String strCredentialHash;
 	String strCredentialSource;
-	String strRequestCredentialAudience;
+	String &strRequestCredentialAudience = refChatController->GetSession().strRequestCredentialAudience;
 	void BindApiCredential(const String &strSecret, const String &strSource, const String &strAudience);
 	void ApiCredentialEdited(const String &strText);
 	void InvalidateApiCredential();
@@ -282,9 +285,9 @@ class AIChatDock : public EditorDock {
 	CheckBox *allow_tools = nullptr;
 	CheckBox *task_native_authorization = nullptr;
 	Label *task_native_scope = nullptr;
-	AIChatTaskAuthorization task_native_grant;
-	uint64_t task_native_epoch = 0;
-	uint64_t task_native_request_epoch = 0;
+	AIChatTaskAuthorization &task_native_grant = refChatController->GetSession().stTaskNativeGrant;
+	uint64_t &task_native_epoch = refChatController->GetSession().nTaskNativeEpoch;
+	uint64_t &task_native_request_epoch = refChatController->GetSession().nTaskNativeRequestEpoch;
 	Dictionary _native_task_scope() const;
 	void _native_task_toggled(bool p_enabled);
 	void _revoke_native_task();
@@ -299,15 +302,15 @@ class AIChatDock : public EditorDock {
 	VBoxContainer *active_reply = nullptr;
 	RichTextLabel *work_text = nullptr;
 	Button *work_toggle = nullptr;
-	uint64_t turn_started = 0;
-	int turn_steps = 0;
+	uint64_t &turn_started = refChatController->GetSession().nTurnStarted;
+	int &turn_steps = refChatController->GetSession().nTurnSteps;
 	TextEdit *input = nullptr;
 	CheckBox *consultation_only = nullptr;
-	bool consultation_turn = false;
+	bool &consultation_turn = refChatController->GetSession().bConsultationTurn;
 	Button *send_button = nullptr;
 	Button *stop_button = nullptr;
-	String snapshot_id;
-	Dictionary snapshot_state;
+	String &snapshot_id = refChatController->GetSession().strSnapshotId;
+	Dictionary &snapshot_state = refChatController->GetSession().mapSnapshotState;
 	String restoring_snapshot_id;
 	Dictionary restoring_snapshot;
 	bool snapshot_restoring = false;
@@ -332,7 +335,6 @@ class AIChatDock : public EditorDock {
 	void _show_snapshot_history();
 	void _jump_to_snapshot(const String &p_id);
 	String _snapshot_path(const String &p_id) const;
-	bool _prepare_snapshot_write(String &r_error);
 	void _add_snapshot_button(Control *p_parent, const String &p_id);
 	void _preview_snapshot_restore(const String &p_id);
 	void _confirm_snapshot_restore();
@@ -345,9 +347,9 @@ class AIChatDock : public EditorDock {
 	AcceptDialog *image_dialog = nullptr;
 	TextureRect *image_preview = nullptr;
 	Array draft_images;
-	Array queued_messages;
-	bool queue_paused = false;
-	bool turn_completed = false;
+	Array &queued_messages = refChatController->GetSession().arrQueuedMessages;
+	bool &queue_paused = refChatController->GetSession().bQueuePaused;
+	bool &turn_completed = refChatController->GetSession().bTurnCompleted;
 	VBoxContainer *message_queue = nullptr;
 	Label *queue_status = nullptr;
 	VBoxContainer *queue_list = nullptr;
@@ -357,7 +359,6 @@ class AIChatDock : public EditorDock {
 	void _resume_message_queue();
 	void _dispatch_queued_message(int p_agent);
 	bool _start_message(const Dictionary &p_message, const Dictionary &p_daqian_selection = Dictionary());
-	HTTPRequest *request = nullptr;
 	ConfirmationDialog *confirmation = nullptr;
 	ObjectID confirmation_id;
 	TextEdit *preview = nullptr;
@@ -386,7 +387,7 @@ class AIChatDock : public EditorDock {
 	VBoxContainer *codex_model_settings = nullptr;
 	OptionButton *model_picker = nullptr;
 	OptionButton *reasoning_picker = nullptr;
-	Dictionary reasoning_preferences;
+	Dictionary &reasoning_preferences = refChatController->GetSession().mapReasoningPreferences;
 	void _sync_reasoning_picker();
 	void _reasoning_selected(int p_index);
 	String _reasoning_effort() const;
@@ -442,8 +443,8 @@ class AIChatDock : public EditorDock {
 	void _model_selected(int p_index);
 	void _model_edited(const String &p_text);
 
-	Array messages;
-	Array transcript;
+	Array &messages = refChatController->GetSession().arrMessages;
+	Array &transcript = refChatController->GetSession().arrTranscript;
 	Timer *history_timer = nullptr;
 	bool history_loaded = false;
 	bool history_restoring = false;
@@ -469,7 +470,7 @@ class AIChatDock : public EditorDock {
 	Timer *history_poll_timer = nullptr;
 	uint64_t history_save_count = 0;
 
-	String conversation_id;
+	String &conversation_id = refChatController->GetSession().strConversationId;
 	String _agent_title(int p_agent) const;
 
 	String _history_path() const;
@@ -493,26 +494,24 @@ class AIChatDock : public EditorDock {
 	void _replay_transcript(const Array &p_transcript);
 	void _cleanup_completed_turn();
 
-	Array tool_calls;
-	int tool_index = 0;
-	int read_batch_count = 0;
-	struct FileReadResult {
-		String content;
-		bool success;
-	};
-	Vector<FileReadResult> read_batch_results;
-	int tool_rounds = 0;
-	uint64_t request_generation = 0;
-	uint64_t session_generation = 0;
-	bool busy = false;
-	String request_key;
-	String pending_path;
-	String pending_before;
-	String pending_after;
+	Array &tool_calls = refChatController->GetSession().arrToolCalls;
+	int &tool_index = refChatController->GetSession().nToolIndex;
+	int &read_batch_count = refChatController->GetSession().nReadBatchCount;
+	using FileReadResult = AIChatController::ReadResult;
+	Vector<FileReadResult> &read_batch_results = refChatController->GetSession().arrReadBatchResults;
+	int &tool_rounds = refChatController->GetSession().nToolRounds;
+	uint64_t &request_generation = refChatController->GetSession().nRequestGeneration;
+	uint64_t &session_generation = refChatController->GetSession().nSessionGeneration;
+	bool &busy = refChatController->GetSession().bBusy;
+	bool bDisplayedBusy = false;
+	String &request_key = refChatController->GetSession().strRequestKey;
+	String &pending_path = refChatController->GetSession().strPendingPath;
+	String &pending_before = refChatController->GetSession().strPendingBefore;
+	String &pending_after = refChatController->GetSession().strPendingAfter;
 	ObjectID editor_control_id;
 	AIChatEditorControl *_get_editor_control();
-	Dictionary pending_editor_action;
-	Dictionary pending_external_editor_message;
+	Dictionary &pending_editor_action = refChatController->GetSession().mapPendingEditorAction;
+	Dictionary &pending_external_editor_message = refChatController->GetSession().mapPendingExternalEditorMessage;
 	Dictionary _editor_bridge_request(const Dictionary &p_envelope);
 	Dictionary _chat_instruction_context() const;
 	String _chat_instruction_blocked_reason(bool p_force_consultation = false) const;
@@ -522,66 +521,68 @@ class AIChatDock : public EditorDock {
 	Dictionary _chat_extended_host_action(const Dictionary &p_args, bool p_confirmed);
 	void _finish_external_editor_request();
 	void _cancel_external_editor_request(const String &p_reason);
-	String pending_action;
-	Dictionary pending_delivery_request;
-	Dictionary delivery_receipt;
-	Dictionary delivery_retry_route;
-	String delivery_retry_instance;
+	String &pending_action = refChatController->GetSession().strPendingAction;
+	Dictionary &pending_delivery_request = refChatController->GetDeliveryExecution().GetState().mapPendingRequest;
+	Dictionary &delivery_receipt = refChatController->GetDeliveryExecution().GetState().mapReceipt;
+	Dictionary &delivery_retry_route = refChatController->GetDeliveryExecution().GetState().mapRetryRoute;
+	String &delivery_retry_instance = refChatController->GetDeliveryExecution().GetState().strRetryInstance;
 	String _delivery_retry_blocked_reason() const;
 	Dictionary _pending_delivery_retry() const;
 	Dictionary _run_delivery_retry(const Dictionary &p_args);
 	void _begin_delivery_retry();
 	void _finish_delivery_retry(const String &p_process_result);
-	String delivery_request_path;
-	String delivery_result_path;
+	String &delivery_request_path = refChatController->GetDeliveryExecution().GetState().strRequestPath;
+	String &delivery_result_path = refChatController->GetDeliveryExecution().GetState().strResultPath;
+	Dictionary GetDeliveryScope() const;
 	void _run_delivery_tool(const Dictionary &p_arguments);
 	bool _delivery_process_arguments(String &r_executable, List<String> &r_arguments, const Dictionary &p_runtime);
 	void _capture_delivery_result(Dictionary &r_process_result);
 	void _finish_delivery();
 	void _clear_delivery_files();
-	String pending_command;
-	String process_guard_result_path;
-	String completed_command_receipt_path;
-	String completed_command_owner;
-	String completed_command_call;
-	String observed_command_owner;
-	String recovering_command_digest;
-	Dictionary consumed_command_by_owner;
-	String pending_cwd;
-	int process_timeout_seconds = 120;
-	bool pending_existed = false;
+	String &pending_command = refChatController->GetSession().strPendingCommand;
+	String &process_guard_result_path = refChatController->GetSession().strCommandGuardResultPath;
+	String &completed_command_receipt_path = refChatController->GetSession().strCompletedCommandReceiptPath;
+	String &completed_command_owner = refChatController->GetSession().strCompletedCommandOwner;
+	String &completed_command_call = refChatController->GetSession().strCompletedCommandCall;
+	String &observed_command_owner = refChatController->GetSession().strObservedCommandOwner;
+	String &recovering_command_digest = refChatController->GetSession().strRecoveringCommandDigest;
+	Dictionary &consumed_command_by_owner = refChatController->GetSession().mapConsumedCommandByOwner;
+	String &pending_cwd = refChatController->GetSession().strPendingCwd;
+	int &process_timeout_seconds = refChatController->GetSession().nCommandTimeoutSeconds;
+	bool &pending_existed = refChatController->GetSession().bPendingExisted;
 	// Each write is durably captured before changing the target file.
 
-	int64_t process_id = -1;
-	uint64_t process_started = 0;
-	Ref<FileAccess> process_stdout;
-	Ref<FileAccess> process_stderr;
-	Ref<RefCounted> process_command_file;
-	PackedByteArray stdout_output;
-	PackedByteArray stderr_output;
-	bool output_truncated = false;
-	bool process_timed_out = false;
+	int64_t &process_id = refChatController->GetSession().nCommandProcessId;
+	uint64_t &process_started = refChatController->GetSession().nCommandStarted;
+	Ref<FileAccess> &process_stdout = refChatController->GetSession().refCommandStdout;
+	Ref<FileAccess> &process_stderr = refChatController->GetSession().refCommandStderr;
+	Ref<RefCounted> &process_command_file = refChatController->GetSession().refCommandFile;
+	PackedByteArray &stdout_output = refChatController->GetSession().arrCommandStdout;
+	PackedByteArray &stderr_output = refChatController->GetSession().arrCommandStderr;
+	bool &output_truncated = refChatController->GetSession().bCommandTruncated;
+	bool &process_timed_out = refChatController->GetSession().bCommandTimedOut;
 
-	int64_t cli_process_id = -1;
-	uint64_t cli_started = 0;
-	uint64_t cli_last_activity = 0;
+	int64_t &cli_process_id = refChatController->GetSession().nCliProcessId;
+	uint64_t &cli_started = refChatController->GetSession().nCliStarted;
+	uint64_t &cli_last_activity = refChatController->GetSession().nCliLastActivity;
 	RichTextLabel *cli_stream_text = nullptr;
 	String cli_partial;
-	uint64_t cli_generation = 0;
-	Ref<FileAccess> cli_stdout;
-	Ref<FileAccess> cli_stderr;
-	Ref<FileAccess> cli_request_file;
-	PackedByteArray cli_output;
-	String cli_input_path;
-	bool cli_truncated = false;
-	bool cli_session = false;
-	bool cli_steering_reset = false;
-	bool cli_waiting = false;
-	String cli_configuration;
-	Vector<String> cli_sent_messages;
-	int turn_model_requests = 0;
+	uint64_t &cli_generation = refChatController->GetSession().nCliGeneration;
+	Ref<FileAccess> &cli_stdout = refChatController->GetSession().refCliStdout;
+	Ref<FileAccess> &cli_stderr = refChatController->GetSession().refCliStderr;
+	Ref<FileAccess> &cli_request_file = refChatController->GetSession().refCliRequestFile;
+	PackedByteArray &cli_output = refChatController->GetSession().arrCliOutput;
+	String &cli_input_path = refChatController->GetSession().strCliInputPath;
+	bool &cli_truncated = refChatController->GetSession().bCliTruncated;
+	bool &cli_session = refChatController->GetSession().bCliSession;
+	bool &cli_steering_reset = refChatController->GetSession().bCliSteeringReset;
+	bool &cli_waiting = refChatController->GetSession().bCliWaiting;
+	String &cli_configuration = refChatController->GetSession().strCliConfiguration;
+	Vector<String> &cli_sent_messages = refChatController->GetSession().arrCliSentMessages;
+	int &turn_model_requests = refChatController->GetSession().nTurnModelRequests;
 
 	struct AgentSession {
+		String strRunReference;
 		String conversation_id;
 		Array messages;
 		Array transcript;
@@ -626,7 +627,7 @@ class AIChatDock : public EditorDock {
 	// Periodic tasks share the single executor, but own separate Agent histories.
 	TabContainer *workspace_pages = nullptr;
 	VBoxContainer *session_navigation = nullptr;
-	AIChatResume resume_storage;
+	AIChatResume &resume_storage = refChatController->GetSession().stResumeStorage;
 	HashMap<String, AIChatDock *> issue_workers;
 	AIChatDock *selected_worker = nullptr;
 	AIChatDock *settings_owner = nullptr;
@@ -815,6 +816,8 @@ class AIChatDock : public EditorDock {
 	void _login_cli();
 	void _start_cli(const Array &p_messages);
 	void _poll_cli();
+	void PresentCliEvent(const Dictionary &mapEvent, uint64_t nGeneration);
+	void CompleteCliResponse(const PackedByteArray &arrBody, int nExitCode, bool bTimeout, bool bTruncated, uint64_t nGeneration);
 	void _cancel_cli();
 	void _append(const String &p_role, const String &p_text);
 	void _choose_images();
@@ -866,21 +869,20 @@ class AIChatDock : public EditorDock {
 	void _start_process();
 	void _cancel_process();
 	void _poll_process();
-	bool _drain_pipe(const Ref<FileAccess> &p_pipe, PackedByteArray &r_output);
 	String _redact(const String &p_text) const;
 	Dictionary _current_host_runtime_metadata() const;
 
-	Dictionary daqian_approval;
-	uint64_t daqian_approval_generation = 0;
-	bool daqian_approval_running = false;
+	Dictionary &daqian_approval = refChatController->GetSession().mapDaqianApproval;
+	uint64_t &daqian_approval_generation = refChatController->GetSession().nDaqianApprovalGeneration;
+	bool &daqian_approval_running = refChatController->GetSession().bDaqianApprovalRunning;
 	bool _offer_daqian_approval(const String &p_detail);
 	Dictionary _get_daqian_approval() const;
 	bool _confirm_daqian_approval(const String &p_token);
 	void _end_daqian_approval(const String &p_state);
 	void _daqian_tool_result(const String &p_result, bool p_file_success);
 
-	String daqian_preview_source;
-	String daqian_preview_conversation;
+	String &daqian_preview_source = refChatController->GetSession().strDaqianPreviewSource;
+	String &daqian_preview_conversation = refChatController->GetSession().strDaqianPreviewConversation;
 	String _work_order_binding(const String &p_field, int p_agent = -1) const;
 	String _get_legacy_candidate_failure(const String &p_owner, const String &p_workspace, int64_t p_issue) const;
 	Dictionary _get_daqian_models() const;
@@ -896,6 +898,7 @@ protected:
 
 public:
 	// Main-thread APIs. Snapshots are detached, contain no credentials, and never select a model.
+	Dictionary GetChatRunSnapshot() const;
 	Dictionary GetModelCatalogSnapshot() const;
 	void RefreshModelCatalog();
 	void CancelModelCatalog();

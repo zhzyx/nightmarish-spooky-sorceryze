@@ -1,0 +1,7 @@
+{
+  "placement": "native",
+  "reason": "Engine-independent C++ runtime is linked into the editor through editor/SCsub; the Godot adapter is native editor code.",
+  "host_contract": "ai_core/README.md schema_version 1; C++17 standard types, Godot main-thread Dictionary adapter, no provider or credential implementation.",
+  "rollback": "Restore the prior verified editor binary and matching source revision; retain domain journals, histories and model snapshots. In-memory runtime state is not persisted.",
+  "evidence": "tests/ai_core/build-evidence.json"
+}

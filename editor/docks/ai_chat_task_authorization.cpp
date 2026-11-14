@@ -44,8 +44,7 @@ Dictionary AIChatDock::_native_task_scope() const {
 }
 
 void AIChatDock::_revoke_native_task() {
-	task_native_epoch++;
-	task_native_grant.revoke();
+	refChatController->RevokeNativeTask();
 	if (task_native_authorization) {
 		task_native_authorization->set_pressed_no_signal(false);
 	}
@@ -60,7 +59,11 @@ void AIChatDock::_native_task_toggled(bool p_enabled) {
 		return;
 	}
 	const Dictionary scope = _native_task_scope();
-	if (!allow_tools->is_pressed() || consultation_only->is_pressed() || (busy && consultation_turn) || _is_review_child() || snapshot_state.get("read_only_review_return", false) || !task_native_grant.grant(scope)) {
+	Dictionary mapPolicy;
+	mapPolicy["tools_allowed"] = allow_tools->is_pressed();
+	mapPolicy["consultation_only"] = consultation_only->is_pressed();
+	mapPolicy["review_child"] = _is_review_child();
+	if (!refChatController->GrantNativeTask(scope, mapPolicy)) {
 		task_native_scope->set_text(U"请先绑定当前工单和需求，并在开发模式开启本地工具后授权。");
 		return;
 	}
@@ -74,9 +77,9 @@ bool AIChatDock::_native_task_allows(const String &p_tool, const Dictionary &p_a
 		_revoke_native_task();
 		return false;
 	}
-	if (p_tool != "editor_action" && p_tool != "route_engine_message") {
-		return false;
-	}
-	const Dictionary operation = p_tool == "route_engine_message" ? Dictionary(p_arguments.get("operation", Dictionary())) : p_arguments;
-	return task_native_request_epoch == task_native_epoch && allow_tools->is_pressed() && task_native_grant.allows(scope, operation.get("action", ""), consultation_turn || consultation_only->is_pressed() || _is_review_child() || bool(snapshot_state.get("read_only_review_return", false)));
+	Dictionary mapPolicy;
+	mapPolicy["tools_allowed"] = allow_tools->is_pressed();
+	mapPolicy["consultation_only"] = consultation_only->is_pressed();
+	mapPolicy["review_child"] = _is_review_child();
+	return refChatController->AllowsNativeTask(scope, mapPolicy, p_tool, p_arguments);
 }

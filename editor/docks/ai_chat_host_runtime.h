@@ -30,10 +30,12 @@
 
 #pragma once
 
+#include "core/object/object_id.h"
 #include "core/io/dir_access.h"
 #include "core/io/file_access.h"
 #include "core/io/json.h"
 #include "core/os/os.h"
+#include "core/variant/callable.h"
 #include "editor/docks/gonggong_host_paths.h"
 
 // Host configuration and accidental cross-worktree protection, not a shell sandbox.
@@ -404,4 +406,16 @@ public:
 		r_error = "workspace_mismatch: this path belongs to another engine source checkout. Use the bound work-order workspace: " + bound + ". Read-only file access remains available.";
 		return false;
 	}
+};
+
+// Editor domain boundary. Controllers exchange values and an executor identity;
+// no View or GUI control is required to prepare or execute a workflow.
+class AIChatHostServices
+{
+public:
+	static Array ToolDefinitions();
+	static bool HandlesEditorTool(const String &strName);
+	static Dictionary ExecuteEditorTool(ObjectID idExecutor, const String &strName, const Dictionary &mapArguments, bool bToolsAllowed, bool bConsultationOnly, bool bConfirmed, const PackedStringArray &arrSecrets);
+	static Dictionary ReadLogs(const Callable &callRedact);
+	static Dictionary ListScripts();
 };

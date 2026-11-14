@@ -8,6 +8,7 @@
 
 | 任务类型 | 入口 |
 | --- | --- |
+| AI 工作流公共运行身份、事件、状态与 Godot 接入 | [统一 AI 运行合同](../../ai_core/README.md) |
 | 独立源码根、禁止依赖、链接输入与构建验证 | `../build/engine-next/README.md` |
 | 第一方 C++ 编码与评审 | `../code-style/cpp/README.md` |
 | 引擎接入、能力协议与迁移验证 | [引擎适配与迁移规范](../../framework/specs/engine-adapter.md) |
