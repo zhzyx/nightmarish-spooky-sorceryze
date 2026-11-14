@@ -16,7 +16,7 @@ jobs:
   images:
     name: Docker images
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - name: Build API image
@@ -27,3 +27,46 @@ jobs:
         run: |
           docker image inspect tianxuan-api:ci --format 'api {{.Size}} bytes'
           docker image inspect tianxuan-web:ci --format 'web {{.Size}} bytes'
+      - name: Compose smoke
+        working-directory: deploy
+        run: |
+          cp .env.example .env
+          docker compose --env-file .env up -d --build
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:8080/api/v1/health >/dev/null; then
+              break
+            fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:8080/api/v1/health
+          curl -fsS -o /dev/null -w 'web %{http_code}\n' http://127.0.0.1:8080/
+          docker compose --env-file .env ps
+      - name: WebSocket proxy
+        run: |
+          python -m pip install --quiet websockets
+          python - <<'PY'
+          import asyncio
+          import websockets
+
+          async def main() -> None:
+              try:
+                  async with websockets.connect(
+                      "ws://127.0.0.1:8080/api/v1/ws/docs/none", open_timeout=10
+                  ) as socket:
+                      await socket.recv()
+              except websockets.exceptions.ConnectionClosed as error:
+                  print("ws closed", error.code)
+                  assert error.code in (4401, 4404)
+              else:
+                  raise AssertionError("expected websocket close")
+
+          asyncio.run(main())
+          PY
+      - name: Compose logs
+        if: failure()
+        working-directory: deploy
+        run: docker compose --env-file .env logs --no-color
+      - name: Compose down
+        if: always()
+        working-directory: deploy
+        run: docker compose --env-file .env down -v
