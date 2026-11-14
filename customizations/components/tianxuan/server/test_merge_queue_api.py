@@ -120,3 +120,23 @@ def test_merge_queue_api_filters_and_paginates(monkeypatch: pytest.MonkeyPatch, 
     merged = client.get("/api/v1/merge-queue", headers=headers, params={"status": "merged"}).json()
     assert merged["total"] == 1
     assert merged["items"][0]["status"] == "merged"
+
+
+def test_retry_cancelled_candidate(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    client, headers, _ = _setup(monkeypatch, tmp_path)
+    item = client.post(
+        "/api/v1/merge-queue",
+        headers=headers,
+        json={"repo": "docs.git", "source": "feature", "target": "main", "title": "重试"},
+    ).json()
+    client.post(f"/api/v1/merge-queue/{item['id']}/cancel", headers=headers)
+    retried = client.post(f"/api/v1/merge-queue/{item['id']}/retry", headers=headers)
+    assert retried.status_code == 200, retried.text
+    assert retried.json()["status"] == "queued"
+    assert retried.json()["attempts"] == 0
+    assert retried.json()["evidence"]["retried_from"] == "cancelled"
+
+    merged = client.post("/api/v1/merge-queue/process", headers=headers).json()["processed"]
+    assert merged[0]["status"] == "merged"
+    denied = client.post(f"/api/v1/merge-queue/{item['id']}/retry", headers=headers)
+    assert denied.status_code == 400

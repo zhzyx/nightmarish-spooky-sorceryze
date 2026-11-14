@@ -6,6 +6,7 @@ import {
   enqueueMerge,
   fetchMergeQueue,
   processMergeQueue,
+  retryMerge,
   type ApiMergeQueueItem,
 } from "@/lib/merge-queue-api";
 
@@ -159,6 +160,23 @@ export function MergeQueuePanel() {
     }
   }
 
+  async function retry(item: ApiMergeQueueItem) {
+    if (!actor) {
+      return;
+    }
+    setBusy(true);
+    setError("");
+    try {
+      await retryMerge(actor, item.id);
+      await load();
+      setNotice("已重新入队");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "重试失败");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function cancel(item: ApiMergeQueueItem) {
     if (!actor) {
       return;
@@ -231,6 +249,10 @@ export function MergeQueuePanel() {
                   {item.status === "queued" ? (
                     <button className="btn btn-ghost" type="button" disabled={busy} onClick={() => cancel(item)}>
                       取消
+                    </button>
+                  ) : ["rejected", "conflict", "cancelled"].includes(item.status) ? (
+                    <button className="btn btn-ghost" type="button" disabled={busy} onClick={() => retry(item)}>
+                      重试
                     </button>
                   ) : null}
                 </div>
