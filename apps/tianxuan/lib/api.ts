@@ -439,3 +439,23 @@ export async function downloadDocExport(
   }
   return response.blob();
 }
+
+export interface ApiIdentityEvent {
+  type: string;
+  actor: string;
+  target: string;
+  payload: Record<string, unknown>;
+  created_at: string;
+}
+
+export async function fetchIdentityEvents(actor: string): Promise<ApiIdentityEvent[]> {
+  const response = await fetch(`${apiBase()}/api/v1/identity/events?limit=20`, {
+    headers: { "X-Actor": actor },
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`identity events request failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { events?: ApiIdentityEvent[] };
+  return body.events ?? [];
+}

@@ -1435,6 +1435,17 @@ class Tianxuan:
         ).fetchall()
         return [dict(row) | {"payload": json.loads(row["payload"])} for row in rows]
 
+    def identity_events(self, actor: str, limit: int = 50) -> list[dict[str, Any]]:
+        if self.role_of(actor) != "admin":
+            raise PermissionDenied("only admin can read identity events")
+        tenant_id = self._tenant_of(actor)
+        rows = self.db.execute(
+            "SELECT type, actor, target, payload, created_at FROM events "
+            "WHERE tenant_id = ? AND type LIKE 'identity.%' ORDER BY created_at DESC LIMIT ?",
+            (tenant_id, max(1, min(int(limit), 200))),
+        ).fetchall()
+        return [dict(row) | {"payload": json.loads(row["payload"])} for row in rows]
+
     @staticmethod
     def _tool_payload(name: str, payload: dict[str, Any]) -> dict[str, Any]:
         payload = dict(payload)

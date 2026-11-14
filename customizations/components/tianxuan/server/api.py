@@ -454,6 +454,12 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
     def delete_identity_link(link_id: str, actor: ActorDep) -> dict[str, Any]:
         return store.unlink_identity(actor, link_id)  # type: ignore[no-any-return]
 
+    @app.get("/api/v1/identity/events")
+    def list_identity_events(
+        actor: ActorDep, limit: int = Query(default=50, ge=1, le=200)
+    ) -> dict[str, list[dict[str, Any]]]:
+        return {"events": store.identity_events(actor, limit)}
+
     @app.post("/api/v1/identity/resolve")
     def resolve_external_identity(payload: IdentityResolveRequest, request: Request) -> dict[str, Any]:
         client_key = payload.subject.strip() or "unknown"

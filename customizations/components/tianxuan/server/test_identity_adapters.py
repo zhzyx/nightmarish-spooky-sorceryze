@@ -395,3 +395,38 @@ def test_oidc_requires_exp_and_rejects_future_nbf(monkeypatch) -> None:
         ).status_code
         == 200
     )
+
+
+def test_identity_events_history(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_IDENTITY_SECRET", "shared-secret")
+    client, headers, user_id = _client()
+    member = client.post(
+        "/api/v1/users",
+        headers=headers,
+        json={"email": "history@example.com", "password": "secret-pass", "role": "editor"},
+    ).json()
+    second_id = member.get("id") or member["user_id"]
+    link = client.post(
+        "/api/v1/identity/links",
+        headers=headers,
+        json={"provider": "tianshu", "subject": "gh_history", "user_id": user_id},
+    ).json()
+    client.patch(f"/api/v1/identity/links/{link['id']}", headers=headers, json={"user_id": second_id})
+    client.delete(f"/api/v1/identity/links/{link['id']}", headers=headers)
+
+    events = client.get("/api/v1/identity/events", headers=headers).json()["events"]
+    assert [event["type"] for event in events] == [
+        "identity.unlinked",
+        "identity.rebound",
+        "identity.linked",
+    ]
+    assert events[0]["payload"]["subject"] == "gh_history"
+
+    viewer = client.post(
+        "/api/v1/users",
+        headers=headers,
+        json={"email": "history-viewer@example.com", "password": "secret-pass", "role": "viewer"},
+    ).json()
+    viewer_id = viewer.get("id") or viewer["user_id"]
+    denied = client.get("/api/v1/identity/events", headers={"X-Actor": viewer_id})
+    assert denied.status_code == 403
