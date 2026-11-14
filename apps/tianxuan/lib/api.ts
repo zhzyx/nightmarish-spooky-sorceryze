@@ -428,7 +428,7 @@ export async function rebindIdentityLink(
 export async function downloadDocExport(
   actor: string,
   docId: string,
-  format: "md" | "html",
+  format: "md" | "html" | "docx",
 ): Promise<Blob> {
   const response = await fetch(
     `${apiBase()}/api/v1/docs/${encodeURIComponent(docId)}/export/file?format=${format}`,

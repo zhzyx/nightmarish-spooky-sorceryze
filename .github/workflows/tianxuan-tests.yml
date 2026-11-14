@@ -27,7 +27,7 @@ jobs:
           cache: "npm"
           cache-dependency-path: "apps/tianxuan/package-lock.json"
       - name: Install Python test dependencies
-        run: pip install fastapi httpx pytest
+        run: pip install fastapi httpx pytest python-docx
       - name: Configure git identity for merge tests
         run: |
           git config --global user.name "Tianxuan Test"
