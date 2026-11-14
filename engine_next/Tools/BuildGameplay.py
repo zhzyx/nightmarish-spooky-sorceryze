@@ -237,7 +237,7 @@ def audit_dynamic_dependencies(args):
         )
         if args.sanitize:
             allowed_prefixes += ("libasan.so.", "libubsan.so.")
-        unexpected = [value for value in dependencies if not value.startswith(allowed_prefixes)]
+        unexpected = [value for value in dependencies if not Path(value).name.startswith(allowed_prefixes)]
     elif args.compiler == "clang":
         output = run([args.otool, "-L", args.executable], cwd=args.repo)
         dependencies = []

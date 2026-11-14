@@ -148,7 +148,7 @@ def audit_linux_dependencies(args, executable):
     )
     if args.sanitize:
         allowed_prefixes += ("libasan.so.", "libubsan.so.")
-    unexpected = [value for value in dependencies if not value.startswith(allowed_prefixes)]
+    unexpected = [value for value in dependencies if not Path(value).name.startswith(allowed_prefixes)]
     if unexpected:
         raise ValueError("Unexpected dynamic dependencies: " + ", ".join(unexpected))
     return dependencies
@@ -232,6 +232,20 @@ def compile_c_source(args, source, object_path, dependency_path, include_audit, 
             "-o",
             object_path,
         ]
+        if sys.platform != "darwin":
+            # ENet's CMake feature probes are not used; strict C99 hides glibc's POSIX socket APIs.
+            index = command.index("-c")
+            command[index:index] = [
+                "-D_DEFAULT_SOURCE",
+                "-DHAS_FCNTL=1",
+                "-DHAS_POLL=1",
+                "-DHAS_INET_PTON=1",
+                "-DHAS_INET_NTOP=1",
+                "-DHAS_MSGHDR_FLAGS=1",
+                "-DHAS_SOCKLEN_T=1",
+                "-DHAS_GETADDRINFO=1",
+                "-DHAS_GETNAMEINFO=1",
+            ]
         if args.sanitize:
             command.extend(["-fsanitize=address,undefined", "-fno-omit-frame-pointer"])
     else:

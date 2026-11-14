@@ -7,10 +7,10 @@ from unittest import mock
 
 from BuildGameplay import (
     CORE_SOURCES,
-    audit_dynamic_dependencies,
     PUBLIC_HEADERS,
     TEST_SOURCES,
     artifact,
+    audit_dynamic_dependencies,
     parse_depfile,
     parse_msvc_includes,
     quoted_response,
@@ -90,13 +90,30 @@ class BuildGameplayTests(unittest.TestCase):
         self.assertEqual(record["sha256"], "2958d416d08aa5a472d7b509036cb7eafd542add84527e66a145ea64cb4cdc75")
 
     def test_linux_dependency_audit_uses_ldd_without_otool(self):
-        executable = self.write("fake-ldd.sh", "#!/bin/sh\nprintf 'libc.so.6 => /lib/libc.so.6\\n'\n")
-        executable.chmod(0o755)
-        args = types.SimpleNamespace(
-            repo=self.root, compiler="clang", ldd=str(executable), executable="unused", sanitize=False
+        output = (
+            b"\tlinux-vdso.so.1 (0x00007f0000000000)\n"
+            b"\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f0000000000)\n"
+            b"\t/lib64/ld-linux-x86-64.so.2 (0x00007f0000000000)\n"
         )
-        with mock.patch("BuildGameplay.sys.platform", "linux"):
-            self.assertEqual(audit_dynamic_dependencies(args), ["libc.so.6"])
+        args = types.SimpleNamespace(repo=self.root, compiler="clang", ldd="ldd", executable="unused", sanitize=False)
+        with (
+            mock.patch("BuildGameplay.sys.platform", "linux"),
+            mock.patch("BuildGameplay.run", return_value=output) as run,
+        ):
+            self.assertEqual(
+                audit_dynamic_dependencies(args), ["linux-vdso.so.1", "libc.so.6", "/lib64/ld-linux-x86-64.so.2"]
+            )
+        run.assert_called_once_with(["ldd", "unused"], cwd=self.root)
+
+    def test_linux_dependency_audit_rejects_undeclared_library(self):
+        output = b"\tlibc.so.6 => /lib/libc.so.6 (0x1)\n\tlibcurl.so.4 => /lib/libcurl.so.4 (0x2)\n"
+        args = types.SimpleNamespace(repo=self.root, compiler="clang", ldd="ldd", executable="unused", sanitize=False)
+        with (
+            mock.patch("BuildGameplay.sys.platform", "linux"),
+            mock.patch("BuildGameplay.run", return_value=output),
+            self.assertRaisesRegex(ValueError, "libcurl.so.4"),
+        ):
+            audit_dynamic_dependencies(args)
 
 
 if __name__ == "__main__":
