@@ -1,0 +1,22 @@
+{
+  "followup_finding": "Schema source kinds accepted each other's fields",
+  "initial_findings": [
+    "Scene digest was not content-bound",
+    "Native Scene validation bypass",
+    "Schema/C++ source drift",
+    "native_key omitted actual inputs"
+  ],
+  "issue_number": 1240,
+  "observed": "All findings closed after fixes and negative tests; no remaining blocking issue; Artifact unknown nested extension payload preserved",
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "result": "approved",
+  "reviewer": {
+    "id": "agent-0",
+    "kind": "independent_read_only_agent",
+    "same_author": false
+  },
+  "schema_version": 1,
+  "scope": "Actual PR1 diff plus review fixes; JSON, Scene/Manifest, Schema, AICore snapshots, SHA-256 and native build identity",
+  "slice": "pr1-r3",
+  "validation_boundary": "Approval applies to the reviewed working content; exact committed candidate CI remains required"
+}

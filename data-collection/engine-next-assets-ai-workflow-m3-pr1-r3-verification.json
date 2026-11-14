@@ -1,0 +1,51 @@
+{
+  "base_commit": "97f4a0a64557f966bb89678effdc69767234f689",
+  "checks": {
+    "clean_source": {
+      "command": "ExportCleanSource.py to m3-pr1-r3-clean-source and rebuild in copied tree",
+      "observed": "111 declared files without Godot roots; 35 tests/369 checks and all M2 handshakes passed; contract_passed",
+      "passed": true
+    },
+    "format": {
+      "command": "Isolated clang-format 23.1.5 and ruff 0.17.5 on changed files",
+      "observed": "Formatting applied; ruff check and git diff --check passed",
+      "passed": true
+    },
+    "link_contract": {
+      "command": "check_engine_next_contract.py --require-sources --require-link-manifest for m3-pr1-review test target",
+      "observed": "89 source files, 132 includes and 43 objects passed",
+      "passed": true
+    },
+    "native_inputs": {
+      "command": "Independent reviewer recomputed every reported input digest and native_key",
+      "observed": "All 94 native inputs exist and match; Runtime.h, AssetValidation.h and all three Schemas included",
+      "passed": true
+    },
+    "runtime_release": {
+      "command": "BuildRuntime.py --compiler clang --build-dir build/engine_next/m3-pr1-review --run-tests",
+      "observed": "35 tests/369 checks and all M2 build/clean/package handshakes passed",
+      "passed": true
+    },
+    "sanitizer": {
+      "command": "BuildRuntime.py --build-dir build/engine_next/m3-pr1-review-sanitize --run-tests --sanitize",
+      "observed": "35 tests/369 checks and all M2 handshakes passed under ASan/UBSan",
+      "passed": true
+    },
+    "schema_semantics": {
+      "command": "python3 build/engine_next/validate_m3_schema_fix.py",
+      "observed": "Draft202012Validator accepted two provenance variants and rejected three cross/unknown-field variants",
+      "passed": true
+    }
+  },
+  "issue_number": 1240,
+  "not_verified": [
+    "R3 exact committed candidate CI",
+    "M3 PR2-5",
+    "M3 overall completion"
+  ],
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "review": "data-collection/engine-next-assets-ai-workflow-m3-pr1-r3-review.json",
+  "schema_version": 1,
+  "slice": "pr1-r3",
+  "supersedes": "data-collection/engine-next-assets-ai-workflow-m3-pr1-r2-verification.json"
+}
