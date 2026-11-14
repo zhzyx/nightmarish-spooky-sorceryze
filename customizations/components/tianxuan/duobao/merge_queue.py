@@ -51,6 +51,15 @@ def _new_id() -> str:
     return f"mq_{uuid.uuid4().hex}"
 
 
+def _is_retryable(error: BaseException) -> bool:
+    if isinstance(error, sqlite3.OperationalError):
+        return True
+    text = str(error).lower()
+    return any(
+        marker in text for marker in ("database is locked", "another git process", "index.lock", "could not lock")
+    )
+
+
 class MergeQueue:
     """串行合入梯队；每次只领取一个候选，验证后在最新目标上合入。"""
 
@@ -173,10 +182,20 @@ class MergeQueue:
             try:
                 outcome = self._execute(item)
             except Exception as error:  # 队列必须留下证据而不是丢失候选
-                outcome = {
-                    "status": "rejected",
-                    "evidence": {"error": f"{type(error).__name__}: {error}"},
-                }
+                attempt = int(item["attempts"]) + 1
+                if _is_retryable(error) and attempt < 3:
+                    outcome = {
+                        "status": "queued",
+                        "evidence": {
+                            "retry_error": f"{type(error).__name__}: {error}",
+                            "attempt": attempt,
+                        },
+                    }
+                else:
+                    outcome = {
+                        "status": "rejected",
+                        "evidence": {"error": f"{type(error).__name__}: {error}", "attempt": attempt},
+                    }
             with self._lock, self.db:
                 self.db.execute(
                     "UPDATE merge_queue SET status = ?, evidence = ?, updated_at = ? WHERE id = ?",

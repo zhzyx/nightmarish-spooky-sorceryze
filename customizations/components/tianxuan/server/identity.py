@@ -8,6 +8,9 @@ from __future__ import annotations
 
 import hmac
 import os
+import threading
+import time
+from collections import deque
 from typing import Protocol
 
 
@@ -59,3 +62,39 @@ def get_identity_adapter(name: str) -> IdentityAdapter | None:
 
 def adapter_names() -> list[str]:
     return sorted(_ADAPTERS)
+
+
+class AttemptLimiter:
+    """进程内滑动窗口限流；多个副本部署时各副本独立计数。"""
+
+    def __init__(self, limit: int = 10, window_seconds: float = 60.0) -> None:
+        self._limit = limit
+        self._window = window_seconds
+        self._events: dict[tuple[str, str], deque[float]] = {}
+        self._lock = threading.Lock()
+
+    def allow(self, provider: str, key: str) -> bool:
+        now = time.monotonic()
+        with self._lock:
+            bucket = self._events.setdefault((provider, key), deque())
+            while bucket and now - bucket[0] > self._window:
+                bucket.popleft()
+            if len(bucket) >= self._limit:
+                return False
+            bucket.append(now)
+            return True
+
+    def reset(self) -> None:
+        with self._lock:
+            self._events.clear()
+
+
+_ATTEMPT_LIMITER = AttemptLimiter(limit=30)
+
+
+def allow_identity_attempt(provider: str, key: str) -> bool:
+    return _ATTEMPT_LIMITER.allow(provider, key)
+
+
+def reset_identity_attempts() -> None:
+    _ATTEMPT_LIMITER.reset()

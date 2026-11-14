@@ -202,3 +202,34 @@ def test_identity_resolves_token_before_command(monkeypatch, capsys) -> None:
     assert body == {"provider": "tianshu", "subject": "gh_1", "secret": "shared"}
     assert calls[1].headers["Authorization"] == "Bearer session-token"
     assert json.loads(capsys.readouterr().out)["ok"] is True
+
+
+def test_sync_reports_ambiguous_titles(monkeypatch, capsys) -> None:
+    calls: list[Request] = []
+
+    def fake(request: Request, timeout: int) -> _Response:
+        calls.append(request)
+        return _Response({
+            "issues": [
+                {"id": "iss_1", "title": "重复", "status": "backlog", "parent_id": "p"},
+                {"id": "iss_2", "title": "重复", "status": "backlog", "parent_id": "p"},
+            ]
+        })
+
+    monkeypatch.setattr(tianshu_bridge, "urlopen", fake)
+    code = tianshu_bridge.main([
+        "--api",
+        "http://api.example",
+        "--actor",
+        "usr_1",
+        "sync",
+        "--external-id",
+        "issue/1",
+        "--done",
+        "重复",
+    ])
+    assert code == 0
+    assert len(calls) == 1
+    envelope = json.loads(capsys.readouterr().out)
+    assert envelope["data"]["updated"] == []
+    assert "ambiguous" in envelope["data"]["missing"][0]
