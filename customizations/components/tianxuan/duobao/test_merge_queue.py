@@ -192,3 +192,25 @@ def test_transient_error_requeues_then_rejects(tmp_path: Path) -> None:
     assert second is not None and second["status"] == "queued" and second["attempts"] == 2
     assert third is not None and third["status"] == "rejected" and third["attempts"] == 3
     assert queue.get(item["id"])["status"] == "rejected"
+
+
+def test_check_environment_scrubs_deployment_secrets(tmp_path: Path, monkeypatch) -> None:
+    service, _ = _repo(tmp_path)
+    queue = MergeQueue(str(tmp_path / "queue.db"), service)
+    monkeypatch.setenv("TIANXUAN_SECRET", "should-not-leak")
+    monkeypatch.setenv("OPENAI_API_KEY", "should-not-leak")
+    monkeypatch.setenv("SAFE_SETTING", "kept")
+    environment = queue._check_environment()
+    assert "TIANXUAN_SECRET" not in environment
+    assert "OPENAI_API_KEY" not in environment
+    assert environment["SAFE_SETTING"] == "kept"
+    assert environment["CI"] == "1"
+    assert environment["GIT_TERMINAL_PROMPT"] == "0"
+
+
+def test_check_timeout_terminates_process_tree(tmp_path: Path) -> None:
+    service, repo = _repo(tmp_path)
+    queue = MergeQueue(str(tmp_path / "queue.db"), service, check_timeout=0.3)
+    result = queue._run_check(repo, [sys.executable, "-c", "import time; time.sleep(5)"])
+    assert result["exit_code"] == 124
+    assert result["duration_seconds"] < 3.0

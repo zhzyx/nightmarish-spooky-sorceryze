@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import os
 import shlex
+import signal
 import sqlite3
 import subprocess
 import tempfile
@@ -58,6 +59,42 @@ def _is_retryable(error: BaseException) -> bool:
     return any(
         marker in text for marker in ("database is locked", "another git process", "index.lock", "could not lock")
     )
+
+
+def _is_sensitive_environment(key: str) -> bool:
+    upper = key.upper()
+    if upper.startswith("TIANXUAN_"):
+        return True
+    return any(
+        marker in upper
+        for marker in (
+            "TOKEN",
+            "SECRET",
+            "PASSWORD",
+            "API_KEY",
+            "PRIVATE_KEY",
+            "CREDENTIAL",
+            "COOKIE",
+        )
+    )
+
+
+def _terminate_process_tree(process: subprocess.Popen[str]) -> None:
+    try:
+        if os.name == "nt":
+            subprocess.run(
+                ["taskkill", "/F", "/T", "/PID", str(process.pid)],
+                check=False,
+                capture_output=True,
+            )
+        else:
+            os.killpg(os.getpgid(process.pid), signal.SIGKILL)  # type: ignore[attr-defined]
+    except (OSError, ProcessLookupError):
+        pass
+    try:
+        process.communicate(timeout=2.0)
+    except (subprocess.TimeoutExpired, OSError):
+        process.kill()
 
 
 class MergeQueue:
@@ -301,7 +338,7 @@ class MergeQueue:
         conflicts: list[str] = []
         with tempfile.TemporaryDirectory(prefix="duobao-queue-") as temporary:
             worktree = Path(temporary) / "worktree"
-            environment = os.environ.copy()
+            environment = self._check_environment()
             environment["GIT_TERMINAL_PROMPT"] = "0"
             subprocess.run(
                 [self.git.git_executable, "clone", "--quiet", str(repo), str(worktree)],
@@ -358,22 +395,43 @@ class MergeQueue:
             )
         return {"conflicts": conflicts, "checks": checks}
 
+    def _check_environment(self) -> dict[str, str]:
+        """合并检查默认不继承部署凭据；管理员可用白名单显式放行。"""
+        allowlist = [item.strip() for item in os.environ.get("TIANXUAN_MERGE_CHECK_ENV", "").split(",") if item.strip()]
+        if allowlist:
+            environment = {key: os.environ[key] for key in allowlist if key in os.environ}
+        else:
+            environment = {key: value for key, value in os.environ.items() if not _is_sensitive_environment(key)}
+        environment["GIT_TERMINAL_PROMPT"] = "0"
+        environment["CI"] = "1"
+        return environment
+
     def _run_check(self, worktree: Path, check: Sequence[str]) -> dict[str, Any]:
         started = datetime.now(timezone.utc)
+        popen_kwargs: dict[str, Any] = {}
+        if os.name == "nt":
+            popen_kwargs["creationflags"] = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
+        else:
+            popen_kwargs["start_new_session"] = True
+        process: subprocess.Popen[str] | None = None
         try:
-            completed = subprocess.run(
+            process = subprocess.Popen(
                 list(check),
                 cwd=worktree,
-                check=False,
-                capture_output=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 text=True,
                 encoding="utf-8",
                 errors="replace",
-                timeout=self.check_timeout,
+                env=self._check_environment(),
+                **popen_kwargs,
             )
-            exit_code = completed.returncode
-            output = f"{completed.stdout}\n{completed.stderr}".strip()
+            stdout, stderr = process.communicate(timeout=self.check_timeout)
+            exit_code = process.returncode
+            output = f"{stdout}\n{stderr}".strip()
         except subprocess.TimeoutExpired:
+            if process is not None:
+                _terminate_process_tree(process)
             exit_code = 124
             output = f"check timed out after {self.check_timeout}s"
         except OSError as error:
