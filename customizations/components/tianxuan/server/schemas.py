@@ -223,6 +223,26 @@ class ExternalRequirementRequest(BaseModel):
     tickets: list[TicketSpec] = Field(default_factory=list)
 
 
+class IdentityLinkRequest(BaseModel):
+    """管理员绑定外部身份到本地用户。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    provider: str
+    subject: str
+    user_id: str
+
+
+class IdentityResolveRequest(BaseModel):
+    """按适配器校验外部身份并换取天璇会话。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    provider: str
+    subject: str
+    secret: str = ""
+
+
 class IssueTransitionRequest(BaseModel):
     """司南工单状态迁移。"""
 

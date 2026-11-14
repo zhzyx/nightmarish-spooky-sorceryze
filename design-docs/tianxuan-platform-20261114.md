@@ -137,7 +137,15 @@
 - 回执为 JSON 信封 `{ok, data}`，可用 `--result` 写入天枢宿主文件。
 - Tianshu Issue 详情提供「天璇」入口：读取绑定内容，未绑定时可发布需求与工单树。
 
-### 11. 治理与准入
+### 11. 身份适配
+
+- 身份只做“外部主体 → 本地用户”的解析，不与 Git 或某个具体系统绑定。
+- `identity_links` 保存 `(provider, subject) → user_id`；管理员通过 `/api/v1/identity/links` 绑定。
+- `/api/v1/identity/resolve` 由适配器校验凭据后签发天璇会话；核心不感知 GitHub/Tianshu/OIDC 细节。
+- 内置适配器：`static`（仅显式开启）、`tianshu`、`github`、`oidc` 共享密钥；后续可新增 OIDC/LDAP/SSO 适配器而不改核心。
+- 天枢桥接优先用 provider/subject 换会话，`--actor`/`--token` 仅作本地调试回退。
+
+### 12. 治理与准入
 - 所有新增 Agent/Skill 生成前与准入前回查 `skills/gonggong-check`；保存 review pass。
 - 新模块按 `customizations/module-boundaries.md#新增模块的构建边界与验收` 记录 `build-impact.json` 并执行对应检查。
 - 工单门禁：建单 → intake 回读 → 实现 → 正式门禁 → 提交/推送/合入。

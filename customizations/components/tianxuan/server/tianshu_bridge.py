@@ -240,6 +240,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--api", default=os.environ.get("TIANXUAN_API", "http://127.0.0.1:8000"))
     parser.add_argument("--actor", default=os.environ.get("TIANXUAN_ACTOR", ""))
     parser.add_argument("--token", default=os.environ.get("TIANXUAN_TOKEN", ""))
+    parser.add_argument("--identity-provider", default=os.environ.get("TIANXUAN_IDENTITY_PROVIDER", ""))
+    parser.add_argument("--identity-subject", default=os.environ.get("TIANXUAN_IDENTITY_SUBJECT", ""))
+    parser.add_argument("--identity-secret", default=os.environ.get("TIANXUAN_IDENTITY_SECRET", ""))
     parser.add_argument("--result", type=Path)
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -295,6 +298,23 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(arguments)
     try:
+        if not args.token and args.identity_provider:
+            if not args.identity_subject:
+                raise BridgeError("identity subject is required")
+            resolved = _request(
+                args.api,
+                "POST",
+                "/api/v1/identity/resolve",
+                body={
+                    "provider": args.identity_provider,
+                    "subject": args.identity_subject,
+                    "secret": args.identity_secret,
+                },
+            )
+            token = str(resolved.get("token", ""))
+            if not token:
+                raise BridgeError("identity resolve returned no token")
+            args.token = token
         data = args.func(args)
         envelope = {"ok": True, "data": data}
         code = 0

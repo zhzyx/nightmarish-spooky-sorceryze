@@ -20,6 +20,7 @@ from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, Web
 from fastapi.responses import JSONResponse
 from gateway import ModelGateway, create_model_router
 from gitea_bridge import GiteaClient, GiteaError
+from identity import get_identity_adapter
 from schemas import (
     CommentCreateRequest,
     CommentResolveRequest,
@@ -31,6 +32,8 @@ from schemas import (
     DocVisibilityRequest,
     ExternalLinkRequest,
     ExternalRequirementRequest,
+    IdentityLinkRequest,
+    IdentityResolveRequest,
     InviteAcceptRequest,
     InviteCreateRequest,
     IssueCommentCreateRequest,
@@ -385,6 +388,39 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
     @app.get("/api/v1/issues/{issue_id}/external-links")
     def issue_external_links(issue_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
         return {"links": store.external_links_for(actor, "issue", issue_id)}
+
+    # ---------- 身份适配 ----------
+
+    @app.post("/api/v1/identity/links")
+    def create_identity_link(payload: IdentityLinkRequest, actor: ActorDep) -> dict[str, Any]:
+        return store.link_identity(  # type: ignore[no-any-return]
+            actor, payload.provider, payload.subject, payload.user_id
+        )
+
+    @app.get("/api/v1/identity/links")
+    def list_identity_links(
+        actor: ActorDep,
+        provider: str | None = Query(default=None),
+        subject: str | None = Query(default=None),
+    ) -> dict[str, list[dict[str, Any]]]:
+        return {"links": store.list_identity_links(actor, provider, subject)}
+
+    @app.post("/api/v1/identity/resolve")
+    def resolve_external_identity(payload: IdentityResolveRequest) -> dict[str, Any]:
+        adapter = get_identity_adapter(payload.provider)
+        if adapter is None:
+            raise HTTPException(status_code=400, detail=f"unknown identity provider: {payload.provider}")
+        if not adapter.verify(payload.subject, payload.secret):
+            raise HTTPException(status_code=403, detail="identity verification failed")
+        link = store.resolve_identity(payload.provider, payload.subject)
+        token = store.issue_session(link["user_id"])
+        return {
+            "provider": payload.provider,
+            "subject": payload.subject,
+            "user_id": link["user_id"],
+            "tenant_id": link["tenant_id"],
+            "token": token,
+        }
 
     # ---------- 事件流 ----------
 

@@ -1440,6 +1440,12 @@ func _tianxuan_command(arguments: Array) -> Dictionary:
 	if tianxuan_actor.is_empty():
 		tianxuan_actor = str(actor.get("user_id", ""))
 	var args := PackedStringArray([bridge, "--api", api, "--actor", tianxuan_actor])
+	var identity_provider := OS.get_environment("TIANXUAN_IDENTITY_PROVIDER")
+	if not identity_provider.is_empty():
+		args.append_array([
+			"--identity-provider", identity_provider,
+			"--identity-subject", str(actor.get("user_id", "")),
+		])
 	for part in arguments:
 		args.append(str(part))
 	return await _host_command(args, "--result", {})
