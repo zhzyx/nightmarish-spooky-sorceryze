@@ -405,3 +405,22 @@ export async function deleteIdentityLink(actor: string, linkId: string): Promise
     throw new Error(`identity unlink failed: ${response.status}`);
   }
 }
+
+export async function rebindIdentityLink(
+  actor: string,
+  linkId: string,
+  userId: string,
+): Promise<ApiIdentityLink> {
+  const response = await fetch(
+    `${apiBase()}/api/v1/identity/links/${encodeURIComponent(linkId)}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", "X-Actor": actor },
+      body: JSON.stringify({ user_id: userId }),
+    },
+  );
+  if (!response.ok) {
+    throw new Error(`identity rebind failed: ${response.status}`);
+  }
+  return (await response.json()) as ApiIdentityLink;
+}

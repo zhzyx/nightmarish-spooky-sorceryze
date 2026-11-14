@@ -243,6 +243,14 @@ class IdentityResolveRequest(BaseModel):
     secret: str = ""
 
 
+class IdentityRebindRequest(BaseModel):
+    """管理员把已绑定的外部身份改绑到另一个本地用户。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    user_id: str
+
+
 class IssueTransitionRequest(BaseModel):
     """司南工单状态迁移。"""
 

@@ -33,6 +33,7 @@ from schemas import (
     ExternalLinkRequest,
     ExternalRequirementRequest,
     IdentityLinkRequest,
+    IdentityRebindRequest,
     IdentityResolveRequest,
     InviteAcceptRequest,
     InviteCreateRequest,
@@ -404,6 +405,10 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
         subject: str | None = Query(default=None),
     ) -> dict[str, list[dict[str, Any]]]:
         return {"links": store.list_identity_links(actor, provider, subject)}
+
+    @app.patch("/api/v1/identity/links/{link_id}")
+    def rebind_identity_link(link_id: str, payload: IdentityRebindRequest, actor: ActorDep) -> dict[str, Any]:
+        return store.rebind_identity(actor, link_id, payload.user_id)  # type: ignore[no-any-return]
 
     @app.delete("/api/v1/identity/links/{link_id}")
     def delete_identity_link(link_id: str, actor: ActorDep) -> dict[str, Any]:

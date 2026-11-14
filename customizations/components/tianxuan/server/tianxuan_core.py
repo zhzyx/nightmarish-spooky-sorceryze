@@ -1338,6 +1338,33 @@ class Tianxuan:
             raise NotFound(f"identity link not found: {link_id}")
         return dict(row)
 
+    def rebind_identity(self, actor: str, link_id: str, user_id: str) -> dict[str, Any]:
+        if self.role_of(actor) != "admin":
+            raise PermissionDenied("only admin can rebind external identities")
+        tenant_id = self._tenant_of(actor)
+        link = self.get_identity_link(link_id)
+        if link["tenant_id"] != tenant_id:
+            raise NotFound(f"identity link not found: {link_id}")
+        user = self.db.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+        if user is None or user["tenant_id"] != tenant_id:
+            raise NotFound(f"user not found: {user_id}")
+        if link["user_id"] == user_id:
+            return link
+        now = _now()
+        self.db.execute(
+            "UPDATE identity_links SET user_id = ?, updated_at = ? WHERE id = ?",
+            (user_id, now, link_id),
+        )
+        self._event(
+            tenant_id,
+            "identity.rebound",
+            actor,
+            link_id,
+            {"provider": link["provider"], "subject": link["subject"], "user_id": user_id},
+        )
+        self.db.commit()
+        return self.get_identity_link(link_id)
+
     def unlink_identity(self, actor: str, link_id: str) -> dict[str, Any]:
         if self.role_of(actor) != "admin":
             raise PermissionDenied("only admin can unbind external identities")

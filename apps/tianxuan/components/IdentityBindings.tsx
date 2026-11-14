@@ -6,6 +6,7 @@ import {
   deleteIdentityLink,
   fetchIdentityLinks,
   fetchUsers,
+  rebindIdentityLink,
   type ApiIdentityLink,
   type ApiMember,
 } from "@/lib/api";
@@ -34,6 +35,7 @@ export function IdentityBindings() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [removing, setRemoving] = useState("");
+  const [targets, setTargets] = useState<Record<string, string>>({});
 
   const load = useCallback(async () => {
     if (!actor) {
@@ -45,6 +47,13 @@ export function IdentityBindings() {
     ]);
     setLinks(nextLinks);
     setUsers(nextUsers);
+    setTargets((current) => {
+      const next = { ...current };
+      for (const link of nextLinks) {
+        next[link.id] = next[link.id] ?? link.user_id;
+      }
+      return next;
+    });
     setUserId((current) => current || nextUsers[0]?.id || "");
   }, [actor]);
 
@@ -93,6 +102,27 @@ export function IdentityBindings() {
     }
   }
 
+  async function rebind(id: string) {
+    if (!actor) {
+      return;
+    }
+    const target = targets[id];
+    if (!target) {
+      return;
+    }
+    setBusy(true);
+    setError("");
+    try {
+      await rebindIdentityLink(actor, id, target);
+      await load();
+      setNotice("已改绑外部身份");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "改绑失败");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function userLabel(id: string): string {
     const user = users.find((item) => item.id === id);
     return user ? `${user.name} · ${user.email}` : id;
@@ -128,6 +158,28 @@ export function IdentityBindings() {
                       {link.provider} · {userLabel(link.user_id)}
                     </span>
                   </span>
+                  <select
+                    aria-label={`改绑 ${link.subject}`}
+                    style={{ ...fieldStyle, maxWidth: 220, padding: "6px 8px" }}
+                    value={targets[link.id] ?? link.user_id}
+                    onChange={(event) =>
+                      setTargets((current) => ({ ...current, [link.id]: event.target.value }))
+                    }
+                  >
+                    {users.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.name} · {user.email}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    className="btn btn-ghost"
+                    type="button"
+                    disabled={busy || (targets[link.id] ?? link.user_id) === link.user_id}
+                    onClick={() => rebind(link.id)}
+                  >
+                    改绑
+                  </button>
                   <button
                     className="btn btn-ghost"
                     type="button"
