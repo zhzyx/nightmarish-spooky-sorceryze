@@ -197,6 +197,32 @@ class TicketsRequest(BaseModel):
     call_id: str | None = Field(default=None, min_length=1, max_length=256)
 
 
+class ExternalLinkRequest(BaseModel):
+    """把天枢/外部工单绑定到天璇目标。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    system: str
+    external_id: str
+    target_type: str
+    target_id: str
+
+
+class ExternalRequirementRequest(BaseModel):
+    """从天枢工单创建天璇需求与工单树。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    system: str
+    external_id: str
+    request_id: str
+    title: str
+    outcome: str
+    scope: str
+    acceptance: str
+    tickets: list[TicketSpec] = Field(default_factory=list)
+
+
 class IssueTransitionRequest(BaseModel):
     """司南工单状态迁移。"""
 

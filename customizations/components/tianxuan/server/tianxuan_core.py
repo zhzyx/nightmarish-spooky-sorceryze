@@ -83,6 +83,15 @@ CREATE TABLE IF NOT EXISTS issue_comments (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, issue_id TEXT NOT NULL,
   author TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS external_links (
+  id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL,
+  system TEXT NOT NULL, external_id TEXT NOT NULL,
+  target_type TEXT NOT NULL, target_id TEXT NOT NULL,
+  created_by TEXT NOT NULL, created_at TEXT NOT NULL,
+  UNIQUE (tenant_id, system, external_id, target_type, target_id)
+);
+CREATE INDEX IF NOT EXISTS idx_external_links_lookup
+  ON external_links(tenant_id, system, external_id);
 CREATE INDEX IF NOT EXISTS idx_issue_comments_issue ON issue_comments(issue_id, created_at);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_docs_request ON docs(tenant_id, request_id)
   WHERE request_id IS NOT NULL;
@@ -1111,6 +1120,141 @@ class Tianxuan:
             "UPDATE docs SET progress = ?, updated_at = ? WHERE id = ?", (json.dumps(progress), _now(), requirement_id)
         )
         return progress
+
+    # ---------- 跨系统：天枢 ↔ 天璇 ----------
+
+    def link_external(
+        self,
+        actor: str,
+        system: str,
+        external_id: str,
+        target_type: str,
+        target_id: str,
+    ) -> dict[str, Any]:
+        """把外部系统标识（如 Tianshu/GitHub Issue）绑定到天璇文档或工单。"""
+        self._require_editor(actor)
+        system = system.strip()
+        external_id = external_id.strip()
+        if not system or not external_id:
+            raise TianxuanError("system and external_id are required")
+        tenant_id = self._tenant_of(actor)
+        if target_type == "doc":
+            target = self.get_doc(target_id)
+        elif target_type == "issue":
+            target = self.get_issue(target_id)
+        else:
+            raise TianxuanError("target_type must be doc or issue")
+        if target["tenant_id"] != tenant_id:
+            raise NotFound(f"{target_type} not found: {target_id}")
+        existing = self.db.execute(
+            "SELECT * FROM external_links WHERE tenant_id = ? AND system = ? AND external_id = ? "
+            "AND target_type = ? AND target_id = ?",
+            (tenant_id, system, external_id, target_type, target_id),
+        ).fetchone()
+        if existing is not None:
+            return dict(existing)
+        link_id = _id("xln")
+        now = _now()
+        self.db.execute(
+            "INSERT INTO external_links (id, tenant_id, system, external_id, target_type, target_id, "
+            "created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (link_id, tenant_id, system, external_id, target_type, target_id, actor, now),
+        )
+        self._event(
+            tenant_id,
+            "external.linked",
+            actor,
+            link_id,
+            {"system": system, "external_id": external_id, "target_type": target_type, "target_id": target_id},
+        )
+        row = self.db.execute("SELECT * FROM external_links WHERE id = ?", (link_id,)).fetchone()
+        return dict(row)
+
+    def external_targets(self, actor: str, system: str, external_id: str) -> list[dict[str, Any]]:
+        tenant_id = self._tenant_of(actor)
+        rows = self.db.execute(
+            "SELECT * FROM external_links WHERE tenant_id = ? AND system = ? AND external_id = ? "
+            "ORDER BY created_at, id",
+            (tenant_id, system, external_id),
+        ).fetchall()
+        links: list[dict[str, Any]] = []
+        for row in rows:
+            link = dict(row)
+            try:
+                if link["target_type"] == "doc":
+                    target = self.get_doc(link["target_id"])
+                    link["target"] = {
+                        "id": target["id"],
+                        "type": "doc",
+                        "title": target["title"],
+                        "kind": target["kind"],
+                        "version": target["version"],
+                    }
+                else:
+                    target = self.get_issue(link["target_id"])
+                    link["target"] = {
+                        "id": target["id"],
+                        "type": "issue",
+                        "title": target["title"],
+                        "status": target["status"],
+                        "number": target["number"],
+                    }
+            except NotFound:
+                link["target"] = None
+            links.append(link)
+        return links
+
+    def external_context(self, actor: str, system: str, external_id: str) -> dict[str, Any]:
+        """返回外部标识在天璇内的文档、需求与工单，供天枢画布/对话读取。"""
+        links = self.external_targets(actor, system, external_id)
+        documents: dict[str, dict[str, Any]] = {}
+        issues: dict[str, dict[str, Any]] = {}
+        for link in links:
+            target = link.get("target")
+            if not isinstance(target, dict):
+                continue
+            try:
+                if target["type"] == "doc":
+                    document = self.get_doc(target["id"])
+                    documents[document["id"]] = document
+                    if document["kind"] == "requirement":
+                        for issue in self.list_issues(actor, document["id"]):
+                            issues[issue["id"]] = issue
+                else:
+                    issue = self.get_issue(target["id"])
+                    issues[issue["id"]] = issue
+            except NotFound:
+                continue
+        return {
+            "system": system,
+            "external_id": external_id,
+            "links": links,
+            "documents": list(documents.values()),
+            "issues": list(issues.values()),
+        }
+
+    def create_requirement_from_external(
+        self,
+        actor: str,
+        system: str,
+        external_id: str,
+        request_id: str,
+        title: str,
+        outcome: str,
+        scope: str,
+        acceptance: str,
+        tickets: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
+        """从天枢工单创建天璇需求与工单树，并建立外部绑定。"""
+        requirement = self.create_requirement(actor, request_id, title, outcome, scope, acceptance)
+        if tickets:
+            self.plan_tickets(actor, requirement["id"], tickets)
+        link = self.link_external(actor, system, external_id, "doc", requirement["id"])
+        return {
+            "requirement": requirement,
+            "issues": self.list_issues(actor, requirement["id"]),
+            "link": link,
+        }
 
     # ---------- 事件与 AI 工具 ----------
 
