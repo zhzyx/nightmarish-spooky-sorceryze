@@ -1300,7 +1300,9 @@ class Tianxuan:
         ).fetchone()
         now = _now()
         if existing is not None:
-            if existing["user_id"] != user_id or existing["tenant_id"] != tenant_id:
+            if existing["tenant_id"] != tenant_id:
+                raise PermissionDenied("external identity is bound to another tenant")
+            if existing["user_id"] != user_id:
                 self.db.execute(
                     "UPDATE identity_links SET tenant_id = ?, user_id = ?, updated_at = ? WHERE id = ?",
                     (tenant_id, user_id, now, existing["id"]),

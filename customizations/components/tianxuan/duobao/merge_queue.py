@@ -14,7 +14,7 @@ import tempfile
 import threading
 import uuid
 from collections.abc import Sequence
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -70,6 +70,7 @@ class MergeQueue:
         self.checks = [list(check) for check in (checks or [])]
         self.check_timeout = check_timeout
         self._lock = threading.Lock()
+        self._process_lock = threading.Lock()
         self._worker: threading.Thread | None = None
         self._stop = threading.Event()
 
@@ -77,6 +78,7 @@ class MergeQueue:
         """启动常驻合入 worker；每次领取一个候选，失败继续等待下一次。"""
         if self._worker is not None:
             return
+        self.recover_stale()
         self._stop.clear()
 
         def loop() -> None:
@@ -163,22 +165,54 @@ class MergeQueue:
         return self.get(item_id)
 
     def process_next(self) -> dict[str, Any] | None:
-        item = self._claim()
-        if item is None:
-            return None
-        try:
-            outcome = self._execute(item)
-        except Exception as error:  # 队列必须留下证据而不是丢失候选
-            outcome = {
-                "status": "rejected",
-                "evidence": {"error": f"{type(error).__name__}: {error}"},
-            }
+        # 合入梯队必须串行：worker 与手动 /process 同时存在时也不能并行执行候选。
+        with self._process_lock:
+            item = self._claim()
+            if item is None:
+                return None
+            try:
+                outcome = self._execute(item)
+            except Exception as error:  # 队列必须留下证据而不是丢失候选
+                outcome = {
+                    "status": "rejected",
+                    "evidence": {"error": f"{type(error).__name__}: {error}"},
+                }
+            with self._lock, self.db:
+                self.db.execute(
+                    "UPDATE merge_queue SET status = ?, evidence = ?, updated_at = ? WHERE id = ?",
+                    (
+                        outcome["status"],
+                        json.dumps(outcome["evidence"], ensure_ascii=False),
+                        _now(),
+                        item["id"],
+                    ),
+                )
+            return self.get(item["id"])
+
+    def recover_stale(self, older_than_seconds: float = 300.0) -> int:
+        """把进程中断后卡在 validating 的候选重新放回队列。"""
+        cutoff = datetime.now(timezone.utc) - timedelta(seconds=max(0.0, older_than_seconds))
+        recovered = 0
         with self._lock, self.db:
-            self.db.execute(
-                "UPDATE merge_queue SET status = ?, evidence = ?, updated_at = ? WHERE id = ?",
-                (outcome["status"], json.dumps(outcome["evidence"], ensure_ascii=False), _now(), item["id"]),
-            )
-        return self.get(item["id"])
+            rows = self.db.execute(
+                "SELECT id, evidence, updated_at FROM merge_queue WHERE status = 'validating'"
+            ).fetchall()
+            for row in rows:
+                try:
+                    updated = datetime.fromisoformat(str(row["updated_at"]))
+                except ValueError:
+                    updated = cutoff - timedelta(seconds=1)
+                if updated >= cutoff:
+                    continue
+                evidence = json.loads(row["evidence"] or "{}")
+                evidence["recovered_from"] = "validating"
+                evidence["recovered_at"] = _now()
+                self.db.execute(
+                    "UPDATE merge_queue SET status = 'queued', evidence = ?, updated_at = ? WHERE id = ?",
+                    (json.dumps(evidence, ensure_ascii=False), _now(), row["id"]),
+                )
+                recovered += 1
+        return recovered
 
     def process_batch(self, limit: int = 5) -> list[dict[str, Any]]:
         results = []

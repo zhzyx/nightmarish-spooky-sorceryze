@@ -79,6 +79,32 @@ def test_invalid_secret_and_unlinked_subject(monkeypatch) -> None:
     assert unknown.status_code == 400
 
 
+def test_other_tenant_cannot_hijack_identity(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_IDENTITY_SECRET", "shared-secret")
+    client, headers, user_id = _client()
+    client.post(
+        "/api/v1/identity/links",
+        headers=headers,
+        json={"provider": "tianshu", "subject": "gh_shared", "user_id": user_id},
+    )
+    other = client.post(
+        "/api/v1/auth/register",
+        json={"tenant_name": "另一租户", "email": "other@example.com", "password": "secret-pass"},
+    ).json()
+    other_headers = {"X-Actor": other["user_id"]}
+    denied = client.post(
+        "/api/v1/identity/links",
+        headers=other_headers,
+        json={"provider": "tianshu", "subject": "gh_shared", "user_id": other["user_id"]},
+    )
+    assert denied.status_code == 403
+    resolved = client.post(
+        "/api/v1/identity/resolve",
+        json={"provider": "tianshu", "subject": "gh_shared", "secret": "shared-secret"},
+    ).json()
+    assert resolved["user_id"] == user_id
+
+
 def test_non_admin_cannot_link_identity(monkeypatch) -> None:
     monkeypatch.setenv("TIANXUAN_IDENTITY_SECRET", "shared-secret")
     client, headers, user_id = _client()
