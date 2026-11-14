@@ -62,7 +62,7 @@ class MergeQueue:
         checks: Sequence[Sequence[str]] | None = None,
         check_timeout: float = 600.0,
     ) -> None:
-        self.db = sqlite3.connect(db_path, check_same_thread=False)
+        self.db = sqlite3.connect(db_path, check_same_thread=False, timeout=30.0)
         self.db.row_factory = sqlite3.Row
         self.db.executescript(SCHEMA)
         self.db.commit()
@@ -70,8 +70,34 @@ class MergeQueue:
         self.checks = [list(check) for check in (checks or [])]
         self.check_timeout = check_timeout
         self._lock = threading.Lock()
+        self._worker: threading.Thread | None = None
+        self._stop = threading.Event()
+
+    def start_worker(self, interval: float = 2.0) -> None:
+        """启动常驻合入 worker；每次领取一个候选，失败继续等待下一次。"""
+        if self._worker is not None:
+            return
+        self._stop.clear()
+
+        def loop() -> None:
+            while not self._stop.wait(max(0.2, float(interval))):
+                try:
+                    self.process_next()
+                except Exception:
+                    continue
+
+        self._worker = threading.Thread(target=loop, name="duobao-merge-queue", daemon=True)
+        self._worker.start()
+
+    def stop_worker(self) -> None:
+        self._stop.set()
+        worker = self._worker
+        if worker is not None:
+            worker.join(timeout=5.0)
+        self._worker = None
 
     def close(self) -> None:
+        self.stop_worker()
         with self._lock:
             self.db.close()
 

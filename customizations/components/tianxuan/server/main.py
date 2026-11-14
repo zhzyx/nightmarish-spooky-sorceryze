@@ -17,8 +17,12 @@ _DB_PATH = os.environ.get("TIANXUAN_DB", "tianxuan.db")
 _GATEWAY_DB = os.environ.get("TIANXUAN_GATEWAY_DB", ":memory:")
 _CHECKS = [shlex.split(part) for part in os.environ.get("TIANXUAN_MERGE_CHECKS", "").split(";") if part.strip()]
 
+_MERGE_QUEUE = MergeQueue(_DB_PATH, GitService(), checks=_CHECKS)
+if os.environ.get("TIANXUAN_MERGE_WORKER", "1") != "0":
+    _MERGE_QUEUE.start_worker()
+
 app = create_app(
     Tianxuan(_DB_PATH),
     gateway=ModelGateway(_GATEWAY_DB),
-    merge_queue=MergeQueue(_DB_PATH, GitService(), checks=_CHECKS),
+    merge_queue=_MERGE_QUEUE,
 )
