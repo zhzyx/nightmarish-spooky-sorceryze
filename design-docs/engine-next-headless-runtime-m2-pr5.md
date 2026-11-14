@@ -47,6 +47,21 @@
 - 已在合并提交 `92260105c38c5baef7030bec0790c2ee58ac4dfe` 整合该基线，原生输入未变化，无需重复引擎构建；原 module-impact 门禁已在同一工作树重新通过。
 - 追加证据：`data-collection/engine-next-headless-runtime-m2-pr5-main-7acdf07c-integration.json`。
 
+## PR #1214 平台失败修复
+
+- Ubuntu 严格 C99 编译确认 `inet_aton` 未声明；Clang 的 ENet C 编译现在显式定义 `HAS_INET_PTON=1` 与 `HAS_INET_NTOP=1`，新增构建命令回归测试，构建工具测试共 15 项。
+- macOS 长稳确认客户端在发出 `DrainAcknowledge` 后可能仅等待 32 ms 就提前断开。现在只有已发送 `DrainComplete`，或普通离开且不处于停服流程时，才允许调用 `DisconnectLater`。
+- 新增仅用于服务器最终停服响应的 `--drain-response-delay-ms`，默认 0，真实正向闭环固定使用 96 ms。修复前二进制在同场景下两个客户端均失败、`acknowledged=0、forced=1`；修复后同场景两个客户端正常关闭、`acknowledged=2、forced=0`。全量服务器包延迟的尝试不纳入证据，因为它会改变重连场景。
+- 最终快速、发布目录、干净目录、Sanitizer 和真实长稳再次通过；长稳为 10,312 tick、165.229 秒。M1 仍为 16 个测试、200161 条检查，Trace 不变。
+- 最终 native key 为 `cde7ed9cdfa3e6fe0a9d4b7ef3809ca8411b02b9f8f1d7cdbd16f56d54d5a7b3`，失效后为 `0a8236dff2f312326e7d09b5ed4acc28f734372dd91d9033aa8e337f58bffd5e`；失效二进制连续两次输出 2 tick，恢复后连续两次输出 1 tick且键完全恢复。
+- 追加证据：`data-collection/engine-next-headless-runtime-m2-pr5-ci6.json`。
+
+## 重绑定基线复验
+
+- PR 重绑定期间 main 前进至 `99a8e8cb1fb4e72dc135b9f655884984ab7909cc`，包含交付框架更新，但没有 Engine Next、legacy Gameplay、工作流或本候选证据路径重叠。
+- 已在 `7869145e78da37e8dc8b7f50965ac4fdcb3aca07` 整合该基线，原生输入不变，原 module-impact 门禁再次通过。
+- 追加证据：`data-collection/engine-next-headless-runtime-m2-pr5-main-99a8e8cb-integration.json`。
+
 ## 待验证与证据边界
 
 - Windows、Ubuntu 和 macOS 的精确候选 CI、main 回读及完整 M2 清单核对完成后，才能关闭 #1042。

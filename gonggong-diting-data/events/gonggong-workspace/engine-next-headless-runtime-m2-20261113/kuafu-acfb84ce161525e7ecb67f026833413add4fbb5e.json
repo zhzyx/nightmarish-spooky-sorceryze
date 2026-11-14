@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-acfb84ce161525e7ecb67f026833413add4fbb5e",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8ba76b31c42cc6a0e7e60620c098dde16da5ba9870eea935cb6c5c89688b7126",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1138",
+    "action": "validation",
+    "detection_head": "ea7eb620b6ccdb8e3523b13fd52866cc826e6a77",
+    "context_sha256": "83683561569980cc1b134f764d99dccbfb590ac09b5cc3c538f5fcfe31724b50",
+    "operator": "kaiyunxue",
+    "worker": "kaiyunxue/kimi-work",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43542926726/job/132287386752",
+    "diagnosis": "Ubuntu 严格 C99 编译在 enet/unix.c:109 失败：独立构建器未定义 HAS_INET_PTON，回退调用未声明的 inet_aton。Apple 分支已有 inet_pton 和 inet_ntop；当前工作者负责让 Clang 构建显式使用这两个 POSIX 接口，并用构建命令回归测试防止回退。",
+    "next_action": "为 Clang 的 ENet C 编译加入 HAS_INET_PTON=1 与 HAS_INET_NTOP=1，新增失败前会缺失宏的单元测试，重跑本地闭环、静态门禁和原 PR 三平台 CI。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T01:53:45.460515+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-14T01:55:41.085836+00:00",
+  "sha256": "588a3dafce87292efe4acf27d3ab24e8b5e5a11df8cb1411841a458bb74b17cb"
+}

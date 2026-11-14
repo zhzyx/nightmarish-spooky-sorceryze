@@ -4,6 +4,8 @@ import json
 import shutil
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest import mock
 
 import BuildRuntime
 import ExportCleanSource
@@ -109,6 +111,32 @@ class BuildRuntimeTests(unittest.TestCase):
         (self.temporary / "next_client").write_bytes(b"stale")
         with self.assertRaises(ValueError):
             PackageRuntime.create_package(self.repo, self.temporary)
+
+    def test_enet_clang_uses_posix_address_conversion(self):
+        args = SimpleNamespace(
+            compiler="clang",
+            clang="clang",
+            sanitize=False,
+            repo=self.repo,
+            tool_environment={},
+        )
+        commands = []
+        includes = {}
+        with (
+            mock.patch.object(BuildRuntime.BuildSupport, "run", return_value=b""),
+            mock.patch.object(BuildRuntime.BuildSupport, "parse_depfile", return_value=[]),
+        ):
+            BuildRuntime.compile_c_source(
+                args,
+                "engine_next/thirdparty/enet/unix.c",
+                self.temporary / "unix.o",
+                self.temporary / "unix.d",
+                includes,
+                commands,
+            )
+        self.assertEqual(len(commands), 1)
+        self.assertIn("-DHAS_INET_PTON=1", commands[0])
+        self.assertIn("-DHAS_INET_NTOP=1", commands[0])
 
 
 if __name__ == "__main__":

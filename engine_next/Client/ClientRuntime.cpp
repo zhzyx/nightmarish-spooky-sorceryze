@@ -444,7 +444,7 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 		}
 		if (bClosing)
 		{
-			if (!bDisconnectSent && nNowMsec >= nDisconnectAtMsec)
+			if (!bDisconnectSent && (bCompletionSent || !bDrainReceived) && nNowMsec >= nDisconnectAtMsec)
 			{
 				eStatus = pTransport->DisconnectLater(1);
 				bDisconnectSent = true;

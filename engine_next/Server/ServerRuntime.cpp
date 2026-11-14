@@ -282,6 +282,10 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 					stResponseHeader.eType = Network::MessageType::Disconnect;
 					stResponseHeader.nMessageSequence = NextSequence(mapSequences, stEvent.nPeerId);
 					stResponseHeader.nSessionId = stHeader.nSessionId;
+					if (in_stConfig.nDrainResponseDelayMsec != 0)
+					{
+						std::this_thread::sleep_for(std::chrono::milliseconds(in_stConfig.nDrainResponseDelayMsec));
+					}
 					eStatus = SendFrame(*pTransport, stEvent.nPeerId, stResponseHeader, Network::EncodeDisconnect(stResponse));
 					if (eStatus != RuntimeStatus::Ok)
 					{

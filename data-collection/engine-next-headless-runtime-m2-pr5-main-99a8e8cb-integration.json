@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "issue_number": 1042,
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "previous_main": "7acdf07ca4c89251527a392c754a536af2094b6a",
+  "integrated_main": "99a8e8cb1fb4e72dc135b9f655884984ab7909cc",
+  "merge_commit": "7869145e78da37e8dc8b7f50965ac4fdcb3aca07",
+  "candidate_verification": "data-collection/engine-next-headless-runtime-m2-pr5-ci6.json",
+  "native_input_changes": [],
+  "overlapping_write_paths": [],
+  "native_rebuild_required": false,
+  "issue_gate": {
+    "command": "python customizations/components/issue-workorders/issue_gate.py --repo . --module-impact-only --base-ref origin/main",
+    "observed": "{\"reviewed_modules\":[\"engine_next\"]}",
+    "passed": true
+  },
+  "kuafu": {
+    "incident": "e32f7b28c4668f5b0aaf436066eccb75adb40de050c74a5bfc038dc062731232",
+    "dispatch_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43548873178",
+    "event": "gonggong-diting-data/events/gonggong-workspace/engine-next-headless-runtime-m2-20261113/kuafu-1217f934e6c79144ef72a021648b8f3da0fc8522.json",
+    "original_operation_reverified": false
+  },
+  "unverified": [
+    "writer_submit --rebind-pr 1214 must be rerun with the integrated delivery framework",
+    "The repaired exact PR head still requires Windows, Ubuntu and macOS CI and final main readback"
+  ]
+}

@@ -35,7 +35,7 @@ def parse_lines(lines, pattern):
     return [match.groupdict() for line in lines if (match := expression.fullmatch(line))]
 
 
-def run_handshake(server, client, report_path, duration_ms=8000, drain_after_ms=3000):
+def run_handshake(server, client, report_path, duration_ms=8000, drain_after_ms=3000, drain_response_delay_ms=96):
     started = time.monotonic()
     report_path = Path(report_path).resolve()
     report_path.parent.mkdir(parents=True, exist_ok=True)
@@ -55,29 +55,34 @@ def run_handshake(server, client, report_path, duration_ms=8000, drain_after_ms=
     output_queue = queue.Queue()
     server_process = None
     clients = []
-    result = {"passed": False, "clients": [], "server_sessions": [], "errors": []}
+    result = {
+        "passed": False,
+        "clients": [],
+        "server_sessions": [],
+        "errors": [],
+        "drain_response_delay_ms": drain_response_delay_ms,
+    }
     try:
-        server_process = popen(
-            [
-                server,
-                "--bind",
-                "127.0.0.1",
-                "--port",
-                "0",
-                "--duration-ms",
-                str(duration_ms),
-                "--drain-after-ms",
-                str(drain_after_ms),
-                "--drain-timeout-ms",
-                "1000",
-                "--seed",
-                "41",
-                "--trace-output",
-                report_path.parent / "server.jsonl",
-            ],
-            report_path.parent,
-            env,
-        )
+        server_command = [
+            server,
+            "--bind",
+            "127.0.0.1",
+            "--port",
+            "0",
+            "--duration-ms",
+            str(duration_ms),
+            "--drain-after-ms",
+            str(drain_after_ms),
+            "--drain-timeout-ms",
+            "1000",
+            "--seed",
+            "41",
+            "--trace-output",
+            report_path.parent / "server.jsonl",
+        ]
+        if drain_response_delay_ms:
+            server_command.extend(["--drain-response-delay-ms", str(drain_response_delay_ms)])
+        server_process = popen(server_command, report_path.parent, env)
 
         def read_server_output():
             for line in server_process.stdout:
@@ -281,6 +286,7 @@ def run_handshake(server, client, report_path, duration_ms=8000, drain_after_ms=
             server_process.returncode == 0
             and all(item["returncode"] == 0 and not item["stderr"] for item in client_results)
             and not errors
+            and (drain_response_delay_ms == 0 or drain_response_delay_ms > 32)
             and len(initial_welcomes) == 2
             and len(resumed_welcomes) == 1
             and resumed_welcomes[0]["client_id"] == "A"
@@ -386,9 +392,15 @@ def main(argv=None):
     parser.add_argument("--server", type=Path, required=True)
     parser.add_argument("--client", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
+    parser.add_argument("--drain-response-delay-ms", type=int, default=96)
     args = parser.parse_args(argv)
     try:
-        result = run_handshake(args.server, args.client, args.report)
+        result = run_handshake(
+            args.server,
+            args.client,
+            args.report,
+            drain_response_delay_ms=args.drain_response_delay_ms,
+        )
         print("ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok")
         print(json.dumps({"report": str(args.report), "trace_sha256": result["trace_sha256"]}, indent=2))
         return 0
