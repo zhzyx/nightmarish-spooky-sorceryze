@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:engine-next:asset-manifest:1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "scene", "assets"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "scene": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scene_id", "scene_revision", "content_sha256"],
+      "properties": {
+        "scene_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"},
+        "scene_revision": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"},
+        "content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "assets": {
+      "type": "array",
+      "maxItems": 1024,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["asset_id", "revision", "type", "media_type", "content_sha256", "byte_size", "dependencies", "source"],
+        "properties": {
+          "asset_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"},
+          "revision": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"},
+          "type": {"enum": ["image", "mesh"]},
+          "media_type": {"enum": ["image/png", "image/jpeg", "model/gltf-binary"]},
+          "content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "byte_size": {"type": "integer", "minimum": 1, "maximum": 67108864},
+          "dependencies": {
+            "type": "array",
+            "maxItems": 256,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["asset_id", "revision", "content_sha256"],
+              "properties": {
+                "asset_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"},
+                "revision": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"},
+                "content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+              }
+            }
+          },
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind"],
+            "properties": {
+              "kind": {"enum": ["executor_artifact", "godot_whitelist_import"]},
+              "artifact_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"},
+              "artifact_revision": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"},
+              "importer_version": {"const": "1"}
+            },
+            "allOf": [
+              {
+                "if": {"properties": {"kind": {"const": "executor_artifact"}}},
+                "then": {
+                  "required": ["artifact_id", "artifact_revision"],
+                  "not": {"required": ["importer_version"]}
+                }
+              },
+              {
+                "if": {"properties": {"kind": {"const": "godot_whitelist_import"}}},
+                "then": {
+                  "required": ["importer_version"],
+                  "not": {"anyOf": [{"required": ["artifact_id"]}, {"required": ["artifact_revision"]}]}
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
