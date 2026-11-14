@@ -1426,6 +1426,7 @@ func _show_tianxuan_dialog(url: String, data: Dictionary, item: Dictionary) -> v
 	var box := VBoxContainer.new()
 	box.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	dialog.add_child(box)
+	var checks: Array = []
 	var requirements: Array = []
 	for doc in data.get("documents", []):
 		if str(doc.get("kind", "")) == "requirement":
@@ -1451,9 +1452,18 @@ func _show_tianxuan_dialog(url: String, data: Dictionary, item: Dictionary) -> v
 			for issue in data.get("issues", []):
 				if str(issue.get("requirement_id", "")) != doc_id or issue.get("parent_id") in [null, ""]:
 					continue
-				var row := Label.new()
-				row.text = "#" + str(issue.get("number", "")) + "  " + str(issue.get("title", "")) + " · " + str(issue.get("status", ""))
-				row.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+				var row := HBoxContainer.new()
+				var label := Label.new()
+				label.text = "#" + str(issue.get("number", "")) + "  " + str(issue.get("title", "")) + " · " + str(issue.get("status", ""))
+				label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+				label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				row.add_child(label)
+				if str(issue.get("status", "")) != "done":
+					var check := CheckBox.new()
+					check.text = "完成"
+					check.set_meta("issue_title", str(issue.get("title", "")))
+					checks.append(check)
+					row.add_child(check)
 				box.add_child(row)
 		var board := Button.new()
 		board.text = "打开天璇看板"
@@ -1461,10 +1471,34 @@ func _show_tianxuan_dialog(url: String, data: Dictionary, item: Dictionary) -> v
 			OS.shell_open("http://127.0.0.1:3000/issues")
 			dialog.hide())
 		box.add_child(board)
+		if not checks.is_empty():
+			var sync := Button.new()
+			sync.text = "同步勾选工单为完成"
+			sync.pressed.connect(_sync_tianxuan.bind(url, checks, dialog))
+			box.add_child(sync)
 	add_child(dialog)
 	dialog.confirmed.connect(dialog.queue_free)
 	dialog.close_requested.connect(dialog.queue_free)
 	dialog.popup_centered()
+
+
+func _sync_tianxuan(url: String, checks: Array, dialog: AcceptDialog) -> void:
+	var titles: Array = []
+	for check in checks:
+		if check.button_pressed:
+			titles.append(str(check.get_meta("issue_title", "")))
+	if titles.is_empty():
+		return
+	var arguments: Array = ["sync", "--external-id", url]
+	for title in titles:
+		arguments.append_array(["--done", title])
+	var result := await _tianxuan_command(arguments)
+	if result.get("ok") != true:
+		issue_inspector.feedback.text = "天璇同步失败：" + str(result.get("error", "未知错误"))
+		return
+	dialog.hide()
+	await get_tree().process_frame
+	_open_tianxuan()
 
 
 func _publish_tianxuan(url: String, item: Dictionary) -> void:

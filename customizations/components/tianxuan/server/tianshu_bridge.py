@@ -164,6 +164,53 @@ def board(args: argparse.Namespace) -> dict[str, Any]:
     return _request(args.api, "GET", "/api/v1/board", actor=args.actor, token=args.token)
 
 
+def _transition(args: argparse.Namespace, issue_id: str, status: str) -> dict[str, Any]:
+    return _request(
+        args.api,
+        "PATCH",
+        f"/api/v1/issues/{urllib.parse.quote(issue_id, safe='')}",
+        actor=args.actor,
+        token=args.token,
+        body={"to_status": status},
+    )
+
+
+def sync_tickets(args: argparse.Namespace) -> dict[str, Any]:
+    """把天枢已完成的计划节点标题同步为天璇子工单 done。"""
+    context = _request(
+        args.api,
+        "GET",
+        "/api/v1/external-context",
+        actor=args.actor,
+        token=args.token,
+        params={"system": args.system, "external_id": args.external_id},
+    )
+    children = [issue for issue in context.get("issues", []) if isinstance(issue, dict) and issue.get("parent_id")]
+    by_title: dict[str, dict[str, Any]] = {}
+    for issue in children:
+        by_title.setdefault(str(issue.get("title", "")), issue)
+    path = ["backlog", "planned", "in-progress", "in-review", "done"]
+    updated: list[dict[str, Any]] = []
+    missing: list[str] = []
+    for title in args.done:
+        issue = by_title.get(title)
+        if issue is None:
+            missing.append(title)
+            continue
+        status = str(issue.get("status", "backlog"))
+        if status == "done":
+            updated.append(issue)
+            continue
+        if status not in path:
+            missing.append(f"{title} (status={status})")
+            continue
+        current = issue
+        for target in path[path.index(status) + 1 :]:
+            current = _transition(args, str(current["id"]), target)
+        updated.append(current)
+    return {"updated": updated, "missing": missing}
+
+
 def _write(args: argparse.Namespace, envelope: dict[str, Any]) -> None:
     text = json.dumps(envelope, ensure_ascii=False, indent=2)
     if args.result:
@@ -239,6 +286,12 @@ def main(argv: list[str] | None = None) -> int:
     p_list.set_defaults(func=issues_list)
 
     sub.add_parser("board", help="工单看板").set_defaults(func=board)
+
+    p = sub.add_parser("sync", help="把天枢完成节点同步为天璇工单完成")
+    p.add_argument("--system", default="tianshu")
+    p.add_argument("--external-id", required=True)
+    p.add_argument("--done", action="append", required=True, help="已完成的计划节点标题")
+    p.set_defaults(func=sync_tickets)
 
     args = parser.parse_args(arguments)
     try:

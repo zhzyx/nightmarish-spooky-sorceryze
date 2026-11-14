@@ -123,3 +123,50 @@ def test_error_is_reported_and_result_written(monkeypatch, tmp_path, capsys) -> 
     assert envelope["ok"] is False
     assert "403" in envelope["error"]
     assert json.loads(capsys.readouterr().out)["ok"] is False
+
+
+def test_sync_advances_ticket_to_done(monkeypatch, capsys) -> None:
+    calls: list[Request] = []
+    seen: list[str] = []
+
+    def fake(request: Request, timeout: int) -> _Response:
+        calls.append(request)
+        if "/external-context" in request.full_url:
+            return _Response({
+                "issues": [
+                    {
+                        "id": "iss_1",
+                        "title": "任务甲",
+                        "status": "backlog",
+                        "parent_id": "iss_parent",
+                    }
+                ]
+            })
+        payload = request.data
+        assert isinstance(payload, bytes)
+        body = json.loads(payload.decode("utf-8"))
+        seen.append(body["to_status"])
+        return _Response({
+            "id": "iss_1",
+            "title": "任务甲",
+            "status": body["to_status"],
+            "parent_id": "iss_parent",
+        })
+
+    monkeypatch.setattr(tianshu_bridge, "urlopen", fake)
+    code = tianshu_bridge.main([
+        "--api",
+        "http://api.example",
+        "--actor",
+        "usr_1",
+        "sync",
+        "--external-id",
+        "issue/1",
+        "--done",
+        "任务甲",
+    ])
+    assert code == 0
+    assert seen == ["planned", "in-progress", "in-review", "done"]
+    envelope = json.loads(capsys.readouterr().out)
+    assert envelope["ok"] is True
+    assert envelope["data"]["updated"][0]["status"] == "done"
