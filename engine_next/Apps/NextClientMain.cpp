@@ -40,7 +40,7 @@ namespace
 
 void PrintUsage()
 {
-	std::cout << "Usage: next_client [--manual-ticks N] [--fixed-step-ms N] [--seed N] [--client-id ID] [--trace-output PATH]\n";
+	std::cout << "Usage: next_client [--manual-ticks N] [--fixed-step-ms N] [--seed N] [--client-id ID] [--trace-output PATH] [--asset-package PATH]\n";
 }
 
 } // namespace

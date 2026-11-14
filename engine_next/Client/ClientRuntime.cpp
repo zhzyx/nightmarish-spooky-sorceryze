@@ -109,9 +109,30 @@ RuntimeStatus SendDisconnect(Network::ITransport &in_stTransport, std::uint64_t 
 
 RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 {
+	RuntimeHost stHost(RuntimeRole::Client);
+	RuntimeStatus eStatus = stHost.Initialize(in_stConfig);
+	if (eStatus != RuntimeStatus::Ok)
+	{
+		return eStatus;
+	}
+	const SceneRuntime &stScene = stHost.GetSceneRuntime();
+	if (stScene.IsLoaded())
+	{
+		std::cout << "ENGINE_NEXT_CLIENT_SCENE client_id=" << in_stConfig.strClientId << " scene_id=" << stScene.GetSceneId()
+				  << " scene_revision=" << stScene.GetSceneRevision() << " scene_content_sha256=" << stScene.GetSceneContentSha256()
+				  << " package_digest=" << stScene.GetPackageDigest() << '\n'
+				  << std::flush;
+	}
+	Gameplay::PredictionReconciler stPrediction;
+	if (!stPrediction.SetModel(stScene.GetPredictionModel()))
+	{
+		stHost.Shutdown();
+		return RuntimeStatus::InvalidParameter;
+	}
 	std::unique_ptr<Network::ITransport> pEnetTransport(Network::CreateEnetTransport());
 	if (pEnetTransport == nullptr)
 	{
+		stHost.Shutdown();
 		return RuntimeStatus::InvalidState;
 	}
 	Network::ImpairmentConfig stImpairmentConfig;
@@ -122,21 +143,14 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 	stImpairmentConfig.nQueueCapacity = in_stConfig.nImpairmentQueueCapacity;
 	stImpairmentConfig.bDropFirstInput = in_stConfig.bDropFirstInput;
 	std::unique_ptr<Network::ImpairmentTransport> pTransport = std::make_unique<Network::ImpairmentTransport>(std::move(pEnetTransport), stImpairmentConfig);
-	RuntimeStatus eStatus = pTransport->StartClient(in_stConfig.strBindAddress, in_stConfig.nPort);
+	eStatus = pTransport->StartClient(in_stConfig.strBindAddress, in_stConfig.nPort);
 	if (eStatus != RuntimeStatus::Ok)
 	{
-		return eStatus;
-	}
-	RuntimeHost stHost(RuntimeRole::Client);
-	eStatus = stHost.Initialize(in_stConfig);
-	if (eStatus != RuntimeStatus::Ok)
-	{
-		pTransport->Stop();
+		stHost.Shutdown();
 		return eStatus;
 	}
 
 	SystemClock stClock;
-	Gameplay::PredictionReconciler stPrediction;
 	std::map<std::uint64_t, Gameplay::InterpolationBuffer> mapRemoteBuffers;
 	std::map<std::uint64_t, Gameplay::PredictionInput> mapUnacknowledgedInputs;
 	std::map<std::uint64_t, std::size_t> mapRemoteHighWater;
@@ -265,7 +279,8 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 					break;
 				}
 				const bool bResume = bReconnecting && bReconnectAttempted;
-				if (stHeader.nSessionId == 0 || (bResume && (stHeader.nSessionId != nSessionId || stWelcome.nEntityId != nEntityId || stWelcome.arrResumeToken == arrResumeToken)))
+				if (stHeader.nSessionId == 0 || stWelcome.nFixedStepMsec != stHost.GetFixedStepLoop().GetFixedStepMsec() ||
+					(bResume && (stHeader.nSessionId != nSessionId || stWelcome.nEntityId != nEntityId || stWelcome.arrResumeToken == arrResumeToken)))
 				{
 					eStatus = RuntimeStatus::InvalidParameter;
 					break;
@@ -405,7 +420,7 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 			stState.vPosition = stSnapshot.vPosition;
 			stState.vVelocity = stSnapshot.vVelocity;
 			stState.nConfirmedSequence = stSnapshot.nLastProcessedInputSequence;
-			stState.nServerTimeMsec = stSnapshot.nServerTick * 16;
+			stState.nServerTimeMsec = stSnapshot.nServerTick * stHost.GetFixedStepLoop().GetFixedStepMsec();
 			nLatestServerTimeMsec = stState.nServerTimeMsec;
 			nLatestSnapshotLocalMsec = stClock.NowMsec();
 			(void)stHost.RecordTrace(stSnapshot.nServerTick, "decoded_snapshot", Runtime::EntityId{ stSnapshot.nEntityId }, stHeader.nSessionId);
@@ -491,7 +506,7 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 			mapUnacknowledgedInputs.emplace(stInput.nSequence, stInput);
 			nUnacknowledgedHighWater = nUnacknowledgedHighWater < mapUnacknowledgedInputs.size() ? mapUnacknowledgedInputs.size() : nUnacknowledgedHighWater;
 			++nSentInputs;
-			nNextInputMsec = nNowMsec + 16;
+			nNextInputMsec = nNowMsec + stHost.GetFixedStepLoop().GetFixedStepMsec();
 			if (in_stConfig.bReconnectTest && !bReconnectAttempted && nSentInputs == 12)
 			{
 				bReconnectAttempted = true;
@@ -551,7 +566,10 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 				{
 					continue;
 				}
-				const bool bMovingSample = stResult.stState->vPosition.fX > 0.0F;
+				const SpawnDefinition *pSpawn = stScene.FindSpawn(EntityId{ stEntry.first });
+				const float fSpawnX = pSpawn == nullptr ? 0.0F : pSpawn->vPosition.fX;
+				const float fDisplacement = stResult.stState->vPosition.fX - fSpawnX;
+				const bool bMovingSample = fDisplacement > 0.0001F || fDisplacement < -0.0001F;
 				if (bMovingSample && !bRemoteSeen &&
 					(stResult.eStatus == Gameplay::InterpolationStatus::Interpolated || stResult.eStatus == Gameplay::InterpolationStatus::Held))
 				{

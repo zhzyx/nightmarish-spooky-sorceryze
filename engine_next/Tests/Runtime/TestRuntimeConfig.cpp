@@ -97,3 +97,12 @@ ENGINE_NEXT_TEST("Drain acknowledgement fault injection is client only")
 	stConfig.eRole = EngineNext::Runtime::RuntimeRole::Server;
 	ENGINE_NEXT_CHECK_EQ(EngineNext::Runtime::ParseArguments({ "--withhold-drain-ack" }, stConfig), EngineNext::Runtime::RuntimeStatus::InvalidParameter);
 }
+
+ENGINE_NEXT_TEST("Asset package is optional and owns the fixed step when present")
+{
+	EngineNext::Runtime::RuntimeConfig stConfig;
+	ENGINE_NEXT_CHECK_EQ(EngineNext::Runtime::ParseArguments({ "--asset-package", "scene.enpak" }, stConfig), EngineNext::Runtime::RuntimeStatus::Ok);
+	ENGINE_NEXT_CHECK_EQ(stConfig.strAssetPackagePath, "scene.enpak");
+	ENGINE_NEXT_CHECK_EQ(EngineNext::Runtime::ParseArguments({ "--asset-package", "scene.enpak", "--fixed-step-ms", "20" }, stConfig), EngineNext::Runtime::RuntimeStatus::InvalidParameter);
+	ENGINE_NEXT_CHECK_EQ(EngineNext::Runtime::ParseArguments({ "--asset-package" }, stConfig), EngineNext::Runtime::RuntimeStatus::InvalidParameter);
+}

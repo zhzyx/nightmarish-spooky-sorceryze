@@ -106,6 +106,7 @@ RuntimeStatus ParseUnsignedOption(const std::string &in_strArgument, const std::
 			return RuntimeStatus::InvalidParameter;
 		}
 		out_stConfig.nFixedStepMsec = static_cast<std::uint32_t>(nValue);
+		out_stConfig.bFixedStepProvided = true;
 		return RuntimeStatus::Ok;
 	}
 	if (in_strArgument == "--seed")
@@ -235,7 +236,8 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 			}
 			continue;
 		}
-		if (strArgument == "--trace-output" || strArgument == "--client-id" || strArgument == "--bind" || strArgument == "--connect")
+		if (strArgument == "--trace-output" || strArgument == "--client-id" || strArgument == "--bind" || strArgument == "--connect" ||
+			strArgument == "--asset-package")
 		{
 			if (!ParseValue(in_arrArguments, nIndex, strValue) || strValue.empty())
 			{
@@ -244,6 +246,10 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 			if (strArgument == "--trace-output")
 			{
 				stParsed.strTracePath = strValue;
+			}
+			else if (strArgument == "--asset-package")
+			{
+				stParsed.strAssetPackagePath = strValue;
 			}
 			else if (strArgument == "--client-id")
 			{
@@ -270,6 +276,10 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 		return RuntimeStatus::InvalidParameter;
 	}
 	if (stParsed.eRole == RuntimeRole::Server && bClientIdProvided)
+	{
+		return RuntimeStatus::InvalidParameter;
+	}
+	if (!stParsed.strAssetPackagePath.empty() && stParsed.bFixedStepProvided)
 	{
 		return RuntimeStatus::InvalidParameter;
 	}

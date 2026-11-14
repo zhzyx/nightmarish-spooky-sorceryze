@@ -1,0 +1,13 @@
+[gd_scene format=3 scene_id="m3.legacy" scene_revision="r3" fixed_step_ms=20 max_speed=4.5]
+
+[ext_resource type="PackedScene" path="res://valid.glb" id="mesh"]
+
+[node name="Root" type="Node3D"]
+metadata/entity_id = 7
+metadata/gameplay_kind = "static"
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2, 3)
+metadata/entity_id = 8
+metadata/gameplay_kind = "static"
+metadata/mesh_resource = "mesh"

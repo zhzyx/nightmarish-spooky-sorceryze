@@ -35,8 +35,8 @@
 namespace EngineNext::Network
 {
 
-SessionManager::SessionManager(Runtime::World &in_stWorld, std::uint64_t nSeed) :
-		pWorld(&in_stWorld), nRandomState(nSeed == 0 ? 1 : nSeed)
+SessionManager::SessionManager(Runtime::World &in_stWorld, std::uint64_t nSeed, const Runtime::SceneRuntime *in_pScene, std::uint32_t in_nFixedStepMsec) :
+		pWorld(&in_stWorld), pScene(in_pScene), nRandomState(nSeed == 0 ? 1 : nSeed), nFixedStepMsec(in_nFixedStepMsec)
 {
 }
 
@@ -56,7 +56,7 @@ Runtime::RuntimeStatus SessionManager::CreateSession(PeerId in_nPeerId, const Cl
 	const bool bResumeEmpty = in_stHello.nResumeSessionId == 0 &&
 			std::all_of(in_stHello.arrResumeToken.begin(), in_stHello.arrResumeToken.end(), [](std::uint8_t nValue)
 						{ return nValue == 0; });
-	if (in_nPeerId == 0 || !bResumeEmpty)
+	if (in_nPeerId == 0 || nFixedStepMsec == 0 || !bResumeEmpty)
 	{
 		return Runtime::RuntimeStatus::InvalidParameter;
 	}
@@ -69,11 +69,31 @@ Runtime::RuntimeStatus SessionManager::CreateSession(PeerId in_nPeerId, const Cl
 		return Runtime::RuntimeStatus::InvalidState;
 	}
 	const std::uint64_t nSessionId = nNextSessionId++;
-	const Runtime::EntityId stEntityId{ nSessionId };
+	Runtime::EntityId stEntityId{ nSessionId };
+	const Runtime::SpawnDefinition *pSpawn = nullptr;
+	if (pScene != nullptr && pScene->IsLoaded())
+	{
+		pSpawn = pScene->GetSpawn(nNextSpawnIndex);
+		if (pSpawn == nullptr)
+		{
+			return Runtime::RuntimeStatus::InvalidState;
+		}
+		stEntityId = pSpawn->stEntityId;
+	}
 	const Runtime::RuntimeStatus eWorldStatus = pWorld->CreateWithId(stEntityId);
 	if (eWorldStatus != Runtime::RuntimeStatus::Ok)
 	{
 		return eWorldStatus;
+	}
+	if (pSpawn != nullptr)
+	{
+		Gameplay::PredictionState *pState = pWorld->Find(stEntityId);
+		if (pState == nullptr)
+		{
+			return Runtime::RuntimeStatus::InvalidState;
+		}
+		pState->vPosition = pSpawn->vPosition;
+		++nNextSpawnIndex;
 	}
 	Session stSession;
 	stSession.nSessionId = nSessionId;
@@ -84,6 +104,8 @@ Runtime::RuntimeStatus SessionManager::CreateSession(PeerId in_nPeerId, const Cl
 
 	out_stWelcome = ServerWelcome{};
 	out_stWelcome.nEntityId = stEntityId.nValue;
+	out_stWelcome.nFixedStepMsec = nFixedStepMsec;
+	out_stWelcome.vPosition = pWorld->Find(stEntityId)->vPosition;
 	out_stWelcome.arrResumeToken = stSession.arrResumeToken;
 	out_nSessionId = nSessionId;
 	return Runtime::RuntimeStatus::Ok;
@@ -137,7 +159,7 @@ bool SessionManager::DisconnectSession(PeerId in_nPeerId, std::uint64_t nNowMsec
 
 Runtime::RuntimeStatus SessionManager::ResumeSession(PeerId in_nPeerId, const ClientHello &in_stHello, std::uint64_t nNowMsec, ServerWelcome &out_stWelcome, std::uint64_t &out_nSessionId)
 {
-	if (in_nPeerId == 0 || in_stHello.nResumeSessionId == 0)
+	if (in_nPeerId == 0 || nFixedStepMsec == 0 || in_stHello.nResumeSessionId == 0)
 	{
 		return Runtime::RuntimeStatus::InvalidParameter;
 	}
@@ -172,7 +194,8 @@ Runtime::RuntimeStatus SessionManager::ResumeSession(PeerId in_nPeerId, const Cl
 	out_stWelcome = ServerWelcome{};
 	out_stWelcome.nEntityId = stSession.stEntityId.nValue;
 	out_stWelcome.arrResumeToken = stSession.arrResumeToken;
-	out_stWelcome.nServerTick = pState->nServerTimeMsec / 16;
+	out_stWelcome.nServerTick = pState->nServerTimeMsec / nFixedStepMsec;
+	out_stWelcome.nFixedStepMsec = nFixedStepMsec;
 	out_stWelcome.nConfirmedInputSequence = pState->nConfirmedSequence;
 	out_stWelcome.vPosition = pState->vPosition;
 	out_stWelcome.vVelocity = pState->vVelocity;

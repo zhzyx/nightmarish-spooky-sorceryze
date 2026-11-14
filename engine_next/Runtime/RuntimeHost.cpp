@@ -51,8 +51,22 @@ RuntimeStatus RuntimeHost::Initialize(const RuntimeConfig &in_stConfig)
 	}
 	stConfig = in_stConfig;
 	stWorld.Clear();
+	stSceneRuntime.Clear();
 	stManualClock.Reset();
 	stFixedStepLoop.Reset();
+	if (!stConfig.strAssetPackagePath.empty())
+	{
+		Assets::Diagnostics arrDiagnostics;
+		if (!stSceneRuntime.Load(stConfig.strAssetPackagePath, arrDiagnostics))
+		{
+			return RuntimeStatus::InvalidParameter;
+		}
+		stConfig.nFixedStepMsec = stSceneRuntime.GetPredictionModel().GetFixedStepMsec();
+	}
+	else if (!stSceneRuntime.ConfigureDefaultSimulation(stConfig.nFixedStepMsec))
+	{
+		return RuntimeStatus::InvalidParameter;
+	}
 	if (!stFixedStepLoop.SetFixedStepMsec(stConfig.nFixedStepMsec))
 	{
 		return RuntimeStatus::InvalidParameter;
@@ -133,6 +147,11 @@ ManualClock &RuntimeHost::GetManualClock() noexcept
 	return stManualClock;
 }
 
+const SceneRuntime &RuntimeHost::GetSceneRuntime() const noexcept
+{
+	return stSceneRuntime;
+}
+
 RuntimeStatus RuntimeHost::RecordTrace(std::uint64_t nTick, const std::string &in_strEvent, EntityId in_stEntityId, std::uint64_t nValue)
 {
 	return stTrace.Record(nTick, in_strEvent, in_stEntityId, nValue);
@@ -153,6 +172,7 @@ void RuntimeHost::Shutdown() noexcept
 	bRunning = false;
 	bInitialized = false;
 	stWorld.Clear();
+	stSceneRuntime.Clear();
 	stFixedStepLoop.Reset();
 	stManualClock.Reset();
 	stTrace.Close();

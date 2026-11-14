@@ -48,6 +48,7 @@ LIBRARY_SOURCES = [
     "engine_next/Runtime/Trace.cpp",
     "engine_next/Runtime/RuntimeConfig.cpp",
     "engine_next/Runtime/RuntimeHost.cpp",
+    "engine_next/Runtime/SceneRuntime.cpp",
     "engine_next/Network/Protocol.cpp",
     "engine_next/Network/EnetTransport.cpp",
     "engine_next/Network/ImpairmentTransport.cpp",
@@ -70,6 +71,7 @@ TEST_SOURCES = [
     "engine_next/Tests/Runtime/TestWorld.cpp",
     "engine_next/Tests/Runtime/TestRuntimeConfig.cpp",
     "engine_next/Tests/Runtime/TestRuntimeHost.cpp",
+    "engine_next/Tests/Runtime/TestSceneRuntime.cpp",
     "engine_next/Tests/Network/TestProtocol.cpp",
     "engine_next/Tests/Network/TestImpairmentTransport.cpp",
     "engine_next/Tests/Gameplay/TestPredictionReconciler.cpp",
@@ -107,6 +109,7 @@ PUBLIC_HEADERS = [
     "EngineNext/Runtime/Trace.h",
     "EngineNext/Runtime/RuntimeConfig.h",
     "EngineNext/Runtime/RuntimeHost.h",
+    "EngineNext/Runtime/SceneRuntime.h",
     "EngineNext/Network/ITransport.h",
     "EngineNext/Network/Protocol.h",
     "EngineNext/Network/ImpairmentTransport.h",
@@ -119,6 +122,7 @@ BUILD_SUPPORT_SOURCES = [
     "engine_next/Tools/RunM2Soak.py",
     "engine_next/Tools/RunM3AssetAcceptance.py",
     "engine_next/Tools/RunM3AiAcceptance.py",
+    "engine_next/Tools/RunM3SceneAcceptance.py",
     "engine_next/Tools/PackageRuntime.py",
 ]
 BuildSupport.ALLOWED_REPOSITORY_INPUTS = (
@@ -522,6 +526,31 @@ def run_ai_acceptance(args, targets, directory):
     )
 
 
+def run_scene_acceptance(args, targets, directory):
+    executables = {target["name"]: directory / target["executable"].name for target in targets}
+    return (
+        BuildSupport
+        .run(
+            [
+                sys.executable,
+                args.repo / "engine_next/Tools/RunM3SceneAcceptance.py",
+                "--next-asset",
+                executables["next_asset"],
+                "--server",
+                executables["next_server"],
+                "--client",
+                executables["next_client"],
+                "--report",
+                directory / "M3SceneReport.json",
+            ],
+            cwd=args.repo,
+            env=args.tool_environment,
+        )
+        .decode("utf-8")
+        .strip()
+    )
+
+
 def run_acceptance(args, targets):
     summaries = {}
     clean_summaries = {}
@@ -547,6 +576,8 @@ def run_acceptance(args, targets):
         "clean_assets": run_asset_acceptance(args, targets, clean_dir),
         "ai": run_ai_acceptance(args, targets, args.build_dir),
         "clean_ai": run_ai_acceptance(args, targets, clean_dir),
+        "scene": run_scene_acceptance(args, targets, args.build_dir),
+        "clean_scene": run_scene_acceptance(args, targets, clean_dir),
         "handshake": run_handshake(args, targets, args.build_dir),
         "clean_handshake": run_handshake(args, targets, clean_dir),
         "drain_faults": run_drain_faults(args, targets, args.build_dir),
@@ -699,6 +730,8 @@ def build(args):
         "clean_assets": acceptance.get("clean_assets", "not_run"),
         "ai": acceptance.get("ai", "not_run"),
         "clean_ai": acceptance.get("clean_ai", "not_run"),
+        "scene": acceptance.get("scene", "not_run"),
+        "clean_scene": acceptance.get("clean_scene", "not_run"),
         "drain_faults": acceptance.get("drain_faults", "not_run"),
         "clean_drain_faults": acceptance.get("clean_drain_faults", "not_run"),
     }

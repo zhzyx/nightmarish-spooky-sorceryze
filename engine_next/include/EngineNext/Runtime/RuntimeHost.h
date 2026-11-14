@@ -33,6 +33,7 @@
 #include "engine_next/include/EngineNext/Runtime/Clock.h"
 #include "engine_next/include/EngineNext/Runtime/FixedStepLoop.h"
 #include "engine_next/include/EngineNext/Runtime/RuntimeConfig.h"
+#include "engine_next/include/EngineNext/Runtime/SceneRuntime.h"
 #include "engine_next/include/EngineNext/Runtime/Trace.h"
 #include "engine_next/include/EngineNext/Runtime/World.h"
 
@@ -45,6 +46,7 @@ class RuntimeHost
 	ManualClock stManualClock;
 	FixedStepLoop stFixedStepLoop;
 	World stWorld;
+	SceneRuntime stSceneRuntime;
 	Trace stTrace;
 	bool bInitialized = false;
 	bool bRunning = false;
@@ -57,6 +59,7 @@ public:
 	[[nodiscard]] World &GetWorld() noexcept;
 	[[nodiscard]] FixedStepLoop &GetFixedStepLoop() noexcept;
 	[[nodiscard]] ManualClock &GetManualClock() noexcept;
+	[[nodiscard]] const SceneRuntime &GetSceneRuntime() const noexcept;
 	[[nodiscard]] RuntimeStatus RecordTrace(std::uint64_t nTick, const std::string &in_strEvent, EntityId in_stEntityId = {}, std::uint64_t nValue = 0);
 	[[nodiscard]] bool IsInitialized() const noexcept;
 	void Shutdown() noexcept;

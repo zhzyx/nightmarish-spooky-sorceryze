@@ -1,0 +1,5 @@
+[gd_scene format=3 scene_id="m3.reject" scene_revision="r1"]
+
+[node name="Root" type="Node3D" unknown_node_field=true]
+metadata/entity_id = 1
+metadata/gameplay_kind = "static"

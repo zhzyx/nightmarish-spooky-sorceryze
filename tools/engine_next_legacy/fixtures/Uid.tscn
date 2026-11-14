@@ -1,0 +1,8 @@
+[gd_scene format=3 scene_id="m3.reject" scene_revision="r1"]
+
+[ext_resource type="PackedScene" path="res://valid.glb" id="other" uid="uid://invalid"]
+
+[node name="Root" type="MeshInstance3D"]
+metadata/entity_id = 1
+metadata/gameplay_kind = "static"
+metadata/mesh_resource = "other"
