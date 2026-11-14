@@ -424,3 +424,18 @@ export async function rebindIdentityLink(
   }
   return (await response.json()) as ApiIdentityLink;
 }
+
+export async function downloadDocExport(
+  actor: string,
+  docId: string,
+  format: "md" | "html",
+): Promise<Blob> {
+  const response = await fetch(
+    `${apiBase()}/api/v1/docs/${encodeURIComponent(docId)}/export/file?format=${format}`,
+    { headers: { "X-Actor": actor } },
+  );
+  if (!response.ok) {
+    throw new Error(`doc export failed: ${response.status}`);
+  }
+  return response.blob();
+}
