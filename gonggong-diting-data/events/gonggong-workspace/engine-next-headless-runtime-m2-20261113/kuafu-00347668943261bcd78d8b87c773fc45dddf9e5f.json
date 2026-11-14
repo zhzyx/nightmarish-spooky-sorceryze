@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-00347668943261bcd78d8b87c773fc45dddf9e5f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3e8f72f4fbd3036d71b64bd9f8703d2a3119e4db84ff4961eae9def7245bef76",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1138",
+    "action": "delivery",
+    "detection_head": "5838241afad2c5f699f06a76b1c299c5560677d4",
+    "context_sha256": "83683561569980cc1b134f764d99dccbfb590ac09b5cc3c538f5fcfe31724b50",
+    "operator": "kaiyunxue",
+    "worker": "kaiyunxue/kimi-work",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/compare/5838241afad2c5f699f06a76b1c299c5560677d4..2988e18f824b3462f502b68b74f915aa9c59a6a0",
+    "diagnosis": "第三次最终证据签发时 main 前进到 2988e18f，预检依旧没有写入路径重叠。候选和 135 个输入 blob 未变，继续为每次漂移新增文档只会扩大竞态窗口。",
+    "next_action": "核对五个上游文件后，直接 fast-forward 并立即执行原签发；以实际签名 base/head 和后续 main 回读作为最终集成证据。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T04:12:19.690428+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-14T04:15:33.562461+00:00",
+  "sha256": "ee34fa78b446c1ce3ccee036f96d99b19298db9525e4ea4eeb13140c6ddb521b"
+}

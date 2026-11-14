@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "issue_number": 1042,
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "implementation_merge_commit": "fe98b82a19da73c5339c9a21959f65950c62e73a",
+  "integrated_main": "8f3eaac66e67537fad415cf9db0edfdcba912714",
+  "integration_strategy": "fast-forward",
+  "upstream_changed_paths": [
+    "customizations/components/tianxuan/README.md",
+    "customizations/components/tianxuan/server/api.py",
+    "customizations/components/tianxuan/server/schemas.py",
+    "customizations/components/tianxuan/server/test_external_links.py",
+    "customizations/components/tianxuan/server/test_tianshu_bridge.py",
+    "customizations/components/tianxuan/server/tianshu_bridge.py",
+    "customizations/components/tianxuan/server/tianxuan_core.py",
+    "design-docs/tianxuan-platform-20261114.md"
+  ],
+  "native_input_changes": [],
+  "overlapping_write_paths": [],
+  "native_rebuild_required": false,
+  "platform_verification": "data-collection/engine-next-headless-runtime-m2-final-platforms.json",
+  "kuafu": {
+    "incident": "43f9ee7936eaf7bb16d1a19dd91b48f8173ab719bf81ce5ce5a826e95ac70f01",
+    "dispatch_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43553726672",
+    "event": "gonggong-diting-data/events/gonggong-workspace/engine-next-headless-runtime-m2-20261113/kuafu-7dd5ee669666b94661a77237fc175044126e85fd.json",
+    "original_operation_reverified": false
+  },
+  "unverified": [
+    "The final evidence PR must be signed on this base, pass CI, merge and be read back on origin/main before issue closure"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-97aea38354a0a042b9d94497f6443c5d254f56a6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a6c3eeb9d59ed745d6a40d00ad60cd578f3768e17df03554508748d2bf4b19ba",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1138",
+    "action": "delivery",
+    "detection_head": "8f3eaac66e67537fad415cf9db0edfdcba912714",
+    "context_sha256": "83683561569980cc1b134f764d99dccbfb590ac09b5cc3c538f5fcfe31724b50",
+    "operator": "kaiyunxue",
+    "worker": "kaiyunxue/kimi-work",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/compare/8f3eaac66e67537fad415cf9db0edfdcba912714..5838241afad2c5f699f06a76b1c299c5560677d4",
+    "diagnosis": "最终证据第二次签发时 main 又前进到 5838241a，预检仍确认与最终写入路径无重叠。需要核对 76 个上游文件是否包含 Engine Next 原生输入；候选尚未提交。",
+    "next_action": "检查上游原生路径；若无变化，使用签发入口的 --auto-integrate 完成无重叠树级对齐，并重新核对候选门禁和签名 head，避免手工整合与签发之间再次竞态。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T04:00:27.434070+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-14T04:02:38.803316+00:00",
+  "sha256": "78b727463b9e42a5ff9807764749c57bacea3479010b0e4d5216923a1d06c4af"
+}
