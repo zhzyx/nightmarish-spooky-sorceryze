@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "event_id": "cursor-kuafu-request-1168",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-run-43522349587-attempt-1",
+  "kind": "request",
+  "occurred_at": "2026-11-14T01:51:20+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1168",
+  "agent": {
+    "id": "kuafu",
+    "origin": "cursor_cloud_agent",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "scope": "用户要求推进 bot 创建的夸父工单并进行代码排查与修复；本单修复 Windows liveness 撤销测试的文件共享竞态。",
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage in the host receipt."
+  },
+  "sha256": "bbdd8b49771cdecfe494576f87e91969161e91586f04f1655c51c29d7e826ec3"
+}
