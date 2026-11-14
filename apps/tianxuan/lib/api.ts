@@ -313,3 +313,28 @@ export async function fetchBoard(actor: string): Promise<Record<string, ApiIssue
   const body = (await response.json()) as { columns?: Record<string, ApiIssue[]> };
   return body.columns ?? {};
 }
+
+export interface ApiExternalLink {
+  id: string;
+  system: string;
+  external_id: string;
+  target_type: string;
+  target_id: string;
+  created_by: string;
+  created_at: string;
+}
+
+export async function fetchDocExternalLinks(
+  docId: string,
+  actor: string,
+): Promise<ApiExternalLink[]> {
+  const response = await fetch(
+    `${apiBase()}/api/v1/docs/${encodeURIComponent(docId)}/external-links`,
+    { headers: { "X-Actor": actor }, cache: "no-store" },
+  );
+  if (!response.ok) {
+    throw new Error(`external links request failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { links?: ApiExternalLink[] };
+  return body.links ?? [];
+}
