@@ -1,0 +1,21 @@
+{
+  "findings": [
+    "Initial PR5 workflow omitted direct AINative/Maliang/editor inputs",
+    "Initial CI exposed missing macOS os.waitid, Ubuntu Pillow and a synchronous Maliang completion busy rejection",
+    "R2 macOS CI exposed Darwin listener inspection depending on unusable external lsof results",
+    "The first libproc revision mixed IPv4 and IPv6 wildcards; review required same-family targets before wildcard acceptance"
+  ],
+  "issue_number": 1240,
+  "observed": "Independent read-only review approved the final R3 delta. Existing R2 waitid, Pillow and deferred Maliang fixes remain approved. Darwin now uses libproc process/socket FD records with the system-header-verified 792-byte socket_fdinfo layout, exact TCP LISTEN port/address checks and unique-PID returns. Buffer truncation and API errors fail safely. Address-family review was initially rejected, then fixed by requiring a same-family target before accepting that family's wildcard; IPv4/IPv6 cross-family negative tests and IPv6 positive ownership pass. Windows/Linux listener paths are unchanged.",
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "result": "approved",
+  "reviewer": {
+    "id": "agent-2",
+    "kind": "independent_read_only_agent",
+    "same_author": false
+  },
+  "schema_version": 1,
+  "scope": "PR5 R3 complete regression fixes: Darwin waitid, pinned Pillow, deferred Maliang completion follow-up and native Darwin listener ownership",
+  "slice": "pr5-r3",
+  "validation_boundary": "Approval covers the reviewed source and real targeted Darwin socket/lifecycle tests. The complete AINative suite, exact R3 three-platform CI, Windows first-use Maliang, macOS AIChat/Tianshu and final main readback remain separate required evidence."
+}

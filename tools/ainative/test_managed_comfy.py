@@ -467,15 +467,37 @@ class ManagedComfyTests(unittest.TestCase):
         (folder / "instance.json").unlink()
 
     def test_listener_identity_matches_loopback_address(self):
-        if not sys.platform.startswith(("win", "linux")):
-            self.skipTest("native TCP table regression is exercised on Windows/Linux")
+        if not sys.platform.startswith(("win", "linux")) and sys.platform != "darwin":
+            self.skipTest("native TCP table regression requires Windows, Linux or Darwin")
         with socket.socket() as first, socket.socket() as second:
-            first.bind(("127.0.0.2", self.port))
-            first.listen()
-            self.assertIsNone(managed._listener_pid(self.config["endpoint"]))
+            if sys.platform == "darwin":
+                # This host has no 127.0.0.2 alias; external-owner rejection is
+                # covered by test_unrelated_port_is_rejected on all platforms.
+                self.assertIsNone(managed._listener_pid(self.config["endpoint"]))
+            else:
+                first.bind(("127.0.0.2", self.port))
+                first.listen()
+                self.assertIsNone(managed._listener_pid(self.config["endpoint"]))
             second.bind(("127.0.0.1", self.port))
             second.listen()
             self.assertEqual(managed._listener_pid(self.config["endpoint"]), os.getpid())
+
+    @unittest.skipUnless(sys.platform == "darwin", "Darwin libproc address-family regression")
+    def test_listener_identity_separates_address_families(self):
+        endpoint6 = "http://[::1]:" + str(self.port)
+        with socket.socket(socket.AF_INET6) as listener:
+            listener.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 1)
+            listener.bind(("::", self.port))
+            listener.listen()
+            self.assertIsNone(managed._listener_pid(self.config["endpoint"]))
+        with socket.socket() as listener:
+            listener.bind(("0.0.0.0", self.port))
+            listener.listen()
+            self.assertIsNone(managed._listener_pid(endpoint6))
+        with socket.socket(socket.AF_INET6) as listener:
+            listener.bind(("::1", self.port))
+            listener.listen()
+            self.assertEqual(managed._listener_pid(endpoint6), os.getpid())
 
     def test_failure_and_unknown_exit_are_not_healthy(self):
         (self.runtime / "fail").touch()
