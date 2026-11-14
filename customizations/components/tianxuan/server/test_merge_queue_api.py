@@ -102,3 +102,21 @@ def test_websocket_rejects_unknown_actor(monkeypatch: pytest.MonkeyPatch, tmp_pa
         with client.websocket_connect("/api/v1/ws/merge-queue?actor=usr_missing") as websocket:
             websocket.receive_json()
     assert failure.value.code == 4401
+
+
+def test_merge_queue_api_filters_and_paginates(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    client, headers, _ = _setup(monkeypatch, tmp_path)
+    for title in ("一", "二", "三"):
+        client.post(
+            "/api/v1/merge-queue",
+            headers=headers,
+            json={"repo": "docs.git", "source": "feature", "target": "main", "title": title},
+        )
+    page = client.get("/api/v1/merge-queue", headers=headers, params={"limit": 1, "offset": 1}).json()
+    assert page["total"] == 3
+    assert len(page["items"]) == 1
+
+    client.post("/api/v1/merge-queue/process", headers=headers)
+    merged = client.get("/api/v1/merge-queue", headers=headers, params={"status": "merged"}).json()
+    assert merged["total"] == 1
+    assert merged["items"][0]["status"] == "merged"

@@ -867,9 +867,13 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
             actor: ActorDep,
             status: str | None = Query(default=None),
             limit: int = Query(default=50, ge=1, le=200),
-        ) -> dict[str, list[dict[str, Any]]]:
+            offset: int = Query(default=0, ge=0),
+        ) -> dict[str, Any]:
             try:
-                return {"items": merge_queue.list_items(status, limit)}
+                return {
+                    "items": merge_queue.list_items(status, limit, offset),
+                    "total": merge_queue.count_items(status),
+                }
             except ValueError as error:
                 raise HTTPException(status_code=400, detail=str(error)) from error
 

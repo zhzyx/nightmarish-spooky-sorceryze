@@ -178,19 +178,29 @@ class MergeQueue:
             )
         return self.get(item_id)
 
-    def list_items(self, status: str | None = None, limit: int = 50) -> list[dict[str, Any]]:
+    def _filter(self, status: str | None) -> tuple[str, list[Any]]:
         if status is not None and status not in STATUSES:
             raise ValueError(f"unknown status: {status}")
-        sql = "SELECT * FROM merge_queue"
+        sql = " FROM merge_queue"
         args: list[Any] = []
         if status is not None:
             sql += " WHERE status = ?"
             args.append(status)
-        sql += " ORDER BY priority DESC, created_at, id LIMIT ?"
-        args.append(max(1, min(int(limit), 200)))
+        return sql, args
+
+    def list_items(self, status: str | None = None, limit: int = 50, offset: int = 0) -> list[dict[str, Any]]:
+        where, args = self._filter(status)
+        sql = "SELECT *" + where + " ORDER BY priority DESC, created_at, id LIMIT ? OFFSET ?"
+        args.extend([max(1, min(int(limit), 200)), max(0, int(offset))])
         with self._lock:
             rows = self.db.execute(sql, args).fetchall()
         return [self._decode(row) for row in rows]
+
+    def count_items(self, status: str | None = None) -> int:
+        where, args = self._filter(status)
+        with self._lock:
+            row = self.db.execute("SELECT COUNT(*) AS total" + where, args).fetchone()
+        return int(row["total"]) if row is not None else 0
 
     def get(self, item_id: str) -> dict[str, Any]:
         with self._lock:
