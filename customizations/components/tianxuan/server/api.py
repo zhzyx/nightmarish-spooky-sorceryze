@@ -35,6 +35,7 @@ from schemas import (
     IssueTransitionRequest,
     LoginRequest,
     MemberCreateRequest,
+    MergeQueueCreateRequest,
     PullRequestCreateRequest,
     PullRequestMergeRequest,
     RegisterRequest,
@@ -151,11 +152,12 @@ def _repo_under_root(name: str) -> Path:
     return candidate
 
 
-def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
-    """为给定领域核心实例构建 HTTP 应用；可选的模型网关挂载到同一应用。"""
+def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue: Any | None = None) -> FastAPI:
+    """为给定领域核心实例构建 HTTP 应用；可选的模型网关与多宝合入队列挂载到同一应用。"""
     app = FastAPI(title="Tianxuan API", version="0.1.0")
     app.state.store = store
     app.state.gateway = gateway
+    app.state.merge_queue = merge_queue
     rooms = DocRooms()
     if gateway is not None:
         app.include_router(create_model_router(gateway))
@@ -675,6 +677,65 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None) -> FastAPI:
             return {"diff": GitService().diff(repo, a, b)}
         except (GitServiceError, OSError) as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
+
+    # ---------- 多宝：合入队列 ----------
+
+    if merge_queue is not None:
+
+        @app.post("/api/v1/merge-queue")
+        def enqueue_merge(payload: MergeQueueCreateRequest, actor: ActorDep) -> dict[str, Any]:
+            if store.role_of(actor) == "viewer":
+                raise PermissionDenied("viewer cannot enqueue merge candidates")
+            repo = _repo_under_root(payload.repo)
+            try:
+                return merge_queue.enqueue(  # type: ignore[no-any-return]
+                    actor,
+                    str(repo),
+                    payload.source,
+                    payload.target,
+                    payload.title,
+                    payload.priority,
+                )
+            except ValueError as error:
+                raise HTTPException(status_code=400, detail=str(error)) from error
+
+        @app.get("/api/v1/merge-queue")
+        def list_merge_queue(
+            actor: ActorDep,
+            status: str | None = Query(default=None),
+            limit: int = Query(default=50, ge=1, le=200),
+        ) -> dict[str, list[dict[str, Any]]]:
+            try:
+                return {"items": merge_queue.list_items(status, limit)}
+            except ValueError as error:
+                raise HTTPException(status_code=400, detail=str(error)) from error
+
+        @app.post("/api/v1/merge-queue/process")
+        def process_merge_queue(
+            actor: ActorDep,
+            limit: int = Query(default=1, ge=1, le=20),
+        ) -> dict[str, list[dict[str, Any]]]:
+            if store.role_of(actor) == "viewer":
+                raise PermissionDenied("viewer cannot process merge queue")
+            return {"processed": merge_queue.process_batch(limit)}
+
+        @app.get("/api/v1/merge-queue/{item_id}")
+        def get_merge_queue_item(item_id: str, actor: ActorDep) -> dict[str, Any]:
+            try:
+                return merge_queue.get(item_id)  # type: ignore[no-any-return]
+            except KeyError as error:
+                raise HTTPException(status_code=404, detail="merge queue item not found") from error
+
+        @app.post("/api/v1/merge-queue/{item_id}/cancel")
+        def cancel_merge_queue_item(item_id: str, actor: ActorDep) -> dict[str, Any]:
+            if store.role_of(actor) == "viewer":
+                raise PermissionDenied("viewer cannot cancel merge candidates")
+            try:
+                return merge_queue.cancel(item_id)  # type: ignore[no-any-return]
+            except KeyError as error:
+                raise HTTPException(status_code=404, detail="merge queue item not found") from error
+            except ValueError as error:
+                raise HTTPException(status_code=400, detail=str(error)) from error
 
     # ---------- 文曲：评论 ----------
 
