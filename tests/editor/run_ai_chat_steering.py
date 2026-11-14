@@ -1,6 +1,7 @@
 """Headless continuous-conversation acceptance against a loopback mock, without provider calls."""
 
 import argparse
+import ctypes
 import hashlib
 import json
 import os
@@ -9,14 +10,115 @@ import subprocess
 import tempfile
 import threading
 import time
+from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from editor_test_isolation import copy_editor
 
+
+class OwnedCliProcesses:
+    def __init__(self):
+        self.handles = {}
+        self.lock = threading.Lock()
+        self.kernel = None
+        if os.name == "nt":
+            self.kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+            self.kernel.OpenProcess.argtypes = [ctypes.c_uint32, ctypes.c_int, ctypes.c_uint32]
+            self.kernel.OpenProcess.restype = ctypes.c_void_p
+            self.kernel.WaitForSingleObject.argtypes = [ctypes.c_void_p, ctypes.c_uint32]
+            self.kernel.WaitForSingleObject.restype = ctypes.c_uint32
+            self.kernel.CloseHandle.argtypes = [ctypes.c_void_p]
+            self.kernel.CloseHandle.restype = ctypes.c_int
+
+    def observe(self, pid):
+        with self.lock:
+            if pid in self.handles:
+                return
+            if self.kernel is None:
+                self.handles[pid] = None
+                return
+            handle = self.kernel.OpenProcess(0x00100000, False, pid)
+            if not handle and ctypes.get_last_error() != 87:
+                raise ctypes.WinError(ctypes.get_last_error())
+            # An invalid PID means the observed worker already exited. A live
+            # handle pins its process identity even if Windows later reuses PID.
+            self.handles[pid] = handle
+
+    def wait_for_exit(self, timeout=5.0):
+        deadline = time.monotonic() + timeout
+        with self.lock:
+            handles = list(self.handles.items())
+        for pid, handle in handles:
+            if self.kernel is not None:
+                if not handle:
+                    continue
+                remaining_ms = max(0, int((deadline - time.monotonic()) * 1000))
+                result = self.kernel.WaitForSingleObject(handle, remaining_ms)
+                if result == 0:
+                    continue
+                if result == 0xFFFFFFFF:
+                    raise ctypes.WinError(ctypes.get_last_error())
+                raise TimeoutError(f"Owned CLI process {pid} is still running before fixture cleanup")
+            while True:
+                try:
+                    os.kill(pid, 0)
+                except ProcessLookupError:
+                    break
+                if time.monotonic() >= deadline:
+                    raise TimeoutError(f"Owned CLI process {pid} is still running before fixture cleanup")
+                time.sleep(0.05)
+
+    def close(self):
+        with self.lock:
+            handles = list(self.handles.values())
+            self.handles.clear()
+        if self.kernel is not None:
+            for handle in handles:
+                if handle:
+                    self.kernel.CloseHandle(handle)
+
+
+@contextmanager
+def temporary_fixture(parent, owned_cli, report_path):
+    parent = parent.resolve()
+    project = Path(tempfile.mkdtemp(prefix="chat-steering-", dir=parent)).resolve()
+    if project.parent != parent:
+        raise ValueError("Fixture cleanup target escaped its output directory")
+    cleanup = {"passed": False}
+    try:
+        yield str(project)
+    finally:
+        try:
+            owned_cli.wait_for_exit()
+            deadline = time.monotonic() + 10.0
+            retries = 0
+            while True:
+                try:
+                    shutil.rmtree(project)
+                    cleanup = {"passed": True, "retries": retries}
+                    break
+                except OSError as error:
+                    if os.name != "nt" or error.winerror not in (32, 145) or time.monotonic() >= deadline:
+                        raise
+                    retries += 1
+                    time.sleep(0.2)
+        except BaseException as error:
+            cleanup["error"] = f"{type(error).__name__}: {error}"
+            raise
+        finally:
+            owned_cli.close()
+            if report_path.is_file():
+                report = json.loads(report_path.read_text(encoding="utf-8"))
+                report["cleanup"] = cleanup
+                report["passed"] = report.get("passed", False) and cleanup["passed"]
+                report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+
+
 MOCK_CODEX = r"""
 // Offline Codex JSONL fixture. Uses only the test loopback server.
 const http = require('node:http');
+if (process.argv.slice(2).join(' ') === 'login status') process.exit(0);
 let wire = '';
 process.stdin.setEncoding('utf8');
 process.stdin.on('data', data => wire += data);
@@ -89,7 +191,8 @@ def main():
     args.out.parent.mkdir(parents=True, exist_ok=True)
     errors, requests, model_requests = [], [], []
     cli_pids = set()
-    with tempfile.TemporaryDirectory(prefix="chat-steering-", dir=args.out.parent) as folder:
+    owned_cli = OwnedCliProcesses()
+    with temporary_fixture(args.out.parent, owned_cli, args.out) as folder:
         project = Path(folder).resolve()
         (project / "project.godot").write_text(
             'config_version=5\n[application]\nconfig/name="Steering Fixture"\n'
@@ -138,6 +241,7 @@ def main():
                     if args.codex:
                         pid = int(self.headers.get("X-Fixture-CLI-Pid", 0))
                         assert pid > 0, "Missing CLI worker PID"
+                        owned_cli.observe(pid)
                         cli_pids.add(pid)
                     assert self.headers.get("Authorization") == "Bearer isolated-fixture-key"
                     assert body["model"] == "fixture"
@@ -217,6 +321,8 @@ def main():
                     self.send_error(500)
 
         server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        # Join the bounded handlers before checking their observed CLI handles.
+        server.daemon_threads = False
         worker = threading.Thread(target=server.serve_forever, daemon=True)
         worker.start()
         env = {key: value for key, value in os.environ.items() if not key.startswith("GONGGONG_")}
@@ -255,17 +361,8 @@ def main():
             )
         restored = None
         try:
-            run = subprocess.run(
-                [str(isolated_editor), "--headless", "--editor", "--path", str(project), "--script", "res://gate.gd"],
-                env=env,
-                cwd=project,
-                capture_output=True,
-                timeout=65,
-            )
-            if args.case in {"stop", "cancel", "issues"} and run.returncode == 0:
-                seeded = json.loads((project / "steering-report.json").read_bytes())
-                env["STEERING_CASE"] = "restore"
-                restart = subprocess.run(
+            try:
+                run = subprocess.run(
                     [
                         str(isolated_editor),
                         "--headless",
@@ -278,8 +375,37 @@ def main():
                     env=env,
                     cwd=project,
                     capture_output=True,
-                    timeout=30,
+                    timeout=65,
                 )
+            except subprocess.TimeoutExpired as error:
+                args.out.with_suffix(".stdout.log").write_bytes(error.stdout or b"")
+                args.out.with_suffix(".stderr.log").write_bytes(error.stderr or b"")
+                raise
+            if args.case in {"stop", "cancel", "issues"} and run.returncode == 0:
+                seeded = json.loads((project / "steering-report.json").read_bytes())
+                env["STEERING_CASE"] = "restore"
+                try:
+                    restart = subprocess.run(
+                        [
+                            str(isolated_editor),
+                            "--headless",
+                            "--editor",
+                            "--path",
+                            str(project),
+                            "--script",
+                            "res://gate.gd",
+                        ],
+                        env=env,
+                        cwd=project,
+                        capture_output=True,
+                        timeout=30,
+                    )
+                except subprocess.TimeoutExpired as error:
+                    args.out.with_suffix(".restart.stdout.log").write_bytes(error.stdout or b"")
+                    args.out.with_suffix(".restart.stderr.log").write_bytes(error.stderr or b"")
+                    args.out.with_suffix(".stdout.log").write_bytes(run.stdout)
+                    args.out.with_suffix(".stderr.log").write_bytes(run.stderr)
+                    raise
                 args.out.with_suffix(".restart.stdout.log").write_bytes(restart.stdout)
                 args.out.with_suffix(".restart.stderr.log").write_bytes(restart.stderr)
                 restored = json.loads((project / "steering-report.json").read_bytes())

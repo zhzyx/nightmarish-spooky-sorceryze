@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "request_id": "ai-unified-framework-20261114",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1086",
+  "base_commit": "99a8e8cb1fb4e72dc135b9f655884984ab7909cc",
+  "recorded_at": "2026-11-14T02:46:55.401543+00:00",
+  "status": "approved_for_affected_scope",
+  "unresolved_product_findings": [],
+  "reviews": [
+    {
+      "reviewer": "tianshu_review",
+      "scope": "Engine-independent Runtime, SCENE adapter, synchronous signal lifetime, immutable requests and snapshots, final native-test rename",
+      "result": "approved",
+      "receipt_sha256": "3ba5103cff2c46f4166e80fe071c772b2534db6b99e078bf8e55bfe9cd35a367"
+    },
+    {
+      "reviewer": "tianshu_review",
+      "scope": "AIChat Controller/CLI extraction, current fixture protocols, final Windows permissions/provenance/cancellation assertions",
+      "result": "approved",
+      "receipt_sha256": "7b968efc7f59f04b904874f924f021bf3c552beacb1512dead3b1d6e7927cb5b"
+    },
+    {
+      "reviewer": "maliang_review",
+      "scope": "Cross-module Controller integration, current public navigation, 26 C++ files, code ownership and direct include/naming rules",
+      "result": "approved_after_resolved_findings",
+      "receipt_sha256": "c21428e1d264a95d112ad5d5db4c48bb661313dc4868c92c1dedb00ae7b570e0"
+    },
+    {
+      "reviewer": "root",
+      "scope": "Independent review of Maliang Controller lifecycle, process identity, restore/cancellation/retry data ownership, integration conflict resolution and final evidence",
+      "result": "approved"
+    }
+  ],
+  "cpp_checks": {
+    "file_count": 26,
+    "clang_format": "passed",
+    "include_paths": "passed",
+    "copyright": "passed",
+    "header_guards": "passed",
+    "receipt_sha256": "70c3ba3d8d227cce574282478afa338ac55f46e39357623b12f17cda9c92c69f"
+  },
+  "navigation": {
+    "route": [
+      "AGENTS.md",
+      "Markdown/engine-core/README.md",
+      "ai_core/README.md"
+    ],
+    "sources_index": "Markdown/sources/README.md",
+    "single_authority": true,
+    "status": "passed"
+  },
+  "resolved_findings": [
+    "Full-precision request identity and synchronous runtime lifetime",
+    "Detached events, frozen inputs, late-event generation guards",
+    "AIChat active session input and CLI progress protocol synchronization",
+    "Maliang reentrant callbacks, pending preview cancellation, transport collision and persisted identity restoration",
+    "Tianshu duplicate preview and source-scope binding",
+    "PascalCase native-test filename and direct Array include",
+    "Design document and public verification links updated"
+  ],
+  "baseline_exceptions": {
+    "full_python_suite": "Two pre-existing Windows synthetic-uploader failures are retained and separately documented in the verification file. No affected-scope product failure remains.",
+    "headless_teardown": "Existing RID/ObjectDB and legacy native-suite diagnostics retained in the verification file."
+  },
+  "files_sha256": {
+    ".github/CODEOWNERS": "6bacd5f11b37414c375f17ad3d29f764b8fd53231834ffa4c5b2a3c6f9eb3cac",
+    "AGENTS.md": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "Markdown/engine-core/README.md": "29ea1bfc6b62ab9dec41c162aee2e76c8b420c00682f4afa65405fe1adb52850",
+    "Markdown/sources/README.md": "1a15b6ebba4ae596c930bcb71ba23026e85cd5f774769df9318ab296a14eebb5",
+    "ai_core/README.md": "721e85e335e423e9fb8a7382c143af604e9e683f4e056badd0de055402684421",
+    "ai_core/Runtime.cpp": "b695e1e7826c168e5878b7d8e031ab072b4b98c96f9ff659da59113411959b41",
+    "ai_core/Runtime.h": "19a9614ac38ac79cacb312eed80ea45a319cdb6cac8acacb54e980f0c93e0420",
+    "ai_core/build-impact.json": "095de26c7571ee683b630c815a59568df5cddb7be9bdf9b3e56be253cbed3ef8",
+    "design-docs/ai-unified-framework-20261114.md": "2b74ee341fe8ec563ed77e551d7cefdab1b5604b444823b4162695604c00553c",
+    "editor/SCsub": "63c1dea2aa23f7724139f364457154aa5559d9817865b70287834497bdb7eb3e",
+    "editor/docks/AIChatCliTransport.cpp": "63b35e5b1a7165faadde289baa535425dee74ee540c854509b0ad0916f47875b",
+    "editor/docks/AIChatCliTransport.h": "508cb68f86e279dfe2efad086c97b28ddaf88e0cae515542a7f1bffbce1b2ea5",
+    "editor/docks/AIChatController.cpp": "f801e199c1558221e5fb2e32ee9e50c9e2c065f9cb91bb4083c8d9b427f5f609",
+    "editor/docks/AIChatController.h": "166ea3b9e1108625d35f67fa1456b0616fa4a0a625d298e82286372648dea5a7",
+    "editor/docks/ai_chat_delivery.cpp": "e23aab2f2eb7bd7afacb09c6122ce9728610451a386dd545e0b38bb261925ea2",
+    "editor/docks/ai_chat_delivery_retry.cpp": "e50f998ab420d09bef4257082c0da2764613685e57a764b95b879fe329b5f62f",
+    "editor/docks/ai_chat_dock.cpp": "cd9256904c98ff8ff9f8c5d8ad1b69b2d74cf6b11ba72a8c0fbe690fb9389b99",
+    "editor/docks/ai_chat_dock.h": "a5206a5f9736b7511ef907f850508cbe54d172a006dc3dcd44fa63bafd7670f6",
+    "editor/docks/ai_chat_engine_candidate.cpp": "cf38afe5449aee46348618ea55819ceee2a17397cad35d97817e3221d5ece64c",
+    "editor/docks/ai_chat_external_chat.cpp": "bf96cee0b479662940994d667cd74814ac756c5321cb494e2b1b2e79c57b6420",
+    "editor/docks/ai_chat_gonggong.cpp": "91663aadf7fd0735111f6202713f22aecc3571ba613420cff350fd5b5ab82b67",
+    "editor/docks/ai_chat_host_commands.cpp": "8f7de2270d069800a1d4e8112e30ec070044ab86247b61cd6cb744fa4295b12c",
+    "editor/docks/ai_chat_scheduler.cpp": "c262782751b5ef6a73342aa5fdb70ddf89d7707b7313913056d712e9e42cd4db",
+    "editor/docks/ai_chat_sub_agents.cpp": "96bf5804f5f9e26be6cde1644144f6fc3e0041365a45774db7b5f75d824791c9",
+    "editor/docks/ai_chat_task_authorization.cpp": "17b1d95b77638fad95230a6ae52c223d372f1d4bf1d86ae62aab3aeedeea8225",
+    "editor/docks/daqian/workflow_controller.gd": "a75e6edadde617b244b52243ea1b889f2c165f08b75385335615eeea2bce4a14",
+    "editor/docks/daqian/workspace.gd": "c4585b73a45848bc755edfaf5c83462356aa303570675a1b046f49d545d6bce6",
+    "editor/docks/daqian_dock.cpp": "16d4f14c4091a6f6502ca620a5cc3ca4e1bd486b6d73dbb77d5a9d47c6b2dd5f",
+    "editor/docks/production/ProductionControl.cpp": "ab7c32eecbfa82899d178d53f3761080a81621e1dfa55b413bc249c4b3c2528b",
+    "modules/ai_core/AIWorkflowRuntime.cpp": "8c441c6b4b3030d56dbee02fddd8dacf92a720c09a310717440fa74af1c5df5c",
+    "modules/ai_core/AIWorkflowRuntime.h": "38ecd379dae969ae4f92c7f68bd4f9524877b0f0262116a7bed8d2dab3c8f0c5",
+    "modules/ai_core/SCsub": "01da8b4f81c9c7665cecbb112fc4e41a01139218930440acf826d62075fee4ee",
+    "modules/ai_core/build-impact.json": "c4961b08054ee93d67abc3c899f22e85595b3cb91d80900323898065555a5de6",
+    "modules/ai_core/config.py": "cb63fcfb37b9f3cc775d166a98806d96d3215372c70c1a1610f6030e708d3117",
+    "modules/ai_core/register_types.cpp": "b619e82a19a4009295e1fb9f7f690e2c7a485fb827a7a2b0fc1c73580f137e8a",
+    "modules/ai_core/register_types.h": "10e88fefefb2bb3273458fb75c9b4eafa9337b3c17ea750c2ffaa0d577412aed",
+    "samples/ainative-workbench/acceptance.gd": "b10133db0d12944e7bad3dcf4075369827b6e99d01a86a5ee8d07ca137a8e333",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "c7287a3740a819a7971dd27562c4a651fe0688e37e41ecda7ec5ed75b89eb939",
+    "samples/ainative-workbench/addons/ainative/workbench_controller.gd": "2084f6f298c6aa1b11e64167978d909b48141b7ca73f118af0f8d7432a956ee6",
+    "samples/ainative-workbench/context_menu_acceptance.gd": "957d52cf862bb5030223fc1418c403f422c7ee068f94258d05d3a8acf7ffb974",
+    "samples/ainative-workbench/controller_acceptance.gd": "7999220f040ed91d57b4bcc40d9772e7bcac7a2a4d5892514545dea7c48da41c",
+    "samples/ainative-workbench/node_preview_acceptance.gd": "318209c59a505402fc3e3cdaeb859076df8c038cebb66c9a2875ddb01d97fe36",
+    "tests/editor/TestAIChatCliTransport.cpp": "e45d1165741c7ab40ee9cf24562d3c6239859bbe981f1c6cd3100b7e2650cfae",
+    "tests/editor/TestAIChatController.cpp": "c27e0fe1ef8d5593f1c13906b2e406e21a62e6074738c6e8a15bd3ac35892511",
+    "tests/editor/TestAIWorkflowRuntime.cpp": "f30abb5625909076149477db7d1b759c8ecff96468efed05a48764d31a79efc3",
+    "tests/editor/ai_chat_integration.gd": "dfba15070ad0b75b08f4f17d737bb80f93c0eed9faa52d034f5d43fc0de8879f",
+    "tests/editor/ai_chat_issues.gd": "be918e60ddd2c57b434a97cfd86f1e73ea56bd725db744fc9f2fcca025ad5dd7",
+    "tests/editor/ai_chat_steering.gd": "d70e009c09de7390b9ada14c859ccbaec4c4dbaa31be04e824bff295e8e3b85e",
+    "tests/editor/ainative_builtin.gd": "fc6c99bfaa8fb6a26857e1b85ddcf7db08dd5a2e367264dacfaced9bf47f9e6d",
+    "tests/editor/daqian_direct.gd": "ca1066f77aa7c91033c2d57b7d2030b7a8e542c0fc5668b536756a8f0d615f17",
+    "tests/editor/daqian_routing_stage.gd": "b092e1b62b679b1d22851ca684eb466d8398b8fa4e018bedcf0777e9091148ce",
+    "tests/editor/daqian_workflow_controller.gd": "309698d56e751ecc30ffcf9354a3e3027268d302ca0675c7b1648db8f3c3fa0b",
+    "tests/editor/mock_codebuddy_cli.js": "6500fe371d8445086ae5c3a58842a79b73c01f692a32ce2f95584e720a1c8acf",
+    "tests/editor/run_ai_chat_integration.py": "68ceadf007ff5923818d33e88b431850fe26199158b906a2aadb1169c02511a3",
+    "tests/editor/run_ai_chat_steering.py": "977726e9173363915c6f041f18bd72067995d4661e296d4d403dee8446a2f113",
+    "tests/editor/run_daqian_graph.py": "8f75ff0bb54b6ec8db26cd14d65eeca3b9ba8f0ad58c2b9ac108daa96ead1adf",
+    "tools/ainative/test_editor_host.py": "c428a909d9b0eb054789f92faa1cc4135bdc5826f3ed20a4ca9ecd182369c5a1"
+  },
+  "latest_main_review": {
+    "status": "passed",
+    "receipt_sha256": "d9741e8f4a91ebac4002964ff7db3f5293a8d7e1f99ca77d314b27009b1057dc",
+    "scope": "Four overlapping paths preserve all upstream semantics; Controller accessor migration checked independently. Latest native and focused model/delivery tests passed."
+  },
+  "strict_compile_fix_reviews": [
+    {
+      "reviewer": "tianshu_review",
+      "scope": "Explicit enum initialization and unknown-kind sequence-preservation assertions",
+      "status": "passed",
+      "receipt_sha256": "1cdbcb4b5bfccfbb8f926575360be1ab426d77ca22eeb1b979a81258f89a85e6"
+    },
+    {
+      "reviewer": "aichat_finish",
+      "scope": "Diagnostic dictionary rename preserves response parsing and failure flow",
+      "status": "passed",
+      "receipt_sha256": "633a758602c55bd4f9c51a55b7df4c5411ec3fede497de3c5c5ea9b67d00340e"
+    }
+  ],
+  "supersedes": "data-collection/ai-unified-framework-1086-review.json"
+}

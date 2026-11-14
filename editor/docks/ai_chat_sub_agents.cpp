@@ -261,8 +261,8 @@ bool AIChatDock::_design_parent_matches(int p_parent, const Dictionary &p_batch)
 	if (!parent_active && !agent_sessions.has(p_parent)) {
 		return false;
 	}
-	const String owner = parent_active ? conversation_id : agent_sessions[p_parent].conversation_id;
-	const String turn = parent_active ? snapshot_id : agent_sessions[p_parent].snapshot_id;
+	const String owner = parent_active ? GetAiSession().strConversation : agent_sessions[p_parent].stData.strConversation;
+	const String turn = parent_active ? GetAiSession().strSnapshot : agent_sessions[p_parent].stData.strSnapshot;
 	return !owner.is_empty() && owner == String(p_batch.get("conversation_id", "")) && turn == String(p_batch.get("snapshot_id", "")) &&
 			_work_order_binding("request_id", p_parent) == String(p_batch.get("request_id", "")) &&
 			_work_order_binding("issue_number", p_parent).to_int() == int64_t(p_batch.get("issue_number", 0)) &&
@@ -359,8 +359,8 @@ void AIChatDock::_cancel_design_batch(int p_agent) {
 	}
 	for (int parent : cancelled) {
 		const String token = design_batches[parent].get("token", "");
-		Array queue = parent == active_agent ? queued_messages : agent_sessions.has(parent) ? agent_sessions[parent].queued_messages
-																							: Array();
+		Array queue = parent == active_agent ? GetAiSession().arrQueuedMessages : agent_sessions.has(parent) ? agent_sessions[parent].stData.arrQueuedMessages
+																											 : Array();
 		for (int i = queue.size() - 1; i >= 0; i--) {
 			const Dictionary message = queue[i];
 			const Dictionary marker = message.get("design_batch_return", Dictionary());
@@ -384,15 +384,15 @@ void AIChatDock::_register_design_batch(int p_parent, const String &p_request_id
 	if (!parent_active && (!sub_agents.has(active_agent) || _sub_agent_root(active_agent) != p_parent || !agent_sessions.has(p_parent))) {
 		return;
 	}
-	if (parent_active ? queue_paused || !queued_messages.is_empty() : agent_sessions[p_parent].queue_paused || !agent_sessions[p_parent].queued_messages.is_empty()) {
+	if (parent_active ? GetAiSession().bQueuePaused || !GetAiSession().arrQueuedMessages.is_empty() : agent_sessions[p_parent].stData.bQueuePaused || !agent_sessions[p_parent].stData.arrQueuedMessages.is_empty()) {
 		return;
 	}
 	Dictionary batch;
 	batch["token"] = vformat("%d-%d", OS::get_singleton()->get_process_id(), OS::get_singleton()->get_ticks_usec());
-	batch["conversation_id"] = parent_active ? conversation_id : agent_sessions[p_parent].conversation_id;
-	batch["snapshot_id"] = parent_active ? snapshot_id : agent_sessions[p_parent].snapshot_id;
-	batch["parent_generation"] = parent_active ? int64_t(session_generation) : int64_t(-1);
-	batch["reporting_blocked"] = parent_active && design_last_blocked_generation == session_generation;
+	batch["conversation_id"] = parent_active ? GetAiSession().strConversation : agent_sessions[p_parent].stData.strConversation;
+	batch["snapshot_id"] = parent_active ? GetAiSession().strSnapshot : agent_sessions[p_parent].stData.strSnapshot;
+	batch["parent_generation"] = parent_active ? int64_t(GetAiSessionGeneration()) : int64_t(-1);
+	batch["reporting_blocked"] = parent_active && design_last_blocked_generation == GetAiSessionGeneration();
 	batch["request_id"] = p_request_id;
 	batch["issue_number"] = p_issue;
 	batch["workspace"] = _workflow_root(p_parent);
@@ -501,9 +501,9 @@ Dictionary AIChatDock::_game_review_candidate(int p_reviewer) const {
 	if (info.get("source", "") != "review" || int(info.get("parent", -1)) != parent || (parent != active_agent && !agent_sessions.has(parent))) {
 		return Dictionary();
 	}
-	const Dictionary state = parent == active_agent ? snapshot_state : agent_sessions[parent].snapshot_state;
-	const String owner = parent == active_agent ? conversation_id : agent_sessions[parent].conversation_id;
-	const String turn = parent == active_agent ? snapshot_id : agent_sessions[parent].snapshot_id;
+	const Dictionary state = parent == active_agent ? GetAiSession().mapSnapshot : agent_sessions[parent].stData.mapSnapshot;
+	const String owner = parent == active_agent ? GetAiSession().strConversation : agent_sessions[parent].stData.strConversation;
+	const String turn = parent == active_agent ? GetAiSession().strSnapshot : agent_sessions[parent].stData.strSnapshot;
 	const Dictionary candidate = context["candidate"];
 	const String root = candidate["source_root"];
 	if (state.has("engine_candidate") || owner != String(candidate["owner"]) || turn != String(context["parent_snapshot"]) ||
@@ -527,28 +527,28 @@ Dictionary AIChatDock::_child_delegation() const {
 		return Dictionary();
 	}
 	const AgentSession &session = agent_sessions[parent];
-	if (session.conversation_id.is_empty() || conversation_id.is_empty() || session.conversation_id == conversation_id) {
+	if (session.stData.strConversation.is_empty() || GetAiSession().strConversation.is_empty() || session.stData.strConversation == GetAiSession().strConversation) {
 		return Dictionary();
 	}
 	Dictionary delegation;
 	delegation["source"] = info["source"];
 	delegation["execution_role"] = _is_review_child() ? "read_only_reviewer" : "implementation_worker";
-	delegation["parent_conversation"] = session.conversation_id;
-	delegation["child_conversation"] = conversation_id;
+	delegation["parent_conversation"] = session.stData.strConversation;
+	delegation["child_conversation"] = GetAiSession().strConversation;
 	delegation["issue_number"] = int64_t(info["issue_number"]);
 	delegation["request_id"] = info["request_id"];
 	delegation["work_order"] = int64_t(info.get("number", info["work_order"]));
-	delegation["turn_scope_sha256"] = snapshot_state.get("child_turn_scope_sha256", "");
+	delegation["turn_scope_sha256"] = GetAiSession().mapSnapshot.get("child_turn_scope_sha256", "");
 	delegation["scope_sha256"] = info.get("scope_sha256", "");
-	delegation["authority_ref"] = "godot-editor:user-chat:" + session.conversation_id;
+	delegation["authority_ref"] = "godot-editor:user-chat:" + session.stData.strConversation;
 	if (_is_review_child()) {
 		const bool game_review = game_review_contexts.has(active_agent);
-		const Dictionary candidate = game_review ? _game_review_candidate(active_agent) : Dictionary(snapshot_state.get("engine_candidate", Dictionary()));
+		const Dictionary candidate = game_review ? _game_review_candidate(active_agent) : Dictionary(GetAiSession().mapSnapshot.get("engine_candidate", Dictionary()));
 		String error;
 		const bool acceptance = acceptance_reviews.has(active_agent);
 		const Dictionary context = acceptance ? acceptance_reviews[active_agent] : Dictionary();
-		const Dictionary expected = acceptance ? Dictionary(context.get("engine_candidate", Dictionary())) : Dictionary(session.snapshot_state.get("engine_candidate", Dictionary()));
-		const String owner = acceptance ? String(context.get("producer_owner", "")) : session.conversation_id;
+		const Dictionary expected = acceptance ? Dictionary(context.get("engine_candidate", Dictionary())) : Dictionary(session.stData.mapSnapshot.get("engine_candidate", Dictionary()));
+		const String owner = acceptance ? String(context.get("producer_owner", "")) : session.stData.strConversation;
 		if (candidate.is_empty() || owner.is_empty() || String(info.get("parent_governance_sha256", "")).length() != 64 ||
 				(!game_review && (candidate != expected || !_validate_engine_candidate(error, owner)))) {
 			return Dictionary();
@@ -561,7 +561,7 @@ Dictionary AIChatDock::_child_delegation() const {
 		delegation["candidate_base_sha"] = candidate["base_sha"];
 		delegation["candidate_root"] = candidate["source_root"];
 		delegation["independence"] = "distinct_host_execution_contexts";
-		delegation["reviewer_conversation_id"] = conversation_id;
+		delegation["reviewer_conversation_id"] = GetAiSession().strConversation;
 		if (acceptance) {
 			delegation["producer_execution_id"] = context.get("producer_execution_id", "");
 			delegation["producer_conversation_id"] = context.get("producer_conversation", "");
@@ -572,7 +572,7 @@ Dictionary AIChatDock::_child_delegation() const {
 }
 
 String AIChatDock::_delegate_review(const Dictionary &p_arguments) {
-	if (!busy || !allow_tools->is_pressed() || consultation_turn || consultation_only->is_pressed() || sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || !AIChatSubAgents::supports_read_only_backend(backend->get_selected()) || !history_writable || snapshot_transaction_failed || snapshot_restoring || engine_build_pid >= 0 || engine_restart_requested || !gonggong_recovered_result.is_empty() || design_batches.has(active_agent) || queue_paused || !queued_messages.is_empty()) {
+	if (!IsAiBusy() || !allow_tools->is_pressed() || consultation_turn || consultation_only->is_pressed() || sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || !AIChatSubAgents::supports_read_only_backend(backend->get_selected()) || !history_writable || snapshot_transaction_failed || snapshot_restoring || engine_build_pid >= 0 || engine_restart_requested || !gonggong_recovered_result.is_empty() || design_batches.has(active_agent) || GetAiSession().bQueuePaused || !GetAiSession().arrQueuedMessages.is_empty()) {
 		return "Error: A read-only review requires an authorized active parent with no pending batch, queue or restore. No reviewer was started.";
 	}
 	const int64_t issue = _work_order_binding("issue_number").to_int();
@@ -591,7 +591,7 @@ String AIChatDock::_delegate_review(const Dictionary &p_arguments) {
 		return "Error: Review prompt must contain 1-8192 UTF-8 bytes and title at most 80 characters.";
 	}
 	Dictionary game_context;
-	if (!snapshot_state.has("engine_candidate")) {
+	if (!GetAiSession().mapSnapshot.has("engine_candidate")) {
 		const String root = AIChatHostRuntime::canonical_directory(_workflow_root());
 		const String project = AIChatHostRuntime::canonical_directory(ProjectSettings::get_singleton()->get_resource_path());
 		const String common = AIChatHostRuntime::checkout_common_directory(root);
@@ -607,12 +607,12 @@ String AIChatDock::_delegate_review(const Dictionary &p_arguments) {
 		candidate["head"] = head;
 		candidate["branch"] = branch;
 		candidate["base_sha"] = head;
-		candidate["owner"] = conversation_id;
+		candidate["owner"] = GetAiSession().strConversation;
 		candidate["issue"] = issue;
 		candidate["request_id"] = review_request;
 		game_context["candidate"] = candidate;
 		game_context["parent"] = active_agent;
-		game_context["parent_snapshot"] = snapshot_id;
+		game_context["parent_snapshot"] = GetAiSession().strSnapshot;
 		game_context["project_root"] = project;
 		game_context["host_root"] = _engine_root();
 	}
@@ -627,7 +627,7 @@ String AIChatDock::_delegate_review(const Dictionary &p_arguments) {
 	info["request_id"] = review_request;
 	info["issue_number"] = issue;
 	info["title"] = review_title;
-	info["parent_snapshot"] = snapshot_id;
+	info["parent_snapshot"] = GetAiSession().strSnapshot;
 	info["parent_governance_sha256"] = gonggong_governance_digest.is_empty() ? gonggong_context.sha256_text() : gonggong_governance_digest;
 	info["sponsor_agent"] = gonggong_reporting.get("agent", Dictionary());
 	const int id = _create_sub_agent(active_agent, review_title.is_empty() ? String(U"只读验收") : review_title.left(AIChatSubAgents::MAX_TITLE_CHARS), info, prompt);
@@ -637,7 +637,7 @@ String AIChatDock::_delegate_review(const Dictionary &p_arguments) {
 	// Carry the parent's exact candidate as read-only provenance. Consultation
 	// bypasses production intake and never asks the host to prepare a candidate.
 	if (game_context.is_empty()) {
-		agent_sessions[id].snapshot_state["engine_candidate"] = Dictionary(snapshot_state["engine_candidate"]).duplicate(true);
+		agent_sessions[id].stData.mapSnapshot["engine_candidate"] = Dictionary(GetAiSession().mapSnapshot["engine_candidate"]).duplicate(true);
 	} else {
 		game_context["parent_governance_sha256"] = info["parent_governance_sha256"];
 		game_review_contexts.insert(id, game_context);
@@ -645,7 +645,7 @@ String AIChatDock::_delegate_review(const Dictionary &p_arguments) {
 	_register_design_batch(active_agent, review_request, issue, id);
 	if (!design_batches.has(active_agent)) {
 		game_review_contexts.erase(id);
-		agent_sessions[id].queued_messages.clear();
+		agent_sessions[id].stData.arrQueuedMessages.clear();
 		sub_agents[id]["state"] = "failed";
 		_queue_history_save();
 		return "Error: The reviewer could not bind to this parent. No review was executed.";
@@ -701,15 +701,15 @@ void AIChatDock::_design_turn_started() {
 	Dictionary children = _design_child_context(active_agent)["children"];
 	Dictionary child = children[active_agent];
 	child["state"] = "running";
-	child["generation"] = int64_t(session_generation);
+	child["generation"] = int64_t(GetAiSessionGeneration());
 	child["delegation"] = _child_delegation();
-	child["conversation_id"] = conversation_id;
-	child["snapshot_id"] = snapshot_id;
+	child["conversation_id"] = GetAiSession().strConversation;
+	child["snapshot_id"] = GetAiSession().strSnapshot;
 	if (sub_agents[active_agent].has("dependency_dispatch")) {
 		Dictionary started;
 		started["dispatch"] = sub_agents[active_agent]["dependency_dispatch"];
-		started["generation"] = int64_t(session_generation);
-		started["conversation_id"] = conversation_id;
+		started["generation"] = int64_t(GetAiSessionGeneration());
+		started["conversation_id"] = GetAiSession().strConversation;
 		started["observed_unix_time"] = Time::get_singleton()->get_unix_time_from_system();
 		const String path = String(Dictionary(started["dispatch"])["path"]) + ".started.json";
 		Ref<FileAccess> file = FileAccess::open(path, FileAccess::WRITE);
@@ -758,7 +758,7 @@ void AIChatDock::_record_design_tool_receipt(const String &p_tool, const String 
 	Dictionary batch = _design_child_context(active_agent);
 	Dictionary children = batch["children"];
 	Dictionary child = children[active_agent];
-	if (String(child.get("state", "")) != "running" || uint64_t(int64_t(child.get("generation", -1))) != session_generation || String(child.get("snapshot_id", "")) != snapshot_id || !_design_parent_matches(parent, batch)) {
+	if (String(child.get("state", "")) != "running" || uint64_t(int64_t(child.get("generation", -1))) != GetAiSessionGeneration() || String(child.get("snapshot_id", "")) != GetAiSession().strSnapshot || !_design_parent_matches(parent, batch)) {
 		return;
 	}
 	Dictionary receipt = AIChatSubAgentReceipts::summarize(p_tool, p_result, p_file_success, p_terminal);
@@ -771,9 +771,9 @@ void AIChatDock::_record_design_tool_receipt(const String &p_tool, const String 
 	if (_is_review_child() && p_file_success && (p_tool == "read_file" || p_tool == "read_script")) {
 		// Record the scope of successful host reads. The result digest covers
 		// exactly the returned (possibly excerpted and redacted) content.
-		const int index = tool_index + read_batch_results.size();
-		if (index >= 0 && index < tool_calls.size()) {
-			const Dictionary call = tool_calls[index];
+		const int index = GetAiTurn().nToolIndex + read_batch_results.size();
+		if (index >= 0 && index < GetAiTurn().arrToolCalls.size()) {
+			const Dictionary call = GetAiTurn().arrToolCalls[index];
 			const Dictionary function = call.get("function", Dictionary());
 			const Dictionary args = JSON::parse_string(function.get("arguments", ""));
 			const String target = args.get("path", "");
@@ -895,12 +895,12 @@ void AIChatDock::_record_design_tool_receipt(const String &p_tool, const String 
 	body["batch_token"] = batch["token"];
 	body["child_id"] = active_agent;
 	body["business_accepted"] = Variant();
-	const String path = _snapshot_path(snapshot_id);
+	const String path = _snapshot_path(GetAiSession().strSnapshot);
 	child["receipt_ref"] = path.is_empty() ? Dictionary() : store_design_receipts(path + ".tool-receipts.json", body);
 }
 
 void AIChatDock::_design_reporting_blocked(uint64_t p_generation) {
-	const uint64_t generation = p_generation ? p_generation : session_generation;
+	const uint64_t generation = p_generation ? p_generation : GetAiSessionGeneration();
 	design_last_blocked_generation = generation;
 	Vector<Dictionary> contexts;
 	for (const KeyValue<int, Dictionary> &entry : design_batches) {
@@ -959,17 +959,17 @@ bool AIChatDock::_design_child_finished(int p_agent, bool p_completed, uint64_t 
 	if (String(child.get("state", "")) != "running" || uint64_t(int64_t(child.get("generation", -1))) != p_generation) {
 		return false;
 	}
-	const String owner = p_agent == active_agent ? conversation_id : agent_sessions.has(p_agent) ? agent_sessions[p_agent].conversation_id
-																								 : String();
-	const String turn = p_agent == active_agent ? snapshot_id : agent_sessions.has(p_agent) ? agent_sessions[p_agent].snapshot_id
-																							: String();
+	const String owner = p_agent == active_agent ? GetAiSession().strConversation : agent_sessions.has(p_agent) ? agent_sessions[p_agent].stData.strConversation
+																												: String();
+	const String turn = p_agent == active_agent ? GetAiSession().strSnapshot : agent_sessions.has(p_agent) ? agent_sessions[p_agent].stData.strSnapshot
+																										   : String();
 	if (String(child.get("conversation_id", "")) != owner || String(child.get("snapshot_id", "")) != turn || !_design_parent_matches(parent, batch)) {
 		_cancel_design_batch(p_agent);
 		return false;
 	}
 	child["state"] = p_completed ? "completed" : "incomplete";
 	child["transport_completed"] = p_completed;
-	const Array history = p_agent == active_agent ? messages : agent_sessions[p_agent].messages;
+	const Array history = p_agent == active_agent ? GetAiSession().arrMessages : agent_sessions[p_agent].stData.arrMessages;
 	Dictionary report;
 	report["untrusted"] = true;
 	report["text_included"] = false;
@@ -1046,7 +1046,7 @@ bool AIChatDock::_design_child_finished(int p_agent, bool p_completed, uint64_t 
 }
 
 bool AIChatDock::_design_return_allowed(int p_parent, const Dictionary &p_message) const {
-	if (!design_batches.has(p_parent) || !allow_tools->is_pressed() || consultation_only->is_pressed() || queue_paused || !history_writable || snapshot_transaction_failed) {
+	if (!design_batches.has(p_parent) || !allow_tools->is_pressed() || consultation_only->is_pressed() || GetAiSession().bQueuePaused || !history_writable || snapshot_transaction_failed) {
 		return false;
 	}
 	const Dictionary batch = design_batches[p_parent];
@@ -1071,11 +1071,11 @@ bool AIChatDock::_design_return_allowed(int p_parent, const Dictionary &p_messag
 		const Dictionary child = children[order[0]];
 		const Dictionary delegation = child.get("delegation", Dictionary());
 		const bool game_review = game_review_contexts.has(int(order[0]));
-		const Dictionary candidate = game_review ? _game_review_candidate(order[0]) : Dictionary(snapshot_state.get("engine_candidate", Dictionary()));
+		const Dictionary candidate = game_review ? _game_review_candidate(order[0]) : Dictionary(GetAiSession().mapSnapshot.get("engine_candidate", Dictionary()));
 		const String root = candidate.get("source_root", "");
 		if (candidate.is_empty() || delegation.get("candidate_root", "") != candidate.get("source_root", "") ||
 				delegation.get("candidate_branch", "") != candidate.get("branch", "") || delegation.get("candidate_base_sha", "") != candidate.get("base_sha", "") ||
-				delegation.get("parent_snapshot", "") != snapshot_id || (!game_review && !_validate_engine_candidate(error)) ||
+				delegation.get("parent_snapshot", "") != GetAiSession().strSnapshot || (!game_review && !_validate_engine_candidate(error)) ||
 				(!game_review && bool(batch.get("review_source_unverified", false))) || !review_files_current(root, batch.get("review_files", Dictionary())) ||
 				String(delegation.get("candidate_head", "")).is_empty() || delegation["candidate_head"] != review_head(root)) {
 			return false;
@@ -1135,16 +1135,16 @@ bool AIChatDock::_queue_design_parent_result(int p_parent) {
 	Dictionary marker;
 	marker["token"] = batch["token"];
 	message["design_batch_return"] = marker;
-	Array queue = p_parent == active_agent ? queued_messages : agent_sessions[p_parent].queued_messages;
+	Array queue = p_parent == active_agent ? GetAiSession().arrQueuedMessages : agent_sessions[p_parent].stData.arrQueuedMessages;
 	if (queue.size() >= 32) {
 		return false;
 	}
 	queue.push_back(message);
 	if (bool(batch.get("reporting_blocked", false))) {
 		if (p_parent == active_agent) {
-			queue_paused = true;
+			GetAiSession().bQueuePaused = true;
 		} else {
-			agent_sessions[p_parent].queue_paused = true;
+			agent_sessions[p_parent].stData.bQueuePaused = true;
 		}
 	}
 	batch["state"] = "queued";
@@ -1242,30 +1242,30 @@ int AIChatDock::_create_sub_agent(int p_parent, const String &p_title, const Dic
 	}
 	const int id = next_agent++;
 	AgentSession session;
-	session.snapshot_state["requirement_workspace"] = _workflow_root(p_parent);
+	session.stData.mapSnapshot["requirement_workspace"] = _workflow_root(p_parent);
 	if (p_parent != active_agent && agent_sessions.has(p_parent)) {
 		const AgentSession &parent = agent_sessions[p_parent];
-		session.model = parent.model;
-		session.cli_model = parent.cli_model;
-		session.codex_model = parent.codex_model;
-		session.reasoning_preferences = parent.reasoning_preferences.duplicate(true);
-		session.backend = parent.backend;
+		session.stData.strModel = parent.stData.strModel;
+		session.stData.strCliModel = parent.stData.strCliModel;
+		session.stData.strCodexModel = parent.stData.strCodexModel;
+		session.stData.mapReasoningPreferences = parent.stData.mapReasoningPreferences.duplicate(true);
+		session.stData.nBackend = parent.stData.nBackend;
 	} else {
-		session.model = model->get_text();
-		session.cli_model = cli_model->get_text();
-		session.codex_model = codex_model->get_text();
-		session.reasoning_preferences = reasoning_preferences.duplicate(true);
-		session.backend = backend->get_selected();
+		session.stData.strModel = model->get_text();
+		session.stData.strCliModel = cli_model->get_text();
+		session.stData.strCodexModel = codex_model->get_text();
+		session.stData.mapReasoningPreferences = GetAiSession().mapReasoningPreferences.duplicate(true);
+		session.stData.nBackend = backend->get_selected();
 	}
-	session.message_list = memnew(VBoxContainer);
-	session.message_list->set_name(vformat("ArchivedMessages%d", id));
-	session.message_list->set_h_size_flags(SIZE_EXPAND_FILL);
-	session.message_list->add_theme_constant_override("separation", 16 * EDSCALE);
-	agent_archive->add_child(session.message_list);
+	session.stView.pMessageList = memnew(VBoxContainer);
+	session.stView.pMessageList->set_name(vformat("ArchivedMessages%d", id));
+	session.stView.pMessageList->set_h_size_flags(SIZE_EXPAND_FILL);
+	session.stView.pMessageList->add_theme_constant_override("separation", 16 * EDSCALE);
+	agent_archive->add_child(session.stView.pMessageList);
 	if (!p_prompt.is_empty()) {
 		Dictionary message = user_message(p_prompt);
 		message["consultation_only"] = String(p_info.get("source", "")) == "review";
-		session.queued_messages.push_back(message);
+		session.stData.arrQueuedMessages.push_back(message);
 	}
 	agent_sessions.insert(id, session);
 	Dictionary info = p_info.duplicate(true);
@@ -1283,7 +1283,7 @@ int AIChatDock::_create_sub_agent(int p_parent, const String &p_title, const Dic
 }
 
 void AIChatDock::_add_sub_agent() {
-	if (!gonggong_recovered_result.is_empty() || busy || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed) {
+	if (!gonggong_recovered_result.is_empty() || IsAiBusy() || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed) {
 		return;
 	}
 	const int parent = active_agent;
@@ -1399,7 +1399,7 @@ void AIChatDock::_confirm_design_action() {
 	const int child = action.get("child", -1);
 	const String actor = local_design_operator();
 	const Variant absent = "missing-design-metadata:" + itos(Time::get_singleton()->get_ticks_usec()) + ":" + itos(get_instance_id());
-	if (actor.is_empty() || parent != _sub_agent_root(active_agent) || busy || !history_writable || !allow_tools->is_pressed() || consultation_only->is_pressed() ||
+	if (actor.is_empty() || parent != _sub_agent_root(active_agent) || IsAiBusy() || !history_writable || !allow_tools->is_pressed() || consultation_only->is_pressed() ||
 			action.get("binding", Dictionary()) != _read_design(parent).get("binding", Variant())) {
 		_append(TTR("Editor"), U"操作者、权限或设计版本已变化，请重新核对后确认。");
 		return;
@@ -1409,7 +1409,7 @@ void AIChatDock::_confirm_design_action() {
 		for (int id : _sub_agent_children(parent, false)) {
 			children[id] = sub_agents[id];
 		}
-		if (parent != active_agent || conversation_id != String(action.get("conversation_id", "")) || snapshot_id != String(action.get("snapshot_id", "")) ||
+		if (parent != active_agent || GetAiSession().strConversation != String(action.get("conversation_id", "")) || GetAiSession().strSnapshot != String(action.get("snapshot_id", "")) ||
 				children != Dictionary(action.get("children", Dictionary()))) {
 			_append(TTR("Editor"), U"原父会话或工单记录已变化，请重新核对后确认。");
 			return;
@@ -1483,7 +1483,7 @@ void AIChatDock::_confirm_design_action() {
 }
 
 void AIChatDock::_spawn_sub_agents_pressed() {
-	if (!gonggong_recovered_result.is_empty() || busy || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || scheduled_agents.has(active_agent)) {
+	if (!gonggong_recovered_result.is_empty() || IsAiBusy() || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || scheduled_agents.has(active_agent)) {
 		return;
 	}
 	if (sub_agents.has(active_agent) && sub_agents[active_agent].has("terminal_receipt") && !sub_agents[active_agent].has("acceptance") && gonggong_receipt_pid < 0) {
@@ -1556,7 +1556,7 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit, const D
 				disk.instantiate();
 				const String path = EditorPaths::get_singleton()->get_project_settings_dir().path_join("project_metadata.cfg");
 				const Error loaded = disk->load(path);
-				bool eligible = p_parent == active_agent && !busy && !queue_paused && queued_messages.is_empty() && history_writable && !snapshot_restoring && !snapshot_transaction_failed && engine_build_pid < 0 && !engine_restart_requested &&
+				bool eligible = p_parent == active_agent && !IsAiBusy() && !GetAiSession().bQueuePaused && GetAiSession().arrQueuedMessages.is_empty() && history_writable && !snapshot_restoring && !snapshot_transaction_failed && engine_build_pid < 0 && !engine_restart_requested &&
 						!actor.is_empty() && approval.get("operator", "") == actor && existing.size() == orders.size() &&
 						gonggong_receipt_pid < 0 && sub_agent_parallel_pid < 0 && production_integration_job.is_empty() && parent_completion_job.is_empty() &&
 						(loaded == OK || loaded == ERR_FILE_NOT_FOUND) && !disk->has_section_key("design_confirmations", key);
@@ -1572,7 +1572,7 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit, const D
 					bool terminal = (state == "review" || state == "completed") && receipt_available(info.get("terminal_receipt", Dictionary()));
 					if (info.get("source", "") == "review" && state == "completed" && agent_sessions.has(id)) {
 						const AgentSession &session = agent_sessions[id];
-						const Ref<FileAccess> receipt = FileAccess::open(_snapshot_path(session.snapshot_id) + ".tool-receipts.json", FileAccess::READ);
+						const Ref<FileAccess> receipt = FileAccess::open(_snapshot_path(session.stData.strSnapshot) + ".tool-receipts.json", FileAccess::READ);
 						if (receipt.is_valid() && receipt->get_length() <= 16 * 1024 * 1024) {
 							const Variant parsed_receipt = JSON::parse_string(receipt->get_as_utf8_string());
 							const Dictionary envelope = parsed_receipt.get_type() == Variant::DICTIONARY ? Dictionary(parsed_receipt) : Dictionary();
@@ -1582,7 +1582,7 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit, const D
 							terminal = !payload.is_empty() && payload.sha256_text() == String(envelope.get("sha256", "")) &&
 									observed.get("source", "") == "current_host_design_batch" && int(observed.get("child_id", -1)) == id &&
 									observed.get("state", "") == "completed" && observed.get("transport_completed", Variant()) == Variant(true) &&
-									observed.get("conversation_id", "") == session.conversation_id && observed.get("snapshot_id", "") == session.snapshot_id;
+									observed.get("conversation_id", "") == session.stData.strConversation && observed.get("snapshot_id", "") == session.stData.strSnapshot;
 						}
 					}
 					eligible = eligible && (never_started || terminal) &&
@@ -1614,8 +1614,8 @@ bool AIChatDock::_spawn_work_order_agents(int p_parent, bool p_explicit, const D
 					pending_design_action["binding"] = binding;
 					pending_design_action["approval"] = approval.duplicate(true);
 					pending_design_action["children"] = children;
-					pending_design_action["conversation_id"] = conversation_id;
-					pending_design_action["snapshot_id"] = snapshot_id;
+					pending_design_action["conversation_id"] = GetAiSession().strConversation;
+					pending_design_action["snapshot_id"] = GetAiSession().strSnapshot;
 					design_summary->set_text(vformat(U"本机缺少已有工单的设计确认。由原操作者 %s 重新确认原版本？\nIssue #%d · %s\n%s\nSHA-256 %s\n\n本次仅保存确认记录。原工单、终态、审查与验收记录保持原样；随后需要再次显式继续生产。", actor, issue, request_id, String(binding["workspace"]), String(binding["sha256"])));
 					design_evidence->hide();
 					design_dialog->set_title(U"重新确认原设计");
@@ -1774,9 +1774,9 @@ bool AIChatDock::_resume_work_order_agents(int p_parent, const String &p_request
 			// This button explicitly authorizes another attempt; automatic dispatch
 			// never clears a queue paused by a failure, Stop, or cold startup.
 			if (id == active_agent) {
-				queue_paused = false;
+				GetAiSession().bQueuePaused = false;
 			} else if (agent_sessions.has(id)) {
-				agent_sessions[id].queue_paused = false;
+				agent_sessions[id].stData.bQueuePaused = false;
 			}
 			resumed++;
 		} else if (state == "waiting" || state == "running") {
@@ -1810,14 +1810,14 @@ bool AIChatDock::_resume_work_order_agents(int p_parent, const String &p_request
 }
 
 void AIChatDock::_sub_agent_dispatch() {
-	if (!is_inside_tree() || !history_loaded || history_restoring || !history_writable || busy || engine_build_pid >= 0 || engine_restart_requested || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty() || !issue_guide_state.is_empty()) {
+	if (!is_inside_tree() || !history_loaded || history_restoring || !history_writable || IsAiBusy() || engine_build_pid >= 0 || engine_restart_requested || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty() || !issue_guide_state.is_empty()) {
 		return;
 	}
 	const int completion_parent = _sub_agent_root(active_agent);
 	if (design_batches.has(completion_parent) && String(design_batches[completion_parent].get("state", "")).begins_with("parent_")) {
 		return; // The live parent gate owns preflight, decisions and terminal acceptance.
 	}
-	if (gonggong_receipt_pid < 0 && !queue_paused && queued_messages.is_empty()) {
+	if (gonggong_receipt_pid < 0 && !GetAiSession().bQueuePaused && GetAiSession().arrQueuedMessages.is_empty()) {
 		for (const KeyValue<int, Dictionary> &entry : acceptance_reviews) {
 			const int parent = entry.value.get("parent", -1);
 			if (_sub_agent_root(active_agent) != parent || !design_batches.has(parent) || design_batches[parent].get("state", "") != "running" || !_design_parent_matches(parent, entry.value)) {
@@ -1835,11 +1835,11 @@ void AIChatDock::_sub_agent_dispatch() {
 			}
 		}
 	}
-	if (gonggong_receipt_pid < 0 && !queue_paused && queued_messages.size() == 1 && Dictionary(queued_messages[0]).has("design_batch_return") && design_batches.has(active_agent) && !bool(design_batches[active_agent].get("reporting_blocked", false))) {
+	if (gonggong_receipt_pid < 0 && !GetAiSession().bQueuePaused && GetAiSession().arrQueuedMessages.size() == 1 && Dictionary(GetAiSession().arrQueuedMessages[0]).has("design_batch_return") && design_batches.has(active_agent) && !bool(design_batches[active_agent].get("reporting_blocked", false))) {
 		callable_mp(this, &AIChatDock::_dispatch_queued_message).call_deferred(active_agent);
 		return;
 	}
-	if (queue_paused || !queued_messages.is_empty()) {
+	if (GetAiSession().bQueuePaused || !GetAiSession().arrQueuedMessages.is_empty()) {
 		return; // The visible Agent's own queue runs first.
 	}
 	const int acceptance_parent = _sub_agent_root(active_agent);
@@ -1898,8 +1898,8 @@ void AIChatDock::_sub_agent_dispatch() {
 		if (bool(batch.get("reporting_blocked", false))) {
 			return; // Another workspace cannot acknowledge the child's failed gate.
 		}
-		const Array queue = parent == active_agent ? queued_messages : agent_sessions[parent].queued_messages;
-		const bool paused = parent == active_agent ? queue_paused : agent_sessions[parent].queue_paused;
+		const Array queue = parent == active_agent ? GetAiSession().arrQueuedMessages : agent_sessions[parent].stData.arrQueuedMessages;
+		const bool paused = parent == active_agent ? GetAiSession().bQueuePaused : agent_sessions[parent].stData.bQueuePaused;
 		if (paused || queue.size() != 1 || !Dictionary(queue[0]).has("design_batch_return")) {
 			return;
 		}
@@ -1933,7 +1933,7 @@ void AIChatDock::_sub_agent_dispatch() {
 		if (!bool(batch.get("read_only_review", false)) && !_design_child_ready(id)) {
 			continue;
 		}
-		const bool paused = id == active_agent ? queue_paused : agent_sessions[id].queue_paused;
+		const bool paused = id == active_agent ? GetAiSession().bQueuePaused : agent_sessions[id].stData.bQueuePaused;
 		if (paused) {
 			return;
 		}
@@ -1945,15 +1945,15 @@ void AIChatDock::_sub_agent_dispatch() {
 		if (active_agent != id) {
 			return;
 		}
-		if (queued_messages.is_empty()) {
+		if (GetAiSession().arrQueuedMessages.is_empty()) {
 			Dictionary message = user_message(CONTINUE_WORK_ORDER);
 			message["consultation_only"] = _is_review_child();
-			queued_messages.push_back(message);
+			GetAiSession().arrQueuedMessages.push_back(message);
 		}
 		design_child_starting = id;
 		_dispatch_queued_message(id);
 		design_child_starting = -1;
-		if (!busy) {
+		if (!IsAiBusy()) {
 			sub_agents[id]["state"] = "failed";
 			_cancel_design_batch(id);
 			_append(TTR("Editor"), U"该工单子会话未能启动，后续工单已停住。请检查连接设置后点「继续落地」。");
@@ -2058,7 +2058,7 @@ bool AIChatDock::_persist_serial_dependency_preflight(int p_child) {
 
 bool AIChatDock::_dispatch_parallel_sub_agents() {
 	const int review_parent = _sub_agent_root(active_agent);
-	if (_is_review_child() || bool(snapshot_state.get("read_only_review_return", false)) || (design_batches.has(review_parent) && bool(design_batches[review_parent].get("read_only_review", false)))) {
+	if (_is_review_child() || bool(GetAiSession().mapSnapshot.get("read_only_review_return", false)) || (design_batches.has(review_parent) && bool(design_batches[review_parent].get("read_only_review", false)))) {
 		return false; // A live read-only review never dispatches production CLI workers.
 	}
 	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
@@ -2412,7 +2412,7 @@ bool AIChatDock::_bind_parallel_review(int id, const Dictionary &receipt, const 
 		return false;
 	}
 	const int parent = sub_agents[id]["parent"];
-	const Dictionary parent_snapshot = parent == active_agent ? snapshot_state : agent_sessions[parent].snapshot_state;
+	const Dictionary parent_snapshot = parent == active_agent ? GetAiSession().mapSnapshot : agent_sessions[parent].stData.mapSnapshot;
 	Dictionary candidate = Dictionary(parent_snapshot.get("engine_candidate", Dictionary())).duplicate(true);
 	const bool ordinary_game = candidate.is_empty();
 	if (ordinary_game) {
@@ -2462,7 +2462,7 @@ void AIChatDock::_poll_parallel_sub_agents() {
 		return; // Observe an existing process only; no new scheduling or model call.
 	}
 	sub_agent_parallel_pid = -1;
-	set_process(cli_process_id >= 0 || process_id >= 0);
+	set_process(GetCliTransport()->HasProcess() || process_id >= 0);
 	Ref<FileAccess> file = FileAccess::open(sub_agent_parallel_output, FileAccess::READ);
 	Dictionary result;
 	if (file.is_valid() && file->get_length() <= 32 * 1024 * 1024) {
@@ -2572,7 +2572,7 @@ void AIChatDock::_sub_agent_finished(int p_agent, bool p_completed, uint64_t p_g
 	if (!is_inside_tree() || history_restoring) {
 		return;
 	}
-	if (design_batches.has(p_agent) && bool(design_batches[p_agent].get("read_only_review", false)) && !p_completed && p_generation == session_generation) {
+	if (design_batches.has(p_agent) && bool(design_batches[p_agent].get("read_only_review", false)) && !p_completed && p_generation == GetAiSessionGeneration()) {
 		_cancel_design_batch(p_agent);
 	}
 	const int parent = _design_child_parent(p_agent);
@@ -2585,10 +2585,10 @@ void AIChatDock::_sub_agent_finished(int p_agent, bool p_completed, uint64_t p_g
 		}
 	}
 	_design_child_finished(p_agent, p_completed, p_generation);
-	if (p_completed && p_agent == active_agent && p_generation == session_generation && !busy && !sub_agents.has(p_agent) && !scheduled_agents.has(p_agent) && !bool(snapshot_state.get("read_only_review_return", false))) {
+	if (p_completed && p_agent == active_agent && p_generation == GetAiSessionGeneration() && !IsAiBusy() && !sub_agents.has(p_agent) && !scheduled_agents.has(p_agent) && !bool(GetAiSession().mapSnapshot.get("read_only_review_return", false))) {
 		_spawn_work_order_agents(p_agent, false);
 	}
-	if (sub_agents.has(p_agent) && p_agent == active_agent && !busy && String(sub_agents[p_agent].get("source", "")) == "design" && String(sub_agents[p_agent]["state"]) == "failed") {
+	if (sub_agents.has(p_agent) && p_agent == active_agent && !IsAiBusy() && String(sub_agents[p_agent].get("source", "")) == "design" && String(sub_agents[p_agent]["state"]) == "failed") {
 		_append(TTR("Editor"), U"本工单子会话未正常完成，后续工单已停住，不会跳过依赖。处理后点「继续落地」，或直接在此子会话中继续对话。");
 	}
 	_refresh_sub_agents();
@@ -2614,12 +2614,12 @@ void AIChatDock::_refresh_sub_agents() {
 	const bool scheduled = scheduled_agents.has(active_agent);
 	sub_agent_bar->set_visible(!scheduled);
 	const int root = _sub_agent_root(active_agent);
-	const bool parallel_continuation = design_batches.has(root) && design_batches[root].get("state", "") == "running" && bool(design_batches[root].get("parallel_external", false)) && !queue_paused;
+	const bool parallel_continuation = design_batches.has(root) && design_batches[root].get("state", "") == "running" && bool(design_batches[root].get("parallel_external", false)) && !GetAiSession().bQueuePaused;
 	bool acceptance_pending = !parent_completion_job.is_empty() && int(parent_completion_job.get("parent", -1)) == root;
 	for (const KeyValue<int, Dictionary> &entry : acceptance_bridge_jobs) {
 		acceptance_pending = acceptance_pending || int(entry.value.get("parent", -1)) == root;
 	}
-	stop_button->set_disabled(!parallel_continuation && !acceptance_pending && !busy && pending_external_editor_message.is_empty() && !snapshot_restoring && gonggong_recovered_result.is_empty() && (observed_command_owner.is_empty() || observed_command_owner != conversation_id));
+	stop_button->set_disabled(!parallel_continuation && !acceptance_pending && !IsAiBusy() && pending_external_editor_message.is_empty() && !snapshot_restoring && gonggong_recovered_result.is_empty() && (observed_command_owner.is_empty() || observed_command_owner != GetAiSession().strConversation));
 	const Vector<int> children = _sub_agent_children(root, false);
 	bool resumable = false;
 	sub_agent_tabs->set_block_signals(true);
@@ -2641,7 +2641,7 @@ void AIChatDock::_refresh_sub_agents() {
 		}
 	}
 	sub_agent_tabs->set_block_signals(false);
-	const bool locked = busy || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty();
+	const bool locked = IsAiBusy() || engine_build_pid >= 0 || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty();
 	const bool child = sub_agents.has(active_agent);
 	add_sub_agent->set_disabled(locked || child || !history_writable || children.size() >= AIChatSubAgents::MAX_CHILDREN_PER_PARENT || sub_agents.size() >= AIChatSubAgents::MAX_CHILDREN || agent_tabs->get_tab_count() >= 256);
 	add_sub_agent->set_tooltip_text(child ? U"子会话不能再派生子会话；请切回父会话后新建。" : U"在当前父会话窗口内新建一个子会话。子会话不能再派生子会话。");
@@ -2752,7 +2752,7 @@ String AIChatDock::_parent_context_result() const {
 		return JSON::stringify(result);
 	}
 	const AgentSession &session = agent_sessions.get(parent);
-	const Dictionary context = AIChatSubAgents::parent_context(session.transcript);
+	const Dictionary context = AIChatSubAgents::parent_context(session.stData.arrTranscript);
 	Array records = context["records"];
 	for (int i = 0; i < records.size(); i++) {
 		Dictionary record = records[i];
@@ -2760,7 +2760,7 @@ String AIChatDock::_parent_context_result() const {
 	}
 	result["ok"] = true;
 	result["parent_title"] = _agent_title(parent);
-	result["parent_conversation_id"] = session.conversation_id;
+	result["parent_conversation_id"] = session.stData.strConversation;
 	result["work_order"] = info.get("number", info.get("work_order", 0));
 	result["request_id"] = info.get("request_id", "");
 	result["host_runtime"] = _current_host_runtime_metadata();
@@ -2987,13 +2987,13 @@ void AIChatDock::_poll_acceptance_bridge() {
 	if (acceptance_bridge_jobs.is_empty()) {
 		acceptance_bridge_timer->stop();
 	}
-	if (busy && design_batches.has(active_agent) && bool(design_batches[active_agent].get("parent_wait_current", false))) {
+	if (IsAiBusy() && design_batches.has(active_agent) && bool(design_batches[active_agent].get("parent_wait_current", false))) {
 		_gate_parent_completion(); // Actual verifier completion, never a timer scan.
 	}
 }
 
 bool AIChatDock::_start_acceptance_review(int p_producer) {
-	if (!sub_agents.has(p_producer) || !history_writable || snapshot_transaction_failed || snapshot_restoring || queue_paused || !allow_tools->is_pressed() || !AIChatSubAgents::supports_read_only_backend(backend->get_selected())) {
+	if (!sub_agents.has(p_producer) || !history_writable || snapshot_transaction_failed || snapshot_restoring || GetAiSession().bQueuePaused || !allow_tools->is_pressed() || !AIChatSubAgents::supports_read_only_backend(backend->get_selected())) {
 		return false;
 	}
 	const Dictionary producer = sub_agents[p_producer];
@@ -3018,7 +3018,7 @@ bool AIChatDock::_start_acceptance_review(int p_producer) {
 		_append(TTR("Editor"), U"自动验收挂起：定版工单须逐行声明「验收: ID | 可验证要求」，不能从自由文本猜测验收项。");
 		return false;
 	}
-	const Dictionary producer_snapshot = p_producer == active_agent ? snapshot_state : agent_sessions[p_producer].snapshot_state;
+	const Dictionary producer_snapshot = p_producer == active_agent ? GetAiSession().mapSnapshot : agent_sessions[p_producer].stData.mapSnapshot;
 	const bool external = bool(producer.get("parallel_external", false));
 	const Dictionary engine_candidate = external ? Dictionary(producer.get("external_candidate", Dictionary())) : Dictionary(producer_snapshot.get("engine_candidate", Dictionary()));
 	const String root = engine_candidate.get("source_root", "");
@@ -3065,7 +3065,7 @@ bool AIChatDock::_start_acceptance_review(int p_producer) {
 		context_receipts.push_back(registration);
 	}
 	context["context_receipts"] = context_receipts;
-	context["producer_conversation"] = external ? String() : (p_producer == active_agent ? conversation_id : agent_sessions[p_producer].conversation_id);
+	context["producer_conversation"] = external ? String() : (p_producer == active_agent ? GetAiSession().strConversation : agent_sessions[p_producer].stData.strConversation);
 	context["producer_owner"] = external ? Dictionary(producer["terminal_receipt"])["execution_id"] : context["producer_conversation"];
 	if (external) {
 		context["producer_execution_id"] = Dictionary(producer["terminal_receipt"])["execution_id"];
@@ -3093,7 +3093,7 @@ bool AIChatDock::_start_acceptance_review(int p_producer) {
 	if (reviewer < 0) {
 		return false;
 	}
-	agent_sessions[reviewer].snapshot_state["engine_candidate"] = engine_candidate.duplicate(true);
+	agent_sessions[reviewer].stData.mapSnapshot["engine_candidate"] = engine_candidate.duplicate(true);
 	Dictionary child;
 	child["state"] = "waiting";
 	child["receipts"] = Array();
@@ -3149,7 +3149,7 @@ bool AIChatDock::_finish_acceptance_review(int p_reviewer, const Array &p_histor
 				context["parent_failure_reported"] = true;
 			}
 			_append(TTR("Editor"), String(U"独立验收尚未通过：") + p_reason);
-			if (design_batches.has(parent) && design_batches[parent].get("state", "") == "running" && _design_parent_matches(parent, continuation_authority) && !queue_paused && !bool(design_batches[parent].get("reporting_blocked", false))) {
+			if (design_batches.has(parent) && design_batches[parent].get("state", "") == "running" && _design_parent_matches(parent, continuation_authority) && !GetAiSession().bQueuePaused && !bool(design_batches[parent].get("reporting_blocked", false))) {
 				Dictionary finding;
 				finding["producer"] = itos(producer);
 				finding["reviewer"] = itos(p_reviewer);
@@ -3170,7 +3170,7 @@ bool AIChatDock::_finish_acceptance_review(int p_reviewer, const Array &p_histor
 	const Dictionary delegation = child.get("delegation", Dictionary());
 	const Dictionary candidate = context["candidate"];
 	const String root = candidate.get("root", "");
-	if (producer == p_reviewer || !sub_agents.has(producer) || !design_batches.has(parent) || design_batches[parent].get("token", "") != continuation_authority.get("token", "") || !_design_parent_matches(parent, continuation_authority) || !history_writable || queue_paused || snapshot_transaction_failed || !allow_tools->is_pressed() || delegation.get("execution_role", "") != "read_only_reviewer" || delegation.get("child_conversation", "") != child.get("conversation_id", "") || child.get("conversation_id", "") == context.get("producer_conversation", "") || String(child.get("conversation_id", "")).is_empty() || context["producer_receipt"] != sub_agents[producer].get("terminal_receipt", Variant()) || !receipt_available(context["producer_receipt"]) || _read_design(parent).get("binding", Variant()) != context["binding"] || !_design_child_ready(producer)) {
+	if (producer == p_reviewer || !sub_agents.has(producer) || !design_batches.has(parent) || design_batches[parent].get("token", "") != continuation_authority.get("token", "") || !_design_parent_matches(parent, continuation_authority) || !history_writable || GetAiSession().bQueuePaused || snapshot_transaction_failed || !allow_tools->is_pressed() || delegation.get("execution_role", "") != "read_only_reviewer" || delegation.get("child_conversation", "") != child.get("conversation_id", "") || child.get("conversation_id", "") == context.get("producer_conversation", "") || String(child.get("conversation_id", "")).is_empty() || context["producer_receipt"] != sub_agents[producer].get("terminal_receipt", Variant()) || !receipt_available(context["producer_receipt"]) || _read_design(parent).get("binding", Variant()) != context["binding"] || !_design_child_ready(producer)) {
 		return rejected("registration_changed");
 	}
 	if (bool(context.get("review_source_unverified", false))) {
@@ -3389,7 +3389,7 @@ bool AIChatDock::_finish_acceptance_review(int p_reviewer, const Array &p_histor
 		} else {
 			Dictionary message = user_message(correction);
 			message["consultation_only"] = false;
-			agent_sessions[producer].queued_messages.push_back(message);
+			agent_sessions[producer].stData.arrQueuedMessages.push_back(message);
 		}
 		context["repair_queued"] = true;
 		UpdateProductionOperation(producer, context, "repair_queued", "");
@@ -3568,7 +3568,7 @@ void AIChatDock::_integrate_production_result(const Dictionary &p_arguments, boo
 			if (parsed.get_type() == Variant::DICTIONARY) {
 				const Dictionary recovered = parsed;
 				const Dictionary original = recovered.get("request", Dictionary());
-				if (recovered.get("conversation_id", "") == Variant(conversation_id) && int(recovered.get("producer_id", -1)) == producer && original.get("request_id", "") == child.get("request_id", Variant()) && original.get("issue_number", 0) == child.get("issue_number", Variant()) && original.get("project_root", "") == Variant(project) && original.get("workspace_root", "") == Variant(workspace)) {
+				if (recovered.get("conversation_id", "") == Variant(GetAiSession().strConversation) && int(recovered.get("producer_id", -1)) == producer && original.get("request_id", "") == child.get("request_id", Variant()) && original.get("issue_number", 0) == child.get("issue_number", Variant()) && original.get("project_root", "") == Variant(project) && original.get("workspace_root", "") == Variant(workspace)) {
 					production_integration_plans.insert(producer, recovered);
 				}
 			}
@@ -3587,7 +3587,7 @@ void AIChatDock::_integrate_production_result(const Dictionary &p_arguments, boo
 		// The batch is consumed when its completion starts this parent's new
 		// turn. Retain the live independent completion, not the old turn ID.
 		const Dictionary review_context = acceptance_reviews[reviewer];
-		if (review_context.get("conversation_id", "") != Variant(conversation_id) || review_context.get("workspace", "") != Variant(workspace) || review_context.get("binding", Dictionary()) != _read_design(active_agent).get("binding", Variant())) {
+		if (review_context.get("conversation_id", "") != Variant(GetAiSession().strConversation) || review_context.get("workspace", "") != Variant(workspace) || review_context.get("binding", Dictionary()) != _read_design(active_agent).get("binding", Variant())) {
 			reject("accepted_design_or_parent_changed");
 			return;
 		}
@@ -3690,8 +3690,8 @@ void AIChatDock::_integrate_production_result(const Dictionary &p_arguments, boo
 	production_integration_job["pid"] = int64_t(pid);
 	production_integration_job["parent"] = active_agent;
 	production_integration_job["producer"] = producer;
-	production_integration_job["generation"] = int64_t(session_generation);
-	production_integration_job["conversation"] = conversation_id;
+	production_integration_job["generation"] = int64_t(GetAiSessionGeneration());
+	production_integration_job["conversation"] = GetAiSession().strConversation;
 	production_integration_job["request"] = integration_request;
 	production_integration_job["stem"] = stem;
 	production_integration_job["started"] = int64_t(OS::get_singleton()->get_ticks_msec());
@@ -3723,7 +3723,7 @@ void AIChatDock::_poll_production_integration() {
 	}
 	const Dictionary job = production_integration_job;
 	const Dictionary integration_request = job["request"];
-	const bool owner = active_agent == int(job["parent"]) && conversation_id == String(job["conversation"]) && session_generation == uint64_t(int64_t(job["generation"])) && busy;
+	const bool owner = active_agent == int(job["parent"]) && GetAiSession().strConversation == String(job["conversation"]) && GetAiSessionGeneration() == uint64_t(int64_t(job["generation"])) && IsAiBusy();
 	if (!owner || !allow_tools->is_pressed() || consultation_only->is_pressed()) {
 		_cancel_production_integration();
 	}
@@ -3792,7 +3792,7 @@ void AIChatDock::_poll_production_integration() {
 	}
 	production_integration_job.clear();
 	production_integration_timer->stop();
-	if (owner && tool_index >= 0 && tool_index < tool_calls.size() && String(Dictionary(Dictionary(tool_calls[tool_index])["function"])["name"]) == "integrate_production_result") {
+	if (owner && GetAiTurn().nToolIndex >= 0 && GetAiTurn().nToolIndex < GetAiTurn().arrToolCalls.size() && String(Dictionary(Dictionary(GetAiTurn().arrToolCalls[GetAiTurn().nToolIndex])["function"])["name"]) == "integrate_production_result") {
 		_finish_tool(JSON::stringify(result), bool(result.get("ok", false)) && state == "applied", true);
 	}
 }

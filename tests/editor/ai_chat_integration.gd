@@ -136,6 +136,7 @@ func _wait_send_ready() -> bool:
 	return _check(not backend.disabled and not send.disabled, "Model loading did not re-enable chat sending: " + status.text)
 
 func _phase(name: String, marker: String, reject := false) -> bool:
+	var dock = root.find_child("AI Chat", true, false)
 	if not await _wait_send_ready():
 		return false
 	chat_input.text = "case:" + name
@@ -143,10 +144,10 @@ func _phase(name: String, marker: String, reject := false) -> bool:
 		send_button.pressed.emit()
 		var idle = await _wait_idle(reject)
 		print("WINDOWS_COMMAND_PHASE ", name, " passed=", idle and marker in _chat_text())
-		return idle and _check(marker in _chat_text(), "Missing response marker: " + marker)
+		return idle and _check(marker in _chat_text(), "Missing response marker: " + marker + "; status=" + progress_status.text + "; run=" + JSON.stringify(dock.get_ai_workflow_snapshot()) + "; chat=" + _chat_text())
 	var code = KEY_ENTER if name == "workflow" else KEY_KP_ENTER
 	_chat_key(code)
-	if not _check(chat_input.text.is_empty() and "正在等待 AI" in progress_status.text, "Enter did not send and clear the input immediately"):
+	if not _check(chat_input.text.is_empty() and "正在等待 AI" in progress_status.text, "Enter did not send and clear the input immediately; draft=" + chat_input.text + "; status=" + progress_status.text + "; run=" + JSON.stringify(dock.get_ai_workflow_snapshot()) + "; chat=" + _chat_text()):
 		return false
 	chat_input.text = "queued draft"
 	_chat_key(code, false, true)
@@ -363,6 +364,8 @@ func _queue_send(text: String):
 	_chat_key(KEY_ENTER)
 
 func _run_message_queue(dock: Node) -> bool:
+	# This suite exercises conversation scheduling and read-only tool results.
+	dock.find_child("ConsultationOnly", true, false).button_pressed = true
 	var resume: Button = dock.find_child("ResumeMessageQueue", true, false)
 	var attachments: HFlowContainer = dock.find_child("ImageAttachments", true, false)
 	var picker: FileDialog = dock.get_node("AIImagePicker")
@@ -389,17 +392,24 @@ func _run_message_queue(dock: Node) -> bool:
 	var image_path = ProjectSettings.globalize_path("res://queue_image.png")
 	if not _check(image.save_png(image_path) == OK, "Could not prepare queue image"):
 		return false
-	_queue_send("queue_first")
+	# Same-mode input during an active turn is steering. Stop with one pending
+	# supplement first, then use the paused queue to collect independent turns.
+	_queue_send("queue_slow")
 	if not _check(_chat_busy() and not send_button.disabled and not dock.find_child("AddImage", true, false).disabled and chat_input.editable, "Composer was locked during execution"):
+		return false
+	_queue_send("queue_first")
+	stop_button.pressed.emit()
+	if not _check(not _chat_busy() and dock.get_meta("queue_paused") and dock.get_meta("queued_message_count") == 1, "Stop did not preserve the first pending independent turn"):
 		return false
 	picker.files_selected.emit(PackedStringArray([image_path]))
 	_queue_send("queue_second")
 	_queue_send("queue_deleted")
-	dock.find_child("QueuedMessages", true, false).find_children("RemoveQueuedMessage", "Button", true, false)[1].pressed.emit()
+	dock.find_child("QueuedMessages", true, false).find_children("RemoveQueuedMessage", "Button", true, false)[2].pressed.emit()
 	_queue_send("queue_third")
 	_chat_key(KEY_ENTER, false, true)
-	if not _check(dock.get_meta("queued_message_count") == 2 and chat_input.text.is_empty() and attachments.get_child_count() == 0 and "case:queue_second" not in _chat_text(), "Queue order, deletion or input clearing failed"):
+	if not _check(dock.get_meta("queued_message_count") == 3 and chat_input.text.is_empty() and attachments.get_child_count() == 0 and "case:queue_second" not in _chat_text(), "Queue order, deletion or input clearing failed"):
 		return false
+	resume.pressed.emit()
 	chat_input.text = "UNSENT_DRAFT"
 	picker.files_selected.emit(PackedStringArray([image_path]))
 	var pages = dock.find_child("AIWorkspacePages", true, false) as TabContainer
@@ -694,13 +704,23 @@ func _run_history():
 			quit(1)
 			return
 		chat_input.text = "历史草稿 B"
+		chat_input.text_changed.emit()
 		var session_model = dock.find_child("CLIModel" if expected_backend == 1 else "APIModel", true, false)
 		session_model.text = "history-model-b"
 		session_model.text_changed.emit(session_model.text)
+		var model_field := "cli_model" if expected_backend == 1 else "model"
+		var active_session: Dictionary = dock.get_ai_session_snapshot()
+		if not _check(active_session[model_field] == "history-model-b" and active_session.draft == "历史草稿 B" and active_session.backend == expected_backend, "Controller active inputs did not follow the model and draft signals"):
+			quit(1)
+			return
 		agent_tabs.current_tab = 0
 		session_model.text = "history-model-a"
 		session_model.text_changed.emit(session_model.text)
 		agent_tabs.current_tab = 1
+		active_session = dock.get_ai_session_snapshot()
+		if not _check(active_session[model_field] == "history-model-b" and active_session.draft == "历史草稿 B", "Controller did not restore the complete Agent B session data"):
+			quit(1)
+			return
 		if not _check(session_model.text == "history-model-b", "Agent B model was overwritten by Agent A"):
 			quit(1)
 			return
@@ -1041,11 +1061,21 @@ func _run():
 		endpoint.text = configured_url
 	if OS.get_environment("AI_CHAT_WINDOWS_COMMANDS") == "1":
 		dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = true
-		for kind in ([] if OS.get_environment("AI_CHAT_WINDOWS_CANCEL_ONLY") == "1" else ["short", "near", "long", "throw", "timeout", "limit", "source"]):
-			if not await _phase("win_command_" + kind, kind.to_upper() + "_COMMAND_OK"):
+		var native_cli = backend.selected == 1
+		var command_prefix = "win_cli_" if native_cli else "win_command_"
+		var kinds = ["short", "near", "long", "limit", "source", "failstart"] if native_cli else ["short", "near", "long", "throw", "timeout", "limit", "source"]
+		for kind in ([] if OS.get_environment("AI_CHAT_WINDOWS_CANCEL_ONLY") == "1" else kinds):
+			var marker_text = "WIN_CLI_" + kind.to_upper() + "_OK" if native_cli else kind.to_upper() + "_COMMAND_OK"
+			if not await _phase(command_prefix + kind, marker_text):
 				quit(1)
 				return
-		chat_input.text = "case:win_command_cancel"
+		if native_cli:
+			dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = false
+			if not await _phase("win_cli_reject", "WIN_CLI_REJECT_OK", true):
+				quit(1)
+				return
+			dock.get_ai_settings_control().find_child("AutoExecuteCommands", true, false).button_pressed = true
+		chat_input.text = "case:" + command_prefix + "cancel"
 		send_button.pressed.emit()
 		var marker = OS.get_environment("AI_CHAT_TEST_EXTERNAL").path_join("工作 ' quoted/started")
 		var deadline = Time.get_ticks_msec() + 90000
@@ -1066,16 +1096,18 @@ func _run():
 			quit(1)
 			return
 		print("WINDOWS_COMMAND_CANCEL_PROCESS_EXITED")
-		if not await _phase("win_command_short", "SHORT_COMMAND_OK") or not _check(not FileAccess.file_exists(marker.get_base_dir().path_join("unexpected")), "Cancelled command continued"):
+		var short_marker = "WIN_CLI_SHORT_OK" if native_cli else "SHORT_COMMAND_OK"
+		if not await _phase(command_prefix + "short", short_marker) or not _check(not FileAccess.file_exists(marker.get_base_dir().path_join("unexpected")), "Cancelled command continued"):
 			quit(1)
 			return
-		var system_root = OS.get_environment("SystemRoot")
-		OS.set_environment("SystemRoot", OS.get_environment("AI_CHAT_TEST_EXTERNAL").path_join("missing-system-root"))
-		var failed_safely = await _phase("win_command_failstart", "FAILSTART_COMMAND_OK")
-		OS.set_environment("SystemRoot", system_root)
-		if not failed_safely:
-			quit(1)
-			return
+		if not native_cli:
+			var system_root = OS.get_environment("SystemRoot")
+			OS.set_environment("SystemRoot", OS.get_environment("AI_CHAT_TEST_EXTERNAL").path_join("missing-system-root"))
+			var failed_safely = await _phase("win_command_failstart", "FAILSTART_COMMAND_OK")
+			OS.set_environment("SystemRoot", system_root)
+			if not failed_safely:
+				quit(1)
+				return
 		print("WINDOWS_COMMANDS_OK")
 		quit(0)
 		return

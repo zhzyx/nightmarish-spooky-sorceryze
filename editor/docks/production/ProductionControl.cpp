@@ -92,7 +92,7 @@ String AIChatDock::ProductionEligibility(int nProducer) const
 
 String AIChatDock::ProductionControl(const Dictionary &mapArguments)
 {
-	if (!busy || !allow_tools->is_pressed() || consultation_turn || consultation_only->is_pressed() || _is_review_child() || sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || !history_writable || snapshot_transaction_failed || snapshot_restoring || queue_paused)
+	if (!IsAiBusy() || !allow_tools->is_pressed() || consultation_turn || consultation_only->is_pressed() || _is_review_child() || sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || !history_writable || snapshot_transaction_failed || snapshot_restoring || GetAiSession().bQueuePaused)
 	{
 		return "Error: Current authorized production parent required.";
 	}
@@ -128,8 +128,8 @@ String AIChatDock::ProductionControl(const Dictionary &mapArguments)
 			mapItem["accepted"] = mapProducer.has("acceptance");
 			mapItem["execution_id"] = Dictionary(mapProducer.get("terminal_receipt", Dictionary())).get("execution_id", "");
 			mapItem["candidate_sha256"] = Dictionary(mapProducer.get("produced_candidate", Dictionary())).get("files_sha256", "");
-			mapItem["blocked_reason"] = !queued_messages.is_empty() ? String("parent_return_pending") : mapProducer.has("pending_parent_operation") ? String("continuation_pending")
-																																					: ProductionEligibility(nId);
+			mapItem["blocked_reason"] = !GetAiSession().arrQueuedMessages.is_empty() ? String("parent_return_pending") : mapProducer.has("pending_parent_operation") ? String("continuation_pending")
+																																									 : ProductionEligibility(nId);
 			Array arrReceipts;
 			for (const Variant &varOperation : Array(mapProducer.get("parent_operations", Array())))
 			{
@@ -165,7 +165,7 @@ String AIChatDock::ProductionControl(const Dictionary &mapArguments)
 		mapResult["items"] = arrItems;
 		return JSON::stringify(mapResult);
 	}
-	if (!queued_messages.is_empty())
+	if (!GetAiSession().arrQueuedMessages.is_empty())
 	{
 		return "Error: Finish the current parent reply to receive the pending production result before another mutation.";
 	}
@@ -292,7 +292,7 @@ void AIChatDock::CompleteProductionControl(int nProducer)
 	mapOperation["reason"] = "authority_candidate_or_terminal_changed";
 	mapOperation["ok"] = false;
 	const int nParent = mapProducer.get("parent", -1);
-	if (active_agent != nParent || !allow_tools->is_pressed() || consultation_turn || consultation_only->is_pressed() || queue_paused || !history_writable || snapshot_transaction_failed || snapshot_restoring || !ProductionEligibility(nProducer).is_empty() || !design_batches.has(nParent) || design_batches[nParent].get("token", "") != mapOperation["token"] || !_design_parent_matches(nParent, design_batches[nParent]) || _read_design(nParent).get("binding", Dictionary()) != mapOperation["binding"] || mapProducer.get("terminal_receipt", Variant()) != mapOperation["terminal"] || Dictionary(acceptance_bridge_results[nProducer].get("response", Dictionary())).is_empty())
+	if (active_agent != nParent || !allow_tools->is_pressed() || consultation_turn || consultation_only->is_pressed() || GetAiSession().bQueuePaused || !history_writable || snapshot_transaction_failed || snapshot_restoring || !ProductionEligibility(nProducer).is_empty() || !design_batches.has(nParent) || design_batches[nParent].get("token", "") != mapOperation["token"] || !_design_parent_matches(nParent, design_batches[nParent]) || _read_design(nParent).get("binding", Dictionary()) != mapOperation["binding"] || mapProducer.get("terminal_receipt", Variant()) != mapOperation["terminal"] || Dictionary(acceptance_bridge_results[nProducer].get("response", Dictionary())).is_empty())
 	{
 		_queue_history_save();
 		return;

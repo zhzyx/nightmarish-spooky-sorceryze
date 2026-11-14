@@ -104,18 +104,18 @@ Dictionary AIChatDock::_chat_extended_host_action(const Dictionary &p_args, bool
 																					: "parent";
 		entry["title"] = _redact(agent_tabs->get_tab_title(i)).left(120);
 		entry["title_hash"] = agent_tabs->get_tab_title(i).sha256_text();
-		entry["owner_hash"] = JSON::stringify(session.snapshot_state).sha256_text();
-		entry["queue_hash"] = JSON::stringify(session.queued_messages).sha256_text();
+		entry["owner_hash"] = JSON::stringify(session.stData.mapSnapshot).sha256_text();
+		entry["queue_hash"] = JSON::stringify(session.stData.arrQueuedMessages).sha256_text();
 		entry["lifecycle_hash"] = JSON::stringify(sub_agents.has(id) ? sub_agents[id] : scheduled_agents.has(id) ? scheduled_agents[id]
 																												 : Dictionary())
 										  .sha256_text();
-		entry["conversation_id"] = session.conversation_id;
-		entry["content_hash"] = JSON::stringify(session.messages).sha256_text() + JSON::stringify(session.transcript).sha256_text();
-		entry["draft_hash"] = session.draft.sha256_text() + JSON::stringify(session.draft_images).sha256_text();
+		entry["conversation_id"] = session.stData.strConversation;
+		entry["content_hash"] = JSON::stringify(session.stData.arrMessages).sha256_text() + JSON::stringify(session.stData.arrTranscript).sha256_text();
+		entry["draft_hash"] = session.stData.strDraft.sha256_text() + JSON::stringify(session.stData.arrDraftImages).sha256_text();
 		session_state.push_back(entry);
 	}
-	for (int i = 0; i < draft_images.size(); i++) {
-		const Dictionary image = draft_images[i];
+	for (int i = 0; i < GetAiSession().arrDraftImages.size(); i++) {
+		const Dictionary image = GetAiSession().arrDraftImages[i];
 		Dictionary entry;
 		entry["index"] = i;
 		entry["name"] = _redact(image.get("name", "")).left(128);
@@ -124,12 +124,12 @@ Dictionary AIChatDock::_chat_extended_host_action(const Dictionary &p_args, bool
 		attachments.push_back(entry);
 	}
 	HashSet<String> seen;
-	if (!snapshot_id.is_empty()) {
-		seen.insert(snapshot_id);
-		history.push_back(snapshot_id);
+	if (!GetAiSession().strSnapshot.is_empty()) {
+		seen.insert(GetAiSession().strSnapshot);
+		history.push_back(GetAiSession().strSnapshot);
 	}
-	for (int i = transcript.size() - 1; i >= 0; i--) {
-		const Dictionary record = transcript[i];
+	for (int i = GetAiSession().arrTranscript.size() - 1; i >= 0; i--) {
+		const Dictionary record = GetAiSession().arrTranscript[i];
 		const String id = record.get("snapshot_id", "");
 		if (!id.is_empty() && !seen.has(id)) {
 			seen.insert(id);
@@ -137,11 +137,11 @@ Dictionary AIChatDock::_chat_extended_host_action(const Dictionary &p_args, bool
 		}
 	}
 	Dictionary state;
-	state["conversation_id"] = conversation_id;
-	state["generation"] = int64_t(session_generation);
+	state["conversation_id"] = GetAiSession().strConversation;
+	state["generation"] = int64_t(GetAiSessionGeneration());
 	state["host_instance"] = int64_t(daqian_chat_host);
 	state["mounted_conversation"] = daqian_mount_conversation;
-	state["owner_hash"] = JSON::stringify(snapshot_state.get("engine_candidate", Dictionary())).sha256_text();
+	state["owner_hash"] = JSON::stringify(GetAiSession().mapSnapshot.get("engine_candidate", Dictionary())).sha256_text();
 	state["issue_number"] = _work_order_binding("issue_number");
 	state["request_id"] = _work_order_binding("request_id");
 	state["active_agent"] = active_agent;
@@ -152,7 +152,7 @@ Dictionary AIChatDock::_chat_extended_host_action(const Dictionary &p_args, bool
 	state["next_schedule"] = next_schedule;
 	state["draft_hash"] = input->get_text().sha256_text();
 	state["attachments_hash"] = JSON::stringify(attachments).sha256_text();
-	state["queue_hash"] = JSON::stringify(queued_messages).sha256_text();
+	state["queue_hash"] = JSON::stringify(GetAiSession().arrQueuedMessages).sha256_text();
 	state["history_hash"] = JSON::stringify(history).sha256_text();
 	state["backend"] = backend->get_selected();
 	state["model_hash"] = _active_model_field()->get_text().sha256_text();
@@ -211,7 +211,7 @@ Dictionary AIChatDock::_chat_extended_host_action(const Dictionary &p_args, bool
 		return result;
 	}
 
-	if (busy || history_restoring || snapshot_restoring || snapshot_transaction_failed || engine_build_pid >= 0 || engine_restart_requested || !gonggong_recovered_result.is_empty() || (daqian_chat_host.is_valid() && action != "chat_host_send_message") || !history_writable || input->has_ime_text()) {
+	if (IsAiBusy() || history_restoring || snapshot_restoring || snapshot_transaction_failed || engine_build_pid >= 0 || engine_restart_requested || !gonggong_recovered_result.is_empty() || (daqian_chat_host.is_valid() && action != "chat_host_send_message") || !history_writable || input->has_ime_text()) {
 		result["error"] = daqian_chat_host.is_valid() ? "host_chat_mounted" : "chat_mutation_unavailable";
 		return result;
 	}
@@ -221,9 +221,9 @@ Dictionary AIChatDock::_chat_extended_host_action(const Dictionary &p_args, bool
 	Dictionary snapshot_data;
 	if (action == "chat_host_send_message") {
 		Control *host = ObjectDB::get_instance<Control>(daqian_chat_host);
-		const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
+		const Dictionary candidate = GetAiSession().mapSnapshot.get("engine_candidate", Dictionary());
 		String owner_error;
-		if (!host || !host->is_inside_tree() || host->is_queued_for_deletion() || host->get_tree() != get_tree() || chat_layout->get_parent() != host || daqian_mount_conversation.is_empty() || daqian_mount_conversation != conversation_id || sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || (!bounded_integer(p_args.get("host_instance", Variant()), 1, 9007199254740991LL) || int64_t(p_args["host_instance"]) != int64_t(daqian_chat_host)) || !AIChatIssueGuide::is_bound(_work_order_binding("issue_number").to_int(), _work_order_binding("request_id")) || String(candidate.get("owner", "")).is_empty() || candidate.get("owner", "") != Variant(conversation_id) || !_validate_engine_candidate(owner_error)) {
+		if (!host || !host->is_inside_tree() || host->is_queued_for_deletion() || host->get_tree() != get_tree() || chat_layout->get_parent() != host || daqian_mount_conversation.is_empty() || daqian_mount_conversation != GetAiSession().strConversation || sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || (!bounded_integer(p_args.get("host_instance", Variant()), 1, 9007199254740991LL) || int64_t(p_args["host_instance"]) != int64_t(daqian_chat_host)) || !AIChatIssueGuide::is_bound(_work_order_binding("issue_number").to_int(), _work_order_binding("request_id")) || String(candidate.get("owner", "")).is_empty() || candidate.get("owner", "") != Variant(GetAiSession().strConversation) || !_validate_engine_candidate(owner_error)) {
 			result["error"] = "mounted_host_owner_changed_or_unbound";
 			return result;
 		}
@@ -316,7 +316,7 @@ Dictionary AIChatDock::_chat_extended_host_action(const Dictionary &p_args, bool
 		}
 		state["cli_path_hash"] = FileAccess::get_sha256(value);
 	} else if (action == "chat_attachment_add") {
-		if (value.get_type() != Variant::STRING || draft_images.size() >= 4 || send_button->is_disabled()) {
+		if (value.get_type() != Variant::STRING || GetAiSession().arrDraftImages.size() >= 4 || send_button->is_disabled()) {
 			result["error"] = "attachment_unavailable";
 			return result;
 		}
@@ -365,7 +365,7 @@ Dictionary AIChatDock::_chat_extended_host_action(const Dictionary &p_args, bool
 			return result;
 		}
 	} else if (action == "chat_attachment_paste") {
-		if (draft_images.size() >= 4 || send_button->is_disabled() || DisplayServer::get_singleton()->get_name() == "headless") {
+		if (GetAiSession().arrDraftImages.size() >= 4 || send_button->is_disabled() || DisplayServer::get_singleton()->get_name() == "headless") {
 			result["error"] = "clipboard_image_unavailable";
 			return result;
 		}
@@ -380,19 +380,19 @@ Dictionary AIChatDock::_chat_extended_host_action(const Dictionary &p_args, bool
 		state["clipboard_image_height"] = added_image->get_height();
 		state["clipboard_image_format"] = added_image->get_format();
 	} else if (action == "chat_attachment_remove") {
-		if (!bounded_integer(p_args.get("index", Variant()), 0, draft_images.size() - 1) || send_button->is_disabled()) {
+		if (!bounded_integer(p_args.get("index", Variant()), 0, GetAiSession().arrDraftImages.size() - 1) || send_button->is_disabled()) {
 			result["error"] = "invalid_attachment_index";
 			return result;
 		}
 		index = p_args["index"];
 	} else if (action == "chat_send_message" || action == "chat_host_send_message") {
-		if (value.get_type() != Variant::STRING || String(value).strip_edges().is_empty() || String(value).utf8().length() > 8192 || !input->get_text().is_empty() || send_button->is_disabled() || queued_messages.size() >= 32 || !issue_guide_state.is_empty() || !igniter_state.is_empty()) {
+		if (value.get_type() != Variant::STRING || String(value).strip_edges().is_empty() || String(value).utf8().length() > 8192 || !input->get_text().is_empty() || send_button->is_disabled() || GetAiSession().arrQueuedMessages.size() >= 32 || !issue_guide_state.is_empty() || !igniter_state.is_empty()) {
 			result["error"] = "invalid_message_or_existing_draft";
 			return result;
 		}
 	} else if (action == "chat_show_changes") {
 		String error;
-		if (value.get_type() != Variant::STRING || !seen.has(value) || !AIChatTools::load_snapshot(_snapshot_path(value), snapshot_data, error) || snapshot_data.get("conversation_id", "") != conversation_id || Array(snapshot_data.get("files", Array())).is_empty()) {
+		if (value.get_type() != Variant::STRING || !seen.has(value) || !AIChatTools::load_snapshot(_snapshot_path(value), snapshot_data, error) || snapshot_data.get("conversation_id", "") != GetAiSession().strConversation || Array(snapshot_data.get("files", Array())).is_empty()) {
 			result["error"] = "snapshot_not_in_current_conversation";
 			return result;
 		}
@@ -490,18 +490,18 @@ Dictionary AIChatDock::_chat_extended_host_action(const Dictionary &p_args, bool
 		result["field"] = p_args["field"];
 		result["path"] = field->get_text();
 	} else if (action == "chat_attachment_add" || action == "chat_attachment_paste") {
-		const int previous = draft_images.size();
+		const int previous = GetAiSession().arrDraftImages.size();
 		_add_image(added_image, action == "chat_attachment_paste" ? String(U"剪贴板截图") : image_path.get_file());
-		if (draft_images.size() != previous + 1) {
+		if (GetAiSession().arrDraftImages.size() != previous + 1) {
 			result["error"] = "attachment_encoding_or_budget_failed";
 			return result;
 		}
 		result["attachment_index"] = previous;
 	} else if (action == "chat_attachment_remove") {
 		_remove_image(index);
-		result["attachment_count"] = draft_images.size();
+		result["attachment_count"] = GetAiSession().arrDraftImages.size();
 	} else if (action == "chat_send_message" || action == "chat_host_send_message") {
-		input->set_text(value);
+		SetAiDraft(value);
 		_send();
 		result["send_requested"] = true;
 		result["business_completed"] = false;
@@ -523,6 +523,6 @@ Dictionary AIChatDock::_chat_extended_host_action(const Dictionary &p_args, bool
 	_queue_history_save();
 	result["ok"] = true;
 	result["active_agent"] = active_agent;
-	result["generation"] = int64_t(session_generation);
+	result["generation"] = int64_t(GetAiSessionGeneration());
 	return result;
 }

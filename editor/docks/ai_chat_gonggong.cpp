@@ -142,8 +142,8 @@ void AIChatDock::_flush_gonggong(const Callable &p_continuation) {
 	}
 	String provenance_error;
 	if (!_recover_active_provenance(provenance_error) ||
-			(snapshot_state.has("engine_candidate") && !_validate_engine_candidate(provenance_error))) {
-		_design_reporting_blocked(session_generation);
+			(GetAiSession().mapSnapshot.has("engine_candidate") && !_validate_engine_candidate(provenance_error))) {
+		_design_reporting_blocked(GetAiSessionGeneration());
 		set_meta("gonggong_reporting", "pending_retry");
 		_append(TTR("Error"), provenance_error);
 		if (p_continuation.is_valid()) {
@@ -154,7 +154,7 @@ void AIChatDock::_flush_gonggong(const Callable &p_continuation) {
 	Dictionary batch;
 	batch["root"] = gonggong_report_root;
 	batch["scope"] = gonggong_reporting.duplicate(true);
-	batch["generation"] = session_generation;
+	batch["generation"] = GetAiSessionGeneration();
 	batch["continuation"] = p_continuation;
 	gonggong_receipt_queue.push_back(batch);
 	if (gonggong_receipt_pid < 0) {
@@ -213,7 +213,7 @@ void AIChatDock::_poll_gonggong_receipt() {
 void AIChatDock::_finish_gonggong_receipt(const Dictionary &result) {
 	Callable continuation = gonggong_receipt_continuation;
 	gonggong_receipt_continuation = Callable();
-	const bool current = busy && gonggong_continuation_generation == session_generation;
+	const bool current = IsAiBusy() && gonggong_continuation_generation == GetAiSessionGeneration();
 	const bool ok = result.get("ok", false).get_type() == Variant::BOOL && bool(result.get("ok", false));
 	if (!ok) {
 		_design_reporting_blocked(gonggong_receipt_generation);
@@ -236,7 +236,7 @@ void AIChatDock::_finish_gonggong_receipt(const Dictionary &result) {
 	if (design_batches.has(active_agent) || _design_child_parent(active_agent) >= 0) {
 		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
 	}
-	if (gonggong_receipt_generation != session_generation) {
+	if (gonggong_receipt_generation != GetAiSessionGeneration()) {
 		return;
 	}
 	set_meta("gonggong_reporting", ok ? "recorded_file" : "pending_retry");
@@ -392,7 +392,7 @@ String AIChatDock::_daqian_board_workspace() const {
 	const String workspace = _workflow_root();
 	EditorSettings *settings = EditorSettings::get_singleton();
 	const Dictionary bindings = settings->get_project_metadata("daqian", "bindings", Dictionary());
-	const Dictionary entry = bindings.get(conversation_id, Dictionary());
+	const Dictionary entry = bindings.get(GetAiSession().strConversation, Dictionary());
 	const Dictionary access = settings->get_project_metadata("daqian_access", workspace.sha256_text(), Dictionary());
 	const Dictionary actor = access.get("actor", Dictionary());
 	const String user = actor.get("user_id", "");
@@ -412,7 +412,7 @@ String AIChatDock::_daqian_board_workspace() const {
 
 bool AIChatDock::_direct_daqian_task() const {
 	const Dictionary bindings = EditorSettings::get_singleton()->get_project_metadata("daqian", "bindings", Dictionary());
-	const Dictionary entry = bindings.get(conversation_id, Dictionary());
+	const Dictionary entry = bindings.get(GetAiSession().strConversation, Dictionary());
 	const String request_id = entry.get("request_id", "");
 	const String number = entry.get("issue_number", "");
 	const String source = entry.get("issue_url", entry.get("source", ""));
@@ -427,15 +427,15 @@ void AIChatDock::_begin_gonggong_context() {
 	const Dictionary runtime = GongGongRuntimeConfig::read_effective();
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
 
-	const String outcome = last_user_content(messages);
-	const String requirement_key = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, outcome, _work_order_binding("issue_number"), _work_order_binding("request_id"));
+	const String outcome = last_user_content(GetAiSession().arrMessages);
+	const String requirement_key = AIChatIssueGuide::requirement_key(GetAiSession().strConversation, GetAiSession().strSnapshot, outcome, _work_order_binding("issue_number"), _work_order_binding("request_id"));
 	// Scheduled and child Agents never run requirement intake or create Issues;
 	// a child inherits the real Issue its parent's finalized design was bound to.
 	const bool direct = _direct_daqian_task() && !scheduled_agents.has(active_agent) && !sub_agents.has(active_agent);
 	bool amendment = false;
-	for (const Variant &entry : messages) {
+	for (const Variant &entry : GetAiSession().arrMessages) {
 		const Dictionary message = entry;
-		if (bool(message.get("steering", false)) && message.get("steering_snapshot", "") == snapshot_id) {
+		if (bool(message.get("steering", false)) && message.get("steering_snapshot", "") == GetAiSession().strSnapshot) {
 			// A plain execution request adds no requirements. Re-read the
 			// existing direct Issue context even when its candidate predates
 			// the host's current amendment adapter.
@@ -466,9 +466,9 @@ void AIChatDock::_begin_gonggong_context() {
 	}
 	gonggong_context = String();
 	gonggong_governance_digest = String();
-	gonggong_generation = session_generation;
+	gonggong_generation = GetAiSessionGeneration();
 	String candidate_error;
-	if (!_recover_active_provenance(candidate_error, runtime) || (snapshot_state.has("engine_candidate") && !_validate_engine_candidate(candidate_error))) {
+	if (!_recover_active_provenance(candidate_error, runtime) || (GetAiSession().mapSnapshot.has("engine_candidate") && !_validate_engine_candidate(candidate_error))) {
 		_append(TTR("Error"), candidate_error);
 		_set_busy(false);
 		return;
@@ -514,7 +514,7 @@ void AIChatDock::_begin_gonggong_context() {
 	}
 	int64_t bound_issue = String(_work_order_binding("issue_number")).to_int();
 	String bound_request = String(_work_order_binding("request_id")).strip_edges();
-	String authority = "godot-editor:user-chat:" + conversation_id;
+	String authority = "godot-editor:user-chat:" + GetAiSession().strConversation;
 	Dictionary delegation;
 	if (sub_agents.has(active_agent)) {
 		delegation = _child_delegation();
@@ -541,7 +541,7 @@ void AIChatDock::_begin_gonggong_context() {
 	context_input["issue_number"] = bound_issue;
 	context_input["request_id"] = bound_request;
 	const Dictionary bindings = EditorSettings::get_singleton()->get_project_metadata("daqian", "bindings", Dictionary());
-	const Dictionary entry = bindings.get(conversation_id, Dictionary());
+	const Dictionary entry = bindings.get(GetAiSession().strConversation, Dictionary());
 	if (!String(entry.get("source", "")).is_empty() && entry.get("request_id", "") == bound_request && String(entry.get("issue_number", "")).to_int() == bound_issue) {
 		context_input["daqian_bound"] = true;
 	}
@@ -599,7 +599,7 @@ void AIChatDock::_poll_gonggong_context() {
 	if (parsed.get_type() == Variant::DICTIONARY) {
 		result = parsed;
 	}
-	const bool cancelled = !busy || gonggong_generation != session_generation;
+	const bool cancelled = !IsAiBusy() || gonggong_generation != GetAiSessionGeneration();
 	if (!cancelled && sub_agents.has(active_agent) && bool(result.get("ok", false))) {
 		const Dictionary binding = result.get("reporting", Dictionary());
 		const Dictionary delegation = _child_delegation();
@@ -646,14 +646,14 @@ void AIChatDock::_poll_gonggong_context() {
 		const String bound_request = _work_order_binding("request_id");
 		if (AIChatIssueGuide::is_status_error(error) && AIChatIssueGuide::is_bound(bound_issue, bound_request) &&
 				!scheduled_agents.has(active_agent) && !sub_agents.has(active_agent) && gonggong_recovered_result.is_empty() &&
-				!restoring_command_offer && command_recovery_reporting.is_empty() && !bool(snapshot_state.get("host_generated_turn", false)) &&
-				!last_user_content(messages).strip_edges().is_empty()) {
+				!restoring_command_offer && command_recovery_reporting.is_empty() && !bool(GetAiSession().mapSnapshot.get("host_generated_turn", false)) &&
+				!last_user_content(GetAiSession().arrMessages).strip_edges().is_empty()) {
 			// Preserve the binding and original message. Only a later explicit Start
 			// reply may run issue-start; every retry still passes the normal gate.
 			_cancel_issue_guide(String());
 			issue_guide_fields["issue_number"] = bound_issue;
 			issue_guide_fields["request_id"] = bound_request;
-			issue_guide_outcome = last_user_content(messages);
+			issue_guide_outcome = last_user_content(GetAiSession().arrMessages);
 			issue_guide_state = bound_request.begins_with("daqian-direct-") ? "await_direct_status" : "await_status";
 			set_meta("gonggong_status", "issue_guide");
 			_append(TTR("Error"), String(U"GongGong 入口校验未通过：") + error);
@@ -702,7 +702,7 @@ void AIChatDock::_poll_gonggong_context() {
 	set_meta("gonggong_status", "context_ready");
 	if (restoring_command_offer) {
 		command_recovery_reporting.clear();
-		_next_tool(session_generation);
+		_next_tool(GetAiSessionGeneration());
 		return;
 	}
 	if (!gonggong_recovered_result.is_empty()) {
@@ -728,7 +728,7 @@ bool AIChatDock::_start_issue_guide() {
 	if (scheduled_agents.has(active_agent) || sub_agents.has(active_agent) || !gonggong_recovered_result.is_empty()) {
 		return false; // Unattended, child and recovery turns keep the fail-closed rejection.
 	}
-	const String outcome = last_user_content(messages);
+	const String outcome = last_user_content(GetAiSession().arrMessages);
 	if (outcome.strip_edges().is_empty()) {
 		return false;
 	}
@@ -776,7 +776,7 @@ Dictionary AIChatDock::_launch_daqian_routing(const Dictionary &p_binding, const
 
 	Dictionary result;
 	String candidate_error;
-	if (snapshot_state.has("engine_candidate") && !_validate_engine_candidate(candidate_error)) {
+	if (GetAiSession().mapSnapshot.has("engine_candidate") && !_validate_engine_candidate(candidate_error)) {
 		result["error"] = candidate_error;
 		return result;
 	}
@@ -838,7 +838,7 @@ void AIChatDock::_begin_issue_agent(const String &p_outcome, bool p_retry, bool 
 	input_request["outcome"] = p_outcome;
 	// Intake runs before the normal model context. Preserve recent questions and
 	// corrections here too, including after an earlier model request failed.
-	const Array requirement_context = AIChatRequirementContext::select(transcript);
+	const Array requirement_context = AIChatRequirementContext::select(GetAiSession().arrTranscript);
 	if (p_retry && issue_guide_fields.has("conversation_context")) {
 		// Reconcile the same journal even after progress/error messages appear.
 		input_request["conversation_context"] = issue_guide_fields["conversation_context"];
@@ -846,7 +846,7 @@ void AIChatDock::_begin_issue_agent(const String &p_outcome, bool p_retry, bool 
 		issue_guide_fields["conversation_context"] = requirement_context;
 		input_request["conversation_context"] = requirement_context;
 	}
-	input_request["conversation_id"] = conversation_id + ":" + snapshot_id;
+	input_request["conversation_id"] = GetAiSession().strConversation + ":" + GetAiSession().strSnapshot;
 	issue_guide_fields["initial_issue"] = _work_order_binding("issue_number");
 	issue_guide_fields["initial_request"] = _work_order_binding("request_id");
 	input_request["issue_number"] = int64_t(String(_work_order_binding("issue_number")).to_int());
@@ -854,21 +854,21 @@ void AIChatDock::_begin_issue_agent(const String &p_outcome, bool p_retry, bool 
 	// A correction belongs to this exact task. The requirements model may
 	// identify unrelated work, but it cannot publish it or rebind this turn.
 	if (AIChatIssueGuide::is_bound(int64_t(input_request["issue_number"]), input_request["request_id"])) {
-		for (const Variant &entry : messages) {
+		for (const Variant &entry : GetAiSession().arrMessages) {
 			const Dictionary message = entry;
-			if (bool(message.get("steering", false)) && String(message.get("steering_snapshot", "")) == snapshot_id) {
+			if (bool(message.get("steering", false)) && String(message.get("steering_snapshot", "")) == GetAiSession().strSnapshot) {
 				input_request["continuation_only"] = true;
 				break;
 			}
 		}
 	}
 	_set_issue_model_config(input_request);
-	if (snapshot_state.has("daqian_model")) {
+	if (GetAiSession().mapSnapshot.has("daqian_model")) {
 		const bool cli = backend->get_selected() == 1 || backend->get_selected() == 2;
 		if (p_retry) {
-			snapshot_state["daqian_model"] = _active_model_field()->get_text().strip_edges();
+			GetAiSession().mapSnapshot["daqian_model"] = _active_model_field()->get_text().strip_edges();
 		}
-		input_request[cli ? "cli_model" : "model"] = snapshot_state["daqian_model"];
+		input_request[cli ? "cli_model" : "model"] = GetAiSession().mapSnapshot["daqian_model"];
 	}
 	input_request["retry_authorized"] = p_retry;
 	input_request["clarifying"] = p_clarifying;
@@ -948,7 +948,7 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 			_environment_setup_completed();
 		} else {
 			_append(TTR("Editor"), U"原需求等待本地配置完成；补充输入保留为草稿，请先完成点火器。");
-			input->set_text(p_text);
+			SetAiDraft(p_text);
 		}
 		return;
 	}
@@ -962,7 +962,7 @@ void AIChatDock::_issue_guide_reply(const String &p_text) {
 				_issue_guide_retry();
 				return;
 			}
-			if (AIChatRequirementContext::mark_transport_retry(transcript, _redact(p_text))) {
+			if (AIChatRequirementContext::mark_transport_retry(GetAiSession().arrTranscript, _redact(p_text))) {
 				_queue_history_save();
 			}
 			_begin_issue_agent(issue_guide_outcome, true);
@@ -1074,7 +1074,7 @@ void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_re
 		issue_guide_state = "agent_error"; // All early configuration/start failures remain retryable.
 	}
 	String candidate_error;
-	if (snapshot_state.has("engine_candidate") && !_validate_engine_candidate(candidate_error)) {
+	if (GetAiSession().mapSnapshot.has("engine_candidate") && !_validate_engine_candidate(candidate_error)) {
 		_append(TTR("Error"), candidate_error);
 		_set_busy(false);
 		return;
@@ -1140,7 +1140,7 @@ void AIChatDock::_issue_guide_run(const String &p_action, const Dictionary &p_re
 	if (p_action == "issue-agent") {
 		// Requirements intake is part of the active turn. Keeping it busy makes
 		// subsequent submissions queue normally and keeps Stop available.
-		if (!busy) {
+		if (!IsAiBusy()) {
 			_begin_reply();
 		}
 		_set_busy(true);
@@ -1315,37 +1315,37 @@ bool AIChatDock::_issue_guide_bind(int64_t p_number, const String &p_request_id)
 	// Metadata and daqian_issue_bound are externally visible recovery routes.
 	// Publish neither until the original conversation and latest input can be
 	// found in history. A queued older snapshot must finish before this one.
-	if (!history_loaded || history_restoring || !history_writable || conversation_id.is_empty()) {
+	if (!history_loaded || history_restoring || !history_writable || GetAiSession().strConversation.is_empty()) {
 		return false;
 	}
-	const String owner = conversation_id;
-	const String snapshot = snapshot_id;
+	const String owner = GetAiSession().strConversation;
+	const String snapshot = GetAiSession().strSnapshot;
 	const uint64_t generation = issue_guide_generation;
 	_queue_history_save();
 	_flush_history();
 	if (history_save_error || history_dirty || history_save_job || !history_primary_valid ||
-			!history_loaded || history_restoring || !history_writable || conversation_id != owner || snapshot_id != snapshot || issue_guide_generation != generation) {
+			!history_loaded || history_restoring || !history_writable || GetAiSession().strConversation != owner || GetAiSession().strSnapshot != snapshot || issue_guide_generation != generation) {
 		return false;
 	}
 	if (_work_order_binding("issue_number").to_int() != p_number || _work_order_binding("request_id") != p_request_id) {
 		_revoke_native_task();
 	}
-	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
+	const Dictionary candidate = GetAiSession().mapSnapshot.get("engine_candidate", Dictionary());
 	if (!candidate.is_empty() && (int64_t(candidate.get("issue", 0)) != p_number || candidate.get("request_id", "") != p_request_id)) {
 		// Intake for the new Issue was written here. Preserve that provenance route
 		// until the host transfers it to the new Issue's own isolated source tree.
-		snapshot_state["requirement_workspace"] = candidate["source_root"];
-		snapshot_state.erase("engine_candidate");
+		GetAiSession().mapSnapshot["requirement_workspace"] = candidate["source_root"];
+		GetAiSession().mapSnapshot.erase("engine_candidate");
 	}
 	EditorSettings *settings = EditorSettings::get_singleton();
 	Dictionary bindings = settings->get_project_metadata("daqian", "bindings", Dictionary());
-	Dictionary bound = bindings.get(conversation_id, Dictionary());
+	Dictionary bound = bindings.get(GetAiSession().strConversation, Dictionary());
 	if (String(bound.get("issue_number", "")).to_int() != p_number || bound.get("request_id", "") != p_request_id) {
 		bound.erase("issue_url");
 	}
 	bound["issue_number"] = itos(p_number);
 	bound["request_id"] = p_request_id;
-	bindings[conversation_id] = bound;
+	bindings[GetAiSession().strConversation] = bound;
 	settings->set_project_metadata("daqian", "bindings", bindings);
 	settings->save_project_metadata();
 	if (sub_agents.has(active_agent)) {
@@ -1369,19 +1369,19 @@ void AIChatDock::_complete_issue_guide_binding(const String &p_action, const Dic
 	// this state never sends issue-agent/create/start again.
 	issue_guide_fields["pending_binding_action"] = p_action;
 	issue_guide_fields["pending_binding_result"] = p_result;
-	if (p_action == "issue-agent" && bool(p_result["ready"]) && last_user_content(messages) != issue_guide_outcome) {
+	if (p_action == "issue-agent" && bool(p_result["ready"]) && last_user_content(GetAiSession().arrMessages) != issue_guide_outcome) {
 		Dictionary clarified;
 		clarified["role"] = "user";
 		clarified["content"] = issue_guide_outcome;
-		messages.push_back(clarified);
+		GetAiSession().arrMessages.push_back(clarified);
 	}
-	const String owner = conversation_id;
-	const String snapshot = snapshot_id;
+	const String owner = GetAiSession().strConversation;
+	const String snapshot = GetAiSession().strSnapshot;
 	const uint64_t generation = issue_guide_generation;
 	const bool bound = _issue_guide_bind(number, request_id);
 	// History completion and binding signals can call back into the host. Never
 	// resume or report an old receipt in a cancelled/switched conversation.
-	if (conversation_id != owner || snapshot_id != snapshot || issue_guide_generation != generation) {
+	if (GetAiSession().strConversation != owner || GetAiSession().strSnapshot != snapshot || issue_guide_generation != generation) {
 		return;
 	}
 	if (!bound) {
@@ -1422,8 +1422,8 @@ void AIChatDock::_complete_issue_guide_binding(const String &p_action, const Dic
 		_set_busy(false);
 		return;
 	}
-	issue_agent_checked = AIChatIssueGuide::requirement_key(conversation_id, snapshot_id, last_user_content(messages), _work_order_binding("issue_number"), _work_order_binding("request_id"));
-	if (!busy) {
+	issue_agent_checked = AIChatIssueGuide::requirement_key(GetAiSession().strConversation, GetAiSession().strSnapshot, last_user_content(GetAiSession().arrMessages), _work_order_binding("issue_number"), _work_order_binding("request_id"));
+	if (!IsAiBusy()) {
 		// A failed local checkpoint paused the turn; resume the retained result.
 		_issue_guide_retry();
 		return;
@@ -1435,10 +1435,10 @@ void AIChatDock::_complete_issue_guide_binding(const String &p_action, const Dic
 }
 
 void AIChatDock::_issue_guide_retry() {
-	if (busy) {
+	if (IsAiBusy()) {
 		return;
 	}
-	if (last_user_content(messages).strip_edges().is_empty()) {
+	if (last_user_content(GetAiSession().arrMessages).strip_edges().is_empty()) {
 		_cancel_issue_guide(U"工单已绑定，但原消息已不在当前会话中，请重新发送。");
 		return;
 	}
@@ -1447,9 +1447,9 @@ void AIChatDock::_issue_guide_retry() {
 	// Same paused turn: the original user message is still the last entry in `messages`.
 	_begin_reply();
 	turn_completed = false;
-	tool_rounds = 0;
+	GetAiTurn().nToolRounds = 0;
 	turn_model_requests = 0;
-	session_generation++;
+	AdvanceAiSessionGeneration();
 	_set_busy(true);
 	_request_completion();
 }
@@ -1458,7 +1458,7 @@ bool AIChatDock::_start_igniter(const Array &p_missing) {
 	if (scheduled_agents.has(active_agent) || sub_agents.has(active_agent) || !gonggong_recovered_result.is_empty()) {
 		return false; // Unattended, child and recovery turns keep the fail-closed rejection.
 	}
-	const String outcome = last_user_content(messages);
+	const String outcome = last_user_content(GetAiSession().arrMessages);
 	if (outcome.strip_edges().is_empty() || p_missing.is_empty()) {
 		return false;
 	}
@@ -1726,19 +1726,19 @@ void AIChatDock::_cancel_igniter(const String &p_notice, const String &p_phase) 
 }
 
 void AIChatDock::_igniter_resume() {
-	if (busy) {
+	if (IsAiBusy()) {
 		return;
 	}
-	if (last_user_content(messages).strip_edges().is_empty()) {
+	if (last_user_content(GetAiSession().arrMessages).strip_edges().is_empty()) {
 		_cancel_igniter(U"环境已部署，但原消息已不在当前会话中，请重新发送。");
 		return;
 	}
 	// Same paused turn: the original user message is still the last entry in `messages`.
 	_begin_reply();
 	turn_completed = false;
-	tool_rounds = 0;
+	GetAiTurn().nToolRounds = 0;
 	turn_model_requests = 0;
-	session_generation++;
+	AdvanceAiSessionGeneration();
 	_set_busy(true);
 	_request_completion();
 }
@@ -1781,13 +1781,13 @@ Dictionary AIChatDock::_parent_completion_observations(int p_parent) {
 	result["observations"] = observations;
 	result["pending_current"] = pending_current;
 	result["unknown_effect"] = process_id >= 0 || !observed_command_owner.is_empty() || !gonggong_recovered_result.is_empty() || !pending_delivery_request.is_empty();
-	result["reserved_decision"] = queue_paused || !queued_messages.is_empty() || confirmation->is_visible() || engine_approval->is_visible() || !allow_tools->is_pressed() || consultation_only->is_pressed();
+	result["reserved_decision"] = GetAiSession().bQueuePaused || !GetAiSession().arrQueuedMessages.is_empty() || confirmation->is_visible() || engine_approval->is_visible() || !allow_tools->is_pressed() || consultation_only->is_pressed();
 	return result;
 }
 
 bool AIChatDock::_start_parent_completion(int p_parent, const String &p_operation) {
 	if (!parent_completion_job.is_empty() || !design_batches.has(p_parent) || p_parent != active_agent || sub_agents.has(p_parent) || scheduled_agents.has(p_parent) ||
-			consultation_turn || consultation_only->is_pressed() || queue_paused || !allow_tools->is_pressed() || !history_writable || snapshot_transaction_failed || snapshot_restoring) {
+			consultation_turn || consultation_only->is_pressed() || GetAiSession().bQueuePaused || !allow_tools->is_pressed() || !history_writable || snapshot_transaction_failed || snapshot_restoring) {
 		return false;
 	}
 	Dictionary batch = design_batches[p_parent];
@@ -1799,9 +1799,9 @@ bool AIChatDock::_start_parent_completion(int p_parent, const String &p_operatio
 		return false;
 	}
 	Dictionary owner;
-	owner["conversation"] = conversation_id;
+	owner["conversation"] = GetAiSession().strConversation;
 	owner["token"] = batch["token"];
-	owner["authority_ref"] = "godot-editor:user-chat:" + conversation_id;
+	owner["authority_ref"] = "godot-editor:user-chat:" + GetAiSession().strConversation;
 	const Array order = batch["order"];
 	if (order.is_empty()) {
 		return false;
@@ -1878,8 +1878,8 @@ bool AIChatDock::_start_parent_completion(int p_parent, const String &p_operatio
 	}
 	parent_completion_job["parent"] = p_parent;
 	parent_completion_job["token"] = batch["token"];
-	parent_completion_job["snapshot"] = snapshot_id;
-	parent_completion_job["generation"] = int64_t(session_generation);
+	parent_completion_job["snapshot"] = GetAiSession().strSnapshot;
+	parent_completion_job["generation"] = int64_t(GetAiSessionGeneration());
 	parent_completion_job["pid"] = int64_t(pid);
 	parent_completion_job["nonce"] = nonce;
 	parent_completion_job["stem"] = stem;
@@ -1911,8 +1911,8 @@ bool AIChatDock::_gate_parent_completion() {
 		return true; // A replay cannot start another check or emit a terminal.
 	}
 	Dictionary batch = design_batches[active_agent];
-	if (int64_t(batch.get("parent_current_generation", -1)) != int64_t(request_generation)) {
-		batch["parent_current_generation"] = int64_t(request_generation);
+	if (int64_t(batch.get("parent_current_generation", -1)) != int64_t(GetAiRequestGeneration())) {
+		batch["parent_current_generation"] = int64_t(GetAiRequestGeneration());
 		// A previous stage's cache is not a fresh candidate read. Invalidate once
 		// per real model completion, then await actual verifier completion events.
 		for (const Variant &id : Array(batch["order"])) {
@@ -1970,16 +1970,16 @@ void AIChatDock::_finish_parent_completion(const String &p_action) {
 			// Close these unexecuted proposals without _finish_tool's continuation.
 			const String held = "Error: Tool proposal not executed; original task is held (" + p_action + "). No delivery finalization was started.";
 			bool recorded = true;
-			if (tool_index >= 0 && tool_index < tool_calls.size()) {
+			if (GetAiTurn().nToolIndex >= 0 && GetAiTurn().nToolIndex < GetAiTurn().arrToolCalls.size()) {
 				_record_design_tool_receipt("complete_delivery", held, false, false);
-				recorded = _record_gonggong("step", "tool-" + itos(tool_rounds) + "-" + itos(tool_index), "cancelled") &&
+				recorded = _record_gonggong("step", "tool-" + itos(GetAiTurn().nToolRounds) + "-" + itos(GetAiTurn().nToolIndex), "cancelled") &&
 						_record_gonggong("message", "tool_result", "received_metadata_only");
-				while (tool_index < tool_calls.size()) {
+				while (GetAiTurn().nToolIndex < GetAiTurn().arrToolCalls.size()) {
 					_append_tool_message(held, false, false);
-					tool_index++;
+					GetAiTurn().nToolIndex++;
 				}
 			}
-			tool_calls.clear();
+			GetAiTurn().arrToolCalls.clear();
 			pending_action = String();
 			if (!recorded) {
 				set_meta("parent_completion_state", "readback_required");
@@ -2019,8 +2019,8 @@ void AIChatDock::_poll_parent_completion() {
 	const Dictionary job = parent_completion_job.duplicate(true);
 	const int parent = job["parent"];
 	const bool current = parent == active_agent && design_batches.has(parent) && design_batches[parent].get("token", Variant()) == job["token"] &&
-			int64_t(session_generation) == int64_t(job["generation"]) && snapshot_id == String(job["snapshot"]) &&
-			_design_parent_matches(parent, design_batches[parent]) && !queue_paused && allow_tools->is_pressed() && !consultation_turn && !consultation_only->is_pressed() &&
+			int64_t(GetAiSessionGeneration()) == int64_t(job["generation"]) && GetAiSession().strSnapshot == String(job["snapshot"]) &&
+			_design_parent_matches(parent, design_batches[parent]) && !GetAiSession().bQueuePaused && allow_tools->is_pressed() && !consultation_turn && !consultation_only->is_pressed() &&
 			history_writable && !snapshot_restoring && !snapshot_transaction_failed;
 	if (!current || OS::get_singleton()->get_ticks_msec() - uint64_t(int64_t(job["started"])) > 300000) {
 		_cancel_parent_completion();
@@ -2030,7 +2030,7 @@ void AIChatDock::_poll_parent_completion() {
 			set_meta("parent_completion_state", "readback_required");
 			set_meta("parent_business_accepted", false);
 		}
-		if (parent == active_agent && int64_t(session_generation) == int64_t(job["generation"]) && busy) {
+		if (parent == active_agent && int64_t(GetAiSessionGeneration()) == int64_t(job["generation"]) && IsAiBusy()) {
 			// The held completion path closes a staged proposal without another
 			// model request and preserves any actual or unknown remote outcome.
 			_finish_parent_completion("readback_required");
@@ -2056,7 +2056,7 @@ void AIChatDock::_poll_parent_completion() {
 		set_meta("parent_completion_state", "decision_required");
 		set_meta("parent_business_accepted", false);
 		_append(TTR("Editor"), String(U"原完整任务校验未通过，未接续：") + _redact(response.get("error", "owner_or_execution_changed")).left(512));
-		if (busy) {
+		if (IsAiBusy()) {
 			_finish_parent_completion("decision_required");
 		}
 		return;
@@ -2092,7 +2092,7 @@ void AIChatDock::_poll_parent_completion() {
 	const String action = response.get("action", "decision_required");
 	if (operation == "check") {
 		const String facts = response["progress_sha256"];
-		const String event = itos(session_generation) + ":" + itos(request_generation);
+		const String event = itos(GetAiSessionGeneration()) + ":" + itos(GetAiRequestGeneration());
 		if (batch.get("parent_event", "") == Variant(event)) {
 			_finish_parent_completion("wait_event");
 			return;

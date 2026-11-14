@@ -213,7 +213,7 @@ func run():
 	# Disabled item reasons and stale context must be enforced in the action handler too.
 	reset_graph()
 	await settle()
-	panel.nodes[0].source = ""
+	panel._set_node_file("source", "")
 	panel.select_node("a")
 	popup_at(point_on_node("a"))
 	var run_index = menu_index("运行并预览")
@@ -225,7 +225,7 @@ func run():
 	panel.service_choice.item_selected.emit(2)
 	panel.nodes[0].type = "text_to_image"
 	panel.nodes[0].provider = "comfy"
-	panel.nodes[0].source = ""
+	panel._set_node_file("source", "")
 	panel.nodes[0].parameters = {"prompt": "", "seed": 1}
 	panel.nodes[0].text = "a valid instruction supplied through node context"
 	panel.select_node("a")
@@ -238,7 +238,7 @@ func run():
 	run_index = menu_index("运行并预览")
 	check(run_index >= 0 and panel.context_menu.is_item_disabled(run_index), "text generation without parameter or instruction prompt remains disabled")
 	panel.nodes[0].type = "image_to_mesh"
-	panel.nodes[0].source = fixture_image
+	panel._set_node_file("source", fixture_image)
 	panel.nodes[0].text = ""
 	panel.select_node("a")
 	popup_at(point_on_node("a"))
@@ -246,7 +246,7 @@ func run():
 	check(run_index >= 0 and not panel.context_menu.is_item_disabled(run_index), "image-to-mesh permits a source image without a text prompt")
 	# Visible parameter drafts participate in the contextual target-save path.
 	panel.nodes[0].type = "text_to_image"
-	panel.nodes[0].source = ""
+	panel._set_node_file("source", "")
 	panel.select_node("a")
 	panel.parameter_form.prompt_edit.text = "visible draft saved before another node is inspected"
 	panel.parameter_form.controls.seed.text = "9007199254740991"
@@ -315,7 +315,7 @@ func run():
 			panel.context_menu.hide()
 			await settle()
 			check(panel.preview_node == "a" and panel.preview_history.get("a", []).size() == 1, "history submenu restores the correct node's prior result")
-		panel.nodes[0].source = fixture_mesh
+		panel._set_node_file("source", fixture_mesh)
 		panel.select_node("a")
 		popup_at(point_on_node("a"))
 		if activate("运行并预览"):
@@ -344,7 +344,10 @@ func run():
 	ctrl_click.pressed = true
 	ctrl_click.position = point_on_node("a")
 	panel.graph.gui_input.emit(ctrl_click)
-	check(panel.context_menu.visible and panel.context_node_ids == ["a"], "Control-click opens the node context menu on macOS")
+	if OS.get_name() == "macOS":
+		check(panel.context_menu.visible and panel.context_node_ids == ["a"], "Control-click opens the node context menu on macOS")
+	else:
+		check(not panel.context_menu.visible, "Control-click retains the platform's primary-click behavior")
 	panel.context_menu.hide()
 	var context_key = InputEventKey.new()
 	context_key.keycode = KEY_F10

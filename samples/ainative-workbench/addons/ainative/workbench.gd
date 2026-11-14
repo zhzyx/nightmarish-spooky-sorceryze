@@ -33,15 +33,33 @@ var dialog: ConfirmationDialog
 var nodes: Array = []
 var edges: Array = []
 var selected_id = ""
-var run_id = ""
-var current: Dictionary = {}
-var jobs: Dictionary = {}
-var serial = 0
-var heartbeat = 0
-var auto_step = false
-var creating = false
-var cancel_create = false
-var preview_target = ""
+const WorkbenchController = preload("res://addons/ainative/workbench_controller.gd")
+var controller = WorkbenchController.new()
+# Preserve the workbench's existing scripting API while the controller owns state.
+var run_id: String:
+	get: return controller.run_id
+	set(value): controller.run_id = value
+var current: Dictionary:
+	get: return controller.current
+	set(value): controller.current = value
+var jobs: Dictionary:
+	get: return controller.jobs
+var serial: int:
+	get: return controller.serial
+var heartbeat: int:
+	get: return controller.heartbeat
+var auto_step: bool:
+	get: return controller.auto_step
+	set(value): controller.auto_step = value
+var creating: bool:
+	get: return controller.creating
+	set(value): controller.creating = value
+var cancel_create: bool:
+	get: return controller.cancel_create
+	set(value): controller.cancel_create = value
+var preview_target: String:
+	get: return controller.preview_target
+	set(value): controller.preview_target = value
 var preview_history: Dictionary = {}
 var history_choice: OptionButton
 var result_choice: OptionButton
@@ -228,6 +246,8 @@ func _set_node_file(field: String, selection):
 		return
 
 func _ready():
+	controller.command_completed.connect(_controller_completed)
+	controller.command_failed.connect(_controller_failed)
 	custom_minimum_size = Vector2(900, 520)
 	var builtin = get_meta('ainative_builtin',false)
 	if builtin:
@@ -527,7 +547,8 @@ func _ready():
 		status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		show_native_section('mesh')
 	if FileAccess.file_exists(state_dir.path_join("last_run.txt")):
-		run_id = FileAccess.get_file_as_string(state_dir.path_join("last_run.txt"))
+		_configure_controller()
+		controller.restore_run(FileAccess.get_file_as_string(state_dir.path_join("last_run.txt")))
 	add_node()
 
 func show_native_section(section: String):
@@ -933,9 +954,7 @@ func open_graph():
 			return
 		destinations.append(e.to)
 	preview_history.clear()
-	run_id = ""
-	current = {}
-	preview_target = ""
+	controller.reset()
 	clear_preview()
 	nodes = value.nodes
 	var legacy = service_draft()
@@ -946,7 +965,7 @@ func open_graph():
 	status.text = RETIRED_GPT_MESH_NOTICE if nodes.any(_retired_mesh_node) else "已重新打开工作流"
 
 func run_node_preview(id: String):
-	if creating or auto_step or not jobs.is_empty():
+	if is_graph_busy():
 		status.text = "正在运行，请等待结果或先取消"
 		return
 	if id.is_empty() or nodes.filter(func(n): return n.id == id).is_empty(): return
@@ -957,162 +976,101 @@ func run_node_preview(id: String):
 		return
 	if selected_id != id: select_node(id)
 	if service_config_link != null: service_config_link.hide()
-	preview_target = id
-	current = {}
 	preview_token = ""
-	auto_step = true
-	creating = true
-	cancel_create = false
 	status.text = "正在运行选中节点及必要的上游节点…"
-	launch("create", {"model": model(), "target": id})
+	_configure_controller()
+	controller.start(model(), id)
 
 func start_run():
-	if creating or auto_step or not jobs.is_empty() or not apply_fields(): return
+	if is_graph_busy() or not apply_fields(): return
 	for data in nodes:
 		var blocker = node_run_blocker(data.id)
 		if not blocker.is_empty():
 			_show_run_problem(blocker)
 			return
 	if service_config_link != null: service_config_link.hide()
-	preview_target = ""
-	current = {}
 	preview_token = ""
-	auto_step = true
-	creating = true
-	cancel_create = false
-	launch("create", {"model": model()})
+	_configure_controller()
+	controller.start(model())
 
 func resume_run():
-	if creating or run_id == "" or not jobs.is_empty(): return
-	auto_step = true
-	launch("step", {"run": run_id})
+	_configure_controller()
+	controller.resume()
 
 func cancel_run():
-	if creating:
-		cancel_create = true
-		preview_target = ""
-		auto_step = false
-		return
-	auto_step = false
-	preview_target = ""
 	preview_token = ""
-	if run_id != "": launch("cancel", {"run": run_id})
+	_configure_controller()
+	controller.cancel()
 
 func retry_node():
-	if creating or auto_step or not jobs.is_empty(): return
+	if is_graph_busy(): return
 	if nodes.any(func(node): return node.id == selected_id and _retired_mesh_node(node)):
 		status.text = RETIRED_GPT_MESH_NOTICE
 		return
 	preview_token = ""
-	if run_id != "": launch("retry", {"run": run_id, "node": selected_id})
+	_configure_controller()
+	controller.retry(selected_id)
+
+func _configure_controller():
+	var configuration = {"python": python_edit.text.strip_edges(), "script": host_edit.text.strip_edges(), "database": db, "factory": factory_edit.text, "state_dir": state_dir, "use_service": _uses_gui_service(), "service_config": service_config_path}
+	if bundled_runtime.has("python"):
+		configuration.bundled_python = bundled_runtime.python
+	if bundled_runtime.has("root"):
+		configuration.bundled_root = bundled_runtime.root
+	controller.configure(configuration)
 
 func launch(command: String, spec: Dictionary):
-	var interpreter = python_edit.text.strip_edges()
-	if command == 'managed-comfy' and bundled_runtime.has('root') and spec.get('runtime_root') == bundled_runtime.root:
-		interpreter = bundled_runtime.python
-	# Empty executable paths abort on macOS before a child process can report an error.
-	# Reject them before writing a request or calling the operating system.
-	if interpreter.is_empty() or host_edit.text.strip_edges().is_empty():
-		var message = "运行环境为空。请在环境设置中选择马良使用的 Python 3.11 或更高版本。" if interpreter.is_empty() else "运行工具路径为空。请在环境设置中恢复马良内置工具路径。"
-		_show_run_problem(message, 'environment')
-		if command == 'managed-comfy': managed_comfy_panel.failed(message)
-		auto_step = false
-		creating = false
-		preview_target = ""
-		return
-	serial += 1
-	var prefix = state_dir.path_join(str(OS.get_process_id()) + "-" + str(serial))
-	var f = FileAccess.open(prefix + ".json", FileAccess.WRITE)
-	if f == null:
-		_show_run_problem("无法写入本机运行请求，请检查用户目录是否可写。")
-		if command == 'managed-comfy': managed_comfy_panel.failed(status.text)
-		auto_step = false
-		if command == "create":
-			creating = false
-			preview_target = ""
-		return
-	f.store_string(JSON.stringify(spec, "", true, true))
-	f.close()
-	var arguments = PackedStringArray([host_edit.text, command, "--db", db, "--factory", factory_edit.text, "--spec", prefix + ".json", "--result", prefix + ".result"])
-	if bundled_runtime.has('python') and interpreter == bundled_runtime.python:
-		# Keep the trusted host's sibling imports, ignore PYTHONPATH and user site.
-		arguments = PackedStringArray(['-E', '-s', '-B']) + arguments
-	if command in ["create", "step"] and _uses_gui_service():
-		arguments.append_array(PackedStringArray(["--service-config", service_config_path]))
-	var pid = OS.create_process(interpreter, arguments)
-	if pid < 0:
-		DirAccess.remove_absolute(prefix + ".json")
-		var message = diagnostic_error("无法启动本机运行环境，请检查马良 Python 的位置与执行权限。", interpreter)
-		_show_run_problem(message, 'environment')
-		if command == 'managed-comfy': managed_comfy_panel.failed(message)
-		auto_step = false
-		if command == "create":
-			creating = false
-			preview_target = ""
-		return
-	jobs[pid] = {"command": command, "prefix": prefix, "spec": spec, "python":interpreter, "script":host_edit.text}
+	_configure_controller()
+	controller.submit(command, spec)
 
 func _process(_delta):
-	heartbeat += 1
-	for pid in jobs.keys():
-		if OS.is_process_running(pid): continue
-		var job = jobs[pid]
-		jobs.erase(pid)
-		var result = JSON.parse_string(FileAccess.get_file_as_string(job.prefix + ".result")) if FileAccess.file_exists(job.prefix + ".result") else null
-		DirAccess.remove_absolute(job.prefix + ".json")
-		DirAccess.remove_absolute(job.prefix + ".result")
-		if not result is Dictionary or not result.get("ok", false):
-			var message = str(result.get("message", "")) if result is Dictionary else ""
-			if message.is_empty():
-				message = "本机运行环境未返回有效结果。请确认 Python 3.11 或更高版本可用，并检查本机设置。"
-			var details: Dictionary = result.get("diagnostic", {}) if result is Dictionary else {"code":"host_result_missing", "command":job.command, "python":job.python, "script":job.script, "exit_code":OS.get_process_exit_code(pid)}
-			message = diagnostic_error("操作失败：" + message, details)
-			_show_run_problem(message)
-			if job.command == "service-check": service_status.text = message
-			if job.command == 'managed-comfy': managed_comfy_panel.failed(message)
-			auto_step = false
-			if job.command == "create":
-				creating = false
-				preview_target = ""
-			continue
-		var data = result.result
-		if job.command == 'managed-comfy':
-			managed_comfy_panel.completed(data, job.spec)
-		elif job.command == "service-check":
-			_apply_service_check(data, job.spec.service)
-		elif job.command == "create":
-			creating = false
-			run_id = data.run_id
-			var f = FileAccess.open(state_dir.path_join("last_run.txt"), FileAccess.WRITE)
-			f.store_string(run_id)
-			if cancel_create: launch("cancel", {"run": run_id})
-		elif job.command == "preview":
-			if job.spec.run == run_id:
-				remember_preview(data, job.spec.node, job.spec.run)
-				if job.spec.node == selected_id: load_preview(data, job.spec.node, job.spec.run)
-		elif job.command == "publish":
-			status.text = "已发布新文件：" + data.path
-			if Engine.is_editor_hint(): EditorInterface.get_resource_filesystem().scan()
-		else:
-			current = data
-			status.text = "运行状态：" + state_label(data.state) + " | 响应计数 " + str(heartbeat)
-			for id in data.nodes:
-				status.text += " | " + id + "：" + state_label(data.nodes[id].state) + "，尝试次数 " + str(data.nodes[id].attempt)
-				if data.nodes[id].state == "failed" and data.nodes[id].get("error") == "invalid_result":
-					status.text += "（生成结果未通过校验，已停止；请保留本次记录，修正问题后重新运行节点）"
-				if data.nodes[id].state == "failed" and managed_comfy_panel.using_bundle() and _service_mode() in ['codex', 'local_mesh']:
-					var job_result = data.nodes[id].get('job')
-					var details = {'run':run_id, 'node':id, 'error':data.nodes[id].get('error'), 'job_error':job_result.get('error') if job_result is Dictionary else null, 'model_log':managed_comfy_panel.last_report.get('log_path', '')}
-					status.text = diagnostic_error(status.text, details)
-			if job.command == "retry": auto_step = true
-			if data.state != "running": auto_step = false
-			if not preview_target.is_empty() and data.nodes.has(preview_target) and data.nodes[preview_target].state == "succeeded":
-				var finished_target = preview_target
-				preview_target = ""
-				auto_step = false
-				launch("preview", {"run": run_id, "node": finished_target})
-			if data.state == "reconcile": status.text += " | 提交结果未知，已暂停。点击“继续运行”查询一次结果，避免重复提交。"
-	if auto_step and jobs.is_empty() and run_id != "": launch("step", {"run": run_id})
+	controller.tick()
+
+func _controller_failed(command: String, failure: Dictionary):
+	var message = str(failure.message)
+	var section = "ai"
+	match failure.code:
+		"runtime_unavailable", "runtime_rejected":
+			message = "当前编辑器缺少统一 AI 运行时，请使用包含 AIWorkflowRuntime 的完整构建。"
+			section = "environment"
+		"runtime_path_empty":
+			message = "运行环境为空。请在环境设置中选择马良使用的 Python 3.11 或更高版本。" if str(failure.diagnostic.get("python", "")).is_empty() else "运行工具路径为空。请在环境设置中恢复马良内置工具路径。"
+			section = "environment"
+		"request_write_failed":
+			message = "无法写入本机运行请求，请检查用户目录是否可写。"
+		"process_start_failed":
+			message = "无法启动本机运行环境，请检查马良 Python 的位置与执行权限。"
+			section = "environment"
+	if message.is_empty():
+		message = "本机运行环境未返回有效结果。请确认 Python 3.11 或更高版本可用，并检查本机设置。"
+	message = diagnostic_error("操作失败：" + message, failure.diagnostic)
+	_show_run_problem(message, section)
+	if command == "service-check": service_status.text = message
+	if command == "managed-comfy": managed_comfy_panel.failed(message)
+
+func _controller_completed(command: String, data: Dictionary, request: Dictionary):
+	if command == "managed-comfy":
+		managed_comfy_panel.completed(data, request)
+	elif command == "service-check":
+		_apply_service_check(data, request.service)
+	elif command == "preview":
+		if request.run == run_id:
+			remember_preview(data, request.node, request.run)
+			if request.node == selected_id: load_preview(data, request.node, request.run)
+	elif command == "publish":
+		status.text = "已发布新文件：" + data.path
+		if Engine.is_editor_hint(): EditorInterface.get_resource_filesystem().scan()
+	elif command != "create":
+		status.text = "运行状态：" + state_label(data.state) + " | 响应计数 " + str(heartbeat)
+		for id in data.nodes:
+			status.text += " | " + id + "：" + state_label(data.nodes[id].state) + "，尝试次数 " + str(data.nodes[id].attempt)
+			if data.nodes[id].state == "failed" and data.nodes[id].get("error") == "invalid_result":
+				status.text += "（生成结果未通过校验，已停止；请保留本次记录，修正问题后重新运行节点）"
+			if data.nodes[id].state == "failed" and managed_comfy_panel.using_bundle() and _service_mode() in ["codex", "local_mesh"]:
+				var job_result = data.nodes[id].get("job")
+				var details = {"run": run_id, "node": id, "error": data.nodes[id].get("error"), "job_error": job_result.get("error") if job_result is Dictionary else null, "model_log": managed_comfy_panel.last_report.get("log_path", "")}
+				status.text = diagnostic_error(status.text, details)
+		if data.state == "reconcile": status.text += " | 提交结果未知，已暂停。点击“继续运行”查询一次结果，避免重复提交。"
 
 func request_preview():
 	if creating:
@@ -1121,7 +1079,7 @@ func request_preview():
 	if run_id.is_empty() or selected_id.is_empty():
 		status.text = "请先点击节点的“运行并预览”"
 		return
-	if jobs.values().any(func(job): return job.command == "preview"): return
+	if controller.has_command("preview"): return
 	if not current.get("nodes", {}).has(selected_id) or current.nodes[selected_id].state != "succeeded":
 		status.text = "选中节点尚未生成成功，请点击“运行并预览”"
 		return
@@ -1299,11 +1257,10 @@ func confirm_publish():
 
 func _exit_tree():
 	if is_instance_valid(managed_comfy_panel): managed_comfy_panel.release_connection()
-	for pid in jobs:
-		if OS.is_process_running(pid): OS.kill(pid)
+	controller.shutdown()
 
 func is_graph_busy() -> bool:
-	return creating or auto_step or not jobs.is_empty()
+	return controller.is_busy()
 
 func _setup_context_controls():
 	context_menu = PopupMenu.new()

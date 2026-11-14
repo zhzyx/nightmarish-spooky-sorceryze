@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-33fbf90eba8ced1930c680ce86505e29731ef2ee",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-unified-framework-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1086",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "980d0593a7fab76cdf48f9e79e30af63261a58b9b490ef1b58391b4830f85874",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1086",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1221",
+    "action": "delivery",
+    "detection_head": "4ccfde99c8fa4817f65a3814278490e41093993e",
+    "context_sha256": "cf5976f18677522a5215682bf06cd087147ededd40e88df13246e579d6ba3717",
+    "operator": "kaiyunxue",
+    "worker": "codex-ai-unified-root",
+    "authority_ref": "Issue1086 user-authorized implementation and main delivery",
+    "evidence": "data-collection/ai-unified-framework-1086-ci-fixed-verification.json",
+    "diagnosis": "The CI-fix update attempted to revise already committed verification receipts. Restored original receipt bytes and appended superseding verification, review and build proof files. Module manifests now reference the appended proof.",
+    "next_action": "Collect the new assessment and retry signed submission; retain original CI failure and new strict compilation proof.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T03:22:18.158015+00:00",
+    "attempted": null,
+    "repair_owner": "codex-ai-unified-root",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-14T03:23:56.630761+00:00",
+  "sha256": "81eca28d59a5c34631f2ee761bd8cbc208f4550003999cbde4d9edc56b169418"
+}

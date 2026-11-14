@@ -47,7 +47,7 @@ String AIChatDock::_delivery_retry_blocked_reason() const {
 	if (sub_agents.has(active_agent) || scheduled_agents.has(active_agent)) {
 		return "parent_session_required";
 	}
-	if (busy || process_id >= 0 || candidate_pid >= 0 || engine_build_pid >= 0 || engine_restart_requested || engine_restart_armed || !delivery_retry_route.is_empty()) {
+	if (IsAiBusy() || process_id >= 0 || candidate_pid >= 0 || engine_build_pid >= 0 || engine_restart_requested || engine_restart_armed || !delivery_retry_route.is_empty()) {
 		return "editor_busy";
 	}
 	if (history_restoring || !history_writable || snapshot_restoring || snapshot_transaction_failed || !gonggong_recovered_result.is_empty()) {
@@ -56,10 +56,10 @@ String AIChatDock::_delivery_retry_blocked_reason() const {
 	if (!pending_external_editor_message.is_empty() || !issue_guide_state.is_empty() || !igniter_state.is_empty() || daqian_chat_host.is_valid() || (agent_close_confirmation && agent_close_confirmation->is_visible()) || confirmation->is_visible() || engine_approval->is_visible()) {
 		return "host_action_pending";
 	}
-	if (!input->get_text().is_empty() || input->has_ime_text() || !draft_images.is_empty()) {
+	if (!input->get_text().is_empty() || input->has_ime_text() || !GetAiSession().arrDraftImages.is_empty()) {
 		return "draft_not_empty";
 	}
-	if (conversation_id.is_empty() || snapshot_id.is_empty() || delivery_retry_instance.is_empty() || !snapshot_state.has("engine_candidate")) {
+	if (GetAiSession().strConversation.is_empty() || GetAiSession().strSnapshot.is_empty() || delivery_retry_instance.is_empty() || !GetAiSession().mapSnapshot.has("engine_candidate")) {
 		return "known_work_order_owner_required";
 	}
 	String error;
@@ -76,7 +76,7 @@ String AIChatDock::_delivery_retry_blocked_reason() const {
 Dictionary AIChatDock::_pending_delivery_retry() const {
 	Dictionary result;
 	result["ok"] = false;
-	const Dictionary binding = snapshot_state.get("engine_candidate", Dictionary());
+	const Dictionary binding = GetAiSession().mapSnapshot.get("engine_candidate", Dictionary());
 	const String folder = String(binding.get("common_dir", "")).path_join("gonggong-delivery-finalization");
 	const Ref<DirAccess> directory = DirAccess::open(folder);
 	if (directory.is_null()) {
@@ -107,11 +107,11 @@ Dictionary AIChatDock::_pending_delivery_retry() const {
 		}
 		const Dictionary saved = parsed;
 		const Dictionary scope = saved.get("scope", Dictionary());
-		if (scope.get("owner", "") != conversation_id || scope.get("source_root", "") != _candidate_root() || scope.get("issue", Variant()) != binding.get("issue", Variant()) || scope.get("request_id", "") != binding.get("request_id", "")) {
+		if (scope.get("owner", "") != GetAiSession().strConversation || scope.get("source_root", "") != _candidate_root() || scope.get("issue", Variant()) != binding.get("issue", Variant()) || scope.get("request_id", "") != binding.get("request_id", "")) {
 			continue;
 		}
 		const Dictionary receipt = saved.get("last_receipt", Dictionary());
-		if (receipt.get("snapshot_id", "") != snapshot_id) {
+		if (receipt.get("snapshot_id", "") != GetAiSession().strSnapshot) {
 			continue;
 		}
 		if (receipt.get("completion_verified", Variant()).get_type() != Variant::BOOL || !bool(receipt["completion_verified"]) || receipt.get("ok", Variant()).get_type() != Variant::BOOL || bool(receipt["ok"]) || receipt.get("stage", "") != "activation_pending") {
@@ -160,7 +160,7 @@ Dictionary AIChatDock::_run_delivery_retry(const Dictionary &p_args) {
 		result["error"] = "delivery_retry_nonce_unavailable";
 		return result;
 	}
-	const Dictionary binding = snapshot_state["engine_candidate"];
+	const Dictionary binding = GetAiSession().mapSnapshot["engine_candidate"];
 	Dictionary recorded = JSON::parse_string(FileAccess::get_file_as_string(binding.get("binding_path", "")));
 	// Preserve the recorded integer identities independently of Variant JSON floats.
 	recorded["version"] = int64_t(recorded.get("version", 0));
@@ -173,9 +173,9 @@ Dictionary AIChatDock::_run_delivery_retry(const Dictionary &p_args) {
 	pending_delivery_request["kind"] = "native_delivery_retry";
 	pending_delivery_request["engine_pid"] = int64_t(OS::get_singleton()->get_process_id());
 	pending_delivery_request["host_instance_id"] = delivery_retry_instance;
-	pending_delivery_request["owner"] = conversation_id;
-	pending_delivery_request["snapshot_id"] = snapshot_id;
-	pending_delivery_request["generation"] = int64_t(session_generation);
+	pending_delivery_request["owner"] = GetAiSession().strConversation;
+	pending_delivery_request["snapshot_id"] = GetAiSession().strSnapshot;
+	pending_delivery_request["generation"] = int64_t(GetAiSessionGeneration());
 	pending_delivery_request["nonce"] = String::hex_encode_buffer(nonce, sizeof(nonce));
 	pending_delivery_request["source_root"] = _candidate_root();
 	pending_delivery_request["binding"] = recorded;
@@ -189,7 +189,7 @@ Dictionary AIChatDock::_run_delivery_retry(const Dictionary &p_args) {
 	delivery_retry_route["request_id"] = p_args["host_action_request_id"];
 	pending_action = "complete_delivery";
 	process_timeout_seconds = 600;
-	queue_paused = true;
+	GetAiSession().bQueuePaused = true;
 	consultation_turn = false;
 	turn_completed = false;
 	_set_busy(true);
@@ -202,7 +202,7 @@ Dictionary AIChatDock::_run_delivery_retry(const Dictionary &p_args) {
 }
 
 void AIChatDock::_begin_delivery_retry() {
-	if (!delivery_retry_route.is_empty() && busy && pending_action == "complete_delivery") {
+	if (!delivery_retry_route.is_empty() && IsAiBusy() && pending_action == "complete_delivery") {
 		if (!allow_tools->is_pressed() || !auto_execute_commands->is_pressed() || consultation_only->is_pressed() || sub_agents.has(active_agent) || scheduled_agents.has(active_agent)) {
 			_finish_tool("Error: Terminal retry permission changed before execution.");
 			return;

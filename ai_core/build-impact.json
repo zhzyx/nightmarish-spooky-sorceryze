@@ -1,0 +1,7 @@
+{
+  "placement": "native",
+  "reason": "Portable C++17 run state is compiled into the Godot AI module and the standalone validation executable.",
+  "host_contract": "Runtime.h exposes standard C++ values and no Godot dependency. Godot serialization and lifecycle registration are implemented by modules/ai_core.",
+  "rollback": "Restore the previous source revision and rebuild the affected native targets. Existing domain persistence formats remain owned by their original adapters.",
+  "evidence": "data-collection/ai-unified-framework-1086-ci-fixed-build-impact.json"
+}
