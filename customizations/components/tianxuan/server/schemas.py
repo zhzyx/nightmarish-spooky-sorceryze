@@ -78,6 +78,16 @@ class PullRequestMergeRequest(BaseModel):
     method: str = "merge"
 
 
+class MergeQueueCreateRequest(BaseModel):
+    """多宝合入队列候选。"""
+
+    repo: str
+    source: str
+    target: str
+    title: str = ""
+    priority: int = 0
+
+
 class DocCreateRequest(BaseModel):
     """创建文曲 Markdown 文档。"""
 
