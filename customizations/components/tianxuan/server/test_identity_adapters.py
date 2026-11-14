@@ -430,3 +430,25 @@ def test_identity_events_history(monkeypatch) -> None:
     viewer_id = viewer.get("id") or viewer["user_id"]
     denied = client.get("/api/v1/identity/events", headers={"X-Actor": viewer_id})
     assert denied.status_code == 403
+
+
+def test_member_event_stream_hides_identity_events(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_IDENTITY_SECRET", "shared-secret")
+    client, headers, user_id = _client()
+    client.post(
+        "/api/v1/identity/links",
+        headers=headers,
+        json={"provider": "tianshu", "subject": "gh_private", "user_id": user_id},
+    )
+    viewer = client.post(
+        "/api/v1/users",
+        headers=headers,
+        json={"email": "events-viewer@example.com", "password": "secret-pass", "role": "viewer"},
+    ).json()
+    viewer_id = viewer.get("id") or viewer["user_id"]
+
+    member_events = client.get("/api/v1/events", headers={"X-Actor": viewer_id}).json()["events"]
+    assert all(not event["type"].startswith("identity.") for event in member_events)
+
+    admin_events = client.get("/api/v1/events", headers=headers).json()["events"]
+    assert any(event["type"] == "identity.linked" for event in admin_events)
