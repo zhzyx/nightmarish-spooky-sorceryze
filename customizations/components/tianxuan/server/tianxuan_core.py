@@ -14,8 +14,11 @@ import json
 import re
 import sqlite3
 import uuid
+from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from functools import wraps
+from threading import RLock
+from typing import Any, Concatenate, ParamSpec, TypeVar
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS tenants (
@@ -162,10 +165,44 @@ def machine_view(body_md: str) -> dict[str, Any]:
     return {"headings": headings, "links": links, "summary": summary}
 
 
+_P = ParamSpec("_P")
+_R = TypeVar("_R")
+
+
+def _connection_call(method: Callable[Concatenate[Tianxuan, _P], _R]) -> Callable[Concatenate[Tianxuan, _P], _R]:
+    """Own the shared connection until the outermost domain call finishes.
+
+    Nested calls share one transaction. Reads do not issue BEGIN or acquire a
+    database write lock; SQLite begins a transaction at the first mutation.
+    Direct access to db/private helpers is outside this concurrency boundary.
+    """
+
+    @wraps(method)
+    def call(self: Tianxuan, *args: _P.args, **kwargs: _P.kwargs) -> _R:
+        with self._connection_lock:
+            outermost = self._call_depth == 0
+            self._call_depth += 1
+            try:
+                result = method(self, *args, **kwargs)
+                if outermost:
+                    self.db.commit()
+                return result
+            except BaseException:
+                if outermost:
+                    self.db.rollback()
+                raise
+            finally:
+                self._call_depth -= 1
+
+    return call
+
+
 class Tianxuan:
     """单组织首版的领域服务；方法与 AI 工具一一可测。"""
 
     def __init__(self, db_path: str = ":memory:"):
+        self._connection_lock = RLock()
+        self._call_depth = 0
         self.db = sqlite3.connect(db_path, check_same_thread=False)
         self.db.row_factory = sqlite3.Row
         self.db.executescript(SCHEMA)
@@ -195,6 +232,7 @@ class Tianxuan:
 
     # ---------- 租户与身份 ----------
 
+    @_connection_call
     def register(self, tenant_name: str, email: str, password: str, name: str = "") -> dict[str, Any]:
         if not tenant_name.strip() or not email.strip() or not password:
             raise TianxuanError("tenant name, email and password are required")
@@ -227,12 +265,11 @@ class Tianxuan:
                 ),
             )
         except sqlite3.IntegrityError as error:
-            self.db.rollback()
             raise TianxuanError(f"registration rejected: {error}") from error
         self._event(tenant_id, "user.registered", user_id, user_id, {"email": email.lower()})
-        self.db.commit()
         return {"tenant_id": tenant_id, "space_id": space_id, "user_id": user_id}
 
+    @_connection_call
     def authenticate(self, email: str, password: str) -> dict[str, Any] | None:
         row = self.db.execute("SELECT * FROM users WHERE email = ?", (email.lower(),)).fetchone()
         if row is None:
@@ -247,6 +284,7 @@ class Tianxuan:
             "role": row["role"],
         }
 
+    @_connection_call
     def issue_session(self, user_id: str, ttl_seconds: int = 86_400) -> str:
         token = "txs_" + uuid.uuid4().hex + uuid.uuid4().hex
         now = datetime.now(timezone.utc)
@@ -260,9 +298,9 @@ class Tianxuan:
                 expires.isoformat(timespec="seconds"),
             ),
         )
-        self.db.commit()
         return token
 
+    @_connection_call
     def user_for_token(self, token: str) -> str | None:
         token_hash = _token_hash(token)
         row = self.db.execute("SELECT user_id, expires_at FROM sessions WHERE token_hash = ?", (token_hash,)).fetchone()
@@ -274,15 +312,15 @@ class Tianxuan:
             expires = datetime.now(timezone.utc)
         if expires <= datetime.now(timezone.utc):
             self.db.execute("DELETE FROM sessions WHERE token_hash = ?", (token_hash,))
-            self.db.commit()
             return None
         return str(row["user_id"])
 
+    @_connection_call
     def revoke_session(self, token: str) -> bool:
         cursor = self.db.execute("DELETE FROM sessions WHERE token_hash = ?", (_token_hash(token),))
-        self.db.commit()
         return cursor.rowcount > 0
 
+    @_connection_call
     def role_of(self, actor: str) -> str:
         row = self.db.execute("SELECT role FROM users WHERE id = ?", (actor,)).fetchone()
         if row is None:
@@ -293,6 +331,7 @@ class Tianxuan:
         if self.role_of(actor) == "viewer":
             raise PermissionDenied("viewer cannot modify content")
 
+    @_connection_call
     def list_members(self, actor: str) -> list[dict[str, Any]]:
         rows = self.db.execute(
             "SELECT id, email, name, role FROM users WHERE tenant_id = ? ORDER BY created_at, id",
@@ -300,6 +339,7 @@ class Tianxuan:
         ).fetchall()
         return [dict(row) for row in rows]
 
+    @_connection_call
     def add_member(self, actor: str, email: str, password: str, name: str = "", role: str = "editor") -> dict[str, Any]:
         if self.role_of(actor) != "admin":
             raise PermissionDenied("only admin can add members")
@@ -327,10 +367,8 @@ class Tianxuan:
                 ),
             )
         except sqlite3.IntegrityError as error:
-            self.db.rollback()
             raise TianxuanError(f"member rejected: {error}") from error
         self._event(tenant_id, "user.added", actor, user_id, {"role": role})
-        self.db.commit()
         return {
             "user_id": user_id,
             "tenant_id": tenant_id,
@@ -339,6 +377,7 @@ class Tianxuan:
             "role": role,
         }
 
+    @_connection_call
     def set_role(self, actor: str, user_id: str, role: str) -> dict[str, Any]:
         if self.role_of(actor) != "admin":
             raise PermissionDenied("only admin can change roles")
@@ -349,9 +388,9 @@ class Tianxuan:
             raise NotFound(f"user not found: {user_id}")
         self.db.execute("UPDATE users SET role = ? WHERE id = ?", (role, user_id))
         self._event(self._tenant_of(actor), "user.role_changed", actor, user_id, {"role": role})
-        self.db.commit()
         return {"user_id": user_id, "role": role}
 
+    @_connection_call
     def create_invite(self, actor: str, email: str, role: str = "editor", ttl_seconds: int = 604_800) -> dict[str, Any]:
         if self.role_of(actor) != "admin":
             raise PermissionDenied("only admin can invite members")
@@ -375,7 +414,6 @@ class Tianxuan:
                 expires.isoformat(timespec="seconds"),
             ),
         )
-        self.db.commit()
         return {
             "code": code,
             "email": email.lower(),
@@ -383,6 +421,7 @@ class Tianxuan:
             "expires_at": expires.isoformat(timespec="seconds"),
         }
 
+    @_connection_call
     def accept_invite(self, code: str, password: str, name: str = "") -> dict[str, Any]:
         token_hash = _token_hash(code)
         row = self.db.execute("SELECT * FROM invites WHERE token_hash = ?", (token_hash,)).fetchone()
@@ -419,10 +458,8 @@ class Tianxuan:
                 (_now(), token_hash),
             )
         except sqlite3.IntegrityError as error:
-            self.db.rollback()
             raise TianxuanError("email is already registered") from error
         self._event(row["tenant_id"], "user.invited", row["created_by"], user_id, {"role": row["role"]})
-        self.db.commit()
         return {
             "user_id": user_id,
             "tenant_id": row["tenant_id"],
@@ -432,6 +469,7 @@ class Tianxuan:
         }
 
     # ---------- 文曲：文档 ----------
+    @_connection_call
     def create_doc(
         self,
         actor: str,
@@ -461,9 +499,9 @@ class Tianxuan:
         )
         self._version(doc_id, 1, body_md, actor)
         self._event(tenant_id, "doc.created", actor, doc_id, {"title": title, "kind": kind})
-        self.db.commit()
         return self.get_doc(doc_id)
 
+    @_connection_call
     def update_doc(
         self,
         actor: str,
@@ -483,15 +521,28 @@ class Tianxuan:
         now = _now()
         title = title if title is not None else doc["title"]
         status = status if status is not None else doc["status"]
-        self.db.execute(
-            "UPDATE docs SET title = ?, body_md = ?, status = ?, tags = ?, version = ?, updated_at = ? WHERE id = ?",
-            (title, body_md, status, json.dumps(classify(f"{title}\n{body_md}")), version, now, doc_id),
+        updated = self.db.execute(
+            "UPDATE docs SET title = ?, body_md = ?, status = ?, tags = ?, version = ?, updated_at = ? "
+            "WHERE id = ? AND version = ?",
+            (
+                title,
+                body_md,
+                status,
+                json.dumps(classify(f"{title}\n{body_md}")),
+                version,
+                now,
+                doc_id,
+                expected_version,
+            ),
         )
+        if updated.rowcount != 1:
+            current = self.get_doc(doc_id)
+            raise VersionConflict(f"expected version {expected_version}, found {current['version']}")
         self._version(doc_id, version, body_md, actor)
         self._event(doc["tenant_id"], "doc.updated", actor, doc_id, {"version": version})
-        self.db.commit()
         return self.get_doc(doc_id)
 
+    @_connection_call
     def get_doc(self, doc_id: str) -> dict[str, Any]:
         row = self.db.execute("SELECT * FROM docs WHERE id = ?", (doc_id,)).fetchone()
         if row is None:
@@ -501,6 +552,7 @@ class Tianxuan:
         doc["progress"] = json.loads(doc["progress"])
         return doc
 
+    @_connection_call
     def list_docs(self, actor: str, kind: str | None = None) -> list[dict[str, Any]]:
         tenant_id = self._tenant_of(actor)
         sql = "SELECT id, title, kind, status, tags, version, updated_at FROM docs WHERE tenant_id = ?"
@@ -540,6 +592,7 @@ class Tianxuan:
             return True
         return doc["visibility"] == "tenant" and self.role_of(actor) != "viewer"
 
+    @_connection_call
     def get_doc_shared(self, actor: str, doc_id: str, *, write: bool = False) -> dict[str, Any]:
         doc = self.get_doc(doc_id)
         allowed = self._can_write(actor, doc) if write else self._can_read(actor, doc)
@@ -547,6 +600,7 @@ class Tianxuan:
             raise PermissionDenied(f"no access to document: {doc_id}")
         return doc
 
+    @_connection_call
     def set_visibility(self, actor: str, doc_id: str, visibility: str) -> dict[str, Any]:
         if visibility not in {"tenant", "private"}:
             raise TianxuanError("visibility must be tenant or private")
@@ -555,9 +609,9 @@ class Tianxuan:
             raise PermissionDenied("only the owner or an admin can change visibility")
         self.db.execute("UPDATE docs SET visibility = ?, updated_at = ? WHERE id = ?", (visibility, _now(), doc_id))
         self._event(doc["tenant_id"], "doc.visibility_changed", actor, doc_id, {"visibility": visibility})
-        self.db.commit()
         return self.get_doc(doc_id)
 
+    @_connection_call
     def share_doc(self, actor: str, doc_id: str, user_id: str, permission: str = "read") -> dict[str, Any]:
         if permission not in {"read", "write"}:
             raise TianxuanError("permission must be read or write")
@@ -573,18 +627,18 @@ class Tianxuan:
             (doc_id, user_id, permission, actor, _now()),
         )
         self._event(doc["tenant_id"], "doc.shared", actor, doc_id, {"user_id": user_id, "permission": permission})
-        self.db.commit()
         return {"doc_id": doc_id, "user_id": user_id, "permission": permission}
 
+    @_connection_call
     def unshare_doc(self, actor: str, doc_id: str, user_id: str) -> dict[str, Any]:
         doc = self.get_doc(doc_id)
         if doc["created_by"] != actor and not self._is_admin(actor):
             raise PermissionDenied("only the owner or an admin can unshare")
         self.db.execute("DELETE FROM doc_shares WHERE doc_id = ? AND user_id = ?", (doc_id, user_id))
         self._event(doc["tenant_id"], "doc.unshared", actor, doc_id, {"user_id": user_id})
-        self.db.commit()
         return {"doc_id": doc_id, "user_id": user_id, "removed": True}
 
+    @_connection_call
     def list_shares(self, actor: str, doc_id: str) -> list[dict[str, Any]]:
         doc = self.get_doc(doc_id)
         if doc["created_by"] != actor and not self._is_admin(actor):
@@ -614,12 +668,14 @@ class Tianxuan:
             (_id("ver"), doc_id, version, body_md, author, _now()),
         )
 
+    @_connection_call
     def versions(self, doc_id: str) -> list[dict[str, Any]]:
         rows = self.db.execute(
             "SELECT version, author, created_at FROM doc_versions WHERE doc_id = ? ORDER BY version", (doc_id,)
         ).fetchall()
         return [dict(row) for row in rows]
 
+    @_connection_call
     def version(self, doc_id: str, version: int) -> dict[str, Any]:
         row = self.db.execute(
             "SELECT version, body_md, author, created_at FROM doc_versions WHERE doc_id = ? AND version = ?",
@@ -631,6 +687,7 @@ class Tianxuan:
 
     # ---------- 文曲：评论 ----------
 
+    @_connection_call
     def add_comment(self, actor: str, doc_id: str, body: str, parent_id: str | None = None) -> dict[str, Any]:
         self._require_editor(actor)
         document = self.get_doc(doc_id)
@@ -650,9 +707,9 @@ class Tianxuan:
             (comment_id, document["tenant_id"], doc_id, parent_id, actor, body, now),
         )
         self._event(document["tenant_id"], "comment.created", actor, comment_id, {"doc_id": doc_id})
-        self.db.commit()
         return self.get_comment(comment_id)
 
+    @_connection_call
     def get_comment(self, comment_id: str) -> dict[str, Any]:
         row = self.db.execute("SELECT * FROM comments WHERE id = ?", (comment_id,)).fetchone()
         if row is None:
@@ -661,6 +718,7 @@ class Tianxuan:
         comment["resolved"] = bool(comment["resolved"])
         return comment
 
+    @_connection_call
     def list_comments(self, actor: str, doc_id: str) -> list[dict[str, Any]]:
         document = self.get_doc(doc_id)
         if not self._can_read(actor, document):
@@ -671,6 +729,7 @@ class Tianxuan:
         ).fetchall()
         return [dict(row) | {"resolved": bool(row["resolved"])} for row in rows]
 
+    @_connection_call
     def resolve_comment(self, actor: str, comment_id: str, resolved: bool = True) -> dict[str, Any]:
         self._require_editor(actor)
         comment = self.get_comment(comment_id)
@@ -689,11 +748,11 @@ class Tianxuan:
             comment_id,
             {},
         )
-        self.db.commit()
         return self.get_comment(comment_id)
 
     # ---------- 偃师：需求文档 ----------
 
+    @_connection_call
     def create_requirement(
         self, actor: str, request_id: str, title: str, outcome: str, scope: str, acceptance: str, lang: str = "zh"
     ) -> dict[str, Any]:
@@ -702,10 +761,22 @@ class Tianxuan:
             f"request_id: {request_id}\nkind: requirement\nlang: {lang}\n---\n\n"
             f"# {title}\n\n## 目标\n\n{outcome}\n\n## 范围\n\n{scope}\n\n## 验收\n\n{acceptance}\n"
         )
-        return self.create_doc(actor, title, body, lang=lang, kind="requirement", request_id=request_id)
+        existing = self.db.execute("SELECT * FROM docs WHERE request_id = ?", (request_id,)).fetchone()
+        if existing is not None:
+            if existing["tenant_id"] != self._tenant_of(actor):
+                raise VersionConflict(f"request_id is already in use: {request_id}")
+            if existing["title"] == title and existing["body_md"] == body:
+                return self.get_doc(existing["id"])
+            raise VersionConflict(f"request_id already exists with different content: {request_id}")
+        try:
+            return self.create_doc(actor, title, body, lang=lang, kind="requirement", request_id=request_id)
+        except sqlite3.IntegrityError as error:
+            self.db.rollback()
+            raise VersionConflict(f"request_id already exists: {request_id}") from error
 
     # ---------- 司南：工单 ----------
 
+    @_connection_call
     def create_issue(
         self,
         actor: str,
@@ -719,6 +790,12 @@ class Tianxuan:
     ) -> dict[str, Any]:
         self._require_editor(actor)
         tenant_id = self._tenant_of(actor)
+        if requirement_id is not None:
+            requirement = self._require_tenant_doc(actor, requirement_id)
+            if requirement["kind"] != "requirement":
+                raise TianxuanError("requirement_id must reference a requirement document")
+        if parent_id is not None:
+            self._require_tenant_issue(actor, parent_id)
         number = self.db.execute(
             "SELECT COALESCE(MAX(number), 0) + 1 FROM issues WHERE tenant_id = ?", (tenant_id,)
         ).fetchone()[0]
@@ -745,15 +822,16 @@ class Tianxuan:
             ),
         )
         self._event(tenant_id, "issue.created", actor, issue_id, {"number": number, "title": title})
-        self.db.commit()
         return self.get_issue(issue_id)
 
+    @_connection_call
     def get_issue(self, issue_id: str) -> dict[str, Any]:
         row = self.db.execute("SELECT * FROM issues WHERE id = ?", (issue_id,)).fetchone()
         if row is None:
             raise NotFound(f"issue not found: {issue_id}")
         return dict(row)
 
+    @_connection_call
     def list_issues(self, actor: str, requirement_id: str | None = None) -> list[dict[str, Any]]:
         tenant_id = self._tenant_of(actor)
         sql = "SELECT * FROM issues WHERE tenant_id = ?"
@@ -766,6 +844,7 @@ class Tianxuan:
 
     # ---------- 司南：工单评论 ----------
 
+    @_connection_call
     def add_issue_comment(self, actor: str, issue_id: str, body: str) -> dict[str, Any]:
         self._require_editor(actor)
         if not body.strip():
@@ -778,15 +857,16 @@ class Tianxuan:
             (comment_id, issue["tenant_id"], issue_id, actor, body, now),
         )
         self._event(issue["tenant_id"], "issue.comment_added", actor, comment_id, {"issue_id": issue_id})
-        self.db.commit()
         return self.get_issue_comment(comment_id)
 
+    @_connection_call
     def get_issue_comment(self, comment_id: str) -> dict[str, Any]:
         row = self.db.execute("SELECT * FROM issue_comments WHERE id = ?", (comment_id,)).fetchone()
         if row is None:
             raise NotFound(f"issue comment not found: {comment_id}")
         return dict(row)
 
+    @_connection_call
     def list_issue_comments(self, actor: str, issue_id: str) -> list[dict[str, Any]]:
         issue = self._require_tenant_issue(actor, issue_id)
         rows = self.db.execute(
@@ -802,52 +882,77 @@ class Tianxuan:
             raise NotFound(f"issue not found: {issue_id}")
         return issue
 
+    def _require_tenant_doc(self, actor: str, doc_id: str) -> dict[str, Any]:
+        document = self.get_doc(doc_id)
+        if document["tenant_id"] != self._tenant_of(actor):
+            raise NotFound(f"doc not found: {doc_id}")
+        return document
+
+    @_connection_call
     def transition_issue(self, actor: str, issue_id: str, to_status: str) -> dict[str, Any]:
         self._require_editor(actor)
-        issue = self.get_issue(issue_id)
+        issue = self._require_tenant_issue(actor, issue_id)
         current = issue["status"]
         if to_status not in ISSUE_TRANSITIONS.get(current, set()):
             raise TransitionRejected(f"{current} -> {to_status} is not allowed")
         self.db.execute("UPDATE issues SET status = ?, updated_at = ? WHERE id = ?", (to_status, _now(), issue_id))
         self._event(issue["tenant_id"], "issue.transitioned", actor, issue_id, {"from": current, "to": to_status})
-        self.db.commit()
         if issue["requirement_id"]:
             self.sync_progress(issue["requirement_id"])
         return self.get_issue(issue_id)
 
+    @_connection_call
     def plan_tickets(self, actor: str, requirement_id: str, tickets: list[dict[str, Any]]) -> list[dict[str, Any]]:
         self._require_editor(actor)
-        requirement = self.get_doc(requirement_id)
+        requirement = self._require_tenant_doc(actor, requirement_id)
         if requirement["kind"] != "requirement":
             raise TianxuanError("tickets can only be planned from a requirement document")
-        parent = self.create_issue(
-            actor,
-            requirement["title"],
-            type="requirement",
-            acceptance="全部子工单验收通过",
-            requirement_id=requirement_id,
-            body_md=f"需求文档：[[{requirement_id}]]",
-        )
+        parent_row = self.db.execute(
+            "SELECT * FROM issues WHERE tenant_id = ? AND requirement_id = ? AND type = 'requirement' "
+            "ORDER BY number LIMIT 1",
+            (requirement["tenant_id"], requirement_id),
+        ).fetchone()
+        if parent_row is None:
+            parent = self.create_issue(
+                actor,
+                requirement["title"],
+                type="requirement",
+                acceptance="全部子工单验收通过",
+                requirement_id=requirement_id,
+                body_md=f"需求文档：[[{requirement_id}]]",
+            )
+        else:
+            parent = dict(parent_row)
+        existing_children = {
+            issue["title"]: issue
+            for issue in self.list_issues(actor, requirement_id)
+            if issue["parent_id"] == parent["id"]
+        }
         created = []
         for ticket in tickets:
-            created.append(
-                self.create_issue(
-                    actor,
-                    ticket.get("title", "未命名工单"),
-                    type=ticket.get("type", "task"),
-                    acceptance=ticket.get("acceptance", ""),
-                    priority=ticket.get("priority", "normal"),
-                    requirement_id=requirement_id,
-                    parent_id=parent["id"],
-                )
+            title = ticket.get("title", "未命名工单")
+            existing = existing_children.get(title)
+            if existing is not None:
+                created.append(existing)
+                continue
+            child = self.create_issue(
+                actor,
+                title,
+                type=ticket.get("type", "task"),
+                acceptance=ticket.get("acceptance", ""),
+                priority=ticket.get("priority", "normal"),
+                requirement_id=requirement_id,
+                parent_id=parent["id"],
             )
+            created.append(child)
+            existing_children[title] = child
         self._event(
             requirement["tenant_id"], "requirement.planned", actor, requirement_id, {"issues": len(created) + 1}
         )
-        self.db.commit()
         self.sync_progress(requirement_id)
         return [parent, *created]
 
+    @_connection_call
     def sync_progress(self, requirement_id: str) -> dict[str, Any]:
         issues = self.db.execute("SELECT status FROM issues WHERE requirement_id = ?", (requirement_id,)).fetchall()
         total = len(issues)
@@ -856,7 +961,6 @@ class Tianxuan:
         self.db.execute(
             "UPDATE docs SET progress = ?, updated_at = ? WHERE id = ?", (json.dumps(progress), _now(), requirement_id)
         )
-        self.db.commit()
         return progress
 
     # ---------- 事件与 AI 工具 ----------
@@ -873,6 +977,7 @@ class Tianxuan:
             (_id("evt"), tenant_id, type_, actor, target, json.dumps(payload), _now()),
         )
 
+    @_connection_call
     def events(self, actor: str, limit: int = 100) -> list[dict[str, Any]]:
         tenant_id = self._tenant_of(actor)
         rows = self.db.execute(

@@ -1,0 +1,567 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "collected_at": "2026-11-14T00:10:46.766940+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/ai-reviewed-delivery-batch-978-request.json",
+      "sha256": "eb279fa8e02641266fea4a6205e636c4d69b743a2da109f041ebd20b7ae19239",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "ai-reviewed-delivery-batch-978-request",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/combined-owned-integration-978-20261113.json",
+      "sha256": "ac480b5a68aedca1c5a033bc5c0aca4d0e58997c30b1376517116771addf73c9",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "combined-owned-integration-978-20261113",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-02930ce7ba694547830a88de20445fcb.json",
+      "sha256": "dab999420f36dfd0ff6dd379c9942707fb66d6b4f4d60cc946fef6688945c249",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-02930ce7ba694547830a88de20445fcb",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-0638f67ac7c14612b7e60df1f9d78e8b.json",
+      "sha256": "f0e6e7b71f0dd6731913781343e02154613c5d0394c5c2c9439064eafa1ecf1e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-0638f67ac7c14612b7e60df1f9d78e8b",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-08984d3bdff143f598983f87316fe8d0.json",
+      "sha256": "b57aa406baf34bfad3bd48927a00732391247466cf61650d2c322de819176dc5",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-08984d3bdff143f598983f87316fe8d0",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-0dda7d6090634ad9a32257d3c7c1a399.json",
+      "sha256": "3d1de9562944024e4499aa8ea8aae0841d3e7f845e256d10db1b5183f4d12699",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-0dda7d6090634ad9a32257d3c7c1a399",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-0faaab4e1826400083d6b621c0f958df.json",
+      "sha256": "dbb6807db62c431556593eac5c2c91f47bc5da756153cb70ea45d322542ffba3",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-0faaab4e1826400083d6b621c0f958df",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-112767efc5dd41d989b2916c56d9d5ce.json",
+      "sha256": "71258ed2cbca8cf1be40a3b14327eddfacdd2bb55170c6ddc1c032df56985d81",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-112767efc5dd41d989b2916c56d9d5ce",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-114d86848cb8470c87b27ad699c52354.json",
+      "sha256": "6795ca183b4f8f4eb16fa7edd3e9ee2a98114442b22df8d6283f0aae61cc5e7d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-114d86848cb8470c87b27ad699c52354",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-1f15be6135d34a7e8f49fc80038238d8.json",
+      "sha256": "c44066b2a929c55023c07f0c0ccea673fb46f8d1e381c8a8157c8939c5347ac9",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-1f15be6135d34a7e8f49fc80038238d8",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-1f92429781eb40178c3bb474ae557729.json",
+      "sha256": "8bc5e1bbb8ec4f3570d0f58f4e766a6cb8d15a0aee2df40b6af3a6f5cead9687",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-1f92429781eb40178c3bb474ae557729",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-206ec22db2134f6989a477317a9e6a73.json",
+      "sha256": "98a3e8a87052c9e3697a9643cca82f47c8acc04134e1c00b8b1617dffcedd356",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-206ec22db2134f6989a477317a9e6a73",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-2147ff8105db423291273548c73be58f.json",
+      "sha256": "a631d1a9a19f98e1a444825774543316974e4611e7e20399f2e8c6a8b14bee43",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-2147ff8105db423291273548c73be58f",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-22b2738b9006441c9fa681fc200e8627.json",
+      "sha256": "783a77ee0278a372a16ca8231451ccc2af744e6f94c2b2829e7f82cfff8e60e3",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-22b2738b9006441c9fa681fc200e8627",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-239d0b25bbbe43cc9b0fc3860894110e.json",
+      "sha256": "5017dd2cc3cc5a49c164a62896b441e58a8ab9e0390ec84b7eb8db6eda5d51b0",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-239d0b25bbbe43cc9b0fc3860894110e",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-25630b54c1244e7f831cf3744b662af2.json",
+      "sha256": "b4945c5a83b3796d70dcd0d9482706397af46a8f43b35015449188f728e7348e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-25630b54c1244e7f831cf3744b662af2",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-2b7fe4c5ce9b4354b26ed8d0c3f075f6.json",
+      "sha256": "8e2e89fec862d1c708c315fa59176be18a58db2ecbf344444ae0ab9d22075fcc",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-2b7fe4c5ce9b4354b26ed8d0c3f075f6",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-2d7f5d54722044d2bfb0d688e0a6e9bb.json",
+      "sha256": "02d2fa224754102de6684b3ad05b90e9c65e5b549f0ab7404c1fb744b8d3c0e3",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-2d7f5d54722044d2bfb0d688e0a6e9bb",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-335b710437eb4deb85112b7748c8913a.json",
+      "sha256": "567cb3e40469a99e3ca88ca44fb69c728a17f7337847520bdb03f3e9e2c4be91",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-335b710437eb4deb85112b7748c8913a",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-35bdb0b4038e4f7bb8609ee2c20190ef.json",
+      "sha256": "1edfef257017d2c912b240aff094ad3702cf7d23c61bbedf1894cda04f10af9d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-35bdb0b4038e4f7bb8609ee2c20190ef",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-377c8ba5ef1f4f299791c5a856e81f63.json",
+      "sha256": "614a5836c56a6e348629434aae1160aecaba1b59e628488ba0a965fb036232e9",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-377c8ba5ef1f4f299791c5a856e81f63",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-3f09bfde0b614e65832a8cbc1cdc9116.json",
+      "sha256": "c83b09cd6d940ae9f16ec6eda7de0875353b20fd6d75499e35df105fdb7bc788",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-3f09bfde0b614e65832a8cbc1cdc9116",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-3fc4ff4a39314fe68816162b4ea372d7.json",
+      "sha256": "41e8c425940bf4270a614ea4017e487a4b8f8978a131678c1dbd2768fd6346ac",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-3fc4ff4a39314fe68816162b4ea372d7",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-40aaac73f44b4a8ebc3d801a3bfd4ca0.json",
+      "sha256": "064c5b183a4fd094b27f65486024820f88cde5f3512d526bea2eea34240dae16",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-40aaac73f44b4a8ebc3d801a3bfd4ca0",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-568e380f8f8f4ff1a35d80e6ac1c649c.json",
+      "sha256": "a8b3477d124029b58274876e2ecdd253693507aa8762af48f77e2d86a77f204b",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-568e380f8f8f4ff1a35d80e6ac1c649c",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-59cd8cf377be4279b7478729ffb91e2f.json",
+      "sha256": "d92c2224b9e3ed6c6487ce81d939a5f2698a92136e0653f9b72f103be45a74e3",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-59cd8cf377be4279b7478729ffb91e2f",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-5e4cedfe864746c39799c39dff97b1d2.json",
+      "sha256": "bb18e2b19a3542a9ef244a6f78e5a5aa32205dc5ff3b328e6836cf8446f654be",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-5e4cedfe864746c39799c39dff97b1d2",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-5f1301ea2394495b8b46a705a6a39d0b.json",
+      "sha256": "cf07c43874d9ab280883704fdbbf528bb2a7f66e521ef8f7baf75722c533d9ad",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-5f1301ea2394495b8b46a705a6a39d0b",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-624fd37d73ff4426b9ae190447f230b4.json",
+      "sha256": "4de733f3c0cc210f8cfbb495cf90ea4ff653c551444fdb3f76929cf034887cb1",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-624fd37d73ff4426b9ae190447f230b4",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-7727c11a4a574aad82dd8d8c64bb278c.json",
+      "sha256": "7f4d3adc88bae7baee2ce981a0d3f7ffce7536e06645863b5d81b36bdd0c7d56",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-7727c11a4a574aad82dd8d8c64bb278c",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-7cd7e49a9542469e9e2c00dbe005ff05.json",
+      "sha256": "ac2ca8efc4ca139c9fb463926508cb07f692ee24b3000388e1474b316b04a436",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-7cd7e49a9542469e9e2c00dbe005ff05",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-84444ea3333341c69ce24b10f305d5e1.json",
+      "sha256": "dbd0d0e61460f7717a078a8614c4b7843a18ee5049bb77e1904b7a2303e406ee",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-84444ea3333341c69ce24b10f305d5e1",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-85be8730955541e0932b6675efe0e27c.json",
+      "sha256": "b5ff61306465d732a6b1a652def28b575107c806c564cc2ebaf957178478490f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-85be8730955541e0932b6675efe0e27c",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-86e5b1620d4045168bdffbdb1189fc9a.json",
+      "sha256": "70e62c046ab35f151fda2d23d33087affcb24ae99bded2c4dc5731419155ab6a",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-86e5b1620d4045168bdffbdb1189fc9a",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-8759e2acbd284a189c9ceef9ea156fa9.json",
+      "sha256": "55962c166e9a36e813449b01a4d3661cd666d174dd363490a949a1a6aa5f12ae",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-8759e2acbd284a189c9ceef9ea156fa9",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-876a3c9eca974390b167d1b263f9166d.json",
+      "sha256": "a78dde746c92b1d854ecfa0f8425cf747b19f5277577b0346fc249a109326f5a",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-876a3c9eca974390b167d1b263f9166d",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-945b4a76b522452c9a289e22dd83ab6b.json",
+      "sha256": "546c910be3a4f86475ee9f24314e7450ff3f62cd379b4a28e7ae1d35a2326a5c",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-945b4a76b522452c9a289e22dd83ab6b",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-994a55fa197d4d788fb33d6c1e826306.json",
+      "sha256": "6bdc1799559173dd23c20af9fb5c65e5396644e82d857605eaee509832600a6b",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-994a55fa197d4d788fb33d6c1e826306",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-a165a0d780ec4560a7799b0bd97b925a.json",
+      "sha256": "583f3be5787eaaf8fc3e9467800fb23cd1f1350593c516d13e1a1a002778e73d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-a165a0d780ec4560a7799b0bd97b925a",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-a9b53ce71e5c4f84a8f3e8a87d4e01b6.json",
+      "sha256": "3154219f92c8673ab136e01f06800f5e8c707545609fac178539484268400e11",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-a9b53ce71e5c4f84a8f3e8a87d4e01b6",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-b7f246da28354aff979e83b4fca41481.json",
+      "sha256": "376fe32938224cb96dc0fe05e6591db2ebbfa5d67a61a5d87beb76e4fa971ad5",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-b7f246da28354aff979e83b4fca41481",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-bb1201f9ec374cb48f0836c0d558c092.json",
+      "sha256": "1dd87e92b2c5676019d050e0b9da757de0c251e49c690407b1aa47681149372b",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-bb1201f9ec374cb48f0836c0d558c092",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-c0e52aeb1bfa4d91bc656f2f69aa387a.json",
+      "sha256": "03ebc31fca91e782e429e5bfe8dee9d0fbcf62cd192c413f1c6577bd0eb016a8",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-c0e52aeb1bfa4d91bc656f2f69aa387a",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-c0f7d0ec5e4247be852517e1f6a902e6.json",
+      "sha256": "c33f7940607ef8f74cdbfdd5781f34275338b6584ec1f4055bcabd729720009e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-c0f7d0ec5e4247be852517e1f6a902e6",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-c320bb5bbb414c59b473bd69fb1bd408.json",
+      "sha256": "130c4a2ac1093603a65248694f70b57ba5cb79ba0bcc9056ef35bb75fb05b19d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-c320bb5bbb414c59b473bd69fb1bd408",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-c3d96d1d55754e9ca8fabd832916e4d5.json",
+      "sha256": "b9c5e9a4309fffa4598a263f1273361464b407ac66ea900999391b101cd846d8",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-c3d96d1d55754e9ca8fabd832916e4d5",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-cbf128092656491f9b897d4d7b0e750e.json",
+      "sha256": "bc8326f2fb05815c6bacd4c48422697d31d36a84e279d67c43ddab505697c44e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-cbf128092656491f9b897d4d7b0e750e",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-d4c5d75c2c3147469860efd1b850082b.json",
+      "sha256": "3ad61c674467e32097a0bb0b264fecb662b2650ddd9929ae251dd01200dda2ef",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-d4c5d75c2c3147469860efd1b850082b",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-d804059c49bb46b297bc3fe05a517196.json",
+      "sha256": "18ed1a08448a5da3c420e5ba7ae726b99b193f27102291fd05091cce3a23b562",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-d804059c49bb46b297bc3fe05a517196",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-dd3e8094af7c4996ab855722d646e4ef.json",
+      "sha256": "80880a3ea9b1f195fa9323bb89a3b21fbe03d7b6a6072405947601ae4a58f421",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-dd3e8094af7c4996ab855722d646e4ef",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-e3d98121b457413fb2ee6fab4cae81c8.json",
+      "sha256": "cacf832f727945fa942c39fb886ca8d7f4c9e9709a143d90db7c166e23d61daa",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-e3d98121b457413fb2ee6fab4cae81c8",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-e72ed7756fca4f4081a3d21589c47ddf.json",
+      "sha256": "69af8bc8bed659a398611be1e1efcd6a24b5dbb1cd647396d98b36327686502f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-e72ed7756fca4f4081a3d21589c47ddf",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-ed9d036a790a48b0afbb996bf52b874d.json",
+      "sha256": "02da97d98c19414001011a2fbbc2ec3b2ff485b00a6f895a4affa4af84d34b5c",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-ed9d036a790a48b0afbb996bf52b874d",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-fc8284e8e30043bd98544aa7f694fcab.json",
+      "sha256": "fe7361d01b819d4ea75820451206cafabea6bcd3c0e6b9d1dc364afeba94b0f7",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-fc8284e8e30043bd98544aa7f694fcab",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-fe25a7a9ed8548cc9d16455c9748d83a.json",
+      "sha256": "3384ebe989f23219d55a2ed7e6f4a0d4638ffd4822a8d54819f337eb79d0b54f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-fe25a7a9ed8548cc9d16455c9748d83a",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-ff13adab86f14b748f9f69ab1456dbd2.json",
+      "sha256": "7062f7bc1103111cc44ccb29d39cbe4c2c689c0467a4e1cc51da8314e5e33dab",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-ff13adab86f14b748f9f69ab1456dbd2",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/dispatch-ffc90db6c5174379b8b5eaf6961d5267.json",
+      "sha256": "c26f9e42ecfca24f11eb877eea49b01723193a5729dad6424274b41f772ecb39",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-ffc90db6c5174379b8b5eaf6961d5267",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-194d511806dce293024b50f02c66f81e155cc9e1.json",
+      "sha256": "c76d4f1a6d091f83d576d4ceb9101434816a31d09cd127ab5e3aae7ff5f08c62",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-194d511806dce293024b50f02c66f81e155cc9e1",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-1bab520d059e27324a4bb8d68dc1e4725b56b409.json",
+      "sha256": "a61cb11deadd8d416edadb7e1c3909b24fe327cbfcd42c24979a8a72640accf9",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-1bab520d059e27324a4bb8d68dc1e4725b56b409",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-233c72bfffa1dd3850f1524ee16a21e6dac892f2.json",
+      "sha256": "7e268d1b410bddc5aa2df64a121ea3fca667187e81ef365946c587f12000cbfe",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-233c72bfffa1dd3850f1524ee16a21e6dac892f2",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-32c3ef3d2da5980365aec66fe4eb3caa63be3969.json",
+      "sha256": "0fae74a6ecda131f150c9a5bdd6f9c00e9f72fea99f13cae74e6a8371c8be609",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-32c3ef3d2da5980365aec66fe4eb3caa63be3969",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-357cd3d8f61869cbd1bed4b3307020b4bd78197e.json",
+      "sha256": "826179a0bf0343e79f36f387e77e805158b8aa6268cf31bb2b2c8152f1626008",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-357cd3d8f61869cbd1bed4b3307020b4bd78197e",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-3f9075e08e9801ec53fcd6babe7de74f3bbd7bc6.json",
+      "sha256": "ef1c7efe7670b2b6875e0e3f56b0a461926b10557b565d236a4c29afe901b87d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-3f9075e08e9801ec53fcd6babe7de74f3bbd7bc6",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-5d19d6584306f0debf128908dd3a1a2f649c3070.json",
+      "sha256": "9570681a2444fc34d34b4c37591f8ef2a7277b18ce18fa579c0c3d4a25feded4",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-5d19d6584306f0debf128908dd3a1a2f649c3070",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-6c2c46fb03f5ca0bf999759a40435751b00b3f82.json",
+      "sha256": "91ff044d571392acf6c20afd89bc7787418124cde4b62cd3d5378d5ba2a58a61",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-6c2c46fb03f5ca0bf999759a40435751b00b3f82",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-6c5869224bebc915a83b98c3b32f383cd3c20bd6.json",
+      "sha256": "9618ddb6c15ed7daba4783038e93ce4fe2df8af1b1c55f7fdea67f7a6f532367",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-6c5869224bebc915a83b98c3b32f383cd3c20bd6",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-6d51873caf668d415361d661ead93d5d19fbd6de.json",
+      "sha256": "22f7f17666738e9b86a59b233a43026e6b0081427d86db11b9057434e71e292f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-6d51873caf668d415361d661ead93d5d19fbd6de",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-7a1c774bae34f7d38dcdee2ae2234ba6b61ee374.json",
+      "sha256": "0b242f5c250f85dc962c22285216d474faf6df9351051645b7fb03d06e5a098d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-7a1c774bae34f7d38dcdee2ae2234ba6b61ee374",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-7b249382e121fac2a755e5a099bdc73a17f2fafc.json",
+      "sha256": "ba15625fb4bc563794cd7dd13743744bd7c752314ceef719cea06603102d7f23",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-7b249382e121fac2a755e5a099bdc73a17f2fafc",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-7cf74c18987509cfe71044a2f095b4bb95ddc407.json",
+      "sha256": "97f09310db20127e55d0b16514f53b8b762de4a7c2de2450ea45954dd636b9d1",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-7cf74c18987509cfe71044a2f095b4bb95ddc407",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-8b576e508763c1901148d3362b7a56767c5d5284.json",
+      "sha256": "6c6d0a614c652a63e65424598bd9df6eceab99d205ac430c25b896aac51826b5",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-8b576e508763c1901148d3362b7a56767c5d5284",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-a4ccf4ce9d1a93eb29f4de2a013f3b5b7a975b9f.json",
+      "sha256": "a79e85d956efe3e8f75ff0d84f58d5ae6b3620992fae6fd3601b9a9d31c2df95",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-a4ccf4ce9d1a93eb29f4de2a013f3b5b7a975b9f",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-b1dbd618f44f75a6e5aca353226a67ecd4ba8298.json",
+      "sha256": "73c15a39511cfac74bda547763406c91f433db07d4aeebb419b736ca5a454547",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-b1dbd618f44f75a6e5aca353226a67ecd4ba8298",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-b9d91503a0514bf4a60c53cdbfe951a167f5d57e.json",
+      "sha256": "4c063e92cc89d25864393733132a7560890e1e2a4ad55d7e47f37c7cc32bc1f8",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-b9d91503a0514bf4a60c53cdbfe951a167f5d57e",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-bf6bd957038a0a7089856a3ed83a0bcdebb26240.json",
+      "sha256": "dc28a22ae12c557ea3dd55b311d2f8f893750627e67e5dce72295d560091197d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-bf6bd957038a0a7089856a3ed83a0bcdebb26240",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-c3920adb67f6aaffd9b74e96745239e63e43f77f.json",
+      "sha256": "1df1471b9526e9e31ece25f6f59c3d946215dd1d94aa39a545eeb40aa754dc7e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-c3920adb67f6aaffd9b74e96745239e63e43f77f",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-ed50c2e61431c161d8eb1fcd4407489bc9ce30d9.json",
+      "sha256": "533c8c6169a729ac434b23c64257477400e9e5662c63c9f59fe6927cba1338ea",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-ed50c2e61431c161d8eb1fcd4407489bc9ce30d9",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/kuafu-fcffa9e86ca3d0e6b54b5e5b659788963f41ed26.json",
+      "sha256": "6a39647e55e4a4d38fbf338f08120a45d2a5d2b98ed9c4b9ce66f822e07d9bed",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-fcffa9e86ca3d0e6b54b5e5b659788963f41ed26",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ai-github-integration-refactor-20261112/request-ai-github-integration-refactor-20261112.json",
+      "sha256": "7ee079b8ba566a410a6348707c450d856b51e3f0f8115c9f0d02f9b642e253ce",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "request-ai-github-integration-refactor-20261112",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 978,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978"
+}
