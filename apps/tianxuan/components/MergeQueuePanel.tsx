@@ -53,6 +53,7 @@ export function MergeQueuePanel() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [live, setLive] = useState(false);
 
   const load = useCallback(async () => {
     if (!actor) {
@@ -66,16 +67,51 @@ export function MergeQueuePanel() {
       return;
     }
     let active = true;
-    const tick = () => {
-      load()
-        .then(() => active && setError(""))
-        .catch((cause: unknown) => active && setError(cause instanceof Error ? cause.message : "加载失败"));
+    let poll: number | null = null;
+    const startPolling = () => {
+      if (poll !== null) {
+        return;
+      }
+      poll = window.setInterval(() => {
+        load()
+          .then(() => active && setError(""))
+          .catch((cause: unknown) => active && setError(cause instanceof Error ? cause.message : "加载失败"));
+      }, 5000);
     };
-    tick();
-    const timer = window.setInterval(tick, 5000);
+    const base =
+      process.env.NEXT_PUBLIC_TIANXUAN_API_BASE?.replace(/\/$/, "") ?? "http://127.0.0.1:8000";
+    const socket = new WebSocket(
+      `${base.replace(/^http/, "ws")}/api/v1/ws/merge-queue?actor=${encodeURIComponent(actor)}`,
+    );
+    socket.onopen = () => {
+      if (active) {
+        setLive(true);
+      }
+    };
+    socket.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data) as { type?: string; items?: ApiMergeQueueItem[] };
+        if (message.type === "snapshot") {
+          setItems(message.items ?? []);
+        }
+      } catch {
+        // 忽略非 JSON 消息
+      }
+    };
+    socket.onerror = () => socket.close();
+    socket.onclose = () => {
+      if (!active) {
+        return;
+      }
+      setLive(false);
+      startPolling();
+    };
     return () => {
       active = false;
-      window.clearInterval(timer);
+      socket.close();
+      if (poll !== null) {
+        window.clearInterval(poll);
+      }
     };
   }, [actor, load]);
 
@@ -145,7 +181,7 @@ export function MergeQueuePanel() {
           <h2 id="merge-queue-title">合入队列</h2>
         </div>
         <span className="section-note">
-          {items.length} 个候选 · 自动 worker
+          {items.length} 个候选 · {live ? "实时" : "轮询"}
           <button className="btn btn-ghost" type="button" disabled={busy} onClick={processNow} style={{ marginLeft: 10 }}>
             立即处理
           </button>

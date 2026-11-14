@@ -11,6 +11,7 @@ from api import create_app
 from duobao_bridge import GitService
 from fastapi.testclient import TestClient
 from merge_queue import MergeQueue
+from starlette.websockets import WebSocketDisconnect
 from tianxuan_core import Tianxuan
 
 
@@ -84,3 +85,20 @@ def test_cancel_and_viewer_rejection(monkeypatch: pytest.MonkeyPatch, tmp_path: 
         json={"repo": "docs.git", "source": "feature", "target": "main"},
     )
     assert denied.status_code == 403
+
+
+def test_websocket_streams_merge_queue_snapshot(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    client, headers, _ = _setup(monkeypatch, tmp_path)
+    actor = headers["X-Actor"]
+    with client.websocket_connect(f"/api/v1/ws/merge-queue?actor={actor}") as websocket:
+        message = websocket.receive_json()
+    assert message["type"] == "snapshot"
+    assert message["items"] == []
+
+
+def test_websocket_rejects_unknown_actor(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    client, _, _ = _setup(monkeypatch, tmp_path)
+    with pytest.raises(WebSocketDisconnect) as failure:
+        with client.websocket_connect("/api/v1/ws/merge-queue?actor=usr_missing") as websocket:
+            websocket.receive_json()
+    assert failure.value.code == 4401

@@ -10,7 +10,9 @@ actor 约定：需要身份的端点从请求头 ``X-Actor`` 读取用户 ID（�
 
 from __future__ import annotations
 
+import asyncio
 import difflib
+import json
 import os
 from pathlib import Path
 from typing import Annotated, Any
@@ -869,6 +871,33 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
         return store.resolve_comment(actor, comment_id, payload.resolved)  # type: ignore[no-any-return]
 
     # ---------- 文曲：实时协同 ----------
+
+    @app.websocket("/api/v1/ws/merge-queue")
+    async def merge_queue_room(websocket: WebSocket) -> None:
+        actor = websocket.query_params.get("actor", "").strip()
+        if not actor:
+            await websocket.close(code=4401)
+            return
+        if merge_queue is None:
+            await websocket.close(code=4404)
+            return
+        try:
+            store.role_of(actor)
+        except NotFound:
+            await websocket.close(code=4401)
+            return
+        await websocket.accept()
+        signature = ""
+        try:
+            while True:
+                items = merge_queue.list_items(limit=100)
+                current = json.dumps(items, ensure_ascii=False, sort_keys=True, default=str)
+                if current != signature:
+                    await websocket.send_json({"type": "snapshot", "items": items})
+                    signature = current
+                await asyncio.sleep(1.0)
+        except (WebSocketDisconnect, RuntimeError):
+            return
 
     @app.websocket("/api/v1/ws/docs/{doc_id}")
     async def doc_room(websocket: WebSocket, doc_id: str) -> None:
