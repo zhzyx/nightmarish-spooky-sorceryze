@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-94d019faab6cb2291309f1e69640cd3d7c577076bbe771f7b5ae602c48e0aaf7",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "occurred_at": "2026-11-14T01:01:04.483457+00:00",
+  "evidence_refs": [
+    "kuafu-86a53e8bc9cdc84b4580fe7f66c732263ac69b8a"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "observe-history-after-save",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Observe asynchronously replaced editor history only after the public saving flag is false; read synchronously on its owning main thread before yielding. Preserve read-lock failures and diagnostic raw bytes separately from acceptance.",
+      "when": "A Windows native fixture reads a file while its actual editor may atomically replace that file from a background save thread.",
+      "counterexample": "A read-only observer can still deny Windows replacement. A generic error code does not prove permission failure or reconstruct a prior race. Waiting on an unrelated flag or reading after a yield does not establish a stable observation boundary.",
+      "trial_plan": "In the next independent registered consumer, hold a real native reader during replacement and retain failure with old bytes intact; close it and require replacement success. Then run the complete consumer with observation behind the actual save flag, requiring unchanged acceptance predicates and bounded completion. Keep this proposal candidate until that future trial is recorded."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-continuation-ci-observation-951.json",
+        "sha256": "8f107a896e06bd26942f4cecd33779565687178a4f38dfb329f3ad73ed496d85"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-parent-production-continuation-20261112/kuafu-86a53e8bc9cdc84b4580fe7f66c732263ac69b8a.json",
+      "sha256": "492e509bbcb03a4c33f49c70be266395d61bf4e5cda666620222a8fd2ebb3d50"
+    }
+  },
+  "sha256": "53bcc97afea6603db7cc1164c85d21fe22de3a7df9df2201415833884da7a64d"
+}

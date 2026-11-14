@@ -1,0 +1,61 @@
+{
+  "issue": 951,
+  "state": "final_local_candidate_base_rebound_delivery_pending",
+  "previous_revision": "6d6da032f2c13c6b725ef3a30902bd41e76e254c",
+  "revision": "6700ef742cf6c1b8fa89a925b5a33b5b5d51e25f",
+  "source_digest": "943c23c76cd8b12ae26ebb8940a89a793ae63f9343f651f354beaaf454a60619",
+  "main_integration": {
+    "logical_private_artifact": "eligibility951-main-6700ef742cf6-preserved.json",
+    "sha256": "73327589c8c3f8647b1d367e66bac2fa546682124117f9689d01f87a10d4e561",
+    "bytes": 4284
+  },
+  "incoming_paths": [
+    "apps/tianxuan/app/globals.css",
+    "apps/tianxuan/app/search/page.tsx",
+    "apps/tianxuan/lib/search-api.ts",
+    "customizations/components/tianxuan/server/api.py",
+    "customizations/components/tianxuan/server/test_api_search.py"
+  ],
+  "preserved_task_files": 27,
+  "native_equivalence": {
+    "scons_result": "up to date; no compilation steps",
+    "same_options_as_previous_wrapper": true,
+    "old_native_cache_key": "26ba552e1039c2306c85b34ab62635d6e1457f486d897ceed09a48c4172314c0",
+    "new_native_cache_key": "dbf94d3414e19e1db38acd311fe8658ce8b09646c6aa1b9db2beb0936b52ece0",
+    "cache_status": "built",
+    "outputs_equal": true,
+    "editor_sha256": "822045d8c84bd2b31d99ded1bffcc93411a1ef4beb450af0560f3d649bfc7485",
+    "console_sha256": "8a371338cee4cd39733fe25ca45b859e253ee089d7e007211514296a226d3806",
+    "tianshu_package_unchanged": true,
+    "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "limit": "Full-source and conservative cache keys changed with the five host/frontend paths. Equal native outputs and the actual SCons dependency result establish this build mapping; no claim that every repository input is unchanged."
+  },
+  "complete_wrapper": {
+    "entry": "tools/build_gonggong_editor.py",
+    "jobs": 4,
+    "existing_shared_cache_limit_gib": 8,
+    "exit_code": 0,
+    "receipt_file": "9c0dfc5c35cf492190929f972d6f9370.json",
+    "receipt_sha256": "920cb4faacb2988459cba8f797eb79d5ab9fc0a2e3172ae07fe66e28c9be9259",
+    "source_recheck": true,
+    "log": {
+      "logical_private_artifact": "eligibility951-final-wrapper-main6700-r1.log",
+      "sha256": "1678a722d92c80caad40d90c3ac443c5247e92164fd949294b58306fd50479b7",
+      "bytes": 1714
+    },
+    "test_cases": {
+      "passed": 99,
+      "failed": 0,
+      "other_skipped": 1486
+    },
+    "assertions": {
+      "passed": 1795,
+      "failed": 0
+    }
+  },
+  "prior_build_report": {
+    "repository_artifact": "data-collection/editor-continuation-eligibility-build-951.json",
+    "sha256": "88cb298164dee9941eae5e8e8a07776ff15c060987abc2882226924b77f7d124"
+  },
+  "scope": "Only final baseline and complete-wrapper rebind. No additional strict/native scenario run, no implementation change and no original-game or installed-runtime operation. Prior failed attempts and version-bound native/offline validation remain unmodified. Independent exact-index gate/CI/main/install and original business acceptance remain with the delivery owner."
+}
