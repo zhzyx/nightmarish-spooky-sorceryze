@@ -34,6 +34,8 @@
 #include "core/math/math_funcs.h"
 #include "core/object/class_db.h"
 
+#include <vector>
+
 static bool _gameplay_dictionary_to_vector3(const Variant &p_value, Vector3 &r_value) {
 	if (p_value.get_type() != Variant::DICTIONARY) {
 		return false;
@@ -79,6 +81,7 @@ void GameplayClientPrediction::_bind_methods() {
 
 void GameplayClientPrediction::set_model(const Ref<GameplayPredictionModel> &p_model) {
 	ERR_FAIL_COND(p_model.is_null());
+	ERR_FAIL_COND(!stReconciler.SetModel(p_model->GetCoreModel()));
 	model = p_model;
 }
 
@@ -88,10 +91,8 @@ Ref<GameplayPredictionModel> GameplayClientPrediction::get_model() const {
 
 void GameplayClientPrediction::set_initial_state(const Ref<GameplayPredictionState> &p_state) {
 	ERR_FAIL_COND(p_state.is_null() || !p_state->get_position().is_finite() || !p_state->get_velocity().is_finite());
-	predicted_state = p_state->duplicate_state();
-	history.clear();
-	last_confirmed_sequence = p_state->get_confirmed_sequence();
-	next_sequence = last_confirmed_sequence + 1;
+	ERR_FAIL_COND(!stReconciler.SetInitialState(p_state->GetMutableCoreState()));
+	_sync_from_core();
 	last_replayed_input_count = 0;
 }
 
@@ -99,8 +100,25 @@ Ref<GameplayPredictionState> GameplayClientPrediction::get_predicted_state() con
 	return predicted_state;
 }
 
+void GameplayClientPrediction::_sync_from_core() {
+	predicted_state->GetMutableCoreState() = stReconciler.GetPredictedState();
+	std::vector<EngineNext::Gameplay::PredictionInput> arrInputs;
+	stReconciler.GetUnconfirmedInputs(arrInputs);
+	history.clear();
+	for (const EngineNext::Gameplay::PredictionInput &stInput : arrInputs) {
+		HistoryEntry entry;
+		entry.input.instantiate();
+		entry.input->set_sequence(stInput.nSequence);
+		entry.input->set_movement_input(Vector3(stInput.vMovementInput.fX, stInput.vMovementInput.fY, stInput.vMovementInput.fZ));
+		entry.input->set_step_msec(stInput.nStepMsec);
+		entry.predicted_state = predicted_state;
+		history.push_back(entry);
+	}
+}
+
 void GameplayClientPrediction::set_max_history(int p_max_history) {
 	ERR_FAIL_COND_MSG(p_max_history < 1 || p_max_history > 4096 || p_max_history < history.size(), "The history limit cannot discard unconfirmed inputs.");
+	ERR_FAIL_COND(!stReconciler.SetMaxHistory(static_cast<uint32_t>(p_max_history)));
 	max_history = p_max_history;
 }
 
@@ -119,6 +137,7 @@ int GameplayClientPrediction::get_max_inputs_per_second() const {
 
 void GameplayClientPrediction::set_correction_threshold(float p_threshold) {
 	ERR_FAIL_COND(!Math::is_finite(p_threshold) || p_threshold < 0.0f);
+	ERR_FAIL_COND(!stReconciler.SetCorrectionThreshold(p_threshold));
 	correction_threshold = p_threshold;
 }
 
@@ -144,19 +163,18 @@ Ref<GameplayPredictionInput> GameplayClientPrediction::predict_input(const Vecto
 		last_rejection_reason = "input_rate_limit";
 		return Ref<GameplayPredictionInput>();
 	}
-	Ref<GameplayPredictionInput> input;
-	input.instantiate();
-	input->set_sequence(next_sequence++);
-	input->set_movement_input(p_input);
-	input->set_step_msec(model->get_fixed_step_msec());
-	if (model->simulate(predicted_state, input) != OK) {
+	EngineNext::Gameplay::PredictionInput stInput;
+	const EngineNext::Gameplay::Vector3 stMovement{ static_cast<float>(p_input.x), static_cast<float>(p_input.y), static_cast<float>(p_input.z) };
+	if (!stReconciler.PredictInput(stMovement, stInput)) {
 		last_rejection_reason = "simulation_rejected";
 		return Ref<GameplayPredictionInput>();
 	}
-	HistoryEntry entry;
-	entry.input = input;
-	entry.predicted_state = predicted_state->duplicate_state();
-	history.push_back(entry);
+	Ref<GameplayPredictionInput> input;
+	input.instantiate();
+	input->set_sequence(stInput.nSequence);
+	input->set_movement_input(p_input);
+	input->set_step_msec(stInput.nStepMsec);
+	_sync_from_core();
 	inputs_in_rate_window++;
 	return input;
 }
@@ -171,16 +189,19 @@ Dictionary GameplayClientPrediction::apply_authoritative_state(const Ref<Gamepla
 		return result;
 	}
 	const uint64_t confirmed = p_state->get_confirmed_sequence();
-	if (confirmed < last_confirmed_sequence) {
+	if (confirmed < stReconciler.GetLastConfirmedSequence()) {
 		last_rejection_reason = "stale_authoritative_state";
 		result["reason"] = last_rejection_reason;
 		return result;
 	}
-	if (confirmed >= next_sequence) {
-		history.clear();
-		predicted_state = p_state->duplicate_state();
-		last_confirmed_sequence = confirmed;
-		next_sequence = confirmed + 1;
+	const EngineNext::Gameplay::PredictionState stAuthority = p_state->GetMutableCoreState();
+	if (confirmed >= stReconciler.GetNextSequence()) {
+		if (!stReconciler.SetInitialState(stAuthority)) {
+			last_rejection_reason = "invalid_authoritative_state";
+			result["reason"] = last_rejection_reason;
+			return result;
+		}
+		_sync_from_core();
 		last_rejection_reason.clear();
 		result["accepted"] = true;
 		result["position_error"] = 0.0f;
@@ -190,32 +211,20 @@ Dictionary GameplayClientPrediction::apply_authoritative_state(const Ref<Gamepla
 		result["remaining_input_count"] = 0;
 		return result;
 	}
-	float error = predicted_state->get_position().distance_to(p_state->get_position());
-	for (const HistoryEntry &entry : history) {
-		if (entry.input->get_sequence() == confirmed) {
-			error = entry.predicted_state->get_position().distance_to(p_state->get_position());
-			break;
-		}
+	float fError = 0.0F;
+	if (!stReconciler.ApplyAuthoritativeState(stAuthority, fError)) {
+		last_rejection_reason = "invalid_authoritative_state";
+		result["reason"] = last_rejection_reason;
+		return result;
 	}
-	while (!history.is_empty() && history[0].input->get_sequence() <= confirmed) {
-		history.remove_at(0);
-	}
-	predicted_state = p_state->duplicate_state();
-	for (HistoryEntry &entry : history) {
-		model->simulate(predicted_state, entry.input);
-		entry.predicted_state = predicted_state->duplicate_state();
-		last_replayed_input_count++;
-	}
-	last_confirmed_sequence = confirmed;
-	if (error > correction_threshold) {
-		correction_count++;
-	}
+	last_replayed_input_count = static_cast<int>(stReconciler.GetUnconfirmedInputCount());
+	_sync_from_core();
 	last_rejection_reason.clear();
 	result["accepted"] = true;
-	result["position_error"] = error;
-	result["corrected"] = error > correction_threshold;
+	result["position_error"] = fError;
+	result["corrected"] = fError > correction_threshold;
 	result["replayed_input_count"] = last_replayed_input_count;
-	result["remaining_input_count"] = history.size();
+	result["remaining_input_count"] = stReconciler.GetUnconfirmedInputCount();
 	return result;
 }
 
@@ -228,15 +237,15 @@ Array GameplayClientPrediction::get_unconfirmed_inputs() const {
 }
 
 int GameplayClientPrediction::get_unconfirmed_input_count() const {
-	return history.size();
+	return stReconciler.GetUnconfirmedInputCount();
 }
 
 uint64_t GameplayClientPrediction::get_last_confirmed_sequence() const {
-	return last_confirmed_sequence;
+	return stReconciler.GetLastConfirmedSequence();
 }
 
 int GameplayClientPrediction::get_correction_count() const {
-	return correction_count;
+	return stReconciler.GetCorrectionCount();
 }
 
 int GameplayClientPrediction::get_last_replayed_input_count() const {
@@ -248,13 +257,10 @@ String GameplayClientPrediction::get_last_rejection_reason() const {
 }
 
 void GameplayClientPrediction::clear() {
-	history.clear();
-	predicted_state.instantiate();
-	next_sequence = 1;
-	last_confirmed_sequence = 0;
+	stReconciler.Reset();
+	_sync_from_core();
 	rate_window_started_msec = 0;
 	inputs_in_rate_window = 0;
-	correction_count = 0;
 	last_replayed_input_count = 0;
 	last_rejection_reason.clear();
 }

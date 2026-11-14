@@ -35,13 +35,21 @@ def parse_lines(lines, pattern):
     return [match.groupdict() for line in lines if (match := expression.fullmatch(line))]
 
 
-def run_handshake(server, client, report_path):
+def run_handshake(server, client, report_path, duration_ms=8000, drain_after_ms=3000):
+    started = time.monotonic()
     report_path = Path(report_path).resolve()
     report_path.parent.mkdir(parents=True, exist_ok=True)
-    env = os.environ.copy()
-    for name in list(env):
-        if "GODOT" in name.upper():
-            env.pop(name, None)
+    if os.name == "nt":
+        keep = {"SYSTEMROOT", "SYSTEMDRIVE", "WINDIR", "COMSPEC", "TEMP", "TMP", "PATH"}
+        env = {name: os.environ[name] for name in keep if name in os.environ}
+    else:
+        env = {
+            "PATH": "/usr/bin:/bin",
+            "HOME": str(report_path.parent / "Home"),
+            "TMPDIR": str(report_path.parent / "Temp"),
+        }
+        (report_path.parent / "Home").mkdir(exist_ok=True)
+        (report_path.parent / "Temp").mkdir(exist_ok=True)
     lines = []
     errors = []
     output_queue = queue.Queue()
@@ -57,9 +65,9 @@ def run_handshake(server, client, report_path):
                 "--port",
                 "0",
                 "--duration-ms",
-                "8000",
+                str(duration_ms),
                 "--drain-after-ms",
-                "3000",
+                str(drain_after_ms),
                 "--drain-timeout-ms",
                 "1000",
                 "--seed",
@@ -106,7 +114,7 @@ def run_handshake(server, client, report_path):
                 "--port",
                 str(port),
                 "--duration-ms",
-                "7000",
+                str(duration_ms),
                 "--seed",
                 "101" if client_id == "A" else "202",
                 "--client-id",
@@ -129,14 +137,14 @@ def run_handshake(server, client, report_path):
 
         client_results = []
         for client_id, process in clients:
-            stdout, stderr = process.communicate(timeout=10)
+            stdout, stderr = process.communicate(timeout=max(10, duration_ms // 1000 + 15))
             client_results.append({
                 "client_id": client_id,
                 "returncode": process.returncode,
                 "stdout": stdout,
                 "stderr": stderr,
             })
-        server_stdout, server_stderr = server_process.communicate(timeout=10)
+        server_stdout, server_stderr = server_process.communicate(timeout=max(10, duration_ms // 1000 + 15))
         lines.extend(server_stdout.splitlines())
         errors.extend(server_stderr.splitlines())
         result["server_returncode"] = server_process.returncode
@@ -212,6 +220,18 @@ def run_handshake(server, client, report_path):
                     r"ENGINE_NEXT_IMPAIRMENT client_id=(?P<client_id>\S+) dropped_input=(?P<dropped_input>\d+) dropped_loss=(?P<dropped_loss>\d+) dropped_overflow=(?P<dropped_overflow>\d+) high_water=(?P<high_water>\d+)",
                 )
             )
+        server_bounds = parse_lines(
+            lines,
+            r"ENGINE_NEXT_SERVER_BOUNDS ticks=(?P<ticks>\d+) input_high_water=(?P<input_high_water>\d+) enet_outgoing_high_water=(?P<enet_outgoing_high_water>\d+) poll_event_high_water=(?P<poll_event_high_water>\d+)",
+        )
+        client_bounds = []
+        for client_result in client_results:
+            client_bounds.extend(
+                parse_lines(
+                    client_result["stdout"].splitlines(),
+                    r"ENGINE_NEXT_CLIENT_BOUNDS client_id=(?P<client_id>\S+) prediction_history=(?P<prediction_history>\d+) unconfirmed_transport=(?P<unconfirmed_transport>\d+) interpolation=(?P<interpolation>\d+) enet_outgoing_high_water=(?P<enet_outgoing_high_water>\d+) poll_event_high_water=(?P<poll_event_high_water>\d+)",
+                )
+            )
         for collection, names in (
             (predictions, ("confirmed", "position_x", "history", "corrections", "retransmissions")),
             (remotes, ("entity_id", "position_x", "samples", "server_time")),
@@ -222,6 +242,17 @@ def run_handshake(server, client, report_path):
             (drain_acks, ("peer_id", "session_id")),
             (drain_completes, ("notified", "acknowledged", "forced", "resumed")),
             (impairments, ("dropped_input", "dropped_loss", "dropped_overflow", "high_water")),
+            (server_bounds, ("ticks", "input_high_water", "enet_outgoing_high_water", "poll_event_high_water")),
+            (
+                client_bounds,
+                (
+                    "prediction_history",
+                    "unconfirmed_transport",
+                    "interpolation",
+                    "enet_outgoing_high_water",
+                    "poll_event_high_water",
+                ),
+            ),
         ):
             for item in collection:
                 for name in names:
@@ -243,6 +274,8 @@ def run_handshake(server, client, report_path):
             "drain_acks": drain_acks,
             "drain_completes": drain_completes,
             "impairments": impairments,
+            "server_bounds": server_bounds,
+            "client_bounds": client_bounds,
         })
         valid = (
             server_process.returncode == 0
@@ -298,6 +331,20 @@ def run_handshake(server, client, report_path):
             and drain_completes[0]["acknowledged"] == 2
             and drain_completes[0]["forced"] == 0
             and drain_completes[0]["resumed"] == 1
+            and len(server_bounds) == 1
+            and server_bounds[0]["ticks"] >= 1
+            and server_bounds[0]["input_high_water"] <= 64
+            and server_bounds[0]["enet_outgoing_high_water"] > 0
+            and server_bounds[0]["poll_event_high_water"] > 0
+            and len(client_bounds) == 2
+            and all(
+                item["prediction_history"] <= 256
+                and item["unconfirmed_transport"] <= 256
+                and item["interpolation"] <= 32
+                and item["enet_outgoing_high_water"] > 0
+                and item["poll_event_high_water"] > 0
+                for item in client_bounds
+            )
             and impairment_a.get("dropped_input") == 1
             and impairment_a.get("dropped_overflow") == 0
             and 0 < impairment_a.get("high_water", 0) <= 16
@@ -307,6 +354,7 @@ def run_handshake(server, client, report_path):
             raise RuntimeError(
                 "Reconnect, loss, interpolation recovery or drain validation failed: " + json.dumps(result)
             )
+        result["elapsed_seconds"] = round(time.monotonic() - started, 3)
         result["trace_sha256"] = {
             name: digest(report_path.parent / name) for name in ("server.jsonl", "client-A.jsonl", "client-B.jsonl")
         }

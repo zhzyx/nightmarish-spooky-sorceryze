@@ -44,6 +44,7 @@ class FakeTransport final : public EngineNext::Network::ITransport
 {
 public:
 	bool bRunning = true;
+	std::size_t nPendingOutgoing = 0;
 	std::vector<std::vector<std::uint8_t>> arrSent;
 
 	EngineNext::Runtime::RuntimeStatus StartServer(const std::string &, std::uint16_t, std::uint32_t) override
@@ -59,11 +60,13 @@ public:
 	EngineNext::Runtime::RuntimeStatus Poll(std::vector<EngineNext::Network::TransportEvent> &out_arrEvents) override
 	{
 		out_arrEvents.clear();
+		nPendingOutgoing = 0;
 		return EngineNext::Runtime::RuntimeStatus::Ok;
 	}
 	EngineNext::Runtime::RuntimeStatus Send(EngineNext::Network::PeerId, std::uint8_t, bool, const std::vector<std::uint8_t> &arrPayload) override
 	{
 		arrSent.push_back(arrPayload);
+		++nPendingOutgoing;
 		return EngineNext::Runtime::RuntimeStatus::Ok;
 	}
 	EngineNext::Runtime::RuntimeStatus Disconnect(EngineNext::Network::PeerId) override
@@ -77,6 +80,10 @@ public:
 	std::uint16_t GetBoundPort() const noexcept override
 	{
 		return 0;
+	}
+	EngineNext::Network::TransportStats GetStats() const noexcept override
+	{
+		return EngineNext::Network::TransportStats{ nPendingOutgoing, arrSent.size(), 0 };
 	}
 	bool IsRunning() const noexcept override
 	{
@@ -121,6 +128,10 @@ ENGINE_NEXT_TEST("Impairment transport delays forwards and bounds its outgoing q
 	EngineNext::Network::FrameHeader stHeader;
 	ENGINE_NEXT_CHECK_EQ(EngineNext::Network::DecodeHeader(pFake->arrSent[0].data(), pFake->arrSent[0].size(), stHeader), EngineNext::Runtime::RuntimeStatus::Ok);
 	ENGINE_NEXT_CHECK(stHeader.eType == EngineNext::Network::MessageType::Snapshot);
+	ENGINE_NEXT_CHECK_EQ(stTransport.PollAt(arrEvents, 121), EngineNext::Runtime::RuntimeStatus::Ok);
+	const EngineNext::Network::TransportStats stStats = stTransport.GetStats();
+	ENGINE_NEXT_CHECK_EQ(stStats.nOutgoingPackets, 0U);
+	ENGINE_NEXT_CHECK_EQ(stStats.nOutgoingPacketHighWater, 2U);
 }
 
 ENGINE_NEXT_TEST("Impairment transport drops exactly one real input and supports seeded loss")

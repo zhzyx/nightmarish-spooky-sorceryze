@@ -31,6 +31,7 @@
 #pragma once
 
 #include "adapters/GameplayPredictionCore.h"
+#include "engine_next/include/EngineNext/Gameplay/PredictionReconciler.h"
 #include "gameplay_relevancy.h"
 #include "gameplay_session.h"
 
@@ -46,19 +47,19 @@ class GameplayClientPrediction : public RefCounted {
 		Ref<GameplayPredictionState> predicted_state;
 	};
 
+	EngineNext::Gameplay::PredictionReconciler stReconciler;
 	Ref<GameplayPredictionModel> model;
 	Ref<GameplayPredictionState> predicted_state;
 	Vector<HistoryEntry> history;
-	uint64_t next_sequence = 1;
-	uint64_t last_confirmed_sequence = 0;
 	uint64_t rate_window_started_msec = 0;
 	int inputs_in_rate_window = 0;
 	int max_history = 256;
 	int max_inputs_per_second = 120;
 	float correction_threshold = 0.001f;
-	int correction_count = 0;
 	int last_replayed_input_count = 0;
 	String last_rejection_reason;
+
+	void _sync_from_core();
 
 protected:
 	static void _bind_methods();

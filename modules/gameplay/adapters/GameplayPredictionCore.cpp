@@ -288,6 +288,11 @@ Error GameplayPredictionModel::simulate(const Ref<GameplayPredictionState> &p_st
 	return ToGodotError(stModel.Simulate(p_state->GetMutableCoreState(), p_input->GetCoreInput()));
 }
 
+const EngineNext::Gameplay::PredictionModel &GameplayPredictionModel::GetCoreModel() const
+{
+	return stModel;
+}
+
 void GameplayInterpolationBuffer::_bind_methods()
 {
 	ClassDB::bind_method(D_METHOD("set_max_samples", "max_samples"), &GameplayInterpolationBuffer::set_max_samples);

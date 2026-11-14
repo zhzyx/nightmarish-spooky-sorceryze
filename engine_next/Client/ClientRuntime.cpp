@@ -139,6 +139,8 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 	Gameplay::PredictionReconciler stPrediction;
 	std::map<std::uint64_t, Gameplay::InterpolationBuffer> mapRemoteBuffers;
 	std::map<std::uint64_t, Gameplay::PredictionInput> mapUnacknowledgedInputs;
+	std::map<std::uint64_t, std::size_t> mapRemoteHighWater;
+	std::size_t nUnacknowledgedHighWater = 0;
 	const bool bMove = in_stConfig.strClientId == "A";
 	Network::ReconnectToken arrResumeToken{};
 	std::uint64_t nSessionId = 0;
@@ -427,6 +429,8 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 			}
 			Gameplay::InterpolationBuffer &stBuffer = mapRemoteBuffers[stSnapshot.nEntityId];
 			const Gameplay::Status eBufferStatus = stBuffer.AddSample(stState);
+			std::size_t &nRemoteHighWater = mapRemoteHighWater[stSnapshot.nEntityId];
+			nRemoteHighWater = nRemoteHighWater < stBuffer.GetSampleCount() ? stBuffer.GetSampleCount() : nRemoteHighWater;
 			(void)stHost.RecordTrace(stState.nServerTimeMsec, "remote_sample", Runtime::EntityId{ stSnapshot.nEntityId }, stBuffer.GetSampleCount());
 			if (eBufferStatus != Gameplay::Status::Ok && eBufferStatus != Gameplay::Status::AlreadyExists)
 			{
@@ -477,6 +481,7 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 				break;
 			}
 			mapUnacknowledgedInputs.emplace(stInput.nSequence, stInput);
+			nUnacknowledgedHighWater = nUnacknowledgedHighWater < mapUnacknowledgedInputs.size() ? mapUnacknowledgedInputs.size() : nUnacknowledgedHighWater;
 			++nSentInputs;
 			nNextInputMsec = nNowMsec + 16;
 			if (in_stConfig.bReconnectTest && !bReconnectAttempted && nSentInputs == 12)
@@ -589,6 +594,19 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
+	std::size_t nRemoteHighWater = 0;
+	for (const std::pair<const std::uint64_t, std::size_t> &stEntry : mapRemoteHighWater)
+	{
+		nRemoteHighWater = nRemoteHighWater < stEntry.second ? stEntry.second : nRemoteHighWater;
+	}
+	const Network::TransportStats stTransportStats = pTransport->GetStats();
+	std::cout << "ENGINE_NEXT_CLIENT_BOUNDS client_id=" << in_stConfig.strClientId
+			  << " prediction_history=" << stPrediction.GetHistoryHighWater()
+			  << " unconfirmed_transport=" << nUnacknowledgedHighWater
+			  << " interpolation=" << nRemoteHighWater
+			  << " enet_outgoing_high_water=" << stTransportStats.nOutgoingPacketHighWater
+			  << " poll_event_high_water=" << stTransportStats.nPollEventHighWater << '\n'
+			  << std::flush;
 	std::cout << "ENGINE_NEXT_IMPAIRMENT client_id=" << in_stConfig.strClientId
 			  << " dropped_input=" << pTransport->GetDroppedFirstInput()
 			  << " dropped_loss=" << pTransport->GetDroppedForLoss()

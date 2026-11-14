@@ -34,6 +34,7 @@
 
 #include <cstdint>
 #include <deque>
+#include <vector>
 
 namespace EngineNext::Gameplay
 {
@@ -53,9 +54,13 @@ class PredictionReconciler
 	std::uint64_t nLastConfirmedSequence = 0;
 	std::uint32_t nCorrectionCount = 0;
 	std::uint32_t nMaxHistory = 256;
+	std::size_t nHistoryHighWater = 0;
 	float fCorrectionThreshold = 0.001F;
 
 public:
+	[[nodiscard]] bool SetModel(const PredictionModel &in_stModel) noexcept;
+	[[nodiscard]] bool SetMaxHistory(std::uint32_t nValue) noexcept;
+	[[nodiscard]] bool SetCorrectionThreshold(float fValue) noexcept;
 	[[nodiscard]] bool SetInitialState(const PredictionState &in_stState) noexcept;
 	// Resume keeps the next local sequence, discards untransported history and rebases on authority.
 	[[nodiscard]] bool RestoreAfterReconnect(const PredictionState &in_stState, float &out_fPositionError) noexcept;
@@ -63,8 +68,12 @@ public:
 	[[nodiscard]] bool ApplyAuthoritativeState(const PredictionState &in_stState, float &out_fPositionError) noexcept;
 	[[nodiscard]] const PredictionState &GetPredictedState() const noexcept;
 	[[nodiscard]] std::size_t GetUnconfirmedInputCount() const noexcept;
+	[[nodiscard]] std::size_t GetHistoryHighWater() const noexcept;
 	[[nodiscard]] std::uint64_t GetLastConfirmedSequence() const noexcept;
+	[[nodiscard]] std::uint64_t GetNextSequence() const noexcept;
 	[[nodiscard]] std::uint32_t GetCorrectionCount() const noexcept;
+	void GetUnconfirmedInputs(std::vector<PredictionInput> &out_arrInputs) const;
+	void Reset() noexcept;
 };
 
 } // namespace EngineNext::Gameplay

@@ -131,7 +131,7 @@ RuntimeStatus ParseUnsignedOption(const std::string &in_strArgument, const std::
 		out_stConfig.nDrainAfterMsec = static_cast<std::uint32_t>(nValue);
 		return RuntimeStatus::Ok;
 	}
-	if (nValue == 0 || nValue > 60000)
+	if (nValue == 0 || nValue > 300000)
 	{
 		return RuntimeStatus::InvalidParameter;
 	}

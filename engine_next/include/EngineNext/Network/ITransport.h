@@ -57,6 +57,13 @@ struct TransportEvent
 	std::vector<std::uint8_t> arrPayload;
 };
 
+struct TransportStats
+{
+	std::size_t nOutgoingPackets = 0;
+	std::size_t nOutgoingPacketHighWater = 0;
+	std::size_t nPollEventHighWater = 0;
+};
+
 class ITransport
 {
 public:
@@ -69,6 +76,7 @@ public:
 	[[nodiscard]] virtual Runtime::RuntimeStatus DisconnectLater(PeerId in_nPeerId) = 0;
 	[[nodiscard]] virtual std::uint16_t GetBoundPort() const noexcept = 0;
 	[[nodiscard]] virtual bool IsRunning() const noexcept = 0;
+	[[nodiscard]] virtual TransportStats GetStats() const noexcept = 0;
 	virtual void Stop() noexcept = 0;
 };
 

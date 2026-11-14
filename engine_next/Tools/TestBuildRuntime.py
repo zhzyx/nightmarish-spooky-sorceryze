@@ -7,6 +7,7 @@ from pathlib import Path
 
 import BuildRuntime
 import ExportCleanSource
+import PackageRuntime
 
 
 class BuildRuntimeTests(unittest.TestCase):
@@ -54,6 +55,61 @@ class BuildRuntimeTests(unittest.TestCase):
         (output / "keep.txt").write_text("keep", encoding="utf-8")
         with self.assertRaises(ValueError):
             ExportCleanSource.export_clean_source(self.repo, output)
+
+
+    def test_package_contains_only_declared_runtime_files(self):
+        targets = []
+        for name in ("next_server", "next_client"):
+            binary = self.temporary / name
+            binary.write_bytes(name.encode("utf-8"))
+            manifest = self.temporary / (name + "LinkManifest.json")
+            manifest.write_text(json.dumps({"target": "next_runtime"}), encoding="utf-8")
+            targets.append({
+                "name": name,
+                "artifact": {"path": binary.relative_to(self.repo).as_posix(), "sha256": PackageRuntime.digest(binary)},
+                "manifest": manifest.relative_to(self.repo).as_posix(),
+                "symbol_audit": {"forbidden": []},
+                "dynamic_dependencies": [],
+            })
+        report = {
+            "compiler": "clang",
+            "platform": "test",
+            "sanitize": False,
+            "native_key": "fixture",
+            "targets": targets,
+        }
+        (self.temporary / "RuntimeBuildReport.json").write_text(json.dumps(report), encoding="utf-8")
+        result = PackageRuntime.create_package(self.repo, self.temporary)
+        self.assertEqual(result["files"], ["ENet-LICENSE.txt", "RuntimePackage.json", "next_client", "next_server"])
+        self.assertTrue(result["godot_free_package"])
+
+    def test_package_rejects_stale_binary_digest(self):
+        targets = []
+        for name in ("next_server", "next_client"):
+            binary = self.temporary / name
+            binary.write_bytes(name.encode("utf-8"))
+            manifest = self.temporary / (name + "LinkManifest.json")
+            manifest.write_text(json.dumps({"target": "next_runtime"}), encoding="utf-8")
+            targets.append({
+                "name": name,
+                "artifact": {"path": binary.relative_to(self.repo).as_posix(), "sha256": PackageRuntime.digest(binary)},
+                "manifest": manifest.relative_to(self.repo).as_posix(),
+                "symbol_audit": {"forbidden": []},
+                "dynamic_dependencies": [],
+            })
+        (self.temporary / "RuntimeBuildReport.json").write_text(
+            json.dumps({
+                "compiler": "clang",
+                "platform": "test",
+                "sanitize": False,
+                "native_key": "fixture",
+                "targets": targets,
+            }),
+            encoding="utf-8",
+        )
+        (self.temporary / "next_client").write_bytes(b"stale")
+        with self.assertRaises(ValueError):
+            PackageRuntime.create_package(self.repo, self.temporary)
 
 
 if __name__ == "__main__":
