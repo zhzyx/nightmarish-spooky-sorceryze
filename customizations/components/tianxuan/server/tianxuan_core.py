@@ -1428,11 +1428,14 @@ class Tianxuan:
     @_connection_call
     def events(self, actor: str, limit: int = 100) -> list[dict[str, Any]]:
         tenant_id = self._tenant_of(actor)
-        rows = self.db.execute(
-            "SELECT type, actor, target, payload, created_at FROM events WHERE tenant_id = ? "
-            "ORDER BY created_at DESC LIMIT ?",
-            (tenant_id, limit),
-        ).fetchall()
+        role = self.role_of(actor)
+        sql = "SELECT type, actor, target, payload, created_at FROM events WHERE tenant_id = ?"
+        args: list[Any] = [tenant_id]
+        if role != "admin":
+            sql += " AND type NOT LIKE 'identity.%'"
+        sql += " ORDER BY created_at DESC LIMIT ?"
+        args.append(max(1, min(int(limit), 500)))
+        rows = self.db.execute(sql, args).fetchall()
         return [dict(row) | {"payload": json.loads(row["payload"])} for row in rows]
 
     def identity_events(self, actor: str, limit: int = 50) -> list[dict[str, Any]]:
