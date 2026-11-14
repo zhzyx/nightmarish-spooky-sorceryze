@@ -32,6 +32,7 @@
 
 #include "engine_next/include/EngineNext/Network/ITransport.h"
 #include "engine_next/include/EngineNext/Network/Protocol.h"
+#include "engine_next/include/EngineNext/Runtime/SceneRuntime.h"
 #include "engine_next/include/EngineNext/Runtime/World.h"
 
 #include <cstdint>
@@ -52,6 +53,7 @@ struct Session
 class SessionManager
 {
 	Runtime::World *pWorld = nullptr;
+	const Runtime::SceneRuntime *pScene = nullptr;
 	struct DisconnectedSession
 	{
 		Session stSession;
@@ -61,12 +63,14 @@ class SessionManager
 	std::map<PeerId, Session> mapSessions;
 	std::map<std::uint64_t, DisconnectedSession> mapDisconnected;
 	std::uint64_t nNextSessionId = 1;
+	std::uint64_t nNextSpawnIndex = 0;
 	std::uint64_t nRandomState = 1;
+	std::uint32_t nFixedStepMsec = 16;
 
 	void FillToken(ReconnectToken &out_arrToken) noexcept;
 
 public:
-	SessionManager(Runtime::World &in_stWorld, std::uint64_t nSeed);
+	SessionManager(Runtime::World &in_stWorld, std::uint64_t nSeed, const Runtime::SceneRuntime *in_pScene = nullptr, std::uint32_t in_nFixedStepMsec = 16);
 	[[nodiscard]] Runtime::RuntimeStatus CreateSession(PeerId in_nPeerId, const ClientHello &in_stHello, ServerWelcome &out_stWelcome, std::uint64_t &out_nSessionId);
 	[[nodiscard]] const Session *GetSession(PeerId in_nPeerId) const noexcept;
 	[[nodiscard]] const std::map<PeerId, Session> &GetSessions() const noexcept;

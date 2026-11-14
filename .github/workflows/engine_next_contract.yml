@@ -11,6 +11,7 @@ on:
       - "tools/check_engine_next_contract.py"
       - "tools/engine_next_contract.json"
       - "tools/test_check_engine_next_contract.py"
+      - "tools/engine_next_legacy/**"
   push:
     branches:
       - main
@@ -23,6 +24,7 @@ on:
       - "tools/check_engine_next_contract.py"
       - "tools/engine_next_contract.json"
       - "tools/test_check_engine_next_contract.py"
+      - "tools/engine_next_legacy/**"
   workflow_dispatch:
 
 permissions:
@@ -89,3 +91,12 @@ jobs:
           python3 build/engine_next/clean-runtime-source/tools/check_engine_next_contract.py --repo build/engine_next/clean-runtime-source --require-sources --require-link-manifest --link-manifest build/engine_next/clang-runtime/next_serverLinkManifest.json
           python3 build/engine_next/clean-runtime-source/tools/check_engine_next_contract.py --repo build/engine_next/clean-runtime-source --require-sources --require-link-manifest --link-manifest build/engine_next/clang-runtime/next_clientLinkManifest.json
           python3 build/engine_next/clean-runtime-source/tools/check_engine_next_contract.py --repo build/engine_next/clean-runtime-source --require-sources --require-link-manifest --link-manifest build/engine_next/clang-runtime/next_assetLinkManifest.json
+
+      - name: Verify legacy Godot scene adapter
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          mkdir -p build/engine_next/godot-legacy
+          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip -o build/engine_next/godot-legacy/Godot.zip
+          echo "d6e382fb531019f85630c1f485a561a0d20c4a2344b6c3847735cfee7da812aa  build/engine_next/godot-legacy/Godot.zip" | sha256sum -c -
+          unzip -q build/engine_next/godot-legacy/Godot.zip -d build/engine_next/godot-legacy
+          python3 engine_next/Tools/RunM3LegacyAcceptance.py --godot build/engine_next/godot-legacy/Godot_v4.4.1-stable_linux.x86_64 --next-asset build/engine_next/clang-runtime/next_asset --adapter tools/engine_next_legacy/scene_adapter.gd --fixtures tools/engine_next_legacy/fixtures --report build/engine_next/clang-runtime/M3LegacyReport.json

@@ -48,6 +48,7 @@ struct RuntimeConfig
 	std::uint64_t nSeed = 1;
 	std::string strClientId = "A";
 	std::string strTracePath;
+	std::string strAssetPackagePath;
 	std::string strBindAddress = "127.0.0.1";
 	std::uint16_t nPort = 0;
 	std::uint32_t nDurationMsec = 8000;
@@ -63,6 +64,7 @@ struct RuntimeConfig
 	bool bWithholdDrainAck = false;
 	bool bNetworkMode = false;
 	bool bHelpRequested = false;
+	bool bFixedStepProvided = false;
 };
 
 [[nodiscard]] RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, RuntimeConfig &out_stConfig);

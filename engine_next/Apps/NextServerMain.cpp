@@ -40,7 +40,7 @@ namespace
 
 void PrintUsage()
 {
-	std::cout << "Usage: next_server [--manual-ticks N] [--fixed-step-ms N] [--seed N] [--trace-output PATH]\n";
+	std::cout << "Usage: next_server [--manual-ticks N] [--fixed-step-ms N] [--seed N] [--trace-output PATH] [--asset-package PATH]\n";
 }
 
 } // namespace

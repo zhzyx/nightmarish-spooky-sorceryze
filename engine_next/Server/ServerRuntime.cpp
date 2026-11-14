@@ -126,11 +126,11 @@ RuntimeStatus SendSnapshot(Network::ITransport &in_stTransport, const Network::S
 	return in_stTransport.Send(in_stRecipient.nPeerId, 1, true, arrFrame);
 }
 
-RuntimeStatus BeginDrain(Network::ITransport &in_stTransport, Network::SessionManager &in_stSessions, std::map<Network::PeerId, std::uint64_t> &mapSequences, std::uint64_t nNowMsec, std::uint64_t nTick, std::uint32_t nTimeoutMsec, DrainState &out_stDrain)
+RuntimeStatus BeginDrain(Network::ITransport &in_stTransport, Network::SessionManager &in_stSessions, std::map<Network::PeerId, std::uint64_t> &mapSequences, std::uint64_t nNowMsec, std::uint64_t nTick, std::uint32_t nTimeoutMsec, std::uint32_t nFixedStepMsec, DrainState &out_stDrain)
 {
 	out_stDrain.bActive = true;
 	out_stDrain.nDeadlineMsec = nNowMsec + nTimeoutMsec;
-	out_stDrain.nDeadlineTick = nTick + (nTimeoutMsec + 15) / 16;
+	out_stDrain.nDeadlineTick = nTick + (nTimeoutMsec + nFixedStepMsec - 1) / nFixedStepMsec;
 	for (const std::pair<const Network::PeerId, Network::Session> &stEntry : in_stSessions.GetSessions())
 	{
 		Network::Disconnect stDisconnect;
@@ -157,32 +157,40 @@ RuntimeStatus BeginDrain(Network::ITransport &in_stTransport, Network::SessionMa
 
 RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 {
+	RuntimeHost stHost(RuntimeRole::Server);
+	RuntimeStatus eStatus = stHost.Initialize(in_stConfig);
+	if (eStatus != RuntimeStatus::Ok)
+	{
+		return eStatus;
+	}
+	const SceneRuntime &stScene = stHost.GetSceneRuntime();
+	if (stScene.IsLoaded())
+	{
+		std::cout << "ENGINE_NEXT_SERVER_SCENE scene_id=" << stScene.GetSceneId() << " scene_revision=" << stScene.GetSceneRevision()
+				  << " scene_content_sha256=" << stScene.GetSceneContentSha256() << " package_digest=" << stScene.GetPackageDigest() << '\n'
+				  << std::flush;
+	}
 	std::unique_ptr<Network::ITransport> pTransport(Network::CreateEnetTransport());
 	if (pTransport == nullptr)
 	{
+		stHost.Shutdown();
 		return RuntimeStatus::InvalidState;
 	}
-	RuntimeStatus eStatus = pTransport->StartServer(in_stConfig.strBindAddress, in_stConfig.nPort, 8);
+	eStatus = pTransport->StartServer(in_stConfig.strBindAddress, in_stConfig.nPort, 8);
 	if (eStatus != RuntimeStatus::Ok)
 	{
-		return eStatus;
-	}
-	RuntimeHost stHost(RuntimeRole::Server);
-	eStatus = stHost.Initialize(in_stConfig);
-	if (eStatus != RuntimeStatus::Ok)
-	{
-		pTransport->Stop();
+		stHost.Shutdown();
 		return eStatus;
 	}
 
-	Network::SessionManager stSessions(stHost.GetWorld(), in_stConfig.nSeed);
+	Network::SessionManager stSessions(stHost.GetWorld(), in_stConfig.nSeed, &stScene, stHost.GetFixedStepLoop().GetFixedStepMsec());
 	SystemClock stClock;
 	FixedStepBatch stPrimeBatch;
 	(void)stHost.GetFixedStepLoop().Advance(stClock.NowMsec(), stPrimeBatch);
 	std::map<Network::PeerId, std::uint64_t> mapSequences;
 	std::map<std::uint64_t, EntityInputQueue> mapInputQueues;
 	std::size_t nInputHighWater = 0;
-	Gameplay::PredictionModel stModel;
+	Gameplay::PredictionModel stModel = stScene.GetPredictionModel();
 	DrainState stDrain;
 	const std::uint64_t nStartedMsec = stClock.NowMsec();
 	std::uint32_t nCreatedSessions = 0;
@@ -251,7 +259,7 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 				Network::Disconnect stDisconnect;
 				const Network::Session *pSession = stSessions.GetSession(stEvent.nPeerId);
 				if (Network::DecodeDisconnect(stEvent.arrPayload.data() + Network::FRAME_HEADER_BYTES, stHeader.nPayloadBytes, stDisconnect) != RuntimeStatus::Ok ||
-					pSession == nullptr || pSession->nSessionId != stHeader.nSessionId)
+						pSession == nullptr || pSession->nSessionId != stHeader.nSessionId)
 				{
 					Reject(*pTransport, stEvent.nPeerId, mapSequences, stHeader, 6);
 					continue;
@@ -330,7 +338,7 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 						stHeader.nPayloadBytes,
 						stCommand);
 				if (stEvent.nChannelId != 1 || pSession == nullptr || pSession->nSessionId != stHeader.nSessionId ||
-					pSession->stEntityId.nValue != stCommand.nEntityId || eInputStatus != RuntimeStatus::Ok)
+						pSession->stEntityId.nValue != stCommand.nEntityId || eInputStatus != RuntimeStatus::Ok)
 				{
 					Reject(*pTransport, stEvent.nPeerId, mapSequences, stHeader, 6);
 					continue;
@@ -370,7 +378,7 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 					continue;
 				}
 				if (stCommand.stInput.nSequence > stQueue.nLastProcessedSequence + 32 ||
-					stQueue.arrInputs.size() >= 64 || stCommand.stInput.nStepMsec != stModel.GetFixedStepMsec())
+						stQueue.arrInputs.size() >= 64 || stCommand.stInput.nStepMsec != stModel.GetFixedStepMsec())
 				{
 					Reject(*pTransport, stEvent.nPeerId, mapSequences, stHeader, 7);
 					continue;
@@ -548,7 +556,8 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 		}
 		if (in_stConfig.nDrainAfterMsec != 0 && stClock.NowMsec() - nStartedMsec >= in_stConfig.nDrainAfterMsec)
 		{
-			eStatus = BeginDrain(*pTransport, stSessions, mapSequences, stClock.NowMsec(), stHost.GetFixedStepLoop().GetTick(), in_stConfig.nDrainTimeoutMsec, stDrain);
+			eStatus = BeginDrain(*pTransport, stSessions, mapSequences, stClock.NowMsec(), stHost.GetFixedStepLoop().GetTick(), in_stConfig.nDrainTimeoutMsec,
+					stModel.GetFixedStepMsec(), stDrain);
 			if (eStatus != RuntimeStatus::Ok)
 			{
 				break;

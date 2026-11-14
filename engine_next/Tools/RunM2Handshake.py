@@ -35,10 +35,44 @@ def parse_lines(lines, pattern):
     return [match.groupdict() for line in lines if (match := expression.fullmatch(line))]
 
 
-def run_handshake(server, client, report_path, duration_ms=8000, drain_after_ms=3000, drain_response_delay_ms=96):
+def run_handshake(
+    server,
+    client,
+    report_path,
+    duration_ms=8000,
+    drain_after_ms=3000,
+    drain_response_delay_ms=96,
+    asset_package=None,
+    fixed_step_ms=None,
+):
     started = time.monotonic()
     report_path = Path(report_path).resolve()
     report_path.parent.mkdir(parents=True, exist_ok=True)
+    scene_config = None
+    if asset_package is not None:
+        scene = json.loads((Path(asset_package) / "Scene.json").read_text(encoding="utf-8"))
+        spawns = sorted(
+            (entity for entity in scene["entities"] if entity["gameplay"]["kind"] == "player_spawn"),
+            key=lambda entity: entity["entity_id"],
+        )
+        if len(spawns) < 2:
+            raise ValueError("Scene acceptance requires two player_spawn entities")
+        step = scene["simulation"]["fixed_step_ms"]
+        speed = scene["simulation"]["max_speed"]
+        scene_config = {
+            "fixed_step_ms": step,
+            "max_speed": speed,
+            "spawn_entity_ids": [spawns[0]["entity_id"], spawns[1]["entity_id"]],
+            "spawn_x": [spawns[0]["transform"]["translation"][0], spawns[1]["transform"]["translation"][0]],
+            "spawn_x_by_entity": {spawn["entity_id"]: spawn["transform"]["translation"][0] for spawn in spawns},
+            "expected_a_position_x": spawns[0]["transform"]["translation"][0] + 24 * speed * step / 1000,
+        }
+    if scene_config:
+        expected_position = scene_config["expected_a_position_x"]
+    elif fixed_step_ms is not None:
+        expected_position = 24 * 8 * fixed_step_ms / 1000
+    else:
+        expected_position = 3.072
     if os.name == "nt":
         keep = {"SYSTEMROOT", "SYSTEMDRIVE", "WINDIR", "COMSPEC", "TEMP", "TMP", "PATH"}
         env = {name: os.environ[name] for name in keep if name in os.environ}
@@ -80,6 +114,10 @@ def run_handshake(server, client, report_path, duration_ms=8000, drain_after_ms=
             "--trace-output",
             report_path.parent / "server.jsonl",
         ]
+        if asset_package is not None:
+            server_command.extend(["--asset-package", str(asset_package)])
+        if fixed_step_ms is not None:
+            server_command.extend(["--fixed-step-ms", str(fixed_step_ms)])
         if drain_response_delay_ms:
             server_command.extend(["--drain-response-delay-ms", str(drain_response_delay_ms)])
         server_process = popen(server_command, report_path.parent, env)
@@ -128,6 +166,10 @@ def run_handshake(server, client, report_path, duration_ms=8000, drain_after_ms=
                 "--trace-output",
                 report_path.parent / f"client-{client_id}.jsonl",
             ]
+            if asset_package is not None:
+                command.extend(["--asset-package", str(asset_package)])
+            if fixed_step_ms is not None:
+                command.extend(["--fixed-step-ms", str(fixed_step_ms)])
             if client_id == "A":
                 command.extend([
                     "--drop-first-input",
@@ -237,6 +279,18 @@ def run_handshake(server, client, report_path, duration_ms=8000, drain_after_ms=
                     r"ENGINE_NEXT_CLIENT_BOUNDS client_id=(?P<client_id>\S+) prediction_history=(?P<prediction_history>\d+) unconfirmed_transport=(?P<unconfirmed_transport>\d+) interpolation=(?P<interpolation>\d+) enet_outgoing_high_water=(?P<enet_outgoing_high_water>\d+) poll_event_high_water=(?P<poll_event_high_water>\d+)",
                 )
             )
+        server_scenes = parse_lines(
+            lines,
+            r"ENGINE_NEXT_SERVER_SCENE scene_id=(?P<scene_id>\S+) scene_revision=(?P<scene_revision>\S+) scene_content_sha256=(?P<scene_content_sha256>[0-9a-f]+) package_digest=(?P<package_digest>[0-9a-f]+)",
+        )
+        client_scenes = []
+        for client_result in client_results:
+            client_scenes.extend(
+                parse_lines(
+                    client_result["stdout"].splitlines(),
+                    r"ENGINE_NEXT_CLIENT_SCENE client_id=(?P<client_id>\S+) scene_id=(?P<scene_id>\S+) scene_revision=(?P<scene_revision>\S+) scene_content_sha256=(?P<scene_content_sha256>[0-9a-f]+) package_digest=(?P<package_digest>[0-9a-f]+)",
+                )
+            )
         for collection, names in (
             (predictions, ("confirmed", "position_x", "history", "corrections", "retransmissions")),
             (remotes, ("entity_id", "position_x", "samples", "server_time")),
@@ -266,6 +320,12 @@ def run_handshake(server, client, report_path, duration_ms=8000, drain_after_ms=
         resumed_welcomes = [item for item in welcomes if item["resumed"] == 1]
         a_initial = next((item for item in initial_welcomes if item["client_id"] == "A"), {})
         impairment_a = next((item for item in impairments if item["client_id"] == "A"), {})
+        if scene_config and a_initial:
+            expected_position = (
+                scene_config["spawn_x_by_entity"][a_initial["entity_id"]]
+                + 24 * scene_config["max_speed"] * scene_config["fixed_step_ms"] / 1000
+            )
+            scene_config["expected_a_position_x"] = expected_position
         result.update({
             "welcomes": welcomes,
             "server_sessions": sessions,
@@ -281,11 +341,26 @@ def run_handshake(server, client, report_path, duration_ms=8000, drain_after_ms=
             "impairments": impairments,
             "server_bounds": server_bounds,
             "client_bounds": client_bounds,
+            "server_scene": server_scenes,
+            "client_scenes": client_scenes,
+            "scene_config": scene_config,
         })
+        scene_identities = [
+            (item["scene_id"], item["scene_revision"], item["scene_content_sha256"], item["package_digest"])
+            for item in server_scenes + client_scenes
+        ]
+        scene_valid = scene_config is None or (
+            len(server_scenes) == 1
+            and len(client_scenes) == 2
+            and {item["client_id"] for item in client_scenes} == {"A", "B"}
+            and len(set(scene_identities)) == 1
+            and {item["entity_id"] for item in initial_welcomes} == set(scene_config["spawn_entity_ids"])
+        )
         valid = (
             server_process.returncode == 0
             and all(item["returncode"] == 0 and not item["stderr"] for item in client_results)
             and not errors
+            and scene_valid
             and (drain_response_delay_ms == 0 or drain_response_delay_ms > 32)
             and len(initial_welcomes) == 2
             and len(resumed_welcomes) == 1
@@ -310,7 +385,7 @@ def run_handshake(server, client, report_path, duration_ms=8000, drain_after_ms=
             and len(predictions) == 1
             and predictions[0]["confirmed"] == 24
             and predictions[0]["history"] == 0
-            and abs(predictions[0]["position_x"] - 3.072) < 0.001
+            and abs(predictions[0]["position_x"] - expected_position) < 0.001
             and predictions[0]["corrections"] >= 1
             and predictions[0]["retransmissions"] >= 1
             and len(remotes) == 3
@@ -319,7 +394,13 @@ def run_handshake(server, client, report_path, duration_ms=8000, drain_after_ms=
             and remotes[2]["status"] in {"interpolated", "held"}
             and remotes[2]["server_time"] > remotes[1]["server_time"]
             and all(
-                item["entity_id"] == a_initial.get("entity_id") and item["position_x"] > 0 and item["samples"] >= 2
+                item["entity_id"] == a_initial.get("entity_id")
+                and (
+                    abs(item["position_x"] - scene_config["spawn_x_by_entity"][item["entity_id"]]) > 0.0001
+                    if scene_config
+                    else item["position_x"] > 0
+                )
+                and item["samples"] >= 2
                 for item in remotes
             )
             and len(client_drains) == 2
