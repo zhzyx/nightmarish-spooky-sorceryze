@@ -4,9 +4,11 @@ import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import {
   createIdentityLink,
   deleteIdentityLink,
+  fetchIdentityEvents,
   fetchIdentityLinks,
   fetchUsers,
   rebindIdentityLink,
+  type ApiIdentityEvent,
   type ApiIdentityLink,
   type ApiMember,
 } from "@/lib/api";
@@ -36,17 +38,20 @@ export function IdentityBindings() {
   const [notice, setNotice] = useState("");
   const [removing, setRemoving] = useState("");
   const [targets, setTargets] = useState<Record<string, string>>({});
+  const [events, setEvents] = useState<ApiIdentityEvent[]>([]);
 
   const load = useCallback(async () => {
     if (!actor) {
       return;
     }
-    const [nextLinks, nextUsers] = await Promise.all([
+    const [nextLinks, nextUsers, nextEvents] = await Promise.all([
       fetchIdentityLinks(actor),
       fetchUsers(actor),
+      fetchIdentityEvents(actor),
     ]);
     setLinks(nextLinks);
     setUsers(nextUsers);
+    setEvents(nextEvents);
     setTargets((current) => {
       const next = { ...current };
       for (const link of nextLinks) {
@@ -235,6 +240,28 @@ export function IdentityBindings() {
             <button className="btn btn-primary" type="button" disabled={busy || !subject.trim()} onClick={bind}>
               {busy ? "绑定中…" : "绑定身份"}
             </button>
+          </div>
+          <div className="reading-list live-list" style={{ marginTop: 8 }}>
+            <p className="section-kicker" style={{ padding: "0 16px" }}>
+              RECENT · IDENTITY EVENTS
+            </p>
+            {events.length === 0 ? (
+              <p className="section-note" style={{ padding: "8px 16px" }}>
+                暂无身份事件
+              </p>
+            ) : (
+              events.slice(0, 8).map((event) => (
+                <div className="reading-item" key={`${event.created_at}-${event.type}-${event.target}`}>
+                  <span className="reading-index">·</span>
+                  <span className="reading-copy">
+                    <strong>{event.type.replace("identity.", "")}</strong>
+                    <span>
+                      {String(event.payload.subject ?? "")} · {new Date(event.created_at).toLocaleString("zh-CN")}
+                    </span>
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </>
       )}
