@@ -121,6 +121,7 @@ var execution_turns: Dictionary:
 	set(value): _get_workflow_controller().execution_turns = value
 var checked_execution := {}
 var tianxuan_synced := {}
+var board_issue_states := {}
 var routing_stages: Dictionary:
 	get: return _get_workflow_controller().routing_stages
 	set(value): _get_workflow_controller().routing_stages = value
@@ -1538,6 +1539,30 @@ func _show_tianxuan_dialog(url: String, data: Dictionary, item: Dictionary) -> v
 	dialog.popup_centered()
 
 
+func _sync_board_completed(incoming: Dictionary) -> void:
+	for item in incoming.get("issues", []):
+		var url := str(item.get("url", ""))
+		if url.is_empty() or not item.has("node_states"):
+			continue
+		var states: Dictionary = item.get("node_states", {})
+		var previous: Dictionary = board_issue_states.get(url, {})
+		var titles: Array = []
+		if not previous.is_empty():
+			var nodes: Dictionary = item.get("plan", {}).get("nodes", {})
+			for node_id in states:
+				var state := str(states[node_id])
+				if state not in ["done", "completed"]:
+					continue
+				if str(previous.get(node_id, "")) == state:
+					continue
+				var title := str(nodes.get(node_id, {}).get("title", ""))
+				if not title.is_empty():
+					titles.append(title)
+		board_issue_states[url] = states.duplicate(true)
+		if not titles.is_empty():
+			_auto_sync_tianxuan(url, titles)
+
+
 func _auto_sync_tianxuan(url: String, titles: Array) -> void:
 	var pending: Array = []
 	for title in titles:
@@ -2890,6 +2915,7 @@ func _refresh_board() -> void:
 		offline = false
 		fresh_progress = true
 		_start_progress_watch(value.get("watch", {}))
+		_sync_board_completed(incoming)
 		if unchanged:
 			# Keep the issue dictionaries that the visible rows and callbacks reference.
 			board = comparable
