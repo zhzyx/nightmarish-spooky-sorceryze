@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "issue_number": 951,
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "baseline": "5838241afad2c5f699f06a76b1c299c5560677d4",
+  "scope": "Completed supersedes validator slice only. Existing continuation/preparation/AI-runtime integration is excluded and retained for later work; no native editor, installed or original-game acceptance.",
+  "command": [
+    "node",
+    "--test",
+    "customizations/components/repository-dispatch/acceptance.test.mjs"
+  ],
+  "runtime": {
+    "node_version": "v24.22.1",
+    "python_version": "Python 3.12.14",
+    "environment": "GONGGONG_PYTHON explicitly selects the verified runtime; PYTHONUTF8=1 and PYTHONDONTWRITEBYTECODE=1"
+  },
+  "source_inputs": [
+    {
+      "path": "customizations/components/repository-dispatch/acceptance-candidate.mjs",
+      "sha256_before": "fbec4aeaf8bce081b45c0e6ca945d6d793507d0bb2e6f3fda00cecc1627e15ff",
+      "sha256_after": "fbec4aeaf8bce081b45c0e6ca945d6d793507d0bb2e6f3fda00cecc1627e15ff",
+      "git_blob": "391bb78b098436e0f2929078a13e954c9901baae"
+    },
+    {
+      "path": "customizations/components/repository-dispatch/acceptance.test.mjs",
+      "sha256_before": "3f8f8a9d3574f11daca00bf78fdd5056b53cc1bef53537618ecf78b7cc18e93e",
+      "sha256_after": "3f8f8a9d3574f11daca00bf78fdd5056b53cc1bef53537618ecf78b7cc18e93e",
+      "git_blob": "ae1e30dcee4fd3e8567c24617562ae83eeeddc61"
+    }
+  ],
+  "source_unchanged": true,
+  "actual_result": {
+    "exit_code": 0,
+    "tests": 35,
+    "passed": 35,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "includes_new_supersedes_cases": 12,
+    "duration_ms": 55208.8561
+  },
+  "evidence": [
+    {
+      "logical_artifact": "acceptance-slice951-module-invocation.json",
+      "sha256": "91788c5bf72a7d21ff291620702b61748e2636898dbc5dab29bc101016d2db36",
+      "bytes": 1452
+    },
+    {
+      "logical_artifact": "acceptance-slice951-module.log",
+      "sha256": "7ba5b2c320b471b2b0620fd5ccab3d052bcefd3b4ee8ba6eba7c9281ab5d8baf",
+      "bytes": 2447
+    }
+  ],
+  "private_reference_resolution": "Logical artifact names resolve under the delivery owner retained parent773 private receipt root. Raw logs and machine paths are not copied into this report.",
+  "limits": "Module result supports this exact two-file correction on the recorded baseline. Independent exact-index review, formal gate, applicable CI and main delivery are separate. No claim of whole951/773 completion.",
+  "stopped_after_test": true,
+  "request_id": "editor-parent-production-continuation-20261112"
+}

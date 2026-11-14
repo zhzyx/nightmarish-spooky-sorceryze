@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4c1baa820a2c31fafdfa9a1ab68584dee181cb09",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-parent-production-continuation-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "dbc0e455df68041fe8f52677988017e205e050b992522b4f1f3fabd3a39a0480",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "action": "delivery",
+    "detection_head": "c6f72efecc64dec9d011cc9356907ce5d71d2683",
+    "context_sha256": "e316b0323ea50d90a8ae8e260b0d34f9c3def748294b6b579f211ff0eb05742e",
+    "operator": "Sail-Li",
+    "worker": "codex-root-acceptance-slice951",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1236",
+    "diagnosis": "Trusted auto integration refused before commit because inherited reads for the excluded47file continuation batch included the entire editor. New main2988e18f changed only a Tianxuan actor environment fallback and README. Independent review confirmed the completed supersedes-only slice and its35module fixtures do not read that UI function; no validator source changed.",
+    "next_action": "Use actual small-slice dependency declarations including repository dispatch, Production and Sinan platforms, runner helpers, framework, trusted gates and CI; preserve all genuine dependencies. Bind current exact candidate and required new-head CI. User has been asked whether other ongoing publishing should pause; no authority to stop another publisher is assumed. Merge the completed slice and then pause.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T04:12:15.580640+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-14T04:18:13.839063+00:00",
+  "sha256": "345782633895dfdd211350b360c12a820ef0d361a2f7f54d7b089a8375b02da0"
+}
