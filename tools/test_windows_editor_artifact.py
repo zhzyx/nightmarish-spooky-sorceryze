@@ -177,7 +177,8 @@ class WindowsEditorArtifactTests(unittest.TestCase):
         module = SimpleNamespace(
             probe=lambda *args: {"native_sources": graph},
             CacheUnavailable=ValueError,
-            is_external_data=lambda name, deps: name == "layout.gd" and name not in deps,
+            host_inputs=lambda root, **kwargs: (),
+            is_external_data=lambda name, deps, hosts: name == "layout.gd" and name not in deps,
         )
         with patch.dict(sys.modules, editor_native_cache=module):
             before = artifact.source_identity(root, ["platform=windows"], {})

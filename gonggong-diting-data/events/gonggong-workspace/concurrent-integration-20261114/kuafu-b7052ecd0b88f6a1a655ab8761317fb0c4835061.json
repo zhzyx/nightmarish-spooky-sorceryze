@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b7052ecd0b88f6a1a655ab8761317fb0c4835061",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "concurrent-integration-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1151",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "53057219fac68f1296efe1e59318170e54adcc525a3e339a56dc7196ed3fc59a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1151",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1154",
+    "action": "user-report",
+    "detection_head": "65e1fdc9f004bdf0a945f1ea4568b91d5bc4c1c4",
+    "context_sha256": "778b5cfc3f8467ae6264418bec92e7c311460d46fcaa9e7c01b1f1bdafd0b865",
+    "operator": "Sail-Li",
+    "worker": "codex-concurrent-integration",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1151",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1085",
+    "diagnosis": "Existing publication records report main drift after CI and manual integration windows. Repository has incremental engine routing but unknown paths fall back to full builds. End-to-end throughput remains unmeasured.",
+    "next_action": "Inventory immutable tracked tree; validate conflict-aware preparation planner; audit actual build consumers before modifying routing; retain final exact candidate validation.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T22:36:05.711497+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li current task 1151; existing publishers retain their candidates",
+    "continuable": "Isolated local implementation and tests continue without changing other worktrees or publishing main."
+  },
+  "occurred_at": "2026-11-13T22:39:20.565593+00:00",
+  "sha256": "34fc570ba68de6a89bf7d0168036ca635e8a2d17fee44b77ad3eaf749db80fb0"
+}
