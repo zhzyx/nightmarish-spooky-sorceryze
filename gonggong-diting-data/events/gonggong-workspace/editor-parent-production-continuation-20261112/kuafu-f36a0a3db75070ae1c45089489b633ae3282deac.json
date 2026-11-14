@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f36a0a3db75070ae1c45089489b633ae3282deac",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-parent-production-continuation-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5302d83aa86a43180b72d1a09d739a2040eed73f684523b4f1dd6d58a6141126",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "action": "validation",
+    "detection_head": "2281ebd6b380e9ac06e02110aee6fbfdee53c8c8",
+    "context_sha256": "d256206484ebfbea671801dffdc2d590f9026e473093e2b4bf3d48b8063cc839",
+    "operator": "Sail-Li",
+    "worker": "codex:/root:editor-parent-production-continuation-20261112",
+    "authority_ref": "Current user continued complete Godot editor support under773 and951; root owns final candidate preparation and delivery after native agent99 handed over the frozen implementation.",
+    "evidence": "data-collection/editor-continuation-preflight-951.json sha256 fe67cd19fb6648f2fef7484e16ab25717358d26a748a947e667cb6060ac9d0e4",
+    "diagnosis": "Candidate hash invariant blocked codespell write changes before staging. Installed TOML conversion drops false values, so a secondary false setting did not override project true. Exact frozen source was restored and all28 hashes matched. The intentional correction only renames eight local identifier occurrences; private-copy preflight now passes without source mutation.",
+    "next_action": "Record the scoped method reuse, rebuild the changed unit through existing validated build entry, independently review complete frozen index, then formal gate and exact CI/main. Original game and installed acceptance remain pending.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T23:39:39.763353+00:00",
+    "attempted": "Original failed preflight and mutation retained; exact source restoration verified; private-copy format and spelling checks passed with unchanged candidate bytes.",
+    "repair_owner": "Current root owns final preflight and local identifier correction; native agent99 can run the already authorized final build after source handoff.",
+    "continuable": "Independent candidate review and preparation continue. Main publication respects the acknowledged1080/1083 priority window."
+  },
+  "occurred_at": "2026-11-13T23:41:07.327097+00:00",
+  "sha256": "8c7e012d045724129667c476c22a61de14c414b02f5703ade50eae8e9f5a56e3"
+}
