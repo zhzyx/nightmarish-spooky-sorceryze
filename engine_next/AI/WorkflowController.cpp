@@ -116,7 +116,7 @@ bool WriteAtomic(const std::string &in_strPath, const std::string &in_strText)
 }
 
 bool SameText(const Serialization::JsonValue::Object &in_mapLeft, const std::string &in_strLeft,
-		const Serialization::JsonValue::Object &in_mapRight, const std::string &in_strRight)
+			  const Serialization::JsonValue::Object &in_mapRight, const std::string &in_strRight)
 {
 	std::string strLeft;
 	std::string strRight;
@@ -131,7 +131,7 @@ WorkflowController::WorkflowController(IProcessTransport &in_stTransport) :
 }
 
 bool WorkflowController::Execute(const HostConfig &in_stConfig, const std::string &in_strCommand,
-		const Serialization::JsonValue &in_stInput, Serialization::JsonValue &out_stResult, Assets::Diagnostics &out_arrDiagnostics)
+								 const Serialization::JsonValue &in_stInput, Serialization::JsonValue &out_stResult, Assets::Diagnostics &out_arrDiagnostics)
 {
 	ProcessSpec stSpec;
 	stSpec.strExecutable = in_stConfig.strPython;
@@ -160,10 +160,10 @@ bool WorkflowController::Execute(const HostConfig &in_stConfig, const std::strin
 	if (!stProcess.bExited || stProcess.bTimedOut || stProcess.bOutputOverflow || stProcess.nExitCode != 0)
 	{
 		Assets::AddDiagnostic(out_arrDiagnostics,
-				stProcess.bOutputOverflow ? "process_output_limit" : stProcess.bTimedOut ? "process_timeout"
-																						 : "process_exit",
-				"$",
-				"Executor process failed its lifecycle or output contract");
+							  stProcess.bOutputOverflow ? "process_output_limit" : stProcess.bTimedOut ? "process_timeout"
+																									   : "process_exit",
+							  "$",
+							  "Executor process failed its lifecycle or output contract");
 		return false;
 	}
 	Serialization::JsonValue stEnvelope;
@@ -190,7 +190,7 @@ bool WorkflowController::Execute(const HostConfig &in_stConfig, const std::strin
 }
 
 bool WorkflowController::SaveState(const HostConfig &in_stConfig, const std::string &in_strRequest, const std::string &in_strRequestDigest,
-		bool in_bPublished, const std::string &in_strDigest, Assets::Diagnostics &out_arrDiagnostics)
+								   bool in_bPublished, const std::string &in_strDigest, Assets::Diagnostics &out_arrDiagnostics)
 {
 	Serialization::JsonValue::List arrArtifacts;
 	for (const std::string &strKey : setPublishedArtifacts)
@@ -222,7 +222,7 @@ bool WorkflowController::SaveState(const HostConfig &in_stConfig, const std::str
 }
 
 bool WorkflowController::ReadState(const HostConfig &in_stConfig, const std::string &in_strRequest,
-		const std::string &in_strRequestDigest, Assets::Diagnostics &out_arrDiagnostics)
+								   const std::string &in_strRequestDigest, Assets::Diagnostics &out_arrDiagnostics)
 {
 	namespace fs = std::filesystem;
 	const fs::path stPath(in_stConfig.strStatePath);
@@ -252,7 +252,7 @@ bool WorkflowController::ReadState(const HostConfig &in_stConfig, const std::str
 	std::string strRequest;
 	std::string strDigest;
 	if (pState == nullptr || !TextMember(*pState, "executor_run_id", strExecutorRunId) || !TextMember(*pState, "request_id", strRequest) ||
-			!TextMember(*pState, "request_sha256", strDigest) || strRequest != in_strRequest || strDigest != in_strRequestDigest)
+		!TextMember(*pState, "request_sha256", strDigest) || strRequest != in_strRequest || strDigest != in_strRequestDigest)
 	{
 		Assets::AddDiagnostic(out_arrDiagnostics, "state_identity", "$", "resume state does not match the complete request");
 		return false;
@@ -364,7 +364,7 @@ bool WorkflowController::ValidateProviderModel(const Serialization::JsonValue &i
 			}
 		}
 		if (!SameText(*pSelection, "provider", *pProvider, "id") || !SameText(*pSelection, "provider_version", *pProvider, "version") ||
-				!SameText(*pSelection, "model", *pProvider, "model") || !SameText(*pSelection, "model_version", *pProvider, "model_version"))
+			!SameText(*pSelection, "model", *pProvider, "model") || !SameText(*pSelection, "model_version", *pProvider, "model_version"))
 		{
 			return false;
 		}
@@ -527,7 +527,7 @@ bool WorkflowController::Run(const Serialization::JsonValue &in_stRequest, const
 		std::string strRevision;
 		std::string strDigest;
 		if (pArtifact == nullptr || !TextMember(*pArtifact, "asset_id", strAsset) || !TextMember(*pArtifact, "revision", strRevision) ||
-				!TextMember(*pArtifact, "content_sha256", strDigest))
+			!TextMember(*pArtifact, "content_sha256", strDigest))
 		{
 			return Fail("artifact_event", "artifact identity is incomplete", out_stResult);
 		}
@@ -548,8 +548,8 @@ bool WorkflowController::Run(const Serialization::JsonValue &in_stRequest, const
 	}
 	Assets::PublishResult ePublish = Assets::PublishResult::Published;
 	if (!Assets::PublishPackageGuarded(stPackage, in_stConfig.strOutput, ePublish, out_stResult.arrDiagnostics, stMutex,
-				[this]()
-				{ return IsCancellationRequested(); }))
+									   [this]()
+									   { return IsCancellationRequested(); }))
 	{
 		if (IsCancellationRequested())
 		{
@@ -568,7 +568,7 @@ bool WorkflowController::Run(const Serialization::JsonValue &in_stRequest, const
 										   { "scene_content_sha256", stPackage.stManifest.strSceneContentSha256 },
 										   { "scene_revision", stPackage.stScene.strSceneRevision },
 								   },
-				"succeeded"))
+					  "succeeded"))
 	{
 		return Fail("completion", "completion event was rejected", out_stResult);
 	}
