@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-production-setup",
+  "event_id": "learn-a88eb609afacecd9bbd49e89b8ab093b63e3730a5246e70bba07c9ab06457ebe",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "occurred_at": "2026-11-13T18:51:56.488049+00:00",
+  "evidence_refs": [
+    "request-951-20261112-readback"
+  ],
+  "payload": {
+    "scope": "editor-production-setup",
+    "lesson": "persist-preparation-failure-before-callbacks",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Before reporting asynchronous preparation failure, persist a bound blocked or unknown attempt that all dispatch callbacks and cold recovery honor; release it only through an explicit bounded recovery action with original ownership and currentness checks.",
+      "when": "An editor preparation completion can trigger history saves or deferred dispatch while producer repair tasks remain queued and production configuration is unavailable.",
+      "counterexample": "An in-memory batch flag disappears at restart; a worker transport blocked receipt cannot represent a distinct preparation failure; deleting generated files or rewriting the immutable baseline would hide the cause.",
+      "trial_plan": "Use the real native public-control workflow to provoke preparation baseline mismatch; require one actual request/result, zero worker starts and no automatic repeats after history saves or cold restart. Explicit Continue may attempt once, Stop plus late callback cannot resume, and missing/mutated receipts remain unknown. Verify strict original-assignment repair separately without rebaselining."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-preparation-loop-951.json",
+        "sha256": "fa40f5c6902e65e9a1f1d8054f4f3a3f79c0fd4fc2ef062f9a4a21daa426b5d7"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-parent-production-continuation-20261112/request-951-20261112-readback.json",
+      "sha256": "d98c6baed1458f2657bffe315c7a12a951ac87917e9900c54b7441128d5ef3b4"
+    }
+  },
+  "sha256": "e1484db89563b9f22159a446c361f0d1e877cc085329c5ae5ec39fd367799f45"
+}

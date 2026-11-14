@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-30b9877367996e3f5cc517f00bd9f57f476cb387256967c0872a43f3bc46d937",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "2249bcd744a989a787dae01bbafc6d65b0eec3ee45176dcc379ab7080a1510ee",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "occurred_at": "2026-11-13T18:22:53.981381+00:00",
+  "evidence_refs": [
+    "request-951-20261112-readback",
+    "learn-0f8b6bc620122740c6114c3e5cbcf20c0c34bff8c0d0906a704eee989406ccfa"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 16,
+    "previous": "ab9e806a01129ce1a13eb23e15fe9a223794c2e959e06c6e135decc3eb9a685b",
+    "action": "applied",
+    "details": {
+      "task": "Issue951 installed original-parent continuation: distinguish the actual tool transport, host currentness, persisted context, fresh independent review and dependent release.",
+      "observed": "A actual supplement returned pending, then a separately verified currentness receipt produced context_recorded without changing A/B terminal bytes or accepting C. The new reviewer consumed the input but retained a source-read failure; neither transport success nor the parent report was counted as business acceptance. Existing B queued occupancy was not manually replaced. The verified method applies; later source changes and business completion remain separate."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-continuation-installed1076-951.json",
+        "sha256": "100d4cdf923da6b6747b5849c1764babe4961307fe57175ab0e5d4f5196e4ba5"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-parent-production-continuation-20261112/request-951-20261112-readback.json",
+      "sha256": "d98c6baed1458f2657bffe315c7a12a951ac87917e9900c54b7441128d5ef3b4"
+    }
+  },
+  "sha256": "55035cb1389a87af2984afe53b82648eba064706b444511d0eea6d11e79b07af"
+}

@@ -387,6 +387,13 @@ Array chat_tools() {
 			for (const String &key : { String("action"), String("operation_id"), String("execution_id"), String("candidate_sha256"), String("context") }) {
 				Dictionary property;
 				property["type"] = "string";
+				if (key == "action") {
+					Array actions;
+					for (const String &value : { String("status"), String("supplement"), String("review"), String("repair") }) {
+						actions.push_back(value);
+					}
+					property["enum"] = actions;
+				}
 				properties[key] = property;
 			}
 			Dictionary producer;
@@ -808,6 +815,13 @@ void AIChatDock::_poll_history_save() {
 	}
 	if (!history_save_error && !history_dirty && !acceptance_reviews.is_empty()) {
 		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
+	}
+	const int preparation_parent = _sub_agent_root(active_agent);
+	if (!history_save_error && !history_dirty && design_batches.has(preparation_parent)) {
+		const Dictionary preparation = design_batches[preparation_parent].get("production_preparation", Dictionary());
+		if (preparation.get("state", "") == "intent" && int64_t(preparation.get("editor_pid", -1)) == OS::get_singleton()->get_process_id() && preparation.get("batch_token", "") == design_batches[preparation_parent].get("token", Variant())) {
+			callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
+		}
 	}
 	if (!history_save_error && !history_dirty && design_batches.has(active_agent) && bool(design_batches[active_agent].get("parallel_external", false)) && String(design_batches[active_agent].get("state", "")) == "queued" && !GetAiSession().arrQueuedMessages.is_empty() && Dictionary(GetAiSession().arrQueuedMessages[0]).has("design_batch_return")) {
 		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
@@ -4494,6 +4508,7 @@ AIChatDock::AgentSession AIChatDock::_capture_agent() const {
 	state.stTransport = GetCliTransport()->CaptureSession();
 	state.stData.mapTransport = get_meta("cli_transport", Dictionary());
 	state.stData.mapResponseTransport = get_meta("cli_response_transport", Dictionary());
+	state.bConsultationTurn = consultation_turn;
 	return state;
 }
 
@@ -4516,6 +4531,8 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 	_queue_chat_scroll_update();
 	SetAiDraft(p_session.stData.strDraft);
 	GetAiSession().arrDraftImages = p_session.stData.arrDraftImages.duplicate(true);
+	// A finished review must not leave its read-only turn on the parent session.
+	consultation_turn = p_session.bConsultationTurn || _is_review_child();
 	turn_completed = false;
 	_refresh_message_queue();
 	_refresh_images();

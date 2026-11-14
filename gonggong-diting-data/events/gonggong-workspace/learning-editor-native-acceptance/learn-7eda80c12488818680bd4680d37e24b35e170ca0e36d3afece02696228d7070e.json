@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-7eda80c12488818680bd4680d37e24b35e170ca0e36d3afece02696228d7070e",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "occurred_at": "2026-11-13T23:07:59.591129+00:00",
+  "evidence_refs": [
+    "dispatch-38faeb10367d47d2abd94f1cd4c7fba4",
+    "learn-d0f5f7cb3cb8f40b893ef245b74bd92266302362e4028e1354cb48b40c71adc1"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "continuation-operation-boundaries",
+    "revision": 2,
+    "previous": "951a3835542b5086aede471306b05fa90decc3d28fd9fda5d05b2403478535be",
+    "action": "revise",
+    "details": {
+      "method": "Test both live-session and cold continuation across actual reviewer-to-parent switches. Preserve before-press, synchronous-return and eventual operation receipts; require fresh independent acceptance before dependency release. Retain the original phase-specific cancellation and new-operation-ID checks.",
+      "when": "Production continuation shares a native dock with read-only reviewer sessions, asynchronous currentness operations and persisted attempts.",
+      "counterexample": "Cold startup can erase leaked transient state and pass while a live parent remains blocked. A returned button signal or unchanged fields alone neither proves registration nor explains timeout. Active consultations and real reviewers must remain read-only.",
+      "trial_plan": "After this pre-registration, strict-build the session-state correction and run the isolated warm prepared-job recovery: actual read-only reviews, public consultation-on Continue rejection with unchanged original records, consultation-off Continue through A/C corrections, fresh dependency checks and real parent receipt listing. Preserve all prior failed runs; do not treat parent listing as original-game business completion. Keep this revision candidate unless its planned trial is separately verified."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-continuation-warm-state-finding-951.json",
+        "sha256": "5c8d1954c18b2e4163cb4d93d57229195f53b452dc75e2e122e761c8397401be"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-parent-production-continuation-20261112/dispatch-38faeb10367d47d2abd94f1cd4c7fba4.json",
+      "sha256": "ee397f3927074b09c6f3111c79ed0b0a67042a127fac58b9da1658cc72331304"
+    }
+  },
+  "sha256": "dafd9368057b6811f2ea45b48aaccbbc3070accbf4d5a22add3b4f7231474f04"
+}

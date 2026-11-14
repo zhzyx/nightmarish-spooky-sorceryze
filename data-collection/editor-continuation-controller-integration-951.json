@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "request_id": "editor-parent-production-continuation-20261112",
+  "issue_number": 951,
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "parent_issue": 773,
+  "scope": "Resume preserved PR1234 parent continuation and persistent preparation integration; existing supersedes dependency already delivered in PR1239. Source/CI delivery only, no installed original-game acceptance.",
+  "integration": {
+    "initial_main": "c28d8175e870f75e5756355c5cc18c3bce4864fa",
+    "preserved_candidate": "163e2ecf638f9bef7960efeb9cf945da46deae4c",
+    "current_main": "53afd518190ceeebaf5f1e13676b98596815fe23",
+    "changes": [
+      "Resolve four native conflicts against canonical AIChatController/session data, without restoring duplicate busy, queue or generation state.",
+      "Keep consultation capture/restore per AgentSession and actual reviewer read-only enforcement.",
+      "Preserve intent-before-launch persistence, cancellation/late-result handling, original configuration hashes, repair lineage and exact dependency currentness.",
+      "Use explicit synchronous lambda captures; no callback escape.",
+      "Manually integrate three subsequent Tianxuan paths with all 44 task-file bytes unchanged. workspace.gd is a genuine embedded native input, so the older binary is not equivalent."
+    ]
+  },
+  "source_inputs": [
+    {
+      "path": "editor/docks/ai_chat_dock.cpp",
+      "sha256": "09f2575f0d6fcf7a6d043972d3cc82f33431960bfbe0b7a287e1bd1bb042e227"
+    },
+    {
+      "path": "editor/docks/ai_chat_dock.h",
+      "sha256": "6f28e12ef6f47c3861df8a8175703f774c75c7ec8a2c13f529738e1e5ef5f849"
+    },
+    {
+      "path": "editor/docks/ai_chat_sub_agents.cpp",
+      "sha256": "f561eede9d452cec7854ad9c0fac6b93b47e0d26d55dab5e77e65b91f31b298c"
+    },
+    {
+      "path": "editor/docks/production/ProductionControl.cpp",
+      "sha256": "8f2502b42435ca6faf14ca53365f8327ddbc83df548b185198265181983427cc"
+    },
+    {
+      "path": "tests/editor/native_acceptance_parallel.py",
+      "sha256": "a6abc16b0729c10055b619178a551cab898995f8f768352cb3fc98d23b0a5f6a"
+    },
+    {
+      "path": "tests/editor/native_preparation_faults.py",
+      "sha256": "0187513275b3f955ec5887e4ba271eff976484211d174cb58c75bf01a4c20650"
+    },
+    {
+      "path": "tests/editor/native_preparation_repair.py",
+      "sha256": "7b49b105db5951baeaa53e4a640e58a376b4e97225948898080ebf0e319bd3ed"
+    },
+    {
+      "path": "tests/editor/native_prepared_job_recovery.py",
+      "sha256": "68c132077ae0dbe7c90dfe70e9b0af573b3915f7214f8b77f75630cfe3458474"
+    },
+    {
+      "path": "tests/editor/run_native_acceptance.py",
+      "sha256": "6f17af1ce2bb81df0eefebccb6a0eb8159d27276cb3c75dd0be781aaba903fcc"
+    },
+    {
+      "path": "tests/editor/run_native_production_setup.py",
+      "sha256": "17343d39e086b45521ce88dff6252e520b97b57856c3e12c0a232cdd256a4d08"
+    },
+    {
+      "path": "tools/godot_parallel/runner.mjs",
+      "sha256": "319a5d5e4c763ef95e1b158ec08b23be3e36583e6c430995beca0f5332700ad6"
+    },
+    {
+      "path": ".github/workflows/windows_builds.yml",
+      "sha256": "c8076b5f8e671ed8f78531cdde77851a1b355e35dc7952977f86efe821624969"
+    }
+  ],
+  "validation": {
+    "first_integrated_binary": {
+      "base": "c28d8175e870f75e5756355c5cc18c3bce4864fa",
+      "source_digest": "6d1c29f6168699a7241268d8c7737ca7f10636e36f8be296d2082f868cf5abae",
+      "native_key": "247451553eb595bc8a2d6bcc53ae8d6d2fdb19f3f592225f120cb97bb6da5c1b",
+      "engine_sha256": "94d8d77db92905670b8a899b8eccfd359b588d7dde70a4b014436ec373e78d8d",
+      "aichat_cases": 115,
+      "aichat_assertions": 1909,
+      "aicore_cases": 16,
+      "aicore_assertions": 110,
+      "all_selected_tests_passed": true,
+      "native_cases": [
+        {
+          "case": "baseline",
+          "exit_code": 0,
+          "oracle": true
+        },
+        {
+          "case": "cancel-missing",
+          "exit_code": 0,
+          "oracle": true
+        },
+        {
+          "case": "prepared-cold",
+          "exit_code": 0,
+          "oracle": true
+        },
+        {
+          "case": "prepared-warm",
+          "exit_code": 0,
+          "oracle": true
+        },
+        {
+          "case": "config-race",
+          "exit_code": 0,
+          "oracle": true
+        }
+      ],
+      "consumer_limits": "Five native cases used this exact binary before the subsequent Tianxuan integration. Generic base diagnostics remain false in intentional specialized fault scenarios; the original dedicated oracle is authoritative for its stated rejection/recovery boundary.",
+      "cold_warm": {
+        "accepted_per_case": 3,
+        "cold_originals_verified": 179,
+        "warm_originals_verified": 178,
+        "parent_call_result_same_id": true,
+        "parent_currentness": true,
+        "warm_public_consultation_rejection": true
+      },
+      "cancel_missing": {
+        "actual_setup_started": true,
+        "setup_terminal_ready": true,
+        "setup_exit_code": 0,
+        "late_result_preserved_without_dispatch": true
+      },
+      "config_race": {
+        "actual_runner_exit_code": 1,
+        "expected_diagnostic": "Dispatch configuration changed",
+        "original_terminal_registration_uid_preserved": true,
+        "repair_remains_interrupted": true
+      }
+    },
+    "new_main_binary": {
+      "base": "53afd518190ceeebaf5f1e13676b98596815fe23",
+      "source_digest": "2dc674fa1171cc203a2b9c1b7416570fdb2765bfbcedac938aa59bb8d4bf4423",
+      "native_key": "e9c081b8f2fe1e11050e8d3490f3100b607bbb18dabc04c7e082a225a467385d",
+      "engine_sha256": "b2ac0de1db8183055a398852c9d289ea5f90cbceeee28a0d207890f10f503932",
+      "console_sha256": "c5506d4dc3502f35c78b51913619458893f5d18e01c28e52a1404c0e31286d8d",
+      "build_exit_code": 0,
+      "aichat_cases": 115,
+      "aichat_assertions": 1909,
+      "all_selected_tests_passed": true,
+      "input_files_unchanged": true,
+      "precise_index_tree": "65c9403331a0b5f02328394de7af025e96d24d05",
+      "limits": "New-main build and selected AIChat tests passed. The earlier five-case binary results are not relabeled as this binary; new exact signed-head CI must exercise the integrated native consumers separately."
+    },
+    "runner_tests": {
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "limits": "Existing entry and dependency-preflight coverage; actual configuration-drift launch rejection is the separate native config-race case."
+    },
+    "static": {
+      "python_ast_and_ruff_files": 6,
+      "runner_node_syntax": true,
+      "cpp_format": true,
+      "private_copy_format_codespell": true
+    }
+  },
+  "retained_failures": [
+    "One baseline fixture invocation stopped before editor startup because its Python lacked pip. The same interpreter then used an existing trusted site-packages directory only through process-local PYTHONPATH; no runtime installation or source change. Original failure bytes are retained.",
+    "The generic diagnostics of intentionally interrupted/faulted native scenarios remain false; they are not overwritten by the dedicated passing oracle.",
+    "Cold/warm editor exit resource-leak warnings remain in original logs. These are not a claim of warning-free execution.",
+    "A transient Git remote read failed; authenticated GitHub API readback and subsequent proxied fetch recovered the actual main state."
+  ],
+  "evidence": [
+    {
+      "logical_artifact": "continuation951-ai1086-native-integration.json",
+      "sha256": "a7e4ed87b45e17fa973afc8749e75116d1e073b22318425afe653803a60adc67",
+      "bytes": 5806
+    },
+    {
+      "logical_artifact": "continuation951-resume-native-semantic-e895cae2d9/review.json",
+      "sha256": "0f708ce907ae0a813b75d9ee1f0d666390139dec6a8714ffa5e14d00e0e48664",
+      "bytes": 4628
+    },
+    {
+      "logical_artifact": "continuation951-main53afd-read-audit-791efe0e5f/review.json",
+      "sha256": "55feedb32ffea3fa0d407fe01d9eae690657123e2fdbda30f555904b485c996e",
+      "bytes": 3476
+    },
+    {
+      "logical_artifact": "resume951-helper-controller-compatibility.json",
+      "sha256": "02b50ff7dde224e6c6f93dca5dd044a6552a814cad387f7b790460fe14e65c8d",
+      "bytes": 5474
+    },
+    {
+      "logical_artifact": "resume951-runner-entry-preflight.json",
+      "sha256": "94da64bbbd57c272d8c7a833f734cecce1ab07d3dfc2887c06b4197df344ac7d",
+      "bytes": 2339
+    },
+    {
+      "logical_artifact": "continuation951-resume-build-r2-result.json",
+      "sha256": "735631d1210552372d26cc783089a599eb411cae9923ebf3755042bab3c07b31",
+      "bytes": 358
+    },
+    {
+      "logical_artifact": "continuation951-resume-build-r2.log",
+      "sha256": "467ad7f779b0ee43b6e42646264120fb98db3be19c72f1b151e973b367700e3e",
+      "bytes": 2042
+    },
+    {
+      "logical_artifact": "resume951-aicore.log",
+      "sha256": "5c089078ac3e7d2112e405f76f420d7be98ca9258c4235093acd59946e3abd68",
+      "bytes": 308
+    },
+    {
+      "logical_artifact": "resume951-native-baseline-cancel-summary.json",
+      "sha256": "93cf87e50c6966a3372ada9d1094a341c760951968bd58dc58a03a3b7ccf8a32",
+      "bytes": 6437
+    },
+    {
+      "logical_artifact": "resume951-native-cold-warm-validation.json",
+      "sha256": "96188dbb702cb731952180efacaaaaa9b3ba809619c9e20fae7886c093203389",
+      "bytes": 7379
+    },
+    {
+      "logical_artifact": "resume951-native-config-race-validation.json",
+      "sha256": "2256b9d9e3ac70b3fdc970a18fb9219e5e2f72efde650b3c32caf47fb8e71c25",
+      "bytes": 1581
+    },
+    {
+      "logical_artifact": "continuation951-manual-main53afd.json",
+      "sha256": "c2481328c662e2893f50e979ab8c541dea0fa36b1c5fdd5b1c97eb75dae166cd",
+      "bytes": 388
+    },
+    {
+      "logical_artifact": "continuation951-resume-build-r3-result.json",
+      "sha256": "46ad60bbe3f77be6bd9ad130023da6d7c2bd354954deae11b061a63693951a06",
+      "bytes": 358
+    },
+    {
+      "logical_artifact": "continuation951-resume-build-r3.log",
+      "sha256": "92c784d3cb03e46d3030765f967fdd2115143a9352fe981a52af558cb7f3444f",
+      "bytes": 2085
+    }
+  ],
+  "private_reference_resolution": "Logical artifact paths resolve under the delivery owner retained parent773 receipt root. Original fixture paths/transcripts and private runtime paths are not published here.",
+  "delivery_requirements": "Independent exact-index review, formal issue gate, committed-data check, new signed-head mandatory CI and main readback remain separate. Keep951/773 open until original full acceptance is actually satisfied. Preserve historical failed candidates and receipts; no installed editor upgrade or original-game continuation in this merge scope."
+}

@@ -1,0 +1,55 @@
+{
+  "issue": 951,
+  "request_id": "editor-parent-production-continuation-20261112",
+  "pull_request": 1213,
+  "signed_commit": "c33ce43d2e96475c21434ce41e97b7de9b0bd704",
+  "candidate": "dc28f7a89bd92700a488e469f4a48f56c7467d44",
+  "base": "7acdf07ca4c89251527a392c754a536af2094b6a",
+  "tree": "20f01c0220c40b3a595d2b4cc43b79d5d2ca3b73",
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43542607720/job/132286515662",
+  "result": "failed",
+  "step": {
+    "name": "Persistent preparation and original dependent job recovery",
+    "started_at": "2026-11-14T02:01:18Z",
+    "completed_at": "2026-11-14T02:08:03Z",
+    "baseline": "passed",
+    "cold": "passed",
+    "warm": "failed"
+  },
+  "warm_first_failure": {
+    "phase": "initial",
+    "setup_result": "blocked",
+    "reason": "Workspace changed while capturing production inputs; wait for the current writer and continue",
+    "request_sha256": "42126cf00f479789be7449f6cbe0b47923609aed94d8a07338c29c97a3c74019",
+    "result_sha256": "5ddf720e7336c58abf48fbe0d0a5a89c4f99fa12c976383a062d539805af24e7",
+    "producer_starts": 0,
+    "independent_reviews": 0,
+    "native_exit": 1,
+    "native_timed_out": false,
+    "native_failure": "A repair did not reach an actual blocked boundary with B accepted",
+    "actual_changed_input": null,
+    "limit": "Warm did not enable the earlier baseline-only Git tree observer. Neither the changing path nor its writer is established by this historical run."
+  },
+  "secondary_failure": {
+    "component": "tests/editor/native_prepared_job_recovery.py:collect",
+    "error": "KeyError: original_config",
+    "cause": "Collection assumed the first A review had already captured original references, although setup had failed before any worker started.",
+    "preserved": "The finally path retained native exit/stdout/stderr, the actual native report, setup observations and six available original objects. The normal final summary was not produced."
+  },
+  "original_evidence": {
+    "artifact_files": 167,
+    "all_bytes_and_hashes_verified": true,
+    "manifest_sha256": "a7ff9fef63ee91ee20f541a38836614ff258fe445a50cc6db9cae23ba668c508",
+    "validation_sha256": "b17eb152041d7c54df2b7432bedfad24b0c1f0344fd52e1ad23a583cbd3e722b",
+    "failure_assessment_sha256": "3713b0c69843538b394f1a8fe5cacb0a863ee4b85ff14091b44788ebad28ea76",
+    "independent_collector_audit_sha256": "634c3111a60bb9d167ae7ebda41ecfc0518358974ec19c728bca0ec98fc3d3a5",
+    "storage": "Private host evidence; historical CI artifacts and reports remain unchanged."
+  },
+  "followup_boundary": {
+    "collector": "Record incomplete stages and secondary collection errors without fabricating references or weakening the complete success oracle.",
+    "diagnosis": "Extend the existing real Git passthrough observer to prepared recovery, retain tree entries and raw differences outside the project, and run a bounded isolated diagnostic with the exact CI editor. The inline tree listing has a size cap; captured process output, raw differences and complete trace files do not have an additional size cap. Observation can affect timing.",
+    "production": "Retain the production snapshot guard and explicit continuation requirement. Do not infer a source, UID, cache or permission cause before actual evidence.",
+    "delivery": "PR1213 was not merged. Earlier PR1205 and PR1209 success does not replace this failure. The publishing wait window was released.",
+    "original_game": "Effective installation and original production records remain unchanged; installed acceptance is still pending."
+  }
+}

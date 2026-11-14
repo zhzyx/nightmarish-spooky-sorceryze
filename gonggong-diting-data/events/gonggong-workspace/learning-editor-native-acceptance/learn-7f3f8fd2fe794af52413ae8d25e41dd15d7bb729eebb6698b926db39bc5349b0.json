@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-7f3f8fd2fe794af52413ae8d25e41dd15d7bb729eebb6698b926db39bc5349b0",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "occurred_at": "2026-11-14T14:57:59.596942+00:00",
+  "evidence_refs": [
+    "kuafu-176e2c09921e80e61c0d89605b6fb1535a9a6d1f",
+    "learn-0a65af65012673f091131779f32f93a76b491b4e7df910b42b5fac10350ffb0e"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "revision": 3,
+    "previous": "943526d643a3cb8216b9464e68cc97ef67822a141ecb8647098190b38726ab5b",
+    "action": "applied",
+    "details": {
+      "task": "Issue951 controller integration: preserve original preparation-start evidence before asserting Stop and late-result rejection.",
+      "observed": "The cancel-missing isolated consumer observed one actual setup with a ready result and exit0, then retained the cancelled/unknown preparation after the parent changed without new dispatch. A separate fixture failed before editor launch due to missing pip and was retained as a setup failure, not counted as cancellation coverage."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-continuation-controller-integration-951.json",
+        "sha256": "bd5f74d012cc7897a938bc4e7d26efd8485dfdf07c8d767467feea9ecc704219"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-parent-production-continuation-20261112/kuafu-176e2c09921e80e61c0d89605b6fb1535a9a6d1f.json",
+      "sha256": "abd011e757eb3812964de814f9dd4739248d20bb4a216ed012150edf781ab6d6"
+    }
+  },
+  "sha256": "dd999347d4a412bd36d3f611c6ef440056cba94042743a2822d9bd579a8b3586"
+}

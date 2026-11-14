@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "issue_number": 951,
+  "parent_issue": 773,
+  "request_id": "editor-parent-production-continuation-20261112",
+  "recorded_at": "2026-11-13T18:11:12.095462+00:00",
+  "state": "partial_installed_consumer_evidence_not_business_acceptance",
+  "installed_main": "22ba06d9543c16ca5e91c0a5c8a4c8fc2545a4f4",
+  "source_followup_baseline": "432cd759",
+  "engine_sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+  "observations": [
+    "Full formal installation restarted with original parent conversation and original producer identities. A/B status allowed supplement/review; no producer was accepted.",
+    "The live automatic parallel-production authorization checkbox was off and explicit parallel config was empty. Source batch registration can reject external producers in this condition, while status had not reported this prerequisite. The first rejection was reported by the parent model; its exact mutation call/result had already been pruned and remains unknown.",
+    "The operator used the existing public checkbox under the existing user authorization. Toggling itself did not dispatch. A normal clarification removed a requirements-stage question about facts that should be checked during execution; this is separate from the completed JSON protocol repair.",
+    "A subsequent real status call contained a trailing space in action and was rejected. Its original native tool pair is retained. A normal correction then reached valid status and the original identified supplement.",
+    "The real supplement tool returned pending; the host subsequently recorded context_recorded. An independent readback verified the original currentness receipt, nonce, candidate and terminal. Original A/B terminal bytes and C state remained unchanged.",
+    "The model represented three LF characters as literal backslash plus n. Actual input is 1919 UTF-8 bytes, not the planned 1916. All other text and parameters are equal; original actual bytes are retained, not normalized in the game history.",
+    "A fresh review was requested through the real tool, with a fresh currentness receipt. Reviewer26 received and consumed the actual supplemental data, including the supplied bounded asset-origin reads. Its 24 tool receipts retain one oversized read failure at sequence3; the failure receipt does not preserve that call path/arguments. Later successful reads do not erase review_source_unverified.",
+    "Reviewer26 reported fail; business acceptance remains null. Reviewer27 is a queued B review whose prompt and scope match B execution and criteria. It has no conversation/snapshot yet. No replacement B review was dispatched; the precise waiting gate is unknown."
+  ],
+  "actual_context_sha256": "7a0150500f96da04e706857d1e348cab0435882dcc4324dcaa2dc3e6061d942b",
+  "currentness_receipt_sha256": "d546519ca92e3fa190db7fc8133731b512cf3e9d7fe3e3cb5f99995e640f5c53",
+  "remaining": [
+    "New source diagnostic candidate must be independently reviewed, validated, delivered and installed.",
+    "A requires a source-verified fresh review, eligible repair and independent revalidation.",
+    "B existing queued review must be reconciled through its actual lifecycle.",
+    "C remains interrupted and unaccepted; dependent production and full game/editor acceptance are incomplete."
+  ],
+  "related_narrow_bug": {
+    "issue_number": 1070,
+    "state": "closed_completed",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1070#issuecomment-6860570205",
+    "scope": "Requirements protocol and installed original-session status recovery only."
+  },
+  "evidence": [
+    {
+      "id": "full_installed_status",
+      "sha256": "a0aa49c2feba4620e54a161dfe7c19e9a1cf20fac36ddf9a383282c399c6809f",
+      "bytes": 4718,
+      "storage": "operator-private; contains original local evidence and is not included in this public report"
+    },
+    {
+      "id": "setup_diagnosis",
+      "sha256": "3e2b1c5f1ac2533dbfcbae30c591edcec3b460a97183456199936bed19b4978d",
+      "bytes": 5532,
+      "storage": "operator-private; contains original local evidence and is not included in this public report"
+    },
+    {
+      "id": "requirements_semantic_question",
+      "sha256": "ac9c9c6ed3e97bba276a3b00c35c39b1998b29acdffb0fddda5bab8f52cc3004",
+      "bytes": 7448,
+      "storage": "operator-private; contains original local evidence and is not included in this public report"
+    },
+    {
+      "id": "invalid_status_action",
+      "sha256": "e54b3cb96c94ceae0de0e7f30b808931657e9f21dfa46c0f3b831b340c318046",
+      "bytes": 2394,
+      "storage": "operator-private; contains original local evidence and is not included in this public report"
+    },
+    {
+      "id": "supplement_tool_pair",
+      "sha256": "e13fe12ef7f41a08adbdbc25363d957e187a1b39571c89f23b040632f53ed179",
+      "bytes": 7046,
+      "storage": "operator-private; contains original local evidence and is not included in this public report"
+    },
+    {
+      "id": "supplement_persisted_and_bound",
+      "sha256": "e501b42194e5c69f880d6db74dad24ed5da7d7e37daf423b5df3c9e1c82215e1",
+      "bytes": 3820,
+      "storage": "operator-private; contains original local evidence and is not included in this public report"
+    },
+    {
+      "id": "fresh_review_tool_pair",
+      "sha256": "ba9a9386c4e4b0bde70a1e884f85b8de34e83e0f28d42647efdddb523917d0eb",
+      "bytes": 3119,
+      "storage": "operator-private; contains original local evidence and is not included in this public report"
+    },
+    {
+      "id": "independent_review26_27_audit",
+      "sha256": "7b24621ba26189178d3e8e21c64411cf62b1399dd73cff374ba4a90b4a1708c1",
+      "bytes": 13094,
+      "storage": "operator-private; contains original local evidence and is not included in this public report"
+    }
+  ],
+  "path_basis": "All repository artifact paths resolve from the repository root; private evidence IDs are not portable file paths."
+}
