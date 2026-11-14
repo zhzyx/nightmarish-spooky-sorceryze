@@ -1,0 +1,45 @@
+{
+  "base_commit": "ee93c936126f5d75891e768581ed172ea7889476",
+  "checks": {
+    "build_tools": {
+      "command": "python3 engine_next/Tools/TestBuildRuntime.py -v; python3 -m unittest tools.test_check_engine_next_contract -v",
+      "observed": "7 build-tool and 23 contract tests passed",
+      "passed": true
+    },
+    "format_correction": {
+      "command": "Extract the exact clang-format/ruff diff emitted by CI job 132502470722 and apply it to the source candidate",
+      "observed": "Nine files received format-only changes; no behavior edits",
+      "passed": true
+    },
+    "link_contract": {
+      "command": "python3 tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/m3-pr1-clang-r2/EngineNextRuntimeTestsLinkManifest.json",
+      "observed": "86 source files, 127 includes and 41 linked objects passed",
+      "passed": true
+    },
+    "runtime_release": {
+      "command": "python3 engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/m3-pr1-clang-r2 --run-tests",
+      "observed": "32 tests/352 checks and all M2 build/clean/package handshakes passed",
+      "passed": true
+    },
+    "whitespace": {
+      "command": "git diff --cached --check",
+      "observed": "No errors",
+      "passed": true
+    }
+  },
+  "issue_number": 1240,
+  "not_verified": [
+    "Static hooks on R2 until exact candidate CI",
+    "M3 overall completion"
+  ],
+  "previous": {
+    "candidate": "eafea5ef9a0e4d783b7076506bf56ee3c0f0e248",
+    "pr": 1250,
+    "result": "Windows/Linux/macOS independent builds passed; static format hooks failed",
+    "signed_head": "a94eaefcb4d641c1733439010aeece4b0dd82286"
+  },
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "schema_version": 1,
+  "slice": "pr1-r2",
+  "supersedes": "data-collection/engine-next-assets-ai-workflow-m3-pr1-verification.json"
+}

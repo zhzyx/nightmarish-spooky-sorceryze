@@ -25,6 +25,12 @@ ENET_SOURCES = [
 ]
 LIBRARY_SOURCES = [
     *ENET_SOURCES,
+    "ai_core/Runtime.cpp",
+    "engine_next/Serialization/Json.cpp",
+    "engine_next/Assets/Types.cpp",
+    "engine_next/Assets/AssetManifest.cpp",
+    "engine_next/Assets/SceneDocument.cpp",
+    "engine_next/AI/WorkflowSnapshot.cpp",
     "engine_next/Gameplay/PredictionModel.cpp",
     "engine_next/Gameplay/InterpolationBuffer.cpp",
     "engine_next/Gameplay/PredictionReconciler.cpp",
@@ -43,6 +49,10 @@ LIBRARY_SOURCES = [
 ]
 TEST_SOURCES = [
     "engine_next/Tests/RuntimeTestMain.cpp",
+    "engine_next/Tests/Serialization/TestJson.cpp",
+    "engine_next/Tests/Assets/TestAssetManifest.cpp",
+    "engine_next/Tests/Assets/TestSceneDocument.cpp",
+    "engine_next/Tests/AI/TestWorkflowSnapshot.cpp",
     "engine_next/Tests/Runtime/TestClockAndFixedStep.cpp",
     "engine_next/Tests/Runtime/TestWorld.cpp",
     "engine_next/Tests/Runtime/TestRuntimeConfig.cpp",
@@ -57,6 +67,11 @@ APP_SOURCES = {
     "EngineNextRuntimeTests": TEST_SOURCES,
 }
 PUBLIC_HEADERS = [
+    "EngineNext/Serialization/Json.h",
+    "EngineNext/Assets/Types.h",
+    "EngineNext/Assets/AssetManifest.h",
+    "EngineNext/Assets/SceneDocument.h",
+    "EngineNext/AI/WorkflowSnapshot.h",
     "EngineNext/Gameplay/Status.h",
     "EngineNext/Gameplay/Vector3.h",
     "EngineNext/Gameplay/PredictionTypes.h",
@@ -83,6 +98,7 @@ BUILD_SUPPORT_SOURCES = [
     "engine_next/Tools/PackageRuntime.py",
 ]
 BuildSupport.ALLOWED_REPOSITORY_INPUTS = (
+    "ai_core/",
     "engine_next/",
     "build/engine_next/",
 )
