@@ -220,10 +220,10 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 		}
 		std::string strValue;
 		if (strArgument == "--manual-ticks" || strArgument == "--fixed-step-ms" || strArgument == "--seed" ||
-				strArgument == "--port" || strArgument == "--duration-ms" || strArgument == "--drain-after-ms" ||
-				strArgument == "--drain-timeout-ms" || strArgument == "--drain-response-delay-ms" ||
-				strArgument == "--impairment-delay-ms" || strArgument == "--impairment-jitter-ms" || strArgument == "--impairment-loss-permille" ||
-				strArgument == "--impairment-queue-capacity")
+			strArgument == "--port" || strArgument == "--duration-ms" || strArgument == "--drain-after-ms" ||
+			strArgument == "--drain-timeout-ms" || strArgument == "--drain-response-delay-ms" ||
+			strArgument == "--impairment-delay-ms" || strArgument == "--impairment-jitter-ms" || strArgument == "--impairment-loss-permille" ||
+			strArgument == "--impairment-queue-capacity")
 		{
 			if (!ParseValue(in_arrArguments, nIndex, strValue))
 			{
@@ -237,7 +237,7 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 			continue;
 		}
 		if (strArgument == "--trace-output" || strArgument == "--client-id" || strArgument == "--bind" || strArgument == "--connect" ||
-				strArgument == "--asset-package")
+			strArgument == "--asset-package")
 		{
 			if (!ParseValue(in_arrArguments, nIndex, strValue) || strValue.empty())
 			{
@@ -266,7 +266,7 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 				stParsed.bNetworkMode = true;
 				bNetworkEndpointProvided = true;
 				if ((strArgument == "--bind" && stParsed.eRole != RuntimeRole::Server) ||
-						(strArgument == "--connect" && stParsed.eRole != RuntimeRole::Client))
+					(strArgument == "--connect" && stParsed.eRole != RuntimeRole::Client))
 				{
 					return RuntimeStatus::InvalidParameter;
 				}
@@ -284,12 +284,12 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 		return RuntimeStatus::InvalidParameter;
 	}
 	if (stParsed.bNetworkMode &&
-			(!bNetworkEndpointProvided || (stParsed.eRole == RuntimeRole::Client && stParsed.nPort == 0)))
+		(!bNetworkEndpointProvided || (stParsed.eRole == RuntimeRole::Client && stParsed.nPort == 0)))
 	{
 		return RuntimeStatus::InvalidParameter;
 	}
 	if (stParsed.eRole == RuntimeRole::Client &&
-			(stParsed.nDrainAfterMsec != 0 || stParsed.nDrainTimeoutMsec != 1000 || stParsed.nDrainResponseDelayMsec != 0))
+		(stParsed.nDrainAfterMsec != 0 || stParsed.nDrainTimeoutMsec != 1000 || stParsed.nDrainResponseDelayMsec != 0))
 	{
 		return RuntimeStatus::InvalidParameter;
 	}

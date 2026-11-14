@@ -259,7 +259,7 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 				Network::Disconnect stDisconnect;
 				const Network::Session *pSession = stSessions.GetSession(stEvent.nPeerId);
 				if (Network::DecodeDisconnect(stEvent.arrPayload.data() + Network::FRAME_HEADER_BYTES, stHeader.nPayloadBytes, stDisconnect) != RuntimeStatus::Ok ||
-						pSession == nullptr || pSession->nSessionId != stHeader.nSessionId)
+					pSession == nullptr || pSession->nSessionId != stHeader.nSessionId)
 				{
 					Reject(*pTransport, stEvent.nPeerId, mapSequences, stHeader, 6);
 					continue;
@@ -338,7 +338,7 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 						stHeader.nPayloadBytes,
 						stCommand);
 				if (stEvent.nChannelId != 1 || pSession == nullptr || pSession->nSessionId != stHeader.nSessionId ||
-						pSession->stEntityId.nValue != stCommand.nEntityId || eInputStatus != RuntimeStatus::Ok)
+					pSession->stEntityId.nValue != stCommand.nEntityId || eInputStatus != RuntimeStatus::Ok)
 				{
 					Reject(*pTransport, stEvent.nPeerId, mapSequences, stHeader, 6);
 					continue;
@@ -378,7 +378,7 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 					continue;
 				}
 				if (stCommand.stInput.nSequence > stQueue.nLastProcessedSequence + 32 ||
-						stQueue.arrInputs.size() >= 64 || stCommand.stInput.nStepMsec != stModel.GetFixedStepMsec())
+					stQueue.arrInputs.size() >= 64 || stCommand.stInput.nStepMsec != stModel.GetFixedStepMsec())
 				{
 					Reject(*pTransport, stEvent.nPeerId, mapSequences, stHeader, 7);
 					continue;
@@ -557,7 +557,7 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 		if (in_stConfig.nDrainAfterMsec != 0 && stClock.NowMsec() - nStartedMsec >= in_stConfig.nDrainAfterMsec)
 		{
 			eStatus = BeginDrain(*pTransport, stSessions, mapSequences, stClock.NowMsec(), stHost.GetFixedStepLoop().GetTick(), in_stConfig.nDrainTimeoutMsec,
-					stModel.GetFixedStepMsec(), stDrain);
+								 stModel.GetFixedStepMsec(), stDrain);
 			if (eStatus != RuntimeStatus::Ok)
 			{
 				break;

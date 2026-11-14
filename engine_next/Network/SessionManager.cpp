@@ -55,7 +55,7 @@ Runtime::RuntimeStatus SessionManager::CreateSession(PeerId in_nPeerId, const Cl
 {
 	const bool bResumeEmpty = in_stHello.nResumeSessionId == 0 &&
 			std::all_of(in_stHello.arrResumeToken.begin(), in_stHello.arrResumeToken.end(), [](std::uint8_t nValue)
-					{ return nValue == 0; });
+						{ return nValue == 0; });
 	if (in_nPeerId == 0 || nFixedStepMsec == 0 || !bResumeEmpty)
 	{
 		return Runtime::RuntimeStatus::InvalidParameter;
@@ -176,7 +176,7 @@ Runtime::RuntimeStatus SessionManager::ResumeSession(PeerId in_nPeerId, const Cl
 	}
 	const std::map<std::uint64_t, DisconnectedSession>::iterator stDisconnected = mapDisconnected.find(in_stHello.nResumeSessionId);
 	if (stDisconnected == mapDisconnected.end() || stDisconnected->second.nGraceDeadlineMsec <= nNowMsec ||
-			stDisconnected->second.stSession.arrResumeToken != in_stHello.arrResumeToken)
+		stDisconnected->second.stSession.arrResumeToken != in_stHello.arrResumeToken)
 	{
 		return Runtime::RuntimeStatus::InvalidParameter;
 	}

@@ -1,0 +1,42 @@
+{
+  "checks": {
+    "host_behavior": {
+      "command": "Godot 4.4.1 headless RunM3LegacyAcceptance.py using current next_asset",
+      "observed": "Real import/verify/publish/readback passed with digest 02df67399c4a5b1dfe481accaf8ce8c9c888326ac82131e8e98676d9be81ca4c; nine forbidden inputs and three semantic corruptions rejected; both no-clobber paths passed",
+      "passed": true
+    }
+  },
+  "input_blobs": {
+    ".github/workflows/engine_next_contract.yml": "87ea90e3580b740f72849b5d9a571107f5d767c3",
+    "engine_next/Apps/NextAssetMain.cpp": "d9cb2d97b4bfd1e32dad2a714231cb3620668d08",
+    "engine_next/Assets/AssetCompiler.cpp": "8429ebdf49761e2f3d847228714640a17585e5be",
+    "engine_next/Assets/AssetPackage.cpp": "393451339b3ebc787ec882368362e6659909271c",
+    "tools/engine_next_legacy/build-impact.json": "ec0107f88fa52eb44e6d52919cc544de367712ec",
+    "tools/engine_next_legacy/fixtures/External.tscn": "e1d7fd5eeb8d7712f572df3fa124ec32df885264",
+    "tools/engine_next_legacy/fixtures/Inherited.tscn": "64e0d0b9ffcca85517b2f39608ddcad767aacb4a",
+    "tools/engine_next_legacy/fixtures/Missing.tscn": "d533890effed91db47cf404933c3de79c9a31d0d",
+    "tools/engine_next_legacy/fixtures/NodeUnknownAttribute.tscn": "b5f0908d67821559e86611cf20bd91da59cdf4d9",
+    "tools/engine_next_legacy/fixtures/ScriptRejected.tscn": "6f2a31631292cd7ee63a83cdcbfdbcb263670059",
+    "tools/engine_next_legacy/fixtures/Uid.tscn": "9574780b56fa469b210c4ae191c0435ccc593465",
+    "tools/engine_next_legacy/fixtures/UnknownAttribute.tscn": "7f52a842604df482c02e1bbdc50baa363483bd72",
+    "tools/engine_next_legacy/fixtures/UnsupportedNode.tscn": "c1dca478725c9fbcdd589c7766179b67a2ad8501",
+    "tools/engine_next_legacy/fixtures/UnsupportedProperty.tscn": "bafa1c24fa761b0d8513e41d894a95a38bfcb787",
+    "tools/engine_next_legacy/fixtures/Whitelist.tscn": "d9c74c2bf8ea009a69751fd86e228f4335f5706e",
+    "tools/engine_next_legacy/fixtures/bad.gd": "61510e14cd75b8840807846a94b864f5acc1f39e",
+    "tools/engine_next_legacy/fixtures/valid.glb": "5a1cd3e4f7b33e7b2a9811c11d221870be16a9fc",
+    "tools/engine_next_legacy/scene_adapter.gd": "552bf3eb9d3ad63d581fe9c32aee976725029fe1"
+  },
+  "issue_number": 1240,
+  "limitations": [
+    "Legacy TSCN no-clobber assumes one host process and is not concurrent atomic creation",
+    "Windows/macOS legacy behavior requires separate evidence"
+  ],
+  "measurements": [
+    "data-collection/engine-next-assets-ai-workflow-m3-pr4-r2-verification.json",
+    "data-collection/engine-next-assets-ai-workflow-m3-pr4-r2-review.json"
+  ],
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "schema_version": 1,
+  "slice": "pr4-r2-legacy",
+  "supersedes": "data-collection/engine-next-assets-ai-workflow-m3-pr4-legacy-build-impact.json"
+}

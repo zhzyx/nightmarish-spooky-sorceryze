@@ -280,7 +280,7 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 				}
 				const bool bResume = bReconnecting && bReconnectAttempted;
 				if (stHeader.nSessionId == 0 || stWelcome.nFixedStepMsec != stHost.GetFixedStepLoop().GetFixedStepMsec() ||
-						(bResume && (stHeader.nSessionId != nSessionId || stWelcome.nEntityId != nEntityId || stWelcome.arrResumeToken == arrResumeToken)))
+					(bResume && (stHeader.nSessionId != nSessionId || stWelcome.nEntityId != nEntityId || stWelcome.arrResumeToken == arrResumeToken)))
 				{
 					eStatus = RuntimeStatus::InvalidParameter;
 					break;
@@ -336,7 +336,7 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 			{
 				Network::Disconnect stDisconnect;
 				if (Network::DecodeDisconnect(stEvent.arrPayload.data() + Network::FRAME_HEADER_BYTES, stHeader.nPayloadBytes, stDisconnect) != RuntimeStatus::Ok ||
-						stHeader.nSessionId != nSessionId)
+					stHeader.nSessionId != nSessionId)
 				{
 					eStatus = RuntimeStatus::InvalidParameter;
 					break;
@@ -344,7 +344,7 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 				if (stDisconnect.nReason == static_cast<std::uint16_t>(Network::DisconnectReason::DrainAcknowledge))
 				{
 					if (!bClosing || !bCloseSucceeded || stDisconnect.nAcknowledgeSequence != nExpectedDrainAcknowledge ||
-							stDisconnect.nDrainDeadlineTick != nDrainDeadlineTick)
+						stDisconnect.nDrainDeadlineTick != nDrainDeadlineTick)
 					{
 						eStatus = RuntimeStatus::InvalidState;
 						break;
@@ -543,7 +543,7 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 		}
 
 		if (bMove && !bPredictionComplete && nSentInputs == 24 && stPrediction.GetUnconfirmedInputCount() == 0 &&
-				mapUnacknowledgedInputs.empty() && stPrediction.GetLastConfirmedSequence() == 24)
+			mapUnacknowledgedInputs.empty() && stPrediction.GetLastConfirmedSequence() == 24)
 		{
 			const Gameplay::PredictionState &stState = stPrediction.GetPredictedState();
 			std::cout << "ENGINE_NEXT_CLIENT_PREDICTION client_id=" << in_stConfig.strClientId
@@ -571,7 +571,7 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 				const float fDisplacement = stResult.stState->vPosition.fX - fSpawnX;
 				const bool bMovingSample = fDisplacement > 0.0001F || fDisplacement < -0.0001F;
 				if (bMovingSample && !bRemoteSeen &&
-						(stResult.eStatus == Gameplay::InterpolationStatus::Interpolated || stResult.eStatus == Gameplay::InterpolationStatus::Held))
+					(stResult.eStatus == Gameplay::InterpolationStatus::Interpolated || stResult.eStatus == Gameplay::InterpolationStatus::Held))
 				{
 					bRemoteSeen = true;
 					std::cout << "ENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=" << stEntry.first
@@ -592,7 +592,7 @@ RuntimeStatus RunClient(const RuntimeConfig &in_stConfig)
 							  << std::flush;
 				}
 				if (bStaleSeen && !bRemoteRecovered && bMovingSample && stResult.stState->nServerTimeMsec > nStaleServerTimeMsec &&
-						(stResult.eStatus == Gameplay::InterpolationStatus::Interpolated || stResult.eStatus == Gameplay::InterpolationStatus::Held))
+					(stResult.eStatus == Gameplay::InterpolationStatus::Interpolated || stResult.eStatus == Gameplay::InterpolationStatus::Held))
 				{
 					bRemoteRecovered = true;
 					std::cout << "ENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=" << stEntry.first

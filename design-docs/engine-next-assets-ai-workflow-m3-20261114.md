@@ -485,5 +485,5 @@ tools/engine_next_legacy/fixtures/{Whitelist.tscn,ScriptRejected.tscn,Unsupporte
 
 - PR 1／2 的中立契约、资产编译和包证据见 `data-collection/engine-next-assets-ai-workflow-m3-pr1-*` 与 `pr2-*`，对应 PR #1272／#1277 已合入。
 - PR 3 的源码审查与本机验证见 `data-collection/engine-next-assets-ai-workflow-m3-pr3-r3-review.json`、`pr3-r3-verification.json` 和 `pr3-r3-build-impact.json`；R1／R2 审查与证据保留用于追踪 CI 格式、负责人和 Windows 兼容性修正。真实 Executor 离线／恢复／进程边界、52 个原生测试、ASan／UBSan、干净源码树和真实链接清单均已执行；Executor／contracts／extensions 定向回归共 44 项通过。
-- PR 4 的独立审查见 `data-collection/engine-next-assets-ai-workflow-m3-pr4-review.json`；本机证据覆盖 54 个原生测试、同包与无包三进程、Godot 4.4.1 的导入／验证／发布／回读及禁止项。Windows／Linux 的 PR 4 结果仍以精确 CI 为准。
+- PR 4 的独立审查见 `data-collection/engine-next-assets-ai-workflow-m3-pr4-r2-review.json`；R2 本机证据覆盖 54 个原生测试、同包与无包三进程、Godot 4.4.1 的导入／验证／发布／回读及禁止项。R1 证据保留用于追踪 CI 格式与命名修正；Windows／Linux 的 PR 4 结果仍以精确 CI 为准。
 - 当前内置 Python 的 AINative 全量 422 项回归记录为 17 失败、42 错误、62 跳过，包含 `os.waitid` 缺失及关联 Provider／owned-process 失败，不得记为全量通过。完整 AI 回归、PR 5 和整单验收仍是独立待办。

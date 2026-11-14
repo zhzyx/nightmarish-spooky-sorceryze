@@ -44,7 +44,7 @@ bool SceneRuntime::Load(const std::string &in_strPackagePath, Assets::Diagnostic
 		return false;
 	}
 	if (!stPredictionModel.SetFixedStepMsec(stPackage.stScene.nFixedStepMsec) ||
-			!stPredictionModel.SetMaxSpeed(static_cast<float>(stPackage.stScene.dMaxSpeed)))
+		!stPredictionModel.SetMaxSpeed(static_cast<float>(stPackage.stScene.dMaxSpeed)))
 	{
 		Assets::AddDiagnostic(out_arrDiagnostics, "invalid_simulation", "$.simulation", "scene simulation cannot configure the prediction model");
 		Clear();
@@ -66,7 +66,7 @@ bool SceneRuntime::Load(const std::string &in_strPackagePath, Assets::Diagnostic
 		});
 	}
 	std::sort(arrSpawns.begin(), arrSpawns.end(), [](const SpawnDefinition &in_stLeft, const SpawnDefinition &in_stRight)
-			{ return in_stLeft.stEntityId.nValue < in_stRight.stEntityId.nValue; });
+			  { return in_stLeft.stEntityId.nValue < in_stRight.stEntityId.nValue; });
 	if (arrSpawns.size() != 2)
 	{
 		Assets::AddDiagnostic(out_arrDiagnostics, "spawn_count", "$.entities", "M2 scene consumption requires exactly two player_spawn entities");
@@ -77,18 +77,18 @@ bool SceneRuntime::Load(const std::string &in_strPackagePath, Assets::Diagnostic
 	strSceneRevision = stPackage.stScene.strSceneRevision;
 	strSceneContentSha256 = stPackage.stManifest.strSceneContentSha256;
 	strPackageDigest = stPackage.strPackageDigest;
-	bLoaded = true;
+	bSceneLoaded = true;
 	return true;
 }
 
 bool SceneRuntime::ConfigureDefaultSimulation(std::uint32_t in_nFixedStepMsec) noexcept
 {
-	return !bLoaded && stPredictionModel.SetFixedStepMsec(in_nFixedStepMsec);
+	return !bSceneLoaded && stPredictionModel.SetFixedStepMsec(in_nFixedStepMsec);
 }
 
 bool SceneRuntime::IsLoaded() const noexcept
 {
-	return bLoaded;
+	return bSceneLoaded;
 }
 
 const std::string &SceneRuntime::GetSceneId() const noexcept
@@ -140,7 +140,7 @@ std::size_t SceneRuntime::GetSpawnCount() const noexcept
 
 void SceneRuntime::Clear() noexcept
 {
-	bLoaded = false;
+	bSceneLoaded = false;
 	strSceneId.clear();
 	strSceneRevision.clear();
 	strSceneContentSha256.clear();

@@ -50,7 +50,7 @@ struct SpawnDefinition
 
 class SceneRuntime
 {
-	bool bLoaded = false;
+	bool bSceneLoaded = false;
 	std::string strSceneId;
 	std::string strSceneRevision;
 	std::string strSceneContentSha256;
