@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-378a455fc06b4d7d140896593c3f33e7998e4efa",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-parent-production-continuation-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "747a8a98f143151959ec7ebb6082117e464936be94ab4f219f9066d2d3d7880b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "action": "dependency",
+    "detection_head": "99a8e8cb1fb4e72dc135b9f655884984ab7909cc",
+    "context_sha256": "6b96503abb151ccc5ab08174479e34b14cd0c6741cb6a7ba55201a0c6405aec1",
+    "operator": "Sail-Li",
+    "worker": "codex-root-production951",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/99a8e8cb1fb4e72dc135b9f655884984ab7909cc/customizations/components/repository-dispatch/acceptance-candidate.mjs#L111",
+    "diagnosis": "Latest-main integration dependency regression reproduced using actual candidate functions: a valid newly added host audit with string supersedes references undefined r, so newHostAudit throws ReferenceError and public candidate currentness returns false. Valid events without supersedes pass. Actual Godot terminal events use supersedes; the failure requires addition after candidate capture. Historical PR1213 failures remain distinct.",
+    "next_action": "Root owns #951 integration; native worker sinan_65c894021a8fdc52 fixes the isolated main-based delivery copy and regression tests. Independent worker sinan_3b7cdf242c7db008 reviews. Preserve exact hash and invalid-event rejection, then run actual candidate CI before main and original installed acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T02:59:48.784170+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-14T03:01:14.585635+00:00",
+  "sha256": "d242ea0994b7605dd07b84134cedab41deedb50ffb1511124b61338532c38049"
+}
