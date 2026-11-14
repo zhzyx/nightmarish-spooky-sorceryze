@@ -387,6 +387,13 @@ Array chat_tools() {
 			for (const String &key : { String("action"), String("operation_id"), String("execution_id"), String("candidate_sha256"), String("context") }) {
 				Dictionary property;
 				property["type"] = "string";
+				if (key == "action") {
+					Array actions;
+					for (const String &value : { String("status"), String("supplement"), String("review"), String("repair") }) {
+						actions.push_back(value);
+					}
+					property["enum"] = actions;
+				}
 				properties[key] = property;
 			}
 			Dictionary producer;
@@ -806,6 +813,13 @@ void AIChatDock::_poll_history_save() {
 	}
 	if (!history_save_error && !history_dirty && !acceptance_reviews.is_empty()) {
 		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
+	}
+	const int preparation_parent = _sub_agent_root(active_agent);
+	if (!history_save_error && !history_dirty && design_batches.has(preparation_parent)) {
+		const Dictionary preparation = design_batches[preparation_parent].get("production_preparation", Dictionary());
+		if (preparation.get("state", "") == "intent" && int64_t(preparation.get("editor_pid", -1)) == OS::get_singleton()->get_process_id() && preparation.get("batch_token", "") == design_batches[preparation_parent].get("token", Variant())) {
+			callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
+		}
 	}
 	if (!history_save_error && !history_dirty && design_batches.has(active_agent) && bool(design_batches[active_agent].get("parallel_external", false)) && String(design_batches[active_agent].get("state", "")) == "queued" && !queued_messages.is_empty() && Dictionary(queued_messages[0]).has("design_batch_return")) {
 		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
@@ -4369,6 +4383,7 @@ AIChatDock::AgentSession AIChatDock::_capture_agent() const {
 	state.draft_images = draft_images.duplicate(true);
 	state.queued_messages = queued_messages;
 	state.queue_paused = queue_paused;
+	state.bConsultationTurn = consultation_turn;
 	state.model = model->get_text();
 	state.cli_model = cli_model->get_text();
 	state.codex_model = codex_model->get_text();
@@ -4410,6 +4425,8 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 	draft_images = p_session.draft_images.duplicate(true);
 	queued_messages = p_session.queued_messages;
 	queue_paused = p_session.queue_paused;
+	// A finished review must not leave its read-only turn on the parent session.
+	consultation_turn = p_session.bConsultationTurn || _is_review_child();
 	turn_completed = false;
 	_refresh_message_queue();
 	_refresh_images();

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-86a53e8bc9cdc84b4580fe7f66c732263ac69b8a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-parent-production-continuation-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e13711406ee8bf8f92f54c2ebb44297842f09c4df909ef12cad90294fcd7a085",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "action": "validation",
+    "detection_head": "8f89f721498a248133b59acee9923c1bbdb52ce7",
+    "context_sha256": "6b96503abb151ccc5ab08174479e34b14cd0c6741cb6a7ba55201a0c6405aec1",
+    "operator": "Sail-Li",
+    "worker": "codex-root-production951",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43531892768/job/132251593196",
+    "diagnosis": "Exact PR1191 CI failed the preparation baseline consumer. Initial native preparation correctly rejected the changed baseline; after cold restore and explicit Continue, capture rejected workspace input drift before the expected baseline comparison. Actual changed input remains under investigation. Cold/warm dependent-job cases did not run. Missing-evidence reports separately contain real parallel events and review results; generic transport false is not their scenario result.",
+    "next_action": "Preserve original CI artifacts and investigate the changed snapshot input with the implementation owner; fix the actual cause and replay the bounded native case, followed by independent candidate review and exact CI. Do not merge or upgrade the original installation.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T00:21:23.398338+00:00",
+    "attempted": "Downloaded immutable parent reports, recorded hashes, compared initial and explicit retry results; first detect action ci was rejected by CLI, corrected to validation before actual intake.",
+    "repair_owner": "Current authorized implementation worker sinan_99def07d3f8a988c; root owns delivery; sinan_3b7cdf242c7db008 remains independent reviewer.",
+    "continuable": "Read-only original installation preparation and review of already completed schema consumers; no original game or foreign worktree changes."
+  },
+  "occurred_at": "2026-11-14T00:24:54.923334+00:00",
+  "sha256": "492e509bbcb03a4c33f49c70be266395d61bf4e5cda666620222a8fd2ebb3d50"
+}

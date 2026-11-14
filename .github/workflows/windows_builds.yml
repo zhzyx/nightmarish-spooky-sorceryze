@@ -233,6 +233,30 @@ jobs:
           $editor = '${{ matrix.bin }}'.Replace('.console.exe', '.exe')
           python -X utf8 tests/editor/run_native_acceptance.py --godot $editor --node (Get-Command node).Source --scenario parallel-parent-restart --restore-confirmation --out parent-recovery-report/confirmation.json
 
+      - name: Independent review missing execution evidence contract
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor'
+        timeout-minutes: 15
+        run: |
+          $env:NATIVE_ACCEPTANCE_JOB_OBJECT = (Resolve-Path tools/codebuddy_cli/node_modules/@tencent-ai/codebuddy-code/bin/native/win32-x64/job-object.node).Path
+          $editor = '${{ matrix.bin }}'.Replace('.console.exe', '.exe')
+          python -X utf8 tests/editor/run_native_acceptance.py --godot $editor --node (Get-Command node).Source --scenario parallel-evidence-completion --out parent-recovery-report/mixed-evidence.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -X utf8 tests/editor/run_native_acceptance.py --godot $editor --node (Get-Command node).Source --scenario parallel-evidence-completion --invalid-missing-evidence fail-null --out parent-recovery-report/rejected-fail-null.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -X utf8 tests/editor/run_native_acceptance.py --godot $editor --node (Get-Command node).Source --scenario parallel-evidence-completion --invalid-missing-evidence array --out parent-recovery-report/rejected-evidence-array.json
+
+      - name: Persistent preparation and original dependent job recovery
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor'
+        timeout-minutes: 20
+        run: |
+          $env:NATIVE_ACCEPTANCE_JOB_OBJECT = (Resolve-Path tools/codebuddy_cli/node_modules/@tencent-ai/codebuddy-code/bin/native/win32-x64/job-object.node).Path
+          $editor = '${{ matrix.bin }}'.Replace('.console.exe', '.exe')
+          python -X utf8 tests/editor/run_native_production_setup.py --godot $editor --node (Get-Command node).Source --backend codebuddy --case normal --preparation-recovery baseline --out parent-recovery-report/preparation-baseline.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -X utf8 tests/editor/run_native_production_setup.py --godot $editor --node (Get-Command node).Source --backend codex --case normal --prepared-job-recovery cold --out parent-recovery-report/prepared-cold.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -X utf8 tests/editor/run_native_production_setup.py --godot $editor --node (Get-Command node).Source --backend codex --case normal --prepared-job-recovery warm --out parent-recovery-report/prepared-warm.json
+
       - name: Upload parent recovery reports
         if: always() && matrix.compiler == 'msvc' && matrix.target == 'editor'
         uses: actions/upload-artifact@v7
