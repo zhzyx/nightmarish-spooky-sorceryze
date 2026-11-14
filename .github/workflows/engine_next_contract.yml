@@ -12,6 +12,16 @@ on:
       - "tools/engine_next_contract.json"
       - "tools/test_check_engine_next_contract.py"
       - "tools/engine_next_legacy/**"
+      - "tools/ainative/**"
+      - "tools/package_maliang_editor.py"
+      - "tools/editor_native_app.py"
+      - "tools/package_tianshu_ui.py"
+      - "tools/editor_provenance_process.py"
+      - "tools/maliang_hunyuan/**"
+      - "samples/ainative-workbench/**"
+      - "editor/ainative/**"
+      - "tests/editor/test_ainative_bundle.py"
+      - "tests/editor/test_maliang_package.py"
   push:
     branches:
       - main
@@ -25,6 +35,16 @@ on:
       - "tools/engine_next_contract.json"
       - "tools/test_check_engine_next_contract.py"
       - "tools/engine_next_legacy/**"
+      - "tools/ainative/**"
+      - "tools/package_maliang_editor.py"
+      - "tools/editor_native_app.py"
+      - "tools/package_tianshu_ui.py"
+      - "tools/editor_provenance_process.py"
+      - "tools/maliang_hunyuan/**"
+      - "samples/ainative-workbench/**"
+      - "editor/ainative/**"
+      - "tests/editor/test_ainative_bundle.py"
+      - "tests/editor/test_maliang_package.py"
   workflow_dispatch:
 
 permissions:
@@ -55,6 +75,11 @@ jobs:
         run: |
           python -m unittest tools.test_check_engine_next_contract -v
           python -m unittest discover -s engine_next/Tools -p "Test*.py" -v
+
+      - name: Run complete AINative and package regressions
+        run: |
+          python -m unittest discover -s tools/ainative -p "test_*.py"
+          python -m unittest tests.editor.test_ainative_bundle tests.editor.test_maliang_package -v
 
       - name: Build and audit standalone tests (MSVC)
         if: runner.os == 'Windows'
@@ -100,3 +125,4 @@ jobs:
           echo "d6e382fb531019f85630c1f485a561a0d20c4a2344b6c3847735cfee7da812aa  build/engine_next/godot-legacy/Godot.zip" | sha256sum -c -
           unzip -q build/engine_next/godot-legacy/Godot.zip -d build/engine_next/godot-legacy
           python3 engine_next/Tools/RunM3LegacyAcceptance.py --godot build/engine_next/godot-legacy/Godot_v4.4.1-stable_linux.x86_64 --next-asset build/engine_next/clang-runtime/next_asset --adapter tools/engine_next_legacy/scene_adapter.gd --fixtures tools/engine_next_legacy/fixtures --report build/engine_next/clang-runtime/M3LegacyReport.json
+          python3 samples/ainative-workbench/test_unified_settings.py --godot build/engine_next/godot-legacy/Godot_v4.4.1-stable_linux.x86_64 --report build/engine_next/clang-runtime/MaliangSettingsReport.json
