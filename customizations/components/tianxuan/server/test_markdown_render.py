@@ -34,3 +34,22 @@ def test_render_unclosed_fence_still_escapes() -> None:
     rendered = render_markdown("```\n<b>未闭合\n")
     assert "<b>" not in rendered
     assert "&lt;b&gt;未闭合" in rendered
+
+
+def test_render_tables_quotes_images_and_rules() -> None:
+    rendered = render_markdown(
+        "> 引用一行\n\n"
+        "| 名称 | 值 |\n"
+        "| --- | --- |\n"
+        "| A | 1 |\n"
+        "| B | 2 |\n\n"
+        "![图](https://example.com/x.png)\n\n"
+        "![坏](javascript:alert(1))\n\n"
+        "---\n"
+    )
+    assert "<blockquote>引用一行</blockquote>" in rendered
+    assert "<table><thead><tr><th>名称</th><th>值</th></tr></thead>" in rendered
+    assert "<td>A</td><td>1</td>" in rendered
+    assert '<img src="https://example.com/x.png" alt="图" loading="lazy" />' in rendered
+    assert "javascript:" not in rendered
+    assert "<hr />" in rendered
