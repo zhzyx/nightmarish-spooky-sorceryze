@@ -187,13 +187,13 @@ def sync_tickets(args: argparse.Namespace) -> dict[str, Any]:
     )
     children = [issue for issue in context.get("issues", []) if isinstance(issue, dict) and issue.get("parent_id")]
     by_title: dict[str, dict[str, Any]] = {}
-    for issue in children:
-        by_title.setdefault(str(issue.get("title", "")), issue)
+    for candidate in children:
+        by_title.setdefault(str(candidate.get("title", "")), candidate)
     path = ["backlog", "planned", "in-progress", "in-review", "done"]
     updated: list[dict[str, Any]] = []
     missing: list[str] = []
     for title in args.done:
-        issue = by_title.get(title)
+        issue: dict[str, Any] | None = by_title.get(title)
         if issue is None:
             missing.append(title)
             continue
