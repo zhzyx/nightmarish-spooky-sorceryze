@@ -293,3 +293,57 @@ def test_oidc_rs256_jwks(monkeypatch) -> None:
         ).status_code
         == 403
     )
+
+
+def test_admin_can_rebind_identity(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_IDENTITY_SECRET", "shared-secret")
+    client, headers, user_id = _client()
+    member = client.post(
+        "/api/v1/users",
+        headers=headers,
+        json={"email": "second@example.com", "password": "secret-pass", "role": "editor"},
+    ).json()
+    second_id = member.get("id") or member["user_id"]
+    link = client.post(
+        "/api/v1/identity/links",
+        headers=headers,
+        json={"provider": "tianshu", "subject": "gh_rebind", "user_id": user_id},
+    ).json()
+
+    rebound = client.patch(
+        f"/api/v1/identity/links/{link['id']}",
+        headers=headers,
+        json={"user_id": second_id},
+    )
+    assert rebound.status_code == 200, rebound.text
+    assert rebound.json()["user_id"] == second_id
+
+    resolved = client.post(
+        "/api/v1/identity/resolve",
+        json={"provider": "tianshu", "subject": "gh_rebind", "secret": "shared-secret"},
+    ).json()
+    assert resolved["user_id"] == second_id
+
+    other = client.post(
+        "/api/v1/auth/register",
+        json={"tenant_name": "外部租户", "email": "outside@example.com", "password": "secret-pass"},
+    ).json()
+    denied = client.patch(
+        f"/api/v1/identity/links/{link['id']}",
+        headers=headers,
+        json={"user_id": other["user_id"]},
+    )
+    assert denied.status_code == 404
+
+    viewer = client.post(
+        "/api/v1/users",
+        headers=headers,
+        json={"email": "viewer2@example.com", "password": "secret-pass", "role": "viewer"},
+    ).json()
+    viewer_id = viewer.get("id") or viewer["user_id"]
+    forbidden = client.patch(
+        f"/api/v1/identity/links/{link['id']}",
+        headers={"X-Actor": viewer_id},
+        json={"user_id": second_id},
+    )
+    assert forbidden.status_code == 403
