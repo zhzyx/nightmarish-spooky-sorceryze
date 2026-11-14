@@ -29,6 +29,8 @@ from schemas import (
     DocShareRequest,
     DocUpdateRequest,
     DocVisibilityRequest,
+    ExternalLinkRequest,
+    ExternalRequirementRequest,
     InviteAcceptRequest,
     InviteCreateRequest,
     IssueCommentCreateRequest,
@@ -337,6 +339,44 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
     @app.get("/api/v1/issues/{issue_id}/comments")
     def list_issue_comments(issue_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
         return {"comments": store.list_issue_comments(actor, issue_id)}
+
+    # ---------- 跨系统：天枢 ↔ 天璇 ----------
+
+    @app.post("/api/v1/external-links")
+    def create_external_link(payload: ExternalLinkRequest, actor: ActorDep) -> dict[str, Any]:
+        return store.link_external(  # type: ignore[no-any-return]
+            actor, payload.system, payload.external_id, payload.target_type, payload.target_id
+        )
+
+    @app.get("/api/v1/external-links")
+    def list_external_links(
+        actor: ActorDep,
+        system: str = Query(min_length=1),
+        external_id: str = Query(min_length=1),
+    ) -> dict[str, list[dict[str, Any]]]:
+        return {"links": store.external_targets(actor, system, external_id)}
+
+    @app.get("/api/v1/external-context")
+    def external_context(
+        actor: ActorDep,
+        system: str = Query(min_length=1),
+        external_id: str = Query(min_length=1),
+    ) -> dict[str, Any]:
+        return store.external_context(actor, system, external_id)  # type: ignore[no-any-return]
+
+    @app.post("/api/v1/requirements/from-external")
+    def requirement_from_external(payload: ExternalRequirementRequest, actor: ActorDep) -> dict[str, Any]:
+        return store.create_requirement_from_external(  # type: ignore[no-any-return]
+            actor,
+            payload.system,
+            payload.external_id,
+            payload.request_id,
+            payload.title,
+            payload.outcome,
+            payload.scope,
+            payload.acceptance,
+            [ticket.model_dump() for ticket in payload.tickets],
+        )
 
     # ---------- 事件流 ----------
 

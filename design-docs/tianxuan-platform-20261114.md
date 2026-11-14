@@ -127,8 +127,16 @@
 - 离线：IndexedDB 草稿 + 冲突合并；首版仅 Web。
 - Godot：预留桥接接口与只读视图，后续接入编辑器。
 
-### 10. 治理与准入
+### 10. 天枢互通（引擎内工作台）
 
+- 天枢以外部工单标识（如 GitHub Issue URL）作为互通键。
+- 天璇保存 `external_links`：外部标识 ↔ 文档/工单，租户隔离、幂等。
+- 桥接 CLI：`server/tianshu_bridge.py` 的 `context` / `publish` / `link` / `docs` / `issues` / `board`。
+- `publish` 从天枢工单创建天璇需求 + 工单树并绑定；重复发布幂等。
+- `context` 返回该外部工单关联的需求、文档与工单，供天枢画布/对话使用。
+- 回执为 JSON 信封 `{ok, data}`，可用 `--result` 写入天枢宿主文件。
+
+### 11. 治理与准入
 - 所有新增 Agent/Skill 生成前与准入前回查 `skills/gonggong-check`；保存 review pass。
 - 新模块按 `customizations/module-boundaries.md#新增模块的构建边界与验收` 记录 `build-impact.json` 并执行对应检查。
 - 工单门禁：建单 → intake 回读 → 实现 → 正式门禁 → 提交/推送/合入。

@@ -73,6 +73,25 @@ docker compose --env-file .env up -d --build
 
 详见 [`deploy/README.md`](../../../deploy/README.md)。
 
+### 天枢互通
+
+引擎内的天枢工作台通过 `server/tianshu_bridge.py` 读写天璇：
+
+```sh
+cd customizations/components/tianxuan/server
+python tianshu_bridge.py --api http://127.0.0.1:8000 --actor <user_id> \
+  context --external-id https://github.com/owner/repo/issues/123
+python tianshu_bridge.py --api http://127.0.0.1:8000 --actor <user_id> \
+  publish --external-id https://github.com/owner/repo/issues/123 \
+  --request-id tianshu-123 --title "需求" --outcome "目标" --scope "范围" --acceptance "验收" \
+  --ticket "任务甲" --ticket "任务乙"
+```
+
+- `context`：读取该外部工单在天璇内的需求/文档/工单
+- `publish`：创建天璇需求与工单树，并写入外部绑定
+- `link`：把外部工单绑定到已有文档或工单
+- 输出 `{"ok": true, "data": ...}`；`--result <path>` 可直接写天枢宿主回执文件
+
 ## 环境变量
 
 | 变量 | 用途 |
