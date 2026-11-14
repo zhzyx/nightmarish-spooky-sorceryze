@@ -5,9 +5,11 @@ import {
   cancelMerge,
   enqueueMerge,
   fetchMergeQueue,
+  fetchMergeQueueStatus,
   processMergeQueue,
   retryMerge,
   type ApiMergeQueueItem,
+  type ApiMergeQueueStatus,
 } from "@/lib/merge-queue-api";
 
 const fieldStyle: CSSProperties = {
@@ -46,6 +48,7 @@ function evidenceText(item: ApiMergeQueueItem): string {
 export function MergeQueuePanel() {
   const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR;
   const [items, setItems] = useState<ApiMergeQueueItem[]>([]);
+  const [status, setStatus] = useState<ApiMergeQueueStatus | null>(null);
   const [repo, setRepo] = useState("docs.git");
   const [source, setSource] = useState("");
   const [target, setTarget] = useState("main");
@@ -61,7 +64,12 @@ export function MergeQueuePanel() {
     if (!actor) {
       return;
     }
-    setItems(await fetchMergeQueue(actor));
+    const [nextItems, nextStatus] = await Promise.all([
+      fetchMergeQueue(actor),
+      fetchMergeQueueStatus(actor),
+    ]);
+    setItems(nextItems);
+    setStatus(nextStatus);
   }, [actor]);
 
   useEffect(() => {
@@ -70,6 +78,7 @@ export function MergeQueuePanel() {
     }
     let active = true;
     let poll: number | null = null;
+    load().catch(() => undefined);
     const startPolling = () => {
       if (poll !== null) {
         return;
@@ -215,7 +224,8 @@ export function MergeQueuePanel() {
               </option>
             ))}
           </select>
-          {visible.length} 个候选 · {live ? "实时" : "轮询"}
+          {status?.worker ? "自动 worker" : "手动模式"} · {status?.queued ?? 0} 排队 · {visible.length} 个候选 ·{" "}
+          {live ? "实时" : "轮询"}
           <button className="btn btn-ghost" type="button" disabled={busy} onClick={processNow} style={{ marginLeft: 10 }}>
             立即处理
           </button>

@@ -90,3 +90,20 @@ export async function retryMerge(actor: string, itemId: string): Promise<ApiMerg
   }
   return (await response.json()) as ApiMergeQueueItem;
 }
+
+export interface ApiMergeQueueStatus {
+  worker: boolean;
+  queued: number;
+  total: number;
+}
+
+export async function fetchMergeQueueStatus(actor: string): Promise<ApiMergeQueueStatus> {
+  const response = await fetch(`${apiBase()}/api/v1/merge-queue/status`, {
+    headers: { "X-Actor": actor },
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`merge status request failed: ${response.status}`);
+  }
+  return (await response.json()) as ApiMergeQueueStatus;
+}
