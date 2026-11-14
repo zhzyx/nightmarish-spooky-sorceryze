@@ -25,6 +25,7 @@ from fastapi.responses import JSONResponse, Response
 from gateway import ModelGateway, create_model_router
 from gitea_bridge import GiteaClient, GiteaError
 from identity import allow_identity_attempt, get_identity_adapter
+from markdown_render import render_markdown
 from schemas import (
     CommentCreateRequest,
     CommentResolveRequest,
@@ -315,8 +316,12 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
                 f"<title>{html.escape(title)}</title>"
                 "<style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;"
                 "max-width:880px;margin:40px auto;padding:0 24px;line-height:1.7;color:#1b1a17}"
-                "pre{white-space:pre-wrap;word-break:break-word;font:inherit}</style></head><body>"
-                f"<h1>{html.escape(title)}</h1><pre>{html.escape(body_md)}</pre></body></html>"
+                "pre{background:#f6f3ec;padding:14px 16px;border-radius:8px;overflow:auto}"
+                "code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.92em}"
+                "blockquote{border-left:3px solid #c9c0ae;margin:0;padding-left:14px;color:#5d584f}"
+                "</style></head><body>"
+                f'<h1>{html.escape(title)}</h1><div class="markdown">{render_markdown(body_md)}</div>'
+                "</body></html>"
             )
             media_type = "text/html; charset=utf-8"
             extension = "html"
