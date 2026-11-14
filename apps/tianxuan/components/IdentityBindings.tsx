@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import {
   createIdentityLink,
+  deleteIdentityLink,
   fetchIdentityLinks,
   fetchUsers,
   type ApiIdentityLink,
@@ -32,6 +33,7 @@ export function IdentityBindings() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [removing, setRemoving] = useState("");
 
   const load = useCallback(async () => {
     if (!actor) {
@@ -74,6 +76,23 @@ export function IdentityBindings() {
     }
   }
 
+  async function remove(id: string) {
+    if (!actor) {
+      return;
+    }
+    setRemoving(id);
+    setError("");
+    try {
+      await deleteIdentityLink(actor, id);
+      await load();
+      setNotice("已解绑外部身份");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "解绑失败");
+    } finally {
+      setRemoving("");
+    }
+  }
+
   function userLabel(id: string): string {
     const user = users.find((item) => item.id === id);
     return user ? `${user.name} · ${user.email}` : id;
@@ -109,6 +128,14 @@ export function IdentityBindings() {
                       {link.provider} · {userLabel(link.user_id)}
                     </span>
                   </span>
+                  <button
+                    className="btn btn-ghost"
+                    type="button"
+                    disabled={removing === link.id}
+                    onClick={() => remove(link.id)}
+                  >
+                    {removing === link.id ? "解绑中…" : "解绑"}
+                  </button>
                 </div>
               ))
             )}

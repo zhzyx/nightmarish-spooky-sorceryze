@@ -13,9 +13,12 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import sys
+import tempfile
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -28,6 +31,46 @@ urlopen = urllib.request.urlopen
 
 class BridgeError(Exception):
     """API 调用或参数错误。"""
+
+
+def _cache_file(api: str, provider: str, subject: str) -> Path | None:
+    setting = os.environ.get("TIANXUAN_TOKEN_CACHE", "")
+    if setting.strip().lower() in {"off", "none", "0"}:
+        return None
+    base = Path(setting) if setting.strip() else Path(tempfile.gettempdir()) / "tianxuan-token-cache"
+    digest = hashlib.sha256(f"{api}|{provider}|{subject}".encode()).hexdigest()[:24]
+    return base / f"{digest}.json"
+
+
+def _read_cached_token(api: str, provider: str, subject: str) -> str:
+    path = _cache_file(api, provider, subject)
+    if path is None or not path.is_file():
+        return ""
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if float(payload.get("expires_at", 0)) <= time.time():
+            return ""
+        return str(payload.get("token", ""))
+    except (OSError, ValueError, TypeError):
+        return ""
+
+
+def _write_cached_token(api: str, provider: str, subject: str, token: str) -> None:
+    path = _cache_file(api, provider, subject)
+    if path is None:
+        return
+    ttl = float(os.environ.get("TIANXUAN_TOKEN_TTL", "900"))
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = path.with_suffix(".partial")
+        temporary.write_text(json.dumps({"token": token, "expires_at": time.time() + ttl}), encoding="utf-8")
+        os.replace(temporary, path)
+        try:
+            path.chmod(0o600)
+        except OSError:
+            pass
+    except OSError:
+        return
 
 
 def _endpoint(api: str, path: str, params: dict[str, str] | None = None) -> str:
@@ -305,19 +348,22 @@ def main(argv: list[str] | None = None) -> int:
         if not args.token and args.identity_provider:
             if not args.identity_subject:
                 raise BridgeError("identity subject is required")
-            resolved = _request(
-                args.api,
-                "POST",
-                "/api/v1/identity/resolve",
-                body={
-                    "provider": args.identity_provider,
-                    "subject": args.identity_subject,
-                    "secret": args.identity_secret,
-                },
-            )
-            token = str(resolved.get("token", ""))
+            token = _read_cached_token(args.api, args.identity_provider, args.identity_subject)
             if not token:
-                raise BridgeError("identity resolve returned no token")
+                resolved = _request(
+                    args.api,
+                    "POST",
+                    "/api/v1/identity/resolve",
+                    body={
+                        "provider": args.identity_provider,
+                        "subject": args.identity_subject,
+                        "secret": args.identity_secret,
+                    },
+                )
+                token = str(resolved.get("token", ""))
+                if not token:
+                    raise BridgeError("identity resolve returned no token")
+                _write_cached_token(args.api, args.identity_provider, args.identity_subject, token)
             args.token = token
         data = args.func(args)
         envelope = {"ok": True, "data": data}
