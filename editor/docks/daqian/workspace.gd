@@ -1436,7 +1436,10 @@ func _tianxuan_command(arguments: Array) -> Dictionary:
 	var api := OS.get_environment("TIANXUAN_API")
 	if api.is_empty():
 		api = "http://127.0.0.1:8000"
-	var args := PackedStringArray([bridge, "--api", api, "--actor", str(actor.get("user_id", ""))])
+	var tianxuan_actor := OS.get_environment("TIANXUAN_ACTOR")
+	if tianxuan_actor.is_empty():
+		tianxuan_actor = str(actor.get("user_id", ""))
+	var args := PackedStringArray([bridge, "--api", api, "--actor", tianxuan_actor])
 	for part in arguments:
 		args.append(str(part))
 	return await _host_command(args, "--result", {})
