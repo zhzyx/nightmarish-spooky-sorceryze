@@ -18,7 +18,21 @@ python customizations/components/issue-workorders/writer_submit.py --issue <编�
 
 入口回读同仓库 WRITE、MAINTAIN 或 ADMIN 身份，运行正式门禁，为已暂存的树创建提交，执行提交后谛听核验并推送专属候选分支。GitHub 以当前协作者为作者签署一笔内容树完全相同的签发提交，绑定工单、原提交、树、目标和 main 基线。入口回读服务端签名、作者及唯一父提交后创建 PR，输出其 URL 与签发 SHA。此回执只用于这次 Git 候选提交。
 
-连接中断后在同一工作树以同一账号重跑。入口按候选提交定位分支并核对已有签名及 PR。签发前若主线仅发生无路径/读取交叉的前进，可显式加 `--auto-integrate`（可选配合 `--reads-file` 声明读取依赖路径）在门禁前完成树级无冲突对齐；CI 等待期间若主线前进且 `overlapping_write_paths` 为空，原签发者可在独立临时工作树运行 `python customizations/components/issue-workorders/writer_submit.py --rebind-pr <PR编号> --close-superseded` 重新执行正式门禁、谛听校验与服务端签发并收口被替代旧单，出现写/读重叠时仍拒绝自动重绑并转合契整合。取得 PR 后沿下述交付路径核验精确 SHA、审查和 CI，并用本人账号合入及回读。生产工具、模型预算及宿主服务凭据仍由其各自宿主授权。
+连接中断后在同一工作树以同一账号重跑。入口按候选提交定位分支并核对已有签名及 PR。签发前若主线仅发生无路径/读取交叉的前进，可显式加 `--auto-integrate`（可选配合 `--reads-file` 声明读取依赖路径）在门禁前完成树级无冲突对齐；附加 `--supersede-prior` 可在新签发 PR 就绪后自动收口本人同工单被替代的旧开放 PR（或单独运行 `--prune-superseded`）。多人并行提交期间，可运行 `writer_submit.py --queue` 在单次 GraphQL 快照中聚合所有账号的在途 PR、审计分层、CI 状态与无冲突合入波次（`merge_waves`）。CI 等待期间若主线前进且 `overlapping_write_paths` 为空，原签发者可在独立临时工作树运行 `python customizations/components/issue-workorders/writer_submit.py --rebind-pr <PR编号> --close-superseded` 重新执行正式门禁、谛听校验与服务端签发并收口被替代旧单，出现写/读重叠时仍拒绝自动重绑并转合契整合。取得 PR 后沿下述交付路径核验精确 SHA、审查和 CI，并用本人账号合入及回读。生产工具、模型预算及宿主服务凭据仍由其各自宿主授权。
+
+## 五级差异化提交审查与阎罗审核契约
+
+`submission_audit.py` 按候选相对基线的真实路径差异自动计算 `audit_profile`，消除“一刀切全仓审查与全量重编”造成的排队，同时严格保留冻结治理与原生构建边界：
+
+| 审核等级 | 命中范围 | 审查链路要求 | 阎罗合入与收尾审核要求 |
+| --- | --- | --- | --- |
+| `tier0_docs_telemetry` | `design-docs/*.md`、`Markdown/**/*.md`、`data-collection` / `gonggong-diting-data` 数据 | 正式门禁 + 静态与谛听校验，免全仓代码独立审查 | `issue-association` + `Static checks` 通过；零重叠主线前进可直接合入 |
+| `tier1_isolated_host` | 已经 SCons 零交集核验的宿主工具与 Web（`tools/native_host_inputs.json`）修改 | 仅审查变更路径与关联条款；跳过 15 分钟引擎重编 | 对应模块测试（如 `Module and web tests` / `planner-tests`）必须真实 `SUCCESS`（禁止被 `SKIPPED` 冒充） |
+| `tier2_scoped_engine_impl` | 常规引擎 `.cpp/.c/.mm` 实现文件修改（不含头文件/注册表/新增文件） | 变更实现与模块回归审查 | 定向模块编译 `Compile affected Windows/Metal targets` 通过即可，免全量编辑器链接 |
+| `tier3_shared_engine_or_ci` | 共享头文件、编辑器核心 C++、未登记宿主新文件、CI 工作流 | 完整独立审查 + 证据哈希绑定 | 必须包含 `Windows / Editor (target=editor)` 全量编译与原生会话回归 `SUCCESS` |
+| `tier4_governance_or_admission` | `framework/`、准入通行证、`AGENT.md`/`SKILL.md`、`build-impact.json` | 元衡/`gonggong-check` 独立审查 + 精确候选通行证 | 额外强制模块构建边界核验与精确候选准入，禁止降级豁免 |
+
+此外，引擎内 `complete_delivery` 与 `editor_delivery_finalize.py` 支持 `delivery_mode="slice"`（分片交付模式）：多人并发协作同一父工单时，分片 PR 合入并回读后记录阶段验收声明、保持 Issue 开放及原 `status:in-progress` 标签，避免提前关单阻塞其他账号在途工作；`yanluo_host.py` 另支持 `mode="pull_request_merge"`（零路径重叠主线前进时无需重签即可原子合入）及规范化 `scope_digest`（容忍工单顶部临时协调头更新，仍拒绝需求正文篡改）。
 
 ## 协作人以本人账号交付（PR 或合并队列）
 

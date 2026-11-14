@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 import issue_gate
+import submission_audit
 import work_items
 
 
@@ -226,8 +227,37 @@ def _merge_disjoint_tree(
     return merged_tree
 
 
+def _diff_entries(repo: Path, before: str, after: str) -> list[tuple[str, bool]]:
+    fields = issue_gate.git(repo, "diff", "--raw", "--no-renames", "-z", before, after, "--").split(b"\0")
+    entries: list[tuple[str, bool]] = []
+    for header, raw_path in zip(fields[::2], fields[1::2]):
+        if not header or not raw_path:
+            continue
+        old, new, _, _, status = header[1:].split()
+        entries.append((os.fsdecode(raw_path), status == b"M" and old == new == b"100644"))
+    return entries
+
+
+def _base_reviewed_host_inputs(repo: Path, base: str) -> frozenset[str]:
+    try:
+        entry = issue_gate.git(repo, "ls-tree", "-z", base, "--", "tools/native_host_inputs.json")
+        if not entry:
+            return frozenset()
+        mode, kind, oid = entry.split(b"\t", 1)[0].split()
+        if mode not in {b"100644", b"100755"} or kind != b"blob":
+            return frozenset()
+        policy = json.loads(issue_gate.git(repo, "cat-file", "blob", oid.decode("ascii")))
+        if isinstance(policy, dict) and policy.get("schema_version") == 1 and isinstance(policy.get("inputs"), list):
+            return frozenset(str(x) for x in policy["inputs"] if isinstance(x, str))
+    except (ValueError, KeyError, OSError, subprocess.SubprocessError):
+        pass
+    return frozenset()
+
+
 def handoff(repo: Path, base: str, tree: str, main: str) -> dict[str, Any]:
-    writes = changed_paths(repo, base, tree)
+    diff_items = _diff_entries(repo, base, tree)
+    writes = sorted(path for path, _ in diff_items)
+    audit_profile = submission_audit.classify_submission_diff(diff_items, _base_reviewed_host_inputs(repo, base))
     upstream = changed_paths(repo, base, main) if main != base else []
     overlap = path_overlap(writes, upstream)
     advanced = main != base and git(repo, "merge-base", base, main) == base
@@ -244,6 +274,7 @@ def handoff(repo: Path, base: str, tree: str, main: str) -> dict[str, Any]:
         "main_observed": main,
         "tree": tree,
         "write_paths": writes,
+        "audit_profile": audit_profile,
         "base_advanced": advanced,
         "upstream_change_count": len(upstream),
         "overlapping_write_paths": overlap,
@@ -421,6 +452,7 @@ def submit(
     *,
     auto_integrate: bool = False,
     reads: Sequence[str] | None = None,
+    supersede_prior: bool = False,
 ) -> dict[str, Any]:
     checked_reads = _validate_read_paths(reads)
     repository = work_items.config(repo)[0]["repository"]
@@ -578,14 +610,7 @@ def submit(
         observed == {"headRefOid": signed, "baseRefName": "main", "isCrossRepository": False},
         "Submitted PR no longer matches the signed candidate",
     )
-    if observed_base != base or state != "OPEN":
-        latest = inspect_pr(repo, repository, int(url.rsplit("/", 1)[1]))
-        require(
-            latest["pr_state"] == "MERGED" or (latest["pr_state"] == "OPEN" and latest["current_main"] == base),
-            "PR handoff requires reconciliation: " + json.dumps(latest, ensure_ascii=True),
-        )
-        return latest
-    return {
+    result_payload: dict[str, Any] = {
         "repository": repository,
         "writer": login,
         "candidate": candidate,
@@ -594,6 +619,17 @@ def submit(
         "pull_request": url,
         "handoff": report,
     }
+    if observed_base != base or state != "OPEN":
+        latest = inspect_pr(repo, repository, int(url.rsplit("/", 1)[1]))
+        require(
+            latest["pr_state"] == "MERGED" or (latest["pr_state"] == "OPEN" and latest["current_main"] == base),
+            "PR handoff requires reconciliation: " + json.dumps(latest, ensure_ascii=True),
+        )
+        result_payload = latest
+    if supersede_prior:
+        pruned = prune_own_superseded(repo, issue=issue, request_id=request, actor_override=actor)
+        result_payload["closed_superseded_prs"] = pruned["closed_prs"]
+    return result_payload
 
 
 def rebind_pr(
@@ -677,6 +713,205 @@ def rebind_pr(
     return result
 
 
+def queue_snapshot(repo: Path) -> dict[str, Any]:
+    """Query all open signed PRs across accounts in one GraphQL call and plan merge waves."""
+    repository = str(work_items.config(repo)[0]["repository"])
+    issue_gate.check_repository(repo, repository)
+    owner, name = repository.split("/", 1)
+    url = "https://github.com/" + repository + ".git"
+    authenticated_git(repo, "fetch", url, "refs/heads/main")
+    main_sha = git(repo, "rev-parse", "FETCH_HEAD")
+
+    query = (
+        """query($owner:String!,$name:String!){
+      repository(owner:$owner,name:$name){
+        pullRequests(states:OPEN,baseRefName:"main",first:100,orderBy:{field:UPDATED_AT,direction:DESC}){
+          nodes{
+            number url title body isDraft headRefName headRefOid baseRefOid isCrossRepository mergeable updatedAt
+            author { login }
+            commits(last:1){
+              nodes{
+                commit{
+                  """
+        + COMMIT_FIELDS
+        + """
+                  statusCheckRollup{
+                    contexts(first:100){
+                      nodes{
+                        __typename
+                        ... on CheckRun { name status conclusion startedAt completedAt checkSuite { workflowRun { workflow { name } } } }
+                        ... on StatusContext { context state }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }"""
+    )
+    data = graphql(query, owner=owner, name=name)
+    nodes = ((data.get("repository") or {}).get("pullRequests") or {}).get("nodes") or []
+
+    valid_prs: list[tuple[dict[str, Any], str, str, int, str, str, str, str | None, list[dict[str, Any]]]] = []
+    fetch_refs: list[str] = []
+    for node in nodes:
+        if not isinstance(node, dict) or node.get("isCrossRepository") or node.get("isDraft"):
+            continue
+        commit_nodes = ((node.get("commits") or {}).get("nodes")) or []
+        if not commit_nodes or not isinstance(commit_nodes[-1].get("commit"), dict):
+            continue
+        tip = commit_nodes[-1]["commit"]
+        head_oid = str(node.get("headRefOid") or "")
+        if tip.get("oid") != head_oid:
+            continue
+
+        rollup_nodes = (((tip.get("statusCheckRollup") or {}).get("contexts") or {}).get("nodes")) or []
+        checks: list[dict[str, Any]] = []
+        for ctx in rollup_nodes:
+            if not isinstance(ctx, dict):
+                continue
+            wf = (((ctx.get("checkSuite") or {}).get("workflowRun") or {}).get("workflow") or {}).get("name") or ""
+            checks.append({**ctx, "workflowName": wf})
+
+        branch_match = re.fullmatch(
+            r"codex/submit/([A-Za-z0-9-]+)/([1-9][0-9]*)/([a-f0-9]{40})",
+            str(node.get("headRefName") or ""),
+        )
+        if branch_match:
+            login, issue_str, candidate = branch_match.groups()
+            if not isinstance(tip.get("message"), str):
+                continue
+            message = tip["message"].rstrip()
+            env_match = re.fullmatch(
+                rf"Sign delivery for #{issue_str}\n\nGongGong-Issue: #{issue_str}\nGongGong-Request: ([a-z0-9-]+)\n"
+                rf"Repository: {re.escape(repository)}\nCandidate: {candidate}\nTree: ([0-9a-f]{{40}})\n"
+                rf"Base: ([0-9a-f]{{40}})\nTarget: main\nWriter: {re.escape(login)}",
+                message,
+            )
+            if not env_match:
+                continue
+            request_id, tree, base = env_match.groups()
+            try:
+                verify_receipt(tip, login, candidate, tree, message)
+            except ValueError:
+                continue
+            pr_num = int(node["number"])
+            fetch_refs.append(f"+refs/pull/{pr_num}/head:refs/remotes/gonggong-queue/pr-{pr_num}")
+            valid_prs.append((node, "signed", login, int(issue_str), request_id, candidate, tree, base, checks))
+            continue
+
+        body_text = str(node.get("body") or "")
+        issue_matches = re.findall(r"^GongGong-Issue:[ \t]*#([1-9][0-9]*)[ \t]*\r?$", body_text, re.M)
+        req_matches = re.findall(r"^GongGong-Request:[ \t]*([a-z0-9]+(?:-[a-z0-9]+)*)[ \t]*\r?$", body_text, re.M)
+        author_login = str((node.get("author") or {}).get("login") or "")
+        tree_oid = str((tip.get("tree") or {}).get("oid") or "")
+        if len(issue_matches) == 1 and len(req_matches) == 1 and author_login and len(tree_oid) == 40:
+            pr_num = int(node["number"])
+            fetch_refs.append(f"+refs/pull/{pr_num}/head:refs/remotes/gonggong-queue/pr-{pr_num}")
+            valid_prs.append((
+                node,
+                "pr_branch",
+                author_login,
+                int(issue_matches[0]),
+                req_matches[0],
+                head_oid,
+                tree_oid,
+                None,
+                checks,
+            ))
+
+    if fetch_refs:
+        authenticated_git(repo, "fetch", "--no-tags", url, *fetch_refs)
+
+    submissions: list[dict[str, Any]] = []
+    for node, sub_kind, login, issue_num, request_id, candidate, tree, pinned_base, checks in valid_prs:
+        pr_num = int(node["number"])
+        pr_ref = f"refs/remotes/gonggong-queue/pr-{pr_num}"
+        resolved_base = pinned_base or git(repo, "merge-base", main_sha, pr_ref)
+        report = handoff(repo, resolved_base, tree, main_sha)
+        submissions.append({
+            "number": pr_num,
+            "submission_kind": sub_kind,
+            "url": node["url"],
+            "title": node["title"],
+            "writer": login,
+            "issue": issue_num,
+            "request_id": request_id,
+            "candidate": candidate,
+            "signed_commit": node["headRefOid"] if sub_kind == "signed" else None,
+            "tree": tree,
+            "base": resolved_base,
+            "base_advanced": report["base_advanced"],
+            "write_paths": report["write_paths"],
+            "overlapping_write_paths": report["overlapping_write_paths"],
+            "audit_tier": report["audit_profile"]["tier"],
+            "ci_state": submission_audit.summarize_ci_state(checks),
+            "mergeable": node.get("mergeable") or "UNKNOWN",
+            "updated_at": node.get("updatedAt") or "",
+        })
+    if fetch_refs:
+        for item in valid_prs:
+            subprocess.run(
+                [
+                    "git",
+                    "-C",
+                    str(repo),
+                    "update-ref",
+                    "-d",
+                    f"refs/remotes/gonggong-queue/pr-{int(item[0]['number'])}",
+                ],
+                capture_output=True,
+            )
+    return submission_audit.plan_submission_queue(submissions, main_sha)
+
+
+def prune_own_superseded(
+    repo: Path,
+    *,
+    issue: int | None = None,
+    request_id: str | None = None,
+    actor_override: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Close only the authenticated collaborator's own superseded duplicate open PRs."""
+    repository = str(work_items.config(repo)[0]["repository"])
+    issue_gate.check_repository(repo, repository)
+    actor = dict(actor_override) if actor_override is not None else writer(repository)
+    login = str(actor["login"])
+    snapshot = queue_snapshot(repo)
+    remote = "github.com/" + repository
+    by_number = {int(item["number"]): item for item in snapshot["submissions"]}
+    closed_prs: list[dict[str, Any]] = []
+    for item in snapshot["superseded_prs"]:
+        pr_num = int(item["pr"])
+        full = by_number[pr_num]
+        if str(full["writer"]).lower() != login.lower():
+            continue
+        if issue is not None and int(full["issue"]) != issue:
+            continue
+        if request_id is not None and str(full["request_id"]) != request_id:
+            continue
+        replacement = int(item["superseded_by"])
+        work_items.gh(
+            "pr",
+            "close",
+            str(pr_num),
+            "-R",
+            remote,
+            "-c",
+            f"Superseded by #{replacement} from the same writer (`{login}`) for #{full['issue']} (`{full['request_id']}`).",
+        )
+        closed_prs.append({"pr": pr_num, "superseded_by": replacement, "issue": full["issue"]})
+    return {
+        "repository": repository,
+        "writer": login,
+        "closed_prs": closed_prs,
+        "remaining_ready_to_merge": snapshot["ready_to_merge"],
+    }
+
+
 def engine_launch_activation(repo: Path, report: Mapping[str, Any]) -> dict[str, Any]:
     # Run at the installed tools entry point, where native/managed dependencies
     # have normal script-directory imports. Never alter the writer's import
@@ -724,11 +959,26 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", type=Path, default=Path.cwd())
     parser.add_argument("--inspect-pr", type=int, help="Read signed PR handoff and compare to current main")
+    parser.add_argument(
+        "--queue",
+        action="store_true",
+        help="Inspect all open multi-account signed PRs in one GraphQL snapshot and plan merge waves",
+    )
+    parser.add_argument(
+        "--prune-superseded",
+        action="store_true",
+        help="Close only the authenticated writer's own superseded duplicate open PRs",
+    )
     parser.add_argument("--rebind-pr", type=int, help="Rebind an open zero-overlap signed PR onto current main")
     parser.add_argument(
         "--close-superseded",
         action="store_true",
         help="Close the old drifted PR once the rebound PR is created and verified (requires --rebind-pr)",
+    )
+    parser.add_argument(
+        "--supersede-prior",
+        action="store_true",
+        help="After submitting a new signed PR, close older open PRs by the same writer for the same Issue/request",
     )
     parser.add_argument(
         "--auto-integrate",
@@ -747,6 +997,37 @@ def main() -> None:
     args = parser.parse_args()
     if args.close_superseded and args.rebind_pr is None:
         parser.error("--close-superseded requires --rebind-pr")
+    if args.queue:
+        if (
+            args.inspect_pr is not None
+            or args.rebind_pr is not None
+            or args.prune_superseded
+            or args.supersede_prior
+            or args.auto_integrate
+            or any(
+                value is not None
+                for value in (args.reads_file, args.issue, args.request_id, args.title, args.notes_file)
+            )
+        ):
+            parser.error("--queue takes no submission or mutation arguments")
+        print(json.dumps(queue_snapshot(args.repo.resolve()), ensure_ascii=False))
+        return
+    if args.prune_superseded:
+        if (
+            args.inspect_pr is not None
+            or args.rebind_pr is not None
+            or args.supersede_prior
+            or args.auto_integrate
+            or any(value is not None for value in (args.reads_file, args.title, args.notes_file))
+        ):
+            parser.error("--prune-superseded accepts only optional --issue and --request-id filters")
+        print(
+            json.dumps(
+                prune_own_superseded(args.repo.resolve(), issue=args.issue, request_id=args.request_id),
+                ensure_ascii=False,
+            )
+        )
+        return
     if args.inspect_pr is not None:
         if (
             args.inspect_pr < 1
@@ -755,6 +1036,7 @@ def main() -> None:
                 for value in (args.rebind_pr, args.reads_file, args.issue, args.request_id, args.title, args.notes_file)
             )
             or args.auto_integrate
+            or args.supersede_prior
         ):
             parser.error("--inspect-pr requires a positive PR number and no submission arguments")
         repo = args.repo.resolve()
@@ -774,6 +1056,7 @@ def main() -> None:
             args.rebind_pr < 1
             or any(value is not None for value in (args.issue, args.request_id, args.title, args.notes_file))
             or args.auto_integrate
+            or args.supersede_prior
         ):
             parser.error("--rebind-pr requires a positive PR number and no manual submission arguments")
         reads = _load_reads_file(args.reads_file)
@@ -809,6 +1092,7 @@ def main() -> None:
             notes,
             auto_integrate=args.auto_integrate,
             reads=reads,
+            supersede_prior=args.supersede_prior,
         )
         from kuafu_incident import observe_success
 

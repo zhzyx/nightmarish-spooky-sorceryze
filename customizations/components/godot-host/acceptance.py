@@ -56,6 +56,61 @@ def current(bridge, root, request):
     }
 
 
+def _verify_write_authority(gh, root, env, repository):
+    owner, name = repository.split("/", 1)
+    query = """query($owner:String!,$name:String!){
+      viewer { login }
+      repository(owner:$owner,name:$name) { nameWithOwner viewerPermission }
+    }"""
+    gql = subprocess.run(
+        [gh, "api", "graphql", "-f", "query=" + query, "-f", "owner=" + owner, "-f", "name=" + name],
+        cwd=root,
+        env=env,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=45,
+    )
+    if gql.returncode == 0:
+        try:
+            payload = json.loads(gql.stdout)
+            viewer = (payload.get("data") or {}).get("viewer") or {}
+            target = (payload.get("data") or {}).get("repository") or {}
+            if (
+                isinstance(viewer.get("login"), str)
+                and viewer["login"]
+                and isinstance(target.get("nameWithOwner"), str)
+            ):
+                if target["nameWithOwner"].casefold() == repository.casefold() and target.get("viewerPermission") in {
+                    "WRITE",
+                    "MAINTAIN",
+                    "ADMIN",
+                }:
+                    return viewer["login"]
+                raise ValueError("Current repository write permission required")
+        except (ValueError, TypeError) as error:
+            if "write permission required" in str(error):
+                raise
+
+    def api(endpoint):
+        process = subprocess.run(
+            [gh, "api", endpoint], cwd=root, env=env, capture_output=True, text=True, encoding="utf-8", timeout=45
+        )
+        if process.returncode:
+            raise ValueError("Current GitHub authority unavailable")
+        return json.loads(process.stdout)
+
+    operator = api("user")["login"]
+    permission = api(f"repos/{repository}/collaborators/{operator}/permission")
+    if permission.get("permission") not in {"write", "maintain", "admin"} and permission.get("role_name") not in {
+        "write",
+        "maintain",
+        "admin",
+    }:
+        raise ValueError("Current repository write permission required")
+    return operator
+
+
 def execute(bridge, root, request, capture=False):
     nonce = request.get("request_nonce")
     if not isinstance(nonce, str) or not nonce or len(nonce) > 256:
@@ -77,27 +132,11 @@ def execute(bridge, root, request, capture=False):
     gh = bridge.find_gh(env, root)
     if not gh:
         raise ValueError("GitHub CLI unavailable")
-
-    def api(endpoint):
-        process = subprocess.run(
-            [gh, "api", endpoint], cwd=root, env=env, capture_output=True, text=True, encoding="utf-8", timeout=45
-        )
-        if process.returncode:
-            raise ValueError("Current GitHub authority unavailable")
-        return json.loads(process.stdout)
-
     settings = json.loads((root / "work-items.json").read_text(encoding="utf-8"))
     repository = settings["repository"]
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository):
         raise ValueError("Invalid configured repository")
-    operator = api("user")["login"]
-    permission = api(f"repos/{repository}/collaborators/{operator}/permission")
-    if permission.get("permission") not in {"write", "maintain", "admin"} and permission.get("role_name") not in {
-        "write",
-        "maintain",
-        "admin",
-    }:
-        raise ValueError("Current repository write permission required")
+    operator = _verify_write_authority(gh, root, env, repository)
     # Always execute the installed reader, not a candidate-provided authority script.
     binding = dict(request, daqian_bound=True)
     bridge.issue_binding(root, binding, "gonggong-workspace")

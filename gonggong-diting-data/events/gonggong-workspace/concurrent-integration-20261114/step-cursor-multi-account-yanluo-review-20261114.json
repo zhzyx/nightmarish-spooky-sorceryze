@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "step-cursor-multi-account-yanluo-review-20261114",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "concurrent-integration-20261114",
+  "kind": "step",
+  "occurred_at": "2026-11-14T01:57:43.906703+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1151",
+  "agent": {
+    "id": "cursor-cloud-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "bad67dcc35d525783bfb12bc7e4363cfdfb0cc1da7c2dcb19ca7e3106806bc2c",
+    "origin": "AGENTS.md"
+  },
+  "payload": {
+    "action": "optimize_engine_multi_account_queue_review_and_yanluo_audit",
+    "summary": "Added multi-account session cache, actor-isolated engine candidates, single-GraphQL submission queue & wave planner, deduplicated streaming candidate review, 5-tier Yanluo risk audit, CI rerun deduplication, PR-merge mode, and engine slice delivery mode.",
+    "evidence_path": "data-collection/engine-multi-account-submission-review-1151.json",
+    "evidence_sha256": "bf5d4f393357009d676e7f491f5cc1f97cb6b56573a668050726a895acc5aa96",
+    "usage": null
+  },
+  "evidence_refs": [
+    "request-1151-concurrent-integration",
+    "step-cursor-concurrent-integration-20261114"
+  ],
+  "sha256": "dbd98821a1e7f3669b8eff08fdcd6e39a27707fde3552c8ae06248dff82b0ce5"
+}

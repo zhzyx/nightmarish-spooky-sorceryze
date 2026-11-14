@@ -67,4 +67,25 @@ PR #1170 的 Windows 完整构建、路由及 planner 检查已成功，两个�
    - `GitService.commit` 与 `GitService.merge` 改为显式 `--force-with-lease` CAS 推送：目标分支被无路径交叉的并发提交推进时在同一临时克隆内自动拉取重放（16 线程并发写 `main` 实测 16/16 全部成功，耗时 1,516.79 ms）；并发 `commit` 命中同一路径或目录前缀时立即抛出 `MergeConflict` 防止静默覆盖丢失更新。
    - 新增 `GitService.merge_batch`，在单次克隆中批量合入多个无冲突分支并将冲突分支干净隔离到 `isolated` 回执（15 个无冲突项 + 1 个冲突项单次克隆合入耗时 266.28 ms，对比 14 次串行 `merge` 702.52 ms）。
 
-实测与代码摘要见 `data-collection/concurrent-integration-throughput-1151.json`。剩余验收：精确新候选的远端 CI 与 `main` 合入回读、生产环境跨会话缓存命中与远端合并吞吐持续观测；父 Issue #1151 保持开放直到整体验收回读完成。
+实测与代码摘要见 `data-collection/concurrent-integration-throughput-1151.json`（已由 PR #1197 合入 `main` `62120ffe9806a41d1d03d57c4145c1cac567463c`）。
+
+## 引擎内多账号并发提交管理、审查链路加速与阎罗差异化审核优化
+
+针对不同账号多人并发在引擎内提交、候选审查 I/O 放大及阎罗审核僵化导致的二次排队问题，继续在四个子系统完成落地优化：
+
+1. **引擎内多账号身份缓存与候选工作树隔离（`repository_access.py`、`editor_engine_candidate.py`）**：
+   - `session_actor` 将原本单槽覆盖的会话身份文件升级为按 `(nonce, root, repo, token_or_login, GONGGONG_GH)` 键控的多账号有界 TTL 字典（最多 16 个已验证账号，默认 900s），未显式授权（`allow_login=False`）的途切账号仍严格触发 `SessionChanged`，授权切换账号免重复全量分页查询 GitHub。
+   - 新增 `fast_write_collaborator` 单次 GraphQL 往返校验写权限（REST 降级兜底），替代 `user` + `collaborators/{login}/permission` 串行双子进程请求。
+   - `editor_engine_candidate.py` 支持可选 `--actor-login` 将 GitHub 账号纳入候选摘要与分支命名（`godot-candidate-<digest>`），消除同一项目下多账号切换会话时的候选目录碰撞；`binding_lock` 支持有界等待重试，避免瞬时文件锁争用直接报错。
+2. **多账号提交队列单次快照与自动收口（`submission_audit.py`、`writer_submit.py`）**：
+   - `writer_submit.py --queue` 通过单次 GraphQL 批量拉取仓库全部开放 PR、签名头、树 OID 与 CI 上下文，一次批量 `git fetch` 后按路径前缀闭包冲突图计算多账号无冲突合入波次（`merge_waves`），同时按 `(writer, issue, request_id)` 精确识别同账号同工单被替代旧单（绝不误伤同一工单上其他协作者账号的并行 PR）。
+   - 新增 `--prune-superseded` 与提交时 `--supersede-prior`，仅允许认证协作者自动关闭本人已被新候选替代的旧开放 PR。
+3. **提交内容审查链路去重与增量摘要（`acceptance-candidate.mjs`、`acceptance.mjs`、`godot-host/acceptance.py`）**：
+   - `acceptance-candidate.mjs` 引入祖先目录去重缓存与 256 KiB 共享流式 SHA-256 读取，在 28,317 个文件的引擎仓库中将单次候选捕获从 1,762 ms 降至 ~1,075 ms，消除约 17 万次冗余 `lstatSync`。
+   - `validateDecisionWithCandidate` 在同一次验证和投影调用内共享最新候选快照，消除对 28k 文件工作树的重复二次全量扫描；新增 `diff-summary`（`summarizeCandidateDiff`，实测 84 ms）供审查链路直接定位变更文件集。
+4. **阎罗五级风险差异化审核与引擎内分片交付（`submission_audit.py`、`yanluo_host.py`、`editor_delivery_finalize.py`、`ai_chat_delivery*.cpp/.h`）**：
+   - 建立 `tier0_docs_telemetry` → `tier4_governance_or_admission` 五级确定性审计画像，对 CI 检查结果按 `(workflow, name)` 取最新重跑结果去重（解决偶发重跑通过后旧失败记录仍卡死收尾的问题），并强制校验当前风险等级对应的必选 CI 作业真实 `SUCCESS`（防止关键检查被 `SKIPPED` 冒充）。
+   - `yanluo_host.py` 新增 `mode="pull_request_merge"`（零路径重叠主线前进时原子合并 PR 而无需全量重签）及规范化 `scope_digest_matches`（容忍工单顶部临时协调头更新，仍拒绝需求正文篡改）。
+   - 引擎内 `AIChatDock`（`complete_delivery` 工具）、`AIChatDeliveryReceipt`、`editor_delivery_finalize.py` 与 `editor_delivery_retry.py` 全链路新增 `delivery_mode="slice"`（分片交付模式）：多人并行开发同一父工单时，分片 PR 合入并回读后记录阶段验收声明、保持工单 `OPEN` 与原活跃状态标签，避免提前关单阻塞其他账号在途工作。
+
+实测证据见 `data-collection/engine-multi-account-submission-review-1151.json`。父 Issue #1151 保持开放，待持续观测多协作者主线运行表现后办理整体验收收尾。
