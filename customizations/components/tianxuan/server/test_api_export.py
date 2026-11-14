@@ -83,3 +83,27 @@ def test_export_docx() -> None:
     assert "Word 导出" in text
     assert "标题" in text
     assert "正文 加粗" in text
+
+
+def test_export_docx_preserves_inline_and_table() -> None:
+    from io import BytesIO
+
+    from docx import Document
+
+    client, headers = _client()
+    doc = client.post(
+        "/api/v1/docs",
+        headers=headers,
+        json={
+            "title": "富文本",
+            "body_md": "**加粗** 与 `代码`\n\n| 名称 | 值 |\n| --- | --- |\n| A | 1 |\n",
+        },
+    ).json()
+    response = client.get(f"/api/v1/docs/{doc['id']}/export/file", headers=headers, params={"format": "docx"})
+    document = Document(BytesIO(response.content))
+    runs = [run for paragraph in document.paragraphs for run in paragraph.runs]
+    assert any(run.bold and run.text == "加粗" for run in runs)
+    assert any(run.font.name == "Consolas" and run.text == "代码" for run in runs)
+    assert len(document.tables) == 1
+    assert document.tables[0].cell(1, 0).text == "A"
+    assert document.tables[0].cell(1, 1).text == "1"
