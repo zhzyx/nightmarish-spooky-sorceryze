@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "issue_number": 951,
+  "parent_issue": 773,
+  "request_id": "editor-parent-production-continuation-20261112",
+  "recorded_at": "2026-11-13T18:44:43.970478+00:00",
+  "state": "actual_preparation_loop_contained_recovery_pending",
+  "installed_source": "22ba06d9543c16ca5e91c0a5c8a4c8fc2545a4f4",
+  "candidate_base": "432cd7591a2c015cffd04252a8aa526e9226beee",
+  "scope": "Original Godot production consumer. This supplements earlier immutable observations; it does not establish complete editor support or parent acceptance.",
+  "observed": {
+    "producer_A": "Independent reviewer 30 performed 10 successful source reads and returned valid mixed false/null evidence findings. Native host queued one automatic evidence-completion repair and preserved all three actual supplemental inputs. No new producer execution was verified.",
+    "producer_B": "Independent reviewer 31 performed 27 successful source reads and returned a valid unknown evidence verdict. Native host queued one automatic evidence-completion repair. No new producer execution was verified.",
+    "integration_C": "Remains interrupted and unaccepted; upstream repair queueing does not release integration.",
+    "preparation": "34 actual requests with identical request bytes and 34 actual blocked results with identical result bytes. The baseline rejection is real, not inferred from repeated visible messages.",
+    "baseline": "Original HEAD and design bytes remain unchanged. Six generated GDScript UID files were absent from the immutable original snapshot and are now included by snapshot preparation. Existing baseline validation correctly rejects this change.",
+    "loop_cause": "Native preparation failure appends an error and returns without blocking dispatch. History-save completion can defer dispatch again while acceptance reviews exist, the batch remains running, and repair children are waiting without production configuration.",
+    "containment": "Original operator used the normal Stop control. Stop is disabled after acknowledgment. Original workers, baseline, generated UID files, failed requests/results and acceptance evidence were preserved."
+  },
+  "required_recovery": [
+    "Persist preparation blocked/unknown state before history-save callbacks can schedule another attempt.",
+    "Preserve the block across restart and require an explicit bounded recovery action with current ownership and baseline checks.",
+    "Do not delete generated UID inputs, rewrite the old baseline, reset repair budgets, or claim queued repairs as worker execution.",
+    "Validate source repair, exact delivered installation and the original consumer separately; retain unknown outcomes until actual receipts exist."
+  ],
+  "incident": "780d04bd997e92bf3e5810ca5c287d6194a60c3b89a9d9cb0ef1c7e3a597ee32",
+  "related_prior_issue": {
+    "number": 877,
+    "readback": "closed/completed",
+    "boundary": "Prior pre-start blocked criterion also applies to this uncovered preparation failure branch; no prior report was rewritten."
+  },
+  "private_evidence_refs": [
+    {
+      "id": "review30_auto_repair",
+      "sha256": "704f9042a4f806fbeb066ed0d4653b37e202cedbbf5f01a14c08fdde4160e993",
+      "bytes": 9875,
+      "visibility": "private-original-retained"
+    },
+    {
+      "id": "preparation_loop_audit",
+      "sha256": "47ada061fd51136bbd3445b2bba426d7ee3d9e0f0e3e3b2c22b443f41f6b024c",
+      "bytes": 34114,
+      "visibility": "private-original-retained"
+    },
+    {
+      "id": "normal_stop_ui_ack",
+      "sha256": "f97497e46e4b96df97dd38ebccd900b185a6f69b597ceac343a6631ad91f5265",
+      "bytes": 419285,
+      "visibility": "private-original-retained"
+    }
+  ],
+  "exclusions": [
+    "No original producer repair completed",
+    "No A/B business acceptance",
+    "No integration or final delivery acceptance",
+    "No complete Godot editor support claim"
+  ]
+}

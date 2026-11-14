@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "issue_number": 951,
+  "parent_issue": 773,
+  "request_id": "editor-parent-production-continuation-20261112",
+  "state": "native_worker_reactivated_result_pending",
+  "scope": "Current Codex execution coordination for the existing Godot work item; not an editor runtime defect or a new business acceptance.",
+  "observation": "A follow-up revision was sent with send_message after the test worker had completed its preceding turn. Delivery of that message did not start a new turn. The implementation owner incorrectly described the revision as running; current root repeated that assumption in progress updates.",
+  "correction": "The implementation owner reported invoking followup_task for the same existing worker. Current root then used the real collaboration.list_agents tool and independently observed the test worker running. No replacement worker was spawned and no fixture result was inferred from the running state.",
+  "verification_boundary": "The next source digest, static checks and actual native test results remain required. Worker activation is execution coordination, not test success or business completion.",
+  "ownership": {
+    "coordinator": "/root",
+    "implementation_owner": "/root/sinan_99def07d3f8a988c",
+    "test_worker": "/root/sinan_65c894021a8fdc52"
+  },
+  "actual_sources": [
+    "The implementation owner's native status message explicitly corrected its earlier running claim and reported reactivation.",
+    "Current root's subsequent real collaboration.list_agents result reported the same test worker and implementation owner running.",
+    "The previous actual completion callback identified the prior helper digest as 9818497f76a42329c4752248fd67be7c239323db4183cf1cb85e30bcfeb1ead2."
+  ],
+  "next_action": "Require the actual completion event and new helper digest, then run static checks and the native recovery consumer. Use followup_task to start work on an idle or completed existing agent; use send_message to coordinate an already running agent."
+}
