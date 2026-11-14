@@ -752,6 +752,7 @@ class Tianxuan:
 
     # ---------- 偃师：需求文档 ----------
 
+    @_connection_call
     def create_requirement(
         self, actor: str, request_id: str, title: str, outcome: str, scope: str, acceptance: str, lang: str = "zh"
     ) -> dict[str, Any]:
@@ -760,7 +761,18 @@ class Tianxuan:
             f"request_id: {request_id}\nkind: requirement\nlang: {lang}\n---\n\n"
             f"# {title}\n\n## 目标\n\n{outcome}\n\n## 范围\n\n{scope}\n\n## 验收\n\n{acceptance}\n"
         )
-        return self.create_doc(actor, title, body, lang=lang, kind="requirement", request_id=request_id)
+        existing = self.db.execute("SELECT * FROM docs WHERE request_id = ?", (request_id,)).fetchone()
+        if existing is not None:
+            if existing["tenant_id"] != self._tenant_of(actor):
+                raise VersionConflict(f"request_id is already in use: {request_id}")
+            if existing["title"] == title and existing["body_md"] == body:
+                return self.get_doc(existing["id"])
+            raise VersionConflict(f"request_id already exists with different content: {request_id}")
+        try:
+            return self.create_doc(actor, title, body, lang=lang, kind="requirement", request_id=request_id)
+        except sqlite3.IntegrityError as error:
+            self.db.rollback()
+            raise VersionConflict(f"request_id already exists: {request_id}") from error
 
     # ---------- 司南：工单 ----------
 
@@ -778,6 +790,12 @@ class Tianxuan:
     ) -> dict[str, Any]:
         self._require_editor(actor)
         tenant_id = self._tenant_of(actor)
+        if requirement_id is not None:
+            requirement = self._require_tenant_doc(actor, requirement_id)
+            if requirement["kind"] != "requirement":
+                raise TianxuanError("requirement_id must reference a requirement document")
+        if parent_id is not None:
+            self._require_tenant_issue(actor, parent_id)
         number = self.db.execute(
             "SELECT COALESCE(MAX(number), 0) + 1 FROM issues WHERE tenant_id = ?", (tenant_id,)
         ).fetchone()[0]
@@ -864,10 +882,16 @@ class Tianxuan:
             raise NotFound(f"issue not found: {issue_id}")
         return issue
 
+    def _require_tenant_doc(self, actor: str, doc_id: str) -> dict[str, Any]:
+        document = self.get_doc(doc_id)
+        if document["tenant_id"] != self._tenant_of(actor):
+            raise NotFound(f"doc not found: {doc_id}")
+        return document
+
     @_connection_call
     def transition_issue(self, actor: str, issue_id: str, to_status: str) -> dict[str, Any]:
         self._require_editor(actor)
-        issue = self.get_issue(issue_id)
+        issue = self._require_tenant_issue(actor, issue_id)
         current = issue["status"]
         if to_status not in ISSUE_TRANSITIONS.get(current, set()):
             raise TransitionRejected(f"{current} -> {to_status} is not allowed")
@@ -880,30 +904,48 @@ class Tianxuan:
     @_connection_call
     def plan_tickets(self, actor: str, requirement_id: str, tickets: list[dict[str, Any]]) -> list[dict[str, Any]]:
         self._require_editor(actor)
-        requirement = self.get_doc(requirement_id)
+        requirement = self._require_tenant_doc(actor, requirement_id)
         if requirement["kind"] != "requirement":
             raise TianxuanError("tickets can only be planned from a requirement document")
-        parent = self.create_issue(
-            actor,
-            requirement["title"],
-            type="requirement",
-            acceptance="全部子工单验收通过",
-            requirement_id=requirement_id,
-            body_md=f"需求文档：[[{requirement_id}]]",
-        )
+        parent_row = self.db.execute(
+            "SELECT * FROM issues WHERE tenant_id = ? AND requirement_id = ? AND type = 'requirement' "
+            "ORDER BY number LIMIT 1",
+            (requirement["tenant_id"], requirement_id),
+        ).fetchone()
+        if parent_row is None:
+            parent = self.create_issue(
+                actor,
+                requirement["title"],
+                type="requirement",
+                acceptance="全部子工单验收通过",
+                requirement_id=requirement_id,
+                body_md=f"需求文档：[[{requirement_id}]]",
+            )
+        else:
+            parent = dict(parent_row)
+        existing_children = {
+            issue["title"]: issue
+            for issue in self.list_issues(actor, requirement_id)
+            if issue["parent_id"] == parent["id"]
+        }
         created = []
         for ticket in tickets:
-            created.append(
-                self.create_issue(
-                    actor,
-                    ticket.get("title", "未命名工单"),
-                    type=ticket.get("type", "task"),
-                    acceptance=ticket.get("acceptance", ""),
-                    priority=ticket.get("priority", "normal"),
-                    requirement_id=requirement_id,
-                    parent_id=parent["id"],
-                )
+            title = ticket.get("title", "未命名工单")
+            existing = existing_children.get(title)
+            if existing is not None:
+                created.append(existing)
+                continue
+            child = self.create_issue(
+                actor,
+                title,
+                type=ticket.get("type", "task"),
+                acceptance=ticket.get("acceptance", ""),
+                priority=ticket.get("priority", "normal"),
+                requirement_id=requirement_id,
+                parent_id=parent["id"],
             )
+            created.append(child)
+            existing_children[title] = child
         self._event(
             requirement["tenant_id"], "requirement.planned", actor, requirement_id, {"issues": len(created) + 1}
         )
