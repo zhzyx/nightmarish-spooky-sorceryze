@@ -93,6 +93,7 @@ python tianshu_bridge.py --api http://127.0.0.1:8000 --actor <user_id> \
 - 输出 `{"ok": true, "data": ...}`；`--result <path>` 可直接写天枢宿主回执文件
 - Tianshu 的 Issue 详情新增「天璇」按钮：读取已绑定需求/文档，未绑定时可一键发布需求与工单树
 - Tianshu 侧通过 `TIANXUAN_API`、`TIANXUAN_ACTOR` 或 `TIANXUAN_TOKEN` 指定天璇连接身份
+- 身份适配：`/api/v1/identity/links` 绑定外部身份，`/api/v1/identity/resolve` 按 provider 适配器换取会话；内置 `static`、`tianshu`、`github`、`oidc` 共享密钥适配器
 
 ## 环境变量
 

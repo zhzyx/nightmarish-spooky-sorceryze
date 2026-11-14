@@ -170,3 +170,35 @@ def test_sync_advances_ticket_to_done(monkeypatch, capsys) -> None:
     envelope = json.loads(capsys.readouterr().out)
     assert envelope["ok"] is True
     assert envelope["data"]["updated"][0]["status"] == "done"
+
+
+def test_identity_resolves_token_before_command(monkeypatch, capsys) -> None:
+    calls: list[Request] = []
+
+    def fake(request: Request, timeout: int) -> _Response:
+        calls.append(request)
+        if request.full_url.endswith("/api/v1/identity/resolve"):
+            return _Response({"token": "session-token", "user_id": "usr_1"})
+        return _Response({"documents": []})
+
+    monkeypatch.setattr(tianshu_bridge, "urlopen", fake)
+    code = tianshu_bridge.main([
+        "--api",
+        "http://api.example",
+        "--identity-provider",
+        "tianshu",
+        "--identity-subject",
+        "gh_1",
+        "--identity-secret",
+        "shared",
+        "context",
+        "--external-id",
+        "issue/1",
+    ])
+    assert code == 0
+    payload = calls[0].data
+    assert isinstance(payload, bytes)
+    body = json.loads(payload.decode("utf-8"))
+    assert body == {"provider": "tianshu", "subject": "gh_1", "secret": "shared"}
+    assert calls[1].headers["Authorization"] == "Bearer session-token"
+    assert json.loads(capsys.readouterr().out)["ok"] is True

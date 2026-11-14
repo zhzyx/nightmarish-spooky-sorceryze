@@ -92,6 +92,12 @@ CREATE TABLE IF NOT EXISTS external_links (
 );
 CREATE INDEX IF NOT EXISTS idx_external_links_lookup
   ON external_links(tenant_id, system, external_id);
+CREATE TABLE IF NOT EXISTS identity_links (
+  id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL,
+  provider TEXT NOT NULL, subject TEXT NOT NULL, user_id TEXT NOT NULL,
+  created_by TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+  UNIQUE (provider, subject)
+);
 CREATE INDEX IF NOT EXISTS idx_issue_comments_issue ON issue_comments(issue_id, created_at);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_docs_request ON docs(tenant_id, request_id)
   WHERE request_id IS NOT NULL;
@@ -1273,6 +1279,90 @@ class Tianxuan:
             "issues": self.list_issues(actor, requirement["id"]),
             "link": link,
         }
+
+    # ---------- 跨系统：身份适配 ----------
+
+    def link_identity(self, actor: str, provider: str, subject: str, user_id: str) -> dict[str, Any]:
+        """管理员把外部身份（provider + subject）绑定到本地用户。"""
+        if self.role_of(actor) != "admin":
+            raise PermissionDenied("only admin can bind external identities")
+        provider = provider.strip()
+        subject = subject.strip()
+        if not provider or not subject:
+            raise TianxuanError("provider and subject are required")
+        tenant_id = self._tenant_of(actor)
+        user = self.db.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+        if user is None or user["tenant_id"] != tenant_id:
+            raise NotFound(f"user not found: {user_id}")
+        existing = self.db.execute(
+            "SELECT * FROM identity_links WHERE provider = ? AND subject = ?",
+            (provider, subject),
+        ).fetchone()
+        now = _now()
+        if existing is not None:
+            if existing["user_id"] != user_id or existing["tenant_id"] != tenant_id:
+                self.db.execute(
+                    "UPDATE identity_links SET tenant_id = ?, user_id = ?, updated_at = ? WHERE id = ?",
+                    (tenant_id, user_id, now, existing["id"]),
+                )
+                self._event(
+                    tenant_id,
+                    "identity.relinked",
+                    actor,
+                    existing["id"],
+                    {"provider": provider, "subject": subject, "user_id": user_id},
+                )
+                self.db.commit()
+            return self.get_identity_link(existing["id"])
+        link_id = _id("idn")
+        self.db.execute(
+            "INSERT INTO identity_links (id, tenant_id, provider, subject, user_id, created_by, "
+            "created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (link_id, tenant_id, provider, subject, user_id, actor, now, now),
+        )
+        self._event(
+            tenant_id,
+            "identity.linked",
+            actor,
+            link_id,
+            {"provider": provider, "subject": subject, "user_id": user_id},
+        )
+        self.db.commit()
+        return self.get_identity_link(link_id)
+
+    def get_identity_link(self, link_id: str) -> dict[str, Any]:
+        row = self.db.execute("SELECT * FROM identity_links WHERE id = ?", (link_id,)).fetchone()
+        if row is None:
+            raise NotFound(f"identity link not found: {link_id}")
+        return dict(row)
+
+    def list_identity_links(
+        self, actor: str, provider: str | None = None, subject: str | None = None
+    ) -> list[dict[str, Any]]:
+        if self.role_of(actor) != "admin":
+            raise PermissionDenied("only admin can list external identities")
+        tenant_id = self._tenant_of(actor)
+        sql = "SELECT * FROM identity_links WHERE tenant_id = ?"
+        args: list[Any] = [tenant_id]
+        if provider:
+            sql += " AND provider = ?"
+            args.append(provider)
+        if subject:
+            sql += " AND subject = ?"
+            args.append(subject)
+        rows = self.db.execute(sql + " ORDER BY created_at, id", args).fetchall()
+        return [dict(row) for row in rows]
+
+    def resolve_identity(self, provider: str, subject: str) -> dict[str, Any]:
+        """按适配器已校验的外部身份解析本地用户；不在此处校验凭据。"""
+        row = self.db.execute(
+            "SELECT il.*, u.email, u.name FROM identity_links il JOIN users u ON u.id = il.user_id "
+            "WHERE il.provider = ? AND il.subject = ?",
+            (provider.strip(), subject.strip()),
+        ).fetchone()
+        if row is None:
+            raise NotFound(f"external identity is not linked: {provider}/{subject}")
+        return dict(row)
 
     # ---------- 事件与 AI 工具 ----------
 
