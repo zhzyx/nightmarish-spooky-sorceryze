@@ -356,6 +356,25 @@ def test_merge_pull_request_without_sha_and_custom_method(make_client: ClientFac
     }
 
 
+def test_merge_pull_request_accepts_empty_success_body(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "POST"
+        assert request.url.path == "/api/v1/repos/octo/duobao/pulls/7/merge"
+        return httpx.Response(200, content=b"")
+
+    client, _ = make_client(handler)
+    assert client.merge_pull_request("octo", "duobao", 7) == {"merged": True, "sha": None}
+
+
+def test_branch_list_treats_null_as_empty(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/api/v1/repos/octo/duobao/branches"
+        return httpx.Response(200, json=None)
+
+    client, _ = make_client(handler)
+    assert client.list_branches("octo", "duobao") == []
+
+
 def test_list_issues_returns_normalized_payload(make_client: ClientFactory) -> None:
     issues_payload = [
         {
