@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
 import { LocalGitRepos } from "@/components/LocalGitRepos";
+import { MergeQueuePanel } from "@/components/MergeQueuePanel";
 import { RepoBrowser } from "@/components/RepoBrowser";
 import { RepoPulls } from "@/components/RepoPulls";
 import { fetchRepos, type ApiRepo } from "@/lib/api";
@@ -59,6 +60,8 @@ export default async function ReposPage() {
       </header>
 
       <LocalGitRepos />
+
+      <MergeQueuePanel />
 
       <RepoPulls />
 
