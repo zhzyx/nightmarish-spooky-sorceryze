@@ -347,3 +347,51 @@ def test_admin_can_rebind_identity(monkeypatch) -> None:
         json={"user_id": second_id},
     )
     assert forbidden.status_code == 403
+
+
+def test_oidc_requires_exp_and_rejects_future_nbf(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_OIDC_SECRET", "oidc-secret")
+    client, headers, user_id = _client()
+    client.post(
+        "/api/v1/identity/links",
+        headers=headers,
+        json={"provider": "oidc", "subject": "oidc-claims", "user_id": user_id},
+    )
+    no_exp = identity.encode_test_jwt("oidc-secret", {"sub": "oidc-claims"})
+    denied = client.post(
+        "/api/v1/identity/resolve",
+        json={"provider": "oidc", "subject": "oidc-claims", "secret": no_exp},
+    )
+    assert denied.status_code == 403
+
+    monkeypatch.setenv("TIANXUAN_OIDC_ALLOW_NO_EXP", "1")
+    allowed = client.post(
+        "/api/v1/identity/resolve",
+        json={"provider": "oidc", "subject": "oidc-claims", "secret": no_exp},
+    )
+    assert allowed.status_code == 200
+    monkeypatch.delenv("TIANXUAN_OIDC_ALLOW_NO_EXP")
+
+    future_nbf = identity.encode_test_jwt(
+        "oidc-secret",
+        {"sub": "oidc-claims", "exp": time.time() + 60, "nbf": time.time() + 3600},
+    )
+    assert (
+        client.post(
+            "/api/v1/identity/resolve",
+            json={"provider": "oidc", "subject": "oidc-claims", "secret": future_nbf},
+        ).status_code
+        == 403
+    )
+
+    past_nbf = identity.encode_test_jwt(
+        "oidc-secret",
+        {"sub": "oidc-claims", "exp": time.time() + 60, "nbf": time.time() - 60},
+    )
+    assert (
+        client.post(
+            "/api/v1/identity/resolve",
+            json={"provider": "oidc", "subject": "oidc-claims", "secret": past_nbf},
+        ).status_code
+        == 200
+    )

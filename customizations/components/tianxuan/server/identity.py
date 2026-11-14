@@ -166,10 +166,28 @@ class OidcJwtIdentityAdapter:
             return False
         if not isinstance(claims, dict) or str(claims.get("sub", "")) != subject:
             return False
+        now = time.time()
         expires = claims.get("exp")
-        if expires is not None:
+        if expires is None:
+            if os.environ.get("TIANXUAN_OIDC_ALLOW_NO_EXP", "") != "1":
+                return False
+        else:
             try:
-                if float(expires) <= time.time():
+                if float(expires) <= now:
+                    return False
+            except (TypeError, ValueError):
+                return False
+        not_before = claims.get("nbf")
+        if not_before is not None:
+            try:
+                if float(not_before) > now + 60:
+                    return False
+            except (TypeError, ValueError):
+                return False
+        issued_at = claims.get("iat")
+        if issued_at is not None:
+            try:
+                if float(issued_at) > now + 60:
                     return False
             except (TypeError, ValueError):
                 return False
