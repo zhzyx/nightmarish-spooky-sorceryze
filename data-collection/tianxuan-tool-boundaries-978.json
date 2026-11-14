@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "issue_number": 978,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "original_issues": [
+    1117,
+    1118
+  ],
+  "remaining_issue": 1188,
+  "remaining_sections": [
+    "B3",
+    "B4"
+  ],
+  "base": "7acdf07ca4c89251527a392c754a536af2094b6a",
+  "files": [
+    {
+      "path": "customizations/components/tianxuan/server/README.md",
+      "sha256": "757be5e08aeaa55c00ad7774763c766b4890be94f735acdb5c980b85e761c8c8"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/api.py",
+      "sha256": "4fba66cf9db7ce8ed8446015b92813f05d02ac8cd6d9f366957002a22f6c5da6"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/schemas.py",
+      "sha256": "d51508c21ccaf990cc308cc440c1eed935df0715623c7beaf1dabd4085f5f976"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_api_tenant_mutations.py",
+      "sha256": "d1d56a7b2b21ef8b9b9b0f034e0abc5262d482efd4c83fdf8418b0b493bf94f3"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_tenant_mutations.py",
+      "sha256": "9aa7f63fd88d7aca9a956697ebac8c32ac6334a0b9604f521530d18869d81937"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_tianxuan_boundary.py",
+      "sha256": "283a7d5c80cc58a8b2496bd1afcb1473e07dfc5d4e808104e9b9d8fb4d900ab7"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_tianxuan_concurrency.py",
+      "sha256": "7e42d2244562ab7d676b27546a7ef2248846f6a1b4ea5d8543d81efd01af06f1"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_tianxuan_core.py",
+      "sha256": "76f8390e766f5454444766859b2aa257351d9a757bdcd6ab2aa99e82e7c562a6"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_tool_receipts.py",
+      "sha256": "d572b79384478674fef4afb9cf92835dd2c258119ebea2ee455557ea5c0979d7"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/tianxuan_cli.py",
+      "sha256": "9fc9b4495c3bb6a3ec10247e642c272a4bcef4fa0bd12f3a294820bad8a17074"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/tianxuan_core.py",
+      "sha256": "0b3a14a2d21a353bb029d698e5c96cfaec2c127fccef9aa340393a837b234149"
+    },
+    {
+      "path": "design-docs/tianxuan-platform-20261114.md",
+      "sha256": "bc0a081cfa6774c1e5da530adbfef711558fd3b74d3d3e661715971c6aa53b8b"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_issue_ancestor_acl.py",
+      "sha256": "961428b676d963f01e8440a9ccb8f4d793d68346ba370c7b4dec460870bdd62b"
+    }
+  ],
+  "changes": [
+    "Tenant/object/space/ancestor checks on existing mutation paths; current role and document ACL checked before receipt replay.",
+    "Six registered mutating tools share durable tenant+actor+tool+call identity, canonical payload, same-result replay and stable conflicts.",
+    "Receipts and business writes share the existing transaction; caller transactions and savepoints remain owned by their caller.",
+    "Manual calls without a key keep intentional repeated-write behavior; requirement legacy requests preserve incremental planning with complete specifications and multiplicity."
+  ],
+  "source_evidence": {
+    "tenant_original_review_sha256": "48d1c626fbc44d03d1986c6be6c3b1be43b0f2230d91f28656b707a40b10ea01",
+    "idempotency_manifest_sha256": "3e5ea3f19c49b3bc33e1688b9331bfc4c9ab81417c786ee8a048e91364b42b61",
+    "idempotency_patch_sha256": "2484091111e6a446925b5ac09858d6350640de4273d9ecb1ba2134f5b841a542",
+    "main1195_reproduction_sha256": "fe663923ad99cdb8aa0374d836d2b25af2a1809f234435594ebef700f5895ca2"
+  },
+  "validation": {
+    "platform": "macOS/Python3.14/isolated SQLite and temporary Git repositories",
+    "tests": 516,
+    "subtests": 144,
+    "scope": "server/wenqu/duobao after integrating upstream merge queue on main7acdf",
+    "log_sha256": "bbfe27d09fe094f2a04a77415d95249161749f601a89c5f2ae1fddcbe9ed2beb",
+    "manifest_sha256": "b7c39d1d2c77d8764da81beb35d4d9c4e592c11720ca7f6f1beead96d0f3a7fc",
+    "warning": "Existing Starlette/httpx deprecation; no failures",
+    "source_candidate_counts_not_added": true,
+    "format_only_followup": "New ACL regression imports reordered by lint; production source unchanged from 510/144 run.",
+    "integration_sha256": "ab8e3218ccc2934df64cf3ead12f1dfbf96436d46ec179d976b9309e95bb205b"
+  },
+  "independent_combined_review": {
+    "state": "approved",
+    "worker": "/root/sinan_86e5f9f83f02c351",
+    "sha256": "746a008cf6a02aa74a78870a7204c5797e9e72a35b6c746d844fdf149983292a",
+    "manifest_sha256": "6df03ba3aa8a97299303c28a016c1876335efe3e0e3a5a4766a466aab62851db",
+    "checks": 40,
+    "counting": "17 original independent +13 regression +10 further probes; no full-suite rerun claimed",
+    "upstream_integration": "After review, main adds merge-queue imports/constructor/routes/schema and platform prose; clean three-way integration preserves reviewed core and test bytes. Root reviewed these3 file deltas and reran516/144 combined tests. Original review scope remains da903-derived candidate."
+  },
+  "delivery": {
+    "formal_gate": "pending",
+    "ci": "pending",
+    "main": "pending"
+  },
+  "limits": [
+    "Only registered six mutating AI tools and their existing Python/HTTP/CLI interfaces receive this idempotence contract.",
+    "No live provider, production database or production deployment claims.",
+    "Historical calls without receipt identities cannot be retroactively attributed.",
+    "1188B1, 1086 unified AI core/controllers and parent978 full platform/install/business acceptance remain incomplete."
+  ],
+  "private_receipts_resolution_base": "Git common directory parent / data-collection/receipts/ai-integration-refactor-20261112",
+  "first_combined_review": {
+    "worker": "/root/sinan_315eb6ee6dac06fb",
+    "report_sha256": "2238c908a5f1c1022b5307088710ec160a4e16c9e02b45d131045715ed1ed10d",
+    "result": "changes_requested",
+    "independent_cases": 17,
+    "failed_acl_cases": 12,
+    "finding": "Inherited private requirement ACL and unkeyed mutation write ACL omitted."
+  },
+  "repair": "One read/write-aware requirement/ancestor helper now checks current ACL for direct methods and receipt replay; read-only comment access preserved.13 new regression cases included in510."
+}

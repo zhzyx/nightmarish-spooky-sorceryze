@@ -452,6 +452,145 @@ class HandoffTests(unittest.TestCase):
         for text in (self.pr_base, self.signed, first["candidate"], first["tree"], "new.txt", "alice", "验收证据"):
             self.assertIn(text, bodies[0])
         self.assertEqual(first["handoff"]["write_paths"], ["new.txt"])
+        self.assertIn("audit_profile", first["handoff"])
+
+    def test_queue_snapshot_and_prune_own_superseded_respect_multi_account_ownership(self) -> None:
+        # Create a second candidate by alice on the same issue/request and an independent candidate by bob.
+        self.git("switch", "-c", "alice-v2", "main")
+        (self.repo / "ship.txt").write_text("alice v2")
+        self.commit("alice v2")
+        cand_a2 = self.git("rev-parse", "HEAD")
+        tree_a2 = self.git("rev-parse", "HEAD^{tree}")
+        msg_a2 = (
+            "Sign delivery for #9\n\nGongGong-Issue: #9\nGongGong-Request: flow-test\nRepository: org/repo\n"
+            f"Candidate: {cand_a2}\nTree: {tree_a2}\nBase: {self.pr_base}\nTarget: main\nWriter: alice"
+        )
+        self.git("commit", "--allow-empty", "-m", msg_a2)
+        signed_a2 = self.git("rev-parse", "HEAD")
+        self.git("update-ref", "refs/pull/10/head", signed_a2)
+
+        self.git("switch", "-c", "bob-v1", "main")
+        (self.repo / "bob.txt").write_text("bob v1")
+        self.commit("bob v1")
+        cand_b1 = self.git("rev-parse", "HEAD")
+        tree_b1 = self.git("rev-parse", "HEAD^{tree}")
+        msg_b1 = (
+            "Sign delivery for #9\n\nGongGong-Issue: #9\nGongGong-Request: flow-test\nRepository: org/repo\n"
+            f"Candidate: {cand_b1}\nTree: {tree_b1}\nBase: {self.pr_base}\nTarget: main\nWriter: bob"
+        )
+        self.git("commit", "--allow-empty", "-m", msg_b1)
+        signed_b1 = self.git("rev-parse", "HEAD")
+        self.git("update-ref", "refs/pull/11/head", signed_b1)
+        self.git("switch", "main")
+
+        def pr_node(
+            num: int, login: str, cand: str, signed: str, tree: str, base: str, msg: str, updated: str
+        ) -> dict[str, Any]:
+            return {
+                "number": num,
+                "url": f"https://github.com/org/repo/pull/{num}",
+                "title": f"PR {num}",
+                "body": "GongGong-Issue: #9\nGongGong-Request: flow-test\n",
+                "isDraft": False,
+                "headRefName": f"codex/submit/{login}/9/{cand}",
+                "headRefOid": signed,
+                "baseRefOid": base,
+                "isCrossRepository": False,
+                "mergeable": "MERGEABLE",
+                "updatedAt": updated,
+                "author": {"login": login},
+                "commits": {
+                    "nodes": [
+                        {
+                            "commit": {
+                                "oid": signed,
+                                "message": msg,
+                                "tree": {"oid": tree},
+                                "parents": {"nodes": [{"oid": cand}]},
+                                "author": {"user": {"login": login}},
+                                "signature": {"isValid": True, "wasSignedByGitHub": True},
+                                "statusCheckRollup": {
+                                    "contexts": {
+                                        "nodes": [
+                                            {
+                                                "__typename": "CheckRun",
+                                                "name": "issue-association",
+                                                "status": "COMPLETED",
+                                                "conclusion": "SUCCESS",
+                                                "completedAt": updated,
+                                                "checkSuite": {"workflowRun": {"workflow": {"name": "Gate"}}},
+                                            }
+                                        ]
+                                    }
+                                },
+                            }
+                        }
+                    ]
+                },
+            }
+
+        gql_data = {
+            "repository": {
+                "pullRequests": {
+                    "nodes": [
+                        pr_node(
+                            7,
+                            "alice",
+                            self.candidate,
+                            self.signed,
+                            self.tree,
+                            self.base,
+                            self.message,
+                            "2026-11-14T00:01:00Z",
+                        ),
+                        pr_node(10, "alice", cand_a2, signed_a2, tree_a2, self.pr_base, msg_a2, "2026-11-14T00:10:00Z"),
+                        pr_node(11, "bob", cand_b1, signed_b1, tree_b1, self.pr_base, msg_b1, "2026-11-14T00:05:00Z"),
+                    ]
+                }
+            }
+        }
+
+        def fetch(repo: Path, operation: str, *rest: str) -> str:
+            refs = [arg for arg in rest if not arg.startswith("-") and not arg.startswith("https://")]
+            return submission.git(repo, "fetch", str(self.repo), *refs)
+
+        closed_prs: list[str] = []
+
+        def gh(*args: str) -> str:
+            if args[:2] == ("pr", "close"):
+                closed_prs.append(args[2])
+                return ""
+            raise AssertionError(args)
+
+        with (
+            patch.object(submission.work_items, "config", return_value=({"repository": "org/repo"}, [])),
+            patch.object(submission.issue_gate, "check_repository"),
+            patch.object(submission, "graphql", return_value=gql_data),
+            patch.object(submission, "authenticated_git", side_effect=fetch),
+            patch.object(submission.work_items, "gh", side_effect=gh),
+            patch.object(submission, "writer", return_value={"login": "bob", "databaseId": 2}),
+        ):
+            snap = submission.queue_snapshot(self.repo)
+            self.assertEqual(snap["accounts"], ["alice", "bob"])
+            self.assertEqual(snap["ready_to_merge"], [10, 11])
+            self.assertEqual(snap["merge_waves"], [[10, 11]])
+            self.assertEqual(snap["superseded_prs"], [{"pr": 7, "writer": "alice", "issue": 9, "superseded_by": 10}])
+            # Bob running prune_own_superseded must NEVER close Alice's superseded PR #7.
+            bob_prune = submission.prune_own_superseded(self.repo)
+            self.assertEqual(bob_prune["closed_prs"], [])
+            self.assertEqual(closed_prs, [])
+
+        with (
+            patch.object(submission.work_items, "config", return_value=({"repository": "org/repo"}, [])),
+            patch.object(submission.issue_gate, "check_repository"),
+            patch.object(submission, "graphql", return_value=gql_data),
+            patch.object(submission, "authenticated_git", side_effect=fetch),
+            patch.object(submission.work_items, "gh", side_effect=gh),
+            patch.object(submission, "writer", return_value={"login": "alice", "databaseId": 1}),
+        ):
+            alice_prune = submission.prune_own_superseded(self.repo)
+            self.assertEqual(alice_prune["closed_prs"], [{"pr": 7, "superseded_by": 10, "issue": 9}])
+            self.assertEqual(closed_prs, ["7"])
 
 
 if __name__ == "__main__":

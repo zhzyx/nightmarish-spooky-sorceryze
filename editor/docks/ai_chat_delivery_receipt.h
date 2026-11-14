@@ -45,6 +45,13 @@ public:
 		if (!number_is(p_value.get("schema_version", Variant()), 1) || p_value.get("kind", "") != kind) {
 			return false;
 		}
+		const String expected_mode = p_expected.get("delivery_mode", "complete");
+		if (expected_mode != "complete" && expected_mode != "slice") {
+			return false;
+		}
+		if (p_value.has("delivery_mode") && p_value.get("delivery_mode", "") != expected_mode) {
+			return false;
+		}
 		if (kind == "native_delivery_retry" && (p_value.get("host_action_request_id", "") != p_expected.get("host_action_request_id", "") || p_value.get("original_journal_sha256", "") != p_expected.get("original_journal_sha256", "") || p_value.get("host_instance_id", "") != p_expected.get("host_instance_id", "") || !number_is(p_value.get("engine_pid", Variant()), p_expected["engine_pid"]))) {
 			return false;
 		}
@@ -61,6 +68,7 @@ public:
 		if (!matches(p_value, p_expected) || !bool(p_value["completion_verified"]) || p_value.get("host_facts", Variant()).get_type() != Variant::DICTIONARY || p_value.get("ci", Variant()).get_type() != Variant::ARRAY) {
 			return false;
 		}
+		const String expected_mode = p_expected.get("delivery_mode", "complete");
 		const Dictionary binding = p_expected["binding"];
 		const Dictionary facts = p_value["host_facts"];
 		if (facts.get("repository", "") != binding["repository"] || !number_is(facts.get("issue", Variant()), binding["issue"]) || facts.get("request_id", "") != binding["request_id"] || facts.get("candidate", "") != p_expected["expected_candidate"] || facts.get("signed_commit", "") != p_expected["expected_signed_commit"] || facts.get("pr_state", "") != "MERGED" || facts.get("pull_request", "") != "https://github.com/" + String(binding["repository"]) + "/pull/" + itos(p_expected["pr"]) || facts.get("delivered_paths_differ", Variant()).get_type() != Variant::ARRAY || !Array(facts["delivered_paths_differ"]).is_empty()) {
@@ -87,8 +95,14 @@ public:
 			}
 			statuses += String(label).begins_with("status:") ? 1 : 0;
 		}
-		if (issue.get("state", "") != "CLOSED" || issue.get("reason", "") != "COMPLETED" || statuses != 1 || !labels.has("status:done") || !labels.has("workspace:gonggong")) {
-			return false;
+		if (expected_mode == "slice") {
+			if (issue.get("state", "") != "OPEN" || statuses != 1 || !(labels.has("status:in-progress") || labels.has("status:in-review")) || !labels.has("workspace:gonggong")) {
+				return false;
+			}
+		} else {
+			if (issue.get("state", "") != "CLOSED" || issue.get("reason", "") != "COMPLETED" || statuses != 1 || !labels.has("status:done") || !labels.has("workspace:gonggong")) {
+				return false;
+			}
 		}
 		const Array checks = p_value["ci"];
 		if (checks.is_empty()) {

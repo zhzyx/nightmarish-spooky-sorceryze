@@ -27,6 +27,9 @@ def installed_module(name, relative):
 
 
 submission = installed_module("delivery_writer", "customizations/components/issue-workorders/writer_submit.py")
+submission_audit = installed_module(
+    "delivery_submission_audit", "customizations/components/issue-workorders/submission_audit.py"
+)
 yanluo_progress = installed_module("delivery_progress", "customizations/components/issue-workorders/yanluo_progress.py")
 _storage = installed_module(
     "delivery_storage", "customizations/platforms/data-collection/git-files/storage/diting_files.py"
@@ -116,6 +119,7 @@ def host_scope(root, request):
     require(isinstance(binding, dict), "Host candidate binding required")
     common, repository, origin = _candidate.identity(root)
     issue, request_id = binding.get("issue"), binding.get("request_id")
+    actor_login = binding.get("actor_login")
     require(
         type(issue) is int
         and issue > 0
@@ -123,7 +127,7 @@ def host_scope(root, request):
         and re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", request_id),
         "Invalid work-order binding",
     )
-    digest = _candidate.candidate_digest(common, repository, issue, request_id, request["owner"])
+    digest = _candidate.candidate_digest(common, repository, issue, request_id, request["owner"], actor_login)
     path = common / "gonggong-engine-candidates" / (digest + ".json")
     require(str(path) == binding.get("binding_path"), "Candidate journal differs from host binding")
     recorded = read_json(path)
@@ -139,6 +143,8 @@ def host_scope(root, request):
         "branch": binding.get("branch"),
         "base_sha": binding.get("base_sha"),
     }
+    if actor_login:
+        expected["actor_login"] = actor_login
     differing = [key for key, value in expected.items() if binding.get(key) != value]
     require(not differing, "Host candidate identity differs: " + ", ".join(differing))
     require(recorded.get("state") == "prepared", "Candidate preparation incomplete")
@@ -149,25 +155,14 @@ def host_scope(root, request):
     return common, recorded, head, late_telemetry(root, recorded)
 
 
-def verified_checks(repository, pr, signed):
+def verified_checks(repository, pr, signed, *, audit_profile=None):
     value = json.loads(
         submission.work_items.gh("pr", "view", str(pr), "-R", repository, "--json", "headRefOid,statusCheckRollup")
     )
     require(value.get("headRefOid") == signed, "PR head changed during completion")
     checks = value.get("statusCheckRollup")
     require(isinstance(checks, list) and checks, "CI readback is missing")
-    summary = []
-    for check in checks:
-        if check.get("__typename") == "StatusContext":
-            state = check.get("state")
-            name = check.get("context", "")
-            require(state == "SUCCESS", "CI is pending or failed")
-        else:
-            state = check.get("conclusion")
-            name = check.get("name", "")
-            require(check.get("status") == "COMPLETED" and state in {"SUCCESS", "SKIPPED"}, "CI is pending or failed")
-        summary.append({"name": str(name)[:256], "state": state})
-    return summary
+    return submission_audit.verify_ci_rollup(checks, audit_profile=audit_profile)
 
 
 def issue_readback(repository, number, request_id, known_types):
@@ -190,7 +185,8 @@ def issue_readback(repository, number, request_id, known_types):
     return value, [name for name in labels if name.startswith("status:")]
 
 
-def acceptance_declaration(value):
+def acceptance_declaration(value, *, delivery_mode="complete"):
+    require(delivery_mode in {"complete", "slice"}, "Unsupported delivery_mode")
     require(isinstance(value, list) and 0 < len(value) <= 64, "The complete original acceptance checklist is required")
     for index, item in enumerate(value):
         require(
@@ -205,14 +201,21 @@ def acceptance_declaration(value):
             item["state"] in {"done", "remaining", "unknown"},
             f"Invalid state at item {index + 1} ({item['id']}): use done, remaining or unknown",
         )
-        require(
-            item["state"] == "done",
-            f"Acceptance item {index + 1} ({item['id']}) is {item['state']}; only done may complete delivery",
-        )
+        if delivery_mode == "complete":
+            require(
+                item["state"] == "done",
+                f"Acceptance item {index + 1} ({item['id']}) is {item['state']}; only done may complete delivery",
+            )
     result = yanluo_progress.assess(value)
-    require(result["complete"], "Remaining or unknown acceptance must keep the Issue open")
+    if delivery_mode == "complete":
+        require(result["complete"], "Remaining or unknown acceptance must keep the Issue open")
+    else:
+        require(result["counts"]["done"] > 0, "Slice delivery requires at least one verified done acceptance item")
+        require(not result["complete"], "All acceptance items are done; use complete delivery_mode to close the Issue")
     return {
         "source": "authorized_worker_declaration",
+        "delivery_mode": delivery_mode,
+        "counts": result["counts"],
         "items": value,
         "sha256": hashlib.sha256(canonical(value).encode()).hexdigest(),
     }
@@ -263,9 +266,11 @@ def publish_declaration(repository, scope, declaration):
 
 def complete(root, request):
     root = Path(root).absolute()
+    delivery_mode = request.get("delivery_mode", "complete")
     result = {
         "schema_version": 1,
         "kind": "native_delivery_finalization",
+        "delivery_mode": delivery_mode,
         "ok": False,
         "completion_verified": False,
         "mutations_may_have_started": False,
@@ -303,12 +308,19 @@ def complete(root, request):
             submission.git(root, "merge-base", candidate, report["current_main"]) == candidate,
             "Candidate is not contained in main",
         )
-        checks = verified_checks(repository, request["pr"], report["signed_commit"])
-        declaration = acceptance_declaration(request.get("acceptance_items"))
+        audit_profile = report.get("audit_profile")
+        checks = verified_checks(repository, request["pr"], report["signed_commit"], audit_profile=audit_profile)
+        declaration = acceptance_declaration(request.get("acceptance_items"), delivery_mode=delivery_mode)
         scope = {
             key: report[key] for key in ("repository", "issue", "request_id", "candidate", "signed_commit", "tree")
         }
-        scope.update(owner=request["owner"], source_root=str(root), acceptance_sha256=declaration["sha256"])
+        scope.update(
+            owner=request["owner"],
+            source_root=str(root),
+            acceptance_sha256=declaration["sha256"],
+        )
+        if delivery_mode != "complete":
+            scope["delivery_mode"] = delivery_mode
         key = hashlib.sha256(
             canonical({key: value for key, value in scope.items() if key != "acceptance_sha256"}).encode()
         ).hexdigest()
@@ -319,71 +331,98 @@ def complete(root, request):
         diagnostic_folder = folder / "attempts"
         require(not diagnostic_folder.is_symlink(), "Invalid delivery attempts directory")
         diagnostic_folder.mkdir(mode=0o700, exist_ok=True)
-        with _candidate.binding_lock(folder / (lock_key + ".lock")):
+        with _candidate.binding_lock(folder / (lock_key + ".lock"), timeout=5.0):
             path = folder / (key + ".json")
             saved = read_json(path) if path.exists() else {"scope": scope, "prior_status": None}
             require(saved.get("scope") == scope, "Delivery journal identity differs")
             issue, statuses = issue_readback(repository, binding["issue"], binding["request_id"], known_types)
-            if issue.get("state") == "CLOSED":
+            if delivery_mode == "slice":
                 require(
-                    issue.get("stateReason") == "COMPLETED" and statuses == ["status:done"],
-                    "Issue closed for another reason",
+                    issue.get("state") == "OPEN" and statuses in (["status:in-progress"], ["status:in-review"]),
+                    "Slice delivery requires an open active Issue",
                 )
-            else:
-                require(issue.get("state") == "OPEN", "Unknown Issue state")
-                prior = saved.get("prior_status")
-                require(
-                    statuses == ["status:done"]
-                    or (prior is None and statuses in (["status:in-progress"], ["status:in-review"]))
-                    or (
-                        prior in {"status:in-progress", "status:in-review"}
-                        and (statuses == [prior] or set(statuses) == {prior, "status:done"})
-                    ),
-                    "Concurrent Issue status mutation",
-                )
-                if prior is None and len(statuses) == 1 and statuses[0] != "status:done":
-                    saved["prior_status"] = statuses[0]
                 _candidate.atomic_json(path, saved)
-                result["stage"] = "completion_write"
+                result["stage"] = "slice_declaration_write"
                 result["mutations_may_have_started"] = True
                 publish_declaration(repository, scope, declaration)
-                if "status:done" not in statuses:
-                    submission.work_items.gh(
-                        "issue", "edit", str(binding["issue"]), "-R", repository, "--add-label", "status:done"
-                    )
-                issue, statuses = issue_readback(repository, binding["issue"], binding["request_id"], known_types)
-                prior = saved.get("prior_status")
+                result["stage"] = "slice_readback"
+                report = submission.inspect_pr(root, repository, request["pr"])
+                receipt = report.get("issue_receipt", {})
                 require(
-                    statuses == ["status:done"] or (prior and set(statuses) == {prior, "status:done"}),
-                    "Concurrent Issue status mutation",
+                    report.get("candidate") == candidate
+                    and report.get("signed_commit") == scope["signed_commit"]
+                    and report.get("delivered_paths_differ") == [],
+                    "Delivery changed during slice finalization",
                 )
-                if prior in statuses:
-                    submission.work_items.gh(
-                        "issue", "edit", str(binding["issue"]), "-R", repository, "--remove-label", prior
+                require(
+                    receipt.get("state") == "OPEN"
+                    and len([v for v in receipt.get("labels", []) if v.startswith("status:")]) == 1
+                    and any(v in {"status:in-progress", "status:in-review"} for v in receipt.get("labels", [])),
+                    "Slice delivery must keep the Issue open with one active status label",
+                )
+            else:
+                if issue.get("state") == "CLOSED":
+                    require(
+                        issue.get("stateReason") == "COMPLETED" and statuses == ["status:done"],
+                        "Issue closed for another reason",
                     )
-                issue, statuses = issue_readback(repository, binding["issue"], binding["request_id"], known_types)
-                require(statuses == ["status:done"], "Completion label was not observed")
-                if issue["state"] == "OPEN":
-                    submission.work_items.gh(
-                        "issue", "close", str(binding["issue"]), "-R", repository, "--reason", "completed"
+                else:
+                    require(issue.get("state") == "OPEN", "Unknown Issue state")
+                    prior = saved.get("prior_status")
+                    require(
+                        statuses == ["status:done"]
+                        or (prior is None and statuses in (["status:in-progress"], ["status:in-review"]))
+                        or (
+                            prior in {"status:in-progress", "status:in-review"}
+                            and (statuses == [prior] or set(statuses) == {prior, "status:done"})
+                        ),
+                        "Concurrent Issue status mutation",
                     )
-            result["stage"] = "closure_readback"
-            report = submission.inspect_pr(root, repository, request["pr"])
-            receipt = report.get("issue_receipt", {})
-            require(
-                report.get("candidate") == candidate
-                and report.get("signed_commit") == scope["signed_commit"]
-                and report.get("delivered_paths_differ") == [],
-                "Delivery changed during finalization",
-            )
-            require(
-                receipt.get("state") == "CLOSED"
-                and receipt.get("reason") == "COMPLETED"
-                and receipt.get("labels", []).count("status:done") == 1
-                and len([v for v in receipt["labels"] if v.startswith("status:")]) == 1,
-                "Issue completion has not been verified",
-            )
+                    if prior is None and len(statuses) == 1 and statuses[0] != "status:done":
+                        saved["prior_status"] = statuses[0]
+                    _candidate.atomic_json(path, saved)
+                    result["stage"] = "completion_write"
+                    result["mutations_may_have_started"] = True
+                    publish_declaration(repository, scope, declaration)
+                    if "status:done" not in statuses:
+                        submission.work_items.gh(
+                            "issue", "edit", str(binding["issue"]), "-R", repository, "--add-label", "status:done"
+                        )
+                    issue, statuses = issue_readback(repository, binding["issue"], binding["request_id"], known_types)
+                    prior = saved.get("prior_status")
+                    require(
+                        statuses == ["status:done"] or (prior and set(statuses) == {prior, "status:done"}),
+                        "Concurrent Issue status mutation",
+                    )
+                    if prior in statuses:
+                        submission.work_items.gh(
+                            "issue", "edit", str(binding["issue"]), "-R", repository, "--remove-label", prior
+                        )
+                    issue, statuses = issue_readback(repository, binding["issue"], binding["request_id"], known_types)
+                    require(statuses == ["status:done"], "Completion label was not observed")
+                    if issue["state"] == "OPEN":
+                        submission.work_items.gh(
+                            "issue", "close", str(binding["issue"]), "-R", repository, "--reason", "completed"
+                        )
+                result["stage"] = "closure_readback"
+                report = submission.inspect_pr(root, repository, request["pr"])
+                receipt = report.get("issue_receipt", {})
+                require(
+                    report.get("candidate") == candidate
+                    and report.get("signed_commit") == scope["signed_commit"]
+                    and report.get("delivered_paths_differ") == [],
+                    "Delivery changed during finalization",
+                )
+                require(
+                    receipt.get("state") == "CLOSED"
+                    and receipt.get("reason") == "COMPLETED"
+                    and receipt.get("labels", []).count("status:done") == 1
+                    and len([v for v in receipt["labels"] if v.startswith("status:")]) == 1,
+                    "Issue completion has not been verified",
+                )
             result["host_facts"] = compact_report(report)
+            if audit_profile is not None:
+                result["audit_profile"] = audit_profile
             result["ci"] = checks
             result["acceptance_declaration"] = declaration
             result["completion_verified"] = True

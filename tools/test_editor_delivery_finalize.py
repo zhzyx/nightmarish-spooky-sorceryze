@@ -342,6 +342,59 @@ class DeliveryTests(unittest.TestCase):
         self.assertFalse(receipt["mutations_may_have_started"])
         self.assertIn("Unsupported delivery request", receipt["error"])
 
+    def test_slice_delivery_mode_keeps_issue_open_and_deduplicates_reruns(self):
+        slice_request = copy.deepcopy(self.request)
+        slice_request["delivery_mode"] = "slice"
+        slice_request["acceptance_items"] = [
+            {
+                "id": "A1",
+                "module": "slice-a",
+                "acceptance": "Slice A verified",
+                "state": "done",
+                "evidence": "slice-a-proof",
+            },
+            {
+                "id": "A2",
+                "module": "slice-b",
+                "acceptance": "Slice B handled by collaborator B",
+                "state": "remaining",
+                "evidence": "assigned-to-collaborator-b",
+            },
+        ]
+
+        def gh_with_rerun(*args):
+            if args[:2] == ("pr", "view"):
+                return json.dumps({
+                    "headRefOid": "b" * 40,
+                    "statusCheckRollup": [
+                        {
+                            "name": "actual CI",
+                            "workflowName": "GHA",
+                            "status": "COMPLETED",
+                            "conclusion": "FAILURE",
+                            "completedAt": "2026-11-14T00:01:00Z",
+                        },
+                        {
+                            "name": "actual CI",
+                            "workflowName": "GHA",
+                            "status": "COMPLETED",
+                            "conclusion": "SUCCESS",
+                            "completedAt": "2026-11-14T00:05:00Z",
+                        },
+                    ],
+                })
+            return self.gh(*args)
+
+        with patch.object(delivery.submission.work_items, "gh", side_effect=gh_with_rerun):
+            result = self.complete(slice_request)
+        self.assertTrue(result["ok"], result)
+        self.assertTrue(result["completion_verified"])
+        self.assertEqual(result["delivery_mode"], "slice")
+        self.assertEqual(self.issue["state"], "OPEN")
+        self.assertIn({"name": "status:in-progress"}, self.issue["labels"])
+        self.assertFalse(any(item[:2] == ("issue", "close") for item in self.writes))
+        self.assertEqual(len(self.comments), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

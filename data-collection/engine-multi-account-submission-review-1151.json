@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "request_id": "concurrent-integration-20261114",
+  "issue_number": 1151,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1151",
+  "measured_at": "2026-11-14T01:57:43.905549+00:00",
+  "benchmarks": {
+    "live_multi_account_queue_snapshot": {
+      "elapsed_ms": 1212.65,
+      "main_sha": "7acdf07ca4c89251527a392c754a536af2094b6a",
+      "open_prs_inspected": 4,
+      "accounts_observed": [
+        "Sail-Li",
+        "kaiyunxue"
+      ],
+      "merge_waves": [
+        [
+          1216,
+          1215,
+          1213
+        ]
+      ]
+    },
+    "candidate_review_pipeline_28k_files": {
+      "files_hashed": 28317,
+      "baseline_before_ms": 1762,
+      "optimized_capture_ms": 988.78,
+      "diff_summary_ms": 112.67
+    }
+  },
+  "verified_test_suites": {
+    "test_daqian_collaborators": {
+      "passed": 9
+    },
+    "test_editor_engine_candidate": {
+      "passed": 28,
+      "skipped": 6
+    },
+    "test_submission_audit": {
+      "passed": 4
+    },
+    "test_writer_submit": {
+      "passed": 13
+    },
+    "test_acceptance": {
+      "passed": 8
+    },
+    "test_parent_completion": {
+      "passed": 25
+    },
+    "acceptance_test_mjs": {
+      "passed": 22
+    },
+    "test_editor_delivery_finalize": {
+      "passed": 16
+    },
+    "test_editor_delivery_retry": {
+      "passed": 13
+    },
+    "test_yanluo_host_and_definition": {
+      "passed": 13
+    }
+  },
+  "candidate_file_sha256": {
+    "customizations/components/godot-host/acceptance.py": "307deb11849549fb563d5c56e322c61761e687e4e8269777566f77f0d4a123e4",
+    "customizations/components/godot-host/daqian/repository_access.py": "b632b4588d9988c1c709969af5b363b8cb979d4c1441f2501f531cd86e77fc33",
+    "customizations/components/issue-workorders/submission_audit.py": "7ab4944785be640aa0148266d1b05c46d602b50b494cfe02731688a589ba7343",
+    "customizations/components/issue-workorders/test_submission_audit.py": "2c3c841758d8b5d6735805d533c469ddc4b055e6824347c8b63aafc76f7c9feb",
+    "customizations/components/issue-workorders/test_writer_submit.py": "ce97bbc687d61dadf5b8eed7417c824d9e390bb8414022c7b80bc1267e67dbb8",
+    "customizations/components/issue-workorders/test_yanluo_host.py": "75642d9d34739708a22ac844203685a857f85de808c81f7f1f4d801cb3716847",
+    "customizations/components/issue-workorders/writer_submit.py": "761fefd9695f5a280f3c6aa8863f4d65d7effcb319bdbeabb3ee7a20b57e133a",
+    "customizations/components/issue-workorders/yanluo.md": "071d02e11fd39a345e18350dee2fbf4b644b500da2b4a16879f9d6f39223ba46",
+    "customizations/components/issue-workorders/yanluo_host.py": "230346836b9973e43494fe2589ef6b4533763009d579f9fb272c410366cffbd0",
+    "customizations/components/repository-dispatch/acceptance-candidate.mjs": "91e13cb4f979a87133935e12a253c213fe39ff2fa39373670e85dfb831371b0e",
+    "customizations/components/repository-dispatch/acceptance.mjs": "839fdfe585f584a49f5fef1510b1953fe70c46e142ee4c42ca5a36a1cb51c8c0",
+    "customizations/components/repository-dispatch/acceptance.test.mjs": "4fff782b14b6bedd9b7423cbd25b6c0837c333af6b72edc12f4ae6a4955aa35a",
+    "design-docs/concurrent-integration-20261114.md": "c43617b4bada26c1ba369e02644ac9d9ab49155e4fb2688439fded7591b1b4ed",
+    "editor/docks/ai_chat_delivery.cpp": "888f10a5052f3f189274f1d019d4d992cea5f68cf493b00462bbc1ca638be8c8",
+    "editor/docks/ai_chat_delivery_receipt.h": "1777f62323ab5b29eb34ccf13a6fb035cb1c97364ea9dd5ec7573a23b530f746",
+    "editor/docks/ai_chat_delivery_retry.cpp": "04d8e6650174d7620d115ab63acbcbb38bcf944eaa9f0daf04784fc45dec5b70",
+    "tests/editor/test_ai_chat_tools.cpp": "b81fe7eb37210f5e39dbc853fa16aa2a17b381d97aa45d1fef89ad943a49130c",
+    "tests/editor/test_daqian_collaborators.py": "461c235df5f77d1a2730eb9d39cd91f6d84560391f9237a8952172eb535d76eb",
+    "tools/editor_delivery_finalize.py": "d707c4c2229672cc8fd2f573c0b7343594f6cdacd3b6b0bce776d8c5a78a6dc6",
+    "tools/editor_delivery_retry.py": "8c68e1741a9b4afb7a632e18487df3525d412a97e44169a924a685ebb4c7ed51",
+    "tools/editor_engine_candidate.py": "540b33cabaca0cb10d068cceccdf618e4654062b1d0108156b0c6b7b35598221",
+    "tools/test_editor_delivery_finalize.py": "85e6b9b80085bf4a5d35f2abbe1feac5287a4bcd62f1afdd7d2818e174dd9427",
+    "tools/test_editor_engine_candidate.py": "a10a5087751884e91bc28258a4e52939cfffc5ff1bd05524c269ca0e509507c7"
+  }
+}

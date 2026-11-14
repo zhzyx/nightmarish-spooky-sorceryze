@@ -105,6 +105,15 @@ void AIChatDock::_run_delivery_tool(const Dictionary &p_arguments) {
 	}
 	const String candidate = p_arguments.get("candidate", "");
 	const String signed_commit = p_arguments.get("signed_commit", "");
+	const String delivery_mode = p_arguments.get("delivery_mode", "complete");
+	if (delivery_mode != "complete" && delivery_mode != "slice") {
+		_finish_tool("Error: delivery_mode must be complete or slice.");
+		return;
+	}
+	if (mapped_parent && delivery_mode != "complete") {
+		_finish_tool("Error: Mapped parent completion requires complete delivery_mode.");
+		return;
+	}
 	if (consultation_turn || consultation_only->is_pressed() || sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || !snapshot_state.has("engine_candidate")) {
 		_finish_tool("Error: Only the current authorized parent may complete its host-bound work order.");
 		return;
@@ -129,6 +138,9 @@ void AIChatDock::_run_delivery_tool(const Dictionary &p_arguments) {
 	const Dictionary recorded = JSON::parse_string(FileAccess::get_file_as_string(binding.get("binding_path", "")));
 	selected_binding["version"] = int64_t(recorded.get("version", 0));
 	selected_binding["origin"] = recorded.get("origin", Variant());
+	if (recorded.has("actor_login")) {
+		selected_binding["actor_login"] = recorded.get("actor_login", Variant());
+	}
 	selected_binding["issue"] = int64_t(binding.get("issue", 0));
 	uint8_t bytes[16];
 	if (CryptoCore::generate_random(bytes, sizeof(bytes)) != OK) {
@@ -148,6 +160,9 @@ void AIChatDock::_run_delivery_tool(const Dictionary &p_arguments) {
 	pending_delivery_request["expected_candidate"] = candidate;
 	pending_delivery_request["expected_signed_commit"] = signed_commit;
 	pending_delivery_request["acceptance_items"] = checklist;
+	if (delivery_mode == "slice") {
+		pending_delivery_request["delivery_mode"] = "slice";
+	}
 	if (mapped_parent) {
 		pending_delivery_request["parent_completion_guard"] = completion_guard;
 	}
@@ -157,7 +172,11 @@ void AIChatDock::_run_delivery_tool(const Dictionary &p_arguments) {
 		_confirm_action();
 	} else {
 		confirmation->set_title(TTR("Approve Delivery Completion"));
-		preview->set_text(vformat(U"核对 PR #%d、主线与 CI，按执行 Agent 的完整验收声明关闭当前工单 #%d，并核验启动入口。未完成或未知结果会暂停后续执行。", int(pr), int(binding["issue"])));
+		if (delivery_mode == "slice") {
+			preview->set_text(vformat(U"核对分片 PR #%d、主线与 CI，记录本分片验收声明并保持工单 #%d 开放以供后续并发协作，同时核验启动入口。", int(pr), int(binding["issue"])));
+		} else {
+			preview->set_text(vformat(U"核对 PR #%d、主线与 CI，按执行 Agent 的完整验收声明关闭当前工单 #%d，并核验启动入口。未完成或未知结果会暂停后续执行。", int(pr), int(binding["issue"])));
+		}
 		_show_confirmation();
 	}
 }
@@ -308,7 +327,11 @@ void AIChatDock::_finish_delivery() {
 	}
 	if (verified) {
 		const Dictionary facts = delivery_receipt["host_facts"];
-		text = vformat(U"交付已回读：PR #%d 已合入主线 %s，工单 #%d 已以 completed 关闭。业务验收依据为执行 Agent 提交的完整声明与证据。", int(pending_delivery_request["pr"]), String(facts["current_main"]).left(12), int(facts["issue"]));
+		if (String(pending_delivery_request.get("delivery_mode", "complete")) == "slice") {
+			text = vformat(U"分片交付已回读：PR #%d 已合入主线 %s，工单 #%d 保持开放以供后续并发协作。业务验收依据为执行 Agent 提交的阶段声明与证据。", int(pending_delivery_request["pr"]), String(facts["current_main"]).left(12), int(facts["issue"]));
+		} else {
+			text = vformat(U"交付已回读：PR #%d 已合入主线 %s，工单 #%d 已以 completed 关闭。业务验收依据为执行 Agent 提交的完整声明与证据。", int(pending_delivery_request["pr"]), String(facts["current_main"]).left(12), int(facts["issue"]));
+		}
 		const Dictionary activation = delivery_receipt.get("engine_launch_activation", Dictionary());
 		if (activation.get("state", "") == "activated") {
 			text += U"启动入口已核验更新。";

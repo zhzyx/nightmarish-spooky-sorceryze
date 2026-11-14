@@ -6,7 +6,7 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class RegisterRequest(BaseModel):
@@ -91,20 +91,28 @@ class MergeQueueCreateRequest(BaseModel):
 class DocCreateRequest(BaseModel):
     """创建文曲 Markdown 文档。"""
 
+    model_config = ConfigDict(extra="forbid")
+
     title: str
     body_md: str = ""
     lang: str = "zh"
     kind: str = "doc"
     request_id: str | None = None
 
+    call_id: str | None = Field(default=None, min_length=1, max_length=256)
+
 
 class DocUpdateRequest(BaseModel):
     """按版本号更新文档正文；版本不匹配由领域层抛 VersionConflict。"""
+
+    model_config = ConfigDict(extra="forbid")
 
     body_md: str
     expected_version: int
     title: str | None = None
     status: str | None = None
+
+    call_id: str | None = Field(default=None, min_length=1, max_length=256)
 
 
 class DocMergeRequest(BaseModel):
@@ -145,11 +153,16 @@ class DocShareRequest(BaseModel):
 class RequirementCreateRequest(BaseModel):
     """创建偃师需求文档。"""
 
+    model_config = ConfigDict(extra="forbid")
+
     request_id: str
     title: str
     outcome: str
     scope: str
     acceptance: str
+    lang: str = "zh"
+
+    call_id: str | None = Field(default=None, min_length=1, max_length=256)
 
 
 class RequirementCommitRequest(BaseModel):
@@ -165,22 +178,33 @@ class RequirementCommitRequest(BaseModel):
 class TicketSpec(BaseModel):
     """需求下的一张工单。"""
 
+    model_config = ConfigDict(extra="forbid")
+
     title: str
     acceptance: str = ""
     type: str = "task"
     priority: str = "normal"
+    body_md: str = ""
 
 
 class TicketsRequest(BaseModel):
     """从需求文档拆分工单。"""
 
+    model_config = ConfigDict(extra="forbid")
+
     tickets: list[TicketSpec] = Field(default_factory=list)
+
+    call_id: str | None = Field(default=None, min_length=1, max_length=256)
 
 
 class IssueTransitionRequest(BaseModel):
     """司南工单状态迁移。"""
 
+    model_config = ConfigDict(extra="forbid")
+
     to_status: str
+
+    call_id: str | None = Field(default=None, min_length=1, max_length=256)
 
 
 class IssueCommentCreateRequest(BaseModel):

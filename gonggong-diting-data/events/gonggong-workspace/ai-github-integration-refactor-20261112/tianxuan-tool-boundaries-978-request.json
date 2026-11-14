@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "tianxuan-tool-boundaries-978-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "request",
+  "occurred_at": "2026-11-14T01:28:19.046469+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "bad67dcc35d525783bfb12bc7e4363cfdfb0cc1da7c2dcb19ca7e3106806bc2c",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Complete tenant mutation boundaries and durable idempotent execution for all six registered mutating AI tools, preserving manual repeated-write semantics.",
+    "authorization_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "operator": "Sail-Li",
+    "design": "design-docs/ai-github-integration-refactor-20261112.md",
+    "validation": "data-collection/tianxuan-tool-boundaries-978.json",
+    "related_issues": [
+      1117,
+      1118,
+      1188
+    ],
+    "source_observation": "Original1117/1118 consolidated into1188;1195partial main reproduced;isolated sources integrated with currentmain da903;independent combined review active;1086not handed over.",
+    "usage": null,
+    "usage_unknown_reason": "Actual model usage not collected"
+  },
+  "evidence_refs": [],
+  "sha256": "64b76e4afe4a3d9bdf8c3407d1382fdedee50eb5d691b12a8c9551c1d082a4e3"
+}

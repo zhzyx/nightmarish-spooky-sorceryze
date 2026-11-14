@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import hashlib
+import inspect
 import json
 import re
 import sqlite3
@@ -18,7 +19,7 @@ from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from threading import RLock
-from typing import Any, Concatenate, ParamSpec, TypeVar
+from typing import Any, Concatenate, ParamSpec, TypeVar, cast
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS tenants (
@@ -62,6 +63,12 @@ CREATE TABLE IF NOT EXISTS issues (
   title TEXT NOT NULL, body_md TEXT NOT NULL DEFAULT '', acceptance TEXT NOT NULL DEFAULT '',
   requirement_id TEXT, created_by TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS tool_receipts (
+  tenant_id TEXT NOT NULL, actor_id TEXT NOT NULL, tool TEXT NOT NULL,
+  key_kind TEXT NOT NULL, call_id TEXT NOT NULL, payload_json TEXT NOT NULL,
+  result_json TEXT NOT NULL, created_at TEXT NOT NULL,
+  PRIMARY KEY (tenant_id, actor_id, tool, key_kind, call_id)
+);
 CREATE TABLE IF NOT EXISTS events (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, type TEXT NOT NULL, actor TEXT NOT NULL,
   target TEXT NOT NULL, payload TEXT NOT NULL DEFAULT '{}', created_at TEXT NOT NULL
@@ -98,6 +105,21 @@ class TianxuanError(Exception):
 
 class VersionConflict(TianxuanError):
     """Raised when a document update uses a stale version."""
+
+
+class StorageError(TianxuanError):
+    """A storage failure; details remain on the chained exception, never the API."""
+
+
+class StorageBusy(StorageError):
+    """A competing transaction prevented this attempt; retry with the same key."""
+
+
+def _storage_error(error: sqlite3.Error) -> StorageError:
+    code = getattr(error, "sqlite_errorcode", 0) & 0xFF
+    if code in (5, 6) or (not code and str(error) in ("database is locked", "database table is locked")):
+        return StorageBusy("storage busy; retry with the same call_id")
+    return StorageError("storage operation failed")
 
 
 class NotFound(TianxuanError):
@@ -167,6 +189,7 @@ def machine_view(body_md: str) -> dict[str, Any]:
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
+_F = TypeVar("_F", bound=Callable[..., Any])
 
 
 def _connection_call(method: Callable[Concatenate[Tianxuan, _P], _R]) -> Callable[Concatenate[Tianxuan, _P], _R]:
@@ -181,20 +204,61 @@ def _connection_call(method: Callable[Concatenate[Tianxuan, _P], _R]) -> Callabl
     def call(self: Tianxuan, *args: _P.args, **kwargs: _P.kwargs) -> _R:
         with self._connection_lock:
             outermost = self._call_depth == 0
+            # A caller-owned transaction must neither be committed nor erased.
+            savepoint = f"domain_{uuid.uuid4().hex}" if outermost and self.db.in_transaction else None
+            if savepoint:
+                self.db.execute(f"SAVEPOINT {savepoint}")
             self._call_depth += 1
             try:
                 result = method(self, *args, **kwargs)
-                if outermost:
+                if savepoint:
+                    self.db.execute(f"RELEASE {savepoint}")
+                elif outermost:
                     self.db.commit()
                 return result
-            except BaseException:
-                if outermost:
+            except BaseException as error:
+                if savepoint:
+                    self.db.execute(f"ROLLBACK TO {savepoint}")
+                    self.db.execute(f"RELEASE {savepoint}")
+                elif outermost:
                     self.db.rollback()
+                if isinstance(error, sqlite3.Error):
+                    raise _storage_error(error) from error
                 raise
             finally:
                 self._call_depth -= 1
 
     return call
+
+
+def _replayable(tool: str, *, legacy: bool = False) -> Callable[[_F], _F]:
+    """Opt-in receipts for ordinary writes; requirements also retain legacy replay."""
+
+    def decorate(method: _F) -> _F:
+        signature = inspect.signature(method)
+
+        @wraps(method)
+        def call(self: Tianxuan, *args: Any, **kwargs: Any) -> Any:
+            bound = signature.bind(self, *args, **kwargs)
+            bound.apply_defaults()
+            arguments = dict(bound.arguments)
+            arguments.pop("self")
+            actor = arguments.pop("actor")
+            call_id = arguments.pop("call_id")
+            if call_id is None and (self._receipt_depth or not legacy):
+                return method(self, *args, **kwargs)
+            payload = self._tool_payload(tool, arguments)
+            return self._run_tool_once(
+                actor,
+                tool,
+                payload,
+                call_id,
+                lambda: method(self, actor, **payload, call_id=call_id),
+            )
+
+        return cast(_F, call)
+
+    return decorate
 
 
 class Tianxuan:
@@ -203,6 +267,7 @@ class Tianxuan:
     def __init__(self, db_path: str = ":memory:"):
         self._connection_lock = RLock()
         self._call_depth = 0
+        self._receipt_depth = 0
         self.db = sqlite3.connect(db_path, check_same_thread=False)
         self.db.row_factory = sqlite3.Row
         self.db.executescript(SCHEMA)
@@ -286,6 +351,7 @@ class Tianxuan:
 
     @_connection_call
     def issue_session(self, user_id: str, ttl_seconds: int = 86_400) -> str:
+        self._tenant_of(user_id)
         token = "txs_" + uuid.uuid4().hex + uuid.uuid4().hex
         now = datetime.now(timezone.utc)
         expires = now + timedelta(seconds=ttl_seconds)
@@ -470,6 +536,7 @@ class Tianxuan:
 
     # ---------- 文曲：文档 ----------
     @_connection_call
+    @_replayable("doc.create", legacy=False)
     def create_doc(
         self,
         actor: str,
@@ -479,6 +546,8 @@ class Tianxuan:
         kind: str = "doc",
         request_id: str | None = None,
         space_id: str | None = None,
+        *,
+        call_id: str | None = None,
     ) -> dict[str, Any]:
         self._require_editor(actor)
         tenant_id = self._tenant_of(actor)
@@ -488,20 +557,40 @@ class Tianxuan:
                 "SELECT id FROM spaces WHERE tenant_id = ? ORDER BY created_at LIMIT 1", (tenant_id,)
             ).fetchone()["id"]
         )
+        self._require_tenant_object(actor, "spaces", space_id)
         doc_id = _id("doc")
         now = _now()
         tags = classify(f"{title}\n{body_md}")
-        self.db.execute(
-            "INSERT INTO docs (id, tenant_id, space_id, title, body_md, lang, kind, request_id, tags, "
-            "status, progress, version, created_by, created_at, updated_at) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', '{}', 1, ?, ?, ?)",
-            (doc_id, tenant_id, space_id, title, body_md, lang, kind, request_id, json.dumps(tags), actor, now, now),
-        )
+        try:
+            self.db.execute(
+                "INSERT INTO docs (id, tenant_id, space_id, title, body_md, lang, kind, request_id, tags, "
+                "status, progress, version, created_by, created_at, updated_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', '{}', 1, ?, ?, ?)",
+                (
+                    doc_id,
+                    tenant_id,
+                    space_id,
+                    title,
+                    body_md,
+                    lang,
+                    kind,
+                    request_id,
+                    json.dumps(tags),
+                    actor,
+                    now,
+                    now,
+                ),
+            )
+        except sqlite3.IntegrityError as error:
+            if str(error) == "UNIQUE constraint failed: docs.tenant_id, docs.request_id":
+                raise VersionConflict("request_id already exists in this tenant") from error
+            raise
         self._version(doc_id, 1, body_md, actor)
         self._event(tenant_id, "doc.created", actor, doc_id, {"title": title, "kind": kind})
         return self.get_doc(doc_id)
 
     @_connection_call
+    @_replayable("doc.update", legacy=False)
     def update_doc(
         self,
         actor: str,
@@ -510,9 +599,11 @@ class Tianxuan:
         expected_version: int,
         title: str | None = None,
         status: str | None = None,
+        *,
+        call_id: str | None = None,
     ) -> dict[str, Any]:
         self._require_editor(actor)
-        doc = self.get_doc(doc_id)
+        doc = self._require_tenant_doc(actor, doc_id)
         if not self._can_write(actor, doc):
             raise PermissionDenied("no write access to document")
         if doc["version"] != expected_version:
@@ -583,6 +674,7 @@ class Tianxuan:
         return row is not None
 
     def _can_write(self, actor: str, doc: dict[str, Any]) -> bool:
+        self._require_tenant_doc(actor, doc["id"])
         if doc["created_by"] == actor or self._is_admin(actor):
             return True
         row = self.db.execute(
@@ -604,7 +696,7 @@ class Tianxuan:
     def set_visibility(self, actor: str, doc_id: str, visibility: str) -> dict[str, Any]:
         if visibility not in {"tenant", "private"}:
             raise TianxuanError("visibility must be tenant or private")
-        doc = self.get_doc(doc_id)
+        doc = self._require_tenant_doc(actor, doc_id)
         if doc["created_by"] != actor and not self._is_admin(actor):
             raise PermissionDenied("only the owner or an admin can change visibility")
         self.db.execute("UPDATE docs SET visibility = ?, updated_at = ? WHERE id = ?", (visibility, _now(), doc_id))
@@ -615,7 +707,7 @@ class Tianxuan:
     def share_doc(self, actor: str, doc_id: str, user_id: str, permission: str = "read") -> dict[str, Any]:
         if permission not in {"read", "write"}:
             raise TianxuanError("permission must be read or write")
-        doc = self.get_doc(doc_id)
+        doc = self._require_tenant_doc(actor, doc_id)
         if doc["created_by"] != actor and not self._is_admin(actor):
             raise PermissionDenied("only the owner or an admin can share")
         target = self.db.execute("SELECT tenant_id FROM users WHERE id = ?", (user_id,)).fetchone()
@@ -631,9 +723,10 @@ class Tianxuan:
 
     @_connection_call
     def unshare_doc(self, actor: str, doc_id: str, user_id: str) -> dict[str, Any]:
-        doc = self.get_doc(doc_id)
+        doc = self._require_tenant_doc(actor, doc_id)
         if doc["created_by"] != actor and not self._is_admin(actor):
             raise PermissionDenied("only the owner or an admin can unshare")
+        self._require_tenant_object(actor, "users", user_id)
         self.db.execute("DELETE FROM doc_shares WHERE doc_id = ? AND user_id = ?", (doc_id, user_id))
         self._event(doc["tenant_id"], "doc.unshared", actor, doc_id, {"user_id": user_id})
         return {"doc_id": doc_id, "user_id": user_id, "removed": True}
@@ -690,12 +783,13 @@ class Tianxuan:
     @_connection_call
     def add_comment(self, actor: str, doc_id: str, body: str, parent_id: str | None = None) -> dict[str, Any]:
         self._require_editor(actor)
-        document = self.get_doc(doc_id)
+        document = self._require_tenant_doc(actor, doc_id)
         if not self._can_read(actor, document):
             raise PermissionDenied(f"no access to document: {doc_id}")
         if not body.strip():
             raise TianxuanError("comment body is required")
         if parent_id is not None:
+            self._require_tenant_object(actor, "comments", parent_id)
             parent = self.get_comment(parent_id)
             if parent["doc_id"] != doc_id:
                 raise TianxuanError("parent comment belongs to another document")
@@ -732,8 +826,9 @@ class Tianxuan:
     @_connection_call
     def resolve_comment(self, actor: str, comment_id: str, resolved: bool = True) -> dict[str, Any]:
         self._require_editor(actor)
+        self._require_tenant_object(actor, "comments", comment_id)
         comment = self.get_comment(comment_id)
-        document = self.get_doc(comment["doc_id"])
+        document = self._require_tenant_doc(actor, comment["doc_id"])
         if not self._can_write(actor, document):
             raise PermissionDenied("no write access to document")
         now = _now()
@@ -753,30 +848,40 @@ class Tianxuan:
     # ---------- 偃师：需求文档 ----------
 
     @_connection_call
+    @_replayable("requirement.create", legacy=True)
     def create_requirement(
-        self, actor: str, request_id: str, title: str, outcome: str, scope: str, acceptance: str, lang: str = "zh"
+        self,
+        actor: str,
+        request_id: str,
+        title: str,
+        outcome: str,
+        scope: str,
+        acceptance: str,
+        lang: str = "zh",
+        *,
+        call_id: str | None = None,
     ) -> dict[str, Any]:
+        self._require_editor(actor)
         body = (
             "---\n"
             f"request_id: {request_id}\nkind: requirement\nlang: {lang}\n---\n\n"
             f"# {title}\n\n## 目标\n\n{outcome}\n\n## 范围\n\n{scope}\n\n## 验收\n\n{acceptance}\n"
         )
-        existing = self.db.execute("SELECT * FROM docs WHERE request_id = ?", (request_id,)).fetchone()
+        existing = self.db.execute(
+            "SELECT * FROM docs WHERE tenant_id = ? AND request_id = ?", (self._tenant_of(actor), request_id)
+        ).fetchone()
         if existing is not None:
-            if existing["tenant_id"] != self._tenant_of(actor):
-                raise VersionConflict(f"request_id is already in use: {request_id}")
-            if existing["title"] == title and existing["body_md"] == body:
+            self._require_tenant_doc(actor, existing["id"])
+            self.get_doc_shared(actor, existing["id"], write=True)
+            if existing["kind"] == "requirement" and existing["title"] == title and existing["body_md"] == body:
                 return self.get_doc(existing["id"])
             raise VersionConflict(f"request_id already exists with different content: {request_id}")
-        try:
-            return self.create_doc(actor, title, body, lang=lang, kind="requirement", request_id=request_id)
-        except sqlite3.IntegrityError as error:
-            self.db.rollback()
-            raise VersionConflict(f"request_id already exists: {request_id}") from error
+        return self.create_doc(actor, title, body, lang=lang, kind="requirement", request_id=request_id)
 
     # ---------- 司南：工单 ----------
 
     @_connection_call
+    @_replayable("issue.create", legacy=False)
     def create_issue(
         self,
         actor: str,
@@ -787,15 +892,12 @@ class Tianxuan:
         requirement_id: str | None = None,
         parent_id: str | None = None,
         body_md: str = "",
+        *,
+        call_id: str | None = None,
     ) -> dict[str, Any]:
         self._require_editor(actor)
         tenant_id = self._tenant_of(actor)
-        if requirement_id is not None:
-            requirement = self._require_tenant_doc(actor, requirement_id)
-            if requirement["kind"] != "requirement":
-                raise TianxuanError("requirement_id must reference a requirement document")
-        if parent_id is not None:
-            self._require_tenant_issue(actor, parent_id)
+        self._require_issue_references(actor, requirement_id, parent_id, write=True)
         number = self.db.execute(
             "SELECT COALESCE(MAX(number), 0) + 1 FROM issues WHERE tenant_id = ?", (tenant_id,)
         ).fetchone()[0]
@@ -849,7 +951,7 @@ class Tianxuan:
         self._require_editor(actor)
         if not body.strip():
             raise TianxuanError("issue comment body is required")
-        issue = self._require_tenant_issue(actor, issue_id)
+        issue = self._require_tenant_issue(actor, issue_id, write=True)
         comment_id = _id("icmt")
         now = _now()
         self.db.execute(
@@ -875,38 +977,71 @@ class Tianxuan:
         ).fetchall()
         return [dict(row) for row in rows]
 
-    def _require_tenant_issue(self, actor: str, issue_id: str) -> dict[str, Any]:
-        issue = self.get_issue(issue_id)
-        # 跨租户按不存在处理，避免通过评论接口探测其他租户的工单 ID。
-        if issue["tenant_id"] != self._tenant_of(actor):
-            raise NotFound(f"issue not found: {issue_id}")
-        return issue
+    def _require_tenant_object(self, actor: str, table: str, object_id: str) -> None:
+        # Table names are fixed by internal callers, never supplied by API input.
+        tenant_id = self._tenant_of(actor)
+        row = self.db.execute(f"SELECT tenant_id FROM {table} WHERE id = ?", (object_id,)).fetchone()
+        if row is None or row["tenant_id"] != tenant_id:
+            raise NotFound(f"{table} object not found: {object_id}")
 
     def _require_tenant_doc(self, actor: str, doc_id: str) -> dict[str, Any]:
-        document = self.get_doc(doc_id)
-        if document["tenant_id"] != self._tenant_of(actor):
-            raise NotFound(f"doc not found: {doc_id}")
-        return document
+        self._require_tenant_object(actor, "docs", doc_id)
+        doc = self.get_doc(doc_id)
+        self._require_tenant_object(actor, "spaces", doc["space_id"])
+        return doc
+
+    def _require_requirement(self, actor: str, requirement_id: str, *, write: bool = False) -> dict[str, Any]:
+        requirement = self._require_tenant_doc(actor, requirement_id)
+        if requirement["kind"] != "requirement":
+            raise TianxuanError("requirement reference must name a requirement document")
+        self.get_doc_shared(actor, requirement_id, write=write)
+        return requirement
+
+    def _require_issue_references(
+        self, actor: str, requirement_id: str | None, parent_id: str | None, *, write: bool = False
+    ) -> None:
+        if requirement_id is not None:
+            self._require_requirement(actor, requirement_id, write=write)
+        visited: set[str] = set()
+        while parent_id is not None:
+            if parent_id in visited:
+                raise TianxuanError("parent issue references contain a cycle")
+            visited.add(parent_id)
+            self._require_tenant_object(actor, "issues", parent_id)
+            parent = self.get_issue(parent_id)
+            if parent["requirement_id"] is not None:
+                self._require_requirement(actor, parent["requirement_id"], write=write)
+            parent_id = parent["parent_id"]
+
+    def _require_tenant_issue(self, actor: str, issue_id: str, *, write: bool = False) -> dict[str, Any]:
+        self._require_tenant_object(actor, "issues", issue_id)
+        issue = self.get_issue(issue_id)
+        self._require_issue_references(actor, issue["requirement_id"], issue["parent_id"], write=write)
+        return issue
 
     @_connection_call
-    def transition_issue(self, actor: str, issue_id: str, to_status: str) -> dict[str, Any]:
+    @_replayable("issue.transition", legacy=False)
+    def transition_issue(
+        self, actor: str, issue_id: str, to_status: str, *, call_id: str | None = None
+    ) -> dict[str, Any]:
         self._require_editor(actor)
-        issue = self._require_tenant_issue(actor, issue_id)
+        issue = self._require_tenant_issue(actor, issue_id, write=True)
         current = issue["status"]
         if to_status not in ISSUE_TRANSITIONS.get(current, set()):
             raise TransitionRejected(f"{current} -> {to_status} is not allowed")
         self.db.execute("UPDATE issues SET status = ?, updated_at = ? WHERE id = ?", (to_status, _now(), issue_id))
         self._event(issue["tenant_id"], "issue.transitioned", actor, issue_id, {"from": current, "to": to_status})
         if issue["requirement_id"]:
-            self.sync_progress(issue["requirement_id"])
+            self.sync_progress(issue["requirement_id"], actor=actor)
         return self.get_issue(issue_id)
 
     @_connection_call
-    def plan_tickets(self, actor: str, requirement_id: str, tickets: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    @_replayable("requirement.plan", legacy=True)
+    def plan_tickets(
+        self, actor: str, requirement_id: str, tickets: list[dict[str, Any]], *, call_id: str | None = None
+    ) -> list[dict[str, Any]]:
         self._require_editor(actor)
-        requirement = self._require_tenant_doc(actor, requirement_id)
-        if requirement["kind"] != "requirement":
-            raise TianxuanError("tickets can only be planned from a requirement document")
+        requirement = self._require_requirement(actor, requirement_id, write=True)
         parent_row = self.db.execute(
             "SELECT * FROM issues WHERE tenant_id = ? AND requirement_id = ? AND type = 'requirement' "
             "ORDER BY number LIMIT 1",
@@ -923,38 +1058,52 @@ class Tianxuan:
             )
         else:
             parent = dict(parent_row)
-        existing_children = {
-            issue["title"]: issue
-            for issue in self.list_issues(actor, requirement_id)
-            if issue["parent_id"] == parent["id"]
-        }
+        # Legacy incremental plans reuse complete specifications, with multiplicity.
+        # Explicit call IDs represent intentional operations: distinct IDs create
+        # distinct children, including identically titled/spec'd tickets.
+        existing_children = (
+            [issue for issue in self.list_issues(actor, requirement_id) if issue["parent_id"] == parent["id"]]
+            if call_id is None
+            else []
+        )
+        changed = parent_row is None
         created = []
+        fields = ("title", "type", "acceptance", "priority", "body_md")
         for ticket in tickets:
-            title = ticket.get("title", "未命名工单")
-            existing = existing_children.get(title)
+            existing = next(
+                (issue for issue in existing_children if all(issue[field] == ticket[field] for field in fields)), None
+            )
             if existing is not None:
                 created.append(existing)
+                existing_children.remove(existing)
                 continue
             child = self.create_issue(
                 actor,
-                title,
-                type=ticket.get("type", "task"),
-                acceptance=ticket.get("acceptance", ""),
-                priority=ticket.get("priority", "normal"),
+                ticket["title"],
+                type=ticket["type"],
+                acceptance=ticket["acceptance"],
+                priority=ticket["priority"],
+                body_md=ticket["body_md"],
                 requirement_id=requirement_id,
                 parent_id=parent["id"],
             )
             created.append(child)
-            existing_children[title] = child
-        self._event(
-            requirement["tenant_id"], "requirement.planned", actor, requirement_id, {"issues": len(created) + 1}
-        )
-        self.sync_progress(requirement_id)
+            changed = True
+        if changed:
+            self._event(
+                requirement["tenant_id"], "requirement.planned", actor, requirement_id, {"issues": len(created) + 1}
+            )
+            self.sync_progress(requirement_id, actor=actor)
         return [parent, *created]
 
     @_connection_call
-    def sync_progress(self, requirement_id: str) -> dict[str, Any]:
-        issues = self.db.execute("SELECT status FROM issues WHERE requirement_id = ?", (requirement_id,)).fetchall()
+    def sync_progress(self, requirement_id: str, *, actor: str) -> dict[str, Any]:
+        self._require_editor(actor)
+        requirement = self._require_requirement(actor, requirement_id, write=True)
+        issues = self.db.execute(
+            "SELECT status FROM issues WHERE requirement_id = ? AND tenant_id = ?",
+            (requirement_id, requirement["tenant_id"]),
+        ).fetchall()
         total = len(issues)
         done = sum(1 for row in issues if row["status"] == "done")
         progress = {"total": total, "done": done, "percent": round((done / total) * 100) if total else 0}
@@ -987,34 +1136,145 @@ class Tianxuan:
         ).fetchall()
         return [dict(row) | {"payload": json.loads(row["payload"])} for row in rows]
 
-    def dispatch_tool(self, actor: str, name: str, payload: dict[str, Any]) -> dict[str, Any]:
-        tools = {
-            "doc.create": lambda p: self.create_doc(
-                actor, p.get("title", ""), p.get("body_md", ""), p.get("lang", "zh")
-            ),
-            "doc.update": lambda p: self.update_doc(actor, p["doc_id"], p["body_md"], p["expected_version"]),
-            "doc.read": lambda p: self.ai_view(p["doc_id"]),
-            "doc.list": lambda p: {"docs": self.list_docs(actor, p.get("kind"))},
-            "requirement.create": lambda p: self.create_requirement(
-                actor, p["request_id"], p["title"], p["outcome"], p["scope"], p["acceptance"]
-            ),
-            "requirement.plan": lambda p: {
-                "issues": self.plan_tickets(actor, p["requirement_id"], p.get("tickets", []))
-            },
-            "issue.create": lambda p: self.create_issue(
-                actor,
-                p["title"],
-                p.get("type", "task"),
-                p.get("acceptance", ""),
-                p.get("priority", "normal"),
-                p.get("requirement_id"),
-                p.get("parent_id"),
-                p.get("body_md", ""),
-            ),
-            "issue.transition": lambda p: self.transition_issue(actor, p["issue_id"], p["to_status"]),
-            "issue.list": lambda p: {"issues": self.list_issues(actor, p.get("requirement_id"))},
+    @staticmethod
+    def _tool_payload(name: str, payload: dict[str, Any]) -> dict[str, Any]:
+        payload = dict(payload)
+        if name == "requirement.plan":
+            defaults = {"title": "未命名工单", "type": "task", "acceptance": "", "priority": "normal", "body_md": ""}
+            tickets = payload["tickets"]
+            if not isinstance(tickets, list) or any(
+                not isinstance(ticket, dict) or set(ticket) - set(defaults) for ticket in tickets
+            ):
+                raise TianxuanError("invalid ticket specification")
+            payload["tickets"] = [defaults | ticket for ticket in tickets]
+        try:
+            # Strict JSON rejects non-finite floats and normalizes container types.
+            normalized = json.loads(json.dumps(payload, sort_keys=True, ensure_ascii=False, allow_nan=False))
+            assert isinstance(normalized, dict)
+            return normalized
+        except (TypeError, ValueError) as error:
+            raise TianxuanError("tool payload must be JSON") from error
+
+    def _authorize_tool(self, actor: str, name: str, payload: dict[str, Any], result: Any = None) -> None:
+        self._require_editor(actor)
+        if name == "doc.create" and payload["space_id"] is not None:
+            self._require_tenant_object(actor, "spaces", payload["space_id"])
+        if name == "doc.update":
+            self._require_tenant_doc(actor, payload["doc_id"])
+            self.get_doc_shared(actor, payload["doc_id"], write=True)
+        if name == "requirement.plan":
+            self._require_requirement(actor, payload["requirement_id"], write=True)
+        if name == "issue.create":
+            self._require_issue_references(actor, payload["requirement_id"], payload["parent_id"], write=True)
+        if name == "issue.transition":
+            self._require_tenant_issue(actor, payload["issue_id"], write=True)
+        if result is None:
+            return
+        if name in ("doc.create", "doc.update", "requirement.create"):
+            self._require_tenant_doc(actor, result["id"])
+            self.get_doc_shared(actor, result["id"], write=True)
+        else:
+            for issue in result if isinstance(result, list) else [result]:
+                self._require_tenant_issue(actor, issue["id"], write=True)
+
+    def _run_tool_once(
+        self, actor: str, name: str, payload: dict[str, Any], call_id: str | None, action: Callable[[], Any]
+    ) -> Any:
+        if call_id is not None and (not isinstance(call_id, str) or not call_id.strip() or len(call_id) > 256):
+            raise TianxuanError("call_id must be a nonempty string of at most 256 characters")
+        encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
+        key_kind = "explicit" if call_id is not None else "legacy-v1"
+        key = call_id if call_id is not None else hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+        # SQLite's writer lock serializes independent connections/processes BEFORE
+        # checking the receipt or running read-modify-write business logic.
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        savepoint = f"receipt_{uuid.uuid4().hex}"
+        self.db.execute(f"SAVEPOINT {savepoint}")
+        self._receipt_depth += 1
+        try:
+            self.db.execute("UPDATE tool_receipts SET call_id = call_id WHERE 0")
+            self._require_editor(actor)
+            identity = (self._tenant_of(actor), actor, name, key_kind, key)
+            receipt = self.db.execute(
+                "SELECT payload_json, result_json FROM tool_receipts "
+                "WHERE tenant_id = ? AND actor_id = ? AND tool = ? AND key_kind = ? AND call_id = ?",
+                identity,
+            ).fetchone()
+            if receipt is not None:
+                # Check result access even on conflicts: old receipts are never an
+                # alternate path around current tenant, role or document ACL checks.
+                result = json.loads(receipt["result_json"])
+                self._authorize_tool(actor, name, json.loads(receipt["payload_json"]), result)
+                if receipt["payload_json"] != encoded:
+                    raise VersionConflict("call_id already used with different payload")
+            else:
+                self._authorize_tool(actor, name, payload)
+                result = action()
+                self._authorize_tool(actor, name, payload, result)
+                self.db.execute(
+                    "INSERT INTO tool_receipts "
+                    "(tenant_id, actor_id, tool, key_kind, call_id, payload_json, result_json, created_at) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    (*identity, encoded, json.dumps(result, ensure_ascii=False, allow_nan=False), _now()),
+                )
+            self.db.execute(f"RELEASE {savepoint}")
+            return result
+        except BaseException:
+            self.db.execute(f"ROLLBACK TO {savepoint}")
+            self.db.execute(f"RELEASE {savepoint}")
+            raise
+        finally:
+            self._receipt_depth -= 1
+
+    @_connection_call
+    def dispatch_tool(
+        self, actor: str, name: str, payload: dict[str, Any], *, call_id: str | None = None
+    ) -> dict[str, Any]:
+        writes: dict[str, Callable[..., Any]] = {
+            "doc.create": self.create_doc,
+            "doc.update": self.update_doc,
+            "requirement.create": self.create_requirement,
+            "requirement.plan": self.plan_tickets,
+            "issue.create": self.create_issue,
+            "issue.transition": self.transition_issue,
         }
-        handler = tools.get(name)
-        if handler is None:
-            raise UnknownTool(f"unknown tool: {name}")
-        return handler(payload)
+        if name in writes:
+            handler = writes[name]
+            payload = dict(payload)
+            if "call_id" in payload:
+                embedded_key = payload.pop("call_id")
+                if call_id is not None and embedded_key != call_id:
+                    raise TianxuanError("conflicting call_id values")
+                call_id = embedded_key
+            # Bind the actual public signature: defaults canonicalize identically
+            # across HTTP/Python/tool calls; unknown fields cannot silently vanish.
+            try:
+                bound = inspect.signature(handler).bind(actor, **payload, call_id=call_id)
+                bound.apply_defaults()
+            except TypeError as error:
+                raise TianxuanError("invalid tool arguments") from error
+            arguments = dict(bound.arguments)
+            arguments.pop("actor")
+            arguments.pop("call_id")
+            normalized = self._tool_payload(name, arguments)
+            raw_handler = inspect.unwrap(handler)
+            result = self._run_tool_once(
+                actor,
+                name,
+                normalized,
+                call_id,
+                lambda: raw_handler(self, actor, **normalized, call_id=call_id),
+            )
+            return {"issues": result} if name == "requirement.plan" else result
+        if call_id is not None or "call_id" in payload:
+            raise TianxuanError("call_id is only supported for mutating tools")
+        if name == "doc.read":
+            self._require_tenant_doc(actor, payload["doc_id"])
+            self.get_doc_shared(actor, payload["doc_id"])
+            return self.ai_view(payload["doc_id"])
+        if name == "doc.list":
+            return {"docs": self.list_docs(actor, payload.get("kind"))}
+        if name == "issue.list":
+            return {"issues": self.list_issues(actor, payload.get("requirement_id"))}
+        raise UnknownTool(f"unknown tool: {name}")

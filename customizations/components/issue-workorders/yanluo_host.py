@@ -18,6 +18,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 import issue_gate
+import submission_audit
 import work_items
 import yanluo_progress
 
@@ -81,7 +82,14 @@ def validate_grant(grant, key, candidate, repo):
     require(p["candidate"] == asdict(candidate), "Grant candidate mismatch")
     require(Path(p["repo_root"]).resolve() == repo, "Grant repository mismatch")
     require(p["authority_ref"] and p["account_login"], "Missing authenticated host authority")
-    require(p["target"] == "main" and p["mode"] == "fast_forward", "Unsupported publication mode")
+    require(
+        p["target"] == "main" and p["mode"] in {"fast_forward", "pull_request_merge"}, "Unsupported publication mode"
+    )
+    if p["mode"] == "pull_request_merge":
+        require(
+            type(p.get("pull_request_number")) is int and p["pull_request_number"] > 0,
+            "PR merge mode requires pull_request_number",
+        )
     return p
 
 
@@ -152,8 +160,16 @@ class GithubHost:
         require(sha(Path(__file__).read_bytes()) == self.payload["adapter_sha256"], "Host implementation drift")
         trusted_files = [
             "customizations/components/issue-workorders/" + x
-            for x in ("yanluo_host.py", "yanluo_progress.py", "issue_gate.py", "work_items.py", "github_runtime.py")
+            for x in (
+                "yanluo_host.py",
+                "yanluo_progress.py",
+                "issue_gate.py",
+                "work_items.py",
+                "github_runtime.py",
+            )
         ]
+        if "customizations/components/issue-workorders/submission_audit.py" in self.payload["trusted_files"]:
+            trusted_files.append("customizations/components/issue-workorders/submission_audit.py")
         trusted_files += [
             "customizations/components/yanluo/closure.py",
             "tools/check_gonggong_distribution.py",
@@ -235,7 +251,10 @@ class GithubHost:
             "pull_request" not in value and issue_gate.request_ids(value.get("body")) == {c.request_id},
             "Issue identity changed",
         )
-        require(sha((value.get("body") or "").encode()) == c.scope_digest, "Issue scope changed")
+        require(
+            submission_audit.scope_digest_matches(value.get("body"), c.scope_digest),
+            "Issue scope changed",
+        )
         labels = [v["name"] for v in value["labels"]]
         require(
             "workspace:gonggong" in labels and len([v for v in labels if v.startswith("type:")]) == 1,
@@ -256,18 +275,35 @@ class GithubHost:
             candidate=c, contained=contained, remote_commit=main["sha"], remote_tree=main["commit"]["tree"]["sha"]
         )
 
+    def _effective_main_for_read(self, c, remote_main):
+        p = self.payload or {}
+        if p.get("mode") == "pull_request_merge" and remote_main != c.expected_main:
+            comparison = self.api(self.endpoint(c, f"compare/{c.expected_main}...{remote_main}"))
+            if comparison.get("status") == "ahead":
+                upstream_files = [item["filename"] for item in comparison.get("files", [])]
+                raw = self.git("diff", "--no-renames", "--name-only", "-z", c.expected_main, c.commit, "--")
+                candidate_writes = [x for x in raw.split("\0") if x]
+                if not submission_audit.path_overlap(candidate_writes, upstream_files):
+                    return c.expected_main
+        return remote_main
+
     def read(self, c):
         issue, status = self.issue(c)
         remote = self.read_main(c)
         proof = self.saved().get("verification")
         if proof:
             proof = dict(proof, candidate=Candidate(**proof["candidate"]))
+        effective_main = (
+            remote["remote_commit"]
+            if remote["contained"]
+            else self._effective_main_for_read(c, remote["remote_commit"])
+        )
         return dict(
             candidate=c,
             published=remote["contained"],
             closed=issue["state"] == "closed",
             status=status,
-            main=remote["remote_commit"],
+            main=effective_main,
             revision=issue["updated_at"],
             verification=proof,
         )
@@ -306,7 +342,8 @@ class GithubHost:
         ])
         # The host signs an already-run delivery manifest result among checks;
         # no arbitrary test commands from a PR or grant are ever executed.
-        runs = self.api(self.endpoint(c, f"commits/{c.commit}/check-runs?per_page=100"))
+        check_target = p.get("signed_commit", c.commit)
+        runs = self.api(self.endpoint(c, f"commits/{check_target}/check-runs?per_page=100"))
         require(runs["total_count"] <= 100, "Paginate check inventory before authorizing")
         names = {}
         for run in runs["check_runs"]:
@@ -323,9 +360,29 @@ class GithubHost:
     def publish(self, c):
         validate_grant(self.grant, os.environ.get("GONGGONG_HOST_KEY", ""), c, self.repo)
         require(self.fd is not None, "Release lease missing")
+        p = self.payload
+        require(self.api("user")["login"] == p["account_login"], "Identity drift")
+        if p["mode"] == "pull_request_merge":
+            issue_row, _ = self.issue(c)
+            require(issue_row["state"] == "open", "Issue closed before delivery")
+            remote = self.read_main(c)
+            require(not remote["contained"], "Candidate already contained in main")
+            if remote["remote_commit"] != c.expected_main:
+                require(
+                    self._effective_main_for_read(c, remote["remote_commit"]) == c.expected_main,
+                    "Target advanced with overlapping writes; reintegrate",
+                )
+            pr_num = p["pull_request_number"]
+            expected_head = p.get("signed_commit", c.commit)
+            merged = self.api(
+                self.endpoint(c, f"pulls/{pr_num}/merge"),
+                "PUT",
+                {"sha": expected_head, "merge_method": "merge"},
+            )
+            require(merged and merged.get("merged") is True, "PR merge was not accepted")
+            return
         current = self.read(c)
         require(current["main"] == c.expected_main and not current["closed"], "Target advanced or Issue closed")
-        require(self.api("user")["login"] == self.payload["account_login"], "Identity drift")
         # REST force=false rejects non-fast-forward changes and respects protection.
         # It never constructs a merge against a newer, untested main tree.
         result = self.api(self.endpoint(c, "git/refs/heads/main"), "PATCH", {"sha": c.commit, "force": False})
