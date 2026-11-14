@@ -182,8 +182,10 @@ else: sys.exit(1)
         labels = workspace / ".github/labels.json"
         labels.parent.mkdir(parents=True)
         shutil.copyfile(Path(__file__).resolve().parents[2] / ".github/labels.json", labels)
-        board = workspace / "customizations/components/godot-host/daqian/board.py"
-        board.parent.mkdir(parents=True)
+        # The editor resolves executable adapters from its installed host tree.
+        # The selected workspace still owns task data and fixture receipts.
+        board = project / "customizations/components/godot-host/daqian/board.py"
+        board.parent.mkdir(parents=True, exist_ok=True)
         board.write_text(
             """import json, sys, time
 from pathlib import Path
@@ -201,15 +203,16 @@ Path(sys.argv[sys.argv.index('--result')+1]).write_text(json.dumps(result))
 """,
             encoding="utf-8",
         )
-        bridge = workspace / "tools/gonggong_bridge.py"
-        bridge.parent.mkdir(parents=True)
+        bridge = project / "tools/gonggong_bridge.py"
+        bridge.parent.mkdir(parents=True, exist_ok=True)
         env["DAQIAN_TEST_SCENARIO"] = args.scenario
         bridge.write_text(
             """import json, os, sys
 from pathlib import Path
 action = sys.argv[1]
 request = json.loads(Path(sys.argv[sys.argv.index('--request') + 1]).read_text(encoding='utf-8'))
-calls = Path(__file__).with_name('calls')
+calls = Path(sys.argv[sys.argv.index('--workspace') + 1]) / 'tools/calls'
+calls.parent.mkdir(parents=True, exist_ok=True)
 previous = calls.read_text().splitlines() if calls.exists() else []
 with calls.open('a') as out:
     print(json.dumps([action, request]), file=out)
@@ -238,7 +241,7 @@ elif action == 'issue-start':
     first_start = not any(json.loads(line)[0] == "issue-start" for line in previous)
     if direct and not first_start:
         import time
-        release = Path(__file__).with_name('release-start')
+        release = calls.with_name('release-start')
         deadline = time.monotonic() + 15
         while not release.exists() and time.monotonic() < deadline:
             time.sleep(.05)
@@ -253,6 +256,7 @@ Path(sys.argv[sys.argv.index('--out') + 1]).write_text(json.dumps(reply))
 """,
             encoding="utf-8",
         )
+        shutil.copyfile(bridge, project / "customizations/components/godot-host/bridge.py")
         env.update(DAQIAN_TEST_REPO=str(workspace), DAQIAN_TEST_PYTHON=sys.executable)
     (project / "project.godot").write_text(
         'config_version=5\n[application]\nconfig/name="Tianshu graph tests"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n'

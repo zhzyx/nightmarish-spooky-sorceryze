@@ -246,6 +246,62 @@ async function main() {
                     await connection.sessionUpdate({ sessionId: session.id, update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: denied ? 'HOST_ACTION_REJECT_OK' : delivery ? 'HOST_DELIVERY_RESULT_OK' : 'HOST_ACTION_BUILD_OK' } } });
                     return { stopReason: 'end_turn' };
                 }
+                if (text.startsWith('case:win_cli_')) {
+                    const kind = text.slice('case:win_cli_'.length);
+                    assert.equal(workspace.provenance_guard_required, true);
+                    assert.equal(state.execution_allowed, true);
+                    const cwd = path.join(process.env.AI_CHAT_TEST_EXTERNAL, "工作 ' quoted");
+                    fs.mkdirSync(cwd, { recursive: true });
+                    const protectedFile = path.join(workspace.workspace_root, 'design-docs/windows-command-fixture.md');
+                    const protectedBefore = fs.readFileSync(protectedFile, 'utf8');
+                    const powershell = script => "'" + path.join(process.env.SystemRoot, 'System32/WindowsPowerShell/v1.0/powershell.exe').replaceAll('\\', '/') + "' -NoProfile -NonInteractive -EncodedCommand " + Buffer.from(script, 'utf16le').toString('base64');
+                    let command = "printf 'short-ok\\n'; pwd -W";
+                    if (kind === 'near') command = "printf 'near-ok\\n'\n#" + 'a'.repeat(4000);
+                    if (kind === 'long') command = "printf '%s\\n' '中文 😀 '\"'\"'single'\"'\"' ` double \"'; printf '错误 stderr\\n' >&2; pwd -W; exit 7\n#" + 'a'.repeat(11000);
+                    if (kind === 'source') command = powershell("Remove-Item -LiteralPath 'design-docs/windows-command-fixture.md'");
+                    if (kind === 'failstart') command = 'godot-fixture-command-that-does-not-exist';
+                    if (kind === 'limit') command = "printf 'must-not-run' > limit-executed.txt\n#" + 'a'.repeat(12000);
+                    if (kind === 'reject') command = "printf forbidden > rejected.txt";
+                    if (kind === 'cancel') {
+                        const quote = value => value.replaceAll("'", "''");
+                        const script = "[IO.File]::WriteAllText('" + quote(path.join(cwd, 'started')) + "', [string]$PID); Start-Sleep -Seconds 30; [IO.File]::WriteAllText('" + quote(path.join(cwd, 'unexpected')) + "', 'bad')";
+                        command = powershell(script);
+                    }
+                    const terminalRequest = { sessionId: session.id, command, cwd: kind === 'source' ? workspace.workspace_root : cwd, outputByteLimit: 64000 };
+                    if (kind === 'limit' || kind === 'reject') {
+                        assert.equal(state.execution_requires_approval, kind === 'reject');
+                        // Invalid terminal arguments and explicit host refusal have
+                        // distinct ACP error envelopes.
+                        await assert.rejects(connection.createTerminal(terminalRequest), error => kind === 'limit'
+                            ? error.code === -32603
+                            : error.code === -32000 && error.message.includes('User rejected'));
+                        assert(!fs.existsSync(path.join(cwd, 'rejected.txt')));
+                        assert(!fs.existsSync(path.join(cwd, 'limit-executed.txt')));
+                    } else {
+                        const terminal = await connection.createTerminal(terminalRequest);
+                        const status = await terminal.waitForExit();
+                        const output = await terminal.currentOutput();
+                        assert.equal(output.exitStatus.exitCode, status.exitCode);
+                        assert.equal(status._meta.timed_out, false);
+                        if (kind === 'source') {
+                            assert.notEqual(status.exitCode, 0);
+                            assert(output.output.includes('provenance_violation'));
+                            assert.equal(fs.readFileSync(protectedFile, 'utf8'), protectedBefore);
+                        } else if (kind === 'long') {
+                            assert.equal(status.exitCode, 7);
+                            assert(output.output.includes('中文 😀 \'single\' ` double "') && output.output.includes('错误 stderr'));
+                            assert(output.output.replaceAll('\\', '/').includes(cwd.replaceAll('\\', '/')));
+                        } else if (kind === 'failstart') {
+                            assert.equal(status.exitCode, 127);
+                        } else {
+                            assert.equal(status.exitCode, 0);
+                            assert(output.output.includes(kind + '-ok'));
+                        }
+                        await terminal.release();
+                    }
+                    await connection.sessionUpdate({ sessionId: session.id, update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'WIN_CLI_' + kind.toUpperCase() + '_OK' } } });
+                    return { stopReason: 'end_turn' };
+                }
                 if (text.startsWith('case:native_command')) {
                     assert.equal(state.execution_requires_approval !== false, text !== 'case:native_command_auto');
                     const denied = text === 'case:native_command_reject' || text === 'case:native_command_disabled';

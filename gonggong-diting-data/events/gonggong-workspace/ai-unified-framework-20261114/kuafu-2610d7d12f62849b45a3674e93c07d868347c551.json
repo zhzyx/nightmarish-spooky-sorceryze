@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2610d7d12f62849b45a3674e93c07d868347c551",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-unified-framework-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1086",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c1cf4921c6f53165227faaa3ff572fcf8516d7cc4a3dd7e8f105f6eda928e54b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1086",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1221",
+    "action": "delivery",
+    "detection_head": "f83f680a7570a69ed678dd14e73e0a9de96e74db",
+    "context_sha256": "cf5976f18677522a5215682bf06cd087147ededd40e88df13246e579d6ba3717",
+    "operator": "kaiyunxue",
+    "worker": "codex-ai-unified-root",
+    "authority_ref": "Issue1086 user-authorized implementation and main delivery",
+    "evidence": "origin/main@99a8e8cb and private writer-submit failure receipt",
+    "diagnosis": "Main advanced across 319 paths after the tested base. Four write paths overlap. The signed submission preflight correctly rejected the stale base. Integrated main, preserved upstream slice-delivery and node-model semantics, with independent path-level review.",
+    "next_action": "Rebuild and run only affected native, delivery and Maliang tests; update exact evidence and retry signed submission with non-overlap auto integration enabled.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T02:49:00.044436+00:00",
+    "attempted": null,
+    "repair_owner": "codex-ai-unified-root",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-14T02:59:34.141619+00:00",
+  "sha256": "2e422ae51f7a203c08fe4cdcbb85d340d789046382ab8745c044249b26960b09"
+}

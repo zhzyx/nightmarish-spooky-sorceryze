@@ -1,0 +1,732 @@
+{
+  "schema_version": 1,
+  "request_id": "ai-unified-framework-20261114",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1086",
+  "recorded_at": "2026-11-14T03:05:03.689792+00:00",
+  "base_commit": "99a8e8cb1fb4e72dc135b9f655884984ab7909cc",
+  "affected_scope_status": "passed",
+  "environment": {
+    "platform": "Windows x64",
+    "compiler": "MSVC 14.5 / Windows SDK 10.0.26100.0",
+    "python": "3.12",
+    "editor_sha256": "aef7f039e68fbf2d3a32fc201ceec94ca040ace8feed294692ec613c4efc9472"
+  },
+  "build": {
+    "command": "python -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no tests=yes accesskit=no d3d12=no angle=no -j16",
+    "exit_code": 0
+  },
+  "native_suites": [
+    {
+      "name": "AIChat",
+      "cases": 115,
+      "assertions": 1907,
+      "exit_code": 0,
+      "command": "$EDITOR --headless --test --test-case=*[AIChat]*"
+    },
+    {
+      "name": "AICore",
+      "cases": 16,
+      "assertions": 108,
+      "exit_code": 0,
+      "command": "$EDITOR --headless --test --test-case=*[AICore]*"
+    }
+  ],
+  "publish_http_smoke": {
+    "command": "python tests/editor/run_ai_chat_http_cancel.py --godot $EDITOR --out $TEMP/report.json --case body --gzip-recovery",
+    "exit_code": 0,
+    "passed": true
+  },
+  "aichat_integration": [
+    {
+      "name": "codex-steering",
+      "passed": true,
+      "exit_code": 0,
+      "binary_sha256": "9d9f5d0f0869584eed495413581351905a68644cc9f5d1b3943a224920a44991",
+      "cleanup": {
+        "passed": true,
+        "retries": 0
+      },
+      "command": [
+        "python",
+        "tests/editor/run_ai_chat_steering.py",
+        "--godot",
+        "$EDITOR",
+        "--out",
+        "$TEMP/steering.json",
+        "--codex",
+        "--node",
+        "node",
+        "--case",
+        "steering"
+      ],
+      "source_sha256_start": {
+        "tests/editor/run_ai_chat_steering.py": "977726e9173363915c6f041f18bd72067995d4661e296d4d403dee8446a2f113",
+        "tests/editor/ai_chat_steering.gd": "d70e009c09de7390b9ada14c859ccbaec4c4dbaa31be04e824bff295e8e3b85e",
+        "tests/editor/ai_chat_issues.gd": "3126f7da256a2331ea07a987417ae44553b1c7edc8a122b371e07c24f918894f",
+        "tools/codex_cli/godot_bridge.js": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab"
+      },
+      "source_sha256_end": {
+        "tests/editor/run_ai_chat_steering.py": "977726e9173363915c6f041f18bd72067995d4661e296d4d403dee8446a2f113",
+        "tests/editor/ai_chat_steering.gd": "d70e009c09de7390b9ada14c859ccbaec4c4dbaa31be04e824bff295e8e3b85e",
+        "tests/editor/ai_chat_issues.gd": "3126f7da256a2331ea07a987417ae44553b1c7edc8a122b371e07c24f918894f",
+        "tools/codex_cli/godot_bridge.js": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab"
+      }
+    },
+    {
+      "name": "codex-tools",
+      "passed": true,
+      "exit_code": 0,
+      "binary_sha256": "9d9f5d0f0869584eed495413581351905a68644cc9f5d1b3943a224920a44991",
+      "cleanup": {
+        "passed": true,
+        "retries": 0
+      },
+      "command": [
+        "python",
+        "tests/editor/run_ai_chat_steering.py",
+        "--godot",
+        "$EDITOR",
+        "--out",
+        "$TEMP/tools.json",
+        "--codex",
+        "--node",
+        "node",
+        "--case",
+        "tools"
+      ],
+      "source_sha256_start": {
+        "tests/editor/run_ai_chat_steering.py": "977726e9173363915c6f041f18bd72067995d4661e296d4d403dee8446a2f113",
+        "tests/editor/ai_chat_steering.gd": "d70e009c09de7390b9ada14c859ccbaec4c4dbaa31be04e824bff295e8e3b85e",
+        "tests/editor/ai_chat_issues.gd": "3126f7da256a2331ea07a987417ae44553b1c7edc8a122b371e07c24f918894f",
+        "tools/codex_cli/godot_bridge.js": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab"
+      },
+      "source_sha256_end": {
+        "tests/editor/run_ai_chat_steering.py": "977726e9173363915c6f041f18bd72067995d4661e296d4d403dee8446a2f113",
+        "tests/editor/ai_chat_steering.gd": "d70e009c09de7390b9ada14c859ccbaec4c4dbaa31be04e824bff295e8e3b85e",
+        "tests/editor/ai_chat_issues.gd": "3126f7da256a2331ea07a987417ae44553b1c7edc8a122b371e07c24f918894f",
+        "tools/codex_cli/godot_bridge.js": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab"
+      }
+    },
+    {
+      "name": "codex-stop",
+      "passed": true,
+      "exit_code": 0,
+      "binary_sha256": "9d9f5d0f0869584eed495413581351905a68644cc9f5d1b3943a224920a44991",
+      "cleanup": {
+        "passed": true,
+        "retries": 0
+      },
+      "command": [
+        "python",
+        "tests/editor/run_ai_chat_steering.py",
+        "--godot",
+        "$EDITOR",
+        "--out",
+        "$TEMP/stop.json",
+        "--codex",
+        "--node",
+        "node",
+        "--case",
+        "stop"
+      ],
+      "source_sha256_start": {
+        "tests/editor/run_ai_chat_steering.py": "977726e9173363915c6f041f18bd72067995d4661e296d4d403dee8446a2f113",
+        "tests/editor/ai_chat_steering.gd": "d70e009c09de7390b9ada14c859ccbaec4c4dbaa31be04e824bff295e8e3b85e",
+        "tests/editor/ai_chat_issues.gd": "3126f7da256a2331ea07a987417ae44553b1c7edc8a122b371e07c24f918894f",
+        "tools/codex_cli/godot_bridge.js": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab"
+      },
+      "source_sha256_end": {
+        "tests/editor/run_ai_chat_steering.py": "977726e9173363915c6f041f18bd72067995d4661e296d4d403dee8446a2f113",
+        "tests/editor/ai_chat_steering.gd": "d70e009c09de7390b9ada14c859ccbaec4c4dbaa31be04e824bff295e8e3b85e",
+        "tests/editor/ai_chat_issues.gd": "3126f7da256a2331ea07a987417ae44553b1c7edc8a122b371e07c24f918894f",
+        "tools/codex_cli/godot_bridge.js": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab"
+      }
+    },
+    {
+      "name": "codex-cancel",
+      "passed": true,
+      "exit_code": 0,
+      "binary_sha256": "9d9f5d0f0869584eed495413581351905a68644cc9f5d1b3943a224920a44991",
+      "cleanup": {
+        "passed": true,
+        "retries": 0
+      },
+      "command": [
+        "python",
+        "tests/editor/run_ai_chat_steering.py",
+        "--godot",
+        "$EDITOR",
+        "--out",
+        "$TEMP/cancel.json",
+        "--codex",
+        "--node",
+        "node",
+        "--case",
+        "cancel"
+      ],
+      "source_sha256_start": {
+        "tests/editor/run_ai_chat_steering.py": "977726e9173363915c6f041f18bd72067995d4661e296d4d403dee8446a2f113",
+        "tests/editor/ai_chat_steering.gd": "d70e009c09de7390b9ada14c859ccbaec4c4dbaa31be04e824bff295e8e3b85e",
+        "tests/editor/ai_chat_issues.gd": "3126f7da256a2331ea07a987417ae44553b1c7edc8a122b371e07c24f918894f",
+        "tools/codex_cli/godot_bridge.js": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab"
+      },
+      "source_sha256_end": {
+        "tests/editor/run_ai_chat_steering.py": "977726e9173363915c6f041f18bd72067995d4661e296d4d403dee8446a2f113",
+        "tests/editor/ai_chat_steering.gd": "d70e009c09de7390b9ada14c859ccbaec4c4dbaa31be04e824bff295e8e3b85e",
+        "tests/editor/ai_chat_issues.gd": "3126f7da256a2331ea07a987417ae44553b1c7edc8a122b371e07c24f918894f",
+        "tools/codex_cli/godot_bridge.js": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab"
+      }
+    },
+    {
+      "name": "codex-mode",
+      "passed": true,
+      "exit_code": 0,
+      "binary_sha256": "9d9f5d0f0869584eed495413581351905a68644cc9f5d1b3943a224920a44991",
+      "cleanup": {
+        "passed": true,
+        "retries": 0
+      },
+      "command": [
+        "python",
+        "tests/editor/run_ai_chat_steering.py",
+        "--godot",
+        "$EDITOR",
+        "--out",
+        "$TEMP/mode.json",
+        "--codex",
+        "--node",
+        "node",
+        "--case",
+        "mode"
+      ],
+      "source_sha256_start": {
+        "tests/editor/run_ai_chat_steering.py": "977726e9173363915c6f041f18bd72067995d4661e296d4d403dee8446a2f113",
+        "tests/editor/ai_chat_steering.gd": "d70e009c09de7390b9ada14c859ccbaec4c4dbaa31be04e824bff295e8e3b85e",
+        "tests/editor/ai_chat_issues.gd": "3126f7da256a2331ea07a987417ae44553b1c7edc8a122b371e07c24f918894f",
+        "tools/codex_cli/godot_bridge.js": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab"
+      },
+      "source_sha256_end": {
+        "tests/editor/run_ai_chat_steering.py": "977726e9173363915c6f041f18bd72067995d4661e296d4d403dee8446a2f113",
+        "tests/editor/ai_chat_steering.gd": "d70e009c09de7390b9ada14c859ccbaec4c4dbaa31be04e824bff295e8e3b85e",
+        "tests/editor/ai_chat_issues.gd": "3126f7da256a2331ea07a987417ae44553b1c7edc8a122b371e07c24f918894f",
+        "tools/codex_cli/godot_bridge.js": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab"
+      }
+    },
+    {
+      "name": "codex-issues",
+      "passed": true,
+      "exit_code": 0,
+      "binary_sha256": "9d9f5d0f0869584eed495413581351905a68644cc9f5d1b3943a224920a44991",
+      "cleanup": {
+        "passed": true,
+        "retries": 0
+      },
+      "command": [
+        "python",
+        "tests/editor/run_ai_chat_steering.py",
+        "--godot",
+        "$EDITOR",
+        "--out",
+        "$TEMP/issues.json",
+        "--codex",
+        "--node",
+        "node",
+        "--case",
+        "issues"
+      ],
+      "source_sha256_start": {
+        "tests/editor/run_ai_chat_steering.py": "977726e9173363915c6f041f18bd72067995d4661e296d4d403dee8446a2f113",
+        "tests/editor/ai_chat_issues.gd": "be918e60ddd2c57b434a97cfd86f1e73ea56bd725db744fc9f2fcca025ad5dd7",
+        "tools/codex_cli/godot_bridge.js": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab"
+      },
+      "source_sha256_end": {
+        "tests/editor/run_ai_chat_steering.py": "977726e9173363915c6f041f18bd72067995d4661e296d4d403dee8446a2f113",
+        "tests/editor/ai_chat_issues.gd": "be918e60ddd2c57b434a97cfd86f1e73ea56bd725db744fc9f2fcca025ad5dd7",
+        "tools/codex_cli/godot_bridge.js": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab"
+      }
+    },
+    {
+      "name": "codebuddy-queue",
+      "passed": true,
+      "exit_code": 0,
+      "binary_sha256": "9d9f5d0f0869584eed495413581351905a68644cc9f5d1b3943a224920a44991",
+      "command": [
+        "python",
+        "tests/editor/run_ai_chat_integration.py",
+        "--godot",
+        "$EDITOR",
+        "--backend",
+        "cli",
+        "--queue"
+      ]
+    },
+    {
+      "name": "codebuddy-windows-commands",
+      "passed": true,
+      "exit_code": 0,
+      "binary_sha256": "9d9f5d0f0869584eed495413581351905a68644cc9f5d1b3943a224920a44991",
+      "command": [
+        "python",
+        "tests/editor/run_ai_chat_integration.py",
+        "--godot",
+        "$EDITOR",
+        "--backend",
+        "cli",
+        "--windows-commands"
+      ]
+    },
+    {
+      "name": "codebuddy-windows-commands-publish",
+      "passed": true,
+      "exit_code": 0,
+      "binary_sha256": "a4482ec2bc2c0eb4e0ea21e797bacacf177c8789b61ff5300acd72575cc2a384",
+      "command": [
+        "python",
+        "tests/editor/run_ai_chat_integration.py",
+        "--godot",
+        "$EDITOR",
+        "--backend",
+        "cli",
+        "--windows-commands"
+      ]
+    },
+    {
+      "name": "http-history",
+      "passed": true,
+      "exit_code": 0,
+      "binary_sha256": "9d9f5d0f0869584eed495413581351905a68644cc9f5d1b3943a224920a44991",
+      "seconds": 20.797,
+      "protocol": "chat-completions",
+      "command": [
+        "python",
+        "tests/editor/run_ai_chat_integration.py",
+        "--godot",
+        "$EDITOR",
+        "--backend",
+        "http",
+        "--history"
+      ],
+      "source_sha256_start": {
+        "tests/editor/run_ai_chat_integration.py": "68ceadf007ff5923818d33e88b431850fe26199158b906a2aadb1169c02511a3",
+        "tests/editor/ai_chat_integration.gd": "dfba15070ad0b75b08f4f17d737bb80f93c0eed9faa52d034f5d43fc0de8879f"
+      },
+      "source_sha256_end": {
+        "tests/editor/run_ai_chat_integration.py": "68ceadf007ff5923818d33e88b431850fe26199158b906a2aadb1169c02511a3",
+        "tests/editor/ai_chat_integration.gd": "dfba15070ad0b75b08f4f17d737bb80f93c0eed9faa52d034f5d43fc0de8879f"
+      }
+    },
+    {
+      "name": "http-queue",
+      "passed": true,
+      "exit_code": 0,
+      "binary_sha256": "9d9f5d0f0869584eed495413581351905a68644cc9f5d1b3943a224920a44991",
+      "seconds": 16.156,
+      "protocol": "chat-completions",
+      "command": [
+        "python",
+        "tests/editor/run_ai_chat_integration.py",
+        "--godot",
+        "$EDITOR",
+        "--backend",
+        "http",
+        "--queue"
+      ],
+      "source_sha256_start": {
+        "tests/editor/run_ai_chat_integration.py": "68ceadf007ff5923818d33e88b431850fe26199158b906a2aadb1169c02511a3",
+        "tests/editor/ai_chat_integration.gd": "dfba15070ad0b75b08f4f17d737bb80f93c0eed9faa52d034f5d43fc0de8879f"
+      },
+      "source_sha256_end": {
+        "tests/editor/run_ai_chat_integration.py": "68ceadf007ff5923818d33e88b431850fe26199158b906a2aadb1169c02511a3",
+        "tests/editor/ai_chat_integration.gd": "dfba15070ad0b75b08f4f17d737bb80f93c0eed9faa52d034f5d43fc0de8879f"
+      }
+    },
+    {
+      "name": "http-windows-commands",
+      "passed": true,
+      "exit_code": 0,
+      "binary_sha256": "9d9f5d0f0869584eed495413581351905a68644cc9f5d1b3943a224920a44991",
+      "seconds": 146.25,
+      "protocol": "chat-completions",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "tests/editor/run_ai_chat_integration.py",
+        "--godot",
+        "$EDITOR",
+        "--backend",
+        "http",
+        "--windows-commands"
+      ],
+      "source_sha256_start": {
+        "tests/editor/run_ai_chat_integration.py": "68ceadf007ff5923818d33e88b431850fe26199158b906a2aadb1169c02511a3",
+        "tests/editor/ai_chat_integration.gd": "dfba15070ad0b75b08f4f17d737bb80f93c0eed9faa52d034f5d43fc0de8879f"
+      },
+      "source_sha256_end": {
+        "tests/editor/run_ai_chat_integration.py": "68ceadf007ff5923818d33e88b431850fe26199158b906a2aadb1169c02511a3",
+        "tests/editor/ai_chat_integration.gd": "dfba15070ad0b75b08f4f17d737bb80f93c0eed9faa52d034f5d43fc0de8879f"
+      }
+    },
+    {
+      "name": "http-responses-issues",
+      "passed": true,
+      "exit_code": 0,
+      "binary_sha256": "9d9f5d0f0869584eed495413581351905a68644cc9f5d1b3943a224920a44991",
+      "seconds": 14.25,
+      "protocol": "responses",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "tests/editor/run_ai_chat_steering.py",
+        "--godot",
+        "$EDITOR",
+        "--case",
+        "issues",
+        "--responses",
+        "--out",
+        "$TEMP/responses-issues.json"
+      ],
+      "source_sha256_start": {
+        "tests/editor/run_ai_chat_steering.py": "977726e9173363915c6f041f18bd72067995d4661e296d4d403dee8446a2f113",
+        "tests/editor/ai_chat_issues.gd": "be918e60ddd2c57b434a97cfd86f1e73ea56bd725db744fc9f2fcca025ad5dd7"
+      },
+      "source_sha256_end": {
+        "tests/editor/run_ai_chat_steering.py": "977726e9173363915c6f041f18bd72067995d4661e296d4d403dee8446a2f113",
+        "tests/editor/ai_chat_issues.gd": "be918e60ddd2c57b434a97cfd86f1e73ea56bd725db744fc9f2fcca025ad5dd7"
+      }
+    }
+  ],
+  "maliang": {
+    "full_suite_editor_sha256": "9d9f5d0f0869584eed495413581351905a68644cc9f5d1b3943a224920a44991",
+    "source_assertions": 233,
+    "service_checks": 109,
+    "builtin_checks": 258,
+    "builtin_modes": 4,
+    "bundled_files_matching_source": 78,
+    "tests": [
+      {
+        "name": "controller",
+        "passed": true,
+        "returncode": 0,
+        "command": [
+          "$EDITOR",
+          "--headless",
+          "--path",
+          "samples/ainative-workbench",
+          "--script",
+          "res://controller_acceptance.gd"
+        ]
+      },
+      {
+        "name": "acceptance",
+        "passed": true,
+        "returncode": 0,
+        "command": [
+          "$EDITOR",
+          "--headless",
+          "--path",
+          "samples/ainative-workbench",
+          "--script",
+          "res://acceptance.gd"
+        ]
+      },
+      {
+        "name": "node-preview",
+        "passed": true,
+        "returncode": 0,
+        "command": [
+          "$EDITOR",
+          "--headless",
+          "--path",
+          "samples/ainative-workbench",
+          "--script",
+          "res://node_preview_acceptance.gd"
+        ]
+      },
+      {
+        "name": "context-menu",
+        "passed": true,
+        "returncode": 0,
+        "command": [
+          "$EDITOR",
+          "--headless",
+          "--path",
+          "samples/ainative-workbench",
+          "--script",
+          "res://context_menu_acceptance.gd"
+        ]
+      },
+      {
+        "name": "parameter-form",
+        "passed": true,
+        "returncode": 0,
+        "command": [
+          "$EDITOR",
+          "--headless",
+          "--path",
+          "samples/ainative-workbench",
+          "--script",
+          "res://parameter_form_acceptance.gd"
+        ]
+      },
+      {
+        "name": "service",
+        "passed": true,
+        "returncode": 0,
+        "command": [
+          "python",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/ainative",
+          "-p",
+          "test_generation_service_gui.py"
+        ]
+      },
+      {
+        "name": "builtin",
+        "passed": true,
+        "returncode": 0,
+        "command": [
+          "python",
+          "tests/editor/run_ainative_builtin.py",
+          "--godot",
+          "$EDITOR",
+          "--report",
+          "data-collection/receipts/ai-unified-framework-20261114/main-integrated-maliang-builtin-checks.json"
+        ]
+      }
+    ],
+    "publish_editor_controller_assertions": 48,
+    "publish_editor_controller_passed": true
+  },
+  "tianshu": {
+    "editor_sha256": "9d9f5d0f0869584eed495413581351905a68644cc9f5d1b3943a224920a44991",
+    "tests": [
+      {
+        "name": "controller_native_normal_entry",
+        "passed": true,
+        "returncode": 0,
+        "seconds": 2.312,
+        "command": [
+          "$EDITOR",
+          "--headless",
+          "--path",
+          "$TEMP/tianshu-main-integrated-1xcqm35k",
+          "--script",
+          "res://test.gd"
+        ]
+      },
+      {
+        "name": "direct_two_process_recovery",
+        "passed": true,
+        "returncode": 0,
+        "seconds": 29.609,
+        "command": [
+          "python",
+          "tests/editor/run_daqian_graph.py",
+          "--godot",
+          "$EDITOR",
+          "--scenario",
+          "direct",
+          "--report",
+          "data-collection/receipts/ai-unified-framework-20261114/main-integrated-tianshu-direct.json"
+        ]
+      }
+    ],
+    "earlier_full_suite_passed": [
+      "routing_stage",
+      "preflight_receipts",
+      "canvas_chat",
+      "workflow_controller",
+      "direct",
+      "publish",
+      "multi_issue"
+    ],
+    "reuse_basis": "Seven Tianshu source/test hashes match the earlier complete suite. Final native Runtime tests and representative Controller/direct flows were rerun."
+  },
+  "full_python_suite": {
+    "command": "pythonw -m unittest discover -s tools/ainative -p test_*.py",
+    "environment": "Task-private Python 3.12 venv with Pillow 13.0.0",
+    "total": 414,
+    "passed": 369,
+    "skipped": 43,
+    "failures": 2,
+    "errors": 0,
+    "exit_code": 1,
+    "status": "failed_with_preexisting_fixture_failures",
+    "baseline_evidence": {
+      "tools/ainative/test_kimi_direct_provider.py": {
+        "sha256": "6ec1bd1b2662db0c14c6657f0ef86deab0246d9bc193b8d31a411c37b3835663",
+        "head_sha256": "6ec1bd1b2662db0c14c6657f0ef86deab0246d9bc193b8d31a411c37b3835663",
+        "equals_head_bytes": true
+      },
+      "tools/ainative/kimi_provider.py": {
+        "sha256": "76678f4b6f0dc7ba1247ee58f1b1910548c47d75ecc627786f0432bb0be89b3f",
+        "head_sha256": "76678f4b6f0dc7ba1247ee58f1b1910548c47d75ecc627786f0432bb0be89b3f",
+        "equals_head_bytes": true
+      }
+    },
+    "failed_tests": [
+      "Direct3DTests.test_adjust_four_view_guidance_uses_all_ordered_views",
+      "Direct3DTests.test_adjust_uploads_local_glb_when_no_upstream_task_is_available"
+    ],
+    "cause": "Unchanged synthetic upload script splits only forward slashes, retaining the Windows directory in mock URLs. The fixture and provider match the base commit byte-for-byte."
+  },
+  "resolved_findings": [
+    "Scene-level runtime registration for ordinary headless consumers",
+    "Full-precision frozen numeric request identity",
+    "Runtime keepalive and detached snapshots during synchronous signals",
+    "Controller input/model synchronization and Codex stage event handling",
+    "Maliang callback reentrancy, late cancellation, per-controller transport names, persisted Provider restoration",
+    "Tianshu frozen binding and unique preview receipts",
+    "Omit absent optional engine_root for CodeBuddy",
+    "Use the current queue modes, real credential input signals, legal production task fixtures and ACP terminal protocol in regression tests",
+    "Bounded owned-process waits and Windows temporary-directory cleanup in steering fixture"
+  ],
+  "observed_diagnostics": [
+    "The broader AIChat native suite emits two existing signal-destruction diagnostics and one EditorSettings diagnostic. The AICore suite is clean.",
+    "Headless editor integration teardown emits RID/ObjectDB resource warnings; command return codes and business assertions are retained separately."
+  ],
+  "unverified": [
+    "Real Provider credentials, generation quality and external service availability",
+    "Manual pixel/IME acceptance",
+    "Native runtime builds on platforms other than Windows"
+  ],
+  "source_sha256": {
+    ".github/CODEOWNERS": "6bacd5f11b37414c375f17ad3d29f764b8fd53231834ffa4c5b2a3c6f9eb3cac",
+    "AGENTS.md": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "Markdown/engine-core/README.md": "29ea1bfc6b62ab9dec41c162aee2e76c8b420c00682f4afa65405fe1adb52850",
+    "Markdown/sources/README.md": "1a15b6ebba4ae596c930bcb71ba23026e85cd5f774769df9318ab296a14eebb5",
+    "ai_core/README.md": "721e85e335e423e9fb8a7382c143af604e9e683f4e056badd0de055402684421",
+    "ai_core/Runtime.cpp": "b695e1e7826c168e5878b7d8e031ab072b4b98c96f9ff659da59113411959b41",
+    "ai_core/Runtime.h": "19a9614ac38ac79cacb312eed80ea45a319cdb6cac8acacb54e980f0c93e0420",
+    "ai_core/build-impact.json": "ef7978602453fa12f69c3d1a19dfee67451ca1ee7cb100cefb1641a66c7ccf3b",
+    "design-docs/ai-unified-framework-20261114.md": "2a8456794d77c6e1e3a04b3595fef403f6b096848a67fa2af084e6c82b4be10d",
+    "editor/SCsub": "63c1dea2aa23f7724139f364457154aa5559d9817865b70287834497bdb7eb3e",
+    "editor/docks/AIChatCliTransport.cpp": "63b35e5b1a7165faadde289baa535425dee74ee540c854509b0ad0916f47875b",
+    "editor/docks/AIChatCliTransport.h": "508cb68f86e279dfe2efad086c97b28ddaf88e0cae515542a7f1bffbce1b2ea5",
+    "editor/docks/AIChatController.cpp": "f801e199c1558221e5fb2e32ee9e50c9e2c065f9cb91bb4083c8d9b427f5f609",
+    "editor/docks/AIChatController.h": "166ea3b9e1108625d35f67fa1456b0616fa4a0a625d298e82286372648dea5a7",
+    "editor/docks/ai_chat_delivery.cpp": "e23aab2f2eb7bd7afacb09c6122ce9728610451a386dd545e0b38bb261925ea2",
+    "editor/docks/ai_chat_delivery_retry.cpp": "e50f998ab420d09bef4257082c0da2764613685e57a764b95b879fe329b5f62f",
+    "editor/docks/ai_chat_dock.cpp": "61e8c85261a6f528462a96202eab07f43334dc9a712b6a2d6c7312bd699c8c82",
+    "editor/docks/ai_chat_dock.h": "a5206a5f9736b7511ef907f850508cbe54d172a006dc3dcd44fa63bafd7670f6",
+    "editor/docks/ai_chat_engine_candidate.cpp": "cf38afe5449aee46348618ea55819ceee2a17397cad35d97817e3221d5ece64c",
+    "editor/docks/ai_chat_external_chat.cpp": "bf96cee0b479662940994d667cd74814ac756c5321cb494e2b1b2e79c57b6420",
+    "editor/docks/ai_chat_gonggong.cpp": "91663aadf7fd0735111f6202713f22aecc3571ba613420cff350fd5b5ab82b67",
+    "editor/docks/ai_chat_host_commands.cpp": "8f7de2270d069800a1d4e8112e30ec070044ab86247b61cd6cb744fa4295b12c",
+    "editor/docks/ai_chat_scheduler.cpp": "c262782751b5ef6a73342aa5fdb70ddf89d7707b7313913056d712e9e42cd4db",
+    "editor/docks/ai_chat_sub_agents.cpp": "96bf5804f5f9e26be6cde1644144f6fc3e0041365a45774db7b5f75d824791c9",
+    "editor/docks/ai_chat_task_authorization.cpp": "17b1d95b77638fad95230a6ae52c223d372f1d4bf1d86ae62aab3aeedeea8225",
+    "editor/docks/daqian/workflow_controller.gd": "a75e6edadde617b244b52243ea1b889f2c165f08b75385335615eeea2bce4a14",
+    "editor/docks/daqian/workspace.gd": "c4585b73a45848bc755edfaf5c83462356aa303570675a1b046f49d545d6bce6",
+    "editor/docks/daqian_dock.cpp": "16d4f14c4091a6f6502ca620a5cc3ca4e1bd486b6d73dbb77d5a9d47c6b2dd5f",
+    "editor/docks/production/ProductionControl.cpp": "ab7c32eecbfa82899d178d53f3761080a81621e1dfa55b413bc249c4b3c2528b",
+    "modules/ai_core/AIWorkflowRuntime.cpp": "ab299f182a78d615936f88d30169803008a5c5c863475e7e4f38d6a4a31df98d",
+    "modules/ai_core/AIWorkflowRuntime.h": "38ecd379dae969ae4f92c7f68bd4f9524877b0f0262116a7bed8d2dab3c8f0c5",
+    "modules/ai_core/SCsub": "01da8b4f81c9c7665cecbb112fc4e41a01139218930440acf826d62075fee4ee",
+    "modules/ai_core/build-impact.json": "d8a1f1998bdd879b4a6bd7cde6fc96fd7077ef17a49b149335cc8dce79ab55a2",
+    "modules/ai_core/config.py": "cb63fcfb37b9f3cc775d166a98806d96d3215372c70c1a1610f6030e708d3117",
+    "modules/ai_core/register_types.cpp": "b619e82a19a4009295e1fb9f7f690e2c7a485fb827a7a2b0fc1c73580f137e8a",
+    "modules/ai_core/register_types.h": "10e88fefefb2bb3273458fb75c9b4eafa9337b3c17ea750c2ffaa0d577412aed",
+    "samples/ainative-workbench/acceptance.gd": "b10133db0d12944e7bad3dcf4075369827b6e99d01a86a5ee8d07ca137a8e333",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "c7287a3740a819a7971dd27562c4a651fe0688e37e41ecda7ec5ed75b89eb939",
+    "samples/ainative-workbench/addons/ainative/workbench_controller.gd": "2084f6f298c6aa1b11e64167978d909b48141b7ca73f118af0f8d7432a956ee6",
+    "samples/ainative-workbench/context_menu_acceptance.gd": "957d52cf862bb5030223fc1418c403f422c7ee068f94258d05d3a8acf7ffb974",
+    "samples/ainative-workbench/controller_acceptance.gd": "7999220f040ed91d57b4bcc40d9772e7bcac7a2a4d5892514545dea7c48da41c",
+    "samples/ainative-workbench/node_preview_acceptance.gd": "318209c59a505402fc3e3cdaeb859076df8c038cebb66c9a2875ddb01d97fe36",
+    "tests/editor/TestAIChatCliTransport.cpp": "e45d1165741c7ab40ee9cf24562d3c6239859bbe981f1c6cd3100b7e2650cfae",
+    "tests/editor/TestAIChatController.cpp": "c27e0fe1ef8d5593f1c13906b2e406e21a62e6074738c6e8a15bd3ac35892511",
+    "tests/editor/TestAIWorkflowRuntime.cpp": "51ddc38b2b539bdb65726b7d3be17c9b603f42553f9a248c8c49d110c683ba22",
+    "tests/editor/ai_chat_integration.gd": "dfba15070ad0b75b08f4f17d737bb80f93c0eed9faa52d034f5d43fc0de8879f",
+    "tests/editor/ai_chat_issues.gd": "be918e60ddd2c57b434a97cfd86f1e73ea56bd725db744fc9f2fcca025ad5dd7",
+    "tests/editor/ai_chat_steering.gd": "d70e009c09de7390b9ada14c859ccbaec4c4dbaa31be04e824bff295e8e3b85e",
+    "tests/editor/ainative_builtin.gd": "fc6c99bfaa8fb6a26857e1b85ddcf7db08dd5a2e367264dacfaced9bf47f9e6d",
+    "tests/editor/daqian_direct.gd": "ca1066f77aa7c91033c2d57b7d2030b7a8e542c0fc5668b536756a8f0d615f17",
+    "tests/editor/daqian_routing_stage.gd": "b092e1b62b679b1d22851ca684eb466d8398b8fa4e018bedcf0777e9091148ce",
+    "tests/editor/daqian_workflow_controller.gd": "309698d56e751ecc30ffcf9354a3e3027268d302ca0675c7b1648db8f3c3fa0b",
+    "tests/editor/mock_codebuddy_cli.js": "6500fe371d8445086ae5c3a58842a79b73c01f692a32ce2f95584e720a1c8acf",
+    "tests/editor/run_ai_chat_integration.py": "68ceadf007ff5923818d33e88b431850fe26199158b906a2aadb1169c02511a3",
+    "tests/editor/run_ai_chat_steering.py": "977726e9173363915c6f041f18bd72067995d4661e296d4d403dee8446a2f113",
+    "tests/editor/run_daqian_graph.py": "8f75ff0bb54b6ec8db26cd14d65eeca3b9ba8f0ad58c2b9ac108daa96ead1adf",
+    "tools/ainative/test_editor_host.py": "c428a909d9b0eb054789f92faa1cc4135bdc5826f3ed20a4ca9ecd182369c5a1"
+  },
+  "private_receipt_sha256": {
+    "publish-native-http.json": "419186ee364f2c07220fb1306e3f00afe9e28072bb157fdf3af3092bf4f2b59e",
+    "aichat-final-suite.json": "d77eaf1703c8f84e476b3013970e547813b17ca4ef863227d74f63dc8140da7f",
+    "main-integrated-maliang-suite.json": "071498516be1d3bd678f43667e7f78bd19dd62cc2ac897edcdeb145532c72189",
+    "publish-maliang-smoke.json": "3da921b7ce10303846ac893394af2988817153934d278d28a904855538752f96",
+    "main-integrated-tianshu-smoke.json": "a2fd4029089557496ba9ac9f14c3dd5d80d4bcb0dcda49a9484bf165f44cc349",
+    "main-integrated-http-integration.json": "93beb7c8ab0b231425b8e9cfdc7ba4909d339ca15915f6d369eec5dd1e8b01d7",
+    "main-integrated-maliang-python-diagnosis.json": "cdadc9f3717147c8b5f06a2c485d5afc1c14b35866402d9b72053ca31befaea4",
+    "latest-native-http.json": "973750d251c5196f3681b73f3d3306585163483e097e230bb406370f317185c3",
+    "drift99-maliang-suite.json": "19314c0216ab738bb62801545ced719aab93df13e1f677f401304ca217126dbf",
+    "drift99-maliang-merge-review.json": "fae0895815ea3b7bb51e11707edf47c6169b2e27ab0deb9fbcfae6c548de49a2",
+    "latest-main-aichat-merge.json": "e73f35f76967fb77127ec2869bca76d137e00d67bbc501c9bbdd1c20b5d02e30",
+    "latest-main-merge-review.json": "d9741e8f4a91ebac4002964ff7db3f5293a8d7e1f99ca77d314b27009b1057dc"
+  },
+  "delivery_status_source": "GitHub Issue #1086 and its signed PR record final CI, merge and completion readbacks.",
+  "static_checks": {
+    "ruff": "0.17.1",
+    "mypy": "2.4.0",
+    "codespell": "2.4.2",
+    "file_format": "passed",
+    "codeowners": "passed",
+    "node_syntax": "passed",
+    "cpp_files": 26,
+    "all_passed": true
+  },
+  "earlier_candidate_reuse": {
+    "full_integration_editor_sha256": "9d9f5d0f0869584eed495413581351905a68644cc9f5d1b3943a224920a44991",
+    "publish_delta": [
+      "Direct Array include in AIChatController.h",
+      "Rename the native test to TestAIWorkflowRuntime.cpp and matching force-link token",
+      "Version hash after unrelated Tianxuan dependency merge"
+    ],
+    "runtime_logic_changed": false,
+    "rerun_on_publish_editor": [
+      "AIChat native 115 cases",
+      "AICore native 16 cases",
+      "HTTP gzip cancellation/recovery",
+      "Maliang Controller 48 assertions",
+      "CodeBuddy full Windows command chain"
+    ]
+  },
+  "main_drift_integration": {
+    "previous_base": "f83f680a7570a69ed678dd14e73e0a9de96e74db",
+    "integrated_base": "99a8e8cb1fb4e72dc135b9f655884984ab7909cc",
+    "upstream_changed_paths": 319,
+    "overlapping_paths": [
+      ".github/CODEOWNERS",
+      "editor/docks/ai_chat_delivery.cpp",
+      "editor/docks/ai_chat_delivery_retry.cpp",
+      "samples/ainative-workbench/addons/ainative/workbench.gd"
+    ],
+    "preserved_behavior": [
+      "Complete and slice delivery with actor binding",
+      "Explicit per-node API models and provider restoration",
+      "Shared Controller ownership"
+    ],
+    "independent_review": "passed",
+    "latest_editor_sha256": "aef7f039e68fbf2d3a32fc201ceec94ca040ace8feed294692ec613c4efc9472",
+    "rerun_results": {
+      "AIChat_native_cases": 115,
+      "AIChat_assertions": 1907,
+      "AICore_cases": 16,
+      "AICore_assertions": 108,
+      "HTTP_gzip_cancel_recovery": "passed",
+      "delivery_python_tests": 29,
+      "maliang_controller_assertions": 48,
+      "maliang_focused_python_tests": 48,
+      "maliang_focused_python_skipped": 0,
+      "maliang_api_node_UI_checks": 90,
+      "maliang_service_UI_checks": 109,
+      "maliang_builtin_checks": 258,
+      "maliang_bundle_files_match": 78
+    },
+    "unchanged_scope_reuse": "Earlier full CLI transport, HTTP history/queue/Responses and Tianshu tests retained with unchanged implementation inputs. New upstream delivery/model inputs received the targeted reruns above."
+  }
+}

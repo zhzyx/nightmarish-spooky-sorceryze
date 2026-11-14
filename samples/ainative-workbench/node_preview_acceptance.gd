@@ -64,8 +64,10 @@ func run():
 	await create_timer(0.15).timeout
 	check(panel.run_id == original_run and panel.jobs.is_empty() and not panel.auto_step, "editing instructions never triggers a model run")
 	# Change a required upstream input to produce a visibly different output type.
-	panel.nodes[0].source = mesh
-	panel.nodes[0].text = "new upstream mesh revision"
+	panel.select_node("upstream")
+	panel._set_node_file("source", mesh)
+	panel.text_edit.text = "new upstream mesh revision"
+	panel.apply_fields()
 	panel.run_node_preview("target")
 	await wait_idle()
 	check(panel.preview_scene != null and panel.preview_node == "target", "node preview decodes a real GLB mesh")

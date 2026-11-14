@@ -52,10 +52,14 @@ func run():
 		var backend = controls.find_child("AIBackend", true, false)
 		backend.select(selected_backend)
 		backend.item_selected.emit(selected_backend)
-	controls.find_child("APIEndpoint", true, false).text = OS.get_environment("STEERING_ENDPOINT")
-	controls.find_child("APIKey", true, false).text = "isolated-fixture-key"
+	var endpoint = controls.get_ai_settings_control().find_child("APIEndpoint", true, false)
+	endpoint.text = OS.get_environment("STEERING_ENDPOINT")
+	endpoint.text_changed.emit(endpoint.text)
+	var key = controls.get_ai_settings_control().find_child("APIKey", true, false)
+	key.text = "isolated-fixture-key"
+	key.text_changed.emit(key.text)
 	controls.find_child("APIModel", true, false).text = "fixture"
-	controls.find_child("AllowTools", true, false).button_pressed = false
+	controls.get_ai_settings_control().find_child("AllowTools", true, false).button_pressed = false
 	host = VBoxContainer.new()
 	root.add_child(host)
 	dock.daqian_preview_received.connect(func(source, reply): received[source] = JSON.parse_string(reply).result)

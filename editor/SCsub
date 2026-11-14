@@ -46,6 +46,7 @@ if env.editor_build:
             "docks/daqian/canvas_context.gd",
             "docks/daqian/spatial_workbench.gd",
             "docks/daqian/workspace.gd",
+            "docks/daqian/workflow_controller.gd",
             "docks/daqian/model_settings.gd",
             "#customizations/components/godot-host/silent_validation.gd",
         ],

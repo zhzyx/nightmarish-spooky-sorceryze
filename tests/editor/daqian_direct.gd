@@ -20,6 +20,9 @@ func canvas_turn(panel, binding: Dictionary, question: String) -> Dictionary:
 
 func check_worker_progress(workspace) -> void:
 	var panel = workspace.get_script().new()
+	panel.chat = workspace.chat
+	check(panel._get_workflow_controller() != workspace._get_workflow_controller(), "Workspace clones shared the mutable workflow controller")
+	check(panel.controller_script == null and panel._get_workflow_controller().get_script() == workspace.controller_script, "Workspace clone lost its installed controller script")
 	var item := {"url":"https://github.com/example/repo/issues/1", "number":1, "request":"original", "source_sha256":"revision", "status":"in-progress", "workers":["original worker"]}
 	panel.chat_work[item.url] = {"worker":{"version":"revision", "step":"chat"}}
 	panel.fresh_progress = false

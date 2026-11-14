@@ -3,7 +3,10 @@ var panel
 var failures = 0
 func check(ok: bool, label: String):
 	print(("PASS " if ok else "FAIL ") + label)
-	if not ok: failures += 1
+	if not ok:
+		failures += 1
+		if is_instance_valid(panel):
+			print("DETAIL ", panel.status.text)
 func wait_idle():
 	var deadline = Time.get_ticks_msec() + 30000
 	while (not panel.jobs.is_empty() or panel.auto_step) and Time.get_ticks_msec() < deadline:
@@ -26,8 +29,8 @@ func run():
 	var source = ProjectSettings.globalize_path("res://fixtures/sample.png")
 	var mesh = ProjectSettings.globalize_path("res://fixtures/sample.gltf")
 	var before = FileAccess.get_sha256(source)
-	panel.source_edit.text = source
-	panel.context_edit.text = source
+	panel._set_node_file("source", source)
+	panel._set_node_file("image_context", source)
 	panel.text_edit.text = "Keep red and green reference"
 	panel.params_edit.text = '{"delay":0.5,"fail":false}'
 	panel.apply_fields()
@@ -45,10 +48,10 @@ func run():
 	panel.open_graph()
 	check(JSON.parse_string(JSON.stringify(panel.model())) == JSON.parse_string(original), "save/reopen preserves nodes edges positions parameters text image context")
 	var saved_graph = FileAccess.get_file_as_string(panel.path_edit.text)
-	panel.source_edit.text = panel.state_dir.path_join("missing.png")
+	panel._set_node_file("source", panel.state_dir.path_join("missing.png"))
 	panel.save_graph()
 	check(FileAccess.get_file_as_string(panel.path_edit.text) == saved_graph, "bad source preserves previous workflow")
-	panel.source_edit.text = ""
+	panel._set_node_file("source", source)
 	panel.apply_fields()
 	var valid_model = JSON.stringify(panel.model())
 	var invalid = FileAccess.open(panel.path_edit.text, FileAccess.WRITE)
@@ -59,6 +62,8 @@ func run():
 	panel.path_edit.text = source
 	panel.save_graph()
 	check(FileAccess.get_sha256(source) == before, "save workflow refuses source PNG target")
+	# Context round-trip was verified above. The current copy node executes one input.
+	panel._set_node_file("image_context", "")
 	var ticks = panel.heartbeat
 	panel.start_run()
 	await wait_idle()
@@ -79,7 +84,7 @@ func run():
 	await wait_idle()
 	check(FileAccess.get_sha256(panel.target_edit.text) == published_hash and panel.status.text.contains("失败"), "existing target cannot be overwritten")
 	panel.nodes = []; panel.edges = []; panel.add_node()
-	panel.source_edit.text = mesh
+	panel._set_node_file("source", mesh)
 	panel.params_edit.text = '{"delay":0,"fail":false}'
 	panel.start_run(); await wait_idle()
 	panel.request_preview(); await wait_idle()

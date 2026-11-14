@@ -100,11 +100,12 @@ def reconcile_factory():
 
 def integer_transport_factory():
     """Production node schemas, without constructing or calling a model backend."""
-    from comfy_provider import KINDS, register
+    from comfy_provider import KINDS
     from extensions import NodeRegistry
+    from generation_service import register_workflow
 
     registry = NodeRegistry()
-    register(registry)
+    register_workflow(registry)
 
     class DescriptionOnly:
         def describe(self):

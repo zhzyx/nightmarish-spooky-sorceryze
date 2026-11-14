@@ -6,6 +6,7 @@
 
 | 主题 | 权威来源 | 已归入模块 |
 | --- | --- | --- |
+| AI 公共运行契约与 M/C/V 分离 | [AI 公共运行契约](../../ai_core/README.md) | `engine-core` |
 | 工作区执行、权限、交付与清理 | [原工作区约束](../workflow/repository/README.md) | `workflow/repository` |
 | 项目贡献、开发、验证与 PR | [项目贡献指南](../../CONTRIBUTING.md) | `build`、`testing`、`code-style` |
 | 仓库工单协作与状态规则 | [仓库协作入口](../../.github/CONTRIBUTING.md) | `workflow` |

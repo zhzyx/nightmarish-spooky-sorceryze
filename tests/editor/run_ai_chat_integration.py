@@ -1126,7 +1126,8 @@ def main():
             )
             script = (
                 "ai_chat_integration.gd"
-                if args.schedules
+                if args.windows_commands
+                or args.schedules
                 or args.queue
                 or args.history
                 or args.agents
@@ -1153,7 +1154,7 @@ def main():
                     "args=sys.argv; action=args[1]; root=Path(args[args.index('--workspace')+1]); out=Path(args[args.index('--out')+1])\n"
                     + f"store=runpy.run_path({str(ROOT / 'customizations/platforms/data-collection/git-files/storage/diting_files.py')!r})\n"
                     + "if action=='flush':\n for p in (root/'.gonggong-outbox/chat').glob('*.json'): store['record'](root,p); p.unlink()\n"
-                    + "result={'ok':True,'ready':True,'issue_number':891,'request_id':'windows-command-fixture','url':'https://github.com/fixture/board/issues/891','context':'Offline transport fixture','reporting':{'tenant_id':'fixture','request_ref':'windows-command-fixture','source_ref':'https://github.com/fixture/board/issues/891','agent':{'id':'fixture','version':'1','definition_sha256':'0'*64,'origin':'offline-fixture'}}}\n"
+                    + "result={'ok':True,'ready':True,'issue_number':891,'request_id':'windows-command-fixture','url':'https://github.com/fixture/board/issues/891','context':'Offline transport fixture','reporting':{'tenant_id':'fixture','actor':'42','request_ref':'windows-command-fixture','source_ref':'https://github.com/fixture/board/issues/891','agent':{'id':'fixture','version':'1','definition_sha256':'0'*64,'origin':'offline-fixture'}}}\n"
                     + "out.write_text(json.dumps(result),encoding='utf-8')\n",
                     encoding="utf-8",
                 )
@@ -1181,9 +1182,8 @@ def main():
             env["AI_CHAT_WINDOWS_COMMANDS"] = "1" if args.windows_commands else ""
             env["APPDATA"] = str(project / "appdata")
             env["LOCALAPPDATA"] = str(project / "localappdata")
-            if args.windows_commands:
-                (project / "appdata").mkdir(exist_ok=True)
-                (project / "localappdata").mkdir(exist_ok=True)
+            (project / "appdata").mkdir(exist_ok=True)
+            (project / "localappdata").mkdir(exist_ok=True)
             dotnet = ROOT / ".dotnet"
             env["DOTNET_ROOT"] = str(dotnet)
             env["DOTNET_ROOT_X64"] = str(dotnet)
