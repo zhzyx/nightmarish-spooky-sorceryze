@@ -13,7 +13,7 @@ export function DocExport({ docId, title }: { docId: string; title: string }) {
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
 
-  async function save(format: "md" | "html" | "docx") {
+  async function save(format: "md" | "html" | "docx" | "pdf") {
     if (!actor) {
       return;
     }
@@ -41,7 +41,7 @@ export function DocExport({ docId, title }: { docId: string; title: string }) {
           <p className="section-kicker">DOCUMENT · EXPORT</p>
           <h2 id="doc-export-title">导出</h2>
         </div>
-        <span className="section-note">Markdown / HTML / Word</span>
+        <span className="section-note">Markdown / HTML / Word / PDF</span>
       </div>
       <div style={{ display: "flex", gap: 10, padding: "0 26px 22px" }}>
         <button className="btn btn-ghost" type="button" disabled={!actor || busy !== ""} onClick={() => save("md")}>
@@ -52,6 +52,9 @@ export function DocExport({ docId, title }: { docId: string; title: string }) {
         </button>
         <button className="btn btn-ghost" type="button" disabled={!actor || busy !== ""} onClick={() => save("docx")}>
           {busy === "docx" ? "导出中…" : "导出 Word"}
+        </button>
+        <button className="btn btn-ghost" type="button" disabled={!actor || busy !== ""} onClick={() => save("pdf")}>
+          {busy === "pdf" ? "导出中…" : "导出 PDF"}
         </button>
       </div>
       {!actor ? (
