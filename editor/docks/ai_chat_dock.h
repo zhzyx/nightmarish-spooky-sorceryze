@@ -575,6 +575,7 @@ class AIChatDock : public EditorDock {
 	struct AgentSession
 	{
 		AIChatSessionData stData;
+		bool bConsultationTurn = false;
 		AIChatSessionTransport stTransport;
 		AgentViewState stView;
 	};
@@ -714,6 +715,12 @@ class AIChatDock : public EditorDock {
 	String ProductionControl(const Dictionary &mapArguments);
 	void CompleteProductionControl(int nProducer);
 	String ProductionEligibility(int nProducer) const;
+	String ProductionRepairConfiguration(const Array &arrWorkers, String &strConfig) const;
+	String CollectPreparedProductionJobs(int nParent, const Vector<int> &arrRepairs, const String &strActor, Dictionary &out_mapJobs) const;
+	String ProductionPreparedConfiguration(const Array &arrWorkers, const String &strActor, String &strConfig) const;
+	Dictionary RecordProductionPreparation(int nParent, const Array &arrWorkers, Dictionary mapAttempt, const String &strState, const String &strReason);
+	bool ProductionPreparationPersisted(const Dictionary &mapAttempt) const;
+	String ValidateProductionPreparationResume(int nParent, const String &strRequest, const String &strActor, Vector<int> &arrProducers) const;
 	void UpdateProductionOperation(int nProducer, const Dictionary &mapContext, const String &strState, const String &strReason);
 	String _delegate_review(const Dictionary &p_arguments);
 	void _cancel_design_batch(int p_agent);

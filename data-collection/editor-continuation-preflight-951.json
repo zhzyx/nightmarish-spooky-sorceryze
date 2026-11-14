@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "issue": 951,
+  "request_id": "editor-parent-production-continuation-20261112",
+  "observed_at": "2026-11-13T23:39:39.284658+00:00",
+  "state": "local_preflight_corrected_rebuild_review_delivery_pending",
+  "scope": "Final candidate preparation; no original game, history, acceptance, staging or effective release changed by the failed check. Private names resolve within the custodial receipts directory for parent773. Repository paths resolve at candidate root.",
+  "failure": {
+    "cause": "Installed codespell reads project write-changes=true. Its TOML conversion drops false values, so the attempted secondary write-changes=false did not override it. The source hash invariant rejected the resulting local identifier edits before git add.",
+    "affected_path": "editor/docks/production/ProductionControl.cpp",
+    "before_sha256": "26097a00db15134e1cec235c6cd9446dd287dd59952f9ee8a6330daabe808ebf",
+    "unintended_sha256": "56409946a5b69c54fa443ed5d8d158df349c8dc29c5d6e583d3751b79dbf4fa0",
+    "log": {
+      "logical_private_artifact": "continuation951-final-review-r1/codespell.log",
+      "sha256": "99e7c868f10394c86f125af5d36e227fc0377ac117145e94004833e78d81a394",
+      "bytes": 818
+    },
+    "manifest": {
+      "logical_private_artifact": "continuation951-final-review-r1/manifest.json",
+      "sha256": "336f8feb0e2bd595b4380953009e3b335945f2fa61df31f441a81cb167beea9c",
+      "bytes": 5278
+    }
+  },
+  "recovery": {
+    "restored_exact_frozen_preimage": true,
+    "all_28_task_hashes_matched_after_restoration": true,
+    "preflight_tools_now_run_only_on_private_copies": true,
+    "source_hashes_checked_before_staging": true,
+    "intentional_source_correction": "Rename eight occurrences of local nNumber to nOrderNumber to satisfy existing repository spelling and naming checks; inverse substitution exactly reproduces the old source bytes. No conditions, data keys or dispatch behavior changed.",
+    "corrected_source_sha256": "fe88fb906edbaea32159e253ff0a60ca3e5e6478eca876b06c6ff0c9e86824c1",
+    "result": {
+      "logical_private_artifact": "continuation951-preflight-r2/preflight.json",
+      "sha256": "f4e96c4e27c8ab0a252e889b4c38d0c9b5a34cb28b417211138903de1b954544",
+      "bytes": 9668
+    },
+    "private_checks_passed": true,
+    "staged": false
+  },
+  "boundaries": [
+    "Prior native behavior evidence retains its original source hashes and versions. The identifier-only change still requires the final native build and exact candidate CI.",
+    "All original failure logs and corrected preflight receipts remain distinct. Full independent index review, main delivery and original installed-game acceptance remain pending."
+  ]
+}

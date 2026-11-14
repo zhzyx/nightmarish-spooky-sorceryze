@@ -124,10 +124,12 @@ event('finish');console.log('Actual fixture worker completed '+name);
         + json.dumps(roots)
         + ";const owners="
         + json.dumps(owners)
+        + ";const mixedEvidence="
+        + json.dumps(scenario == "parallel-evidence-completion")
         + ";const keys=[];\n"
         + """
 for(let i=0;i<roots.length;i++) {const p=new Production(roots[i]);p.init({checkpointEvery:1000});
-const name='ABC'[i];const task=p.create({title:name,goal:'Actual native external acceptance',stage:'integration',acceptance:[name],independentReview:true});
+const name='ABC'[i];const task=p.create({title:name,goal:'Actual native external acceptance',stage:'integration',acceptance:mixedEvidence&&name==='A'?[name,'A-execution']:[name],independentReview:true});
 p.start(task.id,{owner:owners[i],capability:'code',authority:'https://github.com/example/design-batch/issues/441',nextAction:'Run actual registered worker'});
 keys.push(p.read().ledgerId+'::'+task.id);}
 fs.writeFileSync(new URL('./ledger-keys.json',import.meta.url),JSON.stringify(keys));

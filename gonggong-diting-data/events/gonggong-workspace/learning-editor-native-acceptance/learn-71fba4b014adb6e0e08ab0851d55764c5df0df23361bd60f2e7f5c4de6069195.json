@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-71fba4b014adb6e0e08ab0851d55764c5df0df23361bd60f2e7f5c4de6069195",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "occurred_at": "2026-11-14T03:08:39.645811+00:00",
+  "evidence_refs": [
+    "kuafu-c6fb46de7ca0f8dd30611e89a75bf8363bb0df1f"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "wait-current-discovered-catalog",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Before a fixture starts production after restoring a CLI model, wait within its original deadline for the real public catalog to be current, ready and not loading with a discovered source. Select the current picker item without yielding, then retain actual backend, model and capacity immediately before the action.",
+      "when": "A native editor acceptance fixture restores persistent model text and must distinguish a manual option from the actual runtime model catalog.",
+      "counterexample": "Matching model identifiers alone can match a restored manual option. A later ready status does not prove readiness at the earlier action. These observations do not establish which prerequisite failed in a historical run without its snapshot.",
+      "trial_plan": "In the next independent registered cold-start consumer, delay actual discovery while restoring the same manual ID; require no production action before discovered readiness, one real action after readiness, and explicit failure with a retained snapshot when the original deadline expires. Do not weaken production guards or extend the deadline."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-preparation-capture-validation-951.json",
+        "sha256": "941337ffb7f93a66471635e02413f779b2a22d0f23995676912eda5475cd0faf"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-parent-production-continuation-20261112/kuafu-c6fb46de7ca0f8dd30611e89a75bf8363bb0df1f.json",
+      "sha256": "64479b29a61bf89b8728af6a88f13451fc10f282a698f66ea077a0f9a2742a34"
+    }
+  },
+  "sha256": "b846e6a9e636c63fe36d298fe49b0b63f974fcb962c427efb069254b91fb07e8"
+}
