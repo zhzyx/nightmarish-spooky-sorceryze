@@ -54,6 +54,7 @@ export function MergeQueuePanel() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [live, setLive] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const load = useCallback(async () => {
     if (!actor) {
@@ -173,6 +174,8 @@ export function MergeQueuePanel() {
     }
   }
 
+  const visible = statusFilter === "all" ? items : items.filter((item) => item.status === statusFilter);
+
   return (
     <section className="panel" aria-labelledby="merge-queue-title">
       <div className="section-heading">
@@ -181,7 +184,20 @@ export function MergeQueuePanel() {
           <h2 id="merge-queue-title">合入队列</h2>
         </div>
         <span className="section-note">
-          {items.length} 个候选 · {live ? "实时" : "轮询"}
+          <select
+            aria-label="按状态筛选"
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+            style={{ ...fieldStyle, padding: "4px 8px", marginRight: 10 }}
+          >
+            <option value="all">全部状态</option>
+            {Object.entries(STATUS_LABEL).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+          {visible.length} 个候选 · {live ? "实时" : "轮询"}
           <button className="btn btn-ghost" type="button" disabled={busy} onClick={processNow} style={{ marginLeft: 10 }}>
             立即处理
           </button>
@@ -194,12 +210,12 @@ export function MergeQueuePanel() {
       ) : (
         <>
           <div className="reading-list live-list">
-            {items.length === 0 ? (
+            {visible.length === 0 ? (
               <p className="section-note" style={{ padding: "12px 16px" }}>
                 队列为空。入队后由 worker 自动预检、检验并合入。
               </p>
             ) : (
-              items.map((item) => (
+              visible.map((item) => (
                 <div className="reading-item" key={item.id}>
                   <span className="reading-index">{item.status.slice(0, 1).toUpperCase()}</span>
                   <span className="reading-copy">
