@@ -9,9 +9,13 @@
 - 提交输入不得指定 Git 管理路径或平台别名；写入前拒绝路径中的符号链接；
 - 子进程清理继承的 ``GIT_DIR`` 等环境变量，统一关闭交互提示、签名与钩子；
 - 合并冲突在临时克隆中检测并 ``--abort``，裸仓库不会停留在半完成状态，
-  失败时以 :class:`MergeConflict` 返回冲突路径。
+  失败时以 :class:`MergeConflict` 返回冲突路径；
+- 并发推送采用显式 ``--force-with-lease`` CAS 校验：无路径交叉的并发提交或合并
+  在同一临时克隆内自动拉取最新目标并重放；存在路径/目录前缀交叉的并发直接提交
+  拒绝覆盖并抛出 :class:`MergeConflict`，批量合入（``merge_batch``）在单次克隆中
+  合并无冲突分支并隔离冲突分支。
 
-本模块只负责 Git 操作本身；权限、评审、PR 元数据与高并发合入编排由多宝
+本模块只负责 Git 操作与无冲突并发合入编排；权限、评审与 PR 元数据由多宝
 上层承担，Git 对象始终由 Git 服务管理。
 """
 
@@ -22,11 +26,13 @@ import re
 import subprocess
 import tempfile
 import unicodedata
-from collections.abc import Mapping
+from bisect import bisect_left
+from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
 
 __all__ = [
+    "DEFAULT_CONCURRENCY_RETRIES",
     "DEFAULT_GIT_EXECUTABLE",
     "GIT_EXECUTABLE_ENV",
     "GitCommandError",
@@ -38,6 +44,8 @@ __all__ = [
 
 DEFAULT_GIT_EXECUTABLE = "git"
 GIT_EXECUTABLE_ENV = "GIT_EXECUTABLE"
+DEFAULT_CONCURRENCY_RETRIES = 16
+_EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
 
 #: 允许的合并策略（同时限制为白名单，避免把任意参数交给 git）。
 MERGE_STRATEGIES = ("--no-ff", "--ff", "--ff-only")
@@ -145,6 +153,22 @@ class MergeConflict(GitServiceError):
     def conflicts(self) -> list[str]:
         """冲突路径的副本（便于调用方按路径处理）。"""
         return list(self.paths)
+
+
+def _overlapping_paths(left: Iterable[str], right: Iterable[str]) -> list[str]:
+    """检测路径集合交集（含文件与目录前缀碰撞，如 ``a`` 与 ``a/b``）。"""
+    ordered_right = sorted(set(right))
+    members = set(ordered_right)
+    matches: set[str] = set()
+    for name in left:
+        parts = name.split("/")
+        if any("/".join(parts[:end]) in members for end in range(1, len(parts) + 1)):
+            matches.add(name)
+            continue
+        position = bisect_left(ordered_right, name + "/")
+        if position < len(ordered_right) and ordered_right[position].startswith(name + "/"):
+            matches.add(name)
+    return sorted(matches)
 
 
 def _reject_control_characters(value: str, label: str) -> None:
@@ -265,6 +289,12 @@ def _validate_limit(limit: int) -> int:
     return limit
 
 
+def _validate_retries(max_retries: int) -> int:
+    if isinstance(max_retries, bool) or not isinstance(max_retries, int) or not 0 <= max_retries <= 64:
+        raise ValidationError("max_retries must be an integer between 0 and 64")
+    return max_retries
+
+
 class GitService:
     """通过系统 git CLI 提供多宝所需的仓库操作。
 
@@ -320,11 +350,19 @@ class GitService:
         files: Mapping[str, str],
         author_name: str,
         author_email: str,
+        *,
+        max_retries: int = DEFAULT_CONCURRENCY_RETRIES,
     ) -> str:
-        """在临时克隆中写入文件并提交，推送到裸仓库后返回提交 SHA。"""
+        """在临时克隆中写入文件并提交，使用 CAS 校验推回裸仓库后返回提交 SHA。
+
+        若远端目标分支在写入期间被其他并发协作者推进：
+        - 写入路径与远端新增变更无重叠时，自动拉取最新分支并重放提交；
+        - 写入路径与远端新增变更存在文件或目录前缀重叠时，拒绝覆盖并抛出 :class:`MergeConflict`。
+        """
         branch = _validate_branch_name(branch)
         message = _validate_message(message)
         name, email = _validate_identity(author_name, author_email)
+        retries = _validate_retries(max_retries)
         if not isinstance(files, Mapping):
             raise ValidationError("files must be a mapping of relative paths to text")
         staged: dict[str, str] = {}
@@ -341,55 +379,84 @@ class GitService:
         with tempfile.TemporaryDirectory(prefix="duobao-commit-") as temporary:
             worktree = Path(temporary) / "worktree"
             self._clone(repo_path, worktree)
-            self._checkout_branch(worktree, branch)
             worktree_root = worktree.resolve()
-            destinations: dict[str, Path] = {}
-            for relative in staged:
-                destination = worktree.joinpath(*relative.split("/"))
-                current = worktree
-                for part in relative.split("/"):
-                    current = current / part
-                    if current.is_symlink() or getattr(current, "is_junction", lambda: False)():
-                        raise ValidationError(f"file path follows a link: {relative!r}")
-                resolved = destination.resolve()
-                if not resolved.is_relative_to(worktree_root):
-                    raise ValidationError(f"file path escapes the worktree: {relative!r}")
-                _validate_file_path(resolved.relative_to(worktree_root).as_posix())
-                destinations[relative] = destination
-            # Check all destinations before writing any input into the clone.
-            for relative, content in staged.items():
-                destination = destinations[relative]
-                destination.parent.mkdir(parents=True, exist_ok=True)
-                with open(destination, "w", encoding="utf-8", newline="\n") as handle:
-                    handle.write(content)
-            self._run(["-C", str(worktree), "add", "--", *staged])
-            self._run([
-                "-C",
-                str(worktree),
-                "-c",
-                f"user.name={name}",
-                "-c",
-                f"user.email={email}",
-                "-c",
-                "commit.gpgsign=false",
-                "commit",
-                "--no-verify",
-                "-m",
-                message,
-            ])
-            sha = self._rev_parse(worktree, "HEAD")
-            if sha is None:
-                raise GitServiceError("commit succeeded but HEAD cannot be resolved")
-            self._run([
-                "-C",
-                str(worktree),
-                "push",
-                "--quiet",
-                "--no-verify",
-                "origin",
-                f"HEAD:refs/heads/{branch}",
-            ])
-            return sha
+            remote_ref = f"refs/remotes/origin/{branch}"
+
+            for attempt in range(retries + 1):
+                self._checkout_branch(worktree, branch)
+                if attempt > 0:
+                    self._run(["-C", str(worktree), "clean", "-fd", "--quiet"])
+                destinations: dict[str, Path] = {}
+                for relative in staged:
+                    destination = worktree.joinpath(*relative.split("/"))
+                    current = worktree
+                    for part in relative.split("/"):
+                        current = current / part
+                        if current.is_symlink() or getattr(current, "is_junction", lambda: False)():
+                            raise ValidationError(f"file path follows a link: {relative!r}")
+                    resolved = destination.resolve()
+                    if not resolved.is_relative_to(worktree_root):
+                        raise ValidationError(f"file path escapes the worktree: {relative!r}")
+                    _validate_file_path(resolved.relative_to(worktree_root).as_posix())
+                    destinations[relative] = destination
+                base_sha = self._rev_parse(worktree, remote_ref)
+                # Check all destinations before writing any input into the clone.
+                for relative, content in staged.items():
+                    destination = destinations[relative]
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    with open(destination, "w", encoding="utf-8", newline="\n") as handle:
+                        handle.write(content)
+                self._run(["-C", str(worktree), "add", "--", *staged])
+                self._run([
+                    "-C",
+                    str(worktree),
+                    "-c",
+                    f"user.name={name}",
+                    "-c",
+                    f"user.email={email}",
+                    "-c",
+                    "commit.gpgsign=false",
+                    "commit",
+                    "--allow-empty-message",
+                    "--no-verify",
+                    "-m",
+                    message,
+                ])
+                sha = self._rev_parse(worktree, "HEAD")
+                if sha is None:
+                    raise GitServiceError("commit succeeded but HEAD cannot be resolved")
+                lease = f"refs/heads/{branch}:{base_sha or ''}"
+                pushed = self._run(
+                    [
+                        "-C",
+                        str(worktree),
+                        "push",
+                        "--quiet",
+                        "--no-verify",
+                        f"--force-with-lease={lease}",
+                        "origin",
+                        f"HEAD:refs/heads/{branch}",
+                    ],
+                    check=False,
+                )
+                if pushed.returncode == 0:
+                    return sha
+
+                self._run(
+                    ["-C", str(worktree), "fetch", "--quiet", "origin", f"refs/heads/{branch}:{remote_ref}"],
+                    check=False,
+                )
+                latest_sha = self._rev_parse(worktree, remote_ref)
+                if latest_sha is None or latest_sha == base_sha:
+                    raise GitCommandError(pushed.args, pushed.returncode, pushed.stdout, pushed.stderr)
+                upstream_changed = self._changed_paths(worktree, base_sha or _EMPTY_TREE, latest_sha)
+                conflicts = _overlapping_paths(staged.keys(), upstream_changed)
+                if conflicts:
+                    raise MergeConflict(conflicts, source=branch, target=branch)
+                if attempt >= retries:
+                    raise GitCommandError(pushed.args, pushed.returncode, pushed.stdout, pushed.stderr)
+
+            raise GitServiceError("unreachable commit retry state")
 
     def branch(self, repo: str | os.PathLike[str], name: str, start: str = "HEAD") -> str:
         """基于 ``start`` 创建分支并返回其提交 SHA。
@@ -530,15 +597,19 @@ class GitService:
         source: str,
         target: str,
         strategy: str = "--no-ff",
+        *,
+        max_retries: int = DEFAULT_CONCURRENCY_RETRIES,
     ) -> str:
         """将 ``source`` 合入 ``target`` 并推回裸仓库，返回结果提交 SHA。
 
         发生冲突时在临时克隆中执行 ``merge --abort``，裸仓库保持原状，并抛出
-        携带冲突路径的 :class:`MergeConflict`。
+        携带冲突路径的 :class:`MergeConflict`。若 ``target`` 在合并期间被无冲突
+        并发更新推进，在同一临时克隆内自动拉取最新 ``target`` 并重试合并。
         """
         repo_path, _ = self._repo_path(repo, require_bare=True)
         source = _validate_branch_name(source)
         target = _validate_branch_name(target)
+        retries = _validate_retries(max_retries)
         if strategy not in MERGE_STRATEGIES:
             raise ValidationError(
                 f"unsupported merge strategy {strategy!r}; expected one of {', '.join(MERGE_STRATEGIES)}"
@@ -551,49 +622,227 @@ class GitService:
         with tempfile.TemporaryDirectory(prefix="duobao-merge-") as temporary:
             worktree = Path(temporary) / "worktree"
             self._clone(repo_path, worktree)
-            self._checkout_branch(worktree, target)
-            completed = self._run(
-                [
-                    "-C",
-                    str(worktree),
-                    "merge",
-                    "--no-verify",
-                    strategy,
-                    "-m",
-                    f"Merge branch '{source}' into {target}",
-                    f"refs/remotes/origin/{source}",
-                ],
-                check=False,
+            target_remote = f"refs/remotes/origin/{target}"
+
+            for attempt in range(retries + 1):
+                base_sha = self._rev_parse(worktree, target_remote)
+                if base_sha is None:
+                    raise GitServiceError(f"unknown target branch: {target!r}")
+                self._checkout_branch(worktree, target)
+                if attempt > 0:
+                    self._run(["-C", str(worktree), "clean", "-fd", "--quiet"])
+                completed = self._run(
+                    [
+                        "-C",
+                        str(worktree),
+                        "-c",
+                        "user.name=Duobao Merge",
+                        "-c",
+                        "user.email=duobao@gonggong.local",
+                        "merge",
+                        "--no-verify",
+                        strategy,
+                        "-m",
+                        f"Merge branch '{source}' into {target}",
+                        f"refs/remotes/origin/{source}",
+                    ],
+                    check=False,
+                )
+                if completed.returncode != 0:
+                    conflicts = self._conflicted_paths(worktree)
+                    in_progress = self._merge_in_progress(worktree)
+                    if in_progress:
+                        self._run(
+                            ["-C", str(worktree), "merge", "--abort"],
+                            check=False,
+                        )
+                    if conflicts or "CONFLICT" in f"{completed.stdout}\n{completed.stderr}":
+                        raise MergeConflict(conflicts, source=source, target=target)
+                    raise GitCommandError(
+                        completed.args,
+                        completed.returncode,
+                        completed.stdout,
+                        completed.stderr,
+                    )
+                sha = self._rev_parse(worktree, "HEAD")
+                if sha is None:
+                    raise GitServiceError("merge succeeded but HEAD cannot be resolved")
+                if sha == base_sha:
+                    return sha
+                pushed = self._run(
+                    [
+                        "-C",
+                        str(worktree),
+                        "push",
+                        "--quiet",
+                        "--no-verify",
+                        f"--force-with-lease=refs/heads/{target}:{base_sha}",
+                        "origin",
+                        f"HEAD:refs/heads/{target}",
+                    ],
+                    check=False,
+                )
+                if pushed.returncode == 0:
+                    return sha
+
+                self._run(["-C", str(worktree), "fetch", "--quiet", "--prune", "origin"], check=False)
+                latest_sha = self._rev_parse(worktree, target_remote)
+                if latest_sha is None or latest_sha == base_sha or attempt >= retries:
+                    raise GitCommandError(pushed.args, pushed.returncode, pushed.stdout, pushed.stderr)
+
+            raise GitServiceError("unreachable merge retry state")
+
+    def merge_batch(
+        self,
+        repo: str | os.PathLike[str],
+        sources: Sequence[str],
+        target: str,
+        strategy: str = "--no-ff",
+        *,
+        max_retries: int = DEFAULT_CONCURRENCY_RETRIES,
+    ) -> dict[str, Any]:
+        """在单次临时克隆中批量合入多个源分支并原子推回裸仓库。
+
+        与目标或已接收前序分支冲突的源分支会被 ``merge --abort`` 干净隔离到
+        ``isolated`` 列表中，其余无冲突分支继续在同一批次合入，消除逐笔克隆与
+        串行推送争用。
+        """
+        repo_path, _ = self._repo_path(repo, require_bare=True)
+        target = _validate_branch_name(target)
+        retries = _validate_retries(max_retries)
+        if strategy not in MERGE_STRATEGIES:
+            raise ValidationError(
+                f"unsupported merge strategy {strategy!r}; expected one of {', '.join(MERGE_STRATEGIES)}"
             )
-            if completed.returncode != 0:
-                conflicts = self._conflicted_paths(worktree)
-                in_progress = self._merge_in_progress(worktree)
-                if in_progress:
-                    self._run(
-                        ["-C", str(worktree), "merge", "--abort"],
+        if isinstance(sources, (str, bytes)) or not isinstance(sources, Sequence) or not sources:
+            raise ValidationError("sources must be a non-empty sequence of branch names")
+        validated_sources = [_validate_branch_name(item) for item in sources]
+        if len(set(validated_sources)) != len(validated_sources):
+            raise ValidationError("sources must not contain duplicate branch names")
+        if self._rev_parse(repo_path, f"refs/heads/{target}") is None:
+            raise GitServiceError(f"unknown target branch: {target!r}")
+        for item in validated_sources:
+            if self._rev_parse(repo_path, f"refs/heads/{item}") is None:
+                raise GitServiceError(f"unknown source branch: {item!r}")
+
+        with tempfile.TemporaryDirectory(prefix="duobao-batch-merge-") as temporary:
+            worktree = Path(temporary) / "worktree"
+            self._clone(repo_path, worktree)
+            target_remote = f"refs/remotes/origin/{target}"
+
+            for attempt in range(retries + 1):
+                base_sha = self._rev_parse(worktree, target_remote)
+                if base_sha is None:
+                    raise GitServiceError(f"unknown target branch: {target!r}")
+                self._checkout_branch(worktree, target)
+                if attempt > 0:
+                    self._run(["-C", str(worktree), "clean", "-fd", "--quiet"])
+
+                merged: list[dict[str, Any]] = []
+                isolated: list[dict[str, Any]] = []
+                for source in validated_sources:
+                    source_ref = f"refs/remotes/origin/{source}"
+                    ancestor = self._run(
+                        ["-C", str(worktree), "merge-base", "--is-ancestor", source_ref, "HEAD"],
                         check=False,
                     )
-                if conflicts or "CONFLICT" in f"{completed.stdout}\n{completed.stderr}":
-                    raise MergeConflict(conflicts, source=source, target=target)
-                raise GitCommandError(
-                    completed.args,
-                    completed.returncode,
-                    completed.stdout,
-                    completed.stderr,
+                    if ancestor.returncode == 0:
+                        merged.append({
+                            "source": source,
+                            "status": "already_included",
+                            "sha": self._rev_parse(worktree, "HEAD"),
+                        })
+                        continue
+                    completed = self._run(
+                        [
+                            "-C",
+                            str(worktree),
+                            "-c",
+                            "user.name=Duobao Merge",
+                            "-c",
+                            "user.email=duobao@gonggong.local",
+                            "merge",
+                            "--no-verify",
+                            strategy,
+                            "-m",
+                            f"Merge branch '{source}' into {target}",
+                            source_ref,
+                        ],
+                        check=False,
+                    )
+                    if completed.returncode != 0:
+                        conflicts = self._conflicted_paths(worktree)
+                        if self._merge_in_progress(worktree):
+                            self._run(["-C", str(worktree), "merge", "--abort"], check=False)
+                        combined = f"{completed.stdout}\n{completed.stderr}"
+                        if conflicts or "CONFLICT" in combined:
+                            isolated.append({
+                                "source": source,
+                                "reason": "merge_conflict",
+                                "conflicts": conflicts,
+                            })
+                            continue
+                        if strategy == "--ff-only":
+                            isolated.append({
+                                "source": source,
+                                "reason": "non_fast_forward",
+                                "conflicts": [],
+                            })
+                            continue
+                        raise GitCommandError(
+                            completed.args,
+                            completed.returncode,
+                            completed.stdout,
+                            completed.stderr,
+                        )
+                    merged.append({
+                        "source": source,
+                        "status": "merged",
+                        "sha": self._rev_parse(worktree, "HEAD"),
+                    })
+
+                final_sha = self._rev_parse(worktree, "HEAD")
+                if final_sha is None:
+                    raise GitServiceError("batch merge succeeded but HEAD cannot be resolved")
+                if final_sha == base_sha:
+                    return {
+                        "target": target,
+                        "base_sha": base_sha,
+                        "head_sha": final_sha,
+                        "merged": merged,
+                        "isolated": isolated,
+                        "attempts": attempt + 1,
+                    }
+
+                pushed = self._run(
+                    [
+                        "-C",
+                        str(worktree),
+                        "push",
+                        "--quiet",
+                        "--no-verify",
+                        f"--force-with-lease=refs/heads/{target}:{base_sha}",
+                        "origin",
+                        f"HEAD:refs/heads/{target}",
+                    ],
+                    check=False,
                 )
-            sha = self._rev_parse(worktree, "HEAD")
-            if sha is None:
-                raise GitServiceError("merge succeeded but HEAD cannot be resolved")
-            self._run([
-                "-C",
-                str(worktree),
-                "push",
-                "--quiet",
-                "--no-verify",
-                "origin",
-                f"HEAD:refs/heads/{target}",
-            ])
-            return sha
+                if pushed.returncode == 0:
+                    return {
+                        "target": target,
+                        "base_sha": base_sha,
+                        "head_sha": final_sha,
+                        "merged": merged,
+                        "isolated": isolated,
+                        "attempts": attempt + 1,
+                    }
+
+                self._run(["-C", str(worktree), "fetch", "--quiet", "--prune", "origin"], check=False)
+                latest_sha = self._rev_parse(worktree, target_remote)
+                if latest_sha is None or latest_sha == base_sha or attempt >= retries:
+                    raise GitCommandError(pushed.args, pushed.returncode, pushed.stdout, pushed.stderr)
+
+            raise GitServiceError("unreachable batch merge retry state")
 
     # ------------------------------------------------------------------
     # 子进程与辅助
@@ -693,6 +942,15 @@ class GitService:
             return None
         output = completed.stdout.strip()
         return output.splitlines()[0] if output else None
+
+    def _changed_paths(self, repo: str | os.PathLike[str], before: str, after: str) -> list[str]:
+        completed = self._run(
+            ["-C", str(repo), "diff", "--no-renames", "--name-only", "-z", before, after, "--"],
+            check=False,
+        )
+        if completed.returncode != 0:
+            return []
+        return sorted({path for path in completed.stdout.split("\x00") if path})
 
     def _symbolic_head(self, repo: str | os.PathLike[str]) -> str | None:
         completed = self._run(

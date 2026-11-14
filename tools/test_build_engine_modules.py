@@ -145,6 +145,23 @@ class BuildScopeTests(unittest.TestCase):
                 self.assertEqual(plan([(path, True)])[0], "full")
         self.assertEqual(plan([("modules/bmp/new_file.cpp", False)])[0], "full")
 
+    def test_host_integration_planner_preserves_mixed_native_coverage(self):
+        host = "customizations/platforms/development/git/heqi/integration_plan.py"
+        tianxuan_py = "customizations/components/tianxuan/server/api.py"
+        tianxuan_web = "apps/tianxuan/app/repos/page.tsx"
+        markdown_doc = "Markdown/workflow/README.md"
+        native = "core/object/object.cpp"
+        reviewed = frozenset({tianxuan_py, tianxuan_web})
+        self.assertEqual(plan([(host, True)])[0], "skip")
+        self.assertEqual(plan([(markdown_doc, True)])[0], "skip")
+        self.assertEqual(plan([(tianxuan_py, True), (tianxuan_web, True)], reviewed)[0], "skip")
+        self.assertEqual(plan([(tianxuan_py, False)], reviewed)[0], "full")
+        self.assertEqual(plan([("tools/native_host_inputs.json", True), (tianxuan_py, True)], reviewed)[0], "full")
+        self.assertEqual(plan([(host, True), (tianxuan_py, True), (native, True)], reviewed)[:2], ("modules", [native]))
+        self.assertEqual(plan([(host, True), ("core/object/object.h", True)], reviewed)[0], "full")
+        self.assertEqual(plan([("customizations/platforms/development/git/heqi/new.py", False)])[0], "full")
+        self.assertEqual(plan([("customizations/components/godot-host/session_credentials.py", True)])[0], "full")
+
 
 if __name__ == "__main__":
     unittest.main()

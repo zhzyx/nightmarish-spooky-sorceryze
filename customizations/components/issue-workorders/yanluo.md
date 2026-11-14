@@ -18,7 +18,7 @@ python customizations/components/issue-workorders/writer_submit.py --issue <编�
 
 入口回读同仓库 WRITE、MAINTAIN 或 ADMIN 身份，运行正式门禁，为已暂存的树创建提交，执行提交后谛听核验并推送专属候选分支。GitHub 以当前协作者为作者签署一笔内容树完全相同的签发提交，绑定工单、原提交、树、目标和 main 基线。入口回读服务端签名、作者及唯一父提交后创建 PR，输出其 URL 与签发 SHA。此回执只用于这次 Git 候选提交。
 
-连接中断后在同一工作树以同一账号重跑。入口按候选提交定位分支并核对已有签名及 PR。基线或候选发生变化时重新整合验证，协调旧 PR。取得 PR 后沿下述交付路径核验精确 SHA、审查和 CI，并用本人账号合入及回读。生产工具、模型预算及宿主服务凭据仍由其各自宿主授权。
+连接中断后在同一工作树以同一账号重跑。入口按候选提交定位分支并核对已有签名及 PR。签发前若主线仅发生无路径/读取交叉的前进，可显式加 `--auto-integrate`（可选配合 `--reads-file` 声明读取依赖路径）在门禁前完成树级无冲突对齐；CI 等待期间若主线前进且 `overlapping_write_paths` 为空，原签发者可在独立临时工作树运行 `python customizations/components/issue-workorders/writer_submit.py --rebind-pr <PR编号> --close-superseded` 重新执行正式门禁、谛听校验与服务端签发并收口被替代旧单，出现写/读重叠时仍拒绝自动重绑并转合契整合。取得 PR 后沿下述交付路径核验精确 SHA、审查和 CI，并用本人账号合入及回读。生产工具、模型预算及宿主服务凭据仍由其各自宿主授权。
 
 ## 协作人以本人账号交付（PR 或合并队列）
 

@@ -13,8 +13,9 @@
 `git_service.py`：系统 Git CLI 适配器，仓库为裸仓库；提交与合并在临时克隆中执行后推回，复用 Git 而不重写协议。
 
 - 构造时可显式指定 `git_executable`，否则读取环境变量 `GIT_EXECUTABLE`，再回退到 `git`。
-- 覆盖仓库创建、提交、分支、`log`、`diff`、`status` 与合并；合并支持 `--no-ff`、`--ff`、`--ff-only`。
+- 覆盖仓库创建、提交、分支、`log`、`diff`、`status`、单分支合并与批量合入（`merge_batch`）；合并支持 `--no-ff`、`--ff`、`--ff-only`。
 - 冲突时抛出 `MergeConflict`（含冲突路径）并中止临时克隆中的合并，裸仓库保持原状。
+- 并发推送使用显式 `--force-with-lease` CAS 保护：目标分支被无交叉路径并发推进时，`commit` 与 `merge` 在同一临时克隆内自动拉取最新引用并重放；并发 `commit` 命中同路径或文件/目录前缀重叠时立即抛出 `MergeConflict` 拒绝静默覆盖；`merge_batch` 在单次克隆中合入全部无冲突分支并隔离冲突分支。
 - ref、仓库名与文件路径先校验，拒绝 `..`、绝对路径、shell 元字符；子进程固定 `shell=False`。
 - 提交输入拒绝 `.git` 管理路径及其代表性平台别名；全部目标预检后才写入，拒绝符号链接、可检测的 junction 和解析后的管理目录路径。Git 命令显式禁用 hooks、fsmonitor 和提交签名。
 

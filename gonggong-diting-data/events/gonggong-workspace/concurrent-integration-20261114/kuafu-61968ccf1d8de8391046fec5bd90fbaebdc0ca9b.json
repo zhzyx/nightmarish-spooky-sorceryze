@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-61968ccf1d8de8391046fec5bd90fbaebdc0ca9b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "concurrent-integration-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1151",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "72c38e6217edca8bf09ccc86a1097a6ab6fd2a147272eb95aed58bce16a4ab48",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1151",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1154",
+    "action": "delivery",
+    "detection_head": "a99d8c920e4acdf1571e37be9021b62a5233e9a8",
+    "context_sha256": "778b5cfc3f8467ae6264418bec92e7c311460d46fcaa9e7c01b1f1bdafd0b865",
+    "operator": "Sail-Li",
+    "worker": "codex-concurrent-integration",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1151",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43527697448",
+    "diagnosis": "Git HTTPS fetch failed before signing. Independent HTTP1.1 ls-remote also cannot connect to github.com:443; authenticated GitHub API is reachable. Exact candidate branch lookup returned404 and no PR exists; no remote publication occurred. Local formal gate and committed-data check passed.",
+    "next_action": "Diagnose Git transport and DNS without exposing credentials; recover original submission only after readback, preserving current main and1080 publication coordination.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T23:31:04.692343+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T23:32:42.226069+00:00",
+  "sha256": "295c6b9046a261039ae8c9dace3da58166b22591e70fefa5ed279315a7c0dfe9"
+}
