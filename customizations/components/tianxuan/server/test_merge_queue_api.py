@@ -140,3 +140,25 @@ def test_retry_cancelled_candidate(monkeypatch: pytest.MonkeyPatch, tmp_path: Pa
     assert merged[0]["status"] == "merged"
     denied = client.post(f"/api/v1/merge-queue/{item['id']}/retry", headers=headers)
     assert denied.status_code == 400
+
+
+def test_merge_queue_status_reports_worker(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    client, headers, queue = _setup(monkeypatch, tmp_path)
+    initial = client.get("/api/v1/merge-queue/status", headers=headers).json()
+    assert initial == {"worker": False, "queued": 0, "total": 0}
+
+    client.post(
+        "/api/v1/merge-queue",
+        headers=headers,
+        json={"repo": "docs.git", "source": "feature", "target": "main", "title": "状态"},
+    )
+    queued = client.get("/api/v1/merge-queue/status", headers=headers).json()
+    assert queued["queued"] == 1
+    assert queued["total"] == 1
+
+    queue.start_worker(interval=0.1)
+    try:
+        running = client.get("/api/v1/merge-queue/status", headers=headers).json()
+        assert running["worker"] is True
+    finally:
+        queue.stop_worker()

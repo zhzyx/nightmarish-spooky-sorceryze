@@ -914,6 +914,14 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
                 raise PermissionDenied("viewer cannot process merge queue")
             return {"processed": merge_queue.process_batch(limit)}
 
+        @app.get("/api/v1/merge-queue/status")
+        def merge_queue_status(actor: ActorDep) -> dict[str, Any]:
+            return {
+                "worker": merge_queue.worker_running,
+                "queued": merge_queue.count_items("queued"),
+                "total": merge_queue.count_items(),
+            }
+
         @app.get("/api/v1/merge-queue/{item_id}")
         def get_merge_queue_item(item_id: str, actor: ActorDep) -> dict[str, Any]:
             try:

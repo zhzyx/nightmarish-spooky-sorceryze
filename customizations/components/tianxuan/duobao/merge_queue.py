@@ -137,6 +137,11 @@ class MergeQueue:
         self._worker = threading.Thread(target=loop, name="duobao-merge-queue", daemon=True)
         self._worker.start()
 
+    @property
+    def worker_running(self) -> bool:
+        worker = self._worker
+        return worker is not None and worker.is_alive()
+
     def stop_worker(self) -> None:
         self._stop.set()
         worker = self._worker
