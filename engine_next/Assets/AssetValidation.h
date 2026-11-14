@@ -33,6 +33,7 @@
 #include "engine_next/include/EngineNext/Assets/Types.h"
 #include "engine_next/include/EngineNext/Serialization/Json.h"
 
+#include <filesystem>
 #include <initializer_list>
 #include <string>
 
@@ -135,6 +136,48 @@ inline bool ParseRef(const Serialization::JsonValue &in_stValue, const std::stri
 		AddDiagnostic(out_arrDiagnostics, "invalid_digest", in_strPath + ".content_sha256", "expected lowercase SHA-256");
 	}
 	return IsIdentity(out_stRef.strAssetId) && IsRevision(out_stRef.strRevision) && IsSha256(out_stRef.strContentSha256);
+}
+
+inline bool SafeAssetRelativePath(const std::string &in_strPath)
+{
+	if (in_strPath.empty() || in_strPath.find('\\') != std::string::npos || in_strPath.find('\0') != std::string::npos || in_strPath.find(':') != std::string::npos)
+	{
+		return false;
+	}
+	const std::filesystem::path stPath(in_strPath);
+	if (stPath.is_absolute() || stPath.has_root_name() || stPath.has_root_directory())
+	{
+		return false;
+	}
+	for (const std::filesystem::path &stPart : stPath)
+	{
+		if (stPart == ".." || stPart == "." || stPart.empty())
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+inline bool NoLinkedComponents(const std::filesystem::path &in_strPath, bool in_bAllowMissing = false)
+{
+	namespace fs = std::filesystem;
+	fs::path stCurrent = in_strPath.root_path();
+	for (const fs::path &stPart : in_strPath.relative_path())
+	{
+		stCurrent /= stPart;
+		std::error_code stError;
+		const fs::file_status stStatus = fs::symlink_status(stCurrent, stError);
+		if (stError || fs::is_symlink(stStatus))
+		{
+			return false;
+		}
+		if (!fs::exists(stStatus))
+		{
+			return in_bAllowMissing;
+		}
+	}
+	return true;
 }
 
 inline Serialization::JsonValue RefJson(const AssetRef &in_stRef)

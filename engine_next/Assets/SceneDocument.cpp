@@ -203,7 +203,9 @@ bool ParseSceneDocument(const Serialization::JsonValue &in_stValue, SceneDocumen
 					Fields(*pAsset, { "role", "asset_id", "revision", "content_sha256" }, strAssetPath, out_arrDiagnostics);
 					SceneAssetRef stRef;
 					String(*pAsset, "role", strAssetPath, stRef.strRole, out_arrDiagnostics);
-					ParseRef((*pAssets)[nAsset], strAssetPath, stRef.stAsset, out_arrDiagnostics);
+					Serialization::JsonValue::Object mapAsset = *pAsset;
+					mapAsset.erase("role");
+					(void)ParseRef(Serialization::JsonValue(std::move(mapAsset)), strAssetPath, stRef.stAsset, out_arrDiagnostics);
 					stEntity.arrAssets.push_back(std::move(stRef));
 				}
 			}
@@ -217,13 +219,13 @@ Serialization::JsonValue ToJson(const SceneDocument &in_stScene)
 {
 	std::vector<SceneEntity> arrEntities = in_stScene.arrEntities;
 	std::sort(arrEntities.begin(), arrEntities.end(), [](const SceneEntity &in_stLeft, const SceneEntity &in_stRight)
-			  { return in_stLeft.nEntityId < in_stRight.nEntityId; });
+			{ return in_stLeft.nEntityId < in_stRight.nEntityId; });
 	Serialization::JsonValue::List arrJsonEntities;
 	for (const SceneEntity &stEntity : arrEntities)
 	{
 		std::vector<SceneAssetRef> arrAssets = stEntity.arrAssets;
 		std::sort(arrAssets.begin(), arrAssets.end(), [](const SceneAssetRef &in_stLeft, const SceneAssetRef &in_stRight)
-				  {
+				{
 			if (in_stLeft.strRole != in_stRight.strRole)
 			{
 				return in_stLeft.strRole < in_stRight.strRole;
@@ -321,9 +323,9 @@ bool ValidateSceneDocument(const SceneDocument &in_stScene, Diagnostics &out_arr
 			}
 		}
 		const double dNorm = std::sqrt(stEntity.stTransform.arrRotation[0] * stEntity.stTransform.arrRotation[0] +
-									   stEntity.stTransform.arrRotation[1] * stEntity.stTransform.arrRotation[1] +
-									   stEntity.stTransform.arrRotation[2] * stEntity.stTransform.arrRotation[2] +
-									   stEntity.stTransform.arrRotation[3] * stEntity.stTransform.arrRotation[3]);
+				stEntity.stTransform.arrRotation[1] * stEntity.stTransform.arrRotation[1] +
+				stEntity.stTransform.arrRotation[2] * stEntity.stTransform.arrRotation[2] +
+				stEntity.stTransform.arrRotation[3] * stEntity.stTransform.arrRotation[3]);
 		if (!std::isfinite(dNorm) || std::abs(dNorm - 1.0) > 0.00001)
 		{
 			AddDiagnostic(out_arrDiagnostics, "invalid_rotation", strPath + ".transform.rotation_xyzw", "quaternion must be normalized");

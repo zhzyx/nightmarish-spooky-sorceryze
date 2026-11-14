@@ -33,6 +33,7 @@ class BuildRuntimeTests(unittest.TestCase):
             *BuildRuntime.TEST_SOURCES,
             *BuildRuntime.APP_SOURCES["next_server"],
             *BuildRuntime.APP_SOURCES["next_client"],
+            *BuildRuntime.APP_SOURCES["next_asset"],
         ]:
             self.assertTrue(source.startswith(("engine_next/", "ai_core/")), source)
             self.assertFalse((self.repo / source).is_symlink(), source)

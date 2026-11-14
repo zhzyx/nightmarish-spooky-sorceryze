@@ -1,0 +1,51 @@
+{
+  "base_commit": "ed40279916d11d7969d236dffc5e490aa6e3d8a7",
+  "checks": {
+    "asset_acceptance": {
+      "command": "RunM3AssetAcceptance.py in build and clean executable directories",
+      "observed": "Two clean output directories produced identical manifest and package digest; no-clobber reconcile and path escape rejection passed",
+      "passed": true
+    },
+    "clean_source": {
+      "command": "ExportCleanSource.py to m3-pr2-final-clean-source and rebuild",
+      "observed": "135 declared files without Godot roots; all 43 tests/422 checks, CLI and M2 handshakes passed; next_asset contract_passed",
+      "passed": true
+    },
+    "format": {
+      "command": "Isolated clang-format and ruff plus git diff --cached --check",
+      "observed": "All checks passed",
+      "passed": true
+    },
+    "link_contract": {
+      "command": "check_engine_next_contract.py with actual next_asset link manifest",
+      "observed": "99 source files, 153 includes and 34 objects passed; no forbidden symbols or unexpected dynamic dependencies",
+      "passed": true
+    },
+    "runtime_release": {
+      "command": "BuildRuntime.py --compiler clang --build-dir build/engine_next/m3-pr2-clang --run-tests",
+      "observed": "43 tests/422 checks; real next_asset CLI and M2 build/clean/package handshakes passed",
+      "passed": true
+    },
+    "sanitizer": {
+      "command": "BuildRuntime.py --build-dir build/engine_next/m3-pr2-sanitize --run-tests --sanitize",
+      "observed": "43 tests/422 checks including short IHDR/SOS and malformed format cases passed under ASan/UBSan",
+      "passed": true
+    },
+    "tools": {
+      "command": "unittest discover engine_next/Tools and tools.test_check_engine_next_contract",
+      "observed": "18 build/schema and 23 contract tests passed",
+      "passed": true
+    }
+  },
+  "issue_number": 1240,
+  "not_verified": [
+    "Windows/Linux until exact CI",
+    "AI process controller",
+    "M2 scene consumption and legacy adapter",
+    "M3 overall completion"
+  ],
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "review": "data-collection/engine-next-assets-ai-workflow-m3-pr2-review.json",
+  "schema_version": 1,
+  "slice": "pr2"
+}
