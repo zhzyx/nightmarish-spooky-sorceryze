@@ -120,9 +120,10 @@ def atomic_json(path, value):
 
 
 @contextmanager
-def binding_lock(path):
+def binding_lock(path, *, timeout=0.0):
     if path.is_symlink():
         raise CandidateError("candidate_binding_invalid")
+    deadline = time.monotonic() + max(0.0, float(timeout))
     with path.open("a+b") as stream:
         if os.name == "nt":
             import msvcrt
@@ -130,18 +131,26 @@ def binding_lock(path):
             if stream.tell() == 0:
                 stream.write(b"\0")
                 stream.flush()
-            stream.seek(0)
-            try:
-                msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
-            except OSError:
-                raise CandidateError("candidate_binding_busy") from None
+            while True:
+                stream.seek(0)
+                try:
+                    msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+                    break
+                except OSError:
+                    if time.monotonic() >= deadline:
+                        raise CandidateError("candidate_binding_busy") from None
+                    time.sleep(0.025)
         else:
             import fcntl
 
-            try:
-                fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-            except OSError:
-                raise CandidateError("candidate_binding_busy") from None
+            while True:
+                try:
+                    fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    break
+                except OSError:
+                    if time.monotonic() >= deadline:
+                        raise CandidateError("candidate_binding_busy") from None
+                    time.sleep(0.025)
         try:
             yield
         finally:
@@ -353,10 +362,11 @@ def finish_preparation(workspace, target, binding, binding_path):
     atomic_json(binding_path, binding)
 
 
-def candidate_digest(common, repository, issue, request_id, owner):
-    return hashlib.sha256(
-        json.dumps([str(common), repository, issue, request_id, owner], separators=(",", ":")).encode()
-    ).hexdigest()[:24]
+def candidate_digest(common, repository, issue, request_id, owner, actor_login=None):
+    parts = [str(common), repository, issue, request_id, owner]
+    if actor_login:
+        parts.append(str(actor_login).lower())
+    return hashlib.sha256(json.dumps(parts, separators=(",", ":")).encode()).hexdigest()[:24]
 
 
 def inherited_launch(workspace, common, repository, origin, folder, actual_launch):
@@ -447,6 +457,7 @@ def inherited_launch(workspace, common, repository, origin, folder, actual_launc
         ):
             raise CandidateError("candidate_inherited_binding_invalid")
         old_issue, old_request, old_owner = previous.get("issue"), previous.get("request_id"), previous.get("owner")
+        old_actor = previous.get("actor_login")
         if (
             type(old_issue) is not int
             or old_issue < 1
@@ -454,9 +465,13 @@ def inherited_launch(workspace, common, repository, origin, folder, actual_launc
             or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", old_request)
             or not isinstance(old_owner, str)
             or not old_owner
+            or (
+                old_actor is not None
+                and (not isinstance(old_actor, str) or not re.fullmatch(r"[A-Za-z0-9-]+", old_actor))
+            )
         ):
             raise CandidateError("candidate_inherited_binding_invalid")
-        digest = candidate_digest(common, repository, old_issue, old_request, old_owner)
+        digest = candidate_digest(common, repository, old_issue, old_request, old_owner, old_actor)
         if path.name != digest + ".json" or source.name != "godot-candidate-" + digest:
             raise CandidateError("candidate_inherited_binding_invalid")
         expected = {
@@ -470,6 +485,8 @@ def inherited_launch(workspace, common, repository, origin, folder, actual_launc
             "source_root": str(source),
             "branch": "codex/engine-candidate/" + old_request + "-" + digest,
         }
+        if old_actor:
+            expected["actor_login"] = old_actor.lower()
         validate_source(workspace, previous, expected)
         if (
             manifest_path.is_symlink()
@@ -535,7 +552,15 @@ def inherited_launch(workspace, common, repository, origin, folder, actual_launc
     return next(iter(proven.items())) if proven else (str(actual_launch), "")
 
 
-def prepare(workspace, issue, request_id, owner, validate_only=False, launch_executable=None):
+def prepare(
+    workspace,
+    issue,
+    request_id,
+    owner,
+    validate_only=False,
+    launch_executable=None,
+    actor_login=None,
+):
     workspace = Path(workspace).absolute()
     if (
         type(issue) is not int
@@ -546,10 +571,15 @@ def prepare(workspace, issue, request_id, owner, validate_only=False, launch_exe
         raise CandidateError("candidate_identity_invalid")
     if not isinstance(owner, str) or not owner.strip() or len(owner) > 128 or any(ord(c) < 32 for c in owner):
         raise CandidateError("candidate_identity_invalid")
+    normalized_actor = None
+    if actor_login is not None and actor_login != "":
+        if not isinstance(actor_login, str) or not re.fullmatch(r"[A-Za-z0-9-]{1,64}", actor_login):
+            raise CandidateError("candidate_identity_invalid")
+        normalized_actor = actor_login.lower()
     # Every read/recovery checks the current remote Issue; a private journal is not authority.
     verify_work_order(workspace, issue, request_id)
     common, repository, origin = identity(workspace)
-    digest = candidate_digest(common, repository, issue, request_id, owner)
+    digest = candidate_digest(common, repository, issue, request_id, owner, normalized_actor)
     target = workspace.parent / ("godot-candidate-" + digest)
     branch = "codex/engine-candidate/" + request_id + "-" + digest
     folder = common / "gonggong-engine-candidates"
@@ -568,7 +598,9 @@ def prepare(workspace, issue, request_id, owner, validate_only=False, launch_exe
         "source_root": str(target),
         "branch": branch,
     }
-    with binding_lock(folder / (digest + ".lock")):
+    if normalized_actor:
+        expected["actor_login"] = normalized_actor
+    with binding_lock(folder / (digest + ".lock"), timeout=5.0):
         if binding_path.exists():
             if binding_path.is_symlink():
                 raise CandidateError("candidate_binding_invalid")
@@ -648,7 +680,7 @@ def prepare(workspace, issue, request_id, owner, validate_only=False, launch_exe
             validate_source(workspace, binding, expected, require_clean=True)
             finish_preparation(workspace, target, binding, binding_path)
             state = "created"
-        return {
+        result = {
             "ok": True,
             "state": state,
             "source_root": str(target),
@@ -663,6 +695,9 @@ def prepare(workspace, issue, request_id, owner, validate_only=False, launch_exe
             "initial_launch_executable": binding.get("initial_launch_executable", ""),
             "protected_roots": binding.get("protected_roots", []),
         }
+        if normalized_actor:
+            result["actor_login"] = normalized_actor
+        return result
 
 
 def main():
@@ -671,13 +706,20 @@ def main():
     parser.add_argument("--issue", required=True, type=int)
     parser.add_argument("--request-id", required=True)
     parser.add_argument("--owner", required=True)
+    parser.add_argument("--actor-login", default=None, help="Optional GitHub account login for multi-account isolation")
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--validate-only", action="store_true")
     parser.add_argument("--launch-executable", type=Path, help="Host launch path, recorded only for a new binding")
     args = parser.parse_args()
     try:
         result = prepare(
-            args.workspace, args.issue, args.request_id, args.owner, args.validate_only, args.launch_executable
+            args.workspace,
+            args.issue,
+            args.request_id,
+            args.owner,
+            args.validate_only,
+            args.launch_executable,
+            args.actor_login,
         )
     except CandidateError as error:
         result = {"ok": False, "error": str(error)}

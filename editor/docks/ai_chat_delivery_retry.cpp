@@ -132,6 +132,9 @@ Dictionary AIChatDock::_pending_delivery_retry() const {
 		result["expected_candidate"] = candidate;
 		result["expected_signed_commit"] = signed_commit;
 		result["original_journal_sha256"] = FileAccess::get_sha256(path);
+		if (scope.has("delivery_mode")) {
+			result["delivery_mode"] = scope["delivery_mode"];
+		}
 	}
 	result["ok"] = matches == 1;
 	if (matches != 1) {
@@ -178,6 +181,9 @@ Dictionary AIChatDock::_run_delivery_retry(const Dictionary &p_args) {
 	pending_delivery_request["binding"] = recorded;
 	for (const String &key : { String("pr"), String("expected_candidate"), String("expected_signed_commit"), String("original_journal_sha256") }) {
 		pending_delivery_request[key] = selected[key];
+	}
+	if (selected.has("delivery_mode")) {
+		pending_delivery_request["delivery_mode"] = selected["delivery_mode"];
 	}
 	pending_delivery_request["host_action_request_id"] = p_args["host_action_request_id"];
 	delivery_retry_route["request_id"] = p_args["host_action_request_id"];

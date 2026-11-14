@@ -1,5 +1,5 @@
-import {fileDigest,captureCandidate,candidateCurrent,verifiedCurrentCandidate} from './acceptance-candidate.mjs';
-export {captureCandidate} from './acceptance-candidate.mjs';
+import {fileDigest,captureCandidate,candidateCurrent,verifiedCurrentCandidate,summarizeCandidateDiff} from './acceptance-candidate.mjs';
+export {captureCandidate,summarizeCandidateDiff} from './acceptance-candidate.mjs';
 // Internal trusted-host adapter. A JSON verdict is data, never authority: the
 // caller must bind an actual independent completion before invoking this module.
 import fs from 'node:fs';
@@ -14,7 +14,7 @@ const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const check = (ok, why) => {if (!ok) throw Error(why);};
 const read = file => JSON.parse(fs.readFileSync(file,'utf8'));
 
-export function validateDecision(decision, allowLedgerCommits = false) {
+export function validateDecisionWithCandidate(decision, allowLedgerCommits = false) {
   check(decision?.verdict === 'pass' && typeof decision.reason === 'string' && decision.reason.trim(), 'No passing independent verdict');
   check(/^[a-f0-9]{64}$/.test(decision.design_sha256), 'Missing design binding');
   const {producer,reviewer} = decision;
@@ -25,20 +25,29 @@ export function validateDecision(decision, allowLedgerCommits = false) {
     check(receipt && path.isAbsolute(receipt.path) && /^[a-f0-9]{64}$/.test(receipt.sha256), 'Missing terminal receipt');
     check(fileDigest(path.dirname(receipt.path),path.basename(receipt.path)) === receipt.sha256, 'Stale terminal receipt');
   }
+  const actual = verifiedCurrentCandidate(decision.candidate, allowLedgerCommits);
   if(producer.execution_id) {
     const terminal=read(producer.receipt.path),registration=terminal.registration;
     check(terminal.schema_version===1&&terminal.execution_id===producer.execution_id&&terminal.worker_id===producer.worker_id&&terminal.transport_completed===true&&terminal.state==='review'&&terminal.exit_code===0&&terminal.cancel_requested===false&&Number.isSafeInteger(terminal.pid)&&terminal.pid>0&&!terminal.reporting_error&&terminal.reporting?.ok===true&&terminal.reporting?.state==='recorded_file','External producer terminal identity or outcome mismatch');
     check(registration&&path.isAbsolute(registration.path)&&fileDigest(path.dirname(registration.path),path.basename(registration.path))===registration.sha256,'External registration changed');
     const registered=read(registration.path),policy=decision.candidate.audit_policy;
     check(registered.schema_version===1&&registered.execution_id===producer.execution_id&&registered.worker_id===producer.worker_id&&registered.design_sha256===decision.design_sha256&&registered.issue_number===terminal.issue_number&&registered.request_id===terminal.request_id&&policy?.request_id===terminal.request_id&&policy.source_ref.endsWith('/issues/'+terminal.issue_number),'External registration source mismatch');
-    check(registered.candidate.root===decision.candidate.root&&registered.candidate.branch===decision.candidate.branch&&terminal.candidate?.root===decision.candidate.root&&terminal.candidate.base_sha===registered.candidate.base_sha&&candidateCurrent({...terminal.candidate,audit_policy:policy},allowLedgerCommits),'External produced candidate changed');
+    const terminalWithPolicy = {...terminal.candidate, audit_policy: policy};
+    const sharedSnapshot = terminalWithPolicy.root === actual.root ? {...actual, ...(policy ? {audit_policy: policy} : {})} : undefined;
+    check(registered.candidate.root===decision.candidate.root&&registered.candidate.branch===decision.candidate.branch&&terminal.candidate?.root===decision.candidate.root&&terminal.candidate.base_sha===registered.candidate.base_sha&&candidateCurrent(terminalWithPolicy,allowLedgerCommits,sharedSnapshot),'External produced candidate changed');
   }
-  check(candidateCurrent(decision.candidate,allowLedgerCommits), 'Stale candidate');
+  const candidateFiles = new Map(decision.candidate.files.map(f => [f.path, f.sha256]));
+  const actualFiles = new Map(actual.files.map(f => [f.path, f.sha256]));
   check(Array.isArray(decision.criteria) && decision.criteria.length > 0 && new Set(decision.criteria.map(c=>c.id)).size === decision.criteria.length, 'Missing or duplicate criteria');
   for (const c of decision.criteria) {
     check(typeof c.id === 'string' && c.id && Array.isArray(c.evidence) && c.evidence.length, 'Missing criterion evidence');
-    for (const e of c.evidence) check(/^[a-f0-9]{64}$/.test(e.sha256) && decision.candidate.files.some(f=>f.path === e.path && f.sha256 === e.sha256) && fileDigest(decision.candidate.root,e.path) === e.sha256, 'Stale or unbound evidence');
+    for (const e of c.evidence) check(/^[a-f0-9]{64}$/.test(e.sha256) && candidateFiles.get(e.path) === e.sha256 && actualFiles.get(e.path) === e.sha256, 'Stale or unbound evidence');
   }
+  return actual;
+}
+
+export function validateDecision(decision, allowLedgerCommits = false) {
+  validateDecisionWithCandidate(decision, allowLedgerCommits);
   return true;
 }
 
@@ -103,14 +112,15 @@ export async function projectAcceptance({decision,decisionSha256,decisionJson=JS
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    const [action,root] = process.argv.slice(2);
+    const [action,root,baseRef] = process.argv.slice(2);
     if (action === 'capture') {const input=fs.readFileSync(0,'utf8');console.log(JSON.stringify({ok:true,candidate:captureCandidate(root,input ? JSON.parse(input) : undefined)}));}
+    else if (action === 'diff-summary') {console.log(JSON.stringify({ok:true,diff:summarizeCandidateDiff(root,baseRef || 'HEAD')}));}
     else if (action === 'current') {
       const candidate=JSON.parse(fs.readFileSync(0,'utf8'));
       check(fs.realpathSync(root)===fs.realpathSync(candidate.root),'Candidate differs from requested root');
       console.log(JSON.stringify({ok:true,current_candidate:verifiedCurrentCandidate(candidate)}));
     }
-    else if (action === 'verify' || action === 'verify-finalization') {const decision=JSON.parse(fs.readFileSync(0,'utf8'));const ledger=action==='verify-finalization';validateDecision(decision,ledger);console.log(JSON.stringify({ok:true,current_candidate:verifiedCurrentCandidate(decision.candidate,ledger)}));}
+    else if (action === 'verify' || action === 'verify-finalization') {const decision=JSON.parse(fs.readFileSync(0,'utf8'));const ledger=action==='verify-finalization';const current_candidate=validateDecisionWithCandidate(decision,ledger);console.log(JSON.stringify({ok:true,current_candidate}));}
     else if (action === 'project') {
       const input=JSON.parse(fs.readFileSync(0,'utf8'));
       const config=read(input.host_dispatch_config);
@@ -133,13 +143,16 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       };
       const decision=JSON.parse(input.decision_json);
       const registry=parallel ? parallelRegistry(config,decision,ticket) : config.dependencyRegistry;
-      let projection;
+      let projection, current_candidate;
       if(parallel&&!registry) {
-        check(isLive(),'Host generation cancelled or unknown');validateDecision(decision);
+        check(isLive(),'Host generation cancelled or unknown');current_candidate=validateDecisionWithCandidate(decision);
         projection={state:'not_configured',consumer:'parallel-runner'};
-      } else projection=await projectAcceptance({decision,decisionJson:input.decision_json,decisionSha256:sha(input.decision_json),operator:input.operator,
-        registry,ticket,revalidate,isLive,resume:parallel ? async event=>({state:'native_continuation_required',reference:event.reference}) : event=>runEvent({...config,dependencyRegistry:{...config.dependencyRegistry,requireHostAcceptance:true},requests:config.requests.filter(r=>r.ticket!==ticket),action:'dispatch',event},{isLive})});
-      console.log(JSON.stringify({ok:true,projection,current_candidate:verifiedCurrentCandidate(decision.candidate,projection.state==='accepted')}));
+      } else {
+        projection=await projectAcceptance({decision,decisionJson:input.decision_json,decisionSha256:sha(input.decision_json),operator:input.operator,
+          registry,ticket,revalidate,isLive,resume:parallel ? async event=>({state:'native_continuation_required',reference:event.reference}) : event=>runEvent({...config,dependencyRegistry:{...config.dependencyRegistry,requireHostAcceptance:true},requests:config.requests.filter(r=>r.ticket!==ticket),action:'dispatch',event},{isLive})});
+        current_candidate=verifiedCurrentCandidate(decision.candidate,projection.state==='accepted');
+      }
+      console.log(JSON.stringify({ok:true,projection,current_candidate}));
     }
     else throw Error('Unsupported internal acceptance operation');
   } catch (error) {console.log(JSON.stringify({ok:false,error:error.message}));process.exitCode=1;}

@@ -108,6 +108,22 @@ TEST_CASE("[Editor][AIChat] Delivery receipt binds private worker identity and e
 		foreign[key] = "foreign";
 		CHECK_FALSE(AIChatDeliveryReceipt::matches(foreign, live));
 	}
+	Dictionary slice_expected = expected.duplicate(true);
+	slice_expected["delivery_mode"] = "slice";
+	Dictionary slice_receipt = receipt.duplicate(true);
+	slice_receipt["delivery_mode"] = "slice";
+	CHECK_FALSE(AIChatDeliveryReceipt::completed(slice_receipt, slice_expected));
+	Dictionary slice_facts = slice_receipt["host_facts"];
+	Dictionary slice_issue = slice_facts["issue_receipt"];
+	slice_issue["state"] = "OPEN";
+	slice_issue["reason"] = "";
+	Array slice_labels;
+	slice_labels.push_back("status:in-progress");
+	slice_labels.push_back("workspace:gonggong");
+	slice_issue["labels"] = slice_labels;
+	CHECK(AIChatDeliveryReceipt::matches(slice_receipt, slice_expected));
+	CHECK(AIChatDeliveryReceipt::completed(slice_receipt, slice_expected));
+	CHECK_FALSE(AIChatDeliveryReceipt::matches(slice_receipt, expected));
 }
 
 Ref<DirAccess> make_temporary_directory(const String &p_prefix = "godot_ai_chat") {

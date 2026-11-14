@@ -7,7 +7,7 @@ import {execFileSync,spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {Production} from '../../platforms/document-management/git-markdown/yanshi-legacy/runtime/src/production.mjs';
 import {board} from '../../platforms/process-management/yuanheng-local/sinan/coordinator.mjs';
-import {captureCandidate,validateDecision,projectAcceptance,parallelRegistry} from './acceptance.mjs';
+import {captureCandidate,summarizeCandidateDiff,validateDecision,projectAcceptance,parallelRegistry} from './acceptance.mjs';
 import {dispatchEvent} from '../../platforms/process-management/yuanheng-local/sinan/dispatch.mjs';
 const digest = v=>createHash('sha256').update(v).digest('hex');
 function fixture(t, submitted=true) {
@@ -146,4 +146,17 @@ test('actual running ledger submits verified terminal evidence and reviews in on
   f.decision.producer.receipt.sha256=digest(fs.readFileSync(f.decision.producer.receipt.path));
   assert.throws(()=>validateDecision(f.decision,true),/identity or outcome mismatch/);
   assert.equal(board(JSON.parse(fs.readFileSync(f.registry)),f.dir).items[0].acceptanceValid,false);
+});
+test('summarizeCandidateDiff isolates modified, added, deleted and untracked files',t=>{
+  const f=fixture(t);
+  const base=f.git('rev-parse','HEAD');
+  fs.writeFileSync(path.join(f.root,'evidence.txt'),'modified');
+  fs.writeFileSync(path.join(f.root,'staged-add.txt'),'added');
+  f.git('add','staged-add.txt');
+  fs.writeFileSync(path.join(f.root,'untracked.txt'),'untracked');
+  const diff=summarizeCandidateDiff(f.root,base);
+  assert.deepEqual(diff.modified,['evidence.txt']);
+  assert.deepEqual(diff.added,['staged-add.txt']);
+  assert.deepEqual(diff.untracked,['untracked.txt']);
+  assert.equal(diff.changed_count,3);
 });

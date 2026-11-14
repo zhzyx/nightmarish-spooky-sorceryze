@@ -562,6 +562,41 @@ class CandidateTests(unittest.TestCase):
         self.assertNotEqual(first["branch"], second["branch"])
         self.assertNotEqual(first["source_root"], second["source_root"])
 
+    def test_multi_account_actor_login_isolates_candidates_and_waits_for_transient_lock(self):
+        import threading
+        import time
+
+        alice = candidate.prepare(self.root, 390, "runtime-test", "shared-chat", actor_login="Alice")
+        bob = candidate.prepare(self.root, 390, "runtime-test", "shared-chat", actor_login="Bob")
+        legacy = candidate.prepare(self.root, 390, "runtime-test", "shared-chat")
+        self.assertEqual(alice["actor_login"], "alice")
+        self.assertEqual(bob["actor_login"], "bob")
+        self.assertNotIn("actor_login", legacy)
+        self.assertEqual(len({alice["branch"], bob["branch"], legacy["branch"]}), 3)
+        self.assertEqual(len({alice["source_root"], bob["source_root"], legacy["source_root"]}), 3)
+        with self.assertRaisesRegex(candidate.CandidateError, "candidate_identity_invalid"):
+            candidate.prepare(self.root, 390, "runtime-test", "shared-chat", actor_login="../bad")
+
+        lock_file = self.folder / "transient.lock"
+        released = threading.Event()
+        acquired_first = threading.Event()
+
+        def holder():
+            with candidate.binding_lock(lock_file, timeout=0.0):
+                acquired_first.set()
+                time.sleep(0.12)
+            released.set()
+
+        worker = threading.Thread(target=holder)
+        worker.start()
+        acquired_first.wait(timeout=5)
+        with self.assertRaisesRegex(candidate.CandidateError, "candidate_binding_busy"):
+            with candidate.binding_lock(lock_file, timeout=0.0):
+                pass
+        with candidate.binding_lock(lock_file, timeout=2.0):
+            self.assertTrue(released.is_set())
+        worker.join(timeout=5)
+
     def test_requires_current_issue_verification_on_reuse(self):
         first = self.prepare()
         self.verify.side_effect = candidate.CandidateError("candidate_issue_not_verified")

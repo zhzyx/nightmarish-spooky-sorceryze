@@ -75,9 +75,12 @@ def original_transaction(root, request):
             and facts.get("delivered_paths_differ") == [],
             "Original PR binding differs",
         )
-        declaration = delivery.acceptance_declaration(receipt.get("acceptance_declaration", {}).get("items"))
+        declaration = delivery.acceptance_declaration(
+            receipt.get("acceptance_declaration", {}).get("items"),
+            delivery_mode=scope.get("delivery_mode", "complete"),
+        )
         require(
-            declaration == receipt.get("acceptance_declaration")
+            declaration["items"] == receipt.get("acceptance_declaration", {}).get("items")
             and declaration["sha256"] == scope.get("acceptance_sha256"),
             "Original acceptance declaration differs",
         )
@@ -133,26 +136,29 @@ def retry(root, request):
     result["issue"] = binding.get("issue") if isinstance(binding, dict) else None
     result["request_id"] = binding.get("request_id") if isinstance(binding, dict) else None
     try:
+        allowed_keys = {
+            "schema_version",
+            "kind",
+            "owner",
+            "snapshot_id",
+            "generation",
+            "nonce",
+            "source_root",
+            "binding",
+            "pr",
+            "expected_candidate",
+            "expected_signed_commit",
+            "original_journal_sha256",
+            "host_action_request_id",
+            "engine_pid",
+            "host_instance_id",
+        }
+        required_keys = set(allowed_keys)
+        allowed_keys.add("delivery_mode")
         require(
-            set(request)
-            == {
-                "schema_version",
-                "kind",
-                "owner",
-                "snapshot_id",
-                "generation",
-                "nonce",
-                "source_root",
-                "binding",
-                "pr",
-                "expected_candidate",
-                "expected_signed_commit",
-                "original_journal_sha256",
-                "host_action_request_id",
-                "engine_pid",
-                "host_instance_id",
-            }
-            and request.get("kind") == "native_delivery_retry",
+            required_keys <= set(request) <= allowed_keys
+            and request.get("kind") == "native_delivery_retry"
+            and request.get("delivery_mode", "complete") in {"complete", "slice"},
             "Invalid terminal retry request; new business declarations are not accepted",
         )
         require(
@@ -188,7 +194,10 @@ def retry(root, request):
         )
         path = folder / (key + ".json")
         fingerprint = sha(canonical(request).encode())
-        with delivery._candidate.binding_lock(common / "gonggong-delivery-finalization" / (lock_key + ".lock")):
+        with delivery._candidate.binding_lock(
+            common / "gonggong-delivery-finalization" / (lock_key + ".lock"),
+            timeout=5.0,
+        ):
             require(original_path.read_bytes() == original_bytes, "Original transaction changed before retry")
             prior_paths = sorted(folder.glob("*.json"))
             require(len(prior_paths) <= 1024, "Retry journal selection is ambiguous")
@@ -238,16 +247,27 @@ def retry(root, request):
             checks = delivery.verified_checks(repository, request["pr"], scope["signed_commit"])
             known_types = {v["name"] for v in delivery.submission.work_items.config(root)[1]}
             issue, statuses = delivery.issue_readback(repository, binding["issue"], binding["request_id"], known_types)
-            require(
-                issue.get("state") == "CLOSED"
-                and issue.get("stateReason") == "COMPLETED"
-                and statuses == ["status:done"],
-                "Only a verified completed Issue may retry activation",
-            )
+            delivery_mode = scope.get("delivery_mode", "complete")
+            if delivery_mode == "slice":
+                require(
+                    issue.get("state") == "OPEN" and statuses in (["status:in-progress"], ["status:in-review"]),
+                    "Slice delivery retry requires an open active Issue",
+                )
+            else:
+                require(
+                    issue.get("state") == "CLOSED"
+                    and issue.get("stateReason") == "COMPLETED"
+                    and statuses == ["status:done"],
+                    "Only a verified completed Issue may retry activation",
+                )
             result.update(
+                delivery_mode=delivery_mode,
                 host_facts=delivery.compact_report(report),
                 ci=checks,
-                acceptance_declaration=delivery.acceptance_declaration(original["acceptance_items"]),
+                acceptance_declaration=delivery.acceptance_declaration(
+                    original["acceptance_items"],
+                    delivery_mode=delivery_mode,
+                ),
                 original_transaction={
                     **scope,
                     "snapshot_id": original["snapshot_id"],

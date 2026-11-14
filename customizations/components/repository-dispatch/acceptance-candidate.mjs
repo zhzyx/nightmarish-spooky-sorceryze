@@ -6,25 +6,98 @@ const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const check = (ok, why) => {if (!ok) throw Error(why);};
 const git = (root, ...args) => execFileSync(process.env.GONGGONG_GIT || 'git', ['-C', root, ...args], {encoding:'utf8',maxBuffer:32*1024*1024,windowsHide:true});
 
-export function fileDigest(root, relative) {
-  check(typeof relative === 'string' && relative && !path.isAbsolute(relative) && !relative.split(/[\\/]/).some(p => ['..','.git','.yuanheng',''].includes(p)), 'Invalid evidence path');
-  const target = path.resolve(root,relative);
-  for (let current = target; ; current = path.dirname(current)) {
-    try {check(!fs.lstatSync(current).isSymbolicLink(), 'Linked candidate/evidence');}
-    catch (error) {if (error.code !== 'ENOENT') throw error;}
-    if (current === path.parse(current).root) break;
+const STREAM_CHUNK_BYTES = 256 * 1024;
+const sharedReadBuffer = Buffer.allocUnsafe(STREAM_CHUNK_BYTES);
+
+function streamFileDigest(target) {
+  const fd = fs.openSync(target, 'r');
+  const hasher = createHash('sha256');
+  try {
+    while (true) {
+      const readBytes = fs.readSync(fd, sharedReadBuffer, 0, STREAM_CHUNK_BYTES, null);
+      if (readBytes === 0) break;
+      hasher.update(readBytes === STREAM_CHUNK_BYTES ? sharedReadBuffer : sharedReadBuffer.subarray(0, readBytes));
+    }
+  } finally {
+    fs.closeSync(fd);
   }
-  if (!fs.existsSync(target)) return null;
-  check(fs.statSync(target).isFile(), 'Candidate is not a regular file');
-  return sha(fs.readFileSync(target));
+  return hasher.digest('hex');
+}
+
+function checkAncestorDirs(targetDir, checkedDirs) {
+  if (checkedDirs && checkedDirs.has(targetDir)) return;
+  const fsRoot = path.parse(targetDir).root;
+  const chain = [];
+  for (let current = targetDir; ; current = path.dirname(current)) {
+    if (checkedDirs && checkedDirs.has(current)) break;
+    chain.push(current);
+    if (current === fsRoot) break;
+  }
+  for (let i = chain.length - 1; i >= 0; i--) {
+    const dir = chain[i];
+    try {
+      check(!fs.lstatSync(dir).isSymbolicLink(), 'Linked candidate/evidence');
+      if (checkedDirs) checkedDirs.add(dir);
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error;
+    }
+  }
+}
+
+export function fileDigest(root, relative, checkedDirs = undefined) {
+  check(typeof relative === 'string' && relative && !path.isAbsolute(relative) && !relative.split(/[\\/]/).some(p => ['..','.git','.yuanheng',''].includes(p)), 'Invalid evidence path');
+  const target = path.resolve(root, relative);
+  checkAncestorDirs(path.dirname(target), checkedDirs);
+  let stat;
+  try {
+    stat = fs.lstatSync(target);
+  } catch (error) {
+    if (error.code === 'ENOENT') return null;
+    throw error;
+  }
+  check(!stat.isSymbolicLink(), 'Linked candidate/evidence');
+  check(stat.isFile(), 'Candidate is not a regular file');
+  return streamFileDigest(target);
 }
 
 export function captureCandidate(root, auditPolicy) {
   root = fs.realpathSync(root);
   check(fs.realpathSync(git(root,'rev-parse','--show-toplevel').trim()) === root, 'Candidate must be repository root');
+  const checkedDirs = new Set();
+  checkAncestorDirs(root, checkedDirs);
   const paths = [...new Set(git(root,'ls-files','--cached','--others','--exclude-standard','-z').split('\0').filter(p => p && !p.startsWith('.yuanheng/'))) ].sort();
-  const files = paths.map(p => ({path:p,sha256:fileDigest(root,p)}));
+  const files = paths.map(p => ({path:p,sha256:fileDigest(root,p,checkedDirs)}));
   return {root,branch:git(root,'symbolic-ref','--short','HEAD').trim(),head:git(root,'rev-parse','HEAD').trim(),files_sha256:sha(JSON.stringify(files)),files,...(auditPolicy ? {audit_policy:auditPolicy} : {})};
+}
+
+export function summarizeCandidateDiff(root, baseRef = 'HEAD') {
+  root = fs.realpathSync(root);
+  check(fs.realpathSync(git(root,'rev-parse','--show-toplevel').trim()) === root, 'Candidate must be repository root');
+  const resolvedBase = git(root, 'rev-parse', '--verify', '--end-of-options', `${baseRef}^{commit}`).trim();
+  const head = git(root, 'rev-parse', 'HEAD').trim();
+  const rawDiff = git(root, 'diff', '--name-status', '--no-renames', '-z', resolvedBase, '--').split('\0');
+  const added = [], modified = [], deleted = [];
+  for (let i = 0; i + 1 < rawDiff.length; i += 2) {
+    const status = rawDiff[i], rel = rawDiff[i + 1];
+    if (!status || !rel || rel.startsWith('.yuanheng/')) continue;
+    if (status === 'A') added.push(rel);
+    else if (status === 'D') deleted.push(rel);
+    else modified.push(rel);
+  }
+  const untracked = git(root, 'ls-files', '--others', '--exclude-standard', '-z')
+    .split('\0')
+    .filter(p => p && !p.startsWith('.yuanheng/'))
+    .sort();
+  return {
+    root,
+    base_sha: resolvedBase,
+    head,
+    added: added.sort(),
+    modified: modified.sort(),
+    deleted: deleted.sort(),
+    untracked,
+    changed_count: added.length + modified.length + deleted.length + untracked.length,
+  };
 }
 
 const canonical = value => JSON.stringify(value && typeof value === 'object' ? Array.isArray(value) ? value.map(v=>JSON.parse(canonical(v))) : Object.fromEntries(Object.keys(value).sort().map(k=>[k,JSON.parse(canonical(value[k]))])) : value);
@@ -35,7 +108,7 @@ function newHostAudit(root, file, policy, tracked) {
   const e=JSON.parse(fs.readFileSync(path.join(root,file.path),'utf8'));
   const required=['schema_version','event_id','tenant_id','request_id','kind','occurred_at','source_ref','agent','payload','evidence_refs','sha256'];
   if (!required.every(k=>Object.hasOwn(e,k)) || Object.keys(e).some(k=>!required.includes(k)&&k!=='supersedes') || e.schema_version!==1 || e.tenant_id!==policy.tenant_id || e.request_id!==policy.request_id || e.source_ref!==policy.source_ref || file.path!==prefix+e.event_id+'.json') return false;
-  if (!['request','step','message','direction_error','correction','quality_issue','rework','handoff','coverage','request_end','analysis'].includes(e.kind) || !/(Z|[+-][0-9]{2}:[0-9]{2})$/.test(e.occurred_at) || !Number.isFinite(Date.parse(e.occurred_at)) || !Array.isArray(e.evidence_refs) || new Set(e.evidence_refs).size!==e.evidence_refs.length || e.evidence_refs.some(r=>typeof r!=='string'||!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,95}$/.test(r)) || (e.supersedes!==undefined && (typeof e.supersedes!=='string'||!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,95}$/.test(e.supersedes)))) return false;
+  if (!['request','step','message','direction_error','correction','quality_issue','rework','handoff','coverage','request_end','analysis'].includes(e.kind) || !/(Z|[+-][0-9]{2}:[0-9]{2})$/.test(e.occurred_at) || !Number.isFinite(Date.parse(e.occurred_at)) || !Array.isArray(e.evidence_refs) || new Set(e.evidence_refs).size!==e.evidence_refs.length || e.evidence_refs.some(r=>typeof r!=='string'||!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,95}$/.test(r)) || (e.supersedes!==undefined && (typeof e.supersedes!=='string'||!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,95}$/.test(r)))) return false;
   if (!e.agent || Object.keys(e.agent).sort().join(',')!=='definition_sha256,id,origin,version' || Object.values(e.agent).some(v=>typeof v!=='string'||!v.trim()) || !/^[a-f0-9]{64}$/.test(e.agent.definition_sha256) || !e.payload || Array.isArray(e.payload) || typeof e.payload!=='object') return false;
   if (e.event_id.startsWith('host-context-')) {
     if(e.kind!=='request'||e.agent.id!=='gonggong-host-adapter'||e.agent.origin!=='gonggong-host-adapter'||e.payload.issue?.url!==policy.source_ref||typeof e.payload.context_accepted!=='boolean')return false;
@@ -44,7 +117,7 @@ function newHostAudit(root, file, policy, tracked) {
   return /^[a-f0-9]{64}$/.test(e.sha256) && sha(canonical(body))===e.sha256;
 }
 
-function candidateMatches(candidate, actual, allowLedgerCommits = false) {
+export function candidateMatchesSnapshot(candidate, actual, allowLedgerCommits = false) {
   try {
     if (actual.root !== candidate.root || actual.branch !== candidate.branch || sha(JSON.stringify(candidate.files))!==candidate.files_sha256) return false;
     const old=new Map(candidate.files.map(f=>[f.path,f.sha256]));
@@ -65,14 +138,14 @@ function candidateMatches(candidate, actual, allowLedgerCommits = false) {
   } catch {return false;}
 }
 
-export function verifiedCurrentCandidate(candidate, allowLedgerCommits = false) {
-  const actual=captureCandidate(candidate.root,candidate.audit_policy);
-  check(candidateMatches(candidate,actual,allowLedgerCommits),'Stale candidate');
+export function verifiedCurrentCandidate(candidate, allowLedgerCommits = false, precomputedActual = undefined) {
+  const actual = precomputedActual ?? captureCandidate(candidate.root, candidate.audit_policy);
+  check(candidateMatchesSnapshot(candidate, actual, allowLedgerCommits), 'Stale candidate');
   return actual;
 }
 
-export function candidateCurrent(candidate, allowLedgerCommits = false) {
-  try {verifiedCurrentCandidate(candidate,allowLedgerCommits);return true;}
+export function candidateCurrent(candidate, allowLedgerCommits = false, precomputedActual = undefined) {
+  try {verifiedCurrentCandidate(candidate, allowLedgerCommits, precomputedActual);return true;}
   catch {return false;}
 }
 
