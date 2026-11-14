@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-7839f8c2e938d723d1fae2ec25b72b30a35f98b90c583570c07b8c2610e64f66",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "occurred_at": "2026-11-13T23:42:06.387263+00:00",
+  "evidence_refs": [
+    "kuafu-f36a0a3db75070ae1c45089489b633ae3282deac",
+    "learn-30b9877367996e3f5cc517f00bd9f57f476cb387256967c0872a43f3bc46d937"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 17,
+    "previous": "55035cb1389a87af2984afe53b82648eba064706b444511d0eea6d11e79b07af",
+    "action": "applied",
+    "details": {
+      "task": "Root consumes native agent99 original handed-off951 candidate for formal release; same editor production handoff scope, not a new global policy.",
+      "observed": "The consumer source hash invariant refused post-handoff automatic spelling edits before staging. Exact frozen bytes were restored and checked. The intentional identifier-only correction is a new candidate requiring build and independent review; earlier approvals and runtime evidence are not silently relabeled. Private-copy checks passed with all source bytes unchanged."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/editor-continuation-preflight-951.json",
+        "sha256": "fe67cd19fb6648f2fef7484e16ab25717358d26a748a947e667cb6060ac9d0e4"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/editor-parent-production-continuation-20261112/kuafu-f36a0a3db75070ae1c45089489b633ae3282deac.json",
+      "sha256": "8c7e012d045724129667c476c22a61de14c414b02f5703ade50eae8e9f5a56e3"
+    }
+  },
+  "sha256": "7564bcf412975437064dc1704072b3fe38e360131d76297993d168ea394379c2"
+}

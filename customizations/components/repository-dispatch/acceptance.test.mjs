@@ -123,6 +123,22 @@ for(const scenario of ['new','old_changed','wrong_request','code','malformed','t
   if(scenario==='new')assert.equal(validateDecision(f.decision),true);
   else assert.throws(()=>validateDecision(f.decision));
 });
+for(const kind of ['host-context','godot-event']) for(const scenario of ['valid','empty','number','path','too_long','wrong_hash']) test(`host audit supersedes ${kind} ${scenario}`,t=>{
+  const f=fixture(t),policy={tenant_id:'gonggong-workspace',request_id:'fixture',source_ref:'https://github.com/fixture/repo/issues/776'};
+  const prior='host-context-'+'b'.repeat(32);
+  audit(f.root,policy,prior);
+  f.decision.candidate=captureCandidate(f.root,policy);
+  const supersedes={valid:prior,empty:'',number:12,path:'../prior',too_long:'a'.repeat(97),wrong_hash:prior}[scenario];
+  const change={supersedes};
+  if(kind==='godot-event')Object.assign(change,{kind:'correction',payload:{binding:{request_ref:policy.request_id,tenant_id:policy.tenant_id,source_ref:policy.source_ref},phase:'fixture',status:'recorded_file'}});
+  const added=audit(f.root,policy,kind==='godot-event'?'godot-event-123-456':undefined,change);
+  if(scenario==='wrong_hash'){
+    const event=JSON.parse(fs.readFileSync(added,'utf8'));event.sha256='0'.repeat(64);fs.writeFileSync(added,JSON.stringify(event));
+  }
+  if(scenario==='valid')assert.equal(validateDecision(f.decision),true);
+  else assert.throws(()=>validateDecision(f.decision),/Stale candidate/);
+});
+
 test('actual running ledger submits verified terminal evidence and reviews in one commit',async t=>{
   const f=fixture(t,false),before=Number(f.git('rev-list','--count','HEAD'));
   f.decision.candidate.audit_policy={tenant_id:'gonggong-workspace',request_id:'fixture',source_ref:'https://github.com/fixture/repo/issues/776'};

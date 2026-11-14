@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "issue_number": 951,
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "incident": "747a8a98f143151959ec7ebb6082117e464936be94ab4f219f9066d2d3d7880b",
+  "baseline": "99a8e8cb1fb4e72dc135b9f655884984ab7909cc",
+  "scope": "Existing host acceptance supersedes correction and focused integrated dependency regression. Not candidate admission, installed verification or original-game/business completion.",
+  "change": "newHostAudit supersedes pattern now tests e.supersedes instead of undefined r. Event shape, same tenant/request/source policy, untracked-new-only constraint and canonical SHA verification unchanged.",
+  "source_inputs": [
+    {
+      "repository_path": "customizations/components/repository-dispatch/acceptance-candidate.mjs",
+      "sha256": "fbec4aeaf8bce081b45c0e6ca945d6d793507d0bb2e6f3fda00cecc1627e15ff",
+      "bytes": 9402,
+      "git_blob": "391bb78b098436e0f2929078a13e954c9901baae"
+    },
+    {
+      "repository_path": "customizations/components/repository-dispatch/acceptance.test.mjs",
+      "sha256": "3f8f8a9d3574f11daca00bf78fdd5056b53cc1bef53537618ecf78b7cc18e93e",
+      "bytes": 15693,
+      "git_blob": "ae1e30dcee4fd3e8567c24617562ae83eeeddc61"
+    }
+  ],
+  "regression": "12 public validateDecision tests: host-context and godot-event each test valid supersedes plus empty, numeric, path-like, length97 and wrong event hash. Existing old-event/source/evidence/tracked tampering tests unchanged.",
+  "actual_results": {
+    "before_fix": {
+      "new_cases": 12,
+      "passed": 10,
+      "failed": 2,
+      "failure": "Both valid supersedes cases rejected as stale by original source."
+    },
+    "node_modules": {
+      "tests": 42,
+      "passed": 42,
+      "failed": 0,
+      "exit_code": 0,
+      "command": "node --test customizations/components/repository-dispatch/acceptance.test.mjs customizations/components/repository-dispatch/session.test.mjs tools/godot_parallel/entry.test.mjs tools/godot_parallel/preflight.test.mjs"
+    },
+    "python_consumers": [
+      {
+        "path": "customizations/components/godot-host/test_acceptance.py",
+        "tests": 8,
+        "passed": 8,
+        "exit_code": 0
+      },
+      {
+        "path": "tools/test_editor_delivery_finalize.py",
+        "tests": 16,
+        "passed": 16,
+        "exit_code": 0
+      },
+      {
+        "path": "tools/test_editor_delivery_retry.py",
+        "tests": 13,
+        "passed": 13,
+        "exit_code": 0
+      },
+      {
+        "path": "tests/editor/test_daqian_collaborators.py",
+        "tests": 9,
+        "passed": 9,
+        "exit_code": 0,
+        "environment": "PYTHONPATH points to repository-relative customizations/components/godot-host/daqian"
+      },
+      {
+        "path": "tools/test_editor_engine_candidate.py",
+        "tests": 47,
+        "passed": 39,
+        "skipped": 7,
+        "errors": 1,
+        "exit_code": 1
+      }
+    ],
+    "targeted_actor": {
+      "test": "CandidateTests.test_multi_account_actor_login_isolates_candidates_and_waits_for_transient_lock",
+      "tests": 1,
+      "passed": 1,
+      "exit_code": 0
+    },
+    "targeted_slice": {
+      "test": "DeliveryTests.test_slice_delivery_mode_keeps_issue_open_and_deduplicates_reruns",
+      "tests": 1,
+      "passed": 1,
+      "exit_code": 0
+    }
+  },
+  "environment_limit": {
+    "test": "test_inherited_entry_rejects_linked_manifest_before_reading_it",
+    "phase": "fixture manifest.symlink_to before production validation call",
+    "error": "Windows error1314: caller lacks symbolic-link privilege",
+    "unchanged_since": "7acdf07c",
+    "function_source_equal": true,
+    "function_utf8_sha256": "b22b6f51cb88c8c1d3cee167bd81025a7f7c172aee9141e347f24f673d98ed5b",
+    "relation": "The unchanged fixture fails creating its link before the product rejection assertion. It supplies no actor_login and is not a delivery_mode test. New actor and slice-mode tests independently passed.",
+    "disposition": "Retain suite exit1/error and7skips. Do not change permissions, product or test, or convert error to skip/pass. Applicable exact-candidate CI must supply remaining evidence."
+  },
+  "execution_notes": {
+    "source_inputs_unchanged_during_final_regressions": true,
+    "initial_calls_preserved": [
+      "First Node aggregate40pass/2session process failures used implicit Python; explicit GONGGONG_PYTHON rerun42pass.",
+      "First collaborators direct invocation failed importing plan_store; explicit existing daqian PYTHONPATH rerun9pass."
+    ],
+    "git_diff_check_exit": 0,
+    "no_stage_or_commit": true
+  },
+  "private_reference_resolution": "logical_artifact names resolve under the authorized parent773 private receipt root held by delivery owner. Only hashes and sizes are public; raw logs/transcripts are not copied.",
+  "evidence": [
+    {
+      "logical_artifact": "acceptance-supersedes951-before-fix.log",
+      "sha256": "89b3d426cf37a29bd49b5e02fdf8f3aa20d66cc4b5cddca7a823360f98ca1d09",
+      "bytes": 3408
+    },
+    {
+      "logical_artifact": "acceptance-supersedes951-module-and-integration.log",
+      "sha256": "67b10d4598aa1ecc0fe7cdfb70629e5d291989c3aeb648a803d15a523c22deb9",
+      "bytes": 8284
+    },
+    {
+      "logical_artifact": "acceptance-supersedes951-node-r2.log",
+      "sha256": "1ebe7e63a1009c15bb12b71499aa1af4ca83d9d141ae11074a495935000496ec",
+      "bytes": 3069
+    },
+    {
+      "logical_artifact": "acceptance-supersedes951-test_acceptance.log",
+      "sha256": "a1829e56fcc38d43d7ef47d6953616d4633b4b370d1db1200a9d50b8b10b0a77",
+      "bytes": 111
+    },
+    {
+      "logical_artifact": "acceptance-supersedes951-test_editor_delivery_finalize.log",
+      "sha256": "534959de3a26d97bff107d1d353d4b3cf66fe0ce11c0833ada490d8ab8a0a65d",
+      "bytes": 121
+    },
+    {
+      "logical_artifact": "acceptance-supersedes951-test_editor_delivery_retry.log",
+      "sha256": "6904fd3bc708964aadfd597511fcbd7abfca322d973bd223b6532ae3bacf9d0e",
+      "bytes": 118
+    },
+    {
+      "logical_artifact": "acceptance-supersedes951-test_daqian_collaborators.log",
+      "sha256": "7c5b31c257432ed3d139eed22b8ed72509ad942637f4c1663845a11bf288ba0e",
+      "bytes": 232
+    },
+    {
+      "logical_artifact": "acceptance-supersedes951-test_daqian_collaborators-r2.log",
+      "sha256": "96c3fb7bb3e8c9921c0b906ef3240837dfc7b0afd7d9f71fb195512e47865877",
+      "bytes": 112
+    },
+    {
+      "logical_artifact": "acceptance-supersedes951-test_editor_engine_candidate.log",
+      "sha256": "3f89210b88bcf455be63d421cc5eedde1700cc3e14fe0ac00ffdeff5b6925af4",
+      "bytes": 1223
+    },
+    {
+      "logical_artifact": "acceptance-supersedes951-actor-targeted.log",
+      "sha256": "c5ab9c55e9b01efee34b786d8e040ffe84a65baac8f74446c037e38968c6ac17",
+      "bytes": 296
+    },
+    {
+      "logical_artifact": "acceptance-supersedes951-slice-targeted.log",
+      "sha256": "35e7c77d0318d03639687737a90e866178807211ee70d226a0076aa0dd9bce52",
+      "bytes": 267
+    },
+    {
+      "logical_artifact": "acceptance-supersedes951-validation.json",
+      "sha256": "147821cb870fa80daf2141d59d388a31cd3a7ce61efa754856ef977fb0d08664",
+      "bytes": 236726
+    },
+    {
+      "logical_artifact": "acceptance-supersedes951-summary.json",
+      "sha256": "b84d188d4a001007963e9d4d0d4a0886d828e5233fa2e1d69a58f37fe338361d",
+      "bytes": 4778
+    }
+  ],
+  "independent_review": "Implementation worker65 provides facts only; reviewer3b performs independent review. Formal candidate CI/main/installation/original business remain outside this report."
+}
