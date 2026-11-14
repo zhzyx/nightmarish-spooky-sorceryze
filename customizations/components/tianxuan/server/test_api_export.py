@@ -22,7 +22,10 @@ def test_export_markdown_and_html() -> None:
     doc = client.post(
         "/api/v1/docs",
         headers=headers,
-        json={"title": "导出/测试", "body_md": "# 标题\n\n<script>alert(1)</script>\n"},
+        json={
+            "title": "导出/测试",
+            "body_md": "# 标题\n\n**加粗** 与 `代码`\n\n```sh\necho hi\n```\n\n<script>alert(1)</script>\n",
+        },
     ).json()
 
     markdown = client.get(f"/api/v1/docs/{doc['id']}/export/file", headers=headers, params={"format": "md"})
@@ -31,12 +34,15 @@ def test_export_markdown_and_html() -> None:
     assert "attachment;" in markdown.headers["content-disposition"]
     assert markdown.headers["content-disposition"].startswith("attachment; filename=document.md;")
     assert "filename*=UTF-8''" in markdown.headers["content-disposition"]
-    assert markdown.text == "# 标题\n\n<script>alert(1)</script>\n"
+    assert markdown.text == "# 标题\n\n**加粗** 与 `代码`\n\n```sh\necho hi\n```\n\n<script>alert(1)</script>\n"
 
     html = client.get(f"/api/v1/docs/{doc['id']}/export/file", headers=headers, params={"format": "html"})
     assert html.status_code == 200
     assert html.headers["content-type"].startswith("text/html")
-    assert "<pre>" in html.text
+    assert "<h1>标题</h1>" in html.text
+    assert "<strong>加粗</strong>" in html.text
+    assert "<code>代码</code>" in html.text
+    assert '<pre><code class="language-sh">echo hi</code></pre>' in html.text
     assert "&lt;script&gt;alert(1)&lt;/script&gt;" in html.text
     assert "<script>alert(1)</script>" not in html.text
 
