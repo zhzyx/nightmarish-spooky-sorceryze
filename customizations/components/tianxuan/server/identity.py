@@ -6,12 +6,16 @@
 
 from __future__ import annotations
 
+import base64
+import binascii
+import hashlib
 import hmac
+import json
 import os
 import threading
 import time
 from collections import deque
-from typing import Protocol
+from typing import Any, Protocol
 
 
 class IdentityAdapter(Protocol):
@@ -45,13 +49,73 @@ class SharedSecretIdentityAdapter:
         return bool(subject) and bool(expected) and bool(secret) and hmac.compare_digest(secret, expected)
 
 
+def _b64url_decode(value: str) -> bytes:
+    return base64.urlsafe_b64decode(value + "=" * (-len(value) % 4))
+
+
+def _b64url_encode(value: bytes) -> str:
+    return base64.urlsafe_b64encode(value).rstrip(b"=").decode("ascii")
+
+
+class OidcJwtIdentityAdapter:
+    """HS256 签名的 OIDC/JWT 适配器。
+
+    密钥来自部署环境，token 由 OIDC 提供方签发；校验 alg、签名、sub、exp，
+    可选校验 iss/aud。RS256/JWKS 适配器可在不改核心的前提下替换本类。
+    """
+
+    name = "oidc"
+
+    def verify(self, subject: str, secret: str) -> bool:
+        signing_key = os.environ.get("TIANXUAN_OIDC_SECRET", "")
+        if not signing_key or not secret:
+            return False
+        parts = secret.split(".")
+        if len(parts) != 3:
+            return False
+        try:
+            header = json.loads(_b64url_decode(parts[0]))
+            claims = json.loads(_b64url_decode(parts[1]))
+            signature = _b64url_decode(parts[2])
+        except (ValueError, binascii.Error, UnicodeDecodeError):
+            return False
+        if not isinstance(header, dict) or header.get("alg") != "HS256":
+            return False
+        expected = hmac.new(
+            signing_key.encode("utf-8"),
+            f"{parts[0]}.{parts[1]}".encode("ascii"),
+            hashlib.sha256,
+        ).digest()
+        if not hmac.compare_digest(signature, expected):
+            return False
+        if not isinstance(claims, dict) or str(claims.get("sub", "")) != subject:
+            return False
+        expires = claims.get("exp")
+        if expires is not None:
+            try:
+                if float(expires) <= time.time():
+                    return False
+            except (TypeError, ValueError):
+                return False
+        issuer = os.environ.get("TIANXUAN_OIDC_ISSUER", "")
+        if issuer and str(claims.get("iss", "")) != issuer:
+            return False
+        audience = os.environ.get("TIANXUAN_OIDC_AUDIENCE", "")
+        if audience:
+            aud: Any = claims.get("aud")
+            values = aud if isinstance(aud, list) else [aud]
+            if audience not in values:
+                return False
+        return True
+
+
 _ADAPTERS: dict[str, IdentityAdapter] = {
     adapter.name: adapter
     for adapter in (
         StaticIdentityAdapter(),
         SharedSecretIdentityAdapter("tianshu", "TIANXUAN_IDENTITY_SECRET"),
         SharedSecretIdentityAdapter("github", "TIANXUAN_GITHUB_IDENTITY_SECRET"),
-        SharedSecretIdentityAdapter("oidc", "TIANXUAN_OIDC_IDENTITY_SECRET"),
+        OidcJwtIdentityAdapter(),
     )
 }
 
@@ -98,3 +162,12 @@ def allow_identity_attempt(provider: str, key: str) -> bool:
 
 def reset_identity_attempts() -> None:
     _ATTEMPT_LIMITER.reset()
+
+
+def encode_test_jwt(secret: str, claims: dict[str, Any], *, algorithm: str = "HS256") -> str:
+    """仅用于测试/本地验证的 HS256 token 生成器。"""
+    header = _b64url_encode(json.dumps({"alg": algorithm, "typ": "JWT"}).encode("utf-8"))
+    payload = _b64url_encode(json.dumps(claims).encode("utf-8"))
+    signing_input = f"{header}.{payload}".encode("ascii")
+    signature = hmac.new(secret.encode("utf-8"), signing_input, hashlib.sha256).digest()
+    return f"{header}.{payload}.{_b64url_encode(signature)}"

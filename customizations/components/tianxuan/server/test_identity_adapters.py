@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import time
+
 import identity
 import pytest
 from api import create_app
@@ -166,3 +168,71 @@ def test_admin_can_unbind_identity(monkeypatch) -> None:
         json={"provider": "tianshu", "subject": "gh_unbind", "secret": "shared-secret"},
     )
     assert gone.status_code == 404
+
+
+def test_oidc_jwt_signature_and_claims(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_OIDC_SECRET", "oidc-secret")
+    monkeypatch.setenv("TIANXUAN_OIDC_AUDIENCE", "tianxuan")
+    client, headers, user_id = _client()
+    client.post(
+        "/api/v1/identity/links",
+        headers=headers,
+        json={"provider": "oidc", "subject": "oidc-user", "user_id": user_id},
+    )
+    valid = identity.encode_test_jwt(
+        "oidc-secret",
+        {"sub": "oidc-user", "aud": "tianxuan", "exp": time.time() + 60},
+    )
+    ok = client.post(
+        "/api/v1/identity/resolve",
+        json={"provider": "oidc", "subject": "oidc-user", "secret": valid},
+    )
+    assert ok.status_code == 200, ok.text
+
+    expired = identity.encode_test_jwt(
+        "oidc-secret",
+        {"sub": "oidc-user", "aud": "tianxuan", "exp": time.time() - 1},
+    )
+    assert (
+        client.post(
+            "/api/v1/identity/resolve",
+            json={"provider": "oidc", "subject": "oidc-user", "secret": expired},
+        ).status_code
+        == 403
+    )
+
+    wrong_subject = identity.encode_test_jwt(
+        "oidc-secret",
+        {"sub": "other", "aud": "tianxuan", "exp": time.time() + 60},
+    )
+    assert (
+        client.post(
+            "/api/v1/identity/resolve",
+            json={"provider": "oidc", "subject": "oidc-user", "secret": wrong_subject},
+        ).status_code
+        == 403
+    )
+
+    bad_signature = identity.encode_test_jwt(
+        "wrong-secret",
+        {"sub": "oidc-user", "aud": "tianxuan", "exp": time.time() + 60},
+    )
+    assert (
+        client.post(
+            "/api/v1/identity/resolve",
+            json={"provider": "oidc", "subject": "oidc-user", "secret": bad_signature},
+        ).status_code
+        == 403
+    )
+
+    wrong_audience = identity.encode_test_jwt(
+        "oidc-secret",
+        {"sub": "oidc-user", "aud": "other", "exp": time.time() + 60},
+    )
+    assert (
+        client.post(
+            "/api/v1/identity/resolve",
+            json={"provider": "oidc", "subject": "oidc-user", "secret": wrong_audience},
+        ).status_code
+        == 403
+    )
