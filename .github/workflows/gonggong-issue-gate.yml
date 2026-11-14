@@ -19,6 +19,10 @@ jobs:
           script: |
             const {owner, repo} = context.repo;
             const pr = (await github.rest.pulls.get({owner, repo, pull_number: context.payload.pull_request.number})).data;
+            if (pr.state === 'closed') {
+              await core.summary.addRaw('Issue association not applicable: the PR is currently closed. This is not candidate admission or a successful revalidation of an earlier failed run.').write();
+              return;
+            }
             const body = pr.body || '';
             const numbers = [...body.matchAll(/^GongGong-Issue:[ \t]*#([1-9][0-9]*)[ \t]*\r?$/gm)];
             const requests = [...body.matchAll(/^GongGong-Request:[ \t]*([a-z0-9]+(?:-[a-z0-9]+)*)[ \t]*\r?$/gm)];

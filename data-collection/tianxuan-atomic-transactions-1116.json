@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "issue_number": 1116,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1116",
+  "request_id": "tianxuan-audit-tx-02-20261114",
+  "base": "6d6da032f2c13c6b725ef3a30902bd41e76e254c",
+  "reviewed_source": "6920cd30e9381105e27698cac918984ae7f2bb52",
+  "candidate_files": {
+    "customizations/components/tianxuan/server/tianxuan_core.py": "970cb9dfcecafdd4d7fafbd6f13e6aef3f7f1b92f99d05ff037c9e7d5bdbd007",
+    "customizations/components/tianxuan/server/test_tianxuan_concurrency.py": "9c89573c41d690a546d6fe4bb0514f1f20deed6fd8d7b3245657a6831a7801bd",
+    "customizations/components/tianxuan/server/test_tianxuan_boundary.py": "bea69c955f2e0947137de77052634b990337ab6246793ba4740f523e7bbdfefd"
+  },
+  "independent_review": {
+    "worker": "/root/sinan_1779241f2e49e7a3",
+    "sha256": "4e52736e07121a1e2638ac871c01f2d8c98fe2ed37715799b95a7964f772ecbc",
+    "verdict": "PASS_EXACT_692_CANDIDATE_ONLY",
+    "tests": {
+      "domain": 55,
+      "http": 43,
+      "independent": 6,
+      "new_comment_negative_probes": 5
+    }
+  },
+  "integration": {
+    "three_base_files_unchanged": true,
+    "three_candidate_files_byte_identical": true,
+    "new_api_readback_regression": {
+      "http_tests_passed": 52,
+      "log_sha256": "31199c0911ad87e2365d37834c36324d9d8311b9ce41260bd46098bc166a133d",
+      "scope": "current ASGI, local temporary Git readback, enriched search and local Git API; external sockets blocked",
+      "warning": "existing Starlette httpx deprecation",
+      "harness_correction": "Initial incorrect test_api_git.py name collected zero tests; corrected to actual test_api_git_repo.py and preserved original log."
+    },
+    "current_base": "2281ebd6b380e9ac06e02110aee6fbfdee53c8c8"
+  },
+  "delivery": {
+    "commit": null,
+    "ci": "pending",
+    "main": "pending"
+  },
+  "limits": [
+    "Existing1117 tenant authorization and1118 idempotency defects remain separate.",
+    "Synthetic local fixtures do not establish deployed business acceptance."
+  ],
+  "private_receipts_resolution_base": "Git common directory parent, then data-collection/receipts/ai-integration-refactor-20261112."
+}

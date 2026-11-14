@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "issue_number": 978,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "base": "1593063c4ea197be23f40b81f987b8cf068f6dff",
+  "integration": "49 non-overlapping source paths preserved byte-for-byte; no product source rework",
+  "source_files": {
+    ".github/workflows/gonggong-issue-gate.yml": {
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "sha256": "df02f6fdb68599e9752053d0520b54957be255b41024341e699b0511979cfbf9"
+    },
+    "customizations/components/issue-workorders/test_gate_reliability.py": {
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "sha256": "bced7cf30bac32bb3d77da6030e025790d6bff0ad5af40064779cac691bce9ff"
+    },
+    "data-collection/closed-pr-association-1080.json": {
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "sha256": "9c7c35088ad33647c93640c103a38540647fd398a87e6f542058ac435a0b04b1"
+    },
+    "data-collection/requests/kuafu-run-43478437117-attempt-1/0df40fb0-c18e-404c-b157-c3555fb92436.json": {
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "sha256": "f7cbdbe3bff793dc77c3a25001ccf6450070657922808fcac134843e2258401a"
+    },
+    "data-collection/requests/kuafu-run-43478437117-attempt-1/5f5129f6-abac-4b5a-aa0a-a455a05d8c72.json": {
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "sha256": "9022b061f239eb21c9c8c841b8acec383fb23cecec63252ef05d9e8c54d1696e"
+    },
+    "data-collection/requests/kuafu-run-43478437117-attempt-1/b80dce85-3c4f-40b4-b446-5f3cddc67fe8.json": {
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "sha256": "63da28f4ff96adb2050cf13e46ae1531d6deedc6b87c7a4ca7d0999345f8bc60"
+    },
+    "data-collection/requests/kuafu-run-43478437117-attempt-1/c4d514a6-ba69-4322-9fdc-5eb52760ac8f.json": {
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "sha256": "fa80eb220ce4352096a58d0859a58f2ef3f4cf0f796cd917d06cd02a9c682a52"
+    },
+    "design-docs/closed-pr-association-20261114.md": {
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "sha256": "c4bc808590978c26ffe95cca017af0cfffbc5f6e458ff95576799a73091ff8ca"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/kuafu-run-43478437117-attempt-1/closed-pr-association-1080-request.json": {
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "sha256": "57fabc171f98d2407ca37f73cca113ddd1266c64106110f0760eeb8518fe3362"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/kuafu-run-43478437117-attempt-1/dispatch-9e6b842ed9d8447e9191d6446a388345.json": {
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "sha256": "7b1f68cff84441ea955b22ad2f7b390a126b45a5287f847adb646d6ca024b761"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/kuafu-run-43478437117-attempt-1/dispatch-e35d5c0af6284fd4817b3a6b62e6fb7d.json": {
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "sha256": "e1b0b2840320e508372ef956af9a15c22b13859af5082eb87f4c490425e69bc5"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/kuafu-run-43478437117-attempt-1/kuafu-06179117af0081177655c60bad2184aa9c622bf9.json": {
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "sha256": "5626f9ce225d15c7548cb8aa6f9bdcc5edd7f9a2559601c95e324f54431d4d98"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/kuafu-run-43478437117-attempt-1/kuafu-1a8ad9ca748b378d82ebd92370725f9b0fdc20d1.json": {
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "sha256": "9d9fe82aa585db8681fc94cc8d9f5061d354da8a9453f2bafa6cceb6a05ad259"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/kuafu-run-43478437117-attempt-1/kuafu-46528ee3216e9e5ce6734a37729fcc1fae156972.json": {
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "sha256": "d21c2180c10ead4a67050f94be9fc379fbe13c07aae69f17ce9f833427583b5f"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/kuafu-run-43478437117-attempt-1/kuafu-58d8258523f553dbc2c32047786035e79ab3be33.json": {
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "sha256": "8f04d2b65349162fb3b1a11085cde098cee99a1a8b713fdaae48dc69427277d3"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/kuafu-run-43478437117-attempt-1/kuafu-e5a7d562ae7ebe0697de2382990b59a94c438a9f.json": {
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "sha256": "990efae777124119ccc43dffec5e78158eafed987c6383e4b2275dc32809bb96"
+    },
+    "data-collection/api-node-model-selection-1163.json": {
+      "source": "d53442bcc4114cdc7bfbca5a06c173f09cbaef1d",
+      "sha256": "b7c8eeca21364bab64afffe75f9216394547e40f5e7a73ee3306da9bb4c7dc9f"
+    },
+    "data-collection/requests/api-node-model-selection-20261114/3db6d68e-500f-4ab7-af10-7234a5160679.json": {
+      "source": "d53442bcc4114cdc7bfbca5a06c173f09cbaef1d",
+      "sha256": "5714f2f337f487575709bf5a720e2bbc63eefdc5a241c19cd63cbe802cabd1b1"
+    },
+    "design-docs/api-node-model-selection-20261114.md": {
+      "source": "d53442bcc4114cdc7bfbca5a06c173f09cbaef1d",
+      "sha256": "44fa3a8b0d7907fd0b6b52ee5481d8b9959b4d338b83b3a2dac38c2de5aa35a4"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/api-node-model-selection-20261114/api-node-model-selection-1163-request.json": {
+      "source": "d53442bcc4114cdc7bfbca5a06c173f09cbaef1d",
+      "sha256": "34ff16626fcda47f60f49664bab4c0d9fa03e18972cad5981a72b2fde8d6fd37"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/api-node-model-selection-20261114/dispatch-1bf97b67f746424a8fd0e2e32bef2d44.json": {
+      "source": "d53442bcc4114cdc7bfbca5a06c173f09cbaef1d",
+      "sha256": "965e650237e2820adaaf7c3086c48c816575b2116669cb7a43451d0dc4637a19"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/api-node-model-selection-20261114/dispatch-9575d0d4fb604f3884427d4fcd1cea52.json": {
+      "source": "d53442bcc4114cdc7bfbca5a06c173f09cbaef1d",
+      "sha256": "4d5640289015d0eaeaa6a6c701df0e092e1a014fffe2942fa5a3d750ded200c7"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/api-node-model-selection-20261114/dispatch-9cf945368e3c460c902e485e7896aafe.json": {
+      "source": "d53442bcc4114cdc7bfbca5a06c173f09cbaef1d",
+      "sha256": "5a8887bb638537c8e5f9056d170559aab19e220893744294c195d0829b835d12"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/api-node-model-selection-20261114/dispatch-d472564c998348e4b70459d96ea42c11.json": {
+      "source": "d53442bcc4114cdc7bfbca5a06c173f09cbaef1d",
+      "sha256": "b86802a91a24bd414cdfd1c216c40d52fa5be5e81cf3a82b22ee46bbb1b42523"
+    },
+    "samples/ainative-workbench/addons/ainative/workbench.gd": {
+      "source": "d53442bcc4114cdc7bfbca5a06c173f09cbaef1d",
+      "sha256": "f58204003849aed6970ed94ddec48841c20d8654598e57328b0b474d8c870023"
+    },
+    "samples/ainative-workbench/api_node_models_acceptance.gd": {
+      "source": "d53442bcc4114cdc7bfbca5a06c173f09cbaef1d",
+      "sha256": "ebcffcf924a4499c0f3b255bca977e50de39f4e27c8ef2a4528b990cb2d250ff"
+    },
+    "tools/ainative/api_planner.py": {
+      "source": "d53442bcc4114cdc7bfbca5a06c173f09cbaef1d",
+      "sha256": "5c4c8d90f706d76c3a9f459278c9eda8707268c10abed35e877876274ae725fa"
+    },
+    "tools/ainative/generation_service.py": {
+      "source": "d53442bcc4114cdc7bfbca5a06c173f09cbaef1d",
+      "sha256": "c61cc19c79b11abe58509a9c47168495b4de5360acd053524d17d6c5e588e2ca"
+    },
+    "tools/ainative/test_api_node_models.py": {
+      "source": "d53442bcc4114cdc7bfbca5a06c173f09cbaef1d",
+      "sha256": "c4d695f7b9538acd6a7d0b78163c8ba1d90c7471c007565040c41c716a4b449a"
+    },
+    "tools/ainative/test_provider_independence.py": {
+      "source": "d53442bcc4114cdc7bfbca5a06c173f09cbaef1d",
+      "sha256": "ab0dbfde40202583be4c272e0c5ec94af130f9074f86ffb8a21de654197db4d9"
+    },
+    "customizations/components/tianxuan/server/test_tianxuan_boundary.py": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "bea69c955f2e0947137de77052634b990337ab6246793ba4740f523e7bbdfefd"
+    },
+    "customizations/components/tianxuan/server/test_tianxuan_concurrency.py": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "9c89573c41d690a546d6fe4bb0514f1f20deed6fd8d7b3245657a6831a7801bd"
+    },
+    "customizations/components/tianxuan/server/tianxuan_core.py": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "970cb9dfcecafdd4d7fafbd6f13e6aef3f7f1b92f99d05ff037c9e7d5bdbd007"
+    },
+    "data-collection/requests/tianxuan-audit-tx-02-20261114/f0dd70dc-ee04-4a25-9058-d3e74dc30dc2.json": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "1c391f9c14b60127ef3af832e83b48c4433411707c946f24b1571f0c13a94de9"
+    },
+    "data-collection/tianxuan-atomic-transactions-1116.json": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "616a5b41956822214bd66695da88894d20cabe4ffe739737e24503b3093a4397"
+    },
+    "design-docs/tianxuan-atomic-transactions-20261114.md": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "85a02f08f8448d2b0482c8f821c1ac26162114aa75b032c912b1f542c1c7b792"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-19fe819b5186400aa7876241f814f091.json": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "94b52bd8f47284493e5239ab4c97cae300a11802957aeacf6595ecf89c419aa8"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-1b3aa95370dd40688c8a37b7356b5ddb.json": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "b5a122eec4131c65a8e5b5e6dba6948a7c085357472c77f56c8b199b1efa0260"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-1d3fe302b06f49c8a6ab6cfbd39aa457.json": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "3fec9c86fd628d1da0c2386e0f9694056ab3ddf4730d5bdf6b806bdcb9d61af3"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-45ee709221e6444a9523fb39268ea93d.json": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "d9db05fdc082d85cfde6ee454a2c64df34743ed28e034cfa836c51b9de5b487d"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-5262fac2559249c7a54e5f08153016cc.json": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "efa7291a5294592de7e712a0ac795f20d6d053a3053cc9a5d095a0fee430ff0a"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-5d6c2835e2e944dcbbadd6167bd701b0.json": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "c2c9061909b06944f751b9f91e910498f4b5511279e53a99aea2909430794655"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-6f4f917e90bb46c4b2bffe70a8bb07df.json": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "e69ca4b03920952b524bbddf9212e91181f3d2b8148ce3eedf36699ea4799a25"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-74f7d3fe134a487980ef42be1e1db5e2.json": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "f975049af2641d1db4783ad7d87dad56abde1b48b393072e4791edd39dddc661"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-cfd19b3e5afa494cbdabbb9330ed6f6a.json": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "f557c154596b01b46bd1e394765db12fc28ea14c5b55f9de35749148390d0f74"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-edeb6c6bb5ba4182baba601478a2f619.json": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "e732c7bd60df0307efbb973d1d9d0c22d5910d0e33a9277a1033f0fee9f50cfe"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/kuafu-6046db46d6ab9e32a33d46bc64231365c26de0d1.json": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "5213785b6b5e1eba22831ed7dd6c530c58d6fbcbf6aceabf25cf26d7d2ed2899"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/kuafu-ae89fd13f122c956840c2c7be8678bdec648b56d.json": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "df4f5637c403a6af8d80d9d35e99ebcf03d5789624a370bc8ac7c6c72c265e33"
+    },
+    "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/tianxuan-atomic-transactions-1116-request.json": {
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "sha256": "da5097adea9868db8b23f98643af1edbdfbe9e9ff5a03ac8fa9f916ce26fb7fc"
+    }
+  },
+  "contributions": [
+    {
+      "issues": [
+        1080,
+        1083
+      ],
+      "source": "bf0c14164cb7ae18afb07d2c3f82be0ab25002d0",
+      "prior_pr": 1171,
+      "paths": 16,
+      "independent_review_sha256": "eda6f3cd1c1827f74db3c43f548c789f09013a7269d656c0e515579b3568620e"
+    },
+    {
+      "issues": [
+        1163
+      ],
+      "source": "d53442bcc4114cdc7bfbca5a06c173f09cbaef1d",
+      "prior_pr": 1183,
+      "paths": 14,
+      "independent_review_sha256": "9385fabfbcc53f5fd283e34b80232088f2f401f0ec811145eb53c02688d7404b"
+    },
+    {
+      "issues": [
+        1116
+      ],
+      "source": "2b7104a1134aca744fd6988419bdbd7ff052e5dc",
+      "prior_pr": null,
+      "paths": 19,
+      "independent_review_sha256": "4e52736e07121a1e2638ac871c01f2d8c98fe2ed37715799b95a7964f772ecbc"
+    }
+  ],
+  "integration_validation": {
+    "current_server_tests": 104,
+    "server_subtests": 46,
+    "server_warning": "Existing Starlette httpx deprecation retained",
+    "gate_reliability_tests": 10,
+    "actual_script_lifecycle_fixtures": 10,
+    "files_preserved": 49,
+    "server_log_sha256": "7122327d664634ea7bf248d8e50af5fa7b90c774998bc79fa531a23d3b88b337",
+    "gate_log_sha256": "b4d4123713ac9de33e5293dce0cb8c6cd766e98603411c26a4e595044d0a33ad",
+    "api_node_validation_reused": "1183 exact CI complete and independent final 8 specialized/90 formal native/112 extended native/18 probes; implementation and runtime input paths unchanged on integration. These are source evidence, not combined CI."
+  },
+  "delivery": {
+    "independent_integration_review": {
+      "state": "passed",
+      "worker": "/root/sinan_26adf4eade3148bf",
+      "report_sha256": "74b881cfbdd4bdc894ce046ed4e5d54b6c222856e7228764693b20e70996e9de",
+      "candidate_digest": "032ccdca9ae5308f50fce1ca375ab7b1f1e1090508a1c48583a101afbd96365f",
+      "checks": "30 tests/46 subtests + 10 gate + 7 API tests; native reused by exact source digest; no blocking findings",
+      "scope": "53-file reviewed candidate; final review references and actual native terminal events appended separately"
+    },
+    "formal_gate": "pending",
+    "exact_combined_ci": "pending",
+    "main": "pending"
+  },
+  "remaining": [
+    "1086 public AI core/Controller refactor is not delivered or transferred.",
+    "1117 isolated tenant fix awaits independent review and integration;1118 idempotency remains.",
+    "1115 literal zero-Git rejection criterion remains unresolved.",
+    "Parent978 original platform,account,installed-runtime and other acceptance boundaries remain."
+  ],
+  "private_receipts_resolution_base": "Git common directory parent, then data-collection/receipts/ai-integration-refactor-20261112.",
+  "base_refresh": {
+    "previous": "a39ae3406e0470e8c1c2fc40a78a5951d7200a93",
+    "current": "1593063c4ea197be23f40b81f987b8cf068f6dff",
+    "changed_paths": [
+      "design-docs/tianxuan-platform-20261114.md"
+    ],
+    "implementation_or_validation_inputs_changed": false
+  }
+}

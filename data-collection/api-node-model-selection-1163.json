@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "issue_number": 1163,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1163",
+  "request_id": "api-node-model-selection-20261114",
+  "reviewed_source": "6920cd30e9381105e27698cac918984ae7f2bb52",
+  "reviewed_files": {
+    "tools/ainative/api_planner.py": "5c4c8d90f706d76c3a9f459278c9eda8707268c10abed35e877876274ae725fa",
+    "tools/ainative/generation_service.py": "c61cc19c79b11abe58509a9c47168495b4de5360acd053524d17d6c5e588e2ca",
+    "tools/ainative/test_api_node_models.py": "c4d695f7b9538acd6a7d0b78163c8ba1d90c7471c007565040c41c716a4b449a",
+    "tools/ainative/test_provider_independence.py": "ab0dbfde40202583be4c272e0c5ec94af130f9074f86ffb8a21de654197db4d9",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "f58204003849aed6970ed94ddec48841c20d8654598e57328b0b474d8c870023",
+    "samples/ainative-workbench/api_node_models_acceptance.gd": "ebcffcf924a4499c0f3b255bca977e50de39f4e27c8ef2a4528b990cb2d250ff",
+    "design-docs/api-node-model-selection-20261114.md": "eb10fe30ca109f109d1a833520f73bd87ace4ddcd82a49edaf96dd4ae37828ff"
+  },
+  "reviewed_candidate_sha256": "3e6136f6e970db33041d8b5297dcb5ac08e61551488f7d505a559915269dac03",
+  "digest_encoding": "sha256 of sorted compact JSON path->sha256 map",
+  "independent_review": {
+    "reviewer": "independent Codex worker /root/sinan_29d9b494d4426817",
+    "verdict": "pass",
+    "sha256": "9385fabfbcc53f5fd283e34b80232088f2f401f0ec811145eb53c02688d7404b"
+  },
+  "validation": {
+    "specialized_api_tests": 8,
+    "formal_native_checks": 90,
+    "extended_native_checks": 112,
+    "extended_native_includes_formal": true,
+    "independent_protocol_and_configuration_probes": 18,
+    "legacy_settings_ui": 1,
+    "provider_regression": {
+      "tests": 112,
+      "passed": 78,
+      "skipped": 34,
+      "scope": "Python unchanged across UI corrections; native UI rerun separately"
+    }
+  },
+  "resolved_findings": [
+    "Non-string legacy or explicit node values cannot become model strings through untouched inspector apply.",
+    "Padded invalid model remains invalid after untouched inspector apply; explicit valid edit recovers."
+  ],
+  "limitations": [
+    "No current-source engine rebuild; retained binary only executes current GDScript in isolated project.",
+    "No Windows-specific execution or real Blender run; platform skips remain disclosed.",
+    "No external supplier inference, credential authentication, endpoint availability or quality acceptance.",
+    "No CI/main delivery or Issue closure performed by reviewer."
+  ],
+  "delivery": {
+    "commit": "pending",
+    "ci": "pending",
+    "main": "pending",
+    "issue_closure": "pending"
+  },
+  "cleanup": {
+    "temporary_fixtures": "removed by implementer and independent reviewer",
+    "delivery_worktree": "retained until main verification"
+  },
+  "private_receipts_resolution_base": "Git common directory parent, then data-collection/receipts/ai-integration-refactor-20261112.",
+  "review_receipt": "api-node-model-independent-review/review-final.json"
+}

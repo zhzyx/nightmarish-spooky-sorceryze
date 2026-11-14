@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "tianxuan-audit-tx-02-20261114",
+  "collected_at": "2026-11-13T23:26:52.355205+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-19fe819b5186400aa7876241f814f091.json",
+      "sha256": "94b52bd8f47284493e5239ab4c97cae300a11802957aeacf6595ecf89c419aa8",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-19fe819b5186400aa7876241f814f091",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-1b3aa95370dd40688c8a37b7356b5ddb.json",
+      "sha256": "b5a122eec4131c65a8e5b5e6dba6948a7c085357472c77f56c8b199b1efa0260",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-1b3aa95370dd40688c8a37b7356b5ddb",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-1d3fe302b06f49c8a6ab6cfbd39aa457.json",
+      "sha256": "3fec9c86fd628d1da0c2386e0f9694056ab3ddf4730d5bdf6b806bdcb9d61af3",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-1d3fe302b06f49c8a6ab6cfbd39aa457",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-45ee709221e6444a9523fb39268ea93d.json",
+      "sha256": "d9db05fdc082d85cfde6ee454a2c64df34743ed28e034cfa836c51b9de5b487d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-45ee709221e6444a9523fb39268ea93d",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-5262fac2559249c7a54e5f08153016cc.json",
+      "sha256": "efa7291a5294592de7e712a0ac795f20d6d053a3053cc9a5d095a0fee430ff0a",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-5262fac2559249c7a54e5f08153016cc",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-5d6c2835e2e944dcbbadd6167bd701b0.json",
+      "sha256": "c2c9061909b06944f751b9f91e910498f4b5511279e53a99aea2909430794655",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-5d6c2835e2e944dcbbadd6167bd701b0",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-6f4f917e90bb46c4b2bffe70a8bb07df.json",
+      "sha256": "e69ca4b03920952b524bbddf9212e91181f3d2b8148ce3eedf36699ea4799a25",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-6f4f917e90bb46c4b2bffe70a8bb07df",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-74f7d3fe134a487980ef42be1e1db5e2.json",
+      "sha256": "f975049af2641d1db4783ad7d87dad56abde1b48b393072e4791edd39dddc661",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-74f7d3fe134a487980ef42be1e1db5e2",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-cfd19b3e5afa494cbdabbb9330ed6f6a.json",
+      "sha256": "f557c154596b01b46bd1e394765db12fc28ea14c5b55f9de35749148390d0f74",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-cfd19b3e5afa494cbdabbb9330ed6f6a",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/dispatch-edeb6c6bb5ba4182baba601478a2f619.json",
+      "sha256": "e732c7bd60df0307efbb973d1d9d0c22d5910d0e33a9277a1033f0fee9f50cfe",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-edeb6c6bb5ba4182baba601478a2f619",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/kuafu-6046db46d6ab9e32a33d46bc64231365c26de0d1.json",
+      "sha256": "5213785b6b5e1eba22831ed7dd6c530c58d6fbcbf6aceabf25cf26d7d2ed2899",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-6046db46d6ab9e32a33d46bc64231365c26de0d1",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/kuafu-ae89fd13f122c956840c2c7be8678bdec648b56d.json",
+      "sha256": "df4f5637c403a6af8d80d9d35e99ebcf03d5789624a370bc8ac7c6c72c265e33",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-ae89fd13f122c956840c2c7be8678bdec648b56d",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-audit-tx-02-20261114/tianxuan-atomic-transactions-1116-request.json",
+      "sha256": "da5097adea9868db8b23f98643af1edbdfbe9e9ff5a03ac8fa9f916ce26fb7fc",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "tianxuan-atomic-transactions-1116-request",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1116,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1116"
+}
