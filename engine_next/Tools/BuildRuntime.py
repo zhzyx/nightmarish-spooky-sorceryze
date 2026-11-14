@@ -31,6 +31,9 @@ LIBRARY_SOURCES = [
     "engine_next/Assets/Types.cpp",
     "engine_next/Assets/AssetManifest.cpp",
     "engine_next/Assets/SceneDocument.cpp",
+    "engine_next/Assets/BlobValidator.cpp",
+    "engine_next/Assets/AssetCompiler.cpp",
+    "engine_next/Assets/AssetPackage.cpp",
     "engine_next/AI/WorkflowSnapshot.cpp",
     "engine_next/Gameplay/PredictionModel.cpp",
     "engine_next/Gameplay/InterpolationBuffer.cpp",
@@ -54,6 +57,8 @@ TEST_SOURCES = [
     "engine_next/Tests/Serialization/TestSha256.cpp",
     "engine_next/Tests/Assets/TestAssetManifest.cpp",
     "engine_next/Tests/Assets/TestSceneDocument.cpp",
+    "engine_next/Tests/Assets/TestBlobValidator.cpp",
+    "engine_next/Tests/Assets/TestAssetPackage.cpp",
     "engine_next/Tests/AI/TestWorkflowSnapshot.cpp",
     "engine_next/Tests/Runtime/TestClockAndFixedStep.cpp",
     "engine_next/Tests/Runtime/TestWorld.cpp",
@@ -66,6 +71,7 @@ TEST_SOURCES = [
 APP_SOURCES = {
     "next_server": ["engine_next/Apps/NextServerMain.cpp"],
     "next_client": ["engine_next/Apps/NextClientMain.cpp"],
+    "next_asset": ["engine_next/Apps/NextAssetMain.cpp"],
     "EngineNextRuntimeTests": TEST_SOURCES,
 }
 PUBLIC_HEADERS = [
@@ -74,6 +80,9 @@ PUBLIC_HEADERS = [
     "EngineNext/Assets/Types.h",
     "EngineNext/Assets/AssetManifest.h",
     "EngineNext/Assets/SceneDocument.h",
+    "EngineNext/Assets/BlobValidator.h",
+    "EngineNext/Assets/AssetCompiler.h",
+    "EngineNext/Assets/AssetPackage.h",
     "EngineNext/AI/WorkflowSnapshot.h",
     "EngineNext/Gameplay/Status.h",
     "EngineNext/Gameplay/Vector3.h",
@@ -98,6 +107,7 @@ BUILD_SUPPORT_SOURCES = [
     "engine_next/Tools/RunM2Handshake.py",
     "engine_next/Tools/RunM2DrainFaults.py",
     "engine_next/Tools/RunM2Soak.py",
+    "engine_next/Tools/RunM3AssetAcceptance.py",
     "engine_next/Tools/PackageRuntime.py",
 ]
 BuildSupport.ALLOWED_REPOSITORY_INPUTS = (
@@ -363,6 +373,10 @@ def run_target(args, target, directory, trace_directory):
     executable = directory / target["executable"].name
     if target["name"] == "EngineNextRuntimeTests":
         return BuildSupport.run([executable], cwd=directory, env=args.tool_environment).decode("utf-8").strip()
+    if target["name"] == "next_asset":
+        return (
+            BuildSupport.run([executable, "--help"], cwd=directory, env=args.tool_environment).decode("utf-8").strip()
+        )
     trace_path = trace_directory / (target["name"] + ".jsonl")
     return (
         BuildSupport
@@ -445,6 +459,29 @@ def run_drain_faults(args, targets, directory):
     )
 
 
+def run_asset_acceptance(args, targets, directory):
+    executable = directory / next(target["executable"].name for target in targets if target["name"] == "next_asset")
+    return (
+        BuildSupport
+        .run(
+            [
+                sys.executable,
+                args.repo / "engine_next/Tools/RunM3AssetAcceptance.py",
+                "--next-asset",
+                executable,
+                "--fixtures",
+                args.repo / "engine_next/Tests/Fixtures/M3",
+                "--report",
+                directory / "M3AssetReport.json",
+            ],
+            cwd=args.repo,
+            env=args.tool_environment,
+        )
+        .decode("utf-8")
+        .strip()
+    )
+
+
 def run_acceptance(args, targets):
     summaries = {}
     clean_summaries = {}
@@ -456,7 +493,7 @@ def run_acceptance(args, targets):
         clean_executable = clean_dir / target["executable"].name
         shutil.copy2(target["executable"], clean_executable)
         clean_summaries[target["name"]] = run_target(args, target, clean_dir, clean_dir)
-        if target["name"] != "EngineNextRuntimeTests":
+        if target["name"] not in {"EngineNextRuntimeTests", "next_asset"}:
             trace_path = args.build_dir / (target["name"] + ".jsonl")
             clean_trace_path = clean_dir / (target["name"] + ".jsonl")
             if trace_path.read_bytes() != clean_trace_path.read_bytes():
@@ -466,6 +503,8 @@ def run_acceptance(args, targets):
         "summaries": summaries,
         "clean_summaries": clean_summaries,
         "trace_sha256": traces,
+        "assets": run_asset_acceptance(args, targets, args.build_dir),
+        "clean_assets": run_asset_acceptance(args, targets, clean_dir),
         "handshake": run_handshake(args, targets, args.build_dir),
         "clean_handshake": run_handshake(args, targets, clean_dir),
         "drain_faults": run_drain_faults(args, targets, args.build_dir),
@@ -549,12 +588,19 @@ def build(args):
         for path in (args.repo / "engine_next/thirdparty/enet").rglob("*")
         if path.is_file()
     )
+    fixture_inputs = sorted(
+        path.relative_to(args.repo).as_posix()
+        for path in (args.repo / "engine_next/Tests/Fixtures").rglob("*")
+        if path.is_file()
+    )
     native_inputs = sorted([
         *library_sources,
         *third_party_inputs,
+        *fixture_inputs,
         *TEST_SOURCES,
         *APP_SOURCES["next_server"],
         *APP_SOURCES["next_client"],
+        *APP_SOURCES["next_asset"],
         *["engine_next/include/" + header for header in PUBLIC_HEADERS],
         "ai_core/Runtime.h",
         "engine_next/Assets/AssetValidation.h",
@@ -562,6 +608,7 @@ def build(args):
         "engine_next/Schemas/AssetManifest-v1.json",
         "engine_next/Schemas/SceneDocument-v1.json",
         "engine_next/Tests/TestFramework.h",
+        "engine_next/Tests/Assets/FixtureSupport.h",
         *BUILD_SUPPORT_SOURCES,
     ])
     native_identity = {
@@ -601,6 +648,8 @@ def build(args):
         "targets": target_reports,
         "handshake": acceptance.get("handshake", "not_run"),
         "clean_handshake": acceptance.get("clean_handshake", "not_run"),
+        "assets": acceptance.get("assets", "not_run"),
+        "clean_assets": acceptance.get("clean_assets", "not_run"),
         "drain_faults": acceptance.get("drain_faults", "not_run"),
         "clean_drain_faults": acceptance.get("clean_drain_faults", "not_run"),
     }

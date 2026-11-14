@@ -5,7 +5,7 @@
 ## 当前结论
 
 - 用户目标：复用现有 MVC、`AICore::Runtime`、AINative Executor／Provider 和 M2 运行时，新增中立资产契约、独立资产包、宿主进程适配，以及新旧运行时对同一场景的消费。
-- 用户已于 2026-11-14 23:00 明确“开始落地”，确认按本文件五个 PR 连续实施。当前 PR 1 已完成本机实现与验证，PR 2–5 和整单验收仍未完成；不得据此宣称 M3 完成。
+- 用户已于 2026-11-14 23:00 明确“开始落地”，确认按本文件五个 PR 连续实施。PR 1 已由 PR #1272 合入并回读 main；PR 2 已完成本机实现、独立审查和验证，PR 3–5 与整单验收仍未完成。不得据此宣称 M3 完成。
 - 需求 ID：`engine-next-assets-ai-workflow-m3-20261114`。
 - Issue：[#1240](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1240)。
 - 类别：`type:development`。

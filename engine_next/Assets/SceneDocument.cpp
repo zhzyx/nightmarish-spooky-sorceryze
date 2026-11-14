@@ -203,7 +203,9 @@ bool ParseSceneDocument(const Serialization::JsonValue &in_stValue, SceneDocumen
 					Fields(*pAsset, { "role", "asset_id", "revision", "content_sha256" }, strAssetPath, out_arrDiagnostics);
 					SceneAssetRef stRef;
 					String(*pAsset, "role", strAssetPath, stRef.strRole, out_arrDiagnostics);
-					ParseRef((*pAssets)[nAsset], strAssetPath, stRef.stAsset, out_arrDiagnostics);
+					Serialization::JsonValue::Object mapAsset = *pAsset;
+					mapAsset.erase("role");
+					(void)ParseRef(Serialization::JsonValue(std::move(mapAsset)), strAssetPath, stRef.stAsset, out_arrDiagnostics);
 					stEntity.arrAssets.push_back(std::move(stRef));
 				}
 			}
