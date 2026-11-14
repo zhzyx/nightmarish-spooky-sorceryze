@@ -59,3 +59,27 @@ def test_export_requires_actor() -> None:
     doc = client.post("/api/v1/docs", headers=headers, json={"title": "权限", "body_md": "x"}).json()
     response = client.get(f"/api/v1/docs/{doc['id']}/export/file")
     assert response.status_code in {400, 401, 403}
+
+
+def test_export_docx() -> None:
+    from io import BytesIO
+
+    from docx import Document
+
+    client, headers = _client()
+    doc = client.post(
+        "/api/v1/docs",
+        headers=headers,
+        json={"title": "Word 导出", "body_md": "# 标题\n\n正文 **加粗**\n\n- 一\n- 二\n"},
+    ).json()
+    response = client.get(f"/api/v1/docs/{doc['id']}/export/file", headers=headers, params={"format": "docx"})
+    assert response.status_code == 200, response.text
+    assert response.headers["content-type"].startswith(
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
+    assert response.content.startswith(b"PK")
+    document = Document(BytesIO(response.content))
+    text = "\n".join(paragraph.text for paragraph in document.paragraphs)
+    assert "Word 导出" in text
+    assert "标题" in text
+    assert "正文 加粗" in text

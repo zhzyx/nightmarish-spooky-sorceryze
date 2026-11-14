@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Annotated, Any
 from urllib.parse import quote
 
+from docx_export import render_docx
 from duobao_bridge import GitService, GitServiceError
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse, Response
@@ -296,7 +297,7 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
     def download_doc(doc_id: str, actor: ActorDep, format: str = Query(default="md")) -> Response:
         document = store.get_doc_shared(actor, doc_id)
         fmt = format.strip().lower()
-        if fmt not in {"md", "markdown", "html"}:
+        if fmt not in {"md", "markdown", "html", "docx"}:
             raise HTTPException(status_code=400, detail=f"unsupported export format: {format}")
         title = str(document.get("title", "document"))
         body_md = str(document.get("body_md", ""))
@@ -310,7 +311,7 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
             content = body_md
             media_type = "text/markdown; charset=utf-8"
             extension = "md"
-        else:
+        elif fmt == "html":
             content = (
                 '<!doctype html><html lang="zh"><head><meta charset="utf-8">'
                 f"<title>{html.escape(title)}</title>"
@@ -325,6 +326,10 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
             )
             media_type = "text/html; charset=utf-8"
             extension = "html"
+        else:
+            content = render_docx(title, body_md)
+            media_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            extension = "docx"
         disposition = f"attachment; filename=document.{extension}; filename*=UTF-8''{quote(safe_name)}.{extension}"
         return Response(
             content=content,
