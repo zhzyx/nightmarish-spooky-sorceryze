@@ -27,6 +27,7 @@ from gateway import ModelGateway, create_model_router
 from gitea_bridge import GiteaClient, GiteaError
 from identity import allow_identity_attempt, get_identity_adapter
 from markdown_render import render_markdown
+from pdf_export import render_pdf
 from schemas import (
     CommentCreateRequest,
     CommentResolveRequest,
@@ -297,7 +298,7 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
     def download_doc(doc_id: str, actor: ActorDep, format: str = Query(default="md")) -> Response:
         document = store.get_doc_shared(actor, doc_id)
         fmt = format.strip().lower()
-        if fmt not in {"md", "markdown", "html", "docx"}:
+        if fmt not in {"md", "markdown", "html", "docx", "pdf"}:
             raise HTTPException(status_code=400, detail=f"unsupported export format: {format}")
         title = str(document.get("title", "document"))
         body_md = str(document.get("body_md", ""))
@@ -326,10 +327,14 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
             )
             media_type = "text/html; charset=utf-8"
             extension = "html"
-        else:
+        elif fmt == "docx":
             content = render_docx(title, body_md)
             media_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             extension = "docx"
+        else:
+            content = render_pdf(title, body_md)
+            media_type = "application/pdf"
+            extension = "pdf"
         disposition = f"attachment; filename=document.{extension}; filename*=UTF-8''{quote(safe_name)}.{extension}"
         return Response(
             content=content,

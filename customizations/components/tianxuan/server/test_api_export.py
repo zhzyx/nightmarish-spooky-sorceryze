@@ -50,7 +50,7 @@ def test_export_markdown_and_html() -> None:
 def test_export_rejects_unknown_format() -> None:
     client, headers = _client()
     doc = client.post("/api/v1/docs", headers=headers, json={"title": "格式", "body_md": "x"}).json()
-    response = client.get(f"/api/v1/docs/{doc['id']}/export/file", headers=headers, params={"format": "pdf"})
+    response = client.get(f"/api/v1/docs/{doc['id']}/export/file", headers=headers, params={"format": "rtf"})
     assert response.status_code == 400
 
 
@@ -107,3 +107,17 @@ def test_export_docx_preserves_inline_and_table() -> None:
     assert len(document.tables) == 1
     assert document.tables[0].cell(1, 0).text == "A"
     assert document.tables[0].cell(1, 1).text == "1"
+
+
+def test_export_pdf() -> None:
+    client, headers = _client()
+    doc = client.post(
+        "/api/v1/docs",
+        headers=headers,
+        json={"title": "PDF 导出", "body_md": "# 标题\n\n正文内容\n\n- 列表一\n- 列表二\n"},
+    ).json()
+    response = client.get(f"/api/v1/docs/{doc['id']}/export/file", headers=headers, params={"format": "pdf"})
+    assert response.status_code == 200, response.text
+    assert response.headers["content-type"].startswith("application/pdf")
+    assert response.content.startswith(b"%PDF")
+    assert len(response.content) > 1000
