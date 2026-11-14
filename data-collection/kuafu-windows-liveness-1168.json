@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "issue_number": 1168,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1168",
+  "request_id": "kuafu-run-43522349587-attempt-1",
+  "base_commit": "7acdf07ca4c89251527a392c754a536af2094b6a",
+  "reviewed_files": {
+    "customizations/components/godot-host/test_parent_completion.py": "5a9a393ad30e04c3d622bd78644ea956949911f4ff5e36e94ba61fee177eb66f"
+  },
+  "diting_events": {
+    "gonggong-diting-data/events/gonggong-workspace/kuafu-run-43522349587-attempt-1/cursor-kuafu-request-1168.json": "50bc1371fbcf1a60370a13194cf90a38de864a9e4cd521503f83abbaf706b4e5"
+  },
+  "root_cause": "Windows refuses unlink of live.json (WinError 32 sharing violation) while the owner's liveness poll in parent_completion.active() holds it open, so the test timer thread raised PermissionError and never revoked liveness.",
+  "change": "Test-only: the revocation timer retries unlink on PermissionError for up to 0.5s before re-raising; production parent_completion.py is unchanged.",
+  "validation": {
+    "local_platform": "linux",
+    "test_parent_completion": "25 passed",
+    "permission_error_simulation": "Unlink patched to raise PermissionError twice: previous test code fails, retrying code revokes liveness and passes.",
+    "windows": "pending CI Windows / Editor 'Active provenance process ownership' on this PR"
+  },
+  "independent_review": {
+    "reviewer": "independent Cursor cloud subagent bc-3637445f-242c-54d2-8a29-1406e94310d6",
+    "verdict": "approve",
+    "adopted_suggestion": "bounded 0.5s retry deadline"
+  }
+}

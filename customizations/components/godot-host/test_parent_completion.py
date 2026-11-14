@@ -335,7 +335,20 @@ class ParentCompletionTests(unittest.TestCase):
         target = self.folder / "late-write"
         child = "import time;from pathlib import Path;time.sleep(1);Path(" + repr(str(target)) + ").write_text('late')"
         script = "import subprocess,sys,time;subprocess.Popen([sys.executable,'-c'," + repr(child) + "]);time.sleep(5)"
-        timer = threading.Timer(0.2, self.live.unlink)
+
+        def revoke_live():
+            # Windows refuses unlink while the owner's liveness poll has the file open.
+            deadline = time.monotonic() + 0.5
+            while True:
+                try:
+                    self.live.unlink()
+                    return
+                except PermissionError:
+                    if time.monotonic() > deadline:
+                        raise
+                    time.sleep(0.01)
+
+        timer = threading.Timer(0.2, revoke_live)
         timer.start()
         self.addCleanup(timer.join)
         with self.assertRaises((OSError, ValueError)):
