@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DocComments } from "@/components/DocComments";
 import { DocEditor } from "@/components/DocEditor";
+import { DocExport } from "@/components/DocExport";
 import { DocExternalSource } from "@/components/DocExternalSource";
 import { DocSharing } from "@/components/DocSharing";
 import { DocVersions } from "@/components/DocVersions";
@@ -60,6 +61,7 @@ export default async function DocPage({ params }: DocPageProps) {
             initialContent={liveDoc.body_md}
             version={liveDoc.version}
           />
+          <DocExport docId={liveDoc.id} title={liveDoc.title} />
           <DocExternalSource docId={liveDoc.id} />
           <DocSharing docId={liveDoc.id} initialVisibility={liveDoc.visibility} />
           <DocComments docId={liveDoc.id} />

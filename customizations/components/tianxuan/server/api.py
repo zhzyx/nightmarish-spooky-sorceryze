@@ -12,14 +12,16 @@ from __future__ import annotations
 
 import asyncio
 import difflib
+import html
 import json
 import os
 from pathlib import Path
 from typing import Annotated, Any
+from urllib.parse import quote
 
 from duobao_bridge import GitService, GitServiceError
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from gateway import ModelGateway, create_model_router
 from gitea_bridge import GiteaClient, GiteaError
 from identity import allow_identity_attempt, get_identity_adapter
@@ -288,6 +290,42 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
     @app.get("/api/v1/docs/{doc_id}")
     def get_doc(doc_id: str, actor: ActorDep) -> dict[str, Any]:
         return store.get_doc_shared(actor, doc_id)  # type: ignore[no-any-return]
+
+    @app.get("/api/v1/docs/{doc_id}/export/file")
+    def download_doc(doc_id: str, actor: ActorDep, format: str = Query(default="md")) -> Response:
+        document = store.get_doc_shared(actor, doc_id)
+        fmt = format.strip().lower()
+        if fmt not in {"md", "markdown", "html"}:
+            raise HTTPException(status_code=400, detail=f"unsupported export format: {format}")
+        title = str(document.get("title", "document"))
+        body_md = str(document.get("body_md", ""))
+        safe_name = (
+            "".join(
+                character for character in title if character not in '\\/:*?"<>|' and character not in "\r\n"
+            ).strip()
+            or "document"
+        )
+        if fmt in {"md", "markdown"}:
+            content = body_md
+            media_type = "text/markdown; charset=utf-8"
+            extension = "md"
+        else:
+            content = (
+                '<!doctype html><html lang="zh"><head><meta charset="utf-8">'
+                f"<title>{html.escape(title)}</title>"
+                "<style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;"
+                "max-width:880px;margin:40px auto;padding:0 24px;line-height:1.7;color:#1b1a17}"
+                "pre{white-space:pre-wrap;word-break:break-word;font:inherit}</style></head><body>"
+                f"<h1>{html.escape(title)}</h1><pre>{html.escape(body_md)}</pre></body></html>"
+            )
+            media_type = "text/html; charset=utf-8"
+            extension = "html"
+        disposition = f"attachment; filename=document.{extension}; filename*=UTF-8''{quote(safe_name)}.{extension}"
+        return Response(
+            content=content,
+            media_type=media_type,
+            headers={"Content-Disposition": disposition},
+        )
 
     @app.patch("/api/v1/docs/{doc_id}")
     def update_doc(doc_id: str, payload: DocUpdateRequest, actor: ActorDep) -> dict[str, Any]:
