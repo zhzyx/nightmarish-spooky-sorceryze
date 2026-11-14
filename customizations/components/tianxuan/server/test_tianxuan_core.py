@@ -67,7 +67,7 @@ class TianxuanCoreTests(unittest.TestCase):
         for status in ("planned", "in-progress", "in-review", "done"):
             child = self.tx.transition_issue(self.actor, child["id"], status)
         self.assertEqual(child["status"], "done")
-        progress = self.tx.sync_progress(requirement["id"])
+        progress = self.tx.sync_progress(requirement["id"], actor=self.actor)
         self.assertEqual(progress["total"], 3)
         self.assertEqual(progress["done"], 1)
         self.assertEqual(progress["percent"], 33)

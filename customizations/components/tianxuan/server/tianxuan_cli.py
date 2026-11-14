@@ -153,8 +153,10 @@ def get_doc(client: httpx.Client, doc_id: str) -> dict[str, Any]:
     return _request(client, "GET", f"api/v1/docs/{_quote_id(doc_id)}")
 
 
-def create_doc(client: httpx.Client, title: str, body: str, kind: str) -> dict[str, Any]:
+def create_doc(client: httpx.Client, title: str, body: str, kind: str, *, call_id: str | None = None) -> dict[str, Any]:
     payload = {"title": title, "body_md": body, "kind": kind}
+    if call_id is not None:
+        payload["call_id"] = call_id
     return _request(client, "POST", "api/v1/docs", json_body=payload)
 
 
@@ -206,6 +208,8 @@ def create_requirement(
     outcome: str,
     scope: str,
     acceptance: str,
+    *,
+    call_id: str | None = None,
 ) -> dict[str, Any]:
     payload = {
         "request_id": request_id,
@@ -214,6 +218,8 @@ def create_requirement(
         "scope": scope,
         "acceptance": acceptance,
     }
+    if call_id is not None:
+        payload["call_id"] = call_id
     return _request(client, "POST", "api/v1/requirements", json_body=payload)
 
 
@@ -241,7 +247,7 @@ def _cmd_docs_get(client: httpx.Client, args: argparse.Namespace) -> dict[str, A
 
 
 def _cmd_docs_create(client: httpx.Client, args: argparse.Namespace) -> dict[str, Any]:
-    return create_doc(client, args.title, args.body, args.kind)
+    return create_doc(client, args.title, args.body, args.kind, call_id=args.call_id)
 
 
 def _cmd_docs_patch(client: httpx.Client, args: argparse.Namespace) -> dict[str, Any]:
@@ -272,7 +278,9 @@ def _cmd_board(client: httpx.Client, args: argparse.Namespace) -> dict[str, Any]
 
 
 def _cmd_requirements_create(client: httpx.Client, args: argparse.Namespace) -> dict[str, Any]:
-    return create_requirement(client, args.request_id, args.title, args.outcome, args.scope, args.acceptance)
+    return create_requirement(
+        client, args.request_id, args.title, args.outcome, args.scope, args.acceptance, call_id=args.call_id
+    )
 
 
 def _cmd_requirements_export(client: httpx.Client, args: argparse.Namespace) -> dict[str, Any]:
@@ -332,6 +340,7 @@ def build_parser() -> argparse.ArgumentParser:
     docs_create.add_argument("--title", required=True, help="Document title")
     docs_create.add_argument("--body", default="", help="Markdown body")
     docs_create.add_argument("--kind", default="doc", help="Document kind (default: doc)")
+    docs_create.add_argument("--call-id", help="Stable logical call ID; reuse it only for retries")
     docs_create.set_defaults(func=_cmd_docs_create)
 
     docs_patch = docs_commands.add_parser("patch", help="Apply unique find/replace pairs")
@@ -378,6 +387,7 @@ def build_parser() -> argparse.ArgumentParser:
     requirements_create.add_argument("--outcome", required=True, help="Expected outcome")
     requirements_create.add_argument("--scope", required=True, help="Scope of the change")
     requirements_create.add_argument("--acceptance", required=True, help="Acceptance criteria")
+    requirements_create.add_argument("--call-id", help="Stable logical call ID; reuse it only for retries")
     requirements_create.set_defaults(func=_cmd_requirements_create)
 
     requirements_export = requirement_commands.add_parser("export", help="Export a requirement as Markdown")

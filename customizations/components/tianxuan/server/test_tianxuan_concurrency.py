@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from tianxuan_core import Tianxuan, TianxuanError, VersionConflict
+from tianxuan_core import StorageError, Tianxuan, TianxuanError, VersionConflict
 
 
 class DocumentTransactionTests(unittest.TestCase):
@@ -179,8 +179,9 @@ class DocumentTransactionTests(unittest.TestCase):
             "WHEN NEW.type = 'doc.updated' BEGIN SELECT RAISE(ABORT, 'injected event failure'); END"
         )
         before = self.snapshot()
-        with self.assertRaisesRegex(sqlite3.IntegrityError, "injected event failure"):
+        with self.assertRaisesRegex(StorageError, "storage operation failed") as caught:
             self.tx.update_doc(self.actor, self.doc["id"], "rolled back", 1)
+        self.assertIsInstance(caught.exception.__cause__, sqlite3.Error)
         self.assertEqual(self.snapshot(), before)
         self.assertFalse(self.tx.db.in_transaction)
         self.tx.db.execute("DROP TRIGGER reject_update_event")
@@ -199,8 +200,9 @@ class DocumentTransactionTests(unittest.TestCase):
 
         before = self.snapshot()
         with patch.object(self.tx, "db", CommitFailure()):
-            with self.assertRaisesRegex(sqlite3.OperationalError, "injected commit failure"):
+            with self.assertRaisesRegex(StorageError, "storage operation failed") as caught:
                 self.tx.update_doc(self.actor, self.doc["id"], "rolled back", 1)
+        self.assertIsInstance(caught.exception.__cause__, sqlite3.Error)
         self.assertEqual(self.snapshot(), before)
         self.assertFalse(self.tx.db.in_transaction)
         self.tx.update_doc(self.actor, self.doc["id"], "retry", 1)
@@ -340,8 +342,8 @@ class DocumentTransactionTests(unittest.TestCase):
         before = self.tx.events(self.actor)
         original = self.tx.sync_progress
 
-        def fail_after_nested_write(doc_id):
-            original(doc_id)
+        def fail_after_nested_write(doc_id, *, actor):
+            original(doc_id, actor=actor)
             raise RuntimeError("injected after nested sync")
 
         with patch.object(self.tx, "sync_progress", fail_after_nested_write):
