@@ -21,6 +21,7 @@ import sys
 import threading
 import time
 from pathlib import Path
+from types import SimpleNamespace
 
 
 class OwnedProcessError(ValueError):
@@ -105,6 +106,40 @@ def _darwin_group_quiet(pgid):
         return members_now() == members
     except (OSError, AttributeError):
         return False
+
+
+def _waitid(pid, flags):
+    """Use libc waitid on Darwin builds whose Python omits os.waitid."""
+    if hasattr(os, "waitid"):
+        return os.waitid(os.P_PID, pid, flags)
+    if sys.platform != "darwin":
+        raise OwnedProcessError("owned_process_waitid_unavailable")
+
+    class SigInfo(ctypes.Structure):
+        _fields_ = [
+            ("signo", ctypes.c_int),
+            ("error", ctypes.c_int),
+            ("code", ctypes.c_int),
+            ("pid", ctypes.c_int),
+            ("uid", ctypes.c_uint),
+            ("status", ctypes.c_int),
+            ("opaque", ctypes.c_byte * 104),
+        ]
+
+    library = ctypes.CDLL(None, use_errno=True)
+    library.waitid.argtypes = [ctypes.c_int, ctypes.c_uint, ctypes.c_void_p, ctypes.c_int]
+    library.waitid.restype = ctypes.c_int
+    info = SigInfo()
+    # Darwin P_PID=1; the flags supplied by poll use WNOWAIT to pin the leader.
+    result = library.waitid(1, pid, ctypes.byref(info), flags)
+    if result != 0:
+        error = ctypes.get_errno()
+        raise OSError(error, os.strerror(error))
+    if info.signo == 0:
+        return None
+    if info.pid != pid:
+        raise OwnedProcessError("owned_process_waitid_identity")
+    return SimpleNamespace(si_code=info.code, si_status=info.status)
 
 
 def _pipe_pending(pipe):
@@ -239,7 +274,7 @@ class OwnedCommand:
     def poll(self):
         if self.api is not None:
             return self.process.poll()
-        result = os.waitid(os.P_PID, self.process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+        result = _waitid(self.process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
         if result is None:
             return None
         return result.si_status if result.si_code == os.CLD_EXITED else -result.si_status

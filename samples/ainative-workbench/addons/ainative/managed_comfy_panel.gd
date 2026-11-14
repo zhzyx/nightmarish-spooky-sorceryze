@@ -195,8 +195,10 @@ func completed(data: Dictionary, request: Dictionary):
 		host._set_model_options(host.mesh_model_choice, [str(data.mesh_model)], str(data.mesh_model) if selected.is_empty() else selected, true)
 		host._service_settings_changed()
 		save_local()
-		host.save_service_settings()
-		host.check_service()
+		# The controller is still processing this completion callback. Defer the
+		# follow-up save/check until its busy guard has been released.
+		host.save_service_settings.call_deferred()
+		host.check_service.call_deferred()
 
 func failed(message: String):
 	bundle_failure = message

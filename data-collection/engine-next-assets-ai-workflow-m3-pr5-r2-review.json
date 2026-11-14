@@ -1,0 +1,20 @@
+{
+  "findings": [
+    "Initial PR5 workflow did not trigger on AINative, Maliang, editor tests and direct package dependencies",
+    "The initial signed candidate exposed missing os.waitid on macOS Python 3.12 and missing Pillow on Ubuntu",
+    "Windows first-use Maliang attempted save/service-check synchronously while the controller was still processing the managed-comfy completion"
+  ],
+  "issue_number": 1240,
+  "observed": "Independent read-only review approved all R2 deltas. Darwin libc waitid preserves P_PID, ABI offsets, errno, PID validation, WNOWAIT zombie-leader pinning and exit/signal interpretation; standard os.waitid and Windows Job paths are unchanged. Pillow installation remains fatal on failure. Deferred Maliang save/check calls execute only after the controller releases its result-processing busy guard, retain save-before-check order and preserve stale-settings and late-lease protections.",
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "result": "approved",
+  "reviewer": {
+    "id": "agent-2",
+    "kind": "independent_read_only_agent",
+    "same_author": false
+  },
+  "schema_version": 1,
+  "scope": "PR5 R2 Darwin waitid, pinned Pillow and deferred Maliang completion follow-up, in addition to the previously approved workflow triggers and Godot compatibility guards",
+  "slice": "pr5-r2",
+  "validation_boundary": "Local Darwin arm64 Python 3.12.16 passed 422 AINative tests with 62 conditional skips; real Godot 4.4.1 passed 28 unified-settings checks. Neither replaces exact three-platform CI, repaired Windows first-use acceptance, macOS editor acceptance or final main readback."
+}
