@@ -220,6 +220,24 @@ class MergeQueue:
             raise ValueError("only queued candidates can be cancelled")
         return self.get(item_id)
 
+    def retry(self, item_id: str) -> dict[str, Any]:
+        now = _now()
+        with self._lock, self.db:
+            row = self.db.execute("SELECT status, evidence FROM merge_queue WHERE id = ?", (item_id,)).fetchone()
+            if row is None:
+                raise ValueError(f"candidate not found: {item_id}")
+            status = str(row["status"])
+            if status not in {"rejected", "conflict", "cancelled"}:
+                raise ValueError(f"cannot retry candidate in status: {status}")
+            evidence = json.loads(row["evidence"] or "{}")
+            evidence["retried_from"] = status
+            evidence["retried_at"] = now
+            self.db.execute(
+                "UPDATE merge_queue SET status = 'queued', attempts = 0, evidence = ?, updated_at = ? WHERE id = ?",
+                (json.dumps(evidence, ensure_ascii=False), now, item_id),
+            )
+        return self.get(item_id)
+
     def process_next(self) -> dict[str, Any] | None:
         # 合入梯队必须串行：worker 与手动 /process 同时存在时也不能并行执行候选。
         with self._process_lock:

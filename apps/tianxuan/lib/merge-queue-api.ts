@@ -79,3 +79,14 @@ export async function cancelMerge(actor: string, itemId: string): Promise<ApiMer
   }
   return (await response.json()) as ApiMergeQueueItem;
 }
+
+export async function retryMerge(actor: string, itemId: string): Promise<ApiMergeQueueItem> {
+  const response = await fetch(
+    `${apiBase()}/api/v1/merge-queue/${encodeURIComponent(itemId)}/retry`,
+    { method: "POST", headers: { "X-Actor": actor } },
+  );
+  if (!response.ok) {
+    throw new Error(`merge retry failed: ${response.status}`);
+  }
+  return (await response.json()) as ApiMergeQueueItem;
+}

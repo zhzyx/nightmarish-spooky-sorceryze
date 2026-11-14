@@ -893,6 +893,13 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
             except KeyError as error:
                 raise HTTPException(status_code=404, detail="merge queue item not found") from error
 
+        @app.post("/api/v1/merge-queue/{item_id}/retry")
+        def retry_merge(item_id: str, actor: ActorDep) -> dict[str, Any]:
+            try:
+                return merge_queue.retry(item_id)  # type: ignore[no-any-return]
+            except ValueError as error:
+                raise HTTPException(status_code=400, detail=str(error)) from error
+
         @app.post("/api/v1/merge-queue/{item_id}/cancel")
         def cancel_merge_queue_item(item_id: str, actor: ActorDep) -> dict[str, Any]:
             if store.role_of(actor) == "viewer":
