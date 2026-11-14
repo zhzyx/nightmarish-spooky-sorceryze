@@ -30,6 +30,7 @@
 # Engine Next
 /engine_next/                                  @kaiyunxue @godotengine/core @godotengine/buildsystem
 /engine_next/Tests/                            @kaiyunxue @godotengine/core @godotengine/tests
+/engine_next/Tests/AI/SyntheticProvider.py      @kaiyunxue @godotengine/core @godotengine/tests @godotengine/buildsystem
 
 # Doc
 

@@ -484,5 +484,5 @@ tools/engine_next_legacy/fixtures/{Whitelist.tscn,ScriptRejected.tscn,Unsupporte
 ## 验证与采集证据
 
 - PR 1／2 的中立契约、资产编译和包证据见 `data-collection/engine-next-assets-ai-workflow-m3-pr1-*` 与 `pr2-*`，对应 PR #1272／#1277 已合入。
-- PR 3 的源码审查与本机验证见 `data-collection/engine-next-assets-ai-workflow-m3-pr3-review.json`、`pr3-verification.json` 和 `pr3-build-impact.json`。真实 Executor 离线／恢复／进程边界、52 个原生测试、ASan／UBSan、干净源码树和真实链接清单均已执行；Executor／contracts／extensions 定向回归共 44 项通过。
+- PR 3 的源码审查与本机验证见 `data-collection/engine-next-assets-ai-workflow-m3-pr3-r2-review.json`、`pr3-r2-verification.json` 和 `pr3-r2-build-impact.json`；R1 审查与证据保留用于追踪 CI 格式、负责人和 Windows 兼容性修正。真实 Executor 离线／恢复／进程边界、52 个原生测试、ASan／UBSan、干净源码树和真实链接清单均已执行；Executor／contracts／extensions 定向回归共 44 项通过。
 - 当前内置 Python 的 AINative 全量 422 项回归记录为 17 失败、42 错误、62 跳过，包含 `os.waitid` 缺失及关联 Provider／owned-process 失败，不得记为全量通过。Windows／Linux 精确 CI、PR 4–5 和整单验收仍是独立待办。

@@ -131,7 +131,7 @@ bool ProcessTransport::Run(const ProcessSpec &in_stSpec, ProcessResult &out_stRe
 	HANDLE pErrorRead = nullptr;
 	HANDLE pErrorWrite = nullptr;
 	if (!CreatePipe(&pInputRead, &pInputWrite, &stSecurity, 0) || !CreatePipe(&pOutputRead, &pOutputWrite, &stSecurity, 0) ||
-			!CreatePipe(&pErrorRead, &pErrorWrite, &stSecurity, 0))
+		!CreatePipe(&pErrorRead, &pErrorWrite, &stSecurity, 0))
 	{
 		return false;
 	}
@@ -183,7 +183,7 @@ bool ProcessTransport::Run(const ProcessSpec &in_stSpec, ProcessResult &out_stRe
 	out_stResult.bStarted = true;
 	std::atomic<bool> bInputDone{ false };
 	std::thread stInput([&]()
-			{
+						{
 		std::size_t nWritten = 0;
 		while (nWritten < in_stSpec.strInput.size())
 		{
@@ -200,9 +200,9 @@ bool ProcessTransport::Run(const ProcessSpec &in_stSpec, ProcessResult &out_stRe
 	std::atomic<bool> bOutputDone{ false };
 	std::atomic<bool> bErrorDone{ false };
 	std::thread stOutput([&]()
-			{ ReadWindowsPipe(pOutputRead, out_stResult.strOutput, in_stSpec.nOutputLimit, bOverflow, bOutputDone, pJob); });
+						 { ReadWindowsPipe(pOutputRead, out_stResult.strOutput, in_stSpec.nOutputLimit, bOverflow, bOutputDone, pJob); });
 	std::thread stError([&]()
-			{ ReadWindowsPipe(pErrorRead, out_stResult.strError, in_stSpec.nOutputLimit, bOverflow, bErrorDone, pJob); });
+						{ ReadWindowsPipe(pErrorRead, out_stResult.strError, in_stSpec.nOutputLimit, bOverflow, bErrorDone, pJob); });
 	const std::uint64_t nStarted = GetTickCount64();
 	bool bExited = false;
 	for (;;)
@@ -291,7 +291,7 @@ bool ProcessTransport::Run(const ProcessSpec &in_stSpec, ProcessResult &out_stRe
 	(void)fcntl(arrOutput[0], F_SETFL, O_NONBLOCK);
 	(void)fcntl(arrError[0], F_SETFL, O_NONBLOCK);
 	std::thread stInput([&]()
-			{
+						{
 		sigset_t stBlocked;
 		(void)sigemptyset(&stBlocked);
 		(void)sigaddset(&stBlocked, SIGPIPE);

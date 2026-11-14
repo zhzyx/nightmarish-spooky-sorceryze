@@ -39,6 +39,8 @@
 
 #ifdef _WIN32
 #include <windows.h>
+// Windows headers define GetObject as a macro; keep the JSON accessor intact.
+#undef GetObject
 #endif
 
 namespace EngineNext::AI
@@ -259,9 +261,9 @@ bool WorkflowController::ReadState(const HostConfig &in_stConfig, const std::str
 	const Serialization::JsonValue::List *pArtifacts = ListMember(*pState, "published_artifacts");
 	if (pArtifacts != nullptr)
 	{
-		for (const Serialization::JsonValue &stValue : *pArtifacts)
+		for (const Serialization::JsonValue &stArtifactKey : *pArtifacts)
 		{
-			const std::string *pKey = stValue.GetString();
+			const std::string *pKey = stArtifactKey.GetString();
 			if (pKey == nullptr)
 			{
 				return false;

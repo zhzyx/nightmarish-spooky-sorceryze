@@ -55,7 +55,7 @@ struct AiAssetRequest
 
 [[nodiscard]] bool ParseAiAssetRequest(const Serialization::JsonValue &in_stValue, AiAssetRequest &out_stRequest, Assets::Diagnostics &out_arrDiagnostics);
 [[nodiscard]] bool AdaptArtifacts(const AiAssetRequest &in_stRequest, const Serialization::JsonValue &in_stExport,
-		const std::string &in_strStateDirectory, Assets::PackageData &out_stPackage,
-		std::vector<Serialization::JsonValue> &out_arrArtifactEvents, Assets::Diagnostics &out_arrDiagnostics);
+								  const std::string &in_strStateDirectory, Assets::PackageData &out_stPackage,
+								  std::vector<Serialization::JsonValue> &out_arrArtifactEvents, Assets::Diagnostics &out_arrDiagnostics);
 
 } // namespace EngineNext::AI

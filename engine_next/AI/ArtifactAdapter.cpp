@@ -212,7 +212,7 @@ const Serialization::JsonValue *ArtifactByRef(const Serialization::JsonValue &in
 		std::string strCandidateId;
 		std::string strCandidateRevision;
 		if (TextMember(*pArtifact, "id", strCandidateId) && TextMember(*pArtifact, "revision", strCandidateRevision) &&
-				strCandidateId == strId && strCandidateRevision == strRevision)
+			strCandidateId == strId && strCandidateRevision == strRevision)
 		{
 			return &stArtifact;
 		}
@@ -342,8 +342,8 @@ bool ParseAiAssetRequest(const Serialization::JsonValue &in_stValue, AiAssetRequ
 }
 
 bool AdaptArtifacts(const AiAssetRequest &in_stRequest, const Serialization::JsonValue &in_stExport,
-		const std::string &in_strStateDirectory, Assets::PackageData &out_stPackage,
-		std::vector<Serialization::JsonValue> &out_arrArtifactEvents, Assets::Diagnostics &out_arrDiagnostics)
+					const std::string &in_strStateDirectory, Assets::PackageData &out_stPackage,
+					std::vector<Serialization::JsonValue> &out_arrArtifactEvents, Assets::Diagnostics &out_arrDiagnostics)
 {
 	out_arrDiagnostics.clear();
 	out_arrArtifactEvents.clear();
@@ -386,8 +386,8 @@ bool AdaptArtifacts(const AiAssetRequest &in_stRequest, const Serialization::Jso
 		std::string strRevision;
 		std::string strType;
 		if (!TextMember(*pPayload, "content_base64", strEncoded) || !TextMember(*pPayload, "content_sha256", strDeclaredDigest) ||
-				!TextMember(*pPayload, "extension", strExtension) || !TextMember(*pArtifactObject, "id", strId) ||
-				!TextMember(*pArtifactObject, "revision", strRevision) || !TextMember(*pArtifactObject, "type", strType))
+			!TextMember(*pPayload, "extension", strExtension) || !TextMember(*pArtifactObject, "id", strId) ||
+			!TextMember(*pArtifactObject, "revision", strRevision) || !TextMember(*pArtifactObject, "type", strType))
 		{
 			Assets::AddDiagnostic(out_arrDiagnostics, "invalid_artifact_content", "$.asset_bindings", "artifact requires immutable inline content");
 			return false;
@@ -400,7 +400,7 @@ bool AdaptArtifacts(const AiAssetRequest &in_stRequest, const Serialization::Jso
 		}
 		std::vector<std::uint8_t> arrBytes;
 		if (!DecodeBase64(strEncoded, arrBytes) || arrBytes.size() > 64ULL * 1024ULL * 1024ULL ||
-				Serialization::Sha256Hex(arrBytes.data(), arrBytes.size()) != strDeclaredDigest)
+			Serialization::Sha256Hex(arrBytes.data(), arrBytes.size()) != strDeclaredDigest)
 		{
 			Assets::AddDiagnostic(out_arrDiagnostics, "digest_mismatch", "$.asset_bindings", "artifact content digest mismatch");
 			return false;

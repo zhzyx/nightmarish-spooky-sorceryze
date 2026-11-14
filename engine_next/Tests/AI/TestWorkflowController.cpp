@@ -250,7 +250,7 @@ ENGINE_NEXT_TEST("Workflow controller supports cancellation from another thread"
 	stConfig.strOutput = (stRoot / "scene.enpak").string();
 	EngineNext::AI::ControllerResult stResult;
 	std::thread stThread([&]()
-			{ (void)stController.Run(Request(), stConfig, stResult); });
+						 { (void)stController.Run(Request(), stConfig, stResult); });
 	while (!stTransport.bEntered)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));

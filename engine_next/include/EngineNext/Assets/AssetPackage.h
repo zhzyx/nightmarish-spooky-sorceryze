@@ -62,7 +62,7 @@ enum class PublishResult : std::uint8_t
 [[nodiscard]] bool LoadPackage(const std::string &in_strPackageRoot, PackageData &out_stPackage, Diagnostics &out_arrDiagnostics);
 [[nodiscard]] bool PublishPackage(const PackageData &in_stPackage, const std::string &in_strTargetRoot, PublishResult &out_eResult, Diagnostics &out_arrDiagnostics);
 [[nodiscard]] bool PublishPackageGuarded(const PackageData &in_stPackage, const std::string &in_strTargetRoot, PublishResult &out_eResult,
-		Diagnostics &out_arrDiagnostics, std::mutex &in_stCancellationMutex, const std::function<bool()> &in_fnCancelRequested);
+										 Diagnostics &out_arrDiagnostics, std::mutex &in_stCancellationMutex, const std::function<bool()> &in_fnCancelRequested);
 [[nodiscard]] Serialization::JsonValue DiagnosticsJson(const Diagnostics &in_arrDiagnostics);
 
 } // namespace EngineNext::Assets

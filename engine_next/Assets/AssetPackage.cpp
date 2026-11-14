@@ -156,7 +156,7 @@ bool ComputePackageDigest(PackageData &out_stPackage, Diagnostics &out_arrDiagno
 	std::string strManifest;
 	std::string strScene;
 	if (!Serialization::CanonicalJson(ToJson(out_stPackage.stManifest), strManifest) ||
-			!Serialization::CanonicalJson(ToJson(out_stPackage.stScene), strScene))
+		!Serialization::CanonicalJson(ToJson(out_stPackage.stScene), strScene))
 	{
 		AddDiagnostic(out_arrDiagnostics, "canonical_json", "$", "unable to canonicalize package");
 		return false;
@@ -227,7 +227,7 @@ bool LoadPackage(const std::string &in_strPackageRoot, PackageData &out_stPackag
 		return false;
 	}
 	if (!ReadText(stRoot / "AssetManifest.json", out_stPackage.strManifestJson, out_arrDiagnostics) ||
-			!ReadText(stRoot / "Scene.json", out_stPackage.strSceneJson, out_arrDiagnostics))
+		!ReadText(stRoot / "Scene.json", out_stPackage.strSceneJson, out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -235,13 +235,13 @@ bool LoadPackage(const std::string &in_strPackageRoot, PackageData &out_stPackag
 	Serialization::JsonValue stSceneValue;
 	std::string strError;
 	if (!Serialization::ParseJson(out_stPackage.strManifestJson, stManifestValue, strError) ||
-			!Serialization::ParseJson(out_stPackage.strSceneJson, stSceneValue, strError))
+		!Serialization::ParseJson(out_stPackage.strSceneJson, stSceneValue, strError))
 	{
 		AddDiagnostic(out_arrDiagnostics, "invalid_json", "$", strError);
 		return false;
 	}
 	if (!ParseSceneDocument(stSceneValue, out_stPackage.stScene, out_arrDiagnostics) ||
-			!ParseAssetManifest(stManifestValue, out_stPackage.stManifest, out_arrDiagnostics))
+		!ParseAssetManifest(stManifestValue, out_stPackage.stManifest, out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -297,7 +297,7 @@ bool PublishPackage(const PackageData &in_stPackage, const std::string &in_strTa
 }
 
 bool PublishPackageGuarded(const PackageData &in_stPackage, const std::string &in_strTargetRoot, PublishResult &out_eResult,
-		Diagnostics &out_arrDiagnostics, std::mutex &in_stCancellationMutex, const std::function<bool()> &in_fnCancelRequested)
+						   Diagnostics &out_arrDiagnostics, std::mutex &in_stCancellationMutex, const std::function<bool()> &in_fnCancelRequested)
 {
 	out_arrDiagnostics.clear();
 	const fs::path stTarget(in_strTargetRoot);
@@ -315,8 +315,8 @@ bool PublishPackageGuarded(const PackageData &in_stPackage, const std::string &i
 	}
 	PackageData stCopy = in_stPackage;
 	if (!ValidateSceneDocument(stCopy.stScene, out_arrDiagnostics) ||
-			!ValidateAssetManifest(stCopy.stManifest, stCopy.stScene, out_arrDiagnostics) || !ComputePackageDigest(stCopy, out_arrDiagnostics) ||
-			stCopy.strPackageDigest != in_stPackage.strPackageDigest)
+		!ValidateAssetManifest(stCopy.stManifest, stCopy.stScene, out_arrDiagnostics) || !ComputePackageDigest(stCopy, out_arrDiagnostics) ||
+		stCopy.strPackageDigest != in_stPackage.strPackageDigest)
 	{
 		return false;
 	}
@@ -349,8 +349,8 @@ bool PublishPackageGuarded(const PackageData &in_stPackage, const std::string &i
 	do
 	{
 		if (!WriteFile(stStaging / "AssetManifest.json", reinterpret_cast<const std::uint8_t *>(stCopy.strManifestJson.data()), stCopy.strManifestJson.size(), out_arrDiagnostics) ||
-				!WriteFile(stStaging / "Scene.json", reinterpret_cast<const std::uint8_t *>(stCopy.strSceneJson.data()), stCopy.strSceneJson.size(), out_arrDiagnostics) ||
-				!fs::create_directory(stStaging / "blobs", stError) || stError)
+			!WriteFile(stStaging / "Scene.json", reinterpret_cast<const std::uint8_t *>(stCopy.strSceneJson.data()), stCopy.strSceneJson.size(), out_arrDiagnostics) ||
+			!fs::create_directory(stStaging / "blobs", stError) || stError)
 		{
 			break;
 		}

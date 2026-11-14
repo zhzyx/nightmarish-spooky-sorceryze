@@ -196,7 +196,7 @@ ENGINE_NEXT_TEST("Guarded publication cancels before the atomic rename")
 	EngineNext::Assets::PublishResult eResult = EngineNext::Assets::PublishResult::Published;
 	std::mutex stCancellationMutex;
 	ENGINE_NEXT_CHECK(!EngineNext::Assets::PublishPackageGuarded(stPackage, (stRoot / "scene.enpak").string(), eResult, arrDiagnostics, stCancellationMutex, []()
-			{ return true; }));
+																 { return true; }));
 	ENGINE_NEXT_CHECK(!fs::exists(stRoot / "scene.enpak"));
 	fs::remove_all(stRoot);
 }
@@ -222,7 +222,7 @@ ENGINE_NEXT_TEST("Guarded publication serializes cancellation with the atomic re
 	std::atomic<bool> bCancelRequested{ false };
 	std::atomic<bool> bCancellationReturned{ false };
 	std::thread stCancellation([&]()
-			{
+							   {
 		while (!bCallbackEntered)
 		{
 			std::this_thread::yield();
@@ -242,16 +242,16 @@ ENGINE_NEXT_TEST("Guarded publication serializes cancellation with the atomic re
 		bCancellationReturned = true; });
 	EngineNext::Assets::PublishResult eResult = EngineNext::Assets::PublishResult::Published;
 	const bool bPublished = EngineNext::Assets::PublishPackageGuarded(stPackage, (stRoot / "scene.enpak").string(), eResult, arrDiagnostics,
-			stCancellationMutex,
-			[&]()
-			{
-				bCallbackEntered = true;
-				while (!bTryLockReturned)
-				{
-					std::this_thread::yield();
-				}
-				return bCancelRequested.load();
-			});
+																	  stCancellationMutex,
+																	  [&]()
+																	  {
+																		  bCallbackEntered = true;
+																		  while (!bTryLockReturned)
+																		  {
+																			  std::this_thread::yield();
+																		  }
+																		  return bCancelRequested.load();
+																	  });
 	stCancellation.join();
 	ENGINE_NEXT_CHECK(bPublished);
 	ENGINE_NEXT_CHECK(eResult == EngineNext::Assets::PublishResult::Published);

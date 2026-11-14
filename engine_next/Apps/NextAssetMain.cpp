@@ -162,7 +162,7 @@ int RunAi(const std::map<std::string, std::string> &in_mapOptions)
 		return 2;
 	}
 	if (in_mapOptions.count("--output-limit") &&
-			(!SizeOption(in_mapOptions.at("--output-limit"), stConfig.nOutputLimit) || stConfig.nOutputLimit == 0 || stConfig.nOutputLimit > 384ULL * 1024ULL * 1024ULL))
+		(!SizeOption(in_mapOptions.at("--output-limit"), stConfig.nOutputLimit) || stConfig.nOutputLimit == 0 || stConfig.nOutputLimit > 384ULL * 1024ULL * 1024ULL))
 	{
 		return 2;
 	}
@@ -262,7 +262,7 @@ int main(int in_nArgumentCount, char **in_ppArguments)
 			return Failure(arrDiagnostics);
 		}
 		if (!EngineNext::Assets::ParseBuildRequest(stValue, stRequest, arrDiagnostics) ||
-				!EngineNext::Assets::CompilePackage(mapOptions["--source-root"], stRequest, stPackage, arrDiagnostics))
+			!EngineNext::Assets::CompilePackage(mapOptions["--source-root"], stRequest, stPackage, arrDiagnostics))
 		{
 			return Failure(arrDiagnostics);
 		}

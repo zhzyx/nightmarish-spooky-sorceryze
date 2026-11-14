@@ -77,9 +77,9 @@ class WorkflowController final
 	std::set<std::string> setPublishedArtifacts;
 
 	bool Execute(const HostConfig &in_stConfig, const std::string &in_strCommand,
-			const Serialization::JsonValue &in_stInput, Serialization::JsonValue &out_stResult, Assets::Diagnostics &out_arrDiagnostics);
+				 const Serialization::JsonValue &in_stInput, Serialization::JsonValue &out_stResult, Assets::Diagnostics &out_arrDiagnostics);
 	bool SaveState(const HostConfig &in_stConfig, const std::string &in_strRequest, const std::string &in_strRequestDigest, bool in_bPublished,
-			const std::string &in_strDigest, Assets::Diagnostics &out_arrDiagnostics);
+				   const std::string &in_strDigest, Assets::Diagnostics &out_arrDiagnostics);
 	bool ReadState(const HostConfig &in_stConfig, const std::string &in_strRequest, const std::string &in_strRequestDigest, Assets::Diagnostics &out_arrDiagnostics);
 	bool BeginRun(const AiAssetRequest &in_stRequest, const Serialization::JsonValue &in_stOriginalRequest, const std::string &in_strInputDigest);
 	bool PublishEvent(const std::string &in_strKind, const Serialization::JsonValue &in_stPayload, const std::string &in_strState = std::string());
