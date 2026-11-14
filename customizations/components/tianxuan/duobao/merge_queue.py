@@ -410,7 +410,7 @@ class MergeQueue:
         started = datetime.now(timezone.utc)
         popen_kwargs: dict[str, Any] = {}
         if os.name == "nt":
-            popen_kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
+            popen_kwargs["creationflags"] = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
         else:
             popen_kwargs["start_new_session"] = True
         process: subprocess.Popen[str] | None = None
