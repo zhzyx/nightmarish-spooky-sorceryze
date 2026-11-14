@@ -418,6 +418,8 @@ class GiteaClient:
         owner = _validate_segment(owner, "repository owner")
         repo = _validate_segment(repo, "repository name")
         payload = self._request("GET", f"/api/v1/repos/{owner}/{repo}/branches")
+        if payload is None:
+            return []
         if not isinstance(payload, list):
             raise GiteaError(0, "unexpected branches response: expected a JSON array")
         return [_normalize_branch(item) for item in payload]
@@ -432,6 +434,8 @@ class GiteaClient:
             f"/api/v1/repos/{owner}/{repo}/pulls",
             params={"state": state},
         )
+        if payload is None:
+            return []
         if not isinstance(payload, list):
             raise GiteaError(0, "unexpected pulls response: expected a JSON array")
         return [_normalize_pull_request(item) for item in payload]
@@ -483,6 +487,8 @@ class GiteaClient:
             f"/api/v1/repos/{owner}/{repo}/pulls/{number}/merge",
             json_body={"Do": method},
         )
+        if payload is None:
+            return {"merged": True, "sha": None}
         return _normalize_merge(payload)
 
     # ------------------------------------------------------------------
@@ -523,6 +529,8 @@ class GiteaClient:
             ) from error
         if not response.is_success:
             raise _status_error(response, method, path, self._token)
+        if response.status_code == 204 or not response.content.strip():
+            return None
         try:
             return response.json()
         except ValueError as error:
