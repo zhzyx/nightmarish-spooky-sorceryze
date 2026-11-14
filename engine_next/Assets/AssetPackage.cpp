@@ -292,6 +292,13 @@ bool LoadPackage(const std::string &in_strPackageRoot, PackageData &out_stPackag
 
 bool PublishPackage(const PackageData &in_stPackage, const std::string &in_strTargetRoot, PublishResult &out_eResult, Diagnostics &out_arrDiagnostics)
 {
+	std::mutex stCancellationMutex;
+	return PublishPackageGuarded(in_stPackage, in_strTargetRoot, out_eResult, out_arrDiagnostics, stCancellationMutex, std::function<bool()>());
+}
+
+bool PublishPackageGuarded(const PackageData &in_stPackage, const std::string &in_strTargetRoot, PublishResult &out_eResult,
+						   Diagnostics &out_arrDiagnostics, std::mutex &in_stCancellationMutex, const std::function<bool()> &in_fnCancelRequested)
+{
 	out_arrDiagnostics.clear();
 	const fs::path stTarget(in_strTargetRoot);
 	if (stTarget.extension() != ".enpak" || stTarget.filename().empty())
@@ -361,6 +368,14 @@ bool PublishPackage(const PackageData &in_stPackage, const std::string &in_strTa
 		if (!LoadPackage(stStaging.string(), stVerify, arrVerify) || stVerify.strPackageDigest != stCopy.strPackageDigest)
 		{
 			AddDiagnostic(out_arrDiagnostics, "staging_verify", "$", "staging package verification failed");
+			break;
+		}
+		// Cancel uses the same mutex, so the final check and rename share one
+		// linearization point rather than a check-then-act race window.
+		std::lock_guard<std::mutex> stCancellationLock(in_stCancellationMutex);
+		if (in_fnCancelRequested && in_fnCancelRequested())
+		{
+			AddDiagnostic(out_arrDiagnostics, "cancelled", "$", "publication was cancelled before atomic rename");
 			break;
 		}
 		if (!RenameNoReplace(stStaging, stTarget))

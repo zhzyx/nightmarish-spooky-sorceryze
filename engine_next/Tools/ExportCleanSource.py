@@ -14,6 +14,13 @@ PORTABLE_CORE_FILES = [
     "ai_core/Runtime.h",
     "ai_core/Runtime.cpp",
 ]
+AI_HOST_FILES = [
+    "tools/ainative/executor_cli.py",
+    "tools/ainative/executor.py",
+    "tools/ainative/contracts.py",
+    "tools/ainative/extensions.py",
+    "tools/ainative/editor_demo.py",
+]
 
 
 def digest(path):
@@ -30,6 +37,7 @@ def source_files(repo):
         files.append(path.relative_to(repo).as_posix())
     files.extend(TOOL_FILES)
     files.extend(PORTABLE_CORE_FILES)
+    files.extend(AI_HOST_FILES)
     return sorted(files)
 
 

@@ -5,7 +5,7 @@
 ## 当前结论
 
 - 用户目标：复用现有 MVC、`AICore::Runtime`、AINative Executor／Provider 和 M2 运行时，新增中立资产契约、独立资产包、宿主进程适配，以及新旧运行时对同一场景的消费。
-- 用户已于 2026-11-14 23:00 明确“开始落地”，确认按本文件五个 PR 连续实施。PR 1 已由 PR #1272 合入并回读 main；PR 2 已完成本机实现、独立审查和验证，PR 3–5 与整单验收仍未完成。不得据此宣称 M3 完成。
+- 用户已于 2026-11-14 23:00 明确“开始落地”，确认按本文件五个 PR 连续实施。PR 1／2 已分别由 PR #1272／#1277 合入并回读 main；PR 3 已完成本机实现、独立审查和验证，正在进入精确候选交付，PR 4–5 与整单验收仍未完成。不得据此宣称 M3 完成。
 - 需求 ID：`engine-next-assets-ai-workflow-m3-20261114`。
 - Issue：[#1240](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1240)。
 - 类别：`type:development`。
@@ -483,4 +483,6 @@ tools/engine_next_legacy/fixtures/{Whitelist.tscn,ScriptRejected.tscn,Unsupporte
 
 ## 验证与采集证据
 
-当前只有依赖 Issue／PR 回读、基线核对和 intake-only 结果；没有 M3 实现、构建、跨平台或业务验收证据。后续证据必须绑定实际候选、命令、平台、输入摘要和结果，不预填通过。
+- PR 1／2 的中立契约、资产编译和包证据见 `data-collection/engine-next-assets-ai-workflow-m3-pr1-*` 与 `pr2-*`，对应 PR #1272／#1277 已合入。
+- PR 3 的源码审查与本机验证见 `data-collection/engine-next-assets-ai-workflow-m3-pr3-r3-review.json`、`pr3-r3-verification.json` 和 `pr3-r3-build-impact.json`；R1／R2 审查与证据保留用于追踪 CI 格式、负责人和 Windows 兼容性修正。真实 Executor 离线／恢复／进程边界、52 个原生测试、ASan／UBSan、干净源码树和真实链接清单均已执行；Executor／contracts／extensions 定向回归共 44 项通过。
+- 当前内置 Python 的 AINative 全量 422 项回归记录为 17 失败、42 错误、62 跳过，包含 `os.waitid` 缺失及关联 Provider／owned-process 失败，不得记为全量通过。Windows／Linux 精确 CI、PR 4–5 和整单验收仍是独立待办。

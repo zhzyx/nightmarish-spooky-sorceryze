@@ -52,6 +52,7 @@
     "ws2tcpip.h",
     "fcntl.h",
     "poll.h",
+    "spawn.h",
     "netdb.h"
   ],
   "forbidden_cpp_tokens": [

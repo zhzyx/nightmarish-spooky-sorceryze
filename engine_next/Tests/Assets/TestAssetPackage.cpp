@@ -33,8 +33,11 @@
 #include "engine_next/include/EngineNext/Assets/AssetCompiler.h"
 #include "engine_next/include/EngineNext/Serialization/Sha256.h"
 
+#include <atomic>
 #include <filesystem>
 #include <fstream>
+#include <mutex>
+#include <thread>
 
 namespace
 {
@@ -178,5 +181,81 @@ ENGINE_NEXT_TEST("Asset publication validates forged input before reconciling an
 	arrDiagnostics.clear();
 	ENGINE_NEXT_CHECK(EngineNext::Assets::LoadPackage((stRoot / "scene.enpak").string(), stLoaded, arrDiagnostics));
 	ENGINE_NEXT_CHECK_EQ(stLoaded.strPackageDigest, stPackage.strPackageDigest);
+	fs::remove_all(stRoot);
+}
+
+ENGINE_NEXT_TEST("Guarded publication cancels before the atomic rename")
+{
+	namespace fs = std::filesystem;
+	const fs::path stRoot = fs::current_path() / "M3GuardedTest";
+	fs::remove_all(stRoot);
+	fs::create_directories(stRoot);
+	EngineNext::Assets::PackageData stPackage;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(EngineNext::Assets::CompilePackage(EngineNext::Tests::Assets::FixtureRoot().string(), ValidRequest(), stPackage, arrDiagnostics));
+	EngineNext::Assets::PublishResult eResult = EngineNext::Assets::PublishResult::Published;
+	std::mutex stCancellationMutex;
+	ENGINE_NEXT_CHECK(!EngineNext::Assets::PublishPackageGuarded(stPackage, (stRoot / "scene.enpak").string(), eResult, arrDiagnostics, stCancellationMutex, []()
+																 { return true; }));
+	ENGINE_NEXT_CHECK(!fs::exists(stRoot / "scene.enpak"));
+	fs::remove_all(stRoot);
+}
+
+ENGINE_NEXT_TEST("Guarded publication serializes cancellation with the atomic rename")
+{
+	namespace fs = std::filesystem;
+	const fs::path stRoot = fs::current_path() / "M3GuardedRaceTest";
+	fs::remove_all(stRoot);
+	fs::create_directories(stRoot);
+	EngineNext::Assets::PackageData stPackage;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	const bool bCompiled = EngineNext::Assets::CompilePackage(EngineNext::Tests::Assets::FixtureRoot().string(), ValidRequest(), stPackage, arrDiagnostics);
+	ENGINE_NEXT_CHECK(bCompiled);
+	if (!bCompiled)
+	{
+		fs::remove_all(stRoot);
+		return;
+	}
+	std::mutex stCancellationMutex;
+	std::atomic<bool> bCallbackEntered{ false };
+	std::atomic<bool> bTryLockReturned{ false };
+	std::atomic<bool> bCancelRequested{ false };
+	std::atomic<bool> bCancellationReturned{ false };
+	std::thread stCancellation([&]()
+							   {
+		while (!bCallbackEntered)
+		{
+			std::this_thread::yield();
+		}
+		std::unique_lock<std::mutex> stLock(stCancellationMutex, std::defer_lock);
+		const bool bLocked = stLock.try_lock();
+		if (bLocked)
+		{
+			bCancelRequested = true;
+		}
+		bTryLockReturned = true;
+		if (!bLocked)
+		{
+			stLock.lock();
+			bCancelRequested = true;
+		}
+		bCancellationReturned = true; });
+	EngineNext::Assets::PublishResult eResult = EngineNext::Assets::PublishResult::Published;
+	const bool bPublished = EngineNext::Assets::PublishPackageGuarded(stPackage, (stRoot / "scene.enpak").string(), eResult, arrDiagnostics,
+																	  stCancellationMutex,
+																	  [&]()
+																	  {
+																		  bCallbackEntered = true;
+																		  while (!bTryLockReturned)
+																		  {
+																			  std::this_thread::yield();
+																		  }
+																		  return bCancelRequested.load();
+																	  });
+	stCancellation.join();
+	ENGINE_NEXT_CHECK(bPublished);
+	ENGINE_NEXT_CHECK(eResult == EngineNext::Assets::PublishResult::Published);
+	ENGINE_NEXT_CHECK(bCancellationReturned);
+	ENGINE_NEXT_CHECK(fs::exists(stRoot / "scene.enpak"));
 	fs::remove_all(stRoot);
 }
