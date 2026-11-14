@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9908f0ee8e6702a322dbdd9350c3a3f25daf3a75",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3fd2ee5b5f9adc5d0fcf7c080c2f154577d1a830ae3d8a60d3e3e570c3d1cfc3",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1080",
+    "action": "validation",
+    "detection_head": "1593063c4ea197be23f40b81f987b8cf068f6dff",
+    "context_sha256": "4b4fe771961c6b705a35a8945a468a99067dab2f5887fda331ee816d21b58e15",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "reviewed-batch-preliminary-gate.stderr",
+    "diagnosis": "Preliminary gate ran while independent review was active; its genuine dispatch event was still untracked. Trusted Diting validator identified that exact event; no product validation failure. Root owns staging after review terminal.",
+    "next_action": "Reconcile actual review terminal, collect and stage owned native events, then run formal writer gate and committed verification for exact candidate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T00:22:40.154297+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-14T00:23:58.927257+00:00",
+  "sha256": "bd510e8e5ef5faa832c30a3d504f95677df1c8f03fb3038593a329cccbe3184c"
+}

@@ -258,7 +258,7 @@ func run():
             panel.endpoint_edit.text = saved.endpoint
             panel.kimi_model_edit.text = ""
             panel.save_service_settings()
-            check(FileAccess.get_file_as_string(panel.service_config_path) == original_file, "empty model preserves saved configuration")
+            check(FileAccess.get_file_as_string(panel.service_config_path) == original_file, "hidden legacy model control does not change connection settings")
         else:
             panel.endpoint_edit.text = "http://external.example:8188"
             panel.save_service_settings()
@@ -268,7 +268,7 @@ func run():
         panel._update_service_summary()
         check(panel.service_draft() == saved, mode + " restores exact configuration")
         if mode.begins_with("api_"):
-            check(panel.kimi_model_label.text == "API 模型 ID", "generic model label")
+            check(not panel.kimi_model_label.visible and not panel.kimi_model_edit.visible, "no duplicate global API model entry")
             check(not "Kimi" in panel.service_status.text and not "GPT" in panel.service_status.text, "accurate API status")
             check(("Blender" if mode == "api_sculpt" else "Godot") in panel.service_status.text, "accurate builder status")
     panel.queue_free()

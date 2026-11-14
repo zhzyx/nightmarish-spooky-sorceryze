@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "tianxuan-atomic-transactions-1116-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-audit-tx-02-20261114",
+  "kind": "request",
+  "occurred_at": "2026-11-13T23:26:50.766220+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1116",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "bad67dcc35d525783bfb12bc7e4363cfdfb0cc1da7c2dcb19ca7e3106806bc2c",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Fix shared SQLite connection transaction boundaries and optimistic version concurrency",
+    "authorization_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "operator": "Sail-Li",
+    "design": "design-docs/tianxuan-atomic-transactions-20261114.md",
+    "validation": "data-collection/tianxuan-atomic-transactions-1116.json",
+    "observation": "Current authorized repair and actual Issue readback, no claim of deployed acceptance",
+    "usage": null,
+    "usage_unknown_reason": "Actual model usage not collected"
+  },
+  "evidence_refs": [],
+  "sha256": "07a4d4dba1e98aac503667f1e1dbfc948ce0dc4792e84f6c50aff5074be30ea3"
+}

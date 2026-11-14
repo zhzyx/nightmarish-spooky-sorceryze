@@ -52,6 +52,8 @@ MESSAGES = {
     "source_invalid": "源文件格式无效或不受此节点支持。图像输入请选择 PNG/JPEG；网格复制请选择 GLB 或内嵌 glTF。",
     "prompt_missing": "缺少生成提示词。请在节点的提示词参数或文字说明中填写内容后重试。",
     "node_unsupported": "当前生成服务不支持该节点类型。请检查节点类型及“本机设置”的服务模式。",
+    "api_key_missing": "未检测到 API 凭据环境变量；请核对本机连接设置并在配置环境变量后重启马良。",
+    "node_api_model_invalid": "该节点的 API 模型为空、无效或已下线。请在节点检查器中填写有效的本节点模型 ID。",
     "run_service_missing": "本次运行的生成服务快照缺失，不能安全恢复。请保留当前记录并重新创建运行。",
     "editor_command_failed": "操作未完成。请检查节点输入与本机设置；本机诊断已记录不含凭据的错误类别。",
     "modeling_runtime_missing": "指令建模需要有效的 Godot 程序和内置构造工具，请使用包含该功能的马良引擎。",
@@ -151,12 +153,10 @@ def settings(value):
         ):
             raise ServiceError("service_config_invalid")
     if result["mode"] in ("api_modeling", "api_sculpt"):
-        from api_planner import validate_config
+        from api_planner import validate_connection
 
         try:
-            validate_config(
-                dict(endpoint=result["endpoint"], model=result.get("api_model"), key_env=result.get("api_key_env"))
-            )
+            validate_connection(dict(endpoint=result["endpoint"], key_env=result.get("api_key_env")))
         except ValueError as error:
             code = "gpt_modeling_retired" if str(error) == "gpt_modeling_retired" else "service_config_invalid"
             raise ServiceError(code) from None
@@ -394,13 +394,11 @@ def check_service(value):
 
 
 def _probe_api(config):
-    from api_planner import check_configuration
+    from api_planner import check_connection
     from modeling_provider import MESSAGES as API_MESSAGES
 
     try:
-        auth = check_configuration(
-            dict(endpoint=config["endpoint"], model=config["api_model"], key_env=config["api_key_env"])
-        )
+        auth = check_connection(dict(endpoint=config["endpoint"], key_env=config["api_key_env"]))
     except ValueError as error:
         code = "gpt_modeling_retired" if str(error) == "gpt_modeling_retired" else "service_config_invalid"
         raise ServiceError(code) from None
@@ -626,7 +624,9 @@ def _migrate_node_models(node, config):
         return
     mesh_kind = kind.endswith("mesh") or kind == "model_adjust"
     if "model" not in node:
-        if mode == "kimi_native":
+        if mode in ("api_modeling", "api_sculpt"):
+            node["model"] = config.get("api_model", "")
+        elif mode == "kimi_native":
             node["model"] = config.get("model3d_model", "v3.1") if mesh_kind else ""
         elif mode == "codex" and not mesh_kind:
             node["model"] = config.get("image_model", "") or "builtin"
@@ -638,7 +638,9 @@ def _migrate_node_models(node, config):
         else:
             node["image_model"] = config.get("image_model", "") if mode == "comfy" else ""
     if not isinstance(node["model"], str) or not isinstance(node.get("image_model", ""), str):
-        raise ServiceError("service_config_invalid")
+        raise ServiceError(
+            "node_api_model_invalid" if mode in ("api_modeling", "api_sculpt") else "service_config_invalid"
+        )
 
 
 def _provider_key(providers, prefix):
@@ -677,30 +679,45 @@ def prepare_provider(config, model, database, run_id):
         raise ServiceError("node_unsupported")
     if not generated:
         return registry, providers, {"mode": "offline"}
-    if config["mode"] in ("api_modeling", "api_sculpt"):
-        report = _probe_api(config)
-        if not report["connected"] or any(not node["type"].endswith("mesh") for node in generated):
-            raise ServiceError(report.get("code") or "service_not_configured")
-        from modeling_provider import ModelingProvider
-        from sculpt_provider import SculptProvider
-
-        provider_id = "api-modeling" if config["mode"] == "api_modeling" else "api-sculpt"
-        runtime = "godot_path" if config["mode"] == "api_modeling" else "blender_path"
-        provider_config = dict(
-            planner=dict(endpoint=config["endpoint"], model=config["api_model"], key_env=config["api_key_env"]),
-            storage=str(Path(database).resolve().parent / (provider_id + "-state")),
-            builder_path=config["builder_path"],
-        )
-        provider_config[runtime] = config[runtime]
-        register_workflow(registry)
-        providers[provider_id] = (ModelingProvider if runtime == "godot_path" else SculptProvider)(provider_config)
-        for node in generated:
-            node["provider"] = provider_id
-        return registry, providers, dict(mode=config["mode"], provider=provider_config)
     for node in generated:
         _migrate_node_models(node, config)
     snapshots, provider_types = {}, {}
     storage = Path(database).resolve().parent
+    if config["mode"] in ("api_modeling", "api_sculpt"):
+        from api_planner import validate_config
+        from modeling_provider import ModelingProvider
+        from sculpt_provider import SculptProvider
+
+        if any(not node["type"].endswith("mesh") for node in generated):
+            raise ServiceError("node_unsupported")
+        # Validate all node choices before probing credentials or constructing a provider.
+        planners = []
+        for node in generated:
+            planner = dict(endpoint=config["endpoint"], model=node["model"], key_env=config["api_key_env"])
+            try:
+                validate_config(planner)
+            except ValueError:
+                raise ServiceError("node_api_model_invalid") from None
+            planners.append(planner)
+        report = _probe_api(config)
+        if not report["connected"]:
+            raise ServiceError(report.get("code") or "service_not_configured")
+        prefix = "api-modeling" if config["mode"] == "api_modeling" else "api-sculpt"
+        runtime = "godot_path" if config["mode"] == "api_modeling" else "blender_path"
+        register_workflow(registry)
+        for node, planner in zip(generated, planners):
+            candidate = dict(
+                planner=planner, storage=str(storage / (prefix + "-state")), builder_path=config["builder_path"]
+            )
+            candidate[runtime] = config[runtime]
+            key = next((key for key, value in snapshots.items() if value == candidate), None)
+            if key is None:
+                key = _provider_key(providers, prefix)
+                snapshots[key] = candidate
+                provider_types[key] = config["mode"]
+                providers[key] = (ModelingProvider if runtime == "godot_path" else SculptProvider)(candidate)
+            node["provider"] = key
+        return registry, providers, _provider_snapshot(config["mode"], snapshots, provider_types)
 
     if config["mode"] == "kimi_native":
         from kimi_provider import KimiNativeDirectProvider
@@ -919,6 +936,11 @@ def restore_provider(snapshot):
                 from codex_provider import CodexProvider
 
                 providers[key] = CodexProvider(config)
+            elif kind in ("api_modeling", "api_sculpt"):
+                from modeling_provider import ModelingProvider
+                from sculpt_provider import SculptProvider
+
+                providers[key] = (ModelingProvider if kind == "api_modeling" else SculptProvider)(config)
             elif kind in RETIRED_MODELING_PROVIDERS:
                 continue
             else:

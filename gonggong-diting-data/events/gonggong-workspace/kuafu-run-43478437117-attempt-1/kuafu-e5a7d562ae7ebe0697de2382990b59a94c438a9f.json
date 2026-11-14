@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e5a7d562ae7ebe0697de2382990b59a94c438a9f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-run-43478437117-attempt-1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1080",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "72fa573104b637181de96b258cf60bbf6e70f7548784857a5ca17d2b85cdd797",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1080",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1080",
+    "action": "dispatch",
+    "detection_head": "d3177311f67720fc5ef32a399f2398ce2ab0fb67",
+    "context_sha256": "04efe099b26c54ee8c833efb986bf69b6d334d31eb01dc935578735a08cc21f9",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "codex-native-review-1080-reconciled",
+    "diagnosis": "Operator reconcile config used ticket.changed rather than the actual execution.finished event. No launch repeated or reservation removed; actual completed worker verified and reconciled after correcting event type.",
+    "next_action": "Continue reviewed1080 delivery; retain operator error as recovered invocation evidence, not a new product bug.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T18:43:27.193362+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-13T18:44:41.825502+00:00",
+  "sha256": "d1e0284951c3419f8f49b442913332449fe811ae3480ee6c7dcb0be90c55a96c"
+}

@@ -609,6 +609,7 @@ func add_generator():
 	var kind = generator_choice.get_item_metadata(generator_choice.selected)
 	var id = "n" + str(Time.get_ticks_usec())
 	var data = {"id": id, "type": kind, "version": "1", "provider": _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45}
+	if kind != 'copy' and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
 	_migrate_node_models(data, service_draft())
 	nodes.append(data)
 	rebuild()
@@ -624,7 +625,10 @@ func _migrate_node_models(data: Dictionary, legacy: Dictionary):
 	var mesh_kind = _is_mesh_kind(kind)
 	var legacy_image = str(legacy.get('image_model', ''))
 	if not data.has('model'):
-		if mode == 'kimi_native': data.model = str(legacy.get('model3d_model', 'v3.1')) if mesh_kind else ''
+		if mode in ['api_modeling', 'api_sculpt']:
+			var legacy_model = legacy.get('api_model', '')
+			data.model = legacy_model if typeof(legacy_model) == TYPE_STRING else ''
+		elif mode == 'kimi_native': data.model = str(legacy.get('model3d_model', 'v3.1')) if mesh_kind else ''
 		elif cli_mode and not mesh_kind: data.model = legacy_image if not legacy_image.is_empty() else 'builtin'
 		else: data.model = str(legacy.get('mesh_model', '') if mesh_kind else legacy_image)
 	if kind.ends_with('mesh') and not data.has('image_model'):
@@ -635,9 +639,9 @@ func _sync_node_model_controls(data: Dictionary):
 	var kind = str(data.get('type', 'copy'))
 	var generating = kind != 'copy' and not _retired_mesh_node(data) and not _using_legacy_service()
 	node_model_label.visible = generating
-	node_model_choice.visible = generating
+	node_model_choice.visible = generating and _service_mode() not in ['api_modeling', 'api_sculpt']
 	node_model_edit.visible = generating
-	var secondary_image = generating and kind in ['image_to_mesh', 'text_to_mesh'] and _service_mode() != 'kimi_native'
+	var secondary_image = generating and kind in ['image_to_mesh', 'text_to_mesh'] and _service_mode() not in ['kimi_native', 'api_modeling', 'api_sculpt']
 	node_image_model_label.text = '本节点重绘图像模型' if kind == 'image_to_mesh' else '本节点文字生成图像模型'
 	node_image_model_label.visible = secondary_image
 	node_image_model_choice.visible = secondary_image
@@ -646,6 +650,8 @@ func _sync_node_model_controls(data: Dictionary):
 	var models: Dictionary = service_report.get('models', {}) if service_report_draft == JSON.stringify(service_draft()) else {}
 	var primary = models.get('mesh' if _is_mesh_kind(kind) else 'image', [])
 	var primary_name = str(data.get('model', ''))
+	if _service_mode() in ['api_modeling', 'api_sculpt'] and typeof(data.get('model', '')) != TYPE_STRING:
+		primary_name = ''
 	if _service_mode() == 'codex' and not _is_mesh_kind(kind): primary = ['builtin']
 	_set_model_options(node_model_choice, primary, primary_name, not models.is_empty())
 	node_model_edit.text = primary_name
@@ -719,6 +725,7 @@ func apply_fields() -> bool:
 		if data.id == selected_id:
 			if data.get('type', 'copy') != 'copy' and not _retired_mesh_node(data) and not _using_legacy_service():
 				var primary_name = node_model_edit.text.strip_edges()
+				if _service_mode() in ['api_modeling', 'api_sculpt']: primary_name = node_model_edit.text
 				if data.has('model') or not primary_name.is_empty(): data.model = primary_name
 				if data.get('type', '') in ['image_to_mesh', 'text_to_mesh']:
 					var secondary_name = node_image_model_edit.text.strip_edges()
@@ -1546,6 +1553,7 @@ func create_context_node(kind: String):
 	var id = "n" + str(Time.get_ticks_usec())
 	while not nodes.filter(func(n): return n.id == id).is_empty(): id += "x"
 	var data = {"id": id, "type": kind, "version": "1", "provider": "local-copy" if kind == "copy" else _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
+	if kind != 'copy' and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
 	_migrate_node_models(data, service_draft())
 	nodes.append(data)
 	node_picker.hide()
@@ -1844,9 +1852,8 @@ func _restore_service_settings(settings: ConfigFile):
 				# Old route fields do not select the SDK tools or authenticate them.
 				service_saved.endpoint = ''
 			if service_saved.mode in ['api_modeling', 'api_sculpt']:
-				service_saved['api_model'] = str(loaded.get('api_model', ''))
+				if loaded.has('api_model'): service_saved['api_model'] = loaded.api_model
 				service_saved['api_key_env'] = str(loaded.get('api_key_env', 'AINATIVE_API_KEY'))
-				kimi_model_edit.text = service_saved.api_model
 			if service_saved.mode == 'kimi_native':
 				for field in ['image_tool_path', 'image_pythonw_path']:
 					var control: LineEdit = kimi_image_tool_edit if field == 'image_tool_path' else kimi_image_pythonw_edit
@@ -1951,7 +1958,8 @@ func service_draft() -> Dictionary:
 		value['builder_path'] = str(get_meta('ainative_tools_dir', '')).path_join('sculpt_builder.py') if get_meta('ainative_builtin', false) else ProjectSettings.globalize_path('res://../../tools/ainative/sculpt_builder.py')
 	if value.mode in ['api_modeling', 'api_sculpt']:
 		value.image_model = ''
-		value['api_model'] = kimi_model_edit.text.strip_edges()
+		# Retain the old value only to migrate unopened legacy workflows.
+		if service_saved.has('api_model'): value['api_model'] = service_saved.api_model
 		value['api_key_env'] = str(service_saved.get('api_key_env', 'AINATIVE_API_KEY'))
 	if value.mode == 'local_mesh': value.image_model = ''
 	return value
@@ -2003,10 +2011,10 @@ func _update_service_summary():
 		_set_model_options(image_model_choice, ['builtin'], 'builtin', true)
 	endpoint_edit.visible = not cli_mode and not kimi_mode
 	endpoint_edit.editable = mode in ['comfy', 'local_mesh', 'api_modeling', 'api_sculpt']
-	kimi_model_label.text = 'API 模型 ID' if mode in ['api_modeling', 'api_sculpt'] else 'Kimi 模型'
-	kimi_auth_label.text = '凭据环境变量：' + str(service_saved.get('api_key_env', 'AINATIVE_API_KEY')) + '；检测仅核对本机配置，运行时验证接口。' if mode in ['api_modeling', 'api_sculpt'] else 'Tripo API 与 Kimi Work 凭据由 agent-gw SDK 管理。检测仅核对本机工具；账号授权、额度与网络尚未验证，以实际任务回执为准。无需配置 Kimi 语言模型地址或模型。'
-	kimi_model_label.visible = api_mode
-	kimi_model_edit.visible = api_mode
+	kimi_model_label.text = 'Kimi 模型'
+	kimi_auth_label.text = '凭据环境变量：' + str(service_saved.get('api_key_env', 'AINATIVE_API_KEY')) + '；模型请在各节点检查器中选择。检测仅核对本机配置，运行时验证接口。' if mode in ['api_modeling', 'api_sculpt'] else 'Tripo API 与 Kimi Work 凭据由 agent-gw SDK 管理。检测仅核对本机工具；账号授权、额度与网络尚未验证，以实际任务回执为准。无需配置 Kimi 语言模型地址或模型。'
+	kimi_model_label.hide()
+	kimi_model_edit.hide()
 	kimi_auth_label.visible = kimi_mode or api_mode
 	if kimi_model3d_fields != null: kimi_model3d_fields.visible = kimi_mode
 	if kimi_image_fields != null: kimi_image_fields.visible = kimi_mode
@@ -2038,7 +2046,7 @@ func _update_service_summary():
 		elif mode == 'offline': label.text = node_label(kind) + '：不可用，尚未连接真实生成服务'
 		elif mode == 'legacy': label.text = node_label(kind) + '：由已有高级配置检查'
 		elif api_mode:
-			label.text = node_label(kind) + ('：待核对配置 · 自选 API 与 ' + ('Blender' if sculpt_mode else 'Godot') if _is_mesh_kind(kind) else '：不可用 · 语义规划仅生成网格')
+			label.text = node_label(kind) + ('：待核对配置 · 自选 API 与 ' + ('Blender' if sculpt_mode else 'Godot') if kind.ends_with('mesh') else '：不可用 · 语义规划仅生成网格')
 		elif mode == 'local_mesh':
 			label.text = node_label(kind) + ('：待检测 · 本机模型' if kind == 'image_to_mesh' else '：不可用 · 仅直接图生网格')
 		else: label.text = node_label(kind) + ('：待检测 · Kimi Work 独立图像服务' if kimi_mode and not _is_mesh_kind(kind) else '：待检测 · Tripo API 直接三维' if kimi_mode else '：待检测')
@@ -2087,8 +2095,8 @@ func save_service_settings():
 		key_name.compile('^[A-Za-z_][A-Za-z0-9_]*$')
 		var control = RegEx.new()
 		control.compile('[\\x00-\\x1f\\x7f]')
-		if api_address.search(draft.endpoint) == null or control.search(draft.endpoint) != null or draft.api_model.is_empty() or draft.api_model.length() > 256 or control.search(draft.api_model) != null or key_name.search(draft.api_key_env) == null:
-			_show_run_problem('请填写有效 API 地址、模型 ID 和凭据环境变量名。远程地址须用 HTTPS，不可包含账号、密码或查询参数。')
+		if api_address.search(draft.endpoint) == null or control.search(draft.endpoint) != null or key_name.search(draft.api_key_env) == null:
+			_show_run_problem('请填写有效 API 地址和凭据环境变量名。远程地址须用 HTTPS，不可包含账号、密码或查询参数。')
 			return
 		if draft.mode == 'api_sculpt' and draft.blender_path.is_empty():
 			_show_run_problem('请填写 Blender 程序路径后保存。')
@@ -2177,9 +2185,18 @@ func _service_blocker(kind: String, data: Dictionary = {}) -> String:
 	var redraw = kind == "image_to_mesh" and not effective_prompt.is_empty() and _service_mode() not in ['kimi_native', 'local_mesh', 'api_modeling', 'api_sculpt']
 	var selected_model = str(data.get('model', '')).strip_edges()
 	var secondary_image = str(data.get('image_model', '')).strip_edges()
-	var fixed_or_global_model = (_service_mode() == 'kimi_native' and not _is_mesh_kind(kind)) or _service_mode() in ['api_modeling', 'api_sculpt']
-	if not fixed_or_global_model and selected_model.is_empty():
+	var fixed_model = _service_mode() == 'kimi_native' and not _is_mesh_kind(kind)
+	if not fixed_model and selected_model.is_empty():
 		return '该节点尚未选择模型，请在节点检查器中填写或选择模型。'
+	if _service_mode() in ['api_modeling', 'api_sculpt']:
+		var raw_model = data.get('model', '')
+		var invalid_chars = RegEx.new()
+		invalid_chars.compile('[\\x00-\\x1f\\x7f]')
+		var retired_model = RegEx.new()
+		retired_model.compile('^(chatgpt(-[0-9][a-z0-9]*([.-][a-z0-9]+)*)?|gpt-([0-9][a-z0-9]*|oss)([.-][a-z0-9]+)*)$')
+		var normalized = selected_model.to_lower().trim_prefix('ft:').get_slice(':', 0)
+		if not raw_model is String or raw_model != selected_model or selected_model.length() > 256 or invalid_chars.search(selected_model) != null or selected_model.to_lower().begins_with('openai/') or retired_model.search(normalized) != null:
+			return '该节点的 API 模型无效或已下线，请在节点检查器中填写有效的本节点模型 ID。'
 	if _service_mode() in ['comfy', 'codex'] and ((kind == 'text_to_mesh') or redraw) and secondary_image.is_empty():
 		return '该节点需要图像模型，请在节点检查器中选择文字生成图像／重绘模型。'
 	if not service_report.is_empty() and service_report_draft == JSON.stringify(service_draft()):

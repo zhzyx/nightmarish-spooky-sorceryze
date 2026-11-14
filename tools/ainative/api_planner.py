@@ -30,8 +30,9 @@ def _is_openai_model(model):
     )
 
 
-def validate_config(config):
-    require(isinstance(config, dict) and set(config) == {"endpoint", "model", "key_env"}, "api_config_invalid")
+def validate_connection(config):
+    """Validate connection settings without selecting an inference model."""
+    require(isinstance(config, dict) and set(config) == {"endpoint", "key_env"}, "api_config_invalid")
     require(all(isinstance(v, str) and v.strip() == v and v for v in config.values()), "api_config_invalid")
     url = urllib.parse.urlsplit(config["endpoint"])
     try:
@@ -52,19 +53,27 @@ def validate_config(config):
         "api_config_invalid",
     )
     require(re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", config["key_env"]) is not None, "api_config_invalid")
-    require(len(config["model"]) <= 256 and not any(ord(c) < 32 for c in config["model"]), "api_config_invalid")
     host = url.hostname.rstrip(".").lower()
     require(
         host != "api.openai.com"
-        and not host.endswith((".api.openai.com", ".openai.azure.com", ".openai.azure.us", ".openai.azure.cn"))
-        and not _is_openai_model(config["model"]),
+        and not host.endswith((".api.openai.com", ".openai.azure.com", ".openai.azure.us", ".openai.azure.cn")),
         "gpt_modeling_retired",
     )
     return config
 
 
-def check_configuration(config):
-    validate_config(config)
+def validate_config(config):
+    require(isinstance(config, dict) and set(config) == {"endpoint", "model", "key_env"}, "api_config_invalid")
+    validate_connection({key: config[key] for key in ("endpoint", "key_env")})
+    model = config["model"]
+    require(isinstance(model, str) and model and model.strip() == model, "api_config_invalid")
+    require(len(model) <= 256 and not any(ord(c) < 32 or ord(c) == 127 for c in model), "api_config_invalid")
+    require(not _is_openai_model(model), "gpt_modeling_retired")
+    return config
+
+
+def check_connection(config):
+    validate_connection(config)
     ready = bool(os.environ.get(config["key_env"]))
     return dict(
         connected=ready,
@@ -73,6 +82,11 @@ def check_configuration(config):
         auth_mode="api_key",
         message="Configuration checked; endpoint and inference are not yet verified.",
     )
+
+
+def check_configuration(config):
+    validate_config(config)
+    return check_connection({key: config[key] for key in ("endpoint", "key_env")})
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
