@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "issue_number": 1042,
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "previous_main": "8f3eaac66e67537fad415cf9db0edfdcba912714",
+  "integrated_main": "5838241afad2c5f699f06a76b1c299c5560677d4",
+  "integration_strategy": "fast-forward",
+  "implementation_merge_commit": "fe98b82a19da73c5339c9a21959f65950c62e73a",
+  "native_input_changes": [],
+  "overlapping_write_paths": [],
+  "native_rebuild_required": false,
+  "auto_integrate": {
+    "result": "merge_conflict_reported",
+    "incident": "ad173b46be91ab01bf24327b62fe911372f5a5608d406661b51e03f4da1ce8fb",
+    "actual_git_merge_result": "fast-forward without content conflicts",
+    "recovery_event": "gonggong-diting-data/events/gonggong-workspace/engine-next-headless-runtime-m2-20261113/kuafu-327c7718495f96e989b03661123fed05fcd8882b.json"
+  },
+  "main_advance_incident": {
+    "incident": "a6c3eeb9d59ed745d6a40d00ad60cd578f3768e17df03554508748d2bf4b19ba",
+    "event": "gonggong-diting-data/events/gonggong-workspace/engine-next-headless-runtime-m2-20261113/kuafu-97aea38354a0a042b9d94497f6443c5d254f56a6.json"
+  },
+  "unverified": [
+    "The final evidence PR must be signed on this base, pass CI, merge and be read back on origin/main before issue closure"
+  ]
+}

@@ -62,8 +62,13 @@
 - 已在 `7869145e78da37e8dc8b7f50965ac4fdcb3aca07` 整合该基线，原生输入不变，原 module-impact 门禁再次通过。
 - 追加证据：`data-collection/engine-next-headless-runtime-m2-pr5-main-99a8e8cb-integration.json`。
 
-## 待验证与证据边界
+## 最终平台验收与收尾
 
-- Windows、Ubuntu 和 macOS 的精确候选 CI、main 回读及完整 M2 清单核对完成后，才能关闭 #1042。
+- PR #1225 的签名 head `03144fe7de962658af218095e5067425630f7cc6` 已通过 Windows／MSVC、Ubuntu／Clang、macOS／Clang 真实三进程 10,000 tick、静态检查、Issue 关联和 Windows 编辑器检查。
+- 该 PR 已合入为 `fe98b82a19da73c5339c9a21959f65950c62e73a`；main 运行 `43551606803` 的 Windows、Ubuntu 和 macOS 三个作业也全部成功。
+- 总验收前 12 项已由本地、精确 PR 和 main 证据闭合，包括干净构建／运行、双客户端出生、权威模拟、预测校正、插值、重连、负例、优雅停服、有界长稳、链接发布边界、三平台和 legacy 回归。
+- 最后一项是最终证据 PR 的合入与 main 回读；完成前 #1042 和 #1138 保持开放，不预写关单回执。
+- 最终证据签发前，main 已 fast-forward 整合至 `8f3eaac66e67537fad415cf9db0edfdcba912714`；上游仅修改天璇桥接相关文件，与 Engine Next 原生输入和最终写入路径均无重叠。集成证据为 `data-collection/engine-next-headless-runtime-m2-final-main-8f3eaac6-integration.json`。
+- 随后 main 又前进至 `5838241afad2c5f699f06a76b1c299c5560677d4`，新增 AI 工作流与天璇功能但未触及 Engine Next。树级自动集成报告冲突，真实 Git 检查则 fast-forward 成功且无内容冲突；恢复证据为 `data-collection/engine-next-headless-runtime-m2-final-main-5838241a-integration.json`。
 
-证据入口：`engine_next/build-impact.json` 的 `evidence` 字段；最终验证记录位于 `data-collection/`，未生成的项目不预写通过。
+最终平台证据：`data-collection/engine-next-headless-runtime-m2-final-platforms.json`。证据入口仍为 `engine_next/build-impact.json` 的 `evidence` 字段。

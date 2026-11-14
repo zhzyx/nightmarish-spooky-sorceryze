@@ -1,0 +1,240 @@
+{
+  "acceptance": [
+    {
+      "evidence": [
+        "data-collection/engine-next-headless-runtime-m2-pr5-ci6.json"
+      ],
+      "item": "clean_source_build",
+      "observed": "87 declared files with no Godot roots; all three targets and six runtime/clean contracts passed",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        "data-collection/engine-next-headless-runtime-m2-pr5-ci6.json"
+      ],
+      "item": "two_client_birth",
+      "observed": "Two real UDP clients receive distinct SessionId and EntityId values in build, clean and package directories",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        "data-collection/engine-next-headless-runtime-m2-pr5-ci6.json"
+      ],
+      "item": "authoritative_prediction",
+      "observed": "Client A confirms 24 inputs at position 3.072 with empty unconfirmed history",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        "data-collection/engine-next-headless-runtime-m2-pr5-ci6.json"
+      ],
+      "item": "remote_interpolation",
+      "observed": "Client B observes interpolated, stale_held and recovered interpolated samples without extrapolation",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        "data-collection/engine-next-headless-runtime-m2-pr5-ci6.json"
+      ],
+      "item": "loss_correction_and_determinism",
+      "observed": "Real packet loss causes corrections and retransmissions before convergence; deterministic M1 trace remains f55d1f5bc85bb72376d3f31cdf9b64aac91e714b6556dbce1663c1db7995924c without claiming per-packet UDP determinism",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        "data-collection/engine-next-headless-runtime-m2-pr5-ci6.json",
+        "data-collection/engine-next-headless-runtime-m2-pr4-verification.json"
+      ],
+      "item": "reconnect_identity",
+      "observed": "A resumes SessionId 2 and EntityId 2 on a new PeerId; PR4 covers stale credentials, duplicate resume and expiry behavior",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        "data-collection/engine-next-headless-runtime-m2-pr2-verification-r4.json",
+        "data-collection/engine-next-headless-runtime-m2-pr4-verification.json",
+        "data-collection/engine-next-headless-runtime-m2-pr5-ci6.json"
+      ],
+      "item": "negative_protocol_and_drain",
+      "observed": "Protocol negative tests, duplicate and stale input handling, late-join rejection and forced drain failure remain explicit failures, never graceful passes",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        "data-collection/engine-next-headless-runtime-m2-pr5-ci6.json"
+      ],
+      "item": "graceful_shutdown",
+      "observed": "Both clients send DrainComplete; server reports acknowledged=2 forced=0; pre-fix race is reproduced and fixed under 96 ms final-response delay",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        "data-collection/engine-next-headless-runtime-m2-pr5-ci6.json"
+      ],
+      "item": "bounded_soak",
+      "observed": "10312 real 16 ms ticks in 165.229 seconds; server input high water 4, server ENet high water 6 and bounded client histories",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        "data-collection/engine-next-headless-runtime-m2-pr5-ci6.json",
+        "pull_request_checks",
+        "main_checks"
+      ],
+      "item": "link_and_package_boundary",
+      "observed": "Real response manifests contain 24/24/31 objects and one runtime library; package contains only two binaries, ENet license and RuntimePackage.json",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        "pull_request_checks",
+        "main_checks"
+      ],
+      "item": "three_platforms",
+      "observed": "Windows MSVC, Ubuntu Clang and macOS Clang all passed on the exact signed PR head and again on merge commit fe98b82a",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        "data-collection/engine-next-headless-runtime-m2-pr5-ci6.json",
+        "pull_request_checks"
+      ],
+      "item": "legacy_and_m1",
+      "observed": "Godot editor and template_debug each passed 29 tests/4846 assertions locally; Windows editor CI passed; M1 stayed at 16 tests/200161 checks with unchanged trace",
+      "status": "passed"
+    },
+    {
+      "evidence": [
+        "slice_merges",
+        "pull_request_checks",
+        "main_checks"
+      ],
+      "item": "five_pr_delivery_and_final_readback",
+      "observed": "All five implementation PRs and PR1225 are merged with main CI green; the final evidence PR and its main readback remain",
+      "status": "pending"
+    }
+  ],
+  "issue_number": 1042,
+  "local_verification": "data-collection/engine-next-headless-runtime-m2-pr5-ci6.json",
+  "main_checks": [
+    {
+      "completedAt": "2026-11-14T03:30:23Z",
+      "conclusion": "success",
+      "databaseId": 132315092968,
+      "name": "No Godot source or link dependencies (macos-26)",
+      "startedAt": "2026-11-14T03:26:03Z",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43551606803/job/132315092968"
+    },
+    {
+      "completedAt": "2026-11-14T03:29:59Z",
+      "conclusion": "success",
+      "databaseId": 132315093220,
+      "name": "No Godot source or link dependencies (ubuntu-latest)",
+      "startedAt": "2026-11-14T03:26:03Z",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43551606803/job/132315093220"
+    },
+    {
+      "completedAt": "2026-11-14T03:31:12Z",
+      "conclusion": "success",
+      "databaseId": 132315093223,
+      "name": "No Godot source or link dependencies (windows-latest)",
+      "startedAt": "2026-11-14T03:26:03Z",
+      "status": "completed",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43551606803/job/132315093223"
+    }
+  ],
+  "main_run": {
+    "conclusion": "success",
+    "databaseId": 43551606803,
+    "headSha": "fe98b82a19da73c5339c9a21959f65950c62e73a",
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43551606803"
+  },
+  "merge_commit": "fe98b82a19da73c5339c9a21959f65950c62e73a",
+  "merged_at": "2026-11-14T03:25:58Z",
+  "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1225",
+  "pull_request_checks": [
+    {
+      "completedAt": "2026-11-14T03:13:10Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43550038815/job/132310157564",
+      "name": "No Godot source or link dependencies (windows-latest)",
+      "startedAt": "2026-11-14T03:08:28Z",
+      "status": "COMPLETED"
+    },
+    {
+      "completedAt": "2026-11-14T03:08:37Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43550038843/job/132310159887",
+      "name": "issue-association",
+      "startedAt": "2026-11-14T03:08:25Z",
+      "status": "COMPLETED"
+    },
+    {
+      "completedAt": "2026-11-14T03:08:58Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43550038761/job/132310157474",
+      "name": "📊 Static checks / Code style, file formatting, and docs",
+      "startedAt": "2026-11-14T03:08:24Z",
+      "status": "COMPLETED"
+    },
+    {
+      "completedAt": "2026-11-14T03:13:02Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43550038815/job/132310157553",
+      "name": "No Godot source or link dependencies (macos-26)",
+      "startedAt": "2026-11-14T03:08:25Z",
+      "status": "COMPLETED"
+    },
+    {
+      "completedAt": "2026-11-14T03:12:31Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43550038815/job/132310157401",
+      "name": "No Godot source or link dependencies (ubuntu-latest)",
+      "startedAt": "2026-11-14T03:08:24Z",
+      "status": "COMPLETED"
+    },
+    {
+      "completedAt": "2026-11-14T03:22:34Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43550038761/job/132310328012",
+      "name": "🏁 Windows / Editor (target=editor)",
+      "startedAt": "2026-11-14T03:09:01Z",
+      "status": "COMPLETED"
+    }
+  ],
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "schema_version": 1,
+  "signed_head": "03144fe7de962658af218095e5067425630f7cc6",
+  "slice_merges": [
+    {
+      "merge_commit": "bc2efa392ccef0059bab8a007845946a624b78eb",
+      "pr": 1052
+    },
+    {
+      "merge_commit": "8b3b59d8adcd7568688003624a503500a86add29",
+      "pr": 1071
+    },
+    {
+      "merge_commit": "5b89de2446cdeabdc079d1beb8ca7822b7f7ee96",
+      "pr": 1113
+    },
+    {
+      "merge_commit": "90b6d2d490f486815d4a3bd91fe9ac8ac43289ae",
+      "pr": 1161
+    },
+    {
+      "merge_commit": "fe98b82a19da73c5339c9a21959f65950c62e73a",
+      "pr": 1225
+    }
+  ],
+  "superseded_prs": [
+    1193,
+    1202,
+    1214
+  ],
+  "unverified": [
+    "The final evidence PR must merge and its merge commit must be read back on origin/main before closing issues 1138 and 1042"
+  ]
+}
