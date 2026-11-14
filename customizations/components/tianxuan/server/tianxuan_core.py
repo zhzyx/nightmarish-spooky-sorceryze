@@ -1338,6 +1338,24 @@ class Tianxuan:
             raise NotFound(f"identity link not found: {link_id}")
         return dict(row)
 
+    def unlink_identity(self, actor: str, link_id: str) -> dict[str, Any]:
+        if self.role_of(actor) != "admin":
+            raise PermissionDenied("only admin can unbind external identities")
+        tenant_id = self._tenant_of(actor)
+        link = self.get_identity_link(link_id)
+        if link["tenant_id"] != tenant_id:
+            raise NotFound(f"identity link not found: {link_id}")
+        self.db.execute("DELETE FROM identity_links WHERE id = ?", (link_id,))
+        self._event(
+            tenant_id,
+            "identity.unlinked",
+            actor,
+            link_id,
+            {"provider": link["provider"], "subject": link["subject"], "user_id": link["user_id"]},
+        )
+        self.db.commit()
+        return {"deleted": link_id}
+
     def list_identity_links(
         self, actor: str, provider: str | None = None, subject: str | None = None
     ) -> list[dict[str, Any]]:

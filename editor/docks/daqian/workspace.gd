@@ -1538,14 +1538,30 @@ func _show_tianxuan_dialog(url: String, data: Dictionary, item: Dictionary) -> v
 	dialog.popup_centered()
 
 
-func _auto_sync_tianxuan(url: String, title: String) -> void:
-	var key := url + "|" + title
-	if tianxuan_synced.has(key):
+func _auto_sync_tianxuan(url: String, titles: Array) -> void:
+	var pending: Array = []
+	for title in titles:
+		var text := str(title)
+		if text.is_empty():
+			continue
+		var key := url + "|" + text
+		if tianxuan_synced.has(key):
+			continue
+		tianxuan_synced[key] = true
+		pending.append(text)
+	if pending.is_empty():
 		return
-	tianxuan_synced[key] = true
-	var result := await _tianxuan_command(["sync", "--external-id", url, "--done", title])
-	if result.get("ok") != true or not result.get("data", {}).get("missing", []).is_empty():
-		tianxuan_synced.erase(key)
+	var arguments: Array = ["sync", "--external-id", url]
+	for title in pending:
+		arguments.append_array(["--done", title])
+	var result := await _tianxuan_command(arguments)
+	if result.get("ok") != true:
+		for title in pending:
+			tianxuan_synced.erase(url + "|" + str(title))
+		return
+	for entry in result.get("data", {}).get("missing", []):
+		var text := str(entry).split(" (")[0]
+		tianxuan_synced.erase(url + "|" + text)
 
 
 func _sync_tianxuan(url: String, checks: Array, dialog: AcceptDialog) -> void:
@@ -1589,6 +1605,14 @@ func _publish_tianxuan(url: String, item: Dictionary) -> void:
 	if result.get("ok") != true:
 		issue_inspector.feedback.text = "天璇发布失败：" + str(result.get("error", "未知错误"))
 		return
+	var done_titles: Array = []
+	for node_id in editor.context.get("states", {}):
+		if str(editor.context.states[node_id]) not in ["done", "completed"]:
+			continue
+		var node_title := str(editor.draft.nodes.get(node_id, {}).get("title", ""))
+		if not node_title.is_empty():
+			done_titles.append(node_title)
+	_auto_sync_tianxuan(url, done_titles)
 	var context := await _tianxuan_command(["context", "--external-id", url])
 	_show_tianxuan_dialog(url, context.get("data", {}), item)
 
@@ -3470,13 +3494,19 @@ func _refresh_open_states() -> void:
 			if editor.context.get("states", {}) != item.node_states:
 				var previous_states: Dictionary = editor.context.get("states", {}).duplicate()
 				editor.context.states = item.node_states.duplicate()
-				if not previous_states.is_empty():
-					for node_id in item.node_states:
-						var state := str(item.node_states[node_id])
-						if state in ["done", "completed"] and str(previous_states.get(node_id, "")) != state:
-							var node_title := str(editor.draft.nodes.get(node_id, {}).get("title", ""))
-							if not node_title.is_empty():
-								_auto_sync_tianxuan(target_url, node_title)
+				var done_titles: Array = []
+				var changed_titles: Array = []
+				for node_id in item.node_states:
+					var state := str(item.node_states[node_id])
+					if state not in ["done", "completed"]:
+						continue
+					var node_title := str(editor.draft.nodes.get(node_id, {}).get("title", ""))
+					if node_title.is_empty():
+						continue
+					done_titles.append(node_title)
+					if str(previous_states.get(node_id, "")) != state:
+						changed_titles.append(node_title)
+				_auto_sync_tianxuan(target_url, changed_titles if not previous_states.is_empty() else done_titles)
 				editor.refresh_states()
 			return
 	if target_url != current:

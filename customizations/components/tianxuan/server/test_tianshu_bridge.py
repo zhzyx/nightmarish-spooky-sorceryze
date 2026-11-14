@@ -173,6 +173,7 @@ def test_sync_advances_ticket_to_done(monkeypatch, capsys) -> None:
 
 
 def test_identity_resolves_token_before_command(monkeypatch, capsys) -> None:
+    monkeypatch.setenv("TIANXUAN_TOKEN_CACHE", "off")
     calls: list[Request] = []
 
     def fake(request: Request, timeout: int) -> _Response:
@@ -233,3 +234,34 @@ def test_sync_reports_ambiguous_titles(monkeypatch, capsys) -> None:
     envelope = json.loads(capsys.readouterr().out)
     assert envelope["data"]["updated"] == []
     assert "ambiguous" in envelope["data"]["missing"][0]
+
+
+def test_identity_token_is_cached(monkeypatch, tmp_path, capsys) -> None:
+    monkeypatch.setenv("TIANXUAN_TOKEN_CACHE", str(tmp_path / "cache"))
+    resolve_calls = 0
+
+    def fake(request: Request, timeout: int) -> _Response:
+        nonlocal resolve_calls
+        if request.full_url.endswith("/api/v1/identity/resolve"):
+            resolve_calls += 1
+            return _Response({"token": "cached-token"})
+        return _Response({"documents": []})
+
+    monkeypatch.setattr(tianshu_bridge, "urlopen", fake)
+    args = [
+        "--api",
+        "http://api.example",
+        "--identity-provider",
+        "tianshu",
+        "--identity-subject",
+        "gh_cache",
+        "--identity-secret",
+        "shared",
+        "context",
+        "--external-id",
+        "issue/1",
+    ]
+    assert tianshu_bridge.main(args) == 0
+    assert tianshu_bridge.main(args) == 0
+    assert resolve_calls == 1
+    capsys.readouterr()

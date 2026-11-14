@@ -148,3 +148,21 @@ def test_identity_resolve_is_rate_limited(monkeypatch) -> None:
         json={"provider": "tianshu", "subject": "gh_rate", "secret": "shared-secret"},
     )
     assert limited.status_code == 429
+
+
+def test_admin_can_unbind_identity(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_IDENTITY_SECRET", "shared-secret")
+    client, headers, user_id = _client()
+    link = client.post(
+        "/api/v1/identity/links",
+        headers=headers,
+        json={"provider": "tianshu", "subject": "gh_unbind", "user_id": user_id},
+    ).json()
+    deleted = client.delete(f"/api/v1/identity/links/{link['id']}", headers=headers)
+    assert deleted.status_code == 200
+    assert client.get("/api/v1/identity/links", headers=headers).json()["links"] == []
+    gone = client.post(
+        "/api/v1/identity/resolve",
+        json={"provider": "tianshu", "subject": "gh_unbind", "secret": "shared-secret"},
+    )
+    assert gone.status_code == 404

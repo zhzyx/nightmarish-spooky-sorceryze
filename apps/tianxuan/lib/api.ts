@@ -395,3 +395,13 @@ export async function createIdentityLink(
   }
   return (await response.json()) as ApiIdentityLink;
 }
+
+export async function deleteIdentityLink(actor: string, linkId: string): Promise<void> {
+  const response = await fetch(
+    `${apiBase()}/api/v1/identity/links/${encodeURIComponent(linkId)}`,
+    { method: "DELETE", headers: { "X-Actor": actor } },
+  );
+  if (!response.ok) {
+    throw new Error(`identity unlink failed: ${response.status}`);
+  }
+}
