@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-176e2c09921e80e61c0d89605b6fb1535a9a6d1f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-parent-production-continuation-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b3e51de6e3525563001ce25a703afdb973bb7f374cfc8089dec3fd55c1bdcac2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "action": "delivery",
+    "detection_head": "c28d8175e870f75e5756355c5cc18c3bce4864fa",
+    "context_sha256": "3011d87ba2cb02c7ca710cf6780c79d8d40b6b8549c1fcf7634b77bf55210b21",
+    "operator": "Sail-Li",
+    "worker": "codex-root-continuation951-resume",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1234",
+    "diagnosis": "User resumed merge delivery. Applying preserved candidate163e2ecf onto mainc28d8175 produced four native conflicts from the AIChatController/session refactor and one design append conflict. Root owns isolated integration; the existing implementation worker adapted native references, a separate worker checked test helpers, and the independent reviewer checks resulting semantics. Original branches and conflict worktree remain preserved. First receive encountered a transient network failure; this retry uses the existing authorized host proxy.",
+    "next_action": "Validate canonical Controller/session ownership without changing authority, persistence, repair lineage or currentness guards; compile and test the integrated binary, review the exact candidate, then merge and stop at this delivery scope. Do not operate the original installed game.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T14:31:57.598951+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-14T14:35:01.506860+00:00",
+  "sha256": "abd011e757eb3812964de814f9dd4739248d20bb4a216ed012150edf781ab6d6"
+}

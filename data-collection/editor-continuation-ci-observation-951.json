@@ -1,0 +1,159 @@
+{
+  "issue": 951,
+  "parent_issue": 773,
+  "state": "fixture_observation_corrected_exact_candidate_CI_and_original_installation_pending",
+  "request_id": "editor-parent-production-continuation-20261112",
+  "prior_delivery": {
+    "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1191",
+    "signed_head": "72bbec71468d1fc0cbe28669cb89a7212fcd62a2",
+    "tree": "86ff400f2d74107d556345a72168dc8f089d0078",
+    "CI_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43531892768",
+    "result": "failure",
+    "failed_step": "Persistent preparation and original dependent job recovery",
+    "not_run": [
+      "cold prepared-job recovery",
+      "warm prepared-job recovery"
+    ],
+    "readback": {
+      "logical_private_artifact": "pr1191-ci-failed-readback.json",
+      "sha256": "20e2ae4c23a36d1b6f61da8022681863f2b8d1f2cb9ea01967b7082493838098",
+      "bytes": 6162
+    },
+    "raw_parent_manifest": {
+      "logical_private_artifact": "pr1191-ci-parent-originals-manifest.json",
+      "sha256": "39821d0287f9977e5e5161f9f06c6d059f3aa7f39c96ece9eb8ed601aea12583",
+      "bytes": 3225
+    }
+  },
+  "baseline_failure": {
+    "initial": "Real seeded baseline drift was rejected and persisted.",
+    "explicit_retry": "After cold restart, the actual second request was rejected because working inputs changed between snapshot captures.",
+    "root_cause": "Actual changed file is unknown: original CI did not retain the two trees or their difference.",
+    "local_same_engine": "A bounded local native diagnostic passed with equal trees within each capture and both expected baseline rejections. This does not reconstruct the CI race.",
+    "diagnostic_runtime": "Local Python 3.12.14 and Git 2.53.0; CI Python 3.15.2 and Git 2.56.0. No cause is inferred from those differences.",
+    "invocation": {
+      "logical_private_artifact": "pr1191-baseline-diagnostic-r1.invocation.json",
+      "sha256": "f99cfd38d0dad1b1cebb9e6fd4a266e45e6a3919474a84ecbcc77b1dd4c77cd7",
+      "bytes": 1622
+    },
+    "report": {
+      "logical_private_artifact": "pr1191-baseline-diagnostic-r1.json",
+      "sha256": "208f7d4e778ee2e530028e1e23186413b0b5eb2d9eb924192270ad117e53294f",
+      "bytes": 233180
+    },
+    "source_boundary": "That native invocation used faults fb048d024c1047982732c9299d2a479b0cadf2b24b56a937ee624dc28b12fb4f and setup e8453a9bd4cc9246965023c6f8f9be6d77572330f54a35c2a9f76bec5a0b4108. Later changes move raw collection into finally and retain original bytes before parsing."
+  },
+  "diagnostic_change": {
+    "behavior": "Run actual Git with unchanged arguments, working directory and environment; preserve its stdout, stderr and exit status. Record write-tree outcomes and read-only differences outside the fixture repository.",
+    "limit": "Additional observation changes elapsed timing and buffering. Content and exit equivalence are tested; absence of timing effects is not claimed.",
+    "preservation": "Save raw diagnostic bytes, base64 and digest in finally before parsing; retain malformed JSON, invalid UTF-8, per-file read errors and the original collector exception.",
+    "tests": [
+      {
+        "logical_private_artifact": "pr1191-git-observer-failure-probe.json",
+        "sha256": "c1c239f4adcb76f7c6af997db5f190646650f77d10a053a55c04406aeb7cfe74",
+        "bytes": 720
+      },
+      {
+        "logical_private_artifact": "pr1191-trace-preservation-selftest.json",
+        "sha256": "54d25d6f0eff93c5931ac68a170e1d74a07e8ef6f219e9de3db67ed697557f29",
+        "bytes": 725
+      }
+    ]
+  },
+  "warm_observer": {
+    "original_result": "Actual warm invocation timed out after Continue and A repair/review; A/B were accepted and C remained waiting. History save reported FAILED (1).",
+    "mechanism": "The same CI engine, on isolated files, returned FAILED (1) when a FileAccess reader remained open during threaded DirAccess replacement; after closing the reader, replacement returned OK.",
+    "causal_limit": "Original read/write overlap was not captured. The mechanism probe and observed saving=true support the correction but do not reconstruct the original timing.",
+    "correction": "Test observation waits for the public history_saving flag to be false, then reads synchronously on the main thread without yielding. During saving it records UI/save state without opening history or computing its hash.",
+    "unchanged": [
+      "native product inputs",
+      "production guards",
+      "complete acceptance oracle",
+      "original timeout limits"
+    ],
+    "mechanism_receipt": {
+      "logical_private_artifact": "pr1191-native-read-sharing-2eb02b10/invocation.json",
+      "sha256": "54547e1dbaa4d9d67961e17b28a5381c790a8550137abeb45e9e9a41ddf065e6",
+      "bytes": 511
+    },
+    "prior_failure_and_cold_pass": {
+      "logical_private_artifact": "pr1191-cold-warm-ci-engine-r1-validation.json",
+      "sha256": "2558c4c99870da26344b627ff5d9827a5f79cea8e33a920445d40a1081e8ac65",
+      "bytes": 8549
+    },
+    "final_warm": {
+      "exit_code": 0,
+      "duration_seconds": 185.553,
+      "engine_sha256": "e1ca0f0bfc85951e980c9905dc12691905f30b1bf174f872381a4601aeedba66",
+      "source_unchanged": true,
+      "engine_unchanged": true,
+      "complete_oracle": {
+        "passed": true,
+        "phase": "after_collect_before_fixture_cleanup",
+        "source_sha256": "005e857953ab8aedacaf98331588e0d36006011c797ff229078a8d2120e13c79"
+      },
+      "independent_reviews": 5,
+      "dispatches": 4,
+      "setup_requests": 1,
+      "readonly_unchanged": true,
+      "history_save_warning": false,
+      "archive_objects": 185,
+      "archive_all_bytes_and_sha256_verified": true,
+      "archive_manifest_sha256": "c6919574b156342e7fa331850b99bed01b966c71f46c066edfbddea25fa146af",
+      "report_sha256": "c1367181306589022eca0c104d9d18c7ca334eb53e79be31a7fc28e5f9a2cd13",
+      "invocation_sha256": "10817fde73b81a32c4fb9231132a44b0d95ee5c4d54332ccc8205e0ccd708be9",
+      "shutdown_renderer_leak_diagnostics_retained": true,
+      "accepted_count": 3
+    },
+    "final_report": {
+      "logical_private_artifact": "pr1191-warm-ci-engine-r2.json",
+      "sha256": "c1367181306589022eca0c104d9d18c7ca334eb53e79be31a7fc28e5f9a2cd13",
+      "bytes": 1518763
+    },
+    "final_invocation": {
+      "logical_private_artifact": "pr1191-warm-ci-engine-r2.invocation.json",
+      "sha256": "10817fde73b81a32c4fb9231132a44b0d95ee5c4d54332ccc8205e0ccd708be9",
+      "bytes": 124238
+    }
+  },
+  "schema_CI_scope": {
+    "result": "Three scenario-specific native cases remain valid. Mixed has actual A/B/C acceptance; each invalid case has actual production, completed review and criterion_invalid rejection.",
+    "boundary": "The inherited generic transport diagnostic is not the parallel scenario result. Empty accepted decisions in invalid scenarios are not the only predicate.",
+    "independent_audit": {
+      "logical_private_artifact": "continuation951-ci-independent-f5a2aae674ed/review.json",
+      "sha256": "08eaf02ee3c9c639ed849f1c285e4814bf482eb005aa33f543e0785f6960690f",
+      "bytes": 13697
+    }
+  },
+  "final_helper_sources": {
+    "tests/editor/native_preparation_faults.py": {
+      "sha256": "3d71498f9e6e927c1481d2d7ac5ad08a03bf44981db61821211cad4ee07847e2",
+      "git_blob": "3346527db62108682591ac0c87afe4d3540025b3"
+    },
+    "tests/editor/run_native_production_setup.py": {
+      "sha256": "d72955f4a0ce31dac5d8f77deb173c3e04ef86457f6bd4dbc342e43ff84b9fe9",
+      "git_blob": "acb75c91acf00cb9ee211a27a3fb2836c43e63a8"
+    },
+    "tests/editor/native_prepared_job_recovery.py": {
+      "sha256": "005e857953ab8aedacaf98331588e0d36006011c797ff229078a8d2120e13c79",
+      "git_blob": "5c5179cfab3d7d31373a4ed5bb9336bf766db857"
+    }
+  },
+  "helper_handoff": {
+    "logical_private_artifact": "pr1191-final-helper-validation-compact.json",
+    "sha256": "858883111f7ccbd9bff17810a0ae808d20fa3563f4a904447dca5fd202cfcdf5",
+    "bytes": 3751
+  },
+  "source_transfer": {
+    "logical_private_artifact": "pr1191-source-transfer-to-R.json",
+    "sha256": "0436ec15e59422d757b94a5987ff7b531b9f9f8193e61fe56ce41d992b3a91fe",
+    "bytes": 7474
+  },
+  "limits": [
+    "The original CI failure and local warm timeout remain immutable historical failures.",
+    "Cold local success used the prior observation helper; final warm success uses the corrected helper. Each invocation keeps its source hash.",
+    "No new native rebuild is claimed for test-only changes. Exact final candidate CI remains required.",
+    "No original game, original history or effective installation was changed by these tests.",
+    "Issue 951 and complete-editor goal 773 remain open until their actual acceptance, including the original installed consumer."
+  ]
+}
