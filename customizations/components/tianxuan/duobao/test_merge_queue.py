@@ -6,6 +6,7 @@ import os
 import shutil
 import sys
 from pathlib import Path
+from typing import Any
 
 import pytest
 from git_service import GitService
@@ -121,3 +122,53 @@ def test_worker_processes_queued_candidate(tmp_path: Path) -> None:
     finally:
         queue.stop_worker()
         queue.close()
+
+
+def test_recover_stale_validating_candidate(tmp_path: Path) -> None:
+    service, repo = _repo(tmp_path)
+    _branch(service, repo, "feature", {"b.md": "# two\n"})
+    queue = MergeQueue(str(tmp_path / "queue.db"), service)
+    item = queue.enqueue("usr_1", str(repo), "feature", "main", "恢复")
+    with queue._lock, queue.db:
+        queue.db.execute(
+            "UPDATE merge_queue SET status = 'validating', updated_at = ? WHERE id = ?",
+            ("2000-01-01T00:00:00+00:00", item["id"]),
+        )
+    assert queue.recover_stale(older_than_seconds=1) == 1
+    assert queue.get(item["id"])["status"] == "queued"
+
+
+def test_process_next_is_serialized(tmp_path: Path) -> None:
+    import threading
+    import time
+
+    service, repo = _repo(tmp_path)
+    _branch(service, repo, "feature-a", {"a.md": "# a\n"})
+    _branch(service, repo, "feature-b", {"b.md": "# b\n"})
+    queue = MergeQueue(str(tmp_path / "queue.db"), service)
+    queue.enqueue("usr_1", str(repo), "feature-a", "main", "A")
+    queue.enqueue("usr_1", str(repo), "feature-b", "main", "B")
+
+    active = 0
+    peak = 0
+    original = queue._execute
+
+    def slow(item: dict[str, Any]) -> dict[str, Any]:
+        nonlocal active, peak
+        active += 1
+        peak = max(peak, active)
+        time.sleep(0.2)
+        try:
+            return original(item)  # type: ignore[no-any-return]
+        finally:
+            active -= 1
+
+    queue._execute = slow  # type: ignore[method-assign]
+    workers = [threading.Thread(target=queue.process_next) for _ in range(2)]
+    for worker in workers:
+        worker.start()
+    for worker in workers:
+        worker.join(timeout=20)
+    statuses = [entry["status"] for entry in queue.list_items()]
+    assert statuses and all(status == "merged" for status in statuses)
+    assert peak == 1
