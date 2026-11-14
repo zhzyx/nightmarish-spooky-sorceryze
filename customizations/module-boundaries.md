@@ -56,6 +56,16 @@ Git 提供版本控制，GitHub 提供 Issue、子 Issue、PR 与服务权限；
 
 ## 新增模块的构建边界与验收
 
+### 原生缓存的精确宿主输入清单
+
+`tools/native_host_inputs.json` 的路径基准为仓库根。它逐文件列出已核对的独立宿主 Python 输入和说明，不接受通配符或整目录声明；目前仅准许 Tianxuan 和合契 Git 宿主路径。它不改变模块准入、运行授权或测试要求，也不直接使 CI 跳过构建。
+
+设实际配置的 SCons 原生输入为 N，已审查宿主文件清单为 H，则仅 H 中不属于 N 的文件可排除于原生缓存身份。实际生成器/编译消费者优先于清单；新文件默认仍入键。清单文件自身始终入键，清单变更会使旧身份失效。不得仅凭 `placement: host_tool` 或文本后缀扩大排除。
+
+本地缓存按当前工作树清单及文件字节建立身份；GitHub artifact 身份从 HEAD 的清单 blob 读取，与其余 Git tree 条目绑定，未提交清单不能改变该身份。清单损坏、非法路径、链接或 probe 失败时沿原缓存回退策略执行，不沿用旧成功证明。Windows/MSVC 缓存仍限于原支持配置，不推广到其他平台。
+
+验证入口：`tests/editor/test_editor_native_cache.py`、`tests/editor/test_native_host_inputs.py` 和 `tools/test_windows_editor_artifact.py`。其中真实 SCons dry-run 回归验证“原独立宿主脚本被新增生成器消费后重新入键”；独立修改命中、未知新增文件/混合原生输入/策略改变失效、hosted dirty 清单隔离和损坏回退分别验证。`.github/workflows/native-cache.yml` 对适用 PR 与 merge_group 在 Windows/Linux 执行这些回归；Linux 的夹具测试不等于生产 Linux 编辑器缓存支持。
+
 路径以仓库根解析。发现与复盘见[并行工单复用编辑器](../design-docs/engine-artifact-reuse-rollout.md)。先沿 SCsub、生成器、加载器和分发清单追到实际消费点。即使源文件是 GDScript 或 Python，只要生成的头文件进入原生链接，该文件就属于编译输入。对运行时独立读取的包，记录宿主 API 版本、可信选择入口与包摘要；编译器、SDK、生成脚本或影响原生输出的选项变化时重新判断复用范围。
 
 | placement | 设计依据 | 必须实测的 checks |

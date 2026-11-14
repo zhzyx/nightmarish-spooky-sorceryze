@@ -32,7 +32,7 @@ def api(path):
 
 
 def source_identity(root, flags, env):
-    from editor_native_cache import CacheUnavailable, is_external_data, probe
+    from editor_native_cache import CacheUnavailable, host_inputs, is_external_data, probe
 
     options = dict(item.split("=", 1) for item in flags)
     options["cache_path"] = str(root / ".scons_cache")
@@ -41,15 +41,17 @@ def source_identity(root, flags, env):
         if not isinstance(dependencies, list) or not dependencies or not all(isinstance(p, str) for p in dependencies):
             raise ValueError("Invalid SCons dependency inventory")
         dependencies = set(dependencies)
+        host_files = host_inputs(root, committed=True)
     except (CacheUnavailable, KeyError, ValueError, OSError, subprocess.SubprocessError) as error:
         print(f"Full-tree identity required: {error}")
         dependencies = None
+        host_files = ()
     entries = subprocess.check_output(["git", "ls-tree", "-r", "-z", "--full-tree", "HEAD"], cwd=root)
     digest = hashlib.sha256()
     for entry in entries.split(b"\0"):
         if entry:
             name = os.fsdecode(entry.split(b"\t", 1)[1])
-            if dependencies is None or not is_external_data(name, dependencies):
+            if dependencies is None or not is_external_data(name, dependencies, host_files):
                 digest.update(entry + b"\0")
     return digest.hexdigest()
 

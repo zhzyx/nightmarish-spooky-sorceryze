@@ -1,0 +1,19 @@
+{
+  "verified": "Formal gate returned local_checks_passed on base af48bd466beb4785e1926613443cefb4e6434a27",
+  "failure": "Formal gate rejected generated evidence because CRLF worktree bytes differed from LF staged blob",
+  "request_id": "concurrent-integration-20261114",
+  "local_build_scope_tests_passed": 7,
+  "issue_number": 1151,
+  "ci_duplicate_baseline": {
+    "pr_run": 43522256893,
+    "job_completed": "2026-11-13T22:48:47Z",
+    "head": "5ccc72d53b2717b41e69bc405ae6549e0bd0a7b5",
+    "event": "push",
+    "run": 43522243343,
+    "job_started": "2026-11-13T22:48:26Z"
+  },
+  "correction": "Normalized only this task new evidence files to LF and restaged; historical events were not rewritten",
+  "boundary": "This does not prove remote merge or generic newline conversion safety",
+  "local_ci_expression_cases": 9,
+  "remote_optimization_verified": false
+}

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "concurrent-integration-20261114",
+  "collected_at": "2026-11-13T22:44:25.875213+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/concurrent-integration-20261114/dispatch-7ebf67a51b664036ab9ac75c226e4fe8.json",
+      "sha256": "1aa858b8d5d838d13162996a2d8e4fcfde2d5d5f39f5b0907c2e30e56145ae84",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-7ebf67a51b664036ab9ac75c226e4fe8",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/concurrent-integration-20261114/kuafu-b7052ecd0b88f6a1a655ab8761317fb0c4835061.json",
+      "sha256": "71a78393db68ea03b2cb897b5dcc40141aff4a3fd15ccd9ee52146f868af1bdd",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-b7052ecd0b88f6a1a655ab8761317fb0c4835061",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/concurrent-integration-20261114/request-1151-concurrent-integration.json",
+      "sha256": "f89cea1d0f3a0f974c66a122f65db885e649333043d3cbbbcd956f11e5e836df",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "request-1151-concurrent-integration",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1151,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1151"
+}

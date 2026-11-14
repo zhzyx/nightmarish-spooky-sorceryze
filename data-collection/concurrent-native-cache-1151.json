@@ -1,0 +1,64 @@
+{
+  "request_id": "concurrent-integration-20261114",
+  "issue_number": 1151,
+  "base_head": "de3858b123dc9076e8113901df74f877e897c6bc",
+  "reviewer": "/root/sinan_bf2b42c978b32940",
+  "review_result": "no blocking findings",
+  "sha256": {
+    "tools/editor_native_cache.py": "0989d22fe772b9ff40009078215a9d57f6ff6a454f054f92aef059525b652582",
+    "tools/native_host_inputs.json": "c7c12e07c9af0e0b5bc99047489bb0a47e7ec447e51051e2ae78c8b774831fc1",
+    ".github/scripts/windows_editor_artifact.py": "2cd7169dd56e8149aa78768c45f013f1f47488387d5fcf7ebf1e4cc911779654",
+    "tests/editor/test_editor_native_cache.py": "3780c8428eb15bb5f64660708706991c287a0eefa8f568d1c15de8ae25aba8dc",
+    "tests/editor/test_native_host_inputs.py": "ae351a7647dae705d0ccfe3eb8c8f83e831d8678c74af8ffea6cc648b80f0436",
+    "tools/test_windows_editor_artifact.py": "89762e153f94f95096b05c84def0d73b9e2f5f4902caec8df7553fc54f7bf9c6",
+    ".github/workflows/native-cache.yml": "972d4befab46dc15f254ac2db0112dc764affb2cd063d1c2c1c52378ef2830fe",
+    "customizations/module-boundaries.md": "1f5663e4864932aae5b5a509804531001387807d52c4941481fc3f5e371bdf14"
+  },
+  "real_probe": {
+    "platform": "windows",
+    "target": "editor",
+    "arch": "x86_64",
+    "tests": "yes",
+    "module_mono_enabled": "no",
+    "d3d12": "no",
+    "angle": "no",
+    "accesskit": "no",
+    "native_sources": 9362,
+    "host_inputs": 43,
+    "intersection": []
+  },
+  "tests": {
+    "local_cache": {
+      "passed": 12
+    },
+    "host_boundaries": {
+      "passed": 2,
+      "actual_scons": true
+    },
+    "hosted_artifact": {
+      "passed": 8,
+      "skipped": 1,
+      "reason": "POSIX fixture skipped on Windows"
+    },
+    "reviewer_build_time_inventory_mutation": "native_build_inputs_changed; no manifest published"
+  },
+  "limitations": [
+    "Windows actual symlink fixture unavailable: WinError 1314; code reviewed only",
+    "No full local MSVC build or real remote artifact reuse benchmark",
+    "No Linux CI result for this candidate yet",
+    "Not overall Issue acceptance"
+  ],
+  "previous_candidate_ci": {
+    "head": "00f3d0b7803482414cf86114ab8f8271929779b4",
+    "pr": 1170,
+    "full_windows": 43523445104,
+    "build_routing": 43523443879,
+    "planner": 43523443740,
+    "association": 43523443419,
+    "conclusion": "success",
+    "signed_push": 43523431342,
+    "staging_push": 43523426421,
+    "push_conclusion": "skipped",
+    "merged": false
+  }
+}

@@ -1,0 +1,40 @@
+name: Native cache dependency boundaries
+
+on:
+  pull_request:
+    paths:
+      - "tools/build_engine_modules.py"
+      - "tools/editor_native_cache.py"
+      - "tools/native_host_inputs.json"
+      - "tools/test_build_engine_modules.py"
+      - "tools/test_windows_editor_artifact.py"
+      - "tests/editor/test_editor_native_cache.py"
+      - "tests/editor/test_native_host_inputs.py"
+      - ".github/scripts/windows_editor_artifact.py"
+      - ".github/workflows/native-cache.yml"
+      - "SConstruct"
+      - "editor/SCsub"
+  merge_group:
+
+permissions:
+  contents: read
+
+jobs:
+  cache-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/godot-deps
+        with:
+          python-version: "3.12"
+      - name: Verify cache identity, consumers and single producer
+        shell: bash
+        run: |
+          python tools/test_build_engine_modules.py
+          python tests/editor/test_editor_native_cache.py
+          python tests/editor/test_native_host_inputs.py
+          python tools/test_windows_editor_artifact.py

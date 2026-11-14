@@ -1,0 +1,38 @@
+{
+  "goal_complete": false,
+  "request_id": "concurrent-integration-20261114",
+  "transport_note": "git fetch encountered connection reset; GitHub API subsequently confirmed main af48bd46, which was already available locally and fast-forwarded successfully",
+  "issue_number": 1151,
+  "main_readback": "af48bd466beb4785e1926613443cefb4e6434a27",
+  "files": [
+    {
+      "path": "customizations/platforms/development/git/heqi/integration_plan.py",
+      "sha256": "1fa85f753afb0cac37dfa08d0e39af94bf5db6fd85d519326de62d9dec0bf037"
+    },
+    {
+      "path": "customizations/platforms/development/git/heqi/test_integration_plan.py",
+      "sha256": "43d906c6d60fd18cba7444a72b1ba685a59b87c383c636526160a9e65166ac3a"
+    },
+    {
+      "path": ".github/workflows/integration-plan.yml",
+      "sha256": "f3b09f2c912c3a4c49ef29079f97765854963ce52a2618f018cde51d4c88a74b"
+    },
+    {
+      "path": "customizations/platforms/development/git/heqi/concurrent-issue.md",
+      "sha256": "74b7d2e092697fdafaa5a690c4ea4994e419ee0c932440aff6277730e3f8e8ec"
+    }
+  ],
+  "local_tests": {
+    "command": "python customizations/platforms/development/git/heqi/test_integration_plan.py",
+    "passed": 5,
+    "platform": "Windows"
+  },
+  "scope": "read-only preparation planner, not production merge throughput",
+  "independent_review": {
+    "state": "completed",
+    "blocking_findings": 0,
+    "limitations": "Pairwise contribution comparison is quadratic; remote CI and publication unverified",
+    "additional_checks": "1000 path overlap comparisons, read dependency target drift, unknown reads and six invalid declarations",
+    "worker": "/root/sinan_8111b89f4b369f4b"
+  }
+}

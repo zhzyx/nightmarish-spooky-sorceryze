@@ -48,13 +48,44 @@ def implementation(path, modified):
     )
 
 
-def plan(files):
+def reviewed_host_inputs(revision):
+    """Load the base revision's already-reviewed non-native host inventory.
+
+    Reading the comparison base guarantees a PR modifying tools/native_host_inputs.json
+    cannot exempt its own newly added paths before full CI validates the policy.
+    """
+    from editor_native_cache import validate_host_inventory
+
+    try:
+        entry = git("ls-tree", "-z", revision, "--", "tools/native_host_inputs.json")
+        if not entry:
+            return frozenset()
+        mode, kind, oid = entry.split(b"\t", 1)[0].split()
+        if mode not in {b"100644", b"100755"} or kind != b"blob":
+            return frozenset()
+        return validate_host_inventory(git("cat-file", "blob", oid.decode("ascii")))
+    except (subprocess.CalledProcessError, ValueError, TypeError, KeyError):
+        return frozenset()
+
+
+def plan(files, host_files=()):
     sources = set()
     for name, modified in files:
         path = PurePosixPath(name)
+        # These exact host CLI inputs have their own Windows/Linux workflow and
+        # no SCons consumer. Unknown additions still require full integration.
+        if name in {
+            "customizations/platforms/development/git/heqi/integration_plan.py",
+            "customizations/platforms/development/git/heqi/test_integration_plan.py",
+            "customizations/platforms/development/git/heqi/concurrent-issue.md",
+            ".github/workflows/integration-plan.yml",
+        }:
+            continue
+        if modified and name in host_files:
+            continue
         if name in {"README.md", "AGENTS.md", "CONTRIBUTING.md"}:
             continue
-        if path.parts[0] == "design-docs" and path.suffix == ".md":
+        if path.parts[0] in {"design-docs", "Markdown"} and path.suffix == ".md":
             continue
         if path.parts[0] in {"data-collection", "gonggong-diting-data"} and path.suffix in {".json", ".jsonl", ".md"}:
             continue
@@ -113,22 +144,25 @@ def conditional_consumers(files, revision, committed, markers):
     return matches
 
 
-def platform_plan(files, platform, shared_metal=()):
+def platform_plan(files, platform, shared_metal=(), host_files=()):
     metal = [(name, modified) for name, modified in files if name.startswith(METAL_INPUTS) or name in shared_metal]
     if platform == "windows":
         return plan(
-            (name, modified)
-            for name, modified in files
-            if not (name.startswith(METAL_PRIVATE) and implementation(PurePosixPath(name), modified))
+            (
+                (name, modified)
+                for name, modified in files
+                if not (name.startswith(METAL_PRIVATE) and implementation(PurePosixPath(name), modified))
+            ),
+            host_files,
         )
     if platform == "metal":
         if not metal:
             return "skip", [], ""
-        mode, _, reason = plan(files)
+        mode, _, reason = plan(files, host_files)
         if mode == "full":
             return mode, [], reason
-        return plan(metal)
-    return plan(files)
+        return plan(metal, host_files)
+    return plan(files, host_files)
 
 
 def build(sources, flags):
@@ -195,11 +229,12 @@ def main():
         else:
             raise ValueError("missing base")
         files = list(changes(revision, args.committed))
+        host_files = reviewed_host_inputs(revision)
         shared_metal = (
             conditional_consumers(files, revision, args.committed, METAL_MARKERS) if args.ci_platform else set()
         )
         has_metal = bool(shared_metal) or any(name.startswith(METAL_INPUTS) for name, _ in files)
-        mode, sources, reason = platform_plan(files, args.ci_platform, shared_metal)
+        mode, sources, reason = platform_plan(files, args.ci_platform, shared_metal, host_files)
         if args.ci_platform == "windows" and mode == "modules":
             needs_d3d12 = any(source.startswith("drivers/d3d12/") for source in sources) or bool(
                 conditional_consumers([(source, True) for source in sources], revision, args.committed, D3D12_MARKERS)

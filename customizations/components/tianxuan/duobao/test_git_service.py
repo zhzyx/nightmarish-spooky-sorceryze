@@ -248,6 +248,124 @@ class GitServiceTests(unittest.TestCase):
             self.service.merge(self.repo, "left", "main")
         self.assertEqual(self._git("-C", self.repo, "rev-parse", "main").strip(), main_sha)
 
+    def test_concurrent_disjoint_commits_and_overlapping_conflict_guard(self) -> None:
+        import threading
+        from concurrent.futures import ThreadPoolExecutor
+
+        self._commit(files={"seed.txt": "seed\n"})
+        workers = 12
+        barrier = threading.Barrier(workers)
+
+        def concurrent_writer(index: int) -> str:
+            barrier.wait(timeout=10)
+            return str(
+                self.service.commit(
+                    self.repo,
+                    "main",
+                    f"concurrent commit {index}",
+                    {f"mods/mod_{index}/feature.py": f"VALUE = {index}\n"},
+                    f"Agent-{index}",
+                    f"agent{index}@gonggong.local",
+                )
+            )
+
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            shas = list(pool.map(concurrent_writer, range(workers)))
+        self.assertEqual(len(set(shas)), workers)
+        for index in range(workers):
+            self.assertEqual(
+                self.service.read_file(self.repo, "main", f"mods/mod_{index}/feature.py"),
+                f"VALUE = {index}\n",
+            )
+
+        # Deterministic mid-flight race on the same path must raise MergeConflict, never overwrite.
+        original_clone = self.service._clone
+        injected = False
+
+        def racing_clone(repo_path: Path, destination: Path) -> None:
+            nonlocal injected
+            original_clone(repo_path, destination)
+            if not injected:
+                injected = True
+                GitService(GIT_EXECUTABLE).commit(
+                    self.repo,
+                    "main",
+                    "competing writer on shared file",
+                    {"seed.txt": "winner\n"},
+                    "Winner",
+                    "winner@gonggong.local",
+                )
+
+        with mock.patch.object(self.service, "_clone", side_effect=racing_clone):
+            with self.assertRaises(MergeConflict) as conflict:
+                self.service.commit(
+                    self.repo,
+                    "main",
+                    "stale writer on shared file",
+                    {"seed.txt": "stale overwrite\n"},
+                    AUTHOR_NAME,
+                    AUTHOR_EMAIL,
+                )
+        self.assertEqual(conflict.exception.paths, ["seed.txt"])
+        self.assertEqual(self.service.read_file(self.repo, "main", "seed.txt"), "winner\n")
+
+    def test_concurrent_merges_and_batch_merge_conflict_isolation(self) -> None:
+        import threading
+        from concurrent.futures import ThreadPoolExecutor
+
+        self._commit(files={"shared.txt": "base\n"})
+        parallel_count = 10
+        for index in range(parallel_count):
+            branch_name = f"parallel-{index}"
+            self.service.branch(self.repo, branch_name, start="main")
+            self._commit(
+                branch=branch_name,
+                message=f"parallel feature {index}",
+                files={f"parallel/p_{index}.txt": f"p={index}\n"},
+            )
+
+        barrier = threading.Barrier(parallel_count)
+
+        def merge_worker(index: int) -> str:
+            barrier.wait(timeout=10)
+            return str(self.service.merge(self.repo, f"parallel-{index}", "main"))
+
+        with ThreadPoolExecutor(max_workers=parallel_count) as pool:
+            results = list(pool.map(merge_worker, range(parallel_count)))
+        self.assertEqual(len(results), parallel_count)
+        for index in range(parallel_count):
+            self.assertEqual(self.service.read_file(self.repo, "main", f"parallel/p_{index}.txt"), f"p={index}\n")
+
+        # Batch merge integrates disjoint branches in one clone and isolates conflicting branches.
+        batch_sources: list[str] = []
+        for index in range(6):
+            name = f"batch-ok-{index}"
+            self.service.branch(self.repo, name, start="main")
+            self._commit(branch=name, message=f"batch {index}", files={f"batch/f_{index}.txt": f"b={index}\n"})
+            batch_sources.append(name)
+
+        self.service.branch(self.repo, "batch-conflict-a", start="main")
+        self._commit(branch="batch-conflict-a", message="edit shared a", files={"shared.txt": "from-a\n"})
+        self.service.branch(self.repo, "batch-conflict-b", start="main")
+        self._commit(branch="batch-conflict-b", message="edit shared b", files={"shared.txt": "from-b\n"})
+
+        batch = self.service.merge_batch(
+            self.repo,
+            [*batch_sources[:3], "batch-conflict-a", "batch-conflict-b", *batch_sources[3:], "parallel-0"],
+            "main",
+        )
+        merged_map = {entry["source"]: entry["status"] for entry in batch["merged"]}
+        for name in [*batch_sources, "batch-conflict-a"]:
+            self.assertEqual(merged_map[name], "merged")
+        self.assertEqual(merged_map["parallel-0"], "already_included")
+        self.assertEqual(len(batch["isolated"]), 1)
+        self.assertEqual(batch["isolated"][0]["source"], "batch-conflict-b")
+        self.assertEqual(batch["isolated"][0]["reason"], "merge_conflict")
+        self.assertIn("shared.txt", batch["isolated"][0]["conflicts"])
+        for index in range(6):
+            self.assertEqual(self.service.read_file(self.repo, "main", f"batch/f_{index}.txt"), f"b={index}\n")
+        self.assertEqual(self.service.read_file(self.repo, "main", "shared.txt"), "from-a\n")
+
     # ------------------------------------------------------------------
     # validation
     # ------------------------------------------------------------------
