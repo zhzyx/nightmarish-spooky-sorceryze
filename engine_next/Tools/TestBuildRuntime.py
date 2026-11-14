@@ -56,7 +56,6 @@ class BuildRuntimeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             ExportCleanSource.export_clean_source(self.repo, output)
 
-
     def test_package_contains_only_declared_runtime_files(self):
         targets = []
         for name in ("next_server", "next_client"):

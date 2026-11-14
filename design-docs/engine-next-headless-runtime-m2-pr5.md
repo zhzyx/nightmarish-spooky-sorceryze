@@ -16,6 +16,16 @@
 - ASan／UBSan 下独立运行时与发布目录闭环通过；三份真实链接契约、23 个契约测试和 13 个构建工具测试通过。
 - 87 文件无 Godot 源码树重建并完成发布闭环。最终输入集合的原生失效使 native key 从 `934d2bb3dfcc669694537e62292fabc5b1c12c91265e5c457812898eca02e58f` 变为 `1ff5bc3854f613d6883830bb6a4252fa57adc191055b3af781b0888f8b99a308`，默认 tick 从 1 变为 2；恢复后键和行为完全一致。
 - Godot 编辑器与 `template_debug` 分别完成 29 个测试、4,846 条断言且零失败，覆盖共享 Reconciler、限频、重放、`resynchronized` 和真实 ENet 场景。
+
+## CI 修复补充
+
+- Ubuntu 动态依赖审核改用 `ldd`，macOS 保持 `otool`；新增真实脚本测试覆盖 Linux 分支，构建工具测试共 14 项通过。
+- 客户端仅在收到有效服务器最终响应且已发送 `DrainComplete` 后，才把重复断开的 `NotFound` 视为已关闭；其他关闭错误仍失败。新长稳再次达到 10,312 tick。
+- 最终平台修复的原生失效使 native key 从 `716585ca58d162793c5a0510573fd440b0bcbd472ead2e9e71d858ec4e4703a8` 变为 `280b2b45a74cefffc62506b640975555bfc2c7f3ed5e5ac3679c16a17dcf9c0c`，默认 tick 从 1 变为 2；恢复后键和行为完全一致。全部候选 Python 文件通过 `ruff format --check`。
+- 追加证据：`data-collection/engine-next-headless-runtime-m2-pr5-ci-fix.json`。
+
+## 待验证与证据边界
+
 - Windows、Ubuntu 和 macOS 的精确候选 CI、main 回读及完整 M2 清单核对完成后，才能关闭 #1042。
 
 证据入口：`engine_next/build-impact.json` 的 `evidence` 字段；最终验证记录位于 `data-collection/`，未生成的项目不预写通过。
