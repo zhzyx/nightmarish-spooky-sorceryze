@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 namespace EngineNext::Gameplay
 {
@@ -48,14 +49,42 @@ float Distance(const Vector3 &in_vLeft, const Vector3 &in_vRight) noexcept
 
 } // namespace
 
+bool PredictionReconciler::SetModel(const PredictionModel &in_stModel) noexcept
+{
+	stModel = in_stModel;
+	return stModel.GetFixedStepMsec() > 0 && stModel.GetMaxSpeed() > 0.0F && std::isfinite(stModel.GetMaxSpeed());
+}
+
+bool PredictionReconciler::SetMaxHistory(std::uint32_t nValue) noexcept
+{
+	if (nValue == 0 || nValue > 4096 || arrHistory.size() > nValue)
+	{
+		return false;
+	}
+	nMaxHistory = nValue;
+	return true;
+}
+
+bool PredictionReconciler::SetCorrectionThreshold(float fValue) noexcept
+{
+	if (!std::isfinite(fValue) || fValue < 0.0F)
+	{
+		return false;
+	}
+	fCorrectionThreshold = fValue;
+	return true;
+}
+
 bool PredictionReconciler::SetInitialState(const PredictionState &in_stState) noexcept
 {
-	if (!in_stState.vPosition.IsFinite() || !in_stState.vVelocity.IsFinite())
+	if (!in_stState.vPosition.IsFinite() || !in_stState.vVelocity.IsFinite() ||
+		in_stState.nConfirmedSequence == std::numeric_limits<std::uint64_t>::max())
 	{
 		return false;
 	}
 	stPredictedState = in_stState;
 	arrHistory.clear();
+	nHistoryHighWater = 0;
 	nLastConfirmedSequence = in_stState.nConfirmedSequence;
 	nNextSequence = nLastConfirmedSequence + 1;
 	return true;
@@ -82,7 +111,8 @@ bool PredictionReconciler::RestoreAfterReconnect(const PredictionState &in_stSta
 
 bool PredictionReconciler::PredictInput(const Vector3 &in_vMovement, PredictionInput &out_stInput) noexcept
 {
-	if (!in_vMovement.IsFinite() || in_vMovement.LengthSquared() > 1.000001F || arrHistory.size() >= nMaxHistory)
+	if (!in_vMovement.IsFinite() || in_vMovement.LengthSquared() > 1.000001F ||
+		arrHistory.size() >= nMaxHistory || nNextSequence == 0 || nNextSequence == std::numeric_limits<std::uint64_t>::max())
 	{
 		return false;
 	}
@@ -95,6 +125,7 @@ bool PredictionReconciler::PredictInput(const Vector3 &in_vMovement, PredictionI
 		return false;
 	}
 	arrHistory.push_back(HistoryEntry{ out_stInput, stPredictedState });
+	nHistoryHighWater = nHistoryHighWater < arrHistory.size() ? arrHistory.size() : nHistoryHighWater;
 	return true;
 }
 
@@ -146,14 +177,44 @@ std::size_t PredictionReconciler::GetUnconfirmedInputCount() const noexcept
 	return arrHistory.size();
 }
 
+std::size_t PredictionReconciler::GetHistoryHighWater() const noexcept
+{
+	return nHistoryHighWater;
+}
+
 std::uint64_t PredictionReconciler::GetLastConfirmedSequence() const noexcept
 {
 	return nLastConfirmedSequence;
 }
 
+std::uint64_t PredictionReconciler::GetNextSequence() const noexcept
+{
+	return nNextSequence;
+}
+
 std::uint32_t PredictionReconciler::GetCorrectionCount() const noexcept
 {
 	return nCorrectionCount;
+}
+
+void PredictionReconciler::GetUnconfirmedInputs(std::vector<PredictionInput> &out_arrInputs) const
+{
+	out_arrInputs.clear();
+	out_arrInputs.reserve(arrHistory.size());
+	for (const HistoryEntry &stEntry : arrHistory)
+	{
+		out_arrInputs.push_back(stEntry.stInput);
+	}
+}
+
+void PredictionReconciler::Reset() noexcept
+{
+	stPredictedState = PredictionState{};
+	arrHistory.clear();
+	nHistoryHighWater = 0;
+	nNextSequence = 1;
+	nLastConfirmedSequence = 0;
+	nCorrectionCount = 0;
 }
 
 } // namespace EngineNext::Gameplay

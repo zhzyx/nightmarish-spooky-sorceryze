@@ -131,7 +131,16 @@ RuntimeStatus ParseUnsignedOption(const std::string &in_strArgument, const std::
 		out_stConfig.nDrainAfterMsec = static_cast<std::uint32_t>(nValue);
 		return RuntimeStatus::Ok;
 	}
-	if (nValue == 0 || nValue > 60000)
+	if (in_strArgument == "--drain-response-delay-ms")
+	{
+		if (nValue > 1000)
+		{
+			return RuntimeStatus::InvalidParameter;
+		}
+		out_stConfig.nDrainResponseDelayMsec = static_cast<std::uint32_t>(nValue);
+		return RuntimeStatus::Ok;
+	}
+	if (nValue == 0 || nValue > 300000)
 	{
 		return RuntimeStatus::InvalidParameter;
 	}
@@ -211,8 +220,8 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 		std::string strValue;
 		if (strArgument == "--manual-ticks" || strArgument == "--fixed-step-ms" || strArgument == "--seed" ||
 			strArgument == "--port" || strArgument == "--duration-ms" || strArgument == "--drain-after-ms" ||
-			strArgument == "--drain-timeout-ms" || strArgument == "--impairment-delay-ms" ||
-			strArgument == "--impairment-jitter-ms" || strArgument == "--impairment-loss-permille" ||
+			strArgument == "--drain-timeout-ms" || strArgument == "--drain-response-delay-ms" ||
+			strArgument == "--impairment-delay-ms" || strArgument == "--impairment-jitter-ms" || strArgument == "--impairment-loss-permille" ||
 			strArgument == "--impairment-queue-capacity")
 		{
 			if (!ParseValue(in_arrArguments, nIndex, strValue))
@@ -269,7 +278,8 @@ RuntimeStatus ParseArguments(const std::vector<std::string> &in_arrArguments, Ru
 	{
 		return RuntimeStatus::InvalidParameter;
 	}
-	if (stParsed.eRole == RuntimeRole::Client && (stParsed.nDrainAfterMsec != 0 || stParsed.nDrainTimeoutMsec != 1000))
+	if (stParsed.eRole == RuntimeRole::Client &&
+		(stParsed.nDrainAfterMsec != 0 || stParsed.nDrainTimeoutMsec != 1000 || stParsed.nDrainResponseDelayMsec != 0))
 	{
 		return RuntimeStatus::InvalidParameter;
 	}

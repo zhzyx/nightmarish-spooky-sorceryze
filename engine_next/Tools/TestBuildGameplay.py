@@ -1,13 +1,17 @@
 import shlex
+import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from BuildGameplay import (
     CORE_SOURCES,
     PUBLIC_HEADERS,
     TEST_SOURCES,
     artifact,
+    audit_dynamic_dependencies,
     parse_depfile,
     parse_msvc_includes,
     quoted_response,
@@ -85,6 +89,14 @@ class BuildGameplayTests(unittest.TestCase):
         record = artifact(self.root, path)
         self.assertEqual(record["path"], "build/engine_next/object.o")
         self.assertEqual(record["sha256"], "2958d416d08aa5a472d7b509036cb7eafd542add84527e66a145ea64cb4cdc75")
+
+    def test_linux_dependency_audit_uses_ldd_without_otool(self):
+        executable = self.write("fake-ldd.py", "print('libc.so.6 => /lib/libc.so.6\\n/lib64/ld-linux-x86-64.so.2')\n")
+        args = types.SimpleNamespace(
+            repo=self.root, compiler="clang", ldd=sys.executable, executable=str(executable), sanitize=False
+        )
+        with mock.patch("BuildGameplay.sys.platform", "linux"):
+            self.assertEqual(audit_dynamic_dependencies(args), ["libc.so.6", "/lib64/ld-linux-x86-64.so.2"])
 
 
 if __name__ == "__main__":

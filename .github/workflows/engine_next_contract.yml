@@ -37,6 +37,7 @@ jobs:
         os:
           - windows-latest
           - macos-26
+          - ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -60,7 +61,7 @@ jobs:
           call "%VSROOT%\VC\Auxiliary\Build\vcvars64.bat"
           python engine_next/Tools/BuildGameplay.py --repo . --compiler msvc --build-dir build/engine_next/msvc-release --run-tests
           python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-release/LinkManifest.json
-          python engine_next/Tools/BuildRuntime.py --repo . --compiler msvc --build-dir build/engine_next/msvc-runtime --run-tests
+          python engine_next/Tools/BuildRuntime.py --repo . --compiler msvc --build-dir build/engine_next/msvc-runtime --run-tests --soak
           python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-runtime/next_serverLinkManifest.json
           python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-runtime/next_clientLinkManifest.json
           python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-runtime/EngineNextRuntimeTestsLinkManifest.json
@@ -70,11 +71,11 @@ jobs:
           python build/engine_next/clean-runtime-source/tools/check_engine_next_contract.py --repo build/engine_next/clean-runtime-source --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-runtime/next_clientLinkManifest.json
 
       - name: Build and audit standalone tests (Clang)
-        if: runner.os == 'macOS'
+        if: runner.os != 'Windows'
         run: |
           python3 engine_next/Tools/BuildGameplay.py --repo . --compiler clang --build-dir build/engine_next/clang-release --run-tests
           python3 tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-release/LinkManifest.json
-          python3 engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-runtime --run-tests
+          python3 engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-runtime --run-tests --soak
           python3 tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-runtime/next_serverLinkManifest.json
           python3 tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-runtime/next_clientLinkManifest.json
           python3 tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-runtime/EngineNextRuntimeTestsLinkManifest.json

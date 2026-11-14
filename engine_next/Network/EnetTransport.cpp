@@ -73,8 +73,37 @@ class EnetTransport final : public ITransport
 	std::map<PeerId, ENetPeer *> mapPeers;
 	std::map<ENetPeer *, PeerId> mapPeerIds;
 	PeerId nNextPeerId = 1;
+	std::size_t nOutgoingPacketHighWater = 0;
+	std::size_t nPollEventHighWater = 0;
 	bool bServer = false;
 	bool bRunning = false;
+
+	[[nodiscard]] static std::size_t CountList(const ENetList &stList) noexcept
+	{
+		std::size_t nCount = 0;
+		for (ENetListIterator stIterator = enet_list_begin(&stList); stIterator != enet_list_end(&stList); stIterator = enet_list_next(stIterator))
+		{
+			++nCount;
+		}
+		return nCount;
+	}
+
+	[[nodiscard]] std::size_t CountOutgoingPackets() const noexcept
+	{
+		std::size_t nCount = 0;
+		for (const std::pair<const PeerId, ENetPeer *> &stEntry : mapPeers)
+		{
+			nCount += CountList(stEntry.second->outgoingCommands);
+			nCount += CountList(stEntry.second->outgoingSendReliableCommands);
+			nCount += CountList(stEntry.second->sentReliableCommands);
+		}
+		return nCount;
+	}
+
+	void UpdateOutgoingHighWater() noexcept
+	{
+		nOutgoingPacketHighWater = nOutgoingPacketHighWater < CountOutgoingPackets() ? CountOutgoingPackets() : nOutgoingPacketHighWater;
+	}
 
 	[[nodiscard]] PeerId RegisterPeer(ENetPeer *pPeer)
 	{
@@ -208,6 +237,8 @@ public:
 			}
 			out_arrEvents.push_back(std::move(stOutput));
 		}
+		UpdateOutgoingHighWater();
+		nPollEventHighWater = nPollEventHighWater < out_arrEvents.size() ? out_arrEvents.size() : nPollEventHighWater;
 		return nResult < 0 ? Runtime::RuntimeStatus::IoError : Runtime::RuntimeStatus::Ok;
 	}
 
@@ -235,6 +266,7 @@ public:
 			enet_packet_destroy(pPacket);
 			return Runtime::RuntimeStatus::IoError;
 		}
+		UpdateOutgoingHighWater();
 		return Runtime::RuntimeStatus::Ok;
 	}
 
@@ -262,6 +294,11 @@ public:
 		enet_peer_disconnect_later(stPeer->second, 0);
 		enet_host_flush(pHost);
 		return Runtime::RuntimeStatus::Ok;
+	}
+
+	TransportStats GetStats() const noexcept override
+	{
+		return TransportStats{ CountOutgoingPackets(), nOutgoingPacketHighWater, nPollEventHighWater };
 	}
 
 	std::uint16_t GetBoundPort() const noexcept override

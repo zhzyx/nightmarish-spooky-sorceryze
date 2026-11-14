@@ -120,3 +120,41 @@ ENGINE_NEXT_TEST("Input and snapshot payloads preserve fixed-step movement and a
 	ENGINE_NEXT_CHECK_FLOAT(stDecodedSnapshot.vPosition.fX, 3.0F);
 	ENGINE_NEXT_CHECK_FLOAT(stDecodedSnapshot.vVelocity.fX, 8.0F);
 }
+
+ENGINE_NEXT_TEST("Reconciler exposes bounded history configuration snapshots and reset")
+{
+	EngineNext::Gameplay::PredictionReconciler stPrediction;
+	ENGINE_NEXT_CHECK(!stPrediction.SetMaxHistory(0));
+	ENGINE_NEXT_CHECK(!stPrediction.SetMaxHistory(4097));
+	ENGINE_NEXT_CHECK(stPrediction.SetMaxHistory(2));
+	ENGINE_NEXT_CHECK(!stPrediction.SetCorrectionThreshold(-1.0F));
+	ENGINE_NEXT_CHECK(stPrediction.SetCorrectionThreshold(0.01F));
+	ENGINE_NEXT_CHECK(stPrediction.SetInitialState({}));
+	EngineNext::Gameplay::PredictionInput stInput;
+	ENGINE_NEXT_CHECK(stPrediction.PredictInput(EngineNext::Gameplay::Vector3{ 1.0F, 0.0F, 0.0F }, stInput));
+	ENGINE_NEXT_CHECK(stPrediction.PredictInput(EngineNext::Gameplay::Vector3{ 1.0F, 0.0F, 0.0F }, stInput));
+	ENGINE_NEXT_CHECK(!stPrediction.PredictInput(EngineNext::Gameplay::Vector3{ 1.0F, 0.0F, 0.0F }, stInput));
+	ENGINE_NEXT_CHECK_EQ(stPrediction.GetHistoryHighWater(), 2U);
+	ENGINE_NEXT_CHECK(!stPrediction.SetMaxHistory(1));
+	EngineNext::Gameplay::PredictionState stAuthority = stPrediction.GetPredictedState();
+	stAuthority.nConfirmedSequence = 1;
+	float fError = 0.0F;
+	ENGINE_NEXT_CHECK(stPrediction.ApplyAuthoritativeState(stAuthority, fError));
+	std::vector<EngineNext::Gameplay::PredictionInput> arrUnconfirmed;
+	stPrediction.GetUnconfirmedInputs(arrUnconfirmed);
+	ENGINE_NEXT_CHECK_EQ(arrUnconfirmed.size(), 1U);
+	ENGINE_NEXT_CHECK_EQ(arrUnconfirmed[0].nSequence, 2ULL);
+	ENGINE_NEXT_CHECK_EQ(stPrediction.GetNextSequence(), 3ULL);
+	stPrediction.Reset();
+	ENGINE_NEXT_CHECK_EQ(stPrediction.GetUnconfirmedInputCount(), 0U);
+	ENGINE_NEXT_CHECK_EQ(stPrediction.GetHistoryHighWater(), 0U);
+	ENGINE_NEXT_CHECK_EQ(stPrediction.GetLastConfirmedSequence(), 0ULL);
+	ENGINE_NEXT_CHECK_EQ(stPrediction.GetNextSequence(), 1ULL);
+	ENGINE_NEXT_CHECK_EQ(stPrediction.GetCorrectionCount(), 0U);
+	EngineNext::Gameplay::PredictionModel stModel;
+	ENGINE_NEXT_CHECK(stModel.SetFixedStepMsec(100));
+	ENGINE_NEXT_CHECK(stModel.SetMaxSpeed(10.0F));
+	ENGINE_NEXT_CHECK(stPrediction.SetModel(stModel));
+	ENGINE_NEXT_CHECK(stPrediction.PredictInput(EngineNext::Gameplay::Vector3{ 1.0F, 0.0F, 0.0F }, stInput));
+	ENGINE_NEXT_CHECK_FLOAT(stPrediction.GetPredictedState().vPosition.fX, 1.0F);
+}

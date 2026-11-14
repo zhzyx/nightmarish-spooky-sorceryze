@@ -53,6 +53,7 @@ struct RuntimeConfig
 	std::uint32_t nDurationMsec = 8000;
 	std::uint32_t nDrainAfterMsec = 0;
 	std::uint32_t nDrainTimeoutMsec = 1000;
+	std::uint32_t nDrainResponseDelayMsec = 0;
 	std::uint64_t nImpairmentDelayMsec = 0;
 	std::uint64_t nImpairmentJitterMsec = 0;
 	std::uint32_t nImpairmentLossPermille = 0;

@@ -1,0 +1,1397 @@
+{
+  "build_tool_tests": {
+    "count": 15,
+    "failures": 0
+  },
+  "clean_source": {
+    "contracts": {
+      "EngineNextRuntimeTests": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/build/engine_next/clean-m2-pr5-ci6/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/build/engine_next/clean-m2-pr5-ci6",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/build/engine_next/clean-m2-pr5-ci6/build/engine_next/clang-release/EngineNextRuntimeTestsLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "link": {
+          "libraries": 1,
+          "objects": 31,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "sources": {
+          "local_includes": 104,
+          "passed": true,
+          "source_files": 69,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed"
+      },
+      "next_client": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/build/engine_next/clean-m2-pr5-ci6/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/build/engine_next/clean-m2-pr5-ci6",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/build/engine_next/clean-m2-pr5-ci6/build/engine_next/clang-release/next_clientLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "link": {
+          "libraries": 1,
+          "objects": 24,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "sources": {
+          "local_includes": 104,
+          "passed": true,
+          "source_files": 69,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed"
+      },
+      "next_server": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/build/engine_next/clean-m2-pr5-ci6/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/build/engine_next/clean-m2-pr5-ci6",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/build/engine_next/clean-m2-pr5-ci6/build/engine_next/clang-release/next_serverLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "link": {
+          "libraries": 1,
+          "objects": 24,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "sources": {
+          "local_includes": 104,
+          "passed": true,
+          "source_files": 69,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed"
+      }
+    },
+    "file_count": 87,
+    "godot_roots_present": [],
+    "handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\n{\n  \"report\": \"/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/build/engine_next/clean-m2-pr5-ci6/build/engine_next/clang-release/HandshakeReport.json\",\n  \"trace_sha256\": {\n    \"server.jsonl\": \"f48d7bff71e0123ec2a71a80b044247de0b49b3d4d319b70b9f5d3e70f33e71a\",\n    \"client-A.jsonl\": \"5edf34966b35b644d7bb3f098f43876f2aac5d8b06e2443d86033ea13138123a\",\n    \"client-B.jsonl\": \"a2524e17437ed6aa3ef3091e18f9ef793bfa32302ce349416385e9d2318d788b\"\n  }\n}",
+    "native_key": "cde7ed9cdfa3e6fe0a9d4b7ef3809ca8411b02b9f8f1d7cdbd16f56d54d5a7b3",
+    "package_handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\n{\n  \"report\": \"/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/build/engine_next/clean-m2-pr5-ci6/build/engine_next/clang-release/PackageHandshakeReport.json\",\n  \"trace_sha256\": {\n    \"server.jsonl\": \"b998695bb4fce15b4f9dafccab7b58b8034e1fe33391b8f89e0c69f2b10d45c9\",\n    \"client-A.jsonl\": \"e118f02c27a103f5a9ca80fd9ca6ac05bac6911b4ff0a43d55f7722100aa6852\",\n    \"client-B.jsonl\": \"f50131d686771e68e797aa1d06cfda70caac88058b9292999bedc01e536f47b0\"\n  }\n}"
+  },
+  "commands": [
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr5-ci-fix --run-tests",
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr5-ci-soak --run-tests --soak",
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr5-ci-sanitize --run-tests --sanitize",
+    "ExportCleanSource.py --output build/engine_next/clean-m2-pr5-ci, then BuildRuntime.py --run-tests and all three contract checks in the exported tree",
+    "python -m unittest discover -s engine_next/Tools -p 'Test*.py'",
+    "ruff format --check engine_next/Tools",
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr5-ci2 --run-tests",
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr5-ci2-soak --run-tests --soak",
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr5-ci2-sanitize --run-tests --sanitize",
+    "ExportCleanSource.py --output build/engine_next/clean-m2-pr5-ci2, then BuildRuntime.py --run-tests and all three contract checks in the exported tree",
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr5-ci3 --run-tests",
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr5-ci3-soak --run-tests --soak",
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr5-ci3-sanitize --run-tests --sanitize",
+    "ExportCleanSource.py --output build/engine_next/clean-m2-pr5-ci3, then BuildRuntime.py --run-tests and all three contract checks in the exported tree",
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr5-ci6 --run-tests",
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr5-ci6-soak --run-tests --soak",
+    "python engine_next/Tools/BuildRuntime.py --repo . --compiler clang --build-dir build/engine_next/clang-m2-pr5-ci6-sanitize --run-tests --sanitize",
+    "ExportCleanSource.py --output build/engine_next/clean-m2-pr5-ci6, then BuildRuntime.py --run-tests and all three contract checks in the exported tree"
+  ],
+  "drain_regression": {
+    "delay_ms": 96,
+    "post_fix": {
+      "client_bounds": [
+        {
+          "client_id": "A",
+          "enet_outgoing_high_water": 7,
+          "interpolation": 32,
+          "poll_event_high_water": 4,
+          "prediction_history": 6,
+          "unconfirmed_transport": 6
+        },
+        {
+          "client_id": "B",
+          "enet_outgoing_high_water": 2,
+          "interpolation": 32,
+          "poll_event_high_water": 2,
+          "prediction_history": 0,
+          "unconfirmed_transport": 0
+        }
+      ],
+      "client_closes": [
+        {
+          "client_id": "A",
+          "drain": 1
+        },
+        {
+          "client_id": "B",
+          "drain": 1
+        }
+      ],
+      "client_drains": [
+        {
+          "client_id": "A",
+          "deadline_tick": 250
+        },
+        {
+          "client_id": "B",
+          "deadline_tick": 250
+        }
+      ],
+      "client_resumes": [
+        {
+          "confirmed": 8,
+          "entity_id": 2,
+          "error": 0.512,
+          "session_id": 2
+        }
+      ],
+      "clients": [
+        {
+          "client_id": "A",
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "ENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=0 session_id=0\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=2 entity_id=2 resumed=0\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=0 error=0.256\nENGINE_NEXT_CLIENT_RECONNECT_WAIT client_id=A session_id=2 entity_id=2 sent=12 offline_ms=600\nENGINE_NEXT_CLIENT_RECONNECT client_id=A session_id=2 entity_id=2 offline_ms=600\nENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=1 session_id=2\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=2 entity_id=2 resumed=1\nENGINE_NEXT_CLIENT_RESUME client_id=A session_id=2 entity_id=2 confirmed=8 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=11 error=0.128\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=11 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=12 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=15 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=15 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=17 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=23 error=0.128\nENGINE_NEXT_CLIENT_PREDICTION client_id=A confirmed=24 position_x=3.072 history=0 corrections=9 retransmissions=51\nENGINE_NEXT_CLIENT_DRAIN client_id=A deadline_tick=250\nENGINE_NEXT_CLIENT_DRAIN_COMPLETE client_id=A drain=1\nENGINE_NEXT_CLIENT_CLOSE client_id=A drain=1\nENGINE_NEXT_CLIENT_BOUNDS client_id=A prediction_history=6 unconfirmed_transport=6 interpolation=32 enet_outgoing_high_water=7 poll_event_high_water=4\nENGINE_NEXT_IMPAIRMENT client_id=A dropped_input=1 dropped_loss=0 dropped_overflow=0 high_water=7\nENGINE_NEXT_RUNTIME role=client network=ok status=ok\n"
+        },
+        {
+          "client_id": "B",
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "ENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=B reconnecting=0 session_id=0\nENGINE_NEXT_CLIENT_WELCOME client_id=B session_id=1 entity_id=1 resumed=0\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=0.0106667 status=interpolated samples=3 server_time=50\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=1.024 status=stale_held samples=4 server_time=192\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=1.13149 status=interpolated samples=5 server_time=716\nENGINE_NEXT_CLIENT_DRAIN client_id=B deadline_tick=250\nENGINE_NEXT_CLIENT_DRAIN_COMPLETE client_id=B drain=1\nENGINE_NEXT_CLIENT_CLOSE client_id=B drain=1\nENGINE_NEXT_CLIENT_BOUNDS client_id=B prediction_history=0 unconfirmed_transport=0 interpolation=32 enet_outgoing_high_water=2 poll_event_high_water=2\nENGINE_NEXT_IMPAIRMENT client_id=B dropped_input=0 dropped_loss=0 dropped_overflow=0 high_water=0\nENGINE_NEXT_RUNTIME role=client network=ok status=ok\n"
+        }
+      ],
+      "drain_acks": [
+        {
+          "peer_id": 1,
+          "session_id": 1
+        },
+        {
+          "peer_id": 3,
+          "session_id": 2
+        }
+      ],
+      "drain_begins": [
+        {
+          "deadline_tick": 250,
+          "peers": 2
+        }
+      ],
+      "drain_completes": [
+        {
+          "acknowledged": 2,
+          "forced": 0,
+          "notified": 2,
+          "resumed": 1
+        }
+      ],
+      "drain_response_delay_ms": 96,
+      "elapsed_seconds": 3.237,
+      "errors": [],
+      "impairments": [
+        {
+          "client_id": "A",
+          "dropped_input": 1,
+          "dropped_loss": 0,
+          "dropped_overflow": 0,
+          "high_water": 7
+        },
+        {
+          "client_id": "B",
+          "dropped_input": 0,
+          "dropped_loss": 0,
+          "dropped_overflow": 0,
+          "high_water": 0
+        }
+      ],
+      "passed": true,
+      "predictions": [
+        {
+          "confirmed": 24,
+          "corrections": 9,
+          "history": 0,
+          "position_x": 3.072,
+          "retransmissions": 51
+        }
+      ],
+      "remotes": [
+        {
+          "entity_id": 2,
+          "position_x": 0.0106667,
+          "samples": 3,
+          "server_time": 50,
+          "status": "interpolated"
+        },
+        {
+          "entity_id": 2,
+          "position_x": 1.024,
+          "samples": 4,
+          "server_time": 192,
+          "status": "stale_held"
+        },
+        {
+          "entity_id": 2,
+          "position_x": 1.13149,
+          "samples": 5,
+          "server_time": 716,
+          "status": "interpolated"
+        }
+      ],
+      "server_bounds": [
+        {
+          "enet_outgoing_high_water": 6,
+          "input_high_water": 4,
+          "poll_event_high_water": 4,
+          "ticks": 187
+        }
+      ],
+      "server_resumes": [
+        {
+          "confirmed": 8,
+          "entity_id": 2,
+          "peer_id": 3,
+          "session_id": 2
+        }
+      ],
+      "server_returncode": 0,
+      "server_sessions": [
+        {
+          "entity_id": 1,
+          "peer_id": 1,
+          "session_id": 1
+        },
+        {
+          "entity_id": 2,
+          "peer_id": 2,
+          "session_id": 2
+        }
+      ],
+      "server_stderr": [],
+      "server_stdout": [
+        "ENGINE_NEXT_SERVER_READY port=50238",
+        "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=1",
+        "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=2",
+        "ENGINE_NEXT_SESSION peer_id=1 session_id=1 entity_id=1",
+        "ENGINE_NEXT_SESSION peer_id=2 session_id=2 entity_id=2",
+        "ENGINE_NEXT_DISCONNECT peer_id=2 session_id=2 entity_id=2 grace_ms=5000",
+        "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=3",
+        "ENGINE_NEXT_RESUME peer_id=3 session_id=2 entity_id=2 confirmed=8",
+        "ENGINE_NEXT_DRAIN_BEGIN peers=2 deadline_tick=250",
+        "ENGINE_NEXT_DRAIN_ACK peer_id=1 session_id=1",
+        "ENGINE_NEXT_DRAIN_ACK peer_id=3 session_id=2",
+        "ENGINE_NEXT_DRAIN_COMPLETE_PEER peer_id=1 session_id=1",
+        "ENGINE_NEXT_DRAIN_COMPLETE_PEER peer_id=3 session_id=2",
+        "ENGINE_NEXT_DRAIN_COMPLETE notified=2 acknowledged=2 forced=0 resumed=1",
+        "ENGINE_NEXT_SERVER_BOUNDS ticks=187 input_high_water=4 enet_outgoing_high_water=6 poll_event_high_water=4",
+        "ENGINE_NEXT_RUNTIME role=server network=ok status=ok"
+      ],
+      "trace_sha256": {
+        "client-A.jsonl": "559abfabfa91e0cfba81c5c2d54ba842f1fe0b3b6ca3c70fa7e50a25ec3d5f06",
+        "client-B.jsonl": "a2524e17437ed6aa3ef3091e18f9ef793bfa32302ce349416385e9d2318d788b",
+        "server.jsonl": "d11dac3d123c24ebf75418ef5614ab37ba3e48707b5aa5961b0f69e2fc04c2f0"
+      },
+      "welcomes": [
+        {
+          "client_id": "A",
+          "entity_id": 2,
+          "resumed": 0,
+          "session_id": 2
+        },
+        {
+          "client_id": "A",
+          "entity_id": 2,
+          "resumed": 1,
+          "session_id": 2
+        },
+        {
+          "client_id": "B",
+          "entity_id": 1,
+          "resumed": 0,
+          "session_id": 1
+        }
+      ]
+    },
+    "pre_fix": {
+      "client_bounds": [
+        {
+          "client_id": "A",
+          "enet_outgoing_high_water": 6,
+          "interpolation": 32,
+          "poll_event_high_water": 2,
+          "prediction_history": 6,
+          "unconfirmed_transport": 6
+        },
+        {
+          "client_id": "B",
+          "enet_outgoing_high_water": 2,
+          "interpolation": 32,
+          "poll_event_high_water": 2,
+          "prediction_history": 0,
+          "unconfirmed_transport": 0
+        }
+      ],
+      "client_closes": [],
+      "client_drains": [
+        {
+          "client_id": "A",
+          "deadline_tick": 250
+        },
+        {
+          "client_id": "B",
+          "deadline_tick": 250
+        }
+      ],
+      "client_resumes": [
+        {
+          "confirmed": 9,
+          "entity_id": 2,
+          "error": 0.384,
+          "session_id": 2
+        }
+      ],
+      "clients": [
+        {
+          "client_id": "A",
+          "returncode": 1,
+          "stderr": "Client network runtime failed with status 5\n",
+          "stdout": "ENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=0 session_id=0\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=2 entity_id=2 resumed=0\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=0 error=0.256\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=2 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=2 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=4 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=8 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=8 error=0.384\nENGINE_NEXT_CLIENT_RECONNECT_WAIT client_id=A session_id=2 entity_id=2 sent=12 offline_ms=600\nENGINE_NEXT_CLIENT_RECONNECT client_id=A session_id=2 entity_id=2 offline_ms=600\nENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=1 session_id=2\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=2 entity_id=2 resumed=1\nENGINE_NEXT_CLIENT_RESUME client_id=A session_id=2 entity_id=2 confirmed=9 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=11 error=0.128\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=11 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=11 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=13 error=0.128\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=13 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=17 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=17 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=19 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=23 error=0.128\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=23 error=0.128\nENGINE_NEXT_CLIENT_PREDICTION client_id=A confirmed=24 position_x=3.072 history=0 corrections=17 retransmissions=50\nENGINE_NEXT_CLIENT_DRAIN client_id=A deadline_tick=250\nENGINE_NEXT_CLIENT_CLOSE_TIMEOUT client_id=A drain=1\nENGINE_NEXT_CLIENT_BOUNDS client_id=A prediction_history=6 unconfirmed_transport=6 interpolation=32 enet_outgoing_high_water=6 poll_event_high_water=2\nENGINE_NEXT_IMPAIRMENT client_id=A dropped_input=1 dropped_loss=0 dropped_overflow=0 high_water=6\n"
+        },
+        {
+          "client_id": "B",
+          "returncode": 1,
+          "stderr": "Client network runtime failed with status 5\n",
+          "stdout": "ENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=B reconnecting=0 session_id=0\nENGINE_NEXT_CLIENT_WELCOME client_id=B session_id=1 entity_id=1 resumed=0\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=0.00533333 status=interpolated samples=3 server_time=337\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=1.024 status=stale_held samples=4 server_time=480\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=1.35086 status=interpolated samples=5 server_time=1052\nENGINE_NEXT_CLIENT_DRAIN client_id=B deadline_tick=250\nENGINE_NEXT_CLIENT_TRANSPORT_DISCONNECT client_id=B reconnecting=0 closing=1 ready=1\nENGINE_NEXT_CLIENT_BOUNDS client_id=B prediction_history=0 unconfirmed_transport=0 interpolation=32 enet_outgoing_high_water=2 poll_event_high_water=2\nENGINE_NEXT_IMPAIRMENT client_id=B dropped_input=0 dropped_loss=0 dropped_overflow=0 high_water=0\n"
+        }
+      ],
+      "drain_acks": [
+        {
+          "peer_id": 1,
+          "session_id": 1
+        },
+        {
+          "peer_id": 3,
+          "session_id": 2
+        }
+      ],
+      "drain_begins": [
+        {
+          "deadline_tick": 250,
+          "peers": 2
+        }
+      ],
+      "drain_completes": [
+        {
+          "acknowledged": 0,
+          "forced": 1,
+          "notified": 2,
+          "resumed": 1
+        }
+      ],
+      "drain_response_delay_ms": 96,
+      "errors": [
+        "Reconnect, loss, interpolation recovery or drain validation failed: {\"passed\": false, \"clients\": [{\"client_id\": \"A\", \"returncode\": 1, \"stdout\": \"ENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=0 session_id=0\\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=2 entity_id=2 resumed=0\\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=0 error=0.256\\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=2 error=0.384\\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=2 error=0.384\\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=4 error=0.384\\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=8 error=0.384\\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=8 error=0.384\\nENGINE_NEXT_CLIENT_RECONNECT_WAIT client_id=A session_id=2 entity_id=2 sent=12 offline_ms=600\\nENGINE_NEXT_CLIENT_RECONNECT client_id=A session_id=2 entity_id=2 offline_ms=600\\nENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=1 session_id=2\\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=2 entity_id=2 resumed=1\\nENGINE_NEXT_CLIENT_RESUME client_id=A session_id=2 entity_id=2 confirmed=9 error=0.384\\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=11 error=0.128\\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=11 error=0.384\\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=11 error=0.384\\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=13 error=0.128\\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=13 error=0.512\\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=17 error=0.512\\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=17 error=0.512\\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=19 error=0.512\\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=23 error=0.128\\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=23 error=0.128\\nENGINE_NEXT_CLIENT_PREDICTION client_id=A confirmed=24 position_x=3.072 history=0 corrections=17 retransmissions=50\\nENGINE_NEXT_CLIENT_DRAIN client_id=A deadline_tick=250\\nENGINE_NEXT_CLIENT_CLOSE_TIMEOUT client_id=A drain=1\\nENGINE_NEXT_CLIENT_BOUNDS client_id=A prediction_history=6 unconfirmed_transport=6 interpolation=32 enet_outgoing_high_water=6 poll_event_high_water=2\\nENGINE_NEXT_IMPAIRMENT client_id=A dropped_input=1 dropped_loss=0 dropped_overflow=0 high_water=6\\n\", \"stderr\": \"Client network runtime failed with status 5\\n\"}, {\"client_id\": \"B\", \"returncode\": 1, \"stdout\": \"ENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=B reconnecting=0 session_id=0\\nENGINE_NEXT_CLIENT_WELCOME client_id=B session_id=1 entity_id=1 resumed=0\\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=0.00533333 status=interpolated samples=3 server_time=337\\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=1.024 status=stale_held samples=4 server_time=480\\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=1.35086 status=interpolated samples=5 server_time=1052\\nENGINE_NEXT_CLIENT_DRAIN client_id=B deadline_tick=250\\nENGINE_NEXT_CLIENT_TRANSPORT_DISCONNECT client_id=B reconnecting=0 closing=1 ready=1\\nENGINE_NEXT_CLIENT_BOUNDS client_id=B prediction_history=0 unconfirmed_transport=0 interpolation=32 enet_outgoing_high_water=2 poll_event_high_water=2\\nENGINE_NEXT_IMPAIRMENT client_id=B dropped_input=0 dropped_loss=0 dropped_overflow=0 high_water=0\\n\", \"stderr\": \"Client network runtime failed with status 5\\n\"}], \"server_sessions\": [{\"peer_id\": 1, \"session_id\": 1, \"entity_id\": 1}, {\"peer_id\": 2, \"session_id\": 2, \"entity_id\": 2}], \"errors\": [], \"drain_response_delay_ms\": 96, \"server_returncode\": 1, \"server_stdout\": [\"ENGINE_NEXT_SERVER_READY port=60964\", \"ENGINE_NEXT_TRANSPORT_CONNECT peer_id=1\", \"ENGINE_NEXT_TRANSPORT_CONNECT peer_id=2\", \"ENGINE_NEXT_SESSION peer_id=1 session_id=1 entity_id=1\", \"ENGINE_NEXT_SESSION peer_id=2 session_id=2 entity_id=2\", \"ENGINE_NEXT_DISCONNECT peer_id=2 session_id=2 entity_id=2 grace_ms=5000\", \"ENGINE_NEXT_TRANSPORT_CONNECT peer_id=3\", \"ENGINE_NEXT_RESUME peer_id=3 session_id=2 entity_id=2 confirmed=9\", \"ENGINE_NEXT_DRAIN_BEGIN peers=2 deadline_tick=250\", \"ENGINE_NEXT_DRAIN_ACK peer_id=1 session_id=1\", \"ENGINE_NEXT_DRAIN_ACK peer_id=3 session_id=2\", \"ENGINE_NEXT_DRAIN_FORCED peer_id=1\", \"ENGINE_NEXT_DRAIN_COMPLETE notified=2 acknowledged=0 forced=1 resumed=1\", \"ENGINE_NEXT_SERVER_BOUNDS ticks=187 input_high_water=4 enet_outgoing_high_water=4 poll_event_high_water=4\"], \"server_stderr\": [\"Server network runtime failed with status 5\"], \"welcomes\": [{\"client_id\": \"A\", \"session_id\": 2, \"entity_id\": 2, \"resumed\": 0}, {\"client_id\": \"A\", \"session_id\": 2, \"entity_id\": 2, \"resumed\": 1}, {\"client_id\": \"B\", \"session_id\": 1, \"entity_id\": 1, \"resumed\": 0}], \"server_resumes\": [{\"peer_id\": 3, \"session_id\": 2, \"entity_id\": 2, \"confirmed\": 9}], \"client_resumes\": [{\"session_id\": 2, \"entity_id\": 2, \"confirmed\": 9, \"error\": 0.384}], \"predictions\": [{\"confirmed\": 24, \"position_x\": 3.072, \"history\": 0, \"corrections\": 17, \"retransmissions\": 50}], \"remotes\": [{\"entity_id\": 2, \"position_x\": 0.00533333, \"status\": \"interpolated\", \"samples\": 3, \"server_time\": 337}, {\"entity_id\": 2, \"position_x\": 1.024, \"status\": \"stale_held\", \"samples\": 4, \"server_time\": 480}, {\"entity_id\": 2, \"position_x\": 1.35086, \"status\": \"interpolated\", \"samples\": 5, \"server_time\": 1052}], \"client_drains\": [{\"client_id\": \"A\", \"deadline_tick\": 250}, {\"client_id\": \"B\", \"deadline_tick\": 250}], \"client_closes\": [], \"drain_begins\": [{\"peers\": 2, \"deadline_tick\": 250}], \"drain_acks\": [{\"peer_id\": 1, \"session_id\": 1}, {\"peer_id\": 3, \"session_id\": 2}], \"drain_completes\": [{\"notified\": 2, \"acknowledged\": 0, \"forced\": 1, \"resumed\": 1}], \"impairments\": [{\"client_id\": \"A\", \"dropped_input\": 1, \"dropped_loss\": 0, \"dropped_overflow\": 0, \"high_water\": 6}, {\"client_id\": \"B\", \"dropped_input\": 0, \"dropped_loss\": 0, \"dropped_overflow\": 0, \"high_water\": 0}], \"server_bounds\": [{\"ticks\": 187, \"input_high_water\": 4, \"enet_outgoing_high_water\": 4, \"poll_event_high_water\": 4}], \"client_bounds\": [{\"client_id\": \"A\", \"prediction_history\": 6, \"unconfirmed_transport\": 6, \"interpolation\": 32, \"enet_outgoing_high_water\": 6, \"poll_event_high_water\": 2}, {\"client_id\": \"B\", \"prediction_history\": 0, \"unconfirmed_transport\": 0, \"interpolation\": 32, \"enet_outgoing_high_water\": 2, \"poll_event_high_water\": 2}]}"
+      ],
+      "impairments": [
+        {
+          "client_id": "A",
+          "dropped_input": 1,
+          "dropped_loss": 0,
+          "dropped_overflow": 0,
+          "high_water": 6
+        },
+        {
+          "client_id": "B",
+          "dropped_input": 0,
+          "dropped_loss": 0,
+          "dropped_overflow": 0,
+          "high_water": 0
+        }
+      ],
+      "passed": false,
+      "predictions": [
+        {
+          "confirmed": 24,
+          "corrections": 17,
+          "history": 0,
+          "position_x": 3.072,
+          "retransmissions": 50
+        }
+      ],
+      "remotes": [
+        {
+          "entity_id": 2,
+          "position_x": 0.00533333,
+          "samples": 3,
+          "server_time": 337,
+          "status": "interpolated"
+        },
+        {
+          "entity_id": 2,
+          "position_x": 1.024,
+          "samples": 4,
+          "server_time": 480,
+          "status": "stale_held"
+        },
+        {
+          "entity_id": 2,
+          "position_x": 1.35086,
+          "samples": 5,
+          "server_time": 1052,
+          "status": "interpolated"
+        }
+      ],
+      "server_bounds": [
+        {
+          "enet_outgoing_high_water": 4,
+          "input_high_water": 4,
+          "poll_event_high_water": 4,
+          "ticks": 187
+        }
+      ],
+      "server_resumes": [
+        {
+          "confirmed": 9,
+          "entity_id": 2,
+          "peer_id": 3,
+          "session_id": 2
+        }
+      ],
+      "server_returncode": 1,
+      "server_sessions": [
+        {
+          "entity_id": 1,
+          "peer_id": 1,
+          "session_id": 1
+        },
+        {
+          "entity_id": 2,
+          "peer_id": 2,
+          "session_id": 2
+        }
+      ],
+      "server_stderr": [
+        "Server network runtime failed with status 5"
+      ],
+      "server_stdout": [
+        "ENGINE_NEXT_SERVER_READY port=60964",
+        "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=1",
+        "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=2",
+        "ENGINE_NEXT_SESSION peer_id=1 session_id=1 entity_id=1",
+        "ENGINE_NEXT_SESSION peer_id=2 session_id=2 entity_id=2",
+        "ENGINE_NEXT_DISCONNECT peer_id=2 session_id=2 entity_id=2 grace_ms=5000",
+        "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=3",
+        "ENGINE_NEXT_RESUME peer_id=3 session_id=2 entity_id=2 confirmed=9",
+        "ENGINE_NEXT_DRAIN_BEGIN peers=2 deadline_tick=250",
+        "ENGINE_NEXT_DRAIN_ACK peer_id=1 session_id=1",
+        "ENGINE_NEXT_DRAIN_ACK peer_id=3 session_id=2",
+        "ENGINE_NEXT_DRAIN_FORCED peer_id=1",
+        "ENGINE_NEXT_DRAIN_COMPLETE notified=2 acknowledged=0 forced=1 resumed=1",
+        "ENGINE_NEXT_SERVER_BOUNDS ticks=187 input_high_water=4 enet_outgoing_high_water=4 poll_event_high_water=4"
+      ],
+      "welcomes": [
+        {
+          "client_id": "A",
+          "entity_id": 2,
+          "resumed": 0,
+          "session_id": 2
+        },
+        {
+          "client_id": "A",
+          "entity_id": 2,
+          "resumed": 1,
+          "session_id": 2
+        },
+        {
+          "client_id": "B",
+          "entity_id": 1,
+          "resumed": 0,
+          "session_id": 1
+        }
+      ]
+    }
+  },
+  "failed_jobs": [
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43537290318/job/132269254297",
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43537290318/job/132269254737",
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43537290521/job/132269255661",
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43542926726/job/132287386752",
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43542926726/job/132287386768"
+  ],
+  "fixes": {
+    "client_close": "NotFound is accepted only after a valid final server response and the client DrainComplete was sent; all other close errors still fail",
+    "drain_race": "DisconnectLater is gated on DrainComplete for a draining client, or no drain for an ordinary leave; a client can no longer disconnect 32 ms after its initial DrainAcknowledge",
+    "drain_regression": "The server-only drain-response-delay-ms option defaults to zero and delays only the final server response; positive and package loops use 96 ms. A server-wide packet delay attempt was rejected because it changes reconnect behavior",
+    "enet_posix": "Clang C builds define HAS_INET_PTON=1 and HAS_INET_NTOP=1 so Linux strict C99 does not fall back to undeclared inet_aton; a mocked compile-command regression fails without both definitions",
+    "final_format": "The complete candidate passed clang-format 22.1.5 after wrapping one close-transport log statement; all native runtime acceptance was rerun",
+    "format": "Changed C++ and Python files are formatted and checked with clang-format, ruff check and ruff format --check",
+    "linux_loader": "Absolute dynamic-loader paths such as /lib64/ld-linux-x86-64.so.2 are accepted as system runtime; the test fixture includes this exact path",
+    "linux_test": "test_linux_dependency_audit_uses_ldd_without_otool executes the Linux branch with a real fake ldd script",
+    "ubuntu": "BuildGameplay uses ldd and permits only the actual Linux runtime libraries; otool is required only on macOS",
+    "windows_test": "The fake ldd is executed through the current Python interpreter, never as a native executable, so the same test works on Windows and Unix"
+  },
+  "integrated_main": "7acdf07ca4c89251527a392c754a536af2094b6a",
+  "integration": {
+    "format_correction": "engine_next/Client/ClientRuntime.cpp",
+    "main": "69ed8de5c273395074fab49d9c48c1dc0baae00e",
+    "main_native_input_changes": []
+  },
+  "integration_base": "7acdf07ca4c89251527a392c754a536af2094b6a",
+  "issue_number": 1042,
+  "m1_regression": {
+    "clean_run_summary": "ENGINE_NEXT_BENCHMARK model_steps=1000000 buffer_operations=50000 buffer_capacity=4096 repetitions=5 model_median_us=4874 buffer_median_us=161048 model_checksum=3325757522 buffer_checksum=4097\nENGINE_NEXT_TEST_SUMMARY tests=16 checks=200161 failures=0",
+    "test_summary": "ENGINE_NEXT_BENCHMARK model_steps=1000000 buffer_operations=50000 buffer_capacity=4096 repetitions=5 model_median_us=4871 buffer_median_us=161492 model_checksum=3325757522 buffer_checksum=4097\nENGINE_NEXT_TEST_SUMMARY tests=16 checks=200161 failures=0",
+    "trace_sha256": "f55d1f5bc85bb72376d3f31cdf9b64aac91e714b6556dbce1663c1db7995924c"
+  },
+  "native_invalidation": {
+    "before_default_ticks": 1,
+    "before_native_key": "cde7ed9cdfa3e6fe0a9d4b7ef3809ca8411b02b9f8f1d7cdbd16f56d54d5a7b3",
+    "changed_default_ticks": 2,
+    "changed_native_key": "0a8236dff2f312326e7d09b5ed4acc28f734372dd91d9033aa8e337f58bffd5e",
+    "key_changed": true,
+    "repeat_verified": true,
+    "restored": true,
+    "restored_default_ticks": 1,
+    "restored_native_key": "cde7ed9cdfa3e6fe0a9d4b7ef3809ca8411b02b9f8f1d7cdbd16f56d54d5a7b3"
+  },
+  "previous_pr": {
+    "number": 1214,
+    "run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43542926726",
+    "signed_head": "b055f7f04774d9934044270c398c9df86dabc7b4"
+  },
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "runtime": {
+    "clean_test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=21 checks=278 failures=0",
+    "contracts": {
+      "EngineNextRuntimeTests": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/build/engine_next/clang-m2-pr5-ci6/EngineNextRuntimeTestsLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "link": {
+          "libraries": 1,
+          "objects": 31,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "sources": {
+          "local_includes": 104,
+          "passed": true,
+          "source_files": 69,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed"
+      },
+      "next_client": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/build/engine_next/clang-m2-pr5-ci6/next_clientLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "link": {
+          "libraries": 1,
+          "objects": 24,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "sources": {
+          "local_includes": 104,
+          "passed": true,
+          "source_files": 69,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed"
+      },
+      "next_server": {
+        "command": [
+          "/Users/kevinxue/Library/Application Support/kimi-desktop/daimon-share/daimon/runtime/python/.venv/bin/python",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/tools/check_engine_next_contract.py",
+          "--repo",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5",
+          "--require-sources",
+          "--link-manifest",
+          "/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/build/engine_next/clang-m2-pr5-ci6/next_serverLinkManifest.json",
+          "--require-link-manifest"
+        ],
+        "link": {
+          "libraries": 1,
+          "objects": 24,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "sources": {
+          "local_includes": 104,
+          "passed": true,
+          "source_files": 69,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed"
+      }
+    },
+    "handshake": {
+      "client_bounds": [
+        {
+          "client_id": "A",
+          "enet_outgoing_high_water": 7,
+          "interpolation": 32,
+          "poll_event_high_water": 4,
+          "prediction_history": 6,
+          "unconfirmed_transport": 6
+        },
+        {
+          "client_id": "B",
+          "enet_outgoing_high_water": 2,
+          "interpolation": 32,
+          "poll_event_high_water": 2,
+          "prediction_history": 0,
+          "unconfirmed_transport": 0
+        }
+      ],
+      "client_closes": [
+        {
+          "client_id": "A",
+          "drain": 1
+        },
+        {
+          "client_id": "B",
+          "drain": 1
+        }
+      ],
+      "client_drains": [
+        {
+          "client_id": "A",
+          "deadline_tick": 250
+        },
+        {
+          "client_id": "B",
+          "deadline_tick": 250
+        }
+      ],
+      "client_resumes": [
+        {
+          "confirmed": 8,
+          "entity_id": 2,
+          "error": 0.512,
+          "session_id": 2
+        }
+      ],
+      "clients": [
+        {
+          "client_id": "A",
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "ENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=0 session_id=0\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=2 entity_id=2 resumed=0\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=0 error=0.256\nENGINE_NEXT_CLIENT_RECONNECT_WAIT client_id=A session_id=2 entity_id=2 sent=12 offline_ms=600\nENGINE_NEXT_CLIENT_RECONNECT client_id=A session_id=2 entity_id=2 offline_ms=600\nENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=1 session_id=2\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=2 entity_id=2 resumed=1\nENGINE_NEXT_CLIENT_RESUME client_id=A session_id=2 entity_id=2 confirmed=8 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=11 error=0.128\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=11 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=12 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=15 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=15 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=17 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=23 error=0.128\nENGINE_NEXT_CLIENT_PREDICTION client_id=A confirmed=24 position_x=3.072 history=0 corrections=9 retransmissions=51\nENGINE_NEXT_CLIENT_DRAIN client_id=A deadline_tick=250\nENGINE_NEXT_CLIENT_DRAIN_COMPLETE client_id=A drain=1\nENGINE_NEXT_CLIENT_CLOSE client_id=A drain=1\nENGINE_NEXT_CLIENT_BOUNDS client_id=A prediction_history=6 unconfirmed_transport=6 interpolation=32 enet_outgoing_high_water=7 poll_event_high_water=4\nENGINE_NEXT_IMPAIRMENT client_id=A dropped_input=1 dropped_loss=0 dropped_overflow=0 high_water=7\nENGINE_NEXT_RUNTIME role=client network=ok status=ok\n"
+        },
+        {
+          "client_id": "B",
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "ENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=B reconnecting=0 session_id=0\nENGINE_NEXT_CLIENT_WELCOME client_id=B session_id=1 entity_id=1 resumed=0\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=0.0106667 status=interpolated samples=3 server_time=50\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=1.024 status=stale_held samples=4 server_time=192\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=1.13149 status=interpolated samples=5 server_time=716\nENGINE_NEXT_CLIENT_DRAIN client_id=B deadline_tick=250\nENGINE_NEXT_CLIENT_DRAIN_COMPLETE client_id=B drain=1\nENGINE_NEXT_CLIENT_CLOSE client_id=B drain=1\nENGINE_NEXT_CLIENT_BOUNDS client_id=B prediction_history=0 unconfirmed_transport=0 interpolation=32 enet_outgoing_high_water=2 poll_event_high_water=2\nENGINE_NEXT_IMPAIRMENT client_id=B dropped_input=0 dropped_loss=0 dropped_overflow=0 high_water=0\nENGINE_NEXT_RUNTIME role=client network=ok status=ok\n"
+        }
+      ],
+      "drain_acks": [
+        {
+          "peer_id": 1,
+          "session_id": 1
+        },
+        {
+          "peer_id": 3,
+          "session_id": 2
+        }
+      ],
+      "drain_begins": [
+        {
+          "deadline_tick": 250,
+          "peers": 2
+        }
+      ],
+      "drain_completes": [
+        {
+          "acknowledged": 2,
+          "forced": 0,
+          "notified": 2,
+          "resumed": 1
+        }
+      ],
+      "drain_response_delay_ms": 96,
+      "elapsed_seconds": 3.237,
+      "errors": [],
+      "impairments": [
+        {
+          "client_id": "A",
+          "dropped_input": 1,
+          "dropped_loss": 0,
+          "dropped_overflow": 0,
+          "high_water": 7
+        },
+        {
+          "client_id": "B",
+          "dropped_input": 0,
+          "dropped_loss": 0,
+          "dropped_overflow": 0,
+          "high_water": 0
+        }
+      ],
+      "passed": true,
+      "predictions": [
+        {
+          "confirmed": 24,
+          "corrections": 9,
+          "history": 0,
+          "position_x": 3.072,
+          "retransmissions": 51
+        }
+      ],
+      "remotes": [
+        {
+          "entity_id": 2,
+          "position_x": 0.0106667,
+          "samples": 3,
+          "server_time": 50,
+          "status": "interpolated"
+        },
+        {
+          "entity_id": 2,
+          "position_x": 1.024,
+          "samples": 4,
+          "server_time": 192,
+          "status": "stale_held"
+        },
+        {
+          "entity_id": 2,
+          "position_x": 1.13149,
+          "samples": 5,
+          "server_time": 716,
+          "status": "interpolated"
+        }
+      ],
+      "server_bounds": [
+        {
+          "enet_outgoing_high_water": 6,
+          "input_high_water": 4,
+          "poll_event_high_water": 4,
+          "ticks": 187
+        }
+      ],
+      "server_resumes": [
+        {
+          "confirmed": 8,
+          "entity_id": 2,
+          "peer_id": 3,
+          "session_id": 2
+        }
+      ],
+      "server_returncode": 0,
+      "server_sessions": [
+        {
+          "entity_id": 1,
+          "peer_id": 1,
+          "session_id": 1
+        },
+        {
+          "entity_id": 2,
+          "peer_id": 2,
+          "session_id": 2
+        }
+      ],
+      "server_stderr": [],
+      "server_stdout": [
+        "ENGINE_NEXT_SERVER_READY port=50238",
+        "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=1",
+        "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=2",
+        "ENGINE_NEXT_SESSION peer_id=1 session_id=1 entity_id=1",
+        "ENGINE_NEXT_SESSION peer_id=2 session_id=2 entity_id=2",
+        "ENGINE_NEXT_DISCONNECT peer_id=2 session_id=2 entity_id=2 grace_ms=5000",
+        "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=3",
+        "ENGINE_NEXT_RESUME peer_id=3 session_id=2 entity_id=2 confirmed=8",
+        "ENGINE_NEXT_DRAIN_BEGIN peers=2 deadline_tick=250",
+        "ENGINE_NEXT_DRAIN_ACK peer_id=1 session_id=1",
+        "ENGINE_NEXT_DRAIN_ACK peer_id=3 session_id=2",
+        "ENGINE_NEXT_DRAIN_COMPLETE_PEER peer_id=1 session_id=1",
+        "ENGINE_NEXT_DRAIN_COMPLETE_PEER peer_id=3 session_id=2",
+        "ENGINE_NEXT_DRAIN_COMPLETE notified=2 acknowledged=2 forced=0 resumed=1",
+        "ENGINE_NEXT_SERVER_BOUNDS ticks=187 input_high_water=4 enet_outgoing_high_water=6 poll_event_high_water=4",
+        "ENGINE_NEXT_RUNTIME role=server network=ok status=ok"
+      ],
+      "trace_sha256": {
+        "client-A.jsonl": "559abfabfa91e0cfba81c5c2d54ba842f1fe0b3b6ca3c70fa7e50a25ec3d5f06",
+        "client-B.jsonl": "a2524e17437ed6aa3ef3091e18f9ef793bfa32302ce349416385e9d2318d788b",
+        "server.jsonl": "d11dac3d123c24ebf75418ef5614ab37ba3e48707b5aa5961b0f69e2fc04c2f0"
+      },
+      "welcomes": [
+        {
+          "client_id": "A",
+          "entity_id": 2,
+          "resumed": 0,
+          "session_id": 2
+        },
+        {
+          "client_id": "A",
+          "entity_id": 2,
+          "resumed": 1,
+          "session_id": 2
+        },
+        {
+          "client_id": "B",
+          "entity_id": 1,
+          "resumed": 0,
+          "session_id": 1
+        }
+      ]
+    },
+    "native_key": "cde7ed9cdfa3e6fe0a9d4b7ef3809ca8411b02b9f8f1d7cdbd16f56d54d5a7b3",
+    "negative_drain": {
+      "clients": [
+        {
+          "client_id": "A",
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "ENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=0 session_id=0\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=1 entity_id=1 resumed=0\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=2 error=0.128\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=8 error=0.128\nENGINE_NEXT_CLIENT_RECONNECT_WAIT client_id=A session_id=1 entity_id=1 sent=12 offline_ms=600\nENGINE_NEXT_CLIENT_RECONNECT client_id=A session_id=1 entity_id=1 offline_ms=600\nENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=1 session_id=1\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=1 entity_id=1 resumed=1\nENGINE_NEXT_CLIENT_RESUME client_id=A session_id=1 entity_id=1 confirmed=11 error=0.128\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=11 error=0.256\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=13 error=0.128\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=13 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=20 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=20 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=22 error=0.256\nENGINE_NEXT_CLIENT_PREDICTION client_id=A confirmed=24 position_x=3.072 history=0 corrections=9 retransmissions=36\nENGINE_NEXT_CLIENT_DRAIN client_id=A deadline_tick=138\nENGINE_NEXT_CLIENT_DRAIN_COMPLETE client_id=A drain=1\nENGINE_NEXT_CLIENT_CLOSE client_id=A drain=1\nENGINE_NEXT_CLIENT_BOUNDS client_id=A prediction_history=5 unconfirmed_transport=6 interpolation=28 enet_outgoing_high_water=7 poll_event_high_water=4\nENGINE_NEXT_IMPAIRMENT client_id=A dropped_input=0 dropped_loss=0 dropped_overflow=0 high_water=0\nENGINE_NEXT_RUNTIME role=client network=ok status=ok\n"
+        },
+        {
+          "client_id": "B",
+          "returncode": 1,
+          "stderr": "Client network runtime failed with status 5\n",
+          "stdout": "ENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=B reconnecting=0 session_id=0\nENGINE_NEXT_CLIENT_WELCOME client_id=B session_id=2 entity_id=2 resumed=0\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=1 position_x=0.392 status=interpolated samples=3 server_time=49\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=1 position_x=1.152 status=stale_held samples=3 server_time=144\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=1 position_x=1.3699 status=interpolated samples=4 server_time=716\nENGINE_NEXT_CLIENT_DRAIN client_id=B deadline_tick=138\nENGINE_NEXT_CLIENT_DRAIN_WITHHELD client_id=B\nENGINE_NEXT_CLIENT_TRANSPORT_DISCONNECT client_id=B reconnecting=0 closing=1 ready=0\nENGINE_NEXT_CLIENT_BOUNDS client_id=B prediction_history=0 unconfirmed_transport=0 interpolation=28 enet_outgoing_high_water=2 poll_event_high_water=2\nENGINE_NEXT_IMPAIRMENT client_id=B dropped_input=0 dropped_loss=0 dropped_overflow=0 high_water=0\n"
+        },
+        {
+          "client_id": "C",
+          "returncode": 1,
+          "stderr": "Client network runtime failed with status 5\n",
+          "stdout": "ENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=C reconnecting=0 session_id=0\nENGINE_NEXT_CLIENT_REJECT client_id=C reason=8 fatal=0\nENGINE_NEXT_CLIENT_BOUNDS client_id=C prediction_history=0 unconfirmed_transport=0 interpolation=0 enet_outgoing_high_water=2 poll_event_high_water=1\nENGINE_NEXT_IMPAIRMENT client_id=C dropped_input=0 dropped_loss=0 dropped_overflow=0 high_water=0\n"
+        }
+      ],
+      "drain_acks": [
+        {
+          "peer_id": "3",
+          "session_id": "1"
+        }
+      ],
+      "drain_completes": [
+        {
+          "acknowledged": "1",
+          "forced": "1",
+          "notified": "2",
+          "resumed": "1"
+        }
+      ],
+      "drain_rejects": [
+        {
+          "fatal": "0",
+          "peer_id": "4",
+          "reason": "8",
+          "type": "1"
+        }
+      ],
+      "drain_timeouts": [
+        {
+          "peer_id": "2"
+        }
+      ],
+      "errors": [],
+      "expected_failure": true,
+      "late_rejects": [
+        {
+          "fatal": "0",
+          "reason": "8"
+        }
+      ],
+      "passed": true,
+      "server_returncode": 1,
+      "server_stderr": [
+        "Server network runtime failed with status 5"
+      ],
+      "server_stdout": [
+        "ENGINE_NEXT_SERVER_READY port=54293",
+        "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=1",
+        "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=2",
+        "ENGINE_NEXT_SESSION peer_id=1 session_id=1 entity_id=1",
+        "ENGINE_NEXT_SESSION peer_id=2 session_id=2 entity_id=2",
+        "ENGINE_NEXT_DISCONNECT peer_id=1 session_id=1 entity_id=1 grace_ms=5000",
+        "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=3",
+        "ENGINE_NEXT_RESUME peer_id=3 session_id=1 entity_id=1 confirmed=11",
+        "ENGINE_NEXT_DRAIN_BEGIN peers=2 deadline_tick=138",
+        "ENGINE_NEXT_DRAIN_ACK peer_id=3 session_id=1",
+        "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=4",
+        "ENGINE_NEXT_DRAIN_COMPLETE_PEER peer_id=3 session_id=1",
+        "ENGINE_NEXT_REJECT peer_id=4 type=1 reason=8 fatal=0",
+        "ENGINE_NEXT_DRAIN_TIMEOUT peer_id=2",
+        "ENGINE_NEXT_DRAIN_COMPLETE notified=2 acknowledged=1 forced=1 resumed=1",
+        "ENGINE_NEXT_SERVER_BOUNDS ticks=125 input_high_water=4 enet_outgoing_high_water=6 poll_event_high_water=7"
+      ],
+      "trace_sha256": {
+        "fault-client-A.jsonl": "d49688d6b589c0a18571e4025a9d0dda42bcb4c3efa9e9b8cb7b9143dc941c13",
+        "fault-client-B.jsonl": "d856b6c0de4c7689587a375c032a327a95c52251642925086033f3ade8230ebd",
+        "fault-client-C.jsonl": "a79b68f1978a3e0a4b93900f5d2f27ce3a1d822563c8e36e69fb35207ad8f999",
+        "fault-server.jsonl": "71acbc3efa74d136e00fd3a57f3c0eacb1bd184a19d2724c2f2f7b22ff4fb2d7"
+      }
+    },
+    "package_handshake": {
+      "client_bounds": [
+        {
+          "client_id": "A",
+          "enet_outgoing_high_water": 6,
+          "interpolation": 32,
+          "poll_event_high_water": 4,
+          "prediction_history": 5,
+          "unconfirmed_transport": 5
+        },
+        {
+          "client_id": "B",
+          "enet_outgoing_high_water": 2,
+          "interpolation": 32,
+          "poll_event_high_water": 2,
+          "prediction_history": 0,
+          "unconfirmed_transport": 0
+        }
+      ],
+      "client_closes": [
+        {
+          "client_id": "A",
+          "drain": 1
+        },
+        {
+          "client_id": "B",
+          "drain": 1
+        }
+      ],
+      "client_drains": [
+        {
+          "client_id": "A",
+          "deadline_tick": 250
+        },
+        {
+          "client_id": "B",
+          "deadline_tick": 250
+        }
+      ],
+      "client_resumes": [
+        {
+          "confirmed": 8,
+          "entity_id": 2,
+          "error": 0.512,
+          "session_id": 2
+        }
+      ],
+      "clients": [
+        {
+          "client_id": "A",
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "ENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=0 session_id=0\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=2 entity_id=2 resumed=0\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=0 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=2 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=6 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=6 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=8 error=0.384\nENGINE_NEXT_CLIENT_RECONNECT_WAIT client_id=A session_id=2 entity_id=2 sent=12 offline_ms=600\nENGINE_NEXT_CLIENT_RECONNECT client_id=A session_id=2 entity_id=2 offline_ms=600\nENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=1 session_id=2\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=2 entity_id=2 resumed=1\nENGINE_NEXT_CLIENT_RESUME client_id=A session_id=2 entity_id=2 confirmed=8 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=10 error=0.128\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=11 error=0.256\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=13 error=0.128\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=16 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=16 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=22 error=0.256\nENGINE_NEXT_CLIENT_PREDICTION client_id=A confirmed=24 position_x=3.072 history=0 corrections=12 retransmissions=44\nENGINE_NEXT_CLIENT_DRAIN client_id=A deadline_tick=250\nENGINE_NEXT_CLIENT_DRAIN_COMPLETE client_id=A drain=1\nENGINE_NEXT_CLIENT_CLOSE client_id=A drain=1\nENGINE_NEXT_CLIENT_BOUNDS client_id=A prediction_history=5 unconfirmed_transport=5 interpolation=32 enet_outgoing_high_water=6 poll_event_high_water=4\nENGINE_NEXT_IMPAIRMENT client_id=A dropped_input=1 dropped_loss=0 dropped_overflow=0 high_water=6\nENGINE_NEXT_RUNTIME role=client network=ok status=ok\n"
+        },
+        {
+          "client_id": "B",
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "ENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=B reconnecting=0 session_id=0\nENGINE_NEXT_CLIENT_WELCOME client_id=B session_id=1 entity_id=1 resumed=0\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=0.008 status=interpolated samples=3 server_time=337\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=0.768 status=stale_held samples=3 server_time=432\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=1.20381 status=interpolated samples=4 server_time=1004\nENGINE_NEXT_CLIENT_DRAIN client_id=B deadline_tick=250\nENGINE_NEXT_CLIENT_DRAIN_COMPLETE client_id=B drain=1\nENGINE_NEXT_CLIENT_CLOSE client_id=B drain=1\nENGINE_NEXT_CLIENT_BOUNDS client_id=B prediction_history=0 unconfirmed_transport=0 interpolation=32 enet_outgoing_high_water=2 poll_event_high_water=2\nENGINE_NEXT_IMPAIRMENT client_id=B dropped_input=0 dropped_loss=0 dropped_overflow=0 high_water=0\nENGINE_NEXT_RUNTIME role=client network=ok status=ok\n"
+        }
+      ],
+      "drain_acks": [
+        {
+          "peer_id": 1,
+          "session_id": 1
+        },
+        {
+          "peer_id": 3,
+          "session_id": 2
+        }
+      ],
+      "drain_begins": [
+        {
+          "deadline_tick": 250,
+          "peers": 2
+        }
+      ],
+      "drain_completes": [
+        {
+          "acknowledged": 2,
+          "forced": 0,
+          "notified": 2,
+          "resumed": 1
+        }
+      ],
+      "drain_response_delay_ms": 96,
+      "elapsed_seconds": 3.508,
+      "errors": [],
+      "impairments": [
+        {
+          "client_id": "A",
+          "dropped_input": 1,
+          "dropped_loss": 0,
+          "dropped_overflow": 0,
+          "high_water": 6
+        },
+        {
+          "client_id": "B",
+          "dropped_input": 0,
+          "dropped_loss": 0,
+          "dropped_overflow": 0,
+          "high_water": 0
+        }
+      ],
+      "passed": true,
+      "predictions": [
+        {
+          "confirmed": 24,
+          "corrections": 12,
+          "history": 0,
+          "position_x": 3.072,
+          "retransmissions": 44
+        }
+      ],
+      "remotes": [
+        {
+          "entity_id": 2,
+          "position_x": 0.008,
+          "samples": 3,
+          "server_time": 337,
+          "status": "interpolated"
+        },
+        {
+          "entity_id": 2,
+          "position_x": 0.768,
+          "samples": 3,
+          "server_time": 432,
+          "status": "stale_held"
+        },
+        {
+          "entity_id": 2,
+          "position_x": 1.20381,
+          "samples": 4,
+          "server_time": 1004,
+          "status": "interpolated"
+        }
+      ],
+      "server_bounds": [
+        {
+          "enet_outgoing_high_water": 6,
+          "input_high_water": 4,
+          "poll_event_high_water": 4,
+          "ticks": 187
+        }
+      ],
+      "server_resumes": [
+        {
+          "confirmed": 8,
+          "entity_id": 2,
+          "peer_id": 3,
+          "session_id": 2
+        }
+      ],
+      "server_returncode": 0,
+      "server_sessions": [
+        {
+          "entity_id": 1,
+          "peer_id": 1,
+          "session_id": 1
+        },
+        {
+          "entity_id": 2,
+          "peer_id": 2,
+          "session_id": 2
+        }
+      ],
+      "server_stderr": [],
+      "server_stdout": [
+        "ENGINE_NEXT_SERVER_READY port=64814",
+        "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=1",
+        "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=2",
+        "ENGINE_NEXT_SESSION peer_id=1 session_id=1 entity_id=1",
+        "ENGINE_NEXT_SESSION peer_id=2 session_id=2 entity_id=2",
+        "ENGINE_NEXT_DISCONNECT peer_id=2 session_id=2 entity_id=2 grace_ms=5000",
+        "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=3",
+        "ENGINE_NEXT_RESUME peer_id=3 session_id=2 entity_id=2 confirmed=8",
+        "ENGINE_NEXT_DRAIN_BEGIN peers=2 deadline_tick=250",
+        "ENGINE_NEXT_DRAIN_ACK peer_id=1 session_id=1",
+        "ENGINE_NEXT_DRAIN_ACK peer_id=3 session_id=2",
+        "ENGINE_NEXT_DRAIN_COMPLETE_PEER peer_id=1 session_id=1",
+        "ENGINE_NEXT_DRAIN_COMPLETE_PEER peer_id=3 session_id=2",
+        "ENGINE_NEXT_DRAIN_COMPLETE notified=2 acknowledged=2 forced=0 resumed=1",
+        "ENGINE_NEXT_SERVER_BOUNDS ticks=187 input_high_water=4 enet_outgoing_high_water=6 poll_event_high_water=4",
+        "ENGINE_NEXT_RUNTIME role=server network=ok status=ok"
+      ],
+      "trace_sha256": {
+        "client-A.jsonl": "6ee2eb87850518d36283c4806521e738ebc4603cbd977803b5e75572ff3fbc24",
+        "client-B.jsonl": "a2d4e73f0b478cbe8efcb1824037bbfbbb66da3967abba91e83916f71d7c533d",
+        "server.jsonl": "d4e373b14dbd755f1289f681dcb9654cb988701dbbac77ccc2f05a9c37338e53"
+      },
+      "welcomes": [
+        {
+          "client_id": "A",
+          "entity_id": 2,
+          "resumed": 0,
+          "session_id": 2
+        },
+        {
+          "client_id": "A",
+          "entity_id": 2,
+          "resumed": 1,
+          "session_id": 2
+        },
+        {
+          "client_id": "B",
+          "entity_id": 1,
+          "resumed": 0,
+          "session_id": 1
+        }
+      ]
+    },
+    "test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=21 checks=278 failures=0"
+  },
+  "sanitizer": {
+    "handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\n{\n  \"report\": \"/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/build/engine_next/clang-m2-pr5-ci6-sanitize/HandshakeReport.json\",\n  \"trace_sha256\": {\n    \"server.jsonl\": \"78c935fed62d7849f7592bcffd08966d46af733db8fb519f245a87305bd59858\",\n    \"client-A.jsonl\": \"c31fdaa4fbeee66003e2e4ed19288e7f2e8690ec54021a9a2089c4668f5b52c9\",\n    \"client-B.jsonl\": \"271e12236a4b5584ef30c3c5427af10319352ba2bbcf4c6aaeea6278ac118d2c\"\n  }\n}",
+    "native_key": "f1583576650b5571d559fbb6ba60e2cfa8164aa6f4e3535284218cdbf2bf99e1",
+    "package_handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\n{\n  \"report\": \"/Users/kevinxue/dev/newage/nightmarish-spooky-sorceryze/.worktrees/engine-next-headless-runtime-m2-pr5/build/engine_next/clang-m2-pr5-ci6-sanitize/PackageHandshakeReport.json\",\n  \"trace_sha256\": {\n    \"server.jsonl\": \"1cebd2c4a8b0e426837cbc9f2929c3d511c1655f3cf9492badf68b3d3f15c911\",\n    \"client-A.jsonl\": \"6e1a5ea1bae0d809abb7ef445dc3d14276f6efef562e8d116c747c2e1e18f1e7\",\n    \"client-B.jsonl\": \"e1be9232e95d0136676350a4b9ff9c64b03bc93d7d0ae069f3d568c51a8cf26e\"\n  }\n}",
+    "test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=21 checks=278 failures=0"
+  },
+  "schema_version": 1,
+  "slice": "pr5_enet_posix_and_drain_race_fix",
+  "soak": {
+    "client_bounds": [
+      {
+        "client_id": "A",
+        "enet_outgoing_high_water": 7,
+        "interpolation": 32,
+        "poll_event_high_water": 3,
+        "prediction_history": 6,
+        "unconfirmed_transport": 6
+      },
+      {
+        "client_id": "B",
+        "enet_outgoing_high_water": 2,
+        "interpolation": 32,
+        "poll_event_high_water": 2,
+        "prediction_history": 0,
+        "unconfirmed_transport": 0
+      }
+    ],
+    "client_closes": [
+      {
+        "client_id": "A",
+        "drain": 1
+      },
+      {
+        "client_id": "B",
+        "drain": 1
+      }
+    ],
+    "client_drains": [
+      {
+        "client_id": "A",
+        "deadline_tick": 10375
+      },
+      {
+        "client_id": "B",
+        "deadline_tick": 10375
+      }
+    ],
+    "client_resumes": [
+      {
+        "confirmed": 9,
+        "entity_id": 2,
+        "error": 0.384,
+        "session_id": 2
+      }
+    ],
+    "clients": [
+      {
+        "client_id": "A",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "ENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=0 session_id=0\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=2 entity_id=2 resumed=0\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=0 error=0.256\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=2 error=0.384\nENGINE_NEXT_CLIENT_RECONNECT_WAIT client_id=A session_id=2 entity_id=2 sent=12 offline_ms=600\nENGINE_NEXT_CLIENT_RECONNECT client_id=A session_id=2 entity_id=2 offline_ms=600\nENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=1 session_id=2\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=2 entity_id=2 resumed=1\nENGINE_NEXT_CLIENT_RESUME client_id=A session_id=2 entity_id=2 confirmed=9 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=11 error=0.256\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=12 error=0.384\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=15 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=15 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=17 error=0.512\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=23 error=0.128\nENGINE_NEXT_CLIENT_PREDICTION client_id=A confirmed=24 position_x=3.072 history=0 corrections=9 retransmissions=47\nENGINE_NEXT_CLIENT_DRAIN client_id=A deadline_tick=10375\nENGINE_NEXT_CLIENT_DRAIN_COMPLETE client_id=A drain=1\nENGINE_NEXT_CLIENT_CLOSE client_id=A drain=1\nENGINE_NEXT_CLIENT_BOUNDS client_id=A prediction_history=6 unconfirmed_transport=6 interpolation=32 enet_outgoing_high_water=7 poll_event_high_water=3\nENGINE_NEXT_IMPAIRMENT client_id=A dropped_input=1 dropped_loss=0 dropped_overflow=0 high_water=7\nENGINE_NEXT_RUNTIME role=client network=ok status=ok\n"
+      },
+      {
+        "client_id": "B",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "ENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=B reconnecting=0 session_id=0\nENGINE_NEXT_CLIENT_WELCOME client_id=B session_id=1 entity_id=1 resumed=0\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=0.008 status=interpolated samples=3 server_time=49\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=1.152 status=stale_held samples=4 server_time=192\nENGINE_NEXT_CLIENT_REMOTE client_id=B entity_id=2 position_x=1.25949 status=interpolated samples=5 server_time=716\nENGINE_NEXT_CLIENT_DRAIN client_id=B deadline_tick=10375\nENGINE_NEXT_CLIENT_DRAIN_COMPLETE client_id=B drain=1\nENGINE_NEXT_CLIENT_CLOSE client_id=B drain=1\nENGINE_NEXT_CLIENT_BOUNDS client_id=B prediction_history=0 unconfirmed_transport=0 interpolation=32 enet_outgoing_high_water=2 poll_event_high_water=2\nENGINE_NEXT_IMPAIRMENT client_id=B dropped_input=0 dropped_loss=0 dropped_overflow=0 high_water=0\nENGINE_NEXT_RUNTIME role=client network=ok status=ok\n"
+      }
+    ],
+    "drain_acks": [
+      {
+        "peer_id": 2,
+        "session_id": 1
+      },
+      {
+        "peer_id": 3,
+        "session_id": 2
+      }
+    ],
+    "drain_begins": [
+      {
+        "deadline_tick": 10375,
+        "peers": 2
+      }
+    ],
+    "drain_completes": [
+      {
+        "acknowledged": 2,
+        "forced": 0,
+        "notified": 2,
+        "resumed": 1
+      }
+    ],
+    "drain_response_delay_ms": 96,
+    "elapsed_seconds": 165.229,
+    "errors": [],
+    "impairments": [
+      {
+        "client_id": "A",
+        "dropped_input": 1,
+        "dropped_loss": 0,
+        "dropped_overflow": 0,
+        "high_water": 7
+      },
+      {
+        "client_id": "B",
+        "dropped_input": 0,
+        "dropped_loss": 0,
+        "dropped_overflow": 0,
+        "high_water": 0
+      }
+    ],
+    "passed": true,
+    "predictions": [
+      {
+        "confirmed": 24,
+        "corrections": 9,
+        "history": 0,
+        "position_x": 3.072,
+        "retransmissions": 47
+      }
+    ],
+    "remotes": [
+      {
+        "entity_id": 2,
+        "position_x": 0.008,
+        "samples": 3,
+        "server_time": 49,
+        "status": "interpolated"
+      },
+      {
+        "entity_id": 2,
+        "position_x": 1.152,
+        "samples": 4,
+        "server_time": 192,
+        "status": "stale_held"
+      },
+      {
+        "entity_id": 2,
+        "position_x": 1.25949,
+        "samples": 5,
+        "server_time": 716,
+        "status": "interpolated"
+      }
+    ],
+    "server_bounds": [
+      {
+        "enet_outgoing_high_water": 6,
+        "input_high_water": 4,
+        "poll_event_high_water": 3,
+        "ticks": 10312
+      }
+    ],
+    "server_resumes": [
+      {
+        "confirmed": 9,
+        "entity_id": 2,
+        "peer_id": 3,
+        "session_id": 2
+      }
+    ],
+    "server_returncode": 0,
+    "server_sessions": [
+      {
+        "entity_id": 1,
+        "peer_id": 2,
+        "session_id": 1
+      },
+      {
+        "entity_id": 2,
+        "peer_id": 1,
+        "session_id": 2
+      }
+    ],
+    "server_stderr": [],
+    "server_stdout": [
+      "ENGINE_NEXT_SERVER_READY port=56278",
+      "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=1",
+      "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=2",
+      "ENGINE_NEXT_SESSION peer_id=2 session_id=1 entity_id=1",
+      "ENGINE_NEXT_SESSION peer_id=1 session_id=2 entity_id=2",
+      "ENGINE_NEXT_DISCONNECT peer_id=1 session_id=2 entity_id=2 grace_ms=5000",
+      "ENGINE_NEXT_TRANSPORT_CONNECT peer_id=3",
+      "ENGINE_NEXT_RESUME peer_id=3 session_id=2 entity_id=2 confirmed=9",
+      "ENGINE_NEXT_DRAIN_BEGIN peers=2 deadline_tick=10375",
+      "ENGINE_NEXT_DRAIN_ACK peer_id=2 session_id=1",
+      "ENGINE_NEXT_DRAIN_ACK peer_id=3 session_id=2",
+      "ENGINE_NEXT_DRAIN_COMPLETE_PEER peer_id=2 session_id=1",
+      "ENGINE_NEXT_DRAIN_COMPLETE_PEER peer_id=3 session_id=2",
+      "ENGINE_NEXT_DRAIN_COMPLETE notified=2 acknowledged=2 forced=0 resumed=1",
+      "ENGINE_NEXT_SERVER_BOUNDS ticks=10312 input_high_water=4 enet_outgoing_high_water=6 poll_event_high_water=3",
+      "ENGINE_NEXT_RUNTIME role=server network=ok status=ok"
+    ],
+    "soak": {
+      "elapsed_seconds": 165.229,
+      "fixed_step_msec": 16,
+      "input_high_water": 4,
+      "server_enet_outgoing_high_water": 6,
+      "server_poll_event_high_water": 3,
+      "ticks": 10312
+    },
+    "trace_sha256": {
+      "client-A.jsonl": "60a0ee4ddf97b4757cae9c818302cfc47b09d5ef8e12d4ae1535d81207f69db6",
+      "client-B.jsonl": "ebe396ada12ed142d47703f9ab1164324fe51c5067900333f0f0abd20aed4b2e",
+      "server.jsonl": "f47d202f94dbc5fe8ec2cd92ca01e4c794fb0106d28256b23d31afc0bc6650ed"
+    },
+    "welcomes": [
+      {
+        "client_id": "A",
+        "entity_id": 2,
+        "resumed": 0,
+        "session_id": 2
+      },
+      {
+        "client_id": "A",
+        "entity_id": 2,
+        "resumed": 1,
+        "session_id": 2
+      },
+      {
+        "client_id": "B",
+        "entity_id": 1,
+        "resumed": 0,
+        "session_id": 1
+      }
+    ]
+  },
+  "unverified": [
+    "The repaired exact PR head still requires Windows, Ubuntu and macOS CI and main readback before issue closure"
+  ]
+}

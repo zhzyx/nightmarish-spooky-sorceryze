@@ -50,6 +50,7 @@ struct EntityInputQueue
 {
 	std::deque<Gameplay::PredictionInput> arrInputs;
 	std::uint64_t nLastProcessedSequence = 0;
+	std::size_t nHighWater = 0;
 };
 
 struct DrainState
@@ -180,6 +181,7 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 	(void)stHost.GetFixedStepLoop().Advance(stClock.NowMsec(), stPrimeBatch);
 	std::map<Network::PeerId, std::uint64_t> mapSequences;
 	std::map<std::uint64_t, EntityInputQueue> mapInputQueues;
+	std::size_t nInputHighWater = 0;
 	Gameplay::PredictionModel stModel;
 	DrainState stDrain;
 	const std::uint64_t nStartedMsec = stClock.NowMsec();
@@ -280,6 +282,10 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 					stResponseHeader.eType = Network::MessageType::Disconnect;
 					stResponseHeader.nMessageSequence = NextSequence(mapSequences, stEvent.nPeerId);
 					stResponseHeader.nSessionId = stHeader.nSessionId;
+					if (in_stConfig.nDrainResponseDelayMsec != 0)
+					{
+						std::this_thread::sleep_for(std::chrono::milliseconds(in_stConfig.nDrainResponseDelayMsec));
+					}
 					eStatus = SendFrame(*pTransport, stEvent.nPeerId, stResponseHeader, Network::EncodeDisconnect(stResponse));
 					if (eStatus != RuntimeStatus::Ok)
 					{
@@ -370,6 +376,8 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 					continue;
 				}
 				stQueue.arrInputs.insert(stInsert, stCommand.stInput);
+				stQueue.nHighWater = stQueue.nHighWater < stQueue.arrInputs.size() ? stQueue.arrInputs.size() : stQueue.nHighWater;
+				nInputHighWater = nInputHighWater < stQueue.nHighWater ? stQueue.nHighWater : nInputHighWater;
 				continue;
 			}
 			if (stEvent.nChannelId != 0 || stHeader.eType != Network::MessageType::ClientHello)
@@ -450,6 +458,12 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 			{
 				std::cout << "ENGINE_NEXT_DRAIN_COMPLETE notified=" << stDrain.nNotified << " acknowledged=" << stDrain.nAcknowledged
 						  << " forced=" << stDrain.nForced << " resumed=" << nResumedSessions << '\n'
+						  << std::flush;
+				const Network::TransportStats stTransportStats = pTransport->GetStats();
+				std::cout << "ENGINE_NEXT_SERVER_BOUNDS ticks=" << stHost.GetFixedStepLoop().GetTick()
+						  << " input_high_water=" << nInputHighWater
+						  << " enet_outgoing_high_water=" << stTransportStats.nOutgoingPacketHighWater
+						  << " poll_event_high_water=" << stTransportStats.nPollEventHighWater << '\n'
 						  << std::flush;
 				bStopped = true;
 				break;

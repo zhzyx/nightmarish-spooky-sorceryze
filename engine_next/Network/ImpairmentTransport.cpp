@@ -97,6 +97,7 @@ Runtime::RuntimeStatus ImpairmentTransport::PollAt(std::vector<TransportEvent> &
 		}
 		stIterator = arrPending.erase(stIterator);
 	}
+	UpdateCombinedHighWater();
 	return Runtime::RuntimeStatus::Ok;
 }
 
@@ -133,7 +134,9 @@ Runtime::RuntimeStatus ImpairmentTransport::SendAt(PeerId nPeerId, std::uint8_t 
 	}
 	if (stConfig.nDelayMsec == 0 && stConfig.nJitterMsec == 0)
 	{
-		return pUpstream->Send(nPeerId, nChannelId, bReliable, arrPayload);
+		const Runtime::RuntimeStatus eStatus = pUpstream->Send(nPeerId, nChannelId, bReliable, arrPayload);
+		UpdateCombinedHighWater();
+		return eStatus;
 	}
 	if (nNowMsec > static_cast<std::uint64_t>(-1) - stConfig.nDelayMsec - stConfig.nJitterMsec)
 	{
@@ -161,6 +164,7 @@ Runtime::RuntimeStatus ImpairmentTransport::SendAt(PeerId nPeerId, std::uint8_t 
 	}
 	arrPending.push_back(PendingPacket{ nPeerId, nChannelId, bReliable, nDeliveryMsec, arrPayload });
 	nQueueHighWater = nQueueHighWater < arrPending.size() ? arrPending.size() : nQueueHighWater;
+	UpdateCombinedHighWater();
 	return Runtime::RuntimeStatus::Ok;
 }
 
@@ -191,6 +195,24 @@ void ImpairmentTransport::Stop() noexcept
 	{
 		pUpstream->Stop();
 	}
+}
+
+void ImpairmentTransport::UpdateCombinedHighWater() noexcept
+{
+	if (pUpstream == nullptr)
+	{
+		return;
+	}
+	const std::size_t nCurrent = pUpstream->GetStats().nOutgoingPackets + arrPending.size();
+	nCombinedHighWater = nCombinedHighWater < nCurrent ? nCurrent : nCombinedHighWater;
+}
+
+TransportStats ImpairmentTransport::GetStats() const noexcept
+{
+	TransportStats stStats = pUpstream == nullptr ? TransportStats{} : pUpstream->GetStats();
+	stStats.nOutgoingPackets += arrPending.size();
+	stStats.nOutgoingPacketHighWater = stStats.nOutgoingPacketHighWater < nCombinedHighWater ? nCombinedHighWater : stStats.nOutgoingPacketHighWater;
+	return stStats;
 }
 
 std::size_t ImpairmentTransport::GetQueueHighWater() const noexcept

@@ -93,6 +93,7 @@ public:
 	void set_fixed_step_msec(uint32_t p_step_msec);
 	uint32_t get_fixed_step_msec() const;
 	Error simulate(const Ref<GameplayPredictionState> &p_state, const Ref<GameplayPredictionInput> &p_input) const;
+	const EngineNext::Gameplay::PredictionModel &GetCoreModel() const;
 };
 
 class GameplayInterpolationBuffer : public RefCounted

@@ -65,12 +65,14 @@ class ImpairmentTransport final : public ITransport
 	std::uint64_t nRandomState = 1;
 	std::deque<PendingPacket> arrPending;
 	std::size_t nQueueHighWater = 0;
+	std::size_t nCombinedHighWater = 0;
 	std::uint64_t nDroppedForLoss = 0;
 	std::uint64_t nDroppedForOverflow = 0;
 	std::uint64_t nDroppedFirstInput = 0;
 	bool bFirstInputDropped = false;
 
 	[[nodiscard]] std::uint64_t NextRandom() noexcept;
+	void UpdateCombinedHighWater() noexcept;
 	[[nodiscard]] Runtime::RuntimeStatus SendAt(PeerId nPeerId, std::uint8_t nChannelId, bool bReliable, const std::vector<std::uint8_t> &arrPayload, std::uint64_t nNowMsec, bool bValidateConfig);
 
 public:
@@ -84,6 +86,7 @@ public:
 	[[nodiscard]] Runtime::RuntimeStatus DisconnectLater(PeerId in_nPeerId) override;
 	[[nodiscard]] std::uint16_t GetBoundPort() const noexcept override;
 	[[nodiscard]] bool IsRunning() const noexcept override;
+	[[nodiscard]] TransportStats GetStats() const noexcept override;
 	void Stop() noexcept override;
 
 	// Explicit time entry points make queue behavior deterministic in native tests.

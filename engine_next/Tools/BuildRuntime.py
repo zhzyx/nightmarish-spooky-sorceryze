@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 import BuildGameplay as BuildSupport
+import PackageRuntime
 
 ENET_SOURCES = [
     "engine_next/thirdparty/enet/callbacks.c",
@@ -78,6 +79,8 @@ BUILD_SUPPORT_SOURCES = [
     "engine_next/Tools/BuildRuntime.py",
     "engine_next/Tools/RunM2Handshake.py",
     "engine_next/Tools/RunM2DrainFaults.py",
+    "engine_next/Tools/RunM2Soak.py",
+    "engine_next/Tools/PackageRuntime.py",
 ]
 BuildSupport.ALLOWED_REPOSITORY_INPUTS = (
     "engine_next/",
@@ -145,7 +148,11 @@ def audit_linux_dependencies(args, executable):
     )
     if args.sanitize:
         allowed_prefixes += ("libasan.so.", "libubsan.so.")
-    unexpected = [value for value in dependencies if not value.startswith(allowed_prefixes)]
+    unexpected = [
+        value
+        for value in dependencies
+        if not value.startswith(allowed_prefixes) and not Path(value).name.startswith("ld-linux")
+    ]
     if unexpected:
         raise ValueError("Unexpected dynamic dependencies: " + ", ".join(unexpected))
     return dependencies
@@ -217,6 +224,8 @@ def compile_c_source(args, source, object_path, dependency_path, include_audit, 
             "-Wno-unused-parameter",
             "-pedantic",
             "-ffp-contract=off",
+            "-DHAS_INET_PTON=1",
+            "-DHAS_INET_NTOP=1",
             "-I",
             args.repo,
             "-I",
@@ -362,6 +371,29 @@ def run_handshake(args, targets, directory):
                 executables["next_client"],
                 "--report",
                 directory / "HandshakeReport.json",
+            ],
+            cwd=args.repo,
+            env=args.tool_environment,
+        )
+        .decode("utf-8")
+        .strip()
+    )
+
+
+def run_soak(args, targets):
+    executables = {target["name"]: target["executable"] for target in targets}
+    return (
+        BuildSupport
+        .run(
+            [
+                sys.executable,
+                args.repo / "engine_next/Tools/RunM2Soak.py",
+                "--server",
+                executables["next_server"],
+                "--client",
+                executables["next_client"],
+                "--report",
+                args.build_dir / "SoakReport.json",
             ],
             cwd=args.repo,
             env=args.tool_environment,
@@ -550,6 +582,36 @@ def build(args):
     }
     report_path = args.build_dir / "RuntimeBuildReport.json"
     report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    package = PackageRuntime.create_package(args.repo, args.build_dir)
+    package_handshake = "not_run"
+    if args.run_tests:
+        package_handshake = (
+            BuildSupport
+            .run(
+                [
+                    sys.executable,
+                    args.repo / "engine_next/Tools/RunM2Handshake.py",
+                    "--server",
+                    package["directory"] / targets[0]["executable"].name,
+                    "--client",
+                    package["directory"] / targets[1]["executable"].name,
+                    "--report",
+                    args.build_dir / "PackageHandshakeReport.json",
+                ],
+                cwd=args.repo,
+                env=args.tool_environment,
+            )
+            .decode("utf-8")
+            .strip()
+        )
+    report["package"] = {
+        "manifest": BuildSupport.repository_name(args.repo, package["manifest"]),
+        "files": package["files"],
+        "godot_free_package": package["godot_free_package"],
+    }
+    report["package_handshake"] = package_handshake
+    report["soak"] = run_soak(args, targets) if args.soak else "not_run"
+    report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(
         json.dumps(
             {
@@ -561,6 +623,9 @@ def build(args):
                 "trace_sha256": acceptance["trace_sha256"],
                 "handshake": acceptance.get("handshake", "not_run"),
                 "clean_handshake": acceptance.get("clean_handshake", "not_run"),
+                "package": report["package"],
+                "package_handshake": package_handshake,
+                "soak": report["soak"],
             },
             indent=2,
         )
@@ -575,6 +640,7 @@ def main(argv=None):
     parser.add_argument("--build-dir", type=Path, required=True)
     parser.add_argument("--run-tests", action="store_true")
     parser.add_argument("--sanitize", action="store_true")
+    parser.add_argument("--soak", action="store_true")
     args = parser.parse_args(argv)
     if args.sanitize and args.compiler != "clang":
         parser.error("--sanitize is only supported with clang")

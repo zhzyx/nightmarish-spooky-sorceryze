@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7f410c19e252a7aa31b8cc73056462b9740adb31",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "bfca5e53e9226d54bb5b86e353722e2c7dab9d39fcb80e2812053ae1f4a823d0",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1138",
+    "action": "validation",
+    "detection_head": "1937ef62e40586248ed0d4b4e67e558c9b6fdf41",
+    "context_sha256": "83683561569980cc1b134f764d99dccbfb590ac09b5cc3c538f5fcfe31724b50",
+    "operator": "kaiyunxue",
+    "worker": "kaiyunxue/kimi-work",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43537290318",
+    "diagnosis": "新日志确认：Shell fake ldd 不能作为 Windows 可执行文件；ldd 返回绝对路径 /lib64/ld-linux-x86-64.so.2 未被白名单接受；C++ 与 Ruff 格式检查需要实际修正。",
+    "next_action": "通过 Python 解释器运行跨平台 fake ldd，接受绝对路径动态加载器，加入直接回归输出，并完成 clang-format 与 Ruff 修复后重跑全部测试和精确候选 CI。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T01:07:42.341419+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-14T01:10:12.299233+00:00",
+  "sha256": "eaaf47fd30f7c46e2d3dd00026c6872bea48ff7dbd9e56e1c466ffec1c6cfc15"
+}

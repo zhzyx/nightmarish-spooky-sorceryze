@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ebf9f55d8a02cc2388798771023661bba4e1b052",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-headless-runtime-m2-20261113",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f0aff64dfead96a2538f997bb366ad7b3dade463742baaf79cabb178bb2a6738",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1138",
+    "action": "dependency",
+    "detection_head": "fad8da7d049120f48f921f30009a8590d7827203",
+    "context_sha256": "83683561569980cc1b134f764d99dccbfb590ac09b5cc3c538f5fcfe31724b50",
+    "operator": "kaiyunxue",
+    "worker": "kaiyunxue/kimi-work",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43532943324",
+    "diagnosis": "CI 已给出具体证据：macOS 客户端在停服完成后重复 DisconnectLater 遇到 NotFound；Ubuntu 构建器错误要求 macOS otool，未按平台使用 ldd。",
+    "next_action": "仅在最终停服确认已完成后允许 NotFound 为已关闭；Ubuntu 使用 ldd 审核动态依赖，macOS 保持 otool，重跑精确候选三平台验证。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T00:23:07.387656+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-14T00:26:07.066713+00:00",
+  "sha256": "ca9470732863598b50b94cd1999390348e464a5ceb6c1dc5a319a8f48e917797"
+}

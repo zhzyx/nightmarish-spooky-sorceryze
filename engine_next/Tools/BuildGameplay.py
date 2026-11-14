@@ -220,7 +220,29 @@ def audit_symbols(args):
 
 
 def audit_dynamic_dependencies(args):
-    if args.compiler == "clang":
+    if args.compiler == "clang" and sys.platform != "darwin":
+        output = run([args.ldd, args.executable], cwd=args.repo)
+        dependencies = []
+        for line in output.decode("utf-8", errors="replace").splitlines():
+            value = line.strip()
+            if value:
+                dependencies.append(value.split(" ", 1)[0])
+        allowed_prefixes = (
+            "libstdc++.so.",
+            "libgcc_s.so.",
+            "libc.so.",
+            "libm.so.",
+            "ld-linux",
+            "linux-vdso",
+        )
+        if args.sanitize:
+            allowed_prefixes += ("libasan.so.", "libubsan.so.")
+        unexpected = [
+            value
+            for value in dependencies
+            if not value.startswith(allowed_prefixes) and not Path(value).name.startswith("ld-linux")
+        ]
+    elif args.compiler == "clang":
         output = run([args.otool, "-L", args.executable], cwd=args.repo)
         dependencies = []
         for line in output.decode("utf-8", errors="replace").splitlines()[1:]:
@@ -286,12 +308,13 @@ def build(args):
         args.clangxx = shutil.which("clang++")
         args.ar = shutil.which("ar")
         args.nm = shutil.which("nm")
-        args.otool = shutil.which("otool")
-        missing = [
-            name
-            for name, value in (("clang++", args.clangxx), ("ar", args.ar), ("nm", args.nm), ("otool", args.otool))
-            if not value
-        ]
+        args.otool = shutil.which("otool") if sys.platform == "darwin" else None
+        args.ldd = shutil.which("ldd") if sys.platform != "darwin" else None
+        missing = [name for name, value in (("clang++", args.clangxx), ("ar", args.ar), ("nm", args.nm)) if not value]
+        if sys.platform == "darwin" and not args.otool:
+            missing.append("otool")
+        if sys.platform != "darwin" and not args.ldd:
+            missing.append("ldd")
     else:
         args.cl = shutil.which("cl")
         args.lib = shutil.which("lib")

@@ -12,6 +12,7 @@ env_gameplay.add_source_files(
         "adapters/GameplayPredictionCore.cpp",
         "../../engine_next/Gameplay/InterpolationBuffer.cpp",
         "../../engine_next/Gameplay/PredictionModel.cpp",
+        "../../engine_next/Gameplay/PredictionReconciler.cpp",
         "gameplay_entity.cpp",
         "gameplay_match.cpp",
         "gameplay_prediction.cpp",
