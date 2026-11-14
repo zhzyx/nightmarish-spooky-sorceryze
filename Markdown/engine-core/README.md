@@ -8,6 +8,7 @@
 
 | 任务类型 | 入口 |
 | --- | --- |
+| AIChat、马良、天枢及新增 AINative 工作流的公共运行契约与 M/C/V 分离 | [AI 公共运行契约](../../ai_core/README.md) |
 | 独立源码根、禁止依赖、链接输入与构建验证 | `../build/engine-next/README.md` |
 | 第一方 C++ 编码与评审 | `../code-style/cpp/README.md` |
 | 引擎接入、能力协议与迁移验证 | [引擎适配与迁移规范](../../framework/specs/engine-adapter.md) |

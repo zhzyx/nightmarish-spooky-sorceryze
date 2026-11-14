@@ -196,17 +196,20 @@ EditorDock *create_daqian_dock() {
 	Ref<Script> inspector = load_editor_script(daqian_issue_inspector);
 	Ref<Script> canvas = load_editor_script(daqian_canvas_context);
 	Ref<Script> workspace = load_editor_script(daqian_workspace);
+	Ref<Script> refWorkflowController = load_editor_script(daqian_workflow_controller);
 	Ref<Script> spatial = load_editor_script(daqian_spatial_workbench);
 	Ref<Script> models = load_editor_script(daqian_model_settings);
-	if (spatial.is_null() || inspector.is_null() || details.is_null() || canvas.is_null() || rules.is_null() || layout.is_null() || graph.is_null() || workspace.is_null() || models.is_null()) {
+	if (spatial.is_null() || inspector.is_null() || details.is_null() || canvas.is_null() || rules.is_null() || layout.is_null() || graph.is_null() || workspace.is_null() || refWorkflowController.is_null() || models.is_null()) {
 		Label *message = memnew(Label);
 		message->set_text(U"加载天枢失败，请核对编辑器的 天枢业务包、GDScript 支持及错误日志。");
 		dock->add_child(message);
 		return dock;
 	}
+	workspace->set("default_controller_script", refWorkflowController);
 	VBoxContainer *content = memnew(VBoxContainer);
 	content->set_name("DaqianWorkspace");
 	content->set_script(workspace);
+	content->set("controller_script", refWorkflowController);
 	content->set("process_stopper", callable_mp_static(&stop_gonggong_process));
 	content->set("board_bundle_base64", editor_script_source(daqian_board_base64));
 	content->set("board_bundle_sha256", daqian_board_sha256);

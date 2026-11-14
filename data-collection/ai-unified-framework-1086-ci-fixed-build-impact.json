@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "request_id": "ai-unified-framework-20261114",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1086",
+  "base_commit": "99a8e8cb1fb4e72dc135b9f655884984ab7909cc",
+  "placement": "native",
+  "input_blobs": {
+    "ai_core/README.md": "0679ffa1f136fce787c4996ffe0a0c76e7e4db47",
+    "ai_core/Runtime.cpp": "9f1c5e8fe00e7075fcbaf76bae0bb43a5453c433",
+    "ai_core/Runtime.h": "c008bc07d579a1c3cef92be198f93ee3060b09d3",
+    "modules/ai_core/AIWorkflowRuntime.cpp": "847cbf3907c927ab1dc417b268b26236a618d7c2",
+    "modules/ai_core/AIWorkflowRuntime.h": "5443e493fe2722be3984c7404298cc8b917fb6cf",
+    "modules/ai_core/config.py": "d22f9454ed25fc763c4dec143f4a197eaca7acb8",
+    "modules/ai_core/register_types.cpp": "aa9256568494e74d59090449df149e8e0074bab1",
+    "modules/ai_core/register_types.h": "cae91580bf36bdef105872e7231b6ab51a04fc46",
+    "modules/ai_core/SCsub": "ece91eeed33c0873e9ef8c5d9487e3b64f597273",
+    "tests/editor/TestAIWorkflowRuntime.cpp": "9723cfc7d62cc402875389246e587f5b60106db9"
+  },
+  "checks": {
+    "native_invalidation": {
+      "command": "cmd /d /c data-collection/receipts/ai-unified-framework-20261114/native-invalidation/run-final.cmd; python -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no tests=yes accesskit=no d3d12=no angle=no -j16",
+      "observed": "MSVC independently compiled the portable runtime with original and changed initial sequence values. Each executable passed its corresponding behavioral assertion and their SHA256 values differed. The final editor compiled and linked the ai_core module. On the main-integrated editor, 16 AICore cases and 110 assertions passed, including precise numeric request conflicts and synchronous callback lifetime; the broader AIChat suite passed 115 cases and 1909 assertions.",
+      "passed": true
+    }
+  },
+  "portable_variants": [
+    {
+      "variant": "final-original",
+      "initial_sequence": 1,
+      "header_sha256": "19a9614ac38ac79cacb312eed80ea45a319cdb6cac8acacb54e980f0c93e0420",
+      "executable_sha256": "e8fe1d931da6d56bf01625886b275abe7130596b346af3fc27876954ee799148"
+    },
+    {
+      "variant": "final-modified",
+      "initial_sequence": 2,
+      "header_sha256": "9827cae693a46c9c1c802ac9ce2c05be1bf459d00aa6bbbd3145dcfc4f2229e5",
+      "executable_sha256": "39e8b6ee7ec8250e5d66b90d83cda3d7af5909738c6d66baa08e46644b852950"
+    }
+  ],
+  "editor_sha256": "af914c464719367cdebfa8f2bfa1fd2c6dd36b91055dc4c50769ba410b05cb32",
+  "scope": "Windows x64 MSVC. Pure core compilation has no Godot headers or libraries; Godot adapter uses SCENE registration for editor and headless consumers.",
+  "portable_validation": {
+    "source_sha256": {
+      "ai_core/Runtime.h": "19a9614ac38ac79cacb312eed80ea45a319cdb6cac8acacb54e980f0c93e0420",
+      "ai_core/Runtime.cpp": "b695e1e7826c168e5878b7d8e031ab072b4b98c96f9ff659da59113411959b41"
+    },
+    "compiler": "MSVC 14.5 x64",
+    "compile_arguments": [
+      "/nologo",
+      "/std:c++17",
+      "/EHs-c-",
+      "/W4",
+      "/WX",
+      "Runtime.cpp",
+      "probe.cpp"
+    ],
+    "probe_source": "#include \"Runtime.h\"\n#include <cassert>\nint main() { AICore::Runtime runtime(\"probe\"); const AICore::Run *run = runtime.Begin(\"chat\", \"scope\", \"request\", \"model\"); assert(run && run->nSequence == EXPECTED_SEQUENCE); return 0; }\n",
+    "variants": "Compile the exact source with EXPECTED_SEQUENCE=1, then change only Run.nSequence default to 2 and compile with EXPECTED_SEQUENCE=2. Both executables were run successfully."
+  },
+  "supersedes": "data-collection/ai-unified-framework-1086-build-impact.json"
+}

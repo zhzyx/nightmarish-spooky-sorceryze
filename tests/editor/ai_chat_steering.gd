@@ -71,10 +71,11 @@ func _run():
 			report["snapshot"] = saved.agents[0].get("snapshot_id", "")
 		var ai = dock
 		report["restored_backend"] = ai.find_child("AIBackend", true, false).selected
-		report["restored_endpoint"] = ai.find_child("APIEndpoint", true, false).text
+		report["restored_endpoint"] = ai.get_ai_settings_control().find_child("APIEndpoint", true, false).text
 		report["restored_model"] = ai.find_child("APIModel", true, false).text
-		report["session_key_absent"] = ai.find_child("APIKey", true, false).text.is_empty()
-		_check(report.restored_backend == 0 and report.restored_endpoint == OS.get_environment("STEERING_ENDPOINT") and report.restored_model == "fixture", "Restart lost saved connection settings")
+		report["session_key_absent"] = ai.get_ai_settings_control().find_child("APIKey", true, false).text.is_empty()
+		var expected_backend := 2 if OS.get_environment("STEERING_CODEX") == "1" else 0
+		_check(report.restored_backend == expected_backend and report.restored_endpoint == OS.get_environment("STEERING_ENDPOINT") and report.restored_model == "fixture", "Restart lost saved connection settings")
 		_check(report.session_key_absent, "Restart persisted the session-only credential")
 		_finish()
 		return

@@ -33,6 +33,7 @@
 #include "core/io/file_access.h"
 #include "core/os/thread.h"
 #include "core/templates/safe_refcount.h"
+#include "editor/docks/AIChatController.h"
 #include "editor/docks/ai_chat_resume.h"
 #include "editor/docks/ai_chat_task_authorization.h"
 #include "editor/docks/editor_dock.h"
@@ -306,8 +307,6 @@ class AIChatDock : public EditorDock {
 	bool consultation_turn = false;
 	Button *send_button = nullptr;
 	Button *stop_button = nullptr;
-	String snapshot_id;
-	Dictionary snapshot_state;
 	String restoring_snapshot_id;
 	Dictionary restoring_snapshot;
 	bool snapshot_restoring = false;
@@ -344,9 +343,6 @@ class AIChatDock : public EditorDock {
 	FileDialog *image_picker = nullptr;
 	AcceptDialog *image_dialog = nullptr;
 	TextureRect *image_preview = nullptr;
-	Array draft_images;
-	Array queued_messages;
-	bool queue_paused = false;
 	bool turn_completed = false;
 	VBoxContainer *message_queue = nullptr;
 	Label *queue_status = nullptr;
@@ -357,7 +353,7 @@ class AIChatDock : public EditorDock {
 	void _resume_message_queue();
 	void _dispatch_queued_message(int p_agent);
 	bool _start_message(const Dictionary &p_message, const Dictionary &p_daqian_selection = Dictionary());
-	HTTPRequest *request = nullptr;
+
 	ConfirmationDialog *confirmation = nullptr;
 	ObjectID confirmation_id;
 	TextEdit *preview = nullptr;
@@ -365,7 +361,6 @@ class AIChatDock : public EditorDock {
 	Timer *progress_timer = nullptr;
 	AcceptDialog *details_dialog = nullptr;
 	TextEdit *details_text = nullptr;
-	Vector<String> tool_details;
 	String current_activity;
 	uint64_t activity_started = 0;
 	OptionButton *backend = nullptr;
@@ -386,7 +381,6 @@ class AIChatDock : public EditorDock {
 	VBoxContainer *codex_model_settings = nullptr;
 	OptionButton *model_picker = nullptr;
 	OptionButton *reasoning_picker = nullptr;
-	Dictionary reasoning_preferences;
 	void _sync_reasoning_picker();
 	void _reasoning_selected(int p_index);
 	String _reasoning_effort() const;
@@ -442,8 +436,6 @@ class AIChatDock : public EditorDock {
 	void _model_selected(int p_index);
 	void _model_edited(const String &p_text);
 
-	Array messages;
-	Array transcript;
 	Timer *history_timer = nullptr;
 	bool history_loaded = false;
 	bool history_restoring = false;
@@ -469,7 +461,6 @@ class AIChatDock : public EditorDock {
 	Timer *history_poll_timer = nullptr;
 	uint64_t history_save_count = 0;
 
-	String conversation_id;
 	String _agent_title(int p_agent) const;
 
 	String _history_path() const;
@@ -493,18 +484,26 @@ class AIChatDock : public EditorDock {
 	void _replay_transcript(const Array &p_transcript);
 	void _cleanup_completed_turn();
 
-	Array tool_calls;
-	int tool_index = 0;
 	int read_batch_count = 0;
 	struct FileReadResult {
 		String content;
 		bool success;
 	};
 	Vector<FileReadResult> read_batch_results;
-	int tool_rounds = 0;
-	uint64_t request_generation = 0;
-	uint64_t session_generation = 0;
-	bool busy = false;
+	Ref<AIChatController> refAiController;
+	bool bRestoringAiSession = false;
+	void SyncAiSessionInputs();
+	void SetAiDraft(const String &strText);
+	AIChatSessionData &GetAiSession();
+	const AIChatSessionData &GetAiSession() const;
+	AIChatTurnState &GetAiTurn();
+	const AIChatTurnState &GetAiTurn() const;
+	AIChatCliTransport *GetCliTransport() const;
+	bool IsAiBusy() const;
+	uint64_t GetAiRequestGeneration() const;
+	uint64_t GetAiSessionGeneration() const;
+	uint64_t AdvanceAiRequestGeneration();
+	uint64_t AdvanceAiSessionGeneration();
 	String request_key;
 	String pending_path;
 	String pending_before;
@@ -562,52 +561,24 @@ class AIChatDock : public EditorDock {
 	bool output_truncated = false;
 	bool process_timed_out = false;
 
-	int64_t cli_process_id = -1;
-	uint64_t cli_started = 0;
-	uint64_t cli_last_activity = 0;
 	RichTextLabel *cli_stream_text = nullptr;
-	String cli_partial;
-	uint64_t cli_generation = 0;
-	Ref<FileAccess> cli_stdout;
-	Ref<FileAccess> cli_stderr;
-	Ref<FileAccess> cli_request_file;
-	PackedByteArray cli_output;
-	String cli_input_path;
-	bool cli_truncated = false;
-	bool cli_session = false;
-	bool cli_steering_reset = false;
-	bool cli_waiting = false;
-	String cli_configuration;
-	Vector<String> cli_sent_messages;
 	int turn_model_requests = 0;
 
-	struct AgentSession {
-		String conversation_id;
-		Array messages;
-		Array transcript;
-		Vector<String> tool_details;
-		VBoxContainer *message_list = nullptr;
-		String draft;
-		Array draft_images;
-		Array queued_messages;
-		bool queue_paused = false;
-		String model;
-		String cli_model;
-		String codex_model;
-		Dictionary reasoning_preferences;
-		int backend = 1;
-		int scroll = 0;
-		bool follow_latest = true;
-		int64_t cli_process_id = -1;
-		Ref<FileAccess> cli_stdout;
-		Ref<FileAccess> cli_stderr;
-		String cli_configuration;
-		Vector<String> cli_sent_messages;
-		Dictionary transport;
-		Dictionary response_transport;
-		String snapshot_id;
-		Dictionary snapshot_state;
+	// Preserve CPP_CODING_STANDARD.md v1.1 Allman style during formatter transition.
+	// clang-format off
+	struct AgentViewState
+	{
+		VBoxContainer *pMessageList = nullptr;
+		int nScroll = 0;
+		bool bFollowLatest = true;
 	};
+	struct AgentSession
+	{
+		AIChatSessionData stData;
+		AIChatSessionTransport stTransport;
+		AgentViewState stView;
+	};
+	// clang-format on
 	HashMap<int, AgentSession> agent_sessions;
 	PanelContainer *agent_tabs_panel = nullptr;
 	TabBar *agent_tabs = nullptr;
@@ -808,7 +779,6 @@ class AIChatDock : public EditorDock {
 	void _add_agent();
 	void _update_agent_add_button();
 	void _cancel_all_agents();
-	void _release_cli_request();
 	String _codex_bridge() const;
 	bool _validate_cli(const Dictionary &p_runtime = Dictionary()) const;
 	void _backend_changed(int p_backend);
@@ -897,6 +867,8 @@ protected:
 public:
 	// Main-thread APIs. Snapshots are detached, contain no credentials, and never select a model.
 	Dictionary GetModelCatalogSnapshot() const;
+	Dictionary GetAiWorkflowSnapshot() const;
+	Dictionary GetAiSessionSnapshot() const;
 	void RefreshModelCatalog();
 	void CancelModelCatalog();
 	Dictionary get_runtime_configuration() const;

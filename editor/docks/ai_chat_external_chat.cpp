@@ -65,13 +65,13 @@ bool expected_context_matches(const Dictionary &p_expected, const Dictionary &p_
 
 Dictionary AIChatDock::_chat_instruction_context() const {
 	Dictionary context;
-	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
+	const Dictionary candidate = GetAiSession().mapSnapshot.get("engine_candidate", Dictionary());
 	context["version"] = 1;
 	context["engine_pid"] = OS::get_singleton()->get_process_id();
 	context["host_instance_id"] = delivery_retry_instance;
-	context["conversation_id"] = conversation_id;
-	context["generation"] = int64_t(session_generation);
-	context["snapshot_id"] = snapshot_id;
+	context["conversation_id"] = GetAiSession().strConversation;
+	context["generation"] = int64_t(GetAiSessionGeneration());
+	context["snapshot_id"] = GetAiSession().strSnapshot;
 	context["owner"] = candidate.get("owner", "");
 	context["issue_number"] = _work_order_binding("issue_number").to_int();
 	context["work_order_request_id"] = _work_order_binding("request_id");
@@ -80,14 +80,14 @@ Dictionary AIChatDock::_chat_instruction_context() const {
 	context["draft_hash"] = input ? input->get_text().sha256_text() : String();
 	context["draft_empty"] = input && input->get_text().is_empty();
 	context["ime_composing"] = input && input->has_ime_text();
-	context["draft_images_hash"] = JSON::stringify(draft_images).sha256_text();
-	context["queue_hash"] = JSON::stringify(queued_messages).sha256_text();
-	context["queue_count"] = queued_messages.size();
-	context["queue_paused"] = queue_paused;
-	context["busy"] = busy;
+	context["draft_images_hash"] = JSON::stringify(GetAiSession().arrDraftImages).sha256_text();
+	context["queue_hash"] = JSON::stringify(GetAiSession().arrQueuedMessages).sha256_text();
+	context["queue_count"] = GetAiSession().arrQueuedMessages.size();
+	context["queue_paused"] = GetAiSession().bQueuePaused;
+	context["busy"] = IsAiBusy();
 	context["tools_allowed"] = allow_tools && allow_tools->is_pressed();
 	context["automatic_execution"] = auto_execute_commands && auto_execute_commands->is_pressed();
-	context["consultation"] = !consultation_only || consultation_only->is_pressed() || (busy && consultation_turn);
+	context["consultation"] = !consultation_only || consultation_only->is_pressed() || (IsAiBusy() && consultation_turn);
 	const String blocked = _chat_instruction_blocked_reason();
 	context["instruction_available"] = blocked.is_empty();
 	context["blocked_reason"] = blocked;
@@ -105,7 +105,7 @@ String AIChatDock::_chat_instruction_blocked_reason(bool p_force_consultation) c
 		return "permission_denied";
 	}
 	const bool consultation = p_force_consultation || consultation_only->is_pressed();
-	if (!consultation && (!allow_tools->is_pressed() || (busy && consultation_turn))) {
+	if (!consultation && (!allow_tools->is_pressed() || (IsAiBusy() && consultation_turn))) {
 		return "permission_denied";
 	}
 	if (sub_agents.has(active_agent) || scheduled_agents.has(active_agent)) {
@@ -114,18 +114,18 @@ String AIChatDock::_chat_instruction_blocked_reason(bool p_force_consultation) c
 	if (consultation) {
 		// A selected consultation is a new read-only turn, never steering or
 		// permission to resume an older queued production message.
-		if (busy) {
+		if (IsAiBusy()) {
 			return "consultation_busy";
 		}
-		if (queue_paused || !queued_messages.is_empty()) {
+		if (GetAiSession().bQueuePaused || !GetAiSession().arrQueuedMessages.is_empty()) {
 			return "consultation_queue_pending";
 		}
-		if (conversation_id.is_empty()) {
+		if (GetAiSession().strConversation.is_empty()) {
 			return "chat_input_unavailable";
 		}
 	} else {
-		const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
-		if (conversation_id.is_empty() || snapshot_id.is_empty() || String(candidate.get("owner", "")).is_empty() || !AIChatIssueGuide::is_bound(_work_order_binding("issue_number").to_int(), _work_order_binding("request_id"))) {
+		const Dictionary candidate = GetAiSession().mapSnapshot.get("engine_candidate", Dictionary());
+		if (GetAiSession().strConversation.is_empty() || GetAiSession().strSnapshot.is_empty() || String(candidate.get("owner", "")).is_empty() || !AIChatIssueGuide::is_bound(_work_order_binding("issue_number").to_int(), _work_order_binding("request_id"))) {
 			return "known_work_order_owner_required";
 		}
 		String owner_error;
@@ -142,7 +142,7 @@ String AIChatDock::_chat_instruction_blocked_reason(bool p_force_consultation) c
 	if (snapshot_restoring || snapshot_transaction_failed) {
 		return "snapshot_unavailable";
 	}
-	if (engine_restart_requested || (engine_build_pid >= 0 && !busy)) {
+	if (engine_restart_requested || (engine_build_pid >= 0 && !IsAiBusy())) {
 		return "engine_update_pending";
 	}
 	if (!gonggong_recovered_result.is_empty()) {
@@ -169,10 +169,10 @@ String AIChatDock::_chat_instruction_blocked_reason(bool p_force_consultation) c
 	if (!input->get_text().is_empty() || input->has_ime_text()) {
 		return "draft_not_empty";
 	}
-	if (!draft_images.is_empty()) {
+	if (!GetAiSession().arrDraftImages.is_empty()) {
 		return "draft_images_present";
 	}
-	if (queued_messages.size() >= 32) {
+	if (GetAiSession().arrQueuedMessages.size() >= 32) {
 		return "queue_full";
 	}
 	return String();
@@ -225,11 +225,11 @@ Dictionary AIChatDock::_chat_instruction_action(const Dictionary &p_args) {
 	// regular user instruction: _send owns queueing, steering and work-order intake.
 	// No confirmation is manufactured, and no history is written by the caller.
 	const String previous_draft = input->get_text();
-	input->set_text(text);
+	SetAiDraft(text);
 	_send_with_mode(force_consultation);
 	if (!input->get_text().is_empty()) {
 		if (input->get_text() == text) {
-			input->set_text(previous_draft);
+			SetAiDraft(previous_draft);
 		}
 		result["error"] = "chat_send_not_accepted";
 		return result;
@@ -237,9 +237,9 @@ Dictionary AIChatDock::_chat_instruction_action(const Dictionary &p_args) {
 	result["ok"] = true;
 	result["instruction_submitted"] = true;
 	result["business_completed"] = false;
-	result["queue_count"] = queued_messages.size();
-	result["queue_paused"] = queue_paused;
-	result["busy"] = busy;
+	result["queue_count"] = GetAiSession().arrQueuedMessages.size();
+	result["queue_paused"] = GetAiSession().bQueuePaused;
+	result["busy"] = IsAiBusy();
 	return result;
 }
 

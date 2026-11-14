@@ -1,0 +1,7 @@
+{
+  "placement": "native",
+  "reason": "The Godot adapter, scene-level type registration and portable runtime participate in native module compilation and linking.",
+  "host_contract": "AIWorkflowRuntime exposes the shared versioned runtime to editor and headless scene consumers. The portable core is compiled once through this module.",
+  "rollback": "Restore the previous source revision, rebuild the editor and restore the matching embedded controllers as one candidate.",
+  "evidence": "data-collection/ai-unified-framework-1086-ci-fixed-build-impact.json"
+}

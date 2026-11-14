@@ -23,6 +23,10 @@
 /core/input/**/*.py                           @godotengine/input @godotengine/buildsystem
 /core/input/**/SCsub                          @godotengine/input @godotengine/buildsystem
 
+# Shared AI runtime
+/ai_core/                                      @kaiyunxue @godotengine/core @godotengine/buildsystem
+/modules/ai_core/                              @kaiyunxue @godotengine/core @godotengine/buildsystem
+
 # Engine Next
 /engine_next/                                  @kaiyunxue @godotengine/core @godotengine/buildsystem
 /engine_next/Tests/                            @kaiyunxue @godotengine/core @godotengine/tests

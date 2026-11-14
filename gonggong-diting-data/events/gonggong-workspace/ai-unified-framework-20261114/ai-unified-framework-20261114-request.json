@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "event_id": "ai-unified-framework-20261114-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-unified-framework-20261114",
+  "kind": "request",
+  "occurred_at": "2026-11-13T19:03:17.499204+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1086",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "1",
+    "definition_sha256": "5bed2cce5cd1bafac052ff22ae397401eca797d88d34ad0cc88ae555c6fae889",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Implement shared AI runtime and separate AIChat, Maliang and Tianshu controllers from views, publish to main and register the public contract in AGENTS loading routes",
+    "authorization_ref": "Current user instruction on 2026-11-14 to implement and submit/push to main",
+    "design": "design-docs/ai-unified-framework-20261114.md",
+    "base_commit": "d3177311f67720fc5ef32a399f2398ce2ab0fb67",
+    "issue_intake": "passed",
+    "operator": "kaiyunxue",
+    "workers": [
+      "/root/aichat_review",
+      "/root/maliang_review",
+      "/root/tianshu_review"
+    ],
+    "worker_model": "inherited; exact model not returned by host",
+    "usage": null,
+    "usage_unknown_reason": "Host does not expose exact model token usage for this implementation"
+  },
+  "evidence_refs": [],
+  "sha256": "c2dfbb82d3a1ad53f244d9ee504147aa4ea20b5f7f370763223e1264b4335f3a"
+}

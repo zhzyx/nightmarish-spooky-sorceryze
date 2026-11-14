@@ -370,7 +370,7 @@ void AIChatDock::_refresh_schedule_agents() {
 	if (showing) {
 		schedule_notice->set_text(_agent_title(active_agent) + U" · " + run_status(scheduled_agents[active_agent]["state"]));
 	} else {
-		schedule_notice->set_text(busy ? U"当前有会话执行中，结束后可切换查看；定时任务等待空闲，不打断它。" : U"在任务介绍下选择一个执行会话查看对话。每次执行均有独立上下文。");
+		schedule_notice->set_text(IsAiBusy() ? U"当前有会话执行中，结束后可切换查看；定时任务等待空闲，不打断它。" : U"在任务介绍下选择一个执行会话查看对话。每次执行均有独立上下文。");
 	}
 	_route_chat_layout();
 }
@@ -396,7 +396,7 @@ void AIChatDock::_route_chat_layout() {
 }
 
 void AIChatDock::_workspace_selected(int p_index) {
-	if (p_index == 0 && scheduled_agents.has(active_agent) && !busy && engine_build_pid < 0) {
+	if (p_index == 0 && scheduled_agents.has(active_agent) && !IsAiBusy() && engine_build_pid < 0) {
 		const int index = _agent_index(last_manual_agent);
 		if (index >= 0) {
 			_agent_selected(index);
@@ -476,7 +476,7 @@ void AIChatDock::_save_schedule() {
 	task["backend"] = backend->get_selected();
 	task["model"] = model->get_text();
 	task["cli_model"] = backend->get_selected() == 2 ? codex_model->get_text() : cli_model->get_text();
-	task["reasoning_preferences"] = reasoning_preferences.duplicate(true);
+	task["reasoning_preferences"] = GetAiSession().mapReasoningPreferences.duplicate(true);
 	task["next_due"] = int64_t(Time::get_singleton()->get_unix_time_from_system()) + period_seconds(task);
 	if (index < 0) {
 		schedule_tasks.push_back(task);
@@ -546,7 +546,7 @@ void AIChatDock::_enable_schedule(bool p_enabled) {
 			if (int(entry.value["schedule_id"]) == selected_schedule && String(entry.value["state"]) == "waiting") {
 				entry.value["state"] = "failed";
 				if (agent_sessions.has(entry.key)) {
-					agent_sessions[entry.key].queue_paused = true;
+					agent_sessions[entry.key].stData.bQueuePaused = true;
 				}
 			}
 		}
@@ -580,23 +580,23 @@ bool AIChatDock::_enqueue_schedule(int p_index) {
 	const int sequence = int(task["sequence"]) + 1;
 	task["sequence"] = sequence;
 	AgentSession session;
-	session.model = task["model"];
-	session.cli_model = task["cli_model"];
-	session.codex_model = task["cli_model"];
+	session.stData.strModel = task["model"];
+	session.stData.strCliModel = task["cli_model"];
+	session.stData.strCodexModel = task["cli_model"];
 	const Variant saved_preferences = task.get("reasoning_preferences", EditorSettings::get_singleton()->get_project_metadata("ai_chat", "reasoning_preferences", Dictionary()));
 	if (saved_preferences.get_type() == Variant::DICTIONARY) {
-		session.reasoning_preferences = Dictionary(saved_preferences).duplicate(true);
+		session.stData.mapReasoningPreferences = Dictionary(saved_preferences).duplicate(true);
 	}
-	session.backend = task["backend"];
-	session.message_list = memnew(VBoxContainer);
-	session.message_list->set_name(vformat("ArchivedMessages%d", id));
-	session.message_list->set_h_size_flags(SIZE_EXPAND_FILL);
-	session.message_list->add_theme_constant_override("separation", 16 * EDSCALE);
-	agent_archive->add_child(session.message_list);
+	session.stData.nBackend = task["backend"];
+	session.stView.pMessageList = memnew(VBoxContainer);
+	session.stView.pMessageList->set_name(vformat("ArchivedMessages%d", id));
+	session.stView.pMessageList->set_h_size_flags(SIZE_EXPAND_FILL);
+	session.stView.pMessageList->add_theme_constant_override("separation", 16 * EDSCALE);
+	agent_archive->add_child(session.stView.pMessageList);
 	Dictionary message;
 	message["role"] = "user";
 	message["content"] = task["prompt"];
-	session.queued_messages.push_back(message);
+	session.stData.arrQueuedMessages.push_back(message);
 	agent_sessions.insert(id, session);
 	Dictionary run;
 	run["schedule_id"] = task["id"];
@@ -637,7 +637,7 @@ void AIChatDock::_scheduler_tick() {
 }
 
 void AIChatDock::_scheduler_dispatch() {
-	if (!is_inside_tree() || !history_loaded || history_restoring || busy || engine_build_pid >= 0 || engine_restart_requested || (!queue_paused && !queued_messages.is_empty())) {
+	if (!is_inside_tree() || !history_loaded || history_restoring || IsAiBusy() || engine_build_pid >= 0 || engine_restart_requested || (!GetAiSession().bQueuePaused && !GetAiSession().arrQueuedMessages.is_empty())) {
 		return;
 	}
 	// Stable Agent creation order is the scheduler's FIFO, not HashMap order.
@@ -653,7 +653,7 @@ void AIChatDock::_scheduler_dispatch() {
 		}
 		scheduled_agents[id]["state"] = "running";
 		_dispatch_queued_message(id);
-		if (!busy) {
+		if (!IsAiBusy()) {
 			scheduled_agents[id]["state"] = "failed";
 		}
 		_refresh_schedules();
@@ -667,15 +667,15 @@ void AIChatDock::_scheduler_finished() {
 		return;
 	}
 	// Completed periodic Agents retain history, not idle CLI subprocesses.
-	if (!busy && scheduled_agents.has(active_agent) && queued_messages.is_empty()) {
+	if (!IsAiBusy() && scheduled_agents.has(active_agent) && GetAiSession().arrQueuedMessages.is_empty()) {
 		_cancel_cli();
 		set_process(process_id >= 0 || sub_agent_parallel_pid >= 0);
 	}
-	if (!busy && engine_build_pid < 0 && _manual_agent_count() == 0) {
+	if (!IsAiBusy() && engine_build_pid < 0 && _manual_agent_count() == 0) {
 		_add_agent();
 	}
 	_refresh_schedules();
-	if (!busy && engine_build_pid < 0 && workspace_pages->get_current_tab() == 0 && scheduled_agents.has(active_agent)) {
+	if (!IsAiBusy() && engine_build_pid < 0 && workspace_pages->get_current_tab() == 0 && scheduled_agents.has(active_agent)) {
 		const int index = _agent_index(last_manual_agent);
 		if (index >= 0) {
 			_agent_selected(index);
@@ -707,7 +707,7 @@ void AIChatDock::_timer_agent_close(int p_index) {
 
 void AIChatDock::_scheduled_agent_removed(int p_id) {
 	scheduled_agents.erase(p_id);
-	if (_manual_agent_count() == 0 && !busy && engine_build_pid < 0) {
+	if (_manual_agent_count() == 0 && !IsAiBusy() && engine_build_pid < 0) {
 		_add_agent();
 	}
 	_refresh_schedules();

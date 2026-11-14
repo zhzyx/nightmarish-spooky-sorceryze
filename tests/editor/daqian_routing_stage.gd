@@ -3,7 +3,7 @@ extends SceneTree
 
 class Workspace extends "res://editor/docks/daqian/workspace.gd":
 	func _repo() -> String: return "fixture"
-	func _sync_workflow() -> void: pass
+	func _sync_workflow(_redraw := true) -> void: pass
 	func _exit_tree() -> void: pass
 
 

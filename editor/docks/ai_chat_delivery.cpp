@@ -114,7 +114,7 @@ void AIChatDock::_run_delivery_tool(const Dictionary &p_arguments) {
 		_finish_tool("Error: Mapped parent completion requires complete delivery_mode.");
 		return;
 	}
-	if (consultation_turn || consultation_only->is_pressed() || sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || !snapshot_state.has("engine_candidate")) {
+	if (consultation_turn || consultation_only->is_pressed() || sub_agents.has(active_agent) || scheduled_agents.has(active_agent) || !GetAiSession().mapSnapshot.has("engine_candidate")) {
 		_finish_tool("Error: Only the current authorized parent may complete its host-bound work order.");
 		return;
 	}
@@ -127,7 +127,7 @@ void AIChatDock::_run_delivery_tool(const Dictionary &p_arguments) {
 		_finish_tool("Error: " + error);
 		return;
 	}
-	const Dictionary binding = snapshot_state["engine_candidate"];
+	const Dictionary binding = GetAiSession().mapSnapshot["engine_candidate"];
 	Dictionary selected_binding;
 	for (const String &key : { String("version"), String("owner"), String("issue"), String("request_id"), String("source_root"), String("branch"), String("base_sha"), String("common_dir"), String("repository"), String("origin"), String("binding_path") }) {
 		selected_binding[key] = binding.get(key, Variant());
@@ -150,9 +150,9 @@ void AIChatDock::_run_delivery_tool(const Dictionary &p_arguments) {
 	_clear_delivery_files();
 	pending_delivery_request.clear();
 	pending_delivery_request["schema_version"] = 1;
-	pending_delivery_request["owner"] = conversation_id;
-	pending_delivery_request["snapshot_id"] = snapshot_id;
-	pending_delivery_request["generation"] = int64_t(session_generation);
+	pending_delivery_request["owner"] = GetAiSession().strConversation;
+	pending_delivery_request["snapshot_id"] = GetAiSession().strSnapshot;
+	pending_delivery_request["generation"] = int64_t(GetAiSessionGeneration());
 	pending_delivery_request["nonce"] = String::hex_encode_buffer(bytes, sizeof(bytes));
 	pending_delivery_request["source_root"] = _candidate_root();
 	pending_delivery_request["binding"] = selected_binding;
@@ -183,7 +183,7 @@ void AIChatDock::_run_delivery_tool(const Dictionary &p_arguments) {
 
 bool AIChatDock::_delivery_process_arguments(String &r_executable, List<String> &r_arguments, const Dictionary &p_runtime) {
 	String error;
-	if (pending_delivery_request.is_empty() || !busy || pending_delivery_request.get("owner", "") != conversation_id || pending_delivery_request.get("snapshot_id", "") != snapshot_id || int64_t(pending_delivery_request["generation"]) != int64_t(session_generation) || pending_delivery_request.get("source_root", "") != _candidate_root() || !_validate_engine_candidate(error)) {
+	if (pending_delivery_request.is_empty() || !IsAiBusy() || pending_delivery_request.get("owner", "") != GetAiSession().strConversation || pending_delivery_request.get("snapshot_id", "") != GetAiSession().strSnapshot || int64_t(pending_delivery_request["generation"]) != int64_t(GetAiSessionGeneration()) || pending_delivery_request.get("source_root", "") != _candidate_root() || !_validate_engine_candidate(error)) {
 		_finish_tool("Error: Delivery owner, generation or candidate changed before execution. " + error);
 		return false;
 	}
@@ -249,7 +249,7 @@ bool AIChatDock::_delivery_process_arguments(String &r_executable, List<String> 
 
 void AIChatDock::_capture_delivery_result(Dictionary &r_process_result) {
 	r_process_result["ok"] = false;
-	if (!busy || pending_delivery_request.is_empty() || pending_delivery_request.get("owner", "") != conversation_id || pending_delivery_request.get("snapshot_id", "") != snapshot_id || int64_t(pending_delivery_request["generation"]) != int64_t(session_generation)) {
+	if (!IsAiBusy() || pending_delivery_request.is_empty() || pending_delivery_request.get("owner", "") != GetAiSession().strConversation || pending_delivery_request.get("snapshot_id", "") != GetAiSession().strSnapshot || int64_t(pending_delivery_request["generation"]) != int64_t(GetAiSessionGeneration())) {
 		_clear_delivery_files();
 		return;
 	}
@@ -299,7 +299,7 @@ void AIChatDock::_capture_delivery_result(Dictionary &r_process_result) {
 		result = unknown;
 	}
 	delivery_receipt = result.duplicate(true);
-	queue_paused = true; // A receipt flush failure must not dispatch queued work.
+	GetAiSession().bQueuePaused = true; // A receipt flush failure must not dispatch queued work.
 	r_process_result["ok"] = completed && result.get("ok", Variant()).get_type() == Variant::BOOL && bool(result["ok"]);
 	r_process_result["delivery_finalization"] = result;
 }
@@ -307,15 +307,15 @@ void AIChatDock::_capture_delivery_result(Dictionary &r_process_result) {
 void AIChatDock::_finish_delivery() {
 	// This path is reachable only after the fixed worker and tool-result flush.
 	// Neither arbitrary command output nor restored history sets this dictionary.
-	if (pending_delivery_request.get("owner", "") != conversation_id || pending_delivery_request.get("snapshot_id", "") != snapshot_id || int64_t(pending_delivery_request.get("generation", -1)) != int64_t(session_generation)) {
+	if (pending_delivery_request.get("owner", "") != GetAiSession().strConversation || pending_delivery_request.get("snapshot_id", "") != GetAiSession().strSnapshot || int64_t(pending_delivery_request.get("generation", -1)) != int64_t(GetAiSessionGeneration())) {
 		delivery_receipt.clear();
 		pending_delivery_request.clear();
 		_request_completion();
 		return;
 	}
-	queue_paused = true;
+	GetAiSession().bQueuePaused = true;
 	_cancel_design_batch(active_agent);
-	tool_calls.clear();
+	GetAiTurn().arrToolCalls.clear();
 	_clear_resume();
 	_cancel_cli();
 	String text;
@@ -346,7 +346,7 @@ void AIChatDock::_finish_delivery() {
 	Dictionary message;
 	message["role"] = "assistant";
 	message["content"] = text;
-	messages.push_back(message);
+	GetAiSession().arrMessages.push_back(message);
 	_append(U"编辑器", text);
 	set_meta("gonggong_status", turn_completed ? "delivery_completed" : "delivery_pending");
 	_set_busy(false);

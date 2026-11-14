@@ -46,12 +46,12 @@ String AIChatDock::_candidate_root() const {
 	if (game_review_contexts.has(active_agent)) {
 		return Dictionary(game_review_contexts[active_agent]["candidate"])["source_root"];
 	}
-	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
+	const Dictionary candidate = GetAiSession().mapSnapshot.get("engine_candidate", Dictionary());
 	return candidate.get("source_root", ProjectSettings::get_singleton()->get_resource_path());
 }
 
 String AIChatDock::_workflow_root(int p_agent) const {
-	const Dictionary state = p_agent >= 0 && p_agent != active_agent && agent_sessions.has(p_agent) ? agent_sessions[p_agent].snapshot_state : snapshot_state;
+	const Dictionary state = p_agent >= 0 && p_agent != active_agent && agent_sessions.has(p_agent) ? agent_sessions[p_agent].stData.mapSnapshot : GetAiSession().mapSnapshot;
 	const Dictionary candidate = state.get("engine_candidate", Dictionary());
 	if (!candidate.is_empty()) {
 		return candidate.get("source_root", "");
@@ -83,7 +83,7 @@ String AIChatDock::_workflow_root(int p_agent) const {
 bool AIChatDock::_recover_active_provenance(String &r_error, const Dictionary &p_runtime) const {
 	const Dictionary runtime = p_runtime.is_empty() ? GongGongRuntimeConfig::read_effective() : p_runtime;
 	GongGongRuntimeConfig::prepare_child_environment(runtime);
-	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
+	const Dictionary candidate = GetAiSession().mapSnapshot.get("engine_candidate", Dictionary());
 	if (candidate.is_empty()) {
 		return gonggong_reporting.is_empty() || !GetGameReceiptGuard(r_error, runtime, false).is_empty();
 	}
@@ -126,7 +126,7 @@ bool AIChatDock::_recover_active_provenance(String &r_error, const Dictionary &p
 }
 
 bool AIChatDock::_validate_engine_candidate(String &r_error, const String &p_review_owner) const {
-	const Dictionary candidate = snapshot_state.get("engine_candidate", Dictionary());
+	const Dictionary candidate = GetAiSession().mapSnapshot.get("engine_candidate", Dictionary());
 	if (candidate.is_empty()) {
 		// Non-engine hosts and isolated mock workspaces keep their project behavior.
 		if (!FileAccess::exists(_workflow_root().path_join("SConstruct"))) {
@@ -142,7 +142,7 @@ bool AIChatDock::_validate_engine_candidate(String &r_error, const String &p_rev
 			return false;
 		}
 	}
-	if (String(candidate["owner"]) != (p_review_owner.is_empty() ? conversation_id : p_review_owner) || int64_t(candidate["issue"]) != String(_work_order_binding("issue_number")).to_int() || candidate["request_id"] != _work_order_binding("request_id")) {
+	if (String(candidate["owner"]) != (p_review_owner.is_empty() ? GetAiSession().strConversation : p_review_owner) || int64_t(candidate["issue"]) != String(_work_order_binding("issue_number")).to_int() || candidate["request_id"] != _work_order_binding("request_id")) {
 		r_error = "candidate_issue_mismatch: active Issue or conversation changed.";
 		return false;
 	}
@@ -164,7 +164,7 @@ bool AIChatDock::_ensure_engine_candidate(const Dictionary &p_runtime) {
 	if (candidate_pid >= 0) {
 		return false;
 	}
-	if (snapshot_state.has("engine_candidate")) {
+	if (GetAiSession().mapSnapshot.has("engine_candidate")) {
 		String error;
 		if (!_validate_engine_candidate(error)) {
 			_append(TTR("Error"), error);
@@ -182,7 +182,7 @@ bool AIChatDock::_ensure_engine_candidate(const Dictionary &p_runtime) {
 	}
 	candidate_result_path = EditorPaths::get_singleton()->get_cache_dir().path_join("engine-candidate-" + itos(OS::get_singleton()->get_process_id()) + "-" + itos(Time::get_singleton()->get_ticks_usec()) + ".json");
 	List<String> args;
-	for (const String &arg : { worker, String("--workspace"), _workflow_root(), String("--issue"), _work_order_binding("issue_number"), String("--request-id"), _work_order_binding("request_id"), String("--owner"), conversation_id, String("--launch-executable"), OS::get_singleton()->get_executable_path(), String("--out"), candidate_result_path }) {
+	for (const String &arg : { worker, String("--workspace"), _workflow_root(), String("--issue"), _work_order_binding("issue_number"), String("--request-id"), _work_order_binding("request_id"), String("--owner"), GetAiSession().strConversation, String("--launch-executable"), OS::get_singleton()->get_executable_path(), String("--out"), candidate_result_path }) {
 		args.push_back(arg);
 	}
 	ProcessID pid;
@@ -192,7 +192,7 @@ bool AIChatDock::_ensure_engine_candidate(const Dictionary &p_runtime) {
 		return false;
 	}
 	candidate_pid = pid;
-	candidate_generation = session_generation;
+	candidate_generation = GetAiSessionGeneration();
 	if (!candidate_timer) {
 		candidate_timer = memnew(Timer);
 		candidate_timer->set_wait_time(0.1);
@@ -212,7 +212,7 @@ void AIChatDock::_poll_engine_candidate() {
 	candidate_pid = -1;
 	candidate_timer->stop();
 	const Variant parsed = JSON::parse_string(FileAccess::get_file_as_string(candidate_result_path));
-	if (!busy || candidate_generation != session_generation) {
+	if (!IsAiBusy() || candidate_generation != GetAiSessionGeneration()) {
 		return;
 	}
 	if (exit_code != 0 || parsed.get_type() != Variant::DICTIONARY || !bool(Dictionary(parsed).get("ok", false))) {
@@ -220,10 +220,10 @@ void AIChatDock::_poll_engine_candidate() {
 		_set_busy(false);
 		return;
 	}
-	snapshot_state["engine_candidate"] = parsed;
-	snapshot_state["requirement_workspace"] = _candidate_root();
+	GetAiSession().mapSnapshot["engine_candidate"] = parsed;
+	GetAiSession().mapSnapshot["requirement_workspace"] = _candidate_root();
 	String error;
-	if (!_validate_engine_candidate(error) || !AIChatTools::save_snapshot(_snapshot_path(snapshot_id), snapshot_state, error)) {
+	if (!_validate_engine_candidate(error) || !AIChatTools::save_snapshot(_snapshot_path(GetAiSession().strSnapshot), GetAiSession().mapSnapshot, error)) {
 		_append(TTR("Error"), error);
 		_set_busy(false);
 		return;
