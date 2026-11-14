@@ -1204,6 +1204,24 @@ class Tianxuan:
             links.append(link)
         return links
 
+    def external_links_for(self, actor: str, target_type: str, target_id: str) -> list[dict[str, Any]]:
+        """返回绑定到某个文档/工单的外部系统标识。"""
+        tenant_id = self._tenant_of(actor)
+        if target_type == "doc":
+            target = self.get_doc(target_id)
+        elif target_type == "issue":
+            target = self.get_issue(target_id)
+        else:
+            raise TianxuanError("target_type must be doc or issue")
+        if target["tenant_id"] != tenant_id:
+            raise NotFound(f"{target_type} not found: {target_id}")
+        rows = self.db.execute(
+            "SELECT * FROM external_links WHERE tenant_id = ? AND target_type = ? AND target_id = ? "
+            "ORDER BY created_at, id",
+            (tenant_id, target_type, target_id),
+        ).fetchall()
+        return [dict(row) for row in rows]
+
     def external_context(self, actor: str, system: str, external_id: str) -> dict[str, Any]:
         """返回外部标识在天璇内的文档、需求与工单，供天枢画布/对话读取。"""
         links = self.external_targets(actor, system, external_id)

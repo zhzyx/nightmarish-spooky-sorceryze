@@ -174,7 +174,21 @@ def _write(args: argparse.Namespace, envelope: dict[str, Any]) -> None:
     print(text)
 
 
+def _normalize_result(argv: list[str]) -> list[str]:
+    """天枢宿主会把 ``--result`` 追加在命令末尾；统一移到全局位置。"""
+    if "--result" not in argv:
+        return argv
+    index = argv.index("--result")
+    if index + 1 >= len(argv):
+        return argv
+    value = argv[index + 1]
+    rest = argv[:index] + argv[index + 2 :]
+    return ["--result", value, *rest]
+
+
 def main(argv: list[str] | None = None) -> int:
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    arguments = _normalize_result(arguments)
     parser = argparse.ArgumentParser(description="天璇 ↔ 天枢互通桥")
     parser.add_argument("--api", default=os.environ.get("TIANXUAN_API", "http://127.0.0.1:8000"))
     parser.add_argument("--actor", default=os.environ.get("TIANXUAN_ACTOR", ""))
@@ -226,7 +240,7 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("board", help="工单看板").set_defaults(func=board)
 
-    args = parser.parse_args(argv)
+    args = parser.parse_args(arguments)
     try:
         data = args.func(args)
         envelope = {"ok": True, "data": data}
