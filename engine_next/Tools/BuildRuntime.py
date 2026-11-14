@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 import BuildGameplay as BuildSupport
+import ExportCleanSource
 import PackageRuntime
 
 ENET_SOURCES = [
@@ -35,6 +36,9 @@ LIBRARY_SOURCES = [
     "engine_next/Assets/AssetCompiler.cpp",
     "engine_next/Assets/AssetPackage.cpp",
     "engine_next/AI/WorkflowSnapshot.cpp",
+    "engine_next/AI/ProcessTransport.cpp",
+    "engine_next/AI/ArtifactAdapter.cpp",
+    "engine_next/AI/WorkflowController.cpp",
     "engine_next/Gameplay/PredictionModel.cpp",
     "engine_next/Gameplay/InterpolationBuffer.cpp",
     "engine_next/Gameplay/PredictionReconciler.cpp",
@@ -60,6 +64,8 @@ TEST_SOURCES = [
     "engine_next/Tests/Assets/TestBlobValidator.cpp",
     "engine_next/Tests/Assets/TestAssetPackage.cpp",
     "engine_next/Tests/AI/TestWorkflowSnapshot.cpp",
+    "engine_next/Tests/AI/TestWorkflowController.cpp",
+    "engine_next/Tests/AI/TestArtifactAdapter.cpp",
     "engine_next/Tests/Runtime/TestClockAndFixedStep.cpp",
     "engine_next/Tests/Runtime/TestWorld.cpp",
     "engine_next/Tests/Runtime/TestRuntimeConfig.cpp",
@@ -84,6 +90,10 @@ PUBLIC_HEADERS = [
     "EngineNext/Assets/AssetCompiler.h",
     "EngineNext/Assets/AssetPackage.h",
     "EngineNext/AI/WorkflowSnapshot.h",
+    "EngineNext/AI/IProcessTransport.h",
+    "EngineNext/AI/ProcessTransport.h",
+    "EngineNext/AI/ArtifactAdapter.h",
+    "EngineNext/AI/WorkflowController.h",
     "EngineNext/Gameplay/Status.h",
     "EngineNext/Gameplay/Vector3.h",
     "EngineNext/Gameplay/PredictionTypes.h",
@@ -108,6 +118,7 @@ BUILD_SUPPORT_SOURCES = [
     "engine_next/Tools/RunM2DrainFaults.py",
     "engine_next/Tools/RunM2Soak.py",
     "engine_next/Tools/RunM3AssetAcceptance.py",
+    "engine_next/Tools/RunM3AiAcceptance.py",
     "engine_next/Tools/PackageRuntime.py",
 ]
 BuildSupport.ALLOWED_REPOSITORY_INPUTS = (
@@ -482,6 +493,35 @@ def run_asset_acceptance(args, targets, directory):
     )
 
 
+def run_ai_acceptance(args, targets, directory):
+    executable = directory / next(target["executable"].name for target in targets if target["name"] == "next_asset")
+    return (
+        BuildSupport
+        .run(
+            [
+                sys.executable,
+                args.repo / "engine_next/Tools/RunM3AiAcceptance.py",
+                "--next-asset",
+                executable,
+                "--repo",
+                args.repo,
+                "--fixture",
+                args.repo / "engine_next/Tests/Fixtures/M3/valid.glb",
+                "--executor",
+                args.repo / "tools/ainative/executor_cli.py",
+                "--python",
+                sys.executable,
+                "--report",
+                directory / "M3AiReport.json",
+            ],
+            cwd=args.repo,
+            env=args.tool_environment,
+        )
+        .decode("utf-8")
+        .strip()
+    )
+
+
 def run_acceptance(args, targets):
     summaries = {}
     clean_summaries = {}
@@ -505,6 +545,8 @@ def run_acceptance(args, targets):
         "trace_sha256": traces,
         "assets": run_asset_acceptance(args, targets, args.build_dir),
         "clean_assets": run_asset_acceptance(args, targets, clean_dir),
+        "ai": run_ai_acceptance(args, targets, args.build_dir),
+        "clean_ai": run_ai_acceptance(args, targets, clean_dir),
         "handshake": run_handshake(args, targets, args.build_dir),
         "clean_handshake": run_handshake(args, targets, clean_dir),
         "drain_faults": run_drain_faults(args, targets, args.build_dir),
@@ -609,6 +651,7 @@ def build(args):
         "engine_next/Schemas/SceneDocument-v1.json",
         "engine_next/Tests/TestFramework.h",
         "engine_next/Tests/Assets/FixtureSupport.h",
+        "engine_next/Tests/AI/SyntheticProvider.py",
         *BUILD_SUPPORT_SOURCES,
     ])
     native_identity = {
@@ -617,6 +660,8 @@ def build(args):
         "inputs": {name: BuildSupport.digest(args.repo / name) for name in native_inputs},
     }
     native_key = hashlib.sha256(json.dumps(native_identity, sort_keys=True).encode("utf-8")).hexdigest()
+    host_tool_inputs = {name: BuildSupport.digest(args.repo / name) for name in ExportCleanSource.AI_HOST_FILES}
+    host_tool_key = hashlib.sha256(json.dumps(host_tool_inputs, sort_keys=True).encode("utf-8")).hexdigest()
     target_reports = []
     for target in targets:
         target_reports.append({
@@ -636,6 +681,8 @@ def build(args):
         "target": "EngineNextRuntime",
         "native_key": native_key,
         "native_inputs": native_identity["inputs"],
+        "host_tool_key": host_tool_key,
+        "host_tool_inputs": host_tool_inputs,
         "compiler": args.compiler,
         "platform": sys.platform,
         "sanitize": args.sanitize,
@@ -650,6 +697,8 @@ def build(args):
         "clean_handshake": acceptance.get("clean_handshake", "not_run"),
         "assets": acceptance.get("assets", "not_run"),
         "clean_assets": acceptance.get("clean_assets", "not_run"),
+        "ai": acceptance.get("ai", "not_run"),
+        "clean_ai": acceptance.get("clean_ai", "not_run"),
         "drain_faults": acceptance.get("drain_faults", "not_run"),
         "clean_drain_faults": acceptance.get("clean_drain_faults", "not_run"),
     }

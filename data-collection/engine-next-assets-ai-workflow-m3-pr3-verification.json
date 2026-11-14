@@ -1,0 +1,63 @@
+{
+  "base_commit": "e173e63fb34cc690b756e2404cac7415f84dc06c",
+  "checks": {
+    "clean_source": {
+      "command": "ExportCleanSource.py to m3-pr3-delivery-clean-source and rebuild into m3-pr3-delivery-clean-build",
+      "observed": "151 declared files without Godot roots; 52 tests/464 checks, real AI acceptance and M2 handshakes passed",
+      "passed": true
+    },
+    "executor_targeted": {
+      "command": "unittest discover tools/ainative for test_executor.py, test_contracts.py and test_extensions.py",
+      "observed": "22 Executor, 10 contracts and 12 extension tests passed, including unknown-submission reconcile without replay",
+      "passed": true
+    },
+    "format": {
+      "command": "Isolated clang-format, ruff format, JSON parsing and git diff --check",
+      "observed": "All checks passed",
+      "passed": true
+    },
+    "link_contract": {
+      "command": "check_engine_next_contract.py with all four real link manifests in original and clean source trees",
+      "observed": "108 source files and 172 local includes passed; application targets have 37 objects and the test target has 53; no forbidden symbols or unexpected dynamic dependencies",
+      "passed": true
+    },
+    "runtime_release": {
+      "command": "BuildRuntime.py --compiler clang --build-dir build/engine_next/m3-pr3-clang --run-tests",
+      "observed": "52 tests/464 checks; real offline and synthetic Executor workflows, recovery, cancellation, output limits and process-tree cleanup passed in build and clean executable directories",
+      "passed": true
+    },
+    "sanitizer": {
+      "command": "BuildRuntime.py --compiler clang --build-dir build/engine_next/m3-pr3-sanitize --run-tests --sanitize",
+      "observed": "The same 52 tests/464 checks and real AI acceptance passed under ASan/UBSan",
+      "passed": true
+    },
+    "tools": {
+      "command": "unittest discover engine_next/Tools and tools.test_check_engine_next_contract",
+      "observed": "18 build/schema and 23 contract tests passed",
+      "passed": true
+    }
+  },
+  "issue_number": 1240,
+  "known_failures": {
+    "ainative_full_suite": {
+      "command": "python3 -m unittest discover -s tools/ainative -p test_*.py",
+      "observed": "422 tests ran in the internal managed Python: 17 failures, 42 errors and 62 skips; owned-process tests report missing os.waitid and related provider fixtures fail",
+      "passed": false,
+      "scope": "Not counted as a PR3 pass; full AI MVC/Provider regression remains required for final M3 acceptance"
+    }
+  },
+  "not_verified": [
+    "Windows and Linux until exact candidate CI",
+    "M2 scene consumption and legacy Godot adapter",
+    "Full AI MVC/Provider regression and M3 overall completion"
+  ],
+  "platform": {
+    "architecture": "arm64",
+    "python": "3.12.16",
+    "system": "Darwin"
+  },
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "review": "data-collection/engine-next-assets-ai-workflow-m3-pr3-review.json",
+  "schema_version": 1,
+  "slice": "pr3"
+}
