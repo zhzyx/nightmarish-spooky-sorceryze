@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/Icon";
+import { IdentityBindings } from "@/components/IdentityBindings";
 import { fetchGiteaStatus, fetchHealth, type ApiGiteaStatus } from "@/lib/api";
 
 export const metadata: Metadata = {
@@ -102,6 +103,8 @@ export default async function SettingsPage() {
           </div>
         </div>
       </section>
+
+      <IdentityBindings />
 
       <div className="settings-layout">
         <nav aria-label="设置分类" className="settings-nav">
