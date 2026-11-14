@@ -491,6 +491,14 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
     def list_events(actor: ActorDep, limit: int = Query(default=100, ge=1, le=500)) -> dict[str, list[dict[str, Any]]]:
         return {"events": store.events(actor, limit)}
 
+    @app.post("/api/v1/events/prune")
+    def prune_events(
+        actor: ActorDep,
+        older_than_days: int = Query(default=90, ge=1, le=3650),
+        type_prefix: str | None = Query(default=None),
+    ) -> dict[str, int]:
+        return {"deleted": store.prune_events(actor, older_than_days, type_prefix)}
+
     # ---------- 文曲：检索、导出、AI 视图、归类 ----------
 
     @app.get("/api/v1/search")

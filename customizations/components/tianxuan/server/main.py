@@ -21,8 +21,15 @@ _MERGE_QUEUE = MergeQueue(_DB_PATH, GitService(), checks=_CHECKS)
 if os.environ.get("TIANXUAN_MERGE_WORKER", "1") != "0":
     _MERGE_QUEUE.start_worker()
 
+_STORE = Tianxuan(_DB_PATH)
+if os.environ.get("TIANXUAN_EVENT_RETENTION_DAYS"):
+    try:
+        _STORE.prune_all_events(int(os.environ["TIANXUAN_EVENT_RETENTION_DAYS"]))
+    except ValueError:
+        pass
+
 app = create_app(
-    Tianxuan(_DB_PATH),
+    _STORE,
     gateway=ModelGateway(_GATEWAY_DB),
     merge_queue=_MERGE_QUEUE,
 )

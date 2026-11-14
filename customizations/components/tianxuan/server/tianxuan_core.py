@@ -1449,6 +1449,30 @@ class Tianxuan:
         ).fetchall()
         return [dict(row) | {"payload": json.loads(row["payload"])} for row in rows]
 
+    def prune_events(self, actor: str, older_than_days: int = 90, type_prefix: str | None = None) -> int:
+        if self.role_of(actor) != "admin":
+            raise PermissionDenied("only admin can prune events")
+        tenant_id = self._tenant_of(actor)
+        return self._delete_events(tenant_id, older_than_days, type_prefix)
+
+    def prune_all_events(self, older_than_days: int = 90, type_prefix: str | None = None) -> int:
+        return self._delete_events(None, older_than_days, type_prefix)
+
+    def _delete_events(self, tenant_id: str | None, older_than_days: int, type_prefix: str | None) -> int:
+        days = max(0.0, float(older_than_days))
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+        sql = "DELETE FROM events WHERE created_at < ?"
+        args: list[Any] = [cutoff]
+        if tenant_id is not None:
+            sql += " AND tenant_id = ?"
+            args.append(tenant_id)
+        if type_prefix:
+            sql += " AND type LIKE ?"
+            args.append(f"{type_prefix}%")
+        with self.db:
+            deleted = self.db.execute(sql, args).rowcount
+        return int(deleted)
+
     @staticmethod
     def _tool_payload(name: str, payload: dict[str, Any]) -> dict[str, Any]:
         payload = dict(payload)
