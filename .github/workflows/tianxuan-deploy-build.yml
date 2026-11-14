@@ -57,6 +57,9 @@ jobs:
               except websockets.exceptions.ConnectionClosed as error:
                   print("ws closed", error.code)
                   assert error.code in (4401, 4404)
+              except websockets.exceptions.InvalidStatus as error:
+                  print("ws rejected", error.response.status_code)
+                  assert error.response.status_code in (401, 403, 404)
               else:
                   raise AssertionError("expected websocket close")
 
