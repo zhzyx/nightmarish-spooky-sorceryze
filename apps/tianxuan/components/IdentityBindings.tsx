@@ -39,6 +39,7 @@ export function IdentityBindings() {
   const [removing, setRemoving] = useState("");
   const [targets, setTargets] = useState<Record<string, string>>({});
   const [events, setEvents] = useState<ApiIdentityEvent[]>([]);
+  const [eventFilter, setEventFilter] = useState("all");
 
   const load = useCallback(async () => {
     if (!actor) {
@@ -132,6 +133,9 @@ export function IdentityBindings() {
     const user = users.find((item) => item.id === id);
     return user ? `${user.name} · ${user.email}` : id;
   }
+
+  const filteredEvents =
+    eventFilter === "all" ? events : events.filter((event) => event.type === eventFilter);
 
   return (
     <section className="panel" aria-labelledby="identity-bindings-title">
@@ -242,15 +246,35 @@ export function IdentityBindings() {
             </button>
           </div>
           <div className="reading-list live-list" style={{ marginTop: 8 }}>
-            <p className="section-kicker" style={{ padding: "0 16px" }}>
-              RECENT · IDENTITY EVENTS
-            </p>
-            {events.length === 0 ? (
+            <div
+              style={{
+                alignItems: "center",
+                display: "flex",
+                gap: 10,
+                padding: "0 16px",
+              }}
+            >
+              <p className="section-kicker" style={{ flex: 1 }}>
+                RECENT · IDENTITY EVENTS
+              </p>
+              <select
+                aria-label="按事件类型筛选"
+                value={eventFilter}
+                onChange={(event) => setEventFilter(event.target.value)}
+                style={{ ...fieldStyle, padding: "4px 8px", width: 150 }}
+              >
+                <option value="all">全部事件</option>
+                <option value="identity.linked">绑定</option>
+                <option value="identity.rebound">改绑</option>
+                <option value="identity.unlinked">解绑</option>
+              </select>
+            </div>
+            {filteredEvents.length === 0 ? (
               <p className="section-note" style={{ padding: "8px 16px" }}>
                 暂无身份事件
               </p>
             ) : (
-              events.slice(0, 8).map((event) => (
+              filteredEvents.slice(0, 8).map((event) => (
                 <div className="reading-item" key={`${event.created_at}-${event.type}-${event.target}`}>
                   <span className="reading-index">·</span>
                   <span className="reading-copy">

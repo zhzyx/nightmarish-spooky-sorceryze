@@ -466,9 +466,14 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
 
     @app.get("/api/v1/identity/events")
     def list_identity_events(
-        actor: ActorDep, limit: int = Query(default=50, ge=1, le=200)
+        actor: ActorDep,
+        limit: int = Query(default=50, ge=1, le=200),
+        event_type: str | None = Query(default=None),
     ) -> dict[str, list[dict[str, Any]]]:
-        return {"events": store.identity_events(actor, limit)}
+        try:
+            return {"events": store.identity_events(actor, limit, event_type)}
+        except ValueError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
 
     @app.post("/api/v1/identity/resolve")
     def resolve_external_identity(payload: IdentityResolveRequest, request: Request) -> dict[str, Any]:

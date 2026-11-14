@@ -452,3 +452,26 @@ def test_member_event_stream_hides_identity_events(monkeypatch) -> None:
 
     admin_events = client.get("/api/v1/events", headers=headers).json()["events"]
     assert any(event["type"] == "identity.linked" for event in admin_events)
+
+
+def test_identity_events_can_filter_type(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_IDENTITY_SECRET", "shared-secret")
+    client, headers, user_id = _client()
+    client.post(
+        "/api/v1/identity/links",
+        headers=headers,
+        json={"provider": "tianshu", "subject": "gh_filter", "user_id": user_id},
+    )
+    linked = client.get(
+        "/api/v1/identity/events",
+        headers=headers,
+        params={"event_type": "identity.linked"},
+    ).json()["events"]
+    assert [event["type"] for event in linked] == ["identity.linked"]
+
+    invalid = client.get(
+        "/api/v1/identity/events",
+        headers=headers,
+        params={"event_type": "user.created"},
+    )
+    assert invalid.status_code == 400
