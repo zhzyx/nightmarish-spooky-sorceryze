@@ -13,8 +13,8 @@ def _tenants() -> tuple[Tianxuan, str, str]:
     return store, str(first), str(second)
 
 
-def _requirement(store: Tianxuan, actor: str, request_id: str = "req-scope") -> dict:
-    return store.create_requirement(
+def _requirement(store: Tianxuan, actor: str, request_id: str = "req-scope") -> dict[str, Any]:
+    return store.create_requirement(  # type: ignore[no-any-return]
         actor,
         request_id,
         "范围检查需求",
