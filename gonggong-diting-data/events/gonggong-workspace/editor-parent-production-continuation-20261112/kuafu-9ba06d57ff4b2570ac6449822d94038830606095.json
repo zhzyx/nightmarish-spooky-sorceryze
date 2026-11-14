@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9ba06d57ff4b2570ac6449822d94038830606095",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-parent-production-continuation-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a4152d849f17cdeae5c4361e0aa2d034134c682ab171b7213dab864e978afe47",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "action": "delivery",
+    "detection_head": "cce425006e9746e1ef654f8396b0cbbf60533166",
+    "context_sha256": "6b96503abb151ccc5ab08174479e34b14cd0c6741cb6a7ba55201a0c6405aec1",
+    "operator": "Sail-Li",
+    "worker": "codex-root-production951",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/compare/cce425006e9746e1ef654f8396b0cbbf60533166..a08bce60c5d8c4ea4805decde386a826e5ed1525",
+    "diagnosis": "Writer refused before commit after main advanced through PR1197 and PR1203. All37 independently reviewed task files are unchanged and upstream writes are disjoint; the new upstream changes delivery/native-cache interfaces, so their actual candidate binding must be reviewed. No merge or installation was attempted.",
+    "next_action": "Preserve exact r4 approval, integrate verified current main without changing task bytes, run formal gate and publish the new exact branch; independently verify the resulting base/tree while exact CI runs, then merge only after both succeed. The original priority publisher explicitly ended its window after1194.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T01:10:34.984805+00:00",
+    "attempted": "Exact r4 staged review and formal gate passed. Initial private wrapper expected the older review JSON shape and stopped before writer; it was corrected to read the actual nested exact review without modifying it. Trusted writer then detected remote main drift before commit.",
+    "repair_owner": "Current root delivery owner for951; other publishers retain their own candidates.",
+    "continuable": "No product changes or broad retesting needed for this main integration; original installation remains unchanged."
+  },
+  "occurred_at": "2026-11-14T01:12:54.696161+00:00",
+  "sha256": "e6f7b9a4d3b601c76811a199d2ca5f8caa6fd7eafcea660075f0ad07e1cbf15c"
+}
