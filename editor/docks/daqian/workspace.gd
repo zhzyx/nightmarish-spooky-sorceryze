@@ -120,6 +120,7 @@ var execution_turns: Dictionary:
 	get: return _get_workflow_controller().execution_turns
 	set(value): _get_workflow_controller().execution_turns = value
 var checked_execution := {}
+var tianxuan_synced := {}
 var routing_stages: Dictionary:
 	get: return _get_workflow_controller().routing_stages
 	set(value): _get_workflow_controller().routing_stages = value
@@ -1535,6 +1536,16 @@ func _show_tianxuan_dialog(url: String, data: Dictionary, item: Dictionary) -> v
 	dialog.confirmed.connect(dialog.queue_free)
 	dialog.close_requested.connect(dialog.queue_free)
 	dialog.popup_centered()
+
+
+func _auto_sync_tianxuan(url: String, title: String) -> void:
+	var key := url + "|" + title
+	if tianxuan_synced.has(key):
+		return
+	tianxuan_synced[key] = true
+	var result := await _tianxuan_command(["sync", "--external-id", url, "--done", title])
+	if result.get("ok") != true or not result.get("data", {}).get("missing", []).is_empty():
+		tianxuan_synced.erase(key)
 
 
 func _sync_tianxuan(url: String, checks: Array, dialog: AcceptDialog) -> void:
@@ -3457,7 +3468,15 @@ func _refresh_open_states() -> void:
 		var has_questions: bool = item.get("decision", false) or item.get("answered_count", 0) > 0 or not editor.context.get("questions", {}).is_empty()
 		if not has_questions or target_url != current:
 			if editor.context.get("states", {}) != item.node_states:
+				var previous_states: Dictionary = editor.context.get("states", {}).duplicate()
 				editor.context.states = item.node_states.duplicate()
+				if not previous_states.is_empty():
+					for node_id in item.node_states:
+						var state := str(item.node_states[node_id])
+						if state in ["done", "completed"] and str(previous_states.get(node_id, "")) != state:
+							var node_title := str(editor.draft.nodes.get(node_id, {}).get("title", ""))
+							if not node_title.is_empty():
+								_auto_sync_tianxuan(target_url, node_title)
 				editor.refresh_states()
 			return
 	if target_url != current:

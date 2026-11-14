@@ -92,6 +92,7 @@ python tianshu_bridge.py --api http://127.0.0.1:8000 --actor <user_id> \
 - `link`：把外部工单绑定到已有文档或工单
 - 输出 `{"ok": true, "data": ...}`；`--result <path>` 可直接写天枢宿主回执文件
 - Tianshu 的 Issue 详情新增「天璇」按钮：读取已绑定需求/文档，未绑定时可一键发布需求与工单树
+- 天枢节点状态变为 done 时自动调用 `sync` 回写天璇工单；失败/未绑定保留，后续状态变化会重试
 - Tianshu 侧通过 `TIANXUAN_API`、`TIANXUAN_ACTOR` 或 `TIANXUAN_TOKEN` 指定天璇连接身份
 - 身份适配：`/api/v1/identity/links` 绑定外部身份，`/api/v1/identity/resolve` 按 provider 适配器换取会话；内置 `static`、`tianshu`、`github`、`oidc` 共享密钥适配器
 
@@ -115,7 +116,7 @@ python tianshu_bridge.py --api http://127.0.0.1:8000 --actor <user_id> \
 - 权限：文档 `tenant/private` 可见性、按用户 read/write 共享；列表与所有读路径按 ACL 过滤
 - 协作：WebSocket 实时房间（快照/presence/更新广播）、离线草稿三方合并、Web 端本地草稿与在线同步
 - 偃师/司南：需求文档、工单树、状态机、工单评论、看板、进度同步、需求落库 Git Markdown
-- 多宝：本地 Git 提交；持久化合入队列（预检/检验/串行合入/冲突隔离/证据）；Gitea 状态/列表/创建/读取（支持真实 Gitea 实例）
+- 多宝：本地 Git 提交；持久化合入队列（预检/检验/串行合入/冲突隔离/证据）；默认启动自动 worker，设 `TIANXUAN_MERGE_WORKER=0` 可关闭；Gitea 状态/列表/创建/读取（支持真实 Gitea 实例）
 - AI：BYOK 模型网关（用量与预算）；AI 工具入口；结构化补丁
 - Web：文档列表/详情/编辑/共享、实时文档、实时工单看板、实时仓库、设置页系统状态、API 连通状态
 - 交付：`deploy/` 自托管 Compose；CLI；端到端演示脚本

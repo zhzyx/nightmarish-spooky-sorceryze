@@ -99,3 +99,25 @@ def test_priority_and_latest_target_are_honored(tmp_path: Path) -> None:
 
     sha = service.log(repo, "main", 1)[0]["sha"]
     assert sha == second["evidence"]["merge_sha"]
+
+
+def test_worker_processes_queued_candidate(tmp_path: Path) -> None:
+    import time
+
+    service, repo = _repo(tmp_path)
+    _branch(service, repo, "feature", {"b.md": "# two\n"})
+    queue = MergeQueue(str(tmp_path / "queue.db"), service)
+    queue.start_worker(interval=0.05)
+    try:
+        item = queue.enqueue("usr_1", str(repo), "feature", "main", "自动合入")
+        deadline = time.time() + 10
+        current = item
+        while time.time() < deadline:
+            current = queue.get(item["id"])
+            if current["status"] in {"merged", "conflict", "rejected"}:
+                break
+            time.sleep(0.05)
+        assert current["status"] == "merged", current
+    finally:
+        queue.stop_worker()
+        queue.close()
