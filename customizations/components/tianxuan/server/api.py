@@ -45,7 +45,16 @@ from schemas import (
     RoleUpdateRequest,
     TicketsRequest,
 )
-from tianxuan_core import NotFound, PermissionDenied, Tianxuan, TianxuanError, TransitionRejected, VersionConflict
+from tianxuan_core import (
+    NotFound,
+    PermissionDenied,
+    StorageBusy,
+    StorageError,
+    Tianxuan,
+    TianxuanError,
+    TransitionRejected,
+    VersionConflict,
+)
 from wenqu_bridge import build_ai_index, export_markdown, merge_offline
 from wenqu_bridge import classify as classify_markdown
 from wenqu_bridge import search as search_documents
@@ -166,6 +175,14 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
     # Starlette 按异常的 MRO 查找处理器，VersionConflict/TransitionRejected
     # 是 TianxuanError 的子类，注册更具体的类型即可得到 409 而不是 400。
 
+    @app.exception_handler(StorageBusy)
+    def _storage_busy(_request: Request, exc: StorageBusy) -> JSONResponse:
+        return JSONResponse(status_code=503, content={"detail": str(exc)}, headers={"Retry-After": "1"})
+
+    @app.exception_handler(StorageError)
+    def _storage_error(_request: Request, exc: StorageError) -> JSONResponse:
+        return JSONResponse(status_code=500, content={"detail": str(exc)})
+
     @app.exception_handler(NotFound)
     def _not_found(_request: Request, exc: NotFound) -> JSONResponse:
         return JSONResponse(status_code=404, content={"detail": str(exc)})
@@ -257,6 +274,7 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
             lang=payload.lang,
             kind=payload.kind,
             request_id=payload.request_id,
+            call_id=payload.call_id,
         )
 
     @app.get("/api/v1/docs/{doc_id}")
@@ -272,6 +290,7 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
             payload.expected_version,
             title=payload.title,
             status=payload.status,
+            call_id=payload.call_id,
         )
 
     # ---------- 偃师：需求与工单 ----------
@@ -285,12 +304,14 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
             payload.outcome,
             payload.scope,
             payload.acceptance,
+            lang=payload.lang,
+            call_id=payload.call_id,
         )
 
     @app.post("/api/v1/requirements/{doc_id}/tickets")
     def plan_tickets(doc_id: str, payload: TicketsRequest, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
         tickets = [ticket.model_dump() for ticket in payload.tickets]
-        return {"issues": store.plan_tickets(actor, doc_id, tickets)}
+        return {"issues": store.plan_tickets(actor, doc_id, tickets, call_id=payload.call_id)}
 
     # ---------- 司南：工单 ----------
 
@@ -307,7 +328,7 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
 
     @app.patch("/api/v1/issues/{issue_id}")
     def transition_issue(issue_id: str, payload: IssueTransitionRequest, actor: ActorDep) -> dict[str, Any]:
-        return store.transition_issue(actor, issue_id, payload.to_status)  # type: ignore[no-any-return]
+        return store.transition_issue(actor, issue_id, payload.to_status, call_id=payload.call_id)  # type: ignore[no-any-return]
 
     @app.post("/api/v1/issues/{issue_id}/comments")
     def create_issue_comment(issue_id: str, payload: IssueCommentCreateRequest, actor: ActorDep) -> dict[str, Any]:

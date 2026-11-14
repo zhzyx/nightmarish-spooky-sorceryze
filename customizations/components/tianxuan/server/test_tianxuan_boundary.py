@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import patch
 
 import test_tianxuan_concurrency as concurrency
-from tianxuan_core import NotFound, PermissionDenied, Tianxuan, TianxuanError, _token_hash
+from tianxuan_core import NotFound, PermissionDenied, StorageError, Tianxuan, TianxuanError, _token_hash
 
 
 class CurrentBoundaryTests(unittest.TestCase):
@@ -223,9 +223,10 @@ class CurrentBoundaryTests(unittest.TestCase):
                 before = self.dump()
                 with (
                     patch.object(self.tx, "db", FailCommit()),
-                    self.assertRaisesRegex(sqlite3.OperationalError, "injected"),
+                    self.assertRaisesRegex(StorageError, "storage operation failed") as caught,
                 ):
                     action()
+                self.assertIsInstance(caught.exception.__cause__, sqlite3.OperationalError)
                 self.assertEqual(self.dump(), before)
                 self.assertFalse(self.tx.db.in_transaction)
                 action()

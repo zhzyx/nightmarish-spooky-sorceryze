@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-71813705d2e87bad4faf76c9d56f0b4287ce34d1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "79446dc037b904e4e5244b924e16db699a70d5cb43445be010d2c3baad0c9870",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1117",
+    "action": "validation",
+    "detection_head": "c02cc3c67cddf5fca3b57045694f7318f158f145",
+    "context_sha256": "f20918872db5e20ead60a4868e9237a8b6a5b756d11dddfb9f6a62d725630454",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "post1195-reproduction/result.json",
+    "diagnosis": "Main1195 still permits cross-tenant admin document writes; global request lookup conflicts across tenants; replay adds event and same-title changed acceptance silently returns old content. Existing1117/1118 are consolidated into1188B3/B4, not complete. Preserved valid1195guards; reviewed full permissions integrated and268tests46subtests pass. Idempotency repair assigned to native worker under978 in isolated private candidate.",
+    "next_action": "Finish complete B3/B4 scope against actual main, independent combined review, exactCI/main, then reassess1188originalacceptance; preserve prior partial delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T00:54:09.922306+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-14T01:01:41.017732+00:00",
+  "sha256": "567a027ee2dd038ebe7f9ab3b94b4a0b115fb99060fbfb799f4861bec06a02f6"
+}

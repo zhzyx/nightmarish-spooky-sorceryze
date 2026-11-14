@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-28b4a8c8abd5ae77a5c8fe1155202c6086ff9872",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-github-integration-refactor-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "56de01fa3c62723ede43c3143a73e6aa51b45f802b8f5e478f78e0bbe66e8253",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/978",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1117",
+    "action": "validation",
+    "detection_head": "da903fdd50e84c154749b41b74ec7db1c9e75563",
+    "context_sha256": "2e5fa2cf5e8967d9dfce40389911aabaf69433b1c1a0d785c18046bc3c3bc680",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-integration",
+    "authority_ref": "codex-user-ai-github-integration-refactor-20261112",
+    "evidence": "independent-review:tenant-idempotency-independent-review/review.json:12-failed-acl-cases",
+    "diagnosis": "Combined candidate checked tenant and space but omitted inherited private requirement ACL; unkeyed mutation methods also skipped write ACL. Root owns the isolated candidate repair; current-main production is not modified.",
+    "next_action": "Use one read/write-aware requirement and ancestor access check, preserve read-only comment access, rerun independent counterexamples and exact combined validation before delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T01:31:32.123874+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-14T01:33:04.863821+00:00",
+  "sha256": "982c01622736fed3e9bec312eda11b15ed326cec321e060b6eb40ab10b478a28"
+}
