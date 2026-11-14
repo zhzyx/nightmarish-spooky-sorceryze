@@ -338,3 +338,60 @@ export async function fetchDocExternalLinks(
   const body = (await response.json()) as { links?: ApiExternalLink[] };
   return body.links ?? [];
 }
+
+export interface ApiMember {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+}
+
+export interface ApiIdentityLink {
+  id: string;
+  provider: string;
+  subject: string;
+  user_id: string;
+  tenant_id: string;
+  created_at: string;
+}
+
+export async function fetchUsers(actor: string): Promise<ApiMember[]> {
+  const response = await fetch(`${apiBase()}/api/v1/users`, {
+    headers: { "X-Actor": actor },
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`users request failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { users?: ApiMember[] };
+  return body.users ?? [];
+}
+
+export async function fetchIdentityLinks(actor: string): Promise<ApiIdentityLink[]> {
+  const response = await fetch(`${apiBase()}/api/v1/identity/links`, {
+    headers: { "X-Actor": actor },
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`identity links request failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { links?: ApiIdentityLink[] };
+  return body.links ?? [];
+}
+
+export async function createIdentityLink(
+  actor: string,
+  provider: string,
+  subject: string,
+  userId: string,
+): Promise<ApiIdentityLink> {
+  const response = await fetch(`${apiBase()}/api/v1/identity/links`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Actor": actor },
+    body: JSON.stringify({ provider, subject, user_id: userId }),
+  });
+  if (!response.ok) {
+    throw new Error(`identity link request failed: ${response.status}`);
+  }
+  return (await response.json()) as ApiIdentityLink;
+}
