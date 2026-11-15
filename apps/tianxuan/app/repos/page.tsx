@@ -3,23 +3,15 @@ import Link from "next/link";
 import { Icon } from "@/components/Icon";
 import { LocalGitRepos } from "@/components/LocalGitRepos";
 import { MergeQueuePanel } from "@/components/MergeQueuePanel";
-import { RepoBrowser } from "@/components/RepoBrowser";
 import { RepoPulls } from "@/components/RepoPulls";
+import { RepoTree } from "@/components/RepoTree";
 import { fetchRepos, type ApiRepo } from "@/lib/api";
-import { repos } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "代码仓库",
 };
 
 export const dynamic = "force-dynamic";
-
-const stats = [
-  { label: "组织仓库", value: "04", note: "2 个活跃分支", icon: "repos" as const },
-  { label: "本周提交", value: "128", note: "跨 3 个仓库", icon: "gitCommit" as const },
-  { label: "待评审 PR", value: "06", note: "平均等待 2.4h", icon: "pullRequest" as const },
-  { label: "合入冲突", value: "00", note: "队列运行正常", icon: "checkCircle" as const },
-];
 
 export default async function ReposPage() {
   const actor = process.env.TIANXUAN_ACTOR ?? "";
@@ -61,6 +53,8 @@ export default async function ReposPage() {
 
       <LocalGitRepos />
 
+      <RepoTree />
+
       <MergeQueuePanel />
 
       <RepoPulls />
@@ -89,22 +83,6 @@ export default async function ReposPage() {
         </section>
       ) : null}
 
-      <section className="repo-stat-strip" aria-label="仓库概览">
-        {stats.map((stat) => (
-          <article className="repo-stat" key={stat.label}>
-            <span className="repo-stat-icon">
-              <Icon name={stat.icon} size={16} />
-            </span>
-            <span className="repo-stat-copy">
-              <strong>{stat.value}</strong>
-              <span>{stat.label}</span>
-              <small>{stat.note}</small>
-            </span>
-          </article>
-        ))}
-      </section>
-
-      <RepoBrowser initialRepos={repos} />
     </div>
   );
 }

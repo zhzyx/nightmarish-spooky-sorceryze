@@ -80,3 +80,91 @@ export async function fetchLocalLog(
   const body = (await response.json()) as { commits?: ApiCommit[] };
   return body.commits ?? [];
 }
+
+/** 文件树中的单个条目（对应 `GitService.list_tree`）。 */
+export interface ApiTreeEntry {
+  name: string;
+  path: string;
+  type: string;
+  mode: string;
+  sha: string;
+  size: number | null;
+}
+
+/** 标签名与目标提交。 */
+export interface ApiTag {
+  name: string;
+  sha: string;
+}
+
+async function jsonRequest<T>(
+  actor: string,
+  path: string,
+  init?: { method?: string; body?: unknown },
+): Promise<T> {
+  const response = await fetch(`${apiBase()}${path}`, {
+    method: init?.method ?? "GET",
+    headers: {
+      "X-Actor": actor,
+      ...(init?.body === undefined ? {} : { "Content-Type": "application/json" }),
+    },
+    body: init?.body === undefined ? undefined : JSON.stringify(init.body),
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    throw new Error(detail || `local git request failed: ${response.status}`);
+  }
+  return (await response.json()) as T;
+}
+
+/** 读取目录树；`path` 为空表示仓库根。 */
+export async function fetchLocalTree(
+  actor: string,
+  name: string,
+  ref: string,
+  path = "",
+): Promise<ApiTreeEntry[]> {
+  const query = `ref=${encodeURIComponent(ref)}${path ? `&path=${encodeURIComponent(path)}` : ""}`;
+  const body = await jsonRequest<{ entries?: ApiTreeEntry[] }>(
+    actor,
+    `/api/v1/git/repos/${encodeURIComponent(name)}/tree?${query}`,
+  );
+  return body.entries ?? [];
+}
+
+/** 列出仓库标签。 */
+export async function fetchLocalTags(actor: string, name: string): Promise<ApiTag[]> {
+  const body = await jsonRequest<{ tags?: ApiTag[] }>(
+    actor,
+    `/api/v1/git/repos/${encodeURIComponent(name)}/tags`,
+  );
+  return body.tags ?? [];
+}
+
+/** 基于已有提交创建分支。 */
+export async function createLocalBranch(
+  actor: string,
+  name: string,
+  branch: string,
+  start = "HEAD",
+): Promise<{ branch: string; sha: string }> {
+  return jsonRequest<{ branch: string; sha: string }>(
+    actor,
+    `/api/v1/git/repos/${encodeURIComponent(name)}/branches`,
+    { method: "POST", body: { name: branch, start } },
+  );
+}
+
+/** 删除分支（受保护分支需要 admin）。 */
+export async function deleteLocalBranch(
+  actor: string,
+  name: string,
+  branch: string,
+): Promise<{ branch: string; deleted: boolean }> {
+  return jsonRequest<{ branch: string; deleted: boolean }>(
+    actor,
+    `/api/v1/git/repos/${encodeURIComponent(name)}/branches/${encodeURIComponent(branch)}`,
+    { method: "DELETE" },
+  );
+}

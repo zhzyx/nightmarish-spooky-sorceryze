@@ -125,7 +125,7 @@ python tianshu_bridge.py --api http://127.0.0.1:8000 --actor <user_id> \
 - 多宝：本地 Git 提交；持久化合入队列（预检/检验/串行合入/冲突隔离/证据；可选 PR/工单绑定，重试/取消限创建者或 admin，事件回执可接领域事件）；默认启动自动 worker，设 `TIANXUAN_MERGE_WORKER=0` 可关闭；检查在临时 worktree 执行，使用独立 HOME/TEMP 且默认不继承 `TIANXUAN_*`/TOKEN/SECRET 等环境，`TIANXUAN_MERGE_CHECK_ENV` 可白名单；Gitea 仓库/分支/PR/评审/提交状态；保护分支、批准数与必需检查的合并门禁；镜像导入与标签列表
 - 仓库绑定与 webhook：`/api/v1/repo-links` 把 `provider/owner/name` 绑定到租户（全局唯一，admin 管理）；`/api/v1/webhooks/gitea` 校验 HMAC 签名后把 push/PR 事件写入对应租户事件流，未绑定仓库与不支持事件返回 202 ignored
 - AI：BYOK 模型网关（用量与预算）；AI 工具入口；结构化补丁
-- Web：文档列表/详情/编辑/共享、Markdown/HTML/Word/PDF 导出（HTML 为安全 Markdown 渲染；PDF/DOCX 支持 data URI 图片；远程图片需 `TIANXUAN_EXPORT_IMAGE_HOSTS` 白名单）、实时文档、实时工单看板、实时仓库、设置页系统状态、API 连通状态
+- Web：文档列表/详情/编辑/共享、Markdown/HTML/Word/PDF 导出（HTML 为安全 Markdown 渲染；PDF/DOCX 支持 data URI 图片；远程图片需 `TIANXUAN_EXPORT_IMAGE_HOSTS` 白名单）、实时文档、实时工单看板、实时仓库、仓库文件树/分支/标签面板（目录浏览、建删分支、标签查看）、设置页系统状态、API 连通状态
 - 交付：`deploy/` 自托管 Compose；CLI；端到端演示脚本
 
 ## 测试
