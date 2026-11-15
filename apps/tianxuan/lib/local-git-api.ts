@@ -93,6 +93,37 @@ export interface ApiTreeEntry {
   size: number | null;
 }
 
+/** 代码搜索命中的单行（对应 `GitService.search`）。 */
+export interface ApiCodeHit {
+  path: string;
+  line: number;
+  text: string;
+}
+
+/** 在指定 ref 下按固定字符串搜索仓库代码。 */
+export async function searchLocalRepo(
+  actor: string,
+  name: string,
+  query: string,
+  ref: string,
+  path = "",
+  limit = 50,
+): Promise<ApiCodeHit[]> {
+  const params = new URLSearchParams({ q: query, ref, limit: String(limit) });
+  if (path) {
+    params.set("path", path);
+  }
+  const response = await fetch(
+    `${apiBase()}/api/v1/git/repos/${encodeURIComponent(name)}/search?${params.toString()}`,
+    { headers: authHeaders(actor), cache: "no-store" },
+  );
+  if (!response.ok) {
+    throw new Error(`code search request failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { results?: ApiCodeHit[] };
+  return body.results ?? [];
+}
+
 /** 标签名与目标提交。 */
 export interface ApiTag {
   name: string;

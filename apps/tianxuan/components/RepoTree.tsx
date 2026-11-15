@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { formatMessage } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n-client";
 import {
   createLocalBranch,
@@ -10,6 +11,8 @@ import {
   fetchLocalTags,
   fetchLocalTree,
   importLocalRepo,
+  searchLocalRepo,
+  type ApiCodeHit,
   type ApiLocalRepo,
   type ApiTag,
   type ApiTreeEntry,
@@ -89,6 +92,10 @@ export function RepoTree() {
   const [importName, setImportName] = useState("");
   const [importSource, setImportSource] = useState("");
   const [importNotice, setImportNotice] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<ApiCodeHit[] | null>(null);
+  const [searchBusy, setSearchBusy] = useState(false);
+  const [searchError, setSearchError] = useState("");
   const [status, setStatus] = useState<LoadState>("idle");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -133,6 +140,8 @@ export function RepoTree() {
       setTags([]);
       setPath("");
       setError("");
+      setSearchResults(null);
+      setSearchError("");
       setStatus("loading");
       try {
         const [nextBranches, nextTags] = await Promise.all([
@@ -266,6 +275,24 @@ export function RepoTree() {
     }
   }
 
+  async function handleSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    if (!actor || !repo || !query || searchBusy) {
+      return;
+    }
+    setSearchBusy(true);
+    setSearchError("");
+    try {
+      setSearchResults(await searchLocalRepo(actor, repo, query, branch || "HEAD"));
+    } catch (searchErr) {
+      setSearchResults(null);
+      setSearchError(errorMessage(searchErr, t("repos.searchError")));
+    } finally {
+      setSearchBusy(false);
+    }
+  }
+
   return (
     <section className="panel" aria-labelledby="repo-tree-title">
       <header style={headingStyle}>
@@ -315,6 +342,47 @@ export function RepoTree() {
               </button>
             </form>
             {importNotice ? <p style={mutedStyle}>{importNotice}</p> : null}
+
+            {repo ? (
+              <form onSubmit={handleSearch} style={rowStyle} aria-label={t("repos.searchAria")}>
+                <input
+                  aria-label={t("repos.searchAria")}
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder={t("repos.searchPlaceholder")}
+                  style={inputStyle}
+                />
+                <button
+                  className="btn btn-ghost btn-sm"
+                  disabled={searchBusy || !searchQuery.trim()}
+                  type="submit"
+                >
+                  {t("repos.search")}
+                </button>
+                {searchResults !== null ? (
+                  <span style={mutedStyle}>
+                    {formatMessage(t("repos.searchResults"), { count: searchResults.length })}
+                  </span>
+                ) : null}
+              </form>
+            ) : null}
+            {searchError ? <p style={errorStyle}>{searchError}</p> : null}
+            {searchResults !== null ? (
+              <ul style={treeStyle} aria-label={t("repos.searchAria")}>
+                {searchResults.length === 0 ? (
+                  <li style={mutedStyle}>{t("repos.searchEmpty")}</li>
+                ) : (
+                  searchResults.map((hit) => (
+                    <li key={`${hit.path}:${hit.line}`} style={entryStyle}>
+                      <span className="mono-key">
+                        {hit.path}:{hit.line}
+                      </span>
+                      <span style={mutedStyle}>{hit.text}</span>
+                    </li>
+                  ))
+                )}
+              </ul>
+            ) : null}
 
             {repo ? (
               <div style={rowStyle}>
