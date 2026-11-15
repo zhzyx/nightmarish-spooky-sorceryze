@@ -63,6 +63,13 @@ CREATE TABLE IF NOT EXISTS issues (
   title TEXT NOT NULL, body_md TEXT NOT NULL DEFAULT '', acceptance TEXT NOT NULL DEFAULT '',
   requirement_id TEXT, created_by TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS doc_issue_links (
+  id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL,
+  doc_id TEXT NOT NULL, issue_id TEXT NOT NULL,
+  created_by TEXT NOT NULL, created_at TEXT NOT NULL,
+  UNIQUE (tenant_id, doc_id, issue_id)
+);
+CREATE INDEX IF NOT EXISTS idx_doc_issue_links_issue ON doc_issue_links(tenant_id, issue_id);
 CREATE TABLE IF NOT EXISTS tool_receipts (
   tenant_id TEXT NOT NULL, actor_id TEXT NOT NULL, tool TEXT NOT NULL,
   key_kind TEXT NOT NULL, call_id TEXT NOT NULL, payload_json TEXT NOT NULL,
@@ -990,6 +997,109 @@ class Tianxuan:
             args.append(requirement_id)
         rows = self.db.execute(sql + " ORDER BY number", args).fetchall()
         return [dict(row) for row in rows]
+
+    # ---------- 文曲/司南：文档 ↔ 工单关联 ----------
+
+    @_connection_call
+    def link_doc_issue(self, actor: str, doc_id: str, issue_id: str) -> dict[str, Any]:
+        """把文档与工单双向关联；重复关联幂等返回已有记录。"""
+        self._require_editor(actor)
+        self.get_doc_shared(actor, doc_id, write=True)
+        issue = self._require_tenant_issue(actor, issue_id)
+        tenant_id = self._tenant_of(actor)
+        existing = self.db.execute(
+            "SELECT * FROM doc_issue_links WHERE tenant_id = ? AND doc_id = ? AND issue_id = ?",
+            (tenant_id, doc_id, issue_id),
+        ).fetchone()
+        if existing is not None:
+            return dict(existing)
+        link_id = _id("dil")
+        now = _now()
+        try:
+            self.db.execute(
+                "INSERT INTO doc_issue_links (id, tenant_id, doc_id, issue_id, created_by, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                (link_id, tenant_id, doc_id, issue["id"], actor, now),
+            )
+        except sqlite3.IntegrityError as error:
+            row = self.db.execute(
+                "SELECT * FROM doc_issue_links WHERE tenant_id = ? AND doc_id = ? AND issue_id = ?",
+                (tenant_id, doc_id, issue_id),
+            ).fetchone()
+            if row is None:
+                raise TianxuanError("failed to link document and issue") from error
+            return dict(row)
+        self._event(
+            tenant_id,
+            "doc.issue_linked",
+            actor,
+            f"{doc_id}:{issue['id']}",
+            {"doc_id": doc_id, "issue_id": issue["id"]},
+        )
+        return {
+            "id": link_id,
+            "tenant_id": tenant_id,
+            "doc_id": doc_id,
+            "issue_id": issue["id"],
+            "created_by": actor,
+            "created_at": now,
+        }
+
+    @_connection_call
+    def unlink_doc_issue(self, actor: str, doc_id: str, issue_id: str) -> dict[str, Any]:
+        self._require_editor(actor)
+        self.get_doc_shared(actor, doc_id, write=True)
+        tenant_id = self._tenant_of(actor)
+        row = self.db.execute(
+            "SELECT id FROM doc_issue_links WHERE tenant_id = ? AND doc_id = ? AND issue_id = ?",
+            (tenant_id, doc_id, issue_id),
+        ).fetchone()
+        if row is None:
+            raise NotFound(f"document is not linked to issue: {issue_id}")
+        self.db.execute("DELETE FROM doc_issue_links WHERE id = ?", (row["id"],))
+        self._event(
+            tenant_id,
+            "doc.issue_unlinked",
+            actor,
+            f"{doc_id}:{issue_id}",
+            {"doc_id": doc_id, "issue_id": issue_id},
+        )
+        return {"doc_id": doc_id, "issue_id": issue_id, "deleted": True}
+
+    @_connection_call
+    def list_doc_issues(self, actor: str, doc_id: str) -> list[dict[str, Any]]:
+        self.get_doc_shared(actor, doc_id)
+        tenant_id = self._tenant_of(actor)
+        rows = self.db.execute(
+            "SELECT i.id, i.number, i.title, i.status, i.priority, i.type, i.requirement_id, i.updated_at "
+            "FROM issues i JOIN doc_issue_links l ON l.issue_id = i.id AND l.tenant_id = i.tenant_id "
+            "WHERE l.tenant_id = ? AND l.doc_id = ? ORDER BY i.number",
+            (tenant_id, doc_id),
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+    @_connection_call
+    def list_issue_docs(self, actor: str, issue_id: str) -> list[dict[str, Any]]:
+        issue = self._require_tenant_issue(actor, issue_id)
+        rows = self.db.execute(
+            "SELECT doc_id FROM doc_issue_links WHERE tenant_id = ? AND issue_id = ? ORDER BY created_at, id",
+            (issue["tenant_id"], issue_id),
+        ).fetchall()
+        documents: list[dict[str, Any]] = []
+        for row in rows:
+            try:
+                document = self.get_doc_shared(actor, str(row["doc_id"]))
+            except (NotFound, PermissionDenied):
+                continue
+            documents.append({
+                "id": document["id"],
+                "title": document["title"],
+                "kind": document["kind"],
+                "status": document["status"],
+                "version": document["version"],
+                "updated_at": document["updated_at"],
+            })
+        return documents
 
     # ---------- 司南：工单评论 ----------
 

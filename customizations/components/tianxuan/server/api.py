@@ -43,6 +43,7 @@ from schemas import (
     CommentResolveRequest,
     CommitStatusRequest,
     DocCreateRequest,
+    DocIssueLinkRequest,
     DocMergeRequest,
     DocPatchRequest,
     DocShareRequest,
@@ -668,6 +669,22 @@ def create_app(
             if document["id"] in links or document["title"] in links:
                 backlinks.append({"doc_id": other["id"], "title": other["title"]})
         return {"outgoing": outgoing, "backlinks": backlinks}
+
+    @app.get("/api/v1/docs/{doc_id}/issues")
+    def list_doc_issues(doc_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        return {"issues": store.list_doc_issues(actor, doc_id)}
+
+    @app.post("/api/v1/docs/{doc_id}/issues")
+    def link_doc_issue(doc_id: str, payload: DocIssueLinkRequest, actor: ActorDep) -> dict[str, Any]:
+        return store.link_doc_issue(actor, doc_id, payload.issue_id)  # type: ignore[no-any-return]
+
+    @app.delete("/api/v1/docs/{doc_id}/issues/{issue_id}")
+    def unlink_doc_issue(doc_id: str, issue_id: str, actor: ActorDep) -> dict[str, Any]:
+        return store.unlink_doc_issue(actor, doc_id, issue_id)  # type: ignore[no-any-return]
+
+    @app.get("/api/v1/issues/{issue_id}/docs")
+    def list_issue_docs(issue_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        return {"docs": store.list_issue_docs(actor, issue_id)}
 
     # ---------- 偃师：需求导出与落库 ----------
 

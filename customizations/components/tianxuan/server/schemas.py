@@ -248,6 +248,12 @@ class ExternalLinkRequest(BaseModel):
     target_id: str
 
 
+class DocIssueLinkRequest(BaseModel):
+    """把文档与司南工单双向关联。"""
+
+    issue_id: str
+
+
 class ExternalRequirementRequest(BaseModel):
     """从天枢工单创建天璇需求与工单树。"""
 
