@@ -128,7 +128,13 @@ func run():
 	panel.source_edit.text = image_path
 	var parameters = {'prompt':'', 'mesh_steps':5, 'mesh_resolution':128, 'octree_resolution':64}
 	panel.parameter_form.configure('image_to_mesh', parameters)
-	if not verify(panel.apply_fields() and panel.node_run_blocker(id).is_empty(), 'An existing image with no prompt is runnable'): return
+	var fields_applied: bool = panel.apply_fields()
+	var blocker: String = panel.node_run_blocker(id) if fields_applied else panel.status.text
+	receipt['fields_applied'] = fields_applied
+	receipt['run_blocker'] = blocker
+	var matching: Array = panel.nodes.filter(func(data): return data.id == id)
+	receipt['node_model'] = matching[0].get('model', '') if not matching.is_empty() else ''
+	if not verify(fields_applied and blocker.is_empty(), 'An existing image with no prompt is runnable'): return
 	receipt['source_sha256'] = FileAccess.get_sha256(image_path)
 	receipt['parameters'] = parameters
 	panel.run_node_preview(id)

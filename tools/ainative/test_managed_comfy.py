@@ -206,7 +206,16 @@ class ManagedComfyTests(unittest.TestCase):
                 return child
             time.sleep(0.05)
         stream.flush()
-        self.fail("external fixture failed: " + (self.base / "external.log").read_text(errors="replace"))
+        details = {
+            "returncode": child.poll(),
+            "started": (self.runtime / "started").is_file(),
+            "argv": (self.runtime / "argv.json").read_text() if (self.runtime / "argv.json").is_file() else "",
+            "port_open": managed._port_open(config["endpoint"]),
+            "probe": managed._probe(config),
+            "listener_pid": managed._listener_pid(config["endpoint"]),
+            "pid": child.pid,
+        }
+        self.fail("external fixture failed: " + json.dumps(details) + "\n" + (self.base / "external.log").read_text(errors="replace"))
 
     def test_inspect_and_private_override(self):
         before = hashlib.sha256(self.config_path.read_bytes()).hexdigest()

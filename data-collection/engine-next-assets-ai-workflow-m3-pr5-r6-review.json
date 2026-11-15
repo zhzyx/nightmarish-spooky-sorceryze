@@ -1,0 +1,19 @@
+{
+  "findings": [
+    "R5 synthetic logs were empty, so process state and listener evidence were still missing",
+    "R4 first-use connection passed, but the full generation assertion did not distinguish field application from the actual run blocker"
+  ],
+  "issue_number": 1240,
+  "observed": "Independent read-only review approved R6 diagnostics. External fixture failure now reports returncode, started/argv markers, port health, listener identity and logs. Maliang acceptance records fields_applied, the exact blocker and actual node model while preserving the original short-circuit and pass condition. Only synthetic temporary state is collected; production behavior is unchanged.",
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "result": "approved",
+  "reviewer": {
+    "id": "agent-2",
+    "kind": "independent_read_only_agent",
+    "same_author": false
+  },
+  "schema_version": 1,
+  "scope": "PR5 R6 process/listener and node-blocker diagnostics plus all previously reviewed fixes",
+  "slice": "pr5-r6",
+  "validation_boundary": "Targeted lifecycle/external tests, GDScript parsing, ruff and diff checks passed. Exact CI must return the new diagnostics before the remaining root causes can be fixed."
+}
