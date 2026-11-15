@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-20261115",
+  "issue_number": 1323,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1323",
+  "recorded_at": "2026-11-15T14:42:24.975208+00:00",
+  "source": "User-provided M4 requirement attachment in the current Codex chat",
+  "source_sha256": "c19eb21e85628224915f898c7f95690bfbe19fe803ba111326a67facb8404119",
+  "requirement_document": "design-docs/engine-next-visual-runtime-m4-20261115.md",
+  "original_requirement_retained": true,
+  "confirmed_decisions": [
+    "Use this i7-13700KF / RTX 4070 Ti PC as reference and complete design first",
+    "Use self-authored reproducible reference scenes A-F"
+  ],
+  "authorization": "Prepare and submit M4.0 design. Implementation requires user confirmation of the design.",
+  "baseline_commit": "700dfb041cfa8a1dc791e24825ff0ce57a734a52",
+  "authenticated_repository_operator": "kaiyunxue",
+  "intake": {
+    "result": "passed",
+    "issue": 1323,
+    "status": "status:in-progress"
+  },
+  "research_workers": [
+    {
+      "task": "/root/m4_contract_audit",
+      "scope": "Read-only M1-M3 interfaces and dependency acceptance",
+      "state": "research_completed_review_requested"
+    },
+    {
+      "task": "/root/m4_ue_hardware",
+      "scope": "Local PC and Unreal read-only inventory",
+      "state": "completed"
+    },
+    {
+      "task": "/root/m4_primary_refs",
+      "scope": "Primary documentation research",
+      "state": "completed"
+    }
+  ],
+  "not_completed": [
+    "UE A-F baseline captures",
+    "M4.0 user design approval",
+    "4K presentation validation",
+    "M4 renderer implementation and visual/performance acceptance"
+  ],
+  "usage": null
+}

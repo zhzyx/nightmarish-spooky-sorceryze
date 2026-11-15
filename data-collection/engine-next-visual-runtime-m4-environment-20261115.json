@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-20261115",
+  "issue_number": 1323,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1323",
+  "recorded_at": "2026-11-15T22:37:07+08:00",
+  "kind": "read_only_environment_and_reference_observation",
+  "repository_baseline": "700dfb041cfa8a1dc791e24825ff0ce57a734a52",
+  "scope": "M4.0 reference machine and local Unreal source inventory. No renderer or Unreal Editor was started for these observations.",
+  "probe_commands": [
+    {
+      "command": "Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Version,BuildNumber,OSArchitecture",
+      "purpose": "Operating system identity"
+    },
+    {
+      "command": "Get-CimInstance Win32_Processor | Select-Object Name,NumberOfCores,NumberOfLogicalProcessors",
+      "purpose": "CPU identity and topology"
+    },
+    {
+      "command": "Get-CimInstance Win32_ComputerSystem | Select-Object Manufacturer,Model,TotalPhysicalMemory",
+      "purpose": "Machine model and OS-visible physical memory"
+    },
+    {
+      "command": "Get-CimInstance Win32_VideoController | Select-Object Name,DriverVersion,DriverDate,CurrentHorizontalResolution,CurrentVerticalResolution,CurrentRefreshRate",
+      "purpose": "Display adapter, driver and current desktop mode"
+    },
+    {
+      "command": "nvidia-smi --query-gpu=name,memory.total,driver_version,pci.device_id,display_active --format=csv,noheader",
+      "purpose": "Driver-reported GPU memory and active display state"
+    },
+    {
+      "command": "Get-CimInstance -Namespace root/wmi -ClassName WmiMonitorID",
+      "purpose": "Monitor manufacturer and model; instance and serial identifiers omitted from this record"
+    },
+    {
+      "command": "Get-CimInstance -Namespace root/wmi -ClassName WmiMonitorListedSupportedSourceModes",
+      "purpose": "WMI-reported display source modes"
+    },
+    {
+      "command": "Get-CimInstance -Namespace root/wmi -ClassName WmiMonitorConnectionParams",
+      "purpose": "Reported display connection technology; instance identifiers omitted from this record"
+    },
+    {
+      "command": "Get-Content Engine/Build/Build.version; Get-Content Engine/Binaries/Win64/UnrealEditor.version",
+      "working_directory_alias": "user_selected_unreal_reference",
+      "purpose": "Local reference version files"
+    },
+    {
+      "command": "git rev-parse --show-toplevel; git log -1; git remote -v",
+      "working_directory_alias": "user_selected_unreal_reference",
+      "purpose": "Source provenance query returned not-a-Git-repository"
+    },
+    {
+      "command": "Get-Item Engine/Binaries/Win64/UnrealEditor.exe,Engine/Binaries/Win64/UnrealEditor-Cmd.exe; Get-FileHash -Algorithm SHA256 <listed reference files>",
+      "working_directory_alias": "user_selected_unreal_reference",
+      "purpose": "File existence and exact observed source/binary identity"
+    },
+    {
+      "command": "rg --files -g '*.uproject' -g '*.umap'; rg -n <renderer entry symbols> Engine/Source/Runtime",
+      "working_directory_alias": "user_selected_unreal_reference",
+      "purpose": "Sample project inventory and architecture entry points"
+    }
+  ],
+  "observed": {
+    "os": {
+      "name": "Microsoft Windows 11 Home China",
+      "version": "10.0.22631",
+      "build": "22631",
+      "architecture": "x86_64"
+    },
+    "machine": {
+      "manufacturer": "Alienware",
+      "model": "Alienware Aurora R15",
+      "cpu": "13th Gen Intel(R) Core(TM) i7-13700KF",
+      "physical_cores": 16,
+      "logical_processors": 24,
+      "os_visible_physical_memory_bytes": 34064707584
+    },
+    "gpu": {
+      "name": "NVIDIA GeForce RTX 4070 Ti",
+      "driver_reported_memory_mib": 12282,
+      "nvidia_driver_version": "610.60",
+      "windows_driver_version": "32.0.16.1060",
+      "windows_driver_date": "2026-06-09",
+      "display_active": true,
+      "memory_source": "nvidia-smi; Win32_VideoController.AdapterRAM was excluded because its 32-bit value does not represent the installed VRAM"
+    },
+    "display": {
+      "manufacturer": "HKC",
+      "model": "G27M2Pro",
+      "current_desktop_width": 2560,
+      "current_desktop_height": 1440,
+      "current_refresh_hz": 180,
+      "wmi_connection_technology": 10,
+      "wmi_source_mode_count": 11,
+      "wmi_max_source_width": 2560,
+      "wmi_max_source_height": 1440,
+      "wmi_lists_3840x2160": false,
+      "interpretation": "The current desktop and queried WMI source-mode list do not establish a native 3840x2160 presentation path. Re-query actual DXGI output modes and swapchain presentation during runtime acceptance."
+    },
+    "tools": {
+      "dxc_executable_found": true,
+      "dxc_sdk_version_directory": "10.0.26100.0/x64",
+      "pix_found_in_default_program_files_directory": false,
+      "renderdoc_found_in_default_program_files_directory": false,
+      "capture_tool_installation_completeness": "unknown; only PATH and default installation locations were checked"
+    },
+    "unreal_reference": {
+      "root_alias": "user_selected_unreal_reference",
+      "build_version": {
+        "MajorVersion": 5,
+        "MinorVersion": 8,
+        "PatchVersion": 3,
+        "Changelist": 0,
+        "CompatibleChangelist": 55116800,
+        "IsLicenseeVersion": 0,
+        "IsPromotedBuild": 0,
+        "BranchName": "UE5"
+      },
+      "editor_build_id": "40078194-77b9-4eab-9629-3eae7c715d46",
+      "git_metadata_available": false,
+      "editor_executable_present": true,
+      "editor_command_executable_present": true,
+      "editor_executable_size_bytes": 498688,
+      "editor_started": false,
+      "editor_runnable_verified": false,
+      "sample_project_present": "Samples/StarterContent/StarterContent.uproject",
+      "sample_map_present": "Samples/StarterContent/Content/StarterContent/Maps/Advanced_Lighting.umap",
+      "sample_use": "Inventory only. No sample assets have been adopted as M4 reference assets.",
+      "license_file_present": "LICENSE.md",
+      "source_use": "Read-only architecture study. This evidence contains file identity and entry locations, with no Unreal implementation code, shader code or asset content."
+    }
+  },
+  "unknown": [
+    "D3D12 device creation, feature level, shader model, ray-tracing tier, enhanced barriers, descriptor tiers and actual asynchronous-compute overlap",
+    "Native 3840x2160 monitor/output mode and successful 4K swapchain presentation",
+    "VSync policy, VRR state, HDR display state and input-to-present latency",
+    "Local Unreal source archive origin, authenticated upstream commit and binary-to-source reproducibility",
+    "Unreal Editor launch success, D3D12 run configuration, GPU capture success and rendered baseline output",
+    "Final common A-F assets, asset licenses, scene/package hashes, cameras, lighting, exposure, quality settings and UE comparison projects",
+    "Engine Next frame times, percentiles, 1% Low, sustained memory behavior and all visual acceptance results"
+  ],
+  "reference_files": [
+    {
+      "path": "Engine/Build/Build.version",
+      "sha256": "9bc594cbdb2ab8aac478a4d2b1aab5177a74a69802c369557747727b1a0629b0"
+    },
+    {
+      "path": "Engine/Binaries/Win64/UnrealEditor.version",
+      "sha256": "43b40733fab4d26b7eb1615df660b0a4adc5854ec6311dc6c932ea4311e507c"
+    },
+    {
+      "path": "Engine/Binaries/Win64/UnrealEditor.exe",
+      "sha256": "31910f04ab705d2f96e47dce2afce2f4365d3d109af2bc306a29db2bc477ce81"
+    },
+    {
+      "path": "LICENSE.md",
+      "sha256": "73f98e42dbdb609f741e58725a0627dd8a0ce1122dc8aa784cc474cb41d4ddea"
+    },
+    {
+      "path": "Engine/Source/Runtime/RenderCore/Private/RenderGraphBuilder.cpp",
+      "sha256": "4987575af1cc4c8f942062b20dbb5dfc36fbbe395b684c0639506bf0c514261e",
+      "entry_points": ["Compile:1327", "Execute:1766", "CompilePassBarriers:3783"]
+    },
+    {
+      "path": "Engine/Source/Runtime/Renderer/Private/DeferredShadingRenderer.cpp",
+      "sha256": "a4455ba8fee56fb3ea0f4d3d6b4017e986695f60bde277c8519fdf58c2509258",
+      "entry_points": ["Render:1823", "RenderPrePass call:2465", "RenderBasePass call:3060", "RenderLights call:3468", "RenderDeferredReflectionsAndSkyLighting call:3529", "AddPostProcessingPasses call:4312"]
+    },
+    {
+      "path": "Engine/Source/Runtime/D3D12RHI/Private/D3D12Adapter.cpp",
+      "sha256": "caf71abbe8aca4cc3e738ba8346e28d2ac385ee5b57f4264ded0c8f105fe7bdf",
+      "entry_points": ["CreateRootDevice:505", "DRED setup:560"]
+    },
+    {
+      "path": "Engine/Source/Runtime/D3D12RHI/Private/D3D12Viewport.cpp",
+      "sha256": "ee7118df050842b9892d8b63ee18ca6bde8754f9158c977d7b3224e4fe530544",
+      "entry_points": ["Resize:278", "PresentChecked:516", "SchedulePresent:603"]
+    },
+    {
+      "path": "Engine/Source/Runtime/Renderer/Private/Nanite/NaniteCullRaster.cpp",
+      "sha256": "6f0862a514fffd0694b22e2df12b0506c06a08df7059e217fc2c1e7be947cd85",
+      "entry_points": ["AddPass_NodeAndClusterCull:4442", "DrawGeometry:6688", "CalculateClusterIndirectArgsBuffer:7264"]
+    },
+    {
+      "path": "Engine/Source/Runtime/Renderer/Private/Lumen/LumenScreenProbeGather.cpp",
+      "sha256": "a18d36dd4c8e55de33ffd61039f354647c4ec71fde46864e5227219b44666a91",
+      "entry_points": ["InterpolateAndIntegrate:1439", "UpdateHistoryScreenProbeGather:1754"]
+    },
+    {
+      "path": "Engine/Source/Runtime/Renderer/Private/Lumen/LumenReflections.cpp",
+      "sha256": "8e16c893f35438e1b7b8d8be13eb812db9f21f44ca4de9208fd76d30fe495098",
+      "entry_points": ["UseAsyncCompute:403", "RenderLumenReflections:1215"]
+    },
+    {
+      "path": "Engine/Source/Runtime/Renderer/Private/VirtualShadowMaps/VirtualShadowMapArray.cpp",
+      "sha256": "594f1a5caf0f1df3fb93542242fad5bd7c496ad4b1a6ba3dc8d8b75d4a0c2bb2",
+      "entry_points": ["BeginMarkPages:2516", "BuildPageAllocations:3227", "RenderVirtualShadowMapsNanite:4218", "UpdateHZB:4829"]
+    },
+    {
+      "path": "Engine/Source/Runtime/Renderer/Private/PostProcess/TemporalAA.cpp",
+      "sha256": "258d6c17b8a189a9835041a1d476be1be6f291fb4d89857f9d9e42bcc996d7bc",
+      "entry_points": ["SetupSampleWeightParameters:407", "DoesTemporalAAUseComputeShader:531"]
+    },
+    {
+      "path": "Engine/Source/Runtime/Renderer/Private/VolumetricFog.cpp",
+      "sha256": "62a7faacd9d8d6f9e3b087405243080aadb7679d55799fffbbfda1d95c31d844",
+      "entry_points": ["RenderLocalLightsForVolumetricFog:897", "ComputeVolumetricFog:1497"]
+    }
+  ]
+}

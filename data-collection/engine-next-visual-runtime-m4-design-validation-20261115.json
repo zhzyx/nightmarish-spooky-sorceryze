@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-20261115",
+  "issue_number": 1323,
+  "recorded_at": "2026-11-15T14:45:35.923228+00:00",
+  "kind": "m4_design_validation",
+  "inputs": [
+    {
+      "path": "design-docs/engine-next-visual-runtime-m4-20261115.md",
+      "sha256": "f8a64c8f6db5370167938813a056d07d95668f43b6fc062b3dbe5dbfe202a4e4"
+    },
+    {
+      "path": "data-collection/engine-next-visual-runtime-m4-environment-20261115.json",
+      "sha256": "3366551cac2ff96d76b7a4d3a6e6022f7e8b14dddbe0eaf7051ffb9d21d57088"
+    },
+    {
+      "path": "data-collection/engine-next-visual-runtime-m4-dependencies-20261115.json",
+      "sha256": "e4335ab26d84db70e1bb7829623c548bac66999e647b49a70fbdf7c043a213e9"
+    },
+    {
+      "path": "data-collection/engine-next-visual-runtime-m4-request-20261115.json",
+      "sha256": "590d0eefe7c4bf648c5b37fbcda56d6fc04255d0eabde69871267e792080e820"
+    }
+  ],
+  "checks": [
+    {
+      "name": "user_original_requirement_text",
+      "state": "passed",
+      "detail": "Preserved exactly after line-ending and terminal-newline normalization"
+    },
+    {
+      "name": "public_json_parse",
+      "state": "passed",
+      "count": 3
+    },
+    {
+      "name": "git_diff_check",
+      "state": "passed"
+    },
+    {
+      "name": "m1_m2_m3_remote_and_ancestry",
+      "state": "passed",
+      "evidence": "data-collection/engine-next-visual-runtime-m4-dependencies-20261115.json"
+    },
+    {
+      "name": "native_rendering_tests",
+      "state": "not_run",
+      "reason": "Design-only candidate; implementation awaits user confirmation"
+    },
+    {
+      "name": "ue_baseline_capture",
+      "state": "pending",
+      "reason": "Self-authored A-F assets and matching reference projects still require construction"
+    },
+    {
+      "name": "4k_native_presentation",
+      "state": "unknown",
+      "reason": "Current desktop is 2560x1440 and WMI lists no 3840x2160 mode"
+    }
+  ],
+  "completion": "M4.0 design candidate; full reference capture, parameter freeze and user design approval remain open",
+  "temporary_resources": {
+    "worktree": "retained_for_pending_design_review",
+    "private_request_input": "retained_as_recording_receipt",
+    "build_artifacts_created": false
+  }
+}

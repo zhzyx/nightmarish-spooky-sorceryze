@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-20261115",
+  "issue_number": 1323,
+  "recorded_at": "2026-11-15T14:46:11.141250+00:00",
+  "reviewer": "/root/m4_contract_audit",
+  "scope": "Independent review of design candidate and environment evidence",
+  "inputs": [
+    {
+      "path": "design-docs/engine-next-visual-runtime-m4-20261115.md",
+      "sha256": "f8a64c8f6db5370167938813a056d07d95668f43b6fc062b3dbe5dbfe202a4e4"
+    },
+    {
+      "path": "data-collection/engine-next-visual-runtime-m4-environment-20261115.json",
+      "sha256": "3366551cac2ff96d76b7a4d3a6e6022f7e8b14dddbe0eaf7051ffb9d21d57088"
+    }
+  ],
+  "findings_resolved": [
+    "Explicit snapshot reader ownership and release handshake",
+    "glTF model front +Z and camera view -Z separated",
+    "RayQuery requires SM6.5+ and DXR1.1",
+    "AO/reflection/lighting consume updated decal material resource version; light-space culling is independent",
+    "HDR IBL derives from reproducible analytic sky and linear light parameters without expanding M3 source whitelist"
+  ],
+  "result": "passed_design_review",
+  "remaining": [
+    "UE baseline capture",
+    "complete M4.0 acceptance",
+    "user design confirmation before implementation"
+  ],
+  "normalization": "LF-only normalization repeated independent review on current bytes"
+}
