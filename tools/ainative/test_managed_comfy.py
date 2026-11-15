@@ -215,6 +215,14 @@ class ManagedComfyTests(unittest.TestCase):
             "listener_pid": managed._listener_pid(config["endpoint"]),
             "pid": child.pid,
         }
+        if sys.platform == "darwin" and child.poll() is None:
+            try:
+                sampled = subprocess.run(
+                    ["/usr/bin/sample", str(child.pid), "1"], capture_output=True, text=True, timeout=10
+                )
+                details["sample"] = sampled.stdout[:16384] + sampled.stderr[-2048:]
+            except (OSError, subprocess.TimeoutExpired) as error:
+                details["sample"] = type(error).__name__
         self.fail("external fixture failed: " + json.dumps(details) + "\n" + (self.base / "external.log").read_text(errors="replace"))
 
     def test_inspect_and_private_override(self):
