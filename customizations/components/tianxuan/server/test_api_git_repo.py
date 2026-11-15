@@ -113,3 +113,51 @@ def test_protected_branch_mutation_requires_admin(monkeypatch: pytest.MonkeyPatc
 
     assert client.delete(f"/api/v1/git/repos/{name}/branches/release/1.0", headers=editor_headers).status_code == 403
     assert client.delete(f"/api/v1/git/repos/{name}/branches/release/1.0", headers=headers).status_code == 200
+
+
+def test_import_and_tags_endpoints(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    _, name, _, _ = _repo(monkeypatch, tmp_path)
+    monkeypatch.setenv("TIANXUAN_IMPORT_ALLOW_LOCAL", "1")
+    client, headers = _client()
+    source = str(tmp_path / name)
+
+    response = client.post(
+        "/api/v1/git/import",
+        headers=headers,
+        json={"name": "mirror", "source": source},
+    )
+    assert response.status_code == 200, response.text
+    imported = response.json()
+    assert imported["mirror"] is True
+    assert imported["default_branch"] == "main"
+    assert "main" in imported["branches"]
+
+    repos = client.get("/api/v1/git/repos", headers=headers).json()["repos"]
+    assert "mirror.git" in repos
+    tags = client.get("/api/v1/git/repos/mirror.git/tags", headers=headers).json()["tags"]
+    assert tags == []
+
+
+def test_import_requires_admin_and_local_opt_in(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    _, name, _, _ = _repo(monkeypatch, tmp_path)
+    client, headers = _client()
+    store = client.app.state.store  # type: ignore[attr-defined]
+    editor = store.add_member(headers["X-Actor"], "editor@example.com", "secret-pass", role="editor")
+    editor_headers = {"X-Actor": editor["user_id"]}
+    source = str(tmp_path / name)
+
+    monkeypatch.setenv("TIANXUAN_IMPORT_ALLOW_LOCAL", "1")
+    denied = client.post(
+        "/api/v1/git/import",
+        headers=editor_headers,
+        json={"name": "mirror", "source": source},
+    )
+    assert denied.status_code == 403
+
+    monkeypatch.delenv("TIANXUAN_IMPORT_ALLOW_LOCAL", raising=False)
+    blocked = client.post(
+        "/api/v1/git/import",
+        headers=headers,
+        json={"name": "mirror", "source": source},
+    )
+    assert blocked.status_code == 400

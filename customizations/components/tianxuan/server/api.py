@@ -49,6 +49,7 @@ from schemas import (
     ExternalLinkRequest,
     ExternalRequirementRequest,
     GitBranchCreateRequest,
+    GitImportRequest,
     IdentityLinkRequest,
     IdentityRebindRequest,
     IdentityResolveRequest,
@@ -174,11 +175,15 @@ def _gitea_client() -> GiteaClient:
     return GiteaClient(base_url, token)
 
 
-def _repo_under_root(name: str) -> Path:
+def _repo_root() -> Path:
     root = os.environ.get("TIANXUAN_REPO_ROOT", "").strip()
     if not root:
         raise HTTPException(status_code=400, detail="TIANXUAN_REPO_ROOT is not configured")
-    root_path = Path(root).resolve()
+    return Path(root).resolve()
+
+
+def _repo_under_root(name: str) -> Path:
+    root_path = _repo_root()
     candidate = (root_path / name).resolve()
     if not candidate.is_relative_to(root_path):
         raise HTTPException(status_code=400, detail="repo escapes TIANXUAN_REPO_ROOT")
@@ -995,6 +1000,34 @@ def create_app(
         except (GitServiceError, OSError) as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
         return {"branch": branch, "deleted": True}
+
+    @app.get("/api/v1/git/repos/{name}/tags")
+    def git_tags(name: str, actor: ActorDep) -> dict[str, list[dict[str, str]]]:
+        repo = _repo_under_root(name)
+        try:
+            return {"tags": GitService().list_tags(repo)}
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/git/import")
+    def import_git_repo(payload: GitImportRequest, actor: ActorDep) -> dict[str, Any]:
+        if store.role_of(actor) != "admin":
+            raise PermissionDenied("only an admin can import repositories")
+        root = _repo_root()
+        allow_local = os.environ.get("TIANXUAN_IMPORT_ALLOW_LOCAL", "0").strip() == "1"
+        allowed_hosts = tuple(
+            item.strip() for item in os.environ.get("TIANXUAN_IMPORT_ALLOWED_HOSTS", "").split(",") if item.strip()
+        )
+        try:
+            return GitService().import_repo(  # type: ignore[no-any-return]
+                root,
+                payload.name,
+                payload.source,
+                allow_local=allow_local,
+                allowed_hosts=allowed_hosts,
+            )
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
 
     # ---------- 多宝：合入队列 ----------
 

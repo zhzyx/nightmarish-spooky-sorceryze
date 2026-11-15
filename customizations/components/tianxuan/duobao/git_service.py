@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import os
 import re
+import shutil
 import subprocess
 import tempfile
 import unicodedata
@@ -30,6 +31,7 @@ from bisect import bisect_left
 from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
+from urllib.parse import urlsplit
 
 __all__ = [
     "DEFAULT_CONCURRENCY_RETRIES",
@@ -40,6 +42,7 @@ __all__ = [
     "GitServiceError",
     "MergeConflict",
     "ValidationError",
+    "validate_import_source",
 ]
 
 DEFAULT_GIT_EXECUTABLE = "git"
@@ -49,6 +52,12 @@ _EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
 
 #: 允许的合并策略（同时限制为白名单，避免把任意参数交给 git）。
 MERGE_STRATEGIES = ("--no-ff", "--ff", "--ff-only")
+
+#: 仓库导入允许的来源协议；本机路径需要调用方显式开启。
+IMPORT_SCHEMES = ("https", "ssh", "git", "file")
+
+_IMPORT_URL = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*://")
+_IMPORT_MAX_TIMEOUT = 3600.0
 
 _LOG_FORMAT = "%H%x1f%an%x1f%ae%x1f%aI%x1f%s%x1e"
 
@@ -260,6 +269,59 @@ def _validate_branch_name(name: str) -> str:
     return name
 
 
+def validate_import_source(
+    source: str,
+    *,
+    allow_local: bool = False,
+    allowed_hosts: Sequence[str] = (),
+) -> str:
+    """校验仓库导入来源，返回可交给 ``git clone`` 的来源字符串。
+
+    - 只接受 :data:`IMPORT_SCHEMES` 中的协议；URL 不得内嵌用户名或密码；
+    - ``allowed_hosts`` 非空时，远端主机必须命中（大小写不敏感）；
+    - 本机绝对路径与 ``file://`` 仅在 ``allow_local`` 显式开启时接受，
+      供管理员执行本机迁移或隔离测试。
+    """
+    if not isinstance(source, str):
+        raise ValidationError("import source must be a string")
+    if not source or source != source.strip():
+        raise ValidationError(f"invalid import source: {source!r}")
+    _reject_control_characters(source, "import source")
+    if source.startswith("-"):
+        raise ValidationError(f"import source must not start with '-': {source!r}")
+
+    if _IMPORT_URL.match(source):
+        parts = urlsplit(source)
+        scheme = parts.scheme.lower()
+        if scheme not in IMPORT_SCHEMES:
+            raise ValidationError(f"unsupported import scheme {scheme!r}; expected one of {', '.join(IMPORT_SCHEMES)}")
+        if parts.password or (scheme != "ssh" and parts.username):
+            raise ValidationError("import URL must not embed credentials")
+        if scheme == "file":
+            if not allow_local:
+                raise ValidationError("file:// imports are disabled; set TIANXUAN_IMPORT_ALLOW_LOCAL=1")
+            if not parts.path:
+                raise ValidationError(f"invalid file import URL: {source!r}")
+            return source
+        host = (parts.hostname or "").casefold()
+        if not host:
+            raise ValidationError(f"import URL requires a host: {source!r}")
+        if allowed_hosts:
+            permitted = {item.strip().casefold() for item in allowed_hosts if item.strip()}
+            if host not in permitted:
+                raise ValidationError(f"import host {host!r} is not allowed by TIANXUAN_IMPORT_ALLOWED_HOSTS")
+        return source
+
+    if not allow_local:
+        raise ValidationError("local imports are disabled; set TIANXUAN_IMPORT_ALLOW_LOCAL=1")
+    path = Path(source)
+    if not path.is_absolute():
+        raise ValidationError(f"local import source must be an absolute path: {source!r}")
+    if not path.exists():
+        raise ValidationError(f"local import source does not exist: {source!r}")
+    return str(path)
+
+
 def _validate_message(message: str) -> str:
     if not isinstance(message, str) or not message.strip():
         raise ValidationError("commit message must be a non-empty string")
@@ -341,6 +403,65 @@ class GitService:
             str(destination),
         ])
         return str(destination)
+
+    def import_repo(
+        self,
+        root: str | os.PathLike[str],
+        name: str,
+        source: str,
+        *,
+        allow_local: bool = False,
+        allowed_hosts: Sequence[str] = (),
+        timeout: float = 600.0,
+    ) -> dict[str, Any]:
+        """把外部仓库以镜像方式导入 ``root``，返回分支、标签与 HEAD 回执。
+
+        使用 ``git clone --mirror`` 保留全部分支、标签与远端引用；目标已存在时
+        拒绝覆盖。失败或超时会清理本次创建的目标目录，不触碰其他仓库。来源校验
+        见 :func:`validate_import_source`。
+        """
+        directory_name = _validate_repo_name(name)
+        source = validate_import_source(source, allow_local=allow_local, allowed_hosts=allowed_hosts)
+        if (
+            isinstance(timeout, bool)
+            or not isinstance(timeout, (int, float))
+            or not 0 < float(timeout) <= _IMPORT_MAX_TIMEOUT
+        ):
+            raise ValidationError(f"import timeout must be between 0 and {_IMPORT_MAX_TIMEOUT:g} seconds")
+        try:
+            root_path = Path(os.fspath(root)).expanduser().resolve()
+        except TypeError as error:
+            raise ValidationError("root must be a string or os.PathLike") from error
+        if root_path.exists() and not root_path.is_dir():
+            raise GitServiceError(f"repository root is not a directory: {root_path}")
+        root_path.mkdir(parents=True, exist_ok=True)
+        destination = (root_path / directory_name).resolve()
+        if not destination.is_relative_to(root_path):
+            raise ValidationError(f"repository escapes the import root: {destination}")
+        if destination.exists():
+            raise GitServiceError(f"repository already exists: {destination}")
+        try:
+            completed = self._run(
+                ["clone", "--mirror", "--quiet", "--", source, str(destination)],
+                check=False,
+                timeout=float(timeout),
+            )
+        except GitServiceError:
+            shutil.rmtree(destination, ignore_errors=True)
+            raise
+        if completed.returncode != 0:
+            shutil.rmtree(destination, ignore_errors=True)
+            raise GitCommandError(completed.args, completed.returncode, completed.stdout, completed.stderr)
+        return {
+            "path": str(destination),
+            "name": directory_name,
+            "source": source,
+            "default_branch": self._symbolic_head(destination) or "",
+            "head": self._rev_parse(destination, "HEAD"),
+            "branches": self.list_branches(destination),
+            "tags": self.list_tags(destination),
+            "mirror": True,
+        }
 
     def commit(
         self,
@@ -482,6 +603,27 @@ class GitService:
         repo_path, _ = self._repo_path(repo)
         output = self._run(["-C", str(repo_path), "for-each-ref", "--format=%(refname:short)", "refs/heads"]).stdout
         return [line.strip() for line in output.splitlines() if line.strip()]
+
+    def list_tags(self, repo: str | os.PathLike[str]) -> list[dict[str, str]]:
+        """返回标签名及目标提交 SHA；附注标签优先取 peel 后的提交。"""
+        repo_path, _ = self._repo_path(repo)
+        output = self._run([
+            "-C",
+            str(repo_path),
+            "for-each-ref",
+            "--format=%(refname:short)%09%(objectname)%09%(*objectname)",
+            "refs/tags",
+        ]).stdout
+        tags: list[dict[str, str]] = []
+        for line in output.splitlines():
+            fields = line.split("\t")
+            if not fields or not fields[0]:
+                continue
+            peeled = fields[2] if len(fields) > 2 and fields[2] else ""
+            sha = peeled or (fields[1] if len(fields) > 1 else "")
+            if sha:
+                tags.append({"name": fields[0], "sha": sha})
+        return sorted(tags, key=lambda item: item["name"])
 
     def delete_branch(self, repo: str | os.PathLike[str], name: str) -> str:
         """删除本地分支并返回分支名。
@@ -905,6 +1047,7 @@ class GitService:
         check: bool = True,
         line_endings: bool = True,
         preserve_newlines: bool = False,
+        timeout: float | None = None,
     ) -> subprocess.CompletedProcess[str]:
         config_options = list(_BASE_CONFIG_OPTIONS)
         if line_endings:
@@ -918,7 +1061,10 @@ class GitService:
                 encoding=None if preserve_newlines else "utf-8",
                 shell=False,
                 env=self._environment(),
+                timeout=timeout,
             )
+        except subprocess.TimeoutExpired as error:
+            raise GitServiceError(f"git command timed out after {timeout}s: {' '.join(arguments)}") from error
         except FileNotFoundError as error:
             raise GitServiceError(f"git executable was not found: {self.git_executable}") from error
         except OSError as error:

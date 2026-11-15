@@ -13,7 +13,8 @@
 `git_service.py`：系统 Git CLI 适配器，仓库为裸仓库；提交与合并在临时克隆中执行后推回，复用 Git 而不重写协议。
 
 - 构造时可显式指定 `git_executable`，否则读取环境变量 `GIT_EXECUTABLE`，再回退到 `git`。
-- 覆盖仓库创建、提交、分支、分支删除、`log`、`diff`、`tree`/文件列表、`status`、单分支合并与批量合入（`merge_batch`）；合并支持 `--no-ff`、`--ff`、`--ff-only`。
+- 覆盖仓库创建、提交、分支、分支删除、`log`、`diff`、`tree`/文件列表、`tag` 列表、`status`、单分支合并与批量合入（`merge_batch`）；合并支持 `--no-ff`、`--ff`、`--ff-only`。
+- 仓库镜像导入：`import_repo` 以 `git clone --mirror` 保留分支、标签与远端引用；来源先经 `validate_import_source` 校验（仅 https/ssh/git/file，禁止密码凭据，可配主机白名单，本机路径需显式开启），失败或超时清理本次目标。
 - 冲突时抛出 `MergeConflict`（含冲突路径）并中止临时克隆中的合并，裸仓库保持原状。
 - 并发推送使用显式 `--force-with-lease` CAS 保护：目标分支被无交叉路径并发推进时，`commit` 与 `merge` 在同一临时克隆内自动拉取最新引用并重放；并发 `commit` 命中同路径或文件/目录前缀重叠时立即抛出 `MergeConflict` 拒绝静默覆盖；`merge_batch` 在单次克隆中合入全部无冲突分支并隔离冲突分支。
 - ref、仓库名与文件路径先校验，拒绝 `..`、绝对路径、shell 元字符；子进程固定 `shell=False`。
@@ -44,8 +45,9 @@
 
 HTTP/API（`server/api.py`）已暴露：
 
-- 本地仓库浏览：`GET /api/v1/git/repos`、`branches`、`log`、`diff`、`tree`。
+- 本地仓库浏览：`GET /api/v1/git/repos`、`branches`、`log`、`diff`、`tree`、`tags`。
 - 本地仓库分支：`POST /api/v1/git/repos/{name}/branches`、`DELETE /api/v1/git/repos/{name}/branches/{branch}`。
+- 仓库导入：`POST /api/v1/git/import`（仅 admin；`TIANXUAN_IMPORT_ALLOW_LOCAL` 控制本机来源，`TIANXUAN_IMPORT_ALLOWED_HOSTS` 限制远端主机）。
 - 合入队列：`/api/v1/merge-queue` 入队、列表、处理、状态、重试、取消。
 - Gitea：`/api/v1/repos` 列表/创建/读取、`branches`、`pulls` 列表/创建/合并，`pulls/{number}/reviews` 列表/提交。
 
@@ -61,7 +63,7 @@ python -m unittest discover -s customizations/components/tianxuan/duobao -p "tes
 
 - 每用户 Git 身份与凭据（当前 Gitea 使用单一服务 token；`X-Actor` 仍是临时身份）。
 - 评审 UI（后端评审与批准数门禁已就绪）、必需检查结果回写（队列侧已有策略与证据）。
-- 仓库导入/镜像（GitHub → 多宝）、标签/发布、blame 与代码搜索、LFS/子模块。
+- 标签/发布页面、blame 与代码搜索、LFS/子模块；导入进度与失败恢复的可视化。
 - Gitea webhook → 天璇事件、CI 结果回写、多副本合入 worker。
 - TLS/域名、备份恢复演练与监控（见 #1188）。
 

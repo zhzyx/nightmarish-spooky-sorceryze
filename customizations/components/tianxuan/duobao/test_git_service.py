@@ -499,6 +499,40 @@ class GitServiceTests(unittest.TestCase):
         with self.assertRaises(GitServiceError):
             self.service.delete_branch(self.repo, "feature")
 
+    # ------------------------------------------------------------------
+    # import / tags
+    # ------------------------------------------------------------------
+    def test_import_mirror_preserves_branches_tags_and_head(self) -> None:
+        source_service = GitService(GIT_EXECUTABLE)
+        source = source_service.create_repo(self.root.parent / "source", "upstream")
+        head = source_service.commit(source, "main", "init", {"a.md": "# one\n"}, AUTHOR_NAME, AUTHOR_EMAIL)
+        source_service.branch(source, "feature", "main")
+        self._git("-C", source, "tag", "v1", "main")
+
+        import_root = self.root.parent / "imports"
+        result = self.service.import_repo(import_root, "mirror", source, allow_local=True)
+
+        self.assertTrue(result["mirror"])
+        self.assertEqual(result["default_branch"], "main")
+        self.assertEqual(result["head"], head)
+        self.assertEqual(set(result["branches"]), {"main", "feature"})
+        self.assertEqual(result["tags"], [{"name": "v1", "sha": head}])
+        self.assertEqual(self.service.list_tags(result["path"]), [{"name": "v1", "sha": head}])
+
+    def test_import_rejects_existing_destination_and_invalid_input(self) -> None:
+        source_service = GitService(GIT_EXECUTABLE)
+        source = source_service.create_repo(self.root.parent / "source2", "upstream")
+        source_service.commit(source, "main", "init", {"a.md": "x\n"}, AUTHOR_NAME, AUTHOR_EMAIL)
+        import_root = self.root.parent / "imports2"
+        self.service.import_repo(import_root, "mirror", source, allow_local=True)
+
+        with self.assertRaises(GitServiceError):
+            self.service.import_repo(import_root, "mirror", source, allow_local=True)
+        with self.assertRaises(ValidationError):
+            self.service.import_repo(import_root, "other", "relative/path", allow_local=True)
+        with self.assertRaises(ValidationError):
+            self.service.import_repo(import_root, "other", source, allow_local=True, timeout=0)
+
 
 if __name__ == "__main__":
     unittest.main()

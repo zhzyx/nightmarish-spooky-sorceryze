@@ -70,6 +70,13 @@ class GitBranchCreateRequest(BaseModel):
     start: str = "HEAD"
 
 
+class GitImportRequest(BaseModel):
+    """把远端或本机仓库以镜像方式导入多宝。"""
+
+    name: str
+    source: str
+
+
 class PullRequestCreateRequest(BaseModel):
     """在 Gitea 仓库内创建 Pull Request。"""
 
