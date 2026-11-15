@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-1-20261115",
+  "parent_issue_number": 1323,
+  "issue_number": 1327,
+  "recorded_at": "2026-11-15T15:57:22.850720+00:00",
+  "capture_method": "gdigrab of own application client rectangle, 30fps, 8 seconds; cursor excluded",
+  "width": 1280,
+  "height": 720,
+  "video": {
+    "path": "build/engine_next/m4-capture-final2/M41-Final2-Motion.mp4",
+    "size": 926205,
+    "sha256": "b883092af582601b9e7c516aad6bd4d2e44d469cc3eed426273b223e1188bde3"
+  },
+  "executable": {
+    "path": "build/engine_next/m4-1/next_visual_client.exe",
+    "sha256": "3c760000cfc9a1bf3d9a38bff79bb110a7f0c0e9bfe67cc30e18972203279c28"
+  },
+  "ffmpeg": {
+    "source": "Existing installed JianyingPro application dependency",
+    "version": "1.0.0-401a53202a",
+    "sha256": "6480cca4b38450fd845984c1cd01b1a81b554a2d859a4adc843f6b87f4728fa1"
+  },
+  "runtime_exit_code": 0,
+  "capture_exit_code": 0,
+  "scope": "Actual M4.1 fixed-mesh motion video. No frame-time or M4 final-quality claim.",
+  "verification": {
+    "decoded_frame_count": 240,
+    "duration_seconds": 8,
+    "frame_rate": 30,
+    "sampled_frames": 8,
+    "all_sampled_adjacent_frames_changed": true,
+    "sample_hashes": [
+      {
+        "path": "build/engine_next/m4-capture-final2/MotionFrame-01.png",
+        "sha256": "b023112fd1d2a213be2833806fe47493f8040ec44c26fe3701bd99c18ff3421f"
+      },
+      {
+        "path": "build/engine_next/m4-capture-final2/MotionFrame-02.png",
+        "sha256": "073928a242a50fab994c76430917e8b3ad781c1274fc3589de4ac355bc392862"
+      },
+      {
+        "path": "build/engine_next/m4-capture-final2/MotionFrame-03.png",
+        "sha256": "83f20277d0ae87465cebaaee05c4e5ec1d50cd81a3a349b963b2dba0a391e570"
+      },
+      {
+        "path": "build/engine_next/m4-capture-final2/MotionFrame-04.png",
+        "sha256": "a91fa989916373798c944ba3b3d2a6cd1ac9cb118cb4fa75924b41490e96558e"
+      },
+      {
+        "path": "build/engine_next/m4-capture-final2/MotionFrame-05.png",
+        "sha256": "f7b72710e092f7c623c1643f32e3b729a0ebb19ac21b814ce6e96965260f231b"
+      },
+      {
+        "path": "build/engine_next/m4-capture-final2/MotionFrame-06.png",
+        "sha256": "1fc305dfe9f87d36678c5bf1514b363f3e1b21b6b03774bc6743ec81e04c0f81"
+      },
+      {
+        "path": "build/engine_next/m4-capture-final2/MotionFrame-07.png",
+        "sha256": "da51a10f50dbcc1199ef39324c746fe5ef3d21adc644a4c47c45bbbc7cfd49a6"
+      },
+      {
+        "path": "build/engine_next/m4-capture-final2/MotionFrame-08.png",
+        "sha256": "b431e2b6bface0f8e17134574c74f6df5e01316bf0c626ad39872eee556beaca"
+      }
+    ]
+  },
+  "supersedes": "engine-next-visual-runtime-m4-1-video-20261115.json"
+}

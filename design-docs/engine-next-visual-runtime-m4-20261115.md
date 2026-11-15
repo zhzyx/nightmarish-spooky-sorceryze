@@ -8,7 +8,7 @@
 - 用户于 2026-11-15 提交完整 M4 需求，明确由 Codex 执行，遵循项目 C++ 规范，并允许参考本机 UnrealEngine-5.8.3-release 的渲染管线。
 - 用户随后确认以本机 i7-13700KF / RTX 4070 Ti 为参考 PC，先完成设计，并采用自研、可重建的 A–F 基准场景。
 - 当前授权覆盖 M4.0 的依赖回读、参考环境和来源核验、文件级设计、基准方案及设计 PR。用户在原需求第六、八节保留了进入实现前的确认。
-- M4.1–M4.6 等待用户确认设计。M4 父单持续开放，后续按阶段形成独立 PR 和验收记录。
+- 用户于 2026-11-15 明确“请落地”，设计已确认，授权按 M4.1–M4.6 分阶段实现。M4 父单持续开放，后续按阶段形成独立 PR 和验收记录。
 - 工作树从 `origin/main@700dfb041cfa8a1dc791e24825ff0ce57a734a52` 创建，分支为 `codex/engine-next-m4-design-20261115`。
 - 本文中的渲染架构、预算、材质和场景参数均为 M4.0 待确认设计。已执行证据将单独注明实际来源和结果。
 
@@ -18,7 +18,7 @@
 
 最终以同资产、同相机、同灯光、同曝光和画质参数的 UE 对照验证视觉。必达性能为原生 3840×2160 High 平均 ≥120 FPS、1% Low ≥90 FPS，连续 30 分钟稳定。挑战为原生 4K 平均 ≥144 FPS、1% Low ≥120 FPS、连续 60 分钟稳定。完整验收遵循下附原始需求。
 
-本轮提交 M4.0 的文件级设计、FrameGraph、渲染路径、基准场景和已核实依赖。GPU 实测、UE 对照捕获和用户确认的进度按实际证据记录。
+M4.0 设计通过 PR #1326 合入，用户随后确认实现。M4.1 子 Issue #1327 已建立并完成首轮本机渲染、捕获及回归，当前进入正式交付。各阶段实测和远端回读分别记录。
 
 ## 前置依赖回读
 
@@ -43,9 +43,9 @@ M3 最终签发 head 为 `6b5daa0f15de7bc30a1ba5ec64795a3cc1b11676`。三平台 
 | VSync / VRR | 本轮尚未实测应用呈现和驱动最终状态 | 性能组 VSync off、确认 tearing support；视觉组独立记录 VRR / HDR / swapchain 色彩空间 |
 | UE 本地树 | Build.version 标记 5.8.3，Changelist=0，CompatibleChangelist=55116800；存在编辑器和命令行程序 | 源提交、取得来源和精确配置待核实，启动可用性及自研 A–F 基准待执行 |
 | UE 基准 | 尚未生成本任务固定场景截图、动态视频或 GPU Capture | 同一自研资产包、参数与相机轨迹导入后，逐场景采集并冻结摘要 |
-| 新引擎基准 | 本轮提交为设计，未产生视觉二进制 | M4.1 及后续阶段按精确候选实际采集 |
+| 新引擎基准 | M4.1 已产生独立 D3D12 视觉二进制，具体哈希与验证见子单证据 | M4.1 及后续阶段按精确候选实际采集 |
 
-环境记录见 `data-collection/engine-next-visual-runtime-m4-environment-20261115.json`。当前没有满足完整 M4.0 的 UE 参考采集，当前设计评审与基准冻结分别记录。现阶段请用户确认下文技术设计，基准素材和实测结果在实现前继续完成核对。
+环境记录见 `data-collection/engine-next-visual-runtime-m4-environment-20261115.json`。当前没有满足完整 M4.0 的 UE 参考采集，当前设计评审与基准冻结分别记录。用户已于 2026-11-15 确认设计并要求落地，M4.1 已开始。A–F 基准素材与 UE 同参采集仍待完成，按父级验收保留。
 
 ## 冻结的 M2 / M3 边界
 
@@ -309,14 +309,14 @@ High 与 Ultra 都启用 PBR、GI、反射、阴影、TAA、体积、透明和�
 | 阶段 | 本轮拟定产物和独立验收 | 依赖 / 状态 |
 | --- | --- | --- |
 | M4.0 | 本文、环境/依赖回读、自研场景规格、UE 基准采集和固定参数，设计 PR | 设计候选进行中；本机/自研场景已确认，UE 采集和技术设计确认待完成 |
-| M4.1 | 窗口/输入、RHI、frame graph、固定 mesh、GPU validation、干净目录与 PIX | 用户确认设计及基准固定后建子 Issue、独立 PR |
+| M4.1 | 窗口/输入、RHI、frame graph、固定 mesh、GPU validation、干净目录与 GPU Capture | 子 Issue #1327；14 项测试/1208 检查、240帧GPU validation、实际RenderDoc回放与运动视频通过，正式交付中 |
 | M4.2 | GPU Cook、原包/Scene 消费、PBR/IBL/material、ClientSession/F 场景 | M4.1；资产错版/格式负例、M2/M3 回归 |
 | M4.3 | 阴影、后处理、volume/透明、初版反射、时域与动画基础 | M4.2；B/D/E 部分动态质量 |
 | M4.4 | hierarchical clusters、Hi-Z、indirect、streaming、虚拟 shadow pages | M4.3；C ≥1000 实例/1000 万三角形及 CPU/GPU/VRAM |
 | M4.5 | 动态多反弹 GI、完整反射、skin/morph 和收敛稳定性 | M4.4；A/B/D/E 全路径实测 |
 | M4.6 | 固定 A–F UE 对照、4K120/30min、4K144/60min 挑战、干净发布、全部回归 | 全部前项；每条最终验收有实际证据 |
 
-设计确认后按上表创建/复用子 Issue、建立原生父子关系并在本文填回真实 URL；此时仅父 Issue #1323 已创建。阶段共享接口由当前 Codex 主责，worker 只操作其隔离写入范围，审查回读精确候选。M4.0 设计交付与 M4 全部验收分别记录。
+设计已确认，M4.1 子 Issue 为 https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1327，原生父子关系已回读。后续阶段按上表建立独立子 Issue。阶段共享接口由当前 Codex 主责，worker 只操作其隔离写入范围，审查回读精确候选。M4.0 设计交付与 M4 全部验收分别记录。
 
 本轮文档验证采用路径/链接/引用审查、原始需求完整性、`git diff --check`、独立设计审查与 tier0 正式门禁。渲染实现前需要用户确认本文的坐标/FrameGraph、DXR/probe GI + cluster/VSM 路线、附属 RenderConfiguration/GPU 包边界、质量与场景提案。4K 显示设备、UE 来源/可用性和同参采集的实际缺项继续留在 M4.0。
 

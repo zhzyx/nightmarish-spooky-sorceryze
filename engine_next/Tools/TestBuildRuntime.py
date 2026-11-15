@@ -45,6 +45,7 @@ class BuildRuntimeTests(unittest.TestCase):
         self.assertTrue((output / "engine_next/Runtime/RuntimeHost.cpp").is_file())
         self.assertTrue((output / "engine_next/Tools/BuildGameplay.py").is_file())
         self.assertTrue((output / "ai_core/Runtime.cpp").is_file())
+        self.assertTrue((output / "LICENSE.txt").is_file())
         self.assertFalse((output / "core").exists())
         self.assertFalse((output / "modules").exists())
         self.assertFalse((output / "SConstruct").exists())
@@ -52,7 +53,10 @@ class BuildRuntimeTests(unittest.TestCase):
         self.assertEqual(manifest["file_count"], result["file_count"])
         self.assertEqual(manifest["godot_roots_present"], [])
         self.assertTrue(
-            all(item["path"].startswith(("engine_next/", "tools/", "ai_core/")) for item in manifest["files"])
+            all(
+                item["path"] == "LICENSE.txt" or item["path"].startswith(("engine_next/", "tools/", "ai_core/"))
+                for item in manifest["files"]
+            )
         )
 
     def test_clean_export_refuses_nonempty_output(self):

@@ -204,7 +204,11 @@ def _inside(path, root):
 
 
 def validate_contract(document):
-    if not isinstance(document, dict) or set(document) != TOP_LEVEL:
+    if (
+        not isinstance(document, dict)
+        or not TOP_LEVEL <= set(document)
+        or set(document) - TOP_LEVEL - {"target_profiles"}
+    ):
         raise ValueError("Contract fields must exactly match schema 1")
     if document["schema_version"] != 1:
         raise ValueError("Unsupported contract schema")
@@ -263,6 +267,29 @@ def validate_contract(document):
             raise ValueError("Forbidden runtime names must be file names")
     if any(not value.startswith(".") for value in link["forbidden_runtime_suffixes"]):
         raise ValueError("Forbidden runtime suffixes must start with a dot")
+    profiles = document.get("target_profiles", {})
+    if not isinstance(profiles, dict):
+        raise ValueError("Target profiles must be an object")
+    for target, profile in profiles.items():
+        if not isinstance(target, str) or not re.fullmatch(r"[a-z0-9]+(?:[_-][a-z0-9]+)*", target):
+            raise ValueError("Invalid profile target")
+        if target == document["target"]:
+            raise ValueError("Profiles cannot broaden the base target")
+        if not isinstance(profile, dict) or set(profile) != {
+            "source_roots",
+            "allowed_angle_includes",
+            "allowed_system_libraries",
+        }:
+            raise ValueError("Invalid target profile fields")
+        for source in _strings(profile, "source_roots", allow_empty=False):
+            _relative(source, "target_profiles.source_roots")
+            if not any(_inside(source, root) for root in document["source_roots"]):
+                raise ValueError("Profile source roots must stay inside source roots")
+            if any(_inside(source, root) or _inside(root, source) for root in document["public_header_roots"]):
+                raise ValueError("Platform profile cannot broaden public header includes")
+        for name in _strings(profile, "allowed_angle_includes"):
+            _relative(name, "target_profiles.allowed_angle_includes")
+        _strings(profile, "allowed_system_libraries")
     return document
 
 
@@ -426,6 +453,12 @@ class SourceAudit:
             )
         ):
             return
+        if delimiter == "<" and any(
+            target in profile["allowed_angle_includes"]
+            and any(_inside(source, root) for root in profile["source_roots"])
+            for profile in self.contract.get("target_profiles", {}).values()
+        ):
+            return
         if delimiter == "<":
             candidates = [normalized_target]
         else:
@@ -543,7 +576,9 @@ def audit_link_manifest(root, contract, manifest_path):
     if not isinstance(document, dict) or set(document) != required:
         return {"passed": False, "violations": [violation("invalid_link_manifest", manifest_name)]}
     failures = []
-    if document["schema_version"] != 1 or document["target"] != contract["target"]:
+    target = document["target"]
+    profile = contract.get("target_profiles", {}).get(target, {}) if isinstance(target, str) else {}
+    if document["schema_version"] != 1 or (document["target"] != contract["target"] and not profile):
         failures.append(violation("link_target_mismatch", manifest_name))
     producer = document["producer"]
     if not isinstance(producer, dict) or set(producer) != {"kind", "path", "sha256"}:
@@ -574,8 +609,9 @@ def audit_link_manifest(root, contract, manifest_path):
     else:
         if len(set(libraries)) != len(libraries):
             failures.append(violation("duplicate_system_library", manifest_name))
+        allowed_libraries = contract["link"]["allowed_system_libraries"] + profile.get("allowed_system_libraries", [])
         for value in libraries:
-            if value not in contract["link"]["allowed_system_libraries"]:
+            if value not in allowed_libraries:
                 failures.append(violation("undeclared_system_library", manifest_name, library=value))
     failures.sort(key=lambda item: (item["path"], item["code"]))
     return {

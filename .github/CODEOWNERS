@@ -562,5 +562,8 @@
 /modules/gameplay/**/SCsub                       @kaiyunxue @godotengine/buildsystem
 /modules/gameplay/doc_classes/                  @kaiyunxue @godotengine/documentation
 /modules/gameplay/tests/                        @kaiyunxue @godotengine/tests
+/engine_next/                                  @kaiyunxue
+/engine_next/**/*.py                            @kaiyunxue @godotengine/buildsystem
+/engine_next/Tests/                             @kaiyunxue @godotengine/tests
 /deploy/ @zhzyx
 /deploy/production/ @zhzyx @godotengine/buildsystem

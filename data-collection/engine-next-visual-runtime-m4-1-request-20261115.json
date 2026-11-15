@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-1-20261115",
+  "issue_number": 1327,
+  "parent_issue": 1323,
+  "recorded_at": "2026-11-15T15:36:50.968877+00:00",
+  "authorization": "2026-11-15 user explicitly said 请落地 after M4 design delivery",
+  "baseline": "49e0bd2444be533847e3c3ee798d01185c15b99a",
+  "scope": "M4.1 native D3D12 and FrameGraph implementation; remaining M4 stages follow phased PRs",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1327",
+  "workers": [
+    "/root/m41_framegraph",
+    "/root/m41_build",
+    "/root/m41_win32"
+  ]
+}
