@@ -767,6 +767,10 @@ const zh = {
   "doc.fallbackTitle": "文档",
   "doc.liveSpace": "实时",
   "doc.liveKind": "记录",
+  "meta.title": "天璇 · AI-native 工作空间",
+  "meta.template": "%s · 天璇",
+  "meta.description": "天璇：文曲文档、司南工单与多宝代码仓库统一在一套安静的工作空间里。",
+  "meta.applicationName": "天璇",
 } as const;
 
 export type MessageKey = keyof typeof zh;
@@ -1535,6 +1539,10 @@ const en: Record<MessageKey, string> = {
   "doc.fallbackTitle": "Document",
   "doc.liveSpace": "Live",
   "doc.liveKind": "Record",
+  "meta.title": "Tianxuan · AI-native workspace",
+  "meta.template": "%s · Tianxuan",
+  "meta.description": "Tianxuan: Wenqu documents, Sinan issues and Duobao repositories in one quiet workspace.",
+  "meta.applicationName": "Tianxuan",
 };
 
 export function normalizeLocale(value: string | null | undefined): Locale {
