@@ -31,5 +31,17 @@ func _run() -> void:
 		push_error("tianshu-ui-smoke: tianxuan_requested not emitted")
 		quit(1)
 		return
+	var workspace_script: Script = load("res://editor/docks/daqian/workspace.gd")
+	if workspace_script == null:
+		push_error("tianshu-ui-smoke: workspace.gd not found")
+		quit(1)
+		return
+	var pending_label: String = workspace_script.tianxuan_pending_label(
+		{"任务甲": {"attempts": 2}}
+	)
+	if not pending_label.contains("任务甲") or not pending_label.contains("2/3"):
+		push_error("tianshu-ui-smoke: pending label wrong: " + pending_label)
+		quit(1)
+		return
 	print("tianshu-ui-smoke: ok")
 	quit(0)

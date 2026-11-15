@@ -1534,10 +1534,33 @@ func _show_tianxuan_dialog(url: String, data: Dictionary, item: Dictionary) -> v
 			sync.text = "同步勾选工单为完成"
 			sync.pressed.connect(_sync_tianxuan.bind(url, checks, dialog))
 			box.add_child(sync)
+	var pending_text := tianxuan_pending_label(tianxuan_pending.get(url, {}))
+	if not pending_text.is_empty():
+		var pending_row := HBoxContainer.new()
+		var pending_label := Label.new()
+		pending_label.text = pending_text
+		pending_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		pending_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		pending_row.add_child(pending_label)
+		var retry_now := Button.new()
+		retry_now.text = "立即重试"
+		retry_now.pressed.connect(_retry_tianxuan.bind(url, dialog))
+		pending_row.add_child(retry_now)
+		box.add_child(pending_row)
 	add_child(dialog)
 	dialog.confirmed.connect(dialog.queue_free)
 	dialog.close_requested.connect(dialog.queue_free)
 	dialog.popup_centered()
+
+
+static func tianxuan_pending_label(pending: Dictionary) -> String:
+	if pending.is_empty():
+		return ""
+	var parts := PackedStringArray()
+	for title in pending:
+		var entry: Dictionary = pending[title]
+		parts.append("%s（%d/3）" % [str(title), int(entry.get("attempts", 0))])
+	return "待重试同步：" + "、".join(parts)
 
 
 func _sync_board_completed(incoming: Dictionary) -> void:
@@ -1616,6 +1639,23 @@ func _auto_sync_tianxuan(url: String, titles: Array) -> void:
 		tianxuan_pending.erase(url)
 	else:
 		tianxuan_pending[url] = retry
+
+
+func _retry_tianxuan(url: String, dialog: AcceptDialog) -> void:
+	var pending: Dictionary = tianxuan_pending.get(url, {})
+	if pending.is_empty():
+		return
+	var titles: Array = []
+	var now := Time.get_unix_time_from_system()
+	for title in pending:
+		titles.append(str(title))
+		var entry: Dictionary = pending[title]
+		pending[title] = {"attempts": int(entry.get("attempts", 0)), "at": now - 60.0}
+	tianxuan_pending[url] = pending
+	await _auto_sync_tianxuan(url, titles)
+	dialog.hide()
+	await get_tree().process_frame
+	_open_tianxuan()
 
 
 func _sync_tianxuan(url: String, checks: Array, dialog: AcceptDialog) -> void:
