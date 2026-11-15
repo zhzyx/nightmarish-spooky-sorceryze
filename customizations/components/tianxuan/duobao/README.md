@@ -67,7 +67,7 @@ python -m unittest discover -s customizations/components/tianxuan/duobao -p "tes
 ## 首版非目标（需单独立项）
 
 - LFS 与大文件存储、子模块递归克隆/更新（只读展示已支持）。
-- 多副本合入 worker（当前依赖单 SQLite 库；跨副本需共享数据库或外部队列）。
+- 跨副本共享合入队列（当前依赖单 SQLite 库；已提供 worker 注册/心跳、stale 恢复与 worker 列表）。
 
 ## 外部验收（需目标宿主）
 

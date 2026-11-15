@@ -109,3 +109,21 @@ export async function fetchMergeQueueStatus(actor: string): Promise<ApiMergeQueu
   }
   return (await response.json()) as ApiMergeQueueStatus;
 }
+
+export interface ApiMergeWorker {
+  worker_id: string;
+  started_at: string;
+  heartbeat_at: string;
+}
+
+export async function fetchMergeWorkers(actor: string): Promise<ApiMergeWorker[]> {
+  const response = await fetch(`${apiBase()}/api/v1/merge-queue/workers`, {
+    headers: authHeaders(actor),
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`merge workers request failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { workers?: ApiMergeWorker[] };
+  return body.workers ?? [];
+}

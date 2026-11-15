@@ -9,6 +9,8 @@ import {
   enqueueMerge,
   fetchMergeQueue,
   fetchMergeQueueStatus,
+  fetchMergeWorkers,
+  type ApiMergeWorker,
   processMergeQueue,
   retryMerge,
   type ApiMergeQueueItem,
@@ -54,6 +56,7 @@ export function MergeQueuePanel() {
   const { t } = useI18n();
   const [items, setItems] = useState<ApiMergeQueueItem[]>([]);
   const [status, setStatus] = useState<ApiMergeQueueStatus | null>(null);
+  const [workers, setWorkers] = useState<ApiMergeWorker[]>([]);
   const [repo, setRepo] = useState("docs.git");
   const [source, setSource] = useState("");
   const [target, setTarget] = useState("main");
@@ -77,12 +80,14 @@ export function MergeQueuePanel() {
     if (!actor) {
       return;
     }
-    const [nextItems, nextStatus] = await Promise.all([
+    const [nextItems, nextStatus, nextWorkers] = await Promise.all([
       fetchMergeQueue(actor),
       fetchMergeQueueStatus(actor),
+      fetchMergeWorkers(actor).catch(() => [] as ApiMergeWorker[]),
     ]);
     setItems(nextItems);
     setStatus(nextStatus);
+    setWorkers(nextWorkers);
   }, [actor]);
 
   useEffect(() => {
@@ -242,7 +247,8 @@ export function MergeQueuePanel() {
             ))}
           </select>
           {status?.worker ? t("queue.workerMode") : t("queue.manualMode")} · {status?.queued ?? 0}{" "}
-          {t("queue.queued")} · {visible.length} {t("queue.candidates")} · {live ? t("queue.live") : t("queue.polling")}
+          {t("queue.queued")} · {visible.length} {t("queue.candidates")} · {live ? t("queue.live") : t("queue.polling")} ·{" "}
+          {formatMessage(t("queue.workers"), { count: workers.length })}
           <button className="btn btn-ghost" type="button" disabled={busy} onClick={processNow} style={{ marginLeft: 10 }}>
             {t("queue.processNow")}
           </button>

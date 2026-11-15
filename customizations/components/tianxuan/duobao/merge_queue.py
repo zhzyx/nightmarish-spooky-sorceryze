@@ -10,6 +10,7 @@ import os
 import shlex
 import shutil
 import signal
+import socket
 import sqlite3
 import subprocess
 import tempfile
@@ -40,6 +41,11 @@ CREATE TABLE IF NOT EXISTS merge_queue (
 );
 CREATE INDEX IF NOT EXISTS idx_merge_queue_status
   ON merge_queue(status, priority DESC, created_at);
+CREATE TABLE IF NOT EXISTS merge_workers (
+  worker_id TEXT PRIMARY KEY,
+  started_at TEXT NOT NULL,
+  heartbeat_at TEXT NOT NULL
+);
 """
 
 STATUSES = {"queued", "validating", "merged", "conflict", "rejected", "cancelled"}
@@ -139,6 +145,7 @@ class MergeQueue:
         self._process_lock = threading.Lock()
         self._worker: threading.Thread | None = None
         self._stop = threading.Event()
+        self.worker_id = f"{socket.gethostname()}-{os.getpid()}-{uuid.uuid4().hex[:8]}"
 
     def start_worker(self, interval: float = 2.0) -> None:
         """启动常驻合入 worker；每次领取一个候选，失败继续等待下一次。"""
@@ -148,11 +155,16 @@ class MergeQueue:
         self._stop.clear()
 
         def loop() -> None:
-            while not self._stop.wait(max(0.2, float(interval))):
-                try:
-                    self.process_next()
-                except Exception:
-                    continue
+            try:
+                self._heartbeat()
+                while not self._stop.wait(max(0.2, float(interval))):
+                    self._heartbeat()
+                    try:
+                        self.process_next()
+                    except Exception:
+                        continue
+            finally:
+                self._unregister_worker()
 
         self._worker = threading.Thread(target=loop, name="duobao-merge-queue", daemon=True)
         self._worker.start()
@@ -168,6 +180,28 @@ class MergeQueue:
         if worker is not None:
             worker.join(timeout=5.0)
         self._worker = None
+
+    def _heartbeat(self) -> None:
+        now = _now()
+        with self._lock, self.db:
+            self.db.execute(
+                "INSERT INTO merge_workers (worker_id, started_at, heartbeat_at) VALUES (?, ?, ?) "
+                "ON CONFLICT(worker_id) DO UPDATE SET heartbeat_at = excluded.heartbeat_at",
+                (self.worker_id, now, now),
+            )
+
+    def _unregister_worker(self) -> None:
+        with self._lock, self.db:
+            self.db.execute("DELETE FROM merge_workers WHERE worker_id = ?", (self.worker_id,))
+
+    def list_workers(self, stale_after: float = 30.0) -> list[dict[str, Any]]:
+        cutoff = (datetime.now(timezone.utc) - timedelta(seconds=max(1.0, float(stale_after)))).isoformat()
+        with self._lock, self.db:
+            self.db.execute("DELETE FROM merge_workers WHERE heartbeat_at < ?", (cutoff,))
+            rows = self.db.execute(
+                "SELECT worker_id, started_at, heartbeat_at FROM merge_workers ORDER BY started_at"
+            ).fetchall()
+        return [dict(row) for row in rows]
 
     def close(self) -> None:
         self.stop_worker()

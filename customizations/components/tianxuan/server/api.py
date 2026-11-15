@@ -1457,6 +1457,10 @@ def create_app(
                 raise PermissionDenied("viewer cannot process merge queue")
             return {"processed": merge_queue.process_batch(limit)}
 
+        @app.get("/api/v1/merge-queue/workers")
+        def merge_queue_workers(actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+            return {"workers": merge_queue.list_workers()}
+
         @app.get("/api/v1/merge-queue/status")
         def merge_queue_status(actor: ActorDep) -> dict[str, Any]:
             return {

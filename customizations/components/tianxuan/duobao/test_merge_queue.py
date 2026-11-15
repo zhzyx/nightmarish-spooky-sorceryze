@@ -6,6 +6,7 @@ import os
 import shutil
 import sqlite3
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -331,3 +332,21 @@ def test_event_sink_failure_does_not_break_queue(tmp_path: Path) -> None:
     done = queue.process_next()
     assert item["status"] == "queued"
     assert done is not None and done["status"] == "merged"
+
+
+def test_worker_registry_tracks_heartbeat(tmp_path: Path) -> None:
+    service, repo = _repo(tmp_path)
+    queue = MergeQueue(str(tmp_path / "queue.db"), service)
+    try:
+        assert queue.list_workers() == []
+        queue.start_worker(0.1)
+        time.sleep(0.35)
+        workers = queue.list_workers()
+        assert [worker["worker_id"] for worker in workers] == [queue.worker_id]
+        assert queue.worker_running is True
+
+        queue.stop_worker()
+        assert queue.list_workers() == []
+        assert queue.worker_running is False
+    finally:
+        queue.close()
