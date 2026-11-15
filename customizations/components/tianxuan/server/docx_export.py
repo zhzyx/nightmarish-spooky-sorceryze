@@ -7,9 +7,10 @@ from io import BytesIO
 
 from docx import Document
 from docx.document import Document as DocumentType
-from docx.shared import Pt
+from docx.shared import Inches, Pt
 from docx.table import _Cell
 from docx.text.paragraph import Paragraph
+from markdown_images import parse_data_image
 
 _HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
 _UNORDERED = re.compile(r"^[-*]\s+(.*)$")
@@ -95,6 +96,16 @@ def render_docx(title: str, body_md: str) -> bytes:
             index += 1
             continue
 
+        image = parse_data_image(stripped)
+        if image is not None:
+            alt, data = image
+            try:
+                paragraph = document.add_paragraph()
+                paragraph.add_run().add_picture(BytesIO(data), width=Inches(4))
+            except Exception:
+                _add_runs(document.add_paragraph(), alt or stripped)
+            index += 1
+            continue
         next_line = lines[index + 1].strip() if index + 1 < len(lines) else ""
         if "|" in stripped and _TABLE_SEPARATOR.match(next_line):
             headers = _cells(stripped)

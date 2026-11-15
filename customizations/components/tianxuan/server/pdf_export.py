@@ -6,12 +6,15 @@ import re
 from io import BytesIO
 from xml.sax.saxutils import escape
 
+from markdown_images import parse_data_image
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.utils import ImageReader
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.cidfonts import UnicodeCIDFont
 from reportlab.platypus import (
+    Image,
     Paragraph,
     Preformatted,
     SimpleDocTemplate,
@@ -78,6 +81,14 @@ def _table_flowables(headers: list[str], rows: list[list[str]]) -> Table:
     return table
 
 
+def _image_flowable(alt: str, data: bytes) -> Image:
+    reader = ImageReader(BytesIO(data))
+    width, height = reader.getSize()
+    target_width = min(400.0, float(width))
+    target_height = target_width * float(height) / float(width) if width else target_width
+    return Image(BytesIO(data), width=target_width, height=target_height)
+
+
 def render_pdf(title: str, body_md: str) -> bytes:
     buffer = BytesIO()
     document = SimpleDocTemplate(
@@ -110,6 +121,15 @@ def render_pdf(title: str, body_md: str) -> bytes:
             index += 1
             continue
         if not stripped:
+            index += 1
+            continue
+        image = parse_data_image(stripped)
+        if image is not None:
+            try:
+                flowables.append(_image_flowable(*image))
+                flowables.append(Spacer(1, 8))
+            except Exception:
+                flowables.append(Paragraph(escape(_plain(stripped)), _BODY))
             index += 1
             continue
         next_line = lines[index + 1].strip() if index + 1 < len(lines) else ""
