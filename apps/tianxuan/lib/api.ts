@@ -119,6 +119,7 @@ export interface ApiShare {
   user_id: string;
   permission: SharePermission;
   created_at: string;
+  expires_at?: string | null;
 }
 
 export async function fetchShares(id: string, actor: string): Promise<ApiShare[]> {
@@ -154,11 +155,12 @@ export async function shareDoc(
   actor: string,
   userId: string,
   permission: SharePermission,
+  expiresAt?: string,
 ): Promise<void> {
   const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(id)}/shares`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...authHeaders(actor) },
-    body: JSON.stringify({ user_id: userId, permission }),
+    body: JSON.stringify({ user_id: userId, permission, expires_at: expiresAt }),
   });
   if (!response.ok) {
     throw new Error(`share request failed: ${response.status}`);

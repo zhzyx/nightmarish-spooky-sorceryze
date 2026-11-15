@@ -84,6 +84,7 @@ export function DocSharing({ docId, initialVisibility }: DocSharingProps) {
   const [busy, setBusy] = useState("");
   const [newUserId, setNewUserId] = useState("");
   const [newPermission, setNewPermission] = useState<SharePermission>("read");
+  const [expiryDays, setExpiryDays] = useState("");
 
   const loadShares = useCallback(async () => {
     if (!actor) {
@@ -125,11 +126,19 @@ export function DocSharing({ docId, initialVisibility }: DocSharingProps) {
     if (!userId) {
       return;
     }
+    const days = expiryDays.trim() === "" ? null : Number(expiryDays);
+    if (days !== null && (!Number.isInteger(days) || days <= 0)) {
+      setError(t("sharing.expiryInvalid"));
+      return;
+    }
+    const expiresAt =
+      days === null ? undefined : new Date(Date.now() + days * 86_400_000).toISOString();
     setBusy("share");
     setError("");
     try {
-      await shareDoc(docId, actor, userId, newPermission);
+      await shareDoc(docId, actor, userId, newPermission, expiresAt);
       setNewUserId("");
+      setExpiryDays("");
       await loadShares();
     } catch {
       setError(t("sharing.errorAdd"));
@@ -240,6 +249,9 @@ export function DocSharing({ docId, initialVisibility }: DocSharingProps) {
                     <span>
                       {share.permission === "write" ? t("sharing.write") : t("sharing.read")} ·{" "}
                       {shareDate(share.created_at)}
+                      {share.expires_at
+                        ? ` · ${formatMessage(t("sharing.expiresAt"), { date: share.expires_at.slice(0, 10) })}`
+                        : ""}
                     </span>
                   </span>
                   <button
@@ -266,6 +278,18 @@ export function DocSharing({ docId, initialVisibility }: DocSharingProps) {
               onChange={(event) => setNewUserId(event.target.value)}
               placeholder={t("sharing.userPlaceholder")}
               value={newUserId}
+            />
+          </label>
+          <label className="field-search" style={{ flex: "0 1 130px" }}>
+            <Icon name="clock" size={15} />
+            <input
+              aria-label={t("sharing.expiryLabel")}
+              min={1}
+              onChange={(event) => setExpiryDays(event.target.value)}
+              placeholder={t("sharing.expiryPlaceholder")}
+              style={{ width: "100%" }}
+              type="number"
+              value={expiryDays}
             />
           </label>
           <label className="select-field">

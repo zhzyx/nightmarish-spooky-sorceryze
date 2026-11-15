@@ -129,7 +129,7 @@ python tianshu_bridge.py --api http://127.0.0.1:8000 --actor <user_id> \
 - 多宝：本地 Git 提交；持久化合入队列（预检/检验/串行合入/冲突隔离/证据；可选 PR/工单绑定，重试/取消限创建者或 admin，事件回执可接领域事件）；默认启动自动 worker，设 `TIANXUAN_MERGE_WORKER=0` 可关闭；检查在临时 worktree 执行，使用独立 HOME/TEMP 且默认不继承 `TIANXUAN_*`/TOKEN/SECRET 等环境，`TIANXUAN_MERGE_CHECK_ENV` 可白名单；Gitea 仓库/分支/PR/评审/提交状态；保护分支、批准数与必需检查的合并门禁；镜像导入与标签列表
 - 仓库绑定与 webhook：`/api/v1/repo-links` 把 `provider/owner/name` 绑定到租户（全局唯一，admin 管理）；`/api/v1/webhooks/gitea` 校验 HMAC 签名后把 push/PR 事件写入对应租户事件流，未绑定仓库与不支持事件返回 202 ignored
 - AI：BYOK 模型网关（用量与预算）；AI 工具入口；结构化补丁
-- Web：文档列表/详情/编辑/共享、Markdown/HTML/Word/PDF 导出（HTML 为安全 Markdown 渲染；PDF/DOCX 支持 data URI 图片；远程图片需 `TIANXUAN_EXPORT_IMAGE_HOSTS` 白名单）、实时文档、实时工单看板、实时仓库、仓库文件树/分支/标签面板（目录浏览、建删分支、标签查看、镜像导入）、PR 评审（批准/要求修改/评论与评审计数）、PR 状态筛选与分页（open/closed/all）、中英文切换（外壳、登录、工作台含 AI 指令条、404、API 状态、文档列表/详情、文档编辑器、文档导出/共享/评论/版本历史/身份绑定/天枢来源、工单列表/看板、需求页、搜索页、设置页、仓库页/文件树、本地仓库、PR、合入队列已接入，其余面板文案待迁移）、设置页系统状态、API 连通状态
+- Web：文档列表/详情/编辑/共享、Markdown/HTML/Word/PDF 导出（HTML 为安全 Markdown 渲染；PDF/DOCX 支持 data URI 图片；远程图片需 `TIANXUAN_EXPORT_IMAGE_HOSTS` 白名单）、实时文档、实时工单看板、实时仓库、仓库文件树/分支/标签面板（目录浏览、建删分支、标签查看、镜像导入）、PR 评审（批准/要求修改/评论与评审计数）、PR 状态筛选与分页（open/closed/all）、中英文切换（外壳、登录、工作台含 AI 指令条、404、API 状态、文档列表/详情、文档编辑器、文档导出/共享（含有效期）/评论/版本历史/身份绑定/天枢来源、工单列表/看板、需求页、搜索页、设置页、仓库页/文件树、本地仓库、PR、合入队列已接入，其余面板文案待迁移）、设置页系统状态、API 连通状态
 - 交付：`deploy/` 自托管 Compose（含 TLS/门禁 profile 与备份脚本）；CLI；端到端演示脚本；`/api/v1/ready` 就绪探针与 `duobao/backup_drill.py` 备份恢复演练
 
 ## 测试
@@ -147,5 +147,5 @@ python -m pytest customizations/components/tianxuan
 - 新增 Agent/Skill（文曲、多宝、司南工单扩展）必须先经 `skills/gonggong-check` 审查并取得精确候选准入。
 - 文档以 Markdown 为唯一权威，AI 阅读优先；人类视图是第二等公民。
 - 验收沿用现有 Agent（司南协调、偃师设计、夸父质量、谛听证据）。
-- 认证默认使用 Bearer 会话（`/api/v1/auth/session`）；Web 登录页把 token 存入 localStorage 与同站 cookie，`X-Actor` 仅在显式开启时兼容；角色为租户级，文档 ACL 已实现，但字段级权限与共享过期尚未实现。
+- 认证默认使用 Bearer 会话（`/api/v1/auth/session`）；Web 登录页把 token 存入 localStorage 与同站 cookie，`X-Actor` 仅在显式开启时兼容；角色为租户级，文档 ACL 已实现，但字段级权限尚未实现。
 - 产品 Agent/Skill 仍是候选，未经授权批准人签署不得视为已准入。

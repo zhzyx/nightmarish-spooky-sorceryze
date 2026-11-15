@@ -39,7 +39,8 @@ CREATE TABLE IF NOT EXISTS invites (
 );
 CREATE TABLE IF NOT EXISTS doc_shares (
   doc_id TEXT NOT NULL, user_id TEXT NOT NULL, permission TEXT NOT NULL,
-  created_by TEXT NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY (doc_id, user_id)
+  created_by TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT,
+  PRIMARY KEY (doc_id, user_id)
 );
 CREATE TABLE IF NOT EXISTS spaces (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, name TEXT NOT NULL, slug TEXT NOT NULL, created_at TEXT NOT NULL
@@ -169,6 +170,21 @@ class UnknownTool(TianxuanError):
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _normalize_expiry(value: str | None) -> str | None:
+    """校验共享过期时间：None/空串表示不过期，否则必须是未来的 ISO-8601。"""
+    if value is None or not str(value).strip():
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value).strip().replace("Z", "+00:00"))
+    except ValueError as error:
+        raise TianxuanError("expires_at must be an ISO-8601 timestamp") from error
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    if parsed <= datetime.now(timezone.utc):
+        raise TianxuanError("expires_at must be in the future")
+    return parsed.astimezone(timezone.utc).isoformat()
 
 
 def _id(prefix: str) -> str:
@@ -328,7 +344,13 @@ class Tianxuan:
         self._migrate_sessions()
         self._migrate_users()
         self._migrate_docs()
+        self._migrate_doc_shares()
         self.db.commit()
+
+    def _migrate_doc_shares(self) -> None:
+        columns = {row[1] for row in self.db.execute("PRAGMA table_info(doc_shares)")}
+        if columns and "expires_at" not in columns:
+            self.db.execute("ALTER TABLE doc_shares ADD COLUMN expires_at TEXT")
 
     def _migrate_docs(self) -> None:
         columns = {row[1] for row in self.db.execute("PRAGMA table_info(docs)")}
@@ -705,9 +727,10 @@ class Tianxuan:
         if self.role_of(actor) != "admin":
             sql += (
                 " AND (visibility = 'tenant' OR created_by = ?"
-                " OR id IN (SELECT doc_id FROM doc_shares WHERE user_id = ?))"
+                " OR id IN (SELECT doc_id FROM doc_shares WHERE user_id = ?"
+                " AND (expires_at IS NULL OR expires_at > ?)))"
             )
-            args.extend([actor, actor])
+            args.extend([actor, actor, _now()])
         if kind:
             sql += " AND kind = ?"
             args.append(kind)
@@ -723,7 +746,8 @@ class Tianxuan:
         if doc["visibility"] == "tenant":
             return True
         row = self.db.execute(
-            "SELECT 1 FROM doc_shares WHERE doc_id = ? AND user_id = ?", (doc["id"], actor)
+            "SELECT 1 FROM doc_shares WHERE doc_id = ? AND user_id = ? AND (expires_at IS NULL OR expires_at > ?)",
+            (doc["id"], actor, _now()),
         ).fetchone()
         return row is not None
 
@@ -732,7 +756,9 @@ class Tianxuan:
         if doc["created_by"] == actor or self._is_admin(actor):
             return True
         row = self.db.execute(
-            "SELECT permission FROM doc_shares WHERE doc_id = ? AND user_id = ?", (doc["id"], actor)
+            "SELECT permission FROM doc_shares WHERE doc_id = ? AND user_id = ?"
+            " AND (expires_at IS NULL OR expires_at > ?)",
+            (doc["id"], actor, _now()),
         ).fetchone()
         if row is not None and row["permission"] == "write":
             return True
@@ -758,9 +784,17 @@ class Tianxuan:
         return self.get_doc(doc_id)
 
     @_connection_call
-    def share_doc(self, actor: str, doc_id: str, user_id: str, permission: str = "read") -> dict[str, Any]:
+    def share_doc(
+        self,
+        actor: str,
+        doc_id: str,
+        user_id: str,
+        permission: str = "read",
+        expires_at: str | None = None,
+    ) -> dict[str, Any]:
         if permission not in {"read", "write"}:
             raise TianxuanError("permission must be read or write")
+        expiry = _normalize_expiry(expires_at)
         doc = self._require_tenant_doc(actor, doc_id)
         if doc["created_by"] != actor and not self._is_admin(actor):
             raise PermissionDenied("only the owner or an admin can share")
@@ -768,12 +802,20 @@ class Tianxuan:
         if target is None or target["tenant_id"] != doc["tenant_id"]:
             raise NotFound(f"user not found: {user_id}")
         self.db.execute(
-            "INSERT INTO doc_shares (doc_id, user_id, permission, created_by, created_at) VALUES (?, ?, ?, ?, ?) "
-            "ON CONFLICT(doc_id, user_id) DO UPDATE SET permission = excluded.permission",
-            (doc_id, user_id, permission, actor, _now()),
+            "INSERT INTO doc_shares (doc_id, user_id, permission, created_by, created_at, expires_at) "
+            "VALUES (?, ?, ?, ?, ?, ?) "
+            "ON CONFLICT(doc_id, user_id) DO UPDATE SET permission = excluded.permission, "
+            "expires_at = excluded.expires_at, created_at = excluded.created_at",
+            (doc_id, user_id, permission, actor, _now(), expiry),
         )
-        self._event(doc["tenant_id"], "doc.shared", actor, doc_id, {"user_id": user_id, "permission": permission})
-        return {"doc_id": doc_id, "user_id": user_id, "permission": permission}
+        self._event(
+            doc["tenant_id"],
+            "doc.shared",
+            actor,
+            doc_id,
+            {"user_id": user_id, "permission": permission, "expires_at": expiry},
+        )
+        return {"doc_id": doc_id, "user_id": user_id, "permission": permission, "expires_at": expiry}
 
     @_connection_call
     def unshare_doc(self, actor: str, doc_id: str, user_id: str) -> dict[str, Any]:
@@ -791,7 +833,9 @@ class Tianxuan:
         if doc["created_by"] != actor and not self._is_admin(actor):
             raise PermissionDenied("only the owner or an admin can list shares")
         rows = self.db.execute(
-            "SELECT user_id, permission, created_at FROM doc_shares WHERE doc_id = ? ORDER BY created_at", (doc_id,)
+            "SELECT user_id, permission, created_at, expires_at FROM doc_shares WHERE doc_id = ?"
+            " AND (expires_at IS NULL OR expires_at > ?) ORDER BY created_at",
+            (doc_id, _now()),
         ).fetchall()
         return [dict(row) for row in rows]
 

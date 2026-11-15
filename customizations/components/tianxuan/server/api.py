@@ -1054,7 +1054,9 @@ def create_app(
 
     @app.post("/api/v1/docs/{doc_id}/shares")
     def share_doc(doc_id: str, payload: DocShareRequest, actor: ActorDep) -> dict[str, Any]:
-        return store.share_doc(actor, doc_id, payload.user_id, payload.permission)  # type: ignore[no-any-return]
+        return store.share_doc(  # type: ignore[no-any-return]
+            actor, doc_id, payload.user_id, payload.permission, payload.expires_at
+        )
 
     @app.get("/api/v1/docs/{doc_id}/shares")
     def list_doc_shares(doc_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:

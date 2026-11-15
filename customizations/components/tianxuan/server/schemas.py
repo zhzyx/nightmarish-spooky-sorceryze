@@ -184,10 +184,11 @@ class DocVisibilityRequest(BaseModel):
 
 
 class DocShareRequest(BaseModel):
-    """把私有文档共享给同租户成员。"""
+    """把私有文档共享给同租户成员，可选设置过期时间。"""
 
     user_id: str
     permission: str = "read"
+    expires_at: str | None = None
 
 
 class RequirementCreateRequest(BaseModel):
