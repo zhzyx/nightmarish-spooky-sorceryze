@@ -275,6 +275,21 @@ def _normalize_pull_request(payload: Any) -> dict[str, Any]:
     }
 
 
+def _normalize_release(payload: Any) -> dict[str, Any]:
+    """把发布响应裁剪为稳定字段。"""
+    data = _mapping(payload, "release")
+    return {
+        "id": _integer(data, "id"),
+        "tag_name": _string(data, "tag_name"),
+        "name": _string(data, "name"),
+        "body": _string(data, "body"),
+        "draft": bool(data.get("draft")),
+        "prerelease": bool(data.get("prerelease")),
+        "created_at": _string(data, "created_at"),
+        "html_url": _string(data, "html_url"),
+    }
+
+
 def _normalize_review(payload: Any) -> dict[str, Any]:
     """把评审响应裁剪为 ``id/state/body/user/submitted_at``。"""
     data = _mapping(payload, "review")
@@ -505,6 +520,35 @@ class GiteaClient:
                 "html_url": str(item.get("html_url") or ""),
             })
         return releases
+
+    def create_release(
+        self,
+        owner: str,
+        repo: str,
+        tag_name: str,
+        name: str = "",
+        body: str = "",
+        draft: bool = False,
+        prerelease: bool = False,
+    ) -> dict[str, Any]:
+        """创建仓库发布（release）。"""
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        tag = _validate_text(tag_name, "release tag")
+        release_name = _validate_text(name, "release name", allow_empty=True)
+        notes = _validate_text(body, "release body", allow_empty=True)
+        payload = self._request(
+            "POST",
+            f"/api/v1/repos/{owner}/{repo}/releases",
+            json_body={
+                "tag_name": tag,
+                "name": release_name,
+                "body": notes,
+                "draft": bool(draft),
+                "prerelease": bool(prerelease),
+            },
+        )
+        return _normalize_release(payload)
 
     def list_pull_requests(
         self,

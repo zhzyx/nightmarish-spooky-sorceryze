@@ -47,6 +47,25 @@ class _FakeGitea:
     def list_releases(self, owner: str, repo: str) -> list[dict[str, Any]]:
         return [{"id": 1, "tag_name": "v1.0.0", "name": "First release", "draft": False, "prerelease": False}]
 
+    def create_release(
+        self,
+        owner: str,
+        repo: str,
+        tag_name: str,
+        name: str = "",
+        body: str = "",
+        draft: bool = False,
+        prerelease: bool = False,
+    ) -> dict[str, Any]:
+        return {
+            "id": 2,
+            "tag_name": tag_name,
+            "name": name,
+            "body": body,
+            "draft": draft,
+            "prerelease": prerelease,
+        }
+
     def create_pull_request(
         self,
         owner: str,
@@ -163,6 +182,22 @@ def test_create_and_get_repo_with_fake_client(monkeypatch) -> None:
     listed = client.get("/api/v1/repos?owner=owner&limit=10", headers=headers).json()["repos"]
     assert listed[0]["full_name"] == "owner/demo"
     assert listed[0]["limit"] == 10
+
+
+def test_create_release_with_fake_client(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_GITEA_URL", "http://gitea.example")
+    monkeypatch.setenv("TIANXUAN_GITEA_TOKEN", "secret")
+    monkeypatch.setattr(api_module, "GiteaClient", _FakeGitea)
+    client, headers = _setup()
+
+    created = client.post(
+        "/api/v1/repos/owner/demo/releases",
+        headers=headers,
+        json={"tag_name": "v2.0.0", "name": "Second release", "draft": True},
+    )
+    assert created.status_code == 200, created.text
+    assert created.json()["tag_name"] == "v2.0.0"
+    assert created.json()["draft"] is True
 
 
 def test_repo_releases_with_fake_client(monkeypatch) -> None:

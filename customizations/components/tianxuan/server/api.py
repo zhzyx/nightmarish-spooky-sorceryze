@@ -68,6 +68,7 @@ from schemas import (
     PullRequestMergeRequest,
     PullRequestReviewRequest,
     RegisterRequest,
+    ReleaseCreateRequest,
     RepoCreateRequest,
     RepoLinkRequest,
     RequirementCommitRequest,
@@ -855,6 +856,23 @@ def create_app(
         try:
             with client:
                 return {"branches": client.list_branches(owner, name)}
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/repos/{owner}/{name}/releases")
+    def create_repo_release(
+        owner: str,
+        name: str,
+        payload: ReleaseCreateRequest,
+        actor: ActorDep,
+    ) -> dict[str, Any]:
+        _require_editor_role(store, actor, "create releases")
+        client = _gitea_client(_require_gitea_identity(store, actor))
+        try:
+            with client:
+                return client.create_release(  # type: ignore[no-any-return]
+                    owner, name, payload.tag_name, payload.name, payload.body, payload.draft, payload.prerelease
+                )
         except GiteaError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 

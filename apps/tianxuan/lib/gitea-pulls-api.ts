@@ -216,3 +216,28 @@ export async function createReview(
   );
   return readJson<ApiReview>(response, "create review");
 }
+
+/** 创建发布的请求体。 */
+export interface CreateReleasePayload {
+  tag_name: string;
+  name?: string;
+  body?: string;
+  draft?: boolean;
+  prerelease?: boolean;
+}
+
+/** 创建仓库发布。 */
+export async function createRelease(
+  actor: string,
+  owner: string,
+  repo: string,
+  payload: CreateReleasePayload,
+): Promise<ApiRelease> {
+  const response = await fetch(`${apiBase()}${repoPath(owner, repo)}/releases`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(actor) },
+    body: JSON.stringify(payload),
+    cache: "no-store",
+  });
+  return readJson<ApiRelease>(response, "create release");
+}

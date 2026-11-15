@@ -93,6 +93,16 @@ class GitImportRequest(BaseModel):
     source: str
 
 
+class ReleaseCreateRequest(BaseModel):
+    """在 Gitea 仓库中创建发布。"""
+
+    tag_name: str
+    name: str = ""
+    body: str = ""
+    draft: bool = False
+    prerelease: bool = False
+
+
 class PullRequestCreateRequest(BaseModel):
     """在 Gitea 仓库内创建 Pull Request。"""
 

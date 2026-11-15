@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import { Icon } from "@/components/Icon";
 import {
   createPull,
+  createRelease,
   createReview,
   fetchBranches,
   fetchPulls,
@@ -187,6 +188,13 @@ export function RepoPulls() {
   const [mergeMethods, setMergeMethods] = useState<Record<number, MergeMethod>>({});
   const [reviewsByPull, setReviewsByPull] = useState<Record<number, ApiReview[]>>({});
   const [releases, setReleases] = useState<ApiRelease[]>([]);
+  const [releaseTag, setReleaseTag] = useState("");
+  const [releaseName, setReleaseName] = useState("");
+  const [releaseBody, setReleaseBody] = useState("");
+  const [releaseDraft, setReleaseDraft] = useState(false);
+  const [releasePre, setReleasePre] = useState(false);
+  const [releaseBusy, setReleaseBusy] = useState(false);
+  const [releaseError, setReleaseError] = useState("");
   const [pullState, setPullState] = useState<PullState>("open");
   const [page, setPage] = useState(1);
   const requestRef = useRef(0);
@@ -356,6 +364,38 @@ export function RepoPulls() {
       setActionError(formatMessage(t("pulls.mergeError"), { number: pull.number }));
     } finally {
       setBusy("");
+    }
+  }
+
+  async function submitRelease(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const tagName = releaseTag.trim();
+    if (!actor || !activeOwner || !activeRepo || !tagName || releaseBusy) {
+      return;
+    }
+    setReleaseBusy(true);
+    setReleaseError("");
+    setActionError("");
+    setNotice("");
+    try {
+      const created = await createRelease(actor, activeOwner, activeRepo, {
+        tag_name: tagName,
+        name: releaseName.trim(),
+        body: releaseBody.trim(),
+        draft: releaseDraft,
+        prerelease: releasePre,
+      });
+      setReleaseTag("");
+      setReleaseName("");
+      setReleaseBody("");
+      setReleaseDraft(false);
+      setReleasePre(false);
+      setReleases(await fetchReleases(actor, activeOwner, activeRepo));
+      setNotice(formatMessage(t("pulls.releaseCreated"), { tag: created.tag_name }));
+    } catch {
+      setReleaseError(t("pulls.releaseError"));
+    } finally {
+      setReleaseBusy(false);
     }
   }
 
@@ -674,6 +714,49 @@ export function RepoPulls() {
               <p className="mono-key" style={{ marginBottom: "6px" }}>
                 {t("pulls.releasesTitle")} · {activeOwner}/{activeRepo}
               </p>
+              <form onSubmit={submitRelease} style={loadFormStyle} aria-label={t("pulls.newRelease")}>
+                <input
+                  aria-label={t("pulls.releaseTagAria")}
+                  placeholder={t("pulls.releaseTag")}
+                  value={releaseTag}
+                  onChange={(event) => setReleaseTag(event.target.value)}
+                  style={inputStyle}
+                />
+                <input
+                  aria-label={t("pulls.releaseName")}
+                  placeholder={t("pulls.releaseName")}
+                  value={releaseName}
+                  onChange={(event) => setReleaseName(event.target.value)}
+                  style={inputStyle}
+                />
+                <input
+                  aria-label={t("pulls.releaseBody")}
+                  placeholder={t("pulls.releaseBody")}
+                  value={releaseBody}
+                  onChange={(event) => setReleaseBody(event.target.value)}
+                  style={inputStyle}
+                />
+                <label style={{ display: "flex", gap: "4px", alignItems: "center" }}>
+                  <input
+                    type="checkbox"
+                    checked={releaseDraft}
+                    onChange={(event) => setReleaseDraft(event.target.checked)}
+                  />
+                  {t("pulls.releaseDraftLabel")}
+                </label>
+                <label style={{ display: "flex", gap: "4px", alignItems: "center" }}>
+                  <input
+                    type="checkbox"
+                    checked={releasePre}
+                    onChange={(event) => setReleasePre(event.target.checked)}
+                  />
+                  {t("pulls.releasePreLabel")}
+                </label>
+                <button className="btn btn-ghost btn-sm" disabled={releaseBusy || !releaseTag.trim()} type="submit">
+                  {t("pulls.createRelease")}
+                </button>
+              </form>
+              {releaseError ? <p className="section-note" role="alert" style={errorTextStyle}>{releaseError}</p> : null}
               {releases.length === 0 ? (
                 <p className="section-note">{t("pulls.releasesEmpty")}</p>
               ) : (

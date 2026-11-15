@@ -816,3 +816,30 @@ def test_list_releases_normalizes_payload(make_client: ClientFactory) -> None:
             "html_url": "https://gitea.example/owner/demo/releases/7",
         }
     ]
+
+
+def test_create_release_posts_payload(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "POST"
+        assert request.url.path == "/api/v1/repos/owner/demo/releases"
+        payload = httpx.Response(200, content=request.content).json()
+        assert payload["tag_name"] == "v3.0.0"
+        assert payload["draft"] is True
+        return httpx.Response(
+            200,
+            json={
+                "id": 3,
+                "tag_name": "v3.0.0",
+                "name": "Third",
+                "body": "notes",
+                "draft": True,
+                "prerelease": False,
+                "created_at": "2026-02-01T00:00:00Z",
+                "html_url": "https://gitea.example/owner/demo/releases/3",
+            },
+        )
+
+    client, _ = make_client(handler)
+    release = client.create_release("owner", "demo", "v3.0.0", "Third", "notes", draft=True)
+    assert release["tag_name"] == "v3.0.0"
+    assert release["draft"] is True
