@@ -574,3 +574,21 @@ def test_oidc_refreshes_jwks_after_key_rotation(monkeypatch) -> None:
         server.server_close()
         thread.join(timeout=5)
         identity.reset_oidc_cache()
+
+
+def test_oidc_rejects_insecure_non_local_urls(monkeypatch) -> None:
+    monkeypatch.delenv("TIANXUAN_OIDC_ALLOW_INSECURE", raising=False)
+    assert identity._secure_url("https://issuer.example/jwks")
+    assert identity._secure_url("http://127.0.0.1:9000/jwks")
+    assert identity._secure_url("http://localhost:9000/jwks")
+    assert not identity._secure_url("http://issuer.example/jwks")
+
+    monkeypatch.setenv("TIANXUAN_OIDC_ALLOW_INSECURE", "1")
+    assert identity._secure_url("http://issuer.example/jwks")
+
+    monkeypatch.delenv("TIANXUAN_OIDC_ALLOW_INSECURE")
+    identity.reset_oidc_cache()
+    monkeypatch.setenv("TIANXUAN_OIDC_JWKS_URL", "http://issuer.example/jwks")
+    assert identity._load_jwks() == {}
+    monkeypatch.setenv("TIANXUAN_OIDC_DISCOVERY_URL", "http://issuer.example/.well-known")
+    assert identity._load_discovery() == {}
