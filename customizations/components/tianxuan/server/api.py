@@ -342,6 +342,36 @@ def create_app(
     def health() -> dict[str, str]:
         return {"status": "ok"}
 
+    @app.get("/api/v1/metrics")
+    def metrics(actor: ActorDep) -> Response:
+        """Prometheus 文本指标；需要管理员 Bearer 会话。"""
+        if store.role_of(actor) != "admin":
+            raise PermissionDenied("only an admin can read metrics")
+        docs = store.list_docs(actor)
+        issues = store.list_issues(actor)
+        imports = store.list_import_jobs(actor, 100)
+        lines = [
+            "# HELP tianxuan_docs_total Documents visible to the actor.",
+            "# TYPE tianxuan_docs_total gauge",
+            f"tianxuan_docs_total {len(docs)}",
+            "# HELP tianxuan_issues_total Issues in the tenant.",
+            "# TYPE tianxuan_issues_total gauge",
+            f"tianxuan_issues_total {len(issues)}",
+            "# HELP tianxuan_import_jobs_total Recent import jobs.",
+            "# TYPE tianxuan_import_jobs_total gauge",
+            f"tianxuan_import_jobs_total {len(imports)}",
+        ]
+        if merge_queue is not None:
+            lines.extend([
+                "# HELP tianxuan_merge_queue_queued Queued merge candidates.",
+                "# TYPE tianxuan_merge_queue_queued gauge",
+                f"tianxuan_merge_queue_queued {merge_queue.count_items('queued')}",
+                "# HELP tianxuan_merge_workers Active merge workers.",
+                "# TYPE tianxuan_merge_workers gauge",
+                f"tianxuan_merge_workers {len(merge_queue.list_workers())}",
+            ])
+        return Response(content="\n".join(lines) + "\n", media_type="text/plain; version=0.0.4")
+
     @app.get("/api/v1/ready")
     def readiness() -> JSONResponse:
         """就绪检查：数据库可读、仓库根可用；返回 503 表示不应接收流量。"""

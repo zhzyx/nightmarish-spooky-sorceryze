@@ -390,6 +390,9 @@ project's real command.
   unreadable state returns `503 {"status":"degraded",...}` so a proxy/monitor can
   stop routing traffic. The merge worker state is reported when a queue exists,
   but a disabled worker does not mark the service unready.
+- `GET /api/v1/metrics` returns Prometheus text metrics (documents, issues,
+  import jobs, queued merges, active workers) for an admin Bearer token;
+  scrape it with `bearer_token` configured in Prometheus.
 - Keep the data volume on a monitored disk and alert on `/api/v1/ready` 503
   responses plus free space; `production/verify.sh` prints disk usage and
   certificate expiry for the HTTPS profile.
