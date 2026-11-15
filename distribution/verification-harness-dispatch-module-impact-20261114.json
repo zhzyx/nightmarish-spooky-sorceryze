@@ -1,0 +1,19 @@
+{
+  "module": "customizations/components/harness-dispatch",
+  "measured_at": "2026-11-14",
+  "host": "DeepSeek Harness (candidate)",
+  "input_blobs": {
+    "customizations/components/harness-dispatch/adapter.mjs": "9b831e113cd2825eddbb740ac999e4eb537b8bb0",
+    "customizations/components/harness-dispatch/adapter.test.mjs": "6f9dcbc528330a7a259c1905e9c4c83f83234ca1",
+    "customizations/components/harness-dispatch/component.json": "1b10a841b5adeb88be2aa78b79b9561ec7527c61",
+    "customizations/components/harness-dispatch/README.md": "a4e492fc621e01e6c6ece08d3891c257d523e285",
+    "customizations/components/harness-dispatch/HOST_PROTOCOL.md": "9148ddf231d79e235af1ab0f56a9bb47b56fb42a"
+  },
+  "checks": {
+    "host_behavior": {
+      "command": "node --test customizations/components/harness-dispatch/adapter.test.mjs",
+      "observed": "9 tests, 9 pass, 0 fail (duration 114 ms): relative stateRoot, missing source callbacks and missing native subagent rejected; reservation persisted once per ticket/key; native receipt mapped to worker identity; non-terminal and unauthenticated terminal receipts rejected; authenticated terminal releases once",
+      "passed": true
+    }
+  }
+}

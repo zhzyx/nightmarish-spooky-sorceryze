@@ -9,6 +9,7 @@
       "directory": "customizations/platforms/process-management/repository",
       "related_paths": [
         "customizations/components/codex-dispatch",
+        "customizations/components/harness-dispatch",
         "customizations/components/repository-dispatch",
         "customizations/platforms/process-management/yuanheng-local/sinan",
         "framework/agents/sinan/references/parallel-dispatch.md",

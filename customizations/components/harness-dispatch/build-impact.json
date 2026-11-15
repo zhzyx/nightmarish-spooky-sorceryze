@@ -1,0 +1,7 @@
+{
+  "placement": "host_tool",
+  "reason": "DSH is an external agent host: it is neither linked into the Godot engine nor a replaceable in-engine package. The adapter runs inside the host process, calls the shared dispatch contract and maps plan assignments onto the host's native subagent callback.",
+  "host_contract": "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs host contract; tools/gonggong_bridge.py host protocol v1; DSH native subagent callback (native.spawnAgent)",
+  "rollback": "Stop adapter invocation; retain reservations, records and released receipts; re-dispatch only after an authenticated terminal readback; never remove governance checks to resume.",
+  "evidence": "distribution/verification-harness-dispatch-module-impact-20261114.json"
+}
