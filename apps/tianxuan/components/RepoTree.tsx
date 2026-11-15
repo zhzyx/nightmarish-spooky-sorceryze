@@ -11,10 +11,11 @@ import {
   fetchLocalBranches,
   fetchLocalRepos,
   fetchBlame,
+  fetchImportJob,
   fetchLocalTags,
   fetchLocalTree,
-  importLocalRepo,
   searchLocalRepo,
+  startImportJob,
   type ApiBlameLine,
   type ApiCodeHit,
   type ApiLocalRepo,
@@ -273,15 +274,30 @@ export function RepoTree() {
     setError("");
     setImportNotice("");
     try {
-      const imported = await importLocalRepo(actor, name, source);
-      setImportName("");
-      setImportSource("");
-      setImportNotice(
-        `${t("repos.imported")} ${imported.name} · ${imported.branches.length} ${t("repos.branches")} · ${imported.tags.length} ${t("repos.tagsLabel")}`,
-      );
-      const nextRepos = await fetchLocalRepos(actor);
-      setRepos(nextRepos);
-      await selectRepo(imported.name);
+      let job = await startImportJob(actor, name, source);
+      setImportNotice(formatMessage(t("repos.importProgress"), { phase: job.phase }));
+      for (
+        let attempt = 0;
+        attempt < 60 && job.status !== "succeeded" && job.status !== "failed";
+        attempt += 1
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        job = await fetchImportJob(actor, job.id);
+        setImportNotice(formatMessage(t("repos.importProgress"), { phase: job.phase }));
+      }
+      if (job.status === "succeeded") {
+        setImportName("");
+        setImportSource("");
+        setImportNotice(t("repos.importCompleted"));
+        const nextRepos = await fetchLocalRepos(actor);
+        setRepos(nextRepos);
+        await selectRepo(name);
+      } else if (job.status === "failed") {
+        setImportNotice("");
+        setError(formatMessage(t("repos.importFailed"), { error: job.error ?? "" }));
+      } else {
+        setError(t("repos.importTimeout"));
+      }
     } catch (importError) {
       setError(errorMessage(importError, t("repos.importError")));
     } finally {

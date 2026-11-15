@@ -231,6 +231,47 @@ export async function deleteLocalBranch(
   );
 }
 
+/** `POST /api/v1/git/import-jobs` 返回的导入任务。 */
+export interface ApiImportJob {
+  id: string;
+  name: string;
+  source: string;
+  status: "queued" | "running" | "succeeded" | "failed" | string;
+  phase: string;
+  message: string;
+  path: string | null;
+  error: string | null;
+}
+
+/** 提交后台镜像导入任务。 */
+export async function startImportJob(
+  actor: string,
+  name: string,
+  source: string,
+): Promise<ApiImportJob> {
+  const response = await fetch(`${apiBase()}/api/v1/git/import-jobs`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(actor) },
+    body: JSON.stringify({ name, source }),
+  });
+  if (!response.ok) {
+    throw new Error(`import job request failed: ${response.status}`);
+  }
+  return (await response.json()) as ApiImportJob;
+}
+
+/** 读取导入任务状态。 */
+export async function fetchImportJob(actor: string, jobId: string): Promise<ApiImportJob> {
+  const response = await fetch(`${apiBase()}/api/v1/git/import-jobs/${encodeURIComponent(jobId)}`, {
+    headers: authHeaders(actor),
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`import job request failed: ${response.status}`);
+  }
+  return (await response.json()) as ApiImportJob;
+}
+
 /** 创建轻量标签（message 为空）或附注标签。 */
 export async function createLocalTag(
   actor: string,

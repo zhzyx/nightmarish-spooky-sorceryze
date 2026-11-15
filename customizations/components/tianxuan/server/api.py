@@ -15,6 +15,7 @@ import difflib
 import html
 import json
 import os
+import threading
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Annotated, Any
@@ -239,6 +240,36 @@ def _repo_under_root(name: str) -> Path:
     if not candidate.is_relative_to(root_path):
         raise HTTPException(status_code=400, detail="repo escapes TIANXUAN_REPO_ROOT")
     return candidate
+
+
+def _run_import_job(
+    store: Tianxuan,
+    job_id: str,
+    root: Path,
+    name: str,
+    source: str,
+    allow_local: bool,
+    allowed_hosts: tuple[str, ...],
+) -> None:
+    """后台执行镜像导入并记录阶段；异常写入任务而不影响请求线程。"""
+    try:
+        store.update_import_job(job_id, status="running", phase="cloning", message="cloning source repository")
+        path = GitService().import_repo(
+            root,
+            name,
+            source,
+            allow_local=allow_local,
+            allowed_hosts=allowed_hosts,
+        )
+        store.update_import_job(
+            job_id,
+            status="succeeded",
+            phase="done",
+            message="import finished",
+            path=str(path),
+        )
+    except Exception as error:  # noqa: BLE001 - background job must record any failure
+        store.update_import_job(job_id, status="failed", phase="failed", error=str(error))
 
 
 def _policy_patterns(app: FastAPI) -> tuple[str, ...]:
@@ -1325,6 +1356,34 @@ def create_app(
             )
         except (GitServiceError, OSError) as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/git/import-jobs")
+    def start_import_job(payload: GitImportRequest, actor: ActorDep) -> dict[str, Any]:
+        if store.role_of(actor) != "admin":
+            raise PermissionDenied("only an admin can import repositories")
+        root = _repo_root()
+        allow_local = os.environ.get("TIANXUAN_IMPORT_ALLOW_LOCAL", "0").strip() == "1"
+        allowed_hosts = tuple(
+            item.strip() for item in os.environ.get("TIANXUAN_IMPORT_ALLOWED_HOSTS", "").split(",") if item.strip()
+        )
+        job = store.create_import_job(actor, payload.name, payload.source)
+        arguments = (store, job["id"], root, payload.name, payload.source, allow_local, allowed_hosts)
+        if os.environ.get("TIANXUAN_IMPORT_JOBS_INLINE", "0").strip() == "1":
+            _run_import_job(*arguments)
+        else:
+            threading.Thread(target=_run_import_job, args=arguments, daemon=True).start()
+        return store.get_import_job(actor, job["id"])  # type: ignore[no-any-return]
+
+    @app.get("/api/v1/git/import-jobs")
+    def list_import_jobs(
+        actor: ActorDep,
+        limit: int = Query(default=20, ge=1, le=100),
+    ) -> dict[str, list[dict[str, Any]]]:
+        return {"jobs": store.list_import_jobs(actor, limit)}
+
+    @app.get("/api/v1/git/import-jobs/{job_id}")
+    def get_import_job(job_id: str, actor: ActorDep) -> dict[str, Any]:
+        return store.get_import_job(actor, job_id)  # type: ignore[no-any-return]
 
     # ---------- 多宝：合入队列 ----------
 

@@ -71,6 +71,13 @@ CREATE TABLE IF NOT EXISTS doc_issue_links (
   UNIQUE (tenant_id, doc_id, issue_id)
 );
 CREATE INDEX IF NOT EXISTS idx_doc_issue_links_issue ON doc_issue_links(tenant_id, issue_id);
+CREATE TABLE IF NOT EXISTS import_jobs (
+  id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, actor TEXT NOT NULL,
+  name TEXT NOT NULL, source TEXT NOT NULL,
+  status TEXT NOT NULL, phase TEXT NOT NULL, message TEXT NOT NULL DEFAULT '',
+  path TEXT, error TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_import_jobs_tenant ON import_jobs(tenant_id, created_at);
 CREATE TABLE IF NOT EXISTS tool_receipts (
   tenant_id TEXT NOT NULL, actor_id TEXT NOT NULL, tool TEXT NOT NULL,
   key_kind TEXT NOT NULL, call_id TEXT NOT NULL, payload_json TEXT NOT NULL,
@@ -1109,6 +1116,76 @@ class Tianxuan:
             {"doc_id": doc_id, "issue_id": issue_id},
         )
         return {"doc_id": doc_id, "issue_id": issue_id, "deleted": True}
+
+    # ---------- 多宝：仓库导入任务 ----------
+
+    @_connection_call
+    def create_import_job(self, actor: str, name: str, source: str) -> dict[str, Any]:
+        self._require_editor(actor)
+        job_id = _id("imp")
+        now = _now()
+        self.db.execute(
+            "INSERT INTO import_jobs (id, tenant_id, actor, name, source, status, phase, message, "
+            "created_at, updated_at) VALUES (?, ?, ?, ?, ?, 'queued', 'queued', '', ?, ?)",
+            (job_id, self._tenant_of(actor), actor, name, source, now, now),
+        )
+        self._event(self._tenant_of(actor), "repo.import_queued", actor, job_id, {"name": name})
+        return self.get_import_job(actor, job_id)
+
+    @_connection_call
+    def update_import_job(
+        self,
+        job_id: str,
+        *,
+        status: str | None = None,
+        phase: str | None = None,
+        message: str | None = None,
+        path: str | None = None,
+        error: str | None = None,
+    ) -> dict[str, Any]:
+        self.get_import_job_unscoped(job_id)
+        fields: dict[str, Any] = {}
+        if status is not None:
+            fields["status"] = status
+        if phase is not None:
+            fields["phase"] = phase
+        if message is not None:
+            fields["message"] = message
+        if path is not None:
+            fields["path"] = path
+        if error is not None:
+            fields["error"] = error
+        if fields:
+            fields["updated_at"] = _now()
+            assignments = ", ".join(f"{key} = ?" for key in fields)
+            self.db.execute(
+                f"UPDATE import_jobs SET {assignments} WHERE id = ?",
+                (*fields.values(), job_id),
+            )
+        return self.get_import_job_unscoped(job_id)
+
+    @_connection_call
+    def get_import_job(self, actor: str, job_id: str) -> dict[str, Any]:
+        job = self.get_import_job_unscoped(job_id)
+        if job["tenant_id"] != self._tenant_of(actor):
+            raise NotFound(f"import job not found: {job_id}")
+        return job
+
+    @_connection_call
+    def get_import_job_unscoped(self, job_id: str) -> dict[str, Any]:
+        row = self.db.execute("SELECT * FROM import_jobs WHERE id = ?", (job_id,)).fetchone()
+        if row is None:
+            raise NotFound(f"import job not found: {job_id}")
+        return dict(row)
+
+    @_connection_call
+    def list_import_jobs(self, actor: str, limit: int = 20) -> list[dict[str, Any]]:
+        limit = max(1, min(int(limit), 100))
+        rows = self.db.execute(
+            "SELECT * FROM import_jobs WHERE tenant_id = ? ORDER BY created_at DESC LIMIT ?",
+            (self._tenant_of(actor), limit),
+        ).fetchall()
+        return [dict(row) for row in rows]
 
     @_connection_call
     def list_doc_issues(self, actor: str, doc_id: str) -> list[dict[str, Any]]:
