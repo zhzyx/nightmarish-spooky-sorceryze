@@ -1,0 +1,16 @@
+{
+  "kind": "host_adapter",
+  "id": "harness-dispatch",
+  "display_name": "DeepSeek Harness 派发接入",
+  "version": "0.1.0",
+  "path_base": "repository_root",
+  "path": "customizations/components/harness-dispatch",
+  "ownership": "gonggong_customization",
+  "placement": "host_tool",
+  "entry": "adapter.mjs",
+  "state": "candidate_pending_host_binding_and_admission",
+  "runtime_connected": false,
+  "host_contract": "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs",
+  "reporting": "source.report must invoke shared Diting; no global listener",
+  "rollback": "Stop adapter invocation; retain reservations, records and released receipts; re-dispatch only after an authenticated terminal readback."
+}
