@@ -5,6 +5,8 @@ import { useActor } from "@/lib/use-actor";
 import { useCallback, useEffect, useState } from "react";
 import { Icon } from "@/components/Icon";
 import { fetchDocDiff, fetchVersions, type ApiVersion } from "@/lib/api";
+import { formatMessage } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 type LoadState = "loading" | "ready" | "error";
 type DiffState = "idle" | "loading" | "ready" | "error";
@@ -67,22 +69,23 @@ const diffStyle = {
   tabSize: 2,
 } as const;
 
-function shortAuthor(author: string): string {
+function shortAuthor(author: string, fallback: string): string {
   const trimmed = author.trim();
   if (!trimmed) {
-    return "匿名";
+    return fallback;
   }
   return trimmed.length > 12 ? `${trimmed.slice(0, 11)}…` : trimmed;
 }
 
-function formatTimestamp(value: string): string {
+function formatTimestamp(value: string, fallback: string): string {
   const normalized = value.replace("T", " ").replace(/\.\d+/, "");
   const match = /^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})/.exec(normalized);
-  return match ? `${match[1]} ${match[2]}` : value || "未知时间";
+  return match ? `${match[1]} ${match[2]}` : value || fallback;
 }
 
 export function DocVersions({ docId }: DocVersionsProps) {
   const actor = useActor();
+  const { t } = useI18n();
   const [versions, setVersions] = useState<ApiVersion[]>([]);
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [loadError, setLoadError] = useState("");
@@ -121,7 +124,7 @@ export function DocVersions({ docId }: DocVersionsProps) {
       setLoadState("ready");
     } catch {
       setLoadState("error");
-      setLoadError("无法读取版本历史，请确认后端服务已启动且当前账号有权限。");
+      setLoadError(t("versions.errorLoad"));
     }
   }, [actor, docId, resetDiff]);
 
@@ -142,24 +145,24 @@ export function DocVersions({ docId }: DocVersionsProps) {
     } catch {
       setDiff("");
       setDiffState("error");
-      setDiffError("无法生成版本差异，请确认所选版本仍然存在后重试。");
+      setDiffError(t("versions.errorDiff"));
     }
   }
 
   if (!actor) {
     return (
-      <section aria-label="文档版本历史" className="panel">
+      <section aria-label={t("versions.title")} className="panel">
         <div className="section-heading" style={headingStyle}>
           <div>
-            <p className="section-kicker">文曲 · VERSIONS</p>
-            <h2>版本历史</h2>
+            <p className="section-kicker">WENQU · VERSIONS</p>
+            <h2>{t("versions.title")}</h2>
           </div>
-          <span className="mono-key">未启用</span>
+          <span className="mono-key">{t("versions.disabled")}</span>
         </div>
         <div style={panelBodyStyle}>
           <p className="section-note" style={{ fontSize: "10.5px", lineHeight: 1.6 }}>
             <Icon name="lock" size={14} />
-            未配置 NEXT_PUBLIC_TIANXUAN_ACTOR，版本历史面板已禁用，不会请求版本接口。
+            {t("versions.disabledNote")}
           </p>
         </div>
       </section>
@@ -171,25 +174,25 @@ export function DocVersions({ docId }: DocVersionsProps) {
   return (
     <section
       aria-busy={loadState === "loading"}
-      aria-label="文档版本历史"
+      aria-label={t("versions.title")}
       className="panel"
     >
       <div className="section-heading" style={headingStyle}>
         <div>
-          <p className="section-kicker">文曲 · VERSIONS</p>
-          <h2>版本历史</h2>
+          <p className="section-kicker">WENQU · VERSIONS</p>
+          <h2>{t("versions.title")}</h2>
         </div>
         <span className="mono-key">
           {loadState === "loading"
-            ? "读取中…"
+            ? t("versions.summaryLoading")
             : loadState === "error"
-              ? "读取失败"
-              : `${versions.length} 个版本`}
+              ? t("versions.summaryError")
+              : formatMessage(t("versions.summary"), { count: versions.length })}
         </span>
       </div>
 
       <div style={panelBodyStyle}>
-        {loadState === "loading" ? <p className="section-note">正在读取版本历史…</p> : null}
+        {loadState === "loading" ? <p className="section-note">{t("versions.loading")}</p> : null}
 
         {loadState === "error" ? (
           <div style={errorRowStyle}>
@@ -202,13 +205,13 @@ export function DocVersions({ docId }: DocVersionsProps) {
               type="button"
             >
               <Icon name="history" size={12} />
-              重新加载
+              {t("versions.reload")}
             </button>
           </div>
         ) : null}
 
         {loadState === "ready" && versions.length === 0 ? (
-          <p className="section-note">还没有版本记录，保存文档后会自动生成历史版本。</p>
+          <p className="section-note">{t("versions.empty")}</p>
         ) : null}
 
         {loadState === "ready" && versions.length > 0 ? (
@@ -218,11 +221,11 @@ export function DocVersions({ docId }: DocVersionsProps) {
                 <li className="reading-item" key={item.version} style={versionItemStyle}>
                   <span className="reading-index">v{item.version}</span>
                   <span className="reading-copy">
-                    <strong title={item.author}>{shortAuthor(item.author)}</strong>
-                    <span>{formatTimestamp(item.created_at)}</span>
+                    <strong title={item.author}>{shortAuthor(item.author, t("versions.anonymous"))}</strong>
+                    <span>{formatTimestamp(item.created_at, t("versions.unknownTime"))}</span>
                   </span>
                   {item.version === latestVersion ? (
-                    <span className="kind-tag">最新</span>
+                    <span className="kind-tag">{t("versions.latest")}</span>
                   ) : null}
                 </li>
               ))}
@@ -230,9 +233,9 @@ export function DocVersions({ docId }: DocVersionsProps) {
 
             <div style={controlsStyle}>
               <label className="select-field">
-                <span className="mono-key">自</span>
+                <span className="mono-key">{t("versions.from")}</span>
                 <select
-                  aria-label="起始版本"
+                  aria-label={t("versions.fromAria")}
                   disabled={diffState === "loading"}
                   onChange={(event) => {
                     setFromVersion(Number(event.target.value));
@@ -252,9 +255,9 @@ export function DocVersions({ docId }: DocVersionsProps) {
                 →
               </span>
               <label className="select-field">
-                <span className="mono-key">至</span>
+                <span className="mono-key">{t("versions.to")}</span>
                 <select
-                  aria-label="目标版本"
+                  aria-label={t("versions.toAria")}
                   disabled={diffState === "loading"}
                   onChange={(event) => {
                     setToVersion(Number(event.target.value));
@@ -277,7 +280,7 @@ export function DocVersions({ docId }: DocVersionsProps) {
                 type="button"
               >
                 <Icon name="code" size={14} />
-                {diffState === "loading" ? "生成中…" : "查看差异"}
+                {diffState === "loading" ? t("versions.generating") : t("versions.viewDiff")}
               </button>
             </div>
 
@@ -292,7 +295,7 @@ export function DocVersions({ docId }: DocVersionsProps) {
                   type="button"
                 >
                   <Icon name="history" size={12} />
-                  重试
+                  {t("versions.retry")}
                 </button>
               </div>
             ) : null}
@@ -300,20 +303,21 @@ export function DocVersions({ docId }: DocVersionsProps) {
             {diffState === "ready" ? (
               diff.trim() ? (
                 <pre
-                  aria-label={`v${fromVersion} 与 v${toVersion} 的版本差异`}
+                  aria-label={formatMessage(t("versions.diffAria"), { from: fromVersion ?? "", to: toVersion ?? "" })}
                   style={diffStyle}
                   tabIndex={0}
                 >{diff}</pre>
               ) : (
                 <p className="section-note">
-                  <Icon name="check" size={12} /> v{fromVersion} 与 v{toVersion} 内容一致，没有差异。
+                  <Icon name="check" size={12} />{" "}
+                  {formatMessage(t("versions.same"), { from: fromVersion ?? "", to: toVersion ?? "" })}
                 </p>
               )
             ) : null}
 
             <p className="section-note">
               <Icon name="gitCommit" size={12} />
-              默认对比最新两个版本；差异以只读统一差异（unified diff）文本展示。
+              {t("versions.note")}
             </p>
           </>
         ) : null}
