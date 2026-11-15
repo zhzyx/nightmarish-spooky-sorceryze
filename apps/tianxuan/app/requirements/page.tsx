@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
 import {
@@ -12,10 +13,12 @@ import {
   type ApiRequirement,
   type ApiRequirementProgress,
 } from "@/lib/requirements-api";
+import { LOCALE_COOKIE, formatMessage, normalizeLocale, translate, type MessageKey } from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: "需求",
-};
+export function generateMetadata(): Metadata {
+  const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);
+  return { title: translate(locale, "req.title") };
+}
 
 // 实时需求依赖每次请求的 TIANXUAN_ACTOR，禁用静态化。
 export const dynamic = "force-dynamic";
@@ -30,28 +33,7 @@ const statusClass: Record<RequirementStatus, string> = {
   已验收: "is-accepted",
 };
 
-const flowSteps = [
-  {
-    index: "01",
-    title: "对话",
-    copy: "把零散判断、截图与链接交给偃师。",
-  },
-  {
-    index: "02",
-    title: "成稿",
-    copy: "自动形成范围、非目标与可验证的验收。",
-  },
-  {
-    index: "03",
-    title: "拆单",
-    copy: "按依赖拆成独立工单，关联设计文档。",
-  },
-  {
-    index: "04",
-    title: "回读",
-    copy: "每个回执与证据都回到需求原文。",
-  },
-];
+
 
 /** 把后端百分比收敛到 0–100 的整数，避免异常值撑破进度条。 */
 function normalizePercent(progress: ApiRequirementProgress | null | undefined): number {
@@ -83,6 +65,14 @@ async function loadLiveRequirements(actor: string): Promise<ApiRequirement[]> {
 }
 
 export default async function RequirementsPage() {
+  const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);
+  const t = (key: MessageKey) => translate(locale, key);
+  const flowSteps = [
+    { index: "01", title: t("req.step1Title"), copy: t("req.step1Copy") },
+    { index: "02", title: t("req.step2Title"), copy: t("req.step2Copy") },
+    { index: "03", title: t("req.step3Title"), copy: t("req.step3Copy") },
+    { index: "04", title: t("req.step4Title"), copy: t("req.step4Copy") },
+  ];
   const actor = process.env.TIANXUAN_ACTOR?.trim() ?? "";
   let liveRequirements: ApiRequirement[] = [];
   if (actor || process.env.TIANXUAN_TOKEN) {
@@ -114,20 +104,19 @@ export default async function RequirementsPage() {
             YANSHI · REQUIREMENTS
           </p>
           <h1>
-            需求<span className="title-period">。</span>
+            {t("req.title")}
+            {locale === "zh" ? <span className="title-period">。</span> : null}
           </h1>
-          <p className="page-lede">
-            从一句模糊的愿望，到一份能被工单、代码和验收共同引用的文档。需求不是入口表格，而是决策开始变得可回读的地方。
-          </p>
+          <p className="page-lede">{t("req.lede")}</p>
         </div>
         <div className="page-actions">
           <Link className="btn btn-ghost" href="/docs/tianxuan-platform">
             <Icon name="docs" size={16} />
-            设计基线
+            {t("req.designBaseline")}
           </Link>
           <Link className="btn btn-primary" href="/">
             <Icon name="sparkles" size={16} />
-            让偃师起草
+            {t("req.draft")}
           </Link>
         </div>
       </header>
@@ -137,9 +126,9 @@ export default async function RequirementsPage() {
           <header className="panel-head">
             <div>
               <p className="section-kicker">LIVE API</p>
-              <h2 id="live-requirements-title">实时需求</h2>
+              <h2 id="live-requirements-title">{t("req.liveTitle")}</h2>
             </div>
-            <span className="section-note">{liveRequirements.length} 条来自后端 · 含工单进度</span>
+            <span className="section-note">{formatMessage(t("req.liveNote"), { count: liveRequirements.length })}</span>
           </header>
 
           <div className="reading-list live-list">
@@ -151,7 +140,7 @@ export default async function RequirementsPage() {
                   <span className="reading-copy">
                     <strong>{requirement.title}</strong>
                     <span>
-                      {requirement.request_id ? `请求 ${requirement.request_id} · ` : ""}
+                      {requirement.request_id ? formatMessage(t("req.requestPrefix"), { id: requirement.request_id }) : ""}
                       v{requirement.version} · {requirement.status}
                     </span>
                     <span className="meter" aria-hidden="true">
@@ -159,8 +148,12 @@ export default async function RequirementsPage() {
                     </span>
                     <span>
                       {requirement.progress
-                        ? `${requirement.progress.done}/${requirement.progress.total} 工单 · ${percent}%`
-                        : "进度待回读"}
+                        ? formatMessage(t("req.progress"), {
+                            done: requirement.progress.done,
+                            total: requirement.progress.total,
+                            percent,
+                          })
+                        : t("req.progressPending")}
                     </span>
                   </span>
                   <Icon name="chevronRight" size={14} />
@@ -175,30 +168,28 @@ export default async function RequirementsPage() {
         <div className="requirement-hero-copy">
           <p className="section-kicker">REQUIREMENT INTAKE</p>
           <h2>
-            一句话进来，
+            {t("req.heroA")}
             <br />
-            <span>一份可执行的需求出去。</span>
+            <span>{t("req.heroB")}</span>
           </h2>
-          <p>
-            偃师会保留原始讨论的出处，把结论写成 Markdown，再交给司南拆成有依赖的工单。人只需确认边界与顺序。
-          </p>
+          <p>{t("req.heroLede")}</p>
           <div className="requirement-hero-tags">
             <span>
               <Icon name="sparkles" size={13} />
-              自动成稿
+              {t("req.autoDraft")}
             </span>
             <span>
               <Icon name="link" size={13} />
-              双向引用
+              {t("req.bidirectional")}
             </span>
             <span>
               <Icon name="shield" size={13} />
-              人工确认
+              {t("req.human")}
             </span>
           </div>
         </div>
 
-        <div className="requirement-flow" aria-label="需求工作流">
+        <div className="requirement-flow" aria-label={t("req.flowAria")}>
           {flowSteps.map((step, index) => (
             <div className="flow-step" key={step.index}>
               <span className="flow-index">{step.index}</span>
@@ -216,29 +207,29 @@ export default async function RequirementsPage() {
         </span>
       </section>
 
-      <section className="requirement-stats" aria-label="需求池摘要">
+      <section className="requirement-stats" aria-label={t("req.statsAria")}>
         <div className="requirement-stat">
-          <span className="requirement-stat-label">需求池</span>
+          <span className="requirement-stat-label">{t("req.pool")}</span>
           <strong>{String(requirements.length).padStart(2, "0")}</strong>
-          <small>本地演示条目</small>
+          <small>{t("req.demoEntries")}</small>
         </div>
         <div className="requirement-stat">
-          <span className="requirement-stat-label">澄清中</span>
+          <span className="requirement-stat-label">{t("req.clarifying")}</span>
           <strong>{String(clarifying).padStart(2, "0")}</strong>
-          <small>等待边界确认</small>
+          <small>{t("req.clarifyingNote")}</small>
         </div>
         <div className="requirement-stat">
-          <span className="requirement-stat-label">已成稿</span>
+          <span className="requirement-stat-label">{t("req.drafted")}</span>
           <strong>{String(drafted).padStart(2, "0")}</strong>
-          <small>可进入拆单</small>
+          <small>{t("req.draftedNote")}</small>
         </div>
         <div className="requirement-stat">
-          <span className="requirement-stat-label">工单进度</span>
+          <span className="requirement-stat-label">{t("req.issueProgress")}</span>
           <strong>
             {tickets.done}
             <span>/{tickets.all}</span>
           </strong>
-          <small>{accepted} 个需求已验收</small>
+          <small>{formatMessage(t("req.acceptedCount"), { count: accepted })}</small>
         </div>
       </section>
 
@@ -247,17 +238,17 @@ export default async function RequirementsPage() {
           <header className="panel-head">
             <div>
               <p className="section-kicker">THE POOL</p>
-              <h2 id="requirement-pool-title">需求池</h2>
+              <h2 id="requirement-pool-title">{t("req.pool")}</h2>
             </div>
-            <span className="section-note">按最近更新排序</span>
+            <span className="section-note">{t("req.sorted")}</span>
           </header>
 
           <div className="req-table-head" aria-hidden="true">
-            <span>需求</span>
-            <span>进度</span>
-            <span>工单</span>
-            <span>负责人</span>
-            <span>状态</span>
+            <span>{t("req.colRequirement")}</span>
+            <span>{t("req.colProgress")}</span>
+            <span>{t("req.colIssues")}</span>
+            <span>{t("req.colOwner")}</span>
+            <span>{t("req.colStatus")}</span>
           </div>
 
           <div className="requirement-list">
@@ -277,7 +268,7 @@ export default async function RequirementsPage() {
                     <span className="req-summary">{requirement.summary}</span>
                     <span className="req-link-doc">
                       <Icon name="docs" size={12} />
-                      {doc ? doc.title : "关联文档"}
+                      {doc ? doc.title : t("req.linkedDoc")}
                     </span>
                   </span>
 
@@ -294,7 +285,7 @@ export default async function RequirementsPage() {
                   <span className="req-tickets">
                     <strong>{requirement.ticketsDone}</strong>
                     <span>/{requirement.ticketsTotal}</span>
-                    <small>工单</small>
+                    <small>{t("req.ticketsSuffix")}</small>
                   </span>
 
                   <span className="req-owner">
@@ -318,9 +309,9 @@ export default async function RequirementsPage() {
           <footer className="panel-foot">
             <span>
               <Icon name="link" size={14} />
-              所有需求均关联一份 Markdown 权威文档
+              {t("req.footerDoc")}
             </span>
-            <span>已同步至司南</span>
+            <span>{t("req.synced")}</span>
           </footer>
         </section>
 
@@ -334,34 +325,34 @@ export default async function RequirementsPage() {
                 <strong id="yanshi-title">偃师</strong>
                 <small>
                   <span className="live-dot" aria-hidden="true" />
-                  需求 Agent · 演示
+                  {t("req.yanshiAgent")}
                 </small>
               </span>
               <Icon className="yanshi-mark" name="sparkles" size={18} />
             </header>
             <p className="yanshi-intro">
-              从最近 3 份设计文档与 2 个未闭环工单里，识别到 2 条可以进一步成稿的线索。
+              {t("req.yanshiIntro")}
             </p>
             <div className="suggestion-list">
               <div className="suggestion">
                 <span className="suggestion-index">01</span>
                 <span>
-                  <strong>文档块级协同</strong>
-                  <small>建议：先补充冲突合并边界</small>
+                  <strong>{t("req.suggestion1")}</strong>
+                  <small>{t("req.suggestion1Note")}</small>
                 </span>
                 <Icon name="chevronRight" size={14} />
               </div>
               <div className="suggestion">
                 <span className="suggestion-index">02</span>
                 <span>
-                  <strong>模型调用审计视图</strong>
-                  <small>建议：确认 BYOK 范围</small>
+                  <strong>{t("req.suggestion2")}</strong>
+                  <small>{t("req.suggestion2Note")}</small>
                 </span>
                 <Icon name="chevronRight" size={14} />
               </div>
             </div>
             <Link className="text-link yanshi-link" href="/docs/ai-native-docs">
-              查看来源文档
+              {t("req.viewSource")}
               <Icon name="arrowRight" size={14} />
             </Link>
           </section>
@@ -370,7 +361,7 @@ export default async function RequirementsPage() {
             <header className="panel-head">
               <div>
                 <p className="section-kicker">GOOD REQUIREMENT</p>
-                <h2 id="guide-title">一份好需求</h2>
+                <h2 id="guide-title">{t("req.guideTitle")}</h2>
               </div>
               <Icon className="panel-head-icon" name="requirements" size={18} />
             </header>
@@ -378,22 +369,22 @@ export default async function RequirementsPage() {
               <li>
                 <span className="guide-index">壹</span>
                 <span>
-                  <strong>范围可被拒绝</strong>
-                  <small>非目标与范围内同等重要。</small>
+                  <strong>{t("req.guideScope")}</strong>
+                  <small>{t("req.guideScopeNote")}</small>
                 </span>
               </li>
               <li>
                 <span className="guide-index">贰</span>
                 <span>
-                  <strong>验收可被回读</strong>
-                  <small>使用文件、提交或事件，不用“差不多了”。</small>
+                  <strong>{t("req.guideAccept")}</strong>
+                  <small>{t("req.guideAcceptNote")}</small>
                 </span>
               </li>
               <li>
                 <span className="guide-index">叁</span>
                 <span>
-                  <strong>顺序可被交接</strong>
-                  <small>依赖明确，其他人才能继续推进。</small>
+                  <strong>{t("req.guideOrder")}</strong>
+                  <small>{t("req.guideOrderNote")}</small>
                 </span>
               </li>
             </ul>
@@ -403,8 +394,8 @@ export default async function RequirementsPage() {
             <span className="aside-quote-mark" aria-hidden="true">
               〝
             </span>
-            <p>先写清楚不做什么，剩下的路径才会自己浮现。</p>
-            <span>偃师手记 · 027</span>
+            <p>{t("req.quote")}</p>
+            <span>{t("req.quoteCaption")}</span>
           </section>
         </aside>
       </div>
