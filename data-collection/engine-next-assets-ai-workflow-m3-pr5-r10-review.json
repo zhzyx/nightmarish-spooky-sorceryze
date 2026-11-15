@@ -1,0 +1,18 @@
+{
+  "findings": [
+    "R9 macOS and Ubuntu were cancelled at the job's ten-minute limit after completing substantial tests/builds; Windows completed successfully"
+  ],
+  "issue_number": 1240,
+  "observed": "Independent read-only review approved R10. The source-contract matrix timeout is now twenty minutes. No test selection, build content, pass criterion, error handling or skip rule changed.",
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "result": "approved",
+  "reviewer": {
+    "id": "agent-2",
+    "kind": "independent_read_only_agent",
+    "same_author": false
+  },
+  "schema_version": 1,
+  "scope": "PR5 R10 complete-regression time budget plus all R9 implementation and acceptance fixes",
+  "slice": "pr5-r10",
+  "validation_boundary": "YAML parsing and source approval passed. Exact three-platform jobs must still complete successfully within the new budget; editor workflows and main readback remain required."
+}
