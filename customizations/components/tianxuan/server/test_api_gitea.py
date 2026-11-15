@@ -66,6 +66,26 @@ class _FakeGitea:
             "prerelease": prerelease,
         }
 
+    def update_release(
+        self,
+        owner: str,
+        repo: str,
+        release_id: int,
+        *,
+        name: str | None = None,
+        body: str | None = None,
+        draft: bool | None = None,
+        prerelease: bool | None = None,
+    ) -> dict[str, Any]:
+        return {
+            "id": release_id,
+            "tag_name": "v1.0.0",
+            "name": name or "First release",
+            "body": body or "",
+            "draft": bool(draft),
+            "prerelease": bool(prerelease),
+        }
+
     def create_pull_request(
         self,
         owner: str,
@@ -182,6 +202,22 @@ def test_create_and_get_repo_with_fake_client(monkeypatch) -> None:
     listed = client.get("/api/v1/repos?owner=owner&limit=10", headers=headers).json()["repos"]
     assert listed[0]["full_name"] == "owner/demo"
     assert listed[0]["limit"] == 10
+
+
+def test_update_release_with_fake_client(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_GITEA_URL", "http://gitea.example")
+    monkeypatch.setenv("TIANXUAN_GITEA_TOKEN", "secret")
+    monkeypatch.setattr(api_module, "GiteaClient", _FakeGitea)
+    client, headers = _setup()
+
+    updated = client.patch(
+        "/api/v1/repos/owner/demo/releases/7",
+        headers=headers,
+        json={"name": "Renamed", "draft": True},
+    )
+    assert updated.status_code == 200, updated.text
+    assert updated.json()["name"] == "Renamed"
+    assert updated.json()["draft"] is True
 
 
 def test_create_release_with_fake_client(monkeypatch) -> None:

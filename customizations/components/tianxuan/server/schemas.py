@@ -103,6 +103,15 @@ class ReleaseCreateRequest(BaseModel):
     prerelease: bool = False
 
 
+class ReleaseUpdateRequest(BaseModel):
+    """更新 Gitea 发布的可编辑字段。"""
+
+    name: str | None = None
+    body: str | None = None
+    draft: bool | None = None
+    prerelease: bool | None = None
+
+
 class PullRequestCreateRequest(BaseModel):
     """在 Gitea 仓库内创建 Pull Request。"""
 

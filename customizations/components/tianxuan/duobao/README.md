@@ -68,7 +68,7 @@ python -m unittest discover -s customizations/components/tianxuan/duobao -p "tes
 
 - 每用户 Git 身份与凭据（当前 Gitea 使用单一服务 token；`X-Actor` 仍是临时身份）。
 - 评审 UI 已接入批准/要求修改/评论与计数；CI 自动回写（状态写入与合并检查门禁已就绪，尚未接 webhook/流水线）。
-- 发布编辑、LFS/子模块；导入进度与失败恢复的可视化。
+- LFS/子模块；导入进度与失败恢复的可视化。
 - Gitea webhook → 天璇事件、CI 结果回写、多副本合入 worker。
 - TLS/域名、备份恢复演练与监控（见 #1188）。
 

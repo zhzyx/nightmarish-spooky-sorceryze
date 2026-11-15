@@ -15,6 +15,7 @@ import {
   fetchReleases,
   fetchReviews,
   mergePull,
+  updateRelease,
   type ApiBranch,
   type ApiPull,
   type ApiRelease,
@@ -399,6 +400,32 @@ export function RepoPulls() {
     }
   }
 
+  async function editRelease(release: ApiRelease) {
+    if (!actor || !activeOwner || !activeRepo || releaseBusy) {
+      return;
+    }
+    const name = window.prompt(t("pulls.releaseNamePrompt"), release.name);
+    if (name === null) {
+      return;
+    }
+    const body = window.prompt(t("pulls.releaseBodyPrompt"), release.body);
+    if (body === null) {
+      return;
+    }
+    setReleaseBusy(true);
+    setReleaseError("");
+    setNotice("");
+    try {
+      await updateRelease(actor, activeOwner, activeRepo, release.id, { name, body });
+      setReleases(await fetchReleases(actor, activeOwner, activeRepo));
+      setNotice(formatMessage(t("pulls.releaseUpdated"), { tag: release.tag_name }));
+    } catch {
+      setReleaseError(t("pulls.releaseUpdateError"));
+    } finally {
+      setReleaseBusy(false);
+    }
+  }
+
   async function submitReview(pull: ApiPull, event: ReviewEvent) {
     if (!actor || busy || loadState !== "ready") {
       return;
@@ -773,6 +800,14 @@ export function RepoPulls() {
                           {release.created_at ? ` · ${release.created_at.slice(0, 10)}` : ""}
                         </span>
                       </span>
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        disabled={releaseBusy}
+                        onClick={() => void editRelease(release)}
+                        type="button"
+                      >
+                        {t("pulls.editRelease")}
+                      </button>
                       {release.html_url ? (
                         <a className="btn btn-ghost btn-sm" href={release.html_url} rel="noreferrer" target="_blank">
                           <Icon name="link" size={12} />

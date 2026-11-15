@@ -241,3 +241,31 @@ export async function createRelease(
   });
   return readJson<ApiRelease>(response, "create release");
 }
+
+/** 更新发布的请求体。 */
+export interface UpdateReleasePayload {
+  name?: string;
+  body?: string;
+  draft?: boolean;
+  prerelease?: boolean;
+}
+
+/** 更新仓库发布。 */
+export async function updateRelease(
+  actor: string,
+  owner: string,
+  repo: string,
+  releaseId: number,
+  payload: UpdateReleasePayload,
+): Promise<ApiRelease> {
+  const response = await fetch(
+    `${apiBase()}${repoPath(owner, repo)}/releases/${encodeURIComponent(String(releaseId))}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", ...authHeaders(actor) },
+      body: JSON.stringify(payload),
+      cache: "no-store",
+    },
+  );
+  return readJson<ApiRelease>(response, "update release");
+}

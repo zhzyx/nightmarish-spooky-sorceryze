@@ -550,6 +550,39 @@ class GiteaClient:
         )
         return _normalize_release(payload)
 
+    def update_release(
+        self,
+        owner: str,
+        repo: str,
+        release_id: int,
+        *,
+        name: str | None = None,
+        body: str | None = None,
+        draft: bool | None = None,
+        prerelease: bool | None = None,
+    ) -> dict[str, Any]:
+        """更新仓库发布的可编辑字段，至少要提供一个字段。"""
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        release_id = _validate_number(release_id)
+        payload: dict[str, Any] = {}
+        if name is not None:
+            payload["name"] = _validate_text(name, "release name", allow_empty=True)
+        if body is not None:
+            payload["body"] = _validate_text(body, "release body", allow_empty=True)
+        if draft is not None:
+            payload["draft"] = bool(draft)
+        if prerelease is not None:
+            payload["prerelease"] = bool(prerelease)
+        if not payload:
+            raise GiteaValidationError("release update requires at least one field")
+        result = self._request(
+            "PATCH",
+            f"/api/v1/repos/{owner}/{repo}/releases/{release_id}",
+            json_body=payload,
+        )
+        return _normalize_release(result)
+
     def list_pull_requests(
         self,
         owner: str,

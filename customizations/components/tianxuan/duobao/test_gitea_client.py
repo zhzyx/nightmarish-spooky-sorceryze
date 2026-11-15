@@ -843,3 +843,29 @@ def test_create_release_posts_payload(make_client: ClientFactory) -> None:
     release = client.create_release("owner", "demo", "v3.0.0", "Third", "notes", draft=True)
     assert release["tag_name"] == "v3.0.0"
     assert release["draft"] is True
+
+
+def test_update_release_patches_fields(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "PATCH"
+        assert request.url.path == "/api/v1/repos/owner/demo/releases/9"
+        payload = httpx.Response(200, content=request.content).json()
+        assert payload == {"name": "Renamed", "draft": True}
+        return httpx.Response(
+            200,
+            json={
+                "id": 9,
+                "tag_name": "v1.0.0",
+                "name": "Renamed",
+                "body": "",
+                "draft": True,
+                "prerelease": False,
+                "created_at": "",
+                "html_url": "",
+            },
+        )
+
+    client, _ = make_client(handler)
+    release = client.update_release("owner", "demo", 9, name="Renamed", draft=True)
+    assert release["name"] == "Renamed"
+    assert release["draft"] is True
