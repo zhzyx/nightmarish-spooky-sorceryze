@@ -359,6 +359,22 @@ Exit code `0` writes a JSON receipt with `archive_sha256`, file counts and the
 database integrity result; non-zero means the drill failed and the work
 directory is kept for diagnosis.
 
+## CI status write-back
+
+The merge gate reads commit statuses from
+`GET /api/v1/repos/{owner}/{name}/statuses/{sha}`. Ready-to-copy workflows that
+run tests and POST the result live in:
+
+- [`examples/gitea-actions-status.yml`](examples/gitea-actions-status.yml)
+- [`examples/github-actions-status.yml`](examples/github-actions-status.yml)
+
+Copy the matching file into the repository's CI directory and configure the
+repository secrets `TIANXUAN_URL` and `TIANXUAN_TOKEN` (a Tianxuan Bearer token
+with editor access). Then set `TIANXUAN_REQUIRED_CHECKS=tianxuan-ci` on the
+Tianxuan server so the merge queue waits for this status. The workflow reports
+`success`/`failure` with context `tianxuan-ci`; adjust the test step to the
+project's real command.
+
 ## Readiness and monitoring
 
 - `GET /api/v1/health` is a liveness probe and always returns `200 {"status":"ok"}`.

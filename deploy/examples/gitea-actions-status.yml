@@ -1,0 +1,42 @@
+# Report test results back to Tianxuan as a commit status.
+#
+# Copy this file to .gitea/workflows/tianxuan-status.yml in the repository
+# that Tianxuan manages, then configure repository secrets:
+#   TIANXUAN_URL    e.g. https://tianxuan.example.com
+#   TIANXUAN_TOKEN  a Tianxuan Bearer session token with editor access
+#
+# Set TIANXUAN_REQUIRED_CHECKS=tianxuan-ci on the Tianxuan server to make the
+# merge queue wait for this status.
+name: tianxuan-status
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run project tests
+        id: tests
+        run: |
+          # Replace with the project's real test command.
+          echo "replace this step with the project test command"
+
+      - name: Report status to Tianxuan
+        if: always()
+        env:
+          TIANXUAN_URL: ${{ secrets.TIANXUAN_URL }}
+          TIANXUAN_TOKEN: ${{ secrets.TIANXUAN_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          OUTCOME: ${{ steps.tests.outcome }}
+        run: |
+          set -eu
+          state=success
+          if [ "$OUTCOME" != "success" ]; then state=failure; fi
+          curl -fsS -X POST \
+            "$TIANXUAN_URL/api/v1/repos/${REPOSITORY}/statuses/${SHA}" \
+            -H "Authorization: Bearer ${TIANXUAN_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{\"state\":\"${state}\",\"context\":\"tianxuan-ci\",\"description\":\"gitea actions\",\"target_url\":\"${TIANXUAN_URL}\"}"
