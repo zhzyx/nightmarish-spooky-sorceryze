@@ -92,7 +92,7 @@ python tianshu_bridge.py --api http://127.0.0.1:8000 --actor <user_id> \
 - `link`：把外部工单绑定到已有文档或工单
 - 输出 `{"ok": true, "data": ...}`；`--result <path>` 可直接写天枢宿主回执文件
 - Tianshu 的 Issue 详情新增「天璇」按钮：读取已绑定需求/文档，未绑定时可一键发布需求与工单树
-- 天枢节点状态变为 done 时自动调用 `sync` 回写天璇工单；非当前工单在 board 刷新时也会回写；失败/未绑定保留，后续状态变化会重试
+- 天枢节点状态变为 done 时自动调用 `sync` 回写天璇工单；非当前工单在 board 刷新时也会回写；失败/未绑定保留，按 60 秒间隔最多重试 3 次；新的完成事件会重置重试计数
 - Tianshu 侧通过 `TIANXUAN_API`、`TIANXUAN_ACTOR` 或 `TIANXUAN_TOKEN` 指定天璇连接身份
 - 身份适配：`/api/v1/identity/links` 绑定外部身份，`/api/v1/identity/resolve` 按 provider 适配器换取会话；内置 `static`、`tianshu`/`github` 共享密钥、`oidc` JWT 适配器（HS256 用 `TIANXUAN_OIDC_SECRET`；RS256 用 `TIANXUAN_OIDC_JWKS` 或 `TIANXUAN_OIDC_JWKS_URL`；可选 `TIANXUAN_OIDC_ISSUER`/`TIANXUAN_OIDC_AUDIENCE`；默认要求 `exp`，`nbf`/`iat` 超前 60s 拒绝，`TIANXUAN_OIDC_ALLOW_NO_EXP=1` 可放宽）
 
