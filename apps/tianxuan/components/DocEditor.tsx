@@ -15,30 +15,11 @@ import {
 import { Icon, type IconName } from "@/components/Icon";
 import { MergeConflict, mergeDoc } from "@/lib/api";
 import type { DocRecord } from "@/lib/data";
+import { formatMessage } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 type EditorMode = "split" | "write" | "preview";
 type SaveState = "saved" | "dirty" | "saving";
-
-const modeOptions: { id: EditorMode; label: string; icon: IconName }[] = [
-  { id: "split", label: "分栏", icon: "grid" },
-  { id: "write", label: "写作", icon: "pen" },
-  { id: "preview", label: "预览", icon: "eye" },
-];
-
-const formatActions: {
-  id: string;
-  label: string;
-  before: string;
-  after: string;
-  placeholder: string;
-}[] = [
-  { id: "heading", label: "二级标题", before: "\n## ", after: "", placeholder: "标题" },
-  { id: "bold", label: "加粗", before: "**", after: "**", placeholder: "重点" },
-  { id: "italic", label: "斜体", before: "_", after: "_", placeholder: "语气" },
-  { id: "list", label: "无序列表", before: "\n- ", after: "", placeholder: "列表项" },
-  { id: "quote", label: "引用", before: "\n> ", after: "", placeholder: "值得被引用的话" },
-  { id: "code", label: "行内代码", before: "`", after: "`", placeholder: "code" },
-];
 
 function inlineMarkdown(text: string, keyPrefix: string): ReactNode[] {
   const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).filter(Boolean);
@@ -258,6 +239,27 @@ export interface DocEditorProps {
 }
 
 export function DocEditor({ doc, initialContent, version: initialVersion }: DocEditorProps) {
+  const actor = useActor();
+  const { t, locale } = useI18n();
+  const modeOptions: { id: EditorMode; label: string; icon: IconName }[] = [
+    { id: "split", label: t("editor.modeSplit"), icon: "grid" },
+    { id: "write", label: t("editor.modeWrite"), icon: "pen" },
+    { id: "preview", label: t("editor.modePreview"), icon: "eye" },
+  ];
+  const formatActions: {
+    id: string;
+    label: string;
+    before: string;
+    after: string;
+    placeholder: string;
+  }[] = [
+    { id: "heading", label: t("editor.fmtHeading"), before: "\n## ", after: "", placeholder: t("editor.phTitle") },
+    { id: "bold", label: t("editor.fmtBold"), before: "**", after: "**", placeholder: t("editor.phBold") },
+    { id: "italic", label: t("editor.fmtItalic"), before: "_", after: "_", placeholder: t("editor.phItalic") },
+    { id: "list", label: t("editor.fmtList"), before: "\n- ", after: "", placeholder: t("editor.phList") },
+    { id: "quote", label: t("editor.fmtQuote"), before: "\n> ", after: "", placeholder: t("editor.phQuote") },
+    { id: "code", label: t("editor.fmtCode"), before: "`", after: "`", placeholder: t("editor.phCode") },
+  ];
   const [mode, setMode] = useState<EditorMode>("split");
   const [title, setTitle] = useState(doc.title);
   const [markdown, setMarkdown] = useState(initialContent);
@@ -328,10 +330,9 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
     } catch {
       // The visible state still reflects the local draft.
     }
-    const actor = useActor();
     if (!actor || !doc.id.startsWith("doc_")) {
       setSaveState("saved");
-      setSyncNote("已保存至本设备");
+      setSyncNote(t("editor.savedLocal"));
       return;
     }
     setSaveState("saving");
@@ -339,14 +340,14 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
       const result = await mergeDoc(doc.id, actor, initialContent, markdown, version);
       setVersion(result.doc.version);
       setSaveState("saved");
-      setSyncNote(`已同步到服务器 · v${result.doc.version}`);
+      setSyncNote(formatMessage(t("editor.syncedServer"), { version: result.doc.version }));
     } catch (error) {
       if (error instanceof MergeConflict) {
         setSaveState("dirty");
-        setSyncNote(`远端有冲突（${error.conflicts.length} 处），本地草稿保留`);
+        setSyncNote(formatMessage(t("editor.conflict"), { count: error.conflicts.length }));
       } else {
         setSaveState("saved");
-        setSyncNote("后端不可达，已保存至本设备");
+        setSyncNote(t("editor.offline"));
       }
     }
   }
@@ -377,18 +378,18 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
 
   const saveCopy =
     saveState === "dirty"
-      ? "有未保存更改"
+      ? t("editor.dirty")
       : saveState === "saving"
-        ? "正在保存"
-        : "已保存至本设备";
+        ? t("editor.saving")
+        : t("editor.savedLocal");
 
   return (
     <div className="doc-editor-shell">
       <header className="doc-editor-top">
-        <nav aria-label="文档路径" className="doc-breadcrumb">
+        <nav aria-label={t("editor.breadcrumbAria")} className="doc-breadcrumb">
           <Link href="/docs">
             <Icon name="arrowLeft" size={15} />
-            全部文档
+            {t("editor.allDocs")}
           </Link>
           <span aria-hidden="true">/</span>
           <span>{doc.spaceName}</span>
@@ -397,7 +398,7 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
         </nav>
         <div className="doc-editor-actions">
           <Link className="btn btn-ghost btn-sm" href="/issues">
-            关联工单
+            {t("editor.linkedIssues")}
             <Icon name="link" size={14} />
           </Link>
           <button
@@ -420,14 +421,14 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
           </span>
           {syncNote ? <span className="section-note">{syncNote}</span> : null}
           <span className="doc-meta-separator" aria-hidden="true" />
-          <span>最后编辑：{doc.updated}</span>
+          <span>{formatMessage(t("editor.lastEdited"), { time: doc.updated })}</span>
         </div>
         <div className="doc-meta-right">
           <span className="ai-ready">
             <Icon name="sparkles" size={14} />
-            AI 阅读已就绪
+            {t("editor.aiReady")}
           </span>
-          <div className="avatar-stack" aria-label="协作者">
+          <div className="avatar-stack" aria-label={t("editor.collaboratorsAria")}>
             <span className="avatar avatar-xs avatar-jade">文</span>
             <span className="avatar avatar-xs avatar-gold">偃</span>
             <span className="avatar avatar-xs avatar-mist">S</span>
@@ -438,9 +439,9 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
       {restored ? (
         <div className="restore-banner" role="status">
           <Icon name="history" size={15} />
-          已恢复上次保存在本设备上的草稿。
+          {t("editor.restored")}
           <button onClick={() => setRestored(false)} type="button">
-            收起
+            {t("editor.collapse")}
           </button>
         </div>
       ) : null}
@@ -449,7 +450,7 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
         <div className="doc-title-copy">
           <p className="section-kicker">{doc.spaceName}</p>
           <input
-            aria-label="文档标题"
+            aria-label={t("editor.titleAria")}
             className="doc-title-input"
             onChange={(event) => updateTitle(event.target.value)}
             value={title}
@@ -470,9 +471,9 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
         </div>
       </div>
 
-      <section className="editor-card" aria-label="Markdown 编辑器">
+      <section className="editor-card" aria-label={t("editor.markdownAria")}>
         <div className="editor-toolbar">
-          <div className="format-group" role="group" aria-label="Markdown 格式">
+          <div className="format-group" role="group" aria-label={t("editor.formatAria")}>
             {formatActions.map((action) => (
               <button
                 aria-label={action.label}
@@ -501,7 +502,7 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
             <Icon name="file" size={14} />
             {doc.id}.md
           </span>
-          <div className="mode-switch" role="group" aria-label="编辑器视图">
+          <div className="mode-switch" role="group" aria-label={t("editor.viewAria")}>
             {modeOptions.map((option) => (
               <button
                 aria-pressed={mode === option.id}
@@ -522,10 +523,10 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
             <div className="editor-pane">
               <div className="pane-caption">
                 <span>MARKDOWN</span>
-                <span className="pane-hint">⌘S 保存本设备草稿</span>
+                <span className="pane-hint">{t("editor.saveHint")}</span>
               </div>
               <textarea
-                aria-label="Markdown 内容"
+                aria-label={t("editor.contentAria")}
                 className="markdown-textarea"
                 onChange={(event) => updateMarkdown(event.target.value)}
                 onKeyDown={handleEditorKeyDown}
@@ -534,9 +535,9 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
                 value={markdown}
               />
               <footer className="editor-pane-foot">
-                <span>{characters.toLocaleString("zh-CN")} 字符</span>
-                <span>{lines} 行</span>
-                <span>约 {readingTime} 分钟阅读</span>
+                <span>{formatMessage(t("editor.characters"), { count: characters.toLocaleString(locale === "en" ? "en-US" : "zh-CN") })}</span>
+                <span>{formatMessage(t("editor.lines"), { count: lines })}</span>
+                <span>{formatMessage(t("editor.readingTime"), { minutes: readingTime })}</span>
                 <span className="editor-language">Markdown</span>
               </footer>
             </div>
@@ -545,10 +546,10 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
           {mode !== "write" ? (
             <div className="preview-pane">
               <div className="pane-caption">
-                <span>阅读视图</span>
+                <span>{t("editor.readView")}</span>
                 <span className="preview-badge">
                   <Icon name="sparkles" size={12} />
-                  为 AI 优化
+                  {t("editor.aiOptimized")}
                 </span>
               </div>
               <article className="markdown-preview">{preview}</article>
@@ -559,7 +560,7 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
 
       <p className="editor-footnote">
         <Icon name="lock" size={13} />
-        当前为前端演示：草稿仅保存在此浏览器，不发送至服务器，也不会读取任何模型凭据。
+        {t("editor.footnote")}
       </p>
     </div>
   );
