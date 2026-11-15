@@ -1,9 +1,9 @@
 "use client";
 
-import { useActor } from "@/lib/use-actor";
-
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import { getToken } from "@/lib/auth";
+import { formatMessage, type MessageKey } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import {
   cancelMerge,
   enqueueMerge,
@@ -14,6 +14,7 @@ import {
   type ApiMergeQueueItem,
   type ApiMergeQueueStatus,
 } from "@/lib/merge-queue-api";
+import { useActor } from "@/lib/use-actor";
 
 const fieldStyle: CSSProperties = {
   background: "rgba(245, 242, 234, 0.06)",
@@ -26,13 +27,13 @@ const fieldStyle: CSSProperties = {
   padding: "9px 10px",
 };
 
-const STATUS_LABEL: Record<string, string> = {
-  queued: "排队中",
-  validating: "检验中",
-  merged: "已合入",
-  conflict: "冲突",
-  rejected: "已拒绝",
-  cancelled: "已取消",
+const STATUS_KEYS: Record<string, MessageKey> = {
+  queued: "queue.statusQueued",
+  validating: "queue.statusValidating",
+  merged: "queue.statusMerged",
+  conflict: "queue.statusConflict",
+  rejected: "queue.statusRejected",
+  cancelled: "queue.statusCancelled",
 };
 
 function evidenceText(item: ApiMergeQueueItem): string {
@@ -50,6 +51,7 @@ function evidenceText(item: ApiMergeQueueItem): string {
 
 export function MergeQueuePanel() {
   const actor = useActor();
+  const { t } = useI18n();
   const [items, setItems] = useState<ApiMergeQueueItem[]>([]);
   const [status, setStatus] = useState<ApiMergeQueueStatus | null>(null);
   const [repo, setRepo] = useState("docs.git");
@@ -62,6 +64,14 @@ export function MergeQueuePanel() {
   const [notice, setNotice] = useState("");
   const [live, setLive] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const statusLabel = useCallback(
+    (value: string): string => {
+      const key = STATUS_KEYS[value];
+      return key ? t(key) : value;
+    },
+    [t],
+  );
 
   const load = useCallback(async () => {
     if (!actor) {
@@ -89,7 +99,9 @@ export function MergeQueuePanel() {
       poll = window.setInterval(() => {
         load()
           .then(() => active && setError(""))
-          .catch((cause: unknown) => active && setError(cause instanceof Error ? cause.message : "加载失败"));
+          .catch((cause: unknown) =>
+            active && setError(cause instanceof Error ? cause.message : t("queue.loadError")),
+          );
       }, 5000);
     };
     const base =
@@ -111,7 +123,7 @@ export function MergeQueuePanel() {
           setItems(message.items ?? []);
         }
       } catch {
-        // 忽略非 JSON 消息
+        // Ignore non-JSON messages.
       }
     };
     socket.onerror = () => socket.close();
@@ -129,7 +141,7 @@ export function MergeQueuePanel() {
         window.clearInterval(poll);
       }
     };
-  }, [actor, load]);
+  }, [actor, load, t]);
 
   async function enqueue() {
     if (!actor || !repo.trim() || !source.trim() || !target.trim()) {
@@ -149,9 +161,9 @@ export function MergeQueuePanel() {
       setSource("");
       setTitle("");
       await load();
-      setNotice("已入队；worker 会自动处理");
+      setNotice(t("queue.enqueuedNotice"));
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "入队失败");
+      setError(cause instanceof Error ? cause.message : t("queue.enqueueError"));
     } finally {
       setBusy(false);
     }
@@ -166,9 +178,9 @@ export function MergeQueuePanel() {
     try {
       const processed = await processMergeQueue(actor, 5);
       await load();
-      setNotice(`已处理 ${processed.length} 个候选`);
+      setNotice(formatMessage(t("queue.processedNotice"), { count: processed.length }));
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "处理失败");
+      setError(cause instanceof Error ? cause.message : t("queue.processError"));
     } finally {
       setBusy(false);
     }
@@ -183,9 +195,9 @@ export function MergeQueuePanel() {
     try {
       await retryMerge(actor, item.id);
       await load();
-      setNotice("已重新入队");
+      setNotice(t("queue.retryNotice"));
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "重试失败");
+      setError(cause instanceof Error ? cause.message : t("queue.retryError"));
     } finally {
       setBusy(false);
     }
@@ -200,7 +212,7 @@ export function MergeQueuePanel() {
       await cancelMerge(actor, item.id);
       await load();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "取消失败");
+      setError(cause instanceof Error ? cause.message : t("queue.cancelError"));
     } finally {
       setBusy(false);
     }
@@ -213,61 +225,64 @@ export function MergeQueuePanel() {
       <div className="section-heading">
         <div>
           <p className="section-kicker">DUOBAO · MERGE TRAIN</p>
-          <h2 id="merge-queue-title">合入队列</h2>
+          <h2 id="merge-queue-title">{t("queue.title")}</h2>
         </div>
         <span className="section-note">
           <select
-            aria-label="按状态筛选"
+            aria-label={t("queue.filterAria")}
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value)}
             style={{ ...fieldStyle, padding: "4px 8px", marginRight: 10 }}
           >
-            <option value="all">全部状态</option>
-            {Object.entries(STATUS_LABEL).map(([value, label]) => (
+            <option value="all">{t("queue.all")}</option>
+            {Object.entries(STATUS_KEYS).map(([value, key]) => (
               <option key={value} value={value}>
-                {label}
+                {t(key)}
               </option>
             ))}
           </select>
-          {status?.worker ? "自动 worker" : "手动模式"} · {status?.queued ?? 0} 排队 · {visible.length} 个候选 ·{" "}
-          {live ? "实时" : "轮询"}
+          {status?.worker ? t("queue.workerMode") : t("queue.manualMode")} · {status?.queued ?? 0}{" "}
+          {t("queue.queued")} · {visible.length} {t("queue.candidates")} · {live ? t("queue.live") : t("queue.polling")}
           <button className="btn btn-ghost" type="button" disabled={busy} onClick={processNow} style={{ marginLeft: 10 }}>
-            立即处理
+            {t("queue.processNow")}
           </button>
         </span>
       </div>
       {!actor ? (
         <p className="section-note" style={{ padding: "0 26px 22px" }}>
-          未配置 NEXT_PUBLIC_TIANXUAN_ACTOR，无法操作合入队列。
+          {t("queue.disabled")}
         </p>
       ) : (
         <>
           <div className="reading-list live-list">
             {visible.length === 0 ? (
               <p className="section-note" style={{ padding: "12px 16px" }}>
-                队列为空。入队后由 worker 自动预检、检验并合入。
+                {t("queue.empty")}
               </p>
             ) : (
               visible.map((item) => (
                 <div className="reading-item" key={item.id}>
                   <span className="reading-index">{item.status.slice(0, 1).toUpperCase()}</span>
                   <span className="reading-copy">
-                    <strong>
-                      {item.title || `${item.source} → ${item.target}`}
-                    </strong>
+                    <strong>{item.title || `${item.source} → ${item.target}`}</strong>
                     <span>
-                      {item.repo} · {item.source} → {item.target} · 尝试 {item.attempts} ·{" "}
-                      {STATUS_LABEL[item.status] ?? item.status}
+                      {formatMessage(t("queue.itemMeta"), {
+                        repo: item.repo,
+                        source: item.source,
+                        target: item.target,
+                        attempts: item.attempts,
+                      })}{" "}
+                      · {statusLabel(item.status)}
                       {evidenceText(item) ? ` · ${evidenceText(item)}` : ""}
                     </span>
                   </span>
                   {item.status === "queued" ? (
                     <button className="btn btn-ghost" type="button" disabled={busy} onClick={() => cancel(item)}>
-                      取消
+                      {t("queue.cancel")}
                     </button>
                   ) : ["rejected", "conflict", "cancelled"].includes(item.status) ? (
                     <button className="btn btn-ghost" type="button" disabled={busy} onClick={() => retry(item)}>
-                      重试
+                      {t("queue.retry")}
                     </button>
                   ) : null}
                 </div>
@@ -283,19 +298,57 @@ export function MergeQueuePanel() {
               padding: "0 26px 22px",
             }}
           >
-            <input aria-label="仓库" style={fieldStyle} placeholder="docs.git" value={repo} onChange={(event) => setRepo(event.target.value)} />
-            <input aria-label="源分支" style={fieldStyle} placeholder="feature" value={source} onChange={(event) => setSource(event.target.value)} />
-            <input aria-label="目标分支" style={fieldStyle} placeholder="main" value={target} onChange={(event) => setTarget(event.target.value)} />
-            <input aria-label="标题" style={fieldStyle} placeholder="合入标题（可选）" value={title} onChange={(event) => setTitle(event.target.value)} />
-            <input aria-label="优先级" style={fieldStyle} placeholder="0" value={priority} onChange={(event) => setPriority(event.target.value)} />
+            <input
+              aria-label={t("queue.repoAria")}
+              style={fieldStyle}
+              placeholder="docs.git"
+              value={repo}
+              onChange={(event) => setRepo(event.target.value)}
+            />
+            <input
+              aria-label={t("queue.sourceAria")}
+              style={fieldStyle}
+              placeholder="feature"
+              value={source}
+              onChange={(event) => setSource(event.target.value)}
+            />
+            <input
+              aria-label={t("queue.targetAria")}
+              style={fieldStyle}
+              placeholder="main"
+              value={target}
+              onChange={(event) => setTarget(event.target.value)}
+            />
+            <input
+              aria-label={t("queue.titleAria")}
+              style={fieldStyle}
+              placeholder={t("queue.titlePlaceholder")}
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+            />
+            <input
+              aria-label={t("queue.priorityAria")}
+              style={fieldStyle}
+              placeholder="0"
+              value={priority}
+              onChange={(event) => setPriority(event.target.value)}
+            />
             <button className="btn btn-primary" type="button" disabled={busy || !source.trim()} onClick={enqueue}>
-              {busy ? "处理中…" : "入队"}
+              {busy ? t("queue.busy") : t("queue.enqueue")}
             </button>
           </div>
         </>
       )}
-      {notice ? <p className="section-note" style={{ padding: "0 26px 16px" }}>{notice}</p> : null}
-      {error ? <p className="section-note" style={{ padding: "0 26px 16px" }}>{error}</p> : null}
+      {notice ? (
+        <p className="section-note" style={{ padding: "0 26px 16px" }}>
+          {notice}
+        </p>
+      ) : null}
+      {error ? (
+        <p className="section-note" style={{ padding: "0 26px 16px" }}>
+          {error}
+        </p>
+      ) : null}
     </section>
   );
 }

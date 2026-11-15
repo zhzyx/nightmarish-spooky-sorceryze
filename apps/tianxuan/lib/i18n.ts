@@ -86,6 +86,44 @@ const zh = {
   "repos.importNameAria": "导入仓库名",
   "repos.imported": "已导入",
   "repos.branches": "分支",
+  "queue.title": "合入队列",
+  "queue.filterAria": "按状态筛选",
+  "queue.all": "全部状态",
+  "queue.statusQueued": "排队中",
+  "queue.statusValidating": "检验中",
+  "queue.statusMerged": "已合入",
+  "queue.statusConflict": "冲突",
+  "queue.statusRejected": "已拒绝",
+  "queue.statusCancelled": "已取消",
+  "queue.workerMode": "自动 worker",
+  "queue.manualMode": "手动模式",
+  "queue.queued": "排队",
+  "queue.candidates": "个候选",
+  "queue.live": "实时",
+  "queue.polling": "轮询",
+  "queue.processNow": "立即处理",
+  "queue.disabled": "未配置 NEXT_PUBLIC_TIANXUAN_ACTOR，无法操作合入队列。",
+  "queue.empty": "队列为空。入队后由 worker 自动预检、检验并合入。",
+  "queue.attempts": "尝试",
+  "queue.cancel": "取消",
+  "queue.retry": "重试",
+  "queue.itemMeta": "{repo} · {source} → {target} · 尝试 {attempts}",
+  "queue.repoAria": "仓库",
+  "queue.sourceAria": "源分支",
+  "queue.targetAria": "目标分支",
+  "queue.titleAria": "标题",
+  "queue.titlePlaceholder": "合入标题（可选）",
+  "queue.priorityAria": "优先级",
+  "queue.enqueue": "入队",
+  "queue.busy": "处理中…",
+  "queue.enqueuedNotice": "已入队；worker 会自动处理",
+  "queue.enqueueError": "入队失败",
+  "queue.processedNotice": "已处理 {count} 个候选",
+  "queue.processError": "处理失败",
+  "queue.retryNotice": "已重新入队",
+  "queue.retryError": "重试失败",
+  "queue.cancelError": "取消失败",
+  "queue.loadError": "加载失败",
 } as const;
 
 export type MessageKey = keyof typeof zh;
@@ -173,6 +211,44 @@ const en: Record<MessageKey, string> = {
   "repos.importNameAria": "Import repository name",
   "repos.imported": "Imported",
   "repos.branches": "branches",
+  "queue.title": "Merge queue",
+  "queue.filterAria": "Filter by status",
+  "queue.all": "All statuses",
+  "queue.statusQueued": "Queued",
+  "queue.statusValidating": "Validating",
+  "queue.statusMerged": "Merged",
+  "queue.statusConflict": "Conflict",
+  "queue.statusRejected": "Rejected",
+  "queue.statusCancelled": "Cancelled",
+  "queue.workerMode": "Auto worker",
+  "queue.manualMode": "Manual mode",
+  "queue.queued": "queued",
+  "queue.candidates": "candidates",
+  "queue.live": "Live",
+  "queue.polling": "Polling",
+  "queue.processNow": "Process now",
+  "queue.disabled": "NEXT_PUBLIC_TIANXUAN_ACTOR is not configured; the merge queue is disabled.",
+  "queue.empty": "The queue is empty. Workers validate, check and merge new candidates automatically.",
+  "queue.attempts": "attempts",
+  "queue.cancel": "Cancel",
+  "queue.retry": "Retry",
+  "queue.itemMeta": "{repo} · {source} → {target} · attempts {attempts}",
+  "queue.repoAria": "Repository",
+  "queue.sourceAria": "Source branch",
+  "queue.targetAria": "Target branch",
+  "queue.titleAria": "Title",
+  "queue.titlePlaceholder": "Merge title (optional)",
+  "queue.priorityAria": "Priority",
+  "queue.enqueue": "Enqueue",
+  "queue.busy": "Working…",
+  "queue.enqueuedNotice": "Enqueued; the worker will process it automatically",
+  "queue.enqueueError": "Failed to enqueue",
+  "queue.processedNotice": "Processed {count} candidate(s)",
+  "queue.processError": "Failed to process",
+  "queue.retryNotice": "Re-enqueued",
+  "queue.retryError": "Retry failed",
+  "queue.cancelError": "Cancel failed",
+  "queue.loadError": "Failed to load",
 };
 
 export function normalizeLocale(value: string | null | undefined): Locale {
@@ -181,6 +257,13 @@ export function normalizeLocale(value: string | null | undefined): Locale {
 
 export function translate(locale: Locale, key: MessageKey): string {
   return locale === "en" ? en[key] : zh[key];
+}
+
+/** 简单占位符替换：`{name}` → params.name，未提供的占位符原样保留。 */
+export function formatMessage(template: string, params: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (match, name: string) =>
+    Object.prototype.hasOwnProperty.call(params, name) ? String(params[name]) : match,
+  );
 }
 
 export function routeTitleKey(pathname: string): MessageKey {
