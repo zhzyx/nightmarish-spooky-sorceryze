@@ -122,8 +122,8 @@ bool ValidatePass(const PassDesc &stPass, PassId nPass, const std::vector<Resour
 		}
 		const std::uint32_t nCount = GetAccessCount(stAccess, stResource);
 		if (nCount == 0 || nCount > stResource.nSubresourceCount - stAccess.nFirstSubresource || !IsStateValid(stAccess.eState) ||
-				(stAccess.bWrite && !IsWriteState(stAccess.eState)) || (stAccess.bReadBeforeWrite && !stAccess.bWrite) ||
-				(!stAccess.bWrite && IsWriteState(stAccess.eState) && stAccess.eState != ResourceState::UnorderedAccess))
+			(stAccess.bWrite && !IsWriteState(stAccess.eState)) || (stAccess.bReadBeforeWrite && !stAccess.bWrite) ||
+			(!stAccess.bWrite && IsWriteState(stAccess.eState) && stAccess.eState != ResourceState::UnorderedAccess))
 		{
 			return Fail(out_stDiagnostic, GraphError::InvalidAccess, nPass, stAccess.nResource, "Resource access has an invalid range, state, or read/write mode.");
 		}
@@ -200,8 +200,8 @@ void AddTransition(std::vector<ResourceBarrier> &out_arrBarriers, ResourceId nRe
 ResourceId FrameGraph::AddResource(const ResourceDesc &stDescription)
 {
 	if (stDescription.strName.empty() || stDescription.strName.size() > 256 || !IsStateValid(stDescription.eInitialState) ||
-			stDescription.nSubresourceCount == 0 || stDescription.nSubresourceCount > MAX_RESOURCE_SUBRESOURCES ||
-			arrResources.size() >= MAX_GRAPH_RESOURCES || stDescription.nSubresourceCount > MAX_GRAPH_SUBRESOURCES - nTotalSubresources)
+		stDescription.nSubresourceCount == 0 || stDescription.nSubresourceCount > MAX_RESOURCE_SUBRESOURCES ||
+		arrResources.size() >= MAX_GRAPH_RESOURCES || stDescription.nSubresourceCount > MAX_GRAPH_SUBRESOURCES - nTotalSubresources)
 	{
 		return INVALID_RESOURCE;
 	}
@@ -214,8 +214,8 @@ ResourceId FrameGraph::AddResource(const ResourceDesc &stDescription)
 PassId FrameGraph::AddPass(const PassDesc &stDescription)
 {
 	if (stDescription.strName.empty() || stDescription.strName.size() > 256 || arrPasses.size() >= MAX_GRAPH_PASSES ||
-			stDescription.arrAccesses.size() > MAX_GRAPH_DECLARATIONS - nTotalAccesses ||
-			stDescription.arrDependencies.size() > MAX_GRAPH_DECLARATIONS - nTotalDependencies)
+		stDescription.arrAccesses.size() > MAX_GRAPH_DECLARATIONS - nTotalAccesses ||
+		stDescription.arrDependencies.size() > MAX_GRAPH_DECLARATIONS - nTotalDependencies)
 	{
 		return INVALID_PASS;
 	}

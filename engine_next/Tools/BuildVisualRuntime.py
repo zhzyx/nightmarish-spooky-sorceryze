@@ -128,11 +128,12 @@ def configure_tools(args):
 
 
 def parse_includes(args, output, dependency):
+    root = args.repo.resolve()
     if args.compiler == "clang":
         text = dependency.read_text(encoding="utf-8").replace("\\\n", " ")
         _, _, body = text.partition(":")
         paths = [Path(value.replace("\\ ", " ")) for value in body.split()]
-        paths = [path if path.is_absolute() else args.repo / path for path in paths]
+        paths = [path if path.is_absolute() else root / path for path in paths]
     else:
         if dependency is None or not dependency.is_file():
             raise ValueError("MSVC source-dependency output is missing")
@@ -147,7 +148,7 @@ def parse_includes(args, output, dependency):
         paths = [Path(source), *[Path(path) for path in includes]]
     includes = []
     for path in paths:
-        name = BuildSupport.repository_name(args.repo, path)
+        name = BuildSupport.repository_name(root, path)
         if name is not None and not name.startswith(("engine_next/", "build/engine_next/")):
             raise ValueError("Undeclared repository include: " + name)
         includes.append(str(path.resolve()))

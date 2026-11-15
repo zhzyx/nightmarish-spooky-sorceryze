@@ -15,7 +15,7 @@ class VisualBuildTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
-        self.repo = Path(self.temporary.name)
+        self.repo = Path(self.temporary.name).resolve()
         self.build = self.repo / "build/engine_next/visual"
         self.build.mkdir(parents=True)
         (self.repo / "LICENSE.txt").write_text("test license\n", encoding="utf-8")
@@ -146,6 +146,20 @@ class VisualBuildTests(unittest.TestCase):
         dependency.write_text(json.dumps({"Data": {"Source": source, "Includes": [header]}}), encoding="utf-8")
         result = BuildVisualRuntime.parse_includes(args, "注意: 包含文件".encode("gbk"), dependency)
         self.assertEqual(result, sorted([source, header]))
+
+    def test_include_boundary_resolves_repository_aliases(self):
+        alias = self.repo / "nested/.."
+        (self.repo / "nested").mkdir()
+        args = SimpleNamespace(compiler="msvc", repo=alias)
+        dependency = self.build / "source.json"
+        dependency.write_text(
+            json.dumps({
+                "Data": {"Source": str(self.repo / "engine_next/a.cpp"), "Includes": [str(self.repo / "core/object.h")]}
+            }),
+            encoding="utf-8",
+        )
+        with self.assertRaises(ValueError):
+            BuildVisualRuntime.parse_includes(args, b"", dependency)
 
     def test_missing_msvc_dependency_json_fails_closed(self):
         args = SimpleNamespace(compiler="msvc", repo=self.repo)

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-1-20261115",
+  "issue_number": 1327,
+  "failed_pr": 1328,
+  "failed_head": "7e6fec362b1a0cf20a8cb6e9a1b245bcd97c90cf",
+  "failures": [
+    "Pinned clang-format22 and copyright header normalization",
+    "Original external RenderDoc label Initialization flagged by codespell",
+    "Noncanonical temporary roots in macOS/Windows tool tests"
+  ],
+  "repairs": [
+    "Applied pinned clang-format22.1.5 and repository copyright formatter to candidate C++ only",
+    "JSON unicode escape retains exact RenderDoc label semantics",
+    "Canonicalized include-audit root and fixture temp roots; alias negative test added"
+  ],
+  "local_tests": {
+    "framegraph": "14 tests/1208 checks passed",
+    "tools": "32 tests passed",
+    "contract": "30 tests passed, 1 symlink conditional skip",
+    "gpu_validation": "240 frames, 2 resizes, zero errors"
+  },
+  "scope_recovery": {
+    "incident": "Local codespell function called without explicit varargs applied repo configuration and touched unrelated text",
+    "restored_tracked_files": 668,
+    "restoration": "Restored every unrelated tracked path from current task HEAD; verified only intended candidate paths remain modified",
+    "public_and_build_evidence": "Untracked build JSON path spellings may have been rewritten; refreshed final3 build/capture reports are authoritative; old receipts remain historical"
+  },
+  "remaining": "Exact repaired candidate CI and main delivery pending"
+}

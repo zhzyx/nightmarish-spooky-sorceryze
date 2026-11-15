@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-1-20261115",
+  "issue_number": 1327,
+  "supersedes": "engine-next-visual-runtime-m4-1-review-20261115.json",
+  "inputs": [
+    {
+      "path": "engine_next/Rendering/FrameGraph.cpp",
+      "sha256": "e4784d6f998c4c4006d2029f4888d7ecff026a40f136afab3bc9480a2d72a6a0"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/FrameGraph.h",
+      "sha256": "e16e0b7de00c910d78fda9f2d46dc8e19da7a3bb8e9e4cf0aa73eb2768ea94ca"
+    },
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "sha256": "d55ced4611b16d00074a394092651e39aace3ec95ceeef7f376873195dec977b"
+    },
+    {
+      "path": "engine_next/Apps/NextVisualClientMain.cpp",
+      "sha256": "5a8e89a8d0d6dcc9e7cfb931bdf89b40d64ce547c3ccaa0c2ee505139a7c1635"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/FixedMesh.hlsl",
+      "sha256": "82ee60e24fd25c6ea3d0d02fa077b899852350ae8c18d2a9523f48d1b516bc1f"
+    },
+    {
+      "path": "engine_next/Tools/BuildVisualRuntime.py",
+      "sha256": "6ef9c5fb857eeba1a9777103be49483c6ff555b80436cbb02261b449c3feee8b"
+    },
+    {
+      "path": "engine_next/Tools/PackageVisualRuntime.py",
+      "sha256": "8dbca74f72ecab4140f03ba0f8011a2b4f16c79bccb5e9b094bac620b9f92770"
+    },
+    {
+      "path": "tools/check_engine_next_contract.py",
+      "sha256": "ce528852c68b418dd27c4c2618d15900a6e1e51566e9d64a039de19cba4b992d"
+    }
+  ],
+  "reviewers": {
+    "/root/m41_build": "FrameGraph/timing/DRED independent review; portable alias fix regression",
+    "root": "Build/package and CI repair review, pinned formatting semantic preservation",
+    "/root/m41_framegraph": "RHI independent review fixes preserved"
+  },
+  "result": "passed_local_review",
+  "remaining": [
+    "exact candidate CI",
+    "M4.2-M4.6",
+    "DRED fault injection",
+    "UE/4K final acceptance"
+  ]
+}

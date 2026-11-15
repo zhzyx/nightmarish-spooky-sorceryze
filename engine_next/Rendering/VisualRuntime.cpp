@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  VisualRuntime.cpp                                                               */
+/*  VisualRuntime.cpp                                                     */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -134,7 +134,7 @@ struct GpuQueue
 		D3D12_COMMAND_QUEUE_DESC stDescription{};
 		stDescription.Type = eType;
 		if (FAILED(pDevice->CreateCommandQueue(&stDescription, IID_PPV_ARGS(stQueue.Put()))) ||
-				FAILED(pDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(stFence.Put()))))
+			FAILED(pDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(stFence.Put()))))
 		{
 			return false;
 		}
@@ -408,7 +408,7 @@ public:
 		for (GpuQueue *pQueue : { &stGraphics, &stCompute, &stCopy })
 		{
 			if (pQueue->stQueue.Get() != nullptr && pQueue->stFence.Get() != nullptr && pQueue->stEvent.hValue != nullptr &&
-					!pQueue->Flush() && stDevice.Get() != nullptr && SUCCEEDED(stDevice->GetDeviceRemovedReason()))
+				!pQueue->Flush() && stDevice.Get() != nullptr && SUCCEEDED(stDevice->GetDeviceRemovedReason()))
 			{
 				// A live GPU may still reference every allocation. Process teardown
 				// is the only safe terminal outcome after retirement has failed.
@@ -665,9 +665,9 @@ bool VisualRuntime::CreateFrameContexts()
 	{
 		FrameContext &stFrame = arrFrames[nIndex];
 		if (FAILED(stDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(stFrame.stGraphicsAllocator.Put()))) ||
-				FAILED(stDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COMPUTE, IID_PPV_ARGS(stFrame.stComputeAllocator.Put()))) ||
-				FAILED(stDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, stFrame.stGraphicsAllocator.Get(), nullptr, IID_PPV_ARGS(stFrame.stGraphicsList.Put()))) ||
-				FAILED(stDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_COMPUTE, stFrame.stComputeAllocator.Get(), nullptr, IID_PPV_ARGS(stFrame.stComputeList.Put()))))
+			FAILED(stDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COMPUTE, IID_PPV_ARGS(stFrame.stComputeAllocator.Put()))) ||
+			FAILED(stDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, stFrame.stGraphicsAllocator.Get(), nullptr, IID_PPV_ARGS(stFrame.stGraphicsList.Put()))) ||
+			FAILED(stDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_COMPUTE, stFrame.stComputeAllocator.Get(), nullptr, IID_PPV_ARGS(stFrame.stComputeList.Put()))))
 		{
 			return Fail("Create frame command allocators/lists");
 		}
@@ -732,7 +732,7 @@ bool VisualRuntime::CreateTargets()
 	{
 		FrameContext &stFrame = arrFrames[nIndex];
 		if (FAILED(stSwapchain->GetBuffer(nIndex, IID_PPV_ARGS(arrBackbuffers[nIndex].Put()))) ||
-				FAILED(stDevice->CreateCommittedResource(&stHeap, D3D12_HEAP_FLAG_NONE, &stTexture, D3D12_RESOURCE_STATE_COMMON, &stClear, IID_PPV_ARGS(stFrame.stColor.Put()))))
+			FAILED(stDevice->CreateCommittedResource(&stHeap, D3D12_HEAP_FLAG_NONE, &stTexture, D3D12_RESOURCE_STATE_COMMON, &stClear, IID_PPV_ARGS(stFrame.stColor.Put()))))
 		{
 			return Fail("Create color targets");
 		}
@@ -874,8 +874,8 @@ bool VisualRuntime::CreateMesh()
 	const D3D12_RESOURCE_DESC stIndexDescription = BufferDescription(nIndexBytes);
 	const D3D12_RESOURCE_DESC stUploadDescription = BufferDescription(nVertexBytes + nIndexBytes);
 	if (FAILED(stDevice->CreateCommittedResource(&stDefault, D3D12_HEAP_FLAG_NONE, &stVertexDescription, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(stVertices.Put()))) ||
-			FAILED(stDevice->CreateCommittedResource(&stDefault, D3D12_HEAP_FLAG_NONE, &stIndexDescription, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(stIndices.Put()))) ||
-			FAILED(stDevice->CreateCommittedResource(&stUploadHeap, D3D12_HEAP_FLAG_NONE, &stUploadDescription, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(stMeshUpload.Put()))))
+		FAILED(stDevice->CreateCommittedResource(&stDefault, D3D12_HEAP_FLAG_NONE, &stIndexDescription, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(stIndices.Put()))) ||
+		FAILED(stDevice->CreateCommittedResource(&stUploadHeap, D3D12_HEAP_FLAG_NONE, &stUploadDescription, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(stMeshUpload.Put()))))
 	{
 		return Fail("Create mesh buffers");
 	}
@@ -1036,8 +1036,8 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		return Fail("Wait frame retirement");
 	}
 	if (FAILED(stFrame.stGraphicsAllocator->Reset()) || FAILED(stFrame.stComputeAllocator->Reset()) ||
-			FAILED(stFrame.stGraphicsList->Reset(stFrame.stGraphicsAllocator.Get(), stGraphicsPipeline.Get())) ||
-			FAILED(stFrame.stComputeList->Reset(stFrame.stComputeAllocator.Get(), stComputePipeline.Get())))
+		FAILED(stFrame.stGraphicsList->Reset(stFrame.stGraphicsAllocator.Get(), stGraphicsPipeline.Get())) ||
+		FAILED(stFrame.stComputeList->Reset(stFrame.stComputeAllocator.Get(), stComputePipeline.Get())))
 	{
 		return Fail("Reset frame command lists");
 	}

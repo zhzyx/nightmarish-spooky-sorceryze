@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-1-20261115",
+  "issue_number": 1327,
+  "supersedes": "engine-next-visual-runtime-m4-1-verification-20261115.json",
+  "native_key": "017069ea6c366f0c46dfa6366dde06011ecb1992a507107a364e77e46b8ef2e4",
+  "binary": {
+    "path": "build/engine_next/m4-1-r3/next_visual_client.exe",
+    "sha256": "af89a0ecea35e8c2b9c27eb364dad7c87d76a38f02dc9987272167ded1f3e40b"
+  },
+  "checks": {
+    "msvc_build": true,
+    "framegraph": "14 tests/1208 checks passed",
+    "gpu_validation": {
+      "frames": 240,
+      "errors": 0,
+      "resizes": 2,
+      "report": "build/engine_next/m4-1-r3/Validation.json"
+    },
+    "tools": "32 tests passed",
+    "source_contract": "30 tests passed with 1 conditional symlink skip",
+    "clean_source_and_shader_update": "data-collection/engine-next-visual-runtime-m4-1-build-impact.json"
+  },
+  "retained_prior_evidence": {
+    "timing_ring": "Prior same algorithm 66000-frame wrap passed, formatter-only source change",
+    "m2_m3": "Original runtime regression unchanged by formatter and build-test alias fix"
+  },
+  "remaining": "Exact candidate CI and main readback; new-binary motion/video/capture evidence appended separately"
+}
