@@ -49,7 +49,7 @@ export default async function DocPage({ params }: DocPageProps) {
         title: liveDoc.title,
         spaceId: "live",
         spaceName: t("doc.liveSpace"),
-        kind: t("doc.liveKind"),
+        kind: t("doc.liveKind") as DocRecord["kind"],
         excerpt: "",
         updated: "",
         updatedBy: "",
