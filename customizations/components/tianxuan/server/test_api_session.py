@@ -52,7 +52,7 @@ def test_login_issues_token_and_bearer_authorizes() -> None:
 def test_invalid_bearer_and_missing_identity() -> None:
     client, _ = _setup()
     invalid = client.get("/api/v1/docs", headers={"Authorization": "Bearer txs_missing"})
-    assert invalid.status_code == 400
+    assert invalid.status_code == 401
 
     missing = client.get("/api/v1/docs")
     assert missing.status_code == 400
@@ -73,7 +73,7 @@ def test_logout_revokes_token() -> None:
     assert logout.json()["revoked"] is True
 
     denied = client.get("/api/v1/docs", headers={"Authorization": f"Bearer {token}"})
-    assert denied.status_code == 400
+    assert denied.status_code == 401
 
 
 def test_tokens_are_hashed_and_expire() -> None:

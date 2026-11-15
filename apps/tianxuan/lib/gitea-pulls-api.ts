@@ -1,3 +1,5 @@
+import { authHeaders } from "@/lib/auth";
+
 /**
  * 多宝 Gitea Pull Request API 客户端。
  *
@@ -73,7 +75,7 @@ export async function fetchBranches(
   repo: string,
 ): Promise<ApiBranch[]> {
   const response = await fetch(`${apiBase()}${repoPath(owner, repo)}/branches`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   const body = await readJson<{ branches?: ApiBranch[] }>(response, "branches request");
@@ -89,7 +91,7 @@ export async function fetchPulls(
 ): Promise<ApiPull[]> {
   const query = `?state=${encodeURIComponent(state)}`;
   const response = await fetch(`${apiBase()}${repoPath(owner, repo)}/pulls${query}`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   const body = await readJson<{ pulls?: ApiPull[] }>(response, "pulls request");
@@ -105,7 +107,7 @@ export async function createPull(
 ): Promise<ApiPull> {
   const response = await fetch(`${apiBase()}${repoPath(owner, repo)}/pulls`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "X-Actor": actor },
+    headers: { "Content-Type": "application/json", ...authHeaders(actor) },
     body: JSON.stringify({
       title: payload.title,
       head: payload.head,
@@ -129,7 +131,7 @@ export async function mergePull(
     `${apiBase()}${repoPath(owner, repo)}/pulls/${encodeURIComponent(String(number))}/merge`,
     {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Actor": actor },
+      headers: { "Content-Type": "application/json", ...authHeaders(actor) },
       body: JSON.stringify({ method }),
       cache: "no-store",
     },

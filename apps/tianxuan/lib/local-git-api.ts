@@ -1,3 +1,5 @@
+import { authHeaders } from "@/lib/auth";
+
 /**
  * 多宝本地 Git 仓库浏览 API 客户端。
  *
@@ -33,7 +35,7 @@ export interface ApiCommit {
 /** 列出 `TIANXUAN_REPO_ROOT` 下的本地裸仓库。 */
 export async function fetchLocalRepos(actor: string): Promise<ApiLocalRepo[]> {
   const response = await fetch(`${apiBase()}/api/v1/git/repos`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   if (!response.ok) {
@@ -48,7 +50,7 @@ export async function fetchLocalBranches(actor: string, name: string): Promise<s
   const response = await fetch(
     `${apiBase()}/api/v1/git/repos/${encodeURIComponent(name)}/branches`,
     {
-      headers: { "X-Actor": actor },
+      headers: authHeaders(actor),
       cache: "no-store",
     },
   );
@@ -70,7 +72,7 @@ export async function fetchLocalLog(
   const response = await fetch(
     `${apiBase()}/api/v1/git/repos/${encodeURIComponent(name)}/log?${query}`,
     {
-      headers: { "X-Actor": actor },
+      headers: authHeaders(actor),
       cache: "no-store",
     },
   );
@@ -105,7 +107,7 @@ async function jsonRequest<T>(
   const response = await fetch(`${apiBase()}${path}`, {
     method: init?.method ?? "GET",
     headers: {
-      "X-Actor": actor,
+      ...authHeaders(actor),
       ...(init?.body === undefined ? {} : { "Content-Type": "application/json" }),
     },
     body: init?.body === undefined ? undefined : JSON.stringify(init.body),

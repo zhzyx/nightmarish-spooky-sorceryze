@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
+import { getToken } from "@/lib/auth";
 import {
   cancelMerge,
   enqueueMerge,
@@ -91,8 +92,10 @@ export function MergeQueuePanel() {
     };
     const base =
       process.env.NEXT_PUBLIC_TIANXUAN_API_BASE?.replace(/\/$/, "") ?? "http://127.0.0.1:8000";
+    const token = getToken();
+    const query = token ? `token=${encodeURIComponent(token)}` : `actor=${encodeURIComponent(actor)}`;
     const socket = new WebSocket(
-      `${base.replace(/^http/, "ws")}/api/v1/ws/merge-queue?actor=${encodeURIComponent(actor)}`,
+      `${base.replace(/^http/, "ws")}/api/v1/ws/merge-queue?${query}`,
     );
     socket.onopen = () => {
       if (active) {

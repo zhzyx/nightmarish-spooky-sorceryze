@@ -1,3 +1,5 @@
+import { authHeaders } from "@/lib/auth";
+
 function apiBase(): string {
   return typeof window === "undefined" ? API_BASE : "";
 }
@@ -54,7 +56,7 @@ export async function mergeDoc(
 ): Promise<ApiMergeResult> {
   const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(id)}/merge`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "X-Actor": actor },
+    headers: { "Content-Type": "application/json", ...authHeaders(actor) },
     body: JSON.stringify({ base_md, local_md, expected_version }),
   });
   if (response.status === 409) {
@@ -76,7 +78,7 @@ export interface ApiRepo {
 
 export async function fetchRepos(actor: string): Promise<ApiRepo[]> {
   const response = await fetch(`${apiBase()}/api/v1/repos`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   if (!response.ok) {
@@ -88,7 +90,7 @@ export async function fetchRepos(actor: string): Promise<ApiRepo[]> {
 
 export async function fetchDocs(actor: string): Promise<ApiDoc[]> {
   const response = await fetch(`${apiBase()}/api/v1/docs`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   if (!response.ok) {
@@ -100,7 +102,7 @@ export async function fetchDocs(actor: string): Promise<ApiDoc[]> {
 
 export async function fetchDoc(id: string, actor: string): Promise<ApiDocDetail> {
   const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(id)}`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   if (!response.ok) {
@@ -121,7 +123,7 @@ export interface ApiShare {
 
 export async function fetchShares(id: string, actor: string): Promise<ApiShare[]> {
   const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(id)}/shares`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   if (!response.ok) {
@@ -138,7 +140,7 @@ export async function setDocVisibility(
 ): Promise<ApiDocDetail> {
   const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(id)}/visibility`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json", "X-Actor": actor },
+    headers: { "Content-Type": "application/json", ...authHeaders(actor) },
     body: JSON.stringify({ visibility }),
   });
   if (!response.ok) {
@@ -155,7 +157,7 @@ export async function shareDoc(
 ): Promise<void> {
   const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(id)}/shares`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "X-Actor": actor },
+    headers: { "Content-Type": "application/json", ...authHeaders(actor) },
     body: JSON.stringify({ user_id: userId, permission }),
   });
   if (!response.ok) {
@@ -168,7 +170,7 @@ export async function unshareDoc(id: string, actor: string, userId: string): Pro
     `${apiBase()}/api/v1/docs/${encodeURIComponent(id)}/shares/${encodeURIComponent(userId)}`,
     {
       method: "DELETE",
-      headers: { "X-Actor": actor },
+      headers: authHeaders(actor),
     },
   );
   if (!response.ok) {
@@ -188,7 +190,7 @@ export interface ApiComment {
 
 export async function fetchComments(docId: string, actor: string): Promise<ApiComment[]> {
   const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(docId)}/comments`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   if (!response.ok) {
@@ -205,7 +207,7 @@ export async function addComment(
 ): Promise<ApiComment> {
   const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(docId)}/comments`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "X-Actor": actor },
+    headers: { "Content-Type": "application/json", ...authHeaders(actor) },
     body: JSON.stringify({ body }),
   });
   if (!response.ok) {
@@ -221,7 +223,7 @@ export async function resolveComment(
 ): Promise<ApiComment> {
   const response = await fetch(`${apiBase()}/api/v1/comments/${encodeURIComponent(commentId)}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json", "X-Actor": actor },
+    headers: { "Content-Type": "application/json", ...authHeaders(actor) },
     body: JSON.stringify({ resolved }),
   });
   if (!response.ok) {
@@ -238,7 +240,7 @@ export interface ApiVersion {
 
 export async function fetchVersions(docId: string, actor: string): Promise<ApiVersion[]> {
   const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(docId)}/versions`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   if (!response.ok) {
@@ -256,7 +258,7 @@ export async function fetchDocDiff(
 ): Promise<string> {
   const query = `from_version=${encodeURIComponent(String(from))}&to_version=${encodeURIComponent(String(to))}`;
   const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(docId)}/diff?${query}`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   if (!response.ok) {
@@ -292,7 +294,7 @@ export interface ApiIssue {
 export async function fetchIssues(actor: string, status?: string): Promise<ApiIssue[]> {
   const query = status ? `?status=${encodeURIComponent(status)}` : "";
   const response = await fetch(`${apiBase()}/api/v1/issues${query}`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   if (!response.ok) {
@@ -304,7 +306,7 @@ export async function fetchIssues(actor: string, status?: string): Promise<ApiIs
 
 export async function fetchBoard(actor: string): Promise<Record<string, ApiIssue[]>> {
   const response = await fetch(`${apiBase()}/api/v1/board`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   if (!response.ok) {
@@ -330,7 +332,7 @@ export async function fetchDocExternalLinks(
 ): Promise<ApiExternalLink[]> {
   const response = await fetch(
     `${apiBase()}/api/v1/docs/${encodeURIComponent(docId)}/external-links`,
-    { headers: { "X-Actor": actor }, cache: "no-store" },
+    { headers: authHeaders(actor), cache: "no-store" },
   );
   if (!response.ok) {
     throw new Error(`external links request failed: ${response.status}`);
@@ -357,7 +359,7 @@ export interface ApiIdentityLink {
 
 export async function fetchUsers(actor: string): Promise<ApiMember[]> {
   const response = await fetch(`${apiBase()}/api/v1/users`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   if (!response.ok) {
@@ -369,7 +371,7 @@ export async function fetchUsers(actor: string): Promise<ApiMember[]> {
 
 export async function fetchIdentityLinks(actor: string): Promise<ApiIdentityLink[]> {
   const response = await fetch(`${apiBase()}/api/v1/identity/links`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   if (!response.ok) {
@@ -387,7 +389,7 @@ export async function createIdentityLink(
 ): Promise<ApiIdentityLink> {
   const response = await fetch(`${apiBase()}/api/v1/identity/links`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "X-Actor": actor },
+    headers: { "Content-Type": "application/json", ...authHeaders(actor) },
     body: JSON.stringify({ provider, subject, user_id: userId }),
   });
   if (!response.ok) {
@@ -399,7 +401,7 @@ export async function createIdentityLink(
 export async function deleteIdentityLink(actor: string, linkId: string): Promise<void> {
   const response = await fetch(
     `${apiBase()}/api/v1/identity/links/${encodeURIComponent(linkId)}`,
-    { method: "DELETE", headers: { "X-Actor": actor } },
+    { method: "DELETE", headers: authHeaders(actor) },
   );
   if (!response.ok) {
     throw new Error(`identity unlink failed: ${response.status}`);
@@ -415,7 +417,7 @@ export async function rebindIdentityLink(
     `${apiBase()}/api/v1/identity/links/${encodeURIComponent(linkId)}`,
     {
       method: "PATCH",
-      headers: { "Content-Type": "application/json", "X-Actor": actor },
+      headers: { "Content-Type": "application/json", ...authHeaders(actor) },
       body: JSON.stringify({ user_id: userId }),
     },
   );
@@ -432,7 +434,7 @@ export async function downloadDocExport(
 ): Promise<Blob> {
   const response = await fetch(
     `${apiBase()}/api/v1/docs/${encodeURIComponent(docId)}/export/file?format=${format}`,
-    { headers: { "X-Actor": actor } },
+    { headers: authHeaders(actor) },
   );
   if (!response.ok) {
     throw new Error(`doc export failed: ${response.status}`);
@@ -450,7 +452,7 @@ export interface ApiIdentityEvent {
 
 export async function fetchIdentityEvents(actor: string): Promise<ApiIdentityEvent[]> {
   const response = await fetch(`${apiBase()}/api/v1/identity/events?limit=20`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   if (!response.ok) {

@@ -1,3 +1,5 @@
+import { authHeaders } from "@/lib/auth";
+
 /**
  * 偃师需求 API 客户端。
  *
@@ -36,7 +38,7 @@ export interface ApiRequirementProgress {
 /** 列出全部需求文档。 */
 export async function fetchRequirements(actor: string): Promise<ApiRequirement[]> {
   const response = await fetch(`${apiBase()}/api/v1/docs?kind=requirement`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   if (!response.ok) {
@@ -56,7 +58,7 @@ export async function fetchRequirementProgress(
   id: string,
 ): Promise<ApiRequirement> {
   const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(id)}`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   if (!response.ok) {

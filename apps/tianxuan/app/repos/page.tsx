@@ -40,6 +40,9 @@ export default async function ReposPage() {
           </p>
         </div>
         <div className="page-actions">
+          <Link className="btn btn-ghost" href="/login">
+            登录
+          </Link>
           <Link className="btn btn-ghost" href="/docs/duobao-git">
             <Icon name="docs" size={16} />
             工程规范

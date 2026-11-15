@@ -111,13 +111,15 @@ python tianshu_bridge.py --api http://127.0.0.1:8000 --actor <user_id> \
 | `TIANXUAN_REQUIRED_CHECKS` | 合并前必须 success 的提交检查 context（逗号分隔） |
 | `TIANXUAN_IMPORT_ALLOW_LOCAL` | 允许本机路径/`file://` 仓库导入（默认 0） |
 | `TIANXUAN_IMPORT_ALLOWED_HOSTS` | 导入来源主机白名单（逗号分隔） |
+| `TIANXUAN_ALLOW_ACTOR_HEADER` | 兼容开关：为 `1` 时接受 `X-Actor`；默认 `0`，必须使用 Bearer 会话 |
+| `TIANXUAN_TOKEN` | Web 服务端渲染使用的会话 token（可选；未设置时回退 `X-Actor`） |
 | `NEXT_PUBLIC_TIANXUAN_API_BASE` | Web 访问的 API 地址，默认 `http://127.0.0.1:8000` |
 | `TIANXUAN_ACTOR` | Web 服务端渲染使用的 actor（用户 ID） |
 | `NEXT_PUBLIC_TIANXUAN_ACTOR` | Web 浏览器端保存实时文档使用的 actor |
 
 ## 当前能力
 
-- 身份：注册、登录、Bearer 会话（哈希存储、24h 过期、吊销）、租户角色（admin/editor/viewer）、单次邀请
+- 身份：注册、登录、Bearer 会话（哈希存储、24h 过期、吊销）、租户角色（admin/editor/viewer）、单次邀请；Web `/login` 登录页把 token 存入 localStorage 与同站 cookie，API 客户端优先发送 Bearer，`X-Actor` 默认关闭
 - 文曲：Markdown CRUD、版本与统一 diff、评论、链接/反向链接、检索、导出、AI 视图、自动归类、AI 结构化补丁
 - 权限：文档 `tenant/private` 可见性、按用户 read/write 共享；列表与所有读路径按 ACL 过滤
 - 协作：WebSocket 实时房间（快照/presence/更新广播）、离线草稿三方合并、Web 端本地草稿与在线同步
@@ -143,5 +145,5 @@ python -m pytest customizations/components/tianxuan
 - 新增 Agent/Skill（文曲、多宝、司南工单扩展）必须先经 `skills/gonggong-check` 审查并取得精确候选准入。
 - 文档以 Markdown 为唯一权威，AI 阅读优先；人类视图是第二等公民。
 - 验收沿用现有 Agent（司南协调、偃师设计、夸父质量、谛听证据）。
-- 认证仍是会话 token + 临时 actor 语义；角色为租户级，文档 ACL 已实现，但字段级权限与共享过期尚未实现。
+- 认证默认使用 Bearer 会话（`/api/v1/auth/session`）；Web 登录页把 token 存入 localStorage 与同站 cookie，`X-Actor` 仅在显式开启时兼容；角色为租户级，文档 ACL 已实现，但字段级权限与共享过期尚未实现。
 - 产品 Agent/Skill 仍是候选，未经授权批准人签署不得视为已准入。
