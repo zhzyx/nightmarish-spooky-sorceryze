@@ -344,6 +344,13 @@ docker run --rm -v tianxuan-restore:/data --entrypoint sh tianxuan-api:local \
   -c 'sqlite3 /data/tianxuan.db "PRAGMA integrity_check"'
 ```
 
+`backup.sh` can be pointed at a non-default setup with
+`TIANXUAN_DATA_VOLUME`, `TIANXUAN_API_IMAGE` and `TIANXUAN_HEALTH_URL`
+(for example an HTTP health URL when TLS is not enabled). The
+`duobao-acceptance` workflow runs a full backup/restore drill against the
+Compose volume, extracts the archive into a throwaway volume, verifies the
+SQLite integrity check and uploads a JSON receipt.
+
 For local installs without Docker, the module ships an end-to-end drill that
 creates a backup, verifies every SHA256, restores it and compares repository
 bytes plus the SQLite integrity check:

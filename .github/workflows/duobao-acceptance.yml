@@ -36,6 +36,60 @@ jobs:
           fi
           curl -fsS http://127.0.0.1:8080/api/v1/health
 
+      - name: Backup and restore drill
+        env:
+          TIANXUAN_BACKUP_DIR: ${{ runner.temp }}/backups
+          TIANXUAN_HEALTH_URL: http://127.0.0.1:8080/api/v1/health
+        run: |
+          set -u
+          BASE=http://127.0.0.1:8080
+          curl -fsS -X POST "$BASE/api/v1/auth/register"             -H "Content-Type: application/json"             -d '{"tenant_name":"Acceptance","email":"acceptance@example.com","password":"secret-pass"}'             >/dev/null || echo "register skipped"
+          docker run --rm -v tianxuan-data:/data --entrypoint sh tianxuan-api:local -c             "mkdir -p /data/repos/demo.git && printf 'ref: refs/heads/main\n' > /data/repos/demo.git/HEAD"
+
+          bash deploy/production/backup.sh
+          ARCHIVE=$(ls -1t "$TIANXUAN_BACKUP_DIR"/tianxuan-data-*.tgz | head -n1)
+          test -n "$ARCHIVE"
+
+          docker volume rm -f tianxuan-restore >/dev/null 2>&1 || true
+          docker volume create tianxuan-restore >/dev/null
+          docker run --rm -v tianxuan-restore:/data -v "$TIANXUAN_BACKUP_DIR":/backup             --entrypoint sh tianxuan-api:local -c "tar -xzf /backup/$(basename "$ARCHIVE") -C /data"
+          RESTORED_HEAD=$(docker run --rm -v tianxuan-restore:/data --entrypoint cat tianxuan-api:local /data/repos/demo.git/HEAD)
+          DB_CHECK=$(docker run --rm -v tianxuan-restore:/data --entrypoint python tianxuan-api:local -c             "import sqlite3; print(sqlite3.connect('/data/tianxuan.db').execute('PRAGMA integrity_check').fetchone()[0])")
+          test "$RESTORED_HEAD" = "ref: refs/heads/main"
+          test "$DB_CHECK" = "ok"
+
+          python3 - "$ARCHIVE" <<'PY'
+          import hashlib
+          import json
+          import pathlib
+          import sys
+          import tarfile
+
+          archive = sys.argv[1]
+          with tarfile.open(archive) as tar:
+              names = tar.getnames()
+          assert any(name.endswith("tianxuan.db") for name in names), names[:10]
+          assert any(name.endswith("repos/demo.git/HEAD") for name in names), names[:10]
+          digest = hashlib.sha256(pathlib.Path(archive).read_bytes()).hexdigest()
+          receipt = {
+              "archive": archive,
+              "sha256": digest,
+              "entries": len(names),
+              "has_database": True,
+              "has_repository": True,
+          }
+          pathlib.Path("/tmp/backup-receipt.json").write_text(json.dumps(receipt), encoding="utf-8")
+          print(json.dumps(receipt))
+          PY
+
+      - name: Upload backup receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tianxuan-backup-drill
+          path: /tmp/backup-receipt.json
+          if-no-files-found: warn
+
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
