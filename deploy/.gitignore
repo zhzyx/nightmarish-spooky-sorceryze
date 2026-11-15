@@ -2,10 +2,10 @@
 .env
 .env.*
 !.env.example
-docker-compose.override.yml
-htpasswd
-login.html
-nginx.gate.conf
-backups/
-production/access-url.txt
-production/access-token
+/docker-compose.override.yml
+/htpasswd
+/login.html
+/nginx.gate.conf
+/backups/
+/production/access-url.txt
+/production/access-token
