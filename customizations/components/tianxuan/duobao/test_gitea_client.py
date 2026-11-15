@@ -780,3 +780,39 @@ def test_invalid_sudo_rejected_before_request() -> None:
     with pytest.raises(GiteaValidationError):
         GiteaClient(BASE_URL, TOKEN, sudo="bad user", transport=httpx.MockTransport(handler))
     assert requests == []
+
+
+def test_list_releases_normalizes_payload(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "GET"
+        assert request.url.path == "/api/v1/repos/owner/demo/releases"
+        return httpx.Response(
+            200,
+            json=[
+                {
+                    "id": 7,
+                    "tag_name": "v1.0.0",
+                    "name": "First release",
+                    "body": "notes",
+                    "draft": False,
+                    "prerelease": True,
+                    "created_at": "2026-01-01T00:00:00Z",
+                    "html_url": "https://gitea.example/owner/demo/releases/7",
+                }
+            ],
+        )
+
+    client, _ = make_client(handler)
+    releases = client.list_releases("owner", "demo")
+    assert releases == [
+        {
+            "id": 7,
+            "tag_name": "v1.0.0",
+            "name": "First release",
+            "body": "notes",
+            "draft": False,
+            "prerelease": True,
+            "created_at": "2026-01-01T00:00:00Z",
+            "html_url": "https://gitea.example/owner/demo/releases/7",
+        }
+    ]

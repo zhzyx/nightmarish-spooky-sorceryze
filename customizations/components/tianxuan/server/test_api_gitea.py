@@ -44,6 +44,9 @@ class _FakeGitea:
     ) -> list[dict[str, Any]]:
         return [{"number": 1, "title": "demo", "state": state, "page": page, "limit": limit}]
 
+    def list_releases(self, owner: str, repo: str) -> list[dict[str, Any]]:
+        return [{"id": 1, "tag_name": "v1.0.0", "name": "First release", "draft": False, "prerelease": False}]
+
     def create_pull_request(
         self,
         owner: str,
@@ -160,6 +163,17 @@ def test_create_and_get_repo_with_fake_client(monkeypatch) -> None:
     listed = client.get("/api/v1/repos?owner=owner&limit=10", headers=headers).json()["repos"]
     assert listed[0]["full_name"] == "owner/demo"
     assert listed[0]["limit"] == 10
+
+
+def test_repo_releases_with_fake_client(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_GITEA_URL", "http://gitea.example")
+    monkeypatch.setenv("TIANXUAN_GITEA_TOKEN", "secret")
+    monkeypatch.setattr(api_module, "GiteaClient", _FakeGitea)
+    client, headers = _setup()
+
+    releases = client.get("/api/v1/repos/owner/demo/releases", headers=headers).json()["releases"]
+    assert releases[0]["tag_name"] == "v1.0.0"
+    assert releases[0]["name"] == "First release"
 
 
 def test_repo_branches_and_pull_requests_with_fake_client(monkeypatch) -> None:

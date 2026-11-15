@@ -481,6 +481,31 @@ class GiteaClient:
             raise GiteaError(0, "unexpected branches response: expected a JSON array")
         return [_normalize_branch(item) for item in payload]
 
+    def list_releases(self, owner: str, repo: str) -> list[dict[str, Any]]:
+        """列出仓库发布（releases），按 Gitea 返回顺序。"""
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        payload = self._request("GET", f"/api/v1/repos/{owner}/{repo}/releases")
+        if payload is None:
+            return []
+        if not isinstance(payload, list):
+            raise GiteaError(0, "unexpected releases response: expected a JSON array")
+        releases: list[dict[str, Any]] = []
+        for item in payload:
+            if not isinstance(item, dict):
+                continue
+            releases.append({
+                "id": item.get("id"),
+                "tag_name": str(item.get("tag_name") or ""),
+                "name": str(item.get("name") or ""),
+                "body": str(item.get("body") or ""),
+                "draft": bool(item.get("draft")),
+                "prerelease": bool(item.get("prerelease")),
+                "created_at": str(item.get("created_at") or ""),
+                "html_url": str(item.get("html_url") or ""),
+            })
+        return releases
+
     def list_pull_requests(
         self,
         owner: str,

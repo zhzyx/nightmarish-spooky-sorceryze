@@ -57,6 +57,32 @@ export interface ApiReview {
   submitted_at: string;
 }
 
+/** `GET /api/v1/repos/{owner}/{name}/releases` 返回的单个发布。 */
+export interface ApiRelease {
+  id: number;
+  tag_name: string;
+  name: string;
+  body: string;
+  draft: boolean;
+  prerelease: boolean;
+  created_at: string;
+  html_url: string;
+}
+
+/** 读取仓库发布列表。 */
+export async function fetchReleases(
+  actor: string,
+  owner: string,
+  repo: string,
+): Promise<ApiRelease[]> {
+  const response = await fetch(`${apiBase()}${repoPath(owner, repo)}/releases`, {
+    headers: authHeaders(actor),
+    cache: "no-store",
+  });
+  const body = await readJson<{ releases?: ApiRelease[] }>(response, "releases request");
+  return body.releases ?? [];
+}
+
 /** 创建 Pull Request 的请求体。 */
 export interface CreatePullPayload {
   title: string;

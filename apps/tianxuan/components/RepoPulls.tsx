@@ -11,10 +11,12 @@ import {
   createReview,
   fetchBranches,
   fetchPulls,
+  fetchReleases,
   fetchReviews,
   mergePull,
   type ApiBranch,
   type ApiPull,
+  type ApiRelease,
   type ApiReview,
   type MergeMethod,
   type PullState,
@@ -184,6 +186,7 @@ export function RepoPulls() {
   const [body, setBody] = useState("");
   const [mergeMethods, setMergeMethods] = useState<Record<number, MergeMethod>>({});
   const [reviewsByPull, setReviewsByPull] = useState<Record<number, ApiReview[]>>({});
+  const [releases, setReleases] = useState<ApiRelease[]>([]);
   const [pullState, setPullState] = useState<PullState>("open");
   const [page, setPage] = useState(1);
   const requestRef = useRef(0);
@@ -211,6 +214,7 @@ export function RepoPulls() {
       setNotice("");
       setBranches([]);
       setPulls([]);
+      setReleases([]);
       setReviewsByPull({});
       setPullState(stateValue);
       setPage(pageValue);
@@ -219,9 +223,10 @@ export function RepoPulls() {
       rememberValue(OWNER_STORAGE_KEY, nextOwner);
       rememberValue(REPO_STORAGE_KEY, nextRepo);
       try {
-        const [nextBranches, nextPulls] = await Promise.all([
+        const [nextBranches, nextPulls, nextReleases] = await Promise.all([
           fetchBranches(actor, nextOwner, nextRepo),
           fetchPulls(actor, nextOwner, nextRepo, stateValue, pageValue, PAGE_SIZE),
+          fetchReleases(actor, nextOwner, nextRepo).catch(() => [] as ApiRelease[]),
         ]);
         if (requestRef.current !== request) {
           return;
@@ -231,6 +236,7 @@ export function RepoPulls() {
           : nextBranches[0]?.name ?? "main";
         setBranches(nextBranches);
         setPulls(nextPulls);
+        setReleases(nextReleases);
         const reviewEntries = await Promise.all(
           nextPulls.map(async (pull) => {
             try {
@@ -658,6 +664,38 @@ export function RepoPulls() {
                           </>
                         ) : null}
                       </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <p className="mono-key" style={{ marginBottom: "6px" }}>
+                {t("pulls.releasesTitle")} · {activeOwner}/{activeRepo}
+              </p>
+              {releases.length === 0 ? (
+                <p className="section-note">{t("pulls.releasesEmpty")}</p>
+              ) : (
+                <div className="reading-list live-list" style={{ padding: 0 }}>
+                  {releases.map((release) => (
+                    <div className="reading-item" key={release.id ?? release.tag_name}>
+                      <span className="reading-index">{release.tag_name}</span>
+                      <span className="reading-copy">
+                        <strong>{release.name || release.tag_name}</strong>
+                        <span>
+                          {release.draft ? t("pulls.releaseDraft") : ""}
+                          {release.draft && release.prerelease ? " · " : ""}
+                          {release.prerelease ? t("pulls.releasePre") : ""}
+                          {release.created_at ? ` · ${release.created_at.slice(0, 10)}` : ""}
+                        </span>
+                      </span>
+                      {release.html_url ? (
+                        <a className="btn btn-ghost btn-sm" href={release.html_url} rel="noreferrer" target="_blank">
+                          <Icon name="link" size={12} />
+                          {t("pulls.openInGitea")}
+                        </a>
+                      ) : null}
                     </div>
                   ))}
                 </div>

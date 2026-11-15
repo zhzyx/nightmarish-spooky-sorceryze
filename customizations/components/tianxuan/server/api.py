@@ -858,6 +858,19 @@ def create_app(
         except GiteaError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 
+    @app.get("/api/v1/repos/{owner}/{name}/releases")
+    def list_repo_releases(
+        owner: str,
+        name: str,
+        actor: ActorDep,
+    ) -> dict[str, list[dict[str, Any]]]:
+        client = _gitea_client(_gitea_sudo(store, actor))
+        try:
+            with client:
+                return {"releases": client.list_releases(owner, name)}
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
     @app.get("/api/v1/repos/{owner}/{name}/pulls")
     def list_repo_pulls(
         owner: str,
