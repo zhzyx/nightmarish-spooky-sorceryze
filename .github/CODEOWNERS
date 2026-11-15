@@ -563,3 +563,4 @@
 /modules/gameplay/doc_classes/                  @kaiyunxue @godotengine/documentation
 /modules/gameplay/tests/                        @kaiyunxue @godotengine/tests
 /deploy/ @zhzyx
+/deploy/production/ @zhzyx @godotengine/buildsystem
