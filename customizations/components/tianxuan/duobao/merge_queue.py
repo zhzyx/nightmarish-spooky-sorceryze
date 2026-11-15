@@ -342,7 +342,11 @@ class MergeQueue:
                         "status": "rejected",
                         "evidence": {"error": f"{type(error).__name__}: {error}", "attempt": attempt},
                     }
-            existing = json.loads(item["evidence"] or "{}")
+            raw_evidence = item.get("evidence")
+            if isinstance(raw_evidence, dict):
+                existing = raw_evidence
+            else:
+                existing = json.loads(raw_evidence or "{}")
             merged_evidence = {**existing, **outcome["evidence"]} if isinstance(existing, dict) else outcome["evidence"]
             with self._lock, self.db:
                 self.db.execute(
