@@ -211,7 +211,9 @@ def test_list_pull_requests_filters_state(make_client: ClientFactory) -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.method == "GET"
         assert request.url.path == "/api/v1/repos/owner/demo/pulls"
-        assert request.url.query == b"state=all"
+        assert request.url.params["state"] == "all"
+        assert request.url.params["page"] == "1"
+        assert request.url.params["limit"] == "30"
         return httpx.Response(
             200,
             json=[
@@ -231,6 +233,28 @@ def test_list_pull_requests_filters_state(make_client: ClientFactory) -> None:
     assert pulls[0]["number"] == 3
     assert pulls[0]["state"] == "open"
     assert pulls[0]["head"] == "feature"
+
+
+def test_list_pull_requests_supports_pagination(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.params["state"] == "closed"
+        assert request.url.params["page"] == "2"
+        assert request.url.params["limit"] == "10"
+        return httpx.Response(200, json=[])
+
+    client, _ = make_client(handler)
+    assert client.list_pull_requests("owner", "demo", "closed", 2, 10) == []
+
+
+def test_invalid_pull_request_pagination_rejected(make_client: ClientFactory) -> None:
+    client, requests = make_client(forbidden_handler)
+
+    with pytest.raises(GiteaValidationError):
+        client.list_pull_requests("owner", "demo", "open", page=0)
+    with pytest.raises(GiteaValidationError):
+        client.list_pull_requests("owner", "demo", "open", limit=101)
+
+    assert requests == []
 
 
 def test_list_repos_for_current_user(make_client: ClientFactory) -> None:

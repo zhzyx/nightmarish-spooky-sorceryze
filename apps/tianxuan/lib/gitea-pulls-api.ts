@@ -96,14 +96,16 @@ export async function fetchBranches(
   return body.branches ?? [];
 }
 
-/** 读取指定状态的 Pull Request。 */
+/** 读取指定状态、分页的 Pull Request。 */
 export async function fetchPulls(
   actor: string,
   owner: string,
   repo: string,
   state: PullState,
+  page = 1,
+  limit = 30,
 ): Promise<ApiPull[]> {
-  const query = `?state=${encodeURIComponent(state)}`;
+  const query = `?state=${encodeURIComponent(state)}&page=${encodeURIComponent(String(page))}&limit=${encodeURIComponent(String(limit))}`;
   const response = await fetch(`${apiBase()}${repoPath(owner, repo)}/pulls${query}`, {
     headers: authHeaders(actor),
     cache: "no-store",

@@ -39,8 +39,10 @@ class _FakeGitea:
     def list_branches(self, owner: str, repo: str) -> list[dict[str, Any]]:
         return [{"name": "main", "protected": False, "commit_sha": "abc123"}]
 
-    def list_pull_requests(self, owner: str, repo: str, state: str = "open") -> list[dict[str, Any]]:
-        return [{"number": 1, "title": "demo", "state": state}]
+    def list_pull_requests(
+        self, owner: str, repo: str, state: str = "open", page: int = 1, limit: int = 30
+    ) -> list[dict[str, Any]]:
+        return [{"number": 1, "title": "demo", "state": state, "page": page, "limit": limit}]
 
     def create_pull_request(
         self,

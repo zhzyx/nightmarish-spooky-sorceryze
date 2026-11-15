@@ -842,11 +842,13 @@ def create_app(
         name: str,
         actor: ActorDep,
         state: str = Query(default="open"),
+        page: int = Query(default=1, ge=1),
+        limit: int = Query(default=30, ge=1, le=100),
     ) -> dict[str, list[dict[str, Any]]]:
         client = _gitea_client(_gitea_sudo(store, actor))
         try:
             with client:
-                return {"pulls": client.list_pull_requests(owner, name, state)}
+                return {"pulls": client.list_pull_requests(owner, name, state, page, limit)}
         except GiteaError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 

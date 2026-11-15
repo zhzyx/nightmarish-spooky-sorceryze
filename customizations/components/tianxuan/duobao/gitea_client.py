@@ -481,15 +481,26 @@ class GiteaClient:
             raise GiteaError(0, "unexpected branches response: expected a JSON array")
         return [_normalize_branch(item) for item in payload]
 
-    def list_pull_requests(self, owner: str, repo: str, state: str = "open") -> list[dict[str, Any]]:
-        """列出 Pull Request；``state`` 支持 ``open``/``closed``/``all``。"""
+    def list_pull_requests(
+        self,
+        owner: str,
+        repo: str,
+        state: str = "open",
+        page: int = 1,
+        limit: int = 30,
+    ) -> list[dict[str, Any]]:
+        """列出 Pull Request；``state`` 支持 ``open``/``closed``/``all``，支持分页。"""
         owner = _validate_segment(owner, "repository owner")
         repo = _validate_segment(repo, "repository name")
         state = _validate_choice(state, _ISSUE_STATES, "pull request state")
+        if isinstance(page, bool) or not isinstance(page, int) or page < 1:
+            raise GiteaValidationError("page must be a positive integer")
+        if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 100:
+            raise GiteaValidationError("limit must be an integer between 1 and 100")
         payload = self._request(
             "GET",
             f"/api/v1/repos/{owner}/{repo}/pulls",
-            params={"state": state},
+            params={"state": state, "page": str(page), "limit": str(limit)},
         )
         if payload is None:
             return []

@@ -13,6 +13,7 @@ import {
   type ApiPull,
   type ApiReview,
   type MergeMethod,
+  type PullState,
   type ReviewEvent,
 } from "@/lib/gitea-pulls-api";
 
@@ -20,6 +21,7 @@ type LoadState = "idle" | "loading" | "ready" | "error";
 
 const OWNER_STORAGE_KEY = "tianxuan.pulls.owner";
 const REPO_STORAGE_KEY = "tianxuan.pulls.repo";
+const PAGE_SIZE = 20;
 
 const headingStyle = {
   padding: "24px 26px 0",
@@ -103,6 +105,13 @@ const errorTextStyle = { color: "#D48B80" } as const;
 
 const noticeTextStyle = { color: "#9CCBBF" } as const;
 
+const pagerStyle = {
+  display: "flex",
+  gap: "8px",
+  alignItems: "center",
+  flexWrap: "wrap",
+} as const;
+
 const pullItemStyle = {
   gridTemplateColumns: "44px minmax(0, 1fr) auto",
   alignItems: "start",
@@ -170,6 +179,8 @@ export function RepoPulls() {
   const [body, setBody] = useState("");
   const [mergeMethods, setMergeMethods] = useState<Record<number, MergeMethod>>({});
   const [reviewsByPull, setReviewsByPull] = useState<Record<number, ApiReview[]>>({});
+  const [pullState, setPullState] = useState<PullState>("open");
+  const [page, setPage] = useState(1);
   const requestRef = useRef(0);
 
   useEffect(() => {
@@ -181,7 +192,7 @@ export function RepoPulls() {
   }, [actor]);
 
   const load = useCallback(
-    async (ownerValue: string, repoValue: string) => {
+    async (ownerValue: string, repoValue: string, stateValue: PullState = "open", pageValue = 1) => {
       const nextOwner = ownerValue.trim();
       const nextRepo = repoValue.trim();
       if (!actor || !nextOwner || !nextRepo) {
@@ -196,6 +207,8 @@ export function RepoPulls() {
       setBranches([]);
       setPulls([]);
       setReviewsByPull({});
+      setPullState(stateValue);
+      setPage(pageValue);
       setActiveOwner(nextOwner);
       setActiveRepo(nextRepo);
       rememberValue(OWNER_STORAGE_KEY, nextOwner);
@@ -203,7 +216,7 @@ export function RepoPulls() {
       try {
         const [nextBranches, nextPulls] = await Promise.all([
           fetchBranches(actor, nextOwner, nextRepo),
-          fetchPulls(actor, nextOwner, nextRepo, "open"),
+          fetchPulls(actor, nextOwner, nextRepo, stateValue, pageValue, PAGE_SIZE),
         ]);
         if (requestRef.current !== request) {
           return;
@@ -265,7 +278,7 @@ export function RepoPulls() {
       setActionError("请先填写 owner 与 repo，再点击“加载”。");
       return;
     }
-    void load(owner, repo);
+    void load(owner, repo, pullState, 1);
   }
 
   async function submitCreate(event: FormEvent<HTMLFormElement>) {
@@ -298,7 +311,7 @@ export function RepoPulls() {
       });
       setTitle("");
       setBody("");
-      await load(activeOwner, activeRepo);
+      await load(activeOwner, activeRepo, pullState, page);
       setNotice(`已创建 PR #${created.number}「${created.title || nextTitle}」。`);
     } catch {
       setActionError("创建 Pull Request 失败，请确认分支存在、Gitea 已配置且当前账号有权限。");
@@ -320,7 +333,7 @@ export function RepoPulls() {
     setNotice("");
     try {
       const result = await mergePull(actor, activeOwner, activeRepo, pull.number, method);
-      await load(activeOwner, activeRepo);
+      await load(activeOwner, activeRepo, pullState, page);
       setNotice(
         result.merged
           ? `PR #${pull.number} 已以 ${method} 方式合并${
@@ -391,7 +404,7 @@ export function RepoPulls() {
         ? "读取中…"
         : loadState === "error"
           ? "读取失败"
-          : `${pulls.length} 个 open PR`;
+          : `${pulls.length} 个 ${pullState} PR（第 ${page} 页）`;
 
   const createDisabled =
     busy !== "" ||
@@ -459,6 +472,48 @@ export function RepoPulls() {
           </button>
         </form>
 
+        <div style={pagerStyle} aria-label="Pull Request 筛选与分页">
+          <label style={{ ...fieldStyle, flex: "0 0 auto", minWidth: "120px" }}>
+            <span className="mono-key">状态</span>
+            <select
+              aria-label="Pull Request 状态筛选"
+              disabled={loadState === "loading" || busy !== ""}
+              onChange={(event) => {
+                const next = event.target.value as PullState;
+                if (activeOwner && activeRepo && loadState !== "idle") {
+                  void load(activeOwner, activeRepo, next, 1);
+                } else {
+                  setPullState(next);
+                  setPage(1);
+                }
+              }}
+              style={selectStyle}
+              value={pullState}
+            >
+              <option value="open">open</option>
+              <option value="closed">closed</option>
+              <option value="all">all</option>
+            </select>
+          </label>
+          <button
+            className="btn btn-ghost btn-sm"
+            disabled={page <= 1 || loadState === "loading" || busy !== ""}
+            onClick={() => void load(activeOwner, activeRepo, pullState, page - 1)}
+            type="button"
+          >
+            上一页
+          </button>
+          <span className="mono-key">第 {page} 页</span>
+          <button
+            className="btn btn-ghost btn-sm"
+            disabled={pulls.length < PAGE_SIZE || loadState === "loading" || busy !== ""}
+            onClick={() => void load(activeOwner, activeRepo, pullState, page + 1)}
+            type="button"
+          >
+            下一页
+          </button>
+        </div>
+
         {actionError ? (
           <p className="section-note" role="alert" style={errorTextStyle}>
             <Icon name="alert" size={13} /> {actionError}
@@ -505,7 +560,7 @@ export function RepoPulls() {
               {pulls.length === 0 ? (
                 <p className="section-note">
                   <Icon name="pullRequest" size={13} />
-                  当前没有处于 open 状态的 Pull Request。
+                  当前没有处于 {pullState} 状态的 Pull Request。
                 </p>
               ) : (
                 <div
