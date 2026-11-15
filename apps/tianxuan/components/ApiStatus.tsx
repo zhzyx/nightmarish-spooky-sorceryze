@@ -2,17 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { API_BASE, fetchHealth } from "@/lib/api";
+import { useI18n } from "@/lib/i18n-client";
 
 type Status = "checking" | "online" | "offline";
 
-const labels: Record<Status, string> = {
-  checking: "检查 API…",
-  online: "API 已连接",
-  offline: "API 未连接 · 示例数据",
-};
-
 export function ApiStatus() {
+  const { t } = useI18n();
   const [status, setStatus] = useState<Status>("checking");
+  const labels: Record<Status, string> = {
+    checking: t("api.checking"),
+    online: t("api.online"),
+    offline: t("api.offline"),
+  };
 
   useEffect(() => {
     const controller = new AbortController();
