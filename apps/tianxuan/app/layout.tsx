@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 import { AppShell } from "@/components/AppShell";
+import { LOCALE_COOKIE, normalizeLocale } from "@/lib/i18n";
 import { I18nProvider } from "@/lib/i18n-client";
 import "./globals.css";
 
@@ -22,10 +24,11 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);
   return (
-    <html lang="zh-CN">
+    <html lang={locale === "en" ? "en" : "zh-CN"}>
       <body>
-        <I18nProvider>
+        <I18nProvider initialLocale={locale}>
           <AppShell>{children}</AppShell>
         </I18nProvider>
       </body>

@@ -31,25 +31,32 @@ function readCookie(name: string): string {
   return "";
 }
 
-function readLocale(): Locale {
+function readLocale(fallback: Locale): Locale {
   if (typeof window === "undefined") {
-    return "zh";
+    return fallback;
+  }
+  const fromCookie = readCookie(LOCALE_COOKIE);
+  if (fromCookie) {
+    return normalizeLocale(fromCookie);
   }
   const stored = window.localStorage.getItem(LOCALE_COOKIE);
-  if (stored) {
-    return normalizeLocale(stored);
-  }
-  return normalizeLocale(readCookie(LOCALE_COOKIE));
+  return stored ? normalizeLocale(stored) : fallback;
 }
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("zh");
+export function I18nProvider({
+  children,
+  initialLocale = "zh",
+}: {
+  children: ReactNode;
+  initialLocale?: Locale;
+}) {
+  const [locale, setLocaleState] = useState<Locale>(initialLocale);
 
   useEffect(() => {
-    const next = readLocale();
+    const next = readLocale(initialLocale);
     setLocaleState(next);
     document.documentElement.lang = next === "en" ? "en" : "zh-CN";
-  }, []);
+  }, [initialLocale]);
 
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next);

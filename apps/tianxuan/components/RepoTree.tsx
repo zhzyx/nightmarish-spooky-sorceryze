@@ -1,8 +1,7 @@
 "use client";
 
-import { useActor } from "@/lib/use-actor";
-
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { useI18n } from "@/lib/i18n-client";
 import {
   createLocalBranch,
   deleteLocalBranch,
@@ -15,6 +14,7 @@ import {
   type ApiTag,
   type ApiTreeEntry,
 } from "@/lib/local-git-api";
+import { useActor } from "@/lib/use-actor";
 
 type LoadState = "idle" | "loading" | "error";
 
@@ -77,6 +77,7 @@ function errorMessage(error: unknown, fallback: string): string {
 
 export function RepoTree() {
   const actor = useActor();
+  const { t } = useI18n();
   const [repos, setRepos] = useState<ApiLocalRepo[]>([]);
   const [repo, setRepo] = useState("");
   const [branches, setBranches] = useState<string[]>([]);
@@ -112,10 +113,10 @@ export function RepoTree() {
           return;
         }
         setStatus("error");
-        setError(errorMessage(loadError, "读取文件树失败"));
+        setError(errorMessage(loadError, t("repos.loadTreeError")));
       }
     },
-    [actor],
+    [actor, t],
   );
 
   const selectRepo = useCallback(
@@ -158,10 +159,10 @@ export function RepoTree() {
           return;
         }
         setStatus("error");
-        setError(errorMessage(loadError, "读取仓库失败"));
+        setError(errorMessage(loadError, t("repos.loadRepoError")));
       }
     },
-    [actor],
+    [actor, t],
   );
 
   useEffect(() => {
@@ -178,13 +179,13 @@ export function RepoTree() {
       .catch((loadError: unknown) => {
         if (!cancelled) {
           setStatus("error");
-          setError(errorMessage(loadError, "读取本地仓库失败"));
+          setError(errorMessage(loadError, t("repos.loadReposError")));
         }
       });
     return () => {
       cancelled = true;
     };
-  }, [actor]);
+  }, [actor, t]);
 
   async function handleCreateBranch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -202,7 +203,7 @@ export function RepoTree() {
       setBranch(name);
       await loadTree(repo, name, "");
     } catch (createError) {
-      setError(errorMessage(createError, "创建分支失败"));
+      setError(errorMessage(createError, t("repos.createBranchError")));
     } finally {
       setBusy(false);
     }
@@ -212,7 +213,7 @@ export function RepoTree() {
     if (!repo || !branch || busy) {
       return;
     }
-    if (!window.confirm(`删除分支 ${branch}？`)) {
+    if (!window.confirm(`${t("repos.deleteConfirm")}: ${branch}`)) {
       return;
     }
     setBusy(true);
@@ -229,7 +230,7 @@ export function RepoTree() {
         await loadTree(repo, nextBranch, "");
       }
     } catch (deleteError) {
-      setError(errorMessage(deleteError, "删除分支失败"));
+      setError(errorMessage(deleteError, t("repos.deleteBranchError")));
     } finally {
       setBusy(false);
     }
@@ -242,7 +243,7 @@ export function RepoTree() {
     if (!name || !source || busy) {
       return;
     }
-    if (!window.confirm(`从 ${source} 导入为 ${name}？`)) {
+    if (!window.confirm(`${t("repos.importAria")}: ${source} -> ${name}`)) {
       return;
     }
     setBusy(true);
@@ -253,13 +254,13 @@ export function RepoTree() {
       setImportName("");
       setImportSource("");
       setImportNotice(
-        `已导入 ${imported.name}（${imported.branches.length} 分支，${imported.tags.length} 标签）。`,
+        `${t("repos.imported")} ${imported.name} · ${imported.branches.length} ${t("repos.branches")} · ${imported.tags.length} ${t("repos.tagsLabel")}`,
       );
       const nextRepos = await fetchLocalRepos(actor);
       setRepos(nextRepos);
       await selectRepo(imported.name);
     } catch (importError) {
-      setError(errorMessage(importError, "导入仓库失败"));
+      setError(errorMessage(importError, t("repos.importError")));
     } finally {
       setBusy(false);
     }
@@ -269,14 +270,14 @@ export function RepoTree() {
     <section className="panel" aria-labelledby="repo-tree-title">
       <header style={headingStyle}>
         <p className="section-kicker">DUOBAO · TREE</p>
-        <h2 id="repo-tree-title">文件与分支</h2>
+        <h2 id="repo-tree-title">{t("repos.treeTitle")}</h2>
       </header>
       <div style={panelBodyStyle}>
         {!actor ? (
-          <p style={mutedStyle}>设置 NEXT_PUBLIC_TIANXUAN_ACTOR 后可浏览仓库。</p>
+          <p style={mutedStyle}>{t("repos.treeHint")}</p>
         ) : (
           <>
-            <div style={rowStyle} aria-label="本地仓库列表">
+            <div style={rowStyle} aria-label={t("repos.repoListAria")}>
               {repos.map((name) => (
                 <button
                   key={name}
@@ -287,22 +288,22 @@ export function RepoTree() {
                   {name}
                 </button>
               ))}
-              {repos.length === 0 ? <span style={mutedStyle}>没有本地仓库</span> : null}
+              {repos.length === 0 ? <span style={mutedStyle}>{t("repos.noRepos")}</span> : null}
             </div>
 
-            <form onSubmit={handleImport} style={rowStyle} aria-label="导入仓库">
+            <form onSubmit={handleImport} style={rowStyle} aria-label={t("repos.importAria")}>
               <input
-                aria-label="导入仓库名"
+                aria-label={t("repos.importNameAria")}
                 value={importName}
                 onChange={(event) => setImportName(event.target.value)}
-                placeholder="仓库名，例如 app.git"
+                placeholder={t("repos.importName")}
                 style={inputStyle}
               />
               <input
-                aria-label="导入来源"
+                aria-label={t("repos.importSource")}
                 value={importSource}
                 onChange={(event) => setImportSource(event.target.value)}
-                placeholder="https://… 或本机绝对路径"
+                placeholder={t("repos.importSource")}
                 style={inputStyle}
               />
               <button
@@ -310,7 +311,7 @@ export function RepoTree() {
                 disabled={busy || !importName.trim() || !importSource.trim()}
                 type="submit"
               >
-                导入
+                {t("repos.import")}
               </button>
             </form>
             {importNotice ? <p style={mutedStyle}>{importNotice}</p> : null}
@@ -318,9 +319,9 @@ export function RepoTree() {
             {repo ? (
               <div style={rowStyle}>
                 <label style={rowStyle}>
-                  分支
+                  {t("repos.branch")}
                   <select
-                    aria-label="选择分支"
+                    aria-label={t("repos.selectBranch")}
                     value={branch}
                     onChange={(event) => {
                       const next = event.target.value;
@@ -338,18 +339,18 @@ export function RepoTree() {
                 </label>
                 <form onSubmit={handleCreateBranch} style={rowStyle}>
                   <input
-                    aria-label="新分支名"
+                    aria-label={t("repos.newBranch")}
                     value={newBranch}
                     onChange={(event) => setNewBranch(event.target.value)}
-                    placeholder="新分支名"
+                    placeholder={t("repos.newBranch")}
                     style={inputStyle}
                   />
                   <button className="btn btn-ghost btn-sm" disabled={busy || !newBranch.trim()} type="submit">
-                    新建
+                    {t("repos.create")}
                   </button>
                 </form>
                 <button className="btn btn-ghost btn-sm" disabled={busy || !branch} onClick={() => void handleDeleteBranch()} type="button">
-                  删除当前分支
+                  {t("repos.deleteBranch")}
                 </button>
               </div>
             ) : null}
@@ -357,16 +358,16 @@ export function RepoTree() {
             {path ? (
               <div style={rowStyle}>
                 <button className="btn btn-ghost btn-sm" onClick={() => void loadTree(repo, branch, parentPath(path))} type="button">
-                  上一级
+                  {t("repos.up")}
                 </button>
                 <span style={mutedStyle}>{path}</span>
               </div>
             ) : null}
 
-            {status === "loading" ? <p style={mutedStyle}>加载中…</p> : null}
+            {status === "loading" ? <p style={mutedStyle}>{t("repos.loading")}</p> : null}
             {status === "error" ? <p style={errorStyle}>{error}</p> : null}
             {status !== "error" ? (
-              <ul style={treeStyle} aria-label="文件树">
+              <ul style={treeStyle} aria-label={t("repos.treeAria")}>
                 {entries.map((entry) => (
                   <li key={entry.path} style={entryStyle}>
                     {entry.type === "tree" ? (
@@ -377,19 +378,23 @@ export function RepoTree() {
                       <span>{entry.name}</span>
                     )}
                     <span style={mutedStyle}>
-                      {entry.type === "tree" ? "目录" : entry.size === null ? "文件" : `${entry.size} B`}
+                      {entry.type === "tree"
+                        ? t("repos.directory")
+                        : entry.size === null
+                          ? t("repos.file")
+                          : `${entry.size} B`}
                     </span>
                   </li>
                 ))}
                 {entries.length === 0 && status !== "loading" ? (
-                  <li style={mutedStyle}>空目录，或仓库还没有提交</li>
+                  <li style={mutedStyle}>{t("repos.emptyTree")}</li>
                 ) : null}
               </ul>
             ) : null}
 
             {tags.length > 0 ? (
               <div style={rowStyle}>
-                <strong style={mutedStyle}>标签</strong>
+                <strong style={mutedStyle}>{t("repos.tagsLabel")}</strong>
                 {tags.map((tag) => (
                   <span key={tag.name} style={mutedStyle}>
                     {tag.name} · {tag.sha.slice(0, 7)}
