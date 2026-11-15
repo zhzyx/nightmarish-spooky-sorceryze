@@ -58,6 +58,24 @@ jobs:
           test "$RESTORED_HEAD" = "ref: refs/heads/main"
           test "$DB_CHECK" = "ok"
 
+          docker run -d --rm --name tianxuan-restore-api -p 18000:8000 \
+            -v tianxuan-restore:/data \
+            -e TIANXUAN_DB=/data/tianxuan.db \
+            -e TIANXUAN_REPO_ROOT=/data/repos \
+            tianxuan-api:local >/dev/null
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:18000/api/v1/health >/dev/null; then break; fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:18000/api/v1/health
+          RESTORED_TOKEN=$(curl -fsS -X POST http://127.0.0.1:18000/api/v1/auth/session \
+            -H "Content-Type: application/json" \
+            -d '{"email":"acceptance@example.com","password":"secret-pass"}' \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin)["token"])')
+          test -n "$RESTORED_TOKEN"
+          curl -fsS -H "Authorization: Bearer $RESTORED_TOKEN" http://127.0.0.1:18000/api/v1/git/repos | grep -q demo.git
+          docker stop tianxuan-restore-api >/dev/null
+
           python3 - "$ARCHIVE" <<'PY'
           import hashlib
           import json

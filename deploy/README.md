@@ -349,7 +349,7 @@ docker run --rm -v tianxuan-restore:/data --entrypoint sh tianxuan-api:local \
 (for example an HTTP health URL when TLS is not enabled). The
 `duobao-acceptance` workflow runs a full backup/restore drill against the
 Compose volume, extracts the archive into a throwaway volume, verifies the
-SQLite integrity check and uploads a JSON receipt.
+SQLite integrity check and uploads a JSON receipt. It also starts the API against the restored volume and verifies login plus repository listing.
 
 For local installs without Docker, the module ships an end-to-end drill that
 creates a backup, verifies every SHA256, restores it and compares repository
