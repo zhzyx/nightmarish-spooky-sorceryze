@@ -475,3 +475,53 @@ def test_identity_events_can_filter_type(monkeypatch) -> None:
         params={"event_type": "user.created"},
     )
     assert invalid.status_code == 400
+
+
+def test_oidc_discovery_jwks(monkeypatch) -> None:
+    import http.server
+    import json
+    import threading
+
+    class Handler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self) -> None:  # noqa: N802
+            if self.path == "/.well-known/openid-configuration":
+                body = json.dumps({
+                    "issuer": "https://issuer.example",
+                    "jwks_uri": f"http://127.0.0.1:{port}/jwks",
+                }).encode()
+            else:
+                body = json.dumps({"keys": [RS256_JWK]}).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, format: str, *args: object) -> None:
+            return
+
+    server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+    port = server.server_address[1]
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        monkeypatch.setenv(
+            "TIANXUAN_OIDC_DISCOVERY_URL",
+            f"http://127.0.0.1:{port}/.well-known/openid-configuration",
+        )
+        monkeypatch.setenv("TIANXUAN_OIDC_AUDIENCE", "tianxuan")
+        client, headers, user_id = _client()
+        client.post(
+            "/api/v1/identity/links",
+            headers=headers,
+            json={"provider": "oidc", "subject": "oidc-rs", "user_id": user_id},
+        )
+        resolved = client.post(
+            "/api/v1/identity/resolve",
+            json={"provider": "oidc", "subject": "oidc-rs", "secret": RS256_TOKEN},
+        )
+        assert resolved.status_code == 200, resolved.text
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
