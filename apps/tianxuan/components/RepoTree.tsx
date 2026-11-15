@@ -8,6 +8,7 @@ import {
   fetchLocalRepos,
   fetchLocalTags,
   fetchLocalTree,
+  importLocalRepo,
   type ApiLocalRepo,
   type ApiTag,
   type ApiTreeEntry,
@@ -82,6 +83,9 @@ export function RepoTree() {
   const [entries, setEntries] = useState<ApiTreeEntry[]>([]);
   const [tags, setTags] = useState<ApiTag[]>([]);
   const [newBranch, setNewBranch] = useState("");
+  const [importName, setImportName] = useState("");
+  const [importSource, setImportSource] = useState("");
+  const [importNotice, setImportNotice] = useState("");
   const [status, setStatus] = useState<LoadState>("idle");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -229,6 +233,36 @@ export function RepoTree() {
     }
   }
 
+  async function handleImport(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const name = importName.trim();
+    const source = importSource.trim();
+    if (!name || !source || busy) {
+      return;
+    }
+    if (!window.confirm(`从 ${source} 导入为 ${name}？`)) {
+      return;
+    }
+    setBusy(true);
+    setError("");
+    setImportNotice("");
+    try {
+      const imported = await importLocalRepo(actor, name, source);
+      setImportName("");
+      setImportSource("");
+      setImportNotice(
+        `已导入 ${imported.name}（${imported.branches.length} 分支，${imported.tags.length} 标签）。`,
+      );
+      const nextRepos = await fetchLocalRepos(actor);
+      setRepos(nextRepos);
+      await selectRepo(imported.name);
+    } catch (importError) {
+      setError(errorMessage(importError, "导入仓库失败"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <section className="panel" aria-labelledby="repo-tree-title">
       <header style={headingStyle}>
@@ -253,6 +287,31 @@ export function RepoTree() {
               ))}
               {repos.length === 0 ? <span style={mutedStyle}>没有本地仓库</span> : null}
             </div>
+
+            <form onSubmit={handleImport} style={rowStyle} aria-label="导入仓库">
+              <input
+                aria-label="导入仓库名"
+                value={importName}
+                onChange={(event) => setImportName(event.target.value)}
+                placeholder="仓库名，例如 app.git"
+                style={inputStyle}
+              />
+              <input
+                aria-label="导入来源"
+                value={importSource}
+                onChange={(event) => setImportSource(event.target.value)}
+                placeholder="https://… 或本机绝对路径"
+                style={inputStyle}
+              />
+              <button
+                className="btn btn-ghost btn-sm"
+                disabled={busy || !importName.trim() || !importSource.trim()}
+                type="submit"
+              >
+                导入
+              </button>
+            </form>
+            {importNotice ? <p style={mutedStyle}>{importNotice}</p> : null}
 
             {repo ? (
               <div style={rowStyle}>

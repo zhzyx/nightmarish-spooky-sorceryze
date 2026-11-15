@@ -41,6 +41,20 @@ export interface ApiPull {
   html_url: string;
   head: string;
   base: string;
+  head_sha?: string;
+  base_sha?: string;
+}
+
+/** 评审事件，对应 Gitea reviews 接口的 event。 */
+export type ReviewEvent = "APPROVED" | "REQUEST_CHANGES" | "COMMENT";
+
+/** `GET /api/v1/repos/{owner}/{name}/pulls/{number}/reviews` 返回的单条评审。 */
+export interface ApiReview {
+  id: number;
+  state: string;
+  body: string;
+  user: string;
+  submitted_at: string;
 }
 
 /** 创建 Pull Request 的请求体。 */
@@ -137,4 +151,40 @@ export async function mergePull(
     },
   );
   return readJson<ApiMergeResult>(response, "merge pull request");
+}
+
+/** 读取指定 Pull Request 的评审列表。 */
+export async function fetchReviews(
+  actor: string,
+  owner: string,
+  repo: string,
+  number: number,
+): Promise<ApiReview[]> {
+  const response = await fetch(
+    `${apiBase()}${repoPath(owner, repo)}/pulls/${encodeURIComponent(String(number))}/reviews`,
+    { headers: authHeaders(actor), cache: "no-store" },
+  );
+  const body = await readJson<{ reviews?: ApiReview[] }>(response, "reviews request");
+  return body.reviews ?? [];
+}
+
+/** 提交一次评审（批准 / 要求修改 / 评论）。 */
+export async function createReview(
+  actor: string,
+  owner: string,
+  repo: string,
+  number: number,
+  event: ReviewEvent,
+  body = "",
+): Promise<ApiReview> {
+  const response = await fetch(
+    `${apiBase()}${repoPath(owner, repo)}/pulls/${encodeURIComponent(String(number))}/reviews`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...authHeaders(actor) },
+      body: JSON.stringify({ event, body }),
+      cache: "no-store",
+    },
+  );
+  return readJson<ApiReview>(response, "create review");
 }

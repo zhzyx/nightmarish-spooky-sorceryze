@@ -4,12 +4,16 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import { Icon } from "@/components/Icon";
 import {
   createPull,
+  createReview,
   fetchBranches,
   fetchPulls,
+  fetchReviews,
   mergePull,
   type ApiBranch,
   type ApiPull,
+  type ApiReview,
   type MergeMethod,
+  type ReviewEvent,
 } from "@/lib/gitea-pulls-api";
 
 type LoadState = "idle" | "loading" | "ready" | "error";
@@ -143,6 +147,10 @@ function rememberValue(key: string, value: string): void {
   }
 }
 
+function approvedCount(reviews: ApiReview[] | undefined): number {
+  return (reviews ?? []).filter((review) => review.state.toUpperCase() === "APPROVED").length;
+}
+
 export function RepoPulls() {
   const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR ?? "";
   const [owner, setOwner] = useState("");
@@ -161,6 +169,7 @@ export function RepoPulls() {
   const [base, setBase] = useState("main");
   const [body, setBody] = useState("");
   const [mergeMethods, setMergeMethods] = useState<Record<number, MergeMethod>>({});
+  const [reviewsByPull, setReviewsByPull] = useState<Record<number, ApiReview[]>>({});
   const requestRef = useRef(0);
 
   useEffect(() => {
@@ -186,6 +195,7 @@ export function RepoPulls() {
       setNotice("");
       setBranches([]);
       setPulls([]);
+      setReviewsByPull({});
       setActiveOwner(nextOwner);
       setActiveRepo(nextRepo);
       rememberValue(OWNER_STORAGE_KEY, nextOwner);
@@ -203,6 +213,19 @@ export function RepoPulls() {
           : nextBranches[0]?.name ?? "main";
         setBranches(nextBranches);
         setPulls(nextPulls);
+        const reviewEntries = await Promise.all(
+          nextPulls.map(async (pull) => {
+            try {
+              return [pull.number, await fetchReviews(actor, nextOwner, nextRepo, pull.number)] as const;
+            } catch {
+              return [pull.number, []] as const;
+            }
+          }),
+        );
+        if (requestRef.current !== request) {
+          return;
+        }
+        setReviewsByPull(Object.fromEntries(reviewEntries) as Record<number, ApiReview[]>);
         setBase(nextBase);
         setHead((previous) => {
           if (
@@ -307,6 +330,35 @@ export function RepoPulls() {
       );
     } catch {
       setActionError(`合并 PR #${pull.number} 失败，请确认 PR 仍处于 open 状态且没有冲突。`);
+    } finally {
+      setBusy("");
+    }
+  }
+
+  async function submitReview(pull: ApiPull, event: ReviewEvent) {
+    if (!actor || busy || loadState !== "ready") {
+      return;
+    }
+    let reviewBody = "";
+    if (event !== "APPROVED") {
+      const input = window.prompt(
+        event === "REQUEST_CHANGES" ? `要求修改 PR #${pull.number} 的说明` : `评论 PR #${pull.number}`,
+      );
+      if (input === null) {
+        return;
+      }
+      reviewBody = input.trim();
+    }
+    setBusy(`review:${pull.number}`);
+    setActionError("");
+    setNotice("");
+    try {
+      await createReview(actor, activeOwner, activeRepo, pull.number, event, reviewBody);
+      const nextReviews = await fetchReviews(actor, activeOwner, activeRepo, pull.number);
+      setReviewsByPull((previous) => ({ ...previous, [pull.number]: nextReviews }));
+      setNotice(`PR #${pull.number} 已提交评审：${event}。`);
+    } catch {
+      setActionError(`提交 PR #${pull.number} 的评审失败，请确认 Gitea 身份绑定与权限。`);
     } finally {
       setBusy("");
     }
@@ -472,6 +524,37 @@ export function RepoPulls() {
                       </span>
                       <span className="kind-tag">{pull.state || "open"}</span>
                       <span style={pullActionsStyle}>
+                        <span className="kind-tag">
+                          {approvedCount(reviewsByPull[pull.number])} 批准 / {(reviewsByPull[pull.number] ?? []).length} 评审
+                        </span>
+                        {pull.state === "open" ? (
+                          <>
+                            <button
+                              className="btn btn-ghost btn-sm"
+                              disabled={busy !== ""}
+                              onClick={() => void submitReview(pull, "APPROVED")}
+                              type="button"
+                            >
+                              {busy === `review:${pull.number}` ? "提交中…" : "批准"}
+                            </button>
+                            <button
+                              className="btn btn-ghost btn-sm"
+                              disabled={busy !== ""}
+                              onClick={() => void submitReview(pull, "REQUEST_CHANGES")}
+                              type="button"
+                            >
+                              要求修改
+                            </button>
+                            <button
+                              className="btn btn-ghost btn-sm"
+                              disabled={busy !== ""}
+                              onClick={() => void submitReview(pull, "COMMENT")}
+                              type="button"
+                            >
+                              评论
+                            </button>
+                          </>
+                        ) : null}
                         {pull.html_url ? (
                           <a
                             className="btn btn-ghost btn-sm"

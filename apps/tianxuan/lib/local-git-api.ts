@@ -170,3 +170,27 @@ export async function deleteLocalBranch(
     { method: "DELETE" },
   );
 }
+
+/** 导入结果（对应 `GitService.import_repo`）。 */
+export interface ApiImportResult {
+  path: string;
+  name: string;
+  source: string;
+  default_branch: string;
+  head: string | null;
+  branches: string[];
+  tags: ApiTag[];
+  mirror: boolean;
+}
+
+/** 以镜像方式导入远端/本机仓库（仅 admin）。 */
+export async function importLocalRepo(
+  actor: string,
+  name: string,
+  source: string,
+): Promise<ApiImportResult> {
+  return jsonRequest<ApiImportResult>(actor, "/api/v1/git/import", {
+    method: "POST",
+    body: { name, source },
+  });
+}
