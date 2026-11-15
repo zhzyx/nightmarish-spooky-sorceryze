@@ -726,6 +726,54 @@ class GitService:
                 break
         return results
 
+    def blame(
+        self,
+        repo: str | os.PathLike[str],
+        ref: str = "HEAD",
+        path: str = "",
+        limit: int = 2000,
+    ) -> list[dict[str, Any]]:
+        """逐行返回文件的提交归属（作者、行号、行文本）。"""
+        ref = _validate_ref_name(ref, label="blame ref")
+        path = _validate_file_path(path, label="blame path")
+        limit = min(_validate_limit(limit), 5000)
+        repo_path, _ = self._repo_path(repo)
+        completed = self._run(
+            ["-C", str(repo_path), "blame", "--line-porcelain", "--no-color", ref, "--", path],
+            check=False,
+            timeout=30,
+        )
+        if completed.returncode != 0:
+            raise GitServiceError(completed.stderr.strip() or "git blame failed")
+        results: list[dict[str, Any]] = []
+        current: dict[str, Any] | None = None
+        for line in completed.stdout.splitlines():
+            if line.startswith("\t"):
+                if current is not None:
+                    current["text"] = line[1:][:500]
+                    results.append(current)
+                    current = None
+                if len(results) >= limit:
+                    break
+                continue
+            header = re.match(r"^([0-9a-f]{40}) \d+ (\d+)(?: \d+)?$", line)
+            if header:
+                current = {
+                    "sha": header.group(1),
+                    "line": int(header.group(2)),
+                    "author": "",
+                    "summary": "",
+                    "text": "",
+                }
+                continue
+            if current is None:
+                continue
+            if line.startswith("author "):
+                current["author"] = line[7:]
+            elif line.startswith("summary "):
+                current["summary"] = line[8:]
+        return results
+
     def log(self, repo: str | os.PathLike[str], ref: str = "HEAD", limit: int = 20) -> list[dict[str, Any]]:
         """按时间倒序返回提交记录；空仓库的 ``HEAD`` 返回空列表。"""
         repo_path, _ = self._repo_path(repo)

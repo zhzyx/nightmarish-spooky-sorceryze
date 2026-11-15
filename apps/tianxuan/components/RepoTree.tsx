@@ -8,10 +8,12 @@ import {
   deleteLocalBranch,
   fetchLocalBranches,
   fetchLocalRepos,
+  fetchBlame,
   fetchLocalTags,
   fetchLocalTree,
   importLocalRepo,
   searchLocalRepo,
+  type ApiBlameLine,
   type ApiCodeHit,
   type ApiLocalRepo,
   type ApiTag,
@@ -96,6 +98,10 @@ export function RepoTree() {
   const [searchResults, setSearchResults] = useState<ApiCodeHit[] | null>(null);
   const [searchBusy, setSearchBusy] = useState(false);
   const [searchError, setSearchError] = useState("");
+  const [blamePath, setBlamePath] = useState("");
+  const [blameLines, setBlameLines] = useState<ApiBlameLine[] | null>(null);
+  const [blameBusy, setBlameBusy] = useState(false);
+  const [blameError, setBlameError] = useState("");
   const [status, setStatus] = useState<LoadState>("idle");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -142,6 +148,9 @@ export function RepoTree() {
       setError("");
       setSearchResults(null);
       setSearchError("");
+      setBlamePath("");
+      setBlameLines(null);
+      setBlameError("");
       setStatus("loading");
       try {
         const [nextBranches, nextTags] = await Promise.all([
@@ -293,6 +302,23 @@ export function RepoTree() {
     }
   }
 
+  async function loadBlame(path: string) {
+    if (!actor || !repo || blameBusy) {
+      return;
+    }
+    setBlameBusy(true);
+    setBlamePath(path);
+    setBlameError("");
+    try {
+      setBlameLines(await fetchBlame(actor, repo, branch || "HEAD", path));
+    } catch (blameErr) {
+      setBlameLines(null);
+      setBlameError(errorMessage(blameErr, t("repos.blameError")));
+    } finally {
+      setBlameBusy(false);
+    }
+  }
+
   return (
     <section className="panel" aria-labelledby="repo-tree-title">
       <header style={headingStyle}>
@@ -367,6 +393,27 @@ export function RepoTree() {
               </form>
             ) : null}
             {searchError ? <p style={errorStyle}>{searchError}</p> : null}
+            {blamePath ? (
+              <div aria-label={formatMessage(t("repos.blameAria"), { path: blamePath })}>
+                <p className="mono-key">
+                  {t("repos.blameTitle")} · {blamePath}
+                  {blameBusy ? ` · ${t("repos.loading")}` : ""}
+                </p>
+                {blameError ? <p style={errorStyle}>{blameError}</p> : null}
+                {blameLines ? (
+                  <ul style={treeStyle}>
+                    {blameLines.map((line) => (
+                      <li key={`${line.sha}:${line.line}`} style={entryStyle}>
+                        <span className="mono-key">{line.line}</span>
+                        <span style={mutedStyle}>
+                          {line.sha.slice(0, 7)} · {line.author} · {line.text}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+            ) : null}
             {searchResults !== null ? (
               <ul style={treeStyle} aria-label={t("repos.searchAria")}>
                 {searchResults.length === 0 ? (
@@ -443,7 +490,13 @@ export function RepoTree() {
                         📁 {entry.name}
                       </button>
                     ) : (
-                      <span>{entry.name}</span>
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        onClick={() => void loadBlame(entry.path)}
+                        type="button"
+                      >
+                        {entry.name}
+                      </button>
                     )}
                     <span style={mutedStyle}>
                       {entry.type === "tree"

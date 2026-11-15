@@ -555,6 +555,21 @@ class GitServiceTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             self.service.search(self.repo, "x", limit=0)
 
+    def test_blame_returns_line_authors(self) -> None:
+        self._commit(files={"src/app.py": "alpha\nneedle\n"})
+        lines = self.service.blame(self.repo, "HEAD", "src/app.py")
+        self.assertEqual([entry["line"] for entry in lines], [1, 2])
+        self.assertEqual(lines[1]["text"], "needle")
+        self.assertEqual(lines[0]["author"], AUTHOR_NAME)
+        self.assertRegex(lines[0]["sha"], SHA_PATTERN)
+
+    def test_blame_rejects_invalid_path(self) -> None:
+        self._commit(files={"a.txt": "x\n"})
+        with self.assertRaises(ValidationError):
+            self.service.blame(self.repo, "HEAD", "")
+        with self.assertRaises(ValidationError):
+            self.service.blame(self.repo, "HEAD", "../escape.txt")
+
 
 if __name__ == "__main__":
     unittest.main()

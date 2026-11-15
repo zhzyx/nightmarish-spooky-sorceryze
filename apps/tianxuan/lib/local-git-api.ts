@@ -124,6 +124,35 @@ export async function searchLocalRepo(
   return body.results ?? [];
 }
 
+/** 逐行提交归属（对应 `GitService.blame`）。 */
+export interface ApiBlameLine {
+  sha: string;
+  line: number;
+  author: string;
+  summary: string;
+  text: string;
+}
+
+/** 读取指定文件在某个 ref 下的逐行提交归属。 */
+export async function fetchBlame(
+  actor: string,
+  name: string,
+  ref: string,
+  path: string,
+  limit = 2000,
+): Promise<ApiBlameLine[]> {
+  const params = new URLSearchParams({ ref, path, limit: String(limit) });
+  const response = await fetch(
+    `${apiBase()}/api/v1/git/repos/${encodeURIComponent(name)}/blame?${params.toString()}`,
+    { headers: authHeaders(actor), cache: "no-store" },
+  );
+  if (!response.ok) {
+    throw new Error(`blame request failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { lines?: ApiBlameLine[] };
+  return body.lines ?? [];
+}
+
 /** 标签名与目标提交。 */
 export interface ApiTag {
   name: string;

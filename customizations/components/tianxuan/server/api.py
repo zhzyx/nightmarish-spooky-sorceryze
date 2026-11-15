@@ -1163,6 +1163,20 @@ def create_app(
         except (GitServiceError, OSError) as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 
+    @app.get("/api/v1/git/repos/{name}/blame")
+    def git_blame(
+        name: str,
+        actor: ActorDep,
+        path: str = Query(min_length=1),
+        ref: str = Query(default="HEAD", min_length=1),
+        limit: int = Query(default=2000, ge=1, le=5000),
+    ) -> dict[str, list[dict[str, Any]]]:
+        repo = _repo_under_root(name)
+        try:
+            return {"lines": GitService().blame(repo, ref, path, limit)}
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
     @app.post("/api/v1/git/repos/{name}/branches")
     def create_git_branch(
         name: str,
