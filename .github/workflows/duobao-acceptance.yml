@@ -1,0 +1,70 @@
+name: Duobao acceptance screenshots
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  screenshots:
+    name: Compose stack and page screenshots
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start compose stack
+        working-directory: deploy
+        run: |
+          cp .env.example .env
+          docker compose --env-file .env up -d --build
+          ok=0
+          for i in $(seq 1 120); do
+            if curl -fsS http://127.0.0.1:8080/api/v1/health >/dev/null; then
+              ok=1
+              break
+            fi
+            sleep 3
+          done
+          if [ "$ok" != "1" ]; then
+            docker compose --env-file .env logs --no-color
+            exit 1
+          fi
+          curl -fsS http://127.0.0.1:8080/api/v1/health
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Playwright
+        run: |
+          mkdir -p /tmp/shots
+          cd /tmp/shots
+          npm init -y >/dev/null
+          npm install --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+
+      - name: Capture screenshots
+        run: |
+          cp deploy/examples/screenshots.mjs /tmp/shots/screenshot.mjs
+          cd /tmp/shots
+          BASE_URL=http://127.0.0.1:8080 node screenshot.mjs
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tianxuan-screenshots
+          path: /tmp/shots/artifacts
+          if-no-files-found: warn
+
+      - name: Compose logs
+        if: failure()
+        working-directory: deploy
+        run: docker compose --env-file .env logs --no-color
+
+      - name: Compose down
+        if: always()
+        working-directory: deploy
+        run: docker compose --env-file .env down -v
