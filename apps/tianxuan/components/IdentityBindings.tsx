@@ -14,6 +14,8 @@ import {
   type ApiIdentityLink,
   type ApiMember,
 } from "@/lib/api";
+import { formatMessage } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 const PROVIDERS = ["tianshu", "github", "oidc", "static"];
 
@@ -30,6 +32,7 @@ const fieldStyle: CSSProperties = {
 
 export function IdentityBindings() {
   const actor = useActor();
+  const { t, locale } = useI18n();
   const [links, setLinks] = useState<ApiIdentityLink[]>([]);
   const [users, setUsers] = useState<ApiMember[]>([]);
   const [provider, setProvider] = useState("tianshu");
@@ -71,7 +74,7 @@ export function IdentityBindings() {
     }
     load()
       .then(() => setError(""))
-      .catch((cause: unknown) => setError(cause instanceof Error ? cause.message : "加载失败"));
+      .catch((cause: unknown) => setError(cause instanceof Error ? cause.message : t("identity.errorLoad")));
   }, [actor, load]);
 
   async function bind() {
@@ -85,9 +88,9 @@ export function IdentityBindings() {
       await createIdentityLink(actor, provider, subject.trim(), userId);
       setSubject("");
       await load();
-      setNotice("已绑定外部身份");
+      setNotice(t("identity.noticeLinked"));
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "绑定失败");
+      setError(cause instanceof Error ? cause.message : t("identity.errorBind"));
     } finally {
       setBusy(false);
     }
@@ -102,9 +105,9 @@ export function IdentityBindings() {
     try {
       await deleteIdentityLink(actor, id);
       await load();
-      setNotice("已解绑外部身份");
+      setNotice(t("identity.noticeUnlinked"));
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "解绑失败");
+      setError(cause instanceof Error ? cause.message : t("identity.errorUnbind"));
     } finally {
       setRemoving("");
     }
@@ -123,9 +126,9 @@ export function IdentityBindings() {
     try {
       await rebindIdentityLink(actor, id, target);
       await load();
-      setNotice("已改绑外部身份");
+      setNotice(t("identity.noticeRebound"));
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "改绑失败");
+      setError(cause instanceof Error ? cause.message : t("identity.errorRebind"));
     } finally {
       setBusy(false);
     }
@@ -144,20 +147,20 @@ export function IdentityBindings() {
       <div className="section-heading">
         <div>
           <p className="section-kicker">IDENTITY · ADAPTERS</p>
-          <h2 id="identity-bindings-title">外部身份绑定</h2>
+          <h2 id="identity-bindings-title">{t("identity.title")}</h2>
         </div>
-        <span className="section-note">{links.length} 个绑定</span>
+        <span className="section-note">{formatMessage(t("identity.note"), { count: links.length })}</span>
       </div>
       {!actor ? (
         <p className="section-note" style={{ padding: "0 26px 22px" }}>
-          未配置 NEXT_PUBLIC_TIANXUAN_ACTOR，无法读取身份绑定。
+          {t("identity.disabled")}
         </p>
       ) : (
         <>
           <div className="reading-list live-list">
             {links.length === 0 ? (
               <p className="section-note" style={{ padding: "12px 16px" }}>
-                还没有外部身份绑定。先添加绑定，再让天枢/GitHub/OIDC 用对应身份换取会话。
+                {t("identity.empty")}
               </p>
             ) : (
               links.map((link) => (
@@ -170,7 +173,7 @@ export function IdentityBindings() {
                     </span>
                   </span>
                   <select
-                    aria-label={`改绑 ${link.subject}`}
+                    aria-label={formatMessage(t("identity.rebindAria"), { subject: link.subject })}
                     style={{ ...fieldStyle, maxWidth: 220, padding: "6px 8px" }}
                     value={targets[link.id] ?? link.user_id}
                     onChange={(event) =>
@@ -189,7 +192,7 @@ export function IdentityBindings() {
                     disabled={busy || (targets[link.id] ?? link.user_id) === link.user_id}
                     onClick={() => rebind(link.id)}
                   >
-                    改绑
+                    {t("identity.rebind")}
                   </button>
                   <button
                     className="btn btn-ghost"
@@ -197,7 +200,7 @@ export function IdentityBindings() {
                     disabled={removing === link.id}
                     onClick={() => remove(link.id)}
                   >
-                    {removing === link.id ? "解绑中…" : "解绑"}
+                    {removing === link.id ? t("identity.removing") : t("identity.unbind")}
                   </button>
                 </div>
               ))
@@ -213,7 +216,7 @@ export function IdentityBindings() {
             }}
           >
             <select
-              aria-label="身份提供方"
+              aria-label={t("identity.providerAria")}
               style={fieldStyle}
               value={provider}
               onChange={(event) => setProvider(event.target.value)}
@@ -225,14 +228,14 @@ export function IdentityBindings() {
               ))}
             </select>
             <input
-              aria-label="外部 subject"
+              aria-label={t("identity.subjectAria")}
               style={fieldStyle}
-              placeholder="外部 subject，如 GitHub 用户 ID"
+              placeholder={t("identity.subjectPlaceholder")}
               value={subject}
               onChange={(event) => setSubject(event.target.value)}
             />
             <select
-              aria-label="绑定到成员"
+              aria-label={t("identity.userAria")}
               style={fieldStyle}
               value={userId}
               onChange={(event) => setUserId(event.target.value)}
@@ -244,7 +247,7 @@ export function IdentityBindings() {
               ))}
             </select>
             <button className="btn btn-primary" type="button" disabled={busy || !subject.trim()} onClick={bind}>
-              {busy ? "绑定中…" : "绑定身份"}
+              {busy ? t("identity.binding") : t("identity.bind")}
             </button>
           </div>
           <div className="reading-list live-list" style={{ marginTop: 8 }}>
@@ -260,20 +263,20 @@ export function IdentityBindings() {
                 RECENT · IDENTITY EVENTS
               </p>
               <select
-                aria-label="按事件类型筛选"
+                aria-label={t("identity.filterAria")}
                 value={eventFilter}
                 onChange={(event) => setEventFilter(event.target.value)}
                 style={{ ...fieldStyle, padding: "4px 8px", width: 150 }}
               >
-                <option value="all">全部事件</option>
-                <option value="identity.linked">绑定</option>
-                <option value="identity.rebound">改绑</option>
-                <option value="identity.unlinked">解绑</option>
+                <option value="all">{t("identity.allEvents")}</option>
+                <option value="identity.linked">{t("identity.linked")}</option>
+                <option value="identity.rebound">{t("identity.rebound")}</option>
+                <option value="identity.unlinked">{t("identity.unlinked")}</option>
               </select>
             </div>
             {filteredEvents.length === 0 ? (
               <p className="section-note" style={{ padding: "8px 16px" }}>
-                暂无身份事件
+                {t("identity.noEvents")}
               </p>
             ) : (
               filteredEvents.slice(0, 8).map((event) => (
@@ -282,7 +285,7 @@ export function IdentityBindings() {
                   <span className="reading-copy">
                     <strong>{event.type.replace("identity.", "")}</strong>
                     <span>
-                      {String(event.payload.subject ?? "")} · {new Date(event.created_at).toLocaleString("zh-CN")}
+                      {String(event.payload.subject ?? "")} · {new Date(event.created_at).toLocaleString(locale === "en" ? "en-US" : "zh-CN")}
                     </span>
                   </span>
                 </div>
