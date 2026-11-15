@@ -158,10 +158,19 @@ jobs:
                 - ./certs:/etc/letsencrypt:ro
           EOF
           docker compose --env-file .env up -d proxy
-          sleep 5
-
-          test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1/)" = "301"
-          test "$(curl -ksS -o /dev/null -w '%{http_code}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/")" = "302"
+          docker compose ps
+          docker compose logs --no-color proxy | tail -40 || true
+          code=""
+          for i in $(seq 1 30); do
+            code=$(curl -ksS -o /dev/null -w '%{http_code}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/" || true)
+            echo "tls probe $i: $code"
+            if [ "$code" = "302" ]; then break; fi
+            sleep 2
+          done
+          http_code=$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1/ || true)
+          echo "http redirect: $http_code"
+          test "$http_code" = "301"
+          test "$code" = "302"
           curl -ksS -c /tmp/tls-cookies -o /dev/null --resolve "$HOST:443:127.0.0.1" "https://$HOST/gate?key=$TOKEN"
           grep -q tx_access /tmp/tls-cookies
           test "$(curl -sS --cacert "certs/live/$HOST/fullchain.pem" -b /tmp/tls-cookies -o /dev/null -w '%{http_code}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/")" = "200"
