@@ -764,6 +764,9 @@ const zh = {
   "editor.readView": "阅读视图",
   "editor.aiOptimized": "为 AI 优化",
   "editor.footnote": "当前为前端演示：草稿仅保存在此浏览器，不发送至服务器，也不会读取任何模型凭据。",
+  "doc.fallbackTitle": "文档",
+  "doc.liveSpace": "实时",
+  "doc.liveKind": "记录",
 } as const;
 
 export type MessageKey = keyof typeof zh;
@@ -1529,6 +1532,9 @@ const en: Record<MessageKey, string> = {
   "editor.readView": "Reading view",
   "editor.aiOptimized": "Optimized for AI",
   "editor.footnote": "This is a frontend demo: drafts stay in this browser, are not sent to the server, and never read model credentials.",
+  "doc.fallbackTitle": "Document",
+  "doc.liveSpace": "Live",
+  "doc.liveKind": "Record",
 };
 
 export function normalizeLocale(value: string | null | undefined): Locale {
