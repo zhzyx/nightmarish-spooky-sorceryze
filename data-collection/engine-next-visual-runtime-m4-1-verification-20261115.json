@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-1-20261115",
+  "issue_number": 1327,
+  "parent_issue": 1323,
+  "baseline": "49e0bd2444be533847e3c3ee798d01185c15b99a",
+  "input_blobs": {
+    "engine_next/Rendering/VisualRuntime.cpp": "d24f5369a83f345f072dfb536c9548940d542d07",
+    "engine_next/Rendering/FrameGraph.cpp": "a84b3a06a21786591760c1135793326225196b8f",
+    "engine_next/Platform/Windows/Window.cpp": "ebe8ab33ff5bc7c180dd07343703ae51a31517f8",
+    "engine_next/Apps/NextVisualClientMain.cpp": "1dc9928b94f0bd05c20a28cc62feeae0d79cde48",
+    "engine_next/include/EngineNext/Rendering/VisualRuntime.h": "079d38263c5aa1cb0408614c3f25adedb73f80f9",
+    "engine_next/include/EngineNext/Rendering/FrameGraph.h": "a102890941064451f53c143be90d9f4075e3167e"
+  },
+  "visual_build": {
+    "native_key": "e51fd2b62deaf4dca62684d7becd02163c26ee00fd60c817ea4f99836aa67993",
+    "test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=14 checks=1208 failures=0",
+    "report": "build/engine_next/m4-1/VisualBuildReport.json",
+    "sha256": "fc622eab8f894965b1a98bc60c682e5d00ad6d4a12c99e47314cc1d3bccc26f7"
+  },
+  "executable": {
+    "path": "build/engine_next/m4-1/next_visual_client.exe",
+    "sha256": "3c760000cfc9a1bf3d9a38bff79bb110a7f0c0e9bfe67cc30e18972203279c28"
+  },
+  "checks": {
+    "gpu_validation": {
+      "passed": true,
+      "frames": 240,
+      "resizes": 2,
+      "errors": 0,
+      "report": "build/engine_next/m4-1/FinalValidation2.json",
+      "messages": [
+        "ID3D12Device::CreateCommittedResource: Ignoring InitialState D3D12_RESOURCE_STATE_COPY_DEST. Buffers are effectively created in state D3D12_RESOURCE_STATE_COMMON.",
+        "ID3D12Device::CreateCommittedResource: Ignoring InitialState D3D12_RESOURCE_STATE_COPY_DEST. Buffers are effectively created in state D3D12_RESOURCE_STATE_COMMON."
+      ]
+    },
+    "clean_directory_render": {
+      "passed": true,
+      "frames": 120,
+      "validation_errors": 0,
+      "report": "build/engine_next/m4-1/CleanValidation.json"
+    },
+    "path_launch": {
+      "passed": true,
+      "frames": 12,
+      "report": "build/engine_next/m4-1/PathLaunch.json"
+    },
+    "timing_ring_wrap": {
+      "passed": true,
+      "frames": 66000,
+      "retained_samples": 65536,
+      "first_frame_id": 464,
+      "last_frame_id": 65999,
+      "all_gpu_ready": true,
+      "report": "build/engine_next/m4-1/FinalTimingWrap.json"
+    },
+    "runtime_regression": {
+      "passed": true,
+      "report": "build/engine_next/m41-runtime-regression/RuntimeBuildReport.json",
+      "scope": "M2 handshake/reconnect/drain, M3 assets/AI/scene, clean directory and runtime package"
+    },
+    "framegraph_and_tools": {
+      "passed": true,
+      "framegraph_tests": 14,
+      "checks": 1208,
+      "tools_command": "python -m unittest discover -s engine_next/Tools -p Test*.py -q",
+      "contract_command": "python -m unittest tools.test_check_engine_next_contract -q"
+    },
+    "capture": {
+      "passed": true,
+      "evidence": "data-collection/engine-next-visual-runtime-m4-1-capture-final2-20261115.json"
+    },
+    "video": {
+      "passed": true,
+      "evidence": "data-collection/engine-next-visual-runtime-m4-1-video-final2-20261115.json"
+    }
+  },
+  "review": {
+    "framegraph_timing": "Independent review by /root/m41_build after resource ownership fix",
+    "rhi_main_shaders": "Independent review by /root/m41_framegraph; PATH and retirement issues corrected, root verified",
+    "build_package_contract": "Root inspected dependency profile, response manifest, package and tests; agent self-tested"
+  },
+  "not_verified": [
+    "Device-removal DRED fault injection",
+    "GPU async overlap speedup",
+    "M4.2-M4.6 rendering features",
+    "UE same-scene baseline",
+    "Native 4K output and final performance"
+  ],
+  "known_scope": [
+    "RHI backend uses fixed pass execution and validates exact graph shape",
+    "M4.1 UI and GPU submission share the owning thread; multi-thread recording remains subsequent renderer work",
+    "Dedicated graphics/compute queues are used, but overlap is not claimed"
+  ],
+  "regression_fix": "Existing TestBlobValidator std::fill int zero produced C4244 under MSVC 14.50 /WX; explicit uint8_t zero preserves test semantics"
+}

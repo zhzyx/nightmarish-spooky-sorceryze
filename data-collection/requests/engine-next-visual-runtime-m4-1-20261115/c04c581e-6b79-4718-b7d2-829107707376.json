@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "engine-next-visual-runtime-m4-1-20261115",
+  "collected_at": "2026-11-15T16:29:51.077621+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-1-20261115/kuafu-60e9944ca53f7a2979b98d4bd007bd373f73c125.json",
+      "sha256": "6bfb11e69c729e94ea1a96ec511aae642872006f2bd7b141dd5b08311320fcdc",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-60e9944ca53f7a2979b98d4bd007bd373f73c125",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-1-20261115/m41-request-20261115.json",
+      "sha256": "f7e1908b4714f386e8d3292876db4f7e2858dc1fd1c740c4dd092a82a7558a9e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m41-request-20261115",
+      "origin": "AGENTS.md"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1327,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1327"
+}

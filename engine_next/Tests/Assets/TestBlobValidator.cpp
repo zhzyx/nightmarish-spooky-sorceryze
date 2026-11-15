@@ -80,7 +80,7 @@ ENGINE_NEXT_TEST("Blob validator rejects short IHDR and SOS before field access"
 {
 	std::vector<std::uint8_t> arrPng = EngineNext::Tests::Assets::ReadFixture("valid.png");
 	const std::size_t nShort = arrPng.size() - 12;
-	std::fill(arrPng.begin() + static_cast<std::ptrdiff_t>(nShort), arrPng.end(), 0);
+	std::fill(arrPng.begin() + static_cast<std::ptrdiff_t>(nShort), arrPng.end(), std::uint8_t{ 0 });
 	arrPng[nShort + 4] = 'I';
 	arrPng[nShort + 5] = 'H';
 	arrPng[nShort + 6] = 'D';

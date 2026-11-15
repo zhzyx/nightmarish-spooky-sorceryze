@@ -7,6 +7,7 @@ import shutil
 from pathlib import Path
 
 TOOL_FILES = [
+    "LICENSE.txt",
     "tools/check_engine_next_contract.py",
     "tools/engine_next_contract.json",
 ]

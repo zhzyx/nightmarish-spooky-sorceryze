@@ -117,5 +117,26 @@
       ".tscn",
       ".uid"
     ]
+  },
+  "target_profiles": {
+    "next_visual_client": {
+      "source_roots": [
+        "engine_next/Rendering/VisualRuntime.cpp",
+        "engine_next/Platform/Windows"
+      ],
+      "allowed_angle_includes": [
+        "d3d12.h",
+        "d3d12sdklayers.h",
+        "dxgi1_6.h",
+        "dxgidebug.h",
+        "pix.h"
+      ],
+      "allowed_system_libraries": [
+        "d3d12",
+        "dxgi",
+        "dxguid",
+        "user32"
+      ]
+    }
   }
 }

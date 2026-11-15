@@ -1,0 +1,758 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-1-20261115",
+  "parent_issue_number": 1323,
+  "recorded_at": "2026-11-15T15:51:38.132965+00:00",
+  "capture_frame": 456,
+  "api": "D3D12",
+  "tool": {
+    "name": "RenderDoc",
+    "version": "1.47",
+    "commit": "b0e1370309f7d7bf986a73830446ca39d9b8c1fd",
+    "source_url": "https://renderdoc.org/stable/1.47/RenderDoc_1.47_64.zip",
+    "authenticode": "Valid, Baldur Scott Karlsson",
+    "source_manifest": {
+      "path": "build/engine_next/tools/RenderDoc_1.47_64.source.json",
+      "size": 2014,
+      "sha256": "e38f5c7a0e85a0a61df0d1d9147a535a0df2e0b89dd9ea9b520a87f96f9799bf"
+    }
+  },
+  "executable": {
+    "path": "build/engine_next/m4-1/next_visual_client.exe",
+    "size": 1480192,
+    "sha256": "c17a55252a0e6640ada7235aaf86bec381afe3fdd628d2a41be229face18adec"
+  },
+  "shaders": [
+    {
+      "path": "build/engine_next/m4-1/FixedMesh.cs.cso",
+      "size": 3300,
+      "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+    },
+    {
+      "path": "build/engine_next/m4-1/FixedMesh.ps.cso",
+      "size": 4132,
+      "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+    },
+    {
+      "path": "build/engine_next/m4-1/FixedMesh.vs.cso",
+      "size": 4316,
+      "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+    }
+  ],
+  "capture": {
+    "path": "build/engine_next/m4-capture-final/M41-Final_frame456.rdc",
+    "size": 2966653,
+    "sha256": "34e6ce2291f400970ab215389d2b6a9fb7a7b57c63177d56b644c425494b1d00"
+  },
+  "xml": {
+    "path": "build/engine_next/m4-capture-final/M41-Final_frame456.xml",
+    "size": 139988,
+    "sha256": "cc8a1ced0504c44a2123164d23bf41353cc5e97dd3a6624aebd8034ca676597e"
+  },
+  "run_report": {
+    "path": "build/engine_next/m4-capture-final/FinalCaptureRun.json",
+    "size": 331149,
+    "sha256": "b9a5743b8aa37a104fda1b6b7de66a487ccc1ced4952ee591529efdab92cadda"
+  },
+  "capture_invocation": {
+    "launcher": [
+      "renderdoccmd",
+      "capture",
+      "--working-dir",
+      "<build>/m4-1",
+      "--capture-file",
+      "<build>/m4-capture-final/M41-Final",
+      "next_visual_client.exe",
+      "--width",
+      "1280",
+      "--height",
+      "720",
+      "--frames",
+      "900",
+      "--vsync",
+      "--deterministic",
+      "--report",
+      "<build>/m4-capture-final/FinalCaptureRun.json"
+    ],
+    "trigger": "Private validation helper loaded into this authorized process, official RenderDoc API TriggerCapture called after 3 s",
+    "helper": {
+      "path": "build/engine_next/tools/CaptureTrigger.cpp",
+      "size": 1050,
+      "sha256": "6980decd21efa1dd61daea94d1f280c8b32d4f57e828ef7e862a8b9f935d11ec"
+    },
+    "repo_sources_modified_for_capture": false
+  },
+  "run": {
+    "success": true,
+    "frames": 900,
+    "width": 1280,
+    "height": 720,
+    "gpu_validation": false,
+    "validation_errors": 0,
+    "adapter": "NVIDIA GeForce RTX 4070 Ti",
+    "vsync": true,
+    "compute_queue_used": true
+  },
+  "counts": {
+    "Internal::Driver Initialisation Parameters": 1,
+    "ID3D12Device::CreateCommandQueue": 3,
+    "ID3D12Device::CreateFence": 2,
+    "ID3D12Resource::SetName": 9,
+    "IDXGISwapChain::GetBuffer": 1,
+    "ID3D12Device::CreateDescriptorHeap": 3,
+    "ID3D12Device::CreateCommandAllocator": 2,
+    "ID3D12Device::CreateCommandList": 2,
+    "ID3D12Device::CreateCommittedResource": 6,
+    "ID3D12Device::CreateQueryHeap": 2,
+    "ID3D12Device::CreateRootSignature": 2,
+    "ID3D12Device::CreateGraphicsPipeline": 1,
+    "ID3D12Device::CreateComputePipeline": 1,
+    "Internal::Initial Contents": 9,
+    "Internal::List of Initial Contents Resources": 1,
+    "Internal::Frame Metadata": 1,
+    "Internal::Beginning of Capture": 1,
+    "ID3D12CommandQueue::Signal": 2,
+    "ID3D12GraphicsCommandList::Reset": 2,
+    "ID3D12GraphicsCommandList::SetDescriptorHeaps": 2,
+    "ID3D12GraphicsCommandList::SetComputeRootSignature": 1,
+    "ID3D12GraphicsCommandList::SetComputeRoot32BitConstants": 1,
+    "ID3D12GraphicsCommandList::SetComputeRootDescriptorTable": 1,
+    "ID3D12GraphicsCommandList::EndQuery": 8,
+    "ID3D12GraphicsCommandList::ResourceBarrier": 9,
+    "ID3D12GraphicsCommandList::Dispatch": 1,
+    "ID3D12GraphicsCommandList::ResolveQueryData": 2,
+    "ID3D12GraphicsCommandList::Close": 2,
+    "ID3D12CommandQueue::ExecuteCommandLists": 2,
+    "ID3D12CommandQueue::Wait": 1,
+    "ID3D12GraphicsCommandList::SetGraphicsRootSignature": 1,
+    "ID3D12GraphicsCommandList::SetGraphicsRoot32BitConstants": 1,
+    "ID3D12GraphicsCommandList::SetGraphicsRootDescriptorTable": 1,
+    "ID3D12GraphicsCommandList::BeginEvent": 3,
+    "ID3D12GraphicsCommandList::ClearRenderTargetView": 1,
+    "ID3D12GraphicsCommandList::ClearDepthStencilView": 1,
+    "ID3D12GraphicsCommandList::OMSetRenderTargets": 1,
+    "ID3D12GraphicsCommandList::RSSetViewports": 1,
+    "ID3D12GraphicsCommandList::RSSetScissorRects": 1,
+    "ID3D12GraphicsCommandList::IASetPrimitiveTopology": 1,
+    "ID3D12GraphicsCommandList::IASetVertexBuffers": 1,
+    "ID3D12GraphicsCommandList::IASetIndexBuffer": 1,
+    "ID3D12GraphicsCommandList::DrawIndexedInstanced": 1,
+    "ID3D12GraphicsCommandList::EndEvent": 3,
+    "ID3D12GraphicsCommandList::CopyResource": 1,
+    "IDXGISwapChain::Present": 1,
+    "Internal::End of Capture": 1
+  },
+  "selected_commands": [
+    {
+      "name": "ID3D12CommandQueue::Signal",
+      "chunk_index": 47,
+      "values": [
+        {
+          "name": "pQueue",
+          "value": "8",
+          "symbol": null
+        },
+        {
+          "name": "pFence",
+          "value": "282",
+          "symbol": null
+        },
+        {
+          "name": "Value",
+          "value": "457",
+          "symbol": null
+        }
+      ]
+    },
+    {
+      "name": "ID3D12GraphicsCommandList::ResourceBarrier",
+      "chunk_index": 55,
+      "values": [
+        {
+          "name": "pCommandList",
+          "value": "300",
+          "symbol": null
+        },
+        {
+          "name": "NumBarriers",
+          "value": "1",
+          "symbol": null
+        },
+        {
+          "name": "Type",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_TYPE_TRANSITION"
+        },
+        {
+          "name": "Flags",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_FLAG_NONE"
+        },
+        {
+          "name": "pResource",
+          "value": "303",
+          "symbol": null
+        },
+        {
+          "name": "Subresource",
+          "value": "0",
+          "symbol": "0"
+        },
+        {
+          "name": "StateBefore",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_STATE_COMMON"
+        },
+        {
+          "name": "StateAfter",
+          "value": "8",
+          "symbol": "D3D12_RESOURCE_STATE_UNORDERED_ACCESS"
+        }
+      ]
+    },
+    {
+      "name": "ID3D12GraphicsCommandList::Dispatch",
+      "chunk_index": 56,
+      "values": [
+        {
+          "name": "pCommandList",
+          "value": "300",
+          "symbol": null
+        },
+        {
+          "name": "ThreadGroupCountX",
+          "value": "1",
+          "symbol": null
+        },
+        {
+          "name": "ThreadGroupCountY",
+          "value": "1",
+          "symbol": null
+        },
+        {
+          "name": "ThreadGroupCountZ",
+          "value": "1",
+          "symbol": null
+        }
+      ]
+    },
+    {
+      "name": "ID3D12GraphicsCommandList::ResourceBarrier",
+      "chunk_index": 57,
+      "values": [
+        {
+          "name": "pCommandList",
+          "value": "300",
+          "symbol": null
+        },
+        {
+          "name": "NumBarriers",
+          "value": "1",
+          "symbol": null
+        },
+        {
+          "name": "Type",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_TYPE_TRANSITION"
+        },
+        {
+          "name": "Flags",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_FLAG_NONE"
+        },
+        {
+          "name": "pResource",
+          "value": "303",
+          "symbol": null
+        },
+        {
+          "name": "Subresource",
+          "value": "0",
+          "symbol": "0"
+        },
+        {
+          "name": "StateBefore",
+          "value": "8",
+          "symbol": "D3D12_RESOURCE_STATE_UNORDERED_ACCESS"
+        },
+        {
+          "name": "StateAfter",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_STATE_COMMON"
+        }
+      ]
+    },
+    {
+      "name": "ID3D12CommandQueue::ExecuteCommandLists",
+      "chunk_index": 61,
+      "values": [
+        {
+          "name": "pQueue",
+          "value": "283",
+          "symbol": null
+        },
+        {
+          "name": "NumCommandLists",
+          "value": "1",
+          "symbol": null
+        },
+        {
+          "name": null,
+          "value": "300",
+          "symbol": null
+        }
+      ]
+    },
+    {
+      "name": "ID3D12CommandQueue::Signal",
+      "chunk_index": 62,
+      "values": [
+        {
+          "name": "pQueue",
+          "value": "283",
+          "symbol": null
+        },
+        {
+          "name": "pFence",
+          "value": "285",
+          "symbol": null
+        },
+        {
+          "name": "Value",
+          "value": "457",
+          "symbol": null
+        }
+      ]
+    },
+    {
+      "name": "ID3D12CommandQueue::Wait",
+      "chunk_index": 63,
+      "values": [
+        {
+          "name": "pQueue",
+          "value": "8",
+          "symbol": null
+        },
+        {
+          "name": "pFence",
+          "value": "285",
+          "symbol": null
+        },
+        {
+          "name": "Value",
+          "value": "457",
+          "symbol": null
+        }
+      ]
+    },
+    {
+      "name": "ID3D12GraphicsCommandList::ResourceBarrier",
+      "chunk_index": 70,
+      "values": [
+        {
+          "name": "pCommandList",
+          "value": "297",
+          "symbol": null
+        },
+        {
+          "name": "NumBarriers",
+          "value": "1",
+          "symbol": null
+        },
+        {
+          "name": "Type",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_TYPE_TRANSITION"
+        },
+        {
+          "name": "Flags",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_FLAG_NONE"
+        },
+        {
+          "name": "pResource",
+          "value": "303",
+          "symbol": null
+        },
+        {
+          "name": "Subresource",
+          "value": "0",
+          "symbol": "0"
+        },
+        {
+          "name": "StateBefore",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_STATE_COMMON"
+        },
+        {
+          "name": "StateAfter",
+          "value": "192",
+          "symbol": "D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE"
+        }
+      ]
+    },
+    {
+      "name": "ID3D12GraphicsCommandList::ResourceBarrier",
+      "chunk_index": 71,
+      "values": [
+        {
+          "name": "pCommandList",
+          "value": "297",
+          "symbol": null
+        },
+        {
+          "name": "NumBarriers",
+          "value": "1",
+          "symbol": null
+        },
+        {
+          "name": "Type",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_TYPE_TRANSITION"
+        },
+        {
+          "name": "Flags",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_FLAG_NONE"
+        },
+        {
+          "name": "pResource",
+          "value": "327",
+          "symbol": null
+        },
+        {
+          "name": "Subresource",
+          "value": "0",
+          "symbol": "0"
+        },
+        {
+          "name": "StateBefore",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_STATE_COMMON"
+        },
+        {
+          "name": "StateAfter",
+          "value": "4",
+          "symbol": "D3D12_RESOURCE_STATE_RENDER_TARGET"
+        }
+      ]
+    },
+    {
+      "name": "ID3D12GraphicsCommandList::DrawIndexedInstanced",
+      "chunk_index": 80,
+      "values": [
+        {
+          "name": "pCommandList",
+          "value": "297",
+          "symbol": null
+        },
+        {
+          "name": "IndexCountPerInstance",
+          "value": "36",
+          "symbol": null
+        },
+        {
+          "name": "InstanceCount",
+          "value": "1",
+          "symbol": null
+        },
+        {
+          "name": "StartIndexLocation",
+          "value": "0",
+          "symbol": null
+        },
+        {
+          "name": "BaseVertexLocation",
+          "value": "0",
+          "symbol": null
+        },
+        {
+          "name": "StartInstanceLocation",
+          "value": "0",
+          "symbol": null
+        }
+      ]
+    },
+    {
+      "name": "ID3D12GraphicsCommandList::ResourceBarrier",
+      "chunk_index": 85,
+      "values": [
+        {
+          "name": "pCommandList",
+          "value": "297",
+          "symbol": null
+        },
+        {
+          "name": "NumBarriers",
+          "value": "1",
+          "symbol": null
+        },
+        {
+          "name": "Type",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_TYPE_TRANSITION"
+        },
+        {
+          "name": "Flags",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_FLAG_NONE"
+        },
+        {
+          "name": "pResource",
+          "value": "327",
+          "symbol": null
+        },
+        {
+          "name": "Subresource",
+          "value": "0",
+          "symbol": "0"
+        },
+        {
+          "name": "StateBefore",
+          "value": "4",
+          "symbol": "D3D12_RESOURCE_STATE_RENDER_TARGET"
+        },
+        {
+          "name": "StateAfter",
+          "value": "2048",
+          "symbol": "D3D12_RESOURCE_STATE_COPY_SOURCE"
+        }
+      ]
+    },
+    {
+      "name": "ID3D12GraphicsCommandList::ResourceBarrier",
+      "chunk_index": 86,
+      "values": [
+        {
+          "name": "pCommandList",
+          "value": "297",
+          "symbol": null
+        },
+        {
+          "name": "NumBarriers",
+          "value": "1",
+          "symbol": null
+        },
+        {
+          "name": "Type",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_TYPE_TRANSITION"
+        },
+        {
+          "name": "Flags",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_FLAG_NONE"
+        },
+        {
+          "name": "pResource",
+          "value": "289",
+          "symbol": null
+        },
+        {
+          "name": "Subresource",
+          "value": "0",
+          "symbol": "0"
+        },
+        {
+          "name": "StateBefore",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_STATE_COMMON"
+        },
+        {
+          "name": "StateAfter",
+          "value": "1024",
+          "symbol": "D3D12_RESOURCE_STATE_COPY_DEST"
+        }
+      ]
+    },
+    {
+      "name": "ID3D12GraphicsCommandList::ResourceBarrier",
+      "chunk_index": 92,
+      "values": [
+        {
+          "name": "pCommandList",
+          "value": "297",
+          "symbol": null
+        },
+        {
+          "name": "NumBarriers",
+          "value": "1",
+          "symbol": null
+        },
+        {
+          "name": "Type",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_TYPE_TRANSITION"
+        },
+        {
+          "name": "Flags",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_FLAG_NONE"
+        },
+        {
+          "name": "pResource",
+          "value": "303",
+          "symbol": null
+        },
+        {
+          "name": "Subresource",
+          "value": "0",
+          "symbol": "0"
+        },
+        {
+          "name": "StateBefore",
+          "value": "192",
+          "symbol": "D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE"
+        },
+        {
+          "name": "StateAfter",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_STATE_COMMON"
+        }
+      ]
+    },
+    {
+      "name": "ID3D12GraphicsCommandList::ResourceBarrier",
+      "chunk_index": 93,
+      "values": [
+        {
+          "name": "pCommandList",
+          "value": "297",
+          "symbol": null
+        },
+        {
+          "name": "NumBarriers",
+          "value": "1",
+          "symbol": null
+        },
+        {
+          "name": "Type",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_TYPE_TRANSITION"
+        },
+        {
+          "name": "Flags",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_FLAG_NONE"
+        },
+        {
+          "name": "pResource",
+          "value": "327",
+          "symbol": null
+        },
+        {
+          "name": "Subresource",
+          "value": "0",
+          "symbol": "0"
+        },
+        {
+          "name": "StateBefore",
+          "value": "2048",
+          "symbol": "D3D12_RESOURCE_STATE_COPY_SOURCE"
+        },
+        {
+          "name": "StateAfter",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_STATE_COMMON"
+        }
+      ]
+    },
+    {
+      "name": "ID3D12GraphicsCommandList::ResourceBarrier",
+      "chunk_index": 94,
+      "values": [
+        {
+          "name": "pCommandList",
+          "value": "297",
+          "symbol": null
+        },
+        {
+          "name": "NumBarriers",
+          "value": "1",
+          "symbol": null
+        },
+        {
+          "name": "Type",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_TYPE_TRANSITION"
+        },
+        {
+          "name": "Flags",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_BARRIER_FLAG_NONE"
+        },
+        {
+          "name": "pResource",
+          "value": "289",
+          "symbol": null
+        },
+        {
+          "name": "Subresource",
+          "value": "0",
+          "symbol": "0"
+        },
+        {
+          "name": "StateBefore",
+          "value": "1024",
+          "symbol": "D3D12_RESOURCE_STATE_COPY_DEST"
+        },
+        {
+          "name": "StateAfter",
+          "value": "0",
+          "symbol": "D3D12_RESOURCE_STATE_COMMON"
+        }
+      ]
+    },
+    {
+      "name": "ID3D12CommandQueue::ExecuteCommandLists",
+      "chunk_index": 99,
+      "values": [
+        {
+          "name": "pQueue",
+          "value": "8",
+          "symbol": null
+        },
+        {
+          "name": "NumCommandLists",
+          "value": "1",
+          "symbol": null
+        },
+        {
+          "name": null,
+          "value": "297",
+          "symbol": null
+        }
+      ]
+    },
+    {
+      "name": "IDXGISwapChain::Present",
+      "chunk_index": 100,
+      "values": [
+        {
+          "name": "PresentedBackbuffer",
+          "value": "289",
+          "symbol": null
+        },
+        {
+          "name": "SyncInterval",
+          "value": "1",
+          "symbol": null
+        },
+        {
+          "name": "Flags",
+          "value": "0",
+          "symbol": null
+        }
+      ]
+    }
+  ],
+  "replay": {
+    "command": "renderdoccmd replay --loops 1 <capture>",
+    "exit_code": 0
+  },
+  "xml_export": {
+    "command": "renderdoccmd convert -f <capture> -o <xml> -c xml",
+    "exit_code": 0
+  },
+  "scope": "M4.1 fixed mesh D3D12 capture. GPU validation is measured in a separate non-injected run. Native 4K, UE-equivalent quality and M4 final performance are outside this evidence."
+}

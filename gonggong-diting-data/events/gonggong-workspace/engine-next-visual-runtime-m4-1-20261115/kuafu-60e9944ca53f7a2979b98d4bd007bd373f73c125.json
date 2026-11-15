@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-60e9944ca53f7a2979b98d4bd007bd373f73c125",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-1-20261115",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1327",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7a6a826a3ff0128150225fcc8c9a6cd9d60ab7aedefc7e23e6e693e5a2962d84",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1327",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1329",
+    "action": "validation",
+    "detection_head": "91ad259255f305ee48645b4abc075c2130b9f303",
+    "context_sha256": "003026642087a7a8637a585dfb523c232026dcf0968a35caa03ff270c854153c",
+    "operator": "kaiyunxue",
+    "worker": "codex-m41",
+    "authority_ref": "User requested M4 implementation",
+    "evidence": "PR1328 CI static and macOS/windows tool tests, local repaired build m4-1-r3",
+    "diagnosis": "Pinned clang22 differs from local clang20; header alignment and exact RenderDoc label spelling triggered hooks; path aliases require canonical test roots and defensive include audit",
+    "next_action": "Refresh exact byte-bound evidence, resubmit repaired candidate, verify same CI jobs",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-15T16:12:50.149959+00:00",
+    "attempted": "Pinned formatter applied, source labels JSON-escaped without semantic changes, temp roots canonicalized, local14/1208 plus32 tool tests and240frame GBV pass",
+    "repair_owner": "codex-m41",
+    "continuable": "M4.1 candidate delivery"
+  },
+  "occurred_at": "2026-11-15T16:16:36.647667+00:00",
+  "sha256": "792e084f3a8f4111c97b5a11df7232be8882c2dbce608b88b4d94f9549daa803"
+}

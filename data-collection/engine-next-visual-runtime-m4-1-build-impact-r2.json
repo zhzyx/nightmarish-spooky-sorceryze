@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-1-20261115",
+  "issue_number": 1327,
+  "placement": "mixed",
+  "input_blobs": {
+    "engine_next/Rendering/FrameGraph.cpp": "e103a5cceaf39ed9749ff88a3c416f4b958687ae",
+    "engine_next/Rendering/Shaders/FixedMesh.hlsl": "0e32bb1b8f794bd6ef3b8ede41f29ebf618fd60a",
+    "engine_next/Rendering/VisualRuntime.cpp": "9ee7ab55f69ddc1d0d56f700ea111b1b4d79dc93",
+    "engine_next/include/EngineNext/Rendering/FrameGraph.h": "a102890941064451f53c143be90d9f4075e3167e",
+    "engine_next/include/EngineNext/Rendering/VisualRuntime.h": "c7831d49c5fd917f814c3aeb8e1b1d5d13dacd4c",
+    "engine_next/Platform/Windows/Window.cpp": "ebe8ab33ff5bc7c180dd07343703ae51a31517f8",
+    "engine_next/Platform/Windows/Window.h": "dc0d097d29ccdcc2e715c7d6b6d2687d69595ba1",
+    "engine_next/Apps/NextVisualClientMain.cpp": "55cdba62fd6371d4ca82f606301ccaa51f91114e",
+    "engine_next/Tools/BuildVisualRuntime.py": "86dc2f2c05fb13a2d3d11b6bb0ae1e0cae575581",
+    "engine_next/Tools/PackageVisualRuntime.py": "e0312c264b7f0bb8a1ff5879d4eedcf27ac5b245",
+    "tools/check_engine_next_contract.py": "31848d7290bb804f114e01cffd37fe5efc010bf9",
+    "tools/engine_next_contract.json": "d0ddf35480c444f37c8f869b20b3902452231cd8",
+    ".github/workflows/engine_next_contract.yml": "55a9c3c1d86741402f8c49ef496765c39b975843"
+  },
+  "native_keys": {
+    "before": "017069ea6c366f0c46dfa6366dde06011ecb1992a507107a364e77e46b8ef2e4",
+    "changed": "16cdbbf2abfc4777be5ed3d636d13c99c1dae8aacbd5917106736b123b6fb0bd",
+    "restored": "017069ea6c366f0c46dfa6366dde06011ecb1992a507107a364e77e46b8ef2e4"
+  },
+  "checks": {
+    "native_invalidation": {
+      "command": "BuildVisualRuntime.py on physically isolated m4-final3-clean export; change shader tint 0.88 to 0.25; rebuild; restore exact bytes and rebuild",
+      "passed": true,
+      "observed": "Native key changed with shader bytes and returned to original after restoration; all three builds passed 14 FrameGraph tests / 1208 checks"
+    },
+    "same_binary_update": {
+      "command": "One retained next_visual_client.exe --hidden --deterministic --frames 20 with original and changed --shader-directory",
+      "passed": true,
+      "observed": "Exact same executable rendered different PPM output for changed shader bundle",
+      "before_executable": "683604316e41da9013e8083b5a7f3a9f2a239a951f6ae1185527353b921cac47",
+      "after_executable": "683604316e41da9013e8083b5a7f3a9f2a239a951f6ae1185527353b921cac47",
+      "before_package": "ed2b05f5df7009995af007a901a432e4c0004f9defee8e4022a42bcca5bbc74f",
+      "after_package": "a19e1cdded2c876eb6097a4107e7f183adaf50d016ffe6a05eec29d836cc7f4f"
+    },
+    "incompatible_rejection": {
+      "command": "One retained executable with a deliberately malformed FixedMesh.ps.cso",
+      "passed": true,
+      "observed": "Exit 1 before drawing; Create graphics PSO failure surfaced"
+    },
+    "rollback": {
+      "command": "One retained executable reloaded original shader bundle at startup and rendered deterministic frame20",
+      "passed": true,
+      "observed": "Original and restored PPM SHA256 match exactly: 351cb86a90cb3e976b0e7c4a2c1743b97b4e2dd88efdbf16543989f21a648bf4"
+    }
+  },
+  "runs": [
+    {
+      "label": "Baseline",
+      "exit_code": 0,
+      "executable_sha256": "683604316e41da9013e8083b5a7f3a9f2a239a951f6ae1185527353b921cac47",
+      "shader_bundle_sha256": "ed2b05f5df7009995af007a901a432e4c0004f9defee8e4022a42bcca5bbc74f",
+      "capture_sha256": "351cb86a90cb3e976b0e7c4a2c1743b97b4e2dd88efdbf16543989f21a648bf4",
+      "frames": 20
+    },
+    {
+      "label": "Changed",
+      "exit_code": 0,
+      "executable_sha256": "683604316e41da9013e8083b5a7f3a9f2a239a951f6ae1185527353b921cac47",
+      "shader_bundle_sha256": "a19e1cdded2c876eb6097a4107e7f183adaf50d016ffe6a05eec29d836cc7f4f",
+      "capture_sha256": "d5ddf4bace19420c8f7d7ae089a7475f7582dfb272f6fe23fe6faf5df63ecfb4",
+      "frames": 20
+    },
+    {
+      "label": "Rollback",
+      "exit_code": 0,
+      "executable_sha256": "683604316e41da9013e8083b5a7f3a9f2a239a951f6ae1185527353b921cac47",
+      "shader_bundle_sha256": "ed2b05f5df7009995af007a901a432e4c0004f9defee8e4022a42bcca5bbc74f",
+      "capture_sha256": "351cb86a90cb3e976b0e7c4a2c1743b97b4e2dd88efdbf16543989f21a648bf4",
+      "frames": 20
+    },
+    {
+      "label": "Incompatible",
+      "exit_code": 1,
+      "executable_sha256": "683604316e41da9013e8083b5a7f3a9f2a239a951f6ae1185527353b921cac47",
+      "shader_bundle_sha256": "b782ac814d647338a4bf2bf79eb9e291f2347bc473e8acad1e2641e6a7a120f6",
+      "capture_sha256": null,
+      "frames": 0
+    }
+  ],
+  "clean_build": {
+    "test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=14 checks=1208 failures=0",
+    "source_manifest": "build/engine_next/m4-final3-cleanManifest.json",
+    "build_report": "build/engine_next/m4-final3-clean/build/engine_next/visual/VisualBuildReport.json",
+    "shader_compiler": {
+      "sha256": "7c6918a0e2d4e437629fa8549f5ce800970494780f363bbbe1e3d3034f435aee",
+      "version": "dxcompiler.dll: 1.8 - 1.8.2502.11 (239921522); dxil.dll: 1.8(1.8.2502.11)"
+    }
+  },
+  "supersedes": "data-collection/engine-next-visual-runtime-m4-1-build-impact.json"
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-1-20261115",
+  "issue_number": 1327,
+  "parent_issue_number": 1323,
+  "recorded_at": "2026-11-15T16:29:10.581728+00:00",
+  "supersedes": "engine-next-visual-runtime-m4-1-video-final2-20261115.json",
+  "capture_method": "Native PrintWindow(PW_CLIENTONLY | PW_RENDERFULLCONTENT) from the authorized application HWND; 120 sequential frames at 15 Hz, encoded to H.264 using existing ffmpeg",
+  "width": 1280,
+  "height": 720,
+  "video": {
+    "path": "build/engine_next/m4-capture-final3/M41-Final3-TargetMotion.mp4",
+    "size": 435549,
+    "sha256": "fc5102096c71498c80a38e147de0deaa1b253ef8a29514c7f7b4e24938722d59"
+  },
+  "executable": {
+    "path": "build/engine_next/m4-1-r3/next_visual_client.exe",
+    "sha256": "af89a0ecea35e8c2b9c27eb364dad7c87d76a38f02dc9987272167ded1f3e40b"
+  },
+  "verification": {
+    "duration_seconds": 8,
+    "decoded_frame_count": 120,
+    "frame_rate": 15,
+    "sampled_frames": 8,
+    "all_sampled_adjacent_frames_changed": true,
+    "visual_inspection": "First and last source frames show rotating native cube only. The target HWND capture excludes desktop content and occluding windows."
+  },
+  "failed_attempt": {
+    "method": "Desktop/gdigrab",
+    "result": "Rejected during visual QA because a firewall dialog occluded the client rectangle; discarded private video and thumbnails, no raw failed recording published."
+  },
+  "runtime_exit_code": 0,
+  "scope": "Current M4.1 fixed-mesh motion. Recording cadence is independent of runtime frame rate and is not performance evidence."
+}

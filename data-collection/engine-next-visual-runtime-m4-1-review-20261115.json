@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-1-20261115",
+  "issue_number": 1327,
+  "inputs": [
+    {
+      "path": "engine_next/Rendering/FrameGraph.cpp",
+      "sha256": "99d45c1a8138f3954e4e1421f384920e3c51b3e1f3aa21f567ef64982c95b02a"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/FrameGraph.h",
+      "sha256": "e16e0b7de00c910d78fda9f2d46dc8e19da7a3bb8e9e4cf0aa73eb2768ea94ca"
+    },
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "sha256": "da58d739a6476090ba792595a84741c1592b973dc1187dc2952d88dc54d6ee19"
+    },
+    {
+      "path": "engine_next/Apps/NextVisualClientMain.cpp",
+      "sha256": "3933ac317567457236b224f9127a3eebf6b6cb6d32bdd4b1c30f76acbb258bbe"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/FixedMesh.hlsl",
+      "sha256": "82ee60e24fd25c6ea3d0d02fa077b899852350ae8c18d2a9523f48d1b516bc1f"
+    },
+    {
+      "path": "engine_next/Tools/BuildVisualRuntime.py",
+      "sha256": "5e42ae892585634310a99530a6859ad8dc4e93b0f83a84765b9624e7fbfa3eda"
+    },
+    {
+      "path": "engine_next/Tools/PackageVisualRuntime.py",
+      "sha256": "8dbca74f72ecab4140f03ba0f8011a2b4f16c79bccb5e9b094bac620b9f92770"
+    },
+    {
+      "path": "tools/check_engine_next_contract.py",
+      "sha256": "ce528852c68b418dd27c4c2618d15900a6e1e51566e9d64a039de19cba4b992d"
+    }
+  ],
+  "reviews": [
+    {
+      "reviewer": "/root/m41_build",
+      "independent_scope": [
+        "FrameGraph",
+        "VisualRuntime timing/trace/DRED"
+      ],
+      "result": "passed after resource-wide queue ordering fix"
+    },
+    {
+      "reviewer": "/root/m41_framegraph",
+      "independent_scope": [
+        "RHI ownership",
+        "Win32 integration",
+        "CLI",
+        "fixed shader",
+        "build/package"
+      ],
+      "result": "PATH resolution and GPU retirement defects repaired; final validations passed"
+    },
+    {
+      "reviewer": "root",
+      "scope": [
+        "integration",
+        "build/contract and package source review",
+        "verification trace and pixel evidence"
+      ],
+      "result": "passed for M4.1 fixed renderer"
+    }
+  ],
+  "known_unverified": [
+    "DRED fault injection",
+    "async overlap",
+    "4K final rendering",
+    "M4.2+"
+  ],
+  "conclusion": "M4.1 implementation candidate passed bounded scope checks"
+}

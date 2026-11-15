@@ -187,6 +187,55 @@ class EngineNextContractTests(unittest.TestCase):
         self.assertEqual(result["objects"], 1)
         self.assertEqual(result["libraries"], 1)
 
+    def test_visual_sdk_headers_are_limited_to_private_profile_sources(self):
+        self.write("engine_next/Rendering/VisualRuntime.cpp", "#include <d3d12.h>\n#include <dxgi1_6.h>\n")
+        result = audit_sources(self.root, self.contract, True)
+        self.assertTrue(result["passed"], result["violations"])
+        self.write("engine_next/include/BadPublicHeader.h", "#include <d3d12.h>\n")
+        result = audit_sources(self.root, self.contract, True)
+        self.assertIn("unknown_angle_include", {item["code"] for item in result["violations"]})
+
+    def test_visual_profile_does_not_allow_header_prefix_lookalikes(self):
+        self.write("engine_next/Rendering/VisualRuntime.cpp", "#include <d3d12.h/private.h>\n")
+        result = audit_sources(self.root, self.contract, True)
+        self.assertIn("unknown_angle_include", {item["code"] for item in result["violations"]})
+
+    def test_visual_libraries_remain_forbidden_in_headless_target(self):
+        path, document = self.make_manifest()
+        document["system_libraries"] = ["c++", "d3d12", "dxgi", "dxguid", "user32"]
+        self.save_manifest(path, document)
+        result = audit_link_manifest(self.root, self.contract, path)
+        self.assertFalse(result["passed"])
+        document["target"] = "next_visual_client"
+        self.save_manifest(path, document)
+        result = audit_link_manifest(self.root, self.contract, path)
+        self.assertTrue(result["passed"], result["violations"])
+
+    def test_profile_cannot_broaden_public_header_root(self):
+        contract = copy.deepcopy(self.contract)
+        contract["target_profiles"]["next_visual_client"]["source_roots"] = ["engine_next/include"]
+        with self.assertRaises(ValueError):
+            validate_contract(contract)
+
+    def test_profile_cannot_replace_base_target(self):
+        contract = copy.deepcopy(self.contract)
+        profile = contract["target_profiles"].pop("next_visual_client")
+        contract["target_profiles"]["next_runtime"] = profile
+        with self.assertRaises(ValueError):
+            validate_contract(contract)
+
+    def test_legacy_contract_without_profiles_still_loads(self):
+        contract = copy.deepcopy(self.contract)
+        contract.pop("target_profiles")
+        self.assertEqual(validate_contract(contract)["target"], "next_runtime")
+
+    def test_invalid_manifest_target_type_is_rejected(self):
+        path, document = self.make_manifest()
+        document["target"] = []
+        self.save_manifest(path, document)
+        result = audit_link_manifest(self.root, self.contract, path)
+        self.assertIn("link_target_mismatch", {item["code"] for item in result["violations"]})
+
     def test_godot_link_input_is_rejected(self):
         path, document = self.make_manifest()
         document["objects"] = [{"path": "core/object.o", "sha256": "0" * 64}]

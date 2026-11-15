@@ -129,3 +129,59 @@ jobs:
           unzip -q build/engine_next/godot-legacy/Godot.zip -d build/engine_next/godot-legacy
           python3 engine_next/Tools/RunM3LegacyAcceptance.py --godot build/engine_next/godot-legacy/Godot_v4.4.1-stable_linux.x86_64 --next-asset build/engine_next/clang-runtime/next_asset --adapter tools/engine_next_legacy/scene_adapter.gd --fixtures tools/engine_next_legacy/fixtures --report build/engine_next/clang-runtime/M3LegacyReport.json
           python3 samples/ainative-workbench/test_unified_settings.py --godot build/engine_next/godot-legacy/Godot_v4.4.1-stable_linux.x86_64 --report build/engine_next/clang-runtime/MaliangSettingsReport.json
+
+  visual-contract:
+    name: Visual runtime build and FrameGraph (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-latest
+          - macos-26
+          - ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Build and audit D3D12 client, shaders and FrameGraph
+        if: runner.os == 'Windows'
+        run: python engine_next/Tools/BuildVisualRuntime.py --build-dir build/engine_next/visual --run-tests
+
+      - name: Build and audit portable FrameGraph tests
+        if: runner.os != 'Windows'
+        run: python3 engine_next/Tools/BuildVisualRuntime.py --compiler clang --tests-only --build-dir build/engine_next/visual --run-tests
+
+      - name: Export physical clean source
+        run: python engine_next/Tools/ExportCleanSource.py --output build/engine_next/visual-clean-source
+
+      - name: Rebuild D3D12 client from clean source
+        if: runner.os == 'Windows'
+        run: >-
+          python build/engine_next/visual-clean-source/engine_next/Tools/BuildVisualRuntime.py
+          --repo build/engine_next/visual-clean-source --build-dir build/engine_next/visual --run-tests
+
+      - name: Rebuild portable FrameGraph from clean source
+        if: runner.os != 'Windows'
+        run: >-
+          python3 build/engine_next/visual-clean-source/engine_next/Tools/BuildVisualRuntime.py
+          --repo build/engine_next/visual-clean-source --compiler clang --tests-only
+          --build-dir build/engine_next/visual --run-tests
+
+      # Hosted runners validate compilation and CPU contracts; real GPU evidence is collected on the reference PC.
+      - name: Retain visual build evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visual-runtime-${{ matrix.os }}
+          path: |
+            build/engine_next/visual/VisualBuildReport.json
+            build/engine_next/visual/*LinkManifest.json
+            build/engine_next/visual/Release/
+            build/engine_next/visual-clean-sourceManifest.json
