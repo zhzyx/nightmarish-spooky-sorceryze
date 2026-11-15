@@ -121,3 +121,23 @@ def test_export_pdf() -> None:
     assert response.headers["content-type"].startswith("application/pdf")
     assert response.content.startswith(b"%PDF")
     assert len(response.content) > 1000
+
+
+def test_pdf_table_flowable_and_export() -> None:
+    from pdf_export import _table_flowables
+    from reportlab.platypus import Table
+
+    table = _table_flowables(["名称", "值"], [["A", "1"], ["B", "2"]])
+    assert isinstance(table, Table)
+    assert table._cellvalues[1][0].text == "A"
+    assert table._cellvalues[2][1].text == "2"
+
+    client, headers = _client()
+    doc = client.post(
+        "/api/v1/docs",
+        headers=headers,
+        json={"title": "PDF 表格", "body_md": "| 名称 | 值 |\n| --- | --- |\n| A | 1 |\n"},
+    ).json()
+    response = client.get(f"/api/v1/docs/{doc['id']}/export/file", headers=headers, params={"format": "pdf"})
+    assert response.status_code == 200, response.text
+    assert response.content.startswith(b"%PDF")
