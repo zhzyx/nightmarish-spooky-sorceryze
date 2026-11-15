@@ -29,6 +29,20 @@ installations and evaluation, not for high availability.
 Only the `proxy` service publishes a host port. `api` and `web` are reachable
 only on the Compose network.
 
+## Production HTTPS and access gate
+
+The base stack is HTTP-only and does not manage certificates or authentication
+prompts. The optional [`production/`](production/README.md) profile adds:
+
+- Let's Encrypt TLS on 443 (and 80 for ACME + redirect);
+- a cookie access gate with a one-time `/gate?key=...` link;
+- a static `/login.html` instruction page for clients without the cookie;
+- an internal-only bypass so Next.js SSR can still read the API.
+
+Copy the examples from `production/` as described there. The profile keeps all
+application code unchanged; it only replaces the mounted nginx config and adds
+a Compose override.
+
 ## Files
 
 | Path | Purpose |

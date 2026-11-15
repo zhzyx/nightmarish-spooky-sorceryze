@@ -1,0 +1,13 @@
+# Local production overlay for the Tianxuan stack.
+# Copy to deploy/docker-compose.override.yml and adjust if needed.
+# Requires Docker Compose v2.24+ for the !override tag on ports.
+services:
+  proxy:
+    ports: !override
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.gate.conf:/etc/nginx/nginx.conf:ro
+      - ./login.html:/usr/share/nginx/html/login.html:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot:ro
