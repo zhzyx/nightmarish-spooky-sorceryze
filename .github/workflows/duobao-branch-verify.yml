@@ -1,0 +1,33 @@
+name: Duobao branch verification
+
+on:
+  push:
+    branches:
+      - codex/duobao-policy-backup-20261115
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Module tests and lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: pip install fastapi httpx pytest python-docx reportlab "ruff==0.17.1"
+      - name: Configure git identity for merge tests
+        run: |
+          git config --global user.name "Tianxuan Test"
+          git config --global user.email "tianxuan@example.invalid"
+      - name: Lint and format check
+        run: |
+          ruff check --no-fix customizations/components/tianxuan
+          ruff format --check customizations/components/tianxuan
+      - name: Run Tianxuan server and Duobao tests
+        env:
+          GIT_EXECUTABLE: git
+        run: python -m pytest customizations/components/tianxuan -q

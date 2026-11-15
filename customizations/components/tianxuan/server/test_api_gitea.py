@@ -47,13 +47,16 @@ class _FakeGitea:
     ) -> dict[str, Any]:
         return {"number": 2, "title": title, "head": head, "base": base, "body": body}
 
+    def get_pull_request(self, owner: str, repo: str, number: int) -> dict[str, Any]:
+        return {"number": number, "title": "demo", "head": "feature", "base": "main", "state": "open"}
+
     def merge_pull_request(self, owner: str, repo: str, number: int, method: str = "merge") -> dict[str, Any]:
         return {"number": number, "merged": True, "method": method}
 
 
-def _setup() -> tuple[TestClient, dict[str, str]]:
+def _setup(protected_branches: tuple[str, ...] = ()) -> tuple[TestClient, dict[str, str]]:
     store = Tianxuan(":memory:")
-    client = TestClient(create_app(store))
+    client = TestClient(create_app(store, protected_branches=protected_branches))
     registered = client.post(
         "/api/v1/auth/register",
         json={"tenant_name": "仓库工坊", "email": "repo@example.com", "password": "secret-pass"},
@@ -116,3 +119,46 @@ def test_repo_branches_and_pull_requests_with_fake_client(monkeypatch) -> None:
         json={"method": "squash"},
     ).json()
     assert merged == {"number": 2, "merged": True, "method": "squash"}
+
+
+def test_protected_branch_rejects_direct_gitea_merge(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_GITEA_URL", "http://gitea.example")
+    monkeypatch.setenv("TIANXUAN_GITEA_TOKEN", "secret")
+    monkeypatch.setattr(api_module, "GiteaClient", _FakeGitea)
+    client, headers = _setup(protected_branches=("main",))
+
+    response = client.post(
+        "/api/v1/repos/owner/demo/pulls/2/merge",
+        headers=headers,
+        json={"method": "merge"},
+    )
+    assert response.status_code == 403
+    assert "protected" in response.json()["detail"]
+
+
+def test_viewer_cannot_create_repo_or_open_or_merge_pull(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_GITEA_URL", "http://gitea.example")
+    monkeypatch.setenv("TIANXUAN_GITEA_TOKEN", "secret")
+    monkeypatch.setattr(api_module, "GiteaClient", _FakeGitea)
+    client, headers = _setup()
+    store = client.app.state.store  # type: ignore[attr-defined]
+    viewer = store.add_member(headers["X-Actor"], "viewer@example.com", "secret-pass", role="viewer")
+    viewer_headers = {"X-Actor": viewer["user_id"]}
+
+    assert client.post("/api/v1/repos", headers=viewer_headers, json={"name": "demo"}).status_code == 403
+    assert (
+        client.post(
+            "/api/v1/repos/owner/demo/pulls",
+            headers=viewer_headers,
+            json={"title": "feat", "head": "feature", "base": "main"},
+        ).status_code
+        == 403
+    )
+    assert (
+        client.post(
+            "/api/v1/repos/owner/demo/pulls/2/merge",
+            headers=viewer_headers,
+            json={"method": "merge"},
+        ).status_code
+        == 403
+    )

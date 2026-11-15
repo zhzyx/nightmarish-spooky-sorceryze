@@ -15,12 +15,20 @@ import difflib
 import html
 import json
 import os
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Annotated, Any
 from urllib.parse import quote
 
 from docx_export import render_docx
-from duobao_bridge import GitService, GitServiceError
+from duobao_bridge import (
+    GitService,
+    GitServiceError,
+    PolicyError,
+    ensure_branch_mutation_allowed,
+    ensure_merge_allowed,
+    parse_protected_branches,
+)
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse, Response
 from gateway import ModelGateway, create_model_router
@@ -39,6 +47,7 @@ from schemas import (
     DocVisibilityRequest,
     ExternalLinkRequest,
     ExternalRequirementRequest,
+    GitBranchCreateRequest,
     IdentityLinkRequest,
     IdentityRebindRequest,
     IdentityResolveRequest,
@@ -174,12 +183,27 @@ def _repo_under_root(name: str) -> Path:
     return candidate
 
 
-def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue: Any | None = None) -> FastAPI:
+def _policy_patterns(app: FastAPI) -> tuple[str, ...]:
+    return tuple(getattr(app.state, "protected_branches", ()) or ())
+
+
+def _require_editor_role(store: Tianxuan, actor: str, action: str) -> None:
+    if store.role_of(actor) == "viewer":
+        raise PermissionDenied(f"viewer cannot {action}")
+
+
+def create_app(
+    store: Tianxuan,
+    gateway: ModelGateway | None = None,
+    merge_queue: Any | None = None,
+    protected_branches: Sequence[str] = (),
+) -> FastAPI:
     """为给定领域核心实例构建 HTTP 应用；可选的模型网关与多宝合入队列挂载到同一应用。"""
     app = FastAPI(title="Tianxuan API", version="0.1.0")
     app.state.store = store
     app.state.gateway = gateway
     app.state.merge_queue = merge_queue
+    app.state.protected_branches = parse_protected_branches(protected_branches)
     rooms = DocRooms()
     if gateway is not None:
         app.include_router(create_model_router(gateway))
@@ -708,6 +732,8 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
 
     @app.post("/api/v1/repos")
     def create_repo(payload: RepoCreateRequest, actor: ActorDep) -> dict[str, Any]:
+        if store.role_of(actor) != "admin":
+            raise PermissionDenied("only an admin can create repositories")
         client = _gitea_client()
         try:
             with client:
@@ -756,6 +782,7 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
         payload: PullRequestCreateRequest,
         actor: ActorDep,
     ) -> dict[str, Any]:
+        _require_editor_role(store, actor, "create pull requests")
         client = _gitea_client()
         try:
             with client:
@@ -776,9 +803,21 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
         client = _gitea_client()
         try:
             with client:
+                pull = client.get_pull_request(owner, name, number)
+                base = str(pull.get("base") or "")
+                if not base:
+                    raise HTTPException(status_code=502, detail="pull request base branch is missing")
+                ensure_merge_allowed(
+                    base,
+                    _policy_patterns(app),
+                    actor_role=store.role_of(actor),
+                    path="direct",
+                )
                 return client.merge_pull_request(  # type: ignore[no-any-return]
                     owner, name, number, payload.method
                 )
+        except PolicyError as error:
+            raise HTTPException(status_code=403, detail=str(error)) from error
         except GiteaError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 
@@ -869,6 +908,59 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
         except (GitServiceError, OSError) as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 
+    @app.get("/api/v1/git/repos/{name}/tree")
+    def git_tree(
+        name: str,
+        actor: ActorDep,
+        ref: str = Query(default="HEAD", min_length=1),
+        path: str = Query(default=""),
+    ) -> dict[str, list[dict[str, Any]]]:
+        repo = _repo_under_root(name)
+        try:
+            return {"entries": GitService().list_tree(repo, ref, path)}
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/git/repos/{name}/branches")
+    def create_git_branch(
+        name: str,
+        payload: GitBranchCreateRequest,
+        actor: ActorDep,
+    ) -> dict[str, str]:
+        repo = _repo_under_root(name)
+        try:
+            ensure_branch_mutation_allowed(
+                payload.name,
+                _policy_patterns(app),
+                actor_role=store.role_of(actor),
+                operation="create",
+            )
+        except PolicyError as error:
+            raise HTTPException(status_code=403, detail=str(error)) from error
+        try:
+            sha = GitService().branch(repo, payload.name, payload.start)
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+        return {"branch": payload.name, "sha": sha}
+
+    @app.delete("/api/v1/git/repos/{name}/branches/{branch:path}")
+    def delete_git_branch(name: str, branch: str, actor: ActorDep) -> dict[str, Any]:
+        repo = _repo_under_root(name)
+        try:
+            ensure_branch_mutation_allowed(
+                branch,
+                _policy_patterns(app),
+                actor_role=store.role_of(actor),
+                operation="delete",
+            )
+        except PolicyError as error:
+            raise HTTPException(status_code=403, detail=str(error)) from error
+        try:
+            GitService().delete_branch(repo, branch)
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+        return {"branch": branch, "deleted": True}
+
     # ---------- 多宝：合入队列 ----------
 
     if merge_queue is not None:
@@ -887,6 +979,8 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
                     payload.title,
                     payload.priority,
                 )
+            except PolicyError as error:
+                raise HTTPException(status_code=403, detail=str(error)) from error
             except ValueError as error:
                 raise HTTPException(status_code=400, detail=str(error)) from error
 

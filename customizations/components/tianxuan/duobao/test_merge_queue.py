@@ -12,6 +12,7 @@ from typing import Any
 import pytest
 from git_service import GitService
 from merge_queue import MergeQueue
+from policy import RoleDenied
 
 
 def _git() -> str:
@@ -228,3 +229,49 @@ def test_check_runs_with_isolated_home(tmp_path: Path) -> None:
     result = queue._run_check(repo, [sys.executable, "-c", "import os;print(os.environ.get('TEMP',''))"])
     assert result["exit_code"] == 0
     assert "duobao-check-home" in result["output"]
+
+
+def test_protected_branch_merges_only_through_queue(tmp_path: Path) -> None:
+    service, repo = _repo(tmp_path)
+    _branch(service, repo, "feature", {"b.md": "# two\n"})
+    queue = MergeQueue(
+        str(tmp_path / "queue.db"),
+        service,
+        protected_branches=("main",),
+        role_resolver=lambda actor: "editor",
+    )
+    item = queue.enqueue("usr_1", str(repo), "feature", "main")
+    assert item["evidence"]["policy"] == {"target": "main", "protected": True, "path": "queue", "actor_role": "editor"}
+
+    done = queue.process_next()
+    assert done is not None and done["status"] == "merged"
+    assert done["evidence"]["policy"]["protected"] is True
+    assert done["evidence"]["merge_sha"]
+
+
+def test_viewer_cannot_enqueue_candidate(tmp_path: Path) -> None:
+    service, repo = _repo(tmp_path)
+    _branch(service, repo, "feature", {"b.md": "# two\n"})
+    queue = MergeQueue(str(tmp_path / "queue.db"), service, role_resolver=lambda actor: "viewer")
+    with pytest.raises(RoleDenied):
+        queue.enqueue("usr_1", str(repo), "feature", "main")
+
+
+def test_role_revoked_before_execution_rejects_candidate(tmp_path: Path) -> None:
+    service, repo = _repo(tmp_path)
+    _branch(service, repo, "feature", {"b.md": "# two\n"})
+    roles = {"usr_1": "editor"}
+    queue = MergeQueue(
+        str(tmp_path / "queue.db"),
+        service,
+        protected_branches=("main",),
+        role_resolver=lambda actor: roles.get(actor, ""),
+    )
+    before = service.log(repo, "main", 1)[0]["sha"]
+    queue.enqueue("usr_1", str(repo), "feature", "main")
+    roles["usr_1"] = "viewer"
+
+    done = queue.process_next()
+    assert done is not None and done["status"] == "rejected"
+    assert "cannot merge" in done["evidence"]["error"]
+    assert service.log(repo, "main", 1)[0]["sha"] == before

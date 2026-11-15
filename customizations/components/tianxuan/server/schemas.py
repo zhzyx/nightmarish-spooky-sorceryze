@@ -63,6 +63,13 @@ class RepoCreateRequest(BaseModel):
     default_branch: str = "main"
 
 
+class GitBranchCreateRequest(BaseModel):
+    """在本地裸仓库中基于已有提交创建分支。"""
+
+    name: str
+    start: str = "HEAD"
+
+
 class PullRequestCreateRequest(BaseModel):
     """在 Gitea 仓库内创建 Pull Request。"""
 

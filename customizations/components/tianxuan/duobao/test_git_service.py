@@ -467,6 +467,38 @@ class GitServiceTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             GitService("")
 
+    # ------------------------------------------------------------------
+    # tree / branch management
+    # ------------------------------------------------------------------
+    def test_list_tree_returns_directory_entries(self) -> None:
+        self._commit(files={"README.md": "# 多宝\n", "docs/design.md": "设计\n"})
+
+        root = self.service.list_tree(self.repo)
+        self.assertEqual([entry["name"] for entry in root], ["docs", "README.md"])
+        self.assertEqual(root[0]["type"], "tree")
+        self.assertIsNone(root[0]["size"])
+        self.assertEqual(root[1]["path"], "README.md")
+        self.assertEqual(root[1]["type"], "blob")
+        self.assertEqual(root[1]["size"], len("# 多宝\n".encode()))
+
+        nested = self.service.list_tree(self.repo, "main", "docs")
+        self.assertEqual([entry["path"] for entry in nested], ["docs/design.md"])
+
+    def test_list_tree_rejects_unknown_ref_and_escape(self) -> None:
+        self._commit()
+        with self.assertRaises(GitServiceError):
+            self.service.list_tree(self.repo, "missing-ref")
+        with self.assertRaises(ValidationError):
+            self.service.list_tree(self.repo, "main", "../outside")
+
+    def test_delete_branch(self) -> None:
+        head = self._commit()
+        self.service.branch(self.repo, "feature", head)
+        self.assertEqual(self.service.delete_branch(self.repo, "feature"), "feature")
+        self.assertNotIn("feature", self.service.list_branches(self.repo))
+        with self.assertRaises(GitServiceError):
+            self.service.delete_branch(self.repo, "feature")
+
 
 if __name__ == "__main__":
     unittest.main()

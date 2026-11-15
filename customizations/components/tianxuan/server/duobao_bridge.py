@@ -8,5 +8,22 @@ if str(_DUOBAO_DIR) not in sys.path:
     sys.path.insert(0, str(_DUOBAO_DIR))
 
 from git_service import GitService, GitServiceError  # noqa: E402
+from policy import (  # noqa: E402
+    PolicyError,
+    ProtectedBranchError,
+    RoleDenied,
+    ensure_branch_mutation_allowed,
+    ensure_merge_allowed,
+    parse_protected_branches,
+)
 
-__all__ = ["GitService", "GitServiceError"]
+__all__ = [
+    "GitService",
+    "GitServiceError",
+    "PolicyError",
+    "ProtectedBranchError",
+    "RoleDenied",
+    "ensure_branch_mutation_allowed",
+    "ensure_merge_allowed",
+    "parse_protected_branches",
+]

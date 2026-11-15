@@ -15,12 +15,13 @@ import subprocess
 import tempfile
 import threading
 import uuid
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
 from git_service import GitService, MergeConflict
+from policy import PolicyError, ensure_merge_allowed, parse_protected_branches
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS merge_queue (
@@ -108,6 +109,8 @@ class MergeQueue:
         *,
         checks: Sequence[Sequence[str]] | None = None,
         check_timeout: float = 600.0,
+        protected_branches: Sequence[str] = (),
+        role_resolver: Callable[[str], str] | None = None,
     ) -> None:
         self.db = sqlite3.connect(db_path, check_same_thread=False, timeout=30.0)
         self.db.row_factory = sqlite3.Row
@@ -116,6 +119,8 @@ class MergeQueue:
         self.git = git_service
         self.checks = [list(check) for check in (checks or [])]
         self.check_timeout = check_timeout
+        self.protected_branches = parse_protected_branches(protected_branches)
+        self.role_resolver = role_resolver
         self._lock = threading.Lock()
         self._process_lock = threading.Lock()
         self._worker: threading.Thread | None = None
@@ -173,16 +178,45 @@ class MergeQueue:
             raise ValueError(f"unknown target branch: {target}")
         if source == target:
             raise ValueError("source and target must differ")
+        actor_role = self._resolve_role(actor)
+        decision = ensure_merge_allowed(
+            target,
+            self.protected_branches,
+            actor_role=actor_role,
+            path="queue",
+        )
         item_id = _new_id()
         now = _now()
         with self._lock, self.db:
             self.db.execute(
                 "INSERT INTO merge_queue (id, repo, source, target, title, priority, status, "
                 "attempts, evidence, created_by, created_at, updated_at) "
-                "VALUES (?, ?, ?, ?, ?, ?, 'queued', 0, '{}', ?, ?, ?)",
-                (item_id, str(repo_path), source, target, title or source, priority, actor, now, now),
+                "VALUES (?, ?, ?, ?, ?, ?, 'queued', 0, ?, ?, ?, ?)",
+                (
+                    item_id,
+                    str(repo_path),
+                    source,
+                    target,
+                    title or source,
+                    priority,
+                    json.dumps({"policy": decision}, ensure_ascii=False),
+                    actor,
+                    now,
+                    now,
+                ),
             )
         return self.get(item_id)
+
+    def _resolve_role(self, actor: str) -> str:
+        """解析候选创建者的当前角色。
+
+        未注入 resolver 时按受信任的本地编辑器处理，保持既有测试与单机用法；
+        生产入口由宿主传入租户角色解析器，合入执行前会再解析一次。
+        """
+        if self.role_resolver is None:
+            return "editor"
+        role = self.role_resolver(actor)
+        return role if isinstance(role, str) else ""
 
     def _filter(self, status: str | None) -> tuple[str, list[Any]]:
         if status is not None and status not in STATUSES:
@@ -344,11 +378,29 @@ class MergeQueue:
                 "evidence": {"error": "source or target branch no longer exists"},
             }
 
+        actor_role = self._resolve_role(item["created_by"])
+        try:
+            decision = ensure_merge_allowed(
+                item["target"],
+                self.protected_branches,
+                actor_role=actor_role,
+                path="queue",
+            )
+        except PolicyError as error:
+            return {
+                "status": "rejected",
+                "evidence": {
+                    "error": str(error),
+                    "policy": {"target": item["target"], "actor_role": actor_role, "path": "queue"},
+                },
+            }
+
         preview = self._preview(repo, item["source"], item["target"])
         evidence: dict[str, Any] = {
             "validated_at": _now(),
             "checks": preview["checks"],
             "conflicts": preview["conflicts"],
+            "policy": decision,
         }
         if preview["conflicts"]:
             evidence["error"] = "merge conflict"

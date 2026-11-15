@@ -483,6 +483,57 @@ class GitService:
         output = self._run(["-C", str(repo_path), "for-each-ref", "--format=%(refname:short)", "refs/heads"]).stdout
         return [line.strip() for line in output.splitlines() if line.strip()]
 
+    def delete_branch(self, repo: str | os.PathLike[str], name: str) -> str:
+        """删除本地分支并返回分支名。
+
+        受保护分支由 :mod:`policy` 在调用方先行拦截；本方法只做 Git 操作与存在性
+        校验，不重复授权判定。删除使用 ``-D``（显式删除，包含未合并分支），调用方
+        必须在策略层要求相应角色。
+        """
+        repo_path, _ = self._repo_path(repo)
+        name = _validate_branch_name(name)
+        if self._rev_parse(repo_path, f"refs/heads/{name}") is None:
+            raise GitServiceError(f"unknown branch: {name!r}")
+        self._run(["-C", str(repo_path), "branch", "-D", name])
+        return name
+
+    def list_tree(self, repo: str | os.PathLike[str], ref: str = "HEAD", path: str = "") -> list[dict[str, Any]]:
+        """列出 ``ref`` 下 ``path`` 这一层的树项，``path`` 为空表示仓库根。
+
+        返回 ``name/path/type/mode/sha/size``；目录的 ``size`` 为 ``None``。目录项
+        优先，其余按名称排序，便于 Web 文件面板直接渲染。
+        """
+        repo_path, _ = self._repo_path(repo)
+        ref = _validate_ref_name(ref, label="tree ref")
+        if self._rev_parse(repo_path, ref) is None:
+            raise GitServiceError(f"unknown tree ref: {ref!r}")
+        treeish = ref
+        if path:
+            path = _validate_file_path(path, label="tree path")
+            treeish = f"{ref}:{path}"
+        completed = self._run(["-C", str(repo_path), "ls-tree", "-z", "-l", treeish], check=False, line_endings=False)
+        if completed.returncode != 0:
+            raise GitServiceError(f"cannot list tree at {treeish!r}: {completed.stderr.strip()}")
+        output = completed.stdout
+        entries: list[dict[str, Any]] = []
+        for record in output.split("\0"):
+            if not record:
+                continue
+            meta, separator, name = record.partition("\t")
+            fields = meta.split()
+            if not separator or len(fields) < 4:
+                continue
+            mode, kind, sha, size = fields[0], fields[1], fields[2], fields[3]
+            entries.append({
+                "name": name,
+                "path": f"{path}/{name}" if path else name,
+                "type": kind,
+                "mode": mode,
+                "sha": sha,
+                "size": None if size == "-" else int(size),
+            })
+        return sorted(entries, key=lambda item: (item["type"] != "tree", item["name"].casefold()))
+
     # ------------------------------------------------------------------
     # 读取
     # ------------------------------------------------------------------
