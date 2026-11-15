@@ -125,7 +125,9 @@ func run():
 			break
 	panel.add_generator()
 	var id: String = panel.selected_id
-	panel.source_edit.text = image_path
+	# Use the same semantic operation as the file picker; editing the view text
+	# alone does not update the model's source_paths.
+	panel._set_node_file('source', image_path)
 	var parameters = {'prompt':'', 'mesh_steps':5, 'mesh_resolution':128, 'octree_resolution':64}
 	panel.parameter_form.configure('image_to_mesh', parameters)
 	var fields_applied: bool = panel.apply_fields()

@@ -1,0 +1,19 @@
+{
+  "findings": [
+    "R8 removed both external-fixture failures, but the supervisor's own loopback control server still performed reverse DNS and retained nine startup failures",
+    "R7 Maliang diagnostics proved the node model was correct but source_paths stayed empty because the test only edited view text instead of calling the semantic file-selection operation"
+  ],
+  "issue_number": 1240,
+  "observed": "Independent read-only review approved both R9 deltas. The supervisor uses real TCPServer bind and ephemeral port update without getfqdn; Handler, authentication, validation, threading and shutdown are unchanged. The Maliang acceptance now calls _set_node_file with the actual image, preserving model, source, blocker and all subsequent business assertions. Production MVC code is unchanged. Godot parsing and ruff/diff checks pass.",
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "result": "approved",
+  "reviewer": {
+    "id": "agent-2",
+    "kind": "independent_read_only_agent",
+    "same_author": false
+  },
+  "schema_version": 1,
+  "scope": "PR5 R9 supervisor reverse-DNS repair and semantic Maliang source-file acceptance plus all retained fixes",
+  "slice": "pr5-r9",
+  "validation_boundary": "Exact macOS CI must prove the nine startup failures disappear. The corrected Windows image-to-mesh flow and macOS editor acceptance still require exact candidate runs."
+}

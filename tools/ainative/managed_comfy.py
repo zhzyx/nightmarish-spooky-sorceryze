@@ -19,6 +19,7 @@ import json
 import os
 import secrets
 import socket
+import socketserver
 import struct
 import subprocess
 import sys
@@ -34,6 +35,15 @@ LEASE_SECONDS = 15
 MAX_JSON = 16 * 1024 * 1024
 TERMINAL = {"stopped", "failed"}
 _DETACHED_SUPERVISORS: list[subprocess.Popen[bytes]] = []
+
+
+class _LoopbackHTTPServer(ThreadingHTTPServer):
+    def server_bind(self):
+        # HTTPServer.server_bind performs getfqdn/reverse DNS even for a numeric
+        # loopback bind. The supervisor must not depend on a host's mDNS health.
+        socketserver.TCPServer.server_bind(self)
+        self.server_name = "127.0.0.1"
+        self.server_port = self.server_address[1]
 
 
 class ManagedError(ValueError):
@@ -1057,7 +1067,7 @@ class _Supervisor:
                 except (ValueError, TypeError):
                     self.send_error(400)
 
-        server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        server = _LoopbackHTTPServer(("127.0.0.1", 0), Handler)
         server.daemon_threads = True
         server.timeout = 0.15
         self.control_port = server.server_port
