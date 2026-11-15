@@ -1,0 +1,18 @@
+{
+  "findings": [
+    "R7 stack sampling proved the synthetic ThreadingHTTPServer was stalled in gethostbyaddr/mDNS rather than process creation or listener ownership"
+  ],
+  "issue_number": 1240,
+  "observed": "Independent read-only review approved R8. FixtureServer.server_bind calls TCPServer.server_bind for the real bind and server_address update, then initializes server_name/server_port directly from the numeric fixture input. It bypasses HTTPServer getfqdn reverse DNS while preserving ThreadingHTTPServer, routes, port and assertions. Production Comfy is unchanged. Temporary R7 sampling was removed; bounded failure diagnostics remain.",
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "result": "approved",
+  "reviewer": {
+    "id": "agent-2",
+    "kind": "independent_read_only_agent",
+    "same_author": false
+  },
+  "schema_version": 1,
+  "scope": "PR5 R8 synthetic fixture reverse-DNS stall repair plus all retained implementation fixes and diagnostics",
+  "slice": "pr5-r8",
+  "validation_boundary": "The override covers only the shared managed_comfy FIXTURE, not unrelated servers. Exact macOS CI must prove the original 11 startup failures are gone; complete editor acceptance remains required."
+}

@@ -23,7 +23,7 @@ from unittest import mock
 import managed_comfy as managed
 
 FIXTURE = r"""
-import argparse, json, os, sys, threading, time
+import argparse, json, os, socketserver, sys, threading, time
 from pathlib import Path
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 parser=argparse.ArgumentParser()
@@ -60,7 +60,14 @@ class Handler(BaseHTTPRequestHandler):
             routes[self.path]={'protocol_not_ready': True}
         data=json.dumps(routes[self.path]).encode()
         self.send_response(200); self.send_header('Content-Length',str(len(data))); self.end_headers(); self.wfile.write(data)
-ThreadingHTTPServer((args.listen,args.port), Handler).serve_forever()
+class FixtureServer(ThreadingHTTPServer):
+    def server_bind(self):
+        # HTTPServer.server_bind performs a reverse-DNS getfqdn lookup. CI mDNS
+        # can stall indefinitely; the fixture already has a numeric bind address.
+        socketserver.TCPServer.server_bind(self)
+        self.server_name = args.listen
+        self.server_port = self.server_address[1]
+FixtureServer((args.listen,args.port), Handler).serve_forever()
 """
 
 
@@ -215,14 +222,6 @@ class ManagedComfyTests(unittest.TestCase):
             "listener_pid": managed._listener_pid(config["endpoint"]),
             "pid": child.pid,
         }
-        if sys.platform == "darwin" and child.poll() is None:
-            try:
-                sampled = subprocess.run(
-                    ["/usr/bin/sample", str(child.pid), "1"], capture_output=True, text=True, timeout=10
-                )
-                details["sample"] = sampled.stdout[:16384] + sampled.stderr[-2048:]
-            except (OSError, subprocess.TimeoutExpired) as error:
-                details["sample"] = type(error).__name__
         self.fail("external fixture failed: " + json.dumps(details) + "\n" + (self.base / "external.log").read_text(errors="replace"))
 
     def test_inspect_and_private_override(self):
