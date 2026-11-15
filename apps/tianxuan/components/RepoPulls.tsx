@@ -1,5 +1,7 @@
 "use client";
 
+import { formatMessage } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import { useActor } from "@/lib/use-actor";
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
@@ -164,6 +166,7 @@ function approvedCount(reviews: ApiReview[] | undefined): number {
 
 export function RepoPulls() {
   const actor = useActor();
+  const { t } = useI18n();
   const [owner, setOwner] = useState("");
   const [repo, setRepo] = useState("");
   const [activeOwner, setActiveOwner] = useState("");
@@ -263,8 +266,8 @@ export function RepoPulls() {
         }
         setLoadState("error");
         setLoadError(
-          `无法读取分支或 Pull Request，请确认 Gitea 已配置且 ${nextOwner}/${nextRepo} 存在。${
-            error instanceof Error ? `（${error.message}）` : ""
+          `${formatMessage(t("pulls.loadError"), { owner: nextOwner, repo: nextRepo })}${
+            error instanceof Error ? ` (${error.message})` : ""
           }`,
         );
       }
@@ -277,7 +280,7 @@ export function RepoPulls() {
       return;
     }
     if (!owner.trim() || !repo.trim()) {
-      setActionError("请先填写 owner 与 repo，再点击“加载”。");
+      setActionError(t("pulls.needOwnerRepo"));
       return;
     }
     void load(owner, repo, pullState, 1);
@@ -290,15 +293,15 @@ export function RepoPulls() {
     }
     const nextTitle = title.trim();
     if (!nextTitle) {
-      setActionError("请填写 Pull Request 标题。");
+      setActionError(t("pulls.needTitle"));
       return;
     }
     if (!head || !base) {
-      setActionError("请选择 head 与 base 分支。");
+      setActionError(t("pulls.needBranches"));
       return;
     }
     if (head === base) {
-      setActionError("head 与 base 不能是同一个分支。");
+      setActionError(t("pulls.sameBranch"));
       return;
     }
     setBusy("create");
@@ -314,9 +317,9 @@ export function RepoPulls() {
       setTitle("");
       setBody("");
       await load(activeOwner, activeRepo, pullState, page);
-      setNotice(`已创建 PR #${created.number}「${created.title || nextTitle}」。`);
+      setNotice(formatMessage(t("pulls.created"), { number: created.number, title: created.title || nextTitle }));
     } catch {
-      setActionError("创建 Pull Request 失败，请确认分支存在、Gitea 已配置且当前账号有权限。");
+      setActionError(t("pulls.createError"));
     } finally {
       setBusy("");
     }
@@ -327,7 +330,7 @@ export function RepoPulls() {
       return;
     }
     const method = mergeMethods[pull.number] ?? "merge";
-    if (!window.confirm(`确认以 ${method} 方式合并 PR #${pull.number}「${pull.title}」？`)) {
+    if (!window.confirm(formatMessage(t("pulls.mergeConfirm"), { method, number: pull.number, title: pull.title }))) {
       return;
     }
     setBusy(`merge:${pull.number}`);
@@ -338,13 +341,13 @@ export function RepoPulls() {
       await load(activeOwner, activeRepo, pullState, page);
       setNotice(
         result.merged
-          ? `PR #${pull.number} 已以 ${method} 方式合并${
-              result.sha ? `（${result.sha.slice(0, 7)}）` : ""
-            }。`
-          : `PR #${pull.number} 未报告合并成功，请到 Gitea 查看。`,
+          ? `${formatMessage(t("pulls.mergeSuccess"), { number: pull.number, method })}${
+              result.sha ? formatMessage(t("pulls.mergeSha"), { sha: result.sha.slice(0, 7) }) : ""
+            }`
+          : formatMessage(t("pulls.mergeNoResult"), { number: pull.number }),
       );
     } catch {
-      setActionError(`合并 PR #${pull.number} 失败，请确认 PR 仍处于 open 状态且没有冲突。`);
+      setActionError(formatMessage(t("pulls.mergeError"), { number: pull.number }));
     } finally {
       setBusy("");
     }
@@ -357,7 +360,9 @@ export function RepoPulls() {
     let reviewBody = "";
     if (event !== "APPROVED") {
       const input = window.prompt(
-        event === "REQUEST_CHANGES" ? `要求修改 PR #${pull.number} 的说明` : `评论 PR #${pull.number}`,
+        formatMessage(t(event === "REQUEST_CHANGES" ? "pulls.reviewChangesPrompt" : "pulls.reviewCommentPrompt"), {
+          number: pull.number,
+        }),
       );
       if (input === null) {
         return;
@@ -371,9 +376,9 @@ export function RepoPulls() {
       await createReview(actor, activeOwner, activeRepo, pull.number, event, reviewBody);
       const nextReviews = await fetchReviews(actor, activeOwner, activeRepo, pull.number);
       setReviewsByPull((previous) => ({ ...previous, [pull.number]: nextReviews }));
-      setNotice(`PR #${pull.number} 已提交评审：${event}。`);
+      setNotice(formatMessage(t("pulls.reviewNotice"), { number: pull.number, event }));
     } catch {
-      setActionError(`提交 PR #${pull.number} 的评审失败，请确认 Gitea 身份绑定与权限。`);
+      setActionError(formatMessage(t("pulls.reviewError"), { number: pull.number }));
     } finally {
       setBusy("");
     }
@@ -381,18 +386,18 @@ export function RepoPulls() {
 
   if (!actor) {
     return (
-      <section aria-label="Gitea Pull Request 管理" className="panel">
+      <section aria-label={t("pulls.title")} className="panel">
         <div className="section-heading" style={headingStyle}>
           <div>
             <p className="section-kicker">DUOBAO · GITEA PULLS</p>
-            <h2>Pull Request 管理</h2>
+            <h2>{t("pulls.title")}</h2>
           </div>
-          <span className="mono-key">未启用</span>
+          <span className="mono-key">{t("pulls.disabled")}</span>
         </div>
         <div style={panelBodyStyle}>
           <p className="section-note">
             <Icon name="lock" size={13} />
-            未配置 NEXT_PUBLIC_TIANXUAN_ACTOR，Pull Request 面板已禁用，不会发起任何请求。
+            {t("pulls.disabledNote")}
           </p>
         </div>
       </section>
@@ -401,12 +406,12 @@ export function RepoPulls() {
 
   const summary =
     loadState === "idle"
-      ? "等待加载"
+      ? t("pulls.summaryIdle")
       : loadState === "loading"
-        ? "读取中…"
+        ? t("pulls.summaryLoading")
         : loadState === "error"
-          ? "读取失败"
-          : `${pulls.length} 个 ${pullState} PR（第 ${page} 页）`;
+          ? t("pulls.summaryError")
+          : formatMessage(t("pulls.summary"), { count: pulls.length, state: pullState, page });
 
   const createDisabled =
     busy !== "" ||
@@ -420,13 +425,13 @@ export function RepoPulls() {
   return (
     <section
       aria-busy={loadState === "loading" || busy !== ""}
-      aria-label="Gitea Pull Request 管理"
+      aria-label={t("pulls.title")}
       className="panel"
     >
       <div className="section-heading" style={headingStyle}>
         <div>
           <p className="section-kicker">DUOBAO · GITEA PULLS</p>
-          <h2>Pull Request 管理</h2>
+          <h2>{t("pulls.title")}</h2>
         </div>
         <span className="mono-key">{summary}</span>
       </div>
@@ -442,7 +447,7 @@ export function RepoPulls() {
           <label style={fieldStyle}>
             <span className="mono-key">owner</span>
             <input
-              aria-label="仓库 owner"
+              aria-label={t("pulls.ownerAria")}
               autoComplete="off"
               onChange={(event) => setOwner(event.target.value)}
               placeholder="owner"
@@ -454,7 +459,7 @@ export function RepoPulls() {
           <label style={fieldStyle}>
             <span className="mono-key">repo</span>
             <input
-              aria-label="仓库 repo"
+              aria-label={t("pulls.repoAria")}
               autoComplete="off"
               onChange={(event) => setRepo(event.target.value)}
               placeholder="repo"
@@ -470,15 +475,15 @@ export function RepoPulls() {
             type="submit"
           >
             <Icon name="search" size={12} />
-            加载
+            {t("pulls.load")}
           </button>
         </form>
 
-        <div style={pagerStyle} aria-label="Pull Request 筛选与分页">
+        <div style={pagerStyle} aria-label={t("pulls.filterAria")}>
           <label style={{ ...fieldStyle, flex: "0 0 auto", minWidth: "120px" }}>
-            <span className="mono-key">状态</span>
+            <span className="mono-key">{t("pulls.stateLabel")}</span>
             <select
-              aria-label="Pull Request 状态筛选"
+              aria-label={t("pulls.stateAria")}
               disabled={loadState === "loading" || busy !== ""}
               onChange={(event) => {
                 const next = event.target.value as PullState;
@@ -503,16 +508,16 @@ export function RepoPulls() {
             onClick={() => void load(activeOwner, activeRepo, pullState, page - 1)}
             type="button"
           >
-            上一页
+            {t("pulls.prev")}
           </button>
-          <span className="mono-key">第 {page} 页</span>
+          <span className="mono-key">{formatMessage(t("pulls.page"), { page })}</span>
           <button
             className="btn btn-ghost btn-sm"
             disabled={pulls.length < PAGE_SIZE || loadState === "loading" || busy !== ""}
             onClick={() => void load(activeOwner, activeRepo, pullState, page + 1)}
             type="button"
           >
-            下一页
+            {t("pulls.next")}
           </button>
         </div>
 
@@ -531,13 +536,13 @@ export function RepoPulls() {
         {loadState === "idle" ? (
           <p className="section-note">
             <Icon name="pullRequest" size={13} />
-            填写 owner 与 repo 后点击“加载”，查看分支与 open 状态的 Pull Request。
+            {t("pulls.idleHint")}
           </p>
         ) : null}
 
         {loadState === "loading" ? (
           <p className="section-note">
-            正在读取 {activeOwner}/{activeRepo} 的分支与 Pull Request…
+            {formatMessage(t("pulls.loadingHint"), { owner: activeOwner, repo: activeRepo })}
           </p>
         ) : null}
 
@@ -548,7 +553,7 @@ export function RepoPulls() {
             </p>
             <button className="btn btn-ghost btn-sm" onClick={startLoad} type="button">
               <Icon name="history" size={12} />
-              重试
+              {t("pulls.retry")}
             </button>
           </div>
         ) : null}
@@ -562,11 +567,11 @@ export function RepoPulls() {
               {pulls.length === 0 ? (
                 <p className="section-note">
                   <Icon name="pullRequest" size={13} />
-                  当前没有处于 {pullState} 状态的 Pull Request。
+                  {formatMessage(t("pulls.empty"), { state: pullState })}
                 </p>
               ) : (
                 <div
-                  aria-label="开放中的 Pull Request 列表"
+                  aria-label={t("pulls.listAria")}
                   className="reading-list live-list"
                   style={{ padding: 0 }}
                 >
@@ -574,7 +579,7 @@ export function RepoPulls() {
                     <div className="reading-item" key={pull.number} style={pullItemStyle}>
                       <span className="reading-index">#{pull.number}</span>
                       <span className="reading-copy">
-                        <strong title={pull.title}>{pull.title || "（无标题）"}</strong>
+                        <strong title={pull.title}>{pull.title || t("pulls.untitled")}</strong>
                         <span>
                           {pull.head || "?"} → {pull.base || "?"}
                         </span>
@@ -582,7 +587,7 @@ export function RepoPulls() {
                       <span className="kind-tag">{pull.state || "open"}</span>
                       <span style={pullActionsStyle}>
                         <span className="kind-tag">
-                          {approvedCount(reviewsByPull[pull.number])} 批准 / {(reviewsByPull[pull.number] ?? []).length} 评审
+                          {formatMessage(t("pulls.approvals"), { approved: approvedCount(reviewsByPull[pull.number]), total: (reviewsByPull[pull.number] ?? []).length })}
                         </span>
                         {pull.state === "open" ? (
                           <>
@@ -592,7 +597,7 @@ export function RepoPulls() {
                               onClick={() => void submitReview(pull, "APPROVED")}
                               type="button"
                             >
-                              {busy === `review:${pull.number}` ? "提交中…" : "批准"}
+                              {busy === `review:${pull.number}` ? t("pulls.submitting") : t("pulls.approve")}
                             </button>
                             <button
                               className="btn btn-ghost btn-sm"
@@ -600,7 +605,7 @@ export function RepoPulls() {
                               onClick={() => void submitReview(pull, "REQUEST_CHANGES")}
                               type="button"
                             >
-                              要求修改
+                              {t("pulls.requestChanges")}
                             </button>
                             <button
                               className="btn btn-ghost btn-sm"
@@ -608,7 +613,7 @@ export function RepoPulls() {
                               onClick={() => void submitReview(pull, "COMMENT")}
                               type="button"
                             >
-                              评论
+                              {t("pulls.comment")}
                             </button>
                           </>
                         ) : null}
@@ -620,13 +625,13 @@ export function RepoPulls() {
                             target="_blank"
                           >
                             <Icon name="link" size={12} />
-                            在 Gitea 打开
+                            {t("pulls.openInGitea")}
                           </a>
                         ) : null}
                         {pull.state === "open" ? (
                           <>
                             <select
-                              aria-label={`PR #${pull.number} 的合并方式`}
+                              aria-label={formatMessage(t("pulls.mergeMethodAria"), { number: pull.number })}
                               disabled={busy !== ""}
                               onChange={(event) =>
                                 setMergeMethods((previous) => ({
@@ -648,7 +653,7 @@ export function RepoPulls() {
                               type="button"
                             >
                               <Icon name="pullRequest" size={12} />
-                              {busy === `merge:${pull.number}` ? "合并中…" : "合并"}
+                              {busy === `merge:${pull.number}` ? t("pulls.merging") : t("pulls.merge")}
                             </button>
                           </>
                         ) : null}
@@ -662,19 +667,19 @@ export function RepoPulls() {
             {branches.length < 2 ? (
               <p className="section-note">
                 <Icon name="branch" size={13} />
-                该仓库至少需要两个分支（head 与 base 不同）才能创建 Pull Request。
+                {t("pulls.branchHint")}
               </p>
             ) : (
               <form onSubmit={(event) => void submitCreate(event)} style={createFormStyle}>
                 <p className="mono-key" style={{ gridColumn: "1 / -1" }}>
-                  新建 PULL REQUEST
+                  {t("pulls.newTitle")}
                 </p>
                 <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
-                  <span className="mono-key">标题</span>
+                  <span className="mono-key">{t("pulls.titleLabel")}</span>
                   <input
-                    aria-label="Pull Request 标题"
+                    aria-label={t("pulls.titleAria")}
                     onChange={(event) => setTitle(event.target.value)}
-                    placeholder="PR 标题"
+                    placeholder={t("pulls.titlePlaceholder")}
                     style={inputStyle}
                     value={title}
                   />
@@ -682,7 +687,7 @@ export function RepoPulls() {
                 <label style={fieldStyle}>
                   <span className="mono-key">head</span>
                   <select
-                    aria-label="head 分支"
+                    aria-label={t("pulls.headAria")}
                     disabled={busy !== ""}
                     onChange={(event) => setHead(event.target.value)}
                     style={selectStyle}
@@ -699,7 +704,7 @@ export function RepoPulls() {
                 <label style={fieldStyle}>
                   <span className="mono-key">base</span>
                   <select
-                    aria-label="base 分支"
+                    aria-label={t("pulls.baseAria")}
                     disabled={busy !== ""}
                     onChange={(event) => setBase(event.target.value)}
                     style={selectStyle}
@@ -714,11 +719,11 @@ export function RepoPulls() {
                   </select>
                 </label>
                 <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
-                  <span className="mono-key">说明</span>
+                  <span className="mono-key">{t("pulls.bodyLabel")}</span>
                   <textarea
-                    aria-label="Pull Request 说明"
+                    aria-label={t("pulls.bodyAria")}
                     onChange={(event) => setBody(event.target.value)}
-                    placeholder="可选：说明这次变更的目的、范围与验证方式"
+                    placeholder={t("pulls.bodyPlaceholder")}
                     style={textareaStyle}
                     value={body}
                   />
@@ -726,10 +731,10 @@ export function RepoPulls() {
                 <div style={formActionsStyle}>
                   <button className="btn btn-primary btn-sm" disabled={createDisabled} type="submit">
                     <Icon name="plus" size={14} />
-                    {busy === "create" ? "创建中…" : "创建 PR"}
+                    {busy === "create" ? t("pulls.creating") : t("pulls.createPr")}
                   </button>
                   <span className="section-note">
-                    把 {head || "head"} 合入 {base || "base"}，创建后自动刷新 open 列表。
+                    {formatMessage(t("pulls.createNote"), { head: head || "head", base: base || "base" })}
                   </span>
                 </div>
               </form>
@@ -739,7 +744,7 @@ export function RepoPulls() {
 
         <p className="section-note">
           <Icon name="gitCommit" size={12} />
-          只读取 open 状态的 Pull Request；合并操作会先弹出浏览器确认。
+          {t("pulls.readNote")}
         </p>
       </div>
     </section>
