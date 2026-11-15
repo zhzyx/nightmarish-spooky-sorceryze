@@ -1148,6 +1148,21 @@ def create_app(
         except (GitServiceError, OSError) as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 
+    @app.get("/api/v1/git/repos/{name}/search")
+    def git_search(
+        name: str,
+        actor: ActorDep,
+        q: str = Query(min_length=1, max_length=200),
+        ref: str = Query(default="HEAD", min_length=1),
+        path: str = Query(default=""),
+        limit: int = Query(default=50, ge=1, le=200),
+    ) -> dict[str, list[dict[str, Any]]]:
+        repo = _repo_under_root(name)
+        try:
+            return {"results": GitService().search(repo, q, ref, path, limit)}
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
     @app.post("/api/v1/git/repos/{name}/branches")
     def create_git_branch(
         name: str,

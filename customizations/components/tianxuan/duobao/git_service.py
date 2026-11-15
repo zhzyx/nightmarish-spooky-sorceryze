@@ -330,6 +330,16 @@ def _validate_message(message: str) -> str:
     return message
 
 
+def _validate_search_query(query: str) -> str:
+    if not isinstance(query, str) or not query.strip():
+        raise ValidationError("search query must be a non-empty string")
+    if len(query) > 200:
+        raise ValidationError("search query must be at most 200 characters")
+    if any(character in query for character in ("\x00", "\n", "\r")):
+        raise ValidationError("search query must not contain NUL or newlines")
+    return query
+
+
 def _validate_identity(author_name: str, author_email: str) -> tuple[str, str]:
     for value, label in ((author_name, "author name"), (author_email, "author email")):
         if not isinstance(value, str) or not value.strip():
@@ -679,6 +689,43 @@ class GitService:
     # ------------------------------------------------------------------
     # 读取
     # ------------------------------------------------------------------
+    def search(
+        self,
+        repo: str | os.PathLike[str],
+        query: str,
+        ref: str = "HEAD",
+        path: str = "",
+        limit: int = 50,
+    ) -> list[dict[str, Any]]:
+        """在指定 ref 下做固定字符串代码搜索，返回路径、行号与行文本。"""
+        query = _validate_search_query(query)
+        ref = _validate_ref_name(ref, label="search ref")
+        limit = min(_validate_limit(limit), 200)
+        repo_path, _ = self._repo_path(repo)
+        arguments = ["-C", str(repo_path), "grep", "-n", "-I", "--no-color", "-F", "-e", query, ref]
+        if path:
+            arguments.extend(["--", _validate_file_path(path, label="search path")])
+        completed = self._run(arguments, check=False, timeout=30)
+        if completed.returncode == 1:
+            return []
+        if completed.returncode != 0:
+            raise GitServiceError(completed.stderr.strip() or "git grep failed")
+        results: list[dict[str, Any]] = []
+        prefix = f"{ref}:"
+        for line in completed.stdout.splitlines():
+            body = line[len(prefix) :] if line.startswith(prefix) else line
+            parts = body.split(":", 2)
+            if len(parts) != 3 or not parts[1].isdigit():
+                continue
+            results.append({
+                "path": parts[0],
+                "line": int(parts[1]),
+                "text": parts[2][:500],
+            })
+            if len(results) >= limit:
+                break
+        return results
+
     def log(self, repo: str | os.PathLike[str], ref: str = "HEAD", limit: int = 20) -> list[dict[str, Any]]:
         """按时间倒序返回提交记录；空仓库的 ``HEAD`` 返回空列表。"""
         repo_path, _ = self._repo_path(repo)

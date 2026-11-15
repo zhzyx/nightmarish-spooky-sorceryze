@@ -533,6 +533,28 @@ class GitServiceTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             self.service.import_repo(import_root, "other", source, allow_local=True, timeout=0)
 
+    def test_search_finds_lines_in_ref(self) -> None:
+        self._commit(files={"src/app.py": "alpha\nneedle = 1\nomega\n", "docs/readme.md": "no match\n"})
+
+        results = self.service.search(self.repo, "needle")
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["path"], "src/app.py")
+        self.assertEqual(results[0]["line"], 2)
+        self.assertEqual(results[0]["text"], "needle = 1")
+        self.assertEqual(self.service.search(self.repo, "absent"), [])
+
+        by_path = self.service.search(self.repo, "needle", "main", "src")
+        self.assertEqual([item["path"] for item in by_path], ["src/app.py"])
+
+    def test_search_rejects_invalid_input(self) -> None:
+        self._commit(files={"a.txt": "x\n"})
+        with self.assertRaises(ValidationError):
+            self.service.search(self.repo, "")
+        with self.assertRaises(ValidationError):
+            self.service.search(self.repo, "x", ref="-bad")
+        with self.assertRaises(ValidationError):
+            self.service.search(self.repo, "x", limit=0)
+
 
 if __name__ == "__main__":
     unittest.main()
