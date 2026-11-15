@@ -525,3 +525,52 @@ def test_oidc_discovery_jwks(monkeypatch) -> None:
         server.shutdown()
         server.server_close()
         thread.join(timeout=5)
+
+
+def test_oidc_refreshes_jwks_after_key_rotation(monkeypatch) -> None:
+    import http.server
+    import json
+    import threading
+
+    state = {"correct": False}
+
+    class Handler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self) -> None:  # noqa: N802
+            keys = [RS256_JWK] if state["correct"] else [dict(RS256_JWK, kid="old-key")]
+            body = json.dumps({"keys": keys}).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, format: str, *args: object) -> None:
+            return
+
+    server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        port = server.server_address[1]
+        monkeypatch.setenv("TIANXUAN_OIDC_JWKS_URL", f"http://127.0.0.1:{port}/jwks")
+        monkeypatch.setenv("TIANXUAN_OIDC_AUDIENCE", "tianxuan")
+        identity.reset_oidc_cache()
+        identity._load_jwks()  # 先缓存旧密钥
+        state["correct"] = True
+
+        client, headers, user_id = _client()
+        client.post(
+            "/api/v1/identity/links",
+            headers=headers,
+            json={"provider": "oidc", "subject": "oidc-rs", "user_id": user_id},
+        )
+        resolved = client.post(
+            "/api/v1/identity/resolve",
+            json={"provider": "oidc", "subject": "oidc-rs", "secret": RS256_TOKEN},
+        )
+        assert resolved.status_code == 200, resolved.text
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+        identity.reset_oidc_cache()

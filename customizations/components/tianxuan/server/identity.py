@@ -60,6 +60,7 @@ def _b64url_encode(value: bytes) -> str:
 
 _SHA256_DIGEST_INFO = bytes.fromhex("3031300d060960864801650304020105000420")
 _JWKS_CACHE: tuple[float, dict[str, Any]] = (0.0, {})
+_JWKS_FORCED_AT = 0.0
 _DISCOVERY_CACHE: tuple[float, dict[str, Any]] = (0.0, {})
 
 
@@ -87,8 +88,8 @@ def _load_discovery() -> dict[str, Any]:
     return payload
 
 
-def _load_jwks() -> dict[str, Any]:
-    global _JWKS_CACHE
+def _load_jwks(force: bool = False) -> dict[str, Any]:
+    global _JWKS_CACHE, _JWKS_FORCED_AT
     raw = os.environ.get("TIANXUAN_OIDC_JWKS", "")
     if raw:
         try:
@@ -103,8 +104,12 @@ def _load_jwks() -> dict[str, Any]:
         return {}
     now = time.monotonic()
     cached_at, cached = _JWKS_CACHE
-    if cached and now < cached_at:
+    if not force and cached and now < cached_at:
         return cached
+    if force:
+        if now - _JWKS_FORCED_AT < 30.0:
+            return cached or {}
+        _JWKS_FORCED_AT = now
     try:
         with urllib.request.urlopen(url, timeout=3.0) as response:
             payload = json.loads(response.read().decode("utf-8"))
@@ -183,8 +188,11 @@ class OidcJwtIdentityAdapter:
             if not hmac.compare_digest(signature, expected):
                 return False
         elif algorithm == "RS256":
-            if not _rs256_verify(signing_input, signature, _load_jwks(), str(header.get("kid", ""))):
-                return False
+            jwks = _load_jwks()
+            if not _rs256_verify(signing_input, signature, jwks, str(header.get("kid", ""))):
+                refreshed = _load_jwks(force=True)
+                if not _rs256_verify(signing_input, signature, refreshed, str(header.get("kid", ""))):
+                    return False
         else:
             return False
         if not isinstance(claims, dict) or str(claims.get("sub", "")) != subject:
@@ -279,6 +287,13 @@ def allow_identity_attempt(provider: str, key: str) -> bool:
 
 def reset_identity_attempts() -> None:
     _ATTEMPT_LIMITER.reset()
+
+
+def reset_oidc_cache() -> None:
+    global _JWKS_CACHE, _DISCOVERY_CACHE, _JWKS_FORCED_AT
+    _JWKS_CACHE = (0.0, {})
+    _DISCOVERY_CACHE = (0.0, {})
+    _JWKS_FORCED_AT = 0.0
 
 
 def encode_test_jwt(secret: str, claims: dict[str, Any], *, algorithm: str = "HS256") -> str:
