@@ -44,7 +44,7 @@ jobs:
           set -u
           BASE=http://127.0.0.1:8080
           curl -fsS -X POST "$BASE/api/v1/auth/register"             -H "Content-Type: application/json"             -d '{"tenant_name":"Acceptance","email":"acceptance@example.com","password":"secret-pass"}'             >/dev/null || echo "register skipped"
-          docker run --rm -v tianxuan-data:/data --entrypoint sh tianxuan-api:local -c             "mkdir -p /data/repos/demo.git && printf 'ref: refs/heads/main\n' > /data/repos/demo.git/HEAD"
+          docker run --rm -v tianxuan-data:/data --entrypoint sh tianxuan-api:local -c "set -e; rm -rf /tmp/seed /data/repos/demo.git; mkdir -p /tmp/seed; cd /tmp/seed; git init -q -b main; git config user.email seed@example.invalid; git config user.name Seed; printf '# demo\\n' > README.md; git add README.md; git commit -qm init; git clone -q --bare /tmp/seed /data/repos/demo.git"
 
           bash deploy/production/backup.sh
           ARCHIVE=$(ls -1t "$TIANXUAN_BACKUP_DIR"/tianxuan-data-*.tgz | head -n1)
@@ -90,6 +90,16 @@ jobs:
           path: /tmp/backup-receipt.json
           if-no-files-found: warn
 
+      - name: Create authenticated session
+        run: |
+          BASE=http://127.0.0.1:8080
+          TOKEN=$(curl -fsS -X POST "$BASE/api/v1/auth/session" \
+            -H "Content-Type: application/json" \
+            -d '{"email":"acceptance@example.com","password":"secret-pass"}' \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin)["token"])')
+          test -n "$TOKEN"
+          echo "TIANXUAN_TOKEN=$TOKEN" >> "$GITHUB_ENV"
+
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
@@ -120,6 +130,44 @@ jobs:
         if: failure()
         working-directory: deploy
         run: docker compose --env-file .env logs --no-color
+
+      - name: TLS profile smoke
+        working-directory: deploy
+        run: |
+          set -euo pipefail
+          HOST=tianxuan.test
+          TOKEN=tls-test-token
+          mkdir -p "certs/live/$HOST"
+          openssl req -x509 -nodes -days 1 -newkey rsa:2048 \
+            -addext "subjectAltName=DNS:$HOST" \
+            -keyout "certs/live/$HOST/privkey.pem" \
+            -out "certs/live/$HOST/fullchain.pem" \
+            -subj "/CN=$HOST" >/dev/null 2>&1
+          sed "s/__TIANXUAN_HOST__/$HOST/g; s/__ACCESS_TOKEN__/$TOKEN/g" \
+            production/nginx.gate.conf.example > nginx.gate.conf
+          cp production/login.html login.html
+          cat > docker-compose.override.yml <<EOF
+          services:
+            proxy:
+              ports: !override
+                - "80:80"
+                - "443:443"
+              volumes:
+                - ./nginx.gate.conf:/etc/nginx/nginx.conf:ro
+                - ./login.html:/usr/share/nginx/html/login.html:ro
+                - ./certs:/etc/letsencrypt:ro
+          EOF
+          docker compose --env-file .env up -d proxy
+          sleep 5
+
+          test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1/)" = "301"
+          test "$(curl -ksS -o /dev/null -w '%{http_code}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/")" = "302"
+          curl -ksS -c /tmp/tls-cookies -o /dev/null --resolve "$HOST:443:127.0.0.1" "https://$HOST/gate?key=$TOKEN"
+          grep -q tx_access /tmp/tls-cookies
+          test "$(curl -sS --cacert "certs/live/$HOST/fullchain.pem" -b /tmp/tls-cookies -o /dev/null -w '%{http_code}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/")" = "200"
+          test "$(curl -sS --cacert "certs/live/$HOST/fullchain.pem" -b /tmp/tls-cookies -o /dev/null -w '%{http_code}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/api/v1/health")" = "200"
+          curl -sS --cacert "certs/live/$HOST/fullchain.pem" -b /tmp/tls-cookies -D - -o /dev/null --resolve "$HOST:443:127.0.0.1" "https://$HOST/" | grep -qi 'strict-transport-security'
+          test "$(curl -ksS -o /dev/null -w '%{http_code}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/gate?key=wrong")" = "403"
 
       - name: Compose down
         if: always()

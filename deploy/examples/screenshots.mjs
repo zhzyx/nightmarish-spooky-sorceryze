@@ -20,13 +20,22 @@ const pages = [
 ];
 
 await mkdir("artifacts", { recursive: true });
+const token = process.env.TIANXUAN_TOKEN ?? "";
+const prefix = token ? "auth-" : "";
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+if (token) {
+  await context.addInitScript(
+    ({ key, value }) => window.localStorage.setItem(key, value),
+    { key: "tianxuan_token", value: token },
+  );
+}
+const page = await context.newPage();
 try {
   for (const [name, path] of pages) {
     await page.goto(`${base}${path}`, { waitUntil: "networkidle", timeout: 30_000 }).catch(() => {});
-    await page.waitForTimeout(500);
-    await page.screenshot({ path: `artifacts/${name}.png`, fullPage: true });
+    await page.waitForTimeout(1200);
+    await page.screenshot({ path: `artifacts/${prefix}${name}.png`, fullPage: true });
     console.log(`captured ${path}`);
   }
 } finally {
