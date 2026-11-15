@@ -67,6 +67,7 @@ from schemas import (
     PullRequestReviewRequest,
     RegisterRequest,
     RepoCreateRequest,
+    RepoLinkRequest,
     RequirementCommitRequest,
     RequirementCreateRequest,
     RoleUpdateRequest,
@@ -82,6 +83,7 @@ from tianxuan_core import (
     TransitionRejected,
     VersionConflict,
 )
+from webhooks import summarize_gitea_event, verify_gitea_signature
 from wenqu_bridge import build_ai_index, export_markdown, merge_offline
 from wenqu_bridge import classify as classify_markdown
 from wenqu_bridge import search as search_documents
@@ -908,6 +910,58 @@ def create_app(
                 )
         except GiteaError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
+
+    # ---------- 多宝：仓库绑定与 webhook ----------
+
+    @app.post("/api/v1/repo-links")
+    def bind_repo_link(payload: RepoLinkRequest, actor: ActorDep) -> dict[str, Any]:
+        return store.bind_repo(actor, payload.provider, payload.owner, payload.name)  # type: ignore[no-any-return]
+
+    @app.get("/api/v1/repo-links")
+    def list_repo_links(actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        return {"links": store.list_repo_links(actor)}
+
+    @app.delete("/api/v1/repo-links/{link_id}")
+    def unbind_repo_link(link_id: str, actor: ActorDep) -> dict[str, Any]:
+        return store.unbind_repo(actor, link_id)  # type: ignore[no-any-return]
+
+    @app.post("/api/v1/webhooks/gitea")
+    async def gitea_webhook(request: Request) -> JSONResponse:
+        secret = os.environ.get("TIANXUAN_GITEA_WEBHOOK_SECRET", "").strip()
+        if not secret:
+            raise HTTPException(status_code=503, detail="Gitea webhook is not configured")
+        body = await request.body()
+        if not verify_gitea_signature(secret, body, request.headers.get("X-Gitea-Signature", "")):
+            raise HTTPException(status_code=401, detail="invalid webhook signature")
+        event = request.headers.get("X-Gitea-Event", "").strip()
+        delivery = request.headers.get("X-Gitea-Delivery", "").strip()
+        try:
+            payload = json.loads(body.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            raise HTTPException(status_code=400, detail="invalid webhook payload") from None
+        if not isinstance(payload, dict):
+            raise HTTPException(status_code=400, detail="invalid webhook payload")
+        summary = summarize_gitea_event(event, payload)
+        if summary is None:
+            return JSONResponse(status_code=202, content={"accepted": False, "reason": "unsupported event"})
+        repository = summary["payload"]
+        try:
+            tenant_id = store.tenant_for_repo(
+                "gitea",
+                str(repository.get("owner", "")),
+                str(repository.get("name", "")),
+            )
+        except TianxuanError:
+            return JSONResponse(status_code=202, content={"accepted": False, "reason": "invalid repository"})
+        if tenant_id is None:
+            return JSONResponse(status_code=202, content={"accepted": False, "reason": "unlinked repository"})
+        store.record_repo_event(
+            tenant_id,
+            str(summary["type"]),
+            str(summary["target"]),
+            {**repository, "delivery": delivery, "event": event},
+        )
+        return JSONResponse(status_code=202, content={"accepted": True, "type": summary["type"]})
 
     # ---------- 文曲：可见性与共享 ----------
 

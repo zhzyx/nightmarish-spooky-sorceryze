@@ -105,6 +105,12 @@ python tianshu_bridge.py --api http://127.0.0.1:8000 --actor <user_id> \
 | `TIANXUAN_REPO_ROOT` | 需求落库 Git 仓库根（`design/{request_id}.md`） |
 | `TIANXUAN_GITEA_URL` / `TIANXUAN_GITEA_TOKEN` | Gitea/Forgejo 地址与 token |
 | `TIANXUAN_GITEA_OWNER` | 默认仓库 owner（可选） |
+| `TIANXUAN_GITEA_WEBHOOK_SECRET` | Gitea webhook HMAC-SHA256 密钥；未设置时 webhook 返回 503 |
+| `TIANXUAN_PROTECTED_BRANCHES` | 受保护分支模式（逗号分隔，支持 `release/*`） |
+| `TIANXUAN_REQUIRED_APPROVALS` | 合并所需独立批准数（默认 0） |
+| `TIANXUAN_REQUIRED_CHECKS` | 合并前必须 success 的提交检查 context（逗号分隔） |
+| `TIANXUAN_IMPORT_ALLOW_LOCAL` | 允许本机路径/`file://` 仓库导入（默认 0） |
+| `TIANXUAN_IMPORT_ALLOWED_HOSTS` | 导入来源主机白名单（逗号分隔） |
 | `NEXT_PUBLIC_TIANXUAN_API_BASE` | Web 访问的 API 地址，默认 `http://127.0.0.1:8000` |
 | `TIANXUAN_ACTOR` | Web 服务端渲染使用的 actor（用户 ID） |
 | `NEXT_PUBLIC_TIANXUAN_ACTOR` | Web 浏览器端保存实时文档使用的 actor |
@@ -116,7 +122,8 @@ python tianshu_bridge.py --api http://127.0.0.1:8000 --actor <user_id> \
 - 权限：文档 `tenant/private` 可见性、按用户 read/write 共享；列表与所有读路径按 ACL 过滤
 - 协作：WebSocket 实时房间（快照/presence/更新广播）、离线草稿三方合并、Web 端本地草稿与在线同步
 - 偃师/司南：需求文档、工单树、状态机、工单评论、看板、进度同步、需求落库 Git Markdown
-- 多宝：本地 Git 提交；持久化合入队列（预检/检验/串行合入/冲突隔离/证据）；默认启动自动 worker，设 `TIANXUAN_MERGE_WORKER=0` 可关闭；检查在临时 worktree 执行，使用独立 HOME/TEMP 且默认不继承 `TIANXUAN_*`/TOKEN/SECRET 等环境，`TIANXUAN_MERGE_CHECK_ENV` 可白名单；Gitea 状态/列表/创建/读取（支持真实 Gitea 实例）
+- 多宝：本地 Git 提交；持久化合入队列（预检/检验/串行合入/冲突隔离/证据）；默认启动自动 worker，设 `TIANXUAN_MERGE_WORKER=0` 可关闭；检查在临时 worktree 执行，使用独立 HOME/TEMP 且默认不继承 `TIANXUAN_*`/TOKEN/SECRET 等环境，`TIANXUAN_MERGE_CHECK_ENV` 可白名单；Gitea 仓库/分支/PR/评审/提交状态；保护分支、批准数与必需检查的合并门禁；镜像导入与标签列表
+- 仓库绑定与 webhook：`/api/v1/repo-links` 把 `provider/owner/name` 绑定到租户（全局唯一，admin 管理）；`/api/v1/webhooks/gitea` 校验 HMAC 签名后把 push/PR 事件写入对应租户事件流，未绑定仓库与不支持事件返回 202 ignored
 - AI：BYOK 模型网关（用量与预算）；AI 工具入口；结构化补丁
 - Web：文档列表/详情/编辑/共享、Markdown/HTML/Word/PDF 导出（HTML 为安全 Markdown 渲染；PDF/DOCX 支持 data URI 图片；远程图片需 `TIANXUAN_EXPORT_IMAGE_HOSTS` 白名单）、实时文档、实时工单看板、实时仓库、设置页系统状态、API 连通状态
 - 交付：`deploy/` 自托管 Compose；CLI；端到端演示脚本

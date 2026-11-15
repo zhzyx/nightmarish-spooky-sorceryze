@@ -101,6 +101,13 @@ CREATE TABLE IF NOT EXISTS identity_links (
 CREATE INDEX IF NOT EXISTS idx_issue_comments_issue ON issue_comments(issue_id, created_at);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_docs_request ON docs(tenant_id, request_id)
   WHERE request_id IS NOT NULL;
+CREATE TABLE IF NOT EXISTS repo_links (
+  id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL,
+  provider TEXT NOT NULL, owner TEXT NOT NULL, name TEXT NOT NULL,
+  created_by TEXT NOT NULL, created_at TEXT NOT NULL,
+  UNIQUE (provider, owner, name)
+);
+CREATE INDEX IF NOT EXISTS idx_repo_links_tenant ON repo_links(tenant_id);
 """
 
 ISSUE_TRANSITIONS = {
@@ -167,6 +174,31 @@ def _hash_password(password: str, salt: str) -> str:
 
 def _token_hash(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+_REPO_PROVIDERS = frozenset({"gitea", "github"})
+_REPO_SEGMENT_CONTROL = re.compile(r"[\x00-\x1f\x7f]")
+
+
+def _validate_repo_provider(value: str) -> str:
+    if not isinstance(value, str):
+        raise TianxuanError("repository provider must be a string")
+    provider = value.strip().lower()
+    if provider not in _REPO_PROVIDERS:
+        raise TianxuanError(f"unsupported repository provider: {value!r}; expected one of gitea, github")
+    return provider
+
+
+def _validate_repo_segment(value: str, label: str) -> str:
+    if not isinstance(value, str):
+        raise TianxuanError(f"repository {label} must be a string")
+    if not value or value != value.strip():
+        raise TianxuanError(f"invalid repository {label}: {value!r}")
+    if len(value) > 100:
+        raise TianxuanError(f"repository {label} is too long: {value!r}")
+    if _REPO_SEGMENT_CONTROL.search(value) or "/" in value or "\\" in value:
+        raise TianxuanError(f"invalid repository {label}: {value!r}")
+    return value
 
 
 def classify(text: str) -> list[str]:
@@ -1464,6 +1496,88 @@ class Tianxuan:
 
     def prune_all_events(self, older_than_days: int = 90, type_prefix: str | None = None) -> int:
         return self._delete_events(None, older_than_days, type_prefix)
+
+    # ------------------------------------------------------------------
+    # 仓库绑定（webhook 与仓库元数据的租户映射）
+    # ------------------------------------------------------------------
+    @_connection_call
+    def bind_repo(self, actor: str, provider: str, owner: str, name: str) -> dict[str, Any]:
+        """把外部仓库绑定到当前租户；同一 ``provider/owner/name`` 全局唯一。"""
+        if self.role_of(actor) != "admin":
+            raise PermissionDenied("only admin can bind repositories")
+        provider = _validate_repo_provider(provider)
+        owner = _validate_repo_segment(owner, "owner")
+        name = _validate_repo_segment(name, "name")
+        tenant_id = self._tenant_of(actor)
+        link_id = _id("repo")
+        try:
+            self.db.execute(
+                "INSERT INTO repo_links (id, tenant_id, provider, owner, name, created_by, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (link_id, tenant_id, provider, owner, name, actor, _now()),
+            )
+        except sqlite3.IntegrityError as error:
+            raise TianxuanError(f"repository is already linked: {provider}/{owner}/{name}") from error
+        self._event(
+            tenant_id,
+            "repo.linked",
+            actor,
+            f"{provider}/{owner}/{name}",
+            {"provider": provider, "owner": owner, "name": name},
+        )
+        return {
+            "id": link_id,
+            "tenant_id": tenant_id,
+            "provider": provider,
+            "owner": owner,
+            "name": name,
+            "created_by": actor,
+        }
+
+    @_connection_call
+    def list_repo_links(self, actor: str) -> list[dict[str, Any]]:
+        tenant_id = self._tenant_of(actor)
+        rows = self.db.execute(
+            "SELECT id, provider, owner, name, created_by, created_at FROM repo_links "
+            "WHERE tenant_id = ? ORDER BY created_at, id",
+            (tenant_id,),
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+    @_connection_call
+    def unbind_repo(self, actor: str, link_id: str) -> dict[str, Any]:
+        if self.role_of(actor) != "admin":
+            raise PermissionDenied("only admin can unbind repositories")
+        tenant_id = self._tenant_of(actor)
+        row = self.db.execute(
+            "SELECT provider, owner, name FROM repo_links WHERE id = ? AND tenant_id = ?",
+            (link_id, tenant_id),
+        ).fetchone()
+        if row is None:
+            raise NotFound(f"repository link not found: {link_id}")
+        target = f"{row['provider']}/{row['owner']}/{row['name']}"
+        self.db.execute("DELETE FROM repo_links WHERE id = ? AND tenant_id = ?", (link_id, tenant_id))
+        self._event(tenant_id, "repo.unlinked", actor, target, {"provider": row["provider"]})
+        return {"id": link_id, "deleted": True}
+
+    @_connection_call
+    def tenant_for_repo(self, provider: str, owner: str, name: str) -> str | None:
+        """供 webhook 解析仓库所属租户；未绑定返回 ``None``。"""
+        provider = _validate_repo_provider(provider)
+        owner = _validate_repo_segment(owner, "owner")
+        name = _validate_repo_segment(name, "name")
+        row = self.db.execute(
+            "SELECT tenant_id FROM repo_links WHERE provider = ? AND owner = ? AND name = ?",
+            (provider, owner, name),
+        ).fetchone()
+        return str(row["tenant_id"]) if row is not None else None
+
+    @_connection_call
+    def record_repo_event(self, tenant_id: str, event_type: str, target: str, payload: dict[str, Any]) -> None:
+        """记录来自 Git 服务的仓库事件；webhook 已校验签名并由调用方解析租户。"""
+        if not isinstance(event_type, str) or not event_type.startswith("repo."):
+            raise TianxuanError(f"invalid repository event type: {event_type!r}")
+        self._event(tenant_id, event_type, "gitea:webhook", target, payload)
 
     def _delete_events(self, tenant_id: str | None, older_than_days: int, type_prefix: str | None) -> int:
         days = max(0.0, float(older_than_days))

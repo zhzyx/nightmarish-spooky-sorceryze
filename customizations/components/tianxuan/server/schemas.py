@@ -63,6 +63,14 @@ class RepoCreateRequest(BaseModel):
     default_branch: str = "main"
 
 
+class RepoLinkRequest(BaseModel):
+    """把外部仓库绑定到当前租户。"""
+
+    provider: str = "gitea"
+    owner: str
+    name: str
+
+
 class GitBranchCreateRequest(BaseModel):
     """在本地裸仓库中基于已有提交创建分支。"""
 
