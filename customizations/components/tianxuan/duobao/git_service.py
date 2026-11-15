@@ -740,7 +740,7 @@ class GitService:
             raise ValidationError("blame limit must be an integer between 1 and 5000")
         repo_path, _ = self._repo_path(repo)
         completed = self._run(
-            ["-C", str(repo_path), "blame", "--line-porcelain", "--no-color", ref, "--", path],
+            ["-C", str(repo_path), "blame", "--line-porcelain", ref, "--", path],
             check=False,
             timeout=30,
         )
