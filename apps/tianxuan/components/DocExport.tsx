@@ -1,5 +1,7 @@
 "use client";
 
+import { useActor } from "@/lib/use-actor";
+
 import { useState } from "react";
 import { downloadDocExport } from "@/lib/api";
 
@@ -9,7 +11,7 @@ function safeName(title: string): string {
 }
 
 export function DocExport({ docId, title }: { docId: string; title: string }) {
-  const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR;
+  const actor = useActor();
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
 

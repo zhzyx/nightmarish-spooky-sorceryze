@@ -1,5 +1,7 @@
 "use client";
 
+import { useActor } from "@/lib/use-actor";
+
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import {
   createIdentityLink,
@@ -27,7 +29,7 @@ const fieldStyle: CSSProperties = {
 };
 
 export function IdentityBindings() {
-  const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR;
+  const actor = useActor();
   const [links, setLinks] = useState<ApiIdentityLink[]>([]);
   const [users, setUsers] = useState<ApiMember[]>([]);
   const [provider, setProvider] = useState("tianshu");

@@ -1,5 +1,7 @@
 "use client";
 
+import { useActor } from "@/lib/use-actor";
+
 import { useCallback, useEffect, useState } from "react";
 import { Icon } from "@/components/Icon";
 import { fetchDocDiff, fetchVersions, type ApiVersion } from "@/lib/api";
@@ -80,7 +82,7 @@ function formatTimestamp(value: string): string {
 }
 
 export function DocVersions({ docId }: DocVersionsProps) {
-  const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR ?? "";
+  const actor = useActor();
   const [versions, setVersions] = useState<ApiVersion[]>([]);
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [loadError, setLoadError] = useState("");

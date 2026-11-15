@@ -1,5 +1,7 @@
 "use client";
 
+import { useActor } from "@/lib/use-actor";
+
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import {
   createLocalBranch,
@@ -74,7 +76,7 @@ function errorMessage(error: unknown, fallback: string): string {
 }
 
 export function RepoTree() {
-  const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR ?? "";
+  const actor = useActor();
   const [repos, setRepos] = useState<ApiLocalRepo[]>([]);
   const [repo, setRepo] = useState("");
   const [branches, setBranches] = useState<string[]>([]);

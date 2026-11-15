@@ -1,5 +1,7 @@
 "use client";
 
+import { useActor } from "@/lib/use-actor";
+
 import Link from "next/link";
 import {
   Fragment,
@@ -326,7 +328,7 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
     } catch {
       // The visible state still reflects the local draft.
     }
-    const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR ?? "";
+    const actor = useActor();
     if (!actor || !doc.id.startsWith("doc_")) {
       setSaveState("saved");
       setSyncNote("已保存至本设备");

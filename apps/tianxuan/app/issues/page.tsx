@@ -101,7 +101,7 @@ export default async function IssuesPage() {
 
   const actor = process.env.TIANXUAN_ACTOR ?? "";
   let live: { board: Record<string, ApiIssue[]>; issues: ApiIssue[] } | null = null;
-  if (actor) {
+  if (actor || process.env.TIANXUAN_TOKEN) {
     try {
       const [board, liveIssues] = await Promise.all([fetchBoard(actor), fetchIssues(actor)]);
       live = { board, issues: liveIssues };

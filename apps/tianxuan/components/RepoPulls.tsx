@@ -1,5 +1,7 @@
 "use client";
 
+import { useActor } from "@/lib/use-actor";
+
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { Icon } from "@/components/Icon";
 import {
@@ -161,7 +163,7 @@ function approvedCount(reviews: ApiReview[] | undefined): number {
 }
 
 export function RepoPulls() {
-  const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR ?? "";
+  const actor = useActor();
   const [owner, setOwner] = useState("");
   const [repo, setRepo] = useState("");
   const [activeOwner, setActiveOwner] = useState("");

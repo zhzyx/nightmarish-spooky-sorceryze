@@ -56,7 +56,7 @@ function renderTreePage(page: PageTreeNode) {
 export default async function DocsPage() {
   const actor = process.env.TIANXUAN_ACTOR ?? "";
   let liveDocs: ApiDoc[] | null = null;
-  if (actor) {
+  if (actor || process.env.TIANXUAN_TOKEN) {
     try {
       liveDocs = await fetchDocs(actor);
     } catch {

@@ -1,5 +1,7 @@
 "use client";
 
+import { useActor } from "@/lib/use-actor";
+
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Icon } from "@/components/Icon";
 import {
@@ -105,7 +107,7 @@ function formatTimestamp(value: string): string {
 }
 
 export function DocComments({ docId }: DocCommentsProps) {
-  const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR ?? "";
+  const actor = useActor();
   const [comments, setComments] = useState<ApiComment[]>([]);
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [loadError, setLoadError] = useState("");

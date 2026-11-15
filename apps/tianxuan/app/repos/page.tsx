@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 export default async function ReposPage() {
   const actor = process.env.TIANXUAN_ACTOR ?? "";
   let liveRepos: ApiRepo[] | null = null;
-  if (actor) {
+  if (actor || process.env.TIANXUAN_TOKEN) {
     try {
       liveRepos = await fetchRepos(actor);
     } catch {

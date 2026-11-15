@@ -1,5 +1,7 @@
 "use client";
 
+import { useActor } from "@/lib/use-actor";
+
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import { getToken } from "@/lib/auth";
 import {
@@ -47,7 +49,7 @@ function evidenceText(item: ApiMergeQueueItem): string {
 }
 
 export function MergeQueuePanel() {
-  const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR;
+  const actor = useActor();
   const [items, setItems] = useState<ApiMergeQueueItem[]>([]);
   const [status, setStatus] = useState<ApiMergeQueueStatus | null>(null);
   const [repo, setRepo] = useState("docs.git");

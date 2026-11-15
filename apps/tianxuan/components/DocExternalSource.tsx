@@ -1,10 +1,12 @@
 "use client";
 
+import { useActor } from "@/lib/use-actor";
+
 import { useEffect, useState } from "react";
 import { fetchDocExternalLinks, type ApiExternalLink } from "@/lib/api";
 
 export function DocExternalSource({ docId }: { docId: string }) {
-  const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR;
+  const actor = useActor();
   const [links, setLinks] = useState<ApiExternalLink[] | null>(null);
 
   useEffect(() => {

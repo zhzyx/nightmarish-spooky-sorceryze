@@ -85,7 +85,7 @@ async function loadLiveRequirements(actor: string): Promise<ApiRequirement[]> {
 export default async function RequirementsPage() {
   const actor = process.env.TIANXUAN_ACTOR?.trim() ?? "";
   let liveRequirements: ApiRequirement[] = [];
-  if (actor) {
+  if (actor || process.env.TIANXUAN_TOKEN) {
     try {
       liveRequirements = await loadLiveRequirements(actor);
     } catch {

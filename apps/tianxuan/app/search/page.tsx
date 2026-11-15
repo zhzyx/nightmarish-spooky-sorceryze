@@ -148,7 +148,7 @@ export default async function SearchPage({
 
   const actor = process.env.TIANXUAN_ACTOR?.trim() ?? "";
   let liveResults: ApiSearchResult[] | null = null;
-  if (query && actor) {
+  if (query && (actor || process.env.TIANXUAN_TOKEN)) {
     try {
       liveResults = await fetchSearch(actor, query);
     } catch {

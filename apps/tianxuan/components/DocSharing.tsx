@@ -1,5 +1,7 @@
 "use client";
 
+import { useActor } from "@/lib/use-actor";
+
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Icon } from "@/components/Icon";
 import {
@@ -69,7 +71,7 @@ const shareInputStyle = { flex: "1 1 180px", width: "auto" } as const;
 const shareListStyle = { padding: 0 } as const;
 
 export function DocSharing({ docId, initialVisibility }: DocSharingProps) {
-  const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR ?? "";
+  const actor = useActor();
   const [visibility, setVisibility] = useState<DocVisibility>(() =>
     normalizeVisibility(initialVisibility),
   );

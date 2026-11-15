@@ -1,5 +1,7 @@
 "use client";
 
+import { useActor } from "@/lib/use-actor";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/Icon";
 import {
@@ -76,7 +78,7 @@ function formatTime(value: string): string {
 }
 
 export function LocalGitRepos() {
-  const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR ?? "";
+  const actor = useActor();
   const [repos, setRepos] = useState<ApiLocalRepo[]>([]);
   const [reposState, setReposState] = useState<LoadState>("loading");
   const [reposError, setReposError] = useState("");

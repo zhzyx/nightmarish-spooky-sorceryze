@@ -120,6 +120,7 @@ python tianshu_bridge.py --api http://127.0.0.1:8000 --actor <user_id> \
 ## 当前能力
 
 - 身份：注册、登录、Bearer 会话（哈希存储、24h 过期、吊销）、租户角色（admin/editor/viewer）、单次邀请；Web `/login` 登录页把 token 存入 localStorage 与同站 cookie，API 客户端优先发送 Bearer，`X-Actor` 默认关闭
+- Web 身份加载：浏览器有会话 token 时面板无需 `NEXT_PUBLIC_TIANXUAN_ACTOR` 即可加载（`useActor` 在挂载后切换到 token 模式）；服务端渲染在未配置 `TIANXUAN_ACTOR` 时可用 `TIANXUAN_TOKEN` 发起请求
 - Gitea 身份映射：写操作要求操作者已绑定 Gitea 身份（`identity_links` provider=`gitea`、subject=Gitea 用户名），服务端用 `Sudo` 头代表该用户；`TIANXUAN_GITEA_TOKEN` 需为具备 sudo 权限的 token，未绑定用户的写入返回 403，读路径回退服务身份
 - 文曲：Markdown CRUD、版本与统一 diff、评论、链接/反向链接、检索、导出、AI 视图、自动归类、AI 结构化补丁
 - 权限：文档 `tenant/private` 可见性、按用户 read/write 共享；列表与所有读路径按 ACL 过滤
