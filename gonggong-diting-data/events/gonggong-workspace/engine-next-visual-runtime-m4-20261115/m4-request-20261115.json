@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "m4-request-20261115",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-20261115",
+  "kind": "request",
+  "occurred_at": "2026-11-15T14:42:24.975208+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1323",
+  "agent": {
+    "id": "codex-m4-design",
+    "version": "repository-instructions-700dfb04",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "payload": {
+    "scope": "Prepare and submit M4.0 design. Implementation requires user confirmation of the design.",
+    "source_record": "data-collection/engine-next-visual-runtime-m4-request-20261115.json",
+    "confirmed_decisions": [
+      "Use this i7-13700KF / RTX 4070 Ti PC as reference and complete design first",
+      "Use self-authored reproducible reference scenes A-F"
+    ]
+  },
+  "evidence_refs": [],
+  "sha256": "701efc72ac9d865fdf1de13d64412affef3608326408ed6d7395a956cf3c3f89"
+}

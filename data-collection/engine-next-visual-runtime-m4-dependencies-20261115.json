@@ -1,0 +1,554 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-20261115",
+  "issue_number": 1323,
+  "baseline": "700dfb041cfa8a1dc791e24825ff0ce57a734a52",
+  "issues": [
+    {
+      "closedAt": "2026-11-12T16:37:31Z",
+      "number": 939,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "title": "抽取 Engine Next Gameplay 独立内核 M1",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/939"
+    },
+    {
+      "closedAt": "2026-11-13T08:12:52Z",
+      "number": 1025,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "title": "加固 Engine Next Gameplay M1.1 插值与 legacy 回退",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1025"
+    },
+    {
+      "closedAt": "2026-11-14T06:47:10Z",
+      "number": 1042,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "title": "Engine Next M2：独立 Headless 运行时",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1042"
+    },
+    {
+      "closedAt": "2026-11-15T02:36:08Z",
+      "number": 1240,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "title": "Engine Next M3：独立资产体系与 AI 原生内容工作流",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1240"
+    }
+  ],
+  "pull_requests": [
+    {
+      "headRefOid": "63e9c2ff94b4c17735f1af94382ce4f55201629f",
+      "mergeCommit": {
+        "oid": "6ef7879a8e606a50ecbd3b720dabbdb6eee5d583"
+      },
+      "mergedAt": "2026-11-14T04:40:43Z",
+      "number": 1237,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:18:34Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43555992726/job/132328883158",
+          "name": "📊 Static checks",
+          "startedAt": "2026-11-14T04:18:42Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:23:35Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43556002938/job/132328881533",
+          "name": "No Godot source or link dependencies (windows-latest)",
+          "startedAt": "2026-11-14T04:18:43Z",
+          "status": "COMPLETED",
+          "workflowName": "Engine Next build contract"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:18:50Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43556002823/job/132328882969",
+          "name": "issue-association",
+          "startedAt": "2026-11-14T04:18:43Z",
+          "status": "COMPLETED",
+          "workflowName": "GongGong Issue association"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:19:02Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43556002945/job/132328881689",
+          "name": "📊 Static checks / Code style, file formatting, and docs",
+          "startedAt": "2026-11-14T04:18:43Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:23:34Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43556002938/job/132328881321",
+          "name": "No Godot source or link dependencies (macos-26)",
+          "startedAt": "2026-11-14T04:18:43Z",
+          "status": "COMPLETED",
+          "workflowName": "Engine Next build contract"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:22:47Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43556002938/job/132328881554",
+          "name": "No Godot source or link dependencies (ubuntu-latest)",
+          "startedAt": "2026-11-14T04:18:43Z",
+          "status": "COMPLETED",
+          "workflowName": "Engine Next build contract"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:19:02Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43556002945/job/132328972957",
+          "name": "🤖 Android",
+          "startedAt": "2026-11-14T04:19:03Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:18:34Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43555992726/job/132328851282",
+          "name": "🤖 Android",
+          "startedAt": "2026-11-14T04:18:34Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:19:02Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43556002945/job/132328972952",
+          "name": "🍏 iOS",
+          "startedAt": "2026-11-14T04:19:03Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:18:34Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43555992726/job/132328879131",
+          "name": "🍏 iOS",
+          "startedAt": "2026-11-14T04:18:41Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:19:02Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43556002945/job/132328973084",
+          "name": "🐧 Linux",
+          "startedAt": "2026-11-14T04:19:03Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:18:34Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43555992726/job/132328851795",
+          "name": "🐧 Linux",
+          "startedAt": "2026-11-14T04:18:34Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:19:02Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43556002945/job/132328972924",
+          "name": "🍎 macOS",
+          "startedAt": "2026-11-14T04:19:03Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:18:34Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43555992726/job/132328887163",
+          "name": "🍎 macOS",
+          "startedAt": "2026-11-14T04:18:43Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:19:02Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43556002945/job/132328972905",
+          "name": "Compile affected Windows engine targets",
+          "startedAt": "2026-11-14T04:19:03Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:18:34Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43555992726/job/132328883967",
+          "name": "Compile affected Windows engine targets",
+          "startedAt": "2026-11-14T04:18:42Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:19:02Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43556002945/job/132328972940",
+          "name": "Compile affected Metal targets",
+          "startedAt": "2026-11-14T04:19:03Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:18:34Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43555992726/job/132328876143",
+          "name": "Compile affected Metal targets",
+          "startedAt": "2026-11-14T04:18:40Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:19:02Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43556002945/job/132328973414",
+          "name": "🌐 Web",
+          "startedAt": "2026-11-14T04:19:03Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:18:34Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43555992726/job/132328888951",
+          "name": "🌐 Web",
+          "startedAt": "2026-11-14T04:18:43Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:18:34Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43555992726/job/132328891037",
+          "name": "🏁 Windows",
+          "startedAt": "2026-11-14T04:18:44Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-14T04:35:45Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43556002945/job/132328971945",
+          "name": "🏁 Windows / Editor (target=editor)",
+          "startedAt": "2026-11-14T04:19:04Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        }
+      ],
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1237"
+    },
+    {
+      "headRefOid": "6b5daa0f15de7bc30a1ba5ec64795a3cc1b11676",
+      "mergeCommit": {
+        "oid": "0bc22d445086e8f9cdacd43dfe3817c7690bcf41"
+      },
+      "mergedAt": "2026-11-15T02:34:41Z",
+      "number": 1302,
+      "state": "MERGED",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:09Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664547557/job/132660921323",
+          "name": "📊 Static checks",
+          "startedAt": "2026-11-15T01:45:09Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:46:52Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664556557/job/132660946084",
+          "name": "Original Windows CLI and real Blender geometry",
+          "startedAt": "2026-11-15T01:45:17Z",
+          "status": "COMPLETED",
+          "workflowName": "Blender geometry on Windows"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:55:02Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664556488/job/132660945820",
+          "name": "No Godot source or link dependencies (windows-latest)",
+          "startedAt": "2026-11-15T01:45:18Z",
+          "status": "COMPLETED",
+          "workflowName": "Engine Next build contract"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:29Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664556469/job/132660947837",
+          "name": "issue-association",
+          "startedAt": "2026-11-15T01:45:17Z",
+          "status": "COMPLETED",
+          "workflowName": "GongGong Issue association"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:59:19Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664556563/job/132660946195",
+          "name": "editor / Editor (target=editor)",
+          "startedAt": "2026-11-15T01:45:18Z",
+          "status": "COMPLETED",
+          "workflowName": "Maliang offline Windows editor"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:44Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664556548/job/132660946643",
+          "name": "📊 Static checks / Code style, file formatting, and docs",
+          "startedAt": "2026-11-15T01:45:17Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:55:44Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664556488/job/132660946079",
+          "name": "No Godot source or link dependencies (macos-26)",
+          "startedAt": "2026-11-15T01:45:19Z",
+          "status": "COMPLETED",
+          "workflowName": "Engine Next build contract"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:54:51Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664556488/job/132660946015",
+          "name": "No Godot source or link dependencies (ubuntu-latest)",
+          "startedAt": "2026-11-15T01:45:18Z",
+          "status": "COMPLETED",
+          "workflowName": "Engine Next build contract"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:45Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664556548/job/132661061593",
+          "name": "🤖 Android",
+          "startedAt": "2026-11-15T01:45:45Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:09Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664547557/job/132660942409",
+          "name": "🤖 Android",
+          "startedAt": "2026-11-15T01:45:15Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T02:08:31Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664556563/job/132664180079",
+          "name": "package-and-run",
+          "startedAt": "2026-11-15T01:59:20Z",
+          "status": "COMPLETED",
+          "workflowName": "Maliang offline Windows editor"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:45Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664556548/job/132661061053",
+          "name": "🍏 iOS",
+          "startedAt": "2026-11-15T01:45:45Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:09Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664547557/job/132660948150",
+          "name": "🍏 iOS",
+          "startedAt": "2026-11-15T01:45:16Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:45Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664556548/job/132661061280",
+          "name": "🐧 Linux",
+          "startedAt": "2026-11-15T01:45:45Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:09Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664547557/job/132660953937",
+          "name": "🐧 Linux",
+          "startedAt": "2026-11-15T01:45:18Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:45Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664556548/job/132661061588",
+          "name": "🍎 macOS",
+          "startedAt": "2026-11-15T01:45:45Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:09Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664547557/job/132660953693",
+          "name": "🍎 macOS",
+          "startedAt": "2026-11-15T01:45:17Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:45Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664556548/job/132661061602",
+          "name": "Compile affected Windows engine targets",
+          "startedAt": "2026-11-15T01:45:45Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:09Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664547557/job/132660942305",
+          "name": "Compile affected Windows engine targets",
+          "startedAt": "2026-11-15T01:45:15Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:45Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664556548/job/132661061326",
+          "name": "Compile affected Metal targets",
+          "startedAt": "2026-11-15T01:45:45Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:09Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664547557/job/132660943027",
+          "name": "Compile affected Metal targets",
+          "startedAt": "2026-11-15T01:45:15Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:45Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664556548/job/132661061287",
+          "name": "🌐 Web",
+          "startedAt": "2026-11-15T01:45:45Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:09Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664547557/job/132660921769",
+          "name": "🌐 Web",
+          "startedAt": "2026-11-15T01:45:10Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:45:09Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664547557/job/132660961424",
+          "name": "🏁 Windows",
+          "startedAt": "2026-11-15T01:45:20Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-11-15T01:57:52Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43664556548/job/132661060640",
+          "name": "🏁 Windows / Editor (target=editor)",
+          "startedAt": "2026-11-15T01:45:47Z",
+          "status": "COMPLETED",
+          "workflowName": "🔗 GHA"
+        }
+      ],
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1302"
+    }
+  ],
+  "ancestry": [
+    {
+      "commit": "0010a548ad5b52ef268e28c5e9c2c6b9a4ae26e2",
+      "is_ancestor_of_baseline": true
+    },
+    {
+      "commit": "78fe4c2bfe9c7e340f20e1318ec8d5edadbfbd02",
+      "is_ancestor_of_baseline": true
+    },
+    {
+      "commit": "6ef7879a8e606a50ecbd3b720dabbdb6eee5d583",
+      "is_ancestor_of_baseline": true
+    },
+    {
+      "commit": "0bc22d445086e8f9cdacd43dfe3817c7690bcf41",
+      "is_ancestor_of_baseline": true
+    }
+  ]
+}

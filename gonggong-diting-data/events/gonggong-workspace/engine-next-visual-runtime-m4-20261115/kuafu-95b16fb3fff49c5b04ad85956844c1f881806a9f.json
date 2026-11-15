@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-95b16fb3fff49c5b04ad85956844c1f881806a9f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-20261115",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1323",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7965f3e8a4bae4883bb863a205863110fc6b3b636ef6910645736d23b45d7cf4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1323",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1325",
+    "action": "delivery",
+    "detection_head": "700dfb041cfa8a1dc791e24825ff0ce57a734a52",
+    "context_sha256": "cb3011cd4fbb05a00f9f31185af19ea246aa904e3f2b534a74bbed7b7dc60531",
+    "operator": "kaiyunxue",
+    "worker": "codex-m4-design",
+    "authority_ref": "User authorized M4.0 design submission in current chat",
+    "evidence": "writer_submit reported staged bytes differ for M4 dependency JSON",
+    "diagnosis": "Python text writes on Windows produced CRLF while Git index normalized LF; exact-byte collection gate correctly rejected the mismatch",
+    "next_action": "Normalize only owned candidate files to LF, refresh evidence hashes, stage and rerun original writer submission",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-15T14:46:30.559772+00:00",
+    "attempted": "Owned design and JSON converted to LF; no semantic content changed",
+    "repair_owner": "codex-m4-design",
+    "continuable": "M4.0 design submission"
+  },
+  "occurred_at": "2026-11-15T14:49:13.454319+00:00",
+  "sha256": "6c70d6aec64e7fbe41d705aefe198938cb11af5922e4d61031fa725426cea338"
+}
