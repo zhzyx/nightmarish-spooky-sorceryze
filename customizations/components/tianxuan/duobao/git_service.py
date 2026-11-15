@@ -736,7 +736,8 @@ class GitService:
         """逐行返回文件的提交归属（作者、行号、行文本）。"""
         ref = _validate_ref_name(ref, label="blame ref")
         path = _validate_file_path(path, label="blame path")
-        limit = min(_validate_limit(limit), 5000)
+        if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 5000:
+            raise ValidationError("blame limit must be an integer between 1 and 5000")
         repo_path, _ = self._repo_path(repo)
         completed = self._run(
             ["-C", str(repo_path), "blame", "--line-porcelain", "--no-color", ref, "--", path],
