@@ -222,7 +222,12 @@ class ManagedComfyTests(unittest.TestCase):
             "listener_pid": managed._listener_pid(config["endpoint"]),
             "pid": child.pid,
         }
-        self.fail("external fixture failed: " + json.dumps(details) + "\n" + (self.base / "external.log").read_text(errors="replace"))
+        self.fail(
+            "external fixture failed: "
+            + json.dumps(details)
+            + "\n"
+            + (self.base / "external.log").read_text(errors="replace")
+        )
 
     def test_inspect_and_private_override(self):
         before = hashlib.sha256(self.config_path.read_bytes()).hexdigest()
