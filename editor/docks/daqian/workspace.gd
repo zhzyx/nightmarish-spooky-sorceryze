@@ -121,6 +121,7 @@ var execution_turns: Dictionary:
 	set(value): _get_workflow_controller().execution_turns = value
 var checked_execution := {}
 var tianxuan_synced := {}
+var tianxuan_pending := {}
 var board_issue_states := {}
 var routing_stages: Dictionary:
 	get: return _get_workflow_controller().routing_stages
@@ -1540,13 +1541,14 @@ func _show_tianxuan_dialog(url: String, data: Dictionary, item: Dictionary) -> v
 
 
 func _sync_board_completed(incoming: Dictionary) -> void:
+	var now := Time.get_unix_time_from_system()
 	for item in incoming.get("issues", []):
 		var url := str(item.get("url", ""))
 		if url.is_empty() or not item.has("node_states"):
 			continue
 		var states: Dictionary = item.get("node_states", {})
 		var previous: Dictionary = board_issue_states.get(url, {})
-		var titles: Array = []
+		var new_titles: Array = []
 		if not previous.is_empty():
 			var nodes: Dictionary = item.get("plan", {}).get("nodes", {})
 			for node_id in states:
@@ -1557,10 +1559,27 @@ func _sync_board_completed(incoming: Dictionary) -> void:
 					continue
 				var title := str(nodes.get(node_id, {}).get("title", ""))
 				if not title.is_empty():
-					titles.append(title)
+					new_titles.append(title)
 		board_issue_states[url] = states.duplicate(true)
-		if not titles.is_empty():
-			_auto_sync_tianxuan(url, titles)
+		var pending: Dictionary = tianxuan_pending.get(url, {})
+		var titles: Array = new_titles.duplicate()
+		for title in pending.keys():
+			if titles.has(title):
+				continue
+			var entry: Dictionary = pending[title]
+			if int(entry.get("attempts", 0)) >= 3:
+				continue
+			if now - float(entry.get("at", 0.0)) < 60.0:
+				continue
+			titles.append(str(title))
+		if titles.is_empty():
+			continue
+		for title in titles:
+			var previous_entry: Dictionary = pending.get(title, {})
+			var attempts := 1 if new_titles.has(title) else int(previous_entry.get("attempts", 0)) + 1
+			pending[title] = {"attempts": attempts, "at": now}
+		tianxuan_pending[url] = pending
+		_auto_sync_tianxuan(url, titles)
 
 
 func _auto_sync_tianxuan(url: String, titles: Array) -> void:
@@ -1584,9 +1603,19 @@ func _auto_sync_tianxuan(url: String, titles: Array) -> void:
 		for title in pending:
 			tianxuan_synced.erase(url + "|" + str(title))
 		return
+	var missing_titles: Array = []
 	for entry in result.get("data", {}).get("missing", []):
 		var text := str(entry).split(" (")[0]
+		missing_titles.append(text)
 		tianxuan_synced.erase(url + "|" + text)
+	var retry: Dictionary = tianxuan_pending.get(url, {})
+	for title in retry.keys():
+		if not missing_titles.has(str(title)):
+			retry.erase(title)
+	if retry.is_empty():
+		tianxuan_pending.erase(url)
+	else:
+		tianxuan_pending[url] = retry
 
 
 func _sync_tianxuan(url: String, checks: Array, dialog: AcceptDialog) -> void:
