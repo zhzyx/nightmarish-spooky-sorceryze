@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { saveSession } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n-client";
 
 const API_BASE = process.env.NEXT_PUBLIC_TIANXUAN_API_BASE?.replace(/\/$/, "") ?? "";
 
@@ -26,6 +27,7 @@ const fieldStyle = {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t, locale } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -45,19 +47,19 @@ export default function LoginPage() {
         body: JSON.stringify({ email: email.trim(), password }),
       });
       if (!response.ok) {
-        setError(response.status === 401 ? "邮箱或密码不正确" : `登录失败（${response.status}）`);
+        setError(response.status === 401 ? t("login.invalid") : `${t("login.failed")} (${response.status})`);
         return;
       }
       const body = (await response.json()) as { token?: string };
       if (!body.token) {
-        setError("登录响应缺少 token");
+        setError(t("login.missingToken"));
         return;
       }
       saveSession(body.token);
       router.push("/repos");
       router.refresh();
     } catch {
-      setError("无法连接服务器");
+      setError(t("login.network"));
     } finally {
       setBusy(false);
     }
@@ -72,12 +74,10 @@ export default function LoginPage() {
             TIANXUAN · SESSION
           </p>
           <h1>
-            登录<span className="title-period">。</span>
+            {t("login.title")}
+            {locale === "zh" ? <span className="title-period">。</span> : null}
           </h1>
-          <p className="page-lede">
-            使用已注册账号换取会话 token。登录后浏览器请求携带 Bearer token；服务端渲染可配置
-            <code> TIANXUAN_TOKEN </code>。
-          </p>
+          <p className="page-lede">{t("login.lede")}</p>
         </div>
       </header>
 
@@ -85,7 +85,7 @@ export default function LoginPage() {
         <div className="section-heading">
           <div>
             <p className="section-kicker">SESSION</p>
-            <h2 id="login-title">会话登录</h2>
+            <h2 id="login-title">{t("login.session")}</h2>
           </div>
           <span className="section-note">POST /api/v1/auth/session</span>
         </div>
@@ -94,7 +94,7 @@ export default function LoginPage() {
           style={{ display: "flex", flexDirection: "column", gap: "12px", maxWidth: "420px", padding: "16px 26px 22px" }}
         >
           <label style={fieldStyle}>
-            邮箱
+            {t("login.email")}
             <input
               type="email"
               required
@@ -105,7 +105,7 @@ export default function LoginPage() {
             />
           </label>
           <label style={fieldStyle}>
-            密码
+            {t("login.password")}
             <input
               type="password"
               required
@@ -116,7 +116,7 @@ export default function LoginPage() {
             />
           </label>
           <button className="btn btn-primary" type="submit" disabled={busy}>
-            {busy ? "登录中…" : "登录"}
+            {busy ? t("login.busy") : t("login.submit")}
           </button>
           {error ? <p style={{ color: "#D48B80" }}>{error}</p> : null}
         </form>
