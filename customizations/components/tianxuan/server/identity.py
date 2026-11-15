@@ -14,6 +14,7 @@ import json
 import os
 import threading
 import time
+import urllib.parse
 import urllib.request
 from collections import deque
 from typing import Any, Protocol
@@ -68,10 +69,19 @@ def _int_from_b64url(value: str) -> int:
     return int.from_bytes(_b64url_decode(value), "big")
 
 
+def _secure_url(url: str) -> bool:
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme == "https":
+        return True
+    if parsed.scheme == "http" and parsed.hostname in {"localhost", "127.0.0.1", "::1"}:
+        return True
+    return os.environ.get("TIANXUAN_OIDC_ALLOW_INSECURE", "") == "1"
+
+
 def _load_discovery() -> dict[str, Any]:
     global _DISCOVERY_CACHE
     url = os.environ.get("TIANXUAN_OIDC_DISCOVERY_URL", "")
-    if not url:
+    if not url or not _secure_url(url):
         return {}
     now = time.monotonic()
     cached_at, cached = _DISCOVERY_CACHE
@@ -100,7 +110,7 @@ def _load_jwks(force: bool = False) -> dict[str, Any]:
     url = os.environ.get("TIANXUAN_OIDC_JWKS_URL", "")
     if not url:
         url = str(_load_discovery().get("jwks_uri", ""))
-    if not url:
+    if not url or not _secure_url(url):
         return {}
     now = time.monotonic()
     cached_at, cached = _JWKS_CACHE
