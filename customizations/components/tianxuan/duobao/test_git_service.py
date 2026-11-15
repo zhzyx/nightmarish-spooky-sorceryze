@@ -570,6 +570,24 @@ class GitServiceTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             self.service.blame(self.repo, "HEAD", "../escape.txt")
 
+    def test_create_and_delete_tag(self) -> None:
+        sha = self._commit(files={"a.txt": "x\n"})
+        self.assertEqual(self.service.create_tag(self.repo, "v1"), "v1")
+        tags = self.service.list_tags(self.repo)
+        self.assertEqual([tag["name"] for tag in tags], ["v1"])
+        self.assertEqual(tags[0]["sha"], sha)
+
+        self.service.create_tag(self.repo, "v2", "HEAD", "release 2")
+        self.assertEqual([tag["name"] for tag in self.service.list_tags(self.repo)], ["v1", "v2"])
+
+        self.service.delete_tag(self.repo, "v1")
+        self.assertEqual([tag["name"] for tag in self.service.list_tags(self.repo)], ["v2"])
+
+        with self.assertRaises(ValidationError):
+            self.service.create_tag(self.repo, "bad tag")
+        with self.assertRaises(ValidationError):
+            self.service.delete_tag(self.repo, "")
+
 
 if __name__ == "__main__":
     unittest.main()

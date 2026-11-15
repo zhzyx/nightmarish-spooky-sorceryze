@@ -649,6 +649,33 @@ class GitService:
         self._run(["-C", str(repo_path), "branch", "-D", name])
         return name
 
+    def create_tag(
+        self,
+        repo: str | os.PathLike[str],
+        name: str,
+        ref: str = "HEAD",
+        message: str = "",
+    ) -> str:
+        """创建轻量标签（message 为空）或附注标签，并返回标签名。"""
+        name = _validate_ref_name(name, label="tag name")
+        ref = _validate_ref_name(ref, label="tag ref")
+        repo_path, _ = self._repo_path(repo)
+        arguments = ["-C", str(repo_path), "tag"]
+        if message:
+            arguments.extend(["-a", name, "-m", _validate_message(message)])
+        else:
+            arguments.append(name)
+        arguments.append(ref)
+        self._run(arguments)
+        return name
+
+    def delete_tag(self, repo: str | os.PathLike[str], name: str) -> str:
+        """删除本地标签并返回标签名。"""
+        name = _validate_ref_name(name, label="tag name")
+        repo_path, _ = self._repo_path(repo)
+        self._run(["-C", str(repo_path), "tag", "-d", name])
+        return name
+
     def list_tree(self, repo: str | os.PathLike[str], ref: str = "HEAD", path: str = "") -> list[dict[str, Any]]:
         """列出 ``ref`` 下 ``path`` 这一层的树项，``path`` 为空表示仓库根。
 

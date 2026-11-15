@@ -78,6 +78,14 @@ class GitBranchCreateRequest(BaseModel):
     start: str = "HEAD"
 
 
+class GitTagCreateRequest(BaseModel):
+    """在本地裸仓库中创建轻量或附注标签。"""
+
+    name: str
+    ref: str = "HEAD"
+    message: str = ""
+
+
 class GitImportRequest(BaseModel):
     """把远端或本机仓库以镜像方式导入多宝。"""
 

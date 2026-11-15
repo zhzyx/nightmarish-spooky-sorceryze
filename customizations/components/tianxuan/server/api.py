@@ -53,6 +53,7 @@ from schemas import (
     ExternalRequirementRequest,
     GitBranchCreateRequest,
     GitImportRequest,
+    GitTagCreateRequest,
     IdentityLinkRequest,
     IdentityRebindRequest,
     IdentityResolveRequest,
@@ -1224,6 +1225,30 @@ def create_app(
             return {"tags": GitService().list_tags(repo)}
         except (GitServiceError, OSError) as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/git/repos/{name}/tags")
+    def create_git_tag(
+        name: str,
+        payload: GitTagCreateRequest,
+        actor: ActorDep,
+    ) -> dict[str, str]:
+        _require_editor_role(store, actor, "create tags")
+        repo = _repo_under_root(name)
+        try:
+            tag = GitService().create_tag(repo, payload.name, payload.ref, payload.message)
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+        return {"tag": tag}
+
+    @app.delete("/api/v1/git/repos/{name}/tags/{tag:path}")
+    def delete_git_tag(name: str, tag: str, actor: ActorDep) -> dict[str, Any]:
+        _require_editor_role(store, actor, "delete tags")
+        repo = _repo_under_root(name)
+        try:
+            GitService().delete_tag(repo, tag)
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+        return {"tag": tag, "deleted": True}
 
     @app.post("/api/v1/git/import")
     def import_git_repo(payload: GitImportRequest, actor: ActorDep) -> dict[str, Any]:

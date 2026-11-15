@@ -231,6 +231,40 @@ export async function deleteLocalBranch(
   );
 }
 
+/** 创建轻量标签（message 为空）或附注标签。 */
+export async function createLocalTag(
+  actor: string,
+  name: string,
+  tag: string,
+  ref = "HEAD",
+  message = "",
+): Promise<string> {
+  const response = await fetch(
+    `${apiBase()}/api/v1/git/repos/${encodeURIComponent(name)}/tags`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...authHeaders(actor) },
+      body: JSON.stringify({ name: tag, ref, message }),
+    },
+  );
+  if (!response.ok) {
+    throw new Error(`create tag request failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { tag?: string };
+  return body.tag ?? tag;
+}
+
+/** 删除本地标签。 */
+export async function deleteLocalTag(actor: string, name: string, tag: string): Promise<void> {
+  const response = await fetch(
+    `${apiBase()}/api/v1/git/repos/${encodeURIComponent(name)}/tags/${encodeURIComponent(tag)}`,
+    { method: "DELETE", headers: authHeaders(actor) },
+  );
+  if (!response.ok) {
+    throw new Error(`delete tag request failed: ${response.status}`);
+  }
+}
+
 /** 导入结果（对应 `GitService.import_repo`）。 */
 export interface ApiImportResult {
   path: string;

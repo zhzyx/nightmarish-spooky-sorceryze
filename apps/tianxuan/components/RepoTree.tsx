@@ -5,7 +5,9 @@ import { formatMessage } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n-client";
 import {
   createLocalBranch,
+  createLocalTag,
   deleteLocalBranch,
+  deleteLocalTag,
   fetchLocalBranches,
   fetchLocalRepos,
   fetchBlame,
@@ -102,6 +104,9 @@ export function RepoTree() {
   const [blameLines, setBlameLines] = useState<ApiBlameLine[] | null>(null);
   const [blameBusy, setBlameBusy] = useState(false);
   const [blameError, setBlameError] = useState("");
+  const [tagName, setTagName] = useState("");
+  const [tagNotice, setTagNotice] = useState("");
+  const [tagBusy, setTagBusy] = useState(false);
   const [status, setStatus] = useState<LoadState>("idle");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -299,6 +304,48 @@ export function RepoTree() {
       setSearchError(errorMessage(searchErr, t("repos.searchError")));
     } finally {
       setSearchBusy(false);
+    }
+  }
+
+  async function handleCreateTag(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const value = tagName.trim();
+    if (!actor || !repo || !value || tagBusy) {
+      return;
+    }
+    setTagBusy(true);
+    setTagNotice("");
+    setError("");
+    try {
+      const created = await createLocalTag(actor, repo, value, branch || "HEAD");
+      setTagName("");
+      setTags(await fetchLocalTags(actor, repo));
+      setTagNotice(formatMessage(t("repos.tagCreated"), { name: created }));
+    } catch (tagError) {
+      setError(errorMessage(tagError, t("repos.tagError")));
+    } finally {
+      setTagBusy(false);
+    }
+  }
+
+  async function handleDeleteTag(name: string) {
+    if (!actor || !repo || tagBusy) {
+      return;
+    }
+    if (!window.confirm(`${t("repos.deleteTag")}: ${name}`)) {
+      return;
+    }
+    setTagBusy(true);
+    setTagNotice("");
+    setError("");
+    try {
+      await deleteLocalTag(actor, repo, name);
+      setTags(await fetchLocalTags(actor, repo));
+      setTagNotice(formatMessage(t("repos.tagDeleted"), { name }));
+    } catch (tagError) {
+      setError(errorMessage(tagError, t("repos.tagError")));
+    } finally {
+      setTagBusy(false);
     }
   }
 
@@ -513,14 +560,38 @@ export function RepoTree() {
               </ul>
             ) : null}
 
-            {tags.length > 0 ? (
+            {repo ? (
               <div style={rowStyle}>
                 <strong style={mutedStyle}>{t("repos.tagsLabel")}</strong>
+                <form onSubmit={handleCreateTag} style={rowStyle}>
+                  <input
+                    aria-label={t("repos.newTag")}
+                    value={tagName}
+                    onChange={(event) => setTagName(event.target.value)}
+                    placeholder={t("repos.newTag")}
+                    style={inputStyle}
+                  />
+                  <button className="btn btn-ghost btn-sm" disabled={tagBusy || !tagName.trim()} type="submit">
+                    {t("repos.createTag")}
+                  </button>
+                </form>
                 {tags.map((tag) => (
-                  <span key={tag.name} style={mutedStyle}>
-                    {tag.name} · {tag.sha.slice(0, 7)}
+                  <span key={tag.name} style={rowStyle}>
+                    <span style={mutedStyle}>
+                      {tag.name} · {tag.sha.slice(0, 7)}
+                    </span>
+                    <button
+                      aria-label={t("repos.deleteTag")}
+                      className="btn btn-ghost btn-sm"
+                      disabled={tagBusy}
+                      onClick={() => void handleDeleteTag(tag.name)}
+                      type="button"
+                    >
+                      ×
+                    </button>
                   </span>
                 ))}
+                {tagNotice ? <span style={mutedStyle}>{tagNotice}</span> : null}
               </div>
             ) : null}
 
