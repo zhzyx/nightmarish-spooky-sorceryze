@@ -11,9 +11,12 @@ from git_service import GitService, GitServiceError  # noqa: E402
 from policy import (  # noqa: E402
     PolicyError,
     ProtectedBranchError,
+    ReviewRequired,
     RoleDenied,
+    approved_reviewers,
     ensure_branch_mutation_allowed,
     ensure_merge_allowed,
+    ensure_pr_merge_allowed,
     parse_protected_branches,
 )
 
@@ -22,8 +25,11 @@ __all__ = [
     "GitServiceError",
     "PolicyError",
     "ProtectedBranchError",
+    "ReviewRequired",
     "RoleDenied",
+    "approved_reviewers",
     "ensure_branch_mutation_allowed",
     "ensure_merge_allowed",
+    "ensure_pr_merge_allowed",
     "parse_protected_branches",
 ]

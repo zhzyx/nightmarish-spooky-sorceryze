@@ -24,6 +24,22 @@ try:
 except PolicyError as error:
     raise RuntimeError(f"invalid TIANXUAN_PROTECTED_BRANCHES: {error}") from error
 
+
+def _required_approvals() -> int:
+    raw = os.environ.get("TIANXUAN_REQUIRED_APPROVALS", "").strip()
+    if not raw:
+        return 0
+    try:
+        value = int(raw)
+    except ValueError as error:
+        raise RuntimeError(f"TIANXUAN_REQUIRED_APPROVALS must be a non-negative integer: {raw!r}") from error
+    if value < 0:
+        raise RuntimeError(f"TIANXUAN_REQUIRED_APPROVALS must be a non-negative integer: {raw!r}")
+    return value
+
+
+_REQUIRED_APPROVALS = _required_approvals()
+
 _STORE = Tianxuan(_DB_PATH)
 _MERGE_QUEUE = MergeQueue(
     _DB_PATH,
@@ -46,4 +62,5 @@ app = create_app(
     gateway=ModelGateway(_GATEWAY_DB),
     merge_queue=_MERGE_QUEUE,
     protected_branches=_PROTECTED_BRANCHES,
+    required_approvals=_REQUIRED_APPROVALS,
 )

@@ -7,9 +7,12 @@ import unittest
 from policy import (
     PolicyError,
     ProtectedBranchError,
+    ReviewRequired,
     RoleDenied,
+    approved_reviewers,
     ensure_branch_mutation_allowed,
     ensure_merge_allowed,
+    ensure_pr_merge_allowed,
     is_protected,
     parse_protected_branches,
 )
@@ -101,6 +104,65 @@ class BranchMutationPolicyTests(unittest.TestCase):
     def test_unknown_operation_is_rejected(self) -> None:
         with self.assertRaises(PolicyError):
             ensure_branch_mutation_allowed("main", (), actor_role="admin", operation="rename")
+
+
+class ReviewPolicyTests(unittest.TestCase):
+    def test_latest_review_state_wins_per_user(self) -> None:
+        reviews = [
+            {"user": "Alice", "state": "REQUEST_CHANGES"},
+            {"user": "bob", "state": "APPROVED"},
+            {"user": "alice", "state": "APPROVED"},
+        ]
+        self.assertEqual(approved_reviewers(reviews), frozenset({"alice", "bob"}))
+
+    def test_malformed_reviews_are_ignored(self) -> None:
+        reviews = [
+            {"user": "", "state": "APPROVED"},
+            {"user": "carol", "state": None},
+            {"user": "dave", "state": "APPROVED"},
+        ]
+        self.assertEqual(approved_reviewers(reviews), frozenset({"dave"}))
+
+    def test_merge_requires_configured_approvals(self) -> None:
+        with self.assertRaises(ReviewRequired):
+            ensure_pr_merge_allowed(
+                "feature/x",
+                (),
+                actor_role="editor",
+                approvals=frozenset(),
+                required_approvals=1,
+            )
+        decision = ensure_pr_merge_allowed(
+            "feature/x",
+            (),
+            actor_role="editor",
+            approvals=frozenset({"alice"}),
+            required_approvals=1,
+        )
+        self.assertEqual(decision["approvals"], 1)
+        self.assertEqual(decision["required_approvals"], 1)
+
+    def test_zero_approvals_keeps_direct_merge_compatible(self) -> None:
+        decision = ensure_pr_merge_allowed(
+            "feature/x",
+            (),
+            actor_role="editor",
+            approvals=(),
+            required_approvals=0,
+        )
+        self.assertEqual(decision["path"], "direct")
+
+    def test_invalid_required_approvals_is_rejected(self) -> None:
+        for value in (-1, True, "1"):
+            with self.subTest(value=value):
+                with self.assertRaises(PolicyError):
+                    ensure_pr_merge_allowed(
+                        "feature/x",
+                        (),
+                        actor_role="editor",
+                        approvals=(),
+                        required_approvals=value,  # type: ignore[arg-type]
+                    )
 
 
 if __name__ == "__main__":

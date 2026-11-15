@@ -36,6 +36,9 @@ _MAX_ERROR_DETAIL = 200
 #: Gitea 合并接口 ``Do`` 字段允许的取值。
 _MERGE_METHODS = ("merge", "rebase", "rebase-merge", "squash", "fast-forward-only")
 
+#: Gitea 评审接口 ``event`` 字段允许的取值。
+_REVIEW_EVENTS = ("APPROVED", "REQUEST_CHANGES", "COMMENT")
+
 #: Gitea Issue 列表接口允许的 ``state`` 取值。
 _ISSUE_STATES = ("open", "closed", "all")
 
@@ -252,6 +255,20 @@ def _normalize_pull_request(payload: Any) -> dict[str, Any]:
         "html_url": _string(data, "html_url"),
         "head": _branch_field(data.get("head")),
         "base": _branch_field(data.get("base")),
+    }
+
+
+def _normalize_review(payload: Any) -> dict[str, Any]:
+    """把评审响应裁剪为 ``id/state/body/user/submitted_at``。"""
+    data = _mapping(payload, "review")
+    user = data.get("user")
+    login = user.get("login") if isinstance(user, dict) else ""
+    return {
+        "id": _integer(data, "id"),
+        "state": _string(data, "state"),
+        "body": _string(data, "body"),
+        "user": login if isinstance(login, str) else "",
+        "submitted_at": _string(data, "submitted_at"),
     }
 
 
@@ -490,6 +507,43 @@ class GiteaClient:
         if payload is None:
             return {"merged": True, "sha": None}
         return _normalize_merge(payload)
+
+    # ------------------------------------------------------------------
+    # 评审
+    # ------------------------------------------------------------------
+    def list_reviews(self, owner: str, repo: str, number: int) -> list[dict[str, Any]]:
+        """列出 PR 评审；按 Gitea 返回顺序（通常为时间正序）。"""
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        number = _validate_number(number)
+        payload = self._request("GET", f"/api/v1/repos/{owner}/{repo}/pulls/{number}/reviews")
+        if payload is None:
+            return []
+        if not isinstance(payload, list):
+            raise GiteaError(0, "unexpected reviews response: expected a JSON array")
+        return [_normalize_review(item) for item in payload]
+
+    def create_review(
+        self,
+        owner: str,
+        repo: str,
+        number: int,
+        *,
+        event: str,
+        body: str = "",
+    ) -> dict[str, Any]:
+        """提交一次 PR 评审；``event`` 为 APPROVED/REQUEST_CHANGES/COMMENT。"""
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        number = _validate_number(number)
+        event = _validate_choice(event, _REVIEW_EVENTS, "review event")
+        body = _validate_text(body, "review body", allow_empty=True)
+        payload = self._request(
+            "POST",
+            f"/api/v1/repos/{owner}/{repo}/pulls/{number}/reviews",
+            json_body={"event": event, "body": body},
+        )
+        return _normalize_review(payload)
 
     # ------------------------------------------------------------------
     # Issue

@@ -25,8 +25,9 @@ from duobao_bridge import (
     GitService,
     GitServiceError,
     PolicyError,
+    approved_reviewers,
     ensure_branch_mutation_allowed,
-    ensure_merge_allowed,
+    ensure_pr_merge_allowed,
     parse_protected_branches,
 )
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
@@ -60,6 +61,7 @@ from schemas import (
     MergeQueueCreateRequest,
     PullRequestCreateRequest,
     PullRequestMergeRequest,
+    PullRequestReviewRequest,
     RegisterRequest,
     RepoCreateRequest,
     RequirementCommitRequest,
@@ -197,6 +199,7 @@ def create_app(
     gateway: ModelGateway | None = None,
     merge_queue: Any | None = None,
     protected_branches: Sequence[str] = (),
+    required_approvals: int = 0,
 ) -> FastAPI:
     """为给定领域核心实例构建 HTTP 应用；可选的模型网关与多宝合入队列挂载到同一应用。"""
     app = FastAPI(title="Tianxuan API", version="0.1.0")
@@ -204,6 +207,7 @@ def create_app(
     app.state.gateway = gateway
     app.state.merge_queue = merge_queue
     app.state.protected_branches = parse_protected_branches(protected_branches)
+    app.state.required_approvals = required_approvals
     rooms = DocRooms()
     if gateway is not None:
         app.include_router(create_model_router(gateway))
@@ -807,10 +811,14 @@ def create_app(
                 base = str(pull.get("base") or "")
                 if not base:
                     raise HTTPException(status_code=502, detail="pull request base branch is missing")
-                ensure_merge_allowed(
+                required = int(getattr(app.state, "required_approvals", 0) or 0)
+                reviews = client.list_reviews(owner, name, number) if required else []
+                ensure_pr_merge_allowed(
                     base,
                     _policy_patterns(app),
                     actor_role=store.role_of(actor),
+                    approvals=approved_reviewers(reviews),
+                    required_approvals=required,
                     path="direct",
                 )
                 return client.merge_pull_request(  # type: ignore[no-any-return]
@@ -818,6 +826,33 @@ def create_app(
                 )
         except PolicyError as error:
             raise HTTPException(status_code=403, detail=str(error)) from error
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.get("/api/v1/repos/{owner}/{name}/pulls/{number}/reviews")
+    def list_repo_pull_reviews(owner: str, name: str, number: int, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        client = _gitea_client()
+        try:
+            with client:
+                return {"reviews": client.list_reviews(owner, name, number)}
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/repos/{owner}/{name}/pulls/{number}/reviews")
+    def create_repo_pull_review(
+        owner: str,
+        name: str,
+        number: int,
+        payload: PullRequestReviewRequest,
+        actor: ActorDep,
+    ) -> dict[str, Any]:
+        _require_editor_role(store, actor, "review pull requests")
+        client = _gitea_client()
+        try:
+            with client:
+                return client.create_review(  # type: ignore[no-any-return]
+                    owner, name, number, event=payload.event, body=payload.body
+                )
         except GiteaError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 

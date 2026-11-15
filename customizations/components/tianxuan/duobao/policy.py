@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import fnmatch
 import re
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 
 ROLES = ("admin", "editor", "viewer")
 """已知租户角色，权限从高到低。"""
@@ -47,6 +47,29 @@ class ProtectedBranchError(PolicyError):
 
 class RoleDenied(PolicyError):
     """当前角色没有该操作权限。"""
+
+
+class ReviewRequired(PolicyError):
+    """合入所需的独立批准数量不足。"""
+
+
+def approved_reviewers(reviews: Sequence[Mapping[str, object]]) -> frozenset[str]:
+    """返回最后一次评审状态为 APPROVED 的评审者集合。
+
+    Gitea 的评审列表按时间顺序返回；同一评审者以最后一次状态为准（例如先
+    REQUEST_CHANGES 后 APPROVED 视为通过）。用户名大小写不敏感，空用户名或
+    非法状态被忽略，不把未知数据当作批准。
+    """
+    latest: dict[str, str] = {}
+    for review in reviews:
+        if not isinstance(review, Mapping):
+            raise PolicyError(f"review entry must be a mapping: {review!r}")
+        user = review.get("user")
+        state = review.get("state")
+        if not isinstance(user, str) or not user.strip() or not isinstance(state, str):
+            continue
+        latest[user.strip().casefold()] = state.strip().upper()
+    return frozenset(user for user, state in latest.items() if state == "APPROVED")
 
 
 def parse_protected_branches(value: str | Iterable[str] | None) -> tuple[str, ...]:
@@ -117,6 +140,29 @@ def ensure_merge_allowed(
             f"branch {target!r} is protected; merge through the Duobao queue instead of a direct merge"
         )
     return {"target": target, "protected": protected, "path": path, "actor_role": actor_role}
+
+
+def ensure_pr_merge_allowed(
+    target: str,
+    patterns: Sequence[str],
+    *,
+    actor_role: str,
+    approvals: Sequence[str] | frozenset[str],
+    required_approvals: int,
+    path: str = "direct",
+) -> dict[str, object]:
+    """在合入校验上追加独立批准数量要求，并通过返回可回读的判定。
+
+    ``approvals`` 是评审者标识集合（通常来自 :func:`approved_reviewers`）；
+    ``required_approvals`` 默认可为 0，表示未启用评审门禁。
+    """
+    decision = ensure_merge_allowed(target, patterns, actor_role=actor_role, path=path)
+    if isinstance(required_approvals, bool) or not isinstance(required_approvals, int) or required_approvals < 0:
+        raise PolicyError(f"required approvals must be a non-negative integer: {required_approvals!r}")
+    approved = len(set(approvals))
+    if approved < required_approvals:
+        raise ReviewRequired(f"merge into {target!r} requires {required_approvals} approving review(s); got {approved}")
+    return {**decision, "required_approvals": required_approvals, "approvals": approved}
 
 
 def ensure_branch_mutation_allowed(

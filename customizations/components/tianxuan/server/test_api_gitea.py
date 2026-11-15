@@ -11,6 +11,8 @@ from tianxuan_core import Tianxuan
 
 
 class _FakeGitea:
+    reviews: list[dict[str, Any]] = []
+
     def __init__(self, base_url: str, token: str) -> None:
         self.base_url = base_url
         self.token = token
@@ -53,10 +55,34 @@ class _FakeGitea:
     def merge_pull_request(self, owner: str, repo: str, number: int, method: str = "merge") -> dict[str, Any]:
         return {"number": number, "merged": True, "method": method}
 
+    def list_reviews(self, owner: str, repo: str, number: int) -> list[dict[str, Any]]:
+        return list(type(self).reviews)
 
-def _setup(protected_branches: tuple[str, ...] = ()) -> tuple[TestClient, dict[str, str]]:
+    def create_review(self, owner: str, repo: str, number: int, *, event: str, body: str = "") -> dict[str, Any]:
+        review = {
+            "id": len(type(self).reviews) + 1,
+            "state": event,
+            "body": body,
+            "user": "reviewer",
+            "submitted_at": "",
+        }
+        type(self).reviews.append(review)
+        return review
+
+
+def _setup(
+    protected_branches: tuple[str, ...] = (),
+    required_approvals: int = 0,
+) -> tuple[TestClient, dict[str, str]]:
+    _FakeGitea.reviews = []
     store = Tianxuan(":memory:")
-    client = TestClient(create_app(store, protected_branches=protected_branches))
+    client = TestClient(
+        create_app(
+            store,
+            protected_branches=protected_branches,
+            required_approvals=required_approvals,
+        )
+    )
     registered = client.post(
         "/api/v1/auth/register",
         json={"tenant_name": "仓库工坊", "email": "repo@example.com", "password": "secret-pass"},
@@ -162,3 +188,53 @@ def test_viewer_cannot_create_repo_or_open_or_merge_pull(monkeypatch) -> None:
         ).status_code
         == 403
     )
+
+
+def test_required_approval_gates_merge(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_GITEA_URL", "http://gitea.example")
+    monkeypatch.setenv("TIANXUAN_GITEA_TOKEN", "secret")
+    monkeypatch.setattr(api_module, "GiteaClient", _FakeGitea)
+    client, headers = _setup(required_approvals=1)
+
+    blocked = client.post(
+        "/api/v1/repos/owner/demo/pulls/2/merge",
+        headers=headers,
+        json={"method": "merge"},
+    )
+    assert blocked.status_code == 403
+    assert "approving review" in blocked.json()["detail"]
+
+    review = client.post(
+        "/api/v1/repos/owner/demo/pulls/2/reviews",
+        headers=headers,
+        json={"event": "APPROVED", "body": "LGTM"},
+    )
+    assert review.status_code == 200
+    assert review.json()["state"] == "APPROVED"
+
+    listed = client.get("/api/v1/repos/owner/demo/pulls/2/reviews", headers=headers).json()["reviews"]
+    assert [entry["state"] for entry in listed] == ["APPROVED"]
+
+    merged = client.post(
+        "/api/v1/repos/owner/demo/pulls/2/merge",
+        headers=headers,
+        json={"method": "merge"},
+    )
+    assert merged.status_code == 200
+
+
+def test_viewer_cannot_review_pull(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_GITEA_URL", "http://gitea.example")
+    monkeypatch.setenv("TIANXUAN_GITEA_TOKEN", "secret")
+    monkeypatch.setattr(api_module, "GiteaClient", _FakeGitea)
+    client, headers = _setup()
+    store = client.app.state.store  # type: ignore[attr-defined]
+    viewer = store.add_member(headers["X-Actor"], "viewer@example.com", "secret-pass", role="viewer")
+    viewer_headers = {"X-Actor": viewer["user_id"]}
+
+    response = client.post(
+        "/api/v1/repos/owner/demo/pulls/2/reviews",
+        headers=viewer_headers,
+        json={"event": "APPROVED"},
+    )
+    assert response.status_code == 403

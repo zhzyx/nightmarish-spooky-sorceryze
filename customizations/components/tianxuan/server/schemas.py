@@ -85,6 +85,13 @@ class PullRequestMergeRequest(BaseModel):
     method: str = "merge"
 
 
+class PullRequestReviewRequest(BaseModel):
+    """提交一次 Pull Request 评审。"""
+
+    event: str
+    body: str = ""
+
+
 class MergeQueueCreateRequest(BaseModel):
     """多宝合入队列候选。"""
 
