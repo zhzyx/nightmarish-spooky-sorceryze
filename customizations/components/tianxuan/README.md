@@ -118,7 +118,7 @@ python tianshu_bridge.py --api http://127.0.0.1:8000 --actor <user_id> \
 - 偃师/司南：需求文档、工单树、状态机、工单评论、看板、进度同步、需求落库 Git Markdown
 - 多宝：本地 Git 提交；持久化合入队列（预检/检验/串行合入/冲突隔离/证据）；默认启动自动 worker，设 `TIANXUAN_MERGE_WORKER=0` 可关闭；检查在临时 worktree 执行且默认不继承 `TIANXUAN_*`/TOKEN/SECRET 等环境，`TIANXUAN_MERGE_CHECK_ENV` 可白名单；Gitea 状态/列表/创建/读取（支持真实 Gitea 实例）
 - AI：BYOK 模型网关（用量与预算）；AI 工具入口；结构化补丁
-- Web：文档列表/详情/编辑/共享、Markdown/HTML/Word/PDF 导出（HTML 为安全 Markdown 渲染）、实时文档、实时工单看板、实时仓库、设置页系统状态、API 连通状态
+- Web：文档列表/详情/编辑/共享、Markdown/HTML/Word/PDF 导出（HTML 为安全 Markdown 渲染；PDF/DOCX 支持 data URI 图片）、实时文档、实时工单看板、实时仓库、设置页系统状态、API 连通状态
 - 交付：`deploy/` 自托管 Compose；CLI；端到端演示脚本
 
 ## 测试

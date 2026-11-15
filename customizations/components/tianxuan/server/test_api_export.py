@@ -141,3 +141,30 @@ def test_pdf_table_flowable_and_export() -> None:
     response = client.get(f"/api/v1/docs/{doc['id']}/export/file", headers=headers, params={"format": "pdf"})
     assert response.status_code == 200, response.text
     assert response.content.startswith(b"%PDF")
+
+
+DATA_PNG = (
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
+)
+
+
+def test_export_data_uri_image_to_pdf_and_docx() -> None:
+    from io import BytesIO
+
+    from docx import Document
+
+    client, headers = _client()
+    doc = client.post(
+        "/api/v1/docs",
+        headers=headers,
+        json={"title": "图片", "body_md": f"![图]({DATA_PNG})\n"},
+    ).json()
+
+    pdf = client.get(f"/api/v1/docs/{doc['id']}/export/file", headers=headers, params={"format": "pdf"})
+    assert pdf.status_code == 200
+    assert b"/Subtype /Image" in pdf.content
+
+    docx = client.get(f"/api/v1/docs/{doc['id']}/export/file", headers=headers, params={"format": "docx"})
+    assert docx.status_code == 200
+    document = Document(BytesIO(docx.content))
+    assert len(document.inline_shapes) == 1
