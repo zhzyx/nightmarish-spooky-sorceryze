@@ -60,10 +60,31 @@ def _b64url_encode(value: bytes) -> str:
 
 _SHA256_DIGEST_INFO = bytes.fromhex("3031300d060960864801650304020105000420")
 _JWKS_CACHE: tuple[float, dict[str, Any]] = (0.0, {})
+_DISCOVERY_CACHE: tuple[float, dict[str, Any]] = (0.0, {})
 
 
 def _int_from_b64url(value: str) -> int:
     return int.from_bytes(_b64url_decode(value), "big")
+
+
+def _load_discovery() -> dict[str, Any]:
+    global _DISCOVERY_CACHE
+    url = os.environ.get("TIANXUAN_OIDC_DISCOVERY_URL", "")
+    if not url:
+        return {}
+    now = time.monotonic()
+    cached_at, cached = _DISCOVERY_CACHE
+    if cached and now < cached_at:
+        return cached
+    try:
+        with urllib.request.urlopen(url, timeout=3.0) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except (OSError, ValueError):
+        return cached or {}
+    if not isinstance(payload, dict):
+        return {}
+    _DISCOVERY_CACHE = (now + 300.0, payload)
+    return payload
 
 
 def _load_jwks() -> dict[str, Any]:
@@ -76,6 +97,8 @@ def _load_jwks() -> dict[str, Any]:
         except ValueError:
             return {}
     url = os.environ.get("TIANXUAN_OIDC_JWKS_URL", "")
+    if not url:
+        url = str(_load_discovery().get("jwks_uri", ""))
     if not url:
         return {}
     now = time.monotonic()
@@ -191,7 +214,7 @@ class OidcJwtIdentityAdapter:
                     return False
             except (TypeError, ValueError):
                 return False
-        issuer = os.environ.get("TIANXUAN_OIDC_ISSUER", "")
+        issuer = os.environ.get("TIANXUAN_OIDC_ISSUER", "") or str(_load_discovery().get("issuer", ""))
         if issuer and str(claims.get("iss", "")) != issuer:
             return False
         audience = os.environ.get("TIANXUAN_OIDC_AUDIENCE", "")
