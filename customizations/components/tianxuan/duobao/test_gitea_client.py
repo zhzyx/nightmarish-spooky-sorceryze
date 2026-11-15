@@ -730,5 +730,3 @@ def test_invalid_commit_status_inputs_rejected_before_request(make_client: Clien
         client.list_commit_statuses("octo", "duobao", "not-a-sha")
 
     assert requests == []
-
-    assert requests[0].url.path == "/api/v1/repos/octo/duobao"
