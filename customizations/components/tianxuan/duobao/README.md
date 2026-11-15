@@ -33,11 +33,12 @@
 - 可选 `event_sink` 把入队与终态写入领域事件（生产入口接 `Tianxuan.record_actor_event`）；事件通道失败不阻断合入。
 - 临时 worktree 预检、冲突隔离、可配置检查命令、独立 HOME/TEMP、凭据环境剥离、进程树超时与合入证据（`merge_sha`/检查输出/冲突路径/策略判定）。
 
-`gitea_client.py`：Gitea/Forgejo HTTP 客户端（单一服务 token）。
+`gitea_client.py`：Gitea/Forgejo HTTP 客户端（服务 token；可选 `sudo` 代表指定用户）。
 
 - 仓库 list/create/get、分支 list、PR list/create/get/merge（merge/rebase/squash/fast-forward-only）、Issue 列表。
 - 评审：`list_reviews`/`create_review`（APPROVED/REQUEST_CHANGES/COMMENT）。
 - 提交状态：`list_commit_statuses`/`create_commit_status`（pending/success/error/failure/warning），供 CI 回写。
+- `sudo` 参数写入 `Sudo` 请求头，让管理员 token 以指定 Gitea 用户名执行；写操作由上层要求操作者已绑定 Gitea 身份，读操作可回退服务身份。
 - 仓库创建要求租户 `admin`；PR 创建与评审要求 editor/admin；合并前读取 PR 目标分支并按保护策略判定。
 - `TIANXUAN_REQUIRED_APPROVALS` 设置合并所需独立批准数（默认 0）；大于 0 时合并前读取评审，按每位评审者最后一次状态统计 APPROVED。
 - `TIANXUAN_REQUIRED_CHECKS` 设置合并前必须为 `success` 的提交检查 context（逗号分隔，默认空）；缺失、失败或 pending 均拒绝合并。

@@ -1443,6 +1443,19 @@ class Tianxuan:
             raise NotFound(f"external identity is not linked: {provider}/{subject}")
         return dict(row)
 
+    @_connection_call
+    def identity_subject_for_user(self, user_id: str, provider: str) -> str:
+        """返回用户绑定的外部身份 subject（如 Gitea 用户名）；未绑定抛 ``NotFound``。"""
+        if not isinstance(provider, str) or not provider.strip():
+            raise TianxuanError("provider must be a non-empty string")
+        row = self.db.execute(
+            "SELECT subject FROM identity_links WHERE provider = ? AND user_id = ? ORDER BY updated_at DESC LIMIT 1",
+            (provider.strip(), user_id),
+        ).fetchone()
+        if row is None:
+            raise NotFound(f"no {provider} identity linked to user: {user_id}")
+        return str(row["subject"])
+
     # ---------- 事件与 AI 工具 ----------
 
     def _tenant_of(self, actor: str) -> str:

@@ -730,3 +730,29 @@ def test_invalid_commit_status_inputs_rejected_before_request(make_client: Clien
         client.list_commit_statuses("octo", "duobao", "not-a-sha")
 
     assert requests == []
+
+
+def test_sudo_header_is_forwarded() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.headers["Authorization"] == f"token {TOKEN}"
+        assert request.headers["Sudo"] == "alice"
+        return httpx.Response(200, json=REPO_PAYLOAD)
+
+    client = GiteaClient(BASE_URL, TOKEN, sudo="alice", transport=httpx.MockTransport(handler))
+    try:
+        assert client.get_repo("octo", "duobao") == EXPECTED_REPO
+        assert client.sudo == "alice"
+    finally:
+        client.close()
+
+
+def test_invalid_sudo_rejected_before_request() -> None:
+    requests: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(200, json=REPO_PAYLOAD)
+
+    with pytest.raises(GiteaValidationError):
+        GiteaClient(BASE_URL, TOKEN, sudo="bad user", transport=httpx.MockTransport(handler))
+    assert requests == []

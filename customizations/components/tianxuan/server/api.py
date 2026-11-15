@@ -193,7 +193,7 @@ def _requirement_markdown(requirement: dict[str, Any], issues: list[dict[str, An
     return "\n".join(lines).rstrip() + "\n"
 
 
-def _gitea_client() -> GiteaClient:
+def _gitea_client(sudo: str = "") -> GiteaClient:
     base_url = os.environ.get("TIANXUAN_GITEA_URL", "").strip()
     token = os.environ.get("TIANXUAN_GITEA_TOKEN", "").strip()
     if not base_url or not token:
@@ -201,7 +201,25 @@ def _gitea_client() -> GiteaClient:
             status_code=400,
             detail="TIANXUAN_GITEA_URL and TIANXUAN_GITEA_TOKEN are required",
         )
-    return GiteaClient(base_url, token)
+    return GiteaClient(base_url, token, sudo=sudo)
+
+
+def _gitea_sudo(store: Tianxuan, actor: str) -> str:
+    """读取操作者绑定的 Gitea 用户名；未绑定时使用服务身份（只用于读路径）。"""
+    try:
+        return str(store.identity_subject_for_user(actor, "gitea"))
+    except NotFound:
+        return ""
+
+
+def _require_gitea_identity(store: Tianxuan, actor: str) -> str:
+    """写操作必须以操作者自己的 Gitea 身份执行。"""
+    try:
+        return str(store.identity_subject_for_user(actor, "gitea"))
+    except NotFound:
+        raise PermissionDenied(
+            "link a Gitea identity first (provider 'gitea', subject = Gitea username) before writing repositories"
+        ) from None
 
 
 def _repo_root() -> Path:
@@ -763,7 +781,7 @@ def create_app(
         owner: str | None = Query(default=None),
         limit: int = Query(default=50, ge=1, le=100),
     ) -> dict[str, list[dict[str, Any]]]:
-        client = _gitea_client()
+        client = _gitea_client(_gitea_sudo(store, actor))
         try:
             with client:
                 return {"repos": client.list_repos(owner, limit)}
@@ -774,7 +792,7 @@ def create_app(
     def create_repo(payload: RepoCreateRequest, actor: ActorDep) -> dict[str, Any]:
         if store.role_of(actor) != "admin":
             raise PermissionDenied("only an admin can create repositories")
-        client = _gitea_client()
+        client = _gitea_client(_require_gitea_identity(store, actor))
         try:
             with client:
                 return client.create_repo(  # type: ignore[no-any-return]
@@ -785,7 +803,7 @@ def create_app(
 
     @app.get("/api/v1/repos/{owner}/{name}")
     def get_repo(owner: str, name: str, actor: ActorDep) -> dict[str, Any]:
-        client = _gitea_client()
+        client = _gitea_client(_gitea_sudo(store, actor))
         try:
             with client:
                 return client.get_repo(owner, name)  # type: ignore[no-any-return]
@@ -794,7 +812,7 @@ def create_app(
 
     @app.get("/api/v1/repos/{owner}/{name}/branches")
     def list_repo_branches(owner: str, name: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
-        client = _gitea_client()
+        client = _gitea_client(_gitea_sudo(store, actor))
         try:
             with client:
                 return {"branches": client.list_branches(owner, name)}
@@ -808,7 +826,7 @@ def create_app(
         actor: ActorDep,
         state: str = Query(default="open"),
     ) -> dict[str, list[dict[str, Any]]]:
-        client = _gitea_client()
+        client = _gitea_client(_gitea_sudo(store, actor))
         try:
             with client:
                 return {"pulls": client.list_pull_requests(owner, name, state)}
@@ -823,7 +841,7 @@ def create_app(
         actor: ActorDep,
     ) -> dict[str, Any]:
         _require_editor_role(store, actor, "create pull requests")
-        client = _gitea_client()
+        client = _gitea_client(_require_gitea_identity(store, actor))
         try:
             with client:
                 return client.create_pull_request(  # type: ignore[no-any-return]
@@ -840,7 +858,7 @@ def create_app(
         payload: PullRequestMergeRequest,
         actor: ActorDep,
     ) -> dict[str, Any]:
-        client = _gitea_client()
+        client = _gitea_client(_require_gitea_identity(store, actor))
         try:
             with client:
                 pull = client.get_pull_request(owner, name, number)
@@ -873,7 +891,7 @@ def create_app(
 
     @app.get("/api/v1/repos/{owner}/{name}/pulls/{number}/reviews")
     def list_repo_pull_reviews(owner: str, name: str, number: int, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
-        client = _gitea_client()
+        client = _gitea_client(_gitea_sudo(store, actor))
         try:
             with client:
                 return {"reviews": client.list_reviews(owner, name, number)}
@@ -889,7 +907,7 @@ def create_app(
         actor: ActorDep,
     ) -> dict[str, Any]:
         _require_editor_role(store, actor, "review pull requests")
-        client = _gitea_client()
+        client = _gitea_client(_require_gitea_identity(store, actor))
         try:
             with client:
                 return client.create_review(  # type: ignore[no-any-return]
@@ -905,7 +923,7 @@ def create_app(
         sha: str,
         actor: ActorDep,
     ) -> dict[str, list[dict[str, Any]]]:
-        client = _gitea_client()
+        client = _gitea_client(_gitea_sudo(store, actor))
         try:
             with client:
                 return {"statuses": client.list_commit_statuses(owner, name, sha)}
@@ -921,7 +939,7 @@ def create_app(
         actor: ActorDep,
     ) -> dict[str, Any]:
         _require_editor_role(store, actor, "write commit statuses")
-        client = _gitea_client()
+        client = _gitea_client(_gitea_sudo(store, actor))
         try:
             with client:
                 return client.create_commit_status(  # type: ignore[no-any-return]

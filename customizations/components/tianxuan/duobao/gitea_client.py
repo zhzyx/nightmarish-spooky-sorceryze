@@ -398,15 +398,20 @@ class GiteaClient:
         base_url: str,
         token: str,
         *,
+        sudo: str = "",
         transport: httpx.BaseTransport | None = None,
         timeout: float = 30.0,
     ) -> None:
         self.base_url = _validate_base_url(base_url)
         self._token = _validate_token(token)
+        self.sudo = _validate_segment(sudo, "sudo username") if sudo else ""
         timeout_value = _validate_timeout(timeout)
+        headers = {"Authorization": f"token {self._token}"}
+        if self.sudo:
+            headers["Sudo"] = self.sudo
         self._client = httpx.Client(
             base_url=self.base_url,
-            headers={"Authorization": f"token {self._token}"},
+            headers=headers,
             transport=transport,
             timeout=timeout_value,
         )

@@ -13,10 +13,13 @@ from tianxuan_core import Tianxuan
 class _FakeGitea:
     reviews: list[dict[str, Any]] = []
     statuses: list[dict[str, Any]] = []
+    sudos: list[str] = []
 
-    def __init__(self, base_url: str, token: str) -> None:
+    def __init__(self, base_url: str, token: str, sudo: str = "") -> None:
         self.base_url = base_url
         self.token = token
+        self.sudo = sudo
+        type(self).sudos.append(sudo)
 
     def __enter__(self) -> _FakeGitea:
         return self
@@ -110,6 +113,7 @@ def _setup(
 ) -> tuple[TestClient, dict[str, str]]:
     _FakeGitea.reviews = []
     _FakeGitea.statuses = []
+    _FakeGitea.sudos = []
     store = Tianxuan(":memory:")
     client = TestClient(
         create_app(
@@ -123,6 +127,7 @@ def _setup(
         "/api/v1/auth/register",
         json={"tenant_name": "仓库工坊", "email": "repo@example.com", "password": "secret-pass"},
     ).json()
+    store.link_identity(registered["user_id"], "gitea", "tester", registered["user_id"])
     return client, {"X-Actor": registered["user_id"]}
 
 
@@ -325,3 +330,31 @@ def test_viewer_cannot_write_commit_status(monkeypatch) -> None:
         json={"state": "success", "context": "ci/build"},
     )
     assert response.status_code == 403
+
+
+def test_gitea_writes_use_linked_identity_as_sudo(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_GITEA_URL", "http://gitea.example")
+    monkeypatch.setenv("TIANXUAN_GITEA_TOKEN", "secret")
+    monkeypatch.setattr(api_module, "GiteaClient", _FakeGitea)
+    client, headers = _setup()
+
+    created = client.post("/api/v1/repos", headers=headers, json={"name": "demo"})
+    assert created.status_code == 200
+    assert "tester" in _FakeGitea.sudos
+
+
+def test_gitea_writes_require_linked_identity(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_GITEA_URL", "http://gitea.example")
+    monkeypatch.setenv("TIANXUAN_GITEA_TOKEN", "secret")
+    monkeypatch.setattr(api_module, "GiteaClient", _FakeGitea)
+    client, _ = _setup()
+    other = client.post(
+        "/api/v1/auth/register",
+        json={"tenant_name": "无绑定租户", "email": "nolink@example.com", "password": "secret-pass"},
+    ).json()
+    other_headers = {"X-Actor": other["user_id"]}
+
+    assert client.get("/api/v1/repos", headers=other_headers).status_code == 200
+    denied = client.post("/api/v1/repos", headers=other_headers, json={"name": "demo"})
+    assert denied.status_code == 403
+    assert "Gitea identity" in denied.json()["detail"]
