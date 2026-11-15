@@ -251,6 +251,7 @@ def _run_import_job(
     source: str,
     allow_local: bool,
     allowed_hosts: tuple[str, ...],
+    fetch_lfs: bool,
 ) -> None:
     """后台执行镜像导入并记录阶段；异常写入任务而不影响请求线程。"""
     try:
@@ -261,6 +262,7 @@ def _run_import_job(
             source,
             allow_local=allow_local,
             allowed_hosts=allowed_hosts,
+            fetch_lfs=fetch_lfs,
         )
         store.update_import_job(
             job_id,
@@ -1361,6 +1363,7 @@ def create_app(
         allowed_hosts = tuple(
             item.strip() for item in os.environ.get("TIANXUAN_IMPORT_ALLOWED_HOSTS", "").split(",") if item.strip()
         )
+        fetch_lfs = os.environ.get("TIANXUAN_IMPORT_FETCH_LFS", "0").strip() == "1"
         try:
             return GitService().import_repo(  # type: ignore[no-any-return]
                 root,
@@ -1368,6 +1371,7 @@ def create_app(
                 payload.source,
                 allow_local=allow_local,
                 allowed_hosts=allowed_hosts,
+                fetch_lfs=fetch_lfs,
             )
         except (GitServiceError, OSError) as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
@@ -1381,8 +1385,9 @@ def create_app(
         allowed_hosts = tuple(
             item.strip() for item in os.environ.get("TIANXUAN_IMPORT_ALLOWED_HOSTS", "").split(",") if item.strip()
         )
+        fetch_lfs = os.environ.get("TIANXUAN_IMPORT_FETCH_LFS", "0").strip() == "1"
         job = store.create_import_job(actor, payload.name, payload.source)
-        arguments = (store, job["id"], root, payload.name, payload.source, allow_local, allowed_hosts)
+        arguments = (store, job["id"], root, payload.name, payload.source, allow_local, allowed_hosts, fetch_lfs)
         if os.environ.get("TIANXUAN_IMPORT_JOBS_INLINE", "0").strip() == "1":
             _run_import_job(*arguments)
         else:

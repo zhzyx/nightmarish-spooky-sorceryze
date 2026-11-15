@@ -91,6 +91,7 @@ export interface ApiTreeEntry {
   mode: string;
   sha: string;
   size: number | null;
+  lfs?: boolean;
 }
 
 /** 代码搜索命中的单行（对应 `GitService.search`）。 */

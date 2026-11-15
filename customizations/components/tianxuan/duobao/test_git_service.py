@@ -591,3 +591,12 @@ class GitServiceTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+    def test_lfs_files_and_tree_flag(self) -> None:
+        pointer = "version https://git-lfs.github.com/spec/v1\noid sha256:abc\nsize 3\n"
+        self._commit(files={"data.bin": pointer, "plain.txt": "hello\n"})
+
+        self.assertEqual(self.service.lfs_files(self.repo), ["data.bin"])
+        entries = {entry["path"]: entry for entry in self.service.list_tree(self.repo)}
+        self.assertTrue(entries["data.bin"]["lfs"])
+        self.assertFalse(entries["plain.txt"]["lfs"])

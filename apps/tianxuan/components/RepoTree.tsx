@@ -573,6 +573,7 @@ export function RepoTree() {
                           : entry.size === null
                             ? t("repos.file")
                             : `${entry.size} B`}
+                      {entry.lfs ? " · LFS" : ""}
                     </span>
                   </li>
                 ))}

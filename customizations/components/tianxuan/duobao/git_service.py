@@ -367,6 +367,9 @@ def _validate_retries(max_retries: int) -> int:
     return max_retries
 
 
+_LFS_POINTER_MAGIC = "version https://git-lfs.github.com/spec/v1"
+
+
 class GitService:
     """通过系统 git CLI 提供多宝所需的仓库操作。
 
@@ -423,6 +426,7 @@ class GitService:
         allow_local: bool = False,
         allowed_hosts: Sequence[str] = (),
         timeout: float = 600.0,
+        fetch_lfs: bool = False,
     ) -> dict[str, Any]:
         """把外部仓库以镜像方式导入 ``root``，返回分支、标签与 HEAD 回执。
 
@@ -462,6 +466,9 @@ class GitService:
         if completed.returncode != 0:
             shutil.rmtree(destination, ignore_errors=True)
             raise GitCommandError(completed.args, completed.returncode, completed.stdout, completed.stderr)
+        lfs = {"requested": fetch_lfs, "available": False, "fetched": False, "error": ""}
+        if fetch_lfs:
+            lfs = {"requested": True, **self._fetch_lfs(destination, float(timeout))}
         return {
             "path": str(destination),
             "name": directory_name,
@@ -471,6 +478,22 @@ class GitService:
             "branches": self.list_branches(destination),
             "tags": self.list_tags(destination),
             "mirror": True,
+            "lfs": lfs,
+        }
+
+    def _fetch_lfs(self, repo: Path, timeout: float) -> dict[str, Any]:
+        version = self._run(["-C", str(repo), "lfs", "version"], check=False, timeout=10)
+        if version.returncode != 0:
+            return {"available": False, "fetched": False, "error": "git-lfs is not installed"}
+        completed = self._run(
+            ["-C", str(repo), "lfs", "fetch", "--all"],
+            check=False,
+            timeout=timeout,
+        )
+        return {
+            "available": True,
+            "fetched": completed.returncode == 0,
+            "error": completed.stderr.strip() if completed.returncode != 0 else "",
         }
 
     def commit(
@@ -676,6 +699,34 @@ class GitService:
         self._run(["-C", str(repo_path), "tag", "-d", name])
         return name
 
+    def lfs_files(self, repo: str | os.PathLike[str], ref: str = "HEAD") -> list[str]:
+        """返回指定 ref 下内容为 Git LFS 指针的文件路径（无需 git-lfs 可执行文件）。"""
+        ref = _validate_ref_name(ref, label="lfs ref")
+        repo_path, _ = self._repo_path(repo)
+        completed = self._run(
+            [
+                "-C",
+                str(repo_path),
+                "grep",
+                "-l",
+                "-I",
+                "--no-color",
+                "-F",
+                "-e",
+                _LFS_POINTER_MAGIC,
+                ref,
+            ],
+            check=False,
+            timeout=30,
+        )
+        if completed.returncode == 1:
+            return []
+        if completed.returncode != 0:
+            raise GitServiceError(completed.stderr.strip() or "git grep failed")
+        prefix = f"{ref}:"
+        paths = {line[len(prefix) :] if line.startswith(prefix) else line for line in completed.stdout.splitlines()}
+        return sorted(path for path in paths if path)
+
     def list_tree(self, repo: str | os.PathLike[str], ref: str = "HEAD", path: str = "") -> list[dict[str, Any]]:
         """列出 ``ref`` 下 ``path`` 这一层的树项，``path`` 为空表示仓库根。
 
@@ -713,6 +764,9 @@ class GitService:
                 "sha": sha,
                 "size": None if size == "-" else int(size),
             })
+        lfs_paths = set(self.lfs_files(repo, ref))
+        for entry in entries:
+            entry["lfs"] = entry["type"] == "blob" and entry["path"] in lfs_paths
         return sorted(entries, key=lambda item: (item["type"] != "tree", item["name"].casefold()))
 
     # ------------------------------------------------------------------
