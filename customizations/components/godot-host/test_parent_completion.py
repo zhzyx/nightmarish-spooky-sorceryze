@@ -25,6 +25,20 @@ parent = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(parent)
 
 
+def _unlink_when_free(path, deadline=2.0):
+    end = time.time() + deadline
+    while True:
+        try:
+            path.unlink()
+            return
+        except FileNotFoundError:
+            return
+        except PermissionError:
+            if time.time() >= end:
+                raise
+            time.sleep(0.05)
+
+
 class ParentCompletionTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="parent-contract-")
@@ -335,7 +349,7 @@ class ParentCompletionTests(unittest.TestCase):
         target = self.folder / "late-write"
         child = "import time;from pathlib import Path;time.sleep(1);Path(" + repr(str(target)) + ").write_text('late')"
         script = "import subprocess,sys,time;subprocess.Popen([sys.executable,'-c'," + repr(child) + "]);time.sleep(5)"
-        timer = threading.Timer(0.2, self.live.unlink)
+        timer = threading.Timer(0.2, _unlink_when_free, args=(self.live,))
         timer.start()
         self.addCleanup(timer.join)
         with self.assertRaises((OSError, ValueError)):

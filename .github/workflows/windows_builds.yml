@@ -151,6 +151,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python .github/scripts/windows_editor_artifact.py record
 
+      - name: Tianshu workbench UI smoke
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor'
+        shell: pwsh
+        run: |
+          & "${{ matrix.bin }}" --headless --path . --script editor/docks/daqian/test_tianxuan_workbench.gd
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Prepare artifact
         if: matrix.compiler == 'msvc'
         run: |
