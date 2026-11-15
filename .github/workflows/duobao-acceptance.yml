@@ -2,6 +2,9 @@ name: Duobao acceptance screenshots
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - codex/duobao-policy-backup-20261115
 
 permissions:
   contents: read
