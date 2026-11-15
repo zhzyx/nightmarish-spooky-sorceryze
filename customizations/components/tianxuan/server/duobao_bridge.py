@@ -9,18 +9,21 @@ if str(_DUOBAO_DIR) not in sys.path:
 
 from git_service import GitService, GitServiceError  # noqa: E402
 from policy import (  # noqa: E402
+    ChecksRequired,
     PolicyError,
     ProtectedBranchError,
     ReviewRequired,
     RoleDenied,
     approved_reviewers,
     ensure_branch_mutation_allowed,
+    ensure_checks_passed,
     ensure_merge_allowed,
     ensure_pr_merge_allowed,
     parse_protected_branches,
 )
 
 __all__ = [
+    "ChecksRequired",
     "GitService",
     "GitServiceError",
     "PolicyError",
@@ -29,6 +32,7 @@ __all__ = [
     "RoleDenied",
     "approved_reviewers",
     "ensure_branch_mutation_allowed",
+    "ensure_checks_passed",
     "ensure_merge_allowed",
     "ensure_pr_merge_allowed",
     "parse_protected_branches",

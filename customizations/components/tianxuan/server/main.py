@@ -39,6 +39,9 @@ def _required_approvals() -> int:
 
 
 _REQUIRED_APPROVALS = _required_approvals()
+_REQUIRED_CHECKS = tuple(
+    item.strip() for item in os.environ.get("TIANXUAN_REQUIRED_CHECKS", "").split(",") if item.strip()
+)
 
 _STORE = Tianxuan(_DB_PATH)
 _MERGE_QUEUE = MergeQueue(
@@ -63,4 +66,5 @@ app = create_app(
     merge_queue=_MERGE_QUEUE,
     protected_branches=_PROTECTED_BRANCHES,
     required_approvals=_REQUIRED_APPROVALS,
+    required_checks=_REQUIRED_CHECKS,
 )

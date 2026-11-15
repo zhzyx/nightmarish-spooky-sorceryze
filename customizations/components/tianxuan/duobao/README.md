@@ -35,8 +35,10 @@
 
 - 仓库 list/create/get、分支 list、PR list/create/get/merge（merge/rebase/squash/fast-forward-only）、Issue 列表。
 - 评审：`list_reviews`/`create_review`（APPROVED/REQUEST_CHANGES/COMMENT）。
+- 提交状态：`list_commit_statuses`/`create_commit_status`（pending/success/error/failure/warning），供 CI 回写。
 - 仓库创建要求租户 `admin`；PR 创建与评审要求 editor/admin；合并前读取 PR 目标分支并按保护策略判定。
 - `TIANXUAN_REQUIRED_APPROVALS` 设置合并所需独立批准数（默认 0）；大于 0 时合并前读取评审，按每位评审者最后一次状态统计 APPROVED。
+- `TIANXUAN_REQUIRED_CHECKS` 设置合并前必须为 `success` 的提交检查 context（逗号分隔，默认空）；缺失、失败或 pending 均拒绝合并。
 
 `backup.py`：仓库根与 SQLite 状态的离线备份/恢复工具。
 
@@ -49,7 +51,7 @@ HTTP/API（`server/api.py`）已暴露：
 - 本地仓库分支：`POST /api/v1/git/repos/{name}/branches`、`DELETE /api/v1/git/repos/{name}/branches/{branch}`。
 - 仓库导入：`POST /api/v1/git/import`（仅 admin；`TIANXUAN_IMPORT_ALLOW_LOCAL` 控制本机来源，`TIANXUAN_IMPORT_ALLOWED_HOSTS` 限制远端主机）。
 - 合入队列：`/api/v1/merge-queue` 入队、列表、处理、状态、重试、取消。
-- Gitea：`/api/v1/repos` 列表/创建/读取、`branches`、`pulls` 列表/创建/合并，`pulls/{number}/reviews` 列表/提交。
+- Gitea：`/api/v1/repos` 列表/创建/读取、`branches`、`pulls` 列表/创建/合并，`pulls/{number}/reviews` 列表/提交，`commits/{sha}/statuses` 列表与 `statuses/{sha}` 写入。
 
 Web `/repos` 已接入本地仓库浏览、合入队列面板与 Gitea PR 面板；文件树面板的后端接口已就绪，前端仍使用演示数据（见 #1188）。
 
@@ -62,7 +64,7 @@ python -m unittest discover -s customizations/components/tianxuan/duobao -p "tes
 ## 尚未实现（迁移前置）
 
 - 每用户 Git 身份与凭据（当前 Gitea 使用单一服务 token；`X-Actor` 仍是临时身份）。
-- 评审 UI（后端评审与批准数门禁已就绪）、必需检查结果回写（队列侧已有策略与证据）。
+- 评审 UI（后端评审与批准数门禁已就绪）、CI 自动回写（状态写入与合并检查门禁已就绪，尚未接 webhook/流水线）。
 - 标签/发布页面、blame 与代码搜索、LFS/子模块；导入进度与失败恢复的可视化。
 - Gitea webhook → 天璇事件、CI 结果回写、多副本合入 worker。
 - TLS/域名、备份恢复演练与监控（见 #1188）。

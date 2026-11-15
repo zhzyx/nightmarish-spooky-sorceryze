@@ -99,6 +99,15 @@ class PullRequestReviewRequest(BaseModel):
     body: str = ""
 
 
+class CommitStatusRequest(BaseModel):
+    """写入一次 Gitea 提交状态（CI 回写）。"""
+
+    state: str
+    context: str = "duobao"
+    description: str = ""
+    target_url: str = ""
+
+
 class MergeQueueCreateRequest(BaseModel):
     """多宝合入队列候选。"""
 

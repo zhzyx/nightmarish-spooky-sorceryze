@@ -53,6 +53,10 @@ class ReviewRequired(PolicyError):
     """合入所需的独立批准数量不足。"""
 
 
+class ChecksRequired(PolicyError):
+    """合入所需的提交检查未全部通过。"""
+
+
 def approved_reviewers(reviews: Sequence[Mapping[str, object]]) -> frozenset[str]:
     """返回最后一次评审状态为 APPROVED 的评审者集合。
 
@@ -163,6 +167,41 @@ def ensure_pr_merge_allowed(
     if approved < required_approvals:
         raise ReviewRequired(f"merge into {target!r} requires {required_approvals} approving review(s); got {approved}")
     return {**decision, "required_approvals": required_approvals, "approvals": approved}
+
+
+def ensure_checks_passed(
+    statuses: Sequence[Mapping[str, object]],
+    required_checks: Sequence[str],
+) -> dict[str, object]:
+    """按 context 取最后一次提交状态，要求每个必需检查均为 ``success``。
+
+    缺少检查、检查失败或处于 pending 均拒绝；``required_checks`` 为空时只返回
+    空摘要，保持未启用检查门禁的部署兼容。
+    """
+    latest: dict[str, str] = {}
+    for status in statuses:
+        if not isinstance(status, Mapping):
+            raise PolicyError(f"commit status entry must be a mapping: {status!r}")
+        context = status.get("context")
+        state = status.get("state")
+        if isinstance(context, str) and context.strip() and isinstance(state, str):
+            latest[context.strip()] = state.strip().lower()
+    missing: list[str] = []
+    failing: list[str] = []
+    for context in required_checks:
+        if not isinstance(context, str) or not context.strip():
+            raise PolicyError(f"required check names must be non-empty strings: {context!r}")
+        state = latest.get(context.strip())
+        if state is None:
+            missing.append(context.strip())
+        elif state != "success":
+            failing.append(f"{context.strip()}={state}")
+    if missing or failing:
+        raise ChecksRequired(f"required checks are not satisfied: missing={missing}, failing={failing}")
+    return {
+        "required_checks": [context.strip() for context in required_checks],
+        "contexts": {context.strip(): latest[context.strip()] for context in required_checks},
+    }
 
 
 def ensure_branch_mutation_allowed(

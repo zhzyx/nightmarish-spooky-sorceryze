@@ -27,6 +27,7 @@ from duobao_bridge import (
     PolicyError,
     approved_reviewers,
     ensure_branch_mutation_allowed,
+    ensure_checks_passed,
     ensure_pr_merge_allowed,
     parse_protected_branches,
 )
@@ -40,6 +41,7 @@ from pdf_export import render_pdf
 from schemas import (
     CommentCreateRequest,
     CommentResolveRequest,
+    CommitStatusRequest,
     DocCreateRequest,
     DocMergeRequest,
     DocPatchRequest,
@@ -205,6 +207,7 @@ def create_app(
     merge_queue: Any | None = None,
     protected_branches: Sequence[str] = (),
     required_approvals: int = 0,
+    required_checks: Sequence[str] = (),
 ) -> FastAPI:
     """为给定领域核心实例构建 HTTP 应用；可选的模型网关与多宝合入队列挂载到同一应用。"""
     app = FastAPI(title="Tianxuan API", version="0.1.0")
@@ -213,6 +216,7 @@ def create_app(
     app.state.merge_queue = merge_queue
     app.state.protected_branches = parse_protected_branches(protected_branches)
     app.state.required_approvals = required_approvals
+    app.state.required_checks = tuple(required_checks)
     rooms = DocRooms()
     if gateway is not None:
         app.include_router(create_model_router(gateway))
@@ -826,6 +830,12 @@ def create_app(
                     required_approvals=required,
                     path="direct",
                 )
+                required_checks = tuple(getattr(app.state, "required_checks", ()) or ())
+                if required_checks:
+                    head_sha = str(pull.get("head_sha") or "")
+                    if not head_sha:
+                        raise HTTPException(status_code=502, detail="pull request head sha is missing")
+                    ensure_checks_passed(client.list_commit_statuses(owner, name, head_sha), required_checks)
                 return client.merge_pull_request(  # type: ignore[no-any-return]
                     owner, name, number, payload.method
                 )
@@ -857,6 +867,44 @@ def create_app(
             with client:
                 return client.create_review(  # type: ignore[no-any-return]
                     owner, name, number, event=payload.event, body=payload.body
+                )
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.get("/api/v1/repos/{owner}/{name}/commits/{sha}/statuses")
+    def list_repo_commit_statuses(
+        owner: str,
+        name: str,
+        sha: str,
+        actor: ActorDep,
+    ) -> dict[str, list[dict[str, Any]]]:
+        client = _gitea_client()
+        try:
+            with client:
+                return {"statuses": client.list_commit_statuses(owner, name, sha)}
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/repos/{owner}/{name}/statuses/{sha}")
+    def create_repo_commit_status(
+        owner: str,
+        name: str,
+        sha: str,
+        payload: CommitStatusRequest,
+        actor: ActorDep,
+    ) -> dict[str, Any]:
+        _require_editor_role(store, actor, "write commit statuses")
+        client = _gitea_client()
+        try:
+            with client:
+                return client.create_commit_status(  # type: ignore[no-any-return]
+                    owner,
+                    name,
+                    sha,
+                    state=payload.state,
+                    context=payload.context,
+                    description=payload.description,
+                    target_url=payload.target_url,
                 )
         except GiteaError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error

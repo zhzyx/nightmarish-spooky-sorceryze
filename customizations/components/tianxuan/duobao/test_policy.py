@@ -5,12 +5,14 @@ from __future__ import annotations
 import unittest
 
 from policy import (
+    ChecksRequired,
     PolicyError,
     ProtectedBranchError,
     ReviewRequired,
     RoleDenied,
     approved_reviewers,
     ensure_branch_mutation_allowed,
+    ensure_checks_passed,
     ensure_merge_allowed,
     ensure_pr_merge_allowed,
     is_protected,
@@ -163,6 +165,42 @@ class ReviewPolicyTests(unittest.TestCase):
                         approvals=(),
                         required_approvals=value,  # type: ignore[arg-type]
                     )
+
+
+class ChecksPolicyTests(unittest.TestCase):
+    def test_all_required_checks_success(self) -> None:
+        decision = ensure_checks_passed(
+            [{"context": "ci/build", "state": "success"}],
+            ("ci/build",),
+        )
+        self.assertEqual(decision["contexts"], {"ci/build": "success"})
+
+    def test_missing_check_is_rejected(self) -> None:
+        with self.assertRaises(ChecksRequired):
+            ensure_checks_passed([], ("ci/build",))
+
+    def test_failing_and_pending_checks_are_rejected(self) -> None:
+        for state in ("failure", "error", "pending", "warning"):
+            with self.subTest(state=state):
+                with self.assertRaises(ChecksRequired):
+                    ensure_checks_passed([{"context": "ci/build", "state": state}], ("ci/build",))
+
+    def test_latest_status_wins(self) -> None:
+        decision = ensure_checks_passed(
+            [
+                {"context": "ci/build", "state": "failure"},
+                {"context": "ci/build", "state": "success"},
+            ],
+            ("ci/build",),
+        )
+        self.assertEqual(decision["contexts"]["ci/build"], "success")
+
+    def test_empty_required_checks_keep_compatibility(self) -> None:
+        self.assertEqual(ensure_checks_passed([], ())["required_checks"], [])
+
+    def test_malformed_status_entries_are_rejected(self) -> None:
+        with self.assertRaises(PolicyError):
+            ensure_checks_passed([42], ("ci/build",))  # type: ignore[list-item]
 
 
 if __name__ == "__main__":

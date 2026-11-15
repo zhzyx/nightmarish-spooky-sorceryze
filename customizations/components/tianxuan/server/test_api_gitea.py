@@ -12,6 +12,7 @@ from tianxuan_core import Tianxuan
 
 class _FakeGitea:
     reviews: list[dict[str, Any]] = []
+    statuses: list[dict[str, Any]] = []
 
     def __init__(self, base_url: str, token: str) -> None:
         self.base_url = base_url
@@ -50,7 +51,15 @@ class _FakeGitea:
         return {"number": 2, "title": title, "head": head, "base": base, "body": body}
 
     def get_pull_request(self, owner: str, repo: str, number: int) -> dict[str, Any]:
-        return {"number": number, "title": "demo", "head": "feature", "base": "main", "state": "open"}
+        return {
+            "number": number,
+            "title": "demo",
+            "head": "feature",
+            "base": "main",
+            "head_sha": "a" * 40,
+            "base_sha": "b" * 40,
+            "state": "open",
+        }
 
     def merge_pull_request(self, owner: str, repo: str, number: int, method: str = "merge") -> dict[str, Any]:
         return {"number": number, "merged": True, "method": method}
@@ -69,18 +78,45 @@ class _FakeGitea:
         type(self).reviews.append(review)
         return review
 
+    def list_commit_statuses(self, owner: str, repo: str, sha: str) -> list[dict[str, Any]]:
+        return list(type(self).statuses)
+
+    def create_commit_status(
+        self,
+        owner: str,
+        repo: str,
+        sha: str,
+        *,
+        state: str,
+        context: str = "duobao",
+        description: str = "",
+        target_url: str = "",
+    ) -> dict[str, Any]:
+        status = {
+            "state": state,
+            "context": context,
+            "description": description,
+            "target_url": target_url,
+            "created_at": "",
+        }
+        type(self).statuses.append(status)
+        return status
+
 
 def _setup(
     protected_branches: tuple[str, ...] = (),
     required_approvals: int = 0,
+    required_checks: tuple[str, ...] = (),
 ) -> tuple[TestClient, dict[str, str]]:
     _FakeGitea.reviews = []
+    _FakeGitea.statuses = []
     store = Tianxuan(":memory:")
     client = TestClient(
         create_app(
             store,
             protected_branches=protected_branches,
             required_approvals=required_approvals,
+            required_checks=required_checks,
         )
     )
     registered = client.post(
@@ -236,5 +272,56 @@ def test_viewer_cannot_review_pull(monkeypatch) -> None:
         "/api/v1/repos/owner/demo/pulls/2/reviews",
         headers=viewer_headers,
         json={"event": "APPROVED"},
+    )
+    assert response.status_code == 403
+
+
+def test_required_checks_gate_merge(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_GITEA_URL", "http://gitea.example")
+    monkeypatch.setenv("TIANXUAN_GITEA_TOKEN", "secret")
+    monkeypatch.setattr(api_module, "GiteaClient", _FakeGitea)
+    client, headers = _setup(required_checks=("ci/build",))
+    sha = "a" * 40
+
+    missing = client.post("/api/v1/repos/owner/demo/pulls/2/merge", headers=headers, json={"method": "merge"})
+    assert missing.status_code == 403
+    assert "missing" in missing.json()["detail"]
+
+    failed = client.post(
+        f"/api/v1/repos/owner/demo/statuses/{sha}",
+        headers=headers,
+        json={"state": "failure", "context": "ci/build", "description": "tests failed"},
+    )
+    assert failed.status_code == 200
+    blocked = client.post("/api/v1/repos/owner/demo/pulls/2/merge", headers=headers, json={"method": "merge"})
+    assert blocked.status_code == 403
+    assert "failing" in blocked.json()["detail"]
+
+    passed = client.post(
+        f"/api/v1/repos/owner/demo/statuses/{sha}",
+        headers=headers,
+        json={"state": "success", "context": "ci/build", "description": "tests passed"},
+    )
+    assert passed.status_code == 200
+    listed = client.get(f"/api/v1/repos/owner/demo/commits/{sha}/statuses", headers=headers).json()["statuses"]
+    assert [entry["state"] for entry in listed] == ["failure", "success"]
+
+    merged = client.post("/api/v1/repos/owner/demo/pulls/2/merge", headers=headers, json={"method": "merge"})
+    assert merged.status_code == 200
+
+
+def test_viewer_cannot_write_commit_status(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_GITEA_URL", "http://gitea.example")
+    monkeypatch.setenv("TIANXUAN_GITEA_TOKEN", "secret")
+    monkeypatch.setattr(api_module, "GiteaClient", _FakeGitea)
+    client, headers = _setup()
+    store = client.app.state.store  # type: ignore[attr-defined]
+    viewer = store.add_member(headers["X-Actor"], "viewer@example.com", "secret-pass", role="viewer")
+    viewer_headers = {"X-Actor": viewer["user_id"]}
+
+    response = client.post(
+        f"/api/v1/repos/owner/demo/statuses/{'a' * 40}",
+        headers=viewer_headers,
+        json={"state": "success", "context": "ci/build"},
     )
     assert response.status_code == 403

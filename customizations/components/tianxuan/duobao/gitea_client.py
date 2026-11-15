@@ -39,6 +39,12 @@ _MERGE_METHODS = ("merge", "rebase", "rebase-merge", "squash", "fast-forward-onl
 #: Gitea 评审接口 ``event`` 字段允许的取值。
 _REVIEW_EVENTS = ("APPROVED", "REQUEST_CHANGES", "COMMENT")
 
+#: Gitea 提交状态接口 ``state`` 字段允许的取值。
+_STATUS_STATES = ("pending", "success", "error", "failure", "warning")
+
+#: 提交状态接口接受的 SHA 形式（短 SHA 或完整 SHA）。
+_COMMIT_SHA = re.compile(r"^[0-9a-fA-F]{7,40}$")
+
 #: Gitea Issue 列表接口允许的 ``state`` 取值。
 _ISSUE_STATES = ("open", "closed", "all")
 
@@ -230,6 +236,15 @@ def _branch_field(value: Any) -> str:
     return ""
 
 
+def _branch_sha(value: Any) -> str:
+    """从 PR 的 head/base 对象中取提交 SHA；缺失时返回空串。"""
+    if isinstance(value, dict):
+        sha = value.get("sha")
+        if isinstance(sha, str):
+            return sha
+    return ""
+
+
 def _normalize_branch(payload: Any) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise GiteaError(0, "unexpected branch response: expected a JSON object")
@@ -255,6 +270,8 @@ def _normalize_pull_request(payload: Any) -> dict[str, Any]:
         "html_url": _string(data, "html_url"),
         "head": _branch_field(data.get("head")),
         "base": _branch_field(data.get("base")),
+        "head_sha": _branch_sha(data.get("head")),
+        "base_sha": _branch_sha(data.get("base")),
     }
 
 
@@ -269,6 +286,24 @@ def _normalize_review(payload: Any) -> dict[str, Any]:
         "body": _string(data, "body"),
         "user": login if isinstance(login, str) else "",
         "submitted_at": _string(data, "submitted_at"),
+    }
+
+
+def _validate_commit_sha(value: Any) -> str:
+    if not isinstance(value, str) or not _COMMIT_SHA.match(value):
+        raise GiteaValidationError(f"invalid commit sha: {value!r}")
+    return value
+
+
+def _normalize_status(payload: Any) -> dict[str, Any]:
+    """把提交状态裁剪为 ``state/context/description/target_url/created_at``。"""
+    data = _mapping(payload, "commit status")
+    return {
+        "state": _string(data, "state"),
+        "context": _string(data, "context"),
+        "description": _string(data, "description"),
+        "target_url": _string(data, "target_url"),
+        "created_at": _string(data, "created_at"),
     }
 
 
@@ -544,6 +579,52 @@ class GiteaClient:
             json_body={"event": event, "body": body},
         )
         return _normalize_review(payload)
+
+    # ------------------------------------------------------------------
+    # 提交状态（CI 回写）
+    # ------------------------------------------------------------------
+    def list_commit_statuses(self, owner: str, repo: str, sha: str) -> list[dict[str, Any]]:
+        """列出某个提交的状态；按 Gitea 返回顺序（通常为时间正序）。"""
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        sha = _validate_commit_sha(sha)
+        payload = self._request("GET", f"/api/v1/repos/{owner}/{repo}/commits/{sha}/statuses")
+        if payload is None:
+            return []
+        if not isinstance(payload, list):
+            raise GiteaError(0, "unexpected commit statuses response: expected a JSON array")
+        return [_normalize_status(item) for item in payload]
+
+    def create_commit_status(
+        self,
+        owner: str,
+        repo: str,
+        sha: str,
+        *,
+        state: str,
+        context: str = "duobao",
+        description: str = "",
+        target_url: str = "",
+    ) -> dict[str, Any]:
+        """为提交写入一次状态（pending/success/error/failure/warning）。"""
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        sha = _validate_commit_sha(sha)
+        state = _validate_choice(state, _STATUS_STATES, "commit status state")
+        context = _validate_text(context, "commit status context")
+        description = _validate_text(description, "commit status description", allow_empty=True)
+        target_url = _validate_text(target_url, "commit status target_url", allow_empty=True)
+        payload = self._request(
+            "POST",
+            f"/api/v1/repos/{owner}/{repo}/statuses/{sha}",
+            json_body={
+                "state": state,
+                "context": context,
+                "description": description,
+                "target_url": target_url,
+            },
+        )
+        return _normalize_status(payload)
 
     # ------------------------------------------------------------------
     # Issue
