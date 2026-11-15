@@ -1,24 +1,17 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/Icon";
 import { IdentityBindings } from "@/components/IdentityBindings";
 import { fetchGiteaStatus, fetchHealth, type ApiGiteaStatus } from "@/lib/api";
+import { LOCALE_COOKIE, normalizeLocale, translate, type MessageKey } from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: "设置",
-};
+export function generateMetadata(): Metadata {
+  const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);
+  return { title: translate(locale, "settings.title") };
+}
 
 export const dynamic = "force-dynamic";
-
-const settingsNav: { href: string; label: string; icon: IconName }[] = [
-  { href: "#profile", label: "个人资料", icon: "users" },
-  { href: "#appearance", label: "外观", icon: "eye" },
-  { href: "#workspace", label: "工作区", icon: "home" },
-  { href: "#ai", label: "AI 与模型", icon: "sparkles" },
-  { href: "#notifications", label: "通知", icon: "bell" },
-  { href: "#members", label: "成员与权限", icon: "lock" },
-  { href: "#security", label: "安全与数据", icon: "alert" },
-];
 
 const members = [
   { name: "Sail", handle: "sail", role: "管理员", tone: "jade", status: "在线" },
@@ -29,6 +22,17 @@ const members = [
 ];
 
 export default async function SettingsPage() {
+  const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);
+  const t = (key: MessageKey) => translate(locale, key);
+  const settingsNav: { href: string; label: string; icon: IconName }[] = [
+    { href: "#profile", label: t("settings.navProfile"), icon: "users" },
+    { href: "#appearance", label: t("settings.navAppearance"), icon: "eye" },
+    { href: "#workspace", label: t("settings.navWorkspace"), icon: "home" },
+    { href: "#ai", label: t("settings.navAi"), icon: "sparkles" },
+    { href: "#notifications", label: t("settings.navNotifications"), icon: "bell" },
+    { href: "#members", label: t("settings.navMembers"), icon: "lock" },
+    { href: "#security", label: t("settings.navSecurity"), icon: "alert" },
+  ];
   const actor = process.env.TIANXUAN_ACTOR ?? "";
   let apiOnline = false;
   let gitea: ApiGiteaStatus | null = null;
@@ -53,20 +57,19 @@ export default async function SettingsPage() {
             ORGANIZATION · SETTINGS
           </p>
           <h1>
-            设置<span className="title-period">。</span>
+            {t("settings.title")}
+            {locale === "zh" ? <span className="title-period">。</span> : null}
           </h1>
-          <p className="page-lede">
-            只在这里放真正需要决定的选项：如何称呼彼此、如何呈现内容，以及哪些动作必须等一个人说“可以”。
-          </p>
+          <p className="page-lede">{t("settings.lede")}</p>
         </div>
         <div className="page-actions">
           <span className="settings-prototype">
             <span className="live-dot" aria-hidden="true" />
-            原型模式 · 不写回服务
+            {t("settings.prototype")}
           </span>
           <Link className="btn btn-ghost" href="/docs/onboarding">
             <Icon name="docs" size={16} />
-            协作指南
+            {t("settings.guide")}
           </Link>
         </div>
       </header>
@@ -75,29 +78,29 @@ export default async function SettingsPage() {
         <div className="section-heading">
           <div>
             <p className="section-kicker">SYSTEM · STATUS</p>
-            <h2 id="system-status-title">系统状态</h2>
+            <h2 id="system-status-title">{t("settings.systemTitle")}</h2>
           </div>
-          <span className="section-note">服务端实时读取</span>
+          <span className="section-note">{t("settings.systemNote")}</span>
         </div>
         <div className="reading-list live-list">
           <div className="reading-item">
             <span className="reading-index">API</span>
             <span className="reading-copy">
-              <strong>{apiOnline ? "已连接" : "不可达"}</strong>
+              <strong>{apiOnline ? t("settings.connected") : t("settings.unreachable")}</strong>
               <span>/api/v1/health</span>
             </span>
           </div>
           <div className="reading-item">
             <span className="reading-index">Git</span>
             <span className="reading-copy">
-              <strong>{gitea?.configured ? "Gitea 已配置" : "Gitea 未配置"}</strong>
-              <span>{gitea?.owner ? `owner: ${gitea.owner}` : "设置 TIANXUAN_GITEA_URL / TOKEN"}</span>
+              <strong>{gitea?.configured ? t("settings.giteaConfigured") : t("settings.giteaMissing")}</strong>
+              <span>{gitea?.owner ? `owner: ${gitea.owner}` : t("settings.giteaHint")}</span>
             </span>
           </div>
           <div className="reading-item">
             <span className="reading-index">Actor</span>
             <span className="reading-copy">
-              <strong>{actor || "未配置"}</strong>
+              <strong>{actor || t("settings.actorMissing")}</strong>
               <span>TIANXUAN_ACTOR</span>
             </span>
           </div>
@@ -107,8 +110,8 @@ export default async function SettingsPage() {
       <IdentityBindings />
 
       <div className="settings-layout">
-        <nav aria-label="设置分类" className="settings-nav">
-          <p className="sidebar-label">个人与工作区</p>
+        <nav aria-label={t("settings.navAria")} className="settings-nav">
+          <p className="sidebar-label">{t("settings.navGroup")}</p>
           {settingsNav.map((item, index) => (
             <a className={index === 0 ? "is-active" : ""} href={item.href} key={item.href}>
               <Icon name={item.icon} size={16} />
@@ -119,8 +122,8 @@ export default async function SettingsPage() {
             <span className="settings-nav-seal" aria-hidden="true">
               静
             </span>
-            <p>少一点选项，多一点确认。</p>
-            <small>天璇 · 产品原则</small>
+            <p>{t("settings.quote")}</p>
+            <small>{t("settings.quoteCaption")}</small>
           </div>
         </nav>
 
@@ -129,8 +132,8 @@ export default async function SettingsPage() {
             <header className="settings-card-head">
               <div>
                 <p className="section-kicker">IDENTITY</p>
-                <h2 id="profile-title">个人资料</h2>
-                <p>这些信息会出现在文档署名、工单与活动回执里。</p>
+                <h2 id="profile-title">{t("settings.profileTitle")}</h2>
+                <p>{t("settings.profileDesc")}</p>
               </div>
               <Icon className="panel-head-icon" name="users" size={19} />
             </header>
@@ -138,24 +141,24 @@ export default async function SettingsPage() {
             <div className="profile-edit-row">
               <span className="avatar avatar-xl avatar-jade">S</span>
               <div className="profile-edit-copy">
-                <strong>头像使用令牌色块占位</strong>
-                <span>不加载外部图片，也不上传到演示环境。</span>
+                <strong>{t("settings.avatarTitle")}</strong>
+                <span>{t("settings.avatarDesc")}</span>
               </div>
-              <span className="role-pill">管理员</span>
+              <span className="role-pill">{t("settings.adminRole")}</span>
             </div>
 
             <div className="settings-form-grid">
               <label className="settings-field">
-                <span>显示名称</span>
+                <span>{t("settings.displayName")}</span>
                 <input defaultValue="Sail" />
               </label>
               <label className="settings-field">
-                <span>工作区标识</span>
+                <span>{t("settings.workspaceHandle")}</span>
                 <input defaultValue="sail" spellCheck={false} />
               </label>
               <label className="settings-field settings-field-wide">
-                <span>自我介绍</span>
-                <input defaultValue="把复杂留在系统里，把清晰留给下一位协作者。" />
+                <span>{t("settings.bio")}</span>
+                <input defaultValue={t("settings.bioDefault")} />
               </label>
             </div>
           </section>
@@ -164,10 +167,10 @@ export default async function SettingsPage() {
             <header className="settings-card-head">
               <div>
                 <p className="section-kicker">APPEARANCE</p>
-                <h2 id="appearance-title">外观</h2>
-                <p>深色优先，宣纸白只用于需要被看见的文字。</p>
+                <h2 id="appearance-title">{t("settings.appearanceTitle")}</h2>
+                <p>{t("settings.appearanceDesc")}</p>
               </div>
-              <span className="settings-tag">深色优先</span>
+              <span className="settings-tag">{t("settings.darkFirst")}</span>
             </header>
 
             <div className="theme-options">
@@ -182,8 +185,8 @@ export default async function SettingsPage() {
                   </span>
                 </span>
                 <span className="theme-option-copy">
-                  <strong>墨夜</strong>
-                  <small>当前 · 默认主题</small>
+                  <strong>{t("settings.ink")}</strong>
+                  <small>{t("settings.inkNote")}</small>
                 </span>
                 <span className="theme-check">
                   <Icon name="check" size={12} />
@@ -201,8 +204,8 @@ export default async function SettingsPage() {
                   </span>
                 </span>
                 <span className="theme-option-copy">
-                  <strong>暖墨</strong>
-                  <small>低对比 · 仅设计预览</small>
+                  <strong>{t("settings.warm")}</strong>
+                  <small>{t("settings.warmNote")}</small>
                 </span>
               </label>
 
@@ -217,8 +220,8 @@ export default async function SettingsPage() {
                   </span>
                 </span>
                 <span className="theme-option-copy">
-                  <strong>宣纸</strong>
-                  <small>浅色主题 · 待开放</small>
+                  <strong>{t("settings.paper")}</strong>
+                  <small>{t("settings.paperNote")}</small>
                 </span>
                 <span className="theme-lock">
                   <Icon name="lock" size={12} />
@@ -227,13 +230,13 @@ export default async function SettingsPage() {
             </div>
 
             <div className="accent-row">
-              <span className="settings-label">纹样与点睛</span>
-              <span className="accent-swatch accent-ink" title="墨 Ink #0B0E11" />
-              <span className="accent-swatch accent-paper" title="纸 Paper #F5F2EA" />
-              <span className="accent-swatch accent-cinnabar" title="朱砂 Cinnabar #C8402F" />
-              <span className="accent-swatch accent-jade" title="青玉 Jade #3E8E7E" />
-              <span className="accent-swatch accent-gold" title="鎏金 Gold #C9A227" />
-              <span className="accent-caption">扁平中国风 · 毛玻璃</span>
+              <span className="settings-label">{t("settings.accentLabel")}</span>
+              <span className="accent-swatch accent-ink" title={t("settings.inkSwatch")} />
+              <span className="accent-swatch accent-paper" title={t("settings.paperSwatch")} />
+              <span className="accent-swatch accent-cinnabar" title={t("settings.cinnabarSwatch")} />
+              <span className="accent-swatch accent-jade" title={t("settings.jadeSwatch")} />
+              <span className="accent-swatch accent-gold" title={t("settings.goldSwatch")} />
+              <span className="accent-caption">{t("settings.accentCaption")}</span>
             </div>
           </section>
 
@@ -241,30 +244,30 @@ export default async function SettingsPage() {
             <header className="settings-card-head">
               <div>
                 <p className="section-kicker">WORKSPACE</p>
-                <h2 id="workspace-title">工作区</h2>
-                <p>单组织首版。空间与成员共享这一处的语言和时区。</p>
+                <h2 id="workspace-title">{t("settings.workspaceTitle")}</h2>
+                <p>{t("settings.workspaceDesc")}</p>
               </div>
               <Icon className="panel-head-icon" name="home" size={19} />
             </header>
 
             <div className="settings-form-grid">
               <label className="settings-field">
-                <span>工作区名称</span>
+                <span>{t("settings.workspaceName")}</span>
                 <input defaultValue="共工工坊" />
               </label>
               <label className="settings-field">
-                <span>标识</span>
+                <span>{t("settings.handle")}</span>
                 <input defaultValue="gonggong" spellCheck={false} />
               </label>
               <label className="settings-field">
-                <span>语言</span>
+                <span>{t("settings.language")}</span>
                 <select defaultValue="zh-CN">
-                  <option value="zh-CN">简体中文</option>
+                  <option value="zh-CN">{t("settings.langZh")}</option>
                   <option value="en">English</option>
                 </select>
               </label>
               <label className="settings-field">
-                <span>时区</span>
+                <span>{t("settings.timezone")}</span>
                 <select defaultValue="Asia/Shanghai">
                   <option value="Asia/Shanghai">Asia / Shanghai</option>
                   <option value="UTC">UTC</option>
@@ -277,10 +280,10 @@ export default async function SettingsPage() {
             <header className="settings-card-head">
               <div>
                 <p className="section-kicker">AI &amp; MODELS</p>
-                <h2 id="ai-title">AI 与模型</h2>
-                <p>页面只展示托管状态与用量。凭据由服务端保险库持有，永不回显。</p>
+                <h2 id="ai-title">{t("settings.aiTitle")}</h2>
+                <p>{t("settings.aiDesc")}</p>
               </div>
-              <span className="settings-tag settings-tag-muted">未连接</span>
+              <span className="settings-tag settings-tag-muted">{t("settings.notConnected")}</span>
             </header>
 
             <div className="ai-provider">
@@ -288,41 +291,41 @@ export default async function SettingsPage() {
                 <Icon name="sparkles" size={18} />
               </span>
               <span className="ai-provider-copy">
-                <strong>共工模型网关</strong>
-                <small>组织托管 · 自动路由 · 可审计</small>
+                <strong>{t("settings.gateway")}</strong>
+                <small>{t("settings.gatewayNote")}</small>
               </span>
               <span className="ai-provider-state">
                 <span className="status-dot" aria-hidden="true" />
-                原型未连接
+                {t("settings.prototypeNotConnected")}
               </span>
             </div>
 
             <div className="settings-meta-grid">
               <div className="settings-meta">
-                <span>默认模型</span>
-                <strong>天璇路由器 · 自动选择</strong>
-                <small>由任务类型与服务范围决定</small>
+                <span>{t("settings.defaultModel")}</span>
+                <strong>{t("settings.router")}</strong>
+                <small>{t("settings.routerNote")}</small>
               </div>
               <div className="settings-meta">
-                <span>凭据</span>
-                <strong>服务端保险库托管</strong>
-                <small>页面不读取、不显示、不保存密钥</small>
+                <span>{t("settings.credentials")}</span>
+                <strong>{t("settings.vault")}</strong>
+                <small>{t("settings.vaultNote")}</small>
               </div>
               <div className="settings-meta settings-meta-usage">
-                <span>本月用量</span>
+                <span>{t("settings.usage")}</span>
                 <strong>34%</strong>
                 <span className="meter" aria-hidden="true">
                   <span style={{ width: "34%" }} />
                 </span>
-                <small>演示数据，不代表真实计量</small>
+                <small>{t("settings.usageNote")}</small>
               </div>
             </div>
 
             <div className="toggle-list">
               <label className="toggle-row">
                 <span>
-                  <strong>允许 AI 在文档中起草</strong>
-                  <small>生成内容始终以草稿形式出现，并标注来源。</small>
+                  <strong>{t("settings.allowDraft")}</strong>
+                  <small>{t("settings.allowDraftNote")}</small>
                 </span>
                 <span className="switch">
                   <input defaultChecked type="checkbox" />
@@ -331,8 +334,8 @@ export default async function SettingsPage() {
               </label>
               <label className="toggle-row">
                 <span>
-                  <strong>写入司南工单前需要人工确认</strong>
-                  <small>这是默认边界，优先于效率。</small>
+                  <strong>{t("settings.confirmIssues")}</strong>
+                  <small>{t("settings.confirmIssuesNote")}</small>
                 </span>
                 <span className="switch">
                   <input defaultChecked type="checkbox" />
@@ -341,8 +344,8 @@ export default async function SettingsPage() {
               </label>
               <label className="toggle-row">
                 <span>
-                  <strong>记录所有模型调用审计</strong>
-                  <small>记录来源范围、路由与结果，不记录凭据。</small>
+                  <strong>{t("settings.audit")}</strong>
+                  <small>{t("settings.auditNote")}</small>
                 </span>
                 <span className="switch">
                   <input defaultChecked type="checkbox" />
@@ -356,16 +359,16 @@ export default async function SettingsPage() {
             <header className="settings-card-head">
               <div>
                 <p className="section-kicker">NOTIFICATIONS</p>
-                <h2 id="notifications-title">通知</h2>
-                <p>只保留需要人做决定的时刻，不把进度变成噪音。</p>
+                <h2 id="notifications-title">{t("settings.notificationsTitle")}</h2>
+                <p>{t("settings.notificationsDesc")}</p>
               </div>
               <Icon className="panel-head-icon" name="bell" size={19} />
             </header>
             <div className="toggle-list">
               <label className="toggle-row">
                 <span>
-                  <strong>工单等待我的判断</strong>
-                  <small>评审、阻塞与验收回读。</small>
+                  <strong>{t("settings.notifyReview")}</strong>
+                  <small>{t("settings.notifyReviewNote")}</small>
                 </span>
                 <span className="switch">
                   <input defaultChecked type="checkbox" />
@@ -374,8 +377,8 @@ export default async function SettingsPage() {
               </label>
               <label className="toggle-row">
                 <span>
-                  <strong>文档被 AI 更新</strong>
-                  <small>附带更新的块与来源引用。</small>
+                  <strong>{t("settings.notifyDocs")}</strong>
+                  <small>{t("settings.notifyDocsNote")}</small>
                 </span>
                 <span className="switch">
                   <input type="checkbox" />
@@ -384,8 +387,8 @@ export default async function SettingsPage() {
               </label>
               <label className="toggle-row">
                 <span>
-                  <strong>每日工作区摘要</strong>
-                  <small>每天 09:00 汇总，无内容时不发送。</small>
+                  <strong>{t("settings.notifyDaily")}</strong>
+                  <small>{t("settings.notifyDailyNote")}</small>
                 </span>
                 <span className="switch">
                   <input defaultChecked type="checkbox" />
@@ -399,17 +402,17 @@ export default async function SettingsPage() {
             <header className="settings-card-head">
               <div>
                 <p className="section-kicker">MEMBERS &amp; ACCESS</p>
-                <h2 id="members-title">成员与权限</h2>
-                <p>人类与 Agent 使用同一份成员名单，操作都留下可回读的身份。</p>
+                <h2 id="members-title">{t("settings.membersTitle")}</h2>
+                <p>{t("settings.membersDesc")}</p>
               </div>
-              <span className="settings-tag">10 人上限</span>
+              <span className="settings-tag">{t("settings.memberLimit")}</span>
             </header>
 
             <div className="member-table">
               <div className="member-table-head" aria-hidden="true">
-                <span>成员</span>
-                <span>角色</span>
-                <span>状态</span>
+                <span>{t("settings.colMember")}</span>
+                <span>{t("settings.colRole")}</span>
+                <span>{t("settings.colStatus")}</span>
               </div>
               {members.map((member) => (
                 <div className="member-row" key={member.handle}>
@@ -436,8 +439,8 @@ export default async function SettingsPage() {
             <header className="settings-card-head">
               <div>
                 <p className="section-kicker">SECURITY &amp; DATA</p>
-                <h2 id="security-title">安全与数据</h2>
-                <p>关键操作需要再次确认；本原型不执行任何导出或删除。</p>
+                <h2 id="security-title">{t("settings.securityTitle")}</h2>
+                <p>{t("settings.securityDesc")}</p>
               </div>
               <Icon className="panel-head-icon" name="lock" size={19} />
             </header>
@@ -445,27 +448,27 @@ export default async function SettingsPage() {
             <div className="security-rows">
               <div className="security-row">
                 <span>
-                  <strong>当前会话</strong>
-                  <small>此设备 · 浏览器原型 · 无凭据</small>
+                  <strong>{t("settings.session")}</strong>
+                  <small>{t("settings.sessionNote")}</small>
                 </span>
-                <span className="security-state">仅预览</span>
+                <span className="security-state">{t("settings.previewOnly")}</span>
               </div>
               <div className="security-row">
                 <span>
-                  <strong>工作区数据导出</strong>
-                  <small>审计完成后由管理员发起，只从权威来源读取。</small>
+                  <strong>{t("settings.exportTitle")}</strong>
+                  <small>{t("settings.exportNote")}</small>
                 </span>
                 <button className="btn btn-ghost btn-sm" disabled type="button">
-                  导出
+                  {t("settings.exportBtn")}
                 </button>
               </div>
               <div className="security-row security-row-danger">
                 <span>
-                  <strong>归档工作区</strong>
-                  <small>会保留只读回读入口；本演示环境不可执行。</small>
+                  <strong>{t("settings.archiveTitle")}</strong>
+                  <small>{t("settings.archiveNote")}</small>
                 </span>
                 <button className="btn btn-danger btn-sm" disabled type="button">
-                  归档
+                  {t("settings.archiveBtn")}
                 </button>
               </div>
             </div>
@@ -473,7 +476,7 @@ export default async function SettingsPage() {
 
           <p className="settings-footnote">
             <Icon name="lock" size={13} />
-            本页不包含真实 API Key、访问令牌或外部服务地址。所有演示配置仅保留在浏览器输入中。
+            {t("settings.footer")}
           </p>
         </div>
       </div>
