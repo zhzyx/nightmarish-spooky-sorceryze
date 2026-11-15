@@ -91,7 +91,7 @@
 
 - **多宝是合入权威，Git 只是底层对象存储与传输**；不把 Gitea/Forgejo 的 merge 当作产品合入路径。
 - 合入队列：持久化候选、优先级、串行领取、目标推进后重验、冲突隔离、合入证据（预检结果/检查命令/merge sha）。
-- 默认启动常驻合入 worker；`TIANXUAN_MERGE_WORKER=0` 可关闭，由 `/process` 手动驱动。检查在临时 worktree 中运行，默认剥离 `TIANXUAN_*`/TOKEN/SECRET 等凭据环境，超时会终止整个进程树。
+- 默认启动常驻合入 worker；`TIANXUAN_MERGE_WORKER=0` 可关闭，由 `/process` 手动驱动。检查在临时 worktree 中运行，默认剥离 `TIANXUAN_*`/TOKEN/SECRET 等凭据环境，并使用独立 HOME/TEMP 与缓存目录；超时会终止整个进程树。
 - 合入检验：在临时 worktree 中先做合并预检，再执行部署方配置的检查命令；失败候选拒绝且不改目标分支。
 - 复用开源 Git 协议与对象格式；Gitea/Forgejo 仅作为可选托管与协作前端。
 - 高并发：仓库分片、读写分离、合入队列、锁粒度到分支/路径、批量评审。

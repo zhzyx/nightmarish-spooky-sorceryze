@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import os
 import shlex
+import shutil
 import signal
 import sqlite3
 import subprocess
@@ -428,13 +429,27 @@ class MergeQueue:
             )
         return {"conflicts": conflicts, "checks": checks}
 
-    def _check_environment(self) -> dict[str, str]:
+    def _check_environment(self, home: Path | None = None) -> dict[str, str]:
         """合并检查默认不继承部署凭据；管理员可用白名单显式放行。"""
         allowlist = [item.strip() for item in os.environ.get("TIANXUAN_MERGE_CHECK_ENV", "").split(",") if item.strip()]
         if allowlist:
             environment = {key: os.environ[key] for key in allowlist if key in os.environ}
         else:
             environment = {key: value for key, value in os.environ.items() if not _is_sensitive_environment(key)}
+        if home is not None:
+            home.mkdir(parents=True, exist_ok=True)
+            for key in (
+                "HOME",
+                "USERPROFILE",
+                "TMPDIR",
+                "TEMP",
+                "TMP",
+                "XDG_CONFIG_HOME",
+                "XDG_CACHE_HOME",
+                "PIP_CACHE_DIR",
+                "NPM_CONFIG_CACHE",
+            ):
+                environment[key] = str(home)
         environment["GIT_TERMINAL_PROMPT"] = "0"
         environment["CI"] = "1"
         return environment
@@ -446,6 +461,7 @@ class MergeQueue:
             popen_kwargs["creationflags"] = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
         else:
             popen_kwargs["start_new_session"] = True
+        check_home = Path(tempfile.mkdtemp(prefix="duobao-check-home-"))
         process: subprocess.Popen[str] | None = None
         try:
             process = subprocess.Popen(
@@ -456,7 +472,7 @@ class MergeQueue:
                 text=True,
                 encoding="utf-8",
                 errors="replace",
-                env=self._check_environment(),
+                env=self._check_environment(check_home),
                 **popen_kwargs,
             )
             stdout, stderr = process.communicate(timeout=self.check_timeout)
@@ -470,6 +486,8 @@ class MergeQueue:
         except OSError as error:
             exit_code = 127
             output = str(error)
+        finally:
+            shutil.rmtree(check_home, ignore_errors=True)
         duration = (datetime.now(timezone.utc) - started).total_seconds()
         return {
             "command": shlex.join(check),

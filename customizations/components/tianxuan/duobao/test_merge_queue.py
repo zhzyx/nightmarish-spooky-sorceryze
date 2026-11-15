@@ -207,6 +207,12 @@ def test_check_environment_scrubs_deployment_secrets(tmp_path: Path, monkeypatch
     assert environment["CI"] == "1"
     assert environment["GIT_TERMINAL_PROMPT"] == "0"
 
+    home = tmp_path / "check-home"
+    isolated = queue._check_environment(home)
+    assert isolated["HOME"] == str(home)
+    assert isolated["USERPROFILE"] == str(home)
+    assert isolated["TEMP"] == str(home)
+
 
 def test_check_timeout_terminates_process_tree(tmp_path: Path) -> None:
     service, repo = _repo(tmp_path)
@@ -214,3 +220,11 @@ def test_check_timeout_terminates_process_tree(tmp_path: Path) -> None:
     result = queue._run_check(repo, [sys.executable, "-c", "import time; time.sleep(5)"])
     assert result["exit_code"] == 124
     assert result["duration_seconds"] < 3.0
+
+
+def test_check_runs_with_isolated_home(tmp_path: Path) -> None:
+    service, repo = _repo(tmp_path)
+    queue = MergeQueue(str(tmp_path / "queue.db"), service)
+    result = queue._run_check(repo, [sys.executable, "-c", "import os;print(os.environ.get('TEMP',''))"])
+    assert result["exit_code"] == 0
+    assert "duobao-check-home" in result["output"]
