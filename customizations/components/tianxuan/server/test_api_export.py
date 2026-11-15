@@ -168,3 +168,50 @@ def test_export_data_uri_image_to_pdf_and_docx() -> None:
     assert docx.status_code == 200
     document = Document(BytesIO(docx.content))
     assert len(document.inline_shapes) == 1
+
+
+def test_export_remote_image_only_from_allowlist(monkeypatch) -> None:
+    import base64
+    import http.server
+    import threading
+    from io import BytesIO
+
+    from docx import Document
+
+    payload = base64.b64decode(DATA_PNG.split(",", 1)[1])
+
+    class Handler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self) -> None:  # noqa: N802
+            self.send_response(200)
+            self.send_header("Content-Type", "image/png")
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
+
+        def log_message(self, format: str, *args: object) -> None:
+            return
+
+    server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        port = server.server_address[1]
+        client, headers = _client()
+        doc = client.post(
+            "/api/v1/docs",
+            headers=headers,
+            json={"title": "远程图片", "body_md": f"![远程](http://127.0.0.1:{port}/a.png)\n"},
+        ).json()
+        monkeypatch.setenv("TIANXUAN_EXPORT_IMAGE_HOSTS", f"127.0.0.1:{port}")
+        pdf = client.get(f"/api/v1/docs/{doc['id']}/export/file", headers=headers, params={"format": "pdf"})
+        assert b"/Subtype /Image" in pdf.content
+        docx = client.get(f"/api/v1/docs/{doc['id']}/export/file", headers=headers, params={"format": "docx"})
+        assert len(Document(BytesIO(docx.content)).inline_shapes) == 1
+
+        monkeypatch.delenv("TIANXUAN_EXPORT_IMAGE_HOSTS")
+        blocked = client.get(f"/api/v1/docs/{doc['id']}/export/file", headers=headers, params={"format": "pdf"})
+        assert b"/Subtype /Image" not in blocked.content
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
