@@ -1,0 +1,74 @@
+{
+  "base_commit": "b698fe55d2901e75ef9ba4cf782eb8d221e5f6fb",
+  "checks": {
+    "ainative_full_suite": {
+      "command": "python3 -m unittest discover -s tools/ainative -p test_*.py",
+      "observed": "R9 Darwin arm64 Python 3.12.16: 423 tests ran in 175.787 seconds, OK with 61 conditional skips; R10 changes only CI time budget",
+      "passed": true
+    },
+    "clean_source": {
+      "command": "ExportCleanSource.py to m3-pr5-final-clean-source and rebuild",
+      "observed": "156 declared files without Godot roots; unchanged m3-pr5 rebuild passed 54 tests/504 checks and all runtime acceptance; carried forward to m3-pr5-r10",
+      "passed": true
+    },
+    "format": {
+      "command": "clang-format, ruff, YAML parse, CODEOWNERS and git diff --check on the exact candidate",
+      "observed": "R10 changes only source-contract timeout-minutes from 10 to 20; independent review, YAML parsing and diff checks passed",
+      "passed": true
+    },
+    "legacy_host": {
+      "command": "RunM3LegacyAcceptance.py with Godot 4.4.1 and current next_asset",
+      "observed": "Whitelist import, C++ compile, Godot verify, PackedScene publish and semantic readback passed; nine invalid inputs and three intentionally broken scenes rejected",
+      "passed": true
+    },
+    "link_contract": {
+      "command": "check_engine_next_contract.py with all four manifests in original and clean trees",
+      "observed": "111 source files and 183 local includes passed in both trees; application targets contain 38 objects and the test target 55",
+      "passed": true
+    },
+    "maliang_unified_settings": {
+      "command": "samples/ainative-workbench/test_unified_settings.py --report build/engine_next/m3-pr5-r10-maliang-settings.json",
+      "observed": "R2 real Godot 4.4.1 unified settings: 28 checks passed; R10 changes only CI time budget",
+      "passed": true
+    },
+    "runtime_release": {
+      "command": "BuildRuntime.py --build-dir build/engine_next/m3-pr5-clang --run-tests",
+      "observed": "54 tests/504 checks; existing AI and asset workflows plus same-package and no-package M2 scene acceptance passed",
+      "passed": true
+    },
+    "sanitizer": {
+      "command": "BuildRuntime.py --build-dir build/engine_next/m3-pr5-sanitize --run-tests --sanitize",
+      "observed": "54 tests/504 checks and all acceptance paths passed under ASan/UBSan",
+      "passed": true
+    },
+    "scene_consumption": {
+      "command": "RunM3SceneAcceptance.py in build and CleanRun directories",
+      "observed": "Two stable spawns, 20 ms/4.5 scene simulation, negative-origin prediction, remote interpolation recovery, reconnect and graceful drain passed; no-package fixed20 reached x=3.84; invalid packages and 0/1/3 spawns rejected before transport",
+      "passed": true
+    },
+    "tools": {
+      "command": "unittest engine_next/Tools and tools.test_check_engine_next_contract; targeted Executor/contracts/extensions",
+      "observed": "18 build/schema, 23 contract and 44 targeted Executor tests passed",
+      "passed": true
+    }
+  },
+  "issue_number": 1240,
+  "not_verified": [
+    "Exact R10 three-platform CI and editor acceptance remain pending"
+  ],
+  "platform": {
+    "architecture": "arm64",
+    "python": "3.12.16",
+    "system": "Darwin"
+  },
+  "previous": {
+    "pr": 1299,
+    "result": "R9 macOS passed the complete AINative/package phase and Ubuntu advanced through clean runtime work, but both jobs hit the ten-minute cancellation limit; Windows passed",
+    "signed_head": "d6209a36ac3dcb08470ad5fee89157ec1b149951"
+  },
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "review": "data-collection/engine-next-assets-ai-workflow-m3-pr5-r10-review.json",
+  "schema_version": 1,
+  "slice": "pr5-r10",
+  "supersedes": "data-collection/engine-next-assets-ai-workflow-m3-pr5-r9-verification.json"
+}

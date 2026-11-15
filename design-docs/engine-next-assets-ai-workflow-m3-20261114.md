@@ -5,7 +5,7 @@
 ## 当前结论
 
 - 用户目标：复用现有 MVC、`AICore::Runtime`、AINative Executor／Provider 和 M2 运行时，新增中立资产契约、独立资产包、宿主进程适配，以及新旧运行时对同一场景的消费。
-- 用户已于 2026-11-14 23:00 明确“开始落地”，确认按本文件五个 PR 连续实施。PR 1／2／3 已分别由 PR #1272／#1277／#1280 合入并回读 main；PR 4 已完成本机实现、独立审查和验证，正在进入精确候选交付，PR 5 与整单验收仍未完成。不得据此宣称 M3 完成。
+- 用户已于 2026-11-14 23:00 明确“开始落地”，确认按本文件五个 PR 连续实施。PR 1–4 已分别由 PR #1272／#1277／#1280／#1282 合入并回读 main；PR 5 正在执行完整跨平台、干净环境和既有 AI 回归，整单验收尚未完成。不得据此宣称 M3 完成。
 - 需求 ID：`engine-next-assets-ai-workflow-m3-20261114`。
 - Issue：[#1240](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1240)。
 - 类别：`type:development`。
@@ -486,4 +486,4 @@ tools/engine_next_legacy/fixtures/{Whitelist.tscn,ScriptRejected.tscn,Unsupporte
 - PR 1／2 的中立契约、资产编译和包证据见 `data-collection/engine-next-assets-ai-workflow-m3-pr1-*` 与 `pr2-*`，对应 PR #1272／#1277 已合入。
 - PR 3 的源码审查与本机验证见 `data-collection/engine-next-assets-ai-workflow-m3-pr3-r3-review.json`、`pr3-r3-verification.json` 和 `pr3-r3-build-impact.json`；R1／R2 审查与证据保留用于追踪 CI 格式、负责人和 Windows 兼容性修正。真实 Executor 离线／恢复／进程边界、52 个原生测试、ASan／UBSan、干净源码树和真实链接清单均已执行；Executor／contracts／extensions 定向回归共 44 项通过。
 - PR 4 的独立审查见 `data-collection/engine-next-assets-ai-workflow-m3-pr4-r2-review.json`；R2 本机证据覆盖 54 个原生测试、同包与无包三进程、Godot 4.4.1 的导入／验证／发布／回读及禁止项。R1 证据保留用于追踪 CI 格式与命名修正；Windows／Linux 的 PR 4 结果仍以精确 CI 为准。
-- 当前内置 Python 的 AINative 全量 422 项回归记录为 17 失败、42 错误、62 跳过，包含 `os.waitid` 缺失及关联 Provider／owned-process 失败，不得记为全量通过。完整 AI 回归、PR 5 和整单验收仍是独立待办。
+- PR 5 逐轮完整验收分别修复了 macOS `os.waitid` 缺失、Ubuntu Pillow 缺失、Windows 马良完成回调 busy 拒绝和 Darwin 外部 `lsof` 监听归属不可用。R3 使用系统 libproc 核验真实 TCP listener，按地址族区分精确地址与 wildcard，并覆盖 IPv4／IPv6 跨族负例。R4 将全新内置包断言从过时的 Codex 默认值改为既定 `local_mesh`，仍要求精确模型和全部后续业务检查。R5／R6 补充临时 fixture、进程状态及节点诊断；R7 栈采样定位到合成 HTTP fixture 的反向 mDNS 查询。R8 在 fixture 绑定中绕过反解后，外部 fixture 已恢复；R9 对 supervisor 的固定 IPv4 回环控制服务器采用相同的真实 bind／无反解路径，控制 RPC 和临时端口语义不变；马良验收改用真实 `_set_node_file` 语义入口，确保源文件进入模型而非仅更新视图文本。R10 仅将完整三平台契约任务时限从 10 分钟调至 20 分钟，不删减检查。各轮独立审查与本机／CI 证据分别保留，整单收尾以最新候选的精确结果为准。

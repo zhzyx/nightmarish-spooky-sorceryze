@@ -109,7 +109,8 @@ func run():
 	receipt['model_log'] = manager.last_report.get('log_path', '')
 	if not verify(manager.runtime_path.text == runtime and panel.python_edit.text == interpreter, 'Both paths resolved from the running executable'): return
 	if not verify(manager.last_report.get('connected', false) and manager.last_report.get('owned', false) and not manager.lease_path.is_empty(), 'The packaged runtime started and its session owns the local connection'): return
-	if not verify(panel.service_saved.get('mode') == 'codex' and panel.service_saved.get('mesh_model') == model, 'Selected the shipped model without editing service settings'): return
+	# Fresh bundled installations default to local_mesh; Codex remains opt-in.
+	if not verify(panel.service_saved.get('mode') == 'local_mesh' and panel.service_saved.get('mesh_model') == model, 'Selected the shipped model without editing service settings'): return
 	if not verify(panel.service_report.get('capabilities', {}).get('image_to_mesh', {}).get('ready', false), 'Direct image-to-mesh capability ready'): return
 	receipt['cli_connected'] = panel.service_report.get('cli', {}).get('connected', false)
 	var local = ConfigFile.new()
@@ -124,10 +125,18 @@ func run():
 			break
 	panel.add_generator()
 	var id: String = panel.selected_id
-	panel.source_edit.text = image_path
+	# Use the same semantic operation as the file picker; editing the view text
+	# alone does not update the model's source_paths.
+	panel._set_node_file('source', image_path)
 	var parameters = {'prompt':'', 'mesh_steps':5, 'mesh_resolution':128, 'octree_resolution':64}
 	panel.parameter_form.configure('image_to_mesh', parameters)
-	if not verify(panel.apply_fields() and panel.node_run_blocker(id).is_empty(), 'An existing image with no prompt is runnable'): return
+	var fields_applied: bool = panel.apply_fields()
+	var blocker: String = panel.node_run_blocker(id) if fields_applied else panel.status.text
+	receipt['fields_applied'] = fields_applied
+	receipt['run_blocker'] = blocker
+	var matching: Array = panel.nodes.filter(func(data): return data.id == id)
+	receipt['node_model'] = matching[0].get('model', '') if not matching.is_empty() else ''
+	if not verify(fields_applied and blocker.is_empty(), 'An existing image with no prompt is runnable'): return
 	receipt['source_sha256'] = FileAccess.get_sha256(image_path)
 	receipt['parameters'] = parameters
 	panel.run_node_preview(id)

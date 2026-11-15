@@ -1,0 +1,18 @@
+{
+  "findings": [
+    "R6 proved the synthetic child was alive and had written its started marker but never listened; logs alone could not locate the stall"
+  ],
+  "issue_number": 1240,
+  "observed": "Independent read-only review approved bounded Darwin stack sampling on the failed external fixture only. The PID comes from the live Popen handle, /usr/bin/sample uses fixed arguments and a timeout, output is bounded, and sampling failure cannot change the original test failure. Local sample capability and normal external-reuse regression were verified.",
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "result": "approved",
+  "reviewer": {
+    "id": "agent-2",
+    "kind": "independent_read_only_agent",
+    "same_author": false
+  },
+  "schema_version": 1,
+  "scope": "PR5 R7 Darwin failed-child stack diagnostics plus all retained fixes and R6 diagnostics",
+  "slice": "pr5-r7",
+  "validation_boundary": "The sample is a one-second diagnostic snapshot, not a fix or a pass. Exact macOS CI must provide the stack before root-cause repair."
+}

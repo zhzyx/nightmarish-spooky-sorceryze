@@ -1,0 +1,18 @@
+{
+  "findings": [
+    "R3 macOS still had 11 managed_comfy startup failures after native listener adoption, but CI omitted the fixture and supervisor logs required for root-cause diagnosis"
+  ],
+  "issue_number": 1240,
+  "observed": "Independent read-only review approved R5 diagnostics. Failed start receipts now include only the current synthetic test directory's log tails, and failed external launch includes its actual log. Success behavior, production code, pass criteria and skip conditions are unchanged. Targeted lifecycle and external-reuse tests still pass.",
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "result": "approved",
+  "reviewer": {
+    "id": "agent-2",
+    "kind": "independent_read_only_agent",
+    "same_author": false
+  },
+  "schema_version": 1,
+  "scope": "PR5 R5 bounded synthetic failure diagnostics plus all previously reviewed R2-R4 fixes",
+  "slice": "pr5-r5",
+  "validation_boundary": "This is diagnostic instrumentation, not a fix for the remaining macOS startup failure. Exact CI logs and subsequent repair verification are required."
+}

@@ -1,0 +1,18 @@
+{
+  "findings": [
+    "Initial PR5 workflow did not trigger on AINative, Maliang, editor tests and direct package dependencies"
+  ],
+  "issue_number": 1240,
+  "observed": "Independent review verified matching pull_request/push paths for the full AINative suite, Maliang sources, editor tests and direct package dependencies. The native probe was restored before approval. Godot capability guards preserve existing semantics on hosts that provide the methods.",
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "result": "approved",
+  "reviewer": {
+    "id": "agent-2",
+    "kind": "independent_read_only_agent",
+    "same_author": false
+  },
+  "schema_version": 1,
+  "scope": "PR5 full-regression CI coverage, direct input triggers and Godot compatibility guards",
+  "slice": "pr5",
+  "validation_boundary": "Source and CI-integration approval does not replace the exact full-suite CI or final main readback. Historical internal-Python AINative failures remain recorded as failures."
+}

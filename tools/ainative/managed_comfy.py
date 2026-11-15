@@ -19,6 +19,7 @@ import json
 import os
 import secrets
 import socket
+import socketserver
 import struct
 import subprocess
 import sys
@@ -34,6 +35,15 @@ LEASE_SECONDS = 15
 MAX_JSON = 16 * 1024 * 1024
 TERMINAL = {"stopped", "failed"}
 _DETACHED_SUPERVISORS: list[subprocess.Popen[bytes]] = []
+
+
+class _LoopbackHTTPServer(ThreadingHTTPServer):
+    def server_bind(self):
+        # HTTPServer.server_bind performs getfqdn/reverse DNS even for a numeric
+        # loopback bind. The supervisor must not depend on a host's mDNS health.
+        socketserver.TCPServer.server_bind(self)
+        self.server_name = "127.0.0.1"
+        self.server_port = self.server_address[1]
 
 
 class ManagedError(ValueError):
@@ -303,6 +313,75 @@ def _process_identity(pid):
         return ""
 
 
+def _darwin_listener_pid(url):
+    """Read the real Darwin TCP listener through libproc, without lsof."""
+    try:
+        library = ctypes.CDLL("/usr/lib/libproc.dylib")
+        library.proc_listpids.argtypes = [ctypes.c_uint32, ctypes.c_uint32, ctypes.c_void_p, ctypes.c_int]
+        library.proc_listpids.restype = ctypes.c_int
+        library.proc_pidinfo.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_uint64, ctypes.c_void_p, ctypes.c_int]
+        library.proc_pidinfo.restype = ctypes.c_int
+        library.proc_pidfdinfo.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_int]
+        library.proc_pidfdinfo.restype = ctypes.c_int
+        pid_capacity = 4096
+        for _ in range(3):
+            pid_buffer = (ctypes.c_int * pid_capacity)()
+            size = library.proc_listpids(1, 0, pid_buffer, ctypes.sizeof(pid_buffer))  # PROC_ALL_PIDS
+            if size <= 0:
+                return None
+            if size < ctypes.sizeof(pid_buffer):
+                break
+            pid_capacity *= 4
+        else:
+            return None
+        if size % ctypes.sizeof(ctypes.c_int):
+            return None
+        pids = set()
+        targets = {(item[0], item[4][0]) for item in socket.getaddrinfo(url.hostname, None, type=socket.SOCK_STREAM)}
+        for pid in pid_buffer[: size // ctypes.sizeof(ctypes.c_int)]:
+            if pid <= 0:
+                continue
+            fd_capacity = 1024
+            for _ in range(3):
+                fd_buffer = ctypes.create_string_buffer(fd_capacity * 8)
+                fd_size = library.proc_pidinfo(pid, 1, 0, fd_buffer, len(fd_buffer))  # PROC_PIDLISTFDS
+                if fd_size <= 0:
+                    break
+                if fd_size < len(fd_buffer):
+                    break
+                fd_capacity *= 4
+            if fd_size <= 0 or fd_size % 8 or fd_size == len(fd_buffer):
+                continue
+            for offset in range(0, fd_size, 8):
+                fd, kind = struct.unpack_from("=iI", fd_buffer.raw, offset)
+                if kind != 2:  # PROX_FDTYPE_SOCKET
+                    continue
+                info = ctypes.create_string_buffer(792)  # Darwin socket_fdinfo
+                if library.proc_pidfdinfo(pid, fd, 3, info, len(info)) != len(info):  # PROC_PIDFDSOCKETINFO
+                    continue
+                raw = info.raw
+                family = struct.unpack_from("=i", raw, 184)[0]
+                if family not in (socket.AF_INET, socket.AF_INET6):
+                    continue
+                if struct.unpack_from("=i", raw, 256)[0] != 2:  # SOCKINFO_TCP
+                    continue
+                if struct.unpack_from("=i", raw, 344)[0] != 1:  # TSI_S_LISTEN
+                    continue
+                if struct.unpack_from("!H", raw, 268)[0] != url.port:
+                    continue
+                address_raw = raw[324:328] if family == socket.AF_INET else raw[312:328]
+                address = socket.inet_ntop(family, address_raw)
+                addresses = {value for candidate, value in targets if candidate == family}
+                if not addresses:
+                    continue
+                addresses.add("0.0.0.0" if family == socket.AF_INET else "::")
+                if address in addresses:
+                    pids.add(pid)
+        return pids.pop() if len(pids) == 1 else None
+    except (OSError, AttributeError, ValueError, struct.error):
+        return None
+
+
 def _listener_pid(endpoint):
     """Never infer ownership from a live PID: inspect the actual TCP listener."""
     url = urllib.parse.urlsplit(endpoint)
@@ -359,11 +438,13 @@ def _listener_pid(endpoint):
                 except OSError:
                     pass
         return None
+    if sys.platform == "darwin":
+        return _darwin_listener_pid(url)
     try:
         address = "[" + url.hostname + "]" if ":" in url.hostname else url.hostname
         result = subprocess.run(
             [
-                "/usr/sbin/lsof" if sys.platform == "darwin" else "lsof",
+                "lsof",
                 "-nP",
                 "-iTCP@" + address + ":" + str(url.port),
                 "-sTCP:LISTEN",
@@ -986,7 +1067,7 @@ class _Supervisor:
                 except (ValueError, TypeError):
                     self.send_error(400)
 
-        server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        server = _LoopbackHTTPServer(("127.0.0.1", 0), Handler)
         server.daemon_threads = True
         server.timeout = 0.15
         self.control_port = server.server_port

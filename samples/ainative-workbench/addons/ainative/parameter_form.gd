@@ -134,8 +134,10 @@ func _number_field(parent: Node, key: String):
 	input.max_value = spec[2]
 	input.step = 0
 	input.custom_arrow_step = spec[3]
-	input.custom_arrow_round = false
-	input.format = "%s" if key in ["denoise", "mesh_threshold"] else "%.0f"
+	if input.has_method("set_custom_arrow_round"):
+		input.set_custom_arrow_round(false)
+	if input.has_method("set_format"):
+		input.set_format("%s" if key in ["denoise", "mesh_threshold"] else "%.0f")
 	# Imported values must not be silently clamped or rounded before validation.
 	input.allow_greater = true
 	input.allow_lesser = true

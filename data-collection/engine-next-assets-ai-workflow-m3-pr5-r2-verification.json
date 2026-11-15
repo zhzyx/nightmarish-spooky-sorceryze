@@ -1,0 +1,74 @@
+{
+  "base_commit": "30fc090bcb8a6c71548134fd19a5a1e3edaa283b",
+  "checks": {
+    "ainative_full_suite": {
+      "command": "python3 -m unittest discover -s tools/ainative -p test_*.py",
+      "observed": "Darwin arm64 Python 3.12.16 without os.waitid: 422 tests ran in 175.355 seconds, OK with 62 conditional skips; Pillow 12.2.0 present",
+      "passed": true
+    },
+    "clean_source": {
+      "command": "ExportCleanSource.py to m3-pr5-final-clean-source and rebuild",
+      "observed": "156 declared files without Godot roots; unchanged m3-pr5 rebuild passed 54 tests/504 checks and all runtime acceptance; carried forward to m3-pr5-r2",
+      "passed": true
+    },
+    "format": {
+      "command": "clang-format, ruff, YAML parse, CODEOWNERS and git diff --check on the exact candidate",
+      "observed": "R2 Darwin waitid, pinned Pillow and deferred Maliang save/check passed ruff, YAML, real Godot settings and whitespace checks; unchanged native evidence carried from PR5",
+      "passed": true
+    },
+    "legacy_host": {
+      "command": "RunM3LegacyAcceptance.py with Godot 4.4.1 and current next_asset",
+      "observed": "Whitelist import, C++ compile, Godot verify, PackedScene publish and semantic readback passed; nine invalid inputs and three intentionally broken scenes rejected",
+      "passed": true
+    },
+    "link_contract": {
+      "command": "check_engine_next_contract.py with all four manifests in original and clean trees",
+      "observed": "111 source files and 183 local includes passed in both trees; application targets contain 38 objects and the test target 55",
+      "passed": true
+    },
+    "maliang_unified_settings": {
+      "command": "samples/ainative-workbench/test_unified_settings.py --report build/engine_next/m3-pr5-r2-maliang-settings.json",
+      "observed": "Real Godot 4.4.1 unified settings: 28 checks passed with no script errors or leaks after the deferred callback change",
+      "passed": true
+    },
+    "runtime_release": {
+      "command": "BuildRuntime.py --build-dir build/engine_next/m3-pr5-clang --run-tests",
+      "observed": "54 tests/504 checks; existing AI and asset workflows plus same-package and no-package M2 scene acceptance passed",
+      "passed": true
+    },
+    "sanitizer": {
+      "command": "BuildRuntime.py --build-dir build/engine_next/m3-pr5-sanitize --run-tests --sanitize",
+      "observed": "54 tests/504 checks and all acceptance paths passed under ASan/UBSan",
+      "passed": true
+    },
+    "scene_consumption": {
+      "command": "RunM3SceneAcceptance.py in build and CleanRun directories",
+      "observed": "Two stable spawns, 20 ms/4.5 scene simulation, negative-origin prediction, remote interpolation recovery, reconnect and graceful drain passed; no-package fixed20 reached x=3.84; invalid packages and 0/1/3 spawns rejected before transport",
+      "passed": true
+    },
+    "tools": {
+      "command": "unittest engine_next/Tools and tools.test_check_engine_next_contract; targeted Executor/contracts/extensions",
+      "observed": "18 build/schema, 23 contract and 44 targeted Executor tests passed",
+      "passed": true
+    }
+  },
+  "issue_number": 1240,
+  "not_verified": [
+    "Exact R2 three-platform CI and editor acceptance remain pending"
+  ],
+  "platform": {
+    "architecture": "arm64",
+    "python": "3.12.16",
+    "system": "Darwin"
+  },
+  "previous": {
+    "pr": 1283,
+    "result": "Initial signed candidate passed Windows AINative/static/editor checks; macOS lacked os.waitid, Ubuntu lacked Pillow, and Windows offline Maliang rejected save/check while the controller was processing completion",
+    "signed_head": "2f9e7efc8d801db02b890a65e53c9c88f34c9d0d"
+  },
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "review": "data-collection/engine-next-assets-ai-workflow-m3-pr5-r2-review.json",
+  "schema_version": 1,
+  "slice": "pr5-r2",
+  "supersedes": "data-collection/engine-next-assets-ai-workflow-m3-pr5-verification.json"
+}
