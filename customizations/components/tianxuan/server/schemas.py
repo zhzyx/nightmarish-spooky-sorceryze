@@ -124,6 +124,8 @@ class MergeQueueCreateRequest(BaseModel):
     target: str
     title: str = ""
     priority: int = 0
+    pr_number: int | None = None
+    issue_ref: str = ""
 
 
 class DocCreateRequest(BaseModel):

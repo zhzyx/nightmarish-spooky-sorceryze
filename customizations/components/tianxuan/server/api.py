@@ -1148,11 +1148,21 @@ def create_app(
                     payload.target,
                     payload.title,
                     payload.priority,
+                    pr_number=payload.pr_number,
+                    issue_ref=payload.issue_ref,
                 )
             except PolicyError as error:
                 raise HTTPException(status_code=403, detail=str(error)) from error
             except ValueError as error:
                 raise HTTPException(status_code=400, detail=str(error)) from error
+
+        def _require_queue_item_owner(item_id: str, actor: str, action: str) -> None:
+            try:
+                item = merge_queue.get(item_id)
+            except KeyError as error:
+                raise HTTPException(status_code=404, detail="merge queue item not found") from error
+            if store.role_of(actor) != "admin" and item.get("created_by") != actor:
+                raise PermissionDenied(f"only the creator or an admin can {action} merge candidates")
 
         @app.get("/api/v1/merge-queue")
         def list_merge_queue(
@@ -1195,6 +1205,7 @@ def create_app(
 
         @app.post("/api/v1/merge-queue/{item_id}/retry")
         def retry_merge(item_id: str, actor: ActorDep) -> dict[str, Any]:
+            _require_queue_item_owner(item_id, actor, "retry")
             try:
                 return merge_queue.retry(item_id)  # type: ignore[no-any-return]
             except ValueError as error:
@@ -1202,8 +1213,7 @@ def create_app(
 
         @app.post("/api/v1/merge-queue/{item_id}/cancel")
         def cancel_merge_queue_item(item_id: str, actor: ActorDep) -> dict[str, Any]:
-            if store.role_of(actor) == "viewer":
-                raise PermissionDenied("viewer cannot cancel merge candidates")
+            _require_queue_item_owner(item_id, actor, "cancel")
             try:
                 return merge_queue.cancel(item_id)  # type: ignore[no-any-return]
             except KeyError as error:

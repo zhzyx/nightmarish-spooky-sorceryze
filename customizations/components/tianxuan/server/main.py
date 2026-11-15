@@ -50,6 +50,7 @@ _MERGE_QUEUE = MergeQueue(
     checks=_CHECKS,
     protected_branches=_PROTECTED_BRANCHES,
     role_resolver=_STORE.role_of,
+    event_sink=_STORE.record_actor_event,
 )
 if os.environ.get("TIANXUAN_MERGE_WORKER", "1") != "0":
     _MERGE_QUEUE.start_worker()

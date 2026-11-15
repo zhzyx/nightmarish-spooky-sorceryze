@@ -1579,6 +1579,13 @@ class Tianxuan:
             raise TianxuanError(f"invalid repository event type: {event_type!r}")
         self._event(tenant_id, event_type, "gitea:webhook", target, payload)
 
+    @_connection_call
+    def record_actor_event(self, actor: str, event_type: str, target: str, payload: dict[str, Any]) -> None:
+        """以操作者身份记录事件；供合入队列等宿主组件写入审计回执。"""
+        if not isinstance(event_type, str) or not event_type:
+            raise TianxuanError("event type must be a non-empty string")
+        self._event(self._tenant_of(actor), event_type, actor, target, payload)
+
     def _delete_events(self, tenant_id: str | None, older_than_days: int, type_prefix: str | None) -> int:
         days = max(0.0, float(older_than_days))
         cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()

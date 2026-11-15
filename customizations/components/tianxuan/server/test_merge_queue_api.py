@@ -162,3 +162,47 @@ def test_merge_queue_status_reports_worker(monkeypatch: pytest.MonkeyPatch, tmp_
         assert running["worker"] is True
     finally:
         queue.stop_worker()
+
+
+def _add_editor(client: TestClient, headers: dict[str, str], email: str) -> dict[str, str]:
+    response = client.post(
+        "/api/v1/users",
+        headers=headers,
+        json={"email": email, "password": "secret-pass", "role": "editor"},
+    )
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    return {"X-Actor": str(payload.get("id") or payload["user_id"])}
+
+
+def test_queue_binding_and_creator_permissions(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    client, headers, _ = _setup(monkeypatch, tmp_path)
+    first_editor = _add_editor(client, headers, "first@example.com")
+    second_editor = _add_editor(client, headers, "second@example.com")
+
+    created = client.post(
+        "/api/v1/merge-queue",
+        headers=first_editor,
+        json={
+            "repo": "docs.git",
+            "source": "feature",
+            "target": "main",
+            "pr_number": 7,
+            "issue_ref": "#1188",
+        },
+    )
+    assert created.status_code == 200, created.text
+    item = created.json()
+    assert item["evidence"]["binding"] == {"pr_number": 7, "issue_ref": "#1188"}
+
+    assert client.post(f"/api/v1/merge-queue/{item['id']}/cancel", headers=second_editor).status_code == 403
+    assert client.post(f"/api/v1/merge-queue/{item['id']}/retry", headers=second_editor).status_code == 403
+    assert client.post(f"/api/v1/merge-queue/{item['id']}/cancel", headers=first_editor).status_code == 200
+
+    second = client.post(
+        "/api/v1/merge-queue",
+        headers=first_editor,
+        json={"repo": "docs.git", "source": "feature", "target": "main"},
+    ).json()
+    assert client.post(f"/api/v1/merge-queue/{second['id']}/cancel", headers=headers).status_code == 200
+    assert client.post(f"/api/v1/merge-queue/{second['id']}/retry", headers=headers).status_code == 200

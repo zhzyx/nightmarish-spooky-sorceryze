@@ -50,6 +50,18 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _validate_binding(pr_number: int | None, issue_ref: str) -> tuple[int | None, str]:
+    """校验可选的 PR/工单绑定，避免把任意数据写入合入证据。"""
+    if pr_number is not None and (isinstance(pr_number, bool) or not isinstance(pr_number, int) or pr_number <= 0):
+        raise ValueError(f"pull request number must be a positive integer: {pr_number!r}")
+    if not isinstance(issue_ref, str):
+        raise ValueError(f"issue reference must be a string: {issue_ref!r}")
+    issue_ref = issue_ref.strip()
+    if len(issue_ref) > 500 or "\x00" in issue_ref:
+        raise ValueError("issue reference is too long or contains NUL")
+    return pr_number, issue_ref
+
+
 def _new_id() -> str:
     return f"mq_{uuid.uuid4().hex}"
 
@@ -111,6 +123,7 @@ class MergeQueue:
         check_timeout: float = 600.0,
         protected_branches: Sequence[str] = (),
         role_resolver: Callable[[str], str] | None = None,
+        event_sink: Callable[[str, str, str, dict[str, Any]], None] | None = None,
     ) -> None:
         self.db = sqlite3.connect(db_path, check_same_thread=False, timeout=30.0)
         self.db.row_factory = sqlite3.Row
@@ -121,6 +134,7 @@ class MergeQueue:
         self.check_timeout = check_timeout
         self.protected_branches = parse_protected_branches(protected_branches)
         self.role_resolver = role_resolver
+        self.event_sink = event_sink
         self._lock = threading.Lock()
         self._process_lock = threading.Lock()
         self._worker: threading.Thread | None = None
@@ -169,6 +183,9 @@ class MergeQueue:
         target: str,
         title: str = "",
         priority: int = 0,
+        *,
+        pr_number: int | None = None,
+        issue_ref: str = "",
     ) -> dict[str, Any]:
         repo_path = self._repo_path(repo)
         branches = set(self.git.list_branches(repo_path))
@@ -178,6 +195,7 @@ class MergeQueue:
             raise ValueError(f"unknown target branch: {target}")
         if source == target:
             raise ValueError("source and target must differ")
+        pr_number, issue_ref = _validate_binding(pr_number, issue_ref)
         actor_role = self._resolve_role(actor)
         decision = ensure_merge_allowed(
             target,
@@ -185,6 +203,14 @@ class MergeQueue:
             actor_role=actor_role,
             path="queue",
         )
+        evidence: dict[str, Any] = {"policy": decision}
+        binding: dict[str, Any] = {}
+        if pr_number is not None:
+            binding["pr_number"] = pr_number
+        if issue_ref:
+            binding["issue_ref"] = issue_ref
+        if binding:
+            evidence["binding"] = binding
         item_id = _new_id()
         now = _now()
         with self._lock, self.db:
@@ -199,13 +225,28 @@ class MergeQueue:
                     target,
                     title or source,
                     priority,
-                    json.dumps({"policy": decision}, ensure_ascii=False),
+                    json.dumps(evidence, ensure_ascii=False),
                     actor,
                     now,
                     now,
                 ),
             )
+        self._emit(
+            actor,
+            "repo.merge.enqueued",
+            target,
+            {"item_id": item_id, "source": source, "target": target, "binding": binding},
+        )
         return self.get(item_id)
+
+    def _emit(self, actor: str, event_type: str, target: str, payload: dict[str, Any]) -> None:
+        """写入审计事件；事件通道失败不得中断合入队列。"""
+        if self.event_sink is None:
+            return
+        try:
+            self.event_sink(actor, event_type, target, payload)
+        except Exception:
+            return
 
     def _resolve_role(self, actor: str) -> str:
         """解析候选创建者的当前角色。
@@ -301,16 +342,28 @@ class MergeQueue:
                         "status": "rejected",
                         "evidence": {"error": f"{type(error).__name__}: {error}", "attempt": attempt},
                     }
+            existing = json.loads(item["evidence"] or "{}")
+            merged_evidence = {**existing, **outcome["evidence"]} if isinstance(existing, dict) else outcome["evidence"]
             with self._lock, self.db:
                 self.db.execute(
                     "UPDATE merge_queue SET status = ?, evidence = ?, updated_at = ? WHERE id = ?",
                     (
                         outcome["status"],
-                        json.dumps(outcome["evidence"], ensure_ascii=False),
+                        json.dumps(merged_evidence, ensure_ascii=False),
                         _now(),
                         item["id"],
                     ),
                 )
+            self._emit(
+                item["created_by"],
+                f"repo.merge.{outcome['status']}",
+                item["target"],
+                {
+                    "item_id": item["id"],
+                    "status": outcome["status"],
+                    "attempts": int(item["attempts"]) + 1,
+                },
+            )
             return self.get(item["id"])
 
     def recover_stale(self, older_than_seconds: float = 300.0) -> int:

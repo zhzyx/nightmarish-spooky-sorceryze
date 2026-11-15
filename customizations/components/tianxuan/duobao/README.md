@@ -29,6 +29,8 @@
 `merge_queue.py`：SQLite 持久化合入队列。
 
 - 候选持久化、优先级、串行领取、stale 恢复、自动 worker、失败重试与取消。
+- 候选可绑定 PR 编号与工单引用（`pr_number`/`issue_ref`），绑定写入证据并在合入结果中保留；重试与取消仅创建者或租户 `admin` 可执行。
+- 可选 `event_sink` 把入队与终态写入领域事件（生产入口接 `Tianxuan.record_actor_event`）；事件通道失败不阻断合入。
 - 临时 worktree 预检、冲突隔离、可配置检查命令、独立 HOME/TEMP、凭据环境剥离、进程树超时与合入证据（`merge_sha`/检查输出/冲突路径/策略判定）。
 
 `gitea_client.py`：Gitea/Forgejo HTTP 客户端（单一服务 token）。
