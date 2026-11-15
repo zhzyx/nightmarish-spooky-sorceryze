@@ -42,6 +42,11 @@ CREATE TABLE IF NOT EXISTS doc_shares (
   created_by TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT,
   PRIMARY KEY (doc_id, user_id)
 );
+CREATE TABLE IF NOT EXISTS doc_field_permissions (
+  doc_id TEXT NOT NULL, field TEXT NOT NULL, min_role TEXT NOT NULL,
+  updated_by TEXT NOT NULL, updated_at TEXT NOT NULL,
+  PRIMARY KEY (doc_id, field)
+);
 CREATE TABLE IF NOT EXISTS spaces (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, name TEXT NOT NULL, slug TEXT NOT NULL, created_at TEXT NOT NULL
 );
@@ -124,6 +129,9 @@ CREATE TABLE IF NOT EXISTS repo_links (
 );
 CREATE INDEX IF NOT EXISTS idx_repo_links_tenant ON repo_links(tenant_id);
 """
+
+_FIELD_FIELDS = {"title", "body_md", "status", "visibility"}
+_ROLE_RANK = {"viewer": 0, "editor": 1, "admin": 2}
 
 ISSUE_TRANSITIONS = {
     "backlog": {"planned", "in-progress", "cancelled"},
@@ -691,6 +699,12 @@ class Tianxuan:
             raise PermissionDenied("no write access to document")
         if doc["version"] != expected_version:
             raise VersionConflict(f"expected version {expected_version}, found {doc['version']}")
+        if body_md != doc["body_md"]:
+            self._require_field_write(actor, doc, "body_md")
+        if title is not None and title != doc["title"]:
+            self._require_field_write(actor, doc, "title")
+        if status is not None and status != doc["status"]:
+            self._require_field_write(actor, doc, "status")
         version = expected_version + 1
         now = _now()
         title = title if title is not None else doc["title"]
@@ -786,6 +800,8 @@ class Tianxuan:
         doc = self._require_tenant_doc(actor, doc_id)
         if doc["created_by"] != actor and not self._is_admin(actor):
             raise PermissionDenied("only the owner or an admin can change visibility")
+        if visibility != doc["visibility"]:
+            self._require_field_write(actor, doc, "visibility")
         self.db.execute("UPDATE docs SET visibility = ?, updated_at = ? WHERE id = ?", (visibility, _now(), doc_id))
         self._event(doc["tenant_id"], "doc.visibility_changed", actor, doc_id, {"visibility": visibility})
         return self.get_doc(doc_id)
@@ -845,6 +861,61 @@ class Tianxuan:
             (doc_id, _now()),
         ).fetchall()
         return [dict(row) for row in rows]
+
+    # ---------- 文曲：文档字段级权限 ----------
+
+    @_connection_call
+    def set_doc_field_permission(
+        self,
+        actor: str,
+        doc_id: str,
+        field: str,
+        min_role: str,
+    ) -> dict[str, Any]:
+        if field not in _FIELD_FIELDS:
+            raise TianxuanError(f"unsupported field: {field}")
+        if min_role not in _ROLE_RANK:
+            raise TianxuanError("min_role must be viewer, editor or admin")
+        doc = self._require_tenant_doc(actor, doc_id)
+        if doc["created_by"] != actor and not self._is_admin(actor):
+            raise PermissionDenied("only the owner or an admin can set field permissions")
+        now = _now()
+        self.db.execute(
+            "INSERT INTO doc_field_permissions (doc_id, field, min_role, updated_by, updated_at) "
+            "VALUES (?, ?, ?, ?, ?) "
+            "ON CONFLICT(doc_id, field) DO UPDATE SET min_role = excluded.min_role, "
+            "updated_by = excluded.updated_by, updated_at = excluded.updated_at",
+            (doc_id, field, min_role, actor, now),
+        )
+        self._event(
+            doc["tenant_id"],
+            "doc.field_permission_set",
+            actor,
+            doc_id,
+            {"field": field, "min_role": min_role},
+        )
+        return {"doc_id": doc_id, "field": field, "min_role": min_role, "updated_at": now}
+
+    @_connection_call
+    def list_doc_field_permissions(self, actor: str, doc_id: str) -> list[dict[str, Any]]:
+        doc = self.get_doc_shared(actor, doc_id, write=True)
+        rows = self.db.execute(
+            "SELECT field, min_role, updated_by, updated_at FROM doc_field_permissions WHERE doc_id = ? ORDER BY field",
+            (doc["id"],),
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+    def _require_field_write(self, actor: str, doc: dict[str, Any], field: str) -> None:
+        if self._is_admin(actor):
+            return
+        row = self.db.execute(
+            "SELECT min_role FROM doc_field_permissions WHERE doc_id = ? AND field = ?",
+            (doc["id"], field),
+        ).fetchone()
+        if row is None:
+            return
+        if _ROLE_RANK.get(self.role_of(actor), 0) < _ROLE_RANK.get(str(row["min_role"]), 0):
+            raise PermissionDenied(f"{field} requires {row['min_role']} role")
 
     def ai_view(self, doc_id: str) -> dict[str, Any]:
         doc = self.get_doc(doc_id)

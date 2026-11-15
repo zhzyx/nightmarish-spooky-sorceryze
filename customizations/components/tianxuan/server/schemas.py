@@ -210,6 +210,13 @@ class DocVisibilityRequest(BaseModel):
     visibility: str
 
 
+class FieldPermissionRequest(BaseModel):
+    """设置文档字段写入所需的最低角色。"""
+
+    field: str
+    min_role: str
+
+
 class DocShareRequest(BaseModel):
     """把私有文档共享给同租户成员，可选设置过期时间。"""
 

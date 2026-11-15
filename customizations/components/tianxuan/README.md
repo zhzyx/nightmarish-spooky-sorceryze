@@ -147,5 +147,5 @@ python -m pytest customizations/components/tianxuan
 - 新增 Agent/Skill（文曲、多宝、司南工单扩展）必须先经 `skills/gonggong-check` 审查并取得精确候选准入。
 - 文档以 Markdown 为唯一权威，AI 阅读优先；人类视图是第二等公民。
 - 验收沿用现有 Agent（司南协调、偃师设计、夸父质量、谛听证据）。
-- 认证默认使用 Bearer 会话（`/api/v1/auth/session`）；Web 登录页把 token 存入 localStorage 与同站 cookie，`X-Actor` 仅在显式开启时兼容；角色为租户级，文档 ACL 已实现，但字段级权限尚未实现。
+- 认证默认使用 Bearer 会话（`/api/v1/auth/session`）；Web 登录页把 token 存入 localStorage 与同站 cookie，`X-Actor` 仅在显式开启时兼容；角色为租户级，文档 ACL 与字段级写入权限（title/body_md/status/visibility 的最低角色，owner/admin 配置）已实现。
 - 产品 Agent/Skill 仍是候选，未经授权批准人签署不得视为已准入。

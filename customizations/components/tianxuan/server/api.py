@@ -52,6 +52,7 @@ from schemas import (
     DocVisibilityRequest,
     ExternalLinkRequest,
     ExternalRequirementRequest,
+    FieldPermissionRequest,
     GitBranchCreateRequest,
     GitImportRequest,
     GitTagCreateRequest,
@@ -1144,6 +1145,20 @@ def create_app(
     def share_doc(doc_id: str, payload: DocShareRequest, actor: ActorDep) -> dict[str, Any]:
         return store.share_doc(  # type: ignore[no-any-return]
             actor, doc_id, payload.user_id, payload.permission, payload.expires_at
+        )
+
+    @app.get("/api/v1/docs/{doc_id}/field-permissions")
+    def list_doc_field_permissions(doc_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        return {"permissions": store.list_doc_field_permissions(actor, doc_id)}
+
+    @app.put("/api/v1/docs/{doc_id}/field-permissions")
+    def set_doc_field_permission(
+        doc_id: str,
+        payload: FieldPermissionRequest,
+        actor: ActorDep,
+    ) -> dict[str, Any]:
+        return store.set_doc_field_permission(  # type: ignore[no-any-return]
+            actor, doc_id, payload.field, payload.min_role
         )
 
     @app.get("/api/v1/docs/{doc_id}/shares")
