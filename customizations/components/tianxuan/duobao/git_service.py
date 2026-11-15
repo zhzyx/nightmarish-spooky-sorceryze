@@ -703,6 +703,8 @@ class GitService:
             if not separator or len(fields) < 4:
                 continue
             mode, kind, sha, size = fields[0], fields[1], fields[2], fields[3]
+            if mode == "160000" or kind == "commit":
+                kind = "submodule"
             entries.append({
                 "name": name,
                 "path": f"{path}/{name}" if path else name,

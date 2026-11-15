@@ -552,6 +552,10 @@ export function RepoTree() {
                       <button className="btn btn-ghost btn-sm" onClick={() => void loadTree(repo, branch, entry.path)} type="button">
                         📁 {entry.name}
                       </button>
+                    ) : entry.type === "submodule" ? (
+                      <span>
+                        {entry.name} · {t("repos.submodule")}
+                      </span>
                     ) : (
                       <button
                         className="btn btn-ghost btn-sm"
@@ -564,9 +568,11 @@ export function RepoTree() {
                     <span style={mutedStyle}>
                       {entry.type === "tree"
                         ? t("repos.directory")
-                        : entry.size === null
-                          ? t("repos.file")
-                          : `${entry.size} B`}
+                        : entry.type === "submodule"
+                          ? t("repos.submodule")
+                          : entry.size === null
+                            ? t("repos.file")
+                            : `${entry.size} B`}
                     </span>
                   </li>
                 ))}
