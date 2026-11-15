@@ -3,5 +3,5 @@
   "reason": "scene_adapter.gd 只在显式 Godot 进程中解析白名单 TSCN、实例化 legacy 节点并发布 PackedScene；不进入 Engine Next 原生链接或干净运行时闭包。",
   "host_contract": "由固定 Godot 4.4.1 headless 调用 verify/publish/import；next_asset inspect 先验证包，import 输出 BuildRequest 和 staged blobs 后由同一 C++ AssetCompiler 生成 ENPAK。所有禁止项和 no-clobber 失败均返回结构化错误。TSCN 发布／请求写入的 no-clobber 以单宿主进程为前置条件，不宣称并发原子占位；ENPAK 仍由 C++ no-replace 原子发布。",
   "rollback": "删除 tools/engine_next_legacy 及工作流中的显式宿主验收步骤即可恢复 legacy 原行为；既有 Godot Workbench 和 AIWorkflowRuntime 不变。",
-  "evidence": "data-collection/engine-next-assets-ai-workflow-m3-pr5-r3-legacy-build-impact.json"
+  "evidence": "data-collection/engine-next-assets-ai-workflow-m3-pr5-r4-legacy-build-impact.json"
 }

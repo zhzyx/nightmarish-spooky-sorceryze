@@ -1,0 +1,20 @@
+{
+  "findings": [
+    "PR5 CI iteratively exposed missing Darwin waitid, missing Ubuntu Pillow, synchronous Maliang completion busy rejection and unusable Darwin lsof listener inspection",
+    "The first libproc revision mixed address-family wildcards and was corrected before approval",
+    "The Windows acceptance still required the retired fresh-install Codex default although the bundled host and provider-assets contract select local_mesh"
+  ],
+  "issue_number": 1240,
+  "observed": "Independent read-only review approved R4 and all retained R2/R3 fixes. The fresh bundled installation now must save local_mesh and the exact hunyuan3d-mini.safetensors model. This matches managed_comfy_panel and the provider-assets contract; Codex remains opt-in. Connection, ownership, lease, capability, generation, preview, publication and reload assertions are unchanged. Godot 4.4.1 parsed the corrected acceptance script successfully.",
+  "request_id": "engine-next-assets-ai-workflow-m3-20261114",
+  "result": "approved",
+  "reviewer": {
+    "id": "agent-2",
+    "kind": "independent_read_only_agent",
+    "same_author": false
+  },
+  "schema_version": 1,
+  "scope": "PR5 R4 fresh-install local_mesh acceptance correction plus all previously reviewed full-regression fixes",
+  "slice": "pr5-r4",
+  "validation_boundary": "Source approval and GDScript parsing do not prove the repaired Windows first-use flow. Exact R4 three-platform CI, complete Windows offline Maliang, macOS AIChat/Tianshu and main readback remain required."
+}

@@ -109,7 +109,8 @@ func run():
 	receipt['model_log'] = manager.last_report.get('log_path', '')
 	if not verify(manager.runtime_path.text == runtime and panel.python_edit.text == interpreter, 'Both paths resolved from the running executable'): return
 	if not verify(manager.last_report.get('connected', false) and manager.last_report.get('owned', false) and not manager.lease_path.is_empty(), 'The packaged runtime started and its session owns the local connection'): return
-	if not verify(panel.service_saved.get('mode') == 'codex' and panel.service_saved.get('mesh_model') == model, 'Selected the shipped model without editing service settings'): return
+	# Fresh bundled installations default to local_mesh; Codex remains opt-in.
+	if not verify(panel.service_saved.get('mode') == 'local_mesh' and panel.service_saved.get('mesh_model') == model, 'Selected the shipped model without editing service settings'): return
 	if not verify(panel.service_report.get('capabilities', {}).get('image_to_mesh', {}).get('ready', false), 'Direct image-to-mesh capability ready'): return
 	receipt['cli_connected'] = panel.service_report.get('cli', {}).get('connected', false)
 	var local = ConfigFile.new()
