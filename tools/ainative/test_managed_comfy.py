@@ -131,7 +131,16 @@ class ManagedComfyTests(unittest.TestCase):
         self.config_path.write_text(json.dumps(self.config), encoding="utf-8")
 
     def call(self, action, **kwargs):
-        return managed.manage(dict(self.request, action=action, **kwargs))
+        reply = managed.manage(dict(self.request, action=action, **kwargs))
+        if action == "start" and not reply.get("ok"):
+            logs = {}
+            for path in self.base.rglob("*.log"):
+                try:
+                    logs[path.relative_to(self.base).as_posix()] = path.read_text(errors="replace")[-16384:]
+                except OSError:
+                    pass
+            reply["fixture_logs"] = logs
+        return reply
 
     def wait_state(self, expected, timeout=8):
         deadline = time.monotonic() + timeout
@@ -196,7 +205,8 @@ class ManagedComfyTests(unittest.TestCase):
             if managed._probe(config)["connected"]:
                 return child
             time.sleep(0.05)
-        self.fail("external fixture failed")
+        stream.flush()
+        self.fail("external fixture failed: " + (self.base / "external.log").read_text(errors="replace"))
 
     def test_inspect_and_private_override(self):
         before = hashlib.sha256(self.config_path.read_bytes()).hexdigest()
