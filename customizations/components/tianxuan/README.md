@@ -129,7 +129,7 @@ python tianshu_bridge.py --api http://127.0.0.1:8000 --actor <user_id> \
 - 仓库绑定与 webhook：`/api/v1/repo-links` 把 `provider/owner/name` 绑定到租户（全局唯一，admin 管理）；`/api/v1/webhooks/gitea` 校验 HMAC 签名后把 push/PR 事件写入对应租户事件流，未绑定仓库与不支持事件返回 202 ignored
 - AI：BYOK 模型网关（用量与预算）；AI 工具入口；结构化补丁
 - Web：文档列表/详情/编辑/共享、Markdown/HTML/Word/PDF 导出（HTML 为安全 Markdown 渲染；PDF/DOCX 支持 data URI 图片；远程图片需 `TIANXUAN_EXPORT_IMAGE_HOSTS` 白名单）、实时文档、实时工单看板、实时仓库、仓库文件树/分支/标签面板（目录浏览、建删分支、标签查看、镜像导入）、PR 评审（批准/要求修改/评论与评审计数）、PR 状态筛选与分页（open/closed/all）、设置页系统状态、API 连通状态
-- 交付：`deploy/` 自托管 Compose；CLI；端到端演示脚本
+- 交付：`deploy/` 自托管 Compose（含 TLS/门禁 profile 与备份脚本）；CLI；端到端演示脚本；`/api/v1/ready` 就绪探针与 `duobao/backup_drill.py` 备份恢复演练
 
 ## 测试
 

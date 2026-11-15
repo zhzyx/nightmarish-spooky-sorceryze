@@ -1709,6 +1709,12 @@ class Tianxuan:
             raise TianxuanError("event type must be a non-empty string")
         self._event(self._tenant_of(actor), event_type, actor, target, payload)
 
+    @_connection_call
+    def ping(self) -> bool:
+        """轻量健康检查：确认数据库连接仍可读。"""
+        row = self.db.execute("SELECT 1").fetchone()
+        return row is not None
+
     def _delete_events(self, tenant_id: str | None, older_than_days: int, type_prefix: str | None) -> int:
         days = max(0.0, float(older_than_days))
         cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()

@@ -323,6 +323,54 @@ Without these variables the Gitea-backed repository views report
 - **Compose DNS.** `nginx.conf` assumes Docker's embedded DNS; it is not a
   drop-in config for a non-Compose host.
 
+## Backup and restore drill
+
+`production/backup.sh` snapshots the `tianxuan-data` volume while the API is
+stopped and keeps the last seven archives. Verify and rehearse a restore before
+relying on it:
+
+```sh
+# 1. Create a backup archive (stops api briefly, restarts it afterwards)
+bash deploy/production/backup.sh
+
+# 2. Check the archive contents
+tar -tzf deploy/backups/tianxuan-data-*.tgz | head
+
+# 3. Rehearse a restore into a throwaway volume
+docker volume create tianxuan-restore
+docker run --rm -v tianxuan-restore:/data -v "$PWD/deploy/backups:/backup" \
+  --entrypoint tar tianxuan-api:local -xzf /backup/<archive>.tgz -C /data
+docker run --rm -v tianxuan-restore:/data --entrypoint sh tianxuan-api:local \
+  -c 'sqlite3 /data/tianxuan.db "PRAGMA integrity_check"'
+```
+
+For local installs without Docker, the module ships an end-to-end drill that
+creates a backup, verifies every SHA256, restores it and compares repository
+bytes plus the SQLite integrity check:
+
+```sh
+PYTHONPATH=customizations/components/tianxuan/duobao \
+python customizations/components/tianxuan/duobao/backup_drill.py \
+  --repo-root /path/to/repos --database /path/to/tianxuan.db \
+  --workdir /tmp/duobao-drill --json-out /tmp/duobao-drill.json
+```
+
+Exit code `0` writes a JSON receipt with `archive_sha256`, file counts and the
+database integrity result; non-zero means the drill failed and the work
+directory is kept for diagnosis.
+
+## Readiness and monitoring
+
+- `GET /api/v1/health` is a liveness probe and always returns `200 {"status":"ok"}`.
+- `GET /api/v1/ready` is a readiness probe. It checks the SQLite connection and,
+  when `TIANXUAN_REPO_ROOT` is set, that the repository root exists. Missing or
+  unreadable state returns `503 {"status":"degraded",...}` so a proxy/monitor can
+  stop routing traffic. The merge worker state is reported when a queue exists,
+  but a disabled worker does not mark the service unready.
+- Keep the data volume on a monitored disk and alert on `/api/v1/ready` 503
+  responses plus free space; `production/verify.sh` prints disk usage and
+  certificate expiry for the HTTPS profile.
+
 ## Troubleshooting
 
 - `dependency failed to start: container ... api ... is unhealthy` - check

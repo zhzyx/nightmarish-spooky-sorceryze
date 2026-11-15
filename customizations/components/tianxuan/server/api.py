@@ -305,6 +305,27 @@ def create_app(
     def health() -> dict[str, str]:
         return {"status": "ok"}
 
+    @app.get("/api/v1/ready")
+    def readiness() -> JSONResponse:
+        """就绪检查：数据库可读、仓库根可用；返回 503 表示不应接收流量。"""
+        checks: dict[str, Any] = {}
+        try:
+            checks["database"] = store.ping()
+        except Exception:
+            checks["database"] = False
+        repo_root = os.environ.get("TIANXUAN_REPO_ROOT", "").strip()
+        if repo_root:
+            checks["repo_root"] = Path(repo_root).is_dir()
+        else:
+            checks["repo_root"] = None
+        if merge_queue is not None:
+            checks["merge_worker"] = merge_queue.worker_running
+        degraded = checks["database"] is not True or checks["repo_root"] is False
+        return JSONResponse(
+            status_code=503 if degraded else 200,
+            content={"status": "degraded" if degraded else "ready", "checks": checks},
+        )
+
     # ---------- 身份 ----------
 
     @app.post("/api/v1/auth/register")
