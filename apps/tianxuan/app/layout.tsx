@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import type { ReactNode } from "react";
+import { currentIdentity } from "@/lib/server-api";
+import { IdentityProvider } from "@/components/IdentityProvider";
 import { AppShell } from "@/components/AppShell";
 import { LOCALE_COOKIE, normalizeLocale, translate } from "@/lib/i18n";
 import { I18nProvider } from "@/lib/i18n-client";
@@ -25,13 +27,14 @@ export const viewport: Viewport = {
   themeColor: "#0B0E11",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
   const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);
+  const identity = await currentIdentity();
   return (
     <html lang={locale === "en" ? "en" : "zh-CN"}>
       <body>
         <I18nProvider initialLocale={locale}>
-          <AppShell>{children}</AppShell>
+          <IdentityProvider identity={identity}><AppShell>{children}</AppShell></IdentityProvider>
         </I18nProvider>
       </body>
     </html>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useIdentity } from "@/components/IdentityProvider";
 import { useActor } from "@/lib/use-actor";
 
 import Link from "next/link";
@@ -240,6 +241,8 @@ export interface DocEditorProps {
 
 export function DocEditor({ doc, initialContent, version: initialVersion }: DocEditorProps) {
   const actor = useActor();
+  const identity = useIdentity();
+  const draftKey = identity ? `tianxuan:draft:${identity.id}:${doc.id}` : null;
   const { t, locale } = useI18n();
   const modeOptions: { id: EditorMode; label: string; icon: IconName }[] = [
     { id: "split", label: t("editor.modeSplit"), icon: "grid" },
@@ -270,8 +273,15 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
+    setTitle(doc.title);
+    setMarkdown(initialContent);
+    setVersion(initialVersion ?? doc.version ?? 1);
+    setRestored(false);
+    setSaveState("saved");
+    setSyncNote("");
+    if (!draftKey) return;
     try {
-      const raw = window.localStorage.getItem(`tianxuan:draft:${doc.id}`);
+      const raw = window.localStorage.getItem(draftKey);
       if (!raw) {
         return;
       }
@@ -285,16 +295,16 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
     } catch {
       // A blocked storage API must never prevent editing.
     }
-  }, [doc.id]);
+  }, [draftKey, doc.title, doc.version, initialContent, initialVersion]);
 
   useEffect(() => {
-    if (saveState !== "dirty") {
+    if (saveState !== "dirty" || !draftKey) {
       return;
     }
     const timeout = window.setTimeout(() => {
       try {
         window.localStorage.setItem(
-          `tianxuan:draft:${doc.id}`,
+          draftKey,
           JSON.stringify({ title, markdown }),
         );
       } catch {
@@ -303,7 +313,7 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
       setSaveState("saved");
     }, 900);
     return () => window.clearTimeout(timeout);
-  }, [doc.id, markdown, saveState, title]);
+  }, [draftKey, markdown, saveState, title]);
 
   const preview = useMemo(() => renderMarkdown(markdown), [markdown]);
   const characters = markdown.replace(/\s/g, "").length;
@@ -323,8 +333,8 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
 
   async function persistNow() {
     try {
-      window.localStorage.setItem(
-        `tianxuan:draft:${doc.id}`,
+      if (draftKey) window.localStorage.setItem(
+        draftKey,
         JSON.stringify({ title, markdown }),
       );
     } catch {

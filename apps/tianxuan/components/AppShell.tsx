@@ -83,6 +83,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </button>
           </div>
 
+          <Link href="/accounts" className="btn btn-ghost">{locale === "zh" ? "账号与访问 Key" : "Accounts & access keys"}</Link>
           <button className="workspace-switch" type="button">
             <span className="workspace-avatar" aria-hidden="true">
               共

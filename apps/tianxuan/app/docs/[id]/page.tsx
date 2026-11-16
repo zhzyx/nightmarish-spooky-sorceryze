@@ -1,3 +1,4 @@
+import { currentActor } from "@/lib/server-api";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
@@ -7,7 +8,7 @@ import { DocExport } from "@/components/DocExport";
 import { DocExternalSource } from "@/components/DocExternalSource";
 import { DocSharing } from "@/components/DocSharing";
 import { DocVersions } from "@/components/DocVersions";
-import { fetchDoc } from "@/lib/api";
+import { fetchDoc } from "@/lib/server-api";
 import { getDoc, getDocContent, type DocRecord } from "@/lib/data";
 import { LOCALE_COOKIE, normalizeLocale, translate, type MessageKey } from "@/lib/i18n";
 
@@ -40,8 +41,8 @@ export default async function DocPage({ params }: DocPageProps) {
     );
   }
 
-  const actor = process.env.TIANXUAN_ACTOR ?? "";
-  if (actor || process.env.TIANXUAN_TOKEN) {
+  const actor = await currentActor();
+  if (actor) {
     try {
       const liveDoc = await fetchDoc(params.id, actor);
       const record: DocRecord = {

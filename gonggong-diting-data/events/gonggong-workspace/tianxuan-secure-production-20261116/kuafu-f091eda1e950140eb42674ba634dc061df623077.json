@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f091eda1e950140eb42674ba634dc061df623077",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-secure-production-20261116",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1363",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6105288a577471b03a4b49932c86de2249cc762cb0d09fb9fec48c4b5d2c31b6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1363",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1364",
+    "action": "delivery",
+    "detection_head": "a458d4a65dc1024e19b2d7d1d637ba52e261903f",
+    "context_sha256": "e9aa540031cce01a723b168cf36242a8688f05d782956d12b2a43498342ef05f",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "issue:1363",
+    "evidence": "issue:1363",
+    "diagnosis": "Direct GitHub Git transport reset; authenticated fetch succeeds through existing local SOCKS proxy. Main advanced with overlapping Harness implementation; isolated candidate was preserved and rebuilt on 7a6285ff reusing that implementation.",
+    "next_action": "Complete candidate review, rerun writer submission with task-scoped Git proxy, and verify signed PR CI and main before deployment.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-16T15:23:20.609760+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-16T15:45:23.114414+00:00",
+  "sha256": "60efd1fced546ed0ec071af3ca95205b923a38f509cfb6ec897ad25d11f8dd65"
+}

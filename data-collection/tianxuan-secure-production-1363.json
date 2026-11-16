@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "request_id": "tianxuan-secure-production-20261116",
+  "issue_number": 1363,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1363",
+  "scope": "Existing Tianxuan production deployment continuation, personal keys, account roles, authenticated repository files",
+  "usage": null,
+  "usage_unknown_reason": "Actual model usage not collected",
+  "baseline": "7a6285ff3db7efc33d93567dac214c2a02bc4688",
+  "reuse": {
+    "harness_dispatch": "Existing main adapter reused; 9 tests previously passed; no claim of runtime connection",
+    "harness_pr_1362": "Retain RepoTree, i18n, GitService list_tree/read_file/commit/import, merge policy and backup APIs. Superseded custom RepositoryFiles/list_files removed. Only missing generic text file panel and per-user key access are added.",
+    "production": "Reuse existing Compose services, database volume, TLS and renewal. No production replacement before main acceptance."
+  },
+  "historical_candidate": {
+    "baseline": "a458d4a65dc1024e19b2d7d1d637ba52e261903f",
+    "status": "Superseded before publication after Harness main advancement; old candidate and review evidence retained privately",
+    "review_sha256s": [
+      "e0cc28dfdafc2895afd750a5b8a35533232172dcd34758f06202dbf7f148450a",
+      "634d7761cf62642fa8b8d497d2225261a55ef839e3c6d150bfcf4bde6be35297",
+      "afa156f2d4945bac26ad751aa1bed694fe23c85d86859ef325abb8482d601bf6"
+    ],
+    "review_binding_sha256": "9620f0e6e9aedf82e5c28d9ad410677aac4fe80da0b10f51dc4ec8e852b5d924"
+  },
+  "validation": {
+    "web_build": "Passed production build and TypeScript after integration with Harness RepoTree",
+    "python_static": "ruff and mypy passed on seven changed Python files",
+    "auth_ws_mode": "16 passed after integration; personal-key, spoof, CSRF, role, key/ACL revocation, legacy default-off coverage",
+    "file_auth_import": "11 passed; file read/write/stale-blob, directory rejection, branch policy, and import ownership checks",
+    "windows_full": "700 passed, 10 failures including subtests, 3 skipped; symlink privilege, cross-drive temporary paths, SQLite fixture cleanup; Linux run in progress",
+    "linux_full": "675 passed; 36 failures (one inherited repo-root env fixture, 35 Git process/thread resource errors). All failing modules rerun with --init and empty repo-root environment: 59 passed and 83 subtests, including final key/file/import changes. Resource-exhaustion symptom resolved; zombie count was not directly measured.",
+    "production": "pending main delivery and live acceptance",
+    "local_gate": "Formal gate passed on 7a6285ff before final evidence; writer_submit will revalidate complete index."
+  },
+  "independent_review": {
+    "status": "reviewed_no_remaining_confirmed_P1_P2_in_scope",
+    "reviewer": "/root/review_secure_access_1363",
+    "scope": "Complete application/API/deployment diff plus new files on main 7a6285ff; read-only independent review. Governance/collection metadata is not included in application approval.",
+    "report_sha256": "e6165c1cd9777589485b3b927c3e946af4ce9d6db60cef2b0deafb0757d9b1fb",
+    "init_delta_sha256": "762ebecfeb54a1e71badb71c87e2e62c8df1ebc24caf3e9181411ff60e2d3f3a",
+    "reviewed_files": {
+      "apps/tianxuan/app/accounts/page.tsx": "60b634ace773f038e9459da1e44370d16000d22eea83abf815464fbc9657cc6d",
+      "apps/tianxuan/app/docs/[id]/page.tsx": "5e23d3af34ab842a9b88a8d151714ab59d785eb71b15d6fe35dfea9851c6faa5",
+      "apps/tianxuan/app/docs/page.tsx": "11a8df98c824dd70cd4e13a6991ce4190fabe4c33d0ede5e267c360a070e2b92",
+      "apps/tianxuan/app/issues/page.tsx": "025dc85659ca18cf2db6ae73708f83b624303a14272b1a3baeac6ad97c49923c",
+      "apps/tianxuan/app/layout.tsx": "8c12fb9d7c0284b6ba8f31ce2ca8ba287e11bc79517c21dec5784314a55ef78f",
+      "apps/tianxuan/app/login/page.tsx": "d4df77b617b32d6926d9f4df2a0b9ee963bc4bb080b2285383dc10cb4b910bf6",
+      "apps/tianxuan/app/repos/page.tsx": "79586b52ab5a09be20e626a59fee0568c424238fdc3392ae6196f8b3b7714c6b",
+      "apps/tianxuan/app/requirements/page.tsx": "26771c52e69cb617311673ffa1349613decb0834a9d31dba80d48fdcc1d29cb4",
+      "apps/tianxuan/app/search/page.tsx": "cec811d1c94533db03f5670b83c116dff13cfcfb9311f8ed7a05f6f1d8206e02",
+      "apps/tianxuan/app/settings/page.tsx": "fb6b1de81cf39d50696e960df76eb60231aedf02854a207dce85f35fc7ec2f3e",
+      "apps/tianxuan/components/AppShell.tsx": "e1d9dfa478f0185917f9f6011a2ec291163b4bf6bacf2443a74f641c8e5068bd",
+      "apps/tianxuan/components/DocEditor.tsx": "1739543bb091e2739b5431021b77c3e19861022fd49b286f4827a75a720ea720",
+      "apps/tianxuan/components/IdentityProvider.tsx": "8dc56072adbed9232be5392fdba40425f02c286df701c8d72c6b5ca68ea2bc38",
+      "apps/tianxuan/components/RepoFileEditor.tsx": "1813c828241230b20fc13854c7595a04511902566d9f7111387e1bf8cfa73a28",
+      "apps/tianxuan/components/RepoTree.tsx": "107cd0baefb1193290b7cc64305c4e352e08908d246a5d81ef2d31300b257417",
+      "apps/tianxuan/lib/i18n.ts": "7d8254bfbf23d73205d370c75b6dc47c46f7a2de9f3ba7c807c222cfda5a08fc",
+      "apps/tianxuan/lib/server-api.ts": "285d0c71e121f011ecb3abf7184a332b18b7e4c41e1184141acd015096e436a1",
+      "apps/tianxuan/lib/use-actor.ts": "fd35ecf83c5253bc012287ab509afb1d36f8bafc49f89031b03cdfa48254315f",
+      "customizations/components/tianxuan/duobao/git_service.py": "55871785d6a4d9eaf32c2caf690e66e61b1a7e0ef9aa731c350104913773d10f",
+      "customizations/components/tianxuan/duobao/test_import_reservation.py": "3f9d5a4b404420fc8b657457d8e036eded4a19e56f7f369e27cebac432433258",
+      "customizations/components/tianxuan/server/access_control.py": "79320f9bed36e12ef8aa1a788f34d5d1c856cd3daaf90047279279bf55957ea1",
+      "customizations/components/tianxuan/server/api.py": "bae189cf33e8592bc23024c364f7b6f7ebec8d5aa044e481e7dc929a42b5adaa",
+      "customizations/components/tianxuan/server/schemas.py": "f031dbf76ced7666e77a8dea5c43ebd25c5e9450d6a8877005ea8fe04420d30e",
+      "customizations/components/tianxuan/server/test_access_control.py": "dd8b5e93a072ffc9126b2d7ce58999d8ff671d4972c760ce40ca4df06e84abd4",
+      "customizations/components/tianxuan/server/tianxuan_core.py": "772de56213b94bd1905366dca0d675f410603ef07ce1e646c25419470193ae3c",
+      "deploy/production/README.md": "0b476a848c2434d6f4a419be2d59a94456ad968264ce11bdb2718156665f995f",
+      "deploy/production/backup.sh": "fe839e4af13ba6fbbbd822a782f0d701a98947e7a5335cb1949a65a22073059c",
+      "deploy/production/docker-compose.override.yml.example": "705b421851f1907567275deaefdff1a08d519812b12d2a1df37c2cc6fb1dfed7",
+      "deploy/production/nginx.gate.conf.example": "7c90bef96097249c2bdb4a732a4366ced7219a299f5639f5083f5e17747c8b75",
+      "deploy/production/verify.sh": "79ca3df6f25de03eb3d8610710d80436b58f8a3ebe62ecf87e0361d7228d78d5"
+    },
+    "verification": "11 targeted tests passed independently; backup mock success/restart failure/health timeout checked; source review only, production pending"
+  }
+}

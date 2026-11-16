@@ -1,9 +1,10 @@
+import { currentActor } from "@/lib/server-api";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/Icon";
 import { IdentityBindings } from "@/components/IdentityBindings";
-import { fetchGiteaStatus, fetchHealth, type ApiGiteaStatus } from "@/lib/api";
+import { fetchGiteaStatus, fetchHealth, type ApiGiteaStatus } from "@/lib/server-api";
 import { LOCALE_COOKIE, normalizeLocale, translate, type MessageKey } from "@/lib/i18n";
 
 export function generateMetadata(): Metadata {
@@ -33,7 +34,7 @@ export default async function SettingsPage() {
     { href: "#members", label: t("settings.navMembers"), icon: "lock" },
     { href: "#security", label: t("settings.navSecurity"), icon: "alert" },
   ];
-  const actor = process.env.TIANXUAN_ACTOR ?? "";
+  const actor = await currentActor();
   let apiOnline = false;
   let gitea: ApiGiteaStatus | null = null;
   try {

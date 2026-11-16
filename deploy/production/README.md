@@ -1,106 +1,79 @@
-# Production HTTPS and cookie access gate
+# Production HTTPS and personal access keys
 
-This directory is an optional reference profile for running the existing
-`deploy/docker-compose.yml` stack behind **TLS** with a **cookie access gate**.
-It does not change the application code; it only adds an nginx entrypoint and a
-small number of host-mounted files.
+This profile extends the existing Tianxuan Compose stack. It reuses the current
+users, roles, hashed sessions, persistent volume and TLS certificate. A shared
+`/gate?key=` URL is no longer accepted (410); every user signs in at `/login`
+with an administrator-issued personal key. Do not put keys in URLs or logs.
 
-The base stack already ships an HTTP-only nginx proxy. Browsers increasingly
-intercept plain HTTP before the app loads, and native HTTP Basic Auth prompts
-are not shown reliably by every browser or embedded webview. This profile
-therefore uses:
+## Upgrade an existing installation
 
-- a Let's Encrypt certificate for a real hostname;
-- a one-time `/gate?key=...` link that sets a `tx_access` cookie;
-- a static `/login.html` instruction page for clients without the cookie;
-- an internal-only bypass for Docker SSR traffic so Next.js server components
-  can still read the API.
+1. Save the current source revision, image IDs, Compose configuration and a
+   consistent data backup. Rehearse restoring into a separate volume. Keep the
+   old data and images until acceptance; never run `compose down -v`.
+2. Build the reviewed API and Web images from the same approved main revision.
+   The existing volume is migrated additively; users/documents/repos remain.
+3. Copy `docker-compose.override.yml.example` to `deploy/docker-compose.override.yml`
+   and `nginx.gate.conf.example` to `deploy/nginx.gate.conf`. Replace
+   `__TIANXUAN_HOST__` with the existing certificate hostname.
+4. Set `TIANXUAN_TENANT_ID` to the existing administrator's tenant and
+   `TIANXUAN_PUBLIC_ORIGIN=https://<hostname>` in the private `.env`. The overlay
+   enforces `TIANXUAN_REQUIRE_KEYS=1` and uses the internal API for SSR.
+   Do not change the public DNS/certificate or reinitialize the data volume.
+5. Bootstrap one personal key for the existing administrator using the domain
+   method below in the new API image. Store its output in a private file; do
+   not print it in CI logs or commit it. This is a host-admin operation, not
+   an unauthenticated HTTP endpoint.
+6. Run `docker compose --env-file .env up -d`. Validate nginx before switching
+   traffic, then run the read-only verifier and role/revocation acceptance.
 
-## Prerequisites
+Bootstrap shape (replace `existing-admin-id`; execute with the production DB
+and capture stdout directly into a mode-600 private file):
 
-- A hostname whose A record points at the server (for evaluation,
-  `<ip-with-dashes>.sslip.io` resolves to the IP).
-- Ports 80 and 443 reachable from the internet.
-- Docker Compose v2.24 or newer (the override uses `!override` for ports).
-- `certbot` on the host.
-
-## Setup
-
-```sh
-cd deploy
-
-cp production/docker-compose.override.yml.example docker-compose.override.yml
-cp production/nginx.gate.conf.example nginx.gate.conf
-cp production/login.html login.html
-
-HOST=tianxuan.example.com
-TOKEN=$(openssl rand -hex 16)
-sed -i "s/__TIANXUAN_HOST__/$HOST/g; s/__ACCESS_TOKEN__/$TOKEN/g" nginx.gate.conf
-
-printf 'access_url=https://%s/gate?key=%s\n' "$HOST" "$TOKEN" > production/access-url.txt
-chmod 600 production/access-url.txt
+```python
+import os
+from tianxuan_core import Tianxuan
+store = Tianxuan(os.environ["TIANXUAN_DB"])
+try:
+    user = "existing-admin-id"
+    print(store.issue_access_key(user, user, "initial administrator", 90)["key"])
+finally:
+    store.db.close()
 ```
 
-Issue the first certificate with the proxy stopped (standalone HTTP-01), then
-switch renewal to webroot so the running proxy can serve the challenge:
+A key's raw value is returned once. The database stores only its hash in the
+existing sessions table and metadata in access_keys. Expiry, revocation and
+role changes apply on subsequent requests. Administrators manage accounts,
+roles and keys at `/accounts`; viewers cannot write, editors can change
+business data, and only administrators can manage users/keys. Password/session
+login and public registration are unavailable in this production profile.
+
+## Repository content
+
+Place a bare repository containing the complete approved main tree under the
+existing `TIANXUAN_REPO_ROOT` volume. `/repos` browses tracked files through Git,
+not arbitrary host paths. Authorized edits produce independent `web/<user>/...`
+branches and can enter the existing merge queue. Editing a branch does not
+execute or deploy that code. Upstream publication and production upgrades
+still require the existing review/delivery workflow. Keep environment files,
+credentials and host data outside tracked source.
+
+## Verify and recover
 
 ```sh
-docker compose --env-file .env stop proxy
-certbot certonly --standalone --non-interactive --agree-tos \
-  --register-unsafely-without-email --preferred-challenges http -d "$HOST"
-docker compose --env-file .env start proxy
-
-mkdir -p /var/www/certbot
-certbot certonly --webroot -w /var/www/certbot -d "$HOST" \
-  --non-interactive --agree-tos --force-renewal \
-  --deploy-hook "docker exec tianxuan-proxy-1 nginx -s reload"
-```
-
-Start the stack and open the one-time link:
-
-```sh
-docker compose --env-file .env up -d --build
-cat production/access-url.txt
-```
-
-`https://<host>/gate?key=<token>` sets a 30-day `tx_access` cookie and redirects
-to `/`. After that, `https://<host>/` works directly. Without the cookie, pages
-redirect to `/login.html` and `/api/*` returns 401 without a native auth
-challenge.
-
-> The base stack publishes `TIANXUAN_HTTP_PORT` (default 8080). The override in
-> this directory replaces the proxy `ports` mapping with `80` and `443`; keep the
-> hostname in `nginx.gate.conf` in sync with the certificate.
-
-## Files
-
-| File | Purpose |
-| --- | --- |
-| `nginx.gate.conf.example` | TLS + ACME + cookie-gate nginx config (host/token placeholders) |
-| `login.html` | Static instruction page shown without a cookie |
-| `docker-compose.override.yml.example` | Adds 80/443 and mounts the config, login page, certificates, ACME webroot |
-| `verify.sh` | Read-only smoke check for TLS, gate, pages, API and exports |
-| `backup.sh` | Consistent backup of the `tianxuan-data` volume, keeping seven archives |
-
-## Verification
-
-```sh
-env TIANXUAN_HOST="$HOST" TIANXUAN_ACCESS_TOKEN_FILE="$PWD/production/access-token" \
+TIANXUAN_HOST=<hostname> TIANXUAN_ACCESS_TOKEN_FILE=/private/admin-key \
   bash production/verify.sh
 ```
 
-The `verify.sh` script expects the token in `TIANXUAN_ACCESS_TOKEN_FILE` (create it
-with `printf '%s' "$TOKEN" > production/access-token; chmod 600 ...`) or in
-`TIANXUAN_ACCESS_TOKEN`.
+The script asserts TLS verification, anonymous rejection, obsolete-gate
+rejection, authenticated pages/API, cross-origin write rejection and actual
+MD/HTML/DOCX/PDF exports. Separately verify viewer denial, editor writes,
+revocation, WebSocket ACL changes and data/key persistence after restart.
+`backup.sh` returns failure if the API cannot recover; preserve its archive
+and investigate before declaring maintenance successful.
 
-## Security notes
-
-- The access key is a bearer credential: anyone with the link can enter. Treat
-  it like a password and rotate it by replacing the token in `nginx.gate.conf`
-  and recreating the proxy.
-- Keep `production/access-url.txt` out of version control (it is ignored by the
-  base `.gitignore` via `deploy/.env`? Add an explicit ignore if needed).
-- Native HTTP Basic Auth is intentionally not used; TLS plus the cookie gate is
-  the supported reference.
-- For a permanent domain, replace the `sslip.io` host, reissue the certificate,
-  and rebuild the web image if `NEXT_PUBLIC_TIANXUAN_API_BASE` changes.
+Existing certbot webroot renewal and reload hooks remain valid. Fresh hosts
+must obtain their certificate before starting this TLS configuration.
+For rollback, restore the matching configuration/image/data snapshot together.
+If that snapshot predates personal-key authentication, keep public access in
+maintenance mode until the secure service is restored; do not silently reopen
+the insecure shared-actor deployment.

@@ -1,8 +1,9 @@
+import { currentActor } from "@/lib/server-api";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
-import { fetchDocs, type ApiDoc } from "@/lib/api";
+import { fetchDocs, type ApiDoc } from "@/lib/server-api";
 import {
   docs,
   getDoc,
@@ -59,9 +60,9 @@ function renderTreePage(page: PageTreeNode) {
 export default async function DocsPage() {
   const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);
   const t = (key: MessageKey) => translate(locale, key);
-  const actor = process.env.TIANXUAN_ACTOR ?? "";
+  const actor = await currentActor();
   let liveDocs: ApiDoc[] | null = null;
-  if (actor || process.env.TIANXUAN_TOKEN) {
+  if (actor) {
     try {
       liveDocs = await fetchDocs(actor);
     } catch {

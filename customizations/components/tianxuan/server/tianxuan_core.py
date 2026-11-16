@@ -33,6 +33,10 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS sessions (
   token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS access_keys (
+  id TEXT PRIMARY KEY, token_hash TEXT UNIQUE NOT NULL, user_id TEXT NOT NULL,
+  name TEXT NOT NULL, created_by TEXT NOT NULL, created_at TEXT NOT NULL, revoked_at TEXT
+);
 CREATE TABLE IF NOT EXISTS invites (
   token_hash TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, email TEXT NOT NULL, role TEXT NOT NULL,
   created_by TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL, accepted_at TEXT
@@ -476,6 +480,63 @@ class Tianxuan:
     def revoke_session(self, token: str) -> bool:
         cursor = self.db.execute("DELETE FROM sessions WHERE token_hash = ?", (_token_hash(token),))
         return cursor.rowcount > 0
+
+    @_connection_call
+    def issue_access_key(self, actor: str, user_id: str, name: str, days: int = 90) -> dict[str, Any]:
+        if self.role_of(actor) != "admin" or self._tenant_of(actor) != self._tenant_of(user_id):
+            raise PermissionDenied("only a tenant administrator can issue access keys")
+        if not name.strip() or len(name) > 100 or not 1 <= days <= 365:
+            raise TianxuanError("key name and lifetime (1–365 days) are required")
+        token = self.issue_session(user_id, days * 86400)
+        key_id = _id("key")
+        self.db.execute(
+            "INSERT INTO access_keys VALUES (?, ?, ?, ?, ?, ?, NULL)",
+            (key_id, _token_hash(token), user_id, name.strip(), actor, _now()),
+        )
+        self._event(self._tenant_of(actor), "access_key.issued", actor, key_id, {"user_id": user_id})
+        return {"id": key_id, "key": token, "user_id": user_id, "name": name.strip(), "days": days}
+
+    @_connection_call
+    def user_for_access_key(self, token: str) -> str | None:
+        row = self.db.execute(
+            "SELECT user_id FROM access_keys WHERE token_hash = ? AND revoked_at IS NULL",
+            (_token_hash(token),),
+        ).fetchone()
+        if row is None:
+            return None
+        actor = self.user_for_token(token)
+        if actor is None:
+            return None
+        self.role_of(actor)
+        return actor
+
+    @_connection_call
+    def list_access_keys(self, actor: str) -> list[dict[str, Any]]:
+        if self.role_of(actor) != "admin":
+            raise PermissionDenied("only admin can manage access keys")
+        rows = self.db.execute(
+            "SELECT k.id,k.user_id,k.name,k.created_at,k.revoked_at,s.expires_at "
+            "FROM access_keys k JOIN users u ON u.id=k.user_id "
+            "LEFT JOIN sessions s ON s.token_hash=k.token_hash WHERE u.tenant_id=? "
+            "ORDER BY k.created_at,k.id",
+            (self._tenant_of(actor),),
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+    @_connection_call
+    def revoke_access_key(self, actor: str, key_id: str) -> bool:
+        if self.role_of(actor) != "admin":
+            raise PermissionDenied("only admin can revoke access keys")
+        row = self.db.execute(
+            "SELECT k.token_hash FROM access_keys k JOIN users u ON u.id=k.user_id WHERE k.id=? AND u.tenant_id=?",
+            (key_id, self._tenant_of(actor)),
+        ).fetchone()
+        if row is None:
+            raise NotFound("access key not found")
+        self.db.execute("DELETE FROM sessions WHERE token_hash=?", (row["token_hash"],))
+        self.db.execute("UPDATE access_keys SET revoked_at=? WHERE id=?", (_now(), key_id))
+        self._event(self._tenant_of(actor), "access_key.revoked", actor, key_id, {})
+        return True
 
     @_connection_call
     def role_of(self, actor: str) -> str:
@@ -1321,7 +1382,7 @@ class Tianxuan:
     def list_issue_comments(self, actor: str, issue_id: str) -> list[dict[str, Any]]:
         issue = self._require_tenant_issue(actor, issue_id)
         rows = self.db.execute(
-            "SELECT * FROM issue_comments WHERE tenant_id = ? AND issue_id = ? ORDER BY created_at, id",
+            "SELECT * FROM issue_comments WHERE tenant_id = ? AND issue_id = ? ORDER BY created_at, rowid",
             (issue["tenant_id"], issue_id),
         ).fetchall()
         return [dict(row) for row in rows]
@@ -1780,7 +1841,7 @@ class Tianxuan:
         args: list[Any] = [tenant_id]
         if role != "admin":
             sql += " AND type NOT LIKE 'identity.%'"
-        sql += " ORDER BY created_at DESC LIMIT ?"
+        sql += " ORDER BY created_at DESC, rowid DESC LIMIT ?"
         args.append(max(1, min(int(limit), 500)))
         rows = self.db.execute(sql, args).fetchall()
         return [dict(row) | {"payload": json.loads(row["payload"])} for row in rows]
@@ -1798,7 +1859,7 @@ class Tianxuan:
         if event_type:
             sql += " AND type = ?"
             args.append(event_type)
-        sql += " ORDER BY created_at DESC LIMIT ?"
+        sql += " ORDER BY created_at DESC, rowid DESC LIMIT ?"
         args.append(max(1, min(int(limit), 200)))
         rows = self.db.execute(sql, args).fetchall()
         return [dict(row) | {"payload": json.loads(row["payload"])} for row in rows]

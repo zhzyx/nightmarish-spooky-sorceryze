@@ -1,56 +1,54 @@
 #!/usr/bin/env bash
-# Read-only smoke check for the production HTTPS + cookie-gate profile.
-# Usage:
-#   TIANXUAN_HOST=tianxuan.example.com \
-#   TIANXUAN_ACCESS_TOKEN_FILE=/path/to/access-token \
-#   bash deploy/production/verify.sh
+# Read-only acceptance of HTTPS and personal-key authentication.
 set -euo pipefail
-
-DEPLOY_DIR=$(cd "$(dirname "$0")/.." && pwd)
 HOST=${TIANXUAN_HOST:?set TIANXUAN_HOST}
+KEY_FILE=${TIANXUAN_ACCESS_TOKEN_FILE:?set the private personal-key file}
 BASE="https://$HOST"
-TOKEN=${TIANXUAN_ACCESS_TOKEN:-}
-if [ -z "$TOKEN" ] && [ -n "${TIANXUAN_ACCESS_TOKEN_FILE:-}" ]; then
-    TOKEN=$(cat "$TIANXUAN_ACCESS_TOKEN_FILE")
-fi
-if [ -z "$TOKEN" ]; then
-    echo "set TIANXUAN_ACCESS_TOKEN or TIANXUAN_ACCESS_TOKEN_FILE" >&2
-    exit 2
-fi
+CHECK_DIR=$(mktemp -d)
+trap 'rm -rf "$CHECK_DIR"' EXIT
+chmod 700 "$CHECK_DIR"
 
-COOKIE_JAR=$(mktemp)
-HEADERS=$(mktemp)
-trap 'rm -f "$COOKIE_JAR" "$HEADERS"' EXIT
-
-echo "== compose ps =="
-if command -v docker >/dev/null 2>&1; then
-    (cd "$DEPLOY_DIR" && docker compose --env-file .env ps)
-fi
-
-echo "== TLS =="
-curl -sS -o /dev/null -w 'https_status=%{http_code} ssl_verify=%{ssl_verify_result}\n' "$BASE/"
-
-echo "== access gate =="
-curl -sS -D "$HEADERS" -c "$COOKIE_JAR" -o /dev/null "$BASE/gate?key=$TOKEN"
-if grep -qi 'set-cookie: tx_access=' "$HEADERS"; then
-    echo "gate cookie: ok"
-else
-    echo "gate cookie: MISSING" >&2
-    exit 1
-fi
-
-echo "== with cookie =="
-for path in / /docs /issues /requirements /settings; do
-    code=$(curl -sS -b "$COOKIE_JAR" -o /dev/null -w '%{http_code}' "$BASE$path")
-    echo "$path -> $code"
-    [ "$code" = "200" ] || exit 1
+expect() {
+    expected=$1; shift
+    code=$(curl -sS -o "$CHECK_DIR/body" -w '%{http_code}' "$@")
+    [ "$code" = "$expected" ] || { echo "HTTP assertion failed: expected $expected, got $code" >&2; exit 1; }
+}
+expect 302 "$BASE/"
+expect 200 "$BASE/login"
+expect 401 "$BASE/api/v1/docs"
+expect 401 -H 'X-Actor: forged-admin' "$BASE/api/v1/docs"
+expect 401 -H 'Authorization: Bearer invalid-key' "$BASE/api/v1/docs"
+expect 410 "$BASE/gate?key=obsolete-test-key"
+expect 200 "$BASE/api/v1/health"
+echo 'TLS and unauthenticated access: passed'
+python3 - "$KEY_FILE" "$CHECK_DIR/login.json" <<'PY'
+import json, pathlib, sys
+pathlib.Path(sys.argv[2]).write_text(json.dumps({"key": pathlib.Path(sys.argv[1]).read_text().strip()}))
+PY
+expect 200 -H "Origin: $BASE" -H 'Content-Type: application/json' -c "$CHECK_DIR/cookies" --data-binary "@$CHECK_DIR/login.json" "$BASE/api/v1/auth/key-login"
+for path in / /docs /issues /requirements /search /repos /settings /accounts /api/v1/auth/me /api/v1/docs /api/v1/issues; do
+    expect 200 -b "$CHECK_DIR/cookies" "$BASE$path"
 done
-curl -sS -b "$COOKIE_JAR" -o /dev/null -w 'health:%{http_code}\n' "$BASE/api/v1/health"
-
-echo "== certificate =="
-if command -v certbot >/dev/null 2>&1; then
-    certbot certificates 2>/dev/null | grep -E 'Certificate Name|Domains|Expiry' || true
-fi
-
-echo "== disk =="
-df -h "$DEPLOY_DIR" | tail -1
+expect 403 -b "$CHECK_DIR/cookies" -H 'Origin: https://untrusted.example' -H 'Content-Type: application/json' -d '{}' "$BASE/api/v1/docs"
+echo 'Authenticated pages, API and cross-origin rejection: passed'
+expect 200 -b "$CHECK_DIR/cookies" "$BASE/api/v1/docs"
+DOC_ID=$(python3 - "$CHECK_DIR/body" <<'PY'
+import json,sys
+with open(sys.argv[1]) as stream:
+    docs=json.load(stream)["docs"]
+assert docs, "a real document is required for export acceptance"
+print(docs[0]["id"])
+PY
+)
+for format in md html docx pdf; do
+    expect 200 -b "$CHECK_DIR/cookies" "$BASE/api/v1/docs/$DOC_ID/export/file?format=$format"
+    test -s "$CHECK_DIR/body"
+    python3 - "$format" "$CHECK_DIR/body" <<'PY'
+import pathlib,sys
+content=pathlib.Path(sys.argv[2]).read_bytes()
+if sys.argv[1]=="pdf": assert content.startswith(b"%PDF")
+if sys.argv[1]=="docx": assert content.startswith(b"PK")
+PY
+done
+echo 'Document exports: passed'
+echo 'PRODUCTION_READONLY_ACCEPTANCE_OK'

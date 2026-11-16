@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useIdentity } from "@/components/IdentityProvider";
 import { getToken } from "@/lib/auth";
 
 const ENV_ACTOR = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR ?? "";
@@ -14,6 +15,7 @@ const ENV_ACTOR = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR ?? "";
  * 避免 hydration 不匹配。
  */
 export function useActor(): string {
+  const identity = useIdentity();
   const [actor, setActor] = useState(ENV_ACTOR);
   useEffect(() => {
     if (ENV_ACTOR) {
@@ -23,5 +25,5 @@ export function useActor(): string {
       setActor("session");
     }
   }, []);
-  return actor;
+  return identity?.id ?? actor;
 }

@@ -1,3 +1,4 @@
+import { currentActor } from "@/lib/server-api";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
@@ -6,7 +7,7 @@ import { LocalGitRepos } from "@/components/LocalGitRepos";
 import { MergeQueuePanel } from "@/components/MergeQueuePanel";
 import { RepoPulls } from "@/components/RepoPulls";
 import { RepoTree } from "@/components/RepoTree";
-import { fetchRepos, type ApiRepo } from "@/lib/api";
+import { fetchRepos, type ApiRepo } from "@/lib/server-api";
 import { LOCALE_COOKIE, normalizeLocale, translate, type MessageKey } from "@/lib/i18n";
 
 export function generateMetadata(): Metadata {
@@ -19,9 +20,9 @@ export const dynamic = "force-dynamic";
 export default async function ReposPage() {
   const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);
   const t = (key: MessageKey) => translate(locale, key);
-  const actor = process.env.TIANXUAN_ACTOR ?? "";
+  const actor = await currentActor();
   let liveRepos: ApiRepo[] | null = null;
-  if (actor || process.env.TIANXUAN_TOKEN) {
+  if (actor) {
     try {
       liveRepos = await fetchRepos(actor);
     } catch {
