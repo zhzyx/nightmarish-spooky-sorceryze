@@ -277,6 +277,34 @@ class MultiImageTests(unittest.TestCase):
                 self.assertEqual(references, expected)
                 self.assertIn("supplied ordered reference image(s)", child["parameters"]["prompt"])
 
+    def test_single_image_sheet_is_interpreted_as_one_subject_before_generation(self):
+        for index, supplemental_text in enumerate(("", "Keep the same character and choose one front pose")):
+            with self.subTest(supplemental_text=supplemental_text):
+                inner = FakeImageProvider("kimi_work_image")
+                provider = self.adapter(inner)
+                request = dict(
+                    node="generate_image",
+                    version="1",
+                    inputs={"source": reference(self.sources[0])},
+                    parameters={"prompt": supplemental_text, "output_count": 1},
+                    context=[],
+                )
+                key = ("9" if index == 0 else "a") * 64
+                receipt = provider.poll(provider.submit(request, self.manifest, key)["job_id"])
+                self.assertEqual(receipt["state"], "succeeded")
+                self.assertEqual(len(inner.requests), 1)
+                child = inner.requests[0]
+                self.assertEqual(child["inputs"]["source"], reference(self.sources[0]))
+                prompt = child["parameters"]["prompt"]
+                self.assertIn("including panels inside a single file", prompt)
+                self.assertIn("turnaround/multiview sheet", prompt)
+                self.assertIn("multiple poses or states of one subject", prompt)
+                self.assertIn("ONE subject in ONE coherent view and pose", prompt)
+                self.assertIn("never duplicate the subject", prompt)
+                self.assertTrue(prompt.endswith("Perform this interpretation before generating the image."))
+                if supplemental_text:
+                    self.assertTrue(prompt.startswith(supplemental_text + "\n"))
+
     def test_unified_node_supports_text_images_and_combined_inputs(self):
         cases = (
             ("text", "text", "text_to_image"),
@@ -307,10 +335,14 @@ class MultiImageTests(unittest.TestCase):
                 self.assertEqual(inner.requests[0]["node"], child_kind)
                 if input_mode in ("image", "both"):
                     self.assertEqual(inner.requests[0]["inputs"]["source"], reference(self.sources[0]))
+                    self.assertIn("including panels inside a single file", inner.requests[0]["parameters"]["prompt"])
                 if mode == "images":
                     self.assertIn("supplied ordered reference", inner.requests[0]["parameters"]["prompt"])
                 else:
                     self.assertIn("same sculpture", inner.requests[0]["parameters"]["prompt"])
+                if mode == "combined":
+                    self.assertTrue(inner.requests[0]["parameters"]["prompt"].startswith("same sculpture\n"))
+                    self.assertIn("ONE subject", inner.requests[0]["parameters"]["prompt"])
                 registry = NodeRegistry()
                 register_images(registry)
                 validate_invocation(registry, request, manifest, provider.describe())

@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-unified-image-node-20261117",
+  "issue_number": 1372,
+  "date": "2026-11-17",
+  "state": "validated_candidate",
+  "integrated_main": "656493afe1a0e6b99800f0d4970652708be41fdd",
+  "evidence_scope": "Protocol, host, source Godot controls, rebuilt native editor and three real Kimi Work image generations with visual review. No credentials, private URLs or raw generation logs are included.",
+  "editor_sha256": "66bbcb546649e839d6a577f88edeaf593243454b72c91f24eb91eb14d8a82f46",
+  "python_validation": {
+    "multi_image_tests": {"run": 13, "failed": 0},
+    "generation_service_tests": {"run": 14, "failed": 0},
+    "kimi_service_tests": {"run": 11, "failed": 0},
+    "kimi_work_image_tests": {"run": 8, "skipped": 1, "failed": 0},
+    "codex_provider_tests": {"run": 20, "skipped": 18, "failed": 0},
+    "comfy_provider_tests": {"run": 14, "failed": 0},
+    "total": {"run": 80, "skipped": 19, "failed": 0}
+  },
+  "native_validation": {
+    "platform": "macos",
+    "architecture": "arm64",
+    "build": "SCons 4.11.1; editor relinked after final Python formatting and embedded bundle regeneration",
+    "godot_port_type_acceptance": {"failures": 0},
+    "godot_parameter_form_acceptance": {"failures": 0},
+    "godot_multi_image_acceptance": {"failures": 0},
+    "godot_context_menu_acceptance": {"failures": 0},
+    "run_ainative_builtin": {
+      "state": "passed",
+      "scenarios": ["mesh-and-rig", "independent-project", "sample-addon-compatibility", "relocated-runtime"],
+      "installed_bundle_matches_source": true,
+      "known_exit_warnings": "Existing RID/ObjectDB leak warnings remain; this candidate does not claim to fix them."
+    }
+  },
+  "real_generation_acceptance": {
+    "provider": "Kimi Work agent-gw generate_image v2",
+    "launch_policy": "Each job launched once; original worker watched to completion; no automatic retry",
+    "jobs": [
+      {
+        "name": "single",
+        "input_mode": "single_image_without_text",
+        "reference_count": 1,
+        "reference_sha256": ["26e9a705a7a5473d248906ac2281de2bb3cf58ba8799ce639717c284b450fb5a"],
+        "prompt_sha256": "b0b4ccdc04bd796e7d40ce79894fb5938884dcfb7d1c8a9f1c9e350c3ac75d54",
+        "output_sha256": "b983571033c83c85d7b6cf57d8c4c27a0bd72846975b22962a13ea52dd8774ae",
+        "output_bytes": 1523829,
+        "visual_review": "passed: one coherent full-body character; no panel grid or duplicate subject"
+      },
+      {
+        "name": "list-text",
+        "input_mode": "two_ordered_images_with_supplemental_text",
+        "reference_count": 2,
+        "reference_sha256": [
+          "f896a88960c4fd95f7a05eff96a5c998e34e0c2add4952e28e873f723b8be15e",
+          "b4f98e36d4be1e66ce3684ac24691930eeb85e0dffb13fce2e6fbc8565899154"
+        ],
+        "prompt_sha256": "73d7b5e804cf124b9da0e4cfaefb5c9188859f42558ebf260b34b788004dc549",
+        "output_sha256": "506972b1ae06a6993865476f01c8b91939bad879ad3b65e59c933aa079280675",
+        "output_bytes": 1253775,
+        "visual_review": "passed: one front full-body character with the same identity, white-and-gold robe and shoulder armor on a simple background"
+      },
+      {
+        "name": "sheet-text",
+        "input_mode": "single_three_view_sheet_with_supplemental_text",
+        "reference_count": 1,
+        "reference_sha256": ["9bbbcfb47c4f653d43a2596860c28f81403297748e4290ec620a6df815b1a03d"],
+        "prompt_sha256": "b1a87d152496824adc0e9e677e9246dc2f1911917ee84f478a53cf08db3b3191",
+        "output_sha256": "fc2390d47feca737be86bd4ee696ef12ea3830bc75a8be3af3b0cdf5f13484e5",
+        "output_bytes": 1151080,
+        "visual_review": "passed: one three-quarter full-body character fitted from the three views; no three-view layout and no three separate characters"
+      }
+    ],
+    "visual_reviewer": "current agent inspected all three returned images; no independent human visual review is claimed",
+    "source_files_and_private_urls_excluded_from_git": true
+  },
+  "format_validation": {
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "git_diff_check": true
+  },
+  "additional_suite_observation": {
+    "timing": "before_main_integration",
+    "run": 434,
+    "skipped": 62,
+    "failures": 1,
+    "errors": 6,
+    "scope": "Existing modeling/sculpt tests reference unavailable check_modeling_cli, _blender_runtime and legacy settings fields; these unrelated untracked test files were not changed by this candidate."
+  },
+  "independent_code_review": "not_obtained_in_this_session; no subagent used and no independent review claimed"
+}
