@@ -25,8 +25,9 @@ func run():
 	panel.rebuild()
 	await process_frame
 	var expected = {
+		"generate_image":[panel.PORT_IMAGE, panel.PORT_IMAGE_SET, "输入：图片 / 图片列表（可选）＋文本（参数）", "输出：图片队列"],
 		"text_to_image":[panel.PORT_TEXT, panel.PORT_IMAGE_SET, "输入：文本（参数）", "输出：图片队列"],
-		"image_to_image":[panel.PORT_IMAGE_SET, panel.PORT_IMAGE_SET, "输入：图片 / 图片队列", "输出：图片队列"],
+		"image_to_image":[panel.PORT_IMAGE, panel.PORT_IMAGE_SET, "输入：图片 / 图片列表", "输出：图片队列"],
 		"image_to_mesh":[panel.PORT_IMAGE, panel.PORT_MESH, "输入：图片", "输出：Mesh"],
 		"text_to_mesh":[panel.PORT_TEXT, panel.PORT_MESH, "输入：文本（参数）", "输出：Mesh"],
 		"model_adjust":[panel.PORT_MESH, panel.PORT_MESH, "输入：Mesh", "输出：Mesh"],
@@ -48,9 +49,12 @@ func run():
 		check(node.get_output_port_count() == 1, kind + " exposes exactly one output")
 	panel.connect_nodes("text_to_mesh", 0, "image_to_mesh", 0)
 	check(panel.edges.is_empty() and panel.status.text.contains("类型不匹配"), "Mesh cannot silently feed an image input")
+	panel.connect_nodes("text_to_mesh", 0, "generate_image", 0)
+	check(panel.edges.is_empty() and panel.status.text.contains("类型不匹配"), "combined image/list input still rejects Mesh")
 	panel.connect_nodes("text_to_image", 0, "model_adjust", 0)
-	check(panel.edges.is_empty() and panel.status.text.contains("只能连接到图生图"), "image queue cannot silently feed a Mesh input")
-	panel.connect_nodes("text_to_image", 0, "image_to_image", 0)
+	check(panel.edges.is_empty() and panel.status.text.contains("只能连接到生成图片节点"), "image queue cannot silently feed a Mesh input")
+	check(panel.graph.is_valid_connection_type(panel.PORT_IMAGE_SET, panel.PORT_IMAGE), "image lists can be dragged onto the single-image compatible input")
+	panel.connect_nodes("text_to_image", 0, "generate_image", 0)
 	panel.connect_nodes("text_to_image", 0, "image_to_mesh", 0)
 	panel.connect_nodes("text_to_mesh", 0, "model_adjust", 0)
 	check(panel.edges.size() == 2 and panel.edges[0].output == "image_set" and panel.edges[1].output == "result", "image queue and Mesh connections use their declared output contracts")
@@ -58,8 +62,17 @@ func run():
 	legacy.id = "legacy_image"
 	legacy.version = "1"
 	panel.nodes.append(legacy)
+	var single_input = make_node("generate_image")
+	single_input.id = "single_image_input"
+	single_input.version = "1"
+	panel.nodes.append(single_input)
 	panel.rebuild()
 	check(panel.output_kind(legacy) == panel.PORT_IMAGE and panel.graph.get_node(legacy.id).get_output_port_count() == 1, "version 1 keeps its legacy single-image output")
+	panel.connect_nodes(legacy.id, 0, single_input.id, 0)
+	check(panel.edges.size() == 3 and panel.edges[2].output == "result", "a single image can feed the same image/list input as a queue")
+	var by_id = {}
+	for data in panel.nodes: by_id[data.id] = data
+	check(panel._valid_workflow_edge(panel.edges[2], by_id), "single-image input also passes saved workflow validation")
 	var legacy_batch = make_node("text_to_image")
 	legacy_batch.id = "legacy_batch"
 	legacy_batch.version = "2"

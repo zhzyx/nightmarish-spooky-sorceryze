@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-unified-image-node-20261117-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-unified-image-node-20261117",
+  "kind": "request",
+  "occurred_at": "2026-11-16T17:32:47Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1372",
+  "agent": {
+    "id": "kimi-work-host",
+    "version": "20261117",
+    "origin": "external-authorized-host",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5"
+  },
+  "payload": {
+    "intent": "Unify Maliang image generation into one node supporting text, single or ordered image-list input, and combined image-text input while preserving legacy workflows and validating provider, native UI, persistence and delivery behavior.",
+    "authorization_ref": "kimi-work:user:20261117:maliang-unified-image-node",
+    "state": "in_progress",
+    "usage": null,
+    "definition": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "f3c95950cbe4c080e2733e88611e6a1cca041e8861f30c602eea996c1aa8aa30"
+}

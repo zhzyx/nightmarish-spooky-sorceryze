@@ -1,9 +1,9 @@
 """Provider-neutral ordered image inputs and independently durable image outputs.
 
-Version 1 providers retain their original single-image contract. This adapter owns
-version 2 image nodes: each output has its own child intent and idempotency key.
-Single-reference backends receive one deterministic labeled board; native
-multi-reference backends receive every ordered source, never a silently dropped tail.
+Legacy version 1 providers retain their original single-image contract. This adapter
+owns version 2/3 image nodes and the unified generate_image node; each output has its
+own child intent and idempotency key. Single-reference backends receive one deterministic
+labeled board; native multi-reference backends receive every ordered source.
 """
 
 import base64
@@ -18,8 +18,14 @@ from comfy_provider import digest
 from extensions import NodeRegistry, canonical, require, validate_invocation, validate_outputs
 
 VERSION = "3"
+UNIFIED_VERSION = "1"
+GENERATE_IMAGE = "generate_image"
 BATCH_VERSIONS = ("2", VERSION)
 IMAGE_KINDS = ("text_to_image", "image_to_image")
+IMAGE_ONLY_PROMPT = (
+    "Generate one coherent image from the supplied ordered reference image(s). "
+    "Preserve the main subject and visual identity; do not return a contact sheet or collage."
+)
 MAX_IMAGES = 8
 MESSAGES = {
     "invalid_image_batch": "图像输入或输出列表无效。每次支持 1～8 张输入和 1～8 张独立输出，标签不能为空或重复。",
@@ -49,6 +55,21 @@ def register_images(registry):
         definition["version"] = VERSION
         definition["outputs"] = {"image_set": {"types": ["image_set"], "required": True}}
         registry.register(definition)
+
+    definition = registry.get("image_to_image", VERSION)
+    definition.update(
+        id=GENERATE_IMAGE,
+        version=UNIFIED_VERSION,
+        inputs={"source": {"types": ["image", "image_set"], "required": False}},
+        capabilities=[GENERATE_IMAGE],
+    )
+    registry.register(definition)
+
+
+def _is_batch_request(request):
+    return (request["node"] in IMAGE_KINDS and request["version"] in BATCH_VERSIONS) or (
+        request["node"] == GENERATE_IMAGE and request["version"] == UNIFIED_VERSION
+    )
 
 
 def _ref(asset):
@@ -196,32 +217,45 @@ class MultiImageProvider(CodexProvider):
         result["model"] += " + ordered multi-input/multi-output workflow adapter"
         result["model_version"] = self.fingerprint
         result["context_types"] = sorted(set(result["context_types"]) | {"image_set"})
+        capabilities = set(result["capabilities"])
+        if {"text_to_image", "image_to_image"} <= capabilities:
+            capabilities.add(GENERATE_IMAGE)
+        result["capabilities"] = sorted(capabilities)
         return result
 
     def _prepare(self, request, manifest, key):
-        require(request["node"] in IMAGE_KINDS and request["version"] in BATCH_VERSIONS, "invalid_image_batch")
+        require(_is_batch_request(request), "invalid_image_batch")
         sources = _sources(request, manifest)
-        require(bool(sources) or request["node"] == "text_to_image", "invalid_image_batch")
+        child_request = copy.deepcopy(request)
+        if request["node"] == GENERATE_IMAGE:
+            child_request["node"] = "image_to_image" if sources else "text_to_image"
+        require(bool(sources) or child_request["node"] == "text_to_image", "invalid_image_batch")
         specifications = output_specifications(request["parameters"])
         native = self.inner.describe()["id"] == "kimi_work_image"
         adaptation = "ordered_native_multi_reference" if native else "single_reference"
         child_manifest = copy.deepcopy(manifest)
-        child_request = copy.deepcopy(request)
         child_request["version"] = "1"
         for field in ("output_count", "output_labels"):
             child_request["parameters"].pop(field, None)
+        has_text = bool(str(child_request["parameters"].get("prompt", "")).strip()) or any(
+            str(context.get("text", "")).strip() for context in child_request["context"]
+        )
+        if request["node"] == GENERATE_IMAGE:
+            require(bool(sources) or has_text, "invalid_image_batch")
+            if sources and not has_text:
+                child_request["parameters"]["prompt"] = IMAGE_ONLY_PROMPT
         board_pending = len(sources) > 1 and not native
         if native:
             # The original source port is not registered on version 1 text_to_image;
             # represent every reference uniformly in its ordered image context.
             references = [_ref(source["asset"]) for source in sources]
-            child_request["inputs"] = {"source": references[0]} if request["node"] == "image_to_image" else {}
+            child_request["inputs"] = {"source": references[0]} if child_request["node"] == "image_to_image" else {}
             child_request["context"] = [context for context in child_request["context"] if "text" in context]
             child_request["context"] += [
                 dict(artifact=reference, role="reference", scope="node", strength="reference")
-                for reference in references[1 if request["node"] == "image_to_image" else 0 :]
+                for reference in references[1 if child_request["node"] == "image_to_image" else 0 :]
             ]
-        elif request["node"] == "text_to_image" and "source" in child_request["inputs"]:
+        elif child_request["node"] == "text_to_image" and "source" in child_request["inputs"]:
             reference = child_request["inputs"].pop("source")
             child_request["context"].insert(
                 0, dict(artifact=reference, role="reference", scope="node", strength="reference")
@@ -257,9 +291,9 @@ class MultiImageProvider(CodexProvider):
         child_manifest = copy.deepcopy(record["manifest"])
         child_manifest["artifacts"].append(board)
         child_request = copy.deepcopy(record["child_request"])
-        child_request["inputs"] = {"source": _ref(board)} if record["request"]["node"] == "image_to_image" else {}
+        child_request["inputs"] = {"source": _ref(board)} if child_request["node"] == "image_to_image" else {}
         child_request["context"] = [context for context in child_request["context"] if "text" in context]
-        if record["request"]["node"] == "text_to_image":
+        if child_request["node"] == "text_to_image":
             child_request["context"].insert(
                 0, dict(artifact=_ref(board), role="reference", scope="node", strength="reference")
             )
@@ -317,7 +351,7 @@ class MultiImageProvider(CodexProvider):
         self.write(key, children=record["children"])
 
     def submit(self, request, manifest, idempotency_key):
-        if request["node"] not in IMAGE_KINDS or request.get("version", "1") not in BATCH_VERSIONS:
+        if not _is_batch_request(request):
             return self.inner.submit(request, manifest, idempotency_key)
         require(isinstance(idempotency_key, str) and re.fullmatch(r"[a-f0-9]{64}", idempotency_key), "invalid job key")
         previous = self._local(idempotency_key)

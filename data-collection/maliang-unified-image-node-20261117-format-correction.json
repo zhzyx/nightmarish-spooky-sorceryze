@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-unified-image-node-20261117",
+  "issue_number": 1372,
+  "date": "2026-11-17",
+  "kind": "append_only_correction",
+  "supersedes_signed_head": "9ed9a3e9a07e7aa121e1968fe5996bbc85e15122",
+  "failed_check": "Static checks / ruff format",
+  "failed_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43919729788",
+  "cause": "Four Python files required the exact ruff-format layout reported by CI; ruff check, mypy, codespell and other static checks passed.",
+  "corrected_paths": [
+    "tools/ainative/editor_host.py",
+    "tools/ainative/multi_image_provider.py",
+    "tools/ainative/test_multi_image_host.py",
+    "tools/ainative/test_multi_image_provider.py"
+  ],
+  "revalidation": {
+    "affected_python_tests": {"run": 79, "skipped": 19, "failed": 0},
+    "ainative_bundle_tests": {"run": 1, "failed": 0},
+    "git_diff_check": true
+  },
+  "prior_evidence": "data-collection/maliang-unified-image-node-20261117-validation.json"
+}

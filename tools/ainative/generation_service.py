@@ -20,7 +20,7 @@ from multi_image_provider import MESSAGES as MULTI_IMAGE_MESSAGES
 
 RETIRED_MODELING_MODES = frozenset(("codex_modeling", "codex_sculpt"))
 RETIRED_MODELING_PROVIDERS = frozenset(("codex-modeling", "codex-sculpt"))
-KINDS = ("text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust")
+KINDS = ("generate_image", "text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust")
 IMAGE_NODES = {"CheckpointLoaderSimple", "CLIPTextEncode", "EmptyLatentImage", "KSampler", "VAEDecode", "SaveImage"}
 MESH_NODES = {
     "LoadImage",
@@ -290,9 +290,10 @@ def capability(kind, config, info, models, extra_image=False, allow_unselected=F
             missing_nodes=[],
         )
     required = set(MESH_NODES if kind == "image_to_mesh" else IMAGE_NODES)
-    if kind == "image_to_image":
-        required.discard("EmptyLatentImage")
+    if kind in ("generate_image", "image_to_image"):
         required |= {"LoadImage", "ImageScale", "VAEEncode"}
+        if kind == "image_to_image":
+            required.discard("EmptyLatentImage")
     if kind == "text_to_mesh":
         required = (IMAGE_NODES - {"SaveImage"}) | (MESH_NODES - {"LoadImage"})
     if extra_image:
@@ -460,6 +461,7 @@ def _probe_kimi(config):
             mesh=sorted(MODEL3D_GENERATE_MODELS) if ready else [],
         ),
         capabilities=dict(
+            generate_image=dict(image),
             text_to_image=dict(image),
             image_to_image=dict(image),
             text_to_mesh=mesh,
@@ -510,6 +512,7 @@ def _probe_codex(config, *, inspect_cli=True):
         cli=cli,
         models=dict(image=["builtin"], mesh=mesh_report.get("models", {}).get("mesh", [])),
         capabilities={
+            "generate_image": image,
             "text_to_image": image,
             "image_to_image": image,
             "image_to_mesh": mesh_ready,
@@ -598,7 +601,17 @@ def check_inputs(model):
                     raise ServiceError("source_invalid")
         if kind in KINDS and kind not in ("image_to_mesh", "model_adjust"):
             prompt = str(node.get("parameters", {}).get("prompt", "")) + str(node.get("text", ""))
-            if not prompt.strip():
+            has_image_input = bool(
+                incoming
+                or source
+                or any(source_paths)
+                or any(context_paths)
+                or node.get("source_snapshot")
+                or node.get("source_snapshots")
+                or node.get("image_context_snapshot")
+                or node.get("image_context_snapshots")
+            )
+            if not prompt.strip() and (kind != "generate_image" or not has_image_input):
                 raise ServiceError("prompt_missing")
 
 
@@ -665,7 +678,7 @@ def _provider_snapshot(mode, providers, provider_types, legacy_provider=None, le
 
 
 def prepare_provider(config, model, database, run_id):
-    from comfy_provider import ComfyProvider, LocalMeshProvider, register
+    from comfy_provider import ComfyProvider, LocalMeshProvider
     from editor_demo import factory
 
     registry, providers = factory()
@@ -789,7 +802,7 @@ def prepare_provider(config, model, database, run_id):
         report, info = _probe_codex(config, inspect_cli=requires_cli)
         if not report["connected"]:
             raise ServiceError(report.get("code") or "service_unreachable")
-        register(registry)
+        register_workflow(registry)
         for node in generated:
             kind = node["type"]
             mesh_node = kind.endswith("mesh")

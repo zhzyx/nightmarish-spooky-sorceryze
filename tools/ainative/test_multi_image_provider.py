@@ -234,6 +234,100 @@ class MultiImageTests(unittest.TestCase):
         ]
         self.assertEqual(references, [item["artifact"] for item in collection["payload"]["items"]])
 
+    def test_generate_image_accepts_single_image_and_image_set(self):
+        collection = dict(
+            id="input-set",
+            revision="f" * 64,
+            type="image_set",
+            payload=dict(
+                schema_version=1,
+                count=2,
+                items=[
+                    dict(artifact=reference(self.sources[0]), label="front", index=0),
+                    dict(artifact=reference(self.sources[1]), label="side", index=1),
+                ],
+            ),
+        )
+        for mode, source, manifest in (
+            ("single", self.sources[0], self.manifest),
+            ("list", collection, dict(schema_version=1, artifacts=self.sources + [collection])),
+        ):
+            with self.subTest(mode=mode):
+                inner = FakeImageProvider("kimi_work_image")
+                provider = self.adapter(inner)
+                request = dict(
+                    node="generate_image",
+                    version="1",
+                    inputs={"source": reference(source)},
+                    parameters={"prompt": "", "output_count": 1},
+                    context=[],
+                )
+                key = ("7" if mode == "single" else "8") * 64
+                receipt = provider.poll(provider.submit(request, manifest, key)["job_id"])
+                self.assertEqual(receipt["state"], "succeeded")
+                self.assertEqual(set(receipt["outputs"]), {"image_set"})
+                child = inner.requests[0]
+                self.assertEqual(child["node"], "image_to_image")
+                references = [child["inputs"]["source"]] + [
+                    item["artifact"] for item in child["context"] if "artifact" in item
+                ]
+                expected = (
+                    [reference(item) for item in self.sources] if mode == "list" else [reference(self.sources[0])]
+                )
+                self.assertEqual(references, expected)
+                self.assertIn("supplied ordered reference image(s)", child["parameters"]["prompt"])
+
+    def test_unified_node_supports_text_images_and_combined_inputs(self):
+        cases = (
+            ("text", "text", "text_to_image"),
+            ("images", "image", "image_to_image"),
+            ("combined", "both", "image_to_image"),
+        )
+        for index, (mode, input_mode, child_kind) in enumerate(cases):
+            with self.subTest(mode=mode):
+                inner = FakeImageProvider("kimi_work_image")
+                provider = self.adapter(inner)
+                request = dict(
+                    node="generate_image",
+                    version="1",
+                    inputs={},
+                    parameters={"prompt": "", "output_count": 1, "output_labels": []},
+                    context=[],
+                )
+                manifest = {"schema_version": 1, "artifacts": []}
+                if input_mode in ("image", "both"):
+                    request["inputs"] = {"source": reference(self.sources[0])}
+                    manifest = copy.deepcopy(self.manifest)
+                if input_mode in ("text", "both"):
+                    request["parameters"]["prompt"] = "same sculpture"
+                key = str(7 + index) * 64
+                receipt = provider.poll(provider.submit(request, manifest, key)["job_id"])
+                self.assertEqual(receipt["state"], "succeeded")
+                self.assertEqual(set(receipt["outputs"]), {"image_set"})
+                self.assertEqual(inner.requests[0]["node"], child_kind)
+                if input_mode in ("image", "both"):
+                    self.assertEqual(inner.requests[0]["inputs"]["source"], reference(self.sources[0]))
+                if mode == "images":
+                    self.assertIn("supplied ordered reference", inner.requests[0]["parameters"]["prompt"])
+                else:
+                    self.assertIn("same sculpture", inner.requests[0]["parameters"]["prompt"])
+                registry = NodeRegistry()
+                register_images(registry)
+                validate_invocation(registry, request, manifest, provider.describe())
+
+        inner = FakeImageProvider("kimi_work_image")
+        provider = self.adapter(inner)
+        empty = dict(
+            node="generate_image",
+            version="1",
+            inputs={},
+            parameters={"prompt": "", "output_count": 1, "output_labels": []},
+            context=[],
+        )
+        with self.assertRaisesRegex(ValueError, "invalid_image_batch"):
+            provider.submit(empty, {"schema_version": 1, "artifacts": []}, "a" * 64)
+        self.assertEqual(inner.submissions, 0)
+
     def test_version_two_keeps_primary_image_and_queue_outputs(self):
         inner = FakeImageProvider("kimi_work_image")
         provider = self.adapter(inner)
