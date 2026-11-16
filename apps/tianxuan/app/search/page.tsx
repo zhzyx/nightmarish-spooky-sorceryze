@@ -1,3 +1,4 @@
+import { currentActor } from "@/lib/server-api";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
@@ -13,7 +14,7 @@ import {
   type DocRecord,
   type Tone,
 } from "@/lib/data";
-import { fetchSearch, type ApiSearchResult } from "@/lib/search-api";
+import { fetchSearch, type ApiSearchResult } from "@/lib/server-api";
 import { LOCALE_COOKIE, formatMessage, normalizeLocale, translate, type MessageKey } from "@/lib/i18n";
 
 export function generateMetadata(): Metadata {
@@ -173,9 +174,9 @@ export default async function SearchPage({
       : "all";
   const needle = query.toLowerCase();
 
-  const actor = process.env.TIANXUAN_ACTOR?.trim() ?? "";
+  const actor = await currentActor();
   let liveResults: ApiSearchResult[] | null = null;
-  if (query && (actor || process.env.TIANXUAN_TOKEN)) {
+  if (query && (actor)) {
     try {
       liveResults = await fetchSearch(actor, query);
     } catch {

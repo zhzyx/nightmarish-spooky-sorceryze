@@ -452,8 +452,12 @@ class GitService:
         destination = (root_path / directory_name).resolve()
         if not destination.is_relative_to(root_path):
             raise ValidationError(f"repository escapes the import root: {destination}")
-        if destination.exists():
-            raise GitServiceError(f"repository already exists: {destination}")
+        # Atomically reserve the empty clone directory. Only its creator may
+        # clean it up; another importer cannot pass a check-then-create race.
+        try:
+            destination.mkdir()
+        except FileExistsError as error:
+            raise GitServiceError(f"repository already exists: {destination}") from error
         try:
             completed = self._run(
                 ["clone", "--mirror", "--quiet", "--", source, str(destination)],

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "tianxuan-secure-production-1363-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-secure-production-20261116",
+  "kind": "request",
+  "occurred_at": "2026-11-16T15:12:55.433203+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1363",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Continue existing Tianxuan deployment with personal revocable access keys, role enforcement and complete tracked repository content",
+    "authorization_ref": "current-user-deployment-goal-and-explicit-main-role-confirmations-20261116",
+    "operator": "Sail-Li",
+    "design": "design-docs/tianxuan-secure-production-20261116.md",
+    "validation": "data-collection/tianxuan-secure-production-1363.json",
+    "reuse": "Existing Harness deployment, users/roles/hashed sessions, GitService and Compose stack; no new parallel coordinator or user database",
+    "usage": null,
+    "usage_unknown_reason": "Actual model usage not collected"
+  },
+  "evidence_refs": [],
+  "sha256": "d156dfc9c04c550ba833eba212a48bde90fa505c398dd0ff5438ab1e5098a849"
+}

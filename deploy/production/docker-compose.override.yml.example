@@ -2,12 +2,28 @@
 # Copy to deploy/docker-compose.override.yml and adjust if needed.
 # Requires Docker Compose v2.24+ for the !override tag on ports.
 services:
+  api:
+    init: true
+    environment:
+      TIANXUAN_REQUIRE_KEYS: "1"
+      TIANXUAN_ALLOW_ACTOR_HEADER: "0"
+      TIANXUAN_PROTECTED_BRANCHES: "${TIANXUAN_PROTECTED_BRANCHES:-main,master,release/*}"
+      TIANXUAN_TENANT_ID: "${TIANXUAN_TENANT_ID:?set the admitted tenant ID}"
+      TIANXUAN_PUBLIC_ORIGIN: "${TIANXUAN_PUBLIC_ORIGIN:?set the HTTPS origin}"
+  web:
+    build:
+      args:
+        NEXT_PUBLIC_TIANXUAN_ACTOR: ""
+    environment:
+      TIANXUAN_ACTOR: ""
+      TIANXUAN_TOKEN: ""
+      TIANXUAN_REQUIRE_KEYS: "1"
+      TIANXUAN_INTERNAL_API_BASE: "http://api:8000"
   proxy:
     ports: !override
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx.gate.conf:/etc/nginx/nginx.conf:ro
-      - ./login.html:/usr/share/nginx/html/login.html:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - /var/www/certbot:/var/www/certbot:ro

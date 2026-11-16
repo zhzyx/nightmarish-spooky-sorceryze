@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { saveSession } from "@/lib/auth";
+import { clearSession } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n-client";
 
 const API_BASE = process.env.NEXT_PUBLIC_TIANXUAN_API_BASE?.replace(/\/$/, "") ?? "";
@@ -28,7 +28,6 @@ const fieldStyle = {
 export default function LoginPage() {
   const router = useRouter();
   const { t, locale } = useI18n();
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -41,21 +40,16 @@ export default function LoginPage() {
     setBusy(true);
     setError("");
     try {
-      const response = await fetch(`${apiBase()}/api/v1/auth/session`, {
+      const response = await fetch(`${apiBase()}/api/v1/auth/key-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), password }),
+        body: JSON.stringify({ key: password }),
       });
       if (!response.ok) {
         setError(response.status === 401 ? t("login.invalid") : `${t("login.failed")} (${response.status})`);
         return;
       }
-      const body = (await response.json()) as { token?: string };
-      if (!body.token) {
-        setError(t("login.missingToken"));
-        return;
-      }
-      saveSession(body.token);
+      clearSession();
       router.push("/repos");
       router.refresh();
     } catch {
@@ -87,29 +81,18 @@ export default function LoginPage() {
             <p className="section-kicker">SESSION</p>
             <h2 id="login-title">{t("login.session")}</h2>
           </div>
-          <span className="section-note">POST /api/v1/auth/session</span>
+
         </div>
         <form
           onSubmit={submit}
           style={{ display: "flex", flexDirection: "column", gap: "12px", maxWidth: "420px", padding: "16px 26px 22px" }}
         >
           <label style={fieldStyle}>
-            {t("login.email")}
-            <input
-              type="email"
-              required
-              autoComplete="username"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              style={inputStyle}
-            />
-          </label>
-          <label style={fieldStyle}>
             {t("login.password")}
             <input
               type="password"
               required
-              autoComplete="current-password"
+              autoComplete="off"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               style={inputStyle}

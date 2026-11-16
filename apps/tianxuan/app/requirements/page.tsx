@@ -1,3 +1,4 @@
+import { currentActor } from "@/lib/server-api";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
@@ -12,7 +13,7 @@ import {
   fetchRequirements,
   type ApiRequirement,
   type ApiRequirementProgress,
-} from "@/lib/requirements-api";
+} from "@/lib/server-api";
 import { LOCALE_COOKIE, formatMessage, normalizeLocale, translate, type MessageKey } from "@/lib/i18n";
 
 export function generateMetadata(): Metadata {
@@ -73,9 +74,9 @@ export default async function RequirementsPage() {
     { index: "03", title: t("req.step3Title"), copy: t("req.step3Copy") },
     { index: "04", title: t("req.step4Title"), copy: t("req.step4Copy") },
   ];
-  const actor = process.env.TIANXUAN_ACTOR?.trim() ?? "";
+  const actor = await currentActor();
   let liveRequirements: ApiRequirement[] = [];
-  if (actor || process.env.TIANXUAN_TOKEN) {
+  if (actor) {
     try {
       liveRequirements = await loadLiveRequirements(actor);
     } catch {

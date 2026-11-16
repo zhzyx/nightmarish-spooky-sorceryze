@@ -1,9 +1,10 @@
+import { currentActor } from "@/lib/server-api";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
 import { IssueBoard } from "@/components/IssueBoard";
-import { fetchBoard, fetchIssues, type ApiIssue } from "@/lib/api";
+import { fetchBoard, fetchIssues, type ApiIssue } from "@/lib/server-api";
 import { issues } from "@/lib/data";
 import { LOCALE_COOKIE, formatMessage, normalizeLocale, translate, type MessageKey } from "@/lib/i18n";
 
@@ -122,9 +123,9 @@ export default async function IssuesPage() {
   const blocked = issues.filter((issue) => issue.blocked).length;
   const completion = Math.round((done / issues.length) * 100);
 
-  const actor = process.env.TIANXUAN_ACTOR ?? "";
+  const actor = await currentActor();
   let live: { board: Record<string, ApiIssue[]>; issues: ApiIssue[] } | null = null;
-  if (actor || process.env.TIANXUAN_TOKEN) {
+  if (actor) {
     try {
       const [board, liveIssues] = await Promise.all([fetchBoard(actor), fetchIssues(actor)]);
       live = { board, issues: liveIssues };

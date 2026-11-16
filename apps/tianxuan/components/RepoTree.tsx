@@ -1,5 +1,7 @@
 "use client";
 
+import { RepoFileEditor } from "@/components/RepoFileEditor";
+
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { formatMessage } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n-client";
@@ -90,6 +92,8 @@ export function RepoTree() {
   const [repo, setRepo] = useState("");
   const [branches, setBranches] = useState<string[]>([]);
   const [branch, setBranch] = useState("");
+  const [openFile, setOpenFile] = useState("");
+  useEffect(() => { setOpenFile(""); }, [repo, branch]);
   const [path, setPath] = useState("");
   const [entries, setEntries] = useState<ApiTreeEntry[]>([]);
   const [tags, setTags] = useState<ApiTag[]>([]);
@@ -559,7 +563,7 @@ export function RepoTree() {
                     ) : (
                       <button
                         className="btn btn-ghost btn-sm"
-                        onClick={() => void loadBlame(entry.path)}
+                        onClick={() => { setOpenFile(entry.path); void loadBlame(entry.path); }}
                         type="button"
                       >
                         {entry.name}
@@ -582,6 +586,8 @@ export function RepoTree() {
                 ) : null}
               </ul>
             ) : null}
+
+            {openFile && <RepoFileEditor key={`${repo}:${branch}:${openFile}`} repo={repo} branch={branch || "HEAD"} path={openFile} />}
 
             {repo ? (
               <div style={rowStyle}>

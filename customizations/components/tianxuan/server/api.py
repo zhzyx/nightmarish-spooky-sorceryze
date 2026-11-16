@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Annotated, Any
 from urllib.parse import quote
 
+from access_control import configure_access
 from docx_export import render_docx
 from duobao_bridge import (
     GitService,
@@ -73,6 +74,7 @@ from schemas import (
     ReleaseCreateRequest,
     ReleaseUpdateRequest,
     RepoCreateRequest,
+    RepoFileWriteRequest,
     RepoLinkRequest,
     RequirementCommitRequest,
     RequirementCreateRequest,
@@ -106,6 +108,9 @@ def _require_actor(
     authorization: str | None = Header(default=None),
 ) -> str:
     """读取操作者：优先 Bearer 会话 token；X-Actor 需要显式开启并指向真实用户。"""
+    verified = getattr(request.state, "verified_actor", None)
+    if verified:
+        return str(verified)
     if authorization:
         scheme, _, token = authorization.partition(" ")
         if scheme.lower() == "bearer" and token.strip():
@@ -142,7 +147,8 @@ ActorDep = Annotated[str, Depends(_require_actor)]
 class DocRooms:
     """单进程文档房间：连接、成员与广播；跨进程 fan-out 由部署层负责。"""
 
-    def __init__(self) -> None:
+    def __init__(self, store: Tianxuan) -> None:
+        self._store = store
         self._peers: dict[str, set[WebSocket]] = {}
         self._actors: dict[WebSocket, str] = {}
 
@@ -164,6 +170,12 @@ class DocRooms:
     async def broadcast(self, doc_id: str, payload: dict[str, Any]) -> None:
         for peer in list(self._peers.get(doc_id, ())):
             try:
+                try:
+                    self._store.get_doc_shared(self._actors[peer], doc_id)
+                except (NotFound, PermissionDenied):
+                    await peer.close(code=4403)
+                    self.leave(doc_id, peer)
+                    continue
                 await peer.send_json(payload)
             except (RuntimeError, WebSocketDisconnect):
                 self.leave(doc_id, peer)
@@ -295,18 +307,23 @@ def create_app(
     """为给定领域核心实例构建 HTTP 应用；可选的模型网关与多宝合入队列挂载到同一应用。"""
     app = FastAPI(title="Tianxuan API", version="0.1.0")
     app.state.store = store
+    configure_access(app, store)
     app.state.gateway = gateway
     app.state.merge_queue = merge_queue
     app.state.protected_branches = parse_protected_branches(protected_branches)
     app.state.required_approvals = required_approvals
     app.state.required_checks = tuple(required_checks)
-    rooms = DocRooms()
+    rooms = DocRooms(store)
     if gateway is not None:
         app.include_router(create_model_router(gateway))
 
     # ---------- 领域异常 -> HTTP 状态码 ----------
     # Starlette 按异常的 MRO 查找处理器，VersionConflict/TransitionRejected
     # 是 TianxuanError 的子类，注册更具体的类型即可得到 409 而不是 400。
+
+    @app.exception_handler(GitServiceError)
+    def git_error(_request: Request, _error: GitServiceError) -> JSONResponse:
+        return JSONResponse(status_code=400, content={"detail": "invalid repository operation"})
 
     @app.exception_handler(StorageBusy)
     def _storage_busy(_request: Request, exc: StorageBusy) -> JSONResponse:
@@ -1435,6 +1452,55 @@ def create_app(
     def get_import_job(job_id: str, actor: ActorDep) -> dict[str, Any]:
         return store.get_import_job(actor, job_id)  # type: ignore[no-any-return]
 
+    @app.get("/api/v1/git/repos/{name}/file")
+    def repo_file(name: str, actor: ActorDep, path: str, branch: str = "main") -> dict[str, Any]:
+        store.role_of(actor)
+        service = GitService()
+        repo = _repo_under_root(name)
+        head = service.log(repo, branch, 1)[0]["sha"]
+        parent = str(Path(path).parent).replace("\\", "/")
+        entries = service.list_tree(repo, head, "" if parent == "." else parent)
+        entry = next((item for item in entries if item["path"] == path), None)
+        if entry is None:
+            raise HTTPException(404, "tracked file not found")
+        if entry["mode"] not in {"100644", "100755"} or entry["size"] is None or entry["size"] > 1_000_000:
+            raise HTTPException(413, "only regular text files up to 1 MB can be edited")
+        content = service.read_file(repo, head, path)
+        if "\0" in content or "\ufffd" in content:
+            raise HTTPException(415, "binary files cannot be edited as text")
+        return {**entry, "content": content, "branch": branch}
+
+    @app.post("/api/v1/git/repos/{name}/file")
+    def write_repo_file(name: str, payload: RepoFileWriteRequest, actor: ActorDep) -> dict[str, Any]:
+        if store.role_of(actor) == "viewer":
+            raise PermissionDenied("viewer cannot edit repository files")
+        current = repo_file(name, actor, payload.path, payload.branch)
+        if current["sha"] != payload.expected_blob:
+            raise HTTPException(409, "file changed; reload before editing")
+        # Each edit goes to a fresh branch. It cannot overwrite another user's
+        # branch or the deployment baseline, even if the source advances.
+        import uuid
+
+        service = GitService()
+        repo = _repo_under_root(name)
+        head = service.log(repo, payload.branch, 1)[0]["sha"]
+        # Re-read at the selected immutable commit before creating the branch.
+        if service.read_file(repo, head, payload.path) != current["content"]:
+            raise HTTPException(409, "branch advanced; reload before editing")
+        target = f"web/{actor}/{uuid.uuid4().hex[:12]}"
+        try:
+            ensure_branch_mutation_allowed(
+                target, _policy_patterns(app), actor_role=store.role_of(actor), operation="create"
+            )
+        except PolicyError as error:
+            raise HTTPException(status_code=403, detail=str(error)) from error
+        service.branch(repo, target, head)
+        member = next(user for user in store.list_members(actor) if user["id"] == actor)
+        sha = service.commit(
+            repo, target, payload.message, {payload.path: payload.content}, member["name"] or actor, member["email"]
+        )
+        return {"commit": sha, "branch": target, "path": payload.path}
+
     # ---------- 多宝：合入队列 ----------
 
     if merge_queue is not None:
@@ -1547,7 +1613,7 @@ def create_app(
 
     @app.websocket("/api/v1/ws/merge-queue")
     async def merge_queue_room(websocket: WebSocket) -> None:
-        actor = _websocket_actor(store, websocket.query_params)
+        actor = getattr(websocket.state, "verified_actor", None) or _websocket_actor(store, websocket.query_params)
         if actor is None:
             await websocket.close(code=4401)
             return
@@ -1574,7 +1640,7 @@ def create_app(
 
     @app.websocket("/api/v1/ws/docs/{doc_id}")
     async def doc_room(websocket: WebSocket, doc_id: str) -> None:
-        actor = _websocket_actor(store, websocket.query_params)
+        actor = getattr(websocket.state, "verified_actor", None) or _websocket_actor(store, websocket.query_params)
         if actor is None:
             await websocket.close(code=4401)
             return
@@ -1593,6 +1659,11 @@ def create_app(
             await rooms.broadcast(doc_id, {"type": "presence", "actors": rooms.actors(doc_id)})
             while True:
                 message = await websocket.receive_json()
+                try:
+                    store.get_doc_shared(actor, doc_id)
+                except (NotFound, PermissionDenied):
+                    await websocket.close(code=4403)
+                    break
                 kind = message.get("type")
                 if kind == "ping":
                     await websocket.send_json({"type": "pong"})

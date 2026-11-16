@@ -359,3 +359,11 @@ class CommentResolveRequest(BaseModel):
     """标记评论已解决或重新打开。"""
 
     resolved: bool = True
+
+
+class RepoFileWriteRequest(BaseModel):
+    branch: str = Field(min_length=1, max_length=200)
+    path: str = Field(min_length=1, max_length=1024)
+    content: str = Field(max_length=1_000_000)
+    message: str = Field(min_length=1, max_length=500)
+    expected_blob: str = Field(pattern=r"^[0-9a-f]{40,64}$")
