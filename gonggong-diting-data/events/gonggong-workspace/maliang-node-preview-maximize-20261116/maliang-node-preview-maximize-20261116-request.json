@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-node-preview-maximize-20261116-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-node-preview-maximize-20261116",
+  "kind": "request",
+  "occurred_at": "2026-11-16T10:21:37.842983+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1355",
+  "agent": {
+    "id": "kimi-work-host",
+    "version": "20261116",
+    "origin": "external-authorized-host",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5"
+  },
+  "payload": {
+    "intent": "Double-click Maliang image and Mesh node previews to maximize and restore, with explicit maximize and restore buttons.",
+    "authorization_ref": "kimi-work:user:20261116:maliang-node-preview-maximize",
+    "state": "in_progress",
+    "usage": null,
+    "definition": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "8138ee7efae675d572125b03e9eddbe526532a26ffbc64767c93f215f51cc5b8"
+}

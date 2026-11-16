@@ -26,6 +26,16 @@ var target_edit: LineEdit
 var texture: TextureRect
 var viewport: SubViewport
 var mesh_container: SubViewportContainer
+var preview_maximize_button: Button
+var preview_restore_button: Button
+var preview_window: Window
+var preview_window_host: VBoxContainer
+var preview_maximized := false
+var preview_inline_parent: Control
+var preview_inline_index := -1
+var preview_inline_minimum_size := Vector2.ZERO
+var preview_inline_size_flags_horizontal := Control.SIZE_FILL
+var preview_inline_size_flags_vertical := Control.SIZE_FILL
 var mesh_focus := Vector3.ZERO
 var mesh_frame_distance := 1.0
 var preview_root: Node3D
@@ -474,18 +484,24 @@ func _ready():
 	inspector.add_child(result_choice)
 	result_choice.hide()
 	refresh_history()
+	preview_maximize_button = button(inspector, "最大化预览", toggle_preview_maximized)
+	preview_maximize_button.name = "PreviewMaximizeButton"
+	preview_maximize_button.tooltip_text = "打开最大化预览；也可以双击图片或网格"
+	preview_maximize_button.disabled = true
 	native_inspector_fields = inspector.get_children()
 	texture = TextureRect.new()
 	texture.custom_minimum_size = Vector2(240, 120)
 	texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	texture.tooltip_text = "双击最大化预览"
+	texture.gui_input.connect(_image_preview_input)
 	inspector.add_child(texture)
 	texture.hide()
 	var container = SubViewportContainer.new()
 	mesh_container = container
 	container.custom_minimum_size = Vector2(360, 280)
 	container.stretch = true
-	container.tooltip_text = "左键拖动旋转 · 中键拖动平移 · 滚轮缩放 · 双击恢复视角"
+	container.tooltip_text = "左键拖动旋转 · 中键拖动平移 · 滚轮缩放 · 双击最大化 / 还原预览"
 	container.gui_input.connect(_mesh_preview_input)
 	inspector.add_child(container)
 	container.hide()
@@ -511,6 +527,31 @@ func _ready():
 	environment.environment.ambient_light_color = Color.WHITE
 	environment.environment.ambient_light_energy = 0.3
 	preview_root.add_child(environment)
+	preview_window = Window.new()
+	preview_window.name = "MaximizedNodePreview"
+	preview_window.title = "节点预览"
+	preview_window.min_size = Vector2i(480, 360)
+	preview_window.size = Vector2i(1100, 760)
+	preview_window.transient = true
+	preview_window.exclusive = true
+	preview_window.close_requested.connect(restore_preview)
+	add_child(preview_window)
+	preview_window.hide()
+	var window_fields = VBoxContainer.new()
+	window_fields.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	preview_window.add_child(window_fields)
+	var preview_bar = HBoxContainer.new()
+	window_fields.add_child(preview_bar)
+	var preview_hint = Label.new()
+	preview_hint.text = "双击预览可还原到工作台"
+	preview_hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	preview_bar.add_child(preview_hint)
+	preview_restore_button = button(preview_bar, "还原预览", restore_preview)
+	preview_restore_button.name = "PreviewRestoreButton"
+	preview_window_host = VBoxContainer.new()
+	preview_window_host.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	preview_window_host.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	window_fields.add_child(preview_window_host)
 	rigging_panel = preload('res://addons/ainative/rigging_panel.gd').new()
 	content.add_child(rigging_panel)
 	rigging_panel.initialize(self)
@@ -565,6 +606,7 @@ func _ready():
 
 func show_native_section(section: String):
 	if native_sections.is_empty(): return
+	if section != 'mesh': restore_preview()
 	if section == 'settings':
 		settings_requested.emit('environment')
 		return
@@ -1157,7 +1199,62 @@ func show_history(index: int):
 	history_choice.select(index)
 	status.text += " · 版本 " + str(index + 1)
 
+func _displayed_preview() -> Control:
+	if preview_resource != null: return texture
+	if is_instance_valid(preview_scene): return mesh_container
+	return null
+
+func _update_preview_maximize_controls():
+	if not is_instance_valid(preview_maximize_button): return
+	preview_maximize_button.disabled = _displayed_preview() == null
+	preview_maximize_button.text = "还原预览" if preview_maximized else "最大化预览"
+	preview_maximize_button.tooltip_text = "还原到工作台" if preview_maximized else "打开最大化预览；也可以双击图片或网格"
+
+func toggle_preview_maximized():
+	if preview_maximized: restore_preview()
+	else: maximize_preview()
+
+func maximize_preview():
+	if preview_maximized: return
+	var displayed = _displayed_preview()
+	if displayed == null: return
+	preview_inline_parent = displayed.get_parent() as Control
+	preview_inline_index = displayed.get_index()
+	preview_inline_minimum_size = displayed.custom_minimum_size
+	preview_inline_size_flags_horizontal = displayed.size_flags_horizontal
+	preview_inline_size_flags_vertical = displayed.size_flags_vertical
+	displayed.reparent(preview_window_host)
+	displayed.custom_minimum_size = Vector2.ZERO
+	displayed.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	displayed.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	preview_maximized = true
+	preview_window.popup()
+	preview_window.mode = Window.MODE_MAXIMIZED
+	_update_preview_maximize_controls()
+
+func restore_preview():
+	if not preview_maximized: return
+	var displayed = _displayed_preview()
+	preview_maximized = false
+	preview_window.hide()
+	preview_window.mode = Window.MODE_WINDOWED
+	if displayed != null and is_instance_valid(preview_inline_parent):
+		displayed.reparent(preview_inline_parent)
+		preview_inline_parent.move_child(displayed, mini(preview_inline_index, preview_inline_parent.get_child_count() - 1))
+		displayed.custom_minimum_size = preview_inline_minimum_size
+		displayed.size_flags_horizontal = preview_inline_size_flags_horizontal
+		displayed.size_flags_vertical = preview_inline_size_flags_vertical
+	preview_inline_parent = null
+	preview_inline_index = -1
+	_update_preview_maximize_controls()
+
+func _image_preview_input(event: InputEvent):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and event.double_click:
+		toggle_preview_maximized()
+		texture.accept_event()
+
 func clear_preview():
+	restore_preview()
 	preview_token = ""
 	preview_run = ""
 	preview_node = ""
@@ -1171,6 +1268,7 @@ func clear_preview():
 	texture.texture = null
 	texture.hide()
 	mesh_container.hide()
+	_update_preview_maximize_controls()
 
 func show_result(index: int):
 	if index < 0 or index >= current_images.size(): return
@@ -1215,6 +1313,7 @@ func load_preview(data: Dictionary, node_id: String, result_run: String = "", pr
 	preview_node = node_id
 	status.text = "已加载" + {"image":"图像", "mesh":"网格"}.get(data.type,data.type) + "预览，请检查后再发布"
 	if not current_images.is_empty(): status.text += "；当前为“" + str(data.get("label", "独立图片")) + "”，共 " + str(current_images.size()) + " 张"
+	_update_preview_maximize_controls()
 
 func frame_mesh():
 	var bounds = AABB()
@@ -1253,6 +1352,7 @@ func _mesh_preview_input(event: InputEvent):
 	elif event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.double_click:
 			frame_mesh()
+			toggle_preview_maximized()
 			mesh_container.accept_event()
 			return
 		if event.button_index not in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]: return

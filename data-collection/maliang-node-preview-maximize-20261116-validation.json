@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-node-preview-maximize-20261116",
+  "issue_number": 1355,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1355",
+  "recorded_at": "2026-11-16T10:21:37.842983+00:00",
+  "state": "passed",
+  "scope": "Isolated main candidate; real Godot controls and offline Executor; no AI inference.",
+  "input_sha256": {
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "90fed22462788f301e98ebccc53590efc004137027989c98a6832bdce758bc79",
+    "samples/ainative-workbench/node_preview_acceptance.gd": "141a0c09d97a687a1d04024fa2537fde9f0a4f3bed4dc5c25736e733ba08ee4b"
+  },
+  "checks": [
+    {
+      "command": "godot --headless --path samples/ainative-workbench --script res://node_preview_acceptance.gd",
+      "passed": true,
+      "observed": "AINATIVE_NODE_PREVIEW failures=0"
+    },
+    {
+      "command": "godot --headless --path samples/ainative-workbench --script res://acceptance.gd",
+      "passed": true,
+      "observed": "AINATIVE_ACCEPTANCE failures=0"
+    }
+  ],
+  "unverified": [
+    "Human visual approval and real model inference were not part of this offline regression."
+  ]
+}

@@ -15,6 +15,13 @@ func wait_idle():
 		await process_frame
 	check(panel.jobs.is_empty() and not panel.auto_step and not panel.creating, "node operation finishes while the editor frame loop advances")
 
+func double_click(control: Control):
+	var event = InputEventMouseButton.new()
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.pressed = true
+	event.double_click = true
+	control.gui_input.emit(event)
+
 func copy_node(id: String, source: String, delay: float = 0.0, fail: bool = false) -> Dictionary:
 	return {"id": id, "type": "copy", "version": "1", "provider": "local-copy", "source": source, "image_context": "", "text": "", "parameters": {"delay": delay, "fail": fail}, "x": 30, "y": 40}
 
@@ -57,6 +64,15 @@ func run():
 	check(panel.current.get("nodes", {}).size() == 2 and panel.current.nodes.has("upstream") and panel.current.nodes.has("target"), "only target and transitive upstream execute; downstream and unrelated nodes are excluded")
 	check(panel.heartbeat > ticks + 5, "provider work leaves the editor responsive")
 	check(panel.preview_node == "target" and panel.texture.texture != null, "successful target automatically opens the decoded image")
+	check(not panel.preview_maximize_button.disabled, "a loaded image enables the explicit maximize button")
+	double_click(panel.texture)
+	check(panel.preview_maximized and panel.preview_window.visible and panel.preview_window.mode == Window.MODE_MAXIMIZED and panel.texture.get_parent() == panel.preview_window_host, "double-clicking an image opens the maximized preview window")
+	double_click(panel.texture)
+	check(not panel.preview_maximized and not panel.preview_window.visible and panel.texture.get_parent() == panel.inspector_fields, "a second image double-click restores the original inspector placement")
+	panel.preview_maximize_button.pressed.emit()
+	check(panel.preview_maximized and panel.texture.get_parent() == panel.preview_window_host, "the maximize button opens the same image preview")
+	panel.preview_restore_button.pressed.emit()
+	check(not panel.preview_maximized and panel.texture.get_parent() == panel.inspector_fields and panel.texture.texture != null, "the restore button returns the existing image without reloading it")
 	check(panel.preview_history.get("target", []).size() == 1, "first successful result is recorded once in this node's history")
 	var original_run = panel.run_id
 	var original_token = panel.preview_token
@@ -71,6 +87,10 @@ func run():
 	panel.run_node_preview("target")
 	await wait_idle()
 	check(panel.preview_scene != null and panel.preview_node == "target", "node preview decodes a real GLB mesh")
+	double_click(panel.mesh_container)
+	check(panel.preview_maximized and panel.mesh_container.get_parent() == panel.preview_window_host and panel.preview_scene != null, "double-clicking a mesh maximizes the existing 3D scene")
+	panel.preview_window.close_requested.emit()
+	check(not panel.preview_maximized and panel.mesh_container.get_parent() == panel.inspector_fields and panel.preview_scene != null, "closing the maximized window restores the mesh without destroying its scene")
 	check(panel.preview_history.get("target", []).size() == 2 and panel.history_choice.item_count == 2, "a rerun retains both old and new node results for comparison")
 	check(panel.preview_token != original_token, "new input yields a distinct immutable preview version")
 	panel.show_history(0)
