@@ -1,3 +1,5 @@
+import { authHeaders } from "@/lib/auth";
+
 /**
  * 文曲检索 API 客户端。
  *
@@ -32,7 +34,7 @@ export async function fetchSearch(
 ): Promise<ApiSearchResult[]> {
   const params = new URLSearchParams({ q, limit: String(limit) });
   const response = await fetch(`${apiBase()}/api/v1/search?${params.toString()}`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   if (!response.ok) {

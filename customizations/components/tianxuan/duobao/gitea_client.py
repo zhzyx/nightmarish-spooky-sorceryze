@@ -36,6 +36,15 @@ _MAX_ERROR_DETAIL = 200
 #: Gitea 合并接口 ``Do`` 字段允许的取值。
 _MERGE_METHODS = ("merge", "rebase", "rebase-merge", "squash", "fast-forward-only")
 
+#: Gitea 评审接口 ``event`` 字段允许的取值。
+_REVIEW_EVENTS = ("APPROVED", "REQUEST_CHANGES", "COMMENT")
+
+#: Gitea 提交状态接口 ``state`` 字段允许的取值。
+_STATUS_STATES = ("pending", "success", "error", "failure", "warning")
+
+#: 提交状态接口接受的 SHA 形式（短 SHA 或完整 SHA）。
+_COMMIT_SHA = re.compile(r"^[0-9a-fA-F]{7,40}$")
+
 #: Gitea Issue 列表接口允许的 ``state`` 取值。
 _ISSUE_STATES = ("open", "closed", "all")
 
@@ -227,6 +236,15 @@ def _branch_field(value: Any) -> str:
     return ""
 
 
+def _branch_sha(value: Any) -> str:
+    """从 PR 的 head/base 对象中取提交 SHA；缺失时返回空串。"""
+    if isinstance(value, dict):
+        sha = value.get("sha")
+        if isinstance(sha, str):
+            return sha
+    return ""
+
+
 def _normalize_branch(payload: Any) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise GiteaError(0, "unexpected branch response: expected a JSON object")
@@ -252,6 +270,55 @@ def _normalize_pull_request(payload: Any) -> dict[str, Any]:
         "html_url": _string(data, "html_url"),
         "head": _branch_field(data.get("head")),
         "base": _branch_field(data.get("base")),
+        "head_sha": _branch_sha(data.get("head")),
+        "base_sha": _branch_sha(data.get("base")),
+    }
+
+
+def _normalize_release(payload: Any) -> dict[str, Any]:
+    """把发布响应裁剪为稳定字段。"""
+    data = _mapping(payload, "release")
+    return {
+        "id": _integer(data, "id"),
+        "tag_name": _string(data, "tag_name"),
+        "name": _string(data, "name"),
+        "body": _string(data, "body"),
+        "draft": bool(data.get("draft")),
+        "prerelease": bool(data.get("prerelease")),
+        "created_at": _string(data, "created_at"),
+        "html_url": _string(data, "html_url"),
+    }
+
+
+def _normalize_review(payload: Any) -> dict[str, Any]:
+    """把评审响应裁剪为 ``id/state/body/user/submitted_at``。"""
+    data = _mapping(payload, "review")
+    user = data.get("user")
+    login = user.get("login") if isinstance(user, dict) else ""
+    return {
+        "id": _integer(data, "id"),
+        "state": _string(data, "state"),
+        "body": _string(data, "body"),
+        "user": login if isinstance(login, str) else "",
+        "submitted_at": _string(data, "submitted_at"),
+    }
+
+
+def _validate_commit_sha(value: Any) -> str:
+    if not isinstance(value, str) or not _COMMIT_SHA.match(value):
+        raise GiteaValidationError(f"invalid commit sha: {value!r}")
+    return value
+
+
+def _normalize_status(payload: Any) -> dict[str, Any]:
+    """把提交状态裁剪为 ``state/context/description/target_url/created_at``。"""
+    data = _mapping(payload, "commit status")
+    return {
+        "state": _string(data, "state"),
+        "context": _string(data, "context"),
+        "description": _string(data, "description"),
+        "target_url": _string(data, "target_url"),
+        "created_at": _string(data, "created_at"),
     }
 
 
@@ -346,15 +413,20 @@ class GiteaClient:
         base_url: str,
         token: str,
         *,
+        sudo: str = "",
         transport: httpx.BaseTransport | None = None,
         timeout: float = 30.0,
     ) -> None:
         self.base_url = _validate_base_url(base_url)
         self._token = _validate_token(token)
+        self.sudo = _validate_segment(sudo, "sudo username") if sudo else ""
         timeout_value = _validate_timeout(timeout)
+        headers = {"Authorization": f"token {self._token}"}
+        if self.sudo:
+            headers["Sudo"] = self.sudo
         self._client = httpx.Client(
             base_url=self.base_url,
-            headers={"Authorization": f"token {self._token}"},
+            headers=headers,
             transport=transport,
             timeout=timeout_value,
         )
@@ -424,15 +496,113 @@ class GiteaClient:
             raise GiteaError(0, "unexpected branches response: expected a JSON array")
         return [_normalize_branch(item) for item in payload]
 
-    def list_pull_requests(self, owner: str, repo: str, state: str = "open") -> list[dict[str, Any]]:
-        """列出 Pull Request；``state`` 支持 ``open``/``closed``/``all``。"""
+    def list_releases(self, owner: str, repo: str) -> list[dict[str, Any]]:
+        """列出仓库发布（releases），按 Gitea 返回顺序。"""
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        payload = self._request("GET", f"/api/v1/repos/{owner}/{repo}/releases")
+        if payload is None:
+            return []
+        if not isinstance(payload, list):
+            raise GiteaError(0, "unexpected releases response: expected a JSON array")
+        releases: list[dict[str, Any]] = []
+        for item in payload:
+            if not isinstance(item, dict):
+                continue
+            releases.append({
+                "id": item.get("id"),
+                "tag_name": str(item.get("tag_name") or ""),
+                "name": str(item.get("name") or ""),
+                "body": str(item.get("body") or ""),
+                "draft": bool(item.get("draft")),
+                "prerelease": bool(item.get("prerelease")),
+                "created_at": str(item.get("created_at") or ""),
+                "html_url": str(item.get("html_url") or ""),
+            })
+        return releases
+
+    def create_release(
+        self,
+        owner: str,
+        repo: str,
+        tag_name: str,
+        name: str = "",
+        body: str = "",
+        draft: bool = False,
+        prerelease: bool = False,
+    ) -> dict[str, Any]:
+        """创建仓库发布（release）。"""
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        tag = _validate_text(tag_name, "release tag")
+        release_name = _validate_text(name, "release name", allow_empty=True)
+        notes = _validate_text(body, "release body", allow_empty=True)
+        payload = self._request(
+            "POST",
+            f"/api/v1/repos/{owner}/{repo}/releases",
+            json_body={
+                "tag_name": tag,
+                "name": release_name,
+                "body": notes,
+                "draft": bool(draft),
+                "prerelease": bool(prerelease),
+            },
+        )
+        return _normalize_release(payload)
+
+    def update_release(
+        self,
+        owner: str,
+        repo: str,
+        release_id: int,
+        *,
+        name: str | None = None,
+        body: str | None = None,
+        draft: bool | None = None,
+        prerelease: bool | None = None,
+    ) -> dict[str, Any]:
+        """更新仓库发布的可编辑字段，至少要提供一个字段。"""
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        release_id = _validate_number(release_id)
+        payload: dict[str, Any] = {}
+        if name is not None:
+            payload["name"] = _validate_text(name, "release name", allow_empty=True)
+        if body is not None:
+            payload["body"] = _validate_text(body, "release body", allow_empty=True)
+        if draft is not None:
+            payload["draft"] = bool(draft)
+        if prerelease is not None:
+            payload["prerelease"] = bool(prerelease)
+        if not payload:
+            raise GiteaValidationError("release update requires at least one field")
+        result = self._request(
+            "PATCH",
+            f"/api/v1/repos/{owner}/{repo}/releases/{release_id}",
+            json_body=payload,
+        )
+        return _normalize_release(result)
+
+    def list_pull_requests(
+        self,
+        owner: str,
+        repo: str,
+        state: str = "open",
+        page: int = 1,
+        limit: int = 30,
+    ) -> list[dict[str, Any]]:
+        """列出 Pull Request；``state`` 支持 ``open``/``closed``/``all``，支持分页。"""
         owner = _validate_segment(owner, "repository owner")
         repo = _validate_segment(repo, "repository name")
         state = _validate_choice(state, _ISSUE_STATES, "pull request state")
+        if isinstance(page, bool) or not isinstance(page, int) or page < 1:
+            raise GiteaValidationError("page must be a positive integer")
+        if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 100:
+            raise GiteaValidationError("limit must be an integer between 1 and 100")
         payload = self._request(
             "GET",
             f"/api/v1/repos/{owner}/{repo}/pulls",
-            params={"state": state},
+            params={"state": state, "page": str(page), "limit": str(limit)},
         )
         if payload is None:
             return []
@@ -490,6 +660,89 @@ class GiteaClient:
         if payload is None:
             return {"merged": True, "sha": None}
         return _normalize_merge(payload)
+
+    # ------------------------------------------------------------------
+    # 评审
+    # ------------------------------------------------------------------
+    def list_reviews(self, owner: str, repo: str, number: int) -> list[dict[str, Any]]:
+        """列出 PR 评审；按 Gitea 返回顺序（通常为时间正序）。"""
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        number = _validate_number(number)
+        payload = self._request("GET", f"/api/v1/repos/{owner}/{repo}/pulls/{number}/reviews")
+        if payload is None:
+            return []
+        if not isinstance(payload, list):
+            raise GiteaError(0, "unexpected reviews response: expected a JSON array")
+        return [_normalize_review(item) for item in payload]
+
+    def create_review(
+        self,
+        owner: str,
+        repo: str,
+        number: int,
+        *,
+        event: str,
+        body: str = "",
+    ) -> dict[str, Any]:
+        """提交一次 PR 评审；``event`` 为 APPROVED/REQUEST_CHANGES/COMMENT。"""
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        number = _validate_number(number)
+        event = _validate_choice(event, _REVIEW_EVENTS, "review event")
+        body = _validate_text(body, "review body", allow_empty=True)
+        payload = self._request(
+            "POST",
+            f"/api/v1/repos/{owner}/{repo}/pulls/{number}/reviews",
+            json_body={"event": event, "body": body},
+        )
+        return _normalize_review(payload)
+
+    # ------------------------------------------------------------------
+    # 提交状态（CI 回写）
+    # ------------------------------------------------------------------
+    def list_commit_statuses(self, owner: str, repo: str, sha: str) -> list[dict[str, Any]]:
+        """列出某个提交的状态；按 Gitea 返回顺序（通常为时间正序）。"""
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        sha = _validate_commit_sha(sha)
+        payload = self._request("GET", f"/api/v1/repos/{owner}/{repo}/commits/{sha}/statuses")
+        if payload is None:
+            return []
+        if not isinstance(payload, list):
+            raise GiteaError(0, "unexpected commit statuses response: expected a JSON array")
+        return [_normalize_status(item) for item in payload]
+
+    def create_commit_status(
+        self,
+        owner: str,
+        repo: str,
+        sha: str,
+        *,
+        state: str,
+        context: str = "duobao",
+        description: str = "",
+        target_url: str = "",
+    ) -> dict[str, Any]:
+        """为提交写入一次状态（pending/success/error/failure/warning）。"""
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        sha = _validate_commit_sha(sha)
+        state = _validate_choice(state, _STATUS_STATES, "commit status state")
+        context = _validate_text(context, "commit status context")
+        description = _validate_text(description, "commit status description", allow_empty=True)
+        target_url = _validate_text(target_url, "commit status target_url", allow_empty=True)
+        payload = self._request(
+            "POST",
+            f"/api/v1/repos/{owner}/{repo}/statuses/{sha}",
+            json_body={
+                "state": state,
+                "context": context,
+                "description": description,
+                "target_url": target_url,
+            },
+        )
+        return _normalize_status(payload)
 
     # ------------------------------------------------------------------
     # Issue

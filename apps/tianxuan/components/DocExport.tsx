@@ -1,7 +1,10 @@
 "use client";
 
+import { useActor } from "@/lib/use-actor";
+
 import { useState } from "react";
 import { downloadDocExport } from "@/lib/api";
+import { useI18n } from "@/lib/i18n-client";
 
 function safeName(title: string): string {
   const cleaned = title.replace(/[\\/:*?"<>|\r\n]/g, " ").trim();
@@ -9,7 +12,8 @@ function safeName(title: string): string {
 }
 
 export function DocExport({ docId, title }: { docId: string; title: string }) {
-  const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR;
+  const actor = useActor();
+  const { t } = useI18n();
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
 
@@ -28,7 +32,7 @@ export function DocExport({ docId, title }: { docId: string; title: string }) {
       anchor.click();
       URL.revokeObjectURL(url);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "导出失败");
+      setError(cause instanceof Error ? cause.message : t("export.error"));
     } finally {
       setBusy("");
     }
@@ -39,27 +43,27 @@ export function DocExport({ docId, title }: { docId: string; title: string }) {
       <div className="section-heading">
         <div>
           <p className="section-kicker">DOCUMENT · EXPORT</p>
-          <h2 id="doc-export-title">导出</h2>
+          <h2 id="doc-export-title">{t("export.title")}</h2>
         </div>
         <span className="section-note">Markdown / HTML / Word / PDF</span>
       </div>
       <div style={{ display: "flex", gap: 10, padding: "0 26px 22px" }}>
         <button className="btn btn-ghost" type="button" disabled={!actor || busy !== ""} onClick={() => save("md")}>
-          {busy === "md" ? "导出中…" : "导出 Markdown"}
+          {busy === "md" ? t("export.busy") : t("export.md")}
         </button>
         <button className="btn btn-ghost" type="button" disabled={!actor || busy !== ""} onClick={() => save("html")}>
-          {busy === "html" ? "导出中…" : "导出 HTML"}
+          {busy === "html" ? t("export.busy") : t("export.html")}
         </button>
         <button className="btn btn-ghost" type="button" disabled={!actor || busy !== ""} onClick={() => save("docx")}>
-          {busy === "docx" ? "导出中…" : "导出 Word"}
+          {busy === "docx" ? t("export.busy") : t("export.docx")}
         </button>
         <button className="btn btn-ghost" type="button" disabled={!actor || busy !== ""} onClick={() => save("pdf")}>
-          {busy === "pdf" ? "导出中…" : "导出 PDF"}
+          {busy === "pdf" ? t("export.busy") : t("export.pdf")}
         </button>
       </div>
       {!actor ? (
         <p className="section-note" style={{ padding: "0 26px 18px" }}>
-          未配置 NEXT_PUBLIC_TIANXUAN_ACTOR，无法导出。
+          {t("export.disabled")}
         </p>
       ) : null}
       {error ? <p className="section-note" style={{ padding: "0 26px 18px" }}>{error}</p> : null}

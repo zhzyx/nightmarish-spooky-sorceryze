@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { Fragment, type ReactNode } from "react";
 import { EmptyState } from "@/components/EmptyState";
@@ -13,10 +14,12 @@ import {
   type Tone,
 } from "@/lib/data";
 import { fetchSearch, type ApiSearchResult } from "@/lib/search-api";
+import { LOCALE_COOKIE, formatMessage, normalizeLocale, translate, type MessageKey } from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: "全局搜索",
-};
+export function generateMetadata(): Metadata {
+  const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);
+  return { title: translate(locale, "search.title") };
+}
 
 // 实时检索依赖每次请求的 q 与 TIANXUAN_ACTOR，禁用静态化。
 export const dynamic = "force-dynamic";
@@ -34,26 +37,6 @@ interface SearchResult {
   tone: Tone;
   tags: string[];
 }
-
-const suggestions = [
-  { label: "AI 原生文档", query: "AI" },
-  { label: "验收证据", query: "验收" },
-  { label: "合并队列", query: "合并" },
-  { label: "毛玻璃", query: "毛玻璃" },
-  { label: "设计令牌", query: "设计" },
-];
-
-const searchScopes: {
-  id: SearchType;
-  label: string;
-  icon: IconName;
-}[] = [
-  { id: "all", label: "全部", icon: "search" },
-  { id: "docs", label: "文档", icon: "docs" },
-  { id: "issues", label: "工单", icon: "issues" },
-  { id: "repos", label: "仓库", icon: "repos" },
-  { id: "requirements", label: "需求", icon: "requirements" },
-];
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -85,17 +68,35 @@ function buildSearchHref(query: string, type: SearchType): string {
   return suffix ? `/search?${suffix}` : "/search";
 }
 
-function LiveSearchResults({ query, results }: { query: string; results: ApiSearchResult[] }) {
+function LiveSearchResults({
+  query,
+  results,
+  t,
+}: {
+  query: string;
+  results: ApiSearchResult[];
+  t: (key: MessageKey) => string;
+}) {
+  const kindLabel = (kind: string): string => {
+    const keys: Record<string, MessageKey> = {
+      文档: "search.scopeDocs",
+      工单: "search.scopeIssues",
+      仓库: "search.scopeRepos",
+      需求: "search.scopeRequirements",
+    };
+    const key = keys[kind];
+    return key ? t(key) : kind;
+  };
   return (
     <section aria-labelledby="live-search-title" className="live-search-section">
       <div className="search-summary-row live-search-head">
         <p>
-          <strong id="live-search-title">实时结果</strong>
-          <span>文曲检索 API · {results.length} 条</span>
+          <strong id="live-search-title">{t("search.liveTitle")}</strong>
+          <span>{formatMessage(t("search.liveMeta"), { count: results.length })}</span>
         </p>
         <span className="search-index-tag">
           <span className="live-dot" aria-hidden="true" />
-          实时索引
+          {t("search.liveTag")}
         </span>
       </div>
 
@@ -112,7 +113,7 @@ function LiveSearchResults({ query, results }: { query: string; results: ApiSear
               </span>
               <span className="search-result-body">
                 <span className="search-result-head">
-                  <span className="search-result-kind">{result.kind ?? "文档"}</span>
+                  <span className="search-result-kind">{kindLabel(result.kind ?? "文档")}</span>
                   <strong>{highlight(result.title ?? result.id, query)}</strong>
                 </span>
                 {result.snippet ? (
@@ -124,7 +125,7 @@ function LiveSearchResults({ query, results }: { query: string; results: ApiSear
           ))}
         </div>
       ) : (
-        <p className="live-search-empty">实时索引没有匹配的文档。</p>
+        <p className="live-search-empty">{t("search.liveEmpty")}</p>
       )}
     </section>
   );
@@ -135,6 +136,32 @@ export default async function SearchPage({
 }: {
   searchParams: { q?: string; type?: string };
 }) {
+  const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);
+  const t = (key: MessageKey) => translate(locale, key);
+  const suggestions = [
+    { label: t("search.suggestAi"), query: "AI" },
+    { label: t("search.suggestEvidence"), query: "验收" },
+    { label: t("search.suggestMerge"), query: "合并" },
+    { label: t("search.suggestGlass"), query: "毛玻璃" },
+    { label: t("search.suggestDesign"), query: "设计" },
+  ];
+  const searchScopes: { id: SearchType; label: string; icon: IconName }[] = [
+    { id: "all", label: t("search.scopeAll"), icon: "search" },
+    { id: "docs", label: t("search.scopeDocs"), icon: "docs" },
+    { id: "issues", label: t("search.scopeIssues"), icon: "issues" },
+    { id: "repos", label: t("search.scopeRepos"), icon: "repos" },
+    { id: "requirements", label: t("search.scopeRequirements"), icon: "requirements" },
+  ];
+  const kindLabel = (kind: string): string => {
+    const keys: Record<string, MessageKey> = {
+      文档: "search.scopeDocs",
+      工单: "search.scopeIssues",
+      仓库: "search.scopeRepos",
+      需求: "search.scopeRequirements",
+    };
+    const key = keys[kind];
+    return key ? t(key) : kind;
+  };
   const query = (searchParams.q ?? "").trim();
   const typeParam = searchParams.type;
   const activeType: SearchType =
@@ -148,7 +175,7 @@ export default async function SearchPage({
 
   const actor = process.env.TIANXUAN_ACTOR?.trim() ?? "";
   let liveResults: ApiSearchResult[] | null = null;
-  if (query && actor) {
+  if (query && (actor || process.env.TIANXUAN_TOKEN)) {
     try {
       liveResults = await fetchSearch(actor, query);
     } catch {
@@ -186,7 +213,7 @@ export default async function SearchPage({
       kind: "工单",
       title: `${issue.key} ${issue.title}`,
       excerpt: issue.detail,
-      meta: `${issue.project} · ${issue.status === "done" ? "已完成" : "未闭环"} · ${issue.updated}`,
+      meta: `${issue.project} · ${issue.status === "done" ? t("issues.colDone") : t("search.openIssue")} · ${issue.updated}`,
       href: "/issues",
       icon: "issues",
       tone: "cinnabar",
@@ -222,7 +249,7 @@ export default async function SearchPage({
       kind: "需求",
       title: requirement.title,
       excerpt: requirement.summary,
-      meta: `${requirement.id} · ${requirement.status} · 负责人 ${requirement.owner}`,
+      meta: `${requirement.id} · ${requirement.status} · ${t("search.ownerPrefix")} ${requirement.owner}`,
       href: `/docs/${requirement.docId}`,
       icon: "requirements",
       tone: "mist",
@@ -264,35 +291,34 @@ export default async function SearchPage({
           DITING · GLOBAL SEARCH
         </p>
         <h1>
-          全局搜索<span className="title-period">。</span>
+          {t("search.title")}
+          {locale === "zh" ? <span className="title-period">。</span> : null}
         </h1>
-        <p className="search-lede">
-          从一句话出发，找到文档、工单、仓库与需求之间的同一条线索。搜索结果只来自本地工作区索引。
-        </p>
+        <p className="search-lede">{t("search.lede")}</p>
 
         <form action="/search" className="global-search-form" role="search">
           <span className="global-search-icon">
             <Icon name="search" size={20} />
           </span>
           <label className="sr-only" htmlFor="global-search-input">
-            搜索工作区
+            {t("search.inputLabel")}
           </label>
           <input
             autoComplete="off"
             defaultValue={query}
             id="global-search-input"
             name="q"
-            placeholder="搜索页面、编号、仓库或一句话…"
+            placeholder={t("search.placeholder")}
             type="search"
           />
           <kbd>↵</kbd>
           <button className="btn btn-primary" type="submit">
-            搜索
+            {t("search.submit")}
           </button>
         </form>
 
         <div className="search-quick-row">
-          <span>试试看</span>
+          <span>{t("search.try")}</span>
           {suggestions.map((suggestion) => (
             <Link href={buildSearchHref(suggestion.query, "all")} key={suggestion.label}>
               {suggestion.label}
@@ -305,16 +331,16 @@ export default async function SearchPage({
         <>
           <div className="search-summary-row">
             <p>
-              关于 <strong>“{query}”</strong> 的结果
-              <span>在本地索引中找到 {allResults.length} 条</span>
+              <strong>{formatMessage(t("search.resultsFor"), { query })}</strong>
+              <span>{formatMessage(t("search.found"), { count: allResults.length })}</span>
             </p>
             <span className="search-index-tag">
               <span className="live-dot" aria-hidden="true" />
-              本地演示索引
+              {t("search.localIndex")}
             </span>
           </div>
 
-          <div aria-label="搜索范围" className="search-scope-tabs" role="navigation">
+          <div aria-label={t("search.scopeAria")} className="search-scope-tabs" role="navigation">
             {searchScopes.map((scope) => (
               <Link
                 aria-current={activeType === scope.id ? "page" : undefined}
@@ -332,7 +358,7 @@ export default async function SearchPage({
           <div className="search-results-layout">
             <div className="search-main">
               {liveResults !== null ? (
-                <LiveSearchResults query={query} results={liveResults} />
+                <LiveSearchResults query={query} results={liveResults} t={t} />
               ) : null}
 
               {visibleResults.length > 0 ? (
@@ -343,20 +369,23 @@ export default async function SearchPage({
                         <Icon name="sparkles" size={15} />
                       </span>
                       <span>
-                        <strong id="ai-answer-title">AI 摘要</strong>
-                        <small>演示生成 · 不调用模型</small>
+                        <strong id="ai-answer-title">{t("search.aiTitle")}</strong>
+                        <small>{t("search.aiNote")}</small>
                       </span>
                       <span className="ai-answer-badge">LOCAL</span>
                     </div>
                     <p>
-                      与“{query}”最相关的线索集中在
-                      <strong> {visibleResults[0]?.kind}「{visibleResults[0]?.title}」</strong>
-                      。当前共有 {visibleResults.length} 条可回读结果，建议先打开最接近原始判断的文档，再检查关联工单的验收条件。
+                      {formatMessage(t("search.aiBody"), {
+                        query,
+                        kind: kindLabel(visibleResults[0]?.kind ?? ""),
+                        title: visibleResults[0]?.title ?? "",
+                        count: visibleResults.length,
+                      })}
                     </p>
                     <div className="ai-answer-sources">
                       {visibleResults.slice(0, 3).map((result) => (
                         <Link href={result.href} key={result.id}>
-                          <span>{result.kind}</span>
+                          <span>{kindLabel(result.kind)}</span>
                           {result.title}
                         </Link>
                       ))}
@@ -371,7 +400,7 @@ export default async function SearchPage({
                         </span>
                         <span className="search-result-body">
                           <span className="search-result-head">
-                            <span className="search-result-kind">{result.kind}</span>
+                            <span className="search-result-kind">{kindLabel(result.kind)}</span>
                             <strong>{highlight(result.title, query)}</strong>
                           </span>
                           <span className="search-result-excerpt">{highlight(result.excerpt, query)}</span>
@@ -392,10 +421,10 @@ export default async function SearchPage({
               ) : liveResults === null || liveResults.length === 0 ? (
                 <EmptyState
                   actionHref="/search"
-                  actionLabel="清除搜索"
-                  description="换一个更短的关键词，或先在文档空间中建立一条新的可检索记录。"
+                  actionLabel={t("search.clear")}
+                  description={t("search.emptyDesc")}
                   eyebrow="DITING · NO MATCH"
-                  title="没有找到对应的线索"
+                  title={t("search.emptyTitle")}
                 />
               ) : null}
             </div>
@@ -405,30 +434,30 @@ export default async function SearchPage({
                 <header className="panel-head">
                   <div>
                     <p className="section-kicker">INDEX STATUS</p>
-                    <h2>索引范围</h2>
+                    <h2>{t("search.indexScope")}</h2>
                   </div>
                   <Icon className="panel-head-icon" name="layers" size={18} />
                 </header>
                 <div className="index-rows">
                   <div>
-                    <span>文档页面</span>
+                    <span>{t("search.indexDocs")}</span>
                     <strong>{docs.length}</strong>
                   </div>
                   <div>
-                    <span>工单</span>
+                    <span>{t("search.indexIssues")}</span>
                     <strong>{issues.length}</strong>
                   </div>
                   <div>
-                    <span>仓库</span>
+                    <span>{t("search.indexRepos")}</span>
                     <strong>{repos.length}</strong>
                   </div>
                   <div>
-                    <span>需求</span>
+                    <span>{t("search.indexReq")}</span>
                     <strong>{requirements.length}</strong>
                   </div>
                 </div>
                 <p className="index-note">
-                  本地演示索引，不包含真实语义向量。真实环境中由谛听记录来源与读取回执。
+                  {t("search.indexNote")}
                 </p>
               </section>
 
@@ -436,7 +465,7 @@ export default async function SearchPage({
                 <header className="panel-head">
                   <div>
                     <p className="section-kicker">RECENTLY READ</p>
-                    <h2>最近阅读</h2>
+                    <h2>{t("search.recent")}</h2>
                   </div>
                 </header>
                 <div className="search-recent-list">
@@ -454,8 +483,8 @@ export default async function SearchPage({
                 <span className="aside-quote-mark" aria-hidden="true">
                   〝
                 </span>
-                <p>搜索不是找到更多，而是更快看见值得相信的那一条。</p>
-                <span>谛听手记 · 009</span>
+                <p>{t("search.tip")}</p>
+                <span>{t("search.tipCaption")}</span>
               </section>
             </aside>
           </div>
@@ -466,7 +495,7 @@ export default async function SearchPage({
             <header className="panel-head">
               <div>
                 <p className="section-kicker">START HERE</p>
-                <h2 id="search-suggest-title">从一个词开始</h2>
+                <h2 id="search-suggest-title">{t("search.start")}</h2>
               </div>
               <Icon className="panel-head-icon" name="search" size={18} />
             </header>
@@ -485,10 +514,10 @@ export default async function SearchPage({
             <header className="panel-head">
               <div>
                 <p className="section-kicker">CURATED FOR YOU</p>
-                <h2 id="recent-search-title">最近阅读</h2>
+                <h2 id="recent-search-title">{t("search.recent")}</h2>
               </div>
               <Link className="text-link" href="/docs">
-                全部文档
+                {t("search.allDocs")}
                 <Icon name="arrowRight" size={14} />
               </Link>
             </header>
@@ -515,7 +544,7 @@ export default async function SearchPage({
             <header className="panel-head">
               <div>
                 <p className="section-kicker">SOURCES</p>
-                <h2 id="scope-title">搜索范围</h2>
+                <h2 id="scope-title">{t("search.sources")}</h2>
               </div>
             </header>
             <div className="search-source-list">
@@ -524,8 +553,8 @@ export default async function SearchPage({
                   <Icon name="docs" size={15} />
                 </span>
                 <span>
-                  <strong>{docs.length} 个页面</strong>
-                  <small>文曲 · Markdown 全文</small>
+                  <strong>{formatMessage(t("search.sourceDocs"), { count: docs.length })}</strong>
+                  <small>{t("search.sourceDocsNote")}</small>
                 </span>
               </div>
               <div>
@@ -533,8 +562,8 @@ export default async function SearchPage({
                   <Icon name="issues" size={15} />
                 </span>
                 <span>
-                  <strong>{issues.length} 个工单</strong>
-                  <small>司南 · 标题与验收条件</small>
+                  <strong>{formatMessage(t("search.sourceIssues"), { count: issues.length })}</strong>
+                  <small>{t("search.sourceIssuesNote")}</small>
                 </span>
               </div>
               <div>
@@ -542,8 +571,8 @@ export default async function SearchPage({
                   <Icon name="repos" size={15} />
                 </span>
                 <span>
-                  <strong>{repos.length} 个仓库</strong>
-                  <small>多宝 · 描述与分支</small>
+                  <strong>{formatMessage(t("search.sourceRepos"), { count: repos.length })}</strong>
+                  <small>{t("search.sourceReposNote")}</small>
                 </span>
               </div>
             </div>
@@ -553,8 +582,8 @@ export default async function SearchPage({
             <span className="aside-quote-mark" aria-hidden="true">
               〝
             </span>
-            <p>把问题写得具体一点，索引就会更像一面镜子。</p>
-            <span>天璇 · 搜索札记</span>
+            <p>{t("search.tipLarge")}</p>
+            <span>{t("search.tipLargeCaption")}</span>
           </section>
         </div>
       )}

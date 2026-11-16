@@ -6,12 +6,14 @@ import os
 import shutil
 import sqlite3
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
 import pytest
 from git_service import GitService
 from merge_queue import MergeQueue
+from policy import RoleDenied
 
 
 def _git() -> str:
@@ -228,3 +230,123 @@ def test_check_runs_with_isolated_home(tmp_path: Path) -> None:
     result = queue._run_check(repo, [sys.executable, "-c", "import os;print(os.environ.get('TEMP',''))"])
     assert result["exit_code"] == 0
     assert "duobao-check-home" in result["output"]
+
+
+def test_protected_branch_merges_only_through_queue(tmp_path: Path) -> None:
+    service, repo = _repo(tmp_path)
+    _branch(service, repo, "feature", {"b.md": "# two\n"})
+    queue = MergeQueue(
+        str(tmp_path / "queue.db"),
+        service,
+        protected_branches=("main",),
+        role_resolver=lambda actor: "editor",
+    )
+    item = queue.enqueue("usr_1", str(repo), "feature", "main")
+    assert item["evidence"]["policy"] == {"target": "main", "protected": True, "path": "queue", "actor_role": "editor"}
+
+    done = queue.process_next()
+    assert done is not None and done["status"] == "merged"
+    assert done["evidence"]["policy"]["protected"] is True
+    assert done["evidence"]["merge_sha"]
+
+
+def test_viewer_cannot_enqueue_candidate(tmp_path: Path) -> None:
+    service, repo = _repo(tmp_path)
+    _branch(service, repo, "feature", {"b.md": "# two\n"})
+    queue = MergeQueue(str(tmp_path / "queue.db"), service, role_resolver=lambda actor: "viewer")
+    with pytest.raises(RoleDenied):
+        queue.enqueue("usr_1", str(repo), "feature", "main")
+
+
+def test_role_revoked_before_execution_rejects_candidate(tmp_path: Path) -> None:
+    service, repo = _repo(tmp_path)
+    _branch(service, repo, "feature", {"b.md": "# two\n"})
+    roles = {"usr_1": "editor"}
+    queue = MergeQueue(
+        str(tmp_path / "queue.db"),
+        service,
+        protected_branches=("main",),
+        role_resolver=lambda actor: roles.get(actor, ""),
+    )
+    before = service.log(repo, "main", 1)[0]["sha"]
+    queue.enqueue("usr_1", str(repo), "feature", "main")
+    roles["usr_1"] = "viewer"
+
+    done = queue.process_next()
+    assert done is not None and done["status"] == "rejected"
+    assert "cannot merge" in done["evidence"]["error"]
+    assert service.log(repo, "main", 1)[0]["sha"] == before
+
+
+def test_binding_is_preserved_and_events_are_emitted(tmp_path: Path) -> None:
+    service, repo = _repo(tmp_path)
+    _branch(service, repo, "feature", {"b.md": "# two\n"})
+    events: list[tuple[str, dict[str, Any]]] = []
+    queue = MergeQueue(
+        str(tmp_path / "queue.db"),
+        service,
+        event_sink=lambda actor, event_type, target, payload: events.append((event_type, payload)),
+    )
+    item = queue.enqueue(
+        "usr_1",
+        str(repo),
+        "feature",
+        "main",
+        pr_number=7,
+        issue_ref="#1188",
+    )
+    assert item["evidence"]["binding"] == {"pr_number": 7, "issue_ref": "#1188"}
+
+    done = queue.process_next()
+    assert done is not None and done["status"] == "merged"
+    assert done["evidence"]["binding"]["pr_number"] == 7
+    assert [name for name, _ in events] == ["repo.merge.enqueued", "repo.merge.merged"]
+    assert events[1][1]["status"] == "merged"
+
+
+def test_invalid_binding_is_rejected(tmp_path: Path) -> None:
+    service, repo = _repo(tmp_path)
+    _branch(service, repo, "feature", {"b.md": "# two\n"})
+    queue = MergeQueue(str(tmp_path / "queue.db"), service)
+    for pr_number, issue_ref in ((0, ""), (True, ""), (1, "x" * 501), (1, 42)):
+        with pytest.raises(ValueError):
+            queue.enqueue(
+                "usr_1",
+                str(repo),
+                "feature",
+                "main",
+                pr_number=pr_number,
+                issue_ref=issue_ref,  # type: ignore[arg-type]
+            )
+
+
+def test_event_sink_failure_does_not_break_queue(tmp_path: Path) -> None:
+    service, repo = _repo(tmp_path)
+    _branch(service, repo, "feature", {"b.md": "# two\n"})
+
+    def broken(actor: str, event_type: str, target: str, payload: dict[str, Any]) -> None:
+        raise RuntimeError("audit unavailable")
+
+    queue = MergeQueue(str(tmp_path / "queue.db"), service, event_sink=broken)
+    item = queue.enqueue("usr_1", str(repo), "feature", "main")
+    done = queue.process_next()
+    assert item["status"] == "queued"
+    assert done is not None and done["status"] == "merged"
+
+
+def test_worker_registry_tracks_heartbeat(tmp_path: Path) -> None:
+    service, repo = _repo(tmp_path)
+    queue = MergeQueue(str(tmp_path / "queue.db"), service)
+    try:
+        assert queue.list_workers() == []
+        queue.start_worker(0.1)
+        time.sleep(0.35)
+        workers = queue.list_workers()
+        assert [worker["worker_id"] for worker in workers] == [queue.worker_id]
+        assert queue.worker_running is True
+
+        queue.stop_worker()
+        assert queue.list_workers() == []
+        assert queue.worker_running is False
+    finally:
+        queue.close()

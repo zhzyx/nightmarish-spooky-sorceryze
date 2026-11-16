@@ -15,12 +15,23 @@ import difflib
 import html
 import json
 import os
+import threading
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Annotated, Any
 from urllib.parse import quote
 
 from docx_export import render_docx
-from duobao_bridge import GitService, GitServiceError
+from duobao_bridge import (
+    GitService,
+    GitServiceError,
+    PolicyError,
+    approved_reviewers,
+    ensure_branch_mutation_allowed,
+    ensure_checks_passed,
+    ensure_pr_merge_allowed,
+    parse_protected_branches,
+)
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse, Response
 from gateway import ModelGateway, create_model_router
@@ -31,7 +42,9 @@ from pdf_export import render_pdf
 from schemas import (
     CommentCreateRequest,
     CommentResolveRequest,
+    CommitStatusRequest,
     DocCreateRequest,
+    DocIssueLinkRequest,
     DocMergeRequest,
     DocPatchRequest,
     DocShareRequest,
@@ -39,6 +52,10 @@ from schemas import (
     DocVisibilityRequest,
     ExternalLinkRequest,
     ExternalRequirementRequest,
+    FieldPermissionRequest,
+    GitBranchCreateRequest,
+    GitImportRequest,
+    GitTagCreateRequest,
     IdentityLinkRequest,
     IdentityRebindRequest,
     IdentityResolveRequest,
@@ -51,8 +68,12 @@ from schemas import (
     MergeQueueCreateRequest,
     PullRequestCreateRequest,
     PullRequestMergeRequest,
+    PullRequestReviewRequest,
     RegisterRequest,
+    ReleaseCreateRequest,
+    ReleaseUpdateRequest,
     RepoCreateRequest,
+    RepoLinkRequest,
     RequirementCommitRequest,
     RequirementCreateRequest,
     RoleUpdateRequest,
@@ -68,9 +89,15 @@ from tianxuan_core import (
     TransitionRejected,
     VersionConflict,
 )
+from webhooks import summarize_gitea_event, verify_gitea_signature
 from wenqu_bridge import build_ai_index, export_markdown, merge_offline
 from wenqu_bridge import classify as classify_markdown
 from wenqu_bridge import search as search_documents
+
+
+def _actor_header_enabled() -> bool:
+    """X-Actor 只作为显式开启的兼容入口，默认必须使用 Bearer 会话。"""
+    return os.environ.get("TIANXUAN_ALLOW_ACTOR_HEADER", "0").strip() == "1"
 
 
 def _require_actor(
@@ -78,15 +105,35 @@ def _require_actor(
     x_actor: str | None = Header(default=None, alias="X-Actor"),
     authorization: str | None = Header(default=None),
 ) -> str:
-    """读取 actor：优先 Bearer 会话 token，兼容临时 X-Actor。"""
-    actor = (x_actor or "").strip()
-    if not actor and authorization:
+    """读取操作者：优先 Bearer 会话 token；X-Actor 需要显式开启并指向真实用户。"""
+    if authorization:
         scheme, _, token = authorization.partition(" ")
         if scheme.lower() == "bearer" and token.strip():
-            actor = request.app.state.store.user_for_token(token.strip()) or ""
-    if not actor:
-        raise HTTPException(status_code=400, detail="X-Actor header or Bearer token is required")
-    return actor
+            session_actor = request.app.state.store.user_for_token(token.strip())
+            if not session_actor:
+                raise HTTPException(status_code=401, detail="invalid or expired bearer token")
+            return str(session_actor)
+    header_actor = (x_actor or "").strip()
+    if header_actor:
+        if not _actor_header_enabled():
+            raise HTTPException(
+                status_code=401,
+                detail="X-Actor is disabled; create a session with POST /api/v1/auth/session and send a Bearer token",
+            )
+        return header_actor
+    raise HTTPException(status_code=400, detail="X-Actor header or Bearer token is required")
+
+
+def _websocket_actor(store: Tianxuan, query_params: Any) -> str | None:
+    """WebSocket 身份：优先 token 查询参数；X-Actor 仅在兼容模式开启时接受。"""
+    token = (query_params.get("token") or "").strip()
+    if token:
+        actor = store.user_for_token(token)
+        return str(actor) if actor else None
+    actor = (query_params.get("actor") or "").strip()
+    if actor and _actor_header_enabled():
+        return actor
+    return None
 
 
 ActorDep = Annotated[str, Depends(_require_actor)]
@@ -152,7 +199,7 @@ def _requirement_markdown(requirement: dict[str, Any], issues: list[dict[str, An
     return "\n".join(lines).rstrip() + "\n"
 
 
-def _gitea_client() -> GiteaClient:
+def _gitea_client(sudo: str = "") -> GiteaClient:
     base_url = os.environ.get("TIANXUAN_GITEA_URL", "").strip()
     token = os.environ.get("TIANXUAN_GITEA_TOKEN", "").strip()
     if not base_url or not token:
@@ -160,26 +207,99 @@ def _gitea_client() -> GiteaClient:
             status_code=400,
             detail="TIANXUAN_GITEA_URL and TIANXUAN_GITEA_TOKEN are required",
         )
-    return GiteaClient(base_url, token)
+    return GiteaClient(base_url, token, sudo=sudo)
 
 
-def _repo_under_root(name: str) -> Path:
+def _gitea_sudo(store: Tianxuan, actor: str) -> str:
+    """读取操作者绑定的 Gitea 用户名；未绑定时使用服务身份（只用于读路径）。"""
+    try:
+        return str(store.identity_subject_for_user(actor, "gitea"))
+    except NotFound:
+        return ""
+
+
+def _require_gitea_identity(store: Tianxuan, actor: str) -> str:
+    """写操作必须以操作者自己的 Gitea 身份执行。"""
+    try:
+        return str(store.identity_subject_for_user(actor, "gitea"))
+    except NotFound:
+        raise PermissionDenied(
+            "link a Gitea identity first (provider 'gitea', subject = Gitea username) before writing repositories"
+        ) from None
+
+
+def _repo_root() -> Path:
     root = os.environ.get("TIANXUAN_REPO_ROOT", "").strip()
     if not root:
         raise HTTPException(status_code=400, detail="TIANXUAN_REPO_ROOT is not configured")
-    root_path = Path(root).resolve()
+    return Path(root).resolve()
+
+
+def _repo_under_root(name: str) -> Path:
+    root_path = _repo_root()
     candidate = (root_path / name).resolve()
     if not candidate.is_relative_to(root_path):
         raise HTTPException(status_code=400, detail="repo escapes TIANXUAN_REPO_ROOT")
     return candidate
 
 
-def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue: Any | None = None) -> FastAPI:
+def _run_import_job(
+    store: Tianxuan,
+    job_id: str,
+    root: Path,
+    name: str,
+    source: str,
+    allow_local: bool,
+    allowed_hosts: tuple[str, ...],
+    fetch_lfs: bool,
+) -> None:
+    """后台执行镜像导入并记录阶段；异常写入任务而不影响请求线程。"""
+    try:
+        store.update_import_job(job_id, status="running", phase="cloning", message="cloning source repository")
+        path = GitService().import_repo(
+            root,
+            name,
+            source,
+            allow_local=allow_local,
+            allowed_hosts=allowed_hosts,
+            fetch_lfs=fetch_lfs,
+        )
+        store.update_import_job(
+            job_id,
+            status="succeeded",
+            phase="done",
+            message="import finished",
+            path=str(path),
+        )
+    except Exception as error:  # noqa: BLE001 - background job must record any failure
+        store.update_import_job(job_id, status="failed", phase="failed", error=str(error))
+
+
+def _policy_patterns(app: FastAPI) -> tuple[str, ...]:
+    return tuple(getattr(app.state, "protected_branches", ()) or ())
+
+
+def _require_editor_role(store: Tianxuan, actor: str, action: str) -> None:
+    if store.role_of(actor) == "viewer":
+        raise PermissionDenied(f"viewer cannot {action}")
+
+
+def create_app(
+    store: Tianxuan,
+    gateway: ModelGateway | None = None,
+    merge_queue: Any | None = None,
+    protected_branches: Sequence[str] = (),
+    required_approvals: int = 0,
+    required_checks: Sequence[str] = (),
+) -> FastAPI:
     """为给定领域核心实例构建 HTTP 应用；可选的模型网关与多宝合入队列挂载到同一应用。"""
     app = FastAPI(title="Tianxuan API", version="0.1.0")
     app.state.store = store
     app.state.gateway = gateway
     app.state.merge_queue = merge_queue
+    app.state.protected_branches = parse_protected_branches(protected_branches)
+    app.state.required_approvals = required_approvals
+    app.state.required_checks = tuple(required_checks)
     rooms = DocRooms()
     if gateway is not None:
         app.include_router(create_model_router(gateway))
@@ -221,6 +341,57 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
     @app.get("/api/v1/health")
     def health() -> dict[str, str]:
         return {"status": "ok"}
+
+    @app.get("/api/v1/metrics")
+    def metrics(actor: ActorDep) -> Response:
+        """Prometheus 文本指标；需要管理员 Bearer 会话。"""
+        if store.role_of(actor) != "admin":
+            raise PermissionDenied("only an admin can read metrics")
+        docs = store.list_docs(actor)
+        issues = store.list_issues(actor)
+        imports = store.list_import_jobs(actor, 100)
+        lines = [
+            "# HELP tianxuan_docs_total Documents visible to the actor.",
+            "# TYPE tianxuan_docs_total gauge",
+            f"tianxuan_docs_total {len(docs)}",
+            "# HELP tianxuan_issues_total Issues in the tenant.",
+            "# TYPE tianxuan_issues_total gauge",
+            f"tianxuan_issues_total {len(issues)}",
+            "# HELP tianxuan_import_jobs_total Recent import jobs.",
+            "# TYPE tianxuan_import_jobs_total gauge",
+            f"tianxuan_import_jobs_total {len(imports)}",
+        ]
+        if merge_queue is not None:
+            lines.extend([
+                "# HELP tianxuan_merge_queue_queued Queued merge candidates.",
+                "# TYPE tianxuan_merge_queue_queued gauge",
+                f"tianxuan_merge_queue_queued {merge_queue.count_items('queued')}",
+                "# HELP tianxuan_merge_workers Active merge workers.",
+                "# TYPE tianxuan_merge_workers gauge",
+                f"tianxuan_merge_workers {len(merge_queue.list_workers())}",
+            ])
+        return Response(content="\n".join(lines) + "\n", media_type="text/plain; version=0.0.4")
+
+    @app.get("/api/v1/ready")
+    def readiness() -> JSONResponse:
+        """就绪检查：数据库可读、仓库根可用；返回 503 表示不应接收流量。"""
+        checks: dict[str, Any] = {}
+        try:
+            checks["database"] = store.ping()
+        except Exception:
+            checks["database"] = False
+        repo_root = os.environ.get("TIANXUAN_REPO_ROOT", "").strip()
+        if repo_root:
+            checks["repo_root"] = Path(repo_root).is_dir()
+        else:
+            checks["repo_root"] = None
+        if merge_queue is not None:
+            checks["merge_worker"] = merge_queue.worker_running
+        degraded = checks["database"] is not True or checks["repo_root"] is False
+        return JSONResponse(
+            status_code=503 if degraded else 200,
+            content={"status": "degraded" if degraded else "ready", "checks": checks},
+        )
 
     # ---------- 身份 ----------
 
@@ -587,6 +758,22 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
                 backlinks.append({"doc_id": other["id"], "title": other["title"]})
         return {"outgoing": outgoing, "backlinks": backlinks}
 
+    @app.get("/api/v1/docs/{doc_id}/issues")
+    def list_doc_issues(doc_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        return {"issues": store.list_doc_issues(actor, doc_id)}
+
+    @app.post("/api/v1/docs/{doc_id}/issues")
+    def link_doc_issue(doc_id: str, payload: DocIssueLinkRequest, actor: ActorDep) -> dict[str, Any]:
+        return store.link_doc_issue(actor, doc_id, payload.issue_id)  # type: ignore[no-any-return]
+
+    @app.delete("/api/v1/docs/{doc_id}/issues/{issue_id}")
+    def unlink_doc_issue(doc_id: str, issue_id: str, actor: ActorDep) -> dict[str, Any]:
+        return store.unlink_doc_issue(actor, doc_id, issue_id)  # type: ignore[no-any-return]
+
+    @app.get("/api/v1/issues/{issue_id}/docs")
+    def list_issue_docs(issue_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        return {"docs": store.list_issue_docs(actor, issue_id)}
+
     # ---------- 偃师：需求导出与落库 ----------
 
     @app.get("/api/v1/requirements/{request_id}/export")
@@ -699,7 +886,7 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
         owner: str | None = Query(default=None),
         limit: int = Query(default=50, ge=1, le=100),
     ) -> dict[str, list[dict[str, Any]]]:
-        client = _gitea_client()
+        client = _gitea_client(_gitea_sudo(store, actor))
         try:
             with client:
                 return {"repos": client.list_repos(owner, limit)}
@@ -708,7 +895,9 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
 
     @app.post("/api/v1/repos")
     def create_repo(payload: RepoCreateRequest, actor: ActorDep) -> dict[str, Any]:
-        client = _gitea_client()
+        if store.role_of(actor) != "admin":
+            raise PermissionDenied("only an admin can create repositories")
+        client = _gitea_client(_require_gitea_identity(store, actor))
         try:
             with client:
                 return client.create_repo(  # type: ignore[no-any-return]
@@ -719,7 +908,7 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
 
     @app.get("/api/v1/repos/{owner}/{name}")
     def get_repo(owner: str, name: str, actor: ActorDep) -> dict[str, Any]:
-        client = _gitea_client()
+        client = _gitea_client(_gitea_sudo(store, actor))
         try:
             with client:
                 return client.get_repo(owner, name)  # type: ignore[no-any-return]
@@ -728,10 +917,64 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
 
     @app.get("/api/v1/repos/{owner}/{name}/branches")
     def list_repo_branches(owner: str, name: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
-        client = _gitea_client()
+        client = _gitea_client(_gitea_sudo(store, actor))
         try:
             with client:
                 return {"branches": client.list_branches(owner, name)}
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/repos/{owner}/{name}/releases")
+    def create_repo_release(
+        owner: str,
+        name: str,
+        payload: ReleaseCreateRequest,
+        actor: ActorDep,
+    ) -> dict[str, Any]:
+        _require_editor_role(store, actor, "create releases")
+        client = _gitea_client(_require_gitea_identity(store, actor))
+        try:
+            with client:
+                return client.create_release(  # type: ignore[no-any-return]
+                    owner, name, payload.tag_name, payload.name, payload.body, payload.draft, payload.prerelease
+                )
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.patch("/api/v1/repos/{owner}/{name}/releases/{release_id}")
+    def update_repo_release(
+        owner: str,
+        name: str,
+        release_id: int,
+        payload: ReleaseUpdateRequest,
+        actor: ActorDep,
+    ) -> dict[str, Any]:
+        _require_editor_role(store, actor, "update releases")
+        client = _gitea_client(_require_gitea_identity(store, actor))
+        try:
+            with client:
+                return client.update_release(  # type: ignore[no-any-return]
+                    owner,
+                    name,
+                    release_id,
+                    name=payload.name,
+                    body=payload.body,
+                    draft=payload.draft,
+                    prerelease=payload.prerelease,
+                )
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.get("/api/v1/repos/{owner}/{name}/releases")
+    def list_repo_releases(
+        owner: str,
+        name: str,
+        actor: ActorDep,
+    ) -> dict[str, list[dict[str, Any]]]:
+        client = _gitea_client(_gitea_sudo(store, actor))
+        try:
+            with client:
+                return {"releases": client.list_releases(owner, name)}
         except GiteaError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 
@@ -741,11 +984,13 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
         name: str,
         actor: ActorDep,
         state: str = Query(default="open"),
+        page: int = Query(default=1, ge=1),
+        limit: int = Query(default=30, ge=1, le=100),
     ) -> dict[str, list[dict[str, Any]]]:
-        client = _gitea_client()
+        client = _gitea_client(_gitea_sudo(store, actor))
         try:
             with client:
-                return {"pulls": client.list_pull_requests(owner, name, state)}
+                return {"pulls": client.list_pull_requests(owner, name, state, page, limit)}
         except GiteaError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 
@@ -756,7 +1001,8 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
         payload: PullRequestCreateRequest,
         actor: ActorDep,
     ) -> dict[str, Any]:
-        client = _gitea_client()
+        _require_editor_role(store, actor, "create pull requests")
+        client = _gitea_client(_require_gitea_identity(store, actor))
         try:
             with client:
                 return client.create_pull_request(  # type: ignore[no-any-return]
@@ -773,14 +1019,153 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
         payload: PullRequestMergeRequest,
         actor: ActorDep,
     ) -> dict[str, Any]:
-        client = _gitea_client()
+        client = _gitea_client(_require_gitea_identity(store, actor))
         try:
             with client:
+                pull = client.get_pull_request(owner, name, number)
+                base = str(pull.get("base") or "")
+                if not base:
+                    raise HTTPException(status_code=502, detail="pull request base branch is missing")
+                required = int(getattr(app.state, "required_approvals", 0) or 0)
+                reviews = client.list_reviews(owner, name, number) if required else []
+                ensure_pr_merge_allowed(
+                    base,
+                    _policy_patterns(app),
+                    actor_role=store.role_of(actor),
+                    approvals=approved_reviewers(reviews),
+                    required_approvals=required,
+                    path="direct",
+                )
+                required_checks = tuple(getattr(app.state, "required_checks", ()) or ())
+                if required_checks:
+                    head_sha = str(pull.get("head_sha") or "")
+                    if not head_sha:
+                        raise HTTPException(status_code=502, detail="pull request head sha is missing")
+                    ensure_checks_passed(client.list_commit_statuses(owner, name, head_sha), required_checks)
                 return client.merge_pull_request(  # type: ignore[no-any-return]
                     owner, name, number, payload.method
                 )
+        except PolicyError as error:
+            raise HTTPException(status_code=403, detail=str(error)) from error
         except GiteaError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.get("/api/v1/repos/{owner}/{name}/pulls/{number}/reviews")
+    def list_repo_pull_reviews(owner: str, name: str, number: int, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        client = _gitea_client(_gitea_sudo(store, actor))
+        try:
+            with client:
+                return {"reviews": client.list_reviews(owner, name, number)}
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/repos/{owner}/{name}/pulls/{number}/reviews")
+    def create_repo_pull_review(
+        owner: str,
+        name: str,
+        number: int,
+        payload: PullRequestReviewRequest,
+        actor: ActorDep,
+    ) -> dict[str, Any]:
+        _require_editor_role(store, actor, "review pull requests")
+        client = _gitea_client(_require_gitea_identity(store, actor))
+        try:
+            with client:
+                return client.create_review(  # type: ignore[no-any-return]
+                    owner, name, number, event=payload.event, body=payload.body
+                )
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.get("/api/v1/repos/{owner}/{name}/commits/{sha}/statuses")
+    def list_repo_commit_statuses(
+        owner: str,
+        name: str,
+        sha: str,
+        actor: ActorDep,
+    ) -> dict[str, list[dict[str, Any]]]:
+        client = _gitea_client(_gitea_sudo(store, actor))
+        try:
+            with client:
+                return {"statuses": client.list_commit_statuses(owner, name, sha)}
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/repos/{owner}/{name}/statuses/{sha}")
+    def create_repo_commit_status(
+        owner: str,
+        name: str,
+        sha: str,
+        payload: CommitStatusRequest,
+        actor: ActorDep,
+    ) -> dict[str, Any]:
+        _require_editor_role(store, actor, "write commit statuses")
+        client = _gitea_client(_gitea_sudo(store, actor))
+        try:
+            with client:
+                return client.create_commit_status(  # type: ignore[no-any-return]
+                    owner,
+                    name,
+                    sha,
+                    state=payload.state,
+                    context=payload.context,
+                    description=payload.description,
+                    target_url=payload.target_url,
+                )
+        except GiteaError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    # ---------- 多宝：仓库绑定与 webhook ----------
+
+    @app.post("/api/v1/repo-links")
+    def bind_repo_link(payload: RepoLinkRequest, actor: ActorDep) -> dict[str, Any]:
+        return store.bind_repo(actor, payload.provider, payload.owner, payload.name)  # type: ignore[no-any-return]
+
+    @app.get("/api/v1/repo-links")
+    def list_repo_links(actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        return {"links": store.list_repo_links(actor)}
+
+    @app.delete("/api/v1/repo-links/{link_id}")
+    def unbind_repo_link(link_id: str, actor: ActorDep) -> dict[str, Any]:
+        return store.unbind_repo(actor, link_id)  # type: ignore[no-any-return]
+
+    @app.post("/api/v1/webhooks/gitea")
+    async def gitea_webhook(request: Request) -> JSONResponse:
+        secret = os.environ.get("TIANXUAN_GITEA_WEBHOOK_SECRET", "").strip()
+        if not secret:
+            raise HTTPException(status_code=503, detail="Gitea webhook is not configured")
+        body = await request.body()
+        if not verify_gitea_signature(secret, body, request.headers.get("X-Gitea-Signature", "")):
+            raise HTTPException(status_code=401, detail="invalid webhook signature")
+        event = request.headers.get("X-Gitea-Event", "").strip()
+        delivery = request.headers.get("X-Gitea-Delivery", "").strip()
+        try:
+            payload = json.loads(body.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            raise HTTPException(status_code=400, detail="invalid webhook payload") from None
+        if not isinstance(payload, dict):
+            raise HTTPException(status_code=400, detail="invalid webhook payload")
+        summary = summarize_gitea_event(event, payload)
+        if summary is None:
+            return JSONResponse(status_code=202, content={"accepted": False, "reason": "unsupported event"})
+        repository = summary["payload"]
+        try:
+            tenant_id = store.tenant_for_repo(
+                "gitea",
+                str(repository.get("owner", "")),
+                str(repository.get("name", "")),
+            )
+        except TianxuanError:
+            return JSONResponse(status_code=202, content={"accepted": False, "reason": "invalid repository"})
+        if tenant_id is None:
+            return JSONResponse(status_code=202, content={"accepted": False, "reason": "unlinked repository"})
+        store.record_repo_event(
+            tenant_id,
+            str(summary["type"]),
+            str(summary["target"]),
+            {**repository, "delivery": delivery, "event": event},
+        )
+        return JSONResponse(status_code=202, content={"accepted": True, "type": summary["type"]})
 
     # ---------- 文曲：可见性与共享 ----------
 
@@ -790,7 +1175,23 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
 
     @app.post("/api/v1/docs/{doc_id}/shares")
     def share_doc(doc_id: str, payload: DocShareRequest, actor: ActorDep) -> dict[str, Any]:
-        return store.share_doc(actor, doc_id, payload.user_id, payload.permission)  # type: ignore[no-any-return]
+        return store.share_doc(  # type: ignore[no-any-return]
+            actor, doc_id, payload.user_id, payload.permission, payload.expires_at
+        )
+
+    @app.get("/api/v1/docs/{doc_id}/field-permissions")
+    def list_doc_field_permissions(doc_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+        return {"permissions": store.list_doc_field_permissions(actor, doc_id)}
+
+    @app.put("/api/v1/docs/{doc_id}/field-permissions")
+    def set_doc_field_permission(
+        doc_id: str,
+        payload: FieldPermissionRequest,
+        actor: ActorDep,
+    ) -> dict[str, Any]:
+        return store.set_doc_field_permission(  # type: ignore[no-any-return]
+            actor, doc_id, payload.field, payload.min_role
+        )
 
     @app.get("/api/v1/docs/{doc_id}/shares")
     def list_doc_shares(doc_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
@@ -869,6 +1270,171 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
         except (GitServiceError, OSError) as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 
+    @app.get("/api/v1/git/repos/{name}/tree")
+    def git_tree(
+        name: str,
+        actor: ActorDep,
+        ref: str = Query(default="HEAD", min_length=1),
+        path: str = Query(default=""),
+    ) -> dict[str, list[dict[str, Any]]]:
+        repo = _repo_under_root(name)
+        try:
+            return {"entries": GitService().list_tree(repo, ref, path)}
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.get("/api/v1/git/repos/{name}/search")
+    def git_search(
+        name: str,
+        actor: ActorDep,
+        q: str = Query(min_length=1, max_length=200),
+        ref: str = Query(default="HEAD", min_length=1),
+        path: str = Query(default=""),
+        limit: int = Query(default=50, ge=1, le=200),
+    ) -> dict[str, list[dict[str, Any]]]:
+        repo = _repo_under_root(name)
+        try:
+            return {"results": GitService().search(repo, q, ref, path, limit)}
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.get("/api/v1/git/repos/{name}/blame")
+    def git_blame(
+        name: str,
+        actor: ActorDep,
+        path: str = Query(min_length=1),
+        ref: str = Query(default="HEAD", min_length=1),
+        limit: int = Query(default=2000, ge=1, le=5000),
+    ) -> dict[str, list[dict[str, Any]]]:
+        repo = _repo_under_root(name)
+        try:
+            return {"lines": GitService().blame(repo, ref, path, limit)}
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/git/repos/{name}/branches")
+    def create_git_branch(
+        name: str,
+        payload: GitBranchCreateRequest,
+        actor: ActorDep,
+    ) -> dict[str, str]:
+        repo = _repo_under_root(name)
+        try:
+            ensure_branch_mutation_allowed(
+                payload.name,
+                _policy_patterns(app),
+                actor_role=store.role_of(actor),
+                operation="create",
+            )
+        except PolicyError as error:
+            raise HTTPException(status_code=403, detail=str(error)) from error
+        try:
+            sha = GitService().branch(repo, payload.name, payload.start)
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+        return {"branch": payload.name, "sha": sha}
+
+    @app.delete("/api/v1/git/repos/{name}/branches/{branch:path}")
+    def delete_git_branch(name: str, branch: str, actor: ActorDep) -> dict[str, Any]:
+        repo = _repo_under_root(name)
+        try:
+            ensure_branch_mutation_allowed(
+                branch,
+                _policy_patterns(app),
+                actor_role=store.role_of(actor),
+                operation="delete",
+            )
+        except PolicyError as error:
+            raise HTTPException(status_code=403, detail=str(error)) from error
+        try:
+            GitService().delete_branch(repo, branch)
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+        return {"branch": branch, "deleted": True}
+
+    @app.get("/api/v1/git/repos/{name}/tags")
+    def git_tags(name: str, actor: ActorDep) -> dict[str, list[dict[str, str]]]:
+        repo = _repo_under_root(name)
+        try:
+            return {"tags": GitService().list_tags(repo)}
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/git/repos/{name}/tags")
+    def create_git_tag(
+        name: str,
+        payload: GitTagCreateRequest,
+        actor: ActorDep,
+    ) -> dict[str, str]:
+        _require_editor_role(store, actor, "create tags")
+        repo = _repo_under_root(name)
+        try:
+            tag = GitService().create_tag(repo, payload.name, payload.ref, payload.message)
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+        return {"tag": tag}
+
+    @app.delete("/api/v1/git/repos/{name}/tags/{tag:path}")
+    def delete_git_tag(name: str, tag: str, actor: ActorDep) -> dict[str, Any]:
+        _require_editor_role(store, actor, "delete tags")
+        repo = _repo_under_root(name)
+        try:
+            GitService().delete_tag(repo, tag)
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+        return {"tag": tag, "deleted": True}
+
+    @app.post("/api/v1/git/import")
+    def import_git_repo(payload: GitImportRequest, actor: ActorDep) -> dict[str, Any]:
+        if store.role_of(actor) != "admin":
+            raise PermissionDenied("only an admin can import repositories")
+        root = _repo_root()
+        allow_local = os.environ.get("TIANXUAN_IMPORT_ALLOW_LOCAL", "0").strip() == "1"
+        allowed_hosts = tuple(
+            item.strip() for item in os.environ.get("TIANXUAN_IMPORT_ALLOWED_HOSTS", "").split(",") if item.strip()
+        )
+        fetch_lfs = os.environ.get("TIANXUAN_IMPORT_FETCH_LFS", "0").strip() == "1"
+        try:
+            return GitService().import_repo(  # type: ignore[no-any-return]
+                root,
+                payload.name,
+                payload.source,
+                allow_local=allow_local,
+                allowed_hosts=allowed_hosts,
+                fetch_lfs=fetch_lfs,
+            )
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/git/import-jobs")
+    def start_import_job(payload: GitImportRequest, actor: ActorDep) -> dict[str, Any]:
+        if store.role_of(actor) != "admin":
+            raise PermissionDenied("only an admin can import repositories")
+        root = _repo_root()
+        allow_local = os.environ.get("TIANXUAN_IMPORT_ALLOW_LOCAL", "0").strip() == "1"
+        allowed_hosts = tuple(
+            item.strip() for item in os.environ.get("TIANXUAN_IMPORT_ALLOWED_HOSTS", "").split(",") if item.strip()
+        )
+        fetch_lfs = os.environ.get("TIANXUAN_IMPORT_FETCH_LFS", "0").strip() == "1"
+        job = store.create_import_job(actor, payload.name, payload.source)
+        arguments = (store, job["id"], root, payload.name, payload.source, allow_local, allowed_hosts, fetch_lfs)
+        if os.environ.get("TIANXUAN_IMPORT_JOBS_INLINE", "0").strip() == "1":
+            _run_import_job(*arguments)
+        else:
+            threading.Thread(target=_run_import_job, args=arguments, daemon=True).start()
+        return store.get_import_job(actor, job["id"])  # type: ignore[no-any-return]
+
+    @app.get("/api/v1/git/import-jobs")
+    def list_import_jobs(
+        actor: ActorDep,
+        limit: int = Query(default=20, ge=1, le=100),
+    ) -> dict[str, list[dict[str, Any]]]:
+        return {"jobs": store.list_import_jobs(actor, limit)}
+
+    @app.get("/api/v1/git/import-jobs/{job_id}")
+    def get_import_job(job_id: str, actor: ActorDep) -> dict[str, Any]:
+        return store.get_import_job(actor, job_id)  # type: ignore[no-any-return]
+
     # ---------- 多宝：合入队列 ----------
 
     if merge_queue is not None:
@@ -886,9 +1452,21 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
                     payload.target,
                     payload.title,
                     payload.priority,
+                    pr_number=payload.pr_number,
+                    issue_ref=payload.issue_ref,
                 )
+            except PolicyError as error:
+                raise HTTPException(status_code=403, detail=str(error)) from error
             except ValueError as error:
                 raise HTTPException(status_code=400, detail=str(error)) from error
+
+        def _require_queue_item_owner(item_id: str, actor: str, action: str) -> None:
+            try:
+                item = merge_queue.get(item_id)
+            except KeyError as error:
+                raise HTTPException(status_code=404, detail="merge queue item not found") from error
+            if store.role_of(actor) != "admin" and item.get("created_by") != actor:
+                raise PermissionDenied(f"only the creator or an admin can {action} merge candidates")
 
         @app.get("/api/v1/merge-queue")
         def list_merge_queue(
@@ -914,6 +1492,10 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
                 raise PermissionDenied("viewer cannot process merge queue")
             return {"processed": merge_queue.process_batch(limit)}
 
+        @app.get("/api/v1/merge-queue/workers")
+        def merge_queue_workers(actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
+            return {"workers": merge_queue.list_workers()}
+
         @app.get("/api/v1/merge-queue/status")
         def merge_queue_status(actor: ActorDep) -> dict[str, Any]:
             return {
@@ -931,6 +1513,7 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
 
         @app.post("/api/v1/merge-queue/{item_id}/retry")
         def retry_merge(item_id: str, actor: ActorDep) -> dict[str, Any]:
+            _require_queue_item_owner(item_id, actor, "retry")
             try:
                 return merge_queue.retry(item_id)  # type: ignore[no-any-return]
             except ValueError as error:
@@ -938,8 +1521,7 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
 
         @app.post("/api/v1/merge-queue/{item_id}/cancel")
         def cancel_merge_queue_item(item_id: str, actor: ActorDep) -> dict[str, Any]:
-            if store.role_of(actor) == "viewer":
-                raise PermissionDenied("viewer cannot cancel merge candidates")
+            _require_queue_item_owner(item_id, actor, "cancel")
             try:
                 return merge_queue.cancel(item_id)  # type: ignore[no-any-return]
             except KeyError as error:
@@ -965,8 +1547,8 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
 
     @app.websocket("/api/v1/ws/merge-queue")
     async def merge_queue_room(websocket: WebSocket) -> None:
-        actor = websocket.query_params.get("actor", "").strip()
-        if not actor:
+        actor = _websocket_actor(store, websocket.query_params)
+        if actor is None:
             await websocket.close(code=4401)
             return
         if merge_queue is None:
@@ -992,8 +1574,8 @@ def create_app(store: Tianxuan, gateway: ModelGateway | None = None, merge_queue
 
     @app.websocket("/api/v1/ws/docs/{doc_id}")
     async def doc_room(websocket: WebSocket, doc_id: str) -> None:
-        actor = websocket.query_params.get("actor", "").strip()
-        if not actor:
+        actor = _websocket_actor(store, websocket.query_params)
+        if actor is None:
             await websocket.close(code=4401)
             return
         try:

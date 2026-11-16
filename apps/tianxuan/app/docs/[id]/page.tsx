@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { DocComments } from "@/components/DocComments";
 import { DocEditor } from "@/components/DocEditor";
@@ -8,6 +9,7 @@ import { DocSharing } from "@/components/DocSharing";
 import { DocVersions } from "@/components/DocVersions";
 import { fetchDoc } from "@/lib/api";
 import { getDoc, getDocContent, type DocRecord } from "@/lib/data";
+import { LOCALE_COOKIE, normalizeLocale, translate, type MessageKey } from "@/lib/i18n";
 
 interface DocPageProps {
   params: {
@@ -18,14 +20,17 @@ interface DocPageProps {
 export const dynamic = "force-dynamic";
 
 export function generateMetadata({ params }: DocPageProps): Metadata {
+  const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);
   const doc = getDoc(params.id);
   return {
-    title: doc ? doc.title : "文档",
+    title: doc ? doc.title : translate(locale, "doc.fallbackTitle"),
     description: doc?.excerpt,
   };
 }
 
 export default async function DocPage({ params }: DocPageProps) {
+  const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);
+  const t = (key: MessageKey) => translate(locale, key);
   const doc = getDoc(params.id);
   if (doc) {
     return (
@@ -36,15 +41,15 @@ export default async function DocPage({ params }: DocPageProps) {
   }
 
   const actor = process.env.TIANXUAN_ACTOR ?? "";
-  if (actor) {
+  if (actor || process.env.TIANXUAN_TOKEN) {
     try {
       const liveDoc = await fetchDoc(params.id, actor);
       const record: DocRecord = {
         id: liveDoc.id,
         title: liveDoc.title,
         spaceId: "live",
-        spaceName: "实时",
-        kind: "记录",
+        spaceName: t("doc.liveSpace"),
+        kind: t("doc.liveKind") as DocRecord["kind"],
         excerpt: "",
         updated: "",
         updatedBy: "",

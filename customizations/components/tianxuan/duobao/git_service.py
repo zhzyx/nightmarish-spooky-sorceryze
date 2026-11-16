@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import os
 import re
+import shutil
 import subprocess
 import tempfile
 import unicodedata
@@ -30,6 +31,7 @@ from bisect import bisect_left
 from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
+from urllib.parse import urlsplit
 
 __all__ = [
     "DEFAULT_CONCURRENCY_RETRIES",
@@ -40,6 +42,7 @@ __all__ = [
     "GitServiceError",
     "MergeConflict",
     "ValidationError",
+    "validate_import_source",
 ]
 
 DEFAULT_GIT_EXECUTABLE = "git"
@@ -49,6 +52,12 @@ _EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
 
 #: 允许的合并策略（同时限制为白名单，避免把任意参数交给 git）。
 MERGE_STRATEGIES = ("--no-ff", "--ff", "--ff-only")
+
+#: 仓库导入允许的来源协议；本机路径需要调用方显式开启。
+IMPORT_SCHEMES = ("https", "ssh", "git", "file")
+
+_IMPORT_URL = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*://")
+_IMPORT_MAX_TIMEOUT = 3600.0
 
 _LOG_FORMAT = "%H%x1f%an%x1f%ae%x1f%aI%x1f%s%x1e"
 
@@ -260,12 +269,75 @@ def _validate_branch_name(name: str) -> str:
     return name
 
 
+def validate_import_source(
+    source: str,
+    *,
+    allow_local: bool = False,
+    allowed_hosts: Sequence[str] = (),
+) -> str:
+    """校验仓库导入来源，返回可交给 ``git clone`` 的来源字符串。
+
+    - 只接受 :data:`IMPORT_SCHEMES` 中的协议；URL 不得内嵌用户名或密码；
+    - ``allowed_hosts`` 非空时，远端主机必须命中（大小写不敏感）；
+    - 本机绝对路径与 ``file://`` 仅在 ``allow_local`` 显式开启时接受，
+      供管理员执行本机迁移或隔离测试。
+    """
+    if not isinstance(source, str):
+        raise ValidationError("import source must be a string")
+    if not source or source != source.strip():
+        raise ValidationError(f"invalid import source: {source!r}")
+    _reject_control_characters(source, "import source")
+    if source.startswith("-"):
+        raise ValidationError(f"import source must not start with '-': {source!r}")
+
+    if _IMPORT_URL.match(source):
+        parts = urlsplit(source)
+        scheme = parts.scheme.lower()
+        if scheme not in IMPORT_SCHEMES:
+            raise ValidationError(f"unsupported import scheme {scheme!r}; expected one of {', '.join(IMPORT_SCHEMES)}")
+        if parts.password or (scheme != "ssh" and parts.username):
+            raise ValidationError("import URL must not embed credentials")
+        if scheme == "file":
+            if not allow_local:
+                raise ValidationError("file:// imports are disabled; set TIANXUAN_IMPORT_ALLOW_LOCAL=1")
+            if not parts.path:
+                raise ValidationError(f"invalid file import URL: {source!r}")
+            return source
+        host = (parts.hostname or "").casefold()
+        if not host:
+            raise ValidationError(f"import URL requires a host: {source!r}")
+        if allowed_hosts:
+            permitted = {item.strip().casefold() for item in allowed_hosts if item.strip()}
+            if host not in permitted:
+                raise ValidationError(f"import host {host!r} is not allowed by TIANXUAN_IMPORT_ALLOWED_HOSTS")
+        return source
+
+    if not allow_local:
+        raise ValidationError("local imports are disabled; set TIANXUAN_IMPORT_ALLOW_LOCAL=1")
+    path = Path(source)
+    if not path.is_absolute():
+        raise ValidationError(f"local import source must be an absolute path: {source!r}")
+    if not path.exists():
+        raise ValidationError(f"local import source does not exist: {source!r}")
+    return str(path)
+
+
 def _validate_message(message: str) -> str:
     if not isinstance(message, str) or not message.strip():
         raise ValidationError("commit message must be a non-empty string")
     if "\x00" in message:
         raise ValidationError("commit message must not contain NUL")
     return message
+
+
+def _validate_search_query(query: str) -> str:
+    if not isinstance(query, str) or not query.strip():
+        raise ValidationError("search query must be a non-empty string")
+    if len(query) > 200:
+        raise ValidationError("search query must be at most 200 characters")
+    if any(character in query for character in ("\x00", "\n", "\r")):
+        raise ValidationError("search query must not contain NUL or newlines")
+    return query
 
 
 def _validate_identity(author_name: str, author_email: str) -> tuple[str, str]:
@@ -293,6 +365,9 @@ def _validate_retries(max_retries: int) -> int:
     if isinstance(max_retries, bool) or not isinstance(max_retries, int) or not 0 <= max_retries <= 64:
         raise ValidationError("max_retries must be an integer between 0 and 64")
     return max_retries
+
+
+_LFS_POINTER_MAGIC = "version https://git-lfs.github.com/spec/v1"
 
 
 class GitService:
@@ -341,6 +416,85 @@ class GitService:
             str(destination),
         ])
         return str(destination)
+
+    def import_repo(
+        self,
+        root: str | os.PathLike[str],
+        name: str,
+        source: str,
+        *,
+        allow_local: bool = False,
+        allowed_hosts: Sequence[str] = (),
+        timeout: float = 600.0,
+        fetch_lfs: bool = False,
+    ) -> dict[str, Any]:
+        """把外部仓库以镜像方式导入 ``root``，返回分支、标签与 HEAD 回执。
+
+        使用 ``git clone --mirror`` 保留全部分支、标签与远端引用；目标已存在时
+        拒绝覆盖。失败或超时会清理本次创建的目标目录，不触碰其他仓库。来源校验
+        见 :func:`validate_import_source`。
+        """
+        directory_name = _validate_repo_name(name)
+        source = validate_import_source(source, allow_local=allow_local, allowed_hosts=allowed_hosts)
+        if (
+            isinstance(timeout, bool)
+            or not isinstance(timeout, (int, float))
+            or not 0 < float(timeout) <= _IMPORT_MAX_TIMEOUT
+        ):
+            raise ValidationError(f"import timeout must be between 0 and {_IMPORT_MAX_TIMEOUT:g} seconds")
+        try:
+            root_path = Path(os.fspath(root)).expanduser().resolve()
+        except TypeError as error:
+            raise ValidationError("root must be a string or os.PathLike") from error
+        if root_path.exists() and not root_path.is_dir():
+            raise GitServiceError(f"repository root is not a directory: {root_path}")
+        root_path.mkdir(parents=True, exist_ok=True)
+        destination = (root_path / directory_name).resolve()
+        if not destination.is_relative_to(root_path):
+            raise ValidationError(f"repository escapes the import root: {destination}")
+        if destination.exists():
+            raise GitServiceError(f"repository already exists: {destination}")
+        try:
+            completed = self._run(
+                ["clone", "--mirror", "--quiet", "--", source, str(destination)],
+                check=False,
+                timeout=float(timeout),
+            )
+        except GitServiceError:
+            shutil.rmtree(destination, ignore_errors=True)
+            raise
+        if completed.returncode != 0:
+            shutil.rmtree(destination, ignore_errors=True)
+            raise GitCommandError(completed.args, completed.returncode, completed.stdout, completed.stderr)
+        lfs = {"requested": fetch_lfs, "available": False, "fetched": False, "error": ""}
+        if fetch_lfs:
+            lfs = {"requested": True, **self._fetch_lfs(destination, float(timeout))}
+        return {
+            "path": str(destination),
+            "name": directory_name,
+            "source": source,
+            "default_branch": self._symbolic_head(destination) or "",
+            "head": self._rev_parse(destination, "HEAD"),
+            "branches": self.list_branches(destination),
+            "tags": self.list_tags(destination),
+            "mirror": True,
+            "lfs": lfs,
+        }
+
+    def _fetch_lfs(self, repo: Path, timeout: float) -> dict[str, Any]:
+        version = self._run(["-C", str(repo), "lfs", "version"], check=False, timeout=10)
+        if version.returncode != 0:
+            return {"available": False, "fetched": False, "error": "git-lfs is not installed"}
+        completed = self._run(
+            ["-C", str(repo), "lfs", "fetch", "--all"],
+            check=False,
+            timeout=timeout,
+        )
+        return {
+            "available": True,
+            "fetched": completed.returncode == 0,
+            "error": completed.stderr.strip() if completed.returncode != 0 else "",
+        }
 
     def commit(
         self,
@@ -483,9 +637,227 @@ class GitService:
         output = self._run(["-C", str(repo_path), "for-each-ref", "--format=%(refname:short)", "refs/heads"]).stdout
         return [line.strip() for line in output.splitlines() if line.strip()]
 
+    def list_tags(self, repo: str | os.PathLike[str]) -> list[dict[str, str]]:
+        """返回标签名及目标提交 SHA；附注标签优先取 peel 后的提交。"""
+        repo_path, _ = self._repo_path(repo)
+        output = self._run([
+            "-C",
+            str(repo_path),
+            "for-each-ref",
+            "--format=%(refname:short)%09%(objectname)%09%(*objectname)",
+            "refs/tags",
+        ]).stdout
+        tags: list[dict[str, str]] = []
+        for line in output.splitlines():
+            fields = line.split("\t")
+            if not fields or not fields[0]:
+                continue
+            peeled = fields[2] if len(fields) > 2 and fields[2] else ""
+            sha = peeled or (fields[1] if len(fields) > 1 else "")
+            if sha:
+                tags.append({"name": fields[0], "sha": sha})
+        return sorted(tags, key=lambda item: item["name"])
+
+    def delete_branch(self, repo: str | os.PathLike[str], name: str) -> str:
+        """删除本地分支并返回分支名。
+
+        受保护分支由 :mod:`policy` 在调用方先行拦截；本方法只做 Git 操作与存在性
+        校验，不重复授权判定。删除使用 ``-D``（显式删除，包含未合并分支），调用方
+        必须在策略层要求相应角色。
+        """
+        repo_path, _ = self._repo_path(repo)
+        name = _validate_branch_name(name)
+        if self._rev_parse(repo_path, f"refs/heads/{name}") is None:
+            raise GitServiceError(f"unknown branch: {name!r}")
+        self._run(["-C", str(repo_path), "branch", "-D", name])
+        return name
+
+    def create_tag(
+        self,
+        repo: str | os.PathLike[str],
+        name: str,
+        ref: str = "HEAD",
+        message: str = "",
+    ) -> str:
+        """创建轻量标签（message 为空）或附注标签，并返回标签名。"""
+        name = _validate_ref_name(name, label="tag name")
+        ref = _validate_ref_name(ref, label="tag ref")
+        repo_path, _ = self._repo_path(repo)
+        arguments = ["-C", str(repo_path), "tag"]
+        if message:
+            arguments.extend(["-a", name, "-m", _validate_message(message)])
+        else:
+            arguments.append(name)
+        arguments.append(ref)
+        self._run(arguments)
+        return name
+
+    def delete_tag(self, repo: str | os.PathLike[str], name: str) -> str:
+        """删除本地标签并返回标签名。"""
+        name = _validate_ref_name(name, label="tag name")
+        repo_path, _ = self._repo_path(repo)
+        self._run(["-C", str(repo_path), "tag", "-d", name])
+        return name
+
+    def lfs_files(self, repo: str | os.PathLike[str], ref: str = "HEAD") -> list[str]:
+        """返回指定 ref 下内容为 Git LFS 指针的文件路径（无需 git-lfs 可执行文件）。"""
+        ref = _validate_ref_name(ref, label="lfs ref")
+        repo_path, _ = self._repo_path(repo)
+        completed = self._run(
+            [
+                "-C",
+                str(repo_path),
+                "grep",
+                "-l",
+                "-I",
+                "--no-color",
+                "-F",
+                "-e",
+                _LFS_POINTER_MAGIC,
+                ref,
+            ],
+            check=False,
+            timeout=30,
+        )
+        if completed.returncode == 1:
+            return []
+        if completed.returncode != 0:
+            raise GitServiceError(completed.stderr.strip() or "git grep failed")
+        prefix = f"{ref}:"
+        paths = {line[len(prefix) :] if line.startswith(prefix) else line for line in completed.stdout.splitlines()}
+        return sorted(path for path in paths if path)
+
+    def list_tree(self, repo: str | os.PathLike[str], ref: str = "HEAD", path: str = "") -> list[dict[str, Any]]:
+        """列出 ``ref`` 下 ``path`` 这一层的树项，``path`` 为空表示仓库根。
+
+        返回 ``name/path/type/mode/sha/size``；目录的 ``size`` 为 ``None``。目录项
+        优先，其余按名称排序，便于 Web 文件面板直接渲染。
+        """
+        repo_path, _ = self._repo_path(repo)
+        ref = _validate_ref_name(ref, label="tree ref")
+        if self._rev_parse(repo_path, ref) is None:
+            raise GitServiceError(f"unknown tree ref: {ref!r}")
+        treeish = ref
+        if path:
+            path = _validate_file_path(path, label="tree path")
+            treeish = f"{ref}:{path}"
+        completed = self._run(["-C", str(repo_path), "ls-tree", "-z", "-l", treeish], check=False, line_endings=False)
+        if completed.returncode != 0:
+            raise GitServiceError(f"cannot list tree at {treeish!r}: {completed.stderr.strip()}")
+        output = completed.stdout
+        entries: list[dict[str, Any]] = []
+        for record in output.split("\0"):
+            if not record:
+                continue
+            meta, separator, name = record.partition("\t")
+            fields = meta.split()
+            if not separator or len(fields) < 4:
+                continue
+            mode, kind, sha, size = fields[0], fields[1], fields[2], fields[3]
+            if mode == "160000" or kind == "commit":
+                kind = "submodule"
+            entries.append({
+                "name": name,
+                "path": f"{path}/{name}" if path else name,
+                "type": kind,
+                "mode": mode,
+                "sha": sha,
+                "size": None if size == "-" else int(size),
+            })
+        lfs_paths = set(self.lfs_files(repo, ref))
+        for entry in entries:
+            entry["lfs"] = entry["type"] == "blob" and entry["path"] in lfs_paths
+        return sorted(entries, key=lambda item: (item["type"] != "tree", item["name"].casefold()))
+
     # ------------------------------------------------------------------
     # 读取
     # ------------------------------------------------------------------
+    def search(
+        self,
+        repo: str | os.PathLike[str],
+        query: str,
+        ref: str = "HEAD",
+        path: str = "",
+        limit: int = 50,
+    ) -> list[dict[str, Any]]:
+        """在指定 ref 下做固定字符串代码搜索，返回路径、行号与行文本。"""
+        query = _validate_search_query(query)
+        ref = _validate_ref_name(ref, label="search ref")
+        limit = min(_validate_limit(limit), 200)
+        repo_path, _ = self._repo_path(repo)
+        arguments = ["-C", str(repo_path), "grep", "-n", "-I", "--no-color", "-F", "-e", query, ref]
+        if path:
+            arguments.extend(["--", _validate_file_path(path, label="search path")])
+        completed = self._run(arguments, check=False, timeout=30)
+        if completed.returncode == 1:
+            return []
+        if completed.returncode != 0:
+            raise GitServiceError(completed.stderr.strip() or "git grep failed")
+        results: list[dict[str, Any]] = []
+        prefix = f"{ref}:"
+        for line in completed.stdout.splitlines():
+            body = line[len(prefix) :] if line.startswith(prefix) else line
+            parts = body.split(":", 2)
+            if len(parts) != 3 or not parts[1].isdigit():
+                continue
+            results.append({
+                "path": parts[0],
+                "line": int(parts[1]),
+                "text": parts[2][:500],
+            })
+            if len(results) >= limit:
+                break
+        return results
+
+    def blame(
+        self,
+        repo: str | os.PathLike[str],
+        ref: str = "HEAD",
+        path: str = "",
+        limit: int = 2000,
+    ) -> list[dict[str, Any]]:
+        """逐行返回文件的提交归属（作者、行号、行文本）。"""
+        ref = _validate_ref_name(ref, label="blame ref")
+        path = _validate_file_path(path, label="blame path")
+        if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 5000:
+            raise ValidationError("blame limit must be an integer between 1 and 5000")
+        repo_path, _ = self._repo_path(repo)
+        completed = self._run(
+            ["-C", str(repo_path), "blame", "--line-porcelain", ref, "--", path],
+            check=False,
+            timeout=30,
+        )
+        if completed.returncode != 0:
+            raise GitServiceError(completed.stderr.strip() or "git blame failed")
+        results: list[dict[str, Any]] = []
+        current: dict[str, Any] | None = None
+        for line in completed.stdout.splitlines():
+            if line.startswith("\t"):
+                if current is not None:
+                    current["text"] = line[1:][:500]
+                    results.append(current)
+                    current = None
+                if len(results) >= limit:
+                    break
+                continue
+            header = re.match(r"^([0-9a-f]{40}) \d+ (\d+)(?: \d+)?$", line)
+            if header:
+                current = {
+                    "sha": header.group(1),
+                    "line": int(header.group(2)),
+                    "author": "",
+                    "summary": "",
+                    "text": "",
+                }
+                continue
+            if current is None:
+                continue
+            if line.startswith("author "):
+                current["author"] = line[7:]
+            elif line.startswith("summary "):
+                current["summary"] = line[8:]
+        return results
+
     def log(self, repo: str | os.PathLike[str], ref: str = "HEAD", limit: int = 20) -> list[dict[str, Any]]:
         """按时间倒序返回提交记录；空仓库的 ``HEAD`` 返回空列表。"""
         repo_path, _ = self._repo_path(repo)
@@ -854,6 +1226,7 @@ class GitService:
         check: bool = True,
         line_endings: bool = True,
         preserve_newlines: bool = False,
+        timeout: float | None = None,
     ) -> subprocess.CompletedProcess[str]:
         config_options = list(_BASE_CONFIG_OPTIONS)
         if line_endings:
@@ -867,7 +1240,10 @@ class GitService:
                 encoding=None if preserve_newlines else "utf-8",
                 shell=False,
                 env=self._environment(),
+                timeout=timeout,
             )
+        except subprocess.TimeoutExpired as error:
+            raise GitServiceError(f"git command timed out after {timeout}s: {' '.join(arguments)}") from error
         except FileNotFoundError as error:
             raise GitServiceError(f"git executable was not found: {self.git_executable}") from error
         except OSError as error:

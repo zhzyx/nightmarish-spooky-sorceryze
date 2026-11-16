@@ -1,0 +1,227 @@
+name: Duobao acceptance screenshots
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/duobao-policy-backup-20261115
+
+permissions:
+  contents: read
+
+jobs:
+  screenshots:
+    name: Compose stack and page screenshots
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start compose stack
+        working-directory: deploy
+        run: |
+          cp .env.example .env
+          docker compose --env-file .env up -d --build
+          ok=0
+          for i in $(seq 1 120); do
+            if curl -fsS http://127.0.0.1:8080/api/v1/health >/dev/null; then
+              ok=1
+              break
+            fi
+            sleep 3
+          done
+          if [ "$ok" != "1" ]; then
+            docker compose --env-file .env logs --no-color
+            exit 1
+          fi
+          curl -fsS http://127.0.0.1:8080/api/v1/health
+
+      - name: Backup and restore drill
+        env:
+          TIANXUAN_BACKUP_DIR: ${{ runner.temp }}/backups
+          TIANXUAN_HEALTH_URL: http://127.0.0.1:8080/api/v1/health
+        run: |
+          set -u
+          BASE=http://127.0.0.1:8080
+          curl -fsS -X POST "$BASE/api/v1/auth/register"             -H "Content-Type: application/json"             -d '{"tenant_name":"Acceptance","email":"acceptance@example.com","password":"secret-pass"}'             >/dev/null || echo "register skipped"
+          docker run --rm -v tianxuan-data:/data --entrypoint sh tianxuan-api:local -c "set -e; rm -rf /tmp/seed /data/repos/demo.git; mkdir -p /tmp/seed; cd /tmp/seed; git init -q -b main; git config user.email seed@example.invalid; git config user.name Seed; printf '# demo\\n' > README.md; git add README.md; git commit -qm init; git clone -q --bare /tmp/seed /data/repos/demo.git"
+
+          bash deploy/production/backup.sh
+          ARCHIVE=$(ls -1t "$TIANXUAN_BACKUP_DIR"/tianxuan-data-*.tgz | head -n1)
+          test -n "$ARCHIVE"
+
+          docker volume rm -f tianxuan-restore >/dev/null 2>&1 || true
+          docker volume create tianxuan-restore >/dev/null
+          docker run --rm -v tianxuan-restore:/data -v "$TIANXUAN_BACKUP_DIR":/backup             --entrypoint sh tianxuan-api:local -c "tar -xzf /backup/$(basename "$ARCHIVE") -C /data"
+          RESTORED_HEAD=$(docker run --rm -v tianxuan-restore:/data --entrypoint cat tianxuan-api:local /data/repos/demo.git/HEAD)
+          DB_CHECK=$(docker run --rm -v tianxuan-restore:/data --entrypoint python tianxuan-api:local -c             "import sqlite3; print(sqlite3.connect('/data/tianxuan.db').execute('PRAGMA integrity_check').fetchone()[0])")
+          test "$RESTORED_HEAD" = "ref: refs/heads/main"
+          test "$DB_CHECK" = "ok"
+
+          docker run -d --rm --name tianxuan-restore-api -p 18000:8000 \
+            -v tianxuan-restore:/data \
+            -e TIANXUAN_DB=/data/tianxuan.db \
+            -e TIANXUAN_REPO_ROOT=/data/repos \
+            tianxuan-api:local >/dev/null
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:18000/api/v1/health >/dev/null; then break; fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:18000/api/v1/health
+          RESTORED_TOKEN=$(curl -fsS -X POST http://127.0.0.1:18000/api/v1/auth/session \
+            -H "Content-Type: application/json" \
+            -d '{"email":"acceptance@example.com","password":"secret-pass"}' \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin)["token"])')
+          test -n "$RESTORED_TOKEN"
+          curl -fsS -H "Authorization: Bearer $RESTORED_TOKEN" http://127.0.0.1:18000/api/v1/git/repos | grep -q demo.git
+          docker stop tianxuan-restore-api >/dev/null
+
+          python3 - "$ARCHIVE" <<'PY'
+          import hashlib
+          import json
+          import pathlib
+          import sys
+          import tarfile
+
+          archive = sys.argv[1]
+          with tarfile.open(archive) as tar:
+              names = tar.getnames()
+          assert any(name.endswith("tianxuan.db") for name in names), names[:10]
+          assert any(name.endswith("repos/demo.git/HEAD") for name in names), names[:10]
+          digest = hashlib.sha256(pathlib.Path(archive).read_bytes()).hexdigest()
+          receipt = {
+              "archive": archive,
+              "sha256": digest,
+              "entries": len(names),
+              "has_database": True,
+              "has_repository": True,
+          }
+          pathlib.Path("/tmp/backup-receipt.json").write_text(json.dumps(receipt), encoding="utf-8")
+          print(json.dumps(receipt))
+          PY
+
+      - name: Upload backup receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tianxuan-backup-drill
+          path: /tmp/backup-receipt.json
+          if-no-files-found: warn
+
+      - name: Create authenticated session
+        run: |
+          BASE=http://127.0.0.1:8080
+          TOKEN=$(curl -fsS -X POST "$BASE/api/v1/auth/session" \
+            -H "Content-Type: application/json" \
+            -d '{"email":"acceptance@example.com","password":"secret-pass"}' \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin)["token"])')
+          test -n "$TOKEN"
+          echo "TIANXUAN_TOKEN=$TOKEN" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Playwright
+        run: |
+          mkdir -p /tmp/shots
+          cd /tmp/shots
+          npm init -y >/dev/null
+          npm install --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+
+      - name: Capture screenshots
+        run: |
+          cp deploy/examples/screenshots.mjs /tmp/shots/screenshot.mjs
+          cd /tmp/shots
+          BASE_URL=http://127.0.0.1:8080 node screenshot.mjs
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tianxuan-screenshots
+          path: /tmp/shots/artifacts
+          if-no-files-found: warn
+
+      - name: Compose logs
+        if: failure()
+        working-directory: deploy
+        run: docker compose --env-file .env logs --no-color
+
+      - name: TLS profile smoke
+        working-directory: deploy
+        run: |
+          set -euo pipefail
+          HOST=tianxuan.test
+          TOKEN=tls-test-token
+          mkdir -p "certs/live/$HOST"
+          openssl req -x509 -nodes -days 1 -newkey rsa:2048 \
+            -addext "subjectAltName=DNS:$HOST" \
+            -keyout "certs/live/$HOST/privkey.pem" \
+            -out "certs/live/$HOST/fullchain.pem" \
+            -subj "/CN=$HOST" >/dev/null 2>&1
+          sed "s/__TIANXUAN_HOST__/$HOST/g; s/__ACCESS_TOKEN__/$TOKEN/g" \
+            production/nginx.gate.conf.example > nginx.gate.conf
+          cp production/login.html login.html
+          cat > docker-compose.override.yml <<EOF
+          services:
+            proxy:
+              ports: !override
+                - "80:80"
+                - "443:443"
+              volumes:
+                - ./nginx.gate.conf:/etc/nginx/nginx.conf:ro
+                - ./login.html:/usr/share/nginx/html/login.html:ro
+                - ./certs:/etc/letsencrypt:ro
+          EOF
+          docker compose --env-file .env up -d proxy
+          docker compose ps
+          docker compose logs --no-color proxy | tail -30 || true
+
+          code=""
+          for i in $(seq 1 30); do
+            code=$(curl -ksS -o /dev/null -w '%{http_code}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/" || true)
+            echo "tls probe $i: $code"
+            if [ "$code" = "200" ] || [ "$code" = "302" ]; then break; fi
+            sleep 2
+          done
+          case "$code" in
+            200|302) ;;
+            *) echo "TLS endpoint not ready: $code"; exit 1 ;;
+          esac
+
+          http_code=$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1/ || true)
+          echo "http redirect: $http_code"
+          test "$http_code" = "301"
+
+          curl -sS --cacert "certs/live/$HOST/fullchain.pem" -D /tmp/tls-headers -o /dev/null \
+            --resolve "$HOST:443:127.0.0.1" "https://$HOST/"
+          grep -qi 'strict-transport-security' /tmp/tls-headers
+          test "$(curl -sS --cacert "certs/live/$HOST/fullchain.pem" -o /dev/null -w '%{http_code}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/api/v1/health")" = "200"
+
+          curl -ksS -c /tmp/tls-cookies -o /dev/null --resolve "$HOST:443:127.0.0.1" "https://$HOST/gate?key=$TOKEN"
+          grep -q tx_access /tmp/tls-cookies
+          test "$(curl -ksS -b /tmp/tls-cookies -o /dev/null -w '%{http_code}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/")" = "200"
+          test "$(curl -ksS -o /dev/null -w '%{http_code}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/gate?key=wrong")" = "403"
+
+          # Disable the internal SSR bypass so the cookie gate is observable.
+          sed -i '/127.0.0.1 1;/d; /172.16.0.0\/12 1;/d' nginx.gate.conf
+          docker compose --env-file .env restart proxy
+          sleep 5
+          code=""
+          for i in $(seq 1 30); do
+            code=$(curl -ksS -o /dev/null -w '%{http_code}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/" || true)
+            echo "gate probe $i: $code"
+            if [ "$code" = "302" ]; then break; fi
+            sleep 2
+          done
+          test "$code" = "302"
+          test "$(curl -ksS -b /tmp/tls-cookies -o /dev/null -w '%{http_code}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/")" = "200"
+          test "$(curl -ksS -o /dev/null -w '%{http_code}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/api/v1/health")" = "401"
+          test "$(curl -ksS -b /tmp/tls-cookies -o /dev/null -w '%{http_code}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/api/v1/health")" = "200"
+
+      - name: Compose down
+        if: always()
+        working-directory: deploy
+        run: docker compose --env-file .env down -v

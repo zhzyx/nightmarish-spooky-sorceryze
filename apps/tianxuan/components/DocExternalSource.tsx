@@ -1,10 +1,15 @@
 "use client";
 
+import { useActor } from "@/lib/use-actor";
+
 import { useEffect, useState } from "react";
 import { fetchDocExternalLinks, type ApiExternalLink } from "@/lib/api";
+import { formatMessage } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 export function DocExternalSource({ docId }: { docId: string }) {
-  const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR;
+  const actor = useActor();
+  const { t } = useI18n();
   const [links, setLinks] = useState<ApiExternalLink[] | null>(null);
 
   useEffect(() => {
@@ -38,9 +43,9 @@ export function DocExternalSource({ docId }: { docId: string }) {
       <div className="section-heading">
         <div>
           <p className="section-kicker">TIANSHU · LINK</p>
-          <h2 id="external-source-title">天枢来源</h2>
+          <h2 id="external-source-title">{t("external.title")}</h2>
         </div>
-        <span className="section-note">{links.length} 个外部工单</span>
+        <span className="section-note">{formatMessage(t("external.note"), { count: links.length })}</span>
       </div>
       <div className="reading-list live-list">
         {links.map((link) => (
@@ -56,7 +61,7 @@ export function DocExternalSource({ docId }: { docId: string }) {
                 type="button"
                 onClick={() => window.open(link.external_id, "_blank", "noopener,noreferrer")}
               >
-                打开
+                {t("external.open")}
               </button>
             ) : null}
           </div>

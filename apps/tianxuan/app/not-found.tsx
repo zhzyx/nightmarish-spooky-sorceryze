@@ -1,6 +1,11 @@
+import { cookies } from "next/headers";
 import { EmptyState } from "@/components/EmptyState";
+import { LOCALE_COOKIE, normalizeLocale, translate, type MessageKey } from "@/lib/i18n";
 
 export default function NotFound() {
+  const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);
+  const t = (key: MessageKey) => translate(locale, key);
+
   return (
     <div className="page-stack">
       <header className="page-header">
@@ -10,19 +15,18 @@ export default function NotFound() {
             TIANXUAN · NOT FOUND
           </p>
           <h1>
-            留白<span className="title-period">。</span>
+            {t("nf.title")}
+            {locale === "zh" ? <span className="title-period">。</span> : null}
           </h1>
-          <p className="page-lede">
-            这一页不在当前工作区里，也许被移动了，也许还没有被写下。
-          </p>
+          <p className="page-lede">{t("nf.lede")}</p>
         </div>
       </header>
       <EmptyState
         actionHref="/docs"
-        actionLabel="返回文档空间"
-        description="可以从页面树重新进入，或回到工作台让天璇帮你找一条线索。"
+        actionLabel={t("nf.action")}
+        description={t("nf.description")}
         eyebrow="404 · PAGE ABSENT"
-        title="没有找到这个页面"
+        title={t("nf.emptyTitle")}
       />
     </div>
   );

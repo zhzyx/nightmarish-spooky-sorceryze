@@ -5,37 +5,29 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Icon, type IconName } from "@/components/Icon";
 import { ApiStatus } from "@/components/ApiStatus";
+import { useI18n } from "@/lib/i18n-client";
+import { routeTitleKey, type MessageKey } from "@/lib/i18n";
 import { spaces } from "@/lib/data";
 
 interface NavItem {
   href: string;
-  label: string;
+  key: MessageKey;
   icon: IconName;
   badge?: string;
 }
 
 const primaryNav: NavItem[] = [
-  { href: "/", label: "工作台", icon: "home" },
-  { href: "/docs", label: "文档", icon: "docs" },
-  { href: "/issues", label: "工单", icon: "issues", badge: "3" },
-  { href: "/repos", label: "代码仓库", icon: "repos" },
-  { href: "/requirements", label: "需求", icon: "requirements" },
+  { href: "/", key: "nav.home", icon: "home" },
+  { href: "/docs", key: "nav.docs", icon: "docs" },
+  { href: "/issues", key: "nav.issues", icon: "issues", badge: "3" },
+  { href: "/repos", key: "nav.repos", icon: "repos" },
+  { href: "/requirements", key: "nav.requirements", icon: "requirements" },
 ];
 
 const utilityNav: NavItem[] = [
-  { href: "/search", label: "全局搜索", icon: "search" },
-  { href: "/settings", label: "设置", icon: "settings" },
+  { href: "/search", key: "nav.search", icon: "search" },
+  { href: "/settings", key: "nav.settings", icon: "settings" },
 ];
-
-const routeTitles: Record<string, string> = {
-  "": "工作台",
-  docs: "文档",
-  issues: "工单",
-  repos: "代码仓库",
-  requirements: "需求",
-  settings: "设置",
-  search: "全局搜索",
-};
 
 function isActive(pathname: string, href: string): boolean {
   if (href === "/") {
@@ -44,18 +36,11 @@ function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function sectionLabel(pathname: string): string {
-  const first = pathname.split("/")[1] ?? "";
-  if (first === "docs" && pathname.split("/").length > 2) {
-    return "文档 / 阅读视图";
-  }
-  return routeTitles[first] ?? "工作台";
-}
-
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { t, locale, setLocale } = useI18n();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const currentTitle = sectionLabel(pathname);
+  const currentTitle = t(routeTitleKey(pathname));
 
   useEffect(() => {
     setMobileNavOpen(false);
@@ -64,7 +49,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <>
       <a className="skip-link" href="#main-content">
-        跳到主内容
+        {t("shell.skip")}
       </a>
       <div className="ambient" aria-hidden="true">
         <span className="ambient-orbit ambient-orbit-one" />
@@ -74,12 +59,12 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className="app-frame">
         <aside
-          aria-label="主导航"
+          aria-label={t("shell.navAria")}
           className={`sidebar${mobileNavOpen ? " is-open" : ""}`}
           id="app-sidebar"
         >
           <div className="sidebar-brand">
-            <Link className="brand" href="/" aria-label="天璇工作台">
+            <Link className="brand" href="/" aria-label={t("shell.brandAria")}>
               <span className="brand-mark" aria-hidden="true">
                 <span>璇</span>
               </span>
@@ -89,7 +74,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </span>
             </Link>
             <button
-              aria-label="关闭导航"
+              aria-label={t("shell.closeNav")}
               className="icon-button sidebar-close"
               onClick={() => setMobileNavOpen(false)}
               type="button"
@@ -103,14 +88,14 @@ export function AppShell({ children }: { children: ReactNode }) {
               共
             </span>
             <span className="workspace-copy">
-              <strong>共工工坊</strong>
-              <small>单组织 · 10 人</small>
+              <strong>{t("shell.workspaceName")}</strong>
+              <small>{t("shell.workspaceMeta")}</small>
             </span>
             <Icon className="workspace-chevron" name="chevronDown" size={14} />
           </button>
 
-          <nav aria-label="工作区导航" className="sidebar-nav">
-            <p className="sidebar-label">工作区</p>
+          <nav aria-label={t("shell.navAria")} className="sidebar-nav">
+            <p className="sidebar-label">{t("shell.workspace")}</p>
             {primaryNav.map((item) => {
               const active = isActive(pathname, item.href);
               return (
@@ -123,13 +108,13 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <span className="nav-icon">
                     <Icon name={item.icon} size={18} />
                   </span>
-                  <span>{item.label}</span>
+                  <span>{t(item.key)}</span>
                   {item.badge ? <span className="nav-badge">{item.badge}</span> : null}
                 </Link>
               );
             })}
 
-            <p className="sidebar-label sidebar-label-spaced">探索</p>
+            <p className="sidebar-label sidebar-label-spaced">{t("shell.explore")}</p>
             {utilityNav.map((item) => {
               const active = isActive(pathname, item.href);
               return (
@@ -142,7 +127,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <span className="nav-icon">
                     <Icon name={item.icon} size={18} />
                   </span>
-                  <span>{item.label}</span>
+                  <span>{t(item.key)}</span>
                 </Link>
               );
             })}
@@ -150,8 +135,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           <div className="sidebar-spaces">
             <div className="sidebar-label-row">
-              <p className="sidebar-label">空间</p>
-              <Link aria-label="浏览全部文档空间" className="quiet-icon-link" href="/docs">
+              <p className="sidebar-label">{t("shell.spaces")}</p>
+              <Link aria-label={t("shell.browseSpacesAria")} className="quiet-icon-link" href="/docs">
                 <Icon name="plus" size={14} />
               </Link>
             </div>
@@ -167,20 +152,20 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="sidebar-footer">
             <div className="usage-card">
               <div className="usage-card-head">
-                <span>本月 AI 用量</span>
+                <span>{t("shell.usageTitle")}</span>
                 <strong>34%</strong>
               </div>
               <div className="meter" aria-hidden="true">
                 <span style={{ width: "34%" }} />
               </div>
-              <small>演示数据 · 不计量真实调用</small>
+              <small>{t("shell.usageNote")}</small>
             </div>
             <ApiStatus />
             <Link className="profile-card" href="/settings">
               <span className="avatar avatar-jade">S</span>
               <span className="profile-copy">
                 <strong>Sail</strong>
-                <small>产品工程 · 管理员</small>
+                <small>{t("shell.profileRole")}</small>
               </span>
               <Icon name="more" size={16} />
             </Link>
@@ -189,7 +174,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         {mobileNavOpen ? (
           <button
-            aria-label="关闭导航遮罩"
+            aria-label={t("shell.closeScrim")}
             className="sidebar-scrim"
             onClick={() => setMobileNavOpen(false)}
             type="button"
@@ -202,15 +187,15 @@ export function AppShell({ children }: { children: ReactNode }) {
               <button
                 aria-controls="app-sidebar"
                 aria-expanded={mobileNavOpen}
-                aria-label="打开导航"
+                aria-label={t("shell.openNav")}
                 className="icon-button menu-button"
                 onClick={() => setMobileNavOpen(true)}
                 type="button"
               >
                 <Icon name="menu" size={20} />
               </button>
-              <div className="breadcrumbs" aria-label="面包屑">
-                <Link href="/">共工工坊</Link>
+              <div className="breadcrumbs" aria-label={t("shell.breadcrumbsAria")}>
+                <Link href="/">{t("shell.workspaceName")}</Link>
                 <span aria-hidden="true">/</span>
                 <span aria-current="page">{currentTitle}</span>
               </div>
@@ -220,21 +205,29 @@ export function AppShell({ children }: { children: ReactNode }) {
               <form action="/search" className="topbar-search" role="search">
                 <Icon name="search" size={16} />
                 <input
-                  aria-label="全局搜索"
+                  aria-label={t("shell.searchAria")}
                   name="q"
-                  placeholder="搜索文档、工单、仓库"
+                  placeholder={t("shell.searchPlaceholder")}
                   type="search"
                 />
-                <span className="search-scope">全局</span>
+                <span className="search-scope">{t("shell.searchScope")}</span>
               </form>
-              <Link aria-label="全局搜索" className="icon-button mobile-search-link" href="/search">
+              <Link aria-label={t("shell.searchAria")} className="icon-button mobile-search-link" href="/search">
                 <Icon name="search" size={19} />
               </Link>
-              <button aria-label="通知（3 条未读）" className="icon-button notification-button" type="button">
+              <button
+                aria-label={t("shell.languageToggle")}
+                className="icon-button"
+                onClick={() => setLocale(locale === "zh" ? "en" : "zh")}
+                type="button"
+              >
+                {locale === "zh" ? "EN" : "中"}
+              </button>
+              <button aria-label={t("shell.notificationsAria")} className="icon-button notification-button" type="button">
                 <Icon name="bell" size={19} />
                 <span className="notification-dot" aria-hidden="true" />
               </button>
-              <Link className="topbar-avatar" href="/settings" aria-label="打开个人设置">
+              <Link className="topbar-avatar" href="/settings" aria-label={t("shell.settingsAria")}>
                 <span className="avatar avatar-jade">S</span>
               </Link>
             </div>

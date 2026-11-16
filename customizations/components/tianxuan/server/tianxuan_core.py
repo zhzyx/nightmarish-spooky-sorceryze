@@ -39,7 +39,13 @@ CREATE TABLE IF NOT EXISTS invites (
 );
 CREATE TABLE IF NOT EXISTS doc_shares (
   doc_id TEXT NOT NULL, user_id TEXT NOT NULL, permission TEXT NOT NULL,
-  created_by TEXT NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY (doc_id, user_id)
+  created_by TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT,
+  PRIMARY KEY (doc_id, user_id)
+);
+CREATE TABLE IF NOT EXISTS doc_field_permissions (
+  doc_id TEXT NOT NULL, field TEXT NOT NULL, min_role TEXT NOT NULL,
+  updated_by TEXT NOT NULL, updated_at TEXT NOT NULL,
+  PRIMARY KEY (doc_id, field)
 );
 CREATE TABLE IF NOT EXISTS spaces (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, name TEXT NOT NULL, slug TEXT NOT NULL, created_at TEXT NOT NULL
@@ -63,6 +69,20 @@ CREATE TABLE IF NOT EXISTS issues (
   title TEXT NOT NULL, body_md TEXT NOT NULL DEFAULT '', acceptance TEXT NOT NULL DEFAULT '',
   requirement_id TEXT, created_by TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS doc_issue_links (
+  id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL,
+  doc_id TEXT NOT NULL, issue_id TEXT NOT NULL,
+  created_by TEXT NOT NULL, created_at TEXT NOT NULL,
+  UNIQUE (tenant_id, doc_id, issue_id)
+);
+CREATE INDEX IF NOT EXISTS idx_doc_issue_links_issue ON doc_issue_links(tenant_id, issue_id);
+CREATE TABLE IF NOT EXISTS import_jobs (
+  id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, actor TEXT NOT NULL,
+  name TEXT NOT NULL, source TEXT NOT NULL,
+  status TEXT NOT NULL, phase TEXT NOT NULL, message TEXT NOT NULL DEFAULT '',
+  path TEXT, error TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_import_jobs_tenant ON import_jobs(tenant_id, created_at);
 CREATE TABLE IF NOT EXISTS tool_receipts (
   tenant_id TEXT NOT NULL, actor_id TEXT NOT NULL, tool TEXT NOT NULL,
   key_kind TEXT NOT NULL, call_id TEXT NOT NULL, payload_json TEXT NOT NULL,
@@ -101,7 +121,17 @@ CREATE TABLE IF NOT EXISTS identity_links (
 CREATE INDEX IF NOT EXISTS idx_issue_comments_issue ON issue_comments(issue_id, created_at);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_docs_request ON docs(tenant_id, request_id)
   WHERE request_id IS NOT NULL;
+CREATE TABLE IF NOT EXISTS repo_links (
+  id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL,
+  provider TEXT NOT NULL, owner TEXT NOT NULL, name TEXT NOT NULL,
+  created_by TEXT NOT NULL, created_at TEXT NOT NULL,
+  UNIQUE (provider, owner, name)
+);
+CREATE INDEX IF NOT EXISTS idx_repo_links_tenant ON repo_links(tenant_id);
 """
+
+_FIELD_FIELDS = {"title", "body_md", "status", "visibility"}
+_ROLE_RANK = {"viewer": 0, "editor": 1, "admin": 2}
 
 ISSUE_TRANSITIONS = {
     "backlog": {"planned", "in-progress", "cancelled"},
@@ -157,6 +187,21 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _normalize_expiry(value: str | None) -> str | None:
+    """校验共享过期时间：None/空串表示不过期，否则必须是未来的 ISO-8601。"""
+    if value is None or not str(value).strip():
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value).strip().replace("Z", "+00:00"))
+    except ValueError as error:
+        raise TianxuanError("expires_at must be an ISO-8601 timestamp") from error
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    if parsed <= datetime.now(timezone.utc):
+        raise TianxuanError("expires_at must be in the future")
+    return parsed.astimezone(timezone.utc).isoformat()
+
+
 def _id(prefix: str) -> str:
     return f"{prefix}_{uuid.uuid4().hex}"
 
@@ -167,6 +212,31 @@ def _hash_password(password: str, salt: str) -> str:
 
 def _token_hash(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+_REPO_PROVIDERS = frozenset({"gitea", "github"})
+_REPO_SEGMENT_CONTROL = re.compile(r"[\x00-\x1f\x7f]")
+
+
+def _validate_repo_provider(value: str) -> str:
+    if not isinstance(value, str):
+        raise TianxuanError("repository provider must be a string")
+    provider = value.strip().lower()
+    if provider not in _REPO_PROVIDERS:
+        raise TianxuanError(f"unsupported repository provider: {value!r}; expected one of gitea, github")
+    return provider
+
+
+def _validate_repo_segment(value: str, label: str) -> str:
+    if not isinstance(value, str):
+        raise TianxuanError(f"repository {label} must be a string")
+    if not value or value != value.strip():
+        raise TianxuanError(f"invalid repository {label}: {value!r}")
+    if len(value) > 100:
+        raise TianxuanError(f"repository {label} is too long: {value!r}")
+    if _REPO_SEGMENT_CONTROL.search(value) or "/" in value or "\\" in value:
+        raise TianxuanError(f"invalid repository {label}: {value!r}")
+    return value
 
 
 def classify(text: str) -> list[str]:
@@ -289,7 +359,13 @@ class Tianxuan:
         self._migrate_sessions()
         self._migrate_users()
         self._migrate_docs()
+        self._migrate_doc_shares()
         self.db.commit()
+
+    def _migrate_doc_shares(self) -> None:
+        columns = {row[1] for row in self.db.execute("PRAGMA table_info(doc_shares)")}
+        if columns and "expires_at" not in columns:
+            self.db.execute("ALTER TABLE doc_shares ADD COLUMN expires_at TEXT")
 
     def _migrate_docs(self) -> None:
         columns = {row[1] for row in self.db.execute("PRAGMA table_info(docs)")}
@@ -623,6 +699,12 @@ class Tianxuan:
             raise PermissionDenied("no write access to document")
         if doc["version"] != expected_version:
             raise VersionConflict(f"expected version {expected_version}, found {doc['version']}")
+        if body_md != doc["body_md"]:
+            self._require_field_write(actor, doc, "body_md")
+        if title is not None and title != doc["title"]:
+            self._require_field_write(actor, doc, "title")
+        if status is not None and status != doc["status"]:
+            self._require_field_write(actor, doc, "status")
         version = expected_version + 1
         now = _now()
         title = title if title is not None else doc["title"]
@@ -666,9 +748,10 @@ class Tianxuan:
         if self.role_of(actor) != "admin":
             sql += (
                 " AND (visibility = 'tenant' OR created_by = ?"
-                " OR id IN (SELECT doc_id FROM doc_shares WHERE user_id = ?))"
+                " OR id IN (SELECT doc_id FROM doc_shares WHERE user_id = ?"
+                " AND (expires_at IS NULL OR expires_at > ?)))"
             )
-            args.extend([actor, actor])
+            args.extend([actor, actor, _now()])
         if kind:
             sql += " AND kind = ?"
             args.append(kind)
@@ -684,7 +767,8 @@ class Tianxuan:
         if doc["visibility"] == "tenant":
             return True
         row = self.db.execute(
-            "SELECT 1 FROM doc_shares WHERE doc_id = ? AND user_id = ?", (doc["id"], actor)
+            "SELECT 1 FROM doc_shares WHERE doc_id = ? AND user_id = ? AND (expires_at IS NULL OR expires_at > ?)",
+            (doc["id"], actor, _now()),
         ).fetchone()
         return row is not None
 
@@ -693,7 +777,9 @@ class Tianxuan:
         if doc["created_by"] == actor or self._is_admin(actor):
             return True
         row = self.db.execute(
-            "SELECT permission FROM doc_shares WHERE doc_id = ? AND user_id = ?", (doc["id"], actor)
+            "SELECT permission FROM doc_shares WHERE doc_id = ? AND user_id = ?"
+            " AND (expires_at IS NULL OR expires_at > ?)",
+            (doc["id"], actor, _now()),
         ).fetchone()
         if row is not None and row["permission"] == "write":
             return True
@@ -714,14 +800,24 @@ class Tianxuan:
         doc = self._require_tenant_doc(actor, doc_id)
         if doc["created_by"] != actor and not self._is_admin(actor):
             raise PermissionDenied("only the owner or an admin can change visibility")
+        if visibility != doc["visibility"]:
+            self._require_field_write(actor, doc, "visibility")
         self.db.execute("UPDATE docs SET visibility = ?, updated_at = ? WHERE id = ?", (visibility, _now(), doc_id))
         self._event(doc["tenant_id"], "doc.visibility_changed", actor, doc_id, {"visibility": visibility})
         return self.get_doc(doc_id)
 
     @_connection_call
-    def share_doc(self, actor: str, doc_id: str, user_id: str, permission: str = "read") -> dict[str, Any]:
+    def share_doc(
+        self,
+        actor: str,
+        doc_id: str,
+        user_id: str,
+        permission: str = "read",
+        expires_at: str | None = None,
+    ) -> dict[str, Any]:
         if permission not in {"read", "write"}:
             raise TianxuanError("permission must be read or write")
+        expiry = _normalize_expiry(expires_at)
         doc = self._require_tenant_doc(actor, doc_id)
         if doc["created_by"] != actor and not self._is_admin(actor):
             raise PermissionDenied("only the owner or an admin can share")
@@ -729,12 +825,20 @@ class Tianxuan:
         if target is None or target["tenant_id"] != doc["tenant_id"]:
             raise NotFound(f"user not found: {user_id}")
         self.db.execute(
-            "INSERT INTO doc_shares (doc_id, user_id, permission, created_by, created_at) VALUES (?, ?, ?, ?, ?) "
-            "ON CONFLICT(doc_id, user_id) DO UPDATE SET permission = excluded.permission",
-            (doc_id, user_id, permission, actor, _now()),
+            "INSERT INTO doc_shares (doc_id, user_id, permission, created_by, created_at, expires_at) "
+            "VALUES (?, ?, ?, ?, ?, ?) "
+            "ON CONFLICT(doc_id, user_id) DO UPDATE SET permission = excluded.permission, "
+            "expires_at = excluded.expires_at, created_at = excluded.created_at",
+            (doc_id, user_id, permission, actor, _now(), expiry),
         )
-        self._event(doc["tenant_id"], "doc.shared", actor, doc_id, {"user_id": user_id, "permission": permission})
-        return {"doc_id": doc_id, "user_id": user_id, "permission": permission}
+        self._event(
+            doc["tenant_id"],
+            "doc.shared",
+            actor,
+            doc_id,
+            {"user_id": user_id, "permission": permission, "expires_at": expiry},
+        )
+        return {"doc_id": doc_id, "user_id": user_id, "permission": permission, "expires_at": expiry}
 
     @_connection_call
     def unshare_doc(self, actor: str, doc_id: str, user_id: str) -> dict[str, Any]:
@@ -752,9 +856,66 @@ class Tianxuan:
         if doc["created_by"] != actor and not self._is_admin(actor):
             raise PermissionDenied("only the owner or an admin can list shares")
         rows = self.db.execute(
-            "SELECT user_id, permission, created_at FROM doc_shares WHERE doc_id = ? ORDER BY created_at", (doc_id,)
+            "SELECT user_id, permission, created_at, expires_at FROM doc_shares WHERE doc_id = ?"
+            " AND (expires_at IS NULL OR expires_at > ?) ORDER BY created_at",
+            (doc_id, _now()),
         ).fetchall()
         return [dict(row) for row in rows]
+
+    # ---------- 文曲：文档字段级权限 ----------
+
+    @_connection_call
+    def set_doc_field_permission(
+        self,
+        actor: str,
+        doc_id: str,
+        field: str,
+        min_role: str,
+    ) -> dict[str, Any]:
+        if field not in _FIELD_FIELDS:
+            raise TianxuanError(f"unsupported field: {field}")
+        if min_role not in _ROLE_RANK:
+            raise TianxuanError("min_role must be viewer, editor or admin")
+        doc = self._require_tenant_doc(actor, doc_id)
+        if doc["created_by"] != actor and not self._is_admin(actor):
+            raise PermissionDenied("only the owner or an admin can set field permissions")
+        now = _now()
+        self.db.execute(
+            "INSERT INTO doc_field_permissions (doc_id, field, min_role, updated_by, updated_at) "
+            "VALUES (?, ?, ?, ?, ?) "
+            "ON CONFLICT(doc_id, field) DO UPDATE SET min_role = excluded.min_role, "
+            "updated_by = excluded.updated_by, updated_at = excluded.updated_at",
+            (doc_id, field, min_role, actor, now),
+        )
+        self._event(
+            doc["tenant_id"],
+            "doc.field_permission_set",
+            actor,
+            doc_id,
+            {"field": field, "min_role": min_role},
+        )
+        return {"doc_id": doc_id, "field": field, "min_role": min_role, "updated_at": now}
+
+    @_connection_call
+    def list_doc_field_permissions(self, actor: str, doc_id: str) -> list[dict[str, Any]]:
+        doc = self.get_doc_shared(actor, doc_id, write=True)
+        rows = self.db.execute(
+            "SELECT field, min_role, updated_by, updated_at FROM doc_field_permissions WHERE doc_id = ? ORDER BY field",
+            (doc["id"],),
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+    def _require_field_write(self, actor: str, doc: dict[str, Any], field: str) -> None:
+        if self._is_admin(actor):
+            return
+        row = self.db.execute(
+            "SELECT min_role FROM doc_field_permissions WHERE doc_id = ? AND field = ?",
+            (doc["id"], field),
+        ).fetchone()
+        if row is None:
+            return
+        if _ROLE_RANK.get(self.role_of(actor), 0) < _ROLE_RANK.get(str(row["min_role"]), 0):
+            raise PermissionDenied(f"{field} requires {row['min_role']} role")
 
     def ai_view(self, doc_id: str) -> dict[str, Any]:
         doc = self.get_doc(doc_id)
@@ -958,6 +1119,179 @@ class Tianxuan:
             args.append(requirement_id)
         rows = self.db.execute(sql + " ORDER BY number", args).fetchall()
         return [dict(row) for row in rows]
+
+    # ---------- 文曲/司南：文档 ↔ 工单关联 ----------
+
+    @_connection_call
+    def link_doc_issue(self, actor: str, doc_id: str, issue_id: str) -> dict[str, Any]:
+        """把文档与工单双向关联；重复关联幂等返回已有记录。"""
+        self._require_editor(actor)
+        self.get_doc_shared(actor, doc_id, write=True)
+        issue = self._require_tenant_issue(actor, issue_id)
+        tenant_id = self._tenant_of(actor)
+        existing = self.db.execute(
+            "SELECT * FROM doc_issue_links WHERE tenant_id = ? AND doc_id = ? AND issue_id = ?",
+            (tenant_id, doc_id, issue_id),
+        ).fetchone()
+        if existing is not None:
+            return dict(existing)
+        link_id = _id("dil")
+        now = _now()
+        try:
+            self.db.execute(
+                "INSERT INTO doc_issue_links (id, tenant_id, doc_id, issue_id, created_by, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                (link_id, tenant_id, doc_id, issue["id"], actor, now),
+            )
+        except sqlite3.IntegrityError as error:
+            row = self.db.execute(
+                "SELECT * FROM doc_issue_links WHERE tenant_id = ? AND doc_id = ? AND issue_id = ?",
+                (tenant_id, doc_id, issue_id),
+            ).fetchone()
+            if row is None:
+                raise TianxuanError("failed to link document and issue") from error
+            return dict(row)
+        self._event(
+            tenant_id,
+            "doc.issue_linked",
+            actor,
+            f"{doc_id}:{issue['id']}",
+            {"doc_id": doc_id, "issue_id": issue["id"]},
+        )
+        return {
+            "id": link_id,
+            "tenant_id": tenant_id,
+            "doc_id": doc_id,
+            "issue_id": issue["id"],
+            "created_by": actor,
+            "created_at": now,
+        }
+
+    @_connection_call
+    def unlink_doc_issue(self, actor: str, doc_id: str, issue_id: str) -> dict[str, Any]:
+        self._require_editor(actor)
+        self.get_doc_shared(actor, doc_id, write=True)
+        tenant_id = self._tenant_of(actor)
+        row = self.db.execute(
+            "SELECT id FROM doc_issue_links WHERE tenant_id = ? AND doc_id = ? AND issue_id = ?",
+            (tenant_id, doc_id, issue_id),
+        ).fetchone()
+        if row is None:
+            raise NotFound(f"document is not linked to issue: {issue_id}")
+        self.db.execute("DELETE FROM doc_issue_links WHERE id = ?", (row["id"],))
+        self._event(
+            tenant_id,
+            "doc.issue_unlinked",
+            actor,
+            f"{doc_id}:{issue_id}",
+            {"doc_id": doc_id, "issue_id": issue_id},
+        )
+        return {"doc_id": doc_id, "issue_id": issue_id, "deleted": True}
+
+    # ---------- 多宝：仓库导入任务 ----------
+
+    @_connection_call
+    def create_import_job(self, actor: str, name: str, source: str) -> dict[str, Any]:
+        self._require_editor(actor)
+        job_id = _id("imp")
+        now = _now()
+        self.db.execute(
+            "INSERT INTO import_jobs (id, tenant_id, actor, name, source, status, phase, message, "
+            "created_at, updated_at) VALUES (?, ?, ?, ?, ?, 'queued', 'queued', '', ?, ?)",
+            (job_id, self._tenant_of(actor), actor, name, source, now, now),
+        )
+        self._event(self._tenant_of(actor), "repo.import_queued", actor, job_id, {"name": name})
+        return self.get_import_job(actor, job_id)
+
+    @_connection_call
+    def update_import_job(
+        self,
+        job_id: str,
+        *,
+        status: str | None = None,
+        phase: str | None = None,
+        message: str | None = None,
+        path: str | None = None,
+        error: str | None = None,
+    ) -> dict[str, Any]:
+        self.get_import_job_unscoped(job_id)
+        fields: dict[str, Any] = {}
+        if status is not None:
+            fields["status"] = status
+        if phase is not None:
+            fields["phase"] = phase
+        if message is not None:
+            fields["message"] = message
+        if path is not None:
+            fields["path"] = path
+        if error is not None:
+            fields["error"] = error
+        if fields:
+            fields["updated_at"] = _now()
+            assignments = ", ".join(f"{key} = ?" for key in fields)
+            self.db.execute(
+                f"UPDATE import_jobs SET {assignments} WHERE id = ?",
+                (*fields.values(), job_id),
+            )
+        return self.get_import_job_unscoped(job_id)
+
+    @_connection_call
+    def get_import_job(self, actor: str, job_id: str) -> dict[str, Any]:
+        job = self.get_import_job_unscoped(job_id)
+        if job["tenant_id"] != self._tenant_of(actor):
+            raise NotFound(f"import job not found: {job_id}")
+        return job
+
+    @_connection_call
+    def get_import_job_unscoped(self, job_id: str) -> dict[str, Any]:
+        row = self.db.execute("SELECT * FROM import_jobs WHERE id = ?", (job_id,)).fetchone()
+        if row is None:
+            raise NotFound(f"import job not found: {job_id}")
+        return dict(row)
+
+    @_connection_call
+    def list_import_jobs(self, actor: str, limit: int = 20) -> list[dict[str, Any]]:
+        limit = max(1, min(int(limit), 100))
+        rows = self.db.execute(
+            "SELECT * FROM import_jobs WHERE tenant_id = ? ORDER BY created_at DESC LIMIT ?",
+            (self._tenant_of(actor), limit),
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+    @_connection_call
+    def list_doc_issues(self, actor: str, doc_id: str) -> list[dict[str, Any]]:
+        self.get_doc_shared(actor, doc_id)
+        tenant_id = self._tenant_of(actor)
+        rows = self.db.execute(
+            "SELECT i.id, i.number, i.title, i.status, i.priority, i.type, i.requirement_id, i.updated_at "
+            "FROM issues i JOIN doc_issue_links l ON l.issue_id = i.id AND l.tenant_id = i.tenant_id "
+            "WHERE l.tenant_id = ? AND l.doc_id = ? ORDER BY i.number",
+            (tenant_id, doc_id),
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+    @_connection_call
+    def list_issue_docs(self, actor: str, issue_id: str) -> list[dict[str, Any]]:
+        issue = self._require_tenant_issue(actor, issue_id)
+        rows = self.db.execute(
+            "SELECT doc_id FROM doc_issue_links WHERE tenant_id = ? AND issue_id = ? ORDER BY created_at, id",
+            (issue["tenant_id"], issue_id),
+        ).fetchall()
+        documents: list[dict[str, Any]] = []
+        for row in rows:
+            try:
+                document = self.get_doc_shared(actor, str(row["doc_id"]))
+            except (NotFound, PermissionDenied):
+                continue
+            documents.append({
+                "id": document["id"],
+                "title": document["title"],
+                "kind": document["kind"],
+                "status": document["status"],
+                "version": document["version"],
+                "updated_at": document["updated_at"],
+            })
+        return documents
 
     # ---------- 司南：工单评论 ----------
 
@@ -1411,6 +1745,19 @@ class Tianxuan:
             raise NotFound(f"external identity is not linked: {provider}/{subject}")
         return dict(row)
 
+    @_connection_call
+    def identity_subject_for_user(self, user_id: str, provider: str) -> str:
+        """返回用户绑定的外部身份 subject（如 Gitea 用户名）；未绑定抛 ``NotFound``。"""
+        if not isinstance(provider, str) or not provider.strip():
+            raise TianxuanError("provider must be a non-empty string")
+        row = self.db.execute(
+            "SELECT subject FROM identity_links WHERE provider = ? AND user_id = ? ORDER BY updated_at DESC LIMIT 1",
+            (provider.strip(), user_id),
+        ).fetchone()
+        if row is None:
+            raise NotFound(f"no {provider} identity linked to user: {user_id}")
+        return str(row["subject"])
+
     # ---------- 事件与 AI 工具 ----------
 
     def _tenant_of(self, actor: str) -> str:
@@ -1464,6 +1811,101 @@ class Tianxuan:
 
     def prune_all_events(self, older_than_days: int = 90, type_prefix: str | None = None) -> int:
         return self._delete_events(None, older_than_days, type_prefix)
+
+    # ------------------------------------------------------------------
+    # 仓库绑定（webhook 与仓库元数据的租户映射）
+    # ------------------------------------------------------------------
+    @_connection_call
+    def bind_repo(self, actor: str, provider: str, owner: str, name: str) -> dict[str, Any]:
+        """把外部仓库绑定到当前租户；同一 ``provider/owner/name`` 全局唯一。"""
+        if self.role_of(actor) != "admin":
+            raise PermissionDenied("only admin can bind repositories")
+        provider = _validate_repo_provider(provider)
+        owner = _validate_repo_segment(owner, "owner")
+        name = _validate_repo_segment(name, "name")
+        tenant_id = self._tenant_of(actor)
+        link_id = _id("repo")
+        try:
+            self.db.execute(
+                "INSERT INTO repo_links (id, tenant_id, provider, owner, name, created_by, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (link_id, tenant_id, provider, owner, name, actor, _now()),
+            )
+        except sqlite3.IntegrityError as error:
+            raise TianxuanError(f"repository is already linked: {provider}/{owner}/{name}") from error
+        self._event(
+            tenant_id,
+            "repo.linked",
+            actor,
+            f"{provider}/{owner}/{name}",
+            {"provider": provider, "owner": owner, "name": name},
+        )
+        return {
+            "id": link_id,
+            "tenant_id": tenant_id,
+            "provider": provider,
+            "owner": owner,
+            "name": name,
+            "created_by": actor,
+        }
+
+    @_connection_call
+    def list_repo_links(self, actor: str) -> list[dict[str, Any]]:
+        tenant_id = self._tenant_of(actor)
+        rows = self.db.execute(
+            "SELECT id, provider, owner, name, created_by, created_at FROM repo_links "
+            "WHERE tenant_id = ? ORDER BY created_at, id",
+            (tenant_id,),
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+    @_connection_call
+    def unbind_repo(self, actor: str, link_id: str) -> dict[str, Any]:
+        if self.role_of(actor) != "admin":
+            raise PermissionDenied("only admin can unbind repositories")
+        tenant_id = self._tenant_of(actor)
+        row = self.db.execute(
+            "SELECT provider, owner, name FROM repo_links WHERE id = ? AND tenant_id = ?",
+            (link_id, tenant_id),
+        ).fetchone()
+        if row is None:
+            raise NotFound(f"repository link not found: {link_id}")
+        target = f"{row['provider']}/{row['owner']}/{row['name']}"
+        self.db.execute("DELETE FROM repo_links WHERE id = ? AND tenant_id = ?", (link_id, tenant_id))
+        self._event(tenant_id, "repo.unlinked", actor, target, {"provider": row["provider"]})
+        return {"id": link_id, "deleted": True}
+
+    @_connection_call
+    def tenant_for_repo(self, provider: str, owner: str, name: str) -> str | None:
+        """供 webhook 解析仓库所属租户；未绑定返回 ``None``。"""
+        provider = _validate_repo_provider(provider)
+        owner = _validate_repo_segment(owner, "owner")
+        name = _validate_repo_segment(name, "name")
+        row = self.db.execute(
+            "SELECT tenant_id FROM repo_links WHERE provider = ? AND owner = ? AND name = ?",
+            (provider, owner, name),
+        ).fetchone()
+        return str(row["tenant_id"]) if row is not None else None
+
+    @_connection_call
+    def record_repo_event(self, tenant_id: str, event_type: str, target: str, payload: dict[str, Any]) -> None:
+        """记录来自 Git 服务的仓库事件；webhook 已校验签名并由调用方解析租户。"""
+        if not isinstance(event_type, str) or not event_type.startswith("repo."):
+            raise TianxuanError(f"invalid repository event type: {event_type!r}")
+        self._event(tenant_id, event_type, "gitea:webhook", target, payload)
+
+    @_connection_call
+    def record_actor_event(self, actor: str, event_type: str, target: str, payload: dict[str, Any]) -> None:
+        """以操作者身份记录事件；供合入队列等宿主组件写入审计回执。"""
+        if not isinstance(event_type, str) or not event_type:
+            raise TianxuanError("event type must be a non-empty string")
+        self._event(self._tenant_of(actor), event_type, actor, target, payload)
+
+    @_connection_call
+    def ping(self) -> bool:
+        """轻量健康检查：确认数据库连接仍可读。"""
+        row = self.db.execute("SELECT 1").fetchone()
+        return row is not None
 
     def _delete_events(self, tenant_id: str | None, older_than_days: int, type_prefix: str | None) -> int:
         days = max(0.0, float(older_than_days))

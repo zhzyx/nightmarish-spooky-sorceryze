@@ -10,19 +10,15 @@ import {
   type IssueRecord,
   type IssueStatus,
 } from "@/lib/data";
+import { formatMessage } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 type BoardView = "board" | "list";
 
-const projects = ["全部项目", "文曲", "司南", "多宝", "天璇"];
-
-const priorityLabel: Record<IssuePriority, string> = {
-  P0: "最高",
-  P1: "高",
-  P2: "中",
-};
+const ALL_PROJECTS = "__all__";
 
 function issueMatches(issue: IssueRecord, query: string, project: string): boolean {
-  const matchesProject = project === "全部项目" || issue.project === project;
+  const matchesProject = project === ALL_PROJECTS || issue.project === project;
   const haystack = `${issue.key} ${issue.title} ${issue.project} ${issue.tags.join(" ")}`.toLowerCase();
   return matchesProject && haystack.includes(query.trim().toLowerCase());
 }
@@ -32,10 +28,41 @@ export interface IssueBoardProps {
 }
 
 export function IssueBoard({ initialIssues }: IssueBoardProps) {
+  const { t } = useI18n();
+  const projects = [
+    { value: ALL_PROJECTS, label: t("board.allProjects") },
+    { value: "文曲", label: "文曲" },
+    { value: "司南", label: "司南" },
+    { value: "多宝", label: "多宝" },
+    { value: "天璇", label: "天璇" },
+  ];
+  const priorityLabels: Record<IssuePriority, string> = {
+    P0: t("board.priorityHighest"),
+    P1: t("board.priorityHigh"),
+    P2: t("board.priorityMedium"),
+  };
+  const columnLabels: Record<string, string> = {
+    backlog: t("issues.colBacklog"),
+    planned: t("issues.colPlanned"),
+    progress: t("issues.colProgress"),
+    review: t("issues.colReview"),
+    done: t("issues.colDone"),
+    cancelled: t("issues.colCancelled"),
+  };
+  const columnHints: Record<string, string> = {
+    backlog: t("issues.colBacklogHint"),
+    planned: t("issues.colPlannedHint"),
+    progress: t("issues.colProgressHint"),
+    review: t("issues.colReviewHint"),
+    done: t("issues.colDoneHint"),
+    cancelled: t("issues.colCancelledHint"),
+  };
+  const columnLabel = (id: string): string => columnLabels[id] ?? id;
+  const columnHint = (id: string): string => columnHints[id] ?? "";
   const [items, setItems] = useState<IssueRecord[]>(initialIssues);
   const [view, setView] = useState<BoardView>("board");
   const [query, setQuery] = useState("");
-  const [project, setProject] = useState("全部项目");
+  const [project, setProject] = useState(ALL_PROJECTS);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverStatus, setDragOverStatus] = useState<IssueStatus | null>(null);
@@ -59,7 +86,7 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
 
   function moveIssue(id: string, status: IssueStatus) {
     setItems((current) =>
-      current.map((issue) => (issue.id === id ? { ...issue, status, updated: "刚刚" } : issue)),
+      current.map((issue) => (issue.id === id ? { ...issue, status, updated: t("board.justNow") } : issue)),
     );
     setDraggingId(null);
     setDragOverStatus(null);
@@ -83,7 +110,7 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
   return (
     <div className="issue-board-shell">
       <div className="board-toolbar">
-        <div className="segmented-control" role="group" aria-label="工单视图">
+        <div className="segmented-control" role="group" aria-label={t("board.viewAria")}>
           <button
             aria-pressed={view === "board"}
             className={view === "board" ? "is-active" : ""}
@@ -91,7 +118,7 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
             type="button"
           >
             <Icon name="grid" size={14} />
-            看板
+            {t("board.board")}
           </button>
           <button
             aria-pressed={view === "list"}
@@ -100,7 +127,7 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
             type="button"
           >
             <Icon name="list" size={15} />
-            列表
+            {t("board.list")}
           </button>
         </div>
 
@@ -108,20 +135,20 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
           <label className="field-search">
             <Icon name="search" size={15} />
             <input
-              aria-label="搜索工单"
+              aria-label={t("board.searchAria")}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="搜索编号、标题或标签"
+              placeholder={t("board.searchPlaceholder")}
               type="search"
               value={query}
             />
           </label>
           <label className="select-field">
             <Icon name="filter" size={14} />
-            <span className="sr-only">按项目筛选</span>
+            <span className="sr-only">{t("board.filterProject")}</span>
             <select onChange={(event) => setProject(event.target.value)} value={project}>
-              {projects.map((name) => (
-                <option key={name} value={name}>
-                  {name}
+              {projects.map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
                 </option>
               ))}
             </select>
@@ -133,14 +160,14 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
       <div className="board-caption">
         <span>
           <span className="live-dot" aria-hidden="true" />
-          本地演示数据 · 拖动卡片可更新状态
+          {t("board.demoData")}
         </span>
         <span>
-          {filtered.length} / {items.length} 个工单
+          {formatMessage(t("board.count"), { shown: filtered.length, total: items.length })}
           {blockedCount > 0 ? (
             <span className="caption-alert">
               <Icon name="alert" size={12} />
-              {blockedCount} 个阻塞
+              {formatMessage(t("board.blocked"), { count: blockedCount })}
             </span>
           ) : null}
         </span>
@@ -148,18 +175,18 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
 
       {filtered.length === 0 ? (
         <EmptyState
-          actionLabel="清除筛选"
+          actionLabel={t("board.clear")}
           compact
-          description="换一个项目、缩短关键词，或清除筛选查看全部工单。"
+          description={t("board.emptyDesc")}
           eyebrow="SINAN · NO MATCH"
           onAction={() => {
             setQuery("");
-            setProject("全部项目");
+            setProject(ALL_PROJECTS);
           }}
-          title="没有匹配的工单"
+          title={t("board.emptyTitle")}
         />
       ) : view === "board" ? (
-        <div className="kanban" role="region" aria-label="工单看板">
+        <div className="kanban" role="region" aria-label={t("board.boardAria")}>
           {issueColumns.map((column) => {
             const columnIssues = filtered.filter((issue) => issue.status === column.id);
             return (
@@ -177,16 +204,16 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
                 <header className={`kanban-head status-${column.id}`}>
                   <div className="kanban-head-title">
                     <span className="status-dot" aria-hidden="true" />
-                    <h2 id={`column-${column.id}`}>{column.label}</h2>
+                    <h2 id={`column-${column.id}`}>{columnLabel(column.id)}</h2>
                     <span className="column-count">{columnIssues.length}</span>
                   </div>
-                  <span className="column-hint">{column.hint}</span>
+                  <span className="column-hint">{columnHint(column.id)}</span>
                 </header>
 
                 <div className="kanban-cards">
                   {columnIssues.map((issue) => (
                     <button
-                      aria-label={`${issue.key} ${issue.title}，打开详情`}
+                      aria-label={formatMessage(t("board.openAria"), { key: issue.key, title: issue.title })}
                       className={`issue-card${draggingId === issue.id ? " is-dragging" : ""}${issue.blocked ? " is-blocked" : ""}`}
                       draggable
                       key={issue.id}
@@ -207,14 +234,14 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
                         <span className="mono-key">{issue.key}</span>
                         <span className={`priority priority-${issue.priority.toLowerCase()}`}>
                           {issue.priority}
-                          <span className="priority-label">{priorityLabel[issue.priority]}</span>
+                          <span className="priority-label">{priorityLabels[issue.priority]}</span>
                         </span>
                       </span>
                       <span className="issue-card-title">{issue.title}</span>
                       {issue.blocked ? (
                         <span className="blocked-note">
                           <Icon name="alert" size={12} />
-                          等待判断 · 状态迁移边界
+                          {t("board.blockedNote")}
                         </span>
                       ) : null}
                       <span className="issue-tags">
@@ -249,7 +276,7 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
                   {columnIssues.length === 0 ? (
                     <div className="column-empty">
                       <span aria-hidden="true">·</span>
-                      暂无工单
+                      {t("board.noIssues")}
                     </div>
                   ) : null}
                 </div>
@@ -258,14 +285,14 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
           })}
         </div>
       ) : (
-        <section className="issue-list-panel" aria-label="工单列表">
+        <section className="issue-list-panel" aria-label={t("board.listAria")}>
           <header className="issue-list-head">
-            <span>编号 / 标题</span>
-            <span>项目</span>
-            <span>优先级</span>
-            <span>状态</span>
-            <span>负责人</span>
-            <span>更新</span>
+            <span>{t("board.colKeyTitle")}</span>
+            <span>{t("board.colProject")}</span>
+            <span>{t("board.colPriority")}</span>
+            <span>{t("board.colStatus")}</span>
+            <span>{t("board.colAssignee")}</span>
+            <span>{t("board.colUpdated")}</span>
           </header>
           {filtered.map((issue) => (
             <button
@@ -291,7 +318,7 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
               </span>
               <span className={`issue-status issue-status-${issue.status}`}>
                 <span className="status-dot" aria-hidden="true" />
-                {issueColumns.find((column) => column.id === issue.status)?.label}
+                {columnLabel(issue.status)}
               </span>
               <span className="list-assignee">
                 <span className={`avatar avatar-xs avatar-${issue.assigneeTone}`} aria-hidden="true">
@@ -308,7 +335,7 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
       {selected ? (
         <div className="drawer-layer">
           <button
-            aria-label="关闭工单详情"
+            aria-label={t("board.closeDetails")}
             className="drawer-scrim"
             onClick={() => setSelectedId(null)}
             type="button"
@@ -321,12 +348,12 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
                 {selected.blocked ? (
                   <span className="blocked-chip">
                     <Icon name="alert" size={12} />
-                    阻塞
+                    {t("board.blockedChip")}
                   </span>
                 ) : null}
               </div>
               <button
-                aria-label="关闭详情"
+                aria-label={t("board.close")}
                 className="icon-button"
                 onClick={() => setSelectedId(null)}
                 type="button"
@@ -339,16 +366,16 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
               <h2 id="issue-drawer-title">{selected.title}</h2>
               <div className="drawer-fields">
                 <label className="drawer-field">
-                  <span>状态</span>
+                  <span>{t("board.status")}</span>
                   <span className="select-field">
                     <select
-                      aria-label="修改工单状态"
+                      aria-label={t("board.changeStatus")}
                       onChange={(event) => moveIssue(selected.id, event.target.value as IssueStatus)}
                       value={selected.status}
                     >
                       {issueColumns.map((column) => (
                         <option key={column.id} value={column.id}>
-                          {column.label}
+                          {columnLabel(column.id)}
                         </option>
                       ))}
                     </select>
@@ -356,11 +383,11 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
                   </span>
                 </label>
                 <div className="drawer-field">
-                  <span>项目</span>
+                  <span>{t("board.colProject")}</span>
                   <strong>{selected.project}</strong>
                 </div>
                 <div className="drawer-field">
-                  <span>负责人</span>
+                  <span>{t("board.colAssignee")}</span>
                   <strong className="drawer-person">
                     <span className={`avatar avatar-xs avatar-${selected.assigneeTone}`} aria-hidden="true">
                       {selected.assignee.slice(0, 1)}
@@ -369,20 +396,20 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
                   </strong>
                 </div>
                 <div className="drawer-field">
-                  <span>更新</span>
+                  <span>{t("board.colUpdated")}</span>
                   <strong>{selected.updated}</strong>
                 </div>
               </div>
 
               <section className="drawer-section">
                 <p className="section-kicker">CONTEXT</p>
-                <h3>说明</h3>
+                <h3>{t("board.description")}</h3>
                 <p>{selected.detail}</p>
               </section>
 
               <section className="drawer-section">
                 <p className="section-kicker">ACCEPTANCE</p>
-                <h3>验收条件</h3>
+                <h3>{t("board.acceptance")}</h3>
                 <ul className="criteria-list">
                   {selected.criteria.map((criterion) => (
                     <li key={criterion}>
@@ -397,14 +424,14 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
                 {selected.docId ? (
                   <Link href={`/docs/${selected.docId}`}>
                     <Icon name="docs" size={15} />
-                    关联设计文档
+                    {t("board.linkedDoc")}
                     <Icon name="arrowRight" size={13} />
                   </Link>
                 ) : null}
                 {selected.repoId ? (
                   <Link href="/repos">
                     <Icon name="repos" size={15} />
-                    关联仓库
+                    {t("board.linkedRepo")}
                     <Icon name="arrowRight" size={13} />
                   </Link>
                 ) : null}
@@ -412,7 +439,7 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
             </div>
 
             <footer className="drawer-foot">
-              <span className="drawer-demo-note">状态变更仅保存在当前页面</span>
+              <span className="drawer-demo-note">{t("board.demoNote")}</span>
               <button
                 className="btn btn-primary btn-sm"
                 disabled={selected.status === "done"}
@@ -420,7 +447,7 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
                 type="button"
               >
                 <Icon name="check" size={15} />
-                {selected.status === "done" ? "已完成" : "标记完成"}
+                {selected.status === "done" ? t("issues.colDone") : t("board.markDone")}
               </button>
             </footer>
           </aside>

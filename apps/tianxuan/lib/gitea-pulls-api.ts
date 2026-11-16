@@ -1,3 +1,5 @@
+import { authHeaders } from "@/lib/auth";
+
 /**
  * 多宝 Gitea Pull Request API 客户端。
  *
@@ -39,6 +41,46 @@ export interface ApiPull {
   html_url: string;
   head: string;
   base: string;
+  head_sha?: string;
+  base_sha?: string;
+}
+
+/** 评审事件，对应 Gitea reviews 接口的 event。 */
+export type ReviewEvent = "APPROVED" | "REQUEST_CHANGES" | "COMMENT";
+
+/** `GET /api/v1/repos/{owner}/{name}/pulls/{number}/reviews` 返回的单条评审。 */
+export interface ApiReview {
+  id: number;
+  state: string;
+  body: string;
+  user: string;
+  submitted_at: string;
+}
+
+/** `GET /api/v1/repos/{owner}/{name}/releases` 返回的单个发布。 */
+export interface ApiRelease {
+  id: number;
+  tag_name: string;
+  name: string;
+  body: string;
+  draft: boolean;
+  prerelease: boolean;
+  created_at: string;
+  html_url: string;
+}
+
+/** 读取仓库发布列表。 */
+export async function fetchReleases(
+  actor: string,
+  owner: string,
+  repo: string,
+): Promise<ApiRelease[]> {
+  const response = await fetch(`${apiBase()}${repoPath(owner, repo)}/releases`, {
+    headers: authHeaders(actor),
+    cache: "no-store",
+  });
+  const body = await readJson<{ releases?: ApiRelease[] }>(response, "releases request");
+  return body.releases ?? [];
 }
 
 /** 创建 Pull Request 的请求体。 */
@@ -73,23 +115,25 @@ export async function fetchBranches(
   repo: string,
 ): Promise<ApiBranch[]> {
   const response = await fetch(`${apiBase()}${repoPath(owner, repo)}/branches`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   const body = await readJson<{ branches?: ApiBranch[] }>(response, "branches request");
   return body.branches ?? [];
 }
 
-/** 读取指定状态的 Pull Request。 */
+/** 读取指定状态、分页的 Pull Request。 */
 export async function fetchPulls(
   actor: string,
   owner: string,
   repo: string,
   state: PullState,
+  page = 1,
+  limit = 30,
 ): Promise<ApiPull[]> {
-  const query = `?state=${encodeURIComponent(state)}`;
+  const query = `?state=${encodeURIComponent(state)}&page=${encodeURIComponent(String(page))}&limit=${encodeURIComponent(String(limit))}`;
   const response = await fetch(`${apiBase()}${repoPath(owner, repo)}/pulls${query}`, {
-    headers: { "X-Actor": actor },
+    headers: authHeaders(actor),
     cache: "no-store",
   });
   const body = await readJson<{ pulls?: ApiPull[] }>(response, "pulls request");
@@ -105,7 +149,7 @@ export async function createPull(
 ): Promise<ApiPull> {
   const response = await fetch(`${apiBase()}${repoPath(owner, repo)}/pulls`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "X-Actor": actor },
+    headers: { "Content-Type": "application/json", ...authHeaders(actor) },
     body: JSON.stringify({
       title: payload.title,
       head: payload.head,
@@ -129,10 +173,99 @@ export async function mergePull(
     `${apiBase()}${repoPath(owner, repo)}/pulls/${encodeURIComponent(String(number))}/merge`,
     {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Actor": actor },
+      headers: { "Content-Type": "application/json", ...authHeaders(actor) },
       body: JSON.stringify({ method }),
       cache: "no-store",
     },
   );
   return readJson<ApiMergeResult>(response, "merge pull request");
+}
+
+/** 读取指定 Pull Request 的评审列表。 */
+export async function fetchReviews(
+  actor: string,
+  owner: string,
+  repo: string,
+  number: number,
+): Promise<ApiReview[]> {
+  const response = await fetch(
+    `${apiBase()}${repoPath(owner, repo)}/pulls/${encodeURIComponent(String(number))}/reviews`,
+    { headers: authHeaders(actor), cache: "no-store" },
+  );
+  const body = await readJson<{ reviews?: ApiReview[] }>(response, "reviews request");
+  return body.reviews ?? [];
+}
+
+/** 提交一次评审（批准 / 要求修改 / 评论）。 */
+export async function createReview(
+  actor: string,
+  owner: string,
+  repo: string,
+  number: number,
+  event: ReviewEvent,
+  body = "",
+): Promise<ApiReview> {
+  const response = await fetch(
+    `${apiBase()}${repoPath(owner, repo)}/pulls/${encodeURIComponent(String(number))}/reviews`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...authHeaders(actor) },
+      body: JSON.stringify({ event, body }),
+      cache: "no-store",
+    },
+  );
+  return readJson<ApiReview>(response, "create review");
+}
+
+/** 创建发布的请求体。 */
+export interface CreateReleasePayload {
+  tag_name: string;
+  name?: string;
+  body?: string;
+  draft?: boolean;
+  prerelease?: boolean;
+}
+
+/** 创建仓库发布。 */
+export async function createRelease(
+  actor: string,
+  owner: string,
+  repo: string,
+  payload: CreateReleasePayload,
+): Promise<ApiRelease> {
+  const response = await fetch(`${apiBase()}${repoPath(owner, repo)}/releases`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(actor) },
+    body: JSON.stringify(payload),
+    cache: "no-store",
+  });
+  return readJson<ApiRelease>(response, "create release");
+}
+
+/** 更新发布的请求体。 */
+export interface UpdateReleasePayload {
+  name?: string;
+  body?: string;
+  draft?: boolean;
+  prerelease?: boolean;
+}
+
+/** 更新仓库发布。 */
+export async function updateRelease(
+  actor: string,
+  owner: string,
+  repo: string,
+  releaseId: number,
+  payload: UpdateReleasePayload,
+): Promise<ApiRelease> {
+  const response = await fetch(
+    `${apiBase()}${repoPath(owner, repo)}/releases/${encodeURIComponent(String(releaseId))}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", ...authHeaders(actor) },
+      body: JSON.stringify(payload),
+      cache: "no-store",
+    },
+  );
+  return readJson<ApiRelease>(response, "update release");
 }

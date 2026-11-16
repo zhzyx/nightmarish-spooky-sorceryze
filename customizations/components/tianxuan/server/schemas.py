@@ -63,6 +63,55 @@ class RepoCreateRequest(BaseModel):
     default_branch: str = "main"
 
 
+class RepoLinkRequest(BaseModel):
+    """把外部仓库绑定到当前租户。"""
+
+    provider: str = "gitea"
+    owner: str
+    name: str
+
+
+class GitBranchCreateRequest(BaseModel):
+    """在本地裸仓库中基于已有提交创建分支。"""
+
+    name: str
+    start: str = "HEAD"
+
+
+class GitTagCreateRequest(BaseModel):
+    """在本地裸仓库中创建轻量或附注标签。"""
+
+    name: str
+    ref: str = "HEAD"
+    message: str = ""
+
+
+class GitImportRequest(BaseModel):
+    """把远端或本机仓库以镜像方式导入多宝。"""
+
+    name: str
+    source: str
+
+
+class ReleaseCreateRequest(BaseModel):
+    """在 Gitea 仓库中创建发布。"""
+
+    tag_name: str
+    name: str = ""
+    body: str = ""
+    draft: bool = False
+    prerelease: bool = False
+
+
+class ReleaseUpdateRequest(BaseModel):
+    """更新 Gitea 发布的可编辑字段。"""
+
+    name: str | None = None
+    body: str | None = None
+    draft: bool | None = None
+    prerelease: bool | None = None
+
+
 class PullRequestCreateRequest(BaseModel):
     """在 Gitea 仓库内创建 Pull Request。"""
 
@@ -78,6 +127,22 @@ class PullRequestMergeRequest(BaseModel):
     method: str = "merge"
 
 
+class PullRequestReviewRequest(BaseModel):
+    """提交一次 Pull Request 评审。"""
+
+    event: str
+    body: str = ""
+
+
+class CommitStatusRequest(BaseModel):
+    """写入一次 Gitea 提交状态（CI 回写）。"""
+
+    state: str
+    context: str = "duobao"
+    description: str = ""
+    target_url: str = ""
+
+
 class MergeQueueCreateRequest(BaseModel):
     """多宝合入队列候选。"""
 
@@ -86,6 +151,8 @@ class MergeQueueCreateRequest(BaseModel):
     target: str
     title: str = ""
     priority: int = 0
+    pr_number: int | None = None
+    issue_ref: str = ""
 
 
 class DocCreateRequest(BaseModel):
@@ -143,11 +210,19 @@ class DocVisibilityRequest(BaseModel):
     visibility: str
 
 
+class FieldPermissionRequest(BaseModel):
+    """设置文档字段写入所需的最低角色。"""
+
+    field: str
+    min_role: str
+
+
 class DocShareRequest(BaseModel):
-    """把私有文档共享给同租户成员。"""
+    """把私有文档共享给同租户成员，可选设置过期时间。"""
 
     user_id: str
     permission: str = "read"
+    expires_at: str | None = None
 
 
 class RequirementCreateRequest(BaseModel):
@@ -206,6 +281,12 @@ class ExternalLinkRequest(BaseModel):
     external_id: str
     target_type: str
     target_id: str
+
+
+class DocIssueLinkRequest(BaseModel):
+    """把文档与司南工单双向关联。"""
+
+    issue_id: str
 
 
 class ExternalRequirementRequest(BaseModel):

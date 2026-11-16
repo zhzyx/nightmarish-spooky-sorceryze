@@ -467,6 +467,136 @@ class GitServiceTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             GitService("")
 
+    # ------------------------------------------------------------------
+    # tree / branch management
+    # ------------------------------------------------------------------
+    def test_list_tree_returns_directory_entries(self) -> None:
+        self._commit(files={"README.md": "# 多宝\n", "docs/design.md": "设计\n"})
+
+        root = self.service.list_tree(self.repo)
+        self.assertEqual([entry["name"] for entry in root], ["docs", "README.md"])
+        self.assertEqual(root[0]["type"], "tree")
+        self.assertIsNone(root[0]["size"])
+        self.assertEqual(root[1]["path"], "README.md")
+        self.assertEqual(root[1]["type"], "blob")
+        self.assertEqual(root[1]["size"], len("# 多宝\n".encode()))
+
+        nested = self.service.list_tree(self.repo, "main", "docs")
+        self.assertEqual([entry["path"] for entry in nested], ["docs/design.md"])
+
+    def test_list_tree_rejects_unknown_ref_and_escape(self) -> None:
+        self._commit()
+        with self.assertRaises(GitServiceError):
+            self.service.list_tree(self.repo, "missing-ref")
+        with self.assertRaises(ValidationError):
+            self.service.list_tree(self.repo, "main", "../outside")
+
+    def test_delete_branch(self) -> None:
+        head = self._commit()
+        self.service.branch(self.repo, "feature", head)
+        self.assertEqual(self.service.delete_branch(self.repo, "feature"), "feature")
+        self.assertNotIn("feature", self.service.list_branches(self.repo))
+        with self.assertRaises(GitServiceError):
+            self.service.delete_branch(self.repo, "feature")
+
+    # ------------------------------------------------------------------
+    # import / tags
+    # ------------------------------------------------------------------
+    def test_import_mirror_preserves_branches_tags_and_head(self) -> None:
+        source_service = GitService(GIT_EXECUTABLE)
+        source = source_service.create_repo(self.root.parent / "source", "upstream")
+        head = source_service.commit(source, "main", "init", {"a.md": "# one\n"}, AUTHOR_NAME, AUTHOR_EMAIL)
+        source_service.branch(source, "feature", "main")
+        self._git("-C", source, "tag", "v1", "main")
+
+        import_root = self.root.parent / "imports"
+        result = self.service.import_repo(import_root, "mirror", source, allow_local=True)
+
+        self.assertTrue(result["mirror"])
+        self.assertEqual(result["default_branch"], "main")
+        self.assertEqual(result["head"], head)
+        self.assertEqual(set(result["branches"]), {"main", "feature"})
+        self.assertEqual(result["tags"], [{"name": "v1", "sha": head}])
+        self.assertEqual(self.service.list_tags(result["path"]), [{"name": "v1", "sha": head}])
+
+    def test_import_rejects_existing_destination_and_invalid_input(self) -> None:
+        source_service = GitService(GIT_EXECUTABLE)
+        source = source_service.create_repo(self.root.parent / "source2", "upstream")
+        source_service.commit(source, "main", "init", {"a.md": "x\n"}, AUTHOR_NAME, AUTHOR_EMAIL)
+        import_root = self.root.parent / "imports2"
+        self.service.import_repo(import_root, "mirror", source, allow_local=True)
+
+        with self.assertRaises(GitServiceError):
+            self.service.import_repo(import_root, "mirror", source, allow_local=True)
+        with self.assertRaises(ValidationError):
+            self.service.import_repo(import_root, "other", "relative/path", allow_local=True)
+        with self.assertRaises(ValidationError):
+            self.service.import_repo(import_root, "other", source, allow_local=True, timeout=0)
+
+    def test_search_finds_lines_in_ref(self) -> None:
+        self._commit(files={"src/app.py": "alpha\nneedle = 1\nomega\n", "docs/readme.md": "no match\n"})
+
+        results = self.service.search(self.repo, "needle")
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["path"], "src/app.py")
+        self.assertEqual(results[0]["line"], 2)
+        self.assertEqual(results[0]["text"], "needle = 1")
+        self.assertEqual(self.service.search(self.repo, "absent"), [])
+
+        by_path = self.service.search(self.repo, "needle", "main", "src")
+        self.assertEqual([item["path"] for item in by_path], ["src/app.py"])
+
+    def test_search_rejects_invalid_input(self) -> None:
+        self._commit(files={"a.txt": "x\n"})
+        with self.assertRaises(ValidationError):
+            self.service.search(self.repo, "")
+        with self.assertRaises(ValidationError):
+            self.service.search(self.repo, "x", ref="-bad")
+        with self.assertRaises(ValidationError):
+            self.service.search(self.repo, "x", limit=0)
+
+    def test_blame_returns_line_authors(self) -> None:
+        self._commit(files={"src/app.py": "alpha\nneedle\n"})
+        lines = self.service.blame(self.repo, "HEAD", "src/app.py")
+        self.assertEqual([entry["line"] for entry in lines], [1, 2])
+        self.assertEqual(lines[1]["text"], "needle")
+        self.assertEqual(lines[0]["author"], AUTHOR_NAME)
+        self.assertRegex(lines[0]["sha"], SHA_PATTERN)
+
+    def test_blame_rejects_invalid_path(self) -> None:
+        self._commit(files={"a.txt": "x\n"})
+        with self.assertRaises(ValidationError):
+            self.service.blame(self.repo, "HEAD", "")
+        with self.assertRaises(ValidationError):
+            self.service.blame(self.repo, "HEAD", "../escape.txt")
+
+    def test_create_and_delete_tag(self) -> None:
+        sha = self._commit(files={"a.txt": "x\n"})
+        self.assertEqual(self.service.create_tag(self.repo, "v1"), "v1")
+        tags = self.service.list_tags(self.repo)
+        self.assertEqual([tag["name"] for tag in tags], ["v1"])
+        self.assertEqual(tags[0]["sha"], sha)
+
+        self.service.create_tag(self.repo, "v2", "HEAD", "release 2")
+        self.assertEqual([tag["name"] for tag in self.service.list_tags(self.repo)], ["v1", "v2"])
+
+        self.service.delete_tag(self.repo, "v1")
+        self.assertEqual([tag["name"] for tag in self.service.list_tags(self.repo)], ["v2"])
+
+        with self.assertRaises(ValidationError):
+            self.service.create_tag(self.repo, "bad tag")
+        with self.assertRaises(ValidationError):
+            self.service.delete_tag(self.repo, "")
+
 
 if __name__ == "__main__":
     unittest.main()
+
+    def test_lfs_files_and_tree_flag(self) -> None:
+        pointer = "version https://git-lfs.github.com/spec/v1\noid sha256:abc\nsize 3\n"
+        self._commit(files={"data.bin": pointer, "plain.txt": "hello\n"})
+
+        self.assertEqual(self.service.lfs_files(self.repo), ["data.bin"])
+        entries = {entry["path"]: entry for entry in self.service.list_tree(self.repo)}
+        self.assertTrue(entries["data.bin"]["lfs"])
+        self.assertFalse(entries["plain.txt"]["lfs"])

@@ -1,5 +1,7 @@
 "use client";
 
+import { useActor } from "@/lib/use-actor";
+
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Icon } from "@/components/Icon";
 import {
@@ -8,6 +10,8 @@ import {
   resolveComment,
   type ApiComment,
 } from "@/lib/api";
+import { formatMessage } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 
 type LoadState = "loading" | "ready" | "error";
 
@@ -90,22 +94,23 @@ const commentFormFootStyle = {
   justifyContent: "space-between",
 } as const;
 
-function shortAuthor(author: string): string {
+function shortAuthor(author: string, fallback: string): string {
   const trimmed = author.trim();
   if (!trimmed) {
-    return "匿名";
+    return fallback;
   }
   return trimmed.length > 12 ? `${trimmed.slice(0, 11)}…` : trimmed;
 }
 
-function formatTimestamp(value: string): string {
+function formatTimestamp(value: string, fallback: string): string {
   const normalized = value.replace("T", " ").replace(/\.\d+/, "");
   const match = /^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})/.exec(normalized);
-  return match ? `${match[1]} ${match[2]}` : value || "未知时间";
+  return match ? `${match[1]} ${match[2]}` : value || fallback;
 }
 
 export function DocComments({ docId }: DocCommentsProps) {
-  const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR ?? "";
+  const actor = useActor();
+  const { t } = useI18n();
   const [comments, setComments] = useState<ApiComment[]>([]);
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [loadError, setLoadError] = useState("");
@@ -126,7 +131,7 @@ export function DocComments({ docId }: DocCommentsProps) {
       setLoadState("ready");
     } catch {
       setLoadState("error");
-      setLoadError("无法读取评论，请确认后端服务已启动且当前账号有权限。");
+      setLoadError(t("comments.errorLoad"));
     }
   }, [actor, docId]);
 
@@ -147,7 +152,7 @@ export function DocComments({ docId }: DocCommentsProps) {
       setComments((current) => [...current, created]);
       setDraft("");
     } catch {
-      setActionError("评论提交失败，请稍后重试。");
+      setActionError(t("comments.errorSubmit"));
     } finally {
       setPosting(false);
     }
@@ -167,7 +172,7 @@ export function DocComments({ docId }: DocCommentsProps) {
       );
     } catch {
       setActionError(
-        nextResolved ? "标记评论为已解决失败，请稍后重试。" : "重新打开评论失败，请稍后重试。",
+        nextResolved ? t("comments.errorResolve") : t("comments.errorReopen"),
       );
     } finally {
       setResolvingId("");
@@ -176,18 +181,18 @@ export function DocComments({ docId }: DocCommentsProps) {
 
   if (!actor) {
     return (
-      <section aria-label="文档评论" className="panel">
+      <section aria-label={t("comments.title")} className="panel">
         <header className="panel-head">
           <div>
-            <p className="section-kicker">文曲 · COMMENTS</p>
-            <h2>文档评论</h2>
+            <p className="section-kicker">WENQU · COMMENTS</p>
+            <h2>{t("comments.title")}</h2>
           </div>
-          <span className="mono-key">未启用</span>
+          <span className="mono-key">{t("comments.disabled")}</span>
         </header>
         <div style={panelBodyStyle}>
           <p className="section-note" style={{ fontSize: "10.5px", lineHeight: 1.6 }}>
             <Icon name="lock" size={14} />
-            未配置 NEXT_PUBLIC_TIANXUAN_ACTOR，评论面板已禁用，不会请求评论接口。
+            {t("comments.disabledNote")}
           </p>
         </div>
       </section>
@@ -195,23 +200,23 @@ export function DocComments({ docId }: DocCommentsProps) {
   }
 
   return (
-    <section aria-busy={loadState === "loading"} aria-label="文档评论" className="panel">
+    <section aria-busy={loadState === "loading"} aria-label={t("comments.title")} className="panel">
       <header className="panel-head">
         <div>
-          <p className="section-kicker">文曲 · COMMENTS</p>
-          <h2>文档评论</h2>
+          <p className="section-kicker">WENQU · COMMENTS</p>
+          <h2>{t("comments.title")}</h2>
         </div>
         <span className="mono-key">
           {loadState === "loading"
-            ? "读取中…"
+            ? t("comments.summaryLoading")
             : loadState === "error"
-              ? "读取失败"
-              : `${comments.length} 条评论`}
+              ? t("comments.summaryError")
+              : formatMessage(t("comments.summary"), { count: comments.length })}
         </span>
       </header>
 
       <div style={panelBodyStyle}>
-        {loadState === "loading" ? <p className="section-note">正在读取评论…</p> : null}
+        {loadState === "loading" ? <p className="section-note">{t("comments.loading")}</p> : null}
 
         {loadState === "error" ? (
           <div
@@ -222,13 +227,13 @@ export function DocComments({ docId }: DocCommentsProps) {
             </p>
             <button className="text-link" onClick={() => void loadComments()} type="button">
               <Icon name="history" size={13} />
-              重新加载
+              {t("comments.reload")}
             </button>
           </div>
         ) : null}
 
         {loadState === "ready" && comments.length === 0 ? (
-          <p className="section-note">还没有评论，写下第一条建议或问题。</p>
+          <p className="section-note">{t("comments.empty")}</p>
         ) : null}
 
         {comments.length > 0 ? (
@@ -238,24 +243,28 @@ export function DocComments({ docId }: DocCommentsProps) {
                 <div style={commentMainStyle}>
                   <div style={commentMetaStyle}>
                     <strong style={commentAuthorStyle} title={comment.author}>
-                      {shortAuthor(comment.author)}
+                      {shortAuthor(comment.author, t("comments.anonymous"))}
                     </strong>
                     <time
                       className="section-note"
                       dateTime={comment.created_at}
                       style={commentTimeStyle}
                     >
-                      {formatTimestamp(comment.created_at)}
+                      {formatTimestamp(comment.created_at, t("comments.unknownTime"))}
                     </time>
-                    {comment.resolved ? <span className="kind-tag">已解决</span> : null}
+                    {comment.resolved ? <span className="kind-tag">{t("comments.resolved")}</span> : null}
                   </div>
                   <p style={commentBodyStyle}>{comment.body}</p>
                 </div>
                 <button
                   aria-label={
                     comment.resolved
-                      ? `重新打开 ${shortAuthor(comment.author)} 的评论`
-                      : `标记 ${shortAuthor(comment.author)} 的评论为已解决`
+                      ? formatMessage(t("comments.reopenAria"), {
+                          author: shortAuthor(comment.author, t("comments.anonymous")),
+                        })
+                      : formatMessage(t("comments.resolveAria"), {
+                          author: shortAuthor(comment.author, t("comments.anonymous")),
+                        })
                   }
                   className="btn btn-ghost btn-sm"
                   disabled={resolvingId !== ""}
@@ -264,10 +273,10 @@ export function DocComments({ docId }: DocCommentsProps) {
                 >
                   <Icon name={comment.resolved ? "history" : "check"} size={12} />
                   {resolvingId === comment.id
-                    ? "更新中…"
+                    ? t("comments.updating")
                     : comment.resolved
-                      ? "重新打开"
-                      : "标记已解决"}
+                      ? t("comments.reopen")
+                      : t("comments.resolve")}
                 </button>
               </li>
             ))}
@@ -282,19 +291,19 @@ export function DocComments({ docId }: DocCommentsProps) {
 
         <form onSubmit={(event) => void submitComment(event)} style={commentFormStyle}>
           <label className="sr-only" htmlFor="doc-comment-input">
-            评论内容
+            {t("comments.inputLabel")}
           </label>
           <textarea
             id="doc-comment-input"
             onChange={(event) => setDraft(event.target.value)}
-            placeholder="写下评论，例如：请补充验收标准…"
+            placeholder={t("comments.placeholder")}
             rows={3}
             style={commentInputStyle}
             value={draft}
           />
           <div style={commentFormFootStyle}>
             <span className="section-note">
-              {draft.trim() ? `${draft.trim().length} 字` : "纯文本评论"}
+              {draft.trim() ? formatMessage(t("comments.charCount"), { count: draft.trim().length }) : t("comments.plainText")}
             </span>
             <button
               className="btn btn-primary btn-sm"
@@ -302,7 +311,7 @@ export function DocComments({ docId }: DocCommentsProps) {
               type="submit"
             >
               <Icon name="comment" size={14} />
-              {posting ? "提交中…" : "添加评论"}
+              {posting ? t("comments.submitting") : t("comments.add")}
             </button>
           </div>
         </form>

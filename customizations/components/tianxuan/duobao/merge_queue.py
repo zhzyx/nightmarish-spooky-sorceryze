@@ -10,17 +10,19 @@ import os
 import shlex
 import shutil
 import signal
+import socket
 import sqlite3
 import subprocess
 import tempfile
 import threading
 import uuid
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
 from git_service import GitService, MergeConflict
+from policy import PolicyError, ensure_merge_allowed, parse_protected_branches
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS merge_queue (
@@ -39,6 +41,11 @@ CREATE TABLE IF NOT EXISTS merge_queue (
 );
 CREATE INDEX IF NOT EXISTS idx_merge_queue_status
   ON merge_queue(status, priority DESC, created_at);
+CREATE TABLE IF NOT EXISTS merge_workers (
+  worker_id TEXT PRIMARY KEY,
+  started_at TEXT NOT NULL,
+  heartbeat_at TEXT NOT NULL
+);
 """
 
 STATUSES = {"queued", "validating", "merged", "conflict", "rejected", "cancelled"}
@@ -47,6 +54,18 @@ CHECK_OUTPUT_LIMIT = 2000
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _validate_binding(pr_number: int | None, issue_ref: str) -> tuple[int | None, str]:
+    """校验可选的 PR/工单绑定，避免把任意数据写入合入证据。"""
+    if pr_number is not None and (isinstance(pr_number, bool) or not isinstance(pr_number, int) or pr_number <= 0):
+        raise ValueError(f"pull request number must be a positive integer: {pr_number!r}")
+    if not isinstance(issue_ref, str):
+        raise ValueError(f"issue reference must be a string: {issue_ref!r}")
+    issue_ref = issue_ref.strip()
+    if len(issue_ref) > 500 or "\x00" in issue_ref:
+        raise ValueError("issue reference is too long or contains NUL")
+    return pr_number, issue_ref
 
 
 def _new_id() -> str:
@@ -108,6 +127,9 @@ class MergeQueue:
         *,
         checks: Sequence[Sequence[str]] | None = None,
         check_timeout: float = 600.0,
+        protected_branches: Sequence[str] = (),
+        role_resolver: Callable[[str], str] | None = None,
+        event_sink: Callable[[str, str, str, dict[str, Any]], None] | None = None,
     ) -> None:
         self.db = sqlite3.connect(db_path, check_same_thread=False, timeout=30.0)
         self.db.row_factory = sqlite3.Row
@@ -116,10 +138,14 @@ class MergeQueue:
         self.git = git_service
         self.checks = [list(check) for check in (checks or [])]
         self.check_timeout = check_timeout
+        self.protected_branches = parse_protected_branches(protected_branches)
+        self.role_resolver = role_resolver
+        self.event_sink = event_sink
         self._lock = threading.Lock()
         self._process_lock = threading.Lock()
         self._worker: threading.Thread | None = None
         self._stop = threading.Event()
+        self.worker_id = f"{socket.gethostname()}-{os.getpid()}-{uuid.uuid4().hex[:8]}"
 
     def start_worker(self, interval: float = 2.0) -> None:
         """启动常驻合入 worker；每次领取一个候选，失败继续等待下一次。"""
@@ -129,11 +155,16 @@ class MergeQueue:
         self._stop.clear()
 
         def loop() -> None:
-            while not self._stop.wait(max(0.2, float(interval))):
-                try:
-                    self.process_next()
-                except Exception:
-                    continue
+            try:
+                self._heartbeat()
+                while not self._stop.wait(max(0.2, float(interval))):
+                    self._heartbeat()
+                    try:
+                        self.process_next()
+                    except Exception:
+                        continue
+            finally:
+                self._unregister_worker()
 
         self._worker = threading.Thread(target=loop, name="duobao-merge-queue", daemon=True)
         self._worker.start()
@@ -150,6 +181,28 @@ class MergeQueue:
             worker.join(timeout=5.0)
         self._worker = None
 
+    def _heartbeat(self) -> None:
+        now = _now()
+        with self._lock, self.db:
+            self.db.execute(
+                "INSERT INTO merge_workers (worker_id, started_at, heartbeat_at) VALUES (?, ?, ?) "
+                "ON CONFLICT(worker_id) DO UPDATE SET heartbeat_at = excluded.heartbeat_at",
+                (self.worker_id, now, now),
+            )
+
+    def _unregister_worker(self) -> None:
+        with self._lock, self.db:
+            self.db.execute("DELETE FROM merge_workers WHERE worker_id = ?", (self.worker_id,))
+
+    def list_workers(self, stale_after: float = 30.0) -> list[dict[str, Any]]:
+        cutoff = (datetime.now(timezone.utc) - timedelta(seconds=max(1.0, float(stale_after)))).isoformat()
+        with self._lock, self.db:
+            self.db.execute("DELETE FROM merge_workers WHERE heartbeat_at < ?", (cutoff,))
+            rows = self.db.execute(
+                "SELECT worker_id, started_at, heartbeat_at FROM merge_workers ORDER BY started_at"
+            ).fetchall()
+        return [dict(row) for row in rows]
+
     def close(self) -> None:
         self.stop_worker()
         with self._lock:
@@ -164,6 +217,9 @@ class MergeQueue:
         target: str,
         title: str = "",
         priority: int = 0,
+        *,
+        pr_number: int | None = None,
+        issue_ref: str = "",
     ) -> dict[str, Any]:
         repo_path = self._repo_path(repo)
         branches = set(self.git.list_branches(repo_path))
@@ -173,16 +229,69 @@ class MergeQueue:
             raise ValueError(f"unknown target branch: {target}")
         if source == target:
             raise ValueError("source and target must differ")
+        pr_number, issue_ref = _validate_binding(pr_number, issue_ref)
+        actor_role = self._resolve_role(actor)
+        decision = ensure_merge_allowed(
+            target,
+            self.protected_branches,
+            actor_role=actor_role,
+            path="queue",
+        )
+        evidence: dict[str, Any] = {"policy": decision}
+        binding: dict[str, Any] = {}
+        if pr_number is not None:
+            binding["pr_number"] = pr_number
+        if issue_ref:
+            binding["issue_ref"] = issue_ref
+        if binding:
+            evidence["binding"] = binding
         item_id = _new_id()
         now = _now()
         with self._lock, self.db:
             self.db.execute(
                 "INSERT INTO merge_queue (id, repo, source, target, title, priority, status, "
                 "attempts, evidence, created_by, created_at, updated_at) "
-                "VALUES (?, ?, ?, ?, ?, ?, 'queued', 0, '{}', ?, ?, ?)",
-                (item_id, str(repo_path), source, target, title or source, priority, actor, now, now),
+                "VALUES (?, ?, ?, ?, ?, ?, 'queued', 0, ?, ?, ?, ?)",
+                (
+                    item_id,
+                    str(repo_path),
+                    source,
+                    target,
+                    title or source,
+                    priority,
+                    json.dumps(evidence, ensure_ascii=False),
+                    actor,
+                    now,
+                    now,
+                ),
             )
+        self._emit(
+            actor,
+            "repo.merge.enqueued",
+            target,
+            {"item_id": item_id, "source": source, "target": target, "binding": binding},
+        )
         return self.get(item_id)
+
+    def _emit(self, actor: str, event_type: str, target: str, payload: dict[str, Any]) -> None:
+        """写入审计事件；事件通道失败不得中断合入队列。"""
+        if self.event_sink is None:
+            return
+        try:
+            self.event_sink(actor, event_type, target, payload)
+        except Exception:
+            return
+
+    def _resolve_role(self, actor: str) -> str:
+        """解析候选创建者的当前角色。
+
+        未注入 resolver 时按受信任的本地编辑器处理，保持既有测试与单机用法；
+        生产入口由宿主传入租户角色解析器，合入执行前会再解析一次。
+        """
+        if self.role_resolver is None:
+            return "editor"
+        role = self.role_resolver(actor)
+        return role if isinstance(role, str) else ""
 
     def _filter(self, status: str | None) -> tuple[str, list[Any]]:
         if status is not None and status not in STATUSES:
@@ -267,16 +376,32 @@ class MergeQueue:
                         "status": "rejected",
                         "evidence": {"error": f"{type(error).__name__}: {error}", "attempt": attempt},
                     }
+            raw_evidence = item.get("evidence")
+            if isinstance(raw_evidence, dict):
+                existing = raw_evidence
+            else:
+                existing = json.loads(raw_evidence or "{}")
+            merged_evidence = {**existing, **outcome["evidence"]} if isinstance(existing, dict) else outcome["evidence"]
             with self._lock, self.db:
                 self.db.execute(
                     "UPDATE merge_queue SET status = ?, evidence = ?, updated_at = ? WHERE id = ?",
                     (
                         outcome["status"],
-                        json.dumps(outcome["evidence"], ensure_ascii=False),
+                        json.dumps(merged_evidence, ensure_ascii=False),
                         _now(),
                         item["id"],
                     ),
                 )
+            self._emit(
+                item["created_by"],
+                f"repo.merge.{outcome['status']}",
+                item["target"],
+                {
+                    "item_id": item["id"],
+                    "status": outcome["status"],
+                    "attempts": int(item["attempts"]) + 1,
+                },
+            )
             return self.get(item["id"])
 
     def recover_stale(self, older_than_seconds: float = 300.0) -> int:
@@ -344,11 +469,29 @@ class MergeQueue:
                 "evidence": {"error": "source or target branch no longer exists"},
             }
 
+        actor_role = self._resolve_role(item["created_by"])
+        try:
+            decision = ensure_merge_allowed(
+                item["target"],
+                self.protected_branches,
+                actor_role=actor_role,
+                path="queue",
+            )
+        except PolicyError as error:
+            return {
+                "status": "rejected",
+                "evidence": {
+                    "error": str(error),
+                    "policy": {"target": item["target"], "actor_role": actor_role, "path": "queue"},
+                },
+            }
+
         preview = self._preview(repo, item["source"], item["target"])
         evidence: dict[str, Any] = {
             "validated_at": _now(),
             "checks": preview["checks"],
             "conflicts": preview["conflicts"],
+            "policy": decision,
         }
         if preview["conflicts"]:
             evidence["error"] = "merge conflict"

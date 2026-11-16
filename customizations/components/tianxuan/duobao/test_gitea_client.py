@@ -67,6 +67,8 @@ EXPECTED_PR: dict[str, Any] = {
     "html_url": "https://gitea.example/octo/duobao/pulls/7",
     "head": "feature/gitea",
     "base": "main",
+    "head_sha": "a" * 40,
+    "base_sha": "b" * 40,
 }
 
 INVALID_SEGMENTS = [
@@ -209,7 +211,9 @@ def test_list_pull_requests_filters_state(make_client: ClientFactory) -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.method == "GET"
         assert request.url.path == "/api/v1/repos/owner/demo/pulls"
-        assert request.url.query == b"state=all"
+        assert request.url.params["state"] == "all"
+        assert request.url.params["page"] == "1"
+        assert request.url.params["limit"] == "30"
         return httpx.Response(
             200,
             json=[
@@ -229,6 +233,28 @@ def test_list_pull_requests_filters_state(make_client: ClientFactory) -> None:
     assert pulls[0]["number"] == 3
     assert pulls[0]["state"] == "open"
     assert pulls[0]["head"] == "feature"
+
+
+def test_list_pull_requests_supports_pagination(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.params["state"] == "closed"
+        assert request.url.params["page"] == "2"
+        assert request.url.params["limit"] == "10"
+        return httpx.Response(200, json=[])
+
+    client, _ = make_client(handler)
+    assert client.list_pull_requests("owner", "demo", "closed", 2, 10) == []
+
+
+def test_invalid_pull_request_pagination_rejected(make_client: ClientFactory) -> None:
+    client, requests = make_client(forbidden_handler)
+
+    with pytest.raises(GiteaValidationError):
+        client.list_pull_requests("owner", "demo", "open", page=0)
+    with pytest.raises(GiteaValidationError):
+        client.list_pull_requests("owner", "demo", "open", limit=101)
+
+    assert requests == []
 
 
 def test_list_repos_for_current_user(make_client: ClientFactory) -> None:
@@ -615,4 +641,231 @@ def test_trailing_slash_in_base_url_is_normalized() -> None:
     finally:
         client.close()
 
-    assert requests[0].url.path == "/api/v1/repos/octo/duobao"
+
+# ----------------------------------------------------------------------
+# 评审与提交状态
+# ----------------------------------------------------------------------
+def test_list_reviews_normalizes_payload(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "GET"
+        assert request.url.path == "/api/v1/repos/octo/duobao/pulls/7/reviews"
+        assert_authorized(request)
+        return httpx.Response(
+            200,
+            json=[
+                {
+                    "id": 1,
+                    "state": "APPROVED",
+                    "body": "LGTM",
+                    "user": {"login": "alice"},
+                    "submitted_at": "2026-11-15T00:00:00Z",
+                }
+            ],
+        )
+
+    client, _ = make_client(handler)
+    assert client.list_reviews("octo", "duobao", 7) == [
+        {"id": 1, "state": "APPROVED", "body": "LGTM", "user": "alice", "submitted_at": "2026-11-15T00:00:00Z"}
+    ]
+
+
+def test_create_review_forwards_event_and_body(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "POST"
+        assert request.url.path == "/api/v1/repos/octo/duobao/pulls/7/reviews"
+        assert json.loads(request.content) == {"event": "APPROVED", "body": "LGTM"}
+        return httpx.Response(
+            201,
+            json={"id": 2, "state": "APPROVED", "body": "LGTM", "user": {"login": "bob"}, "submitted_at": ""},
+        )
+
+    client, _ = make_client(handler)
+    review = client.create_review("octo", "duobao", 7, event="APPROVED", body="LGTM")
+    assert review["user"] == "bob"
+    assert review["state"] == "APPROVED"
+
+
+def test_list_commit_statuses_normalizes_payload(make_client: ClientFactory) -> None:
+    sha = "a" * 40
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "GET"
+        assert request.url.path == f"/api/v1/repos/octo/duobao/commits/{sha}/statuses"
+        assert_authorized(request)
+        return httpx.Response(
+            200,
+            json=[
+                {
+                    "state": "success",
+                    "context": "ci/build",
+                    "description": "ok",
+                    "target_url": "https://ci.example/1",
+                    "created_at": "2026-11-15T00:00:00Z",
+                }
+            ],
+        )
+
+    client, _ = make_client(handler)
+    assert client.list_commit_statuses("octo", "duobao", sha) == [
+        {
+            "state": "success",
+            "context": "ci/build",
+            "description": "ok",
+            "target_url": "https://ci.example/1",
+            "created_at": "2026-11-15T00:00:00Z",
+        }
+    ]
+
+
+def test_create_commit_status_forwards_payload(make_client: ClientFactory) -> None:
+    sha = "b" * 40
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "POST"
+        assert request.url.path == f"/api/v1/repos/octo/duobao/statuses/{sha}"
+        assert json.loads(request.content) == {
+            "state": "success",
+            "context": "ci/build",
+            "description": "ok",
+            "target_url": "https://ci.example/1",
+        }
+        return httpx.Response(201, json={"state": "success", "context": "ci/build", "description": "ok"})
+
+    client, _ = make_client(handler)
+    status = client.create_commit_status(
+        "octo",
+        "duobao",
+        sha,
+        state="success",
+        context="ci/build",
+        description="ok",
+        target_url="https://ci.example/1",
+    )
+    assert status["state"] == "success"
+    assert status["context"] == "ci/build"
+
+
+def test_invalid_commit_status_inputs_rejected_before_request(make_client: ClientFactory) -> None:
+    client, requests = make_client(forbidden_handler)
+
+    with pytest.raises(GiteaValidationError):
+        client.create_commit_status("octo", "duobao", "a" * 40, state="green")
+    with pytest.raises(GiteaValidationError):
+        client.list_commit_statuses("octo", "duobao", "not-a-sha")
+
+    assert requests == []
+
+
+def test_sudo_header_is_forwarded() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.headers["Authorization"] == f"token {TOKEN}"
+        assert request.headers["Sudo"] == "alice"
+        return httpx.Response(200, json=REPO_PAYLOAD)
+
+    client = GiteaClient(BASE_URL, TOKEN, sudo="alice", transport=httpx.MockTransport(handler))
+    try:
+        assert client.get_repo("octo", "duobao") == EXPECTED_REPO
+        assert client.sudo == "alice"
+    finally:
+        client.close()
+
+
+def test_invalid_sudo_rejected_before_request() -> None:
+    requests: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(200, json=REPO_PAYLOAD)
+
+    with pytest.raises(GiteaValidationError):
+        GiteaClient(BASE_URL, TOKEN, sudo="bad user", transport=httpx.MockTransport(handler))
+    assert requests == []
+
+
+def test_list_releases_normalizes_payload(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "GET"
+        assert request.url.path == "/api/v1/repos/owner/demo/releases"
+        return httpx.Response(
+            200,
+            json=[
+                {
+                    "id": 7,
+                    "tag_name": "v1.0.0",
+                    "name": "First release",
+                    "body": "notes",
+                    "draft": False,
+                    "prerelease": True,
+                    "created_at": "2026-01-01T00:00:00Z",
+                    "html_url": "https://gitea.example/owner/demo/releases/7",
+                }
+            ],
+        )
+
+    client, _ = make_client(handler)
+    releases = client.list_releases("owner", "demo")
+    assert releases == [
+        {
+            "id": 7,
+            "tag_name": "v1.0.0",
+            "name": "First release",
+            "body": "notes",
+            "draft": False,
+            "prerelease": True,
+            "created_at": "2026-01-01T00:00:00Z",
+            "html_url": "https://gitea.example/owner/demo/releases/7",
+        }
+    ]
+
+
+def test_create_release_posts_payload(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "POST"
+        assert request.url.path == "/api/v1/repos/owner/demo/releases"
+        payload = httpx.Response(200, content=request.content).json()
+        assert payload["tag_name"] == "v3.0.0"
+        assert payload["draft"] is True
+        return httpx.Response(
+            200,
+            json={
+                "id": 3,
+                "tag_name": "v3.0.0",
+                "name": "Third",
+                "body": "notes",
+                "draft": True,
+                "prerelease": False,
+                "created_at": "2026-02-01T00:00:00Z",
+                "html_url": "https://gitea.example/owner/demo/releases/3",
+            },
+        )
+
+    client, _ = make_client(handler)
+    release = client.create_release("owner", "demo", "v3.0.0", "Third", "notes", draft=True)
+    assert release["tag_name"] == "v3.0.0"
+    assert release["draft"] is True
+
+
+def test_update_release_patches_fields(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "PATCH"
+        assert request.url.path == "/api/v1/repos/owner/demo/releases/9"
+        payload = httpx.Response(200, content=request.content).json()
+        assert payload == {"name": "Renamed", "draft": True}
+        return httpx.Response(
+            200,
+            json={
+                "id": 9,
+                "tag_name": "v1.0.0",
+                "name": "Renamed",
+                "body": "",
+                "draft": True,
+                "prerelease": False,
+                "created_at": "",
+                "html_url": "",
+            },
+        )
+
+    client, _ = make_client(handler)
+    release = client.update_release("owner", "demo", 9, name="Renamed", draft=True)
+    assert release["name"] == "Renamed"
+    assert release["draft"] is True

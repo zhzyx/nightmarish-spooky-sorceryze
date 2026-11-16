@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/Icon";
+import { formatMessage } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n-client";
 import {
   fetchLocalBranches,
   fetchLocalLog,
@@ -9,6 +11,7 @@ import {
   type ApiCommit,
   type ApiLocalRepo,
 } from "@/lib/local-git-api";
+import { useActor } from "@/lib/use-actor";
 
 type LoadState = "loading" | "ready" | "error";
 type DetailState = "idle" | "loading" | "ready" | "error";
@@ -69,14 +72,15 @@ function shortSha(sha: string): string {
   return trimmed ? trimmed.slice(0, 7) : "—";
 }
 
-function formatTime(value: string): string {
+function formatTime(value: string, fallback: string): string {
   const normalized = value.replace("T", " ").replace(/\.\d+/, "");
   const match = /^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})/.exec(normalized);
-  return match ? `${match[1]} ${match[2]}` : value || "未知时间";
+  return match ? `${match[1]} ${match[2]}` : value || fallback;
 }
 
 export function LocalGitRepos() {
-  const actor = process.env.NEXT_PUBLIC_TIANXUAN_ACTOR ?? "";
+  const actor = useActor();
+  const { t } = useI18n();
   const [repos, setRepos] = useState<ApiLocalRepo[]>([]);
   const [reposState, setReposState] = useState<LoadState>("loading");
   const [reposError, setReposError] = useState("");
@@ -119,10 +123,10 @@ export function LocalGitRepos() {
           return;
         }
         setDetailState("error");
-        setDetailError("无法读取该仓库的分支或提交，请确认后端服务已启动且仓库仍然存在。");
+        setDetailError(t("local.detailError"));
       }
     },
-    [actor],
+    [actor, t],
   );
 
   const loadRepos = useCallback(async () => {
@@ -154,9 +158,9 @@ export function LocalGitRepos() {
         return;
       }
       setReposState("error");
-      setReposError("无法读取本地仓库列表，请确认后端服务已启动，且 TIANXUAN_REPO_ROOT 已配置。");
+      setReposError(t("local.reposError"));
     }
-  }, [actor, selectRepo]);
+  }, [actor, selectRepo, t]);
 
   useEffect(() => {
     void loadRepos();
@@ -170,18 +174,18 @@ export function LocalGitRepos() {
 
   if (!actor) {
     return (
-      <section aria-label="本地 Git 仓库" className="panel">
+      <section aria-label={t("local.aria")} className="panel">
         <div className="section-heading" style={headingStyle}>
           <div>
             <p className="section-kicker">DUOBAO · LOCAL GIT</p>
-            <h2>本地仓库</h2>
+            <h2>{t("local.title")}</h2>
           </div>
-          <span className="mono-key">未启用</span>
+          <span className="mono-key">{t("local.disabled")}</span>
         </div>
         <div style={panelBodyStyle}>
           <p className="section-note">
             <Icon name="lock" size={13} />
-            未配置 NEXT_PUBLIC_TIANXUAN_ACTOR，本地 Git 浏览面板已禁用，不会发起任何请求。
+            {t("local.disabledNote")}
           </p>
         </div>
       </section>
@@ -190,28 +194,28 @@ export function LocalGitRepos() {
 
   const summary =
     reposState === "loading"
-      ? "读取中…"
+      ? t("local.summaryLoading")
       : reposState === "error"
-        ? "读取失败"
-        : `${repos.length} 个仓库`;
+        ? t("local.summaryError")
+        : formatMessage(t("local.summaryCount"), { count: repos.length });
 
   return (
     <section
       aria-busy={reposState === "loading" || detailState === "loading"}
-      aria-label="本地 Git 仓库"
+      aria-label={t("local.aria")}
       className="panel"
     >
       <div className="section-heading" style={headingStyle}>
         <div>
           <p className="section-kicker">DUOBAO · LOCAL GIT</p>
-          <h2>本地仓库</h2>
+          <h2>{t("local.title")}</h2>
         </div>
         <span className="mono-key">{summary}</span>
       </div>
 
       <div style={panelBodyStyle}>
         {reposState === "loading" ? (
-          <p className="section-note">正在读取本地仓库…</p>
+          <p className="section-note">{t("local.loading")}</p>
         ) : null}
 
         {reposState === "error" ? (
@@ -225,7 +229,7 @@ export function LocalGitRepos() {
               type="button"
             >
               <Icon name="history" size={12} />
-              重新加载
+              {t("local.reload")}
             </button>
           </div>
         ) : null}
@@ -233,7 +237,7 @@ export function LocalGitRepos() {
         {reposState === "ready" && repos.length === 0 ? (
           <p className="section-note">
             <Icon name="repos" size={13} />
-            TIANXUAN_REPO_ROOT 下还没有 .git 仓库，先创建裸仓库后再回到这里。
+            {t("local.emptyRoot")}
           </p>
         ) : null}
 
@@ -241,9 +245,9 @@ export function LocalGitRepos() {
           <div className="repo-browser">
             <div>
               <p className="mono-key" style={{ marginBottom: "4px" }}>
-                选择仓库
+                {t("local.selectRepo")}
               </p>
-              <div aria-label="本地仓库列表" className="reading-list live-list" style={repoListStyle}>
+              <div aria-label={t("local.repoListAria")} className="reading-list live-list" style={repoListStyle}>
                 {repos.map((repo) => {
                   const active = repo === selectedRepo;
                   return (
@@ -258,7 +262,7 @@ export function LocalGitRepos() {
                       <span className="reading-index">GIT</span>
                       <span className="reading-copy">
                         <strong>{repo}</strong>
-                        <span>{active ? "当前仓库" : "本地裸仓库"}</span>
+                        <span>{active ? t("local.currentRepo") : t("local.bareRepo")}</span>
                       </span>
                       <Icon name="chevronRight" size={14} />
                     </button>
@@ -269,11 +273,13 @@ export function LocalGitRepos() {
 
             <div>
               {detailState === "idle" ? (
-                <p className="section-note">选择一个仓库以查看分支与最近提交。</p>
+                <p className="section-note">{t("local.selectHint")}</p>
               ) : null}
 
               {detailState === "loading" ? (
-                <p className="section-note">正在读取 {selectedRepo} 的分支与提交…</p>
+                <p className="section-note">
+                  {formatMessage(t("local.loadingRepo"), { repo: selectedRepo ?? "" })}
+                </p>
               ) : null}
 
               {detailState === "error" ? (
@@ -281,13 +287,9 @@ export function LocalGitRepos() {
                   <p className="section-note" role="alert" style={errorTextStyle}>
                     <Icon name="alert" size={13} /> {detailError}
                   </p>
-                  <button
-                    className="btn btn-ghost btn-sm"
-                    onClick={retrySelectedRepo}
-                    type="button"
-                  >
+                  <button className="btn btn-ghost btn-sm" onClick={retrySelectedRepo} type="button">
                     <Icon name="history" size={12} />
-                    重试
+                    {t("local.retry")}
                   </button>
                 </div>
               ) : null}
@@ -296,12 +298,12 @@ export function LocalGitRepos() {
                 branches.length === 0 ? (
                   <p className="section-note">
                     <Icon name="branch" size={13} />
-                    该仓库还没有本地分支。
+                    {t("local.noBranches")}
                   </p>
                 ) : (
                   <>
                     <div style={branchRowStyle}>
-                      <span className="mono-key">分支</span>
+                      <span className="mono-key">{t("local.branch")}</span>
                       {branches.map((branch) => (
                         <span className="kind-tag" key={branch}>
                           {branch}
@@ -310,12 +312,12 @@ export function LocalGitRepos() {
                     </div>
 
                     <p className="mono-key" style={{ marginTop: "12px" }}>
-                      最近提交 · {branches[0]}
+                      {formatMessage(t("local.recentCommits"), { branch: branches[0] })}
                     </p>
 
                     {commits.length > 0 ? (
                       <div
-                        aria-label={`${selectedRepo} 的最近提交`}
+                        aria-label={formatMessage(t("local.commitsAria"), { repo: selectedRepo ?? "" })}
                         className="reading-list live-list"
                         style={commitListStyle}
                       >
@@ -326,10 +328,11 @@ export function LocalGitRepos() {
                             </span>
                             <span className="reading-copy">
                               <strong title={commit.message}>
-                                {commit.message || "（无提交说明）"}
+                                {commit.message || t("local.noMessage")}
                               </strong>
                               <span>
-                                {commit.author || "未知作者"} · {formatTime(commit.date)}
+                                {commit.author || t("local.unknownAuthor")} ·{" "}
+                                {formatTime(commit.date, t("local.unknownTime"))}
                               </span>
                             </span>
                             <Icon name="gitCommit" size={14} />
@@ -338,7 +341,7 @@ export function LocalGitRepos() {
                       </div>
                     ) : (
                       <p className="section-note" style={{ marginTop: "8px" }}>
-                        该分支还没有提交记录。
+                        {t("local.noCommits")}
                       </p>
                     )}
                   </>
@@ -350,7 +353,7 @@ export function LocalGitRepos() {
 
         <p className="section-note">
           <Icon name="gitCommit" size={12} />
-          只读浏览本地裸仓库，最多显示所选分支最近 10 条提交。
+          {t("local.note")}
         </p>
       </div>
     </section>
