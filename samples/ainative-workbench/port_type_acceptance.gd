@@ -1,0 +1,63 @@
+extends SceneTree
+# Typed workflow ports; real Godot controls, no model inference.
+var panel
+var failures = 0
+
+func check(ok: bool, label: String):
+	print(("PASS " if ok else "FAIL ") + label)
+	if not ok: failures += 1
+
+func _initialize():
+	run.call_deferred()
+
+func make_node(kind: String) -> Dictionary:
+	return {"id":kind, "type":kind, "source":"", "image_context":"", "text":"", "parameters":{}, "x":0.0, "y":0.0}
+
+func run():
+	root.size = Vector2i(1440, 1000)
+	panel = load("res://addons/ainative/workbench.gd").new()
+	panel.set_meta("ainative_builtin", true)
+	root.add_child(panel)
+	await process_frame
+	panel.nodes = []
+	for kind in panel.NODE_KINDS: panel.nodes.append(make_node(kind))
+	panel.edges = []
+	panel.rebuild()
+	await process_frame
+	var expected = {
+		"text_to_image":[panel.PORT_TEXT, panel.PORT_IMAGE, "输入：文本（参数）", "输出：图片"],
+		"image_to_image":[panel.PORT_IMAGE, panel.PORT_IMAGE, "输入：图片 / 图片集", "输出：图片"],
+		"image_to_mesh":[panel.PORT_IMAGE, panel.PORT_MESH, "输入：图片", "输出：Mesh"],
+		"text_to_mesh":[panel.PORT_TEXT, panel.PORT_MESH, "输入：文本（参数）", "输出：Mesh"],
+		"model_adjust":[panel.PORT_MESH, panel.PORT_MESH, "输入：Mesh", "输出：Mesh"],
+		"copy":[panel.PORT_DYNAMIC, panel.PORT_DYNAMIC, "输入：图片 / Mesh", "输出：图片 / Mesh"],
+	}
+	for kind in expected:
+		var data = panel.nodes.filter(func(item): return item.type == kind)[0]
+		var types = expected[kind]
+		var node = panel.graph.get_node(kind)
+		check(panel.input_kind(data) == types[0] and panel.output_kind(data) == types[1], kind + " declares its input and output types")
+		check(node.get_output_port_type(0) == types[1] and node.get_output_port_color(0) == panel.PORT_COLORS[types[1]], kind + " renders a typed main output")
+		var input_label = node.get_node("PortTypes/InputType")
+		var output_label = node.get_node("PortTypes/OutputType")
+		check(input_label.text == types[2] and output_label.text == types[3], kind + " shows readable input and output type names")
+		if types[0] == panel.PORT_TEXT:
+			check(node.get_input_port_count() == 0 and input_label.tooltip_text.contains("参数"), kind + " keeps parameter-only text input without a misleading connection")
+		else:
+			check(node.get_input_port_count() == 1 and node.get_input_port_type(0) == types[0] and node.get_input_port_color(0) == panel.PORT_COLORS[types[0]], kind + " renders a typed input")
+		if kind in ["text_to_image", "image_to_image"]:
+			check(node.get_output_port_count() == 2 and node.get_output_port_type(1) == panel.PORT_IMAGE_SET and node.get_node("ImageSetOutputType").text.contains("图片集"), kind + " distinguishes its ordered image-set output")
+		else:
+			check(node.get_output_port_count() == 1, kind + " exposes only its declared main output")
+	panel.connect_nodes("text_to_mesh", 0, "image_to_mesh", 0)
+	check(panel.edges.is_empty() and panel.status.text.contains("图像输出"), "Mesh cannot silently feed an image input")
+	panel.connect_nodes("text_to_image", 0, "model_adjust", 0)
+	check(panel.edges.is_empty() and panel.status.text.contains("已生成模型"), "image cannot silently feed a Mesh input")
+	panel.connect_nodes("text_to_image", 1, "image_to_image", 0)
+	panel.connect_nodes("text_to_image", 0, "image_to_mesh", 0)
+	panel.connect_nodes("text_to_mesh", 0, "model_adjust", 0)
+	check(panel.edges.size() == 3 and panel.edges[0].output == "image_set" and panel.edges[1].output == "result" and panel.edges[2].output == "result", "image-set, image and Mesh connections retain their existing execution contracts")
+	print("AINATIVE_PORT_TYPE failures=" + str(failures))
+	panel.queue_free()
+	await process_frame
+	quit(0 if failures == 0 else 1)

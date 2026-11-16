@@ -153,6 +153,18 @@ const RETIRED_GPT_MESH_PROVIDERS = ["codex-modeling", "codex-sculpt"]
 const RETIRED_GPT_MESH_MODES = ["codex_modeling", "codex_sculpt"]
 const RETIRED_GPT_MESH_NOTICE = "GPT CLI 单独网格生成已下线。请使用当前网格服务新建节点，再连接源文件与下游节点。"
 const NODE_KINDS = ["text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust", "copy"]
+const PORT_DYNAMIC = 0
+const PORT_IMAGE = 1
+const PORT_MESH = 2
+const PORT_TEXT = 3
+const PORT_IMAGE_SET = 4
+const PORT_COLORS = {
+	PORT_DYNAMIC: Color(0.65, 0.68, 0.75),
+	PORT_IMAGE: Color.SKY_BLUE,
+	PORT_MESH: Color.PALE_GREEN,
+	PORT_TEXT: Color(0.85, 0.65, 1.0),
+	PORT_IMAGE_SET: Color(0.4, 0.85, 0.85),
+}
 
 func node_label(kind: String) -> String:
 	return {"copy":"离线复制", "text_to_image":"文字生成图像", "image_to_image":"图像生成图像", "image_to_mesh":"图像生成网格", "text_to_mesh":"文字生成网格", "model_adjust":"模型调整"}.get(kind,kind)
@@ -682,8 +694,21 @@ func _sync_node_model_controls(data: Dictionary):
 		_set_model_options(node_image_model_choice, models.get('image', ['builtin'] if _service_mode() == 'codex' else []), image_name, not models.is_empty())
 		node_image_model_edit.text = image_name
 
+func input_kind(data: Dictionary) -> int:
+	var kind = str(data.get("type", "copy"))
+	if kind in ["text_to_image", "text_to_mesh"]: return PORT_TEXT
+	if kind in ["image_to_image", "image_to_mesh"]: return PORT_IMAGE
+	if kind == "model_adjust": return PORT_MESH
+	return PORT_DYNAMIC
+
 func output_kind(data: Dictionary) -> int:
-	return 2 if data.get("type", "copy") in ["text_to_mesh", "image_to_mesh", "model_adjust"] else 0 if data.get("type", "copy") == "copy" else 1
+	return PORT_MESH if _is_mesh_kind(str(data.get("type", "copy"))) else PORT_DYNAMIC if data.get("type", "copy") == "copy" else PORT_IMAGE
+
+func port_type_name(kind: int) -> String:
+	return {PORT_DYNAMIC:"图片 / Mesh", PORT_IMAGE:"图片", PORT_MESH:"Mesh", PORT_TEXT:"文本", PORT_IMAGE_SET:"图片集"}.get(kind, "未知")
+
+func input_type_name(data: Dictionary) -> String:
+	return "图片 / 图片集" if data.get("type", "copy") == "image_to_image" else port_type_name(input_kind(data))
 
 func rebuild():
 	graph.clear_connections()
@@ -700,16 +725,33 @@ func rebuild():
 		label.name = 'GeneratorDescription'
 		label.text = _generator_description(data)
 		node.add_child(label)
-		node.set_slot(0, not data.get("type", "copy").begins_with("text_"), 0, Color.SKY_BLUE, true, 0, Color.SKY_BLUE)
+		var type_row = HBoxContainer.new()
+		type_row.name = 'PortTypes'
+		node.add_child(type_row)
+		var input_label = Label.new()
+		input_label.name = 'InputType'
+		input_label.text = "输入：" + input_type_name(data)
+		input_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		if input_kind(data) == PORT_TEXT:
+			input_label.text += "（参数）"
+			input_label.tooltip_text = "文本由当前节点的提示词参数提供"
+		type_row.add_child(input_label)
+		var output_label = Label.new()
+		output_label.name = 'OutputType'
+		output_label.text = "输出：" + port_type_name(output_kind(data))
+		output_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		type_row.add_child(output_label)
+		node.set_slot(1, input_kind(data) != PORT_TEXT, input_kind(data), PORT_COLORS[input_kind(data)], true, output_kind(data), PORT_COLORS[output_kind(data)])
 		graph.add_child(node)
 		var run_button = button(node, "运行并预览", run_node_preview.bind(data.id))
 		run_button.mouse_filter = Control.MOUSE_FILTER_PASS
 		if data.get("type", "copy") in ["text_to_image", "image_to_image"]:
 			var set_label = Label.new()
-			set_label.text = "全部独立图片（有序集合）"
+			set_label.name = 'ImageSetOutputType'
+			set_label.text = "输出：图片集（有序）"
 			set_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 			node.add_child(set_label)
-			node.set_slot(1, false, 0, Color.SKY_BLUE, true, 1, Color.PALE_GREEN)
+			node.set_slot(3, false, 0, PORT_COLORS[PORT_IMAGE], true, PORT_IMAGE_SET, PORT_COLORS[PORT_IMAGE_SET])
 		node.node_selected.connect(select_node.bind(data.id))
 		node.position_offset_changed.connect(func(): data.x = node.position_offset.x; data.y = node.position_offset.y)
 	for edge in edges:
@@ -773,7 +815,7 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 	if source_node.is_empty() or target_node.is_empty(): return
 	var target_kind = target_node[0].get("type", "copy")
 	if target_kind.begins_with("text_"): return
-	var required_output = 2 if target_kind == "model_adjust" else 1
+	var required_output = input_kind(target_node[0])
 	if target_kind != "copy" and output_kind(source_node[0]) != required_output:
 		status.text = "模型调整需要连接已生成模型" if target_kind == "model_adjust" else "生成节点需要连接图像输出"
 		return
