@@ -86,7 +86,7 @@ func run():
 	panel.parameter_form.outputs_edit.text = "正面\n三分之四侧面"
 	panel.parameter_form.outputs_edit.text_changed.emit()
 	check(panel.apply_fields() and data.parameters.output_count == 2 and data.parameters.output_labels == ["正面", "三分之四侧面"], "two named outputs are stored as independent output specifications")
-	check(panel.model().nodes.all(func(item): return item.version == "2" if item.type in ["text_to_image", "image_to_image"] else item.version == "1"), "multi-image version applies only to image generation nodes")
+	check(panel.model().nodes.all(func(item): return item.version == "3" if item.type in ["text_to_image", "image_to_image"] else item.version == "1"), "queue-only version applies only to image generation nodes")
 	var before_invalid = data.parameters.duplicate(true)
 	for invalid in ["0", "9", "正面\n正面"]:
 		panel.parameter_form.outputs_edit.text = invalid
@@ -95,12 +95,10 @@ func run():
 	panel.parameter_form.outputs_edit.text = "正面\n三分之四侧面"
 	panel.parameter_form.outputs_edit.text_changed.emit()
 	check(panel.apply_fields(), "corrected output specifications become applicable")
-	panel.connect_nodes(upstream, 1, downstream, 0)
-	check(panel.edges.size() == 1 and panel.edges[0].get("output") == "image_set", "ordered collection has a distinct graph port")
-	panel.connect_nodes(upstream, 1, mesh, 0)
-	check(panel.edges.size() == 1 and panel.status.text.contains("只能连接到图生图"), "collection cannot silently become a single Mesh input")
+	panel.connect_nodes(upstream, 0, downstream, 0)
+	check(panel.edges.size() == 1 and panel.edges[0].get("output") == "image_set", "the sole generation output is an ordered image queue")
 	panel.connect_nodes(upstream, 0, mesh, 0)
-	check(panel.edges.size() == 2 and panel.edges[1].get("output") == "result", "primary image remains available to Mesh")
+	check(panel.edges.size() == 1 and panel.status.text.contains("只能连接到图生图"), "image queue cannot silently become a single Mesh input")
 	panel.path_edit.text = state_path.path_join("multi-image.json")
 	panel.save_graph()
 	var saved = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text))
@@ -141,6 +139,13 @@ func run():
 	check(not panel.result_choice.is_visible_in_tree(), "image member selector stays on the generation page")
 	panel.show_native_section("mesh")
 	check(panel.result_choice.is_visible_in_tree() and panel.result_choice.selected == 1, "returning to generation preserves the selected member")
+	var legacy = original.duplicate(true)
+	legacy.nodes = [find_node(legacy, upstream), find_node(legacy, mesh)]
+	legacy.nodes[0].erase("version")
+	legacy.edges = [{"from":upstream, "to":mesh, "input":"source", "output":"result"}]
+	write_model(legacy)
+	panel.open_graph()
+	check(find_node(panel.model(), upstream).get("version") == "2" and panel.edges == legacy.edges and panel.graph.get_node(upstream).get_output_port_count() == 2, "unversioned historical workflows retain the version 2 primary image and queue contract")
 	await finish()
 
 func finish():

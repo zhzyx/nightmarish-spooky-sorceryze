@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-queue-only-image-output-20261116-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-queue-only-image-output-20261116",
+  "kind": "request",
+  "occurred_at": "2026-11-16T12:23:56Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1359",
+  "agent": {
+    "id": "kimi-work-host",
+    "version": "20261116",
+    "origin": "external-authorized-host",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5"
+  },
+  "payload": {
+    "intent": "Make new Maliang text-to-image and image-to-image nodes expose only an ordered image_set queue for multi-view and detail outputs, while preserving version 1 and version 2 compatibility and validating real generation and restoration.",
+    "authorization_ref": "kimi-work:user:20261116:maliang-queue-only-image-output",
+    "state": "in_progress",
+    "usage": null,
+    "definition": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "99056788e2fc75ab6c7678804cd58d768a6f276ec35702f188ef2f8386363023"
+}
