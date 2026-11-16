@@ -49,9 +49,64 @@ namespace
 namespace fs = std::filesystem;
 using EngineNext::Serialization::JsonValue;
 
+void AppendFloat(std::vector<std::uint8_t> &out_arrBytes, float fValue);
+
+void AppendLittle32(std::vector<std::uint8_t> &out_arrBytes, std::uint32_t nValue)
+{
+	for (std::uint32_t nByte = 0; nByte < 4; ++nByte)
+	{
+		out_arrBytes.push_back(static_cast<std::uint8_t>(nValue >> (nByte * 8U)));
+	}
+}
+
+std::vector<std::uint8_t> TexturedGlb()
+{
+	const std::vector<std::uint8_t> arrSource = EngineNext::Tests::Assets::ReadFixture("valid.glb");
+	const std::uint32_t nJsonBytes = static_cast<std::uint32_t>(arrSource[12]) | (static_cast<std::uint32_t>(arrSource[13]) << 8U) |
+			(static_cast<std::uint32_t>(arrSource[14]) << 16U) | (static_cast<std::uint32_t>(arrSource[15]) << 24U);
+	JsonValue stRoot;
+	std::string strError;
+	ENGINE_NEXT_CHECK(EngineNext::Serialization::ParseJson(std::string(arrSource.begin() + 20, arrSource.begin() + 20 + nJsonBytes), stRoot, strError));
+	std::vector<std::uint8_t> arrBinary(arrSource.begin() + 28 + nJsonBytes, arrSource.end());
+	const std::size_t nUvOffset = arrBinary.size();
+	for (float fValue : { 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 1.0F })
+	{
+		AppendFloat(arrBinary, fValue);
+	}
+	const std::vector<std::uint8_t> arrImage{ 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02, 0x08, 0x06, 0x00, 0x00, 0x00, 0x72, 0xB6, 0x0D, 0x24, 0x00, 0x00, 0x00, 0x10, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9C, 0x63, 0x60, 0x60, 0x60, 0xF8, 0x0F, 0xC5, 0x10, 0x06, 0x00, 0x1D, 0xF4, 0x03, 0xFD, 0xC8, 0xE1, 0xF6, 0xA8, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82 };
+	const std::size_t nImageOffset = arrBinary.size();
+	arrBinary.insert(arrBinary.end(), arrImage.begin(), arrImage.end());
+	JsonValue::Object &mapRoot = *stRoot.GetObject();
+	mapRoot["bufferViews"].GetList()->push_back(JsonValue::Object{ { "buffer", std::int64_t{ 0 } }, { "byteOffset", static_cast<std::int64_t>(nUvOffset) }, { "byteLength", std::int64_t{ 24 } } });
+	mapRoot["bufferViews"].GetList()->push_back(JsonValue::Object{ { "buffer", std::int64_t{ 0 } }, { "byteOffset", static_cast<std::int64_t>(nImageOffset) }, { "byteLength", static_cast<std::int64_t>(arrImage.size()) } });
+	mapRoot["accessors"].GetList()->push_back(JsonValue::Object{ { "bufferView", std::int64_t{ 2 } }, { "componentType", std::int64_t{ 5126 } }, { "count", std::int64_t{ 3 } }, { "type", "VEC2" } });
+	mapRoot["images"] = JsonValue::List{ JsonValue::Object{ { "bufferView", std::int64_t{ 3 } }, { "mimeType", "image/png" } } };
+	mapRoot["textures"] = JsonValue::List{ JsonValue::Object{ { "source", std::int64_t{ 0 } } } };
+	mapRoot["materials"] = JsonValue::List{ JsonValue::Object{ { "pbrMetallicRoughness", JsonValue::Object{ { "baseColorTexture", JsonValue::Object{ { "index", std::int64_t{ 0 } } } } } } } };
+	JsonValue::Object &mapPrimitive = *mapRoot["meshes"].GetList()->at(0).GetObject()->at("primitives").GetList()->at(0).GetObject();
+	mapPrimitive["material"] = std::int64_t{ 0 };
+	mapPrimitive["attributes"].GetObject()->emplace("TEXCOORD_0", std::int64_t{ 2 });
+	mapRoot["buffers"].GetList()->at(0).GetObject()->at("byteLength") = static_cast<std::int64_t>(arrBinary.size());
+	std::string strJson;
+	ENGINE_NEXT_CHECK(EngineNext::Serialization::CanonicalJson(stRoot, strJson));
+	strJson.append((4 - strJson.size() % 4) % 4, ' ');
+	arrBinary.resize((arrBinary.size() + 3) & ~std::size_t{ 3 });
+	std::vector<std::uint8_t> arrResult;
+	AppendLittle32(arrResult, 0x46546C67U);
+	AppendLittle32(arrResult, 2);
+	AppendLittle32(arrResult, static_cast<std::uint32_t>(28 + strJson.size() + arrBinary.size()));
+	AppendLittle32(arrResult, static_cast<std::uint32_t>(strJson.size()));
+	AppendLittle32(arrResult, 0x4E4F534AU);
+	arrResult.insert(arrResult.end(), strJson.begin(), strJson.end());
+	AppendLittle32(arrResult, static_cast<std::uint32_t>(arrBinary.size()));
+	AppendLittle32(arrResult, 0x004E4942U);
+	arrResult.insert(arrResult.end(), arrBinary.begin(), arrBinary.end());
+	return arrResult;
+}
+
 struct PackageFixture
 {
-	PackageFixture()
+	explicit PackageFixture(bool bTextured = false)
 	{
 		static std::atomic<std::uint64_t> nSequence{ 0 };
 		const std::uint64_t nStamp = static_cast<std::uint64_t>(std::chrono::steady_clock::now().time_since_epoch().count());
@@ -75,7 +130,7 @@ struct PackageFixture
 		{
 			return;
 		}
-		const std::vector<std::uint8_t> arrBytes = EngineNext::Tests::Assets::ReadFixture("valid.glb");
+		const std::vector<std::uint8_t> arrBytes = bTextured ? TexturedGlb() : EngineNext::Tests::Assets::ReadFixture("valid.glb");
 		const std::string strDigest = EngineNext::Serialization::Sha256Hex(arrBytes.data(), arrBytes.size());
 		stPackage.stScene.strSceneId = "m42.gpu-test";
 		stPackage.stScene.strSceneRevision = "r1";
@@ -420,4 +475,127 @@ ENGINE_NEXT_TEST("GPU package preserves small nonsingular source entity transfor
 	EngineNext::Rendering::RenderScene stLoaded;
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::LoadGpuPackage(stOutput.string(), stFixture.stPackage.strPackageDigest, stLoaded, arrDiagnostics));
 	ENGINE_NEXT_CHECK_EQ(stLoaded.arrInstances[0].arrTransform[0], 1.0e-8);
+}
+
+ENGINE_NEXT_TEST("Prepared GPU packages retain version-one compatibility and persist clusters")
+{
+	PackageFixture stFixture;
+	if (!stFixture.bReady)
+	{
+		return;
+	}
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	const std::string strSource = (stFixture.stRoot / "source.enpak").string();
+	const std::string strLegacy = (stFixture.stRoot / "legacy.engpu").string();
+	const std::string strPrepared = (stFixture.stRoot / "prepared.engpu").string();
+	const std::string strSecond = (stFixture.stRoot / "second.engpu").string();
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::CookGpuPackage(strSource, strLegacy, arrDiagnostics));
+	const EngineNext::Rendering::GpuCookConfig stConfig;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::CookGpuPackage(strSource, strPrepared, stConfig, arrDiagnostics));
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::CookGpuPackage(strSource, strSecond, stConfig, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(ReadBytes(fs::path(strPrepared) / "GpuManifest.json"), ReadBytes(fs::path(strSecond) / "GpuManifest.json"));
+	EngineNext::Rendering::RenderScene stOriginal;
+	EngineNext::Rendering::RenderScene stLegacy;
+	EngineNext::Rendering::RenderScene stPrepared;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::LoadRenderScene(strSource, stOriginal, arrDiagnostics));
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::LoadGpuPackage(strLegacy, stFixture.stPackage.strPackageDigest, stLegacy, arrDiagnostics));
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::LoadGpuPackage(strPrepared, stFixture.stPackage.strPackageDigest, stPrepared, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(stLegacy.nGpuFormatVersion, 1U);
+	ENGINE_NEXT_CHECK(stLegacy.arrAssets[0].stMesh.arrPrimitives[0].arrClusters.empty());
+	ENGINE_NEXT_CHECK_EQ(stPrepared.nGpuFormatVersion, 2U);
+	ENGINE_NEXT_CHECK_EQ(stPrepared.arrAssets[0].stMesh.arrPrimitives[0].arrClusters.size(), 1U);
+	ENGINE_NEXT_CHECK_EQ(stPrepared.arrAssets[0].stTextureCook.arrMaterials.size(), 1U);
+	ENGINE_NEXT_CHECK(stPrepared.arrAssets[0].stTextureCook.arrVariants.empty());
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::VerifyCookedScene(stOriginal, stLegacy, arrDiagnostics));
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::VerifyCookedScene(stOriginal, stPrepared, arrDiagnostics));
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::CookGpuPackage(strSource, strPrepared, stConfig, arrDiagnostics));
+	ENGINE_NEXT_CHECK(!EngineNext::Rendering::CookGpuPackage(strSource, strPrepared, arrDiagnostics));
+	stPrepared.arrAssets[0].stMesh.arrPrimitives[0].arrClusters[0].fSphereRadius += 1;
+	ENGINE_NEXT_CHECK(!EngineNext::Rendering::VerifyCookedScene(stOriginal, stPrepared, arrDiagnostics));
+}
+
+ENGINE_NEXT_TEST("Prepared GPU reader rejects rehashed cluster changes and unknown algorithms")
+{
+	PackageFixture stFixture;
+	if (!stFixture.bReady)
+	{
+		return;
+	}
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	const fs::path stOutput = stFixture.stRoot / "prepared.engpu";
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::CookGpuPackage((stFixture.stRoot / "source.enpak").string(), stOutput.string(), EngineNext::Rendering::GpuCookConfig{}, arrDiagnostics));
+	JsonValue stManifest;
+	if (!ReadManifest(stOutput / "GpuManifest.json", stManifest))
+	{
+		return;
+	}
+	std::vector<std::uint8_t> arrPage = ReadBytes(stOutput / "blobs" / *stManifest.GetObject()->at("page_sha256").GetString());
+	ENGINE_NEXT_CHECK(arrPage.size() > 8);
+	arrPage[arrPage.size() - 8] ^= 1;
+	ReplacePage(stOutput, arrPage, stManifest);
+	EngineNext::Rendering::RenderScene stLoaded;
+	stLoaded.strSceneId = "preserved";
+	ENGINE_NEXT_CHECK(!EngineNext::Rendering::LoadGpuPackage(stOutput.string(), stFixture.stPackage.strPackageDigest, stLoaded, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(stLoaded.strSceneId, "preserved");
+	stManifest.GetObject()->at("cluster_version") = "unknown";
+	WriteManifest(stOutput / "GpuManifest.json", stManifest);
+	ENGINE_NEXT_CHECK(!EngineNext::Rendering::LoadGpuPackage(stOutput.string(), stFixture.stPackage.strPackageDigest, stLoaded, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(arrDiagnostics.back().strCode, "gpu_manifest");
+}
+
+ENGINE_NEXT_TEST("Prepared GPU package persists image mip bytes and binds them to source pixels")
+{
+	PackageFixture stFixture(true);
+	if (!stFixture.bReady)
+	{
+		return;
+	}
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	const fs::path stOutput = stFixture.stRoot / "textures.engpu";
+	const bool bCooked = EngineNext::Rendering::CookGpuPackage((stFixture.stRoot / "source.enpak").string(), stOutput.string(), EngineNext::Rendering::GpuCookConfig{}, arrDiagnostics);
+#if defined(_WIN32)
+	ENGINE_NEXT_CHECK(bCooked);
+	if (!bCooked)
+	{
+		return;
+	}
+	EngineNext::Rendering::RenderScene stSource;
+	EngineNext::Rendering::RenderScene stLoaded;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::BuildRenderScene(stFixture.stPackage, stSource, arrDiagnostics));
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::LoadGpuPackage(stOutput.string(), stFixture.stPackage.strPackageDigest, stLoaded, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(stLoaded.arrAssets[0].stTextureCook.arrVariants.size(), 1U);
+	const EngineNext::Rendering::CookedTextureVariant &stVariant = stLoaded.arrAssets[0].stTextureCook.arrVariants[0];
+	ENGINE_NEXT_CHECK_EQ(stVariant.arrMips.size(), 2U);
+	ENGINE_NEXT_CHECK_EQ(stVariant.arrMips[0].arrRgba8.size(), 16U);
+	ENGINE_NEXT_CHECK_EQ(stVariant.arrMips[1].arrRgba8.size(), 4U);
+	ENGINE_NEXT_CHECK_EQ(stVariant.eSemantic, EngineNext::Rendering::ImageSemantic::Srgb);
+	ENGINE_NEXT_CHECK_EQ(stVariant.eAlphaPolicy, EngineNext::Rendering::TextureAlphaPolicy::Ignore);
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::VerifyCookedScene(stSource, stLoaded, arrDiagnostics));
+	JsonValue stManifest;
+	if (!ReadManifest(stOutput / "GpuManifest.json", stManifest))
+	{
+		return;
+	}
+	std::vector<std::uint8_t> arrPage = ReadBytes(stOutput / "blobs" / *stManifest.GetObject()->at("page_sha256").GetString());
+	std::vector<std::uint8_t> arrMipMarker;
+	AppendLittle32(arrMipMarker, 1);
+	AppendLittle32(arrMipMarker, 1);
+	AppendLittle32(arrMipMarker, 4);
+	arrMipMarker.insert(arrMipMarker.end(), stVariant.arrMips[1].arrRgba8.begin(), stVariant.arrMips[1].arrRgba8.end());
+	const std::vector<std::uint8_t>::iterator itMip = std::search(arrPage.begin(), arrPage.end(), arrMipMarker.begin(), arrMipMarker.end());
+	ENGINE_NEXT_CHECK(itMip != arrPage.end());
+	if (itMip == arrPage.end())
+	{
+		return;
+	}
+	*(itMip + 12) ^= 1;
+	ReplacePage(stOutput, arrPage, stManifest);
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::LoadGpuPackage(stOutput.string(), stFixture.stPackage.strPackageDigest, stLoaded, arrDiagnostics));
+	ENGINE_NEXT_CHECK(!EngineNext::Rendering::VerifyCookedScene(stSource, stLoaded, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(arrDiagnostics.back().strCode, "gpu_source_mismatch");
+#else
+	ENGINE_NEXT_CHECK(!bCooked);
+	ENGINE_NEXT_CHECK(!fs::exists(stOutput));
+	ENGINE_NEXT_CHECK_EQ(arrDiagnostics.back().strCode, "image_decode_platform");
+#endif
 }

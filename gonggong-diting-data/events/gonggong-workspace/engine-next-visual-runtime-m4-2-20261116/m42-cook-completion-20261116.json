@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "event_id": "m42-cook-completion-20261116",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "kind": "step",
+  "occurred_at": "2026-11-16T03:45:43.306308+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1334",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-5afcb929",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m42-request-20261116"
+  ],
+  "payload": {
+    "scope": "M4.2 v2 persistent mips, material semantic variants and initial mesh clusters implemented under #1334",
+    "foundation_main": "021834b78727eb3481a8501c0c212719157ff7b9",
+    "authorization": "User authorized implementation and direct main delivery after all tests",
+    "verification": "72 rendering tests / 2478 checks, 61 runtime tests / 1100 checks, full M2/M3 and AINative regressions passed; GPU final evidence collected separately",
+    "records": [
+      "data-collection/engine-next-visual-runtime-m4-2-cook-verification.json",
+      "data-collection/engine-next-visual-runtime-m4-2-cook-build-impact.json",
+      "data-collection/engine-next-visual-runtime-m4-2-cook-review-r3.json",
+      "data-collection/engine-next-visual-runtime-m4-2-cluster-review.json"
+    ]
+  },
+  "sha256": "0b7e6fd24be7e13730f96af01f9fce37ca26484d5e09f2a9e8eadf002a9e9c38"
+}

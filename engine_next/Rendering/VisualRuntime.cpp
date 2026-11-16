@@ -42,6 +42,7 @@
 #include "engine_next/Rendering/Cook/EnvironmentLighting.h"
 #include "engine_next/Rendering/Cook/GpuPackage.h"
 #include "engine_next/include/EngineNext/Rendering/RenderScene.h"
+#include "engine_next/include/EngineNext/Rendering/TextureData.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -1425,6 +1426,10 @@ bool VisualRuntime::CreateSceneMesh()
 	for (const RenderAsset &stAsset : stRenderScene.arrAssets)
 	{
 		const std::uint32_t nMaterialBase = static_cast<std::uint32_t>(arrMaterials.size());
+		if (stRenderScene.nGpuFormatVersion == 2 && stAsset.stTextureCook.arrMaterials.size() != stAsset.stMesh.arrMaterials.size())
+		{
+			return Fail("Cooked material texture bindings do not match source materials");
+		}
 		if (stAsset.stMesh.arrMaterials.size() > MAX_MATERIALS - arrMaterials.size())
 		{
 			return Fail("Material descriptor budget exceeded");
@@ -1436,12 +1441,14 @@ bool VisualRuntime::CreateSceneMesh()
 				return Fail("Alpha blend awaits transparent render pass");
 			}
 			const std::uint32_t nMaterial = static_cast<std::uint32_t>(arrMaterials.size());
+			const std::uint32_t nSourceMaterial = nMaterial - nMaterialBase;
 			const std::uint32_t nViewStart = MATERIAL_VIEW_START + nMaterial * MATERIAL_TEXTURE_COUNT;
 			const std::array<std::int32_t, 5> arrTextureIds{ stMaterial.nBaseColorTexture, stMaterial.nMetallicRoughnessTexture, stMaterial.nNormalTexture, stMaterial.nOcclusionTexture, stMaterial.nEmissiveTexture };
 			for (std::uint32_t nSlot = 0; nSlot < MATERIAL_TEXTURE_COUNT; ++nSlot)
 			{
 				const std::int32_t nTexture = arrTextureIds[nSlot];
 				std::vector<MipLevel> arrMips;
+				const std::vector<MipLevel> *pUploadMips = &arrMips;
 				Assets::Diagnostics arrDiagnostics;
 				const bool bSrgb = nSlot == 0 || nSlot == 4;
 				D3D12_SAMPLER_DESC stSampler{};
@@ -1455,22 +1462,41 @@ bool VisualRuntime::CreateSceneMesh()
 				if (nTexture >= 0)
 				{
 					const TextureData &stTexture = stAsset.stMesh.arrTextures[static_cast<std::size_t>(nTexture)];
-					const EncodedImage &stImage = stAsset.stMesh.arrImages[stTexture.nImage];
-					DecodedImage stDecoded;
-					if (!DecodeImage(stImage.arrBytes, stImage.strMimeType, stDecoded, arrDiagnostics))
+					if (stRenderScene.nGpuFormatVersion == 2)
 					{
-						return Fail(arrDiagnostics.empty() ? "Decode material texture" : arrDiagnostics.front().strMessage);
-					}
-					if (nSlot == 4 || (nSlot == 0 && stMaterial.eAlphaMode == AlphaMode::Opaque))
-					{
-						for (std::size_t nAlpha = 3; nAlpha < stDecoded.arrRgba8.size(); nAlpha += 4)
+						const std::int32_t nVariant = stAsset.stTextureCook.arrMaterials[nSourceMaterial].arrVariants[nSlot];
+						if (nVariant < 0 || static_cast<std::size_t>(nVariant) >= stAsset.stTextureCook.arrVariants.size())
 						{
-							stDecoded.arrRgba8[nAlpha] = 255;
+							return Fail("Cooked texture variant index is invalid");
 						}
+						const CookedTextureVariant &stVariant = stAsset.stTextureCook.arrVariants[static_cast<std::size_t>(nVariant)];
+						const ImageSemantic eExpectedSemantic = nSlot == 2 ? ImageSemantic::Normal : (bSrgb ? ImageSemantic::Srgb : ImageSemantic::Linear);
+						const TextureAlphaPolicy eExpectedAlpha = nSlot == 4 || (nSlot == 0 && stMaterial.eAlphaMode == AlphaMode::Opaque) ? TextureAlphaPolicy::Ignore : TextureAlphaPolicy::Preserve;
+						if (stVariant.nImage != stTexture.nImage || stVariant.eSemantic != eExpectedSemantic || stVariant.eAlphaPolicy != eExpectedAlpha || stVariant.arrMips.empty())
+						{
+							return Fail("Cooked texture variant semantics differ from its material slot");
+						}
+						pUploadMips = &stVariant.arrMips;
 					}
-					if (!BuildMipChain(stDecoded, nSlot == 2 ? ImageSemantic::Normal : (bSrgb ? ImageSemantic::Srgb : ImageSemantic::Linear), arrMips, arrDiagnostics))
+					else
 					{
-						return Fail(arrDiagnostics.empty() ? "Decode material texture" : arrDiagnostics.front().strMessage);
+						const EncodedImage &stImage = stAsset.stMesh.arrImages[stTexture.nImage];
+						DecodedImage stDecoded;
+						if (!DecodeImage(stImage.arrBytes, stImage.strMimeType, stDecoded, arrDiagnostics))
+						{
+							return Fail(arrDiagnostics.empty() ? "Decode material texture" : arrDiagnostics.front().strMessage);
+						}
+						if (nSlot == 4 || (nSlot == 0 && stMaterial.eAlphaMode == AlphaMode::Opaque))
+						{
+							for (std::size_t nAlpha = 3; nAlpha < stDecoded.arrRgba8.size(); nAlpha += 4)
+							{
+								stDecoded.arrRgba8[nAlpha] = 255;
+							}
+						}
+						if (!BuildMipChain(stDecoded, nSlot == 2 ? ImageSemantic::Normal : (bSrgb ? ImageSemantic::Srgb : ImageSemantic::Linear), arrMips, arrDiagnostics))
+						{
+							return Fail(arrDiagnostics.empty() ? "Decode material texture" : arrDiagnostics.front().strMessage);
+						}
 					}
 					stSampler.AddressU = stTexture.nWrapS == 33071 ? D3D12_TEXTURE_ADDRESS_MODE_CLAMP : (stTexture.nWrapS == 33648 ? D3D12_TEXTURE_ADDRESS_MODE_MIRROR : D3D12_TEXTURE_ADDRESS_MODE_WRAP);
 					stSampler.AddressV = stTexture.nWrapT == 33071 ? D3D12_TEXTURE_ADDRESS_MODE_CLAMP : (stTexture.nWrapT == 33648 ? D3D12_TEXTURE_ADDRESS_MODE_MIRROR : D3D12_TEXTURE_ADDRESS_MODE_WRAP);
@@ -1491,7 +1517,7 @@ bool VisualRuntime::CreateSceneMesh()
 					stPixel.arrRgba8 = nSlot == 2 ? std::vector<std::uint8_t>{ 128, 128, 255, 255 } : std::vector<std::uint8_t>{ 255, 255, 255, 255 };
 					arrMips.push_back(std::move(stPixel));
 				}
-				if (!UploadTexture(arrMips, bSrgb, nViewStart + nSlot))
+				if (!UploadTexture(*pUploadMips, bSrgb, nViewStart + nSlot))
 				{
 					return false;
 				}
@@ -2508,6 +2534,24 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["scene_revision"] = JsonValue(stRenderScene.strSceneRevision);
 	mapReport["scene_digest"] = JsonValue(stRenderScene.strSceneDigest);
 	mapReport["source_package_digest"] = JsonValue(stRenderScene.strPackageDigest);
+	std::uint64_t nLoadedClusters = 0;
+	std::uint64_t nCookedMipLevels = 0;
+	for (const RenderAsset &stAsset : stRenderScene.arrAssets)
+	{
+		for (const MeshPrimitive &stPrimitive : stAsset.stMesh.arrPrimitives)
+		{
+			nLoadedClusters += stPrimitive.arrClusters.size();
+		}
+		for (const CookedTextureVariant &stVariant : stAsset.stTextureCook.arrVariants)
+		{
+			nCookedMipLevels += stVariant.arrMips.size();
+		}
+	}
+	mapReport["gpu_package_version"] = JsonValue(static_cast<std::int64_t>(stRenderScene.nGpuFormatVersion));
+	mapReport["texture_mip_source"] = JsonValue(!bSceneMode ? "none" : (stRenderScene.nGpuFormatVersion == 2 ? "cooked_gpu_package" : "runtime_decode"));
+	mapReport["cooked_texture_mip_levels"] = JsonValue(static_cast<std::int64_t>(nCookedMipLevels));
+	mapReport["loaded_mesh_clusters"] = JsonValue(static_cast<std::int64_t>(nLoadedClusters));
+	mapReport["mesh_cluster_draw_path"] = JsonValue("indexed_primitive");
 	mapReport["materials"] = JsonValue(static_cast<std::int64_t>(arrMaterials.size()));
 	mapReport["material_textures"] = JsonValue(static_cast<std::int64_t>(arrMaterials.size() * MATERIAL_TEXTURE_COUNT));
 	mapReport["environment_source"] = JsonValue(bSceneMode ? "procedural_linear_hdr_sky" : "none");

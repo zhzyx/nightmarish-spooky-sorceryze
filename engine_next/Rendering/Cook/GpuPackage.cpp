@@ -31,6 +31,8 @@
 #include "engine_next/Rendering/Cook/GpuPackage.h"
 
 #include "engine_next/Assets/AssetValidation.h"
+#include "engine_next/Rendering/Cook/MeshCluster.h"
+#include "engine_next/Rendering/Cook/TextureCook.h"
 #include "engine_next/include/EngineNext/Assets/BlobValidator.h"
 #include "engine_next/include/EngineNext/Serialization/Json.h"
 #include "engine_next/include/EngineNext/Serialization/Sha256.h"
@@ -80,7 +82,8 @@ constexpr std::size_t MAX_PAGE_BYTES = 512ULL * 1024ULL * 1024ULL;
 constexpr std::size_t MAX_MANIFEST_BYTES = 65536;
 constexpr std::uint32_t MAX_ITEMS = 65536;
 constexpr std::array<std::uint8_t, 8> MAGIC{ 'E', 'N', 'G', 'P', 'U', '0', '1', 0 };
-constexpr std::uint32_t FORMAT_VERSION = 1;
+constexpr std::uint32_t LEGACY_FORMAT_VERSION = 1;
+constexpr std::uint32_t PREPARED_FORMAT_VERSION = 2;
 
 bool Fail(Assets::Diagnostics &out_arrDiagnostics, const char *pCode, const std::string &strPath, const char *pMessage)
 {
@@ -161,13 +164,14 @@ public:
 		out_nValue = static_cast<std::uint32_t>(nValue);
 		return true;
 	}
-	bool Count(std::uint32_t &out_nCount, std::size_t nItemBytes, std::uint32_t nLimit = MAX_ITEMS)
+	bool Count(std::uint32_t &out_nCount, std::size_t nItemBytes, std::uint32_t nLimit = MAX_ITEMS, std::size_t nAllocationBytes = 0)
 	{
-		if (!Uint32(out_nCount) || out_nCount > nLimit || out_nCount > (arrBytes.size() - nPosition) / nItemBytes || out_nCount > (MAX_PAGE_BYTES - nDecodedBytes) / nItemBytes)
+		const std::size_t nMemoryBytes = nAllocationBytes == 0 ? nItemBytes : nAllocationBytes;
+		if (nItemBytes == 0 || !Uint32(out_nCount) || out_nCount > nLimit || out_nCount > (arrBytes.size() - nPosition) / nItemBytes || out_nCount > (MAX_PAGE_BYTES - nDecodedBytes) / nMemoryBytes)
 		{
 			return false;
 		}
-		nDecodedBytes += out_nCount * nItemBytes;
+		nDecodedBytes += out_nCount * nMemoryBytes;
 		return true;
 	}
 	bool Float(float &out_fValue)
@@ -201,10 +205,10 @@ public:
 		nPosition += nBytes;
 		return out_strValue.find('\0') == std::string::npos;
 	}
-	bool Bytes(std::vector<std::uint8_t> &out_arrBytes)
+	bool Bytes(std::vector<std::uint8_t> &out_arrBytes, std::uint32_t nLimit = 16 * 1024 * 1024)
 	{
 		std::uint32_t nBytes = 0;
-		if (!Count(nBytes, 1, 16 * 1024 * 1024))
+		if (!Count(nBytes, 1, nLimit))
 		{
 			return false;
 		}
@@ -523,11 +527,307 @@ bool ReadMesh(Reader &stReader, DecodedMesh &out_stMesh)
 	return true;
 }
 
-bool Encode(const RenderScene &stScene, std::vector<std::uint8_t> &out_arrPage)
+std::array<std::int32_t, 5> MaterialTextureIndices(const MaterialData &stMaterial)
+{
+	return { stMaterial.nBaseColorTexture, stMaterial.nMetallicRoughnessTexture, stMaterial.nNormalTexture, stMaterial.nOcclusionTexture, stMaterial.nEmissiveTexture };
+}
+
+void WritePreparedData(Writer &stWriter, const RenderScene &stScene)
+{
+	stWriter.Uint32(static_cast<std::uint32_t>(stScene.arrAssets.size()));
+	for (const RenderAsset &stAsset : stScene.arrAssets)
+	{
+		stWriter.Uint32(static_cast<std::uint32_t>(stAsset.stTextureCook.arrVariants.size()));
+		for (const CookedTextureVariant &stVariant : stAsset.stTextureCook.arrVariants)
+		{
+			stWriter.Uint32(stVariant.nImage);
+			stWriter.Uint32(static_cast<std::uint32_t>(stVariant.eSemantic));
+			stWriter.Uint32(static_cast<std::uint32_t>(stVariant.eAlphaPolicy));
+			stWriter.Uint32(static_cast<std::uint32_t>(stVariant.arrMips.size()));
+			for (const MipLevel &stMip : stVariant.arrMips)
+			{
+				stWriter.Uint32(stMip.nWidth);
+				stWriter.Uint32(stMip.nHeight);
+				stWriter.Uint32(static_cast<std::uint32_t>(stMip.arrRgba8.size()));
+				stWriter.Bytes(stMip.arrRgba8.data(), stMip.arrRgba8.size());
+			}
+		}
+		stWriter.Uint32(static_cast<std::uint32_t>(stAsset.stTextureCook.arrMaterials.size()));
+		for (const CookedMaterialTextures &stMaterial : stAsset.stTextureCook.arrMaterials)
+		{
+			for (std::int32_t nVariant : stMaterial.arrVariants)
+			{
+				stWriter.Uint32(nVariant < 0 ? UINT32_MAX : static_cast<std::uint32_t>(nVariant));
+			}
+		}
+		stWriter.Uint32(static_cast<std::uint32_t>(stAsset.stMesh.arrPrimitives.size()));
+		for (const MeshPrimitive &stPrimitive : stAsset.stMesh.arrPrimitives)
+		{
+			stWriter.Uint32(static_cast<std::uint32_t>(stPrimitive.arrClusters.size()));
+			for (const MeshCluster &stCluster : stPrimitive.arrClusters)
+			{
+				stWriter.Uint32(static_cast<std::uint32_t>(stCluster.arrVertexIndices.size()));
+				for (std::uint32_t nIndex : stCluster.arrVertexIndices)
+				{
+					stWriter.Uint32(nIndex);
+				}
+				stWriter.Uint32(static_cast<std::uint32_t>(stCluster.arrTriangleIndices.size()));
+				stWriter.Bytes(stCluster.arrTriangleIndices.data(), stCluster.arrTriangleIndices.size());
+				for (const std::array<float, 3> &arrBounds : { stCluster.arrBoundsMinimum, stCluster.arrBoundsMaximum, stCluster.arrSphereCenter })
+				{
+					for (float fValue : arrBounds)
+					{
+						stWriter.Float(fValue);
+					}
+				}
+				stWriter.Float(stCluster.fSphereRadius);
+				stWriter.Uint32(stCluster.nDegenerateTriangleCount);
+			}
+		}
+	}
+}
+
+bool ReadTextureData(Reader &stReader, RenderAsset &out_stAsset)
+{
+	std::uint32_t nVariants = 0;
+	if (!stReader.Count(nVariants, 16, MAX_ITEMS, sizeof(CookedTextureVariant)))
+	{
+		return false;
+	}
+	std::set<std::array<std::uint32_t, 3>> setKeys;
+	for (std::uint32_t nVariant = 0; nVariant < nVariants; ++nVariant)
+	{
+		CookedTextureVariant stVariant;
+		std::uint32_t nSemantic = 0;
+		std::uint32_t nAlpha = 0;
+		std::uint32_t nMips = 0;
+		if (!stReader.Uint32(stVariant.nImage) || stVariant.nImage >= out_stAsset.stMesh.arrImages.size() ||
+			!stReader.Uint32(nSemantic) || nSemantic > static_cast<std::uint32_t>(ImageSemantic::Normal) ||
+			!stReader.Uint32(nAlpha) || nAlpha > static_cast<std::uint32_t>(TextureAlphaPolicy::Ignore) ||
+			!setKeys.insert({ stVariant.nImage, nSemantic, nAlpha }).second || !stReader.Count(nMips, 16, 14, sizeof(MipLevel)) || nMips == 0)
+		{
+			return false;
+		}
+		stVariant.eSemantic = static_cast<ImageSemantic>(nSemantic);
+		stVariant.eAlphaPolicy = static_cast<TextureAlphaPolicy>(nAlpha);
+		Assets::BlobInfo stImageInfo;
+		Assets::Diagnostics arrImageDiagnostics;
+		const EncodedImage &stImage = out_stAsset.stMesh.arrImages[stVariant.nImage];
+		if (!Assets::ValidateBlob(stImage.strMimeType, stImage.arrBytes, stImageInfo, arrImageDiagnostics))
+		{
+			return false;
+		}
+		std::uint32_t nWidth = 0;
+		std::uint32_t nHeight = 0;
+		for (std::uint32_t nMip = 0; nMip < nMips; ++nMip)
+		{
+			MipLevel stLevel;
+			if (!stReader.Uint32(stLevel.nWidth) || !stReader.Uint32(stLevel.nHeight) || stLevel.nWidth == 0 || stLevel.nHeight == 0 ||
+				stLevel.nWidth > 8192 || stLevel.nHeight > 8192 ||
+				(nMip == 0 && (stLevel.nWidth != stImageInfo.nWidth || stLevel.nHeight != stImageInfo.nHeight)) ||
+				(nMip != 0 && (stLevel.nWidth != (std::max)(1U, nWidth / 2) || stLevel.nHeight != (std::max)(1U, nHeight / 2) || (nWidth == 1 && nHeight == 1))) ||
+				!stReader.Bytes(stLevel.arrRgba8, static_cast<std::uint32_t>(MAX_PAGE_BYTES)) ||
+				stLevel.arrRgba8.size() != static_cast<std::size_t>(stLevel.nWidth) * stLevel.nHeight * 4)
+			{
+				return false;
+			}
+			nWidth = stLevel.nWidth;
+			nHeight = stLevel.nHeight;
+			stVariant.arrMips.push_back(std::move(stLevel));
+		}
+		if (nWidth != 1 || nHeight != 1)
+		{
+			return false;
+		}
+		out_stAsset.stTextureCook.arrVariants.push_back(std::move(stVariant));
+	}
+	std::uint32_t nMaterials = 0;
+	if (!stReader.Count(nMaterials, sizeof(CookedMaterialTextures)) || nMaterials != out_stAsset.stMesh.arrMaterials.size())
+	{
+		return false;
+	}
+	std::set<std::uint32_t> setReferenced;
+	for (std::uint32_t nMaterial = 0; nMaterial < nMaterials; ++nMaterial)
+	{
+		CookedMaterialTextures stBindings;
+		const MaterialData &stMaterial = out_stAsset.stMesh.arrMaterials[nMaterial];
+		const std::array<std::int32_t, 5> arrSourceTextures = MaterialTextureIndices(stMaterial);
+		for (std::size_t nSlot = 0; nSlot < stBindings.arrVariants.size(); ++nSlot)
+		{
+			std::uint32_t nVariant = 0;
+			if (!stReader.Uint32(nVariant) || (nVariant != UINT32_MAX && nVariant >= nVariants) ||
+				((nVariant == UINT32_MAX) != (arrSourceTextures[nSlot] < 0)))
+			{
+				return false;
+			}
+			if (nVariant != UINT32_MAX)
+			{
+				const CookedTextureVariant &stVariant = out_stAsset.stTextureCook.arrVariants[nVariant];
+				const ImageSemantic eExpected = nSlot == 2 ? ImageSemantic::Normal : (nSlot == 0 || nSlot == 4 ? ImageSemantic::Srgb : ImageSemantic::Linear);
+				const TextureAlphaPolicy eExpectedAlpha = nSlot == 4 || (nSlot == 0 && stMaterial.eAlphaMode == AlphaMode::Opaque) ? TextureAlphaPolicy::Ignore : TextureAlphaPolicy::Preserve;
+				const TextureData &stSourceTexture = out_stAsset.stMesh.arrTextures[static_cast<std::size_t>(arrSourceTextures[nSlot])];
+				if (stVariant.nImage != stSourceTexture.nImage || stVariant.eSemantic != eExpected || stVariant.eAlphaPolicy != eExpectedAlpha)
+				{
+					return false;
+				}
+				setReferenced.insert(nVariant);
+			}
+			stBindings.arrVariants[nSlot] = nVariant == UINT32_MAX ? -1 : static_cast<std::int32_t>(nVariant);
+		}
+		out_stAsset.stTextureCook.arrMaterials.push_back(stBindings);
+	}
+	return setReferenced.size() == nVariants;
+}
+
+bool ReadClusterData(Reader &stReader, MeshPrimitive &out_stPrimitive)
+{
+	std::uint32_t nClusters = 0;
+	if (!stReader.Count(nClusters, 59, MAX_ITEMS, sizeof(MeshCluster)) || nClusters == 0)
+	{
+		return false;
+	}
+	for (std::uint32_t nCluster = 0; nCluster < nClusters; ++nCluster)
+	{
+		MeshCluster stCluster;
+		std::uint32_t nVertices = 0;
+		if (!stReader.Count(nVertices, sizeof(std::uint32_t), MAX_MESH_CLUSTER_VERTICES) || nVertices == 0)
+		{
+			return false;
+		}
+		std::set<std::uint32_t> setVertices;
+		for (std::uint32_t nVertex = 0; nVertex < nVertices; ++nVertex)
+		{
+			std::uint32_t nIndex = 0;
+			if (!stReader.Uint32(nIndex) || nIndex >= out_stPrimitive.arrVertices.size() || !setVertices.insert(nIndex).second)
+			{
+				return false;
+			}
+			stCluster.arrVertexIndices.push_back(nIndex);
+		}
+		if (!stReader.Bytes(stCluster.arrTriangleIndices, MAX_MESH_CLUSTER_TRIANGLES * 3) || stCluster.arrTriangleIndices.empty() || stCluster.arrTriangleIndices.size() % 3 != 0)
+		{
+			return false;
+		}
+		for (std::uint8_t nIndex : stCluster.arrTriangleIndices)
+		{
+			if (nIndex >= nVertices)
+			{
+				return false;
+			}
+		}
+		for (std::array<float, 3> *pBounds : { &stCluster.arrBoundsMinimum, &stCluster.arrBoundsMaximum, &stCluster.arrSphereCenter })
+		{
+			for (float &fValue : *pBounds)
+			{
+				if (!stReader.Float(fValue))
+				{
+					return false;
+				}
+			}
+		}
+		if (!stReader.Float(stCluster.fSphereRadius) || stCluster.fSphereRadius < 0 || !stReader.Uint32(stCluster.nDegenerateTriangleCount) ||
+			stCluster.nDegenerateTriangleCount > stCluster.arrTriangleIndices.size() / 3)
+		{
+			return false;
+		}
+		out_stPrimitive.arrClusters.push_back(std::move(stCluster));
+	}
+	std::vector<MeshCluster> arrExpected;
+	Assets::Diagnostics arrDiagnostics;
+	if (!CookMeshClusters(out_stPrimitive, arrExpected, arrDiagnostics) || arrExpected.size() != out_stPrimitive.arrClusters.size())
+	{
+		return false;
+	}
+	for (std::size_t nIndex = 0; nIndex < arrExpected.size(); ++nIndex)
+	{
+		const MeshCluster &stExpected = arrExpected[nIndex];
+		const MeshCluster &stActual = out_stPrimitive.arrClusters[nIndex];
+		if (stExpected.arrVertexIndices != stActual.arrVertexIndices || stExpected.arrTriangleIndices != stActual.arrTriangleIndices ||
+			stExpected.arrBoundsMinimum != stActual.arrBoundsMinimum || stExpected.arrBoundsMaximum != stActual.arrBoundsMaximum ||
+			stExpected.arrSphereCenter != stActual.arrSphereCenter || stExpected.fSphereRadius != stActual.fSphereRadius ||
+			stExpected.nDegenerateTriangleCount != stActual.nDegenerateTriangleCount)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool ReadPreparedData(Reader &stReader, RenderScene &out_stScene)
+{
+	std::uint32_t nAssets = 0;
+	if (!stReader.Count(nAssets, 4, 1024) || nAssets != out_stScene.arrAssets.size())
+	{
+		return false;
+	}
+	for (RenderAsset &stAsset : out_stScene.arrAssets)
+	{
+		if (!ReadTextureData(stReader, stAsset))
+		{
+			return false;
+		}
+		std::uint32_t nPrimitives = 0;
+		if (!stReader.Count(nPrimitives, 4) || nPrimitives != stAsset.stMesh.arrPrimitives.size())
+		{
+			return false;
+		}
+		for (MeshPrimitive &stPrimitive : stAsset.stMesh.arrPrimitives)
+		{
+			if (!ReadClusterData(stReader, stPrimitive))
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool PrepareScene(RenderScene &out_stScene, Assets::Diagnostics &out_arrDiagnostics)
+{
+	std::size_t nRemainingBytes = MAX_PAGE_BYTES;
+	for (RenderAsset &stAsset : out_stScene.arrAssets)
+	{
+		if (!CookMeshTextures(stAsset.stMesh, stAsset.stTextureCook, out_arrDiagnostics, nRemainingBytes))
+		{
+			return false;
+		}
+		for (const CookedTextureVariant &stVariant : stAsset.stTextureCook.arrVariants)
+		{
+			for (const MipLevel &stMip : stVariant.arrMips)
+			{
+				nRemainingBytes -= stMip.arrRgba8.size();
+			}
+		}
+		for (MeshPrimitive &stPrimitive : stAsset.stMesh.arrPrimitives)
+		{
+			const std::size_t nTriangles = stPrimitive.arrIndices.size() / 3;
+			// At least 21 complete triangles fit the 64-vertex limit, including
+			// disjoint input triangles. Bound all temporary cluster allocations.
+			const std::size_t nMaximumClusters = (nTriangles + 20) / 21;
+			const std::size_t nMaximumBytes = nMaximumClusters * sizeof(MeshCluster) + stPrimitive.arrIndices.size() * 5;
+			if (nMaximumBytes > nRemainingBytes)
+			{
+				return Fail(out_arrDiagnostics, "gpu_cook_budget", "$", "Cluster data exceeds the remaining prepared-data budget.");
+			}
+			if (!CookMeshClusters(stPrimitive, stPrimitive.arrClusters, out_arrDiagnostics))
+			{
+				return false;
+			}
+			for (const MeshCluster &stCluster : stPrimitive.arrClusters)
+			{
+				nRemainingBytes -= sizeof(MeshCluster) + stCluster.arrVertexIndices.size() * sizeof(std::uint32_t) + stCluster.arrTriangleIndices.size();
+			}
+		}
+	}
+	out_stScene.nGpuFormatVersion = PREPARED_FORMAT_VERSION;
+	return true;
+}
+
+bool Encode(const RenderScene &stScene, std::vector<std::uint8_t> &out_arrPage, std::uint32_t nVersion = LEGACY_FORMAT_VERSION)
 {
 	Writer stWriter;
 	stWriter.Bytes(MAGIC.data(), MAGIC.size());
-	stWriter.Uint32(FORMAT_VERSION);
+	stWriter.Uint32(nVersion);
 	stWriter.String(stScene.strSceneId);
 	stWriter.String(stScene.strSceneRevision);
 	stWriter.String(stScene.strSceneDigest);
@@ -553,6 +853,10 @@ bool Encode(const RenderScene &stScene, std::vector<std::uint8_t> &out_arrPage)
 			stWriter.Double(dValue);
 		}
 	}
+	if (nVersion == PREPARED_FORMAT_VERSION)
+	{
+		WritePreparedData(stWriter, stScene);
+	}
 	out_arrPage = std::move(stWriter.arrBytes);
 	return stWriter.bValid;
 }
@@ -571,7 +875,7 @@ bool Decode(const std::vector<std::uint8_t> &arrPage, RenderScene &out_stScene)
 	std::string strSceneRevision;
 	std::string strSceneDigest;
 	std::string strPackageDigest;
-	if (!stReader.Uint64(nMagic) || !stReader.Uint32(nVersion) || nVersion != FORMAT_VERSION ||
+	if (!stReader.Uint64(nMagic) || !stReader.Uint32(nVersion) || nVersion != out_stScene.nGpuFormatVersion ||
 		!stReader.String(strSceneId) || strSceneId != out_stScene.strSceneId || !stReader.String(strSceneRevision) || strSceneRevision != out_stScene.strSceneRevision ||
 		!stReader.String(strSceneDigest) || strSceneDigest != out_stScene.strSceneDigest || !stReader.String(strPackageDigest) || strPackageDigest != out_stScene.strPackageDigest ||
 		!stReader.Count(nAssets, 32, 1024) || nAssets == 0)
@@ -616,6 +920,10 @@ bool Decode(const std::vector<std::uint8_t> &arrPage, RenderScene &out_stScene)
 			}
 		}
 		out_stScene.arrInstances.push_back(stInstance);
+	}
+	if (nVersion == PREPARED_FORMAT_VERSION && !ReadPreparedData(stReader, out_stScene))
+	{
+		return false;
 	}
 	return stReader.IsComplete();
 }
@@ -682,11 +990,11 @@ bool IsInside(const fs::path &stPath, const fs::path &stParent)
 	return true;
 }
 
-JsonValue Manifest(const RenderScene &stScene, const std::vector<std::uint8_t> &arrPage)
+JsonValue Manifest(const RenderScene &stScene, const std::vector<std::uint8_t> &arrPage, std::uint32_t nVersion)
 {
-	return JsonValue::Object{
-		{ "schema_version", std::int64_t{ FORMAT_VERSION } },
-		{ "cook_version", "engine-next-cpu-layout-v1" },
+	JsonValue::Object mapManifest{
+		{ "schema_version", static_cast<std::int64_t>(nVersion) },
+		{ "cook_version", nVersion == PREPARED_FORMAT_VERSION ? "engine-next-gpu-data-v2" : "engine-next-cpu-layout-v1" },
 		{ "source_package_sha256", stScene.strPackageDigest },
 		{ "scene_id", stScene.strSceneId },
 		{ "scene_revision", stScene.strSceneRevision },
@@ -696,6 +1004,13 @@ JsonValue Manifest(const RenderScene &stScene, const std::vector<std::uint8_t> &
 		{ "vertex_layout", "position3f-normal3f-tangent4f-texcoord2f-le" },
 		{ "image_encoding", "source-png-jpeg" },
 	};
+	if (nVersion == PREPARED_FORMAT_VERSION)
+	{
+		mapManifest.emplace("texture_format", "rgba8-uncompressed");
+		mapManifest.emplace("texture_cook_version", "srgb-linear-normal-v1");
+		mapManifest.emplace("cluster_version", "sequential-64v-126t-v1");
+	}
+	return mapManifest;
 }
 
 bool ParseManifest(const std::vector<std::uint8_t> &arrManifest, const std::string &strExpectedSourceDigest, RenderScene &out_stScene, std::string &out_strPageDigest, std::size_t &out_nPageBytes, Assets::Diagnostics &out_arrDiagnostics)
@@ -709,25 +1024,40 @@ bool ParseManifest(const std::vector<std::uint8_t> &arrManifest, const std::stri
 		return false;
 	}
 	const JsonValue::Object *pObject = stValue.GetObject();
-	if (pObject == nullptr || !Assets::Fields(*pObject, { "schema_version", "cook_version", "source_package_sha256", "scene_id", "scene_revision", "scene_sha256", "page_sha256", "page_bytes", "vertex_layout", "image_encoding" }, "$", out_arrDiagnostics))
+	std::int64_t nVersion = 0;
+	if (pObject == nullptr || !Assets::Integer(*pObject, "schema_version", "$", nVersion, out_arrDiagnostics) ||
+		(nVersion != LEGACY_FORMAT_VERSION && nVersion != PREPARED_FORMAT_VERSION))
 	{
 		return false;
 	}
-	std::int64_t nVersion = 0;
+	const bool bPrepared = nVersion == PREPARED_FORMAT_VERSION;
+	if ((!bPrepared && !Assets::Fields(*pObject, { "schema_version", "cook_version", "source_package_sha256", "scene_id", "scene_revision", "scene_sha256", "page_sha256", "page_bytes", "vertex_layout", "image_encoding" }, "$", out_arrDiagnostics)) ||
+		(bPrepared && !Assets::Fields(*pObject, { "schema_version", "cook_version", "source_package_sha256", "scene_id", "scene_revision", "scene_sha256", "page_sha256", "page_bytes", "vertex_layout", "image_encoding", "texture_format", "texture_cook_version", "cluster_version" }, "$", out_arrDiagnostics)))
+	{
+		return false;
+	}
+	std::string strTextureFormat;
+	std::string strTextureVersion;
+	std::string strClusterVersion;
+	if (bPrepared && (!Assets::String(*pObject, "texture_format", "$", strTextureFormat, out_arrDiagnostics) || strTextureFormat != "rgba8-uncompressed" || !Assets::String(*pObject, "texture_cook_version", "$", strTextureVersion, out_arrDiagnostics) || strTextureVersion != "srgb-linear-normal-v1" || !Assets::String(*pObject, "cluster_version", "$", strClusterVersion, out_arrDiagnostics) || strClusterVersion != "sequential-64v-126t-v1"))
+	{
+		return false;
+	}
+	out_stScene.nGpuFormatVersion = static_cast<std::uint32_t>(nVersion);
 	std::int64_t nBytes = 0;
 	std::string strCook;
 	std::string strLayout;
 	std::string strEncoding;
-	if (!Assets::Integer(*pObject, "schema_version", "$", nVersion, out_arrDiagnostics) || nVersion != FORMAT_VERSION ||
-		!Assets::Integer(*pObject, "page_bytes", "$", nBytes, out_arrDiagnostics) || nBytes <= 0 || static_cast<std::uint64_t>(nBytes) > MAX_PAGE_BYTES ||
-		!Assets::String(*pObject, "cook_version", "$", strCook, out_arrDiagnostics) || strCook != "engine-next-cpu-layout-v1" ||
-		!Assets::String(*pObject, "vertex_layout", "$", strLayout, out_arrDiagnostics) || strLayout != "position3f-normal3f-tangent4f-texcoord2f-le" ||
-		!Assets::String(*pObject, "image_encoding", "$", strEncoding, out_arrDiagnostics) || strEncoding != "source-png-jpeg" ||
-		!Assets::String(*pObject, "source_package_sha256", "$", out_stScene.strPackageDigest, out_arrDiagnostics) || out_stScene.strPackageDigest != strExpectedSourceDigest ||
-		!Assets::String(*pObject, "scene_id", "$", out_stScene.strSceneId, out_arrDiagnostics) || !Assets::IsIdentity(out_stScene.strSceneId) ||
-		!Assets::String(*pObject, "scene_revision", "$", out_stScene.strSceneRevision, out_arrDiagnostics) || !Assets::IsRevision(out_stScene.strSceneRevision) ||
-		!Assets::String(*pObject, "scene_sha256", "$", out_stScene.strSceneDigest, out_arrDiagnostics) || !Assets::IsSha256(out_stScene.strSceneDigest) ||
-		!Assets::String(*pObject, "page_sha256", "$", out_strPageDigest, out_arrDiagnostics) || !Assets::IsSha256(out_strPageDigest))
+	if (
+			!Assets::Integer(*pObject, "page_bytes", "$", nBytes, out_arrDiagnostics) || nBytes <= 0 || static_cast<std::uint64_t>(nBytes) > MAX_PAGE_BYTES ||
+			!Assets::String(*pObject, "cook_version", "$", strCook, out_arrDiagnostics) || strCook != (bPrepared ? "engine-next-gpu-data-v2" : "engine-next-cpu-layout-v1") ||
+			!Assets::String(*pObject, "vertex_layout", "$", strLayout, out_arrDiagnostics) || strLayout != "position3f-normal3f-tangent4f-texcoord2f-le" ||
+			!Assets::String(*pObject, "image_encoding", "$", strEncoding, out_arrDiagnostics) || strEncoding != "source-png-jpeg" ||
+			!Assets::String(*pObject, "source_package_sha256", "$", out_stScene.strPackageDigest, out_arrDiagnostics) || out_stScene.strPackageDigest != strExpectedSourceDigest ||
+			!Assets::String(*pObject, "scene_id", "$", out_stScene.strSceneId, out_arrDiagnostics) || !Assets::IsIdentity(out_stScene.strSceneId) ||
+			!Assets::String(*pObject, "scene_revision", "$", out_stScene.strSceneRevision, out_arrDiagnostics) || !Assets::IsRevision(out_stScene.strSceneRevision) ||
+			!Assets::String(*pObject, "scene_sha256", "$", out_stScene.strSceneDigest, out_arrDiagnostics) || !Assets::IsSha256(out_stScene.strSceneDigest) ||
+			!Assets::String(*pObject, "page_sha256", "$", out_strPageDigest, out_arrDiagnostics) || !Assets::IsSha256(out_strPageDigest))
 	{
 		return false;
 	}
@@ -748,6 +1078,19 @@ bool VerifyCookedScene(const RenderScene &stSource, const RenderScene &stCooked,
 	if (arrSource != arrCooked)
 	{
 		return Fail(out_arrDiagnostics, "gpu_source_mismatch", "$", "Cooked scene does not match the validated source scene.");
+	}
+	if (stCooked.nGpuFormatVersion == PREPARED_FORMAT_VERSION)
+	{
+		RenderScene stExpected = stSource;
+		if (!PrepareScene(stExpected, out_arrDiagnostics) || !Encode(stExpected, arrSource, PREPARED_FORMAT_VERSION) ||
+			!Encode(stCooked, arrCooked, PREPARED_FORMAT_VERSION))
+		{
+			return Fail(out_arrDiagnostics, "gpu_source_derived", "$", "Unable to verify prepared data against its source.");
+		}
+		if (arrSource != arrCooked)
+		{
+			return Fail(out_arrDiagnostics, "gpu_source_mismatch", "$", "Prepared mip or cluster data does not match the validated source scene.");
+		}
 	}
 	return true;
 }
@@ -811,6 +1154,13 @@ bool LoadGpuPackage(const std::string &strPackage, const std::string &strExpecte
 
 bool CookGpuPackage(const std::string &strSourcePackage, const std::string &strTargetPackage, Assets::Diagnostics &out_arrDiagnostics)
 {
+	GpuCookConfig stConfig;
+	stConfig.bPrepareGpuData = false;
+	return CookGpuPackage(strSourcePackage, strTargetPackage, stConfig, out_arrDiagnostics);
+}
+
+bool CookGpuPackage(const std::string &strSourcePackage, const std::string &strTargetPackage, const GpuCookConfig &stConfig, Assets::Diagnostics &out_arrDiagnostics)
+{
 	out_arrDiagnostics.clear();
 	std::error_code stError;
 	const fs::path stSource = fs::absolute(strSourcePackage, stError).lexically_normal();
@@ -828,9 +1178,14 @@ bool CookGpuPackage(const std::string &strSourcePackage, const std::string &strT
 	{
 		return false;
 	}
+	const std::uint32_t nVersion = stConfig.bPrepareGpuData ? PREPARED_FORMAT_VERSION : LEGACY_FORMAT_VERSION;
+	if (stConfig.bPrepareGpuData && !PrepareScene(stScene, out_arrDiagnostics))
+	{
+		return false;
+	}
 	std::vector<std::uint8_t> arrPage;
 	std::string strManifest;
-	if (!Encode(stScene, arrPage) || !Serialization::CanonicalJson(Manifest(stScene, arrPage), strManifest))
+	if (!Encode(stScene, arrPage, nVersion) || !Serialization::CanonicalJson(Manifest(stScene, arrPage, nVersion), strManifest))
 	{
 		return Fail(out_arrDiagnostics, "gpu_cook_budget", "$", "GPU package exceeds its serialization budget.");
 	}

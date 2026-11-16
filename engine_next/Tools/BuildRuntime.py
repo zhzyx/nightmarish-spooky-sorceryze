@@ -85,6 +85,10 @@ APP_SOURCES = {
         "engine_next/Apps/NextAssetMain.cpp",
         "engine_next/Rendering/Cook/GltfDecoder.cpp",
         "engine_next/Rendering/Cook/GpuPackage.cpp",
+        "engine_next/Rendering/Cook/ImageDecoder.cpp",
+        "engine_next/Rendering/Cook/MeshCluster.cpp",
+        "engine_next/Rendering/Cook/TextureCook.cpp",
+        "engine_next/Rendering/Cook/JpegValidation.c",
         "engine_next/Rendering/RenderScene.cpp",
     ],
     "EngineNextRuntimeTests": TEST_SOURCES,
@@ -262,6 +266,13 @@ def compiler_command_with_enet(args, source, object_path, dependency_path):
 
 
 def compile_c_source(args, source, object_path, dependency_path, include_audit, commands):
+    if source.startswith(("engine_next/thirdparty/zlib/", "engine_next/thirdparty/libjpeg-turbo/")) or source.endswith(
+        "/JpegValidation.c"
+    ):
+        import BuildVisualRuntime
+
+        BuildVisualRuntime.compile_c_source(args, source, object_path, commands, include_audit)
+        return
     source_path = args.repo / source
     include = args.repo / "engine_next/thirdparty/enet/include"
     if args.compiler == "clang":
@@ -344,6 +355,10 @@ def compile_sources(args, sources, object_dir, suffix, include_audit, commands):
 
 
 def link_target(args, name, sources, library, library_objects, object_dir, suffix, include_audit, commands):
+    if name == "next_asset":
+        import BuildVisualRuntime
+
+        sources = [*sources, *BuildVisualRuntime.ZLIB_SOURCES, *BuildVisualRuntime.JPEG_SOURCES]
     target_objects = compile_sources(args, sources, object_dir, suffix, include_audit, commands)
     executable = args.build_dir / (name + ".exe" if args.compiler == "msvc" or os.name == "nt" else name)
     response = args.build_dir / (name + "Link.rsp")
@@ -354,6 +369,8 @@ def link_target(args, name, sources, library, library_objects, object_dir, suffi
             response_values.append("-fsanitize=address,undefined")
     else:
         response_values.extend(["ws2_32.lib", "winmm.lib", "/OUT:" + str(executable), "/INCREMENTAL:NO"])
+        if name == "next_asset":
+            response_values.extend(["ole32.lib", "windowscodecs.lib"])
     response.write_text(
         BuildSupport.quoted_response(response_values, windows=args.compiler == "msvc"),
         encoding="utf-8",
@@ -368,9 +385,11 @@ def link_target(args, name, sources, library, library_objects, object_dir, suffi
     system_libraries = ["c++"] if args.compiler == "msvc" or sys.platform == "darwin" else ["stdc++", "gcc_s", "c", "m"]
     if args.compiler == "msvc":
         system_libraries.extend(["ws2_32", "winmm"])
+    if name == "next_asset" and args.compiler == "msvc":
+        system_libraries.extend(["ole32", "windowscodecs"])
     manifest = {
         "schema_version": 1,
-        "target": "next_runtime",
+        "target": "next_asset" if name == "next_asset" else "next_runtime",
         "producer": {"kind": "linker_response", **BuildSupport.artifact(args.repo, response)},
         "objects": [BuildSupport.artifact(args.repo, path) for path in [*library_objects, *target_objects]],
         "libraries": [BuildSupport.artifact(args.repo, library)],
@@ -386,7 +405,11 @@ def link_target(args, name, sources, library, library_objects, object_dir, suffi
         "manifest": manifest_path,
         "link_inputs": [str(value) for value in response_values],
         "symbol_audit": audit_symbols(args, executable),
-        "dynamic_dependencies": audit_dynamic_dependencies(args, executable),
+        "dynamic_dependencies": (
+            BuildVisualRuntime.audit_dependencies(args, executable, False)
+            if name == "next_asset"
+            else audit_dynamic_dependencies(args, executable)
+        ),
         "artifact": BuildSupport.artifact(args.repo, executable),
     }
 
@@ -688,6 +711,8 @@ def build(args):
         "engine_next/Rendering/Cook/GltfDecoder.h",
         "engine_next/Rendering/Cook/GpuPackage.h",
         "engine_next/include/EngineNext/Rendering/MeshData.h",
+        "engine_next/include/EngineNext/Rendering/ImageData.h",
+        "engine_next/include/EngineNext/Rendering/TextureData.h",
         "engine_next/include/EngineNext/Rendering/RenderScene.h",
         "engine_next/Schemas/AiAssetRun-v1.json",
         "engine_next/Schemas/AssetManifest-v1.json",
@@ -696,6 +721,15 @@ def build(args):
         "engine_next/Tests/Assets/FixtureSupport.h",
         "engine_next/Tests/AI/SyntheticProvider.py",
         *BUILD_SUPPORT_SOURCES,
+        "engine_next/Tools/BuildVisualRuntime.py",
+        "engine_next/Tools/PackageVisualRuntime.py",
+        *[
+            path.relative_to(args.repo).as_posix()
+            for name in ("zlib", "libjpeg-turbo")
+            for path in (args.repo / "engine_next/thirdparty" / name).rglob("*")
+            if path.is_file()
+        ],
+        *[path.relative_to(args.repo).as_posix() for path in (args.repo / "engine_next/Rendering/Cook").glob("*.h")],
     ])
     native_identity = {
         "compiler": args.compiler,

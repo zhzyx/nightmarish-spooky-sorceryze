@@ -20,6 +20,8 @@ CORE_SOURCES = [
     "engine_next/Rendering/Cook/ImageDecoder.cpp",
     "engine_next/Rendering/Cook/EnvironmentLighting.cpp",
     "engine_next/Rendering/Cook/GpuPackage.cpp",
+    "engine_next/Rendering/Cook/MeshCluster.cpp",
+    "engine_next/Rendering/Cook/TextureCook.cpp",
     "engine_next/Rendering/RenderScene.cpp",
     "engine_next/Serialization/Json.cpp",
     "engine_next/Serialization/Sha256.cpp",
@@ -54,11 +56,14 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestImageDecoder.cpp",
     "engine_next/Tests/Rendering/TestEnvironmentLighting.cpp",
     "engine_next/Tests/Rendering/TestGpuPackage.cpp",
+    "engine_next/Tests/Rendering/TestMeshCluster.cpp",
+    "engine_next/Tests/Rendering/TestTextureCook.cpp",
 ]
 PUBLIC_HEADERS = [
     "EngineNext/Rendering/FrameGraph.h",
     "EngineNext/Rendering/MeshData.h",
     "EngineNext/Rendering/ImageData.h",
+    "EngineNext/Rendering/TextureData.h",
     "EngineNext/Rendering/RenderScene.h",
     "EngineNext/Rendering/VisualRuntime.h",
 ]
