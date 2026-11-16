@@ -1,7 +1,8 @@
 """Provider-neutral ordered image inputs and independently durable image outputs.
 
-Version 1 providers retain their original single-image contract. This adapter owns
-version 2 image nodes: each output has its own child intent and idempotency key.
+Version 1 providers retain their original single-image contract. Versions 2 and 3
+keep explicit labeled batches. Version 4 infers the requested views/details from the
+prompt and derives every non-primary result from the successful primary image.
 Single-reference backends receive one deterministic labeled board; native
 multi-reference backends receive every ordered source, never a silently dropped tail.
 """
@@ -17,8 +18,8 @@ from codex_provider import CodexProvider, _creationflags, validate_png
 from comfy_provider import digest
 from extensions import NodeRegistry, canonical, require, validate_invocation, validate_outputs
 
-VERSION = "3"
-BATCH_VERSIONS = ("2", VERSION)
+VERSION = "4"
+BATCH_VERSIONS = ("2", "3", VERSION)
 IMAGE_KINDS = ("text_to_image", "image_to_image")
 MAX_IMAGES = 8
 MESSAGES = {
@@ -46,8 +47,12 @@ def register_images(registry):
         properties["output_count"] = {"type": "integer"}
         properties["output_labels"] = {"type": "array"}
         registry.register(definition)
-        definition["version"] = VERSION
+        definition["version"] = "3"
         definition["outputs"] = {"image_set": {"types": ["image_set"], "required": True}}
+        registry.register(definition)
+        definition["version"] = VERSION
+        properties.pop("output_count", None)
+        properties.pop("output_labels", None)
         registry.register(definition)
 
 
@@ -97,6 +102,117 @@ def output_specifications(parameters):
     else:
         labels = ["main"] if count == 1 else ["variant " + str(index + 1) for index in range(count)]
     return [dict(index=index, label=label) for index, label in enumerate(labels)]
+
+
+_AUTOMATIC_VIEWS = [
+    ("三分之四侧面", "view", ["三分之四侧面", "四分之三侧面", "3/4侧面", "three-quarter view"]),
+    ("正面", "view", ["正面", "前视图", "正面图", "front view"]),
+    ("左侧面", "view", ["左侧面", "左侧视图", "左视图", "left view"]),
+    ("右侧面", "view", ["右侧面", "右侧视图", "右视图", "right view"]),
+    ("侧面", "view", ["侧面", "侧视图", "side view"]),
+    ("背面", "view", ["背面", "后视图", "背面图", "back view", "rear view"]),
+    ("俯视", "view", ["俯视", "俯视图", "顶视图", "top view"]),
+    ("仰视", "view", ["仰视", "仰视图", "底视图", "bottom view"]),
+    ("面部细节", "detail", ["面部细节", "脸部细节", "面部特写", "脸部特写", "face close-up"]),
+    ("眼部细节", "detail", ["眼部细节", "眼睛特写", "眼部特写", "eye close-up"]),
+    ("手部细节", "detail", ["手部细节", "手指细节", "手部特写", "hand close-up"]),
+    ("服装细节", "detail", ["服装细节", "衣服细节", "服饰特写", "costume detail"]),
+    ("武器细节", "detail", ["武器细节", "武器特写", "weapon detail"]),
+    ("局部细节", "detail", ["局部细节", "细节图", "局部特写", "detail view", "detail shot", "close-up"]),
+]
+_DEFAULT_VIEWS = [
+    ("正面", "view"),
+    ("三分之四侧面", "view"),
+    ("侧面", "view"),
+    ("背面", "view"),
+    ("左侧面", "view"),
+    ("俯视", "view"),
+    ("局部细节", "detail"),
+    ("补充细节", "detail"),
+]
+
+
+def automatic_output_specifications(prompt):
+    """Infer bounded output requirements from the request, never a manual count field."""
+    require(isinstance(prompt, str), "invalid_image_batch")
+    text = prompt.strip().casefold()
+    count_match = re.search(
+        r"([0-9]+|[一二两三四五六七八九])\s*(?:张(?:图|图片)?|幅(?:图)?|个(?:视角|视图)|视图)", text
+    )
+    count = None
+    if count_match:
+        token = count_match.group(1)
+        count = int(token) if token.isdigit() else {"一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9}[token]
+        require(1 <= count <= MAX_IMAGES, "invalid_image_batch")
+    found = []
+    occupied = []
+    for label, mode, terms in _AUTOMATIC_VIEWS:
+        candidates = []
+        for term in terms:
+            start = text.find(term)
+            while start >= 0:
+                end = start + len(term)
+                if not any(start >= left and end <= right for left, right in occupied):
+                    candidates.append((start, end))
+                start = text.find(term, start + 1)
+        if candidates:
+            start, end = min(candidates, key=lambda item: (item[0], -(item[1] - item[0])))
+            occupied.append((start, end))
+            found.append((start, label, mode))
+    found.sort()
+    labels = [(label, mode) for _, label, mode in found]
+    if not labels and not count and any(term in text for term in ["多视角", "多角度", "多视图", "multi-view", "multiview", "turnaround"]):
+        labels = [("正面", "view"), ("右侧面", "view"), ("背面", "view"), ("左侧面", "view")]
+    if not labels and "三视图" in text:
+        labels = [("正面", "view"), ("侧面", "view"), ("背面", "view")]
+    elif not labels and "四视图" in text:
+        labels = [("正面", "view"), ("右侧面", "view"), ("背面", "view"), ("左侧面", "view")]
+    count = count if count is not None else len(labels)
+    if count == 0:
+        return [dict(index=0, label="main", mode="view")]
+    for label, mode in _DEFAULT_VIEWS:
+        if len(labels) >= count:
+            break
+        if label not in [item[0] for item in labels]:
+            labels.append((label, mode))
+    require(len(labels) <= MAX_IMAGES, "invalid_image_batch")
+    return [dict(index=index, label=label, mode=mode) for index, (label, mode) in enumerate(labels)]
+
+
+def _has_output_cue(text):
+    lowered = text.casefold()
+    return (
+        any(term in lowered for _, _, terms in _AUTOMATIC_VIEWS for term in terms)
+        or any(term in lowered for term in ["多视角", "多角度", "多视图", "multi-view", "multiview", "turnaround"])
+        or re.search(r"([0-9]+|[一二两三四五六七八九])\s*(?:张|幅|个视角|个视图|视图)", lowered)
+        is not None
+    )
+
+
+def primary_prompt(prompt):
+    """Remove view enumeration from the primary request without losing its subject."""
+    kept_sentences = []
+    for sentence in re.split(r"[\n。！？!?;；.]+", prompt):
+        clauses = []
+        for clause in re.split(r"[，,]", sentence):
+            if not _has_output_cue(clause):
+                if clause.strip():
+                    clauses.append(clause.strip())
+                continue
+            positions = [
+                clause.casefold().find(term)
+                for _, _, terms in _AUTOMATIC_VIEWS
+                for term in terms
+                if clause.casefold().find(term) >= 0
+            ]
+            if positions:
+                prefix = clause[: min(positions)].strip()
+                if "的" in prefix:
+                    clauses.append(prefix + "单张主图")
+        if clauses:
+            kept_sentences.append("，".join(clauses))
+    cleaned = "。".join(kept_sentences).strip()
+    return cleaned if cleaned else "Create one primary image of the originally requested subject."
 
 
 def make_reference_board(sources, directory, config):
@@ -202,7 +318,19 @@ class MultiImageProvider(CodexProvider):
         require(request["node"] in IMAGE_KINDS and request["version"] in BATCH_VERSIONS, "invalid_image_batch")
         sources = _sources(request, manifest)
         require(bool(sources) or request["node"] == "text_to_image", "invalid_image_batch")
-        specifications = output_specifications(request["parameters"])
+        automatic = request["version"] == VERSION
+        specifications = (
+            automatic_output_specifications(str(request["parameters"].get("prompt", "")))
+            if automatic
+            else output_specifications(request["parameters"])
+        )
+        derivation = (
+            "primary_image_derived"
+            if automatic and len(specifications) > 1
+            else "automatic_single_image"
+            if automatic
+            else "independent_labeled_outputs"
+        )
         native = self.inner.describe()["id"] == "kimi_work_image"
         adaptation = "ordered_native_multi_reference" if native else "single_reference"
         child_manifest = copy.deepcopy(manifest)
@@ -232,6 +360,7 @@ class MultiImageProvider(CodexProvider):
             sources=[dict(ref=_ref(source["asset"]), label=source["label"]) for source in sources],
             specifications=specifications,
             adaptation=adaptation,
+            derivation=derivation,
             reference_board=None,
             board_pending=board_pending,
             child_request=child_request,
@@ -293,17 +422,72 @@ class MultiImageProvider(CodexProvider):
         validate_invocation(registry, record["request"], record["manifest"], self.describe())
         return record
 
+    def _primary_ref(self, plan):
+        first = plan["children"][0]
+        require(
+            plan["request"]["version"] == VERSION
+            and first["receipt"] is not None
+            and first["receipt"]["state"] == "succeeded",
+            "image_batch_result_invalid",
+        )
+        reference = first["receipt"]["outputs"]["result"]
+        manifest = self.inner.result_manifest(first["key"])
+        asset = next(
+            (
+                item
+                for item in manifest["artifacts"]
+                if item["id"] == reference["id"] and item["revision"] == reference["revision"]
+            ),
+            None,
+        )
+        require(asset is not None and asset["type"] == "image", "image_batch_result_invalid")
+        return _ref(asset)
+
+    def _child_manifest(self, plan, index):
+        if plan["request"]["version"] != VERSION or index == 0:
+            return plan["child_manifest"]
+        return self.inner.result_manifest(plan["children"][0]["key"])
+
     def _request(self, plan, index):
         request = copy.deepcopy(plan["child_request"])
         specification = plan["specifications"][index]
-        if len(plan["specifications"]) > 1:
-            prompt = str(request["parameters"].get("prompt", ""))
-            request["parameters"]["prompt"] = (
-                prompt
-                + "\nGenerate exactly one independent image for the labeled view/variant: "
-                + specification["label"]
-                + ". Do not return a contact sheet, collage or multiple panels."
-            )
+        if plan["request"]["version"] != VERSION:
+            if len(plan["specifications"]) > 1:
+                prompt = str(request["parameters"].get("prompt", ""))
+                request["parameters"]["prompt"] = (
+                    prompt
+                    + "\nGenerate exactly one independent image for the labeled view/variant: "
+                    + specification["label"]
+                    + ". Do not return a contact sheet, collage or multiple panels."
+                )
+            return request
+        prompt = str(request["parameters"].get("prompt", ""))
+        if index == 0:
+            if len(plan["specifications"]) > 1:
+                request["parameters"]["prompt"] = (
+                    "Generate exactly one primary image containing exactly one single subject. "
+                    + primary_prompt(prompt)
+                    + "\nOnly one instance of the subject is allowed. Do not return multiple views, duplicates, a contact sheet, collage or multiple panels."
+                )
+            return request
+        primary = self._primary_ref(plan)
+        request["node"] = "image_to_image"
+        request["version"] = "1"
+        request["inputs"] = {"source": primary}
+        action = (
+            "Create a close-up detail of the same subject, focusing on: "
+            if specification.get("mode") == "detail"
+            else "Show the exact same subject from this camera/view direction: "
+        )
+        request["parameters"]["prompt"] = (
+            "The attached primary image is the authoritative depiction of the same generated subject. "
+            + action
+            + specification["label"]
+            + ". Preserve its identity, geometry, materials, colors, style and background. "
+            + "Change only the camera/view or framing needed for this derived image; do not design a new subject. "
+            + "The result must contain exactly one instance of the subject. "
+            + "Do not return multiple views, duplicates, a contact sheet, collage or multiple panels."
+        )
         return request
 
     def _store_receipt(self, key, index, receipt):
@@ -344,9 +528,18 @@ class MultiImageProvider(CodexProvider):
         artifacts, items, identities = [], [], set()
         for child in record["children"]:
             manifest = self.inner.result_manifest(child["key"])
-            images = [asset for asset in manifest["artifacts"] if asset["type"] == "image"]
-            require(len(images) == 1, "image_batch_result_invalid")
-            image = copy.deepcopy(images[0])
+            reference = child["receipt"]["outputs"]["result"]
+            image = copy.deepcopy(
+                next(
+                    (
+                        asset
+                        for asset in manifest["artifacts"]
+                        if asset["id"] == reference["id"] and asset["revision"] == reference["revision"]
+                    ),
+                    None,
+                )
+            )
+            require(image is not None and image["type"] == "image", "image_batch_result_invalid")
             identity = canonical(_ref(image))
             require(identity not in identities, "image_batch_result_invalid")
             identities.add(identity)
@@ -356,8 +549,14 @@ class MultiImageProvider(CodexProvider):
             provenance["ordered_sources"] = record["sources"]
             provenance["output_label"] = specification["label"]
             provenance["output_index"] = child["index"]
-            image["payload"]["provenance"] = provenance
             image["dependencies"] = [source["ref"] for source in record["sources"]]
+            if record["request"]["version"] == VERSION and child["index"] > 0:
+                primary = self._primary_ref(record)
+                provenance["derived_from"] = primary
+                image["dependencies"] = [primary] + [
+                    source["ref"] for source in record["sources"] if source["ref"] != primary
+                ]
+            image["payload"]["provenance"] = provenance
             artifacts.append(image)
             items.append(dict(artifact=_ref(image), label=specification["label"], index=child["index"]))
         require(len(items) == len(record["specifications"]), "image_batch_result_invalid")
@@ -372,6 +571,7 @@ class MultiImageProvider(CodexProvider):
                 provenance=dict(
                     adapter="multi_image_provider",
                     adaptation=record["adaptation"],
+                    derivation=record.get("derivation", "independent_labeled_outputs"),
                     ordered_sources=record["sources"],
                     reference_board=record["reference_board"],
                 ),
@@ -435,7 +635,7 @@ class MultiImageProvider(CodexProvider):
                 # Every bundled child persists its intent before any external I/O.
                 # No child row therefore proves that no submission was attempted.
                 receipt = self.inner.submit(
-                    self._request(record, child["index"]), record["child_manifest"], child["key"]
+                    self._request(record, child["index"]), self._child_manifest(record, child["index"]), child["key"]
                 )
             else:
                 # In particular ComfyUI lookup reconciles a missing prompt_id;
@@ -444,6 +644,12 @@ class MultiImageProvider(CodexProvider):
                 if receipt is None:
                     receipt = self.snapshot(child["key"], "queued")
             self._store_receipt(key, child["index"], receipt)
+            if record["request"]["version"] == VERSION and child["index"] == 0:
+                # Derived children must wait for the durable primary result; never
+                # launch them from the original prompt while the primary is pending.
+                if receipt["state"] != "succeeded":
+                    break
+                record = self.read(key)
             if receipt["state"] in ("failed", "cancelled"):
                 break
         record = self.read(key)

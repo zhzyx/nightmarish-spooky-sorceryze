@@ -287,7 +287,7 @@ def dispatch(args, request):
             runtime_service["image_batch"] = image_batch_settings(config)
             runtime_service["image_batch"]["database"] = str(Path(args.db).resolve())
             runtime_service["image_batch"]["enabled"] = runtime_service["image_batch"]["enabled"] and any(
-                n.get("type", "copy") in ("text_to_image", "image_to_image") and n.get("version") in ("2", "3")
+                n.get("type", "copy") in ("text_to_image", "image_to_image") and n.get("version") in ("2", "3", "4")
                 for n in model["nodes"]
             )
             providers = adapt_image_providers(providers, args.db, runtime_service["image_batch"])

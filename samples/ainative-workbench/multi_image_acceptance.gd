@@ -83,18 +83,11 @@ func run():
 	panel.source_picker.files_selected.emit(PackedStringArray([front, side, front, side, front, side, front, side]))
 	check(data.source_paths.size() == 2 and panel.status.text.contains("最多 8"), "source plus reference cannot exceed eight images")
 	panel.source_picker.files_selected.emit(PackedStringArray([front, side]))
-	panel.parameter_form.outputs_edit.text = "正面\n三分之四侧面"
-	panel.parameter_form.outputs_edit.text_changed.emit()
-	check(panel.apply_fields() and data.parameters.output_count == 2 and data.parameters.output_labels == ["正面", "三分之四侧面"], "two named outputs are stored as independent output specifications")
-	check(panel.model().nodes.all(func(item): return item.version == "3" if item.type in ["text_to_image", "image_to_image"] else item.version == "1"), "queue-only version applies only to image generation nodes")
-	var before_invalid = data.parameters.duplicate(true)
-	for invalid in ["0", "9", "正面\n正面"]:
-		panel.parameter_form.outputs_edit.text = invalid
-		panel.parameter_form.outputs_edit.text_changed.emit()
-		check(not panel.apply_fields() and data.parameters == before_invalid, "invalid output draft blocks applying stale specifications: " + invalid.replace("\n", "/"))
-	panel.parameter_form.outputs_edit.text = "正面\n三分之四侧面"
-	panel.parameter_form.outputs_edit.text_changed.emit()
-	check(panel.apply_fields(), "corrected output specifications become applicable")
+	check(not panel.parameter_form.outputs_edit.visible and panel.parameter_form.rows.outputs.text.contains("自动理解"), "version 4 removes manual output selection and explains automatic derivation")
+	panel.parameter_form.prompt_edit.text = "同一主体，正面和三分之四侧面"
+	panel.parameter_form.prompt_edit.text_changed.emit()
+	check(panel.apply_fields() and not data.parameters.has("output_count") and not data.parameters.has("output_labels"), "automatic output planning stores only the user requirement")
+	check(panel.model().nodes.all(func(item): return item.version == "4" if item.type in ["text_to_image", "image_to_image"] else item.version == "1"), "automatic derived-output version applies only to image generation nodes")
 	panel.connect_nodes(upstream, 0, downstream, 0)
 	check(panel.edges.size() == 1 and panel.edges[0].get("output") == "image_set", "the sole generation output is an ordered image queue")
 	panel.connect_nodes(upstream, 0, mesh, 0)
@@ -123,7 +116,7 @@ func run():
 	panel.select_node(downstream)
 	data = node(downstream)
 	check(panel.selected_id == downstream and data.source_paths == ["", ""] and data.source_snapshots.size() == 2 and data.image_context_snapshots.size() == 1, "reopen restores ordered snapshots without source files or new generation")
-	check(data.parameters.output_labels == ["正面", "三分之四侧面"] and panel.parameter_form.outputs_edit.text == "正面\n三分之四侧面", "reopen restores named independent outputs")
+	check(data.parameters.prompt == "同一主体，正面和三分之四侧面" and not panel.parameter_form.outputs_edit.visible, "reopen preserves the requirement and automatic output mode")
 	check(panel.edges == original.edges and panel.run_id.is_empty() and panel.preview_token.is_empty(), "reopen preserves valid ports but clears old execution authority")
 	# Preview fixtures only test Godot's member selector. Host membership, publication
 	# and restore are exercised by the Python Executor integration test.

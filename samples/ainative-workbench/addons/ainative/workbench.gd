@@ -683,7 +683,7 @@ func add_node():
 func add_generator():
 	var kind = generator_choice.get_item_metadata(generator_choice.selected)
 	var id = "n" + str(Time.get_ticks_usec())
-	var data = {"id": id, "type": kind, "version": "3" if kind in ["text_to_image", "image_to_image"] else "1", "provider": _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45}
+	var data = {"id": id, "type": kind, "version": "4" if kind in ["text_to_image", "image_to_image"] else "1", "provider": _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45}
 	if kind != 'copy' and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
 	_migrate_node_models(data, service_draft())
 	nodes.append(data)
@@ -737,10 +737,10 @@ func _sync_node_model_controls(data: Dictionary):
 		node_image_model_edit.text = image_name
 
 func _image_queue_node(data: Dictionary) -> bool:
-	return data.get("type", "copy") in ["text_to_image", "image_to_image"] and data.get("version", "3") in ["2", "3"]
+	return data.get("type", "copy") in ["text_to_image", "image_to_image"] and data.get("version", "4") in ["2", "3", "4"]
 
 func _queue_only_node(data: Dictionary) -> bool:
-	return _image_queue_node(data) and data.get("version", "3") == "3"
+	return _image_queue_node(data) and data.get("version", "4") in ["3", "4"]
 
 func input_kind(data: Dictionary) -> int:
 	var kind = str(data.get("type", "copy"))
@@ -838,7 +838,7 @@ func select_node(id: String):
 				var requirements = data.parameters.duplicate(true)
 				requirements["prompt"] = _merged_requirements(str(requirements.get("prompt", "")), str(data.get("text", "")))
 				text_edit.text = ""
-				parameter_form.configure(selected_kind, requirements)
+				parameter_form.configure(selected_kind, requirements, str(data.get("version", "1")))
 	_configure_source_picker(selected_kind)
 	source_edit.tooltip_text = source_edit.text if not source_edit.text.is_empty() else "通过系统资源管理器选择源文件，可多选"
 	context_edit.tooltip_text = context_edit.text if not context_edit.text.is_empty() else "通过系统资源管理器选择参考图像，可多选"
@@ -923,7 +923,7 @@ func delete_node():
 func model() -> Dictionary:
 	for data in nodes:
 		_sync_node_files(data)
-		if data.get("type", "copy") in ["text_to_image", "image_to_image"] and not data.has("version"): data.version = "3"
+		if data.get("type", "copy") in ["text_to_image", "image_to_image"] and not data.has("version"): data.version = "4"
 	return {"format": 1, "nodes": nodes, "edges": edges}
 
 func _snapshot_inputs(data: Dictionary, field: String) -> bool:
@@ -1687,7 +1687,7 @@ func create_context_node(kind: String):
 	var position = (context_position + graph.scroll_offset) / graph.zoom
 	var id = "n" + str(Time.get_ticks_usec())
 	while not nodes.filter(func(n): return n.id == id).is_empty(): id += "x"
-	var data = {"id": id, "type": kind, "version": "3" if kind in ["text_to_image", "image_to_image"] else "1", "provider": "local-copy" if kind == "copy" else _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
+	var data = {"id": id, "type": kind, "version": "4" if kind in ["text_to_image", "image_to_image"] else "1", "provider": "local-copy" if kind == "copy" else _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
 	if kind != 'copy' and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
 	_migrate_node_models(data, service_draft())
 	nodes.append(data)
