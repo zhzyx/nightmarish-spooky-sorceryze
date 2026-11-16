@@ -1,0 +1,88 @@
+{
+  "issue": 951,
+  "parent_issue": 773,
+  "state": "candidate_build_and_local_validation_complete_delivery_pending",
+  "revision": "6d6da032f2c13c6b725ef3a30902bd41e76e254c",
+  "clean_source": false,
+  "source_digest": "3631a59a9af9c53e797672ef8523820bb324a8cc900abd968e5537d16f57c25f",
+  "main_integration": {
+    "logical_private_artifact": "eligibility951-main-6d6da032f2c1-preserved.json",
+    "sha256": "31257a025cc3aa481a495da8314467108c5c23ca5206c29bc3d6cd91aa83831c",
+    "bytes": 4147
+  },
+  "strict_native": {
+    "receipt": {
+      "logical_private_artifact": "eligibility951-strict-build-receipt-r16.json",
+      "sha256": "af3ee44d0229fa415313a3805a85c7c47de304c6f142c1c6a77d9aa0a7631586",
+      "bytes": 721
+    },
+    "log": {
+      "logical_private_artifact": "eligibility951-preparation-strict-r16.log",
+      "sha256": "623051f910b149a913b0ff4c8b1b20771415790290cdbcaa675619e7bc714d1d",
+      "bytes": 1026
+    },
+    "warnings": "extra",
+    "werror": true,
+    "tests": true,
+    "actual_build_result": "SCons up to date on current source inputs; retained actual strict binary",
+    "artifact_sha256": "da63926207dffbf8d475571d281d77a28744a9d2dc8314aa2112db0a23f385bd"
+  },
+  "complete_wrapper": {
+    "entry": "tools/build_gonggong_editor.py",
+    "arguments": [
+      "--jobs",
+      "4",
+      "--cache-path",
+      "<existing shared native cache>",
+      "--cache-limit",
+      "8"
+    ],
+    "source_archive_mode": true,
+    "msystem_empty": true,
+    "explicit_test_python": true,
+    "exit_code": 0,
+    "receipt_file": "018c5fd1694b4f4987f9ed81d692a0db.json",
+    "receipt_sha256": "3d24907d4f46922cec6a6a05e8d7818b1a75b6a3607a479dd84dcf67a710195a",
+    "log": {
+      "logical_private_artifact": "eligibility951-final-wrapper-r1.log",
+      "sha256": "244147ca8665bd795e4df85ef3c8f8b294826739a5ca78e5f04acc13a2c14d38",
+      "bytes": 312806
+    },
+    "native_status": "built",
+    "native_key": "26ba552e1039c2306c85b34ab62635d6e1457f486d897ceed09a48c4172314c0",
+    "artifact_sha256": "822045d8c84bd2b31d99ded1bffcc93411a1ef4beb450af0560f3d649bfc7485",
+    "console_sha256": "8a371338cee4cd39733fe25ca45b859e253ee089d7e007211514296a226d3806",
+    "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "aichat_cases": {
+      "passed": 99,
+      "failed": 0,
+      "skipped_other_cases": 1486
+    },
+    "aichat_assertions": {
+      "passed": 1795,
+      "failed": 0
+    }
+  },
+  "validation_report": {
+    "repository_artifact": "data-collection/editor-continuation-eligibility-validation-951.json",
+    "sha256": "056d99a07ae78375778b6b4a0c57cf8126c1868693eee200033910797fd117a3"
+  },
+  "source_input_recheck_after_wrapper": true,
+  "limits": [
+    "This is a dirty isolated candidate build, not a clean-main or installed delivery receipt.",
+    "The strict native scenarios use the separately recorded strict binary; wrapper options produce a different actual artifact hash and are not relabelled as strict scenarios.",
+    "The wrapper passes its actual AIChat unit suite. Logged expected error-path diagnostics remain in the full original log.",
+    "Exact candidate CI/main, final independent index review and original game production acceptance remain for the delivery owner. No original game, installed runtime, history or receipts were edited by these tests."
+  ],
+  "review_roles": {
+    "implementation": "99def07d3f8a988c",
+    "prepared_job_test_helper_contributor": "65c894021a8fdc52",
+    "independent_reviewer": "3b7cdf242c7db008"
+  },
+  "ci_regression_scope": [
+    "phase-one strict independent-review contract",
+    "real baseline preparation block and explicit cold retry",
+    "prepared dependent job cold recovery",
+    "live reviewer-to-parent recovery with public consultation rejection"
+  ]
+}

@@ -53,6 +53,13 @@ if PARENT_BOUNDARY:
     SCENARIO = "parallel-parent-continuation"
 if RESTORE_CONFIRMATION and PARENT_BOUNDARY != "restart":
     raise SystemExit("--restore-confirmation requires --scenario parallel-parent-restart")
+INVALID_MISSING_EVIDENCE = ""
+if "--invalid-missing-evidence" in sys.argv:
+    at = sys.argv.index("--invalid-missing-evidence")
+    INVALID_MISSING_EVIDENCE = sys.argv[at + 1]
+    del sys.argv[at : at + 2]
+    if SCENARIO != "parallel-evidence-completion" or INVALID_MISSING_EVIDENCE not in {"fail-null", "array"}:
+        raise SystemExit("--invalid-missing-evidence requires parallel-evidence-completion and fail-null or array")
 boundary_receipts: dict[str, Any] = {}
 if SCENARIO not in PARENT_SCENARIOS | {
     "pass",
@@ -103,6 +110,12 @@ batch.FINALIZED = batch.FINALIZED.replace(
     "2. DESIGN_BATCH_CHILD_2 checks its assigned evidence\n",
     "2. DESIGN_BATCH_CHILD_2 checks its assigned evidence\n- 依赖: 1\n- 验收: B | fixture-input.txt was read successfully\n",
 )
+if SCENARIO == "parallel-evidence-completion":
+    batch.FINALIZED = batch.FINALIZED.replace(
+        "- 验收: A | fixture-input.txt contains UNTRUSTED_FIXTURE_FILE and execution succeeds\n",
+        "- 验收: A | repair-evidence.txt exists and records the required output\n"
+        "- 验收: A-execution | repair-evidence.txt contains verified execution evidence\n",
+    )
 if SCENARIO in PARENT_SCENARIOS:
     batch.FINALIZED = "<!-- gonggong-parent-completion:v1 -->\n" + batch.FINALIZED
     # Native confirmation is backed by a genuine installed intake read; only
@@ -608,6 +621,61 @@ func _parent_boundary_951():
                 "\tconfirmation.get_ok_button().pressed.emit()\n\t_assert_initial_confirmation_951()\n\nfunc _verify_dependency_handoff():",
             )
             Path(target).write_bytes(script.encode("utf8"))
+        if PARENT_BOUNDARY == "restart":
+            anchor = '\t\t_send("PRODUCTION_COLD_STATUS_951")'
+            assert script.count(anchor) == 1
+            script = script.replace(
+                anchor,
+                "\t\tif not await _verify_parallel_setup_951():\n\t\t\t_finish()\n\t\t\treturn\n" + anchor,
+            )
+            anchor = '\t\tawait _wait_marker("PRODUCTION_COLD_VERIFIED_951", 120.0)'
+            assert script.count(anchor) == 1
+            script = script.replace(
+                anchor,
+                anchor
+                + '\n\t\tEditorInterface.get_editor_settings().set_setting("ai_chat/parallel_work_orders_config", OS.get_environment("NATIVE_PARALLEL_CONFIG"))',
+            )
+            script += """
+func _setup_status_951(stage: String) -> bool:
+	if not _check(not dock.find_child("Send", true, false).disabled, "Setup probe Send unavailable"):
+		return false
+	_send("PRODUCTION_SETUP_" + stage + "_951")
+	return await _wait_marker("PRODUCTION_SETUP_" + stage + "_DONE_951", 120.0)
+
+func _verify_parallel_setup_951() -> bool:
+	var settings = EditorInterface.get_editor_settings()
+	var configured: String = settings.get_setting("ai_chat/parallel_work_orders_config")
+	var option = dock.get_ai_settings_control().find_child("ProductionSetup", true, false)
+	if not _check(not configured.is_empty() and not option.disabled and not option.button_pressed, "Cold setup preconditions changed"):
+		return false
+	var batches_before := _parallel_batches().size()
+	settings.set_setting("ai_chat/parallel_work_orders_config", "")
+	if not await _setup_status_951("REQUIRED"):
+		return false
+	settings.set_setting("ai_chat/parallel_work_orders_config", configured)
+	if not await _setup_status_951("CONFIGURED"):
+		return false
+	settings.set_setting("ai_chat/parallel_work_orders_config", "")
+	option.button_pressed = true # Real public checkbox; no batch registration.
+	if not await _setup_status_951("ENABLED"):
+		return false
+	option.button_pressed = false
+	if not await _setup_status_951("RECHECK"):
+		return false # Status/toggle must not have registered a batch.
+	option.button_pressed = true
+	process_frame.connect(_existing_setup_951)
+	return _check(_parallel_batches().size() == batches_before, "Setup/status probes dispatched production")
+
+func _existing_setup_951():
+	if not FileAccess.file_exists("res://setup-existing-ready-951") or FileAccess.file_exists("res://setup-existing-ack-951"):
+		return
+	var option = dock.get_ai_settings_control().find_child("ProductionSetup", true, false)
+	if not _check(not option.disabled and not dock.find_child("Stop", true, false).disabled, "Existing batch probe requires the current active turn"):
+		return
+	option.button_pressed = false
+	_file("setup-existing-ack-951")
+"""
+            Path(target).write_bytes(script.encode("utf8"))
     if Path(source).name == "design_batch.gd" and SCENARIO == "parallel-integration":
         script = Path(target).read_text(encoding="utf8")
         script = script.replace(
@@ -831,6 +899,74 @@ class AcceptanceServer(ThreadingHTTPServer):
                 instance.wfile.write(data)
                 return
             global continuation_phase, continuation_nonce, continuation_config_original
+            if PARENT_BOUNDARY == "restart" and prompt.startswith("PRODUCTION_SETUP_"):
+                stage = prompt.removeprefix("PRODUCTION_SETUP_").removesuffix("_951")
+                turn = max(i for i, m in enumerate(body["messages"]) if m["role"] == "user")
+                results = [m for m in body["messages"][turn + 1 :] if m["role"] == "tool"]
+                schema = next(t["function"] for t in body["tools"] if t["function"]["name"] == "production_control")
+                assert schema["parameters"]["properties"]["action"]["enum"] == [
+                    "status",
+                    "supplement",
+                    "review",
+                    "repair",
+                ]
+                blocked = stage in {"REQUIRED", "RECHECK"}
+                if not results:
+                    message = batch.tool_call("setup-status", "production_control", {"action": "status"})
+                elif len(results) == 2:
+                    expected = (
+                        "Error: parallel_production_setup_required"
+                        if blocked
+                        else "Error: Expected status, supplement, review or repair."
+                    )
+                    assert results[-1]["content"] == expected, results[-1]
+                    message = batch.tool_call("setup-status-again", "production_control", {"action": "status"})
+                else:
+                    state = batch.json.loads(results[-1]["content"])
+                    item = next(i for i in state["items"] if i["work_order"] == 1)
+                    sibling = next(i for i in state["items"] if i["work_order"] == 3)
+                    assert sibling["state"] == "interrupted" and sibling["eligible_actions"] == [], sibling
+                    assert sibling["blocked_reason"] == "producer_not_known_unaccepted_terminal", sibling
+                    if blocked:
+                        assert item["blocked_reason"] == "parallel_production_setup_required", item
+                        assert item["eligible_actions"] == [] and "ProductionSetup" in item["recovery_hint"], item
+                    else:
+                        assert item["blocked_reason"] == "" and "supplement" in item["eligible_actions"], item
+                    immutable = {
+                        k: v
+                        for k, v in item.items()
+                        if k not in {"blocked_reason", "eligible_actions", "recovery_hint"}
+                    }
+                    if stage == "EXISTING":
+                        assert (
+                            next(o for o in item["operations"] if o["operation_id"] == "cold-context-951")["state"]
+                            == "context_recorded"
+                        )
+                    else:
+                        baseline = boundary_receipts.setdefault("setup_original_item", immutable)
+                        assert immutable == baseline, (stage, immutable, baseline)
+                    if len(results) == 1 and (blocked or stage == "CONFIGURED"):
+                        arguments = {"action": "status "}
+                        if blocked:
+                            arguments = {
+                                "action": "supplement",
+                                "operation_id": "setup-refused-951",
+                                "producer_id": int(item["producer_id"]),
+                                "execution_id": item["execution_id"],
+                                "candidate_sha256": item["candidate_sha256"],
+                                "context": "Must remain unrecorded while setup is absent",
+                            }
+                        message = batch.tool_call("setup-refused", "production_control", arguments)
+                    else:
+                        boundary_receipts.setdefault("setup_checks", {})[stage] = state
+                        message = {"role": "assistant", "content": "PRODUCTION_SETUP_" + stage + "_DONE_951"}
+                data = batch.json.dumps({"choices": [{"message": message, "finish_reason": "stop"}]}).encode()
+                instance.send_response(200)
+                instance.send_header("Content-Type", "application/json")
+                instance.send_header("Content-Length", str(len(data)))
+                instance.end_headers()
+                instance.wfile.write(data)
+                return
             if PARENT_BOUNDARY == "restart" and prompt == "PRODUCTION_COLD_STATUS_951":
                 turn = max(i for i, m in enumerate(body["messages"]) if m["role"] == "user")
                 results = [m for m in body["messages"][turn + 1 :] if m["role"] == "tool"]
@@ -873,8 +1009,23 @@ class AcceptanceServer(ThreadingHTTPServer):
                             sibling = next(i for i in restored["items"] if i["work_order"] == 3)
                             assert sibling["state"] == "interrupted" and not sibling["execution_id"], sibling
                             boundary_receipts["cold_waiting_sibling"] = sibling
-                            continuation_phase = "review"
-                            message = {"role": "assistant", "content": "PRODUCTION_COLD_VERIFIED_951"}
+                            if results[-1]["tool_call_id"] == "cold-existing-status-951":
+                                assert item["blocked_reason"] == "" and "supplement" in item["eligible_actions"], item
+                                boundary_receipts["setup_checks"]["EXISTING"] = restored
+                                continuation_phase = "review"
+                                message = {"role": "assistant", "content": "PRODUCTION_COLD_VERIFIED_951"}
+                            else:
+                                import time
+
+                                project = parallel.folder / "original/samples/project"
+                                (project / "setup-existing-ready-951").touch()
+                                deadline = time.monotonic() + 10
+                                while not (project / "setup-existing-ack-951").exists() and time.monotonic() < deadline:
+                                    time.sleep(0.01)
+                                assert (project / "setup-existing-ack-951").exists(), "Public setup toggle not observed"
+                                message = batch.tool_call(
+                                    "cold-existing-status-951", "production_control", {"action": "status"}
+                                )
                 data = batch.json.dumps({"choices": [{"message": message, "finish_reason": "stop"}]}).encode()
                 instance.send_response(200)
                 instance.send_header("Content-Type", "application/json")
@@ -1140,6 +1291,11 @@ class AcceptanceServer(ThreadingHTTPServer):
             root = Path(roots[-1])
             criteria = batch.json.loads(prompt.split("\n")[1])
             producer_receipt = batch.json.loads(prompt.split("\n")[2])
+            example, _ = batch.json.JSONDecoder().raw_decode(prompt.split("混合示例：", 1)[1])
+            assert example["verdict"] == "unknown" and example["unknown_kind"] == "missing_execution_evidence"
+            assert [c["met"] for c in example["criteria"]] == [False, None]
+            assert isinstance(example["criteria"][1]["missing_evidence"], str)
+            assert "首次 read_file" in prompt and "char_offset:0、char_limit:4096" in prompt
             auxiliary = root.parent / "native-review-auxiliary.txt"
             results = [m["content"] for m in body["messages"] if m["role"] == "tool"]
             for entry in body["messages"]:
@@ -1303,9 +1459,18 @@ class AcceptanceServer(ThreadingHTTPServer):
                 if SCENARIO in {"parallel-evidence-completion", "parallel-evidence-exhausted"} and failing:
                     verdict["verdict"] = "unknown"
                     verdict["unknown_kind"] = "missing_execution_evidence"
-                    for criterion in verdict["criteria"]:
+                    unknown_criteria = (
+                        verdict["criteria"][1:] if SCENARIO == "parallel-evidence-completion" else verdict["criteria"]
+                    )
+                    for criterion in unknown_criteria:
                         criterion["met"] = None
                         criterion["missing_evidence"] = "Run assigned verification and persist repair-evidence.txt"
+                    if INVALID_MISSING_EVIDENCE == "fail-null":
+                        verdict["verdict"] = "fail"
+                        del verdict["unknown_kind"]
+                        unknown_criteria[0]["unknown_kind"] = "missing_execution_evidence"
+                    elif INVALID_MISSING_EVIDENCE == "array":
+                        unknown_criteria[0]["missing_evidence"] = [unknown_criteria[0]["missing_evidence"]]
                 message = {"role": "assistant", "content": batch.json.dumps(verdict)}
             review_calls.append({"root": str(root), "criteria": criteria, "completed": bool(results)})
             data = batch.json.dumps({"choices": [{"message": message, "finish_reason": "stop"}]}).encode()
@@ -1548,7 +1713,8 @@ if __name__ == "__main__":
                 valid = (
                     original["verdict"] == "unknown"
                     and original["unknown_kind"] == "missing_execution_evidence"
-                    and original["criteria"][0]["met"] is None
+                    and [c["met"] for c in original["criteria"]] == [False, None]
+                    and isinstance(original["criteria"][1]["missing_evidence"], str)
                 )
                 valid = (
                     valid
@@ -1558,6 +1724,23 @@ if __name__ == "__main__":
                 valid = (
                     valid and len([r for r in review_calls if r["completed"] and r["criteria"][0]["id"] == "A"]) == 2
                 )
+            if INVALID_MISSING_EVIDENCE:
+                valid = (
+                    not result["errors"]
+                    and result["editor"]["ok"]
+                    and len(parallel.returns) == 1
+                    and "criterion_invalid" in parallel.returns[0]
+                    and "review_source_unverified" not in parallel.returns[0]
+                    and len(starts["A"]) == len(finishes["A"]) == 1
+                    and len(starts["B"]) == len(finishes["B"]) == 1
+                    and not starts["C"]
+                    and all(d["producer"] == 2 for d in decisions)
+                    and not originals
+                    and not continuations
+                    and len([r for r in review_calls if r["completed"] and r["criteria"][0]["id"] == "A"]) == 1
+                )
+                result["invalid_missing_evidence"] = INVALID_MISSING_EVIDENCE
+                result["rejected_review_parent_returns"] = parallel.returns
         if SCENARIO == "parallel-evidence-exhausted":
             valid = (
                 not result["errors"]
@@ -1808,6 +1991,7 @@ if __name__ == "__main__":
             else "Controlled original complete fixture scope: actual command/read delivery, not GitHub merge or provider effectiveness"
         )
     if PARENT_BOUNDARY == "restart":
+        assert set(boundary_receipts["setup_checks"]) == {"REQUIRED", "CONFIGURED", "ENABLED", "RECHECK", "EXISTING"}
         assert boundary_receipts["cold_new_operation"]["state"] == "context_recorded"
         assert boundary_receipts["cold_waiting_sibling"]["state"] == "interrupted"
         assert len(starts["C"]) == 1 and len(accepted) == 3

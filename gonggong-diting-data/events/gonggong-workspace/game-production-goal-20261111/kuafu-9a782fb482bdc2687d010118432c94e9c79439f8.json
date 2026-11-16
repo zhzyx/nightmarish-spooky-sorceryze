@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9a782fb482bdc2687d010118432c94e9c79439f8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-production-goal-20261111",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7a61e9ffe1aaa310b627070690edfe9c7263a0d4cf23cb210c7383fab5725fef",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/773",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "action": "validation",
+    "detection_head": "35024da7ea80986ca7da2fd555ee1d3081c38df4",
+    "context_sha256": "39ef161b72aacaf68dc7b01d62dcdaa642d2d0ee39f3cc771fbba8f73ed35ea5",
+    "operator": "Sail-Li",
+    "worker": "/root",
+    "authority_ref": "User continued #773 Godot production goal with full editor permissions; repository AGENTS authorizes Kuafu same-event recovery; native delegate sinan_99def07d3f8a988c read-only investigation.",
+    "evidence": "Private read-only diagnosis SHA256 3e2b1c5f1ac2533dbfcbae30c591edcec3b460a97183456199936bed19b4978d; actual status pair preserved; original rejected supplement pair unavailable",
+    "diagnosis": "After restart the live public ProductionSetup checkbox was off and parallel config empty. Source registration rejects existing external producers under that configuration; status does not register a batch. This explains a compatible rejection path, but the exact failed supplement tool pair was pruned and remains unverified.",
+    "next_action": "Normal UI authorization checkbox enabled under existing user authorization; verify original identities and operations, then same-ID supplement once only if absent and no pending. Require actual context_recorded before fresh review. Preserve C interrupted and prior failures.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-13T17:42:42.304290+00:00",
+    "attempted": null,
+    "repair_owner": "Current root owns original acceptance session; native child 99 read-only diagnosis",
+    "continuable": "Independent work continues; no game acceptance claimed"
+  },
+  "occurred_at": "2026-11-13T17:48:09.917995+00:00",
+  "sha256": "ad5b96ef212d1f237838b006546f3415da23a4eb07ad2626c5c25716877b870b"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-893864bccc08b3e344bf4b93d68f48ebe5ca3ccd",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "editor-parent-production-continuation-20261112",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0eac9411252ec7caff17f2e6eb6f9d65eef5b3b1a6ae3eb2a3a7aee3016c88ff",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "action": "delivery",
+    "detection_head": "a08bce60c5d8c4ea4805decde386a826e5ed1525",
+    "context_sha256": "6b96503abb151ccc5ab08174479e34b14cd0c6741cb6a7ba55201a0c6405aec1",
+    "operator": "Sail-Li",
+    "worker": "codex-root-production951",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/951",
+    "evidence": "continuation951-writer-r5.log; main a08bce60 to da903fdd; r5 review cc2b14e162ed503ef2bbe5b22f5de8155fc83870693ec31eb242256d70ba5a97",
+    "diagnosis": "The old trusted writer refused before commit after main advanced by two unrelated Tianxuan Gitea paths. The reviewed 38 task files remain unchanged. Repeated manual baseline refresh is racing concurrent delivery.",
+    "next_action": "Use the already delivered trusted main writer optional disjoint auto-integration to publish the exact branch, then independently review its actual final base/tree and require all exact candidate CI before merge.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-14T01:19:37.048507+00:00",
+    "attempted": null,
+    "repair_owner": "codex-root-production951",
+    "continuable": "Branch publication and independent review may proceed; no main merge or installation until exact review and CI pass."
+  },
+  "occurred_at": "2026-11-14T01:20:41.772005+00:00",
+  "sha256": "f146e335655b1cf8437fea54b414cff8016973c70a08ff5844d59ea00619bc41"
+}

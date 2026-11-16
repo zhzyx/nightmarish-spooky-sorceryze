@@ -1,0 +1,1025 @@
+{
+  "schema_version": 1,
+  "issue": 951,
+  "parent_issue": 773,
+  "request_id": "editor-parent-production-continuation-20261112",
+  "state": "local_followup_validation_record_delivery_pending",
+  "scope": "Append-only source-owner validation report adopted from the helper contributor draft and actual owner verification. Controlled native production, transport, independent review and currentness are distinguished from original-game business acceptance. Helper contributor 65 is not the final independent reviewer; final full-index reviewer is 3b.",
+  "artifact_resolution": "logical_private_artifact names resolve relative to the custodial receipts directory for parent 773. Raw originals stay private; hashes and byte counts identify them. repository_artifact paths resolve from the candidate repository root. Input-map digests use UTF-8 JSON sorted keys and compact separators.",
+  "source_boundary": {
+    "main_snapshot": "65e1fdc9f004bdf0a945f1ea4568b91d5bc4c1c4",
+    "previous_main": "66a8c7ed5442fce7646d3d8ad61bb490a0a5c581",
+    "incoming_paths": 41,
+    "task_file_count": 23,
+    "task_bytes_preserved": true,
+    "evidence": {
+      "logical_private_artifact": "eligibility951-main65e1-preserved.json",
+      "sha256": "dc5ddf7fbc91c77e3bcb14215385c759eef801d07c65467400599c58d7e3b1f6",
+      "bytes": 3633
+    },
+    "native_and_runner_inputs_at_mixed_r2": {
+      "editor/docks/ai_chat_sub_agents.cpp": "779dbce57ba03fd655c3f7ac3bab53f425f466e54e23c705ec154bfb87b78691",
+      "editor/docks/ai_chat_dock.cpp": "a9c9661065f773c8c591c8139ce43c304158cf5c5a2c6dceb43acb96dea5228c",
+      "editor/docks/ai_chat_dock.h": "63f3336ccf670bb1c0ce9dd5998bc54d1bcbb311c654209c068088b2f0d667ee",
+      "editor/docks/production/ProductionControl.cpp": "26097a00db15134e1cec235c6cd9446dd287dd59952f9ee8a6330daabe808ebf",
+      "tools/godot_parallel/runner.mjs": "319a5d5e4c763ef95e1b158ec08b23be3e36583e6c430995beca0f5332700ad6"
+    },
+    "limitation": "Historical tests have their own recorded engine and host inputs. Preserving candidate bytes across a main fast-forward does not establish a complete build or installed validation of every new-main input.",
+    "current_head": "65e1fdc9f004bdf0a945f1ea4568b91d5bc4c1c4",
+    "current_product_inputs": {
+      "editor/docks/ai_chat_dock.cpp": "7fedd339bf2d8a906045947baadfcefece9a5ec3b06026b49706aa8bb32df238",
+      "editor/docks/ai_chat_dock.h": "3acb8eea5768747612a790ec9d5a653c42e15aeba513baa859b4c65b4da49587",
+      "editor/docks/ai_chat_sub_agents.cpp": "779dbce57ba03fd655c3f7ac3bab53f425f466e54e23c705ec154bfb87b78691",
+      "editor/docks/production/ProductionControl.cpp": "26097a00db15134e1cec235c6cd9446dd287dd59952f9ee8a6330daabe808ebf",
+      "tools/godot_parallel/runner.mjs": "319a5d5e4c763ef95e1b158ec08b23be3e36583e6c430995beca0f5332700ad6"
+    },
+    "latest_engine_sha256": "da63926207dffbf8d475571d281d77a28744a9d2dc8314aa2112db0a23f385bd"
+  },
+  "historically_delivered_original_installation": {
+    "report": {
+      "repository_artifact": "data-collection/editor-continuation-installed1076-951.json",
+      "sha256": "100d4cdf923da6b6747b5849c1764babe4961307fe57175ab0e5d4f5196e4ba5",
+      "bytes": 5934
+    },
+    "source_and_native_report": {
+      "repository_artifact": "data-collection/editor-parent-production-continuation-951.json",
+      "sha256": "94b24c96516a2d77c529e7f79f3f5bc9a1070c01741436d92e107bdbb1cc23e3",
+      "bytes": 9945
+    },
+    "binding_recovery_report": {
+      "repository_artifact": "data-collection/editor-parent-binding-recovery-951.json",
+      "sha256": "030ac7f5db265a5dc291ec01ab735e594ce01e0d6ad09198cd690815c71ffe93",
+      "bytes": 11793
+    },
+    "installed_main": "22ba06d9543c16ca5e91c0a5c8a4c8fc2545a4f4",
+    "engine_sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+    "scope": "Previously delivered parent tools and binding recovery have partial actual original-consumer evidence. This does not establish completion of the current preparation recovery followup, original A/B repair, original C production or parent 773."
+  },
+  "validation_matrix": [
+    {
+      "case": "phase-one eligibility and strict review contract",
+      "status": "passed_on_recorded_historical_inputs",
+      "evidence": {
+        "logical_private_artifact": "eligibility951-phase-one-validation.json",
+        "sha256": "982d05e41cfb5e137dc948676d4978cf11721a077c8c8ba67a27622f114cfdf8",
+        "bytes": 3701
+      },
+      "host_source_baseline": "432cd7591a2c015cffd04252a8aa526e9226beee",
+      "engine_sha256": "bbe113216d36989ead1b10334f7b1a70748743c54100c65661c46b5fb09a25b2",
+      "strict_build_source_digest": "292cbe2bfcdd93b8a4cf3e5959c68f7b66a60f7d0a7a37cbf6563bbe624c26d1",
+      "coverage": "Cold eligibility, mixed missing-execution evidence driving real repair, invalid fail/null and array contracts. The referenced aggregate retains earlier fixture failures. Not the complete later preparation candidate."
+    },
+    {
+      "case": "strict r14 build",
+      "status": "passed_build",
+      "receipt": {
+        "logical_private_artifact": "eligibility951-strict-build-receipt-r14.json",
+        "sha256": "60ce1b6663ea428634984679e9c9f45b7d4c7b30eb5100926db1e80e865b952c",
+        "bytes": 721
+      },
+      "log": {
+        "logical_private_artifact": "eligibility951-preparation-strict-r14.log",
+        "sha256": "725d83cd882b84f08bf33cc781d313e8eb893e94a5e034d6cea241ee62def95b",
+        "bytes": 1425
+      },
+      "source_digest": "953b8717a8ac395a4ae8cdd0a6aaf08f88c097f7667f2681687bc5e6bcf727af",
+      "engine_sha256": "0919563dd30417ada9dc060424564a19c3cf08492ffebacadc9ccbc803376be9",
+      "cache_status": "uncached",
+      "cache_reason": "unidentified configuration",
+      "coverage": "Actual changed C++ units and editor binaries rebuilt with tests enabled, extra warnings and warnings as errors. No unit-test count is inferred from this build log."
+    },
+    {
+      "case": "preparation-baseline-r3",
+      "scope": "Ordinary normal setup baseline. Engine build and copied host-source baselines are separately bound.",
+      "result": {
+        "logical_private_artifact": "eligibility951-preparation-baseline-r3.json",
+        "sha256": "354c0caee783240834dd88ef314f4c84f9f6b45d0086f360126f63278db47964",
+        "bytes": 225548
+      },
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-baseline-r3.invocation.json",
+        "sha256": "ddf882fc57d3bbdfcf516a22e558e763fbb5f8996aaac530a965fd94199444f7",
+        "bytes": 1464
+      },
+      "ok": true,
+      "exit_code": 0,
+      "host_source_baseline": "5b89de2446cdeabdc079d1beb8ca7822b7f7ee96",
+      "engine_build_baseline": "cd2a5be3d38d79ea2e86f2dc8ba6ebc3afc0a88d",
+      "engine_sha256": "86637ed80188df4ecc97a78daaceb87d4b2e955aa6ddef20f61fc282a04e0997",
+      "source_unchanged": true,
+      "engine_unchanged": true,
+      "input_count": 10,
+      "input_map_sha256": "969323c6c0acf24022d2fc91fa22159d69cb365eed37ce837f6b96459f03dc4e",
+      "input_resolution": "Exact source path/SHA map is preserved in the referenced private invocation; null baseline means not recorded, not inferred."
+    },
+    {
+      "case": "runner lineage r2",
+      "status": "passed_targeted_tests",
+      "evidence": {
+        "logical_private_artifact": "eligibility951-runner-lineage-r2.log",
+        "sha256": "96c79275980b22764bbbcca85b1d8d55aa98159cd735fec5f7ddbd392f0a92cb",
+        "bytes": 577
+      },
+      "passed": 5,
+      "failed": 0,
+      "coverage": "Review/currentness rejection and continuation/reconcile replay boundaries. Not original-game execution."
+    },
+    {
+      "case": "prepared cold r6",
+      "status": "original_invocation_failed_offline_corrected_oracle_passed",
+      "original_invocation": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-cold-r6.invocation.json",
+        "sha256": "1a2d98aa3ad9de4236f525b3cb3d47778f9691c333b3bce821849ee4c50e408c",
+        "bytes": 1589
+      },
+      "original_observed": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-cold-r6.setup-observed.json",
+        "sha256": "b0a01825f7df5edd5cc5ac55d0d664702f243ed11eafa2d4a1ac36802ad79a10",
+        "bytes": 942504
+      },
+      "original_exit_code": 1,
+      "host_source_baseline": "66a8c7ed5442fce7646d3d8ad61bb490a0a5c581",
+      "engine_build_baseline": "bb6236c75333efacb894d5559124c60562dc481f",
+      "engine_sha256": "0919563dd30417ada9dc060424564a19c3cf08492ffebacadc9ccbc803376be9",
+      "source_unchanged": true,
+      "engine_unchanged": true,
+      "native_editor_exits": [
+        0,
+        0
+      ],
+      "actual_counts": {
+        "workers": 5,
+        "reviews": 6,
+        "dispatches": 4
+      },
+      "offline_report": {
+        "logical_private_artifact": "eligibility951-cold-r6-offline-oracle-r2.json",
+        "sha256": "8b80c316ce8ddb3193433fd9a558e9574f18f61851c481116bb09408bfa58c3b",
+        "bytes": 5968
+      },
+      "prior_offline_report": {
+        "logical_private_artifact": "eligibility951-cold-r6-offline-full-oracle.json",
+        "sha256": "328859a6115b9cf5f06e2426d170b626413fe329033553bcf0a7b085b29209d9",
+        "bytes": 4099
+      },
+      "corrected_helper_sha256": "b6b9a50f2499e2d3db3c78025b2c4113dbcd2e1068a89b2398540fdd4c7a677c",
+      "checks": {
+        "actual-r6": {
+          "oracle_result": true,
+          "actual_archived_reads": 8
+        },
+        "first-terminal-hash": {
+          "oracle_result": false,
+          "actual_archived_reads": 3
+        },
+        "repair-reference-hash": {
+          "oracle_result": false,
+          "actual_archived_reads": 4
+        },
+        "predecessor-execution": {
+          "oracle_result": false,
+          "actual_archived_reads": 4
+        },
+        "full-worker-identity": {
+          "oracle_result": false,
+          "actual_archived_reads": 4
+        },
+        "dependency-proof-hash": {
+          "oracle_result": false,
+          "actual_archived_reads": 5
+        },
+        "dependency-terminal": {
+          "oracle_result": false,
+          "actual_archived_reads": 4
+        }
+      },
+      "all_positive_predicates_reached": true,
+      "coverage": "Actual original setup A/B/C, retained isolated UID addition, public capacity-induced preparation gate, cold Continue, fresh B review, A repair, original C dependency release and C repair. Actual terminal/config/lineage/dependency proofs and parent list were read.",
+      "correction": "Oracle originally ran after cleanup. Complete actual archived-byte replay then exposed host terminal file_sha256 versus repair reference sha256 projection assumptions. Corrected oracle verifies actual bytes, full execution/worker identity and strict lineage.",
+      "independent_readback": "Reviewer 3b independently ran the complete corrected oracle against actual archived bytes: true, 8 reads of 7 objects; no observed-data edits or new native run. This is not final full-index approval.",
+      "limit": "Original exit1 remains failed. Offline true is not a new end-to-end invocation pass. Parent list showing live acceptance is not business integration or parent completion."
+    },
+    {
+      "case": "preparation-prepared-config-drift-r1",
+      "scope": "Actual original prepared configuration/job drift is refused, oracle executed before cleanup. Not an experiment creating a new business job.",
+      "result": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-config-drift-r1.json",
+        "sha256": "027c8386a7a0de9e740b7fb12a5c4f485d8c565f3f9934da9c2d1147f09bdb46",
+        "bytes": 449675
+      },
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-config-drift-r1.invocation.json",
+        "sha256": "0542b72754ea75a57b543b21f6ff9d6d96b13f1722615c6a7f8e5751a07b5c09",
+        "bytes": 1597
+      },
+      "ok": true,
+      "exit_code": 0,
+      "host_source_baseline": "65e1fdc9f004bdf0a945f1ea4568b91d5bc4c1c4",
+      "engine_build_baseline": "bb6236c75333efacb894d5559124c60562dc481f",
+      "engine_sha256": "0919563dd30417ada9dc060424564a19c3cf08492ffebacadc9ccbc803376be9",
+      "source_unchanged": true,
+      "engine_unchanged": true,
+      "input_count": 11,
+      "input_map_sha256": "a2e6a66ddac4c59fd179c540a42946237da22c1aa3b4d0fe4ad62095be46efe7",
+      "input_resolution": "Exact source path/SHA map is preserved in the referenced private invocation; null baseline means not recorded, not inferred."
+    },
+    {
+      "case": "preparation-mixed-r2",
+      "scope": "Actual mixed repair-ready and ordinary-ready native consumer; successful result and exact inputs bound independently of historical phase-one mixed tests.",
+      "result": {
+        "logical_private_artifact": "eligibility951-preparation-mixed-r2.json",
+        "sha256": "41d280224b2d558e3a4b0f0b793c938cc0350aba6bf6b7b5efdd14c42222cfc0",
+        "bytes": 485973
+      },
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-mixed-r2.invocation.json",
+        "sha256": "5814fc40ea811e971734a7337c23190fd7087e52fb2aba3393eccbc6bf001a67",
+        "bytes": 1581
+      },
+      "ok": true,
+      "exit_code": 0,
+      "host_source_baseline": "65e1fdc9f004bdf0a945f1ea4568b91d5bc4c1c4",
+      "engine_build_baseline": "bb6236c75333efacb894d5559124c60562dc481f",
+      "engine_sha256": "0919563dd30417ada9dc060424564a19c3cf08492ffebacadc9ccbc803376be9",
+      "source_unchanged": true,
+      "engine_unchanged": true,
+      "input_count": 11,
+      "input_map_sha256": "a2e6a66ddac4c59fd179c540a42946237da22c1aa3b4d0fe4ad62095be46efe7",
+      "input_resolution": "Exact source path/SHA map is preserved in the referenced private invocation; null baseline means not recorded, not inferred."
+    },
+    {
+      "case": "warm-r2",
+      "status": "passed_on_recorded_inputs",
+      "result": {
+        "logical_private_artifact": "eligibility951-preparation-warm-r2.json",
+        "sha256": "1a79cf5aa066d5159d662a30242a274ee35e58a6c770bf289966cdca6c4601b1",
+        "bytes": 323581
+      },
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-warm-r2.invocation.json",
+        "sha256": "459776454348e797a955203af2afa3f0ceae3382b66fa5f345cc0540903d3448",
+        "bytes": 1097
+      },
+      "engine_sha256": "50db3a6a06d5f7f45b1cdd3da139f580a4e7ac9226ddc5666a9642fd3fa5438c",
+      "host_source_baseline": null,
+      "engine_build_baseline": null,
+      "source_unchanged": true,
+      "engine_unchanged": true,
+      "input_map_sha256": "d15688cb97b94fc9cf959a637a1247a183ffdf4b442f71123fb19789363b8b8d"
+    },
+    {
+      "case": "cold-r4",
+      "status": "passed_on_recorded_inputs",
+      "result": {
+        "logical_private_artifact": "eligibility951-preparation-cold-r4.json",
+        "sha256": "90ea00ecd360a9c4878cddf9def0522e62c7f02c8ce566db679ce3b4c2321776",
+        "bytes": 487806
+      },
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-cold-r4.invocation.json",
+        "sha256": "8afca3e43c442f9d23283b1c99a02899258be5ff9830fd558ca6fc1a37b6b56f",
+        "bytes": 1272
+      },
+      "engine_sha256": "86637ed80188df4ecc97a78daaceb87d4b2e955aa6ddef20f61fc282a04e0997",
+      "host_source_baseline": "cd2a5be3d38d79ea2e86f2dc8ba6ebc3afc0a88d",
+      "engine_build_baseline": null,
+      "source_unchanged": true,
+      "engine_unchanged": true,
+      "input_map_sha256": "a79d6def48981a7ddc2839cbd9c59b5eae49b1fe8ead00105a7c43dc28e1d3c2"
+    },
+    {
+      "case": "missing-result-r1",
+      "status": "passed_on_recorded_inputs",
+      "result": {
+        "logical_private_artifact": "eligibility951-preparation-missing-result-r1.json",
+        "sha256": "b24255367dc81929639f85755c175e5c79adb8f790533d9dd6239e1b9aaac6fb",
+        "bytes": 106706
+      },
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-missing-result-r1.invocation.json",
+        "sha256": "be5f32f149598215269a29ebb6676b400ef83957debcbf41bdd00a2887e02456",
+        "bytes": 1107
+      },
+      "engine_sha256": "50db3a6a06d5f7f45b1cdd3da139f580a4e7ac9226ddc5666a9642fd3fa5438c",
+      "host_source_baseline": null,
+      "engine_build_baseline": null,
+      "source_unchanged": true,
+      "engine_unchanged": true,
+      "input_map_sha256": "04c6e0b9dcae698fef70fe9b83eb379f73cc8949e4eb06a67acf6d3417e2abbe"
+    },
+    {
+      "case": "malformed-result-r1",
+      "status": "passed_on_recorded_inputs",
+      "result": {
+        "logical_private_artifact": "eligibility951-preparation-malformed-result-r1.json",
+        "sha256": "6c242b1b6bd67149094fc132d5d347f74bf360f159b9842c848450fc1e2e04e2",
+        "bytes": 116466
+      },
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-malformed-result-r1.invocation.json",
+        "sha256": "254fa931a5b4b1d5aee3b49d161b09c7275052a4172736c229f9a7c27079aa3d",
+        "bytes": 1401
+      },
+      "engine_sha256": "86637ed80188df4ecc97a78daaceb87d4b2e955aa6ddef20f61fc282a04e0997",
+      "host_source_baseline": "cd2a5be3d38d79ea2e86f2dc8ba6ebc3afc0a88d",
+      "engine_build_baseline": null,
+      "source_unchanged": true,
+      "engine_unchanged": true,
+      "input_map_sha256": "b5a1062a72c35da5e9144f95fac74798738e5b8e3a47863a65d0b33aed71cc60"
+    },
+    {
+      "case": "cold-running-r1",
+      "status": "passed_on_recorded_inputs",
+      "result": {
+        "logical_private_artifact": "eligibility951-preparation-cold-running-r1.json",
+        "sha256": "4fa72c586ebd6e421e94987fe0c3b568e9de4ba5abc75d6e8f818df90cf426b1",
+        "bytes": 185795
+      },
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-cold-running-r1.invocation.json",
+        "sha256": "f567c8768a5a4f5c5079ad12e910ea26e3cbf7fbac629486df7332549f79c617",
+        "bytes": 1397
+      },
+      "engine_sha256": "86637ed80188df4ecc97a78daaceb87d4b2e955aa6ddef20f61fc282a04e0997",
+      "host_source_baseline": "cd2a5be3d38d79ea2e86f2dc8ba6ebc3afc0a88d",
+      "engine_build_baseline": null,
+      "source_unchanged": true,
+      "engine_unchanged": true,
+      "input_map_sha256": "dcff82ff07e9b7e313c5f5bd890444afac4847695d6fd8e4da442934c422a2ab"
+    },
+    {
+      "case": "cancel-r2",
+      "status": "passed_on_recorded_inputs",
+      "result": {
+        "logical_private_artifact": "eligibility951-preparation-cancel-r2.json",
+        "sha256": "ba70d96477186b63899c6c3099c47e7b8d4f4cc83c63c6bc3003159268f17509",
+        "bytes": 71970
+      },
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-cancel-r2.invocation.json",
+        "sha256": "ab141a2d5e34e7767c22e079232b79c3fd92f0b7a6f3fb3824249a637aa9f10f",
+        "bytes": 1391
+      },
+      "engine_sha256": "86637ed80188df4ecc97a78daaceb87d4b2e955aa6ddef20f61fc282a04e0997",
+      "host_source_baseline": "cd2a5be3d38d79ea2e86f2dc8ba6ebc3afc0a88d",
+      "engine_build_baseline": null,
+      "source_unchanged": true,
+      "engine_unchanged": true,
+      "input_map_sha256": "b5a1062a72c35da5e9144f95fac74798738e5b8e3a47863a65d0b33aed71cc60"
+    },
+    {
+      "case": "prepared-warm-r3",
+      "status": "passed_on_recorded_inputs",
+      "result": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-warm-r3.json",
+        "sha256": "b2aba8ebca41ac131722801be09590468f0d12baed1073a67c3c928cec245da3",
+        "bytes": 1519176
+      },
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-warm-r3.invocation.json",
+        "sha256": "ec1ff61079b80be607b1986bdf2959fd70c505287bb28c68d2358a061363dcf1",
+        "bytes": 1589
+      },
+      "engine_sha256": "da63926207dffbf8d475571d281d77a28744a9d2dc8314aa2112db0a23f385bd",
+      "host_source_baseline": "65e1fdc9f004bdf0a945f1ea4568b91d5bc4c1c4",
+      "engine_build_baseline": "65e1fdc9f004bdf0a945f1ea4568b91d5bc4c1c4",
+      "source_unchanged": true,
+      "engine_unchanged": true,
+      "input_map_sha256": "a7859b41c33b788e61d3bbc5731e3b52e47df9f419362ba32c278068312c9135"
+    },
+    {
+      "case": "config-race-r4",
+      "status": "passed_on_recorded_inputs",
+      "result": {
+        "logical_private_artifact": "eligibility951-preparation-config-race-r4.json",
+        "sha256": "032e4eec012d6e950e332301ab575784a1f786a3950193a272f627235550c738",
+        "bytes": 202359
+      },
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-config-race-r4.invocation.json",
+        "sha256": "731a8e28c53fdcb24cd4ab9c6087fd0a7cf9be70977b31e95cfd148c243c0b32",
+        "bytes": 1587
+      },
+      "engine_sha256": "da63926207dffbf8d475571d281d77a28744a9d2dc8314aa2112db0a23f385bd",
+      "host_source_baseline": "65e1fdc9f004bdf0a945f1ea4568b91d5bc4c1c4",
+      "engine_build_baseline": "65e1fdc9f004bdf0a945f1ea4568b91d5bc4c1c4",
+      "source_unchanged": true,
+      "engine_unchanged": true,
+      "input_map_sha256": "a7859b41c33b788e61d3bbc5731e3b52e47df9f419362ba32c278068312c9135"
+    },
+    {
+      "case": "cancel-missing-r3",
+      "status": "passed_on_recorded_inputs",
+      "result": {
+        "logical_private_artifact": "eligibility951-preparation-cancel-missing-r3.json",
+        "sha256": "de2de93f2cc712464f827ea1e92119f76cfa9f434de561043bd12f976b667bb7",
+        "bytes": 72447
+      },
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-cancel-missing-r3.invocation.json",
+        "sha256": "0f4b598e0c5cbc16fcb8777647b8f21c75fbd34b3be398bff902f0346c50be32",
+        "bytes": 1590
+      },
+      "engine_sha256": "da63926207dffbf8d475571d281d77a28744a9d2dc8314aa2112db0a23f385bd",
+      "host_source_baseline": "65e1fdc9f004bdf0a945f1ea4568b91d5bc4c1c4",
+      "engine_build_baseline": "65e1fdc9f004bdf0a945f1ea4568b91d5bc4c1c4",
+      "source_unchanged": true,
+      "engine_unchanged": true,
+      "input_map_sha256": "09807641fa4d990d76ce968d38c0e0d7cff6e213e473eec03b23fdf6449598fb"
+    },
+    {
+      "case": "strict r15",
+      "status": "passed_build",
+      "receipt": {
+        "logical_private_artifact": "eligibility951-strict-build-receipt-r15.json",
+        "sha256": "7214c136ec155212671d302d1a753de94cc8942ce329816b0ab559b9944e4cd9",
+        "bytes": 721
+      },
+      "log": {
+        "logical_private_artifact": "eligibility951-preparation-strict-r15.log",
+        "sha256": "83ad46ccd18f80540869a696326fdcd9a51725b26e5e8395ff0ad4918b410fea",
+        "bytes": 2205
+      },
+      "source_digest": "da29c0b592b008160dfb0f4842cdce2755b1280cfaa9727ea607ae0ce8999581",
+      "engine_sha256": "da63926207dffbf8d475571d281d77a28744a9d2dc8314aa2112db0a23f385bd",
+      "scope": "Extra warnings, warnings-as-errors, tests-enabled actual native compile/link. Complete wrapper/AIChat validation remains separate."
+    },
+    {
+      "case": "old-native legacy r2",
+      "status": "original_exit1_full_archived_byte_oracle_passed",
+      "original_invocation": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-legacy-r2.invocation.json",
+        "sha256": "e75d768631645ccada0825ac3fe7af97ff2ce4c2858972e1b39fc6b354036c32",
+        "bytes": 1591
+      },
+      "original_log": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-legacy-r2.log",
+        "sha256": "989c55bfeb6f23fdaea0e65d7e5177d60ee32947fe99a5ac978df86266501282",
+        "bytes": 1317
+      },
+      "offline_reassessment": {
+        "logical_private_artifact": "eligibility951-prepared-legacy-r2-offline-corrected.json",
+        "sha256": "6834878caa99e1036aa5ff0890e34a31ef153ba00f6dd9514e5e2a36cc406040",
+        "bytes": 1934
+      },
+      "old_engine_sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+      "candidate_engine_sha256": "0919563dd30417ada9dc060424564a19c3cf08492ffebacadc9ccbc803376be9",
+      "scope": "Actual old-native eligible repair without new preparation metadata, actual failed baseline setup and Stop, complete result/process-quiescence checks and normal old exit, then candidate cold recovery through independent A/C repairs and dependency currentness. Current isolated host tools are explicitly distinct from a complete old installation.",
+      "oracle_correction": "Old native dispatch lacks configSha256. Exactly one hash-bound original dispatch is recognized through unchanged original config, saved A/B assignments and terminal batch identity; every candidate dispatch still requires the original configSha256 and candidate runtime. No original field was inserted.",
+      "archived_objects": 193,
+      "actual_oracle_reads": 13,
+      "actual_distinct_objects_read": 11,
+      "negative_cases_rejected": 7,
+      "original_exit_retained": 1
+    }
+  ],
+  "retained_failed_attempts": [
+    {
+      "attempt": "prepared cold r1",
+      "outcome": "exit1",
+      "reason": "Fixture removed config before independent acceptance verified it; native parallel_assignment_changed correctly refused. No legitimate repair_of was established."
+    },
+    {
+      "attempt": "prepared cold r2",
+      "outcome": "exit1",
+      "reason": "Real preparation gate reached; fixture incorrectly required Stop disabled for idle."
+    },
+    {
+      "attempt": "prepared cold r3",
+      "outcome": "exit1",
+      "reason": "Native recovery chain progressed, but parent response entered unrelated serial fixture assertions. Whole invocation remains failed."
+    },
+    {
+      "attempt": "prepared cold r4",
+      "outcome": "exit1",
+      "reason": "Stub UUID differed from actual normalized native call ID. Actual persisted history pair is available; original HTTP body was lost during cleanup and is not reconstructed.",
+      "separate_actual_history": {
+        "logical_private_artifact": "eligibility951-prepared-cold-r4-actual-parent-pair.json",
+        "sha256": "6f3b6db436b55e62345be80901252140e13bfd14e3d99d4cddd31f22983b045b",
+        "bytes": 1272
+      }
+    },
+    {
+      "attempt": "prepared cold r5",
+      "outcome": "exit1",
+      "reason": "Oracle read after cleanup. Insufficient retained originals for a complete retrospective oracle."
+    },
+    {
+      "attempt": "prepared cold r6",
+      "outcome": "exit1",
+      "reason": "Post-cleanup oracle failure retained separately from corrected offline true above."
+    },
+    {
+      "attempt": "prepared warm r1",
+      "outcome": "exit1",
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-warm-r1.invocation.json",
+        "sha256": "28b789054420822af6c28e020d0f6dcc5c84572a50fb2bfbd27bd4f6a61218e0",
+        "bytes": 1589
+      },
+      "log": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-warm-r1.log",
+        "sha256": "6eda97603324270d815d4baeca489c906a87d6e222fedadfc33a9faed79f3510",
+        "bytes": 864
+      },
+      "reason": "Outer timeout; warm ready/checked existed, but no invocation checkpoint established whether Continue returned. Do not infer no click or a product cause."
+    },
+    {
+      "attempt": "prepared legacy r1",
+      "outcome": "exit1",
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-legacy-r1.invocation.json",
+        "sha256": "5e527ef55fe0418fc5258d69bfc08739b26d9f2fc69038241eeb527406c7256d",
+        "bytes": 1591
+      },
+      "log": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-legacy-r1.log",
+        "sha256": "eb0de518a032511c0a61d49d46c8fff7ac488ede1579fe9dc8b22631b171f4d3",
+        "bytes": 1937
+      },
+      "reason": "Actual old-host preparation failure and Stop preceded missing handshake markers; old Continue enabled state can remain stale after PID clearance. This is not established as the unique runtime cause. No candidate-stage pass claimed."
+    },
+    {
+      "attempt": "prepared warm r2",
+      "outcome": "exit1 timeout",
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-warm-r2.invocation.json",
+        "sha256": "b97b2b4bf2e0a04970814a6c3d6642901dc557ee072e721042f815776e955a14",
+        "bytes": 1589
+      },
+      "reason": "Actual Continue returned synchronously, but completed read-only reviewer consultation_turn leaked into the parent and silently rejected resume/registration. Capture/restore is corrected; warm r3 subsequently passed on r15. Cold success did not cover this live-session defect."
+    },
+    {
+      "attempt": "prepared legacy r2",
+      "outcome": "exit1 collector KeyError",
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-legacy-r2.invocation.json",
+        "sha256": "e75d768631645ccada0825ac3fe7af97ff2ce4c2858972e1b39fc6b354036c32",
+        "bytes": 1591
+      },
+      "reason": "Old protocol dispatch has no configSha256. Full original bytes were retained and strictly reassessed; the original process failure is not rewritten."
+    },
+    {
+      "attempt": "config race r3",
+      "outcome": "exit1 before production",
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-config-race-r3.invocation.json",
+        "sha256": "26cb1149b81b2218afe50231958243426ca398359728f041eab9c21cb5c2317b",
+        "bytes": 1587
+      },
+      "reason": "Generated fault wrapper contained invalid Python syntax, so model discovery failed before the protected dispatch. Corrected actual generated scripts compile; config-race r4 passes with zero repair launch."
+    },
+    {
+      "attempt": "cancel missing r2",
+      "outcome": "exit1 fixture premature stability assertion",
+      "invocation": {
+        "logical_private_artifact": "eligibility951-preparation-cancel-missing-r2.invocation.json",
+        "sha256": "ce62d19edd7e8ad9eb2fa1d5b442cccba5f1bc5363c53c84035defe2ce7905dc",
+        "bytes": 1590
+      },
+      "reason": "After wrapper exit, the native poll legitimately updated the same cancelled/unknown attempt reason from parent_cancelled_preparation to preparation_completed_after_parent_changed. The fixture now waits for that actual host observation before two save probes. Cancel-missing r3 passes; no product gate was weakened."
+    }
+  ],
+  "latest_fixture_diagnostic_correction": {
+    "helper_sha256": "96a8fe8a26be993a5308ad7bacdcd6484f66cb53c53808ee238d21182ba3254c",
+    "legacy_correction": {
+      "logical_private_artifact": "eligibility951-prepared-legacy-r2-offline-corrected.json",
+      "sha256": "6834878caa99e1036aa5ff0890e34a31ef153ba00f6dd9514e5e2a36cc406040",
+      "bytes": 1934
+    },
+    "generated_wrapper_compile": {
+      "logical_private_artifact": "eligibility951-generated-fault-wrapper-compile-r1.json",
+      "sha256": "903a06edf911bcf42d81d43b607f6e6f8a9b1902c02e80b276649ef924b572ee",
+      "bytes": 945
+    },
+    "scope": "Terminal summaries and full native terminals are different shapes. Legacy dispatch and candidate dispatch are distinct protocols. Full actual oracle now runs before TemporaryDirectory cleanup; stdout/stderr and source references are preserved before collector failures. Cancel-missing waits for native host consumption of the actual wrapper exit before unchanged-history probes."
+  },
+  "pending_actual_results": [
+    "Final full-index independent review and formal gates",
+    "Exact candidate CI/main and clean-main complete build/install",
+    "Actual original-game A/B repair, independent acceptance and C dependency release through the normal UI"
+  ],
+  "coordination_recovery": {
+    "original_report": {
+      "repository_artifact": "data-collection/editor-followup-dispatch-correction-951.json",
+      "sha256": "025a4f3c9697a775ee66074a1388ceba780cca0cfd58bd182c6707eaa6eed370",
+      "bytes": 2026
+    },
+    "original_state_preserved": "native_worker_reactivated_result_pending",
+    "append_status": "Actual followup restarted the worker; owned helper correction, static checks and archived-byte full oracle were completed and reviewer 3b independently reproduced true.",
+    "evidence": {
+      "logical_private_artifact": "eligibility951-cold-r6-offline-oracle-r2.json",
+      "sha256": "8b80c316ce8ddb3193433fd9a558e9574f18f61851c481116bb09408bfa58c3b",
+      "bytes": 5968
+    },
+    "limit": "Worker handoff recovered; this does not complete issue 951 or parent 773."
+  },
+  "design_acceptance_mapping": [
+    {
+      "criteria": [
+        1,
+        2
+      ],
+      "status": "Implemented and isolated native validation complete for this followup",
+      "remaining": "Independent frozen candidate review, delivery and original installed consumption."
+    },
+    {
+      "criteria": [
+        3,
+        4
+      ],
+      "status": "Strict review/repair/preparation recovery verified by recorded native and archived-byte evidence",
+      "remaining": "Original installed pending-repair recovery with fresh independent acceptance; budgets and old failures remain intact."
+    },
+    {
+      "criteria": [
+        5
+      ],
+      "status": "Isolated continuation matrix verified within recorded input boundaries; original game pending",
+      "remaining": "Actual installed A/B repair and revalidation, then original C dependency release and execution through normal controls. No external history, game implementation or authority edits."
+    },
+    {
+      "criteria": [
+        6
+      ],
+      "status": "Current candidate delivery pending",
+      "remaining": "Frozen independent full-index review, formal gates, exact CI/main, complete build/install and actual original-consumer revalidation. Parent 773 remains open for its full scope."
+    }
+  ],
+  "non_claims": [
+    "No current candidate publication, CI success, main merge or installation is asserted.",
+    "Controlled model transport is not evidence of real-provider choices or original business success.",
+    "No missing original is replaced by a synthetic receipt. Existing immutable reports and all failed outcomes remain unchanged.",
+    "Legacy compatibility uses the old native binary with current controlled host tools; it is not validation of a complete old installation."
+  ],
+  "all_preserved_preparation_invocations": [
+    {
+      "case": "baseline-r2",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-baseline-r2.invocation.json",
+        "sha256": "f307903fd7a3ce65981c5c36a450142bfc3763bfe4ffadbd48d6012f3545ee15",
+        "bytes": 1393
+      }
+    },
+    {
+      "case": "baseline-r3",
+      "exit_code": 0,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-baseline-r3.invocation.json",
+        "sha256": "ddf882fc57d3bbdfcf516a22e558e763fbb5f8996aaac530a965fd94199444f7",
+        "bytes": 1464
+      }
+    },
+    {
+      "case": "cancel-missing-r2",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-cancel-missing-r2.invocation.json",
+        "sha256": "ce62d19edd7e8ad9eb2fa1d5b442cccba5f1bc5363c53c84035defe2ce7905dc",
+        "bytes": 1590
+      }
+    },
+    {
+      "case": "cancel-missing-r3",
+      "exit_code": 0,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-cancel-missing-r3.invocation.json",
+        "sha256": "0f4b598e0c5cbc16fcb8777647b8f21c75fbd34b3be398bff902f0346c50be32",
+        "bytes": 1590
+      }
+    },
+    {
+      "case": "cancel-r1",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-cancel-r1.invocation.json",
+        "sha256": "b4fba6b833b652786e14d24deec0477a9ff81e569fdd8f93fb769a2d1e55fdf2",
+        "bytes": 1099
+      }
+    },
+    {
+      "case": "cancel-r2",
+      "exit_code": 0,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-cancel-r2.invocation.json",
+        "sha256": "ab141a2d5e34e7767c22e079232b79c3fd92f0b7a6f3fb3824249a637aa9f10f",
+        "bytes": 1391
+      }
+    },
+    {
+      "case": "cold-r1",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-cold-r1.invocation.json",
+        "sha256": "7d63d04f07596f64f2df21d5bd66edd33232ab3079fb374b95a4a183d22721cd",
+        "bytes": 1097
+      }
+    },
+    {
+      "case": "cold-r2",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-cold-r2.invocation.json",
+        "sha256": "68aedf5b4aef98ec15395ad8bc9b1ab3ee2e7befcf688c1d9ef21854eb64383c",
+        "bytes": 1097
+      }
+    },
+    {
+      "case": "cold-r3",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-cold-r3.invocation.json",
+        "sha256": "4f65fec899c427ed71e726c10abb8cdc4a88c05ccfac3d64c2d31deb4c4a3590",
+        "bytes": 1097
+      }
+    },
+    {
+      "case": "cold-r4",
+      "exit_code": 0,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-cold-r4.invocation.json",
+        "sha256": "8afca3e43c442f9d23283b1c99a02899258be5ff9830fd558ca6fc1a37b6b56f",
+        "bytes": 1272
+      }
+    },
+    {
+      "case": "cold-running-r1",
+      "exit_code": 0,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-cold-running-r1.invocation.json",
+        "sha256": "f567c8768a5a4f5c5079ad12e910ea26e3cbf7fbac629486df7332549f79c617",
+        "bytes": 1397
+      }
+    },
+    {
+      "case": "config-race-r1",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-config-race-r1.invocation.json",
+        "sha256": "73cdb769f364c0dc93fa1a43b6a5a2506c10356b2e7bc3c2bde4efaacf843638",
+        "bytes": 1467
+      }
+    },
+    {
+      "case": "config-race-r2",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-config-race-r2.invocation.json",
+        "sha256": "303dff40d2fc4ea8d471e57ea665c0e38cf03ed7b69bbea382f7275c242d4985",
+        "bytes": 1467
+      }
+    },
+    {
+      "case": "config-race-r3",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-config-race-r3.invocation.json",
+        "sha256": "26cb1149b81b2218afe50231958243426ca398359728f041eab9c21cb5c2317b",
+        "bytes": 1587
+      }
+    },
+    {
+      "case": "config-race-r4",
+      "exit_code": 0,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-config-race-r4.invocation.json",
+        "sha256": "731a8e28c53fdcb24cd4ab9c6087fd0a7cf9be70977b31e95cfd148c243c0b32",
+        "bytes": 1587
+      }
+    },
+    {
+      "case": "malformed-result-r1",
+      "exit_code": 0,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-malformed-result-r1.invocation.json",
+        "sha256": "254fa931a5b4b1d5aee3b49d161b09c7275052a4172736c229f9a7c27079aa3d",
+        "bytes": 1401
+      }
+    },
+    {
+      "case": "missing-result-r1",
+      "exit_code": 0,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-missing-result-r1.invocation.json",
+        "sha256": "be5f32f149598215269a29ebb6676b400ef83957debcbf41bdd00a2887e02456",
+        "bytes": 1107
+      }
+    },
+    {
+      "case": "mixed-r1",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-mixed-r1.invocation.json",
+        "sha256": "e63f1013a5e048b065f56751ffcbc6d85db7128bf060fe003336cf7e2c8ae255",
+        "bytes": 1461
+      }
+    },
+    {
+      "case": "mixed-r2",
+      "exit_code": 0,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-mixed-r2.invocation.json",
+        "sha256": "5814fc40ea811e971734a7337c23190fd7087e52fb2aba3393eccbc6bf001a67",
+        "bytes": 1581
+      }
+    },
+    {
+      "case": "prepared-cold-r1",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-cold-r1.invocation.json",
+        "sha256": "9b8e6a08507421d500e6370d324b99f2cd104402ef3a3ce3739d9f2467856a83",
+        "bytes": 1589
+      }
+    },
+    {
+      "case": "prepared-cold-r2",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-cold-r2.invocation.json",
+        "sha256": "7d8a39d3f5088f131072f782c7f487b23c3bc941870d8212632f47c4c3fb9e71",
+        "bytes": 1589
+      }
+    },
+    {
+      "case": "prepared-cold-r3",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-cold-r3.invocation.json",
+        "sha256": "9a11b2f0b47b725f08299631d64b6913d481da0893b3771f23e0cbb1dd3f8eec",
+        "bytes": 1589
+      }
+    },
+    {
+      "case": "prepared-cold-r4",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-cold-r4.invocation.json",
+        "sha256": "96b5ea5a90efd2dffa187e76d371c9fd58bb060dfe3295d7905d663949092df8",
+        "bytes": 1589
+      }
+    },
+    {
+      "case": "prepared-cold-r5",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-cold-r5.invocation.json",
+        "sha256": "6567bbd142a8edbf2bdcd100458d8a5f73b410c6b786b4276d58f8779b1cbc24",
+        "bytes": 1589
+      }
+    },
+    {
+      "case": "prepared-cold-r6",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-cold-r6.invocation.json",
+        "sha256": "1a2d98aa3ad9de4236f525b3cb3d47778f9691c333b3bce821849ee4c50e408c",
+        "bytes": 1589
+      }
+    },
+    {
+      "case": "prepared-config-drift-r1",
+      "exit_code": 0,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-config-drift-r1.invocation.json",
+        "sha256": "0542b72754ea75a57b543b21f6ff9d6d96b13f1722615c6a7f8e5751a07b5c09",
+        "bytes": 1597
+      }
+    },
+    {
+      "case": "prepared-legacy-r1",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-legacy-r1.invocation.json",
+        "sha256": "5e527ef55fe0418fc5258d69bfc08739b26d9f2fc69038241eeb527406c7256d",
+        "bytes": 1591
+      }
+    },
+    {
+      "case": "prepared-legacy-r2",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-legacy-r2.invocation.json",
+        "sha256": "e75d768631645ccada0825ac3fe7af97ff2ce4c2858972e1b39fc6b354036c32",
+        "bytes": 1591
+      }
+    },
+    {
+      "case": "prepared-warm-r1",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-warm-r1.invocation.json",
+        "sha256": "28b789054420822af6c28e020d0f6dcc5c84572a50fb2bfbd27bd4f6a61218e0",
+        "bytes": 1589
+      }
+    },
+    {
+      "case": "prepared-warm-r2",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-warm-r2.invocation.json",
+        "sha256": "b97b2b4bf2e0a04970814a6c3d6642901dc557ee072e721042f815776e955a14",
+        "bytes": 1589
+      }
+    },
+    {
+      "case": "prepared-warm-r3",
+      "exit_code": 0,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-prepared-warm-r3.invocation.json",
+        "sha256": "ec1ff61079b80be607b1986bdf2959fd70c505287bb28c68d2358a061363dcf1",
+        "bytes": 1589
+      }
+    },
+    {
+      "case": "reuse-r1",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-reuse-r1.invocation.json",
+        "sha256": "96bad2852802c8aaf43c1efd9bf02b1d670b10caa025b67fab1417b20bba7303",
+        "bytes": 1273
+      }
+    },
+    {
+      "case": "reuse-r2",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-reuse-r2.invocation.json",
+        "sha256": "21986aadb96822d7cb0497b3c97742b89d3eb2f1ba865a84864e9e45c3d15e3f",
+        "bytes": 1390
+      }
+    },
+    {
+      "case": "reuse-r3",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-reuse-r3.invocation.json",
+        "sha256": "5c540f49618d8b822bbcae11bc0d692bd44dbed776439386a01b860a5f792c3a",
+        "bytes": 1390
+      }
+    },
+    {
+      "case": "reuse-r4",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-reuse-r4.invocation.json",
+        "sha256": "f1c3dbd040039eee1924077b130b76b0ff80a49d1d4dd963939bb72c8048565d",
+        "bytes": 1461
+      }
+    },
+    {
+      "case": "reuse-r5",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-reuse-r5.invocation.json",
+        "sha256": "923f07a064c2ddd7f20e444e91f084559779444ad9c50cc26ed3826bc8e7f4d4",
+        "bytes": 1461
+      }
+    },
+    {
+      "case": "warm-r1",
+      "exit_code": 1,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-warm-r1.invocation.json",
+        "sha256": "eaa8dbb4bebad72d22158a098827c6ca05d6b325b1b75721454aa4b56df5fb00",
+        "bytes": 1097
+      }
+    },
+    {
+      "case": "warm-r2",
+      "exit_code": 0,
+      "receipt": {
+        "logical_private_artifact": "eligibility951-preparation-warm-r2.invocation.json",
+        "sha256": "459776454348e797a955203af2afa3f0ceae3382b66fa5f345cc0540903d3448",
+        "bytes": 1097
+      }
+    }
+  ],
+  "ci_coverage": {
+    "workflow": ".github/workflows/windows_builds.yml",
+    "condition": "MSVC editor",
+    "representatives": [
+      "parallel-evidence-completion mixed/illegal fail-null/illegal array",
+      "preparation baseline mismatch and explicit cold retry",
+      "prepared cold recovery",
+      "prepared warm recovery and public consultation rejection"
+    ],
+    "direct_editor": true,
+    "existing_job_object_environment": true,
+    "reports_always_uploaded": true,
+    "status": "configured, not yet executed in remote CI",
+    "excluded_from_every_ci_build": [
+      "old-native compatibility binary",
+      "complete local transport/storage fault matrix"
+    ]
+  },
+  "input_reuse_boundary": "Historical results retain exact engine, host baseline and source maps. They are not claimed as re-executed on r15. The preparation/runner source paths retain their tested behavior; the only r15 native delta is scoped consultation state capture/restore, exercised by the full live warm recovery and read-only rejection. Cold and legacy archived-byte reassessment remain separately version-bound. Final CI repeats current representative consumers; original installed business validation remains pending.",
+  "static_checks": {
+    "clang_format_changed_cpp_dry_run_werror": "exit0",
+    "ruff_six_changed_python_check_and_format": "exit0",
+    "git_diff_check": "exit0",
+    "generated_fault_python_compile_five_modes": "exit0",
+    "actual_generated_warm_and_cancel_gd_parse": "exit0"
+  }
+}

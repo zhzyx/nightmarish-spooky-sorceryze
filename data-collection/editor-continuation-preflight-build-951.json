@@ -1,0 +1,80 @@
+{
+  "issue": 951,
+  "state": "identifier_correction_rebuilt_candidate_frozen_delivery_pending",
+  "revision": "2281ebd6b380e9ac06e02110aee6fbfdee53c8c8",
+  "clean_source": false,
+  "source_digest": "8a1eedcf42cd632778cc120a644abf3a29cecdbbf27a61b9e09fc236e6f71cc9",
+  "preflight_correction": {
+    "repository_artifact": "data-collection/editor-continuation-preflight-951.json",
+    "sha256": "fe67cd19fb6648f2fef7484e16ab25717358d26a748a947e667cb6060ac9d0e4",
+    "bytes": 2699
+  },
+  "main_integration": {
+    "logical_private_artifact": "eligibility951-main-2281ebd6b380-preserved.json",
+    "sha256": "9b23212ac51289e28e4ec29799ded5daf68be1e1b0406ae5477047571d23539e",
+    "bytes": 4415
+  },
+  "source_equivalence": {
+    "scope": "Identifier-only correction; eight token occurrences. Inverse replacement exactly restores the prior source bytes. No behavior or permission change.",
+    "prior_cpp_sha256": "26097a00db15134e1cec235c6cd9446dd287dd59952f9ee8a6330daabe808ebf",
+    "current_cpp_sha256": "fe88fb906edbaea32159e253ff0a60ca3e5e6478eca876b06c6ff0c9e86824c1",
+    "inverse_byte_equivalence_verified": true,
+    "clang_format_dry_run_werror_exit": 0,
+    "git_diff_check_exit": 0
+  },
+  "strict_native": {
+    "receipt": {
+      "logical_private_artifact": "eligibility951-strict-build-receipt-r17.json",
+      "sha256": "11598418972e04fc8179beeb2654237ae36ae8bcf9b2b2ee72b78a2274044283",
+      "bytes": 721
+    },
+    "log": {
+      "logical_private_artifact": "eligibility951-preparation-strict-r17.log",
+      "sha256": "63532504c3366e366351575ad7a80c71a9d2e69c5abfcd5542af97a1b4455a13",
+      "bytes": 312704
+    },
+    "exit_code": 0,
+    "warnings": "extra",
+    "warnings_as_errors": true,
+    "tests_enabled": true,
+    "artifact_sha256": "7a41d4cddb2343ca39d2dece002256ca28fdbb33b23c680443756fdd0502cf93"
+  },
+  "complete_wrapper": {
+    "entry": "tools/build_gonggong_editor.py",
+    "jobs": 4,
+    "existing_shared_cache_limit_gib": 8,
+    "exit_code": 0,
+    "receipt_file": "b2805986284943afbfa9ad008578f0b6.json",
+    "receipt_sha256": "2d497939a822739a98eaaa8c1abaecb57565ada49ae6047ae9b6465e639e9f50",
+    "log": {
+      "logical_private_artifact": "eligibility951-final-wrapper-preflight-r1.log",
+      "sha256": "0e58b1f846dbe418443969cc8ed2a0e5c395c92ca8d748a16a91d5ec98605ad7",
+      "bytes": 313391
+    },
+    "native_key": "563e872c43580915bcc6104e91d59ac3c8c533551751474c4f4f4b4c3f57882f",
+    "editor_sha256": "fe150b970330fd2f6ab2c7121b94b18720e6f9d2c6e2dff6c27dcbda7b8dc883",
+    "console_sha256": "74cc0bbf989827d5038fff0e3766861d38c0a92d127891e0e2fd7098111fdb5b",
+    "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "test_cases": {
+      "passed": 99,
+      "failed": 0,
+      "other_skipped": 1486
+    },
+    "assertions": {
+      "passed": 1795,
+      "failed": 0
+    },
+    "source_recheck_after_completion": true
+  },
+  "prior_validation": {
+    "repository_artifact": "data-collection/editor-continuation-eligibility-validation-951.json",
+    "sha256": "056d99a07ae78375778b6b4a0c57cf8126c1868693eee200033910797fd117a3",
+    "bytes": 46853
+  },
+  "limits": [
+    "Existing native business-scenario evidence keeps its original source and binary bindings. No full scenario matrix was rerun for this identifier-only change.",
+    "The strict and wrapper binaries are separate actual artifacts; neither is described as the prior scenario binary.",
+    "The failed preflight, exact restoration and subsequent intentional correction remain in the referenced immutable report. No additional spelling exclusion was added here.",
+    "This dirty isolated candidate still requires independent exact-index review, formal gate, CI/main and original installed-game acceptance by the delivery owner."
+  ]
+}

@@ -1,0 +1,206 @@
+{
+  "issue": 951,
+  "candidate_base": "dc28f7a89bd92700a488e469f4a48f56c7467d44",
+  "scope": "Test fixture capture and early-failure evidence preservation only. Production setup guards and full prepared-job acceptance oracle are unchanged.",
+  "sources": [
+    {
+      "path": "tests/editor/native_preparation_faults.py",
+      "bytes": 8856,
+      "sha256": "0187513275b3f955ec5887e4ba271eff976484211d174cb58c75bf01a4c20650"
+    },
+    {
+      "path": "tests/editor/native_prepared_job_recovery.py",
+      "bytes": 55753,
+      "sha256": "68c132077ae0dbe7c90dfe70e9b0af573b3915f7214f8b77f75630cfe3458474"
+    },
+    {
+      "path": "tests/editor/run_native_production_setup.py",
+      "bytes": 62367,
+      "sha256": "17343d39e086b45521ce88dff6252e520b97b57856c3e12c0a232cdd256a4d08"
+    }
+  ],
+  "original_failure": {
+    "pr": 1213,
+    "head": "c33ce43d2e96475c21434ce41e97b7de9b0bd704",
+    "run_id": 43542607720,
+    "facts": [
+      "Actual warm native exit 1, not timeout; first setup rejected workspace drift before any worker or independent review.",
+      "Collector then raised a secondary missing-phase KeyError; original native result remains failed.",
+      "Original two input trees and changed paths were not captured; exact historical cause remains unknown."
+    ],
+    "evidence": {
+      "name": "pr1213-ci-parent-validation.json",
+      "bytes": 8784,
+      "sha256": "b17eb152041d7c54df2b7432bedfad24b0c1f0344fd52e1ad23a583cbd3e722b"
+    }
+  },
+  "changes": [
+    "Early nonzero native exit or missing phase references produce explicit incomplete/false oracle; available original receipts and secondary failure type remain preserved. No default receipt is fabricated.",
+    "Observe-only Git shim records actual tree IDs, listings and raw differences outside the input repository, preserving actual Git arguments, output streams and exit status. It inserts PATH/trace environment and adds reads/buffering that can alter timing. Only inline listing payload has a 2 MiB limit; capture and raw diff are not globally bounded.",
+    "Ordinary test project initialization now writes the normal project-level .godot/ ignore before commit/editor startup. UID and source files are not ignored.",
+    "Baseline observer skips history reads while native save is in progress. Save probes require count increase, saving=false and error=OK within the original 15 seconds, retaining before/after stats.",
+    "Model setup now requires the public catalog snapshot to be ready/current/not loading with the backend-specific discovered source within the original 45-second deadline. It resolves the live picker index without an intervening await, verifies selection/backend/capacity, and preserves the actual snapshot immediately before explicit Continue."
+  ],
+  "validation": [
+    {
+      "name": "collector failure preservation",
+      "evidence": {
+        "name": "pr1213-collector-failure-preservation-test-r2.json",
+        "bytes": 900,
+        "sha256": "035a613ef56f9d5edb6d35e8835c6bf4447477feeeab408950880cf614f82810"
+      },
+      "scope": "11 synthetic/actual-original-input checks; unchanged success oracle and complete-collector AST."
+    },
+    {
+      "name": "Git transport",
+      "evidence": {
+        "name": "pr1213-observe-transport-68e32996/result.json",
+        "bytes": 3566,
+        "sha256": "c0952421ba21f1d5b3da0160caca946baca0a7e2fd7f8c30c1b3d820bd48b0bd"
+      },
+      "scope": "Actual private Node/Git commands; stdout/stderr/exit unchanged, tree listings and raw differences retained."
+    },
+    {
+      "name": "controlled cache/source/UID activity",
+      "evidence": {
+        "name": "pr1213-cache-capture-guard-2b1ee679/result.json",
+        "bytes": 2693,
+        "sha256": "c4b570288826afcf4687230cdf5135ede3eb6e796db2644401d3ca27919a7d9b"
+      },
+      "scope": "Actual setup capture stages extracted unchanged into a private harness with a controlled between-stage mutation. Cache activity preserves tree; source and UID mutations trigger the original guard. Not a reproduction of original CI timing."
+    },
+    {
+      "name": "exact CI engine before ignore, warm",
+      "evidence": {
+        "name": "pr1213-warm-capture-r1.validation.json",
+        "bytes": 4566,
+        "sha256": "a2c5495dd4edba2863fa1a2f8c6fee9b289d1d10c327e21b8727b42a0dbb2897"
+      },
+      "passed": true,
+      "scope": "Complete native oracle and 186 archived objects verified. Both trees equal, 13 active cache paths included; no historical drift reproduced."
+    },
+    {
+      "name": "exact CI engine after ignore, warm Codex",
+      "evidence": {
+        "name": "pr1213-warm-capture-r2.validation.json",
+        "bytes": 2910,
+        "sha256": "1daf5ece8af7191d36c9f454834768aea7e94c2d865b9222b88678639f899088"
+      },
+      "passed": true,
+      "scope": "Native exit0, full oracle true,177 archived objects verified; cache paths absent, source and UID remain included."
+    },
+    {
+      "name": "exact CI parameters, baseline CodeBuddy",
+      "evidence": {
+        "name": "pr1213-baseline-capture-r3.validation.json",
+        "bytes": 7482,
+        "sha256": "0fdb3d86d826be069a4a2c01412d177d85388ca91f0628e5d95654465d8b9c07"
+      },
+      "passed": true,
+      "scope": "Native exit0 and full scenario true; real seed, original UID drift rejection, cold persistence and one explicit retry; two actual blocked requests. Seven save probes error0/savingfalse."
+    },
+    {
+      "name": "extra baseline Codex",
+      "evidence": {
+        "name": "pr1213-baseline-capture-r2.validation.json",
+        "bytes": 6416,
+        "sha256": "35e88e2bd6b144f7bd56549efbe84c65bf39048d93871921c1aa758511fc94f4"
+      },
+      "passed": false,
+      "scope": "Not the CI baseline backend. Cold Continue reached a distinct prelaunch model/capacity-invalid gate; no second setup was launched. Original failure preserved, exact failing runtime field not captured."
+    },
+    {
+      "name": "Final source baseline codex",
+      "evidence": {
+        "name": "pr1213-baseline-codex-capture-r4.validation.json",
+        "bytes": 7499,
+        "sha256": "7079ce22de2b64ed522c5e8a92783f26c50ec0a8a1d2b79a64f709662db19674"
+      },
+      "raw_report": {
+        "name": "pr1213-baseline-codex-capture-r4.json",
+        "bytes": 306678,
+        "sha256": "2b5e51e6d783e5c1dab7d4c8c69a01fc7ddde223320328ec2fbbfaced592cbdb"
+      },
+      "passed": true,
+      "scope": "Actual precise CI engine with final helper bytes; two actual completed baseline-changed rejections, cold persistence and explicit retry. Three preserved ready catalog snapshots, including immediately before Continue; seven successful save probes. The CodeBuddy case matches the CI baseline backend; Codex remains an additional regression."
+    },
+    {
+      "name": "Final source baseline codebuddy",
+      "evidence": {
+        "name": "pr1213-baseline-codebuddy-capture-r4.validation.json",
+        "bytes": 7507,
+        "sha256": "a6b526d110a7e1c36b59ac1c1c87238c3ef3ba9468a2382e93956fa2e57e4352"
+      },
+      "raw_report": {
+        "name": "pr1213-baseline-codebuddy-capture-r4.json",
+        "bytes": 306549,
+        "sha256": "b81d9cdd2d1eeaedf1f1f606c238a4c9679b23ed963abc5b33abc635842aaffc"
+      },
+      "passed": true,
+      "scope": "Actual precise CI engine with final helper bytes; two actual completed baseline-changed rejections, cold persistence and explicit retry. Three preserved ready catalog snapshots, including immediately before Continue; seven successful save probes. The CodeBuddy case matches the CI baseline backend; Codex remains an additional regression."
+    },
+    {
+      "name": "Public model prerequisite source audit",
+      "evidence": {
+        "name": "pr1213-baseline-cold-prerequisite-audit.json",
+        "bytes": 6709,
+        "sha256": "b924593e685325eb5a7fe1bbfc80fc015e3a37eaaf395ee000e4387fd5a5a4c2"
+      },
+      "scope": "Independent read-only audit identified manual picker identity as insufficient proof of discovered catalog readiness. It did not reconstruct the missing original catalog/capacity snapshot."
+    },
+    {
+      "name": "Final-source prepared warm regression",
+      "evidence": {
+        "name": "pr1213-warm-capture-r5.validation.json",
+        "bytes": 2910,
+        "sha256": "4e2b3e472f8b770d94b8ba39ea6cdc3494fd866489175a7ebea5af8360fe5713"
+      },
+      "raw_report": {
+        "name": "pr1213-warm-capture-r5.json",
+        "bytes": 1344342,
+        "sha256": "e62a8cf33a8920fc9bed15d2fec9f1bebd31e54ef28e3ce96d5c3901e3a69ba1"
+      },
+      "invocation": {
+        "name": "pr1213-warm-capture-r5.invocation.json",
+        "bytes": 126247,
+        "sha256": "8c7d1c172f62fc73a5b6cdb7941f3562946b4965e1b5d2c2a22f47263e63b852"
+      },
+      "passed": true,
+      "scope": "Exact bfe3 PR1213 CI engine with frozen final S helper 17343d39; native exit0, full oracle true before fixture cleanup, complete collector,178 archived objects independently hash/length checked. Initial design confirmation exercised the changed public selector; actual snapshot is ready/current/not loading with codex_model_list and capacity2. Existing timeout and full repair/dependency/consultation/parent-list oracle unchanged. Generic exit RID/ObjectDB warnings preserved; no history-save warning in this phase."
+    }
+  ],
+  "engine": {
+    "sha256": "bfe3c46bf1f5d42d7b8439ba8e4e62aebd595ffa60bbc94d1a784898d2b3b599",
+    "bytes": 186742272,
+    "artifact_id": 14092875921,
+    "manifest": {
+      "name": "pr1213-ci-editor-originals-manifest.json",
+      "bytes": 955,
+      "sha256": "7bbd8aea73e83027500882a9315b905dbc4470f13a193d5cbc30c0ef715c8bea"
+    }
+  },
+  "limits": [
+    "Local runs use the exact CI engine with modified fixture inputs and a local Python/Git runtime, not the original CI environment. New candidate CI remains required.",
+    "Generic exit RID/ObjectDB leak warnings are preserved; no history-save warning in the recorded warm phase. Baseline cold stdout/stderr were not separately archived by the existing caller.",
+    "No original game, effective installation, production receipt or history was modified. Parent production business acceptance remains separate.",
+    "Cold prepared-job scenario was not repeated because these changes do not modify its full success oracle; previous exact-candidate results retain their original input scope.",
+    "Warm r2 executed setup helper 58b7e949 before the final stricter model-readiness precondition; complete warm business oracle and product inputs are unchanged. Final helper 17343d39 was exercised by both baseline backends; exact final-candidate CI remains required.",
+    "Final-source warm r5 now closes the affected selector regression on the exact prior CI engine. It does not validate new native inputs from the later delivery worktree main; those remain assigned to the new exact-candidate CI. Prior cold and earlier warm reports retain their original source/engine bindings. No full business acceptance is inferred from parent-list success."
+  ],
+  "previous": {
+    "name": "pr1213-capture-fix-validation-draft-r2.json",
+    "bytes": 9986,
+    "sha256": "de523e980fe3d13e570ebaf28c02def411242744aaf5b41354bccd0e4f997464"
+  },
+  "extra_codex_baseline_followup": {
+    "original_r2_exit": 1,
+    "original_failing_or_field": "unknown; snapshot not captured",
+    "confirmed_fixture_gap": "Picker identity alone accepted manual/stale entries as model discovery readiness.",
+    "r4_result": "Additional Codex baseline passed with actual ready/current/discovered source and pre-Continue snapshot; no historical state manufactured."
+  },
+  "freeze": {
+    "source_writes_after_r4": false,
+    "native_inflight": false,
+    "new_report_only": true
+  }
+}

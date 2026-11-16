@@ -61,6 +61,8 @@ check-hidden = true
 quiet-level = 3
 builtin = ["clear", "rare", "en-GB_to_en-US"]
 skip = [
+	# Preserve the exact old identifier in the immutable #951 preflight evidence.
+	"data-collection/editor-continuation-preflight-951.json",
 	".mailmap",
 	"*.desktop",
 	"*.gitignore",
