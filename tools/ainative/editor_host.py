@@ -230,14 +230,10 @@ def normalize_editor_integers(graph, registry):
 def selected(host, request, preview=False):
     exported = host.export_node(request["run"], request["node"]) if preview else host.export(request["run"])
     outputs = exported["outputs"][request["node"]]
-    ref = outputs["result"]
     chosen = request.get("artifact")
-    if chosen is not None:
-        require_ref = isinstance(chosen, dict) and set(chosen) == {"id", "revision"}
-        if not require_ref:
-            raise ValueError("invalid selected artifact")
-        if "image_set" not in outputs:
-            raise ValueError("selected artifact is not a set member")
+    if chosen is not None and (not isinstance(chosen, dict) or set(chosen) != {"id", "revision"}):
+        raise ValueError("invalid selected artifact")
+    if "image_set" in outputs:
         collection = next(
             (
                 a
@@ -246,9 +242,18 @@ def selected(host, request, preview=False):
             ),
             None,
         )
-        if collection is None or not any(item["artifact"] == chosen for item in collection["payload"]["items"]):
+        if collection is None or not collection["payload"]["items"]:
+            raise ValueError("image set is empty")
+        items = collection["payload"]["items"]
+        if chosen is not None and not any(item["artifact"] == chosen for item in items):
             raise ValueError("selected artifact is not a set member")
-        ref = chosen
+        # Queue members remain individually previewable and publishable. With no
+        # explicit member selection, preview deterministically opens the first.
+        ref = chosen or items[0]["artifact"]
+    else:
+        if chosen is not None:
+            raise ValueError("selected artifact is not a set member")
+        ref = outputs["result"]
     asset = next(
         a for a in exported["manifest"]["artifacts"] if a["id"] == ref["id"] and a["revision"] == ref["revision"]
     )
@@ -282,7 +287,7 @@ def dispatch(args, request):
             runtime_service["image_batch"] = image_batch_settings(config)
             runtime_service["image_batch"]["database"] = str(Path(args.db).resolve())
             runtime_service["image_batch"]["enabled"] = runtime_service["image_batch"]["enabled"] and any(
-                n.get("type", "copy") in ("text_to_image", "image_to_image") and n.get("version") == "2"
+                n.get("type", "copy") in ("text_to_image", "image_to_image") and n.get("version") in ("2", "3")
                 for n in model["nodes"]
             )
             providers = adapt_image_providers(providers, args.db, runtime_service["image_batch"])

@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-queue-only-image-output-20261116",
+  "issue_number": 1359,
+  "date": "2026-11-16",
+  "state": "validated_candidate",
+  "evidence_scope": "Sanitized local and real-inference receipts; no credentials, private URLs, absolute private paths or raw generation logs.",
+  "editor_sha256": "c7df77bca162db8089433ba864fdf381025ab8d135c2ff8c9c162d26d25cff57",
+  "build": {
+    "platform": "macos",
+    "architecture": "arm64",
+    "bundle_regenerated": true,
+    "editor_relinked": true,
+    "native_bundle_matches_source": true,
+    "native_scenarios": [
+      "mesh-and-rig",
+      "independent-project",
+      "sample-addon-compatibility",
+      "relocated-runtime"
+    ],
+    "all_native_scenarios_passed": true
+  },
+  "local_validation": {
+    "multi_image_tests": {"run": 10, "passed": 10},
+    "editor_host_tests": {"run": 9, "passed": 9},
+    "executor_tests": {"run": 22, "passed": 22},
+    "kimi_work_image_tests": {"run": 8, "passed": 7, "skipped_windows_only": 1},
+    "generation_service_gui_tests": {"run": 1, "passed": 1},
+    "godot_multi_image_acceptance": {"passed": true, "failures": 0},
+    "godot_port_type_acceptance": {"passed": true, "failures": 0},
+    "godot_parameter_form_acceptance": {"passed": true, "failures": 0},
+    "godot_context_menu_acceptance": {"passed": true, "failures": 0},
+    "godot_node_preview_acceptance": {"passed": true, "failures": 0},
+    "real_model_inference_in_local_tests": false
+  },
+  "real_run": {
+    "provider": "kimi_work_image",
+    "kind": "text_to_image",
+    "run_id": "9f11baa9a7b44724bf49126f77583d4b",
+    "node_id": "n4424955",
+    "node_version": "3",
+    "output_keys": ["image_set"],
+    "single_result_port_absent": true,
+    "native_bundled_workbench_without_project_addons": true,
+    "members": [
+      {
+        "index": 0,
+        "label": "正面",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 813051,
+        "sha256": "036f64ec67b248c69af98f8aa1f4bf97904c7e942bd0a8d86e023fba8d2885a0",
+        "editor_screenshot_reviewed": true
+      },
+      {
+        "index": 1,
+        "label": "三分之四侧面",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 812374,
+        "sha256": "e75e4324600136145897a6ec9e627cccf1d02e59288bf2cd4a69986b905dea65",
+        "editor_screenshot_reviewed": true
+      }
+    ],
+    "distinct_independent_images": true,
+    "contact_sheet_used_as_output": false
+  },
+  "restoration": {
+    "run_id": "9f11baa9a7b44724bf49126f77583d4b",
+    "member_artifacts_unchanged": true,
+    "member_sha256_unchanged": true,
+    "new_generation_submitted": false,
+    "editor_screenshots_reviewed": true
+  },
+  "known_unfixed_scope": {
+    "editor_exit_rid_objectdb_warnings_remain": true,
+    "empty_editor_also_reports_majority_of_warnings": true,
+    "claimed_as_fixed_by_this_change": false
+  },
+  "independent_code_review": "not_obtained_in_this_session; no subagent used and no review claimed"
+}

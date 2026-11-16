@@ -25,8 +25,8 @@ func run():
 	panel.rebuild()
 	await process_frame
 	var expected = {
-		"text_to_image":[panel.PORT_TEXT, panel.PORT_IMAGE, "输入：文本（参数）", "输出：图片"],
-		"image_to_image":[panel.PORT_IMAGE, panel.PORT_IMAGE, "输入：图片 / 图片集", "输出：图片"],
+		"text_to_image":[panel.PORT_TEXT, panel.PORT_IMAGE_SET, "输入：文本（参数）", "输出：图片队列"],
+		"image_to_image":[panel.PORT_IMAGE_SET, panel.PORT_IMAGE_SET, "输入：图片 / 图片队列", "输出：图片队列"],
 		"image_to_mesh":[panel.PORT_IMAGE, panel.PORT_MESH, "输入：图片", "输出：Mesh"],
 		"text_to_mesh":[panel.PORT_TEXT, panel.PORT_MESH, "输入：文本（参数）", "输出：Mesh"],
 		"model_adjust":[panel.PORT_MESH, panel.PORT_MESH, "输入：Mesh", "输出：Mesh"],
@@ -45,18 +45,27 @@ func run():
 			check(node.get_input_port_count() == 0 and input_label.tooltip_text.contains("参数"), kind + " keeps parameter-only text input without a misleading connection")
 		else:
 			check(node.get_input_port_count() == 1 and node.get_input_port_type(0) == types[0] and node.get_input_port_color(0) == panel.PORT_COLORS[types[0]], kind + " renders a typed input")
-		if kind in ["text_to_image", "image_to_image"]:
-			check(node.get_output_port_count() == 2 and node.get_output_port_type(1) == panel.PORT_IMAGE_SET and node.get_node("ImageSetOutputType").text.contains("图片集"), kind + " distinguishes its ordered image-set output")
-		else:
-			check(node.get_output_port_count() == 1, kind + " exposes only its declared main output")
+		check(node.get_output_port_count() == 1, kind + " exposes exactly one output")
 	panel.connect_nodes("text_to_mesh", 0, "image_to_mesh", 0)
-	check(panel.edges.is_empty() and panel.status.text.contains("图像输出"), "Mesh cannot silently feed an image input")
+	check(panel.edges.is_empty() and panel.status.text.contains("类型不匹配"), "Mesh cannot silently feed an image input")
 	panel.connect_nodes("text_to_image", 0, "model_adjust", 0)
-	check(panel.edges.is_empty() and panel.status.text.contains("已生成模型"), "image cannot silently feed a Mesh input")
-	panel.connect_nodes("text_to_image", 1, "image_to_image", 0)
+	check(panel.edges.is_empty() and panel.status.text.contains("只能连接到图生图"), "image queue cannot silently feed a Mesh input")
+	panel.connect_nodes("text_to_image", 0, "image_to_image", 0)
 	panel.connect_nodes("text_to_image", 0, "image_to_mesh", 0)
 	panel.connect_nodes("text_to_mesh", 0, "model_adjust", 0)
-	check(panel.edges.size() == 3 and panel.edges[0].output == "image_set" and panel.edges[1].output == "result" and panel.edges[2].output == "result", "image-set, image and Mesh connections retain their existing execution contracts")
+	check(panel.edges.size() == 2 and panel.edges[0].output == "image_set" and panel.edges[1].output == "result", "image queue and Mesh connections use their declared output contracts")
+	var legacy = make_node("text_to_image")
+	legacy.id = "legacy_image"
+	legacy.version = "1"
+	panel.nodes.append(legacy)
+	panel.rebuild()
+	check(panel.output_kind(legacy) == panel.PORT_IMAGE and panel.graph.get_node(legacy.id).get_output_port_count() == 1, "version 1 keeps its legacy single-image output")
+	var legacy_batch = make_node("text_to_image")
+	legacy_batch.id = "legacy_batch"
+	legacy_batch.version = "2"
+	panel.nodes.append(legacy_batch)
+	panel.rebuild()
+	check(panel.output_kind(legacy_batch) == panel.PORT_IMAGE and panel.graph.get_node(legacy_batch.id).get_output_port_count() == 2, "version 2 keeps its legacy primary image and queue outputs")
 	print("AINATIVE_PORT_TYPE failures=" + str(failures))
 	panel.queue_free()
 	await process_frame

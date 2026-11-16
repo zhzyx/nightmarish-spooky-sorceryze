@@ -92,7 +92,7 @@ class MultiImageHostTests(unittest.TestCase):
             node = dict(
                 id="gen",
                 type="image_to_image",
-                version="2",
+                version="3",
                 provider="comfy",
                 source_paths=[str(path) for path in paths],
                 source_snapshots=copy.deepcopy(snapshots),
@@ -102,15 +102,14 @@ class MultiImageHostTests(unittest.TestCase):
             )
             graph, manifest = compile_graph({"nodes": [node], "edges": []})
             self.assertEqual([item["id"] for item in manifest["artifacts"]], ["gen-source-0", "gen-source-1"])
-            self.assertEqual(graph[0]["request"]["version"], "2")
+            self.assertEqual(graph[0]["request"]["version"], "3")
             self.assertEqual(graph[0]["request"]["inputs"]["source"]["id"], "gen-source-0")
             node.update(source_paths=["", ""], source_snapshots=snapshots)
             self.assertEqual(compile_graph({"nodes": [node], "edges": []})[1], manifest)
             node.update(source=str(paths[0]), source_paths=[], source_snapshots=[])
             self.assertEqual(len(compile_graph({"nodes": [node], "edges": []})[1]["artifacts"]), 1)
 
-            # The second graph port carries every member; the legacy result port
-            # still carries only the primary image for Mesh compatibility.
+            # Version 3 has one graph output: the complete ordered image queue.
             upstream = dict(node, id="upstream", type="text_to_image", source="", source_paths=[], source_snapshots=[])
             downstream = dict(node, id="downstream", source="", source_paths=[], source_snapshots=[])
             graph, _ = compile_graph({
@@ -134,6 +133,7 @@ class MultiImageHostTests(unittest.TestCase):
                     if state["state"] in ("succeeded", "failed"):
                         break
                 self.assertEqual(state["state"], "succeeded", state["nodes"]["gen"])
+                self.assertEqual(set(state["nodes"]["gen"]["job"]["outputs"]), {"image_set"})
                 self.assertEqual(make_board.call_count, 1)
                 args.command = "preview"
                 request = {"run": run, "node": "gen"}
