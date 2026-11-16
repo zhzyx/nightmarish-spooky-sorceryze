@@ -16,6 +16,9 @@ import PackageVisualRuntime
 
 CORE_SOURCES = [
     "engine_next/Rendering/FrameGraph.cpp",
+    "engine_next/Rendering/RenderPipeline.cpp",
+    "engine_next/Rendering/RenderConfiguration.cpp",
+    "engine_next/Rendering/CameraMatrices.cpp",
     "engine_next/Rendering/Cook/GltfDecoder.cpp",
     "engine_next/Rendering/Cook/ImageDecoder.cpp",
     "engine_next/Rendering/Cook/EnvironmentLighting.cpp",
@@ -52,6 +55,9 @@ VISUAL_SOURCES = [
 TEST_SOURCES = [
     "engine_next/Tests/RenderingTestMain.cpp",
     "engine_next/Tests/Rendering/TestFrameGraph.cpp",
+    "engine_next/Tests/Rendering/TestRenderPipeline.cpp",
+    "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
+    "engine_next/Tests/Rendering/TestCameraMatrices.cpp",
     "engine_next/Tests/Rendering/TestGltfDecoder.cpp",
     "engine_next/Tests/Rendering/TestImageDecoder.cpp",
     "engine_next/Tests/Rendering/TestEnvironmentLighting.cpp",
@@ -64,6 +70,8 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/MeshData.h",
     "EngineNext/Rendering/ImageData.h",
     "EngineNext/Rendering/TextureData.h",
+    "EngineNext/Rendering/RenderConfiguration.h",
+    "EngineNext/Rendering/CameraMatrices.h",
     "EngineNext/Rendering/RenderScene.h",
     "EngineNext/Rendering/VisualRuntime.h",
 ]
@@ -76,6 +84,7 @@ SHADERS = [
     ("PSMain", "ps_6_0", "Deferred.ps.cso", ["-D", "GEOMETRY_STAGE=1"]),
     ("FullscreenVS", "vs_6_0", "Lighting.vs.cso", []),
     ("LightingPS", "ps_6_0", "Lighting.ps.cso", []),
+    ("ToneMapPS", "ps_6_0", "ToneMap.ps.cso", ["-D", "TONEMAP_STAGE=1"]),
 ]
 
 

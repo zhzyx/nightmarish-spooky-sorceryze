@@ -1,0 +1,1396 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-16T04:09:54.650595+00:00",
+  "author": "/root/m42_network_acceptance",
+  "passed": true,
+  "scope": "Windows D3D12 camera configuration, frame-owned constants, dynamic pass timing, linear HDR and separate manual tone mapping foundation.",
+  "source_inputs": [
+    {
+      "path": "engine_next/Rendering/RenderConfiguration.cpp",
+      "bytes": 10403,
+      "sha256": "b28bf0d59d090f39f9cea4350631f3e9806ef80d92c25e8459e32bc65fc0bcd2",
+      "last_write_utc": "2026-11-16T04:02:51.262382+00:00"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderConfiguration.h",
+      "bytes": 3767,
+      "sha256": "11f3ba6f3fde5fa835d3d7c5ac1d46259567174577a4a0104606ba54e5717062",
+      "last_write_utc": "2026-11-16T04:01:58.042708+00:00"
+    },
+    {
+      "path": "engine_next/Schemas/RenderConfiguration-v1.json",
+      "bytes": 1988,
+      "sha256": "d8c78c0bd8526f0fee1b3c80aa792ea78a0afe705b53576cb0dac7b78bd8253c",
+      "last_write_utc": "2026-11-16T03:56:31.812511+00:00"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
+      "bytes": 13622,
+      "sha256": "2a5470466521c3b9ae293b784ce1077f8d7f810024e36afb78d11e85235ae4c1",
+      "last_write_utc": "2026-11-16T04:03:31.619952+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/CameraMatrices.cpp",
+      "bytes": 9423,
+      "sha256": "80837337110df3fb7958948a356d679f616eebdde3e19d634f4a8847d3753959",
+      "last_write_utc": "2026-11-16T03:57:17.870829+00:00"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/CameraMatrices.h",
+      "bytes": 3585,
+      "sha256": "df4f42a5ac296fd43eb3ceaf7071733f7e99cb1e0004289ded7ad76ad6562552",
+      "last_write_utc": "2026-11-16T03:57:17.870829+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.cpp",
+      "bytes": 7013,
+      "sha256": "c665b519bda110bb6169d2c9a28b8ea63c4a783c11f559111173428147783897",
+      "last_write_utc": "2026-11-16T03:54:07.375794+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.h",
+      "bytes": 3437,
+      "sha256": "aee176e86414e181fb2da6fb7c831729bd34d7f3d3d60cc07b46aa82e6e32839",
+      "last_write_utc": "2026-11-16T03:53:34.505820+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/FrameGraph.cpp",
+      "bytes": 16009,
+      "sha256": "20e25f0d35ab1f4812a983fea3d24f7c7427ba78dfb2ef2fd3f3ec77f4437e1a",
+      "last_write_utc": "2026-11-16T03:53:34.164289+00:00"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/FrameGraph.h",
+      "bytes": 6595,
+      "sha256": "b4ba3b3761f114d929f7ff584572f62614a7bf3f34fe5c2506d62b5b8a32c7dc",
+      "last_write_utc": "2026-11-16T03:53:34.164289+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "bytes": 128934,
+      "sha256": "eea94a0c6d15bf627bccd7871b3fe068e1a77f5f70c05926798b0d51cf8dc1df",
+      "last_write_utc": "2026-11-16T04:03:41.253224+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Deferred.hlsl",
+      "bytes": 8135,
+      "sha256": "42bcfc4ce3883a17ae867f61edab989bb835a3c55e7028957db80086985c6151",
+      "last_write_utc": "2026-11-16T03:57:19.114440+00:00"
+    },
+    {
+      "path": "engine_next/Tools/BuildVisualRuntime.py",
+      "bytes": 25442,
+      "sha256": "5f7601fac65c3cb708c3bc8caa1a160e30e7062371e3434a7cd14418e9a52b60",
+      "last_write_utc": "2026-11-16T03:57:30.274966+00:00"
+    },
+    {
+      "path": "engine_next/Tools/PackageVisualRuntime.py",
+      "bytes": 6678,
+      "sha256": "60671a258830f476daf3cdbf0e58450743ea8a251ed4323e4828baad0407db62",
+      "last_write_utc": "2026-11-16T03:57:30.274966+00:00"
+    }
+  ],
+  "build_binding": {
+    "native_key": "84cd3f7d6a53d935d6befbc392bbea35e9a98251d146e05874dd76a9ff4a7653",
+    "all_native_inputs_match_current_source": true,
+    "build_report": {
+      "path": "build/engine_next/m43-foundation-r3/VisualBuildReport.json",
+      "bytes": 1309990,
+      "sha256": "ab032b2e6d1f5a4025b97d1277ae4f3d0fe7e04ff7ddec45641a9443e61fd4d2",
+      "last_write_utc": "2026-11-16T04:05:10.451467+00:00"
+    },
+    "test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=93 checks=3394 failures=0",
+    "visual_executable": {
+      "path": "build/engine_next/m43-foundation-r3/next_visual_client.exe",
+      "bytes": 2816000,
+      "sha256": "5e64e96ab3e93b45604b8c5cd5f9c97a2e664fb99fbe96aa24be029d1f3688aa",
+      "last_write_utc": "2026-11-16T04:05:03.882513+00:00"
+    },
+    "shaders": [
+      {
+        "path": "build/engine_next/m43-foundation-r3/Deferred.ps.cso",
+        "bytes": 7800,
+        "sha256": "6f297e31e1880a5c0a20fbd0b86b76927563250127b7244f8d94d8eef72d583f",
+        "last_write_utc": "2026-11-16T04:04:44.521703+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-foundation-r3/Deferred.vs.cso",
+        "bytes": 6312,
+        "sha256": "0becbfb1dbba7168e85897cb9f73ab0808c310effd224d1393edd2fc2685995d",
+        "last_write_utc": "2026-11-16T04:04:44.479377+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-foundation-r3/FixedMesh.cs.cso",
+        "bytes": 3300,
+        "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064",
+        "last_write_utc": "2026-11-16T04:04:44.441312+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-foundation-r3/FixedMesh.ps.cso",
+        "bytes": 4132,
+        "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9",
+        "last_write_utc": "2026-11-16T04:04:44.409408+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-foundation-r3/FixedMesh.vs.cso",
+        "bytes": 4316,
+        "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69",
+        "last_write_utc": "2026-11-16T04:04:44.375647+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-foundation-r3/Lighting.ps.cso",
+        "bytes": 8956,
+        "sha256": "0e5e23e54ad35861184039b73858ebf1e3a8ae86e0d6a214f250071f437734fc",
+        "last_write_utc": "2026-11-16T04:04:44.604621+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-foundation-r3/Lighting.vs.cso",
+        "bytes": 3052,
+        "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018",
+        "last_write_utc": "2026-11-16T04:04:44.565090+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-foundation-r3/ToneMap.ps.cso",
+        "bytes": 4588,
+        "sha256": "c5fde6b28f5ece369e2280885521fe18d525de8967140b347f998909d25b1992",
+        "last_write_utc": "2026-11-16T04:04:44.629750+00:00"
+      }
+    ]
+  },
+  "gpu_runs": {
+    "command_record": {
+      "path": "build/engine_next/m43-gpu-evidence/GpuChecks.json",
+      "bytes": 9346,
+      "sha256": "20d6a154cb07e9646375efd0a1598c8237a91c0e070470e8285f2d5f2dce4418",
+      "last_write_utc": "2026-11-16T04:06:21.386384+00:00"
+    },
+    "host_change_record": {
+      "path": "build/engine_next/m43-gpu-evidence/ConfigHostChecks.json",
+      "bytes": 6042,
+      "sha256": "89c06a0fd943251e36720576875c3776ceeb588c638f34e7b42eda9f9e1bad75",
+      "last_write_utc": "2026-11-16T04:06:45.641034+00:00"
+    },
+    "same_parameter_v1_v2_pixels_equal": [
+      "B",
+      "F"
+    ],
+    "resize_runs": {
+      "names": [
+        "B-v1",
+        "B-v2",
+        "F-v1",
+        "F-v2"
+      ],
+      "resizes_each": 2,
+      "frames_each": 120
+    },
+    "manual_exposure_pixel_means": {
+      "B-exposure-low": 79.86020905671296,
+      "B-default": 133.94093822337962,
+      "B-exposure-high": 163.15630570023146
+    },
+    "host_configuration_change": {
+      "before": 1,
+      "changed": 4,
+      "restored": 1,
+      "same_executable_hash": "5e64e96ab3e93b45604b8c5cd5f9c97a2e664fb99fbe96aa24be029d1f3688aa",
+      "restored_pixels_exact": true,
+      "changed_pixels_different": true,
+      "wrong_source_digest_failed_at_frames": 0
+    },
+    "configurations": [
+      {
+        "path": "build/engine_next/m43-gpu-evidence/B-camera-config.json",
+        "bytes": 407,
+        "sha256": "c46196d2fe21573057ee21571257abb57a8055f3486be4cb09507ff6b8523025",
+        "last_write_utc": "2026-11-16T04:06:20.319481+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-gpu-evidence/B-exposure-high-config.json",
+        "bytes": 405,
+        "sha256": "3c21ad14972142849cad6df2215ab22c947710d075f7e6007326a8a50c2971ac",
+        "last_write_utc": "2026-11-16T04:06:19.321429+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-gpu-evidence/B-exposure-low-config.json",
+        "bytes": 408,
+        "sha256": "83ba52a43b382a968ca9d491953877251506a0625d0b0c453a49b80aae07dad0",
+        "last_write_utc": "2026-11-16T04:06:18.345931+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-gpu-evidence/HostBeforeConfig.json",
+        "bytes": 405,
+        "sha256": "77957bb5ac5ac3e995ec145c5f98530e6c34b4f8e8293c16fb552903915520a0",
+        "last_write_utc": "2026-11-16T04:06:42.794883+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-gpu-evidence/HostChangedConfig.json",
+        "bytes": 405,
+        "sha256": "83bff33c950e694d860207d724632505ff4110b1fd323730bf9432b625237bdb",
+        "last_write_utc": "2026-11-16T04:06:43.653934+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-gpu-evidence/HostRenderConfig.json",
+        "bytes": 405,
+        "sha256": "0380276d0e918fae52867008b5902f41ee350fef96d94711bf8fa768812f0622",
+        "last_write_utc": "2026-11-16T04:06:45.136743+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-gpu-evidence/HostRestoredConfig.json",
+        "bytes": 405,
+        "sha256": "77957bb5ac5ac3e995ec145c5f98530e6c34b4f8e8293c16fb552903915520a0",
+        "last_write_utc": "2026-11-16T04:06:44.402989+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-gpu-evidence/HostWrongDigestConfig.json",
+        "bytes": 405,
+        "sha256": "0380276d0e918fae52867008b5902f41ee350fef96d94711bf8fa768812f0622",
+        "last_write_utc": "2026-11-16T04:06:45.136743+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-gpu-evidence/B-camera-config.json",
+        "bytes": 407,
+        "sha256": "c46196d2fe21573057ee21571257abb57a8055f3486be4cb09507ff6b8523025",
+        "last_write_utc": "2026-11-16T04:06:20.319481+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-gpu-evidence/B-exposure-high-config.json",
+        "bytes": 405,
+        "sha256": "3c21ad14972142849cad6df2215ab22c947710d075f7e6007326a8a50c2971ac",
+        "last_write_utc": "2026-11-16T04:06:19.321429+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-gpu-evidence/B-exposure-low-config.json",
+        "bytes": 408,
+        "sha256": "83ba52a43b382a968ca9d491953877251506a0625d0b0c453a49b80aae07dad0",
+        "last_write_utc": "2026-11-16T04:06:18.345931+00:00"
+      }
+    ],
+    "cases": [
+      {
+        "name": "B-v1",
+        "report": {
+          "path": "build/engine_next/m43-gpu-evidence/B-v1.json",
+          "bytes": 63682,
+          "sha256": "02587f4926e9eff8edbb87e47d41cb03052607219c96459725ba3f9cf07149cd",
+          "last_write_utc": "2026-11-16T04:06:14.524545+00:00"
+        },
+        "values": {
+          "success": true,
+          "frames": 120,
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "resizes": 2,
+          "hdr_format": "RGBA16_FLOAT",
+          "tone_mapping": "exponential_manual_exposure",
+          "exposure": 1.0,
+          "gpu_package_version": 1,
+          "texture_mip_source": "runtime_decode",
+          "source_package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+          "scene_digest": "da13b7d6529ac8d432257c7bd1e36559242157b2c7d03af98d0649f207222654"
+        },
+        "passes": [
+          "ComputeTint",
+          "GBuffer",
+          "DeferredLighting",
+          "ToneMap",
+          "CopyToBackbuffer",
+          "Present"
+        ],
+        "image": {
+          "path": "build/engine_next/m43-gpu-evidence/B-v1.ppm",
+          "bytes": 2764816,
+          "sha256": "b5a1e76c24dd57fc14569fbedcb71701736f859d4acbc2d8fc5a371d78ef4f15",
+          "last_write_utc": "2026-11-16T04:06:14.523299+00:00"
+        },
+        "camera_view_projection": [
+          1.2062851427866268,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          2.1445069205095586,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          5.000250012500625e-05,
+          -1.0,
+          0.0,
+          0.0,
+          0.04975248762438122,
+          5.0
+        ],
+        "camera_inverse_view_projection": [
+          0.828991392275553,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.4663076581549986,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          99.995,
+          19.999000000000002,
+          0.0,
+          0.0,
+          -0.995,
+          0.001
+        ]
+      },
+      {
+        "name": "B-v2",
+        "report": {
+          "path": "build/engine_next/m43-gpu-evidence/B-v2.json",
+          "bytes": 63494,
+          "sha256": "f129ac338b0d6b7ae25cf7216f56f36c922d4adcaa463ded9dc8e7317f4d2a59",
+          "last_write_utc": "2026-11-16T04:06:15.561379+00:00"
+        },
+        "values": {
+          "success": true,
+          "frames": 120,
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "resizes": 2,
+          "hdr_format": "RGBA16_FLOAT",
+          "tone_mapping": "exponential_manual_exposure",
+          "exposure": 1.0,
+          "gpu_package_version": 2,
+          "texture_mip_source": "cooked_gpu_package",
+          "source_package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+          "scene_digest": "da13b7d6529ac8d432257c7bd1e36559242157b2c7d03af98d0649f207222654"
+        },
+        "passes": [
+          "ComputeTint",
+          "GBuffer",
+          "DeferredLighting",
+          "ToneMap",
+          "CopyToBackbuffer",
+          "Present"
+        ],
+        "image": {
+          "path": "build/engine_next/m43-gpu-evidence/B-v2.ppm",
+          "bytes": 2764816,
+          "sha256": "b5a1e76c24dd57fc14569fbedcb71701736f859d4acbc2d8fc5a371d78ef4f15",
+          "last_write_utc": "2026-11-16T04:06:15.559383+00:00"
+        },
+        "camera_view_projection": [
+          1.2062851427866268,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          2.1445069205095586,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          5.000250012500625e-05,
+          -1.0,
+          0.0,
+          0.0,
+          0.04975248762438122,
+          5.0
+        ],
+        "camera_inverse_view_projection": [
+          0.828991392275553,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.4663076581549986,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          99.995,
+          19.999000000000002,
+          0.0,
+          0.0,
+          -0.995,
+          0.001
+        ]
+      },
+      {
+        "name": "F-v1",
+        "report": {
+          "path": "build/engine_next/m43-gpu-evidence/F-v1.json",
+          "bytes": 63466,
+          "sha256": "b2c53b9d26b520ad7b6449727855f5447ef747b15309b5ba16240e95694f0cb4",
+          "last_write_utc": "2026-11-16T04:06:16.431390+00:00"
+        },
+        "values": {
+          "success": true,
+          "frames": 120,
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "resizes": 2,
+          "hdr_format": "RGBA16_FLOAT",
+          "tone_mapping": "exponential_manual_exposure",
+          "exposure": 1.0,
+          "gpu_package_version": 1,
+          "texture_mip_source": "runtime_decode",
+          "source_package_digest": "2d75ccffae1d73cf633905c5460fa93b8be2e7a558a48acd23444d991891dd96",
+          "scene_digest": "2389697f70a88cda302cdd5374785d23864d9aa6fe4a79b2a2b22df6ca08fb19"
+        },
+        "passes": [
+          "ComputeTint",
+          "GBuffer",
+          "DeferredLighting",
+          "ToneMap",
+          "CopyToBackbuffer",
+          "Present"
+        ],
+        "image": {
+          "path": "build/engine_next/m43-gpu-evidence/F-v1.ppm",
+          "bytes": 2764816,
+          "sha256": "d70ec2b5e6f777565cd85061d6eeb6dc54f16bd3d06fc1bbd07b5b262d0f625f",
+          "last_write_utc": "2026-11-16T04:06:16.429385+00:00"
+        },
+        "camera_view_projection": [
+          1.2062851427866268,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          2.1445069205095586,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          5.000250012500625e-05,
+          -1.0,
+          0.0,
+          0.0,
+          0.04975248762438122,
+          5.0
+        ],
+        "camera_inverse_view_projection": [
+          0.828991392275553,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.4663076581549986,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          99.995,
+          19.999000000000002,
+          0.0,
+          0.0,
+          -0.995,
+          0.001
+        ]
+      },
+      {
+        "name": "F-v2",
+        "report": {
+          "path": "build/engine_next/m43-gpu-evidence/F-v2.json",
+          "bytes": 63474,
+          "sha256": "6a1381525f97184b5d3e73f4ba50ceb5effb912c72fed0b8d9a9dcb4140ea8b6",
+          "last_write_utc": "2026-11-16T04:06:17.256374+00:00"
+        },
+        "values": {
+          "success": true,
+          "frames": 120,
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "resizes": 2,
+          "hdr_format": "RGBA16_FLOAT",
+          "tone_mapping": "exponential_manual_exposure",
+          "exposure": 1.0,
+          "gpu_package_version": 2,
+          "texture_mip_source": "cooked_gpu_package",
+          "source_package_digest": "2d75ccffae1d73cf633905c5460fa93b8be2e7a558a48acd23444d991891dd96",
+          "scene_digest": "2389697f70a88cda302cdd5374785d23864d9aa6fe4a79b2a2b22df6ca08fb19"
+        },
+        "passes": [
+          "ComputeTint",
+          "GBuffer",
+          "DeferredLighting",
+          "ToneMap",
+          "CopyToBackbuffer",
+          "Present"
+        ],
+        "image": {
+          "path": "build/engine_next/m43-gpu-evidence/F-v2.ppm",
+          "bytes": 2764816,
+          "sha256": "d70ec2b5e6f777565cd85061d6eeb6dc54f16bd3d06fc1bbd07b5b262d0f625f",
+          "last_write_utc": "2026-11-16T04:06:17.255378+00:00"
+        },
+        "camera_view_projection": [
+          1.2062851427866268,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          2.1445069205095586,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          5.000250012500625e-05,
+          -1.0,
+          0.0,
+          0.0,
+          0.04975248762438122,
+          5.0
+        ],
+        "camera_inverse_view_projection": [
+          0.828991392275553,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.4663076581549986,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          99.995,
+          19.999000000000002,
+          0.0,
+          0.0,
+          -0.995,
+          0.001
+        ]
+      },
+      {
+        "name": "B-default",
+        "report": {
+          "path": "build/engine_next/m43-gpu-evidence/B-default.json",
+          "bytes": 63632,
+          "sha256": "72e41b1d00509941c342b2ef8365fd41ed91ecea03636d509faa4a56b5d3a6be",
+          "last_write_utc": "2026-11-16T04:06:18.210011+00:00"
+        },
+        "values": {
+          "success": true,
+          "frames": 120,
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "resizes": 0,
+          "hdr_format": "RGBA16_FLOAT",
+          "tone_mapping": "exponential_manual_exposure",
+          "exposure": 1.0,
+          "gpu_package_version": 2,
+          "texture_mip_source": "cooked_gpu_package",
+          "source_package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+          "scene_digest": "da13b7d6529ac8d432257c7bd1e36559242157b2c7d03af98d0649f207222654"
+        },
+        "passes": [
+          "ComputeTint",
+          "GBuffer",
+          "DeferredLighting",
+          "ToneMap",
+          "CopyToBackbuffer",
+          "Present"
+        ],
+        "image": {
+          "path": "build/engine_next/m43-gpu-evidence/B-default.ppm",
+          "bytes": 2764816,
+          "sha256": "b5a1e76c24dd57fc14569fbedcb71701736f859d4acbc2d8fc5a371d78ef4f15",
+          "last_write_utc": "2026-11-16T04:06:18.209007+00:00"
+        },
+        "camera_view_projection": [
+          1.2062851427866268,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          2.1445069205095586,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          5.000250012500625e-05,
+          -1.0,
+          0.0,
+          0.0,
+          0.04975248762438122,
+          5.0
+        ],
+        "camera_inverse_view_projection": [
+          0.828991392275553,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.4663076581549986,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          99.995,
+          19.999000000000002,
+          0.0,
+          0.0,
+          -0.995,
+          0.001
+        ]
+      },
+      {
+        "name": "B-exposure-low",
+        "report": {
+          "path": "build/engine_next/m43-gpu-evidence/B-exposure-low.json",
+          "bytes": 63688,
+          "sha256": "d27176dbbf4ea4ea58e5daee96770d5720dc8dd4e10cf858ecd9c81f524a2847",
+          "last_write_utc": "2026-11-16T04:06:19.205031+00:00"
+        },
+        "values": {
+          "success": true,
+          "frames": 120,
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "resizes": 0,
+          "hdr_format": "RGBA16_FLOAT",
+          "tone_mapping": "exponential_manual_exposure",
+          "exposure": 0.25,
+          "gpu_package_version": 2,
+          "texture_mip_source": "cooked_gpu_package",
+          "source_package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+          "scene_digest": "da13b7d6529ac8d432257c7bd1e36559242157b2c7d03af98d0649f207222654"
+        },
+        "passes": [
+          "ComputeTint",
+          "GBuffer",
+          "DeferredLighting",
+          "ToneMap",
+          "CopyToBackbuffer",
+          "Present"
+        ],
+        "image": {
+          "path": "build/engine_next/m43-gpu-evidence/B-exposure-low.ppm",
+          "bytes": 2764816,
+          "sha256": "1f1a54a3474a12608bf6c427d2c0020c22971beb40b23fef2df57e429be4404a",
+          "last_write_utc": "2026-11-16T04:06:19.203027+00:00"
+        },
+        "camera_view_projection": [
+          1.2062851427866268,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          2.1445069205095586,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          5.000250012500625e-05,
+          -1.0,
+          0.0,
+          0.0,
+          0.04975248762438122,
+          5.0
+        ],
+        "camera_inverse_view_projection": [
+          0.828991392275553,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.4663076581549986,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          99.995,
+          19.999000000000002,
+          0.0,
+          0.0,
+          -0.995,
+          0.001
+        ]
+      },
+      {
+        "name": "B-exposure-high",
+        "report": {
+          "path": "build/engine_next/m43-gpu-evidence/B-exposure-high.json",
+          "bytes": 63673,
+          "sha256": "217313a65755b4b18a302fb25c09984b9a40be890ec4575f2252c8f9e53f3df0",
+          "last_write_utc": "2026-11-16T04:06:20.144671+00:00"
+        },
+        "values": {
+          "success": true,
+          "frames": 120,
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "resizes": 0,
+          "hdr_format": "RGBA16_FLOAT",
+          "tone_mapping": "exponential_manual_exposure",
+          "exposure": 2.0,
+          "gpu_package_version": 2,
+          "texture_mip_source": "cooked_gpu_package",
+          "source_package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+          "scene_digest": "da13b7d6529ac8d432257c7bd1e36559242157b2c7d03af98d0649f207222654"
+        },
+        "passes": [
+          "ComputeTint",
+          "GBuffer",
+          "DeferredLighting",
+          "ToneMap",
+          "CopyToBackbuffer",
+          "Present"
+        ],
+        "image": {
+          "path": "build/engine_next/m43-gpu-evidence/B-exposure-high.ppm",
+          "bytes": 2764816,
+          "sha256": "37328624e239bc6fceb99775a2dd6749976f55ed0b6553fdc4549a8d12d1f3c4",
+          "last_write_utc": "2026-11-16T04:06:20.143167+00:00"
+        },
+        "camera_view_projection": [
+          1.2062851427866268,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          2.1445069205095586,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          5.000250012500625e-05,
+          -1.0,
+          0.0,
+          0.0,
+          0.04975248762438122,
+          5.0
+        ],
+        "camera_inverse_view_projection": [
+          0.828991392275553,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.4663076581549986,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          99.995,
+          19.999000000000002,
+          0.0,
+          0.0,
+          -0.995,
+          0.001
+        ]
+      },
+      {
+        "name": "B-camera",
+        "report": {
+          "path": "build/engine_next/m43-gpu-evidence/B-camera.json",
+          "bytes": 63956,
+          "sha256": "341236a516b7a13289dd55bf90c8f77dcce60e423281a2c8b5922337430f3164",
+          "last_write_utc": "2026-11-16T04:06:21.136112+00:00"
+        },
+        "values": {
+          "success": true,
+          "frames": 120,
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "resizes": 0,
+          "hdr_format": "RGBA16_FLOAT",
+          "tone_mapping": "exponential_manual_exposure",
+          "exposure": 1.0,
+          "gpu_package_version": 2,
+          "texture_mip_source": "cooked_gpu_package",
+          "source_package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+          "scene_digest": "da13b7d6529ac8d432257c7bd1e36559242157b2c7d03af98d0649f207222654"
+        },
+        "passes": [
+          "ComputeTint",
+          "GBuffer",
+          "DeferredLighting",
+          "ToneMap",
+          "CopyToBackbuffer",
+          "Present"
+        ],
+        "image": {
+          "path": "build/engine_next/m43-gpu-evidence/B-camera.ppm",
+          "bytes": 2764816,
+          "sha256": "63e0c1850a3d489e44f012362b850faf3094d92346fbb0c50f607d6215e98f78",
+          "last_write_utc": "2026-11-16T04:06:21.134112+00:00"
+        },
+        "camera_view_projection": [
+          1.1702684843111868,
+          -0.08302008254529433,
+          1.1971901862107438e-05,
+          -0.23942606534028665,
+          0.0,
+          2.117012104905006,
+          7.981267908071624e-06,
+          -0.15961737689352443,
+          -0.2925671210777967,
+          -0.33208033018117733,
+          4.788760744842975e-05,
+          -0.9577042613611466,
+          0.0,
+          -2.3808809596177023e-16,
+          0.049689235359614434,
+          6.264982043070834
+        ],
+        "camera_inverse_view_projection": [
+          0.8042397819011645,
+          0.0,
+          -0.20105994547529113,
+          0.0,
+          -0.01805212186600557,
+          0.4603291075831421,
+          -0.07220848746402228,
+          0.0,
+          29.998500000000003,
+          19.999000000000002,
+          119.99400000000001,
+          19.999000000000002,
+          -0.23792606534028665,
+          -0.15861737689352443,
+          -0.9517042613611466,
+          0.001
+        ]
+      },
+      {
+        "name": "HostBefore",
+        "report": {
+          "path": "build/engine_next/m43-gpu-evidence/HostBefore.json",
+          "bytes": 24802,
+          "sha256": "a23272f088d4a1114fc455a20d253ddff22a43255a8970be422a0183962149c2",
+          "last_write_utc": "2026-11-16T04:06:43.562021+00:00"
+        },
+        "values": {
+          "success": true,
+          "frames": 30,
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "resizes": 0,
+          "hdr_format": "RGBA16_FLOAT",
+          "tone_mapping": "exponential_manual_exposure",
+          "exposure": 1.0,
+          "gpu_package_version": 2,
+          "texture_mip_source": "cooked_gpu_package",
+          "source_package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+          "scene_digest": "da13b7d6529ac8d432257c7bd1e36559242157b2c7d03af98d0649f207222654"
+        },
+        "passes": [
+          "ComputeTint",
+          "GBuffer",
+          "DeferredLighting",
+          "ToneMap",
+          "CopyToBackbuffer",
+          "Present"
+        ],
+        "image": {
+          "path": "build/engine_next/m43-gpu-evidence/HostBefore.ppm",
+          "bytes": 2764816,
+          "sha256": "74e2794d541ffe83a4bb38fc071edca7f21a4171832b794a1e15129a67734fe4",
+          "last_write_utc": "2026-11-16T04:06:43.562021+00:00"
+        },
+        "camera_view_projection": [
+          1.2062851427866268,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          2.1445069205095586,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          5.000250012500625e-05,
+          -1.0,
+          0.0,
+          0.0,
+          0.04975248762438122,
+          5.0
+        ],
+        "camera_inverse_view_projection": [
+          0.828991392275553,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.4663076581549986,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          99.995,
+          19.999000000000002,
+          0.0,
+          0.0,
+          -0.995,
+          0.001
+        ]
+      },
+      {
+        "name": "HostChanged",
+        "report": {
+          "path": "build/engine_next/m43-gpu-evidence/HostChanged.json",
+          "bytes": 24779,
+          "sha256": "76e78c401ae0bf2b1641177077dd75a274d3edbbf05849364c3c5b6481332fd6",
+          "last_write_utc": "2026-11-16T04:06:44.311254+00:00"
+        },
+        "values": {
+          "success": true,
+          "frames": 30,
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "resizes": 0,
+          "hdr_format": "RGBA16_FLOAT",
+          "tone_mapping": "exponential_manual_exposure",
+          "exposure": 4.0,
+          "gpu_package_version": 2,
+          "texture_mip_source": "cooked_gpu_package",
+          "source_package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+          "scene_digest": "da13b7d6529ac8d432257c7bd1e36559242157b2c7d03af98d0649f207222654"
+        },
+        "passes": [
+          "ComputeTint",
+          "GBuffer",
+          "DeferredLighting",
+          "ToneMap",
+          "CopyToBackbuffer",
+          "Present"
+        ],
+        "image": {
+          "path": "build/engine_next/m43-gpu-evidence/HostChanged.ppm",
+          "bytes": 2764816,
+          "sha256": "81a96ba22fa88ec7ef653c1217e7e95c79e3f99c7fd3c0fc3b4dfbe61e2ba2ec",
+          "last_write_utc": "2026-11-16T04:06:44.310249+00:00"
+        },
+        "camera_view_projection": [
+          1.2062851427866268,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          2.1445069205095586,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          5.000250012500625e-05,
+          -1.0,
+          0.0,
+          0.0,
+          0.04975248762438122,
+          5.0
+        ],
+        "camera_inverse_view_projection": [
+          0.828991392275553,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.4663076581549986,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          99.995,
+          19.999000000000002,
+          0.0,
+          0.0,
+          -0.995,
+          0.001
+        ]
+      },
+      {
+        "name": "HostRestored",
+        "report": {
+          "path": "build/engine_next/m43-gpu-evidence/HostRestored.json",
+          "bytes": 24791,
+          "sha256": "7b44c7f112728cc339e2804ece6c3c6dca6da89e7b83bc45d3907e65bf70c64f",
+          "last_write_utc": "2026-11-16T04:06:45.044307+00:00"
+        },
+        "values": {
+          "success": true,
+          "frames": 30,
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "resizes": 0,
+          "hdr_format": "RGBA16_FLOAT",
+          "tone_mapping": "exponential_manual_exposure",
+          "exposure": 1.0,
+          "gpu_package_version": 2,
+          "texture_mip_source": "cooked_gpu_package",
+          "source_package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+          "scene_digest": "da13b7d6529ac8d432257c7bd1e36559242157b2c7d03af98d0649f207222654"
+        },
+        "passes": [
+          "ComputeTint",
+          "GBuffer",
+          "DeferredLighting",
+          "ToneMap",
+          "CopyToBackbuffer",
+          "Present"
+        ],
+        "image": {
+          "path": "build/engine_next/m43-gpu-evidence/HostRestored.ppm",
+          "bytes": 2764816,
+          "sha256": "74e2794d541ffe83a4bb38fc071edca7f21a4171832b794a1e15129a67734fe4",
+          "last_write_utc": "2026-11-16T04:06:45.042307+00:00"
+        },
+        "camera_view_projection": [
+          1.2062851427866268,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          2.1445069205095586,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          5.000250012500625e-05,
+          -1.0,
+          0.0,
+          0.0,
+          0.04975248762438122,
+          5.0
+        ],
+        "camera_inverse_view_projection": [
+          0.828991392275553,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.4663076581549986,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          99.995,
+          19.999000000000002,
+          0.0,
+          0.0,
+          -0.995,
+          0.001
+        ]
+      },
+      {
+        "name": "HostWrongDigest",
+        "report": {
+          "path": "build/engine_next/m43-gpu-evidence/HostWrongDigest.json",
+          "bytes": 2447,
+          "sha256": "1520cef8604e6cf58c3c956146dbf132b01b3c02282af1dcd86c9766d67824ee",
+          "last_write_utc": "2026-11-16T04:06:45.441738+00:00"
+        },
+        "values": {
+          "success": false,
+          "frames": 0,
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "resizes": 0,
+          "hdr_format": "none",
+          "tone_mapping": "none",
+          "exposure": 1.0,
+          "gpu_package_version": 2,
+          "texture_mip_source": "none",
+          "source_package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+          "scene_digest": "da13b7d6529ac8d432257c7bd1e36559242157b2c7d03af98d0649f207222654"
+        },
+        "passes": []
+      }
+    ]
+  },
+  "network": {
+    "passed": true,
+    "input_driver": "M2 headless next_client with 24 network inputs and same-session reconnect",
+    "observer": "Hidden v2 GPU-package visual client B",
+    "hierarchy_checks": {
+      "draw_samples_checked": 51,
+      "max_absolute_world_error": 1.0728836064011205e-07,
+      "driver_entity_id": 1,
+      "authoritative_final_x_expected": 2.072,
+      "observed_maximum_local_x": 2.07200026512146
+    },
+    "return_codes": {
+      "server": 0,
+      "visual": 0,
+      "client": 0
+    },
+    "graceful_drain": "Both peers acknowledged and completed. Server, visual client and driver exited with code zero.",
+    "evidence": [
+      {
+        "path": "build/engine_next/m43-gpu-evidence/F-Network/Acceptance.json",
+        "bytes": 2220,
+        "sha256": "c8d1a7640137073c5aaefc8899d4ea0073eb16ba156403223d87eedfdbee3d29",
+        "last_write_utc": "2026-11-16T04:06:48.870320+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-gpu-evidence/F-Network/client.log",
+        "bytes": 2076,
+        "sha256": "7ed94b3818cbbb6ee72f8d1db2e9e4b8a918837fd8070ccf526358b056039742",
+        "last_write_utc": "2026-11-16T04:06:48.756686+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-gpu-evidence/F-Network/server.log",
+        "bytes": 1144,
+        "sha256": "d4aaf1902849121737c085934770bafbf109422b2699e007680da4f979b7039a",
+        "last_write_utc": "2026-11-16T04:06:48.761686+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-gpu-evidence/F-Network/visual.log",
+        "bytes": 625,
+        "sha256": "07834366aeec1d2d8d88df213c925fd0ec2b40ec2810558d267adce5d4419b36",
+        "last_write_utc": "2026-11-16T04:06:48.850815+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-gpu-evidence/F-Network/visual.json",
+        "bytes": 149251,
+        "sha256": "b988e1de471ba4ccd3edc82b21a15991c3d71b548e4d637a757d5d38c59b9a11",
+        "last_write_utc": "2026-11-16T04:06:48.776686+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-gpu-evidence/F-Network/visual.ppm",
+        "bytes": 1843215,
+        "sha256": "2c2663335da1dcb7ab9b25e51333a8b900c846ed28d66b14d45833e3af52a944",
+        "last_write_utc": "2026-11-16T04:06:46.967723+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-gpu-evidence/F-Network/server.jsonl",
+        "bytes": 9076,
+        "sha256": "5933c8483942a209d62d19af48b253e24e4c7feca31116af2bdb28801cfe47d5",
+        "last_write_utc": "2026-11-16T04:06:48.761686+00:00"
+      }
+    ],
+    "harness": {
+      "path": "build/engine_next/m43-gpu-evidence/RunNetwork.py",
+      "bytes": 2974,
+      "sha256": "cbc24101267111d736600ed6647275894273c0cd9cb15c7985a88f7f2c069c76",
+      "last_write_utc": "2026-11-16T04:05:16.968505+00:00"
+    },
+    "verifier": {
+      "path": "build/engine_next/m43-gpu-evidence/VerifyNetworkEvidence.py",
+      "bytes": 1820,
+      "sha256": "23318056b314cb334c79362b5cb6298f31b2f119662039afa02780415d1f0ed4",
+      "last_write_utc": "2026-11-16T04:05:07.311539+00:00"
+    }
+  },
+  "renderdoc": {
+    "passed": true,
+    "inspection": {
+      "path": "build/engine_next/m43-gpu-evidence/Capture/Inspection.json",
+      "bytes": 444920,
+      "sha256": "88f1cf4f775bf901f3dffafa01b116e35f7959b899a3db826d111e22315636e5",
+      "last_write_utc": "2026-11-16T04:07:53.162649+00:00"
+    },
+    "capture": {
+      "path": "build/engine_next/m43-gpu-evidence/Capture/M43-B_frame332.rdc",
+      "bytes": 8809529,
+      "sha256": "29af9ede2b1e9ad8d0c59b10333e7f6d40e14ccba460c81547b7b6b576b6a33a",
+      "last_write_utc": "2026-11-16T04:07:06.599435+00:00"
+    },
+    "xml": {
+      "path": "build/engine_next/m43-gpu-evidence/Capture/M43-B_frame332.xml",
+      "bytes": 2111673,
+      "sha256": "062d0733b15c953cd7106ab6ed302a8a8af39eea305730f05c0ee9154d349248",
+      "last_write_utc": "2026-11-16T04:07:50.906894+00:00"
+    },
+    "thumbnail": {
+      "path": "build/engine_next/m43-gpu-evidence/Capture/M43-B_frame332.png",
+      "bytes": 401180,
+      "sha256": "7a0dbdf99d2fa07f4dce79c35b7128d073ba13f8a5f76fcfa4947eff3d9f25b4",
+      "last_write_utc": "2026-11-16T04:07:51.314205+00:00"
+    },
+    "run_report": {
+      "path": "build/engine_next/m43-gpu-evidence/Capture/B-CaptureRun.json",
+      "bytes": 491607,
+      "sha256": "a66dea6e19126fa482b8876fcc89e2a54eac620cab4afdd457f94f34b22bc9f1",
+      "last_write_utc": "2026-11-16T04:07:12.716057+00:00"
+    },
+    "driver": "D3D12",
+    "renderdoc_integrity_verified": true,
+    "commands": [
+      {
+        "command": [
+          "D:\\Projects\\engine-next-m4-1-20261115\\build\\engine_next\\tools\\RenderDoc_1.47_64\\renderdoccmd.exe",
+          "convert",
+          "-f",
+          "D:\\Projects\\engine-next-m4-3-20261116\\build\\engine_next\\m43-gpu-evidence\\Capture\\M43-B_frame332.rdc",
+          "-o",
+          "D:\\Projects\\engine-next-m4-3-20261116\\build\\engine_next\\m43-gpu-evidence\\Capture\\M43-B_frame332.xml",
+          "-c",
+          "xml"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "D:\\Projects\\engine-next-m4-1-20261115\\build\\engine_next\\tools\\RenderDoc_1.47_64\\renderdoccmd.exe",
+          "thumb",
+          "--out",
+          "D:\\Projects\\engine-next-m4-3-20261116\\build\\engine_next\\m43-gpu-evidence\\Capture\\M43-B_frame332.png",
+          "D:\\Projects\\engine-next-m4-3-20261116\\build\\engine_next\\m43-gpu-evidence\\Capture\\M43-B_frame332.rdc"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "D:\\Projects\\engine-next-m4-1-20261115\\build\\engine_next\\tools\\RenderDoc_1.47_64\\renderdoccmd.exe",
+          "replay",
+          "--loops",
+          "1",
+          "D:\\Projects\\engine-next-m4-3-20261116\\build\\engine_next\\m43-gpu-evidence\\Capture\\M43-B_frame332.rdc"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "counts": {
+      "ID3D12GraphicsCommandList::DrawIndexedInstanced": 12,
+      "ID3D12GraphicsCommandList::DrawInstanced": 2,
+      "ID3D12GraphicsCommandList::Dispatch": 1,
+      "ID3D12GraphicsCommandList::ResourceBarrier": 26,
+      "ID3D12CommandQueue::Wait": 1,
+      "ID3D12GraphicsCommandList::EndQuery": 12
+    },
+    "graphics_markers": [
+      "GBuffer",
+      "DeferredLighting",
+      "ToneMap",
+      "CopyToBackbuffer",
+      "Present"
+    ],
+    "hdr_resources": [
+      {
+        "resource_id": "343",
+        "Width": "1280",
+        "Height": "720",
+        "Format": "10",
+        "MipLevels": "1"
+      }
+    ],
+    "render_target_bindings": [
+      {
+        "pass": "GBuffer",
+        "resource_ids": [
+          "344",
+          "345",
+          "346",
+          "347",
+          "342"
+        ],
+        "chunk_index": 296
+      },
+      {
+        "pass": "DeferredLighting",
+        "resource_ids": [
+          "343"
+        ],
+        "chunk_index": 376
+      },
+      {
+        "pass": "ToneMap",
+        "resource_ids": [
+          "341"
+        ],
+        "chunk_index": 390
+      }
+    ],
+    "constant_buffer_bindings": [
+      {
+        "root_parameter": 3,
+        "resource_id": "519",
+        "byte_offset": 0
+      },
+      {
+        "root_parameter": 0,
+        "resource_id": "519",
+        "byte_offset": 256
+      },
+      {
+        "root_parameter": 0,
+        "resource_id": "519",
+        "byte_offset": 512
+      },
+      {
+        "root_parameter": 0,
+        "resource_id": "519",
+        "byte_offset": 768
+      },
+      {
+        "root_parameter": 0,
+        "resource_id": "519",
+        "byte_offset": 1024
+      },
+      {
+        "root_parameter": 0,
+        "resource_id": "519",
+        "byte_offset": 1280
+      },
+      {
+        "root_parameter": 0,
+        "resource_id": "519",
+        "byte_offset": 1536
+      },
+      {
+        "root_parameter": 0,
+        "resource_id": "519",
+        "byte_offset": 1792
+      },
+      {
+        "root_parameter": 0,
+        "resource_id": "519",
+        "byte_offset": 2048
+      },
+      {
+        "root_parameter": 0,
+        "resource_id": "519",
+        "byte_offset": 2304
+      },
+      {
+        "root_parameter": 0,
+        "resource_id": "519",
+        "byte_offset": 2560
+      },
+      {
+        "root_parameter": 0,
+        "resource_id": "519",
+        "byte_offset": 2816
+      },
+      {
+        "root_parameter": 0,
+        "resource_id": "519",
+        "byte_offset": 3072
+      },
+      {
+        "root_parameter": 0,
+        "resource_id": "519",
+        "byte_offset": 0
+      },
+      {
+        "root_parameter": 0,
+        "resource_id": "519",
+        "byte_offset": 0
+      }
+    ]
+  },
+  "review": {
+    "configuration": "Independent read-only review by /root/m42_cook_review with 7 tests and 255 checks. The subsequent UTF-8 regression extended the local suite to 8 tests and 262 checks.",
+    "camera_matrices": "Independent read-only review by /root/m42_network_acceptance found no actionable issues.",
+    "visual_runtime_and_shaders": "Independent read-only review covered CBV layout, frame retirement, query allocation, HDR target transitions, tone mapping and homogeneous reconstruction."
+  },
+  "limitations": [
+    "Temporal accumulation and shadow passes remain in later M4.3 slices.",
+    "These checks use 1280 by 720 and 960 by 640 output.",
+    "Network input comes from the M2 headless client harness.",
+    "HDR lighting uses RGBA16_FLOAT and manual exposure with exponential tone mapping.",
+    "Native 4K and Unreal Engine comparison remain outside this foundation check."
+  ],
+  "source_normalization_after_capture": {
+    "kind": "CRLF to LF only",
+    "paths": [
+      "engine_next/Rendering/RenderConfiguration.cpp",
+      "engine_next/Schemas/RenderConfiguration-v1.json",
+      "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
+      "engine_next/include/EngineNext/Rendering/RenderConfiguration.h"
+    ],
+    "production_semantic_changes": false,
+    "final_rebuild_required": true
+  }
+}

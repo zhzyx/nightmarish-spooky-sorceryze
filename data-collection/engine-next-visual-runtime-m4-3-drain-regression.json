@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-16T04:26:49.195706+00:00",
+  "passed": true,
+  "root_cause": "The late client process was created only after DRAIN_BEGIN. Its process startup and ENet handshake could exceed the unchanged 200 ms drain deadline. The failed run showed successful A drain and B timeout, with no C transport connection.",
+  "fix": "Prepare the real late-client UDP connect packet before starting the server. Release it from the server stdout reader on DRAIN_BEGIN and forward the remainder of the handshake. Keep all application-level rejection and drain assertions. Use one reader per server output stream.",
+  "drain_timeout_ms": 200,
+  "source_inputs": [
+    {
+      "path": "engine_next/Tools/RunM2DrainFaults.py",
+      "bytes": 12735,
+      "sha256": "7c7a5952804acf95e08767e537c8b10ccac996aff49f9dbb4aa09bb095d2a5fa"
+    },
+    {
+      "path": "engine_next/Tools/TestDrainFaults.py",
+      "bytes": 2151,
+      "sha256": "ece7329b1730f9e3197d69da482d067b36785bcf7c6aafb3356357d76214a182"
+    }
+  ],
+  "unit_tests": "2 event-gate UDP regression tests passed.",
+  "runs": [
+    {
+      "label": "stress",
+      "cpu_busy_workers": 12,
+      "summary": {
+        "path": "build/engine_next/m43-drain-fix/stress/Summary.json",
+        "bytes": 2605,
+        "sha256": "dc3b4d341fd49aeddc0eaa42b3262efba0c2f7a38b9e63b11eeb504e0cb6293f"
+      },
+      "server": {
+        "path": "build/engine_next/m43-runtime-r1/CleanRun/next_server.exe",
+        "bytes": 788992,
+        "sha256": "0ab05b4f0b27cbd5dad37a4d13059fc638810500cfd00c7408db6daf4fbf97d1"
+      },
+      "client": {
+        "path": "build/engine_next/m43-runtime-r1/CleanRun/next_client.exe",
+        "bytes": 798720,
+        "sha256": "9399b38561e2607a31344debdcc4aa90a0f4f6f759c838a61a5a52995f598a1e"
+      },
+      "reports": [
+        {
+          "path": "build/engine_next/m43-drain-fix/stress/run-1/DrainFaultsReport.json",
+          "bytes": 5667,
+          "sha256": "b8750b4b37dc07ab94616c864b5c99c3ac39ec232b768256d66078fa4b12884f"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress/run-10/DrainFaultsReport.json",
+          "bytes": 5663,
+          "sha256": "9789c97f9d0e58d5de6fc970fedb32e2f01612870b8df97466de4803e6b3f923"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress/run-2/DrainFaultsReport.json",
+          "bytes": 5664,
+          "sha256": "2980889624850ce671a6282d6f0857e009d500071f01d905abd1c22e7701bed4"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress/run-3/DrainFaultsReport.json",
+          "bytes": 5596,
+          "sha256": "b9083543bf3c361d17c98b8f8f19eba449e7b18ff8e37ba758b81f8cd5f7fde7"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress/run-4/DrainFaultsReport.json",
+          "bytes": 5865,
+          "sha256": "4fa77a652bad8b8f3840b8afd767569ee704de479393116c56a705c498e361f0"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress/run-5/DrainFaultsReport.json",
+          "bytes": 5531,
+          "sha256": "905b915e317f804f277dcd08169bf36a1309db1ff73800403f7d9c0e87ea6228"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress/run-6/DrainFaultsReport.json",
+          "bytes": 5730,
+          "sha256": "1eb0fb7ecd2499d6c716825b6f948a475f5be9f65770abf461318b4a2f8b8d48"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress/run-7/DrainFaultsReport.json",
+          "bytes": 5529,
+          "sha256": "8e999fc65ec72a461193825f7cadcb15a48a580fca2a7f63750066b0bbfe7b87"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress/run-8/DrainFaultsReport.json",
+          "bytes": 5663,
+          "sha256": "7213fdf1dde80acb4d08f432d55ff8a00c0d86812c55423b704c44feb915772a"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress/run-9/DrainFaultsReport.json",
+          "bytes": 5665,
+          "sha256": "68687155a22b3d4ff33ccbeb2aa43636816fda9004a5e032ba09e8ad9b3fdaaa"
+        }
+      ]
+    },
+    {
+      "label": "stress-final",
+      "cpu_busy_workers": 12,
+      "summary": {
+        "path": "build/engine_next/m43-drain-fix/stress-final/Summary.json",
+        "bytes": 2605,
+        "sha256": "557096ed4a2edc9903a1339b974a4cd68f9959794e513c9558ed68cf09aa7805"
+      },
+      "server": {
+        "path": "build/engine_next/m43-runtime-final/next_server.exe",
+        "bytes": 788992,
+        "sha256": "1d78e2911dcf654bf1241684383350b62611aa9a0329239ea2d96bb81c2f33e5"
+      },
+      "client": {
+        "path": "build/engine_next/m43-runtime-final/next_client.exe",
+        "bytes": 798720,
+        "sha256": "bc88e0380d63953991f46d10fb7a3379f0924cff348945268adadedef9abaf56"
+      },
+      "reports": [
+        {
+          "path": "build/engine_next/m43-drain-fix/stress-final/run-1/DrainFaultsReport.json",
+          "bytes": 5596,
+          "sha256": "fcb8fb12d465ca110034c164baecdef78f9c5543e28c7440b1bf6da48ab7e0ce"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress-final/run-10/DrainFaultsReport.json",
+          "bytes": 5932,
+          "sha256": "6c64ecba11d35f6ad29356b3f4317f52a4b353cfcc0ec40b7be27fbc17be5eee"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress-final/run-2/DrainFaultsReport.json",
+          "bytes": 5933,
+          "sha256": "b40776fb71264fb0a1e42bfe01d99972542fe0ef8aa45944fec9484f5b3c00be"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress-final/run-3/DrainFaultsReport.json",
+          "bytes": 5529,
+          "sha256": "e0ab668c587c7a4afa22a24b813e2d47f59d7c8ea6b68fb11acd6065a74a5c30"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress-final/run-4/DrainFaultsReport.json",
+          "bytes": 5596,
+          "sha256": "0224af86dada32207351116dfbdfdabf3e86f00d329857acefdb8cd538eb00c4"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress-final/run-5/DrainFaultsReport.json",
+          "bytes": 5531,
+          "sha256": "b2e8033efb89c279a07624ae8cea4c919e7385ca4b82bbb8b10603851d8fae15"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress-final/run-6/DrainFaultsReport.json",
+          "bytes": 5531,
+          "sha256": "7ad1efa06566c171207e51fcfb4d89093f391d01adbcac8329656a899f0f95f1"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress-final/run-7/DrainFaultsReport.json",
+          "bytes": 5529,
+          "sha256": "2b85f201e0787bbcd9f805ab5dc6a314b223101cc54099828a6e35971cd00750"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress-final/run-8/DrainFaultsReport.json",
+          "bytes": 5529,
+          "sha256": "e13515dae9c42118765f315e3e841675cb1ce4f4d61573498dbfa1638972bd8f"
+        },
+        {
+          "path": "build/engine_next/m43-drain-fix/stress-final/run-9/DrainFaultsReport.json",
+          "bytes": 5530,
+          "sha256": "155c364ab8e5e5362faedfb235bc710a891422dd27771aae6b4b57e4f96e2a94"
+        }
+      ]
+    }
+  ],
+  "total_stress_runs": 20
+}

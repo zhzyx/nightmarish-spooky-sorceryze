@@ -344,3 +344,45 @@ ENGINE_NEXT_TEST("FrameGraph bounds expanded subresource work before creating a 
 	ENGINE_NEXT_CHECK_EQ(stDiagnostic.eError, GraphError::CapacityExceeded);
 	ENGINE_NEXT_CHECK(stCompiled.arrPasses.empty());
 }
+
+ENGINE_NEXT_TEST("FrameGraph supports read-only depth on graphics and restores depth writes")
+{
+	FrameGraph stGraph;
+	const ResourceId nDepth = stGraph.AddResource({ "Depth", ResourceState::DepthWrite, false });
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddPass(MakePass("WriteDepth", QueueType::Graphics, nDepth, ResourceState::DepthWrite, true)), 0U);
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddPass(MakePass("ReadDepth", QueueType::Graphics, nDepth, ResourceState::DepthRead, false)), 1U);
+	PassDesc stRestore = MakePass("RestoreDepth", QueueType::Graphics, nDepth, ResourceState::DepthWrite, true);
+	stRestore.arrAccesses[0].bReadBeforeWrite = true;
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddPass(stRestore), 2U);
+	CompiledGraph stCompiled;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(stGraph.Compile(stCompiled, stDiagnostic));
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrPasses[1].arrBeforeBarriers.size(), 1U);
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrPasses[1].arrBeforeBarriers[0].eBefore, ResourceState::DepthWrite);
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrPasses[1].arrBeforeBarriers[0].eAfter, ResourceState::DepthRead);
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrPasses[2].arrBeforeBarriers[0].eBefore, ResourceState::DepthRead);
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrPasses[2].arrBeforeBarriers[0].eAfter, ResourceState::DepthWrite);
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrResources[nDepth].arrFinalStates[0], ResourceState::DepthWrite);
+}
+
+ENGINE_NEXT_TEST("FrameGraph rejects depth reads on compute and depth reads declared as writes")
+{
+	FrameGraph stGraph;
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddResource({ "Depth", ResourceState::Common, true }), 0U);
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddPass(MakePass("ComputeDepth", QueueType::Compute, 0, ResourceState::DepthRead, false)), 0U);
+	CompiledGraph stCompiled;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(!stGraph.Compile(stCompiled, stDiagnostic));
+	ENGINE_NEXT_CHECK_EQ(stDiagnostic.eError, GraphError::UnsupportedQueueState);
+	stGraph.Clear();
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddResource({ "Depth", ResourceState::DepthRead, true }), 0U);
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddPass(MakePass("IncompatibleInitialDepth", QueueType::Compute, 0, ResourceState::UnorderedAccess, true)), 0U);
+	ENGINE_NEXT_CHECK(!stGraph.Compile(stCompiled, stDiagnostic));
+	ENGINE_NEXT_CHECK_EQ(stDiagnostic.eError, GraphError::UnsupportedQueueState);
+	stGraph.Clear();
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddResource({ "Depth", ResourceState::Common, true }), 0U);
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddPass(MakePass("InvalidDepthWrite", QueueType::Graphics, 0, ResourceState::DepthRead, true)), 0U);
+	ENGINE_NEXT_CHECK(!stGraph.Compile(stCompiled, stDiagnostic));
+	ENGINE_NEXT_CHECK_EQ(stDiagnostic.eError, GraphError::InvalidAccess);
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddResource({ "UnknownState", static_cast<ResourceState>(11), true }), EngineNext::Rendering::INVALID_RESOURCE);
+}

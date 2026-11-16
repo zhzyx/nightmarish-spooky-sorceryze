@@ -5,6 +5,7 @@ import json
 import os
 import queue
 import re
+import socket
 import subprocess
 import sys
 import threading
@@ -12,6 +13,83 @@ import time
 from pathlib import Path
 
 from RunM2Handshake import digest, parse_lines, popen
+
+
+class DrainConnectionGate:
+    """Prepare the late client's real UDP handshake before the short drain window."""
+
+    def __init__(self):
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.socket.bind(("127.0.0.1", 0))
+        self.socket.settimeout(0.05)
+        self.port = self.socket.getsockname()[1]
+        self.ready = threading.Event()
+        self.stopping = threading.Event()
+        self.lock = threading.Lock()
+        self.server_address = None
+        self.client_address = None
+        self.pending = None
+        self.released = False
+        self.forwarded_client_packets = 0
+        self.closed_endpoint_notifications = 0
+        self.errors = []
+        self.thread = threading.Thread(target=self._forward, daemon=True)
+        self.thread.start()
+
+    def set_server(self, port):
+        with self.lock:
+            self.server_address = ("127.0.0.1", port)
+
+    def release(self):
+        with self.lock:
+            if self.server_address is None or self.pending is None:
+                self.errors.append("Late client was not ready at the drain event")
+                return
+            try:
+                self.socket.sendto(self.pending, self.server_address)
+            except OSError as error:
+                self.errors.append(str(error))
+                return
+            self.pending = None
+            self.released = True
+            self.forwarded_client_packets += 1
+
+    def _forward(self):
+        while not self.stopping.is_set():
+            try:
+                data, address = self.socket.recvfrom(65536)
+            except TimeoutError:
+                continue
+            except ConnectionResetError:
+                # Windows reports ICMP after a client or server closes its UDP port.
+                # Required application rejection and drain events are checked below.
+                self.closed_endpoint_notifications += 1
+                continue
+            except OSError as error:
+                if not self.stopping.is_set():
+                    self.errors.append(str(error))
+                return
+            with self.lock:
+                try:
+                    if address == self.server_address:
+                        if self.client_address is not None:
+                            self.socket.sendto(data, self.client_address)
+                    elif self.client_address is None or address == self.client_address:
+                        self.client_address = address
+                        if self.released:
+                            self.socket.sendto(data, self.server_address)
+                            self.forwarded_client_packets += 1
+                        else:
+                            self.pending = data
+                            self.ready.set()
+                except OSError as error:
+                    self.errors.append(str(error))
+                    return
+
+    def close(self):
+        self.stopping.set()
+        self.thread.join(timeout=1)
+        self.socket.close()
 
 
 def run_drain_faults(server, client, report_path):
@@ -26,7 +104,31 @@ def run_drain_faults(server, client, report_path):
     events = queue.Queue()
     processes = []
     result = {"passed": False, "expected_failure": True, "clients": [], "errors": []}
+    gate = DrainConnectionGate()
     try:
+        # C reaches its first ENet packet before the server's drain clock starts.
+        late_client = popen(
+            [
+                client,
+                "--connect",
+                "127.0.0.1",
+                "--port",
+                str(gate.port),
+                "--duration-ms",
+                "8000",
+                "--seed",
+                "303",
+                "--client-id",
+                "C",
+                "--trace-output",
+                report_path.parent / "fault-client-C.jsonl",
+            ],
+            report_path.parent,
+            env,
+        )
+        processes.append(("C", late_client))
+        if not gate.ready.wait(timeout=8):
+            raise RuntimeError("Late client did not prepare its initial UDP packet")
         server_process = popen(
             [
                 server,
@@ -52,15 +154,20 @@ def run_drain_faults(server, client, report_path):
 
         def read_output():
             for line in server_process.stdout:
-                lines.append(line.rstrip())
-                events.put(line.rstrip())
+                line = line.rstrip()
+                if re.fullmatch(r"ENGINE_NEXT_DRAIN_BEGIN peers=2 deadline_tick=\d+", line):
+                    gate.release()
+                lines.append(line)
+                events.put(line)
             events.put(None)
 
         def read_error():
             errors.extend(line.rstrip() for line in server_process.stderr)
 
-        threading.Thread(target=read_output, daemon=True).start()
-        threading.Thread(target=read_error, daemon=True).start()
+        output_reader = threading.Thread(target=read_output, daemon=True)
+        error_reader = threading.Thread(target=read_error, daemon=True)
+        output_reader.start()
+        error_reader.start()
 
         def wait_for(pattern, timeout):
             expression = re.compile(pattern)
@@ -79,6 +186,7 @@ def run_drain_faults(server, client, report_path):
 
         port_match = wait_for(r"ENGINE_NEXT_SERVER_READY port=(?P<port>\d+)", 8)
         port = int(port_match.group("port"))
+        gate.set_server(port)
         for client_id in ("A", "B"):
             command = [
                 client,
@@ -101,28 +209,10 @@ def run_drain_faults(server, client, report_path):
             processes.append((client_id, popen(command, report_path.parent, env)))
 
         wait_for(r"ENGINE_NEXT_DRAIN_BEGIN peers=2 deadline_tick=(?P<deadline>\d+)", 6)
-        late_client = popen(
-            [
-                client,
-                "--connect",
-                "127.0.0.1",
-                "--port",
-                str(port),
-                "--duration-ms",
-                "1500",
-                "--seed",
-                "303",
-                "--client-id",
-                "C",
-                "--trace-output",
-                report_path.parent / "fault-client-C.jsonl",
-            ],
-            report_path.parent,
-            env,
-        )
-        processes.append(("C", late_client))
         client_results = []
-        for client_id, process in processes[1:]:
+        for client_id, process in processes:
+            if client_id == "server":
+                continue
             stdout, stderr = process.communicate(timeout=10)
             client_results.append({
                 "client_id": client_id,
@@ -130,9 +220,19 @@ def run_drain_faults(server, client, report_path):
                 "stdout": stdout,
                 "stderr": stderr,
             })
-        server_stdout, server_stderr = server_process.communicate(timeout=10)
-        lines.extend(server_stdout.splitlines())
-        errors.extend(server_stderr.splitlines())
+        server_process.wait(timeout=10)
+        output_reader.join(timeout=3)
+        error_reader.join(timeout=3)
+        if output_reader.is_alive() or error_reader.is_alive():
+            raise RuntimeError("Server output readers did not finish")
+        if gate.errors or not gate.released or gate.forwarded_client_packets == 0:
+            raise RuntimeError("Late client gate failed: " + repr(gate.errors))
+        result["late_client_gate"] = {
+            "prepared_before_server_start": gate.ready.is_set(),
+            "released_on_drain_begin": gate.released,
+            "forwarded_client_packets": gate.forwarded_client_packets,
+            "closed_endpoint_notifications": gate.closed_endpoint_notifications,
+        }
         result.update({
             "server_returncode": server_process.returncode,
             "server_stdout": lines,
@@ -192,6 +292,7 @@ def run_drain_faults(server, client, report_path):
         result["errors"].append(str(error))
         raise
     finally:
+        gate.close()
         for _, process in processes:
             if process.poll() is None:
                 process.terminate()

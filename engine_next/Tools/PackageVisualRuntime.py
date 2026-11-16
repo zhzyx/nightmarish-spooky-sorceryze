@@ -17,6 +17,7 @@ SHADER_FILES = {
     "Deferred.ps.cso",
     "Lighting.vs.cso",
     "Lighting.ps.cso",
+    "ToneMap.ps.cso",
 }
 
 

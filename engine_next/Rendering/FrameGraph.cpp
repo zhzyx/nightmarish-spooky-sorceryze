@@ -61,7 +61,7 @@ bool IsQueueValid(QueueType eQueue)
 
 bool IsStateValid(ResourceState eState)
 {
-	return eState >= ResourceState::Common && eState <= ResourceState::NonPixelShaderRead;
+	return eState >= ResourceState::Common && eState <= ResourceState::DepthRead;
 }
 
 bool IsQueueStateSupported(QueueType eQueue, ResourceState eState)

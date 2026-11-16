@@ -73,7 +73,7 @@ int main(int nArgumentCount, char **ppArguments)
 		const std::string strOption = ppArguments[nIndex];
 		if (strOption == "--help")
 		{
-			std::cout << "next_visual_client [--width N] [--height N] [--frames N] [--validation] [--hidden] [--vsync] [--exercise-resize] [--deterministic] [--shader-directory PATH] [--report PATH] [--capture PATH] [--asset-package PATH] [--gpu-package PATH] [--connect --port N --client-id ID --server ADDRESS]\n";
+			std::cout << "next_visual_client [--width N] [--height N] [--frames N] [--validation] [--hidden] [--vsync] [--exercise-resize] [--deterministic] [--shader-directory PATH] [--report PATH] [--capture PATH] [--asset-package PATH] [--gpu-package PATH] [--render-config PATH] [--connect --port N --client-id ID --server ADDRESS]\n";
 			std::cout << "WASD moves camera or connected player. R reconnects a connected session. Escape closes.\n";
 			return 0;
 		}
@@ -129,6 +129,10 @@ int main(int nArgumentCount, char **ppArguments)
 		else if (strOption == "--gpu-package")
 		{
 			stConfig.strGpuPackagePath = pValue;
+		}
+		else if (strOption == "--render-config")
+		{
+			stConfig.strRenderConfigPath = pValue;
 		}
 		else if (strOption == "--server")
 		{

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:engine-next:render-configuration:1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_package_sha256",
+    "camera",
+    "exposure"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "source_package_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "camera": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "position",
+        "target",
+        "up",
+        "vertical_fov_degrees",
+        "near_plane",
+        "far_plane"
+      ],
+      "properties": {
+        "position": {
+          "$ref": "#/$defs/vector3"
+        },
+        "target": {
+          "$ref": "#/$defs/vector3"
+        },
+        "up": {
+          "$ref": "#/$defs/vector3"
+        },
+        "vertical_fov_degrees": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 170
+        },
+        "near_plane": {
+          "type": "number",
+          "minimum": 0.001,
+          "maximum": 100
+        },
+        "far_plane": {
+          "type": "number",
+          "exclusiveMinimum": 0.001,
+          "maximum": 10000000
+        }
+      },
+      "$comment": "Runtime validation requires far_plane greater than near_plane and nonzero camera direction and up vectors. The squared cross product of their unit vectors must exceed 1e-24."
+    },
+    "exposure": {
+      "type": "number",
+      "minimum": 0.001,
+      "maximum": 1000
+    }
+  },
+  "$defs": {
+    "vector3": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "number"
+      }
+    }
+  },
+  "$comment": "Load as strict UTF-8 JSON with duplicate keys rejected. Maximum encoded file size is 65536 bytes. The source SHA-256 must match the loaded asset package."
+}

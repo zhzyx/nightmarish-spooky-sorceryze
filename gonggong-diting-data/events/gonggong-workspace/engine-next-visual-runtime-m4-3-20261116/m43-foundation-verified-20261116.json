@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "m43-foundation-verified-20261116",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "step",
+  "occurred_at": "2026-11-16T04:29:23.754114+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-5afcb929",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m43-request-20261116"
+  ],
+  "payload": {
+    "scope": "HDR, configured camera, CBV and graph foundation",
+    "render_tests": "93 tests, 3394 checks",
+    "runtime_tests": "61 tests, 1100 checks and complete M2/M3/AI acceptance",
+    "gpu": "Final current binary B/F v1/v2, resize, source-bound configuration update/rollback, network transforms and RenderDoc passed",
+    "records": [
+      "data-collection/engine-next-visual-runtime-m4-3-foundation-verification.json",
+      "data-collection/engine-next-visual-runtime-m4-3-foundation-gpu-final.json",
+      "data-collection/engine-next-visual-runtime-m4-3-build-impact.json"
+    ]
+  },
+  "sha256": "a50ef8fdedf81648b4bdbd52aa1980ed7ee0339a0286eb65a248388ef76af563"
+}

@@ -43,6 +43,9 @@
 #include "engine_next/Rendering/Cook/GpuPackage.h"
 #include "engine_next/include/EngineNext/Rendering/RenderScene.h"
 #include "engine_next/include/EngineNext/Rendering/TextureData.h"
+#include "engine_next/include/EngineNext/Rendering/CameraMatrices.h"
+#include "engine_next/include/EngineNext/Rendering/RenderConfiguration.h"
+#include "engine_next/Rendering/RenderPipeline.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -79,16 +82,15 @@ namespace
 {
 
 constexpr std::uint32_t FRAME_COUNT = 3;
-constexpr std::uint32_t MAX_PASSES = 5;
-constexpr std::uint32_t GRAPHICS_QUERIES_PER_FRAME = (MAX_PASSES - 1) * 2;
-constexpr std::uint32_t TOTAL_QUERIES_PER_FRAME = MAX_PASSES * 2;
-constexpr std::uint32_t FRAME_VIEW_COUNT = 7;
+constexpr std::uint32_t FRAME_VIEW_COUNT = 8;
 constexpr std::uint32_t MATERIAL_TEXTURE_COUNT = 5;
 constexpr std::uint32_t MAX_MATERIALS = D3D12_MAX_SHADER_VISIBLE_SAMPLER_HEAP_SIZE / MATERIAL_TEXTURE_COUNT;
 constexpr std::uint32_t MATERIAL_VIEW_START = FRAME_COUNT * FRAME_VIEW_COUNT;
 constexpr std::uint32_t ENVIRONMENT_VIEW_START = MATERIAL_VIEW_START + MAX_MATERIALS * MATERIAL_TEXTURE_COUNT;
 constexpr std::uint64_t MAX_TEXTURE_UPLOAD_BYTES = 512ULL * 1024ULL * 1024ULL;
 constexpr DXGI_FORMAT COLOR_FORMAT = DXGI_FORMAT_R8G8B8A8_UNORM;
+constexpr DXGI_FORMAT HDR_FORMAT = DXGI_FORMAT_R16G16B16A16_FLOAT;
+constexpr std::uint64_t CONSTANT_BUFFER_ALIGNMENT = 256;
 constexpr std::size_t MAX_TIMING_SAMPLES = 65536;
 
 // COM references stay in the backend and are retired only after queue fences.
@@ -239,10 +241,12 @@ struct FrameContext
 	ComOwner<ID3D12GraphicsCommandList> stGraphicsList;
 	ComOwner<ID3D12GraphicsCommandList> stComputeList;
 	ComOwner<ID3D12Resource> stColor;
+	ComOwner<ID3D12Resource> stHdr;
 	ComOwner<ID3D12Resource> stDepth;
 	ComOwner<ID3D12Resource> stTint;
 	std::array<ComOwner<ID3D12Resource>, 4> arrGbuffer;
 	ComOwner<ID3D12Resource> stQueries;
+	ComOwner<ID3D12Resource> stConstants;
 	std::uint64_t nGraphicsFence = 0;
 	std::uint64_t nComputeFence = 0;
 	std::uint32_t nTimingFrame = 0;
@@ -259,7 +263,7 @@ struct FrameTiming
 	double dCpuMsec = 0.0;
 	double dGraphicsMsec = 0.0;
 	double dComputeMsec = 0.0;
-	std::array<double, MAX_PASSES> arrPassMsec{};
+	std::vector<double> arrPassMsec;
 	bool bGpuReady = false;
 };
 
@@ -296,9 +300,24 @@ struct DrawConstants
 	std::array<float, 4> arrBaseColor{};
 	std::array<float, 4> arrEmissiveMetallic{};
 	std::array<float, 4> arrSurface{};
-	std::array<float, 4> arrCamera{};
 	std::array<float, 4> arrFlags{};
 };
+
+struct FrameConstants
+{
+	std::array<float, 16> arrViewProjection{};
+	std::array<float, 16> arrInverseViewProjection{};
+	std::array<float, 4> arrCamera{};
+	std::array<float, 4> arrLighting{};
+};
+
+static_assert(sizeof(DrawConstants) == 192);
+static_assert(sizeof(FrameConstants) == 160);
+static_assert(offsetof(DrawConstants, arrFlags) == 176);
+static_assert(offsetof(FrameConstants, arrCamera) == 128);
+static_assert(offsetof(FrameConstants, arrLighting) == 144);
+static_assert(sizeof(DrawConstants) <= CONSTANT_BUFFER_ALIGNMENT);
+static_assert(sizeof(FrameConstants) <= CONSTANT_BUFFER_ALIGNMENT);
 
 D3D12_HEAP_PROPERTIES HeapProperties(D3D12_HEAP_TYPE eType)
 {
@@ -352,6 +371,8 @@ D3D12_RESOURCE_STATES NativeState(ResourceState eState)
 			return D3D12_RESOURCE_STATE_RENDER_TARGET;
 		case ResourceState::DepthWrite:
 			return D3D12_RESOURCE_STATE_DEPTH_WRITE;
+		case ResourceState::DepthRead:
+			return D3D12_RESOURCE_STATE_DEPTH_READ | D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
 		case ResourceState::ShaderRead:
 			return D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
 		case ResourceState::NonPixelShaderRead:
@@ -393,6 +414,8 @@ const char *StateName(ResourceState eState)
 			return "render_target";
 		case ResourceState::DepthWrite:
 			return "depth_write";
+		case ResourceState::DepthRead:
+			return "depth_read";
 		case ResourceState::ShaderRead:
 			return "shader_read";
 		case ResourceState::NonPixelShaderRead:
@@ -505,11 +528,15 @@ private:
 	bool UploadTexture(const std::vector<MipLevel> &arrLevels, bool bSrgb, std::uint32_t nView);
 	bool UploadFloatTexture(const std::vector<const FloatImage *> &arrImages, std::uint32_t nMips, std::uint32_t nView);
 	bool CreateEnvironment();
-	void DrawScene(ID3D12GraphicsCommandList *pList);
+	void DrawScene(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame);
 	void DrawLighting(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame);
+	void DrawToneMap(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame);
+	bool CreateConstantBuffers();
+	bool UpdateConstantBuffer(FrameContext &stFrame);
 	void RecordNetworkSample(const Gameplay::Vector3 &vInput);
 	std::array<float, 16> DrawTransform(const GpuDraw &stDraw) const;
 	std::uint32_t GraphicsPassCount() const noexcept;
+	std::uint32_t TotalQueryCount() const noexcept;
 	bool CreateTargets();
 	bool CreateFrameContexts();
 	bool Resize();
@@ -551,12 +578,15 @@ private:
 	ComOwner<ID3D12PipelineState> stMirroredDoubleSidedPipeline;
 	ComOwner<ID3D12PipelineState> stMirroredPipeline;
 	ComOwner<ID3D12PipelineState> stLightingPipeline;
+	ComOwner<ID3D12PipelineState> stToneMapPipeline;
 	ComOwner<ID3D12DescriptorHeap> stSamplerHeap;
 	std::vector<ComOwner<ID3D12Resource>> arrTextures;
 	std::vector<ComOwner<ID3D12Resource>> arrTextureUploads;
 	std::vector<GpuDraw> arrDraws;
 	std::vector<GpuMaterial> arrMaterials;
 	RenderScene stRenderScene;
+	RenderConfiguration stRenderConfiguration;
+	CameraMatrices stCameraMatrices;
 	Assets::SceneDocument stNetworkScene;
 	Runtime::ClientSession stClient;
 	Runtime::ClientSnapshot stClientSnapshot;
@@ -581,8 +611,10 @@ private:
 	D3D12_INDEX_BUFFER_VIEW stIndexView{};
 	D3D12_PLACED_SUBRESOURCE_FOOTPRINT stCaptureFootprint{};
 	DXGI_ADAPTER_DESC2 stAdapterDescription{};
-	FrameGraph stGraph;
-	CompiledGraph stCompiled;
+	RenderPipeline stRenderPipeline;
+	std::vector<std::uint32_t> arrQueryOffsets;
+	std::size_t nComputePassIndex = 0;
+	CompiledGraph &stCompiled = stRenderPipeline.stGraph;
 	std::vector<FrameTiming> arrTiming = std::vector<FrameTiming>(MAX_TIMING_SAMPLES);
 	std::vector<std::string> arrMessages;
 	std::string strFailure;
@@ -743,7 +775,7 @@ bool VisualRuntime::Initialize()
 	(void)stSwapchain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709);
 	D3D12_DESCRIPTOR_HEAP_DESC stHeap{};
 	stHeap.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-	stHeap.NumDescriptors = FRAME_COUNT * 6;
+	stHeap.NumDescriptors = FRAME_COUNT * 7;
 	if (FAILED(stDevice->CreateDescriptorHeap(&stHeap, IID_PPV_ARGS(stRtvHeap.Put()))))
 	{
 		return Fail("Create RTV heap");
@@ -764,8 +796,8 @@ bool VisualRuntime::Initialize()
 	nRtvStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	nDsvStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	nViewStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	return LoadScene() && CreateFrameContexts() && CreateTargets() && CreatePipeline() &&
-			(!bSceneMode || CreateDeferredPipeline()) && (bSceneMode ? CreateSceneMesh() : CreateMesh()) && BuildGraph();
+	return LoadScene() && BuildGraph() && CreateFrameContexts() && CreateTargets() && CreatePipeline() &&
+			(!bSceneMode || CreateDeferredPipeline()) && (bSceneMode ? CreateSceneMesh() : CreateMesh()) && CreateConstantBuffers();
 }
 
 bool VisualRuntime::CreateFrameContexts()
@@ -792,7 +824,7 @@ bool VisualRuntime::CreateFrameContexts()
 		{
 			return Fail("Create compute tint buffer");
 		}
-		stBuffer = BufferDescription(TOTAL_QUERIES_PER_FRAME * sizeof(std::uint64_t));
+		stBuffer = BufferDescription(TotalQueryCount() * sizeof(std::uint64_t));
 		if (FAILED(stDevice->CreateCommittedResource(&stReadback, D3D12_HEAP_FLAG_NONE, &stBuffer, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(stFrame.stQueries.Put()))))
 		{
 			return Fail("Create timestamp readback");
@@ -812,7 +844,7 @@ bool VisualRuntime::CreateFrameContexts()
 	}
 	D3D12_QUERY_HEAP_DESC stQuery{};
 	stQuery.Type = D3D12_QUERY_HEAP_TYPE_TIMESTAMP;
-	stQuery.Count = FRAME_COUNT * GRAPHICS_QUERIES_PER_FRAME;
+	stQuery.Count = FRAME_COUNT * GraphicsPassCount() * 2;
 	if (FAILED(stDevice->CreateQueryHeap(&stQuery, IID_PPV_ARGS(stGraphicsQueries.Put()))))
 	{
 		return Fail("Create graphics timestamp heap");
@@ -865,6 +897,22 @@ bool VisualRuntime::CreateTargets()
 		stDevice->CreateDepthStencilView(stFrame.stDepth.Get(), &stDsv, Dsv(nIndex));
 		if (bSceneMode)
 		{
+			D3D12_RESOURCE_DESC stHdrDescription = stTexture;
+			stHdrDescription.Format = HDR_FORMAT;
+			D3D12_CLEAR_VALUE stHdrClear{};
+			stHdrClear.Format = HDR_FORMAT;
+			if (FAILED(stDevice->CreateCommittedResource(&stHeap, D3D12_HEAP_FLAG_NONE, &stHdrDescription, D3D12_RESOURCE_STATE_COMMON, &stHdrClear, IID_PPV_ARGS(stFrame.stHdr.Put()))))
+			{
+				return Fail("Create linear HDR target");
+			}
+			stDevice->CreateRenderTargetView(stFrame.stHdr.Get(), nullptr, Rtv(FRAME_COUNT * 6 + nIndex));
+			D3D12_SHADER_RESOURCE_VIEW_DESC stHdrSrv{};
+			stHdrSrv.Format = HDR_FORMAT;
+			stHdrSrv.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+			stHdrSrv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			stHdrSrv.Texture2D.MipLevels = 1;
+			stDevice->CreateShaderResourceView(stFrame.stHdr.Get(), &stHdrSrv, View(nIndex * FRAME_VIEW_COUNT + 7));
+			(void)stFrame.stHdr->SetName(L"EngineNext.LinearHdr");
 			const std::array<DXGI_FORMAT, 4> arrFormats{ DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R16G16B16A16_FLOAT };
 			for (std::uint32_t nTarget = 0; nTarget < arrFormats.size(); ++nTarget)
 			{
@@ -1071,7 +1119,7 @@ bool VisualRuntime::LoadScene()
 {
 	if (stConfig.strAssetPackagePath.empty())
 	{
-		return stConfig.strGpuPackagePath.empty() || Fail("GPU package requires source asset package");
+		return (stConfig.strGpuPackagePath.empty() && stConfig.strRenderConfigPath.empty()) || Fail("GPU package and render configuration require a source asset package");
 	}
 	Assets::Diagnostics arrDiagnostics;
 	if (!LoadRenderScene(stConfig.strAssetPackagePath, stRenderScene, arrDiagnostics))
@@ -1090,6 +1138,10 @@ bool VisualRuntime::LoadScene()
 			return Fail(arrDiagnostics.empty() ? "Verify GPU source binding" : arrDiagnostics.front().strMessage);
 		}
 		stRenderScene = std::move(stCooked);
+	}
+	if (!stConfig.strRenderConfigPath.empty() && !LoadRenderConfiguration(std::filesystem::u8path(stConfig.strRenderConfigPath), stRenderScene.strPackageDigest, stRenderConfiguration, arrDiagnostics))
+	{
+		return Fail(arrDiagnostics.empty() ? "Load rendering configuration" : arrDiagnostics.front().strMessage);
 	}
 	bSceneMode = true;
 	if (stConfig.bConnect)
@@ -1643,7 +1695,8 @@ bool VisualRuntime::CreateDeferredPipeline()
 	const std::vector<std::uint8_t> arrPixel = ReadShader(stConfig.strShaderDirectory, "Deferred.ps.cso");
 	const std::vector<std::uint8_t> arrFullscreen = ReadShader(stConfig.strShaderDirectory, "Lighting.vs.cso");
 	const std::vector<std::uint8_t> arrLighting = ReadShader(stConfig.strShaderDirectory, "Lighting.ps.cso");
-	if (arrVertex.empty() || arrPixel.empty() || arrFullscreen.empty() || arrLighting.empty())
+	const std::vector<std::uint8_t> arrToneMap = ReadShader(stConfig.strShaderDirectory, "ToneMap.ps.cso");
+	if (arrVertex.empty() || arrPixel.empty() || arrFullscreen.empty() || arrLighting.empty() || arrToneMap.empty())
 	{
 		return Fail("Missing deferred shader bundle");
 	}
@@ -1660,9 +1713,9 @@ bool VisualRuntime::CreateDeferredPipeline()
 		arrDescriptorRanges[3].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 		arrDescriptorRanges[3].NumDescriptors = 3;
 		arrDescriptorRanges[3].BaseShaderRegister = 6;
-		std::array<D3D12_ROOT_PARAMETER, 4> arrParameters{};
-		arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-		arrParameters[0].Constants.Num32BitValues = nPipeline == 0 ? sizeof(DrawConstants) / sizeof(float) : 8;
+		std::array<D3D12_ROOT_PARAMETER, 5> arrParameters{};
+		arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+		arrParameters[0].Descriptor.ShaderRegister = nPipeline == 0 ? 0 : 1;
 		arrParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 		for (std::uint32_t nRange = 0; nRange < 2; ++nRange)
 		{
@@ -1678,6 +1731,13 @@ bool VisualRuntime::CreateDeferredPipeline()
 			arrParameters[2].DescriptorTable.pDescriptorRanges = &arrDescriptorRanges[2];
 			arrParameters[3] = arrParameters[2];
 			arrParameters[3].DescriptorTable.pDescriptorRanges = &arrDescriptorRanges[3];
+			stRoot.NumParameters = 4;
+		}
+		else
+		{
+			arrParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+			arrParameters[3].Descriptor.ShaderRegister = 1;
+			arrParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 			stRoot.NumParameters = 4;
 		}
 		D3D12_STATIC_SAMPLER_DESC stEnvironmentSampler{};
@@ -1767,12 +1827,91 @@ bool VisualRuntime::CreateDeferredPipeline()
 	stPipeline.DepthStencilState.DepthEnable = FALSE;
 	stPipeline.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 	stPipeline.NumRenderTargets = 1;
-	stPipeline.RTVFormats[0] = COLOR_FORMAT;
+	stPipeline.RTVFormats[0] = HDR_FORMAT;
 	stPipeline.RTVFormats[1] = DXGI_FORMAT_UNKNOWN;
 	stPipeline.RTVFormats[2] = DXGI_FORMAT_UNKNOWN;
 	stPipeline.RTVFormats[3] = DXGI_FORMAT_UNKNOWN;
 	stPipeline.DSVFormat = DXGI_FORMAT_UNKNOWN;
-	return SUCCEEDED(stDevice->CreateGraphicsPipelineState(&stPipeline, IID_PPV_ARGS(stLightingPipeline.Put()))) || Fail("Create lighting PSO");
+	if (FAILED(stDevice->CreateGraphicsPipelineState(&stPipeline, IID_PPV_ARGS(stLightingPipeline.Put()))))
+	{
+		return Fail("Create lighting PSO");
+	}
+	stPipeline.PS = { arrToneMap.data(), arrToneMap.size() };
+	stPipeline.RTVFormats[0] = COLOR_FORMAT;
+	return SUCCEEDED(stDevice->CreateGraphicsPipelineState(&stPipeline, IID_PPV_ARGS(stToneMapPipeline.Put()))) || Fail("Create tone mapping PSO");
+}
+
+bool VisualRuntime::CreateConstantBuffers()
+{
+	if (!bSceneMode)
+	{
+		return true;
+	}
+	const std::uint64_t nBytes = (arrDraws.size() + 1) * CONSTANT_BUFFER_ALIGNMENT;
+	const D3D12_RESOURCE_DESC stDescription = BufferDescription(nBytes);
+	const D3D12_HEAP_PROPERTIES stHeap = HeapProperties(D3D12_HEAP_TYPE_UPLOAD);
+	for (FrameContext &stFrame : arrFrames)
+	{
+		if (FAILED(stDevice->CreateCommittedResource(&stHeap, D3D12_HEAP_FLAG_NONE, &stDescription, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(stFrame.stConstants.Put()))))
+		{
+			return Fail("Create frame-owned constant upload buffer");
+		}
+		(void)stFrame.stConstants->SetName(L"EngineNext.FrameConstants");
+	}
+	return true;
+}
+
+bool VisualRuntime::UpdateConstantBuffer(FrameContext &stFrame)
+{
+	CameraSettings stCamera = stRenderConfiguration.stCamera;
+	stCamera.arrPosition[0] += fCameraX;
+	stCamera.arrPosition[1] += fCameraY;
+	stCamera.arrTarget[0] += fCameraX;
+	stCamera.arrTarget[1] += fCameraY;
+	Assets::Diagnostics arrDiagnostics;
+	if (!BuildCameraMatrices(stCamera, nWidth, nHeight, { 0, 0 }, stCameraMatrices, arrDiagnostics))
+	{
+		return Fail(arrDiagnostics.empty() ? "Build camera matrices" : arrDiagnostics.front().strMessage);
+	}
+	FrameConstants stConstants;
+	for (std::size_t nIndex = 0; nIndex < 16; ++nIndex)
+	{
+		stConstants.arrViewProjection[nIndex] = static_cast<float>(stCameraMatrices.arrViewProjection[nIndex]);
+		stConstants.arrInverseViewProjection[nIndex] = static_cast<float>(stCameraMatrices.arrInverseViewProjection[nIndex]);
+	}
+	for (std::size_t nIndex = 0; nIndex < 3; ++nIndex)
+	{
+		if (!std::isfinite(stCamera.arrPosition[nIndex]) || std::abs(stCamera.arrPosition[nIndex]) > std::numeric_limits<float>::max())
+		{
+			return Fail("Camera origin exceeds GPU constant range");
+		}
+		stConstants.arrCamera[nIndex] = static_cast<float>(stCamera.arrPosition[nIndex]);
+	}
+	stConstants.arrCamera[3] = 1;
+	stConstants.arrLighting = { static_cast<float>(stRenderConfiguration.dExposure), static_cast<float>(nEnvironmentMips - 1), 0, 0 };
+	void *pMapped = nullptr;
+	const D3D12_RANGE stNoRead{ 0, 0 };
+	if (FAILED(stFrame.stConstants->Map(0, &stNoRead, &pMapped)))
+	{
+		return Fail("Map retired frame constants");
+	}
+	std::uint8_t *pBytes = static_cast<std::uint8_t *>(pMapped);
+	std::memcpy(pBytes, &stConstants, sizeof(stConstants));
+	for (std::size_t nDraw = 0; nDraw < arrDraws.size(); ++nDraw)
+	{
+		const GpuDraw &stDraw = arrDraws[nDraw];
+		const MaterialData &stMaterial = arrMaterials[stDraw.stPrimitive.nMaterial].stData;
+		DrawConstants stDrawConstants;
+		stDrawConstants.arrWorld = DrawTransform(stDraw);
+		stDrawConstants.arrNormal = stDraw.arrNormal;
+		stDrawConstants.arrBaseColor = stMaterial.arrBaseColor;
+		stDrawConstants.arrEmissiveMetallic = { stMaterial.arrEmissive[0], stMaterial.arrEmissive[1], stMaterial.arrEmissive[2], stMaterial.fMetallic };
+		stDrawConstants.arrSurface = { stMaterial.fRoughness, stMaterial.fNormalScale, stMaterial.fOcclusionStrength, stMaterial.fAlphaCutoff };
+		stDrawConstants.arrFlags = { stMaterial.eAlphaMode == AlphaMode::Mask ? 1.0F : 0.0F, stDraw.bMirrored ? -1.0F : 1.0F, stMaterial.nNormalTexture >= 0 ? 1.0F : 0.0F, 0 };
+		std::memcpy(pBytes + (nDraw + 1) * CONSTANT_BUFFER_ALIGNMENT, &stDrawConstants, sizeof(stDrawConstants));
+	}
+	stFrame.stConstants->Unmap(0, nullptr);
+	return true;
 }
 
 std::array<float, 16> VisualRuntime::DrawTransform(const GpuDraw &stDraw) const
@@ -1802,7 +1941,7 @@ std::array<float, 16> VisualRuntime::DrawTransform(const GpuDraw &stDraw) const
 	return arrWorld;
 }
 
-void VisualRuntime::DrawScene(ID3D12GraphicsCommandList *pList)
+void VisualRuntime::DrawScene(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame)
 {
 	const D3D12_VIEWPORT stViewport{ 0, 0, static_cast<float>(nWidth), static_cast<float>(nHeight), 0, 1 };
 	const D3D12_RECT stScissor{ 0, 0, static_cast<LONG>(nWidth), static_cast<LONG>(nHeight) };
@@ -1815,24 +1954,18 @@ void VisualRuntime::DrawScene(ID3D12GraphicsCommandList *pList)
 	pList->SetDescriptorHeaps(2, arrHeaps);
 	pList->SetGraphicsRootSignature(stDeferredRoot.Get());
 	const UINT nSamplerStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
-	for (const GpuDraw &stDraw : arrDraws)
+	pList->SetGraphicsRootConstantBufferView(3, arrFrames[nFrame].stConstants->GetGPUVirtualAddress());
+	for (std::size_t nDraw = 0; nDraw < arrDraws.size(); ++nDraw)
 	{
+		const GpuDraw &stDraw = arrDraws[nDraw];
 		const GpuMaterial &stMaterial = arrMaterials[stDraw.stPrimitive.nMaterial];
-		DrawConstants stConstants;
-		stConstants.arrWorld = DrawTransform(stDraw);
-		stConstants.arrNormal = stDraw.arrNormal;
-		stConstants.arrBaseColor = stMaterial.stData.arrBaseColor;
-		stConstants.arrEmissiveMetallic = { stMaterial.stData.arrEmissive[0], stMaterial.stData.arrEmissive[1], stMaterial.stData.arrEmissive[2], stMaterial.stData.fMetallic };
-		stConstants.arrSurface = { stMaterial.stData.fRoughness, stMaterial.stData.fNormalScale, stMaterial.stData.fOcclusionStrength, stMaterial.stData.fAlphaCutoff };
-		stConstants.arrCamera = { fCameraX, fCameraY, 5.0F, static_cast<float>(nWidth) / static_cast<float>(nHeight) };
-		stConstants.arrFlags = { stMaterial.stData.eAlphaMode == AlphaMode::Mask ? 1.0F : 0.0F, stDraw.bMirrored ? -1.0F : 1.0F, stMaterial.stData.nNormalTexture >= 0 ? 1.0F : 0.0F, 0 };
 		ID3D12PipelineState *pPipeline = stDraw.bMirrored ? stMirroredPipeline.Get() : stDeferredPipeline.Get();
 		if (stMaterial.stData.bDoubleSided)
 		{
 			pPipeline = stDraw.bMirrored ? stMirroredDoubleSidedPipeline.Get() : stDoubleSidedPipeline.Get();
 		}
 		pList->SetPipelineState(pPipeline);
-		pList->SetGraphicsRoot32BitConstants(0, sizeof(DrawConstants) / sizeof(float), &stConstants, 0);
+		pList->SetGraphicsRootConstantBufferView(0, arrFrames[nFrame].stConstants->GetGPUVirtualAddress() + (nDraw + 1) * CONSTANT_BUFFER_ALIGNMENT);
 		pList->SetGraphicsRootDescriptorTable(1, GpuView(stMaterial.nViewStart));
 		D3D12_GPU_DESCRIPTOR_HANDLE stSampler = stSamplerHeap->GetGPUDescriptorHandleForHeapStart();
 		stSampler.ptr += static_cast<UINT64>(nSamplerStride) * stDraw.stPrimitive.nMaterial * MATERIAL_TEXTURE_COUNT;
@@ -1843,77 +1976,63 @@ void VisualRuntime::DrawScene(ID3D12GraphicsCommandList *pList)
 
 void VisualRuntime::DrawLighting(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame)
 {
-	const D3D12_CPU_DESCRIPTOR_HANDLE stColor = Rtv(nFrame + FRAME_COUNT);
+	const D3D12_CPU_DESCRIPTOR_HANDLE stColor = Rtv(nFrame + FRAME_COUNT * 6);
 	pList->OMSetRenderTargets(1, &stColor, FALSE, nullptr);
 	pList->SetPipelineState(stLightingPipeline.Get());
 	pList->SetGraphicsRootSignature(stLightingRoot.Get());
-	const std::array<float, 8> arrConstants{ fCameraX, fCameraY, 5.0F, static_cast<float>(nWidth) / static_cast<float>(nHeight), 1.0F, static_cast<float>(nEnvironmentMips - 1), 0, 0 };
-	pList->SetGraphicsRoot32BitConstants(0, static_cast<UINT>(arrConstants.size()), arrConstants.data(), 0);
+	pList->SetGraphicsRootConstantBufferView(0, arrFrames[nFrame].stConstants->GetGPUVirtualAddress());
 	pList->SetGraphicsRootDescriptorTable(1, GpuView(nFrame * FRAME_VIEW_COUNT + 2));
 	pList->SetGraphicsRootDescriptorTable(2, GpuView(nFrame * FRAME_VIEW_COUNT));
 	pList->SetGraphicsRootDescriptorTable(3, GpuView(ENVIRONMENT_VIEW_START));
 	pList->DrawInstanced(3, 1, 0, 0);
 }
 
+void VisualRuntime::DrawToneMap(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame)
+{
+	const D3D12_CPU_DESCRIPTOR_HANDLE stColor = Rtv(nFrame + FRAME_COUNT);
+	pList->OMSetRenderTargets(1, &stColor, FALSE, nullptr);
+	pList->SetPipelineState(stToneMapPipeline.Get());
+	pList->SetGraphicsRootSignature(stLightingRoot.Get());
+	pList->SetGraphicsRootConstantBufferView(0, arrFrames[nFrame].stConstants->GetGPUVirtualAddress());
+	pList->SetGraphicsRootDescriptorTable(1, GpuView(nFrame * FRAME_VIEW_COUNT + 7));
+	pList->DrawInstanced(3, 1, 0, 0);
+}
+
 std::uint32_t VisualRuntime::GraphicsPassCount() const noexcept
 {
-	return static_cast<std::uint32_t>(stCompiled.arrPasses.size() - 1);
+	return stRenderPipeline.nGraphicsPassCount;
+}
+
+std::uint32_t VisualRuntime::TotalQueryCount() const noexcept
+{
+	return static_cast<std::uint32_t>(stCompiled.arrPasses.size()) * 2;
 }
 
 bool VisualRuntime::BuildGraph()
 {
-	stGraph.Clear();
-	const ResourceId nTint = stGraph.AddResource({ "Tint", ResourceState::Common, true });
-	const ResourceId nColor = stGraph.AddResource({ "Color", ResourceState::Common, false });
-	const ResourceId nDepth = stGraph.AddResource({ "Depth", ResourceState::DepthWrite, true });
-	const ResourceId nBackbuffer = stGraph.AddResource({ "Backbuffer", ResourceState::Present, true });
-	(void)stGraph.AddPass({ "ComputeTint", QueueType::Compute, { { nTint, ResourceState::UnorderedAccess, true } }, {} });
-	if (bSceneMode)
-	{
-		const ResourceId nBase = stGraph.AddResource({ "GBufferBase", ResourceState::Common, false });
-		const ResourceId nNormal = stGraph.AddResource({ "GBufferNormal", ResourceState::Common, false });
-		const ResourceId nSurface = stGraph.AddResource({ "GBufferSurface", ResourceState::Common, false });
-		const ResourceId nEmissive = stGraph.AddResource({ "GBufferEmissive", ResourceState::Common, false });
-		(void)stGraph.AddPass({ "GBuffer", QueueType::Graphics, { { nBase, ResourceState::RenderTarget, true }, { nNormal, ResourceState::RenderTarget, true }, { nSurface, ResourceState::RenderTarget, true }, { nEmissive, ResourceState::RenderTarget, true }, { nDepth, ResourceState::DepthWrite, true } }, {} });
-		(void)stGraph.AddPass({ "DeferredLighting", QueueType::Graphics, { { nTint, ResourceState::ShaderRead, false }, { nBase, ResourceState::ShaderRead, false }, { nNormal, ResourceState::ShaderRead, false }, { nSurface, ResourceState::ShaderRead, false }, { nEmissive, ResourceState::ShaderRead, false }, { nDepth, ResourceState::ShaderRead, false }, { nColor, ResourceState::RenderTarget, true } }, {} });
-	}
-	else
-	{
-		(void)stGraph.AddPass({ "FixedMesh", QueueType::Graphics, { { nTint, ResourceState::ShaderRead, false }, { nColor, ResourceState::RenderTarget, true }, { nDepth, ResourceState::DepthWrite, true } }, {} });
-	}
-	(void)stGraph.AddPass({ "CopyToBackbuffer", QueueType::Graphics, { { nColor, ResourceState::CopySource, false }, { nBackbuffer, ResourceState::CopyDestination, true } }, {} });
-	PassDesc stPresent{ "Present", QueueType::Graphics, { { nTint, ResourceState::Common, false }, { nColor, ResourceState::Common, false }, { nBackbuffer, ResourceState::Present, false } }, {} };
-	if (bSceneMode)
-	{
-		stPresent.arrAccesses.push_back({ nDepth, ResourceState::DepthWrite, true, 0, ALL_SUBRESOURCES, true });
-		for (ResourceId nResource = 4; nResource < 8; ++nResource)
-		{
-			stPresent.arrAccesses.push_back({ nResource, ResourceState::Common, false });
-		}
-	}
-	(void)stGraph.AddPass(stPresent);
 	GraphDiagnostic stDiagnostic;
-	if (!stGraph.Compile(stCompiled, stDiagnostic))
+	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic))
 	{
-		return Fail("FrameGraph compilation failed");
+		return Fail("FrameGraph compilation failed: " + stDiagnostic.strMessage);
 	}
-	if (stCompiled.arrPasses.size() != (bSceneMode ? 5U : 4U) || stCompiled.arrResources.size() != (bSceneMode ? 8U : 4U))
+	if (stRenderPipeline.nComputePassCount != 1)
 	{
-		return Fail("Renderer graph has an unsupported shape");
+		return Fail("Tint pipeline requires one compute submission");
 	}
+	arrQueryOffsets.resize(stCompiled.arrPasses.size());
+	std::uint32_t nGraphicsOffset = 2;
 	for (std::size_t nIndex = 0; nIndex < stCompiled.arrPasses.size(); ++nIndex)
 	{
 		const CompiledPass &stPass = stCompiled.arrPasses[nIndex];
-		if (stPass.nPass != nIndex || stPass.eQueue != (nIndex == 0 ? QueueType::Compute : QueueType::Graphics))
+		if (stPass.eQueue == QueueType::Compute)
 		{
-			return Fail("Unsupported renderer pass or queue");
+			nComputePassIndex = nIndex;
+			arrQueryOffsets[nIndex] = 0;
 		}
-		for (const PassId nProducer : stPass.arrWaits)
+		else
 		{
-			if (nProducer != 0 || nIndex != (bSceneMode ? 2U : 1U))
-			{
-				return Fail("Unsupported renderer queue dependency");
-			}
+			arrQueryOffsets[nIndex] = nGraphicsOffset;
+			nGraphicsOffset += 2;
 		}
 	}
 	return true;
@@ -1947,13 +2066,13 @@ bool VisualRuntime::CollectTiming(FrameContext &stFrame)
 		return true;
 	}
 	void *pMapped = nullptr;
-	const D3D12_RANGE stReadRange{ 0, TOTAL_QUERIES_PER_FRAME * sizeof(std::uint64_t) };
+	const D3D12_RANGE stReadRange{ 0, TotalQueryCount() * sizeof(std::uint64_t) };
 	if (FAILED(stFrame.stQueries->Map(0, &stReadRange, &pMapped)))
 	{
 		return Fail("Map timestamp queries");
 	}
-	std::array<std::uint64_t, TOTAL_QUERIES_PER_FRAME> arrTimes{};
-	std::memcpy(arrTimes.data(), pMapped, sizeof(arrTimes));
+	std::vector<std::uint64_t> arrTimes(TotalQueryCount());
+	std::memcpy(arrTimes.data(), pMapped, arrTimes.size() * sizeof(std::uint64_t));
 	const D3D12_RANGE stNoWrite{ 0, 0 };
 	stFrame.stQueries->Unmap(0, &stNoWrite);
 	if (stCompute.nFrequency == 0 || stGraphics.nFrequency == 0 || arrTimes[1] < arrTimes[0] || arrTimes[stCompiled.arrPasses.size() * 2 - 1] < arrTimes[2])
@@ -1963,15 +2082,16 @@ bool VisualRuntime::CollectTiming(FrameContext &stFrame)
 	FrameTiming &stTiming = Timing(stFrame.nTimingFrame);
 	stTiming.dComputeMsec = 1000.0 * static_cast<double>(arrTimes[1] - arrTimes[0]) / static_cast<double>(stCompute.nFrequency);
 	stTiming.dGraphicsMsec = 1000.0 * static_cast<double>(arrTimes[stCompiled.arrPasses.size() * 2 - 1] - arrTimes[2]) / static_cast<double>(stGraphics.nFrequency);
-	stTiming.arrPassMsec[0] = stTiming.dComputeMsec;
-	for (std::size_t nPassIndex = 1; nPassIndex < stCompiled.arrPasses.size(); ++nPassIndex)
+	stTiming.arrPassMsec.resize(stCompiled.arrPasses.size());
+	for (std::size_t nPassIndex = 0; nPassIndex < stCompiled.arrPasses.size(); ++nPassIndex)
 	{
-		const std::size_t nTimeIndex = nPassIndex * 2;
+		const std::size_t nTimeIndex = arrQueryOffsets[nPassIndex];
 		if (arrTimes[nTimeIndex + 1] < arrTimes[nTimeIndex])
 		{
 			return Fail("Invalid completed pass timestamps");
 		}
-		stTiming.arrPassMsec[nPassIndex] = 1000.0 * static_cast<double>(arrTimes[nTimeIndex + 1] - arrTimes[nTimeIndex]) / static_cast<double>(stGraphics.nFrequency);
+		const std::uint64_t nFrequency = stCompiled.arrPasses[nPassIndex].eQueue == QueueType::Compute ? stCompute.nFrequency : stGraphics.nFrequency;
+		stTiming.arrPassMsec[nPassIndex] = 1000.0 * static_cast<double>(arrTimes[nTimeIndex + 1] - arrTimes[nTimeIndex]) / static_cast<double>(nFrequency);
 	}
 	stTiming.bGpuReady = true;
 	stFrame.bTimingPending = false;
@@ -2002,12 +2122,21 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 	stTiming.nFrame = nFrames;
 	stTiming.nWidth = nWidth;
 	stTiming.nHeight = nHeight;
-	std::vector<ID3D12Resource *> arrResources{ stFrame.stTint.Get(), stFrame.stColor.Get(), stFrame.stDepth.Get(), arrBackbuffers[nIndex].Get() };
+	std::vector<ID3D12Resource *> arrResources(stCompiled.arrResources.size());
+	arrResources[stRenderPipeline.nTint] = stFrame.stTint.Get();
+	arrResources[stRenderPipeline.nColor] = stFrame.stColor.Get();
+	arrResources[stRenderPipeline.nDepth] = stFrame.stDepth.Get();
+	arrResources[stRenderPipeline.nBackbuffer] = arrBackbuffers[nIndex].Get();
 	if (bSceneMode)
 	{
-		for (ComOwner<ID3D12Resource> &stTarget : stFrame.arrGbuffer)
+		arrResources[stRenderPipeline.nHdr] = stFrame.stHdr.Get();
+		for (std::size_t nTarget = 0; nTarget < stFrame.arrGbuffer.size(); ++nTarget)
 		{
-			arrResources.push_back(stTarget.Get());
+			arrResources[stRenderPipeline.arrGbuffer[nTarget]] = stFrame.arrGbuffer[nTarget].Get();
+		}
+		if (!UpdateConstantBuffer(stFrame))
+		{
+			return false;
 		}
 	}
 	const std::array<float, 4> arrConstants{ static_cast<float>(dSeconds), static_cast<float>(nWidth) / static_cast<float>(nHeight), fCameraX, fCameraY };
@@ -2017,7 +2146,7 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 	stFrame.stComputeList->SetComputeRoot32BitConstants(0, 4, arrConstants.data(), 0);
 	stFrame.stComputeList->SetComputeRootDescriptorTable(1, GpuView(nIndex * FRAME_VIEW_COUNT + 1));
 	stFrame.stComputeList->EndQuery(stComputeQueries.Get(), D3D12_QUERY_TYPE_TIMESTAMP, nIndex * 2);
-	const CompiledPass &stComputePass = stCompiled.arrPasses[0];
+	const CompiledPass &stComputePass = stCompiled.arrPasses[nComputePassIndex];
 	ApplyBarriers(stFrame.stComputeList.Get(), stComputePass.arrBeforeBarriers, arrResources);
 	stFrame.stComputeList->Dispatch(1, 1, 1);
 	ApplyBarriers(stFrame.stComputeList.Get(), stComputePass.arrAfterBarriers, arrResources);
@@ -2033,11 +2162,14 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 	{
 		return Fail("Compute completion signal");
 	}
-	for (const PassId nProducer : stCompiled.arrPasses[bSceneMode ? 2 : 1].arrWaits)
+	for (const CompiledPass &stPass : stCompiled.arrPasses)
 	{
-		if (nProducer != 0 || FAILED(stGraphics.stQueue->Wait(stCompute.stFence.Get(), stFrame.nComputeFence)))
+		for (PassId nProducer : stPass.arrWaits)
 		{
-			return Fail("Cross-queue compute to graphics dependency");
+			if (nProducer != stComputePass.nPass || FAILED(stGraphics.stQueue->Wait(stCompute.stFence.Get(), stFrame.nComputeFence)))
+			{
+				return Fail("Cross-queue compute to graphics dependency");
+			}
 		}
 	}
 	stTiming.nComputeFence = stFrame.nComputeFence;
@@ -2046,14 +2178,19 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 	pList->SetGraphicsRootSignature(stGraphicsRoot.Get());
 	pList->SetGraphicsRoot32BitConstants(0, 4, arrConstants.data(), 0);
 	pList->SetGraphicsRootDescriptorTable(1, GpuView(nIndex * FRAME_VIEW_COUNT));
-	for (std::size_t nPassIndex = 1; nPassIndex < stCompiled.arrPasses.size(); ++nPassIndex)
+	for (std::size_t nPassIndex = 0; nPassIndex < stCompiled.arrPasses.size(); ++nPassIndex)
 	{
 		const CompiledPass &stPass = stCompiled.arrPasses[nPassIndex];
-		const UINT nQueryIndex = nIndex * GRAPHICS_QUERIES_PER_FRAME + static_cast<UINT>((nPassIndex - 1) * 2);
+		if (stPass.eQueue != QueueType::Graphics)
+		{
+			continue;
+		}
+		const PassWork eWork = stRenderPipeline.arrWorkByPass[stPass.nPass];
+		const UINT nQueryIndex = nIndex * GraphicsPassCount() * 2 + arrQueryOffsets[nPassIndex] - 2;
 		pList->EndQuery(stGraphicsQueries.Get(), D3D12_QUERY_TYPE_TIMESTAMP, nQueryIndex);
 		PIXBeginEvent(pList, PIX_COLOR_DEFAULT, stPass.strName.c_str());
 		ApplyBarriers(pList, stPass.arrBeforeBarriers, arrResources);
-		if (stPass.strName == "FixedMesh")
+		if (eWork == PassWork::FixedMesh)
 		{
 			const D3D12_CPU_DESCRIPTOR_HANDLE stColorHandle = Rtv(nIndex + FRAME_COUNT);
 			const D3D12_CPU_DESCRIPTOR_HANDLE stDepthHandle = Dsv(nIndex);
@@ -2070,7 +2207,7 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 			pList->IASetIndexBuffer(&stIndexView);
 			pList->DrawIndexedInstanced(36, 1, 0, 0, 0);
 		}
-		else if (stPass.strName == "GBuffer")
+		else if (eWork == PassWork::GBuffer)
 		{
 			std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 4> arrTargets{};
 			const std::array<float, 4> arrClear{};
@@ -2082,13 +2219,17 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 			const D3D12_CPU_DESCRIPTOR_HANDLE stDepthHandle = Dsv(nIndex);
 			pList->ClearDepthStencilView(stDepthHandle, D3D12_CLEAR_FLAG_DEPTH, 0.0F, 0, 0, nullptr);
 			pList->OMSetRenderTargets(4, arrTargets.data(), FALSE, &stDepthHandle);
-			DrawScene(pList);
+			DrawScene(pList, nIndex);
 		}
-		else if (stPass.strName == "DeferredLighting")
+		else if (eWork == PassWork::DeferredLighting)
 		{
 			DrawLighting(pList, nIndex);
 		}
-		else if (stPass.strName == "CopyToBackbuffer")
+		else if (eWork == PassWork::ToneMap)
+		{
+			DrawToneMap(pList, nIndex);
+		}
+		else if (eWork == PassWork::CopyToBackbuffer)
 		{
 			pList->CopyResource(arrBackbuffers[nIndex].Get(), stFrame.stColor.Get());
 			if (bCapture)
@@ -2107,7 +2248,7 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		PIXEndEvent(pList);
 		pList->EndQuery(stGraphicsQueries.Get(), D3D12_QUERY_TYPE_TIMESTAMP, nQueryIndex + 1);
 	}
-	pList->ResolveQueryData(stGraphicsQueries.Get(), D3D12_QUERY_TYPE_TIMESTAMP, nIndex * GRAPHICS_QUERIES_PER_FRAME, GraphicsPassCount() * 2, stFrame.stQueries.Get(), 2 * sizeof(std::uint64_t));
+	pList->ResolveQueryData(stGraphicsQueries.Get(), D3D12_QUERY_TYPE_TIMESTAMP, nIndex * GraphicsPassCount() * 2, GraphicsPassCount() * 2, stFrame.stQueries.Get(), 2 * sizeof(std::uint64_t));
 	if (FAILED(pList->Close()))
 	{
 		return Fail("Close graphics list");
@@ -2149,6 +2290,7 @@ bool VisualRuntime::Resize()
 		}
 		arrBackbuffers[nIndex].Reset();
 		arrFrames[nIndex].stColor.Reset();
+		arrFrames[nIndex].stHdr.Reset();
 		arrFrames[nIndex].stDepth.Reset();
 		for (ComOwner<ID3D12Resource> &stTarget : arrFrames[nIndex].arrGbuffer)
 		{
@@ -2528,7 +2670,21 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	using Serialization::JsonValue;
 	JsonValue::Object mapReport;
 	mapReport["schema_version"] = JsonValue(std::int64_t{ 1 });
-	mapReport["render_path"] = JsonValue(bSceneMode ? "deferred_metallic_roughness" : "fixed_mesh");
+	mapReport["render_path"] = JsonValue(bSceneMode ? "deferred_metallic_roughness_hdr" : "fixed_mesh");
+	mapReport["hdr_format"] = JsonValue(bSceneMode ? "RGBA16_FLOAT" : "none");
+	mapReport["tone_mapping"] = JsonValue(bSceneMode ? "exponential_manual_exposure" : "none");
+	mapReport["exposure"] = JsonValue(stRenderConfiguration.dExposure);
+	mapReport["render_configuration"] = JsonValue(stConfig.strRenderConfigPath);
+	mapReport["camera_view_projection"] = JsonValue::List{};
+	mapReport["camera_inverse_view_projection"] = JsonValue::List{};
+	for (double dValue : stCameraMatrices.arrViewProjection)
+	{
+		mapReport["camera_view_projection"].GetList()->emplace_back(dValue);
+	}
+	for (double dValue : stCameraMatrices.arrInverseViewProjection)
+	{
+		mapReport["camera_inverse_view_projection"].GetList()->emplace_back(dValue);
+	}
 	mapReport["environment_lighting"] = JsonValue(bSceneMode ? "procedural_hdr_irradiance_ggx_prefilter_split_sum" : "fixed_lambert");
 	mapReport["scene_id"] = JsonValue(stRenderScene.strSceneId);
 	mapReport["scene_revision"] = JsonValue(stRenderScene.strSceneRevision);

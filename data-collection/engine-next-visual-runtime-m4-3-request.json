@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "parent_issue_number": 1323,
+  "baseline": "69c6da448c44200e7f3bff3c5c039e8428b22ebe",
+  "authorization": "User approved M4 design and implementation, authorizing main delivery after completed testing.",
+  "scope": "M4.3 HDR pipeline, camera configuration, shadows, temporal postprocessing, initial reflections and volume effects. First slice delivers HDR/frame graph/CBV/camera foundation.",
+  "prerequisite": "M4.2 #1334 final candidate PR #1342, exact CI pending macOS retry.",
+  "workers": [
+    "/root/m42_cook_review",
+    "/root/m42_capture_tools",
+    "/root/m42_network_acceptance"
+  ]
+}
