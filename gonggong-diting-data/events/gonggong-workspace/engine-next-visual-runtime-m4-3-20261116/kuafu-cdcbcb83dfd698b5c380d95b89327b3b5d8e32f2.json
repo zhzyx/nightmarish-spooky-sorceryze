@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-cdcbcb83dfd698b5c380d95b89327b3b5d8e32f2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "1fcb4efc57f6de8b63f233cdbb02e9baa69f483b1ea009a3ca7e4e5418aa8ec2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1349",
+    "action": "validation",
+    "detection_head": "656493afe1a0e6b99800f0d4970652708be41fdd",
+    "context_sha256": "cdf7d3332c93fbdec0191218895e1961d409d3d02e9ea3515d6dec2feec34fa2",
+    "operator": "kaiyunxue",
+    "worker": "codex-m4-implementation",
+    "authority_ref": "User authorized implementation, testing and main delivery in this chat",
+    "evidence": "build/engine_next/temporal-formal-final.log",
+    "diagnosis": "New final review JSON used CRLF working bytes while Git normalized the staged blob to LF; collection source exact-byte validation correctly rejected it. Native source and GPU evidence are unaffected. Normalized the new review with repository file_format.py and staged the same bytes.",
+    "next_action": "Rerun exact-content formal gate, then deliver the reviewed TAA candidate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-16T18:33:00.774459+00:00",
+    "attempted": null,
+    "repair_owner": "codex-m4-implementation",
+    "continuable": "TAA implementation and GPU validation already complete; publication continues after exact-content recheck."
+  },
+  "occurred_at": "2026-11-16T18:34:32.820832+00:00",
+  "sha256": "fbaedd13a87246330ad9fa20bb3597222322c6d1d7e80106fc92cba9723d0784"
+}

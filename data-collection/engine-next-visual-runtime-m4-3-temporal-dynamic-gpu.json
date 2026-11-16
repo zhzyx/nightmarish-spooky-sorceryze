@@ -1,0 +1,304 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-16T18:23:48.928477+00:00",
+  "candidate": "temporal-r6",
+  "binary": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\next_visual_client.exe",
+    "bytes": 2958336,
+    "sha256": "79fea378763e196aeaf7ded79c250d91b5ac3475e1686dff7af383dc75d7e55d"
+  },
+  "native_key": "a22882322c28d2033662af7282864bde5123d2d81990a99d916fc72b20eca182",
+  "dimensions": [
+    960,
+    640
+  ],
+  "actual_run": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\Live.json",
+    "bytes": 4673,
+    "sha256": "444d1d371b89e5cc10e63cd4ee12e8d7d276a5a369d505248f234b8f1777ef47"
+  },
+  "actual_report": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\A.json",
+    "bytes": 34866807,
+    "sha256": "16e304e90b873fe6f6f044cd11fc27a4c76d412d00a5b0f9c0391da94984edd3"
+  },
+  "ui_actions": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\UIActions.json",
+    "bytes": 5613,
+    "sha256": "dff7ac38bcf12f1505208140df2337a7760db0695262c1da3979432a6b0b18c5"
+  },
+  "render_configuration": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\RenderConfiguration.json",
+    "bytes": 1120,
+    "sha256": "514547fa9e2d8b950cc19ee6f9fc037be4e19553348f4a2c0d9f8a3b18b1bd68"
+  },
+  "capture_mode": "Task-owned passive client A under RenderDoc; player B receives real keyboard movement. Twenty consecutive GPU frames 42401 through 42420.",
+  "captures": [
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42401.rdc",
+      "bytes": 6415214,
+      "sha256": "79790a807d61aae73d413fd78cc6972b844e80f67fb516b03e5abcc0d3f54be0"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42402.rdc",
+      "bytes": 6528989,
+      "sha256": "fd692a23ca9a772d730c61534259e183772ecf57746cb2814e1faabd35c93e82"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42403.rdc",
+      "bytes": 6424428,
+      "sha256": "1a18e55bdf44330292f0322b4c78001f38bf42e81891ca95396a878447a5062e"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42404.rdc",
+      "bytes": 6317904,
+      "sha256": "d99017d340401f022888d5c224be190045bc93787b3b953d3c61e8b5dd492f87"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42405.rdc",
+      "bytes": 6566437,
+      "sha256": "15314ac232551ce106b68b28de43ff63093bcad05d68ddd93f60b0ab52cf3929"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42406.rdc",
+      "bytes": 6550962,
+      "sha256": "aefe73837a5db138e9515713e048bb1b6b12f37da96c7f131b2f9daea1a53248"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42407.rdc",
+      "bytes": 6315797,
+      "sha256": "c60e37064c62d5660030f649b6b4c85d8095d5ba68e5a2a78bb48180ed6d2646"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42408.rdc",
+      "bytes": 6580975,
+      "sha256": "c39a7c9153a9e70d67cf7242cba19e2a2ab3db418a4b5248b6d2bcdcfa89b543"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42409.rdc",
+      "bytes": 6665761,
+      "sha256": "cdf05b65513cfa86d6bc6433904e62b69e01d3763cfb92451a67d3751ac77fd2"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42410.rdc",
+      "bytes": 6401217,
+      "sha256": "00be25833e9bbe368ed52220b883961777e36762bf00d4663207fff8fb37c6c8"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42411.rdc",
+      "bytes": 6492949,
+      "sha256": "497b0c4f53b60ffa362b215aec12a4df1b2b2c1be0380e9f171518da5af40f65"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42412.rdc",
+      "bytes": 6499629,
+      "sha256": "1a95d84558bb75d8e741bb5f566c23d99d9e549e58ca06e369e946212a03aaa0"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42413.rdc",
+      "bytes": 6361009,
+      "sha256": "94f1255d035cce7de6d387f4f3aa35d422b95b8a189d4219497dce56aadc436c"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42414.rdc",
+      "bytes": 6550273,
+      "sha256": "aed15760242e10def25a76f67c3a1d22d84b5eca748bbe769b6e6721317e61d0"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42415.rdc",
+      "bytes": 6506693,
+      "sha256": "8f66d32c7ca537c2b784cc24978890d05ed98f8bf4504cc4a014bd87d7ddc359"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42416.rdc",
+      "bytes": 6389558,
+      "sha256": "bf597bcae5f3e7b0a7546f8f9200cd8bd5b1d912ce24de3b3a4684f0ca190866"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42417.rdc",
+      "bytes": 6672949,
+      "sha256": "c732c961c9b2df08d1eaed129074e499e9816d3a00f469f6bd66c28f5f565c94"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42418.rdc",
+      "bytes": 6600918,
+      "sha256": "38139db91f6667e5177f78e30698acfd9a1a085aecb16d8b12c8866a0343abb7"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42419.rdc",
+      "bytes": 6303665,
+      "sha256": "645494691c1417ff7193772767354f8589db744401f2adc4701ca299e32dd8af"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42420.rdc",
+      "bytes": 6513308,
+      "sha256": "1ca7406cd3024452f533b2d4652ca4ab4e1d71990b768e3558cbd857f1ba2f14"
+    }
+  ],
+  "inspected_texture_frames": [
+    42401,
+    42405,
+    42409,
+    42413,
+    42417
+  ],
+  "texture_readbacks": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkInspection.json",
+    "bytes": 69338,
+    "sha256": "259305416c3d95b8e34177cfc98209ec8906485c7e5d55cfc1b73114b9d3ec97"
+  },
+  "motion_and_disocclusion": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\DisocclusionChecks.json",
+    "bytes": 3157,
+    "sha256": "755b1497caa9bf8ef08b9f3f4c2d25002ee01ad3cbcb6ce5d2d2bb1a447f0fb3"
+  },
+  "observations": [
+    {
+      "capture": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42401.rdc",
+      "moving_pixels": 0,
+      "motion_max_abs_xy": 7.4489889811957255e-09,
+      "no_matching_history_id_pixels": 157,
+      "rejected_pixels_output_matches_current_half_tolerance": 157,
+      "rejected_max_abs_color_error": 0.0009579128709447104,
+      "newly_uncovered_sky_pixels": 223,
+      "newly_uncovered_sky_matches_current": 223,
+      "visible_reject_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "capture": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42405.rdc",
+      "moving_pixels": 10037,
+      "motion_max_abs_xy": 0.016252536326646805,
+      "no_matching_history_id_pixels": 159,
+      "rejected_pixels_output_matches_current_half_tolerance": 159,
+      "rejected_max_abs_color_error": 0.0009426570104551502,
+      "newly_uncovered_sky_pixels": 2422,
+      "newly_uncovered_sky_matches_current": 2422,
+      "visible_reject_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "capture": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42409.rdc",
+      "moving_pixels": 9899,
+      "motion_max_abs_xy": 0.014897695742547512,
+      "no_matching_history_id_pixels": 103,
+      "rejected_pixels_output_matches_current_half_tolerance": 103,
+      "rejected_max_abs_color_error": 0.0009579128709447104,
+      "newly_uncovered_sky_pixels": 2469,
+      "newly_uncovered_sky_matches_current": 2469,
+      "visible_reject_ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "capture": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42413.rdc",
+      "moving_pixels": 9965,
+      "motion_max_abs_xy": 0.01625153049826622,
+      "no_matching_history_id_pixels": 157,
+      "rejected_pixels_output_matches_current_half_tolerance": 157,
+      "rejected_max_abs_color_error": 0.0009426570104551502,
+      "newly_uncovered_sky_pixels": 2422,
+      "newly_uncovered_sky_matches_current": 2422,
+      "visible_reject_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "capture": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Temporal_frame42417.rdc",
+      "moving_pixels": 10001,
+      "motion_max_abs_xy": 0.016251256689429283,
+      "no_matching_history_id_pixels": 99,
+      "rejected_pixels_output_matches_current_half_tolerance": 99,
+      "rejected_max_abs_color_error": 0.0009579128709447104,
+      "newly_uncovered_sky_pixels": 2666,
+      "newly_uncovered_sky_matches_current": 2666,
+      "visible_reject_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    }
+  ],
+  "all_inspected_texture_components_finite": true,
+  "moving_object_ids": [
+    4,
+    5,
+    6
+  ],
+  "disocclusion_method": "Reconstruct current bilinear HDR from the captured inputs using the shader pixel grid and jitter. Identify geometry pixels whose four reprojected history taps all have a different object ID. Their output must match current HDR within max(0.00005,0.0015*abs(current)) to accommodate binary16 output and shader interpolation precision. Newly uncovered zero-ID sky is checked separately.",
+  "disocclusion_checked_pixels": 10877,
+  "disocclusion_output_matches": true,
+  "analysis_script": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\AnalyzeDisocclusion.py",
+    "bytes": 2927,
+    "sha256": "da40eaabfd94552ec47a4c2f58102cd67be5d9a0603fdb56136ebb86a1f6e753"
+  },
+  "sequence": {
+    "metadata": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\Sequence.json",
+      "bytes": 11135,
+      "sha256": "7570d2b77239ef50a0de950d580733dda7698f6fdf8aeadff3d20d400c97f90f"
+    },
+    "video": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\GpuResolvedSequence5fps.mp4",
+      "bytes": 169160,
+      "sha256": "4143427d727bf33ccd97d509190af36dfb00015ae4d993cf147f93858e6e5b4e"
+    },
+    "three_frames": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\ThreeFrames.png",
+      "bytes": 86467,
+      "sha256": "60f800d0086f5128b62ffdd00aad2bed6a24a43984300164dea537ebc0402244"
+    },
+    "description": "One decoded image for each consecutive captured GPU frame. Fixed 5 fps inspection playback, with no interpolation. This does not represent real-time runtime performance.",
+    "captured_frame_count": 20,
+    "playback_fps": 5,
+    "sum_original_cpu_frame_msec": 2931.0398
+  },
+  "visual_inspection": "The three inspected output images show lateral movement of the orange remote character while the blue local character remains fixed. No separated previous-character silhouette appears in these inspected output images.",
+  "post_motion_recording": {
+    "video": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\NetworkMotion.mp4",
+      "bytes": 9841368,
+      "sha256": "604363e0e07b56fde99102b0df0846d4768aa45a78a632b3c16c82ba256d9e48"
+    },
+    "metadata": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkFinalCapture\\VideoPartial.json",
+      "bytes": 896,
+      "sha256": "e084997e56023641883725851d3aeb817f60d0020e204ae14eee44dd09953b96"
+    },
+    "description": "This recording starts after the movement interval and ends at normal server drain. It is a finalized 18.45-second partial recording from a requested 20 seconds; no movement claim uses it."
+  },
+  "runtime_success": true,
+  "runtime_validation_errors": 0,
+  "limitations": [
+    "Disocclusion covers the self-authored character and background geometry in F. This scene has no receiving ground plane.",
+    "The derived sequence is fixed-rate inspection playback of actual captured frames. Runtime presentation timestamps were not recorded.",
+    "The earlier short-tap offline-camera attempts did not capture motion and remain outside successful motion evidence."
+  ]
+}

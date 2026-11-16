@@ -1,0 +1,730 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-16T17:40:32.314874+00:00",
+  "placement": "mixed",
+  "source_manifest": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\SourceManifest.json",
+    "bytes": 47449,
+    "sha256": "623b044a6bab51e811bb358fcc1f71dd129a0030d872a97f5f97e6a64e0cce03"
+  },
+  "builds": {
+    "Baseline": {
+      "native_key": "a22882322c28d2033662af7282864bde5123d2d81990a99d916fc72b20eca182",
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\VisualBuildReport.json",
+        "bytes": 1615439,
+        "sha256": "a40c4c11a7109be5b12a0fa8047e7b286a345c02e19f35bd400850ad2015e14d"
+      },
+      "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=157 checks=17099 failures=0",
+      "binary": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\next_visual_client.exe",
+        "bytes": 2958336,
+        "sha256": "327227767265c3545997a10716050b0c1e89d01ba8c5d4baed9c080987fda80d"
+      },
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\Deferred.vs.cso",
+          "bytes": 8236,
+          "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\Deferred.ps.cso",
+          "bytes": 9132,
+          "sha256": "ad96d2284f5086d9c1d5918efdc1a140d48914d5a7e5b114ac8bdb212ccd4311"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\Lighting.ps.cso",
+          "bytes": 76792,
+          "sha256": "e581599fff0207ce9d9eee5e16bb3777b79f4b171c26ed9c06f4f463bbed130f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\ToneMap.ps.cso",
+          "bytes": 5180,
+          "sha256": "97f176dd1cc61d0c9dbc33300cc10da62877c8b2e97887403566de4c10d9dc18"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\Temporal.cs.cso",
+          "bytes": 17552,
+          "sha256": "6eb0c0aa1c0facca47bdab3b5295d68a2b77ae4b3cff137534c3afc8cba9ea07"
+        }
+      ],
+      "directory": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline"
+    },
+    "Changed": {
+      "native_key": "0c904f2fe22d59fc01cc06e4bb94e3edcaa59b0ad85d87af63b2350416d10b8b",
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\VisualBuildReport.json",
+        "bytes": 1615032,
+        "sha256": "0bff4cf86c993d27770f63980119775a0f01e22f2881856cc5922e9531e58052"
+      },
+      "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=157 checks=17099 failures=0",
+      "binary": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\next_visual_client.exe",
+        "bytes": 2958336,
+        "sha256": "eef2bb9892f8a8a62f61ecbeaea070efd305f8882fe4b0fd2a8fe917ba0f7f6c"
+      },
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\Deferred.vs.cso",
+          "bytes": 8236,
+          "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\Deferred.ps.cso",
+          "bytes": 9132,
+          "sha256": "ad96d2284f5086d9c1d5918efdc1a140d48914d5a7e5b114ac8bdb212ccd4311"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\Lighting.ps.cso",
+          "bytes": 76792,
+          "sha256": "e581599fff0207ce9d9eee5e16bb3777b79f4b171c26ed9c06f4f463bbed130f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\ToneMap.ps.cso",
+          "bytes": 5180,
+          "sha256": "97f176dd1cc61d0c9dbc33300cc10da62877c8b2e97887403566de4c10d9dc18"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\Temporal.cs.cso",
+          "bytes": 17580,
+          "sha256": "fa128bda380f362592c680bfa5c606d91f94adc4a89388bac2667f5b99257166"
+        }
+      ],
+      "directory": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed"
+    },
+    "Restored": {
+      "native_key": "a22882322c28d2033662af7282864bde5123d2d81990a99d916fc72b20eca182",
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\VisualBuildReport.json",
+        "bytes": 1615439,
+        "sha256": "e342a6343cc62e66f95aff2cd56b2295ab1b30bc5ce7db5431734c583d498f24"
+      },
+      "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=157 checks=17099 failures=0",
+      "binary": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\next_visual_client.exe",
+        "bytes": 2958336,
+        "sha256": "9f32f2ecf16c1e039fb5ee2e6c82ece45ad7082974504694ad3df873c4de35fd"
+      },
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\Deferred.vs.cso",
+          "bytes": 8236,
+          "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\Deferred.ps.cso",
+          "bytes": 9132,
+          "sha256": "ad96d2284f5086d9c1d5918efdc1a140d48914d5a7e5b114ac8bdb212ccd4311"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\Lighting.ps.cso",
+          "bytes": 76792,
+          "sha256": "e581599fff0207ce9d9eee5e16bb3777b79f4b171c26ed9c06f4f463bbed130f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\ToneMap.ps.cso",
+          "bytes": 5180,
+          "sha256": "97f176dd1cc61d0c9dbc33300cc10da62877c8b2e97887403566de4c10d9dc18"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\Temporal.cs.cso",
+          "bytes": 17552,
+          "sha256": "6eb0c0aa1c0facca47bdab3b5295d68a2b77ae4b3cff137534c3afc8cba9ea07"
+        }
+      ],
+      "directory": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored"
+    }
+  },
+  "same_binary_runs": [
+    {
+      "label": "Baseline",
+      "executable_sha256": "327227767265c3545997a10716050b0c1e89d01ba8c5d4baed9c080987fda80d",
+      "capture": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\RunBaseline\\Result.ppm",
+        "bytes": 921615,
+        "sha256": "a5c364cb363d9e0c96485baf89c860a6e0144d282d38ed2f89ad1e96b4eeba09"
+      },
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\RunBaseline\\Run.json",
+        "bytes": 41766,
+        "sha256": "88b6b70ed2b56ebcc98cfb6e0c146f8c049579b31bc4b0d61e655449bc68fb5f"
+      },
+      "frames": 24,
+      "validation_errors": 0,
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\Deferred.vs.cso",
+          "bytes": 8236,
+          "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\Deferred.ps.cso",
+          "bytes": 9132,
+          "sha256": "ad96d2284f5086d9c1d5918efdc1a140d48914d5a7e5b114ac8bdb212ccd4311"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\Lighting.ps.cso",
+          "bytes": 76792,
+          "sha256": "e581599fff0207ce9d9eee5e16bb3777b79f4b171c26ed9c06f4f463bbed130f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\ToneMap.ps.cso",
+          "bytes": 5180,
+          "sha256": "97f176dd1cc61d0c9dbc33300cc10da62877c8b2e97887403566de4c10d9dc18"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\Temporal.cs.cso",
+          "bytes": 17552,
+          "sha256": "6eb0c0aa1c0facca47bdab3b5295d68a2b77ae4b3cff137534c3afc8cba9ea07"
+        }
+      ]
+    },
+    {
+      "label": "Changed",
+      "executable_sha256": "327227767265c3545997a10716050b0c1e89d01ba8c5d4baed9c080987fda80d",
+      "capture": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\RunChanged\\Result.ppm",
+        "bytes": 921615,
+        "sha256": "3706cf41e60b9ac13343c8f66e3754cc1e4cb310bc11932b976afbb147cc7000"
+      },
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\RunChanged\\Run.json",
+        "bytes": 41767,
+        "sha256": "2cb96fbb7a052b3c28855fd78da896c7623229c50254530ae8c8b868ebeae9e3"
+      },
+      "frames": 24,
+      "validation_errors": 0,
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\Deferred.vs.cso",
+          "bytes": 8236,
+          "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\Deferred.ps.cso",
+          "bytes": 9132,
+          "sha256": "ad96d2284f5086d9c1d5918efdc1a140d48914d5a7e5b114ac8bdb212ccd4311"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\Lighting.ps.cso",
+          "bytes": 76792,
+          "sha256": "e581599fff0207ce9d9eee5e16bb3777b79f4b171c26ed9c06f4f463bbed130f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\ToneMap.ps.cso",
+          "bytes": 5180,
+          "sha256": "97f176dd1cc61d0c9dbc33300cc10da62877c8b2e97887403566de4c10d9dc18"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed\\Temporal.cs.cso",
+          "bytes": 17580,
+          "sha256": "fa128bda380f362592c680bfa5c606d91f94adc4a89388bac2667f5b99257166"
+        }
+      ]
+    },
+    {
+      "label": "Restored",
+      "executable_sha256": "327227767265c3545997a10716050b0c1e89d01ba8c5d4baed9c080987fda80d",
+      "capture": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\RunRestored\\Result.ppm",
+        "bytes": 921615,
+        "sha256": "a5c364cb363d9e0c96485baf89c860a6e0144d282d38ed2f89ad1e96b4eeba09"
+      },
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\RunRestored\\Run.json",
+        "bytes": 41749,
+        "sha256": "0126eee947210af7fa806024961c0016a33779681a7062d7f06988e8ddcda4f5"
+      },
+      "frames": 24,
+      "validation_errors": 0,
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\Deferred.vs.cso",
+          "bytes": 8236,
+          "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\Deferred.ps.cso",
+          "bytes": 9132,
+          "sha256": "ad96d2284f5086d9c1d5918efdc1a140d48914d5a7e5b114ac8bdb212ccd4311"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\Lighting.ps.cso",
+          "bytes": 76792,
+          "sha256": "e581599fff0207ce9d9eee5e16bb3777b79f4b171c26ed9c06f4f463bbed130f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\ToneMap.ps.cso",
+          "bytes": 5180,
+          "sha256": "97f176dd1cc61d0c9dbc33300cc10da62877c8b2e97887403566de4c10d9dc18"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored\\Temporal.cs.cso",
+          "bytes": 17552,
+          "sha256": "6eb0c0aa1c0facca47bdab3b5295d68a2b77ae4b3cff137534c3afc8cba9ea07"
+        }
+      ]
+    }
+  ],
+  "invalid_shader": {
+    "report": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\InvalidRun.json",
+      "bytes": 24165,
+      "sha256": "30b67ef6fbcfe18572264d5cf8997e9d7376fcba0ea2e802cfc2bad4d8094b99"
+    },
+    "exit_code": 1,
+    "frames": 0,
+    "failure": "Create temporal resolve PSO (HRESULT -2147467259)"
+  },
+  "checks": {
+    "native_invalidation": {
+      "command": "python build/engine_next/RunTemporalBuildImpact.py --root . --output build/engine_next/temporal-impact-r6",
+      "observed": "Baseline and restored native keys are equal; changed TemporalAA shader produces a distinct native key. All three builds pass 157 tests and 17099 checks.",
+      "passed": true
+    },
+    "same_binary_update": {
+      "command": "One baseline executable runs all three offline shader directories in the same 24-frame deterministic scene",
+      "observed": "Changed TAA output differs from baseline, with zero GPU validation errors.",
+      "passed": true,
+      "before_executable": "327227767265c3545997a10716050b0c1e89d01ba8c5d4baed9c080987fda80d",
+      "after_executable": "327227767265c3545997a10716050b0c1e89d01ba8c5d4baed9c080987fda80d",
+      "before_package": "d974cb4c51907156501a4c01789f91d1c29d1d378157eef9912a0499da80a29e",
+      "after_package": "8bd0dddd74291d844a344d799a1803ac4e62c857d2b2ef630d8444be4079ecb1"
+    },
+    "rollback": {
+      "command": "One baseline executable selects the restored offline shader directory",
+      "observed": "Restored native key and capture equal baseline.",
+      "passed": true
+    },
+    "incompatible_rejection": {
+      "command": "One baseline executable selects a bundle with invalid Temporal.cs.cso",
+      "observed": "{\"exit_code\": 1, \"failure\": \"Create temporal resolve PSO (HRESULT -2147467259)\", \"frames\": 0, \"report\": {\"bytes\": 24165, \"path\": \"D:\\\\Projects\\\\engine-next-m4-3-temporal-20261116\\\\build\\\\engine_next\\\\temporal-impact-r6\\\\InvalidRun.json\", \"sha256\": \"30b67ef6fbcfe18572264d5cf8997e9d7376fcba0ea2e802cfc2bad4d8094b99\"}}",
+      "passed": true
+    }
+  },
+  "commands": [
+    {
+      "command": [
+        "C:\\Users\\kaiyu\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\engine_next\\Tools\\ExportCleanSource.py",
+        "--repo",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116",
+        "--output",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-temporal-20261116",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Export.log",
+        "bytes": 285,
+        "sha256": "fb591495333a07df7996be305879aeae537e5782e943c652d47df9095c7d1a7f"
+      }
+    },
+    {
+      "command": [
+        "C:\\Users\\kaiyu\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\engine_next\\Tools\\BuildVisualRuntime.py",
+        "--repo",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source",
+        "--build-dir",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline",
+        "--compiler",
+        "msvc",
+        "--run-tests"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-temporal-20261116",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Baseline.log",
+        "bytes": 181,
+        "sha256": "b19dc86f465d57bf7b5539c7fd17e65aec740fe3acaf33f8ddf506f8d9356702"
+      }
+    },
+    {
+      "command": [
+        "C:\\Users\\kaiyu\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\engine_next\\Tools\\BuildVisualRuntime.py",
+        "--repo",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source",
+        "--build-dir",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed",
+        "--compiler",
+        "msvc",
+        "--run-tests"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-temporal-20261116",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Changed.log",
+        "bytes": 180,
+        "sha256": "057bfa8b2dc4a6b2b98382fb0929351bb95081e1ab2ebe71b8d6740968ff946e"
+      }
+    },
+    {
+      "command": [
+        "C:\\Users\\kaiyu\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\engine_next\\Tools\\BuildVisualRuntime.py",
+        "--repo",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source",
+        "--build-dir",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored",
+        "--compiler",
+        "msvc",
+        "--run-tests"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-temporal-20261116",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Restored.log",
+        "bytes": 181,
+        "sha256": "92f6b94c3bf99b9d949adb48e1764fcd9e0ce71f6f192acc1e72b2e3d27635ff"
+      }
+    },
+    {
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\next_visual_client.exe",
+        "--hidden",
+        "--deterministic",
+        "--validation",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--frames",
+        "24",
+        "--asset-package",
+        "D:/Projects/engine-next-m4-3-shadows-20261116/build/engine_next/shadow-gpu-final/Scene.enpak",
+        "--gpu-package",
+        "D:/Projects/engine-next-m4-3-shadows-20261116/build/engine_next/shadow-gpu-final/Scene-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-scene.json",
+        "--shader-directory",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\RunBaseline\\Run.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\RunBaseline\\Result.ppm"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\RunBaseline",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\BaselineRuntime.log",
+        "bytes": 60,
+        "sha256": "1253783642bc19c1af19a3ff4956b7faa917791004b00fb1544e897fe16f7428"
+      }
+    },
+    {
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\next_visual_client.exe",
+        "--hidden",
+        "--deterministic",
+        "--validation",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--frames",
+        "24",
+        "--asset-package",
+        "D:/Projects/engine-next-m4-3-shadows-20261116/build/engine_next/shadow-gpu-final/Scene.enpak",
+        "--gpu-package",
+        "D:/Projects/engine-next-m4-3-shadows-20261116/build/engine_next/shadow-gpu-final/Scene-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-scene.json",
+        "--shader-directory",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Changed",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\RunChanged\\Run.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\RunChanged\\Result.ppm"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\RunChanged",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\ChangedRuntime.log",
+        "bytes": 60,
+        "sha256": "1253783642bc19c1af19a3ff4956b7faa917791004b00fb1544e897fe16f7428"
+      }
+    },
+    {
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\next_visual_client.exe",
+        "--hidden",
+        "--deterministic",
+        "--validation",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--frames",
+        "24",
+        "--asset-package",
+        "D:/Projects/engine-next-m4-3-shadows-20261116/build/engine_next/shadow-gpu-final/Scene.enpak",
+        "--gpu-package",
+        "D:/Projects/engine-next-m4-3-shadows-20261116/build/engine_next/shadow-gpu-final/Scene-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-scene.json",
+        "--shader-directory",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Restored",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\RunRestored\\Run.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\RunRestored\\Result.ppm"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\RunRestored",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\RestoredRuntime.log",
+        "bytes": 60,
+        "sha256": "1253783642bc19c1af19a3ff4956b7faa917791004b00fb1544e897fe16f7428"
+      }
+    },
+    {
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\Source\\build\\engine_next\\Baseline\\next_visual_client.exe",
+        "--hidden",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--asset-package",
+        "D:/Projects/engine-next-m4-3-shadows-20261116/build/engine_next/shadow-gpu-final/Scene.enpak",
+        "--gpu-package",
+        "D:/Projects/engine-next-m4-3-shadows-20261116/build/engine_next/shadow-gpu-final/Scene-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-scene.json",
+        "--shader-directory",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\InvalidShaders",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\InvalidRun.json"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-temporal-20261116",
+      "exit_code": 1,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\InvalidRuntime.log",
+        "bytes": 110,
+        "sha256": "ae6595f9ac1c3c759dee4105340893052d7e09c96acff9f7d6625bb6462aee7f"
+      }
+    }
+  ],
+  "input_blobs": {
+    "engine_next/Rendering/CameraMatrices.cpp": "6052df8be7d3650c5883b18f6f842128eb7eda63",
+    "engine_next/Rendering/Cook/EnvironmentLighting.cpp": "dc508c2de6b0360a3e27c16b34710fba4319d002",
+    "engine_next/Rendering/Cook/EnvironmentLighting.h": "5fae4c4fd0ed1665eb37aa5388504c1a96855042",
+    "engine_next/Rendering/Cook/GltfDecoder.cpp": "f6e95f3ed33f940353938f308807ddb3e69ab284",
+    "engine_next/Rendering/Cook/GltfDecoder.h": "247efc4fefeddcbcccfd2e603dce85d49cbbf65f",
+    "engine_next/Rendering/Cook/GpuPackage.cpp": "b5722c38fd7e4981456d9ab55b71315816382ee7",
+    "engine_next/Rendering/Cook/GpuPackage.h": "8e7a77f6be3037f4d60c46bf60e2afd04275d8ba",
+    "engine_next/Rendering/Cook/ImageDecoder.cpp": "578baabdb174822b33d97ac27fe7565c0ae5440c",
+    "engine_next/Rendering/Cook/ImageDecoder.h": "653978338509693a5a1e770aa321c2fb048aa95f",
+    "engine_next/Rendering/Cook/JpegValidation.c": "b9a56518347d89390f8dc05be4ade9111ae26046",
+    "engine_next/Rendering/Cook/JpegValidation.h": "a817925671d5d1beca1f90fd20a10d1589f25f43",
+    "engine_next/Rendering/Cook/MeshCluster.cpp": "52f27f2a04ca3296ee26d3f4e0577fee21a1e85a",
+    "engine_next/Rendering/Cook/MeshCluster.h": "8d67ca934fa1f2989937ca5aa136b2bb5eafa1b5",
+    "engine_next/Rendering/Cook/TextureCook.cpp": "fc6d3d3069767ce7387ca5ffd0568251684ee7b2",
+    "engine_next/Rendering/Cook/TextureCook.h": "f1277775865a0a8115635a417f1a78e0897d5645",
+    "engine_next/Rendering/FrameGraph.cpp": "29f4da4a5c2bcdd40ee927056e3f810cc997f9bb",
+    "engine_next/Rendering/LocalShadowData.cpp": "36225bd7b393d52b3a06d772cba455f8d4bd748a",
+    "engine_next/Rendering/RenderConfiguration.cpp": "a86ede57c6eb988c0d564cf80cc8465807de9704",
+    "engine_next/Rendering/RenderPipeline.cpp": "97a6e28a35c980e7190c5169b349cf212fad7ed5",
+    "engine_next/Rendering/RenderPipeline.h": "c8c28df19c2cc464c747396948c9d4a0f87e975e",
+    "engine_next/Rendering/RenderScene.cpp": "36123d3eb1e461d9076b359d99e4cd9067e59f7b",
+    "engine_next/Rendering/Shaders/Deferred.hlsl": "19bed0099de73186b3cb96785d6db9e88469388e",
+    "engine_next/Rendering/Shaders/FixedMesh.hlsl": "0e32bb1b8f794bd6ef3b8ede41f29ebf618fd60a",
+    "engine_next/Rendering/Shaders/Shadow.hlsl": "626ef5e92768041e5fd96505c832670768d4de8a",
+    "engine_next/Rendering/Shaders/ShadowSampling.hlsli": "665209001be61d30bc7cc3108503f9aec52ce562",
+    "engine_next/Rendering/Shaders/TemporalAA.hlsl": "672373c5e53b6d9ddd6219f849d3fdba8924e76e",
+    "engine_next/Rendering/Shaders/TemporalSampling.hlsli": "e8df6ca33321b3cb1e81497627e330954ac94849",
+    "engine_next/Rendering/ShadowBounds.cpp": "8dd6c7dc95890506ed2996a3c10ddd30d15da6b9",
+    "engine_next/Rendering/ShadowBounds.h": "31a8703332f7c2fa172d1a16f7c08ece805abe2f",
+    "engine_next/Rendering/ShadowData.cpp": "c9772a4bf3cc51bee1f61314cd52232f0c6d1320",
+    "engine_next/Rendering/TemporalState.cpp": "0a3cd9520af76d8768108b3f0d8eb74d38f4d2d4",
+    "engine_next/Rendering/VisualRuntime.cpp": "d4cc179ebbed1cfadd207202a53d1a08b2db429f",
+    "engine_next/Tools/BuildVisualRuntime.py": "d3dab36c3fa75505aec242dc70be1749bd751750",
+    "engine_next/Tools/PackageVisualRuntime.py": "ebd61db00dd83685744374d581692609b77a373a",
+    "engine_next/Schemas/RenderConfiguration-v1.json": "22eeb2098b250b107c7d00b06e10dcd9e1d6a889",
+    "engine_next/include/EngineNext/Rendering/RenderConfiguration.h": "c19f7ea4d5f47ae82686c3fd4caa86e87644051d",
+    "engine_next/include/EngineNext/Rendering/TemporalState.h": "e33205c340db68c5476bfe93a5c5c8931b8e1ddf"
+  }
+}

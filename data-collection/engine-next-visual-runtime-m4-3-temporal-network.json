@@ -1,0 +1,544 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-16T18:20:22.604177+00:00",
+  "passed": true,
+  "scope": "TAA real keyboard, two-client loopback, reconnect, minimized networking, restored history, and remote entity motion evidence",
+  "binary": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\next_visual_client.exe",
+    "sha256": "79fea378763e196aeaf7ded79c250d91b5ac3475e1686dff7af383dc75d7e55d",
+    "bytes": 2958336
+  },
+  "server": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-runtime-r6\\next_server.exe",
+    "sha256": "c61cf5ea81e065cbd30cb01cec93fd4e0ee121fc0d5e6de98e823d99a4fe117c",
+    "bytes": 788992
+  },
+  "build": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\VisualBuildReport.json",
+    "sha256": "3298823be3257fa92690a320612c174521ab4dcdd79cf777c94ea850405537ad",
+    "bytes": 1536356
+  },
+  "native_key": "a22882322c28d2033662af7282864bde5123d2d81990a99d916fc72b20eca182",
+  "source_sha256": {
+    "engine_next/Rendering/VisualRuntime.cpp": "31b19fae864d2c1e20af10e5817ca516c71f8f0908d5cb9938c774134fc01830",
+    "engine_next/Rendering/RenderPipeline.cpp": "21d0237d3058774792516093b7199d216c75058ba22fc88584f9f27b05aaf7bd",
+    "engine_next/Rendering/RenderPipeline.h": "d850fca026654b1d9aea6241e0bbd025f30e261678654f45f12543115c5db161",
+    "engine_next/Rendering/Shaders/Deferred.hlsl": "192ed67bb89704d45396547d45eff994e9c2addd1a8ef703737f53aa9bc2b596",
+    "engine_next/Rendering/Shaders/TemporalAA.hlsl": "cc1b0dddb3d82c2c57329a78413131514e2d6ebc4a378819d4633a6fd2d41c71",
+    "engine_next/Rendering/Shaders/TemporalSampling.hlsli": "de2fcca10e0a869f9927f73a250761bf3e030b6f7affc3fc6da9080884585ad2",
+    "engine_next/Rendering/TemporalState.cpp": "f03c55580cf3556b06775384bdb3d5e78ef730cacf74f6ee5c34cca61c1bf1f7",
+    "engine_next/Platform/Windows/Window.cpp": "16c56933a4e1812e45af0a3918f3a018344b26eabaa1d7c462403212d56afdbc",
+    "engine_next/Client/ClientSession.cpp": "80c351be551a5de07d151b5180d813f53e03afef94008bf5ce1c897f9380ca5f"
+  },
+  "input_driver": "Computer Use sky.press_key and target-window minimize/activate, using selected returned window objects. Test subprocesses launch through the CLI.",
+  "scene": {
+    "source_package_digest": "2d75ccffae1d73cf633905c5460fa93b8be2e7a558a48acd23444d991891dd96",
+    "fixture": "Original immutable F source package with six-part two-player scene and GPU package v2",
+    "temporal_configuration": "temporal_aa omitted to exercise enabled defaults",
+    "boundary": "F has no receiver floor. Entity transforms and six active point shadow views are checked."
+  },
+  "complete_network_session": {
+    "started_at_utc": "2026-11-16T18:14:24.532439+00:00",
+    "ready_at_utc": "2026-11-16T18:14:32.980247+00:00",
+    "readiness_seconds": 8.327999999979511,
+    "completed_at_utc": "2026-11-16T18:16:55.085571+00:00",
+    "return_codes": [
+      0,
+      0,
+      0
+    ],
+    "commands": [
+      [
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-runtime-r6\\next_server.exe",
+        "--bind",
+        "127.0.0.1",
+        "--port",
+        "0",
+        "--duration-ms",
+        "180000",
+        "--drain-after-ms",
+        "150000",
+        "--asset-package",
+        "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-benchmarks\\F\\Scene.enpak",
+        "--trace-output",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\server.jsonl"
+      ],
+      [
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\next_visual_client.exe",
+        "--asset-package",
+        "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-benchmarks\\F\\Scene.enpak",
+        "--gpu-package",
+        "D:\\Projects\\engine-next-m4-2-cook-20261116\\build\\engine_next\\cook-gpu-evidence-r2\\F-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\RenderConfiguration.json",
+        "--connect",
+        "--port",
+        "54982",
+        "--client-id",
+        "A",
+        "--width",
+        "960",
+        "--height",
+        "640",
+        "--validation",
+        "--vsync",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\A.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\A.ppm"
+      ],
+      [
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\next_visual_client.exe",
+        "--asset-package",
+        "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-benchmarks\\F\\Scene.enpak",
+        "--gpu-package",
+        "D:\\Projects\\engine-next-m4-2-cook-20261116\\build\\engine_next\\cook-gpu-evidence-r2\\F-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\RenderConfiguration.json",
+        "--connect",
+        "--port",
+        "54982",
+        "--client-id",
+        "B",
+        "--width",
+        "960",
+        "--height",
+        "640",
+        "--validation",
+        "--vsync",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\B.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\B.ppm"
+      ]
+    ],
+    "pids": {
+      "server": 30992,
+      "A": 12616,
+      "B": 42148
+    },
+    "clients": {
+      "A": {
+        "frames": 8652,
+        "validation_errors": 0,
+        "network_input_frames": 5,
+        "network_reconnect_requests": 1,
+        "local_shadow_views": 6,
+        "gpu_package_version": 2,
+        "temporal_resets": 6,
+        "network_start_after_gpu_warmup": true
+      },
+      "B": {
+        "frames": 14064,
+        "validation_errors": 0,
+        "network_input_frames": 5,
+        "network_reconnect_requests": 0,
+        "local_shadow_views": 6,
+        "gpu_package_version": 2,
+        "temporal_resets": 1,
+        "network_start_after_gpu_warmup": true
+      }
+    },
+    "artifacts": [
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\Live.json",
+        "sha256": "f0c726e67f89de8f737fc02ec9f700e284ebeecea88a082ffb0f433e21980f5a",
+        "bytes": 4232
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\Completion.json",
+        "sha256": "d9ad2d64d0e393730f9da9b2a4c7503cf0ed13909edb44536f42be7d3c1d16a5",
+        "bytes": 4360
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\RenderConfiguration.json",
+        "sha256": "514547fa9e2d8b950cc19ee6f9fc037be4e19553348f4a2c0d9f8a3b18b1bd68",
+        "bytes": 1120
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\A.log",
+        "sha256": "9f0dd9a1434a163e1e3cab728c0b014069a8be344e1344357290b679d4a815e4",
+        "bytes": 1087
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\A.json",
+        "sha256": "c92c51b194f861d04b6d1525d5011f95203b27f2d52d45f1cec36f21cfb96ee8",
+        "bytes": 6379025
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\B.log",
+        "sha256": "8076997c5841e56ea6d1abf7cc8cf79e64ea23c4f6cc29a10e132e85156938dc",
+        "bytes": 1312
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\B.json",
+        "sha256": "d6e7063c5b02adf3b8e98395fbd51ecadd99270c851b1c3eef9c28021a35c359",
+        "bytes": 10361989
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\server.log",
+        "sha256": "8fb7be5771ddf8d5fb1a9eb51237b6b6055051ada9d57ef47a58dc3ba9aa58ea",
+        "bytes": 1138
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\server.jsonl",
+        "sha256": "cf1944cf42cdfbb51a749497d0bb14f7acafcbaf8e1c888c6389638cefa9f2d3",
+        "bytes": 687637
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\UIActions.json",
+        "sha256": "920ca6d45fab30e4c6944164bdfcba7eee7e0376715358c66fe5cad77b1da444",
+        "bytes": 1400
+      }
+    ]
+  },
+  "checks": {
+    "A": {
+      "frames": 8652,
+      "validation_errors": 0,
+      "network_input_frames": 5,
+      "network_reconnect_requests": 1,
+      "local_shadow_views": 6,
+      "input_key_events": 20,
+      "resizes": 1,
+      "draw_position_max_error": 1.1920928910669204e-08,
+      "largest_sample_gap_msec": 57700,
+      "sample_gap_frames": 30,
+      "last_entities": [
+        {
+          "confirmed_sequence": "8839",
+          "entity_id": "2",
+          "interpolation": 0,
+          "local": true,
+          "position": [
+            1.6400001049041748,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "confirmed_sequence": "9024",
+          "entity_id": "1",
+          "interpolation": 3,
+          "local": false,
+          "position": [
+            -0.3599998950958252,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "temporal_epoch_starts": [
+        {
+          "frame_id": 0,
+          "epoch": 1
+        },
+        {
+          "frame_id": 4,
+          "epoch": 2
+        },
+        {
+          "frame_id": 5115,
+          "epoch": 3
+        },
+        {
+          "frame_id": 5128,
+          "epoch": 4
+        },
+        {
+          "frame_id": 7282,
+          "epoch": 7
+        }
+      ],
+      "temporal_resets": 6
+    },
+    "B": {
+      "frames": 14064,
+      "validation_errors": 0,
+      "network_input_frames": 5,
+      "network_reconnect_requests": 0,
+      "local_shadow_views": 6,
+      "input_key_events": 12,
+      "resizes": 0,
+      "draw_position_max_error": 1.1920928910669204e-08,
+      "largest_sample_gap_msec": 533,
+      "sample_gap_frames": 30,
+      "last_entities": [
+        {
+          "confirmed_sequence": "9017",
+          "entity_id": "1",
+          "interpolation": 0,
+          "local": true,
+          "position": [
+            -0.3599998950958252,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "confirmed_sequence": "8812",
+          "entity_id": "2",
+          "interpolation": 3,
+          "local": false,
+          "position": [
+            1.6400001049041748,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "temporal_epoch_starts": [
+        {
+          "frame_id": 0,
+          "epoch": 1
+        },
+        {
+          "frame_id": 4,
+          "epoch": 2
+        }
+      ],
+      "temporal_resets": 1
+    }
+  },
+  "minimized_evidence": [
+    {
+      "client": "A",
+      "sample_gap_msec": 57700,
+      "rendered_frame_delta": 30,
+      "confirmed_before": "4409",
+      "confirmed_after": "8015",
+      "peer_samples": 283,
+      "peer_input_samples": 5
+    }
+  ],
+  "verifier": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-reset\\Verification.json",
+    "sha256": "c9cd5c237e72428e8e42a9a104bcfe51f43839f975b1fec844f96e3df92a2fee",
+    "bytes": 4423
+  },
+  "verifier_script": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\VerifyLiveNetwork.py",
+    "sha256": "31e9f7bcd67894fc7659f71af1d4c7290a590f57ac9b3f6dcb4c064eea202ba1",
+    "bytes": 5903
+  },
+  "launch_script": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\RunLiveNetwork.py",
+    "sha256": "b7e11997bfaa759d0a4d708c08c84c14281d22c47a17670c62158f6c9d672131",
+    "bytes": 7374
+  },
+  "temporal_checks": [
+    "Every epoch first rendered sample has temporal_sample0 and temporal_history_valid=false. Subsequent frames in the epoch have valid history.",
+    "History read/write indices differ and each submitted write becomes the next frame read.",
+    "Welcome, immediate R request and resumed welcome reset history. Minimize/restore reset history, and the restored window emitted a resize reset.",
+    "A had six resets and resumed at epoch7/sample0 with invalid history. Both peers completed a two-ACK drain."
+  ],
+  "motion_capture_session": {
+    "started_at_utc": "2026-11-16T18:07:26.799663+00:00",
+    "ready_at_utc": "2026-11-16T18:07:33.432437+00:00",
+    "readiness_seconds": 6.51600000000326,
+    "completed_at_utc": "2026-11-16T18:11:58.634799+00:00",
+    "return_codes": [
+      0,
+      0,
+      0
+    ],
+    "commands": [
+      [
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-runtime-r6\\next_server.exe",
+        "--bind",
+        "127.0.0.1",
+        "--port",
+        "0",
+        "--duration-ms",
+        "300000",
+        "--drain-after-ms",
+        "270000",
+        "--asset-package",
+        "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-benchmarks\\F\\Scene.enpak",
+        "--trace-output",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\server.jsonl"
+      ],
+      [
+        "D:\\Projects\\engine-next-m4-1-20261115\\build\\engine_next\\tools\\RenderDoc_1.47_64\\renderdoccmd.exe",
+        "capture",
+        "--wait-for-exit",
+        "--working-dir",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6",
+        "--capture-file",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\Temporal",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\next_visual_client.exe",
+        "--asset-package",
+        "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-benchmarks\\F\\Scene.enpak",
+        "--gpu-package",
+        "D:\\Projects\\engine-next-m4-2-cook-20261116\\build\\engine_next\\cook-gpu-evidence-r2\\F-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\RenderConfiguration.json",
+        "--connect",
+        "--port",
+        "51084",
+        "--client-id",
+        "A",
+        "--width",
+        "960",
+        "--height",
+        "640",
+        "--validation",
+        "--vsync",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\A.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\A.ppm"
+      ],
+      [
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\next_visual_client.exe",
+        "--asset-package",
+        "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-benchmarks\\F\\Scene.enpak",
+        "--gpu-package",
+        "D:\\Projects\\engine-next-m4-2-cook-20261116\\build\\engine_next\\cook-gpu-evidence-r2\\F-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\RenderConfiguration.json",
+        "--connect",
+        "--port",
+        "51084",
+        "--client-id",
+        "B",
+        "--width",
+        "960",
+        "--height",
+        "640",
+        "--validation",
+        "--vsync",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\B.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\B.ppm"
+      ]
+    ],
+    "pids": {
+      "server": 12616,
+      "A": 27332,
+      "B": 13004,
+      "A_launcher": 41052
+    },
+    "clients": {
+      "A": {
+        "frames": 47813,
+        "validation_errors": 0,
+        "network_input_frames": 0,
+        "network_reconnect_requests": 0,
+        "local_shadow_views": 6,
+        "gpu_package_version": 2,
+        "temporal_resets": 1,
+        "network_start_after_gpu_warmup": true
+      },
+      "B": {
+        "frames": 34776,
+        "validation_errors": 0,
+        "network_input_frames": 60,
+        "network_reconnect_requests": 1,
+        "local_shadow_views": 6,
+        "gpu_package_version": 2,
+        "temporal_resets": 3,
+        "network_start_after_gpu_warmup": true
+      }
+    },
+    "artifacts": [
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\Live.json",
+        "sha256": "444d1d371b89e5cc10e63cd4ee12e8d7d276a5a369d505248f234b8f1777ef47",
+        "bytes": 4673
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\Completion.json",
+        "sha256": "094b9be61ed6e9626bd59e3d537b77f958080fb3265ea690b9f550af99701499",
+        "bytes": 4801
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\RenderConfiguration.json",
+        "sha256": "514547fa9e2d8b950cc19ee6f9fc037be4e19553348f4a2c0d9f8a3b18b1bd68",
+        "bytes": 1120
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\A.log",
+        "sha256": "099beb1c972547e5bfeb91eafcdcb480b2341703b4db094a141e1c8ce3e1c3ca",
+        "bytes": 1578
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\A.json",
+        "sha256": "16e304e90b873fe6f6f044cd11fc27a4c76d412d00a5b0f9c0391da94984edd3",
+        "bytes": 34866807
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\B.log",
+        "sha256": "5c650442ec081e065293c7c66e0e5fe032837924039b8a46b048290b04874fd3",
+        "bytes": 4377
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\B.json",
+        "sha256": "ad72ab68e6dd1733e2bd493378126268dbc0ce892992256449ab81dbf80d9492",
+        "bytes": 25596186
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\server.log",
+        "sha256": "e96f7091690ccf1cfca67bdd47a532e76a62f14065b1689b8a5be00f27b35dd7",
+        "bytes": 1142
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\server.jsonl",
+        "sha256": "14bd809ee3d7090ff1e2d4dff7d60b5827996fdb3c70cec6565d5475f5a9d94c",
+        "bytes": 1289221
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\UIActions.json",
+        "sha256": "dff7ac38bcf12f1505208140df2337a7760db0695262c1da3979432a6b0b18c5",
+        "bytes": 5613
+      }
+    ]
+  },
+  "motion_analysis": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\NetworkInspection.json",
+    "sha256": "259305416c3d95b8e34177cfc98209ec8906485c7e5d55cfc1b73114b9d3ec97",
+    "bytes": 69338
+  },
+  "disocclusion_analysis": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\DisocclusionChecks.json",
+    "sha256": "755b1497caa9bf8ef08b9f3f4c2d25002ee01ad3cbcb6ce5d2d2bb1a447f0fb3",
+    "bytes": 3157
+  },
+  "motion_findings": {
+    "sampled_motion_pixels": [
+      10037,
+      9899,
+      9965,
+      10001
+    ],
+    "maximum_absolute_uv_velocity": 0.016252536326646805,
+    "evidence_kind": "Real B keyboard movement replicated and interpolated on RenderDoc-instrumented A; resource data read back from recorded GPU frames.",
+    "video_boundary": "The PrintWindow clip began after the motion input and ended when the window closed. Its contents are excluded from the proof of dynamic motion. The twenty-frame GPU capture sequence supplies motion evidence.",
+    "sampled_rejected_object_pixels": 675,
+    "matching_rejected_object_pixels": 675,
+    "newly_uncovered_sky_pixels": 10202,
+    "matching_newly_uncovered_sky_pixels": 10202
+  },
+  "earlier_sessions": [
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r5\\PartialVerification.json",
+      "result": "Movement and reconnect passed. Restore occurred at drain and remained unverified. Superseded by the complete r6-reset run."
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6\\server.log",
+      "result": "No clients launched. Private harness requested duration330000 above the runtime300000 limit. Subsequent harness uses270000 drain plus30000 completion time."
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-active\\PartialVerification.json",
+      "result": "Both clients completed normally with zero input while Computer Use awaited user dismissal of the firewall prompt. No input acceptance claim."
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-network\\r6-final\\UIActions.json",
+      "result": "Real movement and R succeeded. Minimize click was blocked by TextInputHost overlap before drain, and r6-reset supplies minimize/restore evidence."
+    }
+  ],
+  "resource_cleanup": "All subprocesses from both final network sessions exited normally with return code0. No owned network client or server remains."
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "m43-temporal-static-verified-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "step",
+  "occurred_at": "2026-11-16T17:49:51.912777+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-5afcb929",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m43-request-20261116"
+  ],
+  "payload": {
+    "scope": "Temporal r6 CPU, shader, static GPU and clean-source validation",
+    "binary_sha256": "79fea378763e196aeaf7ded79c250d91b5ac3475e1686dff7af383dc75d7e55d",
+    "render_tests": "157 tests, 17099 checks, zero failures under MSVC and changed-source clang-cl",
+    "runtime": "61 tests, 1100 checks; M2 handshake, drain, 165 second soak and M3 asset/scene/AI regressions passed",
+    "gpu": "13 static scenarios have zero validation errors; first three RenderDoc frames confirm invalid then valid history and byte-exact previous output/next input",
+    "records": [
+      "data-collection/engine-next-visual-runtime-m4-3-temporal-verification.json",
+      "data-collection/engine-next-visual-runtime-m4-3-temporal-build-impact.json",
+      "data-collection/engine-next-visual-runtime-m4-3-temporal-hdr-quality.json"
+    ],
+    "remaining": "Real moving-object capture, final keyboard input and minimized restore, package smoke, exact candidate CI and main readback remain pending. Parent M4 scope stays open."
+  },
+  "sha256": "e20404479e497b4bdec4792cc10b09cadcddb6ea3b0246db534391bf3c0c8b2f"
+}

@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-16T18:30:33.286966+00:00",
+  "reviewer": "independent network acceptance agent",
+  "scope": "Final pre-submission source identity, evidence references and completed TAA acceptance review",
+  "passed": true,
+  "findings": [],
+  "audits": [
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-build-impact.json",
+      "sha256": "3343dbef54f47381df5fee57c3daad208471e16a6d1d4908d64d5f4f1b5f160e",
+      "bytes": 40977,
+      "references_checked": 96,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-configuration-review.json",
+      "sha256": "8fb3c4395b3e30f2d0bfa54f68a31ea07c50d5dbad0d2696d381d20d95da3a07",
+      "bytes": 2287,
+      "references_checked": 6,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-dynamic-gpu.json",
+      "sha256": "6cc80518eaabb712473be8f3a59bf7d55ee4603078d6c8314fba24e04fcee27b",
+      "bytes": 14303,
+      "references_checked": 38,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-gpu.json",
+      "sha256": "a2b62feb58127f99cfc6331d39fb948e88033d0015dd65793554b0c1ce1fd02c",
+      "bytes": 24075,
+      "references_checked": 67,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-hdr-quality.json",
+      "sha256": "552ca2ed6765dd678c1724ba9cf35a7b61c24765a03c606bea1c2b204c48567e",
+      "bytes": 13641,
+      "references_checked": 4,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-network.json",
+      "sha256": "285211caee3e34d3f9cc4a063e55029d7f15623f89e0258583c4fd62fb32b948",
+      "bytes": 22300,
+      "references_checked": 41,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-runtime-review.json",
+      "sha256": "7434b04de42972390fbf298afd43d4bd527f1235a64408f8c360e565ef11e3b2",
+      "bytes": 3125,
+      "references_checked": 8,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-state-review.json",
+      "sha256": "017b8ca5b2e479838b0ff37f610ce3e6e1b0e05028e42c9cc49d9bd5b438c06d",
+      "bytes": 2411,
+      "references_checked": 5,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-verification.json",
+      "sha256": "c9b25e8c008729c61d9cbea69f4a0e46a541dd99ffa9205385da234b66711710",
+      "bytes": 9443,
+      "references_checked": 12,
+      "errors": []
+    }
+  ],
+  "references_checked": 277,
+  "native_identity": {
+    "build_report": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\VisualBuildReport.json",
+      "bytes": 1536356,
+      "sha256": "3298823be3257fa92690a320612c174521ab4dcdd79cf777c94ea850405537ad"
+    },
+    "native_key": "a22882322c28d2033662af7282864bde5123d2d81990a99d916fc72b20eca182",
+    "input_count": 221,
+    "input_mismatches": [],
+    "test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=157 checks=17099 failures=0",
+    "binary": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\next_visual_client.exe",
+      "bytes": 2958336,
+      "sha256": "79fea378763e196aeaf7ded79c250d91b5ac3475e1686dff7af383dc75d7e55d"
+    }
+  },
+  "integration": {
+    "checked_out_base": "656493afe1a0e6b99800f0d4970652708be41fdd",
+    "engine_next_and_ai_core_changes_from_verified_local_shadow_base": [],
+    "ainative_regression": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-ainative-integrated.log",
+      "bytes": 548,
+      "sha256": "084fa6559ef0863de1b51b8f35a2f161f31f0ee3b2288c4d87725b8f1f127bcc"
+    },
+    "tests": 428,
+    "skipped": 36,
+    "passed": true
+  },
+  "diting": {
+    "final_event": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\gonggong-diting-data\\events\\gonggong-workspace\\engine-next-visual-runtime-m4-3-20261116\\m43-temporal-final-verified-20261117.json",
+      "bytes": 2261,
+      "sha256": "f67b3b41249d8fde19a68f8b7beb18f4b503b9a4daf31ae1214e7526331f66ff"
+    },
+    "canonical_payload_sha256_verified": true,
+    "collection": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\requests\\engine-next-visual-runtime-m4-3-20261116\\cdfe99a6-1762-46ff-9192-a1a3bd38720a.json",
+      "bytes": 5096,
+      "sha256": "819e5df53aaf5a7213f43ab029dba268a1ab321b227f0519aff871e16a74ef4d"
+    },
+    "event_file_hashes_verified": 12,
+    "remote_ingestion_confirmed": false
+  },
+  "coverage": [
+    "Prior independent TemporalState and RenderConfiguration reviews remain source-bound and pass their MSVC/clang regressions.",
+    "Read-only C++ runtime and FrameGraph review covers six MRT outputs, constant layouts, fence-retired descriptors, direct-queue history ping-pong, reset invalidation and Present/Signal before commit. No unreviewed CPU or frame graph integration gap was identified.",
+    "Actual GPU validation, release package v1/v2 resize, same-binary shader change/rollback and HDR reference metrics are bound to the final binary and recorded source identity.",
+    "Complete F session proves both players receive real keyboard input, reconnect, retain network progress while minimized, invalidate history on restored output and complete a two-ACK drain.",
+    "Twenty consecutive captured GPU frames include measured remote-object motion and current-color rejection on newly exposed surfaces. The 5 fps derived MP4 contains one decoded image per captured frame, with no interpolation. Three representative images were independently viewed."
+  ],
+  "history_notes": {
+    "delivery_review": "The separate delivery-review JSON is an earlier supplementary snapshot maintained by its owner. This final review audits its underlying current evidence independently and does not bind that mutable snapshot.",
+    "preintegration_verification": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-verification-preintegration.json",
+      "bytes": 8844,
+      "sha256": "f4c270e3907c516a6c167909a6d4216beb20562b8a38b38464e3717c82863d60"
+    },
+    "current_verification": "The current verification record adds the integrated main base and its 428-test result.",
+    "partial_sessions": "Early no-input and incomplete restore sessions remain identified in the network record. The late PrintWindow clip supplies no moving-image acceptance claim."
+  },
+  "remaining_scope": "Exact submitted-head CI and main readback follow submission. Parent M4 remains open for subsequent rendering features and final benchmark/display acceptance."
+}

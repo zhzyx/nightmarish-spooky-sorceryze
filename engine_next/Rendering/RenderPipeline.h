@@ -50,6 +50,7 @@ enum class PassWork : std::uint8_t
 	Present = 6,
 	DirectionalShadow = 7,
 	LocalShadow = 8,
+	TemporalResolve = 9,
 };
 
 struct RenderPipeline
@@ -64,13 +65,20 @@ struct RenderPipeline
 	ResourceId nHdr = INVALID_RESOURCE;
 	ResourceId nDirectionalShadow = INVALID_RESOURCE;
 	ResourceId nLocalShadow = INVALID_RESOURCE;
+	ResourceId nMotion = INVALID_RESOURCE;
+	ResourceId nObjectId = INVALID_RESOURCE;
 	std::array<ResourceId, 4> arrGbuffer{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
+	// Color, linear depth, world normal, and object ID in matching read/write slots.
+	std::array<ResourceId, 4> arrHistoryRead{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
+	std::array<ResourceId, 4> arrHistoryWrite{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
 	std::uint32_t nGraphicsPassCount = 0;
 	std::uint32_t nComputePassCount = 0;
 };
 
 // Builds an owned fixed-mesh or HDR deferred plan on the caller's thread.
+// Temporal resolve applies to scene mode. History resources are imported in Common
+// and must be mapped to disjoint, initialized read and write allocations by the caller.
 // Failure preserves the previous output and reports the graph diagnostic.
-[[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0);
+[[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0, bool bTemporal = true);
 
 } // namespace EngineNext::Rendering

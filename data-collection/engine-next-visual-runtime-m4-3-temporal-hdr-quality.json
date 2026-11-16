@@ -1,0 +1,370 @@
+{
+  "phase_summary": {
+    "count": 8,
+    "mean_rms_linear_rgb": 0.010295378377884488,
+    "rois": {
+      "horizon_left": {
+        "mean_rms_linear_rgb": 0.011974999864260562,
+        "minimum_rms_linear_rgb": 0.00928403780338178,
+        "maximum_rms_linear_rgb": 0.014376092886490333
+      },
+      "silhouettes": {
+        "mean_rms_linear_rgb": 0.029918463426472704,
+        "minimum_rms_linear_rgb": 0.026174281116445423,
+        "maximum_rms_linear_rgb": 0.03332027090743005
+      },
+      "mask_sphere": {
+        "mean_rms_linear_rgb": 0.03948778629213878,
+        "minimum_rms_linear_rgb": 0.03719692292749072,
+        "maximum_rms_linear_rgb": 0.0432760687891003
+      }
+    },
+    "improvement_fraction_against_off": {
+      "whole_image": 0.2569284302390973,
+      "horizon_left": 0.29563060139264863,
+      "silhouettes": 0.25794150499353075,
+      "mask_sphere": 0.28731063751505526
+    }
+  },
+  "reference": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\ReferenceHdr.bin",
+    "width": 1280,
+    "height": 960,
+    "bytes": 9830400,
+    "format": "R16G16B16A16_FLOAT",
+    "dtype": "little endian float16 RGBA packed",
+    "exposure": 1,
+    "capture": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\ReferenceCapture\\Temporal_frame5333.rdc",
+    "capture_sha256": "08cf9faab744a71bd950971df40c56199b8daf5397ab041bdf0163af94f034a7",
+    "texture_resource": "ResourceId::351",
+    "event": 386,
+    "raw_sha256": "f354801a5e3709dd411c564e9a2289e451f2a24a6400c9db23606bd88b517b84",
+    "status": "<Result: 'Success'>"
+  },
+  "raw_sha256": "f354801a5e3709dd411c564e9a2289e451f2a24a6400c9db23606bd88b517b84",
+  "scale": 2,
+  "method": "Mean linear HDR within each low-resolution pixel, exponential exposure then pow(1/2.2); images decoded with power 2.2.",
+  "runs": [
+    {
+      "name": "Off16",
+      "file_sha256": "83052b7be6f5c8dcf2ddff0a0355ed395f8458be3939e18c323b6ce1fe0a987f",
+      "bias_linear_rgb": -0.0006283596180197167,
+      "mean_abs_linear_rgb": 0.0020388463649365853,
+      "rms_linear_rgb": 0.013855163885757627,
+      "rois": {
+        "horizon_left": {
+          "bias_linear_rgb": -0.000619292341814693,
+          "mean_abs_linear_rgb": 0.0025356387188995373,
+          "rms_linear_rgb": 0.017001022315757914
+        },
+        "silhouettes": {
+          "bias_linear_rgb": -0.002872342299172783,
+          "mean_abs_linear_rgb": 0.007529679368327898,
+          "rms_linear_rgb": 0.040318200826219064
+        },
+        "mask_sphere": {
+          "bias_linear_rgb": -0.006396623814535881,
+          "mean_abs_linear_rgb": 0.01357245483340078,
+          "rms_linear_rgb": 0.05540672889301465
+        }
+      }
+    },
+    {
+      "name": "On1",
+      "file_sha256": "d7ae907e36817667826a64990a2ff155af7878e309a96b57e0a512a6e18a9a0f",
+      "bias_linear_rgb": -0.00048640886401466913,
+      "mean_abs_linear_rgb": 0.001938793797223916,
+      "rms_linear_rgb": 0.010737436057312734,
+      "rois": {
+        "horizon_left": {
+          "bias_linear_rgb": -0.0004390241446026801,
+          "mean_abs_linear_rgb": 0.00237710773932152,
+          "rms_linear_rgb": 0.01187661366444925
+        },
+        "silhouettes": {
+          "bias_linear_rgb": -0.001283982835860727,
+          "mean_abs_linear_rgb": 0.006660563686031883,
+          "rms_linear_rgb": 0.03163144280497415
+        },
+        "mask_sphere": {
+          "bias_linear_rgb": -0.0022106992761615077,
+          "mean_abs_linear_rgb": 0.01190607137627264,
+          "rms_linear_rgb": 0.0443628319162273
+        }
+      }
+    },
+    {
+      "name": "On8",
+      "file_sha256": "32c6d1c67ed10235e2b0a1cc6945ccc65a37ab13ecb2d3adacc558a6203d95a5",
+      "bias_linear_rgb": -0.00019323060360713868,
+      "mean_abs_linear_rgb": 0.002005468208451235,
+      "rms_linear_rgb": 0.011557073048427692,
+      "rois": {
+        "horizon_left": {
+          "bias_linear_rgb": -0.00022805860062648353,
+          "mean_abs_linear_rgb": 0.0026863871094121978,
+          "rms_linear_rgb": 0.014318168194420954
+        },
+        "silhouettes": {
+          "bias_linear_rgb": 0.0019491419756167633,
+          "mean_abs_linear_rgb": 0.007027596278146454,
+          "rms_linear_rgb": 0.033345672001416436
+        },
+        "mask_sphere": {
+          "bias_linear_rgb": 0.0033272226167190976,
+          "mean_abs_linear_rgb": 0.011480149884406904,
+          "rms_linear_rgb": 0.04176152987138182
+        }
+      }
+    },
+    {
+      "name": "On16",
+      "file_sha256": "a70f34d75d817136fd002914aa9d2211fe61169d2f23d1ba8ec1ac6cdb660ffd",
+      "bias_linear_rgb": -0.00020080320474907536,
+      "mean_abs_linear_rgb": 0.0020008876752226194,
+      "rms_linear_rgb": 0.011545494778837671,
+      "rois": {
+        "horizon_left": {
+          "bias_linear_rgb": -0.00023410254522738454,
+          "mean_abs_linear_rgb": 0.0026879431358712365,
+          "rms_linear_rgb": 0.014317833372627818
+        },
+        "silhouettes": {
+          "bias_linear_rgb": 0.0019503980130698895,
+          "mean_abs_linear_rgb": 0.006993113628900779,
+          "rms_linear_rgb": 0.03331784459833317
+        },
+        "mask_sphere": {
+          "bias_linear_rgb": 0.003332660433806093,
+          "mean_abs_linear_rgb": 0.011438234382239855,
+          "rms_linear_rgb": 0.04176142431501082
+        }
+      }
+    },
+    {
+      "name": "On17",
+      "file_sha256": "a657e4062df3bb9cb9d9f6cf620d4b6b7b755034a82b7a0e736b0db9c7442d33",
+      "bias_linear_rgb": -0.0005176495785829779,
+      "mean_abs_linear_rgb": 0.0019002772153014996,
+      "rms_linear_rgb": 0.010467978319741594,
+      "rois": {
+        "horizon_left": {
+          "bias_linear_rgb": -0.000510130834720445,
+          "mean_abs_linear_rgb": 0.0023762365100479005,
+          "rms_linear_rgb": 0.01190164635325755
+        },
+        "silhouettes": {
+          "bias_linear_rgb": -0.0009802404986165413,
+          "mean_abs_linear_rgb": 0.006374522384660211,
+          "rms_linear_rgb": 0.030810800691486763
+        },
+        "mask_sphere": {
+          "bias_linear_rgb": -0.0018339584852617398,
+          "mean_abs_linear_rgb": 0.011325579430722096,
+          "rms_linear_rgb": 0.0432760687891003
+        }
+      }
+    },
+    {
+      "name": "On18",
+      "file_sha256": "6bbb5100a697d044e60015cfbbe2686bdf9edb366ec16af29fdae2a4d8c19a5b",
+      "bias_linear_rgb": -0.0003688311222306811,
+      "mean_abs_linear_rgb": 0.0019363269157476434,
+      "rms_linear_rgb": 0.009588552438596588,
+      "rois": {
+        "horizon_left": {
+          "bias_linear_rgb": -0.0004445730129399324,
+          "mean_abs_linear_rgb": 0.0026951100052810257,
+          "rms_linear_rgb": 0.01356684867466466
+        },
+        "silhouettes": {
+          "bias_linear_rgb": 0.00052865753024671,
+          "mean_abs_linear_rgb": 0.006441446773408743,
+          "rms_linear_rgb": 0.027008522774816773
+        },
+        "mask_sphere": {
+          "bias_linear_rgb": 0.0007027368674768683,
+          "mean_abs_linear_rgb": 0.01094058155207441,
+          "rms_linear_rgb": 0.03719692292749072
+        }
+      }
+    },
+    {
+      "name": "On19",
+      "file_sha256": "014e146f2d0a4c15338f1e901c2ba219f3b0af8f6d5a9361fa0985c6f8fa0024",
+      "bias_linear_rgb": -0.00026925344900499264,
+      "mean_abs_linear_rgb": 0.0019418605092336857,
+      "rms_linear_rgb": 0.01054796496573595,
+      "rois": {
+        "horizon_left": {
+          "bias_linear_rgb": -0.00021508065187597814,
+          "mean_abs_linear_rgb": 0.0025096223326383036,
+          "rms_linear_rgb": 0.011897356105260872
+        },
+        "silhouettes": {
+          "bias_linear_rgb": 0.0012911011497037733,
+          "mean_abs_linear_rgb": 0.00659903053665815,
+          "rms_linear_rgb": 0.030642239099745307
+        },
+        "mask_sphere": {
+          "bias_linear_rgb": 0.0024999351112554215,
+          "mean_abs_linear_rgb": 0.010974809786529248,
+          "rms_linear_rgb": 0.040106865527843656
+        }
+      }
+    },
+    {
+      "name": "On20",
+      "file_sha256": "257a5e3bd9ec981f85266ab3bc0c46889571a1f6ed7d1986a39d614fa4a1f921",
+      "bias_linear_rgb": -0.0003802130263467628,
+      "mean_abs_linear_rgb": 0.0018332237803884955,
+      "rms_linear_rgb": 0.010094143022350047,
+      "rois": {
+        "horizon_left": {
+          "bias_linear_rgb": -0.0005013877373810967,
+          "mean_abs_linear_rgb": 0.0019636197491647842,
+          "rms_linear_rgb": 0.00928403780338178
+        },
+        "silhouettes": {
+          "bias_linear_rgb": 0.0005262011456655753,
+          "mean_abs_linear_rgb": 0.0060614102589443145,
+          "rms_linear_rgb": 0.030231931811009586
+        },
+        "mask_sphere": {
+          "bias_linear_rgb": -0.00015786896822411961,
+          "mean_abs_linear_rgb": 0.010066181903754676,
+          "rms_linear_rgb": 0.03822001896947672
+        }
+      }
+    },
+    {
+      "name": "On21",
+      "file_sha256": "6670d3801a9db1d682e7fb62a1a4b7f5d0f1b75c8d4b995623e49e1ae86d8b8d",
+      "bias_linear_rgb": -0.0003544079301120641,
+      "mean_abs_linear_rgb": 0.0019730099203142397,
+      "rms_linear_rgb": 0.010652526371999432,
+      "rois": {
+        "horizon_left": {
+          "bias_linear_rgb": -0.0003877168126547594,
+          "mean_abs_linear_rgb": 0.002681665086076072,
+          "rms_linear_rgb": 0.014376092886490333
+        },
+        "silhouettes": {
+          "bias_linear_rgb": 0.0005464685224664309,
+          "mean_abs_linear_rgb": 0.006709252771612573,
+          "rms_linear_rgb": 0.030156833000253187
+        },
+        "mask_sphere": {
+          "bias_linear_rgb": 0.000862416665382191,
+          "mean_abs_linear_rgb": 0.010908066816484558,
+          "rms_linear_rgb": 0.03796127966692735
+        }
+      }
+    },
+    {
+      "name": "On22",
+      "file_sha256": "47e02ff07a25a5815a7b28799a23c95dabe85bfdf272ceffebe1212b608dfaaa",
+      "bias_linear_rgb": -0.0003561982027077996,
+      "mean_abs_linear_rgb": 0.001870114614000018,
+      "rms_linear_rgb": 0.009019985864237454,
+      "rois": {
+        "horizon_left": {
+          "bias_linear_rgb": -0.0003226129036380701,
+          "mean_abs_linear_rgb": 0.0022408867239663392,
+          "rms_linear_rgb": 0.010906592373932754
+        },
+        "silhouettes": {
+          "bias_linear_rgb": 0.00047760425865529625,
+          "mean_abs_linear_rgb": 0.006121357904347459,
+          "rms_linear_rgb": 0.026174281116445423
+        },
+        "mask_sphere": {
+          "bias_linear_rgb": 0.0005061225001991032,
+          "mean_abs_linear_rgb": 0.010539428956703695,
+          "rms_linear_rgb": 0.03725125293898227
+        }
+      }
+    },
+    {
+      "name": "On23",
+      "file_sha256": "b818745bb2d8d5b5c61c23629c8d1842dc9f89e28e5b29dcef038fa5f8ceae39",
+      "bias_linear_rgb": -0.00040089193045633135,
+      "mean_abs_linear_rgb": 0.0018766258346126382,
+      "rms_linear_rgb": 0.010446216740392193,
+      "rois": {
+        "horizon_left": {
+          "bias_linear_rgb": -0.0005196696622380211,
+          "mean_abs_linear_rgb": 0.002114869471987596,
+          "rms_linear_rgb": 0.009549553381913474
+        },
+        "silhouettes": {
+          "bias_linear_rgb": 0.0003189948973280222,
+          "mean_abs_linear_rgb": 0.0063037578191111315,
+          "rms_linear_rgb": 0.031002828010594542
+        },
+        "mask_sphere": {
+          "bias_linear_rgb": -0.0005660059079123002,
+          "mean_abs_linear_rgb": 0.010160810047171146,
+          "rms_linear_rgb": 0.04011544086929867
+        }
+      }
+    },
+    {
+      "name": "On24",
+      "file_sha256": "e75acce29fcb0964a467c74b287b19d74a2b1dd24ba8af6196414b81adeaeb0b",
+      "bias_linear_rgb": -0.0002021070703520929,
+      "mean_abs_linear_rgb": 0.0020020043258829117,
+      "rms_linear_rgb": 0.011545659300022656,
+      "rois": {
+        "horizon_left": {
+          "bias_linear_rgb": -0.00023496747039556667,
+          "mean_abs_linear_rgb": 0.00268831669006451,
+          "rms_linear_rgb": 0.014317871335183079
+        },
+        "silhouettes": {
+          "bias_linear_rgb": 0.0019546288554485713,
+          "mean_abs_linear_rgb": 0.0070014737604126975,
+          "rms_linear_rgb": 0.03332027090743005
+        },
+        "mask_sphere": {
+          "bias_linear_rgb": 0.003332718022224166,
+          "mean_abs_linear_rgb": 0.011462686823891649,
+          "rms_linear_rgb": 0.04177444064799054
+        }
+      }
+    }
+  ],
+  "validation": {
+    "reference_capture_report": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\ReferenceCapture\\B-CaptureRun.json",
+      "sha256": "7f21c0f377a4eb4b47a074ee2cbe0936817ddabd8fa48f7e2bd076c0c4215f28",
+      "bytes": 3644415
+    },
+    "reference_has_taa": false,
+    "reference_dimensions": [
+      1280,
+      960
+    ],
+    "reference_exposure": 1.0,
+    "reference_gpu_validation_errors": 0,
+    "raw_hdr_range": [
+      0.016632080078125,
+      31.515625
+    ],
+    "raw_hdr_nonfinite": 0,
+    "raw_hdr_half_saturation_pixels": 0,
+    "analyzer": {
+      "path": "build\\engine_next\\temporal-hdr-reference\\AnalyzeHdrReference.py",
+      "sha256": "21dfcd4fed9cedd56cab804c65b6061fc822e80ac7fd04184e00bf41cf477e74",
+      "bytes": 3547
+    }
+  },
+  "limitations": [
+    "Reference uses 2x linear resolution (four spatial samples per output pixel), not a converged infinite-sample ground truth.",
+    "Metrics cover this static camera/fixture; moving edges and disocclusion require the separate motion evaluation.",
+    "Mean RMS across eight phase outputs is reported, not the RMS of an averaged output image."
+  ],
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343
+}

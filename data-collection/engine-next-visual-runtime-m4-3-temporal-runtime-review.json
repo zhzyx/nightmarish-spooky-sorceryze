@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue": 1343,
+  "recorded_at_utc": "2026-11-16T17:38:11.878161+00:00",
+  "reviewer": "independent network acceptance agent",
+  "scope": "Read-only C++ temporal runtime integration and CPU/HLSL layout review",
+  "result": "no actionable findings",
+  "files": {
+    "engine_next/Rendering/VisualRuntime.cpp": "31b19fae864d2c1e20af10e5817ca516c71f8f0908d5cb9938c774134fc01830",
+    "engine_next/Rendering/RenderPipeline.cpp": "21d0237d3058774792516093b7199d216c75058ba22fc88584f9f27b05aaf7bd",
+    "engine_next/Rendering/RenderPipeline.h": "d850fca026654b1d9aea6241e0bbd025f30e261678654f45f12543115c5db161",
+    "engine_next/Rendering/Shaders/Deferred.hlsl": "192ed67bb89704d45396547d45eff994e9c2addd1a8ef703737f53aa9bc2b596",
+    "engine_next/Rendering/Shaders/TemporalAA.hlsl": "cc1b0dddb3d82c2c57329a78413131514e2d6ebc4a378819d4633a6fd2d41c71",
+    "engine_next/Rendering/Shaders/TemporalSampling.hlsli": "de2fcca10e0a869f9927f73a250761bf3e030b6f7affc3fc6da9080884585ad2",
+    "engine_next/Rendering/TemporalState.cpp": "f03c55580cf3556b06775384bdb3d5e78ef730cacf74f6ee5c34cca61c1bf1f7"
+  },
+  "build_report": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\VisualBuildReport.json",
+    "sha256": "3298823be3257fa92690a320612c174521ab4dcdd79cf777c94ea850405537ad",
+    "native_key": "a22882322c28d2033662af7282864bde5123d2d81990a99d916fc72b20eca182",
+    "test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=157 checks=17099 failures=0"
+  },
+  "reviewed_invariants": [
+    "DrawConstants previous-world offset192, uint4 metadata256, size272 and aligned stride512 match HLSL. FrameConstants unjittered projection2992 and previous projection3056, size3120 and aligned stride3328 match HLSL.",
+    "Six MRT formats and RTV positions cover four material outputs, RGBA32F motion and R32_UINT object identity. Stable draw keys use entity/asset/primitive/node with fixed draw order.",
+    "Each swapchain frame waits its graphics and compute fences before descriptor and constant upload rewrites. Temporal resources alternate independently of swapchain indexing on the direct queue.",
+    "Resolve pass declares all current/history reads and history UAV writes. Initial read group clears through UAV transitions before sampling. Present release returns both history groups to Common.",
+    "Candidate world/camera state commits after successful Present and graphics Signal. History index advances only in that success path. Resize flushes both queues before target recreation and invalidates history.",
+    "Immediate reconnect request, new welcome generation, minimized entry and restored entry invalidate temporal state. Network polling remains before minimized early-continue.",
+    "Temporal constants use the unjittered output grid, current pixel jitter correction and previousUV-currentUV motion. Descriptor ranges hold nine SRVs and four UAVs."
+  ],
+  "verification_boundary": "This document records source review. Separate GPU and real input records establish runtime behavior."
+}

@@ -1,0 +1,549 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-16T17:54:39.023247+00:00",
+  "candidate": "temporal-r6",
+  "hardware": "NVIDIA GeForce RTX 4070 Ti 12 GB",
+  "native_key": "a22882322c28d2033662af7282864bde5123d2d81990a99d916fc72b20eca182",
+  "input_count": 221,
+  "input_mismatches_at_capture_start": [],
+  "inputs": [
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\next_visual_client.exe",
+      "bytes": 2958336,
+      "sha256": "79fea378763e196aeaf7ded79c250d91b5ac3475e1686dff7af383dc75d7e55d"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\VisualBuildReport.json",
+      "bytes": 1536356,
+      "sha256": "3298823be3257fa92690a320612c174521ab4dcdd79cf777c94ea850405537ad"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\Deferred.ps.cso",
+      "bytes": 9132,
+      "sha256": "ad96d2284f5086d9c1d5918efdc1a140d48914d5a7e5b114ac8bdb212ccd4311"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\Deferred.vs.cso",
+      "bytes": 8236,
+      "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\FixedMesh.cs.cso",
+      "bytes": 3300,
+      "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\FixedMesh.ps.cso",
+      "bytes": 4132,
+      "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\FixedMesh.vs.cso",
+      "bytes": 4316,
+      "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\Lighting.ps.cso",
+      "bytes": 76792,
+      "sha256": "e581599fff0207ce9d9eee5e16bb3777b79f4b171c26ed9c06f4f463bbed130f"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\Lighting.vs.cso",
+      "bytes": 3052,
+      "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\Shadow.ps.cso",
+      "bytes": 4236,
+      "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\Shadow.vs.cso",
+      "bytes": 4648,
+      "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\Temporal.cs.cso",
+      "bytes": 17552,
+      "sha256": "6eb0c0aa1c0facca47bdab3b5295d68a2b77ae4b3cff137534c3afc8cba9ea07"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\ToneMap.ps.cso",
+      "bytes": 5180,
+      "sha256": "97f176dd1cc61d0c9dbc33300cc10da62877c8b2e97887403566de4c10d9dc18"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-scene.json",
+      "bytes": 1499,
+      "sha256": "fc643149a768a6b6ab7d324abe06ff2453e50dae28cf02ebe371ef31e123756c"
+    }
+  ],
+  "static": {
+    "run_manifest": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\StaticRuns.json",
+      "bytes": 17058,
+      "sha256": "e9aaca26ddbdbb3adcfe77bebea782cea4f9de9b25f01ea048059ba601f5a2e9"
+    },
+    "configuration": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-scene.json",
+      "bytes": 1499,
+      "sha256": "fc643149a768a6b6ab7d324abe06ff2453e50dae28cf02ebe371ef31e123756c"
+    },
+    "resolution": [
+      640,
+      480
+    ],
+    "case_count": 13,
+    "all_success": true,
+    "all_gpu_validation_errors": 0,
+    "stability": [
+      {
+        "a": "On8",
+        "b": "On16",
+        "mean_abs_rgb": 0.0072319878472222225,
+        "max_abs": 8.0,
+        "pixels_changed": 3812
+      },
+      {
+        "a": "On16",
+        "b": "On24",
+        "mean_abs_rgb": 0.0026963975694444444,
+        "max_abs": 4.0,
+        "pixels_changed": 1737
+      },
+      {
+        "a": "Off1",
+        "b": "Off16",
+        "mean_abs_rgb": 0.0,
+        "max_abs": 0.0,
+        "pixels_changed": 0
+      }
+    ],
+    "images": [
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\Off16.png",
+        "bytes": 61115,
+        "sha256": "83052b7be6f5c8dcf2ddff0a0355ed395f8458be3939e18c323b6ce1fe0a987f"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On1.png",
+        "bytes": 62080,
+        "sha256": "d7ae907e36817667826a64990a2ff155af7878e309a96b57e0a512a6e18a9a0f"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On8.png",
+        "bytes": 63843,
+        "sha256": "32c6d1c67ed10235e2b0a1cc6945ccc65a37ab13ecb2d3adacc558a6203d95a5"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On16.png",
+        "bytes": 64140,
+        "sha256": "a70f34d75d817136fd002914aa9d2211fe61169d2f23d1ba8ec1ac6cdb660ffd"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On17.png",
+        "bytes": 64174,
+        "sha256": "a657e4062df3bb9cb9d9f6cf620d4b6b7b755034a82b7a0e736b0db9c7442d33"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On18.png",
+        "bytes": 64485,
+        "sha256": "6bbb5100a697d044e60015cfbbe2686bdf9edb366ec16af29fdae2a4d8c19a5b"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On19.png",
+        "bytes": 64304,
+        "sha256": "014e146f2d0a4c15338f1e901c2ba219f3b0af8f6d5a9361fa0985c6f8fa0024"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On20.png",
+        "bytes": 64030,
+        "sha256": "257a5e3bd9ec981f85266ab3bc0c46889571a1f6ed7d1986a39d614fa4a1f921"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On21.png",
+        "bytes": 64261,
+        "sha256": "6670d3801a9db1d682e7fb62a1a4b7f5d0f1b75c8d4b995623e49e1ae86d8b8d"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On22.png",
+        "bytes": 64397,
+        "sha256": "47e02ff07a25a5815a7b28799a23c95dabe85bfdf272ceffebe1212b608dfaaa"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On23.png",
+        "bytes": 64138,
+        "sha256": "b818745bb2d8d5b5c61c23629c8d1842dc9f89e28e5b29dcef038fa5f8ceae39"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On24.png",
+        "bytes": 64133,
+        "sha256": "e75acce29fcb0964a467c74b287b19d74a2b1dd24ba8af6196414b81adeaeb0b"
+      }
+    ],
+    "run_reports": [
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On1.json",
+        "bytes": 25656,
+        "sha256": "b6b8d74f68301a9722be2ded93265a1bbfaa99e8e220207fbe0a4f8d00bc5cb0"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On8.json",
+        "bytes": 30561,
+        "sha256": "6d5781d0c964e7f44241f9ef294a41fd0041a1fe7eb94cef58b9ca95c72ec827"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On16.json",
+        "bytes": 36153,
+        "sha256": "e359e99373c5ac9b1cf91eeb732557dcb9e64dfbf4441805b76a542af9f4c1ad"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On17.json",
+        "bytes": 36849,
+        "sha256": "036c3a85bf2d522a6fce47f7ec329e70b7ecd4d2dbb96af9eb9f86260be8e4b0"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On18.json",
+        "bytes": 37536,
+        "sha256": "97ae2ffe7b3bfab52dfd200c86761d909a74f6e98758f82fbd9d9dbc1576b5f4"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On19.json",
+        "bytes": 38270,
+        "sha256": "f68aead62793c7f737bbd44ead3ad81c6bf7ebc1e23ac8909850941d305aa871"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On20.json",
+        "bytes": 38948,
+        "sha256": "b7fa2e51411fd34c6a69ac5437857592c635a9ee8cc318cf11444a8501a3db4c"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On21.json",
+        "bytes": 39665,
+        "sha256": "a33d96b17e72c07b182a99cfe8f5136febaa498fb9edaacc49d0bf8a61b0eca6"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On22.json",
+        "bytes": 40348,
+        "sha256": "e43c4ad4f1f61cca1f1ac65f9399577ade7ac08b005d7a32fb921eca34808d00"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On23.json",
+        "bytes": 41057,
+        "sha256": "01883f813c5b8635002e2c8a2455614e829495517278f5edc96b9f8070e3c98e"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\On24.json",
+        "bytes": 41784,
+        "sha256": "4bb9408e1a15728b3d2ed87f3c085e7275d351c0a1068b049b8448000ea21771"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\Off1.json",
+        "bytes": 18537,
+        "sha256": "05d69b41d83a72e461687e3303bf82a9a9725a255874a6ec48ca8daed28123bb"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\Off16.json",
+        "bytes": 28277,
+        "sha256": "6e040d84a55cfcb29d57cad7974605aade6a41f19ef1c9e00db706cdd094d6ee"
+      }
+    ]
+  },
+  "gpu_history": {
+    "api": "D3D12",
+    "renderdoc_version": "1.47",
+    "tool_source": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r3\\RenderDoc\\Source.json",
+      "bytes": 6322,
+      "sha256": "cd7a2a8f9923c1228afd5d6f9ed1bc8882a8fe184741bcaab497fb35bc894a4a"
+    },
+    "captures": [
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\CaptureBurst\\Temporal_frame0.rdc",
+        "bytes": 3460901,
+        "sha256": "729e0592e0bc00404acb297f8ce3060dd4d47fa3608cf661eb1b48af902ca889"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\CaptureBurst\\Temporal_frame1.rdc",
+        "bytes": 5336182,
+        "sha256": "259bc38e6421fb23cd568de4d308899b7f9aad2222b4e4ace1b07c00cb63f197"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\CaptureBurst\\Temporal_frame2.rdc",
+        "bytes": 6667386,
+        "sha256": "9bb041722384cf8bd2ee316d3915a77af140b271d3983688a6722107ac8bd4dc"
+      }
+    ],
+    "texture_readbacks": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\TextureInspection.json",
+      "bytes": 40254,
+      "sha256": "d96b90d8a39e34f1acbe125e279efda16381897da4fba125d4c5fb1c19cc159b"
+    },
+    "checks": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\GpuHistoryChecks.json",
+      "bytes": 926,
+      "sha256": "b77606bff320469b642830cf040d0efb7725d40fe9ec5eefab2f4729558ef238"
+    },
+    "checked": {
+      "passed": true,
+      "checks": [
+        {
+          "capture": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\CaptureBurst\\Temporal_frame0.rdc",
+          "history_valid_constant": 0.0,
+          "history_reads_equal_previous_writes": false,
+          "initial_history_bytes_all_zero": true
+        },
+        {
+          "capture": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\CaptureBurst\\Temporal_frame1.rdc",
+          "history_valid_constant": 1.0,
+          "history_reads_equal_previous_writes": true,
+          "initial_history_bytes_all_zero": false
+        },
+        {
+          "capture": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\CaptureBurst\\Temporal_frame2.rdc",
+          "history_valid_constant": 1.0,
+          "history_reads_equal_previous_writes": true,
+          "initial_history_bytes_all_zero": false
+        }
+      ]
+    },
+    "motion_object_id": {
+      "first_frame_motion_valid_pixels": 0,
+      "second_frame_motion_valid_pixels": 181739,
+      "third_frame_motion_valid_pixels": 182086,
+      "object_ids": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "all_texture_components_finite": true,
+      "description": "Static camera motion xy is numerical roundoff; z stores positive previous view depth and w becomes valid after frame zero."
+    },
+    "physical_history": "Frame 0 reads resources 362-365 and writes 366-369. Frame 1 reverses these groups. Frame 2 restores the first mapping. Each subsequent read texture exactly matches the previous output bytes."
+  },
+  "quality": {
+    "public_report": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-hdr-quality.json",
+      "bytes": 13641,
+      "sha256": "552ca2ed6765dd678c1724ba9cf35a7b61c24765a03c606bea1c2b204c48567e"
+    },
+    "source_analysis": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-hdr-reference\\r6\\HdrQuality.json",
+      "bytes": 13534,
+      "sha256": "681fc647f4c20c269779767d7afed69a4450d329569fcf23eeb9091d742b0c41"
+    },
+    "reference_hdr": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\ReferenceHdr.bin",
+      "bytes": 9830400,
+      "sha256": "f354801a5e3709dd411c564e9a2289e451f2a24a6400c9db23606bd88b517b84"
+    },
+    "reference_metadata": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\ReferenceHdr.json",
+      "bytes": 694,
+      "sha256": "1038f7a5c502c43d010b215b254948c15361ee51976c1892bf0917e0cffe3885"
+    },
+    "reference_resolution": [
+      1280,
+      960
+    ],
+    "tested_resolution": [
+      640,
+      480
+    ],
+    "description": "Actual HDR texture readback is averaged in 2x2 blocks before the production exponential tone mapper and pow(1/2.2). Eight jitter phases are compared against this finite-resolution reference.",
+    "phase_rms_improvement": {
+      "count": 8,
+      "mean_rms_linear_rgb": 0.010295378377884488,
+      "rois": {
+        "horizon_left": {
+          "mean_rms_linear_rgb": 0.011974999864260562,
+          "minimum_rms_linear_rgb": 0.00928403780338178,
+          "maximum_rms_linear_rgb": 0.014376092886490333
+        },
+        "silhouettes": {
+          "mean_rms_linear_rgb": 0.029918463426472704,
+          "minimum_rms_linear_rgb": 0.026174281116445423,
+          "maximum_rms_linear_rgb": 0.03332027090743005
+        },
+        "mask_sphere": {
+          "mean_rms_linear_rgb": 0.03948778629213878,
+          "minimum_rms_linear_rgb": 0.03719692292749072,
+          "maximum_rms_linear_rgb": 0.0432760687891003
+        }
+      },
+      "improvement_fraction_against_off": {
+        "whole_image": 0.2569284302390973,
+        "horizon_left": 0.29563060139264863,
+        "silhouettes": 0.25794150499353075,
+        "mask_sphere": 0.28731063751505526
+      }
+    },
+    "scope": "Static self-authored sphere, MASK and floor scene only."
+  },
+  "release_smoke": {
+    "result": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\ReleaseSmoke\\Result.json",
+      "bytes": 3630,
+      "sha256": "bc9ea2ec465181cb4ab6ad62f0c050d395724dc4ee3d0f4ebe710812910f8ac5"
+    },
+    "binary": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\Release\\next_visual_client.exe",
+      "bytes": 2958336,
+      "sha256": "79fea378763e196aeaf7ded79c250d91b5ac3475e1686dff7af383dc75d7e55d"
+    },
+    "runs": [
+      {
+        "name": "LegacyV1",
+        "command": [
+          "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\Release\\next_visual_client.exe",
+          "--hidden",
+          "--validation",
+          "--deterministic",
+          "--frames",
+          "20",
+          "--width",
+          "640",
+          "--height",
+          "480",
+          "--report",
+          "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\ReleaseSmoke\\LegacyV1.json",
+          "--capture",
+          "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\ReleaseSmoke\\LegacyV1.ppm",
+          "--asset-package",
+          "D:\\Projects\\engine-next-m4-3-shadows-20261116\\build\\engine_next\\shadow-gpu-final\\Scene.enpak",
+          "--gpu-package",
+          "D:\\Projects\\engine-next-m4-3-shadows-20261116\\build\\engine_next\\shadow-gpu-final\\Scene-v1.engpu",
+          "--render-config",
+          "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-scene.json"
+        ],
+        "exit_code": 0,
+        "frames": 20,
+        "resizes": 0,
+        "validation_errors": 0,
+        "report_sha256": "aaa146f250b1311e5a967b7552227bcced93ac194b7a3a9fcf370a09affbc181"
+      },
+      {
+        "name": "DerivedV2Resize",
+        "command": [
+          "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\Release\\next_visual_client.exe",
+          "--hidden",
+          "--validation",
+          "--deterministic",
+          "--frames",
+          "20",
+          "--width",
+          "640",
+          "--height",
+          "480",
+          "--report",
+          "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\ReleaseSmoke\\DerivedV2Resize.json",
+          "--capture",
+          "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\ReleaseSmoke\\DerivedV2Resize.ppm",
+          "--asset-package",
+          "D:\\Projects\\engine-next-m4-3-shadows-20261116\\build\\engine_next\\shadow-gpu-final\\Scene.enpak",
+          "--gpu-package",
+          "D:\\Projects\\engine-next-m4-3-shadows-20261116\\build\\engine_next\\shadow-gpu-final\\Scene-v2.engpu",
+          "--render-config",
+          "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-scene.json",
+          "--exercise-resize"
+        ],
+        "exit_code": 0,
+        "frames": 20,
+        "resizes": 2,
+        "validation_errors": 0,
+        "report_sha256": "d70a474763f3a52911828bcce05ce10d2f148138a7ea268a03d509a4414eea02"
+      },
+      {
+        "name": "FixedResize",
+        "command": [
+          "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\Release\\next_visual_client.exe",
+          "--hidden",
+          "--validation",
+          "--deterministic",
+          "--frames",
+          "20",
+          "--width",
+          "640",
+          "--height",
+          "480",
+          "--report",
+          "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\ReleaseSmoke\\FixedResize.json",
+          "--capture",
+          "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\ReleaseSmoke\\FixedResize.ppm",
+          "--exercise-resize"
+        ],
+        "exit_code": 0,
+        "frames": 20,
+        "resizes": 2,
+        "validation_errors": 0,
+        "report_sha256": "ca9c8c15295fc71bb874d67febbdb1a5533e01bf50432f84899d0b7c0c653065"
+      }
+    ],
+    "run_reports": [
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\ReleaseSmoke\\LegacyV1.json",
+        "bytes": 38944,
+        "sha256": "aaa146f250b1311e5a967b7552227bcced93ac194b7a3a9fcf370a09affbc181"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\ReleaseSmoke\\DerivedV2Resize.json",
+        "bytes": 38959,
+        "sha256": "d70a474763f3a52911828bcce05ce10d2f148138a7ea268a03d509a4414eea02"
+      },
+      {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\ReleaseSmoke\\FixedResize.json",
+        "bytes": 16556,
+        "sha256": "ca9c8c15295fc71bb874d67febbdb1a5533e01bf50432f84899d0b7c0c653065"
+      }
+    ]
+  },
+  "dynamic": {
+    "status": "verified_by_network_moving_object",
+    "camera_attempts": [
+      {
+        "action_log": {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\MovingCapture\\UIActions.json",
+          "bytes": 1904,
+          "sha256": "5afb71a7bf87d00ae0b785091e6b57eff2bbe9b8b58c9e22b6ae30e3575762e4"
+        },
+        "texture_readback": {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\MovingInspection.json",
+          "bytes": 40990,
+          "sha256": "ffb25c45d11b46dd634beb9ac82c45ebc74837e7ded46e318fea4709f39338a2"
+        },
+        "capture_count": 3
+      },
+      {
+        "action_log": {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\Moving20Capture\\UIActions.json",
+          "bytes": 8638,
+          "sha256": "a1478a303085486a5f4f769d935bf92a9aef6bdecaa5ef60cb34e2120f32e835"
+        },
+        "texture_readback": {
+          "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-gpu-r6\\MovingMotionInspection.json",
+          "bytes": 39459,
+          "sha256": "182903121def1fbe09f79e57981b7f72cfb336ba0a3a1d6c5ab0e67d014c77c3"
+        },
+        "capture_count": 20
+      }
+    ],
+    "observed_max_abs_motion_xy": 1.491e-08,
+    "moving_pixels_above_1e_6": 0,
+    "interpretation": "The captured short-tap camera attempts did not contain measurable motion. They provide no moving-edge or disocclusion acceptance.",
+    "network": "A later network session captured real remote-object movement and disocclusion. Its complete run binding, texture readbacks and frame-sequence limits are recorded in successful_capture.",
+    "successful_capture": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-dynamic-gpu.json",
+      "bytes": 14303,
+      "sha256": "6cc80518eaabb712473be8f3a59bf7d55ee4603078d6c8314fba24e04fcee27b"
+    }
+  },
+  "limitations": [
+    "Dynamic moving-object and disocclusion evidence is recorded in the linked temporal-dynamic-gpu report, with its own scene and playback limits.",
+    "No native 4K display or Unreal reference comparison was performed.",
+    "Initial 8-bit downsample exploratory metrics are superseded by the actual HDR reference."
+  ]
+}

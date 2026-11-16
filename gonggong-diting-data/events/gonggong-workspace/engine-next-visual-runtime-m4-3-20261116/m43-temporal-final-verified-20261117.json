@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "event_id": "m43-temporal-final-verified-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "step",
+  "occurred_at": "2026-11-16T18:28:04.770593+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-5afcb929",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m43-request-20261116",
+    "m43-temporal-static-verified-20261117"
+  ],
+  "payload": {
+    "scope": "Temporal r6 real GPU, motion, two-client keyboard and final package acceptance",
+    "binary_sha256": "79fea378763e196aeaf7ded79c250d91b5ac3475e1686dff7af383dc75d7e55d",
+    "gpu": "Three consecutive frames verify history alternation and exact previous-output/next-input data. Thirteen static cases pass GPU validation. HDR reference and eight phases improve measured edge error.",
+    "motion": "Twenty consecutive real GPU captures include moving remote entities. 10877 newly exposed/rejected pixels match current reconstruction within binary16 tolerance. Derived 5fps inspection sequence has no generated intermediate frames.",
+    "network": "Final two clients accept input, reconnect once, continue networking through 57.7 seconds minimized, invalidate history on restore and complete two graceful drain responses. GPU validation reports zero errors.",
+    "package": "Release executable with packaged offline shaders passes legacy-v1, v2 resize and fixed-mesh resize tests.",
+    "records": [
+      "data-collection/engine-next-visual-runtime-m4-3-temporal-network.json",
+      "data-collection/engine-next-visual-runtime-m4-3-temporal-dynamic-gpu.json",
+      "data-collection/engine-next-visual-runtime-m4-3-temporal-gpu.json",
+      "data-collection/engine-next-visual-runtime-m4-3-temporal-verification.json"
+    ],
+    "remaining": "Exact candidate CI and main readback remain. Exposure, Bloom, volume, reflections, full A-F and native 4K acceptance remain in progress under M4."
+  },
+  "sha256": "87dfc5961a741eb101a5e32d61393684eca7ac8bc130f024765bd154c52b2f9f"
+}

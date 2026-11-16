@@ -54,7 +54,7 @@ bool AddPipelinePass(FrameGraph &stGraph, RenderPipeline &stPipeline, const Pass
 
 } // namespace
 
-bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews)
+bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews, bool bTemporal)
 {
 	if (nLocalShadowViews > 28)
 	{
@@ -95,14 +95,40 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 			stGbuffer.arrAccesses.push_back({ nResource, ResourceState::RenderTarget, true });
 			stLighting.arrAccesses.push_back({ nResource, ResourceState::ShaderRead, false });
 		}
+		stPipeline.nMotion = stGraph.AddResource({ "Motion", ResourceState::Common, false });
+		stPipeline.nObjectId = stGraph.AddResource({ "ObjectId", ResourceState::Common, false });
+		stGbuffer.arrAccesses.push_back({ stPipeline.nMotion, ResourceState::RenderTarget, true });
+		stGbuffer.arrAccesses.push_back({ stPipeline.nObjectId, ResourceState::RenderTarget, true });
 		stGbuffer.arrAccesses.push_back({ stPipeline.nDepth, ResourceState::DepthWrite, true });
 		stLighting.arrAccesses.push_back({ stPipeline.nDepth, ResourceState::DepthRead, false });
 		stLighting.arrAccesses.push_back({ stPipeline.nHdr, ResourceState::RenderTarget, true });
 		stLighting.arrAccesses.push_back({ stPipeline.nDirectionalShadow, ResourceState::ShaderRead, false });
 		stLighting.arrAccesses.push_back({ stPipeline.nLocalShadow, ResourceState::ShaderRead, false });
 		if (!AddPipelinePass(stGraph, stPipeline, stGbuffer, PassWork::GBuffer, out_stDiagnostic) ||
-			!AddPipelinePass(stGraph, stPipeline, stLighting, PassWork::DeferredLighting, out_stDiagnostic) ||
-			!AddPipelinePass(stGraph, stPipeline, { "ToneMap", QueueType::Graphics, { { stPipeline.nHdr, ResourceState::ShaderRead, false }, { stPipeline.nColor, ResourceState::RenderTarget, true } }, {} }, PassWork::ToneMap, out_stDiagnostic))
+			!AddPipelinePass(stGraph, stPipeline, stLighting, PassWork::DeferredLighting, out_stDiagnostic))
+		{
+			return false;
+		}
+		ResourceId nToneMapSource = stPipeline.nHdr;
+		if (bTemporal)
+		{
+			const std::array<const char *, 4> arrReadNames{ "HistoryReadColor", "HistoryReadDepth", "HistoryReadNormal", "HistoryReadObjectId" };
+			const std::array<const char *, 4> arrWriteNames{ "HistoryWriteColor", "HistoryWriteDepth", "HistoryWriteNormal", "HistoryWriteObjectId" };
+			PassDesc stTemporal{ "TemporalResolve", QueueType::Graphics, { { stPipeline.nHdr, ResourceState::NonPixelShaderRead, false }, { stPipeline.nDepth, ResourceState::DepthRead, false }, { stPipeline.arrGbuffer[1], ResourceState::NonPixelShaderRead, false }, { stPipeline.nMotion, ResourceState::NonPixelShaderRead, false }, { stPipeline.nObjectId, ResourceState::NonPixelShaderRead, false } }, {} };
+			for (std::size_t nHistory = 0; nHistory < stPipeline.arrHistoryRead.size(); ++nHistory)
+			{
+				stPipeline.arrHistoryRead[nHistory] = stGraph.AddResource({ arrReadNames[nHistory], ResourceState::Common, true });
+				stPipeline.arrHistoryWrite[nHistory] = stGraph.AddResource({ arrWriteNames[nHistory], ResourceState::Common, true });
+				stTemporal.arrAccesses.push_back({ stPipeline.arrHistoryRead[nHistory], ResourceState::NonPixelShaderRead, false });
+				stTemporal.arrAccesses.push_back({ stPipeline.arrHistoryWrite[nHistory], ResourceState::UnorderedAccess, true });
+			}
+			if (!AddPipelinePass(stGraph, stPipeline, stTemporal, PassWork::TemporalResolve, out_stDiagnostic))
+			{
+				return false;
+			}
+			nToneMapSource = stPipeline.arrHistoryWrite[0];
+		}
+		if (!AddPipelinePass(stGraph, stPipeline, { "ToneMap", QueueType::Graphics, { { nToneMapSource, ResourceState::ShaderRead, false }, { stPipeline.nColor, ResourceState::RenderTarget, true } }, {} }, PassWork::ToneMap, out_stDiagnostic))
 		{
 			return false;
 		}
@@ -125,6 +151,16 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		for (ResourceId nResource : stPipeline.arrGbuffer)
 		{
 			stPresent.arrAccesses.push_back({ nResource, ResourceState::Common, false });
+		}
+		stPresent.arrAccesses.push_back({ stPipeline.nMotion, ResourceState::Common, false });
+		stPresent.arrAccesses.push_back({ stPipeline.nObjectId, ResourceState::Common, false });
+		if (bTemporal)
+		{
+			for (std::size_t nHistory = 0; nHistory < stPipeline.arrHistoryRead.size(); ++nHistory)
+			{
+				stPresent.arrAccesses.push_back({ stPipeline.arrHistoryRead[nHistory], ResourceState::Common, false });
+				stPresent.arrAccesses.push_back({ stPipeline.arrHistoryWrite[nHistory], ResourceState::Common, false });
+			}
 		}
 	}
 	if (!AddPipelinePass(stGraph, stPipeline, stPresent, PassWork::Present, out_stDiagnostic) || !stGraph.Compile(stPipeline.stGraph, out_stDiagnostic))

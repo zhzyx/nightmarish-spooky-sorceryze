@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue": 1343,
+  "reviewer": "m42_network_acceptance",
+  "reviewed_at_utc": "2026-11-16T16:56:41.422584+00:00",
+  "scope": "Optional temporal_aa configuration and schema increment",
+  "findings": [],
+  "result": "passed",
+  "source_sha256": {
+    "engine_next/include/EngineNext/Rendering/RenderConfiguration.h": "96e190295227576d044248bb7f91aef9044428a6f90ef88bdb0a1a6a35e1a19f",
+    "engine_next/Rendering/RenderConfiguration.cpp": "281c31d06caf33469f3dcf156672dd78abb92f8552ce3994b2d37fca71d9a233",
+    "engine_next/Schemas/RenderConfiguration-v1.json": "0f32a8f41526cea24c1f8852b7ec9d6cd89e65f9fc80d900058ef78ccdf91123",
+    "engine_next/Tests/Rendering/TestRenderConfiguration.cpp": "a19c5c8655826b7f2bf593c0f0a3706d223831bc625002f9a7477432271756f3"
+  },
+  "runs": [
+    {
+      "compiler": "msvc",
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-config-msvc\\RenderConfigurationTests.exe"
+      ],
+      "sha256": "ba4ae5d0f92c3c2b7177eca7a1af944cedf8cd46b9ce08e476cf9e10d4652bd8",
+      "returncode": 0,
+      "stdout": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=22 checks=2227 failures=0\n",
+      "stderr": ""
+    },
+    {
+      "compiler": "clang",
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-config-clang\\RenderConfigurationTests.exe"
+      ],
+      "sha256": "1c7315b42a451d097564a5d25432f5ae21389714be7b3f564f6880e498c3a406",
+      "returncode": 0,
+      "stdout": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=22 checks=2227 failures=0\n",
+      "stderr": ""
+    }
+  ],
+  "review_checks": [
+    "Absent object preserves enabled true, history weight 0.9 and relative depth threshold 0.01.",
+    "Present object requires exactly enabled, history_weight and depth_threshold; unknown fields and wrong types fail.",
+    "Finite numeric bounds are weight [0,0.99] and threshold [0.0001,0.25], including when disabled.",
+    "Parsing uses the existing local candidate configuration and commits only after full validation. Rejected data preserves all temporal output fields.",
+    "JSON schema permits the same optional object with matching required fields and bounds."
+  ]
+}

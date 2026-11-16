@@ -29,6 +29,8 @@ cbuffer FrameConstants : register(b1)
     column_major float4x4 LocalShadowMatrices[28];
     LocalLightConstants LocalLights[8];
     float4 LocalCounts;
+    column_major float4x4 UnjitteredViewProjection;
+    column_major float4x4 PreviousViewProjection;
 };
 #if defined(GEOMETRY_STAGE)
 cbuffer DrawConstants : register(b0)
@@ -39,6 +41,8 @@ cbuffer DrawConstants : register(b0)
     float4 EmissiveMetallic;
     float4 Surface;
     float4 Flags;
+    column_major float4x4 PreviousWorld;
+    uint4 TemporalMetadata;
 };
 Texture2D<float4> BaseTexture : register(t0);
 Texture2D<float4> MrTexture : register(t1);
@@ -63,12 +67,16 @@ struct VertexOutput
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
     float2 Texcoord : TEXCOORD;
+    float4 CurrentClip : TEXCOORD1;
+    float4 PreviousClip : TEXCOORD2;
 };
 VertexOutput VSMain(VertexInput Input)
 {
     VertexOutput Output;
     float4 Position = mul(World, float4(Input.Position, 1));
     Output.Position = mul(ViewProjection, Position);
+    Output.CurrentClip = mul(UnjitteredViewProjection, Position);
+    Output.PreviousClip = mul(PreviousViewProjection, mul(PreviousWorld, float4(Input.Position, 1)));
     Output.Normal = UnitDirection(mul((float3x3)NormalWorld, Input.Normal), float3(0, 0, 1));
     Output.Tangent = float4(UnitDirection(mul((float3x3)World, Input.Tangent.xyz), float3(1, 0, 0)), Input.Tangent.w * Flags.y);
     Output.Texcoord = Input.Texcoord;
@@ -80,6 +88,8 @@ struct GBufferOutput
     float4 Normal : SV_TARGET1;
     float4 Surface : SV_TARGET2;
     float4 Emissive : SV_TARGET3;
+    float4 Motion : SV_TARGET4;
+    uint ObjectId : SV_TARGET5;
 };
 GBufferOutput PSMain(VertexOutput Input, bool Front : SV_IsFrontFace)
 {
@@ -102,6 +112,15 @@ GBufferOutput PSMain(VertexOutput Input, bool Front : SV_IsFrontFace)
     Normal = UnitDirection(MappedWorld, Normal);
     float4 Mr = MrTexture.Sample(MrSampler, Input.Texcoord);
     float Ao = lerp(1, AoTexture.Sample(AoSampler, Input.Texcoord).r, Surface.z);
+    Output.Motion = 0;
+    if (TemporalMetadata.y != 0 && Input.CurrentClip.w > 0 && Input.PreviousClip.w > 0 &&
+        all(isfinite(Input.CurrentClip)) && all(isfinite(Input.PreviousClip)))
+    {
+        float2 CurrentUv = Input.CurrentClip.xy / Input.CurrentClip.w * float2(0.5, -0.5) + 0.5;
+        float2 PreviousUv = Input.PreviousClip.xy / Input.PreviousClip.w * float2(0.5, -0.5) + 0.5;
+        Output.Motion = float4(PreviousUv - CurrentUv, Input.PreviousClip.w, 1);
+    }
+    Output.ObjectId = TemporalMetadata.x;
     Output.Base = Color;
     Output.Normal = float4(Normal, 1);
     Output.Surface = float4(saturate(Mr.g * Surface.x), saturate(Mr.b * EmissiveMetallic.w), saturate(Ao), 1);
