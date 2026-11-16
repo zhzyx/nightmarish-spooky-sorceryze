@@ -18,6 +18,8 @@ SHADER_FILES = {
     "Lighting.vs.cso",
     "Lighting.ps.cso",
     "ToneMap.ps.cso",
+    "Shadow.vs.cso",
+    "Shadow.ps.cso",
 }
 
 

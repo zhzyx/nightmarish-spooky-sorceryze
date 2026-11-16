@@ -67,12 +67,16 @@ void CheckRejected(const JsonValue &stValue, const std::string &strExpectedDiges
 	stConfiguration.dExposure = 321;
 	stConfiguration.stCamera.arrPosition = { 6, 7, 8 };
 	stConfiguration.strSourcePackageDigest = "unchanged";
+	stConfiguration.stDirectionalLight.dIlluminance = 432;
+	stConfiguration.stShadows.nResolution = 4096;
 	EngineNext::Assets::Diagnostics arrDiagnostics;
 	ENGINE_NEXT_CHECK(!EngineNext::Rendering::ParseRenderConfiguration(stValue, strExpectedDigest, stConfiguration, arrDiagnostics));
 	ENGINE_NEXT_CHECK(!arrDiagnostics.empty());
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.dExposure, 321.0);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stCamera.arrPosition, (std::array<double, 3>{ 6, 7, 8 }));
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.strSourcePackageDigest, "unchanged");
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stDirectionalLight.dIlluminance, 432.0);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stShadows.nResolution, 4096U);
 }
 
 struct TemporaryConfiguration
@@ -100,6 +104,22 @@ struct TemporaryConfiguration
 		return stFile.good();
 	}
 };
+
+JsonValue DirectionalLight()
+{
+	return JsonValue::Object{
+		{ "direction", JsonValue::List{ 0.5, -0.8, -0.6 } },
+		{ "color", JsonValue::List{ 1.0, 0.9666667, 0.9 } },
+		{ "illuminance", 3.0 }
+	};
+}
+
+JsonValue Shadows()
+{
+	return JsonValue::Object{
+		{ "enabled", true }, { "resolution", std::int64_t{ 2048 } }, { "distance", 50.0 }, { "split_lambda", 0.6 }, { "depth_bias", 0.0005 }, { "normal_bias", 0.01 }
+	};
+}
 
 } // namespace
 
@@ -271,4 +291,149 @@ ENGINE_NEXT_TEST("Render configuration file loader preserves UTF-8 paths in diag
 	ENGINE_NEXT_CHECK(!EngineNext::Rendering::LoadRenderConfiguration(stMissing, strSourceDigest, stConfiguration, arrDiagnostics));
 	ENGINE_NEXT_CHECK_EQ(arrDiagnostics.size(), 1U);
 	ENGINE_NEXT_CHECK_EQ(arrDiagnostics.front().strPath, stMissing.u8string());
+}
+
+ENGINE_NEXT_TEST("Render configuration preserves optional lighting and shadow defaults for earlier documents")
+{
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(ValidConfiguration(), strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stDirectionalLight.arrDirection, (std::array<double, 3>{ 0.5, -0.8, -0.6 }));
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stDirectionalLight.arrColor, (std::array<double, 3>{ 1, 0.9666667, 0.9 }));
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stDirectionalLight.dIlluminance, 3.0);
+	ENGINE_NEXT_CHECK(stConfiguration.stShadows.bEnabled);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stShadows.nResolution, 2048U);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stShadows.dDistance, 50.0);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stShadows.dSplitLambda, 0.6);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stShadows.dDepthBias, 0.0005);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stShadows.dNormalBias, 0.01);
+	JsonValue stValue = ValidConfiguration();
+	(*stValue.GetObject())["directional_light"] = DirectionalLight();
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	stValue = ValidConfiguration();
+	(*stValue.GetObject())["shadows"] = Shadows();
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+}
+
+ENGINE_NEXT_TEST("Render configuration strictly validates optional nested lighting and shadow fields")
+{
+	for (const std::string &strName : { "directional_light", "shadows" })
+	{
+		JsonValue stValue = ValidConfiguration();
+		(*stValue.GetObject())[strName] = JsonValue{};
+		CheckRejected(stValue);
+		(*stValue.GetObject())[strName] = strName == "shadows" ? Shadows() : DirectionalLight();
+		JsonValue::Object &mapSettings = *(*stValue.GetObject())[strName].GetObject();
+		mapSettings["unknown"] = true;
+		CheckRejected(stValue);
+		mapSettings.erase("unknown");
+		mapSettings.erase(mapSettings.begin());
+		CheckRejected(stValue);
+	}
+}
+
+ENGINE_NEXT_TEST("Render configuration bounds directional color and illuminance while preserving direction magnitude")
+{
+	JsonValue stValue = ValidConfiguration();
+	(*stValue.GetObject())["directional_light"] = DirectionalLight();
+	JsonValue::Object &mapLight = *(*stValue.GetObject())["directional_light"].GetObject();
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	mapLight["direction"] = JsonValue::List{ 0.0, -8.0, 0.0 };
+	mapLight["color"] = JsonValue::List{ 0.0, 100.0, 1.0 };
+	for (double dValue : { 0.0, 1000000.0 })
+	{
+		mapLight["illuminance"] = dValue;
+		ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stDirectionalLight.arrDirection[1], -8.0);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stDirectionalLight.dIlluminance, dValue);
+	}
+	for (double dValue : { -0.001, 1000000.01, std::numeric_limits<double>::infinity() })
+	{
+		mapLight["illuminance"] = dValue;
+		CheckRejected(stValue);
+	}
+	mapLight["illuminance"] = 1.0;
+	for (const JsonValue &stDirection : { JsonValue(JsonValue::List{ 0.0, 0.0, 0.0 }), JsonValue(JsonValue::List{ 1.0, 2.0 }),
+										  JsonValue(JsonValue::List{ 1.0, true, 0.0 }), JsonValue(JsonValue::List{ std::numeric_limits<double>::quiet_NaN(), 0.0, 0.0 }) })
+	{
+		mapLight["direction"] = stDirection;
+		CheckRejected(stValue);
+	}
+	mapLight["direction"] = JsonValue::List{ std::numeric_limits<double>::denorm_min(), 0.0, 0.0 };
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	mapLight["direction"] = JsonValue::List{ std::numeric_limits<double>::max(), 0.0, 0.0 };
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	for (double dValue : { -0.001, 100.01, std::numeric_limits<double>::infinity() })
+	{
+		mapLight["color"] = JsonValue::List{ 0.0, dValue, 0.0 };
+		CheckRejected(stValue);
+	}
+}
+
+ENGINE_NEXT_TEST("Render configuration validates shadow discrete sizes numeric ranges and disabled settings")
+{
+	JsonValue stValue = ValidConfiguration();
+	(*stValue.GetObject())["shadows"] = Shadows();
+	JsonValue::Object &mapShadows = *(*stValue.GetObject())["shadows"].GetObject();
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	for (std::int64_t nSize : { 256, 512, 1024, 2048, 4096 })
+	{
+		mapShadows["resolution"] = nSize;
+		ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stShadows.nResolution, static_cast<std::uint32_t>(nSize));
+	}
+	for (const JsonValue &stSize : { JsonValue(std::int64_t{ 0 }), JsonValue(std::int64_t{ 300 }), JsonValue(std::int64_t{ 8192 }), JsonValue(2048.0) })
+	{
+		mapShadows["resolution"] = stSize;
+		CheckRejected(stValue);
+	}
+	mapShadows["resolution"] = std::int64_t{ 256 };
+	const std::array<std::string, 4> arrFields{ "distance", "split_lambda", "depth_bias", "normal_bias" };
+	const std::array<double, 4> arrMinimum{ 0.1, 0, 0, 0 };
+	const std::array<double, 4> arrMaximum{ 10000, 1, 0.05, 1 };
+	for (std::size_t nIndex = 0; nIndex < arrFields.size(); ++nIndex)
+	{
+		for (double dValue : { arrMinimum[nIndex], arrMaximum[nIndex] })
+		{
+			mapShadows[arrFields[nIndex]] = dValue;
+			ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+		}
+		for (double dValue : { -0.001, arrMaximum[nIndex] * 2, std::numeric_limits<double>::quiet_NaN() })
+		{
+			mapShadows[arrFields[nIndex]] = dValue;
+			CheckRejected(stValue);
+		}
+		mapShadows[arrFields[nIndex]] = arrMinimum[nIndex];
+	}
+	mapShadows["enabled"] = false;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(!stConfiguration.stShadows.bEnabled);
+	mapShadows["distance"] = -1.0;
+	CheckRejected(stValue);
+	mapShadows["distance"] = 1.0;
+	mapShadows["enabled"] = std::int64_t{ 0 };
+	CheckRejected(stValue);
+}
+
+ENGINE_NEXT_TEST("Render configuration loads optional settings and rejects duplicate nested keys")
+{
+	JsonValue stValue = ValidConfiguration();
+	(*stValue.GetObject())["directional_light"] = DirectionalLight();
+	(*stValue.GetObject())["shadows"] = Shadows();
+	std::string strText;
+	ENGINE_NEXT_CHECK(EngineNext::Serialization::CanonicalJson(stValue, strText));
+	TemporaryConfiguration stFile;
+	ENGINE_NEXT_CHECK(stFile.Write(strText));
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::LoadRenderConfiguration(stFile.stPath, strSourceDigest, stConfiguration, arrDiagnostics));
+	const std::string strKey = "\"enabled\":true";
+	const std::size_t nKey = strText.find(strKey);
+	ENGINE_NEXT_CHECK(nKey != std::string::npos);
+	strText.insert(nKey, "\"enabled\":false,");
+	ENGINE_NEXT_CHECK(stFile.Write(strText));
+	ENGINE_NEXT_CHECK(!EngineNext::Rendering::LoadRenderConfiguration(stFile.stPath, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stShadows.bEnabled);
 }

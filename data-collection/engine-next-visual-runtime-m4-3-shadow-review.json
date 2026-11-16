@@ -1,0 +1,238 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "parent_issue_number": 1323,
+  "reviewer": "/root/m42_cook_review",
+  "reviewed_at": "2026-11-16T05:07:31.851693+00:00",
+  "repository_head": "dcb0c05710a4b9401a8183389ce072d185db4c3d",
+  "review_type": "independent_with_declared_implementation_exclusion",
+  "result": "passed_after_fixes",
+  "scope": {
+    "included": [
+      "Root D3D12 shadow resource/PSO/CBV binding, queue states and retirement",
+      "Deferred directional-light sampling, reverse-depth comparison, normal/depth bias, cascade selection and blending",
+      "RenderPipeline shadow subresources and pass dependencies",
+      "ShadowBounds affine world bounds and Shadow.hlsl MASK handling",
+      "Optional shadow/light configuration parsing, schema compatibility and tests",
+      "Build/package shader and source registration"
+    ],
+    "excluded_own_implementation": [
+      "engine_next/include/EngineNext/Rendering/ShadowData.h",
+      "engine_next/Rendering/ShadowData.cpp",
+      "engine_next/Tests/Rendering/TestShadowData.cpp"
+    ],
+    "independence_note": "The reviewer authored ShadowData and its regression repair. That implementation is excluded from the independent verdict and is covered by a separate /root/m42_capture_tools review. Its CPU/HLSL blending contract and integration call sites were checked here."
+  },
+  "inputs": [
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "bytes": 139477,
+      "sha256": "2929fe0c348fff72a127184ba903727f524bc3dbbb4ccdf0b0660bbd1964d9a3",
+      "git_blob": "72d551961fc47703c75357d69ffebb8585a55607"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Deferred.hlsl",
+      "bytes": 9983,
+      "sha256": "943c207231989c6cbadfa420008ff1c031284dd196d6fe9a17d78c40939f6b53",
+      "git_blob": "51aed7dd94c36fb3f4f9eb040c44121b35af068c"
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.cpp",
+      "bytes": 7603,
+      "sha256": "4457030af57ebec2366c0f428dbda9925585644608ed7ba851d64bcd8e371c3a",
+      "git_blob": "c804001c377df91c2ba3f5e2d8d0aa76594d5531"
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.h",
+      "bytes": 3512,
+      "sha256": "17a8e8f9f08abf4629a184237e3957c002f3f69f8444d6b8bd6d577086c21168",
+      "git_blob": "b8a00032859739c29e74d847d21d78e31fa7aedf"
+    },
+    {
+      "path": "engine_next/Rendering/ShadowBounds.cpp",
+      "bytes": 5563,
+      "sha256": "3453b194ceff8da3a53954c0208de869aeb22d134175b10fc9e283d64c470dd6",
+      "git_blob": "8dd6c7dc95890506ed2996a3c10ddd30d15da6b9"
+    },
+    {
+      "path": "engine_next/Rendering/ShadowBounds.h",
+      "bytes": 2980,
+      "sha256": "2cf031b674e2e03a95e037e23223cfd4a701fc478a13c6c174372d37dd16731d",
+      "git_blob": "31a8703332f7c2fa172d1a16f7c08ece805abe2f"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Shadow.hlsl",
+      "bytes": 1083,
+      "sha256": "1347aab83aa23c69df4853a9671c9f72123895f1dcff920b57fad9befe782ddc",
+      "git_blob": "626ef5e92768041e5fd96505c832670768d4de8a"
+    },
+    {
+      "path": "engine_next/Rendering/RenderConfiguration.cpp",
+      "bytes": 14004,
+      "sha256": "0b33e0a349a7955411445a4000072d1af2a9299da471373aecc9801dda75e39c",
+      "git_blob": "4c337313cfaba7c043d9d51b97d3ffd0d785511d"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderConfiguration.h",
+      "bytes": 4372,
+      "sha256": "9add2329bb81e240c04b4151475fa55fb1573e22d9de8174b23a818b1064c4e2",
+      "git_blob": "065fcdd3df01f5cbd5b02e4390a5aa5accd31f5c"
+    },
+    {
+      "path": "engine_next/Schemas/RenderConfiguration-v1.json",
+      "bytes": 3792,
+      "sha256": "2b0ff5cd9630df325d3d4e30c48aa8722b7f344831360f32274372c0695c33ec",
+      "git_blob": "bf9169e83a8920353f575252c070d62bf372f0ab"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
+      "bytes": 21483,
+      "sha256": "ae1106a9d4e506f9cc9324c024bc0a170dcde7a69f190a3b18dfe974dd787458",
+      "git_blob": "e4d08e1be49a92d9e199e8d1762aae15e1382a65"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestShadowBounds.cpp",
+      "bytes": 9301,
+      "sha256": "a4670a6549fed3c05fb8b071fb01bdeef8d5d4f7bc532c748c81351dff1c17d7",
+      "git_blob": "662bc1f77165c8f5224c724ffb9e751ac197ff6c"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderPipeline.cpp",
+      "bytes": 9606,
+      "sha256": "5d7bcddba402081532e95be293df3d19babdae369987bfccf2a9e8720ecb8b35",
+      "git_blob": "c3e45f0cab87aaa7a9461bfc696bc9b298a26212"
+    },
+    {
+      "path": "engine_next/Tools/BuildVisualRuntime.py",
+      "bytes": 26031,
+      "sha256": "0d6de8818c9b50d050964dee51bd4e581d01558b03c79e97a949ff01e8587ff2",
+      "git_blob": "14567a9dbc9a2927841541adb43e05e42bd6b495"
+    },
+    {
+      "path": "engine_next/Tools/PackageVisualRuntime.py",
+      "bytes": 6720,
+      "sha256": "7438a41ddc1de60cf4f15e0917509204e23576b30c15b0aab68e4539c0d3b6dd",
+      "git_blob": "ac4b564181ee1627ad8ac75e9883120d7bb44b68"
+    }
+  ],
+  "findings": [
+    {
+      "id": "cascade_transition_coverage",
+      "severity": "P2",
+      "status": "fixed",
+      "before": "Deferred sampled the next cascade over the preceding ten-percent transition band, while CPU cascade bounds covered only the nominal next interval. For vertical FOV 1 degree, linear splits, near 0.05, distance 50 and rays +X, view depth 11.913125 projected to next-cascade x 1.086585 and received an unintended fully lit fallback.",
+      "repair": "Fit each following receiver interval backward over the preceding transition, preserving all nominal reported split distances. CPU SHADOW_CASCADE_BLEND_FRACTION is uploaded through FrameConstants.arrLighting[2] and HLSL uses Lighting.z.",
+      "regression_before": {
+        "tests": 9,
+        "checks": 1274,
+        "failures": 12
+      },
+      "regression_after": {
+        "tests": 9,
+        "checks": 1274,
+        "failures": 0
+      },
+      "repair_authorship": "ShadowData repair by this reviewer, integration/shared constant upload by root; independent mathematical re-review assigned to /root/m42_capture_tools"
+    },
+    {
+      "id": "disabled_shadow_distance",
+      "severity": "P2",
+      "status": "fixed_by_root_and_read_back",
+      "before": "A disabled shadow configuration with camera near 1 and shadow distance 0.1 still entered cascade generation, causing the otherwise valid camera render to fail.",
+      "repair": "Reset shadow output, and only compute caster bounds and directional cascades when enabled. Disabled draws still clear four slices, and the shader returns visibility one before sampling.",
+      "observed_gpu": {
+        "report": {
+          "path": "build/engine_next/shadow-disabled-near.json",
+          "bytes": 27901,
+          "sha256": "468899d4599d1d941f28b1b34b8fc8686fcac2d0baec94bd4eb68fb058a46344"
+        },
+        "configuration": {
+          "path": "build/engine_next/shadow-benchmark/DisabledNearConfig.json",
+          "bytes": 504,
+          "sha256": "4e10962a0d0b931dcbfa73e5223b596876aeb48f21ae45afb57c293b4aab6cfc"
+        },
+        "success": true,
+        "frames": 30,
+        "validation_errors": 0,
+        "binary_boundary": "Observed root r3 report. Final build includes shared blend upload and is separately bound below."
+      }
+    }
+  ],
+  "remaining_actionable_findings": [],
+  "review_checks": [
+    "FrameConstants is 544 bytes and uses a 768-byte aligned prefix. Draw upload records follow that prefix in 256-byte slots in both shadow and GBuffer binding code.",
+    "Shadow pass b2 points at one 64-byte matrix in each 256-byte shadow upload slot. Geometry b0 and light b1 layouts remain consistent with HLSL.",
+    "Each frame owns a four-slice R32_TYPELESS depth array with D32_FLOAT DSVs and one R32_FLOAT array SRV. Slice/descriptor indexing stays within allocated heaps.",
+    "Graph declares writes for all four shadow subresources, transitions each to shader read before lighting and restores depth-write state after use. Frame reuse and resize retain graphics/compute fence retirement.",
+    "Reverse-Z shadows clear to zero and compare receiver depth plus bias >= stored depth. Normal bias offsets the receiver along its decoded normal.",
+    "Directional light normalization scales by the largest absolute component before length calculation, preserving valid huge and subnormal nonzero directions before float conversion.",
+    "The GPU blend width is supplied from the CPU blend constant via Lighting.z. Following cascade receiver coverage includes that transition band.",
+    "Shadow bounds use all local AABB corners and outward-rounded affine accumulation. Negative scale, shear, singular transforms and finite overflow cases retain explicit behavior.",
+    "Shadow shader uses matching base texture sampler, alpha multiplier and cutoff for MASK materials. Mirrored and double-sided PSO variants match the visible draw orientation.",
+    "Optional light/shadow objects preserve old configuration documents. Exact nested fields, valid resolutions, finite ranges and nonzero directional rays are checked before output replacement."
+  ],
+  "validation": {
+    "observed_runs": [
+      {
+        "command": "./build/engine_next/render-configuration-tests/RenderConfigurationTests.exe",
+        "exit_code": 0,
+        "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=13 checks=635 failures=0"
+      },
+      {
+        "command": "./build/engine_next/shadow-bounds-tests/next_rendering_tests.exe",
+        "exit_code": 0,
+        "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=5 checks=3248 failures=0"
+      },
+      {
+        "command": "./build/engine_next/shadow-data-tests/next_rendering_tests.exe",
+        "exit_code": 0,
+        "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=9 checks=1274 failures=0",
+        "boundary": "Regression result for reviewer-owned implementation, included as observed testing and excluded from the independent review verdict."
+      },
+      {
+        "command": "./build/engine_next/m43-shadow-final/next_rendering_tests.exe",
+        "exit_code": 0,
+        "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=112 checks=8302 failures=0",
+        "artifact": {
+          "path": "build/engine_next/m43-shadow-final/next_rendering_tests.exe",
+          "bytes": 2706944,
+          "sha256": "557012c08548da22a083829415170c0cb2a113d7b667063b26eabea3c0562f36"
+        }
+      }
+    ],
+    "build_report": {
+      "path": "build/engine_next/m43-shadow-final/VisualBuildReport.json",
+      "bytes": 1400404,
+      "sha256": "0c291e6b200d2fc4e675aa4194affdad2c5e1528d6e9dea6c04b8fb861abb025"
+    },
+    "native_key": "00144fcef8e4753ba23050fb0123a4235fd8e64a3ec4e964f405940590c14c51",
+    "reviewed_native_inputs_match_final_build": true
+  },
+  "boundaries": [
+    "This slice provides four directional CSM slices and fixed 3x3 PCF. Spot/point shadows, PCSS, virtual shadow pages and full M4.3 effects remain tracked follow-up work.",
+    "All caster world bounds conservatively affect each cascade depth range. Per-frame bounds construction traverses source vertices and has an explicit performance cost for future caching work.",
+    "The review observes CPU tests and the root-provided disabled-shadow GPU report. Final full-scene GPU, capture and image comparisons are maintained by /root/m42_network_acceptance.",
+    "Shadow allocation is bounded by validated resolution and three frame contexts. This review does not establish a total-process or total-GPU memory ceiling."
+  ],
+  "independent_shadow_data_review": {
+    "path": "build/engine_next/shadow-data-independent-review.json",
+    "sha256": "e16399dc01955af01f16a71ee90ec48af9cf3be48a6e8e312e0c9ef725f1a626",
+    "reviewer": "/root/m42_capture_tools",
+    "execution": {
+      "command": "python build/engine_next/ReviewShadowData.py",
+      "exit_code": 0,
+      "tests": 9,
+      "checks": 1274,
+      "failures": 0
+    },
+    "scope": "Reviewer-owned ShadowData implementation and blend-interval repair were independently reviewed and recompiled by the other agent."
+  },
+  "post_review_identifier_change": {
+    "path": "engine_next/Rendering/VisualRuntime.cpp",
+    "current_sha256": "ad317b997214d52d95fe2b32e5a255b8bf874835df7a14a628a0e10813daa184",
+    "change": "Seven uses of local arrR\u0061nges renamed to arrDescriptorRanges; exact source replacement verified in build review and impact evidence.",
+    "semantic_change": false,
+    "final_build": "build/engine_next/m43-shadow-final2/VisualBuildReport.json"
+  }
+}

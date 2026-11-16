@@ -56,19 +56,19 @@ bool Fail(const std::string &strCode, const std::string &strPath, const std::str
 	return false;
 }
 
-bool Vector(const Serialization::JsonValue::Object &mapValue, const std::string &strName, std::array<double, 3> &out_arrVector, Assets::Diagnostics &out_arrDiagnostics)
+bool Vector(const Serialization::JsonValue::Object &mapValue, const std::string &strName, const std::string &strParentPath, std::array<double, 3> &out_arrVector, Assets::Diagnostics &out_arrDiagnostics)
 {
 	const Serialization::JsonValue::List *pValues = mapValue.find(strName)->second.GetList();
-	const std::string strPath = "$.camera." + strName;
+	const std::string strPath = strParentPath + "." + strName;
 	if (pValues == nullptr || pValues->size() != out_arrVector.size())
 	{
-		return Fail("camera_vector", strPath, "Expected exactly three finite numbers.", out_arrDiagnostics);
+		return Fail("configuration_vector", strPath, "Expected exactly three finite numbers.", out_arrDiagnostics);
 	}
 	for (std::size_t nIndex = 0; nIndex < out_arrVector.size(); ++nIndex)
 	{
 		if (!(*pValues)[nIndex].GetNumber(out_arrVector[nIndex]))
 		{
-			return Fail("camera_vector", strPath + "[" + std::to_string(nIndex) + "]", "Expected a finite number.", out_arrDiagnostics);
+			return Fail("configuration_vector", strPath + "[" + std::to_string(nIndex) + "]", "Expected a finite number.", out_arrDiagnostics);
 		}
 	}
 	return true;
@@ -142,13 +142,83 @@ bool CameraBasis(const CameraSettings &stCamera, Assets::Diagnostics &out_arrDia
 	return true;
 }
 
+bool RootFields(const Serialization::JsonValue::Object &mapRoot, Assets::Diagnostics &out_arrDiagnostics)
+{
+	Serialization::JsonValue::Object mapFields;
+	for (const std::pair<const std::string, Serialization::JsonValue> &stField : mapRoot)
+	{
+		if (stField.first != "directional_light" && stField.first != "shadows")
+		{
+			mapFields.emplace(stField.first, Serialization::JsonValue{});
+		}
+	}
+	return Assets::Fields(mapFields, { "schema_version", "source_package_sha256", "camera", "exposure" }, "$", out_arrDiagnostics);
+}
+
+bool ParseDirectionalLight(const Serialization::JsonValue &stValue, DirectionalLightSettings &out_stLight, Assets::Diagnostics &out_arrDiagnostics)
+{
+	const std::string strPath = "$.directional_light";
+	const Serialization::JsonValue::Object *pLight = Assets::Object(stValue, strPath, out_arrDiagnostics);
+	if (pLight == nullptr || !Assets::Fields(*pLight, { "direction", "color", "illuminance" }, strPath, out_arrDiagnostics))
+	{
+		return false;
+	}
+	if (!Vector(*pLight, "direction", strPath, out_stLight.arrDirection, out_arrDiagnostics) ||
+		!Vector(*pLight, "color", strPath, out_stLight.arrColor, out_arrDiagnostics) ||
+		!BoundedNumber(*pLight, "illuminance", strPath, 0, 1e6, out_stLight.dIlluminance, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const std::array<double, 3> &arrDirection = out_stLight.arrDirection;
+	if (arrDirection[0] == 0 && arrDirection[1] == 0 && arrDirection[2] == 0)
+	{
+		return Fail("light_direction", strPath + ".direction", "Light direction must be nonzero.", out_arrDiagnostics);
+	}
+	for (double dChannel : out_stLight.arrColor)
+	{
+		if (dChannel < 0 || dChannel > 100)
+		{
+			return Fail("range", strPath + ".color", "Light color components must be in the range zero to 100.", out_arrDiagnostics);
+		}
+	}
+	return true;
+}
+
+bool ParseShadows(const Serialization::JsonValue &stValue, ShadowSettings &out_stShadows, Assets::Diagnostics &out_arrDiagnostics)
+{
+	const std::string strPath = "$.shadows";
+	const Serialization::JsonValue::Object *pShadows = Assets::Object(stValue, strPath, out_arrDiagnostics);
+	if (pShadows == nullptr || !Assets::Fields(*pShadows, { "enabled", "resolution", "distance", "split_lambda", "depth_bias", "normal_bias" }, strPath, out_arrDiagnostics))
+	{
+		return false;
+	}
+	if (!pShadows->find("enabled")->second.GetBool(out_stShadows.bEnabled))
+	{
+		return Fail("type", strPath + ".enabled", "Expected a boolean.", out_arrDiagnostics);
+	}
+	std::int64_t nResolution = 0;
+	if (!Assets::Integer(*pShadows, "resolution", strPath, nResolution, out_arrDiagnostics))
+	{
+		return false;
+	}
+	if (nResolution != 256 && nResolution != 512 && nResolution != 1024 && nResolution != 2048 && nResolution != 4096)
+	{
+		return Fail("range", strPath + ".resolution", "Expected shadow resolution 256, 512, 1024, 2048 or 4096.", out_arrDiagnostics);
+	}
+	out_stShadows.nResolution = static_cast<std::uint32_t>(nResolution);
+	return BoundedNumber(*pShadows, "distance", strPath, 0.1, 10000, out_stShadows.dDistance, out_arrDiagnostics) &&
+			BoundedNumber(*pShadows, "split_lambda", strPath, 0, 1, out_stShadows.dSplitLambda, out_arrDiagnostics) &&
+			BoundedNumber(*pShadows, "depth_bias", strPath, 0, 0.05, out_stShadows.dDepthBias, out_arrDiagnostics) &&
+			BoundedNumber(*pShadows, "normal_bias", strPath, 0, 1, out_stShadows.dNormalBias, out_arrDiagnostics);
+}
+
 } // namespace
 
 bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std::string &strExpectedDigest, RenderConfiguration &out_stConfiguration,
 							  Assets::Diagnostics &out_arrDiagnostics)
 {
 	const Serialization::JsonValue::Object *pRoot = Assets::Object(stValue, "$", out_arrDiagnostics);
-	if (pRoot == nullptr || !Assets::Fields(*pRoot, { "schema_version", "source_package_sha256", "camera", "exposure" }, "$", out_arrDiagnostics))
+	if (pRoot == nullptr || !RootFields(*pRoot, out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -176,8 +246,8 @@ bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std
 		return false;
 	}
 	CameraSettings &stCamera = stConfiguration.stCamera;
-	if (!Vector(*pCamera, "position", stCamera.arrPosition, out_arrDiagnostics) || !Vector(*pCamera, "target", stCamera.arrTarget, out_arrDiagnostics) ||
-		!Vector(*pCamera, "up", stCamera.arrUp, out_arrDiagnostics) ||
+	if (!Vector(*pCamera, "position", "$.camera", stCamera.arrPosition, out_arrDiagnostics) || !Vector(*pCamera, "target", "$.camera", stCamera.arrTarget, out_arrDiagnostics) ||
+		!Vector(*pCamera, "up", "$.camera", stCamera.arrUp, out_arrDiagnostics) ||
 		!BoundedNumber(*pCamera, "vertical_fov_degrees", "$.camera", 1, 170, stCamera.dVerticalFovDegrees, out_arrDiagnostics) ||
 		!BoundedNumber(*pCamera, "near_plane", "$.camera", 0.001, 100, stCamera.dNearPlane, out_arrDiagnostics) ||
 		!BoundedNumber(*pCamera, "far_plane", "$.camera", 0.001, 1e7, stCamera.dFarPlane, out_arrDiagnostics) ||
@@ -190,6 +260,16 @@ bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std
 		return Fail("camera_planes", "$.camera.far_plane", "Far plane must exceed the near plane.", out_arrDiagnostics);
 	}
 	if (!CameraBasis(stCamera, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itLight = pRoot->find("directional_light");
+	if (itLight != pRoot->end() && !ParseDirectionalLight(itLight->second, stConfiguration.stDirectionalLight, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itShadows = pRoot->find("shadows");
+	if (itShadows != pRoot->end() && !ParseShadows(itShadows->second, stConfiguration.stShadows, out_arrDiagnostics))
 	{
 		return false;
 	}

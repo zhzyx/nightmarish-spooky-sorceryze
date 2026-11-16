@@ -34,6 +34,7 @@
 #include "engine_next/include/EngineNext/Serialization/Json.h"
 
 #include <array>
+#include <cstdint>
 #include <filesystem>
 #include <string>
 
@@ -50,9 +51,29 @@ struct CameraSettings
 	double dFarPlane = 1000;
 };
 
+struct DirectionalLightSettings
+{
+	// World-space direction in which the light rays travel.
+	std::array<double, 3> arrDirection{ 0.5, -0.8, -0.6 };
+	std::array<double, 3> arrColor{ 1, 0.9666667, 0.9 };
+	double dIlluminance = 3;
+};
+
+struct ShadowSettings
+{
+	bool bEnabled = true;
+	std::uint32_t nResolution = 2048;
+	double dDistance = 50;
+	double dSplitLambda = 0.6;
+	double dDepthBias = 0.0005;
+	double dNormalBias = 0.01;
+};
+
 struct RenderConfiguration
 {
 	CameraSettings stCamera;
+	DirectionalLightSettings stDirectionalLight;
+	ShadowSettings stShadows;
 	double dExposure = 1;
 	std::string strSourcePackageDigest;
 };
@@ -60,6 +81,8 @@ struct RenderConfiguration
 // Camera vectors must be finite with nonzero direction and up. Their normalized
 // cross product squared must exceed 1e-24. FOV is [1, 170] degrees, near is
 // [0.001, 100], and near < far <= 1e7. Exposure is a multiplier in [0.001, 1000].
+// Optional directional_light and shadows objects use defaults when absent.
+// Light colors are [0, 100], illuminance [0, 1e6], and direction is nonzero.
 // Both functions append diagnostics and leave the output unchanged on failure.
 [[nodiscard]] bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std::string &strExpectedDigest, RenderConfiguration &out_stConfiguration,
 											Assets::Diagnostics &out_arrDiagnostics);

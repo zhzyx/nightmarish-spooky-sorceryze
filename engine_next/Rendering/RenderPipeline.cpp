@@ -68,6 +68,11 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 	}
 	if (bSceneMode)
 	{
+		stPipeline.nDirectionalShadow = stGraph.AddResource({ "DirectionalShadow", ResourceState::DepthWrite, true, 4 });
+		if (!AddPipelinePass(stGraph, stPipeline, { "DirectionalShadow", QueueType::Graphics, { { stPipeline.nDirectionalShadow, ResourceState::DepthWrite, true } }, {} }, PassWork::DirectionalShadow, out_stDiagnostic))
+		{
+			return false;
+		}
 		stPipeline.arrGbuffer[0] = stGraph.AddResource({ "GBufferBase", ResourceState::Common, false });
 		stPipeline.arrGbuffer[1] = stGraph.AddResource({ "GBufferNormal", ResourceState::Common, false });
 		stPipeline.arrGbuffer[2] = stGraph.AddResource({ "GBufferSurface", ResourceState::Common, false });
@@ -83,6 +88,7 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		stGbuffer.arrAccesses.push_back({ stPipeline.nDepth, ResourceState::DepthWrite, true });
 		stLighting.arrAccesses.push_back({ stPipeline.nDepth, ResourceState::DepthRead, false });
 		stLighting.arrAccesses.push_back({ stPipeline.nHdr, ResourceState::RenderTarget, true });
+		stLighting.arrAccesses.push_back({ stPipeline.nDirectionalShadow, ResourceState::ShaderRead, false });
 		if (!AddPipelinePass(stGraph, stPipeline, stGbuffer, PassWork::GBuffer, out_stDiagnostic) ||
 			!AddPipelinePass(stGraph, stPipeline, stLighting, PassWork::DeferredLighting, out_stDiagnostic) ||
 			!AddPipelinePass(stGraph, stPipeline, { "ToneMap", QueueType::Graphics, { { stPipeline.nHdr, ResourceState::ShaderRead, false }, { stPipeline.nColor, ResourceState::RenderTarget, true } }, {} }, PassWork::ToneMap, out_stDiagnostic))
@@ -103,6 +109,7 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 	{
 		stPresent.arrAccesses.push_back({ stPipeline.nDepth, ResourceState::DepthWrite, true, 0, ALL_SUBRESOURCES, true });
 		stPresent.arrAccesses.push_back({ stPipeline.nHdr, ResourceState::Common, false });
+		stPresent.arrAccesses.push_back({ stPipeline.nDirectionalShadow, ResourceState::DepthWrite, true, 0, ALL_SUBRESOURCES, true });
 		for (ResourceId nResource : stPipeline.arrGbuffer)
 		{
 			stPresent.arrAccesses.push_back({ nResource, ResourceState::Common, false });

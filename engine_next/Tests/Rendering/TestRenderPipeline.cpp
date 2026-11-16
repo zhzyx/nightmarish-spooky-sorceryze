@@ -68,8 +68,11 @@ void CheckReusableStates(const RenderPipeline &stPipeline)
 {
 	for (const CompiledResource &stResource : stPipeline.stGraph.arrResources)
 	{
-		ENGINE_NEXT_CHECK_EQ(stResource.arrFinalStates.size(), 1U);
-		ENGINE_NEXT_CHECK_EQ(stResource.arrFinalStates[0], stResource.stDescription.eInitialState);
+		ENGINE_NEXT_CHECK_EQ(stResource.arrFinalStates.size(), stResource.stDescription.nSubresourceCount);
+		for (ResourceState eState : stResource.arrFinalStates)
+		{
+			ENGINE_NEXT_CHECK_EQ(eState, stResource.stDescription.eInitialState);
+		}
 	}
 }
 
@@ -114,14 +117,14 @@ ENGINE_NEXT_TEST("RenderPipeline separates deferred HDR lighting from tone mappi
 	RenderPipeline stPipeline;
 	GraphDiagnostic stDiagnostic;
 	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic));
-	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 6U);
-	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 9U);
-	ENGINE_NEXT_CHECK_EQ(stPipeline.nGraphicsPassCount, 5U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 7U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 10U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nGraphicsPassCount, 6U);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nComputePassCount, 1U);
 	ENGINE_NEXT_CHECK(stPipeline.nHdr != stPipeline.nColor);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources[stPipeline.nHdr].stDescription.strName, "HdrColor");
-	const std::array<PassWork, 6> arrWork{ PassWork::ComputeTint, PassWork::GBuffer, PassWork::DeferredLighting, PassWork::ToneMap, PassWork::CopyToBackbuffer, PassWork::Present };
-	const std::array<const char *, 6> arrNames{ "ComputeTint", "GBuffer", "DeferredLighting", "ToneMap", "CopyToBackbuffer", "Present" };
+	const std::array<PassWork, 7> arrWork{ PassWork::ComputeTint, PassWork::DirectionalShadow, PassWork::GBuffer, PassWork::DeferredLighting, PassWork::ToneMap, PassWork::CopyToBackbuffer, PassWork::Present };
+	const std::array<const char *, 7> arrNames{ "ComputeTint", "DirectionalShadow", "GBuffer", "DeferredLighting", "ToneMap", "CopyToBackbuffer", "Present" };
 	for (std::size_t nIndex = 0; nIndex < arrWork.size(); ++nIndex)
 	{
 		const CompiledPass &stPass = stPipeline.stGraph.arrPasses[nIndex];
@@ -130,14 +133,14 @@ ENGINE_NEXT_TEST("RenderPipeline separates deferred HDR lighting from tone mappi
 		ENGINE_NEXT_CHECK_EQ(stPass.eQueue, nIndex == 0 ? QueueType::Compute : QueueType::Graphics);
 	}
 	const CompiledPass &stCompute = stPipeline.stGraph.arrPasses[0];
-	const CompiledPass &stGbuffer = stPipeline.stGraph.arrPasses[1];
-	const CompiledPass &stLighting = stPipeline.stGraph.arrPasses[2];
-	const CompiledPass &stToneMap = stPipeline.stGraph.arrPasses[3];
+	const CompiledPass &stGbuffer = stPipeline.stGraph.arrPasses[2];
+	const CompiledPass &stLighting = stPipeline.stGraph.arrPasses[3];
+	const CompiledPass &stToneMap = stPipeline.stGraph.arrPasses[4];
 	ENGINE_NEXT_CHECK(stCompute.bSignalRequired);
 	ENGINE_NEXT_CHECK(stGbuffer.arrWaits.empty());
 	ENGINE_NEXT_CHECK_EQ(stLighting.arrWaits, std::vector<PassId>{ stCompute.nPass });
-	ENGINE_NEXT_CHECK_EQ(stLighting.arrAccesses.back().nResource, stPipeline.nHdr);
-	ENGINE_NEXT_CHECK_EQ(stLighting.arrAccesses.back().eState, ResourceState::RenderTarget);
+	ENGINE_NEXT_CHECK_EQ(stLighting.arrAccesses.back().nResource, stPipeline.nDirectionalShadow);
+	ENGINE_NEXT_CHECK_EQ(stLighting.arrAccesses.back().eState, ResourceState::ShaderRead);
 	ENGINE_NEXT_CHECK(HasTransition(stLighting, stPipeline.nDepth, ResourceState::DepthWrite, ResourceState::DepthRead));
 	for (ResourceId nResource : stPipeline.arrGbuffer)
 	{
@@ -146,8 +149,8 @@ ENGINE_NEXT_TEST("RenderPipeline separates deferred HDR lighting from tone mappi
 	}
 	ENGINE_NEXT_CHECK(HasTransition(stToneMap, stPipeline.nHdr, ResourceState::RenderTarget, ResourceState::ShaderRead));
 	ENGINE_NEXT_CHECK(HasTransition(stToneMap, stPipeline.nColor, ResourceState::Common, ResourceState::RenderTarget));
-	ENGINE_NEXT_CHECK(HasTransition(stPipeline.stGraph.arrPasses[4], stPipeline.nColor, ResourceState::RenderTarget, ResourceState::CopySource));
-	ENGINE_NEXT_CHECK(HasTransition(stPipeline.stGraph.arrPasses[5], stPipeline.nDepth, ResourceState::DepthRead, ResourceState::DepthWrite));
+	ENGINE_NEXT_CHECK(HasTransition(stPipeline.stGraph.arrPasses[5], stPipeline.nColor, ResourceState::RenderTarget, ResourceState::CopySource));
+	ENGINE_NEXT_CHECK(HasTransition(stPipeline.stGraph.arrPasses[6], stPipeline.nDepth, ResourceState::DepthRead, ResourceState::DepthWrite));
 	CheckReusableStates(stPipeline);
 }
 
@@ -163,8 +166,8 @@ ENGINE_NEXT_TEST("RenderPipeline rebuild replaces owned scene resources and pass
 	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass[1], PassWork::FixedMesh);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nGraphicsPassCount, 3U);
 	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic));
-	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass.size(), 6U);
-	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass[1], PassWork::GBuffer);
-	ENGINE_NEXT_CHECK_EQ(stPipeline.nGraphicsPassCount, 5U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass.size(), 7U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass[1], PassWork::DirectionalShadow);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nGraphicsPassCount, 6U);
 	CheckReusableStates(stPipeline);
 }

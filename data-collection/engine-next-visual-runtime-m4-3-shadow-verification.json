@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-16T05:12:11.362316+00:00",
+  "baseline": "dcb0c05710a4b9401a8183389ce072d185db4c3d",
+  "passed": true,
+  "visual_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=112 checks=8302 failures=0",
+  "visual_native_key": "d6c8ee0fffec05b07a7701e5bab0e86efc78f2bb4585df9cd87f40f13454945c",
+  "runtime_native_key": "11f411f01a297915d643d97e5003013556573af4df8003d1d20f07effb8734e5",
+  "visual_input_mismatches": [],
+  "runtime_input_mismatches": [],
+  "reports": [
+    {
+      "path": "build/engine_next/m43-shadow-final2/VisualBuildReport.json",
+      "bytes": 1400777,
+      "sha256": "f1134454f54c136e0cb3e156cfdd2e464164a1e093d9ff5f89552330a1c6c944"
+    },
+    {
+      "path": "build/engine_next/shadow-runtime/RuntimeBuildReport.json",
+      "bytes": 263632,
+      "sha256": "23a35caed4e5faf9ff3a1973dd98422d1cf72a278b43fe87298f897e50d2f2c0"
+    },
+    {
+      "path": "build/engine_next/shadow-tools.log",
+      "bytes": 5217,
+      "sha256": "6c74da73da97b5fc59c5be915c369e421dcab4417d968ccc2a085dca22867f45"
+    },
+    {
+      "path": "build/engine_next/shadow-contract.log",
+      "bytes": 5422,
+      "sha256": "880e1c430bdc098a9844f129232618f9c6d00afb5d3d54fe0c9cc9af5cb37df5"
+    },
+    {
+      "path": "build/engine_next/shadow-ainative.log",
+      "bytes": 544,
+      "sha256": "84909912d9ce83380bdb0141c36faa1e2aa85727f025406058189713efff4dc4"
+    },
+    {
+      "path": "build/engine_next/shadow-editor.log",
+      "bytes": 1675,
+      "sha256": "cc3a65908e13f380d1b816f04cde2af7af343a5b27a39d4a896d293ed6e713a0"
+    }
+  ],
+  "regressions": {
+    "runtime": "61 tests 1100 checks plus complete M2/M3/AI/handshake/clean/package/drain acceptance",
+    "tools": "35 passed",
+    "contract": "31 passed, one conditional skip",
+    "ainative": "424 passed, 36 environment skips",
+    "editor_packages": "9 passed, two environment skips"
+  }
+}
