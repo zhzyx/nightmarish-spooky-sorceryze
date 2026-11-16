@@ -1,0 +1,405 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue": 1343,
+  "related_bug": 1368,
+  "recorded_at_utc": "2026-11-16T16:32:29.017493+00:00",
+  "result": "passed",
+  "runtime": {
+    "binary_sha256": "cf714c8bc710c8ff9467baee35d35727284c8f4d69c2826da2edda1772c757b6",
+    "native_key": "6c6277a6c5bbb0573761124b9592df01b5f321d881f02fc475a28b64115e7317",
+    "build_tests": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0",
+    "source_input_count": 215,
+    "source_mismatches": []
+  },
+  "run": {
+    "started_at_utc": "2026-11-16T16:27:10.627250+00:00",
+    "ready_at_utc": "2026-11-16T16:27:19.483307+00:00",
+    "readiness_seconds": 8.452999999979511,
+    "commands": [
+      [
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-runtime\\next_server.exe",
+        "--bind",
+        "127.0.0.1",
+        "--port",
+        "0",
+        "--duration-ms",
+        "240000",
+        "--drain-after-ms",
+        "210000",
+        "--asset-package",
+        "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-benchmarks\\F\\Scene.enpak",
+        "--trace-output",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-network\\final4\\server.jsonl"
+      ],
+      [
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-final4\\next_visual_client.exe",
+        "--asset-package",
+        "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-benchmarks\\F\\Scene.enpak",
+        "--gpu-package",
+        "D:\\Projects\\engine-next-m4-2-cook-20261116\\build\\engine_next\\cook-gpu-evidence-r2\\F-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-network\\final4\\RenderConfiguration.json",
+        "--connect",
+        "--port",
+        "49834",
+        "--client-id",
+        "A",
+        "--width",
+        "960",
+        "--height",
+        "640",
+        "--validation",
+        "--vsync",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-network\\final4\\A.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-network\\final4\\A.ppm"
+      ],
+      [
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-final4\\next_visual_client.exe",
+        "--asset-package",
+        "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-benchmarks\\F\\Scene.enpak",
+        "--gpu-package",
+        "D:\\Projects\\engine-next-m4-2-cook-20261116\\build\\engine_next\\cook-gpu-evidence-r2\\F-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-network\\final4\\RenderConfiguration.json",
+        "--connect",
+        "--port",
+        "49834",
+        "--client-id",
+        "B",
+        "--width",
+        "960",
+        "--height",
+        "640",
+        "--validation",
+        "--vsync",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-network\\final4\\B.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-network\\final4\\B.ppm"
+      ]
+    ],
+    "pids": {
+      "server": 31988,
+      "A": 30712,
+      "B": 37900
+    },
+    "visual_sha256": "cf714c8bc710c8ff9467baee35d35727284c8f4d69c2826da2edda1772c757b6",
+    "server_sha256": "22fe3e5ab39c50fa16a55f594043e004f381c5a6436879195af8ed9b3223a335",
+    "shader_sha256": {
+      "Deferred.ps.cso": "6f297e31e1880a5c0a20fbd0b86b76927563250127b7244f8d94d8eef72d583f",
+      "Deferred.vs.cso": "62601c1f714b45c0a96fcd2f2e6bbd7e48f0349264f67112959c1dc318b50ce1",
+      "FixedMesh.cs.cso": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064",
+      "FixedMesh.ps.cso": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9",
+      "FixedMesh.vs.cso": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69",
+      "Lighting.ps.cso": "316543b7e0dafe6aa5106806b0cd600413a02e3da829eb514ce4281cddaf77dc",
+      "Lighting.vs.cso": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018",
+      "Shadow.ps.cso": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24",
+      "Shadow.vs.cso": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4",
+      "ToneMap.ps.cso": "72a6c2ce2537a74909c50fc7c7d4be3f1c53f9cdf979ed61115d57c1b9c7228c"
+    },
+    "configuration_sha256": "514547fa9e2d8b950cc19ee6f9fc037be4e19553348f4a2c0d9f8a3b18b1bd68",
+    "input_driver": "Windows Computer Use key events into selected visible client window",
+    "completed_at_utc": "2026-11-16T16:30:41.248173+00:00",
+    "return_codes": [
+      0,
+      0,
+      0
+    ],
+    "passed": true
+  },
+  "checks": {
+    "A": {
+      "frames": 13654,
+      "validation_errors": 0,
+      "network_input_frames": 8,
+      "network_reconnect_requests": 0,
+      "local_shadow_views": 6,
+      "input_key_events": 18,
+      "resizes": 1,
+      "draw_position_max_error": 4.470348358154297e-08,
+      "largest_sample_gap_msec": 51784,
+      "sample_gap_frames": 30,
+      "last_entities": [
+        {
+          "confirmed_sequence": "12571",
+          "entity_id": "2",
+          "interpolation": 0,
+          "local": true,
+          "position": [
+            -0.024000123143196106,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "confirmed_sequence": "12548",
+          "entity_id": "1",
+          "interpolation": 3,
+          "local": false,
+          "position": [
+            -0.7439999580383301,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    "B": {
+      "frames": 22201,
+      "validation_errors": 0,
+      "network_input_frames": 12,
+      "network_reconnect_requests": 1,
+      "local_shadow_views": 6,
+      "input_key_events": 38,
+      "resizes": 0,
+      "draw_position_max_error": 4.470348358154297e-08,
+      "largest_sample_gap_msec": 539,
+      "sample_gap_frames": 30,
+      "last_entities": [
+        {
+          "confirmed_sequence": "12561",
+          "entity_id": "1",
+          "interpolation": 0,
+          "local": true,
+          "position": [
+            -0.7439999580383301,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "confirmed_sequence": "12559",
+          "entity_id": "2",
+          "interpolation": 3,
+          "local": false,
+          "position": [
+            -0.024000123143196106,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    }
+  },
+  "minimized_evidence": [
+    {
+      "client": "A",
+      "sample_gap_msec": 51784,
+      "rendered_frame_delta": 30,
+      "confirmed_before": "7047",
+      "confirmed_after": "10283",
+      "peer_samples": 279,
+      "peer_input_samples": 5
+    }
+  ],
+  "warmup": {
+    "A": {
+      "network_start_after_gpu_warmup": true,
+      "first_cpu_frame_msec": 6899.3924,
+      "first_network_frame": 4
+    },
+    "B": {
+      "network_start_after_gpu_warmup": true,
+      "first_cpu_frame_msec": 6905.1115,
+      "first_network_frame": 4
+    }
+  },
+  "input_actions": {
+    "method": "Computer Use @oai/sky press_key and title-bar click",
+    "window_mapping": {
+      "w1": {
+        "client_id": "B",
+        "pid": 37900
+      },
+      "w2": {
+        "client_id": "A",
+        "pid": 30712
+      }
+    },
+    "actions": [
+      {
+        "time_unix_msec": 1794846509511,
+        "at_utc": "2026-11-16T16:28:29.511000+00:00",
+        "action": "B ten D key presses"
+      },
+      {
+        "time_unix_msec": 1794846520195,
+        "at_utc": "2026-11-16T16:28:40.195000+00:00",
+        "action": "B R reconnect"
+      },
+      {
+        "time_unix_msec": 1794846521760,
+        "at_utc": "2026-11-16T16:28:41.760000+00:00",
+        "action": "A eight A key presses"
+      },
+      {
+        "time_unix_msec": 1794846552438,
+        "at_utc": "2026-11-16T16:29:12.438000+00:00",
+        "action": "A minimized through observed title-bar control"
+      },
+      {
+        "time_unix_msec": 1794846552547,
+        "at_utc": "2026-11-16T16:29:12.547000+00:00",
+        "action": "B five A key presses while A minimized"
+      },
+      {
+        "time_unix_msec": 1794846604071,
+        "at_utc": "2026-11-16T16:30:04.071000+00:00",
+        "action": "A restored"
+      }
+    ],
+    "minimized_confirmation": "Computer Use get_window_state returned window is minimized before restoring."
+  },
+  "video": {
+    "schema_version": 1,
+    "recorded_at": "2026-11-16T16:28:39.752408+00:00",
+    "method": "Win32 PrintWindow selected by exact task-owned PID, client-only surface",
+    "pid": 37900,
+    "width": 960,
+    "height": 640,
+    "frames": 400,
+    "fps": 20,
+    "unique_frame_hashes": 7,
+    "capture_elapsed_seconds": 20.05967230000533,
+    "encoder_returncode": 0,
+    "video": {
+      "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-network\\final4\\NetworkMotion.mp4",
+      "bytes": 5606269,
+      "sha256": "b84cd922c91d2c0816032b34b9c2ec54e06ae26e2d6536f074b00523763bf096"
+    },
+    "encoder": {
+      "path": "C:\\Users\\kaiyu\\AppData\\Local\\JianyingPro\\Apps\\11.8.0.14778\\ffmpeg.exe",
+      "sha256": "6480cca4b38450fd845984c1cd01b1a81b554a2d859a4adc843f6b87f4728fa1"
+    },
+    "estimated_recording_interval_utc": {
+      "start": "2026-11-16T16:28:19.692736+00:00",
+      "end": "2026-11-16T16:28:39.752408+00:00"
+    },
+    "action_coverage": "The video captures initial movement. The reconnect and minimized interval occurred afterward and are evidenced by the action timestamps, client/server logs and network samples."
+  },
+  "files": [
+    {
+      "path": "build/engine_next/local-shadow-network/final4/A.json",
+      "bytes": 7358665,
+      "sha256": "58cd9b34ba76e04bd399d673774ad89f3ec81e453772fc401bcd35c1452e4807"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/A.log",
+      "bytes": 1657,
+      "sha256": "1f634a198d770516b525bbef7918d3ed2ffb45da830185cb9beba479d34337f4"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/A.ppm",
+      "bytes": 1843215,
+      "sha256": "8942f8ccbdef3039a7a5b0c89bbd259f300f52ce99016fbc1beda81fe527c1d1"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/B.json",
+      "bytes": 11967910,
+      "sha256": "59316658281facb8984b001c00c0e72a75512ee6b9fe58c41375c7e6c7463b02"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/B.log",
+      "bytes": 2189,
+      "sha256": "26ac41c7635fa5fb29e8b066447655ffce85dbf87b1a70beecd0424edc8a5454"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/B.ppm",
+      "bytes": 1843215,
+      "sha256": "8942f8ccbdef3039a7a5b0c89bbd259f300f52ce99016fbc1beda81fe527c1d1"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/Completion.json",
+      "bytes": 4342,
+      "sha256": "cc79fc8b3109a7fcd985bd4955b2967b1602f682f322a919f6c5dc4df5294b42"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/Live.json",
+      "bytes": 4214,
+      "sha256": "7c317e3a507c4e2ea2f28eb120ee119216e931cde7c9cc280accd1952d8aa918"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/NetworkMotion-0.png",
+      "bytes": 36039,
+      "sha256": "5fca3ea94afc63f4586e8f4a90e4ebf07ea0539ff455fd2f0bc1062a77ddc53f"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/NetworkMotion-200.png",
+      "bytes": 35825,
+      "sha256": "880f5467de5e057638c09fb7b84d6a51f6759fa6da9d807ae84ab4cb2f082d9a"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/NetworkMotion-399.png",
+      "bytes": 35619,
+      "sha256": "05c38dc5d6c35dcb9f27b137aa023cf179f787ee61b8e1b81962c5afc4adc9ed"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/NetworkMotion.ffmpeg.log",
+      "bytes": 4665,
+      "sha256": "ba4183cbea8430e4e506c8e91453ef08453755bec3b7349f5738abed789a1b4e"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/NetworkMotion.json",
+      "bytes": 29625,
+      "sha256": "189fdf445d95f4ede03d65ce49834faaa9184a634636a8558bd01af949635881"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/NetworkMotion.mp4",
+      "bytes": 5606269,
+      "sha256": "b84cd922c91d2c0816032b34b9c2ec54e06ae26e2d6536f074b00523763bf096"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/RenderConfiguration.json",
+      "bytes": 1120,
+      "sha256": "514547fa9e2d8b950cc19ee6f9fc037be4e19553348f4a2c0d9f8a3b18b1bd68"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/server.jsonl",
+      "bytes": 976450,
+      "sha256": "ac1b5a4200caa46a237ac74275f16c95b830a5b5e25cd89e72325630b26d2347"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/server.log",
+      "bytes": 1141,
+      "sha256": "90798323a8a9e765cf8507830bfa2cbf96e541545eaee6ae821afdc345697275"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/UIActions.json",
+      "bytes": 1278,
+      "sha256": "f1de7d25dedd6cd4eb983dae05a8630971fd2e2243d14db164c979a9c9319a2e"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/final4/Verification.json",
+      "bytes": 4366,
+      "sha256": "61e86b1a5fe4a0a120b636502d91eaa6db9f7b0708eef1964e5a4663bd8f6769"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/RunLiveNetwork.py",
+      "bytes": 5880,
+      "sha256": "97a062b6616905c68ff450c618a2a0cbf21d8ae4893d627dba6323d0a92589b1"
+    },
+    {
+      "path": "build/engine_next/local-shadow-network/VerifyLiveNetwork.py",
+      "bytes": 4708,
+      "sha256": "1411667eb58d27368aeb97086a92cd42f8b00f463bcb8211542b34648180427f"
+    },
+    {
+      "path": "build/engine_next/local-shadow-final4/VisualBuildReport.json",
+      "bytes": 1479873,
+      "sha256": "3bcd938633407ed1d19dcbb9e9f7a3f7537937b1c2dc51da981ebd3c2c7ffa83"
+    },
+    {
+      "path": "build/engine_next/local-shadow-final4/next_visual_client.exe",
+      "bytes": 2909696,
+      "sha256": "cf714c8bc710c8ff9467baee35d35727284c8f4d69c2826da2edda1772c757b6"
+    }
+  ],
+  "limitations": [
+    "F uses its original immutable source scene with two players and six draw instances. Its background is an environment and has no receiver floor geometry. Dynamic shadow-map views are active while network-driven transforms move; a receiver-plane shadow motion measurement uses the separate shadow fixture.",
+    "The previous final3 attempts were superseded after reproducing a transport timeout caused by the first GPU frame. Their failure logs are preserved in build/engine_next/local-shadow-network.",
+    "The 210 second private harness drain deadline reserves startup time and the interactive test interval. It does not change application protocol timeouts."
+  ]
+}

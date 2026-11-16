@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "m43-local-shadow-gpu-verified-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "step",
+  "occurred_at": "2026-11-16T16:00:00+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-5afcb929",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m43-request-20261116"
+  ],
+  "payload": {
+    "scope": "Point and spot local shadows, PCF/PCSS and source-bound configuration",
+    "cpp": "136 tests and 15411 checks, no failures",
+    "runtime": "61 tests and 1100 checks, M2/M3/AI native and clean acceptance passed",
+    "gpu": "Reference RTX 4070 Ti, final binary d1ef50f207a061a8d08ed72d71b84aad58157a9ba14f686ce9acf774e8b55661, nine quality cases, maximum 28 views, matched seam regression and MASK receiver control, actual RenderDoc 48 indexed draws and replay passed",
+    "records": [
+      "data-collection/engine-next-visual-runtime-m4-3-local-shadow-verification.json",
+      "data-collection/engine-next-visual-runtime-m4-3-local-shadow-gpu.json",
+      "data-collection/engine-next-visual-runtime-m4-3-local-shadow-build-impact.json"
+    ],
+    "network_final_candidate": "in_progress",
+    "remaining": "Complete M4.3 TAA, post-processing, volumes, reflections and parent M4 acceptance remain open"
+  },
+  "sha256": "4a59f958b2279039b43773bc652a156680a8948d1f787cc861c2c51d5136a3be"
+}

@@ -20,6 +20,7 @@ CORE_SOURCES = [
     "engine_next/Rendering/RenderConfiguration.cpp",
     "engine_next/Rendering/CameraMatrices.cpp",
     "engine_next/Rendering/ShadowData.cpp",
+    "engine_next/Rendering/LocalShadowData.cpp",
     "engine_next/Rendering/ShadowBounds.cpp",
     "engine_next/Rendering/Cook/GltfDecoder.cpp",
     "engine_next/Rendering/Cook/ImageDecoder.cpp",
@@ -61,6 +62,8 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
     "engine_next/Tests/Rendering/TestCameraMatrices.cpp",
     "engine_next/Tests/Rendering/TestShadowData.cpp",
+    "engine_next/Tests/Rendering/TestLocalShadowData.cpp",
+    "engine_next/Tests/Rendering/TestShadowSampling.cpp",
     "engine_next/Tests/Rendering/TestShadowBounds.cpp",
     "engine_next/Tests/Rendering/TestGltfDecoder.cpp",
     "engine_next/Tests/Rendering/TestImageDecoder.cpp",
@@ -77,6 +80,7 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/RenderConfiguration.h",
     "EngineNext/Rendering/CameraMatrices.h",
     "EngineNext/Rendering/ShadowData.h",
+    "EngineNext/Rendering/LocalShadowData.h",
     "EngineNext/Rendering/RenderScene.h",
     "EngineNext/Rendering/VisualRuntime.h",
 ]
@@ -531,6 +535,7 @@ def build(args):
                 "engine_next/Rendering/Shaders/FixedMesh.hlsl",
                 "engine_next/Rendering/Shaders/Deferred.hlsl",
                 "engine_next/Rendering/Shaders/Shadow.hlsl",
+                "engine_next/Rendering/Shaders/ShadowSampling.hlsli",
             ]
         ),
         *[

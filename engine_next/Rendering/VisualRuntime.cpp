@@ -48,6 +48,7 @@
 #include "engine_next/Rendering/RenderPipeline.h"
 #include "engine_next/include/EngineNext/Rendering/ShadowData.h"
 #include "engine_next/Rendering/ShadowBounds.h"
+#include "engine_next/include/EngineNext/Rendering/LocalShadowData.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -84,7 +85,8 @@ namespace
 {
 
 constexpr std::uint32_t FRAME_COUNT = 3;
-constexpr std::uint32_t FRAME_VIEW_COUNT = 9;
+constexpr std::uint32_t FRAME_VIEW_COUNT = 10;
+constexpr std::uint32_t MAX_LOCAL_SHADOW_VIEWS = 28;
 constexpr std::uint32_t MATERIAL_TEXTURE_COUNT = 5;
 constexpr std::uint32_t MAX_MATERIALS = D3D12_MAX_SHADER_VISIBLE_SAMPLER_HEAP_SIZE / MATERIAL_TEXTURE_COUNT;
 constexpr std::uint32_t MATERIAL_VIEW_START = FRAME_COUNT * FRAME_VIEW_COUNT;
@@ -250,6 +252,7 @@ struct FrameContext
 	ComOwner<ID3D12Resource> stQueries;
 	ComOwner<ID3D12Resource> stConstants;
 	ComOwner<ID3D12Resource> stDirectionalShadow;
+	ComOwner<ID3D12Resource> stLocalShadow;
 	ComOwner<ID3D12Resource> stShadowConstants;
 	std::uint64_t nGraphicsFence = 0;
 	std::uint64_t nComputeFence = 0;
@@ -309,6 +312,15 @@ struct DrawConstants
 	std::array<float, 4> arrFlags{};
 };
 
+struct LocalLightConstants
+{
+	std::array<float, 4> arrPositionRange{};
+	std::array<float, 4> arrColorIntensity{};
+	std::array<float, 4> arrDirectionType{};
+	std::array<float, 4> arrConeShadow{};
+	std::array<float, 4> arrShadowParameters{};
+};
+
 struct FrameConstants
 {
 	std::array<float, 16> arrViewProjection{};
@@ -321,10 +333,17 @@ struct FrameConstants
 	std::array<float, 4> arrLightDirection{};
 	std::array<float, 4> arrLightColor{};
 	std::array<float, 4> arrShadowParameters{};
+	std::array<std::array<float, 16>, MAX_LOCAL_SHADOW_VIEWS> arrLocalShadowMatrices{};
+	std::array<LocalLightConstants, 8> arrLocalLights{};
+	std::array<float, 4> arrLocalCounts{};
 };
 
 static_assert(sizeof(DrawConstants) == 192);
-static_assert(sizeof(FrameConstants) == 544);
+static_assert(sizeof(LocalLightConstants) == 80);
+static_assert(sizeof(FrameConstants) == 2992);
+static_assert(offsetof(FrameConstants, arrLocalShadowMatrices) == 544);
+static_assert(offsetof(FrameConstants, arrLocalLights) == 2336);
+static_assert(offsetof(FrameConstants, arrLocalCounts) == 2976);
 static_assert(offsetof(DrawConstants, arrFlags) == 176);
 static_assert(offsetof(FrameConstants, arrCamera) == 128);
 static_assert(offsetof(FrameConstants, arrLighting) == 144);
@@ -542,7 +561,7 @@ private:
 	bool ResolveNetworkBindings();
 	bool CreateDeferredPipeline();
 	bool CreateShadowPipeline();
-	void DrawDirectionalShadows(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame);
+	void DrawShadows(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, bool bLocal);
 	bool UploadTexture(const std::vector<MipLevel> &arrLevels, bool bSrgb, std::uint32_t nView);
 	bool UploadFloatTexture(const std::vector<const FloatImage *> &arrImages, std::uint32_t nMips, std::uint32_t nView);
 	bool CreateEnvironment();
@@ -608,6 +627,7 @@ private:
 	RenderConfiguration stRenderConfiguration;
 	CameraMatrices stCameraMatrices;
 	ShadowData stShadowData;
+	LocalShadowData stLocalShadowData;
 	Assets::SceneDocument stNetworkScene;
 	Runtime::ClientSession stClient;
 	Runtime::ClientSnapshot stClientSnapshot;
@@ -615,6 +635,7 @@ private:
 	std::uint64_t nNetworkInputFrames = 0;
 	std::uint64_t nReconnectRequests = 0;
 	std::uint64_t nObservedGeneration = 0;
+	bool bNetworkStartedAfterGpuWarmup = false;
 	bool bSceneMode = false;
 	std::uint64_t nSceneTriangles = 0;
 	std::uint64_t nTextureUploadBytes = 0;
@@ -802,7 +823,7 @@ bool VisualRuntime::Initialize()
 		return Fail("Create RTV heap");
 	}
 	stHeap.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-	stHeap.NumDescriptors = FRAME_COUNT * 5;
+	stHeap.NumDescriptors = FRAME_COUNT * (5 + MAX_LOCAL_SHADOW_VIEWS);
 	if (FAILED(stDevice->CreateDescriptorHeap(&stHeap, IID_PPV_ARGS(stDsvHeap.Put()))))
 	{
 		return Fail("Create DSV heap");
@@ -961,6 +982,27 @@ bool VisualRuntime::CreateTargets()
 			stShadowSrv.Texture2DArray.MipLevels = 1;
 			stDevice->CreateShaderResourceView(stFrame.stDirectionalShadow.Get(), &stShadowSrv, View(nIndex * FRAME_VIEW_COUNT + 8));
 			(void)stFrame.stDirectionalShadow->SetName(L"EngineNext.DirectionalShadow");
+			D3D12_RESOURCE_DESC stLocalDescription = stShadowDescription;
+			stLocalDescription.Width = stRenderConfiguration.stShadows.nLocalResolution;
+			stLocalDescription.Height = stRenderConfiguration.stShadows.nLocalResolution;
+			const std::uint32_t nViews = (std::max)(1U, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size()));
+			stLocalDescription.DepthOrArraySize = static_cast<UINT16>(nViews);
+			if (FAILED(stDevice->CreateCommittedResource(&stHeap, D3D12_HEAP_FLAG_NONE, &stLocalDescription, D3D12_RESOURCE_STATE_DEPTH_WRITE, &stDepthClear, IID_PPV_ARGS(stFrame.stLocalShadow.Put()))))
+			{
+				return Fail("Create local shadow array");
+			}
+			for (std::uint32_t nView = 0; nView < nViews; ++nView)
+			{
+				D3D12_DEPTH_STENCIL_VIEW_DESC stLocalDsv{};
+				stLocalDsv.Format = DXGI_FORMAT_D32_FLOAT;
+				stLocalDsv.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
+				stLocalDsv.Texture2DArray.ArraySize = 1;
+				stLocalDsv.Texture2DArray.FirstArraySlice = nView;
+				stDevice->CreateDepthStencilView(stFrame.stLocalShadow.Get(), &stLocalDsv, Dsv(FRAME_COUNT * 5 + nIndex * MAX_LOCAL_SHADOW_VIEWS + nView));
+			}
+			stShadowSrv.Texture2DArray.ArraySize = nViews;
+			stDevice->CreateShaderResourceView(stFrame.stLocalShadow.Get(), &stShadowSrv, View(nIndex * FRAME_VIEW_COUNT + 9));
+			(void)stFrame.stLocalShadow->SetName(L"EngineNext.LocalShadow");
 			const std::array<DXGI_FORMAT, 4> arrFormats{ DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R16G16B16A16_FLOAT };
 			for (std::uint32_t nTarget = 0; nTarget < arrFormats.size(); ++nTarget)
 			{
@@ -1191,6 +1233,10 @@ bool VisualRuntime::LoadScene()
 	{
 		return Fail(arrDiagnostics.empty() ? "Load rendering configuration" : arrDiagnostics.front().strMessage);
 	}
+	if (!BuildLocalShadows(stRenderConfiguration.arrPointLights, stRenderConfiguration.arrSpotLights, stLocalShadowData, arrDiagnostics))
+	{
+		return Fail(arrDiagnostics.empty() ? "Build local shadow views" : arrDiagnostics.back().strMessage);
+	}
 	bSceneMode = true;
 	if (stConfig.bConnect)
 	{
@@ -1204,17 +1250,6 @@ bool VisualRuntime::LoadScene()
 			return Fail("Simulation scene package changed during initialization");
 		}
 		stNetworkScene = std::move(stPackage.stScene);
-		Runtime::RuntimeConfig stNetwork;
-		stNetwork.eRole = Runtime::RuntimeRole::Client;
-		stNetwork.bNetworkMode = true;
-		stNetwork.strAssetPackagePath = stConfig.strAssetPackagePath;
-		stNetwork.strBindAddress = stConfig.strServerAddress;
-		stNetwork.strClientId = stConfig.strClientId;
-		stNetwork.nPort = stConfig.nServerPort;
-		if (stClient.Initialize(stNetwork) != Runtime::RuntimeStatus::Ok || stClient.GetPackageDigest() != stRenderScene.strPackageDigest)
-		{
-			return Fail("Initialize visual gameplay session");
-		}
 	}
 	return true;
 }
@@ -1764,7 +1799,7 @@ bool VisualRuntime::CreateDeferredPipeline()
 		arrDescriptorRanges[3].NumDescriptors = 3;
 		arrDescriptorRanges[3].BaseShaderRegister = 6;
 		arrDescriptorRanges[4].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-		arrDescriptorRanges[4].NumDescriptors = 1;
+		arrDescriptorRanges[4].NumDescriptors = 2;
 		arrDescriptorRanges[4].BaseShaderRegister = 9;
 		std::array<D3D12_ROOT_PARAMETER, 5> arrParameters{};
 		arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -1962,9 +1997,9 @@ bool VisualRuntime::CreateShadowPipeline()
 	return true;
 }
 
-void VisualRuntime::DrawDirectionalShadows(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame)
+void VisualRuntime::DrawShadows(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, bool bLocal)
 {
-	const float fResolution = static_cast<float>(stRenderConfiguration.stShadows.nResolution);
+	const float fResolution = static_cast<float>(bLocal ? stRenderConfiguration.stShadows.nLocalResolution : stRenderConfiguration.stShadows.nResolution);
 	const D3D12_VIEWPORT stViewport{ 0, 0, fResolution, fResolution, 0, 1 };
 	const D3D12_RECT stScissor{ 0, 0, static_cast<LONG>(fResolution), static_cast<LONG>(fResolution) };
 	pList->RSSetViewports(1, &stViewport);
@@ -1976,16 +2011,18 @@ void VisualRuntime::DrawDirectionalShadows(ID3D12GraphicsCommandList *pList, std
 	pList->SetDescriptorHeaps(2, arrHeaps);
 	pList->SetGraphicsRootSignature(stShadowRoot.Get());
 	const UINT nSamplerStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
-	for (std::uint32_t nCascade = 0; nCascade < 4; ++nCascade)
+	const std::uint32_t nViewCount = bLocal ? (std::max)(1U, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size())) : 4;
+	for (std::uint32_t nView = 0; nView < nViewCount; ++nView)
 	{
-		const D3D12_CPU_DESCRIPTOR_HANDLE stDepth = Dsv(FRAME_COUNT + nFrame * 4 + nCascade);
+		const std::uint32_t nDsv = bLocal ? FRAME_COUNT * 5 + nFrame * MAX_LOCAL_SHADOW_VIEWS + nView : FRAME_COUNT + nFrame * 4 + nView;
+		const D3D12_CPU_DESCRIPTOR_HANDLE stDepth = Dsv(nDsv);
 		pList->ClearDepthStencilView(stDepth, D3D12_CLEAR_FLAG_DEPTH, 0, 0, 0, nullptr);
-		if (!stRenderConfiguration.stShadows.bEnabled)
+		if (!stRenderConfiguration.stShadows.bEnabled || (bLocal && stLocalShadowData.arrViews.empty()))
 		{
 			continue;
 		}
 		pList->OMSetRenderTargets(0, nullptr, FALSE, &stDepth);
-		pList->SetGraphicsRootConstantBufferView(1, arrFrames[nFrame].stShadowConstants->GetGPUVirtualAddress() + nCascade * CONSTANT_BUFFER_ALIGNMENT);
+		pList->SetGraphicsRootConstantBufferView(1, arrFrames[nFrame].stShadowConstants->GetGPUVirtualAddress() + (bLocal ? nView + 4 : nView) * CONSTANT_BUFFER_ALIGNMENT);
 		for (std::size_t nDraw = 0; nDraw < arrDraws.size(); ++nDraw)
 		{
 			const GpuDraw &stDraw = arrDraws[nDraw];
@@ -2018,7 +2055,7 @@ bool VisualRuntime::CreateConstantBuffers()
 			return Fail("Create frame-owned constant upload buffer");
 		}
 		(void)stFrame.stConstants->SetName(L"EngineNext.FrameConstants");
-		const D3D12_RESOURCE_DESC stShadowDescription = BufferDescription(4 * CONSTANT_BUFFER_ALIGNMENT);
+		const D3D12_RESOURCE_DESC stShadowDescription = BufferDescription((4 + MAX_LOCAL_SHADOW_VIEWS) * CONSTANT_BUFFER_ALIGNMENT);
 		if (FAILED(stDevice->CreateCommittedResource(&stHeap, D3D12_HEAP_FLAG_NONE, &stShadowDescription, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(stFrame.stShadowConstants.Put()))))
 		{
 			return Fail("Create shadow constant upload buffer");
@@ -2102,6 +2139,99 @@ bool VisualRuntime::UpdateConstantBuffer(FrameContext &stFrame)
 		stConstants.arrCascadeSplits[nCascade] = static_cast<float>(stShadowData.arrCascades[nCascade].dSplitFar);
 	}
 	stConstants.arrShadowParameters = { stRenderConfiguration.stShadows.bEnabled ? 1.0F : 0.0F, 1.0F / static_cast<float>(stRenderConfiguration.stShadows.nResolution), static_cast<float>(stRenderConfiguration.stShadows.dDepthBias), static_cast<float>(stRenderConfiguration.stShadows.dNormalBias) };
+	for (std::size_t nView = 0; nView < stLocalShadowData.arrViews.size(); ++nView)
+	{
+		for (std::size_t nElement = 0; nElement < 16; ++nElement)
+		{
+			stConstants.arrLocalShadowMatrices[nView][nElement] = static_cast<float>(stLocalShadowData.arrViews[nView].arrViewProjection[nElement]);
+		}
+	}
+	std::size_t nLightIndex = 0;
+	for (const PointLightSettings &stPoint : stRenderConfiguration.arrPointLights)
+	{
+		LocalLightConstants &stOutput = stConstants.arrLocalLights[nLightIndex++];
+		for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
+		{
+			stOutput.arrPositionRange[nAxis] = static_cast<float>(stPoint.arrPosition[nAxis]);
+			stOutput.arrColorIntensity[nAxis] = static_cast<float>(stPoint.arrColor[nAxis] * stPoint.dLumens / (4 * 3.141592653589793));
+		}
+		stOutput.arrPositionRange[3] = static_cast<float>(stPoint.dRange);
+		stOutput.arrConeShadow[2] = -1;
+		for (std::size_t nView = 0; nView < stLocalShadowData.arrViews.size(); ++nView)
+		{
+			if (stLocalShadowData.arrViews[nView].nLightId == stPoint.nId)
+			{
+				stOutput.arrConeShadow[2] = static_cast<float>(nView);
+				break;
+			}
+		}
+		const double dNear = (std::min)(0.05, stPoint.dRange * 0.01);
+		stOutput.arrShadowParameters = { static_cast<float>(dNear), static_cast<float>(stPoint.dRange), static_cast<float>(stRenderConfiguration.stShadows.dLightRadius * 0.5 * stRenderConfiguration.stShadows.nLocalResolution / dNear), 0 };
+	}
+	for (const SpotLightSettings &stSpot : stRenderConfiguration.arrSpotLights)
+	{
+		LocalLightConstants &stOutput = stConstants.arrLocalLights[nLightIndex++];
+		const double dOuter = stSpot.dOuterAngleDegrees * 3.141592653589793 / 180;
+		const double dInner = stSpot.dInnerAngleDegrees * 3.141592653589793 / 180;
+		const double dOuterChordSquared = 4 * std::pow(std::sin(dOuter * 0.5), 2);
+		const double dInnerChordSquared = 4 * std::pow(std::sin(dInner * 0.5), 2);
+		if (static_cast<float>(dOuterChordSquared) - static_cast<float>(dInnerChordSquared) < std::numeric_limits<float>::min())
+		{
+			return Fail("Spot cone exceeds GPU angular precision");
+		}
+		double dSolidAngle = 0;
+		if (!ComputeSpotSolidAngle(stSpot.dInnerAngleDegrees, stSpot.dOuterAngleDegrees, dSolidAngle))
+		{
+			return Fail("Spot angular falloff has no finite solid angle");
+		}
+		const double dSpotMaximum = (std::max)({ std::abs(stSpot.arrDirection[0]), std::abs(stSpot.arrDirection[1]), std::abs(stSpot.arrDirection[2]) });
+		const std::array<double, 3> arrSpotDirection{ stSpot.arrDirection[0] / dSpotMaximum, stSpot.arrDirection[1] / dSpotMaximum, stSpot.arrDirection[2] / dSpotMaximum };
+		const double dSpotLength = std::sqrt(arrSpotDirection[0] * arrSpotDirection[0] + arrSpotDirection[1] * arrSpotDirection[1] + arrSpotDirection[2] * arrSpotDirection[2]);
+		for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
+		{
+			stOutput.arrPositionRange[nAxis] = static_cast<float>(stSpot.arrPosition[nAxis]);
+			const double dIntensity = stSpot.arrColor[nAxis] * stSpot.dLumens / dSolidAngle;
+			if (!std::isfinite(dIntensity) || dIntensity > std::numeric_limits<float>::max())
+			{
+				return Fail("Spot radiance exceeds finite GPU precision");
+			}
+			stOutput.arrColorIntensity[nAxis] = static_cast<float>(dIntensity);
+			stOutput.arrDirectionType[nAxis] = static_cast<float>(arrSpotDirection[nAxis] / dSpotLength);
+		}
+		stOutput.arrPositionRange[3] = static_cast<float>(stSpot.dRange);
+		stOutput.arrDirectionType[3] = 1;
+		stOutput.arrConeShadow = { static_cast<float>(dInnerChordSquared), static_cast<float>(dOuterChordSquared), -1, 0 };
+		for (std::size_t nView = 0; nView < stLocalShadowData.arrViews.size(); ++nView)
+		{
+			if (stLocalShadowData.arrViews[nView].nLightId == stSpot.nId)
+			{
+				stOutput.arrConeShadow[2] = static_cast<float>(nView);
+				break;
+			}
+		}
+		const double dNear = (std::min)(0.05, stSpot.dRange * 0.01);
+		const double dProjectedRadius = stRenderConfiguration.stShadows.dLightRadius * 0.5 / std::tan(dOuter) * stRenderConfiguration.stShadows.nLocalResolution / dNear;
+		if (!std::isfinite(dProjectedRadius) || dProjectedRadius > std::numeric_limits<float>::max())
+		{
+			return Fail("Spot source radius exceeds finite GPU precision");
+		}
+		stOutput.arrShadowParameters = { static_cast<float>(dNear), static_cast<float>(stSpot.dRange), static_cast<float>(dProjectedRadius), 0 };
+	}
+	for (std::size_t nIndex = 0; nIndex < nLightIndex; ++nIndex)
+	{
+		const LocalLightConstants &stLocal = stConstants.arrLocalLights[nIndex];
+		for (const std::array<float, 4> *pValues : { &stLocal.arrPositionRange, &stLocal.arrColorIntensity, &stLocal.arrDirectionType, &stLocal.arrConeShadow, &stLocal.arrShadowParameters })
+		{
+			for (float fValue : *pValues)
+			{
+				if (!std::isfinite(fValue))
+				{
+					return Fail("Local light parameters exceed finite GPU precision");
+				}
+			}
+		}
+	}
+	stConstants.arrLocalCounts = { static_cast<float>(nLightIndex), static_cast<float>(stLocalShadowData.arrViews.size()), static_cast<float>(stRenderConfiguration.stShadows.nLocalResolution), stRenderConfiguration.stShadows.eFilter == ShadowFilter::Pcss ? 1.0F : 0.0F };
 	void *pMapped = nullptr;
 	const D3D12_RANGE stNoRead{ 0, 0 };
 	if (FAILED(stFrame.stConstants->Map(0, &stNoRead, &pMapped)))
@@ -2132,6 +2262,10 @@ bool VisualRuntime::UpdateConstantBuffer(FrameContext &stFrame)
 	for (std::size_t nCascade = 0; nCascade < 4; ++nCascade)
 	{
 		std::memcpy(pBytes + nCascade * CONSTANT_BUFFER_ALIGNMENT, stConstants.arrShadowViewProjection[nCascade].data(), 16 * sizeof(float));
+	}
+	for (std::size_t nView = 0; nView < stLocalShadowData.arrViews.size(); ++nView)
+	{
+		std::memcpy(pBytes + (nView + 4) * CONSTANT_BUFFER_ALIGNMENT, stConstants.arrLocalShadowMatrices[nView].data(), 16 * sizeof(float));
 	}
 	stFrame.stShadowConstants->Unmap(0, nullptr);
 	return true;
@@ -2235,7 +2369,7 @@ std::uint32_t VisualRuntime::TotalQueryCount() const noexcept
 bool VisualRuntime::BuildGraph()
 {
 	GraphDiagnostic stDiagnostic;
-	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic))
+	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size())))
 	{
 		return Fail("FrameGraph compilation failed: " + stDiagnostic.strMessage);
 	}
@@ -2355,6 +2489,7 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 	{
 		arrResources[stRenderPipeline.nHdr] = stFrame.stHdr.Get();
 		arrResources[stRenderPipeline.nDirectionalShadow] = stFrame.stDirectionalShadow.Get();
+		arrResources[stRenderPipeline.nLocalShadow] = stFrame.stLocalShadow.Get();
 		for (std::size_t nTarget = 0; nTarget < stFrame.arrGbuffer.size(); ++nTarget)
 		{
 			arrResources[stRenderPipeline.arrGbuffer[nTarget]] = stFrame.arrGbuffer[nTarget].Get();
@@ -2417,7 +2552,11 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		ApplyBarriers(pList, stPass.arrBeforeBarriers, arrResources);
 		if (eWork == PassWork::DirectionalShadow)
 		{
-			DrawDirectionalShadows(pList, nIndex);
+			DrawShadows(pList, nIndex, false);
+		}
+		else if (eWork == PassWork::LocalShadow)
+		{
+			DrawShadows(pList, nIndex, true);
 		}
 		else if (eWork == PassWork::FixedMesh)
 		{
@@ -2521,6 +2660,7 @@ bool VisualRuntime::Resize()
 		arrFrames[nIndex].stColor.Reset();
 		arrFrames[nIndex].stHdr.Reset();
 		arrFrames[nIndex].stDirectionalShadow.Reset();
+		arrFrames[nIndex].stLocalShadow.Reset();
 		arrFrames[nIndex].stDepth.Reset();
 		for (ComOwner<ID3D12Resource> &stTarget : arrFrames[nIndex].arrGbuffer)
 		{
@@ -2617,7 +2757,7 @@ bool VisualRuntime::Run()
 			fCameraX += (stInput.arrKeys['D'] ? 0.01F : 0.0F) - (stInput.arrKeys['A'] ? 0.01F : 0.0F);
 			fCameraY += (stInput.arrKeys['W'] ? 0.01F : 0.0F) - (stInput.arrKeys['S'] ? 0.01F : 0.0F);
 		}
-		if (stConfig.bConnect)
+		if (bNetworkStartedAfterGpuWarmup)
 		{
 			Gameplay::Vector3 vInput{
 				(stInput.arrKeys['D'] ? 1.0F : 0.0F) - (stInput.arrKeys['A'] ? 1.0F : 0.0F),
@@ -2644,9 +2784,10 @@ bool VisualRuntime::Run()
 				}
 			}
 			const Runtime::SystemClock stClock;
-			if (stClient.Tick(stClock.NowMsec(), vInput) != Runtime::RuntimeStatus::Ok)
+			const Runtime::RuntimeStatus eNetworkStatus = stClient.Tick(stClock.NowMsec(), vInput);
+			if (eNetworkStatus != Runtime::RuntimeStatus::Ok)
 			{
-				return Fail("Network visual client step");
+				return Fail("Network visual client step status=" + std::to_string(static_cast<unsigned int>(eNetworkStatus)));
 			}
 			stClientSnapshot = stClient.GetSnapshot();
 			if (stClient.HasSucceeded())
@@ -2681,6 +2822,34 @@ bool VisualRuntime::Run()
 		if (!RenderFrame(dSeconds, bCapture))
 		{
 			return false;
+		}
+		if (stConfig.bConnect && !bNetworkStartedAfterGpuWarmup)
+		{
+			// Driver validation can block the first draw for longer than a transport timeout.
+			// Retire that work before starting the peer's handshake clock.
+			if (!stGraphics.Flush() || !stCompute.Flush())
+			{
+				return Fail("Retire GPU warmup before network startup");
+			}
+			Runtime::RuntimeConfig stNetwork;
+			stNetwork.eRole = Runtime::RuntimeRole::Client;
+			stNetwork.bNetworkMode = true;
+			stNetwork.strAssetPackagePath = stConfig.strAssetPackagePath;
+			stNetwork.strBindAddress = stConfig.strServerAddress;
+			stNetwork.strClientId = stConfig.strClientId;
+			stNetwork.nPort = stConfig.nServerPort;
+			const Runtime::RuntimeStatus eNetworkStatus = stClient.Initialize(stNetwork);
+			if (eNetworkStatus != Runtime::RuntimeStatus::Ok)
+			{
+				return Fail("Initialize visual gameplay session status=" + std::to_string(static_cast<unsigned int>(eNetworkStatus)));
+			}
+			if (stClient.GetPackageDigest() != stRenderScene.strPackageDigest)
+			{
+				return Fail("Simulation scene package changed before network startup");
+			}
+			bNetworkStartedAfterGpuWarmup = true;
+			std::cout << "ENGINE_NEXT_VISUAL_NETWORK_START client_id=" << stConfig.strClientId << " after_gpu_warmup=1 frame=" << nFrames << '\n'
+					  << std::flush;
 		}
 		Timing(nFrames - 1).dCpuMsec = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - stFrameStart).count();
 		if (stConfig.bExerciseResize && (nFrames == 3 || nFrames == 6))
@@ -2906,6 +3075,10 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["shadow_cascades"] = JsonValue(static_cast<std::int64_t>(bSceneMode ? 4 : 0));
 	mapReport["shadow_resolution"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stShadows.nResolution));
 	mapReport["shadow_filter"] = JsonValue("pcf_3x3_cascade_blend");
+	mapReport["local_lights"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.arrPointLights.size() + stRenderConfiguration.arrSpotLights.size()));
+	mapReport["local_shadow_views"] = JsonValue(static_cast<std::int64_t>(stLocalShadowData.arrViews.size()));
+	mapReport["local_shadow_resolution"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stShadows.nLocalResolution));
+	mapReport["local_shadow_filter"] = JsonValue(stRenderConfiguration.stShadows.eFilter == ShadowFilter::Pcss ? "pcss_5x5" : "pcf_3x3");
 	mapReport["shadow_split_distances"] = JsonValue::List{};
 	for (const ShadowCascade &stCascade : stShadowData.arrCascades)
 	{
@@ -2959,6 +3132,7 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["texture_upload_bytes"] = JsonValue(static_cast<std::int64_t>(nTextureUploadBytes));
 	mapReport["draw_instances"] = JsonValue(static_cast<std::int64_t>(arrDraws.size()));
 	mapReport["scene_triangles"] = JsonValue(static_cast<std::int64_t>(nSceneTriangles));
+	mapReport["network_start_after_gpu_warmup"] = JsonValue(bNetworkStartedAfterGpuWarmup);
 	mapReport["network_input_frames"] = JsonValue(static_cast<std::int64_t>(nNetworkInputFrames));
 	mapReport["network_reconnect_requests"] = JsonValue(static_cast<std::int64_t>(nReconnectRequests));
 	mapReport["network_client_id"] = JsonValue(stConfig.strClientId);

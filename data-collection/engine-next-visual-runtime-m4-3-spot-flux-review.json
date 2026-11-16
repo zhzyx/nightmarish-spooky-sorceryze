@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue": 1343,
+  "reviewed_at_utc": "2026-11-16T15:24:35.843734+00:00",
+  "reviewer": "m42_network_acceptance",
+  "scope": "ComputeSpotSolidAngle, its direct VisualRuntime intensity consumer, and the two integral regressions",
+  "findings": [],
+  "verification": {
+    "command": [
+      "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\spot-flux-clang\\next_rendering_tests.exe"
+    ],
+    "returncode": 0,
+    "stdout": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=20 checks=1443 failures=0\n",
+    "stderr": "",
+    "exe_sha256": "be320b0cf836a233883225e26ab66549f6272e41bff3379f163f0fde91be337a"
+  },
+  "sources_sha256": {
+    "engine_next/include/EngineNext/Rendering/RenderConfiguration.h": "b4386cbf2500f3de9c5a84e39075ebf829e7310b82bd98511ca376052129eb0f",
+    "engine_next/Rendering/RenderConfiguration.cpp": "057ba36d65325f401b7fcf50b839e4f14d9f385a0d38874784e626b0e834d472",
+    "engine_next/Tests/Rendering/TestRenderConfiguration.cpp": "0ea58650d29ce139333523a2721b2aec2d83e0841f313fd56deaa3f6ee0cb72d",
+    "engine_next/Rendering/VisualRuntime.cpp": "b52e85772dbb02f5b2fc219271f41754c352aeccdcb59a26587c63d317e6d43e",
+    "engine_next/Rendering/Shaders/Deferred.hlsl": "93f40781e2c4c4f48cb27b9dfaaa36917e08a845c7f8e3f94ce4f334c29b9252"
+  },
+  "reasoning": [
+    "For q=4*sin(theta/2)^2, the solid angle differential is pi*dq. The unit falloff is 1 for q<=qinner and has a smoothstep transition whose normalized integral equals one half, yielding pi*(qinner+qouter)/2.",
+    "The implementation computes that value with sine half angles, preserving small-angle precision and avoiding cancellation from 1-cos(theta).",
+    "Output is assigned only after finite angle/range validation and positive finite area validation. Invalid and underflowing inputs preserve the output.",
+    "VisualRuntime divides declared luminous flux times color by the same effective solid angle, validates finite float intensity, and sends the corresponding squared-chord boundaries to the shader.",
+    "The independent theta-domain quadrature includes 2*pi*sin(theta), narrow and wide cones, and measures the integrated declared flux."
+  ],
+  "scope_boundary": "VisualRuntime and Deferred HLSL were reviewed at the recorded hashes. Subsequent seam-sampling changes are reviewed separately.",
+  "source_verification_at_utc": "2026-11-16T15:31:52.071757+00:00",
+  "source_verification": {
+    "engine_next/include/EngineNext/Rendering/RenderConfiguration.h": {
+      "reviewed_sha256": "b4386cbf2500f3de9c5a84e39075ebf829e7310b82bd98511ca376052129eb0f",
+      "current_sha256_at_verification": "b4386cbf2500f3de9c5a84e39075ebf829e7310b82bd98511ca376052129eb0f",
+      "matches": true
+    },
+    "engine_next/Rendering/RenderConfiguration.cpp": {
+      "reviewed_sha256": "057ba36d65325f401b7fcf50b839e4f14d9f385a0d38874784e626b0e834d472",
+      "current_sha256_at_verification": "057ba36d65325f401b7fcf50b839e4f14d9f385a0d38874784e626b0e834d472",
+      "matches": true
+    },
+    "engine_next/Tests/Rendering/TestRenderConfiguration.cpp": {
+      "reviewed_sha256": "0ea58650d29ce139333523a2721b2aec2d83e0841f313fd56deaa3f6ee0cb72d",
+      "current_sha256_at_verification": "0ea58650d29ce139333523a2721b2aec2d83e0841f313fd56deaa3f6ee0cb72d",
+      "matches": true
+    },
+    "engine_next/Rendering/VisualRuntime.cpp": {
+      "reviewed_sha256": "b52e85772dbb02f5b2fc219271f41754c352aeccdcb59a26587c63d317e6d43e",
+      "current_sha256_at_verification": "b52e85772dbb02f5b2fc219271f41754c352aeccdcb59a26587c63d317e6d43e",
+      "matches": true
+    },
+    "engine_next/Rendering/Shaders/Deferred.hlsl": {
+      "reviewed_sha256": "93f40781e2c4c4f48cb27b9dfaaa36917e08a845c7f8e3f94ce4f334c29b9252",
+      "current_sha256_at_verification": "129566d40a633d3661d848760f9b4274205c3203dc2848b066eb5f8029aea591",
+      "matches": false
+    }
+  }
+}

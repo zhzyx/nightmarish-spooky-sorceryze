@@ -1,0 +1,1024 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "regression_issue_number": 1351,
+  "recorded_at": "2026-11-16T16:16:01.226857+00:00",
+  "scope": "Actual D3D12 point and spot PCF/PCSS runtime, cube-seam and MASK receiver regression validation",
+  "build": {
+    "report": {
+      "path": "build\\engine_next\\local-shadow-final3\\VisualBuildReport.json",
+      "bytes": 1479873,
+      "sha256": "004c53dcb8b8ab6578b742a230fc40794cb16ba769d86609f8b6aa44984c0595"
+    },
+    "binary": {
+      "path": "build\\engine_next\\local-shadow-final3\\next_visual_client.exe",
+      "bytes": 2909184,
+      "sha256": "d1ef50f207a061a8d08ed72d71b84aad58157a9ba14f686ce9acf774e8b55661"
+    },
+    "native_key": "e0f16b6ddc458c6bd29886b2e0ff60fee13b8495c1a4060aa2634c404eb7531c",
+    "test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0",
+    "shaders": [
+      {
+        "path": "build\\engine_next\\local-shadow-final3\\Deferred.ps.cso",
+        "bytes": 7800,
+        "sha256": "6f297e31e1880a5c0a20fbd0b86b76927563250127b7244f8d94d8eef72d583f"
+      },
+      {
+        "path": "build\\engine_next\\local-shadow-final3\\Deferred.vs.cso",
+        "bytes": 6832,
+        "sha256": "62601c1f714b45c0a96fcd2f2e6bbd7e48f0349264f67112959c1dc318b50ce1"
+      },
+      {
+        "path": "build\\engine_next\\local-shadow-final3\\FixedMesh.cs.cso",
+        "bytes": 3300,
+        "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+      },
+      {
+        "path": "build\\engine_next\\local-shadow-final3\\FixedMesh.ps.cso",
+        "bytes": 4132,
+        "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+      },
+      {
+        "path": "build\\engine_next\\local-shadow-final3\\FixedMesh.vs.cso",
+        "bytes": 4316,
+        "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+      },
+      {
+        "path": "build\\engine_next\\local-shadow-final3\\Lighting.ps.cso",
+        "bytes": 76708,
+        "sha256": "316543b7e0dafe6aa5106806b0cd600413a02e3da829eb514ce4281cddaf77dc"
+      },
+      {
+        "path": "build\\engine_next\\local-shadow-final3\\Lighting.vs.cso",
+        "bytes": 3052,
+        "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+      },
+      {
+        "path": "build\\engine_next\\local-shadow-final3\\Shadow.ps.cso",
+        "bytes": 4236,
+        "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+      },
+      {
+        "path": "build\\engine_next\\local-shadow-final3\\Shadow.vs.cso",
+        "bytes": 4648,
+        "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+      },
+      {
+        "path": "build\\engine_next\\local-shadow-final3\\ToneMap.ps.cso",
+        "bytes": 5096,
+        "sha256": "72a6c2ce2537a74909c50fc7c7d4be3f1c53f9cdf979ed61115d57c1b9c7228c"
+      }
+    ]
+  },
+  "bound_inputs": {
+    "path": "build\\engine_next\\local-shadow-gpu-final3\\PreparedInputs.json",
+    "bytes": 4171,
+    "sha256": "f1bf48ed15c5346a27e6fd7d77abac93af8574b74187207b85389740a0345712"
+  },
+  "main_cases": [
+    {
+      "name": "PointOff",
+      "report": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\PointOff.json",
+        "bytes": 45318,
+        "sha256": "b1f3631a8d55b967524aed5c4ac10867425c01803361d97582769b893202ff74"
+      },
+      "config": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\PointOffConfig.json",
+        "bytes": 1055,
+        "sha256": "6d8fcfed843e0100aa8efb8f59921d7319f96f3f5acd4f4601db01c8b62e10b0"
+      },
+      "image": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\PointOff.png",
+        "bytes": 104759,
+        "sha256": "56fd77d7ef5c87f8a0f38b747d5ad471058bdda49e1bacfd3b8228ef7b252048"
+      },
+      "frames": 60,
+      "validation_errors": 0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "local_shadow_views": 0,
+      "peak_local_memory_bytes": 863023104
+    },
+    {
+      "name": "PointPcf",
+      "report": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\PointPcf.json",
+        "bytes": 46400,
+        "sha256": "96f72ebdfa44dd6122b36a1c6de587b568f01158269efd7f9f1eb931c8965085"
+      },
+      "config": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\PointPcfConfig.json",
+        "bytes": 1054,
+        "sha256": "53b90a5998aa1e6977c92fdde3f61d86954d6f33dcf00a1f9e13fd6d0cd3eef0"
+      },
+      "image": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\PointPcf.png",
+        "bytes": 108889,
+        "sha256": "5b0029293aa405c981707867c6b5683d20e9d8ea33b7d23dc7a1e3e5b62b3854"
+      },
+      "frames": 60,
+      "validation_errors": 0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "local_shadow_views": 6,
+      "peak_local_memory_bytes": 927739904
+    },
+    {
+      "name": "PointPcss",
+      "report": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\PointPcss.json",
+        "bytes": 46431,
+        "sha256": "598517a5b171752a8f08b951b9a34929dbcd9441cfce4298c224976827ead13e"
+      },
+      "config": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\PointPcssConfig.json",
+        "bytes": 1055,
+        "sha256": "1c2a801d5ff9f1b04c17b00a78c74709714f904d6f3182b8e20bfea3cdd45df4"
+      },
+      "image": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\PointPcss.png",
+        "bytes": 117908,
+        "sha256": "f08b23cf9c04a367a49fd2b38449d0e4b42dc5ff9c68031eafbb6eab3dd889d4"
+      },
+      "frames": 60,
+      "validation_errors": 0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "local_shadow_views": 6,
+      "peak_local_memory_bytes": 927739904
+    },
+    {
+      "name": "PointPcssSmall",
+      "report": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\PointPcssSmall.json",
+        "bytes": 46439,
+        "sha256": "978e6dc54442a28fdd6a00cc3175c071f68f7e8b1854cbd6f5d6ea70345353db"
+      },
+      "config": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\PointPcssSmallConfig.json",
+        "bytes": 1056,
+        "sha256": "ec26cb4b8663fc815ba5fe2baf441af439bc1ed67ff2e467288f9260cda67207"
+      },
+      "image": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\PointPcssSmall.png",
+        "bytes": 108966,
+        "sha256": "dcb3a39f9ffc270bf4a71773c16a4d587807b1d0a8e953a48727619ef037451a"
+      },
+      "frames": 60,
+      "validation_errors": 0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "local_shadow_views": 6,
+      "peak_local_memory_bytes": 927731712
+    },
+    {
+      "name": "SpotOff",
+      "report": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\SpotOff.json",
+        "bytes": 45365,
+        "sha256": "5d5fc170b1ee7440f47d9441994860f254b4bc60a9a89d744fb0de2fb0697f14"
+      },
+      "config": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\SpotOffConfig.json",
+        "bytes": 1186,
+        "sha256": "34889888d546fb966e5472ae7e0385ebe35c3a698142c4f99adbb42da80b0e46"
+      },
+      "image": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\SpotOff.png",
+        "bytes": 72325,
+        "sha256": "dab16358d78ffecf6a08e73dc75035c5c0cfa407dd11ac3746bd8ea2d00c7003"
+      },
+      "frames": 60,
+      "validation_errors": 0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "local_shadow_views": 0,
+      "peak_local_memory_bytes": 863031296
+    },
+    {
+      "name": "SpotPcf",
+      "report": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\SpotPcf.json",
+        "bytes": 45430,
+        "sha256": "dbce9c9571254ed20fd71f483cb0391b4ac0a1d65a026fd44828e178a8b4d317"
+      },
+      "config": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\SpotPcfConfig.json",
+        "bytes": 1185,
+        "sha256": "99947ca1ff3f95b69a6a52ca6c18eef4634e9221d9c9b9502cd481582e059479"
+      },
+      "image": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\SpotPcf.png",
+        "bytes": 78463,
+        "sha256": "29e52bd0fcf16e25034ff68e5de7849c0a18b2300371e89b71d0bec37e98a6ea"
+      },
+      "frames": 60,
+      "validation_errors": 0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "local_shadow_views": 1,
+      "peak_local_memory_bytes": 863031296
+    },
+    {
+      "name": "SpotPcss",
+      "report": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\SpotPcss.json",
+        "bytes": 45401,
+        "sha256": "d1ccea4c787de506625f82db1fef5f3a5fe2ea13a39655860bf5db2341578551"
+      },
+      "config": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\SpotPcssConfig.json",
+        "bytes": 1186,
+        "sha256": "c5341d41dd3c29a5c8b1baedf551c2d6f59c0af64bf93086f8769e87a0496144"
+      },
+      "image": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\SpotPcss.png",
+        "bytes": 89218,
+        "sha256": "3b4d9842b3d85d211e1dd80b383bc268906969e9e912af3ac923822dd39bd42c"
+      },
+      "frames": 60,
+      "validation_errors": 0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "local_shadow_views": 1,
+      "peak_local_memory_bytes": 863031296
+    },
+    {
+      "name": "SpotPcssSmall",
+      "report": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\SpotPcssSmall.json",
+        "bytes": 45400,
+        "sha256": "ed4460879b4dd6bbfdcbaa6ac5cf2d222b193dee55adb34a568735a71ca61bec"
+      },
+      "config": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\SpotPcssSmallConfig.json",
+        "bytes": 1187,
+        "sha256": "c2216a508d06467a28359a317002a3705a59ef2dc36f651845473b7ffeb7a0c8"
+      },
+      "image": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\SpotPcssSmall.png",
+        "bytes": 78401,
+        "sha256": "dd4daa6012f36273d7a44c1f72ec88c413564413f3fd8e69e23f25f161d612d3"
+      },
+      "frames": 60,
+      "validation_errors": 0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "local_shadow_views": 1,
+      "peak_local_memory_bytes": 863023104
+    },
+    {
+      "name": "CombinedPcss",
+      "report": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\CombinedPcss.json",
+        "bytes": 46660,
+        "sha256": "ecbd7e31b7a3074127fed2e820fd8d147d53ab34c1978c1f0beeca54582c7803"
+      },
+      "config": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\CombinedPcssConfig.json",
+        "bytes": 1409,
+        "sha256": "eecdde57fdfe90f928353b1ee5df40fdee6111ffe4328e378261d7d74ffd8760"
+      },
+      "image": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\CombinedPcss.png",
+        "bytes": 126802,
+        "sha256": "0032d4fd855ff1a3b3cd351ba1d9521fc16a26c2d0ecf1aaecaf15dcf6e7a198"
+      },
+      "frames": 60,
+      "validation_errors": 0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "local_shadow_views": 7,
+      "peak_local_memory_bytes": 940511232
+    }
+  ],
+  "pixel_comparisons": [
+    {
+      "first": "PointOff",
+      "second": "PointPcf",
+      "changed_pixels": 13487,
+      "mean_absolute_rgb_difference": [
+        0.5755815972222222,
+        0.39343098958333333,
+        0.14705512152777778
+      ]
+    },
+    {
+      "first": "PointPcf",
+      "second": "PointPcss",
+      "changed_pixels": 20369,
+      "mean_absolute_rgb_difference": [
+        0.205048828125,
+        0.13770833333333332,
+        0.051396484375
+      ]
+    },
+    {
+      "first": "PointPcssSmall",
+      "second": "PointPcss",
+      "changed_pixels": 20049,
+      "mean_absolute_rgb_difference": [
+        0.20687825520833333,
+        0.13890516493055555,
+        0.05182183159722222
+      ]
+    },
+    {
+      "first": "SpotOff",
+      "second": "SpotPcf",
+      "changed_pixels": 12666,
+      "mean_absolute_rgb_difference": [
+        1.4164051649305556,
+        1.1545464409722221,
+        0.62181640625
+      ]
+    },
+    {
+      "first": "SpotPcf",
+      "second": "SpotPcss",
+      "changed_pixels": 16455,
+      "mean_absolute_rgb_difference": [
+        0.7563444010416667,
+        0.5872884114583333,
+        0.28045030381944447
+      ]
+    },
+    {
+      "first": "SpotPcssSmall",
+      "second": "SpotPcss",
+      "changed_pixels": 16475,
+      "mean_absolute_rgb_difference": [
+        0.7667567274305556,
+        0.5962641059027778,
+        0.28564670138888887
+      ]
+    }
+  ],
+  "boundary_cases": [
+    {
+      "name": "Maximum",
+      "report": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\Boundary\\Maximum.json",
+        "bytes": 26988,
+        "sha256": "6df2eef34e92e0d7c62bb9e3bc7521d30d5053571ca80cedd38c7d2fa275e520"
+      },
+      "config": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\Boundary\\MaximumConfig.json",
+        "bytes": 3131,
+        "sha256": "8009d83ab9c2cbd755c54efdcf4ae9717501bedc3858608627d14f57df427471"
+      },
+      "image": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\Boundary\\Maximum.png",
+        "bytes": 98337,
+        "sha256": "8ea57b625cf7a7fb95a769d15a3078a883f70c5f2fdddbfb9524f45f5f5100b7"
+      },
+      "frames": 12,
+      "validation_errors": 0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "local_shadow_views": 28,
+      "peak_local_memory_bytes": 875761664
+    },
+    {
+      "name": "Empty",
+      "report": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\Boundary\\Empty.json",
+        "bytes": 21143,
+        "sha256": "44a0e74449212921e15e59b883104d022dedd2fc4b9426f6acdef8098de19ffd"
+      },
+      "config": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\Boundary\\EmptyConfig.json",
+        "bytes": 832,
+        "sha256": "72f17c985a2041a830adf66e30661dfa5e3455ed5dcc3243b0c0beaa654014c6"
+      },
+      "image": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\Boundary\\Empty.png",
+        "bytes": 51410,
+        "sha256": "bacb4bdcfa16630a131e8faf10f68a215b47a83c2c792df30a391be5eec0386e"
+      },
+      "frames": 12,
+      "validation_errors": 0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "local_shadow_views": 0,
+      "peak_local_memory_bytes": 861982720
+    },
+    {
+      "name": "Disabled",
+      "report": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\Boundary\\Disabled.json",
+        "bytes": 22407,
+        "sha256": "e5d102eb51e38cef68250b3ffb9b055c98498d561953dc073b209858d20c93d4"
+      },
+      "config": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\Boundary\\DisabledConfig.json",
+        "bytes": 1410,
+        "sha256": "fbcc9cdcb2ff2f799d568b363ad58d1f5aff3061a7041d5fd98376da4d43b5a4"
+      },
+      "image": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\Boundary\\Disabled.png",
+        "bytes": 108566,
+        "sha256": "841508731e5c01db4b76e88b73c1fb0d542eb0040c245c3b2d989a7bf9042834"
+      },
+      "frames": 12,
+      "validation_errors": 0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "local_shadow_views": 7,
+      "peak_local_memory_bytes": 939470848
+    }
+  ],
+  "capture": {
+    "inspection": {
+      "path": "build\\engine_next\\local-shadow-gpu-final3\\Capture\\Inspection.json",
+      "bytes": 440907,
+      "sha256": "eb36ed654964d69af9cf35552094a52c06882d2c19400116a2f6852ad41ca0d8"
+    },
+    "rdc": {
+      "path": "build\\engine_next\\local-shadow-gpu-final3\\Capture\\M43-Local_frame296.rdc",
+      "bytes": 9654711,
+      "sha256": "44ceb16862b31bfada8116ed252dbe0849edbd29603c778e8c46657d83dabf3a"
+    },
+    "xml": {
+      "path": "build\\engine_next\\local-shadow-gpu-final3\\Capture\\M43-Local_frame296.xml",
+      "bytes": 2136263,
+      "sha256": "d9aff6a8a6238343cd50debd411823ab674072ce3a23345fedfe224de55f26a1"
+    },
+    "replay_log": {
+      "path": "build\\engine_next\\local-shadow-gpu-final3\\Capture\\M43-Local_frame296.replay.log",
+      "bytes": 148,
+      "sha256": "004346d015b4af097deb4cb8755fa0deaf7fa9f2743c7f1d25dc5739ccf1b3d9"
+    },
+    "depth_resources": [
+      {
+        "resource_id": "346",
+        "width": 1280,
+        "height": 720,
+        "array_layers": 1,
+        "format": "DXGI_FORMAT_R32_TYPELESS"
+      },
+      {
+        "resource_id": "348",
+        "width": 2048,
+        "height": 2048,
+        "array_layers": 4,
+        "format": "DXGI_FORMAT_R32_TYPELESS"
+      },
+      {
+        "resource_id": "349",
+        "width": 1024,
+        "height": 1024,
+        "array_layers": 7,
+        "format": "DXGI_FORMAT_R32_TYPELESS"
+      }
+    ],
+    "depth_bindings": [
+      {
+        "resource_id": "348",
+        "slice": "0",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource_id": "348",
+        "slice": "1",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource_id": "348",
+        "slice": "2",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource_id": "348",
+        "slice": "3",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource_id": "349",
+        "slice": "0",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource_id": "349",
+        "slice": "1",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource_id": "349",
+        "slice": "2",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource_id": "349",
+        "slice": "3",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource_id": "349",
+        "slice": "4",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource_id": "349",
+        "slice": "5",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource_id": "349",
+        "slice": "6",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource_id": "346",
+        "slice": null,
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      }
+    ],
+    "indexed_draws_by_depth_target": {
+      "('348', '0')": 4,
+      "('348', '1')": 4,
+      "('348', '2')": 4,
+      "('348', '3')": 4,
+      "('349', '0')": 4,
+      "('349', '1')": 4,
+      "('349', '2')": 4,
+      "('349', '3')": 4,
+      "('349', '4')": 4,
+      "('349', '5')": 4,
+      "('349', '6')": 4,
+      "('346', None)": 4
+    },
+    "local_array": {
+      "resource_id": "349",
+      "format": "R32_TYPELESS resource with D32_FLOAT per-slice DSV",
+      "width": 1024,
+      "height": 1024,
+      "slices": 7,
+      "point_faces": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "spot_slice": 6,
+      "indexed_draws_per_slice": 4
+    },
+    "indexed_draws": 48,
+    "fullscreen_draws": 2,
+    "dispatches": 1,
+    "renderdoc_replay_exit_code": 0
+  },
+  "cube_seam": {
+    "before_image": {
+      "path": "build\\engine_next\\local-shadow-gpu-final\\Boundary\\SeamStressPcss.png",
+      "bytes": 208994,
+      "sha256": "75d56fceb3c5e74ffff85825400b5e8fbdecd9bac7b8dcb47815b0e753b71bc5"
+    },
+    "after_case": {
+      "name": "SeamPcss",
+      "report": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SeamPcss.json",
+        "bytes": 21918,
+        "sha256": "3f1b0038deadc2334188625a7c16d6a5f800b425696d5b6c343a39ae31fdbdd4"
+      },
+      "config": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SeamPcssConfig.json",
+        "bytes": 1126,
+        "sha256": "7db0c8d915abd131ad70142573d7b8b9d7cecf297104da25508f98e667581180"
+      },
+      "image": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SeamPcss.png",
+        "bytes": 228825,
+        "sha256": "0fb06ce0dfd431f8552f252660a9719b3a09b4556c0dc531cd372044b0285b7f"
+      },
+      "frames": 12,
+      "validation_errors": 0,
+      "resolution": [
+        1024,
+        1024
+      ],
+      "local_shadow_views": 6,
+      "peak_local_memory_bytes": 863756288
+    },
+    "config_objects_identical": true,
+    "resolution": [
+      1024,
+      1024
+    ],
+    "profile_region": [
+      360,
+      690,
+      411,
+      730
+    ],
+    "profiles": {
+      "before": {
+        "gray_mean_by_column": [
+          185.03333333333333,
+          185.10833333333332,
+          185.18333333333334,
+          185.24166666666667,
+          185.35833333333332,
+          185.41666666666666,
+          185.39166666666668,
+          185.45,
+          185.59166666666667,
+          185.46666666666667,
+          185.58333333333334,
+          185.63333333333333,
+          185.56666666666666,
+          185.61666666666667,
+          185.675,
+          185.70833333333334,
+          185.88333333333333,
+          185.975,
+          185.98333333333332,
+          186.04166666666666,
+          192.75833333333333,
+          192.70833333333334,
+          192.85833333333332,
+          192.90833333333333,
+          192.95,
+          193.025,
+          193.2,
+          193.275,
+          193.39166666666668,
+          193.55833333333334,
+          193.63333333333333,
+          193.775,
+          193.88333333333333,
+          193.85,
+          193.95833333333334,
+          194.05833333333334,
+          194.125,
+          194.18333333333334,
+          194.54166666666666,
+          194.64166666666668,
+          194.73333333333332,
+          194.81666666666666,
+          194.89166666666668,
+          194.975,
+          195.075,
+          195.15833333333333,
+          195.38333333333333,
+          195.43333333333334,
+          195.475,
+          195.63333333333333,
+          195.68333333333334
+        ],
+        "maximum_adjacent_jump": 6.716666666666669
+      },
+      "after": {
+        "gray_mean_by_column": [
+          191.1,
+          191.26666666666668,
+          191.26666666666668,
+          191.31666666666666,
+          191.39166666666668,
+          191.44166666666666,
+          191.525,
+          191.61666666666667,
+          191.81666666666666,
+          191.90833333333333,
+          191.85,
+          191.93333333333334,
+          192.00833333333333,
+          192.06666666666666,
+          192.125,
+          192.18333333333334,
+          192.25,
+          192.33333333333334,
+          192.31666666666666,
+          192.41666666666666,
+          192.5,
+          192.55833333333334,
+          192.65833333333333,
+          192.73333333333332,
+          192.825,
+          192.90833333333333,
+          192.94166666666666,
+          193.04166666666666,
+          193.13333333333333,
+          193.2,
+          193.38333333333333,
+          193.425,
+          193.5,
+          193.56666666666666,
+          193.55,
+          193.625,
+          193.68333333333334,
+          193.85833333333332,
+          193.94166666666666,
+          194.025,
+          194.125,
+          194.15,
+          194.25,
+          194.38333333333333,
+          194.55,
+          194.675,
+          194.725,
+          194.79166666666666,
+          194.81666666666666,
+          194.95,
+          195.13333333333333
+        ],
+        "maximum_adjacent_jump": 0.19999999999998863
+      }
+    },
+    "observation": "The broad vertical discontinuity is absent after world-direction kernel and per-tap geometric-plane depth handling.",
+    "before_binary": {
+      "path": "build\\engine_next\\local-shadow-final2\\next_visual_client.exe",
+      "bytes": 2909184,
+      "sha256": "b25dd9c3c048694f6f6c5419dc6c547e43d615d21d5822aeef4260b39bc93f2e"
+    }
+  },
+  "mask_receiver": [
+    {
+      "light_kind": "Point",
+      "cases": [
+        {
+          "name": "PointMaskOff",
+          "report": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\PointMaskOff.json",
+            "bytes": 20865,
+            "sha256": "05bf15e799975ab8d64294454e5700ec431171f562c19fd79d32f3b47e57d6ce"
+          },
+          "config": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\PointMaskOffConfig.json",
+            "bytes": 1125,
+            "sha256": "873507549a55a69e6cfca6b1af0ca294ba2b81d97a13a266aad44013cf01b992"
+          },
+          "image": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\PointMaskOff.png",
+            "bytes": 189275,
+            "sha256": "214b4281648f5f308d8add57d79cf5f63b681144a630d993a54ff21f15078933"
+          },
+          "frames": 12,
+          "validation_errors": 0,
+          "resolution": [
+            1024,
+            1024
+          ],
+          "local_shadow_views": 0,
+          "peak_local_memory_bytes": 870748160
+        },
+        {
+          "name": "PointMaskOn",
+          "report": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\PointMaskOn.json",
+            "bytes": 21910,
+            "sha256": "31ff5e53c611faf8cdf4305bb7f9327a373dec7100ce7be4a583c0152498a44b"
+          },
+          "config": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\PointMaskOnConfig.json",
+            "bytes": 1124,
+            "sha256": "176b21a1b4a83117f778c8aba4834a78bbe966c1d0bdcd80770cfae47b1a3381"
+          },
+          "image": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\PointMaskOn.png",
+            "bytes": 190486,
+            "sha256": "621ce2597ddac20c0ff1fbb7827e219d99a48fb2755b887f9988344fc05a73dd"
+          },
+          "frames": 12,
+          "validation_errors": 0,
+          "resolution": [
+            1024,
+            1024
+          ],
+          "local_shadow_views": 6,
+          "peak_local_memory_bytes": 936505344
+        },
+        {
+          "name": "PointOpaqueOff",
+          "report": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\PointOpaqueOff.json",
+            "bytes": 20884,
+            "sha256": "82426b910c2631e30269679f5674f633a18c2e90874648e93acebf69c6d6601c"
+          },
+          "config": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\PointOpaqueOffConfig.json",
+            "bytes": 1125,
+            "sha256": "f509c9c54ef8c2312f38faa255f036d3c2c76949156e4e421fdab8efe5beab4c"
+          },
+          "image": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\PointOpaqueOff.png",
+            "bytes": 189100,
+            "sha256": "83ff9e24149057099803a3f69e42c0dbe624924ac5a95ff4ce608ff009ab9d15"
+          },
+          "frames": 12,
+          "validation_errors": 0,
+          "resolution": [
+            1024,
+            1024
+          ],
+          "local_shadow_views": 0,
+          "peak_local_memory_bytes": 870756352
+        },
+        {
+          "name": "PointOpaqueOn",
+          "report": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\PointOpaqueOn.json",
+            "bytes": 21941,
+            "sha256": "b391e59bcf07d81b4901ee17ee41bfc05f5b07e7cdad5676a34d0750075aa865"
+          },
+          "config": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\PointOpaqueOnConfig.json",
+            "bytes": 1124,
+            "sha256": "4f1e12ead32f6b06d44271a22020599911cf39d0111e5e235b839af86b8d82c2"
+          },
+          "image": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\PointOpaqueOn.png",
+            "bytes": 187683,
+            "sha256": "e3f2f36f96b491717056943cf0e31d96b6cabb9ff56803faf4d3e862ff56bb87"
+          },
+          "frames": 12,
+          "validation_errors": 0,
+          "resolution": [
+            1024,
+            1024
+          ],
+          "local_shadow_views": 6,
+          "peak_local_memory_bytes": 936513536
+        }
+      ],
+      "method": "Compare (Off-On) between MASK and otherwise identical OPAQUE asset, restricted to receiver-plane pixels outside all three sphere silhouettes.",
+      "receiver_roi": [
+        0,
+        180,
+        180,
+        320
+      ],
+      "changed_receiver_pixels": 5038,
+      "mean_absolute_rgb_difference": [
+        2.6551984126984127,
+        1.700079365079365,
+        0.6199603174603174
+      ],
+      "receiver_difference": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\PointReceiverMaskDifference.png",
+        "bytes": 19000,
+        "sha256": "4f85a6d35727c0d0d05fca827e7325d65eb06d2132ea8f087247c425afb9f739"
+      }
+    },
+    {
+      "light_kind": "Spot",
+      "cases": [
+        {
+          "name": "SpotMaskOff",
+          "report": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SpotMaskOff.json",
+            "bytes": 20862,
+            "sha256": "590342dc1c39615ca02692de84bb132d12973f9df6e3aa6ac1abb71dc7010946"
+          },
+          "config": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SpotMaskOffConfig.json",
+            "bytes": 1264,
+            "sha256": "542acce5312c05457fce14821965baeb45e330537b7675426e2a1f2392793fbc"
+          },
+          "image": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SpotMaskOff.png",
+            "bytes": 166041,
+            "sha256": "03fbc0053f4d809747ecee198a8d5c481c57075407e287d1b4943d66f3e4451e"
+          },
+          "frames": 12,
+          "validation_errors": 0,
+          "resolution": [
+            1024,
+            1024
+          ],
+          "local_shadow_views": 0,
+          "peak_local_memory_bytes": 870748160
+        },
+        {
+          "name": "SpotMaskOn",
+          "report": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SpotMaskOn.json",
+            "bytes": 20873,
+            "sha256": "43d03b61c8fa82ebb5c00590880c1ada87b4c4b15ee1a77c0f4729e623e1f670"
+          },
+          "config": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SpotMaskOnConfig.json",
+            "bytes": 1263,
+            "sha256": "d04958af9c5ae9d9b50251e2509f48340e29781241436dde6adfb15cdb901734"
+          },
+          "image": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SpotMaskOn.png",
+            "bytes": 173657,
+            "sha256": "f4bebe9fa12a6e3e670541d870139f1aa7e21f50cc526033879434eec9c90881"
+          },
+          "frames": 12,
+          "validation_errors": 0,
+          "resolution": [
+            1024,
+            1024
+          ],
+          "local_shadow_views": 1,
+          "peak_local_memory_bytes": 870756352
+        },
+        {
+          "name": "SpotOpaqueOff",
+          "report": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SpotOpaqueOff.json",
+            "bytes": 20884,
+            "sha256": "29d29f38b7790f26e56a858c5d070f5bc4f3713733a1bd3e5aa5fe4dc2f2724e"
+          },
+          "config": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SpotOpaqueOffConfig.json",
+            "bytes": 1264,
+            "sha256": "7998fb275038ee7bf7a2591c9cd4f1160bbe5b572fccae3d6b50fb8ba4ab028c"
+          },
+          "image": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SpotOpaqueOff.png",
+            "bytes": 166034,
+            "sha256": "df34d3cacd3e2a4a3b3a240033d2d331186513459a9eac96d6f70b2c25daa0aa"
+          },
+          "frames": 12,
+          "validation_errors": 0,
+          "resolution": [
+            1024,
+            1024
+          ],
+          "local_shadow_views": 0,
+          "peak_local_memory_bytes": 870748160
+        },
+        {
+          "name": "SpotOpaqueOn",
+          "report": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SpotOpaqueOn.json",
+            "bytes": 20873,
+            "sha256": "ae5945ae1fd324811284f121d48935782c672abc4e62e5a7d140dac8794d64c7"
+          },
+          "config": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SpotOpaqueOnConfig.json",
+            "bytes": 1263,
+            "sha256": "c88b23a1687cafab57655dc8c67409ed05d622a45ea29cd7bdb93cafec15fc9b"
+          },
+          "image": {
+            "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SpotOpaqueOn.png",
+            "bytes": 168548,
+            "sha256": "084809e4afd81db5d8052d49ad009ba047b729dee33e17b7323e00ed7ff194d4"
+          },
+          "frames": 12,
+          "validation_errors": 0,
+          "resolution": [
+            1024,
+            1024
+          ],
+          "local_shadow_views": 1,
+          "peak_local_memory_bytes": 870756352
+        }
+      ],
+      "method": "Compare (Off-On) between MASK and otherwise identical OPAQUE asset, restricted to receiver-plane pixels outside all three sphere silhouettes.",
+      "receiver_roi": [
+        0,
+        180,
+        180,
+        320
+      ],
+      "changed_receiver_pixels": 5039,
+      "mean_absolute_rgb_difference": [
+        12.963531746031746,
+        9.394444444444444,
+        3.816547619047619
+      ],
+      "receiver_difference": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SpotReceiverMaskDifference.png",
+        "bytes": 48197,
+        "sha256": "421fcc9f41a706bf41d0cc6c1b920765233aa6d4e57a534a5deff62149c74c70"
+      }
+    }
+  ],
+  "decisions_and_corrections": [
+    "An initial shared Python configuration object incorrectly disabled Combined shadows. That capture remains private and is excluded here. Final cases assert 6, 1, 7 or 0 views explicitly.",
+    "An intermediate seam image used 1280x720. Its numerical comparison was discarded. The reported before/after pair uses semantically identical configurations and 1024x1024 captures."
+  ],
+  "verification_boundary": "This file binds final3 executable and GPU evidence. Dynamic network shadow motion and target-window video are recorded separately. Native 4K and Unreal-reference image quality are outside this validation."
+}

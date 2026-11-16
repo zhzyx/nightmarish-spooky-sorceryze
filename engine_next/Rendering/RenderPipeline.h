@@ -49,6 +49,7 @@ enum class PassWork : std::uint8_t
 	CopyToBackbuffer = 5,
 	Present = 6,
 	DirectionalShadow = 7,
+	LocalShadow = 8,
 };
 
 struct RenderPipeline
@@ -62,6 +63,7 @@ struct RenderPipeline
 	ResourceId nBackbuffer = INVALID_RESOURCE;
 	ResourceId nHdr = INVALID_RESOURCE;
 	ResourceId nDirectionalShadow = INVALID_RESOURCE;
+	ResourceId nLocalShadow = INVALID_RESOURCE;
 	std::array<ResourceId, 4> arrGbuffer{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
 	std::uint32_t nGraphicsPassCount = 0;
 	std::uint32_t nComputePassCount = 0;
@@ -69,6 +71,6 @@ struct RenderPipeline
 
 // Builds an owned fixed-mesh or HDR deferred plan on the caller's thread.
 // Failure preserves the previous output and reports the graph diagnostic.
-[[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic);
+[[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0);
 
 } // namespace EngineNext::Rendering

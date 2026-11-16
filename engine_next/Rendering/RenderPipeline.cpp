@@ -54,8 +54,13 @@ bool AddPipelinePass(FrameGraph &stGraph, RenderPipeline &stPipeline, const Pass
 
 } // namespace
 
-bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic)
+bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews)
 {
+	if (nLocalShadowViews > 28)
+	{
+		out_stDiagnostic = { GraphError::CapacityExceeded, INVALID_PASS, INVALID_RESOURCE, "Local shadow view budget exceeded." };
+		return false;
+	}
 	FrameGraph stGraph;
 	RenderPipeline stPipeline;
 	stPipeline.nTint = stGraph.AddResource({ "Tint", ResourceState::Common, true });
@@ -70,6 +75,11 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 	{
 		stPipeline.nDirectionalShadow = stGraph.AddResource({ "DirectionalShadow", ResourceState::DepthWrite, true, 4 });
 		if (!AddPipelinePass(stGraph, stPipeline, { "DirectionalShadow", QueueType::Graphics, { { stPipeline.nDirectionalShadow, ResourceState::DepthWrite, true } }, {} }, PassWork::DirectionalShadow, out_stDiagnostic))
+		{
+			return false;
+		}
+		stPipeline.nLocalShadow = stGraph.AddResource({ "LocalShadow", ResourceState::DepthWrite, true, nLocalShadowViews == 0 ? 1U : nLocalShadowViews });
+		if (!AddPipelinePass(stGraph, stPipeline, { "LocalShadow", QueueType::Graphics, { { stPipeline.nLocalShadow, ResourceState::DepthWrite, true } }, {} }, PassWork::LocalShadow, out_stDiagnostic))
 		{
 			return false;
 		}
@@ -89,6 +99,7 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		stLighting.arrAccesses.push_back({ stPipeline.nDepth, ResourceState::DepthRead, false });
 		stLighting.arrAccesses.push_back({ stPipeline.nHdr, ResourceState::RenderTarget, true });
 		stLighting.arrAccesses.push_back({ stPipeline.nDirectionalShadow, ResourceState::ShaderRead, false });
+		stLighting.arrAccesses.push_back({ stPipeline.nLocalShadow, ResourceState::ShaderRead, false });
 		if (!AddPipelinePass(stGraph, stPipeline, stGbuffer, PassWork::GBuffer, out_stDiagnostic) ||
 			!AddPipelinePass(stGraph, stPipeline, stLighting, PassWork::DeferredLighting, out_stDiagnostic) ||
 			!AddPipelinePass(stGraph, stPipeline, { "ToneMap", QueueType::Graphics, { { stPipeline.nHdr, ResourceState::ShaderRead, false }, { stPipeline.nColor, ResourceState::RenderTarget, true } }, {} }, PassWork::ToneMap, out_stDiagnostic))
@@ -110,6 +121,7 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		stPresent.arrAccesses.push_back({ stPipeline.nDepth, ResourceState::DepthWrite, true, 0, ALL_SUBRESOURCES, true });
 		stPresent.arrAccesses.push_back({ stPipeline.nHdr, ResourceState::Common, false });
 		stPresent.arrAccesses.push_back({ stPipeline.nDirectionalShadow, ResourceState::DepthWrite, true, 0, ALL_SUBRESOURCES, true });
+		stPresent.arrAccesses.push_back({ stPipeline.nLocalShadow, ResourceState::DepthWrite, true, 0, ALL_SUBRESOURCES, true });
 		for (ResourceId nResource : stPipeline.arrGbuffer)
 		{
 			stPresent.arrAccesses.push_back({ nResource, ResourceState::Common, false });

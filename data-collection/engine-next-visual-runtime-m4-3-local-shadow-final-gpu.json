@@ -1,0 +1,419 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-16T16:34:54.725569+00:00",
+  "scope": "Final4 binary revalidation after delayed network startup",
+  "build": {
+    "report": {
+      "path": "build\\engine_next\\local-shadow-final4\\VisualBuildReport.json",
+      "bytes": 1479873,
+      "sha256": "3bcd938633407ed1d19dcbb9e9f7a3f7537937b1c2dc51da981ebd3c2c7ffa83"
+    },
+    "binary": {
+      "path": "build\\engine_next\\local-shadow-final4\\next_visual_client.exe",
+      "bytes": 2909696,
+      "sha256": "cf714c8bc710c8ff9467baee35d35727284c8f4d69c2826da2edda1772c757b6"
+    },
+    "native_key": "6c6277a6c5bbb0573761124b9592df01b5f321d881f02fc475a28b64115e7317",
+    "test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0",
+    "input_hashes_verified": 215
+  },
+  "difference_from_final3": {
+    "changed_input_files": [
+      "engine_next/Rendering/VisualRuntime.cpp"
+    ],
+    "shader_pairs": [
+      {
+        "current": {
+          "path": "build\\engine_next\\local-shadow-final4\\Deferred.ps.cso",
+          "bytes": 7800,
+          "sha256": "6f297e31e1880a5c0a20fbd0b86b76927563250127b7244f8d94d8eef72d583f"
+        },
+        "previous": {
+          "path": "build\\engine_next\\local-shadow-final3\\Deferred.ps.cso",
+          "bytes": 7800,
+          "sha256": "6f297e31e1880a5c0a20fbd0b86b76927563250127b7244f8d94d8eef72d583f"
+        },
+        "bytes_equal": true
+      },
+      {
+        "current": {
+          "path": "build\\engine_next\\local-shadow-final4\\Deferred.vs.cso",
+          "bytes": 6832,
+          "sha256": "62601c1f714b45c0a96fcd2f2e6bbd7e48f0349264f67112959c1dc318b50ce1"
+        },
+        "previous": {
+          "path": "build\\engine_next\\local-shadow-final3\\Deferred.vs.cso",
+          "bytes": 6832,
+          "sha256": "62601c1f714b45c0a96fcd2f2e6bbd7e48f0349264f67112959c1dc318b50ce1"
+        },
+        "bytes_equal": true
+      },
+      {
+        "current": {
+          "path": "build\\engine_next\\local-shadow-final4\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        "previous": {
+          "path": "build\\engine_next\\local-shadow-final3\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        "bytes_equal": true
+      },
+      {
+        "current": {
+          "path": "build\\engine_next\\local-shadow-final4\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        "previous": {
+          "path": "build\\engine_next\\local-shadow-final3\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        "bytes_equal": true
+      },
+      {
+        "current": {
+          "path": "build\\engine_next\\local-shadow-final4\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        "previous": {
+          "path": "build\\engine_next\\local-shadow-final3\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        "bytes_equal": true
+      },
+      {
+        "current": {
+          "path": "build\\engine_next\\local-shadow-final4\\Lighting.ps.cso",
+          "bytes": 76708,
+          "sha256": "316543b7e0dafe6aa5106806b0cd600413a02e3da829eb514ce4281cddaf77dc"
+        },
+        "previous": {
+          "path": "build\\engine_next\\local-shadow-final3\\Lighting.ps.cso",
+          "bytes": 76708,
+          "sha256": "316543b7e0dafe6aa5106806b0cd600413a02e3da829eb514ce4281cddaf77dc"
+        },
+        "bytes_equal": true
+      },
+      {
+        "current": {
+          "path": "build\\engine_next\\local-shadow-final4\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        "previous": {
+          "path": "build\\engine_next\\local-shadow-final3\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        "bytes_equal": true
+      },
+      {
+        "current": {
+          "path": "build\\engine_next\\local-shadow-final4\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        "previous": {
+          "path": "build\\engine_next\\local-shadow-final3\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        "bytes_equal": true
+      },
+      {
+        "current": {
+          "path": "build\\engine_next\\local-shadow-final4\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        "previous": {
+          "path": "build\\engine_next\\local-shadow-final3\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        "bytes_equal": true
+      },
+      {
+        "current": {
+          "path": "build\\engine_next\\local-shadow-final4\\ToneMap.ps.cso",
+          "bytes": 5096,
+          "sha256": "72a6c2ce2537a74909c50fc7c7d4be3f1c53f9cdf979ed61115d57c1b9c7228c"
+        },
+        "previous": {
+          "path": "build\\engine_next\\local-shadow-final3\\ToneMap.ps.cso",
+          "bytes": 5096,
+          "sha256": "72a6c2ce2537a74909c50fc7c7d4be3f1c53f9cdf979ed61115d57c1b9c7228c"
+        },
+        "bytes_equal": true
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "CombinedPcss",
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-final4\\next_visual_client.exe",
+        "--asset-package",
+        "D:\\Projects\\engine-next-m4-3-shadows-20261116\\build\\engine_next\\shadow-gpu-final\\Scene.enpak",
+        "--gpu-package",
+        "D:\\Projects\\engine-next-m4-3-shadows-20261116\\build\\engine_next\\shadow-gpu-final\\Scene-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-gpu-final4\\CombinedPcssConfig.json",
+        "--width",
+        "1280",
+        "--height",
+        "720",
+        "--frames",
+        "12",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-gpu-final4\\CombinedPcss.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-gpu-final4\\CombinedPcss.ppm"
+      ],
+      "report": {
+        "path": "build\\engine_next\\local-shadow-gpu-final4\\CombinedPcss.json",
+        "bytes": 22482,
+        "sha256": "729f98cf4850bf29aae72e9dc4bc84bad0d4f2e271400e12e07b5ca7ef619335"
+      },
+      "config": {
+        "path": "build\\engine_next\\local-shadow-gpu-final4\\CombinedPcssConfig.json",
+        "bytes": 1409,
+        "sha256": "eecdde57fdfe90f928353b1ee5df40fdee6111ffe4328e378261d7d74ffd8760"
+      },
+      "image": {
+        "path": "build\\engine_next\\local-shadow-gpu-final4\\CombinedPcss.png",
+        "bytes": 126802,
+        "sha256": "0032d4fd855ff1a3b3cd351ba1d9521fc16a26c2d0ecf1aaecaf15dcf6e7a198"
+      },
+      "rgb": {
+        "path": "build\\engine_next\\local-shadow-gpu-final4\\CombinedPcss.ppm",
+        "bytes": 2764816,
+        "sha256": "4812a99da992c0e8f21a6ebcc1e93370ff665701957bf30da5af606f5c54cd73"
+      },
+      "reference_rgb": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\CombinedPcss.ppm",
+        "bytes": 2764816,
+        "sha256": "4812a99da992c0e8f21a6ebcc1e93370ff665701957bf30da5af606f5c54cd73"
+      },
+      "rgb_bytes_equal": true,
+      "frames": 12,
+      "validation_errors": 0,
+      "resolution": [
+        1280,
+        720
+      ],
+      "local_shadow_views": 7
+    },
+    {
+      "name": "SeamPcss",
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-final4\\next_visual_client.exe",
+        "--asset-package",
+        "D:\\Projects\\engine-next-m4-3-shadows-20261116\\build\\engine_next\\shadow-gpu-final\\Scene.enpak",
+        "--gpu-package",
+        "D:\\Projects\\engine-next-m4-3-shadows-20261116\\build\\engine_next\\shadow-gpu-final\\Scene-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-gpu-final4\\SeamPcssConfig.json",
+        "--width",
+        "1024",
+        "--height",
+        "1024",
+        "--frames",
+        "12",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-gpu-final4\\SeamPcss.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-gpu-final4\\SeamPcss.ppm"
+      ],
+      "report": {
+        "path": "build\\engine_next\\local-shadow-gpu-final4\\SeamPcss.json",
+        "bytes": 21960,
+        "sha256": "b167f61665a6c6bb157d95781f9c1749f0d525312c471ad211944185196aee7d"
+      },
+      "config": {
+        "path": "build\\engine_next\\local-shadow-gpu-final4\\SeamPcssConfig.json",
+        "bytes": 1126,
+        "sha256": "7db0c8d915abd131ad70142573d7b8b9d7cecf297104da25508f98e667581180"
+      },
+      "image": {
+        "path": "build\\engine_next\\local-shadow-gpu-final4\\SeamPcss.png",
+        "bytes": 228825,
+        "sha256": "0fb06ce0dfd431f8552f252660a9719b3a09b4556c0dc531cd372044b0285b7f"
+      },
+      "rgb": {
+        "path": "build\\engine_next\\local-shadow-gpu-final4\\SeamPcss.ppm",
+        "bytes": 3145745,
+        "sha256": "6d3fe261b229d3a8d8464ecde977baa2ce21c7e669d99fa367364551264c6bdc"
+      },
+      "reference_rgb": {
+        "path": "build\\engine_next\\local-shadow-gpu-final3\\Matched\\SeamPcss.ppm",
+        "bytes": 3145745,
+        "sha256": "6d3fe261b229d3a8d8464ecde977baa2ce21c7e669d99fa367364551264c6bdc"
+      },
+      "rgb_bytes_equal": true,
+      "frames": 12,
+      "validation_errors": 0,
+      "resolution": [
+        1024,
+        1024
+      ],
+      "local_shadow_views": 6
+    }
+  ],
+  "historical_feature_matrix": {
+    "path": "data-collection\\engine-next-visual-runtime-m4-3-local-shadow-gpu.json",
+    "bytes": 33610,
+    "sha256": "1a777881fca815574cf9f6aef79a61787b145a9048891ed2d7ac3b776c5d3792"
+  },
+  "capture": {
+    "rdc": {
+      "path": "build\\engine_next\\local-shadow-gpu-final4\\Capture\\M43-Local_frame555.rdc",
+      "bytes": 9659100,
+      "sha256": "679b35747aca3bb3a3aab9be2b63c58058358795a0c29c21b07fae6f2f140597"
+    },
+    "xml": {
+      "path": "build\\engine_next\\local-shadow-gpu-final4\\Capture\\M43-Local_frame555.xml",
+      "bytes": 2140646,
+      "sha256": "2eaa21575bb90138a951262bbe59418c93b5144d8ecc8a79c17e77d4d1f3f6aa"
+    },
+    "inspection": {
+      "path": "build\\engine_next\\local-shadow-gpu-final4\\Capture\\Inspection.json",
+      "bytes": 444485,
+      "sha256": "a69e499787afe9279bb71a9dc0cd87c3f7f9b646ea474bb28d948d58ffb14924"
+    },
+    "run_report": {
+      "path": "build\\engine_next\\local-shadow-gpu-final4\\Capture\\B-CaptureRun.json",
+      "bytes": 834401,
+      "sha256": "52ec686682a213f94c2fd4d9c38f2edec35b6492d63c6b41dbf2add7c278bbaf"
+    },
+    "replay_log": {
+      "path": "build\\engine_next\\local-shadow-gpu-final4\\Capture\\M43-Local_frame555.replay.log",
+      "bytes": 148,
+      "sha256": "ee4eff8c443092e9b5e72fb1e1512adcc443a4c26691cb0f351b89f3cebf7ad1"
+    },
+    "replay_exit_code": 0,
+    "indexed_draws": 48,
+    "fullscreen_draws": 2,
+    "dispatches": 1,
+    "depth_resources": [
+      {
+        "resource_id": "328",
+        "width": 1280,
+        "height": 720,
+        "layers": 1,
+        "format": "DXGI_FORMAT_R32_TYPELESS"
+      },
+      {
+        "resource_id": "330",
+        "width": 2048,
+        "height": 2048,
+        "layers": 4,
+        "format": "DXGI_FORMAT_R32_TYPELESS"
+      },
+      {
+        "resource_id": "331",
+        "width": 1024,
+        "height": 1024,
+        "layers": 7,
+        "format": "DXGI_FORMAT_R32_TYPELESS"
+      }
+    ],
+    "depth_bindings": [
+      {
+        "resource": "330",
+        "slice": "0",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource": "330",
+        "slice": "1",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource": "330",
+        "slice": "2",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource": "330",
+        "slice": "3",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource": "331",
+        "slice": "0",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource": "331",
+        "slice": "1",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource": "331",
+        "slice": "2",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource": "331",
+        "slice": "3",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource": "331",
+        "slice": "4",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource": "331",
+        "slice": "5",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource": "331",
+        "slice": "6",
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      },
+      {
+        "resource": "328",
+        "slice": null,
+        "format": "DXGI_FORMAT_D32_FLOAT"
+      }
+    ],
+    "draws_by_depth_target": {
+      "('330', '0')": 4,
+      "('330', '1')": 4,
+      "('330', '2')": 4,
+      "('330', '3')": 4,
+      "('331', '0')": 4,
+      "('331', '1')": 4,
+      "('331', '2')": 4,
+      "('331', '3')": 4,
+      "('331', '4')": 4,
+      "('331', '5')": 4,
+      "('331', '6')": 4,
+      "('328', None)": 4
+    }
+  },
+  "verification_boundary": "The full feature matrix remains bound to final3. Final4 has one network-lifecycle source delta, identical ten shaders, exact matching Combined and seam RGB checks, and a new RenderDoc capture and replay. Network cold-start, input, reconnect, minimized advancement and window video are independently recorded.",
+  "network_evidence": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-local-shadow-network.json",
+    "bytes": 15071,
+    "sha256": "274fbe8a9e19255b25c4e8ae15eb65e73f99e4fb714abd1d627917e17f573e6f"
+  },
+  "network_video_boundary": "The target-window video records the initial movement interval. Reconnect and minimized advancement are substantiated by the separately timestamped action and runtime logs."
+}

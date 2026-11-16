@@ -1,0 +1,351 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "parent_issue_number": 1323,
+  "reviewer": "/root/m42_cook_review",
+  "reviewed_at": "2026-11-16T15:46:48.330506+00:00",
+  "repository_head": "149ed960ace1da559c6945bcf9f7914b769e0d3b",
+  "review_type": "independent_with_declared_implementation_exclusion",
+  "result": "code_review_passed_after_fixes",
+  "scope": {
+    "independently_reviewed": [
+      "Local-light configuration parser/schema/default compatibility",
+      "LocalShadow resource arrays, root bindings, PSOs, frame-owned upload buffers and retirement",
+      "RenderPipeline local-shadow pass, slice budget and reusable final states",
+      "Deferred local-light flux conversion, attenuation, cone precision, reverse-Z visibility and normal bias",
+      "ShadowSampling HLSLI perspective reconstruction, blocker averaging, PCF/PCSS and bounded reads",
+      "BuildVisualRuntime registration and actual constant-buffer ABI",
+      "Cross-face point-light tap reprojection, neighboring slice bounds and view-axis depth conversion"
+    ],
+    "own_implementation_excluded": [
+      "engine_next/Rendering/LocalShadowData.cpp",
+      "engine_next/include/EngineNext/Rendering/LocalShadowData.h",
+      "engine_next/Tests/Rendering/TestLocalShadowData.cpp",
+      "New formal boundary case in TestRenderPipeline.cpp",
+      "engine_next/Tests/Rendering/TestShadowSampling.cpp",
+      "C++ test compatibility macro in ShadowSampling.hlsli",
+      "ComputeSpotSolidAngle in RenderConfiguration.h/.cpp, its two TestRenderConfiguration tests, and VisualRuntime call-site change",
+      "Analytic plane fixture and receiver-plane regression in TestShadowSampling.cpp"
+    ],
+    "independence_note": "The reviewer authored LocalShadowData, the new graph boundary case, the original direct-HLSLI test adapter, the analytic plane regression, and the spotlight solid-angle helper/caller. Those author-owned implementations are excluded from the independent verdict. Other agents separately reviewed LocalShadowData, spotlight flux, and final point sampling. This record reports direct observations and cross-reviews without classifying authored code as independent.",
+    "gpu_acceptance": "Not included. Current real-GPU/capture evidence is collected by other agents and must be assessed separately."
+  },
+  "inputs": [
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "bytes": 148518,
+      "sha256": "b52e85772dbb02f5b2fc219271f41754c352aeccdcb59a26587c63d317e6d43e",
+      "git_blob": "89dacddad87cfbea900557df8cc9149ca41063e4"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Deferred.hlsl",
+      "bytes": 12233,
+      "sha256": "129566d40a633d3661d848760f9b4274205c3203dc2848b066eb5f8029aea591",
+      "git_blob": "1171d292031b8610a5c8df730167209f27c11295"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/ShadowSampling.hlsli",
+      "bytes": 11040,
+      "sha256": "1e1a731fee2e9d821bc752e7a4db76bfb304f643d575125fdb5b2e9a1b221387",
+      "git_blob": "665209001be61d30bc7cc3108503f9aec52ce562"
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.cpp",
+      "bytes": 8406,
+      "sha256": "524c0dc053885f67a037e84b1acba3f9a522fec770962686f98c3ee6d532a84c",
+      "git_blob": "ec760b2c212539f47354d0a518933e29883fc1ab"
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.h",
+      "bytes": 3612,
+      "sha256": "6dcaf094606a5b29a62d73e253f46e60bf932a29546e116d854c535d0dd6818b",
+      "git_blob": "03e09ac2330b31b88c07b4322ec185d5b57785c9"
+    },
+    {
+      "path": "engine_next/Rendering/RenderConfiguration.cpp",
+      "bytes": 22551,
+      "sha256": "057ba36d65325f401b7fcf50b839e4f14d9f385a0d38874784e626b0e834d472",
+      "git_blob": "3caa2b29d9537548fa8b7cdc2e86d505e94b62e6"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderConfiguration.h",
+      "bytes": 6168,
+      "sha256": "b4386cbf2500f3de9c5a84e39075ebf829e7310b82bd98511ca376052129eb0f",
+      "git_blob": "890777ce43497e03b994f4c3dda92c303187532d"
+    },
+    {
+      "path": "engine_next/Schemas/RenderConfiguration-v1.json",
+      "bytes": 7162,
+      "sha256": "2dbeeef56ed35e6f435fc4ceb1ea8149fe44f822a76d063b5c1d3e1f288d815b",
+      "git_blob": "8cfc95644e2a8f434996efe1f97ac090699a889e"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
+      "bytes": 34160,
+      "sha256": "0ea58650d29ce139333523a2721b2aec2d83e0841f313fd56deaa3f6ee0cb72d",
+      "git_blob": "b05f17277dfefad850a6360ca8deb785f23a6250"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderPipeline.cpp",
+      "bytes": 11231,
+      "sha256": "649b9c8b31bdc436e59a9f60ec6b1cb8079bf853e050bcd9a2f791902b573412",
+      "git_blob": "a7d8533f47bf43202600e85c2e41688b9d11ec27"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestShadowSampling.cpp",
+      "bytes": 17870,
+      "sha256": "b5d467a855a9a22b2f97db7a08668c30b8948d66ad3acb70b435ee9ca36aa2a7",
+      "git_blob": "635f50adb1b951c1772c91777d2f833f0e3abbc2"
+    },
+    {
+      "path": "engine_next/Rendering/LocalShadowData.cpp",
+      "bytes": 9717,
+      "sha256": "f995b49c1a54ba75725eb43630778ce6d8c26ddf16f4a7a06529b9721ab03b5d",
+      "git_blob": "36225bd7b393d52b3a06d772cba455f8d4bd748a"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/LocalShadowData.h",
+      "bytes": 3714,
+      "sha256": "ff2e1bb675eb86e453f02579cbe53fb9dc2c1659e6e15f7bc3d3209d9c809e1d",
+      "git_blob": "6935a1db0e451f6f560e4b6a22620eebf8869491"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestLocalShadowData.cpp",
+      "bytes": 15064,
+      "sha256": "70f7d25eea3ff982995106f1b0ba099b65be44c205a314bd51a4a9ff081bff98",
+      "git_blob": "2ff1b3eff76e00b2af69896ebbaf6bdc10f4861e"
+    },
+    {
+      "path": "engine_next/Tools/BuildVisualRuntime.py",
+      "bytes": 26313,
+      "sha256": "9a89555732b27e958d6eff838a24e3f5a3ad888e8b66891ac6d1b89987b72639",
+      "git_blob": "802250834015a96b2aa6e5e27cc0f55e8a0d9119"
+    }
+  ],
+  "confirmed_findings_resolved": [
+    {
+      "issue": "Very narrow cone cosine cancellation and binary32 cosine collapse",
+      "resolution": "Use squared chord 4*sin(theta/2)^2 for cone limits and flux solid angle. Require a normal binary32 interval before GPU smoothstep."
+    },
+    {
+      "issue": "Derived intensity and projected source radius may exceed binary32",
+      "resolution": "Validate finite range before conversion. GPU radiance is bounded before distance attenuation, and HDR output is saturated to finite half-float maximum."
+    },
+    {
+      "issue": "Clamping distance before direction normalization distorts near-light direction",
+      "resolution": "Use true distance and SafeDirection for light direction, clamp only inverse-square attenuation denominator."
+    },
+    {
+      "issue": "Point-face selection differed from the normal-biased projection location",
+      "resolution": "Both selection and matrix projection use the same BiasedPosition. Private HLSL-based regression reproduces old failure and verifies current fix."
+    },
+    {
+      "issue": "Uniform outer-cone solid angle undercounted declared luminous flux under the actual smoothstep angular falloff",
+      "resolution": "ComputeSpotSolidAngle integrates the unit-peak falloff as pi*(innerChordSquared+outerChordSquared)/2. VisualRuntime uses the shared result for flux-to-intensity conversion. Five independent polar-angle quadrature cases catch the old formula."
+    },
+    {
+      "issue": "Clamping point-light filter taps to a single face introduces cubemap seams",
+      "resolution": "Out-of-face taps map through the production cube projection conventions into a neighboring slice. Sampled depth is reconstructed to distance, converted into the original face axis and projected for the same reverse-depth comparison."
+    },
+    {
+      "issue": "Cross-face addressing alone retained a visible planar-receiver PCSS seam",
+      "resolution": "Point-light sampling now uses a face-independent radial tangent kernel, Duff stable orthonormal basis, actual fetched texel rays, and receiver-plane intersections. Geometric derivatives are evaluated before the sky branch and light loop. This supersedes the intermediate source-face depth conversion path."
+    }
+  ],
+  "constant_buffer_abi": {
+    "evidence": "DXC -E LightingPS -T ps_6_0 -Ges -WX -O3 -Fc output, compiled locally from current HLSL",
+    "dxc_reflection": {
+      "ViewProjection": 0,
+      "InverseViewProjection": 64,
+      "Camera": 128,
+      "Lighting": 144,
+      "View": 160,
+      "ShadowViewProjection": 224,
+      "CascadeSplits": 480,
+      "LightDirection": 496,
+      "LightColor": 512,
+      "ShadowParameters": 528,
+      "LocalShadowMatrices": 544,
+      "LocalLights": 2336,
+      "LocalCounts": 2976,
+      "size": 2992
+    },
+    "local_light_stride": 80,
+    "matrix_stride": 64,
+    "frame_cbv_stride": 3072,
+    "draw_cbv_stride": 256,
+    "draw_data_bytes": 192,
+    "shadow_upload_bytes": 8192,
+    "shadow_cbv_slots": 32,
+    "per_slot_matrix_bytes": 64,
+    "capacity_checks": [
+      "FrameConstants size and offsets match C++ static_asserts and reflected HLSL exactly.",
+      "Each frame constant upload starts at aligned resource base. First draw begins at 3072, subsequent draw slots have 256-byte alignment.",
+      "Four directional plus 28 local matrix slots use (4+28)*256=8192 bytes, including the final 64-byte matrix.",
+      "Local-shadow texture has max(1,view count) slices. Six views per point and one per spot yield at most 28.",
+      "Unique cross-kind light IDs and contiguous point faces make the first ID match the base slice. Shader major-axis face is in [0,5].",
+      "At most eight light records, with float-exact counts and indices. Renderer startup validates configuration via BuildLocalShadows before GPU upload.",
+      "Current source uses two explicit ID scans, one for each kind. No separately named findShadowIndex helper was present at review time."
+    ],
+    "reflected_dxil_sha256": "316543b7e0dafe6aa5106806b0cd600413a02e3da829eb514ce4281cddaf77dc"
+  },
+  "observed_tests": [
+    {
+      "scope": "Official FrameGraph + RenderPipeline tests after formal boundary addition",
+      "compiler": "MSVC C++17 /W4 /WX /fp:strict, no exceptions",
+      "tests": 20,
+      "checks": 1562,
+      "failures": 0
+    },
+    {
+      "scope": "Official TestShadowSampling.cpp direct production HLSLI inclusion",
+      "compiler": "MSVC C++17 /W4 /WX /fp:strict, no exceptions",
+      "tests": 5,
+      "checks": 582,
+      "failures": 0
+    },
+    {
+      "scope": "Official TestShadowSampling.cpp direct production HLSLI inclusion",
+      "compiler": "VS bundled clang-cl C++17 /W4 /WX /fp:strict, no exceptions",
+      "tests": 5,
+      "checks": 582,
+      "failures": 0
+    },
+    {
+      "scope": "LocalShadowData own math tests",
+      "compiler": "MSVC C++17",
+      "tests": 8,
+      "checks": 433,
+      "failures": 0,
+      "independent_rerun": "m42_capture_tools; build/engine_next/local-shadow-independent-review.json"
+    },
+    {
+      "scope": "Private actual HLSL LocalVisibility + PointFace + UnitDirection bodies, production LocalShadowData matrices",
+      "checks": 42,
+      "failures": 0,
+      "note": "CPU adapter evidence, not real GPU behavior"
+    },
+    {
+      "scope": "Previous full visual build before new formal sampling and graph boundary tests",
+      "tests": 125,
+      "checks": 9519,
+      "failures": 0,
+      "log": "build/engine_next/local-shadow-final.log",
+      "current_final_build": "Pending root execution. Previous full result is not claimed for the new sources."
+    },
+    {
+      "scope": "RenderConfiguration including shared spotlight solid-angle function and polar-angle quadrature tests",
+      "compiler": "MSVC C++17 /W4 /WX /fp:strict",
+      "tests": 20,
+      "checks": 1443,
+      "failures": 0
+    },
+    {
+      "scope": "Same RenderConfiguration tests",
+      "compiler": "clang-cl C++17 /W4 /WX /fp:strict",
+      "tests": 20,
+      "checks": 1443,
+      "failures": 0
+    },
+    {
+      "scope": "Private negative control restores historical uniform outer-cap formula while retaining the formal tests",
+      "compiler": "clang-cl C++17",
+      "tests": 20,
+      "checks": 1443,
+      "failures": 5,
+      "expected_failure": true,
+      "detail": "All five flux quadrature cases fail under the historical formula."
+    },
+    {
+      "scope": "Final cross-face TestShadowSampling direct actual HLSLI",
+      "compiler": "clang-cl C++17 /W4 /WX /fp:strict",
+      "tests": 7,
+      "checks": 5482,
+      "failures": 0
+    },
+    {
+      "scope": "Formal 7 cross-face tests plus two independent private projection/depth cases with production LocalShadowData",
+      "compiler": "MSVC C++17 /W4 /WX /fp:strict",
+      "tests": 9,
+      "checks": 7115,
+      "failures": 0,
+      "detail": "150 rays compare all six HLSLI cube projection bases against production matrices; 108 cross-face taps verify depth axis conversion and base slices 0,6,18."
+    },
+    {
+      "scope": "Final radial point-shadow HLSLI, analytic planar receiver, and near-pole kernel regression",
+      "compiler": "clang-cl C++17 /W4 /WX /fp:strict",
+      "tests": 8,
+      "checks": 5676,
+      "failures": 0,
+      "source_snapshot": "Final inputs listed in this record"
+    }
+  ],
+  "shader_macro_validation": {
+    "change": "Production HLSL [unroll] token is selected by ENGINE_NEXT_SHADOW_UNROLL; C++ test inclusion selects an empty token. Six loop annotations are affected.",
+    "compiled_before_sha256": "19ece564df078dee578b4bc813a72713f5032bf9033bac848e4c8c6756d9bcef",
+    "compiled_after_sha256": "19ece564df078dee578b4bc813a72713f5032bf9033bac848e4c8c6756d9bcef",
+    "byte_identical": true,
+    "independence_note": "Both artifacts were locally compiled with the same DXC flags. This proves this macro change retained the compiled Lighting shader bytes.",
+    "scope": "Historical macro-only change before the subsequent cross-face algorithm update. Final cross-face shader has the separately recorded new digest."
+  },
+  "remaining_acceptance": [
+    "Final3 complete executable build, three build-impact trials, final candidate real-GPU tests and capture/replay are owned by root and other agents. This review does not claim those results."
+  ],
+  "format_checks": [
+    "copyright_headers.py applied to the two changed test files; repeated call made no changes",
+    "file_format.py applied to changed tests and HLSLI; repeated call made no changes",
+    "clang-format --style=file --dry-run --Werror passed for both changed C++ tests",
+    "git diff --check passed"
+  ],
+  "source_snapshot_note": "Final code-freeze snapshot for this independent review. Historical test entries are labeled; full-build result 125/9519 predates later tests. Shader-override image observations do not establish final3 executable validation.",
+  "cross_face_review": {
+    "result": "Final radial sampling and receiver-plane implementation reviewed; no actionable issue identified in this code snapshot.",
+    "supersedes": "Intermediate cross-face readdressing tests established mapping correctness but left a visible half-plane discontinuity in the GPU stress image. That intermediate implementation was replaced.",
+    "basis": "Duff signed-Z orthonormal basis keeps denominator magnitude at least one and avoids the near-south-pole cancellation found in the intermediate Frisvad implementation.",
+    "depth": "The fetched texel center defines a cube ray. Stored face-axis depth becomes radial distance by multiplying by that ray length. Receiver comparison uses the intersection of the same texel ray with the local receiver plane.",
+    "receiver_plane": "Geometric normal comes from ddx/ddy of reconstructed world position before divergent sky return and local-light branches; it is normalized once. Normal-map normal remains the bias direction. The plane passes through the same biased position.",
+    "filter": "PCSS blocker average and kernel radius are radial and independent of the selected cube face. Positive reverse-depth bias is converted to a nonnegative radial comparison gap.",
+    "layers": "Each tap chooses a dominant cube face within the validated six-layer point block. Projected texels are clamped within the chosen layer. Spotlights retain the original planar PCF/PCSS route.",
+    "shader_compile": {
+      "entry": "LightingPS",
+      "profile": "ps_6_0",
+      "flags": [
+        "-Ges",
+        "-WX",
+        "-O3"
+      ],
+      "sha256": "316543b7e0dafe6aa5106806b0cd600413a02e3da829eb514ce4281cddaf77dc"
+    },
+    "source_sha256": {
+      "hlsli": "1e1a731fee2e9d821bc752e7a4db76bfb304f643d575125fdb5b2e9a1b221387",
+      "deferred": "129566d40a633d3661d848760f9b4274205c3203dc2848b066eb5f8029aea591"
+    },
+    "numeric_evidence": "Actual HLSLI executes through the C++ texture/intrinsic adapter. Final pole and plane cases are formal rendering tests."
+  },
+  "independent_followup_records": [
+    {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-spot-flux-review.json",
+      "sha256": "91f7172874464e61e39ab6587da376bd30e500d0cb5fe0245f946ac91e94c6bb"
+    },
+    {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-point-shadow-sampling-review.json",
+      "sha256": "40ad51c65324f3b22389057a9e97be92a6b3ac963027901d379d000555f42e03"
+    }
+  ],
+  "visual_observations": {
+    "scope": "Inspection of shader-override captures supplied by the GPU owner. This is not validation of the final3 rebuilt executable.",
+    "earlier_failure": "SeamStressFixedPcss.png visibly retained a vertical half-plane boundary near x=395.",
+    "current_observation": "SeamStressFinalPlanePcss.png and SeamStressFinalPlanePcf.png no longer show that boundary; PCF retains the expected hard shadows.",
+    "images": [
+      {
+        "path": "build/engine_next/local-shadow-gpu-final/Boundary/SeamStressFinalPlanePcss.png",
+        "sha256": "0fb06ce0dfd431f8552f252660a9719b3a09b4556c0dc531cd372044b0285b7f"
+      },
+      {
+        "path": "build/engine_next/local-shadow-gpu-final/Boundary/SeamStressFinalPlanePcf.png",
+        "sha256": "74b29accd70bbfa6caeec1448170cb2a68f0dc4a42b3b652288826e965872392"
+      }
+    ]
+  }
+}
