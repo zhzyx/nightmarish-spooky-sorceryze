@@ -32,6 +32,8 @@
 
 #include <enet/enet.h>
 
+#include <cerrno>
+#include <iostream>
 #include <map>
 #include <new>
 #include <utility>
@@ -236,6 +238,18 @@ public:
 					break;
 			}
 			out_arrEvents.push_back(std::move(stOutput));
+		}
+		if (nResult < 0)
+		{
+#ifdef _WIN32
+			const int nSocketError = WSAGetLastError();
+#else
+			const int nSocketError = errno;
+#endif
+			std::cerr << "ENGINE_NEXT_TRANSPORT_IO_ERROR operation=poll role=" << (bServer ? "server" : "client")
+					  << " bound_port=" << pHost->address.port << " socket_error=" << nSocketError
+					  << " received_packets=" << pHost->totalReceivedPackets << " sent_packets=" << pHost->totalSentPackets << '\n'
+					  << std::flush;
 		}
 		UpdateOutgoingHighWater();
 		nPollEventHighWater = nPollEventHighWater < out_arrEvents.size() ? out_arrEvents.size() : nPollEventHighWater;

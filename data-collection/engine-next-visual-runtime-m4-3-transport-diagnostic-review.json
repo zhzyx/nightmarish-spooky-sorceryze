@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "pull_request": 1348,
+  "recorded_at": "2026-11-16T05:52:16.120097+00:00",
+  "reviewer": "m42_capture_tools",
+  "scope": "Independent read-only review of EnetTransport poll error diagnostics",
+  "findings": [],
+  "checks": [
+    "The only production change adds error-only logging after enet_host_service returns negative",
+    "errno on POSIX and WSAGetLastError on Windows are captured before iostream output or UpdateOutgoingHighWater",
+    "The successful-poll path, returned RuntimeStatus, queued events and absence of retry remain unchanged",
+    "ENET_DEBUG is absent from actual compiler commands, so upstream perror calls are excluded",
+    "The record includes poll phase, server/client role, bound port and packet counters; it is evidence for a future failure, not an inferred original errno"
+  ],
+  "inputs": [
+    {
+      "path": "engine_next/Network/EnetTransport.cpp",
+      "bytes": 10759,
+      "sha256": "25129a66e46c7f613d9a795ca815988b1c216587de53d2ada74c0e28cb61df68"
+    },
+    {
+      "path": "build/engine_next/pr1348-enet-diagnostic/RuntimeBuildReport.json",
+      "bytes": 266834,
+      "sha256": "4677682a978c7c98c9bf5de19c794d1329cbecf02de8350b0ee33e4c9ffb791f"
+    }
+  ],
+  "validation": {
+    "performed_by": "m42_network_acceptance",
+    "evidence_read_by_reviewer": true,
+    "source_matches_native_inputs": true,
+    "runtime_test_summaries": [
+      {
+        "target": "EngineNextRuntimeTests",
+        "summary": "ENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_RECONNECT client_id=A session_id=7 entity_id=11 offline_ms=600\r\nENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=1 session_id=7\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=1\r\nENGINE_NEXT_CLIENT_RESUME client_id=A session_id=7 entity_id=11 confirmed=1 error=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_TEST_SUMMARY tests=61 checks=1100 failures=0",
+        "clean_summary": "ENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_RECONNECT client_id=A session_id=7 entity_id=11 offline_ms=600\r\nENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=1 session_id=7\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=1\r\nENGINE_NEXT_CLIENT_RESUME client_id=A session_id=7 entity_id=11 confirmed=1 error=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_TEST_SUMMARY tests=61 checks=1100 failures=0"
+      }
+    ],
+    "handshake_passed": true,
+    "clean_handshake_passed": true,
+    "package_handshake_passed": true,
+    "drain_faults_passed": true,
+    "clean_drain_faults_passed": true,
+    "soak": "not_run"
+  },
+  "verification_boundary": "The POSIX error branch has not yet been observed in the failing macOS CI. An ENet internal error that does not set errno can still leave a stale socket error value; this log records the observed error state and does not identify a specific syscall."
+}
