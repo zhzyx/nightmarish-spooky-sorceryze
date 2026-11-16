@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "event_id": "m43-request-20261116",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "request",
+  "occurred_at": "2026-11-16T04:05:55.366737+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-5afcb929",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "source_record": "data-collection/engine-next-visual-runtime-m4-3-request.json",
+    "authorization": "User approved M4 design and implementation, authorizing main delivery after completed testing."
+  },
+  "sha256": "6308f3be6da0e02bd26ecdb9a73b9e2a93a7c4e00885cc56364d7d03238ed5a0"
+}

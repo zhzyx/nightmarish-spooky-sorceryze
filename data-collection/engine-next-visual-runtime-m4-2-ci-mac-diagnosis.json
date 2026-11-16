@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-16T04:18:03.029766+00:00",
+  "issue_number": 1344,
+  "pull_request": 1342,
+  "run_id": 43800299084,
+  "job_id": 133078678712,
+  "head": "fd927c7bffd45bc000ca5a8c7800ac5c793e1f5a",
+  "candidate": "69c6da448c44200e7f3bff3c5c039e8428b22ebe",
+  "base": "021834b78727eb3481a8501c0c212719157ff7b9",
+  "log": {
+    "path": "D:\\Projects\\engine-next-m4-2-cook-20261116\\build\\engine_next\\m42-cook-ci-mac-job.log",
+    "sha256": "67f1d8ef61688e53abe4ecec4b49726934e6a700c626e38b4b4a3e7d46b93761"
+  },
+  "confirmed": {
+    "failed_step": "Build and audit standalone tests (Clang)",
+    "failed_command": "clean-runtime-source/engine_next/Tools/RunM2Handshake.py against clean-runtime-source/build/engine_next/clang-runtime/CleanRun/next_server + next_client",
+    "preceding_runtime_unit_tests": "61 tests / 1101 checks / zero failures",
+    "preceding_handshakes": [
+      "working tree",
+      "working tree CleanRun",
+      "working tree distribution"
+    ],
+    "preceding_soak": "10312 ticks / 165.526 seconds / pass",
+    "source_and_link_contract": "passed",
+    "network_source_changed_by_candidate": false,
+    "failure": "A/B/server all returned 1 and runtime status 5; A started reconnect after twelve inputs; no new connection/resume or server drain; B became stale_held"
+  },
+  "source_locations": [
+    {
+      "path": "engine_next/include/EngineNext/Runtime/Types.h",
+      "line": 45,
+      "meaning": "RuntimeStatus5 is IoError"
+    },
+    {
+      "path": "engine_next/Client/ClientRuntime.cpp",
+      "line": 63,
+      "meaning": "incomplete acceptance or internal error both collapse to IoError"
+    },
+    {
+      "path": "engine_next/Server/ServerRuntime.cpp",
+      "line": 578,
+      "meaning": "incomplete graceful shutdown or internal error both collapse to IoError"
+    },
+    {
+      "path": "engine_next/Network/EnetTransport.cpp",
+      "line": 242,
+      "meaning": "enet_host_service negative return maps to IoError without errno diagnostic"
+    },
+    {
+      "path": "engine_next/ThirdParty/enet/unix.c",
+      "line": 470,
+      "meaning": "sendmsg non-EWOULDBLOCK errors propagate"
+    },
+    {
+      "path": "engine_next/ThirdParty/enet/unix.c",
+      "line": 504,
+      "meaning": "recvmsg non-EWOULDBLOCK errors propagate"
+    }
+  ],
+  "inference": "The failure is a nondeterministic runtime transport or scheduling event, not compile/source-contract failure. ENet host_service OS error while A closed its old socket is plausible. Existing logs cannot distinguish an OS errno from duration expiry because both become status5. No exact errno or definitive root cause is claimed.",
+  "next_action": "Rerun only this failed job once with unchanged source to test transient hypothesis. If repeated, add narrow error/phase/timing evidence before retrying or changing acceptance. Do not weaken assertions or silently ignore IO errors.",
+  "rerun": {
+    "job_id": 133083547557,
+    "attempt": 2,
+    "conclusion": "success",
+    "run_conclusion": "success",
+    "head_unchanged": true,
+    "log": {
+      "path": "D:\\Projects\\engine-next-m4-2-cook-20261116\\build\\engine_next\\m42-cook-ci-mac-rerun-job.log",
+      "sha256": "b678daedc15bc46730d8a450742e98f7352cb44a7600bd4827c13277179d812f"
+    },
+    "clean_export_cleanrun_handshake": {
+      "clients": 2,
+      "resumes": 1,
+      "stale_recoveries": 1,
+      "graceful_acks": 2,
+      "status": "ok",
+      "trace_sha256": {
+        "server.jsonl": "015edacad89af6f383f11ce2bc1340fec3d3f186b4539f75863933dfdd907876",
+        "client-A.jsonl": "53cc58eb37b1f52ef15e7cbadfbf1ae2cc96c22860e3ddf85242b8de968c1325",
+        "client-B.jsonl": "ce0116bb7c74dd47d05366e5bc818b9152a057679570f64c2e530b696eab298d"
+      }
+    },
+    "portable_asset_acceptance": {
+      "passed": true,
+      "flag": "--layout-only"
+    },
+    "result": "The original failure did not reproduce on the single authorized unchanged-source rerun. Exact original errno remains unobserved."
+  },
+  "delivery": {
+    "pr": 1342,
+    "main": "26c6ecf73e5ce698519440a4afcc066650ff10ae",
+    "closed_issues": [
+      1334,
+      1344
+    ]
+  }
+}

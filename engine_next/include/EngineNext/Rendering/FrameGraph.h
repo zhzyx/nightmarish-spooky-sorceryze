@@ -70,6 +70,7 @@ enum class ResourceState : std::uint8_t
 	UnorderedAccess = 7,
 	Present = 8,
 	NonPixelShaderRead = 9,
+	DepthRead = 10,
 };
 
 enum class BarrierKind : std::uint8_t

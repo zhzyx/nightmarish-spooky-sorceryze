@@ -5,6 +5,13 @@ float3 UnitDirection(float3 Direction, float3 Fallback)
     float3 Scaled = Direction / max(Maximum, 1.0e-38);
     return Maximum > 0 ? Scaled * rsqrt(max(dot(Scaled, Scaled), 1.0e-38)) : Fallback;
 }
+cbuffer FrameConstants : register(b1)
+{
+    column_major float4x4 ViewProjection;
+    column_major float4x4 InverseViewProjection;
+    float4 Camera;
+    float4 Lighting;
+};
 #if defined(GEOMETRY_STAGE)
 cbuffer DrawConstants : register(b0)
 {
@@ -13,7 +20,6 @@ cbuffer DrawConstants : register(b0)
     float4 BaseColor;
     float4 EmissiveMetallic;
     float4 Surface;
-    float4 Camera;
     float4 Flags;
 };
 Texture2D<float4> BaseTexture : register(t0);
@@ -43,8 +49,8 @@ struct VertexOutput
 VertexOutput VSMain(VertexInput Input)
 {
     VertexOutput Output;
-    float3 Position = mul(World, float4(Input.Position, 1)).xyz - Camera.xyz;
-    Output.Position = float4(Position.x * 2.1445069 / Camera.w, Position.y * 2.1445069, 0.05, -Position.z);
+    float4 Position = mul(World, float4(Input.Position, 1));
+    Output.Position = mul(ViewProjection, Position);
     Output.Normal = UnitDirection(mul((float3x3)NormalWorld, Input.Normal), float3(0, 0, 1));
     Output.Tangent = float4(UnitDirection(mul((float3x3)World, Input.Tangent.xyz), float3(1, 0, 0)), Input.Tangent.w * Flags.y);
     Output.Texcoord = Input.Texcoord;
@@ -85,11 +91,9 @@ GBufferOutput PSMain(VertexOutput Input, bool Front : SV_IsFrontFace)
     return Output;
 }
 #else
-cbuffer LightingConstants : register(b0)
-{
-    float4 Camera;
-    float4 Lighting;
-};
+#if defined(TONEMAP_STAGE)
+Texture2D<float4> HdrBuffer : register(t0);
+#else
 Texture2D<float4> BaseBuffer : register(t0);
 Texture2D<float4> NormalBuffer : register(t1);
 Texture2D<float4> SurfaceBuffer : register(t2);
@@ -100,6 +104,7 @@ TextureCube<float4> Irradiance : register(t6);
 TextureCube<float4> PrefilteredEnvironment : register(t7);
 Texture2D<float4> BrdfLut : register(t8);
 SamplerState EnvironmentSampler : register(s0);
+#endif
 struct FullscreenOutput
 {
     float4 Position : SV_POSITION;
@@ -112,6 +117,14 @@ FullscreenOutput FullscreenVS(uint Id : SV_VertexID)
     Output.Position = float4(Output.Texcoord * float2(2, -2) + float2(-1, 1), 0, 1);
     return Output;
 }
+#if defined(TONEMAP_STAGE)
+float4 ToneMapPS(FullscreenOutput Input) : SV_TARGET
+{
+    float3 Color = HdrBuffer.Load(int3(int2(Input.Position.xy), 0)).rgb;
+    Color = 1 - exp(-max(Color, 0) * Lighting.x);
+    return float4(pow(saturate(Color), 1.0 / 2.2), 1);
+}
+#else
 float3 SafeDirection(float3 Direction)
 {
     return UnitDirection(Direction, float3(0, 0, 1));
@@ -140,21 +153,20 @@ float4 LightingPS(FullscreenOutput Input) : SV_TARGET
 {
     int2 Pixel = int2(Input.Position.xy);
     float Depth = DepthBuffer.Load(int3(Pixel, 0));
+    float2 Ndc = Input.Texcoord * float2(2, -2) + float2(-1, 1);
     if (Depth <= 0)
     {
-        float2 Ndc = Input.Texcoord * float2(2, -2) + float2(-1, 1);
-        float3 Direction = normalize(float3(Ndc.x * Camera.w / 2.1445069, Ndc.y / 2.1445069, -1));
+        float4 FarPosition = mul(InverseViewProjection, float4(Ndc, 0, 1));
+        float3 Direction = normalize(FarPosition.xyz - Camera.xyz * FarPosition.w);
         float3 Sky = PrefilteredEnvironment.SampleLevel(EnvironmentSampler, Direction, 0).rgb;
-        Sky = 1 - exp(-Sky * Lighting.x);
-        return float4(pow(saturate(Sky), 1.0 / 2.2), 1);
+        return float4(max(Sky, 0), 1);
     }
     float3 Base = BaseBuffer.Load(int3(Pixel, 0)).rgb;
     float3 N = normalize(NormalBuffer.Load(int3(Pixel, 0)).xyz);
     float3 Material = SurfaceBuffer.Load(int3(Pixel, 0)).rgb;
     float3 Emissive = EmissiveBuffer.Load(int3(Pixel, 0)).rgb;
-    float Z = -0.05 / Depth;
-    float2 Ndc = Input.Texcoord * float2(2, -2) + float2(-1, 1);
-    float3 Position = float3(Ndc.x * -Z * Camera.w / 2.1445069, Ndc.y * -Z / 2.1445069, Z) + Camera.xyz;
+    float4 WorldPosition = mul(InverseViewProjection, float4(Ndc, Depth, 1));
+    float3 Position = WorldPosition.xyz / WorldPosition.w;
     float3 V = SafeDirection(Camera.xyz - Position);
     float3 Color = EvaluateLight(Base, Material.y, Material.x, N, V, normalize(float3(-0.5, 0.8, 0.6)), float3(3, 2.9, 2.7) * Tint[0].rgb);
     float3 PointVector = float3(2, 3, 2) - Position;
@@ -169,7 +181,8 @@ float4 LightingPS(FullscreenOutput Input) : SV_TARGET
     float2 Brdf = BrdfLut.SampleLevel(EnvironmentSampler, float2(NoV, Material.x), 0).rg;
     Color += ((1 - F) * (1 - Material.y) * Diffuse + Prefiltered * (F0 * Brdf.x + Brdf.y)) * Material.z;
     Color += Emissive;
-    Color = 1 - exp(-Color * Lighting.x);
-    return float4(pow(saturate(Color), 1.0 / 2.2), 1);
+    return float4(max(Color, 0), 1);
 }
+#endif
+
 #endif

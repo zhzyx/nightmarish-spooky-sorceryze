@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-bcbc0ffa2a6bc9fb2bdefd8d94a9265654209a94",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1334",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a797c64e81b4abe2ece70e028195dc86a772b64d79b16078826b7ece5051c050",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1334",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1344",
+    "action": "validation",
+    "detection_head": "69c6da448c44200e7f3bff3c5c039e8428b22ebe",
+    "context_sha256": "8fc8e7f4a1371dd3a1e0ecb4fb8be82e4b6360e13ef536723a058ceb2ded37c4",
+    "operator": "kaiyunxue",
+    "worker": "/root/m42_capture_tools",
+    "authority_ref": "Authorized M4 implementation and CI recovery",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43800299084/job/133078678712",
+    "diagnosis": "Same exact candidate passed original build handshake, clean run, package handshake and soak; later exported clean-source handshake got ENet Poll IoError. C++ compilation and dependency audits passed. Socket errno was not captured, so root cause remains unconfirmed.",
+    "next_action": "Re-run the single failed macOS job once to discriminate transient socket failure; if repeated add precise transport diagnostic and repair the cause without relaxing acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-16T04:00:49.510007+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-16T04:04:05.443505+00:00",
+  "sha256": "a3fd70da9cf414e6f1684abdcec90cc5db30d21c81e7883e16e6db5e623bfa01"
+}

@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1345,
+  "recorded_at": "2026-11-16T04:36:02.580639+00:00",
+  "reviewer": "m42_capture_tools",
+  "scope": "Independent read-only review of event-gated late-client drain acceptance and two real UDP gate unit tests",
+  "findings": [],
+  "checks": [
+    {
+      "subject": "Real handshake",
+      "result": "The gate captures a datagram emitted by the actual next_client C, delays forwarding until the observed server DRAIN_BEGIN, and thereafter relays client and server bytes without constructing protocol responses."
+    },
+    {
+      "subject": "Drain deadline and assertions",
+      "result": "The server retains --drain-after-ms 2000 and --drain-timeout-ms 200. The complete valid boolean expression is AST-identical to HEAD, including exact A/B/C return codes, one timeout, one acknowledgment, one nonfatal reason-8 server/client rejection, and acknowledged=1/forced=1/resumed=1."
+    },
+    {
+      "subject": "Endpoint filtering and packet handling",
+      "result": "The socket binds loopback with an ephemeral port, learns the first client address, forwards only that client and the configured exact server endpoint, and retains one pre-release datagram for the current single ENet connect attempt. Forwarding errors fail acceptance. ConnectionResetError records closed-endpoint ICMP while all required application events remain mandatory."
+    },
+    {
+      "subject": "Thread synchronization",
+      "result": "Pending packet, release state and endpoints use one lock, with ready/stopping Events for cross-thread coordination. Server stdout has one reader during normal collection, both output threads are joined after process exit, and the gate receive uses a 50ms timeout with bounded join."
+    },
+    {
+      "subject": "Owned process cleanup",
+      "result": "The finally path closes the owned gate and terminates each still-running owned child, escalating to kill after a 3-second communicate timeout. No external process is selected."
+    }
+  ],
+  "execution": {
+    "command": "python -m unittest discover -s engine_next/Tools -p TestDrainFaults.py -v",
+    "exit_code": 0,
+    "tests": 2,
+    "failures": 0,
+    "real_udp_loopback": true
+  },
+  "inputs": [
+    {
+      "path": "engine_next/Tools/RunM2DrainFaults.py",
+      "bytes": 12735,
+      "sha256": "7c7a5952804acf95e08767e537c8b10ccac996aff49f9dbb4aa09bb095d2a5fa"
+    },
+    {
+      "path": "engine_next/Tools/TestDrainFaults.py",
+      "bytes": 2151,
+      "sha256": "ece7329b1730f9e3197d69da482d067b36785bcf7c6aafb3356357d76214a182"
+    },
+    {
+      "path": "build/engine_next/drain-independent-review-tests.log",
+      "bytes": 443,
+      "sha256": "0671cdb1e15f7a1c55c1d27067c2a8670c6bc247b44efcdbc641d4eb5225d688"
+    }
+  ],
+  "existing_full_runtime_evidence_read": [
+    {
+      "path": "build/engine_next/m43-runtime-final2/DrainFaultsReport.json",
+      "bytes": 5531,
+      "sha256": "3d1bbc4606a53d084f3df0a2d7d71eb2e0e8eeb2c31828f7852f83e4ec1d42e7",
+      "passed": true,
+      "server_returncode": 1,
+      "drain_completes": [
+        {
+          "acknowledged": "1",
+          "forced": "1",
+          "notified": "2",
+          "resumed": "1"
+        }
+      ],
+      "late_client_gate": {
+        "closed_endpoint_notifications": 5,
+        "forwarded_client_packets": 4,
+        "prepared_before_server_start": true,
+        "released_on_drain_begin": true
+      }
+    },
+    {
+      "path": "build/engine_next/m43-runtime-final2/CleanRun/DrainFaultsReport.json",
+      "bytes": 5799,
+      "sha256": "7750c404b044ded1e7475d29c8e395f463db180df73a782d8820c45990ede602",
+      "passed": true,
+      "server_returncode": 1,
+      "drain_completes": [
+        {
+          "acknowledged": "1",
+          "forced": "1",
+          "notified": "2",
+          "resumed": "1"
+        }
+      ],
+      "late_client_gate": {
+        "closed_endpoint_notifications": 5,
+        "forwarded_client_packets": 4,
+        "prepared_before_server_start": true,
+        "released_on_drain_begin": true
+      }
+    }
+  ],
+  "verification_boundary": "This review independently ran the two UDP gate tests and read the existing full-runtime reports. It did not rerun the reported stress campaign or execute another full runtime build."
+}

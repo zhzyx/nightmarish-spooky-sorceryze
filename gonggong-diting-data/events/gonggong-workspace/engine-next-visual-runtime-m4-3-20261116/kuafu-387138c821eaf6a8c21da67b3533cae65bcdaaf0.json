@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-387138c821eaf6a8c21da67b3533cae65bcdaaf0",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "112a54e661ab9497f2a682092c18a9aa55c19076a43a878f8069777b24d72c66",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1345",
+    "action": "validation",
+    "detection_head": "69c6da448c44200e7f3bff3c5c039e8428b22ebe",
+    "context_sha256": "dfce30184cf60e79f01b77ba140d078e97952ab9a4e5e8e99ede489a1a53971b",
+    "operator": "kaiyunxue",
+    "worker": "/root/m42_network_acceptance",
+    "authority_ref": "Authorized M4 implementation and regression repair",
+    "evidence": "build/engine_next/m43-runtime-r1/CleanRun/DrainFaultsReport.json",
+    "diagnosis": "Fault harness starts client C only after DRAIN_BEGIN, putting process launch, loader and ENet connection inside a 200ms drain window. Failure has no C transport connection; A ack and B forced timeout remain correct. Existing product binaries pass original run.",
+    "next_action": "Prepare C before drain behind a test-only loopback UDP gate; release its buffered handshake on DRAIN_BEGIN, preserving 200ms deadline and every rejection/assertion; repeat same-binary and full runtime tests.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-16T04:12:48.363325+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-16T04:14:47.085859+00:00",
+  "sha256": "033d1bc1af15c34b1b06f94c12cc2f88dca7a9d5eee8eddf242e2e12a20f917b"
+}

@@ -1,0 +1,321 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "parent_issue_number": 1323,
+  "reviewer": "/root/m42_cook_review",
+  "reviewed_at": "2026-11-16T04:07:46.562238+00:00",
+  "repository_head": "69c6da448c44200e7f3bff3c5c039e8428b22ebe",
+  "review_type": "independent_read_only",
+  "result": "passed",
+  "inputs": [
+    {
+      "path": "engine_next/Rendering/RenderPipeline.h",
+      "bytes": 3437,
+      "sha256": "aee176e86414e181fb2da6fb7c831729bd34d7f3d3d60cc07b46aa82e6e32839",
+      "git_blob": "07af9e4fe94e3a0b29dbece51568d0731e23a5a8"
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.cpp",
+      "bytes": 7013,
+      "sha256": "c665b519bda110bb6169d2c9a28b8ea63c4a783c11f559111173428147783897",
+      "git_blob": "a3a5c848b40fb0366e10a078108277ce0f43b3fb"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/FrameGraph.h",
+      "bytes": 6595,
+      "sha256": "b4ba3b3761f114d929f7ff584572f62614a7bf3f34fe5c2506d62b5b8a32c7dc",
+      "git_blob": "b770b22e1c6dba98ba2cc2ba0bddbe783ab4b14a"
+    },
+    {
+      "path": "engine_next/Rendering/FrameGraph.cpp",
+      "bytes": 16009,
+      "sha256": "20e25f0d35ab1f4812a983fea3d24f7c7427ba78dfb2ef2fd3f3ec77f4437e1a",
+      "git_blob": "29f4da4a5c2bcdd40ee927056e3f810cc997f9bb"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderPipeline.cpp",
+      "bytes": 9449,
+      "sha256": "0837e34e9d728524af087c78a0b9ba5ed14da944e7139f5e2f3b050a44af9ab6",
+      "git_blob": "dd831c0194b0810a75d11472cad327aa05e18fce"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestFrameGraph.cpp",
+      "bytes": 22736,
+      "sha256": "1bd5dda2c38697b89927233fdc6c7f57c53e86c407d0eb8861a2c8956861e48c",
+      "git_blob": "35625140fd25c1cb9c5cc4b5362abc55dfa15ea6"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderConfiguration.h",
+      "bytes": 3699,
+      "sha256": "75c6a9546e297e3f250af2e8f5ccd9920616165a1577781442734991eb23ce71",
+      "git_blob": "c3305d4d6e3c35e6e80746daf8ab81ca33183949"
+    },
+    {
+      "path": "engine_next/Rendering/RenderConfiguration.cpp",
+      "bytes": 10180,
+      "sha256": "fec3e91ee33561aa902d17ef64d79814d25e2e7d8cfbd87b7bad9b09c3e64c0e",
+      "git_blob": "8f6674bfc53c6d0cfd5339435acad7f8c9bc4404"
+    },
+    {
+      "path": "engine_next/Schemas/RenderConfiguration-v1.json",
+      "bytes": 1911,
+      "sha256": "f219eaa2f7e4b36a9179152020d64a5a791b1420eb910b7f92f93b1a0133fab9",
+      "git_blob": "dc9b240e9f088cdec4e3d52f825bcdf1d8e24154"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
+      "bytes": 13350,
+      "sha256": "ad313ec124605a5d9e181797c86d96068c705754499ae342dc5dd57f264afa60",
+      "git_blob": "8e323602419d76d4264aa6b088ec5bab331a9a0b"
+    },
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "bytes": 126092,
+      "sha256": "289a5340cdddc2fc82456dd79aa7ea5062f0888b8349509a648908ce0072c24b",
+      "git_blob": "3e97fd717ee9906049a6faa2620ba5471a4f6712"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Deferred.hlsl",
+      "bytes": 7947,
+      "sha256": "09f8a2182f6f3c07fcc0025020b29a3303037973b816fc37a49db9b36037e7b4",
+      "git_blob": "a2cb6f087da2e8e6fe6054b9e1271b2d15a15025"
+    },
+    {
+      "path": "engine_next/Tools/BuildVisualRuntime.py",
+      "bytes": 25442,
+      "sha256": "5f7601fac65c3cb708c3bc8caa1a160e30e7062371e3434a7cd14418e9a52b60",
+      "git_blob": "13e437700c2e3fbf68f5a8b446ef670d40e08de1"
+    },
+    {
+      "path": "engine_next/Tools/PackageVisualRuntime.py",
+      "bytes": 6678,
+      "sha256": "60671a258830f476daf3cdbf0e58450743ea8a251ed4323e4828baad0407db62",
+      "git_blob": "26d510285d3f5f6771c3d78f66df0c9bcb677386"
+    },
+    {
+      "path": "engine_next/Apps/NextVisualClientMain.cpp",
+      "bytes": 6800,
+      "sha256": "39a69794577dd9416cb8722939aca27a702d06e3c23110ab63620c9bad7a642b",
+      "git_blob": "55143e43bebc01f94587c1353e841ca42f768c63"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/VisualRuntime.h",
+      "bytes": 3160,
+      "sha256": "582ed382207519621740a729d1794d0a80c40d294efc733d6561e11178ac4d48",
+      "git_blob": "22db326674728caf76474365547d70fd61daf6d0"
+    }
+  ],
+  "scope": {
+    "included": [
+      "RenderPipeline graph construction, pass ID/work mapping and final-state reuse",
+      "FrameGraph DepthRead state and queue/access validation additions",
+      "RenderConfiguration exact fields, JSON values, source binding, file budget and camera basis",
+      "VisualRuntime CBV upload lifetime/layout, HDR resources/PSOs, graph execution/query offsets, resize and normal scene entry",
+      "Deferred HLSL frame/draw constants, matrix projection, world position reconstruction, HDR lighting and tone mapping",
+      "BuildVisualRuntime and PackageVisualRuntime source/header/shader registration and NextVisualClientMain render configuration option"
+    ],
+    "excluded_own_implementation": [
+      "engine_next/include/EngineNext/Rendering/CameraMatrices.h",
+      "engine_next/Rendering/CameraMatrices.cpp",
+      "engine_next/Tests/Rendering/TestCameraMatrices.cpp"
+    ],
+    "independence_note": "The reviewer implemented CameraMatrices. Its implementation and tests are excluded from this independent review. The caller contract, checked CPU-to-GPU conversion, configuration agreement and shader matrix usage are included. CameraMatrices received separate review by /root/m42_network_acceptance."
+  },
+  "actionable_findings": [],
+  "review_checks": [
+    "Both fixed and scene graphs finish with the resource initial states declared for the next frame. Compute tint releases to COMMON, the graphics consumer waits for its fence, and frame reuse waits for both submission fences.",
+    "PassWork uses the compiled PassId mapping. Graphics query slots are packed after the compute pair and use the appropriate queue timestamp frequency.",
+    "DepthRead is read-only and available on the graphics queue. D3D12 maps it to DEPTH_READ with pixel/nonpixel shader resource states, matching deferred depth sampling.",
+    "Configuration exact-field checks precede iterator dereferences. JsonValue numeric extraction rejects nonfinite values. Source digest, vector shape, camera basis, FOV, clipping and exposure constraints are validated transactionally.",
+    "DrawConstants is 192 bytes and FrameConstants is 160 bytes. Static assertions check sizes and offsets. Each record starts on a 256-byte boundary, and the owning frame upload is written after retirement waits.",
+    "The geometry root signature binds draw b0 and frame b1. Lighting and tone mapping bind frame b1, with texture slots matching the shader declarations.",
+    "The HDR target is RGBA16_FLOAT. Lighting emits linear HDR, and a separate ToneMap shader writes the existing SDR target before copy/present.",
+    "Resize flushes both queues before replacing depth, color, GBuffer and HDR targets. Frame constants are regenerated using the new viewport dimensions.",
+    "Shader build registration and exact package allowlist both include ToneMap.ps.cso. Source and public header registration include the three foundation modules."
+  ],
+  "validation": {
+    "observed_runs": [
+      {
+        "command": "./build/engine_next/pipeline-tests/next_rendering_tests.exe",
+        "exit_code": 0,
+        "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=19 checks=1357 failures=0"
+      },
+      {
+        "command": "./build/engine_next/render-configuration-tests/RenderConfigurationTests.exe",
+        "exit_code": 0,
+        "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=7 checks=255 failures=0"
+      },
+      {
+        "command": "./build/engine_next/m43-foundation-r3/next_rendering_tests.exe",
+        "exit_code": 0,
+        "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=93 checks=3394 failures=0",
+        "artifact": {
+          "path": "build/engine_next/m43-foundation-r3/next_rendering_tests.exe",
+          "bytes": 2608640,
+          "sha256": "a10da56d7de44e07082fcb56021e9b34e1e970965e9ae004a01a1da2e724e2e1"
+        }
+      }
+    ],
+    "build_report": {
+      "path": "build/engine_next/m43-foundation-r3/VisualBuildReport.json",
+      "bytes": 1309990,
+      "sha256": "ab032b2e6d1f5a4025b97d1277ae4f3d0fe7e04ff7ddec45641a9443e61fd4d2"
+    },
+    "native_key": "84cd3f7d6a53d935d6befbc392bbea35e9a98251d146e05874dd76a9ff4a7653",
+    "reviewed_native_inputs_match_r3": false,
+    "source_contract": "210 source files passed at camera handoff; later final source/link validation remains owned by integration",
+    "r3_inputs_match_after_crlf_to_lf_normalization": true,
+    "final_impact": {
+      "path": "build/engine_next/m43-foundation-impact-final/ImpactReport.json",
+      "sha256": "430c9e2ddff6479045ec9a38f0013d8707e7931e18e18b055cef297ddb2037ef",
+      "source_manifest_sha256": "5fd97d267af8d27fc17a62ad360ba1a824c454912ef819166cdc5bba1bf7ffe1",
+      "reviewed_inputs_match_final_export": false,
+      "builds": {
+        "Baseline": {
+          "native_key": "bcb8c599b6498c41ab8103a751361516ce835f48f21b5610fbff303c7e0cd0e0",
+          "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=93 checks=3394 failures=0"
+        },
+        "Changed": {
+          "native_key": "3a9c277631622746e57489386eb82018159ae5186a1ae94914d83d056f3489b7",
+          "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=93 checks=3394 failures=0"
+        },
+        "Restored": {
+          "native_key": "bcb8c599b6498c41ab8103a751361516ce835f48f21b5610fbff303c7e0cd0e0",
+          "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=93 checks=3394 failures=0"
+        }
+      },
+      "checks": {
+        "native_invalidation": true,
+        "same_binary_update": true,
+        "incompatible_rejection": true,
+        "rollback": true,
+        "source_restored": true
+      },
+      "same_binary_runs": [
+        {
+          "label": "Baseline",
+          "frames": 20,
+          "validation_errors": 0,
+          "capture_sha256": "de89291b2e9785a63fbf1650e41f239f9c01dc03d5d9523fe20071473822fb37"
+        },
+        {
+          "label": "Changed",
+          "frames": 20,
+          "validation_errors": 0,
+          "capture_sha256": "f1fc4159457a5211caa53f23d9660cc759b697b40b9fb24f78eea6ea7aee3e29"
+        },
+        {
+          "label": "Restored",
+          "frames": 20,
+          "validation_errors": 0,
+          "capture_sha256": "de89291b2e9785a63fbf1650e41f239f9c01dc03d5d9523fe20071473822fb37"
+        }
+      ],
+      "invalid_shader": {
+        "exit_code": 1,
+        "frames": 0,
+        "failure": "Create graphics PSO (HRESULT -2147467259)"
+      },
+      "completed_at": "2026-11-16T04:28:43.680358+00:00",
+      "reviewed_inputs_match_after_declared_copyright_spacing_normalization": true,
+      "exact_current_input_match_count": 13,
+      "comment_only_current_input_difference_count": 3,
+      "post_build_copyright_spacing_reference": "post_build_copyright_spacing"
+    }
+  },
+  "boundary_notes": [
+    "This foundation slice implements configuration, matrix-fed CBVs, explicit HDR/tone-map separation and graph scheduling preparation. CSM/local shadows, TAA/history, automatic exposure, Bloom, SSR, froxel volumes and transparency retain subsequent M4.3 work.",
+    "The current backend still submits one compute tint pass and one graphics list. Query allocation uses actual graph shape; arbitrary multi-queue execution remains a subsequent integration task.",
+    "Current GPU constants use binary32 world positions/matrices. CPU camera construction validates representability, and the renderer separately validates the camera origin conversion. Camera-relative large-world rendering retains its later implementation status.",
+    "This review did not perform independent interactive GPU capture. The r3 CPU regression was executed; GPU validation and dynamic image evidence are owned by /root/m42_network_acceptance.",
+    "After the r3 observations, the RenderConfiguration source/header/schema/test files and VisualRuntime/Deferred shader files were normalized from CRLF to LF. Current input SHA-256 values above bind the normalized files. The r3 build report binds their earlier exact bytes, and the post-review normalization list records both values.",
+    "Final clean-export impact validation uses the pre-copyright-spacing bytes recorded in post_build_copyright_spacing. The current source differs in three line-2 copyright-title comments only; each comparison is recorded byte-for-byte. Baseline/changed/restored builds each passed 93 tests and 3394 checks, and the same executable demonstrated shader update, rollback and invalid shader rejection. Those GPU runs use the fixed-mesh path; they supplement the independent scene GPU evidence.",
+    "No rebuild followed the copyright-header spacing update. Exact final source-to-export equality is false for the three declared comment-only files; all other reviewed inputs match exactly."
+  ],
+  "post_review_byte_normalization": {
+    "checked_at": "2026-11-16T04:24:54.609495+00:00",
+    "files": [
+      {
+        "path": "engine_next/include/EngineNext/Rendering/RenderConfiguration.h",
+        "reviewed_sha256": "11f3ba6f3fde5fa835d3d7c5ac1d46259567174577a4a0104606ba54e5717062",
+        "normalized_sha256": "a5912375a4c93a064abe81da6140f75b159650262e50f354b622650b5fd2fa91",
+        "only_crlf_to_lf": true
+      },
+      {
+        "path": "engine_next/Rendering/RenderConfiguration.cpp",
+        "reviewed_sha256": "b28bf0d59d090f39f9cea4350631f3e9806ef80d92c25e8459e32bc65fc0bcd2",
+        "normalized_sha256": "aed7515311fe2ae4a4350bca8b3bc6f8d707fc80fe668af88885da874253c6e3",
+        "only_crlf_to_lf": true
+      },
+      {
+        "path": "engine_next/Schemas/RenderConfiguration-v1.json",
+        "reviewed_sha256": "d8c78c0bd8526f0fee1b3c80aa792ea78a0afe705b53576cb0dac7b78bd8253c",
+        "normalized_sha256": "f219eaa2f7e4b36a9179152020d64a5a791b1420eb910b7f92f93b1a0133fab9",
+        "only_crlf_to_lf": true
+      },
+      {
+        "path": "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
+        "reviewed_sha256": "2a5470466521c3b9ae293b784ce1077f8d7f810024e36afb78d11e85235ae4c1",
+        "normalized_sha256": "d9bf3a5254292c9ea134f9d2aa79c6204aab4e413326e074490c965ccecac81e",
+        "only_crlf_to_lf": true
+      },
+      {
+        "path": "engine_next/Rendering/VisualRuntime.cpp",
+        "prior_review_sha256": "eea94a0c6d15bf627bccd7871b3fe068e1a77f5f70c05926798b0d51cf8dc1df",
+        "normalized_sha256": "289a5340cdddc2fc82456dd79aa7ea5062f0888b8349509a648908ce0072c24b",
+        "only_crlf_to_lf": true
+      },
+      {
+        "path": "engine_next/Rendering/Shaders/Deferred.hlsl",
+        "prior_review_sha256": "42bcfc4ce3883a17ae867f61edab989bb835a3c55e7028957db80086985c6151",
+        "normalized_sha256": "09f8a2182f6f3c07fcc0025020b29a3303037973b816fc37a49db9b36037e7b4",
+        "only_crlf_to_lf": true
+      }
+    ],
+    "method": "Compared clean-export bytes after converting CRLF to LF. All differences are line endings."
+  },
+  "post_build_copyright_spacing": {
+    "checked_at": "2026-11-16T04:34:46.421409+00:00",
+    "files": [
+      {
+        "path": "engine_next/include/EngineNext/Rendering/RenderConfiguration.h",
+        "build_source_sha256": "a5912375a4c93a064abe81da6140f75b159650262e50f354b622650b5fd2fa91",
+        "build_source_git_blob": "103e67504c0961be434bed4530486362fba9fa7d",
+        "current_sha256": "75c6a9546e297e3f250af2e8f5ccd9920616165a1577781442734991eb23ce71",
+        "current_git_blob": "c3305d4d6e3c35e6e80746daf8ab81ca33183949",
+        "line": 2,
+        "build_line": "/*  RenderConfiguration.h                                               */",
+        "current_line": "/*  RenderConfiguration.h                                                 */",
+        "normalization": "Remove ASCII space characters only from line 2, preserve all other bytes.",
+        "normalized_equal": true
+      },
+      {
+        "path": "engine_next/Rendering/RenderConfiguration.cpp",
+        "build_source_sha256": "aed7515311fe2ae4a4350bca8b3bc6f8d707fc80fe668af88885da874253c6e3",
+        "build_source_git_blob": "1fb439bf1d23b9320d681fb6261701318d6c2745",
+        "current_sha256": "fec3e91ee33561aa902d17ef64d79814d25e2e7d8cfbd87b7bad9b09c3e64c0e",
+        "current_git_blob": "8f6674bfc53c6d0cfd5339435acad7f8c9bc4404",
+        "line": 2,
+        "build_line": "/*  RenderConfiguration.cpp                                             */",
+        "current_line": "/*  RenderConfiguration.cpp                                               */",
+        "normalization": "Remove ASCII space characters only from line 2, preserve all other bytes.",
+        "normalized_equal": true
+      },
+      {
+        "path": "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
+        "build_source_sha256": "d9bf3a5254292c9ea134f9d2aa79c6204aab4e413326e074490c965ccecac81e",
+        "build_source_git_blob": "2a22d03a783b397da0cc115f11f28f7366e3d65d",
+        "current_sha256": "ad313ec124605a5d9e181797c86d96068c705754499ae342dc5dd57f264afa60",
+        "current_git_blob": "8e323602419d76d4264aa6b088ec5bab331a9a0b",
+        "line": 2,
+        "build_line": "/*  TestRenderConfiguration.cpp                                         */",
+        "current_line": "/*  TestRenderConfiguration.cpp                                           */",
+        "normalization": "Remove ASCII space characters only from line 2, preserve all other bytes.",
+        "normalized_equal": true
+      }
+    ],
+    "all_other_bytes_unchanged": true,
+    "rebuild_performed": false
+  }
+}

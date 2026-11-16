@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-16T04:25:34.033273+00:00",
+  "baseline": "26c6ecf73e5ce698519440a4afcc066650ff10ae",
+  "passed": true,
+  "visual_tests": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=93 checks=3394 failures=0",
+  "visual_native_key": "bcb8c599b6498c41ab8103a751361516ce835f48f21b5610fbff303c7e0cd0e0",
+  "runtime_native_key": "02564d7dee8ca292c6efc7b583f17c98216012f0e367615affa43005f59eef3c",
+  "visual_input_differences": [],
+  "runtime_input_differences": [],
+  "records": [
+    {
+      "path": "build/engine_next/m43-foundation-final2/VisualBuildReport.json",
+      "bytes": 1311386,
+      "sha256": "cee8ce3b1c2c01423ddf00c36f4de8eb497379e2f932031f6127281b91c4f0c6"
+    },
+    {
+      "path": "build/engine_next/m43-runtime-final2/RuntimeBuildReport.json",
+      "bytes": 256602,
+      "sha256": "33112b1e8bfe46df4485812e4da1a9da7a1683c7a11a386f5d0077060570be73"
+    },
+    {
+      "path": "build/engine_next/m43-tool-tests-final.log",
+      "bytes": 5217,
+      "sha256": "95f21aaec36358ae7dbdef1f94fb5053fd2e9b2246a8cc80888265395af49b8a"
+    },
+    {
+      "path": "build/engine_next/m43-contract-tests.log",
+      "bytes": 5422,
+      "sha256": "c7317e3839f72f780f23fcdc61e5f146572eb60424bdb6110177e522c90f7709"
+    },
+    {
+      "path": "build/engine_next/m43-ainative-tests.log",
+      "bytes": 544,
+      "sha256": "7cf5977e6c6a89bbf62306e8f8b230a6fece8293beb002ff8e8ce93b56afd17f"
+    },
+    {
+      "path": "build/engine_next/m43-editor-package-tests.log",
+      "bytes": 1675,
+      "sha256": "9077bca31acaeb6ea01dcd82b9f29b8c4c42e7e270584c7decc680d52f6cd03f"
+    },
+    {
+      "path": "build/engine_next/m43-runtime-final2/DrainFaultsReport.json",
+      "bytes": 5531,
+      "sha256": "3d1bbc4606a53d084f3df0a2d7d71eb2e0e8eeb2c31828f7852f83e4ec1d42e7"
+    },
+    {
+      "path": "build/engine_next/m43-runtime-final2/CleanRun/DrainFaultsReport.json",
+      "bytes": 5799,
+      "sha256": "7750c404b044ded1e7475d29c8e395f463db180df73a782d8820c45990ede602"
+    }
+  ],
+  "regressions": {
+    "runtime": "61 tests / 1100 checks; M3 assets, AI, scene, handshake, clean run, drain faults and release handshake passed",
+    "tools": "35 tests passed, including event-gated late connection regression",
+    "contract": "31 tests passed with one conditional skip",
+    "ainative": "424 tests passed with 36 environment skips",
+    "editor_packages": "9 tests passed with two environment skips"
+  },
+  "notes": [
+    "Original drain failure retained in the private build evidence. The late client process is prepared before the server starts, with UDP traffic released on the actual drain event. Deadline and rejection assertions remain unchanged.",
+    "RGBA16_FLOAT intermediate, manual exposure, configurable finite reverse-Z camera and draw/frame constant buffers are implemented in this slice. Shadows and temporal/volume effects continue in later M4.3 slices."
+  ],
+  "post_build_comment_formatting": [
+    {
+      "path": "engine_next/Rendering/RenderConfiguration.cpp",
+      "build_sha256": "aed7515311fe2ae4a4350bca8b3bc6f8d707fc80fe668af88885da874253c6e3",
+      "current_sha256": "fec3e91ee33561aa902d17ef64d79814d25e2e7d8cfbd87b7bad9b09c3e64c0e",
+      "change": "Copyright file-title padding spaces only; normalized bytes equal."
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
+      "build_sha256": "d9bf3a5254292c9ea134f9d2aa79c6204aab4e413326e074490c965ccecac81e",
+      "current_sha256": "ad313ec124605a5d9e181797c86d96068c705754499ae342dc5dd57f264afa60",
+      "change": "Copyright file-title padding spaces only; normalized bytes equal."
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderConfiguration.h",
+      "build_sha256": "a5912375a4c93a064abe81da6140f75b159650262e50f354b622650b5fd2fa91",
+      "current_sha256": "75c6a9546e297e3f250af2e8f5ccd9920616165a1577781442734991eb23ce71",
+      "change": "Copyright file-title padding spaces only; normalized bytes equal."
+    }
+  ]
+}

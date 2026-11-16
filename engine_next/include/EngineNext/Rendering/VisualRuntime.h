@@ -51,6 +51,7 @@ struct VisualConfig
 	std::string strCapturePath;
 	std::string strAssetPackagePath;
 	std::string strGpuPackagePath;
+	std::string strRenderConfigPath;
 	std::string strServerAddress = "127.0.0.1";
 	std::string strClientId = "A";
 	std::uint16_t nServerPort = 0;
