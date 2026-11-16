@@ -181,6 +181,19 @@
         "intrin.h"
       ],
       "allowed_system_libraries": []
+    },
+    "next_asset": {
+      "source_roots": [
+        "engine_next/Rendering/Cook/ImageDecoder.cpp"
+      ],
+      "allowed_angle_includes": [
+        "wincodec.h",
+        "objbase.h"
+      ],
+      "allowed_system_libraries": [
+        "ole32",
+        "windowscodecs"
+      ]
     }
   }
 }

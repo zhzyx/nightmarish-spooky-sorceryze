@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-16T03:41:27.834414+00:00",
+  "reviewer": "m42_capture_tools",
+  "scope": "independent MeshCluster correctness review",
+  "findings": [],
+  "checks": [
+    "finite input, index range and triangular index count",
+    "unique vertex mapping including duplicate triangle corners",
+    "64-vertex and 126-triangle cluster split boundaries",
+    "triangle sequence preservation and degenerate triangle retention",
+    "conservative binary32 sphere using double distances from rounded center",
+    "input and cluster budgets, output transaction and alias safety"
+  ],
+  "execution": {
+    "command": "python build/engine_next/ReviewMeshCluster.py",
+    "exit_code": 0,
+    "tests": 8,
+    "checks": 62,
+    "failures": 0
+  },
+  "inputs": [
+    {
+      "path": "engine_next/Rendering/Cook/MeshCluster.cpp",
+      "bytes": 9561,
+      "sha256": "0bdf8708899278407df15a7047d0bd7bb6218d98c273f6b78a4bdac76b051a67"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/MeshCluster.h",
+      "bytes": 3330,
+      "sha256": "ebcb7a0c0d039bcfbb25a287398ee192f8442570fd074116b783dba837b32a58"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/MeshData.h",
+      "bytes": 4750,
+      "sha256": "0fc4d5369f76d612541e899ee7ad8e469f5972b12947cddf95aca667d4e3888a"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestMeshCluster.cpp",
+      "bytes": 14828,
+      "sha256": "9f36bf0a90bfb032afe9d1510e4b0c78de3c7700786bc5dfbf68bc78548a72cb"
+    },
+    {
+      "path": "build/engine_next/mesh-cluster-independent-review.log",
+      "bytes": 69,
+      "sha256": "c30e8d9835904fe6062a126080d412605042c16f686044926af3bc4ac15fe91e"
+    }
+  ],
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "issue_number": 1334
+}

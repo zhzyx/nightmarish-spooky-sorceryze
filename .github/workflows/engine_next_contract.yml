@@ -130,7 +130,7 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           python3 engine_next/Tools/GenerateVisualBenchmarks.py --output build/engine_next/visual-benchmarks
-          python3 engine_next/Tools/RunM42AssetAcceptance.py --next-asset build/engine_next/clang-runtime/next_asset --fixtures build/engine_next/visual-benchmarks --report build/engine_next/M42AssetReport.json
+          python3 engine_next/Tools/RunM42AssetAcceptance.py --next-asset build/engine_next/clang-runtime/next_asset --fixtures build/engine_next/visual-benchmarks --report build/engine_next/M42AssetReport.json --layout-only
 
       - name: Verify legacy Godot scene adapter
         if: matrix.os == 'ubuntu-latest'

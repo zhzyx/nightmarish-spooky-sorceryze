@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "issue_number": 1334,
+  "recorded_at": "2026-11-16T03:44:33.121725+00:00",
+  "baseline": "021834b78727eb3481a8501c0c212719157ff7b9",
+  "inputs": {
+    ".github/workflows/engine_next_contract.yml": "f271154061a181075af84405e69d94d7cb2092f7b59f4f20f5838eb599c8db62",
+    "design-docs/engine-next-visual-runtime-m4-2-cook-20261116.md": "7d88567e25335c9649d320d19ed25a4e377148b1771c8e81c5ebe6ead4440969",
+    "engine_next/Apps/NextAssetMain.cpp": "7f7dc2cb032e9948d30b125266744e5193e292de69263471a26e0e0012e6dfab",
+    "engine_next/Rendering/Cook/GpuPackage.cpp": "7b4a658bbdeaab56adeba092a84bebfc09fb54422b3209504302338d681d21ba",
+    "engine_next/Rendering/Cook/GpuPackage.h": "bb57d58e460ff2abcc74fc537c3253b34851056b1d300b3a26b279f6ffb6e7e2",
+    "engine_next/Rendering/Cook/MeshCluster.cpp": "0bdf8708899278407df15a7047d0bd7bb6218d98c273f6b78a4bdac76b051a67",
+    "engine_next/Rendering/Cook/MeshCluster.h": "ebcb7a0c0d039bcfbb25a287398ee192f8442570fd074116b783dba837b32a58",
+    "engine_next/Rendering/Cook/TextureCook.cpp": "f19492a36053e01d1a7dfc80c52dd5fea68a0e3dabd6ff670a2d419fe5073fcf",
+    "engine_next/Rendering/Cook/TextureCook.h": "cbd38236181781ca607234c303538acf5156bc9d2d0375ee73d1869a7824ccd3",
+    "engine_next/Rendering/VisualRuntime.cpp": "434b5524b420769cd5bba3b3cd7477829dcc1dc4c5cc018e879826f431964611",
+    "engine_next/Tests/Rendering/TestGpuPackage.cpp": "6cf67d764fe344c731ab0921353089d4d220045431223d5551fcb8517dca3537",
+    "engine_next/Tests/Rendering/TestMeshCluster.cpp": "9f36bf0a90bfb032afe9d1510e4b0c78de3c7700786bc5dfbf68bc78548a72cb",
+    "engine_next/Tests/Rendering/TestTextureCook.cpp": "0a7881edfb281c0ab8dedf4be7f470fb8b7c4379ed817482cf8d0139822ec846",
+    "engine_next/Tools/BuildRuntime.py": "3ff83aefacf85e1b9e6c48118cf2bb78accbb4bb5cb61bb122c0656549d7d778",
+    "engine_next/Tools/BuildVisualRuntime.py": "ed350b7eb43b72b6e6cd207bfebd7a999a90b6a23e433331ff26f8eca5a6b93c",
+    "engine_next/Tools/RunM42AssetAcceptance.py": "cecc0aad7134aaaa290788c45f86a8fe6b3b81d5690cb23da0189c1e2ee1508d",
+    "engine_next/include/EngineNext/Rendering/MeshData.h": "0fc4d5369f76d612541e899ee7ad8e469f5972b12947cddf95aca667d4e3888a",
+    "engine_next/include/EngineNext/Rendering/RenderScene.h": "845e54eb0e1722bdc041abd573a9db8a8a03d6373e5673e80b337b445753736b",
+    "engine_next/include/EngineNext/Rendering/TextureData.h": "4b31acb9e896d75ee57fd749e1e786acb49c46f17ebe11dbcd647334f7cdb735",
+    "tools/engine_next_contract.json": "897ad309c10b67f913e91879a3c70aaf78167a7c8ba4f2780997f6e9264e5652"
+  },
+  "reports": [
+    {
+      "path": "build/engine_next/m42-cook-visual-r2/VisualBuildReport.json",
+      "sha256": "05aed8e35595387d0e608c1f7f37500101ea65872fed6253846deec9fe27bcf9",
+      "bytes": 1185826
+    },
+    {
+      "path": "build/engine_next/m42-cook-runtime-r2/RuntimeBuildReport.json",
+      "sha256": "720d0a430559ddb95bc56c68b312bd510b8c318fbcdb9e1af6842d349d28e820",
+      "bytes": 262406
+    },
+    {
+      "path": "build/engine_next/M42CookAssetReport-final.json",
+      "sha256": "a11a28e637889c8bea755412258af204eb1a4d053016333bd6770d5520bba6bb",
+      "bytes": 29152
+    },
+    {
+      "path": "build/engine_next/M42LegacyAssetReport-final.json",
+      "sha256": "3929bbd1bf18e75ab9a08253641b13a90853428e10080ff7bf3b27e7720445a4",
+      "bytes": 29114
+    },
+    {
+      "path": "build/engine_next/runtime-contract-final.json",
+      "sha256": "14397839ad6cb7d41e40e0a8d4fe1e2169f153c3251de22cda0845e8196bad44",
+      "bytes": 653
+    },
+    {
+      "path": "build/engine_next/visual-contract-final.json",
+      "sha256": "6e94621043d154fafa179d26b45091898d114d4a19258c59333d8e1440b2391f",
+      "bytes": 653
+    },
+    {
+      "path": "build/engine_next/contract-tests.log",
+      "sha256": "feeb90206a9134201aa3bdaa6b670251bd71a788be03c02f9edc5126316f8640",
+      "bytes": 5422
+    },
+    {
+      "path": "build/engine_next/tool-tests.log",
+      "sha256": "374034a861f3236382566359edbf8dd48337ed586a4b87e4ad8a59fcda042480",
+      "bytes": 4877
+    },
+    {
+      "path": "build/engine_next/ainative-tests.log",
+      "sha256": "023325851ac901c61d456f66a4353ebd813e0eb7cf7ae071d99d7d236e939b2a",
+      "bytes": 544
+    },
+    {
+      "path": "build/engine_next/editor-package-tests.log",
+      "sha256": "e683f32339f98604fef54fe59feb2bc4e0adbcbfac30fbb5bb8717f5e084d112",
+      "bytes": 1675
+    }
+  ],
+  "visual_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=72 checks=2478 failures=0",
+  "visual_native_key": "1257768d17edcc1cdd9373b516458efb11d1ab88a5e1514b778b9c4c055836e5",
+  "runtime_native_key": "ee75cfc09e818944882838ca88e2b1b4f42f77f1e4193ad2470279ad1a488545",
+  "runtime_summary": "ENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_RECONNECT client_id=A session_id=7 entity_id=11 offline_ms=600\r\nENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=1 session_id=7\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=1\r\nENGINE_NEXT_CLIENT_RESUME client_id=A session_id=7 entity_id=11 confirmed=1 error=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_TEST_SUMMARY tests=61 checks=1100 failures=0",
+  "regressions": {
+    "contract": "31 tests, 1 conditional skip",
+    "tools": "33 tests",
+    "ainative": "424 tests, 36 environment skips",
+    "editor_package": "9 tests, 2 environment skips",
+    "runtime": "61 tests, 1100 checks; handshake, clean-room acceptance, M3 assets/AI/scene and drain faults passed"
+  },
+  "passed": true,
+  "limitations": [
+    "Cooked textures are uncompressed RGBA8; block compression remains in M4.4.",
+    "Cluster data is persisted and validated; indexed primitive draw remains the M4.2 path.",
+    "Startup recomputes derived data to verify source binding before uploading stored mips."
+  ]
+}

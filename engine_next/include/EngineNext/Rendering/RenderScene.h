@@ -32,6 +32,7 @@
 
 #include "engine_next/include/EngineNext/Assets/AssetPackage.h"
 #include "engine_next/include/EngineNext/Rendering/MeshData.h"
+#include "engine_next/include/EngineNext/Rendering/TextureData.h"
 
 #include <array>
 #include <cstdint>
@@ -45,6 +46,7 @@ struct RenderAsset
 {
 	Assets::AssetRef stIdentity;
 	DecodedMesh stMesh;
+	MeshTextureCook stTextureCook;
 };
 
 struct RenderInstance
@@ -59,6 +61,8 @@ struct RenderInstance
 
 struct RenderScene
 {
+	// Zero for source scenes, one for legacy layout packages, two for prepared GPU data.
+	std::uint32_t nGpuFormatVersion = 0;
 	std::string strSceneId;
 	std::string strSceneRevision;
 	std::string strSceneDigest;

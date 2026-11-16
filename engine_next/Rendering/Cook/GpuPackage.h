@@ -37,9 +37,17 @@
 namespace EngineNext::Rendering
 {
 
-// CPU-only deterministic cook. The original package remains read-only. Existing
+struct GpuCookConfig
+{
+	// Version two includes uncompressed texture mips and initial mesh clusters.
+	// Image-backed materials require a supported pixel decoder on this host.
+	bool bPrepareGpuData = true;
+};
+
+// CPU-only deterministic legacy version-one cook. The original package remains read-only. Existing
 // matching output reconciles; different content is never overwritten.
 [[nodiscard]] bool CookGpuPackage(const std::string &strSourcePackage, const std::string &strTargetPackage, Assets::Diagnostics &out_arrDiagnostics);
+[[nodiscard]] bool CookGpuPackage(const std::string &strSourcePackage, const std::string &strTargetPackage, const GpuCookConfig &stConfig, Assets::Diagnostics &out_arrDiagnostics);
 
 // Verifies canonical manifest, exact files, declared source digest, page hashes,
 // bounded little-endian layout, and render references before replacing output.

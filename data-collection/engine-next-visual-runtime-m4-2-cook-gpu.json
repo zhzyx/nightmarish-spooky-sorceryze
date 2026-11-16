@@ -1,0 +1,931 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "issue_number": 1334,
+  "recorded_at": "2026-11-16T03:46:45.525875+00:00",
+  "author": "/root/m42_network_acceptance",
+  "passed": true,
+  "scope": "Windows D3D12 GPU package v2 material mip consumption, legacy v1 image equality, and loopback replication with transformed parents.",
+  "source_inputs": [
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "bytes": 120573,
+      "sha256": "434b5524b420769cd5bba3b3cd7477829dcc1dc4c5cc018e879826f431964611",
+      "last_write_utc": "2026-11-16T03:25:07.790442+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/TextureCook.cpp",
+      "bytes": 9916,
+      "sha256": "f19492a36053e01d1a7dfc80c52dd5fea68a0e3dabd6ff670a2d419fe5073fcf",
+      "last_write_utc": "2026-11-16T03:22:56.122153+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/TextureCook.h",
+      "bytes": 3471,
+      "sha256": "cbd38236181781ca607234c303538acf5156bc9d2d0375ee73d1869a7824ccd3",
+      "last_write_utc": "2026-11-16T03:22:56.112118+00:00"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/TextureData.h",
+      "bytes": 3104,
+      "sha256": "4b31acb9e896d75ee57fd749e1e786acb49c46f17ebe11dbcd647334f7cdb735",
+      "last_write_utc": "2026-11-16T03:22:56.129153+00:00"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestTextureCook.cpp",
+      "bytes": 11101,
+      "sha256": "0a7881edfb281c0ab8dedf4be7f470fb8b7c4379ed817482cf8d0139822ec846",
+      "last_write_utc": "2026-11-16T03:28:50.608469+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/GpuPackage.cpp",
+      "bytes": 47672,
+      "sha256": "7b4a658bbdeaab56adeba092a84bebfc09fb54422b3209504302338d681d21ba",
+      "last_write_utc": "2026-11-16T03:31:32.784829+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/GpuPackage.h",
+      "bytes": 3918,
+      "sha256": "bb57d58e460ff2abcc74fc537c3253b34851056b1d300b3a26b279f6ffb6e7e2",
+      "last_write_utc": "2026-11-16T03:25:25.199897+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/MeshCluster.cpp",
+      "bytes": 9561,
+      "sha256": "0bdf8708899278407df15a7047d0bd7bb6218d98c273f6b78a4bdac76b051a67",
+      "last_write_utc": "2026-11-16T03:26:16.377711+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/MeshCluster.h",
+      "bytes": 3330,
+      "sha256": "ebcb7a0c0d039bcfbb25a287398ee192f8442570fd074116b783dba837b32a58",
+      "last_write_utc": "2026-11-16T03:26:16.378711+00:00"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/MeshData.h",
+      "bytes": 4750,
+      "sha256": "0fc4d5369f76d612541e899ee7ad8e469f5972b12947cddf95aca667d4e3888a",
+      "last_write_utc": "2026-11-16T03:22:00.764553+00:00"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderScene.h",
+      "bytes": 3626,
+      "sha256": "845e54eb0e1722bdc041abd573a9db8a8a03d6373e5673e80b337b445753736b",
+      "last_write_utc": "2026-11-16T03:25:25.199395+00:00"
+    }
+  ],
+  "build_binding": {
+    "visual_native_key": "1257768d17edcc1cdd9373b516458efb11d1ab88a5e1514b778b9c4c055836e5",
+    "runtime_native_key": "ee75cfc09e818944882838ca88e2b1b4f42f77f1e4193ad2470279ad1a488545",
+    "all_visual_inputs_match_current_source": true,
+    "all_runtime_inputs_match_current_source": true,
+    "visual_build_report": {
+      "path": "build/engine_next/m42-cook-visual-r2/VisualBuildReport.json",
+      "bytes": 1185826,
+      "sha256": "05aed8e35595387d0e608c1f7f37500101ea65872fed6253846deec9fe27bcf9",
+      "last_write_utc": "2026-11-16T03:40:00.392435+00:00"
+    },
+    "runtime_build_report": {
+      "path": "build/engine_next/m42-cook-runtime-r2/RuntimeBuildReport.json",
+      "bytes": 262406,
+      "sha256": "720d0a430559ddb95bc56c68b312bd510b8c318fbcdb9e1af6842d349d28e820",
+      "last_write_utc": "2026-11-16T03:41:17.472969+00:00"
+    },
+    "visual_executable": {
+      "path": "build/engine_next/m42-cook-visual-r2/next_visual_client.exe",
+      "bytes": 2776576,
+      "sha256": "7c33487f200898b6fedd849145a6e8c6a3973e4c9981fe754ce05272c5430ca8",
+      "last_write_utc": "2026-11-16T03:39:53.284951+00:00"
+    },
+    "asset_executable": {
+      "path": "build/engine_next/m42-cook-runtime-r2/next_asset.exe",
+      "bytes": 1225728,
+      "sha256": "535554c67698f0c9c3ab9e015849336fe3bdb1d7663ded8169054cf102ad3824",
+      "last_write_utc": "2026-11-16T03:40:19.467223+00:00"
+    },
+    "server_executable": {
+      "path": "build/engine_next/m42-cook-runtime-r2/next_server.exe",
+      "bytes": 788992,
+      "sha256": "339c80fa4da1c27aa0e85202f8ef393fd10dc7593df61b9ca74f12ed758380a1",
+      "last_write_utc": "2026-11-16T03:40:07.941425+00:00"
+    },
+    "client_executable": {
+      "path": "build/engine_next/m42-cook-runtime-r2/next_client.exe",
+      "bytes": 798720,
+      "sha256": "f9358a611bc3afa1be8d33b9839a3c14bb2d0b1d622e29620669b5d368287c58",
+      "last_write_utc": "2026-11-16T03:40:08.901064+00:00"
+    },
+    "visual_test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=72 checks=2478 failures=0",
+    "shaders": [
+      {
+        "path": "build/engine_next/m42-cook-visual-r2/Deferred.ps.cso",
+        "bytes": 7832,
+        "sha256": "76fca2096d39008d0fc9af66b01181c20379d6e739c7db1a4c3ca0ee01d6ce36",
+        "last_write_utc": "2026-11-16T03:39:30.944898+00:00"
+      },
+      {
+        "path": "build/engine_next/m42-cook-visual-r2/Deferred.vs.cso",
+        "bytes": 5828,
+        "sha256": "92e57eada06dcc415480f0cdd97f6d248a705c2f7a7606cb55a32c2b746256de",
+        "last_write_utc": "2026-11-16T03:39:30.894255+00:00"
+      },
+      {
+        "path": "build/engine_next/m42-cook-visual-r2/FixedMesh.cs.cso",
+        "bytes": 3300,
+        "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064",
+        "last_write_utc": "2026-11-16T03:39:30.850701+00:00"
+      },
+      {
+        "path": "build/engine_next/m42-cook-visual-r2/FixedMesh.ps.cso",
+        "bytes": 4132,
+        "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9",
+        "last_write_utc": "2026-11-16T03:39:30.815146+00:00"
+      },
+      {
+        "path": "build/engine_next/m42-cook-visual-r2/FixedMesh.vs.cso",
+        "bytes": 4316,
+        "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69",
+        "last_write_utc": "2026-11-16T03:39:30.771775+00:00"
+      },
+      {
+        "path": "build/engine_next/m42-cook-visual-r2/Lighting.ps.cso",
+        "bytes": 8732,
+        "sha256": "e7a39f7d70e0031909c2b357f592b417263bc8f81590b5badc36f21811036611",
+        "last_write_utc": "2026-11-16T03:39:31.050306+00:00"
+      },
+      {
+        "path": "build/engine_next/m42-cook-visual-r2/Lighting.vs.cso",
+        "bytes": 3052,
+        "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018",
+        "last_write_utc": "2026-11-16T03:39:30.991567+00:00"
+      }
+    ]
+  },
+  "legacy_comparison": {
+    "passed": true,
+    "command_record": {
+      "path": "build/engine_next/cook-gpu-evidence-r2/GpuComparison.json",
+      "bytes": 5639,
+      "sha256": "a94d388d700c825d6652e00310f749accb039ae778e5f740cd30d2ccd386f7ed",
+      "last_write_utc": "2026-11-16T03:44:20.683800+00:00"
+    },
+    "width": 1280,
+    "height": 720,
+    "frames_per_run": 120,
+    "byte_identical_capture_pairs": [
+      "B-v1 == B-v2",
+      "F-v1 == F-v2"
+    ],
+    "cases": [
+      {
+        "scene": "B",
+        "version": 1,
+        "run_report": {
+          "path": "build/engine_next/cook-gpu-evidence-r2/B-v1.json",
+          "bytes": 57868,
+          "sha256": "e70b8bb3949e24507e6a7b43960909a333a22d45bb57a7728b0777f9e279ca60",
+          "last_write_utc": "2026-11-16T03:44:18.074548+00:00"
+        },
+        "image": {
+          "path": "build/engine_next/cook-gpu-evidence-r2/B-v1.ppm",
+          "bytes": 2764816,
+          "sha256": "d1172afbf1ce0099ede776e14b609c904b1318448f5060289d536483af5a88ba",
+          "last_write_utc": "2026-11-16T03:44:18.072547+00:00"
+        },
+        "gpu_package": {
+          "path": "D:/Projects/engine-next-m4-2-cook-20261116/build/engine_next/cook-gpu-evidence-r2/B-v1.engpu",
+          "files": [
+            {
+              "path": "build/engine_next/cook-gpu-evidence-r2/B-v1.engpu/blobs/e2ac6c604c0c8416abb61d6067421c6992c2760e38520f7824c700492a5af3ec",
+              "bytes": 1094876,
+              "sha256": "e2ac6c604c0c8416abb61d6067421c6992c2760e38520f7824c700492a5af3ec",
+              "last_write_utc": "2026-11-16T03:40:24.878129+00:00"
+            },
+            {
+              "path": "build/engine_next/cook-gpu-evidence-r2/B-v1.engpu/GpuManifest.json",
+              "bytes": 481,
+              "sha256": "be843679c1c3c885d46413cb3213c7db044e973cb31d8c8752b174b83fac5c38",
+              "last_write_utc": "2026-11-16T03:40:24.878129+00:00"
+            }
+          ]
+        },
+        "report_values": {
+          "scene_id": "m4.bench.b",
+          "scene_revision": "r1",
+          "scene_digest": "da13b7d6529ac8d432257c7bd1e36559242157b2c7d03af98d0649f207222654",
+          "source_package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+          "gpu_package_version": 1,
+          "texture_mip_source": "runtime_decode",
+          "cooked_texture_mip_levels": 0,
+          "loaded_mesh_clusters": 0,
+          "mesh_cluster_draw_path": "indexed_primitive",
+          "frames": 120,
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "device_removed_reason": 0
+        }
+      },
+      {
+        "scene": "B",
+        "version": 2,
+        "run_report": {
+          "path": "build/engine_next/cook-gpu-evidence-r2/B-v2.json",
+          "bytes": 57900,
+          "sha256": "19ec18df5db06edf0ce2b2bbf07c0846eaf0944ba9c0889ccac36cb4bcfb5c8b",
+          "last_write_utc": "2026-11-16T03:44:19.052972+00:00"
+        },
+        "image": {
+          "path": "build/engine_next/cook-gpu-evidence-r2/B-v2.ppm",
+          "bytes": 2764816,
+          "sha256": "d1172afbf1ce0099ede776e14b609c904b1318448f5060289d536483af5a88ba",
+          "last_write_utc": "2026-11-16T03:44:19.050972+00:00"
+        },
+        "gpu_package": {
+          "path": "D:/Projects/engine-next-m4-2-cook-20261116/build/engine_next/cook-gpu-evidence-r2/B-v2.engpu",
+          "files": [
+            {
+              "path": "build/engine_next/cook-gpu-evidence-r2/B-v2.engpu/blobs/09f38a24b0b18366975baf00963d27aeec69067a8ccb19b23f9ff5d3cdbaae65",
+              "bytes": 1424280,
+              "sha256": "09f38a24b0b18366975baf00963d27aeec69067a8ccb19b23f9ff5d3cdbaae65",
+              "last_write_utc": "2026-11-16T03:40:27.549777+00:00"
+            },
+            {
+              "path": "build/engine_next/cook-gpu-evidence-r2/B-v2.engpu/GpuManifest.json",
+              "bytes": 607,
+              "sha256": "7af1d520a7df235cb1e6bad11521009797932b58bfa95812830e730c2f258f5b",
+              "last_write_utc": "2026-11-16T03:40:27.549777+00:00"
+            }
+          ]
+        },
+        "report_values": {
+          "scene_id": "m4.bench.b",
+          "scene_revision": "r1",
+          "scene_digest": "da13b7d6529ac8d432257c7bd1e36559242157b2c7d03af98d0649f207222654",
+          "source_package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+          "gpu_package_version": 2,
+          "texture_mip_source": "cooked_gpu_package",
+          "cooked_texture_mip_levels": 35,
+          "loaded_mesh_clusters": 456,
+          "mesh_cluster_draw_path": "indexed_primitive",
+          "frames": 120,
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "device_removed_reason": 0
+        }
+      },
+      {
+        "scene": "F",
+        "version": 1,
+        "run_report": {
+          "path": "build/engine_next/cook-gpu-evidence-r2/F-v1.json",
+          "bytes": 57877,
+          "sha256": "e12e21974eb30eeb1015eab7729d12b8cb7b0607e9c94135fb47eb6afa59fb84",
+          "last_write_utc": "2026-11-16T03:44:19.834132+00:00"
+        },
+        "image": {
+          "path": "build/engine_next/cook-gpu-evidence-r2/F-v1.ppm",
+          "bytes": 2764816,
+          "sha256": "bd0b43ccdb6c554d9d261ee6decba2fa1fd08e4f02073c13d318ed2f58f6e377",
+          "last_write_utc": "2026-11-16T03:44:19.832128+00:00"
+        },
+        "gpu_package": {
+          "path": "D:/Projects/engine-next-m4-2-cook-20261116/build/engine_next/cook-gpu-evidence-r2/F-v1.engpu",
+          "files": [
+            {
+              "path": "build/engine_next/cook-gpu-evidence-r2/F-v1.engpu/blobs/b874e93c6b39c6f6fc2d379b16fe88ed372747ae65aa676ef788b4d45c07f973",
+              "bytes": 514708,
+              "sha256": "b874e93c6b39c6f6fc2d379b16fe88ed372747ae65aa676ef788b4d45c07f973",
+              "last_write_utc": "2026-11-16T03:40:28.504307+00:00"
+            },
+            {
+              "path": "build/engine_next/cook-gpu-evidence-r2/F-v1.engpu/GpuManifest.json",
+              "bytes": 480,
+              "sha256": "eb8304be584e4d7c5eaeaa3180867327b03cc30afda366e0ef094e73d94435dc",
+              "last_write_utc": "2026-11-16T03:40:28.505307+00:00"
+            }
+          ]
+        },
+        "report_values": {
+          "scene_id": "m4.bench.f",
+          "scene_revision": "r1",
+          "scene_digest": "2389697f70a88cda302cdd5374785d23864d9aa6fe4a79b2a2b22df6ca08fb19",
+          "source_package_digest": "2d75ccffae1d73cf633905c5460fa93b8be2e7a558a48acd23444d991891dd96",
+          "gpu_package_version": 1,
+          "texture_mip_source": "runtime_decode",
+          "cooked_texture_mip_levels": 0,
+          "loaded_mesh_clusters": 0,
+          "mesh_cluster_draw_path": "indexed_primitive",
+          "frames": 120,
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "device_removed_reason": 0
+        }
+      },
+      {
+        "scene": "F",
+        "version": 2,
+        "run_report": {
+          "path": "build/engine_next/cook-gpu-evidence-r2/F-v2.json",
+          "bytes": 57931,
+          "sha256": "5acbd6ea8efc36eb2e24a549952fa07175d298fb6d61582d1ab125f0c1f431b0",
+          "last_write_utc": "2026-11-16T03:44:20.582913+00:00"
+        },
+        "image": {
+          "path": "build/engine_next/cook-gpu-evidence-r2/F-v2.ppm",
+          "bytes": 2764816,
+          "sha256": "bd0b43ccdb6c554d9d261ee6decba2fa1fd08e4f02073c13d318ed2f58f6e377",
+          "last_write_utc": "2026-11-16T03:44:20.581913+00:00"
+        },
+        "gpu_package": {
+          "path": "D:/Projects/engine-next-m4-2-cook-20261116/build/engine_next/cook-gpu-evidence-r2/F-v2.engpu",
+          "files": [
+            {
+              "path": "build/engine_next/cook-gpu-evidence-r2/F-v2.engpu/blobs/302660c927e1b2e39c979883ac8cb82b4fa9f973a511ce9b6596a0dd1d3840ae",
+              "bytes": 624600,
+              "sha256": "302660c927e1b2e39c979883ac8cb82b4fa9f973a511ce9b6596a0dd1d3840ae",
+              "last_write_utc": "2026-11-16T03:40:29.319590+00:00"
+            },
+            {
+              "path": "build/engine_next/cook-gpu-evidence-r2/F-v2.engpu/GpuManifest.json",
+              "bytes": 606,
+              "sha256": "cf7a2027b6f15bb8f203ec5fd0edac0bff5a3cabd67560ddb83ebcd57ae53bbf",
+              "last_write_utc": "2026-11-16T03:40:29.319590+00:00"
+            }
+          ]
+        },
+        "report_values": {
+          "scene_id": "m4.bench.f",
+          "scene_revision": "r1",
+          "scene_digest": "2389697f70a88cda302cdd5374785d23864d9aa6fe4a79b2a2b22df6ca08fb19",
+          "source_package_digest": "2d75ccffae1d73cf633905c5460fa93b8be2e7a558a48acd23444d991891dd96",
+          "gpu_package_version": 2,
+          "texture_mip_source": "cooked_gpu_package",
+          "cooked_texture_mip_levels": 0,
+          "loaded_mesh_clusters": 228,
+          "mesh_cluster_draw_path": "indexed_primitive",
+          "frames": 120,
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "device_removed_reason": 0
+        }
+      }
+    ]
+  },
+  "network": {
+    "passed": true,
+    "input_driver": "M2 headless next_client with 24 real network inputs and reconnect",
+    "observer": "Hidden D3D12 next_visual_client B consuming GPU package v2",
+    "hierarchy": {
+      "parent_translation": [
+        0.25,
+        0.3,
+        0
+      ],
+      "parent_rotation_z_degrees": 90,
+      "parent_scale": 0.75,
+      "mesh_child_translation": [
+        0,
+        0.25,
+        0
+      ]
+    },
+    "driver_entity_selected_from_welcome_log": true,
+    "hierarchy_checks": {
+      "draw_samples_checked": 87,
+      "max_absolute_world_error": 1.0728836064011205e-07,
+      "driver_entity_id": 1,
+      "authoritative_final_x_expected": 2.072,
+      "observed_maximum_local_x": 2.07200026512146
+    },
+    "return_codes": {
+      "server": 0,
+      "visual": 0,
+      "client": 0
+    },
+    "gpu_validation": true,
+    "validation_errors": 0,
+    "frames": 428,
+    "reconnected_same_session_and_entity": true,
+    "graceful_drain": "Two peers acknowledged, no forced close, all three processes exited with zero.",
+    "evidence": [
+      {
+        "path": "build/engine_next/cook-gpu-evidence-r2/F-Network/Acceptance.json",
+        "bytes": 2253,
+        "sha256": "4e392d8eedc46bbfec3246234b99fd49d6ed610bc52b88eaaec3e1353a1ffb24",
+        "last_write_utc": "2026-11-16T03:45:03.962826+00:00"
+      },
+      {
+        "path": "build/engine_next/cook-gpu-evidence-r2/F-Network/visual.json",
+        "bytes": 195871,
+        "sha256": "69008e20154371a08a0dd4918dd38645a5768880e8266c4de0d22bfe2dc2188c",
+        "last_write_utc": "2026-11-16T03:45:03.862807+00:00"
+      },
+      {
+        "path": "build/engine_next/cook-gpu-evidence-r2/F-Network/visual.ppm",
+        "bytes": 1843215,
+        "sha256": "e32aa8e16858223afa0851b7dd74a1d7b76096c7b42b69f52340eaed7bcbb82e",
+        "last_write_utc": "2026-11-16T03:45:01.830070+00:00"
+      },
+      {
+        "path": "build/engine_next/cook-gpu-evidence-r2/F-Network/client.log",
+        "bytes": 1872,
+        "sha256": "1bfbed5feb72a3b926239f9986d0c43f7a62d6554ea4180779a611f714de977b",
+        "last_write_utc": "2026-11-16T03:45:03.849133+00:00"
+      },
+      {
+        "path": "build/engine_next/cook-gpu-evidence-r2/F-Network/server.log",
+        "bytes": 1142,
+        "sha256": "aaa52d163f4ec35f000b3da0fe812ca34169112f5b967750b274583537bb5029",
+        "last_write_utc": "2026-11-16T03:45:03.850133+00:00"
+      },
+      {
+        "path": "build/engine_next/cook-gpu-evidence-r2/F-Network/visual.log",
+        "bytes": 625,
+        "sha256": "369423f6fac8e296cb4ba13f9fcaec228abbf3f771d982314b598ba79b6887d5",
+        "last_write_utc": "2026-11-16T03:45:03.928014+00:00"
+      },
+      {
+        "path": "build/engine_next/cook-gpu-evidence-r2/F-Network/server.jsonl",
+        "bytes": 9300,
+        "sha256": "c6e026cbd953ba330053761317442be202670756c9c962de722d58a24bf1356d",
+        "last_write_utc": "2026-11-16T03:45:03.850133+00:00"
+      }
+    ],
+    "gpu_package": {
+      "path": "D:/Projects/engine-next-m4-2-cook-20261116/build/engine_next/cook-gpu-evidence-r2/F-hierarchy-v2.engpu",
+      "files": [
+        {
+          "path": "build/engine_next/cook-gpu-evidence-r2/F-hierarchy-v2.engpu/blobs/fbcbf95d73977b273285c10677fe04650daedfd4a0710e1b9cf343e91a0531f5",
+          "bytes": 624610,
+          "sha256": "fbcbf95d73977b273285c10677fe04650daedfd4a0710e1b9cf343e91a0531f5",
+          "last_write_utc": "2026-11-16T03:40:37.570940+00:00"
+        },
+        {
+          "path": "build/engine_next/cook-gpu-evidence-r2/F-hierarchy-v2.engpu/GpuManifest.json",
+          "bytes": 616,
+          "sha256": "1628e195a928b3d6b6c44119d2b0bc4963e31849878c0eab3d505a315e7a3aa2",
+          "last_write_utc": "2026-11-16T03:40:37.612901+00:00"
+        }
+      ]
+    },
+    "verifier": {
+      "path": "build/engine_next/cook-gpu-evidence-r2/VerifyNetworkEvidence.py",
+      "bytes": 1820,
+      "sha256": "23318056b314cb334c79362b5cb6298f31b2f119662039afa02780415d1f0ed4",
+      "last_write_utc": "2026-11-16T03:45:00.672531+00:00"
+    },
+    "harness": {
+      "path": "build/engine_next/cook-gpu-evidence-r2/RunCookNetwork.py",
+      "bytes": 2997,
+      "sha256": "574b2bcb824bc6c897b61c5250c6189aa325cbbd08366423d6511a5cc15753e4",
+      "last_write_utc": "2026-11-16T03:44:15.895875+00:00"
+    }
+  },
+  "renderdoc": {
+    "passed": true,
+    "captured_scene": "B GPU package v2",
+    "inspection": {
+      "path": "build/engine_next/cook-gpu-evidence-r2/CaptureFinal/Inspection.json",
+      "bytes": 414032,
+      "sha256": "fbae3fb00fb23d63d60746070222fa47bba84ec8c2e0903070cc43292da89a09",
+      "last_write_utc": "2026-11-16T03:46:26.434057+00:00"
+    },
+    "capture": {
+      "path": "build/engine_next/cook-gpu-evidence-r2/CaptureFinal/M42-B_frame470.rdc",
+      "bytes": 6827936,
+      "sha256": "43af3ca83631f0610259f681f407d49e84247a175146600ea93b268a7fb24411",
+      "last_write_utc": "2026-11-16T03:45:49.590758+00:00"
+    },
+    "xml": {
+      "path": "build/engine_next/cook-gpu-evidence-r2/CaptureFinal/M42-B_frame470.xml",
+      "bytes": 2100590,
+      "sha256": "d076ed8070cc31ee0908c013893964526fe6e710b25e7c55e967fb5134d05a36",
+      "last_write_utc": "2026-11-16T03:46:24.701746+00:00"
+    },
+    "thumbnail": {
+      "path": "build/engine_next/cook-gpu-evidence-r2/CaptureFinal/M42-B_frame470.png",
+      "bytes": 404794,
+      "sha256": "74fb321593fe97c16f24c08ea953d1f208e79933e4cb208efd1c276bba316304",
+      "last_write_utc": "2026-11-16T03:46:24.851005+00:00"
+    },
+    "run_report": {
+      "path": "build/engine_next/cook-gpu-evidence-r2/CaptureFinal/B-CaptureRun.json",
+      "bytes": 631940,
+      "sha256": "786022e6f108ac7cc61dd02a85ef6b67856bd483a685626b2b190f1f7873e1ef",
+      "last_write_utc": "2026-11-16T03:45:55.690861+00:00"
+    },
+    "commands": [
+      {
+        "command": [
+          "D:\\Projects\\engine-next-m4-1-20261115\\build\\engine_next\\tools\\RenderDoc_1.47_64\\renderdoccmd.exe",
+          "convert",
+          "-f",
+          "D:\\Projects\\engine-next-m4-2-cook-20261116\\build\\engine_next\\cook-gpu-evidence-r2\\CaptureFinal\\M42-B_frame470.rdc",
+          "-o",
+          "D:\\Projects\\engine-next-m4-2-cook-20261116\\build\\engine_next\\cook-gpu-evidence-r2\\CaptureFinal\\M42-B_frame470.xml",
+          "-c",
+          "xml"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "D:\\Projects\\engine-next-m4-1-20261115\\build\\engine_next\\tools\\RenderDoc_1.47_64\\renderdoccmd.exe",
+          "thumb",
+          "--out",
+          "D:\\Projects\\engine-next-m4-2-cook-20261116\\build\\engine_next\\cook-gpu-evidence-r2\\CaptureFinal\\M42-B_frame470.png",
+          "D:\\Projects\\engine-next-m4-2-cook-20261116\\build\\engine_next\\cook-gpu-evidence-r2\\CaptureFinal\\M42-B_frame470.rdc"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "D:\\Projects\\engine-next-m4-1-20261115\\build\\engine_next\\tools\\RenderDoc_1.47_64\\renderdoccmd.exe",
+          "replay",
+          "--loops",
+          "1",
+          "D:\\Projects\\engine-next-m4-2-cook-20261116\\build\\engine_next\\cook-gpu-evidence-r2\\CaptureFinal\\M42-B_frame470.rdc"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "renderdoc_integrity_verified": true,
+    "counts": {
+      "ID3D12GraphicsCommandList::DrawIndexedInstanced": 12,
+      "ID3D12GraphicsCommandList::DrawInstanced": 1,
+      "ID3D12GraphicsCommandList::Dispatch": 1,
+      "ID3D12GraphicsCommandList::ResourceBarrier": 23,
+      "ID3D12CommandQueue::Wait": 1
+    },
+    "material_texture_resources": [
+      {
+        "chunk_index": 46,
+        "resource_id": "372",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 48,
+        "resource_id": "374",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 50,
+        "resource_id": "376",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 52,
+        "resource_id": "378",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 56,
+        "resource_id": "382",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 58,
+        "resource_id": "384",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 60,
+        "resource_id": "386",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 62,
+        "resource_id": "388",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 66,
+        "resource_id": "392",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 68,
+        "resource_id": "394",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 70,
+        "resource_id": "396",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 72,
+        "resource_id": "398",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 76,
+        "resource_id": "402",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 78,
+        "resource_id": "404",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 80,
+        "resource_id": "406",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 82,
+        "resource_id": "408",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 86,
+        "resource_id": "412",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 88,
+        "resource_id": "414",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 90,
+        "resource_id": "416",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 92,
+        "resource_id": "418",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 96,
+        "resource_id": "422",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 98,
+        "resource_id": "424",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 100,
+        "resource_id": "426",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 102,
+        "resource_id": "428",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 106,
+        "resource_id": "432",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 108,
+        "resource_id": "434",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 110,
+        "resource_id": "436",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 112,
+        "resource_id": "438",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 116,
+        "resource_id": "442",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 118,
+        "resource_id": "444",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 120,
+        "resource_id": "446",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 122,
+        "resource_id": "448",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 126,
+        "resource_id": "452",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 128,
+        "resource_id": "454",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 130,
+        "resource_id": "456",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 132,
+        "resource_id": "458",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 134,
+        "resource_id": "460",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 136,
+        "resource_id": "462",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 138,
+        "resource_id": "464",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 140,
+        "resource_id": "466",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 142,
+        "resource_id": "468",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 146,
+        "resource_id": "472",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 148,
+        "resource_id": "474",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 150,
+        "resource_id": "476",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 152,
+        "resource_id": "478",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 156,
+        "resource_id": "482",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 158,
+        "resource_id": "484",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 160,
+        "resource_id": "486",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      },
+      {
+        "chunk_index": 162,
+        "resource_id": "488",
+        "width": 64,
+        "height": 64,
+        "mip_levels": 7
+      }
+    ],
+    "material_texture_resource_observation": "49 RGBA8 typeless material resources have seven mip levels each. Runtime upload retains per-material descriptors while package storage shares five unique variants.",
+    "gpu_package": {
+      "path": "D:/Projects/engine-next-m4-2-cook-20261116/build/engine_next/cook-gpu-evidence-r2/B-v2.engpu",
+      "files": [
+        {
+          "path": "build/engine_next/cook-gpu-evidence-r2/B-v2.engpu/blobs/09f38a24b0b18366975baf00963d27aeec69067a8ccb19b23f9ff5d3cdbaae65",
+          "bytes": 1424280,
+          "sha256": "09f38a24b0b18366975baf00963d27aeec69067a8ccb19b23f9ff5d3cdbaae65",
+          "last_write_utc": "2026-11-16T03:40:27.549777+00:00"
+        },
+        {
+          "path": "build/engine_next/cook-gpu-evidence-r2/B-v2.engpu/GpuManifest.json",
+          "bytes": 607,
+          "sha256": "7af1d520a7df235cb1e6bad11521009797932b58bfa95812830e730c2f258f5b",
+          "last_write_utc": "2026-11-16T03:40:27.549777+00:00"
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "GPU texture storage is uncompressed RGBA8.",
+    "Mesh clusters are serialized and validated. Rendering uses the indexed primitive draw path.",
+    "The v2 texture compiler uses Windows WIC decoding.",
+    "Network input in this run came from the M2 headless client harness.",
+    "Native 4K quality and Unreal Engine comparison remain outside this check."
+  ]
+}

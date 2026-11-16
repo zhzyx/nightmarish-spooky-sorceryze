@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "issue_number": 1334,
+  "parent_issue_number": 1323,
+  "reviewer": "/root/m42_cook_review",
+  "reviewed_at": "2026-11-16T03:45:15.781999+00:00",
+  "repository_head": "021834b78727eb3481a8501c0c212719157ff7b9",
+  "review_type": "independent_read_only",
+  "scope": {
+    "included": [
+      "BuildRuntime/BuildVisualRuntime integration, link inputs, native input identity, platform contract and NextAsset CLI",
+      "GpuPackage version-one compatibility and version-two bounded read/write, references, material bindings and source recomputation",
+      "TextureCook semantic variants, alpha policies, mip budgets, source validation and transactional output",
+      "VisualRuntime version-two load, source verification, texture upload selection, descriptor/material index correspondence and reports"
+    ],
+    "excluded_own_implementation": [
+      "engine_next/Rendering/Cook/MeshCluster.cpp",
+      "engine_next/Rendering/Cook/MeshCluster.h",
+      "engine_next/Tests/Rendering/TestMeshCluster.cpp",
+      "MeshCluster and MeshPrimitive.arrClusters declarations in engine_next/include/EngineNext/Rendering/MeshData.h"
+    ],
+    "independence_note": "The reviewer implemented MeshCluster in this slice. That implementation is excluded from this independent review. GpuPackage use of its public API and comparison of all returned fields was reviewed."
+  },
+  "inputs": [
+    {
+      "path": "engine_next/Tools/BuildRuntime.py",
+      "sha256": "3ff83aefacf85e1b9e6c48118cf2bb78accbb4bb5cb61bb122c0656549d7d778",
+      "git_blob": "48ce0bf883eab16f0ab25f459d166c0feb2ad636"
+    },
+    {
+      "path": "engine_next/Tools/BuildVisualRuntime.py",
+      "sha256": "ed350b7eb43b72b6e6cd207bfebd7a999a90b6a23e433331ff26f8eca5a6b93c",
+      "git_blob": "2ca97010e61ea338c87e77ed784e2cf67e1424b5"
+    },
+    {
+      "path": "engine_next/Apps/NextAssetMain.cpp",
+      "sha256": "7f7dc2cb032e9948d30b125266744e5193e292de69263471a26e0e0012e6dfab",
+      "git_blob": "1edb04f84df1100c8186757eadeb3e4a4d694a63"
+    },
+    {
+      "path": "tools/engine_next_contract.json",
+      "sha256": "897ad309c10b67f913e91879a3c70aaf78167a7c8ba4f2780997f6e9264e5652",
+      "git_blob": "022c230fe4e4efc25f317a5458345d96944ffce1"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/GpuPackage.cpp",
+      "sha256": "7b4a658bbdeaab56adeba092a84bebfc09fb54422b3209504302338d681d21ba",
+      "git_blob": "b5722c38fd7e4981456d9ab55b71315816382ee7"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/GpuPackage.h",
+      "sha256": "bb57d58e460ff2abcc74fc537c3253b34851056b1d300b3a26b279f6ffb6e7e2",
+      "git_blob": "8e7a77f6be3037f4d60c46bf60e2afd04275d8ba"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/TextureCook.cpp",
+      "sha256": "f19492a36053e01d1a7dfc80c52dd5fea68a0e3dabd6ff670a2d419fe5073fcf",
+      "git_blob": "fc6d3d3069767ce7387ca5ffd0568251684ee7b2"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/TextureCook.h",
+      "sha256": "cbd38236181781ca607234c303538acf5156bc9d2d0375ee73d1869a7824ccd3",
+      "git_blob": "f1277775865a0a8115635a417f1a78e0897d5645"
+    },
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "sha256": "434b5524b420769cd5bba3b3cd7477829dcc1dc4c5cc018e879826f431964611",
+      "git_blob": "da4c5b90bc4c419265d8bec3ac3e20e386ac9d5d"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/TextureData.h",
+      "sha256": "4b31acb9e896d75ee57fd749e1e786acb49c46f17ebe11dbcd647334f7cdb735",
+      "git_blob": "cc482d85a19ee40bd547362408523ae5ad2447e6"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderScene.h",
+      "sha256": "845e54eb0e1722bdc041abd573a9db8a8a03d6373e5673e80b337b445753736b",
+      "git_blob": "4c813cdd5b6f5d66b5cee71dab577a9d66f35333"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestGpuPackage.cpp",
+      "sha256": "6cf67d764fe344c731ab0921353089d4d220045431223d5551fcb8517dca3537",
+      "git_blob": "7fe570f0a8652a57f88917e391ba89361d532be8"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestTextureCook.cpp",
+      "sha256": "0a7881edfb281c0ab8dedf4be7f470fb8b7c4379ed817482cf8d0139822ec846",
+      "git_blob": "3620b561f40ca6e44e9f736eb09c135fbd7eb25f"
+    }
+  ],
+  "result": "passed_after_integration_input_fix",
+  "remaining_actionable_findings": [],
+  "findings": [
+    {
+      "id": "runtime_native_identity_headers",
+      "severity": "P2",
+      "status": "fixed_by_integration_owner_and_read_back",
+      "before": "BuildRuntime native_inputs omitted ImageData.h and TextureData.h while newly linked image/texture cook code depended on them, so a header change could leave native_key unchanged.",
+      "after": "Both actual headers are explicitly listed in native_inputs. PackageVisualRuntime.py, newly imported through BuildVisualRuntime, is also bound.",
+      "verification": [
+        "engine_next/include/EngineNext/Rendering/ImageData.h",
+        "engine_next/include/EngineNext/Rendering/TextureData.h",
+        "engine_next/Tools/PackageVisualRuntime.py"
+      ]
+    }
+  ],
+  "review_results": [
+    "Legacy three-argument CookGpuPackage preserves version-one output. Version-one manifest fields and page layout remain selectable and readable.",
+    "Version-two manifest requires supported texture and cluster algorithm identifiers and agrees with the binary format version.",
+    "Reader validates counts before allocations, constrains mip dimensions and complete downsample chains, enforces unique variant keys and referenced bindings, and validates all texture references against decoded source tables.",
+    "Cluster decoding bounds local/global indices and recomputes cluster membership, triangle order, AABB, sphere and degenerate count before accepting the decoded result.",
+    "VerifyCookedScene compares legacy canonical source fields first, then recomputes version-two derived data and compares canonical bytes. VisualRuntime calls this verification before replacing its source RenderScene.",
+    "TextureCook keeps source bytes read-only, deduplicates by image/semantic/alpha policy, applies the same slot policy as VisualRuntime, checks the requested mip budget and replaces output only after success.",
+    "New rendering upload path reads persisted mips after material-count, variant-index and slot-semantic checks. Existing sampler behavior is preserved.",
+    "The reviewed C++ sources contain no throw, try or catch constructs. Existing filesystem operations retain error_code handling and transactional publication."
+  ],
+  "observed_tests": [
+    {
+      "command": "./build/engine_next/gpu-package-test/GpuPackageTests.exe",
+      "cwd": "D:/Projects/engine-next-m4-2-cook-20261116",
+      "exit_code": 0,
+      "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=10 checks=195 failures=0",
+      "artifact": {
+        "path": "build/engine_next/gpu-package-test/GpuPackageTests.exe",
+        "sha256": "b5dd2c723bebeb4a570edd833be54d1e3aa6f61fb8f12ffaf6a93debd53ba64c",
+        "bytes": 1116160
+      },
+      "source_binding": "Re-executed the implementation-owner scoped binary. This observation alone does not certify the final full-build source identity."
+    },
+    {
+      "command": "./build/engine_next/texture-cook-test/TextureCookTests.exe",
+      "cwd": "D:/Projects/engine-next-m4-2-cook-20261116",
+      "exit_code": 0,
+      "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=5 checks=39 failures=0",
+      "artifact": {
+        "path": "build/engine_next/texture-cook-test/TextureCookTests.exe",
+        "sha256": "9efed26dab5d442e7c12b8eb98365177873a0c24a54026cf67176f212697f0b6",
+        "bytes": 695808
+      },
+      "source_binding": "Re-executed the implementation-owner scoped binary. TextureCook.cpp matched the earlier visual build input identity at review time."
+    },
+    {
+      "command": "Python import BuildRuntime, BuildVisualRuntime and runpy entrypoint modules with alternate run_name",
+      "exit_code": 0,
+      "summary": "Both entrypoint import orders completed, and declared next_asset source sets contained no duplicate C library sources."
+    },
+    {
+      "command": "git diff --check -- reviewed C++ source/header paths",
+      "exit_code": 0
+    }
+  ],
+  "boundary_notes": [
+    "Version-two mips are persisted and uploaded directly, while startup VerifyCookedScene recomputes source pixels and mip chains to prove the derived content matches the original source. Startup mip computation has therefore not been eliminated.",
+    "LoadGpuPackage verifies declared digest, structure and bounded payload. The full source binding is provided by VerifyCookedScene at the visual entrypoint.",
+    "Payload budgets and bounded temporary recomputation do not define a process RSS ceiling. Source scenes, decoded scenes, encoded comparison pages and temporary texture data may coexist.",
+    "Windows WIC supplies pixel decoding. Image-backed complete cook and recomputation on other platforms retain an explicit platform diagnostic.",
+    "This review confirms prepared data and the upload path. Clusters remain initial flat metadata with indexed primitive draws. Block compression, full LOD, streaming, skin/morph, dynamic GI and final UE/native-4K acceptance retain their stage status.",
+    "The earlier m42-cook-visual-r1 report matched reviewed TextureCook.cpp and VisualRuntime.cpp, but its GpuPackage.cpp digest preceded the reviewed revision. A final full-build report and CI must bind the current inputs independently."
+  ]
+}

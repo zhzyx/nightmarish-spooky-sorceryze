@@ -93,7 +93,7 @@ def validate(binary, package, source_digest, operation, evidence, success=True, 
     )
 
 
-def exercise_scene(binary, fixtures, workspace, name):
+def exercise_scene(binary, fixtures, workspace, name, layout_only):
     directory = fixtures / name
     work = workspace / name
     work.mkdir()
@@ -114,16 +114,28 @@ def exercise_scene(binary, fixtures, workspace, name):
     digest = inspected["package_digest"]
     expected_instances = 12 if name == "B" else 6
     results = []
+    cook_options = ["--layout-only"] if layout_only else []
     for label in ("First", "Second"):
         destination = work / f"{label}.engpu"
         if destination.exists():
             raise RuntimeError("GPU cook requires a fresh output directory")
-        run(binary, ["gpu-cook", "--package", source, "--output", destination], f"cook_{label.lower()}", commands)
+        run(
+            binary,
+            ["gpu-cook", "--package", source, "--output", destination, *cook_options],
+            f"cook_{label.lower()}",
+            commands,
+        )
         result = validate(binary, destination, digest, f"validate_{label.lower()}", commands)
         if result["package_digest"] != digest or result["scene_id"] != f"m4.bench.{name.lower()}":
             raise RuntimeError("GPU package lost its source identity")
         if result["instance_count"] != expected_instances:
             raise RuntimeError("GPU package lost a fixture mesh instance")
+        if result["gpu_format_version"] != (1 if layout_only else 2):
+            raise RuntimeError("GPU package has an unexpected format version")
+        if not layout_only and (
+            result["mesh_cluster_count"] <= 0 or (name == "B" and result["texture_mip_count"] <= 0)
+        ):
+            raise RuntimeError("Prepared GPU package lost its derived data")
         results.append(snapshot(destination))
     if results[0] != results[1]:
         raise RuntimeError("Independent GPU cooks produced different bytes")
@@ -133,7 +145,7 @@ def exercise_scene(binary, fixtures, workspace, name):
         ):
             raise RuntimeError("Independent GPU cooks failed byte comparison")
     original = work / "First.engpu"
-    run(binary, ["gpu-cook", "--package", source, "--output", original], "reconcile_existing", commands)
+    run(binary, ["gpu-cook", "--package", source, "--output", original, *cook_options], "reconcile_existing", commands)
     if snapshot(original) != results[0]:
         raise RuntimeError("Idempotent publication changed an existing GPU package")
     usage_cases = (
@@ -141,6 +153,10 @@ def exercise_scene(binary, fixtures, workspace, name):
         ("unused_request", ["gpu-cook", "--package", source, "--output", original, "--request", "unused.json"]),
         ("missing_cook_package", ["gpu-cook", "--output", original]),
         ("missing_cook_output", ["gpu-cook", "--package", source]),
+        (
+            "duplicate_layout_only",
+            ["gpu-cook", "--package", source, "--output", original, "--layout-only", "--layout-only"],
+        ),
         (
             "duplicate_source_digest",
             ["gpu-validate", "--package", original, "--source-digest", digest, "--source-digest", digest],
@@ -192,6 +208,10 @@ def exercise_scene(binary, fixtures, workspace, name):
         "idempotent": True,
         "invalid_cli_usage_rejected": True,
         "instance_count": expected_instances,
+        "gpu_format_version": result["gpu_format_version"],
+        "mesh_cluster_count": result["mesh_cluster_count"],
+        "texture_mip_count": result["texture_mip_count"],
+        "texture_variant_count": result["texture_variant_count"],
         "commands": commands,
     }
 
@@ -201,27 +221,28 @@ def main():
     parser.add_argument("--next-asset", type=Path, required=True)
     parser.add_argument("--fixtures", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
+    parser.add_argument("--layout-only", action="store_true", help="Exercise legacy v1 without host pixel decoding")
     args = parser.parse_args()
     binary = args.next_asset.resolve(strict=True)
     fixtures = args.fixtures.resolve(strict=True)
     args.report.parent.mkdir(parents=True, exist_ok=True)
     report = {
-        "schema_version": 1,
+        "schema_version": 2,
         "passed": False,
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "tool_sha256": file_sha256(Path(__file__)),
         "executable": {"name": binary.name, "bytes": binary.stat().st_size, "sha256": file_sha256(binary)},
         "fixture_generator": json.loads((fixtures / "BenchmarkManifest.json").read_text(encoding="utf-8")),
-        "scope": "CPU geometry-layout GPU package with source PNG/JPEG image bytes",
-        "texture_mips_baked": False,
+        "scope": "legacy geometry layout" if args.layout_only else "prepared texture mips and initial mesh clusters",
+        "texture_mips_baked": not args.layout_only,
         "block_compression_baked": False,
-        "clusters_baked": False,
+        "clusters_baked": not args.layout_only,
         "scenes": [],
     }
     try:
         with tempfile.TemporaryDirectory(prefix="m42-assets-", dir=args.report.parent) as temporary:
             for name in ("B", "F"):
-                report["scenes"].append(exercise_scene(binary, fixtures, Path(temporary), name))
+                report["scenes"].append(exercise_scene(binary, fixtures, Path(temporary), name, args.layout_only))
         report["passed"] = True
     except (RuntimeError, OSError, subprocess.SubprocessError) as error:
         report["error"] = str(error)

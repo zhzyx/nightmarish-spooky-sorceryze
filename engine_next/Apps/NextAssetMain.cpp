@@ -107,6 +107,36 @@ JsonValue InspectJson(const EngineNext::Assets::PackageData &in_stPackage)
 	};
 }
 
+JsonValue InspectGpuJson(const EngineNext::Rendering::RenderScene &in_stScene)
+{
+	std::size_t nClusterCount = 0;
+	std::size_t nMipCount = 0;
+	std::size_t nTextureVariantCount = 0;
+	for (const EngineNext::Rendering::RenderAsset &stAsset : in_stScene.arrAssets)
+	{
+		for (const EngineNext::Rendering::MeshPrimitive &stPrimitive : stAsset.stMesh.arrPrimitives)
+		{
+			nClusterCount += stPrimitive.arrClusters.size();
+		}
+		for (const EngineNext::Rendering::CookedTextureVariant &stVariant : stAsset.stTextureCook.arrVariants)
+		{
+			nMipCount += stVariant.arrMips.size();
+		}
+		nTextureVariantCount += stAsset.stTextureCook.arrVariants.size();
+	}
+	return JsonValue::Object{
+		{ "diagnostics", JsonValue::List{} },
+		{ "gpu_format_version", static_cast<std::int64_t>(in_stScene.nGpuFormatVersion) },
+		{ "instance_count", static_cast<std::int64_t>(in_stScene.arrInstances.size()) },
+		{ "mesh_cluster_count", static_cast<std::int64_t>(nClusterCount) },
+		{ "package_digest", in_stScene.strPackageDigest },
+		{ "scene_id", in_stScene.strSceneId },
+		{ "texture_mip_count", static_cast<std::int64_t>(nMipCount) },
+		{ "texture_variant_count", static_cast<std::int64_t>(nTextureVariantCount) },
+		{ "valid", true },
+	};
+}
+
 bool UnsignedOption(const std::string &in_strValue, std::uint32_t &out_nValue)
 {
 	if (in_strValue.empty())
@@ -203,7 +233,7 @@ int main(int in_nArgumentCount, char **in_ppArguments)
 {
 	if (in_nArgumentCount < 2 || (in_nArgumentCount == 2 && std::string(in_ppArguments[1]) == "--help"))
 	{
-		std::cout << "Usage: next_asset compile --request FILE --source-root DIR --output DIR.enpak | validate --package DIR.enpak | inspect --package DIR.enpak | gpu-cook --package DIR.enpak --output DIR.engpu | gpu-validate --package DIR.engpu --source-digest SHA256 | ai-run --request FILE --python FILE --executor-script FILE --factory NAME --database FILE --state FILE --output DIR.enpak [--resume]\n";
+		std::cout << "Usage: next_asset compile --request FILE --source-root DIR --output DIR.enpak | validate --package DIR.enpak | inspect --package DIR.enpak | gpu-cook --package DIR.enpak --output DIR.engpu [--layout-only] | gpu-validate --package DIR.engpu --source-digest SHA256 | ai-run --request FILE --python FILE --executor-script FILE --factory NAME --database FILE --state FILE --output DIR.enpak [--resume]\n";
 		return in_nArgumentCount == 2 ? 0 : 2;
 	}
 	const std::string strCommand = in_ppArguments[1];
@@ -214,12 +244,17 @@ int main(int in_nArgumentCount, char **in_ppArguments)
 		if (strCommand == "gpu-cook" || strCommand == "gpu-validate")
 		{
 			const bool bAllowed = strOption == "--package" ||
-					(strCommand == "gpu-cook" && strOption == "--output") ||
+					(strCommand == "gpu-cook" && (strOption == "--output" || strOption == "--layout-only")) ||
 					(strCommand == "gpu-validate" && strOption == "--source-digest");
 			if (!bAllowed || mapOptions.count(strOption) != 0)
 			{
 				return 2;
 			}
+		}
+		if (strOption == "--layout-only" && strCommand == "gpu-cook")
+		{
+			mapOptions[strOption] = "true";
+			continue;
 		}
 		if (strOption == "--resume")
 		{
@@ -262,7 +297,9 @@ int main(int in_nArgumentCount, char **in_ppArguments)
 		{
 			return 2;
 		}
-		if (!EngineNext::Rendering::CookGpuPackage(mapOptions.at("--package"), mapOptions.at("--output"), arrDiagnostics))
+		EngineNext::Rendering::GpuCookConfig stConfig;
+		stConfig.bPrepareGpuData = mapOptions.count("--layout-only") == 0;
+		if (!EngineNext::Rendering::CookGpuPackage(mapOptions.at("--package"), mapOptions.at("--output"), stConfig, arrDiagnostics))
 		{
 			return Failure(arrDiagnostics);
 		}
@@ -280,13 +317,7 @@ int main(int in_nArgumentCount, char **in_ppArguments)
 		{
 			return Failure(arrDiagnostics);
 		}
-		Print(JsonValue::Object{
-				{ "diagnostics", JsonValue::List{} },
-				{ "instance_count", static_cast<std::int64_t>(stScene.arrInstances.size()) },
-				{ "package_digest", stScene.strPackageDigest },
-				{ "scene_id", stScene.strSceneId },
-				{ "valid", true },
-		});
+		Print(InspectGpuJson(stScene));
 		return 0;
 	}
 	if (strCommand == "compile")

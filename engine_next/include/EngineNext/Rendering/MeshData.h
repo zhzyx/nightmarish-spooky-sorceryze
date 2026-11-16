@@ -87,11 +87,27 @@ struct TextureData
 	std::int32_t nWrapT = 10497;
 };
 
+inline constexpr std::uint32_t MAX_MESH_CLUSTER_VERTICES = 64;
+inline constexpr std::uint32_t MAX_MESH_CLUSTER_TRIANGLES = 126;
+
+struct MeshCluster
+{
+	// Local triangle indices address this ordered list of primitive vertex IDs.
+	std::vector<std::uint32_t> arrVertexIndices;
+	std::vector<std::uint8_t> arrTriangleIndices;
+	std::array<float, 3> arrBoundsMinimum{};
+	std::array<float, 3> arrBoundsMaximum{};
+	std::array<float, 3> arrSphereCenter{};
+	float fSphereRadius = 0.0F;
+	std::uint32_t nDegenerateTriangleCount = 0;
+};
+
 struct MeshPrimitive
 {
 	std::vector<MeshVertex> arrVertices;
 	std::vector<std::uint32_t> arrIndices;
 	std::int32_t nMaterial = 0;
+	std::vector<MeshCluster> arrClusters;
 };
 
 struct MeshInstance
