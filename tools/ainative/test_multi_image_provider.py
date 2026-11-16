@@ -97,7 +97,7 @@ class MultiImageTests(unittest.TestCase):
         self.manifest = dict(schema_version=1, artifacts=copy.deepcopy(self.sources))
         self.request = dict(
             node="image_to_image",
-            version="2",
+            version="3",
             inputs={"source": reference(self.sources[0])},
             parameters={"prompt": "same person", "output_count": 2, "output_labels": ["front", "three-quarter"]},
             context=[dict(artifact=reference(self.sources[1]), role="reference", scope="node", strength="reference")],
@@ -142,10 +142,11 @@ class MultiImageTests(unittest.TestCase):
                     [source["revision"] for source in self.sources],
                 )
                 self.assertEqual(provenance["ordered_sources"], provider.read(key)["sources"])
-                self.assertEqual(receipt["outputs"]["result"], collection["payload"]["items"][0]["artifact"])
+                self.assertEqual(set(receipt["outputs"]), {"image_set"})
+                self.assertEqual(receipt["outputs"]["image_set"], reference(collection))
                 registry = NodeRegistry()
                 register_images(registry)
-                validate_outputs(registry, "image_to_image", "2", receipt["outputs"], manifest)
+                validate_outputs(registry, "image_to_image", "3", receipt["outputs"], manifest)
                 self.assertEqual(provider.submit(self.request, self.manifest, key)["state"], "succeeded")
                 self.assertEqual(inner.submissions, 2)
 
@@ -232,6 +233,19 @@ class MultiImageTests(unittest.TestCase):
             item["artifact"] for item in second.requests[0]["context"] if "artifact" in item
         ]
         self.assertEqual(references, [item["artifact"] for item in collection["payload"]["items"]])
+
+    def test_version_two_keeps_primary_image_and_queue_outputs(self):
+        inner = FakeImageProvider("kimi_work_image")
+        provider = self.adapter(inner)
+        request = copy.deepcopy(self.request)
+        request["version"] = "2"
+        receipt = provider.poll(provider.submit(request, self.manifest, "6" * 64)["job_id"])
+        self.assertEqual(receipt["state"], "succeeded")
+        self.assertEqual(set(receipt["outputs"]), {"result", "image_set"})
+        collection = next(
+            item for item in provider.result_manifest(receipt["job_id"])["artifacts"] if item["type"] == "image_set"
+        )
+        self.assertEqual(receipt["outputs"]["result"], collection["payload"]["items"][0]["artifact"])
 
     def test_version_one_keeps_original_provider_identity_and_lifecycle(self):
         inner = FakeImageProvider("comfy")

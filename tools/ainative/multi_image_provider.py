@@ -17,7 +17,8 @@ from codex_provider import CodexProvider, _creationflags, validate_png
 from comfy_provider import digest
 from extensions import NodeRegistry, canonical, require, validate_invocation, validate_outputs
 
-VERSION = "2"
+VERSION = "3"
+BATCH_VERSIONS = ("2", VERSION)
 IMAGE_KINDS = ("text_to_image", "image_to_image")
 MAX_IMAGES = 8
 MESSAGES = {
@@ -31,19 +32,22 @@ MESSAGES = {
 
 
 def register_images(registry):
-    """Add a new version; never mutate the version 1 definitions used by old runs."""
+    """Add versions without mutating definitions already used by old runs."""
     from comfy_provider import register
 
     register(registry)
     for kind in IMAGE_KINDS:
         definition = registry.get(kind, "1")
-        definition["version"] = VERSION
+        definition["version"] = "2"
         definition["inputs"] = {"source": {"types": ["image", "image_set"], "required": kind == "image_to_image"}}
         definition["context_types"] = ["text", "image", "image_set"]
         definition["outputs"]["image_set"] = {"types": ["image_set"], "required": True}
         properties = definition["parameters"]["properties"]
         properties["output_count"] = {"type": "integer"}
         properties["output_labels"] = {"type": "array"}
+        registry.register(definition)
+        definition["version"] = VERSION
+        definition["outputs"] = {"image_set": {"types": ["image_set"], "required": True}}
         registry.register(definition)
 
 
@@ -195,7 +199,7 @@ class MultiImageProvider(CodexProvider):
         return result
 
     def _prepare(self, request, manifest, key):
-        require(request["node"] in IMAGE_KINDS and request["version"] == VERSION, "invalid_image_batch")
+        require(request["node"] in IMAGE_KINDS and request["version"] in BATCH_VERSIONS, "invalid_image_batch")
         sources = _sources(request, manifest)
         require(bool(sources) or request["node"] == "text_to_image", "invalid_image_batch")
         specifications = output_specifications(request["parameters"])
@@ -313,7 +317,7 @@ class MultiImageProvider(CodexProvider):
         self.write(key, children=record["children"])
 
     def submit(self, request, manifest, idempotency_key):
-        if request["node"] not in IMAGE_KINDS or request.get("version", "1") != VERSION:
+        if request["node"] not in IMAGE_KINDS or request.get("version", "1") not in BATCH_VERSIONS:
             return self.inner.submit(request, manifest, idempotency_key)
         require(isinstance(idempotency_key, str) and re.fullmatch(r"[a-f0-9]{64}", idempotency_key), "invalid job key")
         previous = self._local(idempotency_key)
@@ -380,8 +384,10 @@ class MultiImageProvider(CodexProvider):
         )
         registry = NodeRegistry()
         register_images(registry)
-        outputs = {"result": items[0]["artifact"], "image_set": _ref(collection)}
-        validate_outputs(registry, record["request"]["node"], VERSION, outputs, result)
+        outputs = {"image_set": _ref(collection)}
+        if record["request"]["version"] == "2":
+            outputs["result"] = items[0]["artifact"]
+        validate_outputs(registry, record["request"]["node"], record["request"]["version"], outputs, result)
         self.write(key, result=result, terminal=self.snapshot(key, "succeeded", outputs))
 
     def _failed(self, key):
