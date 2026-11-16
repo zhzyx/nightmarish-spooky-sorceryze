@@ -142,7 +142,11 @@ def automatic_output_specifications(prompt):
     count = None
     if count_match:
         token = count_match.group(1)
-        count = int(token) if token.isdigit() else {"一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9}[token]
+        count = (
+            int(token)
+            if token.isdigit()
+            else {"一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9}[token]
+        )
         require(1 <= count <= MAX_IMAGES, "invalid_image_batch")
     found = []
     occupied = []
@@ -161,7 +165,11 @@ def automatic_output_specifications(prompt):
             found.append((start, label, mode))
     found.sort()
     labels = [(label, mode) for _, label, mode in found]
-    if not labels and not count and any(term in text for term in ["多视角", "多角度", "多视图", "multi-view", "multiview", "turnaround"]):
+    if (
+        not labels
+        and not count
+        and any(term in text for term in ["多视角", "多角度", "多视图", "multi-view", "multiview", "turnaround"])
+    ):
         labels = [("正面", "view"), ("右侧面", "view"), ("背面", "view"), ("左侧面", "view")]
     if not labels and "三视图" in text:
         labels = [("正面", "view"), ("侧面", "view"), ("背面", "view")]
@@ -184,8 +192,7 @@ def _has_output_cue(text):
     return (
         any(term in lowered for _, _, terms in _AUTOMATIC_VIEWS for term in terms)
         or any(term in lowered for term in ["多视角", "多角度", "多视图", "multi-view", "multiview", "turnaround"])
-        or re.search(r"([0-9]+|[一二两三四五六七八九])\s*(?:张|幅|个视角|个视图|视图)", lowered)
-        is not None
+        or re.search(r"([0-9]+|[一二两三四五六七八九])\s*(?:张|幅|个视角|个视图|视图)", lowered) is not None
     )
 
 
