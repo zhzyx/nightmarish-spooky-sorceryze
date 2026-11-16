@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "request_id": "tianxuan-secure-production-20261116",
+  "issue_number": 1363,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1363",
+  "scope": "Existing Tianxuan production deployment continuation, personal keys, account roles, authenticated repository files",
+  "usage": null,
+  "usage_unknown_reason": "Actual model usage not collected",
+  "production_acceptance": {
+    "application_main": "5ed73c9b8a51aa0d003dbcf9a849f2a45eea6af3",
+    "code_pr": 1366,
+    "source_snapshot": {
+      "commit": "5ed73c9b8a51aa0d003dbcf9a849f2a45eea6af3",
+      "tracked_files": 28867,
+      "tracked_bytes": 423253618,
+      "archive_sha256": "80fa4364119ed585ea84918d1979dddd2dda43cc5725b1dbf3859b0498976969",
+      "archive_bytes": 94271032
+    },
+    "transport": "TLS verified; anonymous APIs 401; shared gate 410; cross-origin cookie writes 403",
+    "pages_and_exports": "Authenticated pages and MD/HTML/DOCX/PDF export signatures passed",
+    "roles": "Viewer writes denied, editor can edit on independent branch, protected main deletion denied, role downgrade effective",
+    "keys": "Per-user issue/revoke and persistence passed; revoked live reader closed 4401 while writer remains connected",
+    "restart": "Admin key, document version 2 and revocations retained after API/Web restart",
+    "preservation": "All rows existing before deployment across 16 original tables preserved; live integrity_check ok",
+    "rollback": "Consistent backup restored to isolated volume; additive migration preserves original records; retained old application reopens restored database",
+    "browser": {
+      "fileRead": {
+        "length": 6528,
+        "readonly": false
+      },
+      "pages": {
+        "/repos": {
+          "title": "代码仓库 · 天璇",
+          "path": "/repos",
+          "textLength": 11884,
+          "insecureResources": 0
+        },
+        "/docs": {
+          "title": "文档 · 天璇",
+          "path": "/docs",
+          "textLength": 1197,
+          "insecureResources": 0
+        },
+        "/accounts": {
+          "title": "天璇 · AI-native 工作空间",
+          "path": "/accounts",
+          "textLength": 650,
+          "insecureResources": 0
+        }
+      },
+      "mobile": {
+        "width": 390,
+        "bodyWidth": 390,
+        "path": "/repos"
+      }
+    },
+    "cleanup": "Temporary edit branch removed and two test keys revoked; two readonly test accounts plus one proof document retained for audit. Final temporary resource cleanup pending.",
+    "remaining": "True unauthenticated login Location redirect and actual user profile display follow-up pending main and rollout."
+  },
+  "redirect_review": {
+    "sha256": "d3674efb5de9eaa189991b12cd48845a545a2e6b73ffeca9d62eb2d9c8b99882",
+    "files": {
+      "deploy/production/nginx.gate.conf.example": "a31b10835258f3ecb8514b2cd72d4ee60f5db4eb274ac032b3da3ce4393d9110",
+      "deploy/production/verify.sh": "f3f9a10fb60b4026d9054b0b3fe62c3919b0322814a4c665ad4790ea39afa633"
+    },
+    "cases": "Missing/wrong Location rejected; relative/absolute configured login Location accepted; isolated nginx returns actual 302+Location."
+  },
+  "profile_review": {
+    "report_sha256": "7cfcce73c2608c16d54185a51974ab8ae1d372bdcbf54b3908d26b366b1ce1d8",
+    "file": "apps/tianxuan/components/AppShell.tsx",
+    "sha256": "c749e1ce024ad0df2033f56acd22f5dc5e1a89d9a4daa528d80fc58808b99023",
+    "verification": "Independent null/viewer/editor/admin source checks; Next production build and TypeScript passed"
+  },
+  "prior_receipt": {
+    "path": "data-collection/tianxuan-secure-production-1363.json",
+    "sha256": "b3d82b5d4ece5b2da6c59521e48c1b19e7f548e771b808724e81618ee8689f12"
+  }
+}

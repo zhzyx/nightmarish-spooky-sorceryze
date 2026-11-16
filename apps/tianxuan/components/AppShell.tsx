@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Icon, type IconName } from "@/components/Icon";
+import { useIdentity } from "@/components/IdentityProvider";
 import { ApiStatus } from "@/components/ApiStatus";
 import { useI18n } from "@/lib/i18n-client";
 import { routeTitleKey, type MessageKey } from "@/lib/i18n";
@@ -38,7 +39,12 @@ function isActive(pathname: string, href: string): boolean {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const identity = useIdentity();
   const { t, locale, setLocale } = useI18n();
+  const profileName = identity?.name || identity?.email || (locale === "zh" ? "未登录" : "Signed out");
+  const roles: Record<string, string> = {viewer: "只读", editor: "编辑", admin: "管理员"};
+  const profileRole = identity ? (locale === "zh" ? (roles[identity.role] ?? identity.role) : identity.role) : "";
+  const profileInitial = identity ? profileName.slice(0, 1).toUpperCase() : "?";
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const currentTitle = t(routeTitleKey(pathname));
 
@@ -162,11 +168,11 @@ export function AppShell({ children }: { children: ReactNode }) {
               <small>{t("shell.usageNote")}</small>
             </div>
             <ApiStatus />
-            <Link className="profile-card" href="/settings">
-              <span className="avatar avatar-jade">S</span>
+            <Link className="profile-card" href="/accounts">
+              <span className="avatar avatar-jade">{profileInitial}</span>
               <span className="profile-copy">
-                <strong>Sail</strong>
-                <small>{t("shell.profileRole")}</small>
+                <strong>{profileName}</strong>
+                <small>{profileRole}</small>
               </span>
               <Icon name="more" size={16} />
             </Link>
@@ -229,7 +235,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <span className="notification-dot" aria-hidden="true" />
               </button>
               <Link className="topbar-avatar" href="/settings" aria-label={t("shell.settingsAria")}>
-                <span className="avatar avatar-jade">S</span>
+                <span className="avatar avatar-jade">{profileInitial}</span>
               </Link>
             </div>
           </header>
