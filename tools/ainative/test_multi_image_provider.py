@@ -271,7 +271,9 @@ class MultiImageTests(unittest.TestCase):
                 references = [child["inputs"]["source"]] + [
                     item["artifact"] for item in child["context"] if "artifact" in item
                 ]
-                expected = [reference(item) for item in self.sources] if mode == "list" else [reference(self.sources[0])]
+                expected = (
+                    [reference(item) for item in self.sources] if mode == "list" else [reference(self.sources[0])]
+                )
                 self.assertEqual(references, expected)
                 self.assertIn("supplied ordered reference image(s)", child["parameters"]["prompt"])
 

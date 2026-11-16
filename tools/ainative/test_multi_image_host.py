@@ -120,7 +120,9 @@ class MultiImageHostTests(unittest.TestCase):
 
             # Exercise the current unified node through the real Executor/host path;
             # the compile checks above still cover legacy version 3 workflows.
-            run_node = dict(node, type="generate_image", version="1", source="", source_paths=["", ""], source_snapshots=snapshots)
+            run_node = dict(
+                node, type="generate_image", version="1", source="", source_paths=["", ""], source_snapshots=snapshots
+            )
             args = argparse.Namespace(
                 db=str(root / "runs.sqlite"), factory="test_multi_image_host:persistent_factory", command="create"
             )

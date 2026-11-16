@@ -67,12 +67,8 @@ def register_images(registry):
 
 
 def _is_batch_request(request):
-    return (
-        request["node"] in IMAGE_KINDS
-        and request["version"] in BATCH_VERSIONS
-    ) or (
-        request["node"] == GENERATE_IMAGE
-        and request["version"] == UNIFIED_VERSION
+    return (request["node"] in IMAGE_KINDS and request["version"] in BATCH_VERSIONS) or (
+        request["node"] == GENERATE_IMAGE and request["version"] == UNIFIED_VERSION
     )
 
 
