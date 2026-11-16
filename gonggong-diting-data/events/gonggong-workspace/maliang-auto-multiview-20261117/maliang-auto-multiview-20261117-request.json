@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-auto-multiview-20261117-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-auto-multiview-20261117",
+  "kind": "request",
+  "occurred_at": "2026-11-16T16:46:02Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1367",
+  "agent": {
+    "id": "kimi-work-host",
+    "version": "20261117",
+    "origin": "external-authorized-host",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5"
+  },
+  "payload": {
+    "intent": "Automatically infer Maliang image count, views and details from the requirement, then derive all non-primary images from the successful primary artifact instead of independently rerunning the description.",
+    "authorization_ref": "kimi-work:user:20261117:maliang-auto-multiview",
+    "state": "in_progress",
+    "usage": null,
+    "definition": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "31e9d3b69c1e9371db7593ec83df2f9f17f146156a04923d60b9268172b941d7"
+}

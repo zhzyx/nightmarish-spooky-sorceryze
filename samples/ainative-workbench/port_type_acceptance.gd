@@ -79,6 +79,12 @@ func run():
 	panel.nodes.append(legacy_batch)
 	panel.rebuild()
 	check(panel.output_kind(legacy_batch) == panel.PORT_IMAGE and panel.graph.get_node(legacy_batch.id).get_output_port_count() == 2, "version 2 keeps its legacy primary image and queue outputs")
+	var queue_v3 = make_node("text_to_image")
+	queue_v3.id = "queue_v3"
+	queue_v3.version = "3"
+	panel.nodes.append(queue_v3)
+	panel.rebuild()
+	check(panel.output_kind(queue_v3) == panel.PORT_IMAGE_SET and panel.graph.get_node(queue_v3.id).get_output_port_count() == 1, "version 3 keeps its queue-only output")
 	print("AINATIVE_PORT_TYPE failures=" + str(failures))
 	panel.queue_free()
 	await process_frame

@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-auto-multiview-20261117",
+  "issue_number": 1367,
+  "date": "2026-11-17",
+  "state": "validated_candidate",
+  "evidence_scope": "Sanitized local and real-inference evidence; no credentials, private URLs, absolute private paths or raw generation logs.",
+  "integrated_main_base": "a22d44c536835316b33a807426774008f4dfba02",
+  "editor_sha256": "3febcaacd10534599bf381a8d4ed2dbf5296e4d1070f6c1543c3f5b1f119962e",
+  "automatic_planning": {
+    "manual_output_count_or_labels_used": false,
+    "supported_cases_tested": [
+      "single_image",
+      "explicit_count",
+      "named_views",
+      "generic_multiview",
+      "three_view_sheet_request",
+      "local_details",
+      "overlap_deduplication",
+      "maximum_limit_rejection"
+    ],
+    "maximum_images": 8
+  },
+  "local_validation": {
+    "multi_image_provider_and_host_tests": {"run": 18, "passed": 18},
+    "full_ainative_suite": {"run": 434, "failures": 0, "skipped_by_platform_or_condition": 62},
+    "godot_automatic_output_ui": {"passed": true, "failures": 0},
+    "godot_port_compatibility": {"passed": true, "failures": 0},
+    "native_bundle_matches_source": true,
+    "native_scenarios_passed": [
+      "mesh-and-rig",
+      "independent-project",
+      "sample-addon-compatibility",
+      "relocated-runtime"
+    ],
+    "unified_native_test_uses_node_ids_not_fixed_indices": true,
+    "fake_inference_is_not_real_consistency_evidence": true
+  },
+  "attempts": [
+    {
+      "run_id": "5aaedea0035d4955a2198d381c972a2b",
+      "generation_succeeded": true,
+      "acceptance_harness_output_directory_missing": true,
+      "visual_result_rejected_because_view_enumeration_leaked_into_single_image_prompts": true,
+      "regenerated_to_claim_acceptance": false,
+      "outcome": "superseded_by_prompt_isolation_fix"
+    },
+    {
+      "run_id": "919828afe18741b38534239590e70171",
+      "node_version": "4",
+      "outcome": "passed_before_unified_node_integration; not the final unified acceptance"
+    }
+  ],
+  "final_real_run": {
+    "provider": "kimi_work_image",
+    "node_kind": "generate_image",
+    "run_id": "a1bd78d534454eb58e118a5e24b73692",
+    "node_id": "n3696010",
+    "parent_job_id": "bc1275bec838de5402cb9e34ee08934a31998012c06afdeaf216677f5ed7c79e",
+    "node_version": "2",
+    "output_keys": ["image_set"],
+    "primary_node": "text_to_image",
+    "derived_node": "image_to_image",
+    "derived_source_matches_primary_artifact": true,
+    "derived_from_provenance_matches_primary": true,
+    "members": [
+      {
+        "index": 0,
+        "label": "正面",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 804194,
+        "sha256": "592d949b2c342ebf0cebfde93bc318603ee51b64756cded4e54979ab265229ab"
+      },
+      {
+        "index": 1,
+        "label": "三分之四侧面",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 784894,
+        "sha256": "43e38dde7a72048d8ec6d6e5e57ac17fac58658d901cc8588beb28f4dbdb0005"
+      }
+    ],
+    "visual_review": "Each member shows exactly one owl sculpture; material and geometry are consistent and the second is a different three-quarter view. No multi-subject panel or independent redesign accepted.",
+    "restoration": {
+      "run_id_unchanged": true,
+      "member_artifacts_unchanged": true,
+      "member_sha256_unchanged": true,
+      "new_generation_submitted": false
+    }
+  },
+  "known_unfixed_scope": {
+    "editor_exit_rid_objectdb_warnings_remain": true,
+    "claimed_as_fixed_by_this_change": false
+  },
+  "independent_code_review": "User reported approval in the conversation; no tool self-review is presented as independent review."
+}
