@@ -369,6 +369,7 @@ class MultiImageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "invalid_image_batch"):
             provider.submit(empty, {"schema_version": 1, "artifacts": []}, "a" * 64)
         self.assertEqual(inner.submissions, 0)
+
     def test_automatic_requirements_infer_count_views_and_details(self):
         cases = [
             ("一个白底石雕", ["main"]),
