@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "remote_identity": {
+    "repository": "zhzyx/nightmarish-spooky-sorceryze",
+    "issue": 1352,
+    "event_id": 36262250155
+  },
+  "envelope_sha256": "ba81b02b545046e44bba6af3c6685d3604e8cc7797726a5d0e9942361a1129f9",
+  "state": "recorded_file",
+  "diting_event_id": "github-3e1fb8831f66122b9f183f3cf104bd5677315e31708c2154c85959a27dfe8fdc",
+  "git_committed": false,
+  "diting_consumption_confirmed": false,
+  "coordination": "associate_only_no_dispatch"
+}

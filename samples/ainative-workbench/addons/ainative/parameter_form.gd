@@ -40,8 +40,8 @@ func _init():
 	add_child(prompt_label)
 	rows.prompt = prompt_label
 	prompt_edit = TextEdit.new()
-	prompt_edit.placeholder_text = "描述你希望生成的内容"
-	prompt_edit.custom_minimum_size.y = 85
+	prompt_edit.placeholder_text = "描述生成内容、风格和约束（请勿填写凭据）"
+	prompt_edit.custom_minimum_size.y = 100
 	prompt_edit.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 	add_child(prompt_edit)
 	prompt_edit.text_changed.connect(func(): _set_parameter("prompt", prompt_edit.text))

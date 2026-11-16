@@ -233,10 +233,11 @@ func run():
 	run_index = menu_index("运行并预览")
 	check(run_index >= 0 and not panel.context_menu.is_item_disabled(run_index), "generation accepts the effective prompt from node instructions without a parameter prompt")
 	panel.nodes[0].text = ""
+	panel.nodes[0].parameters.prompt = ""
 	panel.select_node("a")
 	popup_at(point_on_node("a"))
 	run_index = menu_index("运行并预览")
-	check(run_index >= 0 and panel.context_menu.is_item_disabled(run_index), "text generation without parameter or instruction prompt remains disabled")
+	check(run_index >= 0 and panel.context_menu.is_item_disabled(run_index), "text generation without a merged requirement remains disabled")
 	panel.nodes[0].type = "image_to_mesh"
 	panel._set_node_file("source", fixture_image)
 	panel.nodes[0].text = ""

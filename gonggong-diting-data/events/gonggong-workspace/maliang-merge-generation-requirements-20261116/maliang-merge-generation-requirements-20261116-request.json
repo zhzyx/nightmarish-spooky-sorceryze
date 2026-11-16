@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-merge-generation-requirements-20261116-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-merge-generation-requirements-20261116",
+  "kind": "request",
+  "occurred_at": "2026-11-16T17:38:00+08:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1352",
+  "agent": {
+    "id": "kimi-work-issue1352-current-operator",
+    "version": "not-reported-by-host",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "explicit-user-request-intake"
+  },
+  "payload": {
+    "event": "request.created",
+    "request": "需求1:把文字说明和‘建模要求合并’。",
+    "delivery_request": "推送到仓库",
+    "document": "design-docs/maliang-merge-generation-requirements-20261116.md",
+    "execution": "current_host",
+    "status": "status:in-progress"
+  },
+  "evidence_refs": [],
+  "sha256": "f84dd52b2886869ab78f25cf859096e7eab31d3e4d56a9a5faca98d2979f357e"
+}
