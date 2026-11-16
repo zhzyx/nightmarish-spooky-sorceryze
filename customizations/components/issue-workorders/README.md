@@ -71,7 +71,7 @@ GongGong-Issue: #6
 GongGong-Request: issue-governance-20261102
 ```
 
-`.github/workflows/gonggong-issue-gate.yml` 使用 PR 创建、编辑、同步等事件，无定时任务；`pull_request_target` 仅运行可信 base 工作流的固定 github-script，权限只读，绝不 checkout 或运行 PR 代码。CI 查询本仓库真实 Issue、类别/状态及需求 ID；无外部共工源时不冒称执行完整准入或业务验收。Issue 后续独立改标签/关闭不会自动刷新已有 PR 检查，合入前须重跑并复核最新状态。管理员需另将 `issue-association` 配置为分支保护必需检查；工作流存在不表示远程已强制，也无法约束仓库外直接修改 Godot。
+`.github/workflows/gonggong-issue-gate.yml` 使用 PR 创建、编辑、同步等事件，无定时任务；`pull_request` 运行只读 github-script 元数据检查，绝不 checkout 或运行 PR 代码，不使用 secrets 或写权限。工作流定义来自 PR 合并引用，其变更仍须独立审查；本检查不充当可信候选准入。此事件不依赖平台对 `pull_request_target` 的默认许可。CI 查询本仓库真实 Issue、类别/状态及需求 ID；无外部共工源时不冒称执行完整准入或业务验收。Issue 后续独立改标签/关闭不会自动刷新已有 PR 检查，合入前须重跑并复核最新状态。管理员需另将 `issue-association` 配置为分支保护必需检查；工作流存在不表示远程已强制，也无法约束仓库外直接修改 Godot。
 
 回退：停止调用该适配器，保留既有 Issue、文档、事件和采集索引；不要删除远程标签或历史数据。恢复旧入口不能消除已经创建的 Issue。
 
