@@ -26,6 +26,15 @@ IMAGE_ONLY_PROMPT = (
     "Generate one coherent image from the supplied ordered reference image(s). "
     "Preserve the main subject and visual identity; do not return a contact sheet or collage."
 )
+REFERENCE_INTERPRETATION_PROMPT = (
+    "Before generating, first inspect and infer the meaning of every reference image, including panels inside a single file. "
+    "A single file may be an ordinary view, a turnaround/multiview sheet, or multiple poses or states of one subject. "
+    "For multiview or multi-state panels of one subject, reconcile all panels as evidence for ONE subject's identity, anatomy, "
+    "proportions, clothing and details, then depict that ONE subject in ONE coherent view and pose; never duplicate the subject "
+    "or reproduce the panel grid. Use any supplied text to select the desired view, pose, state or edit. Do not merge clearly "
+    "distinct subjects into one. When the relationship is ambiguous, prefer a conservative same-subject interpretation rather "
+    "than inventing extra characters. Perform this interpretation before generating the image."
+)
 MAX_IMAGES = 8
 MESSAGES = {
     "invalid_image_batch": "图像输入或输出列表无效。每次支持 1～8 张输入和 1～8 张独立输出，标签不能为空或重复。",
@@ -242,8 +251,13 @@ class MultiImageProvider(CodexProvider):
         )
         if request["node"] == GENERATE_IMAGE:
             require(bool(sources) or has_text, "invalid_image_batch")
-            if sources and not has_text:
-                child_request["parameters"]["prompt"] = IMAGE_ONLY_PROMPT
+            if sources:
+                prompt = str(child_request["parameters"].get("prompt", ""))
+                if not has_text:
+                    prompt = IMAGE_ONLY_PROMPT
+                child_request["parameters"]["prompt"] = (
+                    (prompt + "\n") if prompt else ""
+                ) + REFERENCE_INTERPRETATION_PROMPT
         board_pending = len(sources) > 1 and not native
         if native:
             # The original source port is not registered on version 1 text_to_image;
