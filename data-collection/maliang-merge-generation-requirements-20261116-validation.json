@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-merge-generation-requirements-20261116",
+  "issue": 1352,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1352",
+  "candidate_scope": "Merge node-level text and generation prompt into one editable requirement while preserving copy-node compatibility.",
+  "validation": {
+    "parameter_form_acceptance": {
+      "command": "bin/godot.macos.editor.arm64 --headless --path samples/ainative-workbench --script res://parameter_form_acceptance.gd",
+      "result": "passed",
+      "failures": 0
+    },
+    "offline_acceptance": {
+      "command": "bin/godot.macos.editor.arm64 --headless --path samples/ainative-workbench --script res://acceptance.gd",
+      "result": "passed",
+      "failures": 0
+    },
+    "context_menu_acceptance": {
+      "command": "bin/godot.macos.editor.arm64 --headless --path samples/ainative-workbench --script res://context_menu_acceptance.gd",
+      "result": "passed",
+      "failures": 0
+    },
+    "macos_editor_build": {
+      "command": "python -m SCons platform=macos target=editor arch=arm64 use_volk=yes accesskit=no -j8",
+      "result": "passed",
+      "elapsed_seconds": 713.53
+    },
+    "main_integration": {
+      "base": "5f08e2ecb406f43fb4fedfe1f39b2018b5c6e265",
+      "merge_commit": "2b7e81bc",
+      "result": "passed",
+      "additional_regressions": {
+        "port_type_acceptance": "passed",
+        "node_preview_acceptance": "passed"
+      }
+    },
+    "real_model_generation": "not_run"
+  }
+}

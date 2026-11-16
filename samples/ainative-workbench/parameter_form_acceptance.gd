@@ -44,6 +44,13 @@ func run():
 	form.controls.denoise.value = 0.75
 	await process_frame
 	check(panel.apply_fields() and selected.parameters.prompt == "红色石雕猫头鹰", "prompt widget updates the model without JSON editing")
+	selected.text = "保持人脸和服装特征"
+	panel.select_node(selected.id)
+	check(not panel.text_edit.is_visible_in_tree() and form.prompt_edit.text == "红色石雕猫头鹰\n保持人脸和服装特征", "generation nodes merge legacy text and prompt into one visible requirement")
+	check(panel.apply_fields() and selected.text.is_empty() and selected.parameters.prompt == "红色石雕猫头鹰\n保持人脸和服装特征", "applying merged requirements stores one canonical prompt without legacy duplication")
+	panel.select_node(panel.nodes[0].id)
+	panel.select_node(selected.id)
+	check(form.prompt_edit.text == "红色石雕猫头鹰\n保持人脸和服装特征", "switching nodes does not duplicate the merged requirement")
 	check(selected.parameters.width == 768 and selected.parameters.height == 1024 and selected.parameters.seed == 2147483648 and selected.parameters.denoise == 0.75, "size, large seed and strength widgets update their contract keys")
 	check(panel.jobs.is_empty() and not panel.auto_step, "editing form fields never triggers model execution")
 	var desired = selected.parameters.duplicate(true)
