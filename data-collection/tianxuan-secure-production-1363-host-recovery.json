@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "request_id": "tianxuan-secure-production-20261116",
+  "issue_number": 1363,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1363",
+  "usage": null,
+  "usage_unknown_reason": "Actual model usage not collected",
+  "prior_receipt": "data-collection/tianxuan-secure-production-1363-live.json",
+  "quality_event": "gonggong-diting-data/events/gonggong-workspace/tianxuan-secure-production-20261116/kuafu-f18946d259927c0046b82a145812bfd63d2b73c7.json",
+  "host_failure": {
+    "incident": "3bba39bcee6f5a5095f3987a7b833c2c4f3e8df32120c664b57ad5925649b4aa",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1364",
+    "runs": [43910413025, 43912072460],
+    "conclusion": "startup_failure",
+    "jobs_created": 0,
+    "cause": "GitHub scheduled brownout of default pull_request_target protection for affected public repositories",
+    "announced_end_utc": "2026-11-16T18:00:00Z",
+    "official_source": "https://github.blog/changelog/2026-11-02-pull_request_target-blocked-by-default-december-2/",
+    "independent_review": "Existing read-only reviewer confirmed identical run annotations and official window; no candidate code executed in failed runs",
+    "recovery": "After the announced window, trigger a fresh PR event and verify actual success before merge; no policy bypass",
+    "recovery_verified": false
+  },
+  "current_secure_backup_restore": {
+    "application_main": "5ed73c9b8a51aa0d003dbcf9a849f2a45eea6af3",
+    "integrity": "ok",
+    "administrator_key_restored": true,
+    "revocations_restored": true,
+    "document_version": 2,
+    "repository_tracked_files": 28867,
+    "isolated_restore_volume_removed_after_success": true,
+    "backup_retained_private": true
+  },
+  "followup_image": {
+    "web_manifest": "sha256:d25c1a15fcc74e3d718a485f9591287ad158f4cbb7c405855adebf8f9506ecee",
+    "built_on_target_linux": true,
+    "status": "Built successfully; activation awaits candidate main delivery"
+  },
+  "remaining": "Issue-association recovery, final main delivery, production redirect/profile activation, final external acceptance and owned-resource cleanup. Authoritative completion receipts will be appended to the source Issue after these operations."
+}
