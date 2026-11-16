@@ -55,9 +55,26 @@ struct PackageFixture
 	{
 		static std::atomic<std::uint64_t> nSequence{ 0 };
 		const std::uint64_t nStamp = static_cast<std::uint64_t>(std::chrono::steady_clock::now().time_since_epoch().count());
-		stRoot = fs::temp_directory_path() / ("engine-next-gpu-package-" + std::to_string(nStamp) + "-" + std::to_string(nSequence.fetch_add(1)));
 		std::error_code stError;
-		ENGINE_NEXT_CHECK(fs::create_directory(stRoot, stError));
+		fs::path stTemporaryDirectory = fs::temp_directory_path(stError);
+		ENGINE_NEXT_CHECK(!stError);
+		if (stError)
+		{
+			return;
+		}
+		stTemporaryDirectory = fs::canonical(stTemporaryDirectory, stError);
+		ENGINE_NEXT_CHECK(!stError);
+		if (stError)
+		{
+			return;
+		}
+		stRoot = stTemporaryDirectory / ("engine-next-gpu-package-" + std::to_string(nStamp) + "-" + std::to_string(nSequence.fetch_add(1)));
+		const bool bCreated = fs::create_directory(stRoot, stError);
+		ENGINE_NEXT_CHECK(bCreated && !stError);
+		if (!bCreated || stError)
+		{
+			return;
+		}
 		const std::vector<std::uint8_t> arrBytes = EngineNext::Tests::Assets::ReadFixture("valid.glb");
 		const std::string strDigest = EngineNext::Serialization::Sha256Hex(arrBytes.data(), arrBytes.size());
 		stPackage.stScene.strSceneId = "m42.gpu-test";
@@ -89,7 +106,8 @@ struct PackageFixture
 		EngineNext::Assets::Diagnostics arrDiagnostics;
 		ENGINE_NEXT_CHECK(EngineNext::Assets::ComputePackageDigest(stPackage, arrDiagnostics));
 		EngineNext::Assets::PublishResult eResult = EngineNext::Assets::PublishResult::Published;
-		ENGINE_NEXT_CHECK(EngineNext::Assets::PublishPackage(stPackage, (stRoot / "source.enpak").string(), eResult, arrDiagnostics));
+		bReady = EngineNext::Assets::PublishPackage(stPackage, (stRoot / "source.enpak").string(), eResult, arrDiagnostics);
+		ENGINE_NEXT_CHECK(bReady);
 	}
 	~PackageFixture()
 	{
@@ -98,6 +116,7 @@ struct PackageFixture
 	}
 	fs::path stRoot;
 	EngineNext::Assets::PackageData stPackage;
+	bool bReady = false;
 };
 
 std::vector<std::uint8_t> ReadBytes(const fs::path &stPath)
@@ -113,13 +132,26 @@ std::vector<std::uint8_t> ReadBytes(const fs::path &stPath)
 	return arrBytes;
 }
 
-JsonValue ReadManifest(const fs::path &stPath)
+bool ReadManifest(const fs::path &stPath, JsonValue &out_stValue)
 {
 	const std::vector<std::uint8_t> arrBytes = ReadBytes(stPath);
-	JsonValue stValue;
 	std::string strError;
-	ENGINE_NEXT_CHECK(EngineNext::Serialization::ParseJson(std::string(arrBytes.begin(), arrBytes.end()), stValue, strError));
-	return stValue;
+	const bool bParsed = EngineNext::Serialization::ParseJson(std::string(arrBytes.begin(), arrBytes.end()), out_stValue, strError);
+	ENGINE_NEXT_CHECK(bParsed);
+	if (!bParsed)
+	{
+		return false;
+	}
+	const JsonValue::Object *pManifest = out_stValue.GetObject();
+	ENGINE_NEXT_CHECK(pManifest != nullptr);
+	if (pManifest == nullptr)
+	{
+		return false;
+	}
+	const JsonValue::Object::const_iterator itPage = pManifest->find("page_sha256");
+	const bool bHasPage = itPage != pManifest->end() && itPage->second.IsString();
+	ENGINE_NEXT_CHECK(bHasPage);
+	return bHasPage;
 }
 
 void WriteManifest(const fs::path &stPath, const JsonValue &stValue)
@@ -162,13 +194,21 @@ void AppendFloat(std::vector<std::uint8_t> &out_arrBytes, float fValue)
 ENGINE_NEXT_TEST("GPU cook produces identical pages in separate output directories")
 {
 	PackageFixture stFixture;
+	if (!stFixture.bReady)
+	{
+		return;
+	}
 	EngineNext::Assets::Diagnostics arrDiagnostics;
 	const fs::path stFirst = stFixture.stRoot / "first.engpu";
 	const fs::path stSecond = stFixture.stRoot / "second.engpu";
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::CookGpuPackage((stFixture.stRoot / "source.enpak").string(), stFirst.string(), arrDiagnostics));
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::CookGpuPackage((stFixture.stRoot / "source.enpak").string(), stSecond.string(), arrDiagnostics));
 	ENGINE_NEXT_CHECK_EQ(ReadBytes(stFirst / "GpuManifest.json"), ReadBytes(stSecond / "GpuManifest.json"));
-	const JsonValue stManifest = ReadManifest(stFirst / "GpuManifest.json");
+	JsonValue stManifest;
+	if (!ReadManifest(stFirst / "GpuManifest.json", stManifest))
+	{
+		return;
+	}
 	const std::string strPage = *stManifest.GetObject()->at("page_sha256").GetString();
 	ENGINE_NEXT_CHECK_EQ(ReadBytes(stFirst / "blobs" / strPage), ReadBytes(stSecond / "blobs" / strPage));
 	EngineNext::Rendering::RenderScene stLoaded;
@@ -185,13 +225,21 @@ ENGINE_NEXT_TEST("GPU cook produces identical pages in separate output directori
 ENGINE_NEXT_TEST("GPU package rejects a different source digest and corrupted page transactionally")
 {
 	PackageFixture stFixture;
+	if (!stFixture.bReady)
+	{
+		return;
+	}
 	EngineNext::Assets::Diagnostics arrDiagnostics;
 	const fs::path stOutput = stFixture.stRoot / "target.engpu";
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::CookGpuPackage((stFixture.stRoot / "source.enpak").string(), stOutput.string(), arrDiagnostics));
 	EngineNext::Rendering::RenderScene stLoaded;
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::LoadGpuPackage(stOutput.string(), stFixture.stPackage.strPackageDigest, stLoaded, arrDiagnostics));
 	ENGINE_NEXT_CHECK(!EngineNext::Rendering::LoadGpuPackage(stOutput.string(), std::string(64, 'a'), stLoaded, arrDiagnostics));
-	const JsonValue stManifest = ReadManifest(stOutput / "GpuManifest.json");
+	JsonValue stManifest;
+	if (!ReadManifest(stOutput / "GpuManifest.json", stManifest))
+	{
+		return;
+	}
 	const std::string strPage = *stManifest.GetObject()->at("page_sha256").GetString();
 	std::ofstream stPage(stOutput / "blobs" / strPage, std::ios::binary | std::ios::trunc);
 	stPage << "short";
@@ -205,11 +253,19 @@ ENGINE_NEXT_TEST("GPU package rejects a different source digest and corrupted pa
 ENGINE_NEXT_TEST("GPU package rejects manifest traversal and undeclared content")
 {
 	PackageFixture stFixture;
+	if (!stFixture.bReady)
+	{
+		return;
+	}
 	EngineNext::Assets::Diagnostics arrDiagnostics;
 	const fs::path stOutput = stFixture.stRoot / "target.engpu";
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::CookGpuPackage((stFixture.stRoot / "source.enpak").string(), stOutput.string(), arrDiagnostics));
 	EngineNext::Rendering::RenderScene stLoaded;
-	JsonValue stManifest = ReadManifest(stOutput / "GpuManifest.json");
+	JsonValue stManifest;
+	if (!ReadManifest(stOutput / "GpuManifest.json", stManifest))
+	{
+		return;
+	}
 	stManifest.GetObject()->at("page_sha256") = "../escape";
 	WriteManifest(stOutput / "GpuManifest.json", stManifest);
 	ENGINE_NEXT_CHECK(!EngineNext::Rendering::LoadGpuPackage(stOutput.string(), stFixture.stPackage.strPackageDigest, stLoaded, arrDiagnostics));
@@ -223,10 +279,18 @@ ENGINE_NEXT_TEST("GPU package rejects manifest traversal and undeclared content"
 ENGINE_NEXT_TEST("GPU package checks decoded page structure even with a matching digest")
 {
 	PackageFixture stFixture;
+	if (!stFixture.bReady)
+	{
+		return;
+	}
 	EngineNext::Assets::Diagnostics arrDiagnostics;
 	const fs::path stOutput = stFixture.stRoot / "target.engpu";
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::CookGpuPackage((stFixture.stRoot / "source.enpak").string(), stOutput.string(), arrDiagnostics));
-	JsonValue stManifest = ReadManifest(stOutput / "GpuManifest.json");
+	JsonValue stManifest;
+	if (!ReadManifest(stOutput / "GpuManifest.json", stManifest))
+	{
+		return;
+	}
 	const std::string strOldPage = *stManifest.GetObject()->at("page_sha256").GetString();
 	std::vector<std::uint8_t> arrPage = ReadBytes(stOutput / "blobs" / strOldPage);
 	arrPage.push_back(0);
@@ -246,6 +310,10 @@ ENGINE_NEXT_TEST("GPU package checks decoded page structure even with a matching
 ENGINE_NEXT_TEST("GPU source verification rejects a rehashed encoded scene identity")
 {
 	PackageFixture stFixture;
+	if (!stFixture.bReady)
+	{
+		return;
+	}
 	EngineNext::Assets::Diagnostics arrDiagnostics;
 	const fs::path stOutput = stFixture.stRoot / "target.engpu";
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::CookGpuPackage((stFixture.stRoot / "source.enpak").string(), stOutput.string(), arrDiagnostics));
@@ -254,7 +322,11 @@ ENGINE_NEXT_TEST("GPU source verification rejects a rehashed encoded scene ident
 	EngineNext::Rendering::RenderScene stLoaded;
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::LoadGpuPackage(stOutput.string(), stFixture.stPackage.strPackageDigest, stLoaded, arrDiagnostics));
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::VerifyCookedScene(stSource, stLoaded, arrDiagnostics));
-	JsonValue stManifest = ReadManifest(stOutput / "GpuManifest.json");
+	JsonValue stManifest;
+	if (!ReadManifest(stOutput / "GpuManifest.json", stManifest))
+	{
+		return;
+	}
 	std::vector<std::uint8_t> arrPage = ReadBytes(stOutput / "blobs" / *stManifest.GetObject()->at("page_sha256").GetString());
 	const std::string strOriginal = stSource.strSceneId;
 	const std::vector<std::uint8_t>::iterator itIdentity = std::search(arrPage.begin(), arrPage.end(), strOriginal.begin(), strOriginal.end());
@@ -275,12 +347,20 @@ ENGINE_NEXT_TEST("GPU source verification rejects a rehashed encoded scene ident
 ENGINE_NEXT_TEST("GPU source verification rejects rehashed valid geometry changes")
 {
 	PackageFixture stFixture;
+	if (!stFixture.bReady)
+	{
+		return;
+	}
 	EngineNext::Assets::Diagnostics arrDiagnostics;
 	const fs::path stOutput = stFixture.stRoot / "target.engpu";
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::CookGpuPackage((stFixture.stRoot / "source.enpak").string(), stOutput.string(), arrDiagnostics));
 	EngineNext::Rendering::RenderScene stSource;
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::BuildRenderScene(stFixture.stPackage, stSource, arrDiagnostics));
-	JsonValue stManifest = ReadManifest(stOutput / "GpuManifest.json");
+	JsonValue stManifest;
+	if (!ReadManifest(stOutput / "GpuManifest.json", stManifest))
+	{
+		return;
+	}
 	std::vector<std::uint8_t> arrPage = ReadBytes(stOutput / "blobs" / *stManifest.GetObject()->at("page_sha256").GetString());
 	const EngineNext::Rendering::MeshVertex &stVertex = stSource.arrAssets[0].stMesh.arrPrimitives[0].arrVertices[0];
 	std::vector<std::uint8_t> arrVertex;
@@ -320,6 +400,10 @@ ENGINE_NEXT_TEST("GPU source verification rejects rehashed valid geometry change
 ENGINE_NEXT_TEST("GPU package preserves small nonsingular source entity transforms")
 {
 	PackageFixture stFixture;
+	if (!stFixture.bReady)
+	{
+		return;
+	}
 	stFixture.stPackage.stScene.arrEntities[0].stTransform.arrScale = { 1.0e-8, 1.0e-8, 1.0e-8 };
 	stFixture.stPackage.strSceneJson.clear();
 	stFixture.stPackage.strManifestJson.clear();

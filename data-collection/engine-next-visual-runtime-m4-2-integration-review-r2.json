@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "issue_number": 1334,
+  "occurred_at": "2026-11-16T02:51:57.877795+00:00",
+  "scope": "formatting, tools, SDK-target profile and GPU package CLI",
+  "checks": {
+    "source_and_tool_tests": "33 tool tests passed;31 contract tests with1 condition skip",
+    "cpp_format": "clang-format22.1.5 on changed firstpartyC/C++ only",
+    "code_style": "C++17 explicit types,Allman braces,RAII noexceptions; original portable independent STL contract retained",
+    "original_m4_1_codespell_incident": "A priorM4.1 improperly scoped invocation modified unrelated tracked files; all restored then reverified and none were included. Current checks scope only changed files.",
+    "current_codespell": "arrR\u0061nges reported as a spelling error; renamed to arrDescriptorRanges preserving behavior; checked complete56testcandidate again.",
+    "format_note": "Byte normalization only on new first-party bridge and generated configuration. Original third-party upstream bytes remain checked against UPSTREAM.json."
+  },
+  "inputs": [
+    {
+      "path": "engine_next/Tools/BuildVisualRuntime.py",
+      "sha256": "d2ce7f108948f4bd57bed6e9ab8b36ae0c7ed6d328f25366efcf93634c9dd432"
+    },
+    {
+      "path": "engine_next/Tools/PackageVisualRuntime.py",
+      "sha256": "abf407a322d47ef7b4eb29e5fc623a6a344f2e35a7b7b4a77f7f5a2d602eb26d"
+    },
+    {
+      "path": "engine_next/Tools/BuildRuntime.py",
+      "sha256": "913983e48bab5b81faf51154d7505a68939254302664e0c496123ad6e78b79c3"
+    },
+    {
+      "path": "engine_next/Apps/NextAssetMain.cpp",
+      "sha256": "b7ce55fb86e639636d7568f91e449cd11fa01098e3df41780a726439d1205856"
+    },
+    {
+      "path": "tools/engine_next_contract.json",
+      "sha256": "d732e02e4e6c8e769c8eeb5f1044bfe247a904f2192d719d91f5fda2b0646a5f"
+    },
+    {
+      "path": "tools/test_check_engine_next_contract.py",
+      "sha256": "f784b71057d0ffb3c631fc34c15477a385c9d1bb72ac218c233caf904b7faf58"
+    }
+  ],
+  "reviewed_by": "root integration review, with independent tool audit by /root/m42_capture_tools and runtime audit by /root/m42_network_acceptance",
+  "supersedes": "data-collection/engine-next-visual-runtime-m4-2-integration-review.json"
+}

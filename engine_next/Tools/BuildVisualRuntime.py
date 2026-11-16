@@ -279,6 +279,7 @@ def compile_c_source(args, source, output, commands, include_audit):
             "-I",
             args.repo / "engine_next/thirdparty/libjpeg-turbo/src",
             "-DNO_GETENV",
+            "-D_POSIX_C_SOURCE=200809L",
             "-MMD",
             "-MF",
             dependency,
