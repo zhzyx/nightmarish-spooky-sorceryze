@@ -246,6 +246,24 @@ class ServiceTests(unittest.TestCase):
         model["nodes"].append(dict(id="unused", type="image_to_mesh", parameters={}))
         self.assertTrue(dispatch(self.args, {"model": model, "target": "gen"})["run_id"])
 
+    def test_unified_image_node_accepts_either_images_or_text(self):
+        from generation_service import check_inputs
+
+        model = self.model("generate_image")
+        model["nodes"][0]["version"] = "1"
+        model["nodes"][0]["parameters"] = {"prompt": ""}
+        model["nodes"][0]["source_snapshot"] = {"fixture": "image-only"}
+        check_inputs(model)
+        model["nodes"][0]["parameters"]["prompt"] = "combined text"
+        check_inputs(model)
+        model["nodes"][0].pop("source_snapshot")
+        check_inputs(model)
+        model["nodes"][0]["parameters"]["prompt"] = ""
+        with self.assertRaises(ServiceError) as context:
+            check_inputs(model)
+        self.assertEqual(context.exception.code, "prompt_missing")
+        self.assertEqual(self.requests, [])
+
     def test_wrong_address_offline_protocol_and_redacted_errors(self):
         for endpoint in ("file:///secret", "http://user:secret@localhost:1", "http://localhost:1/path?secret=value"):
             report = check_service({**self.config, "endpoint": endpoint})

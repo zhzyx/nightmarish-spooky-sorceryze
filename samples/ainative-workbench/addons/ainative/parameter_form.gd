@@ -166,7 +166,7 @@ func _output_specifications(parameters: Dictionary):
 	return {"count":int(count), "labels":normalized}
 
 func _update_output_specs():
-	if _loading or not kind in ["text_to_image", "image_to_image"]: return
+	if _loading or not kind in ["generate_image", "text_to_image", "image_to_image"]: return
 	var content = outputs_edit.text.strip_edges()
 	var count = 1
 	var labels: Array = []
@@ -197,10 +197,10 @@ func configure(node_kind: String, parameters: Dictionary):
 	# image_to_mesh can optionally redraw the source before generating the mesh.
 	# Keep its effective prompt and image parameters visible instead of hiding them.
 	var image_stage = generator
-	rows.prompt.text = "提示词（可选，填写后先重绘图像）" if kind == "image_to_mesh" else "提示词"
+	rows.prompt.text = "提示词（无图片时必填）" if kind == "generate_image" else "提示词（可选，填写后先重绘图像）" if kind == "image_to_mesh" else "提示词"
 	rows.prompt.visible = image_stage
 	prompt_edit.visible = image_stage
-	rows.outputs.visible = kind in ["text_to_image", "image_to_image"]
+	rows.outputs.visible = kind in ["generate_image", "text_to_image", "image_to_image"]
 	outputs_edit.visible = rows.outputs.visible
 	copy_hint.visible = not generator
 	advanced_toggle.visible = generator
@@ -208,7 +208,7 @@ func configure(node_kind: String, parameters: Dictionary):
 	rows.height.visible = image_stage
 	rows.seed.visible = generator
 	rows.steps.visible = image_stage
-	rows.denoise.visible = kind in ["image_to_image", "image_to_mesh"]
+	rows.denoise.visible = kind in ["generate_image", "image_to_image", "image_to_mesh"]
 	for key in ["mesh_steps", "mesh_resolution", "octree_resolution", "mesh_threshold", "mesh_algorithm"]:
 		rows[key].visible = kind.ends_with("mesh")
 	_raw_changed()
@@ -231,7 +231,7 @@ func set_kimi_mode(enabled: bool):
 	_apply_cli_controls()
 
 func _kimi_image_mode() -> bool:
-	return _kimi_mode and kind in ['text_to_image', 'image_to_image']
+	return _kimi_mode and kind in ['generate_image', 'text_to_image', 'image_to_image']
 
 func _is_mesh_kind(value: String) -> bool:
 	return value in ['text_to_mesh', 'image_to_mesh', 'model_adjust']
@@ -255,7 +255,7 @@ func _apply_cli_controls():
 	cli_hint.visible = (_cli_mode or instruction_mode) and generator
 	cli_hint.text = ('自选 API 返回严格规划，' + ('Blender' if _sculpt_mode else 'Godot') + ' 固定构造器生成网格；请预览检查形态与隐藏面。') if _api_mode else 'Kimi Work 独立图像服务根据提示词与可选参考图生成二维图片；下方宽高是实际请求尺寸，须为 16 的倍数。随机种子、采样步数和 denoise 不适用，不是 K3.1 Pro 直接输出图片。' if _kimi_image_mode() else 'Kimi Work 通过 Tripo API 根据描述、单图或 2–4 视图直接生成 GLB，无需 Blender 或 K3 原语规划；三视图整图按正面／右侧／背面裁切，额外图文混合约束会明确拒绝。' if _kimi_mode else 'CLI 图像按提示词及参考图生成；尺寸为目标要求，会采用支持的接近尺寸。图像不使用本机模型的随机种子、采样步数或重绘强度。'
 	if kind == 'model_adjust': cli_hint.text = '基于原模型和可选文字／图片上下文，通过 Tripo API texture_3d_model 输出新 GLB。原模型必须提供；文字+风格图需同时有文字，四图引导需包含全部视角。'
-	rows.prompt.text = '微调要求（可选）' if kind == 'model_adjust' else ('建模要求（可选，结合源图推断结构）' if instruction_mode else '提示词（可选，填写后先重绘图像）') if kind == 'image_to_mesh' else ('图生图要求' if _kimi_image_mode() and kind == 'image_to_image' else '生图要求' if _kimi_image_mode() else '建模要求' if modeling_mesh else '提示词')
+	rows.prompt.text = '微调要求（可选）' if kind == 'model_adjust' else ('建模要求（可选，结合源图推断结构）' if instruction_mode else '提示词（可选，填写后先重绘图像）') if kind == 'image_to_mesh' else ('生图要求（无图片时必填）' if kind == 'generate_image' else '图生图要求' if _kimi_image_mode() and kind == 'image_to_image' else '生图要求' if _kimi_image_mode() else '建模要求' if modeling_mesh else '提示词')
 	for key in ['width', 'height']:
 		rows[key].visible = generator and not modeling_mesh
 	for key in ['mesh_steps', 'mesh_resolution', 'octree_resolution', 'mesh_threshold', 'mesh_algorithm']:
@@ -263,7 +263,7 @@ func _apply_cli_controls():
 	rows.seed.visible = generator and not instruction_mode and (not _cli_mode or _is_mesh_kind(kind))
 	rows.seed.get_child(0).text = '网格随机种子' if _cli_mode and _is_mesh_kind(kind) else '随机种子'
 	rows.steps.visible = generator and not _cli_mode and not instruction_mode
-	rows.denoise.visible = not _cli_mode and not instruction_mode and kind in ['image_to_image', 'image_to_mesh']
+	rows.denoise.visible = not _cli_mode and not instruction_mode and kind in ['generate_image', 'image_to_image', 'image_to_mesh']
 	advanced_toggle.visible = generator and not instruction_mode and (not _cli_mode or _is_mesh_kind(kind))
 	if not advanced_toggle.visible: advanced_box.hide()
 
@@ -326,7 +326,7 @@ func _raw_changed():
 	var algorithm = str(parameters.get("mesh_algorithm", DEFAULTS.mesh_algorithm))
 	controls.mesh_algorithm.select(0 if algorithm == "surface net" else 1 if algorithm == "basic" else -1)
 	var specifications = _output_specifications(parameters)
-	if specifications != null and kind in ["text_to_image", "image_to_image"]:
+	if specifications != null and kind in ["generate_image", "text_to_image", "image_to_image"]:
 		outputs_edit.text = "\n".join(specifications.labels) if not specifications.labels.is_empty() else str(specifications.count)
 	_loading = false
 	_set_error("")
@@ -354,7 +354,7 @@ func parameters():
 		_set_error("参数格式无效，请修正开发者选项中的参数对象")
 		return null
 	if kind == "copy": return result
-	if kind in ["text_to_image", "image_to_image"]:
+	if kind in ["generate_image", "text_to_image", "image_to_image"]:
 		if _dirty_outputs or _output_specifications(result) == null:
 			_set_error("输出数量须为 1～8 的整数；每行一个非空、不重复且不超过 80 字的标签")
 			return null
