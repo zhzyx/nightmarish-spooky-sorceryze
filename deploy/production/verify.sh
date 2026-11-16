@@ -10,10 +10,16 @@ chmod 700 "$CHECK_DIR"
 
 expect() {
     expected=$1; shift
-    code=$(curl -sS -o "$CHECK_DIR/body" -w '%{http_code}' "$@")
+    code=$(curl -sS -D "$CHECK_DIR/headers" -o "$CHECK_DIR/body" -w '%{http_code}' "$@")
     [ "$code" = "$expected" ] || { echo "HTTP assertion failed: expected $expected, got $code" >&2; exit 1; }
 }
 expect 302 "$BASE/"
+python3 - "$CHECK_DIR/headers" "$BASE/login" <<'PY'
+import pathlib,sys
+headers=pathlib.Path(sys.argv[1]).read_text().splitlines()
+location=next((line.partition(":")[2].strip() for line in headers if line.lower().startswith("location:")), "")
+assert location in {"/login", sys.argv[2]}, "unauthenticated pages must redirect to the login URL"
+PY
 expect 200 "$BASE/login"
 expect 401 "$BASE/api/v1/docs"
 expect 401 -H 'X-Actor: forged-admin' "$BASE/api/v1/docs"

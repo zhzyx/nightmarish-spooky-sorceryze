@@ -88,6 +88,8 @@ http {
             proxy_set_header Authorization $http_authorization;
         }
 
+        location @key_login { return 302 /login; }
+
         location = /login {
             set $login_web http://web:3000;
             proxy_pass $login_web;
@@ -138,7 +140,7 @@ http {
 
         location / {
             auth_request /_account_auth;
-            error_page 401 =302 /login;
+            error_page 401 = @key_login;
             set $web_http http://web:3000;
             proxy_pass $web_http;
 
