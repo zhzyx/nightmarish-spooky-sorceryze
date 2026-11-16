@@ -92,24 +92,16 @@ func run():
 	panel.source_picker.files_selected.emit(PackedStringArray([]))
 	panel.context_picker.files_selected.emit(PackedStringArray([]))
 	check(panel.node_run_blocker(downstream).contains("至少选择图片或填写"), "empty unified input is rejected with an actionable explanation")
-	data.parameters.prompt = "仅文字生成一个雕塑"
-	check(panel.node_run_blocker(downstream).is_empty(), "text-only unified generation is eligible without images")
+	check(not panel.parameter_form.outputs_edit.visible and panel.parameter_form.rows.outputs.text.contains("自动理解"), "unified version 2 removes manual output selection")
+	panel.parameter_form.prompt_edit.text = "同一主体，正面和三分之四侧面"
+	panel.parameter_form.prompt_edit.text_changed.emit()
+	check(panel.apply_fields() and not data.parameters.has("output_count") and not data.parameters.has("output_labels"), "automatic output planning stores only the user requirement")
+	check(node(upstream).type == "generate_image" and node(upstream).version == "2" and data.type == "generate_image" and data.version == "2", "unified generation nodes use automatic derived-output version 2")
 	panel.source_picker.files_selected.emit(PackedStringArray([front, side]))
 	panel.context_picker.files_selected.emit(PackedStringArray([reference]))
-	data.parameters.prompt = "结合参考图生成雕塑"
-	check(panel.node_run_blocker(downstream).is_empty(), "combined ordered images and text are eligible together")
-	panel.parameter_form.outputs_edit.text = "正面\n三分之四侧面"
-	panel.parameter_form.outputs_edit.text_changed.emit()
-	check(panel.apply_fields() and data.parameters.output_count == 2 and data.parameters.output_labels == ["正面", "三分之四侧面"], "two named outputs are stored as independent output specifications")
-	check(node(upstream).type == "generate_image" and node(upstream).version == "1" and data.type == "generate_image" and data.version == "1", "unified generation nodes use the version 1 image queue contract")
-	var before_invalid = data.parameters.duplicate(true)
-	for invalid in ["0", "9", "正面\n正面"]:
-		panel.parameter_form.outputs_edit.text = invalid
-		panel.parameter_form.outputs_edit.text_changed.emit()
-		check(not panel.apply_fields() and data.parameters == before_invalid, "invalid output draft blocks applying stale specifications: " + invalid.replace("\n", "/"))
-	panel.parameter_form.outputs_edit.text = "正面\n三分之四侧面"
-	panel.parameter_form.outputs_edit.text_changed.emit()
-	check(panel.apply_fields(), "corrected output specifications become applicable")
+	panel.parameter_form.prompt_edit.text = "结合参考图生成雕塑，正面和三分之四侧面"
+	panel.parameter_form.prompt_edit.text_changed.emit()
+	check(panel.apply_fields() and panel.node_run_blocker(downstream).is_empty(), "combined ordered images and automatic multi-view text are eligible together")
 	panel.connect_nodes(upstream, 0, downstream, 0)
 	check(panel.edges.size() == 1 and panel.edges[0].get("output") == "image_set", "the sole generation output is an ordered image queue")
 	panel.connect_nodes(upstream, 0, mesh, 0)
@@ -138,7 +130,7 @@ func run():
 	panel.select_node(downstream)
 	data = node(downstream)
 	check(panel.selected_id == downstream and data.source_paths == ["", ""] and data.source_snapshots.size() == 2 and data.image_context_snapshots.size() == 1, "reopen restores ordered snapshots without source files or new generation")
-	check(data.parameters.output_labels == ["正面", "三分之四侧面"] and panel.parameter_form.outputs_edit.text == "正面\n三分之四侧面", "reopen restores named independent outputs")
+	check(data.parameters.prompt == "结合参考图生成雕塑，正面和三分之四侧面" and not panel.parameter_form.outputs_edit.visible, "reopen preserves the requirement and automatic output mode")
 	check(panel.edges == original.edges and panel.run_id.is_empty() and panel.preview_token.is_empty(), "reopen preserves valid ports but clears old execution authority")
 	# Preview fixtures only test Godot's member selector. Host membership, publication
 	# and restore are exercised by the Python Executor integration test.

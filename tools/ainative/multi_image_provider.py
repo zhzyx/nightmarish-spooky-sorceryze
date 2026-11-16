@@ -651,7 +651,7 @@ class MultiImageProvider(CodexProvider):
         registry = NodeRegistry()
         register_images(registry)
         outputs = {"image_set": _ref(collection)}
-        if record["request"]["version"] == "2":
+        if record["request"]["node"] in IMAGE_KINDS and record["request"]["version"] == "2":
             outputs["result"] = items[0]["artifact"]
         validate_outputs(registry, record["request"]["node"], record["request"]["version"], outputs, result)
         self.write(key, result=result, terminal=self.snapshot(key, "succeeded", outputs))

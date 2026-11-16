@@ -10,7 +10,13 @@ from unittest.mock import patch
 
 from contracts import validate
 from extensions import NodeRegistry, validate_invocation, validate_outputs
-from multi_image_provider import MultiImageProvider, output_specifications, register_images
+from multi_image_provider import (
+    MultiImageProvider,
+    automatic_output_specifications,
+    output_specifications,
+    primary_prompt,
+    register_images,
+)
 
 
 def asset(name, body):
@@ -81,7 +87,11 @@ class FakeImageProvider:
         return self.poll(key)
 
     def result_manifest(self, key):
-        return dict(schema_version=1, artifacts=[copy.deepcopy(self.jobs[key]["image"])])
+        job = self.jobs[key]
+        return dict(
+            schema_version=1,
+            artifacts=copy.deepcopy(job["manifest"]["artifacts"]) + [copy.deepcopy(job["image"])],
+        )
 
     def cancel(self, key):
         self.jobs[key]["receipt"] = dict(job_id=key, state="cancelled", outputs={}, error=None)
@@ -359,6 +369,115 @@ class MultiImageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "invalid_image_batch"):
             provider.submit(empty, {"schema_version": 1, "artifacts": []}, "a" * 64)
         self.assertEqual(inner.submissions, 0)
+    def test_automatic_requirements_infer_count_views_and_details(self):
+        cases = [
+            ("一个白底石雕", ["main"]),
+            ("同一主体的正面、侧面和背面", ["正面", "侧面", "背面"]),
+            ("同一角色多视角", ["正面", "右侧面", "背面", "左侧面"]),
+            ("两张图：正面和面部细节", ["正面", "面部细节"]),
+            ("角色三视图", ["正面", "侧面", "背面"]),
+        ]
+        for prompt, expected in cases:
+            with self.subTest(prompt=prompt):
+                self.assertEqual(
+                    [item["label"] for item in automatic_output_specifications(prompt)],
+                    expected,
+                )
+        specifications = automatic_output_specifications("两张图：正面和面部细节")
+        self.assertEqual([item["mode"] for item in specifications], ["view", "detail"])
+        with self.assertRaisesRegex(ValueError, "invalid_image_batch"):
+            automatic_output_specifications("生成九张图")
+        cleaned = primary_prompt(
+            "A small gray stone owl sculpture on a white background. Show a front view and a three-quarter view of the same sculpture."
+        )
+        self.assertIn("stone owl sculpture", cleaned)
+        self.assertNotIn("front view", cleaned)
+        self.assertNotIn("three-quarter view", cleaned)
+        self.assertEqual(primary_prompt("同一石雕，正面和三分之四侧面"), "同一石雕")
+        self.assertEqual(primary_prompt("生成同一石雕的正面和侧面"), "生成同一石雕的单张主图")
+
+    def test_automatic_views_are_derived_from_the_same_primary_image(self):
+        inner = FakeImageProvider("kimi_work_image")
+        provider = self.adapter(inner)
+        request = dict(
+            node="text_to_image",
+            version="4",
+            inputs={},
+            parameters={"prompt": "同一石雕，正面和三分之四侧面"},
+            context=[],
+        )
+        key = "7" * 64
+        receipt = provider.submit(request, {"schema_version": 1, "artifacts": []}, key)
+        for _ in range(4):
+            receipt = provider.poll(receipt["job_id"])
+            if receipt["state"] == "succeeded":
+                break
+        self.assertEqual(receipt["state"], "succeeded")
+        self.assertEqual(inner.submissions, 2)
+        self.assertEqual(inner.requests[0]["node"], "text_to_image")
+        self.assertEqual(inner.requests[0]["inputs"], {})
+        self.assertNotIn("正面", inner.requests[0]["parameters"]["prompt"])
+        self.assertNotIn("三分之四侧面", inner.requests[0]["parameters"]["prompt"])
+        self.assertIn("exactly one single subject", inner.requests[0]["parameters"]["prompt"])
+        children = provider.read(key)["children"]
+        primary = inner.result_manifest(children[0]["key"])["artifacts"][-1]
+        derived = inner.requests[1]
+        self.assertEqual(derived["node"], "image_to_image")
+        self.assertEqual(derived["inputs"]["source"], reference(primary))
+        self.assertIn("authoritative depiction of the same generated subject", derived["parameters"]["prompt"])
+        self.assertIn("do not design a new subject", derived["parameters"]["prompt"])
+        result = provider.result_manifest(key)
+        collection = next(item for item in result["artifacts"] if item["type"] == "image_set")
+        self.assertEqual(collection["payload"]["provenance"]["derivation"], "primary_image_derived")
+        second_image = next(
+            item for item in result["artifacts"] if item["id"] == collection["payload"]["items"][1]["artifact"]["id"]
+        )
+        self.assertEqual(second_image["payload"]["provenance"]["derived_from"], reference(primary))
+        self.assertIn(reference(primary), second_image["dependencies"])
+
+    def test_automatic_single_image_runs_only_once(self):
+        inner = FakeImageProvider("kimi_work_image")
+        provider = self.adapter(inner)
+        request = dict(
+            node="text_to_image",
+            version="4",
+            inputs={},
+            parameters={"prompt": "白底上的一个石雕"},
+            context=[],
+        )
+        key = "8" * 64
+        receipt = provider.poll(provider.submit(request, {"schema_version": 1, "artifacts": []}, key)["job_id"])
+        self.assertEqual(receipt["state"], "succeeded")
+        self.assertEqual(inner.submissions, 1)
+        self.assertEqual(provider.read(key)["derivation"], "automatic_single_image")
+
+    def test_unified_version_two_uses_the_same_primary_derived_chain(self):
+        inner = FakeImageProvider("kimi_work_image")
+        provider = self.adapter(inner)
+        request = dict(
+            node="generate_image",
+            version="2",
+            inputs={},
+            parameters={"prompt": "同一石雕，正面和三分之四侧面"},
+            context=[],
+        )
+        key = "9" * 64
+        receipt = provider.submit(request, {"schema_version": 1, "artifacts": []}, key)
+        for _ in range(4):
+            receipt = provider.poll(receipt["job_id"])
+            if receipt["state"] == "succeeded":
+                break
+        self.assertEqual(receipt["state"], "succeeded")
+        self.assertEqual(set(receipt["outputs"]), {"image_set"})
+        self.assertEqual(inner.submissions, 2)
+        children = provider.read(key)["children"]
+        primary = inner.result_manifest(children[0]["key"])["artifacts"][-1]
+        self.assertEqual(inner.requests[0]["node"], "text_to_image")
+        self.assertEqual(inner.requests[1]["node"], "image_to_image")
+        self.assertEqual(inner.requests[1]["inputs"]["source"], reference(primary))
+        result = provider.result_manifest(key)
+        collection = next(item for item in result["artifacts"] if item["type"] == "image_set")
+        self.assertEqual(collection["payload"]["provenance"]["derivation"], "primary_image_derived")
 
     def test_version_two_keeps_primary_image_and_queue_outputs(self):
         inner = FakeImageProvider("kimi_work_image")

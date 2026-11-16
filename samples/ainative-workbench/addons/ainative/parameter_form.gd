@@ -28,6 +28,7 @@ var _display_text: Dictionary = {}
 var _shown_prompt = ""
 var _dirty_numbers: Dictionary = {}
 var _dirty_outputs = false
+var _automatic_outputs = false
 var _cli_mode = false
 var _sculpt_mode = false
 var _kimi_mode = false
@@ -166,7 +167,7 @@ func _output_specifications(parameters: Dictionary):
 	return {"count":int(count), "labels":normalized}
 
 func _update_output_specs():
-	if _loading or not kind in ["generate_image", "text_to_image", "image_to_image"]: return
+	if _loading or _automatic_outputs or not kind in ["generate_image", "text_to_image", "image_to_image"]: return
 	var content = outputs_edit.text.strip_edges()
 	var count = 1
 	var labels: Array = []
@@ -184,8 +185,9 @@ func _update_output_specs():
 	_set_parameter("output_count", count)
 	_set_parameter("output_labels", labels)
 
-func configure(node_kind: String, parameters: Dictionary):
+func configure(node_kind: String, parameters: Dictionary, node_version: String = ""):
 	kind = node_kind
+	_automatic_outputs = node_version == "4" or (kind == "generate_image" and node_version == "2")
 	_loading = true
 	raw_edit.text = JSON.stringify(parameters, "", true, true)
 	_loading = false
@@ -200,8 +202,9 @@ func configure(node_kind: String, parameters: Dictionary):
 	rows.prompt.text = "提示词（无图片时必填）" if kind == "generate_image" else "提示词（可选，填写后先重绘图像）" if kind == "image_to_mesh" else "提示词"
 	rows.prompt.visible = image_stage
 	prompt_edit.visible = image_stage
+	rows.outputs.text = "图片数量、视角与局部细节由描述自动理解；多图从同一主图衍生" if _automatic_outputs else "输出数量，或每行一个视角／变体标签"
 	rows.outputs.visible = kind in ["generate_image", "text_to_image", "image_to_image"]
-	outputs_edit.visible = rows.outputs.visible
+	outputs_edit.visible = rows.outputs.visible and not _automatic_outputs
 	copy_hint.visible = not generator
 	advanced_toggle.visible = generator
 	rows.width.visible = image_stage
@@ -326,7 +329,7 @@ func _raw_changed():
 	var algorithm = str(parameters.get("mesh_algorithm", DEFAULTS.mesh_algorithm))
 	controls.mesh_algorithm.select(0 if algorithm == "surface net" else 1 if algorithm == "basic" else -1)
 	var specifications = _output_specifications(parameters)
-	if specifications != null and kind in ["generate_image", "text_to_image", "image_to_image"]:
+	if not _automatic_outputs and specifications != null and kind in ["generate_image", "text_to_image", "image_to_image"]:
 		outputs_edit.text = "\n".join(specifications.labels) if not specifications.labels.is_empty() else str(specifications.count)
 	_loading = false
 	_set_error("")
@@ -354,7 +357,7 @@ func parameters():
 		_set_error("参数格式无效，请修正开发者选项中的参数对象")
 		return null
 	if kind == "copy": return result
-	if kind in ["generate_image", "text_to_image", "image_to_image"]:
+	if not _automatic_outputs and kind in ["generate_image", "text_to_image", "image_to_image"]:
 		if _dirty_outputs or _output_specifications(result) == null:
 			_set_error("输出数量须为 1～8 的整数；每行一个非空、不重复且不超过 80 字的标签")
 			return null

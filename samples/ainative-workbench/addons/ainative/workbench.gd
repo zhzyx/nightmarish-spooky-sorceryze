@@ -189,7 +189,8 @@ func _is_image_kind(kind: String) -> bool:
 	return kind in IMAGE_KINDS
 
 func _new_node_version(kind: String) -> String:
-	return "3" if kind in ["text_to_image", "image_to_image"] else "1"
+	if kind == GENERATE_IMAGE: return "2"
+	return "4" if kind in ["text_to_image", "image_to_image"] else "1"
 
 func state_label(value: String) -> String:
 	return {"pending":"等待中", "queued":"排队中", "ready":"就绪", "running":"运行中", "succeeded":"已成功", "failed":"已失败", "cancelled":"已取消", "blocked":"受阻", "reconcile":"待查询提交结果", "skipped":"已跳过"}.get(value,value)
@@ -749,12 +750,12 @@ func _sync_node_model_controls(data: Dictionary):
 
 func _image_queue_node(data: Dictionary) -> bool:
 	var kind = str(data.get("type", "copy"))
-	if kind == GENERATE_IMAGE: return data.get("version", "1") == "1"
-	return kind in ["text_to_image", "image_to_image"] and data.get("version", "3") in ["2", "3"]
+	if kind == GENERATE_IMAGE: return data.get("version", "2") in ["1", "2"]
+	return kind in ["text_to_image", "image_to_image"] and data.get("version", "4") in ["2", "3", "4"]
 
 func _queue_only_node(data: Dictionary) -> bool:
 	var kind = str(data.get("type", "copy"))
-	return _image_queue_node(data) and (kind == GENERATE_IMAGE or data.get("version", "3") == "3")
+	return _image_queue_node(data) and (kind == GENERATE_IMAGE or data.get("version", "4") in ["3", "4"])
 
 func _accepts_image_set(data: Dictionary) -> bool:
 	var kind = str(data.get("type", "copy"))
@@ -862,7 +863,7 @@ func select_node(id: String):
 				var requirements = data.parameters.duplicate(true)
 				requirements["prompt"] = _merged_requirements(str(requirements.get("prompt", "")), str(data.get("text", "")))
 				text_edit.text = ""
-				parameter_form.configure(selected_kind, requirements)
+				parameter_form.configure(selected_kind, requirements, str(data.get("version", "1")))
 	_configure_source_picker(selected_kind)
 	source_edit.tooltip_text = source_edit.text if not source_edit.text.is_empty() else "通过系统资源管理器选择源文件，可多选"
 	context_edit.tooltip_text = context_edit.text if not context_edit.text.is_empty() else "通过系统资源管理器选择参考图像，可多选"
@@ -947,7 +948,7 @@ func delete_node():
 func model() -> Dictionary:
 	for data in nodes:
 		_sync_node_files(data)
-		if data.get("type", "copy") in ["text_to_image", "image_to_image"] and not data.has("version"): data.version = "3"
+		if data.get("type", "copy") in ["text_to_image", "image_to_image"] and not data.has("version"): data.version = "4"
 	return {"format": 1, "nodes": nodes, "edges": edges}
 
 func _snapshot_inputs(data: Dictionary, field: String) -> bool:

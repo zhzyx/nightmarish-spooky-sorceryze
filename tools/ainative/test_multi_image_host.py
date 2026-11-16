@@ -195,6 +195,46 @@ class MultiImageHostTests(unittest.TestCase):
                     [snapshot["content_sha256"] for snapshot in snapshots],
                 )
 
+    def test_automatic_queue_runs_primary_then_derived_through_editor_host(self):
+        with tempfile.TemporaryDirectory(prefix="multi-image-auto-host-") as temporary:
+            root = Path(temporary)
+            node = dict(
+                id="auto",
+                type="text_to_image",
+                version="4",
+                provider="comfy",
+                source="",
+                source_paths=[],
+                source_snapshots=[],
+                image_context_paths=[],
+                text="",
+                parameters={"prompt": "同一主体的正面和三分之四侧面"},
+            )
+            args = argparse.Namespace(
+                db=str(root / "runs.sqlite"), factory="test_multi_image_host:persistent_factory", command="create"
+            )
+            with patch.dict(os.environ, {"AINATIVE_MULTI_IMAGE_FIXTURE_STATE": str(root)}):
+                run = dispatch(args, {"model": {"nodes": [node], "edges": []}})["run_id"]
+                args.command = "step"
+                for _ in range(12):
+                    state = dispatch(args, {"run": run})
+                    if state["state"] in ("succeeded", "failed"):
+                        break
+                self.assertEqual(state["state"], "succeeded", state["nodes"]["auto"])
+                self.assertEqual(set(state["nodes"]["auto"]["job"]["outputs"]), {"image_set"})
+                args.command = "preview"
+                preview = dispatch(args, {"run": run, "node": "auto"})
+                self.assertEqual([item["label"] for item in preview["images"]], ["正面", "三分之四侧面"])
+                stored = json.loads((root / "inner.json").read_text(encoding="utf-8"))
+                self.assertEqual(stored["submissions"], 2)
+                self.assertEqual(stored["requests"][0]["node"], "text_to_image")
+                self.assertEqual(stored["requests"][1]["node"], "image_to_image")
+                parent = MultiImageProvider(PersistentFake(root / "inner.json"), root / "adapter")
+                children = parent.read(state["nodes"]["auto"]["job"]["job_id"])["children"]
+                first_result = json.loads((root / "inner.json").read_text(encoding="utf-8"))["jobs"][children[0]["key"]]
+                expected = first_result["receipt"]["outputs"]["result"]
+                self.assertEqual(stored["requests"][1]["inputs"]["source"], expected)
+
 
 if __name__ == "__main__":
     unittest.main()
