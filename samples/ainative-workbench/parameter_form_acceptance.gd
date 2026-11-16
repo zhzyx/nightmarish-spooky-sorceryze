@@ -21,17 +21,17 @@ func run():
 	var original = panel.nodes[0].parameters.duplicate(true)
 	check(panel.apply_fields() and JSON.parse_string(JSON.stringify(panel.nodes[0].parameters)) == JSON.parse_string(JSON.stringify(original)), "opening and applying the copy form preserves legacy parameters")
 	var kind_index = 0
-	for kind in ["text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh"]:
+	for kind in ["generate_image", "image_to_mesh", "text_to_mesh"]:
 		panel.generator_choice.selected = kind_index
 		panel.add_generator()
 		var image_stage = true
 		check(form.prompt_edit.visible == image_stage and form.rows.width.visible == image_stage and form.rows.height.visible == image_stage, "type-specific prompt and image sizes: " + kind)
 		check(not form.advanced_box.visible and not panel.params_edit.is_visible_in_tree(), "advanced and developer fields start folded: " + kind)
 		form.advanced_toggle.button_pressed = true
-		check(form.rows.mesh_steps.visible == kind.ends_with("mesh") and form.rows.denoise.visible == (kind in ["image_to_image", "image_to_mesh"]), "advanced fields follow node capabilities: " + kind)
+		check(form.rows.mesh_steps.visible == kind.ends_with("mesh") and form.rows.denoise.visible == (kind in ["generate_image", "image_to_mesh"]), "advanced fields follow node capabilities: " + kind)
 		kind_index += 1
 	# Real widget signals, not editing the backing JSON.
-	panel.generator_choice.selected = 1
+	panel.generator_choice.selected = 0
 	panel.add_generator()
 	var selected = panel.nodes[-1]
 	form.prompt_edit.text = "红色石雕猫头鹰"

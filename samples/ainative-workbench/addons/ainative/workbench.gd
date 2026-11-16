@@ -162,7 +162,10 @@ const CONTEXT_HISTORY = 12
 const RETIRED_GPT_MESH_PROVIDERS = ["codex-modeling", "codex-sculpt"]
 const RETIRED_GPT_MESH_MODES = ["codex_modeling", "codex_sculpt"]
 const RETIRED_GPT_MESH_NOTICE = "GPT CLI 单独网格生成已下线。请使用当前网格服务新建节点，再连接源文件与下游节点。"
-const NODE_KINDS = ["text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust", "copy"]
+const GENERATE_IMAGE = "generate_image"
+const IMAGE_KINDS = [GENERATE_IMAGE, "text_to_image", "image_to_image"]
+const NODE_KINDS = [GENERATE_IMAGE, "text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust", "copy"]
+const CREATION_NODE_KINDS = [GENERATE_IMAGE, "image_to_mesh", "text_to_mesh", "model_adjust", "copy"]
 const PORT_DYNAMIC = 0
 const PORT_IMAGE = 1
 const PORT_MESH = 2
@@ -177,10 +180,16 @@ const PORT_COLORS = {
 }
 
 func node_label(kind: String) -> String:
-	return {"copy":"离线复制", "text_to_image":"文字生成图像", "image_to_image":"图像生成图像", "image_to_mesh":"图像生成网格", "text_to_mesh":"文字生成网格", "model_adjust":"模型调整"}.get(kind,kind)
+	return {"copy":"离线复制", GENERATE_IMAGE:"生成图片", "text_to_image":"文字生成图像", "image_to_image":"图像生成图像", "image_to_mesh":"图像生成网格", "text_to_mesh":"文字生成网格", "model_adjust":"模型调整"}.get(kind,kind)
 
 func _is_mesh_kind(kind: String) -> bool:
 	return kind in ["text_to_mesh", "image_to_mesh", "model_adjust"]
+
+func _is_image_kind(kind: String) -> bool:
+	return kind in IMAGE_KINDS
+
+func _new_node_version(kind: String) -> String:
+	return "3" if kind in ["text_to_image", "image_to_image"] else "1"
 
 func state_label(value: String) -> String:
 	return {"pending":"等待中", "queued":"排队中", "ready":"就绪", "running":"运行中", "succeeded":"已成功", "failed":"已失败", "cancelled":"已取消", "blocked":"受阻", "reconcile":"待查询提交结果", "skipped":"已跳过"}.get(value,value)
@@ -220,13 +229,13 @@ func _show_file_picker(picker: FileDialog, selected_path: String):
 func _configure_source_picker(kind: String):
 	var copy = kind == "copy"
 	var adjust = kind == "model_adjust"
-	var multiple = kind in ["text_to_image", "image_to_image"]
+	var multiple = _is_image_kind(kind)
 	source_picker.title = "选择已生成模型（GLB / 内嵌 glTF）" if adjust else "选择源图像或模型" if copy else "选择源图像（可多选）"
 	source_picker.filters = PackedStringArray(["*.glb,*.gltf ; GLB / 内嵌 glTF 模型" if adjust else "*.png,*.jpg,*.jpeg,*.glb,*.gltf ; 图像 / 网格" if copy else "*.png,*.jpg,*.jpeg ; PNG / JPEG 图像"])
 	source_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILES if multiple else FileDialog.FILE_MODE_OPEN_FILE
 	context_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILES if multiple or adjust else FileDialog.FILE_MODE_OPEN_FILE
 	source_browse.text = "选择模型…" if adjust else "选择文件…" if copy else "选择图片…"
-	source_edit.placeholder_text = "必须选择已生成模型" if adjust else "未选择源图像或模型" if copy else "未选择源图像，可多选"
+	source_edit.placeholder_text = "必须选择已生成模型" if adjust else "未选择源图像或模型" if copy else "未选择源图像，可多选；也可仅填写文本" if kind == GENERATE_IMAGE else "未选择源图像，可多选"
 	context_edit.placeholder_text = "微调参考图（可选，单图或四视角）" if adjust else "未选择参考图像（可选）"
 
 func _node_paths(data: Dictionary, field: String) -> Array:
@@ -250,7 +259,7 @@ func _set_node_file(field: String, selection):
 	for data in nodes:
 		if data.id != selected_id: continue
 		var other = "image_context" if field == "source" else "source"
-		var image_node = data.get("type", "copy") in ["text_to_image", "image_to_image"]
+		var image_node = _is_image_kind(str(data.get("type", "copy")))
 		var total = paths.size() + _node_paths(data, other).size()
 		if paths.size() > 8 or (image_node and total > 8):
 			status.text = "源图与参考图合计每次最多 8 张"
@@ -394,17 +403,19 @@ func _ready():
 	add_child(workflow_dialog)
 	# Retained for saved automation and callers; node creation is now in the canvas menu.
 	generator_choice = OptionButton.new()
-	for kind in NODE_KINDS:
+	for kind in CREATION_NODE_KINDS:
 		if kind == "copy": continue
 		generator_choice.add_item(node_label(kind))
 		generator_choice.set_item_metadata(generator_choice.item_count - 1, kind)
-	if builtin: generator_choice.selected = 2
+	if builtin: generator_choice.selected = 1
 	add_child(generator_choice)
 	generator_choice.hide()
 	var split = HSplitContainer.new()
 	split.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	content.add_child(split)
 	graph = GraphEdit.new()
+	# Let users drag an ordered image list onto the combined image/list input.
+	graph.add_valid_connection_type(PORT_IMAGE_SET, PORT_IMAGE)
 	graph.custom_minimum_size = Vector2(460, 320)
 	graph.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	split.add_child(graph)
@@ -683,7 +694,7 @@ func add_node():
 func add_generator():
 	var kind = generator_choice.get_item_metadata(generator_choice.selected)
 	var id = "n" + str(Time.get_ticks_usec())
-	var data = {"id": id, "type": kind, "version": "3" if kind in ["text_to_image", "image_to_image"] else "1", "provider": _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45}
+	var data = {"id": id, "type": kind, "version": _new_node_version(kind), "provider": _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45}
 	if kind != 'copy' and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
 	_migrate_node_models(data, service_draft())
 	nodes.append(data)
@@ -737,16 +748,27 @@ func _sync_node_model_controls(data: Dictionary):
 		node_image_model_edit.text = image_name
 
 func _image_queue_node(data: Dictionary) -> bool:
-	return data.get("type", "copy") in ["text_to_image", "image_to_image"] and data.get("version", "3") in ["2", "3"]
+	var kind = str(data.get("type", "copy"))
+	if kind == GENERATE_IMAGE: return data.get("version", "1") == "1"
+	return kind in ["text_to_image", "image_to_image"] and data.get("version", "3") in ["2", "3"]
 
 func _queue_only_node(data: Dictionary) -> bool:
-	return _image_queue_node(data) and data.get("version", "3") == "3"
+	var kind = str(data.get("type", "copy"))
+	return _image_queue_node(data) and (kind == GENERATE_IMAGE or data.get("version", "3") == "3")
+
+func _accepts_image_set(data: Dictionary) -> bool:
+	var kind = str(data.get("type", "copy"))
+	return kind == GENERATE_IMAGE and _image_queue_node(data) or kind == "image_to_image" and _image_queue_node(data)
+
+func _accepts_single_image(source: Dictionary, target: Dictionary) -> bool:
+	return _accepts_image_set(target) and output_kind(source) == PORT_IMAGE
 
 func input_kind(data: Dictionary) -> int:
 	var kind = str(data.get("type", "copy"))
 	if kind in ["text_to_image", "text_to_mesh"]: return PORT_TEXT
-	if kind == "image_to_image": return PORT_IMAGE_SET if _queue_only_node(data) else PORT_IMAGE
-	if kind == "image_to_mesh": return PORT_IMAGE
+	# The GraphEdit compatibility rule registered in _ready also permits image_set here.
+	if _accepts_image_set(data): return PORT_IMAGE
+	if kind in ["image_to_image", "image_to_mesh"]: return PORT_IMAGE
 	if kind == "model_adjust": return PORT_MESH
 	return PORT_DYNAMIC
 
@@ -759,7 +781,9 @@ func port_type_name(kind: int) -> String:
 	return {PORT_DYNAMIC:"图片 / Mesh", PORT_IMAGE:"图片", PORT_MESH:"Mesh", PORT_TEXT:"文本", PORT_IMAGE_SET:"图片队列"}.get(kind, "未知")
 
 func input_type_name(data: Dictionary) -> String:
-	return "图片 / 图片队列" if _queue_only_node(data) and data.get("type", "copy") == "image_to_image" else port_type_name(input_kind(data))
+	var kind = str(data.get("type", "copy"))
+	if kind == GENERATE_IMAGE: return "图片 / 图片列表（可选）＋文本（参数）"
+	return "图片 / 图片列表" if _image_queue_node(data) and kind == "image_to_image" else port_type_name(input_kind(data))
 
 func rebuild():
 	graph.clear_connections()
@@ -892,10 +916,10 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 	if target_kind.begins_with("text_"): return
 	var output = "image_set" if _queue_only_node(source_node[0]) or (_image_queue_node(source_node[0]) and from_port == 1) else "result"
 	if output == "image_set":
-		if target_kind != "image_to_image" or not _image_queue_node(target_node[0]):
-			status.text = "图片队列只能连接到图生图节点；网格节点需要单张图片"
+		if not _accepts_image_set(target_node[0]):
+			status.text = "图片队列只能连接到生成图片节点；网格节点需要单张图片"
 			return
-	elif target_kind != "copy" and output_kind(source_node[0]) != input_kind(target_node[0]):
+	elif target_kind != "copy" and ((_accepts_image_set(target_node[0]) and not _accepts_single_image(source_node[0], target_node[0])) or (not _accepts_image_set(target_node[0]) and output_kind(source_node[0]) != input_kind(target_node[0]))):
 		status.text = "模型调整需要连接已生成模型" if target_kind == "model_adjust" else "生成节点的输入与输出类型不匹配"
 		return
 	for edge in edges:
@@ -1017,9 +1041,9 @@ func _valid_workflow_edge(edge: Dictionary, by_id: Dictionary) -> bool:
 	if target_kind.begins_with("text_"): return false
 	var output = edge.get("output", "result")
 	if output == "image_set":
-		return _image_queue_node(by_id[edge.from]) and target_kind == "image_to_image" and _image_queue_node(by_id[edge.to])
+		return _image_queue_node(by_id[edge.from]) and _accepts_image_set(by_id[edge.to])
 	if _queue_only_node(by_id[edge.from]): return false
-	return output == "result" and (target_kind == "copy" or output_kind(by_id[edge.from]) == input_kind(by_id[edge.to]))
+	return output == "result" and (target_kind == "copy" or (_accepts_image_set(by_id[edge.to]) and _accepts_single_image(by_id[edge.from], by_id[edge.to])) or (not _accepts_image_set(by_id[edge.to]) and output_kind(by_id[edge.from]) == input_kind(by_id[edge.to])))
 
 func open_graph():
 	_invalidate_context()
@@ -1528,16 +1552,19 @@ func node_run_blocker(id: String) -> String:
 		if _retired_mesh_node(data): return RETIRED_GPT_MESH_NOTICE
 		var incoming = edges.filter(func(edge): return edge.to == next_id)
 		for edge in incoming: pending.append(edge.from)
-		if not kind.begins_with("text_") and incoming.is_empty() and _node_paths(data, "source").is_empty():
+		var has_images = not incoming.is_empty() or not _node_paths(data, "source").is_empty() or not _node_paths(data, "image_context").is_empty()
+		if kind != GENERATE_IMAGE and not kind.begins_with("text_") and incoming.is_empty() and _node_paths(data, "source").is_empty():
 			return "请先设置源文件或连接上游节点（" + str(next_id) + "）"
 		for field in ["source", "image_context"]:
 			for path in _node_paths(data, field):
 				if not path.is_empty() and not FileAccess.file_exists(path):
 					return ("源文件" if field == "source" else "参考图像") + "不存在（" + str(next_id) + "）"
-		if kind in ["text_to_image", "image_to_image"] and _node_paths(data, "source").size() + _node_paths(data, "image_context").size() > 8:
+		if _is_image_kind(kind) and _node_paths(data, "source").size() + _node_paths(data, "image_context").size() > 8:
 			return "源图与参考图合计每次最多 8 张（" + str(next_id) + "）"
 		var prompt = str(data.get("parameters", {}).get("prompt", "")) + "\n" + str(data.get("text", ""))
-		if not kind in ["copy", "image_to_mesh", "model_adjust"] and prompt.strip_edges().is_empty():
+		if kind == GENERATE_IMAGE and not has_images and prompt.strip_edges().is_empty():
+			return "请至少选择图片或填写生成提示词（" + str(next_id) + "）"
+		if kind != GENERATE_IMAGE and not kind in ["copy", "image_to_mesh", "model_adjust"] and prompt.strip_edges().is_empty():
 			return "请先填写生成提示词（" + str(next_id) + "）"
 		var service_reason = _service_blocker(kind, data)
 		if not service_reason.is_empty(): return service_reason
@@ -1660,7 +1687,7 @@ func _history_context_action(index: int):
 func filter_node_picker(text: String):
 	node_picker_list.clear()
 	var search = text.strip_edges().to_lower()
-	for group in [["图像生成", ["text_to_image", "image_to_image"]], ["网格生成", ["image_to_mesh", "text_to_mesh"]], ["模型处理", ["model_adjust"]], ["离线工具", ["copy"]]]:
+	for group in [["图像生成", [GENERATE_IMAGE]], ["网格生成", ["image_to_mesh", "text_to_mesh"]], ["模型处理", ["model_adjust"]], ["离线工具", ["copy"]]]:
 		var matches: Array = []
 		for kind in group[1]:
 			if search.is_empty() or search in (node_label(kind) + " " + kind + " " + group[0]).to_lower(): matches.append(kind)
@@ -1687,7 +1714,7 @@ func create_context_node(kind: String):
 	var position = (context_position + graph.scroll_offset) / graph.zoom
 	var id = "n" + str(Time.get_ticks_usec())
 	while not nodes.filter(func(n): return n.id == id).is_empty(): id += "x"
-	var data = {"id": id, "type": kind, "version": "3" if kind in ["text_to_image", "image_to_image"] else "1", "provider": "local-copy" if kind == "copy" else _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
+	var data = {"id": id, "type": kind, "version": _new_node_version(kind), "provider": "local-copy" if kind == "copy" else _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
 	if kind != 'copy' and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
 	_migrate_node_models(data, service_draft())
 	nodes.append(data)

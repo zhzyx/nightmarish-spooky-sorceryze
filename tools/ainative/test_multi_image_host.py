@@ -91,8 +91,8 @@ class MultiImageHostTests(unittest.TestCase):
             snapshots = [dict(snapshot_file(path), extension=".png") for path in paths]
             node = dict(
                 id="gen",
-                type="image_to_image",
-                version="3",
+                type="generate_image",
+                version="1",
                 provider="comfy",
                 source_paths=[str(path) for path in paths],
                 source_snapshots=copy.deepcopy(snapshots),
@@ -102,7 +102,7 @@ class MultiImageHostTests(unittest.TestCase):
             )
             graph, manifest = compile_graph({"nodes": [node], "edges": []})
             self.assertEqual([item["id"] for item in manifest["artifacts"]], ["gen-source-0", "gen-source-1"])
-            self.assertEqual(graph[0]["request"]["version"], "3")
+            self.assertEqual(graph[0]["request"]["version"], "1")
             self.assertEqual(graph[0]["request"]["inputs"]["source"]["id"], "gen-source-0")
             node.update(source_paths=["", ""], source_snapshots=snapshots)
             self.assertEqual(compile_graph({"nodes": [node], "edges": []})[1], manifest)
@@ -118,7 +118,9 @@ class MultiImageHostTests(unittest.TestCase):
             })
             self.assertEqual(graph[1]["links"]["source"], {"node": "upstream", "port": "image_set"})
 
-            run_node = dict(node, source="", source_paths=["", ""], source_snapshots=snapshots)
+            # Exercise the current unified node through the real Executor/host path;
+            # the compile checks above still cover legacy version 3 workflows.
+            run_node = dict(node, type="generate_image", version="1", source="", source_paths=["", ""], source_snapshots=snapshots)
             args = argparse.Namespace(
                 db=str(root / "runs.sqlite"), factory="test_multi_image_host:persistent_factory", command="create"
             )
@@ -166,6 +168,10 @@ class MultiImageHostTests(unittest.TestCase):
                 self.assertEqual(Path(published["path"]).read_bytes(), stage.read_bytes())
                 before = json.loads((root / "inner.json").read_text(encoding="utf-8"))
                 self.assertEqual(before["submissions"], 2)
+                self.assertEqual(len(before["requests"]), 2)
+                for child in before["requests"]:
+                    self.assertIn("same sculpture", child["parameters"]["prompt"])
+                    self.assertEqual(child["inputs"]["source"]["id"], "board")
                 args.command = "step"
                 restored = dispatch(args, {"run": run})
                 self.assertEqual(restored["state"], "succeeded")

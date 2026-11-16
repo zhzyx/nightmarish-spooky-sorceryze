@@ -34,10 +34,12 @@ example.json 全部是合成契约夹具，UE/Mixamo Profile 是占位元数据�
 
 ## Real ComfyUI provider (#145)
 
-`comfy_provider:factory` registers `text_to_image`, `image_to_image`,
-`image_to_mesh`, `text_to_mesh`, plus the existing `local-copy` demo. The editor's
-`+ Generate` selector creates the four typed nodes. Text nodes have no source port;
-image nodes require an image, and mesh outputs cannot feed image inputs.
+`comfy_provider:factory` registers the legacy `text_to_image`, `image_to_image`,
+`image_to_mesh`, `text_to_mesh` contracts, plus the existing `local-copy` demo.
+The current editor exposes one unified `generate_image` node for text, single-image /
+image-list, and combined image-text input; its sole output is an ordered `image_set`.
+Legacy image nodes remain loadable with their original contracts. Mesh outputs cannot
+feed image inputs.
 
 Copy `comfy-config.example.json` **outside the repository**. Replace the two
 checkpoint SHA256 values with hashes of the installed files, and record the exact
@@ -235,13 +237,16 @@ workers do not prove real Tripo API inference. Real acceptance requires the priv
 `task_id` and receipts, independent GLB validation, native preview/publication/reopen
 checks and separate multi-view visual review.
 
-## Kimi Work text-to-image and image-to-image (#808)
+## Kimi Work unified image generation (#808)
 
 The `kimi_native` Workbench service mode is a composite route. Mesh nodes use
-`kimi_native` and its direct Tripo API `generate_3d_model` boundary. The
-`text_to_image` and `image_to_image` nodes instead use `kimi_work_image`, an independent
-Kimi Work `agent-gw generate_image` v2 service. K3.1 Pro does not directly generate these
-2D images, and this integration neither replaces nor disguises ComfyUI or Codex.
+`kimi_native` and its direct Tripo API `generate_3d_model` boundary. The unified
+`generate_image` node and legacy `text_to_image` / `image_to_image` nodes instead use
+`kimi_work_image`, an independent Kimi Work `agent-gw generate_image` v2 service. The
+unified node accepts text, ordered images, or both; image-only requests use a durable
+neutral reference-image instruction because the underlying service requires a prompt.
+K3.1 Pro does not directly generate these 2D images, and this integration neither
+replaces nor disguises ComfyUI or Codex.
 
 In AI settings, select the installed plugin's `scripts/image_generation_tool.py` and the
 windowless `pythonw.exe` returned by the official `resolve_image_powershell.sh` resolver.

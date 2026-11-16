@@ -68,14 +68,18 @@ func run():
 	panel.set_meta("ainative_builtin", true)
 	root.add_child(panel)
 	await process_frame
-	var upstream = add_kind("text_to_image")
-	var downstream = add_kind("image_to_image")
+	var upstream = add_kind("generate_image")
+	var downstream = add_kind("generate_image")
 	var mesh = add_kind("image_to_mesh")
 	panel.select_node(downstream)
 	var data = node(downstream)
 	if data.is_empty():
 		await finish()
 		return
+	for index in panel.service_choice.item_count:
+		if panel.service_choice.get_item_metadata(index) == "legacy":
+			panel.service_choice.select(index)
+			panel.service_choice.item_selected.emit(index)
 	check(panel.source_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILES and panel.context_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILES, "both image input pickers accept multiple local files")
 	panel.source_picker.files_selected.emit(PackedStringArray([front, side]))
 	panel.context_picker.files_selected.emit(PackedStringArray([reference]))
@@ -83,10 +87,21 @@ func run():
 	panel.source_picker.files_selected.emit(PackedStringArray([front, side, front, side, front, side, front, side]))
 	check(data.source_paths.size() == 2 and panel.status.text.contains("最多 8"), "source plus reference cannot exceed eight images")
 	panel.source_picker.files_selected.emit(PackedStringArray([front, side]))
+	data.parameters.prompt = ""
+	check(panel.node_run_blocker(downstream).is_empty(), "image-only unified generation is eligible without a prompt")
+	panel.source_picker.files_selected.emit(PackedStringArray([]))
+	panel.context_picker.files_selected.emit(PackedStringArray([]))
+	check(panel.node_run_blocker(downstream).contains("至少选择图片或填写"), "empty unified input is rejected with an actionable explanation")
+	data.parameters.prompt = "仅文字生成一个雕塑"
+	check(panel.node_run_blocker(downstream).is_empty(), "text-only unified generation is eligible without images")
+	panel.source_picker.files_selected.emit(PackedStringArray([front, side]))
+	panel.context_picker.files_selected.emit(PackedStringArray([reference]))
+	data.parameters.prompt = "结合参考图生成雕塑"
+	check(panel.node_run_blocker(downstream).is_empty(), "combined ordered images and text are eligible together")
 	panel.parameter_form.outputs_edit.text = "正面\n三分之四侧面"
 	panel.parameter_form.outputs_edit.text_changed.emit()
 	check(panel.apply_fields() and data.parameters.output_count == 2 and data.parameters.output_labels == ["正面", "三分之四侧面"], "two named outputs are stored as independent output specifications")
-	check(panel.model().nodes.all(func(item): return item.version == "3" if item.type in ["text_to_image", "image_to_image"] else item.version == "1"), "queue-only version applies only to image generation nodes")
+	check(node(upstream).type == "generate_image" and node(upstream).version == "1" and data.type == "generate_image" and data.version == "1", "unified generation nodes use the version 1 image queue contract")
 	var before_invalid = data.parameters.duplicate(true)
 	for invalid in ["0", "9", "正面\n正面"]:
 		panel.parameter_form.outputs_edit.text = invalid
@@ -98,7 +113,7 @@ func run():
 	panel.connect_nodes(upstream, 0, downstream, 0)
 	check(panel.edges.size() == 1 and panel.edges[0].get("output") == "image_set", "the sole generation output is an ordered image queue")
 	panel.connect_nodes(upstream, 0, mesh, 0)
-	check(panel.edges.size() == 1 and panel.status.text.contains("只能连接到图生图"), "image queue cannot silently become a single Mesh input")
+	check(panel.edges.size() == 1 and panel.status.text.contains("只能连接到生成图片节点"), "image queue cannot silently become a single Mesh input")
 	panel.path_edit.text = state_path.path_join("multi-image.json")
 	panel.save_graph()
 	var saved = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text))
@@ -141,6 +156,7 @@ func run():
 	check(panel.result_choice.is_visible_in_tree() and panel.result_choice.selected == 1, "returning to generation preserves the selected member")
 	var legacy = original.duplicate(true)
 	legacy.nodes = [find_node(legacy, upstream), find_node(legacy, mesh)]
+	legacy.nodes[0].type = "text_to_image"
 	legacy.nodes[0].erase("version")
 	legacy.edges = [{"from":upstream, "to":mesh, "input":"source", "output":"result"}]
 	write_model(legacy)

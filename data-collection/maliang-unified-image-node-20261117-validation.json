@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-unified-image-node-20261117",
+  "issue_number": 1372,
+  "date": "2026-11-17",
+  "state": "validated_candidate",
+  "integrated_main": "5ed73c9b8a51aa0d003dbcf9a849f2a45eea6af3",
+  "evidence_scope": "Local fake providers and native Godot controls after integration with the fetched main; no real model inference, credentials, private URLs or raw generation logs.",
+  "editor_sha256": "c7df77bca162db8089433ba864fdf381025ab8d135c2ff8c9c162d26d25cff57",
+  "python_validation": {
+    "multi_image_tests": {"run": 12, "failed": 0},
+    "generation_service_tests": {"run": 14, "failed": 0},
+    "kimi_service_tests": {"run": 11, "failed": 0},
+    "kimi_work_image_tests": {"run": 8, "skipped": 1, "failed": 0},
+    "codex_provider_tests": {"run": 20, "skipped": 18, "failed": 0},
+    "comfy_provider_tests": {"run": 14, "failed": 0},
+    "total": {"run": 79, "skipped": 19, "failed": 0},
+    "ainative_bundle_tests": {"run": 1, "failed": 0}
+  },
+  "native_validation": {
+    "platform": "macos",
+    "architecture": "arm64",
+    "godot_port_type_acceptance": {"failures": 0},
+    "godot_parameter_form_acceptance": {"failures": 0},
+    "godot_multi_image_acceptance": {"failures": 0},
+    "godot_context_menu_acceptance": {"failures": 0},
+    "real_model_inference": false
+  },
+  "additional_suite_observation": {
+    "timing": "before_main_integration",
+    "run": 434,
+    "skipped": 62,
+    "failures": 1,
+    "errors": 6,
+    "scope": "Existing modeling/sculpt tests reference unavailable check_modeling_cli, _blender_runtime and legacy settings fields; these unrelated untracked test files were not changed by this candidate."
+  },
+  "format_validation": {
+    "python_py_compile": true,
+    "git_diff_check": true,
+    "ruff": "not_installed"
+  },
+  "independent_code_review": "not_obtained_in_this_session; no subagent used and no independent review claimed"
+}
