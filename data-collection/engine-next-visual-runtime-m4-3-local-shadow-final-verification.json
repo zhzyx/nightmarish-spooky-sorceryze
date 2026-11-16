@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "base_main": "149ed960ace1da559c6945bcf9f7914b769e0d3b",
+  "visual": {
+    "report": {
+      "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-final4\\VisualBuildReport.json",
+      "bytes": 1479873,
+      "sha256": "3bcd938633407ed1d19dcbb9e9f7a3f7537937b1c2dc51da981ebd3c2c7ffa83"
+    },
+    "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0",
+    "native_key": "6c6277a6c5bbb0573761124b9592df01b5f321d881f02fc475a28b64115e7317",
+    "binary": {
+      "path": "build/engine_next/local-shadow-final4/next_visual_client.exe",
+      "sha256": "cf714c8bc710c8ff9467baee35d35727284c8f4d69c2826da2edda1772c757b6"
+    },
+    "input_mismatches": [],
+    "package": {
+      "files": [
+        "Deferred.ps.cso",
+        "Deferred.vs.cso",
+        "ENet-LICENSE.txt",
+        "FixedMesh.cs.cso",
+        "FixedMesh.ps.cso",
+        "FixedMesh.vs.cso",
+        "LICENSE.txt",
+        "Lighting.ps.cso",
+        "Lighting.vs.cso",
+        "Shadow.ps.cso",
+        "Shadow.vs.cso",
+        "ToneMap.ps.cso",
+        "VisualPackage.json",
+        "libjpeg-turbo-LICENSE.md",
+        "libjpeg-turbo-README.ijg",
+        "next_visual_client.exe",
+        "zlib-LICENSE.txt"
+      ],
+      "manifest": "build/engine_next/local-shadow-final4/Release/VisualPackage.json"
+    },
+    "all_ten_shader_hashes_match_final3": true
+  },
+  "source_change_since_final3": {
+    "file": "engine_next/Rendering/VisualRuntime.cpp",
+    "scope": "Start ClientSession only after successful first-frame GPU retirement; include actual status in failure diagnostics and report warmup startup."
+  },
+  "base_feature_evidence": "data-collection/engine-next-visual-runtime-m4-3-local-shadow-verification.json",
+  "historical_gpu_evidence": "data-collection/engine-next-visual-runtime-m4-3-local-shadow-gpu.json",
+  "final_gpu_evidence": "data-collection/engine-next-visual-runtime-m4-3-local-shadow-final-gpu.json",
+  "network_evidence": "data-collection/engine-next-visual-runtime-m4-3-local-shadow-network.json",
+  "remaining": "TAA, post-processing, volume, reflections and parent M4 benchmark acceptance remain open.",
+  "integrated_main": "5ed73c9b8a51aa0d003dbcf9a849f2a45eea6af3",
+  "integration_note": "Fast-forward main integration has no Engine Next, AI core or runtime host-tool source overlap. The final4 native identity remains unchanged. Affected upstream AINative regression suite is rerun after integration.",
+  "integrated_ainative_regression": {
+    "command": "python -m unittest discover -s tools/ainative -p test_*.py",
+    "tests": 425,
+    "skipped": 36,
+    "passed": true,
+    "log": "build\\engine_next\\local-ainative-integrated.log",
+    "sha256": "edd0b590a0b847ebb4fece10b474bd8064a45a93f97622672c3f71ff7c28db6f"
+  }
+}

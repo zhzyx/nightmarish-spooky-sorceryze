@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-398caa38a647389650dd606055e3a4304b3354e3",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "70c068338d286f68f45a83f93b66f53172b0049dd1b0bea6e6b97ef8f1ec7091",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1368",
+    "action": "validation",
+    "detection_head": "149ed960ace1da559c6945bcf9f7914b769e0d3b",
+    "context_sha256": "bce64943a6cad6e6898ec148717f4c5af308ab75c59cded57d561c1673b295b8",
+    "operator": "kaiyunxue",
+    "worker": "/root",
+    "authority_ref": "User authorized M4 implementation and tested main delivery",
+    "evidence": "design-docs/engine-next-network-gpu-warmup-20261117.md",
+    "diagnosis": "Client session starts before initial GPU execution completes. Actual first frame blocked 83 seconds, then network step failed without a welcome.",
+    "next_action": "Start client session after first GPU frame retires; repeat exact final binary networking and GPU acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-16T16:24:19.809363+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-16T16:25:15.903397+00:00",
+  "sha256": "24663afab65e9815600f8df2ace66ec51dd72388bb29f04389c5ee996990e6fc"
+}

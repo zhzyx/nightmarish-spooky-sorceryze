@@ -5,6 +5,15 @@ float3 UnitDirection(float3 Direction, float3 Fallback)
     float3 Scaled = Direction / max(Maximum, 1.0e-38);
     return Maximum > 0 ? Scaled * rsqrt(max(dot(Scaled, Scaled), 1.0e-38)) : Fallback;
 }
+#include "ShadowSampling.hlsli"
+struct LocalLightConstants
+{
+    float4 PositionRange;
+    float4 ColorIntensity;
+    float4 DirectionType;
+    float4 ConeShadow;
+    float4 ShadowParameters;
+};
 cbuffer FrameConstants : register(b1)
 {
     column_major float4x4 ViewProjection;
@@ -17,6 +26,9 @@ cbuffer FrameConstants : register(b1)
     float4 LightDirection;
     float4 LightColor;
     float4 ShadowParameters;
+    column_major float4x4 LocalShadowMatrices[28];
+    LocalLightConstants LocalLights[8];
+    float4 LocalCounts;
 };
 #if defined(GEOMETRY_STAGE)
 cbuffer DrawConstants : register(b0)
@@ -110,6 +122,7 @@ TextureCube<float4> Irradiance : register(t6);
 TextureCube<float4> PrefilteredEnvironment : register(t7);
 Texture2D<float4> BrdfLut : register(t8);
 Texture2DArray<float> DirectionalShadow : register(t9);
+Texture2DArray<float> LocalShadow : register(t10);
 SamplerState EnvironmentSampler : register(s0);
 #endif
 struct FullscreenOutput
@@ -202,11 +215,37 @@ float DirectionalVisibility(float3 Position, float3 N)
     }
     return Visibility;
 }
+float LocalVisibility(LocalLightConstants Light, float3 Position, float3 N, float3 GeometricNormal)
+{
+    if (ShadowParameters.x < 0.5 || Light.ConeShadow.z < 0)
+    {
+        return 1;
+    }
+    float3 BiasedPosition = Position + N * ShadowParameters.w;
+    uint Slice = (uint)Light.ConeShadow.z;
+    uint Face = 6;
+    if (Light.DirectionType.w < 0.5)
+    {
+        Face = ShadowCubeFace(BiasedPosition - Light.PositionRange.xyz);
+        Slice += Face;
+    }
+    float4 ShadowPosition = mul(LocalShadowMatrices[Slice], float4(BiasedPosition, 1));
+    if (ShadowPosition.w <= 0)
+    {
+        return 1;
+    }
+    return SampleShadowMap(LocalShadow, ShadowPosition.xyz / ShadowPosition.w, Slice,
+        LocalCounts.z, ShadowParameters.z, Light.ShadowParameters.z,
+        Light.ShadowParameters.xy, false, LocalCounts.w > 0.5, Face, GeometricNormal);
+}
 float4 LightingPS(FullscreenOutput Input) : SV_TARGET
 {
     int2 Pixel = int2(Input.Position.xy);
     float Depth = DepthBuffer.Load(int3(Pixel, 0));
     float2 Ndc = Input.Texcoord * float2(2, -2) + float2(-1, 1);
+    float4 WorldPosition = mul(InverseViewProjection, float4(Ndc, Depth, 1));
+    float3 Position = WorldPosition.xyz / WorldPosition.w;
+    float3 PlaneNormal = cross(ddx(Position), ddy(Position));
     if (Depth <= 0)
     {
         float4 FarPosition = mul(InverseViewProjection, float4(Ndc, 0, 1));
@@ -218,13 +257,31 @@ float4 LightingPS(FullscreenOutput Input) : SV_TARGET
     float3 N = normalize(NormalBuffer.Load(int3(Pixel, 0)).xyz);
     float3 Material = SurfaceBuffer.Load(int3(Pixel, 0)).rgb;
     float3 Emissive = EmissiveBuffer.Load(int3(Pixel, 0)).rgb;
-    float4 WorldPosition = mul(InverseViewProjection, float4(Ndc, Depth, 1));
-    float3 Position = WorldPosition.xyz / WorldPosition.w;
+    float3 GeometricNormal = UnitDirection(PlaneNormal, N);
     float3 V = SafeDirection(Camera.xyz - Position);
     float3 Color = EvaluateLight(Base, Material.y, Material.x, N, V, LightDirection.xyz, LightColor.rgb * Tint[0].rgb) * DirectionalVisibility(Position, N);
-    float3 PointVector = float3(2, 3, 2) - Position;
-    float Distance2 = max(dot(PointVector, PointVector), 0.01);
-    Color += EvaluateLight(Base, Material.y, Material.x, N, V, SafeDirection(PointVector), float3(18, 12, 8) / Distance2);
+    [loop] for (uint LightIndex = 0; LightIndex < (uint)LocalCounts.x; ++LightIndex)
+    {
+        LocalLightConstants Light = LocalLights[LightIndex];
+        float3 LightVector = Light.PositionRange.xyz - Position;
+        float Distance2 = dot(LightVector, LightVector);
+        float Distance = sqrt(max(Distance2, 0));
+        if (Distance >= Light.PositionRange.w)
+        {
+            continue;
+        }
+        float3 Direction = SafeDirection(LightVector);
+        float Attenuation = pow(saturate(1 - pow(Distance / Light.PositionRange.w, 4)), 2) / max(Distance2, 0.0001);
+        if (Light.DirectionType.w > 0.5)
+        {
+            float3 ConeOffset = -Direction - Light.DirectionType.xyz;
+            float ChordSquared = dot(ConeOffset, ConeOffset);
+            Attenuation *= 1 - smoothstep(Light.ConeShadow.x, Light.ConeShadow.y, ChordSquared);
+        }
+        float Visibility = LocalVisibility(Light, Position, N, GeometricNormal);
+        float3 Radiance = min(Light.ColorIntensity.rgb, 1.0e20) * Attenuation;
+        Color += EvaluateLight(Base, Material.y, Material.x, N, V, Direction, Radiance) * Visibility;
+    }
     float NoV = saturate(dot(N, V));
     float3 F0 = lerp(0.04, Base, Material.y);
     float3 F = F0 + (max(1 - Material.x, F0) - F0) * pow(1 - NoV, 5);
@@ -234,7 +291,7 @@ float4 LightingPS(FullscreenOutput Input) : SV_TARGET
     float2 Brdf = BrdfLut.SampleLevel(EnvironmentSampler, float2(NoV, Material.x), 0).rg;
     Color += ((1 - F) * (1 - Material.y) * Diffuse + Prefiltered * (F0 * Brdf.x + Brdf.y)) * Material.z;
     Color += Emissive;
-    return float4(max(Color, 0), 1);
+    return float4(clamp(Color, 0, 65504), 1);
 }
 #endif
 

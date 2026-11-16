@@ -1,0 +1,221 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-16T16:36:21.899887+00:00",
+  "reviewer": "m42_capture_tools",
+  "scope": "Independent final4 delivery-evidence audit, historical final3 reconciliation and LocalShadowData source/test review",
+  "authorship_boundary": "The reviewer authored sampling implementation and GPU collection. This audit independently verifies evidence identity and arithmetic; it makes no independent code-review claim for sampling.",
+  "findings": [],
+  "local_shadow_math": {
+    "review": "Re-read current LocalShadowData source/API/test files. Six face orientations, perspective depth, bounded light counts, unique IDs, ordered views and transactional failure remain consistent.",
+    "command": "python build/engine_next/ReviewLocalShadow.py",
+    "exit_code": 0,
+    "tests": 8,
+    "checks": 433,
+    "failures": 0,
+    "inputs": [
+      {
+        "path": "engine_next/Rendering/LocalShadowData.cpp",
+        "bytes": 9717,
+        "sha256": "f995b49c1a54ba75725eb43630778ce6d8c26ddf16f4a7a06529b9721ab03b5d"
+      },
+      {
+        "path": "engine_next/include/EngineNext/Rendering/LocalShadowData.h",
+        "bytes": 3714,
+        "sha256": "ff2e1bb675eb86e453f02579cbe53fb9dc2c1659e6e15f7bc3d3209d9c809e1d"
+      },
+      {
+        "path": "engine_next/Tests/Rendering/TestLocalShadowData.cpp",
+        "bytes": 15064,
+        "sha256": "70f7d25eea3ff982995106f1b0ba099b65be44c205a314bd51a4a9ff081bff98"
+      },
+      {
+        "path": "build/engine_next/local-shadow-delivery-math-tests.log",
+        "bytes": 70,
+        "sha256": "6d21bbb92537d79de316d66103d40f98553b6b18eb1cc3017e6a37dc453e8e58"
+      }
+    ]
+  },
+  "warmup_change_review": {
+    "source": {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "bytes": 149573,
+      "sha256": "ede9a0ae01ae3efebd6fad8d1e0ac0266e5930953437f3f5f296047356073833"
+    },
+    "diff_base": "staged final3 candidate",
+    "findings": [],
+    "checks": [
+      "LoadScene retains SceneDocument load and package digest verification before GPU creation; ResolveNetworkBindings relies on this loaded scene and draw metadata, not ClientSession state.",
+      "The initial ClientSnapshot is empty. DrawTransform copies the asset world matrix and finds no network entity, preserving the authored first-frame transforms.",
+      "Run submits the first successful frame, flushes graphics and compute queues, then creates the session and verifies its package digest before setting the started flag.",
+      "Tick, movement pulses, reconnect requests and network samples are gated on the started flag and therefore first run in the next event loop.",
+      "Minimized startup waits to render and initialize. Once initialized, network Tick still executes before the minimized-window continue path.",
+      "Failed initialization is transactional in ClientSession; digest mismatch exits with failure and RAII destroys the session. Successful drain is tested immediately after Tick and exits before another Tick."
+    ],
+    "execution_boundary": "Final4 exact-binary network warmup, real input, reconnect and minimized progress evidence is linked separately. The video covers initial motion only."
+  },
+  "artifacts": [
+    {
+      "path": "build/engine_next/local-shadow-delivery-audit/AuditResults.json",
+      "bytes": 1908,
+      "sha256": "61f1e5ac7d2df4b134defb118d340da012ef11d34738c98d350ee0a78952e634"
+    },
+    {
+      "path": "build/engine_next/local-shadow-delivery-audit/CheckedFiles.json",
+      "bytes": 34868,
+      "sha256": "bb268894955887d3047fd749ed26ded7852b67b6d2966a6af841771749e62e2a"
+    },
+    {
+      "path": "build/engine_next/local-shadow-delivery-audit/AuditFinal4Results.json",
+      "bytes": 1848,
+      "sha256": "461e5ac9392ab8557d16e91f2dbe100aa5cd409f840770ba30666bf4629f11f1"
+    },
+    {
+      "path": "build/engine_next/local-shadow-delivery-audit/CheckedFinal4Files.json",
+      "bytes": 41942,
+      "sha256": "687f6a6536e9d98796384ab88daa6e61c99e985aaa84ed909efa25b43c8dfe74"
+    },
+    {
+      "path": "build/engine_next/local-shadow-delivery-audit/AuditFinal4.py",
+      "bytes": 7413,
+      "sha256": "e823b454060fad430f43ae7de77e1d7b9098d997505cdf1e6c7e18cc4d458371"
+    },
+    {
+      "path": "build/engine_next/local-shadow-impact-final3/ImpactReport.json",
+      "bytes": 33733,
+      "sha256": "42508bec0b9e62be81729b4936b57b686833362e1673b42754199e82d3bec080"
+    },
+    {
+      "path": "build/engine_next/local-shadow-impact-final4/ImpactReport.json",
+      "bytes": 33733,
+      "sha256": "b47e916d06726055c0e27dc6eb35926ae362ad3d4d78d75ce6e1661df2762b24"
+    },
+    {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-local-shadow-build-impact.json",
+      "bytes": 39589,
+      "sha256": "7b5583a1519b949376e203927b14f8c46737d85c0e3ab6831ecb880730b736ab"
+    },
+    {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-local-shadow-gpu.json",
+      "bytes": 33610,
+      "sha256": "1a777881fca815574cf9f6aef79a61787b145a9048891ed2d7ac3b776c5d3792"
+    },
+    {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-local-shadow-final-gpu.json",
+      "bytes": 15072,
+      "sha256": "07c56c07e2463783ed5606df54f9d2c230ea16dc11467fc6a2b178dfacd2ed19"
+    },
+    {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-local-shadow-network.json",
+      "bytes": 15071,
+      "sha256": "274fbe8a9e19255b25c4e8ae15eb65e73f99e4fb714abd1d627917e17f573e6f"
+    },
+    {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-network-warmup-verification.json",
+      "bytes": 4072,
+      "sha256": "d70c932a746024e00f6f94f4f5749c85eca38c37105bcf72369fded2307c6065"
+    }
+  ],
+  "verification_boundary": "Final4 impact now binds current source and final4 exact native identity. The full shadow feature matrix remains final3 historical evidence; final4 has identical shaders, exact Combined/seam RGB comparisons and its own RenderDoc capture/replay. Sampling source authorship is excluded from independent code review.",
+  "historical_final3_audit": {
+    "passed": true,
+    "historical_candidate": "final3",
+    "subsequent_source_deltas": [
+      "engine_next/Rendering/VisualRuntime.cpp"
+    ],
+    "checked_file_count": 136,
+    "input_blob_count": 42,
+    "clean_export_file_count": 287,
+    "builds": {
+      "Baseline": {
+        "key": "e0f16b6ddc458c6bd29886b2e0ff60fee13b8495c1a4060aa2634c404eb7531c",
+        "binary_sha256": "73f522331ca76cfcdb23f487885097f59688e6eab0033e61be7e000003e5509b",
+        "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0"
+      },
+      "Changed": {
+        "key": "5ed0ff4dc1cf7f667a18072c2ae04af2ab98f9e7f82c802e10f84b0b89825181",
+        "binary_sha256": "a1e41952dd3af0079764169628905ccf811b73bbf8a91d8f672e8d88084e19ee",
+        "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0"
+      },
+      "Restored": {
+        "key": "e0f16b6ddc458c6bd29886b2e0ff60fee13b8495c1a4060aa2634c404eb7531c",
+        "binary_sha256": "5047c170cb2d3651f3f45762772a4f682ea27baec01eb2a8ccc94de362f0d3d2",
+        "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0"
+      }
+    },
+    "changed_input": [
+      "engine_next/Rendering/Shaders/FixedMesh.hlsl"
+    ],
+    "shared_exe_sha256": "73f522331ca76cfcdb23f487885097f59688e6eab0033e61be7e000003e5509b",
+    "image_hashes": [
+      "de89291b2e9785a63fbf1650e41f239f9c01dc03d5d9523fe20071473822fb37",
+      "f1fc4159457a5211caa53f23d9660cc759b697b40b9fb24f78eea6ea7aee3e29",
+      "de89291b2e9785a63fbf1650e41f239f9c01dc03d5d9523fe20071473822fb37"
+    ],
+    "invalid_failure": "Create graphics PSO (HRESULT -2147467259)",
+    "validated_gpu_cases": 21,
+    "final_exe_sha256": "d1ef50f207a061a8d08ed72d71b84aad58157a9ba14f686ce9acf774e8b55661",
+    "native_identity_exactly_matches_clean_export": true,
+    "seam_jumps": {
+      "before": 6.716666666666669,
+      "after": 0.19999999999998863
+    },
+    "mask_receiver_pixels": {
+      "Point": 5038,
+      "Spot": 5039
+    }
+  },
+  "audit": {
+    "passed": true,
+    "candidate": "final4",
+    "subsequent_source_deltas": [],
+    "checked_file_count": 165,
+    "input_blob_count": 42,
+    "clean_export_file_count": 287,
+    "builds": {
+      "Baseline": {
+        "key": "6c6277a6c5bbb0573761124b9592df01b5f321d881f02fc475a28b64115e7317",
+        "binary_sha256": "2b9b899a1825b4620e033d9149e8bbd0e45431086c0d95d86622f94c5a57b00c",
+        "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0"
+      },
+      "Changed": {
+        "key": "65be09ec93818d459f93aeea1ed50f5b2f710b2940e1420b6fbe366659ce523f",
+        "binary_sha256": "e000ef6736de5360574780d39c61152b01190d4fa67553770c7aa11f0933ce1e",
+        "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0"
+      },
+      "Restored": {
+        "key": "6c6277a6c5bbb0573761124b9592df01b5f321d881f02fc475a28b64115e7317",
+        "binary_sha256": "a774122496def4e378f6e574996375c9f061eb93d94ec8d9092bb370e1db36fe",
+        "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0"
+      }
+    },
+    "changed_input": [
+      "engine_next/Rendering/Shaders/FixedMesh.hlsl"
+    ],
+    "shared_exe_sha256": "2b9b899a1825b4620e033d9149e8bbd0e45431086c0d95d86622f94c5a57b00c",
+    "image_hashes": [
+      "de89291b2e9785a63fbf1650e41f239f9c01dc03d5d9523fe20071473822fb37",
+      "f1fc4159457a5211caa53f23d9660cc759b697b40b9fb24f78eea6ea7aee3e29",
+      "de89291b2e9785a63fbf1650e41f239f9c01dc03d5d9523fe20071473822fb37"
+    ],
+    "invalid_failure": "Create graphics PSO (HRESULT -2147467259)",
+    "validated_gpu_cases": 21,
+    "final_exe_sha256": "cf714c8bc710c8ff9467baee35d35727284c8f4d69c2826da2edda1772c757b6",
+    "native_identity_exactly_matches_clean_export": true,
+    "seam_jumps": {
+      "before": 6.716666666666669,
+      "after": 0.19999999999998863
+    },
+    "mask_receiver_pixels": {
+      "Point": 5038,
+      "Spot": 5039
+    }
+  },
+  "historical_final3_impact": {
+    "path": "build/engine_next/local-shadow-impact-final3/ImpactReport.json",
+    "bytes": 33733,
+    "sha256": "42508bec0b9e62be81729b4936b57b686833362e1673b42754199e82d3bec080"
+  },
+  "historical_note": "The mutable public impact report was replaced by final4 before commit. The final3 audit is retained with its immutable private ImpactReport reference."
+}

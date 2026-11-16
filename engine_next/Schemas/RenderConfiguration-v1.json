@@ -136,9 +136,145 @@
           "type": "number",
           "minimum": 0,
           "maximum": 1
+        },
+        "local_resolution": {
+          "type": "integer",
+          "enum": [
+            256,
+            512,
+            1024,
+            2048
+          ]
+        },
+        "filter": {
+          "enum": [
+            "pcf",
+            "pcss"
+          ]
+        },
+        "light_radius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
         }
       },
       "$comment": "Omission uses the built-in shadow defaults. All settings remain validated when enabled is false."
+    },
+    "point_lights": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "position",
+          "color",
+          "lumens",
+          "range",
+          "casts_shadow"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4294967295
+          },
+          "position": {
+            "$ref": "#/$defs/vector3"
+          },
+          "color": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "items": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          },
+          "lumens": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100000000
+          },
+          "range": {
+            "type": "number",
+            "minimum": 0.1,
+            "maximum": 10000
+          },
+          "casts_shadow": {
+            "type": "boolean"
+          }
+        }
+      },
+      "$comment": "Omission preserves one default point light. An empty array disables point lights. IDs must be unique across point and spot lights."
+    },
+    "spot_lights": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "position",
+          "color",
+          "lumens",
+          "range",
+          "casts_shadow",
+          "direction",
+          "inner_angle_degrees",
+          "outer_angle_degrees"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4294967295
+          },
+          "position": {
+            "$ref": "#/$defs/vector3"
+          },
+          "color": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "items": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          },
+          "lumens": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100000000
+          },
+          "range": {
+            "type": "number",
+            "minimum": 0.1,
+            "maximum": 10000
+          },
+          "casts_shadow": {
+            "type": "boolean"
+          },
+          "direction": {
+            "$ref": "#/$defs/vector3"
+          },
+          "inner_angle_degrees": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 85
+          },
+          "outer_angle_degrees": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 89
+          }
+        }
+      },
+      "$comment": "Omission preserves an empty array. Direction must be finite and nonzero. The outer angle must exceed the inner angle. IDs must be unique across point and spot lights."
     }
   },
   "$defs": {

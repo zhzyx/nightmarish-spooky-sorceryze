@@ -1,0 +1,670 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-16T16:34:12.199796+00:00",
+  "placement": "mixed",
+  "source_manifest": {
+    "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\SourceManifest.json",
+    "bytes": 46448,
+    "sha256": "1fd5d6d7506a42ed6846a4695998b91192abe150d491443dc1e55bed87217691"
+  },
+  "builds": {
+    "Baseline": {
+      "native_key": "6c6277a6c5bbb0573761124b9592df01b5f321d881f02fc475a28b64115e7317",
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\VisualBuildReport.json",
+        "bytes": 1565754,
+        "sha256": "de45fcf6ac59947c641acbc9f109de0c042a7d2eb5f10127e71661e68cb5eab0"
+      },
+      "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0",
+      "binary": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\next_visual_client.exe",
+        "bytes": 2909696,
+        "sha256": "2b9b899a1825b4620e033d9149e8bbd0e45431086c0d95d86622f94c5a57b00c"
+      },
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\Deferred.vs.cso",
+          "bytes": 6832,
+          "sha256": "62601c1f714b45c0a96fcd2f2e6bbd7e48f0349264f67112959c1dc318b50ce1"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\Deferred.ps.cso",
+          "bytes": 7800,
+          "sha256": "6f297e31e1880a5c0a20fbd0b86b76927563250127b7244f8d94d8eef72d583f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\Lighting.ps.cso",
+          "bytes": 76708,
+          "sha256": "316543b7e0dafe6aa5106806b0cd600413a02e3da829eb514ce4281cddaf77dc"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\ToneMap.ps.cso",
+          "bytes": 5096,
+          "sha256": "72a6c2ce2537a74909c50fc7c7d4be3f1c53f9cdf979ed61115d57c1b9c7228c"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        }
+      ],
+      "directory": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline"
+    },
+    "Changed": {
+      "native_key": "65be09ec93818d459f93aeea1ed50f5b2f710b2940e1420b6fbe366659ce523f",
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\VisualBuildReport.json",
+        "bytes": 1565365,
+        "sha256": "1accc76e8813f3efd2ec96bce53146c75d93265e97cd2ebc45af5ea9a3c16ed6"
+      },
+      "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0",
+      "binary": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\next_visual_client.exe",
+        "bytes": 2909696,
+        "sha256": "e000ef6736de5360574780d39c61152b01190d4fa67553770c7aa11f0933ce1e"
+      },
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "c4ae7e0f9d4a8a319ef22ef9362a6e20eb2dc760b703f0c342ba2ddc69aa86b4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\Deferred.vs.cso",
+          "bytes": 6832,
+          "sha256": "62601c1f714b45c0a96fcd2f2e6bbd7e48f0349264f67112959c1dc318b50ce1"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\Deferred.ps.cso",
+          "bytes": 7800,
+          "sha256": "6f297e31e1880a5c0a20fbd0b86b76927563250127b7244f8d94d8eef72d583f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\Lighting.ps.cso",
+          "bytes": 76708,
+          "sha256": "316543b7e0dafe6aa5106806b0cd600413a02e3da829eb514ce4281cddaf77dc"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\ToneMap.ps.cso",
+          "bytes": 5096,
+          "sha256": "72a6c2ce2537a74909c50fc7c7d4be3f1c53f9cdf979ed61115d57c1b9c7228c"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        }
+      ],
+      "directory": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed"
+    },
+    "Restored": {
+      "native_key": "6c6277a6c5bbb0573761124b9592df01b5f321d881f02fc475a28b64115e7317",
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\VisualBuildReport.json",
+        "bytes": 1565754,
+        "sha256": "d6ddfa83c28b42c9e6f310dd8f6088a9e20bb1e91cd0bfa8acedb742072b51ce"
+      },
+      "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0",
+      "binary": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\next_visual_client.exe",
+        "bytes": 2909696,
+        "sha256": "a774122496def4e378f6e574996375c9f061eb93d94ec8d9092bb370e1db36fe"
+      },
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\Deferred.vs.cso",
+          "bytes": 6832,
+          "sha256": "62601c1f714b45c0a96fcd2f2e6bbd7e48f0349264f67112959c1dc318b50ce1"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\Deferred.ps.cso",
+          "bytes": 7800,
+          "sha256": "6f297e31e1880a5c0a20fbd0b86b76927563250127b7244f8d94d8eef72d583f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\Lighting.ps.cso",
+          "bytes": 76708,
+          "sha256": "316543b7e0dafe6aa5106806b0cd600413a02e3da829eb514ce4281cddaf77dc"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\ToneMap.ps.cso",
+          "bytes": 5096,
+          "sha256": "72a6c2ce2537a74909c50fc7c7d4be3f1c53f9cdf979ed61115d57c1b9c7228c"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        }
+      ],
+      "directory": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored"
+    }
+  },
+  "same_binary_runs": [
+    {
+      "label": "Baseline",
+      "executable_sha256": "2b9b899a1825b4620e033d9149e8bbd0e45431086c0d95d86622f94c5a57b00c",
+      "capture": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\RunBaseline\\Result.ppm",
+        "bytes": 2764816,
+        "sha256": "de89291b2e9785a63fbf1650e41f239f9c01dc03d5d9523fe20071473822fb37"
+      },
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\RunBaseline\\Run.json",
+        "bytes": 13174,
+        "sha256": "109c20ad92fd7990fe7b3191f93fc08726ae737291bf8b9c76a563b363136ce0"
+      },
+      "frames": 20,
+      "validation_errors": 0,
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\Deferred.vs.cso",
+          "bytes": 6832,
+          "sha256": "62601c1f714b45c0a96fcd2f2e6bbd7e48f0349264f67112959c1dc318b50ce1"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\Deferred.ps.cso",
+          "bytes": 7800,
+          "sha256": "6f297e31e1880a5c0a20fbd0b86b76927563250127b7244f8d94d8eef72d583f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\Lighting.ps.cso",
+          "bytes": 76708,
+          "sha256": "316543b7e0dafe6aa5106806b0cd600413a02e3da829eb514ce4281cddaf77dc"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\ToneMap.ps.cso",
+          "bytes": 5096,
+          "sha256": "72a6c2ce2537a74909c50fc7c7d4be3f1c53f9cdf979ed61115d57c1b9c7228c"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        }
+      ]
+    },
+    {
+      "label": "Changed",
+      "executable_sha256": "2b9b899a1825b4620e033d9149e8bbd0e45431086c0d95d86622f94c5a57b00c",
+      "capture": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\RunChanged\\Result.ppm",
+        "bytes": 2764816,
+        "sha256": "f1fc4159457a5211caa53f23d9660cc759b697b40b9fb24f78eea6ea7aee3e29"
+      },
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\RunChanged\\Run.json",
+        "bytes": 13179,
+        "sha256": "ef9c538e133266b17e4456ae2136a3a1a4a541088dd5683ca71b99abfb2cfebd"
+      },
+      "frames": 20,
+      "validation_errors": 0,
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "c4ae7e0f9d4a8a319ef22ef9362a6e20eb2dc760b703f0c342ba2ddc69aa86b4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\Deferred.vs.cso",
+          "bytes": 6832,
+          "sha256": "62601c1f714b45c0a96fcd2f2e6bbd7e48f0349264f67112959c1dc318b50ce1"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\Deferred.ps.cso",
+          "bytes": 7800,
+          "sha256": "6f297e31e1880a5c0a20fbd0b86b76927563250127b7244f8d94d8eef72d583f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\Lighting.ps.cso",
+          "bytes": 76708,
+          "sha256": "316543b7e0dafe6aa5106806b0cd600413a02e3da829eb514ce4281cddaf77dc"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\ToneMap.ps.cso",
+          "bytes": 5096,
+          "sha256": "72a6c2ce2537a74909c50fc7c7d4be3f1c53f9cdf979ed61115d57c1b9c7228c"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        }
+      ]
+    },
+    {
+      "label": "Restored",
+      "executable_sha256": "2b9b899a1825b4620e033d9149e8bbd0e45431086c0d95d86622f94c5a57b00c",
+      "capture": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\RunRestored\\Result.ppm",
+        "bytes": 2764816,
+        "sha256": "de89291b2e9785a63fbf1650e41f239f9c01dc03d5d9523fe20071473822fb37"
+      },
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\RunRestored\\Run.json",
+        "bytes": 13180,
+        "sha256": "54ae80a8624acc138321c9f8d2f48e0eb1a34258771a5e9e00acad7b1782eac9"
+      },
+      "frames": 20,
+      "validation_errors": 0,
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\Deferred.vs.cso",
+          "bytes": 6832,
+          "sha256": "62601c1f714b45c0a96fcd2f2e6bbd7e48f0349264f67112959c1dc318b50ce1"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\Deferred.ps.cso",
+          "bytes": 7800,
+          "sha256": "6f297e31e1880a5c0a20fbd0b86b76927563250127b7244f8d94d8eef72d583f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\Lighting.ps.cso",
+          "bytes": 76708,
+          "sha256": "316543b7e0dafe6aa5106806b0cd600413a02e3da829eb514ce4281cddaf77dc"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\ToneMap.ps.cso",
+          "bytes": 5096,
+          "sha256": "72a6c2ce2537a74909c50fc7c7d4be3f1c53f9cdf979ed61115d57c1b9c7228c"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        }
+      ]
+    }
+  ],
+  "invalid_shader": {
+    "report": {
+      "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\InvalidRun.json",
+      "bytes": 6012,
+      "sha256": "20037927ce2fe1f99ae1f8f675e73945940868ff9a7860001a8fe5f3c5684fd8"
+    },
+    "exit_code": 1,
+    "frames": 0,
+    "failure": "Create graphics PSO (HRESULT -2147467259)"
+  },
+  "checks": {
+    "native_invalidation": {
+      "command": "Export physical clean source; baseline, changed shader, restored shader full builds",
+      "observed": "Baseline ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0; Changed ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0; Restored ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0",
+      "passed": true
+    },
+    "same_binary_update": {
+      "command": "One executable selects changed shader directory",
+      "observed": "Changed capture differs from baseline",
+      "passed": true,
+      "before_executable": "2b9b899a1825b4620e033d9149e8bbd0e45431086c0d95d86622f94c5a57b00c",
+      "after_executable": "2b9b899a1825b4620e033d9149e8bbd0e45431086c0d95d86622f94c5a57b00c",
+      "before_package": "fa953eeabe7fb5ee52ab8b1f00cfefc6942a85eff99809e5e4cea55881de046a",
+      "after_package": "deff22aacd58e542b6589f7e9e11634bab8c29ddf73ad895571ea788aec1be4e"
+    },
+    "rollback": {
+      "command": "One executable selects restored shader directory",
+      "observed": "Restored capture equals baseline",
+      "passed": true,
+      "before_executable": "2b9b899a1825b4620e033d9149e8bbd0e45431086c0d95d86622f94c5a57b00c",
+      "after_executable": "2b9b899a1825b4620e033d9149e8bbd0e45431086c0d95d86622f94c5a57b00c",
+      "before_package": "deff22aacd58e542b6589f7e9e11634bab8c29ddf73ad895571ea788aec1be4e",
+      "after_package": "fa953eeabe7fb5ee52ab8b1f00cfefc6942a85eff99809e5e4cea55881de046a"
+    },
+    "incompatible_rejection": {
+      "command": "One executable selects invalid DXIL shader",
+      "observed": "{\"exit_code\": 1, \"failure\": \"Create graphics PSO (HRESULT -2147467259)\", \"frames\": 0, \"report\": {\"bytes\": 6012, \"path\": \"D:\\\\Projects\\\\engine-next-m4-3-local-shadows-20261116\\\\build\\\\engine_next\\\\local-shadow-impact-final4\\\\InvalidRun.json\", \"sha256\": \"20037927ce2fe1f99ae1f8f675e73945940868ff9a7860001a8fe5f3c5684fd8\"}}",
+      "passed": true
+    }
+  },
+  "commands": [
+    {
+      "command": [
+        "C:\\Users\\kaiyu\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\engine_next\\Tools\\ExportCleanSource.py",
+        "--repo",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116",
+        "--output",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Export.log",
+        "bytes": 311,
+        "sha256": "d26aae7a2d34e8c19bf9c5240c695a85fda8442a52940c1bae6f42ea08085011"
+      }
+    },
+    {
+      "command": [
+        "C:\\Users\\kaiyu\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\engine_next\\Tools\\BuildVisualRuntime.py",
+        "--repo",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source",
+        "--build-dir",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline",
+        "--compiler",
+        "msvc",
+        "--run-tests"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Baseline.log",
+        "bytes": 181,
+        "sha256": "3fd53f3f686606d65d957c3ef22a4173ef20f19ebb7b094ad553351cf5f46b3a"
+      }
+    },
+    {
+      "command": [
+        "C:\\Users\\kaiyu\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\engine_next\\Tools\\BuildVisualRuntime.py",
+        "--repo",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source",
+        "--build-dir",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed",
+        "--compiler",
+        "msvc",
+        "--run-tests"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Changed.log",
+        "bytes": 180,
+        "sha256": "1bda4a7976be44515b472f2ca90475130b8727fd61224c80b1f7830ecbbafc82"
+      }
+    },
+    {
+      "command": [
+        "C:\\Users\\kaiyu\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\engine_next\\Tools\\BuildVisualRuntime.py",
+        "--repo",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source",
+        "--build-dir",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored",
+        "--compiler",
+        "msvc",
+        "--run-tests"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Restored.log",
+        "bytes": 181,
+        "sha256": "05f83db0f8b739636166f3ef9297b0c651830c3526db34f3c6a32c39474618b2"
+      }
+    },
+    {
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\next_visual_client.exe",
+        "--hidden",
+        "--deterministic",
+        "--frames",
+        "20",
+        "--shader-directory",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\RunBaseline\\Run.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\RunBaseline\\Result.ppm"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\RunBaseline",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\BaselineRuntime.log",
+        "bytes": 60,
+        "sha256": "8351201ccad58be246de4813f6a1bee22a397bf8baafd9f04823e8b04e704921"
+      }
+    },
+    {
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\next_visual_client.exe",
+        "--hidden",
+        "--deterministic",
+        "--frames",
+        "20",
+        "--shader-directory",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Changed",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\RunChanged\\Run.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\RunChanged\\Result.ppm"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\RunChanged",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\ChangedRuntime.log",
+        "bytes": 60,
+        "sha256": "8351201ccad58be246de4813f6a1bee22a397bf8baafd9f04823e8b04e704921"
+      }
+    },
+    {
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\next_visual_client.exe",
+        "--hidden",
+        "--deterministic",
+        "--frames",
+        "20",
+        "--shader-directory",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Restored",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\RunRestored\\Run.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\RunRestored\\Result.ppm"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\RunRestored",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\RestoredRuntime.log",
+        "bytes": 60,
+        "sha256": "8351201ccad58be246de4813f6a1bee22a397bf8baafd9f04823e8b04e704921"
+      }
+    },
+    {
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\Source\\build\\engine_next\\Baseline\\next_visual_client.exe",
+        "--hidden",
+        "--deterministic",
+        "--frames",
+        "20",
+        "--shader-directory",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\InvalidShaders",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\InvalidRun.json"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116",
+      "exit_code": 1,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-impact-final4\\InvalidRuntime.log",
+        "bytes": 102,
+        "sha256": "75f2a579001910d042c2bb3eb18f1216774b8670b934d836a934021b002ac1ae"
+      }
+    }
+  ],
+  "input_blobs": {
+    "engine_next/Apps/NextVisualClientMain.cpp": "55143e43bebc01f94587c1353e841ca42f768c63",
+    "engine_next/include/EngineNext/Rendering/LocalShadowData.h": "6935a1db0e451f6f560e4b6a22620eebf8869491",
+    "engine_next/include/EngineNext/Rendering/RenderConfiguration.h": "890777ce43497e03b994f4c3dda92c303187532d",
+    "engine_next/Rendering/CameraMatrices.cpp": "6052df8be7d3650c5883b18f6f842128eb7eda63",
+    "engine_next/Rendering/Cook/EnvironmentLighting.cpp": "dc508c2de6b0360a3e27c16b34710fba4319d002",
+    "engine_next/Rendering/Cook/EnvironmentLighting.h": "5fae4c4fd0ed1665eb37aa5388504c1a96855042",
+    "engine_next/Rendering/Cook/GltfDecoder.cpp": "f6e95f3ed33f940353938f308807ddb3e69ab284",
+    "engine_next/Rendering/Cook/GltfDecoder.h": "247efc4fefeddcbcccfd2e603dce85d49cbbf65f",
+    "engine_next/Rendering/Cook/GpuPackage.cpp": "b5722c38fd7e4981456d9ab55b71315816382ee7",
+    "engine_next/Rendering/Cook/GpuPackage.h": "8e7a77f6be3037f4d60c46bf60e2afd04275d8ba",
+    "engine_next/Rendering/Cook/ImageDecoder.cpp": "578baabdb174822b33d97ac27fe7565c0ae5440c",
+    "engine_next/Rendering/Cook/ImageDecoder.h": "653978338509693a5a1e770aa321c2fb048aa95f",
+    "engine_next/Rendering/Cook/JpegValidation.c": "b9a56518347d89390f8dc05be4ade9111ae26046",
+    "engine_next/Rendering/Cook/JpegValidation.h": "a817925671d5d1beca1f90fd20a10d1589f25f43",
+    "engine_next/Rendering/Cook/MeshCluster.cpp": "52f27f2a04ca3296ee26d3f4e0577fee21a1e85a",
+    "engine_next/Rendering/Cook/MeshCluster.h": "8d67ca934fa1f2989937ca5aa136b2bb5eafa1b5",
+    "engine_next/Rendering/Cook/TextureCook.cpp": "fc6d3d3069767ce7387ca5ffd0568251684ee7b2",
+    "engine_next/Rendering/Cook/TextureCook.h": "f1277775865a0a8115635a417f1a78e0897d5645",
+    "engine_next/Rendering/FrameGraph.cpp": "29f4da4a5c2bcdd40ee927056e3f810cc997f9bb",
+    "engine_next/Rendering/LocalShadowData.cpp": "36225bd7b393d52b3a06d772cba455f8d4bd748a",
+    "engine_next/Rendering/RenderConfiguration.cpp": "3caa2b29d9537548fa8b7cdc2e86d505e94b62e6",
+    "engine_next/Rendering/RenderPipeline.cpp": "ec760b2c212539f47354d0a518933e29883fc1ab",
+    "engine_next/Rendering/RenderPipeline.h": "03e09ac2330b31b88c07b4322ec185d5b57785c9",
+    "engine_next/Rendering/RenderScene.cpp": "36123d3eb1e461d9076b359d99e4cd9067e59f7b",
+    "engine_next/Rendering/Shaders/Deferred.hlsl": "1171d292031b8610a5c8df730167209f27c11295",
+    "engine_next/Rendering/Shaders/FixedMesh.hlsl": "0e32bb1b8f794bd6ef3b8ede41f29ebf618fd60a",
+    "engine_next/Rendering/Shaders/Shadow.hlsl": "626ef5e92768041e5fd96505c832670768d4de8a",
+    "engine_next/Rendering/Shaders/ShadowSampling.hlsli": "665209001be61d30bc7cc3108503f9aec52ce562",
+    "engine_next/Rendering/ShadowBounds.cpp": "8dd6c7dc95890506ed2996a3c10ddd30d15da6b9",
+    "engine_next/Rendering/ShadowBounds.h": "31a8703332f7c2fa172d1a16f7c08ece805abe2f",
+    "engine_next/Rendering/ShadowData.cpp": "c9772a4bf3cc51bee1f61314cd52232f0c6d1320",
+    "engine_next/Rendering/VisualRuntime.cpp": "c0bdded646fedf3c0a1e2c9f4be86eae6ba46040",
+    "engine_next/Schemas/RenderConfiguration-v1.json": "8cfc95644e2a8f434996efe1f97ac090699a889e",
+    "engine_next/Tests/Rendering/TestLocalShadowData.cpp": "2ff1b3eff76e00b2af69896ebbaf6bdc10f4861e",
+    "engine_next/Tests/Rendering/TestRenderConfiguration.cpp": "b05f17277dfefad850a6360ca8deb785f23a6250",
+    "engine_next/Tests/Rendering/TestRenderPipeline.cpp": "a7d8533f47bf43202600e85c2e41688b9d11ec27",
+    "engine_next/Tests/Rendering/TestShadowSampling.cpp": "635f50adb1b951c1772c91777d2f833f0e3abbc2",
+    "engine_next/Tools/BuildRuntime.py": "48ce0bf883eab16f0ab25f459d166c0feb2ad636",
+    "engine_next/Tools/BuildVisualRuntime.py": "802250834015a96b2aa6e5e27cc0f55e8a0d9119",
+    "engine_next/Tools/PackageVisualRuntime.py": "ac4b564181ee1627ad8ac75e9883120d7bb44b68",
+    "tools/check_engine_next_contract.py": "31848d7290bb804f114e01cffd37fe5efc010bf9",
+    "tools/engine_next_contract.json": "022c230fe4e4efc25f317a5458345d96944ffce1"
+  }
+}

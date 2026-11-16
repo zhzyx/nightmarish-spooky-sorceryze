@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "base_main": "149ed960ace1da559c6945bcf9f7914b769e0d3b",
+  "visual": {
+    "report": {
+      "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-final3\\VisualBuildReport.json",
+      "bytes": 1479873,
+      "sha256": "004c53dcb8b8ab6578b742a230fc40794cb16ba769d86609f8b6aa44984c0595"
+    },
+    "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0",
+    "native_key": "e0f16b6ddc458c6bd29886b2e0ff60fee13b8495c1a4060aa2634c404eb7531c",
+    "binary": {
+      "path": "build/engine_next/local-shadow-final3/next_visual_client.exe",
+      "sha256": "d1ef50f207a061a8d08ed72d71b84aad58157a9ba14f686ce9acf774e8b55661"
+    },
+    "input_mismatches": [],
+    "package": {
+      "files": [
+        "Deferred.ps.cso",
+        "Deferred.vs.cso",
+        "ENet-LICENSE.txt",
+        "FixedMesh.cs.cso",
+        "FixedMesh.ps.cso",
+        "FixedMesh.vs.cso",
+        "LICENSE.txt",
+        "Lighting.ps.cso",
+        "Lighting.vs.cso",
+        "Shadow.ps.cso",
+        "Shadow.vs.cso",
+        "ToneMap.ps.cso",
+        "VisualPackage.json",
+        "libjpeg-turbo-LICENSE.md",
+        "libjpeg-turbo-README.ijg",
+        "next_visual_client.exe",
+        "zlib-LICENSE.txt"
+      ],
+      "manifest": "build/engine_next/local-shadow-final3/Release/VisualPackage.json"
+    },
+    "shader_count": 10,
+    "candidate_scope": "Local-shadow implementation before the later cold-start network fix. See final-candidate verification for final4."
+  },
+  "runtime": {
+    "report": {
+      "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-runtime\\RuntimeBuildReport.json",
+      "bytes": 269660,
+      "sha256": "022fe59a7493a56b9f25d194210e10300df506f5034a62d74dea93f54196c352"
+    },
+    "log": {
+      "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-runtime.log",
+      "bytes": 6129,
+      "sha256": "a2a6b97db082b631e443b368c8fa103a3bfbe5e7c9c25e1db34b3f070bae384e"
+    },
+    "test_summary": "ENGINE_NEXT_TEST_SUMMARY tests=61 checks=1100 failures=0",
+    "scene": "ENGINE_NEXT_M3_SCENE clients=2 scene_revision=r9 expected_a_position_x=4.16 status=ok",
+    "clean_scene": "ENGINE_NEXT_M3_SCENE clients=2 scene_revision=r9 expected_a_position_x=4.16 status=ok",
+    "drain_faults": "ENGINE_NEXT_DRAIN_NEGATIVE timeout=1 rejected_new_peer=1 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-m4-3-local-shadows-20261116\\\\build\\\\engine_next\\\\local-runtime\\\\DrainFaultsReport.json\",\r\n  \"trace_sha256\": {\r\n    \"fault-server.jsonl\": \"78a38a94dd309cdd9612aa82f56a326a5d57681d3dc20872e26b19ded3244162\",\r\n    \"fault-client-A.jsonl\": \"f029769f9dbdd46a7cdbeba83d3a307cf9c2731de5b20b639833169485159a30\",\r\n    \"fault-client-B.jsonl\": \"99dda39b8345df82b00448f5f06107d71d4e11c377305d823948e85ecef1cc39\",\r\n    \"fault-client-C.jsonl\": \"af384f1c3194bfd3f9514e5065d16d60d66df55eca53cd674eaa1d61682f133c\"\r\n  }\r\n}",
+    "clean_drain_faults": "ENGINE_NEXT_DRAIN_NEGATIVE timeout=1 rejected_new_peer=1 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-m4-3-local-shadows-20261116\\\\build\\\\engine_next\\\\local-runtime\\\\CleanRun\\\\DrainFaultsReport.json\",\r\n  \"trace_sha256\": {\r\n    \"fault-server.jsonl\": \"75507af39365df52bbebb6ad044301c06c10517d91f177d65c891c6ceb6c6623\",\r\n    \"fault-client-A.jsonl\": \"7b8189ce6584d65f9a5b9e28ef22235fcbd45a8cb97aa527eacb6728687c5854\",\r\n    \"fault-client-B.jsonl\": \"fc2ff36c3475ca9dfce35b0da20977a1c4504140d1f35e8c2185b588fd5f2f88\",\r\n    \"fault-client-C.jsonl\": \"af384f1c3194bfd3f9514e5065d16d60d66df55eca53cd674eaa1d61682f133c\"\r\n  }\r\n}",
+    "handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-m4-3-local-shadows-20261116\\\\build\\\\engine_next\\\\local-runtime\\\\HandshakeReport.json\",\r\n  \"trace_sha256\": {\r\n    \"server.jsonl\": \"da3954be6c87d1181ae2ac78267d089c434307a33da323d949cd9955a5e684dc\",\r\n    \"client-A.jsonl\": \"37929e33bf954a6a08d21303a74e2bdc90fdb1e3cf0e16e5b926d848784d7d11\",\r\n    \"client-B.jsonl\": \"623d0af30ba35a245896daa9358ec89551155ce162894512797e32cb0d9b5fd5\"\r\n  }\r\n}",
+    "clean_handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-m4-3-local-shadows-20261116\\\\build\\\\engine_next\\\\local-runtime\\\\CleanRun\\\\HandshakeReport.json\",\r\n  \"trace_sha256\": {\r\n    \"server.jsonl\": \"818ef89a8cbd3312e3f114942dba2b5095c5500fb168c10567491bc66c663e4c\",\r\n    \"client-A.jsonl\": \"4a86b90145ab8e2139aa0faaf4c20b4104b222a62004dbdc4117c0dd2cfa283d\",\r\n    \"client-B.jsonl\": \"b2f4dee2d92e7508efb325409c2acd5613951c835f64225c4fbf719e30ceb009\"\r\n  }\r\n}",
+    "package_handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-m4-3-local-shadows-20261116\\\\build\\\\engine_next\\\\local-runtime\\\\PackageHandshakeReport.json\",\r\n  \"trace_sha256\": {\r\n    \"server.jsonl\": \"906e667bdce48e4330512be54ffde23b6fce65d4fcdfd04ddc6b30b706f8938e\",\r\n    \"client-A.jsonl\": \"f0e3a14bff4c3138c80eceb486f2b2d33d5e38a0bd03d64208e9ee94ccaaee41\",\r\n    \"client-B.jsonl\": \"81d7bfcba3128047f5b127003073c63d164606e599d16a90c28f66dccc5bb653\"\r\n  }\r\n}"
+  },
+  "regressions": [
+    {
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-tools.log",
+        "bytes": 5217,
+        "sha256": "2713359d4803172bab84990550dfcb1ee8a7cf7d9adbf981cba53f31c2538347"
+      },
+      "tail": "t_and_forwards_both_directions (TestDrainFaults.DrainConnectionGateTests.test_buffers_connect_until_drain_event_and_forwards_both_directions) ... ok\ntest_release_requires_a_prepared_client_and_server (TestDrainFaults.DrainConnectionGateTests.test_release_requires_a_prepared_client_and_server) ... ok\n\n----------------------------------------------------------------------\nRan 35 tests in 0.624s\n\nOK\n"
+    },
+    {
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-contract.log",
+        "bytes": 5422,
+        "sha256": "c7317e3839f72f780f23fcdc61e5f146572eb60424bdb6110177e522c90f7709"
+      },
+      "tail": "EngineNextContractTests.test_visual_profile_does_not_allow_header_prefix_lookalikes) ... ok\ntest_visual_sdk_headers_are_limited_to_private_profile_sources (tools.test_check_engine_next_contract.EngineNextContractTests.test_visual_sdk_headers_are_limited_to_private_profile_sources) ... ok\n\n----------------------------------------------------------------------\nRan 31 tests in 0.129s\n\nOK (skipped=1)\n"
+    },
+    {
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-ainative.log",
+        "bytes": 544,
+        "sha256": "fb708040ea9dfe507b3760de2e57b013f4be82ba0904b2028f872bf0383a88d9"
+      },
+      "tail": "......................s............................s....................................s.....................................ssss......s.ss............ss.............ss.........s.........s..sssssssssssssss.....................................................sss...............s.......\n----------------------------------------------------------------------\nRan 424 tests in 337.731s\n\nOK (skipped=36)\n"
+    },
+    {
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-editor.log",
+        "bytes": 1675,
+        "sha256": "1e13f42518ed6b30daf8c67993ed4c73e7c5be22c5e87da11b8aa3272e2d5c31"
+      },
+      "tail": "blish_restores_previous (tests.editor.test_maliang_package.PackageTest.test_verification_failure_after_publish_restores_previous) ... ok\ntest_wheels_and_tencent_notice_are_digest_pinned (tests.editor.test_maliang_package.PackageTest.test_wheels_and_tencent_notice_are_digest_pinned) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 0.068s\n\nOK (skipped=2)\n"
+    }
+  ],
+  "visual_acceptance_record": "data-collection/engine-next-visual-runtime-m4-3-local-shadow-gpu.json",
+  "scope": "Local point/spot shadows and PCSS slice. TAA, volumes, reflection, complete UE comparison and 4K acceptance continue under parent #1323.",
+  "final_candidate_record": "data-collection/engine-next-visual-runtime-m4-3-local-shadow-final-verification.json"
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "issue_number": 1351,
+  "parent_issue_number": 1343,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "failed_binary_sha256": "b25dd9c3c048694f6f6c5419dc6c547e43d615d21d5822aeef4260b39bc93f2e",
+  "point_seam": {
+    "image": {
+      "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-gpu-final\\Boundary\\SeamStressPcss.png",
+      "bytes": 208994,
+      "sha256": "75d56fceb3c5e74ffff85825400b5e8fbdecd9bac7b8dcb47815b0e753b71bc5"
+    },
+    "configuration": {
+      "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-gpu-final\\Boundary\\SeamStressPcssConfig.json",
+      "bytes": 1126,
+      "sha256": "7db0c8d915abd131ad70142573d7b8b9d7cecf297104da25508f98e667581180"
+    },
+    "runtime": {
+      "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-shadow-gpu-final\\Boundary\\SeamStressPcss.json",
+      "bytes": 21927,
+      "sha256": "4be110af31372e8b29c80168dfc412e1b2b83123edea65a87f7d753e71cfd0ba"
+    },
+    "observation": "Visible vertical and horizontal brightness boundaries at point-shadow cube face edges. GPU validation zero errors."
+  },
+  "spot_flux": {
+    "independent_review": {
+      "path": "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\spot-flux-review.json",
+      "bytes": 2276,
+      "sha256": "9b98491522a1c1a651b0e62c550ac57fbdcbf2438853595c711e8552ad2e01bd"
+    },
+    "old_normalization": "pi * outer_chord_squared",
+    "correct_normalization": "pi * (inner_chord_squared + outer_chord_squared) / 2",
+    "observation": "The angular smoothstep integrates to half its transition interval; old normalization emits half the declared flux at inner angle zero."
+  },
+  "repair_state": "local_verification_passed_pending_exact_candidate_ci_and_main",
+  "repair_evidence": "data-collection/engine-next-visual-runtime-m4-3-local-shadow-gpu.json",
+  "final_binary_sha256": "d1ef50f207a061a8d08ed72d71b84aad58157a9ba14f686ce9acf774e8b55661",
+  "final_cpp_tests": "136 tests, 15411 checks, zero failures"
+}

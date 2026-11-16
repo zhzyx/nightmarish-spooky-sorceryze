@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "reviewer": "/root/m42_cook_review",
+  "reviewed_at_utc": "2026-11-16T16:46:07.302873+00:00",
+  "result": "passed",
+  "review_type": "read_only_integration_audit",
+  "previous_base": "149ed960ace1da559c6945bcf9f7914b769e0d3b",
+  "integrated_base": "5ed73c9b8a51aa0d003dbcf9a849f2a45eea6af3",
+  "scope": {
+    "included": [
+      "Integration file-boundary overlap",
+      "Current final4 native source and shader identity",
+      "Network startup after GPU warmup lifecycle"
+    ],
+    "excluded": [
+      "Implementation and UI behavior of unrelated upstream changes",
+      "New AINative regression result, which is being run by root",
+      "Final PR signature and remote CI"
+    ]
+  },
+  "integration": {
+    "mode": "fast_forward",
+    "upstream_path_count": 117,
+    "candidate_staged_path_count": 38,
+    "crossed_paths": [],
+    "upstream_engine_or_ai_core_paths": [],
+    "upstream_ainative_paths": [
+      "tools/ainative/editor_host.py",
+      "tools/ainative/multi_image_provider.py",
+      "tools/ainative/test_multi_image_host.py",
+      "tools/ainative/test_multi_image_provider.py"
+    ],
+    "candidate_paths": [
+      "data-collection/engine-next-visual-runtime-m4-3-local-shadow-build-impact.json",
+      "data-collection/engine-next-visual-runtime-m4-3-local-shadow-defects.json",
+      "data-collection/engine-next-visual-runtime-m4-3-local-shadow-delivery-review.json",
+      "data-collection/engine-next-visual-runtime-m4-3-local-shadow-final-gpu.json",
+      "data-collection/engine-next-visual-runtime-m4-3-local-shadow-final-verification.json",
+      "data-collection/engine-next-visual-runtime-m4-3-local-shadow-gpu.json",
+      "data-collection/engine-next-visual-runtime-m4-3-local-shadow-network.json",
+      "data-collection/engine-next-visual-runtime-m4-3-local-shadow-review.json",
+      "data-collection/engine-next-visual-runtime-m4-3-local-shadow-verification.json",
+      "data-collection/engine-next-visual-runtime-m4-3-network-warmup-verification.json",
+      "data-collection/engine-next-visual-runtime-m4-3-point-shadow-sampling-review.json",
+      "data-collection/engine-next-visual-runtime-m4-3-spot-flux-review.json",
+      "data-collection/requests/engine-next-visual-runtime-m4-3-20261116/00a908eb-1c68-494c-8e73-0d1294acab22.json",
+      "data-collection/requests/engine-next-visual-runtime-m4-3-20261116/2a3cd371-9e01-4ded-b96f-98d2cc7d6578.json",
+      "data-collection/requests/engine-next-visual-runtime-m4-3-20261116/6adaffc2-c31d-466b-b081-842bf39402da.json",
+      "design-docs/engine-next-local-shadow-defects-20261116.md",
+      "design-docs/engine-next-network-gpu-warmup-20261117.md",
+      "design-docs/engine-next-visual-runtime-m4-3-local-shadows-20261116.md",
+      "engine_next/Rendering/LocalShadowData.cpp",
+      "engine_next/Rendering/RenderConfiguration.cpp",
+      "engine_next/Rendering/RenderPipeline.cpp",
+      "engine_next/Rendering/RenderPipeline.h",
+      "engine_next/Rendering/Shaders/Deferred.hlsl",
+      "engine_next/Rendering/Shaders/ShadowSampling.hlsli",
+      "engine_next/Rendering/VisualRuntime.cpp",
+      "engine_next/Rendering/build-impact.json",
+      "engine_next/Schemas/RenderConfiguration-v1.json",
+      "engine_next/Tests/Rendering/TestLocalShadowData.cpp",
+      "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
+      "engine_next/Tests/Rendering/TestRenderPipeline.cpp",
+      "engine_next/Tests/Rendering/TestShadowSampling.cpp",
+      "engine_next/Tools/BuildVisualRuntime.py",
+      "engine_next/include/EngineNext/Rendering/LocalShadowData.h",
+      "engine_next/include/EngineNext/Rendering/RenderConfiguration.h",
+      "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/kuafu-398caa38a647389650dd606055e3a4304b3354e3.json",
+      "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/kuafu-7a881e35c64dc243780218eaee2ad1fc76247d7c.json",
+      "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-local-shadow-final-verified-20261117.json",
+      "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-local-shadow-gpu-verified-20261117.json"
+    ]
+  },
+  "native_verification": {
+    "report": {
+      "path": "build\\engine_next\\local-shadow-final4\\VisualBuildReport.json",
+      "sha256": "3bcd938633407ed1d19dcbb9e9f7a3f7537937b1c2dc51da981ebd3c2c7ffa83",
+      "bytes": 1479873
+    },
+    "native_key": "6c6277a6c5bbb0573761124b9592df01b5f321d881f02fc475a28b64115e7317",
+    "input_count": 215,
+    "input_mismatches": [],
+    "shader_count": 10,
+    "shader_mismatches": [],
+    "actual_test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=136 checks=15411 failures=0",
+    "binary": {
+      "path": "build/engine_next/local-shadow-final4/next_visual_client.exe",
+      "sha256": "cf714c8bc710c8ff9467baee35d35727284c8f4d69c2826da2edda1772c757b6",
+      "bytes": 2909696
+    }
+  },
+  "network_lifecycle_review": {
+    "source": {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "sha256": "ede9a0ae01ae3efebd6fad8d1e0ac0266e5930953437f3f5f296047356073833",
+      "bytes": 149573
+    },
+    "findings": [],
+    "checks": [
+      "LoadScene validates source, cooked package, render settings and network scene bindings without initializing the transport.",
+      "The first successful RenderFrame is followed by graphics and compute queue flushes before ClientSession Initialize.",
+      "No network Tick executes before the initialized-after-warmup flag is set.",
+      "Initialization errors and post-load package digest changes fail before publishing the started flag.",
+      "Subsequent iterations use the existing Tick, reconnect and movement paths; minimized windows preserve post-start network polling.",
+      "The success status and startup log correspond to the actual successful initialization boundary."
+    ]
+  },
+  "notes": [
+    "The 38 staged paths are the candidate set before this audit JSON is added. This evidence file adds one path afterward.",
+    "Upstream path enumeration establishes disjoint integration scope and does not claim independent review of unrelated UI code.",
+    "Final4 native inputs are byte-identical to their recorded hashes after the fast-forward integration."
+  ]
+}

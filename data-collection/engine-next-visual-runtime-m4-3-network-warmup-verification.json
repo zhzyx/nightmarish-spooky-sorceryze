@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue": 1343,
+  "diagnosed_at_utc": "2026-11-16T16:26:07.226869+00:00",
+  "diagnosis": "The visual runtime initialized ENet during scene load and polled once before the first draw. GPU validation stalled the first frame for 82.999 seconds. ENet timed out its pending connection before the next poll. The unregistered disconnect carried peer ID zero, causing ClientSession to return InvalidParameter.",
+  "actual_visual_failure": {
+    "binary_sha256": "d1ef50f207a061a8d08ed72d71b84aad58157a9ba14f686ce9acf774e8b55661",
+    "frame_count": 1,
+    "first_cpu_frame_msec": 82999.2677,
+    "network_generation": 0,
+    "validation_errors": 0
+  },
+  "controlled_reproduction": {
+    "recorded_at_utc": "2026-11-16T16:25:27.238411+00:00",
+    "server_command": [
+      "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\local-runtime\\next_server.exe",
+      "--bind",
+      "127.0.0.1",
+      "--port",
+      "0",
+      "--duration-ms",
+      "50000"
+    ],
+    "client_command": [
+      "D:\\Projects\\engine-next-m4-3-local-shadows-20261116\\build\\engine_next\\network-warmup-repro\\Repro.exe",
+      "53948"
+    ],
+    "client_return_code": 0,
+    "stdout": "REPRO initialized=0 first_tick=0\nREPRO second_tick_after_35_seconds=1 connected=0\n",
+    "runtime_library_sha256": "355c0710e2b9f815117eba029c0bdd948a412894dd9d255a2dd16b7e98c75ac6"
+  },
+  "repair": "Defer ClientSession initialization until the first successful frame has fully retired on graphics and compute queues. Start normal network ticking on the next loop iteration. Preserve all transport timeouts and reconnect behavior.",
+  "files_sha256": {
+    "build/engine_next/network-warmup-repro/Repro.cpp": "7f0bfa08ac03042b9fe7ee0741974d5f1b802d5c6545890de121989ba4d1c3f3",
+    "build/engine_next/network-warmup-repro/Repro.exe": "5d5fc87b27ea50201ce153284869d987fd60a4fccf9ebce3a916d1966d2b2909",
+    "build/engine_next/network-warmup-repro/server.log": "18f628292065fc6c273444bce9c581bb855bf0a3d7524b909f697b459a139064",
+    "build/engine_next/network-warmup-repro/client.log": "1e4b08092df5ca4bf249cc15f199a671b4fb54eca1e9ad270155b6c2c4118116",
+    "build/engine_next/local-shadow-network/final3-r3/A.json": "835f2b4b880710a0b4a774ecec7603c67499324036657c5419850c076e97f186",
+    "build/engine_next/local-shadow-network/final3-r3/A.log": "e2136f3ea3fac36806a1663c57a6cf8474040cbc7487e4403f70ffba997e0133",
+    "engine_next/Rendering/VisualRuntime.cpp": "ede9a0ae01ae3efebd6fad8d1e0ac0266e5930953437f3f5f296047356073833"
+  },
+  "verification_status": "passed",
+  "bug_issue": 1368,
+  "recorded_at_utc": "2026-11-16T16:30:29.260985+00:00",
+  "verification_run": "build/engine_next/local-shadow-network/final4",
+  "verified_at_utc": "2026-11-16T16:32:29.018412+00:00",
+  "final_binary_sha256": "cf714c8bc710c8ff9467baee35d35727284c8f4d69c2826da2edda1772c757b6",
+  "final_native_key": "6c6277a6c5bbb0573761124b9592df01b5f321d881f02fc475a28b64115e7317",
+  "warmup_start_checks": {
+    "A": {
+      "network_start_after_gpu_warmup": true,
+      "first_cpu_frame_msec": 6899.3924,
+      "first_network_frame": 4
+    },
+    "B": {
+      "network_start_after_gpu_warmup": true,
+      "first_cpu_frame_msec": 6905.1115,
+      "first_network_frame": 4
+    }
+  },
+  "network_return_codes": [
+    0,
+    0,
+    0
+  ],
+  "minimized_evidence": [
+    {
+      "client": "A",
+      "sample_gap_msec": 51784,
+      "rendered_frame_delta": 30,
+      "confirmed_before": "7047",
+      "confirmed_after": "10283",
+      "peer_samples": 279,
+      "peer_input_samples": 5
+    }
+  ],
+  "network_evidence": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-local-shadow-network.json",
+    "sha256": "274fbe8a9e19255b25c4e8ae15eb65e73f99e4fb714abd1d627917e17f573e6f"
+  },
+  "boundary": "The failure is reproduced by a 35 second control pause between real ClientSession ticks, and final GPU startup order is verified. Final4 startup used the driver cache and did not repeat the 83 second GPU cold stall."
+}
