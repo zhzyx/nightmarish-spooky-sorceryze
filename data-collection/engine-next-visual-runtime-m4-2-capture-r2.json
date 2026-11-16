@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "issue_number": 1334,
+  "recorded_at": "2026-11-16T03:01:01.672737+00:00",
+  "api": "D3D12",
+  "capture": {
+    "path": "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-capture-final-r12\\M42-B_frame488.rdc",
+    "bytes": 6829231,
+    "sha256": "b1c6e3de3a273cc4bb21e70fedb2c2b49d1f7ae52c433fc0dc5a2b477e8ea7fe"
+  },
+  "xml": {
+    "path": "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-capture-final-r12\\M42-B_frame488.xml",
+    "bytes": 2100605,
+    "sha256": "274696766cbd93a7e47abcf619ba65583c3245bd2c6d03592df5a9b9b64bb56b"
+  },
+  "thumbnail": {
+    "path": "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-capture-final-r12\\M42-B_frame488.png",
+    "bytes": 403792,
+    "sha256": "7ba7300c0a7a16b77bb8f1246e458230d78b074e01c36657cba37a33d6987c58"
+  },
+  "run_report": {
+    "path": "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-capture-final-r12\\B-CaptureRun.json",
+    "bytes": 641907,
+    "sha256": "7c9b4080eea91db04317ccad878f2b47e7a17f606a8de341533a0d0a12107033"
+  },
+  "binary": {
+    "path": "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-final-r12\\next_visual_client.exe",
+    "bytes": 2684416,
+    "sha256": "565ac02819c7a89be892eeda7e3e0801dc51096ba87e29817a04c15d01ffcc7e"
+  },
+  "shaders": [
+    {
+      "path": "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-final-r12\\Deferred.ps.cso",
+      "bytes": 7832,
+      "sha256": "76fca2096d39008d0fc9af66b01181c20379d6e739c7db1a4c3ca0ee01d6ce36"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-final-r12\\Deferred.vs.cso",
+      "bytes": 5828,
+      "sha256": "92e57eada06dcc415480f0cdd97f6d248a705c2f7a7606cb55a32c2b746256de"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-final-r12\\FixedMesh.cs.cso",
+      "bytes": 3300,
+      "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-final-r12\\FixedMesh.ps.cso",
+      "bytes": 4132,
+      "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-final-r12\\FixedMesh.vs.cso",
+      "bytes": 4316,
+      "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-final-r12\\Lighting.ps.cso",
+      "bytes": 8732,
+      "sha256": "e7a39f7d70e0031909c2b357f592b417263bc8f81590b5badc36f21811036611"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-final-r12\\Lighting.vs.cso",
+      "bytes": 3052,
+      "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+    }
+  ],
+  "renderdoc_integrity_verified": true,
+  "scope": "Actual self-authored B material scene D3D12 capture and local GPU replay. Separate GBV evidence is required. Full M4 quality, native 4K and UE comparison are pending.",
+  "validation_run": {
+    "path": "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-capture-final-r12\\ValidationRun.json",
+    "sha256": "e71ee0c8fb66e4d3643b3b90f940ded6756f46db4da0af8c6cbd9b7aee6071d4",
+    "frames": 240,
+    "resizes": 2,
+    "validation_errors": 0
+  },
+  "visual_review": "Captured thumbnail inspected. Twelve PBR spheres, checker normal/material response, MASK, emissive, mirrored and nonuniform instances are visible against the same procedural environment.",
+  "supersedes": "data-collection/engine-next-visual-runtime-m4-2-capture.json",
+  "prior_record_sha256": "c3918e2460a211010d4eccee5cc19d311447c88cbba0dc706ae32b88fd333417",
+  "counts": {
+    "Internal::Driver Initialization Parameters": 1,
+    "ID3D12Device::CreateCommandQueue": 3,
+    "ID3D12Device::CreateFence": 2,
+    "ID3D12Resource::SetName": 76,
+    "IDXGISwapChain::GetBuffer": 1,
+    "ID3D12Device::CreateDescriptorHeap": 4,
+    "ID3D12Device::CreateCommandAllocator": 2,
+    "ID3D12Device::CreateCommandList": 2,
+    "ID3D12Device::CreateCommittedResource": 73,
+    "ID3D12Device::CreateQueryHeap": 2,
+    "ID3D12Device::CreateRootSignature": 4,
+    "ID3D12Device::CreateGraphicsPipeline": 5,
+    "ID3D12Device::CreateComputePipeline": 1,
+    "Internal::Initial Contents": 77,
+    "Internal::List of Initial Contents Resources": 1,
+    "Internal::Frame Metadata": 1,
+    "Internal::Beginning of Capture": 1,
+    "ID3D12CommandQueue::Signal": 2,
+    "ID3D12GraphicsCommandList::Reset": 2,
+    "ID3D12GraphicsCommandList::SetDescriptorHeaps": 3,
+    "ID3D12GraphicsCommandList::SetComputeRootSignature": 1,
+    "ID3D12GraphicsCommandList::SetComputeRoot32BitConstants": 1,
+    "ID3D12GraphicsCommandList::SetComputeRootDescriptorTable": 1,
+    "ID3D12GraphicsCommandList::EndQuery": 10,
+    "ID3D12GraphicsCommandList::ResourceBarrier": 23,
+    "ID3D12GraphicsCommandList::Dispatch": 1,
+    "ID3D12GraphicsCommandList::ResolveQueryData": 2,
+    "ID3D12GraphicsCommandList::Close": 2,
+    "ID3D12CommandQueue::ExecuteCommandLists": 2,
+    "ID3D12CommandQueue::Wait": 1,
+    "ID3D12GraphicsCommandList::SetGraphicsRootSignature": 3,
+    "ID3D12GraphicsCommandList::SetGraphicsRoot32BitConstants": 14,
+    "ID3D12GraphicsCommandList::SetGraphicsRootDescriptorTable": 28,
+    "ID3D12GraphicsCommandList::BeginEvent": 4,
+    "ID3D12GraphicsCommandList::ClearRenderTargetView": 4,
+    "ID3D12GraphicsCommandList::ClearDepthStencilView": 1,
+    "ID3D12GraphicsCommandList::OMSetRenderTargets": 2,
+    "ID3D12GraphicsCommandList::RSSetViewports": 1,
+    "ID3D12GraphicsCommandList::RSSetScissorRects": 1,
+    "ID3D12GraphicsCommandList::IASetPrimitiveTopology": 1,
+    "ID3D12GraphicsCommandList::IASetVertexBuffers": 1,
+    "ID3D12GraphicsCommandList::IASetIndexBuffer": 1,
+    "ID3D12GraphicsCommandList::SetPipelineState": 13,
+    "ID3D12GraphicsCommandList::DrawIndexedInstanced": 12,
+    "ID3D12GraphicsCommandList::EndEvent": 4,
+    "ID3D12GraphicsCommandList::DrawInstanced": 1,
+    "ID3D12GraphicsCommandList::CopyResource": 1,
+    "IDXGISwapChain::Present": 1,
+    "Internal::End of Capture": 1
+  },
+  "label_normalization": "The source capture and commands retain their original labels in the prior immutable record."
+}

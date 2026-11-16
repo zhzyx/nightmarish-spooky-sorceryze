@@ -1,0 +1,484 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "issue_number": 1334,
+  "recorded_at": "2026-11-16T03:00:31.310610+00:00",
+  "reviewer": "/root/m42_network_acceptance",
+  "source_inputs": [
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "sha256": "26dcea6598d69a9589a71a0a4c7cf0b64779482e0ffad56ff259bb3651b7ae49",
+      "bytes": 118090
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Deferred.hlsl",
+      "sha256": "fc4a02a72d36d6a6b5ef9372a4b0c72b1828d9c3deaec01430f5cc8304f659fe",
+      "bytes": 7715
+    },
+    {
+      "path": "engine_next/Platform/Windows/Window.cpp",
+      "sha256": "16c56933a4e1812e45af0a3918f3a018344b26eabaa1d7c462403212d56afdbc",
+      "bytes": 18212
+    },
+    {
+      "path": "engine_next/Platform/Windows/Window.h",
+      "sha256": "5f30501e5c608ad0605920ec6d53ad9a30d4daea055eb59dcd48e9883758730e",
+      "bytes": 4338
+    },
+    {
+      "path": "engine_next/Client/ClientSession.cpp",
+      "sha256": "80c351be551a5de07d151b5180d813f53e03afef94008bf5ce1c897f9380ca5f",
+      "bytes": 34589
+    },
+    {
+      "path": "engine_next/Client/ClientSession.h",
+      "sha256": "8626073725cdab0d7d8482dd5ac8fc6c264117c487fd3e906da52611123eab81",
+      "bytes": 4594
+    },
+    {
+      "path": "engine_next/Tests/Runtime/TestClientSession.cpp",
+      "sha256": "e9280ed0c91ab42753e3367e85814759100e85eb2613be8246e150c993ee83a5",
+      "bytes": 14224
+    }
+  ],
+  "checks": {
+    "real_two_client_input_and_resume": "passed_r11",
+    "minimized_network_continues": {
+      "passed": true,
+      "run": "m42-network-final",
+      "evidence": [
+        {
+          "before_frame": 13470,
+          "after_frame": 13500,
+          "duration_msec": 28917,
+          "confirmed_sequence_before": 4670,
+          "confirmed_sequence_after": 6478,
+          "sequence_advance": 1808
+        }
+      ],
+      "observed": "While the native window was minimized through its title-bar control, draw-frame sampling paused and client acknowledgements continued. Restoring the window retained the same session and accepted the next real input."
+    },
+    "hierarchy_and_graceful_server_drain": {
+      "passed": true,
+      "visual_executable": {
+        "path": "build/engine_next/m42-final-r12/next_visual_client.exe",
+        "sha256": "565ac02819c7a89be892eeda7e3e0801dc51096ba87e29817a04c15d01ffcc7e",
+        "bytes": 2684416
+      },
+      "server_executable": {
+        "path": "build/engine_next/m42-runtime-r4/next_server.exe",
+        "sha256": "3ee191f6c1ce8799ac61bdc3740d0832b9d77a0d20cbff10a79af4813229f008",
+        "bytes": 788992
+      },
+      "driver_executable": {
+        "path": "build/engine_next/m42-runtime-r4/next_client.exe",
+        "sha256": "cc6da2acc0f792e1bfbe3e921b30a8da9ccdff9ac92810f5bbbf7b0a003b8f94",
+        "bytes": 798720
+      },
+      "source_scene": {
+        "path": "build/engine_next/deferred-check/F-hierarchy.enpak/Scene.json",
+        "sha256": "d23bf9cefd8a92d224c742827ac12458207ff2a8c7cec9fe9826d77d0322c39b",
+        "bytes": 1603
+      },
+      "acceptance": {
+        "path": "build/engine_next/m42-hierarchy-final/Acceptance.json",
+        "sha256": "82182a485b51def9dea3a70227c93527b59adbeed91644c27fa8850685a1fcf4",
+        "bytes": 2001
+      },
+      "visual_report": {
+        "path": "build/engine_next/m42-hierarchy-final/visual.json",
+        "sha256": "386ddc2f99bc5704ce69e045f5fa94fc7fcf4a34c7aab6527b1a86135ed3809d",
+        "bytes": 107666
+      },
+      "server_log": {
+        "path": "build/engine_next/m42-hierarchy-final/server.log",
+        "sha256": "d206380566e31fcfcbe9b684b53dd3731e0450ea6b8537f375e97437f6a2854e",
+        "bytes": 1142
+      },
+      "visual_log": {
+        "path": "build/engine_next/m42-hierarchy-final/visual.log",
+        "sha256": "7f9a17598eb5035907c3696ab0e2e707484cc320e755b9e3689a5260cfe3e726",
+        "bytes": 625
+      },
+      "driver_log": {
+        "path": "build/engine_next/m42-hierarchy-final/client.log",
+        "sha256": "dd6d112a77d870f6e196c37623e3f34d269c5a8bc26e34735e034113407bd2b4",
+        "bytes": 2072
+      },
+      "return_codes": {
+        "server": 0,
+        "visual": 0,
+        "client": 0
+      },
+      "frames": 224,
+      "gpu_validation_errors": 0,
+      "independent_math_check": {
+        "draw_samples_checked": 45,
+        "max_absolute_world_error": 1.0728836064011205e-07,
+        "authoritative_final_x_expected": 2.072,
+        "observed_maximum_local_x": 2.07200026512146
+      },
+      "expected_transform": "parent translation [0.25,0.3,0], parent Z rotation 90deg, uniform scale0.75, child mesh offset [0,0.25,0], GLB per-part offsets. World(delta)=parent linear * (snapshot local position - original spawn local position).",
+      "server_drain": "notified=2 acknowledged=2 forced=0 resumed=1"
+    }
+  },
+  "runs": [
+    {
+      "name": "m42-network-r9",
+      "visual_executable": {
+        "path": "build/engine_next/m42-full-r9/next_visual_client.exe",
+        "sha256": "2ea6e3670f461fe807bcb19f04c92b6e74205bbf4a7e392e0acfa82492902e5e",
+        "bytes": 2684416
+      },
+      "clients": [
+        {
+          "client_id": "A",
+          "report": {
+            "path": "build/engine_next/m42-network-r9/A.json",
+            "sha256": "0760a1a0c28d348fe6f4b0dd30eb7119b5ee25fa8a44aee9f5237514b0013688",
+            "bytes": 4305820
+          },
+          "log": {
+            "path": "build/engine_next/m42-network-r9/A.log",
+            "sha256": "b2a5b52bd652f330d2a555278e341980db23c0f43a7496bb601e17ab79d87d90",
+            "bytes": 528
+          },
+          "frames": 9929,
+          "gpu_validation_errors": 0,
+          "input_key_events": 3,
+          "network_input_frames": 1,
+          "reconnect_requests": 0,
+          "generation": 1,
+          "session_ids": [
+            "2"
+          ],
+          "last_entities": [
+            {
+              "confirmed_sequence": "3437",
+              "entity_id": "2",
+              "interpolation": 0,
+              "local": true,
+              "position": [
+                0.871999979019165,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "confirmed_sequence": "3421",
+              "entity_id": "1",
+              "interpolation": 3,
+              "local": false,
+              "position": [
+                -0.871999979019165,
+                0.0,
+                0.0
+              ]
+            }
+          ]
+        },
+        {
+          "client_id": "B",
+          "report": {
+            "path": "build/engine_next/m42-network-r9/B.json",
+            "sha256": "9b6efbfeaf823100b07aafe7eaf1dbbb75c70c0dda58c6ebc8e2e4bccc82936a",
+            "bytes": 6036094
+          },
+          "log": {
+            "path": "build/engine_next/m42-network-r9/B.log",
+            "sha256": "91d3670f306d0b318150b5e981c32afb075f90282156e3183e6197c5be99224f",
+            "bytes": 784
+          },
+          "frames": 13865,
+          "gpu_validation_errors": 0,
+          "input_key_events": 6,
+          "network_input_frames": 1,
+          "reconnect_requests": 1,
+          "generation": 2,
+          "session_ids": [
+            "1"
+          ],
+          "last_entities": [
+            {
+              "confirmed_sequence": "4806",
+              "entity_id": "1",
+              "interpolation": 0,
+              "local": true,
+              "position": [
+                -0.871999979019165,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "confirmed_sequence": "3446",
+              "entity_id": "2",
+              "interpolation": 5,
+              "local": false,
+              "position": [
+                0.871999979019165,
+                0.0,
+                0.0
+              ]
+            }
+          ]
+        }
+      ],
+      "input_method": "Computer Use @oai/sky physical SendInput single-key presses. Native focus and returned app windows were selected before each action.",
+      "server_log": {
+        "path": "build/engine_next/m42-network-r9/server.log",
+        "sha256": "2aae5a2acf865330aad1112c3a2d93ad42030a77dc63172aa09cc47b945bbb12",
+        "bytes": 909
+      }
+    },
+    {
+      "name": "m42-network-final",
+      "visual_executable": {
+        "path": "build/engine_next/m42-full-r10/next_visual_client.exe",
+        "sha256": "e5e649a2f257463fe99599d9f482f7666000a86cb43f034413bd206aa17a2fa6",
+        "bytes": 2684416
+      },
+      "clients": [
+        {
+          "client_id": "A",
+          "report": {
+            "path": "build/engine_next/m42-network-final/A.json",
+            "sha256": "c574ff698175dbdc6af1f3b3d430e05de14dbe333b799574481420805ae2fc23",
+            "bytes": 8926399
+          },
+          "log": {
+            "path": "build/engine_next/m42-network-final/A.log",
+            "sha256": "5f67ce067e4bb376c0f66fa4892a4a6a84395733b3981d61de352904fd4e9f7d",
+            "bytes": 1543
+          },
+          "frames": 20500,
+          "gpu_validation_errors": 0,
+          "input_key_events": 9,
+          "network_input_frames": 2,
+          "reconnect_requests": 1,
+          "generation": 2,
+          "session_ids": [
+            "1"
+          ],
+          "last_entities": [
+            {
+              "confirmed_sequence": "8905",
+              "entity_id": "1",
+              "interpolation": 0,
+              "local": true,
+              "position": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "confirmed_sequence": "8886",
+              "entity_id": "2",
+              "interpolation": 3,
+              "local": false,
+              "position": [
+                0.871999979019165,
+                0.0,
+                0.0
+              ]
+            }
+          ]
+        },
+        {
+          "client_id": "B",
+          "report": {
+            "path": "build/engine_next/m42-network-final/B.json",
+            "sha256": "57d3c466609982f2bbf81a8bfa95088bb64695694aa3a3a1006d45e79084536c",
+            "bytes": 13174670
+          },
+          "log": {
+            "path": "build/engine_next/m42-network-final/B.log",
+            "sha256": "eef9dbcb95540e967547cd0437d7ec53e51ab559169f05e32d0dc9d36f86b773",
+            "bytes": 736
+          },
+          "frames": 30236,
+          "gpu_validation_errors": 0,
+          "input_key_events": 4,
+          "network_input_frames": 1,
+          "reconnect_requests": 0,
+          "generation": 1,
+          "session_ids": [
+            "2"
+          ],
+          "last_entities": [
+            {
+              "confirmed_sequence": "10493",
+              "entity_id": "2",
+              "interpolation": 0,
+              "local": true,
+              "position": [
+                0.871999979019165,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "confirmed_sequence": "8907",
+              "entity_id": "1",
+              "interpolation": 5,
+              "local": false,
+              "position": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            }
+          ]
+        }
+      ],
+      "input_method": "Computer Use @oai/sky physical SendInput single-key presses. Native focus and returned app windows were selected before each action.",
+      "server_log": {
+        "path": "build/engine_next/m42-network-final/server.log",
+        "sha256": "2396d3cfe0c087f32f012e107cf9a6d8133b34d0f916f73289cf843f5828f897",
+        "bytes": 823
+      }
+    },
+    {
+      "name": "m42-network-r11",
+      "visual_executable": {
+        "path": "build/engine_next/m42-full-r11/next_visual_client.exe",
+        "sha256": "ca3c469ed315ed06584f611b7945b77ec2fa8b43b9bca9cea5c21f235dad96c5",
+        "bytes": 2684416
+      },
+      "clients": [
+        {
+          "client_id": "A",
+          "report": {
+            "path": "build/engine_next/m42-network-r11/A.json",
+            "sha256": "1ae7031597ae8de32700ce3739d750631e28a9f52f84a638bb83ed30f168da3d",
+            "bytes": 9497477
+          },
+          "log": {
+            "path": "build/engine_next/m42-network-r11/A.log",
+            "sha256": "a3120f8a201fb794eca19c899782b779f20628b2569796b19b3ada6eb529cb9b",
+            "bytes": 460
+          },
+          "frames": 21840,
+          "gpu_validation_errors": 0,
+          "input_key_events": 3,
+          "network_input_frames": 1,
+          "reconnect_requests": 0,
+          "generation": 1,
+          "session_ids": [
+            "2"
+          ],
+          "last_entities": [
+            {
+              "confirmed_sequence": "7575",
+              "entity_id": "2",
+              "interpolation": 0,
+              "local": true,
+              "position": [
+                0.871999979019165,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "confirmed_sequence": "7559",
+              "entity_id": "1",
+              "interpolation": 3,
+              "local": false,
+              "position": [
+                -0.871999979019165,
+                0.0,
+                0.0
+              ]
+            }
+          ]
+        },
+        {
+          "client_id": "B",
+          "report": {
+            "path": "build/engine_next/m42-network-r11/B.json",
+            "sha256": "d1483c42195ae7e4d2e556a95fc5cc3d5372e17cb7134ad9e3f762c283ca135f",
+            "bytes": 10366058
+          },
+          "log": {
+            "path": "build/engine_next/m42-network-r11/B.log",
+            "sha256": "b4b8812ef916d0b5bd4028d6ee8b4cf20f81da30e7f8530ebb00d9e7f365e860",
+            "bytes": 784
+          },
+          "frames": 23808,
+          "gpu_validation_errors": 0,
+          "input_key_events": 6,
+          "network_input_frames": 1,
+          "reconnect_requests": 1,
+          "generation": 2,
+          "session_ids": [
+            "1"
+          ],
+          "last_entities": [
+            {
+              "confirmed_sequence": "8255",
+              "entity_id": "1",
+              "interpolation": 0,
+              "local": true,
+              "position": [
+                -0.871999979019165,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "confirmed_sequence": "7584",
+              "entity_id": "2",
+              "interpolation": 5,
+              "local": false,
+              "position": [
+                0.871999979019165,
+                0.0,
+                0.0
+              ]
+            }
+          ]
+        }
+      ],
+      "input_method": "Computer Use @oai/sky physical SendInput single-key presses. Native focus and returned app windows were selected before each action.",
+      "server_log": {
+        "path": "build/engine_next/m42-network-r11/server.log",
+        "sha256": "2b3f4d72a163b204b73299fe712204794262060d672789142b44bea5e8d7dcce",
+        "bytes": 750
+      }
+    }
+  ],
+  "limitations": [
+    "R reconnect delays 100 ms in the source. The inherited textual offline_ms=600 reconnect log field is a fixed historical label and does not measure elapsed disconnection.",
+    "Video uses the r11 executable. The final r12 change adds successful exit after graceful server drain. Actual r12 drain and hierarchy rendering are validated separately.",
+    "The hidden hierarchy run is driven by the real M2 headless acceptance client. It is not a user keyboard-input run.",
+    "Native 4K performance and full M4 rendering features remain outside this stage evidence."
+  ],
+  "video_metadata": {
+    "path": "build/engine_next/m42-network-r11/F-Network-Motion.json",
+    "sha256": "1240cf653be320dc16a344db197be257bef259a132173fa370f7672fa15c5d56",
+    "bytes": 44005
+  },
+  "reproduced_and_fixed": [
+    {
+      "issue": "Short keydown/keyup within one PumpEvents batch lost movement and reconnect",
+      "before": "r8 actual input_key_events15 but movement_frames0 and reconnect_requests0",
+      "fix": "Window arrPressed edge plus one queued direction pulse consumed by the next fixed simulation step; R uses the key edge",
+      "verification": "r9/r10/r11 native keyboard input and TestClientSession one-step-only pulse test"
+    },
+    {
+      "issue": "Minimized visual loop skipped networking",
+      "fix": "Tick the session before pausing presentation",
+      "verification": "r10 minimized interval28.917seconds advanced1808 acknowledgements"
+    },
+    {
+      "issue": "Successful server drain left visual loop polling a stopped transport",
+      "fix": "Break the frame loop when ClientSession.HasSucceeded returns true",
+      "verification": "r12 hierarchy run returned visual/server/client0 and two graceful acknowledgements"
+    }
+  ],
+  "review": {
+    "status": "passed_with_documented_limits",
+    "scope": "C++17 ownership/no-exception public interfaces, input focus and short presses, caller-thread ClientSession, parent hierarchy mapping, digest consistency across startup loads, sRGB GBuffer/texture slots and D3D12 fence retirement. First-party code in these files was self-reviewed when modified."
+  }
+}

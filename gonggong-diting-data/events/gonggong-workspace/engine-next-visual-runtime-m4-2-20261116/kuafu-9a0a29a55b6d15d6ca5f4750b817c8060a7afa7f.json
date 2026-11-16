@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9a0a29a55b6d15d6ca5f4750b817c8060a7afa7f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1334",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e5e540ebf7b6bc6c0b9159c4e68bdc40ed31de91b91339b29d22935bbaf2db6f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1334",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1339",
+    "action": "delivery",
+    "detection_head": "253ea0200711f2d7802090a8a666f0c6d054b8a9",
+    "context_sha256": "21d0d70ca07270709c312d72df04e070a32f7e59484bfdfda09d05233fecb5c0",
+    "operator": "kaiyunxue",
+    "worker": "codex-root",
+    "authority_ref": "User authorized M4 implementation and main delivery",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1338",
+    "diagnosis": "Submission succeeded through signed PR creation; final output encoding failed on emoji under Windows GBK. Readback confirms PR1338 head d0dbd767. Separate actual CI failures affect portable test fixture and static evidence/header formatting.",
+    "next_action": "Use UTF8 Python environment for submission recovery; fix precise CI failures and supersede with verified candidate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-16T03:04:39.559020+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-16T03:08:05.069908+00:00",
+  "sha256": "7243a65773b78b7d6f290b19b4934b4337fdbd9f79d25db8fe11935b0f179aae"
+}

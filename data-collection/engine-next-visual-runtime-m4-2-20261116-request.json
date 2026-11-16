@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "issue_number": 1334,
+  "parent_issue": 1323,
+  "recorded_at": "2026-11-15T18:09:31.523076+00:00",
+  "authorization": "2026-11-15 user explicitly said 请落地 after M4 design delivery",
+  "baseline": "5afcb929df22d8cad02c3a4792e4b76f8b28c382",
+  "scope": "M4.2 independent asset decode, GPU cook, deferred PBR/IBL and ClientSession visual integration",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1334",
+  "workers": [
+    "/root/m41_framegraph",
+    "/root/m41_build",
+    "/root/m41_win32"
+  ]
+}

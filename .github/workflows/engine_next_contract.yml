@@ -120,6 +120,18 @@ jobs:
           python3 build/engine_next/clean-runtime-source/tools/check_engine_next_contract.py --repo build/engine_next/clean-runtime-source --require-sources --require-link-manifest --link-manifest build/engine_next/clang-runtime/next_clientLinkManifest.json
           python3 build/engine_next/clean-runtime-source/tools/check_engine_next_contract.py --repo build/engine_next/clean-runtime-source --require-sources --require-link-manifest --link-manifest build/engine_next/clang-runtime/next_assetLinkManifest.json
 
+      - name: Validate deterministic visual GPU packages (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          python engine_next/Tools/GenerateVisualBenchmarks.py --output build/engine_next/visual-benchmarks
+          python engine_next/Tools/RunM42AssetAcceptance.py --next-asset build/engine_next/msvc-runtime/next_asset.exe --fixtures build/engine_next/visual-benchmarks --report build/engine_next/M42AssetReport.json
+
+      - name: Validate deterministic visual GPU packages (portable)
+        if: runner.os != 'Windows'
+        run: |
+          python3 engine_next/Tools/GenerateVisualBenchmarks.py --output build/engine_next/visual-benchmarks
+          python3 engine_next/Tools/RunM42AssetAcceptance.py --next-asset build/engine_next/clang-runtime/next_asset --fixtures build/engine_next/visual-benchmarks --report build/engine_next/M42AssetReport.json
+
       - name: Verify legacy Godot scene adapter
         if: matrix.os == 'ubuntu-latest'
         run: |

@@ -9,7 +9,15 @@ import tempfile
 import time
 from pathlib import Path
 
-SHADER_FILES = {"FixedMesh.vs.cso", "FixedMesh.ps.cso", "FixedMesh.cs.cso"}
+SHADER_FILES = {
+    "FixedMesh.vs.cso",
+    "FixedMesh.ps.cso",
+    "FixedMesh.cs.cso",
+    "Deferred.vs.cso",
+    "Deferred.ps.cso",
+    "Lighting.vs.cso",
+    "Lighting.ps.cso",
+}
 
 
 def digest(path):
@@ -42,7 +50,7 @@ def create_package(repo, build_dir):
     sources = [target["artifact"], *report["shaders"]]
     expected = {"next_visual_client.exe", *SHADER_FILES}
     if len(sources) != len(expected) or {Path(item["path"]).name for item in sources} != expected:
-        raise ValueError("Visual package requires exactly one executable and three shader stages")
+        raise ValueError("Visual package requires exactly one executable and all declared shader stages")
     manifest_source = repo / target["manifest"]
     if digest(manifest_source) != target["manifest_sha256"]:
         raise ValueError("Visual link manifest differs from its build report")
@@ -80,13 +88,21 @@ def create_package(repo, build_dir):
             if digest(destination) != item["sha256"]:
                 raise ValueError("Visual output changed during packaging: " + source.name)
             entries.append({"path": source.name, "sha256": digest(destination), "bytes": destination.stat().st_size})
-        license_source = repo / "LICENSE.txt"
-        shutil.copy2(license_source, staging / "LICENSE.txt")
-        entries.append({
-            "path": "LICENSE.txt",
-            "sha256": digest(staging / "LICENSE.txt"),
-            "bytes": license_source.stat().st_size,
-        })
+        licenses = {
+            "LICENSE.txt": "LICENSE.txt",
+            "ENet-LICENSE.txt": "engine_next/thirdparty/enet/LICENSE",
+            "zlib-LICENSE.txt": "engine_next/thirdparty/zlib/LICENSE",
+            "libjpeg-turbo-LICENSE.md": "engine_next/thirdparty/libjpeg-turbo/LICENSE.md",
+            "libjpeg-turbo-README.ijg": "engine_next/thirdparty/libjpeg-turbo/README.ijg",
+        }
+        for name, path in licenses.items():
+            license_source = repo / path
+            shutil.copy2(license_source, staging / name)
+            entries.append({
+                "path": name,
+                "sha256": digest(staging / name),
+                "bytes": license_source.stat().st_size,
+            })
         manifest = {
             "schema_version": 1,
             "target": "EngineNextVisualPackage",

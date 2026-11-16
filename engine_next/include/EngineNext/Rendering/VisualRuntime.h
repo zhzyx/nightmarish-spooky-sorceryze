@@ -49,6 +49,12 @@ struct VisualConfig
 	std::string strShaderDirectory;
 	std::string strReportPath;
 	std::string strCapturePath;
+	std::string strAssetPackagePath;
+	std::string strGpuPackagePath;
+	std::string strServerAddress = "127.0.0.1";
+	std::string strClientId = "A";
+	std::uint16_t nServerPort = 0;
+	bool bConnect = false;
 };
 
 // Runs on the calling UI/render thread until close or the explicit frame limit.

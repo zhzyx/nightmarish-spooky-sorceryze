@@ -55,6 +55,7 @@ LIBRARY_SOURCES = [
     "engine_next/Network/SessionManager.cpp",
     "engine_next/Server/ServerRuntime.cpp",
     "engine_next/Client/ClientRuntime.cpp",
+    "engine_next/Client/ClientSession.cpp",
 ]
 TEST_SOURCES = [
     "engine_next/Tests/RuntimeTestMain.cpp",
@@ -72,6 +73,7 @@ TEST_SOURCES = [
     "engine_next/Tests/Runtime/TestRuntimeConfig.cpp",
     "engine_next/Tests/Runtime/TestRuntimeHost.cpp",
     "engine_next/Tests/Runtime/TestSceneRuntime.cpp",
+    "engine_next/Tests/Runtime/TestClientSession.cpp",
     "engine_next/Tests/Network/TestProtocol.cpp",
     "engine_next/Tests/Network/TestImpairmentTransport.cpp",
     "engine_next/Tests/Gameplay/TestPredictionReconciler.cpp",
@@ -79,7 +81,12 @@ TEST_SOURCES = [
 APP_SOURCES = {
     "next_server": ["engine_next/Apps/NextServerMain.cpp"],
     "next_client": ["engine_next/Apps/NextClientMain.cpp"],
-    "next_asset": ["engine_next/Apps/NextAssetMain.cpp"],
+    "next_asset": [
+        "engine_next/Apps/NextAssetMain.cpp",
+        "engine_next/Rendering/Cook/GltfDecoder.cpp",
+        "engine_next/Rendering/Cook/GpuPackage.cpp",
+        "engine_next/Rendering/RenderScene.cpp",
+    ],
     "EngineNextRuntimeTests": TEST_SOURCES,
 }
 PUBLIC_HEADERS = [
@@ -677,6 +684,11 @@ def build(args):
         *["engine_next/include/" + header for header in PUBLIC_HEADERS],
         "ai_core/Runtime.h",
         "engine_next/Assets/AssetValidation.h",
+        "engine_next/Client/ClientSession.h",
+        "engine_next/Rendering/Cook/GltfDecoder.h",
+        "engine_next/Rendering/Cook/GpuPackage.h",
+        "engine_next/include/EngineNext/Rendering/MeshData.h",
+        "engine_next/include/EngineNext/Rendering/RenderScene.h",
         "engine_next/Schemas/AiAssetRun-v1.json",
         "engine_next/Schemas/AssetManifest-v1.json",
         "engine_next/Schemas/SceneDocument-v1.json",

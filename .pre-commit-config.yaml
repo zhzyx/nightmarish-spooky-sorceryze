@@ -83,7 +83,7 @@ repos:
       - id: codespell
         # Preserve the immutable method event's original British spelling and digest.
         # The PR4 r7 evidence is immutable; r10 and later records append corrections.
-        exclude: ^(tools/maliang_hunyuan/HUNYUAN-NOTICE|gonggong-diting-data/events/gonggong-workspace/learning-editor-native-acceptance/learn-d0f5f7cb3cb8f40b893ef245b74bd92266302362e4028e1354cb48b40c71adc1\.json|data-collection/engine-next-headless-runtime-m2-pr4-build-impact-r7\.json|engine_next/thirdparty/|data-collection/engine-next-visual-runtime-m4-1-capture-(20261115|final2-20261115)\.json)$
+        exclude: ^(tools/maliang_hunyuan/HUNYUAN-NOTICE|gonggong-diting-data/events/gonggong-workspace/learning-editor-native-acceptance/learn-d0f5f7cb3cb8f40b893ef245b74bd92266302362e4028e1354cb48b40c71adc1\.json|data-collection/engine-next-headless-runtime-m2-pr4-build-impact-r7\.json|engine_next/thirdparty/|data-collection/engine-next-visual-runtime-m4-1-capture-(20261115|final2-20261115)\.json|data-collection/engine-next-visual-runtime-m4-2-(capture|integration-review|network-verification)\.json)$
         additional_dependencies: [tomli]
         args: ["--ignore-words-list=ENXT"]
 

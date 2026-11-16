@@ -110,6 +110,7 @@ struct Window::State
 		if (nKey < stInput.arrKeys.size() && stInput.arrKeys[nKey] != bPressed)
 		{
 			stInput.arrKeys[nKey] = bPressed;
+			stInput.arrPressed[nKey] = stInput.arrPressed[nKey] || bPressed;
 			++stInput.nKeyEventCount;
 			stInput.nLastEventQpc = ReadQpc();
 		}
@@ -157,6 +158,7 @@ struct Window::State
 
 	void ReleaseInput() noexcept
 	{
+		stInput.arrPressed.fill(false);
 		for (std::uint32_t nKey = 0; nKey < stInput.arrKeys.size(); ++nKey)
 		{
 			SetKey(nKey, false);
@@ -490,6 +492,7 @@ void Window::PumpEvents() noexcept
 	{
 		return;
 	}
+	ptrState->stInput.arrPressed.fill(false);
 	ptrState->stInput.nMouseDeltaX = 0;
 	ptrState->stInput.nMouseDeltaY = 0;
 	ptrState->stInput.nWheelDelta = 0;

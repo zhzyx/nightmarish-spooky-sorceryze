@@ -38,7 +38,9 @@
     "servers"
   ],
   "third_party_roots": [
-    "engine_next/thirdparty/enet"
+    "engine_next/thirdparty/enet",
+    "engine_next/thirdparty/zlib",
+    "engine_next/thirdparty/libjpeg-turbo"
   ],
   "allowed_angle_include_prefixes": [
     "enet/",
@@ -122,21 +124,63 @@
     "next_visual_client": {
       "source_roots": [
         "engine_next/Rendering/VisualRuntime.cpp",
-        "engine_next/Platform/Windows"
+        "engine_next/Platform/Windows",
+        "engine_next/Rendering/Cook/ImageDecoder.cpp",
+        "engine_next/Tests/Rendering/TestImageDecoder.cpp"
       ],
       "allowed_angle_includes": [
         "d3d12.h",
         "d3d12sdklayers.h",
         "dxgi1_6.h",
         "dxgidebug.h",
-        "pix.h"
+        "pix.h",
+        "wincodec.h",
+        "objbase.h"
       ],
       "allowed_system_libraries": [
         "d3d12",
         "dxgi",
         "dxguid",
-        "user32"
+        "user32",
+        "ole32",
+        "windowscodecs"
       ]
+    },
+    "next_rendering_tests": {
+      "source_roots": [
+        "engine_next/Tests/Rendering/TestImageDecoder.cpp"
+      ],
+      "allowed_angle_includes": [
+        "objbase.h"
+      ],
+      "allowed_system_libraries": [
+        "ole32",
+        "windowscodecs"
+      ]
+    },
+    "zlib_portable": {
+      "source_roots": [
+        "engine_next/thirdparty/zlib"
+      ],
+      "allowed_angle_includes": [
+        "io.h",
+        "unixio.h",
+        "alloc.h",
+        "malloc.h",
+        "stdatomic.h",
+        "zconf.h"
+      ],
+      "allowed_system_libraries": []
+    },
+    "jpeg_portable": {
+      "source_roots": [
+        "engine_next/thirdparty/libjpeg-turbo",
+        "engine_next/Rendering/Cook/JpegValidation.c"
+      ],
+      "allowed_angle_includes": [
+        "intrin.h"
+      ],
+      "allowed_system_libraries": []
     }
   }
 }

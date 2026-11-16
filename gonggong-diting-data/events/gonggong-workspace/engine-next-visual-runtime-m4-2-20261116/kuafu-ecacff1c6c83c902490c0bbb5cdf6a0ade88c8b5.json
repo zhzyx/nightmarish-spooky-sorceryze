@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ecacff1c6c83c902490c0bbb5cdf6a0ade88c8b5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1334",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e5e540ebf7b6bc6c0b9159c4e68bdc40ed31de91b91339b29d22935bbaf2db6f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1334",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1339",
+    "action": "delivery",
+    "detection_head": "253ea0200711f2d7802090a8a666f0c6d054b8a9",
+    "context_sha256": "21d0d70ca07270709c312d72df04e070a32f7e59484bfdfda09d05233fecb5c0",
+    "operator": "kaiyunxue",
+    "worker": "codex-root",
+    "authority_ref": "User authorized M4 implementation and main delivery",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1338",
+    "diagnosis": "Verified PR1338 was created despite console encoding error. Linux needs POSIX setenv declaration; macOS temporary-path alias needs canonicalization in test fixture; two test header alignments and immutable evidence spelling cause static hook differences. Local fixes preserve production rendering code and no-linked-components policy.",
+    "next_action": "Finish clean-source reruns, append immutable replacement evidence and submit revised signed candidate with UTF8 enabled.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-16T03:04:39.559020+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-16T03:12:26.703721+00:00",
+  "sha256": "5968d2419046c36b27e71e693d07992a743c01273c22759c5d666077664f297c"
+}

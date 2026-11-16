@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "issue_number": 1334,
+  "bug_issue": 1339,
+  "prior_pr": 1338,
+  "prior_signed_head": "d0dbd76705786e7323be57a72146af1aab15295a",
+  "failures": [
+    {
+      "source": "build/engine_next/m42-static-ci.log",
+      "observed": "Immutable JSON original labels spellcheck and two test copyright filename padding produced modifications",
+      "repair": "Preserve committed evidence, append normalized replacement receipts; add narrow exact-file exclusions for immutable originals; run existing copyright-header formatter on two tests",
+      "sha256": "44e191aa43a7458c20387891cc1323c566a36c2e97387f6a27445a82cfbe9405"
+    },
+    {
+      "source": "build/engine_next/m42-linux-ci.log",
+      "observed": "ISO C99 JPEG build had no setenv declaration",
+      "repair": "Declare POSIX2008 feature level on Clang C compilation; retain strict warnings",
+      "sha256": "068d5562188dd4cb4f8624f4d0f0fd238ada9eb2d00c7d41e2d457e08ef085db"
+    },
+    {
+      "source": "build/engine_next/m42-mac-ci.log",
+      "observed": "macOS temp root alias rejected by existing no-linked-components package policy, then test continued after assertion",
+      "repair": "Resolve actual fixture temp directory and stop dependent tests after setup failure; retain production path policy",
+      "sha256": "b6a587f16fe54ed23a8ef51f9b136665285ccbbe451917a240d183eaa6bdd1a0"
+    },
+    {
+      "source": "build/engine_next/m42-submit.log",
+      "observed": "CLI output GBK could not encode Windows check emoji after creating signedPR",
+      "repair": "Read back PR1338 then set UTF8 process environment for subsequent submission; no duplicate blind publish",
+      "sha256": "314576b2ae7105d9d5499b3b66e890dda8fa76ce92ff8f04f13390a6f439c701"
+    }
+  ],
+  "validation_status": "Local scoped verification and exact revised CI pending",
+  "local_checks": [
+    "TestBuildVisualRuntime15tests passed",
+    "TestGpuPackage7tests121checks passed",
+    "Windows junction tempdir alias7tests121checks passed",
+    "codespell replacement JSONs passed without modifications"
+  ],
+  "clean_builds": "Three Windows clean-source visual builds passed56tests2303checks. Same executable shader update, rejection and rollback passed.",
+  "production_gpu_sources": "Unchanged from r12 GPU verification, checked individually by independent reviewer."
+}

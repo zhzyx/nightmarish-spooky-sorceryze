@@ -19,6 +19,15 @@ class VisualBuildTests(unittest.TestCase):
         self.build = self.repo / "build/engine_next/visual"
         self.build.mkdir(parents=True)
         (self.repo / "LICENSE.txt").write_text("test license\n", encoding="utf-8")
+        for path in (
+            "engine_next/thirdparty/enet/LICENSE",
+            "engine_next/thirdparty/zlib/LICENSE",
+            "engine_next/thirdparty/libjpeg-turbo/LICENSE.md",
+            "engine_next/thirdparty/libjpeg-turbo/README.ijg",
+        ):
+            source = self.repo / path
+            source.parent.mkdir(parents=True, exist_ok=True)
+            source.write_text("upstream license\n", encoding="utf-8")
 
     def prepare_package(self):
         sources = []
@@ -56,7 +65,16 @@ class VisualBuildTests(unittest.TestCase):
         package = PackageVisualRuntime.create_package(self.repo, self.build)
         self.assertEqual(
             set(package["files"]),
-            {"next_visual_client.exe", "LICENSE.txt", "VisualPackage.json", *PackageVisualRuntime.SHADER_FILES},
+            {
+                "next_visual_client.exe",
+                "LICENSE.txt",
+                "ENet-LICENSE.txt",
+                "zlib-LICENSE.txt",
+                "libjpeg-turbo-LICENSE.md",
+                "libjpeg-turbo-README.ijg",
+                "VisualPackage.json",
+                *PackageVisualRuntime.SHADER_FILES,
+            },
         )
         manifest = json.loads(package["manifest"].read_text(encoding="utf-8"))
         self.assertEqual(manifest["godot_runtime_dependencies"], [])
@@ -170,6 +188,21 @@ class VisualBuildTests(unittest.TestCase):
         args = SimpleNamespace(compiler="msvc", repo=self.repo)
         dependency = self.build / "source.json"
         dependency.write_text(json.dumps({"Data": {"Source": "a.cpp", "Includes": []}}), encoding="utf-8")
+        with self.assertRaises(ValueError):
+            BuildVisualRuntime.parse_includes(args, b"", dependency)
+
+    def test_clang_dependency_preserves_escaped_spaces_and_rejects_hidden_godot(self):
+        args = SimpleNamespace(compiler="clang", repo=self.repo)
+        dependency = self.build / "source.d"
+        good = self.repo / "engine_next/include/header with spaces.h"
+        bad = self.repo / "core/header with spaces.h"
+
+        def escaped(path):
+            return path.as_posix().replace(" ", "\\ ")
+
+        dependency.write_text("output.o: " + escaped(good) + "\n", encoding="utf-8")
+        self.assertEqual(BuildVisualRuntime.parse_includes(args, b"", dependency), [str(good.resolve())])
+        dependency.write_text("output.o: " + escaped(bad) + "\n", encoding="utf-8")
         with self.assertRaises(ValueError):
             BuildVisualRuntime.parse_includes(args, b"", dependency)
 

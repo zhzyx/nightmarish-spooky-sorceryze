@@ -1,7 +1,7 @@
 {
   "placement": "mixed",
-  "reason": "C++ render and FrameGraph sources form the native target. Offline DXC outputs are independent runtime files loaded at startup, so their same-binary update, rejection and rollback behavior is tested separately.",
-  "host_contract": "Windows x86_64 next_visual_client owns native D3D12 queues, fences and descriptors. Offline DXC shader outputs accompany the exact target and are bound by VisualBuildReport/VisualPackage digests. Headless targets retain their separate dependency contract.",
-  "rollback": "Restore source and shader inputs, rebuild the visual target and its shader bundle, verify original rendered pixels and native identity. Existing headless runtime output remains independently built.",
-  "evidence": "data-collection/engine-next-visual-runtime-m4-1-build-impact-r2.json"
+  "reason": "Independent C++ rendering and asset decoding form the native target. Offline shaders and source-bound GPU pages are separately selected at startup and verified before use.",
+  "host_contract": "Windows x86_64 native D3D12 visual client with explicit queues, resource retirement and bounded asset decoding. GpuPackage preserves original M3 identities; headless target link and public-header boundaries remain independently audited.",
+  "rollback": "Restore the original source and shader bundle, rebuild, and verify native identity and deterministic pixels. GPU package replacement is validated against its actual source scene.",
+  "evidence": "data-collection/engine-next-visual-runtime-m4-2-build-impact-r2.json"
 }
