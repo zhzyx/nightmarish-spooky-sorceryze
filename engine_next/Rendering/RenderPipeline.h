@@ -48,6 +48,7 @@ enum class PassWork : std::uint8_t
 	ToneMap = 4,
 	CopyToBackbuffer = 5,
 	Present = 6,
+	DirectionalShadow = 7,
 };
 
 struct RenderPipeline
@@ -60,6 +61,7 @@ struct RenderPipeline
 	ResourceId nDepth = INVALID_RESOURCE;
 	ResourceId nBackbuffer = INVALID_RESOURCE;
 	ResourceId nHdr = INVALID_RESOURCE;
+	ResourceId nDirectionalShadow = INVALID_RESOURCE;
 	std::array<ResourceId, 4> arrGbuffer{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
 	std::uint32_t nGraphicsPassCount = 0;
 	std::uint32_t nComputePassCount = 0;

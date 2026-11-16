@@ -61,6 +61,84 @@
       "type": "number",
       "minimum": 0.001,
       "maximum": 1000
+    },
+    "directional_light": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "direction",
+        "color",
+        "illuminance"
+      ],
+      "properties": {
+        "direction": {
+          "$ref": "#/$defs/vector3"
+        },
+        "color": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "illuminance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000
+        }
+      },
+      "$comment": "Direction specifies the world-space travel direction of light rays. It must be finite and nonzero. Omission uses the built-in directional light defaults."
+    },
+    "shadows": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "resolution",
+        "distance",
+        "split_lambda",
+        "depth_bias",
+        "normal_bias"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "resolution": {
+          "type": "integer",
+          "enum": [
+            256,
+            512,
+            1024,
+            2048,
+            4096
+          ]
+        },
+        "distance": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 10000
+        },
+        "split_lambda": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "depth_bias": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.05
+        },
+        "normal_bias": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "$comment": "Omission uses the built-in shadow defaults. All settings remain validated when enabled is false."
     }
   },
   "$defs": {

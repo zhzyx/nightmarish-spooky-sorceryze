@@ -19,6 +19,8 @@ CORE_SOURCES = [
     "engine_next/Rendering/RenderPipeline.cpp",
     "engine_next/Rendering/RenderConfiguration.cpp",
     "engine_next/Rendering/CameraMatrices.cpp",
+    "engine_next/Rendering/ShadowData.cpp",
+    "engine_next/Rendering/ShadowBounds.cpp",
     "engine_next/Rendering/Cook/GltfDecoder.cpp",
     "engine_next/Rendering/Cook/ImageDecoder.cpp",
     "engine_next/Rendering/Cook/EnvironmentLighting.cpp",
@@ -58,6 +60,8 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestRenderPipeline.cpp",
     "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
     "engine_next/Tests/Rendering/TestCameraMatrices.cpp",
+    "engine_next/Tests/Rendering/TestShadowData.cpp",
+    "engine_next/Tests/Rendering/TestShadowBounds.cpp",
     "engine_next/Tests/Rendering/TestGltfDecoder.cpp",
     "engine_next/Tests/Rendering/TestImageDecoder.cpp",
     "engine_next/Tests/Rendering/TestEnvironmentLighting.cpp",
@@ -72,6 +76,7 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/TextureData.h",
     "EngineNext/Rendering/RenderConfiguration.h",
     "EngineNext/Rendering/CameraMatrices.h",
+    "EngineNext/Rendering/ShadowData.h",
     "EngineNext/Rendering/RenderScene.h",
     "EngineNext/Rendering/VisualRuntime.h",
 ]
@@ -85,6 +90,8 @@ SHADERS = [
     ("FullscreenVS", "vs_6_0", "Lighting.vs.cso", []),
     ("LightingPS", "ps_6_0", "Lighting.ps.cso", []),
     ("ToneMapPS", "ps_6_0", "ToneMap.ps.cso", ["-D", "TONEMAP_STAGE=1"]),
+    ("ShadowVS", "vs_6_0", "Shadow.vs.cso", []),
+    ("ShadowPS", "ps_6_0", "Shadow.ps.cso", []),
 ]
 
 
@@ -423,7 +430,13 @@ def compile_shaders(args, commands):
         source = (
             args.repo
             / "engine_next/Rendering/Shaders"
-            / ("FixedMesh.hlsl" if name.startswith("FixedMesh") else "Deferred.hlsl")
+            / (
+                "FixedMesh.hlsl"
+                if name.startswith("FixedMesh")
+                else "Shadow.hlsl"
+                if name.startswith("Shadow")
+                else "Deferred.hlsl"
+            )
         )
         output = args.build_dir / name
         command = [compiler, "-E", entry, "-T", profile, "-Ges", "-WX", "-O3", "-Fo", output, *definitions, source]
@@ -514,7 +527,11 @@ def build(args):
         *(
             []
             if args.tests_only
-            else ["engine_next/Rendering/Shaders/FixedMesh.hlsl", "engine_next/Rendering/Shaders/Deferred.hlsl"]
+            else [
+                "engine_next/Rendering/Shaders/FixedMesh.hlsl",
+                "engine_next/Rendering/Shaders/Deferred.hlsl",
+                "engine_next/Rendering/Shaders/Shadow.hlsl",
+            ]
         ),
         *[
             name

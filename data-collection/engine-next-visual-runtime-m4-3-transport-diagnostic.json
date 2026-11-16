@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "bug_issue": 1349,
+  "recorded_at": "2026-11-16T05:51:58.900374+00:00",
+  "reason": "Repeat macOS network handshake failure lacks socket errno; log it at the first party transport error boundary.",
+  "candidate_base": "98a464d7ac0f1aa63873585a58cd22b59efa001b",
+  "source": {
+    "path": "engine_next/Network/EnetTransport.cpp",
+    "sha256": "25129a66e46c7f613d9a795ca815988b1c216587de53d2ada74c0e28cb61df68"
+  },
+  "reports": [
+    {
+      "path": "build/engine_next/pr1348-enet-diagnostic/RuntimeBuildReport.json",
+      "sha256": "4677682a978c7c98c9bf5de19c794d1329cbecf02de8350b0ee33e4c9ffb791f"
+    },
+    {
+      "path": "build/engine_next/pr1348-enet-visual/VisualBuildReport.json",
+      "sha256": "d52be054e48af58b54f8f0ac421f43a1c90ad4a3b146bd4f4c42d9b69a23db2b"
+    },
+    {
+      "path": "build/engine_next/pr1348-enet-diagnostic/Diagnosis.json",
+      "sha256": "0d314c0a97a25dfc6355c135222aa23247df41f65aee71fffd358f42a0c88826"
+    }
+  ],
+  "checks": {
+    "runtime": "61 tests 1100 checks; source/clean/package handshakes, M3 scene and drain pass",
+    "visual": "112 tests 8302 checks and full link build pass"
+  },
+  "macos_errno": "unknown pending exact-candidate CI"
+}

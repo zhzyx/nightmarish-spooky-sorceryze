@@ -11,6 +11,12 @@ cbuffer FrameConstants : register(b1)
     column_major float4x4 InverseViewProjection;
     float4 Camera;
     float4 Lighting;
+    column_major float4x4 View;
+    column_major float4x4 ShadowViewProjection[4];
+    float4 CascadeSplits;
+    float4 LightDirection;
+    float4 LightColor;
+    float4 ShadowParameters;
 };
 #if defined(GEOMETRY_STAGE)
 cbuffer DrawConstants : register(b0)
@@ -103,6 +109,7 @@ StructuredBuffer<float4> Tint : register(t5);
 TextureCube<float4> Irradiance : register(t6);
 TextureCube<float4> PrefilteredEnvironment : register(t7);
 Texture2D<float4> BrdfLut : register(t8);
+Texture2DArray<float> DirectionalShadow : register(t9);
 SamplerState EnvironmentSampler : register(s0);
 #endif
 struct FullscreenOutput
@@ -149,6 +156,52 @@ float3 EvaluateLight(float3 Base, float Metallic, float Roughness, float3 N, flo
     float3 Specular = D * G * F / max(4 * NoV * NoL, 0.0001);
     return ((1 - F) * (1 - Metallic) * Base / 3.14159265 + Specular) * Radiance * NoL;
 }
+float SampleCascadeShadow(float3 Position, float3 N, uint Cascade)
+{
+    float4 ShadowPosition = mul(ShadowViewProjection[Cascade], float4(Position + N * ShadowParameters.w, 1));
+    float3 Projected = ShadowPosition.xyz / ShadowPosition.w;
+    float2 Uv = Projected.xy * float2(0.5, -0.5) + 0.5;
+    if (any(Uv < 0) || any(Uv > 1) || Projected.z < 0 || Projected.z > 1)
+    {
+        return 1;
+    }
+    int Resolution = (int)round(1 / ShadowParameters.y);
+    int2 Center = int2(Uv * Resolution);
+    float Visibility = 0;
+    [unroll] for (int Y = -1; Y <= 1; ++Y)
+    {
+        [unroll] for (int X = -1; X <= 1; ++X)
+        {
+            int2 Pixel = clamp(Center + int2(X, Y), 0, Resolution - 1);
+            float Depth = DirectionalShadow.Load(int4(Pixel, Cascade, 0));
+            Visibility += Projected.z + ShadowParameters.z >= Depth ? 1 : 0;
+        }
+    }
+    return Visibility / 9;
+}
+float DirectionalVisibility(float3 Position, float3 N)
+{
+    float Distance = -mul(View, float4(Position, 1)).z;
+    if (ShadowParameters.x < 0.5 || Distance > CascadeSplits.w)
+    {
+        return 1;
+    }
+    uint Cascade = Distance > CascadeSplits.x ? 1 : 0;
+    Cascade = Distance > CascadeSplits.y ? 2 : Cascade;
+    Cascade = Distance > CascadeSplits.z ? 3 : Cascade;
+    float Visibility = SampleCascadeShadow(Position, N, Cascade);
+    if (Cascade < 3)
+    {
+        float Start = Cascade == 0 ? 0 : CascadeSplits[Cascade - 1];
+        float Width = (CascadeSplits[Cascade] - Start) * Lighting.z;
+        float Blend = saturate((Distance - (CascadeSplits[Cascade] - Width)) / max(Width, 0.001));
+        if (Blend > 0)
+        {
+            Visibility = lerp(Visibility, SampleCascadeShadow(Position, N, Cascade + 1), Blend);
+        }
+    }
+    return Visibility;
+}
 float4 LightingPS(FullscreenOutput Input) : SV_TARGET
 {
     int2 Pixel = int2(Input.Position.xy);
@@ -168,7 +221,7 @@ float4 LightingPS(FullscreenOutput Input) : SV_TARGET
     float4 WorldPosition = mul(InverseViewProjection, float4(Ndc, Depth, 1));
     float3 Position = WorldPosition.xyz / WorldPosition.w;
     float3 V = SafeDirection(Camera.xyz - Position);
-    float3 Color = EvaluateLight(Base, Material.y, Material.x, N, V, normalize(float3(-0.5, 0.8, 0.6)), float3(3, 2.9, 2.7) * Tint[0].rgb);
+    float3 Color = EvaluateLight(Base, Material.y, Material.x, N, V, LightDirection.xyz, LightColor.rgb * Tint[0].rgb) * DirectionalVisibility(Position, N);
     float3 PointVector = float3(2, 3, 2) - Position;
     float Distance2 = max(dot(PointVector, PointVector), 0.01);
     Color += EvaluateLight(Base, Material.y, Material.x, N, V, SafeDirection(PointVector), float3(18, 12, 8) / Distance2);

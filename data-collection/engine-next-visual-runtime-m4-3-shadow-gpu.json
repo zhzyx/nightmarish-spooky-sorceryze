@@ -1,0 +1,992 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-16T05:20:09.976685+00:00",
+  "passed": true,
+  "scope": "Self-authored M4 A directional-shadow subscene with receiver plane, opaque, negative-scale and alpha-masked spheres.",
+  "source_inputs": [
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "bytes": 139547,
+      "sha256": "ad317b997214d52d95fe2b32e5a255b8bf874835df7a14a628a0e10813daa184",
+      "last_write_utc": "2026-11-16T05:14:47.583621+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Shadow.hlsl",
+      "bytes": 1083,
+      "sha256": "1347aab83aa23c69df4853a9671c9f72123895f1dcff920b57fad9befe782ddc",
+      "last_write_utc": "2026-11-16T04:43:18.759771+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Deferred.hlsl",
+      "bytes": 9983,
+      "sha256": "943c207231989c6cbadfa420008ff1c031284dd196d6fe9a17d78c40939f6b53",
+      "last_write_utc": "2026-11-16T05:01:42.306916+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/ShadowData.cpp",
+      "bytes": 12975,
+      "sha256": "0b1594e46f52bb443868d7cf1d0b063c24cc6bc1da032fdbd318d63db527a10b",
+      "last_write_utc": "2026-11-16T05:14:47.557151+00:00"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/ShadowData.h",
+      "bytes": 3964,
+      "sha256": "c4e0245746d12b296f09375e6bcae1e72556e31dfdf21104c67bcfcc01908205",
+      "last_write_utc": "2026-11-16T05:14:47.585623+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/ShadowBounds.cpp",
+      "bytes": 5563,
+      "sha256": "3453b194ceff8da3a53954c0208de869aeb22d134175b10fc9e283d64c470dd6",
+      "last_write_utc": "2026-11-16T05:14:47.556150+00:00"
+    },
+    {
+      "path": "engine_next/Rendering/RenderConfiguration.cpp",
+      "bytes": 14004,
+      "sha256": "0b33e0a349a7955411445a4000072d1af2a9299da471373aecc9801dda75e39c",
+      "last_write_utc": "2026-11-16T05:14:47.556150+00:00"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderConfiguration.h",
+      "bytes": 4372,
+      "sha256": "9add2329bb81e240c04b4151475fa55fb1573e22d9de8174b23a818b1064c4e2",
+      "last_write_utc": "2026-11-16T05:14:47.585623+00:00"
+    },
+    {
+      "path": "engine_next/Tools/GenerateShadowBenchmark.py",
+      "bytes": 4974,
+      "sha256": "acdf6b48ba8639147eefa0180c11f54b61d67bb85f446a0f890036fb6b7791b4",
+      "last_write_utc": "2026-11-16T05:01:59.332471+00:00"
+    }
+  ],
+  "build_binding": {
+    "build_report": {
+      "path": "build/engine_next/m43-shadow-final2/VisualBuildReport.json",
+      "bytes": 1400777,
+      "sha256": "f1134454f54c136e0cb3e156cfdd2e464164a1e093d9ff5f89552330a1c6c944",
+      "last_write_utc": "2026-11-16T05:10:37.408167+00:00"
+    },
+    "binary": {
+      "path": "build/engine_next/m43-shadow-final2/next_visual_client.exe",
+      "bytes": 2865664,
+      "sha256": "47ea3334f998950f691d8840baea2a580888fcbfa2e927a418477c9eeff433ca",
+      "last_write_utc": "2026-11-16T05:10:30.749356+00:00"
+    },
+    "native_key": "d6c8ee0fffec05b07a7701e5bab0e86efc78f2bb4585df9cd87f40f13454945c",
+    "all_native_inputs_match_current_bytes": true,
+    "test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=112 checks=8302 failures=0",
+    "shaders": [
+      {
+        "path": "build/engine_next/m43-shadow-final2/Deferred.ps.cso",
+        "bytes": 7800,
+        "sha256": "6f297e31e1880a5c0a20fbd0b86b76927563250127b7244f8d94d8eef72d583f",
+        "last_write_utc": "2026-11-16T05:10:10.605948+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-shadow-final2/Deferred.vs.cso",
+        "bytes": 6516,
+        "sha256": "1d716cd88e4d227a0c30caa186ad3128567627e8326a23eb16491262b58a5380",
+        "last_write_utc": "2026-11-16T05:10:10.573188+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-shadow-final2/FixedMesh.cs.cso",
+        "bytes": 3300,
+        "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064",
+        "last_write_utc": "2026-11-16T05:10:10.539682+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-shadow-final2/FixedMesh.ps.cso",
+        "bytes": 4132,
+        "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9",
+        "last_write_utc": "2026-11-16T05:10:10.516393+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-shadow-final2/FixedMesh.vs.cso",
+        "bytes": 4316,
+        "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69",
+        "last_write_utc": "2026-11-16T05:10:10.489385+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-shadow-final2/Lighting.ps.cso",
+        "bytes": 12212,
+        "sha256": "893465b8d7fa63a684c282816fce0f0d39d4bc53936f82ea1e0af501a5e1bdfd",
+        "last_write_utc": "2026-11-16T05:10:10.684689+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-shadow-final2/Lighting.vs.cso",
+        "bytes": 3052,
+        "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018",
+        "last_write_utc": "2026-11-16T05:10:10.634617+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-shadow-final2/Shadow.ps.cso",
+        "bytes": 4236,
+        "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24",
+        "last_write_utc": "2026-11-16T05:10:10.771088+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-shadow-final2/Shadow.vs.cso",
+        "bytes": 4648,
+        "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4",
+        "last_write_utc": "2026-11-16T05:10:10.743567+00:00"
+      },
+      {
+        "path": "build/engine_next/m43-shadow-final2/ToneMap.ps.cso",
+        "bytes": 4796,
+        "sha256": "0e557d1626f9ec201b868c79ecd46cf1e6178c533792145717c5f6d4e5070793",
+        "last_write_utc": "2026-11-16T05:10:10.712199+00:00"
+      }
+    ]
+  },
+  "prior_build_coverage": {
+    "build_report": {
+      "path": "build/engine_next/m43-shadow-final/VisualBuildReport.json",
+      "bytes": 1400404,
+      "sha256": "0c291e6b200d2fc4e675aa4194affdad2c5e1528d6e9dea6c04b8fb861abb025",
+      "last_write_utc": "2026-11-16T05:04:29.954227+00:00"
+    },
+    "binary": {
+      "path": "build/engine_next/m43-shadow-final/next_visual_client.exe",
+      "bytes": 2865664,
+      "sha256": "117a313b75a74ba715a8e1315a2e98c9e3297d550ad7ea35ba90a452eb61b42f",
+      "last_write_utc": "2026-11-16T05:04:23.251099+00:00"
+    },
+    "only_changed_native_input": "engine_next/Rendering/VisualRuntime.cpp",
+    "change": "Seven occurrences of a local descriptor-range variable were renamed in CreateShadowPipeline. Reversing the rename exactly matches the previous source SHA-256.",
+    "source_equivalence_verified": true,
+    "final_on_off_pixels_match_previous": true
+  },
+  "generator": {
+    "manifest": {
+      "path": "build/engine_next/shadow-gpu-final/Source/BenchmarkManifest.json",
+      "bytes": 2142,
+      "sha256": "42efd8bec41ba13fb26ddc42bb94a26d07eaaf03c70d5bfbb9738b3b58c15859",
+      "last_write_utc": "2026-11-16T05:07:35.902501+00:00"
+    },
+    "deterministic_source_check": {
+      "path": "build/engine_next/shadow-benchmark/GeneratorDeterminism.json",
+      "bytes": 590,
+      "sha256": "434248844f7a5269b08db57663324e8fcdffbe73fbc156cbf6981e6675983445",
+      "last_write_utc": "2026-11-16T05:02:26.494327+00:00"
+    },
+    "glb_matches_previously_measured_scene": true,
+    "generated_files": [
+      {
+        "path": "build/engine_next/shadow-gpu-final/Source/A-Shadow/BuildRequest.json",
+        "bytes": 1347,
+        "sha256": "1cdb5b545dc2b59c3c758a62d10ddc777262102c3773990243c7c2bf49847f74",
+        "last_write_utc": "2026-11-16T05:07:35.901501+00:00"
+      },
+      {
+        "path": "build/engine_next/shadow-gpu-final/Source/A-Shadow/SceneDocument.json",
+        "bytes": 859,
+        "sha256": "603db1929fb45f6554ff40887cf444de0b69e7d94feee9db6781215489a88655",
+        "last_write_utc": "2026-11-16T05:07:35.901501+00:00"
+      },
+      {
+        "path": "build/engine_next/shadow-gpu-final/Source/A-Shadow/ShadowReceiver.glb",
+        "bytes": 91916,
+        "sha256": "9a67739673d181135de2325cb470cae3e77ef235e311e5759375673450cee398",
+        "last_write_utc": "2026-11-16T05:07:35.901501+00:00"
+      },
+      {
+        "path": "build/engine_next/shadow-gpu-final/Source/BenchmarkManifest.json",
+        "bytes": 2142,
+        "sha256": "42efd8bec41ba13fb26ddc42bb94a26d07eaaf03c70d5bfbb9738b3b58c15859",
+        "last_write_utc": "2026-11-16T05:07:35.902501+00:00"
+      }
+    ]
+  },
+  "gpu": {
+    "runs": [
+      {
+        "name": "ShadowOff-v1",
+        "build": "final",
+        "report": {
+          "path": "build/engine_next/shadow-gpu-final/ShadowOff-v1.json",
+          "bytes": 41962,
+          "sha256": "9c597a0f22e0186dcee3a359c99a7b2e685c723c1057b396252ff4dfde551d06",
+          "last_write_utc": "2026-11-16T05:07:42.085991+00:00"
+        },
+        "configuration": {
+          "path": "build/engine_next/shadow-gpu-final/ShadowOff-v1Config.json",
+          "bytes": 759,
+          "sha256": "879bc7f8540dfa0c598bed09e3895bf1200426bb8892dfa83565b738ea93696d",
+          "last_write_utc": "2026-11-16T05:07:36.147275+00:00"
+        },
+        "image": {
+          "path": "build/engine_next/shadow-gpu-final/ShadowOff-v1.ppm",
+          "bytes": 2764816,
+          "sha256": "24ede310e4940b98d703dd5b9b4dbdfdd0ca85e6c32254de7d93bdc62e1ff88a",
+          "last_write_utc": "2026-11-16T05:07:42.084990+00:00"
+        },
+        "values": {
+          "frames": 60,
+          "resizes": 0,
+          "directional_shadows": false,
+          "shadow_resolution": 2048,
+          "shadow_cascades": 4,
+          "shadow_split_distances": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "draw_instances": 4,
+          "scene_triangles": 6626
+        }
+      },
+      {
+        "name": "ShadowOn-v1",
+        "build": "final",
+        "report": {
+          "path": "build/engine_next/shadow-gpu-final/ShadowOn-v1.json",
+          "bytes": 41961,
+          "sha256": "8f64864fb4396d1c8b502303454192c01bf9feb9bac2ac63c71879aae08953c7",
+          "last_write_utc": "2026-11-16T05:07:43.000390+00:00"
+        },
+        "configuration": {
+          "path": "build/engine_next/shadow-gpu-final/ShadowOn-v1Config.json",
+          "bytes": 758,
+          "sha256": "c77e34c9452900a3c1f241e342ce330054296b2a2ba7f941f8c421a0a53cc99c",
+          "last_write_utc": "2026-11-16T05:07:42.205509+00:00"
+        },
+        "image": {
+          "path": "build/engine_next/shadow-gpu-final/ShadowOn-v1.ppm",
+          "bytes": 2764816,
+          "sha256": "bc853819acbd1dbc6a41e4e934c0ef54e7899ef4868a023a60d20890ee68d6be",
+          "last_write_utc": "2026-11-16T05:07:42.999392+00:00"
+        },
+        "values": {
+          "frames": 60,
+          "resizes": 0,
+          "directional_shadows": true,
+          "shadow_resolution": 2048,
+          "shadow_cascades": 4,
+          "shadow_split_distances": [
+            5.183702397557106,
+            10.958683298050515,
+            20.339838230116772,
+            50.0
+          ],
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "draw_instances": 4,
+          "scene_triangles": 6626
+        }
+      },
+      {
+        "name": "ShadowOff-v2",
+        "build": "final",
+        "report": {
+          "path": "build/engine_next/shadow-gpu-final/ShadowOff-v2.json",
+          "bytes": 41961,
+          "sha256": "600763b22aa924eabd0cbe1129ad10ee5ecfe5fca44af55e1eefe8943dfd0724",
+          "last_write_utc": "2026-11-16T05:07:43.830302+00:00"
+        },
+        "configuration": {
+          "path": "build/engine_next/shadow-gpu-final/ShadowOff-v2Config.json",
+          "bytes": 759,
+          "sha256": "879bc7f8540dfa0c598bed09e3895bf1200426bb8892dfa83565b738ea93696d",
+          "last_write_utc": "2026-11-16T05:07:43.095740+00:00"
+        },
+        "image": {
+          "path": "build/engine_next/shadow-gpu-final/ShadowOff-v2.ppm",
+          "bytes": 2764816,
+          "sha256": "24ede310e4940b98d703dd5b9b4dbdfdd0ca85e6c32254de7d93bdc62e1ff88a",
+          "last_write_utc": "2026-11-16T05:07:43.828302+00:00"
+        },
+        "values": {
+          "frames": 60,
+          "resizes": 0,
+          "directional_shadows": false,
+          "shadow_resolution": 2048,
+          "shadow_cascades": 4,
+          "shadow_split_distances": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "draw_instances": 4,
+          "scene_triangles": 6626
+        }
+      },
+      {
+        "name": "ShadowOn-v2",
+        "build": "final",
+        "report": {
+          "path": "build/engine_next/shadow-gpu-final/ShadowOn-v2.json",
+          "bytes": 41980,
+          "sha256": "21841bc636f6552e75f0250b3eefe5141f44cad4ba48caf51e9bb0e654d73b5d",
+          "last_write_utc": "2026-11-16T05:07:44.709854+00:00"
+        },
+        "configuration": {
+          "path": "build/engine_next/shadow-gpu-final/ShadowOn-v2Config.json",
+          "bytes": 758,
+          "sha256": "c77e34c9452900a3c1f241e342ce330054296b2a2ba7f941f8c421a0a53cc99c",
+          "last_write_utc": "2026-11-16T05:07:43.925047+00:00"
+        },
+        "image": {
+          "path": "build/engine_next/shadow-gpu-final/ShadowOn-v2.ppm",
+          "bytes": 2764816,
+          "sha256": "bc853819acbd1dbc6a41e4e934c0ef54e7899ef4868a023a60d20890ee68d6be",
+          "last_write_utc": "2026-11-16T05:07:44.708346+00:00"
+        },
+        "values": {
+          "frames": 60,
+          "resizes": 0,
+          "directional_shadows": true,
+          "shadow_resolution": 2048,
+          "shadow_cascades": 4,
+          "shadow_split_distances": [
+            5.183702397557106,
+            10.958683298050515,
+            20.339838230116772,
+            50.0
+          ],
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "draw_instances": 4,
+          "scene_triangles": 6626
+        }
+      },
+      {
+        "name": "Resize",
+        "build": "final",
+        "report": {
+          "path": "build/engine_next/shadow-gpu-final/Resize.json",
+          "bytes": 41991,
+          "sha256": "3bce2328c4c2d05543b0b1894ea9e818d3592626b0feff2e81aa775f88316d24",
+          "last_write_utc": "2026-11-16T05:07:45.655864+00:00"
+        },
+        "configuration": {
+          "path": "build/engine_next/shadow-gpu-final/ResizeConfig.json",
+          "bytes": 758,
+          "sha256": "c77e34c9452900a3c1f241e342ce330054296b2a2ba7f941f8c421a0a53cc99c",
+          "last_write_utc": "2026-11-16T05:07:44.814656+00:00"
+        },
+        "image": {
+          "path": "build/engine_next/shadow-gpu-final/Resize.ppm",
+          "bytes": 2764816,
+          "sha256": "bc853819acbd1dbc6a41e4e934c0ef54e7899ef4868a023a60d20890ee68d6be",
+          "last_write_utc": "2026-11-16T05:07:45.654863+00:00"
+        },
+        "values": {
+          "frames": 60,
+          "resizes": 2,
+          "directional_shadows": true,
+          "shadow_resolution": 2048,
+          "shadow_cascades": 4,
+          "shadow_split_distances": [
+            5.183702397557106,
+            10.958683298050515,
+            20.339838230116772,
+            50.0
+          ],
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "draw_instances": 4,
+          "scene_triangles": 6626
+        }
+      },
+      {
+        "name": "DisabledNear",
+        "build": "final",
+        "report": {
+          "path": "build/engine_next/shadow-gpu-final/DisabledNear.json",
+          "bytes": 41875,
+          "sha256": "1889305922fc883b14f7d861f95d42fde50f1960a3583647458c98d7a39a27c8",
+          "last_write_utc": "2026-11-16T05:07:46.468265+00:00"
+        },
+        "configuration": {
+          "path": "build/engine_next/shadow-gpu-final/DisabledNearConfig.json",
+          "bytes": 757,
+          "sha256": "3676470902e5af7af01491ce6292910d0c0dcaa00248649fc3690bf583ef9d83",
+          "last_write_utc": "2026-11-16T05:07:45.763504+00:00"
+        },
+        "image": {
+          "path": "build/engine_next/shadow-gpu-final/DisabledNear.ppm",
+          "bytes": 2764816,
+          "sha256": "7c8f8f0cd3d550af3a51453328f7ca6bbfc3be0f2ac59d39d5edbb23a1a70d9e",
+          "last_write_utc": "2026-11-16T05:07:46.466265+00:00"
+        },
+        "values": {
+          "frames": 60,
+          "resizes": 0,
+          "directional_shadows": false,
+          "shadow_resolution": 2048,
+          "shadow_cascades": 4,
+          "shadow_split_distances": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "draw_instances": 4,
+          "scene_triangles": 6626
+        }
+      },
+      {
+        "name": "RotatedLight",
+        "build": "final",
+        "report": {
+          "path": "build/engine_next/shadow-gpu-final/RotatedLight.json",
+          "bytes": 42007,
+          "sha256": "828aec7fb32915784d3128ef14e5a8912fb037602fd99ac5a1657a8eddc388a2",
+          "last_write_utc": "2026-11-16T05:07:47.354616+00:00"
+        },
+        "configuration": {
+          "path": "build/engine_next/shadow-gpu-final/RotatedLightConfig.json",
+          "bytes": 758,
+          "sha256": "e0f8308f347d0f0eca612f20f2932a2b2fc647abac21650877cd555410732363",
+          "last_write_utc": "2026-11-16T05:07:46.577494+00:00"
+        },
+        "image": {
+          "path": "build/engine_next/shadow-gpu-final/RotatedLight.ppm",
+          "bytes": 2764816,
+          "sha256": "40eb24fc955e7ebd85f7a44a5f67b9c9ba0f3db218b414c22d4d3b2c7fdc53f8",
+          "last_write_utc": "2026-11-16T05:07:47.353615+00:00"
+        },
+        "values": {
+          "frames": 60,
+          "resizes": 0,
+          "directional_shadows": true,
+          "shadow_resolution": 2048,
+          "shadow_cascades": 4,
+          "shadow_split_distances": [
+            5.183702397557106,
+            10.958683298050515,
+            20.339838230116772,
+            50.0
+          ],
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "draw_instances": 4,
+          "scene_triangles": 6626
+        }
+      },
+      {
+        "name": "MovedCamera",
+        "build": "final",
+        "report": {
+          "path": "build/engine_next/shadow-gpu-final/MovedCamera.json",
+          "bytes": 41971,
+          "sha256": "5f6a00b24a2a313e7baa28396145a7ca9beb03aaa58223c5fc69c98a82b2dfb2",
+          "last_write_utc": "2026-11-16T05:07:48.221232+00:00"
+        },
+        "configuration": {
+          "path": "build/engine_next/shadow-gpu-final/MovedCameraConfig.json",
+          "bytes": 759,
+          "sha256": "56eef52f3c7822c8bb9d920b96d89d9aab974070e592e882250ecf78db90dfbb",
+          "last_write_utc": "2026-11-16T05:07:47.453276+00:00"
+        },
+        "image": {
+          "path": "build/engine_next/shadow-gpu-final/MovedCamera.ppm",
+          "bytes": 2764816,
+          "sha256": "f9062ec8bf431a0a357f4099166a4e3a5f32c3ef5bf94ee48a0c232c4c32b6ee",
+          "last_write_utc": "2026-11-16T05:07:48.220229+00:00"
+        },
+        "values": {
+          "frames": 60,
+          "resizes": 0,
+          "directional_shadows": true,
+          "shadow_resolution": 2048,
+          "shadow_cascades": 4,
+          "shadow_split_distances": [
+            5.183702397557106,
+            10.958683298050515,
+            20.339838230116772,
+            50.0
+          ],
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "draw_instances": 4,
+          "scene_triangles": 6626
+        }
+      },
+      {
+        "name": "ShadowOff",
+        "build": "final2",
+        "report": {
+          "path": "build/engine_next/shadow-gpu-final2/ShadowOff.json",
+          "bytes": 41952,
+          "sha256": "781f99b4beafc9f4a2694c6c1976c6083cfa87c571737bbaa7373ded849c1654",
+          "last_write_utc": "2026-11-16T05:13:49.134386+00:00"
+        },
+        "configuration": {
+          "path": "build/engine_next/shadow-gpu-final2/ShadowOffConfig.json",
+          "bytes": 759,
+          "sha256": "879bc7f8540dfa0c598bed09e3895bf1200426bb8892dfa83565b738ea93696d",
+          "last_write_utc": "2026-11-16T05:13:47.931452+00:00"
+        },
+        "image": {
+          "path": "build/engine_next/shadow-gpu-final2/ShadowOff.ppm",
+          "bytes": 2764816,
+          "sha256": "24ede310e4940b98d703dd5b9b4dbdfdd0ca85e6c32254de7d93bdc62e1ff88a",
+          "last_write_utc": "2026-11-16T05:13:49.074599+00:00"
+        },
+        "values": {
+          "frames": 60,
+          "resizes": 0,
+          "directional_shadows": false,
+          "shadow_resolution": 2048,
+          "shadow_cascades": 4,
+          "shadow_split_distances": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "draw_instances": 4,
+          "scene_triangles": 6626
+        }
+      },
+      {
+        "name": "ShadowOn",
+        "build": "final2",
+        "report": {
+          "path": "build/engine_next/shadow-gpu-final2/ShadowOn.json",
+          "bytes": 41964,
+          "sha256": "958ce3447c9ea6f129573d5d520bfcd1fefc3abfabcc6120ba85a8b5d03642eb",
+          "last_write_utc": "2026-11-16T05:13:50.001061+00:00"
+        },
+        "configuration": {
+          "path": "build/engine_next/shadow-gpu-final2/ShadowOnConfig.json",
+          "bytes": 758,
+          "sha256": "c77e34c9452900a3c1f241e342ce330054296b2a2ba7f941f8c421a0a53cc99c",
+          "last_write_utc": "2026-11-16T05:13:49.255476+00:00"
+        },
+        "image": {
+          "path": "build/engine_next/shadow-gpu-final2/ShadowOn.ppm",
+          "bytes": 2764816,
+          "sha256": "bc853819acbd1dbc6a41e4e934c0ef54e7899ef4868a023a60d20890ee68d6be",
+          "last_write_utc": "2026-11-16T05:13:49.998061+00:00"
+        },
+        "values": {
+          "frames": 60,
+          "resizes": 0,
+          "directional_shadows": true,
+          "shadow_resolution": 2048,
+          "shadow_cascades": 4,
+          "shadow_split_distances": [
+            5.183702397557106,
+            10.958683298050515,
+            20.339838230116772,
+            50.0
+          ],
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "draw_instances": 4,
+          "scene_triangles": 6626
+        }
+      },
+      {
+        "name": "OpaqueOff",
+        "build": "final2",
+        "report": {
+          "path": "build/engine_next/shadow-gpu-final2/OpaqueOff.json",
+          "bytes": 41969,
+          "sha256": "d9b58623eeffe8924f2be15421843df4caac0b5a100d2718594719aeb5891a89",
+          "last_write_utc": "2026-11-16T05:13:50.868727+00:00"
+        },
+        "configuration": {
+          "path": "build/engine_next/shadow-gpu-final2/OpaqueOffConfig.json",
+          "bytes": 759,
+          "sha256": "490e0d5b4779b14a28b160d09c04fc0d7c2ca3cb2b38c73bad733772abedd68e",
+          "last_write_utc": "2026-11-16T05:13:50.169930+00:00"
+        },
+        "image": {
+          "path": "build/engine_next/shadow-gpu-final2/OpaqueOff.ppm",
+          "bytes": 2764816,
+          "sha256": "d08c4578bdd7e532ec616bbe229f150c4f002b0dc1842ee7ddc2a31c75ef4010",
+          "last_write_utc": "2026-11-16T05:13:50.865732+00:00"
+        },
+        "values": {
+          "frames": 60,
+          "resizes": 0,
+          "directional_shadows": false,
+          "shadow_resolution": 2048,
+          "shadow_cascades": 4,
+          "shadow_split_distances": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "draw_instances": 4,
+          "scene_triangles": 6626
+        }
+      },
+      {
+        "name": "OpaqueOn",
+        "build": "final2",
+        "report": {
+          "path": "build/engine_next/shadow-gpu-final2/OpaqueOn.json",
+          "bytes": 42028,
+          "sha256": "487cfa1b4a1f5e3551dbf36d8f085a61ac8d04fcf96f3df2115876e004a9d3ea",
+          "last_write_utc": "2026-11-16T05:13:51.722446+00:00"
+        },
+        "configuration": {
+          "path": "build/engine_next/shadow-gpu-final2/OpaqueOnConfig.json",
+          "bytes": 758,
+          "sha256": "c01004379633c40e50a16d8985976e137ec9e7d431232497fb9d579a0e5ba1de",
+          "last_write_utc": "2026-11-16T05:13:50.961019+00:00"
+        },
+        "image": {
+          "path": "build/engine_next/shadow-gpu-final2/OpaqueOn.ppm",
+          "bytes": 2764816,
+          "sha256": "10d52aa4a0ab096f2c46c4f6f1bea1682a8938ca1936c43a2703f963752eab8a",
+          "last_write_utc": "2026-11-16T05:13:51.719446+00:00"
+        },
+        "values": {
+          "frames": 60,
+          "resizes": 0,
+          "directional_shadows": true,
+          "shadow_resolution": 2048,
+          "shadow_cascades": 4,
+          "shadow_split_distances": [
+            5.183702397557106,
+            10.958683298050515,
+            20.339838230116772,
+            50.0
+          ],
+          "gpu_validation": true,
+          "validation_errors": 0,
+          "draw_instances": 4,
+          "scene_triangles": 6626
+        }
+      }
+    ],
+    "commands": {
+      "path": "build/engine_next/shadow-gpu-final/GpuChecks.json",
+      "bytes": 13564,
+      "sha256": "baf77fce11eda6b6a0f57e5716269619aa85bdff6c16d22e018691216c14837f",
+      "last_write_utc": "2026-11-16T05:07:48.778136+00:00"
+    },
+    "final_commands": {
+      "path": "build/engine_next/shadow-gpu-final2/FinalGpuChecks.json",
+      "bytes": 7452,
+      "sha256": "43df96689eb312f161b96965c5206dd7dbf609b1248aec4f7d5e037c52e32717",
+      "last_write_utc": "2026-11-16T05:13:51.850325+00:00"
+    },
+    "v1_v2_pixels_identical": true,
+    "on_off_metrics": {
+      "changed_pixels": 19713,
+      "darkened_pixels": 17545,
+      "brightened_pixels": 0,
+      "difference_bounds": [
+        511,
+        238,
+        941,
+        454
+      ],
+      "mean_absolute_rgb": [
+        0.5896549479166666,
+        0.4487651909722222,
+        0.22439561631944444
+      ]
+    },
+    "receiver_regions": {
+      "opaque_receiver_shadow": {
+        "box": [
+          690,
+          410,
+          770,
+          440
+        ],
+        "changed_pixels": 2400,
+        "darkened_pixels": 2400,
+        "mean_absolute_rgb": [
+          40.690416666666664,
+          31.2475,
+          15.450833333333334
+        ]
+      },
+      "mirrored_receiver_shadow": {
+        "box": [
+          835,
+          420,
+          915,
+          440
+        ],
+        "changed_pixels": 1600,
+        "darkened_pixels": 1600,
+        "mean_absolute_rgb": [
+          43.161875,
+          32.36125,
+          15.97625
+        ]
+      },
+      "mask_receiver_fragment": {
+        "box": [
+          685,
+          353,
+          730,
+          375
+        ],
+        "changed_pixels": 137,
+        "darkened_pixels": 137,
+        "mean_absolute_rgb": [
+          3.596969696969697,
+          2.683838383838384,
+          1.2838383838383838
+        ]
+      },
+      "background_control": {
+        "box": [
+          50,
+          50,
+          450,
+          200
+        ],
+        "changed_pixels": 0,
+        "darkened_pixels": 0,
+        "mean_absolute_rgb": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "alpha_mask_opaque_control": {
+      "receiver_roi": [
+        685,
+        353,
+        730,
+        375
+      ],
+      "changed_shadow_only_pixels": 76,
+      "masked_mean_attenuation": [
+        3.596969696969697,
+        2.683838383838384,
+        1.2838383838383838
+      ],
+      "opaque_mean_attenuation": [
+        4.83030303030303,
+        3.5595959595959594,
+        1.7121212121212122
+      ]
+    }
+  },
+  "network": {
+    "passed": true,
+    "build": "final",
+    "input_driver": "M2 headless client with 24 real loopback inputs and reconnect",
+    "hierarchy_checks": {
+      "draw_samples_checked": 51,
+      "max_absolute_world_error": 1.0728836064011205e-07,
+      "driver_entity_id": 1,
+      "authoritative_final_x_expected": 2.072,
+      "observed_maximum_local_x": 2.07200026512146
+    },
+    "return_codes": {
+      "server": 0,
+      "visual": 0,
+      "client": 0
+    },
+    "evidence": [
+      {
+        "path": "build/engine_next/shadow-gpu-final/F-Network/Acceptance.json",
+        "bytes": 2239,
+        "sha256": "a12201e3b0069b473457ca3aaa0e145bcf8fee3027c24c5635b19d1f7409b217",
+        "last_write_utc": "2026-11-16T05:08:23.868672+00:00"
+      },
+      {
+        "path": "build/engine_next/shadow-gpu-final/F-Network/server.log",
+        "bytes": 1142,
+        "sha256": "84eb0fc8f1f6352e16a973658a9de515ea82bcbb247966e99b08832e81d52ea4",
+        "last_write_utc": "2026-11-16T05:08:23.757884+00:00"
+      },
+      {
+        "path": "build/engine_next/shadow-gpu-final/F-Network/client.log",
+        "bytes": 1740,
+        "sha256": "a968d59c39b1d84b1936ed2459f44081404849d80b624af60e9fbb15fc366086",
+        "last_write_utc": "2026-11-16T05:08:23.752382+00:00"
+      },
+      {
+        "path": "build/engine_next/shadow-gpu-final/F-Network/visual.log",
+        "bytes": 625,
+        "sha256": "b3abb76fc479d7bec90b013801c81f3fe4c0b97850ff92de524b5d7777841e95",
+        "last_write_utc": "2026-11-16T05:08:23.850631+00:00"
+      },
+      {
+        "path": "build/engine_next/shadow-gpu-final/F-Network/visual.json",
+        "bytes": 159813,
+        "sha256": "748b07a14a6c92eeb6ac754023dcac7d17abd0bb87d3b9742e02e5beccc1d828",
+        "last_write_utc": "2026-11-16T05:08:23.774552+00:00"
+      },
+      {
+        "path": "build/engine_next/shadow-gpu-final/F-Network/server.jsonl",
+        "bytes": 8908,
+        "sha256": "27847225f72463a9e749cab067938b560aa358ff39985e3a819e30332ab9d582",
+        "last_write_utc": "2026-11-16T05:08:23.757884+00:00"
+      }
+    ],
+    "claim": "Both peers completed graceful drain and all three processes returned zero."
+  },
+  "renderdoc": {
+    "passed": true,
+    "capture": {
+      "path": "build/engine_next/shadow-gpu-final2/Capture/M43-B_frame405.rdc",
+      "bytes": 6572395,
+      "sha256": "de6bd11f8e6e244859e1e4cebf8083dbcfb08ff5216bf18ec0fc40681444c087",
+      "last_write_utc": "2026-11-16T05:14:21.595990+00:00"
+    },
+    "inspection": {
+      "path": "build/engine_next/shadow-gpu-final2/Capture/Inspection.json",
+      "bytes": 396012,
+      "sha256": "76c09115d59af9fb69fdb904e765171550ebf41a2d47e37f93580889ec66c829",
+      "last_write_utc": "2026-11-16T05:16:38.822038+00:00"
+    },
+    "xml": {
+      "path": "build/engine_next/shadow-gpu-final2/Capture/M43-B_frame405.xml",
+      "bytes": 1952422,
+      "sha256": "9cd7f1e98e2a84b372b34aa67495503866129d5396e4bcc5048994cf90e059b3",
+      "last_write_utc": "2026-11-16T05:16:37.140467+00:00"
+    },
+    "thumbnail": {
+      "path": "build/engine_next/shadow-gpu-final2/Capture/M43-B_frame405.png",
+      "bytes": 188334,
+      "sha256": "ab3e0259104e9ae39a21a90c7b71da6d0a46829e06ae50929416a514bfd8ec30",
+      "last_write_utc": "2026-11-16T05:16:37.217948+00:00"
+    },
+    "run_report": {
+      "path": "build/engine_next/shadow-gpu-final2/Capture/B-CaptureRun.json",
+      "bytes": 566293,
+      "sha256": "1793cecd7a6718fc3ea91c56eeee04df6cfe5d970e012aa67aef7e88529656f1",
+      "last_write_utc": "2026-11-16T05:14:27.732453+00:00"
+    },
+    "renderdoc_integrity_verified": true,
+    "commands": [
+      {
+        "command": [
+          "D:\\Projects\\engine-next-m4-1-20261115\\build\\engine_next\\tools\\RenderDoc_1.47_64\\renderdoccmd.exe",
+          "convert",
+          "-f",
+          "D:\\Projects\\engine-next-m4-3-shadows-20261116\\build\\engine_next\\shadow-gpu-final2\\Capture\\M43-B_frame405.rdc",
+          "-o",
+          "D:\\Projects\\engine-next-m4-3-shadows-20261116\\build\\engine_next\\shadow-gpu-final2\\Capture\\M43-B_frame405.xml",
+          "-c",
+          "xml"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "D:\\Projects\\engine-next-m4-1-20261115\\build\\engine_next\\tools\\RenderDoc_1.47_64\\renderdoccmd.exe",
+          "thumb",
+          "--out",
+          "D:\\Projects\\engine-next-m4-3-shadows-20261116\\build\\engine_next\\shadow-gpu-final2\\Capture\\M43-B_frame405.png",
+          "D:\\Projects\\engine-next-m4-3-shadows-20261116\\build\\engine_next\\shadow-gpu-final2\\Capture\\M43-B_frame405.rdc"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "D:\\Projects\\engine-next-m4-1-20261115\\build\\engine_next\\tools\\RenderDoc_1.47_64\\renderdoccmd.exe",
+          "replay",
+          "--loops",
+          "1",
+          "D:\\Projects\\engine-next-m4-3-shadows-20261116\\build\\engine_next\\shadow-gpu-final2\\Capture\\M43-B_frame405.rdc"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "counts": {
+      "ID3D12GraphicsCommandList::DrawIndexedInstanced": 20,
+      "ID3D12GraphicsCommandList::DrawInstanced": 2,
+      "ID3D12GraphicsCommandList::Dispatch": 1,
+      "ID3D12GraphicsCommandList::ResourceBarrier": 34,
+      "ID3D12GraphicsCommandList::EndQuery": 14,
+      "ID3D12CommandQueue::Wait": 1
+    },
+    "depth_array": {
+      "resource_id": "330",
+      "Width": "2048",
+      "Height": "2048",
+      "DepthOrArraySize": "4",
+      "MipLevels": "1",
+      "Format": "40"
+    },
+    "slice_clears": [
+      {
+        "resource": "330",
+        "slice": 0,
+        "depth": 0.0,
+        "chunk_index": 190
+      },
+      {
+        "resource": "330",
+        "slice": 1,
+        "depth": 0.0,
+        "chunk_index": 213
+      },
+      {
+        "resource": "330",
+        "slice": 2,
+        "depth": 0.0,
+        "chunk_index": 236
+      },
+      {
+        "resource": "330",
+        "slice": 3,
+        "depth": 0.0,
+        "chunk_index": 259
+      }
+    ],
+    "draws_per_slice": {
+      "0": 4,
+      "1": 4,
+      "2": 4,
+      "3": 4
+    },
+    "lighting_descriptor_tables": [
+      {
+        "root_parameter": 1,
+        "descriptor_heap": "294",
+        "descriptor_index": 2
+      },
+      {
+        "root_parameter": 2,
+        "descriptor_heap": "294",
+        "descriptor_index": 0
+      },
+      {
+        "root_parameter": 3,
+        "descriptor_heap": "294",
+        "descriptor_index": 2072
+      },
+      {
+        "root_parameter": 4,
+        "descriptor_heap": "294",
+        "descriptor_index": 8
+      }
+    ],
+    "shader_dump": {
+      "path": "build/engine_next/shadow-gpu-final2/LightingShaderDump.txt",
+      "bytes": 62402,
+      "sha256": "d89ebe563ece7085c7ba3b78f87a6cd5e3964200335458f2682f77f1fd4669e9",
+      "last_write_utc": "2026-11-16T05:19:17.732549+00:00"
+    },
+    "shader_read": "The final Lighting.ps.cso reflection binds DirectionalShadow as Texture2DArray at t9. The shader implements a 3 by 3 manual comparison filter and cascade transition blending."
+  },
+  "limitations": [
+    "The benchmark is an M4 A shadow subscene.",
+    "Output checks use 1280 by 720 and network observer uses 960 by 640.",
+    "The network driver is the M2 headless client harness.",
+    "Native 4K and Unreal Engine comparison remain outside this check."
+  ]
+}

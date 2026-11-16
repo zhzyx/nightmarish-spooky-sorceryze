@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-16T05:09:58.607253+00:00",
+  "reviewer": "m42_capture_tools",
+  "scope": "Independent shadow benchmark generator and shader build routing review",
+  "findings": [],
+  "checks": [
+    "Generator uses only self-authored procedural sphere and receiver geometry plus shared procedural RGBA PNG data",
+    "Receiver winding faces +Y; fixture contains opaque, negative-scale mirrored, and MASK double-sided cases",
+    "Two separate output directories contain byte-identical four generated files and all manifest size/hash values match",
+    "Shader routing selects FixedMesh, Shadow, and Deferred source files by declared output name; ShadowVS/PS use their own file and all ten artifacts bind source key",
+    "Shadow.hlsl participates in native_inputs; ShadowData/ShadowBounds and tests participate in the actual compilation lists"
+  ],
+  "execution": {
+    "generator_command": "python engine_next/Tools/GenerateShadowBenchmark.py --output <two private directories>",
+    "exit_code": 0,
+    "identical_file_count": 4,
+    "shader_count": 10,
+    "baseline_test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=112 checks=8302 failures=0"
+  },
+  "generated_files": [
+    {
+      "path": "build/engine_next/shadow-generator-independent/first/BenchmarkManifest.json",
+      "bytes": 2142,
+      "sha256": "42efd8bec41ba13fb26ddc42bb94a26d07eaaf03c70d5bfbb9738b3b58c15859"
+    },
+    {
+      "path": "build/engine_next/shadow-generator-independent/first/A-Shadow/BuildRequest.json",
+      "bytes": 1347,
+      "sha256": "1cdb5b545dc2b59c3c758a62d10ddc777262102c3773990243c7c2bf49847f74"
+    },
+    {
+      "path": "build/engine_next/shadow-generator-independent/first/A-Shadow/SceneDocument.json",
+      "bytes": 859,
+      "sha256": "603db1929fb45f6554ff40887cf444de0b69e7d94feee9db6781215489a88655"
+    },
+    {
+      "path": "build/engine_next/shadow-generator-independent/first/A-Shadow/ShadowReceiver.glb",
+      "bytes": 91916,
+      "sha256": "9a67739673d181135de2325cb470cae3e77ef235e311e5759375673450cee398"
+    }
+  ],
+  "source_inputs": [
+    {
+      "path": "engine_next/Tools/GenerateShadowBenchmark.py",
+      "bytes": 4974,
+      "sha256": "acdf6b48ba8639147eefa0180c11f54b61d67bb85f446a0f890036fb6b7791b4"
+    },
+    {
+      "path": "engine_next/Tools/GenerateVisualBenchmarks.py",
+      "bytes": 14503,
+      "sha256": "c8016eb9f0762a1312fbfe73142f0754176d86eacf6424afbce70d8b07b7da6d"
+    },
+    {
+      "path": "engine_next/Tools/BuildVisualRuntime.py",
+      "bytes": 26031,
+      "sha256": "0d6de8818c9b50d050964dee51bd4e581d01558b03c79e97a949ff01e8587ff2"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Shadow.hlsl",
+      "bytes": 1083,
+      "sha256": "1347aab83aa23c69df4853a9671c9f72123895f1dcff920b57fad9befe782ddc"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/ShadowData.h",
+      "bytes": 3964,
+      "sha256": "c4e0245746d12b296f09375e6bcae1e72556e31dfdf21104c67bcfcc01908205"
+    },
+    {
+      "path": "engine_next/Rendering/ShadowData.cpp",
+      "bytes": 12975,
+      "sha256": "0b1594e46f52bb443868d7cf1d0b063c24cc6bc1da032fdbd318d63db527a10b"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestShadowData.cpp",
+      "bytes": 16073,
+      "sha256": "6a8c5266e8366ef5cf6fc444d0a1d2bfed3cefb8a0330aea8b534b4ac3a2f838"
+    }
+  ],
+  "test_log": {
+    "path": "build/engine_next/shadow-generator-independent.log",
+    "bytes": 928,
+    "sha256": "6db3ca1eef76c88caed648acd47473dedbcb050991cb0177508f9a1953d4b667"
+  },
+  "impact_source_delta": {
+    "changed_files": [
+      "engine_next/Rendering/VisualRuntime.cpp"
+    ],
+    "exact_transform": "old.replace(b'arrRanges', b'arrDescriptorRanges') == current",
+    "replacement_count": 7,
+    "snapshot_source_sha256": "2929fe0c348fff72a127184ba903727f524bc3dbbb4ccdf0b0660bbd1964d9a3",
+    "current_source_sha256": "ad317b997214d52d95fe2b32e5a255b8bf874835df7a14a628a0e10813daa184",
+    "verification": "Exact byte comparison passed. Runtime identity changed; existing impact binary remains bound to its original native key."
+  }
+}

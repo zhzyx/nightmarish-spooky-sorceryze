@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3e2123e25967b28756250625ca27b646f331e09e",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c8c92093114e5064d6592ad32be744fca3c95bc06dae29e4b04ef903dba9aa07",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1349",
+    "action": "validation",
+    "detection_head": "98a464d7ac0f1aa63873585a58cd22b59efa001b",
+    "context_sha256": "6d0278f63bd8534912f2f3983462b9874d7f72a481cfbb3ee15d02700d3f335d",
+    "operator": "kaiyunxue",
+    "worker": "/root/m42_network_acceptance",
+    "authority_ref": "Authorized M4 implementation and CI failure diagnosis",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43809825752/job/133108761519",
+    "diagnosis": "Repeated macOS failure occurs during clean-source M3Scene reconnect handshake after twelve inputs. No socket errno was logged. Add only first-party Poll error diagnostics to identify actual socket error while preserving original failure behavior.",
+    "next_action": "Submit instrumented candidate after local runtime and rendering regressions; inspect exact-head macOS CI error and repair only the confirmed cause.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-16T05:37:33.404939+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-16T05:52:32.756323+00:00",
+  "sha256": "df98348cc2768dd18019f8e0963a09fca618607ca340e27395dce0365e507b74"
+}
