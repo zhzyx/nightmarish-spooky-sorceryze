@@ -1,0 +1,65 @@
+{
+  "request_id": "collaborator-pr-unblock-20261117",
+  "issue_number": 1388,
+  "base": "6590bc7ed9fffd55a0e72d844c4c8331b25a3d4a",
+  "local_tests": {
+    "command": "node --test customizations/components/issue-workorders/test_issue_association_workflow.mjs",
+    "passed": 7,
+    "failed": 0
+  },
+  "failure": {
+    "run": 43922625430,
+    "conclusion": "startup_failure",
+    "jobs": 0,
+    "annotation": "GitHub scheduled brownout of default pull_request_target event policy"
+  },
+  "existing_success": {
+    "run": 43931744179,
+    "job": "issue-association",
+    "conclusion": "success"
+  },
+  "permissions": {
+    "zhzyx": "admin",
+    "kaiyunxue": "write",
+    "Sail-Li": "write"
+  },
+  "protection": {
+    "main_protected": false,
+    "rulesets": []
+  },
+  "other_writer_evidence": {
+    "pr": 1378,
+    "merged_by": "kaiyunxue",
+    "requested_reviewers": [
+      "zhzyx",
+      "Sail-Li"
+    ],
+    "review_requests_created_by": "kaiyunxue"
+  },
+  "hashes": {
+    ".github/workflows/gonggong-issue-gate.yml": "83ca18c034263085e5088163fbd253d787600cb4f575f8b168a49932e2d506ca",
+    "customizations/components/issue-workorders/README.md": "fbadcb7bf8c8f88ae67a8ee131dbc70bcbff1846724dca17c29c50758445a670",
+    "customizations/components/issue-workorders/yanluo.md": "6c1e2d4468768490330024fd6e997d06d0d4e4714e56c1d464348485e8d7b517",
+    "customizations/components/issue-workorders/test_issue_association_workflow.mjs": "032159e0d96307a8a6ab04c231b2d0c41f5728605dde992bb4ac23804f2477dd"
+  },
+  "limits": [
+    "No impersonation of another collaborator",
+    "PR workflow definition comes from merge ref; local gate and independent review remain required",
+    "Historical zero-job failure is not relabeled as a successful run"
+  ],
+  "hash_basis": "Git index bytes",
+  "independent_review": {
+    "worker": "/root/review_pr_unblock",
+    "tool": "collaboration.spawn_agent",
+    "state": "completed",
+    "verdict": "passed",
+    "tests_passed": 7,
+    "scope": [
+      ".github/workflows/gonggong-issue-gate.yml",
+      "customizations/components/issue-workorders/README.md",
+      "customizations/components/issue-workorders/yanluo.md",
+      "customizations/components/issue-workorders/test_issue_association_workflow.mjs"
+    ],
+    "findings": []
+  }
+}

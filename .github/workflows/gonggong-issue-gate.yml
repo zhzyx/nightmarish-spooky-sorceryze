@@ -1,7 +1,7 @@
 name: GongGong Issue association
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, edited, reopened, synchronize, ready_for_review]
 
 permissions:
@@ -13,7 +13,9 @@ jobs:
   issue-association:
     runs-on: ubuntu-latest
     steps:
-      # Trusted base workflow only. Never check out or execute PR code here.
+      # Read-only metadata validation: no checkout, secrets, or PR code execution.
+      # The workflow is part of the PR merge ref; it is not trusted candidate admission.
+      # Workflow changes still require the independent review and local delivery gate.
       - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
         with:
           script: |

@@ -36,6 +36,10 @@ python customizations/components/issue-workorders/writer_submit.py --issue <编�
 
 ## 协作人以本人账号交付（PR 或合并队列）
 
+独立审查要求审查责任与实现责任独立，不固定要求 Sail-Li、仓库所有者或管理员。宿主已有可用的独立 Agent 时，按实际派发入口组织核查并保存候选、审查范围、真实工作者和结论；也可由有权独立协作者审查。实现者自评不算独立审查，明确保留给人的判断及实际分支保护要求的 GitHub approval 仍须满足。普通 review request 只表示邀请，不等于分支要求审批，也不能代替已完成审查；不得仅因已邀请某个人就停止所有可执行交付步骤。审查明确不通过时修复具体问题再复验，不能用“人人可提交”跳过。
+
+`issue-association` 只验证关联元数据，与独立审查和候选准入分开核对。工作流使用只读 `pull_request` 事件，不检出或执行候选代码、不读取 secrets、不写仓库；工作流定义来自 PR 合并引用，本检查本身不证明其未被候选修改。正式本地门禁、独立审查和精确 CI 仍承担交付核验。`startup_failure` 且零作业时先读取 Actions 注释与事件策略，不将其报告成 Issue 关联错误或请求固定账号审查。历史 `pull_request_target` 运行可能因平台默认事件策略被阻止，重复请求审查不会解除此阻塞。
+
 所有当前仓库协作人都是关键可提交角色。身份随 GitHub 仓库协作关系生效和撤销，不维护账号白名单。核对完整名单用 `gh api repos/OWNER/REPO/collaborators --paginate`；只需办理本人交付时，用 `gh api user --jq .login` 和 `gh repo view OWNER/REPO --json viewerPermission` 核对同一认证通道。OWNER/REPO 取自仓库根的 work-items.json 并与 origin 核对。提交作者、Issue 创建者和本地 Git 用户名均不证明当前权限。无法读取完整名单不等于本人没有权限；操作仍以远端实际许可为准。
 
 1. 每位协作人可提交自己的候选。先按正式工单门禁提交，再运行 git-check --require-committed。可写者推送任务分支；只读或 triage 协作人按仓库允许的 fork/PR 流程贡献，无权写入上游或自行合入。关键角色不改变仓库 ACL。

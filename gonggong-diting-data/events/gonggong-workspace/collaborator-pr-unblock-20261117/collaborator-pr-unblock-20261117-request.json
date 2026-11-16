@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "collaborator-pr-unblock-20261117-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "collaborator-pr-unblock-20261117",
+  "kind": "request",
+  "occurred_at": "2026-11-16T19:27:59.244822+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1388",
+  "agent": {
+    "id": "codex-current-session",
+    "version": "20261117",
+    "origin": "external-authorized-host",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5"
+  },
+  "payload": {
+    "intent": "Repair collaborator PR startup failures and fixed-person review misconception",
+    "authorization_ref": "Current Codex user request 2026-11-17",
+    "definition": "AGENTS.md",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "4522c3ea20f98307d9e23ddb5353d90be0a69562bc232acc013a96b348aa9a6a"
+}
