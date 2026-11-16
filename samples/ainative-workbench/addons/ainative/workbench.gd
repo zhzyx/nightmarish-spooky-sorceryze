@@ -442,7 +442,7 @@ func _ready():
 	node_image_model_edit = line(inspector, "重绘提示词非空时使用的图像模型")
 	node_image_model_choice.item_selected.connect(func(index): node_image_model_edit.text = str(node_image_model_choice.get_item_metadata(index)))
 	text_edit = TextEdit.new()
-	text_edit.placeholder_text = "文字说明（请勿填写凭据）"
+	text_edit.placeholder_text = "复制节点的文字说明（请勿填写凭据）"
 	text_edit.custom_minimum_size.y = 65
 	inspector.add_child(text_edit)
 	parameter_form = preload("res://addons/ainative/parameter_form.gd").new()
@@ -715,6 +715,13 @@ func rebuild():
 	for edge in edges:
 		graph.connect_node(edge.from, 1 if edge.get("output", "result") == "image_set" else 0, edge.to, 0)
 
+func _merged_requirements(primary: String, supplementary: String) -> String:
+	var main = primary.strip_edges()
+	var extra = supplementary.strip_edges()
+	if main.is_empty(): return extra
+	if extra.is_empty(): return main
+	return main + "\n" + extra
+
 func select_node(id: String):
 	var changed = selected_id != id
 	selected_id = id
@@ -726,8 +733,17 @@ func select_node(id: String):
 			_sync_node_files(data)
 			source_edit.text = " ; ".join(_node_paths(data, "source"))
 			context_edit.text = " ; ".join(_node_paths(data, "image_context"))
-			text_edit.text = data.text
-			parameter_form.configure(selected_kind, data.parameters)
+			text_edit.visible = selected_kind == "copy"
+			if selected_kind == "copy":
+				text_edit.text = str(data.get("text", ""))
+				parameter_form.configure(selected_kind, data.parameters)
+			else:
+				# Legacy text and prompt become one editable requirement. The old
+				# field is cleared only when the user applies or runs the node.
+				var requirements = data.parameters.duplicate(true)
+				requirements["prompt"] = _merged_requirements(str(requirements.get("prompt", "")), str(data.get("text", "")))
+				text_edit.text = ""
+				parameter_form.configure(selected_kind, requirements)
 	_configure_source_picker(selected_kind)
 	source_edit.tooltip_text = source_edit.text if not source_edit.text.is_empty() else "通过系统资源管理器选择源文件，可多选"
 	context_edit.tooltip_text = context_edit.text if not context_edit.text.is_empty() else "通过系统资源管理器选择参考图像，可多选"
@@ -752,7 +768,13 @@ func apply_fields() -> bool:
 					var secondary_name = node_image_model_edit.text.strip_edges()
 					if data.has('image_model') or not secondary_name.is_empty(): data.image_model = secondary_name
 			_sync_node_files(data)
-			data.text = text_edit.text
+			if data.get("type", "copy") == "copy":
+				data.text = text_edit.text
+			else:
+				# Keep the hidden control compatible with existing automation while
+				# storing all non-copy requirements in the canonical prompt field.
+				params["prompt"] = _merged_requirements(str(params.get("prompt", "")), text_edit.text)
+				data.text = ""
 			data.parameters = params
 	_update_service_summary()
 	return true

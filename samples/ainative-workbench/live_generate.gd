@@ -37,13 +37,14 @@ func run():
 	panel.add_generator()
 	panel.params_edit.text = '{"prompt":"a friendly humanoid robot in blue armor","seed":42}'
 	panel.context_edit.text = args[0]
-	panel.text_edit.text = "front view, full body, plain white background"
+	panel.parameter_form.prompt_edit.text = "a friendly humanoid robot in blue armor\nfront view, full body, plain white background"
 	panel.path_edit.text = panel.state_dir.path_join("context-workflow.json")
 	panel.save_graph()
 	var portable = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text))
 	check(portable is Dictionary, "real workflow saved")
 	if not portable is Dictionary: quit(1); return
 	check(portable.nodes[0].image_context == "" and portable.nodes[0].image_context_snapshot.content_sha256 == original_hash, "reference embedded with its actual byte hash")
+	check(portable.nodes[0].text == "" and portable.nodes[0].parameters.prompt == "a friendly humanoid robot in blue armor\nfront view, full body, plain white background", "workflow stores one merged generation requirement")
 	panel.open_graph()
 	var ticks = panel.heartbeat
 	panel.current = {}
@@ -57,21 +58,20 @@ func run():
 	var node = panel.current.nodes[panel.selected_id]
 	check(node.provider == "comfy" and node.request.node == "text_to_image" and node.request.parameters.seed == 42, "actual typed node accepted editor integer transport")
 	var reference_found = false
-	var text_found = false
+	var text_found = node.request.parameters.prompt.contains("front view, full body, plain white background")
 	for context in node.request.context:
-		if context.has("text"): text_found = context.text == panel.text_edit.text
 		if context.has("artifact"):
 			for asset in panel.current.manifest.artifacts:
 				if asset.id == context.artifact.id and asset.revision == context.artifact.revision:
 					reference_found = asset.payload.content_sha256 == original_hash
-	check(reference_found and text_found, "actual generation retained both image and text context")
+	check(reference_found and text_found, "actual generation retained the reference image and merged text requirement")
 	var output_ref = node.job.outputs.result
 	var output_hash = ""
 	for asset in panel.current.manifest.artifacts:
 		if asset.id == output_ref.id and asset.revision == output_ref.revision:
 			output_hash = asset.payload.content_sha256
 			var usage = asset.payload.provenance.usage
-			check(usage.image_usage == "img2img_initial_latent" and usage.effective_prompt.contains(panel.text_edit.text), "provider used both contexts in actual inference")
+			check(usage.image_usage == "img2img_initial_latent" and usage.effective_prompt.contains("front view, full body, plain white background"), "provider used the reference and merged requirement in actual inference")
 	panel.request_preview()
 	await wait_idle()
 	check(panel.texture.texture != null and panel.preview_run == panel.run_id, "actual generated context result previewed")
