@@ -11,11 +11,36 @@ import sys
 from pathlib import Path
 
 import BuildGameplay as BuildSupport
+import BuildRuntime as RuntimeSupport
 import PackageVisualRuntime
 
 CORE_SOURCES = [
     "engine_next/Rendering/FrameGraph.cpp",
+    "engine_next/Rendering/Cook/GltfDecoder.cpp",
+    "engine_next/Rendering/Cook/ImageDecoder.cpp",
+    "engine_next/Rendering/Cook/EnvironmentLighting.cpp",
+    "engine_next/Rendering/Cook/GpuPackage.cpp",
+    "engine_next/Rendering/RenderScene.cpp",
     "engine_next/Serialization/Json.cpp",
+    "engine_next/Serialization/Sha256.cpp",
+    "engine_next/Assets/Types.cpp",
+    "engine_next/Assets/AssetManifest.cpp",
+    "engine_next/Assets/SceneDocument.cpp",
+    "engine_next/Assets/BlobValidator.cpp",
+    "engine_next/Assets/AssetPackage.cpp",
+]
+ZLIB_SOURCES = [
+    "engine_next/thirdparty/zlib/" + name
+    for name in ("adler32.c", "crc32.c", "inflate.c", "inffast.c", "inftrees.c", "zutil.c")
+]
+JPEG_SOURCES = [
+    "engine_next/thirdparty/libjpeg-turbo/" + name
+    for name in json.loads(
+        (Path(__file__).resolve().parents[1] / "thirdparty/libjpeg-turbo/UPSTREAM.json").read_text(encoding="utf-8")
+    )["sources"]
+]
+CLIENT_SOURCES = [
+    source for source in RuntimeSupport.LIBRARY_SOURCES if source not in CORE_SOURCES and not source.endswith(".c")
 ]
 VISUAL_SOURCES = [
     "engine_next/Apps/NextVisualClientMain.cpp",
@@ -25,16 +50,27 @@ VISUAL_SOURCES = [
 TEST_SOURCES = [
     "engine_next/Tests/RenderingTestMain.cpp",
     "engine_next/Tests/Rendering/TestFrameGraph.cpp",
+    "engine_next/Tests/Rendering/TestGltfDecoder.cpp",
+    "engine_next/Tests/Rendering/TestImageDecoder.cpp",
+    "engine_next/Tests/Rendering/TestEnvironmentLighting.cpp",
+    "engine_next/Tests/Rendering/TestGpuPackage.cpp",
 ]
 PUBLIC_HEADERS = [
     "EngineNext/Rendering/FrameGraph.h",
+    "EngineNext/Rendering/MeshData.h",
+    "EngineNext/Rendering/ImageData.h",
+    "EngineNext/Rendering/RenderScene.h",
     "EngineNext/Rendering/VisualRuntime.h",
 ]
-SYSTEM_LIBRARIES = ["d3d12", "dxgi", "dxguid", "user32"]
+SYSTEM_LIBRARIES = ["d3d12", "dxgi", "dxguid", "user32", "ole32", "windowscodecs", "ws2_32", "winmm"]
 SHADERS = [
     ("VSMain", "vs_6_0", "FixedMesh.vs.cso", []),
     ("PSMain", "ps_6_0", "FixedMesh.ps.cso", []),
     ("CSMain", "cs_6_0", "FixedMesh.cs.cso", ["-D", "COMPUTE_STAGE=1"]),
+    ("VSMain", "vs_6_0", "Deferred.vs.cso", ["-D", "GEOMETRY_STAGE=1"]),
+    ("PSMain", "ps_6_0", "Deferred.ps.cso", ["-D", "GEOMETRY_STAGE=1"]),
+    ("FullscreenVS", "vs_6_0", "Lighting.vs.cso", []),
+    ("LightingPS", "ps_6_0", "Lighting.ps.cso", []),
 ]
 
 
@@ -131,8 +167,12 @@ def parse_includes(args, output, dependency):
     root = args.repo.resolve()
     if args.compiler == "clang":
         text = dependency.read_text(encoding="utf-8").replace("\\\n", " ")
-        _, _, body = text.partition(":")
-        paths = [Path(value.replace("\\ ", " ")) for value in body.split()]
+        separator = re.search(r":\s", text)
+        if separator is None:
+            raise ValueError("Clang dependency file has no target separator")
+        body = text[separator.end() :]
+        words = re.findall(r"(?:\\.|[^\s\\])+", body)
+        paths = [Path(re.sub(r"\\([ #\\])", r"\1", value).replace("$$", "$")) for value in words]
         paths = [path if path.is_absolute() else root / path for path in paths]
     else:
         if dependency is None or not dependency.is_file():
@@ -141,7 +181,12 @@ def parse_includes(args, output, dependency):
         data = data.get("Data", {})
         source = data.get("Source")
         includes = data.get("Includes")
-        if not isinstance(source, str) or not source or not isinstance(includes, list) or not includes:
+        if (
+            not isinstance(source, str)
+            or not source
+            or not isinstance(includes, list)
+            or (not includes and not source.endswith(".c"))
+        ):
             raise ValueError("MSVC source-dependency output is incomplete")
         if any(not isinstance(path, str) or not path for path in includes):
             raise ValueError("MSVC source-dependency output contains invalid includes")
@@ -149,7 +194,7 @@ def parse_includes(args, output, dependency):
     includes = []
     for path in paths:
         name = BuildSupport.repository_name(root, path)
-        if name is not None and not name.startswith(("engine_next/", "build/engine_next/")):
+        if name is not None and not name.startswith(("ai_core/", "engine_next/", "build/engine_next/")):
             raise ValueError("Undeclared repository include: " + name)
         includes.append(str(path.resolve()))
     return sorted(set(includes))
@@ -165,7 +210,7 @@ def compile_sources(args, sources, commands, include_audit):
         dependency = output.with_suffix(".json" if args.compiler == "msvc" else ".d")
         if dependency.exists():
             dependency.unlink()
-        command = BuildSupport.compiler_command(args, source_path, output, dependency)
+        command = RuntimeSupport.compiler_command_with_enet(args, source_path, output, dependency)
         if args.compiler == "msvc":
             command[command.index("/EHsc")] = "/EHs-c-"
             command.remove("/showIncludes")
@@ -183,6 +228,70 @@ def compile_sources(args, sources, commands, include_audit):
         commands.append([str(value) for value in command])
         objects.append(output)
     return objects
+
+
+def compile_c_source(args, source, output, commands, include_audit):
+    dependency = output.with_suffix(".json" if args.compiler == "msvc" else ".d")
+    if args.compiler == "msvc":
+        command = [
+            args.cl,
+            "/nologo",
+            "/TC",
+            "/std:c17",
+            "/O2",
+            "/W4",
+            "/WX",
+            "/wd4100",
+            "/wd4245",
+            "/wd5287",
+            "/fp:strict",
+            "/D_WINSOCK_DEPRECATED_NO_WARNINGS",
+            "/sourceDependencies",
+            str(dependency),
+            "/I",
+            args.repo,
+            "/I",
+            args.repo / "engine_next/thirdparty/enet/include",
+            "/I",
+            args.repo / "engine_next/thirdparty/libjpeg-turbo/src",
+            "/DNO_GETENV",
+            "/c",
+            args.repo / source,
+            "/F" + "o" + str(output),
+        ]
+    else:
+        command = [
+            args.clang,
+            "-std=c99",
+            "-O1" if args.sanitize else "-O2",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-Wno-unused-parameter",
+            "-pedantic",
+            "-ffp-contract=off",
+            "-DHAS_INET_PTON=1",
+            "-DHAS_INET_NTOP=1",
+            "-I",
+            args.repo,
+            "-I",
+            args.repo / "engine_next/thirdparty/enet/include",
+            "-I",
+            args.repo / "engine_next/thirdparty/libjpeg-turbo/src",
+            "-DNO_GETENV",
+            "-MMD",
+            "-MF",
+            dependency,
+            "-c",
+            args.repo / source,
+            "-o",
+            output,
+        ]
+        if args.sanitize:
+            command.extend(["-fsanitize=address,undefined", "-fno-omit-frame-pointer"])
+    raw = BuildSupport.run(command, cwd=args.repo, env=args.tool_environment)
+    include_audit[source] = parse_includes(args, raw, dependency)
+    commands.append([str(value) for value in command])
 
 
 def create_archive(args, objects, commands):
@@ -217,6 +326,10 @@ def audit_dependencies(args, executable, visual):
         "vcruntime140.dll",
         "vcruntime140_1.dll",
         "ucrtbase.dll",
+        "ole32.dll",
+        "windowscodecs.dll",
+        "ws2_32.dll",
+        "winmm.dll",
     }
     if visual:
         allowed.update({"d3d12.dll", "dxgi.dll", "user32.dll"})
@@ -232,6 +345,8 @@ def audit_symbols(args, inputs):
     for path in inputs:
         command = [args.dumpbin, "/NOLOGO", "/SYMBOLS", path] if args.compiler == "msvc" else [args.nm, path]
         output = BuildSupport.run(command, env=args.tool_environment).decode("utf-8", errors="replace")
+        if args.compiler == "msvc":
+            output = "\n".join(line for line in output.splitlines() if "| ??_C@" not in line)
         if any(token in output for token in BuildSupport.FORBIDDEN_SYMBOLS):
             raise ValueError("Forbidden symbol in " + path.name)
     return {"forbidden": [], "audited_inputs": [path.name for path in inputs]}
@@ -240,7 +355,7 @@ def audit_symbols(args, inputs):
 def link_target(args, name, objects, library, core_objects, commands, visual=False):
     executable = args.build_dir / (name + ".exe" if args.compiler == "msvc" else name)
     response = args.build_dir / (name + "Link.rsp")
-    libraries = SYSTEM_LIBRARIES if visual else []
+    libraries = SYSTEM_LIBRARIES if visual else (["ole32", "windowscodecs"] if args.compiler == "msvc" else [])
     values = [*objects, library]
     if args.compiler == "msvc":
         values.extend([name + ".lib" for name in libraries])
@@ -263,7 +378,7 @@ def link_target(args, name, objects, library, core_objects, commands, visual=Fal
     commands.append([str(value) for value in command])
     manifest = {
         "schema_version": 1,
-        "target": "next_visual_client" if visual else "next_runtime",
+        "target": "next_visual_client" if visual else "next_rendering_tests",
         "producer": {"kind": "linker_response", **BuildSupport.artifact(args.repo, response)},
         "objects": [BuildSupport.artifact(args.repo, path) for path in [*core_objects, *objects]],
         "libraries": [BuildSupport.artifact(args.repo, library)],
@@ -288,9 +403,13 @@ def link_target(args, name, objects, library, core_objects, commands, visual=Fal
 
 def compile_shaders(args, commands):
     compiler = find_dxc(args.tool_environment, args.dxc)
-    source = args.repo / "engine_next/Rendering/Shaders/FixedMesh.hlsl"
     results = []
     for entry, profile, name, definitions in SHADERS:
+        source = (
+            args.repo
+            / "engine_next/Rendering/Shaders"
+            / ("FixedMesh.hlsl" if name.startswith("FixedMesh") else "Deferred.hlsl")
+        )
         output = args.build_dir / name
         command = [compiler, "-E", entry, "-T", profile, "-Ges", "-WX", "-O3", "-Fo", output, *definitions, source]
         BuildSupport.run(command, cwd=args.repo, env=args.tool_environment)
@@ -313,12 +432,18 @@ def build(args):
     args.build_dir.mkdir(parents=True, exist_ok=True)
     (args.build_dir / "Objects").mkdir(exist_ok=True)
     configure_tools(args)
+    if args.compiler == "clang":
+        args.clang = shutil.which("clang", path=args.tool_environment.get("PATH"))
     commands = []
     include_audit = {}
     core_objects = compile_sources(args, CORE_SOURCES, commands, include_audit)
+    for source in [*ZLIB_SOURCES, *JPEG_SOURCES, "engine_next/Rendering/Cook/JpegValidation.c"]:
+        output = args.build_dir / "Objects" / object_name(source, ".obj" if args.compiler == "msvc" else ".o")
+        compile_c_source(args, source, output, commands, include_audit)
+        core_objects.append(output)
     library, members = create_archive(args, core_objects, commands)
     header_sources = []
-    headers = PUBLIC_HEADERS[:1] if args.tests_only else PUBLIC_HEADERS
+    headers = PUBLIC_HEADERS[:-1] if args.tests_only else PUBLIC_HEADERS
     for index, header in enumerate(headers):
         source = args.build_dir / "Objects" / ("PublicHeader" + str(index) + ".cpp")
         source.write_text('#include "' + header + '"\n', encoding="utf-8", newline="\n")
@@ -339,27 +464,48 @@ def build(args):
     dxc = None
     if not args.tests_only:
         shaders, dxc = compile_shaders(args, commands)
-        visual_objects = compile_sources(args, VISUAL_SOURCES, commands, include_audit)
+        visual_objects = compile_sources(args, [*CLIENT_SOURCES, *VISUAL_SOURCES], commands, include_audit)
+        for source in RuntimeSupport.ENET_SOURCES:
+            if source.endswith("/unix.c"):
+                continue
+            output = args.build_dir / "Objects" / object_name(source, ".obj")
+            compile_c_source(args, source, output, commands, include_audit)
+            visual_objects.append(output)
         targets.append(
             link_target(args, "next_visual_client", visual_objects, library, core_objects, commands, visual=True)
         )
     native_files = sorted({
         *CORE_SOURCES,
+        *ZLIB_SOURCES,
+        *JPEG_SOURCES,
+        "engine_next/Rendering/Cook/JpegValidation.c",
         *TEST_SOURCES,
+        *([] if args.tests_only else CLIENT_SOURCES + RuntimeSupport.ENET_SOURCES),
         *([] if args.tests_only else VISUAL_SOURCES),
         *["engine_next/include/" + name for name in headers],
         "engine_next/Tests/TestFramework.h",
         "engine_next/Tools/BuildGameplay.py",
+        "engine_next/Tools/BuildRuntime.py",
+        *[
+            path.relative_to(args.repo).as_posix()
+            for name in ("enet", "zlib", "libjpeg-turbo")
+            for path in (args.repo / "engine_next/thirdparty" / name).rglob("*")
+            if path.is_file()
+        ],
         "engine_next/Tools/BuildVisualRuntime.py",
         "engine_next/Tools/PackageVisualRuntime.py",
         "tools/check_engine_next_contract.py",
         "tools/engine_next_contract.json",
-        *([] if args.tests_only else ["engine_next/Rendering/Shaders/FixedMesh.hlsl"]),
+        *(
+            []
+            if args.tests_only
+            else ["engine_next/Rendering/Shaders/FixedMesh.hlsl", "engine_next/Rendering/Shaders/Deferred.hlsl"]
+        ),
         *[
             name
             for values in include_audit.values()
             for path in values
-            if (name := BuildSupport.repository_name(args.repo, path)) and name.startswith("engine_next/")
+            if (name := BuildSupport.repository_name(args.repo, path)) and name.startswith(("engine_next/", "ai_core/"))
         ],
     })
     native_identity = {

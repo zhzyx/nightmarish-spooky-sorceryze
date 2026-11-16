@@ -28,6 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
+#include "engine_next/Rendering/Cook/GpuPackage.h"
 #include "engine_next/include/EngineNext/AI/ProcessTransport.h"
 #include "engine_next/include/EngineNext/AI/WorkflowController.h"
 #include "engine_next/include/EngineNext/Assets/AssetCompiler.h"
@@ -202,7 +203,7 @@ int main(int in_nArgumentCount, char **in_ppArguments)
 {
 	if (in_nArgumentCount < 2 || (in_nArgumentCount == 2 && std::string(in_ppArguments[1]) == "--help"))
 	{
-		std::cout << "Usage: next_asset compile --request FILE --source-root DIR --output DIR.enpak | validate --package DIR.enpak | inspect --package DIR.enpak | ai-run --request FILE --python FILE --executor-script FILE --factory NAME --database FILE --state FILE --output DIR.enpak [--resume]\n";
+		std::cout << "Usage: next_asset compile --request FILE --source-root DIR --output DIR.enpak | validate --package DIR.enpak | inspect --package DIR.enpak | gpu-cook --package DIR.enpak --output DIR.engpu | gpu-validate --package DIR.engpu --source-digest SHA256 | ai-run --request FILE --python FILE --executor-script FILE --factory NAME --database FILE --state FILE --output DIR.enpak [--resume]\n";
 		return in_nArgumentCount == 2 ? 0 : 2;
 	}
 	const std::string strCommand = in_ppArguments[1];
@@ -210,12 +211,22 @@ int main(int in_nArgumentCount, char **in_ppArguments)
 	for (int nIndex = 2; nIndex < in_nArgumentCount; ++nIndex)
 	{
 		const std::string strOption = in_ppArguments[nIndex];
+		if (strCommand == "gpu-cook" || strCommand == "gpu-validate")
+		{
+			const bool bAllowed = strOption == "--package" ||
+					(strCommand == "gpu-cook" && strOption == "--output") ||
+					(strCommand == "gpu-validate" && strOption == "--source-digest");
+			if (!bAllowed || mapOptions.count(strOption) != 0)
+			{
+				return 2;
+			}
+		}
 		if (strOption == "--resume")
 		{
 			mapOptions[strOption] = "true";
 			continue;
 		}
-		static const char *arrOptions[] = { "--request", "--source-root", "--output", "--package", "--python", "--executor-script", "--factory", "--database", "--state", "--max-steps", "--timeout-ms", "--output-limit" };
+		static const char *arrOptions[] = { "--request", "--source-root", "--output", "--package", "--python", "--executor-script", "--factory", "--database", "--state", "--max-steps", "--timeout-ms", "--output-limit", "--source-digest" };
 		bool bKnown = false;
 		for (const char *pOption : arrOptions)
 		{
@@ -245,6 +256,39 @@ int main(int in_nArgumentCount, char **in_ppArguments)
 		return RunAi(mapOptions);
 	}
 	EngineNext::Assets::Diagnostics arrDiagnostics;
+	if (strCommand == "gpu-cook")
+	{
+		if (mapOptions.count("--package") == 0 || mapOptions.count("--output") == 0)
+		{
+			return 2;
+		}
+		if (!EngineNext::Rendering::CookGpuPackage(mapOptions.at("--package"), mapOptions.at("--output"), arrDiagnostics))
+		{
+			return Failure(arrDiagnostics);
+		}
+		Print(JsonValue::Object{ { "diagnostics", JsonValue::List{} }, { "valid", true } });
+		return 0;
+	}
+	if (strCommand == "gpu-validate")
+	{
+		if (mapOptions.count("--package") == 0 || mapOptions.count("--source-digest") == 0)
+		{
+			return 2;
+		}
+		EngineNext::Rendering::RenderScene stScene;
+		if (!EngineNext::Rendering::LoadGpuPackage(mapOptions.at("--package"), mapOptions.at("--source-digest"), stScene, arrDiagnostics))
+		{
+			return Failure(arrDiagnostics);
+		}
+		Print(JsonValue::Object{
+				{ "diagnostics", JsonValue::List{} },
+				{ "instance_count", static_cast<std::int64_t>(stScene.arrInstances.size()) },
+				{ "package_digest", stScene.strPackageDigest },
+				{ "scene_id", stScene.strSceneId },
+				{ "valid", true },
+		});
+		return 0;
+	}
 	if (strCommand == "compile")
 	{
 		std::string strRequest;

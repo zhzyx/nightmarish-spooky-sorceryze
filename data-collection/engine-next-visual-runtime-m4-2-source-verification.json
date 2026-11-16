@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "issue_number": 1334,
+  "checks": [
+    {
+      "command": [
+        "C:\\Users\\kaiyu\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "tools/check_engine_next_contract.py",
+        "--repo",
+        ".",
+        "--require-sources"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"contract_id\": \"engine-next-no-godot-v1\",\n  \"godot_free_runtime_verified\": false,\n  \"link\": {\n    \"state\": \"not_provided\"\n  },\n  \"passed\": true,\n  \"schema_version\": 1,\n  \"scope\": \"source_and_declared_link_manifest_only\",\n  \"sources\": {\n    \"local_includes\": 336,\n    \"passed\": true,\n    \"source_files\": 194,\n    \"state\": \"sources_passed\"\n  },\n  \"state\": \"contract_passed\",\n  \"target\": \"next_runtime\",\n  \"verification_boundary\": \"A real target must still bind linker-produced inputs, symbols and a clean-environment run.\",\n  \"violations\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "C:\\Users\\kaiyu\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-m",
+        "unittest",
+        "tools.test_check_engine_next_contract",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "----------------------------------------------------------------------\nRan 31 tests in 0.153s\n\nOK (skipped=1)\n"
+    },
+    {
+      "command": [
+        "C:\\Users\\kaiyu\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "engine_next/Tools",
+        "-p",
+        "Test*.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "----------------------------------------------------------------------\nRan 33 tests in 0.555s\n\nOK\n"
+    }
+  ],
+  "result": "passed"
+}

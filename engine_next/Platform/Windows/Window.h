@@ -42,6 +42,7 @@ namespace EngineNext::Platform::Windows
 struct InputState
 {
 	std::array<bool, 256> arrKeys{};
+	std::array<bool, 256> arrPressed{};
 	std::array<bool, 5> arrMouseButtons{};
 	std::int64_t nMouseDeltaX = 0;
 	std::int64_t nMouseDeltaY = 0;
@@ -76,7 +77,7 @@ public:
 	[[nodiscard]] bool Initialize(const wchar_t *pTitle, std::uint32_t nWidth, std::uint32_t nHeight, bool bHidden, std::string &out_strError);
 	void Shutdown() noexcept;
 	// Processes a bounded batch of this window's messages. Relative motion and
-	// wheel deltas reset at entry; counters and held-button states persist.
+	// wheel deltas and key-press edges reset at entry; counters and held states persist.
 	void PumpEvents() noexcept;
 	[[nodiscard]] void *GetNativeHandle() const noexcept;
 	[[nodiscard]] std::uint32_t GetWidth() const noexcept;

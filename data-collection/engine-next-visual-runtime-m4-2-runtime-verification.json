@@ -1,0 +1,373 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "issue_number": 1334,
+  "native_key": "91065c9175f5365d34149145beedb4a42fc27e8683617e40d39d239c1d71fae0",
+  "report": {
+    "path": "build/engine_next/m42-runtime-final/RuntimeBuildReport.json",
+    "sha256": "ad91ca28d4613e3e8baefd60ac16e373ada1a68e14b0c283219f0535c7997ca0"
+  },
+  "targets": [
+    {
+      "name": "next_server",
+      "artifact": {
+        "path": "build/engine_next/m42-runtime-final/next_server.exe",
+        "sha256": "ee1ac48f5bc954e1b94623fb8b1196b4547a7cff14bdb94171f05971e48c4a58"
+      },
+      "dynamic_dependencies": [
+        "KERNEL32.dll",
+        "WINMM.dll",
+        "WS2_32.dll"
+      ],
+      "symbol_audit": {
+        "command": [
+          "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\MSVC\\14.50.35717\\bin\\HostX64\\x64\\dumpbin.EXE",
+          "/NOLOGO",
+          "/SYMBOLS",
+          "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-runtime-final\\next_server.exe"
+        ],
+        "forbidden": []
+      },
+      "summary": "ENGINE_NEXT_RUNTIME role=server ticks=4 status=ok",
+      "clean_summary": "ENGINE_NEXT_RUNTIME role=server ticks=4 status=ok"
+    },
+    {
+      "name": "next_client",
+      "artifact": {
+        "path": "build/engine_next/m42-runtime-final/next_client.exe",
+        "sha256": "73bd52c4440c68e2b91c21d61627efaa8be556e3e65a51a2f32a80fd85468c68"
+      },
+      "dynamic_dependencies": [
+        "KERNEL32.dll",
+        "WINMM.dll",
+        "WS2_32.dll"
+      ],
+      "symbol_audit": {
+        "command": [
+          "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\MSVC\\14.50.35717\\bin\\HostX64\\x64\\dumpbin.EXE",
+          "/NOLOGO",
+          "/SYMBOLS",
+          "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-runtime-final\\next_client.exe"
+        ],
+        "forbidden": []
+      },
+      "summary": "ENGINE_NEXT_RUNTIME role=client client_id=A ticks=4 status=ok",
+      "clean_summary": "ENGINE_NEXT_RUNTIME role=client client_id=A ticks=4 status=ok"
+    },
+    {
+      "name": "next_asset",
+      "artifact": {
+        "path": "build/engine_next/m42-runtime-final/next_asset.exe",
+        "sha256": "5eb8ee32b77b32c6c187764c000e6aab8787a49d50ea0dc6cb4e7264f2423c20"
+      },
+      "dynamic_dependencies": [
+        "KERNEL32.dll"
+      ],
+      "symbol_audit": {
+        "command": [
+          "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\MSVC\\14.50.35717\\bin\\HostX64\\x64\\dumpbin.EXE",
+          "/NOLOGO",
+          "/SYMBOLS",
+          "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-runtime-final\\next_asset.exe"
+        ],
+        "forbidden": []
+      },
+      "summary": "Usage: next_asset compile --request FILE --source-root DIR --output DIR.enpak | validate --package DIR.enpak | inspect --package DIR.enpak | gpu-cook --package DIR.enpak --output DIR.engpu | gpu-validate --package DIR.engpu --source-digest SHA256 | ai-run --request FILE --python FILE --executor-script FILE --factory NAME --database FILE --state FILE --output DIR.enpak [--resume]",
+      "clean_summary": "Usage: next_asset compile --request FILE --source-root DIR --output DIR.enpak | validate --package DIR.enpak | inspect --package DIR.enpak | gpu-cook --package DIR.enpak --output DIR.engpu | gpu-validate --package DIR.engpu --source-digest SHA256 | ai-run --request FILE --python FILE --executor-script FILE --factory NAME --database FILE --state FILE --output DIR.enpak [--resume]"
+    },
+    {
+      "name": "EngineNextRuntimeTests",
+      "artifact": {
+        "path": "build/engine_next/m42-runtime-final/EngineNextRuntimeTests.exe",
+        "sha256": "274b5d2528226df90915f0a2bdd8b6e67f1154904cada1698cfa571b1e834d99"
+      },
+      "dynamic_dependencies": [
+        "KERNEL32.dll"
+      ],
+      "symbol_audit": {
+        "command": [
+          "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\MSVC\\14.50.35717\\bin\\HostX64\\x64\\dumpbin.EXE",
+          "/NOLOGO",
+          "/SYMBOLS",
+          "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-runtime-final\\EngineNextRuntimeTests.exe"
+        ],
+        "forbidden": []
+      },
+      "summary": "ENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_RECONNECT client_id=A session_id=7 entity_id=11 offline_ms=600\r\nENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=1 session_id=7\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=1\r\nENGINE_NEXT_CLIENT_RESUME client_id=A session_id=7 entity_id=11 confirmed=1 error=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_TEST_SUMMARY tests=61 checks=1100 failures=0",
+      "clean_summary": "ENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_RECONNECT client_id=A session_id=7 entity_id=11 offline_ms=600\r\nENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=1 session_id=7\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=1\r\nENGINE_NEXT_CLIENT_RESUME client_id=A session_id=7 entity_id=11 confirmed=1 error=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_TEST_SUMMARY tests=61 checks=1100 failures=0"
+    }
+  ],
+  "acceptance": {
+    "assets": "ENGINE_NEXT_M3_ASSETS deterministic=1 no_clobber=1 path_escape_rejected=1 status=ok",
+    "clean_assets": "ENGINE_NEXT_M3_ASSETS deterministic=1 no_clobber=1 path_escape_rejected=1 status=ok",
+    "ai": "ENGINE_NEXT_M3_AI offline=1 synthetic_resume=1 provider_submits=1 artifact_state=1 output_limit=1 detached_reaped=1 status=ok",
+    "clean_ai": "ENGINE_NEXT_M3_AI offline=1 synthetic_resume=1 provider_submits=1 artifact_state=1 output_limit=1 detached_reaped=1 status=ok",
+    "scene": "ENGINE_NEXT_M3_SCENE clients=2 scene_revision=r9 expected_a_position_x=4.16 status=ok",
+    "clean_scene": "ENGINE_NEXT_M3_SCENE clients=2 scene_revision=r9 expected_a_position_x=4.16 status=ok",
+    "handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-m4-2-20261116\\\\build\\\\engine_next\\\\m42-runtime-final\\\\HandshakeReport.json\",\r\n  \"trace_sha256\": {\r\n    \"server.jsonl\": \"78d6e06c04de96b056972c8febc1ba6f27b4199fe255743ab7ed001b6d256256\",\r\n    \"client-A.jsonl\": \"a1bc4daba9e5fc1bdf050fed882c361b1c87ea5c4455bd13b5b3d711ae91baca\",\r\n    \"client-B.jsonl\": \"623d0af30ba35a245896daa9358ec89551155ce162894512797e32cb0d9b5fd5\"\r\n  }\r\n}",
+    "clean_handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-m4-2-20261116\\\\build\\\\engine_next\\\\m42-runtime-final\\\\CleanRun\\\\HandshakeReport.json\",\r\n  \"trace_sha256\": {\r\n    \"server.jsonl\": \"78d6e06c04de96b056972c8febc1ba6f27b4199fe255743ab7ed001b6d256256\",\r\n    \"client-A.jsonl\": \"dc3c859fa247df8b6e95df3092ac51879a866e26fcdb1a18fe3854db7feb77e7\",\r\n    \"client-B.jsonl\": \"623d0af30ba35a245896daa9358ec89551155ce162894512797e32cb0d9b5fd5\"\r\n  }\r\n}",
+    "drain_faults": "ENGINE_NEXT_DRAIN_NEGATIVE timeout=1 rejected_new_peer=1 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-m4-2-20261116\\\\build\\\\engine_next\\\\m42-runtime-final\\\\DrainFaultsReport.json\",\r\n  \"trace_sha256\": {\r\n    \"fault-server.jsonl\": \"17f2481014d9f5d027094baa65927635d82ed449e55d881de58d52aa46a7c692\",\r\n    \"fault-client-A.jsonl\": \"807f45559371103d2776c421621d419cc582d033da919e983b1d799c6d52d02a\",\r\n    \"fault-client-B.jsonl\": \"fc2ff36c3475ca9dfce35b0da20977a1c4504140d1f35e8c2185b588fd5f2f88\",\r\n    \"fault-client-C.jsonl\": \"af384f1c3194bfd3f9514e5065d16d60d66df55eca53cd674eaa1d61682f133c\"\r\n  }\r\n}",
+    "clean_drain_faults": "ENGINE_NEXT_DRAIN_NEGATIVE timeout=1 rejected_new_peer=1 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-m4-2-20261116\\\\build\\\\engine_next\\\\m42-runtime-final\\\\CleanRun\\\\DrainFaultsReport.json\",\r\n  \"trace_sha256\": {\r\n    \"fault-server.jsonl\": \"62ebcd253c00272be1ee46a94391b5ea3bd4b5c039165d481955b179eeb1cd12\",\r\n    \"fault-client-A.jsonl\": \"9b72a08b37ceed0844627f5583989efddd0772adcb5dc380ec583eb270bc4ca3\",\r\n    \"fault-client-B.jsonl\": \"17d9ff8af002f19d69fc8caa6b92d7c61f9295ce67b8a1d73f14cb99bb017c2d\",\r\n    \"fault-client-C.jsonl\": \"af384f1c3194bfd3f9514e5065d16d60d66df55eca53cd674eaa1d61682f133c\"\r\n  }\r\n}",
+    "package_handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-m4-2-20261116\\\\build\\\\engine_next\\\\m42-runtime-final\\\\PackageHandshakeReport.json\",\r\n  \"trace_sha256\": {\r\n    \"server.jsonl\": \"1674d2fd28c726620db36c98e8f4059df1d27692d248b860aaec97c02ab3f063\",\r\n    \"client-A.jsonl\": \"7f2d324169f9db80f9ced5a93265f0e698814a32808c6a8914e13bf07cd983e1\",\r\n    \"client-B.jsonl\": \"abf349592969348ddd6c03b3323cc0565143910fc7dc962b4baa191be916f716\"\r\n  }\r\n}"
+  },
+  "source_inputs": {
+    "ai_core/Runtime.cpp": "b695e1e7826c168e5878b7d8e031ab072b4b98c96f9ff659da59113411959b41",
+    "ai_core/Runtime.h": "19a9614ac38ac79cacb312eed80ea45a319cdb6cac8acacb54e980f0c93e0420",
+    "engine_next/AI/ArtifactAdapter.cpp": "72b9e32aea8f6cdf22a1cbafe6966fcc3cc14cf0d6ff6220bb4f21af58bd1f6c",
+    "engine_next/AI/ProcessTransport.cpp": "0219b5ff9b2e2af2f46f9054737766bbdc73861afe911f6c04c253d64fd9be2d",
+    "engine_next/AI/WorkflowController.cpp": "40798ebee03bd156ff0fd0e6161732ce54e448319ab0c55b5d085f5b0fb99bf7",
+    "engine_next/AI/WorkflowSnapshot.cpp": "c56d4c03e036af017f017e44ebd991e70614bee92ebc88965338fad8068eefae",
+    "engine_next/Apps/NextAssetMain.cpp": "b7ce55fb86e639636d7568f91e449cd11fa01098e3df41780a726439d1205856",
+    "engine_next/Apps/NextClientMain.cpp": "108ee6e2d5182c0887fbf2abefa5832fc46e7efd9da94965ff0d1026718f8009",
+    "engine_next/Apps/NextServerMain.cpp": "0aef897b28b33f0e3529067dbdfaea8a452f7d91d63f1a853bb5d4916d76ed83",
+    "engine_next/Assets/AssetCompiler.cpp": "e1c3fb9b3deae43ea70431f4a7bfdb34ebc1840a06ded192f87921bc57139b03",
+    "engine_next/Assets/AssetManifest.cpp": "832a9b2fe1e5f5959779d4a488fce4e4a309fdf0db50a4151e5b07b869429de1",
+    "engine_next/Assets/AssetPackage.cpp": "610f272b7d9a6460568b7d39e4a77d36595a1fc05556362a22f79ef464b9e1e0",
+    "engine_next/Assets/AssetValidation.h": "5e313988c3fd46001c6551229f4a24014b7b3c1ce1577781d0d2748632e53f89",
+    "engine_next/Assets/BlobValidator.cpp": "fc58ac897ef120435088c5f532d0921ce080b3a6fb6061b9df3d13feb38d1db9",
+    "engine_next/Assets/SceneDocument.cpp": "f06adc980d48cc48df4890644a7783875cf266d80ee1dc90bb60b6b3a6ce0cc5",
+    "engine_next/Assets/Types.cpp": "3686528bab39526527c5eccc0e46146b3f07dadcd6720f68b320c09155be578a",
+    "engine_next/Client/ClientRuntime.cpp": "9529c64f43140f7dbe247ba2f84a2e84be2baf061cf4907b51da51b565c272b8",
+    "engine_next/Client/ClientSession.cpp": "80c351be551a5de07d151b5180d813f53e03afef94008bf5ce1c897f9380ca5f",
+    "engine_next/Client/ClientSession.h": "8626073725cdab0d7d8482dd5ac8fc6c264117c487fd3e906da52611123eab81",
+    "engine_next/Gameplay/InterpolationBuffer.cpp": "5a4fa95be8d42dab4cdb543952e719da062f57b589e634c033904ecfd3ba8a81",
+    "engine_next/Gameplay/PredictionModel.cpp": "67f9ffb1a1e7546bac157daf66b235ab91d2fc40c784568edfeefb501b758aae",
+    "engine_next/Gameplay/PredictionReconciler.cpp": "743ffb7fc7be192806793949cd831ef5638a79619fa6b88b283d2e320cef66c7",
+    "engine_next/Network/EnetTransport.cpp": "8ad24abc1eb18558598b949732b65b5d41e209ae9e3717f1cc2ab02c0a61bf03",
+    "engine_next/Network/ImpairmentTransport.cpp": "f804863b29d97afbc52aaebae33f9e332ed8f6aaef5ed06444cb6ab7b20c425e",
+    "engine_next/Network/Protocol.cpp": "cd78261a0e8a3896755a78dfd6b2631cae893939403207054a8be9b331bc8f51",
+    "engine_next/Network/SessionManager.cpp": "f0bd8a9031e8d61c61e6235a7a78dd40e0cbc78ccd0eea6ae493cbb5dece05da",
+    "engine_next/Rendering/Cook/GltfDecoder.cpp": "3ff391b09aea9fbe0e4f3e403e1146dd5efdf0914945b55655f1326bf5426d81",
+    "engine_next/Rendering/Cook/GltfDecoder.h": "137e4517003ee479e87442aff6540a574d6ac3fcd4554074fb0d042251c6b53b",
+    "engine_next/Rendering/Cook/GpuPackage.cpp": "fc527861be8808308c23bddc15dc144f71d6c1c1996f62e258817041e7aeb7d0",
+    "engine_next/Rendering/Cook/GpuPackage.h": "8355f6951d5eee815d7241f9177aa7dcbeadfa73cea578624ce38f8c85d72abb",
+    "engine_next/Rendering/RenderScene.cpp": "36bf7a5134de603ef44c4e17ceca55b81db42347505f8a513724f7a798056d29",
+    "engine_next/Runtime/Clock.cpp": "c21ce5234742634a181e3ae575e6da308263932b7e1dd7254362faeb360d27f6",
+    "engine_next/Runtime/FixedStepLoop.cpp": "93b0bf0451b16e9cd71270b2b978d40f2cf1c8eedcbe34be8e0a1cc2aefcdc3c",
+    "engine_next/Runtime/RuntimeConfig.cpp": "fd90811c8d803ea0838e787eda9921daaa118696b5dba587108acf1d3729ce37",
+    "engine_next/Runtime/RuntimeHost.cpp": "37eaa0dd76f31c2fdd7f14b4408b0d2d276d37646863dad55d6876583dcf9c2b",
+    "engine_next/Runtime/SceneRuntime.cpp": "638c3c65f9517e71724b02ad5dd94b2f0ab15f6687853e4cb4d97950a4f5fa5b",
+    "engine_next/Runtime/Trace.cpp": "98e1b44934730125d157fcb2a5bcb6a51c66cbe7812e093009a84d8a6556661e",
+    "engine_next/Runtime/World.cpp": "8a635bcc32f3cf569b8ace921d31360a32c6397be70206a9c1a5af69a0197668",
+    "engine_next/Schemas/AiAssetRun-v1.json": "6d417ab9561d64b08bcc054a77631666f0daf8c2604371c3dae3032d80e3ea20",
+    "engine_next/Schemas/AssetManifest-v1.json": "e83754c4d07e69c9320e5e890f68cc80d795eec43d9f1beafbe8ccccb647f40c",
+    "engine_next/Schemas/SceneDocument-v1.json": "5e527db4424bbd92f6b0db141e9e71e50c98474ed5d71efcbeede0a20cf90668",
+    "engine_next/Serialization/Json.cpp": "bd5378c0e98935cc4adc7d535c2a6b733480f3a4e537e70fed77cc0b9bd3368c",
+    "engine_next/Serialization/Sha256.cpp": "0c2c99e228e2b730cab8c2b36f7982fa9ac8d1ddcb89c972db4dbdf85035139a",
+    "engine_next/Server/ServerRuntime.cpp": "361794f88bcafe7cae57d055f4883c299055129f40f91e07eba70c02742aac74",
+    "engine_next/Tests/AI/SyntheticProvider.py": "cb5c8c8ab7ee85b8365d36e64f96a67b96af699ef691e248e8d2caf86c258c62",
+    "engine_next/Tests/AI/TestArtifactAdapter.cpp": "1f1e7ebc96796723e4c085d5edae5ea6454db674407be348900753aa267bbcf7",
+    "engine_next/Tests/AI/TestWorkflowController.cpp": "196d46cbe7bc82150dd55947e9f3bc78b523428845fe8a78293afee8008e21cb",
+    "engine_next/Tests/AI/TestWorkflowSnapshot.cpp": "d21877e59ce604134b50c60d2c8e4566b86eba63622adfa8780ee96847eb4625",
+    "engine_next/Tests/Assets/FixtureSupport.h": "16ee8ea150a829bff8a8951b77f0d24b6489bd807a079c116704d8c1f2e197c5",
+    "engine_next/Tests/Assets/TestAssetManifest.cpp": "6f039676973bc7a62cc56edb324bdfe3fa573e1f2c4dbde4ce933b87213af98f",
+    "engine_next/Tests/Assets/TestAssetPackage.cpp": "301667cfd131f9265748b9e4d9d232dcb25b573361d3b509fbd02e99e6045b85",
+    "engine_next/Tests/Assets/TestBlobValidator.cpp": "35ad76d3349306ac4b99fd9357794b6dd0b98498b39cdcc28cf2830f92139555",
+    "engine_next/Tests/Assets/TestSceneDocument.cpp": "f8a2356af3c07e3be8a1425f01d04fcbcc2a042027ec5ec4e2bc4d6b10146d4e",
+    "engine_next/Tests/Fixtures/M3/README.md": "4fe3327cb16354f7c2ea0c04bd8892741de24e710c64b31787647f78572d24ae",
+    "engine_next/Tests/Fixtures/M3/empty-scan.jpg": "ee67dd45bf19d6b6546dac9cf99713af529a366ee53bd5e302556f52beebb8c0",
+    "engine_next/Tests/Fixtures/M3/invalid-accessor.glb": "11e0d5f462d4f413e25b02f09c550250a6154708e124c57d9dc357b4441735d6",
+    "engine_next/Tests/Fixtures/M3/invalid-buffer.glb": "9d69c86cc5f968a6f01977c65b914f235e43d4f8019eb4c84ee9f796d8763eac",
+    "engine_next/Tests/Fixtures/M3/invalid-depth.png": "4a604bd0f161071a45fa473f1ce688df5d3880757409e78683260a2a1eddfaef",
+    "engine_next/Tests/Fixtures/M3/invalid-ihdr.png": "fc0cad8c1ffad1ee9432a36ca7e983c002de6e606494bef5fad84e2f6b49af20",
+    "engine_next/Tests/Fixtures/M3/invalid.glb": "33c8b2fd5cb2013605bd48d4f0d1e7cb55251561e48a201a50367f9ca3e293f4",
+    "engine_next/Tests/Fixtures/M3/invalid.jpg": "dd845ab83d26e07e7b57778cc35db2e906af318a06a223adb4fef52501ee4ca5",
+    "engine_next/Tests/Fixtures/M3/invalid.png": "3b6798e64ca23c377b0833c9c2e692fdb4f153995a2143df53b4123cf9ae5ec9",
+    "engine_next/Tests/Fixtures/M3/valid-rgb.jpg": "b1da01f71f949fe160bad287bf59c65db2ee9a784003201110fb439484bb9250",
+    "engine_next/Tests/Fixtures/M3/valid.glb": "d636e45e08c85276e160b0021251eacbf473177a445dc95db5e091b6a2868683",
+    "engine_next/Tests/Fixtures/M3/valid.jpg": "908586da3b233eccbd226d7f43f322d19e3b6cd1a2e5eeda65fe55aa93957e66",
+    "engine_next/Tests/Fixtures/M3/valid.png": "c93d06c474f8cbc92c4588d6e66a59a5b6f49b9c57d50edabcf8bc036db97be2",
+    "engine_next/Tests/Gameplay/TestPredictionReconciler.cpp": "40bcbbf41bbaddfd3e19fdfd5d82032aecf1ba782700d3dabd4fa0d3854a8bad",
+    "engine_next/Tests/Network/TestImpairmentTransport.cpp": "f8193669f26164e01b3ae4326f2363878746ca89b6f3a10173fe6266d0b79840",
+    "engine_next/Tests/Network/TestProtocol.cpp": "69e25e49563be8d5d7d5276ffb0e568f45fc194e74333dc7d3ba376de9e4950d",
+    "engine_next/Tests/Runtime/TestClientSession.cpp": "e9280ed0c91ab42753e3367e85814759100e85eb2613be8246e150c993ee83a5",
+    "engine_next/Tests/Runtime/TestClockAndFixedStep.cpp": "bb280c0e05aef2a258e9105e256276d82a9619aa527ca8b9cd7cb7c65587bfe9",
+    "engine_next/Tests/Runtime/TestRuntimeConfig.cpp": "aece8bd5ab84a7b77fbff6fa8813fc087b1114e51a55804ec0385f980fc2f371",
+    "engine_next/Tests/Runtime/TestRuntimeHost.cpp": "268f696728191c3c84eb1d57cf9c9a77b6fd6eb6d7b312b52bc5f7d14b250785",
+    "engine_next/Tests/Runtime/TestSceneRuntime.cpp": "864abdc5fe89609d786266702b5be90d854c183b5c900c9c5f99d5b119625a7c",
+    "engine_next/Tests/Runtime/TestWorld.cpp": "a61ca9845edef0ac17ff27efb36773472843284250212301de3dd97e7b0fe993",
+    "engine_next/Tests/RuntimeTestMain.cpp": "d37b36f1aecf7f51bd6a5608605852c04446ae26883dc7c111832ae93fc47b06",
+    "engine_next/Tests/Serialization/TestJson.cpp": "91d721f2a720b138187519c708e9841df8da153f165db0780611803169a24bc2",
+    "engine_next/Tests/Serialization/TestSha256.cpp": "0326736278a431731aa1095d06c4bf3b5e42ab1cf4d8d11ad1c9399344747506",
+    "engine_next/Tests/TestFramework.h": "4baf615666b56f50307e51412c992cad43b02ce83ec331711c99ed154e34f039",
+    "engine_next/Tools/BuildGameplay.py": "3a92214a5dc1333d5424675b94b63dc3a175119a68b4ae4e0461d484dbb9b1a2",
+    "engine_next/Tools/BuildRuntime.py": "913983e48bab5b81faf51154d7505a68939254302664e0c496123ad6e78b79c3",
+    "engine_next/Tools/PackageRuntime.py": "b28405d8b6463892823ecfa700d24db6038b28d29f5b5f847cea0b4ae98d8c77",
+    "engine_next/Tools/RunM2DrainFaults.py": "e30d2a5d3e0940e763f92558afd9a33fc53a37ceacbe0b45916aafdc3d67cbe2",
+    "engine_next/Tools/RunM2Handshake.py": "edef9398449ad52d01bd6bf3765d82e6f816e5e1624ce1ae8f8d36ba9c1366cf",
+    "engine_next/Tools/RunM2Soak.py": "eb8ad7dd7fd0d41b2434c8f2040353750a6dffc20b44479a76bb04ef2fbff663",
+    "engine_next/Tools/RunM3AiAcceptance.py": "1ef165e58f0a389a1fd92ebc0a07ad880ef076e2cc180e5bf56a98e8f365011b",
+    "engine_next/Tools/RunM3AssetAcceptance.py": "4353d159e2c00a4ce1425076f45d8a7c725485da6c7f8f65174b77e63062de04",
+    "engine_next/Tools/RunM3SceneAcceptance.py": "528f2b6c2fec62d63d7730ceb871d6a2c9d0c21d5dbef38883a7861dfdbf159d",
+    "engine_next/include/EngineNext/AI/ArtifactAdapter.h": "1f802093d529615d45d499172d16f48a3ea9f83a23aa9ce8865cffb175a2ea14",
+    "engine_next/include/EngineNext/AI/IProcessTransport.h": "560c24af1697565e11dea87e7dc96198384b60ff4d52754f6841489093dbbec8",
+    "engine_next/include/EngineNext/AI/ProcessTransport.h": "d1899f978c5571a5a6d349af59ef3339c4b343dd3dbbc9418909c64ea73c6254",
+    "engine_next/include/EngineNext/AI/WorkflowController.h": "7d99ec90608a14ab7d14520fd65f3c78d554137faa41a4dd6fdf7f2a4063488d",
+    "engine_next/include/EngineNext/AI/WorkflowSnapshot.h": "2216f8d747049cb27c1f0e5601cb10142e2e8ded08d13597be67998181fc48e8",
+    "engine_next/include/EngineNext/Assets/AssetCompiler.h": "6d0da91b2e1a8e4ba0ff6430b2adda9044722f4ae8f8e3154ba2768bba61fbaa",
+    "engine_next/include/EngineNext/Assets/AssetManifest.h": "4b86ce9719a5be2278cde4afe7edcc13ad45fd921c87d7b331bafe81d353193f",
+    "engine_next/include/EngineNext/Assets/AssetPackage.h": "d0028d8fcc729d7571432de49f3c65629f16defbf6296a8119d323b33b3a1bd7",
+    "engine_next/include/EngineNext/Assets/BlobValidator.h": "42b781c71a618b9f8ca0015cb09b1fe7e34ae1ccb7fca440c9908dd5b0535bb4",
+    "engine_next/include/EngineNext/Assets/SceneDocument.h": "7b1fac27a54f95d31ede6de5e9b7f68a9903377fc1a7ec05b0721c6355eda410",
+    "engine_next/include/EngineNext/Assets/Types.h": "7068d004d36798d76d5d2429f8f9c585cf64a01ab96bee4074c15bc07e5a3aa1",
+    "engine_next/include/EngineNext/Gameplay/InterpolationBuffer.h": "6f6126f2f17f3400b2c3004c1836c354db4dc9bd5477c71fc59e7dfaff6dc266",
+    "engine_next/include/EngineNext/Gameplay/PredictionModel.h": "052e15153e1b5c2a42319b016c227d560bd406359606c2740174e1c34d302c21",
+    "engine_next/include/EngineNext/Gameplay/PredictionReconciler.h": "a79cbb4453cb16d724b915be36e10466379c222ac9dbfa5c5ad38c04ad60f3ee",
+    "engine_next/include/EngineNext/Gameplay/PredictionTypes.h": "89b843b60666d13707c32c728c1952d885fe8bcd8122c575350bf138cb4b58c6",
+    "engine_next/include/EngineNext/Gameplay/Status.h": "1f0a64e657d685fb561e0369d53f8a47e7cf53711d99b70dcad49bf5d7a794bd",
+    "engine_next/include/EngineNext/Gameplay/Vector3.h": "c829b4664ce80507c7fced7cb721ed36b98871869ccf28550f51156a67293b64",
+    "engine_next/include/EngineNext/Network/ITransport.h": "6f65d04cc4e97dc988bcc5d697d29315b49c2b4756c2866e23575a8f5ba1522e",
+    "engine_next/include/EngineNext/Network/ImpairmentTransport.h": "ef1e93fa9ef081ff444eb9741b48558058d27b9943dad445b9fb0fe14eb0f3c6",
+    "engine_next/include/EngineNext/Network/Protocol.h": "d27b7638028b0181a3c266cd51daff0562acb9a59e9a633907480739bcb1e138",
+    "engine_next/include/EngineNext/Rendering/MeshData.h": "4db2f44c5789a3ed5ae94315c41ad50c40cb5777e3c81fc0ff3cb16f932a46e1",
+    "engine_next/include/EngineNext/Rendering/RenderScene.h": "d2b614deec0513e1416249e375dbf4e06a702fbdc394ec49206699146db721c5",
+    "engine_next/include/EngineNext/Runtime/Clock.h": "e547a6cf2ab3891bddf99eee7375fbb665e618f7f3a26320d8cffc19634445e3",
+    "engine_next/include/EngineNext/Runtime/FixedStepLoop.h": "87363d1895504296a8582c822fa9af2e88d4859e07f380369cba727c1e88b5d0",
+    "engine_next/include/EngineNext/Runtime/RuntimeConfig.h": "acb8774870f4ef8ad9d2a3d1af11ff6eafe43dffe5c7bebd1d29ae85530690a5",
+    "engine_next/include/EngineNext/Runtime/RuntimeHost.h": "5dc071f73103cf4b87258e154f8220f2bde3175ffeddd01c90aed6b227e8ab2d",
+    "engine_next/include/EngineNext/Runtime/SceneRuntime.h": "961d77383cd3513484077fdf85360c90ecf925b69638ad988941a88cc6a5df43",
+    "engine_next/include/EngineNext/Runtime/Trace.h": "01f8ad52c7f8d2dbac2acea538b874f4c84bc61bba32ec3d44472a0df79cd0dd",
+    "engine_next/include/EngineNext/Runtime/Types.h": "addaf43c64ffe275b74cc08b6225d60b2d9fb4bef6fc6f30c6a9b3080a32e940",
+    "engine_next/include/EngineNext/Runtime/World.h": "d87f1edc4358d7305a5b3a4d52216ac84047627efd336962b86291677118d826",
+    "engine_next/include/EngineNext/Serialization/Json.h": "7d20349f3d9b9f660aa0eaea13673e0d92b854fbb159878d48fbfacfa661f6b0",
+    "engine_next/include/EngineNext/Serialization/Sha256.h": "943af809ad934c6b2b23fef0012ea49a929f836a8dcbfb0b0077c9efbce66316",
+    "engine_next/thirdparty/enet/.gitattributes": "c44b28ea1bcdfc633775b25736f02ca93398520998cfddad683ad61b5694d946",
+    "engine_next/thirdparty/enet/LICENSE": "a29cd246638974da7c6edf423a0a69d4a6f7d759940b7cfa9a2bc3442ac3834c",
+    "engine_next/thirdparty/enet/PATCHES.json": "4ff1461bb9130baff619e7901618b5c9ac3e001da2e13dddc4eb732d30ab096c",
+    "engine_next/thirdparty/enet/README": "30355fcc7dba245ab2462f17cd7ef9ba5eb141ef055cea36972480b66cd879eb",
+    "engine_next/thirdparty/enet/UPSTREAM.json": "67de471ae8fced9f27c5fd7592eae1c9edb5cbd47424223efe6ddb1afea4f41b",
+    "engine_next/thirdparty/enet/callbacks.c": "0d42c2a191c7d22ed0da2b14617b958cce2efd2a185b3aef9fe51a0fb6704ba2",
+    "engine_next/thirdparty/enet/compress.c": "6af9da787bf5aaeb44befcf4e4a822d6e4d0972279bac73004f628bf06788774",
+    "engine_next/thirdparty/enet/host.c": "396e27689fe5ad6cc88d3a96fb93fa274f951663fe2f627391ab8f48a6d95830",
+    "engine_next/thirdparty/enet/include/enet/callbacks.h": "20b3d8834bd19b77d9e8b6bcef4cd6fccb9875a4c1cdb0e5f7881b1b285c8d16",
+    "engine_next/thirdparty/enet/include/enet/enet.h": "1780a6ecc27574a207438639869573f4e417bffc9c95f48a95837a887fad9acf",
+    "engine_next/thirdparty/enet/include/enet/list.h": "845120efb4ad1633eb2f61c8d8f5529b33de2170152779bc6046ac0453cab46b",
+    "engine_next/thirdparty/enet/include/enet/protocol.h": "32de2a7e94e7dcfdf1b9fae2e4cde44f2e44ef49e9a1c4a9dac2165289da281f",
+    "engine_next/thirdparty/enet/include/enet/time.h": "808d5c402c908c14afd0df385855a1b8713e5f69a04008c341a70928647d3e6e",
+    "engine_next/thirdparty/enet/include/enet/types.h": "543482db06a0086983641f550effec827e0ccf722667d4e1956cc92cb074dca6",
+    "engine_next/thirdparty/enet/include/enet/unix.h": "c37171b9f5f37e813059f6e37f247d32ae96037b6f2165d743fc757c6ea80c83",
+    "engine_next/thirdparty/enet/include/enet/utility.h": "5f9f3b9f5110d6a0e4be94bcf7950031985c278b49c922f637074e30784fc392",
+    "engine_next/thirdparty/enet/include/enet/win32.h": "4d16a2c8301570fc54264bfe7bfb4b8bdbf86e2a1d8a6e047633e6fd79d4964f",
+    "engine_next/thirdparty/enet/list.c": "c5350bfa7b7d3cc49fa4b2ebab92e359995e4b1ca47c2c17b0fa338dad87e5a4",
+    "engine_next/thirdparty/enet/packet.c": "cfa444c3bf8460a1a14909166b08efc2cf82112b4368011814396d6d09a3bce7",
+    "engine_next/thirdparty/enet/peer.c": "a967be4d6b03e8059838587f6f0e13fe092109121f51bec4ed039721ddc1a157",
+    "engine_next/thirdparty/enet/protocol.c": "ecea8558f1ce0b088a9aee0ea9f55524e9f10336b7f2a9d30fcdc244b2b527c2",
+    "engine_next/thirdparty/enet/unix.c": "eb901bc255150fdf867b4a71419b1b233e5bb0858abf298da282320a2fa02045",
+    "engine_next/thirdparty/enet/win32.c": "bf36d2239b6fe5c779d84605c44f0fbeb48330a0a8ea26006a1af0c7ee7cb6f0"
+  },
+  "clean_run_scope": "Copied audited executables and tests into CleanRun without project.godot or Godot runtime assets. Physical source export is separate visual-build-impact evidence.",
+  "link_contracts": [
+    {
+      "target": "next_server",
+      "exit_code": 0,
+      "report": {
+        "contract_id": "engine-next-no-godot-v1",
+        "godot_free_runtime_verified": false,
+        "link": {
+          "libraries": 1,
+          "objects": 39,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "passed": true,
+        "schema_version": 1,
+        "scope": "source_and_declared_link_manifest_only",
+        "sources": {
+          "local_includes": 336,
+          "passed": true,
+          "source_files": 194,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed",
+        "target": "next_runtime",
+        "verification_boundary": "A real target must still bind linker-produced inputs, symbols and a clean-environment run.",
+        "violations": []
+      }
+    },
+    {
+      "target": "next_client",
+      "exit_code": 0,
+      "report": {
+        "contract_id": "engine-next-no-godot-v1",
+        "godot_free_runtime_verified": false,
+        "link": {
+          "libraries": 1,
+          "objects": 39,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "passed": true,
+        "schema_version": 1,
+        "scope": "source_and_declared_link_manifest_only",
+        "sources": {
+          "local_includes": 336,
+          "passed": true,
+          "source_files": 194,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed",
+        "target": "next_runtime",
+        "verification_boundary": "A real target must still bind linker-produced inputs, symbols and a clean-environment run.",
+        "violations": []
+      }
+    },
+    {
+      "target": "next_asset",
+      "exit_code": 0,
+      "report": {
+        "contract_id": "engine-next-no-godot-v1",
+        "godot_free_runtime_verified": false,
+        "link": {
+          "libraries": 1,
+          "objects": 42,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "passed": true,
+        "schema_version": 1,
+        "scope": "source_and_declared_link_manifest_only",
+        "sources": {
+          "local_includes": 336,
+          "passed": true,
+          "source_files": 194,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed",
+        "target": "next_runtime",
+        "verification_boundary": "A real target must still bind linker-produced inputs, symbols and a clean-environment run.",
+        "violations": []
+      }
+    },
+    {
+      "target": "EngineNextRuntimeTests",
+      "exit_code": 0,
+      "report": {
+        "contract_id": "engine-next-no-godot-v1",
+        "godot_free_runtime_verified": false,
+        "link": {
+          "libraries": 1,
+          "objects": 57,
+          "passed": true,
+          "runtime_files": 0,
+          "state": "link_passed"
+        },
+        "passed": true,
+        "schema_version": 1,
+        "scope": "source_and_declared_link_manifest_only",
+        "sources": {
+          "local_includes": 336,
+          "passed": true,
+          "source_files": 194,
+          "state": "sources_passed"
+        },
+        "state": "contract_passed",
+        "target": "next_runtime",
+        "verification_boundary": "A real target must still bind linker-produced inputs, symbols and a clean-environment run.",
+        "violations": []
+      }
+    }
+  ]
+}

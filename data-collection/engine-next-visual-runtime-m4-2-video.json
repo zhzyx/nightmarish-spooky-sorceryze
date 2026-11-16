@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-16T02:50:59.846329+00:00",
+  "method": "Win32 PrintWindow selected by exact task-owned PID, client-only surface",
+  "pid": 36708,
+  "width": 960,
+  "height": 640,
+  "frames": 600,
+  "fps": 20,
+  "unique_frame_hashes": 589,
+  "capture_elapsed_seconds": 30.039102200011257,
+  "encoder_returncode": 0,
+  "video": {
+    "path": "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-network-r11\\F-Network-Motion.mp4",
+    "bytes": 11438641,
+    "sha256": "ddcf0d87d9a49f6a2d9c177ba96a742e2bed0f574245a74777b19a9fe1077f8e"
+  },
+  "encoder": {
+    "path": "C:\\Users\\kaiyu\\AppData\\Local\\JianyingPro\\Apps\\11.8.0.14778\\ffmpeg.exe",
+    "sha256": "6480cca4b38450fd845984c1cd01b1a81b554a2d859a4adc843f6b87f4728fa1"
+  },
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "issue_number": 1334,
+  "client_binary": {
+    "path": "build/engine_next/m42-full-r11/next_visual_client.exe",
+    "sha256": "ca3c469ed315ed06584f611b7945b77ec2fa8b43b9bca9cea5c21f235dad96c5"
+  },
+  "frame_log": {
+    "path": "build/engine_next/m42-network-r11/F-Network-Motion.json",
+    "sha256": "1240cf653be320dc16a344db197be257bef259a132173fa370f7672fa15c5d56"
+  },
+  "content_status": "Actual F network scene, input/reconnect receipts recorded separately by network verifier."
+}

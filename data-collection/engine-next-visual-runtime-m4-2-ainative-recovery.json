@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "issue_number": 1334,
+  "analyst": "/root/m42_cook_review",
+  "scope": "AINative complete regression recovery, synthetic Direct3D fixture portability",
+  "baseline": {
+    "commit": "5afcb929df22d8cad02c3a4792e4b76f8b28c382",
+    "log": "build/engine_next/ainative-final.log",
+    "sha256": "e6e9f228461ae6f93d7df47774e9bf8124fb218628ff8b5b978af88ecb780eaf",
+    "summary": "423 tests, 10 failures, 36 skipped",
+    "failures": [
+      "test_adjust_accepts_one_image_without_text (test_kimi_direct_provider.Direct3DTests.test_adjust_accepts_one_image_without_text)",
+      "test_adjust_accepts_source_without_guidance (test_kimi_direct_provider.Direct3DTests.test_adjust_accepts_source_without_guidance)",
+      "test_adjust_four_view_guidance_uses_all_ordered_views (test_kimi_direct_provider.Direct3DTests.test_adjust_four_view_guidance_uses_all_ordered_views)",
+      "test_adjust_uploads_local_glb_when_no_upstream_task_is_available (test_kimi_direct_provider.Direct3DTests.test_adjust_uploads_local_glb_when_no_upstream_task_is_available)",
+      "test_adjust_uses_source_task_text_and_style_image_without_overwriting_original (test_kimi_direct_provider.Direct3DTests.test_adjust_uses_source_task_text_and_style_image_without_overwriting_original)",
+      "test_executor_links_generated_mesh_into_adjustment_and_returns_new_artifact (test_kimi_direct_provider.Direct3DTests.test_executor_links_generated_mesh_into_adjustment_and_returns_new_artifact)",
+      "test_single_image_accepts_empty_prompt_and_rejects_extra_text_constraint (test_kimi_direct_provider.Direct3DTests.test_single_image_accepts_empty_prompt_and_rejects_extra_text_constraint)",
+      "test_text_generation_uses_tripo_operation_and_real_glb_receipt (test_kimi_direct_provider.Direct3DTests.test_text_generation_uses_tripo_operation_and_real_glb_receipt)",
+      "test_three_view_sheet_is_cropped_and_uploaded_in_front_right_back_order (test_kimi_direct_provider.Direct3DTests.test_three_view_sheet_is_cropped_and_uploaded_in_front_right_back_order)",
+      "test_tool_check_is_local_and_reports_missing_configuration (test_kimi_direct_provider.Direct3DTests.test_tool_check_is_local_and_reports_missing_configuration)"
+    ],
+    "isolated_reproduction": {
+      "command": "python -m unittest test_kimi_direct_provider.Direct3DTests.test_tool_check_is_local_and_reports_missing_configuration -v",
+      "log": "build/engine_next/ainative-single-repro.log",
+      "sha256": "b269a12c5af100f9b6ddd84da7d7cc58634b2cfde8e0ffbab0f4018670171f3e",
+      "summary": "1 test, 1 failure"
+    }
+  },
+  "cause": [
+    "All ten initial failures use sys.executable (python.exe) for a Windows production contract requiring pythonw.exe. The same fixture passes correct runtime validation with the installed sibling pythonw.exe.",
+    "Running with the correct interpreter then exposes fixture-only POSIX basename splitting in the fake uploader and early temp deletion before terminal worker process exit."
+  ],
+  "changes": {
+    "path": "tools/ainative/test_kimi_direct_provider.py",
+    "sha256": "cd16c4d9ca1719d1cab262c73f8f92f370a14d5e6f6d2df303080508b537747f",
+    "details": [
+      "Choose installed sibling pythonw.exe only on Windows; retain sys.executable on other platforms.",
+      "Use pathlib.Path.name in synthetic uploader.",
+      "Wait up to eight seconds for workers created by the current test before deleting temporary output.",
+      "Add Windows console-python rejection regression."
+    ]
+  },
+  "production_unchanged": {
+    "path": "tools/ainative/kimi_provider.py",
+    "sha256": "76678f4b6f0dc7ba1247ee58f1b1910548c47d75ecc627786f0432bb0be89b3f"
+  },
+  "validation": {
+    "module": {
+      "command": "python -m unittest test_kimi_direct_provider -v",
+      "log": "build/engine_next/ainative-direct-fixed.log",
+      "sha256": "354bddeb49503eeb69ac0d960506e30c71818ad9df2686cee504a7978dc9929f",
+      "summary": "13 tests in 5.139 seconds, zero failures"
+    },
+    "full": {
+      "command": "python -m unittest discover -s tools/ainative -p test_*.py -v",
+      "python": "C:/Users/kaiyu/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+      "log": "build/engine_next/ainative-recovery-full.log",
+      "sha256": "9285eaae63748a92c5cf12bf95a2d97a642e06eccab3054e214cb4763d0b5c93",
+      "summary": "424 tests in 300.904 seconds, zero failures, 36 conditional skips"
+    },
+    "ruff": "0.17.1 format/check passed",
+    "diff_check": "git diff --check passed"
+  },
+  "findings_boundary": "Managed Comfy tests, including failure/unknown-exit lifecycle, passed in the final serialized suite. Earlier debug timeout stack dumps were progress observations, not terminal failures. No production provider or network code changed.",
+  "cleanup_review": {
+    "ownership": "set(_MODEL3D_WORKERS) captured at setUp; teardown waits only new Popen objects added by that serial test. Existing worker objects are excluded by object identity. The subprocesses launched by the test use temporary config paths under that test root.",
+    "bound_seconds_per_worker": 8,
+    "failure_behavior": "Timeout remains a unittest error and does not trigger broad process termination.",
+    "observed": "No remaining python/pythonw process command line matched kimi-direct-3d-, kimi_provider.py --worker, or managed-tests- after completed full suite.",
+    "no_production_mutation": true
+  }
+}

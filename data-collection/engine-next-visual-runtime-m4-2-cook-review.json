@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "issue_number": 1334,
+  "reviewer": "/root/m42_cook_review",
+  "reviewed_at": "2026-11-16T02:43:09.337459+00:00",
+  "inputs": [
+    {
+      "path": "engine_next/Rendering/Cook/GltfDecoder.cpp",
+      "sha256": "3ff391b09aea9fbe0e4f3e403e1146dd5efdf0914945b55655f1326bf5426d81"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/GltfDecoder.h",
+      "sha256": "137e4517003ee479e87442aff6540a574d6ac3fcd4554074fb0d042251c6b53b"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/GpuPackage.cpp",
+      "sha256": "fc527861be8808308c23bddc15dc144f71d6c1c1996f62e258817041e7aeb7d0"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/GpuPackage.h",
+      "sha256": "8355f6951d5eee815d7241f9177aa7dcbeadfa73cea578624ce38f8c85d72abb"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/EnvironmentLighting.cpp",
+      "sha256": "3b6d142dfd0d4b6ada50cfea44cba0ae7171d4713e050ddc9ff35ece4311a485"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/EnvironmentLighting.h",
+      "sha256": "483d0976d89024ceeb062f8f54b30ad3a875ea7b0ffd4b1f1406c29ed92a8ab8"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/ImageDecoder.cpp",
+      "sha256": "82f16c93b4797d7ddd453da1b9f2e7958cd446c82ce336222b75b7352c216cf7"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/ImageDecoder.h",
+      "sha256": "53506f1e4747d1ef1e6d20ad5d4f584756a6cf975703a81f256babdd6afcc29f"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/JpegValidation.c",
+      "sha256": "0b335908bf2c52dc08c2a396a1bed43395b290da713800f0a3e16698effa9a7f"
+    },
+    {
+      "path": "engine_next/Rendering/Cook/JpegValidation.h",
+      "sha256": "aafd9120f17566547a35d46c990e1f742a06272f1ac6490f981baa6dc9fc96fe"
+    },
+    {
+      "path": "engine_next/Rendering/RenderScene.cpp",
+      "sha256": "36bf7a5134de603ef44c4e17ceca55b81db42347505f8a513724f7a798056d29"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderScene.h",
+      "sha256": "d2b614deec0513e1416249e375dbf4e06a702fbdc394ec49206699146db721c5"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestGltfDecoder.cpp",
+      "sha256": "1ca35c2876ef956481a2fc692b2250b4be478715f09b74ea04f6c2b3536c3b07"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestGpuPackage.cpp",
+      "sha256": "a253ba25c4970ad3dcb9affdfa94c7d0bbd94cb9368ffba358cbaf29090131bf"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestEnvironmentLighting.cpp",
+      "sha256": "2268a9e08b7c202a1704b42ff237f4c05a22abe6d5a4003244ef90d2bdacbb64"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestImageDecoder.cpp",
+      "sha256": "caa88fc3e202cb2d3c7db682ccd88cd08ccc374e2a8d0c97742d4d1731fe4e34"
+    }
+  ],
+  "scope": "Independent CPU cook, GLB semantics, image stream validation, deterministic page/source binding, bounded allocations and transactional output review. GltfDecoder.cpp and its test were subsequently repaired by this reviewer.",
+  "result": "passed_with_repairs",
+  "findings": [
+    {
+      "id": "glb_binary_padding",
+      "severity": "P2",
+      "status": "fixed",
+      "before": "M3 and render decode accepted an extra 4-byte BIN suffix not covered by buffer.byteLength and accepted nonzero alignment bytes.",
+      "after": "Render decoder permits at most three zero padding bytes.",
+      "regression": "New test failed before change, then passed with valid one-byte zero padding and rejected nonzero/excess padding."
+    },
+    {
+      "id": "flat_normal_tangents",
+      "severity": "P2",
+      "status": "fixed",
+      "before": "No NORMAL but valid preexisting TANGENT parallel to computed flat normal caused the render decoder to reject the primitive.",
+      "after": "Flat-normal path regenerates tangent basis and ignores authored tangent direction as required by core glTF.",
+      "regression": "Valid +Z authored tangent on XY triangle reproduced failure, then 3 reconstructed vertices passed normal/tangent checks."
+    },
+    {
+      "id": "buffer_component_precheck",
+      "severity": "audit_note",
+      "status": "withdrawn_after_readback",
+      "detail": "The initial concern about missing buffer range/component-type checks is already handled in M3 ValidateAccessorGeometry before the renderer decodes. No duplicate change added."
+    }
+  ],
+  "validation": {
+    "command": "python build/engine_next/ReviewCook.py",
+    "compiler": "MSVC x64, C++17, /W4 /WX /EHs-c- /D_HAS_EXCEPTIONS=0",
+    "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=18 checks=145 failures=0",
+    "link_contract": "Scoped helper invoked actual BuildVisualRuntime link_target including source/link/symbol/dependency checks",
+    "baseline_library": "build/engine_next/m42-full-r6/EngineNextRendering.lib",
+    "new_objects": "GltfDecoder.cpp, RenderScene.cpp, TestGltfDecoder.cpp, RenderingTestMain.cpp",
+    "diff_check": "git diff --check passed"
+  },
+  "boundary_notes": [
+    "GPU page load alone verifies the declared source digest and structure. VerifyCookedScene compares complete canonical pages against source-decoded content at the visual entry point.",
+    "512 MiB scene/page budgets describe encoded/decoded payload caps. GenerateBasis and page/source comparisons also allocate temporary vectors, so this is not a process RSS ceiling.",
+    "Image decode is Windows WIC-backed and strict entropy prechecks precede pixels. PNG/JPEG source content remains encoded in the current .engpu page, mips are constructed at renderer startup.",
+    "Advanced materials, animation/skin/morph, block compression, virtual geometry, dynamic GI, and final UE/4K acceptance retain their staged status."
+  ],
+  "sources": [
+    "https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#glb-stored-buffer",
+    "https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#binary-buffer",
+    "https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#meshes"
+  ],
+  "post_review_byte_normalization": "First-party JPEG bridge line endings normalized to LF for repository storage; generated libjpeg config whitespace normalized and recorded in PATCHES.json. No executable statements changed; full rendering tests rerun in m42-final."
+}

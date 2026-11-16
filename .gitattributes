@@ -78,3 +78,6 @@ data-collection/editor-production-build-placement-concurrent-773.json -text whit
 # Preserve exact #943 installed receipts referenced by immutable method events.
 data-collection/editor-design-contract-943-installed.json -text whitespace=cr-at-eol
 data-collection/editor-design-contract-943-template-installed.json -text whitespace=cr-at-eol
+
+# Preserve the original whitespace in this byte-verified upstream notice.
+engine_next/thirdparty/zlib/contrib/crc32vx/README -whitespace

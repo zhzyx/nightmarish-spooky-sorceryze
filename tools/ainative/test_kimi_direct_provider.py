@@ -4,13 +4,14 @@ import base64
 import hashlib
 import io
 import json
+import os
 import sys
 import tempfile
 import time
 import unittest
 from pathlib import Path
 
-from kimi_provider import KimiNativeDirectProvider, check_model3d_tool
+from kimi_provider import _MODEL3D_WORKERS, KimiNativeDirectProvider, check_model3d_tool
 from test_kimi_provider import png_bytes, triangle_glb
 
 KEY = "c" * 64
@@ -18,6 +19,9 @@ KEY = "c" * 64
 
 class Direct3DTests(unittest.TestCase):
     def setUp(self):
+        self.previous_workers = set(_MODEL3D_WORKERS)
+        self.runtime = Path(sys.executable).with_name("pythonw.exe") if os.name == "nt" else Path(sys.executable)
+        self.assertTrue(self.runtime.is_file())
         self.tmp = tempfile.TemporaryDirectory(prefix="kimi-direct-3d-")
         self.root = Path(self.tmp.name)
         self.tool = self.root / "model3d_generation_tool.py"
@@ -25,9 +29,10 @@ class Direct3DTests(unittest.TestCase):
         self.watcher = self.root / "model3d_generation_watch.py"
         self.tool.write_text(
             "import sys\n"
+            "from pathlib import Path\n"
             "if sys.argv[1] != 'image-to-url': raise SystemExit(2)\n"
             "path = sys.argv[sys.argv.index('--image-path') + 1]\n"
-            "print('https://public.test/' + path.rsplit('/', 1)[-1])\n",
+            "print('https://public.test/' + Path(path).name)\n",
             encoding="utf-8",
         )
         self.launcher.write_text(
@@ -61,7 +66,7 @@ class Direct3DTests(unittest.TestCase):
         )
         self.config = dict(
             tool_path=str(self.tool),
-            pythonw_path=sys.executable,
+            pythonw_path=str(self.runtime),
             storage=str(self.root / "state"),
             model="v3.1",
         )
@@ -73,6 +78,10 @@ class Direct3DTests(unittest.TestCase):
                 self.provider.cancel(KEY)
             except (ValueError, TypeError):
                 pass
+        # A terminal receipt can be stored just before the child process exits.
+        # Reap this test's workers before removing logs held open on Windows.
+        for worker in set(_MODEL3D_WORKERS) - self.previous_workers:
+            worker.wait(timeout=8)
         self.tmp.cleanup()
 
     def artifact(self, data, name="sheet"):
@@ -230,9 +239,15 @@ class Direct3DTests(unittest.TestCase):
         report = check_model3d_tool("", "")
         self.assertFalse(report["connected"])
         self.assertEqual(report["code"], "model3d_not_configured")
-        ready = check_model3d_tool(str(self.tool), sys.executable)
+        ready = check_model3d_tool(str(self.tool), str(self.runtime))
         self.assertTrue(ready["connected"])
         self.assertEqual(ready["service"], "Tripo API")
+
+    @unittest.skipUnless(os.name == "nt", "Windows runtime naming contract")
+    def test_tool_check_rejects_console_python_on_windows(self):
+        report = check_model3d_tool(str(self.tool), str(self.runtime.with_name("python.exe")))
+        self.assertFalse(report["connected"])
+        self.assertEqual(report["code"], "model3d_runtime_missing")
 
     def test_adjust_uses_source_task_text_and_style_image_without_overwriting_original(self):
         source = self.model_artifact()

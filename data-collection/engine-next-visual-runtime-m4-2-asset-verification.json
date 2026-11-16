@@ -1,0 +1,934 @@
+{
+  "block_compression_baked": false,
+  "clusters_baked": false,
+  "executable": {
+    "bytes": 992768,
+    "name": "next_asset.exe",
+    "sha256": "5eb8ee32b77b32c6c187764c000e6aab8787a49d50ea0dc6cb4e7264f2423c20"
+  },
+  "fixture_generator": {
+    "comparison_status": "Unmeasured; no UE comparison or visual acceptance is asserted",
+    "generator": "engine_next/Tools/GenerateVisualBenchmarks.py",
+    "generator_sha256": "c8016eb9f0762a1312fbfe73142f0754176d86eacf6424afbce70d8b07b7da6d",
+    "provenance": "Self-authored procedural geometry and textures emitted by this generator as executor artifacts",
+    "revision": "r1",
+    "scenes": [
+      {
+        "camera": {
+          "look_direction": [
+            0,
+            0,
+            -1
+          ],
+          "position": [
+            0,
+            0,
+            5
+          ],
+          "vertical_fov_degrees": 50
+        },
+        "description": "Twelve material spheres, three metallic rows and four roughness columns",
+        "files": [
+          {
+            "byte_size": 16516,
+            "path": "B/BaseColor.png",
+            "sha256": "ba19a54d9037ef73a61345b3bfe7de2a16d5cd334d9ccd57e1c171704f144461"
+          },
+          {
+            "byte_size": 1314,
+            "path": "B/BuildRequest.json",
+            "sha256": "0285ae7606227a522113bc93c5a99b6382f38cf75d6b534d3335be9f85f3f247"
+          },
+          {
+            "byte_size": 16516,
+            "path": "B/Emissive.png",
+            "sha256": "2896ae634e4150d23cc3cb1975ba1c54cea5a1abae93d191948b96d7bf9c146a"
+          },
+          {
+            "byte_size": 146148,
+            "path": "B/Materials.glb",
+            "sha256": "ef3c149dfb910f53b4445b5b4e584c97b1827d6ba1df305576cebd6150722801"
+          },
+          {
+            "byte_size": 16516,
+            "path": "B/Normal.png",
+            "sha256": "44094b9734326552404de3d5332147e80c08313577b2f5bf3ebefd6c214a92f3"
+          },
+          {
+            "byte_size": 16516,
+            "path": "B/Orm.png",
+            "sha256": "5b331471bfaf5507eeee314e2460450aad06ac6bb9b1b74124a77459ff3cceb5"
+          },
+          {
+            "byte_size": 845,
+            "path": "B/SceneDocument.json",
+            "sha256": "ae99cc3b244c1bca6b1a220560e34f0e703f4d9c59a1fc4a24cbce8abdf33aac"
+          }
+        ],
+        "material_cases": [
+          {
+            "alpha_mask": false,
+            "emissive": false,
+            "metallic_factor": 0,
+            "name": "Sphere_M0_R0.15",
+            "node": 0,
+            "roughness_factor": 0.15,
+            "scale": [
+              0.45,
+              0.45,
+              0.45
+            ],
+            "translation": [
+              -1.8,
+              1.2,
+              0
+            ]
+          },
+          {
+            "alpha_mask": false,
+            "emissive": false,
+            "metallic_factor": 0,
+            "name": "Sphere_M0_R0.4",
+            "node": 1,
+            "roughness_factor": 0.4,
+            "scale": [
+              0.45,
+              0.45,
+              0.45
+            ],
+            "translation": [
+              -0.6000000000000001,
+              1.2,
+              0
+            ]
+          },
+          {
+            "alpha_mask": false,
+            "emissive": false,
+            "metallic_factor": 0,
+            "name": "Sphere_M0_R0.7",
+            "node": 2,
+            "roughness_factor": 0.7,
+            "scale": [
+              0.45,
+              0.45,
+              0.45
+            ],
+            "translation": [
+              0.5999999999999999,
+              1.2,
+              0
+            ]
+          },
+          {
+            "alpha_mask": false,
+            "emissive": false,
+            "metallic_factor": 0,
+            "name": "Sphere_M0_R1",
+            "node": 3,
+            "roughness_factor": 1,
+            "scale": [
+              0.45,
+              0.45,
+              0.45
+            ],
+            "translation": [
+              1.7999999999999996,
+              1.2,
+              0
+            ]
+          },
+          {
+            "alpha_mask": false,
+            "emissive": false,
+            "metallic_factor": 0.5,
+            "name": "Sphere_M0.5_R0.15",
+            "node": 4,
+            "roughness_factor": 0.15,
+            "scale": [
+              0.45,
+              0.45,
+              0.45
+            ],
+            "translation": [
+              -1.8,
+              0.0,
+              0
+            ]
+          },
+          {
+            "alpha_mask": false,
+            "emissive": false,
+            "metallic_factor": 0.5,
+            "name": "Sphere_M0.5_R0.4",
+            "node": 5,
+            "roughness_factor": 0.4,
+            "scale": [
+              0.45,
+              0.45,
+              0.45
+            ],
+            "translation": [
+              -0.6000000000000001,
+              0.0,
+              0
+            ]
+          },
+          {
+            "alpha_mask": false,
+            "emissive": false,
+            "metallic_factor": 0.5,
+            "name": "Sphere_M0.5_R0.7",
+            "node": 6,
+            "roughness_factor": 0.7,
+            "scale": [
+              0.45,
+              0.45,
+              0.45
+            ],
+            "translation": [
+              0.5999999999999999,
+              0.0,
+              0
+            ]
+          },
+          {
+            "alpha_mask": false,
+            "emissive": false,
+            "metallic_factor": 0.5,
+            "name": "Sphere_M0.5_R1",
+            "node": 7,
+            "roughness_factor": 1,
+            "scale": [
+              0.45,
+              0.45,
+              0.45
+            ],
+            "translation": [
+              1.7999999999999996,
+              0.0,
+              0
+            ]
+          },
+          {
+            "alpha_mask": false,
+            "emissive": true,
+            "metallic_factor": 1,
+            "name": "Sphere_M1_R0.15",
+            "node": 8,
+            "roughness_factor": 0.15,
+            "scale": [
+              0.45,
+              0.45,
+              0.45
+            ],
+            "translation": [
+              -1.8,
+              -1.2,
+              0
+            ]
+          },
+          {
+            "alpha_mask": true,
+            "emissive": false,
+            "metallic_factor": 1,
+            "name": "Sphere_M1_R0.4",
+            "node": 9,
+            "roughness_factor": 0.4,
+            "scale": [
+              0.45,
+              0.45,
+              0.45
+            ],
+            "translation": [
+              -0.6000000000000001,
+              -1.2,
+              0
+            ]
+          },
+          {
+            "alpha_mask": false,
+            "emissive": false,
+            "metallic_factor": 1,
+            "name": "Sphere_M1_R0.7",
+            "node": 10,
+            "roughness_factor": 0.7,
+            "scale": [
+              -0.45,
+              0.45,
+              0.45
+            ],
+            "translation": [
+              0.5999999999999999,
+              -1.2,
+              0
+            ]
+          },
+          {
+            "alpha_mask": false,
+            "emissive": false,
+            "metallic_factor": 1,
+            "name": "Sphere_M1_R1",
+            "node": 11,
+            "roughness_factor": 1,
+            "scale": [
+              0.36000000000000004,
+              0.49500000000000005,
+              0.29250000000000004
+            ],
+            "translation": [
+              1.7999999999999996,
+              -1.2,
+              0
+            ]
+          }
+        ],
+        "name": "B",
+        "request": "B/BuildRequest.json",
+        "scene_document": "B/SceneDocument.json"
+      },
+      {
+        "camera": {
+          "look_direction": [
+            0,
+            0,
+            -1
+          ],
+          "position": [
+            0,
+            0,
+            5
+          ],
+          "vertical_fov_degrees": 50
+        },
+        "description": "Two player_spawn mesh entities with distinct self-authored avatar colors",
+        "files": [
+          {
+            "byte_size": 2432,
+            "path": "F/BuildRequest.json",
+            "sha256": "534e41e44ef877ae07e69d6dd5ad74a0b731951f0397a3636eefc93beb30f1ba"
+          },
+          {
+            "byte_size": 73924,
+            "path": "F/PlayerBlue.glb",
+            "sha256": "fafa2c8640a73828d1231064fbe5f5677388ed0f2db988f2d6658ff48c74435f"
+          },
+          {
+            "byte_size": 73932,
+            "path": "F/PlayerOrange.glb",
+            "sha256": "44294fe69cbe9228acad0932ad791d8c0d1eb6ddca3c7c14e0d42c7f12410e66"
+          },
+          {
+            "byte_size": 1542,
+            "path": "F/SceneDocument.json",
+            "sha256": "88dbfaf340bb8d614649391c545bd556818b65899fc9e1ec4da06d9335f18669"
+          }
+        ],
+        "name": "F",
+        "request": "F/BuildRequest.json",
+        "scene_document": "F/SceneDocument.json"
+      }
+    ],
+    "schema_version": 1
+  },
+  "passed": true,
+  "scenes": [
+    {
+      "byte_comparison_equal": true,
+      "commands": [
+        {
+          "exit_code": 0,
+          "operation": "compile_source",
+          "result": {
+            "assets": [
+              {
+                "asset_id": "m4.bench.b",
+                "byte_size": 146148,
+                "content_sha256": "ef3c149dfb910f53b4445b5b4e584c97b1827d6ba1df305576cebd6150722801",
+                "revision": "r1",
+                "type": "mesh"
+              }
+            ],
+            "manifest_sha256": "f55dad50826119e8009f169d3a265248aeb55beea06896237015d4d70ec345d7",
+            "package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+            "reconciled_existing": false,
+            "scene_id": "m4.bench.b",
+            "scene_revision": "r1",
+            "valid": true
+          }
+        },
+        {
+          "exit_code": 0,
+          "operation": "inspect_source",
+          "result": {
+            "assets": [
+              {
+                "asset_id": "m4.bench.b",
+                "byte_size": 146148,
+                "content_sha256": "ef3c149dfb910f53b4445b5b4e584c97b1827d6ba1df305576cebd6150722801",
+                "revision": "r1",
+                "type": "mesh"
+              }
+            ],
+            "manifest_sha256": "f55dad50826119e8009f169d3a265248aeb55beea06896237015d4d70ec345d7",
+            "package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+            "scene_id": "m4.bench.b",
+            "scene_revision": "r1",
+            "valid": true
+          }
+        },
+        {
+          "exit_code": 0,
+          "operation": "cook_first",
+          "result": {
+            "diagnostics": [],
+            "valid": true
+          }
+        },
+        {
+          "exit_code": 0,
+          "operation": "validate_first",
+          "result": {
+            "diagnostics": [],
+            "instance_count": 12,
+            "package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+            "scene_id": "m4.bench.b",
+            "valid": true
+          }
+        },
+        {
+          "exit_code": 0,
+          "operation": "cook_second",
+          "result": {
+            "diagnostics": [],
+            "valid": true
+          }
+        },
+        {
+          "exit_code": 0,
+          "operation": "validate_second",
+          "result": {
+            "diagnostics": [],
+            "instance_count": 12,
+            "package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+            "scene_id": "m4.bench.b",
+            "valid": true
+          }
+        },
+        {
+          "exit_code": 0,
+          "operation": "reconcile_existing",
+          "result": {
+            "diagnostics": [],
+            "valid": true
+          }
+        },
+        {
+          "exit_code": 2,
+          "operation": "reject_usage_duplicate_package"
+        },
+        {
+          "exit_code": 2,
+          "operation": "reject_usage_unused_request"
+        },
+        {
+          "exit_code": 2,
+          "operation": "reject_usage_missing_cook_package"
+        },
+        {
+          "exit_code": 2,
+          "operation": "reject_usage_missing_cook_output"
+        },
+        {
+          "exit_code": 2,
+          "operation": "reject_usage_duplicate_source_digest"
+        },
+        {
+          "exit_code": 2,
+          "operation": "reject_usage_unused_output"
+        },
+        {
+          "exit_code": 2,
+          "operation": "reject_usage_missing_validate_package"
+        },
+        {
+          "exit_code": 2,
+          "operation": "reject_usage_missing_validate_digest"
+        },
+        {
+          "exit_code": 1,
+          "operation": "reject_wrong_source",
+          "result": {
+            "diagnostics": [
+              {
+                "code": "gpu_manifest",
+                "message": "GPU manifest is invalid, noncanonical, or bound to another source package.",
+                "path": "$"
+              }
+            ],
+            "valid": false
+          }
+        },
+        {
+          "exit_code": 1,
+          "operation": "reject_changed_page",
+          "result": {
+            "diagnostics": [
+              {
+                "code": "gpu_page",
+                "message": "GPU page digest, bounds, layout or references are invalid.",
+                "path": "$"
+              }
+            ],
+            "valid": false
+          }
+        },
+        {
+          "exit_code": 1,
+          "operation": "reject_truncated_page",
+          "result": {
+            "diagnostics": [
+              {
+                "code": "gpu_page",
+                "message": "GPU page digest, bounds, layout or references are invalid.",
+                "path": "$"
+              }
+            ],
+            "valid": false
+          }
+        },
+        {
+          "exit_code": 1,
+          "operation": "reject_rehashed_changed_page",
+          "result": {
+            "diagnostics": [
+              {
+                "code": "gpu_page",
+                "message": "GPU page digest, bounds, layout or references are invalid.",
+                "path": "$"
+              }
+            ],
+            "valid": false
+          }
+        },
+        {
+          "exit_code": 1,
+          "operation": "reject_rehashed_truncated_page",
+          "result": {
+            "diagnostics": [
+              {
+                "code": "gpu_page",
+                "message": "GPU page digest, bounds, layout or references are invalid.",
+                "path": "$"
+              }
+            ],
+            "valid": false
+          }
+        },
+        {
+          "exit_code": 1,
+          "operation": "reject_unknown_file",
+          "result": {
+            "diagnostics": [
+              {
+                "code": "gpu_package_files",
+                "message": "GPU package contains too many entries.",
+                "path": "$"
+              }
+            ],
+            "valid": false
+          }
+        }
+      ],
+      "deterministic": true,
+      "gpu_package_files": [
+        {
+          "kind": "directory",
+          "path": "blobs/"
+        },
+        {
+          "bytes": 1094876,
+          "kind": "file",
+          "path": "blobs/e2ac6c604c0c8416abb61d6067421c6992c2760e38520f7824c700492a5af3ec",
+          "sha256": "e2ac6c604c0c8416abb61d6067421c6992c2760e38520f7824c700492a5af3ec"
+        },
+        {
+          "bytes": 481,
+          "kind": "file",
+          "path": "GpuManifest.json",
+          "sha256": "be843679c1c3c885d46413cb3213c7db044e973cb31d8c8752b174b83fac5c38"
+        }
+      ],
+      "idempotent": true,
+      "instance_count": 12,
+      "invalid_cli_usage_rejected": true,
+      "scene": "B",
+      "source_files_after": [
+        {
+          "bytes": 471,
+          "kind": "file",
+          "path": "AssetManifest.json",
+          "sha256": "f55dad50826119e8009f169d3a265248aeb55beea06896237015d4d70ec345d7"
+        },
+        {
+          "kind": "directory",
+          "path": "blobs/"
+        },
+        {
+          "bytes": 146148,
+          "kind": "file",
+          "path": "blobs/ef3c149dfb910f53b4445b5b4e584c97b1827d6ba1df305576cebd6150722801",
+          "sha256": "ef3c149dfb910f53b4445b5b4e584c97b1827d6ba1df305576cebd6150722801"
+        },
+        {
+          "bytes": 497,
+          "kind": "file",
+          "path": "Scene.json",
+          "sha256": "da13b7d6529ac8d432257c7bd1e36559242157b2c7d03af98d0649f207222654"
+        }
+      ],
+      "source_files_before": [
+        {
+          "bytes": 471,
+          "kind": "file",
+          "path": "AssetManifest.json",
+          "sha256": "f55dad50826119e8009f169d3a265248aeb55beea06896237015d4d70ec345d7"
+        },
+        {
+          "kind": "directory",
+          "path": "blobs/"
+        },
+        {
+          "bytes": 146148,
+          "kind": "file",
+          "path": "blobs/ef3c149dfb910f53b4445b5b4e584c97b1827d6ba1df305576cebd6150722801",
+          "sha256": "ef3c149dfb910f53b4445b5b4e584c97b1827d6ba1df305576cebd6150722801"
+        },
+        {
+          "bytes": 497,
+          "kind": "file",
+          "path": "Scene.json",
+          "sha256": "da13b7d6529ac8d432257c7bd1e36559242157b2c7d03af98d0649f207222654"
+        }
+      ],
+      "source_origin": "compiled_fixture_request",
+      "source_package_digest": "5348fa21631b898ed98fdef855b6e04fb12b77d396d7a0addad9175d13ee5556",
+      "source_unchanged": true
+    },
+    {
+      "byte_comparison_equal": true,
+      "commands": [
+        {
+          "exit_code": 0,
+          "operation": "compile_source",
+          "result": {
+            "assets": [
+              {
+                "asset_id": "m4.bench.f.blue",
+                "byte_size": 73924,
+                "content_sha256": "fafa2c8640a73828d1231064fbe5f5677388ed0f2db988f2d6658ff48c74435f",
+                "revision": "r1",
+                "type": "mesh"
+              },
+              {
+                "asset_id": "m4.bench.f.orange",
+                "byte_size": 73932,
+                "content_sha256": "44294fe69cbe9228acad0932ad791d8c0d1eb6ddca3c7c14e0d42c7f12410e66",
+                "revision": "r1",
+                "type": "mesh"
+              }
+            ],
+            "manifest_sha256": "8911b44acd26da7a5e956305fda273bea5eb9f5575c03373627097cab12173ff",
+            "package_digest": "2d75ccffae1d73cf633905c5460fa93b8be2e7a558a48acd23444d991891dd96",
+            "reconciled_existing": false,
+            "scene_id": "m4.bench.f",
+            "scene_revision": "r1",
+            "valid": true
+          }
+        },
+        {
+          "exit_code": 0,
+          "operation": "inspect_source",
+          "result": {
+            "assets": [
+              {
+                "asset_id": "m4.bench.f.blue",
+                "byte_size": 73924,
+                "content_sha256": "fafa2c8640a73828d1231064fbe5f5677388ed0f2db988f2d6658ff48c74435f",
+                "revision": "r1",
+                "type": "mesh"
+              },
+              {
+                "asset_id": "m4.bench.f.orange",
+                "byte_size": 73932,
+                "content_sha256": "44294fe69cbe9228acad0932ad791d8c0d1eb6ddca3c7c14e0d42c7f12410e66",
+                "revision": "r1",
+                "type": "mesh"
+              }
+            ],
+            "manifest_sha256": "8911b44acd26da7a5e956305fda273bea5eb9f5575c03373627097cab12173ff",
+            "package_digest": "2d75ccffae1d73cf633905c5460fa93b8be2e7a558a48acd23444d991891dd96",
+            "scene_id": "m4.bench.f",
+            "scene_revision": "r1",
+            "valid": true
+          }
+        },
+        {
+          "exit_code": 0,
+          "operation": "cook_first",
+          "result": {
+            "diagnostics": [],
+            "valid": true
+          }
+        },
+        {
+          "exit_code": 0,
+          "operation": "validate_first",
+          "result": {
+            "diagnostics": [],
+            "instance_count": 6,
+            "package_digest": "2d75ccffae1d73cf633905c5460fa93b8be2e7a558a48acd23444d991891dd96",
+            "scene_id": "m4.bench.f",
+            "valid": true
+          }
+        },
+        {
+          "exit_code": 0,
+          "operation": "cook_second",
+          "result": {
+            "diagnostics": [],
+            "valid": true
+          }
+        },
+        {
+          "exit_code": 0,
+          "operation": "validate_second",
+          "result": {
+            "diagnostics": [],
+            "instance_count": 6,
+            "package_digest": "2d75ccffae1d73cf633905c5460fa93b8be2e7a558a48acd23444d991891dd96",
+            "scene_id": "m4.bench.f",
+            "valid": true
+          }
+        },
+        {
+          "exit_code": 0,
+          "operation": "reconcile_existing",
+          "result": {
+            "diagnostics": [],
+            "valid": true
+          }
+        },
+        {
+          "exit_code": 2,
+          "operation": "reject_usage_duplicate_package"
+        },
+        {
+          "exit_code": 2,
+          "operation": "reject_usage_unused_request"
+        },
+        {
+          "exit_code": 2,
+          "operation": "reject_usage_missing_cook_package"
+        },
+        {
+          "exit_code": 2,
+          "operation": "reject_usage_missing_cook_output"
+        },
+        {
+          "exit_code": 2,
+          "operation": "reject_usage_duplicate_source_digest"
+        },
+        {
+          "exit_code": 2,
+          "operation": "reject_usage_unused_output"
+        },
+        {
+          "exit_code": 2,
+          "operation": "reject_usage_missing_validate_package"
+        },
+        {
+          "exit_code": 2,
+          "operation": "reject_usage_missing_validate_digest"
+        },
+        {
+          "exit_code": 1,
+          "operation": "reject_wrong_source",
+          "result": {
+            "diagnostics": [
+              {
+                "code": "gpu_manifest",
+                "message": "GPU manifest is invalid, noncanonical, or bound to another source package.",
+                "path": "$"
+              }
+            ],
+            "valid": false
+          }
+        },
+        {
+          "exit_code": 1,
+          "operation": "reject_changed_page",
+          "result": {
+            "diagnostics": [
+              {
+                "code": "gpu_page",
+                "message": "GPU page digest, bounds, layout or references are invalid.",
+                "path": "$"
+              }
+            ],
+            "valid": false
+          }
+        },
+        {
+          "exit_code": 1,
+          "operation": "reject_truncated_page",
+          "result": {
+            "diagnostics": [
+              {
+                "code": "gpu_page",
+                "message": "GPU page digest, bounds, layout or references are invalid.",
+                "path": "$"
+              }
+            ],
+            "valid": false
+          }
+        },
+        {
+          "exit_code": 1,
+          "operation": "reject_rehashed_changed_page",
+          "result": {
+            "diagnostics": [
+              {
+                "code": "gpu_page",
+                "message": "GPU page digest, bounds, layout or references are invalid.",
+                "path": "$"
+              }
+            ],
+            "valid": false
+          }
+        },
+        {
+          "exit_code": 1,
+          "operation": "reject_rehashed_truncated_page",
+          "result": {
+            "diagnostics": [
+              {
+                "code": "gpu_page",
+                "message": "GPU page digest, bounds, layout or references are invalid.",
+                "path": "$"
+              }
+            ],
+            "valid": false
+          }
+        },
+        {
+          "exit_code": 1,
+          "operation": "reject_unknown_file",
+          "result": {
+            "diagnostics": [
+              {
+                "code": "gpu_package_files",
+                "message": "GPU package contains too many entries.",
+                "path": "$"
+              }
+            ],
+            "valid": false
+          }
+        }
+      ],
+      "deterministic": true,
+      "gpu_package_files": [
+        {
+          "kind": "directory",
+          "path": "blobs/"
+        },
+        {
+          "bytes": 514708,
+          "kind": "file",
+          "path": "blobs/b874e93c6b39c6f6fc2d379b16fe88ed372747ae65aa676ef788b4d45c07f973",
+          "sha256": "b874e93c6b39c6f6fc2d379b16fe88ed372747ae65aa676ef788b4d45c07f973"
+        },
+        {
+          "bytes": 480,
+          "kind": "file",
+          "path": "GpuManifest.json",
+          "sha256": "eb8304be584e4d7c5eaeaa3180867327b03cc30afda366e0ef094e73d94435dc"
+        }
+      ],
+      "idempotent": true,
+      "instance_count": 6,
+      "invalid_cli_usage_rejected": true,
+      "scene": "F",
+      "source_files_after": [
+        {
+          "bytes": 793,
+          "kind": "file",
+          "path": "AssetManifest.json",
+          "sha256": "8911b44acd26da7a5e956305fda273bea5eb9f5575c03373627097cab12173ff"
+        },
+        {
+          "kind": "directory",
+          "path": "blobs/"
+        },
+        {
+          "bytes": 73932,
+          "kind": "file",
+          "path": "blobs/44294fe69cbe9228acad0932ad791d8c0d1eb6ddca3c7c14e0d42c7f12410e66",
+          "sha256": "44294fe69cbe9228acad0932ad791d8c0d1eb6ddca3c7c14e0d42c7f12410e66"
+        },
+        {
+          "bytes": 73924,
+          "kind": "file",
+          "path": "blobs/fafa2c8640a73828d1231064fbe5f5677388ed0f2db988f2d6658ff48c74435f",
+          "sha256": "fafa2c8640a73828d1231064fbe5f5677388ed0f2db988f2d6658ff48c74435f"
+        },
+        {
+          "bytes": 884,
+          "kind": "file",
+          "path": "Scene.json",
+          "sha256": "2389697f70a88cda302cdd5374785d23864d9aa6fe4a79b2a2b22df6ca08fb19"
+        }
+      ],
+      "source_files_before": [
+        {
+          "bytes": 793,
+          "kind": "file",
+          "path": "AssetManifest.json",
+          "sha256": "8911b44acd26da7a5e956305fda273bea5eb9f5575c03373627097cab12173ff"
+        },
+        {
+          "kind": "directory",
+          "path": "blobs/"
+        },
+        {
+          "bytes": 73932,
+          "kind": "file",
+          "path": "blobs/44294fe69cbe9228acad0932ad791d8c0d1eb6ddca3c7c14e0d42c7f12410e66",
+          "sha256": "44294fe69cbe9228acad0932ad791d8c0d1eb6ddca3c7c14e0d42c7f12410e66"
+        },
+        {
+          "bytes": 73924,
+          "kind": "file",
+          "path": "blobs/fafa2c8640a73828d1231064fbe5f5677388ed0f2db988f2d6658ff48c74435f",
+          "sha256": "fafa2c8640a73828d1231064fbe5f5677388ed0f2db988f2d6658ff48c74435f"
+        },
+        {
+          "bytes": 884,
+          "kind": "file",
+          "path": "Scene.json",
+          "sha256": "2389697f70a88cda302cdd5374785d23864d9aa6fe4a79b2a2b22df6ca08fb19"
+        }
+      ],
+      "source_origin": "compiled_fixture_request",
+      "source_package_digest": "2d75ccffae1d73cf633905c5460fa93b8be2e7a558a48acd23444d991891dd96",
+      "source_unchanged": true
+    }
+  ],
+  "schema_version": 1,
+  "scope": "CPU geometry-layout GPU package with source PNG/JPEG image bytes",
+  "texture_mips_baked": false,
+  "timestamp_utc": "2026-11-16T02:51:28.671322+00:00",
+  "tool_sha256": "d19553ff27304fe5b381ed7c3e5b9249a597cbaec09ec064d0676a2bf2e615c5",
+  "request_id": "engine-next-visual-runtime-m4-2-20261116",
+  "issue_number": 1334
+}

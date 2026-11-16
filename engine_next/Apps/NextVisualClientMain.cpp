@@ -59,6 +59,7 @@ bool ParseUnsigned(const char *pValue, std::uint32_t &out_nValue)
 int main(int nArgumentCount, char **ppArguments)
 {
 	EngineNext::Rendering::VisualConfig stConfig;
+	bool bExplicitClientId = false;
 	std::array<wchar_t, 32768> arrModulePath{};
 	const DWORD nPathLength = GetModuleFileNameW(nullptr, arrModulePath.data(), static_cast<DWORD>(arrModulePath.size()));
 	if (nPathLength == 0 || nPathLength >= arrModulePath.size())
@@ -72,16 +73,18 @@ int main(int nArgumentCount, char **ppArguments)
 		const std::string strOption = ppArguments[nIndex];
 		if (strOption == "--help")
 		{
-			std::cout << "next_visual_client [--width N] [--height N] [--frames N] [--validation] [--hidden] [--vsync] [--exercise-resize] [--deterministic] [--shader-directory PATH] [--report PATH] [--capture PATH]\n";
+			std::cout << "next_visual_client [--width N] [--height N] [--frames N] [--validation] [--hidden] [--vsync] [--exercise-resize] [--deterministic] [--shader-directory PATH] [--report PATH] [--capture PATH] [--asset-package PATH] [--gpu-package PATH] [--connect --port N --client-id ID --server ADDRESS]\n";
+			std::cout << "WASD moves camera or connected player. R reconnects a connected session. Escape closes.\n";
 			return 0;
 		}
-		if (strOption == "--validation" || strOption == "--hidden" || strOption == "--vsync" || strOption == "--exercise-resize" || strOption == "--deterministic")
+		if (strOption == "--validation" || strOption == "--hidden" || strOption == "--vsync" || strOption == "--exercise-resize" || strOption == "--deterministic" || strOption == "--connect")
 		{
 			stConfig.bValidation = stConfig.bValidation || strOption == "--validation";
 			stConfig.bHidden = stConfig.bHidden || strOption == "--hidden";
 			stConfig.bVsync = stConfig.bVsync || strOption == "--vsync";
 			stConfig.bExerciseResize = stConfig.bExerciseResize || strOption == "--exercise-resize";
 			stConfig.bDeterministic = stConfig.bDeterministic || strOption == "--deterministic";
+			stConfig.bConnect = stConfig.bConnect || strOption == "--connect";
 			continue;
 		}
 		if (nIndex + 1 >= nArgumentCount)
@@ -119,6 +122,33 @@ int main(int nArgumentCount, char **ppArguments)
 		{
 			stConfig.strReportPath = pValue;
 		}
+		else if (strOption == "--asset-package")
+		{
+			stConfig.strAssetPackagePath = pValue;
+		}
+		else if (strOption == "--gpu-package")
+		{
+			stConfig.strGpuPackagePath = pValue;
+		}
+		else if (strOption == "--server")
+		{
+			stConfig.strServerAddress = pValue;
+		}
+		else if (strOption == "--client-id")
+		{
+			stConfig.strClientId = pValue;
+			bExplicitClientId = !stConfig.strClientId.empty();
+		}
+		else if (strOption == "--port")
+		{
+			std::uint32_t nPort = 0;
+			if (!ParseUnsigned(pValue, nPort) || nPort == 0 || nPort > 65535)
+			{
+				std::cerr << "Invalid server port\n";
+				return 2;
+			}
+			stConfig.nServerPort = static_cast<std::uint16_t>(nPort);
+		}
 		else if (strOption == "--capture")
 		{
 			stConfig.strCapturePath = pValue;
@@ -132,6 +162,11 @@ int main(int nArgumentCount, char **ppArguments)
 	if (stConfig.nWidth < 64 || stConfig.nHeight < 64 || stConfig.nWidth > 8192 || stConfig.nHeight > 8192)
 	{
 		std::cerr << "Window dimensions must be in [64, 8192]\n";
+		return 2;
+	}
+	if (stConfig.bConnect && (stConfig.nServerPort == 0 || stConfig.strAssetPackagePath.empty() || !bExplicitClientId))
+	{
+		std::cerr << "--connect requires --port, --client-id and --asset-package\n";
 		return 2;
 	}
 	return EngineNext::Rendering::RunVisualClient(stConfig);

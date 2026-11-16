@@ -195,6 +195,20 @@ class EngineNextContractTests(unittest.TestCase):
         result = audit_sources(self.root, self.contract, True)
         self.assertIn("unknown_angle_include", {item["code"] for item in result["violations"]})
 
+    def test_image_platform_headers_stay_private_and_libraries_stay_scoped(self):
+        self.write("engine_next/Rendering/Cook/ImageDecoder.cpp", "#include <wincodec.h>\n#include <objbase.h>\n")
+        self.assertTrue(audit_sources(self.root, self.contract, True)["passed"])
+        self.write("engine_next/include/BadImageHeader.h", "#include <wincodec.h>\n")
+        result = audit_sources(self.root, self.contract, True)
+        self.assertIn("unknown_angle_include", {item["code"] for item in result["violations"]})
+        path, document = self.make_manifest()
+        document["system_libraries"] = ["c++", "windowscodecs", "ole32"]
+        self.save_manifest(path, document)
+        self.assertFalse(audit_link_manifest(self.root, self.contract, path)["passed"])
+        document["target"] = "next_rendering_tests"
+        self.save_manifest(path, document)
+        self.assertTrue(audit_link_manifest(self.root, self.contract, path)["passed"])
+
     def test_visual_profile_does_not_allow_header_prefix_lookalikes(self):
         self.write("engine_next/Rendering/VisualRuntime.cpp", "#include <d3d12.h/private.h>\n")
         result = audit_sources(self.root, self.contract, True)

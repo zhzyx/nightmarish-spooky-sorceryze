@@ -1,0 +1,19 @@
+{
+  "source_files_byte_preserved": true,
+  "patches": [],
+  "generated_files": {
+    "src/jconfig.h": "9545992fbf367753dc1f8b54d60a6434ab956d12f327acecc12c4914af649695",
+    "src/jconfigint.h": "c416360360bb9929b73c1e08d5461c951f7dfc02391f70996d790fe25bd4cc37",
+    "src/jversion.h": "9ef81aa06dba52bbf3b7f1ee0542a4652e78a65ec5ec9ddd3e86a8900239a31c"
+  },
+  "configuration": {
+    "jpeg_lib_version": 62,
+    "simd": false,
+    "arithmetic_decode": true,
+    "arithmetic_encode": false,
+    "turbojpeg": false,
+    "generated_from": "3.1.3 src/jconfig.h.in, src/jconfigint.h.in, src/jversion.h.in",
+    "platform_branches": "MSVC intrinsic and TLS branches, 32/64-bit sizeof(size_t)",
+    "purpose": "Coefficient-only 8-bit validation; 12-bit coefficient wrappers satisfy upstream dynamic precision references."
+  }
+}
