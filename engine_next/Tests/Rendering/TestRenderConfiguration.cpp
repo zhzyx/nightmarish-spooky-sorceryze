@@ -71,6 +71,9 @@ void CheckRejected(const JsonValue &stValue, const std::string &strExpectedDiges
 	stConfiguration.strSourcePackageDigest = "unchanged";
 	stConfiguration.stDirectionalLight.dIlluminance = 432;
 	stConfiguration.stShadows.nResolution = 4096;
+	stConfiguration.stTemporal.bEnabled = false;
+	stConfiguration.stTemporal.dHistoryWeight = 0.25;
+	stConfiguration.stTemporal.dDepthThreshold = 0.125;
 	stConfiguration.arrPointLights.front().nId = 4321;
 	stConfiguration.arrSpotLights.push_back(EngineNext::Rendering::SpotLightSettings{});
 	EngineNext::Assets::Diagnostics arrDiagnostics;
@@ -81,6 +84,9 @@ void CheckRejected(const JsonValue &stValue, const std::string &strExpectedDiges
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.strSourcePackageDigest, "unchanged");
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stDirectionalLight.dIlluminance, 432.0);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stShadows.nResolution, 4096U);
+	ENGINE_NEXT_CHECK(!stConfiguration.stTemporal.bEnabled);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stTemporal.dHistoryWeight, 0.25);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stTemporal.dDepthThreshold, 0.125);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrPointLights.front().nId, 4321U);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrSpotLights.size(), 1U);
 }
@@ -684,5 +690,76 @@ ENGINE_NEXT_TEST("Spot solid angle rejects invalid and underflowing angles trans
 		double dSolidAngle = 42;
 		ENGINE_NEXT_CHECK(!EngineNext::Rendering::ComputeSpotSolidAngle(arrCone[0], arrCone[1], dSolidAngle));
 		ENGINE_NEXT_CHECK_EQ(dSolidAngle, 42);
+	}
+}
+
+ENGINE_NEXT_TEST("Render configuration defaults and bounds optional temporal settings")
+{
+	JsonValue stValue = ValidConfiguration();
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stTemporal.bEnabled);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stTemporal.dHistoryWeight, 0.9);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stTemporal.dDepthThreshold, 0.01);
+	for (bool bEnabled : { false, true })
+	{
+		for (double dWeight : { 0.0, 0.9, 0.99 })
+		{
+			for (double dThreshold : { 0.0001, 0.01, 0.25 })
+			{
+				(*stValue.GetObject())["temporal_aa"] = JsonValue::Object{
+					{ "enabled", bEnabled }, { "history_weight", dWeight }, { "depth_threshold", dThreshold }
+				};
+				ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+				ENGINE_NEXT_CHECK_EQ(stConfiguration.stTemporal.bEnabled, bEnabled);
+				ENGINE_NEXT_CHECK_EQ(stConfiguration.stTemporal.dHistoryWeight, dWeight);
+				ENGINE_NEXT_CHECK_EQ(stConfiguration.stTemporal.dDepthThreshold, dThreshold);
+			}
+		}
+	}
+	stValue.GetObject()->erase("temporal_aa");
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stTemporal.bEnabled);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stTemporal.dHistoryWeight, 0.9);
+}
+
+ENGINE_NEXT_TEST("Render configuration rejects malformed temporal settings transactionally")
+{
+	JsonValue stValue = ValidConfiguration();
+	const JsonValue stValidTemporal = JsonValue::Object{
+		{ "enabled", true }, { "history_weight", 0.9 }, { "depth_threshold", 0.01 }
+	};
+	for (const JsonValue &stWrongType : { JsonValue{}, JsonValue(true), JsonValue(1.0), JsonValue("temporal"), JsonValue(JsonValue::List{}) })
+	{
+		(*stValue.GetObject())["temporal_aa"] = stWrongType;
+		CheckRejected(stValue);
+	}
+	for (const std::string &strField : { "enabled", "history_weight", "depth_threshold" })
+	{
+		(*stValue.GetObject())["temporal_aa"] = stValidTemporal;
+		(*stValue.GetObject())["temporal_aa"].GetObject()->erase(strField);
+		CheckRejected(stValue);
+	}
+	(*stValue.GetObject())["temporal_aa"] = stValidTemporal;
+	JsonValue::Object &mapTemporal = *(*stValue.GetObject())["temporal_aa"].GetObject();
+	mapTemporal["unknown"] = true;
+	CheckRejected(stValue);
+	mapTemporal.erase("unknown");
+	mapTemporal["enabled"] = 1.0;
+	CheckRejected(stValue);
+	mapTemporal["enabled"] = false;
+	for (const JsonValue &stWeight : { JsonValue(-0.001), JsonValue(0.991), JsonValue(std::numeric_limits<double>::quiet_NaN()),
+									   JsonValue(std::numeric_limits<double>::infinity()), JsonValue(true), JsonValue("0.5") })
+	{
+		mapTemporal["history_weight"] = stWeight;
+		CheckRejected(stValue);
+	}
+	mapTemporal["history_weight"] = 0.9;
+	for (const JsonValue &stThreshold : { JsonValue(0.0), JsonValue(0.000099), JsonValue(0.251), JsonValue(std::numeric_limits<double>::quiet_NaN()),
+										  JsonValue(std::numeric_limits<double>::infinity()), JsonValue(false), JsonValue("0.01") })
+	{
+		mapTemporal["depth_threshold"] = stThreshold;
+		CheckRejected(stValue);
 	}
 }

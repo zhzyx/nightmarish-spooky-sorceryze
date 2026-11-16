@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5649396a79bdc82654200c859332c3197bcc4948",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "336af68a6fc4486defbd7080d03b84099eafe47de6286f205b800ba6cfccadc4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1349",
+    "action": "delivery",
+    "detection_head": "656493afe1a0e6b99800f0d4970652708be41fdd",
+    "context_sha256": "cdf7d3332c93fbdec0191218895e1961d409d3d02e9ea3515d6dec2feec34fa2",
+    "operator": "kaiyunxue",
+    "worker": "codex-m4-implementation",
+    "authority_ref": "User authorized implementation, testing and main delivery in this chat",
+    "evidence": "build/engine_next/temporal-writer-final.log",
+    "diagnosis": "Main advanced five unrelated files after review. There is no native or evidence write overlap. Fast-forward integrated a22d44c536835316b33a807426774008f4dfba02 and the affected multi-image provider regression passes 12 tests. The 221 native inputs remain unchanged.",
+    "next_action": "Stage integration evidence and repeat signing with automatic disjoint-main integration enabled.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-16T18:39:16.945520+00:00",
+    "attempted": null,
+    "repair_owner": "codex-m4-implementation",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-16T18:40:56.809533+00:00",
+  "sha256": "a3f5ea007e2fcda01e343b4008153281e73ff631a64d4117a7b510a9bcf284b1"
+}

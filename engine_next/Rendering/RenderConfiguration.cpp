@@ -250,6 +250,22 @@ bool ParseShadows(const Serialization::JsonValue &stValue, ShadowSettings &out_s
 			BoundedNumber(*pShadows, "light_radius", strPath, 0, 10, out_stShadows.dLightRadius, out_arrDiagnostics);
 }
 
+bool ParseTemporal(const Serialization::JsonValue &stValue, TemporalSettings &out_stTemporal, Assets::Diagnostics &out_arrDiagnostics)
+{
+	const std::string strPath = "$.temporal_aa";
+	const Serialization::JsonValue::Object *pTemporal = Assets::Object(stValue, strPath, out_arrDiagnostics);
+	if (pTemporal == nullptr || !Assets::Fields(*pTemporal, { "enabled", "history_weight", "depth_threshold" }, strPath, out_arrDiagnostics))
+	{
+		return false;
+	}
+	if (!pTemporal->find("enabled")->second.GetBool(out_stTemporal.bEnabled))
+	{
+		return Fail("type", strPath + ".enabled", "Expected a boolean.", out_arrDiagnostics);
+	}
+	return BoundedNumber(*pTemporal, "history_weight", strPath, 0, 0.99, out_stTemporal.dHistoryWeight, out_arrDiagnostics) &&
+			BoundedNumber(*pTemporal, "depth_threshold", strPath, 0.0001, 0.25, out_stTemporal.dDepthThreshold, out_arrDiagnostics);
+}
+
 bool ParseLightProperties(const Serialization::JsonValue::Object &mapLight, const std::string &strPath,
 						  PointLightSettings &out_stLight, Assets::Diagnostics &out_arrDiagnostics)
 {
@@ -412,7 +428,7 @@ bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std
 							  Assets::Diagnostics &out_arrDiagnostics)
 {
 	const Serialization::JsonValue::Object *pRoot = Assets::Object(stValue, "$", out_arrDiagnostics);
-	if (pRoot == nullptr || !RequiredFields(*pRoot, { "schema_version", "source_package_sha256", "camera", "exposure" }, { "directional_light", "shadows", "point_lights", "spot_lights" }, "$", out_arrDiagnostics))
+	if (pRoot == nullptr || !RequiredFields(*pRoot, { "schema_version", "source_package_sha256", "camera", "exposure" }, { "directional_light", "shadows", "point_lights", "spot_lights", "temporal_aa" }, "$", out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -478,6 +494,11 @@ bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std
 		return false;
 	}
 	if (!UniqueLightIds(stConfiguration, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itTemporal = pRoot->find("temporal_aa");
+	if (itTemporal != pRoot->end() && !ParseTemporal(itTemporal->second, stConfiguration.stTemporal, out_arrDiagnostics))
 	{
 		return false;
 	}

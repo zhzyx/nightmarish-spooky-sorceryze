@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-16T18:26:47.137633+00:00",
+  "scope": "Independent read-only evidence identity and result verification. This reviewer authored the graph and original temporal shader, so those areas are excluded from independent source review. Coverage helper increments authored by another worker were separately reviewed and tested.",
+  "audits": [
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-verification.json",
+      "sha256": "c9b25e8c008729c61d9cbea69f4a0e46a541dd99ffa9205385da234b66711710",
+      "references_checked": 12,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-build-impact.json",
+      "sha256": "3343dbef54f47381df5fee57c3daad208471e16a6d1d4908d64d5f4f1b5f160e",
+      "references_checked": 88,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-hdr-quality.json",
+      "sha256": "552ca2ed6765dd678c1724ba9cf35a7b61c24765a03c606bea1c2b204c48567e",
+      "references_checked": 2,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-runtime-review.json",
+      "sha256": "7434b04de42972390fbf298afd43d4bd527f1235a64408f8c360e565ef11e3b2",
+      "references_checked": 1,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-gpu.json",
+      "sha256": "a2b62feb58127f99cfc6331d39fb948e88033d0015dd65793554b0c1ce1fd02c",
+      "references_checked": 61,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-dynamic-gpu.json",
+      "sha256": "6cc80518eaabb712473be8f3a59bf7d55ee4603078d6c8314fba24e04fcee27b",
+      "references_checked": 33,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\data-collection\\engine-next-visual-runtime-m4-3-temporal-network.json",
+      "sha256": "285211caee3e34d3f9cc4a063e55029d7f15623f89e0258583c4fd62fb32b948",
+      "references_checked": 28,
+      "errors": []
+    }
+  ],
+  "references_checked": 225,
+  "impact_checks": {
+    "baseline_and_restored_native_keys_equal": true,
+    "changed_native_key_distinct": true,
+    "main_and_clean_baseline_input_maps_equal": true,
+    "same_executable_for_all_shader_updates": true,
+    "changed_pixels_differ": true,
+    "rollback_pixels_equal": true,
+    "three_24_frame_runs_success_gbv_zero": true,
+    "invalid_shader_rejected_before_frame": true
+  },
+  "pending": [],
+  "passed_with_stated_pending_scope": true
+}

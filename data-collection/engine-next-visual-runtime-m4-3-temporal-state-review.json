@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue": 1343,
+  "recorded_at_utc": "2026-11-16T16:18:38.097349+00:00",
+  "reviewer": "m42_network_acceptance",
+  "scope": "TemporalState two-phase candidate, commit, reset, stable draw identity and jitter sequence",
+  "result": "passed",
+  "findings": [],
+  "source_sha256": {
+    "engine_next/include/EngineNext/Rendering/TemporalState.h": "6287ad9b429eaf294e0db821cb4c536e069bd6511212fdae604406fe136c2132",
+    "engine_next/Rendering/TemporalState.cpp": "f03c55580cf3556b06775384bdb3d5e78ef730cacf74f6ee5c34cca61c1bf1f7",
+    "engine_next/Tests/Rendering/TestTemporalState.cpp": "b8bb35acc7f42d5af3df6a178d2b51fe3aea86ebdb8073d1c8b503968d381443"
+  },
+  "runs": [
+    {
+      "compiler": "msvc",
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-state-final-msvc\\TemporalStateTests.exe"
+      ],
+      "exe_sha256": "5cd6252873975a9032f68ac3a4ff2e0891f712c31519f309728519063d480a43",
+      "exit_code": 0,
+      "stdout": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=8 checks=351 failures=0\n",
+      "stderr": ""
+    },
+    {
+      "compiler": "clang",
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-state-final-clang\\TemporalStateTests.exe"
+      ],
+      "exe_sha256": "fa59d2bbbce1048760522439cf3e6c44a86f89e24a5f531140d00149d91bfe93",
+      "exit_code": 0,
+      "stdout": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=8 checks=351 failures=0\n",
+      "stderr": ""
+    }
+  ],
+  "review_checks": [
+    "Failed preparation returns before modifying pending candidate, token, committed snapshot, epoch or output.",
+    "Only the newest successfully prepared candidate token is committed. A reset invalidates pending tokens while preserving increasing token identity.",
+    "Jitter and epoch advance on commit. Abandoned viewport or projection changes preserve committed state.",
+    "Committed draws are sorted using all four identity fields. Output is produced in the current input order, with duplicate identities rejected.",
+    "New and explicitly reset draws use current transform as invalid previous history. Removed draws disappear on commit.",
+    "Ordinary camera motion uses the previous committed unjittered camera, while viewport and projection metadata changes start a new history epoch."
+  ]
+}

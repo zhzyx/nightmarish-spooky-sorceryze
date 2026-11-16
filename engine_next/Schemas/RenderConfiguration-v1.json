@@ -275,6 +275,31 @@
         }
       },
       "$comment": "Omission preserves an empty array. Direction must be finite and nonzero. The outer angle must exceed the inner angle. IDs must be unique across point and spot lights."
+    },
+    "temporal_aa": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "history_weight",
+        "depth_threshold"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "history_weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.99
+        },
+        "depth_threshold": {
+          "type": "number",
+          "minimum": 0.0001,
+          "maximum": 0.25
+        }
+      },
+      "$comment": "Omission uses the built-in temporal defaults. All fields remain validated when disabled. The depth threshold is a relative depth difference."
     }
   },
   "$defs": {

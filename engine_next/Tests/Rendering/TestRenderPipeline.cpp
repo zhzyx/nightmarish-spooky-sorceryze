@@ -117,9 +117,9 @@ ENGINE_NEXT_TEST("RenderPipeline separates deferred HDR lighting from tone mappi
 {
 	RenderPipeline stPipeline;
 	GraphDiagnostic stDiagnostic;
-	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic));
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, false));
 	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 8U);
-	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 11U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 13U);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nGraphicsPassCount, 7U);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nComputePassCount, 1U);
 	ENGINE_NEXT_CHECK(stPipeline.nHdr != stPipeline.nColor);
@@ -148,6 +148,11 @@ ENGINE_NEXT_TEST("RenderPipeline separates deferred HDR lighting from tone mappi
 		ENGINE_NEXT_CHECK(HasTransition(stGbuffer, nResource, ResourceState::Common, ResourceState::RenderTarget));
 		ENGINE_NEXT_CHECK(HasTransition(stLighting, nResource, ResourceState::RenderTarget, ResourceState::ShaderRead));
 	}
+	for (ResourceId nResource : { stPipeline.nMotion, stPipeline.nObjectId })
+	{
+		ENGINE_NEXT_CHECK(HasTransition(stGbuffer, nResource, ResourceState::Common, ResourceState::RenderTarget));
+		ENGINE_NEXT_CHECK(HasTransition(stPipeline.stGraph.arrPasses[7], nResource, ResourceState::RenderTarget, ResourceState::Common));
+	}
 	ENGINE_NEXT_CHECK(HasTransition(stToneMap, stPipeline.nHdr, ResourceState::RenderTarget, ResourceState::ShaderRead));
 	ENGINE_NEXT_CHECK(HasTransition(stToneMap, stPipeline.nColor, ResourceState::Common, ResourceState::RenderTarget));
 	ENGINE_NEXT_CHECK(HasTransition(stPipeline.stGraph.arrPasses[6], stPipeline.nColor, ResourceState::RenderTarget, ResourceState::CopySource));
@@ -159,14 +164,14 @@ ENGINE_NEXT_TEST("RenderPipeline rebuild replaces owned scene resources and pass
 {
 	RenderPipeline stPipeline;
 	GraphDiagnostic stDiagnostic;
-	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic));
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, false));
 	ENGINE_NEXT_CHECK(BuildRenderPipeline(false, stPipeline, stDiagnostic));
 	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass.size(), 4U);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 4U);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nHdr, EngineNext::Rendering::INVALID_RESOURCE);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass[1], PassWork::FixedMesh);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nGraphicsPassCount, 3U);
-	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic));
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, false));
 	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass.size(), 8U);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass[1], PassWork::DirectionalShadow);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nGraphicsPassCount, 7U);
@@ -179,7 +184,7 @@ ENGINE_NEXT_TEST("RenderPipeline bounds local shadow slices and preserves the fi
 	GraphDiagnostic stDiagnostic;
 	for (std::uint32_t nViews : { 0U, 6U, 28U })
 	{
-		ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, nViews));
+		ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, nViews, false));
 		const CompiledResource &stLocal = stPipeline.stGraph.arrResources[stPipeline.nLocalShadow];
 		ENGINE_NEXT_CHECK_EQ(stLocal.stDescription.nSubresourceCount, nViews == 0 ? 1U : nViews);
 		ENGINE_NEXT_CHECK_EQ(stLocal.stDescription.eInitialState, ResourceState::DepthWrite);
@@ -187,7 +192,7 @@ ENGINE_NEXT_TEST("RenderPipeline bounds local shadow slices and preserves the fi
 	}
 	const ResourceId nLocalShadow = stPipeline.nLocalShadow;
 	const std::vector<PassWork> arrWork = stPipeline.arrWorkByPass;
-	ENGINE_NEXT_CHECK(!BuildRenderPipeline(true, stPipeline, stDiagnostic, 29));
+	ENGINE_NEXT_CHECK(!BuildRenderPipeline(true, stPipeline, stDiagnostic, 29, false));
 	ENGINE_NEXT_CHECK_EQ(stDiagnostic.eError, GraphError::CapacityExceeded);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nLocalShadow, nLocalShadow);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass, arrWork);
@@ -197,5 +202,124 @@ ENGINE_NEXT_TEST("RenderPipeline bounds local shadow slices and preserves the fi
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nLocalShadow, EngineNext::Rendering::INVALID_RESOURCE);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 4U);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass, (std::vector<PassWork>{ PassWork::ComputeTint, PassWork::FixedMesh, PassWork::CopyToBackbuffer, PassWork::Present }));
+	CheckReusableStates(stPipeline);
+}
+
+ENGINE_NEXT_TEST("RenderPipeline enables temporal history by default with graphics queue resolve")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic));
+	ENGINE_NEXT_CHECK_EQ(stDiagnostic.eError, GraphError::None);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 9U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 21U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nGraphicsPassCount, 8U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nComputePassCount, 1U);
+	const std::array<PassWork, 9> arrWork{ PassWork::ComputeTint, PassWork::DirectionalShadow, PassWork::LocalShadow,
+										   PassWork::GBuffer, PassWork::DeferredLighting, PassWork::TemporalResolve, PassWork::ToneMap, PassWork::CopyToBackbuffer, PassWork::Present };
+	for (std::size_t nIndex = 0; nIndex < arrWork.size(); ++nIndex)
+	{
+		const CompiledPass &stPass = stPipeline.stGraph.arrPasses[nIndex];
+		ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass[stPass.nPass], arrWork[nIndex]);
+		ENGINE_NEXT_CHECK_EQ(stPass.eQueue, nIndex == 0 ? QueueType::Compute : QueueType::Graphics);
+	}
+	const CompiledPass &stGbuffer = stPipeline.stGraph.arrPasses[3];
+	const CompiledPass &stTemporal = stPipeline.stGraph.arrPasses[5];
+	const CompiledPass &stToneMap = stPipeline.stGraph.arrPasses[6];
+	ENGINE_NEXT_CHECK_EQ(stTemporal.strName, "TemporalResolve");
+	ENGINE_NEXT_CHECK(stTemporal.arrWaits.empty());
+	ENGINE_NEXT_CHECK_EQ(stTemporal.arrAccesses.size(), 13U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses[4].arrWaits, std::vector<PassId>{ stPipeline.stGraph.arrPasses[0].nPass });
+	ENGINE_NEXT_CHECK(HasTransition(stGbuffer, stPipeline.nMotion, ResourceState::Common, ResourceState::RenderTarget));
+	ENGINE_NEXT_CHECK(HasTransition(stGbuffer, stPipeline.nObjectId, ResourceState::Common, ResourceState::RenderTarget));
+	ENGINE_NEXT_CHECK(HasTransition(stTemporal, stPipeline.nMotion, ResourceState::RenderTarget, ResourceState::NonPixelShaderRead));
+	ENGINE_NEXT_CHECK(HasTransition(stTemporal, stPipeline.nObjectId, ResourceState::RenderTarget, ResourceState::NonPixelShaderRead));
+	ENGINE_NEXT_CHECK(HasTransition(stTemporal, stPipeline.nHdr, ResourceState::RenderTarget, ResourceState::NonPixelShaderRead));
+	ENGINE_NEXT_CHECK(HasTransition(stTemporal, stPipeline.arrGbuffer[1], ResourceState::ShaderRead, ResourceState::NonPixelShaderRead));
+	ENGINE_NEXT_CHECK_EQ(stTemporal.arrAccesses[0].nResource, stPipeline.nHdr);
+	ENGINE_NEXT_CHECK_EQ(stTemporal.arrAccesses[1].nResource, stPipeline.nDepth);
+	ENGINE_NEXT_CHECK_EQ(stTemporal.arrAccesses[1].eState, ResourceState::DepthRead);
+	ENGINE_NEXT_CHECK_EQ(stTemporal.arrAccesses[2].nResource, stPipeline.arrGbuffer[1]);
+	ENGINE_NEXT_CHECK_EQ(stToneMap.arrAccesses[0].nResource, stPipeline.arrHistoryWrite[0]);
+	ENGINE_NEXT_CHECK(HasTransition(stToneMap, stPipeline.arrHistoryWrite[0], ResourceState::UnorderedAccess, ResourceState::ShaderRead));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources[stPipeline.nMotion].nFirstPass, stGbuffer.nPass);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources[stPipeline.nObjectId].nFirstPass, stGbuffer.nPass);
+	CheckReusableStates(stPipeline);
+}
+
+ENGINE_NEXT_TEST("RenderPipeline keeps all temporal history reads and writes distinct and reusable")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 28, true));
+	const CompiledPass &stTemporal = stPipeline.stGraph.arrPasses[5];
+	const CompiledPass &stPresent = stPipeline.stGraph.arrPasses.back();
+	const std::array<const char *, 4> arrReadNames{ "HistoryReadColor", "HistoryReadDepth", "HistoryReadNormal", "HistoryReadObjectId" };
+	const std::array<const char *, 4> arrWriteNames{ "HistoryWriteColor", "HistoryWriteDepth", "HistoryWriteNormal", "HistoryWriteObjectId" };
+	for (std::size_t nHistory = 0; nHistory < stPipeline.arrHistoryRead.size(); ++nHistory)
+	{
+		const ResourceId nRead = stPipeline.arrHistoryRead[nHistory];
+		const ResourceId nWrite = stPipeline.arrHistoryWrite[nHistory];
+		const CompiledResource &stRead = stPipeline.stGraph.arrResources[nRead];
+		const CompiledResource &stWrite = stPipeline.stGraph.arrResources[nWrite];
+		ENGINE_NEXT_CHECK(stRead.stDescription.bImported);
+		ENGINE_NEXT_CHECK(stWrite.stDescription.bImported);
+		ENGINE_NEXT_CHECK_EQ(stRead.stDescription.strName, arrReadNames[nHistory]);
+		ENGINE_NEXT_CHECK_EQ(stWrite.stDescription.strName, arrWriteNames[nHistory]);
+		ENGINE_NEXT_CHECK_EQ(stRead.nFirstPass, stTemporal.nPass);
+		ENGINE_NEXT_CHECK_EQ(stWrite.nFirstPass, stTemporal.nPass);
+		ENGINE_NEXT_CHECK_EQ(stRead.nLastPass, stPresent.nPass);
+		ENGINE_NEXT_CHECK_EQ(stWrite.nLastPass, stPresent.nPass);
+		ENGINE_NEXT_CHECK(HasTransition(stTemporal, nRead, ResourceState::Common, ResourceState::NonPixelShaderRead));
+		ENGINE_NEXT_CHECK(HasTransition(stTemporal, nWrite, ResourceState::Common, ResourceState::UnorderedAccess));
+		ENGINE_NEXT_CHECK_EQ(stTemporal.arrAccesses[5 + nHistory * 2].nResource, nRead);
+		ENGINE_NEXT_CHECK_EQ(stTemporal.arrAccesses[5 + nHistory * 2].eState, ResourceState::NonPixelShaderRead);
+		ENGINE_NEXT_CHECK(!stTemporal.arrAccesses[5 + nHistory * 2].bWrite);
+		ENGINE_NEXT_CHECK_EQ(stTemporal.arrAccesses[6 + nHistory * 2].nResource, nWrite);
+		ENGINE_NEXT_CHECK(stTemporal.arrAccesses[6 + nHistory * 2].bWrite);
+		ENGINE_NEXT_CHECK(!stTemporal.arrAccesses[6 + nHistory * 2].bReadBeforeWrite);
+		for (std::size_t nOther = 0; nOther < stPipeline.arrHistoryRead.size(); ++nOther)
+		{
+			ENGINE_NEXT_CHECK(nRead != stPipeline.arrHistoryWrite[nOther]);
+			if (nHistory != nOther)
+			{
+				ENGINE_NEXT_CHECK(nRead != stPipeline.arrHistoryRead[nOther]);
+				ENGINE_NEXT_CHECK(nWrite != stPipeline.arrHistoryWrite[nOther]);
+			}
+		}
+	}
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources[stPipeline.nLocalShadow].stDescription.nSubresourceCount, 28U);
+	CheckReusableStates(stPipeline);
+}
+
+ENGINE_NEXT_TEST("RenderPipeline toggles temporal resources without retaining history or changing fixed mode")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 7));
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 7, false));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 8U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 13U);
+	ENGINE_NEXT_CHECK(stPipeline.nMotion != EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK(stPipeline.nObjectId != EngineNext::Rendering::INVALID_RESOURCE);
+	for (std::size_t nHistory = 0; nHistory < stPipeline.arrHistoryRead.size(); ++nHistory)
+	{
+		ENGINE_NEXT_CHECK_EQ(stPipeline.arrHistoryRead[nHistory], EngineNext::Rendering::INVALID_RESOURCE);
+		ENGINE_NEXT_CHECK_EQ(stPipeline.arrHistoryWrite[nHistory], EngineNext::Rendering::INVALID_RESOURCE);
+	}
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses[5].arrAccesses[0].nResource, stPipeline.nHdr);
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 7, true));
+	const std::vector<PassWork> arrSavedWork = stPipeline.arrWorkByPass;
+	const ResourceId nSavedHistory = stPipeline.arrHistoryRead[0];
+	ENGINE_NEXT_CHECK(!BuildRenderPipeline(true, stPipeline, stDiagnostic, 29, true));
+	ENGINE_NEXT_CHECK_EQ(stDiagnostic.eError, GraphError::CapacityExceeded);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass, arrSavedWork);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.arrHistoryRead[0], nSavedHistory);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 9U);
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(false, stPipeline, stDiagnostic, 28, true));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 4U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 4U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nMotion, EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nObjectId, EngineNext::Rendering::INVALID_RESOURCE);
 	CheckReusableStates(stPipeline);
 }

@@ -21,6 +21,7 @@ CORE_SOURCES = [
     "engine_next/Rendering/CameraMatrices.cpp",
     "engine_next/Rendering/ShadowData.cpp",
     "engine_next/Rendering/LocalShadowData.cpp",
+    "engine_next/Rendering/TemporalState.cpp",
     "engine_next/Rendering/ShadowBounds.cpp",
     "engine_next/Rendering/Cook/GltfDecoder.cpp",
     "engine_next/Rendering/Cook/ImageDecoder.cpp",
@@ -64,6 +65,8 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestShadowData.cpp",
     "engine_next/Tests/Rendering/TestLocalShadowData.cpp",
     "engine_next/Tests/Rendering/TestShadowSampling.cpp",
+    "engine_next/Tests/Rendering/TestTemporalSampling.cpp",
+    "engine_next/Tests/Rendering/TestTemporalState.cpp",
     "engine_next/Tests/Rendering/TestShadowBounds.cpp",
     "engine_next/Tests/Rendering/TestGltfDecoder.cpp",
     "engine_next/Tests/Rendering/TestImageDecoder.cpp",
@@ -81,6 +84,7 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/CameraMatrices.h",
     "EngineNext/Rendering/ShadowData.h",
     "EngineNext/Rendering/LocalShadowData.h",
+    "EngineNext/Rendering/TemporalState.h",
     "EngineNext/Rendering/RenderScene.h",
     "EngineNext/Rendering/VisualRuntime.h",
 ]
@@ -96,6 +100,7 @@ SHADERS = [
     ("ToneMapPS", "ps_6_0", "ToneMap.ps.cso", ["-D", "TONEMAP_STAGE=1"]),
     ("ShadowVS", "vs_6_0", "Shadow.vs.cso", []),
     ("ShadowPS", "ps_6_0", "Shadow.ps.cso", []),
+    ("CSMain", "cs_6_0", "Temporal.cs.cso", []),
 ]
 
 
@@ -439,6 +444,8 @@ def compile_shaders(args, commands):
                 if name.startswith("FixedMesh")
                 else "Shadow.hlsl"
                 if name.startswith("Shadow")
+                else "TemporalAA.hlsl"
+                if name.startswith("Temporal")
                 else "Deferred.hlsl"
             )
         )
@@ -536,6 +543,8 @@ def build(args):
                 "engine_next/Rendering/Shaders/Deferred.hlsl",
                 "engine_next/Rendering/Shaders/Shadow.hlsl",
                 "engine_next/Rendering/Shaders/ShadowSampling.hlsli",
+                "engine_next/Rendering/Shaders/TemporalAA.hlsl",
+                "engine_next/Rendering/Shaders/TemporalSampling.hlsli",
             ]
         ),
         *[

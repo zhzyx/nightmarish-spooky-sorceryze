@@ -102,11 +102,19 @@ struct ShadowSettings
 	double dLightRadius = 0.1;
 };
 
+struct TemporalSettings
+{
+	bool bEnabled = true;
+	double dHistoryWeight = 0.9;
+	double dDepthThreshold = 0.01;
+};
+
 struct RenderConfiguration
 {
 	CameraSettings stCamera;
 	DirectionalLightSettings stDirectionalLight;
 	ShadowSettings stShadows;
+	TemporalSettings stTemporal;
 	std::vector<PointLightSettings> arrPointLights{ PointLightSettings{} };
 	std::vector<SpotLightSettings> arrSpotLights;
 	double dExposure = 1;
@@ -130,6 +138,8 @@ struct RenderConfiguration
 // Light colors are [0, 100], directional illuminance [0, 1e6], local lumens
 // [0, 1e8], local range [0.1, 10000], and directions are finite and nonzero.
 // Spot angles satisfy 0 <= inner <= 85 and inner < outer <= 89 degrees.
+// Optional temporal_aa uses defaults when absent. Its history weight is [0, 0.99]
+// and relative depth threshold is [0.0001, 0.25], including when disabled.
 // Both functions append diagnostics and leave the output unchanged on failure.
 [[nodiscard]] bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std::string &strExpectedDigest, RenderConfiguration &out_stConfiguration,
 											Assets::Diagnostics &out_arrDiagnostics);

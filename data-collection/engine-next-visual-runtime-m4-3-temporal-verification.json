@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "base_candidate": "3cef6807a76038c04241b15cdd72e014ae6c7421",
+  "visual": {
+    "report": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\VisualBuildReport.json",
+      "bytes": 1536356,
+      "sha256": "3298823be3257fa92690a320612c174521ab4dcdd79cf777c94ea850405537ad"
+    },
+    "binary": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\next_visual_client.exe",
+      "bytes": 2958336,
+      "sha256": "79fea378763e196aeaf7ded79c250d91b5ac3475e1686dff7af383dc75d7e55d"
+    },
+    "native_key": "a22882322c28d2033662af7282864bde5123d2d81990a99d916fc72b20eca182",
+    "input_count": 221,
+    "input_mismatches": [],
+    "test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=157 checks=17099 failures=0",
+    "shader_count": 11,
+    "package": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-r6\\Release\\VisualPackage.json",
+      "bytes": 6334,
+      "sha256": "603c11440f0173050ed92cdea535e7900361dbe7686fbb3c8d306a7f0d7f14b6"
+    }
+  },
+  "clang_cl": {
+    "report": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-clang-cl-r6\\Result.json",
+      "bytes": 757512,
+      "sha256": "ac26b6656b4aa71fc665375075f27032e9cb46c755d17b15ac6551494e0e9b17"
+    },
+    "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=157 checks=17099 failures=0\r\n",
+    "scope": "Changed production C++ and all rendering tests compiled with clang-cl; unchanged library support linked from exact r6 MSVC build."
+  },
+  "runtime": {
+    "report": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-runtime-r6\\RuntimeBuildReport.json",
+      "bytes": 266772,
+      "sha256": "0e159a9ff2bcd4f68bc77b40c3dcec52537b20dbc8d3d434c683dc8191189389"
+    },
+    "soak": "ENGINE_NEXT_SOAK ticks=10312 elapsed_seconds=165.25 input_high_water=4 status=ok",
+    "handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-m4-3-temporal-20261116\\\\build\\\\engine_next\\\\temporal-runtime-r6\\\\HandshakeReport.json\",\r\n  \"trace_sha256\": {\r\n    \"server.jsonl\": \"da3954be6c87d1181ae2ac78267d089c434307a33da323d949cd9955a5e684dc\",\r\n    \"client-A.jsonl\": \"7ef182e3a4dd7a2c0b7fc617a0ac917f3d52d02d480648592352e55c5241430d\",\r\n    \"client-B.jsonl\": \"623d0af30ba35a245896daa9358ec89551155ce162894512797e32cb0d9b5fd5\"\r\n  }\r\n}",
+    "clean_handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-m4-3-temporal-20261116\\\\build\\\\engine_next\\\\temporal-runtime-r6\\\\CleanRun\\\\HandshakeReport.json\",\r\n  \"trace_sha256\": {\r\n    \"server.jsonl\": \"78d6e06c04de96b056972c8febc1ba6f27b4199fe255743ab7ed001b6d256256\",\r\n    \"client-A.jsonl\": \"f1791f7d2aa600d17f41814b362eb09ea1e07389607a5a60bd02f071d2f25e61\",\r\n    \"client-B.jsonl\": \"623d0af30ba35a245896daa9358ec89551155ce162894512797e32cb0d9b5fd5\"\r\n  }\r\n}",
+    "scene": "ENGINE_NEXT_M3_SCENE clients=2 scene_revision=r9 expected_a_position_x=4.16 status=ok",
+    "clean_scene": "ENGINE_NEXT_M3_SCENE clients=2 scene_revision=r9 expected_a_position_x=4.16 status=ok",
+    "ai": "ENGINE_NEXT_M3_AI offline=1 synthetic_resume=1 provider_submits=1 artifact_state=1 output_limit=1 detached_reaped=1 status=ok",
+    "clean_ai": "ENGINE_NEXT_M3_AI offline=1 synthetic_resume=1 provider_submits=1 artifact_state=1 output_limit=1 detached_reaped=1 status=ok",
+    "package_handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-m4-3-temporal-20261116\\\\build\\\\engine_next\\\\temporal-runtime-r6\\\\PackageHandshakeReport.json\",\r\n  \"trace_sha256\": {\r\n    \"server.jsonl\": \"b97466520e1a4721d7abf3142c07a55b713f6ecbb9e8d97aa00864e79da92a17\",\r\n    \"client-A.jsonl\": \"786dff0475ec8ff93f457e7dcd8a59d946547e4db7ff792c1deca781effed286\",\r\n    \"client-B.jsonl\": \"3317104f4754ba6f1b885ed12ac40c2141dae17de6bf06a1dab714a3402e339a\"\r\n  }\r\n}"
+  },
+  "regressions": [
+    {
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-tools-r6.log",
+        "bytes": 139,
+        "sha256": "503e03bfb526e42062cb3361662da26a43602217d6e081d13135e374ad86e109"
+      },
+      "tail": "...................................\n----------------------------------------------------------------------\nRan 35 tests in 0.717s\n\nOK\n"
+    },
+    {
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-contract.log",
+        "bytes": 5422,
+        "sha256": "86582d50707db81a0cf97a0a25386baed9642346d21ff500f4fe051c97f6458b"
+      },
+      "tail": "wn_angle_and_missing_local_includes_are_rejected (tools.test_check_engine_next_contract.EngineNextContractTests.test_unknown_angle_and_missing_local_includes_are_rejected) ... ok\ntest_valid_link_manifest_passes (tools.test_check_engine_next_contract.EngineNextContractTests.test_valid_link_manifest_passes) ... ok\ntest_visual_libraries_remain_forbidden_in_headless_target (tools.test_check_engine_next_contract.EngineNextContractTests.test_visual_libraries_remain_forbidden_in_headless_target) ... ok\ntest_visual_profile_does_not_allow_header_prefix_lookalikes (tools.test_check_engine_next_contract.EngineNextContractTests.test_visual_profile_does_not_allow_header_prefix_lookalikes) ... ok\ntest_visual_sdk_headers_are_limited_to_private_profile_sources (tools.test_check_engine_next_contract.EngineNextContractTests.test_visual_sdk_headers_are_limited_to_private_profile_sources) ... ok\n\n----------------------------------------------------------------------\nRan 31 tests in 0.148s\n\nOK (skipped=1)\n"
+    },
+    {
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-ainative.log",
+        "bytes": 545,
+        "sha256": "c9384bdc2f6a20624bbdefc6e38c78ed9d9eeb1a0074fb4273cae09482428241"
+      },
+      "tail": "...............................s.................................................................................................................................s............................s....................................s......................................ssss......s.ss............ss.............ss.........s.........s..sssssssssssssss.....................................................sss...............s.......\n----------------------------------------------------------------------\nRan 425 tests in 281.358s\n\nOK (skipped=36)\n"
+    },
+    {
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-editor-r6.log",
+        "bytes": 1675,
+        "sha256": "20ebec3054a82e2ca36527e23fee2aad05535ebbc2e23f4bb8d87f2fd3f2d309"
+      },
+      "tail": "ared_comfy_excludes_local_user_data_and_other_models (tests.editor.test_maliang_package.PackageTest.test_prepared_comfy_excludes_local_user_data_and_other_models) ... ok\ntest_removing_console_wrappers_keeps_no_dangling_aliases (tests.editor.test_maliang_package.PackageTest.test_removing_console_wrappers_keeps_no_dangling_aliases) ... skipped 'macOS script aliases'\ntest_runtime_cannot_link_to_a_build_interpreter (tests.editor.test_maliang_package.PackageTest.test_runtime_cannot_link_to_a_build_interpreter) ... skipped 'This Windows user cannot create symlinks'\ntest_verification_failure_after_publish_restores_previous (tests.editor.test_maliang_package.PackageTest.test_verification_failure_after_publish_restores_previous) ... ok\ntest_wheels_and_tencent_notice_are_digest_pinned (tests.editor.test_maliang_package.PackageTest.test_wheels_and_tencent_notice_are_digest_pinned) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 0.061s\n\nOK (skipped=2)\n"
+    }
+  ],
+  "asset_regression": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-asset-r6.json",
+    "bytes": 27258,
+    "sha256": "ed77becbc5c0b112bbdaeca258bf979fbb4df1bbb8dfee126f22cab64cd0a7d6"
+  },
+  "build_impact": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-impact-r6\\ImpactReport.json",
+    "bytes": 35870,
+    "sha256": "927081824caacaccb25a6dacf582d6f09755dd17fa077adaabc046127a6f984b"
+  },
+  "remaining": "Actual motion/GPU and final package acceptance recorded separately. Exposure, Bloom, volume, reflections and parent M4 full benchmark remain in progress.",
+  "integrated_main": "656493afe1a0e6b99800f0d4970652708be41fdd",
+  "integration_note": "Fast-forward integration has no Engine Next/native dependency changes. Exact 221-input visual identity remains unchanged. AINative upstream changes were regression tested again.",
+  "integrated_ainative": {
+    "tests": 428,
+    "skipped": 36,
+    "passed": true,
+    "log": {
+      "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-ainative-integrated.log",
+      "bytes": 548,
+      "sha256": "084fa6559ef0863de1b51b8f35a2f161f31f0ee3b2288c4d87725b8f1f127bcc"
+    }
+  }
+}

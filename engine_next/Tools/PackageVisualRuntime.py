@@ -20,6 +20,7 @@ SHADER_FILES = {
     "ToneMap.ps.cso",
     "Shadow.vs.cso",
     "Shadow.ps.cso",
+    "Temporal.cs.cso",
 }
 
 
