@@ -1,9 +1,11 @@
 """Provider-neutral ordered image inputs and independently durable image outputs.
 
 Legacy version 1 providers retain their original single-image contract. This adapter
-owns version 2/3 image nodes and the unified generate_image node; each output has its
-own child intent and idempotency key. Single-reference backends receive one deterministic
-labeled board; native multi-reference backends receive every ordered source.
+owns version 2/3/4 image nodes, the unified generate_image node, and version 2
+image_to_mesh input expansion. Image outputs have independent durable children;
+image_to_mesh keeps its single Mesh result and ordered primary/reference mapping.
+Single-reference backends receive one deterministic labeled board; native
+multi-reference backends receive every ordered source.
 """
 
 import base64
@@ -19,6 +21,7 @@ from extensions import NodeRegistry, canonical, require, validate_invocation, va
 
 VERSION = "4"
 UNIFIED_VERSION = "2"
+MESH_VERSION = "2"
 GENERATE_IMAGE = "generate_image"
 BATCH_VERSIONS = ("2", "3", VERSION)
 UNIFIED_BATCH_VERSIONS = ("1", UNIFIED_VERSION)
@@ -84,6 +87,12 @@ def register_images(registry):
     properties.pop("output_labels", None)
     registry.register(definition)
 
+    definition = registry.get("image_to_mesh", "1")
+    definition["version"] = MESH_VERSION
+    definition["inputs"] = {"source": {"types": ["image", "image_set"], "required": True}}
+    definition["context_types"] = ["text", "image", "image_set"]
+    registry.register(definition)
+
 
 def _is_batch_request(request):
     return (request["node"] in IMAGE_KINDS and request["version"] in BATCH_VERSIONS) or (
@@ -127,6 +136,22 @@ def _sources(request, manifest):
         append(reference, "source" if position == 0 else "reference " + str(position + 1))
     require(len(result) <= MAX_IMAGES, "invalid_image_batch")
     return result
+
+
+def _mesh_request(request, manifest):
+    """Flatten one image_set into the legacy primary image and ordered references."""
+    require(request["node"] == "image_to_mesh" and request["version"] == MESH_VERSION, "invalid_image_batch")
+    sources = _sources(request, manifest)
+    require(bool(sources), "invalid_image_batch")
+    child = copy.deepcopy(request)
+    references = [_ref(source["asset"]) for source in sources]
+    child["version"] = "1"
+    child["inputs"] = {"source": references[0]}
+    child["context"] = [context for context in child["context"] if "text" in context]
+    child["context"] += [
+        dict(artifact=reference, role="reference", scope="node", strength="reference") for reference in references[1:]
+    ]
+    return child
 
 
 def output_specifications(parameters):
@@ -567,6 +592,8 @@ class MultiImageProvider(CodexProvider):
         self.write(key, children=record["children"])
 
     def submit(self, request, manifest, idempotency_key):
+        if request["node"] == "image_to_mesh" and request.get("version") == MESH_VERSION:
+            return self.inner.submit(_mesh_request(request, manifest), manifest, idempotency_key)
         if not _is_batch_request(request):
             return self.inner.submit(request, manifest, idempotency_key)
         require(isinstance(idempotency_key, str) and re.fullmatch(r"[a-f0-9]{64}", idempotency_key), "invalid job key")

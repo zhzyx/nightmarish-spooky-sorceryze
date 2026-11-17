@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-mesh-multi-image-input-20261117-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-mesh-multi-image-input-20261117",
+  "kind": "request",
+  "occurred_at": "2026-11-17T04:47:04.658018Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1396",
+  "agent": {
+    "id": "kimi-work-host",
+    "version": "20261117",
+    "origin": "external-authorized-host",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5"
+  },
+  "payload": {
+    "intent": "Extend image_to_mesh to accept a single image or an ordered image_set, preserving input order and legacy provider contracts while expanding the set into primary and reference images.",
+    "authorization_ref": "kimi-work:user:20261117:image-to-mesh-input-still-single-image",
+    "state": "in_progress",
+    "usage": null,
+    "definition": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "d465edd8b179790408c6570cbb0f27b9a7f728eaf041e112060a73482cc8f88e"
+}

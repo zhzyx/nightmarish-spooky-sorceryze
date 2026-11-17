@@ -244,6 +244,71 @@ class MultiImageTests(unittest.TestCase):
         ]
         self.assertEqual(references, [item["artifact"] for item in collection["payload"]["items"]])
 
+    def test_all_mesh_provider_routes_receive_the_multi_input_adapter(self):
+        from generation_service import adapt_image_providers
+
+        for name in ("kimi_native", "kimi_native_1", "api-modeling", "api-sculpt", "local_mesh", "comfy"):
+            with self.subTest(name=name):
+                inner = FakeImageProvider("kimi_native")
+                providers = adapt_image_providers(
+                    {name: inner}, self.root / "host.sqlite", {"enabled": True, "board_config": {}}
+                )
+                self.assertIsInstance(providers[name], MultiImageProvider)
+                self.assertIs(providers[name].inner, inner)
+
+    def test_mesh_accepts_single_image_and_expands_image_set_for_legacy_provider(self):
+        collection = dict(
+            id="mesh-input-set",
+            revision="e" * 64,
+            type="image_set",
+            payload=dict(
+                schema_version=1,
+                count=2,
+                items=[
+                    dict(artifact=reference(self.sources[0]), label="front", index=0),
+                    dict(artifact=reference(self.sources[1]), label="side", index=1),
+                ],
+            ),
+        )
+        for mode, source, manifest in (
+            ("single", self.sources[0], self.manifest),
+            ("list", collection, dict(schema_version=1, artifacts=self.sources + [collection])),
+        ):
+            with self.subTest(mode=mode):
+                inner = FakeImageProvider("kimi_native")
+                provider = self.adapter(inner)
+                request = dict(
+                    node="image_to_mesh",
+                    version="2",
+                    inputs={"source": reference(source)},
+                    parameters={"prompt": "fit one character from every view"},
+                    context=[],
+                )
+                key = ("3" if mode == "single" else "4") * 64
+                receipt = provider.poll(provider.submit(request, manifest, key)["job_id"])
+                self.assertEqual(receipt["state"], "succeeded")
+                child = inner.requests[0]
+                self.assertEqual(child["version"], "1")
+                references = [child["inputs"]["source"]] + [
+                    item["artifact"] for item in child["context"] if "artifact" in item
+                ]
+                expected = (
+                    [reference(item) for item in self.sources] if mode == "list" else [reference(self.sources[0])]
+                )
+                self.assertEqual(references, expected)
+                self.assertEqual(child["parameters"]["prompt"], "fit one character from every view")
+                self.assertIsNone(provider._local(key))
+                registry = NodeRegistry()
+                register_images(registry)
+                validate_invocation(registry, request, manifest, provider.describe())
+
+        inner = FakeImageProvider("kimi_native")
+        provider = self.adapter(inner)
+        empty = dict(node="image_to_mesh", version="2", inputs={}, parameters={"prompt": "mesh"}, context=[])
+        with self.assertRaisesRegex(ValueError, "invalid_image_batch"):
+            provider.submit(empty, {"schema_version": 1, "artifacts": []}, "5" * 64)
+        self.assertEqual(inner.submissions, 0)
+
     def test_generate_image_accepts_single_image_and_image_set(self):
         collection = dict(
             id="input-set",

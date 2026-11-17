@@ -38,8 +38,10 @@ example.json 全部是合成契约夹具，UE/Mixamo Profile 是占位元数据�
 `image_to_mesh`, `text_to_mesh` contracts, plus the existing `local-copy` demo.
 The current editor exposes one unified `generate_image` node for text, single-image /
 image-list, and combined image-text input; its sole output is an ordered `image_set`.
-Legacy image nodes remain loadable with their original contracts. Mesh outputs cannot
-feed image inputs.
+Legacy image nodes remain loadable with their original contracts. New `image_to_mesh`
+version 2 nodes accept one image or an ordered `image_set`; the adapter expands the set
+into the legacy primary image and ordered reference context while retaining one Mesh
+result and each provider's existing input limits. Mesh outputs cannot feed image inputs.
 
 Copy `comfy-config.example.json` **outside the repository**. Replace the two
 checkpoint SHA256 values with hashes of the installed files, and record the exact

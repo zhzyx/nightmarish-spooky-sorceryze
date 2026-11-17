@@ -553,11 +553,10 @@ def adapt_image_providers(providers, database, batch):
         return providers
     from multi_image_provider import MultiImageProvider
 
+    supported = ("comfy", "codex", "kimi_work_image", "kimi_native", "local_mesh", "api-modeling", "api-sculpt")
     for name in list(providers):
         base, separator, suffix = name.rpartition("_")
-        if name not in ("comfy", "codex", "kimi_work_image") and not (
-            separator and suffix.isdigit() and base in ("comfy", "codex", "kimi_work_image")
-        ):
+        if name not in supported and not (separator and suffix.isdigit() and base in supported):
             continue
         providers[name] = MultiImageProvider(
             providers[name],

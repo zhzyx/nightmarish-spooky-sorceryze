@@ -71,6 +71,10 @@ func run():
 	var upstream = add_kind("generate_image")
 	var downstream = add_kind("generate_image")
 	var mesh = add_kind("image_to_mesh")
+	panel.select_node(mesh)
+	check(node(mesh).version == "2" and panel.source_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILES, "image-to-Mesh exposes ordered multi-file input")
+	panel.source_picker.files_selected.emit(PackedStringArray([front, side]))
+	check(node(mesh).source_paths == [front, side], "image-to-Mesh stores multiple source images in order")
 	panel.select_node(downstream)
 	var data = node(downstream)
 	if data.is_empty():
@@ -105,7 +109,7 @@ func run():
 	panel.connect_nodes(upstream, 0, downstream, 0)
 	check(panel.edges.size() == 1 and panel.edges[0].get("output") == "image_set", "the sole generation output is an ordered image queue")
 	panel.connect_nodes(upstream, 0, mesh, 0)
-	check(panel.edges.size() == 1 and panel.status.text.contains("只能连接到生成图片节点"), "image queue cannot silently become a single Mesh input")
+	check(panel.edges.size() == 2 and panel.edges[1].get("output") == "image_set", "image queue feeds the version 2 image-to-Mesh input without collapsing to one image")
 	panel.path_edit.text = state_path.path_join("multi-image.json")
 	panel.save_graph()
 	var saved = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text))
@@ -123,8 +127,9 @@ func run():
 	find_node(corrupt, downstream).source_snapshots[1].content_sha256 = "0".repeat(64)
 	reject_model(corrupt, "tampered snapshot bytes are rejected before model execution")
 	corrupt = original.duplicate(true)
+	find_node(corrupt, mesh).version = "1"
 	corrupt.edges[0].to = mesh
-	reject_model(corrupt, "saved collection-to-Mesh edge is rejected")
+	reject_model(corrupt, "saved collection-to-legacy-Mesh edge is rejected")
 	write_model(original)
 	panel.open_graph()
 	panel.select_node(downstream)

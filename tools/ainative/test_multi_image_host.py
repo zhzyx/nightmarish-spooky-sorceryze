@@ -118,6 +118,16 @@ class MultiImageHostTests(unittest.TestCase):
             })
             self.assertEqual(graph[1]["links"]["source"], {"node": "upstream", "port": "image_set"})
 
+            mesh = dict(
+                node, id="mesh", type="image_to_mesh", version="2", source="", source_paths=[], source_snapshots=[]
+            )
+            graph, _ = compile_graph({
+                "nodes": [upstream, mesh],
+                "edges": [{"from": "upstream", "to": "mesh", "input": "source", "output": "image_set"}],
+            })
+            self.assertEqual(graph[1]["request"]["version"], "2")
+            self.assertEqual(graph[1]["links"]["source"], {"node": "upstream", "port": "image_set"})
+
             # Exercise the current unified node through the real Executor/host path;
             # the compile checks above still cover legacy version 3 workflows.
             run_node = dict(
