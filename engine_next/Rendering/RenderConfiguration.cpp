@@ -161,6 +161,137 @@ bool RequiredFields(const Serialization::JsonValue::Object &mapValue, std::initi
 	return Assets::Fields(mapFields, arrRequired, strPath, out_arrDiagnostics);
 }
 
+bool OptionalNumber(const Serialization::JsonValue::Object &mapValue, const char *pName, const std::string &strPath,
+					double &out_dNumber, Assets::Diagnostics &out_arrDiagnostics)
+{
+	return mapValue.find(pName) == mapValue.end() || Assets::Number(mapValue, pName, strPath, out_dNumber, out_arrDiagnostics);
+}
+
+bool ParseExposure(const Serialization::JsonValue &stValue, ExposureSettings &out_stSettings, Assets::Diagnostics &out_arrDiagnostics)
+{
+	const std::string strPath = "$.exposure_settings";
+	const Serialization::JsonValue::Object *pObject = Assets::Object(stValue, strPath, out_arrDiagnostics);
+	if (pObject == nullptr)
+	{
+		return false;
+	}
+	if (!RequiredFields(*pObject, {}, { "mode", "manual_ev100", "compensation_ev", "min_ev100", "max_ev100", "low_percentile", "high_percentile", "light_half_life", "dark_half_life" }, strPath, out_arrDiagnostics))
+	{
+		return false;
+	}
+	if (pObject->find("mode") != pObject->end())
+	{
+		std::string strMode;
+		if (!Assets::String(*pObject, "mode", strPath, strMode, out_arrDiagnostics))
+		{
+			return false;
+		}
+		if (strMode != "legacy" && strMode != "manual" && strMode != "automatic")
+		{
+			return Fail("exposure_mode", strPath + ".mode", "Expected legacy, manual, or automatic exposure.", out_arrDiagnostics);
+		}
+		out_stSettings.eMode = strMode == "legacy" ? ExposureMode::Legacy : (strMode == "manual" ? ExposureMode::Manual : ExposureMode::Automatic);
+	}
+	return OptionalNumber(*pObject, "manual_ev100", strPath, out_stSettings.dManualEv100, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "compensation_ev", strPath, out_stSettings.dCompensationEv, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "min_ev100", strPath, out_stSettings.dMinimumEv100, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "max_ev100", strPath, out_stSettings.dMaximumEv100, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "low_percentile", strPath, out_stSettings.dLowPercentile, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "high_percentile", strPath, out_stSettings.dHighPercentile, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "light_half_life", strPath, out_stSettings.dLightHalfLife, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "dark_half_life", strPath, out_stSettings.dDarkHalfLife, out_arrDiagnostics) &&
+			ValidateExposureSettings(out_stSettings, out_arrDiagnostics);
+}
+
+bool ParseBloom(const Serialization::JsonValue &stValue, BloomSettings &out_stSettings, Assets::Diagnostics &out_arrDiagnostics)
+{
+	const std::string strPath = "$.bloom";
+	const Serialization::JsonValue::Object *pObject = Assets::Object(stValue, strPath, out_arrDiagnostics);
+	if (pObject == nullptr)
+	{
+		return false;
+	}
+	if (!RequiredFields(*pObject, {}, { "enabled", "intensity", "threshold", "soft_knee", "mip_count" }, strPath, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itEnabled = pObject->find("enabled");
+	if (itEnabled != pObject->end() && !itEnabled->second.GetBool(out_stSettings.bEnabled))
+	{
+		return Fail("type", strPath + ".enabled", "Expected a boolean.", out_arrDiagnostics);
+	}
+	if (pObject->find("mip_count") != pObject->end())
+	{
+		std::int64_t nMipCount = 0;
+		if (!Assets::Integer(*pObject, "mip_count", strPath, nMipCount, out_arrDiagnostics))
+		{
+			return false;
+		}
+		if (nMipCount < 1 || nMipCount > 6)
+		{
+			return Fail("bloom_range", strPath + ".mip_count", "Bloom mip count must be in [1,6].", out_arrDiagnostics);
+		}
+		out_stSettings.nMipCount = static_cast<std::uint32_t>(nMipCount);
+	}
+	return OptionalNumber(*pObject, "intensity", strPath, out_stSettings.dIntensity, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "threshold", strPath, out_stSettings.dThreshold, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "soft_knee", strPath, out_stSettings.dSoftKnee, out_arrDiagnostics) &&
+			ValidateBloomSettings(out_stSettings, out_arrDiagnostics);
+}
+
+bool ParseLightAnimation(const Serialization::JsonValue &stValue, double dBaseIlluminance,
+						 LightAnimationSettings &out_stSettings, Assets::Diagnostics &out_arrDiagnostics)
+{
+	const std::string strPath = "$.light_animation";
+	const Serialization::JsonValue::Object *pObject = Assets::Object(stValue, strPath, out_arrDiagnostics);
+	if (pObject == nullptr || !RequiredFields(*pObject, {}, { "loop", "interpolation", "keyframes" }, strPath, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itLoop = pObject->find("loop");
+	if (itLoop != pObject->end() && !itLoop->second.GetBool(out_stSettings.bLoop))
+	{
+		return Fail("type", strPath + ".loop", "Expected a boolean.", out_arrDiagnostics);
+	}
+	if (pObject->find("interpolation") != pObject->end())
+	{
+		std::string strInterpolation;
+		if (!Assets::String(*pObject, "interpolation", strPath, strInterpolation, out_arrDiagnostics))
+		{
+			return false;
+		}
+		if (strInterpolation != "linear" && strInterpolation != "step")
+		{
+			return Fail("light_animation", strPath + ".interpolation", "Expected linear or step interpolation.", out_arrDiagnostics);
+		}
+		out_stSettings.eInterpolation = strInterpolation == "linear" ? LightInterpolation::Linear : LightInterpolation::Step;
+	}
+	const Serialization::JsonValue::Object::const_iterator itKeys = pObject->find("keyframes");
+	if (itKeys != pObject->end())
+	{
+		const Serialization::JsonValue::List *pKeys = itKeys->second.GetList();
+		if (pKeys == nullptr || pKeys->size() > MAX_LIGHT_KEYFRAMES)
+		{
+			return Fail("light_animation", strPath + ".keyframes", "Expected at most 256 light keyframes.", out_arrDiagnostics);
+		}
+		out_stSettings.arrKeyframes.reserve(pKeys->size());
+		for (std::size_t nIndex = 0; nIndex < pKeys->size(); ++nIndex)
+		{
+			const std::string strKeyPath = strPath + ".keyframes[" + std::to_string(nIndex) + "]";
+			const Serialization::JsonValue::Object *pKey = Assets::Object((*pKeys)[nIndex], strKeyPath, out_arrDiagnostics);
+			LightKeyframe stKey;
+			if (pKey == nullptr || !Assets::Fields(*pKey, { "seconds", "multiplier" }, strKeyPath, out_arrDiagnostics) ||
+				!Assets::Number(*pKey, "seconds", strKeyPath, stKey.dSeconds, out_arrDiagnostics) ||
+				!Assets::Number(*pKey, "multiplier", strKeyPath, stKey.dMultiplier, out_arrDiagnostics))
+			{
+				return false;
+			}
+			out_stSettings.arrKeyframes.push_back(stKey);
+		}
+	}
+	return ValidateLightAnimation(out_stSettings, dBaseIlluminance, out_arrDiagnostics);
+}
+
 bool ParseDirectionalLight(const Serialization::JsonValue &stValue, DirectionalLightSettings &out_stLight, Assets::Diagnostics &out_arrDiagnostics)
 {
 	const std::string strPath = "$.directional_light";
@@ -428,7 +559,7 @@ bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std
 							  Assets::Diagnostics &out_arrDiagnostics)
 {
 	const Serialization::JsonValue::Object *pRoot = Assets::Object(stValue, "$", out_arrDiagnostics);
-	if (pRoot == nullptr || !RequiredFields(*pRoot, { "schema_version", "source_package_sha256", "camera", "exposure" }, { "directional_light", "shadows", "point_lights", "spot_lights", "temporal_aa" }, "$", out_arrDiagnostics))
+	if (pRoot == nullptr || !RequiredFields(*pRoot, { "schema_version", "source_package_sha256", "camera", "exposure" }, { "directional_light", "shadows", "point_lights", "spot_lights", "temporal_aa", "exposure_settings", "bloom", "light_animation" }, "$", out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -499,6 +630,21 @@ bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std
 	}
 	const Serialization::JsonValue::Object::const_iterator itTemporal = pRoot->find("temporal_aa");
 	if (itTemporal != pRoot->end() && !ParseTemporal(itTemporal->second, stConfiguration.stTemporal, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itExposure = pRoot->find("exposure_settings");
+	if (itExposure != pRoot->end() && !ParseExposure(itExposure->second, stConfiguration.stExposure, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itBloom = pRoot->find("bloom");
+	if (itBloom != pRoot->end() && !ParseBloom(itBloom->second, stConfiguration.stBloom, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itAnimation = pRoot->find("light_animation");
+	if (itAnimation != pRoot->end() && !ParseLightAnimation(itAnimation->second, stConfiguration.stDirectionalLight.dIlluminance, stConfiguration.stLightAnimation, out_arrDiagnostics))
 	{
 		return false;
 	}

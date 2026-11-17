@@ -109,12 +109,18 @@ float4 ValidHistoryTap(int2 Pixel, uint ObjectId, float ExpectedDepth, float3 No
         return float4(0, 0, 0, 0);
     }
     float4 Color = HistoryColor.Load(int3(Pixel, 0));
+    float4 Exposure = ExposureState[0];
+    float Ratio = Exposure.x / Exposure.y;
+    if (!isfinite(Exposure.x) || !isfinite(Exposure.y) || Exposure.x <= 0 || Exposure.y <= 0 || !isfinite(Ratio) || Ratio <= 0)
+    {
+        return float4(0, 0, 0, 0);
+    }
     if (!all(isfinite(Color)))
     {
         return float4(0, 0, 0, 0);
     }
     Weight *= saturate(1 - abs(Color.a - Coverage) * 4);
-    return float4(FiniteColor(Color.rgb) * Weight, Weight);
+    return float4(FiniteColor(Color.rgb * Ratio) * Weight, Weight);
 }
 
 float ResolveHistoryWeight(float HistorySetting, float Coverage, float ValidWeight)

@@ -274,11 +274,21 @@ Texture2D<Float4> HistoryColor;
 Texture2D<float> HistoryDepth;
 Texture2D<Float4> HistoryNormal;
 Texture2D<std::uint32_t> HistoryObjectId;
+struct ExposureBuffer
+{
+	Float4 stValue{ 1, 1, 0, 0 };
+	Float4 operator[](std::size_t) const
+	{
+		return stValue;
+	}
+};
+ExposureBuffer ExposureState;
 
 #include "engine_next/Rendering/Shaders/TemporalSampling.hlsli"
 
 void ResetTextures()
 {
+	ExposureState.stValue = Float4(1, 1, 0, 0);
 	Settings = Float4(1, 0.9F, 0.01F, 0);
 	Planes = Float4(0.05F, 1000, 0, 0);
 	CurrentHdr.arrValues.fill(Float4(1, 0, 0, 1));
@@ -451,4 +461,15 @@ ENGINE_NEXT_TEST("Temporal history confidence survives color normalization and l
 	ENGINE_NEXT_CHECK_EQ(ResolveHistoryWeight(0.9F, 1, 0), 0);
 	ENGINE_NEXT_CHECK_EQ(ResolveHistoryWeight(-1, 1, 1), 0);
 	ENGINE_NEXT_CHECK_EQ(ResolveHistoryWeight(2, 1, 1), 1);
+}
+
+ENGINE_NEXT_TEST("Temporal history adjusts previous pre-exposure before color feedback")
+{
+	ResetTextures();
+	ExposureState.stValue = Float4(2, 1, 0, 0);
+	const Float4 stTap = ValidHistoryTap(Int2(0, 0), 1, 0.05F, Float3(0, 0, 1), 1, 1);
+	CheckNear(stTap.x, 2);
+	CheckNear(stTap.w, 1);
+	ExposureState.stValue = Float4(2, 0, 0, 0);
+	ENGINE_NEXT_CHECK_EQ(ValidHistoryTap(Int2(0, 0), 1, 0.05F, Float3(0, 0, 1), 1, 1).w, 0);
 }

@@ -15,6 +15,7 @@ Texture2D<float4> HistoryColor : register(t5);
 Texture2D<float> HistoryDepth : register(t6);
 Texture2D<float4> HistoryNormal : register(t7);
 Texture2D<uint> HistoryObjectId : register(t8);
+StructuredBuffer<float4> ExposureState : register(t9);
 RWTexture2D<float4> OutputColor : register(u0);
 RWTexture2D<float> OutputDepth : register(u1);
 RWTexture2D<float4> OutputNormal : register(u2);

@@ -21,6 +21,10 @@ SHADER_FILES = {
     "Shadow.vs.cso",
     "Shadow.ps.cso",
     "Temporal.cs.cso",
+    "Histogram.cs.cso",
+    "Exposure.cs.cso",
+    "BloomDown.cs.cso",
+    "BloomUp.cs.cso",
 }
 
 

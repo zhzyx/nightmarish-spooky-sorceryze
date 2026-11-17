@@ -1,7 +1,7 @@
 {
   "placement": "mixed",
-  "reason": "Independent C++ rendering and transactional temporal state form the native target. Offline TAA shaders and source-bound rendering configuration are selected at startup.",
+  "reason": "Independent C++ rendering and exposure, Bloom and deterministic lighting state form the native target. Offline post-process shaders and source-bound rendering configuration are selected at startup.",
   "host_contract": "Windows x86_64 native D3D12 visual client with explicit queues, resource retirement and bounded asset decoding. GpuPackage preserves original M3 identities; headless target link and public-header boundaries remain independently audited.",
   "rollback": "Restore the original source and shader bundle, rebuild, and verify native identity and deterministic pixels. GPU package replacement is validated against its actual source scene.",
-  "evidence": "data-collection/engine-next-visual-runtime-m4-3-temporal-build-impact.json"
+  "evidence": "data-collection/engine-next-visual-runtime-m4-3-postprocess-build-impact.json"
 }

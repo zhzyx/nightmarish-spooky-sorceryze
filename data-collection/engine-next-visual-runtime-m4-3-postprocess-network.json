@@ -1,0 +1,392 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-17T02:10:06.192396+00:00",
+  "scope": "Postprocess r4 real keyboard, reconnect and minimized two-client loopback acceptance with exposure/history reset",
+  "passed": true,
+  "binary": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-r4\\next_visual_client.exe",
+    "bytes": 3026432,
+    "sha256": "131f70651f458b7f7c34311ad89f48f498422f2e5b7f9720987ccecbcdb5d106"
+  },
+  "server": {
+    "path": "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-runtime-r6\\next_server.exe",
+    "bytes": 788992,
+    "sha256": "c61cf5ea81e065cbd30cb01cec93fd4e0ee121fc0d5e6de98e823d99a4fe117c"
+  },
+  "build_report": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-r4\\VisualBuildReport.json",
+    "bytes": 1661913,
+    "sha256": "ed873a060ef449ae76b88958709bca86829776640b9cf77f540a099f041eca8e"
+  },
+  "native_key": "34ec6d30b77359d20dcf6a0e85ff6ae6d73cf4cd17302fbea78e254261886de2",
+  "source_sha256": {
+    "engine_next/Rendering/VisualRuntime.cpp": "8a3b38ef0a9d4f8741d9d9cb360aa587ee04d30ceadef4b679f5326b2a11c7d5",
+    "engine_next/Client/ClientSession.cpp": "80c351be551a5de07d151b5180d813f53e03afef94008bf5ce1c897f9380ca5f",
+    "engine_next/Platform/Windows/Window.cpp": "16c56933a4e1812e45af0a3918f3a018344b26eabaa1d7c462403212d56afdbc",
+    "engine_next/Rendering/Shaders/Exposure.hlsl": "2870a6fdd17504baa73131bd4fa976ede3ba685cc0c7df8dbe0b4963d60f7766",
+    "engine_next/Rendering/Shaders/ExposureMath.hlsli": "ed72cb6d70f51b509dceb24a7ac13051287e712027bbc0263b138aa753b0f402",
+    "engine_next/Rendering/Shaders/TemporalAA.hlsl": "e59f0fd6f21968a7206a7a92be792cf44181375d81e8d0be9aa2f47525efd4a3",
+    "engine_next/Rendering/Shaders/TemporalSampling.hlsli": "4c7115f3ec45a44d29a4e1bc8fb1b031df1a6f529fc7df393464cdbe670d5b87",
+    "engine_next/Rendering/Shaders/Deferred.hlsl": "c89bbdf511cf09f4fdd0638dc6ebffe839bc335e306823961d2e8d68eb0e5ff4"
+  },
+  "test_session": {
+    "started_at_utc": "2026-11-17T02:06:17.165052+00:00",
+    "ready_at_utc": "2026-11-17T02:06:25.327707+00:00",
+    "readiness_seconds": 7.670999999972992,
+    "completed_at_utc": "2026-11-17T02:08:48.199936+00:00",
+    "pids": {
+      "server": 33928,
+      "A": 300,
+      "B": 38816
+    },
+    "return_codes": [
+      0,
+      0,
+      0
+    ],
+    "commands": [
+      [
+        "D:\\Projects\\engine-next-m4-3-temporal-20261116\\build\\engine_next\\temporal-runtime-r6\\next_server.exe",
+        "--bind",
+        "127.0.0.1",
+        "--port",
+        "0",
+        "--duration-ms",
+        "180000",
+        "--drain-after-ms",
+        "150000",
+        "--asset-package",
+        "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-benchmarks\\F\\Scene.enpak",
+        "--trace-output",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\server.jsonl"
+      ],
+      [
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-r4\\next_visual_client.exe",
+        "--asset-package",
+        "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-benchmarks\\F\\Scene.enpak",
+        "--gpu-package",
+        "D:\\Projects\\engine-next-m4-2-cook-20261116\\build\\engine_next\\cook-gpu-evidence-r2\\F-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\RenderConfiguration.json",
+        "--connect",
+        "--port",
+        "50508",
+        "--client-id",
+        "A",
+        "--width",
+        "960",
+        "--height",
+        "640",
+        "--validation",
+        "--vsync",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\A.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\A.ppm"
+      ],
+      [
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-r4\\next_visual_client.exe",
+        "--asset-package",
+        "D:\\Projects\\engine-next-m4-2-20261116\\build\\engine_next\\m42-benchmarks\\F\\Scene.enpak",
+        "--gpu-package",
+        "D:\\Projects\\engine-next-m4-2-cook-20261116\\build\\engine_next\\cook-gpu-evidence-r2\\F-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\RenderConfiguration.json",
+        "--connect",
+        "--port",
+        "50508",
+        "--client-id",
+        "B",
+        "--width",
+        "960",
+        "--height",
+        "640",
+        "--validation",
+        "--vsync",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\B.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\B.ppm"
+      ]
+    ]
+  },
+  "input_driver": "Computer Use sky.press_key, observed target-window minimize, and restore activation. Server and clients launch through the CLI.",
+  "network_checks": {
+    "A": {
+      "frames": 8950,
+      "validation_errors": 0,
+      "network_input_frames": 5,
+      "network_reconnect_requests": 0,
+      "local_shadow_views": 6,
+      "input_key_events": 12,
+      "resizes": 0,
+      "draw_position_max_error": 1.1920928910669204e-08,
+      "largest_sample_gap_msec": 666,
+      "sample_gap_frames": 30,
+      "last_entities": [
+        {
+          "confirmed_sequence": "8890",
+          "entity_id": "1",
+          "interpolation": 0,
+          "local": true,
+          "position": [
+            -0.3599998950958252,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "confirmed_sequence": "8861",
+          "entity_id": "2",
+          "interpolation": 3,
+          "local": false,
+          "position": [
+            1.6400001049041748,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "temporal_epoch_starts": [
+        {
+          "frame_id": 0,
+          "epoch": 1
+        },
+        {
+          "frame_id": 4,
+          "epoch": 2
+        }
+      ],
+      "temporal_resets": 1
+    },
+    "B": {
+      "frames": 10210,
+      "validation_errors": 0,
+      "network_input_frames": 5,
+      "network_reconnect_requests": 1,
+      "local_shadow_views": 6,
+      "input_key_events": 20,
+      "resizes": 1,
+      "draw_position_max_error": 1.1920928910669204e-08,
+      "largest_sample_gap_msec": 29562,
+      "sample_gap_frames": 30,
+      "last_entities": [
+        {
+          "confirmed_sequence": "8874",
+          "entity_id": "2",
+          "interpolation": 0,
+          "local": true,
+          "position": [
+            1.6400001049041748,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "confirmed_sequence": "8884",
+          "entity_id": "1",
+          "interpolation": 3,
+          "local": false,
+          "position": [
+            -0.3599998950958252,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "temporal_epoch_starts": [
+        {
+          "frame_id": 0,
+          "epoch": 1
+        },
+        {
+          "frame_id": 4,
+          "epoch": 2
+        },
+        {
+          "frame_id": 3880,
+          "epoch": 3
+        },
+        {
+          "frame_id": 3892,
+          "epoch": 4
+        },
+        {
+          "frame_id": 4876,
+          "epoch": 7
+        }
+      ],
+      "temporal_resets": 6
+    }
+  },
+  "minimized_evidence": [
+    {
+      "client": "B",
+      "sample_gap_msec": 29562,
+      "rendered_frame_delta": 30,
+      "confirmed_before": "3351",
+      "confirmed_after": "5199",
+      "peer_samples": 124,
+      "peer_input_samples": 5
+    }
+  ],
+  "postprocess_checks": {
+    "A": {
+      "exposure_mode": "automatic",
+      "bloom_enabled": true,
+      "postprocess_samples": 8950,
+      "all_samples_ready": true,
+      "all_meter_pixels_finite": true,
+      "ordinary_frame_pre_exposure_matches_previous_display": true,
+      "reset_frames": [
+        {
+          "frame_id": 0,
+          "temporal_epoch": 1,
+          "temporal_sample": 0,
+          "temporal_history_valid": false,
+          "frame_pre_exposure": 1.0,
+          "display_exposure": 1.1318291425704956
+        },
+        {
+          "frame_id": 4,
+          "temporal_epoch": 2,
+          "temporal_sample": 0,
+          "temporal_history_valid": false,
+          "frame_pre_exposure": 1.0,
+          "display_exposure": 1.1318291425704956
+        }
+      ]
+    },
+    "B": {
+      "exposure_mode": "automatic",
+      "bloom_enabled": true,
+      "postprocess_samples": 10210,
+      "all_samples_ready": true,
+      "all_meter_pixels_finite": true,
+      "ordinary_frame_pre_exposure_matches_previous_display": true,
+      "reset_frames": [
+        {
+          "frame_id": 0,
+          "temporal_epoch": 1,
+          "temporal_sample": 0,
+          "temporal_history_valid": false,
+          "frame_pre_exposure": 1.0,
+          "display_exposure": 1.1318291425704956
+        },
+        {
+          "frame_id": 4,
+          "temporal_epoch": 2,
+          "temporal_sample": 0,
+          "temporal_history_valid": false,
+          "frame_pre_exposure": 1.0,
+          "display_exposure": 1.1318291425704956
+        },
+        {
+          "frame_id": 3880,
+          "temporal_epoch": 3,
+          "temporal_sample": 0,
+          "temporal_history_valid": false,
+          "frame_pre_exposure": 1.0,
+          "display_exposure": 1.1322075128555298
+        },
+        {
+          "frame_id": 3892,
+          "temporal_epoch": 4,
+          "temporal_sample": 0,
+          "temporal_history_valid": false,
+          "frame_pre_exposure": 1.0,
+          "display_exposure": 1.1322075128555298
+        },
+        {
+          "frame_id": 4876,
+          "temporal_epoch": 7,
+          "temporal_sample": 0,
+          "temporal_history_valid": false,
+          "frame_pre_exposure": 1.0,
+          "display_exposure": 1.1336334943771362
+        }
+      ]
+    }
+  },
+  "artifacts": [
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\Verification.json",
+      "bytes": 4423,
+      "sha256": "4e62664bf3aea44f12a182bddc4a28cd1765bc56c257680ea21872c850bbfffc"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\Completion.json",
+      "bytes": 4781,
+      "sha256": "5d1343568cfaab7c152f195f7e8d21dbef82110957a684334f512314983410d8"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\Live.json",
+      "bytes": 4653,
+      "sha256": "470911bd377b22516398d3ca39a5b35c3adbcdac8b2c5725bfbccb251fde1224"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\RenderConfiguration.json",
+      "bytes": 1262,
+      "sha256": "5d54aac6f4fa48ad9547147c21eac75990d85c31cdf480331fe6b425f3be5897"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\UIActions.json",
+      "bytes": 1408,
+      "sha256": "cdabfab8d8d889575be6ab423796a2ff4b3bf2310c27bfce53bf0473fb0d3fc7"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\A.json",
+      "bytes": 14789915,
+      "sha256": "62388ca45ebc7d7dfb3da1d3ccfa849717db14027d84d99ace8725128f6440f7"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\A.log",
+      "bytes": 1449,
+      "sha256": "74301263fc062904cbecf0aa55af3d41082771258b2985908a6b05ab2a02eea4"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\B.json",
+      "bytes": 16863350,
+      "sha256": "38c514ede5159ab4f094d102bf1b7e90b6fef88e91a3f130be94d583656c16b2"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\B.log",
+      "bytes": 1291,
+      "sha256": "f917ac92551cfcd6fc7adc606c63296ce970f599e1457ed6eedaf270c0a62670"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\server.jsonl",
+      "bytes": 686839,
+      "sha256": "b6eafcc5547790d55cc7fc1c77d42d8ba95328c8ebefc011097e799509390269"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4-final\\server.log",
+      "bytes": 1138,
+      "sha256": "3922a257665081e765274d11b8077cb073f4dd11f13aebd8b47fac54247c8006"
+    }
+  ],
+  "private_tools": [
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\RunLiveNetwork.py",
+      "bytes": 7490,
+      "sha256": "ecd0a9d272f5b2e4c8b8efaa4b2364c24649b390b9dacdf8b4097ab1fa3da7c0"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\VerifyLiveNetwork.py",
+      "bytes": 6603,
+      "sha256": "8e23bfd518b6f154536adcd35b778111588e520d4e42fab310b1c56ec3471fe0"
+    }
+  ],
+  "earlier_attempt": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-network\\r4",
+    "result": "No UI input was sent while the Windows firewall prompt awaited user handling. After the long inactive interval, the private completion deadline expired and terminated owned processes. No completion report or passing claim is attached to that attempt."
+  },
+  "boundaries": [
+    "Original immutable F source package and GPU package v2 are used. F contains no receiver floor geometry.",
+    "This session verifies live postprocess continuity and reset lifecycle. Dynamic light adaptation and absolute gray-card calibration use their own GPU evidence.",
+    "The user dismissed the security prompt. No permission or security UI action was automated."
+  ],
+  "cleanup": "All owned final-session processes exited normally. GPU handoff was sent to the capture worker."
+}

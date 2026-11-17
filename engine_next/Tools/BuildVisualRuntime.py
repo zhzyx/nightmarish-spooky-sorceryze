@@ -22,6 +22,8 @@ CORE_SOURCES = [
     "engine_next/Rendering/ShadowData.cpp",
     "engine_next/Rendering/LocalShadowData.cpp",
     "engine_next/Rendering/TemporalState.cpp",
+    "engine_next/Rendering/PostProcessSettings.cpp",
+    "engine_next/Rendering/LightTimeline.cpp",
     "engine_next/Rendering/ShadowBounds.cpp",
     "engine_next/Rendering/Cook/GltfDecoder.cpp",
     "engine_next/Rendering/Cook/ImageDecoder.cpp",
@@ -67,6 +69,10 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestShadowSampling.cpp",
     "engine_next/Tests/Rendering/TestTemporalSampling.cpp",
     "engine_next/Tests/Rendering/TestTemporalState.cpp",
+    "engine_next/Tests/Rendering/TestPostProcessSettings.cpp",
+    "engine_next/Tests/Rendering/TestLightTimeline.cpp",
+    "engine_next/Tests/Rendering/TestExposureSampling.cpp",
+    "engine_next/Tests/Rendering/TestBloomSampling.cpp",
     "engine_next/Tests/Rendering/TestShadowBounds.cpp",
     "engine_next/Tests/Rendering/TestGltfDecoder.cpp",
     "engine_next/Tests/Rendering/TestImageDecoder.cpp",
@@ -85,6 +91,8 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/ShadowData.h",
     "EngineNext/Rendering/LocalShadowData.h",
     "EngineNext/Rendering/TemporalState.h",
+    "EngineNext/Rendering/PostProcessSettings.h",
+    "EngineNext/Rendering/LightTimeline.h",
     "EngineNext/Rendering/RenderScene.h",
     "EngineNext/Rendering/VisualRuntime.h",
 ]
@@ -101,6 +109,10 @@ SHADERS = [
     ("ShadowVS", "vs_6_0", "Shadow.vs.cso", []),
     ("ShadowPS", "ps_6_0", "Shadow.ps.cso", []),
     ("CSMain", "cs_6_0", "Temporal.cs.cso", []),
+    ("HistogramBuildCS", "cs_6_0", "Histogram.cs.cso", ["-D", "HISTOGRAM_STAGE=1"]),
+    ("ExposureAdaptCS", "cs_6_0", "Exposure.cs.cso", []),
+    ("DownsampleCS", "cs_6_0", "BloomDown.cs.cso", []),
+    ("UpsampleCS", "cs_6_0", "BloomUp.cs.cso", []),
 ]
 
 
@@ -444,6 +456,10 @@ def compile_shaders(args, commands):
                 if name.startswith("FixedMesh")
                 else "Shadow.hlsl"
                 if name.startswith("Shadow")
+                else "Exposure.hlsl"
+                if name.startswith(("Histogram", "Exposure"))
+                else "Bloom.hlsl"
+                if name.startswith("Bloom")
                 else "TemporalAA.hlsl"
                 if name.startswith("Temporal")
                 else "Deferred.hlsl"
@@ -545,6 +561,10 @@ def build(args):
                 "engine_next/Rendering/Shaders/ShadowSampling.hlsli",
                 "engine_next/Rendering/Shaders/TemporalAA.hlsl",
                 "engine_next/Rendering/Shaders/TemporalSampling.hlsli",
+                "engine_next/Rendering/Shaders/Exposure.hlsl",
+                "engine_next/Rendering/Shaders/ExposureMath.hlsli",
+                "engine_next/Rendering/Shaders/Bloom.hlsl",
+                "engine_next/Rendering/Shaders/BloomSampling.hlsli",
             ]
         ),
         *[

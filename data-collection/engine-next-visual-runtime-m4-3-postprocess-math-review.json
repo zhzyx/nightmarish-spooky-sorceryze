@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-16T17:57:01.370853+00:00",
+  "reviewer": "independent network acceptance agent",
+  "result": "no remaining actionable findings",
+  "scope": "Exposure and bloom configuration, pure exposure calculations, histogram and adaptation HLSL, production-included math regressions",
+  "source_sha256": {
+    "engine_next/Rendering/PostProcessSettings.cpp": "a872c712b08bea9e0870df35f2605aa3e5648d80e07d7cd2225528565d4db832",
+    "engine_next/Rendering/RenderConfiguration.cpp": "d9a4eac546b63e107f205f29a92a009afee217036ed1cfe08b0d987fa0da9281",
+    "engine_next/Tests/Rendering/TestPostProcessSettings.cpp": "df84f9044837a5f2c723bcac409681e88179fdf7c0da88d3428d0b8590bb7723",
+    "engine_next/Tests/Rendering/TestExposureSampling.cpp": "958f6dc1b60aa7ce612d7b38389386ff5c993f2d786ae1d5d40f8fa84fe7a59e",
+    "engine_next/Tests/Rendering/TestRenderConfiguration.cpp": "dca11b9e339342ad7385dfa8a66ce2e25fcd1859968d9b248938056f937e8225",
+    "engine_next/include/EngineNext/Rendering/PostProcessSettings.h": "55e6da34c8d9ee506ff8bcb4396af771a6b13c02b7d79496471230f66f90c03d",
+    "engine_next/include/EngineNext/Rendering/RenderConfiguration.h": "6b286a7dd8ceca6e45a8cba8ac6dc62f89b87839c3075ed2bcc1de659531078c",
+    "engine_next/Schemas/RenderConfiguration-v1.json": "85c16284f5316bc9c243d9f9c5f29fff56098b9e035d580e76897cb3c7b37c17",
+    "engine_next/Rendering/Shaders/Exposure.hlsl": "2870a6fdd17504baa73131bd4fa976ede3ba685cc0c7df8dbe0b4963d60f7766",
+    "engine_next/Rendering/Shaders/ExposureMath.hlsli": "ed72cb6d70f51b509dceb24a7ac13051287e712027bbc0263b138aa753b0f402"
+  },
+  "test_report": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-tests\\IndependentReviewTests.json",
+    "sha256": "91a094e01f9ba4b8de755510b69c8989c687400df22b5419f6e663e393d0689c",
+    "results": [
+      {
+        "compiler": "msvc",
+        "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=44 checks=5919 failures=0",
+        "exit_code": 0
+      },
+      {
+        "compiler": "clang",
+        "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=44 checks=5919 failures=0",
+        "exit_code": 0
+      }
+    ]
+  },
+  "reviewed": [
+    "Legacy numeric exposure remains required and preserves its multiplier. Optional objects default field-by-field while rejecting unknown keys, wrong types, nonfinite data and invalid relationships.",
+    "Manual multiplier is exp2(compensationEV - manualEV100) / 1.2. Automatic target uses logarithmic gray calibration, compensation and configured EV limits.",
+    "Adaptation uses log exposure, separate bright/dark half-lives, nonnegative time bounded to 0.1 seconds, and monotonic endpoint clipping.",
+    "CPU histogram accumulates all uint32 bins in uint64 and performs fractional-rank clipping before log-luminance averaging. GPU excludes invalid pixels, records invalid/finite counts and applies pre-exposure logarithmically.",
+    "HLSL production source is directly included by scalar/vector CPU adapters. Histogram stage uses uniform group synchronization for edge groups, with explicit caller-clear/UAV-barrier contract."
+  ],
+  "corrected_finding": {
+    "finding": "Adjacent legal percentiles can round to the same rank after multiplication by the histogram count. The initial implementation rejected this legal interval.",
+    "reproducer": {
+      "low": 0.7087874219010951,
+      "high": 0.7087874219010952,
+      "total_count": 3
+    },
+    "resolution": "CPU and GPU reducers choose the containing nonempty bucket for a collapsed numerical rank interval. The exact CPU case and float GPU collapse case are covered by regression tests."
+  },
+  "boundary": "GPU shader execution and runtime binding are separate integration evidence. This record covers source review and independently rerun MSVC and clang-cl tests."
+}

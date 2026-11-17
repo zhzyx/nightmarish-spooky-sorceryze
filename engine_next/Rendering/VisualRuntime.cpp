@@ -50,6 +50,7 @@
 #include "engine_next/Rendering/ShadowBounds.h"
 #include "engine_next/include/EngineNext/Rendering/LocalShadowData.h"
 #include "engine_next/include/EngineNext/Rendering/TemporalState.h"
+#include "engine_next/include/EngineNext/Rendering/LightTimeline.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -86,7 +87,7 @@ namespace
 {
 
 constexpr std::uint32_t FRAME_COUNT = 3;
-constexpr std::uint32_t FRAME_VIEW_COUNT = 26;
+constexpr std::uint32_t FRAME_VIEW_COUNT = 104;
 constexpr std::uint32_t HISTORY_VIEW_START = FRAME_COUNT * FRAME_VIEW_COUNT;
 constexpr std::uint32_t HISTORY_VIEW_COUNT = 16;
 constexpr std::uint32_t MAX_LOCAL_SHADOW_VIEWS = 28;
@@ -254,6 +255,10 @@ struct FrameContext
 	std::array<ComOwner<ID3D12Resource>, 4> arrGbuffer;
 	ComOwner<ID3D12Resource> stMotion;
 	ComOwner<ID3D12Resource> stObjectId;
+	ComOwner<ID3D12Resource> stHistogram;
+	std::array<ComOwner<ID3D12Resource>, 6> arrBloomDown;
+	std::array<ComOwner<ID3D12Resource>, 6> arrBloomUp;
+	ComOwner<ID3D12Resource> stPostReadback;
 	ComOwner<ID3D12Resource> stQueries;
 	ComOwner<ID3D12Resource> stConstants;
 	ComOwner<ID3D12Resource> stDirectionalShadow;
@@ -276,6 +281,12 @@ struct FrameTiming
 	std::uint32_t nTemporalSample = 0;
 	std::uint32_t nTemporalRead = 0;
 	std::array<double, 2> arrTemporalJitter{};
+	std::array<float, 4> arrExposure{};
+	std::uint32_t nMeterFinite = 0;
+	std::uint32_t nMeterInvalid = 0;
+	bool bPostReady = false;
+	double dLightingSeconds = 0;
+	double dDirectionalIlluminance = 0;
 	bool bTemporalHistoryValid = false;
 	double dCpuMsec = 0.0;
 	double dGraphicsMsec = 0.0;
@@ -358,7 +369,7 @@ static_assert(offsetof(DrawConstants, arrPreviousWorld) == 192);
 static_assert(offsetof(DrawConstants, arrTemporal) == 256);
 static_assert(sizeof(LocalLightConstants) == 80);
 static_assert(sizeof(FrameConstants) == 3120);
-static_assert(FRAME_VIEW_COUNT == 26);
+static_assert(FRAME_VIEW_COUNT == 104);
 static_assert(offsetof(FrameConstants, arrUnjitteredViewProjection) == 2992);
 static_assert(offsetof(FrameConstants, arrPreviousViewProjection) == 3056);
 static_assert(offsetof(FrameConstants, arrLocalShadowMatrices) == 544);
@@ -581,6 +592,10 @@ private:
 	bool ResolveNetworkBindings();
 	bool CreateDeferredPipeline();
 	bool CreateShadowPipeline();
+	bool CreatePostProcessPipeline();
+	bool CreatePostProcessTargets();
+	bool PreparePostProcess(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame);
+	void DrawPostProcess(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, PassWork eWork, std::uint32_t nMip, double dSeconds);
 	bool CreateTemporalPipeline();
 	bool CreateHistoryTargets();
 	bool ResetTemporalHistory();
@@ -604,6 +619,8 @@ private:
 	bool BuildGraph();
 	bool RenderFrame(double dSeconds, bool bCapture);
 	bool CollectTiming(FrameContext &stFrame);
+	void RecordPostProcessReadback(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame);
+	bool CollectPostProcess(FrameContext &stFrame, FrameTiming &stTiming);
 	bool ReadCapture();
 	bool CheckValidation();
 	FrameTiming &Timing(std::uint32_t nFrame);
@@ -632,6 +649,7 @@ private:
 	ComOwner<ID3D12RootSignature> stComputeRoot;
 	ComOwner<ID3D12RootSignature> stDeferredRoot;
 	ComOwner<ID3D12RootSignature> stLightingRoot;
+	ComOwner<ID3D12RootSignature> stToneMapRoot;
 	ComOwner<ID3D12PipelineState> stGraphicsPipeline;
 	ComOwner<ID3D12PipelineState> stComputePipeline;
 	ComOwner<ID3D12PipelineState> stDeferredPipeline;
@@ -640,6 +658,19 @@ private:
 	ComOwner<ID3D12PipelineState> stMirroredPipeline;
 	ComOwner<ID3D12PipelineState> stLightingPipeline;
 	ComOwner<ID3D12PipelineState> stToneMapPipeline;
+	ComOwner<ID3D12DescriptorHeap> stPostCpuHeap;
+	ComOwner<ID3D12RootSignature> stExposureRoot;
+	ComOwner<ID3D12RootSignature> stBloomRoot;
+	ComOwner<ID3D12PipelineState> stHistogramPipeline;
+	ComOwner<ID3D12PipelineState> stExposurePipeline;
+	ComOwner<ID3D12PipelineState> stBloomDownPipeline;
+	ComOwner<ID3D12PipelineState> stBloomUpPipeline;
+	std::array<ComOwner<ID3D12Resource>, 2> arrExposure;
+	std::uint32_t nExposureRead = 0;
+	bool bExposureReady = false;
+	double dManualExposure = 1;
+	double dLastPostSeconds = 0;
+	DirectionalLightSettings stFrameLight;
 	ComOwner<ID3D12DescriptorHeap> stHistoryCpuHeap;
 	ComOwner<ID3D12RootSignature> stTemporalRoot;
 	ComOwner<ID3D12PipelineState> stTemporalPipeline;
@@ -874,7 +905,7 @@ bool VisualRuntime::Initialize()
 	nDsvStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	nViewStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	return LoadScene() && BuildGraph() && CreateFrameContexts() && CreateTargets() && CreatePipeline() &&
-			(!bSceneMode || (CreateDeferredPipeline() && CreateShadowPipeline() && CreateTemporalPipeline())) && (bSceneMode ? CreateSceneMesh() : CreateMesh()) && CreateConstantBuffers();
+			(!bSceneMode || (CreateDeferredPipeline() && CreateShadowPipeline() && CreateTemporalPipeline() && CreatePostProcessPipeline())) && (bSceneMode ? CreateSceneMesh() : CreateMesh()) && CreateConstantBuffers();
 }
 
 bool VisualRuntime::CreateFrameContexts()
@@ -1096,6 +1127,10 @@ bool VisualRuntime::CreateTargets()
 	{
 		return false;
 	}
+	if (!CreatePostProcessTargets())
+	{
+		return false;
+	}
 	stDevice->GetCopyableFootprints(&stTexture, 0, 1, 0, &stCaptureFootprint, nullptr, nullptr, &nCaptureBytes);
 	const D3D12_HEAP_PROPERTIES stReadback = HeapProperties(D3D12_HEAP_TYPE_READBACK);
 	const D3D12_RESOURCE_DESC stCaptureDescription = BufferDescription(nCaptureBytes);
@@ -1293,6 +1328,11 @@ bool VisualRuntime::LoadScene()
 	if (!stConfig.strRenderConfigPath.empty() && !LoadRenderConfiguration(std::filesystem::u8path(stConfig.strRenderConfigPath), stRenderScene.strPackageDigest, stRenderConfiguration, arrDiagnostics))
 	{
 		return Fail(arrDiagnostics.empty() ? "Load rendering configuration" : arrDiagnostics.front().strMessage);
+	}
+	if (stRenderConfiguration.stExposure.eMode != ExposureMode::Automatic &&
+		!ComputeExposureMultiplier(stRenderConfiguration.stExposure, stRenderConfiguration.dExposure, 0, dManualExposure, arrDiagnostics))
+	{
+		return Fail("Compute manual exposure");
 	}
 	if (!BuildLocalShadows(stRenderConfiguration.arrPointLights, stRenderConfiguration.arrSpotLights, stLocalShadowData, arrDiagnostics))
 	{
@@ -1849,7 +1889,7 @@ bool VisualRuntime::CreateDeferredPipeline()
 	}
 	for (std::uint32_t nPipeline = 0; nPipeline < 2; ++nPipeline)
 	{
-		std::array<D3D12_DESCRIPTOR_RANGE, 5> arrDescriptorRanges{};
+		std::array<D3D12_DESCRIPTOR_RANGE, 6> arrDescriptorRanges{};
 		arrDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 		arrDescriptorRanges[0].NumDescriptors = 5;
 		arrDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
@@ -1863,7 +1903,10 @@ bool VisualRuntime::CreateDeferredPipeline()
 		arrDescriptorRanges[4].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 		arrDescriptorRanges[4].NumDescriptors = 2;
 		arrDescriptorRanges[4].BaseShaderRegister = 9;
-		std::array<D3D12_ROOT_PARAMETER, 5> arrParameters{};
+		arrDescriptorRanges[5].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+		arrDescriptorRanges[5].NumDescriptors = 1;
+		arrDescriptorRanges[5].BaseShaderRegister = 11;
+		std::array<D3D12_ROOT_PARAMETER, 6> arrParameters{};
 		arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 		arrParameters[0].Descriptor.ShaderRegister = nPipeline == 0 ? 0 : 1;
 		arrParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
@@ -1883,14 +1926,18 @@ bool VisualRuntime::CreateDeferredPipeline()
 			arrParameters[3].DescriptorTable.pDescriptorRanges = &arrDescriptorRanges[3];
 			arrParameters[4] = arrParameters[2];
 			arrParameters[4].DescriptorTable.pDescriptorRanges = &arrDescriptorRanges[4];
-			stRoot.NumParameters = 5;
+			arrParameters[5] = arrParameters[2];
+			arrParameters[5].DescriptorTable.pDescriptorRanges = &arrDescriptorRanges[5];
+			stRoot.NumParameters = 6;
 		}
 		else
 		{
 			arrParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 			arrParameters[3].Descriptor.ShaderRegister = 1;
 			arrParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-			stRoot.NumParameters = 4;
+			arrParameters[4] = arrParameters[1];
+			arrParameters[4].DescriptorTable.pDescriptorRanges = &arrDescriptorRanges[5];
+			stRoot.NumParameters = 5;
 		}
 		D3D12_STATIC_SAMPLER_DESC stEnvironmentSampler{};
 		stEnvironmentSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
@@ -1992,6 +2039,39 @@ bool VisualRuntime::CreateDeferredPipeline()
 	{
 		return Fail("Create lighting PSO");
 	}
+	std::array<D3D12_DESCRIPTOR_RANGE, 4> arrToneRanges{};
+	std::array<D3D12_ROOT_PARAMETER, 5> arrToneParameters{};
+	arrToneParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	arrToneParameters[0].Descriptor.ShaderRegister = 1;
+	for (std::uint32_t nRange = 0; nRange < 4; ++nRange)
+	{
+		arrToneRanges[nRange].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+		arrToneRanges[nRange].NumDescriptors = 1;
+		arrToneRanges[nRange].BaseShaderRegister = nRange;
+		arrToneParameters[nRange + 1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		arrToneParameters[nRange + 1].DescriptorTable.NumDescriptorRanges = 1;
+		arrToneParameters[nRange + 1].DescriptorTable.pDescriptorRanges = &arrToneRanges[nRange];
+	}
+	D3D12_STATIC_SAMPLER_DESC stToneSampler{};
+	stToneSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	stToneSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	stToneSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	stToneSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	stToneSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+	stToneSampler.MaxLOD = D3D12_FLOAT32_MAX;
+	D3D12_ROOT_SIGNATURE_DESC stToneRoot{};
+	stToneRoot.NumParameters = static_cast<UINT>(arrToneParameters.size());
+	stToneRoot.pParameters = arrToneParameters.data();
+	stToneRoot.NumStaticSamplers = 1;
+	stToneRoot.pStaticSamplers = &stToneSampler;
+	ComOwner<ID3DBlob> stToneSerialized;
+	ComOwner<ID3DBlob> stToneErrors;
+	if (FAILED(D3D12SerializeRootSignature(&stToneRoot, D3D_ROOT_SIGNATURE_VERSION_1, stToneSerialized.Put(), stToneErrors.Put())) ||
+		FAILED(stDevice->CreateRootSignature(0, stToneSerialized->GetBufferPointer(), stToneSerialized->GetBufferSize(), IID_PPV_ARGS(stToneMapRoot.Put()))))
+	{
+		return Fail("Create post-process tone mapping root");
+	}
+	stPipeline.pRootSignature = stToneMapRoot.Get();
 	stPipeline.PS = { arrToneMap.data(), arrToneMap.size() };
 	stPipeline.RTVFormats[0] = COLOR_FORMAT;
 	return SUCCEEDED(stDevice->CreateGraphicsPipelineState(&stPipeline, IID_PPV_ARGS(stToneMapPipeline.Put()))) || Fail("Create tone mapping PSO");
@@ -2005,6 +2085,7 @@ bool VisualRuntime::ResetTemporalHistory()
 		return Fail("Reset temporal state");
 	}
 	bHistoryReady = false;
+	bExposureReady = false;
 	++nHistoryResets;
 	return true;
 }
@@ -2059,6 +2140,281 @@ bool VisualRuntime::CreateHistoryTargets()
 	return true;
 }
 
+bool VisualRuntime::CreatePostProcessPipeline()
+{
+	const std::array<const char *, 4> arrNames{ "Histogram.cs.cso", "Exposure.cs.cso", "BloomDown.cs.cso", "BloomUp.cs.cso" };
+	const std::array<ComOwner<ID3D12PipelineState> *, 4> arrPipelines{
+		&stHistogramPipeline, &stExposurePipeline, &stBloomDownPipeline, &stBloomUpPipeline
+	};
+	for (std::uint32_t nKind = 0; nKind < 2; ++nKind)
+	{
+		const std::uint32_t nSrvCount = nKind == 0 ? 2U : 4U;
+		std::array<D3D12_DESCRIPTOR_RANGE, 5> arrDescriptorRanges{};
+		std::array<D3D12_ROOT_PARAMETER, 6> arrParameters{};
+		arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		arrParameters[0].Constants.Num32BitValues = 16;
+		arrParameters[0].Constants.ShaderRegister = 0;
+		for (std::uint32_t nRange = 0; nRange <= nSrvCount; ++nRange)
+		{
+			D3D12_DESCRIPTOR_RANGE &stRange = arrDescriptorRanges[nRange];
+			stRange.RangeType = nRange == nSrvCount ? D3D12_DESCRIPTOR_RANGE_TYPE_UAV : D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+			stRange.NumDescriptors = 1;
+			stRange.BaseShaderRegister = nRange == nSrvCount ? 0 : nRange;
+			D3D12_ROOT_PARAMETER &stParameter = arrParameters[nRange + 1];
+			stParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+			stParameter.DescriptorTable.NumDescriptorRanges = 1;
+			stParameter.DescriptorTable.pDescriptorRanges = &stRange;
+		}
+		D3D12_STATIC_SAMPLER_DESC stSampler{};
+		stSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+		stSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		stSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		stSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		stSampler.MaxAnisotropy = 1;
+		stSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+		stSampler.MaxLOD = D3D12_FLOAT32_MAX;
+		stSampler.ShaderRegister = 0;
+		D3D12_ROOT_SIGNATURE_DESC stRoot{};
+		stRoot.NumParameters = nSrvCount + 2;
+		stRoot.pParameters = arrParameters.data();
+		stRoot.NumStaticSamplers = nKind == 0 ? 0U : 1U;
+		stRoot.pStaticSamplers = nKind == 0 ? nullptr : &stSampler;
+		ComOwner<ID3DBlob> stSerialized;
+		ComOwner<ID3DBlob> stErrors;
+		ComOwner<ID3D12RootSignature> &stRootOwner = nKind == 0 ? stExposureRoot : stBloomRoot;
+		if (FAILED(D3D12SerializeRootSignature(&stRoot, D3D_ROOT_SIGNATURE_VERSION_1, stSerialized.Put(), stErrors.Put())) ||
+			FAILED(stDevice->CreateRootSignature(0, stSerialized->GetBufferPointer(), stSerialized->GetBufferSize(), IID_PPV_ARGS(stRootOwner.Put()))))
+		{
+			return Fail(nKind == 0 ? "Create exposure root signature" : "Create Bloom root signature");
+		}
+		for (std::uint32_t nShader = nKind * 2; nShader < nKind * 2 + 2; ++nShader)
+		{
+			const std::vector<std::uint8_t> arrShader = ReadShader(stConfig.strShaderDirectory, arrNames[nShader]);
+			if (arrShader.empty())
+			{
+				return Fail(std::string("Missing post-process shader ") + arrNames[nShader]);
+			}
+			D3D12_COMPUTE_PIPELINE_STATE_DESC stPipeline{};
+			stPipeline.pRootSignature = stRootOwner.Get();
+			stPipeline.CS = { arrShader.data(), arrShader.size() };
+			if (FAILED(stDevice->CreateComputePipelineState(&stPipeline, IID_PPV_ARGS(arrPipelines[nShader]->Put()))))
+			{
+				return Fail(std::string("Create post-process PSO ") + arrNames[nShader]);
+			}
+		}
+	}
+	return true;
+}
+
+bool VisualRuntime::CreatePostProcessTargets()
+{
+	if (!bSceneMode)
+	{
+		return true;
+	}
+	if (nWidth == 0 || nHeight == 0 || static_cast<std::uint64_t>(nWidth) * nHeight > std::numeric_limits<std::uint32_t>::max())
+	{
+		return Fail("Post-process viewport exceeds histogram counter range");
+	}
+	if (stPostCpuHeap.Get() == nullptr)
+	{
+		D3D12_DESCRIPTOR_HEAP_DESC stDescription{};
+		stDescription.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		stDescription.NumDescriptors = 2 + FRAME_COUNT;
+		if (FAILED(stDevice->CreateDescriptorHeap(&stDescription, IID_PPV_ARGS(stPostCpuHeap.Put()))))
+		{
+			return Fail("Create CPU post-process descriptor heap");
+		}
+	}
+	const D3D12_HEAP_PROPERTIES stHeap = HeapProperties(D3D12_HEAP_TYPE_DEFAULT);
+	for (std::uint32_t nSet = 0; nSet < arrExposure.size(); ++nSet)
+	{
+		if (arrExposure[nSet].Get() == nullptr)
+		{
+			D3D12_RESOURCE_DESC stDescription = BufferDescription(16);
+			stDescription.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+			if (FAILED(stDevice->CreateCommittedResource(&stHeap, D3D12_HEAP_FLAG_NONE, &stDescription, D3D12_RESOURCE_STATE_COMMON,
+														 nullptr, IID_PPV_ARGS(arrExposure[nSet].Put()))))
+			{
+				return Fail("Create exposure record");
+			}
+			const std::wstring strName = L"EngineNext.Exposure." + std::to_wstring(nSet);
+			(void)arrExposure[nSet]->SetName(strName.c_str());
+		}
+		// A typed float4 alias gives the clear four distinct channel values.
+		D3D12_UNORDERED_ACCESS_VIEW_DESC stUav{};
+		stUav.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		stUav.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+		stUav.Buffer.NumElements = 1;
+		D3D12_CPU_DESCRIPTOR_HANDLE stCpu = stPostCpuHeap->GetCPUDescriptorHandleForHeapStart();
+		stCpu.ptr += static_cast<SIZE_T>(nSet) * nViewStride;
+		stDevice->CreateUnorderedAccessView(arrExposure[nSet].Get(), nullptr, &stUav, stCpu);
+	}
+	for (std::uint32_t nFrame = 0; nFrame < FRAME_COUNT; ++nFrame)
+	{
+		FrameContext &stFrame = arrFrames[nFrame];
+		if (stFrame.stHistogram.Get() == nullptr)
+		{
+			D3D12_RESOURCE_DESC stDescription = BufferDescription(258 * sizeof(std::uint32_t));
+			stDescription.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+			if (FAILED(stDevice->CreateCommittedResource(&stHeap, D3D12_HEAP_FLAG_NONE, &stDescription, D3D12_RESOURCE_STATE_COMMON,
+														 nullptr, IID_PPV_ARGS(stFrame.stHistogram.Put()))))
+			{
+				return Fail("Create exposure histogram");
+			}
+			const std::wstring strName = L"EngineNext.Histogram." + std::to_wstring(nFrame);
+			(void)stFrame.stHistogram->SetName(strName.c_str());
+		}
+		if (stFrame.stPostReadback.Get() == nullptr)
+		{
+			const D3D12_HEAP_PROPERTIES stReadbackHeap = HeapProperties(D3D12_HEAP_TYPE_READBACK);
+			const D3D12_RESOURCE_DESC stReadbackDescription = BufferDescription(16 + 258 * sizeof(std::uint32_t));
+			if (FAILED(stDevice->CreateCommittedResource(&stReadbackHeap, D3D12_HEAP_FLAG_NONE, &stReadbackDescription,
+														 D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(stFrame.stPostReadback.Put()))))
+			{
+				return Fail("Create post-process diagnostic readback");
+			}
+			const std::wstring strName = L"EngineNext.PostProcessReadback." + std::to_wstring(nFrame);
+			(void)stFrame.stPostReadback->SetName(strName.c_str());
+		}
+
+		D3D12_SHADER_RESOURCE_VIEW_DESC stSrv{};
+		stSrv.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+		stSrv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		stSrv.Buffer.NumElements = 258;
+		stSrv.Buffer.StructureByteStride = sizeof(std::uint32_t);
+		stDevice->CreateShaderResourceView(stFrame.stHistogram.Get(), &stSrv, View(nFrame * FRAME_VIEW_COUNT + 28));
+		D3D12_UNORDERED_ACCESS_VIEW_DESC stUav{};
+		stUav.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+		stUav.Buffer.NumElements = 258;
+		stUav.Buffer.StructureByteStride = sizeof(std::uint32_t);
+		stDevice->CreateUnorderedAccessView(stFrame.stHistogram.Get(), nullptr, &stUav, View(nFrame * FRAME_VIEW_COUNT + 29));
+		D3D12_CPU_DESCRIPTOR_HANDLE stCpu = stPostCpuHeap->GetCPUDescriptorHandleForHeapStart();
+		stCpu.ptr += static_cast<SIZE_T>(2 + nFrame) * nViewStride;
+		stUav.Format = DXGI_FORMAT_R32_UINT;
+		stUav.Buffer.StructureByteStride = 0;
+		stDevice->CreateUnorderedAccessView(stFrame.stHistogram.Get(), nullptr, &stUav, View(nFrame * FRAME_VIEW_COUNT + 97));
+		stDevice->CreateUnorderedAccessView(stFrame.stHistogram.Get(), nullptr, &stUav, stCpu);
+		std::uint32_t nMipWidth = nWidth;
+		std::uint32_t nMipHeight = nHeight;
+		for (std::uint32_t nMip = 0; nMip < stFrame.arrBloomDown.size(); ++nMip)
+		{
+			nMipWidth = (std::max)(1U, (nMipWidth + 1) / 2);
+			nMipHeight = (std::max)(1U, (nMipHeight + 1) / 2);
+			for (std::uint32_t nKind = 0; nKind < 2; ++nKind)
+			{
+				ComOwner<ID3D12Resource> &stTarget = nKind == 0 ? stFrame.arrBloomDown[nMip] : stFrame.arrBloomUp[nMip];
+				const bool bUsed = nKind == 0 ? nMip < stRenderPipeline.arrBloomDown.size() : nMip < stRenderPipeline.arrBloomUp.size();
+				if (!bUsed)
+				{
+					stTarget.Reset();
+					continue;
+				}
+				if (stTarget.Get() != nullptr)
+				{
+					const D3D12_RESOURCE_DESC stCurrent = stTarget->GetDesc();
+					if (stCurrent.Width == nMipWidth && stCurrent.Height == nMipHeight)
+					{
+						continue;
+					}
+				}
+				D3D12_RESOURCE_DESC stDescription{};
+				stDescription.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+				stDescription.Width = nMipWidth;
+				stDescription.Height = nMipHeight;
+				stDescription.DepthOrArraySize = 1;
+				stDescription.MipLevels = 1;
+				stDescription.Format = HDR_FORMAT;
+				stDescription.SampleDesc.Count = 1;
+				stDescription.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+				if (FAILED(stDevice->CreateCommittedResource(&stHeap, D3D12_HEAP_FLAG_NONE, &stDescription, D3D12_RESOURCE_STATE_COMMON,
+															 nullptr, IID_PPV_ARGS(stTarget.Put()))))
+				{
+					return Fail("Create Bloom mip target");
+				}
+				const std::wstring strName = L"EngineNext.Bloom." + std::to_wstring(nFrame) + L"." +
+						std::to_wstring(nKind) + L"." + std::to_wstring(nMip);
+				(void)stTarget->SetName(strName.c_str());
+			}
+		}
+	}
+	return true;
+}
+
+bool VisualRuntime::PreparePostProcess(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame)
+{
+	if (nFrame >= FRAME_COUNT || nExposureRead >= arrExposure.size() || pList == nullptr || stPostCpuHeap.Get() == nullptr)
+	{
+		return Fail("Invalid post-process frame preparation");
+	}
+	const std::uint32_t nStart = nFrame * FRAME_VIEW_COUNT;
+	D3D12_SHADER_RESOURCE_VIEW_DESC stTextureSrv{};
+	stTextureSrv.Format = HDR_FORMAT;
+	stTextureSrv.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	stTextureSrv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	stTextureSrv.Texture2D.MipLevels = 1;
+	D3D12_UNORDERED_ACCESS_VIEW_DESC stTextureUav{};
+	stTextureUav.Format = HDR_FORMAT;
+	stTextureUav.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+	FrameContext &stFrame = arrFrames[nFrame];
+	for (std::uint32_t nMip = 0; nMip < stRenderPipeline.arrBloomDown.size(); ++nMip)
+	{
+		stDevice->CreateShaderResourceView(stFrame.arrBloomDown[nMip].Get(), &stTextureSrv, View(nStart + 48 + 2 * nMip));
+		stDevice->CreateUnorderedAccessView(stFrame.arrBloomDown[nMip].Get(), nullptr, &stTextureUav, View(nStart + 49 + 2 * nMip));
+	}
+	for (std::uint32_t nMip = 0; nMip < stRenderPipeline.arrBloomUp.size(); ++nMip)
+	{
+		stDevice->CreateShaderResourceView(stFrame.arrBloomUp[nMip].Get(), &stTextureSrv, View(nStart + 60 + 2 * nMip));
+		stDevice->CreateUnorderedAccessView(stFrame.arrBloomUp[nMip].Get(), nullptr, &stTextureUav, View(nStart + 61 + 2 * nMip));
+	}
+	ID3D12Resource *pBloom = stRenderConfiguration.stTemporal.bEnabled ? arrHistory[1 - nHistoryRead][0].Get() : stFrame.stHdr.Get();
+	if (!stRenderPipeline.arrBloomDown.empty())
+	{
+		pBloom = stRenderPipeline.arrBloomUp.empty() ? stFrame.arrBloomDown[0].Get() : stFrame.arrBloomUp[0].Get();
+	}
+	stDevice->CreateShaderResourceView(pBloom, &stTextureSrv, View(nStart + 96));
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC stSrv{};
+	stSrv.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	stSrv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	stSrv.Buffer.NumElements = 1;
+	stSrv.Buffer.StructureByteStride = 16;
+	stDevice->CreateShaderResourceView(arrExposure[nExposureRead].Get(), &stSrv, View(nStart + 26));
+	stDevice->CreateShaderResourceView(arrExposure[1 - nExposureRead].Get(), &stSrv, View(nStart + 27));
+	D3D12_UNORDERED_ACCESS_VIEW_DESC stClear{};
+	stClear.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	stClear.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+	stClear.Buffer.NumElements = 1;
+	stDevice->CreateUnorderedAccessView(arrExposure[nExposureRead].Get(), nullptr, &stClear, View(nStart + 30));
+	D3D12_UNORDERED_ACCESS_VIEW_DESC stWrite{};
+	stWrite.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+	stWrite.Buffer.NumElements = 1;
+	stWrite.Buffer.StructureByteStride = 16;
+	stDevice->CreateUnorderedAccessView(arrExposure[1 - nExposureRead].Get(), nullptr, &stWrite, View(nStart + 31));
+	if (!bExposureReady)
+	{
+		double dSeed = 1;
+		if (stRenderConfiguration.stExposure.eMode != ExposureMode::Automatic)
+		{
+			Assets::Diagnostics arrDiagnostics;
+			if (!ComputeExposureMultiplier(stRenderConfiguration.stExposure, stRenderConfiguration.dExposure, 0, dSeed, arrDiagnostics))
+			{
+				return Fail(arrDiagnostics.empty() ? "Compute exposure seed" : arrDiagnostics.back().strMessage);
+			}
+		}
+		const float fSeed = static_cast<float>(dSeed);
+		const std::array<float, 4> arrSeed{ fSeed, fSeed, 0, 0 };
+		D3D12_CPU_DESCRIPTOR_HANDLE stCpu = stPostCpuHeap->GetCPUDescriptorHandleForHeapStart();
+		stCpu.ptr += static_cast<SIZE_T>(nExposureRead) * nViewStride;
+		pList->ClearUnorderedAccessViewFloat(GpuView(nStart + 30), stCpu, arrExposure[nExposureRead].Get(), arrSeed.data(), 0, nullptr);
+	}
+	D3D12_CPU_DESCRIPTOR_HANDLE stCpu = stPostCpuHeap->GetCPUDescriptorHandleForHeapStart();
+	stCpu.ptr += static_cast<SIZE_T>(2 + nFrame) * nViewStride;
+	const std::array<UINT, 4> arrZero{};
+	pList->ClearUnorderedAccessViewUint(GpuView(nStart + 97), stCpu, arrFrames[nFrame].stHistogram.Get(), arrZero.data(), 0, nullptr);
+	return true;
+}
+
 bool VisualRuntime::CreateTemporalPipeline()
 {
 	const std::vector<std::uint8_t> arrShader = ReadShader(stConfig.strShaderDirectory, "Temporal.cs.cso");
@@ -2068,7 +2424,7 @@ bool VisualRuntime::CreateTemporalPipeline()
 	}
 	std::array<D3D12_DESCRIPTOR_RANGE, 2> arrTemporalRanges{};
 	arrTemporalRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	arrTemporalRanges[0].NumDescriptors = 9;
+	arrTemporalRanges[0].NumDescriptors = 10;
 	arrTemporalRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
 	arrTemporalRanges[1].NumDescriptors = 4;
 	std::array<D3D12_ROOT_PARAMETER, 3> arrParameters{};
@@ -2111,19 +2467,25 @@ void VisualRuntime::ResolveTemporal(ID3D12GraphicsCommandList *pList, std::uint3
 	for (std::uint32_t nIndex = 0; nIndex < arrCurrent.size(); ++nIndex)
 	{
 		stSrv.Format = arrCurrentFormats[nIndex];
-		stDevice->CreateShaderResourceView(arrCurrent[nIndex], &stSrv, View(nStart + 12 + nIndex));
+		stDevice->CreateShaderResourceView(arrCurrent[nIndex], &stSrv, View(nStart + 32 + nIndex));
 	}
 	for (std::uint32_t nTarget = 0; nTarget < 4; ++nTarget)
 	{
 		stSrv.Format = arrHistoryFormats[nTarget];
-		stDevice->CreateShaderResourceView(arrHistory[nHistoryRead][nTarget].Get(), &stSrv, View(nStart + 17 + nTarget));
+		stDevice->CreateShaderResourceView(arrHistory[nHistoryRead][nTarget].Get(), &stSrv, View(nStart + 37 + nTarget));
 		D3D12_UNORDERED_ACCESS_VIEW_DESC stUav{};
 		stUav.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
 		stUav.Format = arrHistoryFormats[nTarget];
-		stDevice->CreateUnorderedAccessView(arrHistory[1 - nHistoryRead][nTarget].Get(), nullptr, &stUav, View(nStart + 21 + nTarget));
+		stDevice->CreateUnorderedAccessView(arrHistory[1 - nHistoryRead][nTarget].Get(), nullptr, &stUav, View(nStart + 42 + nTarget));
 	}
 	stSrv.Format = HDR_FORMAT;
-	stDevice->CreateShaderResourceView(arrHistory[1 - nHistoryRead][0].Get(), &stSrv, View(nStart + 25));
+	stDevice->CreateShaderResourceView(arrHistory[1 - nHistoryRead][0].Get(), &stSrv, View(nStart + 46));
+	D3D12_SHADER_RESOURCE_VIEW_DESC stExposureSrv{};
+	stExposureSrv.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	stExposureSrv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	stExposureSrv.Buffer.NumElements = 1;
+	stExposureSrv.Buffer.StructureByteStride = 16;
+	stDevice->CreateShaderResourceView(arrExposure[nExposureRead].Get(), &stExposureSrv, View(nStart + 41));
 	if (!bHistoryReady)
 	{
 		// Every resource is initialized before the first possible history read.
@@ -2161,8 +2523,8 @@ void VisualRuntime::ResolveTemporal(ID3D12GraphicsCommandList *pList, std::uint3
 	pList->SetPipelineState(stTemporalPipeline.Get());
 	pList->SetComputeRootSignature(stTemporalRoot.Get());
 	pList->SetComputeRoot32BitConstants(0, 16, arrConstants.data(), 0);
-	pList->SetComputeRootDescriptorTable(1, GpuView(nStart + 12));
-	pList->SetComputeRootDescriptorTable(2, GpuView(nStart + 21));
+	pList->SetComputeRootDescriptorTable(1, GpuView(nStart + 32));
+	pList->SetComputeRootDescriptorTable(2, GpuView(nStart + 42));
 	pList->Dispatch((nWidth + 7) / 8, (nHeight + 7) / 8, 1);
 }
 
@@ -2346,7 +2708,7 @@ bool VisualRuntime::UpdateConstantBuffer(FrameContext &stFrame)
 		stConstants.arrCamera[nIndex] = static_cast<float>(stCamera.arrPosition[nIndex]);
 	}
 	stConstants.arrCamera[3] = 1;
-	stConstants.arrLighting = { static_cast<float>(stRenderConfiguration.dExposure), static_cast<float>(nEnvironmentMips - 1), static_cast<float>(SHADOW_CASCADE_BLEND_FRACTION), 0 };
+	stConstants.arrLighting = { static_cast<float>(stRenderConfiguration.dExposure), static_cast<float>(nEnvironmentMips - 1), static_cast<float>(SHADOW_CASCADE_BLEND_FRACTION), stRenderConfiguration.stBloom.bEnabled ? static_cast<float>(stRenderConfiguration.stBloom.dIntensity) : 0.0F };
 	stShadowData = ShadowData{};
 	if (stRenderConfiguration.stShadows.bEnabled)
 	{
@@ -2363,7 +2725,7 @@ bool VisualRuntime::UpdateConstantBuffer(FrameContext &stFrame)
 			}
 			arrCasterBounds.push_back(stBounds);
 		}
-		if (!BuildDirectionalShadows(stCamera, nWidth, nHeight, stRenderConfiguration.stDirectionalLight, stRenderConfiguration.stShadows, arrCasterBounds, stShadowData, arrDiagnostics))
+		if (!BuildDirectionalShadows(stCamera, nWidth, nHeight, stFrameLight, stRenderConfiguration.stShadows, arrCasterBounds, stShadowData, arrDiagnostics))
 		{
 			return Fail(arrDiagnostics.empty() ? "Build shadow cascades" : arrDiagnostics.back().strMessage);
 		}
@@ -2376,7 +2738,7 @@ bool VisualRuntime::UpdateConstantBuffer(FrameContext &stFrame)
 			stConstants.arrShadowViewProjection[nCascade][nIndex] = static_cast<float>(stShadowData.arrCascades[nCascade].arrViewProjection[nIndex]);
 		}
 	}
-	const DirectionalLightSettings &stLight = stRenderConfiguration.stDirectionalLight;
+	const DirectionalLightSettings &stLight = stFrameLight;
 	const double dMaximum = (std::max)({ std::abs(stLight.arrDirection[0]), std::abs(stLight.arrDirection[1]), std::abs(stLight.arrDirection[2]) });
 	const std::array<double, 3> arrDirection{ stLight.arrDirection[0] / dMaximum, stLight.arrDirection[1] / dMaximum, stLight.arrDirection[2] / dMaximum };
 	const double dLength = std::sqrt(arrDirection[0] * arrDirection[0] + arrDirection[1] * arrDirection[1] + arrDirection[2] * arrDirection[2]);
@@ -2568,6 +2930,7 @@ void VisualRuntime::DrawScene(ID3D12GraphicsCommandList *pList, std::uint32_t nF
 	pList->SetGraphicsRootSignature(stDeferredRoot.Get());
 	const UINT nSamplerStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 	pList->SetGraphicsRootConstantBufferView(3, arrFrames[nFrame].stConstants->GetGPUVirtualAddress());
+	pList->SetGraphicsRootDescriptorTable(4, GpuView(nFrame * FRAME_VIEW_COUNT + 26));
 	for (std::size_t nDraw = 0; nDraw < arrDraws.size(); ++nDraw)
 	{
 		const GpuDraw &stDraw = arrDraws[nDraw];
@@ -2598,7 +2961,71 @@ void VisualRuntime::DrawLighting(ID3D12GraphicsCommandList *pList, std::uint32_t
 	pList->SetGraphicsRootDescriptorTable(2, GpuView(nFrame * FRAME_VIEW_COUNT));
 	pList->SetGraphicsRootDescriptorTable(3, GpuView(ENVIRONMENT_VIEW_START));
 	pList->SetGraphicsRootDescriptorTable(4, GpuView(nFrame * FRAME_VIEW_COUNT + 8));
+	pList->SetGraphicsRootDescriptorTable(5, GpuView(nFrame * FRAME_VIEW_COUNT + 26));
 	pList->DrawInstanced(3, 1, 0, 0);
+}
+
+void VisualRuntime::DrawPostProcess(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame,
+									PassWork eWork, std::uint32_t nMip, double dSeconds)
+{
+	const std::uint32_t nStart = nFrame * FRAME_VIEW_COUNT;
+	if (eWork == PassWork::HistogramBuild || eWork == PassWork::ExposureAdapt)
+	{
+		const ExposureSettings &stExposure = stRenderConfiguration.stExposure;
+		const double dElapsed = bExposureReady && std::isfinite(dSeconds) && std::isfinite(dLastPostSeconds) ? (std::max)(0.0, dSeconds - dLastPostSeconds) : 0;
+		const float fDelta = static_cast<float>((std::min)(dElapsed, EXPOSURE_MAX_DELTA_SECONDS));
+		const std::array<float, 16> arrConstants{
+			static_cast<float>(nWidth), static_cast<float>(nHeight), 1.0F / nWidth, 1.0F / nHeight,
+			fDelta, static_cast<float>(stExposure.dLightHalfLife), static_cast<float>(stExposure.dDarkHalfLife), bExposureReady ? 0.0F : 1.0F,
+			static_cast<float>(stExposure.dLowPercentile), static_cast<float>(stExposure.dHighPercentile),
+			static_cast<float>(stExposure.dMinimumEv100), static_cast<float>(stExposure.dMaximumEv100),
+			static_cast<float>(stExposure.eMode), static_cast<float>(dManualExposure), static_cast<float>(stExposure.dCompensationEv), 1
+		};
+		const bool bHistogram = eWork == PassWork::HistogramBuild;
+		const std::uint32_t nSource = bHistogram ? (stRenderConfiguration.stTemporal.bEnabled ? 46U : 7U) : 28U;
+		pList->SetPipelineState(bHistogram ? stHistogramPipeline.Get() : stExposurePipeline.Get());
+		pList->SetComputeRootSignature(stExposureRoot.Get());
+		pList->SetComputeRoot32BitConstants(0, 16, arrConstants.data(), 0);
+		pList->SetComputeRootDescriptorTable(1, GpuView(nStart + nSource));
+		pList->SetComputeRootDescriptorTable(2, GpuView(nStart + 26));
+		pList->SetComputeRootDescriptorTable(3, GpuView(nStart + (bHistogram ? 29U : 31U)));
+		pList->Dispatch(bHistogram ? (nWidth + 15) / 16 : 1U, bHistogram ? (nHeight + 15) / 16 : 1U, 1);
+		return;
+	}
+	const bool bDownsample = eWork == PassWork::BloomDownsample;
+	FrameContext &stFrame = arrFrames[nFrame];
+	ID3D12Resource *pDestination = bDownsample ? stFrame.arrBloomDown[nMip].Get() : stFrame.arrBloomUp[nMip].Get();
+	ID3D12Resource *pSource = bDownsample ? (nMip == 0 ? (stRenderConfiguration.stTemporal.bEnabled ? arrHistory[1 - nHistoryRead][0].Get() : stFrame.stHdr.Get()) : stFrame.arrBloomDown[nMip - 1].Get()) : stFrame.arrBloomDown[nMip].Get();
+	const D3D12_RESOURCE_DESC stDestination = pDestination->GetDesc();
+	const D3D12_RESOURCE_DESC stSource = pSource->GetDesc();
+	const float fDestinationWidth = static_cast<float>(stDestination.Width);
+	const float fDestinationHeight = static_cast<float>(stDestination.Height);
+	const float fSourceWidth = static_cast<float>(stSource.Width);
+	const float fSourceHeight = static_cast<float>(stSource.Height);
+	const BloomSettings &stBloom = stRenderConfiguration.stBloom;
+	const std::array<float, 16> arrConstants{
+		fDestinationWidth, fDestinationHeight, 1.0F / fDestinationWidth, 1.0F / fDestinationHeight,
+		fSourceWidth, fSourceHeight, 1.0F / fSourceWidth, 1.0F / fSourceHeight,
+		static_cast<float>(stBloom.dIntensity), static_cast<float>(stBloom.dThreshold), static_cast<float>(stBloom.dSoftKnee), 0.5F,
+		bDownsample && nMip == 0 ? 1.0F : 0.0F, 0, 0, 0
+	};
+	const std::uint32_t nSourceView = bDownsample ? (nMip == 0 ? (stRenderConfiguration.stTemporal.bEnabled ? 46U : 7U) : 48U + 2 * (nMip - 1)) : 48U + 2 * nMip;
+	std::uint32_t nLowerView = nSourceView;
+	if (!bDownsample)
+	{
+		const std::uint32_t nLowerMip = nMip + 1;
+		nLowerView = nLowerMip + 1 == stRenderPipeline.arrBloomDown.size() ? 48U + 2 * nLowerMip : 60U + 2 * nLowerMip;
+	}
+	const std::uint32_t nDestinationView = (bDownsample ? 49U : 61U) + 2 * nMip;
+	pList->SetPipelineState(bDownsample ? stBloomDownPipeline.Get() : stBloomUpPipeline.Get());
+	pList->SetComputeRootSignature(stBloomRoot.Get());
+	pList->SetComputeRoot32BitConstants(0, 16, arrConstants.data(), 0);
+	pList->SetComputeRootDescriptorTable(1, GpuView(nStart + nSourceView));
+	pList->SetComputeRootDescriptorTable(2, GpuView(nStart + nLowerView));
+	pList->SetComputeRootDescriptorTable(3, GpuView(nStart + 26));
+	pList->SetComputeRootDescriptorTable(4, GpuView(nStart + 27));
+	pList->SetComputeRootDescriptorTable(5, GpuView(nStart + nDestinationView));
+	pList->Dispatch((static_cast<std::uint32_t>(stDestination.Width) + 7) / 8, (stDestination.Height + 7) / 8, 1);
 }
 
 void VisualRuntime::DrawToneMap(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame)
@@ -2606,9 +3033,12 @@ void VisualRuntime::DrawToneMap(ID3D12GraphicsCommandList *pList, std::uint32_t 
 	const D3D12_CPU_DESCRIPTOR_HANDLE stColor = Rtv(nFrame + FRAME_COUNT);
 	pList->OMSetRenderTargets(1, &stColor, FALSE, nullptr);
 	pList->SetPipelineState(stToneMapPipeline.Get());
-	pList->SetGraphicsRootSignature(stLightingRoot.Get());
+	pList->SetGraphicsRootSignature(stToneMapRoot.Get());
 	pList->SetGraphicsRootConstantBufferView(0, arrFrames[nFrame].stConstants->GetGPUVirtualAddress());
-	pList->SetGraphicsRootDescriptorTable(1, GpuView(nFrame * FRAME_VIEW_COUNT + (stRenderConfiguration.stTemporal.bEnabled ? 25 : 7)));
+	pList->SetGraphicsRootDescriptorTable(1, GpuView(nFrame * FRAME_VIEW_COUNT + (stRenderConfiguration.stTemporal.bEnabled ? 46 : 7)));
+	pList->SetGraphicsRootDescriptorTable(2, GpuView(nFrame * FRAME_VIEW_COUNT + 96));
+	pList->SetGraphicsRootDescriptorTable(3, GpuView(nFrame * FRAME_VIEW_COUNT + 26));
+	pList->SetGraphicsRootDescriptorTable(4, GpuView(nFrame * FRAME_VIEW_COUNT + 27));
 	pList->DrawInstanced(3, 1, 0, 0);
 }
 
@@ -2625,7 +3055,7 @@ std::uint32_t VisualRuntime::TotalQueryCount() const noexcept
 bool VisualRuntime::BuildGraph()
 {
 	GraphDiagnostic stDiagnostic;
-	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size()), stRenderConfiguration.stTemporal.bEnabled))
+	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size()), stRenderConfiguration.stTemporal.bEnabled, true, stRenderConfiguration.stBloom.bEnabled ? stRenderConfiguration.stBloom.nMipCount : 0))
 	{
 		return Fail("FrameGraph compilation failed: " + stDiagnostic.strMessage);
 	}
@@ -2673,6 +3103,64 @@ void VisualRuntime::ApplyBarriers(ID3D12GraphicsCommandList *pList, const std::v
 	}
 }
 
+void VisualRuntime::RecordPostProcessReadback(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame)
+{
+	FrameContext &stFrame = arrFrames[nFrame];
+	const std::array<ID3D12Resource *, 2> arrSources{ arrExposure[1 - nExposureRead].Get(), stFrame.stHistogram.Get() };
+	pList->CopyBufferRegion(stFrame.stPostReadback.Get(), 0, arrSources[0], 0, 16);
+	pList->CopyBufferRegion(stFrame.stPostReadback.Get(), 16, arrSources[1], 0, 258 * sizeof(std::uint32_t));
+}
+
+bool VisualRuntime::CollectPostProcess(FrameContext &stFrame, FrameTiming &stTiming)
+{
+	if (stFrame.stPostReadback.Get() == nullptr)
+	{
+		return Fail("Missing post-process diagnostic readback");
+	}
+	const D3D12_RANGE stReadRange{ 0, 16 + 258 * sizeof(std::uint32_t) };
+	void *pMapped = nullptr;
+	if (FAILED(stFrame.stPostReadback->Map(0, &stReadRange, &pMapped)))
+	{
+		return Fail("Map retired post-process diagnostics");
+	}
+	std::array<float, 4> arrExposureValues{};
+	std::array<std::uint32_t, 258> arrHistogram{};
+	const std::uint8_t *pBytes = static_cast<const std::uint8_t *>(pMapped);
+	std::memcpy(arrExposureValues.data(), pBytes, sizeof(arrExposureValues));
+	std::memcpy(arrHistogram.data(), pBytes + sizeof(arrExposureValues), sizeof(arrHistogram));
+	const D3D12_RANGE stNoWrite{ 0, 0 };
+	stFrame.stPostReadback->Unmap(0, &stNoWrite);
+	for (float fValue : arrExposureValues)
+	{
+		if (!std::isfinite(fValue))
+		{
+			return Fail("Nonfinite GPU exposure diagnostic");
+		}
+	}
+	if (arrExposureValues[0] < std::numeric_limits<float>::min() || arrExposureValues[1] < std::numeric_limits<float>::min() ||
+		arrExposureValues[3] < 0)
+	{
+		return Fail("GPU exposure diagnostic outside supported range");
+	}
+	std::uint64_t nBinnedPixels = 0;
+	for (std::size_t nBin = 0; nBin < EXPOSURE_HISTOGRAM_BINS; ++nBin)
+	{
+		nBinnedPixels += arrHistogram[nBin];
+	}
+	const std::uint64_t nFinite = arrHistogram[EXPOSURE_HISTOGRAM_BINS + 1];
+	const std::uint64_t nInvalid = arrHistogram[EXPOSURE_HISTOGRAM_BINS];
+	const std::uint64_t nExpectedPixels = static_cast<std::uint64_t>(stTiming.nWidth) * stTiming.nHeight;
+	if (nBinnedPixels != nFinite || nFinite + nInvalid != nExpectedPixels)
+	{
+		return Fail("GPU histogram counters do not match the submitted viewport");
+	}
+	stTiming.arrExposure = arrExposureValues;
+	stTiming.nMeterFinite = static_cast<std::uint32_t>(nFinite);
+	stTiming.nMeterInvalid = static_cast<std::uint32_t>(nInvalid);
+	stTiming.bPostReady = true;
+	return true;
+}
+
 bool VisualRuntime::CollectTiming(FrameContext &stFrame)
 {
 	if (!stFrame.bTimingPending)
@@ -2706,6 +3194,10 @@ bool VisualRuntime::CollectTiming(FrameContext &stFrame)
 		}
 		const std::uint64_t nFrequency = stCompiled.arrPasses[nPassIndex].eQueue == QueueType::Compute ? stCompute.nFrequency : stGraphics.nFrequency;
 		stTiming.arrPassMsec[nPassIndex] = 1000.0 * static_cast<double>(arrTimes[nTimeIndex + 1] - arrTimes[nTimeIndex]) / static_cast<double>(nFrequency);
+	}
+	if (bSceneMode && !CollectPostProcess(stFrame, stTiming))
+	{
+		return false;
 	}
 	stTiming.bGpuReady = true;
 	stFrame.bTimingPending = false;
@@ -2748,6 +3240,18 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		arrResources[stRenderPipeline.nLocalShadow] = stFrame.stLocalShadow.Get();
 		arrResources[stRenderPipeline.nMotion] = stFrame.stMotion.Get();
 		arrResources[stRenderPipeline.nObjectId] = stFrame.stObjectId.Get();
+		arrResources[stRenderPipeline.nHistogram] = stFrame.stHistogram.Get();
+		arrResources[stRenderPipeline.nPostReadback] = stFrame.stPostReadback.Get();
+		arrResources[stRenderPipeline.nExposureRead] = arrExposure[nExposureRead].Get();
+		arrResources[stRenderPipeline.nExposureWrite] = arrExposure[1 - nExposureRead].Get();
+		for (std::size_t nMip = 0; nMip < stRenderPipeline.arrBloomDown.size(); ++nMip)
+		{
+			arrResources[stRenderPipeline.arrBloomDown[nMip]] = stFrame.arrBloomDown[nMip].Get();
+		}
+		for (std::size_t nMip = 0; nMip < stRenderPipeline.arrBloomUp.size(); ++nMip)
+		{
+			arrResources[stRenderPipeline.arrBloomUp[nMip]] = stFrame.arrBloomUp[nMip].Get();
+		}
 		if (stRenderConfiguration.stTemporal.bEnabled)
 		{
 			for (std::size_t nTarget = 0; nTarget < 4; ++nTarget)
@@ -2760,6 +3264,15 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		{
 			arrResources[stRenderPipeline.arrGbuffer[nTarget]] = stFrame.arrGbuffer[nTarget].Get();
 		}
+		stFrameLight = stRenderConfiguration.stDirectionalLight;
+		Assets::Diagnostics arrLightDiagnostics;
+		if (!EvaluateLightAnimation(stRenderConfiguration.stLightAnimation, stRenderConfiguration.stDirectionalLight.dIlluminance,
+									dSeconds, stFrameLight.dIlluminance, arrLightDiagnostics))
+		{
+			return Fail(arrLightDiagnostics.empty() ? "Evaluate light animation" : arrLightDiagnostics.back().strMessage);
+		}
+		stTiming.dLightingSeconds = dSeconds;
+		stTiming.dDirectionalIlluminance = stFrameLight.dIlluminance;
 		if (!UpdateConstantBuffer(stFrame))
 		{
 			return false;
@@ -2821,7 +3334,22 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		pList->EndQuery(stGraphicsQueries.Get(), D3D12_QUERY_TYPE_TIMESTAMP, nQueryIndex);
 		PIXBeginEvent(pList, PIX_COLOR_DEFAULT, stPass.strName.c_str());
 		ApplyBarriers(pList, stPass.arrBeforeBarriers, arrResources);
-		if (eWork == PassWork::DirectionalShadow)
+		if (eWork == PassWork::PrepareExposure)
+		{
+			if (!PreparePostProcess(pList, nIndex))
+			{
+				return false;
+			}
+		}
+		else if (eWork == PassWork::PostProcessReadback)
+		{
+			RecordPostProcessReadback(pList, nIndex);
+		}
+		else if (eWork == PassWork::HistogramBuild || eWork == PassWork::ExposureAdapt || eWork == PassWork::BloomDownsample || eWork == PassWork::BloomUpsample)
+		{
+			DrawPostProcess(pList, nIndex, eWork, stRenderPipeline.arrPassMipIndex[stPass.nPass], dSeconds);
+		}
+		else if (eWork == PassWork::DirectionalShadow)
 		{
 			DrawShadows(pList, nIndex, false);
 		}
@@ -2915,6 +3443,9 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 			nHistoryRead = 1 - nHistoryRead;
 			bHistoryReady = true;
 		}
+		nExposureRead = 1 - nExposureRead;
+		bExposureReady = true;
+		dLastPostSeconds = dSeconds;
 	}
 	stFrame.bTimingPending = true;
 	stFrame.nTimingFrame = nFrames;
@@ -3403,8 +3934,17 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	{
 		mapReport["shadow_split_distances"].GetList()->emplace_back(stCascade.dSplitFar);
 	}
-	mapReport["tone_mapping"] = JsonValue(bSceneMode ? "exponential_manual_exposure" : "none");
+	mapReport["tone_mapping"] = JsonValue(bSceneMode ? "exponential_preexposed_hdr" : "none");
 	mapReport["exposure"] = JsonValue(stRenderConfiguration.dExposure);
+	const ExposureSettings &stExposure = stRenderConfiguration.stExposure;
+	mapReport["exposure_mode"] = JsonValue(stExposure.eMode == ExposureMode::Automatic ? "automatic" : stExposure.eMode == ExposureMode::Manual ? "manual"
+																																				: "legacy");
+	mapReport["manual_ev100"] = JsonValue(stExposure.dManualEv100);
+	mapReport["exposure_compensation_ev"] = JsonValue(stExposure.dCompensationEv);
+	mapReport["exposure_histogram_bins"] = JsonValue(static_cast<std::int64_t>(EXPOSURE_HISTOGRAM_BINS));
+	mapReport["bloom_enabled"] = JsonValue(stRenderConfiguration.stBloom.bEnabled);
+	mapReport["bloom_mip_count"] = JsonValue(static_cast<std::int64_t>(stRenderPipeline.arrBloomDown.size()));
+	mapReport["bloom_intensity"] = JsonValue(stRenderConfiguration.stBloom.dIntensity);
 	mapReport["render_configuration"] = JsonValue(stConfig.strRenderConfigPath);
 	mapReport["camera_view_projection"] = JsonValue::List{};
 	mapReport["camera_inverse_view_projection"] = JsonValue::List{};
@@ -3512,6 +4052,25 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 		mapTiming["temporal_write_index"] = JsonValue(static_cast<std::int64_t>(1 - stTiming.nTemporalRead));
 		mapTiming["temporal_history_valid"] = JsonValue(stTiming.bTemporalHistoryValid);
 		mapTiming["temporal_jitter"] = JsonValue::List{ stTiming.arrTemporalJitter[0], stTiming.arrTemporalJitter[1] };
+		mapTiming["postprocess_ready"] = JsonValue(stTiming.bPostReady);
+		mapTiming["lighting_seconds"] = JsonValue(stTiming.dLightingSeconds);
+		mapTiming["directional_illuminance"] = JsonValue(stTiming.dDirectionalIlluminance);
+		if (stTiming.bPostReady)
+		{
+			JsonValue::List arrExposureRecord;
+			for (float fValue : stTiming.arrExposure)
+			{
+				arrExposureRecord.emplace_back(static_cast<double>(fValue));
+			}
+			mapTiming["exposure_record"] = JsonValue(std::move(arrExposureRecord));
+			mapTiming["display_exposure"] = JsonValue(static_cast<double>(stTiming.arrExposure[0]));
+			mapTiming["frame_pre_exposure"] = JsonValue(static_cast<double>(stTiming.arrExposure[1]));
+			mapTiming["target_ev100"] = JsonValue(static_cast<double>(stTiming.arrExposure[2]));
+			mapTiming["metered_luminance"] = JsonValue(static_cast<double>(stTiming.arrExposure[3]));
+			mapTiming["meter_finite_pixels"] = JsonValue(static_cast<std::int64_t>(stTiming.nMeterFinite));
+			mapTiming["meter_invalid_pixels"] = JsonValue(static_cast<std::int64_t>(stTiming.nMeterInvalid));
+		}
+
 		mapTiming["graphics_msec"] = stTiming.bGpuReady ? JsonValue(stTiming.dGraphicsMsec) : JsonValue();
 		mapTiming["compute_msec"] = stTiming.bGpuReady ? JsonValue(stTiming.dComputeMsec) : JsonValue();
 		JsonValue::List arrPassTimes;

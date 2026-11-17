@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-17T02:23:30.942683+00:00",
+  "scope": "Read-only verification of evidence identity, native placement measurements and final GPU execution records. This reviewer authored Bloom sampling and GPU capture tools, so those areas are excluded from independent source review. Graph additions authored by another worker were independently reviewed and tested in the separate pipeline review.",
+  "audits": [
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-build-impact.json",
+      "sha256": "7e852faa9269a7271221b23adc6fc666c702ac6d3878218a57f376f29de1b004",
+      "references_checked": 112,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-final-gpu.json",
+      "sha256": "98bf17cee2bf31ca366d8ee6eded92f1743cdb887db3a4406f348a2f3c1f6cec",
+      "references_checked": 28,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-calibration.json",
+      "sha256": "3fa33f1c1b5b3b072300ef5c3c60695719add441dcce79a324f2bc4db6cf55a6",
+      "references_checked": 28,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-dynamic.json",
+      "sha256": "20d0256458b8ad3443d33fec94973b8361c6a19704ee37bf04e2e1bca3130fce",
+      "references_checked": 31,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-network.json",
+      "sha256": "75d94e228ec07830d15c7472bd881fcb902a62406c3e8ce0d135872639a02023",
+      "references_checked": 16,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-verification.json",
+      "sha256": "a6d3c53f18b2c155a0a60ba24afbee4ed8f334dbe223fdb6019f1138200d2a4e",
+      "references_checked": 22,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-final-source-review.json",
+      "sha256": "89a666357e94c387b6b0eb3e749370f72bd8d0bb287a9eddb17c7bd34f6a24db",
+      "references_checked": 37,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-numerical-review.json",
+      "sha256": "9b90adf61d9d095418367ddcc8146c8049cdac17d2f685eca339366964f63919",
+      "references_checked": 6,
+      "errors": []
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-dynamic-numerical-review.json",
+      "sha256": "57bbb8adc704a63c702080b373f18d73aa001d778bf66ecf1c81dcfa34122ccb",
+      "references_checked": 4,
+      "errors": []
+    }
+  ],
+  "references_checked": 284,
+  "placement": {
+    "main_and_clean_baseline_input_maps_equal": true,
+    "baseline_restored_native_keys_equal": true,
+    "changed_native_key_distinct": true,
+    "same_executable_all_three_runs": true,
+    "baseline_restored_capture_bytes_equal": true,
+    "changed_capture_bytes_different": true,
+    "three_runs_24_frames_gbv_zero": true,
+    "invalid_bloom_shader_rejected_before_first_frame": true
+  },
+  "python_typecheck": {
+    "command": "python -m mypy --follow-imports=silent engine_next/Tools/BuildVisualRuntime.py engine_next/Tools/PackageVisualRuntime.py engine_next/Tools/GeneratePostProcessBenchmark.py",
+    "version": "2.4.1",
+    "result": "Success: no issues found in 3 source files",
+    "log": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-mypy.log",
+      "sha256": "281a094c39385b4d7b53e5db635f52158036861433c2a4975b9039e77a627a24"
+    }
+  },
+  "passed": true
+}

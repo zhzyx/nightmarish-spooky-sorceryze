@@ -1,0 +1,245 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-17T02:12:00.283828+00:00",
+  "candidate": "postprocess-r4",
+  "native_key": "34ec6d30b77359d20dcf6a0e85ff6ae6d73cf4cd17302fbea78e254261886de2",
+  "binary": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-r4\\next_visual_client.exe",
+    "bytes": 3026432,
+    "sha256": "131f70651f458b7f7c34311ad89f48f498422f2e5b7f9720987ccecbcdb5d106"
+  },
+  "generator": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\engine_next\\Tools\\GeneratePostProcessBenchmark.py",
+    "bytes": 6947,
+    "sha256": "b319fccdaa249d812db6ff842d994bd22b2c25bf54f2c3a265ba8adb274fc3d9"
+  },
+  "scene_manifest": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-source\\BenchmarkManifest.json",
+    "bytes": 8506,
+    "sha256": "32269a93b3ef2ac44e3f9fbbe9a5b850fe5eedf39dc69ce50c48d93e8a57758e"
+  },
+  "source_package_manifest": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration.enpak\\AssetManifest.json",
+    "bytes": 500,
+    "sha256": "868d898d2d9580ecc537627385063bef189194bfcb98f345de0a88bff5a2113d"
+  },
+  "gpu_package_manifest": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration.engpu\\GpuManifest.json",
+    "bytes": 614,
+    "sha256": "29e247fbcb746622b3fbf0f4b9f71749117442f72413c56cfd61bc2990fb7b7f"
+  },
+  "run_manifest": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\Runs.json",
+    "bytes": 5042,
+    "sha256": "dacb47431ed51ac9d5102d316e3304e75d4ee3705147f9bde1484ca5fbe69724"
+  },
+  "captures": [
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\BloomOn\\Temporal_frame148.rdc",
+      "bytes": 7357674,
+      "sha256": "935d96132978eebbefdfa0f7bff3c11386d993999b612fcee04c277ea4c0f5a7"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\BloomOn\\Temporal_frame149.rdc",
+      "bytes": 7360950,
+      "sha256": "2167cae0316770ec04d52ed514f8e7845cccd556616738fa66e97257ac319efd"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\BloomOn\\Temporal_frame150.rdc",
+      "bytes": 7359658,
+      "sha256": "5fb00d90f053de3b13f9a7c518bcde156dbd07e83e430284489afd5af355e5b1"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\ManualEv10\\Temporal_frame176.rdc",
+      "bytes": 6524180,
+      "sha256": "f11e9b7eb2ed42622407c738142d1619fbf92bd31f820d0ebfdda459e620282f"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\ManualEv10\\Temporal_frame177.rdc",
+      "bytes": 6525144,
+      "sha256": "9d9386d4ebe4e2234f972ce5e3de0b5f1eee58a8b16ced5238ab6c83e03b93ba"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\ManualEv10\\Temporal_frame178.rdc",
+      "bytes": 6523599,
+      "sha256": "96597dee1dc784b25b1d850f62b38c9722f1250e33d2f7c54819da2983cdd559"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\ManualGray18\\Temporal_frame16.rdc",
+      "bytes": 6527190,
+      "sha256": "df379411be8a4ea53b61162133cc827c7dcac96c4ba08621f285abbc92ba12ea"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\ManualGray18\\Temporal_frame17.rdc",
+      "bytes": 6525171,
+      "sha256": "5dd9810a614101e67c7cc8f6d0b86d882dbdf1b790c3a15f1012d1cc2a2ff6fb"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\ManualGray18\\Temporal_frame18.rdc",
+      "bytes": 6526173,
+      "sha256": "4e776995d77909e02f7f50d2d2e88fa320878bda6623dc9a4d042774775d91ef"
+    }
+  ],
+  "capture_commands": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\CaptureCommands.json",
+    "bytes": 4376,
+    "sha256": "3847c1245ed441b0a96e2c6e3d1069eefd030d1cc4975dfbc1ee7f5c6bd27f72"
+  },
+  "actual_gpu_readbacks": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\Inspection.json",
+    "bytes": 5965,
+    "sha256": "f6bf06cd52fa615906879b12181a8fa068a131502ebedafe28c325394e5cd933"
+  },
+  "analysis": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\CalibrationChecks.json",
+    "bytes": 1972,
+    "sha256": "6ea34431b9f1d989aded68cd5492e3ec64dddec5ca12bee977ff10c3c4e3d552"
+  },
+  "analysis_script": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\AnalyzeCalibration.py",
+    "bytes": 1788,
+    "sha256": "b667eb287eb0821639655fd952ef75117b01b838da793935baf973a7ac0e944d"
+  },
+  "interior_roi": [
+    300,
+    220,
+    340,
+    260
+  ],
+  "checks": [
+    {
+      "label": "ManualGray18",
+      "expected_exposed_linear": 0.18,
+      "interior_mean_exposed_rgb": [
+        0.179931640625,
+        0.179931640625,
+        0.179931640625
+      ],
+      "interior_min": 0.179931640625,
+      "interior_max": 0.179931640625,
+      "maximum_abs_error": 6.835937499999334e-05,
+      "exposure_read": [
+        0.18000000715255737,
+        0.18000000715255737,
+        2.2108964920043945,
+        0.0
+      ],
+      "exposure_write": [
+        0.18000000715255737,
+        0.18000000715255737,
+        2.2108964920043945,
+        0.0
+      ]
+    },
+    {
+      "label": "ManualEv10",
+      "expected_exposed_linear": 0.0008138020833333334,
+      "interior_mean_exposed_rgb": [
+        0.0008134841918945312,
+        0.0008134841918945312,
+        0.0008134841918945312
+      ],
+      "interior_min": 0.0008134841918945312,
+      "interior_max": 0.0008134841918945312,
+      "maximum_abs_error": 3.1789143880211947e-07,
+      "exposure_read": [
+        0.0008138020639307797,
+        0.0008138020639307797,
+        9.999999046325684,
+        0.0
+      ],
+      "exposure_write": [
+        0.0008138020639307797,
+        0.0008138020639307797,
+        9.999999046325684,
+        0.0
+      ]
+    },
+    {
+      "label": "BloomOn",
+      "expected_exposed_linear": 4,
+      "interior_mean_exposed_rgb": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "interior_min": 4.0,
+      "interior_max": 4.0,
+      "maximum_abs_error": 0.0,
+      "exposure_read": [
+        4.0,
+        4.0,
+        -2.2630343437194824,
+        0.0
+      ],
+      "exposure_write": [
+        4.0,
+        4.0,
+        -2.2630343437194824,
+        0.0
+      ]
+    },
+    {
+      "bloom_black_surround_pixels": 264088,
+      "bloom_lit_surround_pixels": 255416,
+      "maximum_halo_delta": 97,
+      "negative_delta_pixels": 0
+    }
+  ],
+  "run_reports": [
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\ManualGray18.json",
+      "bytes": 49584,
+      "sha256": "cb914bf9fcedb7fb485e9ca4c4538942063166c4d415a1f3777354f520da0c53"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\ManualEv10.json",
+      "bytes": 49744,
+      "sha256": "34414d4a445344544d2607f6ca3ed0cbac7d90bba605fd610a599918d67d4343"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\BloomOff.json",
+      "bytes": 48134,
+      "sha256": "6394b939b32087abbd4d876c233600dd6d63675aa094a9d01e63b7ff9bad9d95"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\BloomOn.json",
+      "bytes": 70762,
+      "sha256": "55e576ea811b95e7d8e668a4d093e28d25ad2e88ef6deb5c0d47a3b5ba287d6b"
+    }
+  ],
+  "images": [
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\ManualGray18.png",
+      "bytes": 1433,
+      "sha256": "7ec882a31a3ee144cccac0d0a1b6f97c3d455be47b520f7b1d5e2ee6ba2cb423"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\ManualEv10.png",
+      "bytes": 1434,
+      "sha256": "0158d75e9ee617169de2896dc3bab1322f1a5a45c921fbe765429b787e07aac3"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\BloomOff.png",
+      "bytes": 1432,
+      "sha256": "51d847b1ea814b6fafbabbacdd47808590957687eca0d981ee47fae060c45def"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\BloomOn.png",
+      "bytes": 17046,
+      "sha256": "83c72a02b182ff490f26beb309f512f05ec57606b086c3598c2a3c9f09236fad"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-calibration-gpu-r4\\CalibrationCases.png",
+      "bytes": 22101,
+      "sha256": "af4ebb6e53258970fe50b509114532bb59593e52fbd3835c0c0cdb9d0d4bdcf5"
+    }
+  ],
+  "scope": "Self-authored radiance-one emissive card and isolated patch, black occluded surround, no direct/local illumination. 640x480, TAA disabled. Interior HDR is read before ToneMap; exposure ratio is read from bound GPU records.",
+  "limitations": [
+    "Quantization tolerance accounts for RGBA16F intermediate storage.",
+    "Bloom halo count includes the black surround of both the card and the small patch."
+  ]
+}

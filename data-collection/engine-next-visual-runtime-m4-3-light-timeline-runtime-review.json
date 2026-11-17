@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-16T19:31:46.227316+00:00",
+  "scope": "Independent read-only r4 runtime light-timeline integration review",
+  "passed": true,
+  "findings": [],
+  "native_key": "34ec6d30b77359d20dcf6a0e85ff6ae6d73cf4cd17302fbea78e254261886de2",
+  "source_sha256": {
+    "engine_next/Rendering/VisualRuntime.cpp": "8a3b38ef0a9d4f8741d9d9cb360aa587ee04d30ceadef4b679f5326b2a11c7d5",
+    "engine_next/include/EngineNext/Rendering/LightTimeline.h": "8778c9d9caa340b9827ef04ae32a66823583c5390efb0125f205a809282c66d2",
+    "engine_next/Rendering/LightTimeline.cpp": "4a809751913bb219a8e315ca99de93aef9c5e47e5ebb8a418c6b94746cccd610"
+  },
+  "checks": [
+    "The current frame copies immutable directional settings before evaluation, so previous frame state does not accumulate multipliers.",
+    "The same evaluated light feeds shadow setup and light constants before submission. Diagnostic time and illuminance originate from that same value.",
+    "Failure stops before constant upload and submitted temporal/exposure state commit. Empty animation follows the identity behavior from the validated evaluator."
+  ],
+  "dynamic_evidence": "data-collection/engine-next-visual-runtime-m4-3-postprocess-dynamic-numerical-review.json"
+}

@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "candidate": "postprocess-final",
+  "base_before_integration": "6590bc7ed9fffd55a0e72d844c4c8331b25a3d4a",
+  "integrated_main": "61dc9db5cd4c5ebf30d74e835f6489fb1204c328",
+  "visual": {
+    "report": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-final\\VisualBuildReport.json",
+      "bytes": 1663254,
+      "sha256": "a683569a72bb712acf8c478950a3d614d624225f2fb0770b77649392b4cbfe4e"
+    },
+    "binary": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-final\\next_visual_client.exe",
+      "bytes": 3026432,
+      "sha256": "24e4bf9784ce790897f525a324811792cbad5916fa36d8e526a33d8b221d9303"
+    },
+    "native_key": "ed839af22a155c8e8082dd0545ed67822b0ce91b6f444c244b4887e2d7695b68",
+    "input_count": 233,
+    "input_mismatches": [],
+    "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=202 checks=25873 failures=0",
+    "shader_count": 15,
+    "package": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-final\\Release\\VisualPackage.json",
+      "bytes": 7029,
+      "sha256": "8f306fa6f4094f90a23352099631df5d01f45dac0a5992f120f68aa2816e70c2"
+    }
+  },
+  "runtime": {
+    "report": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-runtime\\RuntimeBuildReport.json",
+      "bytes": 270033,
+      "sha256": "828278e68c803643b462d97fd4e05bac5f968f26989fb9938a9ad2dc64b504ad"
+    },
+    "handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-m4-3-postprocess-20261117\\\\build\\\\engine_next\\\\postprocess-runtime\\\\HandshakeReport.json\",\r\n  \"trace_sha256\": {\r\n    \"server.jsonl\": \"da3954be6c87d1181ae2ac78267d089c434307a33da323d949cd9955a5e684dc\",\r\n    \"client-A.jsonl\": \"e27f4a115ebb94e23fe776acbb37894cba0974c7556e59a8c1b6d0be77b5970d\",\r\n    \"client-B.jsonl\": \"623d0af30ba35a245896daa9358ec89551155ce162894512797e32cb0d9b5fd5\"\r\n  }\r\n}",
+    "clean_handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-m4-3-postprocess-20261117\\\\build\\\\engine_next\\\\postprocess-runtime\\\\CleanRun\\\\HandshakeReport.json\",\r\n  \"trace_sha256\": {\r\n    \"server.jsonl\": \"da3954be6c87d1181ae2ac78267d089c434307a33da323d949cd9955a5e684dc\",\r\n    \"client-A.jsonl\": \"d68e9f79dee73b349a54baa30bcfe7bd51990b2d5b2066d732c2bb749fe48c5e\",\r\n    \"client-B.jsonl\": \"623d0af30ba35a245896daa9358ec89551155ce162894512797e32cb0d9b5fd5\"\r\n  }\r\n}",
+    "ai": "ENGINE_NEXT_M3_AI offline=1 synthetic_resume=1 provider_submits=1 artifact_state=1 output_limit=1 detached_reaped=1 status=ok",
+    "clean_ai": "ENGINE_NEXT_M3_AI offline=1 synthetic_resume=1 provider_submits=1 artifact_state=1 output_limit=1 detached_reaped=1 status=ok",
+    "scene": "ENGINE_NEXT_M3_SCENE clients=2 scene_revision=r9 expected_a_position_x=-0.8399999999999999 status=ok",
+    "clean_scene": "ENGINE_NEXT_M3_SCENE clients=2 scene_revision=r9 expected_a_position_x=-0.8399999999999999 status=ok",
+    "soak": "ENGINE_NEXT_SOAK ticks=10312 elapsed_seconds=165.25 input_high_water=4 status=ok"
+  },
+  "regressions": [
+    {
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-clang-cl-r4.log",
+        "bytes": 74,
+        "sha256": "4eda0b2637b66873fe524f8167cc29d0be9033bced6a1c7688039ef32c2d20c4"
+      },
+      "tail": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=202 checks=25873 failures=0\n\n\n"
+    },
+    {
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-tools-final.log",
+        "bytes": 139,
+        "sha256": "cefd90cb7585e7344e4fe755b63ca2cdb468db574caa42fec738d7fc00e32c47"
+      },
+      "tail": "...................................\n----------------------------------------------------------------------\nRan 35 tests in 0.659s\n\nOK\n"
+    },
+    {
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-contract.log",
+        "bytes": 5422,
+        "sha256": "f69db9dd02f97a9b235d78822084f7c00189106f8ea6bd7a9e3a764a21d0f95f"
+      },
+      "tail": "est_passes (tools.test_check_engine_next_contract.EngineNextContractTests.test_valid_link_manifest_passes) ... ok\ntest_visual_libraries_remain_forbidden_in_headless_target (tools.test_check_engine_next_contract.EngineNextContractTests.test_visual_libraries_remain_forbidden_in_headless_target) ... ok\ntest_visual_profile_does_not_allow_header_prefix_lookalikes (tools.test_check_engine_next_contract.EngineNextContractTests.test_visual_profile_does_not_allow_header_prefix_lookalikes) ... ok\ntest_visual_sdk_headers_are_limited_to_private_profile_sources (tools.test_check_engine_next_contract.EngineNextContractTests.test_visual_sdk_headers_are_limited_to_private_profile_sources) ... ok\n\n----------------------------------------------------------------------\nRan 31 tests in 0.114s\n\nOK (skipped=1)\n"
+    },
+    {
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-ainative.log",
+        "bytes": 554,
+        "sha256": "7c2b5382491d7b4fbaf4098405f8c99f613eab378fbaffddaba32f08097546ab"
+      },
+      "tail": "...............................s..................................................................................................................................s............................s....................................s..............................................ssss......s.ss............ss.............ss.........s.........s..sssssssssssssss.....................................................sss...............s.......\n----------------------------------------------------------------------\nRan 434 tests in 276.667s\n\nOK (skipped=36)\n"
+    },
+    {
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-upstream-association.log",
+        "bytes": 523,
+        "sha256": "b5303609f432e06e14deaf105cb4001aaed32b0d9cd3df62a2701d84176c5fab"
+      },
+      "tail": "\u2714 read-only pull_request event without checkout, secrets or write privileges (0.5383ms)\n\u2714 valid association passes without requiring a named reviewer (0.4654ms)\n\u2714 missing identity fails (0.303ms)\n\u2714 mismatched request fails (0.1393ms)\n\u2714 closed issue fails (0.1071ms)\n\u2714 inactive status fails (0.1124ms)\n\u2714 recorded event without collection fails, matching collection passes (0.3087ms)\n\u2139 tests 7\n\u2139 suites 0\n\u2139 pass 7\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 74.9761\n"
+    }
+  ],
+  "remaining": "Exact submitted-head CI and main readback follow submission. Volume, reflections and full M4 acceptance remain in progress.",
+  "prior_visual": {
+    "report": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-r4\\VisualBuildReport.json",
+      "bytes": 1661913,
+      "sha256": "ed873a060ef449ae76b88958709bca86829776640b9cf77f540a099f041eca8e"
+    },
+    "binary": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-r4\\next_visual_client.exe",
+      "bytes": 3026432,
+      "sha256": "131f70651f458b7f7c34311ad89f48f498422f2e5b7f9720987ccecbcdb5d106"
+    },
+    "native_key": "34ec6d30b77359d20dcf6a0e85ff6ae6d73cf4cd17302fbea78e254261886de2",
+    "input_count": 233,
+    "input_mismatches": [],
+    "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=202 checks=25873 failures=0",
+    "shader_count": 15,
+    "package": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-r4\\Release\\VisualPackage.json",
+      "bytes": 7026,
+      "sha256": "41ecd0ab8e34f59a8ffca27c68eb90d66cb14bf319ba0901ab043a15602623b0"
+    },
+    "candidate": "postprocess-r4"
+  },
+  "recorded_at_utc": "2026-11-17T02:22:26.324453+00:00",
+  "format_only_delta": {
+    "files": [
+      {
+        "path": "engine_next/Rendering/LightTimeline.cpp",
+        "prior_sha256": "4a809751913bb219a8e315ca99de93aef9c5e47e5ebb8a418c6b94746cccd610",
+        "current_sha256": "b33135caf1c12b116a5679a4b2002253461eb96aa676b92e9970d28f2b29cd98"
+      }
+    ],
+    "proof": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-probes\\FinalWhitespaceDelta.json",
+      "bytes": 448,
+      "sha256": "013306867ab761351ddf2857f02fec42b76f0a8b66c7c19c8f62dbad908d98f5"
+    },
+    "network_scope": "The real keyboard, reconnect and minimize session remains bound to the r4 executable and shader bytes recorded by its network document."
+  },
+  "evidence": {
+    "network": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-network.json",
+      "bytes": 14510,
+      "sha256": "75d94e228ec07830d15c7472bd881fcb902a62406c3e8ce0d135872639a02023"
+    },
+    "calibration": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-calibration.json",
+      "bytes": 10096,
+      "sha256": "3fa33f1c1b5b3b072300ef5c3c60695719add441dcce79a324f2bc4db6cf55a6"
+    },
+    "dynamic": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-dynamic.json",
+      "bytes": 9581,
+      "sha256": "20d0256458b8ad3443d33fec94973b8361c6a19704ee37bf04e2e1bca3130fce"
+    },
+    "dynamic_numerical": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-dynamic-numerical-review.json",
+      "bytes": 3670,
+      "sha256": "57bbb8adc704a63c702080b373f18d73aa001d778bf66ecf1c81dcfa34122ccb"
+    },
+    "numerical": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-numerical-review.json",
+      "bytes": 2939,
+      "sha256": "9b90adf61d9d095418367ddcc8146c8049cdac17d2f685eca339366964f63919"
+    },
+    "source_review": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-final-source-review.json",
+      "bytes": 15714,
+      "sha256": "89a666357e94c387b6b0eb3e749370f72bd8d0bb287a9eddb17c7bd34f6a24db"
+    },
+    "final_gpu": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-final-gpu.json",
+      "bytes": 7907,
+      "sha256": "98bf17cee2bf31ca366d8ee6eded92f1743cdb887db3a4406f348a2f3c1f6cec"
+    },
+    "final_dynamic_numerical": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-probes\\FinalNumericalChecks.json",
+      "bytes": 155,
+      "sha256": "a388c3363c820f6306d7fa42b3f924c2e76ae7603111449282d40aa529fdb185"
+    },
+    "build_impact": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-build-impact.json",
+      "sha256": "7e852faa9269a7271221b23adc6fc666c702ac6d3878218a57f376f29de1b004",
+      "bytes": 50621
+    }
+  }
+}

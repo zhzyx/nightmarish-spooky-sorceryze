@@ -31,6 +31,7 @@
 #include "engine_next/Rendering/RenderPipeline.h"
 
 #include <cstddef>
+#include <string>
 #include <utility>
 
 namespace EngineNext::Rendering
@@ -39,7 +40,8 @@ namespace EngineNext::Rendering
 namespace
 {
 
-bool AddPipelinePass(FrameGraph &stGraph, RenderPipeline &stPipeline, const PassDesc &stDescription, PassWork eWork, GraphDiagnostic &out_stDiagnostic)
+bool AddPipelinePass(FrameGraph &stGraph, RenderPipeline &stPipeline, const PassDesc &stDescription, PassWork eWork, GraphDiagnostic &out_stDiagnostic,
+					 std::uint32_t nMipIndex = INVALID_RESOURCE)
 {
 	const PassId nPass = stGraph.AddPass(stDescription);
 	if (nPass == INVALID_PASS)
@@ -49,16 +51,24 @@ bool AddPipelinePass(FrameGraph &stGraph, RenderPipeline &stPipeline, const Pass
 	}
 	stPipeline.arrWorkByPass.resize(static_cast<std::size_t>(nPass) + 1);
 	stPipeline.arrWorkByPass[nPass] = eWork;
+	stPipeline.arrPassMipIndex.resize(static_cast<std::size_t>(nPass) + 1, INVALID_RESOURCE);
+	stPipeline.arrPassMipIndex[nPass] = nMipIndex;
 	return true;
 }
 
 } // namespace
 
-bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews, bool bTemporal)
+bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews, bool bTemporal,
+						 bool bExposure, std::uint32_t nBloomMips)
 {
 	if (nLocalShadowViews > 28)
 	{
 		out_stDiagnostic = { GraphError::CapacityExceeded, INVALID_PASS, INVALID_RESOURCE, "Local shadow view budget exceeded." };
+		return false;
+	}
+	if (nBloomMips > 6 || (bSceneMode && nBloomMips != 0 && !bExposure))
+	{
+		out_stDiagnostic = { GraphError::InvalidAccess, INVALID_PASS, INVALID_RESOURCE, "Bloom requires exposure and at most six mips." };
 		return false;
 	}
 	FrameGraph stGraph;
@@ -90,6 +100,19 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		stPipeline.nHdr = stGraph.AddResource({ "HdrColor", ResourceState::Common, false });
 		PassDesc stGbuffer{ "GBuffer", QueueType::Graphics, {}, {} };
 		PassDesc stLighting{ "DeferredLighting", QueueType::Graphics, { { stPipeline.nTint, ResourceState::ShaderRead, false } }, {} };
+		if (bExposure)
+		{
+			stPipeline.nHistogram = stGraph.AddResource({ "ExposureHistogram", ResourceState::Common, true });
+			stPipeline.nExposureRead = stGraph.AddResource({ "ExposureRead", ResourceState::Common, true });
+			stPipeline.nExposureWrite = stGraph.AddResource({ "ExposureWrite", ResourceState::Common, true });
+			stPipeline.nPostReadback = stGraph.AddResource({ "PostProcessReadback", ResourceState::CopyDestination, true });
+			if (!AddPipelinePass(stGraph, stPipeline, { "PrepareExposure", QueueType::Graphics, { { stPipeline.nExposureRead, ResourceState::UnorderedAccess, true, 0, ALL_SUBRESOURCES, true }, { stPipeline.nHistogram, ResourceState::UnorderedAccess, true } }, {} }, PassWork::PrepareExposure, out_stDiagnostic))
+			{
+				return false;
+			}
+			stGbuffer.arrAccesses.push_back({ stPipeline.nExposureRead, ResourceState::ShaderRead, false });
+			stLighting.arrAccesses.push_back({ stPipeline.nExposureRead, ResourceState::ShaderRead, false });
+		}
 		for (ResourceId nResource : stPipeline.arrGbuffer)
 		{
 			stGbuffer.arrAccesses.push_back({ nResource, ResourceState::RenderTarget, true });
@@ -122,13 +145,65 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 				stTemporal.arrAccesses.push_back({ stPipeline.arrHistoryRead[nHistory], ResourceState::NonPixelShaderRead, false });
 				stTemporal.arrAccesses.push_back({ stPipeline.arrHistoryWrite[nHistory], ResourceState::UnorderedAccess, true });
 			}
+			if (bExposure)
+			{
+				stTemporal.arrAccesses.push_back({ stPipeline.nExposureRead, ResourceState::NonPixelShaderRead, false });
+			}
 			if (!AddPipelinePass(stGraph, stPipeline, stTemporal, PassWork::TemporalResolve, out_stDiagnostic))
 			{
 				return false;
 			}
 			nToneMapSource = stPipeline.arrHistoryWrite[0];
 		}
-		if (!AddPipelinePass(stGraph, stPipeline, { "ToneMap", QueueType::Graphics, { { nToneMapSource, ResourceState::ShaderRead, false }, { stPipeline.nColor, ResourceState::RenderTarget, true } }, {} }, PassWork::ToneMap, out_stDiagnostic))
+		PassDesc stToneMap{ "ToneMap", QueueType::Graphics, { { nToneMapSource, ResourceState::ShaderRead, false }, { stPipeline.nColor, ResourceState::RenderTarget, true } }, {} };
+		if (bExposure)
+		{
+			if (!AddPipelinePass(stGraph, stPipeline, { "HistogramBuild", QueueType::Graphics, { { nToneMapSource, ResourceState::NonPixelShaderRead, false }, { stPipeline.nExposureRead, ResourceState::NonPixelShaderRead, false }, { stPipeline.nHistogram, ResourceState::UnorderedAccess, true, 0, ALL_SUBRESOURCES, true } }, {} }, PassWork::HistogramBuild, out_stDiagnostic) ||
+				!AddPipelinePass(stGraph, stPipeline, { "ExposureAdapt", QueueType::Graphics, { { stPipeline.nHistogram, ResourceState::NonPixelShaderRead, false }, { stPipeline.nExposureRead, ResourceState::NonPixelShaderRead, false }, { stPipeline.nExposureWrite, ResourceState::UnorderedAccess, true } }, {} }, PassWork::ExposureAdapt, out_stDiagnostic))
+			{
+				return false;
+			}
+			stToneMap.arrAccesses.push_back({ stPipeline.nExposureRead, ResourceState::ShaderRead, false });
+			stToneMap.arrAccesses.push_back({ stPipeline.nExposureWrite, ResourceState::ShaderRead, false });
+		}
+		for (std::uint32_t nMip = 0; nMip < nBloomMips; ++nMip)
+		{
+			const ResourceId nDown = stGraph.AddResource({ "BloomDown" + std::to_string(nMip), ResourceState::Common, true });
+			stPipeline.arrBloomDown.push_back(nDown);
+			const ResourceId nSource = nMip == 0 ? nToneMapSource : stPipeline.arrBloomDown[nMip - 1];
+			PassDesc stDown{ "BloomDownsample" + std::to_string(nMip), QueueType::Graphics, { { nSource, ResourceState::NonPixelShaderRead, false }, { nDown, ResourceState::UnorderedAccess, true } }, {} };
+			if (nMip == 0)
+			{
+				stDown.arrAccesses.push_back({ stPipeline.nExposureRead, ResourceState::NonPixelShaderRead, false });
+				stDown.arrAccesses.push_back({ stPipeline.nExposureWrite, ResourceState::NonPixelShaderRead, false });
+			}
+			if (!AddPipelinePass(stGraph, stPipeline, stDown, PassWork::BloomDownsample, out_stDiagnostic, nMip))
+			{
+				return false;
+			}
+		}
+		if (nBloomMips != 0)
+		{
+			stPipeline.arrBloomUp.resize(nBloomMips - 1, INVALID_RESOURCE);
+			ResourceId nLower = stPipeline.arrBloomDown.back();
+			for (std::uint32_t nRemaining = nBloomMips - 1; nRemaining > 0; --nRemaining)
+			{
+				const std::uint32_t nMip = nRemaining - 1;
+				const ResourceId nUp = stGraph.AddResource({ "BloomUp" + std::to_string(nMip), ResourceState::Common, true });
+				stPipeline.arrBloomUp[nMip] = nUp;
+				if (!AddPipelinePass(stGraph, stPipeline, { "BloomUpsample" + std::to_string(nMip), QueueType::Graphics, { { stPipeline.arrBloomDown[nMip], ResourceState::NonPixelShaderRead, false }, { nLower, ResourceState::NonPixelShaderRead, false }, { nUp, ResourceState::UnorderedAccess, true } }, {} }, PassWork::BloomUpsample, out_stDiagnostic, nMip))
+				{
+					return false;
+				}
+				nLower = nUp;
+			}
+			stToneMap.arrAccesses.push_back({ nLower, ResourceState::ShaderRead, false });
+		}
+		if (!AddPipelinePass(stGraph, stPipeline, stToneMap, PassWork::ToneMap, out_stDiagnostic))
+		{
+			return false;
+		}
+		if (bExposure && !AddPipelinePass(stGraph, stPipeline, { "PostProcessReadback", QueueType::Graphics, { { stPipeline.nHistogram, ResourceState::CopySource, false }, { stPipeline.nExposureWrite, ResourceState::CopySource, false }, { stPipeline.nPostReadback, ResourceState::CopyDestination, true } }, {} }, PassWork::PostProcessReadback, out_stDiagnostic))
 		{
 			return false;
 		}
@@ -161,6 +236,20 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 				stPresent.arrAccesses.push_back({ stPipeline.arrHistoryRead[nHistory], ResourceState::Common, false });
 				stPresent.arrAccesses.push_back({ stPipeline.arrHistoryWrite[nHistory], ResourceState::Common, false });
 			}
+		}
+		if (bExposure)
+		{
+			stPresent.arrAccesses.push_back({ stPipeline.nHistogram, ResourceState::Common, false });
+			stPresent.arrAccesses.push_back({ stPipeline.nExposureRead, ResourceState::Common, false });
+			stPresent.arrAccesses.push_back({ stPipeline.nExposureWrite, ResourceState::Common, false });
+		}
+		for (ResourceId nResource : stPipeline.arrBloomDown)
+		{
+			stPresent.arrAccesses.push_back({ nResource, ResourceState::Common, false });
+		}
+		for (ResourceId nResource : stPipeline.arrBloomUp)
+		{
+			stPresent.arrAccesses.push_back({ nResource, ResourceState::Common, false });
 		}
 	}
 	if (!AddPipelinePass(stGraph, stPipeline, stPresent, PassWork::Present, out_stDiagnostic) || !stGraph.Compile(stPipeline.stGraph, out_stDiagnostic))

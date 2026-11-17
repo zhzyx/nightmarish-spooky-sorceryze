@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-16T19:25:34.570008+00:00",
+  "candidate": "postprocess-r3",
+  "scope": "Independent numerical recomputation from three actual recorded GPU frames",
+  "passed": true,
+  "inputs": [
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-gpu-r3\\Inspection.json",
+      "sha256": "32b60491672af41beda83658ca3b84b35fdc57507b572899ba3732889e51dd8f",
+      "bytes": 128069
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-probes\\R3Readback.json",
+      "sha256": "9891ffd6aee675df632c6af9f579f67827d6b7ffc7e097e4f10ebffed4969ce1",
+      "bytes": 2773
+    }
+  ],
+  "results": [
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-probes\\R3ExposureVerification.json",
+      "sha256": "78c4823c3b175059dd1df3e42f7ee6bfd0a15d1c62ea3228302d6cbab6ae61ea",
+      "bytes": 1112
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-probes\\R3HistogramVerification.json",
+      "sha256": "7879e9a09e3a41e3244ad0247e5cbdf1cd9abf37052cea749cc2d55215f89e3d",
+      "bytes": 1202
+    }
+  ],
+  "checker": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-probes\\VerifyExposureReadback.py",
+    "sha256": "6f17d81b196876b189b47ad0a6d976da91369a8ffa4c27f2ce7170d900011c74",
+    "bytes": 2691
+  },
+  "summary": {
+    "frames": 3,
+    "histogram_pixels_per_frame": 307200,
+    "histogram_all_bins_exact": true,
+    "invalid_pixels_each_frame": 0,
+    "maximum_exposure_absolute_error": 5.2797724192643614e-08,
+    "pre_exposure_next_frame_matches_previous_output": true
+  },
+  "methods": [
+    "Histogram independently recomputed in NumPy float32 from captured HDR and prior pre-exposure, compared to all 256 GPU bins and finite/invalid counters.",
+    "Double arithmetic recomputed partial-bin percentile log average, target EV, calibrated target multiplier and bounded-time half-life adaptation.",
+    "Actual output record checked against display multiplier, current pre-exposure, target EV and metered luminance.",
+    "Copy source resource IDs and exact byte hashes match separately decoded exposure output and histogram buffers at offsets0 and16 for all three captures. Destination equality uses the capture worker replay results."
+  ],
+  "boundary": "This is a numerical audit of recorded r3 inputs. Later source changes require a new candidate binding.",
+  "readback_copy_semantics": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-probes\\R3ReadbackSemanticVerification.json",
+    "sha256": "9d02c1bbdb0f8231d646b0e5d02b44fdda6c85622e70144b9cae02298dba1f52",
+    "bytes": 965
+  }
+}

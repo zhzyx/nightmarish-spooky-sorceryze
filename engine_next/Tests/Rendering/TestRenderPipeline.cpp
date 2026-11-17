@@ -77,6 +77,30 @@ void CheckReusableStates(const RenderPipeline &stPipeline)
 	}
 }
 
+const CompiledPass *FindWork(const RenderPipeline &stPipeline, PassWork eWork, std::uint32_t nMip = EngineNext::Rendering::INVALID_RESOURCE)
+{
+	for (const CompiledPass &stPass : stPipeline.stGraph.arrPasses)
+	{
+		if (stPipeline.arrWorkByPass[stPass.nPass] == eWork && stPipeline.arrPassMipIndex[stPass.nPass] == nMip)
+		{
+			return &stPass;
+		}
+	}
+	return nullptr;
+}
+
+bool HasAccess(const CompiledPass &stPass, ResourceId nResource, ResourceState eState, bool bWrite)
+{
+	for (const EngineNext::Rendering::ResourceAccess &stAccess : stPass.arrAccesses)
+	{
+		if (stAccess.nResource == nResource && stAccess.eState == eState && stAccess.bWrite == bWrite)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 } // namespace
 
 ENGINE_NEXT_TEST("RenderPipeline preserves the fixed mesh compute and graphics plan")
@@ -322,4 +346,220 @@ ENGINE_NEXT_TEST("RenderPipeline toggles temporal resources without retaining hi
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nMotion, EngineNext::Rendering::INVALID_RESOURCE);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nObjectId, EngineNext::Rendering::INVALID_RESOURCE);
 	CheckReusableStates(stPipeline);
+}
+
+ENGINE_NEXT_TEST("RenderPipeline prepares exposure before geometry and meters resolved HDR")
+{
+	for (bool bTemporal : { false, true })
+	{
+		RenderPipeline stPipeline;
+		GraphDiagnostic stDiagnostic;
+		ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 28, bTemporal, true));
+		ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), bTemporal ? 13U : 12U);
+		ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), bTemporal ? 25U : 17U);
+		ENGINE_NEXT_CHECK_EQ(stPipeline.nComputePassCount, 1U);
+		ENGINE_NEXT_CHECK_EQ(stPipeline.nGraphicsPassCount, bTemporal ? 12U : 11U);
+		const CompiledPass *pPrepare = FindWork(stPipeline, PassWork::PrepareExposure);
+		const CompiledPass *pGeometry = FindWork(stPipeline, PassWork::GBuffer);
+		const CompiledPass *pLighting = FindWork(stPipeline, PassWork::DeferredLighting);
+		const CompiledPass *pBuild = FindWork(stPipeline, PassWork::HistogramBuild);
+		const CompiledPass *pAdapt = FindWork(stPipeline, PassWork::ExposureAdapt);
+		const CompiledPass *pTone = FindWork(stPipeline, PassWork::ToneMap);
+		ENGINE_NEXT_CHECK(pPrepare != nullptr && pGeometry != nullptr && pLighting != nullptr && pBuild != nullptr && pAdapt != nullptr && pTone != nullptr);
+		if (pPrepare == nullptr || pGeometry == nullptr || pLighting == nullptr || pBuild == nullptr || pAdapt == nullptr || pTone == nullptr)
+		{
+			continue;
+		}
+		ENGINE_NEXT_CHECK(pPrepare->nPass < pGeometry->nPass);
+		ENGINE_NEXT_CHECK(pLighting->nPass < pBuild->nPass);
+		ENGINE_NEXT_CHECK(pBuild->nPass < pAdapt->nPass && pAdapt->nPass < pTone->nPass);
+		ENGINE_NEXT_CHECK(HasAccess(*pPrepare, stPipeline.nExposureRead, ResourceState::UnorderedAccess, true));
+		ENGINE_NEXT_CHECK(pPrepare->arrAccesses[0].bReadBeforeWrite);
+		ENGINE_NEXT_CHECK(HasAccess(*pPrepare, stPipeline.nHistogram, ResourceState::UnorderedAccess, true));
+		ENGINE_NEXT_CHECK(HasTransition(*pGeometry, stPipeline.nExposureRead, ResourceState::UnorderedAccess, ResourceState::ShaderRead));
+		ENGINE_NEXT_CHECK(HasAccess(*pLighting, stPipeline.nExposureRead, ResourceState::ShaderRead, false));
+		const ResourceId nResolved = bTemporal ? stPipeline.arrHistoryWrite[0] : stPipeline.nHdr;
+		ENGINE_NEXT_CHECK(HasAccess(*pBuild, nResolved, ResourceState::NonPixelShaderRead, false));
+		bool bHistogramOrdering = false;
+		for (const ResourceBarrier &stBarrier : pBuild->arrBeforeBarriers)
+		{
+			bHistogramOrdering = bHistogramOrdering || (stBarrier.nResource == stPipeline.nHistogram && stBarrier.eKind == EngineNext::Rendering::BarrierKind::Uav);
+		}
+		ENGINE_NEXT_CHECK(bHistogramOrdering);
+		ENGINE_NEXT_CHECK(HasTransition(*pAdapt, stPipeline.nHistogram, ResourceState::UnorderedAccess, ResourceState::NonPixelShaderRead));
+		ENGINE_NEXT_CHECK(HasTransition(*pAdapt, stPipeline.nExposureWrite, ResourceState::Common, ResourceState::UnorderedAccess));
+		ENGINE_NEXT_CHECK(HasAccess(*pTone, stPipeline.nExposureRead, ResourceState::ShaderRead, false));
+		ENGINE_NEXT_CHECK(HasTransition(*pTone, stPipeline.nExposureWrite, ResourceState::UnorderedAccess, ResourceState::ShaderRead));
+		if (bTemporal)
+		{
+			const CompiledPass *pTemporal = FindWork(stPipeline, PassWork::TemporalResolve);
+			ENGINE_NEXT_CHECK(pTemporal != nullptr);
+			if (pTemporal != nullptr)
+			{
+				ENGINE_NEXT_CHECK(HasAccess(*pTemporal, stPipeline.nExposureRead, ResourceState::NonPixelShaderRead, false));
+				ENGINE_NEXT_CHECK(pTemporal->nPass < pBuild->nPass);
+			}
+		}
+		for (ResourceId nResource : { stPipeline.nHistogram, stPipeline.nExposureRead, stPipeline.nExposureWrite })
+		{
+			ENGINE_NEXT_CHECK(stPipeline.stGraph.arrResources[nResource].stDescription.bImported);
+		}
+		CheckReusableStates(stPipeline);
+	}
+}
+
+ENGINE_NEXT_TEST("RenderPipeline maps every bloom mip to distinct resources and ordered work")
+{
+	for (std::uint32_t nMips = 1; nMips <= 6; ++nMips)
+	{
+		RenderPipeline stPipeline;
+		GraphDiagnostic stDiagnostic;
+		ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 6, true, true, nMips));
+		ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 13U + nMips * 2U - 1U);
+		ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 25U + nMips * 2U - 1U);
+		ENGINE_NEXT_CHECK_EQ(stPipeline.arrBloomDown.size(), nMips);
+		ENGINE_NEXT_CHECK_EQ(stPipeline.arrBloomUp.size(), nMips - 1U);
+		ENGINE_NEXT_CHECK_EQ(stPipeline.arrPassMipIndex.size(), stPipeline.arrWorkByPass.size());
+		const CompiledPass *pAdapt = FindWork(stPipeline, PassWork::ExposureAdapt);
+		const CompiledPass *pLastDown = FindWork(stPipeline, PassWork::BloomDownsample, nMips - 1);
+		for (std::uint32_t nMip = 0; nMip < nMips; ++nMip)
+		{
+			const CompiledPass *pDown = FindWork(stPipeline, PassWork::BloomDownsample, nMip);
+			ENGINE_NEXT_CHECK(pDown != nullptr && pAdapt != nullptr);
+			if (pDown == nullptr || pAdapt == nullptr)
+			{
+				continue;
+			}
+			const ResourceId nSource = nMip == 0 ? stPipeline.arrHistoryWrite[0] : stPipeline.arrBloomDown[nMip - 1];
+			ENGINE_NEXT_CHECK(HasAccess(*pDown, nSource, ResourceState::NonPixelShaderRead, false));
+			ENGINE_NEXT_CHECK(HasAccess(*pDown, stPipeline.arrBloomDown[nMip], ResourceState::UnorderedAccess, true));
+			ENGINE_NEXT_CHECK(pDown->nPass > pAdapt->nPass);
+			ENGINE_NEXT_CHECK(HasTransition(*pDown, stPipeline.arrBloomDown[nMip], ResourceState::Common, ResourceState::UnorderedAccess));
+			if (nMip == 0)
+			{
+				ENGINE_NEXT_CHECK(HasAccess(*pDown, stPipeline.nExposureRead, ResourceState::NonPixelShaderRead, false));
+				ENGINE_NEXT_CHECK(HasTransition(*pDown, stPipeline.nExposureWrite, ResourceState::UnorderedAccess, ResourceState::NonPixelShaderRead));
+			}
+		}
+		for (std::uint32_t nMip = 0; nMip + 1 < nMips; ++nMip)
+		{
+			const CompiledPass *pUp = FindWork(stPipeline, PassWork::BloomUpsample, nMip);
+			ENGINE_NEXT_CHECK(pUp != nullptr);
+			if (pUp == nullptr)
+			{
+				continue;
+			}
+			const ResourceId nLower = nMip + 2 == nMips ? stPipeline.arrBloomDown[nMip + 1] : stPipeline.arrBloomUp[nMip + 1];
+			ENGINE_NEXT_CHECK(HasAccess(*pUp, stPipeline.arrBloomDown[nMip], ResourceState::NonPixelShaderRead, false));
+			ENGINE_NEXT_CHECK(HasAccess(*pUp, nLower, ResourceState::NonPixelShaderRead, false));
+			ENGINE_NEXT_CHECK(HasAccess(*pUp, stPipeline.arrBloomUp[nMip], ResourceState::UnorderedAccess, true));
+			ENGINE_NEXT_CHECK(pLastDown != nullptr);
+			if (pLastDown != nullptr)
+			{
+				ENGINE_NEXT_CHECK(pUp->nPass > pLastDown->nPass);
+			}
+		}
+		const CompiledPass *pTone = FindWork(stPipeline, PassWork::ToneMap);
+		ENGINE_NEXT_CHECK(pTone != nullptr);
+		if (pTone != nullptr)
+		{
+			const ResourceId nBloom = nMips == 1 ? stPipeline.arrBloomDown[0] : stPipeline.arrBloomUp[0];
+			ENGINE_NEXT_CHECK(HasAccess(*pTone, nBloom, ResourceState::ShaderRead, false));
+		}
+		for (const CompiledPass &stPass : stPipeline.stGraph.arrPasses)
+		{
+			const PassWork eWork = stPipeline.arrWorkByPass[stPass.nPass];
+			if (eWork != PassWork::BloomDownsample && eWork != PassWork::BloomUpsample)
+			{
+				ENGINE_NEXT_CHECK_EQ(stPipeline.arrPassMipIndex[stPass.nPass], EngineNext::Rendering::INVALID_RESOURCE);
+			}
+		}
+		CheckReusableStates(stPipeline);
+	}
+}
+
+ENGINE_NEXT_TEST("RenderPipeline meters and blooms current HDR when temporal resolve is disabled")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, false, true, 6));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 23U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 28U);
+	ENGINE_NEXT_CHECK_EQ(FindWork(stPipeline, PassWork::TemporalResolve), nullptr);
+	const CompiledPass *pBuild = FindWork(stPipeline, PassWork::HistogramBuild);
+	const CompiledPass *pDown = FindWork(stPipeline, PassWork::BloomDownsample, 0);
+	const CompiledPass *pTone = FindWork(stPipeline, PassWork::ToneMap);
+	ENGINE_NEXT_CHECK(pBuild != nullptr && pDown != nullptr && pTone != nullptr);
+	if (pBuild != nullptr && pDown != nullptr && pTone != nullptr)
+	{
+		ENGINE_NEXT_CHECK(HasAccess(*pBuild, stPipeline.nHdr, ResourceState::NonPixelShaderRead, false));
+		ENGINE_NEXT_CHECK(HasAccess(*pDown, stPipeline.nHdr, ResourceState::NonPixelShaderRead, false));
+		ENGINE_NEXT_CHECK(HasAccess(*pTone, stPipeline.nHdr, ResourceState::ShaderRead, false));
+	}
+	CheckReusableStates(stPipeline);
+}
+
+ENGINE_NEXT_TEST("RenderPipeline bounds post-process settings without replacing an existing graph")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 28, true, true, 6));
+	const std::vector<PassWork> arrWork = stPipeline.arrWorkByPass;
+	const std::vector<ResourceId> arrBloom = stPipeline.arrBloomDown;
+	ENGINE_NEXT_CHECK(!BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 7));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass, arrWork);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.arrBloomDown, arrBloom);
+	ENGINE_NEXT_CHECK(!BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, false, 1));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass, arrWork);
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 9U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nExposureRead, EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK(stPipeline.arrBloomDown.empty() && stPipeline.arrBloomUp.empty());
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(false, stPipeline, stDiagnostic, 28, true, true, 6));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 4U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 4U);
+	ENGINE_NEXT_CHECK(stPipeline.arrBloomDown.empty() && stPipeline.arrBloomUp.empty());
+	CheckReusableStates(stPipeline);
+}
+
+ENGINE_NEXT_TEST("RenderPipeline declares post-process readback transfers and restores sources")
+{
+	for (bool bTemporal : { false, true })
+	{
+		for (std::uint32_t nMips : { 0U, 1U, 6U })
+		{
+			RenderPipeline stPipeline;
+			GraphDiagnostic stDiagnostic;
+			ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, bTemporal, true, nMips));
+			const CompiledPass *pTone = FindWork(stPipeline, PassWork::ToneMap);
+			const CompiledPass *pReadback = FindWork(stPipeline, PassWork::PostProcessReadback);
+			const CompiledPass *pCopy = FindWork(stPipeline, PassWork::CopyToBackbuffer);
+			const CompiledPass *pPresent = FindWork(stPipeline, PassWork::Present);
+			ENGINE_NEXT_CHECK(pTone != nullptr && pReadback != nullptr && pCopy != nullptr && pPresent != nullptr);
+			if (pTone == nullptr || pReadback == nullptr || pCopy == nullptr || pPresent == nullptr)
+			{
+				continue;
+			}
+			ENGINE_NEXT_CHECK(pTone->nPass < pReadback->nPass && pReadback->nPass < pCopy->nPass);
+			ENGINE_NEXT_CHECK_EQ(pReadback->eQueue, QueueType::Graphics);
+			ENGINE_NEXT_CHECK_EQ(pReadback->arrAccesses.size(), 3U);
+			ENGINE_NEXT_CHECK(HasAccess(*pReadback, stPipeline.nHistogram, ResourceState::CopySource, false));
+			ENGINE_NEXT_CHECK(HasAccess(*pReadback, stPipeline.nExposureWrite, ResourceState::CopySource, false));
+			ENGINE_NEXT_CHECK(HasAccess(*pReadback, stPipeline.nPostReadback, ResourceState::CopyDestination, true));
+			ENGINE_NEXT_CHECK(HasTransition(*pReadback, stPipeline.nHistogram, ResourceState::NonPixelShaderRead, ResourceState::CopySource));
+			ENGINE_NEXT_CHECK(HasTransition(*pReadback, stPipeline.nExposureWrite, ResourceState::ShaderRead, ResourceState::CopySource));
+			ENGINE_NEXT_CHECK(HasTransition(*pPresent, stPipeline.nHistogram, ResourceState::CopySource, ResourceState::Common));
+			ENGINE_NEXT_CHECK(HasTransition(*pPresent, stPipeline.nExposureWrite, ResourceState::CopySource, ResourceState::Common));
+			const CompiledResource &stReadback = stPipeline.stGraph.arrResources[stPipeline.nPostReadback];
+			ENGINE_NEXT_CHECK(stReadback.stDescription.bImported);
+			ENGINE_NEXT_CHECK_EQ(stReadback.stDescription.eInitialState, ResourceState::CopyDestination);
+			ENGINE_NEXT_CHECK_EQ(stReadback.arrFinalStates, (std::vector<ResourceState>{ ResourceState::CopyDestination }));
+			CheckReusableStates(stPipeline);
+		}
+	}
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nPostReadback, EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK_EQ(FindWork(stPipeline, PassWork::PostProcessReadback), nullptr);
 }

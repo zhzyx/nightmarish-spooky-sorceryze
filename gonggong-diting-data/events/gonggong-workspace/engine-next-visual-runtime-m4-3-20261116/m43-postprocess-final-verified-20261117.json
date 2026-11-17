@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "event_id": "m43-postprocess-final-verified-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "step",
+  "occurred_at": "2026-11-17T02:23:08.817985+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-5afcb929",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m43-request-20261116",
+    "m43-temporal-final-verified-20261117"
+  ],
+  "payload": {
+    "scope": "M4.3 post-process slice with exposure, pre-exposed temporal history, Bloom and deterministic directional-light timeline",
+    "native_key": "ed839af22a155c8e8082dd0545ed67822b0ce91b6f444c244b4887e2d7695b68",
+    "binary_sha256": "24e4bf9784ce790897f525a324811792cbad5916fa36d8e526a33d8b221d9303",
+    "tests": "Final MSVC C++17 build passes 202 rendering tests and 25873 checks. Runtime regression passes 61 tests and 1100 checks, M2/M3 clean runs and 165-second soak. AI regressions pass 434 tests with 36 documented skips.",
+    "gpu": "Final binary passes real GPU gray-card, EV10 and Bloom tests and a 241-frame dynamic exposure test with zero validation errors. All 15 offline shader files match the preceding r4 candidate. Continuous target-window video and GPU resource captures are recorded.",
+    "network": "The r4 candidate passes two-client actual keyboard input, reconnect, 29.562 seconds minimized networking and restore. Its identity remains explicit. The final candidate differs only in three indentation lines in LightTimeline.cpp, with a separately checked whitespace-only delta.",
+    "build_placement": "Three final-source clean builds verify Bloom shader native-key invalidation and restoration. One unchanged executable renders distinct updated-shader output and byte-identical rollback output. Invalid DXIL fails before the first frame.",
+    "records": [
+      "data-collection/engine-next-visual-runtime-m4-3-postprocess-verification.json",
+      "data-collection/engine-next-visual-runtime-m4-3-postprocess-final-source-review.json",
+      "data-collection/engine-next-visual-runtime-m4-3-postprocess-final-gpu.json",
+      "data-collection/engine-next-visual-runtime-m4-3-postprocess-build-impact.json",
+      "data-collection/engine-next-visual-runtime-m4-3-postprocess-network.json"
+    ],
+    "remaining": "Exact candidate CI and main readback follow. M4.3 reflections, volumetrics and dynamic transparency remain. Full M4 geometry, streaming, GI, A-F UE comparisons and native-4K performance/stability remain in progress."
+  },
+  "sha256": "5b4b3ac3cd2a00ddcf6c5daf4221ba9822e928de675f92f005225978ef6a59ab"
+}

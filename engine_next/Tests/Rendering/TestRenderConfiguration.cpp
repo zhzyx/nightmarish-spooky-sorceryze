@@ -74,6 +74,13 @@ void CheckRejected(const JsonValue &stValue, const std::string &strExpectedDiges
 	stConfiguration.stTemporal.bEnabled = false;
 	stConfiguration.stTemporal.dHistoryWeight = 0.25;
 	stConfiguration.stTemporal.dDepthThreshold = 0.125;
+	stConfiguration.stExposure.eMode = EngineNext::Rendering::ExposureMode::Manual;
+	stConfiguration.stExposure.dManualEv100 = 7;
+	stConfiguration.stBloom.bEnabled = true;
+	stConfiguration.stBloom.dIntensity = 0.5;
+	stConfiguration.stLightAnimation.bLoop = true;
+	stConfiguration.stLightAnimation.eInterpolation = EngineNext::Rendering::LightInterpolation::Step;
+	stConfiguration.stLightAnimation.arrKeyframes = { { 0, 2 }, { 1, 3 } };
 	stConfiguration.arrPointLights.front().nId = 4321;
 	stConfiguration.arrSpotLights.push_back(EngineNext::Rendering::SpotLightSettings{});
 	EngineNext::Assets::Diagnostics arrDiagnostics;
@@ -87,6 +94,14 @@ void CheckRejected(const JsonValue &stValue, const std::string &strExpectedDiges
 	ENGINE_NEXT_CHECK(!stConfiguration.stTemporal.bEnabled);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stTemporal.dHistoryWeight, 0.25);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stTemporal.dDepthThreshold, 0.125);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.eMode, EngineNext::Rendering::ExposureMode::Manual);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.dManualEv100, 7);
+	ENGINE_NEXT_CHECK(stConfiguration.stBloom.bEnabled);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stBloom.dIntensity, 0.5);
+	ENGINE_NEXT_CHECK(stConfiguration.stLightAnimation.bLoop);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stLightAnimation.eInterpolation, EngineNext::Rendering::LightInterpolation::Step);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stLightAnimation.arrKeyframes.size(), 2U);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stLightAnimation.arrKeyframes.back().dMultiplier, 3);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrPointLights.front().nId, 4321U);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrSpotLights.size(), 1U);
 }
@@ -762,4 +777,255 @@ ENGINE_NEXT_TEST("Render configuration rejects malformed temporal settings trans
 		mapTemporal["depth_threshold"] = stThreshold;
 		CheckRejected(stValue);
 	}
+}
+
+ENGINE_NEXT_TEST("Render configuration preserves numeric exposure with optional post-process defaults")
+{
+	JsonValue stValue = ValidConfiguration();
+	(*stValue.GetObject())["exposure"] = 321.0;
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	for (bool bIncludeObjects : { false, true })
+	{
+		if (bIncludeObjects)
+		{
+			(*stValue.GetObject())["exposure_settings"] = JsonValue::Object{};
+			(*stValue.GetObject())["bloom"] = JsonValue::Object{};
+		}
+		ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.dExposure, 321);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.eMode, EngineNext::Rendering::ExposureMode::Legacy);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.dManualEv100, 10);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.dCompensationEv, 0);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.dMinimumEv100, -16);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.dMaximumEv100, 24);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.dLowPercentile, 0.1);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.dHighPercentile, 0.9);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.dLightHalfLife, 0.25);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.dDarkHalfLife, 0.75);
+		ENGINE_NEXT_CHECK(!stConfiguration.stBloom.bEnabled);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stBloom.dIntensity, 0.04);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stBloom.dThreshold, 1);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stBloom.dSoftKnee, 0.5);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stBloom.nMipCount, 6U);
+	}
+	stValue.GetObject()->erase("exposure");
+	CheckRejected(stValue);
+	(*stValue.GetObject())["exposure"] = JsonValue::Object{};
+	CheckRejected(stValue);
+}
+
+ENGINE_NEXT_TEST("Render configuration accepts exposure modes and inclusive post-process limits")
+{
+	JsonValue stValue = ValidConfiguration();
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	const std::array<EngineNext::Rendering::ExposureMode, 3> arrModes{
+		EngineNext::Rendering::ExposureMode::Legacy, EngineNext::Rendering::ExposureMode::Manual, EngineNext::Rendering::ExposureMode::Automatic
+	};
+	const std::array<std::string, 3> arrNames{ "legacy", "manual", "automatic" };
+	for (std::size_t nMode = 0; nMode < arrModes.size(); ++nMode)
+	{
+		for (double dEndpoint : { 0.0, 1.0 })
+		{
+			(*stValue.GetObject())["exposure_settings"] = JsonValue::Object{
+				{ "mode", arrNames[nMode] }, { "manual_ev100", -16 + 40 * dEndpoint }, { "compensation_ev", -10 + 20 * dEndpoint }, { "min_ev100", -16.0 }, { "max_ev100", 24.0 }, { "low_percentile", 0.0 }, { "high_percentile", 1.0 }, { "light_half_life", 10 * dEndpoint }, { "dark_half_life", 10 * dEndpoint }
+			};
+			(*stValue.GetObject())["bloom"] = JsonValue::Object{
+				{ "enabled", dEndpoint != 0 }, { "intensity", 10 * dEndpoint }, { "threshold", 65504 * dEndpoint }, { "soft_knee", dEndpoint }, { "mip_count", std::int64_t{ dEndpoint == 0 ? 1 : 6 } }
+			};
+			ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+			ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.eMode, arrModes[nMode]);
+			ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.dManualEv100, -16 + 40 * dEndpoint);
+			ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.dCompensationEv, -10 + 20 * dEndpoint);
+			ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.dLightHalfLife, 10 * dEndpoint);
+			ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.dDarkHalfLife, 10 * dEndpoint);
+			ENGINE_NEXT_CHECK_EQ(stConfiguration.stBloom.bEnabled, dEndpoint != 0);
+			ENGINE_NEXT_CHECK_EQ(stConfiguration.stBloom.dIntensity, 10 * dEndpoint);
+			ENGINE_NEXT_CHECK_EQ(stConfiguration.stBloom.dThreshold, 65504 * dEndpoint);
+			ENGINE_NEXT_CHECK_EQ(stConfiguration.stBloom.dSoftKnee, dEndpoint);
+			ENGINE_NEXT_CHECK_EQ(stConfiguration.stBloom.nMipCount, dEndpoint == 0 ? 1U : 6U);
+		}
+	}
+	(*stValue.GetObject())["exposure_settings"] = JsonValue::Object{ { "min_ev100", 4.0 }, { "max_ev100", 4.0 } };
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.dMinimumEv100, 4);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stExposure.dMaximumEv100, 4);
+}
+
+ENGINE_NEXT_TEST("Render configuration rejects malformed post-process objects transactionally")
+{
+	JsonValue stValue = ValidConfiguration();
+	for (const std::string &strObject : { "exposure_settings", "bloom" })
+	{
+		for (const JsonValue &stWrong : { JsonValue{}, JsonValue(true), JsonValue(1.0), JsonValue("settings"), JsonValue(JsonValue::List{}) })
+		{
+			(*stValue.GetObject())[strObject] = stWrong;
+			CheckRejected(stValue);
+		}
+		(*stValue.GetObject())[strObject] = JsonValue::Object{ { "unknown", true } };
+		CheckRejected(stValue);
+		stValue.GetObject()->erase(strObject);
+	}
+	for (const JsonValue &stMode : { JsonValue("Manual"), JsonValue("auto"), JsonValue(true), JsonValue(1.0), JsonValue{} })
+	{
+		(*stValue.GetObject())["exposure_settings"] = JsonValue::Object{ { "mode", stMode } };
+		CheckRejected(stValue);
+	}
+}
+
+ENGINE_NEXT_TEST("Render configuration validates every optional exposure number and its relationships")
+{
+	JsonValue stValue = ValidConfiguration();
+	const std::array<std::string, 8> arrFields{
+		"manual_ev100", "compensation_ev", "min_ev100", "max_ev100", "low_percentile", "high_percentile", "light_half_life", "dark_half_life"
+	};
+	for (const std::string &strField : arrFields)
+	{
+		for (const JsonValue &stWrong : { JsonValue(true), JsonValue("1"), JsonValue{}, JsonValue(std::numeric_limits<double>::infinity()), JsonValue(std::numeric_limits<double>::quiet_NaN()), JsonValue(-100.0), JsonValue(100.0) })
+		{
+			(*stValue.GetObject())["exposure_settings"] = JsonValue::Object{ { strField, stWrong } };
+			CheckRejected(stValue);
+		}
+	}
+	(*stValue.GetObject())["exposure_settings"] = JsonValue::Object{ { "min_ev100", 3.0 }, { "max_ev100", 2.0 } };
+	CheckRejected(stValue);
+	(*stValue.GetObject())["exposure_settings"] = JsonValue::Object{ { "low_percentile", 0.7 }, { "high_percentile", 0.7 } };
+	CheckRejected(stValue);
+	(*stValue.GetObject())["exposure_settings"] = JsonValue::Object{ { "low_percentile", 0.8 }, { "high_percentile", 0.7 } };
+	CheckRejected(stValue);
+}
+
+ENGINE_NEXT_TEST("Render configuration validates bloom fields even while disabled")
+{
+	JsonValue stValue = ValidConfiguration();
+	for (const std::string &strField : { "enabled", "intensity", "threshold", "soft_knee", "mip_count" })
+	{
+		for (const JsonValue &stWrong : { JsonValue("1"), JsonValue{}, JsonValue(std::numeric_limits<double>::infinity()) })
+		{
+			(*stValue.GetObject())["bloom"] = JsonValue::Object{ { "enabled", false } };
+			(*(*stValue.GetObject())["bloom"].GetObject())[strField] = stWrong;
+			CheckRejected(stValue);
+		}
+	}
+	for (const JsonValue &stWrong : { JsonValue(0.0), JsonValue(1.0), JsonValue(std::int64_t{ 0 }), JsonValue(std::int64_t{ 7 }), JsonValue(true) })
+	{
+		(*stValue.GetObject())["bloom"] = JsonValue::Object{ { "mip_count", stWrong } };
+		CheckRejected(stValue);
+	}
+	for (const std::string &strField : { "intensity", "threshold", "soft_knee" })
+	{
+		for (const JsonValue &stWrong : { JsonValue(true), JsonValue(-0.001), JsonValue(65505.0) })
+		{
+			(*stValue.GetObject())["bloom"] = JsonValue::Object{ { "enabled", false }, { strField, stWrong } };
+			CheckRejected(stValue);
+		}
+	}
+}
+
+ENGINE_NEXT_TEST("Render configuration defaults and parses a directional light timeline")
+{
+	JsonValue stValue = ValidConfiguration();
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stLightAnimation.arrKeyframes.empty());
+	ENGINE_NEXT_CHECK(!stConfiguration.stLightAnimation.bLoop);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stLightAnimation.eInterpolation, EngineNext::Rendering::LightInterpolation::Linear);
+	for (const std::string &strInterpolation : { "linear", "step" })
+	{
+		(*stValue.GetObject())["light_animation"] = JsonValue::Object{
+			{ "loop", true }, { "interpolation", strInterpolation }, { "keyframes", JsonValue::List{ JsonValue::Object{ { "seconds", 0.0 }, { "multiplier", 1.0 } }, JsonValue::Object{ { "seconds", 2.0 }, { "multiplier", 100.0 } }, JsonValue::Object{ { "seconds", 4.0 }, { "multiplier", 0.0 } } } }
+		};
+		ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+		ENGINE_NEXT_CHECK(stConfiguration.stLightAnimation.bLoop);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stLightAnimation.arrKeyframes.size(), 3U);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stLightAnimation.arrKeyframes[1].dSeconds, 2);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stLightAnimation.arrKeyframes[1].dMultiplier, 100);
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stLightAnimation.eInterpolation, strInterpolation == "linear" ? EngineNext::Rendering::LightInterpolation::Linear : EngineNext::Rendering::LightInterpolation::Step);
+	}
+	for (const JsonValue &stEmpty : { JsonValue(JsonValue::Object{}), JsonValue(JsonValue::Object{ { "loop", true }, { "keyframes", JsonValue::List{} } }) })
+	{
+		(*stValue.GetObject())["light_animation"] = stEmpty;
+		ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+		ENGINE_NEXT_CHECK(stConfiguration.stLightAnimation.arrKeyframes.empty());
+		ENGINE_NEXT_CHECK_EQ(stConfiguration.stLightAnimation.eInterpolation, EngineNext::Rendering::LightInterpolation::Linear);
+	}
+}
+
+ENGINE_NEXT_TEST("Render configuration rejects malformed light timeline objects and key fields")
+{
+	JsonValue stValue = ValidConfiguration();
+	for (const JsonValue &stBad : { JsonValue{}, JsonValue(true), JsonValue(1.0), JsonValue("track"), JsonValue(JsonValue::List{}), JsonValue(JsonValue::Object{ { "unknown", true } }) })
+	{
+		(*stValue.GetObject())["light_animation"] = stBad;
+		CheckRejected(stValue);
+	}
+	for (const JsonValue &stBad : { JsonValue("LINEAR"), JsonValue("spline"), JsonValue(true), JsonValue{} })
+	{
+		(*stValue.GetObject())["light_animation"] = JsonValue::Object{ { "interpolation", stBad } };
+		CheckRejected(stValue);
+	}
+	for (const JsonValue &stBad : { JsonValue("true"), JsonValue(1.0), JsonValue{} })
+	{
+		(*stValue.GetObject())["light_animation"] = JsonValue::Object{ { "loop", stBad } };
+		CheckRejected(stValue);
+	}
+	for (const JsonValue &stBad : { JsonValue{}, JsonValue(true), JsonValue(JsonValue::Object{}), JsonValue("keys") })
+	{
+		(*stValue.GetObject())["light_animation"] = JsonValue::Object{ { "keyframes", stBad } };
+		CheckRejected(stValue);
+	}
+	for (const JsonValue &stBadKey : { JsonValue(true), JsonValue(JsonValue::Object{}), JsonValue(JsonValue::Object{ { "seconds", 0.0 } }),
+									   JsonValue(JsonValue::Object{ { "multiplier", 1.0 } }), JsonValue(JsonValue::Object{ { "seconds", 0.0 }, { "multiplier", 1.0 }, { "extra", true } }) })
+	{
+		(*stValue.GetObject())["light_animation"] = JsonValue::Object{ { "keyframes", JsonValue::List{ stBadKey } } };
+		CheckRejected(stValue);
+	}
+	for (const std::string &strField : { "seconds", "multiplier" })
+	{
+		for (const JsonValue &stBad : { JsonValue(true), JsonValue("0"), JsonValue{}, JsonValue(-1.0), JsonValue(std::numeric_limits<double>::infinity()), JsonValue(std::numeric_limits<double>::quiet_NaN()) })
+		{
+			JsonValue stKey = JsonValue::Object{ { "seconds", 0.0 }, { "multiplier", 1.0 } };
+			(*stKey.GetObject())[strField] = stBad;
+			(*stValue.GetObject())["light_animation"] = JsonValue::Object{ { "keyframes", JsonValue::List{ stKey } } };
+			CheckRejected(stValue);
+		}
+	}
+}
+
+ENGINE_NEXT_TEST("Render configuration validates ordered timeline budget and illuminance product")
+{
+	JsonValue stValue = ValidConfiguration();
+	for (const JsonValue::List &arrBadKeys : {
+				 JsonValue::List{ JsonValue::Object{ { "seconds", 1.0 }, { "multiplier", 1.0 } } },
+				 JsonValue::List{ JsonValue::Object{ { "seconds", 0.0 }, { "multiplier", 1.0 } }, JsonValue::Object{ { "seconds", 0.0 }, { "multiplier", 1.0 } } } })
+	{
+		(*stValue.GetObject())["light_animation"] = JsonValue::Object{ { "keyframes", arrBadKeys } };
+		CheckRejected(stValue);
+	}
+	(*stValue.GetObject())["light_animation"] = JsonValue::Object{ { "loop", true }, { "keyframes", JsonValue::List{ JsonValue::Object{ { "seconds", 0.0 }, { "multiplier", 1.0 } } } } };
+	CheckRejected(stValue);
+	JsonValue::List arrKeys;
+	for (std::uint32_t nKey = 0; nKey < 256; ++nKey)
+	{
+		arrKeys.emplace_back(JsonValue::Object{ { "seconds", static_cast<double>(nKey) }, { "multiplier", 1.0 } });
+	}
+	(*stValue.GetObject())["light_animation"] = JsonValue::Object{ { "keyframes", arrKeys } };
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stLightAnimation.arrKeyframes.size(), 256U);
+	arrKeys.emplace_back(JsonValue::Object{ { "seconds", 256.0 }, { "multiplier", 1.0 } });
+	(*stValue.GetObject())["light_animation"] = JsonValue::Object{ { "keyframes", arrKeys } };
+	CheckRejected(stValue);
+	(*stValue.GetObject())["directional_light"] = DirectionalLight();
+	(*(*stValue.GetObject())["directional_light"].GetObject())["illuminance"] = 1e6;
+	(*stValue.GetObject())["light_animation"] = JsonValue::Object{ { "keyframes", JsonValue::List{ JsonValue::Object{ { "seconds", 0.0 }, { "multiplier", 1.0 } } } } };
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	(*(*stValue.GetObject())["light_animation"].GetObject())["keyframes"].GetList()->front().GetObject()->at("multiplier") = 2.0;
+	CheckRejected(stValue);
+	(*(*stValue.GetObject())["directional_light"].GetObject())["illuminance"] = 0.0;
+	(*(*stValue.GetObject())["light_animation"].GetObject())["keyframes"].GetList()->front().GetObject()->at("multiplier") = std::numeric_limits<double>::max();
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
 }
