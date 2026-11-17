@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2638a2ea2df4dea26c182c1d60b18ccbec5ae659",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-direction-shorthand-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1392",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "9be2e2a5ef6af382eee4a2808bd9361a048fbeddb2e012aa4a26a4039042dd95",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1392",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1392",
+    "action": "delivery",
+    "detection_head": "83775e6c2ffb5b3a518c4ffebbe0f3777c7dce06",
+    "context_sha256": "03e1e3f40627014fc5171195d28e467f782c4fc99dd8bb3728c58916b70fc9a4",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-host",
+    "authority_ref": "kimi-work:user:20261117:maliang-direction-shorthand",
+    "evidence": "design-docs/maliang-direction-shorthand-20261117.md",
+    "diagnosis": "PR notes incorrectly retained template GongGong headers; submission CLI requires body-only notes. No candidate content or test failure.",
+    "next_action": "Remove the two template headers and rerun the identical writer submission for issue 1392.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T03:43:41.266226+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T03:44:24.776786+00:00",
+  "sha256": "483af5d31cad27b0476e5ed7030940ed8b715f7c8b39dedbe700bb450c4f50e3"
+}
