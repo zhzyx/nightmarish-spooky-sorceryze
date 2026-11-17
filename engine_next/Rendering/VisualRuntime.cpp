@@ -40,6 +40,7 @@
 #include "engine_next/include/EngineNext/Assets/SceneDocument.h"
 #include "engine_next/Rendering/Cook/ImageDecoder.h"
 #include "engine_next/Rendering/Cook/EnvironmentLighting.h"
+#include "engine_next/Rendering/Cook/EnvironmentImportance.h"
 #include "engine_next/Rendering/Cook/GpuPackage.h"
 #include "engine_next/include/EngineNext/Rendering/RenderScene.h"
 #include "engine_next/include/EngineNext/Rendering/TextureData.h"
@@ -118,6 +119,7 @@ constexpr std::uint32_t MATERIAL_TEXTURE_COUNT = 5;
 constexpr std::uint32_t MAX_MATERIALS = D3D12_MAX_SHADER_VISIBLE_SAMPLER_HEAP_SIZE / MATERIAL_TEXTURE_COUNT;
 constexpr std::uint32_t MATERIAL_VIEW_START = HISTORY_VIEW_START + HISTORY_VIEW_COUNT;
 constexpr std::uint32_t ENVIRONMENT_VIEW_START = MATERIAL_VIEW_START + MAX_MATERIALS * MATERIAL_TEXTURE_COUNT;
+constexpr std::uint32_t ENVIRONMENT_ALIAS_VIEW = ENVIRONMENT_VIEW_START + 3;
 constexpr std::uint64_t MAX_TEXTURE_UPLOAD_BYTES = 512ULL * 1024ULL * 1024ULL;
 constexpr DXGI_FORMAT COLOR_FORMAT = DXGI_FORMAT_R8G8B8A8_UNORM;
 constexpr DXGI_FORMAT HDR_FORMAT = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -709,6 +711,7 @@ private:
 	void DrawShadows(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, bool bLocal);
 	bool UploadTexture(const std::vector<MipLevel> &arrLevels, bool bSrgb, std::uint32_t nView);
 	bool UploadFloatTexture(const std::vector<const FloatImage *> &arrImages, std::uint32_t nMips, std::uint32_t nView);
+	bool UploadEnvironmentImportance(const EnvironmentImportance &stImportance);
 	bool CreateEnvironment();
 	void DrawScene(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame);
 	void DrawLighting(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame);
@@ -830,6 +833,9 @@ private:
 	std::uint64_t nSceneTriangles = 0;
 	std::uint64_t nTextureUploadBytes = 0;
 	std::uint32_t nEnvironmentMips = 0;
+	std::uint32_t nEnvironmentAliasEntries = 0;
+	std::uint64_t nEnvironmentAliasBytes = 0;
+	ComOwner<ID3D12Resource> stEnvironmentAlias;
 	double dEnvironmentBuildMsec = 0;
 	ComOwner<ID3D12Resource> stVertices;
 	ComOwner<ID3D12Resource> stIndices;
@@ -1019,7 +1025,7 @@ bool VisualRuntime::Initialize()
 		return Fail("Create DSV heap");
 	}
 	stHeap.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	stHeap.NumDescriptors = ENVIRONMENT_VIEW_START + 3;
+	stHeap.NumDescriptors = ENVIRONMENT_VIEW_START + 4;
 	stHeap.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	if (FAILED(stDevice->CreateDescriptorHeap(&stHeap, IID_PPV_ARGS(stViewHeap.Put()))))
 	{
@@ -1689,6 +1695,58 @@ bool VisualRuntime::UploadFloatTexture(const std::vector<const FloatImage *> &ar
 	return true;
 }
 
+bool VisualRuntime::UploadEnvironmentImportance(const EnvironmentImportance &stImportance)
+{
+	const std::uint64_t nBytes = stImportance.arrEntries.size() * sizeof(EnvironmentAliasEntry);
+	if (stImportance.arrEntries.empty() || nBytes > MAX_TEXTURE_UPLOAD_BYTES - nTextureUploadBytes)
+	{
+		return Fail("Environment importance upload budget exceeded");
+	}
+	const D3D12_RESOURCE_DESC stDescription = BufferDescription(nBytes);
+	const D3D12_HEAP_PROPERTIES stDefault = HeapProperties(D3D12_HEAP_TYPE_DEFAULT);
+	const D3D12_HEAP_PROPERTIES stUploadHeap = HeapProperties(D3D12_HEAP_TYPE_UPLOAD);
+	ComOwner<ID3D12Resource> stUpload;
+	if (FAILED(stDevice->CreateCommittedResource(&stDefault, D3D12_HEAP_FLAG_NONE, &stDescription,
+												 D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(stEnvironmentAlias.Put()))) ||
+		FAILED(stDevice->CreateCommittedResource(&stUploadHeap, D3D12_HEAP_FLAG_NONE, &stDescription,
+												 D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(stUpload.Put()))))
+	{
+		return Fail("Create environment importance buffers");
+	}
+	void *pMapped = nullptr;
+	const D3D12_RANGE stNoRead{ 0, 0 };
+	if (FAILED(stUpload->Map(0, &stNoRead, &pMapped)))
+	{
+		return Fail("Map environment importance upload");
+	}
+	std::memcpy(pMapped, stImportance.arrEntries.data(), static_cast<std::size_t>(nBytes));
+	stUpload->Unmap(0, nullptr);
+	ID3D12GraphicsCommandList *pList = arrFrames[0].stGraphicsList.Get();
+	D3D12_RESOURCE_BARRIER stBarrier{};
+	stBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	stBarrier.Transition.pResource = stEnvironmentAlias.Get();
+	stBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
+	stBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_DEST;
+	stBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	pList->ResourceBarrier(1, &stBarrier);
+	pList->CopyBufferRegion(stEnvironmentAlias.Get(), 0, stUpload.Get(), 0, nBytes);
+	stBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	stBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+	pList->ResourceBarrier(1, &stBarrier);
+	D3D12_SHADER_RESOURCE_VIEW_DESC stSrv{};
+	stSrv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	stSrv.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	stSrv.Buffer.NumElements = static_cast<UINT>(stImportance.arrEntries.size());
+	stSrv.Buffer.StructureByteStride = sizeof(EnvironmentAliasEntry);
+	stDevice->CreateShaderResourceView(stEnvironmentAlias.Get(), &stSrv, View(ENVIRONMENT_ALIAS_VIEW));
+	(void)stEnvironmentAlias->SetName(L"EngineNext.EnvironmentImportance");
+	nEnvironmentAliasEntries = stSrv.Buffer.NumElements;
+	nEnvironmentAliasBytes = nBytes;
+	nTextureUploadBytes += nBytes;
+	arrTextureUploads.push_back(std::move(stUpload));
+	return true;
+}
+
 bool VisualRuntime::CreateEnvironment()
 {
 	const std::chrono::steady_clock::time_point stStart = std::chrono::steady_clock::now();
@@ -1714,6 +1772,18 @@ bool VisualRuntime::CreateEnvironment()
 		!UploadFloatTexture({ &stEnvironment.stBrdfLut }, 1, ENVIRONMENT_VIEW_START + 2))
 	{
 		return false;
+	}
+	if (bMaterialExtensions)
+	{
+		EnvironmentImportance stImportance;
+		if (!BuildEnvironmentImportance(stEnvironment.arrPrefilteredMips[0], stImportance, strError))
+		{
+			return Fail(strError);
+		}
+		if (!UploadEnvironmentImportance(stImportance))
+		{
+			return false;
+		}
 	}
 	dEnvironmentBuildMsec = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - stStart).count();
 	return true;
@@ -2054,7 +2124,7 @@ bool VisualRuntime::CreateDeferredPipeline()
 	}
 	for (std::uint32_t nPipeline = 0; nPipeline < 2; ++nPipeline)
 	{
-		std::array<D3D12_DESCRIPTOR_RANGE, 7> arrDescriptorRanges{};
+		std::array<D3D12_DESCRIPTOR_RANGE, 8> arrDescriptorRanges{};
 		arrDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 		arrDescriptorRanges[0].NumDescriptors = 5;
 		arrDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
@@ -2074,7 +2144,10 @@ bool VisualRuntime::CreateDeferredPipeline()
 		arrDescriptorRanges[6].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 		arrDescriptorRanges[6].NumDescriptors = 2;
 		arrDescriptorRanges[6].BaseShaderRegister = 12;
-		std::array<D3D12_ROOT_PARAMETER, 7> arrParameters{};
+		arrDescriptorRanges[7].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+		arrDescriptorRanges[7].NumDescriptors = 1;
+		arrDescriptorRanges[7].BaseShaderRegister = 15;
+		std::array<D3D12_ROOT_PARAMETER, 8> arrParameters{};
 		arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 		arrParameters[0].Descriptor.ShaderRegister = nPipeline == 0 ? 0 : 1;
 		arrParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
@@ -2101,7 +2174,9 @@ bool VisualRuntime::CreateDeferredPipeline()
 			{
 				arrParameters[6] = arrParameters[2];
 				arrParameters[6].DescriptorTable.pDescriptorRanges = &arrDescriptorRanges[6];
-				stRoot.NumParameters = 7;
+				arrParameters[7] = arrParameters[2];
+				arrParameters[7].DescriptorTable.pDescriptorRanges = &arrDescriptorRanges[7];
+				stRoot.NumParameters = 8;
 			}
 		}
 		else
@@ -2691,7 +2766,7 @@ bool VisualRuntime::CreateTransparencyPipeline()
 	{
 		return Fail("Missing transparent shader bundle");
 	}
-	std::array<D3D12_DESCRIPTOR_RANGE, 9> arrDescriptorRanges{};
+	std::array<D3D12_DESCRIPTOR_RANGE, 10> arrDescriptorRanges{};
 	arrDescriptorRanges[0] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 5, 0, 0, 0 };
 	arrDescriptorRanges[1] = { D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 5, 0, 0, 0 };
 	arrDescriptorRanges[2] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5, 0, 0 };
@@ -2701,7 +2776,8 @@ bool VisualRuntime::CreateTransparencyPipeline()
 	arrDescriptorRanges[6] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 12, 0, 0 };
 	arrDescriptorRanges[7] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 13, 0, 0 };
 	arrDescriptorRanges[8] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 14, 0, 0 };
-	std::array<D3D12_ROOT_PARAMETER, 13> arrParameters{};
+	arrDescriptorRanges[9] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 15, 0, 0 };
+	std::array<D3D12_ROOT_PARAMETER, 14> arrParameters{};
 	for (std::uint32_t nIndex = 0; nIndex < 2; ++nIndex)
 	{
 		arrParameters[nIndex].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -2733,7 +2809,7 @@ bool VisualRuntime::CreateTransparencyPipeline()
 	stEnvironmentSampler.ShaderRegister = 5;
 	stEnvironmentSampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	D3D12_ROOT_SIGNATURE_DESC stRoot{};
-	stRoot.NumParameters = static_cast<UINT>(arrParameters.size());
+	stRoot.NumParameters = bMaterialExtensions ? 14U : 13U;
 	stRoot.pParameters = arrParameters.data();
 	stRoot.NumStaticSamplers = 1;
 	stRoot.pStaticSamplers = &stEnvironmentSampler;
@@ -3066,6 +3142,10 @@ void VisualRuntime::DrawTransparency(ID3D12GraphicsCommandList *pList, std::uint
 	pList->SetGraphicsRootDescriptorTable(10, GpuView(nFrame * FRAME_VIEW_COUNT));
 	pList->SetGraphicsRootDescriptorTable(11, GpuView(nFrame * FRAME_VIEW_COUNT + VOLUME_INTEGRAL_VIEW));
 	pList->SetGraphicsRootDescriptorTable(12, GpuView(nFrame * FRAME_VIEW_COUNT + VOLUME_HISTORY_WRITE_VIEW));
+	if (bMaterialExtensions)
+	{
+		pList->SetGraphicsRootDescriptorTable(13, GpuView(ENVIRONMENT_ALIAS_VIEW));
+	}
 	const UINT nSamplerStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 	for (const ForwardDrawItem &stItem : arrForwardDraws)
 	{
@@ -3193,14 +3273,14 @@ bool VisualRuntime::CreateReflectionPipeline()
 	{
 		return true;
 	}
-	std::array<D3D12_DESCRIPTOR_RANGE, 16> arrDescriptorRanges{};
-	std::array<D3D12_ROOT_PARAMETER, 18> arrParameters{};
+	std::array<D3D12_DESCRIPTOR_RANGE, 17> arrDescriptorRanges{};
+	std::array<D3D12_ROOT_PARAMETER, 19> arrParameters{};
 	arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 	arrParameters[0].Constants.Num32BitValues = 16;
 	arrParameters[0].Constants.ShaderRegister = 0;
 	arrParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	arrParameters[1].Descriptor.ShaderRegister = 1;
-	const std::uint32_t nRangeCount = bMaterialExtensions ? 16U : 12U;
+	const std::uint32_t nRangeCount = bMaterialExtensions ? 17U : 12U;
 	for (std::uint32_t nRange = 0; nRange < nRangeCount; ++nRange)
 	{
 		D3D12_DESCRIPTOR_RANGE &stRange = arrDescriptorRanges[nRange];
@@ -4179,6 +4259,7 @@ void VisualRuntime::DrawLighting(ID3D12GraphicsCommandList *pList, std::uint32_t
 	if (bMaterialExtensions)
 	{
 		pList->SetGraphicsRootDescriptorTable(6, GpuView(nFrame * FRAME_VIEW_COUNT + MATERIAL_PARAMETERS_VIEW));
+		pList->SetGraphicsRootDescriptorTable(7, GpuView(ENVIRONMENT_ALIAS_VIEW));
 	}
 	pList->DrawInstanced(3, 1, 0, 0);
 }
@@ -4322,6 +4403,7 @@ void VisualRuntime::DrawReflections(ID3D12GraphicsCommandList *pList, std::uint3
 			pList->SetComputeRootDescriptorTable(15, GpuView(nStart + MATERIAL_PARAMETERS_VIEW + 1));
 			pList->SetComputeRootDescriptorTable(16, GpuView(ENVIRONMENT_VIEW_START + 1));
 			pList->SetComputeRootDescriptorTable(17, GpuView(nStart + 26));
+			pList->SetComputeRootDescriptorTable(18, GpuView(ENVIRONMENT_ALIAS_VIEW));
 		}
 	}
 	else
@@ -5387,6 +5469,8 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["environment_samples"] = JsonValue(static_cast<std::int64_t>(bSceneMode ? 128 : 0));
 	mapReport["environment_mips"] = JsonValue(static_cast<std::int64_t>(nEnvironmentMips));
 	mapReport["environment_build_msec"] = JsonValue(dEnvironmentBuildMsec);
+	mapReport["environment_importance_entries"] = JsonValue(static_cast<std::int64_t>(nEnvironmentAliasEntries));
+	mapReport["environment_importance_bytes"] = JsonValue(static_cast<std::int64_t>(nEnvironmentAliasBytes));
 	mapReport["texture_upload_bytes"] = JsonValue(static_cast<std::int64_t>(nTextureUploadBytes));
 	mapReport["draw_instances"] = JsonValue(static_cast<std::int64_t>(arrDraws.size()));
 	mapReport["scene_triangles"] = JsonValue(static_cast<std::int64_t>(nSceneTriangles));
