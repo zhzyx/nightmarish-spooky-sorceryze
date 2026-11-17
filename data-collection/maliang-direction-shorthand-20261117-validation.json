@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-direction-shorthand-20261117",
+  "issue_number": 1392,
+  "date": "2026-11-17",
+  "state": "validated_candidate",
+  "evidence_scope": "Sanitized local parser, fake-provider and native validation evidence; no credentials, private URLs, absolute private paths or raw generation logs.",
+  "integrated_main_base": "f39bc9028958e5395d8ec38c6bbcc0bc577a480e",
+  "editor_sha256": "38db86ddce6b69fe84e5e830cf06c0fe44adaed35387ae8bb08571ced1f2283f",
+  "reported_prompt_plan": {
+    "before": ["俯视", "面部细节"],
+    "after": ["正面", "背面", "左侧面", "右侧面", "俯视", "面部正面特写", "面部左侧特写", "面部右侧特写"],
+    "expected_count": 8,
+    "multiview_face_closeup_count": 3,
+    "manual_output_count_or_labels_used": false
+  },
+  "local_validation": {
+    "multi_image_provider_and_host_tests": {"run": 18, "passed": 18, "failed": 0},
+    "full_ainative_suite": {"run": 434, "failed": 0, "skipped_by_platform_or_condition": 62},
+    "ruff_format": "passed",
+    "ruff_check": "passed",
+    "git_diff_check": "passed",
+    "native_build": {"platform": "macos", "architecture": "arm64", "passed": true},
+    "native_scenarios": {
+      "passed": ["mesh-and-rig", "independent-project", "sample-addon-compatibility", "relocated-runtime"],
+      "installed_bundle_matches_source": true,
+      "report": ".kimi-output/native-bundle.json"
+    }
+  },
+  "derivation_contract": {
+    "unchanged": true,
+    "primary_image_generated_first": true,
+    "other_views_reference_primary": true,
+    "fake_inference_is_not_real_visual_acceptance": true
+  },
+  "real_model_inference": false,
+  "known_unfixed_scope": {
+    "editor_exit_rid_objectdb_warnings_remain": true,
+    "claimed_as_fixed_by_this_change": false
+  },
+  "independent_code_review": "pending; no self-review is presented as independent approval"
+}
