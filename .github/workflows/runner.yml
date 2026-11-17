@@ -75,6 +75,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/godot-deps
+      - name: Install pinned WebView2 SDK for editor objects
+        run: python tools/install_webview2.py
       - name: Install Direct3D 12 SDK for affected driver objects
         if: needs.static-checks.outputs.needs-d3d12 == 'true'
         run: python misc/scripts/install_d3d12_sdk_windows.py --msvc-only

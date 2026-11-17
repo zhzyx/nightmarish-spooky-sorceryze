@@ -26,7 +26,18 @@ def main_revision(workspace):
     if remote != head:
         raise ValueError("Update the primary checkout to the current origin/main before installing")
     subprocess.run(
-        ["git", "-C", workspace, "diff", "--quiet", head, "--", "tools/codex_cli", "tools/codebuddy_cli"],
+        [
+            "git",
+            "-C",
+            workspace,
+            "diff",
+            "--quiet",
+            head,
+            "--",
+            "tools/codex_cli",
+            "tools/codebuddy_cli",
+            "thirdparty/webview2/manifest.json",
+        ],
         check=True,
     )
     return head
@@ -48,6 +59,22 @@ def local_receipt(folder, revision, hashes):
     raise ValueError("No matching clean main build receipt for the staged files")
 
 
+def webview2_files(workspace, folder):
+    manifest_path = workspace / "thirdparty/webview2/manifest.json"
+    if not manifest_path.is_file():
+        return []  # Older revisions predate the embedded browser.
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    mapping = {
+        "WebView2Loader.dll": "build/native/x64/WebView2Loader.dll",
+        "WebView2-LICENSE.txt": "LICENSE.txt",
+        "WebView2-NOTICE.txt": "NOTICE.txt",
+    }
+    for name, source in mapping.items():
+        if not (folder / name).is_file() or digest(folder / name) != manifest["files"][source]:
+            raise ValueError(f"Missing or unverified WebView2 distribution file: {name}")
+    return list(mapping)
+
+
 def stage(workspace, output, folder, run):
     revision = main_revision(workspace)
     with tempfile.TemporaryDirectory(dir=output) as tmp:
@@ -59,13 +86,13 @@ def stage(workspace, output, folder, run):
             receipt = json.loads((folder / RECEIPT).read_text(encoding="utf-8"))
             if receipt["revision"] != revision:
                 raise ValueError("Actions run does not match the current main revision")
-        names = list(FILES)
+        names = list(FILES) + webview2_files(workspace, folder)
         if run:
             if not (folder / CONSOLE).is_file():
                 if "windows_subsystem=console" not in receipt["inputs"]["flags"]:
                     raise ValueError("Editor artifact lacks a console entry")
                 names.remove(CONSOLE)
-            names.extend(path.name for path in folder.glob("*.dll"))
+            names.extend(path.name for path in folder.glob("*.dll") if path.name not in names)
         for name in names:
             shutil.copyfile(folder / name, output / name)
         if not run:

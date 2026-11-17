@@ -104,6 +104,26 @@ class NativeCacheTests(unittest.TestCase):
         self.assertEqual(self.runs, 1)
         self.assertEqual(self.env, {"CODEX_TOOL_CALL_ID": "consumer"})
 
+    def test_cache_restores_webview2_loader_and_licenses_into_empty_bin(self):
+        sidecars = ["WebView2Loader.dll", "WebView2-LICENSE.txt", "WebView2-NOTICE.txt"]
+        self.probe["generated"] = [*self.outputs, *["bin/" + name for name in sidecars]]
+
+        def produce():
+            self.produce()
+            for name in sidecars:
+                (self.artifact.parent / name).write_text(name)
+
+        initial = self.build(produce)
+        self.assertEqual(initial["status"], "built")
+        for file in self.artifact.parent.iterdir():
+            if file.is_file():
+                file.unlink()
+        restored = self.build(produce)
+        self.assertEqual(restored["status"], "hit")
+        self.assertEqual(self.runs, 1)
+        for name in sidecars:
+            self.assertEqual((self.artifact.parent / name).read_text(), name)
+
     def test_governance_and_external_package_edits_require_graph_evidence(self):
         detached = [
             "work-items.json",

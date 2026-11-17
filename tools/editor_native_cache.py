@@ -407,7 +407,14 @@ def identify(root, options, artifact, env, cancelled=None):
         if console not in generated:
             raise CacheUnavailable("console artifact not in configured graph")
         outputs.append(console)
-    outputs.extend(sorted(n for n in generated if n.startswith("bin/") and n.lower().endswith(".dll")))
+    outputs.extend(
+        sorted(
+            n
+            for n in generated
+            if n.startswith("bin/")
+            and (n.lower().endswith(".dll") or n in {"bin/WebView2-LICENSE.txt", "bin/WebView2-NOTICE.txt"})
+        )
+    )
     identity = {
         "version": 1,
         "options": {k: v for k, v in options.items() if k not in resources},

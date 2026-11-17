@@ -110,7 +110,7 @@ bool IsWebPlatformNavigationAllowed(const std::string &strUrl, const std::string
 	return !strOrigin.empty() && ParseWebPlatformOrigin(strTarget, strActualOrigin) && strActualOrigin == strOrigin;
 }
 
-#ifndef MACOS_ENABLED
+#if !defined(MACOS_ENABLED) && !defined(WEB_PLATFORM_WEBVIEW2_ENABLED)
 WebPlatformNative *WebPlatformNative::Create(void *, const std::string &)
 {
 	return nullptr;

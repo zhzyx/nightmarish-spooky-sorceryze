@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a43bf881bbfd874945956a149ccf8f2fabe05667",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-windows-web-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "58b3c98e8e7d135146883f11ab707f5e40ac01a36eee290a50dfa842d1e8ad91",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1467",
+    "action": "dispatch",
+    "detection_head": "c6a88218a5ebb2d692e43742afb3a13cc9815938",
+    "context_sha256": "61ec3605973ea7a67cdb5ceb4d0c07f931bb77dece4b7c3e308278584afcec4d",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-request-20261118-godot-windows",
+    "evidence": "codex:collaboration.list_agents:sinan_d2d5736efcd9507a:completed",
+    "diagnosis": "Host supplied worker.completed instead of supported execution.finished; corrected event and actual native worker completion verified, reconciliation succeeded. No product defect or duplicate launch.",
+    "next_action": "Continue independent review and runtime CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T19:09:19.999797+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T19:12:02.621062+00:00",
+  "sha256": "171831ad4f1dc483a114d5412662696e1e94a3401ed59a9aa4644d6364f5f825"
+}
