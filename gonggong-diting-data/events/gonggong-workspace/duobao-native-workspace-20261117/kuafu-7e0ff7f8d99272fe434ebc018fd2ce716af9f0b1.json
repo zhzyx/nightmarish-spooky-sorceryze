@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7e0ff7f8d99272fe434ebc018fd2ce716af9f0b1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-workspace-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1414",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ae2ea164f973dcb6e1b92ab71f26f7785e0be108b2cbeb475d80cdb81a5d0565",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1414",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1416",
+    "action": "delivery",
+    "detection_head": "704e179de4e44b277be46dafebda4e0cfa7f46f6",
+    "context_sha256": "dbad183496baf7c7791f6b61fc091989c7bf44f9f481423543b3b4c0f05179ea",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "data-collection/duobao-native-workspace-delivery-review-1414.json",
+    "diagnosis": "codespell write-changes rewrote intentional wording in immutable learning event; original index bytes restored, exact event skip independently reviewed, comment fixed; nonmutating codespell passes and product hashes unchanged.",
+    "next_action": "Stage reviewed configuration and evidence, retry writer submission, then verify exact CI and main delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T09:59:14.895797+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T10:15:57.943676+00:00",
+  "sha256": "b7d4462786b9a7362836a47bb25e54b9c9801d4db58cd05ef3fceebfd92a9087"
+}

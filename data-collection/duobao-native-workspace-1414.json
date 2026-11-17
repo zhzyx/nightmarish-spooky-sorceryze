@@ -1,0 +1,132 @@
+{
+  "issue_number": 1414,
+  "request_id": "duobao-native-workspace-20261117",
+  "state": "independently_reviewed_pending_delivery",
+  "initial_implementation": {
+    "issue": "github:zhzyx/nightmarish-spooky-sorceryze#1414",
+    "state": "local_windows_verified_pending_independent_review_linux_delivery",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+    "placement": "host_tool",
+    "path_base": "repository_root",
+    "inputs": {
+      "customizations/components/tianxuan/duobao/native_workspace.py": "b0479162a6c36fed27eb12d4a9d4838fced4fb9b20207871aa2df92854922701",
+      "customizations/components/tianxuan/duobao/native_workspace_cli.py": "a750bd1665226037ce467ce20a7a634d8dffacadf8ccd4462d99057c96ad1402",
+      "customizations/components/tianxuan/duobao/test_native_workspace.py": "946b5745e667673e6e72641ef4313fb4d5c72a51391ab8fcee228569203d9093",
+      "customizations/components/tianxuan/duobao/native_workspace.md": "9e88d81dacd6e8b44d2209b481413a265648699dc143629aa787aab8cc1da6a8",
+      "customizations/components/tianxuan/duobao/native_store.py": "2e8c149703a81ff50d0f2c4c0894fea427745172005126dbefc9cf7f2f56129a"
+    },
+    "checks": [
+      {
+        "name": "host_behavior",
+        "command": "py -X utf8 -m unittest discover -s customizations/components/tianxuan/duobao -p test_native_workspace.py -v",
+        "passed": true,
+        "tests_run": 11,
+        "skipped": [
+          {
+            "test": "test_links_rejected (test_native_workspace.WorkspaceTests.test_links_rejected)",
+            "reason": "Host cannot create symlink: [WinError 1314] 客户端没有所需的特权。: 'C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\tmpa172g_2n\\\\native.sqlite' -> 'C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\tmpa172g_2n\\\\work\\\\app\\\\link'"
+          },
+          {
+            "test": "test_nonregular_file_rejected (test_native_workspace.WorkspaceTests.test_nonregular_file_rejected)",
+            "reason": "POSIX fifo test"
+          }
+        ],
+        "output": "test_cli_empty_path_roundtrip_restart (test_native_workspace.WorkspaceTests.test_cli_empty_path_roundtrip_restart) ... ok\ntest_cross_module_atomic_success (test_native_workspace.WorkspaceTests.test_cross_module_atomic_success) ... ok\ntest_delta_pagination_binary_empty_binding_and_transfer (test_native_workspace.WorkspaceTests.test_delta_pagination_binary_empty_binding_and_transfer) ... ok\ntest_links_rejected (test_native_workspace.WorkspaceTests.test_links_rejected) ... skipped \"Host cannot create symlink: [WinError 1314] 客户端没有所需的特权。: 'C:\\\\\\\\Users\\\\\\\\ROG\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\tmpa172g_2n\\\\\\\\native.sqlite' -> 'C:\\\\\\\\Users\\\\\\\\ROG\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\tmpa172g_2n\\\\\\\\work\\\\\\\\app\\\\\\\\link'\"\ntest_nonregular_file_rejected (test_native_workspace.WorkspaceTests.test_nonregular_file_rejected) ... skipped 'POSIX fifo test'\ntest_paths_aliases_and_existing_destination (test_native_workspace.WorkspaceTests.test_paths_aliases_and_existing_destination) ... ok\ntest_resource_limits (test_native_workspace.WorkspaceTests.test_resource_limits) ... ok\ntest_scan_unknown_module_and_directory_budget (test_native_workspace.WorkspaceTests.test_scan_unknown_module_and_directory_budget) ... ok\ntest_source_corruption_and_write_failure_unpublished (test_native_workspace.WorkspaceTests.test_source_corruption_and_write_failure_unpublished) ... ok\ntest_unrelated_drift_pins_and_atomic_conflict (test_native_workspace.WorkspaceTests.test_unrelated_drift_pins_and_atomic_conflict) ... ok\ntest_windows_junction_rejected (test_native_workspace.WorkspaceTests.test_windows_junction_rejected) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 1.290s\n\nOK (skipped=2)\n"
+      }
+    ],
+    "transfer": {
+      "unchanged_large_object_bytes": 100000,
+      "delta_json_utf8_bytes": 2981,
+      "pages": 4,
+      "tokens": "not_measured"
+    },
+    "method_recall": {
+      "tenant": "gonggong-workspace",
+      "scope": "content-storage-integrity",
+      "lessons": [],
+      "unavailable": []
+    },
+    "cleanup": {
+      "temporary_databases_snapshots": "TemporaryDirectory cleanup completed",
+      "production_changes": false,
+      "retained": "Five requested implementation/document/evidence files for parent review and delivery"
+    },
+    "limitations": [
+      "Trusted local host and single responsible writer; no adversarial same-machine OS sandbox",
+      "Windows symlink creation privilege unavailable; real Windows junction rejection passed",
+      "Linux execution and independent review delegated to parent",
+      "No model token measurement or production workflow/install claim",
+      "Candidate and received states are not approvals or releases"
+    ]
+  },
+  "final_source_bindings": [
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace.py",
+      "sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "bytes": 15265,
+      "git_blob_raw": "8e6334622cd69d6a710eed9786ce1c879588fff1",
+      "git_blob_filtered": "8e6334622cd69d6a710eed9786ce1c879588fff1"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace_cli.py",
+      "sha256": "1bc61a3165c58ac918af8a0874fc8c85db7ee6cb8946f2e95ddbeb088f4038fa",
+      "bytes": 2500,
+      "git_blob_raw": "829c35b6d182e1fb1a03961ba680f6bfb00c498e",
+      "git_blob_filtered": "829c35b6d182e1fb1a03961ba680f6bfb00c498e"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/test_native_workspace.py",
+      "sha256": "e2492c64842db53a5c89748276f00f6af9ce5629f6be8d506368e7f90efa4d56",
+      "bytes": 12049,
+      "git_blob_raw": "6884801db58a40db44956d5a185e0356833f8971",
+      "git_blob_filtered": "6884801db58a40db44956d5a185e0356833f8971"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace.md",
+      "sha256": "9e88d81dacd6e8b44d2209b481413a265648699dc143629aa787aab8cc1da6a8",
+      "bytes": 6119,
+      "git_blob_raw": "3fc43aa50f0f835766e87b99aa73fec84e68e9c6",
+      "git_blob_filtered": "3fc43aa50f0f835766e87b99aa73fec84e68e9c6"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_store.py",
+      "sha256": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+      "bytes": 15645,
+      "git_blob_raw": "1503687c9add396cd2ff7a9902f21f263431e997",
+      "git_blob_filtered": "1503687c9add396cd2ff7a9902f21f263431e997"
+    }
+  ],
+  "final_validation": {
+    "local_native_tests": 46,
+    "local_skipped": 2,
+    "local_output": "test_corrupt_request_reference_does_not_replay_another_run (test_native_evidence.EvidenceTests.test_corrupt_request_reference_does_not_replay_another_run) ... ok\ntest_dependency_content_corruption_rejects_cached_fact (test_native_evidence.EvidenceTests.test_dependency_content_corruption_rejects_cached_fact) ... ok\ntest_disjoint_object_and_unrelated_module_reuse_original_fact (test_native_evidence.EvidenceTests.test_disjoint_object_and_unrelated_module_reuse_original_fact) ... ok\ntest_durable_replay_and_conflicting_reuse (test_native_evidence.EvidenceTests.test_durable_replay_and_conflicting_reuse) ... ok\ntest_exact_dependency_change_invalidates (test_native_evidence.EvidenceTests.test_exact_dependency_change_invalidates) ... ok\ntest_expiry_future_clock_and_runner_revocation_are_checked_on_lookup (test_native_evidence.EvidenceTests.test_expiry_future_clock_and_runner_revocation_are_checked_on_lookup) ... ok\ntest_failed_unknown_and_revoked_latest_fact_never_fall_back_to_old_pass (test_native_evidence.EvidenceTests.test_failed_unknown_and_revoked_latest_fact_never_fall_back_to_old_pass) ... ok\ntest_host_scope_is_copied_and_caller_cannot_install_unknown_check (test_native_evidence.EvidenceTests.test_host_scope_is_copied_and_caller_cannot_install_unknown_check) ... ok\ntest_input_and_evidence_corruption_never_return_pass (test_native_evidence.EvidenceTests.test_input_and_evidence_corruption_never_return_pass) ... ok\ntest_invalid_policy_log_context_and_revoker_rejected (test_native_evidence.EvidenceTests.test_invalid_policy_log_context_and_revoker_rejected) ... ok\ntest_read_change_delete_and_missing_creation_invalidate (test_native_evidence.EvidenceTests.test_read_change_delete_and_missing_creation_invalidate) ... ok\ntest_rule_toolchain_environment_and_parameters_invalidate (test_native_evidence.EvidenceTests.test_rule_toolchain_environment_and_parameters_invalidate) ... ok\ntest_same_request_parallel_records_have_one_identity (test_native_evidence.EvidenceTests.test_same_request_parallel_records_have_one_identity) ... ok\ntest_storage_failure_rolls_back_evidence_and_retry_succeeds (test_native_evidence.EvidenceTests.test_storage_failure_rolls_back_evidence_and_retry_succeeds) ... ok\ntest_tenants_do_not_share_cached_evidence (test_native_evidence.EvidenceTests.test_tenants_do_not_share_cached_evidence) ... ok\ntest_unknown_and_whole_module_scopes_are_conservative (test_native_evidence.EvidenceTests.test_unknown_and_whole_module_scopes_are_conservative) ... ok\ntest_250_independent_connections_no_global_revision_retries (test_native_store.NativeStoreTests.test_250_independent_connections_no_global_revision_retries) ... ok\ntest_batch_atomicity_on_late_missing_dependency (test_native_store.NativeStoreTests.test_batch_atomicity_on_late_missing_dependency) ... ok\ntest_batch_cycle_and_missing_batch_member_reject_atomically (test_native_store.NativeStoreTests.test_batch_cycle_and_missing_batch_member_reject_atomically) ... ok\ntest_batch_dependencies_and_immutable_composition (test_native_store.NativeStoreTests.test_batch_dependencies_and_immutable_composition) ... ok\ntest_changed_read_and_unknown_read_reject_with_unchanged_state (test_native_store.NativeStoreTests.test_changed_read_and_unknown_read_reject_with_unchanged_state) ... ok\ntest_cli_actual_json_boundary_and_invalid_base64 (test_native_store.NativeStoreTests.test_cli_actual_json_boundary_and_invalid_base64) ... ok\ntest_competing_writers_one_wins_without_silent_overwrite (test_native_store.NativeStoreTests.test_competing_writers_one_wins_without_silent_overwrite) ... ok\ntest_corrupt_dedup_hit_rejects_entire_batch_without_receipt (test_native_store.NativeStoreTests.test_corrupt_dedup_hit_rejects_entire_batch_without_receipt) ... ok\ntest_corruption_is_not_returned_as_valid_content (test_native_store.NativeStoreTests.test_corruption_is_not_returned_as_valid_content) ... ok\ntest_delete_prefix_conflict_and_invalid_input (test_native_store.NativeStoreTests.test_delete_prefix_conflict_and_invalid_input) ... ok\ntest_idempotency_after_restart_and_conflicting_reuse (test_native_store.NativeStoreTests.test_idempotency_after_restart_and_conflicting_reuse) ... ok\ntest_missing_read_detects_concurrent_creation (test_native_store.NativeStoreTests.test_missing_read_detects_concurrent_creation) ... ok\ntest_no_git_network_or_process_is_required (test_native_store.NativeStoreTests.test_no_git_network_or_process_is_required) ... ok\ntest_same_module_disjoint_old_base_changes_preserve_both (test_native_store.NativeStoreTests.test_same_module_disjoint_old_base_changes_preserve_both) ... ok\ntest_same_request_concurrency_returns_one_durable_result (test_native_store.NativeStoreTests.test_same_request_concurrency_returns_one_durable_result) ... ok\ntest_tenant_and_module_revision_isolation (test_native_store.NativeStoreTests.test_tenant_and_module_revision_isolation) ... ok\ntest_transaction_storage_failure_rolls_back_and_retry_succeeds (test_native_store.NativeStoreTests.test_transaction_storage_failure_rolls_back_and_retry_succeeds) ... ok\ntest_unrelated_module_drift_never_invalidates_fixed_work (test_native_store.NativeStoreTests.test_unrelated_module_drift_never_invalidates_fixed_work) ... ok\ntest_cli_empty_path_roundtrip_restart (test_native_workspace.WorkspaceTests.test_cli_empty_path_roundtrip_restart) ... ok\ntest_cross_module_atomic_success (test_native_workspace.WorkspaceTests.test_cross_module_atomic_success) ... ok\ntest_delta_pagination_binary_empty_binding_and_transfer (test_native_workspace.WorkspaceTests.test_delta_pagination_binary_empty_binding_and_transfer) ... ok\ntest_links_rejected (test_native_workspace.WorkspaceTests.test_links_rejected) ... skipped \"Host cannot create symlink: [WinError 1314] 客户端没有所需的特权。: 'C:\\\\\\\\Users\\\\\\\\ROG\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\tmp5799h4nc\\\\\\\\native.sqlite' -> 'C:\\\\\\\\Users\\\\\\\\ROG\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\tmp5799h4nc\\\\\\\\work\\\\\\\\app\\\\\\\\link'\"\ntest_nonregular_file_rejected (test_native_workspace.WorkspaceTests.test_nonregular_file_rejected) ... skipped 'POSIX fifo test'\ntest_paths_aliases_and_existing_destination (test_native_workspace.WorkspaceTests.test_paths_aliases_and_existing_destination) ... ok\ntest_resource_limits (test_native_workspace.WorkspaceTests.test_resource_limits) ... ok\ntest_scan_unknown_module_and_directory_budget (test_native_workspace.WorkspaceTests.test_scan_unknown_module_and_directory_budget) ... ok\ntest_source_corruption_and_write_failure_unpublished (test_native_workspace.WorkspaceTests.test_source_corruption_and_write_failure_unpublished) ... ok\ntest_unknown_reads_reject_drift_before_decoding_new_head (test_native_workspace.WorkspaceTests.test_unknown_reads_reject_drift_before_decoding_new_head) ... ok\ntest_unrelated_drift_pins_and_atomic_conflict (test_native_workspace.WorkspaceTests.test_unrelated_drift_pins_and_atomic_conflict) ... ok\ntest_windows_junction_rejected (test_native_workspace.WorkspaceTests.test_windows_junction_rejected) ... ok\n\n----------------------------------------------------------------------\nRan 46 tests in 6.383s\n\nOK (skipped=2)\n",
+    "independent": "46 tests,44 passed2 platform skips; old implementation fails new targeted test, fixed implementation never decodes oversized drifted head",
+    "server": "12 tests,11 passed1 Windows-only skip; POSIX symlink/FIFO cases passed",
+    "review": "data-collection/duobao-native-workspace-review-1414.json",
+    "server_receipt": "data-collection/duobao-native-workspace-server-1414.json"
+  },
+  "defect": {
+    "issue_number": 1416,
+    "fix": "Reject unknown-read drift inside store transaction before loading current revision payload.",
+    "before_log": "test_unknown_reads_reject_drift_before_decoding_new_head (test_native_workspace.WorkspaceTests.test_unknown_reads_reject_drift_before_decoding_new_head) ... FAIL\n\n======================================================================\nFAIL: test_unknown_reads_reject_drift_before_decoding_new_head (test_native_workspace.WorkspaceTests.test_unknown_reads_reject_drift_before_decoding_new_head)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\GongGong-work\\duobao-native-workspace-20261117\\customizations\\components\\tianxuan\\duobao\\test_native_workspace.py\", line 120, in test_unknown_reads_reject_drift_before_decoding_new_head\n    workspace.submit(\"org\", \"actor\", \"bounded-conflict\", {\"bounded\": original}, target)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\GongGong-work\\duobao-native-workspace-20261117\\customizations\\components\\tianxuan\\duobao\\native_workspace.py\", line 271, in submit\n    return self.store.submit(tenant, actor, request_key, changes)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\GongGong-work\\duobao-native-workspace-20261117\\customizations\\components\\tianxuan\\duobao\\native_store.py\", line 246, in submit\n    latest = self._revision(db, tenant, module, current)\n  File \"C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\unittest\\mock.py\", line 1175, in __call__\n    return self._mock_call(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\unittest\\mock.py\", line 1179, in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\unittest\\mock.py\", line 1240, in _execute_mock_call\n    result = effect(*args, **kwargs)\n  File \"D:\\GongGong-work\\duobao-native-workspace-20261117\\customizations\\components\\tianxuan\\duobao\\test_native_workspace.py\", line 116, in observed\n    self.assertNotEqual(revision, advanced, \"known conflict decoded the unneeded new head\")\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 'b1cc212fd20bb28ff7d55fb7919a67875678d71ab018a0f91608ae510dcf2a04' == 'b1cc212fd20bb28ff7d55fb7919a67875678d71ab018a0f91608ae510dcf2a04' : known conflict decoded the unneeded new head\n\n----------------------------------------------------------------------\nRan 1 test in 0.086s\n\nFAILED (failures=1)\n"
+  },
+  "limits": [
+    "Trusted local host and single responsible writer; no adversarial same-machine OS sandbox",
+    "Windows symlink creation privilege unavailable; real Windows junction rejection passed",
+    "Linux execution and independent review delegated to parent",
+    "No model token measurement or production workflow/install claim",
+    "Candidate and received states are not approvals or releases"
+  ],
+  "cleanup": {
+    "temporary_databases_snapshots": "TemporaryDirectory cleanup completed",
+    "production_changes": false,
+    "retained": "Five requested implementation/document/evidence files for parent review and delivery"
+  },
+  "delivery_supplement": {
+    "review": "data-collection/duobao-native-workspace-delivery-review-1414.json",
+    "review_sha256": "6680aca716845e515ea9364f07ca2f2c67d11e77403015fe46bc6dbe596e8eed",
+    "integrated_tests": "data-collection/duobao-native-workspace-integrated-1414.json",
+    "spelling_recovery": "Restored immutable learning event from original index. Skip only its exact path; fixed comment; nonmutating independent codespell passed."
+  }
+}

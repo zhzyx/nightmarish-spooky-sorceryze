@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-978eeb614d7fd1c316cc695fd143ce3348e39aa8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-workspace-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1414",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "60c7a456bf7f35b55e50a9a969f1aaf0e886753e13b0b810f3c5d09a6ea94ebf",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1414",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1416",
+    "action": "validation",
+    "detection_head": "704e179de4e44b277be46dafebda4e0cfa7f46f6",
+    "context_sha256": "dbad183496baf7c7791f6b61fc091989c7bf44f9f481423543b3b4c0f05179ea",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1414",
+    "diagnosis": "Independent review and parent regression reproduced decoding drifted current head before inevitable unknown-read conflict. Moved rejection before current revision load within same NativeStore write transaction. Local46 native tests passed with2 platform skips; Linux12 workspace tests passed with1 Windows-only skip.",
+    "next_action": "Independent final review includes modified NativeStore, exact source bindings and full regression; formal delivery and original operation verification before closure.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T09:45:02.888275+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T09:54:32.936290+00:00",
+  "sha256": "d53ea7b528293223247b81e33930c702597670a7db651c568c6b612801847923"
+}

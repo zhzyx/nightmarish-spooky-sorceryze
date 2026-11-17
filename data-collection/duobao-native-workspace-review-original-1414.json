@@ -1,0 +1,165 @@
+{
+  "schema": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1414",
+  "reviewer": "independent native child agent /root/sinan_a8c8e9edcf924c85",
+  "reviewed_at": "2026-11-17T09:44:05.678610+00:00",
+  "verdict": "request_changes",
+  "root": "D:\\GongGong-work\\duobao-native-workspace-20261117",
+  "head": "704e179de4e44b277be46dafebda4e0cfa7f46f6",
+  "source_bindings": [
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace.py",
+      "sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "git_blob_raw": "8e6334622cd69d6a710eed9786ce1c879588fff1",
+      "git_blob_filtered": "8e6334622cd69d6a710eed9786ce1c879588fff1",
+      "bytes": 15265
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace_cli.py",
+      "sha256": "1bc61a3165c58ac918af8a0874fc8c85db7ee6cb8946f2e95ddbeb088f4038fa",
+      "git_blob_raw": "829c35b6d182e1fb1a03961ba680f6bfb00c498e",
+      "git_blob_filtered": "829c35b6d182e1fb1a03961ba680f6bfb00c498e",
+      "bytes": 2500
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/test_native_workspace.py",
+      "sha256": "37473b34c8bbbe2c07e6c5baf7ef3514895b8918132ccb2525cc7a02eaf0a3a9",
+      "git_blob_raw": "06be8e7f248b26cd0bf33347ecff8825fd6ee26a",
+      "git_blob_filtered": "06be8e7f248b26cd0bf33347ecff8825fd6ee26a",
+      "bytes": 10940
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace.md",
+      "sha256": "9e88d81dacd6e8b44d2209b481413a265648699dc143629aa787aab8cc1da6a8",
+      "git_blob_raw": "3fc43aa50f0f835766e87b99aa73fec84e68e9c6",
+      "git_blob_filtered": "3fc43aa50f0f835766e87b99aa73fec84e68e9c6",
+      "bytes": 6119
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_store.py",
+      "sha256": "2e8c149703a81ff50d0f2c4c0894fea427745172005126dbefc9cf7f2f56129a",
+      "git_blob_raw": "985a31e14bf3d1a15fc20bccac419250321f34ad",
+      "git_blob_filtered": "985a31e14bf3d1a15fc20bccac419250321f34ad",
+      "bytes": 15465
+    }
+  ],
+  "frozen_bindings_match": true,
+  "findings": [
+    {
+      "id": "R1",
+      "priority": "P2",
+      "title": "Reject conservative drift before allocating the new head revision",
+      "file": "customizations/components/tianxuan/duobao/native_store.py",
+      "line": 246,
+      "description": "NativeWorkspace.submit delegates to NativeStore.submit after checking only selected source metadata. On a drifted module NativeStore fetches and JSON-decodes latest current metadata before checking reads=None. Thus a normal store head created through the existing unrestricted NativeStore API can exceed the workspace request_bytes metadata ceiling and still be allocated on a submission which must reject anyway. This is not a malicious concurrent-process scenario.",
+      "observed": {
+        "request_bytes": 512,
+        "source_payload_bytes": 131,
+        "current_payload_bytes": 15683,
+        "json_loads_sizes": [
+          131,
+          131,
+          131,
+          15683
+        ],
+        "result": "Conflict: Unknown read dependencies after module drift: app",
+        "heads_unchanged": true
+      },
+      "reproduce": [
+        "Create app revision with edits {a: bytes(old)} using NativeStore.submit, base=None, reads=None.",
+        "Create NativeWorkspace(store, Limits(request_bytes=512)); materialize the old app revision to a fresh temporary snapshot.",
+        "Delete snapshot manifest, edit app/a to bytes(edit).",
+        "Advance app head through NativeStore.submit from the old base, adding extra0..extra199 each bytes(x).",
+        "Wrap native_store.json.loads with a delegating spy recording len(input.encode(UTF-8)); call workspace.submit with the original selected revision.",
+        "Observe 15683-byte current payload decoded before Conflict, despite 512-byte configured metadata ceiling."
+      ],
+      "suggested_fix": "Inside the existing transaction reject current != base with reads is None before loading latest. Retain request-key replay ordering and known read-set semantics. Add an allocation-bound regression asserting the new head is never decoded for conservative drift."
+    }
+  ],
+  "verification": {
+    "existing_suite": {
+      "command": "py -X utf8 -m unittest discover -s customizations/components/tianxuan/duobao -p test_native_workspace.py -v",
+      "tests": 11,
+      "passed": 9,
+      "skipped": 2,
+      "skip_reasons": [
+        "Windows host symlink creation denied with WinError 1314",
+        "POSIX FIFO requires POSIX"
+      ],
+      "exit_code": 0
+    },
+    "independent_adversarial": [
+      {
+        "name": "deleted_manifest_ignored_and_reads_None",
+        "passed": true
+      },
+      {
+        "name": "drift_head_metadata_allocated_over_limit",
+        "passed": false,
+        "finding": "R1"
+      },
+      {
+        "name": "incompatible_dependency_closure_unpublished",
+        "passed": true
+      },
+      {
+        "name": "existing_empty_destination_not_overwritten",
+        "passed": true
+      },
+      {
+        "name": "Windows_junction_ancestor_rejected",
+        "passed": true
+      },
+      {
+        "name": "case_prefix_NFC_device_aliases_rejected",
+        "passed": true
+      },
+      {
+        "name": "oversized_blob_rejected_before_store_read",
+        "passed": true
+      },
+      {
+        "name": "delta_cursor_binding_and_repeatability",
+        "passed": true
+      },
+      {
+        "name": "delta_exact_compact_item_byte_accounting",
+        "passed": true,
+        "item_bytes": 213,
+        "page_bytes": 350,
+        "compact_full_response_bytes": 603,
+        "interpretation": "Matches documented item-only budget; not a claim that total wire output fits page_bytes."
+      }
+    ],
+    "source_inspection": [
+      "Sources come from caller-supplied exact selected closure; mutable manifest is never parsed for authority.",
+      "Every changed module uses reads=None; dependency changes remain pinned to old exact revisions by documented contract.",
+      "Source blob length and selected revision metadata length checked before full decode/read.",
+      "Filesystem entries and ancestors reject reparse points and symlinks; staging destination publication and cleanup exercised by existing real-filesystem fault-injection tests.",
+      "Cross-module receive and conflict use one native store transaction; existing suite confirms no partial head change.",
+      "Real empty-PATH subprocess CLI roundtrip and restart in existing suite rerun successfully.",
+      "Cursor is a deterministic input-bound position, not an authenticated access credential."
+    ],
+    "method_recall": {
+      "scope": "editor-dependency-handoff",
+      "applicable": "bind-consumer-release: exact producer bytes and candidate bindings checked independently; mutated candidates require new receipt.",
+      "counterexample": "This review is not authority for downstream production/business acceptance."
+    }
+  },
+  "limitations": [
+    "Windows-only independent execution; Linux behavior not executed in this child.",
+    "Symlink privilege unavailable and FIFO platform skip are not passes.",
+    "Trusted single-writer local host assumption retained; no sandbox claim against malicious same-machine processes.",
+    "No complete production workflow integration, model token savings, commit, push, deploy or issue closure claimed.",
+    "Sources are uncommitted candidate files; HEAD alone is not the candidate binding."
+  ],
+  "cleanup": {
+    "temporary_directory_policy": "System TemporaryDirectory(prefix=duobao-independent-review-) removed on exit; junction explicitly removed before cleanup. Existing tests own their TemporaryDirectory cleanup.",
+    "verified_custom_test_directory_removed": true,
+    "product_source_mutations": false,
+    "bytecode_disabled": true,
+    "retained": [
+      "this review receipt"
+    ]
+  }
+}

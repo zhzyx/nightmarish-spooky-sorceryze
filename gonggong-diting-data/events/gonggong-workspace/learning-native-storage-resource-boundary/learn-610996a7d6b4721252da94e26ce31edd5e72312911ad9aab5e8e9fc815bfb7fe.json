@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-native-storage-resource-boundary",
+  "event_id": "learn-610996a7d6b4721252da94e26ce31edd5e72312911ad9aab5e8e9fc815bfb7fe",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1414",
+  "occurred_at": "2026-11-17T09:58:40.991507+00:00",
+  "evidence_refs": [
+    "codex-intake-1414-20261117"
+  ],
+  "payload": {
+    "scope": "native-storage-resource-boundary",
+    "lesson": "reject-known-conflict-before-loading",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Reject conflicts determined solely by immutable/base and current-head identities before decoding an unneeded revision, while preserving the same atomic transaction.",
+      "when": "A bounded execution adapter delegates conservative unknown-read submissions to a broader native content store.",
+      "counterexample": "Known object read sets need the latest object map to test disjointness; an outside-transaction preflight alone cannot prevent concurrent drift.",
+      "trial_plan": "At future adoption use a small snapshot budget and a legitimately grown current head; spy on decoding, require conflict before grown metadata is loaded and unchanged database; retain known-read merge and idempotency regressions."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/duobao-native-workspace-review-1414.json",
+        "sha256": "d8bd775a26f57f89a6db6b5e35c6593765a93dfc686508d19e30c8a3cfa9eb50"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/codex-intake-1414-20261117.json",
+      "sha256": "589e728904230712c08bba1cd8ec577075c77fcd010b011e7a203f2b76a7cfa3"
+    }
+  },
+  "sha256": "6e2ecef35de952535645b152b6de0efdf78fffff18058852e214f963dba3230b"
+}

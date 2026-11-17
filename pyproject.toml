@@ -61,6 +61,8 @@ check-hidden = true
 quiet-level = 3
 builtin = ["clear", "rare", "en-GB_to_en-US"]
 skip = [
+	# Preserve the exact recorded #1414 lesson and its checksum.
+	"gonggong-diting-data/events/gonggong-workspace/learning-native-storage-resource-boundary/learn-610996a7d6b4721252da94e26ce31edd5e72312911ad9aab5e8e9fc815bfb7fe.json",
 	".mailmap",
 	"*.desktop",
 	"*.gitignore",

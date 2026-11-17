@@ -1,0 +1,134 @@
+{
+  "schema": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1414",
+  "reviewer": "independent native child agent /root/sinan_43a3c0b2385bf035",
+  "reviewed_at": "2026-11-17T09:55:11.703104+00:00",
+  "verdict": "approve",
+  "root": "D:\\GongGong-work\\duobao-native-workspace-20261117",
+  "head": "704e179de4e44b277be46dafebda4e0cfa7f46f6",
+  "source_bindings": [
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace.py",
+      "sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "bytes": 15265,
+      "git_blob_raw": "8e6334622cd69d6a710eed9786ce1c879588fff1",
+      "git_blob_filtered": "8e6334622cd69d6a710eed9786ce1c879588fff1"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace_cli.py",
+      "sha256": "1bc61a3165c58ac918af8a0874fc8c85db7ee6cb8946f2e95ddbeb088f4038fa",
+      "bytes": 2500,
+      "git_blob_raw": "829c35b6d182e1fb1a03961ba680f6bfb00c498e",
+      "git_blob_filtered": "829c35b6d182e1fb1a03961ba680f6bfb00c498e"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/test_native_workspace.py",
+      "sha256": "e2492c64842db53a5c89748276f00f6af9ce5629f6be8d506368e7f90efa4d56",
+      "bytes": 12049,
+      "git_blob_raw": "6884801db58a40db44956d5a185e0356833f8971",
+      "git_blob_filtered": "6884801db58a40db44956d5a185e0356833f8971"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace.md",
+      "sha256": "9e88d81dacd6e8b44d2209b481413a265648699dc143629aa787aab8cc1da6a8",
+      "bytes": 6119,
+      "git_blob_raw": "3fc43aa50f0f835766e87b99aa73fec84e68e9c6",
+      "git_blob_filtered": "3fc43aa50f0f835766e87b99aa73fec84e68e9c6"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_store.py",
+      "sha256": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+      "bytes": 15645,
+      "git_blob_raw": "1503687c9add396cd2ff7a9902f21f263431e997",
+      "git_blob_filtered": "1503687c9add396cd2ff7a9902f21f263431e997"
+    }
+  ],
+  "frozen_bindings_match": true,
+  "findings": [],
+  "resolved_findings": [
+    {
+      "id": "R1",
+      "prior_verdict": "request_changes",
+      "resolution": "Unknown-read drift is rejected inside the existing BEGIN IMMEDIATE write transaction before latest revision is loaded. Request-key replay still precedes this check; known-read merge logic is unchanged.",
+      "verification": {
+        "request_bytes": 512,
+        "source_payload_bytes": 131,
+        "current_payload_bytes": 15683,
+        "json_loads_sizes": [
+          131,
+          131,
+          131
+        ],
+        "result": "Unknown read dependencies after module drift: app",
+        "heads_unchanged": true,
+        "table_counts_before": {
+          "native_heads": 1,
+          "native_revisions": 2,
+          "native_blobs": 2,
+          "native_receipts": 2
+        },
+        "table_counts_after": {
+          "native_heads": 1,
+          "native_revisions": 2,
+          "native_blobs": 2,
+          "native_receipts": 2
+        }
+      }
+    }
+  ],
+  "verification": {
+    "existing_suite": {
+      "command": "py -X utf8 -m unittest discover -s customizations/components/tianxuan/duobao -p 'test_native*.py' -v",
+      "tests": 46,
+      "passed": 44,
+      "skipped": 2,
+      "exit_code": 0,
+      "skip_reasons": [
+        "Windows symlink creation denied WinError 1314",
+        "POSIX FIFO requires POSIX"
+      ]
+    },
+    "negative_control": {
+      "method": "Loaded HEAD native_store.py into an in-memory module namespace and temporarily replaced only NativeStore.submit; ran the newly added regression against real temporary SQLite and filesystem objects.",
+      "tests": 1,
+      "expected_failures": 1,
+      "unexpected_errors": 0,
+      "failure": "known conflict decoded the unneeded new head",
+      "output": "test_unknown_reads_reject_drift_before_decoding_new_head (test_native_workspace.WorkspaceTests.test_unknown_reads_reject_drift_before_decoding_new_head) ... FAIL\n\n======================================================================\nFAIL: test_unknown_reads_reject_drift_before_decoding_new_head (test_native_workspace.WorkspaceTests.test_unknown_reads_reject_drift_before_decoding_new_head)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\GongGong-work\\duobao-native-workspace-20261117\\customizations\\components\\tianxuan\\duobao\\test_native_workspace.py\", line 120, in test_unknown_reads_reject_drift_before_decoding_new_head\n    workspace.submit(\"org\", \"actor\", \"bounded-conflict\", {\"bounded\": original}, target)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\GongGong-work\\duobao-native-workspace-20261117\\customizations\\components\\tianxuan\\duobao\\native_workspace.py\", line 271, in submit\n    return self.store.submit(tenant, actor, request_key, changes)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"HEAD/native_store.py\", line 246, in submit\n  File \"C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\unittest\\mock.py\", line 1175, in __call__\n    return self._mock_call(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\unittest\\mock.py\", line 1179, in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\unittest\\mock.py\", line 1240, in _execute_mock_call\n    result = effect(*args, **kwargs)\n  File \"D:\\GongGong-work\\duobao-native-workspace-20261117\\customizations\\components\\tianxuan\\duobao\\test_native_workspace.py\", line 116, in observed\n    self.assertNotEqual(revision, advanced, \"known conflict decoded the unneeded new head\")\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 'b1cc212fd20bb28ff7d55fb7919a67875678d71ab018a0f91608ae510dcf2a04' == 'b1cc212fd20bb28ff7d55fb7919a67875678d71ab018a0f91608ae510dcf2a04' : known conflict decoded the unneeded new head\n\n----------------------------------------------------------------------\nRan 1 test in 0.067s\n\nFAILED (failures=1)\n"
+    },
+    "source_inspection": [
+      "All five frozen inputs read and bound before/after independent tests.",
+      "Authoritative exact sources remain caller-provided; mutable manifest neither parsed nor trusted; removed manifest exercised independently.",
+      "Metadata/blob lengths are checked before decoding/fetching selected sources; closure, file count, entry count and byte ceilings retained.",
+      "Unknown-read rejection precedes unneeded current metadata decode while remaining inside the same transaction; base metadata still validated.",
+      "Request replay checked first. Known-read disjoint merge, changed-read conflict, dependency conflict and existing batch rollback behavior remain unchanged; store concurrency and idempotency tests rerun.",
+      "Filesystem portable naming, ancestor link/reparse checks, staged materialization failure cleanup and existing destination checks inspected; actual Windows junction test passes.",
+      "Delta pagination uses deterministic exact-input binding; byte budget is compact item payload, excluding envelope as documented.",
+      "CLI bounded stdin, explicit database path and empty PATH subprocess behavior inspected and rerun."
+    ],
+    "method_recall": {
+      "scope": "editor-dependency-handoff",
+      "lesson": "bind-consumer-release",
+      "revision": 16,
+      "applied": "Recomputed exact producer bytes and Git blob bindings independently after verification; old receipt does not authorize changed source.",
+      "counterexample": "This receipt is not downstream production/business acceptance."
+    }
+  },
+  "limitations": [
+    "Windows execution in this reviewer only; Linux results reported by parent were not independently rerun or admitted as execution evidence here.",
+    "Two platform skips are not passes.",
+    "Trusted single-writer local host assumption remains; no protection against malicious same-machine races claimed.",
+    "NativeStore generic direct API remains outside workspace resource limits; known-read direct merges can load unrestricted store revisions by existing contract.",
+    "Uncommitted candidate: HEAD alone is insufficient; approval applies only to listed exact file bindings.",
+    "No production integration, token savings, commit, push, deploy or issue closure claimed."
+  ],
+  "cleanup": {
+    "product_source_mutations": false,
+    "bytecode_disabled": true,
+    "temporary_directory_removed": true,
+    "in_memory_patch_restored": true,
+    "retained": [
+      "this review receipt"
+    ]
+  }
+}
