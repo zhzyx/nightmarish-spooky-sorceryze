@@ -1,0 +1,135 @@
+{
+  "issue": 1422,
+  "related_issue": 1425,
+  "parent": 1382,
+  "reviewer": "independent-native-subagent-ci-correction",
+  "reviewed_at": "2026-11-17T12:38:25.310053+00:00",
+  "mode": "read-only source; sole authorized private receipt write",
+  "source_root": "D:\\GongGong-work\\native-check-runner-20261117",
+  "source_head": "42ec7ed4fb65f35b93f6ed82d4ba00770aac2e0f",
+  "verdict": "approved",
+  "findings": [],
+  "source_bindings": {
+    "customizations/components/tianxuan/duobao/native_check_runner.py": {
+      "sha256": "328216ad20a617cdecf26487cef0ca5a16044ad7bc5c853488f110dd818943e6",
+      "git_blob": "6a01a38e3390c9fd80f5856b4ca1ee5180433443",
+      "matches_previous_review": true
+    },
+    "customizations/components/tianxuan/duobao/test_native_check_runner.py": {
+      "sha256": "555b3edc9cac26412f6a5c7cf7d4c348034c92b216d5b01fd46b585f6f7f281b",
+      "git_blob": "0b6a06943521fc23be24e315a7f17506c24f3960",
+      "matches_previous_review": false
+    },
+    "customizations/components/tianxuan/duobao/native_check_runner.md": {
+      "sha256": "0639b51e89a5ef1d18159cb25cd112afed7e3b1b06dfcc809e41be01b91f81d6",
+      "git_blob": "024db5525dbf5c80e887d61b65e3f7e43095aa6d",
+      "matches_previous_review": true
+    },
+    "tools/ainative/owned_process.py": {
+      "sha256": "72cf68efb4965de39b59806f55ad9b5f802b1c1bb674bed7498d0914d40b8150",
+      "git_blob": "299243639ded6ce63066006df1055ee18021ad68",
+      "matches_previous_review": true
+    },
+    "tools/editor_provenance_process.py": {
+      "sha256": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1",
+      "git_blob": "1792895eca6d3ff29467380ea4f3be4fd9236fcd",
+      "matches_previous_review": true
+    },
+    "tools/ainative/test_owned_process.py": {
+      "sha256": "b53d60729b5f80000a5c205da52b330472371b5c96235b963836ca047169c009",
+      "git_blob": "d7633c008609f157938b3b9c432d94e5b7e3fe85",
+      "matches_previous_review": true
+    },
+    "customizations/components/tianxuan/duobao/native_evidence.py": {
+      "sha256": "c0497cae5a43cc653b2135dcc99cda3bbd0282b6c9b50066de9759c12f24be1d",
+      "git_blob": "a32c57f2d69ae9cc31402d2db366e23899524b54",
+      "matches_previous_review": true
+    },
+    "customizations/components/tianxuan/duobao/native_store.py": {
+      "sha256": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+      "git_blob": "1503687c9add396cd2ff7a9902f21f263431e997",
+      "matches_previous_review": true
+    },
+    "customizations/components/tianxuan/duobao/native_workspace.py": {
+      "sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "git_blob": "8e6334622cd69d6a710eed9786ce1c879588fff1",
+      "matches_previous_review": true
+    },
+    "customizations/components/tianxuan/duobao/native_release.py": {
+      "sha256": "1b0d51f6997fc5226dfc61bedc44f76fe336bc64a68686f47e01b48ee5fb98f8",
+      "git_blob": "1f508962cf22644995856cb2a50a5e4f1c5c28f9",
+      "matches_previous_review": true
+    },
+    "design-docs/native-check-runner-20261117.md": {
+      "sha256": "cf8666660afadfe487f0b1571be0c64632e25c441a3a18c413abaed8f808f9f8",
+      "git_blob": "eb5916f248133cc8fb06594a67cfc0e48586ba01",
+      "matches_previous_review": true
+    }
+  },
+  "exact_diff": "diff --git a/customizations/components/tianxuan/duobao/test_native_check_runner.py b/customizations/components/tianxuan/duobao/test_native_check_runner.py\nindex a8521525..0b6a0694 100644\n--- a/customizations/components/tianxuan/duobao/test_native_check_runner.py\n+++ b/customizations/components/tianxuan/duobao/test_native_check_runner.py\n@@ -26,6 +26,7 @@ class RunnerTests(unittest.TestCase):\n         self.tmp = tempfile.TemporaryDirectory(prefix=\"native-run-test-\")\n         self.addCleanup(self.tmp.cleanup)\n         self.root = Path(self.tmp.name)\n+        self.python = str(Path(sys.executable).resolve(strict=True))\n         self.store = NativeStore(self.root / \"native.sqlite\")\n         self.cache = EvidenceCache(\n             self.store,\n@@ -36,7 +37,7 @@ class RunnerTests(unittest.TestCase):\n         self.registry = {\n             \"check\": dict(\n                 argv=[\n-                    sys.executable,\n+                    self.python,\n                     \"-c\",\n                     \"import os,pathlib; assert pathlib.Path.cwd() == pathlib.Path(os.environ['DUOBAO_OUTPUT']); print('actual check')\",\n                 ],\n@@ -59,7 +60,7 @@ class RunnerTests(unittest.TestCase):\n \n     def runner(self, code=None, timeout=3, limit=4096):\n         if code is not None:\n-            self.registry[\"check\"][\"argv\"] = [sys.executable, \"-c\", code]\n+            self.registry[\"check\"][\"argv\"] = [self.python, \"-c\", code]\n         self.registry[\"check\"].update(timeout=timeout, log_bytes=limit)\n         return NativeCheckRunner(\n             self.cache,\n",
+  "delta_verification": {
+    "scope": "Only 3 added and 2 removed test lines since 42ec7ed4: canonicalize sys.executable with strict resolution once in setUp and use it in both registry argument vectors. No assertion, skip or production change.",
+    "production_guard": "NativeCheckRunner.__init__ still calls absolute(argv[0]); native_workspace.absolute checks every ancestor using checked_stat/lstat and rejects symlinks and Windows reparse points. No production resolve() or relaxation was introduced.",
+    "fixture_semantics": "The fixture supplies the canonical installed Python executable required by the existing trusted registry contract. sys.executable remains appropriate for separate controller and descendant process launches outside registry construction.",
+    "prior_binding_comparison": "All 10 other final-review bindings match exactly; only runner test fixture changed."
+  },
+  "evidence": [
+    {
+      "path": "data-collection/native-check-runner-final-review-1422.json",
+      "sha256": "609d619c231868ebd891ff302eba60bd172df5046377676271ea159050428e09"
+    },
+    {
+      "path": "data-collection/native-check-runner-ci-linux-1422.json",
+      "sha256": "cc33a8897c93fdd43f301c67e1f4d226eb2eadd09ced27a8c596f9374e462606"
+    },
+    {
+      "path": "data-collection/native-check-runner-linux-1422.json",
+      "sha256": "50bd110a8558445613dfe558d5907f7812a158c3644021a80dd9c6d1d8b1b8fa"
+    }
+  ],
+  "validation": {
+    "git_diff_check": 0,
+    "linux_current": {
+      "executable": "/usr/local/bin/python",
+      "python": "3.12.16",
+      "environment": "existing Linux server isolated160MiB/1CPU container; network disabled",
+      "tests": 14,
+      "passed_tests": 13,
+      "skipped": [
+        [
+          "test_actual_controller_restart_retains_unknown_run (test_native_check_runner.RunnerTests.test_actual_controller_restart_retains_unknown_run)",
+          "Windows kill-on-close Job crash fixture"
+        ]
+      ],
+      "passed": true,
+      "harness_seconds": 10.072203273011837,
+      "suite_seconds": 9.595,
+      "source_hashes_verified": 119,
+      "mismatches": []
+    },
+    "linux_prior": {
+      "tests": 93,
+      "passed_tests": 89,
+      "platform_skips": 4,
+      "reuse": "Existing 93-test Linux run remains runtime evidence. All 119 bindings except this explicitly reviewed test fixture match; the 93-test suite was not rerun on new fixture bytes. Current 14-test run provides corrected fixture evidence."
+    },
+    "windows": "Parent reports 14 runner tests passed in 9.216s and ruff/mypy passed; these reports were not independently rerun by this reviewer."
+  },
+  "method_learning": {
+    "scope": "editor-dependency-handoff",
+    "recalled_verified": [
+      "await-terminal-observers",
+      "bind-consumer-release",
+      "review-context-and-source-evidence"
+    ],
+    "application": "Pin actual current bytes and completed Linux receipt. Preserve historical evidence without claiming it tested changed fixture bytes; approval is scoped code review, not business acceptance.",
+    "counterexample": "Terminal worker status or old receipt alone cannot release a changed candidate."
+  },
+  "limits": [
+    "No tests independently executed by this read-only reviewer; supplied completed Linux receipt audited against all source hashes.",
+    "No Darwin execution claimed.",
+    "Formal exact-candidate admission, CI completion, delivery and issue acceptance remain parent responsibilities.",
+    "No commit, push, deployment or model call performed."
+  ],
+  "cleanup": "No temporary files, processes or settings created; only this authorized receipt written."
+}

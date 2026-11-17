@@ -1,0 +1,125 @@
+{
+  "issue": 1422,
+  "bugs": [
+    1424,
+    1425
+  ],
+  "parent": 1382,
+  "state": "source reviewed; final fixture delta review and formal delivery pending",
+  "source_bindings": {
+    "customizations/components/tianxuan/duobao/native_check_runner.py": {
+      "sha256": "328216ad20a617cdecf26487cef0ca5a16044ad7bc5c853488f110dd818943e6",
+      "git_blob": "6a01a38e3390c9fd80f5856b4ca1ee5180433443"
+    },
+    "customizations/components/tianxuan/duobao/test_native_check_runner.py": {
+      "sha256": "bd41be780f3dc6c0e0199b0d6fc79959bb56da1a84ed475182a0bdd7796b5a19",
+      "git_blob": "a8521525baea39413774c6436fc3888b85713693"
+    },
+    "customizations/components/tianxuan/duobao/native_check_runner.md": {
+      "sha256": "0639b51e89a5ef1d18159cb25cd112afed7e3b1b06dfcc809e41be01b91f81d6",
+      "git_blob": "024db5525dbf5c80e887d61b65e3f7e43095aa6d"
+    },
+    "tools/ainative/owned_process.py": {
+      "sha256": "72cf68efb4965de39b59806f55ad9b5f802b1c1bb674bed7498d0914d40b8150",
+      "git_blob": "299243639ded6ce63066006df1055ee18021ad68"
+    },
+    "tools/editor_provenance_process.py": {
+      "sha256": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1",
+      "git_blob": "1792895eca6d3ff29467380ea4f3be4fd9236fcd"
+    },
+    "tools/ainative/test_owned_process.py": {
+      "sha256": "b53d60729b5f80000a5c205da52b330472371b5c96235b963836ca047169c009",
+      "git_blob": "d7633c008609f157938b3b9c432d94e5b7e3fe85"
+    },
+    "customizations/components/tianxuan/duobao/native_evidence.py": {
+      "sha256": "c0497cae5a43cc653b2135dcc99cda3bbd0282b6c9b50066de9759c12f24be1d",
+      "git_blob": "a32c57f2d69ae9cc31402d2db366e23899524b54"
+    },
+    "customizations/components/tianxuan/duobao/native_store.py": {
+      "sha256": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+      "git_blob": "1503687c9add396cd2ff7a9902f21f263431e997"
+    },
+    "customizations/components/tianxuan/duobao/native_workspace.py": {
+      "sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "git_blob": "8e6334622cd69d6a710eed9786ce1c879588fff1"
+    },
+    "customizations/components/tianxuan/duobao/native_release.py": {
+      "sha256": "1b0d51f6997fc5226dfc61bedc44f76fe336bc64a68686f47e01b48ee5fb98f8",
+      "git_blob": "1f508962cf22644995856cb2a50a5e4f1c5c28f9"
+    },
+    "design-docs/native-check-runner-20261117.md": {
+      "sha256": "cf8666660afadfe487f0b1571be0c64632e25c441a3a18c413abaed8f808f9f8",
+      "git_blob": "eb5916f248133cc8fb06594a67cfc0e48586ba01"
+    }
+  },
+  "evidence": [
+    {
+      "path": "data-collection/native-check-runner-1422.json",
+      "sha256": "0b39aa1906e99d4d1eaaf1a32d0fc2f3e982f7bfa07643b8cf3139a32a2bc46f"
+    },
+    {
+      "path": "data-collection/native-check-runner-review-original-1422.json",
+      "sha256": "71204bedb5221b258791ae50f757231522554a35f9ae0700b49b50a33aa7f32c"
+    },
+    {
+      "path": "data-collection/native-check-runner-review-fixed-1422.json",
+      "sha256": "1acf1f8dcec3bdbb2dc39e11ac141f3bbfe96994c38c39e9a978aa4d9455ca58"
+    },
+    {
+      "path": "data-collection/native-check-runner-linux-initial-1422.json",
+      "sha256": "cb1dec481abfdeaf44708a4428dff14e1054640f88c346823c19fbfae51a5406"
+    },
+    {
+      "path": "data-collection/native-check-runner-linux-fixture-1422.json",
+      "sha256": "f69f0502bc4e6a9e8b31076173390a3eb12d13f1162a95307b68cdebf273c17e"
+    },
+    {
+      "path": "data-collection/native-check-runner-process-diagnostic-1422.json",
+      "sha256": "60fc53dcf5dab8fbb1cd2771b7c5e25121499d03e0202f2e54f1727e33ae7cf7"
+    },
+    {
+      "path": "data-collection/native-check-runner-linux-1422.json",
+      "sha256": "50bd110a8558445613dfe558d5907f7812a158c3644021a80dd9c6d1d8b1b8fa"
+    }
+  ],
+  "validation": {
+    "windows_native": "80 tests,78passed2platformskip",
+    "windows_process_final": "13tests10passed3platformskip16.136s",
+    "linux_final": "93tests89passed4platformskip67.535s; actual canonical Python3.12.16 in160MiB1CPU network-disabled container",
+    "static": "ruff check/format5files, mypy5files without custom import path passed",
+    "module_impact": "formal index module-impact-only returns no new registered module directories; extension of existing Tianxuan host_tool, existing embedded helper remains embedded"
+  },
+  "review_delta": "Since corrected-source independent review only synthetic adapter fixture timeout0.6s POSIX→3s and canonical executable install note changed. All runtime files identical to approved source. Linux real diagnostic proves three-interpreter startup0.965s; production timeout is unchanged.",
+  "corrections": [
+    "Independent P1 policy-drift reproduced; three before-fix tests failed. Freeze policy and persist run binding; compare expected binding inside evidence record, reject cache-hit drift. Four cases pass.",
+    "Server test report initially could not serialize skipped TestCase objects; corrected to names. A shell edit quoting error caused one unintended old-harness rerun; original readable failure retained.",
+    "Canonical executable path is required, symlink Python rejected by intended boundary.",
+    "Explicit waiting for reconciliation terminal result avoids dispatch coordination lock conflict; no lock removed or duplicate worker started."
+  ],
+  "acceptance": {
+    "1": "covered by real process tests, referenced independent review and Linux proof; final delivery pending",
+    "2": "covered by real process tests, referenced independent review and Linux proof; final delivery pending",
+    "3": "covered by real process tests, referenced independent review and Linux proof; final delivery pending",
+    "4": "covered by real process tests, referenced independent review and Linux proof; final delivery pending",
+    "5": "covered by real process tests, referenced independent review and Linux proof; final delivery pending"
+  },
+  "limitations": [
+    "Trusted host callbacks must authenticate actors and verify installed registry/toolchain/environment; test callbacks are not production identity.",
+    "No OS sandbox or artifact disk quota; only trusted commands.",
+    "Unknown reserved/running/held runs retain ownership and require external reconciliation; no blind restart.",
+    "Historical receipts require fresh EvidenceCache/NativeRelease validation.",
+    "No real model calls or token-efficiency claim; distributed nodes/full automatic workflow and AA rendering remain parent work."
+  ],
+  "cleanup": {
+    "test_temporary_directories_removed": true,
+    "production_services_changed": false,
+    "worktree_retained": "undelivered source and parent task still active"
+  },
+  "delivery_envelope_correction": {
+    "path": "data-collection/native-check-runner-process-diagnostic-1422.json",
+    "before_sha256": "c37656d965d6871d80870cac08d70165a39069caf8a83fcf9f3947175acf6b23",
+    "after_sha256": "60fc53dcf5dab8fbb1cd2771b7c5e25121499d03e0202f2e54f1727e33ae7cf7",
+    "rows_unchanged": true,
+    "reason": "Formal Git evidence gate requires object envelopes. Uncommitted array wrapped with issue/kind/rows; decoded observations unchanged. Product/source review bindings unaffected."
+  }
+}

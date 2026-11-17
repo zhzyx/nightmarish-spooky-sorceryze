@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "native-check-runner-20261117",
+  "collected_at": "2026-11-17T12:00:35.805034+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-check-runner-20261117/codex-intake-1422-20261117.json",
+      "sha256": "51a10e21a17bc68e3dc6ad0f67e2c42d21599861c111058359a679a8dab3f520",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "codex-intake-1422-20261117",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-check-runner-20261117/dispatch-4723ebaf0cc6464d8b6b02718b08adb2.json",
+      "sha256": "af380be45a2288b31d2a60b3edad3d73acac5260d99d517573899415a667880a",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-4723ebaf0cc6464d8b6b02718b08adb2",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-check-runner-20261117/dispatch-7bdad6e803fd4e878b159a8f50ae938e.json",
+      "sha256": "b3177df302df62a4cd7945c14d144cf81434353b85e6125778dcbb57c0c7fa49",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-7bdad6e803fd4e878b159a8f50ae938e",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-check-runner-20261117/dispatch-80308c86247e4f53aac62e562795f561.json",
+      "sha256": "4869f1508cdc939d05d55b1ce92e2cfd5e9cd21eb0e1c16159254dd19b6c4d77",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-80308c86247e4f53aac62e562795f561",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-check-runner-20261117/dispatch-85c40816c4874e189df1d50c63ab6943.json",
+      "sha256": "294e7a5fe2a0763b97e17f081558fe2bd0a48e943ad87d3c4dc46fea79a83ef4",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-85c40816c4874e189df1d50c63ab6943",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-check-runner-20261117/dispatch-bf62ad89cded47cca766a5ef4c122cd0.json",
+      "sha256": "f654023db8d98e8bb5f543704ca8a959c8300e3bf781918fb507292a48e11233",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-bf62ad89cded47cca766a5ef4c122cd0",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-check-runner-20261117/dispatch-ca4d5b7e1c7142e0a26d972e3cf1729a.json",
+      "sha256": "352f56f49b9460f3ad6c7f61d58c3cb84f6c9ef031f7d3839dd3e0782ce8a816",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-ca4d5b7e1c7142e0a26d972e3cf1729a",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-check-runner-20261117/kuafu-873321073b1fc05fabfa3bbe45fc3d548ad10e4f.json",
+      "sha256": "27c46ba79af00c4fad8c7c344d4fef170202115a1b7511d2ac0d9ba10b7af306",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-873321073b1fc05fabfa3bbe45fc3d548ad10e4f",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-check-runner-20261117/kuafu-ba028f4a4f1e87b2bfd9be3b47b704fb2dd8d41f.json",
+      "sha256": "4bd5c6031a633afe009a0e96f440d58155c13231e18d65f6d51d408b1907b761",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-ba028f4a4f1e87b2bfd9be3b47b704fb2dd8d41f",
+      "origin": "authenticated_host_role"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1422,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1422"
+}

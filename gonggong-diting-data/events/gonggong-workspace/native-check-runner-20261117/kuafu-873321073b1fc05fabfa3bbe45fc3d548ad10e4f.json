@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-873321073b1fc05fabfa3bbe45fc3d548ad10e4f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-check-runner-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1422",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2576de10af6cc1f5d432d56f7a9821b81b3fb4482a55bbb8351df27a767041de",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1422",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1425",
+    "action": "validation",
+    "detection_head": "04fcdb5f1f0e301f179e0581944accee382a2496",
+    "context_sha256": "7eb86ca20bb829edc0fc67edaf49f8ef4e56b5e6de4cba62b6fca82aba242d0b",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "D:/GongGong/data-collection/receipts/duobao-1382/check-runner-review.json",
+    "diagnosis": "Real subprocess passed under changed policy because record recomputed binding. Three new regression tests failed before fix; freeze policy snapshot, persist original execution binding and compare expected_binding inside record; verify cache hit binding. Four regression cases and80 native suite now pass with2 platform skips.",
+    "next_action": "Independent corrected-source review and actual Linux process tests, then formal delivery; never count initial review as approval.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T11:43:33.144170+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T11:48:52.661796+00:00",
+  "sha256": "8df2e99f4a8b5995ec457c0d87a0f14f1c50817c70157305090f162a8a02d4c6"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fd8cd6dd6ce7f5a1ba10cd914d1bb27909701515",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-check-runner-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1422",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "64f71de92c99108eae431029b7f7473d57c3bfb3f852ffbb58fd47df6532551f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1422",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1425",
+    "action": "delivery",
+    "detection_head": "ba897aa5a6f1525d41280323a240f2f6a9a9b9c4",
+    "context_sha256": "7eb86ca20bb829edc0fc67edaf49f8ef4e56b5e6de4cba62b6fca82aba242d0b",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "data-collection/native-check-runner-delivery-1422.json",
+    "diagnosis": "Formal evidence gate expects JSON object; diagnostic used raw array. Wrapped uncommitted evidence with issue/kind/rows and verified decoded rows identical to preserved private original. Updated aggregate digest with before/after trace. No product or test source changes.",
+    "next_action": "Restage exact metadata and rerun original formal writer delivery, then CI/main acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T12:18:51.557890+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T12:22:51.976935+00:00",
+  "sha256": "8016cf9e6595d43449615fd95ea52eca661d8a8f7ce58b80067ef056f0db8c6a"
+}

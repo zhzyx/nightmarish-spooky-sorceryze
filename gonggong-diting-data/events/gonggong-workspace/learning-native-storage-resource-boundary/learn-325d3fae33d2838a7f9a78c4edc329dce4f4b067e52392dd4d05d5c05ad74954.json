@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-native-storage-resource-boundary",
+  "event_id": "learn-325d3fae33d2838a7f9a78c4edc329dce4f4b067e52392dd4d05d5c05ad74954",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1422",
+  "occurred_at": "2026-11-17T12:00:35.821855+00:00",
+  "evidence_refs": [
+    "codex-intake-1422-20261117"
+  ],
+  "payload": {
+    "scope": "native-storage-resource-boundary",
+    "lesson": "freeze-executed-check-binding",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Capture an immutable policy and input binding before executing a check, persist it with the run, and compare the original binding at evidence recording rather than relabeling results with the latest policy.",
+      "when": "Real asynchronous validation writes reusable facts while the trusted host can update installed rules.",
+      "counterexample": "Comparing a policy only before the recording call leaves a race; passing a self-declared result without authenticated runner authorization is not acceptable.",
+      "trial_plan": "At future adoption change rule version and nested scope during a real subprocess, immediately before record and after binding construction; require no hit under new rules, preserved old binding and restart writeback without process repetition."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-check-runner-review-fixed-1422.json",
+        "sha256": "1acf1f8dcec3bdbb2dc39e11ac141f3bbfe96994c38c39e9a978aa4d9455ca58"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-check-runner-20261117/codex-intake-1422-20261117.json",
+      "sha256": "c867f781494e5dfb15a9d5f6287d3f056c4195eb4fd8dbc63a22ac3b0f440cf1"
+    }
+  },
+  "sha256": "220f6179d80fcbcebe3ee66bcbf08f2642e0265d47136e464331bb6f29e46e6c"
+}

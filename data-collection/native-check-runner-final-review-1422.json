@@ -1,0 +1,177 @@
+{
+  "issue": 1422,
+  "related_issue": 1425,
+  "parent": 1382,
+  "reviewer": "independent-native-subagent-final-delta",
+  "reviewed_at": "2026-11-17T12:15:25.916648+00:00",
+  "mode": "read-only-source; sole write is this authorized receipt",
+  "source_root": "D:\\GongGong-work\\native-check-runner-20261117",
+  "source_head": "04fcdb5f1f0e301f179e0581944accee382a2496",
+  "verdict": "approved",
+  "findings": [],
+  "source_bindings": {
+    "customizations/components/tianxuan/duobao/native_check_runner.py": {
+      "sha256": "328216ad20a617cdecf26487cef0ca5a16044ad7bc5c853488f110dd818943e6",
+      "git_blob": "6a01a38e3390c9fd80f5856b4ca1ee5180433443"
+    },
+    "customizations/components/tianxuan/duobao/test_native_check_runner.py": {
+      "sha256": "bd41be780f3dc6c0e0199b0d6fc79959bb56da1a84ed475182a0bdd7796b5a19",
+      "git_blob": "a8521525baea39413774c6436fc3888b85713693"
+    },
+    "customizations/components/tianxuan/duobao/native_check_runner.md": {
+      "sha256": "0639b51e89a5ef1d18159cb25cd112afed7e3b1b06dfcc809e41be01b91f81d6",
+      "git_blob": "024db5525dbf5c80e887d61b65e3f7e43095aa6d"
+    },
+    "tools/ainative/owned_process.py": {
+      "sha256": "72cf68efb4965de39b59806f55ad9b5f802b1c1bb674bed7498d0914d40b8150",
+      "git_blob": "299243639ded6ce63066006df1055ee18021ad68"
+    },
+    "tools/editor_provenance_process.py": {
+      "sha256": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1",
+      "git_blob": "1792895eca6d3ff29467380ea4f3be4fd9236fcd"
+    },
+    "tools/ainative/test_owned_process.py": {
+      "sha256": "b53d60729b5f80000a5c205da52b330472371b5c96235b963836ca047169c009",
+      "git_blob": "d7633c008609f157938b3b9c432d94e5b7e3fe85"
+    },
+    "customizations/components/tianxuan/duobao/native_evidence.py": {
+      "sha256": "c0497cae5a43cc653b2135dcc99cda3bbd0282b6c9b50066de9759c12f24be1d",
+      "git_blob": "a32c57f2d69ae9cc31402d2db366e23899524b54"
+    },
+    "customizations/components/tianxuan/duobao/native_store.py": {
+      "sha256": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+      "git_blob": "1503687c9add396cd2ff7a9902f21f263431e997"
+    },
+    "customizations/components/tianxuan/duobao/native_workspace.py": {
+      "sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "git_blob": "8e6334622cd69d6a710eed9786ce1c879588fff1"
+    },
+    "customizations/components/tianxuan/duobao/native_release.py": {
+      "sha256": "1b0d51f6997fc5226dfc61bedc44f76fe336bc64a68686f47e01b48ee5fb98f8",
+      "git_blob": "1f508962cf22644995856cb2a50a5e4f1c5c28f9"
+    },
+    "design-docs/native-check-runner-20261117.md": {
+      "sha256": "cf8666660afadfe487f0b1571be0c64632e25c441a3a18c413abaed8f808f9f8",
+      "git_blob": "eb5916f248133cc8fb06594a67cfc0e48586ba01"
+    }
+  },
+  "frozen_bindings_verified": true,
+  "evidence": [
+    {
+      "path": "data-collection/native-check-runner-delivery-1422.json",
+      "sha256": "0a1db0249be4ee4950ad1d0c3829632a510c4bbd91c732a373dcf30c0330ce20"
+    },
+    {
+      "path": "data-collection/native-check-runner-1422.json",
+      "sha256": "0b39aa1906e99d4d1eaaf1a32d0fc2f3e982f7bfa07643b8cf3139a32a2bc46f"
+    },
+    {
+      "path": "data-collection/native-check-runner-review-original-1422.json",
+      "sha256": "71204bedb5221b258791ae50f757231522554a35f9ae0700b49b50a33aa7f32c"
+    },
+    {
+      "path": "data-collection/native-check-runner-review-fixed-1422.json",
+      "sha256": "1acf1f8dcec3bdbb2dc39e11ac141f3bbfe96994c38c39e9a978aa4d9455ca58"
+    },
+    {
+      "path": "data-collection/native-check-runner-linux-initial-1422.json",
+      "sha256": "cb1dec481abfdeaf44708a4428dff14e1054640f88c346823c19fbfae51a5406"
+    },
+    {
+      "path": "data-collection/native-check-runner-linux-fixture-1422.json",
+      "sha256": "f69f0502bc4e6a9e8b31076173390a3eb12d13f1162a95307b68cdebf273c17e"
+    },
+    {
+      "path": "data-collection/native-check-runner-process-diagnostic-1422.json",
+      "sha256": "c37656d965d6871d80870cac08d70165a39069caf8a83fcf9f3947175acf6b23"
+    },
+    {
+      "path": "data-collection/native-check-runner-linux-1422.json",
+      "sha256": "50bd110a8558445613dfe558d5907f7812a158c3644021a80dd9c6d1d8b1b8fa"
+    }
+  ],
+  "delta_verification": {
+    "runtime": "All seven runtime Python files in source_bindings exactly equal corrected-source review SHA256 and Git blob bindings; native runner test and design also identical.",
+    "fixture": "Reversing only the two-line comment and timeout = 3.0 to previous Windows 3.0 / POSIX 0.6 expression reconstructs corrected-review exact SHA256 fb4137f100595003c3663edfe491da4e01b4726f14ff40087828a0508216838c (CRLF). No assertion removal or other fixture change.",
+    "documentation": "Removing only canonical executable paragraph and following blank line reconstructs corrected-review exact SHA256 73a3a0ada81c92c94420d11ab3000fca0e787a992ad33201b0a694e956bf312d (CRLF).",
+    "production_timeout": "NativeCheckRunner validates finite 0 < timeout <= 86400 and passes installed spec timeout directly to run_owned. Production helper and provider runtime hashes unchanged.",
+    "ownership": "Fixture still checks three process markers, timeout/error/cancel/flood/callback outcomes, <7s bound, all owned identities gone, unrelated process alive and logs <=4096. Timeout scenarios still terminate 30-second sleepers. POSIX session/leader and Windows Job semantics unchanged.",
+    "diagnostic": "Actual constrained Linux diagnostic timed out at 0.620749s with only parent+child markers under 0.6s; 3s limit allowed all three interpreters and success at 0.964597s. Raising synthetic startup allowance is supported by measured evidence."
+  },
+  "evidence_reuse": {
+    "corrected_review": "Approved corrected-source runtime review remains applicable by exact byte identity, including independent policy drift, post-comparison write race, snapshot and fresh-instance recovery cases.",
+    "linux_final": {
+      "tests": 93,
+      "passed_tests": 89,
+      "platform_skips": 4,
+      "suite_seconds": 66.43,
+      "harness_seconds": 67.53515237700776,
+      "python": "3.12.16",
+      "executable": "/usr/local/bin/python3.12",
+      "environment": "existing Linux server isolated160MiB/1CPU container; network disabled",
+      "source_hashes_verified": 119,
+      "mismatches": [],
+      "skipped": [
+        [
+          "test_actual_controller_restart_retains_unknown_run (test_native_check_runner.RunnerTests.test_actual_controller_restart_retains_unknown_run)",
+          "Windows kill-on-close Job crash fixture"
+        ],
+        [
+          "test_windows_junction_rejected (test_native_workspace.WorkspaceTests.test_windows_junction_rejected)",
+          "Windows junction test"
+        ],
+        [
+          "test_group_readback_rejects_live_member_and_accepts_pinned_zombie (test_owned_process.AdapterProcessTests.test_group_readback_rejects_live_member_and_accepts_pinned_zombie)",
+          "Darwin process inspection"
+        ],
+        [
+          "test_owned_cleanup_inside_native_protection_profile (test_owned_process.AdapterProcessTests.test_owned_cleanup_inside_native_protection_profile)",
+          "Darwin native provenance profile"
+        ]
+      ]
+    },
+    "windows": "Corrected review actual Windows 80 native tests (78 pass, 2 skips) and 13 process tests (10 pass, 3 skips) reusable: runtime unchanged and Windows fixture timeout remains 3s.",
+    "compatibility": "cwd=None default, old EvidenceCache.record expected_binding=None, isolated cwd and helper generated-bundle invalidation/rollback are covered by reviewed actual suites.",
+    "failures": "Original policy-drift rejection and Linux startup failures are preserved; only final passed Linux receipt supplies current fixture success."
+  },
+  "checks": [
+    {
+      "check": "git diff --cached --check",
+      "exit_code": 0
+    },
+    {
+      "check": "ruff check --no-cache on five changed Python files",
+      "exit_code": 0,
+      "output": "All checks passed!"
+    },
+    {
+      "check": "ruff format --check --no-cache on five changed Python files",
+      "exit_code": 0,
+      "output": "5 files already formatted"
+    },
+    {
+      "check": "JSON parse plus 11 source SHA256/Git blob pairs and 7 evidence hashes",
+      "result": "all match"
+    },
+    {
+      "check": "manual final docs/design/metadata review",
+      "result": "No blocking formatting or spelling issue; metadata correctly distinguishes tests run, skips and pass status."
+    }
+  ],
+  "method_learning": {
+    "scope": "editor-dependency-handoff",
+    "lessons": [
+      "await-terminal-observers",
+      "bind-consumer-release",
+      "review-context-and-source-evidence"
+    ],
+    "application": "Compare source bytes with corrected review and final Linux execution evidence; retain failed historical receipts; this review does not release business acceptance."
+  },
+  "limits": [
+    "No Linux rerun by this reviewer; existing actual Linux receipt audited against all 119 current file hashes.",
+    "Darwin-specific checks skipped; no claim of Darwin execution.",
+    "No implementation, commit, push, model call or deployment performed.",
+    "Formal admission, delivery and full issue acceptance remain parent responsibility; evidence validity remains subject to fresh consumer policy validation."
+  ],
+  "cleanup": "No temporary files, processes or settings created; only authorized review receipt written."
+}

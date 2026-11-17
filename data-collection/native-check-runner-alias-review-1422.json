@@ -1,0 +1,165 @@
+{
+  "issue": 1422,
+  "related_issue": 1425,
+  "parent": 1382,
+  "reviewer": "independent-native-subagent-alias-delta",
+  "reviewed_at": "2026-11-17T12:56:44.640263+00:00",
+  "mode": "read-only source; sole authorized receipt write",
+  "source_root": "D:\\GongGong-work\\native-check-runner-20261117",
+  "source_head": "0bf60d18ca4e75d9441e4b22398b401f1c1a9482",
+  "delta_base": "0bf60d18ca4e75d9441e4b22398b401f1c1a9482",
+  "verdict": "approved",
+  "findings": [],
+  "source_bindings": {
+    "customizations/components/tianxuan/duobao/native_check_runner.py": {
+      "sha256": "328216ad20a617cdecf26487cef0ca5a16044ad7bc5c853488f110dd818943e6",
+      "git_blob": "6a01a38e3390c9fd80f5856b4ca1ee5180433443"
+    },
+    "customizations/components/tianxuan/duobao/test_native_check_runner.py": {
+      "sha256": "555b3edc9cac26412f6a5c7cf7d4c348034c92b216d5b01fd46b585f6f7f281b",
+      "git_blob": "0b6a06943521fc23be24e315a7f17506c24f3960"
+    },
+    "customizations/components/tianxuan/duobao/native_check_runner.md": {
+      "sha256": "0639b51e89a5ef1d18159cb25cd112afed7e3b1b06dfcc809e41be01b91f81d6",
+      "git_blob": "024db5525dbf5c80e887d61b65e3f7e43095aa6d"
+    },
+    "tools/ainative/owned_process.py": {
+      "sha256": "72cf68efb4965de39b59806f55ad9b5f802b1c1bb674bed7498d0914d40b8150",
+      "git_blob": "299243639ded6ce63066006df1055ee18021ad68"
+    },
+    "tools/editor_provenance_process.py": {
+      "sha256": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1",
+      "git_blob": "1792895eca6d3ff29467380ea4f3be4fd9236fcd"
+    },
+    "tools/ainative/test_owned_process.py": {
+      "sha256": "6259586dc0183b58941db6210cc9ddf9ffa19c17ba57f844a8c25e80188f9893",
+      "git_blob": "92f2cfe7a3bee1819ea52dea055f2701c4da799d"
+    },
+    "customizations/components/tianxuan/duobao/native_evidence.py": {
+      "sha256": "c0497cae5a43cc653b2135dcc99cda3bbd0282b6c9b50066de9759c12f24be1d",
+      "git_blob": "a32c57f2d69ae9cc31402d2db366e23899524b54"
+    },
+    "customizations/components/tianxuan/duobao/native_store.py": {
+      "sha256": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+      "git_blob": "1503687c9add396cd2ff7a9902f21f263431e997"
+    },
+    "customizations/components/tianxuan/duobao/native_workspace.py": {
+      "sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "git_blob": "8e6334622cd69d6a710eed9786ce1c879588fff1"
+    },
+    "customizations/components/tianxuan/duobao/native_release.py": {
+      "sha256": "1b0d51f6997fc5226dfc61bedc44f76fe336bc64a68686f47e01b48ee5fb98f8",
+      "git_blob": "1f508962cf22644995856cb2a50a5e4f1c5c28f9"
+    },
+    "design-docs/native-check-runner-20261117.md": {
+      "sha256": "cf8666660afadfe487f0b1571be0c64632e25c441a3a18c413abaed8f808f9f8",
+      "git_blob": "eb5916f248133cc8fb06594a67cfc0e48586ba01"
+    }
+  },
+  "exact_diff": "diff --git a/tools/ainative/test_owned_process.py b/tools/ainative/test_owned_process.py\nindex d7633c00..92f2cfe7 100644\n--- a/tools/ainative/test_owned_process.py\n+++ b/tools/ainative/test_owned_process.py\n@@ -67,7 +67,7 @@ class AdapterProcessTests(unittest.TestCase):\n                     self.assertEqual(code, 0)\n                     self.assertEqual(failures, [])\n                     output.seek(0)\n-                    self.assertEqual(Path(output.read().decode().strip()), expected)\n+                    self.assertTrue(Path(output.read().decode().strip()).samefile(expected))\n                     self.assertEqual(Path.cwd(), parent)\n \n     def test_owned_helper_change_invalidates_generated_bundle(self):",
+  "delta_verification": {
+    "scope": "One assertion replacement in test_owned_process.py only; no production, skip, timeout or other assertion change.",
+    "semantics": "Child os.getcwd() output and expected directory are compared by filesystem identity via Path.samefile while the TemporaryDirectory remains alive. This preserves explicit cwd and default inheritance checks across aliases such as /var and /private/var. A different directory returns false; missing or inaccessible paths raise and fail the test. Exit status, empty failure list and unchanged parent cwd assertions remain.",
+    "ci_review_comparison": {
+      "changed_bindings": [
+        "tools/ainative/test_owned_process.py"
+      ],
+      "other_bindings_identical": 10
+    },
+    "final_review_comparison": {
+      "changed_bindings": [
+        "customizations/components/tianxuan/duobao/test_native_check_runner.py",
+        "tools/ainative/test_owned_process.py"
+      ],
+      "explanation": "Runner fixture canonical executable change already reviewed in committed CI review; current delta only changes child cwd equality."
+    },
+    "historical_reviews_committed": true
+  },
+  "evidence": [
+    {
+      "path": "data-collection/native-check-runner-alias-linux-1422.json",
+      "sha256": "a72b2d019b2ce91add27108ad1748d6892f136782832f3eadb00a3031de901d1"
+    },
+    {
+      "path": "data-collection/native-check-runner-ci-review-1422.json",
+      "sha256": "9ec477b59d044d0e96e5794cd60b0c2dd46a0f0e8806261c583a04e9a72648f3"
+    },
+    {
+      "path": "data-collection/native-check-runner-final-review-1422.json",
+      "sha256": "609d619c231868ebd891ff302eba60bd172df5046377676271ea159050428e09"
+    },
+    {
+      "path": "data-collection/native-check-runner-ci-linux-1422.json",
+      "sha256": "cc33a8897c93fdd43f301c67e1f4d226eb2eadd09ced27a8c596f9374e462606"
+    },
+    {
+      "path": "data-collection/native-check-runner-linux-1422.json",
+      "sha256": "50bd110a8558445613dfe558d5907f7812a158c3644021a80dd9c6d1d8b1b8fa"
+    }
+  ],
+  "validation": {
+    "linux_current": {
+      "tests": 13,
+      "passed_tests": 11,
+      "skipped": [
+        [
+          "test_group_readback_rejects_live_member_and_accepts_pinned_zombie (test_owned_process.AdapterProcessTests.test_group_readback_rejects_live_member_and_accepts_pinned_zombie)",
+          "Darwin process inspection"
+        ],
+        [
+          "test_owned_cleanup_inside_native_protection_profile (test_owned_process.AdapterProcessTests.test_owned_cleanup_inside_native_protection_profile)",
+          "Darwin native provenance profile"
+        ]
+      ],
+      "passed": true,
+      "harness_seconds": 42.008357537997654,
+      "suite_seconds": 41.245,
+      "python": "3.12.16",
+      "environment": "existing Linux server isolated160MiB/1CPU container; network disabled",
+      "source_hashes_verified": 119,
+      "mismatches": [],
+      "alias_reproduction": {
+        "lexical_equal": false,
+        "same_directory": true,
+        "wrong_directory_rejected": true,
+        "exit": 0
+      }
+    },
+    "windows_current": {
+      "source": "Parent session report; not independently executed or transcript-audited by this reviewer",
+      "tests": 13,
+      "passed_tests": 10,
+      "platform_skips": 3,
+      "suite_seconds": 16.044
+    },
+    "ruff": "Parent reports passed; not independently rerun.",
+    "original_macos_failure": {
+      "source": "Parent supplied CI failure description",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44082900271/job/134037764441",
+      "description": "Lexical /private/var versus /var mismatch; no successful macOS rerun claimed."
+    }
+  },
+  "historical_reuse": {
+    "production": "All production bindings identical to committed CI and final reviews; their runtime analysis remains applicable.",
+    "linux_93_tests": "Historical 93 tests, 89 passed and 4 platform skips are reused for unchanged runtime only. Not a fresh full-suite run on this candidate.",
+    "linux_14_tests": "Prior corrected registry-fixture 14-test run remains historical evidence for unchanged runner fixture, not a current full-suite run.",
+    "changed_fixture": "Current actual Linux 13-test receipt plus alias positive/negative reproduction covers changed cwd assertion; parent Windows report supplements compatibility."
+  },
+  "method_learning": {
+    "scope": "editor-dependency-handoff",
+    "verified_lessons": [
+      "bind-consumer-release",
+      "await-terminal-observers",
+      "review-context-and-source-evidence"
+    ],
+    "application": "Compare exact current bytes, canonical blobs and completed execution receipt; preserve historical failures and avoid relabeling reused suites as current runs.",
+    "counterexample": "Worker completion or old evidence alone cannot admit changed candidate bytes."
+  },
+  "limits": [
+    "No test execution by this read-only reviewer; completed Linux receipt independently checked against all current bound source hashes.",
+    "No macOS execution or CI-success claim; Linux alias reproduction validates directory semantics but does not replace Darwin execution.",
+    "Formal candidate admission, CI, delivery and full business acceptance remain parent responsibility.",
+    "No source edits, commit, push, deployment or model invocation."
+  ],
+  "cleanup": "No temporary files, processes or settings created; sole output is this authorized receipt."
+}

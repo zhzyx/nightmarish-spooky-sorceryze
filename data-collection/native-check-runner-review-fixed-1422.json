@@ -1,0 +1,142 @@
+{
+  "issue": 1422,
+  "related_issue": 1425,
+  "reviewer": "independent-native-subagent-corrected-source",
+  "mode": "read-only-source",
+  "reviewed_at": "2026-11-17T11:56:49.993115+00:00",
+  "source_root": "D:\\GongGong-work\\native-check-runner-20261117",
+  "source_head": "04fcdb5f1f0e301f179e0581944accee382a2496",
+  "source_bindings": {
+    "customizations/components/tianxuan/duobao/native_check_runner.py": {
+      "sha256": "328216ad20a617cdecf26487cef0ca5a16044ad7bc5c853488f110dd818943e6",
+      "git_blob": "6a01a38e3390c9fd80f5856b4ca1ee5180433443"
+    },
+    "customizations/components/tianxuan/duobao/test_native_check_runner.py": {
+      "sha256": "bd41be780f3dc6c0e0199b0d6fc79959bb56da1a84ed475182a0bdd7796b5a19",
+      "git_blob": "a8521525baea39413774c6436fc3888b85713693"
+    },
+    "customizations/components/tianxuan/duobao/native_check_runner.md": {
+      "sha256": "73a3a0ada81c92c94420d11ab3000fca0e787a992ad33201b0a694e956bf312d",
+      "git_blob": "138f6269861ec57e0d0530972a6da0f199495920"
+    },
+    "tools/ainative/owned_process.py": {
+      "sha256": "72cf68efb4965de39b59806f55ad9b5f802b1c1bb674bed7498d0914d40b8150",
+      "git_blob": "299243639ded6ce63066006df1055ee18021ad68"
+    },
+    "tools/editor_provenance_process.py": {
+      "sha256": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1",
+      "git_blob": "1792895eca6d3ff29467380ea4f3be4fd9236fcd"
+    },
+    "tools/ainative/test_owned_process.py": {
+      "sha256": "fb4137f100595003c3663edfe491da4e01b4726f14ff40087828a0508216838c",
+      "git_blob": "08178dda25eb0a802b28e55736d6d4f02891e9b8"
+    },
+    "customizations/components/tianxuan/duobao/native_evidence.py": {
+      "sha256": "c0497cae5a43cc653b2135dcc99cda3bbd0282b6c9b50066de9759c12f24be1d",
+      "git_blob": "a32c57f2d69ae9cc31402d2db366e23899524b54"
+    },
+    "customizations/components/tianxuan/duobao/native_store.py": {
+      "sha256": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+      "git_blob": "1503687c9add396cd2ff7a9902f21f263431e997"
+    },
+    "customizations/components/tianxuan/duobao/native_workspace.py": {
+      "sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "git_blob": "8e6334622cd69d6a710eed9786ce1c879588fff1"
+    },
+    "customizations/components/tianxuan/duobao/native_release.py": {
+      "sha256": "1b0d51f6997fc5226dfc61bedc44f76fe336bc64a68686f47e01b48ee5fb98f8",
+      "git_blob": "1f508962cf22644995856cb2a50a5e4f1c5c28f9"
+    },
+    "design-docs/native-check-runner-20261117.md": {
+      "sha256": "cf8666660afadfe487f0b1571be0c64632e25c441a3a18c413abaed8f808f9f8",
+      "git_blob": "eb5916f248133cc8fb06594a67cfc0e48586ba01"
+    }
+  },
+  "frozen_bindings_verified": true,
+  "verdict": "approved",
+  "findings": [],
+  "supersedes_finding": {
+    "receipt": "check-runner-review.json",
+    "finding": "Execution result is rebound to policy changed during execution",
+    "resolution": "Original binding persisted in run payload; record compares expected binding and writes that same frozen computed value; policy scope deep snapshot; cache-hit binding checked."
+  },
+  "independent_cases": [
+    {
+      "case": "real-process-policy-drift-and-fresh-instance-restoration",
+      "verdict": "pass",
+      "drift": "Conflict; zero evidence; durable original result",
+      "restoration": "original v1 policy recovers without subprocess"
+    },
+    {
+      "case": "policy-change-after-expected-binding-comparison-before-SQL-write",
+      "verdict": "pass",
+      "observed": "Written evidence remains original v1 scope+policy; current v2 lookup misses"
+    },
+    {
+      "case": "nested-policy-scope-mutation-during-input-read",
+      "verdict": "pass",
+      "observed": "Snapshot keeps v1 policy and original nested scope together"
+    }
+  ],
+  "tests": [
+    {
+      "command": [
+        "C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "customizations/components/tianxuan/duobao",
+        "-p",
+        "test_native_*.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "seconds": 18.733,
+      "stdout": "",
+      "stderr": "----------------------------------------------------------------------\nRan 80 tests in 18.598s\n\nOK (skipped=2)\n"
+    },
+    {
+      "command": [
+        "C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/ainative",
+        "-p",
+        "test_owned_process.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "seconds": 16.27,
+      "stdout": "",
+      "stderr": "----------------------------------------------------------------------\nRan 13 tests in 16.120s\n\nOK (skipped=3)\n"
+    }
+  ],
+  "inspection": {
+    "running_race": "Conflict leaves durable result and no new-policy evidence",
+    "writeback_race": "Mutation before binding rejects; mutation after comparison preserves original binding and cannot relabel evidence",
+    "replay": "Fresh policy/context must match original durable request; restored v1 replay uses persisted binding and no respawn",
+    "cache_hit": "Mismatch against initial reservation rejects and holds; matching historical cached result remains fact requiring fresh release validation",
+    "compatibility": "expected_binding defaults None; existing callers retain behavior. cwd defaults None; all native and process helper tests pass."
+  },
+  "method_learning": {
+    "scope": "editor-dependency-handoff",
+    "recalled": [
+      "await-terminal-observers",
+      "bind-consumer-release",
+      "review-context-and-source-evidence"
+    ],
+    "application": "Review exact corrected source bytes and actual outcomes; previous rejected receipt remains historical.",
+    "feedback": "Post-comparison races require verifying evidence identity, not merely requiring every policy update to abort."
+  },
+  "limits": [
+    "Windows local actual subprocess verification; parent owns Linux evidence.",
+    "No source changes, commits, pushes, models, deployments or business acceptance.",
+    "Trusted host and storage prerequisite; same-key completed/cached responses remain historical facts."
+  ],
+  "cleanup": "All independent TemporaryDirectory fixtures cleaned; suites own and clean fixtures; private review receipt retained."
+}

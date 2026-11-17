@@ -1,0 +1,11 @@
+{
+  "issue": 1422,
+  "review": {
+    "path": "data-collection/native-check-runner-final-review-1422.json",
+    "sha256": "609d619c231868ebd891ff302eba60bd172df5046377676271ea159050428e09"
+  },
+  "state": "Final fixture and source/evidence review approved; formal delivery pending",
+  "final_linux": "93 run,89passed4platformskip;119 source hashes independently matched",
+  "source_format": "Reviewed/tested local raw SHA and canonical Git blob both recorded; Git line ending normalization does not claim byte-identical local/runtime source files on every host.",
+  "cleanup": "All isolated server tests temporary directories removed and no production service replacement. Unknown runtime runs retain ownership by design; ongoing task worktree retained."
+}

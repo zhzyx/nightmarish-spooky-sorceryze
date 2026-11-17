@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-63bbc92d42cb713afbd340fb90d7c1298ed1827a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-check-runner-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1422",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "97ae6f458815eaf096dd9ec0796c9fb51d34fa66f362834f05fe4975ec1d8206",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1422",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1425",
+    "action": "validation",
+    "detection_head": "0bf60d18ca4e75d9441e4b22398b401f1c1a9482",
+    "context_sha256": "06d6a8d3b1dc62a7999ea8fc3b4f4eccacb304cdc230819ac55fd5f99ae5696c",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44082900271/job/134037764441",
+    "diagnosis": "macOS temp path /var resolves to /private/var in child os.getcwd; cwd test used lexical equality although actual directory is identical. Runtime cwd behavior is unchanged. Root owns one-line fixture correction.",
+    "next_action": "Compare actual directory identity with Path.samefile; run Windows helper regression and POSIX alias reproduction, independent exact-delta review and macOS CI. Keep issue open until remote main verified.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T12:49:35.865141+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T12:50:28.425534+00:00",
+  "sha256": "a212655b3dda99022ae054f812b12c37d2acf6899aae0a7913eb1133e0d7fd65"
+}

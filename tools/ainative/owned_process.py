@@ -177,7 +177,7 @@ def _pipe_pending(pipe):
 
 
 class OwnedCommand:
-    def __init__(self, arguments, *, stdout, stderr, env, limit, stdin=None, windows_api=None):
+    def __init__(self, arguments, *, stdout, stderr, env, limit, stdin=None, windows_api=None, cwd=None):
         self.process = None
         self.api = None
         self.job = None
@@ -199,6 +199,7 @@ class OwnedCommand:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT if stderr is None else subprocess.PIPE,
                 env=env,
+                cwd=cwd,
                 close_fds=True,
                 start_new_session=self.api is None,
                 creationflags=0x08000004 if self.api is not None else 0,
@@ -367,7 +368,9 @@ def owned_scope(method):
     return wrapped
 
 
-def run_owned(arguments, *, stdout, stderr=None, env=None, limit, timeout, active, fail, stdin=None, scope=None):
+def run_owned(
+    arguments, *, stdout, stderr=None, env=None, limit, timeout, active, fail, stdin=None, scope=None, cwd=None
+):
     """Return a direct exit code or None after durable cancellation/failure.
 
     Output is capped while draining, including a short-lived writer that exits
@@ -375,7 +378,7 @@ def run_owned(arguments, *, stdout, stderr=None, env=None, limit, timeout, activ
     """
     if not active():
         return None
-    command = OwnedCommand(arguments, stdout=stdout, stderr=stderr, env=env, limit=limit, stdin=stdin)
+    command = OwnedCommand(arguments, stdout=stdout, stderr=stderr, env=env, limit=limit, stdin=stdin, cwd=cwd)
     command.fail = fail
     retained = False
     deadline = time.monotonic() + timeout

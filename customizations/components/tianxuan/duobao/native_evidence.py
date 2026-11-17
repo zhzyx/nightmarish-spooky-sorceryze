@@ -111,7 +111,9 @@ class EvidenceCache:
         _revision_id(candidate)
         _revision_id(toolchain)
         _revision_id(environment)
-        policy = self._policy(check_id)
+        # Freeze scope and version together before reading immutable inputs.
+        # A host policy update must not relabel already selected inputs.
+        policy = json.loads(_json(self._policy(check_id)))
         if not isinstance(parameters, dict) or len(_json(parameters).encode("utf-8")) > 65536:
             raise NativeStoreError("Expected bounded JSON check parameters")
         with self.store._connection() as db:
@@ -186,6 +188,7 @@ class EvidenceCache:
         parameters: dict[str, Any],
         outcome: str,
         log: bytes,
+        expected_binding: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Receive an authenticated runner's fact; it is not an independent approval."""
         _identifier(actor)
@@ -197,6 +200,8 @@ class EvidenceCache:
         bound = self.binding(
             tenant, candidate, check_id, toolchain=toolchain, environment=environment, parameters=parameters
         )
+        if expected_binding is not None and bound != expected_binding:
+            raise Conflict("Executed check binding no longer matches installed policy")
         if self.authorize(tenant, actor, check_id, "record") is not True:
             raise NativeStoreError("Runner is not authorized for this check")
         request = {**bound, "candidate": candidate, "actor": actor, "outcome": outcome, "log_sha256": _digest(log)}
