@@ -422,6 +422,41 @@
         }
       },
       "$comment": "Omitted fields use linear interpolation, no loop, and empty identity keyframes. Nonempty keys start at zero with strictly increasing seconds. Loop period is the positive final key time, and wrapping may jump. Each multiplier times base directional illuminance must remain finite and at most 1000000."
+    },
+    "reflections": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "max_distance": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000
+        },
+        "thickness": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 10
+        },
+        "normal_bias": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "max_steps": {
+          "type": "integer",
+          "minimum": 8,
+          "maximum": 256
+        },
+        "max_roughness": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        }
+      },
+      "$comment": "Missing fields use disabled reflections, maximum distance 100, thickness 0.1, normal bias 0.02, 128 steps, maximum perceptual roughness 0.8. Positive GPU values must remain normal binary32. All fields are validated when disabled."
     }
   },
   "$defs": {

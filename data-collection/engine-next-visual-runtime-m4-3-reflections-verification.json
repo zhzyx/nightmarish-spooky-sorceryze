@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-17T15:18:21.674991+00:00",
+  "base_commit": "7d0a8a52a43662000db6a6fea4d47883e8f84b03",
+  "candidate": "reflections-r5",
+  "native_key": "c58b345330856c7866e49a885910c4978f09a1ba6dc6abbee286f90877057bc9",
+  "input_count": 241,
+  "input_mismatches": [],
+  "test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=231 checks=30923 failures=0",
+  "build": {
+    "path": "build/engine_next/reflections-r5/VisualBuildReport.json",
+    "sha256": "b99d261b201a421c0dbce5c8190532bac354e813a153e23a3ba858252adb538e",
+    "bytes": 1739144
+  },
+  "binary": {
+    "path": "build/engine_next/reflections-r5/next_visual_client.exe",
+    "sha256": "89881db1beaf1997c4fc01c6d620d7ddb810274a297d0bb0bcba112db639e31f",
+    "bytes": 3040768
+  },
+  "package": {
+    "path": "build/engine_next/reflections-r5/Release/VisualPackage.json",
+    "sha256": "58ec2c1bb9d3b0b73cf86581b1619881c2a761293639433b9f322404e9e6101a",
+    "bytes": 7868
+  },
+  "shader_count": 20,
+  "clang_regression": {
+    "path": "build/engine_next/reflections-clang-cl-r4/Result.json",
+    "sha256": "bdba5c4e6b54b86ff6c0c4384ac8772aa730b5cd93870c43ec82731c7e6fd19d",
+    "bytes": 1084122
+  },
+  "static_checks": {
+    "path": "build/engine_next/reflections-static-final/Result.json",
+    "sha256": "a088437993d0fd7f0a6477f8fbc6d1453c6345147eb5b80b25d0e278dfff8b86",
+    "bytes": 16105
+  },
+  "tool_tests": {
+    "path": "build/engine_next/reflections-tools.log",
+    "sha256": "cdfdfde7398d02e4e0178af82d4805b62f9a6d28c1a4e1ffa3c56bdd8c620c65",
+    "bytes": 139
+  },
+  "typecheck": {
+    "path": "build/engine_next/reflections-mypy.log",
+    "sha256": "281a094c39385b4d7b53e5db635f52158036861433c2a4975b9039e77a627a24",
+    "bytes": 44
+  },
+  "ai_regression": {
+    "path": "build/engine_next/reflections-ainative-main7d0a8a52.log",
+    "sha256": "c7229c67e3f3fcd9de46f832bf79bd3621ab481465b572e945df0286459e4b56",
+    "bytes": 565
+  },
+  "ai_regression_summary": {
+    "tests": 445,
+    "skipped": 36,
+    "failures": 0,
+    "errors": 0
+  },
+  "contract_tests": {
+    "path": "build/engine_next/reflections-contract.log",
+    "sha256": "afbab38f7eecf3a723e93ae3ff4dcbc55869ced1104a978bdc057f455679b7a3",
+    "bytes": 147
+  },
+  "evidence": {
+    "gpu": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-reflections-gpu.json",
+      "sha256": "3ad88ae036d990ad2f0267be6a42eb9e0923aea1efef74bd6ae976c4608e4c9c",
+      "bytes": 38784
+    },
+    "source-review": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-reflections-source-review.json",
+      "sha256": "feaa13cf92bce212cb8e6bc16528c2460669e7473d2833f1b15af912bae5ecd2",
+      "bytes": 57936
+    },
+    "delivery-review": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-reflections-delivery-review.json",
+      "sha256": "ebac4710e4280fd8e6c8c849e4a38b5955b64d91995eaa327bb4e429f22b024e",
+      "bytes": 2117
+    },
+    "regression": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-reflections-regression.json",
+      "sha256": "105698633da599084c773e72a15fcbd0904a6ad4a3180c1fcb6db0d97cc5fbfa",
+      "bytes": 42227
+    },
+    "network": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-reflections-network.json",
+      "sha256": "e1c9da26edf53420e3782b94b2f57d552a9a9e7451b4cc6a721f372389fe2cb3",
+      "bytes": 36964
+    },
+    "build-impact": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-reflections-build-impact.json",
+      "sha256": "0fd3b4449f421f5b11834639e6161705bafb40a5abafa03f6afd7aeaec7e89c5",
+      "bytes": 48761
+    },
+    "boundary": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-reflections-boundary.json",
+      "sha256": "d883a37884b6eafa0323f6a6ac5ef0c3911069554b4852aec7c7bb4d55c84979",
+      "bytes": 26102
+    },
+    "dynamic-gpu": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-reflections-dynamic-gpu.json",
+      "sha256": "0ce4b90fc7d5ed007d469abcfb377a7c5d31a3c8fc24a8e2d187fdb404581178",
+      "bytes": 26004
+    },
+    "final-source-delta": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-reflections-final-source-delta.json",
+      "sha256": "eda8b0990940ea8b0bb8c7df18a3ec58a32cbadc83b2e87bd9d212ea216cd5aa",
+      "bytes": 5905
+    },
+    "final-gpu": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-reflections-final-gpu.json",
+      "sha256": "34b4cc94a7a0be42655dd8ac1068c87517ffe03833378666fb844633cceaeec3",
+      "bytes": 7763
+    }
+  },
+  "scope": "Roughness-aware screen-space reflections with explicit nonrecursive radiance, IBL fallback, bounded perspective-correct traversal and existing temporal resolve.",
+  "limitations": [
+    "Traversal uses mip-zero depth with a maximum of 256 steps. HiZ acceleration is scheduled with geometry optimization.",
+    "Screen-space visibility and thickness approximate geometry. Offscreen rays use IBL. Traced GI and recursive reflection support are tracked by the parent request.",
+    "Reflection history uses the existing receiver-surface TAA. Dynamic reflection content requires the recorded motion review and remains subject to temporal approximation.",
+    "The open M4 parent request tracks volumetrics, dynamic transparency, geometry streaming, GI, UE A-F comparison and native-4K performance and stability."
+  ],
+  "remaining": "Exact submitted-head CI and main readback follow this verification record."
+}

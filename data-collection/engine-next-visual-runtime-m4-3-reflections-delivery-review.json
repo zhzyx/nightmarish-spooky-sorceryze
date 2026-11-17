@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "status": "passed",
+  "scope": "Independent verification of build-impact placement evidence, executable and input identity, report outcomes and artifact bytes. Shader source authored by this reviewer is excluded from independent source-review claims.",
+  "proof": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-reflections-build-impact.json",
+    "sha256": "0fd3b4449f421f5b11834639e6161705bafb40a5abafa03f6afd7aeaec7e89c5",
+    "bytes": 48761
+  },
+  "checked_file_references": 142,
+  "native_keys": {
+    "Baseline": "c58b345330856c7866e49a885910c4978f09a1ba6dc6abbee286f90877057bc9",
+    "Changed": "9b05659c39d755f7918f7970d80c8945358cad7dc1ec1a8ef099299d1d6b61b6",
+    "Restored": "c58b345330856c7866e49a885910c4978f09a1ba6dc6abbee286f90877057bc9"
+  },
+  "main_native_inputs_equal_baseline": true,
+  "changed_native_inputs": [
+    "engine_next/Rendering/Shaders/Reflection.hlsl"
+  ],
+  "changed_shader_files": [
+    "ReflectionTrace.cs.cso"
+  ],
+  "same_executable_three_shader_bundles": true,
+  "all_runtime_runs_24_frames_zero_validation": true,
+  "updated_pixels_change": true,
+  "rollback_pixels_identical": true,
+  "invalid_shader_rejected_before_frame_zero": true,
+  "evidence_execution": "Read existing immutable results and recomputed every referenced SHA256 and size. GPU execution was performed by the parent agent; this review reran no GPU workload.",
+  "metadata_paths": {
+    "base": "repository_root",
+    "normalization": "Artifact paths are repository-relative. External input bytes were copied unchanged into the ignored evidence-inputs directory. Displayed compiler and Python command names omit host installation paths. Original command and metadata bytes are retained in the private archive.",
+    "original_metadata": {
+      "path": "build/engine_next/reflection-metadata-original/engine-next-visual-runtime-m4-3-reflections-delivery-review.json",
+      "sha256": "a1a8731787c08a7b295414f3eeae0d0cbe537140b4bf90a2d25bff425fcffb2d",
+      "bytes": 1580
+    }
+  }
+}

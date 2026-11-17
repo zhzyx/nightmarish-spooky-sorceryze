@@ -57,6 +57,10 @@ enum class PassWork : std::uint8_t
 	BloomDownsample = 13,
 	BloomUpsample = 14,
 	PostProcessReadback = 15,
+	ReflectionColorMip = 16,
+	ReflectionTrace = 17,
+	ReflectionComposite = 18,
+	ReflectionRadiance = 19,
 };
 
 struct RenderPipeline
@@ -64,7 +68,7 @@ struct RenderPipeline
 	CompiledGraph stGraph;
 	// Indexed by the stable PassId, independently of the compiled execution order.
 	std::vector<PassWork> arrWorkByPass;
-	// Indexed by PassId. Only Bloom passes have a valid mip index.
+	// Indexed by PassId. Bloom and reflection color-mip passes have valid indices.
 	std::vector<std::uint32_t> arrPassMipIndex;
 	ResourceId nTint = INVALID_RESOURCE;
 	ResourceId nColor = INVALID_RESOURCE;
@@ -79,6 +83,12 @@ struct RenderPipeline
 	ResourceId nExposureRead = INVALID_RESOURCE;
 	ResourceId nExposureWrite = INVALID_RESOURCE;
 	ResourceId nPostReadback = INVALID_RESOURCE;
+	ResourceId nEnvironmentSpecular = INVALID_RESOURCE;
+	ResourceId nReflection = INVALID_RESOURCE;
+	ResourceId nReflectedHdr = INVALID_RESOURCE;
+	// Additional reflection color levels 1..N-1. Before tracing, level zero is
+	// nReflectedHdr containing full lighting without screen-space reflections.
+	std::vector<ResourceId> arrReflectionMips;
 	std::vector<ResourceId> arrBloomDown;
 	std::vector<ResourceId> arrBloomUp;
 	std::array<ResourceId, 4> arrGbuffer{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
@@ -97,8 +107,10 @@ struct RenderPipeline
 // The last downsample is the last upsample input, so arrBloomUp has mips minus one
 // entries. Exposure readback remains CopyDestination. Other post-process imported
 // resources finish in Common for reuse.
+// Reflection color levels include nHdr and must be in [1,6] when enabled.
+// Zero disables reflections. Fixed-mesh mode ignores valid reflection options.
 // Failure preserves the previous output and reports the graph diagnostic.
 [[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0, bool bTemporal = true,
-									   bool bExposure = false, std::uint32_t nBloomMips = 0);
+									   bool bExposure = false, std::uint32_t nBloomMips = 0, std::uint32_t nReflectionMips = 0);
 
 } // namespace EngineNext::Rendering

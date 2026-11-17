@@ -33,6 +33,7 @@
 #include "engine_next/include/EngineNext/Assets/Types.h"
 #include "engine_next/include/EngineNext/Rendering/PostProcessSettings.h"
 #include "engine_next/include/EngineNext/Rendering/LightTimeline.h"
+#include "engine_next/include/EngineNext/Rendering/ReflectionSettings.h"
 #include "engine_next/include/EngineNext/Serialization/Json.h"
 
 #include <array>
@@ -120,6 +121,7 @@ struct RenderConfiguration
 	ExposureSettings stExposure;
 	BloomSettings stBloom;
 	LightAnimationSettings stLightAnimation;
+	ReflectionSettings stReflections;
 	std::vector<PointLightSettings> arrPointLights{ PointLightSettings{} };
 	std::vector<SpotLightSettings> arrSpotLights;
 	double dExposure = 1;
@@ -149,6 +151,7 @@ struct RenderConfiguration
 // Numeric exposure remains required and supplies the legacy-mode multiplier.
 // Optional light_animation applies its timeline to directional illuminance.
 // Its omitted fields default to an empty, non-looping linear track.
+// Optional reflections uses disabled ReflectionSettings defaults when absent.
 // Both functions append diagnostics and leave the output unchanged on failure.
 [[nodiscard]] bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std::string &strExpectedDigest, RenderConfiguration &out_stConfiguration,
 											Assets::Diagnostics &out_arrDiagnostics);
