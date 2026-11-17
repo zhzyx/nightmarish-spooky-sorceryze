@@ -1,0 +1,187 @@
+{
+  "schema": 1,
+  "issue": 1444,
+  "issue_state": "OPEN",
+  "reviewer": "independent-native-workflow-review3",
+  "reviewed_at": "2026-11-17T17:24:46.598778+00:00",
+  "authorization": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+  "baseline_commit": "b1a5c7fe344048eb8060307c786a81d60fddece5",
+  "observed_head": "7f057ed5b0a6a8e7084916a50bef46d0060511b7",
+  "verdict": "ci_dependency_delta_accepted_hosted_revalidation_required_business_acceptance_incomplete",
+  "findings": [],
+  "workflow_sha256": "9f66dac40c80dced5277078dd14c676c60601602ab7b4a0da1b5766b7ccb17cc",
+  "precise_diff": "diff --git a/.github/workflows/tianxuan-tests.yml b/.github/workflows/tianxuan-tests.yml\nindex 3741247e..6f26a000 100644\n--- a/.github/workflows/tianxuan-tests.yml\n+++ b/.github/workflows/tianxuan-tests.yml\n@@ -27,7 +27,7 @@ jobs:\n           cache: \"npm\"\n           cache-dependency-path: \"apps/tianxuan/package-lock.json\"\n       - name: Install Python test dependencies\n-        run: pip install fastapi httpx pytest python-docx reportlab\n+        run: pip install fastapi uvicorn httpx pytest python-docx reportlab\n       - name: Configure git identity for merge tests\n         run: |\n           git config --global user.name \"Tianxuan Test\"\n",
+  "tracked_changed_paths": [
+    ".github/workflows/tianxuan-tests.yml"
+  ],
+  "prior_review": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-workflow-review2.json",
+    "sha256": "71c50247ccf50adbc16fda52ff1b64a99405137e6691275c82785cd171dc27f9"
+  },
+  "source_unchanged_comparison": {
+    "customizations/components/tianxuan/duobao/native_check_inputs.py": {
+      "prior": "ddefa8b940dbf201e59c0ee9f1b69b02c390146ac9357425dec12bd3391b344d",
+      "actual": "ddefa8b940dbf201e59c0ee9f1b69b02c390146ac9357425dec12bd3391b344d",
+      "match": true
+    },
+    "customizations/components/tianxuan/duobao/native_check_runner.py": {
+      "prior": "93a933d4cced3d1c34d991f3814119945ff6b448a2f106e097d8790f7ed98f8f",
+      "actual": "93a933d4cced3d1c34d991f3814119945ff6b448a2f106e097d8790f7ed98f8f",
+      "match": true
+    },
+    "customizations/components/tianxuan/duobao/native_evidence.py": {
+      "prior": "c0497cae5a43cc653b2135dcc99cda3bbd0282b6c9b50066de9759c12f24be1d",
+      "actual": "c0497cae5a43cc653b2135dcc99cda3bbd0282b6c9b50066de9759c12f24be1d",
+      "match": true
+    },
+    "customizations/components/tianxuan/duobao/native_release.py": {
+      "prior": "2ca0a797a44d01fe6852b4c2b0089ecaa5cbcbe5e36dea98111eeb4cae51903b",
+      "actual": "2ca0a797a44d01fe6852b4c2b0089ecaa5cbcbe5e36dea98111eeb4cae51903b",
+      "match": true
+    },
+    "customizations/components/tianxuan/duobao/native_store.py": {
+      "prior": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+      "actual": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+      "match": true
+    },
+    "customizations/components/tianxuan/duobao/native_workspace.py": {
+      "prior": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "actual": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "match": true
+    },
+    "customizations/components/tianxuan/duobao/test_native_check_inputs.py": {
+      "prior": "d5d6eee1ebe6b840511e20dcb281a6d99c02409a38c832067d10e5005bf4856b",
+      "actual": "d5d6eee1ebe6b840511e20dcb281a6d99c02409a38c832067d10e5005bf4856b",
+      "match": true
+    },
+    "customizations/components/tianxuan/server/api.py": {
+      "prior": "e9cf3ea7ddf6041ff2b462dfa2ba0d341827e34b7600cac846a4d0dc2f09e8c7",
+      "actual": "e9cf3ea7ddf6041ff2b462dfa2ba0d341827e34b7600cac846a4d0dc2f09e8c7",
+      "match": true
+    },
+    "customizations/components/tianxuan/server/native_api.py": {
+      "prior": "ee387cbf28890d1a5a85025744e6323daf98f9e2ee3a66713bbbb4ebb5a78184",
+      "actual": "ee387cbf28890d1a5a85025744e6323daf98f9e2ee3a66713bbbb4ebb5a78184",
+      "match": true
+    },
+    "customizations/components/tianxuan/server/tianxuan_core.py": {
+      "prior": "5bdb687f1904ea5d27e5ea84b0bd6526b1179ea90ea2f9b6b2ac6922d831153d",
+      "actual": "5bdb687f1904ea5d27e5ea84b0bd6526b1179ea90ea2f9b6b2ac6922d831153d",
+      "match": true
+    },
+    "customizations/components/tianxuan/sinan-workorders/README.md": {
+      "prior": "2b28055d1fc884e93080a07d351a5e64e8543ff450a6456e56f4e75cf661951f",
+      "actual": "2b28055d1fc884e93080a07d351a5e64e8543ff450a6456e56f4e75cf661951f",
+      "match": true
+    },
+    "customizations/components/tianxuan/sinan-workorders/conftest.py": {
+      "prior": "c37dc8303d58efd8fb4302254c4fcfd88ea729255fba2af4b5453129d8654e37",
+      "actual": "c37dc8303d58efd8fb4302254c4fcfd88ea729255fba2af4b5453129d8654e37",
+      "match": true
+    },
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": {
+      "prior": "dae76fa5f294c1b08dcfd9e0bb43134d7d3848db9889ddaaf99adedcfe744f57",
+      "actual": "dae76fa5f294c1b08dcfd9e0bb43134d7d3848db9889ddaaf99adedcfe744f57",
+      "match": true
+    },
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": {
+      "prior": "65c66cd9bf2b136dbab67c35f4074940f4bbe750a907f8773a43d579648dd771",
+      "actual": "65c66cd9bf2b136dbab67c35f4074940f4bbe750a907f8773a43d579648dd771",
+      "match": true
+    },
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": {
+      "prior": "63ae67641dcfd156c267afa7f1188c7a54a53cea908f10a5b60ef541a9426029",
+      "actual": "63ae67641dcfd156c267afa7f1188c7a54a53cea908f10a5b60ef541a9426029",
+      "match": true
+    },
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": {
+      "prior": "be048a19aaca7cea1e1dce1fae1ebbe60b7b94a8def4e56df7826abed2b8a9cc",
+      "actual": "be048a19aaca7cea1e1dce1fae1ebbe60b7b94a8def4e56df7826abed2b8a9cc",
+      "match": true
+    },
+    "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs": {
+      "prior": "676f3d4c8797aab5878a7eb66f3c476f09b7d903e25606a55fbdfded819e8654",
+      "actual": "676f3d4c8797aab5878a7eb66f3c476f09b7d903e25606a55fbdfded819e8654",
+      "match": true
+    },
+    "tools/ainative/owned_process.py": {
+      "prior": "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78",
+      "actual": "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78",
+      "match": true
+    },
+    "tools/editor_provenance_process.py": {
+      "prior": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1",
+      "actual": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1",
+      "match": true
+    },
+    "design-docs/native-workflow-20261117.md": {
+      "prior": "4e0ab1e5af78e0850aba7f035b4052d0f72e346f0a48f339267290409355600f",
+      "actual": "4e0ab1e5af78e0850aba7f035b4052d0f72e346f0a48f339267290409355600f",
+      "match": true
+    },
+    "tools/native_host_inputs.json": {
+      "prior": "605a456ac445cc7801c879829a1daad35a8368b6617ba8485917828b474cbef2",
+      "actual": "605a456ac445cc7801c879829a1daad35a8368b6617ba8485917828b474cbef2",
+      "match": true
+    },
+    "customizations/components/tianxuan/sinan-workorders/build-impact.json": {
+      "prior": "e9907c89f44a471af42e26ee3ba31b04fe19ac518b7b02d5fed6de75527c5adb",
+      "actual": "e9907c89f44a471af42e26ee3ba31b04fe19ac518b7b02d5fed6de75527c5adb",
+      "match": true
+    }
+  },
+  "dependency_review": {
+    "requirements_path": "customizations/components/tianxuan/server/requirements.txt",
+    "requirements_sha256": "8d40aeda56e3c00a04c43ec6e3fdf1b2eb0cad0e16661e6ea864a58a4186a7aa",
+    "conclusion": "uvicorn already declared server runtime dependency; same Python 3.12 CI environment installs uvicorn before unchanged original python -m pytest customizations/components/tianxuan -q entry. Node 22 setup unchanged."
+  },
+  "real_http_test": {
+    "path": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py",
+    "sha256": "be048a19aaca7cea1e1dce1fae1ebbe60b7b94a8def4e56df7826abed2b8a9cc",
+    "name": "test_actual_node_authenticated_http_dispatch",
+    "unchanged": true,
+    "skipped": false,
+    "evidence": "Unconditional import uvicorn at line 203; actual socket listener and uvicorn.Server; assert Node available; authenticated subprocess native_dispatch.mjs and replay assertions retained. Hosted failed log proves this test was executed, not skipped."
+  },
+  "original_ci": {
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44134663233",
+    "head": "b1a5c7fe344048eb8060307c786a81d60fddece5",
+    "conclusion": "failure",
+    "independently_read": "gh run view --log-failed and --json headSha,conclusion,url",
+    "failure": "ModuleNotFoundError: No module named uvicorn at test_native_workflow.py:203",
+    "summary": "1 failed, 849 passed, 2 skipped, 1 warning, 204 subtests passed in 99.08s"
+  },
+  "parent_local_recheck": {
+    "path": "D:\\GongGong-work\\native-workflow-20261117\\data-collection\\native-workflow-ci-dependency-1444.json",
+    "sha256": "74976a77eb9d4f6d7fd7413c1b2c4eb6534f14413cfea5ab1579077acedd025e",
+    "exit_code": 1,
+    "passed": false,
+    "summary": "6 failed, 846 passed, 5 skipped, 1 warning, 165 subtests passed in 273.39s",
+    "failures": "WinError 1314 creating symlinks and relative paths across C: temp / D: cwd in existing admin-path and git-root tests. Parent notified; full-suite success is not claimed.",
+    "independently_rerun": false
+  },
+  "limits": [
+    "No source edits, model calls, production deployment, commits, pushes, further agents or test reruns performed.",
+    "Replacement hosted Linux CI on exact correction candidate is still required; local receipt does not establish hosted success.",
+    "Review limited to one-line CI dependency correction and source continuity; original review2 limitations remain in force.",
+    "Additional untracked dispatch/Kuafu event files and local test receipt are not code changes and were not independently audited as business acceptance."
+  ],
+  "remaining_acceptance": [
+    "Real same-product content conflict integration through Heqi and independent acceptance",
+    "Explicit managed-definition revision/replacement lifecycle",
+    "Criterion 6 real CLI/API provider A/B comparison with actual or unknown usage and time/wait/reread/check evidence",
+    "Full 1444 acceptance remains open; parent consumers and deployment separately remain open"
+  ],
+  "acceptance_ownership": "Issue 1444 remains OPEN; remaining original acceptance is retained on 1444, not silently transferred to a parent.",
+  "method_learning": {
+    "recalled": "editor-dependency-handoff",
+    "applied": "bind-consumer-release: exact file bytes and authoritative CI head/failure checked before accepting limited correction",
+    "counterexample": "Local passing targeted tests or corrected dependency text cannot substitute for hosted full-suite terminal success.",
+    "feedback": "Keep dependency correction acceptance separate from full regression status when another host exposes privilege or filesystem assumptions; require exact hosted candidate revalidation."
+  },
+  "cleanup": {
+    "temporary_resources_created": false,
+    "retained": "Only requested private review3 receipt written; other task resources untouched."
+  },
+  "private_original_sha256": "e1ac3d00bc0ce7150a25488dd5ecf6172d52398ed2619b6f12673e7cc5cab8ae"
+}
