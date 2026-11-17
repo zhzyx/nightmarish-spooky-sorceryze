@@ -1,0 +1,146 @@
+{
+  "schema": "independent-native-api-review-v1",
+  "issue": "github:zhzyx/nightmarish-spooky-sorceryze#1413",
+  "reviewer": "independent-final-review-agent",
+  "reviewed_at": "2026-11-17T09:48:10.556711+00:00",
+  "worktree": "D:\\GongGong-work\\duobao-native-api-20261117",
+  "head": "704e179de4e44b277be46dafebda4e0cfa7f46f6",
+  "input_manifest_sha256": "25e120affd5fa73a1bccd6312a18e108f7fd5a0ac63976996695abe70a56f04a",
+  "bindings": [
+    {
+      "path": "customizations/components/tianxuan/server/api.py",
+      "sha256": "df63f6def69d551209a950cc9a8fc15b964bbca14f0695ee682cfe39f85b221d",
+      "sha256_lf": "1dfb26012ee20c422c800fea6c678aebd8c39095039b3e8f46c37975b0afc7b9",
+      "expected_sha256": "df63f6def69d551209a950cc9a8fc15b964bbca14f0695ee682cfe39f85b221d",
+      "matches": true,
+      "git_blob": "63e736246b54e86b09966cbe91c10338fa66e121"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/main.py",
+      "sha256": "4d113d3ce735ea05b6f481e4021cb0d1b9f302ed0c1dd188f6a004b3679d0fde",
+      "sha256_lf": "3bd80a5d90c8a3cd9859ce0b097a807eff1a9b69f31cbb5429bc92e61421b1c7",
+      "expected_sha256": "4d113d3ce735ea05b6f481e4021cb0d1b9f302ed0c1dd188f6a004b3679d0fde",
+      "matches": true,
+      "git_blob": "57a4d2d47de54c896cb1c370b93f652e475ec278"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/native_api.py",
+      "sha256": "f402f875e649b58448b67bd2510001c3dbac13becba46f628c9c53581ef56f07",
+      "sha256_lf": "c398ce08a48ef5232ee48d49dc31e972c8efdd5361e2ceaa2307b9cb98be6fce",
+      "expected_sha256": "f402f875e649b58448b67bd2510001c3dbac13becba46f628c9c53581ef56f07",
+      "matches": true,
+      "git_blob": "e5ac6f75d463a8ef6cec4c56ce380377e549529c"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_native_api.py",
+      "sha256": "e5ce8ce84daab67087c0235283cafc8fc45b41bf044b892a66f79bd94358b499",
+      "sha256_lf": "4a85726e458399def6555fb94e5259815b37ca7f21eea2fc11f721037083ce1e",
+      "expected_sha256": "e5ce8ce84daab67087c0235283cafc8fc45b41bf044b892a66f79bd94358b499",
+      "matches": true,
+      "git_blob": "6034e91b6278a6691a4251be677d3032cd12263b"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/NATIVE_API.md",
+      "sha256": "665146d1118fc859d73d1dcb030ef1689c39ef42e0225f980db53a8917d1cdc0",
+      "sha256_lf": "80daefe4b9e973cf1364bec2a9a2478f2ab6d10be023e3e32dcd8dff7161ca26",
+      "expected_sha256": "665146d1118fc859d73d1dcb030ef1689c39ef42e0225f980db53a8917d1cdc0",
+      "matches": true,
+      "git_blob": "d916af6569bdb944ee1b4347894f83dda8da0f0f"
+    }
+  ],
+  "verdict": "approved",
+  "findings": [],
+  "resolved_findings": [
+    {
+      "id": "R1",
+      "prior_receipt": "D:/GongGong/data-collection/receipts/duobao-1382/api-review.json",
+      "resolution": "UTF-8 validation runs for every object key including null deletes before NativeStore.submit. Six independent HTTP probes return 422 with zero submit calls and no rows in any native table, including mixed multi-module payloads. Valid escaped surrogate pair and Chinese path roundtrip through HTTP succeeds."
+    }
+  ],
+  "verification": [
+    {
+      "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -m pytest -p no:cacheprovider customizations/components/tianxuan/server/test_native_api.py customizations/components/tianxuan/server/test_api_session.py customizations/components/tianxuan/server/test_api_auth_mode.py customizations/components/tianxuan/server/test_access_control.py customizations/components/tianxuan/server/test_tianxuan_concurrency.py customizations/components/tianxuan/server/test_main_app.py customizations/components/tianxuan/duobao/test_native_store.py -q",
+      "result": "69 passed, 1 warning, 2 subtests passed in 17.99s",
+      "warning": "Existing Starlette httpx deprecation"
+    }
+  ],
+  "adversarial_observations": [
+    {
+      "case": "invalid_unicode_edit",
+      "name_escaped": "'\\ud800'",
+      "status": 422,
+      "store_submit_calls": 0,
+      "both_module_heads": null
+    },
+    {
+      "case": "invalid_unicode_delete",
+      "name_escaped": "'\\ud800'",
+      "status": 422,
+      "store_submit_calls": 0,
+      "both_module_heads": null
+    },
+    {
+      "case": "invalid_unicode_edit",
+      "name_escaped": "'path/\\udfff'",
+      "status": 422,
+      "store_submit_calls": 0,
+      "both_module_heads": null
+    },
+    {
+      "case": "invalid_unicode_delete",
+      "name_escaped": "'path/\\udfff'",
+      "status": 422,
+      "store_submit_calls": 0,
+      "both_module_heads": null
+    },
+    {
+      "case": "invalid_unicode_edit",
+      "name_escaped": "'\\ud800x\\udfff'",
+      "status": 422,
+      "store_submit_calls": 0,
+      "both_module_heads": null
+    },
+    {
+      "case": "invalid_unicode_delete",
+      "name_escaped": "'\\ud800x\\udfff'",
+      "status": 422,
+      "store_submit_calls": 0,
+      "both_module_heads": null
+    },
+    {
+      "case": "rejected_batch_database_counts",
+      "counts": {
+        "native_blobs": 0,
+        "native_revisions": 0,
+        "native_heads": 0,
+        "native_receipts": 0,
+        "native_compositions": 0
+      }
+    },
+    {
+      "case": "valid_chinese_and_surrogate_pair_HTTP_roundtrip",
+      "submit_status": 200,
+      "read_status": 200,
+      "bytes_hex": "61"
+    }
+  ],
+  "assessment": {
+    "authentication": "No regression observed: verified identity/session, forged X-Actor denial, strict tenant admission, expired/revoked sessions and viewer write denial pass.",
+    "bounds": "Stream stop, Content-Length, entry/module count, base64 and decoded bounds pass. New Unicode validation is within already bounded JSON ingestion.",
+    "startup": "Native startup forbids GitService/MergeQueue/subprocess construction; Git fallback test passes.",
+    "integration_claims": "NATIVE_API.md explicitly limits native mode to identity, health and candidate routes and leaves document/issue/model and producer/consumer governance integration for subsequent work. No full integration completion claimed."
+  },
+  "limitations": [
+    "Review approves the exact five-file HTTP adapter candidate only; changes require renewed review.",
+    "Windows tests and independent in-process HTTP boundary checks rerun here; prior Linux isolated-container evidence was reported by parent, not independently rerun in this review.",
+    "No production deployment/switch, external network acceptance, trusted read tracking, governance approval or overall parent-goal completion established.",
+    "Production access middleware retains existing synchronous checks; responsiveness test covers non-production native identity lookup.",
+    "Full-limit memory profiling not performed."
+  ],
+  "method_learning": {
+    "scope": "content-storage-integrity",
+    "recall": "No lessons or unavailable lessons returned.",
+    "feedback_for_parent": "JSON escaped adjacent high/low surrogate pairs are valid scalar input; malformed-pair regressions must separate surrogates, and include a positive supplementary-plane HTTP roundtrip. Persist any method proposal through parent authorized learning scope."
+  },
+  "cleanup": "No product edits, commits, pushes or deployment. Independent script executed from stdin, TemporaryDirectory databases removed after auth connection close. Python -B and pytest cache disabled. Pytest-managed temporary directories follow the existing pytest retention policy; no unrelated resources deleted."
+}

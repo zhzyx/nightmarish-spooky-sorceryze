@@ -44,16 +44,29 @@ _REQUIRED_CHECKS = tuple(
 )
 
 _STORE = Tianxuan(_DB_PATH)
-_MERGE_QUEUE = MergeQueue(
-    _DB_PATH,
-    GitService(),
-    checks=_CHECKS,
-    protected_branches=_PROTECTED_BRANCHES,
-    role_resolver=_STORE.role_of,
-    event_sink=_STORE.record_actor_event,
-)
-if os.environ.get("TIANXUAN_MERGE_WORKER", "1") != "0":
-    _MERGE_QUEUE.start_worker()
+_MODE = os.environ.get("TIANXUAN_STORAGE_MODE", "git")
+if _MODE not in {"git", "native"}:
+    raise RuntimeError("TIANXUAN_STORAGE_MODE must be git or native")
+_NATIVE_STORE = None
+_MERGE_QUEUE = None
+if _MODE == "native":
+    from native_store import NativeStore
+
+    _NATIVE_DATABASE = os.environ.get("TIANXUAN_NATIVE_DB", "")
+    if not _NATIVE_DATABASE:
+        raise RuntimeError("native mode requires explicit absolute TIANXUAN_NATIVE_DB")
+    _NATIVE_STORE = NativeStore(_NATIVE_DATABASE)
+else:
+    _MERGE_QUEUE = MergeQueue(
+        _DB_PATH,
+        GitService(),
+        checks=_CHECKS,
+        protected_branches=_PROTECTED_BRANCHES,
+        role_resolver=_STORE.role_of,
+        event_sink=_STORE.record_actor_event,
+    )
+    if os.environ.get("TIANXUAN_MERGE_WORKER", "1") != "0":
+        _MERGE_QUEUE.start_worker()
 
 if os.environ.get("TIANXUAN_EVENT_RETENTION_DAYS"):
     try:
@@ -63,9 +76,11 @@ if os.environ.get("TIANXUAN_EVENT_RETENTION_DAYS"):
 
 app = create_app(
     _STORE,
-    gateway=ModelGateway(_GATEWAY_DB),
+    gateway=ModelGateway(_GATEWAY_DB) if _MODE == "git" else None,
     merge_queue=_MERGE_QUEUE,
     protected_branches=_PROTECTED_BRANCHES,
     required_approvals=_REQUIRED_APPROVALS,
     required_checks=_REQUIRED_CHECKS,
+    native_store=_NATIVE_STORE,
+    native_only=_MODE == "native",
 )

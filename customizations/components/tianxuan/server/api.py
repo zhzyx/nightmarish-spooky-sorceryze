@@ -303,11 +303,18 @@ def create_app(
     protected_branches: Sequence[str] = (),
     required_approvals: int = 0,
     required_checks: Sequence[str] = (),
+    native_store: Any | None = None,
+    native_only: bool = False,
 ) -> FastAPI:
     """为给定领域核心实例构建 HTTP 应用；可选的模型网关与多宝合入队列挂载到同一应用。"""
     app = FastAPI(title="Tianxuan API", version="0.1.0")
     app.state.store = store
     configure_access(app, store)
+    if native_store is not None:
+        from native_api import create_native_router
+
+        app.state.native_store = native_store
+        app.include_router(create_native_router(native_store))
     app.state.gateway = gateway
     app.state.merge_queue = merge_queue
     app.state.protected_branches = parse_protected_branches(protected_branches)
@@ -437,6 +444,11 @@ def create_app(
         if scheme.lower() != "bearer" or not token.strip():
             raise HTTPException(status_code=400, detail="Bearer token is required")
         return {"revoked": store.revoke_session(token.strip())}
+
+    if native_only:
+        if native_store is None:
+            raise ValueError("native_only requires a native store")
+        return app
 
     # ---------- 成员与角色 ----------
 

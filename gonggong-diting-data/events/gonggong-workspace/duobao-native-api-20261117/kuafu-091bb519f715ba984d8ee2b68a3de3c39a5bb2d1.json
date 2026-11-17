@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-091bb519f715ba984d8ee2b68a3de3c39a5bb2d1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-api-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1413",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0e6c47599c64005bf5c729a8adb94dbe9604468217a3b32e261a8fe37f0274fd",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1413",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1415",
+    "action": "validation",
+    "detection_head": "704e179de4e44b277be46dafebda4e0cfa7f46f6",
+    "context_sha256": "b5f7e4b0e612f9c4c1208a85f5c9d0508fbac04a70a28f99701ae4308bb5c93e",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1413",
+    "diagnosis": "Independent reviewer and parent reproduced lone surrogate object-name encoding failure at native HTTP boundary with no database write. Added explicit UTF8 name validation before store invocation; 17 native API tests pass including invalid lone surrogates and valid Chinese/emoji names. Original before-test included one valid surrogate pair negative by mistake; corrected that test and preserve original log.",
+    "next_action": "Independent fixed candidate review, updated Linux isolated test and formal delivery; do not close original or bug before main readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T09:39:18.777164+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T09:44:41.932314+00:00",
+  "sha256": "008f44c39d9e280591c4f353bb81a24d0a733e09598420eb966de708962a3ff8"
+}

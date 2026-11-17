@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-native-http-input-boundary",
+  "event_id": "learn-504a55f1d301091051046344a604b6ec09e215a5e9ac4e9c2f62bb2eb02e37b7",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1413",
+  "occurred_at": "2026-11-17T09:55:57.807331+00:00",
+  "evidence_refs": [
+    "codex-intake-1413-20261117"
+  ],
+  "payload": {
+    "scope": "native-http-input-boundary",
+    "lesson": "validate-decoded-object-names",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Validate decoded object names as Unicode scalar text before invoking storage, including deletion keys; preserve valid escaped pairs and non-ASCII names.",
+      "when": "A JSON transport accepts object names later encoded into canonical UTF8 content identities.",
+      "counterexample": "JSON syntax acceptance does not ensure every escaped string can be UTF8 encoded; valid surrogate pairs decode into a normal scalar and must remain accepted.",
+      "trial_plan": "In a future adoption, send lone high/low surrogates and mixed-batch deletes through real transport; assert422, zero storage calls and unchanged database, then roundtrip Chinese and emoji names."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/duobao-native-api-review-1413.json",
+        "sha256": "bc80bc7b12d4a2eb645c39103f366111a316ed4249c94416f1a67a8b862f539a"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/duobao-native-api-20261117/codex-intake-1413-20261117.json",
+      "sha256": "b228beef293bdba5d7ce40fb3d322b20616f7693d27aedf735ef8c1170ac3687"
+    }
+  },
+  "sha256": "e486d573a887ebe0217f48352a490bc21dc8e22fbfe125c158db58901bde4eb0"
+}
