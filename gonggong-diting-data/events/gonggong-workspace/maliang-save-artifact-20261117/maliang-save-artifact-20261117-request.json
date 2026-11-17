@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-save-artifact-20261117-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-save-artifact-20261117",
+  "kind": "request",
+  "occurred_at": "2026-11-17T11:43:00Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1427",
+  "agent": {
+    "id": "kimi-work-host",
+    "version": "20261117",
+    "origin": "external-authorized-host",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5"
+  },
+  "payload": {
+    "intent": "Add a Save Artifact button to the Maliang workbench publish bar: open the native system save dialog, let the user choose any destination path, and copy the currently previewed raw image or GLB mesh there.",
+    "authorization_ref": "kimi-work:user:20261117:maliang-save-artifact-submit-main",
+    "state": "in_progress",
+    "usage": null,
+    "definition": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "4eaa677788a918fa91ee7dcfe4e3fcb392a43bcb72ea3055aaa9b0633a214a18"
+}
