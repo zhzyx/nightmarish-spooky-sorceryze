@@ -8,14 +8,23 @@ from __future__ import annotations
 
 import json
 import os
-import shutil
 import stat
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
 from native_store import NativeStoreError, _digest, _json
-from native_workspace import Limits, NativeWorkspace, absolute, checked_stat, portable, tree_names
+from native_workspace import (
+    Limits,
+    NativeWorkspace,
+    _capture_stage_owner,
+    _cleanup_owned_stage,
+    _rename_prepared,
+    absolute,
+    checked_stat,
+    portable,
+    tree_names,
+)
 
 CONTRACT = "native-check/2:cwd=output:scoped-input"
 
@@ -82,6 +91,7 @@ class CheckInputView:
         if os.path.lexists(destination):
             raise NativeStoreError("Destination already exists")
         stage = Path(tempfile.mkdtemp(prefix=".duobao-check-stage-", dir=destination.parent))
+        owner = _capture_stage_owner(stage)
         try:
             for module, names in json.loads(self.descriptor).items():
                 (stage / module).mkdir()
@@ -101,9 +111,9 @@ class CheckInputView:
                         stream.write(bytes(row[0]))
             if os.path.lexists(destination):
                 raise NativeStoreError("Destination already exists")
-            stage.rename(destination)
-        except BaseException:
-            shutil.rmtree(stage)
+            _rename_prepared(stage, destination, self.limits, owner)
+        except BaseException as error:
+            _cleanup_owned_stage(stage, owner, error)
             raise
 
     def snapshot(self, root):

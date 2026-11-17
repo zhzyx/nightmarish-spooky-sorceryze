@@ -1,0 +1,27 @@
+{
+  "request_id": "native-worker-intake-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461",
+  "record": {
+    "state": "recorded_file",
+    "path": "D:\\GongGong-work\\native-worker-intake-20261118\\gonggong-diting-data\\events\\gonggong-workspace\\native-worker-intake-20261118\\native-worker-intake-validation-1461.json",
+    "sha256": "40cc8f074a775e6f11170724ba0ccbe9ce02797f6279c1e9603e53a571455776",
+    "git_committed": false
+  },
+  "learning": {
+    "head": "76a44653156b9403a18c6638674aa92e50a20778c457032e4e734b70ac1bf454",
+    "state": "recorded_file",
+    "idempotent": false
+  },
+  "command": [
+    "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "customizations/platforms/data-collection/git-files/storage/diting_files.py",
+    "validate",
+    "--repo",
+    "D:\\GongGong-work\\native-worker-intake-20261118"
+  ],
+  "exit_code": 0,
+  "stdout": "{\"valid\": true, \"dataset_id\": \"5094b7ca-057c-4370-831b-10b6a30ae081\", \"records\": 9469}\n",
+  "stderr": ""
+}

@@ -1,0 +1,18 @@
+{
+  "record": {
+    "state": "recorded_file",
+    "path": "D:\\GongGong-work\\native-worker-intake-20261118\\gonggong-diting-data\\events\\gonggong-workspace\\native-worker-intake-20261118\\native-worker-intake-repaired-1461.json",
+    "sha256": "a0946ad5a1d155cb1d0a781a81ceb8aa14248532e26f7c2c0886314aea4e902e",
+    "git_committed": false
+  },
+  "proposal": {
+    "head": "3bf7322735103c27c7d8441a58f3e2ae3e6f4082f56071648666bf6aa49e7e54",
+    "state": "recorded_file",
+    "idempotent": false
+  },
+  "verified": {
+    "head": "837aee645aaa0c3244476848a720a5d0179b3d6f7f58da270aa763bb08c1cc82",
+    "state": "recorded_file",
+    "idempotent": false
+  }
+}

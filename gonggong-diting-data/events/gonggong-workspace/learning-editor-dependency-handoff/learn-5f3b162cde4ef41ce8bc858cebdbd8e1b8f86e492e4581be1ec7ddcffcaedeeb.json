@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-5f3b162cde4ef41ce8bc858cebdbd8e1b8f86e492e4581be1ec7ddcffcaedeeb",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461",
+  "occurred_at": "2026-11-17T19:04:23.190266+00:00",
+  "evidence_refs": [
+    "dispatch-586573e1e439460298acc70fa5e13540",
+    "learn-02757203eaa6752243702f5d9a322be7209f6fbaac0ad5b6411f06085d56a5cc"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "await-terminal-observers",
+    "revision": 6,
+    "previous": "eced5b3bc6111c11bc0625091e004909fdb4f6cdcd85ba84f5380c0d12840002",
+    "action": "applied",
+    "details": {
+      "task": "#1461 immutable worker intake; original owner closes process and flushes transcript before recording recovery spool.",
+      "observed": "57 regression tests plus physical-probe supplement passed. Receive/compose/terminal crash tests recover exact output without producer rerun; missing owned close remains unknown; forged task/corrupt spool rejected. Ordinary trusted local process only, no OS isolation or model throughput claim."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-worker-intake-1461.json",
+        "sha256": "0290c934ba8e8b71fd23745ef3e1e645b4b8371f28ee89db10ecc974ed06adf7"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-586573e1e439460298acc70fa5e13540.json",
+      "sha256": "a845b3b36e0f424400fba118ac8ade917e495989e2a5aca01c8328faa53fe3de"
+    }
+  },
+  "sha256": "76a44653156b9403a18c6638674aa92e50a20778c457032e4e734b70ac1bf454"
+}

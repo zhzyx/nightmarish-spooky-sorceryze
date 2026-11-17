@@ -1,0 +1,61 @@
+{
+  "request_id": "native-worker-intake-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461",
+  "command": [
+    "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "pytest",
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py",
+    "customizations/components/tianxuan/duobao/test_native_store.py",
+    "-q"
+  ],
+  "exit_code": 0,
+  "stdout": ".........................................................                [100%]\n============================== warnings summary ===============================\ncustomizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_actual_node_authenticated_http_dispatch\n  D:\\GongGong-work\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n57 passed, 1 warning in 39.89s\n",
+  "stderr": "",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "1c4a5634ca2943f94d8c25e2b476e784212b1c399c0530d372d3200322b8c6f0",
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py": "aa678ebba4e30c776464c076807e09746e90f926be0962cdfc1b7eabedcb9eab",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "0379883c2f3a2a78d18fee36ae237404e8409cd7cf89565609703dc4eafdaf5c",
+    "customizations/components/tianxuan/sinan-workorders/README.md": "29e568a55331f374296d6e98e87216c28d6c3aa9557ec93f5395125a456474df",
+    "customizations/components/tianxuan/duobao/native_store.py": "bee1c2af572fe3f891c77ad9dc46896511780f0123649c40dab25077548193bf",
+    "customizations/components/tianxuan/duobao/native_candidates.py": "a041e0debb42b2df3859205416409c37e15c644bdcc33895998bf70c7e63db2b"
+  },
+  "platform": "win32",
+  "scope": "local worker intake only; joint product acceptance, independent review, Linux and delivery belong to parent",
+  "prior_run": {
+    "exit_code": 1,
+    "result": "2 failed, 33 passed",
+    "failures": [
+      "Windows time_ns identical in distinct-output fixture; replaced with distinct execution directory input",
+      "Legacy fixture deleted old terminal table; now removes v2 terminal and owned closed spool to represent truly unknown execution"
+    ]
+  },
+  "static_validation": "py -m ruff check --no-fix: All checks passed",
+  "models_called": false,
+  "previous_failed_receipt": "data-collection/native-worker-intake-1461-failed-fixture.json",
+  "physical_probe_additional_validation": {
+    "command": [
+      "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "-m",
+      "pytest",
+      "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py::test_physical_probe_rejects_corrupt_spool_without_writes",
+      "-q"
+    ],
+    "exit_code": 0,
+    "stdout": ".                                                                        [100%]\n1 passed in 1.03s\n",
+    "stderr": ""
+  },
+  "cleanup": "No branches/worktrees created; test temporary data owned by pytest; preserve failed-fixture receipt and all deliverable source for parent review. No installation/configuration changes.",
+  "scope_notes": [
+    "NativeStore and NativeCandidates read-only dependency hashes match handoff",
+    "57-test full run before adding one supplemental physical probe test; implementation source unchanged between runs",
+    "No WinError5 observed here; no claim that independent intermittent materialize failure is fixed",
+    "Current producer ACL gates candidate content; trusted authenticated coordinator may query only process_closed boolean",
+    "Host default limits: file 2MiB, total 8MiB; no throughput claim"
+  ]
+}

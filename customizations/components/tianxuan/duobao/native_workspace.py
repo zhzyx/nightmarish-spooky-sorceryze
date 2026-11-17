@@ -7,11 +7,13 @@ Workspace metadata never grants authority. Received changes are not releases.
 from __future__ import annotations
 
 import base64
+import hashlib
 import os
 import re
 import shutil
 import stat
 import tempfile
+import time
 import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
@@ -105,6 +107,119 @@ def absolute(path, *, missing=False):
     return path
 
 
+def _stage_identity(path):
+    info = checked_stat(path)
+    return info.st_dev, info.st_ino, stat.S_IFMT(info.st_mode)
+
+
+def _capture_stage_owner(stage):
+    # Capture immediately after creation, before filling or handing off the tree.
+    absolute(stage)
+    return tuple((path, _stage_identity(path)) for path in (stage, *stage.parents))
+
+
+def _verify_stage_owner(stage, owner):
+    absolute(stage)
+    if tuple(path for path, _ in owner) != (stage, *stage.parents) or any(
+        _stage_identity(path) != identity for path, identity in owner
+    ):
+        raise NativeStoreError("Prepared stage identity or ancestry changed")
+
+
+def _rename_prepared(stage, destination, limits, owner):
+    """Publish an owned bounded tree; tolerate brief Windows child-handle holds.
+
+    This remains a trusted single-writer adapter. Windows rename never replaces
+    an existing destination. Each retry revalidates the original owned tree and
+    its ancestry; permanent denials retain the first OS exception.
+    """
+    _verify_stage_owner(stage, owner)
+    if os.name != "nt":
+        stage.rename(destination)
+        return
+
+    def metadata(info):
+        # Reading can update access time on Windows; it is not content drift.
+        return info.st_dev, info.st_ino, info.st_mode, info.st_size, info.st_mtime_ns, info.st_ctime_ns
+
+    def fingerprint():
+        result = {}
+        pending = [stage]
+        total = files = 0
+        while pending:
+            path = pending.pop()
+            info = checked_stat(path)
+            if len(result) >= limits.entries + 1:
+                raise NativeStoreError("Prepared tree entry limit exceeded")
+            digest = None
+            if stat.S_ISDIR(info.st_mode):
+                with os.scandir(path) as entries:
+                    for entry in entries:
+                        pending.append(Path(entry.path))
+                        if len(pending) + len(result) > limits.entries + 1:
+                            raise NativeStoreError("Prepared tree entry limit exceeded")
+            else:
+                files += 1
+                total += info.st_size
+                # Workspace adds one bounded manifest to the source budgets.
+                if (
+                    files > limits.files + 1
+                    or info.st_size > max(limits.file_bytes, limits.request_bytes)
+                    or total > limits.total_bytes + limits.request_bytes
+                ):
+                    raise NativeStoreError("Prepared tree size limit exceeded")
+                with path.open("rb") as stream:
+                    data = stream.read(info.st_size + 1)
+                if len(data) != info.st_size or metadata(checked_stat(path)) != metadata(info):
+                    raise NativeStoreError("Prepared tree changed")
+                digest = hashlib.sha256(data).hexdigest()
+            result[path.relative_to(stage).as_posix()] = (*metadata(info), digest)
+        return result
+
+    prepared = fingerprint()
+    _verify_stage_owner(stage, owner)
+    absolute(destination, missing=True)
+    if os.path.lexists(destination):
+        raise NativeStoreError("Destination already exists")
+    try:
+        stage.rename(destination)
+        return
+    except OSError as original:
+        if getattr(original, "winerror", None) not in (5, 32):
+            raise
+        deadline = time.monotonic() + 0.25
+        for delay in (0.02, 0.04, 0.08):
+            if time.monotonic() + delay >= deadline:
+                break
+            time.sleep(delay)
+            try:
+                _verify_stage_owner(stage, owner)
+                absolute(destination, missing=True)
+                if os.path.lexists(destination) or fingerprint() != prepared:
+                    break
+                _verify_stage_owner(stage, owner)
+                if time.monotonic() >= deadline:
+                    break
+                stage.rename(destination)
+                return
+            except OSError as retry_error:
+                if getattr(retry_error, "winerror", None) not in (5, 32):
+                    break
+            except NativeStoreError:
+                break
+        raise original
+
+
+def _cleanup_owned_stage(stage, owner, error):
+    # A failed retry may have observed replacement or a still-open child. Never
+    # remove a replacement, traverse changed ancestry, or mask the first error.
+    try:
+        _verify_stage_owner(stage, owner)
+        shutil.rmtree(stage)
+    except (OSError, NativeStoreError) as cleanup_error:
+        error.add_note("Prepared stage cleanup incomplete: " + str(cleanup_error))
+
+
 class NativeWorkspace:
     def __init__(self, store: NativeStore, limits: Limits | None = None):
         self.store = store
@@ -186,6 +301,7 @@ class NativeWorkspace:
         manifest = {"schema": 1, "tenant": tenant, "state": "candidate", "modules": revisions}
         manifest["source_digest"] = _digest(_json(manifest).encode())
         stage = Path(tempfile.mkdtemp(prefix=".duobao-stage-", dir=destination.parent))
+        owner = _capture_stage_owner(stage)
         try:
             for module, state in states.items():
                 (stage / module).mkdir()
@@ -198,9 +314,9 @@ class NativeWorkspace:
             (stage / MANIFEST).write_text(_json(manifest), encoding="utf-8")
             if os.path.lexists(destination):
                 raise NativeStoreError("Destination already exists")
-            stage.rename(destination)
-        except BaseException:
-            shutil.rmtree(stage)
+            _rename_prepared(stage, destination, self.limits, owner)
+        except BaseException as error:
+            _cleanup_owned_stage(stage, owner, error)
             raise
         return manifest
 

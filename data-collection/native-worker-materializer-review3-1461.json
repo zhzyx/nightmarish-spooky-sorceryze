@@ -1,0 +1,176 @@
+{
+  "issue": 1461,
+  "request_id": "native-worker-intake-20261118",
+  "reviewer": "independent Codex final materializer delta reviewer",
+  "created_at": "2026-11-17T21:01:58.864603+00:00",
+  "approved": true,
+  "decision": "approve_exact_final_materializer_source",
+  "overall_business_acceptance": false,
+  "source_root": "D:\\GongGong-work\\native-worker-intake-20261118",
+  "source_sha256": {
+    "customizations/components/tianxuan/duobao/native_workspace.py": "401dcb5e0fe2ab1a8b8e888457044b4f622a1cbf39346f1a0dddc48ab9b9af66",
+    "customizations/components/tianxuan/duobao/native_check_inputs.py": "a3880f7480b1b98234a5d022cc77d4ca173de9c09dc898fa27558a1e92575f06",
+    "customizations/components/tianxuan/duobao/test_native_workspace.py": "b300fa1bdf2ea4b357fa4074e3f6dcbc30b7e27a8ce9ea5ad8b2ea66bf911602",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "06f5559778dd628376aedcf41f6dd47efde38536f220486b7b0daf7cb4be1320"
+  },
+  "prior_review": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-windows-rename-review2.json",
+    "sha256": "fab9f592b90bb21f275274aec9398f5dc1a9c92cb49b4441d2f46864885352ea",
+    "basis": "Carry forward independent production, ownership, capacity, destination race, Unicode and negative control review only for exact unchanged bytes. Previous sole blocker is corrected and independently retested."
+  },
+  "public_evidence": {
+    "path": "D:\\GongGong-work\\native-worker-intake-20261118\\data-collection\\native-worker-fixture-correction-1461.json",
+    "sha256": "ed95e88bdbd45ac6e4fe8dd139ac103afd20449455d4b5afdddbb25853b395c7",
+    "checks": [
+      {
+        "command": [
+          "D:/GongGong-work/tx-venv/Scripts/python.exe",
+          "-B",
+          "-m",
+          "pytest",
+          "-p",
+          "no:cacheprovider",
+          "-q",
+          "customizations/components/tianxuan/duobao/test_native_workspace.py",
+          "customizations/components/tianxuan/duobao/test_native_check_inputs.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py",
+          "--basetemp",
+          "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-windows-fixture-correction\\pytest-temp"
+        ],
+        "exit_code": 0,
+        "stdout": "....s.s........................ [ 60%]\n....................                                                     [100%]\n49 passed, 2 skipped, 41 subtests passed in 23.64s\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "py",
+          "-X",
+          "utf8",
+          "-m",
+          "ruff",
+          "check",
+          "--no-fix",
+          "customizations/components/tianxuan/duobao/native_workspace.py",
+          "customizations/components/tianxuan/duobao/native_check_inputs.py",
+          "customizations/components/tianxuan/duobao/test_native_workspace.py"
+        ],
+        "exit_code": 0,
+        "stdout": "All checks passed!\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "py",
+          "-X",
+          "utf8",
+          "-m",
+          "ruff",
+          "format",
+          "--check",
+          "customizations/components/tianxuan/duobao/native_workspace.py",
+          "customizations/components/tianxuan/duobao/native_check_inputs.py",
+          "customizations/components/tianxuan/duobao/test_native_workspace.py"
+        ],
+        "exit_code": 0,
+        "stdout": "3 files already formatted\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "py",
+          "-X",
+          "utf8",
+          "-m",
+          "mypy",
+          "--cache-dir",
+          "nul",
+          "customizations/components/tianxuan/duobao/native_workspace.py",
+          "customizations/components/tianxuan/duobao/native_check_inputs.py",
+          "customizations/components/tianxuan/duobao/test_native_workspace.py"
+        ],
+        "exit_code": 0,
+        "stdout": "Success: no issues found in 3 source files\n",
+        "stderr": ""
+      }
+    ],
+    "all_source_hashes_verified": true
+  },
+  "checks": {
+    "production_hashes_unchanged": true,
+    "exact_one_line_delta_verified_by_reverse_sha256": true,
+    "public_all_sources_current": true,
+    "previous_all_runtime_except_fixture_unchanged": true,
+    "source_hashes_stable": true,
+    "public_sources_stable": true
+  },
+  "reverse_fixture_sha256": "4a7dc475dfc4ac98b88b36c2b94587cbdcdeb5b7778ef0cfec4e0adec52105b8",
+  "fixture_review": "Only stage.rename(original) changes to imported original _rename_prepared(stage,original,limits,owner). The imported function reference is not replaced by patch.object on its defining module. Then stage.mkdir creates foreign replacement and old owner is passed to the helper. Both materializers must raise identity/ancestry NativeStoreError; destination absent, original retained, foreign retained and cleanup note asserted. No expected assertion or production guard changed.",
+  "independent_tests": {
+    "command": [
+      "D:/GongGong-work/tx-venv/Scripts/python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-q",
+      "customizations/components/tianxuan/duobao/test_native_workspace.py",
+      "-k",
+      "materializers_reject_replacement_before_helper_entry or reserved_aliases_are_exact_unicode_codepoints or real_child_handle_release_and_held_budget or permanent_errors_and_retry_mutations_fail_closed or changed_normal_ancestor",
+      "--basetemp",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-windows-rename-review3-probes\\pytest-temp"
+    ],
+    "exit_code": 0,
+    "stdout": "......                                               [100%]\r\n6 passed, 12 deselected, 20 subtests passed in 0.63s\r\n",
+    "stderr": ""
+  },
+  "independent_static": {
+    "command": [
+      "py",
+      "-B",
+      "-X",
+      "utf8",
+      "-m",
+      "ruff",
+      "check",
+      "--no-cache",
+      "--no-fix",
+      "customizations/components/tianxuan/duobao/test_native_workspace.py"
+    ],
+    "exit_code": 0,
+    "stdout": "All checks passed!\n",
+    "stderr": ""
+  },
+  "findings": [],
+  "historical_cause": "UNKNOWN; actual handle experiment demonstrates one mechanism and does not identify historical holder/filter/ACL.",
+  "limits": [
+    "Trusted single-writer adapter, not atomic hostile-filesystem sandbox.",
+    "Approval covers exact materializer repair via review2 plus independently tested fixture delta; parent retains integration, Linux, CI/main and overall business acceptance."
+  ],
+  "method_learning": {
+    "scope": "editor-dependency-handoff",
+    "recalled": [
+      "await-terminal-observers",
+      "bind-consumer-release",
+      "reconstruct-worker-outcomes",
+      "review-context-and-source-evidence"
+    ],
+    "application": "Exact bytes linked across prior review, corrected fixture and terminal independent tests; previous receipts cannot substitute for changed candidate evidence.",
+    "feedback": "Use original bounded operation to arrange contention-sensitive adversarial preconditions, then retain old identity and rejection assertions. Recapturing replacement identity or bypassing final guard invalidates this test. Parent may append under wider authorization."
+  },
+  "cleanup": {
+    "removed_empty_owned_dirs": [],
+    "retained_dirs": [],
+    "reason": "Script and raw terminal receipts retained as independent review evidence. No previous basetemp reused or cleaned."
+  },
+  "evidence_sha256": {
+    "pytest.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pytest.stdout.bin": "f6d86d77648ada45898fa30a943cbccce4cb010629b62893615024243b27b05c",
+    "results.json": "b3ca5aefed9c16d7b88f32ef20d34a334029fa1c508001be83c80259a30412d7",
+    "run.py": "3fc62aeb9be720237d598d63efa1faa4b1b3b5f1c74892aa987a11d69ee4d7e4"
+  },
+  "private_original_sha256": "7076ff5db6744d417418a2d5f3f4c41c7cbca5670db787cff401021fdb37a260",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461"
+}

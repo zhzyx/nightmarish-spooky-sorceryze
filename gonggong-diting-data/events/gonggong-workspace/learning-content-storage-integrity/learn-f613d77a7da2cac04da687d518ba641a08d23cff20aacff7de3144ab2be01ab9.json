@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-content-storage-integrity",
+  "event_id": "learn-f613d77a7da2cac04da687d518ba641a08d23cff20aacff7de3144ab2be01ab9",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461",
+  "occurred_at": "2026-11-17T20:39:03.884745+00:00",
+  "evidence_refs": [
+    "native-worker-intake-validation-1461"
+  ],
+  "payload": {
+    "scope": "content-storage-integrity",
+    "lesson": "utf8-source-codepoint-guards",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Use explicit UTF-8 when reading/writing repository source, inspect non-ASCII codepoint changes against the actual base, and encode security-sensitive expected aliases independently as numeric codepoints in tests.",
+      "when": "Editing UTF-8 source under a Windows locale that can decode UTF-8 byte pairs as valid different characters; implementation and tests may share the same faulty edit pipeline.",
+      "counterexample": "A passing test that transcodes its expected string along with the implementation can conceal the same regression. Numeric codepoint probes do not prove arbitrary code or binary asset encoding correct.",
+      "trial_plan": "In an isolated in-memory function, deliberately decode original UTF-8 superscript bytes as GBK; confirm mirrored transcoded literal assertions can pass while numeric U+00B9/U+00B2/U+00B3 probes detect failure. Confirm original UTF-8 function rejects those reserved aliases and permits unrelated Chinese suffixes. Do not mutate production source for the trial."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-worker-unicode-correction-1461.json",
+        "sha256": "22939756325e02e77589fc6ae477e03912841576c26fd98ec5b62effce690130"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/native-worker-intake-validation-1461.json",
+      "sha256": "40cc8f074a775e6f11170724ba0ccbe9ce02797f6279c1e9603e53a571455776"
+    }
+  },
+  "sha256": "836e766b8120621d03ceef28e720fcae679dd64cfc4527b1d80d118d036a1709"
+}

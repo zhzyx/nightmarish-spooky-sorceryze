@@ -1,0 +1,54 @@
+{
+  "issue": 1461,
+  "state": "local_repair_verified_pending_independent_review",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "06f5559778dd628376aedcf41f6dd47efde38536f220486b7b0daf7cb4be1320",
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py": "c63b7292a9adc374a63da5d7eb94bc189c13e0e349daa0aa22ad481168318f9f",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "0379883c2f3a2a78d18fee36ae237404e8409cd7cf89565609703dc4eafdaf5c",
+    "customizations/components/tianxuan/sinan-workorders/README.md": "edae9e4eabe1aa886c6c671f7697521fdd196764f4b37550253e9da5f404e63e",
+    "customizations/components/tianxuan/duobao/native_store.py": "bee1c2af572fe3f891c77ad9dc46896511780f0123649c40dab25077548193bf",
+    "customizations/components/tianxuan/duobao/native_candidates.py": "a041e0debb42b2df3859205416409c37e15c644bdcc33895998bf70c7e63db2b",
+    "customizations/components/tianxuan/duobao/native_workspace.py": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+    "tools/ainative/owned_process.py": "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "63ae67641dcfd156c267afa7f1188c7a54a53cea908f10a5b60ef541a9426029",
+    "tools/native_host_inputs.json": "3a4f05fd7c378d12211e06c7b1f5c18a6f089bfd91f95e343561ae118e63e3e1",
+    "design-docs/native-worker-intake-20261118.md": "46dfbf8ff6c07932f5794267cfd0c385126cdc3ec1038765d04c0aadc28165f2"
+  },
+  "findings": {
+    "R1": "Cancellation linearizes in closed-output transaction after bounded collection and encoding; cancelled decision stores no changes and is authoritative across restart. Later event does not revoke persisted decision.",
+    "R2": "Both metadata and content recovery validate physical and output records, exact task/digest/schema and matching exit/transcript; missing physical closure never produces output.",
+    "R3": "Every terminal reconstructed from validated immutable history and exact-compared; failed exit 7 changed to 99 and deleted spool plus substituted failed terminal reject."
+  },
+  "validation": {
+    "path": "data-collection/native-worker-repair-schema-validation-1461.json",
+    "sha256": "184f51aa5163743144db79078a92d1125ace2acb1bab0861f1425d17457cd496",
+    "result": "76 passed, 1 dependency deprecation warning; includes 16 original worker tests, 10 new worker regressions, original independent probes, workflow and native store",
+    "ruff": "py -X utf8 -m ruff check --no-fix passed"
+  },
+  "separate_process_recovery": "Four simultaneous new interpreters recover the same database for produced, no-change, real exit 7 and late cancellation, with 20-second communication bounds and finally cleanup. All results identical; producer relaunch replaced with assertion; restart run returns same terminal.",
+  "preserved_originals": {
+    "data-collection/native-worker-intake-1461.json": "0290c934ba8e8b71fd23745ef3e1e645b4b8371f28ee89db10ecc974ed06adf7",
+    "data-collection/native-worker-intake-1461-diting.json": "6638d6834597a35863d11b9380cfc60cf92ee31187357329d286fba3e18c404d",
+    "data-collection/native-worker-boundary-1461.json": "c04d3777d5fea61ff2282aa4ac3e3c4be788053bcc7680941cc2fd4a68e47ef7"
+  },
+  "repair_history": [
+    {
+      "path": "data-collection/native-worker-repair-first-validation-1461.json",
+      "sha256": "b5ec892e04e71d8276c0a5f1e4504e1c4b103a6a89e3ff852f67a17b0d581680"
+    },
+    {
+      "path": "data-collection/native-worker-repair-final-validation-1461.json",
+      "sha256": "01b1d29318432a85d583df813a57e5ba571ed901c633af6bcbaa6f0a078eddc2"
+    }
+  ],
+  "first_failure": "First repair schema incorrectly rejected helper documented null exit on cancellation; corrected without changing helper, original failing receipt retained.",
+  "limits": "Unchanged task digest, provenance, current ACL, collection budgets and accepted dependency bytes. process_closed remains trusted coordinator metadata only; grants no candidate access.",
+  "limitations": [
+    "Trusted-host corruption probes are integrity checks, not public producer exploits.",
+    "Original independent WinError5 remains unfixed/unclaimed; later no-change ACL probe passed, which does not establish materialize defect resolution.",
+    "Linux/SCons, independent rereview, composite coordination, production, main delivery and original parent acceptance remain parent responsibility."
+  ],
+  "cleanup": "No server/container/model/install/commit/push/branch/worktree created. All spawned regression processes awaited, with bounded kill/wait finally guard. Validation receipts retained for review, including first failed run; pytest temporary fixtures are diagnostic fixtures, not production configuration. Source and original evidence retained for parent delivery.",
+  "path_base": "Repository root",
+  "joint_product_accepted": false
+}

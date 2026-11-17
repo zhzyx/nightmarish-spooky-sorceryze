@@ -1,0 +1,125 @@
+{
+  "issue": 1461,
+  "request_id": "native-worker-intake-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461",
+  "kind": "original_same_frozen_module_reproduction_after",
+  "states": {
+    "50b4b64f3bff043511afe89c3ea330483044c0b518c06ce54d3d970cf3933ced": "produced",
+    "2a2e90c0a33e655a465472125353efd35cb0fa7f8b1e883ee612fbcf736fd297": "produced"
+  },
+  "results": [
+    {
+      "state": "produced",
+      "exit_code": 0,
+      "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8",
+      "modules": {
+        "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab"
+      },
+      "intake": {
+        "state": "candidate_received",
+        "tenant": "ten_5411a8d8ebfa4333a455a2e4afced4dc",
+        "actor": "usr_e914de4d18b0481598a9e315577d56fb",
+        "request_key": "worker-50b4b64f3bff043511afe89c3ea330483044c0b518c06ce54d3d970cf3933ced",
+        "request_digest": "b78dd1c71dea7c54f31b9f11a8965d28963fa7c453089acd325d81737f2fb834",
+        "origin": {
+          "source_ref": "native-source:e904682113f170aa521c520bd9d637591fe0e9470b6f02db5cc5e498432fd657",
+          "worker_ref": "native-worker:50b4b64f3bff043511afe89c3ea330483044c0b518c06ce54d3d970cf3933ced",
+          "issue_url": "native://ten_5411a8d8ebfa4333a455a2e4afced4dc/issues/iss_49a4ee744ace435594a466d8e9089954"
+        },
+        "inputs": {
+          "a": {
+            "module": "a",
+            "base": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e",
+            "reads": null,
+            "edits": {
+              "output": "e4c84ec9bacfbaa4bcb038e961a622f6452c27995ee9df89370e50cb17c0237f"
+            },
+            "dependencies": {}
+          }
+        },
+        "revisions": {
+          "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab"
+        },
+        "requires_final_composition_validation": true,
+        "id": "9656fcb3d74ae1abb72de43b619ccf67a9ad486d7677bcc16993b522c6a847cf"
+      },
+      "origin": {
+        "source_ref": "native-source:e904682113f170aa521c520bd9d637591fe0e9470b6f02db5cc5e498432fd657",
+        "worker_ref": "native-worker:50b4b64f3bff043511afe89c3ea330483044c0b518c06ce54d3d970cf3933ced",
+        "issue_url": "native://ten_5411a8d8ebfa4333a455a2e4afced4dc/issues/iss_49a4ee744ace435594a466d8e9089954"
+      },
+      "no_changes": false,
+      "usage": null,
+      "provider_model": null
+    },
+    {
+      "state": "produced",
+      "exit_code": 0,
+      "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8",
+      "modules": {
+        "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab"
+      },
+      "intake": {
+        "state": "candidate_received",
+        "tenant": "ten_5411a8d8ebfa4333a455a2e4afced4dc",
+        "actor": "usr_e914de4d18b0481598a9e315577d56fb",
+        "request_key": "worker-2a2e90c0a33e655a465472125353efd35cb0fa7f8b1e883ee612fbcf736fd297",
+        "request_digest": "651691397aa9ea68ed3d839d7bc5103f9d4ea657ff6235310c6923ececf6238f",
+        "origin": {
+          "source_ref": "native-source:6fe1a47e85f22af3d61dad348acdfab5ee39fbc9c45be64c48446dbd962f7fae",
+          "worker_ref": "native-worker:2a2e90c0a33e655a465472125353efd35cb0fa7f8b1e883ee612fbcf736fd297",
+          "issue_url": "native://ten_5411a8d8ebfa4333a455a2e4afced4dc/issues/iss_d9e6002ee04e4413bf3c4a14afacab6e"
+        },
+        "inputs": {
+          "a": {
+            "module": "a",
+            "base": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e",
+            "reads": null,
+            "edits": {
+              "output": "e4c84ec9bacfbaa4bcb038e961a622f6452c27995ee9df89370e50cb17c0237f"
+            },
+            "dependencies": {}
+          }
+        },
+        "revisions": {
+          "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab"
+        },
+        "requires_final_composition_validation": true,
+        "id": "1c3dd4706cd34e1eee048492c306c7956bfd436beabfb81f5b1d5754c3a7d44b"
+      },
+      "origin": {
+        "source_ref": "native-source:6fe1a47e85f22af3d61dad348acdfab5ee39fbc9c45be64c48446dbd962f7fae",
+        "worker_ref": "native-worker:2a2e90c0a33e655a465472125353efd35cb0fa7f8b1e883ee612fbcf736fd297",
+        "issue_url": "native://ten_5411a8d8ebfa4333a455a2e4afced4dc/issues/iss_d9e6002ee04e4413bf3c4a14afacab6e"
+      },
+      "no_changes": false,
+      "usage": null,
+      "provider_model": null
+    }
+  ],
+  "actual_process_intervals_ns": [
+    [
+      1794942611485766900,
+      1794942611891854500
+    ],
+    [
+      1794942611490786000,
+      1794942611896913000
+    ]
+  ],
+  "heads_unchanged": true,
+  "distinct_intake_provenance": true,
+  "same_output_candidate_deduplicated": true,
+  "exact_terminals_recovered": true,
+  "source_sha256": {
+    "customizations\\components\\tianxuan\\sinan-workorders\\native_worker.py": "1c4a5634ca2943f94d8c25e2b476e784212b1c399c0530d372d3200322b8c6f0",
+    "customizations\\components\\tianxuan\\sinan-workorders\\native_workflow.py": "63ae67641dcfd156c267afa7f1188c7a54a53cea908f10a5b60ef541a9426029",
+    "customizations\\components\\tianxuan\\duobao\\native_candidates.py": "a041e0debb42b2df3859205416409c37e15c644bdcc33895998bf70c7e63db2b"
+  },
+  "model_calls": 0,
+  "tokens": null,
+  "limits": "Two actual Python producers; original post-process head-drift failure corrected. No same-product integration, model-token or250 simultaneous executions claim.",
+  "temporary_directory_removed": true
+}

@@ -1,0 +1,58 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461",
+  "request_id": "native-worker-intake-20261118",
+  "trial": "In-memory original function versus deliberate UTF8-to-GBK decoding, production sources untouched",
+  "observations": [
+    {
+      "prefix": "COM",
+      "codepoint": 185,
+      "original_rejected": true,
+      "mutation_detected": true,
+      "mirrored_broken_assertion_passes": true,
+      "original_allows_unrelated_suffix": true
+    },
+    {
+      "prefix": "COM",
+      "codepoint": 178,
+      "original_rejected": true,
+      "mutation_detected": true,
+      "mirrored_broken_assertion_passes": true,
+      "original_allows_unrelated_suffix": true
+    },
+    {
+      "prefix": "COM",
+      "codepoint": 179,
+      "original_rejected": true,
+      "mutation_detected": true,
+      "mirrored_broken_assertion_passes": true,
+      "original_allows_unrelated_suffix": true
+    },
+    {
+      "prefix": "LPT",
+      "codepoint": 185,
+      "original_rejected": true,
+      "mutation_detected": true,
+      "mirrored_broken_assertion_passes": true,
+      "original_allows_unrelated_suffix": true
+    },
+    {
+      "prefix": "LPT",
+      "codepoint": 178,
+      "original_rejected": true,
+      "mutation_detected": true,
+      "mirrored_broken_assertion_passes": true,
+      "original_allows_unrelated_suffix": true
+    },
+    {
+      "prefix": "LPT",
+      "codepoint": 179,
+      "original_rejected": true,
+      "mutation_detected": true,
+      "mirrored_broken_assertion_passes": true,
+      "original_allows_unrelated_suffix": true
+    }
+  ],
+  "passed": true,
+  "scope": "Controlled UTF8/GBK mechanism and independent numeric alias probes; not attribution of exact historical edit command or proof of arbitrary source encoding.",
+  "source_sha256": "401dcb5e0fe2ab1a8b8e888457044b4f622a1cbf39346f1a0dddc48ab9b9af66"
+}
