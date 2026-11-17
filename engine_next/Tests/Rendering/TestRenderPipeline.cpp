@@ -768,3 +768,56 @@ ENGINE_NEXT_TEST("RenderPipeline forward feature combinations remain reusable an
 	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 4U);
 	CheckReusableStates(stPipeline);
 }
+
+ENGINE_NEXT_TEST("RenderPipeline material buffers follow geometry lighting reflections and retirement")
+{
+	for (bool bReflections : { false, true })
+	{
+		for (bool bForward : { false, true })
+		{
+			RenderPipeline stPipeline;
+			GraphDiagnostic stDiagnostic;
+			ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 6, true, true, 6,
+												  bReflections ? 6U : 0U, { bForward, bForward }, true));
+			const CompiledPass *pGeometry = FindWork(stPipeline, PassWork::GBuffer);
+			const CompiledPass *pLighting = FindWork(stPipeline, PassWork::DeferredLighting);
+			const CompiledPass *pPresent = FindWork(stPipeline, PassWork::Present);
+			ENGINE_NEXT_CHECK(pGeometry && pLighting && pPresent);
+			if (!pGeometry || !pLighting || !pPresent)
+			{
+				return;
+			}
+			for (ResourceId nResource : stPipeline.arrMaterialBuffers)
+			{
+				ENGINE_NEXT_CHECK(nResource != EngineNext::Rendering::INVALID_RESOURCE);
+				ENGINE_NEXT_CHECK(HasAccess(*pGeometry, nResource, ResourceState::RenderTarget, true));
+				ENGINE_NEXT_CHECK(HasAccess(*pLighting, nResource, ResourceState::ShaderRead, false));
+				ENGINE_NEXT_CHECK(HasAccess(*pPresent, nResource, ResourceState::Common, false));
+				if (bReflections)
+				{
+					const CompiledPass *pTrace = FindWork(stPipeline, PassWork::ReflectionTrace);
+					ENGINE_NEXT_CHECK(pTrace != nullptr);
+					if (pTrace != nullptr)
+					{
+						ENGINE_NEXT_CHECK(HasAccess(*pTrace, nResource, ResourceState::NonPixelShaderRead, false));
+						ENGINE_NEXT_CHECK(HasAccess(*pTrace, stPipeline.nExposureRead, ResourceState::NonPixelShaderRead, false));
+					}
+				}
+			}
+			CheckReusableStates(stPipeline);
+		}
+	}
+}
+
+ENGINE_NEXT_TEST("RenderPipeline keeps optional material buffers absent in legacy and fixed mesh modes")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.arrMaterialBuffers[0], EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.arrMaterialBuffers[1], EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(false, stPipeline, stDiagnostic, 0, true, false, 0, 0, {}, true));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.arrMaterialBuffers[0], EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.arrMaterialBuffers[1], EngineNext::Rendering::INVALID_RESOURCE);
+	CheckReusableStates(stPipeline);
+}

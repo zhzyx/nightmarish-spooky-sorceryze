@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "event_id": "m43-materials-final-verified-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-17T17:14:30.488269+00:00",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-4c450671",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m43-request-20261116",
+    "m43-volume-final-verified-20261117"
+  ],
+  "payload": {
+    "scope": "Material override capability slice with shared clearcoat and anisotropic direct, environment, SSR and transparent shading",
+    "native_key": "636e9a1fc5e83160c6e22a4aa50a2b98a68ff6cd3184b8c599e5a7bcfbf7e9d8",
+    "binary_sha256": "675b22b5af587b1b9cb48efef53226b5938e15cbf644b3082d8fe2256cc74b9b",
+    "cpu": "MSVC and clang-cl each pass 341 rendering tests and 206466 checks. Fresh AINative passes 445 tests with 36 documented skips. Scoped tool tests pass 35 tests; contract tests pass 31 with one documented skip.",
+    "gpu": "Final R6 serial normal-entry matrix passes nine cases and 168 frames. A separate exact 3840x2160 hidden target passes twelve frames with materials, SSR, TAA, Bloom, fog and particles. All validation errors are zero. Original concurrent attempt was terminated and preserved; only the serial reruns are final evidence.",
+    "identity": "Actual R3/R4 RenderDoc reads and R5 interactive network evidence retain their tested candidate identities. R4/R5/R6 runtime text and all 32 offline shaders match as recorded in the candidate delta.",
+    "build_placement": "Three clean R5 builds and one fixed executable verify material helper native-key invalidation, changed shader output, byte-exact rollback and malformed-shader rejection. Runtime module inputs are identical to R6; the later R6 difference is a test aggregate initializer.",
+    "quality": "Low-count environment NDF sampling produces confirmed high-contrast bright artifacts. A private 512/256/128 reference removes the measured isolated peaks. Further sampling quality work remains under the open M4 parent.",
+    "records": [
+      "data-collection/engine-next-visual-runtime-m4-3-materials-verification.json",
+      "data-collection/engine-next-visual-runtime-m4-3-materials-final-gpu.json",
+      "data-collection/engine-next-visual-runtime-m4-3-materials-gpu-readback.json",
+      "data-collection/engine-next-visual-runtime-m4-3-materials-build-impact.json",
+      "data-collection/engine-next-visual-runtime-m4-3-materials-network.json"
+    ],
+    "remaining": "Exact candidate CI and main readback follow. Parent Issues 1343 and 1323 stay open for sampling quality, GI, geometry/streaming, remaining material/light features, UE comparisons and native-4K performance/stability."
+  },
+  "sha256": "9639b6f757fe95845fe660b399ed5ba9b3d7ba439067f843be04b9687bdfb613"
+}

@@ -15,8 +15,10 @@ SHADER_FILES = {
     "FixedMesh.cs.cso",
     "Deferred.vs.cso",
     "Deferred.ps.cso",
+    "MaterialDeferred.ps.cso",
     "Lighting.vs.cso",
     "Lighting.ps.cso",
+    "MaterialLighting.ps.cso",
     "ToneMap.ps.cso",
     "Shadow.vs.cso",
     "Shadow.ps.cso",
@@ -26,8 +28,10 @@ SHADER_FILES = {
     "BloomDown.cs.cso",
     "BloomUp.cs.cso",
     "ReflectionLighting.ps.cso",
+    "MaterialReflectionLighting.ps.cso",
     "ReflectionColor.cs.cso",
     "ReflectionTrace.cs.cso",
+    "MaterialReflectionTrace.cs.cso",
     "ReflectionComposite.cs.cso",
     "ReflectionRadiance.cs.cso",
     "VolumeInject.cs.cso",
@@ -37,6 +41,7 @@ SHADER_FILES = {
     "VolumeComposite.cs.cso",
     "Transparent.vs.cso",
     "Transparent.ps.cso",
+    "MaterialTransparent.ps.cso",
 }
 
 

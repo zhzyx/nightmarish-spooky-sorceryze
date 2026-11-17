@@ -844,6 +844,60 @@
       },
       "default": [],
       "description": "Emitter IDs must be unique. Runtime validation limits sum(ceil(rate*lifetime)) to 4096 for all emitters."
+    },
+    "material_overrides": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "asset_id",
+          "material_index"
+        ],
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "material_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295
+          },
+          "clearcoat": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "factor": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "roughness": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          },
+          "anisotropy": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "strength": {
+                "type": "number",
+                "minimum": -1,
+                "maximum": 1
+              },
+              "rotation_radians": {
+                "type": "number",
+                "minimum": -6.283185307179586,
+                "maximum": 6.283185307179586
+              }
+            }
+          }
+        }
+      }
     }
   },
   "$defs": {

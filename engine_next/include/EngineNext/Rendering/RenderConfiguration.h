@@ -36,6 +36,7 @@
 #include "engine_next/include/EngineNext/Rendering/ReflectionSettings.h"
 #include "engine_next/include/EngineNext/Rendering/VolumeSettings.h"
 #include "engine_next/include/EngineNext/Rendering/ParticleSettings.h"
+#include "engine_next/include/EngineNext/Rendering/MaterialSettings.h"
 #include "engine_next/include/EngineNext/Serialization/Json.h"
 
 #include <array>
@@ -126,6 +127,7 @@ struct RenderConfiguration
 	ReflectionSettings stReflections;
 	VolumeSettings stVolume;
 	std::vector<ParticleSettings> arrParticles;
+	MaterialSettings stMaterials;
 	std::vector<PointLightSettings> arrPointLights{ PointLightSettings{} };
 	std::vector<SpotLightSettings> arrSpotLights;
 	double dExposure = 1;
@@ -159,6 +161,8 @@ struct RenderConfiguration
 // Optional volumetric_fog uses disabled VolumeSettings defaults. Optional
 // particles has at most sixteen uniquely identified emitters and 4096 combined
 // live particles, including disabled emitters.
+// Optional material_overrides selects source asset IDs and material indices.
+// Source existence is resolved against the loaded scene before GPU allocation.
 // Both functions append diagnostics and leave the output unchanged on failure.
 [[nodiscard]] bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std::string &strExpectedDigest, RenderConfiguration &out_stConfiguration,
 											Assets::Diagnostics &out_arrDiagnostics);

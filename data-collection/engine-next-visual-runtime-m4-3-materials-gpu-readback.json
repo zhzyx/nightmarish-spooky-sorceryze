@@ -1,0 +1,1917 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-17T16:58:17.576466+00:00",
+  "status": "precision_and_binding_verified_sampling_quality_finding_open",
+  "scope": "Actual R3/R4 material MRT, lighting, reflection and transparent draw readback. Higher-sample environment comparison remains a separate quality finding.",
+  "path_base": "repository_root",
+  "candidates": [
+    {
+      "name": "r3",
+      "native_key": "caa88c521bb82dacf2d8701bf5d656e65d1720a211cd5411a976788d64060bd6",
+      "executable": {
+        "path": "build/engine_next/materials-r3/next_visual_client.exe",
+        "bytes": 3200000,
+        "sha256": "e359de32155500bd5bb656f432da0de02648968cf99186162cc7d2697417459c"
+      },
+      "build_report": {
+        "path": "build/engine_next/materials-r3/VisualBuildReport.json",
+        "bytes": 2090487,
+        "sha256": "dd43064639ecd76126b2871981c72fbca64670246fd39c83ae2344a1d452ae58"
+      },
+      "test_summary": "MATERIAL_HEMISPHERE cases=72 minimum=0.184115 maximum=0.991663\r\nMATERIAL_ENVIRONMENT_FURNACE cases=72 minimum=0.184124 maximum=0.998307\r\nENGINE_NEXT_RENDERING_TEST_SUMMARY tests=341 checks=206466 failures=0",
+      "capture_manifest": {
+        "path": "build/engine_next/material-capture-r3-live/CaptureManifest.json",
+        "bytes": 2686,
+        "sha256": "330ce2a7d64673df4da0beb86a8ae60fc0a5b0788640a1bc17b91e8f915f6048"
+      }
+    },
+    {
+      "name": "r4",
+      "native_key": "ece0c52b30aeb80464a817d940dce37f755fcf77618fb2dd9f12e17bdef7b892",
+      "executable": {
+        "path": "build/engine_next/materials-r4/next_visual_client.exe",
+        "bytes": 3200512,
+        "sha256": "52c518004268f31f583acd345b90f7a0e9fc0f7273430b5c15b7288673e2ca39"
+      },
+      "build_report": {
+        "path": "build/engine_next/materials-r4/VisualBuildReport.json",
+        "bytes": 2091230,
+        "sha256": "5abfdfa9d596b3021f572d799ad83bf18430d7274be0a862fbe3a8d2ad1f7b45"
+      },
+      "test_summary": "MATERIAL_HEMISPHERE cases=72 minimum=0.184115 maximum=0.991663\r\nMATERIAL_ENVIRONMENT_FURNACE cases=72 minimum=0.184124 maximum=0.998307\r\nENGINE_NEXT_RENDERING_TEST_SUMMARY tests=341 checks=206466 failures=0",
+      "capture_manifest": {
+        "path": "build/engine_next/material-capture-r4-live/CaptureManifest.json",
+        "bytes": 6705,
+        "sha256": "1ea26c2a19a78952d7fdfc1fd84a6d4eb8678cec69faec572d490ce52ea65663"
+      }
+    }
+  ],
+  "runs": [
+    {
+      "candidate": "r3",
+      "case": "Tiny",
+      "frames": 600,
+      "validation_errors": 0,
+      "success": true,
+      "captures": 3,
+      "runtime": {
+        "path": "build/engine_next/material-capture-r3-live/Tiny/Runtime.json",
+        "bytes": 760626,
+        "sha256": "51ddc9a210c6f0b6f47fb549491ec2cce1f3bbc5138ce1b38a26bfc859a0e94d"
+      }
+    },
+    {
+      "candidate": "r4",
+      "case": "Tiny",
+      "frames": 600,
+      "validation_errors": 0,
+      "success": true,
+      "captures": 3,
+      "runtime": {
+        "path": "build/engine_next/material-capture-r4-live/Tiny/Runtime.json",
+        "bytes": 760433,
+        "sha256": "d8c7a104e14dc0d3520a05fcdcc4993729fa4b7db7daa8d71525041515a2a1e4"
+      }
+    },
+    {
+      "candidate": "r4",
+      "case": "Combined",
+      "frames": 600,
+      "validation_errors": 0,
+      "success": true,
+      "captures": 3,
+      "runtime": {
+        "path": "build/engine_next/material-capture-r4-live/Combined/Runtime.json",
+        "bytes": 760325,
+        "sha256": "3e29da6f33f8c84328e4896d1ea3fe44d0a307652bbeee89e9b704a6a475e61d"
+      }
+    },
+    {
+      "candidate": "r4",
+      "case": "EnvironmentOnly",
+      "frames": 600,
+      "validation_errors": 0,
+      "success": true,
+      "captures": 3,
+      "runtime": {
+        "path": "build/engine_next/material-capture-r4-live/EnvironmentOnly/Runtime.json",
+        "bytes": 760486,
+        "sha256": "a5e7ef8825fb7147cfa0e5a6ec755d5729f64a30ac014b6256acf75fd55a1031"
+      }
+    },
+    {
+      "candidate": "r4",
+      "case": "SSRCombined",
+      "frames": 600,
+      "validation_errors": 0,
+      "success": true,
+      "captures": 3,
+      "runtime": {
+        "path": "build/engine_next/material-capture-r4-live/SSRCombined/Runtime.json",
+        "bytes": 940551,
+        "sha256": "7939f50fa2aa8a7e2e9553fa402b7446c132f87ad44272ad6ccc653e29e8e2b0"
+      }
+    }
+  ],
+  "precision": {
+    "affected_pixels": 33204,
+    "requested_clearcoat": 1e-09,
+    "requested_anisotropy_magnitude": 1e-09,
+    "r3_format": "R16G16B16A16_FLOAT",
+    "r3_result": "Both tiny values round to signed zero on all seven opaque objects.",
+    "r4_format": "R32G32B32A32_FLOAT",
+    "r4_result": "All selected pixels match their actual float32 draw constants exactly, including negative anisotropy.",
+    "transparent_object_id": 8,
+    "transparent_result": "Actual 288-byte draw constants retain the tiny float32 values in both captures.",
+    "parameter_and_tangent_targets": 2,
+    "tangent_format": "R16G16B16A16_FLOAT"
+  },
+  "numerical": {
+    "path": "build/engine_next/material-capture-r4-live/NumericalChecks.json",
+    "bytes": 51735,
+    "sha256": "69652f69ba71de6764bbf2458b861755c535a7c7d2c9a955c1630350de69aac9"
+  },
+  "finite_texture_subresources": 124,
+  "finite_scope": "Each GetTextureData call reads mip zero and array slice zero. Screen-space targets are complete two-dimensional images; cube data describes the captured face only.",
+  "energy_observation": {
+    "zero_emissive_opaque_pixels": 165270,
+    "positive_direct_contribution_pixels": 84351,
+    "positive_environment_only_pixels": 165264,
+    "combined_hdr_rgb_sum": 165635.8049507141,
+    "environment_hdr_rgb_sum": 145206.6070213318,
+    "combined_hdr_max": 54.125,
+    "environment_hdr_max": 3.896484375,
+    "scope": "Measured pre-tone-map radiance over matching zero-emissive geometry pixels. Same-source CPU tests cover hemispherical BRDF energy integration."
+  },
+  "ssr": {
+    "material_and_tangent_resource_ids_match_gbuffer": true,
+    "positive_confidence_pixels": 58398,
+    "composite_half_encoding_distance_max": 1,
+    "composite_max_absolute_error": 0.015411376953125,
+    "reflection_rgb_sum": 25578.91969680786
+  },
+  "independent_cpu_recheck": {
+    "worker": "m42_cook_review",
+    "result": "Reported exact same numerical result and verified raw texture hashes without GPU execution.",
+    "artifact": {
+      "path": "build/engine_next/material-capture-tools/IndependentNumericalChecks.json",
+      "bytes": 51735,
+      "sha256": "69652f69ba71de6764bbf2458b861755c535a7c7d2c9a955c1630350de69aac9"
+    }
+  },
+  "sampling_quality": {
+    "status": "confirmed_low_sample_artifact",
+    "comparison": {
+      "path": "build/engine_next/material-ibl-reference-r1/Comparison.json",
+      "bytes": 3009,
+      "sha256": "44da4319550c21285645899a9fce09bd156793ec2b2707f644cee2e9a44b39e8"
+    },
+    "counts_low": [
+      32,
+      16,
+      8
+    ],
+    "counts_high": [
+      512,
+      256,
+      128
+    ],
+    "statistics": [
+      {
+        "variant": "low",
+        "interior_pixels": 31052,
+        "isolated_bright_pixels": 24,
+        "maximum_neighbor_excess": 2.27067763671875,
+        "mean_luminance": 0.2222898880672934,
+        "rgb_sum": 23427.38189315796
+      },
+      {
+        "variant": "high",
+        "interior_pixels": 31052,
+        "isolated_bright_pixels": 0,
+        "maximum_neighbor_excess": 0.8867185546875003,
+        "mean_luminance": 0.2215454224656388,
+        "rgb_sum": 23344.966300964355
+      }
+    ],
+    "rgb_rms_difference": 0.09136585146188736,
+    "relative_rgb_sum_change": -0.003517917305888685,
+    "finding": "Increasing only the environment sample counts removes the measured isolated bright pixels and forms coherent highlights. The low-count NDF estimator has visible sampling artifacts on this scene.",
+    "remaining": "The higher-count image still contains weaker structured sampling patterns. This is a denser NDF reference, and environment importance sampling or another variance-reduction method remains to be evaluated."
+  },
+  "collector_corrections": [
+    {
+      "kind": "resource_binding_metadata",
+      "observation": "The initial inspector labeled resources by reflection-array index. The final ReadbackBindings uses fixedBindNumber and records shader resource names and register spaces. Original readback directories remain available."
+    },
+    {
+      "kind": "private_reference_launcher",
+      "observation": "The first high-sample launch was rejected for unsupported --shader-dir before rendering. The corrected --shader-directory run completed 240 frames and three captures with zero validation errors.",
+      "failed_manifest": {
+        "path": "build/engine_next/material-ibl-reference-r1/HighCapture/CaptureManifest.json",
+        "bytes": 8414,
+        "sha256": "bb2344aef433b27c24c699ff6f3b62c8822845eeaa00c90a60570690d02daa6b"
+      },
+      "failed_log": {
+        "path": "build/engine_next/material-ibl-reference-r1/HighCapture/EnvironmentOnly/Capture.log",
+        "bytes": 1051,
+        "sha256": "0201cc812ae0e2c9e7cd13fe6d6a0a5dab72639ad153bd98bc51bbbb4fb95129"
+      }
+    }
+  ],
+  "cross_tree_helper_snapshot": {
+    "path": "build/engine_next/material-capture-tools/ImportedCaptureHost.py",
+    "bytes": 15902,
+    "sha256": "995be6f667e99866f1f332ae5c42fb7cb4d355a97d2fe3b6cf7b899944599692"
+  },
+  "final_candidate_scope": "R3 and R4 identities are retained. Later R5/R6 source and shader equivalence belong to the final candidate record.",
+  "file_refs": [
+    {
+      "path": "build/engine_next/material-capture-r3-live/CaptureManifest.json",
+      "bytes": 2686,
+      "sha256": "330ce2a7d64673df4da0beb86a8ae60fc0a5b0788640a1bc17b91e8f915f6048"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/CaptureRunner.py",
+      "bytes": 6148,
+      "sha256": "721aab1eb1a65090722902b608cf45ad00565d03593356fcc9d5501c141c668a"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/Readback/Inspection.json",
+      "bytes": 25497,
+      "sha256": "2644144325f66c2762b1fde5c9c812d13d01f1c52ad372d65b3f00d40d228368"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Inspection.json",
+      "bytes": 30840,
+      "sha256": "73262a2862392d568f97405ba86093898fb7e7a32c66ea985dc6271f89542090"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/DeferredLighting-842-FrameConstants.bin",
+      "bytes": 3120,
+      "sha256": "7ab4b913ccfe02a432c6281a3ef33c30bd9ee29ba0ee727c16b1b7910b485949"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/DeferredLighting-rt0.bin",
+      "bytes": 2457600,
+      "sha256": "fd26d3f805f2938776fbad255b3fd7372d3e25d37e8af9db1750508115964e9e"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/DeferredLighting-t0.bin",
+      "bytes": 1228800,
+      "sha256": "34ff9974f2bc79bd68173eac67f26c4cadc1b33ba3d2688db7913837b25d78bd"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/DeferredLighting-t1.bin",
+      "bytes": 2457600,
+      "sha256": "f48efdb88e80a41f95d727c9a57869e5f2d9afb1de27c1e808a624fe9e3c1b39"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/DeferredLighting-t12.bin",
+      "bytes": 2457600,
+      "sha256": "3d74a249a9600cde10a03cd098dd0d6b8da6175904f53ebb01c81c12332a4ec8"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/DeferredLighting-t13.bin",
+      "bytes": 2457600,
+      "sha256": "cd96da7c3aabd1f398be41cf14933385f74b2849e78754dcb0fbe319aef3ff47"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/DeferredLighting-t2.bin",
+      "bytes": 1228800,
+      "sha256": "6c66a20288c4aab81eded4dfe587a54d1b5ba5db58afc042911817a58bed69b9"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/DeferredLighting-t3.bin",
+      "bytes": 2457600,
+      "sha256": "874312948d22abb0eb2db6e56e613d7c91acdc41db910c802622bf220e9b265c"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/DeferredLighting-t4.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/DeferredLighting-t6.bin",
+      "bytes": 16384,
+      "sha256": "7d48f764304847dcdcfca40e72596644372bfd118091eea13bf8ba1d69920754"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/DeferredLighting-t7.bin",
+      "bytes": 65536,
+      "sha256": "45898380278934bf364ded812406c4e797a6efeda84685fcb58274d4b587054a"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/DeferredLighting-t8.bin",
+      "bytes": 65536,
+      "sha256": "834cbb57f5b017ff009e7ee0690d874c6bc21ce84c4593f4394fc002f10b7a0d"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-773-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "b0a133c6ddd6f54589f26b87d99ab166355ec9ad93fd56ce671d3efaf0a26744"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-778-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "54f7e95f8dd546b3dbe934ee4574b2f3d2c04718ac8cf6c71363e59d347ced80"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-783-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "1061a1a7e4255c6ffbd92ba929e01706e9f764da96fa6f6782ed38f6d34b2536"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-788-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "30d0d2d8f39436f9fe96ac5c05decbc9c7ec1784b36999f15bf8a86c469ee24a"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-793-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "b0e919956b4e76f1e9f2569a65cc5a051964f90c0ef98680b8f7af25f21c9237"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-798-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "fd8b40d2894a9881606fc0066521b4ceb866f0c4bfddb8533e0d2c3d86b8d00f"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-803-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "598bb73b17dcc6995b69134d81ef9e3b3e2e82395467e43c52a7de431d86789b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-808-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "4a689be02d6e388713a302a21c4f434648f9de46a978f22c522f4cd5775abbf0"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-813-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "162bdd3e5622755138475c398bba9683023d1be3a6b92b5dadf20202995fff30"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-depth.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-rt0.bin",
+      "bytes": 1228800,
+      "sha256": "34ff9974f2bc79bd68173eac67f26c4cadc1b33ba3d2688db7913837b25d78bd"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-rt1.bin",
+      "bytes": 2457600,
+      "sha256": "f48efdb88e80a41f95d727c9a57869e5f2d9afb1de27c1e808a624fe9e3c1b39"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-rt2.bin",
+      "bytes": 1228800,
+      "sha256": "6c66a20288c4aab81eded4dfe587a54d1b5ba5db58afc042911817a58bed69b9"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-rt3.bin",
+      "bytes": 2457600,
+      "sha256": "874312948d22abb0eb2db6e56e613d7c91acdc41db910c802622bf220e9b265c"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-rt4.bin",
+      "bytes": 4915200,
+      "sha256": "f824c1a8a1128713f17dd8d1190d70e6012b509606d986e7a6c81e40b628df2b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-rt5.bin",
+      "bytes": 1228800,
+      "sha256": "d809c241182e2b9607f143ce432f25d320b4b420db4e354b2c28fffc073142ef"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-rt6.bin",
+      "bytes": 2457600,
+      "sha256": "3d74a249a9600cde10a03cd098dd0d6b8da6175904f53ebb01c81c12332a4ec8"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/GBuffer-rt7.bin",
+      "bytes": 2457600,
+      "sha256": "cd96da7c3aabd1f398be41cf14933385f74b2849e78754dcb0fbe319aef3ff47"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/Transparency-879-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "fd7ca17f807d35e73ba94bc3ded8d2c8f5d340fc951c02f93d82475175298961"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/Transparency-879-FrameConstants.bin",
+      "bytes": 3120,
+      "sha256": "7ab4b913ccfe02a432c6281a3ef33c30bd9ee29ba0ee727c16b1b7910b485949"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/Transparency-depth.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/Transparency-rt0.bin",
+      "bytes": 2457600,
+      "sha256": "2304f910642727e136f7fa50f49c6482c5460290de9371754ede43c52317f232"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/ReadbackBindings/Tiny/Transparency-rt1.bin",
+      "bytes": 307200,
+      "sha256": "1648987c1cd910ddf5446a90e408a878a3270f320f5fb7c4479a0bdad88ec8e8"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/Tiny/Configuration.json",
+      "bytes": 3127,
+      "sha256": "08c1c6bc67b0600db2bb6dc3aea26f73913eb5a5a6d4d15245449a5dafb8a9d3"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/Tiny/Material_frame0.rdc",
+      "bytes": 3636185,
+      "sha256": "5a0381cf5a9e9279ec5aeea03a973c642a8b3cf295c6f341af7ae0c9620576f2"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/Tiny/Material_frame1.rdc",
+      "bytes": 3815018,
+      "sha256": "b5272b5cb58b4acc100ba1a6974944fceaceee01ccd1bb877429df1ca1a3ed6c"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/Tiny/Material_frame2.rdc",
+      "bytes": 3817166,
+      "sha256": "1789306de67350bbf5588fd2b4fad8dce7664b4bee1d4c29a2aeb72ff90ce2cb"
+    },
+    {
+      "path": "build/engine_next/material-capture-r3-live/Tiny/Runtime.json",
+      "bytes": 760626,
+      "sha256": "51ddc9a210c6f0b6f47fb549491ec2cce1f3bbc5138ce1b38a26bfc859a0e94d"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/CaptureManifest.json",
+      "bytes": 6705,
+      "sha256": "1ea26c2a19a78952d7fdfc1fd84a6d4eb8678cec69faec572d490ce52ea65663"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/CaptureRunner.py",
+      "bytes": 6338,
+      "sha256": "6e4eaa17eacd5f31eb27770527641c5f17465584cc404bf0e41e89161babbfa8"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/Combined/Configuration.json",
+      "bytes": 3080,
+      "sha256": "8a7c33e2d530fb6b69e1707b91272567802251cac56eef23c8bfee612b0a36fd"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/Combined/Material_frame1.rdc",
+      "bytes": 3821907,
+      "sha256": "966d3b77d29e8324d9c24b6ebe447286d59db50b991ac3e0bd4b809382c1d4e1"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/Combined/Material_frame2.rdc",
+      "bytes": 3823475,
+      "sha256": "7f8c654cac98afb8f8eabf488db8eb9c05182276a2632fdcc50cf2a6ea34b6af"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/Combined/Material_frame3.rdc",
+      "bytes": 6932464,
+      "sha256": "56c05108ce01faea39ceaae22bcf28c1db57a981edd3e2b67eebec9db8950ef6"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/Combined/Runtime.json",
+      "bytes": 760325,
+      "sha256": "3e29da6f33f8c84328e4896d1ea3fe44d0a307652bbeee89e9b704a6a475e61d"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/EnvironmentOnly/Configuration.json",
+      "bytes": 3080,
+      "sha256": "23488f3df4d501c9e846c8e5fe826b8ab10cb0d1188e66d24eb451e01a8b9eb7"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/EnvironmentOnly/Material_frame1.rdc",
+      "bytes": 3819677,
+      "sha256": "acaeb7ed556557b5f3b4b808232f24992c8984fde3da0294e45390868fc7f781"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/EnvironmentOnly/Material_frame2.rdc",
+      "bytes": 3819979,
+      "sha256": "d0ef1ca84d42f8fb8e479fd5487846ed568643249b72562f5259abc172e18edc"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/EnvironmentOnly/Material_frame3.rdc",
+      "bytes": 6654790,
+      "sha256": "ee6bcd13de954a0b7aa588c9ea4f71dd03b68d10ed4401a3ac5621f563e88ff6"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/EnvironmentOnly/Runtime.json",
+      "bytes": 760486,
+      "sha256": "a5e7ef8825fb7147cfa0e5a6ec755d5729f64a30ac014b6256acf75fd55a1031"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/NumericalChecks.json",
+      "bytes": 51735,
+      "sha256": "69652f69ba71de6764bbf2458b861755c535a7c7d2c9a955c1630350de69aac9"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/Readback/Inspection.json",
+      "bytes": 110025,
+      "sha256": "a637ada2287e5f7dc2b69dc78f0f5d8df2c1bc0621e48dc548bd5437091f01db"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/DeferredLighting-355-FrameConstants.bin",
+      "bytes": 3120,
+      "sha256": "7ab4b913ccfe02a432c6281a3ef33c30bd9ee29ba0ee727c16b1b7910b485949"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/DeferredLighting-rt0.bin",
+      "bytes": 2457600,
+      "sha256": "202f4b30b93529338317a4796b09efc196a707f1d8773f28bb8c353ccdd32894"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/DeferredLighting-t0.bin",
+      "bytes": 1228800,
+      "sha256": "34ff9974f2bc79bd68173eac67f26c4cadc1b33ba3d2688db7913837b25d78bd"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/DeferredLighting-t1.bin",
+      "bytes": 2457600,
+      "sha256": "f48efdb88e80a41f95d727c9a57869e5f2d9afb1de27c1e808a624fe9e3c1b39"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/DeferredLighting-t12.bin",
+      "bytes": 4915200,
+      "sha256": "6491010c52ad5252a4227f4f149ce4016af2579ed62682588dd47f0bbfa01ccb"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/DeferredLighting-t13.bin",
+      "bytes": 2457600,
+      "sha256": "cd96da7c3aabd1f398be41cf14933385f74b2849e78754dcb0fbe319aef3ff47"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/DeferredLighting-t2.bin",
+      "bytes": 1228800,
+      "sha256": "6c66a20288c4aab81eded4dfe587a54d1b5ba5db58afc042911817a58bed69b9"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/DeferredLighting-t3.bin",
+      "bytes": 2457600,
+      "sha256": "874312948d22abb0eb2db6e56e613d7c91acdc41db910c802622bf220e9b265c"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/DeferredLighting-t4.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/DeferredLighting-t6.bin",
+      "bytes": 16384,
+      "sha256": "7d48f764304847dcdcfca40e72596644372bfd118091eea13bf8ba1d69920754"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/DeferredLighting-t7.bin",
+      "bytes": 65536,
+      "sha256": "45898380278934bf364ded812406c4e797a6efeda84685fcb58274d4b587054a"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/DeferredLighting-t8.bin",
+      "bytes": 65536,
+      "sha256": "834cbb57f5b017ff009e7ee0690d874c6bc21ce84c4593f4394fc002f10b7a0d"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-286-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "1bea78063a1283b2b9d9728ba020b98d13adbdb8d7649664e7a27aea2258eb68"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-291-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "47fa0b2cef8e3459d1f6cf22cf6dae8088f3aabad32c1e4837327beca3ebce2c"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-296-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "f8bc5dd6967c85a1899bc6835f6beb08063ce3c024afa0f3a1dfa5489ded60d7"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-301-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "15bf0698a44d48a2948e3bad40d148075f840834d658e49c4297de679909f18a"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-306-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "e614a1ae69adeb66cc69420df49d4779fa891cd12309110ba466293d05847dd8"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-311-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "384caf0a9b23dca684074791d2fee255db26ee0fa98dc6b79b1c6f20942c698d"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-316-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "214ae87581eb12f9fcfaf6b9ce15cdbbd46e1dfe7237d4ff2d42f4b1db524c24"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-321-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "53f2d542bd29f7f98e7d50a00408653b598799ce504e772db5c6add8f6894bcc"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-326-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "17e78f5eb33030b745b45accd0a4a29807a987deccd681032a083421b0859996"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-depth.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-rt0.bin",
+      "bytes": 1228800,
+      "sha256": "34ff9974f2bc79bd68173eac67f26c4cadc1b33ba3d2688db7913837b25d78bd"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-rt1.bin",
+      "bytes": 2457600,
+      "sha256": "f48efdb88e80a41f95d727c9a57869e5f2d9afb1de27c1e808a624fe9e3c1b39"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-rt2.bin",
+      "bytes": 1228800,
+      "sha256": "6c66a20288c4aab81eded4dfe587a54d1b5ba5db58afc042911817a58bed69b9"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-rt3.bin",
+      "bytes": 2457600,
+      "sha256": "874312948d22abb0eb2db6e56e613d7c91acdc41db910c802622bf220e9b265c"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-rt4.bin",
+      "bytes": 4915200,
+      "sha256": "fd3b2485612cf9d272bc8d0a6882f1a580cbcc90cba2e232f9d88d9aabbf93e3"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-rt5.bin",
+      "bytes": 1228800,
+      "sha256": "d809c241182e2b9607f143ce432f25d320b4b420db4e354b2c28fffc073142ef"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-rt6.bin",
+      "bytes": 4915200,
+      "sha256": "6491010c52ad5252a4227f4f149ce4016af2579ed62682588dd47f0bbfa01ccb"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/GBuffer-rt7.bin",
+      "bytes": 2457600,
+      "sha256": "cd96da7c3aabd1f398be41cf14933385f74b2849e78754dcb0fbe319aef3ff47"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/Transparency-392-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "9078eca15a343d21808c2193ffbaebb046f19ee20685ff89bb444340087d22f7"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/Transparency-392-FrameConstants.bin",
+      "bytes": 3120,
+      "sha256": "7ab4b913ccfe02a432c6281a3ef33c30bd9ee29ba0ee727c16b1b7910b485949"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/Transparency-depth.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/Transparency-rt0.bin",
+      "bytes": 2457600,
+      "sha256": "dc055a34ceeaf2a6f3ab8b028b8bfaf6aaf003a4964dbb1814053014f4a3bf37"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Combined/Transparency-rt1.bin",
+      "bytes": 307200,
+      "sha256": "1648987c1cd910ddf5446a90e408a878a3270f320f5fb7c4479a0bdad88ec8e8"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/DeferredLighting-355-FrameConstants.bin",
+      "bytes": 3120,
+      "sha256": "52e4f14b51e94fcabf9aa220b82eb4841b40fc6c45183ea4cc533fec9d71d2a4"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/DeferredLighting-rt0.bin",
+      "bytes": 2457600,
+      "sha256": "4c02a1d9da64aed70c2f93d80421eae76f925f53ea86d3e5cd3afd6aa7375dc8"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/DeferredLighting-t0.bin",
+      "bytes": 1228800,
+      "sha256": "34ff9974f2bc79bd68173eac67f26c4cadc1b33ba3d2688db7913837b25d78bd"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/DeferredLighting-t1.bin",
+      "bytes": 2457600,
+      "sha256": "f48efdb88e80a41f95d727c9a57869e5f2d9afb1de27c1e808a624fe9e3c1b39"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/DeferredLighting-t12.bin",
+      "bytes": 4915200,
+      "sha256": "6491010c52ad5252a4227f4f149ce4016af2579ed62682588dd47f0bbfa01ccb"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/DeferredLighting-t13.bin",
+      "bytes": 2457600,
+      "sha256": "cd96da7c3aabd1f398be41cf14933385f74b2849e78754dcb0fbe319aef3ff47"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/DeferredLighting-t2.bin",
+      "bytes": 1228800,
+      "sha256": "6c66a20288c4aab81eded4dfe587a54d1b5ba5db58afc042911817a58bed69b9"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/DeferredLighting-t3.bin",
+      "bytes": 2457600,
+      "sha256": "874312948d22abb0eb2db6e56e613d7c91acdc41db910c802622bf220e9b265c"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/DeferredLighting-t4.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/DeferredLighting-t6.bin",
+      "bytes": 16384,
+      "sha256": "7d48f764304847dcdcfca40e72596644372bfd118091eea13bf8ba1d69920754"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/DeferredLighting-t7.bin",
+      "bytes": 65536,
+      "sha256": "45898380278934bf364ded812406c4e797a6efeda84685fcb58274d4b587054a"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/DeferredLighting-t8.bin",
+      "bytes": 65536,
+      "sha256": "834cbb57f5b017ff009e7ee0690d874c6bc21ce84c4593f4394fc002f10b7a0d"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-286-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "1bea78063a1283b2b9d9728ba020b98d13adbdb8d7649664e7a27aea2258eb68"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-291-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "47fa0b2cef8e3459d1f6cf22cf6dae8088f3aabad32c1e4837327beca3ebce2c"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-296-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "f8bc5dd6967c85a1899bc6835f6beb08063ce3c024afa0f3a1dfa5489ded60d7"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-301-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "15bf0698a44d48a2948e3bad40d148075f840834d658e49c4297de679909f18a"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-306-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "e614a1ae69adeb66cc69420df49d4779fa891cd12309110ba466293d05847dd8"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-311-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "384caf0a9b23dca684074791d2fee255db26ee0fa98dc6b79b1c6f20942c698d"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-316-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "214ae87581eb12f9fcfaf6b9ce15cdbbd46e1dfe7237d4ff2d42f4b1db524c24"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-321-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "53f2d542bd29f7f98e7d50a00408653b598799ce504e772db5c6add8f6894bcc"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-326-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "17e78f5eb33030b745b45accd0a4a29807a987deccd681032a083421b0859996"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-depth.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-rt0.bin",
+      "bytes": 1228800,
+      "sha256": "34ff9974f2bc79bd68173eac67f26c4cadc1b33ba3d2688db7913837b25d78bd"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-rt1.bin",
+      "bytes": 2457600,
+      "sha256": "f48efdb88e80a41f95d727c9a57869e5f2d9afb1de27c1e808a624fe9e3c1b39"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-rt2.bin",
+      "bytes": 1228800,
+      "sha256": "6c66a20288c4aab81eded4dfe587a54d1b5ba5db58afc042911817a58bed69b9"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-rt3.bin",
+      "bytes": 2457600,
+      "sha256": "874312948d22abb0eb2db6e56e613d7c91acdc41db910c802622bf220e9b265c"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-rt4.bin",
+      "bytes": 4915200,
+      "sha256": "fd3b2485612cf9d272bc8d0a6882f1a580cbcc90cba2e232f9d88d9aabbf93e3"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-rt5.bin",
+      "bytes": 1228800,
+      "sha256": "d809c241182e2b9607f143ce432f25d320b4b420db4e354b2c28fffc073142ef"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-rt6.bin",
+      "bytes": 4915200,
+      "sha256": "6491010c52ad5252a4227f4f149ce4016af2579ed62682588dd47f0bbfa01ccb"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/GBuffer-rt7.bin",
+      "bytes": 2457600,
+      "sha256": "cd96da7c3aabd1f398be41cf14933385f74b2849e78754dcb0fbe319aef3ff47"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/Transparency-392-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "9078eca15a343d21808c2193ffbaebb046f19ee20685ff89bb444340087d22f7"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/Transparency-392-FrameConstants.bin",
+      "bytes": 3120,
+      "sha256": "52e4f14b51e94fcabf9aa220b82eb4841b40fc6c45183ea4cc533fec9d71d2a4"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/Transparency-depth.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/Transparency-rt0.bin",
+      "bytes": 2457600,
+      "sha256": "c2c6e28d8f3f5e4ea4e07c12ceb494fbb21dd1a3d5988bac5c1d30c2b6339ebf"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/EnvironmentOnly/Transparency-rt1.bin",
+      "bytes": 307200,
+      "sha256": "1648987c1cd910ddf5446a90e408a878a3270f320f5fb7c4479a0bdad88ec8e8"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Inspection.json",
+      "bytes": 133759,
+      "sha256": "3bd4c80d56ab881bcb87560d516deb0a7f796039b5a0e9acded4380cb9de68c0"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/DeferredLighting-356-FrameConstants.bin",
+      "bytes": 3120,
+      "sha256": "7ab4b913ccfe02a432c6281a3ef33c30bd9ee29ba0ee727c16b1b7910b485949"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/DeferredLighting-rt0.bin",
+      "bytes": 2457600,
+      "sha256": "b329cd2b0e8f5350f461a41a35f44c156cdb694d945dd2e7143ead1e1c2259b4"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/DeferredLighting-rt1.bin",
+      "bytes": 2457600,
+      "sha256": "71e25d21eda2dabdd41b29c0d670cb69e4325f5479813f5e768fcff34a60b586"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/DeferredLighting-t0.bin",
+      "bytes": 1228800,
+      "sha256": "34ff9974f2bc79bd68173eac67f26c4cadc1b33ba3d2688db7913837b25d78bd"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/DeferredLighting-t1.bin",
+      "bytes": 2457600,
+      "sha256": "f48efdb88e80a41f95d727c9a57869e5f2d9afb1de27c1e808a624fe9e3c1b39"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/DeferredLighting-t12.bin",
+      "bytes": 4915200,
+      "sha256": "6491010c52ad5252a4227f4f149ce4016af2579ed62682588dd47f0bbfa01ccb"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/DeferredLighting-t13.bin",
+      "bytes": 2457600,
+      "sha256": "cd96da7c3aabd1f398be41cf14933385f74b2849e78754dcb0fbe319aef3ff47"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/DeferredLighting-t2.bin",
+      "bytes": 1228800,
+      "sha256": "6c66a20288c4aab81eded4dfe587a54d1b5ba5db58afc042911817a58bed69b9"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/DeferredLighting-t3.bin",
+      "bytes": 2457600,
+      "sha256": "874312948d22abb0eb2db6e56e613d7c91acdc41db910c802622bf220e9b265c"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/DeferredLighting-t4.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/DeferredLighting-t6.bin",
+      "bytes": 16384,
+      "sha256": "7d48f764304847dcdcfca40e72596644372bfd118091eea13bf8ba1d69920754"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/DeferredLighting-t7.bin",
+      "bytes": 65536,
+      "sha256": "45898380278934bf364ded812406c4e797a6efeda84685fcb58274d4b587054a"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/DeferredLighting-t8.bin",
+      "bytes": 65536,
+      "sha256": "834cbb57f5b017ff009e7ee0690d874c6bc21ce84c4593f4394fc002f10b7a0d"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-286-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "1bea78063a1283b2b9d9728ba020b98d13adbdb8d7649664e7a27aea2258eb68"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-291-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "47fa0b2cef8e3459d1f6cf22cf6dae8088f3aabad32c1e4837327beca3ebce2c"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-296-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "f8bc5dd6967c85a1899bc6835f6beb08063ce3c024afa0f3a1dfa5489ded60d7"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-301-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "15bf0698a44d48a2948e3bad40d148075f840834d658e49c4297de679909f18a"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-306-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "e614a1ae69adeb66cc69420df49d4779fa891cd12309110ba466293d05847dd8"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-311-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "384caf0a9b23dca684074791d2fee255db26ee0fa98dc6b79b1c6f20942c698d"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-316-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "214ae87581eb12f9fcfaf6b9ce15cdbbd46e1dfe7237d4ff2d42f4b1db524c24"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-321-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "53f2d542bd29f7f98e7d50a00408653b598799ce504e772db5c6add8f6894bcc"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-326-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "17e78f5eb33030b745b45accd0a4a29807a987deccd681032a083421b0859996"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-depth.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-rt0.bin",
+      "bytes": 1228800,
+      "sha256": "34ff9974f2bc79bd68173eac67f26c4cadc1b33ba3d2688db7913837b25d78bd"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-rt1.bin",
+      "bytes": 2457600,
+      "sha256": "f48efdb88e80a41f95d727c9a57869e5f2d9afb1de27c1e808a624fe9e3c1b39"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-rt2.bin",
+      "bytes": 1228800,
+      "sha256": "6c66a20288c4aab81eded4dfe587a54d1b5ba5db58afc042911817a58bed69b9"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-rt3.bin",
+      "bytes": 2457600,
+      "sha256": "874312948d22abb0eb2db6e56e613d7c91acdc41db910c802622bf220e9b265c"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-rt4.bin",
+      "bytes": 4915200,
+      "sha256": "fd3b2485612cf9d272bc8d0a6882f1a580cbcc90cba2e232f9d88d9aabbf93e3"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-rt5.bin",
+      "bytes": 1228800,
+      "sha256": "d809c241182e2b9607f143ce432f25d320b4b420db4e354b2c28fffc073142ef"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-rt6.bin",
+      "bytes": 4915200,
+      "sha256": "6491010c52ad5252a4227f4f149ce4016af2579ed62682588dd47f0bbfa01ccb"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/GBuffer-rt7.bin",
+      "bytes": 2457600,
+      "sha256": "cd96da7c3aabd1f398be41cf14933385f74b2849e78754dcb0fbe319aef3ff47"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/ReflectionComposite-t0.bin",
+      "bytes": 2457600,
+      "sha256": "b329cd2b0e8f5350f461a41a35f44c156cdb694d945dd2e7143ead1e1c2259b4"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/ReflectionComposite-t1.bin",
+      "bytes": 2457600,
+      "sha256": "71e25d21eda2dabdd41b29c0d670cb69e4325f5479813f5e768fcff34a60b586"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/ReflectionComposite-t2.bin",
+      "bytes": 2457600,
+      "sha256": "3eb195a576f8deabc0740a7eb2d88f496ac86efb9de809ce80b43fe537964d85"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/ReflectionComposite-u0.bin",
+      "bytes": 2457600,
+      "sha256": "842d27cc8a6bbd4a0659872570641731303eaa40755a8ee33f6d96a714ac52aa"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/ReflectionTrace-469-FrameConstants.bin",
+      "bytes": 3120,
+      "sha256": "7ab4b913ccfe02a432c6281a3ef33c30bd9ee29ba0ee727c16b1b7910b485949"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/ReflectionTrace-t11.bin",
+      "bytes": 4915200,
+      "sha256": "6491010c52ad5252a4227f4f149ce4016af2579ed62682588dd47f0bbfa01ccb"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/ReflectionTrace-t12.bin",
+      "bytes": 2457600,
+      "sha256": "cd96da7c3aabd1f398be41cf14933385f74b2849e78754dcb0fbe319aef3ff47"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/ReflectionTrace-t3.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/ReflectionTrace-u0.bin",
+      "bytes": 2457600,
+      "sha256": "3eb195a576f8deabc0740a7eb2d88f496ac86efb9de809ce80b43fe537964d85"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/Transparency-522-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "9078eca15a343d21808c2193ffbaebb046f19ee20685ff89bb444340087d22f7"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/Transparency-522-FrameConstants.bin",
+      "bytes": 3120,
+      "sha256": "7ab4b913ccfe02a432c6281a3ef33c30bd9ee29ba0ee727c16b1b7910b485949"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/Transparency-depth.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/Transparency-rt0.bin",
+      "bytes": 2457600,
+      "sha256": "66e2b6b6fa178ae3dfb05f6c23e020b7013d75043b8322fd9a5785c78fa16f27"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/SSRCombined/Transparency-rt1.bin",
+      "bytes": 307200,
+      "sha256": "1648987c1cd910ddf5446a90e408a878a3270f320f5fb7c4479a0bdad88ec8e8"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/DeferredLighting-355-FrameConstants.bin",
+      "bytes": 3120,
+      "sha256": "7ab4b913ccfe02a432c6281a3ef33c30bd9ee29ba0ee727c16b1b7910b485949"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/DeferredLighting-rt0.bin",
+      "bytes": 2457600,
+      "sha256": "e4cb4d51cd9f6e53a30c33583c39a5c49efb9a26cb8d3aeff2e2adb00c9456b6"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/DeferredLighting-t0.bin",
+      "bytes": 1228800,
+      "sha256": "34ff9974f2bc79bd68173eac67f26c4cadc1b33ba3d2688db7913837b25d78bd"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/DeferredLighting-t1.bin",
+      "bytes": 2457600,
+      "sha256": "f48efdb88e80a41f95d727c9a57869e5f2d9afb1de27c1e808a624fe9e3c1b39"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/DeferredLighting-t12.bin",
+      "bytes": 4915200,
+      "sha256": "4023fbcf386f803959b54ee01caca8616a083ed9935e6be157dd8edd0cd393da"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/DeferredLighting-t13.bin",
+      "bytes": 2457600,
+      "sha256": "cd96da7c3aabd1f398be41cf14933385f74b2849e78754dcb0fbe319aef3ff47"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/DeferredLighting-t2.bin",
+      "bytes": 1228800,
+      "sha256": "6c66a20288c4aab81eded4dfe587a54d1b5ba5db58afc042911817a58bed69b9"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/DeferredLighting-t3.bin",
+      "bytes": 2457600,
+      "sha256": "874312948d22abb0eb2db6e56e613d7c91acdc41db910c802622bf220e9b265c"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/DeferredLighting-t4.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/DeferredLighting-t6.bin",
+      "bytes": 16384,
+      "sha256": "7d48f764304847dcdcfca40e72596644372bfd118091eea13bf8ba1d69920754"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/DeferredLighting-t7.bin",
+      "bytes": 65536,
+      "sha256": "45898380278934bf364ded812406c4e797a6efeda84685fcb58274d4b587054a"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/DeferredLighting-t8.bin",
+      "bytes": 65536,
+      "sha256": "834cbb57f5b017ff009e7ee0690d874c6bc21ce84c4593f4394fc002f10b7a0d"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-286-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "17fbf293ef046564101483d9f644ef7229a6e65c8f5fa37862b5c296b90b2c12"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-291-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "d7fd4acb0cf1d643ad868cd7a7517c1da0a80f7ec6cc96448e69855851070661"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-296-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "194fd50bbd3e81975620f10d0a0ea31925680b3d31d8505675331e5ce7fd46f7"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-301-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "ab12c7fefc32c3db5686d8ba78494e747bc8ab9503e352b7a3769650afe3574c"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-306-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "443bbb7d871e9e1d5484d4cac2f53ca820f64e9c651c69a663ab046a3f60bda4"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-311-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "41449a9d1b826344c7db24c17e3be388941a5a1ef6e6886f6f372e291e65c1e4"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-316-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "7cf4d20f55baf1e6c502ba37d6c6d38b377623c3a67678d9510096885ee88e23"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-321-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "53f2d542bd29f7f98e7d50a00408653b598799ce504e772db5c6add8f6894bcc"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-326-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "17e78f5eb33030b745b45accd0a4a29807a987deccd681032a083421b0859996"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-depth.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-rt0.bin",
+      "bytes": 1228800,
+      "sha256": "34ff9974f2bc79bd68173eac67f26c4cadc1b33ba3d2688db7913837b25d78bd"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-rt1.bin",
+      "bytes": 2457600,
+      "sha256": "f48efdb88e80a41f95d727c9a57869e5f2d9afb1de27c1e808a624fe9e3c1b39"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-rt2.bin",
+      "bytes": 1228800,
+      "sha256": "6c66a20288c4aab81eded4dfe587a54d1b5ba5db58afc042911817a58bed69b9"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-rt3.bin",
+      "bytes": 2457600,
+      "sha256": "874312948d22abb0eb2db6e56e613d7c91acdc41db910c802622bf220e9b265c"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-rt4.bin",
+      "bytes": 4915200,
+      "sha256": "fd3b2485612cf9d272bc8d0a6882f1a580cbcc90cba2e232f9d88d9aabbf93e3"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-rt5.bin",
+      "bytes": 1228800,
+      "sha256": "d809c241182e2b9607f143ce432f25d320b4b420db4e354b2c28fffc073142ef"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-rt6.bin",
+      "bytes": 4915200,
+      "sha256": "4023fbcf386f803959b54ee01caca8616a083ed9935e6be157dd8edd0cd393da"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/GBuffer-rt7.bin",
+      "bytes": 2457600,
+      "sha256": "cd96da7c3aabd1f398be41cf14933385f74b2849e78754dcb0fbe319aef3ff47"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/Transparency-392-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "23050eb357e523f95571a8f43dd5d989f96707b7839b546d914ee0fd466da5a7"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/Transparency-392-FrameConstants.bin",
+      "bytes": 3120,
+      "sha256": "7ab4b913ccfe02a432c6281a3ef33c30bd9ee29ba0ee727c16b1b7910b485949"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/Transparency-depth.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/Transparency-rt0.bin",
+      "bytes": 2457600,
+      "sha256": "ab92fd9bdfff43e81dc403ecae9c78a1dcdd314fcd488e47f65fd882fd7b6441"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/ReadbackBindings/Tiny/Transparency-rt1.bin",
+      "bytes": 307200,
+      "sha256": "1648987c1cd910ddf5446a90e408a878a3270f320f5fb7c4479a0bdad88ec8e8"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/SSRCombined/Configuration.json",
+      "bytes": 3198,
+      "sha256": "c511434ff5162c70de2f4b572a2853ffdef8a3835a41dd442d9c88a1f0e0a74d"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/SSRCombined/Material_frame1.rdc",
+      "bytes": 3935514,
+      "sha256": "5864f03e6d401f84076cd9c9f44a51376eb3349ca52f31d85fb1b661a2c03de7"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/SSRCombined/Material_frame2.rdc",
+      "bytes": 3937192,
+      "sha256": "9b4e1f75989955fc1d5a4dfe028fc34ee511e78c775e9f86f34b3dcd18551eff"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/SSRCombined/Material_frame3.rdc",
+      "bytes": 9329841,
+      "sha256": "2726d0194bacf4f5edc3be09a7649cd235bd7e218c1bc46e2f45785290377f00"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/SSRCombined/Runtime.json",
+      "bytes": 940551,
+      "sha256": "7939f50fa2aa8a7e2e9553fa402b7446c132f87ad44272ad6ccc653e29e8e2b0"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/Tiny/Configuration.json",
+      "bytes": 3127,
+      "sha256": "08c1c6bc67b0600db2bb6dc3aea26f73913eb5a5a6d4d15245449a5dafb8a9d3"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/Tiny/Material_frame1.rdc",
+      "bytes": 3824141,
+      "sha256": "e77906ff56e414001408443592357801e44d64fd4902bced4d16d2f9443e837b"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/Tiny/Material_frame2.rdc",
+      "bytes": 3824488,
+      "sha256": "9a78cf9437d7f1830bc9fc135175f554adfc512e41898378a4c0b3ef376f5151"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/Tiny/Material_frame3.rdc",
+      "bytes": 6936440,
+      "sha256": "a5e7f27bb8501d6fca2fb0e928c55ece9450e0335e1052932ffe14ec5d636d3d"
+    },
+    {
+      "path": "build/engine_next/material-capture-r4-live/Tiny/Runtime.json",
+      "bytes": 760433,
+      "sha256": "d8c7a104e14dc0d3520a05fcdcc4993729fa4b7db7daa8d71525041515a2a1e4"
+    },
+    {
+      "path": "build/engine_next/material-capture-tools/CaptureBurst.dll",
+      "bytes": 100864,
+      "sha256": "ee1fffe092058b22e460f2d0fdf1c45c5a4b9da64325e54b85024e40cdc179b3"
+    },
+    {
+      "path": "build/engine_next/material-capture-tools/CheckMaterialReadback.py",
+      "bytes": 7696,
+      "sha256": "994a34263b9be22d30d7e459931cbafcbb4a4265bb238dd5fd618de96493ceec"
+    },
+    {
+      "path": "build/engine_next/material-capture-tools/CompareIblSamples.py",
+      "bytes": 4825,
+      "sha256": "3eac789b2aefdabac4e7cc71ab8a803eceb9d19c058187974443ef2834838672"
+    },
+    {
+      "path": "build/engine_next/material-capture-tools/ImportedCaptureHost.py",
+      "bytes": 15902,
+      "sha256": "995be6f667e99866f1f332ae5c42fb7cb4d355a97d2fe3b6cf7b899944599692"
+    },
+    {
+      "path": "build/engine_next/material-capture-tools/IndependentNumericalChecks.json",
+      "bytes": 51735,
+      "sha256": "69652f69ba71de6764bbf2458b861755c535a7c7d2c9a955c1630350de69aac9"
+    },
+    {
+      "path": "build/engine_next/material-capture-tools/InspectMaterials.py",
+      "bytes": 7334,
+      "sha256": "74ea588641e681fe50280c8a520c8d66c877554c531532c407f3a0eb56330212"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Comparison.json",
+      "bytes": 3009,
+      "sha256": "44da4319550c21285645899a9fce09bd156793ec2b2707f644cee2e9a44b39e8"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture/CaptureManifest.json",
+      "bytes": 8414,
+      "sha256": "bb2344aef433b27c24c699ff6f3b62c8822845eeaa00c90a60570690d02daa6b"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture/EnvironmentOnly/Capture.log",
+      "bytes": 1051,
+      "sha256": "0201cc812ae0e2c9e7cd13fe6d6a0a5dab72639ad153bd98bc51bbbb4fb95129"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/CaptureManifest.json",
+      "bytes": 9449,
+      "sha256": "484fd2febfaa903e345d272914cd5399805267e7ab54ab2d36776e4f5e94c3b5"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/CaptureRunner.py",
+      "bytes": 6835,
+      "sha256": "92c5e1ed2db2df18d8b0bfe52618069602943341c87f40fba549f8254f56eb4f"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/EnvironmentOnly/Configuration.json",
+      "bytes": 3080,
+      "sha256": "23488f3df4d501c9e846c8e5fe826b8ab10cb0d1188e66d24eb451e01a8b9eb7"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/EnvironmentOnly/Material_frame0.rdc",
+      "bytes": 3633316,
+      "sha256": "311088183d2c74d5ad60c2ceb603c86d4977b20a8014dfaf679f0cf52d6e5bc7"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/EnvironmentOnly/Material_frame1.rdc",
+      "bytes": 3820456,
+      "sha256": "3593d512233a294b4af48fd8b3421845f557bbd7822fb6c60a61f0bc1f4afc6a"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/EnvironmentOnly/Material_frame2.rdc",
+      "bytes": 3821183,
+      "sha256": "64ee2765a8b8d41f23cf64937823ccae5628f45c6c27bb57e40ea2c5ca8ebf48"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/EnvironmentOnly/Runtime.json",
+      "bytes": 320528,
+      "sha256": "b705f553e253a2bca62926d89fe325452ce9e4621cbdbb12f862427f0c7de576"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/DeferredLighting-842-FrameConstants.bin",
+      "bytes": 3120,
+      "sha256": "52e4f14b51e94fcabf9aa220b82eb4841b40fc6c45183ea4cc533fec9d71d2a4"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/DeferredLighting-rt0.bin",
+      "bytes": 2457600,
+      "sha256": "98a59ea1087ee7e2f1376b19c535f04d6e280958f84d7024b0fc5b06cda14893"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/DeferredLighting-t0.bin",
+      "bytes": 1228800,
+      "sha256": "34ff9974f2bc79bd68173eac67f26c4cadc1b33ba3d2688db7913837b25d78bd"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/DeferredLighting-t1.bin",
+      "bytes": 2457600,
+      "sha256": "f48efdb88e80a41f95d727c9a57869e5f2d9afb1de27c1e808a624fe9e3c1b39"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/DeferredLighting-t12.bin",
+      "bytes": 4915200,
+      "sha256": "6491010c52ad5252a4227f4f149ce4016af2579ed62682588dd47f0bbfa01ccb"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/DeferredLighting-t13.bin",
+      "bytes": 2457600,
+      "sha256": "cd96da7c3aabd1f398be41cf14933385f74b2849e78754dcb0fbe319aef3ff47"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/DeferredLighting-t2.bin",
+      "bytes": 1228800,
+      "sha256": "6c66a20288c4aab81eded4dfe587a54d1b5ba5db58afc042911817a58bed69b9"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/DeferredLighting-t3.bin",
+      "bytes": 2457600,
+      "sha256": "874312948d22abb0eb2db6e56e613d7c91acdc41db910c802622bf220e9b265c"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/DeferredLighting-t4.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/DeferredLighting-t6.bin",
+      "bytes": 16384,
+      "sha256": "7d48f764304847dcdcfca40e72596644372bfd118091eea13bf8ba1d69920754"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/DeferredLighting-t7.bin",
+      "bytes": 65536,
+      "sha256": "45898380278934bf364ded812406c4e797a6efeda84685fcb58274d4b587054a"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/DeferredLighting-t8.bin",
+      "bytes": 65536,
+      "sha256": "834cbb57f5b017ff009e7ee0690d874c6bc21ce84c4593f4394fc002f10b7a0d"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-773-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "e581a93566c2cb6bca646b33cbd8360e82b05eb25519d42a934410ac50c344ae"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-778-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "f1ee40038ca63209c29aff0d0a108f2ba486614cc801dd1c314d178fe3c6e91d"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-783-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "7cecd27877e553c0d018af566d2e96799c74c59b1e461e3d506cb66f2ab2a73d"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-788-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "185eb654f6129edbdf7d7ce3be35e25df61b0fbe63ac12d3896449b4ccf6e5e3"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-793-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "1718b0b49fe428c9781d6b20affb6be3f339ec1e66cb5f9df3a31084ce09fee4"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-798-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "0f313905530ccabb2c0c3c7087c856b2d90c42c50e739afefb2acca5bc8de614"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-803-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "1debdf5532f3be5ef424c0dbca51ca249baf8f218416af647df65d6042a0a6a6"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-808-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "4a689be02d6e388713a302a21c4f434648f9de46a978f22c522f4cd5775abbf0"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-813-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "162bdd3e5622755138475c398bba9683023d1be3a6b92b5dadf20202995fff30"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-depth.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-rt0.bin",
+      "bytes": 1228800,
+      "sha256": "34ff9974f2bc79bd68173eac67f26c4cadc1b33ba3d2688db7913837b25d78bd"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-rt1.bin",
+      "bytes": 2457600,
+      "sha256": "f48efdb88e80a41f95d727c9a57869e5f2d9afb1de27c1e808a624fe9e3c1b39"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-rt2.bin",
+      "bytes": 1228800,
+      "sha256": "6c66a20288c4aab81eded4dfe587a54d1b5ba5db58afc042911817a58bed69b9"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-rt3.bin",
+      "bytes": 2457600,
+      "sha256": "874312948d22abb0eb2db6e56e613d7c91acdc41db910c802622bf220e9b265c"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-rt4.bin",
+      "bytes": 4915200,
+      "sha256": "f824c1a8a1128713f17dd8d1190d70e6012b509606d986e7a6c81e40b628df2b"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-rt5.bin",
+      "bytes": 1228800,
+      "sha256": "d809c241182e2b9607f143ce432f25d320b4b420db4e354b2c28fffc073142ef"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-rt6.bin",
+      "bytes": 4915200,
+      "sha256": "6491010c52ad5252a4227f4f149ce4016af2579ed62682588dd47f0bbfa01ccb"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/GBuffer-rt7.bin",
+      "bytes": 2457600,
+      "sha256": "cd96da7c3aabd1f398be41cf14933385f74b2849e78754dcb0fbe319aef3ff47"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/Transparency-879-DrawConstants.bin",
+      "bytes": 288,
+      "sha256": "451787cc3e97c4af4c45cbbaf1d954310d9f9bd1de5d910fef57b78ab398b65a"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/Transparency-879-FrameConstants.bin",
+      "bytes": 3120,
+      "sha256": "52e4f14b51e94fcabf9aa220b82eb4841b40fc6c45183ea4cc533fec9d71d2a4"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/Transparency-depth.bin",
+      "bytes": 1228800,
+      "sha256": "ecf9a50c95d85d31da3a8a785ea620165f1a6d6f8620a2892b08102f5971fe3b"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/Transparency-rt0.bin",
+      "bytes": 2457600,
+      "sha256": "d0d6a831e78c914bce127e87247e9b5653bf095066e43151a376d26986385af2"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/EnvironmentOnly/Transparency-rt1.bin",
+      "bytes": 307200,
+      "sha256": "1648987c1cd910ddf5446a90e408a878a3270f320f5fb7c4479a0bdad88ec8e8"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/HighCapture2/ReadbackBindings/Inspection.json",
+      "bytes": 31577,
+      "sha256": "f2156c5123ae0182c1b30b5fd7196d1593312b05b65c2cf677104c339d7c359c"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/LowHigh.png",
+      "bytes": 99785,
+      "sha256": "89c102f667e751373f04a4f514fc864f47057b11c4e5ad16b958cfb9f1f35483"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/MaterialEnvironmentLighting.original.hlsli",
+      "bytes": 1971,
+      "sha256": "ccd16614521683f62b2bb21b926ce216911208febcaa6134b76f35a00c6d7661"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Preparation.json",
+      "bytes": 13104,
+      "sha256": "175c27c1d29ffb5b94d85c76fcc457bb70850a00c62517f086bc32794cc46131"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/BloomDown.cs.cso",
+      "bytes": 43620,
+      "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/BloomUp.cs.cso",
+      "bytes": 14672,
+      "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/Deferred.ps.cso",
+      "bytes": 9796,
+      "sha256": "fdb405648278367112be514bb79bbabc9c021a6d30fa3f511bbd8fc574ab4fd0"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/Deferred.vs.cso",
+      "bytes": 8272,
+      "sha256": "054ffc21eac34fe6b44738c0d70e3df72ca902910319d9583476b72a71e49225"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/Exposure.cs.cso",
+      "bytes": 5804,
+      "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/FixedMesh.cs.cso",
+      "bytes": 3300,
+      "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/FixedMesh.ps.cso",
+      "bytes": 4132,
+      "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/FixedMesh.vs.cso",
+      "bytes": 4316,
+      "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/Histogram.cs.cso",
+      "bytes": 5648,
+      "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/Lighting.ps.cso",
+      "bytes": 77096,
+      "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/Lighting.vs.cso",
+      "bytes": 3052,
+      "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/MaterialDeferred.ps.cso",
+      "bytes": 10172,
+      "sha256": "6959b36adafbb94b0de26726a718fecb900052d7a301b16502770d9b4e448bcb"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/MaterialLighting.ps.cso",
+      "bytes": 97056,
+      "sha256": "d882f8ba4fdf3b21075bb01c0f5fbd2640d90d6d0e8b897c2db3729a73d67e4b"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/MaterialReflectionLighting.ps.cso",
+      "bytes": 97540,
+      "sha256": "df73574f8636404517734ddd0bd6d8bd04b95b510f8d1fa3d55a52c0d65fa9b6"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/MaterialReflectionTrace.cs.cso",
+      "bytes": 58292,
+      "sha256": "792f2a28a1409213e42fc690bd33fe15e814600b9f6241de617a198b975d8829"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/MaterialTransparent.ps.cso",
+      "bytes": 116392,
+      "sha256": "401533e67ea623181537f9a0e3841a468ee3e74b1c1ca0dc4637e43742a1e7a1"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/ReflectionColor.cs.cso",
+      "bytes": 4928,
+      "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/ReflectionComposite.cs.cso",
+      "bytes": 5100,
+      "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/ReflectionLighting.ps.cso",
+      "bytes": 77608,
+      "sha256": "a5f56708b0e421294e3f50ad34eb65958eaeb3b53ec947c7b975b7513cb563a8"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/ReflectionRadiance.cs.cso",
+      "bytes": 4304,
+      "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/ReflectionTrace.cs.cso",
+      "bytes": 31880,
+      "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/Shadow.ps.cso",
+      "bytes": 4236,
+      "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/Shadow.vs.cso",
+      "bytes": 4648,
+      "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/Temporal.cs.cso",
+      "bytes": 19880,
+      "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/ToneMap.ps.cso",
+      "bytes": 6376,
+      "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/Transparent.ps.cso",
+      "bytes": 96584,
+      "sha256": "6aa1173db8669785ba5b057fb9bce0b1456c44760a7ed6a806bb5854a39d062f"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/Transparent.vs.cso",
+      "bytes": 7224,
+      "sha256": "8481c0885358157ced21fc22f30d74bf1feb598d768a9bf6b85f35ddf25a0c24"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/VolumeComposite.cs.cso",
+      "bytes": 19948,
+      "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/VolumeInject.cs.cso",
+      "bytes": 8836,
+      "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/VolumeIntegrate.cs.cso",
+      "bytes": 7508,
+      "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/VolumeLight.cs.cso",
+      "bytes": 66432,
+      "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Shaders/VolumeTemporal.cs.cso",
+      "bytes": 16000,
+      "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057"
+    },
+    {
+      "path": "build/engine_next/material-ibl-reference-r1/Source/MaterialEnvironmentLighting.hlsli",
+      "bytes": 1983,
+      "sha256": "5bf3204189ca0c4886976a45f2ec631f1744cc9d6926f2a010cd0adb260eccb1"
+    },
+    {
+      "path": "build/engine_next/materials-r3/VisualBuildReport.json",
+      "bytes": 2090487,
+      "sha256": "dd43064639ecd76126b2871981c72fbca64670246fd39c83ae2344a1d452ae58"
+    },
+    {
+      "path": "build/engine_next/materials-r3/next_visual_client.exe",
+      "bytes": 3200000,
+      "sha256": "e359de32155500bd5bb656f432da0de02648968cf99186162cc7d2697417459c"
+    },
+    {
+      "path": "build/engine_next/materials-r4/VisualBuildReport.json",
+      "bytes": 2091230,
+      "sha256": "5abfdfa9d596b3021f572d799ad83bf18430d7274be0a862fbe3a8d2ad1f7b45"
+    },
+    {
+      "path": "build/engine_next/materials-r4/next_visual_client.exe",
+      "bytes": 3200512,
+      "sha256": "52c518004268f31f583acd345b90f7a0e9fc0f7273430b5c15b7288673e2ca39"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Bloom.hlsl",
+      "bytes": 1096,
+      "sha256": "5c5e8a93bc2929a91cfb879a1bc1ea10632950a85e1cfdda2d4b4c0f21822eb9"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/BloomSampling.hlsli",
+      "bytes": 3442,
+      "sha256": "642c7a51a93eb163254fbde23d345dc6fe6143a3c96ea2930a09be42d4f00182"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Deferred.hlsl",
+      "bytes": 16660,
+      "sha256": "6d38ce614528fdbf8b1d88aaa46d72c8d5416ef079e517682f85aecf941e230d"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Exposure.hlsl",
+      "bytes": 2143,
+      "sha256": "2870a6fdd17504baa73131bd4fa976ede3ba685cc0c7df8dbe0b4963d60f7766"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/ExposureMath.hlsli",
+      "bytes": 5667,
+      "sha256": "ed72cb6d70f51b509dceb24a7ac13051287e712027bbc0263b138aa753b0f402"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/FixedMesh.hlsl",
+      "bytes": 1643,
+      "sha256": "82ee60e24fd25c6ea3d0d02fa077b899852350ae8c18d2a9523f48d1b516bc1f"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/MaterialEnvironment.hlsli",
+      "bytes": 7294,
+      "sha256": "b790be5ee54da820dd9e69b409d46fc850dbb4aef6161b4e1214d1c4cae72854"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/MaterialEnvironmentLighting.hlsli",
+      "bytes": 1971,
+      "sha256": "ccd16614521683f62b2bb21b926ce216911208febcaa6134b76f35a00c6d7661"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/MaterialLobes.hlsli",
+      "bytes": 9295,
+      "sha256": "0423b27e9d0b199dc5871ed5ef18e6d578595c45388635f37ef9530a1d838c92"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Reflection.hlsl",
+      "bytes": 10665,
+      "sha256": "c033a5a175af29bdd54a944a2c706d9959d5e39eb9ba96b1fd6c0a3474c0453a"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/ReflectionSampling.hlsli",
+      "bytes": 5083,
+      "sha256": "494fd0332d6b07a2d1764fbf49b8b9ba32e97699bae86edccd1a85adc0889ab0"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/ReflectionTrace.hlsli",
+      "bytes": 10469,
+      "sha256": "a0a9465d507d2cb09121454b083ba4cef96c6193fb1d26a5612d6197de845a8d"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Shadow.hlsl",
+      "bytes": 1083,
+      "sha256": "1347aab83aa23c69df4853a9671c9f72123895f1dcff920b57fad9befe782ddc"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/ShadowSampling.hlsli",
+      "bytes": 11040,
+      "sha256": "1e1a731fee2e9d821bc752e7a4db76bfb304f643d575125fdb5b2e9a1b221387"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/TemporalAA.hlsl",
+      "bytes": 5923,
+      "sha256": "b4f6b723a392dfd035db202c1553e6aa642fd507100b5e24297f2717cae9b69c"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/TemporalSampling.hlsli",
+      "bytes": 4680,
+      "sha256": "4c7115f3ec45a44d29a4e1bc8fb1b031df1a6f529fc7df393464cdbe670d5b87"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Transparent.hlsl",
+      "bytes": 13156,
+      "sha256": "efc0f2c643c03e49215381e9679e5ba09a2c7ff6b75cbcf1cb35f32deef2e417"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/TransparentMath.hlsli",
+      "bytes": 1654,
+      "sha256": "e43b410cc75a4831eecdd013eb68bafc67c278b439945a0eac365be2659584da"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Volume.hlsl",
+      "bytes": 7951,
+      "sha256": "f50ea13d6c965a031acbbbad1fb5d6646ee1b8308a8dae54177c9b1526d4521d"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeColor.hlsli",
+      "bytes": 558,
+      "sha256": "8dee5693da669d587401ce905fdaa8c190f6658e43a92ca4e8d4eb3760301690"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeCommon.hlsli",
+      "bytes": 2050,
+      "sha256": "0dc5fa434aa95297b4f881b46c94cd4640a689b58b74267a1bc7369560e8a0c2"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeComposite.hlsl",
+      "bytes": 1076,
+      "sha256": "c00fd02ac27c23bab733c8a4f5a190ed87b0cad2ffe79e5a608d886680f1a72c"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeMath.hlsli",
+      "bytes": 7085,
+      "sha256": "aa553436af96a070153e7a2c91ea970cb40c6d26001d5f4cedb20a95eaae6030"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeSampling.hlsli",
+      "bytes": 3223,
+      "sha256": "b927e93d2daf3350f40d88ff2e18230f848ce7cebd6b5dca492256d642993e7b"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeTemporal.hlsl",
+      "bytes": 4327,
+      "sha256": "1f3bc55cbc256e69fcc1d58d3103ea008fa2cccc28f33809d83f966ed3c69f42"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeTemporalMath.hlsli",
+      "bytes": 1776,
+      "sha256": "15fbd9a9780f43e97629e6c420cc6e1d20d569e787b80a5b7065d5375043281b"
+    }
+  ]
+}

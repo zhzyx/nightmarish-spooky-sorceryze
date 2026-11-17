@@ -59,7 +59,7 @@ bool AddPipelinePass(FrameGraph &stGraph, RenderPipeline &stPipeline, const Pass
 } // namespace
 
 bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews, bool bTemporal,
-						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects)
+						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions)
 {
 	if (nLocalShadowViews > 28)
 	{
@@ -133,6 +133,16 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 			stGbuffer.arrAccesses.push_back({ nResource, ResourceState::RenderTarget, true });
 			stLighting.arrAccesses.push_back({ nResource, ResourceState::ShaderRead, false });
 		}
+		if (bMaterialExtensions)
+		{
+			stPipeline.arrMaterialBuffers[0] = stGraph.AddResource({ "MaterialLobes", ResourceState::Common, false });
+			stPipeline.arrMaterialBuffers[1] = stGraph.AddResource({ "MaterialTangent", ResourceState::Common, false });
+			for (ResourceId nResource : stPipeline.arrMaterialBuffers)
+			{
+				stGbuffer.arrAccesses.push_back({ nResource, ResourceState::RenderTarget, true });
+				stLighting.arrAccesses.push_back({ nResource, ResourceState::ShaderRead, false });
+			}
+		}
 		stPipeline.nMotion = stGraph.AddResource({ "Motion", ResourceState::Common, false });
 		stPipeline.nObjectId = stGraph.AddResource({ "ObjectId", ResourceState::Common, false });
 		stGbuffer.arrAccesses.push_back({ stPipeline.nMotion, ResourceState::RenderTarget, true });
@@ -196,6 +206,17 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 			for (ResourceId nMip : stPipeline.arrReflectionMips)
 			{
 				stTrace.arrAccesses.push_back({ nMip, ResourceState::NonPixelShaderRead, false });
+			}
+			if (bMaterialExtensions)
+			{
+				for (ResourceId nResource : stPipeline.arrMaterialBuffers)
+				{
+					stTrace.arrAccesses.push_back({ nResource, ResourceState::NonPixelShaderRead, false });
+				}
+				if (bExposure)
+				{
+					stTrace.arrAccesses.push_back({ stPipeline.nExposureRead, ResourceState::NonPixelShaderRead, false });
+				}
 			}
 			if (!AddPipelinePass(stGraph, stPipeline, stTrace, PassWork::ReflectionTrace, out_stDiagnostic) ||
 				!AddPipelinePass(stGraph, stPipeline,
@@ -469,6 +490,13 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		for (ResourceId nResource : stPipeline.arrGbuffer)
 		{
 			stPresent.arrAccesses.push_back({ nResource, ResourceState::Common, false });
+		}
+		if (bMaterialExtensions)
+		{
+			for (ResourceId nResource : stPipeline.arrMaterialBuffers)
+			{
+				stPresent.arrAccesses.push_back({ nResource, ResourceState::Common, false });
+			}
 		}
 		stPresent.arrAccesses.push_back({ stPipeline.nMotion, ResourceState::Common, false });
 		stPresent.arrAccesses.push_back({ stPipeline.nObjectId, ResourceState::Common, false });
