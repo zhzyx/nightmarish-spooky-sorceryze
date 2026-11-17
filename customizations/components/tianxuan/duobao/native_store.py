@@ -86,6 +86,54 @@ CREATE TABLE IF NOT EXISTS native_compositions (
 """
 
 
+def prepare_changes(changes: list[dict[str, Any]]) -> tuple[dict[str, dict[str, Any]], dict[str, bytes]]:
+    """Pure canonical validation shared by immediate submission and intake."""
+    if not isinstance(changes, list) or not 1 <= len(changes) <= 128:
+        raise NativeStoreError("Expected 1..128 module changes")
+    prepared: dict[str, dict[str, Any]] = {}
+    blobs: dict[str, bytes] = {}
+    for change in changes:
+        if not isinstance(change, dict) or set(change) - {"module", "base", "reads", "edits", "dependencies"}:
+            raise NativeStoreError("Invalid change fields")
+        if not {"module", "base", "reads", "edits"} <= set(change):
+            raise NativeStoreError("Change is missing explicit base/read/write inputs")
+        module = _identifier(change["module"])
+        if module in prepared:
+            raise NativeStoreError("Repeated module in batch")
+        base = change["base"]
+        if base is not None:
+            _revision_id(base)
+        reads = change["reads"]
+        if reads is not None and not isinstance(reads, list):
+            raise NativeStoreError("Reads must be a list or null (unknown)")
+        reads = None if reads is None else sorted({_object_name(name) for name in reads})
+        if not isinstance(change["edits"], dict):
+            raise NativeStoreError("Edits must be a mapping")
+        edits: dict[str, str | None] = {}
+        for name, data in change["edits"].items():
+            _object_name(name)
+            if data is not None and not isinstance(data, bytes):
+                raise NativeStoreError("Object content must be bytes or null")
+            digest = None if data is None else _digest(data)
+            edits[name] = digest
+            if digest is not None and data is not None:
+                blobs[digest] = data
+        item = {"module": module, "base": base, "reads": reads, "edits": edits}
+        if "dependencies" in change:
+            deps = change["dependencies"]
+            if not isinstance(deps, dict):
+                raise NativeStoreError("Dependencies must be a mapping")
+            for name, revision in deps.items():
+                _identifier(name)
+                if name == module:
+                    raise NativeStoreError("Self dependency")
+                if revision != "@batch":
+                    _revision_id(revision)
+            item["dependencies"] = dict(deps)
+        prepared[module] = item
+    return prepared, blobs
+
+
 class NativeStore:
     def __init__(self, database: str | Path):
         self.database = Path(database)
@@ -172,49 +220,7 @@ class NativeStore:
         _identifier(tenant)
         _identifier(actor)
         _identifier(request_key)
-        if not isinstance(changes, list) or not 1 <= len(changes) <= 128:
-            raise NativeStoreError("Expected 1..128 module changes")
-        prepared: dict[str, dict[str, Any]] = {}
-        blobs: dict[str, bytes] = {}
-        for change in changes:
-            if not isinstance(change, dict) or set(change) - {"module", "base", "reads", "edits", "dependencies"}:
-                raise NativeStoreError("Invalid change fields")
-            if not {"module", "base", "reads", "edits"} <= set(change):
-                raise NativeStoreError("Change is missing explicit base/read/write inputs")
-            module = _identifier(change["module"])
-            if module in prepared:
-                raise NativeStoreError("Repeated module in batch")
-            base = change["base"]
-            if base is not None:
-                _revision_id(base)
-            reads = change["reads"]
-            if reads is not None and not isinstance(reads, list):
-                raise NativeStoreError("Reads must be a list or null (unknown)")
-            reads = None if reads is None else sorted({_object_name(name) for name in reads})
-            if not isinstance(change["edits"], dict):
-                raise NativeStoreError("Edits must be a mapping")
-            edits: dict[str, str | None] = {}
-            for name, data in change["edits"].items():
-                _object_name(name)
-                if data is not None and not isinstance(data, bytes):
-                    raise NativeStoreError("Object content must be bytes or null")
-                digest = None if data is None else _digest(data)
-                edits[name] = digest
-                if digest is not None and data is not None:
-                    blobs[digest] = data
-            item = {"module": module, "base": base, "reads": reads, "edits": edits}
-            if "dependencies" in change:
-                deps = change["dependencies"]
-                if not isinstance(deps, dict):
-                    raise NativeStoreError("Dependencies must be a mapping")
-                for name, revision in deps.items():
-                    _identifier(name)
-                    if name == module:
-                        raise NativeStoreError("Self dependency")
-                    if revision != "@batch":
-                        _revision_id(revision)
-                item["dependencies"] = dict(deps)
-            prepared[module] = item
+        prepared, blobs = prepare_changes(changes)
         request_digest = _digest(_json(prepared).encode("utf-8"))
         with self._connection(write=True) as db:
             prior = db.execute(

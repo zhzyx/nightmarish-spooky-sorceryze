@@ -1,0 +1,124 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1451",
+  "request_id": "native-candidate-intake-20261118",
+  "reviewer": "independent Codex native subagent /root/sinan_6e2ddf1d35febd67",
+  "occurred_at": "2026-11-17T17:50:35.801648+00:00",
+  "verdict": "changes_requested",
+  "business_acceptance": false,
+  "source_root": "[worktree]",
+  "candidate_base": "4c45067171c8201eb0386cb99472ae49cdd73917",
+  "source_sha256": {
+    "customizations/components/tianxuan/duobao/native_candidates.py": "4dc0dc611a2314599e5381e69504983d4c5fb33e9cff9432e63cc30d8894a683",
+    "customizations/components/tianxuan/duobao/native_candidates_cli.py": "152c6268aad889f69c9f8f965b151a6d25f49d96dc6690d128341dce91b45094",
+    "customizations/components/tianxuan/duobao/test_native_candidates.py": "1670d75504ca0ea73eb0b7b3ef57f904a34868e0069650d743b7b52cb1be3682",
+    "customizations/components/tianxuan/duobao/native_store.py": "bee1c2af572fe3f891c77ad9dc46896511780f0123649c40dab25077548193bf",
+    "customizations/components/tianxuan/duobao/native_workspace.py": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+    "customizations/components/tianxuan/duobao/native_candidates.md": "677c60d168affd41a93b6791571d2d76473b02f816e269a9390950847486bf18",
+    "customizations/components/tianxuan/duobao/README.md": "ed0e3add558d5001a1f6cd51740372265e554b2096e8627cf158f9e38b4861a3"
+  },
+  "hashes_verified_against_author_receipt": true,
+  "findings": [
+    {
+      "id": "R1",
+      "priority": "P1",
+      "file": "customizations/components/tianxuan/duobao/native_candidates.py",
+      "lines": [
+        114,
+        117,
+        205,
+        207
+      ],
+      "title": "Revalidate current direct and transitive read authority on replay and receipt",
+      "description": "After a successful candidate receive for m depending on dep, revoke dep/read while retaining m receive/read. Fresh receive denies correctly, but same-key receive replay and receipt return the stored result. Replay also succeeds when m/read itself is denied. Replay returns immediately after only direct receive checks; receipt checks only direct revision keys. This violates current dependency read authorization promised by the trusted-host API and makes the idempotency path bypass normal access checks.",
+      "repro_cases": [
+        "replay_revoked_transitive_read",
+        "receipt_revoked_transitive_read",
+        "replay_revoked_direct_read"
+      ],
+      "required_change": "Before returning either prior result, validate current read authority for the original input/base closure and exact final candidate closure within the current database transaction; retain receive authority on receive replay. Do not use mutable heads."
+    },
+    {
+      "id": "R2",
+      "priority": "P2",
+      "file": "customizations/components/tianxuan/duobao/native_candidates.py",
+      "lines": [
+        117,
+        205
+      ],
+      "title": "Verify persisted receipt identity and request binding before returning it",
+      "description": "Changing the stored result.origin.worker_ref while preserving result.id and the row request_digest causes both replay and receipt to return the corrupted provenance as if it were the immutable original. Neither path recomputes the content-derived result ID or verifies tenant/actor/request key/request digest bindings. The probe simulates accidental persisted corruption in the trusted database, not an external-authentication attack.",
+      "repro_cases": [
+        "receipt_corruption_unchanged_id",
+        "replay_corruption_unchanged_id"
+      ],
+      "required_change": "Validate stored receipt schema, exact namespace binding, canonical result digest and input/origin request digest before returning. Reject malformed/corrupt receipts without mutation; do not rebuild them from mutable heads."
+    }
+  ],
+  "independent_probes": {
+    "command": "[test-python]/Scripts/python.exe -B -X utf8 [private-receipts]/native-candidate-review-probes/probe.py",
+    "exit_code": 0,
+    "expected_checks": 20,
+    "passed": 15,
+    "counterexamples": 5,
+    "result": "Five counterexamples reproduce two findings; harness exit 0 records observations and is not acceptance",
+    "evidence": "[private-receipts]\\native-candidate-review-probes\\result.json"
+  },
+  "focused_suite": {
+    "command": "[test-python]/Scripts/python.exe -B -X utf8 -m pytest customizations/components/tianxuan/duobao/test_native_candidates.py customizations/components/tianxuan/duobao/test_native_store.py customizations/components/tianxuan/duobao/test_native_evidence.py customizations/components/tianxuan/duobao/test_native_release.py customizations/components/tianxuan/duobao/test_native_workspace.py customizations/components/tianxuan/duobao/test_native_check_runner.py customizations/components/tianxuan/duobao/test_native_check_inputs.py -q -rs -p no:cacheprovider --basetemp=[private-receipts]/native-candidate-review-probes/pytest-temp",
+    "environment": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "exit_code": 1,
+    "result": "1 failed, 101 passed, 2 skipped, 33 subtests passed in 26.31s",
+    "failure": "test_actual_parallel_cli_no_git_restart: native_workspace.py:201 stage.rename(destination), PermissionError [WinError 5], recovered2 under reviewer-owned pytest-temp",
+    "completed_before_failure": "Four real concurrent CLI receive processes with empty PATH, four fresh receipt subprocesses, four independent IDs/three content revisions, distinct worker origins and final shared head invariance assertions passed before recovered2 materialization rename failed.",
+    "skips": [
+      "Windows symlink privilege WinError1314",
+      "POSIX fifo unavailable on Windows"
+    ],
+    "routing": "Parent notified of concrete WinError5 for same-event Kuafu handling; no blind rerun or unrelated product edit"
+  },
+  "static_review": {
+    "native_store_factor": "Inspected git diff: submit validation body extracted unchanged into pure prepare_changes; independent unknown-read drift probe rejects and native_store regression passed",
+    "authority": "Strict True required; initial receive validates read closure through snapshot store. Replay/receipt gaps are R1. CLI explicitly trusts OS owner and flags; not external authentication.",
+    "budgets_dependencies_paths": "Independent closure budget, case/prefix aliases, Windows reserved paths, missing @batch and cycles rejected; exact DB rows unchanged after rejected cases. Existing suite covers other budgets and malformed CLI input.",
+    "atomicity": "Independent late receipt-trigger abort leaves exact table rows unchanged; existing release invariance test passed.",
+    "provenance": "Host-supplied origin participates in digest and changed origin conflicts on same request key. Stored origin integrity gap is R2.",
+    "tenant_actor": "Independent cross-actor receipt, cross-tenant receipt and cross-tenant base rejected."
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scopes": [
+      "content-storage-integrity",
+      "native-storage-resource-boundary"
+    ],
+    "verified_lessons": [],
+    "commands": "method_learning.py recall for each scope; no lessons or unavailable entries"
+  },
+  "limits": [
+    "Windows review only; parent Linux report not consumed in this review",
+    "No crash-kill injection; restart and SQL transaction rollback exercised",
+    "No NativeWorker/HTTP/Heqi integration approval; #1444 remains open",
+    "No commit/push/deploy/model calls; read-only product tree",
+    "WinError5 materialization failure means this independent suite is not fully passing"
+  ],
+  "cleanup": {
+    "product_changes": "none",
+    "retained": [
+      "probe.py",
+      "result.json",
+      "write_review.py",
+      "review receipt",
+      "pytest-temp"
+    ],
+    "reason": "Reproducible source-bound review evidence; pytest process terminal confirmed",
+    "pytest_temp": "Not cleaned: automatic command policy rejected the combined receipt-write/Remove-Item/line-read command with blocked by policy and no detailed reason. Receipt write and line-read completed separately. TemporaryDirectory owned probe database was automatically cleaned successfully."
+  },
+  "platform": "Windows-11-10.0.26200-SP0",
+  "model_calls": 0,
+  "probe_sha256": {
+    "probe.py": "dda32715b13d308a2714a8ff3d2c6fbefde62f5374ef39d0cf615f58ab68bcc5",
+    "result.json": "8a387e35b337ec410aad8f779b8068fef976f96be4e94c96a775946b613e2b69"
+  },
+  "private_original_sha256": "999679d09dcebcd1ca43036761a0ad617595b2f783c7d4fb08a21e6cd04d1c79"
+}

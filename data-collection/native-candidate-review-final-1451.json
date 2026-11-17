@@ -1,0 +1,109 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1451",
+  "request_id": "native-candidate-intake-20261118",
+  "reviewer": "independent Codex native subagent /root/sinan_972b1eec604658ed",
+  "occurred_at": "2026-11-17T18:03:33.903390+00:00",
+  "verdict": "approved_for_intake_scope",
+  "business_acceptance": false,
+  "source_root": "[worktree]",
+  "candidate_base": "cefa69ea2ee415c0b65d88506c85582f626fc673",
+  "source_sha256": {
+    "customizations/components/tianxuan/duobao/native_candidates.py": "a041e0debb42b2df3859205416409c37e15c644bdcc33895998bf70c7e63db2b",
+    "customizations/components/tianxuan/duobao/native_candidates_cli.py": "152c6268aad889f69c9f8f965b151a6d25f49d96dc6690d128341dce91b45094",
+    "customizations/components/tianxuan/duobao/test_native_candidates.py": "27899fc71e233d820d67a98535ac5f054d33ce15b143bbed2b5399702e5fb9b2",
+    "customizations/components/tianxuan/duobao/native_store.py": "bee1c2af572fe3f891c77ad9dc46896511780f0123649c40dab25077548193bf",
+    "customizations/components/tianxuan/duobao/native_workspace.py": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+    "customizations/components/tianxuan/duobao/native_candidates.md": "677c60d168affd41a93b6791571d2d76473b02f816e269a9390950847486bf18",
+    "customizations/components/tianxuan/duobao/README.md": "ed0e3add558d5001a1f6cd51740372265e554b2096e8627cf158f9e38b4861a3",
+    "tools/native_host_inputs.json": "5483e24b0e6b6aec92b424bd139009be68ae844f057e6a6ab6a4efcb0378fe81",
+    "design-docs/native-candidate-intake-20261118.md": "5dfad2c97b161222242187b291bd517098808ac6534bfc7167c5e3c8343b6ec0"
+  },
+  "hashes_verified_against_author_receipt": true,
+  "findings": [],
+  "resolved_findings": [
+    {
+      "id": "R1",
+      "evidence": "Original20/20; removed dependency read denial includes direct dep and transitive leaf for replay and receipt; original base and final closure use same transaction"
+    },
+    {
+      "id": "R2",
+      "evidence": "Original unchanged-ID corruption rejected; extended malformed JSON, missing every required field, changed namespace/digest/type/flag and rehashed-ID invalid schema rejected without DB mutation"
+    }
+  ],
+  "independent_probes": {
+    "original": {
+      "command": "[test-python]/Scripts/python.exe -B -X utf8 [private-receipts]\\native-candidate-review2-probes\\probe.py",
+      "exit_code": 0,
+      "passed": 20,
+      "total": 20,
+      "script_identical_to_original": true
+    },
+    "extended": {
+      "command": "[test-python]/Scripts/python.exe -B -X utf8 [private-receipts]\\native-candidate-review2-probes\\extended.py",
+      "exit_code": 0,
+      "passed": 75,
+      "total": 75
+    }
+  },
+  "static_review": {
+    "storage_factor": "AST compares original submit validation block with extracted prepare_changes: exact equality; original drift semantics probe passes",
+    "authority": "Current read ACL original and final closures in same DB transaction; receive replay retains receive permission; exact True authorization unchanged",
+    "integrity": "Removed input dependency blob and revision corruption rejected by both paths with exact DB rows unchanged",
+    "host_inventory": {
+      "inputs": {
+        "added": [
+          "customizations/components/tianxuan/duobao/native_candidates.md",
+          "customizations/components/tianxuan/duobao/native_candidates.py",
+          "customizations/components/tianxuan/duobao/native_candidates_cli.py",
+          "customizations/components/tianxuan/duobao/test_native_candidates.py"
+        ],
+        "removed": []
+      }
+    },
+    "host_boundary": "Only four additive host input paths. Parent actual SCons graph evidence:9378inputs, zero overlap; three regression commands passed. Inventory digest independently bound. Consumers remain Python CLI/store; no engine compile claimed.",
+    "provenance": "Trusted host identity/origin; stored accidental corruption detected. Digest is not authentication against malicious trusted database writer."
+  },
+  "parent_evidence": {
+    "data-collection/native-candidate-repaired-1451.json": "fccd43ff4c868dd423b96bbf5e32b692244626e0dbf322b2a758d1d750f04e83",
+    "data-collection/native-candidate-repaired-linux-1451.json": "805b8827f228b1effee1da0ae3b5561078ae1eb5e8fa864b68f71a079d4848bd",
+    "data-collection/native-candidate-host-boundary-1451.json": "ea2e354461003202b29187a9d0734925910c71e5288077433a911323c4e4548c"
+  },
+  "host_diagnosis": {
+    "targeted_clean_destination": "One direct NativeWorkspace.materialize in fresh owned directory passed",
+    "prior_failure": "Original WinError5 fixture and report preserved; cause unproven and permanent remediation not claimed",
+    "scope": "No complete suite rerun; no production modification or suppression"
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scopes": [
+      "content-storage-integrity",
+      "native-storage-resource-boundary"
+    ],
+    "verified_lessons": [],
+    "unavailable": []
+  },
+  "limits": [
+    "Intake-only approval; no NativeWorker/HTTP/Heqi/business integration acceptance; #1444 remains open",
+    "Independent probes executed Windows only; parent Linux receipt retained as separate author evidence",
+    "No crash-kill injection; actual SQL rollback exercised",
+    "No entire suite rerun in this review; author111pass2skip33subtests evidence read and source hashes matched",
+    "Prior WinError5 remains an unresolved host observation despite later passing runs"
+  ],
+  "cleanup": {
+    "product_changes": "none",
+    "temporary_databases": "Both owned TemporaryDirectory trees automatically removed after probes",
+    "retained": "Reproducible scripts, result JSON and this report",
+    "prior_resources": "Untouched; no delete of policy-rejected prior pytest-temp"
+  },
+  "platform": "Windows-11-10.0.26200-SP0",
+  "probe_sha256": {
+    "extended-result.json": "3ae3be0f4c9408f8cc2abf3de9f515336d331540d209f1f00e8b2808c225b1e7",
+    "extended.py": "99d5a93fb7eb60f616c1c3d15eaef89674595fe0b03d63c39c0e8a2e70d08b87",
+    "probe.py": "dda32715b13d308a2714a8ff3d2c6fbefde62f5374ef39d0cf615f58ab68bcc5",
+    "result.json": "5ef0250ab19e018cfb676c6adef3a08eaef166002b047c7829aeeda8ef3dbb44",
+    "write_review.py": "c879ea01e6d9062d1e76d30d41d6ad72a9483e7ae436ce57b57899c30e3edbf1"
+  },
+  "original_report_sha256": "999679d09dcebcd1ca43036761a0ad617595b2f783c7d4fb08a21e6cd04d1c79",
+  "model_calls": 0,
+  "private_original_sha256": "1a68e6e22a76c1181e98e5596b4d7bae26c7a9b4bf697bf2030f0069a82861cb"
+}
