@@ -1,0 +1,92 @@
+{
+  "format": "duobao-independent-release-review/1",
+  "issue": 1409,
+  "reviewer": "native-subagent:/root/sinan_2509199163162f2b",
+  "role": "independent_read_only_reviewer",
+  "reviewed_at": "2026-11-17T08:57:38.804440+00:00",
+  "source_root": "D:\\GongGong-work\\duobao-native-release-20261117",
+  "source_head": "c472447b739d5530e832c2089cef8652b751f998",
+  "frozen_bindings": [
+    {
+      "path": "customizations/components/tianxuan/duobao/native_release.py",
+      "sha256": "1b0d51f6997fc5226dfc61bedc44f76fe336bc64a68686f47e01b48ee5fb98f8",
+      "git_blob": "1f508962cf22644995856cb2a50a5e4f1c5c28f9"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/test_native_release.py",
+      "sha256": "dd22e2ef946264ae23a7ced27c0b2205911f1a8237ca86d0cf75705aaace531c",
+      "git_blob": "7abd2ec52beb595620a17cdd0d68f764b2202790"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_release.md",
+      "sha256": "6ffd0dbf8afd527fab485a73096eb737506e5912c804b29882fc78a707aff5aa",
+      "git_blob": "f7d06c28f14cc98ecff6ed175eaf07c71836fecf"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_store.py",
+      "sha256": "2e8c149703a81ff50d0f2c4c0894fea427745172005126dbefc9cf7f2f56129a",
+      "git_blob": "985a31e14bf3d1a15fc20bccac419250321f34ad"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_evidence.py",
+      "sha256": "779a6f9162874c2f2a24349c3dca2193cad31fec04c950749f851fcaf9f3216f",
+      "git_blob": "9586dbf0dd4e830d0ddfe0217fea056ee2ad3e87"
+    },
+    {
+      "path": "design-docs/duobao-native-release-20261117.md",
+      "sha256": "4b01fcf7cf2ee3b159f0051485ce34831295041f4e3c510c04a6bfcc68394035",
+      "git_blob": "952b1e499eb0bf4a9ab6ae4b5ccf2f0bc0872ca9"
+    }
+  ],
+  "frozen_inputs_match": true,
+  "verdict": "pass_with_documented_integration_limits",
+  "findings": [],
+  "verification": [
+    {
+      "command": "py -B -X utf8 -m unittest discover -s customizations/components/tianxuan/duobao -p test_native*.py -v",
+      "exit_code": 0,
+      "tests": 54,
+      "passed": 54,
+      "scope": "Independent rerun: 20 release, 16 evidence, 18 store tests"
+    },
+    {
+      "command": "py -B -X utf8 - (in-memory independent unittest checks)",
+      "tests": 6,
+      "passed": 6,
+      "test_names": [
+        "test_replay_still_requires_publisher_authority",
+        "test_request_pointer_corruption",
+        "test_transactional_reviewer_revocation_wins",
+        "test_reader_snapshot_during_review_revocation",
+        "test_wrong_product_event_rejected_by_event_reader",
+        "test_scoped_authority_does_not_accept_generic_membership"
+      ],
+      "transcript": "test_replay_still_requires_publisher_authority (__main__.IndependentChecks.test_replay_still_requires_publisher_authority) ... ok\ntest_request_pointer_corruption (__main__.IndependentChecks.test_request_pointer_corruption) ... ok\ntest_transactional_reviewer_revocation_wins (__main__.IndependentChecks.test_transactional_reviewer_revocation_wins) ... ok\ntest_reader_snapshot_during_review_revocation (__main__.IndependentChecks.test_reader_snapshot_during_review_revocation) ... ok\ntest_wrong_product_event_rejected_by_event_reader (__main__.IndependentChecks.test_wrong_product_event_rejected_by_event_reader) ... ok\ntest_scoped_authority_does_not_accept_generic_membership (__main__.IndependentChecks.test_scoped_authority_does_not_accept_generic_membership) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.678s\n\nOK\n"
+    }
+  ],
+  "assessment": [
+    "Trusted installed policy pins required check IDs, scopes, versions, execution contexts, full-composition coverage and exact evidence IDs. Current policy drift rejects the review.",
+    "Contribution resolver is mandatory; empty/unknown sources and reviewer contribution reject. Verified author set is retained and rechecked on publication.",
+    "Publication, authorization, evidence, revocation and per-channel compare-and-swap share BEGIN IMMEDIATE and a single evidence adapter connection. Transactional authority revocation committed first rejects publication.",
+    "Selected and events use query-only WAL snapshots. Independent blocked-reader test allowed review revocation to commit; prior snapshot returned prior valid selection, subsequent selected rejected. This is documented snapshot semantics, not a consumption lease.",
+    "Historical request replay still requires current operation authority and does not reselect old content; corrupted replay references reject. Rollback uses a valid review and expected current channel receipt.",
+    "Manifest, pointer, request and event rollback together on event failure. Tenant/product predicates and digest checks cover accidental corruption under trusted database assumptions.",
+    "No actionable defect reproduced in the exact frozen candidate."
+  ],
+  "integration_limits": [
+    "Trusted-host local Python library only; actor authentication, verified complete contributor provenance, remote identity integration and credential/database protection remain host responsibilities.",
+    "Mutable authorization/provenance must use the provided database transaction. Installed Python policy objects/callbacks must not mutate concurrently; no atomic claim is made for external authorization services.",
+    "No deployment, service installation, consumer acknowledgement, production identity wiring, rendering acceptance, runtime throughput or token-use result is established.",
+    "SQLite serializes writes; WAL reader concurrency does not establish multi-writer scaling.",
+    "Historical events and replay receipts are not current approval. Consumers must read selected; validity is only at its read snapshot.",
+    "Hashes detect corruption, not a malicious administrator able to rewrite the trusted database and recompute digests."
+  ],
+  "method_recall": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 16,
+    "applied": "Compared all frozen source byte hashes before independent checks and again at receipt generation; added Git blob bindings."
+  },
+  "cleanup": "Temporary database fixtures removed by unittest addCleanup; no source edits, commits or publication performed.",
+  "independent_repro_source": "class IndependentChecks(ReleaseTests):\n def test_replay_still_requires_publisher_authority(self):\n  self.publish()\n  with self.store._connection(write=True) as db:\n   db.execute(\"DELETE FROM authority WHERE tenant='org' AND actor='admin'\")\n  with self.assertRaises(NativeStoreError): self.publish()\n def test_request_pointer_corruption(self):\n  self.publish()\n  second=self.publish('other','beta')\n  with self.store._connection(write=True) as db:\n   db.execute(\"UPDATE native_release_requests SET record=? WHERE tenant='org' AND actor='admin' AND request_key='select'\",(second['id'],))\n  with self.assertRaises(NativeStoreError): self.publish()\n def test_transactional_reviewer_revocation_wins(self):\n  entered=threading.Event(); proceed=threading.Event(); started=threading.Event()\n  def revoke():\n   with self.store._connection(write=True) as db:\n    db.execute(\"DELETE FROM authority WHERE tenant='org' AND actor='reviewer'\")\n    entered.set()\n    if not proceed.wait(5): raise RuntimeError('timeout')\n  def publish():\n   started.set()\n   return self.publish()\n  with ThreadPoolExecutor(2) as pool:\n   rev=pool.submit(revoke)\n   self.assertTrue(entered.wait(5))\n   future=pool.submit(publish)\n   try: self.assertTrue(started.wait(5))\n   finally: proceed.set()\n   rev.result(timeout=5)\n   with self.assertRaises(NativeStoreError): future.result(timeout=5)\n  self.assertIsNone(self.selected())\n def test_reader_snapshot_during_review_revocation(self):\n  first=self.publish(); entered=threading.Event(); proceed=threading.Event()\n  original=self.release.authorize\n  def auth(db,t,a,s,op):\n   allowed=original(db,t,a,s,op)\n   if op=='read':\n    entered.set()\n    if not proceed.wait(5): raise RuntimeError('timeout')\n   return allowed\n  self.release.authorize=auth\n  with ThreadPoolExecutor(2) as pool:\n   reader=pool.submit(self.selected)\n   try:\n    self.assertTrue(entered.wait(5))\n    rev=pool.submit(self.release.revoke,'org','admin','independent-revoke',self.review,'withdraw')\n    rev.result(timeout=2)\n   finally: proceed.set()\n   self.assertEqual(reader.result(timeout=5),first)\n  self.release.authorize=original\n  with self.assertRaises(NativeStoreError): self.selected()\n def test_wrong_product_event_rejected_by_event_reader(self):\n  self.publish()\n  with self.store._connection(write=True) as db:\n   db.execute(\"UPDATE native_release_events SET product='other-product'\")\n  with self.assertRaises(NativeStoreError):\n   self.release.events('org','admin','other-product')\n def test_scoped_authority_does_not_accept_generic_membership(self):\n  original=self.release.authorize\n  def auth(db,t,a,s,op):\n   return original(db,t,a,s,op) and not (s=='whole' and op=='evidence:record')\n  self.release.authorize=auth\n  with self.assertRaises(NativeStoreError): self.publish()\n"
+}
