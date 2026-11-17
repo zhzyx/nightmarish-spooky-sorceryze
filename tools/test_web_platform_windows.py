@@ -31,8 +31,16 @@ class Fixture(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.end_headers()
         try:
+            marker = b""
+            if self.server.is_external and self.path != "/execution-proof":
+                marker = (
+                    b"<script>parent.postMessage('external-page-executed','*');"
+                    b"if(opener)opener.postMessage('external-page-executed','*');fetch('/execution-proof')</script>"
+                )
+            elif not self.server.is_external and self.path == "/allowed-frame":
+                marker = b"<script>parent.postMessage('allowed-page-executed','*')</script>"
             self.wfile.write(
-                b"<!doctype html><title>Fixture</title><h1>WebView2 fixture</h1><a href='/second'>Second</a>"
+                b"<!doctype html><title>Fixture</title><h1>WebView2 fixture</h1><a href='/second'>Second</a>" + marker
             )
         except (BrokenPipeError, ConnectionResetError):
             pass
@@ -84,7 +92,8 @@ def main():
         return
     servers = [ThreadingHTTPServer(("127.0.0.1", 0), Fixture) for _ in range(2)]
     origins = [f"http://127.0.0.1:{server.server_port}" for server in servers]
-    for server in servers:
+    for index, server in enumerate(servers):
+        server.is_external = index == 1
         server.requests = []
         server.external = origins[1]
         threading.Thread(target=server.serve_forever, daemon=True).start()
@@ -115,10 +124,11 @@ def main():
             server.server_close()
     report = {
         "compile": "passed",
-        "runtime": "passed" if result.returncode == 0 and not servers[1].requests else "failed",
+        "runtime": "passed" if result.returncode == 0 and "/execution-proof" not in servers[1].requests else "failed",
         "returncode": result.returncode,
         "hidden_hwnd": True,
         "external_requests": servers[1].requests,
+        "navigation_policy_limit": "WebView2 may speculatively issue GET before cancellation; document/script rejection is checked, not network isolation.",
         "stdout": result.stdout,
         "stderr": result.stderr,
         "manual_not_run": ["real editor input and IME", "native upload/download dialogs", "visual DPI/modal layout"],

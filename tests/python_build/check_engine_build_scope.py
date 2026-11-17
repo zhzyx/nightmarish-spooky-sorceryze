@@ -64,6 +64,10 @@ def main():
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
         git(ROOT, "clone", "--quiet", "--shared", "--local", str(ROOT), str(root))
+        if platform == "windows":
+            # Ignored SDK inputs are not inherited by the isolated checkout.
+            # Provision explicitly before any editor graph inspection.
+            subprocess.run([sys.executable, "tools/install_webview2.py"], cwd=root, check=True)
         with (root / "README.md").open("a", encoding="utf-8") as doc:
             doc.write("\nScope test.\n")
         git(root, "commit", "-qam", "Documentation only")

@@ -1,0 +1,22 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "candidate": "b6d45dbd66bbd5c3ebd4ca99386f824029c7fdda",
+  "signed_commit": "0527f806c54413acd4c8f2f7a38774fd13a07884",
+  "pull_request": 1469,
+  "results": {
+    "static_checks": "passed",
+    "issue_association": "passed",
+    "cache_linux": "passed",
+    "routing_macos": "passed",
+    "cache_windows": "failed SDK prerequisite missing",
+    "routing_windows": "failed SDK prerequisite missing",
+    "windows_editor": "standalone native compile passed; runtime fixture failed; full editor build not reached"
+  },
+  "source_fix": [
+    ".github/workflows/native-cache.yml explicitly installs pinned SDK on Windows",
+    "tests/python_build/check_engine_build_scope.py explicitly installs pinned SDK in isolated Windows clone"
+  ],
+  "retest": "required on final candidate",
+  "independent_delta_review": "data-collection/godot-windows-web-1462-independent-review-ci.json"
+}

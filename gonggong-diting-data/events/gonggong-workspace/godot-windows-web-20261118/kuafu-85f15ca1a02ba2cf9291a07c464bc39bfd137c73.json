@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-85f15ca1a02ba2cf9291a07c464bc39bfd137c73",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-windows-web-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fb0e1d7401e96a798da06003ef36758ee78b185e41e2376c0ab2e962cf498b41",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1467",
+    "action": "validation",
+    "detection_head": "b6d45dbd66bbd5c3ebd4ca99386f824029c7fdda",
+    "context_sha256": "61ec3605973ea7a67cdb5ceb4d0c07f931bb77dece4b7c3e308278584afcec4d",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-request-20261118-godot-windows",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44158560586",
+    "diagnosis": "Native MSVC harness compiled and ran, failed persistence assertion and observed speculative iframe GET. Fixture mistakenly expected a session cookie to survive browser-session exit; set persistent max-age and split storage checks. Microsoft NavigationStartingEventArgs documents GET may occur before cancel. Reverted speculative product filtering change, keep navigation policy, replace zero-network assertion with external document execution sentinel and explicit documented network limitation. Actual retest remains required.",
+    "next_action": "Independent review of corrected fixtures, then exact Windows runtime and full editor CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T19:34:14.386726+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T19:37:05.454628+00:00",
+  "sha256": "c19068330d928038cb1d267f13e38be320f42ae121e64b16911c8f7f1be3d219"
+}

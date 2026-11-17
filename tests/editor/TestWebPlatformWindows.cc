@@ -69,7 +69,16 @@ std::string Source(WebPlatformWindows *pNative)
 	// Fixtures deliberately use only ASCII URLs.
 	const std::wstring strWide(pSource);
 	CoTaskMemFree(pSource);
-	return std::string(strWide.begin(), strWide.end());
+	std::string strResult;
+	for (const wchar_t nCharacter : strWide)
+	{
+		if (nCharacter > 127)
+		{
+			return {};
+		}
+		strResult.push_back(static_cast<char>(nCharacter));
+	}
+	return strResult;
 }
 
 bool WaitForPage(WebPlatformWindows *pNative, const std::string &strUrl)
@@ -189,7 +198,7 @@ int main(int nArgc, char **ppArgv)
 		return 8;
 	}
 	if (!Evaluate(ptrNative.get(), L"document.body.innerText.includes('WebView2 fixture')", L"true") ||
-		!Evaluate(ptrNative.get(), L"localStorage.setItem('web-platform-test','persist'); document.cookie='web_platform_test=persist;path=/'; true", L"true"))
+		!Evaluate(ptrNative.get(), L"localStorage.setItem('web-platform-test','persist'); document.cookie='web_platform_test=persist;path=/;max-age=3600'; true", L"true"))
 	{
 		return 9;
 	}
@@ -215,6 +224,16 @@ int main(int nArgc, char **ppArgv)
 	{
 		return 12;
 	}
+	if (!Evaluate(ptrNative.get(), L"window.allowedFrameExecuted=false; window.addEventListener('message',function(e){if(e.data==='allowed-page-executed')window.allowedFrameExecuted=true;}); var control=document.createElement('iframe'); control.src='/allowed-frame'; document.body.append(control); true", L"true"))
+	{
+		return 28;
+	}
+	Drain();
+	if (!Evaluate(ptrNative.get(), L"window.allowedFrameExecuted === true", L"true"))
+	{
+		return 29;
+	}
+	Evaluate(ptrNative.get(), L"control.remove(); true", L"true");
 	const std::wstring strExternalWide(strExternal.begin(), strExternal.end());
 	if (!Evaluate(ptrNative.get(), L"location.href='" + strExternalWide + L"/outside'; true", L"true"))
 	{
@@ -225,11 +244,15 @@ int main(int nArgc, char **ppArgv)
 	{
 		return 14;
 	}
-	if (!Evaluate(ptrNative.get(), L"var f=document.createElement('iframe'); f.src='" + strExternalWide + L"/frame'; document.body.append(f); window.open('" + strExternalWide + L"/popup'); true", L"true"))
+	if (!Evaluate(ptrNative.get(), L"window.externalPageExecuted=false; window.addEventListener('message',function(e){if(e.data==='external-page-executed')window.externalPageExecuted=true;}); var f=document.createElement('iframe'); f.src='" + strExternalWide + L"/frame'; document.body.append(f); window.open('" + strExternalWide + L"/popup'); true", L"true"))
 	{
 		return 15;
 	}
 	Drain();
+	if (!Evaluate(ptrNative.get(), L"window.externalPageExecuted === false", L"true"))
+	{
+		return 27;
+	}
 	ptrNative->Navigate(strBase + "/redirect");
 	Drain();
 	if (Source(ptrNative.get()).find(strExternal) == 0)
@@ -254,7 +277,8 @@ int main(int nArgc, char **ppArgv)
 	}
 	ptrNative.reset(static_cast<WebPlatformWindows *>(WebPlatformNative::Create(pWindow, strBase + "/")));
 	if (!ptrNative || !WaitForPage(ptrNative.get(), strBase + "/") ||
-		!Evaluate(ptrNative.get(), L"localStorage.getItem('web-platform-test') === 'persist' && document.cookie.includes('web_platform_test=persist')", L"true"))
+		!Evaluate(ptrNative.get(), L"localStorage.getItem('web-platform-test')", L"\"persist\"") ||
+		!Evaluate(ptrNative.get(), L"document.cookie.includes('web_platform_test=persist')", L"true"))
 	{
 		return 19;
 	}
