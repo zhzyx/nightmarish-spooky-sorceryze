@@ -1,0 +1,35 @@
+{
+  "request_id": "godot-web-platforms-20261118",
+  "issue": 1454,
+  "candidate": {
+    "repository": ".",
+    "commit": "dd0ac17406d2e568210f5c9236dd10d3661361ba",
+    "tree": "08d25e3d4d3be4f7bcb17d2b0713c66205feb267"
+  },
+  "inputs_sha256": "e7445e372474e6cbd58c9a6ad4032dd1ecd4ca6af702afe0ef30347e9ca5b512",
+  "status": "passed",
+  "path_resolution_base": "repository root",
+  "kind": "source",
+  "checks": [
+    "all delivered source bytes match final independent-review hashes",
+    "artifact bytes match candidate commit/tree",
+    "formal gate and committed-data check passed in writer_submit before PR creation"
+  ],
+  "review": "data-collection/godot-web-platforms-1454-independent-review-format.json",
+  "runtime_evidence": [
+    "data-collection/godot-web-platforms-1454-validation.json",
+    "data-collection/godot-web-platforms-1454-ci-format.json"
+  ],
+  "local_editor_build": {
+    "path": "bin/godot.macos.editor.dev.arm64",
+    "sha256": "8d5ed24677188c0e97327ed5b158875a660d9dd08dbb908d189ff0e93144f3d3",
+    "role": "validation build, not an installed/runnable delivery claim",
+    "source_binding": "13 final reviewed source hashes; built before formatting candidate commit, debug version metadata still identifies its parent"
+  },
+  "not_claimed": [
+    "full issue acceptance",
+    "production deployment",
+    "consumer installation",
+    "Windows/Linux embedded runtime"
+  ]
+}
