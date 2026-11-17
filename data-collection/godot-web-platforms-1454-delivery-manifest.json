@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "path_base": "framework",
+  "resolution_note": "Invoke check_delivery.py with --framework-root set to this repository root, overriding its default framework directory.",
+  "stage": "candidate",
+  "delivery_kind": "source",
+  "model_mode": "none",
+  "candidate": {
+    "repository": ".",
+    "commit": "dd0ac17406d2e568210f5c9236dd10d3661361ba",
+    "tree": "08d25e3d4d3be4f7bcb17d2b0713c66205feb267"
+  },
+  "dependencies": [
+    {
+      "path": "SConstruct",
+      "sha256": "a256d926029a4a7d0ccc50a4e75a885d9772d76f08327311fd643e0bd344535c",
+      "version": "cefa69ea2ee415c0b65d88506c85582f626fc673",
+      "affects": [
+        "macOS Godot editor build"
+      ]
+    },
+    {
+      "path": "apps/tianxuan/package-lock.json",
+      "sha256": "edb7dc6522baca8905a79a714b80fa597521e9deee987db4a7eda506b58684d7",
+      "version": "cefa69ea2ee415c0b65d88506c85582f626fc673",
+      "affects": [
+        "existing Web platform integration validation"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "editor/docks/WebPlatformNative.h",
+      "role": "source",
+      "path": "editor/docks/WebPlatformNative.h",
+      "candidate_path": "editor/docks/WebPlatformNative.h",
+      "sha256": "e310fe4aa47cf5fffafe0c5d60eafbedf95c27e8e0f93532718a9be49378559a",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/dd0ac17406d2e568210f5c9236dd10d3661361ba/editor/docks/WebPlatformNative.h"
+    },
+    {
+      "id": "editor/docks/WebPlatformNative.cpp",
+      "role": "source",
+      "path": "editor/docks/WebPlatformNative.cpp",
+      "candidate_path": "editor/docks/WebPlatformNative.cpp",
+      "sha256": "928576b1dda13eb4e71c1e02a52449bf941fa92af2092a6b10c14223ae93c069",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/dd0ac17406d2e568210f5c9236dd10d3661361ba/editor/docks/WebPlatformNative.cpp"
+    },
+    {
+      "id": "editor/docks/WebPlatformMacOS.mm",
+      "role": "source",
+      "path": "editor/docks/WebPlatformMacOS.mm",
+      "candidate_path": "editor/docks/WebPlatformMacOS.mm",
+      "sha256": "90dc4a139e5c9de2f9d0997ad3b3171cda5947b32cd39ca3d6a41af65a2c42cf",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/dd0ac17406d2e568210f5c9236dd10d3661361ba/editor/docks/WebPlatformMacOS.mm"
+    },
+    {
+      "id": "editor/docks/WebPlatformDock.h",
+      "role": "source",
+      "path": "editor/docks/WebPlatformDock.h",
+      "candidate_path": "editor/docks/WebPlatformDock.h",
+      "sha256": "60be9161d297dd498456970ff23c007c2302a481c57a12fb3d634df6caa3e6d7",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/dd0ac17406d2e568210f5c9236dd10d3661361ba/editor/docks/WebPlatformDock.h"
+    },
+    {
+      "id": "editor/docks/WebPlatformDock.cpp",
+      "role": "source",
+      "path": "editor/docks/WebPlatformDock.cpp",
+      "candidate_path": "editor/docks/WebPlatformDock.cpp",
+      "sha256": "a6e85805cff026bbb3951af401fbe1a19d4bc4a81f2e7db9ceb6f4b576a0b993",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/dd0ac17406d2e568210f5c9236dd10d3661361ba/editor/docks/WebPlatformDock.cpp"
+    },
+    {
+      "id": "editor/docks/SCsub",
+      "role": "source",
+      "path": "editor/docks/SCsub",
+      "candidate_path": "editor/docks/SCsub",
+      "sha256": "672be3ecd471462b3b580f93dddad6e05acc831f46bb9b5490dcb8264daab4b7",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/dd0ac17406d2e568210f5c9236dd10d3661361ba/editor/docks/SCsub"
+    },
+    {
+      "id": "editor/editor_node.cpp",
+      "role": "source",
+      "path": "editor/editor_node.cpp",
+      "candidate_path": "editor/editor_node.cpp",
+      "sha256": "f92782c7b23b84e00e29e2e67a3b093b8af06355f7d028f014a1c4ca42802c1e",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/dd0ac17406d2e568210f5c9236dd10d3661361ba/editor/editor_node.cpp"
+    },
+    {
+      "id": "editor/register_editor_types.cpp",
+      "role": "source",
+      "path": "editor/register_editor_types.cpp",
+      "candidate_path": "editor/register_editor_types.cpp",
+      "sha256": "b5b511244d3102e988655bcf394a5cafada5e11c501f2fd72ba44247aa17b14e",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/dd0ac17406d2e568210f5c9236dd10d3661361ba/editor/register_editor_types.cpp"
+    },
+    {
+      "id": "platform/macos/detect.py",
+      "role": "source",
+      "path": "platform/macos/detect.py",
+      "candidate_path": "platform/macos/detect.py",
+      "sha256": "9cecf7c6a676e10245082cc9c522efcbbbe8a95c33fc6b816a98c457e0effd35",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/dd0ac17406d2e568210f5c9236dd10d3661361ba/platform/macos/detect.py"
+    },
+    {
+      "id": ".pre-commit-config.yaml",
+      "role": "source",
+      "path": ".pre-commit-config.yaml",
+      "candidate_path": ".pre-commit-config.yaml",
+      "sha256": "5e8a084a74d3d7cf7904dd98511540a89c8c49e135d2df8697d3a1c153264a72",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/dd0ac17406d2e568210f5c9236dd10d3661361ba/.pre-commit-config.yaml"
+    },
+    {
+      "id": "tests/editor/TestWebPlatformMacOS.mm",
+      "role": "source",
+      "path": "tests/editor/TestWebPlatformMacOS.mm",
+      "candidate_path": "tests/editor/TestWebPlatformMacOS.mm",
+      "sha256": "e97e13750a2d53b752f377b481051c391e53703e26255db4f91e98f295151c67",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/dd0ac17406d2e568210f5c9236dd10d3661361ba/tests/editor/TestWebPlatformMacOS.mm"
+    },
+    {
+      "id": "tests/editor/TestWebPlatformPolicy.cc",
+      "role": "source",
+      "path": "tests/editor/TestWebPlatformPolicy.cc",
+      "candidate_path": "tests/editor/TestWebPlatformPolicy.cc",
+      "sha256": "2f1ebfcf91ced3565940d2e8ddeb57d1f965a3cc592e71d6cb8c8ce36f4e10a6",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/dd0ac17406d2e568210f5c9236dd10d3661361ba/tests/editor/TestWebPlatformPolicy.cc"
+    },
+    {
+      "id": "tests/editor/web_platform_dock.gd",
+      "role": "source",
+      "path": "tests/editor/web_platform_dock.gd",
+      "candidate_path": "tests/editor/web_platform_dock.gd",
+      "sha256": "01b6bac91d5f61be80f6cf0c0b2e8b59d165953106d562c3593c8a10ba395996",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/dd0ac17406d2e568210f5c9236dd10d3661361ba/tests/editor/web_platform_dock.gd"
+    }
+  ],
+  "validation": {
+    "source": {
+      "path": "data-collection/godot-web-platforms-1454-delivery-source.json",
+      "sha256": "3fd7a0dc023d10edf02bbe10aa5238c8c938274fa00b476cb9cb284c5b6d9a2b"
+    }
+  },
+  "collection": {
+    "state": "configured",
+    "configured": {
+      "path": "data-collection/godot-web-platforms-1454-delivery-collection.json",
+      "sha256": "9d7a1fbf717e7b54d97820e44bd9b1c92b0671f2b57f39242ff97e93e3e890ea"
+    }
+  }
+}

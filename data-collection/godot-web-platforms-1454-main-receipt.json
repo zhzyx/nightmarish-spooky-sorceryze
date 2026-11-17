@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "request_id": "godot-web-platforms-20261118",
+  "issue": 1454,
+  "path_resolution_base": "repository root",
+  "delivery_mode": "slice",
+  "scope": "macOS native Web workspace and shared interface; Windows native backend continues under child #1462",
+  "source_candidate": "dd0ac17406d2e568210f5c9236dd10d3661361ba",
+  "signed_candidate": "ea6c3b9bc6d10e00aff548666b5702f6b53d8652",
+  "pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1459",
+  "merge_commit": "bf72c2dd4e36bc057c64cbdd5e9a060163b16526",
+  "merged_at": "2026-11-17T18:51:01Z",
+  "merged_by": "Sail-Li",
+  "remote_main_contains_signed_candidate": true,
+  "ci": {
+    "run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44148399087",
+    "checks": [
+      {
+        "name": "📊 Static checks",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "issue-association",
+        "conclusion": "SUCCESS"
+      },
+      {
+        "name": "📊 Static checks / Code style, file formatting, and docs",
+        "conclusion": "SUCCESS"
+      },
+      {
+        "name": "🤖 Android",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🤖 Android",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🍏 iOS",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🍏 iOS",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🐧 Linux",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🐧 Linux",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🍎 macOS",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🍎 macOS",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "Compile affected Windows engine targets",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "Compile affected Windows engine targets",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "Compile affected Metal targets",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "Compile affected Metal targets",
+        "conclusion": "SUCCESS"
+      },
+      {
+        "name": "🌐 Web",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🌐 Web",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🏁 Windows",
+        "conclusion": "SKIPPED"
+      },
+      {
+        "name": "🏁 Windows / Editor (target=editor)",
+        "conclusion": "SUCCESS"
+      }
+    ]
+  },
+  "delivery_consistency": {
+    "ok": true,
+    "scope": "local_consistency",
+    "boundary": "Local file/Git and supplied metadata consistency only; no authentication of remote identity, report authorship, execution, model service or collection behavior; not admission or release approval.",
+    "diagnostics": []
+  },
+  "source_manifest": "data-collection/godot-web-platforms-1454-delivery-manifest.json",
+  "scope_decision": {
+    "source": "current user conversation",
+    "decision": "同时支持 Windows",
+    "windows_child": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+    "native_parent_relationship": "verified both sides"
+  },
+  "parent_acceptance": "incomplete; keep #1454 open",
+  "remaining": [
+    "Windows WebView2 implementation and actual runtime verification under #1462",
+    "real display keyboard/IME/focus and native file-panel acceptance",
+    "production HTTPS session verification"
+  ],
+  "resource_state": {
+    "test_servers": "stopped",
+    "test_app_profile_database_web_dependencies": "removed; see prior cleanup record",
+    "worktree_candidate_editor_private_evidence": "retained for acceptance and exact source evidence",
+    "formatter_venv": "retained and explicitly borrowed by active Windows implementation worker /root/sinan_d2d5736efcd9507a; do not delete while in use"
+  },
+  "collection_consumption": null
+}

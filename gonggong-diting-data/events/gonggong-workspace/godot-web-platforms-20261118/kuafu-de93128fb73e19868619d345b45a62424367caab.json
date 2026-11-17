@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-de93128fb73e19868619d345b45a62424367caab",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-web-platforms-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "773085861d9002fd259e7d5c6a1457abfd1e66731cc90c1ec3a5f77e1778f672",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1455",
+    "action": "delivery",
+    "detection_head": "dd0ac17406d2e568210f5c9236dd10d3661361ba",
+    "context_sha256": "72e9b2ddb6d561dccbca785b292c3db969867a1f401afc578a7a8531199d4de2",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-request-20261118-godot-only",
+    "evidence": "writer_submit returned GITHUB_COMMAND after committing dd0ac174. Remote readback found PR 1459 and signed ea6c3b9bc6d10e00aff548666b5702f6b53d8652. writer_submit --inspect-pr 1459 verified signer, exact tree and main baseline cefa69ea, no overlap. Static and issue checks passed; native CI running. Superseded own PR 1458 closed only after readback.",
+    "diagnosis": "Submission side effect succeeded before final GitHub command failed; actual publication receipt recovered, no repeat publish or credential change.",
+    "next_action": "Await exact candidate native CI, then merge through PR and reread main. Append this recovery receipt with final delivery telemetry.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T18:30:01.965953+00:00",
+    "attempted": null,
+    "repair_owner": "codex-root",
+    "continuable": "Continue exact PR 1459; no new implementation change required."
+  },
+  "occurred_at": "2026-11-17T18:31:43.732737+00:00",
+  "sha256": "1732b33f06b1c51e1130c4e522d878ba6b9e67bd624db4ac87e40333b8c680a2"
+}

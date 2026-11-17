@@ -30,3 +30,9 @@ placement=native：Godot 原生工作区、平台 WebView 宿主和链接依赖�
 静默测试覆盖隐藏原生窗口及后台编辑器；真实输入法/焦点、上传下载面板、生产 HTTPS 身份会话仍分别保留未知。完整平台功能复用现有站点，不将页面导航测试等同于全部业务流程验收。使用和复现入口见 `customizations/components/godot-host/web-workbench.md`。
 
 为执行 C++ 规范的 Allman 格式，仅对本次 WebPlatform/TestWebPlatform 文件增加局部 clang-format 钩子；其他文件保留原钩子。无全局格式迁移或校验豁免。
+
+## macOS 分片接收与 Windows 子项
+
+PR #1459 已合入 main，提交 bf72c2dd4e36bc057c64cbdd5e9a060163b16526，源候选 dd0ac17406d2e568210f5c9236dd10d3661361ba，签发 ea6c3b9bc6d10e00aff548666b5702f6b53d8652。全部适用 CI（静态、工单关联、Windows 完整编辑器与会话恢复回归、Metal 相关编译）通过；这不把 Windows 构建兼容性计为网页后端完成。
+
+2026-11-18 用户再次明确“同时支持 Windows”。独立子项 #1462（godot-windows-web-20261118）承担 Windows WebView2 后端、依赖分发和实际 Windows 验证；GitHub 原生父子关系两侧已回读，设计在 `design-docs/godot-windows-web-20261118.md`（随子项交付）。原 #1454 继续管理双平台整体验收，不提前关闭。真实显示器交互和生产 HTTPS 会话仍须独立留证。源交付清单与 main 回读在 `data-collection/godot-web-platforms-1454-delivery-manifest.json` 和 `data-collection/godot-web-platforms-1454-main-receipt.json`。

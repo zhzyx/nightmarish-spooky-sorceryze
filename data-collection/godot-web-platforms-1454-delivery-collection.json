@@ -1,0 +1,20 @@
+{
+  "request_id": "godot-web-platforms-20261118",
+  "issue": 1454,
+  "candidate": {
+    "repository": ".",
+    "commit": "dd0ac17406d2e568210f5c9236dd10d3661361ba",
+    "tree": "08d25e3d4d3be4f7bcb17d2b0713c66205feb267"
+  },
+  "inputs_sha256": "e7445e372474e6cbd58c9a6ad4032dd1ecd4ca6af702afe0ef30347e9ca5b512",
+  "status": "passed",
+  "path_resolution_base": "repository root",
+  "kind": "collection.configured",
+  "binding": {
+    "path": "work-items.json",
+    "sha256": "f1fbc8c69ca7ed7e8838221b352c1b8fa2bab05f179e980e8adf3eab57ddc042"
+  },
+  "tenant": "gonggong-workspace",
+  "source_event": "gonggong-diting-data/events/gonggong-workspace/godot-web-platforms-20261118/godot-web-platforms-1454-request.json",
+  "state_scope": "Existing host binding only; committed file events are separately verified; consumer processing remains unknown."
+}
