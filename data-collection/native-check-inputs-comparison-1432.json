@@ -1,0 +1,16 @@
+{
+  "issue": 1432,
+  "workload": "Same fixed child check reads core/a.txt through initial,unrelated-module,unselected-object,relevant-object changes. Actual child output markers counted.",
+  "benchmark_script_sha256": "826d5b01a28ba4a6d498c100349738a2fc3def9354f5d06c24d371676fd7d33f",
+  "before": {
+    "checks": 4,
+    "seconds": 0.7785293000051752
+  },
+  "after": {
+    "checks": 2,
+    "seconds": 0.38218980001693126
+  },
+  "limits": "One synthetic Windows sample. Not a full engine/model workload, production throughput, statistical speed guarantee or token savings. Final whole-composition release check remains required; scoped evidence reuse does not approve a new candidate.",
+  "tokens": null,
+  "model_calls": 0
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4c53ad550e72fc4646037acf74475586db97ffc7",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-check-input-views-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1432",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6fa57f7af78d41355c7018388afe8ecd0bf4a1dd2498a07da5dfcc6637e9f0d9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1432",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1439",
+    "action": "intake",
+    "detection_head": "22a7431e2d44d4c47262af0f5c471f9aa1cc2034",
+    "context_sha256": "79012d8c8a84135935ac3e4a0383d8e3cb2fa4e9d6a2bf8a55b593bfb87f8aaf",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1432",
+    "diagnosis": "Parent private harness omitted required tenant after alternate PowerShell process rejected script policy. Verified bundled Python and explicit tenant now pass intake; repository or user execution policy unchanged. Dependent dispatch must only start after successful preparation.",
+    "next_action": "Continue native input-view implementation from accepted main after verified no-launch state; preserve original incidents and confirm actual worker receipt.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T13:37:31.568665+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T13:42:53.113963+00:00",
+  "sha256": "508da920a6c3d4e8bd2fe7f3bff7d7ec085dcded82704f550ec886a3b46916e9"
+}

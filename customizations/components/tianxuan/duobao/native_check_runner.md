@@ -8,7 +8,7 @@
 
 注册表每项必须包含 `argv`（绝对可执行文件，禁止 cmd/bat 隐式 shell）、`env`（明确环境，不合并宿主完整环境）、`toolchain`、`environment`（64 位摘要）、`timeout`（0..86400 秒）、`log_bytes`（1..900000 字节）。输入范围和规则版本沿用 EvidenceCache 已安装 policy。宿主验证器负责核验工具链、依赖、环境与指纹真实性；单个 executable 摘要不等同整体环境证明。本实现会在运行前后调用验证器。测试验证器只对应确定性 Python 测试安装，不是生产认证实现。
 
-固定命令参数可使用 `{input}` 和 `{output}` 占位符，同时收到 `DUOBAO_INPUT` 与 `DUOBAO_OUTPUT` 的绝对路径。进程 cwd 固定为该运行的独立 output 目录，通过新增可选 cwd 参数传至 OwnedCommand/Popen；不使用全局 chdir。执行合同版本纳入可信上下文，现有 helper 调用不传 cwd 时仍保持默认继承行为。完整精确组合通过 NativeWorkspace 物化；生成物写入分离 output。即便 policy 声明部分输入，runner context 仍包含完整 candidate，保守避免可访问的其余组合漂移被误复用。上下文也绑定注册表、runner 源码、进程 helper 摘要和 EvidenceCache policy/输入。
+固定命令参数可使用 `{input}` 和 `{output}` 占位符，同时收到 `DUOBAO_INPUT` 与 `DUOBAO_OUTPUT` 的绝对路径。进程 cwd 固定为该运行的独立 output 目录，通过新增可选 cwd 参数传至 OwnedCommand/Popen；不使用全局 chdir。执行合同版本纳入可信上下文，现有 helper 调用不传 cwd 时仍保持默认继承行为。检查输入由 CheckInputView 从已冻结 EvidenceCache 绑定物化：显式对象范围只暴露这些对象，缺失对象保持缺失，空范围保留空模块目录；精确依赖闭包完整展开。reads=None 保守选择完整组合，单模块 None 保留模块修订身份。输入目录不写入 manifest、candidate 或未选择对象。生成物写入分离 output。native-check/2 合同的上下文绑定注册表、runner、输入视图及 NativeWorkspace 辅助源码、进程 helper 和工具/环境；不包含 candidate，因此等价范围可跨候选复用。原候选仍属于运行请求与可信控制回执，旧合同不会命中新合同。NativeWorkspace 生产接口不变。
 
 可执行路径同样拒绝符号链接与重解析点；安装者应核验规范化后的真实可执行路径。例如 Linux 的 python 别名可能是链接，应登记核验后的 python3.12 实体路径，不由不可信请求临时解析替换。
 
@@ -22,7 +22,7 @@
 
 OwnedCommand 在 Windows 将暂停子进程绑定 kill-on-close Job 后恢复；POSIX 用独立 session 与未回收 leader 固定进程组身份，可信命令不得自行逃离 session。超时、取消、超量输出和读取错误终止所有权范围；不确定清理会保留 held，不产生通过事实。不以记录 PID 对重启后的进程盲目信号或重启。检查不是 OS 沙盒；网络、文件访问、生成物磁盘用量未实施系统级隔离，宿主必须只安装可信检查。
 
-退出后读取 NativeWorkspace 实际内容，并核对原输入和 manifest 的内容、mtime/ctime 与有界目录结构。普通写后恢复也会改变时间戳而被拒绝；此检查不能证明恶意代码没有读取目录外文件或恢复所有内容及时间戳。真实退出码、原因、原始日志摘要、有界 base64 transcript 写入 EvidenceCache。原始日志最多 log_bytes；transcript 最多取前 600000 原始字节并明确标记截断，确保 EvidenceCache 总记录小于 1MiB。失败、超时、取消和输入污染只能产生 failed；未知状态不产生 passed。
+退出后通过有界快照核对实际输入的内容摘要、类型、mtime/ctime（含根目录）及目录结构；拒绝链接和重解析点。视图复用 NativeWorkspace 的路径、资源上限及精确依赖验证，并通过临时目录原子改名完成物化；失败清理所属 stage。普通写后恢复也会改变时间戳而被拒绝；此检查不能证明恶意代码没有读取目录外文件或恢复所有内容及时间戳。真实退出码、原因、原始日志摘要、有界 base64 transcript 写入 EvidenceCache。原始日志最多 log_bytes；transcript 最多取前 600000 原始字节并明确标记截断，确保 EvidenceCache 总记录小于 1MiB。失败、超时、取消和输入污染只能产生 failed；未知状态不产生 passed。
 
 ## 幂等与恢复范围
 
@@ -43,3 +43,7 @@ OwnedCommand 在 Windows 将暂停子进程绑定 kill-on-close Job 后恢复；
 新 runner 为独立 host_tool；此次新增 cwd 参数同时修改既有嵌入资源 `tools/ainative/owned_process.py`。实际消费链为 `editor/SCsub` 的 `#tools/ainative/*.py`（排除 test_）→ `editor/ainative/builders.py:bundle_sources/build_bundle` → `editor/ainative/bundle.gen.h`。Windows helper `tools/editor_provenance_process.py` 由 bundle_sources 加入实际生成依赖。以上路径基准均为仓库根；独立部署则按前述 process_helper_path 解析，不依赖源码工作树。
 
 `test_owned_helper_change_invalidates_generated_bundle` 使用真实生成器在临时目录生成头文件，修改 owned_process 输入后头文件及嵌入摘要改变，恢复原输入后头文件完全恢复。既有 bundle_graph 测试另外核对 editor/SCsub 真实输入图及独立布局的 helper 加载；未声称本次完成引擎二进制重编译或替换。回退新 runner 时停用入口并保留记录；helper 的 cwd=None 默认兼容，嵌入版本若发布须随原有构建与签发入口处理。
+
+## 范围复用验证（#1432）
+
+`test_native_check_inputs.py` 验证真实进程次数、输入可见性、缺失对象创建、空范围、依赖、保守未知范围、预算和失败清理。同一 NativeRelease 产品策略可同时服务 A/B 候选；仍要求整组合检查和各候选独立批准，范围缓存命中不能替代审批。具体源码绑定与 Windows 结果在 `data-collection/native-check-inputs-1432.json`（仓库根为解析基准）；Linux 和独立审查由父工单接续。

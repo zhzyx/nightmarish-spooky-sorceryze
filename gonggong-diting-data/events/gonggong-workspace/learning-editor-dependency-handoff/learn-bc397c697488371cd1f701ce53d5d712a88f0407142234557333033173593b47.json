@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-bc397c697488371cd1f701ce53d5d712a88f0407142234557333033173593b47",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1432",
+  "occurred_at": "2026-11-17T14:22:58.181936+00:00",
+  "evidence_refs": [
+    "codex-intake-1432-20261117",
+    "learn-7839f8c2e938d723d1fae2ec25b72b30a35f98b90c583570c07b8c2610e64f66"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 18,
+    "previous": "5894b2c3bfc5d69d0dd851fb5b31dcd249ebfdf0daf3b7b5fdffbacf53087d42",
+    "action": "applied",
+    "details": {
+      "task": "#1432 scoped native check input implementation and independent acceptance",
+      "observed": "Receiver verified producer, independent worker terminal receipt, all source hashes and evidence. Baseline raw runner newline differs from canonical Git bytes; reviewed LF normalization proves same implementation without rewriting original record. Actual dependency-hidden change reruns while unrelated changes reuse; release remains separately approved."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-check-inputs-review-1432.json",
+        "sha256": "703c10cb93f7b31b4c2fdb2cac7eb2afd4526996b358f92a97fc2a3855db395d"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-check-input-views-20261117/codex-intake-1432-20261117.json",
+      "sha256": "f6dd0c850ecd5024d5dea3b9afc0e051fe01acaa2f0809c3b0bc8a61271933d2"
+    }
+  },
+  "sha256": "550320ceea03ba49d4d8a0e05753474242430434eed6463321ebb6195bcc39eb"
+}

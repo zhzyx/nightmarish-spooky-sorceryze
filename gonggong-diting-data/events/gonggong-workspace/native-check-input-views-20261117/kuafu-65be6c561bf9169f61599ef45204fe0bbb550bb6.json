@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-65be6c561bf9169f61599ef45204fe0bbb550bb6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-check-input-views-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1432",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "17dd46375c9a56da61c81c267d5fb44cbf406cb2feb9928d25465c14c1df6f08",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1432",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1439",
+    "action": "dispatch",
+    "detection_head": "22a7431e2d44d4c47262af0f5c471f9aa1cc2034",
+    "context_sha256": "79012d8c8a84135935ac3e4a0383d8e3cb2fa4e9d6a2bf8a55b593bfb87f8aaf",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1432",
+    "diagnosis": "Dispatch failed at source revalidate because GitHub connection unavailable. Completed dispatch result proves validation_failed before reservation/launch; no native request or worker created. Actual identity Sail-Li and write permission re-read successfully via direct and proxy requests; retry only after this readback and use per-process proxy.",
+    "next_action": "Continue native input-view implementation from accepted main after verified no-launch state; preserve original incidents and confirm actual worker receipt.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T13:38:40.052424+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T13:47:06.340554+00:00",
+  "sha256": "3fcc643d471fc11566116b413b8c25c2d2f7a890cba1fb95c0c92c9f596b61e4"
+}

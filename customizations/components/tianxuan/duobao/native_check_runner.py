@@ -6,16 +6,15 @@ import base64
 import importlib.util
 import json
 import math
-import os
-import stat
 import threading
 from collections.abc import Callable, Mapping
 from pathlib import Path
 from typing import Any
 
+from native_check_inputs import CONTRACT, CheckInputView
 from native_evidence import EvidenceCache
 from native_store import Conflict, NativeStoreError, _digest, _identifier, _json, _revision_id
-from native_workspace import MANIFEST, NativeWorkspace, absolute, checked_stat
+from native_workspace import absolute
 
 
 def _process_helper(path=None):
@@ -28,22 +27,6 @@ def _process_helper(path=None):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
-
-
-def _stamps(root):
-    result = {}
-    stack = [root]
-    while stack:
-        with os.scandir(stack.pop()) as entries:
-            for entry in entries:
-                if len(result) >= 20000:
-                    raise NativeStoreError("Input entry limit exceeded")
-                path = Path(entry.path)
-                info = checked_stat(path)
-                result[str(path.relative_to(root))] = (info.st_mtime_ns, info.st_ctime_ns)
-                if stat.S_ISDIR(info.st_mode):
-                    stack.append(path)
-    return result
 
 
 class NativeCheckRunner:
@@ -120,8 +103,9 @@ class NativeCheckRunner:
             "environment": spec["environment"],
             "parameters": {
                 "registry": _digest(_json(spec).encode()),
-                "execution_contract": "native-check/1:cwd=output:full-composition",
-                "candidate": candidate,
+                "execution_contract": CONTRACT,
+                "input_view": _digest(Path(__file__).with_name("native_check_inputs.py").read_bytes()),
+                "workspace_helpers": _digest(Path(__file__).with_name("native_workspace.py").read_bytes()),
                 "process_helper": self.helper.implementation_fingerprint(),
                 "runner": _digest(Path(__file__).read_bytes()),
             },
@@ -204,21 +188,13 @@ class NativeCheckRunner:
                 if hit["evidence"]["binding"] != binding["binding"]:
                     raise Conflict("Check policy changed during cache lookup")
                 return self._save(tenant, key, {**value, "state": "cached", "evidence": hit["evidence"]["id"]})
-            with self.store._connection() as db:
-                row = db.execute(
-                    "SELECT payload FROM native_compositions WHERE tenant=? AND id=?", (tenant, candidate)
-                ).fetchone()
-            if row is None or _digest(row["payload"].encode()) != candidate:
-                raise NativeStoreError("Composition integrity failure")
-            selected = json.loads(row["payload"])["modules"]
+            view = CheckInputView.from_binding(self.store, tenant, binding)
             folder = Path(value["workspace"])
             folder.mkdir()
             inputs, outputs = folder / "input", folder / "output"
             outputs.mkdir()
-            workspace = NativeWorkspace(self.store)
-            workspace.materialize(tenant, selected, inputs)
-            manifest = (inputs / MANIFEST).read_bytes()
-            stamps = _stamps(inputs)
+            view.materialize(self.store, tenant, inputs)
+            stamps = view.snapshot(inputs)
             value = self._save(tenant, key, {**value, "state": "running", "workspace": str(folder)})
             args = [arg.replace("{input}", str(inputs)).replace("{output}", str(outputs)) for arg in spec["argv"]]
             env = dict(spec["env"], DUOBAO_INPUT=str(inputs), DUOBAO_OUTPUT=str(outputs))
@@ -245,12 +221,7 @@ class NativeCheckRunner:
                 log.seek(0)
                 raw = log.read(spec["log_bytes"])
             try:
-                after_stamps = _stamps(inputs)
-                if (
-                    workspace.collect(tenant, selected, inputs)
-                    or (inputs / MANIFEST).read_bytes() != manifest
-                    or after_stamps != stamps
-                ):
+                if view.snapshot(inputs) != stamps:
                     reasons.append("input_pollution")
             except (OSError, NativeStoreError):
                 reasons.append("input_pollution")
