@@ -1,0 +1,140 @@
+{
+  "request_id": "native-workflow-revisions-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1456",
+  "results": [
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "check",
+        "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py",
+        "customizations/components/tianxuan/duobao/native_release.py",
+        "customizations/components/tianxuan/server/native_api.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.14414780000515748,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py",
+        "customizations/components/tianxuan/duobao/native_release.py",
+        "customizations/components/tianxuan/server/native_api.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12855570000829175,
+      "stdout": "4 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "D:/GongGong-work/tx-venv/Scripts/python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "customizations/components/tianxuan/sinan-workorders",
+        "customizations/components/tianxuan/duobao/test_native_release.py",
+        "customizations/components/tianxuan/server/test_native_api.py",
+        "-q",
+        "--showlocals"
+      ],
+      "exit_code": 0,
+      "seconds": 49.08948409999721,
+      "stdout": "................................................................ [ 81%]\n...............                                                          [100%]\n============================== warnings summary ===============================\n..\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1\n  D:\\GongGong-work\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n79 passed, 1 warning, 8 subtests passed in 48.13s\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.04746809999051038,
+      "stdout": "",
+      "stderr": "warning: in the working copy of 'customizations/components/tianxuan/duobao/native_release.py', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'customizations/components/tianxuan/server/native_api.py', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'customizations/components/tianxuan/sinan-workorders/README.md', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'customizations/components/tianxuan/sinan-workorders/native_workflow.py', CRLF will be replaced by LF the next time Git touches it\n"
+    }
+  ],
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "1e4a60b2cd2710e6e810c309397fce0d177114b3c0d6f8a0995d32a2f6ed440e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py": "45947ec8ef4b73804a99fb25e665cfb06325a0ab4173d699bb89e5c6071dad64",
+    "customizations/components/tianxuan/duobao/native_release.py": "e998f42f35775446bb2c816deb0866d831da72ea51070cf7c6ed5f2426906fab",
+    "customizations/components/tianxuan/server/native_api.py": "89b7fdeefcfcba9118b5803d6c3a05e10db19997b3a72d153e40ba592afd87b0"
+  },
+  "passed": true,
+  "legacy_before": {
+    "issue": 1456,
+    "probe": "actual_accepted_v1_workflow_with_separate_domain_connection_after_v2_replacement",
+    "outcome": "published",
+    "result": {
+      "id": "3845318c6b1894de0fd8f7cad6c47917999917e9594bc560080b141b4d8a431c",
+      "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8",
+      "modules": {
+        "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab"
+      },
+      "policy": "aceb1e73ae9b096e87faf63f13d723d5619bba951823b330a5d9eada492fac43",
+      "recorded_at": 1794939403.6637924,
+      "request": {
+        "action": "publish",
+        "actor": "publisher",
+        "channel": "stable",
+        "expected": null,
+        "product": "a",
+        "request_key": "publish-90f295d8d1cefc8bad7deac8bd7843d7cc89190eb188bbea4fcc44f7e661b726",
+        "review": "1eda3a7e53b2e35c5bee263c0c4e87ea42ad443a85092303ec78a7662675a536",
+        "tenant": "ten_f339a50e0d2044d8b6ab6bdb97b1ce80"
+      },
+      "state": "content_selected",
+      "tenant": "ten_f339a50e0d2044d8b6ab6bdb97b1ce80"
+    },
+    "original_state": "produced",
+    "new_state": "ready",
+    "current_issue": "planned",
+    "source_sha256": {
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "a552ef9ea2b4678d125610252d953887164651399e287dc9e713720827757893",
+      "customizations/components/tianxuan/duobao/native_release.py": "e998f42f35775446bb2c816deb0866d831da72ea51070cf7c6ed5f2426906fab"
+    },
+    "legacy_source_sha256": "63ae67641dcfd156c267afa7f1188c7a54a53cea908f10a5b60ef541a9426029",
+    "model_calls": 0,
+    "temporary_directory_removed": true
+  },
+  "legacy_after": {
+    "issue": 1456,
+    "probe": "actual_accepted_v1_workflow_with_separate_domain_connection_after_v2_replacement",
+    "outcome": "rejected",
+    "result": {
+      "type": "NativeStoreError",
+      "message": "Producer terminal required"
+    },
+    "original_state": "superseded",
+    "new_state": "ready",
+    "current_issue": "planned",
+    "source_sha256": {
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "899398e4cbe0c7b8d0049ab157034684fe00f15fe4420058f4f1de47e20f6668",
+      "customizations/components/tianxuan/duobao/native_release.py": "e998f42f35775446bb2c816deb0866d831da72ea51070cf7c6ed5f2426906fab"
+    },
+    "legacy_source_sha256": "63ae67641dcfd156c267afa7f1188c7a54a53cea908f10a5b60ef541a9426029",
+    "model_calls": 0,
+    "temporary_directory_removed": true
+  },
+  "limits": [
+    "Original author Node dispatch intermittent state failure retained; root run does not prove cause or fix",
+    "No model calls or production deployment"
+  ],
+  "model_calls": 0,
+  "tokens": null
+}

@@ -130,6 +130,7 @@
     "customizations/components/tianxuan/sinan-workorders/native_worker.py",
     "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
     "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py",
     "customizations/components/tianxuan/wenqu/README.md",
     "customizations/components/tianxuan/wenqu/test_wenqu.py",
     "customizations/components/tianxuan/wenqu/wenqu.py",

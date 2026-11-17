@@ -38,12 +38,46 @@ class NativeWorkflow:
         self.next_issues = next_issues
         self.installed_target = installed_target
         self.catalog = json.loads(_json(catalog or []))
+        self.domain.db.create_function("native_workflow_version", 0, lambda: 2)
         with self._transaction() as db:
             db.execute(
                 "CREATE TABLE IF NOT EXISTS native_tasks (id TEXT PRIMARY KEY, tenant TEXT NOT NULL, "
                 "issue TEXT UNIQUE NOT NULL, task TEXT NOT NULL, state TEXT NOT NULL, "
                 "ready_at REAL NOT NULL, assignment TEXT, terminal TEXT, acceptance TEXT)"
             )
+            # One writer transaction: preserve exact old task rows and worker states.
+            db.execute("CREATE TABLE IF NOT EXISTS native_active_tasks (issue TEXT PRIMARY KEY, task TEXT NOT NULL)")
+            db.execute(
+                "CREATE TABLE IF NOT EXISTS native_task_revisions (task TEXT PRIMARY KEY, previous TEXT, actor TEXT NOT NULL)"
+            )
+            indexes = db.execute("PRAGMA index_list(native_tasks)").fetchall()
+            if any(
+                i["unique"] and [c["name"] for c in db.execute("PRAGMA index_info(" + i["name"] + ")")] == ["issue"]
+                for i in indexes
+            ):
+                db.execute("ALTER TABLE native_tasks RENAME TO native_tasks_v1")
+                db.execute(
+                    "CREATE TABLE native_tasks (id TEXT PRIMARY KEY, tenant TEXT NOT NULL, issue TEXT NOT NULL, "
+                    "task TEXT NOT NULL, state TEXT NOT NULL, ready_at REAL NOT NULL, assignment TEXT, terminal TEXT, acceptance TEXT)"
+                )
+                db.execute("INSERT INTO native_tasks SELECT * FROM native_tasks_v1")
+                db.execute("INSERT INTO native_active_tasks SELECT issue,id FROM native_tasks_v1")
+                for row in db.execute("SELECT id,task FROM native_tasks_v1").fetchall():
+                    db.execute(
+                        "INSERT INTO native_task_revisions VALUES (?,NULL,?)",
+                        (row["id"], json.loads(row["task"])["actor"]),
+                    )
+                db.execute("DROP TABLE native_tasks_v1")
+            # Old installations cannot mutate versioned task rows silently.
+            for action in ("INSERT", "UPDATE", "DELETE"):
+                db.execute(
+                    "CREATE TRIGGER IF NOT EXISTS native_tasks_v2_"
+                    + action
+                    + " BEFORE "
+                    + action
+                    + " ON native_tasks BEGIN SELECT CASE WHEN native_workflow_version()!=2 "
+                    "THEN RAISE(ABORT,'native workflow v2 required') END; END"
+                )
             db.execute(
                 "CREATE TABLE IF NOT EXISTS native_outbox (id TEXT PRIMARY KEY, tenant TEXT NOT NULL, "
                 "payload TEXT NOT NULL)"
@@ -84,11 +118,32 @@ class NativeWorkflow:
     def status(self, actor, key):
         with self._transaction() as db:
             row = self._row(db, key)
-            self._allow(actor, row["issue"], "read")
+            self._read_allowed(actor, row)
             return row
 
+    def _read_allowed(self, actor, row):
+        self._allow(actor, row["issue"], "read")
+        task = json.loads(row["task"])
+        # A historical contract keeps its original text even if the issue is
+        # reassociated. Current issue visibility cannot authorize that history.
+        for requirement in task["source"]["definition"]["requirements"]:
+            self.domain.get_doc_shared(actor, requirement["id"])
+        self._inputs_allowed(actor, task["selected"])
+
     def authorize_task(
-        self, actor, issue, *, selected, writes, dependencies, profile, product, checks, mandate, capabilities=None
+        self,
+        actor,
+        issue,
+        *,
+        selected,
+        writes,
+        dependencies,
+        profile,
+        product,
+        checks,
+        mandate,
+        capabilities=None,
+        expected=None,
     ):
         source = self._allow(actor, issue, "authorize")
         if not mandate or not checks or profile not in self.worker.profiles:
@@ -130,6 +185,7 @@ class NativeWorkflow:
             product=product,
             checks=checks,
             mandate=mandate,
+            **({"previous": expected} if expected is not None else {}),
         )
         key = _digest(_json(task).encode())
         with self._transaction() as db:
@@ -137,28 +193,56 @@ class NativeWorkflow:
                 raise NativeStoreError("Source changed")
             for dependency, acceptance in dependencies.items():
                 row = self._row(db, dependency)
-                self._allow(actor, row["issue"], "read")
+                self._read_allowed(actor, row)
                 if row["tenant"] != tenant or row["acceptance"] != acceptance or not acceptance:
                     raise NativeStoreError("Dependency lacks exact accepted output")
                 accepted = json.loads(acceptance)
                 if any(revisions.get(m) != r for m, r in accepted["modules"].items()):
                     raise NativeStoreError("Dependency output must be pinned")
-            old = db.execute("SELECT id FROM native_tasks WHERE issue=?", (issue,)).fetchone()
-            if old:
-                if old["id"] != key:
-                    raise NativeStoreError("Managed definition already bound; explicit revision required")
-                return key
-            if self.domain.get_issue(issue)["status"] in {"done", "cancelled"}:
+            old = db.execute("SELECT task FROM native_active_tasks WHERE issue=?", (issue,)).fetchone()
+            if db.execute("SELECT 1 FROM native_tasks WHERE id=?", (key,)).fetchone():
+                return key  # Stable replay never reactivates an older definition.
+            if (old["task"] if old else None) != expected:
+                raise NativeStoreError("Managed definition already bound; explicit revision required (active changed)")
+            if expected is not None and not old:
+                raise NativeStoreError("No active definition to replace")
+            if expected is None and self.domain.get_issue(issue)["status"] in {"done", "cancelled"}:
                 raise NativeStoreError("Terminal issue cannot be newly managed")
             db.execute(
                 "INSERT INTO native_tasks VALUES (?,?,?,?,?,?,NULL,NULL,NULL)",
                 (key, tenant, issue, _json(task), "ready", time.time()),
             )
-            db.execute("INSERT INTO native_managed_issues VALUES (?,?,NULL)", (issue, source["revision"]))
+            db.execute(
+                "INSERT INTO native_active_tasks VALUES (?,?) ON CONFLICT(issue) DO UPDATE SET task=excluded.task",
+                (issue, key),
+            )
+            if expected is not None:
+                # Legacy publishers do not know the active map and can publish
+                # without writing native_tasks. Retire settled unaccepted work
+                # so their existing produced-state guard also fails closed.
+                # Real/unknown occupancy and historical acceptance stay intact.
+                db.execute(
+                    "UPDATE native_tasks SET state='superseded' WHERE id=? AND state IN ('ready','produced','failed','stopped')",
+                    (expected,),
+                )
+            db.execute("INSERT INTO native_task_revisions VALUES (?,?,?)", (key, expected, actor))
+            db.execute(
+                "INSERT INTO native_managed_issues VALUES (?,?,NULL) ON CONFLICT(issue_id) DO UPDATE SET definition=excluded.definition,acceptance=NULL",
+                (issue, source["revision"]),
+            )
             db.execute("UPDATE issues SET status='planned' WHERE id=?", (issue,))
+            self.domain._event(tenant, "native.authorized", actor, issue, {"task": key, "previous": expected})
+            requirement = source["definition"]["requirement_id"]
+            if requirement:
+                self.domain.sync_progress(requirement, actor=actor)
         return key
 
     def _valid(self, actor, row):
+        active = self.domain.db.execute(
+            "SELECT task FROM native_active_tasks WHERE issue=?", (row["issue"],)
+        ).fetchone()
+        if not active or active[0] != row["id"]:
+            raise NativeStoreError("Task definition superseded")
         task = json.loads(row["task"])
         self._inputs_allowed(actor, task["selected"])
         if self._allow(actor, row["issue"], "execute") != task["source"]:
@@ -167,7 +251,7 @@ class NativeWorkflow:
             raise NativeStoreError("Issue execution is stopped")
         for dependency, acceptance in task["dependencies"].items():
             other = self._row(self.domain.db, dependency)
-            self._allow(actor, other["issue"], "read")
+            self._read_allowed(actor, other)
             if other["acceptance"] != acceptance or other["state"] != "accepted":
                 raise NativeStoreError("Dependency acceptance changed")
         return task
@@ -195,13 +279,13 @@ class NativeWorkflow:
             ).fetchall()
             items, ready, sources, active, requests = [], [], [], [], []
             held = db.execute(
-                "SELECT id,tenant,issue FROM native_tasks WHERE state IN ('reserved','running','held') ORDER BY id LIMIT 1024"
+                "SELECT * FROM native_tasks WHERE state IN ('reserved','running','held') ORDER BY id LIMIT 1024"
             ).fetchall()
             for index, held_row in enumerate(held):
                 visible = held_row["tenant"] == tenant
                 if visible:
                     try:
-                        self._allow(actor, held_row["issue"], "read")
+                        self._read_allowed(actor, held_row)
                     except PermissionDenied:
                         visible = False
                 active.append({
@@ -330,9 +414,11 @@ class NativeWorkflow:
             if upstream["acceptance"] != acceptance or upstream["state"] != "accepted":
                 raise NativeStoreError("Dependency acceptance changed")
             request = accepted["request"]
-            current = self.release.selected(task["tenant"], actor, request["product"], request["channel"])
+            current = self.release.historical(
+                task["tenant"], actor, request["product"], request["channel"], accepted["id"]
+            )
             if current != accepted:
-                raise NativeStoreError("Dependency release no longer current")
+                raise NativeStoreError("Dependency historical release invalid")
 
     def reconcile(self, actor, key):
         row = self.status(actor, key)
@@ -344,11 +430,13 @@ class NativeWorkflow:
             return row  # No expiry, PID takeover or automatic relaunch.
         with self._transaction() as db:
             current = self._row(db, key)
-            self._valid(actor, current)
+            try:
+                self._valid(actor, current)
+                state = terminal["state"]
+            except (PermissionDenied, NativeStoreError):
+                state = "stopped"
             if current["state"] in {"running", "held"}:
-                db.execute(
-                    "UPDATE native_tasks SET state=?,terminal=? WHERE id=?", (terminal["state"], _json(terminal), key)
-                )
+                db.execute("UPDATE native_tasks SET state=?,terminal=? WHERE id=?", (state, _json(terminal), key))
         return self.status(actor, key)
 
     def advance(self, actor, *, isolate=False, exclude=()):
@@ -407,12 +495,12 @@ class NativeWorkflow:
             for check in task["checks"]
         }
 
-    def authorize_installed(self, actor, issue):
+    def authorize_installed(self, actor, issue, *, expected=None):
         self._allow(actor, issue, "authorize")
         if not callable(self.installed_plan):
             raise NativeStoreError("No admitted native plan installed")
         plan = self.installed_plan(actor, issue)
-        return self.authorize_task(actor, issue, **plan)
+        return self.authorize_task(actor, issue, expected=expected, **plan)
 
     def review(self, actor, key):
         self._dependencies_current(actor, key)
@@ -462,6 +550,7 @@ class NativeWorkflow:
         """Installed delivery target only; a replay never silently rebases publication."""
         row = self.status(actor, key)
         self._allow(actor, row["issue"], "publish")
+        self._valid(actor, row)
         if row["state"] == "accepted":
             return {"state": "accepted", "acceptance": json.loads(row["acceptance"])}
         if row["state"] != "produced" or not callable(self.installed_target):
@@ -523,8 +612,13 @@ class NativeWorkflow:
             for acceptance in task["dependencies"].values():
                 accepted = json.loads(acceptance)
                 request = accepted["request"]
-                if self.release.selected(task["tenant"], actor, request["product"], request["channel"]) != accepted:
-                    raise NativeStoreError("Dependency release no longer current")
+                if (
+                    self.release.historical(
+                        task["tenant"], actor, request["product"], request["channel"], accepted["id"]
+                    )
+                    != accepted
+                ):
+                    raise NativeStoreError("Dependency historical release invalid")
             _, policy = self.release._policy(native_db, task["tenant"], task["product"])
             if policy["checks"] != task["check_contexts"]:
                 raise NativeStoreError("Release does not cover exact task criteria")
@@ -542,6 +636,19 @@ class NativeWorkflow:
         self._dependencies_current(actor, key)
         row = self.status(actor, key)
         task = json.loads(row["task"])
+        if row["state"] == "accepted":
+            with self._transaction() as db:
+                self._valid(actor, self._row(db, key))
+                self._allow(actor, row["issue"], "accept")
+            accepted = json.loads(row["acceptance"])
+            request = accepted["request"]
+            if (
+                channel != request["channel"]
+                or self.release.historical(task["tenant"], actor, request["product"], channel, accepted["id"])
+                != accepted
+            ):
+                raise NativeStoreError("Acceptance changed")
+            return accepted
         # NativeRelease readback verifies current approval, contributor independence,
         # checks and policy. Caller cannot supply acceptance facts.
         selected = self.release.selected(task["tenant"], actor, task["product"], channel)
