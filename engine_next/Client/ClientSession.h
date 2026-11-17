@@ -78,6 +78,8 @@ public:
 	// Takes ownership of the supplied transport, including Stop on error/Shutdown.
 	[[nodiscard]] RuntimeStatus Initialize(const RuntimeConfig &stConfig, std::unique_ptr<Network::ITransport> pTransport, ClientSessionMode eMode = ClientSessionMode::Interactive);
 	// Monotonic milliseconds. Nonblocking and at most eight input steps per call.
+	// A full server input window pauses prediction while acknowledgments and
+	// retransmissions continue. Queued movement survives until the next step.
 	[[nodiscard]] RuntimeStatus Tick(std::uint64_t nNowMsec, const Gameplay::Vector3 &vMovement);
 	// A short input edge survives until the next real input step. At most one
 	// pending direction is retained; held movement takes precedence at that step.

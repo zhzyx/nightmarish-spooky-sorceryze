@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "input-window-verified-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-input-window-backpressure-20261117",
+  "kind": "step",
+  "occurred_at": "2026-11-17T03:23:26.685781+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1391",
+  "agent": {
+    "id": "codex-m42-network-acceptance",
+    "version": "repository-instructions-83775e6c",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "input-window-request-20261117"
+  ],
+  "payload": {
+    "change": "Shared 32-input window and interactive prediction backpressure preserve acknowledgment, retransmission and pending movement.",
+    "verification": "MSVC and clang scoped tests pass 8 tests and 6639 checks. Final full runtime tests pass 62 tests and 7142 checks with 217 declared inputs matching current bytes. Normal, clean and packaged M2 handshake and normal/clean drain, M3 assets, AI and scene checks pass.",
+    "regression_strength": "The original implementation fails the new formal tests with 498 failed checks. Persistent first-input loss produces sequence 33 at 512ms before the fix and recovers through sequence44 by1400ms with the fix.",
+    "evidence": "data-collection/engine-next-input-window-backpressure-verification.json",
+    "remaining": "Independent review and signed PR delivery are owned by the parent."
+  },
+  "sha256": "3f84e0724cad045eb02ce7e392e8d494cb577e0d7312c3777eebf89401cc713b"
+}

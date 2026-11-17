@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-input-window-backpressure-20261117",
+  "issue": 1391,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1391",
+  "recorded_at_utc": "2026-11-17T03:22:49.335602+00:00",
+  "baseline": "83775e6c2ffb5b3a518c4ffebbe0f3777c7dce06",
+  "source_files": [
+    {
+      "path": "engine_next/Client/ClientSession.cpp",
+      "size_bytes": 34555,
+      "sha256": "e599ece9532636dc76cd8d6177275c82cc2655757dc5bd9af478f32b5a6bace9"
+    },
+    {
+      "path": "engine_next/Client/ClientSession.h",
+      "size_bytes": 4745,
+      "sha256": "46c237e3ffa8ab5361a01b8a48ef6e856f82fade7a76123d2fee0a7849978efb"
+    },
+    {
+      "path": "engine_next/Server/ServerRuntime.cpp",
+      "size_bytes": 24861,
+      "sha256": "91d3da2850d8465f3344900e9a25fd2c8679b0df8b347cf98fc0355322bf5bbd"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Network/Protocol.h",
+      "size_bytes": 6107,
+      "sha256": "59ac79791f891e3e3753d6004858ecb63073be427c36d9179a4806a2a565c058"
+    },
+    {
+      "path": "engine_next/Tests/Runtime/TestClientSession.cpp",
+      "size_bytes": 17705,
+      "sha256": "65cb2cc01ecb7dc219962ae6a84be8eee5ec5fd29719e9999af889c5aae75f65"
+    }
+  ],
+  "changes": [
+    "The shared protocol constant preserves the existing 32-input server acceptance window.",
+    "Interactive prediction pauses at 32 unconfirmed inputs. Incoming acknowledgments and retransmissions continue through the normal session step.",
+    "A pending short movement survives a full window and is consumed once when an acknowledged slot becomes available.",
+    "Server validation uses the same constant and a subtraction after the existing stale-input branch."
+  ],
+  "deterministic_reproduction": {
+    "artifact": {
+      "path": "build/engine_next/input-window-evidence/PersistentLossResults.json",
+      "size_bytes": 4217,
+      "sha256": "b6e0d66a244690fde67732aa25db9e78ff6e95f4eff1f79885a840f5c54fea53"
+    },
+    "baseline": "Dropping sequence 1 through 700 milliseconds causes sequence 33 at 512 milliseconds while the server remains at sequence zero.",
+    "candidate": "With a 32-input window the same transport model rejects no input and processes sequence 44 by 1400 milliseconds.",
+    "actual_live_boundary": "The earlier reflection session recorded rejection reason 7. The exact missing input or scheduling event in that live run was not logged."
+  },
+  "scoped_tests": [
+    {
+      "path": "build/engine_next/input-window-scoped-final/Result.json",
+      "size_bytes": 7571,
+      "sha256": "82c9ff369f513a6a7bf87ed6e94a3ec83986ce53777156e85cd52dbe93d94164"
+    },
+    {
+      "path": "build/engine_next/input-window-scoped-final-clang/Result.json",
+      "size_bytes": 5038,
+      "sha256": "2ad6162a2fd1085032062da474d9ee4f29c00c7a1a60823c440c6afe9564abca"
+    }
+  ],
+  "scoped_summary": "MSVC and clang-cl each pass 8 tests and 6639 checks.",
+  "mutation": {
+    "artifact": {
+      "path": "build/engine_next/input-window-mutation/Result.json",
+      "size_bytes": 1064,
+      "sha256": "8c092e147a1522b19edac442e4c5161e7f510aa2d73626cae3f334e87f92b99d"
+    },
+    "result": "The previous ClientSession implementation fails the new tests with 498 failed checks."
+  },
+  "final_runtime": {
+    "artifact": {
+      "path": "build/engine_next/input-window-runtime-final/RuntimeBuildReport.json",
+      "size_bytes": 282760,
+      "sha256": "1a69d9c3c9c281470f2ba289016201e7147834f7a376a5e36cbeb8550f5e60ee"
+    },
+    "native_key": "5bac0cef55d6ad873081833fc8a3929d6c0ad5c70c14e2a7f843ae6add06ec05",
+    "native_input_count": 217,
+    "input_mismatches": [],
+    "target_results": [
+      {
+        "artifact": {
+          "path": "build/engine_next/input-window-runtime-final/next_server.exe",
+          "size_bytes": 788992,
+          "sha256": "03097759e5aced39db68007897ff27adeadf2d8597cd2da2d9a8c8766f1092da"
+        },
+        "summary": "ENGINE_NEXT_RUNTIME role=server ticks=4 status=ok",
+        "clean_summary": "ENGINE_NEXT_RUNTIME role=server ticks=4 status=ok"
+      },
+      {
+        "artifact": {
+          "path": "build/engine_next/input-window-runtime-final/next_client.exe",
+          "size_bytes": 798720,
+          "sha256": "b5a27d51bd8536a87fce01f8743d6d680be7a2aeeabc8872cfcf7a434d5406b5"
+        },
+        "summary": "ENGINE_NEXT_RUNTIME role=client client_id=A ticks=4 status=ok",
+        "clean_summary": "ENGINE_NEXT_RUNTIME role=client client_id=A ticks=4 status=ok"
+      },
+      {
+        "artifact": {
+          "path": "build/engine_next/input-window-runtime-final/next_asset.exe",
+          "size_bytes": 1225728,
+          "sha256": "95a37696721c0185e8a3e09f2c5cc95129ba1b32d4a5de04e17d9cc10d3fe5b5"
+        },
+        "summary": "Usage: next_asset compile --request FILE --source-root DIR --output DIR.enpak | validate --package DIR.enpak | inspect --package DIR.enpak | gpu-cook --package DIR.enpak --output DIR.engpu [--layout-only] | gpu-validate --package DIR.engpu --source-digest SHA256 | ai-run --request FILE --python FILE --executor-script FILE --factory NAME --database FILE --state FILE --output DIR.enpak [--resume]",
+        "clean_summary": "Usage: next_asset compile --request FILE --source-root DIR --output DIR.enpak | validate --package DIR.enpak | inspect --package DIR.enpak | gpu-cook --package DIR.enpak --output DIR.engpu [--layout-only] | gpu-validate --package DIR.engpu --source-digest SHA256 | ai-run --request FILE --python FILE --executor-script FILE --factory NAME --database FILE --state FILE --output DIR.enpak [--resume]"
+      },
+      {
+        "artifact": {
+          "path": "build/engine_next/input-window-runtime-final/EngineNextRuntimeTests.exe",
+          "size_bytes": 1177600,
+          "sha256": "2abd62986f9471a0def470b61e5cdb2f44dd399c0ee6cba59c70a7dd277be387"
+        },
+        "summary": "ENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_RECONNECT client_id=A session_id=7 entity_id=11 offline_ms=600\r\nENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=1 session_id=7\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=1\r\nENGINE_NEXT_CLIENT_RESUME client_id=A session_id=7 entity_id=11 confirmed=1 error=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=33 error=0.128\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_TEST_SUMMARY tests=62 checks=7142 failures=0",
+        "clean_summary": "ENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_RECONNECT client_id=A session_id=7 entity_id=11 offline_ms=600\r\nENGINE_NEXT_CLIENT_TRANSPORT_CONNECTED client_id=A reconnecting=1 session_id=7\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=1\r\nENGINE_NEXT_CLIENT_RESUME client_id=A session_id=7 entity_id=11 confirmed=1 error=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_CLIENT_CORRECTION client_id=A sequence=33 error=0.128\r\nENGINE_NEXT_CLIENT_WELCOME client_id=A session_id=7 entity_id=11 resumed=0\r\nENGINE_NEXT_TEST_SUMMARY tests=62 checks=7142 failures=0"
+      }
+    ],
+    "acceptance_reports": [
+      {
+        "path": "build/engine_next/input-window-runtime-final/HandshakeReport.json",
+        "size_bytes": 7733,
+        "sha256": "435fb1844b928c355e0e58a8c539d618139b04be255ebfee6f11c98b2b361a1e"
+      },
+      {
+        "path": "build/engine_next/input-window-runtime-final/DrainFaultsReport.json",
+        "size_bytes": 5728,
+        "sha256": "27deab2258357b1fc797ab21ec041a49e122b8baf811c0785c2ce61ba2cf72ff"
+      },
+      {
+        "path": "build/engine_next/input-window-runtime-final/M3AssetReport.json",
+        "size_bytes": 206,
+        "sha256": "2b5f319993330fca5845c64ba88182e383f2e8c5952c1ab9d143f64e0d5b2e5a"
+      },
+      {
+        "path": "build/engine_next/input-window-runtime-final/M3AiReport.json",
+        "size_bytes": 432,
+        "sha256": "e142d6bbeb3424a4a2642fdfc96df2969df3b44d5b61d6c602ca0e276ea80934"
+      },
+      {
+        "path": "build/engine_next/input-window-runtime-final/M3SceneReport.json",
+        "size_bytes": 10022,
+        "sha256": "aa7c3d3ba59dcf7b511b71e89464feb2cebb5a0387fcd558c8f6a3a325215556"
+      },
+      {
+        "path": "build/engine_next/input-window-runtime-final/CleanRun/HandshakeReport.json",
+        "size_bytes": 7935,
+        "sha256": "a333e792a55627118f03e9c5a2545e43ed8635c0c216d9fef40c70ebc67465a2"
+      },
+      {
+        "path": "build/engine_next/input-window-runtime-final/CleanRun/DrainFaultsReport.json",
+        "size_bytes": 5464,
+        "sha256": "4f6879477393fbe1f895008f542ee2682178fc8c58f13a61012a7a13e0c0be27"
+      },
+      {
+        "path": "build/engine_next/input-window-runtime-final/CleanRun/M3AssetReport.json",
+        "size_bytes": 206,
+        "sha256": "2b5f319993330fca5845c64ba88182e383f2e8c5952c1ab9d143f64e0d5b2e5a"
+      },
+      {
+        "path": "build/engine_next/input-window-runtime-final/CleanRun/M3AiReport.json",
+        "size_bytes": 432,
+        "sha256": "e142d6bbeb3424a4a2642fdfc96df2969df3b44d5b61d6c602ca0e276ea80934"
+      },
+      {
+        "path": "build/engine_next/input-window-runtime-final/CleanRun/M3SceneReport.json",
+        "size_bytes": 9921,
+        "sha256": "6a4d7330ddf2d6cd2653d3be86c5a0afc75ab6d1339457aae66295579b4d5966"
+      },
+      {
+        "path": "build/engine_next/input-window-runtime-final/PackageHandshakeReport.json",
+        "size_bytes": 7742,
+        "sha256": "de1c4d4ce5447285c0e2e8ce9b9f959521b34632a9407548507dbce981c1c244"
+      }
+    ],
+    "summaries": {
+      "handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-input-window-backpressure-20261117\\\\build\\\\engine_next\\\\input-window-runtime-final\\\\HandshakeReport.json\",\r\n  \"trace_sha256\": {\r\n    \"server.jsonl\": \"da3954be6c87d1181ae2ac78267d089c434307a33da323d949cd9955a5e684dc\",\r\n    \"client-A.jsonl\": \"1787268e5fc4c9bd0dfb4c61e75829047a1cce3784096e5da5559dae9d541cea\",\r\n    \"client-B.jsonl\": \"623d0af30ba35a245896daa9358ec89551155ce162894512797e32cb0d9b5fd5\"\r\n  }\r\n}",
+      "clean_handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-input-window-backpressure-20261117\\\\build\\\\engine_next\\\\input-window-runtime-final\\\\CleanRun\\\\HandshakeReport.json\",\r\n  \"trace_sha256\": {\r\n    \"server.jsonl\": \"78d6e06c04de96b056972c8febc1ba6f27b4199fe255743ab7ed001b6d256256\",\r\n    \"client-A.jsonl\": \"69e5c24e21e4db0581bf4d6d9e3882e35911d329fb8ec1026960d4e51ef9fbfa\",\r\n    \"client-B.jsonl\": \"623d0af30ba35a245896daa9358ec89551155ce162894512797e32cb0d9b5fd5\"\r\n  }\r\n}",
+      "drain_faults": "ENGINE_NEXT_DRAIN_NEGATIVE timeout=1 rejected_new_peer=1 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-input-window-backpressure-20261117\\\\build\\\\engine_next\\\\input-window-runtime-final\\\\DrainFaultsReport.json\",\r\n  \"trace_sha256\": {\r\n    \"fault-server.jsonl\": \"75507af39365df52bbebb6ad044301c06c10517d91f177d65c891c6ceb6c6623\",\r\n    \"fault-client-A.jsonl\": \"369fbbc2bb652582d808b0ac73cabd8995a15a9d081db258dc3ccc4672c97e55\",\r\n    \"fault-client-B.jsonl\": \"fc2ff36c3475ca9dfce35b0da20977a1c4504140d1f35e8c2185b588fd5f2f88\",\r\n    \"fault-client-C.jsonl\": \"af384f1c3194bfd3f9514e5065d16d60d66df55eca53cd674eaa1d61682f133c\"\r\n  }\r\n}",
+      "clean_drain_faults": "ENGINE_NEXT_DRAIN_NEGATIVE timeout=1 rejected_new_peer=1 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-input-window-backpressure-20261117\\\\build\\\\engine_next\\\\input-window-runtime-final\\\\CleanRun\\\\DrainFaultsReport.json\",\r\n  \"trace_sha256\": {\r\n    \"fault-server.jsonl\": \"62ebcd253c00272be1ee46a94391b5ea3bd4b5c039165d481955b179eeb1cd12\",\r\n    \"fault-client-A.jsonl\": \"d476278257cd97fd5a26d2f8e674b867c61ccb0f5323141e355679edc619560d\",\r\n    \"fault-client-B.jsonl\": \"17d9ff8af002f19d69fc8caa6b92d7c61f9295ce67b8a1d73f14cb99bb017c2d\",\r\n    \"fault-client-C.jsonl\": \"af384f1c3194bfd3f9514e5065d16d60d66df55eca53cd674eaa1d61682f133c\"\r\n  }\r\n}",
+      "package_handshake": "ENGINE_NEXT_HANDSHAKE clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok\r\n{\r\n  \"report\": \"D:\\\\Projects\\\\engine-next-input-window-backpressure-20261117\\\\build\\\\engine_next\\\\input-window-runtime-final\\\\PackageHandshakeReport.json\",\r\n  \"trace_sha256\": {\r\n    \"server.jsonl\": \"1674d2fd28c726620db36c98e8f4059df1d27692d248b860aaec97c02ab3f063\",\r\n    \"client-A.jsonl\": \"9c4c6f9585b1983df7d0cd31648ded8f0d2263b4e21d828efbcace755f3fddaf\",\r\n    \"client-B.jsonl\": \"abf349592969348ddd6c03b3323cc0565143910fc7dc962b4baa191be916f716\"\r\n  }\r\n}",
+      "assets": "ENGINE_NEXT_M3_ASSETS deterministic=1 no_clobber=1 path_escape_rejected=1 status=ok",
+      "clean_assets": "ENGINE_NEXT_M3_ASSETS deterministic=1 no_clobber=1 path_escape_rejected=1 status=ok",
+      "ai": "ENGINE_NEXT_M3_AI offline=1 synthetic_resume=1 provider_submits=1 artifact_state=1 output_limit=1 detached_reaped=1 status=ok",
+      "clean_ai": "ENGINE_NEXT_M3_AI offline=1 synthetic_resume=1 provider_submits=1 artifact_state=1 output_limit=1 detached_reaped=1 status=ok",
+      "scene": "ENGINE_NEXT_M3_SCENE clients=2 scene_revision=r9 expected_a_position_x=4.16 status=ok",
+      "clean_scene": "ENGINE_NEXT_M3_SCENE clients=2 scene_revision=r9 expected_a_position_x=-0.8399999999999999 status=ok"
+    }
+  },
+  "earlier_soak": {
+    "artifact": {
+      "path": "build/engine_next/input-window-runtime/RuntimeBuildReport.json",
+      "size_bytes": 280394,
+      "sha256": "6cc7acc1b49c4eb7b888b358dd1917286cf4f94b77d31e1c1ce0a2241f43dce0"
+    },
+    "summary": "ENGINE_NEXT_SOAK ticks=10312 elapsed_seconds=165.25 input_high_water=4 status=ok",
+    "identity_boundary": "This earlier build used the same production sources and an indentation-only earlier form of TestClientSession.cpp. The final full runtime build is recorded separately."
+  },
+  "formatting": "Pinned clang-format 22.1.5 dry run, file_format.py and git diff --check passed.",
+  "pending": "Parent independent review and signed PR delivery."
+}

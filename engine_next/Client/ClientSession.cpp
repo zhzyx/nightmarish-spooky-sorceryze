@@ -529,12 +529,8 @@ RuntimeStatus ClientSession::State::Step(const Gameplay::Vector3 &vMovement)
 	if (eMode == ClientSessionMode::Interactive && bConnected && !bReconnecting)
 	{
 		std::uint32_t nSteps = 0;
-		while (nNowMsec >= nNextInputMsec && nSteps < 8)
+		while (nNowMsec >= nNextInputMsec && nSteps < 8 && mapUnacknowledgedInputs.size() < Network::MAX_INPUT_WINDOW)
 		{
-			if (mapUnacknowledgedInputs.size() >= 256)
-			{
-				return RuntimeStatus::InvalidState;
-			}
 			Gameplay::PredictionInput stInput;
 			const Gameplay::Vector3 vStepMovement = vMovement.LengthSquared() > 0 ? vMovement : vPendingMovement;
 			if (!stPrediction.PredictInput(vStepMovement, stInput))

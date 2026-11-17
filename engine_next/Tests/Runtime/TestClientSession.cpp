@@ -33,7 +33,9 @@
 #include "engine_next/Client/ClientSession.h"
 #include "engine_next/include/EngineNext/Network/Protocol.h"
 
+#include <algorithm>
 #include <limits>
+#include <map>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -247,8 +249,9 @@ ENGINE_NEXT_TEST("ClientSession bounds missing acknowledgments and remote entity
 	{
 		ENGINE_NEXT_CHECK_EQ(stSession.Tick(nIndex * 16, {}), RuntimeStatus::Ok);
 	}
-	ENGINE_NEXT_CHECK_EQ(stSession.Tick(256 * 16, {}), RuntimeStatus::InvalidState);
-	ENGINE_NEXT_CHECK(!stSession.IsConnected());
+	ENGINE_NEXT_CHECK_EQ(stSession.Tick(256 * 16, {}), RuntimeStatus::Ok);
+	ENGINE_NEXT_CHECK(stSession.IsConnected());
+	ENGINE_NEXT_CHECK_EQ(stSession.GetSnapshot().arrEntities[0].stState.nConfirmedSequence, EngineNext::Network::MAX_INPUT_WINDOW);
 	stSession.Shutdown();
 	std::unique_ptr<SessionTransport> pSecond = std::make_unique<SessionTransport>();
 	pTransport = pSecond.get();
@@ -263,6 +266,87 @@ ENGINE_NEXT_TEST("ClientSession bounds missing acknowledgments and remote entity
 	}
 	ENGINE_NEXT_CHECK_EQ(stSession.Tick(0, {}), RuntimeStatus::InvalidState);
 	ENGINE_NEXT_CHECK(stSession.GetSnapshot().arrEntities.size() <= 256);
+}
+
+ENGINE_NEXT_TEST("ClientSession pauses a full input window and recovers a lost oldest input")
+{
+	EngineNext::Runtime::ClientSession stSession;
+	std::unique_ptr<SessionTransport> pFake = std::make_unique<SessionTransport>();
+	SessionTransport *pTransport = pFake.get();
+	ENGINE_NEXT_CHECK_EQ(stSession.Initialize(Config(), std::move(pFake)), RuntimeStatus::Ok);
+	pTransport->Welcome();
+	std::map<std::uint64_t, EngineNext::Gameplay::PredictionInput> mapServerInputs;
+	std::uint64_t nLastProcessed = 0;
+	std::uint64_t nMaximumSent = 0;
+	std::uint64_t nFirstMovingSequence = 0;
+	std::uint64_t nLastMovingSequence = 0;
+	std::uint64_t nFirstInputAcceptedMsec = 0;
+	for (std::uint64_t nNowMsec = 0; nNowMsec <= 1600; nNowMsec += 16)
+	{
+		if (nNowMsec == 608)
+		{
+			ENGINE_NEXT_CHECK_EQ(stSession.QueueMovementPulse({ 1.0F, 0.0F, 0.0F }), RuntimeStatus::Ok);
+		}
+		ENGINE_NEXT_CHECK_EQ(stSession.Tick(nNowMsec, {}), RuntimeStatus::Ok);
+		for (const std::vector<std::uint8_t> &arrFrame : pTransport->arrSent)
+		{
+			EngineNext::Network::FrameHeader stHeader;
+			ENGINE_NEXT_CHECK_EQ(EngineNext::Network::DecodeHeader(arrFrame.data(), arrFrame.size(), stHeader), RuntimeStatus::Ok);
+			if (stHeader.eType != EngineNext::Network::MessageType::Input)
+			{
+				continue;
+			}
+			EngineNext::Network::InputCommand stCommand;
+			ENGINE_NEXT_CHECK_EQ(EngineNext::Network::DecodeInputCommand(arrFrame.data() + EngineNext::Network::FRAME_HEADER_BYTES,
+																		 stHeader.nPayloadBytes, stCommand),
+								 RuntimeStatus::Ok);
+			const EngineNext::Gameplay::PredictionInput &stInput = stCommand.stInput;
+			nMaximumSent = (std::max)(nMaximumSent, stInput.nSequence);
+			ENGINE_NEXT_CHECK_EQ(stInput.nStepMsec, 16U);
+			if (stInput.vMovementInput.fX != 0)
+			{
+				nFirstMovingSequence = nFirstMovingSequence == 0 ? stInput.nSequence : nFirstMovingSequence;
+				nLastMovingSequence = stInput.nSequence;
+			}
+			if (stInput.nSequence == 1 && nNowMsec < 700)
+			{
+				continue;
+			}
+			if (stInput.nSequence <= nLastProcessed)
+			{
+				continue;
+			}
+			ENGINE_NEXT_CHECK(stInput.nSequence - nLastProcessed <= EngineNext::Network::MAX_INPUT_WINDOW);
+			if (stInput.nSequence == 1)
+			{
+				nFirstInputAcceptedMsec = nNowMsec;
+			}
+			mapServerInputs.emplace(stInput.nSequence, stInput);
+		}
+		pTransport->arrSent.clear();
+		if (nNowMsec < 700)
+		{
+			ENGINE_NEXT_CHECK_EQ(nMaximumSent, (std::min)(nNowMsec / 16 + 1, static_cast<std::uint64_t>(EngineNext::Network::MAX_INPUT_WINDOW)));
+		}
+		if (mapServerInputs.erase(nLastProcessed + 1) != 0)
+		{
+			++nLastProcessed;
+		}
+		if (nLastProcessed != 0)
+		{
+			EngineNext::Network::Snapshot stSnapshot;
+			stSnapshot.nEntityId = 11;
+			stSnapshot.nServerTick = nNowMsec / 16;
+			stSnapshot.nLastProcessedInputSequence = nLastProcessed;
+			pTransport->Packet(EngineNext::Network::MessageType::Snapshot, EngineNext::Network::EncodeSnapshot(stSnapshot));
+		}
+	}
+	ENGINE_NEXT_CHECK(nFirstInputAcceptedMsec >= 700);
+	ENGINE_NEXT_CHECK(nLastProcessed > EngineNext::Network::MAX_INPUT_WINDOW);
+	ENGINE_NEXT_CHECK(nMaximumSent > EngineNext::Network::MAX_INPUT_WINDOW);
+	ENGINE_NEXT_CHECK_EQ(nFirstMovingSequence, static_cast<std::uint64_t>(EngineNext::Network::MAX_INPUT_WINDOW) + 1);
+	ENGINE_NEXT_CHECK_EQ(nLastMovingSequence, nFirstMovingSequence);
+	ENGINE_NEXT_CHECK(stSession.IsConnected());
 }
 
 ENGINE_NEXT_TEST("ClientSession retains a short movement pulse for exactly one fixed step")
