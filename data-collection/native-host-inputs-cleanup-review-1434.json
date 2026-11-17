@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "issue": 1434,
+  "related_bug": 1438,
+  "reviewer": "codex-native-independent-exact-delta-review-agent",
+  "recorded_at": "2026-11-17T14:00:01.063857+00:00",
+  "source_root": "D:\\GongGong-work\\native-host-inputs-20261117",
+  "path_base": "source_root unless absolute",
+  "base_commit": "26baf6c2921fbf4aa2cfe8c34bb9ea6fa2d6968e",
+  "candidate_state": "Uncommitted test delta and untracked cleanup evidence over base_commit; approval binds exact bytes/blobs below, not a future whole commit.",
+  "verdict": "pass",
+  "findings": [],
+  "scope": "Read-only exact delta review of cancellation cleanup test deadline; prior inventory review preserved by byte comparison. Parent owns formal gates, candidate admission, CI, main and Issue closure.",
+  "reviewed_files": {
+    "tools/native_host_inputs.json": {
+      "sha256": "d6287a31aa2e3803b52f0e69e5e806a8a2fe5e0e86ba69a316b5015335cd19ae",
+      "git_blob": "8513629225b22c2a5ea20515854378afa533d6e4"
+    },
+    "design-docs/native-host-inputs-20261117.md": {
+      "sha256": "c6cec04318b4b0dc89dd8ae4896f4067308943c9b2313325e3dcc64fc2ea64a1",
+      "git_blob": "35d102753f7df30bbd91b8db949bab21755187b2"
+    },
+    "data-collection/native-host-inputs-1434.json": {
+      "sha256": "07dbb92dc6f2b6561474cd3de25906383b3247aa4f7001a54e4b3d69d9eb58ab",
+      "git_blob": "ff2cbed538067f9511f5a50e191a822ce6bdc6d4"
+    },
+    "tools/editor_native_cache.py": {
+      "sha256": "12756789e5157b27a1d97a756670850a0ee23e0f6ba947a5e2ab5e97b2c35573",
+      "git_blob": "2cdc5eed7099588d6285c32ef20b5c4940d8426d"
+    },
+    "tools/build_engine_modules.py": {
+      "sha256": "558c21d1d69094135dcfb8bff7279e0315db013f5e641b8467045513f0bdf8cc",
+      "git_blob": "aac6225aeb95b610def52e9014587de932c3a00f"
+    },
+    "tools/test_build_engine_modules.py": {
+      "sha256": "ddbbbba4607c923140f6e2aa5779934b19a31a8e3925b3d4128c026f2ba68ecc",
+      "git_blob": "d1605a294e06e40500e1c5c112475b976c47fe3c"
+    },
+    ".github/scripts/windows_editor_artifact.py": {
+      "sha256": "2cd7169dd56e8149aa78768c45f013f1f47488387d5fcf7ebf1e4cc911779654",
+      "git_blob": "4f689b4b3bb8da2ba6c9335124910d4a639954fe"
+    },
+    "customizations/components/issue-workorders/writer_submit.py": {
+      "sha256": "761fefd9695f5a280f3c6aa8863f4d65d7effcb319bdbeabb3ee7a20b57e133a",
+      "git_blob": "e7643f68cb917fb35d0706a329f80b753f57e9d1"
+    },
+    "tests/editor/test_native_host_inputs.py": {
+      "sha256": "3b77664b4277dbd091f522b14d2ce81d86bedb5f5fd8659b7b7ac38616f21ace",
+      "git_blob": "64df3f2437dae524994f8a825fdd8263078abfe5"
+    },
+    "tests/editor/test_editor_native_cache.py": {
+      "sha256": "736a6025d40721158806ef7f91600a02582cb833feaf0f3dd5c3758e2d1274f4",
+      "git_blob": "8bc0d773067bb94275749e4dbe763fdae9a010c6"
+    },
+    "tests/editor/test_codex_bridge.js": {
+      "sha256": "e3069e8fc36eeaffdb79a148b6e13b124f388da14b5d897731662043bf9857ab",
+      "git_blob": "cf5f2b95cda4b3e52ffd1db89720b9764cfa989c"
+    },
+    "tools/codex_cli/godot_bridge.js": {
+      "sha256": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab",
+      "git_blob": "6c24ece72d421d5aaa9193b82a11b5fed806eb46"
+    },
+    "data-collection/native-host-inputs-review-1434.json": {
+      "sha256": "358568e585c62ae566f678a5b148fda929a89eca08508bd2391e2327b9931f81",
+      "git_blob": "2226e2f958571b9dca24247ec31574478a38084e"
+    },
+    "data-collection/native-host-inputs-cleanup-1434.json": {
+      "sha256": "c20c2ca014c33535bdd9a86d37f0d034e3419873c24cc1c2fda9635b2d420e7c",
+      "git_blob": "c0901794bc1503cb2f5ac0ce8b1a80f2933e6d93"
+    }
+  },
+  "delta": {
+    "path": "tests/editor/test_codex_bridge.js",
+    "base_blob": "4edcf8731da7944fc3394810d337c3254eb4aa99",
+    "candidate_blob": "cf5f2b95cda4b3e52ffd1db89720b9764cfa989c",
+    "description": "Replace 200 iterations at 10 ms with 60,000 ms wall-clock deadline and 20 ms polling; deletion assertion retained. No production changes."
+  },
+  "assessment": [
+    "Windows detached cleanup listener already uses recursive rmSync with maxRetries 30 and retryDelay 100; nominal linear retry delay sums to 46,500 ms. A 2 second test budget can reject valid eventual cleanup.",
+    "60 second deadline provides 13.5 seconds beyond nominal retry delays; exits immediately on disappearance and still rejects persistent private files. It is a test observation budget, not a production performance guarantee.",
+    "Prior review is committed at the base and all ten recorded file SHA256 values match current bytes, preserving its exact 17-input inventory and 24-test evidence. No inventory or native-cache algorithm was reapproved with different bytes."
+  ],
+  "independent_checks": [
+    {
+      "command": "node --check tests/editor/test_codex_bridge.js",
+      "exit_code": 0
+    },
+    {
+      "check": "Extract actual deadline loop and deletion assertion into node:vm; inject clock, timer and filesystem without disk writes",
+      "exit_code": 0,
+      "cases": [
+        {
+          "disappearance_ms": 0,
+          "observed_ms": 0,
+          "assertion": "pass"
+        },
+        {
+          "disappearance_ms": 2860,
+          "observed_ms": 2860,
+          "assertion": "pass"
+        },
+        {
+          "disappearance_ms": 46500,
+          "observed_ms": 46500,
+          "assertion": "pass"
+        },
+        {
+          "disappearance_ms": null,
+          "observed_ms": 60000,
+          "assertion": "fails as required"
+        }
+      ]
+    },
+    {
+      "check": "SHA256/git blob audit; base production and prior review unchanged; only tracked delta is test file",
+      "exit_code": 0
+    }
+  ],
+  "parent_evidence_assessment": {
+    "whole_suite": "Supplied evidence records node --test: 21 passed, 0 failed, 0 skipped; test and production hashes independently matched. Full OS suite was not rerun by this reviewer.",
+    "controlled_lock": "Supplied evidence records directory present at 2 s, removal after release at 2.857654999999795 s, fixture removed. This supports the premature-timeout mechanism, not identification of hosted CI interference.",
+    "native_addon": "Hash/package recorded by parent; addon bytes not independently inspected in this constrained review."
+  },
+  "method_recall": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 19,
+    "head": "d306043838773c972591351c230cd9898d946cce1639f2d04a179e3bd849f18f",
+    "state": "verified",
+    "unavailable": [],
+    "application": "Preserve exact consumer-bound prior approval by hash; do not extrapolate OS fixture result to hosted cause or build performance."
+  },
+  "limits": [
+    "Date.now uses wall time; large clock adjustments and scheduler stalls can affect elapsed observation time. 46.5 s sums nominal retry delays and excludes filesystem/scheduling overhead.",
+    "No exact hosted-lock identity established; no CI pass, full compilation, deployment or main acceptance claimed.",
+    "New commit SHA/index admission and delivery remain parent responsibilities. Changed reviewed bytes invalidate this delta approval."
+  ],
+  "cleanup": {
+    "temporary_files_created": false,
+    "implementation_edits": false,
+    "commit_push_models_deploy": false,
+    "only_persistent_output": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\host-inputs-cleanup-review.json"
+  }
+}

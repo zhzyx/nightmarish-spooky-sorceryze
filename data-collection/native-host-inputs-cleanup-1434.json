@@ -1,0 +1,27 @@
+{
+  "issue": 1434,
+  "bug": 1438,
+  "command": "node --test tests/editor/test_codex_bridge.js",
+  "exit": 0,
+  "seconds": 6.651875199997448,
+  "stdout": "✔ requirements data contract is explicit, closed and cannot enable tools (2.6504ms)\n✔ requirements CLI actually receives typed schema and reports bounded data failures (2378.2428ms)\n✔ consultation distinguishes malformed tools, version skew and disallowed writes (0.2205ms)\n✔ production continuation crosses the Codex bridge only when advertised by the parent (0.7618ms)\n✔ output schema constrains active tools and typed arguments, retaining dynamic fallback (0.2937ms)\n✔ typed commands avoid double encoding and preserve optional host defaults (0.2615ms)\n✔ required nulls and invalid batches are rejected without partial calls (0.3534ms)\n✔ Codex arguments preserve default model, isolate config and disable native execution (0.1346ms)\n✔ consultation preserves host mode and rejects write capabilities before subprocess launch (0.318ms)\n✔ Godot context preserves Chinese, tool results and current permissions (0.1388ms)\n✔ consultation accepts semantic editor state but refuses editor actions (0.1633ms)\n✔ structured proposals are translated to host tool calls (0.0734ms)\n✔ malformed, unavailable and disabled actions never reach the host (0.216ms)\n✔ ordinary chat returns a final assistant message (0.0846ms)\n✔ Codex subprocess handles UTF-8 JSONL, failed turns and missing completion without leaking stderr (2867.8ms)\n✔ semantic actions are discoverable and disabled permissions reject them (0.4114ms)\n✔ delivery completion remains an explicit host proposal with its exact typed scope (0.1775ms)\n✔ images reach the CLI as private attachments with message references and are cleaned up (989.41ms)\n✔ cancelling a pending image request removes private attachments (306.2343ms)\n✔ Codex batches 17 independent reads in one turn and rejects oversized or mixed batches atomically (0.4091ms)\n✔ Windows proxy honors explicit settings and applies verified system HTTPS mapping only to child (0.3983ms)\nℹ tests 21\nℹ suites 0\nℹ pass 21\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 6613.1846\n",
+  "stderr": "",
+  "native_addon_sha256": "0f7411dbaed36fb0b353193ab92e39fd225490196dce82543631e13b16d1a586",
+  "test_sha256": "e3069e8fc36eeaffdb79a148b6e13b124f388da14b5d897731662043bf9857ab",
+  "production_sha256": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab",
+  "controlled_lock_reproduction": {
+    "issue": 1434,
+    "related_tracker": 1438,
+    "scenario": "Real Windows file handle denies deletion while bridge is forcibly terminated; existing independent cleanup listener retries after lock release.",
+    "child_exit": 1,
+    "directory_present_after_2_seconds": true,
+    "directory_removed_after_release": true,
+    "seconds_to_cleanup": 2.857654999999795,
+    "production_source_changed": false,
+    "production_sha256": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab",
+    "native_addon_package": "@tencent-ai/codebuddy-code@2.176.0",
+    "limits": "Reproduces premature test timeout under a controlled valid OS lock; does not identify the specific external lock or scheduling cause on hosted CI.",
+    "fixture_directory_removed": true
+  },
+  "limits": "Test-only deadline correction. Real Windows lock reproduction shows old2s deadline can reject valid eventual cleanup. Specific hosted lock cause remains unknown; no production change or performance guarantee."
+}
