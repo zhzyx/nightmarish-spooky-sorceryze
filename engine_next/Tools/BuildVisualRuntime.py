@@ -24,6 +24,7 @@ CORE_SOURCES = [
     "engine_next/Rendering/TemporalState.cpp",
     "engine_next/Rendering/PostProcessSettings.cpp",
     "engine_next/Rendering/LightTimeline.cpp",
+    "engine_next/Rendering/ReflectionSettings.cpp",
     "engine_next/Rendering/ShadowBounds.cpp",
     "engine_next/Rendering/Cook/GltfDecoder.cpp",
     "engine_next/Rendering/Cook/ImageDecoder.cpp",
@@ -71,6 +72,9 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestTemporalState.cpp",
     "engine_next/Tests/Rendering/TestPostProcessSettings.cpp",
     "engine_next/Tests/Rendering/TestLightTimeline.cpp",
+    "engine_next/Tests/Rendering/TestReflectionSettings.cpp",
+    "engine_next/Tests/Rendering/TestReflectionTrace.cpp",
+    "engine_next/Tests/Rendering/TestReflectionSampling.cpp",
     "engine_next/Tests/Rendering/TestExposureSampling.cpp",
     "engine_next/Tests/Rendering/TestBloomSampling.cpp",
     "engine_next/Tests/Rendering/TestShadowBounds.cpp",
@@ -93,6 +97,7 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/TemporalState.h",
     "EngineNext/Rendering/PostProcessSettings.h",
     "EngineNext/Rendering/LightTimeline.h",
+    "EngineNext/Rendering/ReflectionSettings.h",
     "EngineNext/Rendering/RenderScene.h",
     "EngineNext/Rendering/VisualRuntime.h",
 ]
@@ -113,6 +118,11 @@ SHADERS = [
     ("ExposureAdaptCS", "cs_6_0", "Exposure.cs.cso", []),
     ("DownsampleCS", "cs_6_0", "BloomDown.cs.cso", []),
     ("UpsampleCS", "cs_6_0", "BloomUp.cs.cso", []),
+    ("LightingPS", "ps_6_0", "ReflectionLighting.ps.cso", ["-D", "REFLECTION_STAGE=1"]),
+    ("ColorMipCS", "cs_6_0", "ReflectionColor.cs.cso", ["-D", "COLOR_MIP_STAGE=1"]),
+    ("TraceCS", "cs_6_0", "ReflectionTrace.cs.cso", ["-D", "REFLECTION_TRACE_STAGE=1"]),
+    ("CompositeCS", "cs_6_0", "ReflectionComposite.cs.cso", ["-D", "COMPOSITE_STAGE=1"]),
+    ("RadianceCS", "cs_6_0", "ReflectionRadiance.cs.cso", ["-D", "RADIANCE_STAGE=1"]),
 ]
 
 
@@ -454,6 +464,8 @@ def compile_shaders(args, commands):
             / (
                 "FixedMesh.hlsl"
                 if name.startswith("FixedMesh")
+                else "Reflection.hlsl"
+                if name.startswith("Reflection") and name != "ReflectionLighting.ps.cso"
                 else "Shadow.hlsl"
                 if name.startswith("Shadow")
                 else "Exposure.hlsl"
@@ -565,6 +577,9 @@ def build(args):
                 "engine_next/Rendering/Shaders/ExposureMath.hlsli",
                 "engine_next/Rendering/Shaders/Bloom.hlsl",
                 "engine_next/Rendering/Shaders/BloomSampling.hlsli",
+                "engine_next/Rendering/Shaders/Reflection.hlsl",
+                "engine_next/Rendering/Shaders/ReflectionTrace.hlsli",
+                "engine_next/Rendering/Shaders/ReflectionSampling.hlsli",
             ]
         ),
         *[

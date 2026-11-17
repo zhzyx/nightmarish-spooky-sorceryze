@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue": 1343,
+  "recorded_at_utc": "2026-11-17T03:45:21.626866+00:00",
+  "integration": {
+    "dependency_issue": 1391,
+    "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1393",
+    "signed_head": "bc0f99ed0d70948f62f34a1b93040d9f58e250ec",
+    "main_merge_commit": "f39bc9028958e5395d8ec38c6bbcc0bc577a480e",
+    "issue_state": "CLOSED COMPLETED"
+  },
+  "final_build": {
+    "artifact": {
+      "path": "build/engine_next/reflections-r5/VisualBuildReport.json",
+      "size_bytes": 1739144,
+      "sha256": "b99d261b201a421c0dbce5c8190532bac354e813a153e23a3ba858252adb538e"
+    },
+    "native_key": "c58b345330856c7866e49a885910c4978f09a1ba6dc6abbee286f90877057bc9",
+    "input_count": 241,
+    "input_mismatches": [],
+    "test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=231 checks=30923 failures=0",
+    "executable": {
+      "path": "build/engine_next/reflections-r5/next_visual_client.exe",
+      "size_bytes": 3040768,
+      "sha256": "89881db1beaf1997c4fc01c6d620d7ddb810274a297d0bb0bcba112db639e31f"
+    }
+  },
+  "r4_reference_build": {
+    "path": "build/engine_next/reflections-r4/VisualBuildReport.json",
+    "size_bytes": 1739144,
+    "sha256": "29fd7284051a35fcac3afaabf68be1c2c9de73aa159da0146d16a43ce72e866d"
+  },
+  "changed_native_inputs": [
+    {
+      "path": "engine_next/Client/ClientSession.cpp",
+      "r4_sha256": "80c351be551a5de07d151b5180d813f53e03afef94008bf5ce1c897f9380ca5f",
+      "r5_sha256": "e599ece9532636dc76cd8d6177275c82cc2655757dc5bd9af478f32b5a6bace9"
+    },
+    {
+      "path": "engine_next/Client/ClientSession.h",
+      "r4_sha256": "8626073725cdab0d7d8482dd5ac8fc6c264117c487fd3e906da52611123eab81",
+      "r5_sha256": "46c237e3ffa8ab5361a01b8a48ef6e856f82fade7a76123d2fee0a7849978efb"
+    },
+    {
+      "path": "engine_next/Server/ServerRuntime.cpp",
+      "r4_sha256": "361794f88bcafe7cae57d055f4883c299055129f40f91e07eba70c02742aac74",
+      "r5_sha256": "91d3da2850d8465f3344900e9a25fd2c8679b0df8b347cf98fc0355322bf5bbd"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Network/Protocol.h",
+      "r4_sha256": "d27b7638028b0181a3c266cd51daff0562acb9a59e9a633907480739bcb1e138",
+      "r5_sha256": "59ac79791f891e3e3753d6004858ecb63073be427c36d9179a4806a2a565c058"
+    }
+  ],
+  "unchanged_reflection_inputs": true,
+  "shader_count": 20,
+  "all_twenty_shader_bytes_equal_r4": true,
+  "shaders": {
+    "FixedMesh.vs.cso": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69",
+    "FixedMesh.ps.cso": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9",
+    "FixedMesh.cs.cso": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064",
+    "Deferred.vs.cso": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2",
+    "Deferred.ps.cso": "c1c529dadd44e0b6f6f73b7f489401519354004a4ef0a8fd75506c8fa17cd7f8",
+    "Lighting.vs.cso": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018",
+    "Lighting.ps.cso": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8",
+    "ToneMap.ps.cso": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f",
+    "Shadow.vs.cso": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4",
+    "Shadow.ps.cso": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24",
+    "Temporal.cs.cso": "44a4dc42b1b1b115e8bfa4a77cf2b710140a05089714a080ecd9e553683be46e",
+    "Histogram.cs.cso": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1",
+    "Exposure.cs.cso": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c",
+    "BloomDown.cs.cso": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7",
+    "BloomUp.cs.cso": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c",
+    "ReflectionLighting.ps.cso": "f2590dd8cc22dfbd00aa5030b1169cf234bf465a802e3a4372083323d2f0c0cb",
+    "ReflectionColor.cs.cso": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7",
+    "ReflectionTrace.cs.cso": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051",
+    "ReflectionComposite.cs.cso": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4",
+    "ReflectionRadiance.cs.cso": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88"
+  },
+  "prior_source_review": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-reflections-source-review.json",
+    "size_bytes": 57936,
+    "sha256": "feaa13cf92bce212cb8e6bc16528c2460669e7473d2833f1b15af912bae5ecd2"
+  },
+  "prior_regression": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-reflections-regression.json",
+    "size_bytes": 42227,
+    "sha256": "105698633da599084c773e72a15fcbd0904a6ad4a3180c1fcb6db0d97cc5fbfa"
+  },
+  "dependency_ci": {
+    "path": "build/engine_next/reflection-independent-review/InputWindowDependencyCI.json",
+    "size_bytes": 1230,
+    "sha256": "c5c379e30e67c5a1743968441a1a1dbb1841411f510c8457eb591a38a6081913"
+  },
+  "verification_scope": "The r4 static reflection implementation and all offline shader bytes are unchanged. R5 integrates the independently reviewed input-window fix. Final GPU comparison and live mirrored-network acceptance are separate evidence.",
+  "metadata_paths": {
+    "base": "repository_root",
+    "normalization": "Artifact paths are repository-relative. External input bytes were copied unchanged into the ignored evidence-inputs directory. Displayed compiler and Python command names omit host installation paths. Original command and metadata bytes are retained in the private archive.",
+    "original_metadata": {
+      "path": "build/engine_next/reflection-metadata-original/engine-next-visual-runtime-m4-3-reflections-final-source-delta.json",
+      "sha256": "47e95ff53e696762273466c6509b48fb9fa99c176db2988d6e3cdfcdadf59866",
+      "bytes": 5380
+    }
+  }
+}

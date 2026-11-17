@@ -1,0 +1,774 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "status": "passed",
+  "scope": "12 actual Windows D3D12 boundary and compatibility cases using reflections-r4, every case 20 frames with zero GPU validation errors, plus a 241-frame dynamic exposure run",
+  "runs": [
+    {
+      "name": "OddSize",
+      "command": [
+        "build/engine_next/reflections-r4/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "20",
+        "--width",
+        "321",
+        "--height",
+        "239",
+        "--report",
+        "build/engine_next/reflection-gpu-r4/Boundary/OddSize.json",
+        "--capture",
+        "build/engine_next/reflection-gpu-r4/Boundary/OddSize.ppm",
+        "--render-config",
+        "build/engine_next/reflection-gpu-r4/Boundary/OddSizeConfig.json",
+        "--asset-package",
+        "build/engine_next/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "build/engine_next/reflection-benchmark-r2.engpu"
+      ],
+      "exit_code": 0,
+      "frames": 20,
+      "success": true,
+      "validation_errors": 0,
+      "failure": "",
+      "width": 321,
+      "height": 239,
+      "resizes": 0,
+      "gpu_package_version": 2,
+      "requested_width": 321,
+      "requested_height": 239,
+      "reflections_enabled": true
+    },
+    {
+      "name": "MaximumRoughness",
+      "command": [
+        "build/engine_next/reflections-r4/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "20",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--report",
+        "build/engine_next/reflection-gpu-r4/Boundary/MaximumRoughness.json",
+        "--capture",
+        "build/engine_next/reflection-gpu-r4/Boundary/MaximumRoughness.ppm",
+        "--render-config",
+        "build/engine_next/reflection-gpu-r4/Boundary/MaximumRoughnessConfig.json",
+        "--asset-package",
+        "build/engine_next/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "build/engine_next/reflection-benchmark-r2.engpu"
+      ],
+      "exit_code": 0,
+      "frames": 20,
+      "success": true,
+      "validation_errors": 0,
+      "failure": "",
+      "width": 640,
+      "height": 480,
+      "resizes": 0,
+      "gpu_package_version": 2,
+      "requested_width": 640,
+      "requested_height": 480,
+      "reflections_enabled": true
+    },
+    {
+      "name": "MinimumRoughness",
+      "command": [
+        "build/engine_next/reflections-r4/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "20",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--report",
+        "build/engine_next/reflection-gpu-r4/Boundary/MinimumRoughness.json",
+        "--capture",
+        "build/engine_next/reflection-gpu-r4/Boundary/MinimumRoughness.ppm",
+        "--render-config",
+        "build/engine_next/reflection-gpu-r4/Boundary/MinimumRoughnessConfig.json",
+        "--asset-package",
+        "build/engine_next/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "build/engine_next/reflection-benchmark-r2.engpu"
+      ],
+      "exit_code": 0,
+      "frames": 20,
+      "success": true,
+      "validation_errors": 0,
+      "failure": "",
+      "width": 640,
+      "height": 480,
+      "resizes": 0,
+      "gpu_package_version": 2,
+      "requested_width": 640,
+      "requested_height": 480,
+      "reflections_enabled": true
+    },
+    {
+      "name": "MinimumDistance",
+      "command": [
+        "build/engine_next/reflections-r4/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "20",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--report",
+        "build/engine_next/reflection-gpu-r4/Boundary/MinimumDistance.json",
+        "--capture",
+        "build/engine_next/reflection-gpu-r4/Boundary/MinimumDistance.ppm",
+        "--render-config",
+        "build/engine_next/reflection-gpu-r4/Boundary/MinimumDistanceConfig.json",
+        "--asset-package",
+        "build/engine_next/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "build/engine_next/reflection-benchmark-r2.engpu"
+      ],
+      "exit_code": 0,
+      "frames": 20,
+      "success": true,
+      "validation_errors": 0,
+      "failure": "",
+      "width": 640,
+      "height": 480,
+      "resizes": 0,
+      "gpu_package_version": 2,
+      "requested_width": 640,
+      "requested_height": 480,
+      "reflections_enabled": true
+    },
+    {
+      "name": "MaximumTrace",
+      "command": [
+        "build/engine_next/reflections-r4/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "20",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--report",
+        "build/engine_next/reflection-gpu-r4/Boundary/MaximumTrace.json",
+        "--capture",
+        "build/engine_next/reflection-gpu-r4/Boundary/MaximumTrace.ppm",
+        "--render-config",
+        "build/engine_next/reflection-gpu-r4/Boundary/MaximumTraceConfig.json",
+        "--asset-package",
+        "build/engine_next/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "build/engine_next/reflection-benchmark-r2.engpu"
+      ],
+      "exit_code": 0,
+      "frames": 20,
+      "success": true,
+      "validation_errors": 0,
+      "failure": "",
+      "width": 640,
+      "height": 480,
+      "resizes": 0,
+      "gpu_package_version": 2,
+      "requested_width": 640,
+      "requested_height": 480,
+      "reflections_enabled": true
+    },
+    {
+      "name": "MinimumSteps",
+      "command": [
+        "build/engine_next/reflections-r4/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "20",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--report",
+        "build/engine_next/reflection-gpu-r4/Boundary/MinimumSteps.json",
+        "--capture",
+        "build/engine_next/reflection-gpu-r4/Boundary/MinimumSteps.ppm",
+        "--render-config",
+        "build/engine_next/reflection-gpu-r4/Boundary/MinimumStepsConfig.json",
+        "--asset-package",
+        "build/engine_next/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "build/engine_next/reflection-benchmark-r2.engpu"
+      ],
+      "exit_code": 0,
+      "frames": 20,
+      "success": true,
+      "validation_errors": 0,
+      "failure": "",
+      "width": 640,
+      "height": 480,
+      "resizes": 0,
+      "gpu_package_version": 2,
+      "requested_width": 640,
+      "requested_height": 480,
+      "reflections_enabled": true
+    },
+    {
+      "name": "HigherCamera",
+      "command": [
+        "build/engine_next/reflections-r4/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "20",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--report",
+        "build/engine_next/reflection-gpu-r4/Boundary/HigherCamera.json",
+        "--capture",
+        "build/engine_next/reflection-gpu-r4/Boundary/HigherCamera.ppm",
+        "--render-config",
+        "build/engine_next/reflection-gpu-r4/Boundary/HigherCameraConfig.json",
+        "--asset-package",
+        "build/engine_next/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "build/engine_next/reflection-benchmark-r2.engpu"
+      ],
+      "exit_code": 0,
+      "frames": 20,
+      "success": true,
+      "validation_errors": 0,
+      "failure": "",
+      "width": 640,
+      "height": 480,
+      "resizes": 0,
+      "gpu_package_version": 2,
+      "requested_width": 640,
+      "requested_height": 480,
+      "reflections_enabled": true
+    },
+    {
+      "name": "Resize",
+      "command": [
+        "build/engine_next/reflections-r4/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "20",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--report",
+        "build/engine_next/reflection-gpu-r4/Boundary/Resize.json",
+        "--capture",
+        "build/engine_next/reflection-gpu-r4/Boundary/Resize.ppm",
+        "--render-config",
+        "build/engine_next/reflection-gpu-r4/Boundary/ResizeConfig.json",
+        "--asset-package",
+        "build/engine_next/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "build/engine_next/reflection-benchmark-r2.engpu",
+        "--exercise-resize"
+      ],
+      "exit_code": 0,
+      "frames": 20,
+      "success": true,
+      "validation_errors": 0,
+      "failure": "",
+      "width": 640,
+      "height": 480,
+      "resizes": 2,
+      "gpu_package_version": 2,
+      "requested_width": 640,
+      "requested_height": 480,
+      "reflections_enabled": true
+    },
+    {
+      "name": "ReleaseV1",
+      "command": [
+        "build/engine_next/reflections-r4/Release/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "20",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--report",
+        "build/engine_next/reflection-gpu-r4/Boundary/ReleaseV1.json",
+        "--capture",
+        "build/engine_next/reflection-gpu-r4/Boundary/ReleaseV1.ppm",
+        "--asset-package",
+        "build/engine_next/reflections-evidence-inputs/shadow-gpu-final/Scene.enpak",
+        "--gpu-package",
+        "build/engine_next/reflections-evidence-inputs/shadow-gpu-final/Scene-v1.engpu"
+      ],
+      "exit_code": 0,
+      "frames": 20,
+      "success": true,
+      "validation_errors": 0,
+      "failure": "",
+      "width": 640,
+      "height": 480,
+      "resizes": 0,
+      "gpu_package_version": 1,
+      "requested_width": 640,
+      "requested_height": 480,
+      "reflections_enabled": false,
+      "shipped_shader_directory_used": true,
+      "missing_reflection_config_default": false
+    },
+    {
+      "name": "ReleaseV2Resize",
+      "command": [
+        "build/engine_next/reflections-r4/Release/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "20",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--report",
+        "build/engine_next/reflection-gpu-r4/Boundary/ReleaseV2Resize.json",
+        "--capture",
+        "build/engine_next/reflection-gpu-r4/Boundary/ReleaseV2Resize.ppm",
+        "--asset-package",
+        "build/engine_next/reflections-evidence-inputs/shadow-gpu-final/Scene.enpak",
+        "--gpu-package",
+        "build/engine_next/reflections-evidence-inputs/shadow-gpu-final/Scene-v2.engpu",
+        "--exercise-resize"
+      ],
+      "exit_code": 0,
+      "frames": 20,
+      "success": true,
+      "validation_errors": 0,
+      "failure": "",
+      "width": 640,
+      "height": 480,
+      "resizes": 2,
+      "gpu_package_version": 2,
+      "requested_width": 640,
+      "requested_height": 480,
+      "reflections_enabled": false,
+      "shipped_shader_directory_used": true,
+      "missing_reflection_config_default": false
+    },
+    {
+      "name": "ReleaseFixedResize",
+      "command": [
+        "build/engine_next/reflections-r4/Release/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "20",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--report",
+        "build/engine_next/reflection-gpu-r4/Boundary/ReleaseFixedResize.json",
+        "--capture",
+        "build/engine_next/reflection-gpu-r4/Boundary/ReleaseFixedResize.ppm",
+        "--exercise-resize"
+      ],
+      "exit_code": 0,
+      "frames": 20,
+      "success": true,
+      "validation_errors": 0,
+      "failure": "",
+      "width": 640,
+      "height": 480,
+      "resizes": 2,
+      "gpu_package_version": 0,
+      "requested_width": 640,
+      "requested_height": 480,
+      "reflections_enabled": false,
+      "shipped_shader_directory_used": true,
+      "missing_reflection_config_default": false
+    },
+    {
+      "name": "LegacyMask",
+      "command": [],
+      "exit_code": 0,
+      "frames": 20,
+      "success": true,
+      "validation_errors": 0,
+      "failure": "",
+      "width": 640,
+      "height": 480,
+      "requested_width": 640,
+      "requested_height": 480,
+      "resizes": 0,
+      "gpu_package_version": 2,
+      "reflections_enabled": true
+    }
+  ],
+  "dynamic_exposure": {
+    "exit_code": 0,
+    "frames": 241,
+    "success": true,
+    "validation_errors": 0,
+    "all_meter_finite": true,
+    "preexposure_chain": true,
+    "illuminances": [
+      200.0,
+      20000.0
+    ],
+    "exposure_range": [
+      0.029502132907509804,
+      0.1899208426475525
+    ]
+  },
+  "limits": "Dimensions report actual client extents. These runs cover up to 640x480 and 321x239. Native 4K performance remains unmeasured.",
+  "file_refs": [
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/HigherCamera.json",
+      "sha256": "a8ee87fa708a280329fea31e562e37a40ab5b64b7c553140a165ff403c90dbf5",
+      "bytes": 61057
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/HigherCamera.png",
+      "sha256": "28d0b81e6b3965cf217be8bb1aa39c120424242dda47c9ce01d1a63dca4bd1c2",
+      "bytes": 43167
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/HigherCamera.ppm",
+      "sha256": "5d82162f00189b299f2a29e4825167e98f1f88445154239663038ecb621d0d55",
+      "bytes": 921615
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/HigherCameraConfig.json",
+      "sha256": "7b67ea7e1a44070e1a0700c3a51c554b18f047d975a4c473b11ca19749f88378",
+      "bytes": 1111
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/LegacyMask.json",
+      "sha256": "28c7625104fc650def930978104e4c7e86163a604d83b035c53e5db09582b371",
+      "bytes": 70698
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/LegacyMask.ppm",
+      "sha256": "791dcc412b8cf1a1bda38dd159fe4e7cacff0f68b91e7c8587aa453397f888c2",
+      "bytes": 921615
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/LegacyMaskConfig.json",
+      "sha256": "557920aa62f560f3caa605a122a61473d54ff378cbc3c00bbc56e57b3826e1e5",
+      "bytes": 1672
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/MaximumRoughness.json",
+      "sha256": "958ec8458cad021c39edf715d54e9f1675ff03529ccab4d29a79bdaeb67b0b9f",
+      "bytes": 61082
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/MaximumRoughness.ppm",
+      "sha256": "20517133bc43307880ee365c66cf4c38b91defbae8551a11af8ae71c8178cd68",
+      "bytes": 921615
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/MaximumRoughnessConfig.json",
+      "sha256": "608786cac19fdaef8d3f7c2d98c4285da1354e96502bdce4138906bd0f123e6f",
+      "bytes": 1107
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/MaximumTrace.json",
+      "sha256": "67cb5ede27c17f3d8584d01be6e3c46c99ee0989abb7ff1db7cb277c2856fdd3",
+      "bytes": 61079
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/MaximumTrace.ppm",
+      "sha256": "6259105b96dfe8f22bf9c2d63561cd1566021df0faee7ac923fab2d20a2073d2",
+      "bytes": 921615
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/MaximumTraceConfig.json",
+      "sha256": "9365a8760f929f96c50494e73d73ac7a441949746066446fe21a5c127db91e0d",
+      "bytes": 1107
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/MinimumDistance.json",
+      "sha256": "b2cbe145520fd2996ca46dab496ada2e209a51c1dabfff43b5bffe9c0b0a09d3",
+      "bytes": 61093
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/MinimumDistance.ppm",
+      "sha256": "a0827cde8174ce03c59e1ab466292439a902cf8543be7d4f52ddcb33b2224d1b",
+      "bytes": 921615
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/MinimumDistanceConfig.json",
+      "sha256": "ae65f8b6a766d0dd923e97e17532cebdf2872052978579eae62d34b5aa5a589e",
+      "bytes": 1129
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/MinimumRoughness.json",
+      "sha256": "f145c4aa1a19d038e3b6932974f9e3165cbc9e1327bd66c91b90722bd54f788f",
+      "bytes": 61114
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/MinimumRoughness.ppm",
+      "sha256": "a0827cde8174ce03c59e1ab466292439a902cf8543be7d4f52ddcb33b2224d1b",
+      "bytes": 921615
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/MinimumRoughnessConfig.json",
+      "sha256": "cc2c27b1b9ebd6d6b7fcfd46fd2d13a15a946cf26dbb075d5d8d8f6f9aff9d93",
+      "bytes": 1128
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/MinimumSteps.json",
+      "sha256": "70416496373c875a1eadd9e31ead55f6c9c1696f0aa7ebf64b0a991db86ed50e",
+      "bytes": 61126
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/MinimumSteps.ppm",
+      "sha256": "5cfceed237dd10b91d148b0028be09a0bd6485eb1a87d969a9efe5bededf07be",
+      "bytes": 921615
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/MinimumStepsConfig.json",
+      "sha256": "dc7906769b7375cf970f06aa5740a769d4de5fee5cdc69bf31cf816e02e26315",
+      "bytes": 1107
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/OddSize.json",
+      "sha256": "2e2ed05e72dd2e664dd4b207c42f4403fdd9d1f72f61207b60a1f2dc93df8534",
+      "bytes": 61095
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/OddSize.ppm",
+      "sha256": "68cad33f3d7e9fccd11039541e239d05c28dbfd334f756df99ffcdeecbd0d155",
+      "bytes": 230172
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/OddSizeConfig.json",
+      "sha256": "963a07b49158fdc973a27733cb1868fe6fa06bfa29ac7fdbffb9869cd59b5398",
+      "bytes": 1109
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/ReleaseFixedResize.json",
+      "sha256": "3330e19fa679fce428534a8e55c5a0b345f53fc4de413422763e1cae38f2ccef",
+      "bytes": 18409
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/ReleaseFixedResize.ppm",
+      "sha256": "1006f41f2859453522fa8d91a73723c040bc33d4c03d1d37aff95c9a8366b847",
+      "bytes": 921615
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/ReleaseV1.json",
+      "sha256": "04bbf85c88e27e5ac7e0fa7ba05bf6fc3dd19e83d265999b6ccd34145205204a",
+      "bytes": 53223
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/ReleaseV1.ppm",
+      "sha256": "aa0ae615e0306d7237cacfc60110410f114332122cee300cfc51b8056c09feaf",
+      "bytes": 921615
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/ReleaseV2Resize.json",
+      "sha256": "10993ddfba689c2e3320f202718f4a499c96b0049fa228ba55bcdaf5b279ec9a",
+      "bytes": 53225
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/ReleaseV2Resize.ppm",
+      "sha256": "f82cf45922a6596ccf4301e82b8a33cd14a294aa1b8909ba64b8cc5319ce22d5",
+      "bytes": 921615
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/Resize.json",
+      "sha256": "4a086dd0cdcd632a14c2c82ef366759f40e7309234f39d72681ba48970238acd",
+      "bytes": 61115
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/Resize.ppm",
+      "sha256": "946a9c1c727079d9a65ef8bf1e78fe61e05bf9fdcf70fc71247dab4ba9ff3c3f",
+      "bytes": 921615
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/ResizeConfig.json",
+      "sha256": "963a07b49158fdc973a27733cb1868fe6fa06bfa29ac7fdbffb9869cd59b5398",
+      "bytes": 1109
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Boundary/Results.json",
+      "sha256": "a036aa005a18f4a1e7b1815557e727f09e98b532bca9b3839cb4f7e7d8c2e3ca",
+      "bytes": 13519
+    },
+    {
+      "path": "build/engine_next/reflections-r4/next_visual_client.exe",
+      "sha256": "4a235b294885da51b5d3c22cfe8fdbd813b26ad55c57cfa35697cb6a52056081",
+      "bytes": 3040768
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/next_visual_client.exe",
+      "sha256": "4a235b294885da51b5d3c22cfe8fdbd813b26ad55c57cfa35697cb6a52056081",
+      "bytes": 3040768
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/BloomDown.cs.cso",
+      "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7",
+      "bytes": 43620
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/BloomUp.cs.cso",
+      "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c",
+      "bytes": 14672
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/Deferred.ps.cso",
+      "sha256": "c1c529dadd44e0b6f6f73b7f489401519354004a4ef0a8fd75506c8fa17cd7f8",
+      "bytes": 9760
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/Deferred.vs.cso",
+      "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2",
+      "bytes": 8236
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/Exposure.cs.cso",
+      "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c",
+      "bytes": 5804
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/FixedMesh.cs.cso",
+      "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064",
+      "bytes": 3300
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/FixedMesh.ps.cso",
+      "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9",
+      "bytes": 4132
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/FixedMesh.vs.cso",
+      "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69",
+      "bytes": 4316
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/Histogram.cs.cso",
+      "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1",
+      "bytes": 5648
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/Lighting.ps.cso",
+      "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8",
+      "bytes": 77096
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/Lighting.vs.cso",
+      "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018",
+      "bytes": 3052
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/ReflectionColor.cs.cso",
+      "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7",
+      "bytes": 4928
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/ReflectionComposite.cs.cso",
+      "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4",
+      "bytes": 5100
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/ReflectionLighting.ps.cso",
+      "sha256": "f2590dd8cc22dfbd00aa5030b1169cf234bf465a802e3a4372083323d2f0c0cb",
+      "bytes": 77608
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/ReflectionRadiance.cs.cso",
+      "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88",
+      "bytes": 4304
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/ReflectionTrace.cs.cso",
+      "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051",
+      "bytes": 31880
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/Shadow.ps.cso",
+      "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24",
+      "bytes": 4236
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/Shadow.vs.cso",
+      "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4",
+      "bytes": 4648
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/Temporal.cs.cso",
+      "sha256": "44a4dc42b1b1b115e8bfa4a77cf2b710140a05089714a080ecd9e553683be46e",
+      "bytes": 19080
+    },
+    {
+      "path": "build/engine_next/reflections-r4/Release/ToneMap.ps.cso",
+      "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f",
+      "bytes": 6376
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Exposure/Checks.json",
+      "sha256": "8dfb0b017e38f2afdb1bc2db8f426a1012a6a8e831faa4a803039bce41d3a09a",
+      "bytes": 280
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Exposure/Command.json",
+      "sha256": "aa3a55450652045ee5ae63dfc2ba740adb5fb296923cc47617a6d5b5932ec1d9",
+      "bytes": 928
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Exposure/Configuration.json",
+      "sha256": "c21cbc2e5726674dad0140b11af031861985bd185235bfccb6673882885fe946",
+      "bytes": 1613
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Exposure/Final.ppm",
+      "sha256": "6571f829c7945c81a1e71489a1f21f0f4258e4009648f901a8a96b3b0a023a0b",
+      "bytes": 921615
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Exposure/Output.log",
+      "sha256": "8d87ef0b7b86066f0d5084c9add661641aed758a31f92deffb0074a2d6609464",
+      "bytes": 61
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Exposure/Run.json",
+      "sha256": "34ae7b0e082519bb3930efc3c8b5da0ef597311c0668fbbd5e20266e15985c4f",
+      "bytes": 510195
+    }
+  ],
+  "metadata_paths": {
+    "base": "repository_root",
+    "normalization": "Artifact paths are repository-relative. External input bytes were copied unchanged into the ignored evidence-inputs directory. Displayed compiler and Python command names omit host installation paths. Original command and metadata bytes are retained in the private archive.",
+    "original_metadata": {
+      "path": "build/engine_next/reflection-metadata-original/engine-next-visual-runtime-m4-3-reflections-boundary.json",
+      "sha256": "22f7304c06a558be6bcb4705be0ae48701e1c5a8260afa66487199c15e6f5c5d",
+      "bytes": 33146
+    }
+  }
+}

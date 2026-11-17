@@ -563,3 +563,85 @@ ENGINE_NEXT_TEST("RenderPipeline declares post-process readback transfers and re
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nPostReadback, EngineNext::Rendering::INVALID_RESOURCE);
 	ENGINE_NEXT_CHECK_EQ(FindWork(stPipeline, PassWork::PostProcessReadback), nullptr);
 }
+
+ENGINE_NEXT_TEST("RenderPipeline separates reflection lighting and composes before temporal")
+{
+	for (bool bTemporal : { false, true })
+	{
+		for (std::uint32_t nLevels : { 1U, 6U })
+		{
+			RenderPipeline stPipeline;
+			GraphDiagnostic stDiagnostic;
+			ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, bTemporal, true, 0, nLevels));
+			ENGINE_NEXT_CHECK_EQ(stPipeline.arrReflectionMips.size(), nLevels - 1U);
+			ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), (bTemporal ? 13U : 12U) + nLevels + 2U);
+			ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), (bTemporal ? 25U : 17U) + nLevels + 2U);
+			const CompiledPass *pLight = FindWork(stPipeline, PassWork::DeferredLighting);
+			const CompiledPass *pTrace = FindWork(stPipeline, PassWork::ReflectionTrace);
+			const CompiledPass *pRadiance = FindWork(stPipeline, PassWork::ReflectionRadiance);
+			const CompiledPass *pComposite = FindWork(stPipeline, PassWork::ReflectionComposite);
+			const CompiledPass *pNext = FindWork(stPipeline, bTemporal ? PassWork::TemporalResolve : PassWork::HistogramBuild);
+			ENGINE_NEXT_CHECK(pLight != nullptr && pRadiance != nullptr && pTrace != nullptr && pComposite != nullptr && pNext != nullptr);
+			if (pLight == nullptr || pRadiance == nullptr || pTrace == nullptr || pComposite == nullptr || pNext == nullptr)
+			{
+				continue;
+			}
+			ENGINE_NEXT_CHECK(HasAccess(*pLight, stPipeline.nHdr, ResourceState::RenderTarget, true));
+			ENGINE_NEXT_CHECK(HasAccess(*pLight, stPipeline.nEnvironmentSpecular, ResourceState::RenderTarget, true));
+			ENGINE_NEXT_CHECK(pLight->nPass < pRadiance->nPass && pRadiance->nPass < pTrace->nPass && pTrace->nPass < pComposite->nPass && pComposite->nPass < pNext->nPass);
+			ENGINE_NEXT_CHECK(HasAccess(*pRadiance, stPipeline.nHdr, ResourceState::NonPixelShaderRead, false));
+			ENGINE_NEXT_CHECK(HasAccess(*pRadiance, stPipeline.nEnvironmentSpecular, ResourceState::NonPixelShaderRead, false));
+			ENGINE_NEXT_CHECK(HasAccess(*pRadiance, stPipeline.nReflectedHdr, ResourceState::UnorderedAccess, true));
+			for (ResourceId nResource : { stPipeline.nReflectedHdr, stPipeline.arrGbuffer[0], stPipeline.arrGbuffer[1], stPipeline.arrGbuffer[2] })
+			{
+				ENGINE_NEXT_CHECK(HasAccess(*pTrace, nResource, ResourceState::NonPixelShaderRead, false));
+			}
+			ENGINE_NEXT_CHECK(HasAccess(*pTrace, stPipeline.nDepth, ResourceState::DepthRead, false));
+			ENGINE_NEXT_CHECK(HasAccess(*pTrace, stPipeline.nReflection, ResourceState::UnorderedAccess, true));
+			ENGINE_NEXT_CHECK(HasTransition(*pRadiance, stPipeline.nEnvironmentSpecular, ResourceState::RenderTarget, ResourceState::NonPixelShaderRead));
+			ENGINE_NEXT_CHECK(HasTransition(*pComposite, stPipeline.nReflection, ResourceState::UnorderedAccess, ResourceState::NonPixelShaderRead));
+			ENGINE_NEXT_CHECK(HasAccess(*pComposite, stPipeline.nReflectedHdr, ResourceState::UnorderedAccess, true));
+			ENGINE_NEXT_CHECK(HasTransition(*pComposite, stPipeline.nReflectedHdr, ResourceState::NonPixelShaderRead, ResourceState::UnorderedAccess));
+			ENGINE_NEXT_CHECK(HasTransition(*pNext, stPipeline.nReflectedHdr, ResourceState::UnorderedAccess, ResourceState::NonPixelShaderRead));
+			for (std::uint32_t nLevel = 1; nLevel < nLevels; ++nLevel)
+			{
+				const CompiledPass *pMip = FindWork(stPipeline, PassWork::ReflectionColorMip, nLevel);
+				ENGINE_NEXT_CHECK(pMip != nullptr);
+				if (pMip == nullptr)
+				{
+					continue;
+				}
+				const ResourceId nSource = nLevel == 1 ? stPipeline.nReflectedHdr : stPipeline.arrReflectionMips[nLevel - 2];
+				const ResourceId nOutput = stPipeline.arrReflectionMips[nLevel - 1];
+				ENGINE_NEXT_CHECK(HasAccess(*pMip, nSource, ResourceState::NonPixelShaderRead, false));
+				ENGINE_NEXT_CHECK(HasAccess(*pMip, nOutput, ResourceState::UnorderedAccess, true));
+				ENGINE_NEXT_CHECK(HasAccess(*pTrace, nOutput, ResourceState::NonPixelShaderRead, false));
+				ENGINE_NEXT_CHECK(pMip->nPass < pTrace->nPass);
+			}
+			CheckReusableStates(stPipeline);
+		}
+	}
+}
+
+ENGINE_NEXT_TEST("RenderPipeline bounds reflections and preserves disabled and fixed entry points")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 6, 6));
+	const std::vector<PassWork> arrWork = stPipeline.arrWorkByPass;
+	const ResourceId nReflected = stPipeline.nReflectedHdr;
+	ENGINE_NEXT_CHECK(!BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 6, 7));
+	ENGINE_NEXT_CHECK_EQ(stDiagnostic.eError, GraphError::CapacityExceeded);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nReflectedHdr, nReflected);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass, arrWork);
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 9U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nReflection, EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nEnvironmentSpecular, EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK(stPipeline.arrReflectionMips.empty());
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(false, stPipeline, stDiagnostic, 0, true, true, 6, 6));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 4U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 4U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nReflectedHdr, EngineNext::Rendering::INVALID_RESOURCE);
+	CheckReusableStates(stPipeline);
+}

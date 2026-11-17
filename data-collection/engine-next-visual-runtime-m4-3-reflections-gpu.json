@@ -1,0 +1,1023 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "status": "static_gpu_and_capture_verified",
+  "scope": "Windows RTX 4070 Ti, actual 640x480 D3D12 reflection rendering; dynamic network validation is maintained separately",
+  "build": {
+    "native_key": "1ebf8e6523a9b3d1b3f1059016bb782222d40dd7d1910dd42fc85ce802690ce7",
+    "input_count": 241,
+    "input_mismatches": [],
+    "artifacts": [
+      {
+        "path": "build/engine_next/reflections-r4/next_visual_client.exe",
+        "sha256": "4a235b294885da51b5d3c22cfe8fdbd813b26ad55c57cfa35697cb6a52056081",
+        "bytes": 3040768
+      },
+      {
+        "path": "build/engine_next/reflections-r4/VisualBuildReport.json",
+        "sha256": "29fd7284051a35fcac3afaabf68be1c2c9de73aa159da0146d16a43ce72e866d",
+        "bytes": 1739144
+      },
+      {
+        "path": "build/engine_next/reflection-benchmark-r2.enpak/AssetManifest.json",
+        "sha256": "ccbb4b796c3b559b7bf9b15974d0429fa01d81a4bbd249283363c147a18f7cad",
+        "bytes": 500
+      },
+      {
+        "path": "build/engine_next/reflection-benchmark-r2.enpak/blobs/4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93",
+        "sha256": "4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93",
+        "bytes": 85204
+      },
+      {
+        "path": "build/engine_next/reflection-benchmark-r2.enpak/Scene.json",
+        "sha256": "5c2cd0ff64cead3815109e87503b565f7fc94c0adb67ab60363efc92d3fbfba7",
+        "bytes": 518
+      },
+      {
+        "path": "build/engine_next/reflection-benchmark-r2.engpu/blobs/f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174",
+        "sha256": "f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174",
+        "bytes": 8226
+      },
+      {
+        "path": "build/engine_next/reflection-benchmark-r2.engpu/GpuManifest.json",
+        "sha256": "efb9fa418be5ca9877b0b6473b81f3d05722eac202ff00907490374a519c017e",
+        "bytes": 614
+      },
+      {
+        "path": "build/engine_next/reflections-r4/BloomDown.cs.cso",
+        "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7",
+        "bytes": 43620
+      },
+      {
+        "path": "build/engine_next/reflections-r4/BloomUp.cs.cso",
+        "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c",
+        "bytes": 14672
+      },
+      {
+        "path": "build/engine_next/reflections-r4/Deferred.ps.cso",
+        "sha256": "c1c529dadd44e0b6f6f73b7f489401519354004a4ef0a8fd75506c8fa17cd7f8",
+        "bytes": 9760
+      },
+      {
+        "path": "build/engine_next/reflections-r4/Deferred.vs.cso",
+        "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2",
+        "bytes": 8236
+      },
+      {
+        "path": "build/engine_next/reflections-r4/Exposure.cs.cso",
+        "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c",
+        "bytes": 5804
+      },
+      {
+        "path": "build/engine_next/reflections-r4/FixedMesh.cs.cso",
+        "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064",
+        "bytes": 3300
+      },
+      {
+        "path": "build/engine_next/reflections-r4/FixedMesh.ps.cso",
+        "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9",
+        "bytes": 4132
+      },
+      {
+        "path": "build/engine_next/reflections-r4/FixedMesh.vs.cso",
+        "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69",
+        "bytes": 4316
+      },
+      {
+        "path": "build/engine_next/reflections-r4/Histogram.cs.cso",
+        "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1",
+        "bytes": 5648
+      },
+      {
+        "path": "build/engine_next/reflections-r4/Lighting.ps.cso",
+        "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8",
+        "bytes": 77096
+      },
+      {
+        "path": "build/engine_next/reflections-r4/Lighting.vs.cso",
+        "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018",
+        "bytes": 3052
+      },
+      {
+        "path": "build/engine_next/reflections-r4/ReflectionColor.cs.cso",
+        "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7",
+        "bytes": 4928
+      },
+      {
+        "path": "build/engine_next/reflections-r4/ReflectionComposite.cs.cso",
+        "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4",
+        "bytes": 5100
+      },
+      {
+        "path": "build/engine_next/reflections-r4/ReflectionLighting.ps.cso",
+        "sha256": "f2590dd8cc22dfbd00aa5030b1169cf234bf465a802e3a4372083323d2f0c0cb",
+        "bytes": 77608
+      },
+      {
+        "path": "build/engine_next/reflections-r4/ReflectionRadiance.cs.cso",
+        "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88",
+        "bytes": 4304
+      },
+      {
+        "path": "build/engine_next/reflections-r4/ReflectionTrace.cs.cso",
+        "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051",
+        "bytes": 31880
+      },
+      {
+        "path": "build/engine_next/reflections-r4/Shadow.ps.cso",
+        "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24",
+        "bytes": 4236
+      },
+      {
+        "path": "build/engine_next/reflections-r4/Shadow.vs.cso",
+        "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4",
+        "bytes": 4648
+      },
+      {
+        "path": "build/engine_next/reflections-r4/Temporal.cs.cso",
+        "sha256": "44a4dc42b1b1b115e8bfa4a77cf2b710140a05089714a080ecd9e553683be46e",
+        "bytes": 19080
+      },
+      {
+        "path": "build/engine_next/reflections-r4/ToneMap.ps.cso",
+        "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f",
+        "bytes": 6376
+      }
+    ]
+  },
+  "scenario": {
+    "package": "self_authored_reflection_benchmark_r2",
+    "source_package_sha256": "4fd56d4811037e088f536642f3a195512c8ba91eda58c78567dd7f4ec0244b31",
+    "triangles": 22,
+    "sampling": "24 deterministic frames for each configuration"
+  },
+  "runs": [
+    {
+      "name": "Off",
+      "command": [
+        "build/engine_next/reflections-r4/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--frames",
+        "24",
+        "--asset-package",
+        "build/engine_next/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "build/engine_next/reflection-benchmark-r2.engpu",
+        "--render-config",
+        "build/engine_next/reflection-benchmark-configs-r2/Off.json",
+        "--report",
+        "build/engine_next/reflection-gpu-r4/Off.json",
+        "--capture",
+        "build/engine_next/reflection-gpu-r4/Off.ppm"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 5.200104713439941,
+      "success": true,
+      "frames": 24,
+      "validation_errors": 0,
+      "failure": "",
+      "width": 640,
+      "height": 480,
+      "reflection_color_mips": 0,
+      "artifacts": [
+        {
+          "path": "build/engine_next/reflection-benchmark-configs-r2/Off.json",
+          "sha256": "60249dd95a9d93a0854120ada1b40d70661f49b805e47a072459a55ca0d82014",
+          "bytes": 1110
+        },
+        {
+          "path": "build/engine_next/reflection-gpu-r4/Off.json",
+          "sha256": "f5d71517b3dba1e792cfde364821d0dac971afd5b561d5e7152028d75c31c0ac",
+          "bytes": 48311
+        },
+        {
+          "path": "build/engine_next/reflection-gpu-r4/Off.ppm",
+          "sha256": "71c9756984ff09bb75bdec5a564b2a39e32d81cb5b0239e4a19c9fd4c5a07798",
+          "bytes": 921615
+        }
+      ]
+    },
+    {
+      "name": "On",
+      "command": [
+        "build/engine_next/reflections-r4/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--frames",
+        "24",
+        "--asset-package",
+        "build/engine_next/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "build/engine_next/reflection-benchmark-r2.engpu",
+        "--render-config",
+        "build/engine_next/reflection-benchmark-configs-r2/On.json",
+        "--report",
+        "build/engine_next/reflection-gpu-r4/On.json",
+        "--capture",
+        "build/engine_next/reflection-gpu-r4/On.ppm"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 5.273393154144287,
+      "success": true,
+      "frames": 24,
+      "validation_errors": 0,
+      "failure": "",
+      "width": 640,
+      "height": 480,
+      "reflection_color_mips": 6,
+      "artifacts": [
+        {
+          "path": "build/engine_next/reflection-benchmark-configs-r2/On.json",
+          "sha256": "963a07b49158fdc973a27733cb1868fe6fa06bfa29ac7fdbffb9869cd59b5398",
+          "bytes": 1109
+        },
+        {
+          "path": "build/engine_next/reflection-gpu-r4/On.json",
+          "sha256": "f46c40abd18d8418cb045eaa91747750fd236273c94493e73fb9efb898cfab04",
+          "bytes": 66503
+        },
+        {
+          "path": "build/engine_next/reflection-gpu-r4/On.ppm",
+          "sha256": "fda11f6a063cc65ca5972072a8b89e3d5738c82ef5adc2a9804587613673a2f9",
+          "bytes": 921615
+        }
+      ]
+    },
+    {
+      "name": "OnTemporal",
+      "command": [
+        "build/engine_next/reflections-r4/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--frames",
+        "24",
+        "--asset-package",
+        "build/engine_next/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "build/engine_next/reflection-benchmark-r2.engpu",
+        "--render-config",
+        "build/engine_next/reflection-benchmark-configs-r2/OnTemporal.json",
+        "--report",
+        "build/engine_next/reflection-gpu-r4/OnTemporal.json",
+        "--capture",
+        "build/engine_next/reflection-gpu-r4/OnTemporal.ppm"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 5.56567645072937,
+      "success": true,
+      "frames": 24,
+      "validation_errors": 0,
+      "failure": "",
+      "width": 640,
+      "height": 480,
+      "reflection_color_mips": 6,
+      "artifacts": [
+        {
+          "path": "build/engine_next/reflection-benchmark-configs-r2/OnTemporal.json",
+          "sha256": "f72ae3a6a3091f367318172a63990dd5bf82a23318c85689f426f5ee55500480",
+          "bytes": 1108
+        },
+        {
+          "path": "build/engine_next/reflection-gpu-r4/OnTemporal.json",
+          "sha256": "4ee31a18f442c78a5126f9bbd73385cbe787bf6675663b86471f97bc6b8ea8e6",
+          "bytes": 74997
+        },
+        {
+          "path": "build/engine_next/reflection-gpu-r4/OnTemporal.ppm",
+          "sha256": "b0ae2489b7137525416ce7b060852dc9814f4874f2714a11045ccc6552fb9d62",
+          "bytes": 921615
+        }
+      ]
+    }
+  ],
+  "renderdoc": {
+    "version": "1.47",
+    "capture_validation": false,
+    "captures": 3,
+    "frame_ids": [
+      0,
+      1,
+      2
+    ],
+    "passes": [
+      "ReflectionRadiance",
+      "ReflectionColorMip1",
+      "ReflectionColorMip2",
+      "ReflectionColorMip3",
+      "ReflectionColorMip4",
+      "ReflectionColorMip5",
+      "ReflectionTrace",
+      "ReflectionComposite"
+    ],
+    "replay_statuses": [
+      "<Result: 'Success'>",
+      "<Result: 'Success'>",
+      "<Result: 'Success'>"
+    ],
+    "resource_capture": "Read actual bound SRV/UAV textures at each dispatch and frame constant buffer bytes through the RenderDoc replay API",
+    "captured_dimensions": {
+      "level0": [
+        640,
+        480
+      ],
+      "mips": [
+        [
+          320,
+          240
+        ],
+        [
+          160,
+          120
+        ],
+        [
+          80,
+          60
+        ],
+        [
+          40,
+          30
+        ],
+        [
+          20,
+          15
+        ]
+      ]
+    }
+  },
+  "numerical": {
+    "all_bound_textures_finite": true,
+    "maximum_radiance_error_half_ulp": 1.0,
+    "maximum_composite_error_half_ulp": 1.0,
+    "maximum_mip_error_half_ulp": 1.0,
+    "alpha_range": [
+      0.0,
+      1.0
+    ],
+    "nonzero_confidence_pixels": [
+      31715,
+      31715,
+      31715
+    ],
+    "fallback": "Zero-alpha pixels match base plus environment specular within one binary16 ULP",
+    "rounding": "CPU reference rounds to nearest binary16; GPU UAV stores may differ by one binary16 ULP"
+  },
+  "stripe_regression": {
+    "old_build": "reflections-r3",
+    "new_build": "reflections-r4",
+    "same_configuration_and_package": true,
+    "roi": {
+      "x": [
+        170,
+        210
+      ],
+      "y": [
+        260,
+        343
+      ]
+    },
+    "old_row_mean_alpha_range": [
+      0.96337890625,
+      1.0
+    ],
+    "new_row_mean_alpha_range": [
+      1.0,
+      1.0
+    ],
+    "old_hit_count": 31715,
+    "new_hit_count": 31715,
+    "observation": "Depth-confidence horizontal bands disappear in the measured planar reflection interior. Specular reflected geometry remains visible. Single-sample edge aliasing remains visible without TAA."
+  },
+  "historical_failures": [
+    {
+      "build": "reflections-r2",
+      "case": "On",
+      "validation_errors": 95,
+      "cause": "BRDF LUT had pixel-only SRV state while the reflection compute shader reads t10",
+      "fixed_build": "reflections-r3",
+      "retest": "Same On configuration completed 24 frames with zero validation errors"
+    },
+    {
+      "build": "reflections-r3",
+      "cause": "Accepted depth-slab offset modulated confidence and produced planar horizontal bands",
+      "fixed_build": "reflections-r4",
+      "retest": "Actual captured alpha and matched image comparison above"
+    }
+  ],
+  "compatibility": {
+    "historical_test_build": "reflections-r3",
+    "baseline_build": "postprocess-final",
+    "same_legacy_configuration": true,
+    "frames_each": 20,
+    "validation_errors_each": 0,
+    "ppm_byte_identical": true,
+    "r4_off_equals_r3_off": true
+  },
+  "roles": {
+    "shader_implementation": "m42_capture_tools",
+    "gpu_execution_and_evidence": "m42_capture_tools",
+    "independent_code_and_numeric_review": "recorded separately by m42_network_acceptance and m42_cook_review"
+  },
+  "file_refs": [
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Inputs.json",
+      "sha256": "b0ca18d6ad23c00d7f1685d4f4a91bc2f874ebab36fe52ce56da0cedccfae4c3",
+      "bytes": 7005
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Runs.json",
+      "sha256": "059ae0c6b198d1a428afbad77a59d213c5997e425320f662cd9dc510a263241c",
+      "bytes": 6181
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Inspection.json",
+      "sha256": "75338d62ebc5613494834366e442c9edc4a72c420a80d481919de13eb38b569e",
+      "bytes": 58150
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/NumericalChecks.json",
+      "sha256": "70b540c45f83dea50162ca19b7d61824bbc7adea47fb14420bbad8fb2c538079",
+      "bytes": 43295
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Comparison.png",
+      "sha256": "96f1bf15d8ddffa735ce7b2bb6c573c554ca165b7f3eb998273cf61ae78e4a79",
+      "bytes": 114956
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/StripeComparison.png",
+      "sha256": "be4a55b5f9615ed6330be2520b5c6877090f00507a6382d5c822ca4f6bdb5cbb",
+      "bytes": 72312
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Off.json",
+      "sha256": "f5d71517b3dba1e792cfde364821d0dac971afd5b561d5e7152028d75c31c0ac",
+      "bytes": 48311
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Off.ppm",
+      "sha256": "71c9756984ff09bb75bdec5a564b2a39e32d81cb5b0239e4a19c9fd4c5a07798",
+      "bytes": 921615
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/On.json",
+      "sha256": "f46c40abd18d8418cb045eaa91747750fd236273c94493e73fb9efb898cfab04",
+      "bytes": 66503
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/On.ppm",
+      "sha256": "fda11f6a063cc65ca5972072a8b89e3d5738c82ef5adc2a9804587613673a2f9",
+      "bytes": 921615
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/OnTemporal.json",
+      "sha256": "4ee31a18f442c78a5126f9bbd73385cbe787bf6675663b86471f97bc6b8ea8e6",
+      "bytes": 74997
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/OnTemporal.ppm",
+      "sha256": "b0ae2489b7137525416ce7b060852dc9814f4874f2714a11045ccc6552fb9d62",
+      "bytes": 921615
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Capture/Temporal_frame0.rdc",
+      "sha256": "d50447cfae4b66ad5c7347b625a5abde80730ef6425c98be88a01b8ba1e121eb",
+      "bytes": 3447071
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionRadiance-t0.bin",
+      "sha256": "aee3538bf21e1c86a50ce2d0946c015a12f235d1e79a4d9e3cafaa7a8a924d88",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionRadiance-t1.bin",
+      "sha256": "4ac3251396d2b2fbae5669b01dc98cc6da23cd96a238443f4886be7207a4c5bc",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionRadiance-u0.bin",
+      "sha256": "b4c867f801efd51e3b8f8fd76591536fe453107db6ca03450feb985485e31ad7",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionColorMip1-t0.bin",
+      "sha256": "b4c867f801efd51e3b8f8fd76591536fe453107db6ca03450feb985485e31ad7",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionColorMip1-u0.bin",
+      "sha256": "3b13c24c690a98731621f89a7d199afaf529d9e90c4a27d094ae8442f5ba8725",
+      "bytes": 614400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionColorMip2-t0.bin",
+      "sha256": "3b13c24c690a98731621f89a7d199afaf529d9e90c4a27d094ae8442f5ba8725",
+      "bytes": 614400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionColorMip2-u0.bin",
+      "sha256": "9bc7c013c9d42d509f0285ddc43a57434fba57903f8da4eb1cc16ced126fdb07",
+      "bytes": 153600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionColorMip3-t0.bin",
+      "sha256": "9bc7c013c9d42d509f0285ddc43a57434fba57903f8da4eb1cc16ced126fdb07",
+      "bytes": 153600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionColorMip3-u0.bin",
+      "sha256": "244cff90dc763c14b8219dcc7f0bda9113a31925006e063fb5e27f702cd9fb92",
+      "bytes": 38400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionColorMip4-t0.bin",
+      "sha256": "244cff90dc763c14b8219dcc7f0bda9113a31925006e063fb5e27f702cd9fb92",
+      "bytes": 38400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionColorMip4-u0.bin",
+      "sha256": "9700b240cec58cd4ff54f9f653eb16e2534ff6539ac53102c474d7521a5bb729",
+      "bytes": 9600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionColorMip5-t0.bin",
+      "sha256": "9700b240cec58cd4ff54f9f653eb16e2534ff6539ac53102c474d7521a5bb729",
+      "bytes": 9600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionColorMip5-u0.bin",
+      "sha256": "d57f0c28d2f4eecea2701ff82f7050d7fd109eec2952cf041ab8fbe8c0d90bb5",
+      "bytes": 2400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionTrace-t0.bin",
+      "sha256": "31e50953e509906aae658230f3fd39aac6e981e341a6f2c4e47c9d3ef59e46fe",
+      "bytes": 1228800
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionTrace-t1.bin",
+      "sha256": "7d0ee7ffc6762e737bd5503b9edd30f8c6e63bc917c4baa37475dd51eb5378c7",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionTrace-t2.bin",
+      "sha256": "944cf8cd5b8da8c6ca4f9c0f5ea3b56392089a65373677d554303793d21aa270",
+      "bytes": 1228800
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionTrace-t3.bin",
+      "sha256": "f6829cd4545712acacf14c465d41c9743b25346f240c8cd17a00a1a925e816f3",
+      "bytes": 1228800
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionTrace-t4.bin",
+      "sha256": "b4c867f801efd51e3b8f8fd76591536fe453107db6ca03450feb985485e31ad7",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionTrace-t5.bin",
+      "sha256": "3b13c24c690a98731621f89a7d199afaf529d9e90c4a27d094ae8442f5ba8725",
+      "bytes": 614400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionTrace-t6.bin",
+      "sha256": "9bc7c013c9d42d509f0285ddc43a57434fba57903f8da4eb1cc16ced126fdb07",
+      "bytes": 153600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionTrace-t7.bin",
+      "sha256": "244cff90dc763c14b8219dcc7f0bda9113a31925006e063fb5e27f702cd9fb92",
+      "bytes": 38400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionTrace-t8.bin",
+      "sha256": "9700b240cec58cd4ff54f9f653eb16e2534ff6539ac53102c474d7521a5bb729",
+      "bytes": 9600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionTrace-t9.bin",
+      "sha256": "d57f0c28d2f4eecea2701ff82f7050d7fd109eec2952cf041ab8fbe8c0d90bb5",
+      "bytes": 2400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionTrace-t10.bin",
+      "sha256": "834cbb57f5b017ff009e7ee0690d874c6bc21ce84c4593f4394fc002f10b7a0d",
+      "bytes": 65536
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionTrace-u0.bin",
+      "sha256": "eb7a1ff25cc1acb831386bfd7a12f1f96107bbcd3a7a883574ca465a6a2f9cf5",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-FrameConstants.bin",
+      "sha256": "a5028f98fde3e61bb36642567ec7c3469825133c95ce345006b82dfb085b6cdd",
+      "bytes": 8960
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionComposite-t0.bin",
+      "sha256": "aee3538bf21e1c86a50ce2d0946c015a12f235d1e79a4d9e3cafaa7a8a924d88",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionComposite-t1.bin",
+      "sha256": "4ac3251396d2b2fbae5669b01dc98cc6da23cd96a238443f4886be7207a4c5bc",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionComposite-t2.bin",
+      "sha256": "eb7a1ff25cc1acb831386bfd7a12f1f96107bbcd3a7a883574ca465a6a2f9cf5",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame0-ReflectionComposite-u0.bin",
+      "sha256": "24840148c55e4e8d66c691fb4e0cc107c90918a13919f65cfb5bfb9eb317321f",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Capture/Temporal_frame1.rdc",
+      "sha256": "b5acd13d93ba860dcc32961e2d836c48c4694d81651fdf41c7fdb788dad365bf",
+      "bytes": 3651684
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionRadiance-t0.bin",
+      "sha256": "123340ce37aa6013fb4916361c17a42c61b3bcb32edc00a4a566c80f99948563",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionRadiance-t1.bin",
+      "sha256": "4ac3251396d2b2fbae5669b01dc98cc6da23cd96a238443f4886be7207a4c5bc",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionRadiance-u0.bin",
+      "sha256": "250d72147e90330c015b731eb19221f5df56f003f18c918ae36c605658a21801",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionColorMip1-t0.bin",
+      "sha256": "250d72147e90330c015b731eb19221f5df56f003f18c918ae36c605658a21801",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionColorMip1-u0.bin",
+      "sha256": "fd1016f813eed1e3d4e0e6d621ed4c3625b3c135e1562c73f4d1872fff725a1a",
+      "bytes": 614400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionColorMip2-t0.bin",
+      "sha256": "fd1016f813eed1e3d4e0e6d621ed4c3625b3c135e1562c73f4d1872fff725a1a",
+      "bytes": 614400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionColorMip2-u0.bin",
+      "sha256": "2fc347e22226c5f5dc81eebd3848be1f2f1c554b13bad2bc4703068f34bb4cdc",
+      "bytes": 153600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionColorMip3-t0.bin",
+      "sha256": "2fc347e22226c5f5dc81eebd3848be1f2f1c554b13bad2bc4703068f34bb4cdc",
+      "bytes": 153600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionColorMip3-u0.bin",
+      "sha256": "2e24852a77e5f16b7531e5039492389f250730c35978828fad55808714b5f1e4",
+      "bytes": 38400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionColorMip4-t0.bin",
+      "sha256": "2e24852a77e5f16b7531e5039492389f250730c35978828fad55808714b5f1e4",
+      "bytes": 38400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionColorMip4-u0.bin",
+      "sha256": "c897fff75f33537ad3557fac71f1b0e0a1d1f63aa2568fb3a73b5b8210f661b1",
+      "bytes": 9600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionColorMip5-t0.bin",
+      "sha256": "c897fff75f33537ad3557fac71f1b0e0a1d1f63aa2568fb3a73b5b8210f661b1",
+      "bytes": 9600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionColorMip5-u0.bin",
+      "sha256": "42a5d8ebacbbd4d3adc1437696dedbf52529187cd1e080774956f66680c088ad",
+      "bytes": 2400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionTrace-t0.bin",
+      "sha256": "31e50953e509906aae658230f3fd39aac6e981e341a6f2c4e47c9d3ef59e46fe",
+      "bytes": 1228800
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionTrace-t1.bin",
+      "sha256": "7d0ee7ffc6762e737bd5503b9edd30f8c6e63bc917c4baa37475dd51eb5378c7",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionTrace-t2.bin",
+      "sha256": "944cf8cd5b8da8c6ca4f9c0f5ea3b56392089a65373677d554303793d21aa270",
+      "bytes": 1228800
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionTrace-t3.bin",
+      "sha256": "f6829cd4545712acacf14c465d41c9743b25346f240c8cd17a00a1a925e816f3",
+      "bytes": 1228800
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionTrace-t4.bin",
+      "sha256": "250d72147e90330c015b731eb19221f5df56f003f18c918ae36c605658a21801",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionTrace-t5.bin",
+      "sha256": "fd1016f813eed1e3d4e0e6d621ed4c3625b3c135e1562c73f4d1872fff725a1a",
+      "bytes": 614400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionTrace-t6.bin",
+      "sha256": "2fc347e22226c5f5dc81eebd3848be1f2f1c554b13bad2bc4703068f34bb4cdc",
+      "bytes": 153600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionTrace-t7.bin",
+      "sha256": "2e24852a77e5f16b7531e5039492389f250730c35978828fad55808714b5f1e4",
+      "bytes": 38400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionTrace-t8.bin",
+      "sha256": "c897fff75f33537ad3557fac71f1b0e0a1d1f63aa2568fb3a73b5b8210f661b1",
+      "bytes": 9600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionTrace-t9.bin",
+      "sha256": "42a5d8ebacbbd4d3adc1437696dedbf52529187cd1e080774956f66680c088ad",
+      "bytes": 2400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionTrace-t10.bin",
+      "sha256": "834cbb57f5b017ff009e7ee0690d874c6bc21ce84c4593f4394fc002f10b7a0d",
+      "bytes": 65536
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionTrace-u0.bin",
+      "sha256": "b1b89146ba4e46f92073d3815b62e950430ff94e18420c78a655021f6b3c0468",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-FrameConstants.bin",
+      "sha256": "8bf77c979eaaa1af44f6ab12f1238188f09c4eec3981a48d60b77216e71c8c07",
+      "bytes": 8960
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionComposite-t0.bin",
+      "sha256": "123340ce37aa6013fb4916361c17a42c61b3bcb32edc00a4a566c80f99948563",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionComposite-t1.bin",
+      "sha256": "4ac3251396d2b2fbae5669b01dc98cc6da23cd96a238443f4886be7207a4c5bc",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionComposite-t2.bin",
+      "sha256": "b1b89146ba4e46f92073d3815b62e950430ff94e18420c78a655021f6b3c0468",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame1-ReflectionComposite-u0.bin",
+      "sha256": "1ed570fb75fe819f0f144a6b82a674b8f0ac1560b279b75e49e109857786c6a3",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Capture/Temporal_frame2.rdc",
+      "sha256": "aa6d99a19916d70c9d4a01b959d63b878a4fd25ecbe9d2de9738c4f3a63e79be",
+      "bytes": 3650395
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionRadiance-t0.bin",
+      "sha256": "c59c8fd1e57284bbc043469d7683441d7d6f84fd1aef1a805a960370d6239648",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionRadiance-t1.bin",
+      "sha256": "4ac3251396d2b2fbae5669b01dc98cc6da23cd96a238443f4886be7207a4c5bc",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionRadiance-u0.bin",
+      "sha256": "446a6f127437e4424d2714b280b6b1b57635e07dff663a9748cdf95284b6d2ad",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionColorMip1-t0.bin",
+      "sha256": "446a6f127437e4424d2714b280b6b1b57635e07dff663a9748cdf95284b6d2ad",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionColorMip1-u0.bin",
+      "sha256": "9130901e0f0ea767fad74274949eaa00fbe0203e04f09bf4b2814dc2c28c9896",
+      "bytes": 614400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionColorMip2-t0.bin",
+      "sha256": "9130901e0f0ea767fad74274949eaa00fbe0203e04f09bf4b2814dc2c28c9896",
+      "bytes": 614400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionColorMip2-u0.bin",
+      "sha256": "4e1025bb87cd239e33d73651300400ae5c5eaf95481a04e6c5c7b5b5dffd472e",
+      "bytes": 153600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionColorMip3-t0.bin",
+      "sha256": "4e1025bb87cd239e33d73651300400ae5c5eaf95481a04e6c5c7b5b5dffd472e",
+      "bytes": 153600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionColorMip3-u0.bin",
+      "sha256": "4f5a4ef18c8e88bf0ec4c0023a9f1c20b161da74d006a870ac9a4268815af916",
+      "bytes": 38400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionColorMip4-t0.bin",
+      "sha256": "4f5a4ef18c8e88bf0ec4c0023a9f1c20b161da74d006a870ac9a4268815af916",
+      "bytes": 38400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionColorMip4-u0.bin",
+      "sha256": "1fc88e703b7ef9b96463dfa905805605d08cb1bed552884b220f71f80e3da341",
+      "bytes": 9600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionColorMip5-t0.bin",
+      "sha256": "1fc88e703b7ef9b96463dfa905805605d08cb1bed552884b220f71f80e3da341",
+      "bytes": 9600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionColorMip5-u0.bin",
+      "sha256": "8ecdf30a0adc3ee965f985c4e4358d03ee1ac0da1a6a4440cfb2a9a9241f853c",
+      "bytes": 2400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionTrace-t0.bin",
+      "sha256": "31e50953e509906aae658230f3fd39aac6e981e341a6f2c4e47c9d3ef59e46fe",
+      "bytes": 1228800
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionTrace-t1.bin",
+      "sha256": "7d0ee7ffc6762e737bd5503b9edd30f8c6e63bc917c4baa37475dd51eb5378c7",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionTrace-t2.bin",
+      "sha256": "944cf8cd5b8da8c6ca4f9c0f5ea3b56392089a65373677d554303793d21aa270",
+      "bytes": 1228800
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionTrace-t3.bin",
+      "sha256": "f6829cd4545712acacf14c465d41c9743b25346f240c8cd17a00a1a925e816f3",
+      "bytes": 1228800
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionTrace-t4.bin",
+      "sha256": "446a6f127437e4424d2714b280b6b1b57635e07dff663a9748cdf95284b6d2ad",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionTrace-t5.bin",
+      "sha256": "9130901e0f0ea767fad74274949eaa00fbe0203e04f09bf4b2814dc2c28c9896",
+      "bytes": 614400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionTrace-t6.bin",
+      "sha256": "4e1025bb87cd239e33d73651300400ae5c5eaf95481a04e6c5c7b5b5dffd472e",
+      "bytes": 153600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionTrace-t7.bin",
+      "sha256": "4f5a4ef18c8e88bf0ec4c0023a9f1c20b161da74d006a870ac9a4268815af916",
+      "bytes": 38400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionTrace-t8.bin",
+      "sha256": "1fc88e703b7ef9b96463dfa905805605d08cb1bed552884b220f71f80e3da341",
+      "bytes": 9600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionTrace-t9.bin",
+      "sha256": "8ecdf30a0adc3ee965f985c4e4358d03ee1ac0da1a6a4440cfb2a9a9241f853c",
+      "bytes": 2400
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionTrace-t10.bin",
+      "sha256": "834cbb57f5b017ff009e7ee0690d874c6bc21ce84c4593f4394fc002f10b7a0d",
+      "bytes": 65536
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionTrace-u0.bin",
+      "sha256": "f5779515850dedff925135159e6e1d727481fca76b4fa830c35ac624eb1c5231",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-FrameConstants.bin",
+      "sha256": "8bf77c979eaaa1af44f6ab12f1238188f09c4eec3981a48d60b77216e71c8c07",
+      "bytes": 8960
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionComposite-t0.bin",
+      "sha256": "c59c8fd1e57284bbc043469d7683441d7d6f84fd1aef1a805a960370d6239648",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionComposite-t1.bin",
+      "sha256": "4ac3251396d2b2fbae5669b01dc98cc6da23cd96a238443f4886be7207a4c5bc",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionComposite-t2.bin",
+      "sha256": "f5779515850dedff925135159e6e1d727481fca76b4fa830c35ac624eb1c5231",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r4/Temporal_frame2-ReflectionComposite-u0.bin",
+      "sha256": "0f796ac3965064c3538c8dbd1cbc5bed0c8c7f2f93eb40b477b2eaf603be4837",
+      "bytes": 2457600
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r2/On.json",
+      "sha256": "1bb5ee09da12169a4c65ee10458604f8b04eff7a4dc79496ddc8e85f42f30f7c",
+      "bytes": 150767
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r3/On.json",
+      "sha256": "aece06229a2bfdf8dbd16d10bd699a396bd65d9a3fc7535c8f6d9af2d9741a92",
+      "bytes": 66505
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r3/On.ppm",
+      "sha256": "9a5ade36842f478befce756f933b5f1325efe7dace45be4f1ab88a132a750aa8",
+      "bytes": 921615
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r3/StripeFix/Result.json",
+      "sha256": "f27f1fb5f673181f4c0bc4750a181a6970ebc424f0303165a3ca3cd758c4d497",
+      "bytes": 2060
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r3/StripeFix/Comparison.png",
+      "sha256": "0fbc2bcbd15c0a76329a0fcf1bca14800a53f530774d8f5d88622ad4bdebcc54",
+      "bytes": 72642
+    },
+    {
+      "path": "build/engine_next/reflection-gpu-r3/Compatibility/Results.json",
+      "sha256": "096c1237405aea539721561f992f1d2a9da3c98de856a3280c6ec72c4c8470d8",
+      "bytes": 2969
+    },
+    {
+      "path": "build/engine_next/RunReflectionGpu.py",
+      "sha256": "58a301721ef08e74cbc128eca2fb2bd00bc6cc325e648a68ed6aa878395426c8",
+      "bytes": 3164
+    },
+    {
+      "path": "build/engine_next/CaptureReflection.py",
+      "sha256": "7ac1ca23cb064302c1f24d5ed11a75ef1442c36deb43e6e3d2d1aedd3168806d",
+      "bytes": 6120
+    },
+    {
+      "path": "build/engine_next/InspectReflectionR4.py",
+      "sha256": "ca97b6865f5592230bd10a5c2434dbd9da6e1a0678bc14e2a84695114d7aaf60",
+      "bytes": 3550
+    },
+    {
+      "path": "build/engine_next/AnalyzeReflectionR4.py",
+      "sha256": "1314f2432ba9595290853a7d81f5d01c2a97399ff8bac832f50d6b2e53dbff52",
+      "bytes": 3646
+    }
+  ],
+  "metadata_paths": {
+    "base": "repository_root",
+    "normalization": "Artifact paths are repository-relative. External input bytes were copied unchanged into the ignored evidence-inputs directory. Displayed compiler and Python command names omit host installation paths. Original command and metadata bytes are retained in the private archive.",
+    "original_metadata": {
+      "path": "build/engine_next/reflection-metadata-original/engine-next-visual-runtime-m4-3-reflections-gpu.json",
+      "sha256": "367f269b1df8837a40d62acb9033afcf80460cda3a1b5d94015567117e5ec5d0",
+      "bytes": 48649
+    }
+  }
+}

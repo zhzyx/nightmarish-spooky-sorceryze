@@ -292,6 +292,39 @@ bool ParseLightAnimation(const Serialization::JsonValue &stValue, double dBaseIl
 	return ValidateLightAnimation(out_stSettings, dBaseIlluminance, out_arrDiagnostics);
 }
 
+bool ParseReflections(const Serialization::JsonValue &stValue, ReflectionSettings &out_stSettings, Assets::Diagnostics &out_arrDiagnostics)
+{
+	const std::string strPath = "$.reflections";
+	const Serialization::JsonValue::Object *pObject = Assets::Object(stValue, strPath, out_arrDiagnostics);
+	if (pObject == nullptr || !RequiredFields(*pObject, {}, { "enabled", "max_distance", "thickness", "normal_bias", "max_steps", "max_roughness" }, strPath, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itEnabled = pObject->find("enabled");
+	if (itEnabled != pObject->end() && !itEnabled->second.GetBool(out_stSettings.bEnabled))
+	{
+		return Fail("type", strPath + ".enabled", "Expected a boolean.", out_arrDiagnostics);
+	}
+	if (pObject->find("max_steps") != pObject->end())
+	{
+		std::int64_t nMaxSteps = 0;
+		if (!Assets::Integer(*pObject, "max_steps", strPath, nMaxSteps, out_arrDiagnostics))
+		{
+			return false;
+		}
+		if (nMaxSteps < 8 || nMaxSteps > 256)
+		{
+			return Fail("reflection_settings", strPath + ".max_steps", "Expected an integer step count in [8,256].", out_arrDiagnostics);
+		}
+		out_stSettings.nMaxSteps = static_cast<std::uint32_t>(nMaxSteps);
+	}
+	return OptionalNumber(*pObject, "max_distance", strPath, out_stSettings.dMaxDistance, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "thickness", strPath, out_stSettings.dThickness, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "normal_bias", strPath, out_stSettings.dNormalBias, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "max_roughness", strPath, out_stSettings.dMaxRoughness, out_arrDiagnostics) &&
+			ValidateReflectionSettings(out_stSettings, out_arrDiagnostics);
+}
+
 bool ParseDirectionalLight(const Serialization::JsonValue &stValue, DirectionalLightSettings &out_stLight, Assets::Diagnostics &out_arrDiagnostics)
 {
 	const std::string strPath = "$.directional_light";
@@ -559,7 +592,7 @@ bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std
 							  Assets::Diagnostics &out_arrDiagnostics)
 {
 	const Serialization::JsonValue::Object *pRoot = Assets::Object(stValue, "$", out_arrDiagnostics);
-	if (pRoot == nullptr || !RequiredFields(*pRoot, { "schema_version", "source_package_sha256", "camera", "exposure" }, { "directional_light", "shadows", "point_lights", "spot_lights", "temporal_aa", "exposure_settings", "bloom", "light_animation" }, "$", out_arrDiagnostics))
+	if (pRoot == nullptr || !RequiredFields(*pRoot, { "schema_version", "source_package_sha256", "camera", "exposure" }, { "directional_light", "shadows", "point_lights", "spot_lights", "temporal_aa", "exposure_settings", "bloom", "light_animation", "reflections" }, "$", out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -645,6 +678,11 @@ bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std
 	}
 	const Serialization::JsonValue::Object::const_iterator itAnimation = pRoot->find("light_animation");
 	if (itAnimation != pRoot->end() && !ParseLightAnimation(itAnimation->second, stConfiguration.stDirectionalLight.dIlluminance, stConfiguration.stLightAnimation, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itReflections = pRoot->find("reflections");
+	if (itReflections != pRoot->end() && !ParseReflections(itReflections->second, stConfiguration.stReflections, out_arrDiagnostics))
 	{
 		return false;
 	}

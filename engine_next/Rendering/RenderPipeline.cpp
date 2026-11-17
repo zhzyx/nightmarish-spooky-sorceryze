@@ -59,7 +59,7 @@ bool AddPipelinePass(FrameGraph &stGraph, RenderPipeline &stPipeline, const Pass
 } // namespace
 
 bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews, bool bTemporal,
-						 bool bExposure, std::uint32_t nBloomMips)
+						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips)
 {
 	if (nLocalShadowViews > 28)
 	{
@@ -69,6 +69,11 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 	if (nBloomMips > 6 || (bSceneMode && nBloomMips != 0 && !bExposure))
 	{
 		out_stDiagnostic = { GraphError::InvalidAccess, INVALID_PASS, INVALID_RESOURCE, "Bloom requires exposure and at most six mips." };
+		return false;
+	}
+	if (nReflectionMips > 6)
+	{
+		out_stDiagnostic = { GraphError::CapacityExceeded, INVALID_PASS, INVALID_RESOURCE, "Reflection color-mip budget exceeded." };
 		return false;
 	}
 	FrameGraph stGraph;
@@ -127,17 +132,55 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		stLighting.arrAccesses.push_back({ stPipeline.nHdr, ResourceState::RenderTarget, true });
 		stLighting.arrAccesses.push_back({ stPipeline.nDirectionalShadow, ResourceState::ShaderRead, false });
 		stLighting.arrAccesses.push_back({ stPipeline.nLocalShadow, ResourceState::ShaderRead, false });
+		if (nReflectionMips != 0)
+		{
+			stPipeline.nEnvironmentSpecular = stGraph.AddResource({ "EnvironmentSpecular", ResourceState::Common, false });
+			stPipeline.nReflection = stGraph.AddResource({ "Reflection", ResourceState::Common, false });
+			stPipeline.nReflectedHdr = stGraph.AddResource({ "ReflectedHdr", ResourceState::Common, false });
+			stLighting.arrAccesses.push_back({ stPipeline.nEnvironmentSpecular, ResourceState::RenderTarget, true });
+		}
 		if (!AddPipelinePass(stGraph, stPipeline, stGbuffer, PassWork::GBuffer, out_stDiagnostic) ||
 			!AddPipelinePass(stGraph, stPipeline, stLighting, PassWork::DeferredLighting, out_stDiagnostic))
 		{
 			return false;
 		}
 		ResourceId nToneMapSource = stPipeline.nHdr;
+		if (nReflectionMips != 0)
+		{
+			if (!AddPipelinePass(stGraph, stPipeline, { "ReflectionRadiance", QueueType::Graphics, { { stPipeline.nHdr, ResourceState::NonPixelShaderRead, false }, { stPipeline.nEnvironmentSpecular, ResourceState::NonPixelShaderRead, false }, { stPipeline.nReflectedHdr, ResourceState::UnorderedAccess, true } }, {} }, PassWork::ReflectionRadiance, out_stDiagnostic))
+			{
+				return false;
+			}
+			ResourceId nMipSource = stPipeline.nReflectedHdr;
+			for (std::uint32_t nLevel = 1; nLevel < nReflectionMips; ++nLevel)
+			{
+				const ResourceId nMip = stGraph.AddResource({ "ReflectionColorMip" + std::to_string(nLevel), ResourceState::Common, false });
+				stPipeline.arrReflectionMips.push_back(nMip);
+				if (!AddPipelinePass(stGraph, stPipeline, { "ReflectionColorMip" + std::to_string(nLevel), QueueType::Graphics, { { nMipSource, ResourceState::NonPixelShaderRead, false }, { nMip, ResourceState::UnorderedAccess, true } }, {} },
+									 PassWork::ReflectionColorMip, out_stDiagnostic, nLevel))
+				{
+					return false;
+				}
+				nMipSource = nMip;
+			}
+			PassDesc stTrace{ "ReflectionTrace", QueueType::Graphics, { { stPipeline.arrGbuffer[0], ResourceState::NonPixelShaderRead, false }, { stPipeline.arrGbuffer[1], ResourceState::NonPixelShaderRead, false }, { stPipeline.arrGbuffer[2], ResourceState::NonPixelShaderRead, false }, { stPipeline.nDepth, ResourceState::DepthRead, false }, { stPipeline.nReflectedHdr, ResourceState::NonPixelShaderRead, false }, { stPipeline.nReflection, ResourceState::UnorderedAccess, true } }, {} };
+			for (ResourceId nMip : stPipeline.arrReflectionMips)
+			{
+				stTrace.arrAccesses.push_back({ nMip, ResourceState::NonPixelShaderRead, false });
+			}
+			if (!AddPipelinePass(stGraph, stPipeline, stTrace, PassWork::ReflectionTrace, out_stDiagnostic) ||
+				!AddPipelinePass(stGraph, stPipeline, { "ReflectionComposite", QueueType::Graphics, { { stPipeline.nHdr, ResourceState::NonPixelShaderRead, false }, { stPipeline.nEnvironmentSpecular, ResourceState::NonPixelShaderRead, false }, { stPipeline.nReflection, ResourceState::NonPixelShaderRead, false }, { stPipeline.nReflectedHdr, ResourceState::UnorderedAccess, true } }, {} },
+								 PassWork::ReflectionComposite, out_stDiagnostic))
+			{
+				return false;
+			}
+			nToneMapSource = stPipeline.nReflectedHdr;
+		}
 		if (bTemporal)
 		{
 			const std::array<const char *, 4> arrReadNames{ "HistoryReadColor", "HistoryReadDepth", "HistoryReadNormal", "HistoryReadObjectId" };
 			const std::array<const char *, 4> arrWriteNames{ "HistoryWriteColor", "HistoryWriteDepth", "HistoryWriteNormal", "HistoryWriteObjectId" };
-			PassDesc stTemporal{ "TemporalResolve", QueueType::Graphics, { { stPipeline.nHdr, ResourceState::NonPixelShaderRead, false }, { stPipeline.nDepth, ResourceState::DepthRead, false }, { stPipeline.arrGbuffer[1], ResourceState::NonPixelShaderRead, false }, { stPipeline.nMotion, ResourceState::NonPixelShaderRead, false }, { stPipeline.nObjectId, ResourceState::NonPixelShaderRead, false } }, {} };
+			PassDesc stTemporal{ "TemporalResolve", QueueType::Graphics, { { nToneMapSource, ResourceState::NonPixelShaderRead, false }, { stPipeline.nDepth, ResourceState::DepthRead, false }, { stPipeline.arrGbuffer[1], ResourceState::NonPixelShaderRead, false }, { stPipeline.nMotion, ResourceState::NonPixelShaderRead, false }, { stPipeline.nObjectId, ResourceState::NonPixelShaderRead, false } }, {} };
 			for (std::size_t nHistory = 0; nHistory < stPipeline.arrHistoryRead.size(); ++nHistory)
 			{
 				stPipeline.arrHistoryRead[nHistory] = stGraph.AddResource({ arrReadNames[nHistory], ResourceState::Common, true });
@@ -242,6 +285,16 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 			stPresent.arrAccesses.push_back({ stPipeline.nHistogram, ResourceState::Common, false });
 			stPresent.arrAccesses.push_back({ stPipeline.nExposureRead, ResourceState::Common, false });
 			stPresent.arrAccesses.push_back({ stPipeline.nExposureWrite, ResourceState::Common, false });
+		}
+		if (nReflectionMips != 0)
+		{
+			stPresent.arrAccesses.push_back({ stPipeline.nEnvironmentSpecular, ResourceState::Common, false });
+			stPresent.arrAccesses.push_back({ stPipeline.nReflection, ResourceState::Common, false });
+			stPresent.arrAccesses.push_back({ stPipeline.nReflectedHdr, ResourceState::Common, false });
+			for (ResourceId nMip : stPipeline.arrReflectionMips)
+			{
+				stPresent.arrAccesses.push_back({ nMip, ResourceState::Common, false });
+			}
 		}
 		for (ResourceId nResource : stPipeline.arrBloomDown)
 		{

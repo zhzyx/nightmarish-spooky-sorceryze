@@ -81,6 +81,8 @@ void CheckRejected(const JsonValue &stValue, const std::string &strExpectedDiges
 	stConfiguration.stLightAnimation.bLoop = true;
 	stConfiguration.stLightAnimation.eInterpolation = EngineNext::Rendering::LightInterpolation::Step;
 	stConfiguration.stLightAnimation.arrKeyframes = { { 0, 2 }, { 1, 3 } };
+	stConfiguration.stReflections.bEnabled = true;
+	stConfiguration.stReflections.dMaxDistance = 321;
 	stConfiguration.arrPointLights.front().nId = 4321;
 	stConfiguration.arrSpotLights.push_back(EngineNext::Rendering::SpotLightSettings{});
 	EngineNext::Assets::Diagnostics arrDiagnostics;
@@ -102,6 +104,8 @@ void CheckRejected(const JsonValue &stValue, const std::string &strExpectedDiges
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stLightAnimation.eInterpolation, EngineNext::Rendering::LightInterpolation::Step);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stLightAnimation.arrKeyframes.size(), 2U);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stLightAnimation.arrKeyframes.back().dMultiplier, 3);
+	ENGINE_NEXT_CHECK(stConfiguration.stReflections.bEnabled);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stReflections.dMaxDistance, 321);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrPointLights.front().nId, 4321U);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrSpotLights.size(), 1U);
 }
@@ -1028,4 +1032,59 @@ ENGINE_NEXT_TEST("Render configuration validates ordered timeline budget and ill
 	(*(*stValue.GetObject())["directional_light"].GetObject())["illuminance"] = 0.0;
 	(*(*stValue.GetObject())["light_animation"].GetObject())["keyframes"].GetList()->front().GetObject()->at("multiplier") = std::numeric_limits<double>::max();
 	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+}
+
+ENGINE_NEXT_TEST("Render configuration supports optional reflection defaults and bounds")
+{
+	JsonValue stValue = ValidConfiguration();
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(!stConfiguration.stReflections.bEnabled);
+	(*stValue.GetObject())["reflections"] = JsonValue::Object{};
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stReflections.dMaxDistance, 100);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stReflections.dThickness, .1);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stReflections.dNormalBias, .02);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stReflections.nMaxSteps, 128U);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stReflections.dMaxRoughness, .8);
+	(*stValue.GetObject())["reflections"] = JsonValue::Object{ { "enabled", true }, { "max_distance", 1000.0 }, { "thickness", 10.0 }, { "normal_bias", 1.0 }, { "max_steps", std::int64_t{ 256 } }, { "max_roughness", 1.0 } };
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stReflections.bEnabled);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stReflections.nMaxSteps, 256U);
+	(*stValue.GetObject())["reflections"] = JsonValue::Object{ { "enabled", false }, { "normal_bias", 0.0 }, { "max_steps", std::int64_t{ 8 } } };
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+}
+
+ENGINE_NEXT_TEST("Render configuration rejects malformed reflection fields transactionally")
+{
+	JsonValue stValue = ValidConfiguration();
+	for (const JsonValue &stBad : { JsonValue{}, JsonValue(true), JsonValue(1.0), JsonValue("reflection"), JsonValue(JsonValue::List{}), JsonValue(JsonValue::Object{ { "unknown", 1.0 } }) })
+	{
+		(*stValue.GetObject())["reflections"] = stBad;
+		CheckRejected(stValue);
+	}
+	for (const std::string &strName : { "enabled", "max_distance", "thickness", "normal_bias", "max_steps", "max_roughness" })
+	{
+		for (const JsonValue &stBad : { JsonValue{}, JsonValue("1"), JsonValue(std::numeric_limits<double>::infinity()) })
+		{
+			(*stValue.GetObject())["reflections"] = JsonValue::Object{ { strName, stBad } };
+			CheckRejected(stValue);
+		}
+	}
+	for (const std::string &strName : { "max_distance", "thickness", "max_roughness" })
+	{
+		for (double dBad : { 0.0, -1.0, std::numeric_limits<double>::min(), 1001.0 })
+		{
+			(*stValue.GetObject())["reflections"] = JsonValue::Object{ { strName, dBad } };
+			CheckRejected(stValue);
+		}
+	}
+	for (const JsonValue &stBad : { JsonValue(8.0), JsonValue(true), JsonValue(std::int64_t{ 7 }), JsonValue(std::int64_t{ 257 }) })
+	{
+		(*stValue.GetObject())["reflections"] = JsonValue::Object{ { "max_steps", stBad } };
+		CheckRejected(stValue);
+	}
+	(*stValue.GetObject())["reflections"] = JsonValue::Object{ { "enabled", false }, { "normal_bias", -1.0 } };
+	CheckRejected(stValue);
 }

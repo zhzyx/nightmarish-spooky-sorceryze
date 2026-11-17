@@ -87,7 +87,12 @@ namespace
 {
 
 constexpr std::uint32_t FRAME_COUNT = 3;
-constexpr std::uint32_t FRAME_VIEW_COUNT = 104;
+constexpr std::uint32_t FRAME_VIEW_COUNT = 120;
+constexpr std::uint32_t REFLECTION_MIP_COUNT = 6;
+constexpr std::uint32_t REFLECTION_MIP_VIEW = 104;
+constexpr std::uint32_t REFLECTION_ENV_VIEW = 114;
+constexpr std::uint32_t REFLECTION_RESULT_VIEW = 115;
+constexpr std::uint32_t REFLECTION_OUTPUT_VIEW = 117;
 constexpr std::uint32_t HISTORY_VIEW_START = FRAME_COUNT * FRAME_VIEW_COUNT;
 constexpr std::uint32_t HISTORY_VIEW_COUNT = 16;
 constexpr std::uint32_t MAX_LOCAL_SHADOW_VIEWS = 28;
@@ -250,6 +255,10 @@ struct FrameContext
 	ComOwner<ID3D12GraphicsCommandList> stComputeList;
 	ComOwner<ID3D12Resource> stColor;
 	ComOwner<ID3D12Resource> stHdr;
+	ComOwner<ID3D12Resource> stEnvironmentSpecular;
+	ComOwner<ID3D12Resource> stReflection;
+	ComOwner<ID3D12Resource> stReflectedHdr;
+	std::array<ComOwner<ID3D12Resource>, REFLECTION_MIP_COUNT - 1> arrReflectionMips;
 	ComOwner<ID3D12Resource> stDepth;
 	ComOwner<ID3D12Resource> stTint;
 	std::array<ComOwner<ID3D12Resource>, 4> arrGbuffer;
@@ -369,7 +378,7 @@ static_assert(offsetof(DrawConstants, arrPreviousWorld) == 192);
 static_assert(offsetof(DrawConstants, arrTemporal) == 256);
 static_assert(sizeof(LocalLightConstants) == 80);
 static_assert(sizeof(FrameConstants) == 3120);
-static_assert(FRAME_VIEW_COUNT == 104);
+static_assert(REFLECTION_OUTPUT_VIEW + 2 <= FRAME_VIEW_COUNT);
 static_assert(offsetof(FrameConstants, arrUnjitteredViewProjection) == 2992);
 static_assert(offsetof(FrameConstants, arrPreviousViewProjection) == 3056);
 static_assert(offsetof(FrameConstants, arrLocalShadowMatrices) == 544);
@@ -596,6 +605,9 @@ private:
 	bool CreatePostProcessTargets();
 	bool PreparePostProcess(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame);
 	void DrawPostProcess(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, PassWork eWork, std::uint32_t nMip, double dSeconds);
+	bool CreateReflectionTargets();
+	bool CreateReflectionPipeline();
+	void DrawReflections(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, PassWork eWork, std::uint32_t nMip);
 	bool CreateTemporalPipeline();
 	bool CreateHistoryTargets();
 	bool ResetTemporalHistory();
@@ -665,6 +677,9 @@ private:
 	ComOwner<ID3D12PipelineState> stExposurePipeline;
 	ComOwner<ID3D12PipelineState> stBloomDownPipeline;
 	ComOwner<ID3D12PipelineState> stBloomUpPipeline;
+	ComOwner<ID3D12RootSignature> stReflectionRoot;
+	std::array<ComOwner<ID3D12PipelineState>, 4> arrReflectionPipelines;
+	std::uint64_t nReflectionBytes = 0;
 	std::array<ComOwner<ID3D12Resource>, 2> arrExposure;
 	std::uint32_t nExposureRead = 0;
 	bool bExposureReady = false;
@@ -883,7 +898,7 @@ bool VisualRuntime::Initialize()
 	(void)stSwapchain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709);
 	D3D12_DESCRIPTOR_HEAP_DESC stHeap{};
 	stHeap.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-	stHeap.NumDescriptors = FRAME_COUNT * 9;
+	stHeap.NumDescriptors = FRAME_COUNT * 10;
 	if (FAILED(stDevice->CreateDescriptorHeap(&stHeap, IID_PPV_ARGS(stRtvHeap.Put()))))
 	{
 		return Fail("Create RTV heap");
@@ -905,7 +920,7 @@ bool VisualRuntime::Initialize()
 	nDsvStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	nViewStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	return LoadScene() && BuildGraph() && CreateFrameContexts() && CreateTargets() && CreatePipeline() &&
-			(!bSceneMode || (CreateDeferredPipeline() && CreateShadowPipeline() && CreateTemporalPipeline() && CreatePostProcessPipeline())) && (bSceneMode ? CreateSceneMesh() : CreateMesh()) && CreateConstantBuffers();
+			(!bSceneMode || (CreateDeferredPipeline() && CreateShadowPipeline() && CreateTemporalPipeline() && CreatePostProcessPipeline() && CreateReflectionPipeline())) && (bSceneMode ? CreateSceneMesh() : CreateMesh()) && CreateConstantBuffers();
 }
 
 bool VisualRuntime::CreateFrameContexts()
@@ -1127,7 +1142,7 @@ bool VisualRuntime::CreateTargets()
 	{
 		return false;
 	}
-	if (!CreatePostProcessTargets())
+	if (!CreatePostProcessTargets() || !CreateReflectionTargets())
 	{
 		return false;
 	}
@@ -1504,7 +1519,7 @@ bool VisualRuntime::UploadFloatTexture(const std::vector<const FloatImage *> &ar
 	stBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	stBarrier.Transition.pResource = stTexture.Get();
 	stBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-	stBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	stBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
 	stBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 	pList->ResourceBarrier(1, &stBarrier);
 	D3D12_SHADER_RESOURCE_VIEW_DESC stSrv{};
@@ -1881,7 +1896,7 @@ bool VisualRuntime::CreateDeferredPipeline()
 	const std::vector<std::uint8_t> arrVertex = ReadShader(stConfig.strShaderDirectory, "Deferred.vs.cso");
 	const std::vector<std::uint8_t> arrPixel = ReadShader(stConfig.strShaderDirectory, "Deferred.ps.cso");
 	const std::vector<std::uint8_t> arrFullscreen = ReadShader(stConfig.strShaderDirectory, "Lighting.vs.cso");
-	const std::vector<std::uint8_t> arrLighting = ReadShader(stConfig.strShaderDirectory, "Lighting.ps.cso");
+	const std::vector<std::uint8_t> arrLighting = ReadShader(stConfig.strShaderDirectory, stRenderConfiguration.stReflections.bEnabled ? "ReflectionLighting.ps.cso" : "Lighting.ps.cso");
 	const std::vector<std::uint8_t> arrToneMap = ReadShader(stConfig.strShaderDirectory, "ToneMap.ps.cso");
 	if (arrVertex.empty() || arrPixel.empty() || arrFullscreen.empty() || arrLighting.empty() || arrToneMap.empty())
 	{
@@ -2027,9 +2042,9 @@ bool VisualRuntime::CreateDeferredPipeline()
 	stPipeline.InputLayout = {};
 	stPipeline.DepthStencilState.DepthEnable = FALSE;
 	stPipeline.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
-	stPipeline.NumRenderTargets = 1;
+	stPipeline.NumRenderTargets = stRenderConfiguration.stReflections.bEnabled ? 2U : 1U;
 	stPipeline.RTVFormats[0] = HDR_FORMAT;
-	stPipeline.RTVFormats[1] = DXGI_FORMAT_UNKNOWN;
+	stPipeline.RTVFormats[1] = stRenderConfiguration.stReflections.bEnabled ? HDR_FORMAT : DXGI_FORMAT_UNKNOWN;
 	stPipeline.RTVFormats[2] = DXGI_FORMAT_UNKNOWN;
 	stPipeline.RTVFormats[3] = DXGI_FORMAT_UNKNOWN;
 	stPipeline.RTVFormats[4] = DXGI_FORMAT_UNKNOWN;
@@ -2073,8 +2088,151 @@ bool VisualRuntime::CreateDeferredPipeline()
 	}
 	stPipeline.pRootSignature = stToneMapRoot.Get();
 	stPipeline.PS = { arrToneMap.data(), arrToneMap.size() };
+	stPipeline.NumRenderTargets = 1;
+	stPipeline.RTVFormats[1] = DXGI_FORMAT_UNKNOWN;
 	stPipeline.RTVFormats[0] = COLOR_FORMAT;
 	return SUCCEEDED(stDevice->CreateGraphicsPipelineState(&stPipeline, IID_PPV_ARGS(stToneMapPipeline.Put()))) || Fail("Create tone mapping PSO");
+}
+
+bool VisualRuntime::CreateReflectionTargets()
+{
+	nReflectionBytes = 0;
+	if (!bSceneMode || !stRenderConfiguration.stReflections.bEnabled)
+	{
+		return true;
+	}
+	const D3D12_HEAP_PROPERTIES stHeap = HeapProperties(D3D12_HEAP_TYPE_DEFAULT);
+	for (std::uint32_t nFrame = 0; nFrame < FRAME_COUNT; ++nFrame)
+	{
+		FrameContext &stFrame = arrFrames[nFrame];
+		std::uint32_t nMipWidth = nWidth;
+		std::uint32_t nMipHeight = nHeight;
+		for (std::uint32_t nTarget = 0; nTarget < REFLECTION_MIP_COUNT + 2; ++nTarget)
+		{
+			ComOwner<ID3D12Resource> *pTarget = nullptr;
+			std::uint32_t nView = 0;
+			D3D12_RESOURCE_DESC stDescription{};
+			stDescription.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+			stDescription.Width = nWidth;
+			stDescription.Height = nHeight;
+			stDescription.DepthOrArraySize = 1;
+			stDescription.MipLevels = 1;
+			stDescription.Format = HDR_FORMAT;
+			stDescription.SampleDesc.Count = 1;
+			stDescription.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+			if (nTarget == 0)
+			{
+				pTarget = &stFrame.stEnvironmentSpecular;
+				nView = REFLECTION_ENV_VIEW;
+				stDescription.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+			}
+			else if (nTarget == 1)
+			{
+				pTarget = &stFrame.stReflection;
+				nView = REFLECTION_RESULT_VIEW;
+			}
+			else if (nTarget == 2)
+			{
+				pTarget = &stFrame.stReflectedHdr;
+				nView = REFLECTION_OUTPUT_VIEW;
+			}
+			else
+			{
+				nMipWidth = (nMipWidth + 1) / 2;
+				nMipHeight = (nMipHeight + 1) / 2;
+				stDescription.Width = nMipWidth;
+				stDescription.Height = nMipHeight;
+				pTarget = &stFrame.arrReflectionMips[nTarget - 3];
+				nView = REFLECTION_MIP_VIEW + (nTarget - 3) * 2;
+			}
+			if (FAILED(stDevice->CreateCommittedResource(&stHeap, D3D12_HEAP_FLAG_NONE, &stDescription, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(pTarget->Put()))))
+			{
+				return Fail("Create reflection texture");
+			}
+			const std::wstring strName = L"EngineNext.Reflection." + std::to_wstring(nFrame) + L"." + std::to_wstring(nTarget);
+			(void)(*pTarget)->SetName(strName.c_str());
+			nReflectionBytes += stDevice->GetResourceAllocationInfo(0, 1, &stDescription).SizeInBytes;
+			D3D12_SHADER_RESOURCE_VIEW_DESC stSrv{};
+			stSrv.Format = HDR_FORMAT;
+			stSrv.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+			stSrv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			stSrv.Texture2D.MipLevels = 1;
+			stDevice->CreateShaderResourceView(pTarget->Get(), &stSrv, View(nFrame * FRAME_VIEW_COUNT + nView));
+			if (nTarget == 0)
+			{
+				stDevice->CreateRenderTargetView(pTarget->Get(), nullptr, Rtv(FRAME_COUNT * 9 + nFrame));
+			}
+			else
+			{
+				D3D12_UNORDERED_ACCESS_VIEW_DESC stUav{};
+				stUav.Format = HDR_FORMAT;
+				stUav.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+				stDevice->CreateUnorderedAccessView(pTarget->Get(), nullptr, &stUav, View(nFrame * FRAME_VIEW_COUNT + nView + 1));
+			}
+		}
+	}
+	return true;
+}
+
+bool VisualRuntime::CreateReflectionPipeline()
+{
+	if (!stRenderConfiguration.stReflections.bEnabled)
+	{
+		return true;
+	}
+	std::array<D3D12_DESCRIPTOR_RANGE, 12> arrDescriptorRanges{};
+	std::array<D3D12_ROOT_PARAMETER, 14> arrParameters{};
+	arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+	arrParameters[0].Constants.Num32BitValues = 16;
+	arrParameters[0].Constants.ShaderRegister = 0;
+	arrParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	arrParameters[1].Descriptor.ShaderRegister = 1;
+	for (std::uint32_t nRange = 0; nRange < arrDescriptorRanges.size(); ++nRange)
+	{
+		D3D12_DESCRIPTOR_RANGE &stRange = arrDescriptorRanges[nRange];
+		stRange.RangeType = nRange == 11 ? D3D12_DESCRIPTOR_RANGE_TYPE_UAV : D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+		stRange.NumDescriptors = 1;
+		stRange.BaseShaderRegister = nRange == 11 ? 0 : nRange;
+		arrParameters[nRange + 2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		arrParameters[nRange + 2].DescriptorTable.NumDescriptorRanges = 1;
+		arrParameters[nRange + 2].DescriptorTable.pDescriptorRanges = &stRange;
+	}
+	D3D12_ROOT_SIGNATURE_DESC stRoot{};
+	stRoot.NumParameters = static_cast<UINT>(arrParameters.size());
+	stRoot.pParameters = arrParameters.data();
+	D3D12_STATIC_SAMPLER_DESC stSampler{};
+	stSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	stSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	stSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	stSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	stSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+	stSampler.MaxLOD = D3D12_FLOAT32_MAX;
+	stRoot.NumStaticSamplers = 1;
+	stRoot.pStaticSamplers = &stSampler;
+	ComOwner<ID3DBlob> stSerialized;
+	ComOwner<ID3DBlob> stErrors;
+	if (FAILED(D3D12SerializeRootSignature(&stRoot, D3D_ROOT_SIGNATURE_VERSION_1, stSerialized.Put(), stErrors.Put())) ||
+		FAILED(stDevice->CreateRootSignature(0, stSerialized->GetBufferPointer(), stSerialized->GetBufferSize(), IID_PPV_ARGS(stReflectionRoot.Put()))))
+	{
+		return Fail("Create reflection root signature");
+	}
+	const std::array<const char *, 4> arrNames{ "ReflectionColor.cs.cso", "ReflectionTrace.cs.cso", "ReflectionComposite.cs.cso", "ReflectionRadiance.cs.cso" };
+	for (std::size_t nShader = 0; nShader < arrNames.size(); ++nShader)
+	{
+		const std::vector<std::uint8_t> arrShader = ReadShader(stConfig.strShaderDirectory, arrNames[nShader]);
+		if (arrShader.empty())
+		{
+			return Fail(std::string("Missing reflection shader ") + arrNames[nShader]);
+		}
+		D3D12_COMPUTE_PIPELINE_STATE_DESC stPipeline{};
+		stPipeline.pRootSignature = stReflectionRoot.Get();
+		stPipeline.CS = { arrShader.data(), arrShader.size() };
+		if (FAILED(stDevice->CreateComputePipelineState(&stPipeline, IID_PPV_ARGS(arrReflectionPipelines[nShader].Put()))))
+		{
+			return Fail(std::string("Create reflection PSO ") + arrNames[nShader]);
+		}
+	}
+	return true;
 }
 
 bool VisualRuntime::ResetTemporalHistory()
@@ -2367,7 +2525,8 @@ bool VisualRuntime::PreparePostProcess(ID3D12GraphicsCommandList *pList, std::ui
 		stDevice->CreateShaderResourceView(stFrame.arrBloomUp[nMip].Get(), &stTextureSrv, View(nStart + 60 + 2 * nMip));
 		stDevice->CreateUnorderedAccessView(stFrame.arrBloomUp[nMip].Get(), nullptr, &stTextureUav, View(nStart + 61 + 2 * nMip));
 	}
-	ID3D12Resource *pBloom = stRenderConfiguration.stTemporal.bEnabled ? arrHistory[1 - nHistoryRead][0].Get() : stFrame.stHdr.Get();
+	ID3D12Resource *pCurrentHdr = stRenderConfiguration.stReflections.bEnabled ? stFrame.stReflectedHdr.Get() : stFrame.stHdr.Get();
+	ID3D12Resource *pBloom = stRenderConfiguration.stTemporal.bEnabled ? arrHistory[1 - nHistoryRead][0].Get() : pCurrentHdr;
 	if (!stRenderPipeline.arrBloomDown.empty())
 	{
 		pBloom = stRenderPipeline.arrBloomUp.empty() ? stFrame.arrBloomDown[0].Get() : stFrame.arrBloomUp[0].Get();
@@ -2458,7 +2617,8 @@ void VisualRuntime::ResolveTemporal(ID3D12GraphicsCommandList *pList, std::uint3
 	const std::uint32_t nStart = nFrame * FRAME_VIEW_COUNT;
 	FrameContext &stFrame = arrFrames[nFrame];
 	const std::array<DXGI_FORMAT, 4> arrHistoryFormats{ HDR_FORMAT, DXGI_FORMAT_R32_FLOAT, HDR_FORMAT, DXGI_FORMAT_R32_UINT };
-	const std::array<ID3D12Resource *, 5> arrCurrent{ stFrame.stHdr.Get(), stFrame.stDepth.Get(), stFrame.arrGbuffer[1].Get(), stFrame.stMotion.Get(), stFrame.stObjectId.Get() };
+	ID3D12Resource *pCurrentHdr = stRenderConfiguration.stReflections.bEnabled ? stFrame.stReflectedHdr.Get() : stFrame.stHdr.Get();
+	const std::array<ID3D12Resource *, 5> arrCurrent{ pCurrentHdr, stFrame.stDepth.Get(), stFrame.arrGbuffer[1].Get(), stFrame.stMotion.Get(), stFrame.stObjectId.Get() };
 	const std::array<DXGI_FORMAT, 5> arrCurrentFormats{ HDR_FORMAT, DXGI_FORMAT_R32_FLOAT, HDR_FORMAT, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32_UINT };
 	D3D12_SHADER_RESOURCE_VIEW_DESC stSrv{};
 	stSrv.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
@@ -2952,8 +3112,8 @@ void VisualRuntime::DrawScene(ID3D12GraphicsCommandList *pList, std::uint32_t nF
 
 void VisualRuntime::DrawLighting(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame)
 {
-	const D3D12_CPU_DESCRIPTOR_HANDLE stColor = Rtv(nFrame + FRAME_COUNT * 6);
-	pList->OMSetRenderTargets(1, &stColor, FALSE, nullptr);
+	const std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 2> arrColors{ Rtv(nFrame + FRAME_COUNT * 6), Rtv(nFrame + FRAME_COUNT * 9) };
+	pList->OMSetRenderTargets(stRenderConfiguration.stReflections.bEnabled ? 2U : 1U, arrColors.data(), FALSE, nullptr);
 	pList->SetPipelineState(stLightingPipeline.Get());
 	pList->SetGraphicsRootSignature(stLightingRoot.Get());
 	pList->SetGraphicsRootConstantBufferView(0, arrFrames[nFrame].stConstants->GetGPUVirtualAddress());
@@ -2982,7 +3142,7 @@ void VisualRuntime::DrawPostProcess(ID3D12GraphicsCommandList *pList, std::uint3
 			static_cast<float>(stExposure.eMode), static_cast<float>(dManualExposure), static_cast<float>(stExposure.dCompensationEv), 1
 		};
 		const bool bHistogram = eWork == PassWork::HistogramBuild;
-		const std::uint32_t nSource = bHistogram ? (stRenderConfiguration.stTemporal.bEnabled ? 46U : 7U) : 28U;
+		const std::uint32_t nSource = bHistogram ? (stRenderConfiguration.stTemporal.bEnabled ? 46U : (stRenderConfiguration.stReflections.bEnabled ? REFLECTION_OUTPUT_VIEW : 7U)) : 28U;
 		pList->SetPipelineState(bHistogram ? stHistogramPipeline.Get() : stExposurePipeline.Get());
 		pList->SetComputeRootSignature(stExposureRoot.Get());
 		pList->SetComputeRoot32BitConstants(0, 16, arrConstants.data(), 0);
@@ -2995,7 +3155,8 @@ void VisualRuntime::DrawPostProcess(ID3D12GraphicsCommandList *pList, std::uint3
 	const bool bDownsample = eWork == PassWork::BloomDownsample;
 	FrameContext &stFrame = arrFrames[nFrame];
 	ID3D12Resource *pDestination = bDownsample ? stFrame.arrBloomDown[nMip].Get() : stFrame.arrBloomUp[nMip].Get();
-	ID3D12Resource *pSource = bDownsample ? (nMip == 0 ? (stRenderConfiguration.stTemporal.bEnabled ? arrHistory[1 - nHistoryRead][0].Get() : stFrame.stHdr.Get()) : stFrame.arrBloomDown[nMip - 1].Get()) : stFrame.arrBloomDown[nMip].Get();
+	ID3D12Resource *pCurrentHdr = stRenderConfiguration.stReflections.bEnabled ? stFrame.stReflectedHdr.Get() : stFrame.stHdr.Get();
+	ID3D12Resource *pSource = bDownsample ? (nMip == 0 ? (stRenderConfiguration.stTemporal.bEnabled ? arrHistory[1 - nHistoryRead][0].Get() : pCurrentHdr) : stFrame.arrBloomDown[nMip - 1].Get()) : stFrame.arrBloomDown[nMip].Get();
 	const D3D12_RESOURCE_DESC stDestination = pDestination->GetDesc();
 	const D3D12_RESOURCE_DESC stSource = pSource->GetDesc();
 	const float fDestinationWidth = static_cast<float>(stDestination.Width);
@@ -3009,7 +3170,7 @@ void VisualRuntime::DrawPostProcess(ID3D12GraphicsCommandList *pList, std::uint3
 		static_cast<float>(stBloom.dIntensity), static_cast<float>(stBloom.dThreshold), static_cast<float>(stBloom.dSoftKnee), 0.5F,
 		bDownsample && nMip == 0 ? 1.0F : 0.0F, 0, 0, 0
 	};
-	const std::uint32_t nSourceView = bDownsample ? (nMip == 0 ? (stRenderConfiguration.stTemporal.bEnabled ? 46U : 7U) : 48U + 2 * (nMip - 1)) : 48U + 2 * nMip;
+	const std::uint32_t nSourceView = bDownsample ? (nMip == 0 ? (stRenderConfiguration.stTemporal.bEnabled ? 46U : (stRenderConfiguration.stReflections.bEnabled ? REFLECTION_OUTPUT_VIEW : 7U)) : 48U + 2 * (nMip - 1)) : 48U + 2 * nMip;
 	std::uint32_t nLowerView = nSourceView;
 	if (!bDownsample)
 	{
@@ -3035,11 +3196,79 @@ void VisualRuntime::DrawToneMap(ID3D12GraphicsCommandList *pList, std::uint32_t 
 	pList->SetPipelineState(stToneMapPipeline.Get());
 	pList->SetGraphicsRootSignature(stToneMapRoot.Get());
 	pList->SetGraphicsRootConstantBufferView(0, arrFrames[nFrame].stConstants->GetGPUVirtualAddress());
-	pList->SetGraphicsRootDescriptorTable(1, GpuView(nFrame * FRAME_VIEW_COUNT + (stRenderConfiguration.stTemporal.bEnabled ? 46 : 7)));
+	pList->SetGraphicsRootDescriptorTable(1, GpuView(nFrame * FRAME_VIEW_COUNT + (stRenderConfiguration.stTemporal.bEnabled ? 46 : (stRenderConfiguration.stReflections.bEnabled ? REFLECTION_OUTPUT_VIEW : 7))));
 	pList->SetGraphicsRootDescriptorTable(2, GpuView(nFrame * FRAME_VIEW_COUNT + 96));
 	pList->SetGraphicsRootDescriptorTable(3, GpuView(nFrame * FRAME_VIEW_COUNT + 26));
 	pList->SetGraphicsRootDescriptorTable(4, GpuView(nFrame * FRAME_VIEW_COUNT + 27));
 	pList->DrawInstanced(3, 1, 0, 0);
+}
+
+void VisualRuntime::DrawReflections(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, PassWork eWork, std::uint32_t nMip)
+{
+	const std::uint32_t nStart = nFrame * FRAME_VIEW_COUNT;
+	const FrameContext &stFrame = arrFrames[nFrame];
+	const ReflectionSettings &stSettings = stRenderConfiguration.stReflections;
+	std::array<float, 16> arrConstants{
+		static_cast<float>(nWidth), static_cast<float>(nHeight), 0, 0,
+		static_cast<float>(stCameraMatrices.arrProjection[0]), static_cast<float>(stCameraMatrices.arrProjection[5]),
+		static_cast<float>(-stCameraMatrices.arrProjection[8]), static_cast<float>(-stCameraMatrices.arrProjection[9]),
+		static_cast<float>(stRenderConfiguration.stCamera.dNearPlane), static_cast<float>(stRenderConfiguration.stCamera.dFarPlane),
+		static_cast<float>(stSettings.dMaxDistance), static_cast<float>(stSettings.dThickness),
+		static_cast<float>(stSettings.dNormalBias), static_cast<float>(stSettings.nMaxSteps),
+		static_cast<float>(stSettings.dMaxRoughness), static_cast<float>(REFLECTION_MIP_COUNT - 1)
+	};
+	pList->SetComputeRootSignature(stReflectionRoot.Get());
+	pList->SetComputeRootConstantBufferView(1, stFrame.stConstants->GetGPUVirtualAddress());
+	std::uint32_t nWidthDispatch = nWidth;
+	std::uint32_t nHeightDispatch = nHeight;
+	if (eWork == PassWork::ReflectionRadiance)
+	{
+		pList->SetPipelineState(arrReflectionPipelines[3].Get());
+		pList->SetComputeRootDescriptorTable(2, GpuView(nStart + 7));
+		pList->SetComputeRootDescriptorTable(3, GpuView(nStart + REFLECTION_ENV_VIEW));
+		pList->SetComputeRootDescriptorTable(13, GpuView(nStart + REFLECTION_OUTPUT_VIEW + 1));
+	}
+	else if (eWork == PassWork::ReflectionColorMip)
+	{
+		const D3D12_RESOURCE_DESC stDestination = stFrame.arrReflectionMips[nMip - 1]->GetDesc();
+		ID3D12Resource *pSource = nMip == 1 ? stFrame.stReflectedHdr.Get() : stFrame.arrReflectionMips[nMip - 2].Get();
+		const D3D12_RESOURCE_DESC stSource = pSource->GetDesc();
+		nWidthDispatch = static_cast<std::uint32_t>(stDestination.Width);
+		nHeightDispatch = stDestination.Height;
+		arrConstants[0] = static_cast<float>(nWidthDispatch);
+		arrConstants[1] = static_cast<float>(nHeightDispatch);
+		arrConstants[4] = static_cast<float>(stSource.Width);
+		arrConstants[5] = static_cast<float>(stSource.Height);
+		const std::uint32_t nSourceView = nMip == 1 ? REFLECTION_OUTPUT_VIEW : REFLECTION_MIP_VIEW + (nMip - 2) * 2;
+		pList->SetPipelineState(arrReflectionPipelines[0].Get());
+		pList->SetComputeRootDescriptorTable(2, GpuView(nStart + nSourceView));
+		pList->SetComputeRootDescriptorTable(13, GpuView(nStart + REFLECTION_MIP_VIEW + (nMip - 1) * 2 + 1));
+	}
+	else if (eWork == PassWork::ReflectionTrace)
+	{
+		pList->SetPipelineState(arrReflectionPipelines[1].Get());
+		pList->SetComputeRootDescriptorTable(2, GpuView(nStart + 2));
+		pList->SetComputeRootDescriptorTable(3, GpuView(nStart + 3));
+		pList->SetComputeRootDescriptorTable(4, GpuView(nStart + 4));
+		pList->SetComputeRootDescriptorTable(5, GpuView(nStart + 6));
+		pList->SetComputeRootDescriptorTable(6, GpuView(nStart + REFLECTION_OUTPUT_VIEW));
+		for (std::uint32_t nLevel = 1; nLevel < REFLECTION_MIP_COUNT; ++nLevel)
+		{
+			pList->SetComputeRootDescriptorTable(6 + nLevel, GpuView(nStart + REFLECTION_MIP_VIEW + (nLevel - 1) * 2));
+		}
+		pList->SetComputeRootDescriptorTable(12, GpuView(ENVIRONMENT_VIEW_START + 2));
+		pList->SetComputeRootDescriptorTable(13, GpuView(nStart + REFLECTION_RESULT_VIEW + 1));
+	}
+	else
+	{
+		pList->SetPipelineState(arrReflectionPipelines[2].Get());
+		pList->SetComputeRootDescriptorTable(2, GpuView(nStart + 7));
+		pList->SetComputeRootDescriptorTable(3, GpuView(nStart + REFLECTION_ENV_VIEW));
+		pList->SetComputeRootDescriptorTable(4, GpuView(nStart + REFLECTION_RESULT_VIEW));
+		pList->SetComputeRootDescriptorTable(13, GpuView(nStart + REFLECTION_OUTPUT_VIEW + 1));
+	}
+	pList->SetComputeRoot32BitConstants(0, static_cast<UINT>(arrConstants.size()), arrConstants.data(), 0);
+	pList->Dispatch((nWidthDispatch + 7) / 8, (nHeightDispatch + 7) / 8, 1);
 }
 
 std::uint32_t VisualRuntime::GraphicsPassCount() const noexcept
@@ -3055,7 +3284,8 @@ std::uint32_t VisualRuntime::TotalQueryCount() const noexcept
 bool VisualRuntime::BuildGraph()
 {
 	GraphDiagnostic stDiagnostic;
-	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size()), stRenderConfiguration.stTemporal.bEnabled, true, stRenderConfiguration.stBloom.bEnabled ? stRenderConfiguration.stBloom.nMipCount : 0))
+	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size()), stRenderConfiguration.stTemporal.bEnabled, true, stRenderConfiguration.stBloom.bEnabled ? stRenderConfiguration.stBloom.nMipCount : 0,
+							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0))
 	{
 		return Fail("FrameGraph compilation failed: " + stDiagnostic.strMessage);
 	}
@@ -3236,6 +3466,16 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 	if (bSceneMode)
 	{
 		arrResources[stRenderPipeline.nHdr] = stFrame.stHdr.Get();
+		if (stRenderConfiguration.stReflections.bEnabled)
+		{
+			arrResources[stRenderPipeline.nEnvironmentSpecular] = stFrame.stEnvironmentSpecular.Get();
+			arrResources[stRenderPipeline.nReflection] = stFrame.stReflection.Get();
+			arrResources[stRenderPipeline.nReflectedHdr] = stFrame.stReflectedHdr.Get();
+			for (std::size_t nMip = 0; nMip < stRenderPipeline.arrReflectionMips.size(); ++nMip)
+			{
+				arrResources[stRenderPipeline.arrReflectionMips[nMip]] = stFrame.arrReflectionMips[nMip].Get();
+			}
+		}
 		arrResources[stRenderPipeline.nDirectionalShadow] = stFrame.stDirectionalShadow.Get();
 		arrResources[stRenderPipeline.nLocalShadow] = stFrame.stLocalShadow.Get();
 		arrResources[stRenderPipeline.nMotion] = stFrame.stMotion.Get();
@@ -3348,6 +3588,10 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		else if (eWork == PassWork::HistogramBuild || eWork == PassWork::ExposureAdapt || eWork == PassWork::BloomDownsample || eWork == PassWork::BloomUpsample)
 		{
 			DrawPostProcess(pList, nIndex, eWork, stRenderPipeline.arrPassMipIndex[stPass.nPass], dSeconds);
+		}
+		else if (eWork == PassWork::ReflectionRadiance || eWork == PassWork::ReflectionColorMip || eWork == PassWork::ReflectionTrace || eWork == PassWork::ReflectionComposite)
+		{
+			DrawReflections(pList, nIndex, eWork, stRenderPipeline.arrPassMipIndex[stPass.nPass]);
 		}
 		else if (eWork == PassWork::DirectionalShadow)
 		{
@@ -3483,6 +3727,13 @@ bool VisualRuntime::Resize()
 		arrFrames[nIndex].stDepth.Reset();
 		arrFrames[nIndex].stMotion.Reset();
 		arrFrames[nIndex].stObjectId.Reset();
+		arrFrames[nIndex].stEnvironmentSpecular.Reset();
+		arrFrames[nIndex].stReflection.Reset();
+		arrFrames[nIndex].stReflectedHdr.Reset();
+		for (ComOwner<ID3D12Resource> &stTarget : arrFrames[nIndex].arrReflectionMips)
+		{
+			stTarget.Reset();
+		}
 		for (ComOwner<ID3D12Resource> &stTarget : arrFrames[nIndex].arrGbuffer)
 		{
 			stTarget.Reset();
@@ -4014,6 +4265,9 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["adapter_luid_high"] = JsonValue(static_cast<std::int64_t>(stAdapterDescription.AdapterLuid.HighPart));
 	mapReport["dedicated_video_memory"] = JsonValue(static_cast<std::int64_t>(stAdapterDescription.DedicatedVideoMemory));
 	mapReport["peak_local_memory"] = JsonValue(static_cast<std::int64_t>(nPeakLocalMemory));
+	mapReport["screen_space_reflections"] = JsonValue(bSceneMode && stRenderConfiguration.stReflections.bEnabled);
+	mapReport["reflection_resource_bytes"] = JsonValue(static_cast<std::int64_t>(nReflectionBytes));
+	mapReport["reflection_color_mips"] = JsonValue(static_cast<std::int64_t>(bSceneMode && stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0));
 	mapReport["vsync"] = JsonValue(stConfig.bVsync);
 	mapReport["tearing_supported"] = JsonValue(bTearing);
 	mapReport["compute_queue_used"] = JsonValue(nFrames > 0);

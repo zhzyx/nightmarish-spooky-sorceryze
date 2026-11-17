@@ -268,7 +268,16 @@ float LocalVisibility(LocalLightConstants Light, float3 Position, float3 N, floa
         LocalCounts.z, ShadowParameters.z, Light.ShadowParameters.z,
         Light.ShadowParameters.xy, false, LocalCounts.w > 0.5, Face, GeometricNormal);
 }
+#if defined(REFLECTION_STAGE)
+struct LightingOutput
+{
+    float4 Base : SV_TARGET0;
+    float4 EnvironmentSpecular : SV_TARGET1;
+};
+LightingOutput LightingPS(FullscreenOutput Input)
+#else
 float4 LightingPS(FullscreenOutput Input) : SV_TARGET
+#endif
 {
     int2 Pixel = int2(Input.Position.xy);
     float Depth = DepthBuffer.Load(int3(Pixel, 0));
@@ -282,7 +291,14 @@ float4 LightingPS(FullscreenOutput Input) : SV_TARGET
         float3 Direction = normalize(FarPosition.xyz - Camera.xyz * FarPosition.w);
         float3 Sky = PrefilteredEnvironment.SampleLevel(EnvironmentSampler, Direction, 0).rgb;
         Sky *= ExposureState[0].x;
+#if defined(REFLECTION_STAGE)
+        LightingOutput Output;
+        Output.Base = float4(all(isfinite(Sky)) ? clamp(Sky, 0, 65504) : float3(0, 0, 0), 1);
+        Output.EnvironmentSpecular = 0;
+        return Output;
+#else
         return float4(all(isfinite(Sky)) ? clamp(Sky, 0, 65504) : float3(0, 0, 0), 1);
+#endif
     }
     float3 Base = BaseBuffer.Load(int3(Pixel, 0)).rgb;
     float3 N = normalize(NormalBuffer.Load(int3(Pixel, 0)).xyz);
@@ -320,9 +336,19 @@ float4 LightingPS(FullscreenOutput Input) : SV_TARGET
     float3 Reflection = reflect(-V, N);
     float3 Prefiltered = PrefilteredEnvironment.SampleLevel(EnvironmentSampler, Reflection, Material.x * Lighting.y).rgb;
     float2 Brdf = BrdfLut.SampleLevel(EnvironmentSampler, float2(NoV, Material.x), 0).rg;
+#if defined(REFLECTION_STAGE)
+    Color += (1 - F) * (1 - Material.y) * Diffuse * Material.z;
+    float3 EnvironmentSpecular = Prefiltered * (F0 * Brdf.x + Brdf.y) * Material.z * ExposureState[0].x;
+    Color = Color * ExposureState[0].x + Emissive;
+    LightingOutput Output;
+    Output.Base = float4(all(isfinite(Color)) ? clamp(Color, 0, 65504) : float3(0, 0, 0), 1);
+    Output.EnvironmentSpecular = float4(all(isfinite(EnvironmentSpecular)) ? clamp(EnvironmentSpecular, 0, 65504) : float3(0, 0, 0), 1);
+    return Output;
+#else
     Color += ((1 - F) * (1 - Material.y) * Diffuse + Prefiltered * (F0 * Brdf.x + Brdf.y)) * Material.z;
     Color = Color * ExposureState[0].x + Emissive;
     return float4(all(isfinite(Color)) ? clamp(Color, 0, 65504) : float3(0, 0, 0), 1);
+#endif
 }
 #endif
 

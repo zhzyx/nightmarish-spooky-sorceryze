@@ -25,6 +25,11 @@ SHADER_FILES = {
     "Exposure.cs.cso",
     "BloomDown.cs.cso",
     "BloomUp.cs.cso",
+    "ReflectionLighting.ps.cso",
+    "ReflectionColor.cs.cso",
+    "ReflectionTrace.cs.cso",
+    "ReflectionComposite.cs.cso",
+    "ReflectionRadiance.cs.cso",
 }
 
 

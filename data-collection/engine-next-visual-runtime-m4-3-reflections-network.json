@@ -1,0 +1,978 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-17T14:48:33.766638+00:00",
+  "status": "passed",
+  "complete_acceptance": true,
+  "current_candidate": {
+    "build": "reflections-r5",
+    "executable": {
+      "path": "build/engine_next/reflections-r5/next_visual_client.exe",
+      "size_bytes": 3040768,
+      "sha256": "89881db1beaf1997c4fc01c6d620d7ddb810274a297d0bb0bcba112db639e31f"
+    },
+    "patched_server": {
+      "path": "build/engine_next/reflections-evidence-inputs/input-window-runtime-final/next_server.exe",
+      "size_bytes": 788992,
+      "sha256": "03097759e5aced39db68007897ff27adeadf2d8597cd2da2d9a8c8766f1092da"
+    },
+    "native_build": {
+      "path": "build/engine_next/reflections-r5/VisualBuildReport.json",
+      "size_bytes": 1739144,
+      "sha256": "b99d261b201a421c0dbce5c8190532bac354e813a153e23a3ba858252adb538e"
+    },
+    "source_delta": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-reflections-final-source-delta.json",
+      "size_bytes": 5905,
+      "sha256": "eda8b0990940ea8b0bb8c7df18a3ec58a32cbadc83b2e87bd9d212ea216cd5aa"
+    }
+  },
+  "pending_condition": null,
+  "ui_boundary": "The agent did not activate controls in the security dialog or change firewall settings. Earlier target-app clicks were intercepted by PickerHost, later identified as FirewallNotificationDialogServer. After visible identification, target-app input was paused. User subsequently reported the prompts closed. The completed sessions showed the test client windows without a security overlay before input.",
+  "remaining_acceptance": [],
+  "scene_choice": {
+    "kind": "Self-authored derived F scene",
+    "source_package_digest": "3310d4d94529a0c0ea139bd7054f4b4a14b2d9c29a87a592f8195181f4890369",
+    "changes_from_original_f": "Retains original player meshes and simulation entities 1 and 2. Adds a static mirror floor with entity ID100. Package identity differs from original immutable F.",
+    "provenance": {
+      "path": "build/engine_next/reflection-network-scene/Provenance.json",
+      "size_bytes": 1902,
+      "sha256": "f40937183fd33b12562da832869551adc225b78e13f61fde06e2327a443797b1"
+    },
+    "configuration": {
+      "path": "build/engine_next/reflection-network/MirrorConfiguration.json",
+      "size_bytes": 1436,
+      "sha256": "4e9ebb60d003bf576a79058a270da2bf4f8a237f05e152bafceffc7fff8aa18e"
+    }
+  },
+  "prepared_invocation": {
+    "path": "build/engine_next/reflection-network/PreparedR5Invocation.json",
+    "size_bytes": 1207,
+    "sha256": "d5bb942a981a2f35e8e8b521d6b15bb9acf47560083bfe4af25630a817ff9762"
+  },
+  "partial_sessions": [
+    {
+      "session": "r4-final",
+      "complete_acceptance": false,
+      "explanation": {
+        "completed_acceptance": false,
+        "status": "A exited after Escape key while attempting to dismiss IME. Task-owned B and server then terminated. This session remains incomplete."
+      },
+      "client_reports": {
+        "A": {
+          "frames": 3023,
+          "success": true,
+          "failure": "",
+          "validation_errors": 0,
+          "network_input_frames": 5,
+          "network_reconnect_requests": 0,
+          "temporal_resets": 1,
+          "source_package_digest": "2d75ccffae1d73cf633905c5460fa93b8be2e7a558a48acd23444d991891dd96"
+        }
+      },
+      "artifacts": [
+        {
+          "path": "build/engine_next/reflection-network/r4-final/A.json",
+          "size_bytes": 5875706,
+          "sha256": "2bb1761c342cbd8560175f30b63067356c7ca1780cbb1c4fd7b3ffa02dc4e4ee"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final/A.log",
+          "size_bytes": 1843,
+          "sha256": "75d0a83b62ace30f3f6f263819ac67ce03afcfa77a068847ca7ed7716b7632db"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final/A.ppm",
+          "size_bytes": 1843215,
+          "sha256": "5dac6349422ad9919b6d9ab626977ce526c3727ad9d3b65df6c8ad961fd07d80"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final/B.log",
+          "size_bytes": 470,
+          "sha256": "7e52176d909141f6f983257f091196dd7e683d79c166b650274d76acbd0969d2"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final/B.ppm",
+          "size_bytes": 1843215,
+          "sha256": "d379154ac6e9413f855fb161bab8af5606f21a94d758cf0fe4e1f1767cb51d91"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final/Completion.json",
+          "size_bytes": 5303,
+          "sha256": "a268e9c670e06f9b0ad13f878e0c4ed4db50a5d7e8dfedab0ade210850babec3"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final/Live.json",
+          "size_bytes": 5156,
+          "sha256": "3c225eb35f0a879e192026a9588d8d15ccf9a4ef6bdb9596e980ce806da5beee"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final/PartialSession.json",
+          "size_bytes": 188,
+          "sha256": "ed4dc31ee4e3213bbd8365f403dd2ab25cfd0667483299911635fd9d339deb92"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final/RenderConfiguration.json",
+          "size_bytes": 1433,
+          "sha256": "8817eb0acd1a099218aba6560f9c490891f48369374e39579173013119a4f6fa"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final/server.jsonl",
+          "size_bytes": 335681,
+          "sha256": "e8291bd701e9b9105c8c7262c53103a7673601fd99a5cfa0dda2c0a7f5eb4250"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final/server.log",
+          "size_bytes": 566,
+          "sha256": "7a90e2e4a04be91d4f08eeab111949883ce4ea1419be1a3347ca139648dc4ad1"
+        }
+      ]
+    },
+    {
+      "session": "r4-final2",
+      "complete_acceptance": false,
+      "explanation": {
+        "completed_acceptance": false,
+        "status": "Normal drain with two acknowledgments and one reconnect. B received five movement pulses. A received no movement pulses. Minimize attempts were intercepted by PickerHost overlay and the keyboard alternative did not minimize. This session remains incomplete.",
+        "later_readonly_diagnosis": "The intercepted PickerHost process was later identified as FirewallNotificationDialogServer. No UI action was taken on that process. Once its security dialog was visibly identified in the next session, UI input was paused pending the user."
+      },
+      "client_reports": {
+        "A": {
+          "frames": 8200,
+          "success": true,
+          "failure": "",
+          "validation_errors": 0,
+          "network_input_frames": 0,
+          "network_reconnect_requests": 0,
+          "temporal_resets": 1,
+          "source_package_digest": "2d75ccffae1d73cf633905c5460fa93b8be2e7a558a48acd23444d991891dd96"
+        },
+        "B": {
+          "frames": 13795,
+          "success": true,
+          "failure": "",
+          "validation_errors": 0,
+          "network_input_frames": 5,
+          "network_reconnect_requests": 1,
+          "temporal_resets": 3,
+          "source_package_digest": "2d75ccffae1d73cf633905c5460fa93b8be2e7a558a48acd23444d991891dd96"
+        }
+      },
+      "artifacts": [
+        {
+          "path": "build/engine_next/reflection-network/r4-final2/A.json",
+          "size_bytes": 15851029,
+          "sha256": "961dc8469ed37787bc0d3e7cb7df16580bfb232c24e124f687072b46c1aec5f0"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final2/A.log",
+          "size_bytes": 691,
+          "sha256": "81d9e3ad86eb0a2d5f0ea4036cfb7bf24c0f837537c07e5ee42d4b1a9dcec092"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final2/A.ppm",
+          "size_bytes": 1843215,
+          "sha256": "eaa8785f18bc4af47ef41ff3cdcc9fe65c47507c309e4007d8da7dcb2784b9c4"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final2/B.json",
+          "size_bytes": 26626840,
+          "sha256": "4343152911abdbb0f294da79efa9c0b9db83a0bb75f29af72901b06d6694b904"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final2/B.log",
+          "size_bytes": 1500,
+          "sha256": "95dd1ccdd2af79a107d748931e47a9c6b1e290d4970c168f909bbbc46cae1745"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final2/B.ppm",
+          "size_bytes": 1843215,
+          "sha256": "4da35b4af53b704ce52153aa1e3073a92f255bc35ac97e91040bc5a7fc028c68"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final2/Completion.json",
+          "size_bytes": 5290,
+          "sha256": "a48072457bc2a011dbbe44e1e36ed5ed3abb900b6ca8ebf9758f699ad2144313"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final2/Live.json",
+          "size_bytes": 5162,
+          "sha256": "8efa3157557e005fc52dad1d3ac4e721cf08fe6632f52ef5131e8ce890847439"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final2/PartialSession.json",
+          "size_bytes": 587,
+          "sha256": "16665dad9aebec1a09e112a081d5bc8f07f46785c5f60eef3321c718c48c2dea"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final2/RenderConfiguration.json",
+          "size_bytes": 1433,
+          "sha256": "8817eb0acd1a099218aba6560f9c490891f48369374e39579173013119a4f6fa"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final2/server.jsonl",
+          "size_bytes": 825582,
+          "sha256": "e1f004518e373d7afca9c8b3108fbb4ad2e6d2a22cad521ce742df2b1aab669a"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final2/server.log",
+          "size_bytes": 1141,
+          "sha256": "9711c2ccc9818bc30b5e8eff433f00314d14e0efb4129e722a09b82683090ed2"
+        }
+      ]
+    },
+    {
+      "session": "r4-final3",
+      "complete_acceptance": false,
+      "explanation": {
+        "schema_version": 1,
+        "recorded_at_utc": "2026-11-17T03:08:23.118213+00:00",
+        "complete_acceptance": false,
+        "input_sent_by_agent": false,
+        "workspace_observation": "Windows security firewall request over the selected runtime prevented starting UI actions. The agent did not act on that request.",
+        "actual_failure": {
+          "server": "Input reject type 3 reason 7 for peer 1 followed by runtime status 5",
+          "client_A": "Fatal reject reason 7, runtime status 5",
+          "client_B": "Runtime status 4, InvalidState"
+        },
+        "source_analysis": {
+          "server_reason7_predicates": [
+            "input sequence exceeds last processed sequence by 32",
+            "queue size at least 64",
+            "input step differs from fixed model step"
+          ],
+          "excluded_by_invariants": [
+            "Before insertion, accepted unique future input sequence is at most last+32, so this queue cannot grow to 64.",
+            "Client PredictInput uses the welcome fixed step, which remains 16 ms in this session."
+          ],
+          "identified_predicate": "Sequence exceeded the server acceptance window. The missing input or server scheduling condition that produced the gap was not logged and remains unproven.",
+          "no_socket_error_log": true
+        },
+        "return_codes": [
+          1,
+          1,
+          1
+        ],
+        "files": [
+          {
+            "path": "build/engine_next/reflection-network/r4-final3/A.log",
+            "bytes": 658,
+            "sha256": "8f1a4aaa7c994938cc4c2a61ad51d69402e4573315d36fdccc67776a16c39d04"
+          },
+          {
+            "path": "build/engine_next/reflection-network/r4-final3/B.log",
+            "bytes": 603,
+            "sha256": "a8d21c407150472058dc407c610d0d261d016fd23079296bdf88c79f6816fe27"
+          },
+          {
+            "path": "build/engine_next/reflection-network/r4-final3/server.log",
+            "bytes": 572,
+            "sha256": "55b76a45f947749cc841bc2520594d048a09e52466e6b9d5cb122bda4055ad7a"
+          },
+          {
+            "path": "build/engine_next/reflection-network/r4-final3/A.json",
+            "bytes": 1851215,
+            "sha256": "b00abe1eacfb0fe79fde2d0475a7cbdbae0bc0393174149a64476ade1ae81b04"
+          },
+          {
+            "path": "build/engine_next/reflection-network/r4-final3/B.json",
+            "bytes": 2278498,
+            "sha256": "ee504266521abcd7b3c1f5bda49395dae4189d2d57db595f18ea902710919f51"
+          },
+          {
+            "path": "build/engine_next/reflection-network/r4-final3/server.jsonl",
+            "bytes": 343672,
+            "sha256": "6408acb442333bd3a52d9dfd7a44343b77962e830649f9c1ac8243693f377e64"
+          },
+          {
+            "path": "build/engine_next/reflection-network/r4-final3/Completion.json",
+            "bytes": 5372,
+            "sha256": "5a7857befdb69856d07e0ca38cecaeb25d6a48df13bd04904859c910c292afa4"
+          },
+          {
+            "path": "build/engine_next/reflection-network/r4-final3/Live.json",
+            "bytes": 5243,
+            "sha256": "443a306d5fa843bd5384a1913a5a6c1d840d44753d3f0d70e238c9b096f95d1c"
+          },
+          {
+            "path": "build/engine_next/reflection-network/r4-final3/RenderConfiguration.json",
+            "bytes": 1436,
+            "sha256": "4e9ebb60d003bf576a79058a270da2bf4f8a237f05e152bafceffc7fff8aa18e"
+          }
+        ],
+        "client_diagnostics": {
+          "A": {
+            "frames": 935,
+            "network_input_frames": 0,
+            "cpu_frame_max_msec": 6105.6905,
+            "cpu_frame_median_msec": 72.2471,
+            "last_network_sample": {
+              "connected": true,
+              "draw_positions": [
+                {
+                  "entity_id": "1",
+                  "position": [
+                    -1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "simulation_entity_id": "1"
+                },
+                {
+                  "entity_id": "1",
+                  "position": [
+                    -1.0,
+                    0.699999988079071,
+                    0.0
+                  ],
+                  "simulation_entity_id": "1"
+                },
+                {
+                  "entity_id": "1",
+                  "position": [
+                    -1.0,
+                    0.699999988079071,
+                    0.23999999463558197
+                  ],
+                  "simulation_entity_id": "1"
+                },
+                {
+                  "entity_id": "2",
+                  "position": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "simulation_entity_id": "2"
+                },
+                {
+                  "entity_id": "2",
+                  "position": [
+                    1.0,
+                    0.699999988079071,
+                    0.0
+                  ],
+                  "simulation_entity_id": "2"
+                },
+                {
+                  "entity_id": "2",
+                  "position": [
+                    1.0,
+                    0.699999988079071,
+                    0.23999999463558197
+                  ],
+                  "simulation_entity_id": "2"
+                },
+                {
+                  "entity_id": "100",
+                  "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "simulation_entity_id": "0"
+                }
+              ],
+              "entities": [
+                {
+                  "confirmed_sequence": "4401",
+                  "entity_id": "1",
+                  "interpolation": 0,
+                  "local": true,
+                  "position": [
+                    -1.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "confirmed_sequence": "4401",
+                  "entity_id": "2",
+                  "interpolation": 3,
+                  "local": false,
+                  "position": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "frame": 930,
+              "generation": 1,
+              "input": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "sample_time_msec": "365889629",
+              "session_id": "1"
+            },
+            "last_cpu_frame_msec": [
+              103.7389,
+              104.3525,
+              103.7759,
+              105.0739,
+              105.8978,
+              102.7446,
+              139.7934,
+              105.6563,
+              104.2601,
+              106.9531
+            ]
+          },
+          "B": {
+            "frames": 1157,
+            "network_input_frames": 0,
+            "cpu_frame_max_msec": 6183.2089,
+            "cpu_frame_median_msec": 71.597,
+            "last_network_sample": {
+              "connected": true,
+              "draw_positions": [
+                {
+                  "entity_id": "1",
+                  "position": [
+                    -1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "simulation_entity_id": "1"
+                },
+                {
+                  "entity_id": "1",
+                  "position": [
+                    -1.0,
+                    0.699999988079071,
+                    0.0
+                  ],
+                  "simulation_entity_id": "1"
+                },
+                {
+                  "entity_id": "1",
+                  "position": [
+                    -1.0,
+                    0.699999988079071,
+                    0.23999999463558197
+                  ],
+                  "simulation_entity_id": "1"
+                },
+                {
+                  "entity_id": "2",
+                  "position": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "simulation_entity_id": "2"
+                },
+                {
+                  "entity_id": "2",
+                  "position": [
+                    1.0,
+                    0.699999988079071,
+                    0.0
+                  ],
+                  "simulation_entity_id": "2"
+                },
+                {
+                  "entity_id": "2",
+                  "position": [
+                    1.0,
+                    0.699999988079071,
+                    0.23999999463558197
+                  ],
+                  "simulation_entity_id": "2"
+                },
+                {
+                  "entity_id": "100",
+                  "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "simulation_entity_id": "0"
+                }
+              ],
+              "entities": [
+                {
+                  "confirmed_sequence": "4655",
+                  "entity_id": "2",
+                  "interpolation": 0,
+                  "local": true,
+                  "position": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "confirmed_sequence": "4387",
+                  "entity_id": "1",
+                  "interpolation": 5,
+                  "local": false,
+                  "position": [
+                    -1.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "frame": 1140,
+              "generation": 1,
+              "input": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "sample_time_msec": "365893397",
+              "session_id": "2"
+            },
+            "last_cpu_frame_msec": [
+              36.0412,
+              37.2782,
+              36.4144,
+              36.7725,
+              36.1806,
+              36.5179,
+              36.2257,
+              36.5824,
+              37.1183,
+              36.4618
+            ]
+          }
+        },
+        "security_dialog_host": "PickerHost.exe FirewallNotificationDialogServer -Embedding"
+      },
+      "client_reports": {
+        "A": {
+          "frames": 935,
+          "success": false,
+          "failure": "Network visual client step status=5 (HRESULT -2147467259)",
+          "validation_errors": 0,
+          "network_input_frames": 0,
+          "network_reconnect_requests": 0,
+          "temporal_resets": 1,
+          "source_package_digest": "3310d4d94529a0c0ea139bd7054f4b4a14b2d9c29a87a592f8195181f4890369"
+        },
+        "B": {
+          "frames": 1157,
+          "success": false,
+          "failure": "Network visual client step status=4 (HRESULT -2147467259)",
+          "validation_errors": 0,
+          "network_input_frames": 0,
+          "network_reconnect_requests": 0,
+          "temporal_resets": 1,
+          "source_package_digest": "3310d4d94529a0c0ea139bd7054f4b4a14b2d9c29a87a592f8195181f4890369"
+        }
+      },
+      "artifacts": [
+        {
+          "path": "build/engine_next/reflection-network/r4-final3/A.json",
+          "size_bytes": 1851215,
+          "sha256": "b00abe1eacfb0fe79fde2d0475a7cbdbae0bc0393174149a64476ade1ae81b04"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final3/A.log",
+          "size_bytes": 658,
+          "sha256": "8f1a4aaa7c994938cc4c2a61ad51d69402e4573315d36fdccc67776a16c39d04"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final3/A.ppm",
+          "size_bytes": 1843215,
+          "sha256": "5a56dad3fcd9467038844f215d419bb8523d7d29646bad78c3b5a58e6d4ebdde"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final3/B.json",
+          "size_bytes": 2278498,
+          "sha256": "ee504266521abcd7b3c1f5bda49395dae4189d2d57db595f18ea902710919f51"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final3/B.log",
+          "size_bytes": 603,
+          "sha256": "a8d21c407150472058dc407c610d0d261d016fd23079296bdf88c79f6816fe27"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final3/B.ppm",
+          "size_bytes": 1843215,
+          "sha256": "c1938029dd5becb6a79954e9f65a8024e6de0c2ab5a96800dac06ed26f9ef399"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final3/Completion.json",
+          "size_bytes": 5372,
+          "sha256": "5a7857befdb69856d07e0ca38cecaeb25d6a48df13bd04904859c910c292afa4"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final3/Live.json",
+          "size_bytes": 5243,
+          "sha256": "443a306d5fa843bd5384a1913a5a6c1d840d44753d3f0d70e238c9b096f95d1c"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final3/PartialSession.json",
+          "size_bytes": 9242,
+          "sha256": "dbfd8de2f8b471bb53453fb0e6b419296c765494e5d61702364ae417c87fa1d5"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final3/RenderConfiguration.json",
+          "size_bytes": 1436,
+          "sha256": "4e9ebb60d003bf576a79058a270da2bf4f8a237f05e152bafceffc7fff8aa18e"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final3/server.jsonl",
+          "size_bytes": 343672,
+          "sha256": "6408acb442333bd3a52d9dfd7a44343b77962e830649f9c1ac8243693f377e64"
+        },
+        {
+          "path": "build/engine_next/reflection-network/r4-final3/server.log",
+          "size_bytes": 572,
+          "sha256": "55b76a45f947749cc841bc2520594d048a09e52466e6b9d5cb122bda4055ad7a"
+        }
+      ]
+    }
+  ],
+  "automatic_network_evidence": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-reflections-dynamic-gpu.json",
+    "size_bytes": 26004,
+    "sha256": "0ce4b90fc7d5ed007d469abcfb377a7c5d31a3c8fc24a8e2d187fdb404581178"
+  },
+  "automatic_boundary": "The scripted headless client and visual peer completed real loopback motion, reconnect and graceful drain. This evidence uses automated acceptance input and is separate from keyboard and minimize acceptance.",
+  "dependent_bug": {
+    "number": 1391,
+    "pr": 1393,
+    "signed_head": "bc0f99ed0d70948f62f34a1b93040d9f58e250ec",
+    "merge_commit": "f39bc9028958e5395d8ec38c6bbcc0bc577a480e",
+    "state": "closed completed",
+    "scope": "Deterministic 32-input-window backpressure. The exact missing input or scheduling event in partial r4-final3 remains unrecorded."
+  },
+  "no_live_owned_network_processes": true,
+  "r5_keyboard_attempt": {
+    "path": "build/engine_next/reflection-network/r5-final/PartialSession.json",
+    "size_bytes": 2655,
+    "sha256": "3e833b51f6fb189be986e1bea382baed32a2dbffffb4a438b5ef935c5224da20"
+  },
+  "historical_pending_record": {
+    "path": "build/engine_next/reflection-network/NetworkBeforeCompletedKeyboard.json",
+    "size_bytes": 27497,
+    "sha256": "d6e3a20b50b009f5f1f5ed036b0d68ef08bc8e9f7d579b75d704230f1b932e9e"
+  },
+  "completed_keyboard_acceptance": {
+    "session": "r5-final3",
+    "input_driver": "Windows Computer Use key events into the returned A and B client windows",
+    "checks": {
+      "A": {
+        "frames": 3427,
+        "validation_errors": 0,
+        "network_input_frames": 8,
+        "network_reconnect_requests": 1,
+        "local_shadow_views": 6,
+        "input_key_events": 21,
+        "resizes": 1,
+        "draw_position_max_error": 1.1920928910669204e-08,
+        "largest_sample_gap_msec": 65960,
+        "sample_gap_frames": 30,
+        "last_entities": [
+          {
+            "confirmed_sequence": "15795",
+            "entity_id": "1",
+            "interpolation": 0,
+            "local": true,
+            "position": [
+              -0.48799991607666016,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "confirmed_sequence": "16244",
+            "entity_id": "2",
+            "interpolation": 3,
+            "local": false,
+            "position": [
+              1.7680001258850098,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "temporal_epoch_starts": [
+          {
+            "frame_id": 0,
+            "epoch": 1
+          },
+          {
+            "frame_id": 4,
+            "epoch": 2
+          },
+          {
+            "frame_id": 640,
+            "epoch": 5
+          },
+          {
+            "frame_id": 1485,
+            "epoch": 6
+          },
+          {
+            "frame_id": 1490,
+            "epoch": 7
+          }
+        ],
+        "temporal_resets": 6
+      },
+      "B": {
+        "frames": 4008,
+        "validation_errors": 0,
+        "network_input_frames": 30,
+        "network_reconnect_requests": 0,
+        "local_shadow_views": 6,
+        "input_key_events": 62,
+        "resizes": 0,
+        "draw_position_max_error": 1.1920928910669204e-08,
+        "largest_sample_gap_msec": 3540,
+        "sample_gap_frames": 30,
+        "last_entities": [
+          {
+            "confirmed_sequence": "16194",
+            "entity_id": "2",
+            "interpolation": 0,
+            "local": true,
+            "position": [
+              1.7680001258850098,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "confirmed_sequence": "15689",
+            "entity_id": "1",
+            "interpolation": 3,
+            "local": false,
+            "position": [
+              -0.48799991607666016,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "temporal_epoch_starts": [
+          {
+            "frame_id": 0,
+            "epoch": 1
+          },
+          {
+            "frame_id": 4,
+            "epoch": 2
+          }
+        ],
+        "temporal_resets": 1
+      }
+    },
+    "minimized_evidence": [
+      {
+        "client": "A",
+        "ui_minimized_msec": 67571,
+        "sample_gap_msec": 65960,
+        "rendered_frame_delta": 30,
+        "confirmed_before": "3119",
+        "confirmed_after": "7242",
+        "peer_samples": 88,
+        "peer_input_samples": 30
+      }
+    ],
+    "graceful_drain": {
+      "notified": 2,
+      "acknowledged": 2,
+      "forced": 0,
+      "resumed": 1
+    },
+    "return_codes": [
+      0,
+      0,
+      0
+    ],
+    "artifacts": [
+      {
+        "path": "build/engine_next/reflection-network/r5-final3/A.json",
+        "size_bytes": 6682965,
+        "sha256": "78be1c2f34d60e64fe10efbc2499d65e739fb0e86a11231fe578b083bea5e11e"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final3/A.log",
+        "size_bytes": 9892,
+        "sha256": "f589fe1119bbb38800f5b329df42fc8c607e71ab99e05645aa5dc6660995cfa1"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final3/A.ppm",
+        "size_bytes": 1843215,
+        "sha256": "a8e237de546c5596485c0aac9339b6a64ce754da44d444cd489210c8ed211ae5"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final3/B.json",
+        "size_bytes": 7819015,
+        "sha256": "af16efded5d6a38b8a1b465d95aa17d3cc0d23db195635708a1af1b5810473cd"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final3/B.log",
+        "size_bytes": 66736,
+        "sha256": "856004174afe7147f15d01498316eba539177559307d0c7dc6e6096b57e76d6e"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final3/B.ppm",
+        "size_bytes": 1843215,
+        "sha256": "996d8763beace82f7856043964151082b90e4e733e0c79ac025dd2d719857d40"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final3/Completion.json",
+        "size_bytes": 5386,
+        "sha256": "de2bd8ef3a9599d8665b3d3b8522d2ef3fb8b22f0c4f47cb1b368b6ca4ac4160"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final3/Live.json",
+        "size_bytes": 5258,
+        "sha256": "8e1aeec1e02d5de402189514863793dcc2def533a272c717f4a44b7e607a2697"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final3/RenderConfiguration.json",
+        "size_bytes": 1436,
+        "sha256": "4e9ebb60d003bf576a79058a270da2bf4f8a237f05e152bafceffc7fff8aa18e"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final3/server.jsonl",
+        "size_bytes": 1275822,
+        "sha256": "6b25833134ee3ed1b879804fc4e2180a36b6d4a3ed4a5f002b7793472f8c1e2c"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final3/server.log",
+        "size_bytes": 1153,
+        "sha256": "8b32eba0dbf5b047c3b578f6d28afd5b908794354f0c3ea47cf3fca0230da953"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final3/UIActions.json",
+        "size_bytes": 5033,
+        "sha256": "04cc16093d73e8a7881f52ccc545b4d8a0c1305261724326b2aebed8aa9c83d5"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final3/VerificationFinal.json",
+        "size_bytes": 4558,
+        "sha256": "266316b31880f5a33574cedac62daa33510b2c49f8f43e7de3c09634169c0312"
+      }
+    ],
+    "verifier": {
+      "path": "build/engine_next/reflection-network/VerifyLiveNetworkFinal.py",
+      "size_bytes": 7270,
+      "sha256": "f5575b58c0ae597b521da22836fb156a47fd815c4381a69c5f3010186ab58b7d"
+    },
+    "scope": "WASD motion, local prediction, remote interpolation, one R reconnect, A minimize/restore, temporal and exposure resets, exact final peer positions. A Space event was sent; the current runtime has no jump binding, so jumping is outside this result."
+  },
+  "additional_keyboard_motion_session": {
+    "session": "r5-final2",
+    "completed": [
+      "two-client keyboard motion",
+      "R reconnect",
+      "two acknowledged graceful disconnects"
+    ],
+    "omitted": "Minimization was pending when the server drained. The complete r5-final3 session covers it.",
+    "artifacts": [
+      {
+        "path": "build/engine_next/reflection-network/r5-final2/A.json",
+        "size_bytes": 6591448,
+        "sha256": "8c95e164ed191b8e52c29ee90b211c0ea9e43f94b7dfd24aa1ac49e896f6312c"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final2/A.log",
+        "size_bytes": 9887,
+        "sha256": "6eb1898f2a68f8ec3aad8df8249928458d4ec26ebe278d39a8b678d0425f2855"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final2/A.ppm",
+        "size_bytes": 1843215,
+        "sha256": "ae0315b51aac733a932d7d8362b290a64dec973e3ad1cfe493bc762065ce9257"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final2/B.json",
+        "size_bytes": 4758786,
+        "sha256": "2eb110793c16d9614d43e592954f950dfd4ba611fa41876d06484897b8add80a"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final2/B.log",
+        "size_bytes": 21196,
+        "sha256": "52535557d127dcb4382ccb4d815c9ddda7648e23e89626f66b6e7e6c3d9f7746"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final2/B.ppm",
+        "size_bytes": 1843215,
+        "sha256": "0a6ce57dad9b5c1a15446d15f2c8edb00355414e4a530e2bb34da80cc96f1df5"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final2/Completion.json",
+        "size_bytes": 5387,
+        "sha256": "28073231a9395122496b9fd442a2d8049b5a8525a7040b02cfe239af644f0a04"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final2/Live.json",
+        "size_bytes": 5259,
+        "sha256": "93d4d82e9e91d0412906bc897425ae216477b04b5114f16965acf6c51d18b081"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final2/RenderConfiguration.json",
+        "size_bytes": 1436,
+        "sha256": "4e9ebb60d003bf576a79058a270da2bf4f8a237f05e152bafceffc7fff8aa18e"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final2/server.jsonl",
+        "size_bytes": 969872,
+        "sha256": "2313e6c3f5d839370b8f47d44e15dbee64f26d318efbced98ca234c6cc228f42"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final2/server.log",
+        "size_bytes": 1154,
+        "sha256": "a41389104d00f2a47c996c5aadd2fe7f48186e053cbd0e2072d7967dc62e09d0"
+      },
+      {
+        "path": "build/engine_next/reflection-network/r5-final2/UIActions.json",
+        "size_bytes": 3058,
+        "sha256": "aa00fb6f30122edc023e6fdc81710facc8540058f5cbb72a3fd4dcd4aef32c47"
+      }
+    ],
+    "video": [
+      {
+        "path": "build/engine_next/reflection-network-keyboard-r5-final2/Motion.json",
+        "size_bytes": 86822,
+        "sha256": "8fab7a2747acc12bf7f7f688d99cd0c185d57080720b12e6453d36313e0cb535"
+      },
+      {
+        "path": "build/engine_next/reflection-network-keyboard-r5-final2/Motion.mp4",
+        "size_bytes": 21015864,
+        "sha256": "7b90f3f3c7167994df445e6773b4cbc8d9968b7232fe0418bc6b591d2090de08"
+      }
+    ],
+    "video_timing": "900 encoded frames at 20 fps. Recorded sample interval 14:28:33.195Z through 14:29:30.435Z spans 57.24 seconds. Encoded duration is 45 seconds.",
+    "image_checks": {
+      "path": "build/engine_next/reflection-network-keyboard-r5-final2/ImageChecks.json",
+      "size_bytes": 8201,
+      "sha256": "1d4e94e7820cf6b02481ff55a55a96dbc039e9511e40673fba76b7421cd08abe"
+    },
+    "measured_motion_pixels": {
+      "orange_actor_centroid_delta": 165.93,
+      "orange_reflection_centroid_delta": 154.39,
+      "blue_body_centroid_delta": 0.16
+    },
+    "motion_interval_note": "The B movement primarily overlaps the final eight encoded seconds. A movement, reconnect and minimization are supported by the later action logs and reports."
+  },
+  "checker_correction": {
+    "original_checker": {
+      "path": "build/engine_next/reflection-network/VerifyLiveNetwork.py",
+      "size_bytes": 6895,
+      "sha256": "2e6d14718156b61bf7597e5d2aab5cd6fbc83c12c43c9c327440f1841ee0522c"
+    },
+    "observation": "An ordinary B sampling gap of 3.54 seconds was incorrectly classified as minimization by the old duration-only heuristic.",
+    "resolution": "The final verifier selects the client named by actual minimize/restore UI records and requires both recorded minimization and observed render-sample gap to exceed 25 seconds. Confirmed-sequence advancement, peer input, draw positions and every existing frame/history check remain required."
+  },
+  "metadata_paths": {
+    "base": "repository_root",
+    "normalization": "Artifact paths are repository-relative. External input bytes were copied unchanged into the ignored evidence-inputs directory. Displayed compiler and Python command names omit host installation paths. Original command and metadata bytes are retained in the private archive.",
+    "original_metadata": {
+      "path": "build/engine_next/reflection-metadata-original/engine-next-visual-runtime-m4-3-reflections-network.json",
+      "sha256": "b5f0df572127161962c2a344d86f57243559c0b1ae71baaa02e4c5f908dea71c",
+      "bytes": 38073
+    }
+  }
+}

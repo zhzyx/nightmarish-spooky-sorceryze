@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-7d0a8a52",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "event_id": "m43-reflections-final-verified-20261117",
+  "kind": "step",
+  "occurred_at": "2026-11-17T15:13:04.814751+00:00",
+  "evidence_refs": [
+    "m43-request-20261116",
+    "m43-postprocess-final-verified-20261117"
+  ],
+  "payload": {
+    "scope": "M4.3 reflection slice with roughness-aware screen-space tracing, nonrecursive radiance mips, IBL fallback and receiver TAA integration",
+    "native_key": "c58b345330856c7866e49a885910c4978f09a1ba6dc6abbee286f90877057bc9",
+    "binary_sha256": "89881db1beaf1997c4fc01c6d620d7ddb810274a297d0bb0bcba112db639e31f",
+    "tests": "MSVC C++17 231 tests and 30923 checks passed. Fresh full AINative regression on main 7d0a8a52 passed 445 tests with 36 documented skips.",
+    "gpu": "R5 static Off/On/OnTemporal and bundled Release resize passed with zero validation errors and exact r4 image parity. R4 RenderDoc radiance, mip, trace and composite readbacks retain their original binary identity. R5 keyboard/network motion video and complete minimize/restore/reconnect evidence are separately bound.",
+    "build_placement": "Three clean builds validated shader native-key invalidation and restoration. One baseline executable accepted changed shader bytes, changed pixels, reproduced baseline pixels after rollback and rejected malformed DXIL before rendering.",
+    "metadata": "Public paths are repository-relative. Original raw logs and metadata are preserved in the ignored evidence archive; copied external input files preserve exact bytes.",
+    "records": [
+      "data-collection/engine-next-visual-runtime-m4-3-reflections-verification.json",
+      "data-collection/engine-next-visual-runtime-m4-3-reflections-final-gpu.json",
+      "data-collection/engine-next-visual-runtime-m4-3-reflections-build-impact.json",
+      "data-collection/engine-next-visual-runtime-m4-3-reflections-network.json"
+    ],
+    "remaining": "Exact candidate CI and main readback follow. Issue 1343 remains open for volume, transparency, geometry, streaming, GI, UE comparison and native-4K performance/stability work."
+  },
+  "sha256": "19f8186f53f7f727f3f54754dba76b4a6b8c093f99784a80bbea047b2abfd2e0"
+}
