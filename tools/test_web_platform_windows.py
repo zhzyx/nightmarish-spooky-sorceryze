@@ -42,7 +42,7 @@ class Fixture(BaseHTTPRequestHandler):
             self.wfile.write(
                 b"<!doctype html><title>Fixture</title><h1>WebView2 fixture</h1><a href='/second'>Second</a>" + marker
             )
-        except (BrokenPipeError, ConnectionResetError):
+        except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
             pass
 
     def log_message(self, *_args):
@@ -68,10 +68,28 @@ def main():
         "/nologo",
         "/utf-8",
         "/std:c++17",
-        "/EHsc",
+        "/Zc:__cplusplus",
+        "/permissive-",
+        "/MT",
+        "/GR",
+        "/O2",
         "/W4",
+        "/WX",
+        # Match Godot's MSVC warning policy and exception/header environment.
+        *[
+            "/wd" + warning
+            for warning in ("4100", "4127", "4201", "4244", "4245", "4267", "4305", "4324", "4514", "4714", "4820")
+        ],
+        "/D_HAS_EXCEPTIONS=0",
+        "/DWIN32",
+        "/DWINDOWS_ENABLED",
+        "/DWINVER=0x0A00",
+        "/D_WIN32_WINNT=0x0A00",
+        "/DNOMINMAX",
         "/DWEB_PLATFORM_WINDOWS_TESTS",
         "/DWEB_PLATFORM_WEBVIEW2_ENABLED",
+        # Resolve windows.h through the actual engine wrapper, as SCons does.
+        "/I" + str(ROOT / "platform/windows"),
         "/I" + str(ROOT),
         "/I" + str(sdk / "build/native/include"),
         str(ROOT / "editor/docks/WebPlatformNative.cpp"),

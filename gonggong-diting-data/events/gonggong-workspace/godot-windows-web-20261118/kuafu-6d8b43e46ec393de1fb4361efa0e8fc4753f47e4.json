@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-6d8b43e46ec393de1fb4361efa0e8fc4753f47e4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-windows-web-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "044645998cc13848346abca103cc9542ab88c6f46476e3d043080c8e06188ab5",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1467",
+    "action": "validation",
+    "detection_head": "25b07ca60f471094049387198a969adf118b365e",
+    "context_sha256": "61ec3605973ea7a67cdb5ceb4d0c07f931bb77dece4b7c3e308278584afcec4d",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-request-20261118-godot-windows",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44167274020/job/134336967685",
+    "diagnosis": "Full editor uses platform/windows/windows.h with WIN32_LEAN_AND_MEAN. WebView2.h line 54 uses typedef interface before COM imports; original standalone harness omitted engine wrapper. Add explicit objbase/WRL before generated SDK in backend and harness; align MSVC include path, exception and warning settings. Host Python CA failure recovered with system TLS-verified curl plus unchanged pinned package/member SHA verification; no TLS bypass.",
+    "next_action": "Independent three-file delta review, then exact Windows harness and full editor CI; keep #1467 and #1462 open until actual recovery/main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T20:47:37.932732+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T20:49:56.066733+00:00",
+  "sha256": "053ba33cbcde9d7235628f4d9796b698ed3a33eb3dbb7a21711a50ebefb48cc8"
+}

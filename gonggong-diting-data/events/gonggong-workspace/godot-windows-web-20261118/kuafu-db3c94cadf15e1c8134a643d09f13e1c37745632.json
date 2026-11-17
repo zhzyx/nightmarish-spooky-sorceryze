@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-db3c94cadf15e1c8134a643d09f13e1c37745632",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-windows-web-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fb0e1d7401e96a798da06003ef36758ee78b185e41e2376c0ab2e962cf498b41",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1467",
+    "action": "validation",
+    "detection_head": "b6d45dbd66bbd5c3ebd4ca99386f824029c7fdda",
+    "context_sha256": "61ec3605973ea7a67cdb5ceb4d0c07f931bb77dece4b7c3e308278584afcec4d",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-request-20261118-godot-windows",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44167274020",
+    "diagnosis": "Aligned candidate 705a2b5f actual WebView2 hidden runtime passed: persistent cookie/localStorage, positive same-origin frame, external document execution rejection, renderer retry and lifetime. Speculative GET is recorded separately and not claimed as network isolation. Artifact 14365364361 returns WEB_PLATFORM_WINDOWS_OK; full editor build remains pending.",
+    "next_action": "Keep issue open until full exact candidate CI, main receipt and final telemetry delivery; manual display and production acceptance continue in #1474.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T19:34:14.386726+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T20:45:23.982279+00:00",
+  "sha256": "25b4d5fc9f19585be5e5c14cba06698018314b3e6c848d273f4783cc8c402887"
+}

@@ -37,9 +37,12 @@
 #endif
 #include <windows.h>
 
-#include <WebView2.h>
+#include <objbase.h>
 #include <shlobj.h>
 #include <wrl.h>
+
+// Godot's lean windows.h omits COM declarations required by the generated SDK.
+#include <WebView2.h>
 
 #include <algorithm>
 #include <cmath>

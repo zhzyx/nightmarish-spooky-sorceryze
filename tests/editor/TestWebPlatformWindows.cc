@@ -35,8 +35,11 @@
 #endif
 #include <windows.h>
 
-#include <WebView2.h>
+#include <objbase.h>
 #include <wrl.h>
+
+// Match the backend's explicit COM setup under Godot's lean Windows wrapper.
+#include <WebView2.h>
 
 #include <chrono>
 #include <iostream>
