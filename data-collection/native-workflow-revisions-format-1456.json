@@ -1,0 +1,50 @@
+{
+  "issue": 1456,
+  "request_id": "native-workflow-revisions-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1456",
+  "command": "Actual file_format.py on full staged candidate blobs, exact hook exclusions",
+  "selected": [
+    "customizations/components/tianxuan/duobao/native_release.py",
+    "customizations/components/tianxuan/server/native_api.py",
+    "customizations/components/tianxuan/sinan-workorders/README.md",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py",
+    "data-collection/native-workflow-revisions-aligned-boundary-1456.json",
+    "data-collection/native-workflow-revisions-boundary-1456.json",
+    "data-collection/native-workflow-revisions-format-1456.json",
+    "data-collection/native-workflow-revisions-linux-1456.json",
+    "data-collection/native-workflow-revisions-main-alignment-1456.json",
+    "data-collection/native-workflow-revisions-metadata-review-1456.json",
+    "data-collection/native-workflow-revisions-node-observation-1456.json",
+    "data-collection/native-workflow-revisions-observer-transport-1456.json",
+    "data-collection/native-workflow-revisions-review-final-1456.json",
+    "data-collection/native-workflow-revisions-review-initial-1456.json",
+    "data-collection/native-workflow-revisions-root-1456.json",
+    "design-docs/native-workflow-revisions-20261118.md",
+    "gonggong-diting-data/events/gonggong-workspace/learning-editor-dependency-handoff/learn-8afc936ec74f544cf9a074f9e38a54cea88e08047e1077ca9f33c2dd9a382628.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-workflow-revisions-20261118/dispatch-01c692e9794b467e8a185a31c932ac10.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-workflow-revisions-20261118/dispatch-10802275dceb44158b76b52cc0757bf9.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-workflow-revisions-20261118/dispatch-32ed255871904312b81af21a00019d56.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-workflow-revisions-20261118/dispatch-3a9b1093bd4e4c47bbfef7bdc93d7b75.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-workflow-revisions-20261118/dispatch-677cddf6d04c4b8bb5d18da941aac21a.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-workflow-revisions-20261118/dispatch-d1ced631842641c79a893db136693c6e.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-workflow-revisions-20261118/dispatch-e43cd010633f4d089ad6f3e576c504dd.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-workflow-revisions-20261118/dispatch-fc94f15e0b474543b97eff9eb554260f.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-workflow-revisions-20261118/request-native-workflow-revisions-1456.json",
+    "tools/native_host_inputs.json"
+  ],
+  "skipped": [
+    "data-collection/native-workflow-revisions-1456.json"
+  ],
+  "source_sha256": {
+    ".pre-commit-config.yaml": "2d5515a953adb387e6150aa06cd6572bc0e5e5c1a19b5d8f1a3f2e3e051d0686",
+    ".gitattributes": "653575320bf219d3c9318b6cb7da216f4206d9897eb59d18e5141679aae224f4",
+    "misc/scripts/file_format.py": "29a890753b9007285f2030b8194ea787d33d3973f73e0f21be7d5f089b4efa25"
+  },
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "changed": [],
+  "passed": true,
+  "temporary_directory_removed": true
+}

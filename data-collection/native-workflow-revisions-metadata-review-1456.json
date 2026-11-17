@@ -1,0 +1,135 @@
+{
+  "issue": 1456,
+  "verdict": "approved",
+  "scope": "Exact main-alignment/inventory metadata delta and source/evidence continuity only; no deployment, final candidate gate, Issue closure or full parent/business acceptance.",
+  "reviewed_at": "2026-11-17T20:18:11.561129+00:00",
+  "head": "5d0200ca328a41d7d374d122b11488e6a0dd032a",
+  "origin_main_local_ref_at_review": "a409f21b95c1a878c8022d7603b64251bfc2faf6",
+  "prior_review_sha256": "a90de9f7bf3434199dc12bd8f43b369ab8ba50d2613b0b49db605e17a8e7a366",
+  "source_proof": {
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": {
+      "reviewed_raw_sha256": "1e4a60b2cd2710e6e810c309397fce0d177114b3c0d6f8a0995d32a2f6ed440e",
+      "current_raw_sha256": "1e4a60b2cd2710e6e810c309397fce0d177114b3c0d6f8a0995d32a2f6ed440e",
+      "index_sha256": "d430f51e674aba1571016b9030250a83bfff8008b051d4586d0ed122f6fdd26a",
+      "raw_unchanged": true,
+      "index_equals_normalized_worktree": true
+    },
+    "customizations/components/tianxuan/duobao/native_release.py": {
+      "reviewed_raw_sha256": "e998f42f35775446bb2c816deb0866d831da72ea51070cf7c6ed5f2426906fab",
+      "current_raw_sha256": "e998f42f35775446bb2c816deb0866d831da72ea51070cf7c6ed5f2426906fab",
+      "index_sha256": "4ce171897ac1a1259467eba466a56b934978018f8226635fafd976474cb2ad07",
+      "raw_unchanged": true,
+      "index_equals_normalized_worktree": true
+    },
+    "customizations/components/tianxuan/server/native_api.py": {
+      "reviewed_raw_sha256": "89b7fdeefcfcba9118b5803d6c3a05e10db19997b3a72d153e40ba592afd87b0",
+      "current_raw_sha256": "89b7fdeefcfcba9118b5803d6c3a05e10db19997b3a72d153e40ba592afd87b0",
+      "index_sha256": "75021a4ec647a48bf23d058c5010393608352524793a1d9f6353ca52f0b2dc65",
+      "raw_unchanged": true,
+      "index_equals_normalized_worktree": true
+    },
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py": {
+      "reviewed_raw_sha256": "45947ec8ef4b73804a99fb25e665cfb06325a0ab4173d699bb89e5c6071dad64",
+      "current_raw_sha256": "45947ec8ef4b73804a99fb25e665cfb06325a0ab4173d699bb89e5c6071dad64",
+      "index_sha256": "81b5d32e265820f6cd5dd5d84dc3433febac53f4c96c71995e192ee75b96bfd7",
+      "raw_unchanged": true,
+      "index_equals_normalized_worktree": true
+    },
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": {
+      "reviewed_raw_sha256": "dae76fa5f294c1b08dcfd9e0bb43134d7d3848db9889ddaaf99adedcfe744f57",
+      "current_raw_sha256": "dae76fa5f294c1b08dcfd9e0bb43134d7d3848db9889ddaaf99adedcfe744f57",
+      "index_sha256": "dae76fa5f294c1b08dcfd9e0bb43134d7d3848db9889ddaaf99adedcfe744f57",
+      "raw_unchanged": true,
+      "index_equals_normalized_worktree": true
+    },
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": {
+      "reviewed_raw_sha256": "65c66cd9bf2b136dbab67c35f4074940f4bbe750a907f8773a43d579648dd771",
+      "current_raw_sha256": "65c66cd9bf2b136dbab67c35f4074940f4bbe750a907f8773a43d579648dd771",
+      "index_sha256": "65c66cd9bf2b136dbab67c35f4074940f4bbe750a907f8773a43d579648dd771",
+      "raw_unchanged": true,
+      "index_equals_normalized_worktree": true
+    }
+  },
+  "inventory": {
+    "sha256": "d059d2470624fb43dd561eb0b271fbaccb35447c482af68dfca35f5b6d031e27",
+    "index_equals_worktree": true,
+    "main_1451_additions": [
+      "customizations/components/tianxuan/duobao/native_candidates.md",
+      "customizations/components/tianxuan/duobao/native_candidates.py",
+      "customizations/components/tianxuan/duobao/native_candidates_cli.py",
+      "customizations/components/tianxuan/duobao/test_native_candidates.py"
+    ],
+    "only_candidate_addition": "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py",
+    "removed": [],
+    "schema_unchanged": true,
+    "exact_union": true
+  },
+  "raw_bound_receipt": {
+    "path": "data-collection/native-workflow-revisions-1456.json",
+    "sha256": "faaf26799dcf72559f637dc09edd15a4bd2c51064cc67c3898155c839681d832",
+    "index_equals_raw": true
+  },
+  "alignment": {
+    "target_matches_head": true,
+    "snapshot_changed_paths": [
+      "tools/native_host_inputs.json"
+    ],
+    "post_snapshot_format_update": "Only adds aligned-boundary receipt and format receipt itself to selected list; staged format receipt still equals original snapshot. All other after-snapshot hashes independently match.",
+    "current_hash_exceptions": [
+      "data-collection/native-workflow-revisions-format-1456.json"
+    ]
+  },
+  "supporting_evidence": {
+    "boundary": {
+      "native_sources": 9382,
+      "overlap": [],
+      "checks_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "policy_binding_matches": true,
+      "independently_rerun": false
+    },
+    "format": {
+      "selected_count": 24,
+      "changed": [],
+      "passed": true,
+      "independently_rerun": false
+    }
+  },
+  "evidence_sha256": {
+    "data-collection\\native-workflow-revisions-main-alignment-1456.json": "feda9d1d747fcfdf40c8331649d39bcb6586b106cc6ba894c5a5f963e73458dc",
+    "data-collection\\native-workflow-revisions-aligned-boundary-1456.json": "7fcce0ac418976e233fda2e8dc5b981cc7ec8365a555a2ff2e69933da165e0df",
+    "data-collection\\native-workflow-revisions-format-1456.json": "c3b6a6311ea96eec4deaf39f66a98a87e1a70bde19564bc3c7125941b38b91e3"
+  },
+  "findings": [],
+  "verification": [
+    "Independently compared all six reviewed code raw hashes and normalized index bytes.",
+    "Independently inspected staged inventory diff: exactly one added line, no removed paths or policy edits.",
+    "git diff --cached --check exit 0.",
+    "Inspected staged name/status: no deletions, no additional business source beyond previously reviewed changes."
+  ],
+  "limitations": [
+    "Four Python working files use CRLF; index contains LF. Raw source hashes match prior approved review, normalized index comparison passes; raw equality is asserted only for bound receipt and inventory.",
+    "main-alignment receipt remains untracked and latest format receipt unstaged at review; final candidate assembly and gate must include intended evidence and rerun formatting as needed.",
+    "Local origin/main ref has advanced to a409f21b; this approval binds HEAD 5d0200ca and stated delta, not a claim of current remote main alignment.",
+    "Boundary and format execution results are parent evidence read and consistency checked, not independent reruns.",
+    "WinError 5 remains unresolved and owned by Issue 1461; this delivery does not claim repair."
+  ],
+  "method_learning": {
+    "scope": "editor-dependency-handoff",
+    "recalled_verified": [
+      "bind-consumer-release revision 21",
+      "await-terminal-observers revision 5"
+    ],
+    "applied": "Bind review to exact source bytes/index and distinguish supporting receipts from independently executed validation.",
+    "counterexample": "Later successful test receipts do not prove intermittent failures fixed."
+  },
+  "cleanup": {
+    "product_edits": 0,
+    "commit_push_deploy_model_calls": 0,
+    "temporary_files_created": 0,
+    "retained": "Only authorized private UTF-8 LF review receipt created."
+  }
+}

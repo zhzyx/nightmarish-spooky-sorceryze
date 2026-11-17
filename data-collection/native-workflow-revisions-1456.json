@@ -1,0 +1,44 @@
+{
+  "request_id": "native-workflow-revisions-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1456",
+  "base": "cefa69ea2ee415c0b65d88506c85582f626fc673",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "occurred_at": "2026-11-17T18:08:33.971553+00:00",
+  "command": [
+    "D:/GongGong-work/tx-venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "pytest",
+    "customizations/components/tianxuan/sinan-workorders",
+    "customizations/components/tianxuan/duobao/test_native_release.py",
+    "customizations/components/tianxuan/server/test_native_api.py",
+    "-q",
+    "--showlocals"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 47.234,
+  "stdout": "................................................................ [ 85%]\n...........                                                              [100%]\n============================== warnings summary ===============================\n..\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1\n  D:\\GongGong-work\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n75 passed, 1 warning, 8 subtests passed in 46.26s\n",
+  "stderr": "",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "a552ef9ea2b4678d125610252d953887164651399e287dc9e713720827757893",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py": "fd1754fb5ca453a09afa5d5ed108cbbe04a0d658c0aaa6e7e66abe5f5756c69d",
+    "customizations/components/tianxuan/duobao/native_release.py": "e998f42f35775446bb2c816deb0866d831da72ea51070cf7c6ed5f2426906fab",
+    "customizations/components/tianxuan/server/native_api.py": "89b7fdeefcfcba9118b5803d6c3a05e10db19997b3a72d153e40ba592afd87b0",
+    "customizations/components/tianxuan/sinan-workorders/README.md": "a2f604481b093854f2b15f4a85503a5a33ee5afd5d438cf14ace77abfa213122"
+  },
+  "previous_runs": [
+    "75 passed, 8 subtests, before requirement progress reset",
+    "After progress reset: 74 passed, one existing Node dispatch state assertion failed; immediate isolated test passed. This receipt preserves final full-suite result."
+  ],
+  "limitations": [
+    "Windows local workers and installed HTTP; no production deployment or model quality claim",
+    "Linux and independent acceptance delegated to parent",
+    "Old reserved unknown occupancy retained until trusted terminal; no timeout or fabricated terminal release"
+  ],
+  "cleanup": {
+    "temporary_intake_removed": true,
+    "test_processes": "subprocesses communicated and HTTP threads stopped by fixture cleanup",
+    "worktree": "retained for parent independent review and delivery; no commit or push"
+  }
+}

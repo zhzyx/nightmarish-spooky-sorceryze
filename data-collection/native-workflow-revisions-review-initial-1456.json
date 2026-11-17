@@ -1,0 +1,61 @@
+{
+  "issue": 1456,
+  "verdict": "changes_requested",
+  "scope": "Independent exact-source review; no full workflow, production deployment or parent completion claim",
+  "head": "cefa69ea2ee415c0b65d88506c85582f626fc673",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "899398e4cbe0c7b8d0049ab157034684fe00f15fe4420058f4f1de47e20f6668",
+    "customizations/components/tianxuan/duobao/native_release.py": "e998f42f35775446bb2c816deb0866d831da72ea51070cf7c6ed5f2426906fab",
+    "customizations/components/tianxuan/server/native_api.py": "89b7fdeefcfcba9118b5803d6c3a05e10db19997b3a72d153e40ba592afd87b0",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py": "aef1852ae3468291eda258af674244a0c58abf2df3c1bbe91944b40bcfd5c8e7",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "dae76fa5f294c1b08dcfd9e0bb43134d7d3848db9889ddaaf99adedcfe744f57",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "65c66cd9bf2b136dbab67c35f4074940f4bbe750a907f8773a43d579648dd771"
+  },
+  "findings": [
+    {
+      "priority": "P2",
+      "file": "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+      "line": 117,
+      "title": "Historical status does not recheck historical source ACL",
+      "evidence": "workflow-revisions-review-probes/acl-probe.json",
+      "observed": "Other editor denied original private source before issue reassociation; after privileged SQL issue requirement reassociation and revision, status returns superseded contract with complete old private requirement text.",
+      "precondition": "Probe constructs domain state by privileged SQL; no currently exposed issue-reparent mutation API was found. This is not demonstrated as a direct public HTTP exploit.",
+      "fix": "Before returning historical row, check original source.definition.requirements current get_doc_shared permissions and source-bound selected input ACL; preserve allowed historical reads when current original ACL permits them."
+    }
+  ],
+  "verified": [
+    "15 focused revision tests independently passed in 12.52 seconds; junit XML retained.",
+    "Actual trusted-main v1 NativeWorkflow separate connection cannot publish after revision: state superseded, new ready, issue planned.",
+    "Actual v1 publisher holding native/domain guard first blocks revision until publication; subsequent revision retires old produced state and legacy complete rejects; issue remains planned.",
+    "Inspected CAS transaction rechecks current authority/source; stable replay returns existing key without reactivating older version.",
+    "Inspected immutable contract/terminal/acceptance retention and reserved/running/held occupancy; directed tests confirm late terminal reconciliation only settles old work.",
+    "Focused suite covers persistent actual old schema shape, DDL rollback fault, restart, separate legacy SQL writer fail-closed, two process CAS, authenticated HTTP installed revision.",
+    "Historical release validation checks original record digest/event, current reader/publisher/reviewer authority, approval revocation/age/policy, exact composition, checks and content through existing _valid_review/_facts.",
+    "Root Windows report and Linux report were read as supporting evidence, not claimed as independent runs."
+  ],
+  "limitations": [
+    "Original intermittent Node results-state assertion failure remains unresolved. Five directed observer passes and later full-suite passes do not establish root cause or repair; native_dispatch.mjs and native_worker.py are unchanged.",
+    "Actual legacy running worker may finish immutable candidate/terminal storage; v2 occupancy remains until trusted reconciliation. This is intentional retained physical work, not authorization to publish or close a new definition.",
+    "Legacy constructor/raw reads remain possible; native_tasks mutation fails without v2 connection function. No broader old-host API rollback compatibility guarantee.",
+    "Historical ACL fix must be independently retested and exact final bytes rebound before approval."
+  ],
+  "evidence": {
+    "acl-probe.json": "c6c9b5da06ef9751555e1dc84b9e5fc15c4fed26906664b937c0cda5496bf895",
+    "independent-old-publisher.json": "3809e13c31d2bf769dfdd8f7da07952941b13b02d0616e46ff13fb055a84fdf3",
+    "race-probe.json": "b44391e57d4ea479dfbe5a17ba892c7ebcd7fb1e3539e3c671428a8675177ab0"
+  },
+  "method_learning": {
+    "scope": "editor-dependency-handoff",
+    "applied": [
+      "bind-consumer-release: pin source bytes and actual consumer receipt",
+      "await-terminal-observers: no successful root-cause claim from later passing observer runs"
+    ]
+  },
+  "cleanup": {
+    "successful": "Successful independent publisher, race and corrected ACL probes closed domain connections and removed their TemporaryDirectory fixtures.",
+    "retained": "Initial ACL probe failed cleanup because its generator close did not close SQLite; explicit close fixed subsequent probe. tmp4ria9p2z plus pytest fixtures remain. A PowerShell cleanup command was rejected by automatic execution policy; parent instructed not to retry. Scripts, JSON and junit XML retained as review evidence.",
+    "product_edits": false,
+    "commit_push_deploy_model_calls": 0
+  },
+  "private_original_sha256": "447dddd2e1aa0e9ef09e648b1e2c0a2c3914911a1bb74a01d84883136900637d"
+}

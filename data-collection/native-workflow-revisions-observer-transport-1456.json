@@ -1,0 +1,9 @@
+{
+  "issue": 1456,
+  "path": "data-collection/native-workflow-revisions-node-observation-1456.json",
+  "original_sha256": "4895f52005c556b4eae1f6b255228fe12741e7a1d03254f61e4a0b40ae3ab099",
+  "published_sha256": "cac1d7c7f79a82b1bafd31965493f078b660a46ceaa5dac104b77a121b522d11",
+  "json_value_unchanged": true,
+  "original_preserved_privately": true,
+  "immutable_bound_report_untouched": "native-workflow-revisions-1456.json"
+}
