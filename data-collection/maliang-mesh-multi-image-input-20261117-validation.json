@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-mesh-multi-image-input-20261117",
+  "issue_number": 1396,
+  "date": "2026-11-17",
+  "state": "validated_candidate",
+  "integrated_main": "f39bc9028958e5395d8ec38c6bbcc0bc577a480e",
+  "evidence_scope": "Protocol, provider routing, Godot source controls and rebuilt native editor scenarios; no real 3D inference or visual acceptance is claimed.",
+  "python_validation": {
+    "total": {"run": 87, "skipped": 19, "failed": 0},
+    "coverage": [
+      "single image and ordered image_set expansion for image_to_mesh",
+      "primary/reference ordering and prompt preservation",
+      "Kimi Native, API modeling, API sculpt, local Mesh, Comfy and Codex adapter routes",
+      "legacy version 1 compatibility and empty input rejection"
+    ]
+  },
+  "source_godot_validation": {
+    "port_type_acceptance": {"failures": 0},
+    "multi_image_acceptance": {"failures": 0},
+    "parameter_form_acceptance": {"failures": 0},
+    "context_menu_acceptance": {"failures": 0},
+    "image_to_mesh_v2": "图片 / 图片列表, multi-file selection, image_set connection and ordered snapshots",
+    "image_to_mesh_v1": "single-image legacy contract preserved"
+  },
+  "format_validation": {
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "git_diff_check": true
+  },
+  "native_validation": {
+    "state": "passed",
+    "editor_sha256": "27e8599a0cb24e7d6d0b1c7e680e9ec39eab614607f7573e039f0d5e6da9eec0",
+    "run_ainative_builtin": {
+      "state": "passed",
+      "scenarios": ["mesh-and-rig", "independent-project", "sample-addon-compatibility", "relocated-runtime"],
+      "installed_bundle_matches_source": true,
+      "image_to_mesh_multi_file_assertions": "passed",
+      "known_exit_warnings": "Existing RID/ObjectDB leak warnings remain; this candidate does not claim to fix them."
+    }
+  },
+  "real_model_inference": false,
+  "independent_code_review": "not_obtained_in_this_session; no subagent used and no independent review claimed"
+}

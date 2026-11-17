@@ -190,6 +190,7 @@ func _is_image_kind(kind: String) -> bool:
 
 func _new_node_version(kind: String) -> String:
 	if kind == GENERATE_IMAGE: return "2"
+	if kind == "image_to_mesh": return "2"
 	return "4" if kind in ["text_to_image", "image_to_image"] else "1"
 
 func state_label(value: String) -> String:
@@ -227,10 +228,10 @@ func _show_file_picker(picker: FileDialog, selected_path: String):
 	if not first.is_empty(): picker.current_path = first
 	picker.popup_centered_ratio(0.7)
 
-func _configure_source_picker(kind: String):
+func _configure_source_picker(kind: String, data: Dictionary = {}):
 	var copy = kind == "copy"
 	var adjust = kind == "model_adjust"
-	var multiple = _is_image_kind(kind)
+	var multiple = _is_image_kind(kind) or _accepts_image_set(data)
 	source_picker.title = "选择已生成模型（GLB / 内嵌 glTF）" if adjust else "选择源图像或模型" if copy else "选择源图像（可多选）"
 	source_picker.filters = PackedStringArray(["*.glb,*.gltf ; GLB / 内嵌 glTF 模型" if adjust else "*.png,*.jpg,*.jpeg,*.glb,*.gltf ; 图像 / 网格" if copy else "*.png,*.jpg,*.jpeg ; PNG / JPEG 图像"])
 	source_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILES if multiple else FileDialog.FILE_MODE_OPEN_FILE
@@ -260,7 +261,7 @@ func _set_node_file(field: String, selection):
 	for data in nodes:
 		if data.id != selected_id: continue
 		var other = "image_context" if field == "source" else "source"
-		var image_node = _is_image_kind(str(data.get("type", "copy")))
+		var image_node = _is_image_kind(str(data.get("type", "copy"))) or _accepts_image_set(data)
 		var total = paths.size() + _node_paths(data, other).size()
 		if paths.size() > 8 or (image_node and total > 8):
 			status.text = "源图与参考图合计每次最多 8 张"
@@ -759,7 +760,7 @@ func _queue_only_node(data: Dictionary) -> bool:
 
 func _accepts_image_set(data: Dictionary) -> bool:
 	var kind = str(data.get("type", "copy"))
-	return kind == GENERATE_IMAGE and _image_queue_node(data) or kind == "image_to_image" and _image_queue_node(data)
+	return (kind == GENERATE_IMAGE or kind == "image_to_image") and _image_queue_node(data) or kind == "image_to_mesh" and data.get("version", "1") == "2"
 
 func _accepts_single_image(source: Dictionary, target: Dictionary) -> bool:
 	return _accepts_image_set(target) and output_kind(source) == PORT_IMAGE
@@ -784,7 +785,7 @@ func port_type_name(kind: int) -> String:
 func input_type_name(data: Dictionary) -> String:
 	var kind = str(data.get("type", "copy"))
 	if kind == GENERATE_IMAGE: return "图片 / 图片列表（可选）＋文本（参数）"
-	return "图片 / 图片列表" if _image_queue_node(data) and kind == "image_to_image" else port_type_name(input_kind(data))
+	return "图片 / 图片列表" if _accepts_image_set(data) and kind in ["image_to_image", "image_to_mesh"] else port_type_name(input_kind(data))
 
 func rebuild():
 	graph.clear_connections()
@@ -864,7 +865,7 @@ func select_node(id: String):
 				requirements["prompt"] = _merged_requirements(str(requirements.get("prompt", "")), str(data.get("text", "")))
 				text_edit.text = ""
 				parameter_form.configure(selected_kind, requirements, str(data.get("version", "1")))
-	_configure_source_picker(selected_kind)
+	_configure_source_picker(selected_kind, nodes.filter(func(n): return n.id == selected_id)[0])
 	source_edit.tooltip_text = source_edit.text if not source_edit.text.is_empty() else "通过系统资源管理器选择源文件，可多选"
 	context_edit.tooltip_text = context_edit.text if not context_edit.text.is_empty() else "通过系统资源管理器选择参考图像，可多选"
 	refresh_history()
@@ -918,7 +919,7 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 	var output = "image_set" if _queue_only_node(source_node[0]) or (_image_queue_node(source_node[0]) and from_port == 1) else "result"
 	if output == "image_set":
 		if not _accepts_image_set(target_node[0]):
-			status.text = "图片队列只能连接到生成图片节点；网格节点需要单张图片"
+			status.text = "目标节点不支持图片列表输入；请连接单张图片或选择支持图片列表的节点"
 			return
 	elif target_kind != "copy" and ((_accepts_image_set(target_node[0]) and not _accepts_single_image(source_node[0], target_node[0])) or (not _accepts_image_set(target_node[0]) and output_kind(source_node[0]) != input_kind(target_node[0]))):
 		status.text = "模型调整需要连接已生成模型" if target_kind == "model_adjust" else "生成节点的输入与输出类型不匹配"
@@ -1560,7 +1561,7 @@ func node_run_blocker(id: String) -> String:
 			for path in _node_paths(data, field):
 				if not path.is_empty() and not FileAccess.file_exists(path):
 					return ("源文件" if field == "source" else "参考图像") + "不存在（" + str(next_id) + "）"
-		if _is_image_kind(kind) and _node_paths(data, "source").size() + _node_paths(data, "image_context").size() > 8:
+		if (_is_image_kind(kind) or _accepts_image_set(data)) and _node_paths(data, "source").size() + _node_paths(data, "image_context").size() > 8:
 			return "源图与参考图合计每次最多 8 张（" + str(next_id) + "）"
 		var prompt = str(data.get("parameters", {}).get("prompt", "")) + "\n" + str(data.get("text", ""))
 		if kind == GENERATE_IMAGE and not has_images and prompt.strip_edges().is_empty():
