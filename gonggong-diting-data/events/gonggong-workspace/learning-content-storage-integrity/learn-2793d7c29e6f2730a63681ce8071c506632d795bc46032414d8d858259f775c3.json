@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-content-storage-integrity",
+  "event_id": "learn-2793d7c29e6f2730a63681ce8071c506632d795bc46032414d8d858259f775c3",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461",
+  "occurred_at": "2026-11-17T20:52:58.284614+00:00",
+  "evidence_refs": [
+    "native-worker-intake-validation-1461",
+    "learn-f613d77a7da2cac04da687d518ba641a08d23cff20aacff7de3144ab2be01ab9"
+  ],
+  "payload": {
+    "scope": "content-storage-integrity",
+    "lesson": "utf8-source-codepoint-guards",
+    "revision": 2,
+    "previous": "836e766b8120621d03ceef28e720fcae679dd64cfc4527b1d80d118d036a1709",
+    "action": "verify",
+    "details": {
+      "test": "Execute the predeclared original-function versus in-memory UTF8-to-GBK mutation trial, without altering source files.",
+      "expected": "All six original reserved aliases rejected; deliberate GBK mutation detected by numeric codepoints while mirrored transformed assertion passes; unrelated suffixes preserved.",
+      "observed": "All six original reserved aliases rejected; deliberate GBK mutation detected by numeric codepoints while mirrored transformed assertion passes; unrelated suffixes preserved."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-worker-encoding-method-trial-1461.json",
+        "sha256": "1d3aa7461e580e1c5688dda809c5b0d54c940addfb2c6801674eae70fb109d75"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/native-worker-intake-validation-1461.json",
+      "sha256": "40cc8f074a775e6f11170724ba0ccbe9ce02797f6279c1e9603e53a571455776"
+    }
+  },
+  "sha256": "09edb94e0d5c6d07fbb6c7883d01f4201d344baceab996f912520f0abc4a8f78"
+}

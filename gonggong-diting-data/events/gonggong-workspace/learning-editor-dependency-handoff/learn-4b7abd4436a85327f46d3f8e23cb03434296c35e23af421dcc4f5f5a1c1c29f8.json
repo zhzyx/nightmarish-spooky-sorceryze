@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-4b7abd4436a85327f46d3f8e23cb03434296c35e23af421dcc4f5f5a1c1c29f8",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461",
+  "occurred_at": "2026-11-17T19:29:25.205546+00:00",
+  "evidence_refs": [
+    "native-worker-intake-repaired-1461"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "reconstruct-worker-outcomes",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Persist cancellation decision before intake, validate physical and output closure, reconstruct and exact-compare every terminal including failures.",
+      "when": "Trusted local worker database drives immutable candidate recovery and coordination closure.",
+      "counterexample": "A failed terminal string or intact output spool alone does not prove authentic physical exit; cancellation arriving before the decision must not become produced.",
+      "trial_plan": "Run original cancellation/physical corruption/exit7-to99 probes and four separate-process recovery modes; require rejection or exact stable terminal without producer rerun."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-worker-intake-repaired-1461.json",
+        "sha256": "505657b17850f3f3e238932463336bae32c6409b76ae5bd83de3b04f83cce9d4"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/native-worker-intake-repaired-1461.json",
+      "sha256": "a0946ad5a1d155cb1d0a781a81ceb8aa14248532e26f7c2c0886314aea4e902e"
+    }
+  },
+  "sha256": "3bf7322735103c27c7d8441a58f3e2ae3e6f4082f56071648666bf6aa49e7e54"
+}

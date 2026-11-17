@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "native-worker-intake-20261118",
+  "collected_at": "2026-11-17T21:24:06.858646+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/codex-intake-1461-20261117.json",
+      "sha256": "cf51d78f6f778a591233dd8d7a9f70b6b363d5c80ab6b751ccd410984e2911b4",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "codex-intake-1461-20261117",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-016091e550a645bbb25954a66c3ea758.json",
+      "sha256": "b7ceaa3fadcc7a46d2a74dc65421b3cfa708ca944511d8693b88b85fa08bc222",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-016091e550a645bbb25954a66c3ea758",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-05ca6c3fd76344afbebd81ecee24c085.json",
+      "sha256": "95d4194ac8567dbb09783016bebff328cb7db535543ec11cced8296688db8dfe",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-05ca6c3fd76344afbebd81ecee24c085",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-37271efecabe49a5a4c3aa1487722af0.json",
+      "sha256": "cfcf141d73e41f0ef4a81233fe6b672d7f569bcd0db6a4119524c6522e5e6b9d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-37271efecabe49a5a4c3aa1487722af0",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-48765d61030347dbb15f10795a47219c.json",
+      "sha256": "7dc998d7460f8994f5c1fa2421d948cb9445cb617f5c3fba9c16359212b0a084",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-48765d61030347dbb15f10795a47219c",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-4a92d8b1115d4f779ed329f0121227d0.json",
+      "sha256": "ca3aa6d9db60769b8370b41e93d11bbb41162135eb3261ffdf6f1f83d0ec26b2",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-4a92d8b1115d4f779ed329f0121227d0",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-5077f9d88a854999a026fa94ea0b240b.json",
+      "sha256": "997619cc668281458e63920b1ea7730d8fdbd39418d51403f7e825455d32b314",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-5077f9d88a854999a026fa94ea0b240b",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-586573e1e439460298acc70fa5e13540.json",
+      "sha256": "8c1aeb07b91a2b3aa89a7bacca9a2088f409dc55194c6c9784ab92a6505fa9ae",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-586573e1e439460298acc70fa5e13540",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-5a57131f2ae74af3a67ad04fb5d153da.json",
+      "sha256": "dd68fa7a11e76de371194aca7217525de422897b957745ea10db5398d766ea80",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-5a57131f2ae74af3a67ad04fb5d153da",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-8fe9f317f64443828a08c7c73a52f9be.json",
+      "sha256": "0fdec3fbfe4433697a4418729be7ed2f339a63edcfdc97f0acaeb30192ff2a1a",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-8fe9f317f64443828a08c7c73a52f9be",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-a640cb2ae3144ada8a4da34a7d5bb4ee.json",
+      "sha256": "28bf869caf519c2ceaab0e4a9257c4e697714dfc7a448d06a666861d39001317",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-a640cb2ae3144ada8a4da34a7d5bb4ee",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-b9d7220189df4681b01df374ad6fecbe.json",
+      "sha256": "6a2b4efce10e1756e10bbce3da0e7a7e3e3923c489257803748279fb1a27f804",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-b9d7220189df4681b01df374ad6fecbe",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-bdb9143d13ec4fa18d8937eceed4fb95.json",
+      "sha256": "f4f48b4cd1822ae9169cf35c955b9fe64c95c9e7ea48292c3111f2ad0d006f6b",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-bdb9143d13ec4fa18d8937eceed4fb95",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-c04d0e5bf3f449c582d9d96485bfd1ef.json",
+      "sha256": "bcb03006997b8b3efa70d35dcfe4d230e51ee1f0a2396d7121c6bf887ca1c4f0",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-c04d0e5bf3f449c582d9d96485bfd1ef",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-c67c634aabf14a079a9b2579bd82caaf.json",
+      "sha256": "2d8737fdadc630e1b7dc606158e21c3c14da7fe9a4d3c6e580cd4c0beaf6a961",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-c67c634aabf14a079a9b2579bd82caaf",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-c86a2b1e976145bea9fd7bdb479ac4d4.json",
+      "sha256": "d7c20b2bb9ec455e8834eec86f5a4a4a6ab7a183a61972a62899405af5f3e403",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-c86a2b1e976145bea9fd7bdb479ac4d4",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-d397abe2526748c99e0fde4e94c53d86.json",
+      "sha256": "554941d5111cec4dc36f8c760c6b017db1decc4caf2059107d3fbd382d42f2ff",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-d397abe2526748c99e0fde4e94c53d86",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-d7fe8b0609a24c6f98e8ec1ed44261e2.json",
+      "sha256": "3b4afdb44b53de3e120de5800ccd6f32c9dc6ab0fceb403e38423d7901c16266",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-d7fe8b0609a24c6f98e8ec1ed44261e2",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-d8b75bdba23e47c58070dcd1ee4ab175.json",
+      "sha256": "6431226040b30cc1d8492320eeda19b78d0bbf0aa18e99619dcbe71284fa0a5b",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-d8b75bdba23e47c58070dcd1ee4ab175",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-f2c5143f7fc2485580b2daa5fa251bf1.json",
+      "sha256": "51c17cf5ced22efe0fa27eaa81fbf70d2b870dd6ec42bcc0f8b7682f3f1f5917",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-f2c5143f7fc2485580b2daa5fa251bf1",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/dispatch-ffa8e8fa9a80468fa0cbf373a428f6b8.json",
+      "sha256": "1a43e413fd2c4247620f9212c95eb069c927875113211631854f4c40944dbd9f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-ffa8e8fa9a80468fa0cbf373a428f6b8",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/native-worker-intake-repaired-1461.json",
+      "sha256": "e01e0c328f3c2e9cdf28014d2039ee592a307b2ffdfad324103abb0fd2f15537",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "native-worker-intake-repaired-1461",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-worker-intake-20261118/native-worker-intake-validation-1461.json",
+      "sha256": "94522641a4fe8e06ca5fd1c179619676b7a9553f1795d8267b387e07e5169b31",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "native-worker-intake-validation-1461",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1461,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461"
+}

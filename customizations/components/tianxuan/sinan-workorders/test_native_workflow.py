@@ -44,6 +44,12 @@ def fixture(tmp_path):
         tmp_path / "workers",
         {"local": dict(argv=[python, "-c", code], env=env, timeout=5, log_bytes=4096)},
         lambda *a: True,
+        authorize=lambda db, t, a, m, action: (
+            t == tenant
+            and a in {actor, "execution-producer"}
+            and (m in "abc" or m.startswith("requirement-"))
+            and action in {"read", "receive"}
+        ),
     )
     cache = EvidenceCache(native, {"check": dict(version="1", reads=None, max_age_seconds=3600)}, lambda *a: True)
     (tmp_path / "checks").mkdir()
@@ -473,7 +479,8 @@ def test_authenticated_reconcile_durable_terminal_only(fixture):
     with w._transaction() as db:
         db.execute("UPDATE native_tasks SET state='held',terminal=NULL WHERE id=?", (key,))
     with w.worker.store._connection(write=True) as db:
-        db.execute("DELETE FROM native_worker_terminals WHERE execution=?", (key,))
+        db.execute("DELETE FROM native_worker_terminals_v2 WHERE execution=?", (key,))
+        db.execute("DELETE FROM native_worker_closed WHERE execution=?", (key,))
     assert w.reconcile(actor, key)["state"] == "held"
 
 

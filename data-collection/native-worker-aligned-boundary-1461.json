@@ -1,0 +1,50 @@
+{
+  "issue": 1461,
+  "passed": true,
+  "native_sources": 9382,
+  "native_sources_sha256": "b0a22fa56b3b57595b5afe483066bc4f710a5362b092e10ebe02e90566d6a772",
+  "module_inputs": [
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py"
+  ],
+  "overlap": [],
+  "inventory_before": 145,
+  "inventory_after": 145,
+  "policy_sha256": "1618f3b90a75114fc5fd1477fb2c8b06d0dcd9ca668c1f2e58d1aee1afa573e7",
+  "checks": [
+    {
+      "command": "py -X utf8 tests/editor/test_native_host_inputs.py",
+      "exit_code": 0,
+      "output": "Full-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: invalid host input inventory\nFull-tree identity required: invalid host input inventory\n...\n----------------------------------------------------------------------\nRan 3 tests in 8.693s\n\nOK\n"
+    },
+    {
+      "command": "py -X utf8 tests/editor/test_editor_native_cache.py",
+      "exit_code": 0,
+      "output": "..............\n----------------------------------------------------------------------\nRan 14 tests in 17.356s\n\nOK\n"
+    },
+    {
+      "command": "py -X utf8 tools/test_windows_editor_artifact.py",
+      "exit_code": 0,
+      "output": "Full-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: Invalid SCons dependency inventory\ns........\n----------------------------------------------------------------------\nRan 9 tests in 0.758s\n\nOK (skipped=1)\n"
+    }
+  ],
+  "actual_scons_command": [
+    "py",
+    "-X",
+    "utf8",
+    "-m",
+    "SCons",
+    "-n",
+    "-Q",
+    "gonggong_native_probe=D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-worker-aligned-scons-probe.json",
+    "accesskit=no",
+    "angle=no",
+    "d3d12=no",
+    "debug_symbols=no",
+    "dev_mode=yes",
+    "platform=windows",
+    "target=editor"
+  ],
+  "seconds": 31.8745396000013,
+  "compilation_performed": false,
+  "limits": "Windows actual SCons consumer graph and cache regression; no renderer performance or AA-quality acceptance."
+}

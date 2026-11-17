@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1461-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-worker-intake-20261118",
+  "kind": "request",
+  "occurred_at": "2026-11-17T21:24:04.550456+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1461,
+    "title": "原生工作者：持久接收并行贡献，不依赖共享模块头",
+    "body": "<!-- gonggong-request:native-worker-intake-20261118 -->\n\n# 工作者不可变贡献接收\n\n需求 ID：native-worker-intake-20261118。父 #1444；用户授权完整 AI 原生链路，允许摆脱 Git 权威。路径基准为仓库根。\n\n当前真实双生产者同模块实验已有成功输出，却因 NativeWorker.run 调用共享 head submit，使后到的输出拒收、无终态。#1451 的不可变候选接收已完成独立审查与 Windows/Linux 验证；代码发布等待不是隔离实现的业务依赖，采用精确源码摘要的只读依赖交接。\n\n1. NativeWorker 将成功普通文件输出接入已验收 NativeCandidates，固定原始输入，独立持久 provenance，不修改模块共享 head 或选择发布。已有 submit 的未知读取漂移保护不改变。\n2. 候选接收使用明确安装的宿主权限端口，缺失即拒绝；保留 tenant、producer、原任务合同、执行标识。不得使用无条件默认授权，不信任工作区自报 actor/origin。收集仍检查原写入范围与只读需求。\n3. 两个实际并发进程同模块不同/相同输出，各自保留终态与贡献，不因另一方或第三方前进 head 而返工；进程结束后可独立回读原任务精确终态。未知真实进程不盲目重启。\n4. 显式记录 candidate intake receipt，生产完成不等于整合验收；合契同产品整合、联合检查和独立发布由父 #1444 后续推进。无变化输出也必须明确可恢复且来源不被伪造。\n5. 授权撤销、越权输出、伪造任务、receipt 篡改、不同任务重放和异常收集均不得伪装 produced；原测试与实际无 Git 运行验证。不能把保留未知占用改成已成功。\n\n复用 sinan-workorders host_tool，不触及渲染、#951、#1343 或框架定义。新增宿主文件按真实 SCons 消费与缓存边界核验。证据从首次写入使用 UTF-8 LF，绑定后不改字节。部署前独立审查；父任务保留真实模型效率与完整业务验收。\n\n授权：codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117\n\n<!-- gonggong-host-git:Sail-Li -->\n\n\n<!-- immutable-worker-independent-review -->\n作者完成不可变接收、关闭spool与只读物理关闭核验，57回归加1补测通过；进入独立对抗审查。当前生产者权限保护与协调者结清物理占用分离，实际联合产品集成尚未完成。\n\n\n<!-- worker-review-three-fixes -->\n独立审查复现三项缺口：collect期间取消仍produced；reconcile不核对损坏physical关闭记录；真实exit7终态被改99仍接受。后两项是宿主DB完整性反例，不是公开攻击。修复并按原探针复验，保留原报告；Windows临时rename失败及Linux传输/测试300秒超时由父排障。\n\n\n<!-- worker-three-fixes-independent-review -->\nIndependent repaired1461 review in D:/GongGong-work/native-worker-intake-20261118. Read original native-worker-review.json/probes, new data-collection/native-worker-intake-repaired-1461.json exactsource plus repaired Linuxreport when present. Root/authorclaim76tests with original3failureprobes, fouractualprocess concurrent recovery fouroutcomes, nullschema corner tests. Validate R1postcollect cancellation linearization persisted; R2physicalclosure integrity everyreplay; R3failedterminal reconstructed fromactualexit/reasons/transcript andexactcompared, no missing-spool substitution. Genuine physicalclosure versus logicaloutcome bothconsistent; currentcontentACL/tenant/source/task/limits/noop/restart guards and no forcedproducer rerun remain. Re-run original private probes intoNEW native-worker-review2-probes nooverwriteoldreport/policyblockedpaths. Corruption tests trustedhostDB notpublicattack. Review new assertions for realistic process behavior and terminal reconstruction races. Original accepteddependencyoverlayhashes unchanged; rootmetadataonly added one host test path has actualSCons9378/cacheproof. Root server full4.55MB payload timedout; narrowedactualownedprocesshelper to606KB and repairedsource Linuxpassed49.88testseconds withoutGit; no total throughput/tokenclaim. WindowsWinError5 remainsunresolved, preserveany recurrence. Currentcoordination process_closed notyetwired1466; no acceptanceclaim. No productedits/commit/push/deploy/models/furtheragents. Write sourcebound native-worker-review2.json with approval/findings and actualobservations. AllreportsUTF8LF.\n\n\n<!-- windows-materialization-diagnosis -->\n修复版独立复审认可三项终态修复，但原实际 Windows stage.rename WinError5再次出现。范围增加：在当前隔离工作副本诊断 NativeWorkspace/NativeCheckInputs 的物化失败，依据实证修复与复验；不得靠反复重跑覆盖失败，不削弱路径/权限/原子性保护。必要源文件改动单独绑定审查，原证据保留。\n\n\n<!-- windows-rename-independent-review -->\n真实Windows子文件句柄导致父目录rename WinError5可复现；当前最小修复只对5/32作有界重试并复核目录/祖先/内容与目标缺席，保留首个失败。53通过2明确权限跳过27子测试；进入独立审查。历史句柄持有者仍未知。\n\n\n<!-- rename-owner-repair -->\n独立审查真实复现发布helper未绑定stage创建时身份、清理未绑定原祖先身份。当前候选未准入，按原句柄修复范围继续补齐创建身份与祖先到发布/清理的端到端绑定，保留原失败探针并重新独立核验。\n\n\n<!-- final-materializer-review -->\nWR1/WR2已补齐创建身份与祖先绑定。父责任者又发现未准入候选将原¹²³及原测试共同转码，真实保留名被放行；已恢复原UTF-8字符并增加独立数字码点探针，49通过2平台跳过41子测试、Ruff/mypy通过。旧报告和失败证据原样保留，当前完整修复待独立复审。\n\n\n<!-- wr3-fixture-review -->\n生产身份/Unicode修复复审未发现新问题，但WR3反例准备自身raw rename偶发失败。只将该一行测试准备改为原有界helper移动已知自有stage，随后仍按原所有权拒绝替换。生产源码未变；49通过2跳过41子测试及静态检查通过，进入该一行独立核验。\n\n\n<!-- native-worker-metadata -->\n当前已完成源码与实际联合回归，进入独立最终核验；父项完整模型效率、分布式执行及250在途验收保持未完成。\n",
+    "updated_at": "2026-11-17T21:22:37Z",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "operator": "Sail-Li",
+    "scope": "Actual issue readback and user authorization intake; not acceptance or delivery."
+  },
+  "evidence_refs": [],
+  "sha256": "0a292871005f0606bba2fc07ec4a1c07c10d38eb9d5e75ef0db08382733d11b6"
+}

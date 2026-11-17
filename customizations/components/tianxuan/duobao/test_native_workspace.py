@@ -4,12 +4,22 @@ import os
 import subprocess
 import sys
 import tempfile
+import threading
+import time
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
 from native_store import Conflict, NativeStore, NativeStoreError
-from native_workspace import MANIFEST, Limits, NativeWorkspace, portable
+from native_workspace import (
+    MANIFEST,
+    Limits,
+    NativeWorkspace,
+    _capture_stage_owner,
+    _cleanup_owned_stage,
+    _rename_prepared,
+    portable,
+)
 
 
 class WorkspaceTests(unittest.TestCase):
@@ -56,6 +66,55 @@ class WorkspaceTests(unittest.TestCase):
             timeout=30,
         )
         return proc.returncode, json.loads(proc.stdout)
+
+    def test_materializers_reject_replacement_before_helper_entry(self):
+        import native_check_inputs as ci
+        import native_workspace as nw
+
+        for kind in ("workspace", "check"):
+            with self.subTest(kind=kind):
+                destination = self.root / (kind + "-published")
+                original = self.root / (kind + "-created")
+                stages = []
+
+                def replace(stage, dest, limits, owner):
+                    _rename_prepared(stage, original, limits, owner)
+                    stage.mkdir()
+                    (stage / "foreign").write_bytes(b"foreign")
+                    stages.append(stage)
+                    return _rename_prepared(stage, dest, limits, owner)
+
+                module = nw if kind == "workspace" else ci
+                with patch.object(module, "_rename_prepared", replace):
+                    with self.assertRaisesRegex(NativeStoreError, "identity or ancestry") as error:
+                        if kind == "workspace":
+                            self.ws.materialize("org", self.selected, destination)
+                        else:
+                            ci.CheckInputView("{}", Limits()).materialize(None, "org", destination)
+                self.assertFalse(destination.exists())
+                self.assertTrue(original.is_dir())
+                self.assertEqual((stages[0] / "foreign").read_bytes(), b"foreign")
+                self.assertTrue(error.exception.__notes__)
+
+    def test_changed_normal_ancestor_preserves_same_owned_stage(self):
+        parent = self.root / "parent"
+        parent.mkdir()
+        stage = parent / "stage"
+        stage.mkdir()
+        owner = _capture_stage_owner(stage)
+        (stage / "owned").write_bytes(b"owned")
+        parent.rename(self.root / "old-parent")
+        parent.mkdir()
+        (self.root / "old-parent" / "stage").rename(stage)
+        with patch.object(Path, "rename") as rename:
+            with self.assertRaisesRegex(NativeStoreError, "identity or ancestry"):
+                _rename_prepared(stage, parent / "published", Limits(), owner)
+        rename.assert_not_called()
+        original = PermissionError(13, "first failure")
+        _cleanup_owned_stage(stage, owner, original)
+        self.assertEqual((stage / "owned").read_bytes(), b"owned")
+        self.assertTrue(original.__notes__)
+        self.assertTrue((self.root / "old-parent").is_dir())
 
     def test_cli_empty_path_roundtrip_restart(self):
         path = self.root / "work"
@@ -254,6 +313,146 @@ class WorkspaceTests(unittest.TestCase):
                 self.ws.collect("org", self.selected, path)
         finally:
             junction.rmdir()
+
+
+class DeviceAliasCodepointTests(unittest.TestCase):
+    def test_reserved_aliases_are_exact_unicode_codepoints(self):
+        # Numeric codepoints prevent source transcoding from silently changing
+        # both the production guard and its expected test strings together.
+        for prefix in ("COM", "LPT"):
+            for codepoint in (185, 178, 179):
+                name = prefix + chr(codepoint) + ".log"
+                with self.subTest(prefix=prefix, codepoint=codepoint), self.assertRaises(NativeStoreError):
+                    portable(name)
+            for codepoint in (0x9E7F, 0x864F, 0x9C81):
+                name = prefix + chr(codepoint) + ".log"
+                with self.subTest(prefix=prefix, codepoint=codepoint):
+                    self.assertEqual(portable(name), name)
+
+
+@unittest.skipUnless(os.name == "nt", "Windows directory rename semantics")
+class WindowsRenameTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.stage = self.root / "stage"
+        self.stage.mkdir()
+        self.owner = _capture_stage_owner(self.stage)
+        (self.stage / "file").write_bytes(b"original")
+        os.utime(self.stage / "file", (946684800, 946684800))
+        self.destination = self.root / "destination"
+
+    def test_real_child_handle_release_and_held_budget(self):
+        import ctypes
+        from ctypes import wintypes
+
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel.CreateFileW.argtypes = [
+            wintypes.LPCWSTR,
+            wintypes.DWORD,
+            wintypes.DWORD,
+            ctypes.c_void_p,
+            wintypes.DWORD,
+            wintypes.DWORD,
+            wintypes.HANDLE,
+        ]
+        kernel.CreateFileW.restype = wintypes.HANDLE
+        kernel.CloseHandle.argtypes = [wintypes.HANDLE]
+        handle = kernel.CreateFileW(str(self.stage / "file"), 0x80000000, 7, None, 3, 0, None)
+        self.assertNotEqual(handle, wintypes.HANDLE(-1).value)
+        try:
+            with self.assertRaises(OSError) as old:
+                self.stage.rename(self.destination)
+            self.assertEqual(old.exception.winerror, 5)
+            started = time.monotonic()
+            with self.assertRaises(OSError) as held:
+                _rename_prepared(self.stage, self.destination, Limits(), self.owner)
+            self.assertEqual(held.exception.winerror, 5)
+            self.assertLess(time.monotonic() - started, 1)
+            self.assertFalse(self.destination.exists())
+            timer = threading.Timer(0.04, kernel.CloseHandle, args=(handle,))
+            timer.start()
+            try:
+                _rename_prepared(self.stage, self.destination, Limits(), self.owner)
+            finally:
+                timer.join()
+                handle = None
+            self.assertEqual((self.destination / "file").read_bytes(), b"original")
+        finally:
+            if handle is not None:
+                kernel.CloseHandle(handle)
+
+    def test_permanent_errors_and_retry_mutations_fail_closed(self):
+        for mode in ("denied", "errno_only", "destination", "content", "replacement", "junction"):
+            with self.subTest(mode=mode):
+                if mode != "denied":
+                    self.tearDown_case()
+                original = PermissionError(13, "permanent denial")
+                if mode != "errno_only":
+                    original.winerror = 5
+                owner = self.owner
+                calls = []
+
+                def deny(path, destination):
+                    calls.append(path)
+                    if len(calls) == 1:
+                        if mode == "destination":
+                            destination.mkdir()
+                        elif mode == "content":
+                            (path / "file").write_bytes(b"changed")
+                        elif mode in ("replacement", "junction"):
+                            os.rename(path, self.root / "original-stage")
+                            if mode == "replacement":
+                                path.mkdir()
+                            else:
+                                subprocess.run(
+                                    ["cmd", "/c", "mklink", "/J", str(path), str(self.root / "original-stage")],
+                                    check=True,
+                                    capture_output=True,
+                                )
+                    raise original
+
+                with patch.object(Path, "rename", deny):
+                    with self.assertRaises(PermissionError) as error:
+                        _rename_prepared(self.stage, self.destination, Limits(), self.owner)
+                self.assertIs(error.exception, original)
+                self.assertEqual(len(calls), 4 if mode == "denied" else 1)
+                if mode in ("replacement", "junction"):
+                    _cleanup_owned_stage(self.stage, owner, original)
+                    self.assertTrue(self.stage.exists())
+                    self.assertTrue((self.root / "original-stage/file").exists())
+
+    def test_changed_normal_ancestor_between_retries_preserves_first_error(self):
+        outer = self.root / "outer"
+        outer.mkdir()
+        stage = outer / "stage"
+        stage.mkdir()
+        (stage / "owned").write_bytes(b"owned")
+        owner = _capture_stage_owner(stage)
+        original = PermissionError(13, "first denial")
+        original.winerror = 5
+        calls = []
+
+        def deny(path, destination):
+            calls.append(path)
+            os.rename(outer, self.root / "old-outer")
+            outer.mkdir()
+            os.rename(self.root / "old-outer" / "stage", stage)
+            raise original
+
+        with patch.object(Path, "rename", deny):
+            with self.assertRaises(PermissionError) as error:
+                _rename_prepared(stage, outer / "destination", Limits(), owner)
+        self.assertIs(error.exception, original)
+        self.assertEqual(len(calls), 1)
+        _cleanup_owned_stage(stage, owner, original)
+        self.assertEqual((stage / "owned").read_bytes(), b"owned")
+        self.assertTrue(original.__notes__)
+
+    def tearDown_case(self):
+        self.temp.cleanup()
+        self.setUp()
 
 
 if __name__ == "__main__":

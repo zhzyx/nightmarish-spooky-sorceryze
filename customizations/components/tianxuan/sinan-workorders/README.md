@@ -89,3 +89,58 @@ NativeRelease 的短写入防护覆盖最终领域验收事务，阻止撤回/�
 独立发布。尚未声称远程执行节点、真实 provider/用量收益、250 任务负载、同一产品并发
 结果的合契语义整合、浏览器/Godot 消费或 Linux 生产验收完成。
 API/CLI 只绑定本地可信生产安装；请求来自另一台节点不等于生产计算已迁到远端。
+
+
+## Immutable worker intake (#1461)
+
+The installed host must construct `NativeWorker(..., authorize=authority)` with a
+short local `authority(db, tenant, producer, module, action)` callback returning
+exactly `True` for current `read` and `receive` permission. There is no default
+allow policy. Resolve current permissions from trusted installation state (use
+`db` for transactional revocation); never accept the callback, actor, source,
+profile or task contract from producer workspace files. `NativeWorkflow` supplies
+the authorized full task; execution is its canonical digest, including tenant,
+producer, original source, mandate, selected inputs and writes. These ordinary
+local processes are trusted installed programs, not an OS isolation boundary.
+
+Successful output is bounded and collected once after owned process closure and
+transcript flush. A short transaction stores the full original task and immutable
+closed-output spool in `native_worker_closed`. `NativeCandidates.receive` then
+records the original baseline and native source/task/issue URI provenance without
+moving shared module heads. The terminal retains the exact intake receipt and
+composition; `produced` is not joint product acceptance or publication. Empty
+changes retain provenance with `no_changes=true` and `intake=null`.
+
+Restart reconciles only host database closure records, replaying the same intake
+key and rechecking current authority. Failure between closure, receive,
+composition and terminal can finish without relaunch or mutable workspace reads.
+An existing execution directory without closure stays unknown; no PID or edited
+workspace receipt establishes success. Terminals use `native_worker_terminals_v2`
+so legacy submit-based terminals are not silently promoted to intake evidence.
+Installations upgrading active legacy workers must preserve their original
+owner/receipt and reconcile through that installed version before switching.
+The host database, spool and installation must be inaccessible to untrusted
+producers. Missing or corrupted records require owner investigation, not rerun.
+
+The default worker collection budget is 2 MiB per file and 8 MiB total. An
+installed host may pass `limits=Limits(...)` after evaluating its memory budget;
+workspace collection and candidate intake share those limits. Hex spool encoding
+and JSON parsing amplify memory use; this slice makes no throughput claim.
+`process_closed(task, execution)` is a trusted coordinator-only physical fact
+port. Its caller must authenticate its coordination role. It returns only a
+boolean, without exposing output, receiving candidates or publishing content,
+so producer withdrawal does not prevent an authorized coordinator releasing a
+physically closed reservation. `reconcile` still requires current producer ACL.
+
+Cancellation linearizes at the event check inside the closed-output transaction,
+after collection and encoding and before any candidate intake. An observed cancel
+persists `cancelled=true` with no changes; clearing the event or restarting cannot
+turn that decision into produced. A later event does not revoke an already closed
+output decision. The process helper may report a null exit for cancellation or
+bounded termination; only its returned, fully cleaned-up observation is recorded.
+Recovery validates both physical and output record digests/contracts, binds their
+exit/transcript fields, reconstructs every terminal and compares all saved fields.
+A physical non-success can reconstruct failure even if interrupted before output
+spooling. A physical success without an output decision remains unknown; arbitrary
+terminal rows cannot establish failure or success. Trusted-host database corruption
+probes test integrity, not a public producer attack surface.

@@ -1,0 +1,504 @@
+{
+  "issue": 1461,
+  "request_id": "native-worker-intake-20261118",
+  "reviewer": "independent Codex final materializer reviewer",
+  "approved": false,
+  "decision": "changes_requested_test_fixture_contention",
+  "overall_business_acceptance": false,
+  "source_root": "D:\\GongGong-work\\native-worker-intake-20261118",
+  "source_sha256": {
+    "customizations/components/tianxuan/duobao/native_workspace.py": "401dcb5e0fe2ab1a8b8e888457044b4f622a1cbf39346f1a0dddc48ab9b9af66",
+    "customizations/components/tianxuan/duobao/native_check_inputs.py": "a3880f7480b1b98234a5d022cc77d4ca173de9c09dc898fa27558a1e92575f06",
+    "customizations/components/tianxuan/duobao/test_native_workspace.py": "4a7dc475dfc4ac98b88b36c2b94587cbdcdeb5b7778ef0cfec4e0adec52105b8",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "06f5559778dd628376aedcf41f6dd47efde38536f220486b7b0daf7cb4be1320"
+  },
+  "all_runtime_source_sha256": {
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\backup.py": "19b1e4fc00cb09acbef489f6369e875fbe153c1ca1495c149770acabd9839548",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\backup_drill.py": "289a655a9f226ae757b1c1d92269ce13119151e5f1b65696ace31807603a51c1",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\gitea_client.py": "77c1ce5fe3c3581c51f6b31a0f0278b0cdf83f85e5d164fab9f39618c84fcc38",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\git_service.py": "55871785d6a4d9eaf32c2caf690e66e61b1a7e0ef9aa731c350104913773d10f",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\merge_queue.py": "4a3c39eed0a09091fcd33a3d5fd047b760b08ec76e2b1e11846f2d96e43d6755",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\native_candidates.py": "a041e0debb42b2df3859205416409c37e15c644bdcc33895998bf70c7e63db2b",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\native_check_inputs.py": "a3880f7480b1b98234a5d022cc77d4ca173de9c09dc898fa27558a1e92575f06",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\native_check_runner.py": "93a933d4cced3d1c34d991f3814119945ff6b448a2f106e097d8790f7ed98f8f",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\native_cli.py": "e7db40a12ca5b18d753a182f7d8a853c76d8f96bb9c3893a27bd842049a9613a",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\native_evidence.py": "c0497cae5a43cc653b2135dcc99cda3bbd0282b6c9b50066de9759c12f24be1d",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\native_release.py": "2ca0a797a44d01fe6852b4c2b0089ecaa5cbcbe5e36dea98111eeb4cae51903b",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\native_store.py": "bee1c2af572fe3f891c77ad9dc46896511780f0123649c40dab25077548193bf",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\native_workspace.py": "401dcb5e0fe2ab1a8b8e888457044b4f622a1cbf39346f1a0dddc48ab9b9af66",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\native_workspace_cli.py": "1bc61a3165c58ac918af8a0874fc8c85db7ee6cb8946f2e95ddbeb088f4038fa",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\policy.py": "2e42b969ac54e88211757c74a9c4927205b78fe5f8419d2fc3d52a6c7bf72b7b",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_admin_paths.py": "f86c67db99ae0e41655d343f462eb2d031c0476e8f9c7f59d28a7455a46bac1c",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_backup.py": "bbeaff35ef999562aab3be91bcd4732a48be39b022ad1fbea59ad14c5bfab1ea",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_backup_drill.py": "22307a8f6f7dff28df1f625b1ad9e837b5c9070b22758c11fefaa7f82f38803b",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_gitea_client.py": "a629148331a00f263c803d6e9b27dceaca5c44d8bb6f91a140a0217281764f5f",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_git_service.py": "04f4dcc1aa7004ba2f5056cdef7b99105c965712e85ac7ff168fcd0553cc2dd6",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_git_service_repo_root.py": "1b4d13586518f2f84a0379f1be01333ee41677a1df7f696880b466a297dc8bbd",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_import_reservation.py": "3f9d5a4b404420fc8b657457d8e036eded4a19e56f7f369e27cebac432433258",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_import_source.py": "a6bc613c0048f6fb040d99989090649418e57bcd75ff9a3ccde67927012eb1f6",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_merge_queue.py": "cf8341aa3541891231832c74fae13d2ce89317012ad171b573ff7d039cdd0ba8",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_native_check_inputs.py": "d5d6eee1ebe6b840511e20dcb281a6d99c02409a38c832067d10e5005bf4856b",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_native_check_runner.py": "059bf81e8a08ba1d43b2f6395e439f4c462938b9366eff94a8f9fb89e0760da5",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_native_evidence.py": "054ede06d298edcb71488a76879afb12bc67d4938d731cf7daa77f523d71c304",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_native_release.py": "dd22e2ef946264ae23a7ced27c0b2205911f1a8237ca86d0cf75705aaace531c",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_native_store.py": "cb7df0539fc42cd5cb2dc0bcb31f681994ace28041c782f32a5b7a894446a743",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_native_workspace.py": "4a7dc475dfc4ac98b88b36c2b94587cbdcdeb5b7778ef0cfec4e0adec52105b8",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_policy.py": "6626dba6631c25c8fd3dca54e19a08a5c14f7bb079e32fe758989c8ac36f9769",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\verify_native_processes.py": "f5f03eaef371c7d007b4c88003e16a75a20c43bfb9938a30f71614a91d449120",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\conftest.py": "c37dc8303d58efd8fb4302254c4fcfd88ea729255fba2af4b5453129d8654e37",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_worker.py": "06f5559778dd628376aedcf41f6dd47efde38536f220486b7b0daf7cb4be1320",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_workflow.py": "63ae67641dcfd156c267afa7f1188c7a54a53cea908f10a5b60ef541a9426029",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\test_native_worker_intake.py": "c63b7292a9adc374a63da5d7eb94bc189c13e0e349daa0aa22ad481168318f9f",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\test_native_workflow.py": "0379883c2f3a2a78d18fee36ae237404e8409cd7cf89565609703dc4eafdaf5c",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\access_control.py": "4d1f5911bdf4e33aca95b6d73a166687202d0d36553c3d3e4d8082d4473b7ffd",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\api.py": "e9cf3ea7ddf6041ff2b462dfa2ba0d341827e34b7600cac846a4d0dc2f09e8c7",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\conftest.py": "ff22f32a23f09e1473e85f1b6132d311835e6b80c59bca26688edb1494901258",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\demo.py": "31f66dd2bd55a0024bd4aedf096da24b42cb70f999629d481582191b3405b122",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\docx_export.py": "bc024a44e347e28c5574a9d90d3a9fc97e29b82f0c59c7745c0bd63e7a196fee",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\duobao_bridge.py": "221819b17a40881369a8e4fbc1c699981168f9fa3a33794cbfb72c78307e1fa7",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\gateway.py": "7fb68bcd8d73e7e1377a4a69892f709eef39808bbacb332094ea4c0e4af99522",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\gitea_bridge.py": "3137ec96b60b572aabba6cdee214bbc6f1da0976e77f6f359e0ab00b3fb6a4e3",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\identity.py": "c5d8804c605ef4e7f7c90d0d50c0923dc94b95d0836de0f52abe4a092c91b311",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\main.py": "d8f211eb6dd27a126a59bf78489eef06a68f7b454ec4ab2b8a243a305ba76b14",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\markdown_images.py": "20c6b19d4c24205621fe400874c3b1f060040c757ba915c2ba3cf35656af245f",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\markdown_render.py": "80b220e1e570d0d0f7a7b0381d2fe5ece0db60e311288887c183896794fd8dd0",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\native_api.py": "ee387cbf28890d1a5a85025744e6323daf98f9e2ee3a66713bbbb4ebb5a78184",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\pdf_export.py": "21b936bcde60ba7e34b49cee49edbb567782774369fba37fa9597597f6394a62",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\schemas.py": "f031dbf76ced7666e77a8dea5c43ebd25c5e9450d6a8877005ea8fe04420d30e",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_acceptance_smoke.py": "af815d85dc087c5cfda030f7c9119ee85b3a42d88414e054460d742e3100b762",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_access_control.py": "dd8b5e93a072ffc9126b2d7ce58999d8ff671d4972c760ce40ca4df06e84abd4",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_acl_matrix.py": "5f92e2b298826eee9a45e338d655ec2049708c0aa0a28d9aa57498a44606b98e",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api.py": "d46fb014e724ef163b05970c5ee1dac819f22367916db7b6ea39e27f27841c16",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_auth_mode.py": "141b01aba6eb8179077cfa19ef4df495c64f88c7e598ed849f83963386c98d9a",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_board.py": "1f154a1faf3a5c1a29d3d86857904e36d66bacc77d0a04d4253f1e31fa268ddc",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_comments.py": "cdaf28b64d7d38611fc06e2a91fc753a1a89d4d85a49cb278f2b0594c027293c",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_doc_issues.py": "98642c8cf391808e63e1e7cd2947bb400a5dde2ac5c889d46f7742db8c83b498",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_export.py": "b8ad17fbf71b53098a076ab9c62c646d2f7972121f5d5e927fbf464db5eb5082",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_field_permissions.py": "ebce6b3f9a4e151bd265ad3fa21c17f94120ee3654ddb11549d123025eb3f62b",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_gateway.py": "b4ea4125e23bf0c64278be68f2f2acd13cdd13cf8ddbf932b35915848dd11539",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_gitea.py": "e19c46de601c92fcd1aa21b68149988a12263b918d0986553b0158834b287d6e",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_git_repo.py": "cba3f17a9f518620a39f58ce8f6bd907ca942c55355a0dcb6c07ff9d8af0440f",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_import_jobs.py": "81ebbc88e4326263d7195d8417dbf3b7fcab3a2aa320e31c9dff918e77a4184f",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_invites.py": "ad89c5a282eab075500bf50f68b545528959f985b8e8595508dc26ccb69275a4",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_links.py": "b7b4cf28dbae5b2c2cfe920434ac7262b398573dd4b21ef2c3ff15c419cbed15",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_merge.py": "8ddbab954a711648f9aba5897af4b9f0e4876e22150449f9459fe0cac3ee7ea6",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_metrics.py": "d934bce45c707954c61978c84f79c747a3d529a112e2e979f43b97dffca5fda7",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_patch.py": "4e998e45b3221e542a7daa7075bd5ae0355c96931732d67eb0e6e82b676a2c1e",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_ready.py": "4b9f52303c25140f01403ff262ac58796434e476db4cac9baf02a4934612b829",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_repo_links.py": "07c7156ad24b8dd6d75fff19b561f058ca49d9e12d2b9c110d4e0fe79a6d0f45",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_requirement_export.py": "cfa64271af7aeaf4d48a47777db86c7d70f2b2d8de0b3391cfbd5c5c72762021",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_roles.py": "08c3ec1bf212a150b81c14322b6413d1b339fac8cc422f99024b8dab7ce3d5cc",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_search.py": "126420e66e8e8eb5ca7a921ce0a2bf960e9c90ba1cf90a3586e159a33d71b144",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_session.py": "866d4c0f5e4dfb4f3503e433cc38c07ec5969bdbceaf81ec2084454a9ecb2eb3",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_sharing.py": "8282c4062693a8c6ca60844ecc5217d1aa0c6a79d25706e24f62cfa159a516a5",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_tenant_mutations.py": "bf9404bbc51ed91962a5d7a61b165b7b24ebeb03e6461c6531fb9df7101e54bb",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_versions.py": "5f30a7113f28f54777e4fb566baa5ca04316d8d6b0e496d0d2248aed46e2940b",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_api_webhooks.py": "a8fe00b40e75b5100933fb4f37ff9f60a61b4771c6958571e40f7ac22f8db092",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_cli.py": "343c75e787033e166efe96496f4e5900da03b40e833503cff3cb8d0838941419",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_e2e.py": "0fadd6f861fa02b11b239ada53f197e74eef585a2e16ce4d5f9f2e99689c0e77",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_event_retention.py": "e789227eda54faeb06b26cb27485a01e86c533fbad77f4b8b7bc0c186e90d38c",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_external_links.py": "843553fe3dc17c14774e411d3028d59bdb9dd12ab502b525c26e042f1ccc94a6",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_gateway.py": "a4640d6cb6216e80d64eb602baac7358bc16198a4ea392956dc7a41172f00d48",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_identity_adapters.py": "e6f6d603d7eb40b3276663b5660d898ceb17a8c144e3fc2fdd331b63b36a0b31",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_issue_ancestor_acl.py": "961428b676d963f01e8440a9ccb8f4d793d68346ba370c7b4dec460870bdd62b",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_issue_comments.py": "ceffe2b76c2f3e02c0d9f25e96ab7c39fa225c3510302174b4bc706d0de0af2f",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_main_app.py": "989809fd05d49ec71d2acc50bfe899913e82669b912d171f3f98a6e1e79b4c1a",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_markdown_render.py": "5cf5021bb879aaaa5f66dddc02650c4a173613f6faa8e6490a666557a85e3447",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_merge_queue_api.py": "dc68588e0e250300c81c393f3d23a2e88e2055aefead4a9e09c18c3be11c1b50",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_native_api.py": "4a85726e458399def6555fb94e5259815b37ca7f21eea2fc11f721037083ce1e",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_native_platform.py": "b40695e79772b9296a35178fbc0898772893b61239d89fbae7b22c56b7f24abc",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_scope_idempotency.py": "2bc83d89b8469e5d655e886740cc3fd1b8c2c9159ceac943bea09574d1807d59",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_share_expiry.py": "5728ab899daff8bb3fa048bbef5d97790bb553ad7c4ffa0fae763730610fd347",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_tenant_mutations.py": "9aa7f63fd88d7aca9a956697ebac8c32ac6334a0b9604f521530d18869d81937",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_tianshu_bridge.py": "041dd22c345f3c924f96d6ceb99ed7d6a7dc6c22fbea146bb5e8355915730909",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_tianxuan_boundary.py": "bb561f11373ae1580ed939ded7defb6813e72bbaa4ebe7810524b39dbf25dafe",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_tianxuan_concurrency.py": "7e42d2244562ab7d676b27546a7ef2248846f6a1b4ea5d8543d81efd01af06f1",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_tianxuan_core.py": "76f8390e766f5454444766859b2aa257351d9a757bdcd6ab2aa99e82e7c562a6",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_tool_receipts.py": "d572b79384478674fef4afb9cf92835dd2c258119ebea2ee455557ea5c0979d7",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_webhook_signature.py": "3e1decb8da4a3838fe4689ea0af5872d63ebb3029a3d8792496fd5be024d1e27",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\test_ws.py": "a8a342a45863ab68248ab9d1925d1567056365b293361f9d58a58486de612b8f",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\tianshu_bridge.py": "d2b6023adcbf47c1fd471fb89ec0007c735d792d8a1b8228de33c45432142da8",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\tianxuan_cli.py": "9fc9b4495c3bb6a3ec10247e642c272a4bcef4fa0bd12f3a294820bad8a17074",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\tianxuan_core.py": "5bdb687f1904ea5d27e5ea84b0bd6526b1179ea90ea2f9b6b2ac6922d831153d",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\webhooks.py": "ab92309455037d63686260912ec73be6a31140bbaa212988c752c1139a454115",
+    "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\server\\wenqu_bridge.py": "572e23e9b7c236acbcbf4434b84e36a6cc279019fda12a157ea44ef6961f27c1"
+  },
+  "source_stable": true,
+  "findings": [
+    {
+      "id": "WR3",
+      "priority": "P2",
+      "file": "customizations/components/tianxuan/duobao/test_native_workspace.py",
+      "line": 81,
+      "title": "Replacement regression fixture fails before reaching ownership guard",
+      "observed": "Focused test reproducibly returns exit1; UTF8 rerun identifies kind=workspace stage.rename(original) raising WinError5 before replacement and helper call. New regression therefore cannot consistently validate workspace guard on this Windows host. First run output decoder also failed; neither run is counted as passing.",
+      "recommendation": "Make adversarial fixture establish its intended replacement deterministically despite bounded transient child-handle contention, while keeping asserted production guard and original owner unchanged; rerun exact-source focused validation.",
+      "scope": "Test fixture failure; does not demonstrate a production ownership bypass or identify historical handle owner."
+    }
+  ],
+  "closed_findings": {
+    "WR1": {
+      "published_foreign": false,
+      "original_created_stage_retained": true,
+      "foreign_stage_retained": true
+    },
+    "WR2": {
+      "owned_stage_deleted": false,
+      "notes": [
+        "Prepared stage cleanup incomplete: Prepared stage identity or ancestry changed"
+      ],
+      "interpretation": "Same original WR2 probe with creation-time ancestry owner signature."
+    }
+  },
+  "validation": {
+    "adversarial": {
+      "replacement_rejection": "Prepared stage identity or ancestry changed",
+      "replacement_before_helper_snapshot": {
+        "published_foreign": false,
+        "original_created_stage_retained": true,
+        "foreign_stage_retained": true
+      },
+      "cleanup_changed_normal_ancestor": {
+        "owned_stage_deleted": false,
+        "notes": [
+          "Prepared stage cleanup incomplete: Prepared stage identity or ancestry changed"
+        ],
+        "interpretation": "Same original WR2 probe with creation-time ancestry owner signature."
+      },
+      "capacity": [
+        {
+          "budget": "entries",
+          "error": "Prepared tree entry limit exceeded",
+          "rename_calls": 0
+        },
+        {
+          "budget": "files",
+          "error": "Prepared tree size limit exceeded",
+          "rename_calls": 0
+        },
+        {
+          "budget": "per_file",
+          "error": "Prepared tree size limit exceeded",
+          "rename_calls": 0
+        },
+        {
+          "budget": "total",
+          "error": "Prepared tree size limit exceeded",
+          "rename_calls": 0
+        }
+      ],
+      "destination_os_race": {
+        "error": {
+          "winerror": 183,
+          "type": "FileExistsError"
+        },
+        "empty_destination_preserved": true,
+        "source_preserved": true
+      },
+      "sources_stable": true
+    },
+    "focused": {
+      "command": [
+        "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "-q",
+        "customizations/components/tianxuan/duobao/test_native_workspace.py",
+        "customizations/components/tianxuan/duobao/test_native_check_inputs.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py",
+        "--basetemp",
+        "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-windows-rename-review2-probes\\pytest-utf8-temp"
+      ],
+      "exit_code": 1,
+      "stdout": "....s.s........................ [ 60%]\r\n....................                                                     [100%]\r\n================================== FAILURES ===================================\r\n_ WorkspaceTests.test_materializers_reject_replacement_before_helper_entry (kind='workspace') _\r\n\r\nself = <test_native_workspace.WorkspaceTests testMethod=test_materializers_reject_replacement_before_helper_entry>\r\n\r\n    def test_materializers_reject_replacement_before_helper_entry(self):\r\n        import native_check_inputs as ci\r\n        import native_workspace as nw\r\n    \r\n        for kind in (\"workspace\", \"check\"):\r\n            with self.subTest(kind=kind):\r\n                destination = self.root / (kind + \"-published\")\r\n                original = self.root / (kind + \"-created\")\r\n                stages = []\r\n    \r\n                def replace(stage, dest, limits, owner):\r\n                    stage.rename(original)\r\n                    stage.mkdir()\r\n                    (stage / \"foreign\").write_bytes(b\"foreign\")\r\n                    stages.append(stage)\r\n                    return _rename_prepared(stage, dest, limits, owner)\r\n    \r\n                module = nw if kind == \"workspace\" else ci\r\n                with patch.object(module, \"_rename_prepared\", replace):\r\n                    with self.assertRaisesRegex(NativeStoreError, \"identity or ancestry\") as error:\r\n                        if kind == \"workspace\":\r\n>                           self.ws.materialize(\"org\", self.selected, destination)\r\n\r\ncustomizations\\components\\tianxuan\\duobao\\test_native_workspace.py:91: \r\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\r\ncustomizations\\components\\tianxuan\\duobao\\native_workspace.py:317: in materialize\r\n    _rename_prepared(stage, destination, self.limits, owner)\r\ncustomizations\\components\\tianxuan\\duobao\\test_native_workspace.py:81: in replace\r\n    stage.rename(original)\r\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\r\n\r\n    def rename(self, target):\r\n        \"\"\"\r\n        Rename this path to the target path.\r\n    \r\n        The target path may be absolute or relative. Relative paths are\r\n        interpreted relative to the current working directory, *not* the\r\n        directory of the Path object.\r\n    \r\n        Returns the new Path instance pointing to the target path.\r\n        \"\"\"\r\n>       os.rename(self, target)\r\nE       PermissionError: [WinError 5] 拒绝访问。: 'D:\\\\GongGong\\\\data-collection\\\\receipts\\\\duobao-1382\\\\native-windows-rename-review2-probes\\\\tmpsqzzrho2\\\\.duobao-stage-3iuxclh9' -> 'D:\\\\GongGong\\\\data-collection\\\\receipts\\\\duobao-1382\\\\native-windows-rename-review2-probes\\\\tmpsqzzrho2\\\\workspace-created'\r\n\r\nD:\\GongGong\\project\\runtime\\python\\Lib\\pathlib.py:1363: PermissionError\r\n=========================== short test summary info ===========================\r\nSUBFAILED(kind='workspace') customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_materializers_reject_replacement_before_helper_entry\r\n1 failed, 49 passed, 2 skipped, 40 subtests passed in 23.80s\r\n",
+      "stderr": ""
+    },
+    "first_focused_failure": {
+      "command": [
+        "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "-q",
+        "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_native_workspace.py",
+        "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\duobao\\test_native_check_inputs.py",
+        "D:\\GongGong-work\\native-worker-intake-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\test_native_worker_intake.py",
+        "--basetemp",
+        "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-windows-rename-review2-probes\\pytest-temp"
+      ],
+      "exit_code": 1,
+      "stdout": null,
+      "stderr": ""
+    },
+    "unicode_and_static": {
+      "portable_exact_baseline_source": true,
+      "baseline_commit": "cefa69ea2ee415c0b65d88506c85582f626fc673",
+      "main_ref_limitation": "Local main stale and lacks native_workspace.py; original baseline HEAD used",
+      "current_probe": [
+        {
+          "prefix": "COM",
+          "codepoint": 185,
+          "rejected": true,
+          "expected_rejected": true
+        },
+        {
+          "prefix": "COM",
+          "codepoint": 178,
+          "rejected": true,
+          "expected_rejected": true
+        },
+        {
+          "prefix": "COM",
+          "codepoint": 179,
+          "rejected": true,
+          "expected_rejected": true
+        },
+        {
+          "prefix": "COM",
+          "codepoint": 40575,
+          "rejected": false,
+          "expected_rejected": false
+        },
+        {
+          "prefix": "COM",
+          "codepoint": 34383,
+          "rejected": false,
+          "expected_rejected": false
+        },
+        {
+          "prefix": "COM",
+          "codepoint": 40065,
+          "rejected": false,
+          "expected_rejected": false
+        },
+        {
+          "prefix": "LPT",
+          "codepoint": 185,
+          "rejected": true,
+          "expected_rejected": true
+        },
+        {
+          "prefix": "LPT",
+          "codepoint": 178,
+          "rejected": true,
+          "expected_rejected": true
+        },
+        {
+          "prefix": "LPT",
+          "codepoint": 179,
+          "rejected": true,
+          "expected_rejected": true
+        },
+        {
+          "prefix": "LPT",
+          "codepoint": 40575,
+          "rejected": false,
+          "expected_rejected": false
+        },
+        {
+          "prefix": "LPT",
+          "codepoint": 34383,
+          "rejected": false,
+          "expected_rejected": false
+        },
+        {
+          "prefix": "LPT",
+          "codepoint": 40065,
+          "rejected": false,
+          "expected_rejected": false
+        }
+      ],
+      "in_memory_negative_control": [
+        {
+          "prefix": "COM",
+          "codepoint": 185,
+          "rejected": false,
+          "expected_rejected": true
+        },
+        {
+          "prefix": "COM",
+          "codepoint": 178,
+          "rejected": false,
+          "expected_rejected": true
+        },
+        {
+          "prefix": "COM",
+          "codepoint": 179,
+          "rejected": false,
+          "expected_rejected": true
+        },
+        {
+          "prefix": "COM",
+          "codepoint": 40575,
+          "rejected": true,
+          "expected_rejected": false
+        },
+        {
+          "prefix": "COM",
+          "codepoint": 34383,
+          "rejected": true,
+          "expected_rejected": false
+        },
+        {
+          "prefix": "COM",
+          "codepoint": 40065,
+          "rejected": true,
+          "expected_rejected": false
+        },
+        {
+          "prefix": "LPT",
+          "codepoint": 185,
+          "rejected": false,
+          "expected_rejected": true
+        },
+        {
+          "prefix": "LPT",
+          "codepoint": 178,
+          "rejected": false,
+          "expected_rejected": true
+        },
+        {
+          "prefix": "LPT",
+          "codepoint": 179,
+          "rejected": false,
+          "expected_rejected": true
+        },
+        {
+          "prefix": "LPT",
+          "codepoint": 40575,
+          "rejected": true,
+          "expected_rejected": false
+        },
+        {
+          "prefix": "LPT",
+          "codepoint": 34383,
+          "rejected": true,
+          "expected_rejected": false
+        },
+        {
+          "prefix": "LPT",
+          "codepoint": 40065,
+          "rejected": true,
+          "expected_rejected": false
+        }
+      ],
+      "mutation_detection": "All 12 detect historical guard corruption without editing product",
+      "immutable_checks": {
+        "D:\\GongGong-work\\native-worker-intake-20261118\\data-collection\\native-worker-intake-repaired-1461.json": true,
+        "D:\\GongGong-work\\native-worker-intake-20261118\\data-collection\\native-worker-linux-repaired-1461.json": true,
+        "D:\\GongGong-work\\native-worker-intake-20261118\\data-collection\\native-worker-boundary-1461.json": true,
+        "D:\\GongGong-work\\native-worker-intake-20261118\\data-collection\\native-worker-repair-schema-validation-1461.json": true,
+        "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-windows-rename-review.json": true
+      },
+      "checks": [
+        {
+          "command": [
+            "py",
+            "-B",
+            "-X",
+            "utf8",
+            "-m",
+            "ruff",
+            "check",
+            "--no-cache",
+            "--no-fix",
+            "customizations/components/tianxuan/duobao/native_workspace.py",
+            "customizations/components/tianxuan/duobao/native_check_inputs.py",
+            "customizations/components/tianxuan/duobao/test_native_workspace.py"
+          ],
+          "exit_code": 0,
+          "stdout": "All checks passed!\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "py",
+            "-B",
+            "-X",
+            "utf8",
+            "-m",
+            "ruff",
+            "format",
+            "--no-cache",
+            "--check",
+            "customizations/components/tianxuan/duobao/native_workspace.py",
+            "customizations/components/tianxuan/duobao/native_check_inputs.py",
+            "customizations/components/tianxuan/duobao/test_native_workspace.py"
+          ],
+          "exit_code": 0,
+          "stdout": "3 files already formatted\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "py",
+            "-B",
+            "-X",
+            "utf8",
+            "-m",
+            "mypy",
+            "--cache-dir",
+            "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-windows-rename-review2-probes\\mypy-cache",
+            "customizations/components/tianxuan/duobao/native_workspace.py",
+            "customizations/components/tianxuan/duobao/native_check_inputs.py",
+            "customizations/components/tianxuan/duobao/test_native_workspace.py"
+          ],
+          "exit_code": 0,
+          "stdout": "Success: no issues found in 3 source files\n",
+          "stderr": ""
+        }
+      ]
+    },
+    "original_nonascii_codepoints_unchanged": {
+      "customizations/components/tianxuan/duobao/native_workspace.py": true,
+      "customizations/components/tianxuan/duobao/test_native_workspace.py": true
+    }
+  },
+  "confirmed": [
+    "Production captures original stage and all ancestor identities immediately after mkdtemp; both materializers pass owner to initial publish and cleanup. Every Windows retry verifies owner before fingerprint and before rename.",
+    "Original independent WR1 pre-helper replacement now rejects; original and foreign trees retained. Original WR2 same-owned-root moved under changed parent retained with cleanup note.",
+    "Capacity entry/files/per-file/total fences reject before any rename; OS destination race preserves empty destination and source with WinError183.",
+    "Focused tests execute real Windows CreateFile child-handle release and held-budget behavior, permanent denials, original exception identity, changed contents, replacement, junction and changed ancestors; only workspace adversarial setup fails.",
+    "Fingerprint bounded by existing limits plus manifest/root allowances; at most four rename attempts and 20/40/80ms sleeps. Deadline250ms bounds retry admission, not filesystem I/O duration. No overwrite or copy fallback introduced.",
+    "portable() exact baseline HEAD source and all preexisting non-ASCII codepoints restored; 12 independent numeric probes pass and all 12 detect in-memory superscript-to-CJK corruption.",
+    "Accepted worker06f555 and accessible bound historical evidence hashes remain unchanged."
+  ],
+  "historical_cause": "UNKNOWN. Actual controlled handle tests demonstrate one mechanism; current fixture WinError5 and historical failures do not identify an antivirus/filter/ACL/handle holder.",
+  "limits": [
+    "Trusted single-writer adapter, not atomic hostile-filesystem sandbox.",
+    "Local main stale and lacks native_workspace.py; original merge baseline HEAD cefa69ea2ee415c0b65d88506c85582f626fc673 used for byte comparison.",
+    "Parent retains integration1466/Linux/CI/main and business acceptance.",
+    "Old ownership-repair report binds corrupted superscript candidate; preserved as historical evidence, not accepted-current evidence."
+  ],
+  "method_learning": {
+    "scope": "editor-dependency-handoff",
+    "recalled": [
+      "await-terminal-observers",
+      "bind-consumer-release",
+      "reconstruct-worker-outcomes",
+      "review-context-and-source-evidence"
+    ],
+    "application": "Current exact-source hashes and actual terminal failures bound; prior successful receipts not substituted.",
+    "feedback": "Test replacement fixture itself uses raw rename and can fail before intended fault injection; numeric independent codepoints defeat common encoding corruption of implementation and expected strings.",
+    "handoff": "Parent may append learning under wider authorization; no shared stream writes."
+  },
+  "cleanup": "TemporaryDirectory independent probes removed their own fixtures. Failed focused test temp trees and mypy cache retained under new review2-probes pending contention diagnosis and source revalidation; not declared cleaned. No old basetemp reused and no blocked, historical, other-agent paths touched.",
+  "evidence_sha256": {
+    "extra.json": "c53c0dec2ff692642750bac03e18b93a783dee3196c8eaa3a3af8268883ce661",
+    "focused-utf8.json": "4526ac7ed27d6e0f501751d2c08335d0ce5fb47cd78b6ff2539c6c07a42b8ae6",
+    "focused-utf8.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "focused-utf8.stdout.bin": "41df740306edce3fa8867653bb8238551908e7e71663a89dcc5bebdc1b0f4509",
+    "results.json": "baad1f7fd7cf4643faa67677554808d7e96dd018256b934a0fab8ec3cf9d666d",
+    "run_probes.py": "d14fd090dbf4d59171da38f4365572d31ae5da41c3c0e731f15553d9f26f9686"
+  },
+  "format": "UTF-8 without BOM; LF",
+  "private_original_sha256": "fab9f592b90bb21f275274aec9398f5dc1a9c92cb49b4441d2f46864885352ea",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461"
+}

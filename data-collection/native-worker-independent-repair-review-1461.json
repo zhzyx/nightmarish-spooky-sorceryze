@@ -1,0 +1,117 @@
+{
+  "issue": 1461,
+  "decision": "approve_repair_delta_only",
+  "overall_acceptance": false,
+  "reviewer": "independent native worker repair reviewer",
+  "source_root": "D:\\GongGong-work\\native-worker-intake-20261118",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "06f5559778dd628376aedcf41f6dd47efde38536f220486b7b0daf7cb4be1320",
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py": "c63b7292a9adc374a63da5d7eb94bc189c13e0e349daa0aa22ad481168318f9f",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "0379883c2f3a2a78d18fee36ae237404e8409cd7cf89565609703dc4eafdaf5c",
+    "customizations/components/tianxuan/sinan-workorders/README.md": "edae9e4eabe1aa886c6c671f7697521fdd196764f4b37550253e9da5f404e63e",
+    "customizations/components/tianxuan/duobao/native_store.py": "bee1c2af572fe3f891c77ad9dc46896511780f0123649c40dab25077548193bf",
+    "customizations/components/tianxuan/duobao/native_candidates.py": "a041e0debb42b2df3859205416409c37e15c644bdcc33895998bf70c7e63db2b",
+    "customizations/components/tianxuan/duobao/native_workspace.py": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+    "tools/ainative/owned_process.py": "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "63ae67641dcfd156c267afa7f1188c7a54a53cea908f10a5b60ef541a9426029",
+    "tools/native_host_inputs.json": "3a4f05fd7c378d12211e06c7b1f5c18a6f089bfd91f95e343561ae118e63e3e1",
+    "design-docs/native-worker-intake-20261118.md": "46dfbf8ff6c07932f5794267cfd0c385126cdc3ec1038765d04c0aadc28165f2"
+  },
+  "scope": "Exact R1/R2/R3 repair delta accepted; Windows materialization remains blocked and original parent/business acceptance is not granted.",
+  "repair_findings": [
+    {
+      "id": "R1",
+      "status": "resolved",
+      "evidence": "Original late-collect cancellation probe passed. _close_output samples event inside BEGIN IMMEDIATE after collection/encoding and persists cancelled with no changes. Four separate interpreter recovery for cancelled state passed. Additional after-commit event probe passed: later event cannot revoke persisted produced decision."
+    },
+    {
+      "id": "R2",
+      "status": "resolved",
+      "evidence": "_history validates physical and closed task/digest/schema, exit and transcript pairing on every reconcile and physical observation. Original physical corruption probe and new missing-physical/null JSON cases passed. Physical closure does not authorize content access; read/receive ACL checks remain in contract and terminal commit."
+    },
+    {
+      "id": "R3",
+      "status": "resolved",
+      "evidence": "Failed terminals reconstruct state plus actual physical exit/reasons/transcript and _terminal exact-compares persisted JSON. Real exit 7 changed to 99 and deleted output plus substituted failed terminal reject. Additional altered reasons/transcript probes pass. Actual exit 7 before output spool commit reconstructs correctly without relaunch; this valid failure recovery differs from forged failure substitution after successful physical exit."
+    }
+  ],
+  "remaining_findings": [
+    {
+      "id": "W1",
+      "priority": "P2",
+      "status": "reproduced_unresolved",
+      "file": "customizations/components/tianxuan/duobao/native_workspace.py",
+      "line": 201,
+      "title": "Windows materialization rename intermittently fails with WinError 5",
+      "evidence": "test_closed_output_recovers_without_producer[receive] failed before producer launch at stage.rename(destination); full traceback and fixture retained in results.json and tmp/test_closed_output_recovers_wi0. No retry performed.",
+      "requested_action": "Parent Kuafu routing: diagnose Windows stage rename failure, retain original and current reproduction, repair source under authorized owner and revalidate original affected receive-crash and no-change ACL scenarios. Existing failure is not excused by Linux or other passing runs."
+    }
+  ],
+  "independent_validation": {
+    "original_probes_and_worker_suite": {
+      "passed": 33,
+      "failed": 1,
+      "skipped": 0
+    },
+    "seconds": 25.659196799999336,
+    "pytest_exit_code": 1,
+    "additional_boundary_probes": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    "boundary_seconds": 2.4033155999932205,
+    "note": "Runner process exits 0 because it stores pytest result rather than sys.exit(code); authoritative test exit_code in results.json is 1. Original private probes all passed, selected dependency ACL both changed and no-change passed this time, original Windows failure remains open. Initial default py lacked pytest; used existing tx-venv interpreter without installation."
+  },
+  "source_and_dependency_binding": {
+    "author_hashes_match": true,
+    "linux_all_reported_source_hashes_match": true,
+    "accepted_dependency_overlay_unchanged": true,
+    "original_author_receipts_unchanged": true,
+    "original_review_report_preserved": "4470d1d2e452095fb33f0618efb94918e6ecf50e5bac23a217d8af4a3ef97f20",
+    "original_probe_preserved": "ce68489580b2a4577bfb7490bb9188a3ef22190d35b0ff5000a2dfc953331876"
+  },
+  "review_observations": [
+    "Producer and collection are outside worker write transactions. Cancellation read is an explicit immutable decision point; subsequent cancellation does not retroactively change that outcome.",
+    "Physical process closure is recorded after owned helper exits and transcript flush/digest. Authentic failed physical closure can recover before output spool commit; successful physical closure alone stays unknown. Current read/receive authorization remains required for reconcile; coordinator-only physical boolean grants no candidate content.",
+    "Four Popen interpreters are launched before communication/wait in each produced/no-change/exit7/cancel mode, sharing the same SQLite DB; bounded wait and finally kill/wait are present. There is no start barrier, so not every SQLite transaction is proven to overlap. This supports recovery consistency, not throughput.",
+    "Child interpreters replace producer launch with assertion; parent restart returns durable terminal. Creation of the Popen list precedes try/finally, so process creation failure partway through would lack the test cleanup guard; this is a test harness robustness limitation, not observed here.",
+    "Trusted task digest/tenant/source provenance, current selected/read plus writes/receive ACL, immutable selected revisions, write scope, limits and no-op restart behavior are retained. Accepted dependency bytes are unchanged. No independent exact-size or peak-memory benchmark.",
+    "Corruption injections modify trusted host SQLite directly, testing integrity detection; these are not public producer exploits.",
+    "Source metadata diff adds only test_native_worker_intake.py to host inventory. Existing boundary receipt reports actual SCons dry-run graph of 9378 sources, no overlap, 3 inventory tests, 14 cache tests and 9 artifact tests with 1 skip. Reviewed as parent evidence, not independently rerun.",
+    "Linux repaired receipt exact source hashes match and records 49.880196 seconds for selected Python regressions with no runtime Git/network. actual_node tests are explicitly deselected there. This is test duration, not whole-task efficiency or model/token throughput. Full-payload timeout and narrowed payload behavior remain parent transport evidence."
+  ],
+  "receipts_sha256": {
+    "data-collection\\native-worker-intake-repaired-1461.json": "505657b17850f3f3e238932463336bae32c6409b76ae5bd83de3b04f83cce9d4",
+    "data-collection\\native-worker-linux-repaired-1461.json": "dbd4476a552da5404f066cb03eedc258e914061c555ff6ec65617e750c19bb0d",
+    "data-collection\\native-worker-boundary-1461.json": "c04d3777d5fea61ff2282aa4ac3e3c4be788053bcc7680941cc2fd4a68e47ef7",
+    "data-collection\\native-worker-repair-schema-validation-1461.json": "184f51aa5163743144db79078a92d1125ace2acb1bab0861f1425d17457cd496",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-worker-review2-probes\\results.json": "9449ddc03ae3047e68900eb960a5d0a96cc2d97ba1b9b4d666b0d1eaa35d0a2f",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-worker-review2-probes\\boundary-results.json": "97ee4d7172a3416a6a7ed0d02f8ecb7b2b2ea363eee4d1c7b170fbbed5625e3c",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-worker-review2-probes\\test_review2.py": "ce68489580b2a4577bfb7490bb9188a3ef22190d35b0ff5000a2dfc953331876",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-worker-review2-probes\\test_boundaries.py": "d66e87140f52385a0bf5f0ac889931ad021459787ca731a19dafb509a911d035",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-worker-review2-probes\\run_review.py": "728ef8381b448eb5d28de688bbb1de2956d274e89f86e1b26963c6b0523a0f76",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-worker-review2-probes\\run_boundaries.py": "a83821fa0bae8837ec67a2abded91c3ce2a79d8d558b615f53311f3b16cdd732"
+  },
+  "unresolved_acceptance": [
+    "Windows W1 remains unresolved; local full-suite pass cannot be claimed.",
+    "Coordinator process_closed integration belongs to #1466 and remains unwired in this reviewed source; no occupancy-release acceptance.",
+    "Composite production acceptance, real model/product workload, main delivery and original parent acceptance remain parent responsibilities. No token,250-way throughput or business completion claim."
+  ],
+  "method_learning": {
+    "scope": "editor-dependency-handoff",
+    "recalled": [
+      "await-terminal-observers",
+      "bind-consumer-release",
+      "reconstruct-worker-outcomes",
+      "review-context-and-source-evidence"
+    ],
+    "applied": "Pinned exact source and accepted overlay, reran original failures, distinguished physical closure from logical terminal and retained recurring Windows failure. Author verified-method status does not replace independent acceptance.",
+    "feedback": "Parent may append this exact review outcome within its authorized method-learning write scope; this reviewer is restricted to review2 outputs."
+  },
+  "cleanup": "No product edits, install, models, commits, branches, worktrees, deployment or additional agents. Test processes completed and four-interpreter tests execute bounded wait/finally. Review scripts/results and private SQLite/materialization fixtures retained as diagnostic evidence including W1; they have not been deleted and are not production configuration.",
+  "format": "UTF-8 without BOM, LF",
+  "private_original_sha256": "d24af6d781d5e0b0a90a2e923c3b53c39c5a3989931bb2a06e7a85cea4592eee",
+  "request_id": "native-worker-intake-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461"
+}

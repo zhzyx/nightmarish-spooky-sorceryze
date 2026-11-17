@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "native-worker-intake-validation-1461",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-worker-intake-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-17T19:04:21.708939+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "request_id": "native-worker-intake-20261118",
+    "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461",
+    "evidence": {
+      "path": "data-collection/native-worker-intake-1461.json",
+      "sha256": "0290c934ba8e8b71fd23745ef3e1e645b4b8371f28ee89db10ecc974ed06adf7"
+    },
+    "state": "local_worker_intake_verified",
+    "joint_product_accepted": false
+  },
+  "evidence_refs": [
+    "dispatch-586573e1e439460298acc70fa5e13540"
+  ],
+  "sha256": "40cc8f074a775e6f11170724ba0ccbe9ce02797f6279c1e9603e53a571455776"
+}
