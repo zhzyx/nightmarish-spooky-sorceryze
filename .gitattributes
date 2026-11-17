@@ -57,6 +57,10 @@ data-collection/maliang-gpt-modeling-20261108-host-snapshot.json -text whitespac
 
 # Preserve the exact #785 validation bytes referenced by immutable method events.
 data-collection/parallel-worker-receipts-785.json -text whitespace=cr-at-eol
+# Preserve the exact #1453 receipt referenced by immutable intake and learning events.
+data-collection/git-test-portability-1453.json -text whitespace=cr-at-eol
+# Preserve the concurrent #1451 intake receipt already bound to validation events.
+data-collection/native-candidate-intake-1451.json -text whitespace=cr-at-eol
 # Preserve the exact #840 validation bytes referenced by immutable method events.
 data-collection/provider-independence-840.json -text whitespace=cr-at-eol
 # Preserve the original #776 adapter handoff and validation bytes.

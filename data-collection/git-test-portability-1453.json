@@ -1,0 +1,235 @@
+{
+  "request_id": "native-git-test-portability-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1453",
+  "occurred_at": "2026-11-17T17:43:25.632908+00:00",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "cwd": ". (isolated task worktree on D:; system temporary fixtures on C:)",
+  "base_sha": "4c45067171c8201eb0386cb99472ae49cdd73917",
+  "source_sha256": {
+    "customizations/components/tianxuan/duobao/test_admin_paths.py": "27a3a97a28593b20abb8ef5f8c83f981914fac50ea53daeb73623d2fc52983cb",
+    "customizations/components/tianxuan/duobao/test_git_service_repo_root.py": "34981062543c6c359702f5ce236f9e42a76f0eca88aa6aba726dc00d6793d2be",
+    "customizations/components/tianxuan/duobao/git_service.py": "55871785d6a4d9eaf32c2caf690e66e61b1a7e0ef9aa731c350104913773d10f"
+  },
+  "checks": [
+    {
+      "argv": [
+        "D:/GongGong-work/tx-venv/Scripts/python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "customizations/components/tianxuan/duobao/test_admin_paths.py",
+        "customizations/components/tianxuan/duobao/test_git_service_repo_root.py",
+        "-q",
+        "-ra",
+        "-p",
+        "no:cacheprovider"
+      ],
+      "exit_code": 0,
+      "seconds": 8.327999999994063,
+      "output": "...s......ss.                     [100%]\n=========================== short test summary info ===========================\nSKIPPED [1] customizations\\components\\tianxuan\\duobao\\test_admin_paths.py:30: symlink capability unavailable: [WinError 1314] 客户端没有所需的特权。: 'C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\tmphqts5vsb\\\\worktree\\\\.git' -> 'C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\tmphqts5vsb\\\\worktree\\\\alias'\nSKIPPED [1] customizations\\components\\tianxuan\\duobao\\test_admin_paths.py:93: symlink capability unavailable: [WinError 1314] 客户端没有所需的特权。: 'C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\tmp37jg8z6a\\\\worktree\\\\.git\\\\config' -> 'C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\tmp37jg8z6a\\\\worktree\\\\alias'\nSKIPPED [1] customizations\\components\\tianxuan\\duobao\\test_admin_paths.py:93: symlink capability unavailable: [WinError 1314] 客户端没有所需的特权。: 'C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\tmpj2b69x_0\\\\worktree\\\\.git' -> 'C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\tmpj2b69x_0\\\\worktree\\\\alias'\nSKIPPED [1] customizations\\components\\tianxuan\\duobao\\test_git_service_repo_root.py:174: Windows forbids CR/LF in path components\nSKIPPED [1] customizations\\components\\tianxuan\\duobao\\test_git_service_repo_root.py:151: directory symlink capability unavailable: [WinError 1314] 客户端没有所需的特权。: 'C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\duobao-root-test-48f4xjec\\\\工作 tree' -> 'C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\duobao-root-test-48f4xjec\\\\alias-0'\n10 passed, 5 skipped, 37 subtests passed in 7.95s\n"
+    },
+    {
+      "argv": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "check",
+        "--no-fix",
+        "customizations/components/tianxuan/duobao/test_admin_paths.py",
+        "customizations/components/tianxuan/duobao/test_git_service_repo_root.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.14100000000325963,
+      "output": "All checks passed!\n"
+    },
+    {
+      "argv": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "customizations/components/tianxuan/duobao/test_admin_paths.py",
+        "customizations/components/tianxuan/duobao/test_git_service_repo_root.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.125,
+      "output": "2 files already formatted\n"
+    },
+    {
+      "argv": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "mypy",
+        "--follow-imports=silent",
+        "customizations/components/tianxuan/duobao/test_admin_paths.py",
+        "customizations/components/tianxuan/duobao/test_git_service_repo_root.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.9370000000053551,
+      "output": "Success: no issues found in 2 source files\n"
+    }
+  ],
+  "limits": [
+    "Windows symlink assertions skipped only on actual unsupported/privilege result; not Windows symlink security coverage.",
+    "Linux and independent review delegated to parent; no broad suite, model call, commit, push or deployment.",
+    "Parent #1444 and Kuafu #1445 retain unrelated remaining acceptance."
+  ],
+  "counterexamples": {
+    "invocation": "D:/GongGong-work/tx-venv/Scripts/python.exe -X utf8 - (inline unittest.mock probes)",
+    "results": [
+      {
+        "entry": "admin",
+        "exception": "NotImplementedError",
+        "errno": null,
+        "winerror": null,
+        "observed": "narrow capability skip"
+      },
+      {
+        "entry": "admin",
+        "exception": "OSError",
+        "errno": 40,
+        "winerror": null,
+        "observed": "narrow capability skip"
+      },
+      {
+        "entry": "admin",
+        "exception": "OSError",
+        "errno": 129,
+        "winerror": null,
+        "observed": "narrow capability skip"
+      },
+      {
+        "entry": "admin",
+        "exception": "PermissionError",
+        "errno": 13,
+        "winerror": 1314,
+        "observed": "narrow capability skip"
+      },
+      {
+        "entry": "admin",
+        "exception": "PermissionError",
+        "errno": 13,
+        "winerror": null,
+        "observed": "original unexpected error propagated"
+      },
+      {
+        "entry": "admin",
+        "exception": "PermissionError",
+        "errno": 1,
+        "winerror": null,
+        "observed": "original unexpected error propagated"
+      },
+      {
+        "entry": "admin",
+        "exception": "FileNotFoundError",
+        "errno": 2,
+        "winerror": null,
+        "observed": "original unexpected error propagated"
+      },
+      {
+        "entry": "admin",
+        "exception": "FileExistsError",
+        "errno": 17,
+        "winerror": null,
+        "observed": "original unexpected error propagated"
+      },
+      {
+        "entry": "admin",
+        "exception": "OSError",
+        "errno": 5,
+        "winerror": null,
+        "observed": "original unexpected error propagated"
+      },
+      {
+        "entry": "repo_root",
+        "exception": "NotImplementedError",
+        "errno": null,
+        "winerror": null,
+        "observed": "narrow capability skip"
+      },
+      {
+        "entry": "repo_root",
+        "exception": "OSError",
+        "errno": 40,
+        "winerror": null,
+        "observed": "narrow capability skip"
+      },
+      {
+        "entry": "repo_root",
+        "exception": "OSError",
+        "errno": 129,
+        "winerror": null,
+        "observed": "narrow capability skip"
+      },
+      {
+        "entry": "repo_root",
+        "exception": "PermissionError",
+        "errno": 13,
+        "winerror": 1314,
+        "observed": "narrow capability skip"
+      },
+      {
+        "entry": "repo_root",
+        "exception": "PermissionError",
+        "errno": 13,
+        "winerror": null,
+        "observed": "original unexpected error propagated"
+      },
+      {
+        "entry": "repo_root",
+        "exception": "PermissionError",
+        "errno": 1,
+        "winerror": null,
+        "observed": "original unexpected error propagated"
+      },
+      {
+        "entry": "repo_root",
+        "exception": "FileNotFoundError",
+        "errno": 2,
+        "winerror": null,
+        "observed": "original unexpected error propagated"
+      },
+      {
+        "entry": "repo_root",
+        "exception": "FileExistsError",
+        "errno": 17,
+        "winerror": null,
+        "observed": "original unexpected error propagated"
+      },
+      {
+        "entry": "repo_root",
+        "exception": "OSError",
+        "errno": 5,
+        "winerror": null,
+        "observed": "original unexpected error propagated"
+      }
+    ],
+    "limit": "Synthetic exception classification only; no real symlink security assertions claimed."
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scope": "build-validation",
+    "verified_lessons": [
+      "match-ci-warning-policy revision 2",
+      "validate-whole-signed-candidate revision 3"
+    ],
+    "applicability": "C++ warning trial is inapplicable to test-only Python fixture changes. Source-bound whole-candidate static checks applied to both changed Python files; exact signed-head CI/main remains parent delivery responsibility. No whole-suite success inferred."
+  },
+  "cleanup": {
+    "removed": [
+      "temporary Diting intake input data-collection/git-test-portability-intake.local.json"
+    ],
+    "retained": [
+      "Task worktree and branch retained for parent Linux/review/delivery; no uncommitted source removed."
+    ],
+    "temporary_fixtures": "TemporaryDirectory contexts cleaned test Git repositories; relative-path test restores original cwd in finally."
+  }
+}

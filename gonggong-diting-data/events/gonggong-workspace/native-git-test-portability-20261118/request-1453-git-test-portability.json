@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "event_id": "request-1453-git-test-portability",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-git-test-portability-20261118",
+  "kind": "request",
+  "occurred_at": "2026-11-17T17:44:18.633552+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1453",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1453,
+    "title": "修复Windows Git测试夹具的符号链接能力与跨盘路径假设",
+    "state": "open",
+    "labels": [
+      "type:bug",
+      "status:in-progress",
+      "workspace:gonggong"
+    ],
+    "updated_at": "2026-11-17T17:34:00Z",
+    "body": "<!-- gonggong-request:native-git-test-portability-20261118 -->\n\n# Windows 下既有 Git 测试夹具的可移植性\n\n需求 ID：native-git-test-portability-20261118。关联 #1444 的扩大验证及夸父跟踪 #1445。路径基准为仓库根。\n\n真实 Windows 全套运行记录了 846 通过、5 跳过、165 子测试通过，同时六个既有 Git 夹具失败：test_admin_paths 的符号链接创建遇到 WinError 1314；test_git_service_repo_root 对 C: 临时目录和 D: 当前目录执行相对路径计算失败。原生工作链路及真实 HTTP 测试通过；该失败不能写成全套成功。\n\n仅修复测试夹具，不改变 git_service.py、生产路径防护、权限或机器开发者模式。符号链接试验必须实际探测宿主能力，只对明确不支持/未获权限的情况记录跳过，不吞掉其他异常或虚构覆盖；Linux 有能力时继续运行原安全断言。相对路径试验在真实同卷工作目录内调用被测入口，保持对工作树、bare 和 linked repository 的断言及外部目录拒绝用例。\n\n验收为原失败 Windows 入口定向通过或明确能力跳过、Linux 对应测试真实运行和独立源码审查；保留每种主机实测范围。拒绝路径时不得启动任何进程、修改 Git 管理文件或写入此前安全文件，原断言不能删除。测试恢复后补齐原工单的环境限制记录；#1444 其他验收和 #1445 其他事件不因本项完成而关闭。\n\n沿用既有 host_tool 测试位置，不新增产品模块。回退恢复前一测试版本，实际 Git 服务不受影响。\n\n\n授权：codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117\n\n<!-- gonggong-host-git:Sail-Li -->\n",
+    "execution_authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "intake_only": {
+      "exit_code": 0,
+      "observed_status": "status:in-progress",
+      "command": "./tools/run_issue_gate.ps1 -Issue 1453 -RequestId native-git-test-portability-20261118 -IntakeOnly -Python D:/GongGong-work/tx-venv/Scripts/python.exe"
+    }
+  },
+  "evidence_refs": [
+    "dispatch-c44166b2d07b4d73a0b59ec307422cbd"
+  ],
+  "sha256": "e8643c003a90aafd082f1c0c5b3d1f84616ec3e1eaa506ae84ff6c37957e5a50"
+}

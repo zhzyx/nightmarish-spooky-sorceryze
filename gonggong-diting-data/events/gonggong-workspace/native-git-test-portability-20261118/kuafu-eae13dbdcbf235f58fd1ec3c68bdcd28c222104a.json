@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-eae13dbdcbf235f58fd1ec3c68bdcd28c222104a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-git-test-portability-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1453",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6c7ea4b313d529e782fd25cb84a4823a46c6ee97692c925352c35c66d8ba1c1f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1453",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "delivery",
+    "detection_head": "cefa69ea2ee415c0b65d88506c85582f626fc673",
+    "context_sha256": "47ae9816b61959163984116a6ab157df9545351012d0d44ada0bfc5627a95b3e",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1453",
+    "diagnosis": "Formal source collection gate rejected CRLF author receipt because Git normalized staged LF bytes. Immutable intake and learning reference original byte hash. Follow existing repository exact per-file gitattributes -text whitespace=cr-at-eol convention to preserve original receipt; do not rewrite immutable evidence. Product tests unchanged; independent one-line attribute delta review and exact formal gate recheck required.",
+    "next_action": "Root preserves original report bytes, gets independent attribute review, restages and retries original formal writer after actual failed receipt.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T17:57:40.342885+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T18:01:53.909217+00:00",
+  "sha256": "8e8b23684b22eadd841b91c5ad6e0248c8fc79d26f4e85a11f2af0796cd1e170"
+}
