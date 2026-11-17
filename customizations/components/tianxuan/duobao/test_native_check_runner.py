@@ -202,6 +202,17 @@ class RunnerTests(unittest.TestCase):
                     self.assertEqual(result["exit_code"], 7)
                 self.assertLessEqual((Path(result["workspace"]) / "process.log").stat().st_size, 4096)
 
+    def test_scoped_input_timestamp_pollution_without_content_change(self):
+        self.cache.policies["check"]["reads"] = {"core": ["code"]}
+        runner = self.runner(
+            "import os,pathlib; p=pathlib.Path(os.environ['DUOBAO_INPUT'])/'core/code'; "
+            "s=p.stat(); os.utime(p,ns=(s.st_atime_ns,s.st_mtime_ns+1000000000))"
+        )
+        result = self.run_check(runner)
+        self.assertEqual(result["outcome"], "failed")
+        self.assertIn("input_pollution", result["reasons"])
+        self.assertEqual((Path(result["workspace"]) / "input/core/code").read_bytes(), b"first")
+
     def test_concurrent_duplicate_and_native_submit(self):
         runner = self.runner(
             "import os,pathlib,time; pathlib.Path(os.environ['DUOBAO_OUTPUT'],'started').write_text('yes'); time.sleep(1)"

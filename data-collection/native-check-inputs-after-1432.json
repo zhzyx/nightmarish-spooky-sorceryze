@@ -1,0 +1,63 @@
+{
+  "issue": 1432,
+  "label": "scoped",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.3",
+  "rows": [
+    {
+      "scenario": "initial",
+      "candidate": "d5ca9d461c57e6d08e090a5638e7fc51cfba3acb95ee7e8b4bdf58b2bc171792",
+      "state": "complete",
+      "seconds": 0.16675999999279156,
+      "evidence": "7db360e2f068772437ca81fcc25a897e8c156f7244a340c21a776c84f498daaa"
+    },
+    {
+      "scenario": "unrelated-module",
+      "candidate": "79992fca2c321c2e9ea50074f2b20ac9666f4427b190496a7c685b372ca29f4d",
+      "state": "cached",
+      "seconds": 0.02649010000459384,
+      "evidence": "7db360e2f068772437ca81fcc25a897e8c156f7244a340c21a776c84f498daaa"
+    },
+    {
+      "scenario": "unselected-object",
+      "candidate": "c86c2671c61f37faf7604918ec0a7c603855982ae8c96342b0c341999a347543",
+      "state": "cached",
+      "seconds": 0.023986900007002987,
+      "evidence": "7db360e2f068772437ca81fcc25a897e8c156f7244a340c21a776c84f498daaa"
+    },
+    {
+      "scenario": "relevant-object",
+      "candidate": "67b79e543d9c0ad7a4f3a5405ca05afba88ae14bcfb797985cfb5fba579b611c",
+      "state": "complete",
+      "seconds": 0.16495280001254287,
+      "evidence": "25fcd1307fcf22445224bf3373fd31a0a0f42d4bb5caf34f0f6904f4c27b0f27"
+    }
+  ],
+  "actual_child_markers": [
+    {
+      "sha256": "559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "visible_files": [
+        "core\\a.txt"
+      ]
+    },
+    {
+      "sha256": "c8361f9b468e68c86da024270e0949ce139cb704b8d7cce586681b99f3a7ea56",
+      "visible_files": [
+        "core\\a.txt"
+      ]
+    }
+  ],
+  "actual_checks": 2,
+  "total_execute_seconds": 0.38218980001693126,
+  "model_calls": 0,
+  "tokens": null,
+  "limits": "Synthetic fixed check; actual process count and elapsed times, not full engine workload, production throughput or token savings. Both variants use same check and changes.",
+  "temporary_directory_removed": true,
+  "source_sha256": {
+    "native_store.py": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+    "native_evidence.py": "c0497cae5a43cc653b2135dcc99cda3bbd0282b6c9b50066de9759c12f24be1d",
+    "native_check_runner.py": "93a933d4cced3d1c34d991f3814119945ff6b448a2f106e097d8790f7ed98f8f",
+    "native_workspace.py": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+    "native_check_inputs.py": "ddefa8b940dbf201e59c0ee9f1b69b02c390146ac9357425dec12bd3391b344d"
+  }
+}

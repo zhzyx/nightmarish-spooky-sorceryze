@@ -1,0 +1,23 @@
+{
+  "issue": 1432,
+  "state": "implementation and independent review passed; CI/main pending",
+  "review_sha256": "703c10cb93f7b31b4c2fdb2cac7eb2afd4526996b358f92a97fc2a3855db395d",
+  "architecture": "Native content-scoped input view is derived from trusted evidence binding. Check context binds selected objects, exact dependency closure and executor contract, without unrelated candidate identity. Final release still validates whole composition and independent approval.",
+  "acceptance": {
+    "scoped_visibility": "Windows 88 run,86 pass,2 platform skips; independent overlap/transitive/hidden dependency/path/quota probes passed",
+    "linux": "101 run,97 pass,4 platform skips;121 raw source bindings matched",
+    "real_process_reuse": "Same fixed workload: initial and relevant change execute; unrelated module and unselected object reuse. Four actual processes become two.",
+    "regressions": "Policy/input drift, stable-run recovery, unknown read scope and full release checks retained"
+  },
+  "limits": [
+    "Only one small deterministic benchmark, no model calls or measured token savings.",
+    "Frozen trusted read declarations are not inferred automatically; unknown reads remain conservative.",
+    "Native check execution uses trusted installed commands; input views do not form an OS sandbox.",
+    "Full workflow production deployment, native dispatch and end-to-end acceptance remain in parent1382."
+  ],
+  "bug_recovery": {
+    "issue": 1439,
+    "local_intake": "Explicit tenant and existing executable probe completed intake; no execution-policy change.",
+    "transport": "Transient GitHub read failure before reserve; verified no worker launched, restored authenticated reads and completed actual launch/reconcile. External cause not proven."
+  }
+}

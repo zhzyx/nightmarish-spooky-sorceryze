@@ -1,0 +1,111 @@
+{
+  "issue": 1432,
+  "source_base": "22a7431e2d44d4c47262af0f5c471f9aa1cc2034",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "source_bindings": {
+    "customizations/components/tianxuan/duobao/native_check_inputs.py": "ddefa8b940dbf201e59c0ee9f1b69b02c390146ac9357425dec12bd3391b344d",
+    "customizations/components/tianxuan/duobao/native_check_runner.py": "93a933d4cced3d1c34d991f3814119945ff6b448a2f106e097d8790f7ed98f8f",
+    "customizations/components/tianxuan/duobao/test_native_check_inputs.py": "43ab82366f6aaae34d1e6bafda41ce5595cd922672dcbdd2155f6248032b710a",
+    "customizations/components/tianxuan/duobao/test_native_check_runner.py": "059bf81e8a08ba1d43b2f6395e439f4c462938b9366eff94a8f9fb89e0760da5",
+    "customizations/components/tianxuan/duobao/native_check_runner.md": "ce5d46c48874fcabb8f33dde1bf6fbd673ab6b56ee23b9a3fe3687705ce5aa3c"
+  },
+  "checks": [
+    {
+      "command": [
+        "C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "customizations/components/tianxuan/duobao/",
+        "-p",
+        "test_native*.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 20.839036399993347,
+      "stdout": "",
+      "stderr": "...............................................................................ss.......\n----------------------------------------------------------------------\nRan 88 tests in 20.703s\n\nOK (skipped=2)\n"
+    },
+    {
+      "command": [
+        "C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "--no-fix",
+        "customizations/components/tianxuan/duobao/native_check_inputs.py",
+        "customizations/components/tianxuan/duobao/native_check_runner.py",
+        "customizations/components/tianxuan/duobao/test_native_check_inputs.py",
+        "customizations/components/tianxuan/duobao/test_native_check_runner.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.05843940000340808,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "customizations/components/tianxuan/duobao/native_check_inputs.py",
+        "customizations/components/tianxuan/duobao/native_check_runner.py",
+        "customizations/components/tianxuan/duobao/test_native_check_inputs.py",
+        "customizations/components/tianxuan/duobao/test_native_check_runner.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.05959279999660794,
+      "stdout": "4 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+        "-m",
+        "mypy",
+        "--follow-imports=skip",
+        "customizations/components/tianxuan/duobao/native_check_inputs.py",
+        "customizations/components/tianxuan/duobao/native_check_runner.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.15342770000279415,
+      "stdout": "Success: no issues found in 2 source files\n",
+      "stderr": ""
+    }
+  ],
+  "process_counts": {
+    "initial": 1,
+    "unrelated_module": 1,
+    "unselected_object": 1,
+    "relevant_object": 2,
+    "absence_creation": 3,
+    "scope": "test_scope_process_counts_and_absence, actual run_owned wrapping real processes"
+  },
+  "limits": {
+    "modules": 128,
+    "files": 10000,
+    "entries": 20000,
+    "file_bytes": 8388608,
+    "total_bytes": 67108864,
+    "binding_metadata_bytes": 4194304
+  },
+  "cleanup": {
+    "test_directories": "TemporaryDirectory cleanup after terminal tests",
+    "failed_materialization": "owned stage removed; destination absent asserted",
+    "unknown_runs": "retained ownership by production runner, isolated fixtures removed only after terminal test process cleanup",
+    "worktrees": "parent-owned worktree retained for review and delivery",
+    "packages": "none generated"
+  },
+  "remaining": [
+    "parent Linux validation",
+    "parent independent review",
+    "parent same-workload benchmark",
+    "formal delivery and acceptance"
+  ],
+  "claims": "Synthetic local process evidence only; no token savings or full production pipeline completion claimed"
+}

@@ -1,0 +1,86 @@
+{
+  "issue": 1432,
+  "label": "baseline",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.3",
+  "rows": [
+    {
+      "scenario": "initial",
+      "candidate": "d5ca9d461c57e6d08e090a5638e7fc51cfba3acb95ee7e8b4bdf58b2bc171792",
+      "state": "complete",
+      "seconds": 0.18725119999726303,
+      "evidence": "e4bd29e5a926eb1c823001eea543d6a905f2e8330728419db6468b49f30499d5"
+    },
+    {
+      "scenario": "unrelated-module",
+      "candidate": "79992fca2c321c2e9ea50074f2b20ac9666f4427b190496a7c685b372ca29f4d",
+      "state": "complete",
+      "seconds": 0.181520800004364,
+      "evidence": "6f3e0d0204b046a9b9f7eee9213ba7375f2b5b042407870e50ab24af27f32f48"
+    },
+    {
+      "scenario": "unselected-object",
+      "candidate": "c86c2671c61f37faf7604918ec0a7c603855982ae8c96342b0c341999a347543",
+      "state": "complete",
+      "seconds": 0.20308829999703448,
+      "evidence": "1a035acb9d1717272db83ebf1397c158e362ae38ab0174ef6cbbffe5409fff9b"
+    },
+    {
+      "scenario": "relevant-object",
+      "candidate": "67b79e543d9c0ad7a4f3a5405ca05afba88ae14bcfb797985cfb5fba579b611c",
+      "state": "complete",
+      "seconds": 0.20666900000651367,
+      "evidence": "51d09e1781571f855be2fabd817e226a0beec52926626b4552174834d4723ccb"
+    }
+  ],
+  "actual_child_markers": [
+    {
+      "sha256": "559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "visible_files": [
+        ".duobao-source.json",
+        "core\\a.txt",
+        "core\\b.txt",
+        "noise\\noise.txt"
+      ]
+    },
+    {
+      "sha256": "559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "visible_files": [
+        ".duobao-source.json",
+        "core\\a.txt",
+        "core\\b.txt",
+        "noise\\noise.txt"
+      ]
+    },
+    {
+      "sha256": "559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "visible_files": [
+        ".duobao-source.json",
+        "core\\a.txt",
+        "core\\b.txt",
+        "noise\\noise.txt"
+      ]
+    },
+    {
+      "sha256": "c8361f9b468e68c86da024270e0949ce139cb704b8d7cce586681b99f3a7ea56",
+      "visible_files": [
+        ".duobao-source.json",
+        "core\\a.txt",
+        "core\\b.txt",
+        "noise\\noise.txt"
+      ]
+    }
+  ],
+  "actual_checks": 4,
+  "total_execute_seconds": 0.7785293000051752,
+  "model_calls": 0,
+  "tokens": null,
+  "limits": "Synthetic fixed check; actual process count and elapsed times, not full engine workload, production throughput or token savings. Both variants use same check and changes.",
+  "temporary_directory_removed": true,
+  "source_sha256": {
+    "native_store.py": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+    "native_evidence.py": "c0497cae5a43cc653b2135dcc99cda3bbd0282b6c9b50066de9759c12f24be1d",
+    "native_check_runner.py": "328216ad20a617cdecf26487cef0ca5a16044ad7bc5c853488f110dd818943e6",
+    "native_workspace.py": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1"
+  }
+}

@@ -1,0 +1,198 @@
+{
+  "issue": 1432,
+  "role": "independent read-only implementation review",
+  "reviewer": "native Codex sub-agent /root/sinan_8352a7020dd2e1a0",
+  "workspace": "D:/GongGong-work/native-check-input-views-20261117",
+  "source_head": "22a7431e2d44d4c47262af0f5c471f9aa1cc2034",
+  "verdict": "pass_with_stated_limits",
+  "blocking_findings": [],
+  "source_bindings": {
+    "customizations/components/tianxuan/duobao/native_check_inputs.py": {
+      "sha256": "ddefa8b940dbf201e59c0ee9f1b69b02c390146ac9357425dec12bd3391b344d",
+      "git_blob_raw": "5d93f141c16d044ea53badc4cceec1379835d3e4",
+      "git_blob_filtered": "5d93f141c16d044ea53badc4cceec1379835d3e4"
+    },
+    "customizations/components/tianxuan/duobao/native_check_runner.py": {
+      "sha256": "93a933d4cced3d1c34d991f3814119945ff6b448a2f106e097d8790f7ed98f8f",
+      "git_blob_raw": "29f0ad308a6c5ad774dbbff42b7e376fd834a22c",
+      "git_blob_filtered": "29f0ad308a6c5ad774dbbff42b7e376fd834a22c"
+    },
+    "customizations/components/tianxuan/duobao/native_evidence.py": {
+      "sha256": "c0497cae5a43cc653b2135dcc99cda3bbd0282b6c9b50066de9759c12f24be1d",
+      "git_blob_raw": "a32c57f2d69ae9cc31402d2db366e23899524b54",
+      "git_blob_filtered": "a32c57f2d69ae9cc31402d2db366e23899524b54"
+    },
+    "customizations/components/tianxuan/duobao/native_workspace.py": {
+      "sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "git_blob_raw": "8e6334622cd69d6a710eed9786ce1c879588fff1",
+      "git_blob_filtered": "8e6334622cd69d6a710eed9786ce1c879588fff1"
+    },
+    "customizations/components/tianxuan/duobao/native_release.py": {
+      "sha256": "1b0d51f6997fc5226dfc61bedc44f76fe336bc64a68686f47e01b48ee5fb98f8",
+      "git_blob_raw": "1f508962cf22644995856cb2a50a5e4f1c5c28f9",
+      "git_blob_filtered": "1f508962cf22644995856cb2a50a5e4f1c5c28f9"
+    },
+    "customizations/components/tianxuan/duobao/native_store.py": {
+      "sha256": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+      "git_blob_raw": "1503687c9add396cd2ff7a9902f21f263431e997",
+      "git_blob_filtered": "1503687c9add396cd2ff7a9902f21f263431e997"
+    },
+    "customizations/components/tianxuan/duobao/test_native_check_inputs.py": {
+      "sha256": "43ab82366f6aaae34d1e6bafda41ce5595cd922672dcbdd2155f6248032b710a",
+      "git_blob_raw": "8d4942ecc08df4b234adc8d05b8d0286b1ff1cb0",
+      "git_blob_filtered": "8d4942ecc08df4b234adc8d05b8d0286b1ff1cb0"
+    },
+    "customizations/components/tianxuan/duobao/test_native_check_runner.py": {
+      "sha256": "059bf81e8a08ba1d43b2f6395e439f4c462938b9366eff94a8f9fb89e0760da5",
+      "git_blob_raw": "9115d7afd3ef91666a2091b15a51923e7705c696",
+      "git_blob_filtered": "9115d7afd3ef91666a2091b15a51923e7705c696"
+    },
+    "customizations/components/tianxuan/duobao/native_check_runner.md": {
+      "sha256": "ce5d46c48874fcabb8f33dde1bf6fbd673ab6b56ee23b9a3fe3687705ce5aa3c",
+      "git_blob_raw": "3f4975875912a67af460212bf84d681463a165eb",
+      "git_blob_filtered": "3f4975875912a67af460212bf84d681463a165eb"
+    },
+    "design-docs/native-check-input-views-20261117.md": {
+      "sha256": "51075bf160358706bced2a82e41e0d211f83e56b3ed38ea385ead2d8ac903a32",
+      "git_blob_raw": "ae862a7ccbf51fb01fbc05672908d0a57e065a00",
+      "git_blob_filtered": "ae862a7ccbf51fb01fbc05672908d0a57e065a00"
+    },
+    "tools/ainative/owned_process.py": {
+      "sha256": "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78",
+      "git_blob_raw": "299243639ded6ce63066006df1055ee18021ad68",
+      "git_blob_filtered": "299243639ded6ce63066006df1055ee18021ad68"
+    }
+  },
+  "evidence_validation": {
+    "data-collection/native-check-inputs-1432.json": {
+      "sha256": "7f251a35a602f5a283626a56362a714102f7bc024f591e2117e1cb6f093f6a34",
+      "bindings_checked": 5,
+      "mismatches": []
+    },
+    "data-collection/native-check-inputs-after-1432.json": {
+      "sha256": "108433372983c1df8a4f19165ce682b508218de3aa4ffc3f9ae5c69267e00081",
+      "bindings_checked": 5,
+      "mismatches": [],
+      "resolution": "Basenames resolved relative to duobao; all 5 match current bytes."
+    },
+    "data-collection/native-check-inputs-baseline-1432.json": {
+      "sha256": "589c8b1882caa5c50fc544b03139d7d6819120fa5f390bdcfc102a0d145fd8c5",
+      "bindings_checked": 4,
+      "mismatches": [],
+      "resolution": "Basenames resolved relative to duobao; runner equals HEAD with LF converted to CRLF; other 3 match raw HEAD."
+    },
+    "data-collection/native-check-inputs-comparison-1432.json": {
+      "sha256": "77232b16ae440c36bf6fa7eeb4c4153d5ca5a1c187963f9ff472515b91caa359",
+      "bindings_checked": 0,
+      "mismatches": []
+    },
+    "data-collection/native-check-inputs-linux-1432.json": {
+      "sha256": "9e6e32fae071165b8e2a47247434b761410b9e16eaba889497a1e8436c0509f4",
+      "bindings_checked": 121,
+      "mismatches": []
+    }
+  },
+  "method_recall": {
+    "scope": "editor-dependency-handoff",
+    "applied": [
+      "bind-consumer-release revision 17: checked exact source bytes and producer evidence; completion alone is not acceptance",
+      "await-terminal-observers revision 5: regression checks durable result and unknown-run recovery"
+    ],
+    "counterexample": "Test termination or benchmark counters alone do not establish production release acceptance"
+  },
+  "independent_regression": {
+    "command": "py -B -X utf8 -m unittest -v test_native_check_inputs test_native_check_runner test_native_evidence test_native_release test_native_workspace test_native_store",
+    "cwd": "customizations/components/tianxuan/duobao",
+    "exit_code": 0,
+    "run": 88,
+    "passed": 86,
+    "skipped": 2,
+    "seconds": 21.256,
+    "output": "test_dependency_conflict_and_integrity (test_native_check_inputs.InputTests.test_dependency_conflict_and_integrity) ... ok\r\ntest_empty_scope_and_exact_dependency_closure (test_native_check_inputs.InputTests.test_empty_scope_and_exact_dependency_closure) ... ok\r\ntest_frozen_binding_limits_and_corrupt_blob_cleanup (test_native_check_inputs.InputTests.test_frozen_binding_limits_and_corrupt_blob_cleanup) ... ok\r\ntest_scope_process_counts_and_absence (test_native_check_inputs.InputTests.test_scope_process_counts_and_absence) ... ok\r\ntest_stable_release_policy_requires_separate_reviews (test_native_check_inputs.InputTests.test_stable_release_policy_requires_separate_reviews) ... ok\r\ntest_unknown_scope_conservative (test_native_check_inputs.InputTests.test_unknown_scope_conservative) ... ok\r\ntest_view_limits_portability_and_transactional_cleanup (test_native_check_inputs.InputTests.test_view_limits_portability_and_transactional_cleanup) ... ok\r\ntest_actual_controller_restart_retains_unknown_run (test_native_check_runner.RunnerTests.test_actual_controller_restart_retains_unknown_run) ... ok\r\ntest_authority_registry_and_input_invalidation (test_native_check_runner.RunnerTests.test_authority_registry_and_input_invalidation) ... ok\r\ntest_binding_policy_snapshot_cannot_mix_scope_and_version (test_native_check_runner.RunnerTests.test_binding_policy_snapshot_cannot_mix_scope_and_version) ... ok\r\ntest_cancel_and_timeout_descendants (test_native_check_runner.RunnerTests.test_cancel_and_timeout_descendants) ... ok\r\ntest_concurrent_duplicate_and_native_submit (test_native_check_runner.RunnerTests.test_concurrent_duplicate_and_native_submit) ... ok\r\ntest_distinct_commands_execute_in_parallel (test_native_check_runner.RunnerTests.test_distinct_commands_execute_in_parallel) ... ok\r\ntest_policy_change_at_cache_hit_cannot_change_reserved_binding (test_native_check_runner.RunnerTests.test_policy_change_at_cache_hit_cannot_change_reserved_binding) ... ok\r\ntest_policy_change_at_evidence_writeback_is_rejected (test_native_check_runner.RunnerTests.test_policy_change_at_evidence_writeback_is_rejected) ... ok\r\ntest_policy_change_during_process_cannot_relabel_result (test_native_check_runner.RunnerTests.test_policy_change_during_process_cannot_relabel_result) ... ok\r\ntest_real_failures (test_native_check_runner.RunnerTests.test_real_failures) ... ok\r\ntest_real_success_cache_restart_release_and_revocation (test_native_check_runner.RunnerTests.test_real_success_cache_restart_release_and_revocation) ... ok\r\ntest_result_writeback_failure_recovers_without_respawn (test_native_check_runner.RunnerTests.test_result_writeback_failure_recovers_without_respawn) ... ok\r\ntest_scoped_input_timestamp_pollution_without_content_change (test_native_check_runner.RunnerTests.test_scoped_input_timestamp_pollution_without_content_change) ... ok\r\ntest_tool_rule_expiry_and_binary_log_bounds (test_native_check_runner.RunnerTests.test_tool_rule_expiry_and_binary_log_bounds) ... ok\r\ntest_unknown_crash_window_is_held_without_respawn (test_native_check_runner.RunnerTests.test_unknown_crash_window_is_held_without_respawn) ... ok\r\ntest_corrupt_request_reference_does_not_replay_another_run (test_native_evidence.EvidenceTests.test_corrupt_request_reference_does_not_replay_another_run) ... ok\r\ntest_dependency_content_corruption_rejects_cached_fact (test_native_evidence.EvidenceTests.test_dependency_content_corruption_rejects_cached_fact) ... ok\r\ntest_disjoint_object_and_unrelated_module_reuse_original_fact (test_native_evidence.EvidenceTests.test_disjoint_object_and_unrelated_module_reuse_original_fact) ... ok\r\ntest_durable_replay_and_conflicting_reuse (test_native_evidence.EvidenceTests.test_durable_replay_and_conflicting_reuse) ... ok\r\ntest_exact_dependency_change_invalidates (test_native_evidence.EvidenceTests.test_exact_dependency_change_invalidates) ... ok\r\ntest_expiry_future_clock_and_runner_revocation_are_checked_on_lookup (test_native_evidence.EvidenceTests.test_expiry_future_clock_and_runner_revocation_are_checked_on_lookup) ... ok\r\ntest_failed_unknown_and_revoked_latest_fact_never_fall_back_to_old_pass (test_native_evidence.EvidenceTests.test_failed_unknown_and_revoked_latest_fact_never_fall_back_to_old_pass) ... ok\r\ntest_host_scope_is_copied_and_caller_cannot_install_unknown_check (test_native_evidence.EvidenceTests.test_host_scope_is_copied_and_caller_cannot_install_unknown_check) ... ok\r\ntest_input_and_evidence_corruption_never_return_pass (test_native_evidence.EvidenceTests.test_input_and_evidence_corruption_never_return_pass) ... ok\r\ntest_invalid_policy_log_context_and_revoker_rejected (test_native_evidence.EvidenceTests.test_invalid_policy_log_context_and_revoker_rejected) ... ok\r\ntest_read_change_delete_and_missing_creation_invalidate (test_native_evidence.EvidenceTests.test_read_change_delete_and_missing_creation_invalidate) ... ok\r\ntest_rule_toolchain_environment_and_parameters_invalidate (test_native_evidence.EvidenceTests.test_rule_toolchain_environment_and_parameters_invalidate) ... ok\r\ntest_same_request_parallel_records_have_one_identity (test_native_evidence.EvidenceTests.test_same_request_parallel_records_have_one_identity) ... ok\r\ntest_storage_failure_rolls_back_evidence_and_retry_succeeds (test_native_evidence.EvidenceTests.test_storage_failure_rolls_back_evidence_and_retry_succeeds) ... ok\r\ntest_tenants_do_not_share_cached_evidence (test_native_evidence.EvidenceTests.test_tenants_do_not_share_cached_evidence) ... ok\r\ntest_unknown_and_whole_module_scopes_are_conservative (test_native_evidence.EvidenceTests.test_unknown_and_whole_module_scopes_are_conservative) ... ok\r\ntest_channels_and_same_channel_competitors (test_native_release.ReleaseTests.test_channels_and_same_channel_competitors) ... ok\r\ntest_check_policy_drift_and_evidence_expiry (test_native_release.ReleaseTests.test_check_policy_drift_and_evidence_expiry) ... ok\r\ntest_corruption_rejected (test_native_release.ReleaseTests.test_corruption_rejected) ... ok\r\ntest_event_cursor_is_bounded_and_product_scoped (test_native_release.ReleaseTests.test_event_cursor_is_bounded_and_product_scoped) ... ok\r\ntest_event_failure_rolls_back_pointer_receipt_and_manifest (test_native_release.ReleaseTests.test_event_failure_rolls_back_pointer_receipt_and_manifest) ... ok\r\ntest_event_product_corruption_rejects_current_selection (test_native_release.ReleaseTests.test_event_product_corruption_rejects_current_selection) ... ok\r\ntest_expiry_authority_policy_and_source_rechecked (test_native_release.ReleaseTests.test_expiry_authority_policy_and_source_rechecked) ... ok\r\ntest_full_flow_restart_and_rollback (test_native_release.ReleaseTests.test_full_flow_restart_and_rollback) ... ok\r\ntest_idempotent_receipts_events_and_revocation_no_resurrection (test_native_release.ReleaseTests.test_idempotent_receipts_events_and_revocation_no_resurrection) ... ok\r\ntest_identity_source_and_required_policy_rejections (test_native_release.ReleaseTests.test_identity_source_and_required_policy_rejections) ... ok\r\ntest_latest_failed_unknown_or_changed_evidence_rejects_prior_review (test_native_release.ReleaseTests.test_latest_failed_unknown_or_changed_evidence_rejects_prior_review) ... ok\r\ntest_publish_before_revocation_has_historical_event_but_invalid_selection (test_native_release.ReleaseTests.test_publish_before_revocation_has_historical_event_but_invalid_selection) ... ok\r\ntest_reader_snapshot_does_not_block_unrelated_publication (test_native_release.ReleaseTests.test_reader_snapshot_does_not_block_unrelated_publication) ... ok\r\ntest_record_and_blob_corruption_rejected_on_consumer_read (test_native_release.ReleaseTests.test_record_and_blob_corruption_rejected_on_consumer_read) ... ok\r\ntest_release_flow_without_network_process_or_git (test_native_release.ReleaseTests.test_release_flow_without_network_process_or_git) ... ok\r\ntest_review_revocation_before_publish_and_reapproved_rollback (test_native_release.ReleaseTests.test_review_revocation_before_publish_and_reapproved_rollback) ... ok\r\ntest_revocation_commits_before_blocked_publish (test_native_release.ReleaseTests.test_revocation_commits_before_blocked_publish) ... ok\r\ntest_revoked_evidence_rejects_publish_and_current_read (test_native_release.ReleaseTests.test_revoked_evidence_rejects_publish_and_current_read) ... ok\r\ntest_tenant_product_isolation (test_native_release.ReleaseTests.test_tenant_product_isolation) ... ok\r\ntest_unknown_composition_context_and_missing_atomic_event (test_native_release.ReleaseTests.test_unknown_composition_context_and_missing_atomic_event) ... ok\r\ntest_cli_empty_path_roundtrip_restart (test_native_workspace.WorkspaceTests.test_cli_empty_path_roundtrip_restart) ... ok\r\ntest_cross_module_atomic_success (test_native_workspace.WorkspaceTests.test_cross_module_atomic_success) ... ok\r\ntest_delta_pagination_binary_empty_binding_and_transfer (test_native_workspace.WorkspaceTests.test_delta_pagination_binary_empty_binding_and_transfer) ... ok\r\ntest_links_rejected (test_native_workspace.WorkspaceTests.test_links_rejected) ... skipped \"Host cannot create symlink: [WinError 1314] 客户端没有所需的特权。: 'C:\\\\\\\\Users\\\\\\\\ROG\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\tmpgfnd5lpv\\\\\\\\native.sqlite' -> 'C:\\\\\\\\Users\\\\\\\\ROG\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\tmpgfnd5lpv\\\\\\\\work\\\\\\\\app\\\\\\\\link'\"\r\ntest_nonregular_file_rejected (test_native_workspace.WorkspaceTests.test_nonregular_file_rejected) ... skipped 'POSIX fifo test'\r\ntest_paths_aliases_and_existing_destination (test_native_workspace.WorkspaceTests.test_paths_aliases_and_existing_destination) ... ok\r\ntest_resource_limits (test_native_workspace.WorkspaceTests.test_resource_limits) ... ok\r\ntest_scan_unknown_module_and_directory_budget (test_native_workspace.WorkspaceTests.test_scan_unknown_module_and_directory_budget) ... ok\r\ntest_source_corruption_and_write_failure_unpublished (test_native_workspace.WorkspaceTests.test_source_corruption_and_write_failure_unpublished) ... ok\r\ntest_unknown_reads_reject_drift_before_decoding_new_head (test_native_workspace.WorkspaceTests.test_unknown_reads_reject_drift_before_decoding_new_head) ... ok\r\ntest_unrelated_drift_pins_and_atomic_conflict (test_native_workspace.WorkspaceTests.test_unrelated_drift_pins_and_atomic_conflict) ... ok\r\ntest_windows_junction_rejected (test_native_workspace.WorkspaceTests.test_windows_junction_rejected) ... ok\r\ntest_250_independent_connections_no_global_revision_retries (test_native_store.NativeStoreTests.test_250_independent_connections_no_global_revision_retries) ... ok\r\ntest_batch_atomicity_on_late_missing_dependency (test_native_store.NativeStoreTests.test_batch_atomicity_on_late_missing_dependency) ... ok\r\ntest_batch_cycle_and_missing_batch_member_reject_atomically (test_native_store.NativeStoreTests.test_batch_cycle_and_missing_batch_member_reject_atomically) ... ok\r\ntest_batch_dependencies_and_immutable_composition (test_native_store.NativeStoreTests.test_batch_dependencies_and_immutable_composition) ... ok\r\ntest_changed_read_and_unknown_read_reject_with_unchanged_state (test_native_store.NativeStoreTests.test_changed_read_and_unknown_read_reject_with_unchanged_state) ... ok\r\ntest_cli_actual_json_boundary_and_invalid_base64 (test_native_store.NativeStoreTests.test_cli_actual_json_boundary_and_invalid_base64) ... ok\r\ntest_competing_writers_one_wins_without_silent_overwrite (test_native_store.NativeStoreTests.test_competing_writers_one_wins_without_silent_overwrite) ... ok\r\ntest_corrupt_dedup_hit_rejects_entire_batch_without_receipt (test_native_store.NativeStoreTests.test_corrupt_dedup_hit_rejects_entire_batch_without_receipt) ... ok\r\ntest_corruption_is_not_returned_as_valid_content (test_native_store.NativeStoreTests.test_corruption_is_not_returned_as_valid_content) ... ok\r\ntest_delete_prefix_conflict_and_invalid_input (test_native_store.NativeStoreTests.test_delete_prefix_conflict_and_invalid_input) ... ok\r\ntest_idempotency_after_restart_and_conflicting_reuse (test_native_store.NativeStoreTests.test_idempotency_after_restart_and_conflicting_reuse) ... ok\r\ntest_missing_read_detects_concurrent_creation (test_native_store.NativeStoreTests.test_missing_read_detects_concurrent_creation) ... ok\r\ntest_no_git_network_or_process_is_required (test_native_store.NativeStoreTests.test_no_git_network_or_process_is_required) ... ok\r\ntest_same_module_disjoint_old_base_changes_preserve_both (test_native_store.NativeStoreTests.test_same_module_disjoint_old_base_changes_preserve_both) ... ok\r\ntest_same_request_concurrency_returns_one_durable_result (test_native_store.NativeStoreTests.test_same_request_concurrency_returns_one_durable_result) ... ok\r\ntest_tenant_and_module_revision_isolation (test_native_store.NativeStoreTests.test_tenant_and_module_revision_isolation) ... ok\r\ntest_transaction_storage_failure_rolls_back_and_retry_succeeds (test_native_store.NativeStoreTests.test_transaction_storage_failure_rolls_back_and_retry_succeeds) ... ok\r\ntest_unrelated_module_drift_never_invalidates_fixed_work (test_native_store.NativeStoreTests.test_unrelated_module_drift_never_invalidates_fixed_work) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 88 tests in 21.256s\r\n\r\nOK (skipped=2)\r\n"
+  },
+  "independent_adversarial": {
+    "script": "\nimport sys,json,copy\nfrom pathlib import Path\nfrom unittest.mock import patch\nsys.path.insert(0,'customizations/components/tianxuan/duobao')\nfrom test_native_check_inputs import InputTests\nfrom native_check_inputs import CheckInputView\nfrom native_store import NativeStoreError,_digest,_json\nfrom native_workspace import Limits\nt=InputTests();t.setUp(); results=[]\ntry:\n leaf=t.update('leaf','leaf',{'deep':b'L'})\n dep=t.update('dep','dep',{'picked':b'P','hidden':b'H'},{'leaf':leaf})\n core=t.update('corepin','core',{}, {'dep':dep})\n t.candidate=t.store.compose('test',{'core':core})['id']\n r=t.scoped({'core':['code'],'dep':['picked','absent']})\n b=t.cache.binding('test',t.candidate,'check',**r.context('check',t.candidate))\n v=CheckInputView.from_binding(t.store,'test',b)\n dest=t.root/'overlap';v.materialize(t.store,'test',dest)\n names=sorted(p.relative_to(dest).as_posix() for p in dest.rglob('*'))\n assert names==['core','core/code','dep','dep/hidden','dep/picked','leaf','leaf/deep'],names\n results.append({'case':'selected_dependency_overlap_and_transitive_closure','passed':True,'visible':names})\n with patch.object(r.helper,'run_owned',wraps=r.helper.run_owned) as proc:\n  assert t.run_check(r,'before')['outcome']=='passed'\n  dep=t.update('depchange','dep',{'hidden':b'changed'},{'leaf':leaf})\n  core=t.update('corepin2','core',{}, {'dep':dep})\n  t.candidate=t.store.compose('test',{'core':core})['id']\n  assert t.run_check(r,'after')['state']=='complete'\n  assert proc.call_count==2\n results.append({'case':'unselected_object_in_dependency_is_relevant_and_reruns','passed':True,'actual_processes':2})\n for path in ('../escape','AUX','bad.','a/../b'):\n  fake=copy.deepcopy(b);fake['binding']['inputs']['core']['objects']={path:_digest(b'first')};fake['key']=_digest(_json(fake['binding']).encode())\n  try: CheckInputView.from_binding(t.store,'test',fake)\n  except NativeStoreError: pass\n  else: raise AssertionError(path)\n results.append({'case':'rehashed_unsafe_paths_rejected','passed':True,'paths':['../escape','AUX','bad.','a/../b']})\n # Content-integrity digest is deliberately not an authorization signature.\n fake=copy.deepcopy(b);fake['binding']['inputs']={'core':{'objects':{},'dependencies':{}}};fake['key']=_digest(_json(fake['binding']).encode())\n assert CheckInputView.from_binding(t.store,'test',fake).descriptor=='{\"core\":{}}'\n results.append({'case':'forged_binding_boundary','observed':'rehashed fabricated binding accepted by internal from_binding; execute does not accept binding from callers and reconstructs it from trusted EvidenceCache; no authentication claim for this helper'})\n # Quotas on missing object entries and metadata stay bounded before publication.\n try: CheckInputView.from_binding(t.store,'test',b,Limits(request_bytes=10))\n except NativeStoreError: pass\n else: raise AssertionError('metadata limit')\n results.append({'case':'metadata_budget_rejects_before_materialization','passed':True})\nfinally:\n root=t.root;t.doCleanups();assert not root.exists()\nprint(json.dumps({'cases':results,'temporary_directory_removed':True}))\n",
+    "exit_code": 0,
+    "result": {
+      "cases": [
+        {
+          "case": "selected_dependency_overlap_and_transitive_closure",
+          "passed": true,
+          "visible": [
+            "core",
+            "core/code",
+            "dep",
+            "dep/hidden",
+            "dep/picked",
+            "leaf",
+            "leaf/deep"
+          ]
+        },
+        {
+          "case": "unselected_object_in_dependency_is_relevant_and_reruns",
+          "passed": true,
+          "actual_processes": 2
+        },
+        {
+          "case": "rehashed_unsafe_paths_rejected",
+          "passed": true,
+          "paths": [
+            "../escape",
+            "AUX",
+            "bad.",
+            "a/../b"
+          ]
+        },
+        {
+          "case": "forged_binding_boundary",
+          "observed": "rehashed fabricated binding accepted by internal from_binding; execute does not accept binding from callers and reconstructs it from trusted EvidenceCache; no authentication claim for this helper"
+        },
+        {
+          "case": "metadata_budget_rejects_before_materialization",
+          "passed": true
+        }
+      ],
+      "temporary_directory_removed": true
+    }
+  },
+  "assessment": [
+    "Actual view consists of selected objects and exact dependency closure. Selected/dependency overlap intentionally expands dependency module to full pinned revision; the dependency revision is already bound in EvidenceCache, so hidden dependency changes invalidate.",
+    "Declared absent objects stay absent, creation changes binding; unknown whole/module scopes preserve revision identity. Scoped selected revisions are not exposed through producer manifest/candidate metadata.",
+    "Quotas cover bounded metadata, modules, existing files, byte sizes and materialized entries. Portable names, aliases and reparse rejection use existing workspace helpers. Stage errors remove stage before publishing destination. Snapshot covers root, directories, file type, timestamps and content digest.",
+    "Runner freezes trusted binding, compares cache-hit binding and uses expected_binding on result writeback. Stable run request retains candidate. Existing unknown/result/replay behavior remains tested.",
+    "NativeRelease is unchanged and enforces whole-composition check, distinct review per candidate, exact evidence, expiry, revocation and channel CAS.",
+    "from_binding digest check detects accidental corruption, not authorization. A rehashed fabricated safe binding is accepted internally; execute accepts no caller binding and constructs it from trusted installed EvidenceCache. This is consistent with documented trusted-host API, not an OS sandbox."
+  ],
+  "linux": {
+    "validation": "Read supplied actual Linux transcript and verified all 121 raw source SHA256 bindings against review tree",
+    "run": 101,
+    "passed": 97,
+    "skipped": 4,
+    "independently_executed_by_this_reviewer": false
+  },
+  "benchmark": {
+    "validation": "Compared before/after scenario candidates, actual child markers, states and code hashes. Baseline source matches HEAD; runner SHA uses CRLF versus git blob LF. After sources match reviewed bytes. Independent regression reproduced unrelated/unselected reuse and relevant rerun.",
+    "before_actual_checks": 4,
+    "after_actual_checks": 2,
+    "before_seconds": 0.7785293000051752,
+    "after_seconds": 0.38218980001693126,
+    "limitation": "Read and verified exact shared benchmark harness; this reviewer independently reproduced reuse/relevance via regression and additional probes, did not rerun baseline timing comparison. Baseline runner raw CRLF bytes differ from Git LF bytes but normalize identically. One small deterministic Windows sample, no token savings or production efficiency conclusion.",
+    "harness": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\check-input-benchmark.py",
+      "sha256": "826d5b01a28ba4a6d498c100349738a2fc3def9354f5d06c24d371676fd7d33f",
+      "body": "\"\"\"Same deterministic local check across unrelated and relevant changes; not a model benchmark.\"\"\"\nfrom pathlib import Path\nimport sys,json,tempfile,hashlib,time,os,platform\nrepo=Path(sys.argv[1]); label=sys.argv[2]; output=Path(sys.argv[3])\nsys.dont_write_bytecode=True\nsys.path.insert(0,str(repo/'customizations/components/tianxuan/duobao'))\nfrom native_store import NativeStore\nfrom native_evidence import EvidenceCache\nfrom native_check_runner import NativeCheckRunner\ncode=\"import os,pathlib,json,hashlib; p=pathlib.Path(os.environ['DUOBAO_INPUT']); data=(p/'core/a.txt').read_bytes(); result={'sha256':hashlib.sha256(data).hexdigest(),'visible_files':sorted(str(f.relative_to(p)) for f in p.rglob('*') if f.is_file())}; pathlib.Path(os.environ['DUOBAO_OUTPUT'],'actual-check.json').write_text(json.dumps(result)); print(json.dumps(result))\"\nwith tempfile.TemporaryDirectory(prefix='duobao-input-bench-') as folder:\n    root=Path(folder);store=NativeStore(root/'native.sqlite')\n    cache=EvidenceCache(store,{'check':{'version':'v1','reads':{'core':['a.txt']},'max_age_seconds':3600}},lambda t,a,c,op:t=='test' and a=='runner')\n    registry={'check':{'argv':[str(Path(sys.executable).resolve(strict=True)),'-c',code],'env':{k:v for k,v in os.environ.items() if k in {'SystemRoot','WINDIR'}},'toolchain':'a'*64,'environment':'b'*64,'timeout':5,'log_bytes':4096}}\n    runner=NativeCheckRunner(cache,root,registry,lambda t,a,c,op:t=='test' and a=='runner',lambda c,s:Path(s['argv'][0]).is_file())\n    selected={};serial=0; rows=[]\n    def change(module, edits):\n        global serial\n        serial+=1\n        selected.update(store.submit('test','producer',f'edit-{serial}',[{'module':module,'base':store.head('test',module),'reads':[],'edits':edits}])['revisions'])\n    def execute(name, expected):\n        candidate=store.compose('test',selected)['id'];started=time.perf_counter()\n        result=runner.execute('test','runner',name,candidate,'check')\n        elapsed=time.perf_counter()-started\n        assert result['state'] in {'complete','cached'}\n        if result['state']=='complete':\n            assert result['outcome']=='passed'\n            marker=json.loads((Path(result['workspace'])/'output/actual-check.json').read_text())\n            assert marker['sha256']==hashlib.sha256(expected).hexdigest()\n        rows.append({'scenario':name,'candidate':candidate,'state':result['state'],'seconds':elapsed,'evidence':result['evidence']})\n    change('core',{'a.txt':b'A','b.txt':b'B'});change('noise',{'noise.txt':b'N'})\n    execute('initial',b'A')\n    change('noise',{'noise.txt':b'N2'});execute('unrelated-module',b'A')\n    change('core',{'b.txt':b'B2'});execute('unselected-object',b'A')\n    change('core',{'a.txt':b'A2'});execute('relevant-object',b'A2')\n    actual=[json.loads(f.read_text()) for f in root.glob('native-check-*/output/actual-check.json')]\n    report={'issue':1432,'label':label,'platform':platform.platform(),'python':platform.python_version(),'rows':rows,'actual_child_markers':actual,'actual_checks':len(actual),'total_execute_seconds':sum(x['seconds'] for x in rows),'model_calls':0,'tokens':None,'limits':'Synthetic fixed check; actual process count and elapsed times, not full engine workload, production throughput or token savings. Both variants use same check and changes.'}\nreport['temporary_directory_removed']=not root.exists()\nnames=['native_store.py','native_evidence.py','native_check_runner.py','native_workspace.py','native_check_inputs.py']\nreport['source_sha256']={n:hashlib.sha256((repo/'customizations/components/tianxuan/duobao'/n).read_bytes()).hexdigest() for n in names if (repo/'customizations/components/tianxuan/duobao'/n).exists()}\noutput.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\\n',encoding='utf-8',newline='\\n')\nprint(json.dumps({k:v for k,v in report.items() if k not in {'source_sha256','actual_child_markers','rows'}}))\n",
+      "review": "Same child argv and four scenario changes for both source roots. Counts output marker files created by actual subprocess, verifies output content digest, preserves logs and scenarios in report; TemporaryDirectory cleanup checked. No model call."
+    }
+  },
+  "limits": [
+    "Trusted commands and single-writer host; arbitrary out-of-directory reads or malicious same-host races excluded by contract.",
+    "Windows symlink privilege and POSIX FIFO fixtures skipped locally; Linux transcript covers those and has Windows/Darwin-specific skips.",
+    "This review approves only exact bound implementation bytes; it is not commit, deployment, Issue closure or parent business acceptance."
+  ],
+  "cleanup": {
+    "source_edits": false,
+    "raw_evidence_modified": false,
+    "test_temp_directories": "Existing fixture cleanup completed; additional independent probe asserted its TemporaryDirectory absent after cleanup.",
+    "retained": "Parent-owned worktree and all original receipts; only this authorized review receipt written."
+  }
+}
