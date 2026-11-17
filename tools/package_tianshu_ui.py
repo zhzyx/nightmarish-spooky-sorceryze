@@ -23,6 +23,9 @@ def installed_package(executable):
 
 
 def verify_candidate_package(manifest):
+    from package_tianshu_board import verify_candidate_package as verify_board
+
+    verify_board(manifest)
     # Legacy manifests predate desktop packages. New producer snapshots require the pin.
     expected = manifest.get("tianshu_ui_sha256")
     if expected is None and "tools/package_tianshu_ui.py" not in manifest.get("source_inputs", {}):

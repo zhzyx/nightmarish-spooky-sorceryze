@@ -35,7 +35,12 @@ def git(root, *args):
 
 
 UI_OUTPUTS = {"bin/tianshu-ui.json", "bin/tianshu-ui.self_update_a.json", "bin/tianshu-ui.self_update_b.json"}
+UI_OUTPUTS |= {name.replace("tianshu-ui", "tianshu-board") for name in tuple(UI_OUTPUTS)}
 EXTERNAL_SCRIPTS = {"editor/docks/daqian/graph_layout.gd", "editor/docks/daqian/issue_graph.gd"}
+EXTERNAL_SCRIPTS |= {
+    "customizations/components/godot-host/daqian/" + name
+    for name in ("editor_board_entry.py", "board.py", "board_delta.py", "progress.py")
+}
 REPRODUCIBLE = "GONGGONG_NATIVE_SOURCE_ARCHIVE"
 REQUEST_CONTEXT = {"PWD", "OLDPWD", "GONGGONG_WORKSPACE", "WT_SESSION", "TERM_SESSION_ID", "CODEX_TOOL_CALL_ID"}
 RESTORE_MARKERS = "bin/.gonggong-native-restores"
@@ -564,16 +569,32 @@ def build_or_reuse(root, options, artifact, produce, *, env=None, cancelled=None
                 record_restore(root, name)
                 verified_copy(entry / name, root / name, metadata["outputs"][name])
         else:
-            with tempfile.TemporaryDirectory(dir=store) as tmp:
-                stage = Path(tmp) / "entry"
-                hashes = {}
-                for name in outputs:
-                    hashes[name] = digest(root / name)
-                    verified_copy(root / name, stage / name, hashes[name])
-                metadata = {"key": key, "producer_head": head, "outputs": hashes}
-                (stage / "manifest.json").write_bytes(canonical(metadata))
+            hashes = {name: digest(root / name) for name in outputs}
+            metadata = {"key": key, "producer_head": head, "outputs": hashes}
+            try:
+                with tempfile.TemporaryDirectory(dir=store) as tmp:
+                    stage = Path(tmp) / "entry"
+                    for name in outputs:
+                        verified_copy(root / name, stage / name, hashes[name])
+                    (stage / "manifest.json").write_bytes(canonical(metadata))
+                    check_cancel(cancelled)
+                    stage.rename(entry)
+            except InterruptedError:
+                raise
+            except OSError as error:
+                # A reusable cache is optional. The checked local build remains valid
+                # when publication fails (for example a Windows sharing violation).
+                # Do not retry the producer, claim a cache hit, or swallow cancellation.
                 check_cancel(cancelled)
-                stage.rename(entry)
+                return {
+                    "status": "uncached",
+                    "key": key,
+                    "reason": str(error),
+                    "artifact_sha256": hashes[outputs[0]],
+                    "producer_head": head,
+                    "consumer_head": head,
+                    "outputs": hashes,
+                }
         check_cancel(cancelled)
         return {
             "status": "hit" if hit else "built",

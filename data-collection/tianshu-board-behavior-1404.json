@@ -1,0 +1,56 @@
+{
+  "cases": {
+    "0-A": {
+      "args": [
+        "-I",
+        "-B",
+        "C:/Users/ROG/AppData/Local/Temp/board-behavior-uan9kk37/editor/editor_data/cache/gonggong-board-47d60df90a320017473bcd7c8b29ff69c93cf1f6992828f91b4789df4253c1eb.pyz",
+        "--workspace-board-sha256",
+        "3b3d1e17dfd8ea97d42ca35da4da437d02e4d2cbc2681ca9a5485207113c33e5"
+      ],
+      "cache_failure_fallback": true,
+      "missing_fallback": true,
+      "result": {
+        "fixture_version": "A"
+      }
+    },
+    "1-B": {
+      "args": [
+        "-I",
+        "-B",
+        "C:/Users/ROG/AppData/Local/Temp/board-behavior-uan9kk37/editor/editor_data/cache/gonggong-board-5b54ae7bbcbbbee898eb0f9d9e0e366d2343a0fbb269c935511feaeb9f8b7c9d.pyz",
+        "--workspace-board-sha256",
+        "3b3d1e17dfd8ea97d42ca35da4da437d02e4d2cbc2681ca9a5485207113c33e5"
+      ],
+      "cache_failure_fallback": true,
+      "missing_fallback": true,
+      "result": {
+        "fixture_version": "B"
+      }
+    },
+    "cancelled_cli": {
+      "terminal_returncode": 1,
+      "late_result": false
+    },
+    "2-A": {
+      "args": [
+        "-I",
+        "-B",
+        "C:/Users/ROG/AppData/Local/Temp/board-behavior-uan9kk37/editor/editor_data/cache/gonggong-board-47d60df90a320017473bcd7c8b29ff69c93cf1f6992828f91b4789df4253c1eb.pyz",
+        "--workspace-board-sha256",
+        "3b3d1e17dfd8ea97d42ca35da4da437d02e4d2cbc2681ca9a5485207113c33e5"
+      ],
+      "cache_failure_fallback": true,
+      "missing_fallback": true,
+      "result": {
+        "fixture_version": "A"
+      }
+    }
+  },
+  "scope": "offline fixture CLI/result via real native loader and bootstrap; no online business acceptance",
+  "editor_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+  "temporary_directory_removed": true,
+  "issue_number": 1404,
+  "request_id": "tianshu-board-runtime-package-20261117",
+  "original_receipt_sha256": "a497c8d224fb6ea6defb7658c86e0795912d1a52bcc36d7d380ebc2348661f31"
+}

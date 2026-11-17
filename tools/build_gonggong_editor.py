@@ -47,6 +47,8 @@ def build(root, jobs, use_mingw=False, cache_path=None, cache_limit=8):
     native = build_or_reuse(root, options, binary, compile_editor, env=env)
     package = root / "bin/tianshu-ui.json"
     subprocess.run([sys.executable, "tools/package_tianshu_ui.py", "--output", str(package)], cwd=root, check=True)
+    board = root / "bin/tianshu-board.json"
+    subprocess.run([sys.executable, "tools/package_tianshu_board.py", "--output", str(board)], cwd=root, check=True)
     console = binary.with_suffix(".console.exe")
     subprocess.run([console, "--headless", "--test", "--test-case=*[AIChat]*"], cwd=root, check=True)
     if (
@@ -62,6 +64,7 @@ def build(root, jobs, use_mingw=False, cache_path=None, cache_limit=8):
         console_sha256=hashlib.sha256(console.read_bytes()).hexdigest(),
         native=native,
         tianshu_sha256=hashlib.sha256(package.read_bytes()).hexdigest(),
+        tianshu_board_sha256=hashlib.sha256(board.read_bytes()).hexdigest(),
         aichat="passed",
     )
     folder = root / "bin/gonggong-build-receipts"

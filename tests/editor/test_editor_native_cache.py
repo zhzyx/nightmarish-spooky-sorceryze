@@ -163,6 +163,21 @@ class NativeCacheTests(unittest.TestCase):
         policy.write_text(json.dumps({"schema_version": 1, "inputs": []}))
         self.assertNotEqual(cache.native_key(self.root, self.opts, self.artifact, self.env), initial["key"])
 
+    def test_board_runtime_sources_are_external_until_embedded_consumer_claims_them(self):
+        name = "customizations/components/godot-host/daqian/board.py"
+        board = self.root / name
+        board.parent.mkdir(parents=True)
+        board.write_text("A")
+        self.git("add", ".")
+        self.commit()
+        key = cache.native_key(self.root, self.opts, self.artifact, self.env)
+        board.write_text("B")
+        self.assertEqual(cache.native_key(self.root, self.opts, self.artifact, self.env), key)
+        self.probe["native_sources"].append(name)
+        embedded = cache.native_key(self.root, self.opts, self.artifact, self.env)
+        board.write_text("C")
+        self.assertNotEqual(cache.native_key(self.root, self.opts, self.artifact, self.env), embedded)
+
     def test_invalid_host_inventory_falls_back_without_publishing_cache(self):
         path = self.root / "tools/native_host_inputs.json"
         path.parent.mkdir()
@@ -273,6 +288,19 @@ class NativeCacheTests(unittest.TestCase):
         self.assertEqual(self.build()["status"], "hit")
         self.assertEqual(self.runs, 2)
         self.assertEqual(len(list(self.store.glob("*.corrupt-*"))), 1)
+
+    def test_cache_publication_denied_preserves_successful_local_build(self):
+        with patch.object(Path, "rename", side_effect=PermissionError("sharing violation")):
+            receipt = self.build()
+        self.assertEqual(receipt["status"], "uncached")
+        self.assertIn("sharing violation", receipt["reason"])
+        self.assertEqual(self.runs, 1)
+        self.assertEqual(self.artifact.read_bytes(), b"engine")
+        self.assertEqual(self.console.read_bytes(), b"launcher")
+        self.assertEqual(receipt["outputs"][self.outputs[0]], cache.digest(self.artifact))
+        self.assertFalse(any(p.is_dir() for p in self.store.iterdir()))
+        self.assertEqual(self.build()["status"], "built")
+        self.assertEqual(self.build()["status"], "hit")
 
     def test_unknown_platform_falls_back_without_overriding_build_metadata(self):
         self.opts["platform"] = "macos"

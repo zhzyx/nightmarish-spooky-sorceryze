@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-2aa62ec700bc2cec5aad4fbc08a2e0bb8895bbbc1df83f07e4c6a19a3eff0883",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1404",
+  "occurred_at": "2026-11-17T08:41:45.769871+00:00",
+  "evidence_refs": [
+    "codex-intake-1404-20261117",
+    "learn-1019683a1a32777cae71a18ed3de4944e098525ff4150c096fb6fbc90681a098"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 18,
+    "previous": "f15cc9f751fa986f0a5654ac7858958a187146ee7c78483ab27f75e6cefcbdc6",
+    "action": "applied",
+    "details": {
+      "task": "#1404 将四文件看板兼容 Python 从生成头改为独立桌面运行包。",
+      "observed": "Windows 同一二进制实际加载与离线 CLI/result A-B-A、拒绝不兼容、会话固定和回退通过。四个实际 Python 输入逐一修改仅重包；原生加载器改动触发编译和链接。不能推广到未测平台或线上业务。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/tianshu-board-native-1404.json",
+        "sha256": "ddc41ba20220cc1c299fbe1ec9fe54b9d362fd96933eb52209988a050ee2e1fb"
+      },
+      {
+        "path": "data-collection/tianshu-board-behavior-1404.json",
+        "sha256": "146429df6001dd0ec202216c22729cf1c0f23cb26e0d1c43459c6202bed2ff48"
+      },
+      {
+        "path": "data-collection/tianshu-board-four-inputs-1404.json",
+        "sha256": "5e8cdd11e2f1b941289d8f04f5dbc981322fe6b951926b8501ed76c8beb235d5"
+      },
+      {
+        "path": "data-collection/tianshu-board-build-boundary-1404.json",
+        "sha256": "01d3203f3e12ad46112f3ff5cbdd69392b04e3fe02a480a12723acf4bcd5273f"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianshu-board-runtime-package-20261117/codex-intake-1404-20261117.json",
+      "sha256": "cb9a2ee5aa53dfa7ff81aa9abe5eed7c6f4f576fa625b48bb02ed1109245ec18"
+    }
+  },
+  "sha256": "f833ebf45ab8b16d0b0a81d5b60c61a4b449634711d43a9a162b04834b958ffb"
+}

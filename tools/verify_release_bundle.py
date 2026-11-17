@@ -26,14 +26,17 @@ def editor_files(installed, revision):
     records = {}
     for item in installed["files"]:
         name = item["path"]
-        if name not in (gui, installed["console_editor"], "bin/tianshu-ui.json") and not re.fullmatch(
-            r"bin/[\w.-]+\.dll", name, re.ASCII
-        ):
+        if name not in (
+            gui,
+            installed["console_editor"],
+            "bin/tianshu-ui.json",
+            "bin/tianshu-board.json",
+        ) and not re.fullmatch(r"bin/[\w.-]+\.dll", name, re.ASCII):
             raise ValueError("Unexpected installed runtime component: " + name)
         if name in records or not re.fullmatch("[a-fA-F0-9]{64}", item["sha256"]):
             raise ValueError("Invalid installed runtime inventory")
         records[name] = item
-    if not {gui, installed["console_editor"], "bin/tianshu-ui.json"} <= records.keys():
+    if not {gui, installed["console_editor"], "bin/tianshu-ui.json", "bin/tianshu-board.json"} <= records.keys():
         raise ValueError("Incomplete installed editor inventory")
     return records
 

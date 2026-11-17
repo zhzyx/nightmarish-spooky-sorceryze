@@ -149,6 +149,8 @@ jobs:
         run: |
           python tools/package_tianshu_ui.py --output bin/tianshu-ui.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/package_tianshu_board.py --output bin/tianshu-board.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python .github/scripts/windows_editor_artifact.py record
 
       - name: Tianshu workbench UI smoke

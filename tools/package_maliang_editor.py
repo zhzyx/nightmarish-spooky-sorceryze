@@ -401,6 +401,11 @@ def copy_editor(editor, staged, target):
             package = installed_package(editor)
             if package.is_file():
                 copy_file(package, installed_package(binary))
+        from package_tianshu_board import installed_package as board_package
+
+        board = board_package(editor)
+        if not app and board.is_file():
+            copy_file(board, board_package(binary))
         editor_native_app.native_executable(binary)
         subprocess.run(["/usr/bin/lipo", str(binary), "-verify_arch", "arm64"], check=True)
         return binary

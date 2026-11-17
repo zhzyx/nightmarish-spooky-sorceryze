@@ -83,6 +83,11 @@ def artifact_manifest(root, artifact, binding, project, options, before, native_
     package = installed_package(artifact)
     if package.is_file():
         value["tianshu_ui_sha256"] = hashlib.sha256(package.read_bytes()).hexdigest()
+    from package_tianshu_board import installed_package as board_package
+
+    board = board_package(artifact)
+    if board.is_file():
+        value["tianshu_board_sha256"] = hashlib.sha256(board.read_bytes()).hexdigest()
     verify_candidate_package(value)
     path = Path(str(artifact) + ".candidate.json")
     if native_app is not None:

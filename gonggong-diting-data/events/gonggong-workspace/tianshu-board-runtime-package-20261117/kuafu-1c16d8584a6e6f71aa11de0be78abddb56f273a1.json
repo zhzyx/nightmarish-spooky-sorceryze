@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1c16d8584a6e6f71aa11de0be78abddb56f273a1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-board-runtime-package-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1404",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "01e4d357d610fed4508438b8441390c990a7ffd2e6eba829dabbbce61e54d0e8",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1404",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1405",
+    "action": "validation",
+    "detection_head": "a409f21b95c1a878c8022d7603b64251bfc2faf6",
+    "context_sha256": "19fc2cde3f6839b9326b91703834b94ccc176147ced7e5ceb520453984788714",
+    "operator": "Sail-Li",
+    "worker": "current-codex-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "D:/GongGong/data-collection/receipts/duobao-1382/board-native-build-fixed.log",
+    "diagnosis": "Native compilation succeeded; optional shared cache stage.rename returned Windows access denied and propagated failure. No conflicting destination remained on readback; underlying OS denial not established. Fixed cache publication OSError fallback to verified local output without second producer; preserve cancellation and integrity errors. Regression injects denied rename, verifies preserved engine/console, no cache hit claim and later recovery. 14 cache tests passed; exact build wrapper rerun completed, native artifact hash unchanged and 115 AIChat tests passed. Native package smoke and offline real CLI A-B-A passed.",
+    "next_action": "Independent review delta and actual SCons boundary test before delivery. Retain unknown OS trigger; package issue stays open until full scope acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T08:08:43.813320+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T08:16:18.433468+00:00",
+  "sha256": "90f60b6cb916cb2405aa8abd7facea7b37d4bbf31f138f2ca042d958bdb9373a"
+}

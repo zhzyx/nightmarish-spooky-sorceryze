@@ -1,0 +1,83 @@
+{
+  "editor_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+  "package_a": "5e2fc0797e98114396f67809a14db6b39e88f306322f92584e145f3143d40b71",
+  "package_b": "577d3253859c9c475e9cee3c33ccb0a776f943c80ead2e0f8f3ac48791b086ac",
+  "cases": {
+    "installed_A_session_fixed_while_B_written": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT ae061fab868585fe0f8be05938f4755aa3dc31fbbdee84d2dab6ced9c38191f8|ae061fab868585fe0f8be05938f4755aa3dc31fbbdee84d2dab6ced9c38191f8"
+    },
+    "next_session_B": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT 06cfa9779f5dec1e3956ce6e60a477d593a85a0748f2df67249feef013560be0|06cfa9779f5dec1e3956ce6e60a477d593a85a0748f2df67249feef013560be0"
+    },
+    "rollback_A": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT ae061fab868585fe0f8be05938f4755aa3dc31fbbdee84d2dab6ced9c38191f8|ae061fab868585fe0f8be05938f4755aa3dc31fbbdee84d2dab6ced9c38191f8"
+    },
+    "explicit_B": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT 06cfa9779f5dec1e3956ce6e60a477d593a85a0748f2df67249feef013560be0|06cfa9779f5dec1e3956ce6e60a477d593a85a0748f2df67249feef013560be0"
+    },
+    "self_update_slot_B": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT 06cfa9779f5dec1e3956ce6e60a477d593a85a0748f2df67249feef013560be0|06cfa9779f5dec1e3956ce6e60a477d593a85a0748f2df67249feef013560be0"
+    },
+    "legacy_modern_unknown_helpers": {
+      "returncode": 0,
+      "observed": "DAQIAN_BOARD_HELPERS_OK"
+    },
+    "wrong_pin": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT |"
+    },
+    "missing_pin": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT |"
+    },
+    "relative_path": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT |"
+    },
+    "missing_package": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT |"
+    },
+    "unknown_abi": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT |"
+    },
+    "entry_digest": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT |"
+    },
+    "zip_digest": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT |"
+    },
+    "wrong_type": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT |"
+    },
+    "bad_base64": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT |"
+    },
+    "bad_payload": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT |"
+    },
+    "oversize": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT |"
+    },
+    "corrupt_zip": {
+      "returncode": 0,
+      "observed": "BOARD_PACKAGE_RESULT |"
+    }
+  },
+  "evidence_level": "native editor injection; Python execution semantics tested separately",
+  "issue_number": 1404,
+  "request_id": "tianshu-board-runtime-package-20261117",
+  "original_receipt_sha256": "5f9c59e29e2be6dad67c1c30c5aa82ec8a1e75cddacec40436001f841e0768c1"
+}

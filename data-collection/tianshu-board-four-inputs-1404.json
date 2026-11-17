@@ -1,0 +1,182 @@
+{
+  "issue_number": 1404,
+  "request_id": "tianshu-board-runtime-package-20261117",
+  "command": [
+    "C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+    "-m",
+    "SCons",
+    "platform=windows",
+    "target=editor",
+    "arch=x86_64",
+    "dev_build=no",
+    "precision=single",
+    "module_mono_enabled=no",
+    "ninja=no",
+    "extra_suffix=",
+    "tests=yes",
+    "accesskit=no",
+    "d3d12=no",
+    "angle=no",
+    "cache_path=D:\\GongGong\\data-collection\\receipts\\duobao-1382\\scons-cache",
+    "cache_limit=8",
+    "-j10"
+  ],
+  "cases": {
+    "board-four-baseline": {
+      "returncode": 0,
+      "before": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914"
+      },
+      "after": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914"
+      },
+      "compiled_dock": false,
+      "linked_editor": false,
+      "raw_process_output_sha256": "80ced97975c34ce737fe1533c88af4b0db132caa6143aa7fa23c472498a816e7",
+      "stored_log_sha256": "80ced97975c34ce737fe1533c88af4b0db132caa6143aa7fa23c472498a816e7"
+    },
+    "board-four-editor_board_entry-package-changed": {
+      "returncode": 0,
+      "before": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914"
+      },
+      "after": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "50f3abffa8572d47569cdcb7a42eb447e402f82c210a9bc949d0cfbc5b7bc89e"
+      },
+      "compiled_dock": false,
+      "linked_editor": false,
+      "raw_process_output_sha256": "d1a3177e2c2dcdd2d00d79017487ae635788888cfe4aac748951d4d9c79c80f3",
+      "stored_log_sha256": "d1a3177e2c2dcdd2d00d79017487ae635788888cfe4aac748951d4d9c79c80f3"
+    },
+    "board-four-editor_board_entry-package-restored": {
+      "returncode": 0,
+      "before": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "50f3abffa8572d47569cdcb7a42eb447e402f82c210a9bc949d0cfbc5b7bc89e"
+      },
+      "after": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914"
+      },
+      "compiled_dock": false,
+      "linked_editor": false,
+      "raw_process_output_sha256": "6c44fbc759a9d696a80e89160925dc9be20c48c0061392d610b997c16bc0db2a",
+      "stored_log_sha256": "6c44fbc759a9d696a80e89160925dc9be20c48c0061392d610b997c16bc0db2a"
+    },
+    "board-four-board-package-changed": {
+      "returncode": 0,
+      "before": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914"
+      },
+      "after": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "2c264f8c84e5397fc00df9e3551068b9810e069081a5f8ca640072656a97f460"
+      },
+      "compiled_dock": false,
+      "linked_editor": false,
+      "raw_process_output_sha256": "f8ca2eded5ce04d58d595272bdfdd96b6c6dd56a6ec47f0fa79ca69beebc894b",
+      "stored_log_sha256": "f8ca2eded5ce04d58d595272bdfdd96b6c6dd56a6ec47f0fa79ca69beebc894b"
+    },
+    "board-four-board-package-restored": {
+      "returncode": 0,
+      "before": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "2c264f8c84e5397fc00df9e3551068b9810e069081a5f8ca640072656a97f460"
+      },
+      "after": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914"
+      },
+      "compiled_dock": false,
+      "linked_editor": false,
+      "raw_process_output_sha256": "30f800e713b1ac19358479828eead08cf37ac8d18db5f8e652808329257c6a31",
+      "stored_log_sha256": "30f800e713b1ac19358479828eead08cf37ac8d18db5f8e652808329257c6a31"
+    },
+    "board-four-board_delta-package-changed": {
+      "returncode": 0,
+      "before": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914"
+      },
+      "after": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "3fa6ce079090b02e7c6ca3789ac828e8eb28ae86167b916ffa10a3e8a4262abd"
+      },
+      "compiled_dock": false,
+      "linked_editor": false,
+      "raw_process_output_sha256": "45f80b13840f482d3f32b4a5c4554f64271be8548a73a5268f63fc501e1132d3",
+      "stored_log_sha256": "45f80b13840f482d3f32b4a5c4554f64271be8548a73a5268f63fc501e1132d3"
+    },
+    "board-four-board_delta-package-restored": {
+      "returncode": 0,
+      "before": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "3fa6ce079090b02e7c6ca3789ac828e8eb28ae86167b916ffa10a3e8a4262abd"
+      },
+      "after": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914"
+      },
+      "compiled_dock": false,
+      "linked_editor": false,
+      "raw_process_output_sha256": "f9fcc1f51a30a8211402376bab5c357d59da341597505fd445dd2fc31065ac6a",
+      "stored_log_sha256": "f9fcc1f51a30a8211402376bab5c357d59da341597505fd445dd2fc31065ac6a"
+    },
+    "board-four-progress-package-changed": {
+      "returncode": 0,
+      "before": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914"
+      },
+      "after": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "fdd46a0b4aad223519a0e6253890615f1dd8dfd31993ebb68777bdc12b932dc8"
+      },
+      "compiled_dock": false,
+      "linked_editor": false,
+      "raw_process_output_sha256": "0b2945f6e071654b678048181a97cc518789ace0dcaf9e7d183e826e862106bf",
+      "stored_log_sha256": "0b2945f6e071654b678048181a97cc518789ace0dcaf9e7d183e826e862106bf"
+    },
+    "board-four-progress-package-restored": {
+      "returncode": 0,
+      "before": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "fdd46a0b4aad223519a0e6253890615f1dd8dfd31993ebb68777bdc12b932dc8"
+      },
+      "after": {
+        "binary_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "binary_mtime_ns": 1794903404199953900,
+        "package_sha256": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914"
+      },
+      "compiled_dock": false,
+      "linked_editor": false,
+      "raw_process_output_sha256": "fdf151cfb56be0faafac06ea9d7b5ee4396683896c47b84875942e2c3ddde8e8",
+      "stored_log_sha256": "fdf151cfb56be0faafac06ea9d7b5ee4396683896c47b84875942e2c3ddde8e8"
+    }
+  },
+  "scope": "Actual Windows MSVC SCons boundary; native and package sources restored; no production install switch.",
+  "passed": true,
+  "original_receipt_sha256": "0796b8ac7990682f77d0a4dfee481d90ab740783616dbac2dc810bd0f856140e"
+}

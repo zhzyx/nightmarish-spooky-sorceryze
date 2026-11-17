@@ -34,11 +34,14 @@
 #include "core/crypto/crypto_core.h"
 #include "core/io/file_access.h"
 #include "core/io/json.h"
+#include "core/io/marshalls.h"
 #include "core/object/callable_mp.h"
 #include "core/object/class_db.h"
 #include "core/object/script_language.h"
 #include "core/os/os.h"
+#if !defined(WINDOWS_ENABLED) && !defined(MACOS_ENABLED) && !defined(LINUXBSD_ENABLED)
 #include "editor/docks/daqian_board.gen.h"
+#endif
 #include "editor/docks/daqian_scripts.gen.h"
 #include "editor/docks/editor_dock.h"
 #include "editor/docks/gonggong_process.h"
@@ -47,6 +50,8 @@
 #include "main/main.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/label.h"
+
+#include <zlib.h>
 
 #ifdef MACOS_ENABLED
 #include "editor/docks/gonggong_validation.gen.h"
@@ -121,6 +126,129 @@ static Dictionary load_tianshu_package() {
 		Variant value = data.get(field, Variant());
 		ERR_FAIL_COND_V_MSG(value.get_type() != Variant::STRING || String(value).strip_edges().is_empty(), Dictionary(), "Incomplete Tianshu UI package.");
 	}
+	return data;
+}
+
+// ABI 1 deliberately accepts only deterministic ZIP_STORED archives emitted by
+// package_tianshu_board.py. Check both local and central records before Python sees bytes.
+static bool validate_tianshu_board_zip(const Dictionary &p_data) {
+	if (p_data.get("entries", Variant()).get_type() != Variant::DICTIONARY) {
+		return false;
+	}
+	Dictionary entries = p_data["entries"];
+	if (entries.size() != 4) {
+		return false;
+	}
+	CharString encoded = String(p_data["bundle_base64"]).ascii();
+	Vector<uint8_t> zip;
+	zip.resize(encoded.length());
+	size_t length = 0;
+	if (CryptoCore::b64_decode(zip.ptrw(), zip.size(), &length, (const uint8_t *)encoded.get_data(), encoded.length()) != OK || length < 22) {
+		return false;
+	}
+	zip.resize(length);
+	Vector<uint8_t> canonical;
+	canonical.resize(encoded.length() + 1);
+	size_t encoded_length = 0;
+	if (CryptoCore::b64_encode(canonical.ptrw(), canonical.size(), &encoded_length, zip.ptr(), zip.size()) != OK || encoded_length != (size_t)encoded.length() || memcmp(canonical.ptr(), encoded.get_data(), encoded_length) != 0) {
+		return false;
+	}
+	uint8_t digest[32];
+	if (CryptoCore::sha256(zip.ptr(), zip.size(), digest) != OK || String::hex_encode_buffer(digest, 32) != String(p_data["bundle_sha256"])) {
+		return false;
+	}
+	const uint8_t *bytes = zip.ptr();
+	const char *names[] = { "__main__.py", "board.py", "board_delta.py", "progress.py" };
+	uint32_t offsets[4], sizes[4], crcs[4];
+	uint64_t pos = 0, total = 0;
+	for (int i = 0; i < 4; i++) {
+		uint32_t name_size = strlen(names[i]);
+		if (pos + 30 + name_size > length) {
+			return false;
+		}
+		const uint8_t *h = bytes + pos;
+		sizes[i] = decode_uint32(h + 22);
+		crcs[i] = decode_uint32(h + 14);
+		offsets[i] = pos;
+		total += sizes[i];
+		if (decode_uint32(h) != 0x04034b50 || decode_uint16(h + 4) != 20 || decode_uint16(h + 6) != 0 || decode_uint16(h + 8) != 0 || decode_uint16(h + 10) != 0 || decode_uint16(h + 12) != 33 || decode_uint32(h + 18) != sizes[i] || decode_uint16(h + 26) != name_size || decode_uint16(h + 28) != 0 || memcmp(h + 30, names[i], name_size) != 0 || total > 16 * 1024 * 1024 || pos + 30 + name_size + sizes[i] > length) {
+			return false;
+		}
+		const uint8_t *body = h + 30 + name_size;
+		if (crc32(0, body, sizes[i]) != crcs[i] || entries.get(names[i], Variant()).get_type() != Variant::STRING || CryptoCore::sha256(body, sizes[i], digest) != OK || String::hex_encode_buffer(digest, 32) != String(entries[names[i]])) {
+			return false;
+		}
+		pos += 30 + name_size + sizes[i];
+	}
+	uint64_t central = pos;
+	for (int i = 0; i < 4; i++) {
+		uint32_t name_size = strlen(names[i]);
+		if (pos + 46 + name_size > length) {
+			return false;
+		}
+		const uint8_t *h = bytes + pos;
+		if (decode_uint32(h) != 0x02014b50 || decode_uint16(h + 4) != 20 || decode_uint16(h + 6) != 20 || decode_uint16(h + 8) != 0 || decode_uint16(h + 10) != 0 || decode_uint16(h + 12) != 0 || decode_uint16(h + 14) != 33 || decode_uint32(h + 16) != crcs[i] || decode_uint32(h + 20) != sizes[i] || decode_uint32(h + 24) != sizes[i] || decode_uint16(h + 28) != name_size || decode_uint16(h + 30) != 0 || decode_uint16(h + 32) != 0 || decode_uint16(h + 34) != 0 || decode_uint16(h + 36) != 0 || decode_uint32(h + 38) != (0600U << 16) || decode_uint32(h + 42) != offsets[i] || memcmp(h + 46, names[i], name_size) != 0) {
+			return false;
+		}
+		pos += 46 + name_size;
+	}
+	if (pos + 22 != length) {
+		return false;
+	}
+	const uint8_t *end = bytes + pos;
+	return decode_uint32(end) == 0x06054b50 && decode_uint16(end + 4) == 0 && decode_uint16(end + 6) == 0 && decode_uint16(end + 8) == 4 && decode_uint16(end + 10) == 4 && decode_uint32(end + 12) == pos - central && decode_uint32(end + 16) == central && decode_uint16(end + 20) == 0;
+}
+
+static Dictionary load_tianshu_board_package() {
+	OS *os = OS::get_singleton();
+	String executable = os->get_executable_path();
+	String directory = executable.get_base_dir();
+	String filename = "tianshu-board.json";
+	for (const String &slot : { String("self_update_a"), String("self_update_b") }) {
+		if (executable.get_file().split(".").has(slot)) {
+			filename = "tianshu-board." + slot + ".json";
+		}
+	}
+#ifdef MACOS_ENABLED
+	if (directory.get_file() == "MacOS" && directory.get_base_dir().get_file() == "Contents") {
+		directory = directory.get_base_dir().path_join("Resources");
+		filename = "tianshu-board.json";
+	}
+#endif
+	String path = directory.path_join(filename);
+	String pin;
+	if (os->has_environment("GONGGONG_TIANSHU_BOARD_PACKAGE") || os->has_environment("GONGGONG_TIANSHU_BOARD_SHA256")) {
+		path = os->get_environment("GONGGONG_TIANSHU_BOARD_PACKAGE");
+		pin = os->get_environment("GONGGONG_TIANSHU_BOARD_SHA256").to_lower();
+		ERR_FAIL_COND_V_MSG(!path.is_absolute_path() || path.contains("://") || pin.length() != 64 || !pin.is_valid_hex_number(false), Dictionary(), "Tianshu board requires an absolute filesystem path and a SHA-256 pin.");
+	}
+	// Bypass project packs. Verify and compile the same bytes (one open).
+	Ref<FileAccess> file = FileAccess::open(path, FileAccess::READ | FileAccess::SKIP_PACK);
+	ERR_FAIL_COND_V_MSG(file.is_null(), Dictionary(), "Tianshu board package missing: " + path);
+	uint64_t size = file->get_length();
+	ERR_FAIL_COND_V_MSG(size == 0 || size > 4 * 1024 * 1024, Dictionary(), "Invalid Tianshu board package size.");
+	Vector<uint8_t> bytes = file->get_buffer(size);
+	ERR_FAIL_COND_V((uint64_t)bytes.size() != size, Dictionary());
+	if (!pin.is_empty()) {
+		uint8_t digest[32];
+		ERR_FAIL_COND_V(CryptoCore::sha256(bytes.ptr(), bytes.size(), digest) != OK, Dictionary());
+		ERR_FAIL_COND_V_MSG(String::hex_encode_buffer(digest, 32) != pin, Dictionary(), "Tianshu board package pin mismatch.");
+	}
+	Variant envelope = JSON::parse_string(String::utf8((const char *)bytes.ptr(), bytes.size()));
+	ERR_FAIL_COND_V_MSG(envelope.get_type() != Variant::DICTIONARY, Dictionary(), "Invalid Tianshu board package.");
+	Dictionary manifest = envelope;
+	ERR_FAIL_COND_V_MSG(manifest.get("payload", Variant()).get_type() != Variant::STRING || manifest.get("sha256", Variant()).get_type() != Variant::STRING, Dictionary(), "Invalid board envelope fields.");
+	String payload = manifest.get("payload", "");
+	ERR_FAIL_COND_V_MSG(payload.is_empty() || payload.sha256_text() != String(manifest.get("sha256", "")), Dictionary(), "Tianshu board payload checksum mismatch.");
+	Variant parsed = JSON::parse_string(payload);
+	ERR_FAIL_COND_V(parsed.get_type() != Variant::DICTIONARY, Dictionary());
+	Dictionary data = parsed;
+	ERR_FAIL_COND_V_MSG(data.get("abi", "") != Variant("tianshu-board-compat/1"), Dictionary(), "Incompatible Tianshu board package ABI.");
+	for (const char *field : { "version", "bundle_base64", "bundle_sha256" }) {
+		Variant value = data.get(field, Variant());
+		ERR_FAIL_COND_V_MSG(value.get_type() != Variant::STRING || String(value).strip_edges().is_empty(), Dictionary(), "Incomplete Tianshu board package.");
+	}
+	ERR_FAIL_COND_V_MSG(!validate_tianshu_board_zip(data), Dictionary(), "Invalid Tianshu board ZIP or entry digest.");
 	return data;
 }
 #endif
@@ -211,8 +339,18 @@ EditorDock *create_daqian_dock() {
 	content->set_script(workspace);
 	content->set("controller_script", refWorkflowController);
 	content->set("process_stopper", callable_mp_static(&stop_gonggong_process));
+#if defined(WINDOWS_ENABLED) || defined(MACOS_ENABLED) || defined(LINUXBSD_ENABLED)
+	Dictionary board_package = load_tianshu_board_package();
+	if (!board_package.is_empty()) {
+		content->set("board_bundle_base64", board_package["bundle_base64"]);
+		content->set("board_bundle_sha256", board_package["bundle_sha256"]);
+	} else {
+		WARN_PRINT("Tianshu board compatibility package rejected; using workspace helper fallback.");
+	}
+#else
 	content->set("board_bundle_base64", editor_script_source(daqian_board_base64));
 	content->set("board_bundle_sha256", daqian_board_sha256);
+#endif
 	content->set("details_script", details);
 	content->set("inspector_script", inspector);
 	content->set("canvas_script", canvas);

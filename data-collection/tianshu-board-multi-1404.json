@@ -1,0 +1,9 @@
+{
+  "state": "passed",
+  "editor_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+  "scenario": "multi_issue",
+  "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board",
+  "issue_number": 1404,
+  "request_id": "tianshu-board-runtime-package-20261117",
+  "original_receipt_sha256": "1237b5da238feb9bbf00353fca4676a8839896afee083d0c6bfa488794862eb9"
+}

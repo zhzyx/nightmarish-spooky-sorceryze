@@ -46,6 +46,7 @@ if ($hasGit -or $inventory.schema_version -eq 2) {
         }
     }
     $required += 'bin/tianshu-ui.json'
+    $required += 'bin/tianshu-board.json'
     $required += @($inventory.files | Where-Object { $_.path -match '^bin/[a-zA-Z0-9_.-]+[.]dll$' } | ForEach-Object path)
 }
 foreach ($name in $required) {
