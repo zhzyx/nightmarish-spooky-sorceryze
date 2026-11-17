@@ -1,0 +1,13 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "reason": "Concurrent main PR #1473 received during Windows full build; integrate current baseline before delivery.",
+  "previous_base": "4ee782c3ddbdf9b3f63e507c7a874bd048ed21c5",
+  "current_base": "5d0200ca328a41d7d374d122b11488e6a0dd032a",
+  "local_integration": "1b92b37b6411829d93e7e28f7c91cc541f2ddbdb",
+  "conflicts": false,
+  "reviewed_files_unchanged": 25,
+  "review": "data-collection/godot-windows-web-1462-independent-review-runtime.json",
+  "prior_runtime": "data-collection/godot-windows-web-1462-runtime-1471.json",
+  "aligned_candidate_ci": "pending; prior run does not substitute for updated baseline checks"
+}
