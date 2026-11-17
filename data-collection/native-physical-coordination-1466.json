@@ -1,0 +1,88 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1466",
+  "request_id": "native-product-integration-20261118",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "8c8e742058b72b286f9849b3e1e17297a5a2729d7b5509e87c41c5e94ffdad3d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py": "4d4e1c35d2fb89f1dcc6b4680b2006f0fbaf71de883386eb9cef949dc90f2440",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "06f5559778dd628376aedcf41f6dd47efde38536f220486b7b0daf7cb4be1320",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "59c8a0f2afc5aaa40190a5fa2a90405ddbcf26d567e28d51e585169ddec26f1b"
+  },
+  "checks": [
+    {
+      "command": [
+        "D:/GongGong-work/tx-venv/Scripts/python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py",
+        "-q",
+        "--basetemp",
+        "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\physical-coordination-final-1"
+      ],
+      "exit_code": 0,
+      "seconds": 3.9997295000066515,
+      "stdout": ".....                                                                    [100%]\n5 passed in 3.69s\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "check",
+        "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12495650000346359,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.11271349999879021,
+      "stdout": "2 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "mypy",
+        "--cache-dir",
+        "nul",
+        "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.54870060000394,
+      "stdout": "Success: no issues found in 2 source files\n",
+      "stderr": ""
+    }
+  ],
+  "passed": true,
+  "semantics": "Current authenticated coordinator can release physically closed capacity while content remains closed-unresolved and not accepted. Restored original producer authority recovers immutable spool without rerun; malformed physical closure and unknown process remain held; replacement cannot close new issue.",
+  "limits": [
+    "No real model calls or production claim",
+    "Only scoped coordinator delta; full combined Windows/Linux/Node and independent review pending",
+    "Unknown-process fixture sets trusted coordinator held state without fabricating a terminal",
+    "Historical Windows materializer fault still under1461 repair; this scope does not claim it fixed"
+  ],
+  "retained_resources": "Source-bound temporary database/process files retained for independent review; process helpers settled."
+}

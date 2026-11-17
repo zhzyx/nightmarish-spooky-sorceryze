@@ -481,7 +481,7 @@ def test_authenticated_reconcile_durable_terminal_only(fixture):
     with w.worker.store._connection(write=True) as db:
         db.execute("DELETE FROM native_worker_terminals_v2 WHERE execution=?", (key,))
         db.execute("DELETE FROM native_worker_closed WHERE execution=?", (key,))
-    assert w.reconcile(actor, key)["state"] == "held"
+    assert w.reconcile(actor, key)["state"] == "closed-unresolved"
 
 
 def test_fifo_and_managed_done_tool_guard(fixture):

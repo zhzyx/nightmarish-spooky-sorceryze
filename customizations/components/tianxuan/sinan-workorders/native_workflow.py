@@ -6,12 +6,24 @@ Unknown intent survives restart and requires an authenticated owner receipt.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import time
+from concurrent.futures import Future
 from contextlib import contextmanager
 
 from native_store import NativeStoreError, _digest, _json
 from tianxuan_core import PermissionDenied
+
+
+def check_passed(runner, tenant, candidate, check, fact):
+    """A cached result has no process outcome; validate its actual evidence."""
+    if fact.get("outcome") == "passed":
+        return True
+    if fact.get("state") != "cached":
+        return False
+    hit = runner.cache.lookup(tenant, candidate, check, **runner.context(check, candidate))
+    return hit is not None and hit["evidence"]["id"] == fact.get("evidence")
 
 
 class NativeWorkflow:
@@ -35,6 +47,7 @@ class NativeWorkflow:
         self.domain, self.worker, self.runner, self.release = domain, worker, runner, release
         self.authorize, self.capacity = authorize, capacity
         self.principals, self.review_candidate, self.installed_plan = principals, review_candidate, installed_plan
+        self._executions = {}  # Exact local coordinator ownership; never inferred from a PID.
         self.next_issues = next_issues
         self.installed_target = installed_target
         self.catalog = json.loads(_json(catalog or []))
@@ -144,8 +157,11 @@ class NativeWorkflow:
         mandate,
         capabilities=None,
         expected=None,
+        delivery_mode="standalone",
     ):
         source = self._allow(actor, issue, "authorize")
+        if delivery_mode not in {"standalone", "contribution"}:
+            raise NativeStoreError("Unsupported delivery mode")
         if not mandate or not checks or profile not in self.worker.profiles:
             raise NativeStoreError("Installed profile, checks and mandate required")
         tenant = source["definition"]["tenant_id"]
@@ -185,6 +201,7 @@ class NativeWorkflow:
             product=product,
             checks=checks,
             mandate=mandate,
+            delivery_mode=delivery_mode,
             **({"previous": expected} if expected is not None else {}),
         )
         key = _digest(_json(task).encode())
@@ -222,7 +239,7 @@ class NativeWorkflow:
                 # so their existing produced-state guard also fails closed.
                 # Real/unknown occupancy and historical acceptance stay intact.
                 db.execute(
-                    "UPDATE native_tasks SET state='superseded' WHERE id=? AND state IN ('ready','produced','failed','stopped')",
+                    "UPDATE native_tasks SET state='superseded' WHERE id=? AND state IN ('ready','produced','failed','stopped','closed-unresolved')",
                     (expected,),
                 )
             db.execute("INSERT INTO native_task_revisions VALUES (?,?,?)", (key, expected, actor))
@@ -290,6 +307,7 @@ class NativeWorkflow:
                         visible = False
                 active.append({
                     "ticket": held_row["id"] if visible else "occupied-slot-" + str(index),
+                    **({"terminalObservable": True} if visible and held_row["state"] != "reserved" else {}),
                     "reads": [],
                     "writes": [str(self.worker.root / held_row["id"])] if visible else [],
                 })
@@ -373,7 +391,43 @@ class NativeWorkflow:
             )
             return True
 
+    async def await_terminal(self, actor, key):
+        # Registration and execution ownership use the same domain lock. A
+        # completed execution is recovered from durable state, not cached events.
+        with self.domain._connection_lock:
+            row = self.status(actor, key)
+            owned = self._executions.get(key)
+        if owned is not None:
+            event, deadline = owned
+            try:
+                await asyncio.wait_for(asyncio.shield(asyncio.wrap_future(event)), max(0, deadline - time.monotonic()))
+            except TimeoutError:
+                raise NativeStoreError("Terminal observer deadline exceeded; physical state remains unknown") from None
+        row = self.reconcile(actor, key)
+        if row["state"] in {"reserved", "running", "held", "closed-unresolved"}:
+            raise NativeStoreError("Terminal event ownership unavailable; physical state remains unknown")
+        with self._transaction() as db:
+            row = self._row(db, key)
+            self._valid(actor, row)
+        return row
+
     def execute(self, actor, key):
+        with self.domain._connection_lock:
+            row = self.status(actor, key)
+            if key in self._executions or row["state"] != "reserved":
+                return row
+            task = json.loads(row["task"])
+            event = Future()
+            deadline = time.monotonic() + self.worker.profiles[task["profile"]]["timeout"] + 60
+            self._executions[key] = (event, deadline)
+        try:
+            return self._execute_owned(actor, key)
+        finally:
+            with self.domain._connection_lock:
+                self._executions.pop(key, None)
+                event.set_result(None)
+
+    def _execute_owned(self, actor, key):
         self._dependencies_current(actor, key)
         with self._transaction() as db:
             row = self._row(db, key)
@@ -423,20 +477,48 @@ class NativeWorkflow:
     def reconcile(self, actor, key):
         row = self.status(actor, key)
         self._allow(actor, row["issue"], "reconcile")
-        if row["state"] not in {"running", "held"}:
+        if row["state"] not in {"running", "held", "closed-unresolved"}:
             return row
-        terminal = self.worker.reconcile(json.loads(row["task"]), key)
-        if terminal is None:
+        task = json.loads(row["task"])
+        failure = None
+        try:
+            terminal = self.worker.reconcile(task, key)
+        except NativeStoreError as error:
+            # Current producer authority can reject content after the physical
+            # process closed. The coordinator may settle capacity, never approve
+            # that content or impersonate the producer to recover it.
+            terminal, failure = None, str(error)
+        if terminal is None and not self.worker.process_closed(task, key):
+            if failure is not None:
+                raise NativeStoreError(failure)
             return row  # No expiry, PID takeover or automatic relaunch.
         with self._transaction() as db:
             current = self._row(db, key)
+            self._read_allowed(actor, current)
+            self._allow(actor, current["issue"], "reconcile")
             try:
                 self._valid(actor, current)
-                state = terminal["state"]
+                state = terminal["state"] if terminal is not None else "closed-unresolved"
             except (PermissionDenied, NativeStoreError):
                 state = "stopped"
-            if current["state"] in {"running", "held"}:
-                db.execute("UPDATE native_tasks SET state=?,terminal=? WHERE id=?", (state, _json(terminal), key))
+            if current["state"] in {"running", "held", "closed-unresolved"}:
+                db.execute(
+                    "UPDATE native_tasks SET state=?,terminal=? WHERE id=?",
+                    (state, _json(terminal) if terminal is not None else None, key),
+                )
+                if state in {"produced", "failed"}:
+                    db.execute(
+                        "UPDATE issues SET status=? WHERE id=?",
+                        ("in-review" if state == "produced" else "blocked", current["issue"]),
+                    )
+                if current["state"] != state:
+                    self.domain._event(
+                        task["tenant"],
+                        "native.reconciled",
+                        actor,
+                        current["issue"],
+                        {"task": key, "state": state, "content_error": failure},
+                    )
         return self.status(actor, key)
 
     def advance(self, actor, *, isolate=False, exclude=()):
@@ -506,6 +588,8 @@ class NativeWorkflow:
         self._dependencies_current(actor, key)
         row = self.status(actor, key)
         task = self._valid(actor, row)
+        if task.get("delivery_mode") == "contribution":
+            raise NativeStoreError("Contribution requires joint integration review")
         self._allow(actor, row["issue"], "review")
         if not callable(self.principals) or not callable(self.review_candidate):
             raise NativeStoreError("Independent review installation unavailable")
@@ -523,7 +607,10 @@ class NativeWorkflow:
             if previous:
                 return self.release._valid_review(native_db, task["tenant"], previous["record"])
         facts = self.check(actor, key)
-        if any(fact["outcome"] != "passed" for fact in facts.values()):
+        if any(
+            not check_passed(self.runner, task["tenant"], terminal["candidate"], check, fact)
+            for check, fact in facts.items()
+        ):
             raise NativeStoreError("Required content checks failed; independent review not started")
         with self._transaction() as db:
             if db.execute("SELECT 1 FROM native_workflow_reviews WHERE task=?", (key,)).fetchone():
@@ -549,6 +636,10 @@ class NativeWorkflow:
     def finish(self, actor, key):
         """Installed delivery target only; a replay never silently rebases publication."""
         row = self.status(actor, key)
+        if json.loads(row["task"]).get("delivery_mode") == "contribution":
+            if not hasattr(self, "integration"):
+                raise NativeStoreError("Integration installation unavailable")
+            return self.integration.check_contribution(actor, key)
         self._allow(actor, row["issue"], "publish")
         self._valid(actor, row)
         if row["state"] == "accepted":
@@ -636,6 +727,8 @@ class NativeWorkflow:
         self._dependencies_current(actor, key)
         row = self.status(actor, key)
         task = json.loads(row["task"])
+        if task.get("delivery_mode") == "contribution":
+            raise NativeStoreError("Contribution requires atomic integration acceptance")
         if row["state"] == "accepted":
             with self._transaction() as db:
                 self._valid(actor, self._row(db, key))

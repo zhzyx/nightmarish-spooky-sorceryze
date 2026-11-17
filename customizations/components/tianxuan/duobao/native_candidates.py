@@ -191,7 +191,8 @@ class NativeCandidates:
             )
             return result
 
-    def _verified_receipt(self, db, tenant, actor, request_key, row):
+    def _verified_receipt(self, db, tenant, actor, request_key, row, requester=None):
+        reader = actor if requester is None else requester
         try:
             result = json.loads(row["result"])
             required = {
@@ -228,10 +229,10 @@ class NativeCandidates:
             # Recheck original input and final output closures. A dependency removed
             # by this contribution can still occur in the original input metadata.
             workspace = NativeWorkspace(
-                _SnapshotStore(db, lambda module, action: self._allow(db, tenant, actor, module, action)), self.limits
+                _SnapshotStore(db, lambda module, action: self._allow(db, tenant, reader, module, action)), self.limits
             )
             for module, item in result["inputs"].items():
-                self._allow(db, tenant, actor, module, "read")
+                self._allow(db, tenant, reader, module, "read")
                 if item["base"] is not None:
                     workspace.sources(tenant, {module: item["base"]})
             workspace.sources(tenant, result["revisions"])
@@ -242,6 +243,11 @@ class NativeCandidates:
             raise NativeStoreError("Candidate receipt integrity failure") from error
 
     def receipt(self, tenant, actor, request_key):
+        return self.receipt_for(tenant, actor, actor, request_key)
+
+    def receipt_for(self, tenant, requester, actor, request_key):
+        """Read an original receipt with the requester's current closure authority."""
+        _identifier(requester)
         for value in (tenant, actor, request_key):
             _identifier(value)
         with self.store._connection() as db:
@@ -252,4 +258,4 @@ class NativeCandidates:
             ).fetchone()
             if row is None:
                 raise NativeStoreError("Candidate receipt unavailable")
-            return self._verified_receipt(db, tenant, actor, request_key, row)
+            return self._verified_receipt(db, tenant, actor, request_key, row, requester)

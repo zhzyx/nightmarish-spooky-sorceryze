@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "native-product-integration-20261118",
+  "collected_at": "2026-11-17T21:44:06.150817+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-product-integration-20261118/codex-intake-1466-20261117.json",
+      "sha256": "ab8587a69c04515e31f6ce9bca93e1ff03901e8cb32c3548993884b4949f82ba",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "codex-intake-1466-20261117",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-product-integration-20261118/dispatch-02d362abe56f414e93b541cd17e43461.json",
+      "sha256": "190a930414c8afc3acfebf4f9906b79f8590af4afd118905bb018f65266dad2c",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-02d362abe56f414e93b541cd17e43461",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-product-integration-20261118/dispatch-1f33fca42b1e4256b838eb9688576d71.json",
+      "sha256": "6b537033adc65b633adc6d647d44e2eaaa444c0c6c2e3f382ff2c4bcea91228e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-1f33fca42b1e4256b838eb9688576d71",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-product-integration-20261118/dispatch-27eb97a847af4d4f95be2bd5eafbe5e2.json",
+      "sha256": "ab41aa89f0877a6bc9e7af9e13e198912e6b0712c41b40cb9b6d43f05811e42f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-27eb97a847af4d4f95be2bd5eafbe5e2",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-product-integration-20261118/dispatch-2fd6e7c514504eb0b5df594d76103ae9.json",
+      "sha256": "ac1b450e1bbf0613c8d121d50c46b03943206770c54d15a14515851cfbbddfc8",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-2fd6e7c514504eb0b5df594d76103ae9",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-product-integration-20261118/dispatch-6aaaa3b3664e4140bee434682915269a.json",
+      "sha256": "4919346bb193fe281dde3668b3c72b957fb63df6a5b0c15646e352b087897be3",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-6aaaa3b3664e4140bee434682915269a",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-product-integration-20261118/dispatch-7ae9b23a1b6f48a8bd487e8cb8544ad0.json",
+      "sha256": "c036dade69f84c178c13ac94ef40008df98e3b3dcba3293388acff584a168646",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-7ae9b23a1b6f48a8bd487e8cb8544ad0",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-product-integration-20261118/dispatch-89dfc286337d43cd9c10544674323f91.json",
+      "sha256": "b03954eeff4b292cc6b49bcf9783b1132ee6db91af2f5b503e5844e4e002f44d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-89dfc286337d43cd9c10544674323f91",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-product-integration-20261118/dispatch-8c6d91292bf7450b8339472fd8e560b2.json",
+      "sha256": "4b23777ddabe5f4c13fedc6a3aa3ada184f82553de1ad9aee56918871a5f855a",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-8c6d91292bf7450b8339472fd8e560b2",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-product-integration-20261118/dispatch-c74f2cde3b2e440dae5704133408baa7.json",
+      "sha256": "5be8246725e1038a61c099754e575029b9d23a7f0bec3672dd3c796a1625339e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-c74f2cde3b2e440dae5704133408baa7",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-product-integration-20261118/dispatch-d2b7b22f295043fca87b204ab0165339.json",
+      "sha256": "3738770fbe0d6b9027efaf3159d1f0de818666a47d1031be347356a86751547b",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-d2b7b22f295043fca87b204ab0165339",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-product-integration-20261118/dispatch-d7412b44724d4a0693c8cfec09fb6601.json",
+      "sha256": "2b1688b8c870383d0f9cc87c8b66377beecb5605b1ff56b297fa385a2266187f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-d7412b44724d4a0693c8cfec09fb6601",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-product-integration-20261118/dispatch-e36fc39524414cf9a549d9fa580f0725.json",
+      "sha256": "ae64885d2ddc274a8486505164fee251c6399a9d044e8148ca40c68de5e1f477",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-e36fc39524414cf9a549d9fa580f0725",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1466,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1466"
+}

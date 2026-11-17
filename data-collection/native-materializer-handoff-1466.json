@@ -1,0 +1,21 @@
+{
+  "request_id": "native-product-integration-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1466",
+  "dependency_issue": 1461,
+  "review_sha256": "7076ff5db6744d417418a2d5f3f4c41c7cbca5670db787cff401021fdb37a260",
+  "scope": "Exact independently accepted materializer dependency, no full1461/Git-main/production/model acceptance claim.",
+  "files": {
+    "customizations/components/tianxuan/duobao/native_workspace.py": {
+      "before": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "accepted": "401dcb5e0fe2ab1a8b8e888457044b4f622a1cbf39346f1a0dddc48ab9b9af66"
+    },
+    "customizations/components/tianxuan/duobao/native_check_inputs.py": {
+      "before": "ddefa8b940dbf201e59c0ee9f1b69b02c390146ac9357425dec12bd3391b344d",
+      "accepted": "a3880f7480b1b98234a5d022cc77d4ca173de9c09dc898fa27558a1e92575f06"
+    },
+    "customizations/components/tianxuan/duobao/test_native_workspace.py": {
+      "before": "e2492c64842db53a5c89748276f00f6af9ce5629f6be8d506368e7f90efa4d56",
+      "accepted": "b300fa1bdf2ea4b357fa4074e3f6dcbc30b7e27a8ce9ea5ad8b2ea66bf911602"
+    }
+  }
+}

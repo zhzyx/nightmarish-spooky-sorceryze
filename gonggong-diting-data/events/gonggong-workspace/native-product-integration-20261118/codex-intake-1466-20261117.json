@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1466-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-product-integration-20261118",
+  "kind": "request",
+  "occurred_at": "2026-11-17T21:44:03.811872+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1466",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1466,
+    "title": "合契：同产品并行贡献整合与联合验收",
+    "body": "<!-- gonggong-request:native-product-integration-20261118 -->\n\n# 合契同产品不可变贡献整合\n\n需求 ID：native-product-integration-20261118，父 #1444；原用户授权持续有效。路径基准为仓库根。\n\n目标是将多个 AI 对同一产品的贡献整合并验收，不要求生产者追赶任何 Git/main。固定输入、原始贡献和真实终态永久分离于产品选择；用户要求的全链路效率与模型实测仍由父项保留。\n\n已独立验收的 #1451 候选源码和 #1456 定义/历史依赖源码按精确摘要交接到本隔离树（Git 留底仍在途）。工单 #1461 的工作者接入尚在开发，不作为已验收依赖；本项先独立实现以真实 NativeCandidates 输入的整合核心，待其完成后接入真实生产者链路验收。设计源为私有 heqi-integration-design.json，实际源码及当前边界优先于设计草图。\n\n1. 新增既有 sinan-workorders 内的 host_tool，不新增框架角色。合契授权计划绑定 tenant、同一 product/channel、固定产品基线与预期发布、全部原任务/source/执行/候选/准则、原贡献receipt与当前权限、最终检查策略和独立review要求。原生产内容不得被覆盖为整合内容。\n2. 短事务持久化计划/执行意图；实际文件、检查、模型/冲突处理在锁外。按原base与最终产品base做确定性对象级三方整合，删除、相同编辑、大小写/文件目录别名与依赖闭包均明确验证。未知读取允许构造候选，不表示语义独立，最终检查必须覆盖改变输入。\n3. 真冲突只阻塞受影响整合，禁止last-writer-wins；已安装合契resolver可产生绑定原输入三元组的决议及新计划。依赖重绑必须显式授权，重新验证依赖消费者。无关head更新不重跑生产者。\n4. contribution_checked 与 accepted 区分。合成同一最终candidate后检查联合准则和真实原需求覆盖，独立审查者排除全部原生产者及resolver；NativeRelease一次发布，原子推进所有已覆盖贡献任务/工单/进度/outbox。不能逐个旧complete造成部分关单；任何原需求换版/撤权/停止阻断全组合验收。\n5. 进程/传输中断后按持久请求/历史release回读；幂等、CAS竞争、重复事件、撤销/过期/政策变更均验证。保留旧原件与未知占用，不伪造成功。当前组织与原私有需求权限保持。\n6. 用同产品/同模块多贡献证明联合内容、全准则与一次发布；与不同产品分别发布区分。真实双生产者及认证HTTP/Sinan驱动在#1461精确验收接入后完成，不提前宣称跑通。最终效率对比和AA渲染保障仍属于父验收。\n\n构建位置host_tool，新增文件须实际SCons零原生交集与缓存回归；不改#951/#1343/渲染/框架准入。证据首次写UTF-8 LF再绑定摘要；完整门禁、独立审查、Windows/Linux验证与main留底由父推进。不能以本设计登记当完成。\n\n授权：codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117\n\n<!-- gonggong-host-git:Sail-Li -->\n\n\n<!-- core-independent-review -->\n核心实现完成，62项测试通过；真实工作者/Node链路未验收。父责任者复现执行principal与登录用户身份混用导致拒绝，先独立审查并保留原始证据，之后修复与重新验证。\n\n\n<!-- actual-joint-dispatch -->\n根责任者已修复执行身份/历史回读两项，真实Linux核心回归通过（未含Node）。#1461已独立认可工作者修复源码按摘要交接；继续实际HTTP/Node同产品自动整合、唯一发布、原需求验收与下游推进。根责任者单独负责物理占用结清和该项测试；不会将物理关闭作为内容验收。Windows物化修复仍独立排障，尚不引入该候选。\n\n\n<!-- joint-independent-review -->\n真实Windows HTTP/Node同模块双生产者→联合检查/唯一发布→原outbox下游及100%需求进度已跑通，最终新增6测试通过；根责任者另5项真实物理关闭/权限/恢复验证通过。进入整合层完整独立审查。未调用真实模型，当前测试不是生产或token节约证明；物化修复单独复审，当前尚未复制。\n\n\n<!-- late-terminal-liveness-repair -->\n独立J1复现：HTTP execute丢失/超时而服务器任务仍运行，driveNative退出，迟到produced无自动finish；显式第二事件能恢复且不重跑。保持原授权，补齐真实完成事件接续与恢复核验，避免将120秒HTTP预算误当86400秒任务终态。Windows物化堵塞由1461独立修复，当前不重跑覆盖。\n\n\n<!-- native-terminal-review -->\n当前已完成源码与实际联合回归，进入独立最终核验；父项完整模型效率、分布式执行及250在途验收保持未完成。\n",
+    "updated_at": "2026-11-17T21:15:00Z",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "operator": "Sail-Li",
+    "scope": "Actual issue readback and user authorization intake; not acceptance or delivery."
+  },
+  "evidence_refs": [],
+  "sha256": "22aafb0b6132459e1668e9e5874fe70bee0e51953f304549c3c37f9527a0bb48"
+}

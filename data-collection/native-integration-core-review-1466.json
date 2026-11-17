@@ -1,0 +1,105 @@
+{
+  "format": "native-integration-independent-review/1",
+  "issue": "github:zhzyx/nightmarish-spooky-sorceryze#1466",
+  "reviewer": "/root/sinan_df23d3f6c87f8acc",
+  "state": "changes_requested_core_only",
+  "business_acceptance": false,
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "32a41f17fb0b78355457191186c8bfdf748de5513ebfd7ac2e94260fb4433a69",
+    "customizations/components/tianxuan/sinan-workorders/test_native_integration.py": "173653c0adc8f72dc9a7f49d5a7bfbb51cb1f808739a8b883416146ddd49d46d",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.md": "081a99ddb55e663f757ca924592da0eda8fdc3cf5e47f1812e720816346b80a5",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "3f6c8d1c39e726df65e2dcef9e344ed5423c6a95624057f96115fc8d8010ab51",
+    "customizations/components/tianxuan/duobao/native_candidates.py": "5f485fb726ee6a5463ab7dfb1bd336d389499f0e35057b78aef2870014f977c4",
+    "customizations/components/tianxuan/server/native_api.py": "6ad80631fb72db6c2961dd3712fef7bcc96ca29d44c2830ba6e4a06326ececea"
+  },
+  "matches_frozen_author_handoff": true,
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scope": "editor-dependency-handoff",
+    "verified": [
+      "await-terminal-observers revision5",
+      "bind-consumer-release revision20",
+      "review-context-and-source-evidence revision4"
+    ],
+    "application": "Checked frozen source bytes, original receipts and actual consumer verification. Fixture terminal injection and installed test ports are not physical or business acceptance. No new learning event written outside delegated scope."
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "priority": 1,
+      "file": "customizations/components/tianxuan/sinan-workorders/native_integration.py",
+      "line": 68,
+      "title": "Do not authenticate execution principals as domain users",
+      "evidence": "test_review.py::test_principal: an authorized domain actor creates a contribution with installed-producer-principal; real NativeCandidates intake and ordinary subprocess check pass; check_contribution raises NotFound(user not found: installed-producer-principal).",
+      "cause": "_original calls workflow._valid(task[producer], row), which calls domain issue_snapshot on the execution principal.",
+      "fix": "Keep caller/source/current-task authorization and original private read ACL. Check frozen producer identity through the installed role binding and native read/receive authority; do not require an execution principal to be a domain user. Test distinct caller/producer/checker/integrator/reviewer/publisher and producer admission revocation. Do not simply remove producer authority validation."
+    },
+    {
+      "id": "R2",
+      "priority": 2,
+      "file": "customizations/components/tianxuan/sinan-workorders/native_integration.py",
+      "line": 254,
+      "title": "Expose authorized historical integration receipts after task replacement",
+      "evidence": "test_review.py::test_history: finish accepts both original tasks; public authorize_task(expected=original) creates successor; old workflow.status acceptance and NativeRelease.historical are readable, but integration.status and finish raise Task definition superseded.",
+      "cause": "status uses _load(accepted=True), but _original unconditionally runs _valid requiring the original to remain the current active task. accepted=True only changes allowed state.",
+      "fix": "Separate historical accepted status/readback from live eligibility. Authenticate current requester against current issue plus original requirement/private source ACL, preserve frozen integrity and historical publication binding. Never let a historical read authorize execute, new publication or fan-in. Keep unfinished/replaced contributions blocked. Add original/current source visibility and revocation negative tests."
+    }
+  ],
+  "validation": [
+    {
+      "command": "python -X utf8 -m pytest test_review.py -q -p no:cacheprovider --basetemp=.../native-integration-review-probes/r5",
+      "result": "4 passed in 4.23s",
+      "details": [
+        "R1 reproduced",
+        "R2 reproduced using public replacement API",
+        "Real cache hit accepted; wrong candidate, wrong evidence and changed version rejected; NativeRelease blocks removal of sole whole-composition reader and installed policy drift",
+        "Two simultaneous finish calls while first review waits: second reports unknown, one review invocation, final joint acceptance for both tasks"
+      ]
+    },
+    {
+      "command": "python -X utf8 -m pytest source test_native_integration.py --basetemp=.../probes/suite",
+      "result": "16 passed, 4 failed, 1 warning in 22.98s",
+      "failures": "Windows PermissionError WinError5 at native_check_inputs.py:104 stage.rename(destination), including CAS successor, authenticated HTTP, portable collisions and wrong cache ID test setup. No assertion-level product failure inferred."
+    },
+    {
+      "command": "python -X utf8 -m pytest test_core_short.py --basetemp=.../probes/s",
+      "result": "17 passed, 2 failed, 1 warning in 22.74s",
+      "details": "Calls all 19 original test functions, including both collision variants. Short fixture paths did not eliminate WinError5; receipt-reader setup and CAS successor failed. Pure path-length explanation is unproven. Failure handed to parent for Kuafu triage; no blind retry."
+    }
+  ],
+  "reviewed_controls": {
+    "originals": "Actual immutable candidate receipt, origin, writable delta, closure and candidate digest are validated. Tests inject trusted produced domain row; no claim of physical process closure. No-op validates explicit terminal origin/exit/transcript shape and unchanged composition but depends on trusted terminal writer.",
+    "merge": "Deterministic per-object merge, conflict refusal, exact installed resolution, explicit repin target and cycle checks reviewed. No producer head publication.",
+    "criteria": "All original check IDs must be present; full original contract/source is embedded in immutable integration.json and a whole-composition check is required. This binds semantic inputs, not proof an arbitrary installed program actually assesses every criterion. Production semantic installation remains unaccepted.",
+    "review": "Original producer plus integrator plus resolver author union participates in independent release review. Installed test principal strings and permissive authority ports are not real admitted production principal evidence.",
+    "release": "Short guarded publication validates current source/authority and exact context policy; NativeRelease validates full check policies, review age/revocation, evidence and CAS. One native publication precedes recoverable atomic domain fan-in.",
+    "history": "Historical selected release is validated independent of latest channel. R2 concerns task replacement preventing integration history exposure; original/current source permission must still gate any repair."
+  },
+  "limitations": [
+    "No product edits, commits, deployments, model calls or additional agents.",
+    "No process_closed wiring/physical1461 integration or Node automatic dispatch acceptance.",
+    "Thread concurrency probe is real overlapping calls on a shared installed test workflow, not cross-process revocation pressure testing.",
+    "No claim that all 62 upstream tests independently passed: author receipt says 62 passed; independent broader reruns hit Windows stage rename failure.",
+    "No malicious host DB/source corruption presented as caller exploit. Earlier probe assertion text/configure API mistakes corrected before final four-probe run.",
+    "Parent owns source fixes, Kuafu routing, further acceptance, production authority, delivery and final cleanup."
+  ],
+  "cleanup": {
+    "removed": [],
+    "retained": [
+      "test_review.py and test_core_short.py for reproducible findings and control checks",
+      "r5 fixture databases for successful independent probes",
+      "suite and s databases/materialized paths for unresolved Windows rename triage",
+      "run/r2/r3/r4 intermediate fixture paths retained with original failure context pending parent triage; not claimed cleaned",
+      "write_report.py and this durable review receipt"
+    ],
+    "original_blocked_cleanup_paths_untouched": true
+  },
+  "probe_sha256": {
+    "test_core_short.py": "5f9db59040c7c68a8b8d01db64ecec30f76c51966a8584c1929d14454d87a31d",
+    "test_review.py": "1a4adb211ec0edd20fcc5f9480ea14d388458121b634b05da1559394e24f6290",
+    "write_report.py": "4ccb6b1219cb8a2220006da389a8746635b0483eb3c22660569378bbc288c19a"
+  },
+  "private_original_sha256": "d1d679310163f08b039e37e15b03eaefa143a827229930bc0dff77acce9b1f76",
+  "request_id": "native-product-integration-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1466"
+}
