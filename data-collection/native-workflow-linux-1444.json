@@ -1,0 +1,1335 @@
+{
+  "issue": 1444,
+  "python": "3.12.16",
+  "executable": "/usr/local/bin/python3.12",
+  "environment": "existing Linux server isolated160MiB/1CPU, no network or Git in runtime PATH; production services unchanged",
+  "exit_code": 0,
+  "passed": true,
+  "seconds": 66.8043556130142,
+  "tests": [
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_actual_parallel_producers_completion_and_replay",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 2.7810938760230783
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_acl_and_stable_definition",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.10028597599011846
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_unknown_reservation_survives_restart",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.012464458006434143
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_bad_content_cannot_release",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.23511092198896222
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_installation_change_holds_without_launch",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.047839413018664345
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_release_before_domain_failure_replays_without_worker",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 2.1762245960126165
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_private_link_and_ancestor_hidden_from_all_lists",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.12354060102370568
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_single_operator_independent_execution_review_replay",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.9472655610006768
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_failed_check_does_not_consume_independent_review",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.24072688599699177
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_finish_pins_target_and_recovers_after_progress_failure",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.9593269569741096
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_authenticated_reconcile_durable_terminal_only",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.7072419800097123
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_fifo_and_managed_done_tool_guard",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.02085300799808465
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_release_revoke_serializes_after_domain_acceptance",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 1.0430207809840795
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_definition_change_and_replayed_manual_done_fail_closed",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.015559861989459023
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_unavailable_head_and_server_capability_admission",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0167796460154932
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_foreign_and_private_occupancy_is_anonymous",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.1598036530194804
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_cancel_during_real_production_preserves_business_stop",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.6644571970100515
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_revoked_transitive_source_acl_prevents_materialization",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.13919853698462248
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_outbox_isolates_failed_branch",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 1.8501713130099233
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_review_cancellation_cannot_publish",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.8958638299955055
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_publication_guard_covers_native_commit",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.8689473980048206
+    },
+    {
+      "test": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_publication_guard_rechecks_after_review_before_sql",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.9388057530159131
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_candidate_lifecycle_and_isolation",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.30028371699154377
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_identity_and_parameters",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.03491309500532225
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_atomic_conflict_unknown_reads_and_concurrency",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.03845499700400978
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_limits_and_storage_errors",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.06236071401508525
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_invalid_unicode_object_name_is_rejected_before_storage[\\ud800]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.005405113013694063
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_invalid_unicode_object_name_is_rejected_before_storage[path/\\udfff]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.005896824994124472
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_invalid_unicode_object_name_is_rejected_before_storage[\\ud800x\\udfff]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.006979635974857956
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_valid_unicode_object_name_roundtrips",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.007842624996555969
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_stream_limit_stops_receiving",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.003996756015112624
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_strict_production_access",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.2962418039969634
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_real_native_startup_forbids_git_and_processes",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.6196636380045675
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_blocked_identity_does_not_block_event_loop",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.010590796999167651
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_git_mode_fallback_starts",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.287837973999558
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_expired_sessions_and_viewer_write_denial",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0865806009969674
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_atomic_batch_dependency_composition",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.02994415198918432
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_real_sqlite_lock_maps_to_retryable_response",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.024644204997457564
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_api.py::test_early_length_entry_and_batch_limits",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.01819360800436698
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_platform.py::test_snapshot_invalid_base_has_no_native_write[\\ud800]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.5252919670019764
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_platform.py::test_snapshot_invalid_base_has_no_native_write[base1]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.5939467420103028
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_platform.py::test_snapshot_invalid_base_has_no_native_write[base2]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.518841363984393
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_platform.py::test_snapshot_invalid_base_has_no_native_write[7]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.4776444350136444
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_platform.py::test_snapshot_invalid_base_has_no_native_write[False]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.5372715019911993
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_platform.py::test_native_requirement_keeps_current_source_acl",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 1.538671804999467
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_platform.py::test_native_platform",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 3.0495264109922573
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_platform.py::test_model_verified_identity",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.8393775680160616
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_platform.py::test_source_is_consistent_across_connections",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.09940496098715812
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_platform.py::test_actor_context_holds_shared_connection",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.09009223099565133
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_platform.py::test_native_production_gateway_and_roles",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.48316970298765227
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_native_platform.py::test_native_status_uses_capabilities_without_gitea",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.008060969994403422
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_issue_ancestor_acl.py::test_ancestor_acl_revocation_blocks_fresh_and_replayed_writes[False-issue.create-1]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.009389955986989662
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_issue_ancestor_acl.py::test_ancestor_acl_revocation_blocks_fresh_and_replayed_writes[False-issue.create-3]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.014102799003012478
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_issue_ancestor_acl.py::test_ancestor_acl_revocation_blocks_fresh_and_replayed_writes[False-issue.transition-1]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0079890739871189
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_issue_ancestor_acl.py::test_ancestor_acl_revocation_blocks_fresh_and_replayed_writes[False-issue.transition-3]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.012437425000825897
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_issue_ancestor_acl.py::test_ancestor_acl_revocation_blocks_fresh_and_replayed_writes[True-issue.create-1]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.012148730020271614
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_issue_ancestor_acl.py::test_ancestor_acl_revocation_blocks_fresh_and_replayed_writes[True-issue.create-3]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.011935563990846276
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_issue_ancestor_acl.py::test_ancestor_acl_revocation_blocks_fresh_and_replayed_writes[True-issue.transition-1]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.009691621991805732
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_issue_ancestor_acl.py::test_ancestor_acl_revocation_blocks_fresh_and_replayed_writes[True-issue.transition-3]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.020434709993423894
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_issue_ancestor_acl.py::test_manual_mutation_rechecks_current_requirement_acl[create_issue]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.008486332022584975
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_issue_ancestor_acl.py::test_manual_mutation_rechecks_current_requirement_acl[transition_issue]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.009191145014483482
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_issue_ancestor_acl.py::test_manual_mutation_rechecks_current_requirement_acl[add_issue_comment]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.007268907007528469
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_issue_ancestor_acl.py::test_manual_mutation_rechecks_current_requirement_acl[sync_progress]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.006166776001919061
+    },
+    {
+      "test": "customizations/components/tianxuan/server/test_issue_ancestor_acl.py::test_read_only_ancestor_share_keeps_comment_reads",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.015175286011071876
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_cli_empty_path_roundtrip_restart",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 2.4046955719823018
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_cross_module_atomic_success",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.02941812001517974
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_delta_pagination_binary_empty_binding_and_transfer",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.04663208100828342
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_links_rejected",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.02709849798702635
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_nonregular_file_rejected",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.02547231499920599
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_paths_aliases_and_existing_destination",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_paths_aliases_and_existing_destination",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_paths_aliases_and_existing_destination",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_paths_aliases_and_existing_destination",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_paths_aliases_and_existing_destination",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_paths_aliases_and_existing_destination",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_paths_aliases_and_existing_destination",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_paths_aliases_and_existing_destination",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_paths_aliases_and_existing_destination",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_paths_aliases_and_existing_destination",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_paths_aliases_and_existing_destination",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_paths_aliases_and_existing_destination",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.02495276799891144
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_resource_limits",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_resource_limits",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_resource_limits",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_resource_limits",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_resource_limits",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.5658805480052251
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_scan_unknown_module_and_directory_budget",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.02822264001588337
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_source_corruption_and_write_failure_unpublished",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.02409971400629729
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_unknown_reads_reject_drift_before_decoding_new_head",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.3570108389831148
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_unrelated_drift_pins_and_atomic_conflict",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.04621072899317369
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_workspace.py::WorkspaceTests::test_windows_junction_rejected",
+      "phase": "call",
+      "outcome": "skipped",
+      "seconds": 0.0004387969966046512
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_250_independent_connections_no_global_revision_retries",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.7254943140142132
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_batch_atomicity_on_late_missing_dependency",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.003971293015638366
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_batch_cycle_and_missing_batch_member_reject_atomically",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.004205897013889626
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_batch_dependencies_and_immutable_composition",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0065551240113563836
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_changed_read_and_unknown_read_reject_with_unchanged_state",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.006661305000307038
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_cli_actual_json_boundary_and_invalid_base64",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.01223188400035724
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_competing_writers_one_wins_without_silent_overwrite",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.012955156998941675
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_corrupt_dedup_hit_rejects_entire_batch_without_receipt",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.008158173994161189
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_corruption_is_not_returned_as_valid_content",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0043295219948049635
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_delete_prefix_conflict_and_invalid_input",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.005948437988990918
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_idempotency_after_restart_and_conflicting_reuse",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.006250857986742631
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_missing_read_detects_concurrent_creation",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.005174871010240167
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_no_git_network_or_process_is_required",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.007615463982801884
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_same_module_disjoint_old_base_changes_preserve_both",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.006997983000474051
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_same_request_concurrency_returns_one_durable_result",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.02381287401658483
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_tenant_and_module_revision_isolation",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.005681521986844018
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_transaction_storage_failure_rolls_back_and_retry_succeeds",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.007811652991222218
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_store.py::NativeStoreTests::test_unrelated_module_drift_never_invalidates_fixed_work",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.048346149997087196
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_channels_and_same_channel_competitors",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.021695203002309427
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_check_policy_drift_and_evidence_expiry",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.013296695979079232
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_corruption_rejected",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.01380999298999086
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_event_cursor_is_bounded_and_product_scoped",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.020830860012210906
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_event_failure_rolls_back_pointer_receipt_and_manifest",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.019561597000574693
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_event_product_corruption_rejects_current_selection",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.019192930980352685
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_expiry_authority_policy_and_source_rechecked",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_expiry_authority_policy_and_source_rechecked",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_expiry_authority_policy_and_source_rechecked",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_expiry_authority_policy_and_source_rechecked",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_expiry_authority_policy_and_source_rechecked",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_expiry_authority_policy_and_source_rechecked",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.03250076298718341
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_full_flow_restart_and_rollback",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.03287572099361569
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_idempotent_receipts_events_and_revocation_no_resurrection",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.024847952008713037
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_identity_source_and_required_policy_rejections",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.016798344993731007
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_latest_failed_unknown_or_changed_evidence_rejects_prior_review",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_latest_failed_unknown_or_changed_evidence_rejects_prior_review",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_latest_failed_unknown_or_changed_evidence_rejects_prior_review",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_latest_failed_unknown_or_changed_evidence_rejects_prior_review",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.02814539600512944
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_publish_before_revocation_has_historical_event_but_invalid_selection",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.019847275980282575
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_reader_snapshot_does_not_block_unrelated_publication",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.022503844025777653
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_record_and_blob_corruption_rejected_on_consumer_read",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.021933690004516393
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_release_flow_without_network_process_or_git",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.03231865100678988
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_review_revocation_before_publish_and_reapproved_rollback",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.02873628301313147
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_revocation_commits_before_blocked_publish",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.018898094014730304
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_revoked_evidence_rejects_publish_and_current_read",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.018045800999971107
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_tenant_product_isolation",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.027625911985524
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_release.py::ReleaseTests::test_unknown_composition_context_and_missing_atomic_event",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.021698227006709203
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_evidence.py::EvidenceTests::test_corrupt_request_reference_does_not_replay_another_run",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.010159144992940128
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_evidence.py::EvidenceTests::test_dependency_content_corruption_rejects_cached_fact",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.011079035990405828
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_evidence.py::EvidenceTests::test_disjoint_object_and_unrelated_module_reuse_original_fact",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.01128346798941493
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_evidence.py::EvidenceTests::test_durable_replay_and_conflicting_reuse",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.010234829009277746
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_evidence.py::EvidenceTests::test_exact_dependency_change_invalidates",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.018527948996052146
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_evidence.py::EvidenceTests::test_expiry_future_clock_and_runner_revocation_are_checked_on_lookup",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.014669866999611259
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_evidence.py::EvidenceTests::test_failed_unknown_and_revoked_latest_fact_never_fall_back_to_old_pass",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.02479831498931162
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_evidence.py::EvidenceTests::test_host_scope_is_copied_and_caller_cannot_install_unknown_check",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.010862574999919161
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_evidence.py::EvidenceTests::test_input_and_evidence_corruption_never_return_pass",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.013482387003023177
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_evidence.py::EvidenceTests::test_invalid_policy_log_context_and_revoker_rejected",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.013229928008513525
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_evidence.py::EvidenceTests::test_read_change_delete_and_missing_creation_invalidate",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.019349553011124954
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_evidence.py::EvidenceTests::test_rule_toolchain_environment_and_parameters_invalidate",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.014108692004811019
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_evidence.py::EvidenceTests::test_same_request_parallel_records_have_one_identity",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.05091575998812914
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_evidence.py::EvidenceTests::test_storage_failure_rolls_back_evidence_and_retry_succeeds",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.009605622006347403
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_evidence.py::EvidenceTests::test_tenants_do_not_share_cached_evidence",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.010056920989882201
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_evidence.py::EvidenceTests::test_unknown_and_whole_module_scopes_are_conservative",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.014465098996879533
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_actual_controller_restart_retains_unknown_run",
+      "phase": "call",
+      "outcome": "skipped",
+      "seconds": 0.0001748360227793455
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_authority_registry_and_input_invalidation",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.6968030459829606
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_binding_policy_snapshot_cannot_mix_scope_and_version",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.020961353002348915
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_cancel_and_timeout_descendants",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 1.456307940010447
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_concurrent_duplicate_and_native_submit",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 1.2445176640176214
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_distinct_commands_execute_in_parallel",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 1.734925615019165
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_policy_change_at_cache_hit_cannot_change_reserved_binding",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.020927354984451085
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_policy_change_at_evidence_writeback_is_rejected",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.3110756149981171
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_policy_change_during_process_cannot_relabel_result",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 1.3987844790099189
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_real_failures",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_real_failures",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_real_failures",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_real_failures",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_real_failures",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.8399266210035421
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_real_success_cache_restart_release_and_revocation",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.5369550730101764
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_result_writeback_failure_recovers_without_respawn",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.24852009199094027
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_scoped_input_timestamp_pollution_without_content_change",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.2357409019896295
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_tool_rule_expiry_and_binary_log_bounds",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 1.1410899360198528
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_runner.py::RunnerTests::test_unknown_crash_window_is_held_without_respawn",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.03453161599463783
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_inputs.py::InputTests::test_dependency_conflict_and_integrity",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.02709589002188295
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_inputs.py::InputTests::test_empty_scope_and_exact_dependency_closure",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.5122804559941869
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_inputs.py::InputTests::test_frozen_binding_limits_and_corrupt_blob_cleanup",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_inputs.py::InputTests::test_frozen_binding_limits_and_corrupt_blob_cleanup",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_inputs.py::InputTests::test_frozen_binding_limits_and_corrupt_blob_cleanup",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_inputs.py::InputTests::test_frozen_binding_limits_and_corrupt_blob_cleanup",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_inputs.py::InputTests::test_frozen_binding_limits_and_corrupt_blob_cleanup",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.03960389399435371
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_inputs.py::InputTests::test_scope_process_counts_and_absence",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.8349217990180477
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_inputs.py::InputTests::test_stable_release_policy_requires_separate_reviews",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.84937042297679
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_inputs.py::InputTests::test_unknown_scope_conservative",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_inputs.py::InputTests::test_unknown_scope_conservative",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_inputs.py::InputTests::test_unknown_scope_conservative",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.9950233529962134
+    },
+    {
+      "test": "customizations/components/tianxuan/duobao/test_native_check_inputs.py::InputTests::test_view_limits_portability_and_transactional_cleanup",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.07311684102751315
+    }
+  ],
+  "deselected": [
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_actual_node_authenticated_http_dispatch",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_actual_node_refills_before_unrelated_terminal"
+  ],
+  "output": ".....................................................................uuu [ 46%]\nuuuuuuuu.uuuu.....s........................uuuuu....uuu................. [ 79%]\n.........s........uuuu........uuuu...uu..                                [100%]\n=============================== warnings summary ===============================\n../../usr/local/lib/python3.12/site-packages/fastapi/testclient.py:1\n  /usr/local/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n150 passed, 2 skipped, 2 deselected, 1 warning, 33 subtests passed in 64.98s (0:01:04)\n",
+  "source_sha256": {
+    "customizations/components/tianxuan/duobao/backup.py": "19b1e4fc00cb09acbef489f6369e875fbe153c1ca1495c149770acabd9839548",
+    "customizations/components/tianxuan/duobao/backup_drill.py": "289a655a9f226ae757b1c1d92269ce13119151e5f1b65696ace31807603a51c1",
+    "customizations/components/tianxuan/duobao/gitea_client.py": "77c1ce5fe3c3581c51f6b31a0f0278b0cdf83f85e5d164fab9f39618c84fcc38",
+    "customizations/components/tianxuan/duobao/git_service.py": "55871785d6a4d9eaf32c2caf690e66e61b1a7e0ef9aa731c350104913773d10f",
+    "customizations/components/tianxuan/duobao/merge_queue.py": "4a3c39eed0a09091fcd33a3d5fd047b760b08ec76e2b1e11846f2d96e43d6755",
+    "customizations/components/tianxuan/duobao/native_check_inputs.py": "ddefa8b940dbf201e59c0ee9f1b69b02c390146ac9357425dec12bd3391b344d",
+    "customizations/components/tianxuan/duobao/native_check_runner.py": "93a933d4cced3d1c34d991f3814119945ff6b448a2f106e097d8790f7ed98f8f",
+    "customizations/components/tianxuan/duobao/native_cli.py": "e7db40a12ca5b18d753a182f7d8a853c76d8f96bb9c3893a27bd842049a9613a",
+    "customizations/components/tianxuan/duobao/native_evidence.py": "c0497cae5a43cc653b2135dcc99cda3bbd0282b6c9b50066de9759c12f24be1d",
+    "customizations/components/tianxuan/duobao/native_release.py": "2ca0a797a44d01fe6852b4c2b0089ecaa5cbcbe5e36dea98111eeb4cae51903b",
+    "customizations/components/tianxuan/duobao/native_store.py": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+    "customizations/components/tianxuan/duobao/native_workspace.py": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+    "customizations/components/tianxuan/duobao/native_workspace_cli.py": "1bc61a3165c58ac918af8a0874fc8c85db7ee6cb8946f2e95ddbeb088f4038fa",
+    "customizations/components/tianxuan/duobao/policy.py": "2e42b969ac54e88211757c74a9c4927205b78fe5f8419d2fc3d52a6c7bf72b7b",
+    "customizations/components/tianxuan/duobao/test_admin_paths.py": "f86c67db99ae0e41655d343f462eb2d031c0476e8f9c7f59d28a7455a46bac1c",
+    "customizations/components/tianxuan/duobao/test_backup.py": "bbeaff35ef999562aab3be91bcd4732a48be39b022ad1fbea59ad14c5bfab1ea",
+    "customizations/components/tianxuan/duobao/test_backup_drill.py": "22307a8f6f7dff28df1f625b1ad9e837b5c9070b22758c11fefaa7f82f38803b",
+    "customizations/components/tianxuan/duobao/test_gitea_client.py": "a629148331a00f263c803d6e9b27dceaca5c44d8bb6f91a140a0217281764f5f",
+    "customizations/components/tianxuan/duobao/test_git_service.py": "04f4dcc1aa7004ba2f5056cdef7b99105c965712e85ac7ff168fcd0553cc2dd6",
+    "customizations/components/tianxuan/duobao/test_git_service_repo_root.py": "1b4d13586518f2f84a0379f1be01333ee41677a1df7f696880b466a297dc8bbd",
+    "customizations/components/tianxuan/duobao/test_import_reservation.py": "3f9d5a4b404420fc8b657457d8e036eded4a19e56f7f369e27cebac432433258",
+    "customizations/components/tianxuan/duobao/test_import_source.py": "a6bc613c0048f6fb040d99989090649418e57bcd75ff9a3ccde67927012eb1f6",
+    "customizations/components/tianxuan/duobao/test_merge_queue.py": "cf8341aa3541891231832c74fae13d2ce89317012ad171b573ff7d039cdd0ba8",
+    "customizations/components/tianxuan/duobao/test_native_check_inputs.py": "d5d6eee1ebe6b840511e20dcb281a6d99c02409a38c832067d10e5005bf4856b",
+    "customizations/components/tianxuan/duobao/test_native_check_runner.py": "059bf81e8a08ba1d43b2f6395e439f4c462938b9366eff94a8f9fb89e0760da5",
+    "customizations/components/tianxuan/duobao/test_native_evidence.py": "054ede06d298edcb71488a76879afb12bc67d4938d731cf7daa77f523d71c304",
+    "customizations/components/tianxuan/duobao/test_native_release.py": "dd22e2ef946264ae23a7ced27c0b2205911f1a8237ca86d0cf75705aaace531c",
+    "customizations/components/tianxuan/duobao/test_native_store.py": "cb7df0539fc42cd5cb2dc0bcb31f681994ace28041c782f32a5b7a894446a743",
+    "customizations/components/tianxuan/duobao/test_native_workspace.py": "e2492c64842db53a5c89748276f00f6af9ce5629f6be8d506368e7f90efa4d56",
+    "customizations/components/tianxuan/duobao/test_policy.py": "6626dba6631c25c8fd3dca54e19a08a5c14f7bb079e32fe758989c8ac36f9769",
+    "customizations/components/tianxuan/duobao/verify_native_processes.py": "f5f03eaef371c7d007b4c88003e16a75a20c43bfb9938a30f71614a91d449120",
+    "customizations/components/tianxuan/server/access_control.py": "4d1f5911bdf4e33aca95b6d73a166687202d0d36553c3d3e4d8082d4473b7ffd",
+    "customizations/components/tianxuan/server/api.py": "e9cf3ea7ddf6041ff2b462dfa2ba0d341827e34b7600cac846a4d0dc2f09e8c7",
+    "customizations/components/tianxuan/server/conftest.py": "ff22f32a23f09e1473e85f1b6132d311835e6b80c59bca26688edb1494901258",
+    "customizations/components/tianxuan/server/demo.py": "31f66dd2bd55a0024bd4aedf096da24b42cb70f999629d481582191b3405b122",
+    "customizations/components/tianxuan/server/docx_export.py": "bc024a44e347e28c5574a9d90d3a9fc97e29b82f0c59c7745c0bd63e7a196fee",
+    "customizations/components/tianxuan/server/duobao_bridge.py": "221819b17a40881369a8e4fbc1c699981168f9fa3a33794cbfb72c78307e1fa7",
+    "customizations/components/tianxuan/server/gateway.py": "7fb68bcd8d73e7e1377a4a69892f709eef39808bbacb332094ea4c0e4af99522",
+    "customizations/components/tianxuan/server/gitea_bridge.py": "3137ec96b60b572aabba6cdee214bbc6f1da0976e77f6f359e0ab00b3fb6a4e3",
+    "customizations/components/tianxuan/server/identity.py": "c5d8804c605ef4e7f7c90d0d50c0923dc94b95d0836de0f52abe4a092c91b311",
+    "customizations/components/tianxuan/server/main.py": "d8f211eb6dd27a126a59bf78489eef06a68f7b454ec4ab2b8a243a305ba76b14",
+    "customizations/components/tianxuan/server/markdown_images.py": "20c6b19d4c24205621fe400874c3b1f060040c757ba915c2ba3cf35656af245f",
+    "customizations/components/tianxuan/server/markdown_render.py": "80b220e1e570d0d0f7a7b0381d2fe5ece0db60e311288887c183896794fd8dd0",
+    "customizations/components/tianxuan/server/native_api.py": "ee387cbf28890d1a5a85025744e6323daf98f9e2ee3a66713bbbb4ebb5a78184",
+    "customizations/components/tianxuan/server/pdf_export.py": "21b936bcde60ba7e34b49cee49edbb567782774369fba37fa9597597f6394a62",
+    "customizations/components/tianxuan/server/schemas.py": "f031dbf76ced7666e77a8dea5c43ebd25c5e9450d6a8877005ea8fe04420d30e",
+    "customizations/components/tianxuan/server/test_acceptance_smoke.py": "af815d85dc087c5cfda030f7c9119ee85b3a42d88414e054460d742e3100b762",
+    "customizations/components/tianxuan/server/test_access_control.py": "dd8b5e93a072ffc9126b2d7ce58999d8ff671d4972c760ce40ca4df06e84abd4",
+    "customizations/components/tianxuan/server/test_acl_matrix.py": "5f92e2b298826eee9a45e338d655ec2049708c0aa0a28d9aa57498a44606b98e",
+    "customizations/components/tianxuan/server/test_api.py": "d46fb014e724ef163b05970c5ee1dac819f22367916db7b6ea39e27f27841c16",
+    "customizations/components/tianxuan/server/test_api_auth_mode.py": "141b01aba6eb8179077cfa19ef4df495c64f88c7e598ed849f83963386c98d9a",
+    "customizations/components/tianxuan/server/test_api_board.py": "1f154a1faf3a5c1a29d3d86857904e36d66bacc77d0a04d4253f1e31fa268ddc",
+    "customizations/components/tianxuan/server/test_api_comments.py": "cdaf28b64d7d38611fc06e2a91fc753a1a89d4d85a49cb278f2b0594c027293c",
+    "customizations/components/tianxuan/server/test_api_doc_issues.py": "98642c8cf391808e63e1e7cd2947bb400a5dde2ac5c889d46f7742db8c83b498",
+    "customizations/components/tianxuan/server/test_api_export.py": "b8ad17fbf71b53098a076ab9c62c646d2f7972121f5d5e927fbf464db5eb5082",
+    "customizations/components/tianxuan/server/test_api_field_permissions.py": "ebce6b3f9a4e151bd265ad3fa21c17f94120ee3654ddb11549d123025eb3f62b",
+    "customizations/components/tianxuan/server/test_api_gateway.py": "b4ea4125e23bf0c64278be68f2f2acd13cdd13cf8ddbf932b35915848dd11539",
+    "customizations/components/tianxuan/server/test_api_gitea.py": "e19c46de601c92fcd1aa21b68149988a12263b918d0986553b0158834b287d6e",
+    "customizations/components/tianxuan/server/test_api_git_repo.py": "cba3f17a9f518620a39f58ce8f6bd907ca942c55355a0dcb6c07ff9d8af0440f",
+    "customizations/components/tianxuan/server/test_api_import_jobs.py": "81ebbc88e4326263d7195d8417dbf3b7fcab3a2aa320e31c9dff918e77a4184f",
+    "customizations/components/tianxuan/server/test_api_invites.py": "ad89c5a282eab075500bf50f68b545528959f985b8e8595508dc26ccb69275a4",
+    "customizations/components/tianxuan/server/test_api_links.py": "b7b4cf28dbae5b2c2cfe920434ac7262b398573dd4b21ef2c3ff15c419cbed15",
+    "customizations/components/tianxuan/server/test_api_merge.py": "8ddbab954a711648f9aba5897af4b9f0e4876e22150449f9459fe0cac3ee7ea6",
+    "customizations/components/tianxuan/server/test_api_metrics.py": "d934bce45c707954c61978c84f79c747a3d529a112e2e979f43b97dffca5fda7",
+    "customizations/components/tianxuan/server/test_api_patch.py": "4e998e45b3221e542a7daa7075bd5ae0355c96931732d67eb0e6e82b676a2c1e",
+    "customizations/components/tianxuan/server/test_api_ready.py": "4b9f52303c25140f01403ff262ac58796434e476db4cac9baf02a4934612b829",
+    "customizations/components/tianxuan/server/test_api_repo_links.py": "07c7156ad24b8dd6d75fff19b561f058ca49d9e12d2b9c110d4e0fe79a6d0f45",
+    "customizations/components/tianxuan/server/test_api_requirement_export.py": "cfa64271af7aeaf4d48a47777db86c7d70f2b2d8de0b3391cfbd5c5c72762021",
+    "customizations/components/tianxuan/server/test_api_roles.py": "08c3ec1bf212a150b81c14322b6413d1b339fac8cc422f99024b8dab7ce3d5cc",
+    "customizations/components/tianxuan/server/test_api_search.py": "126420e66e8e8eb5ca7a921ce0a2bf960e9c90ba1cf90a3586e159a33d71b144",
+    "customizations/components/tianxuan/server/test_api_session.py": "866d4c0f5e4dfb4f3503e433cc38c07ec5969bdbceaf81ec2084454a9ecb2eb3",
+    "customizations/components/tianxuan/server/test_api_sharing.py": "8282c4062693a8c6ca60844ecc5217d1aa0c6a79d25706e24f62cfa159a516a5",
+    "customizations/components/tianxuan/server/test_api_tenant_mutations.py": "bf9404bbc51ed91962a5d7a61b165b7b24ebeb03e6461c6531fb9df7101e54bb",
+    "customizations/components/tianxuan/server/test_api_versions.py": "5f30a7113f28f54777e4fb566baa5ca04316d8d6b0e496d0d2248aed46e2940b",
+    "customizations/components/tianxuan/server/test_api_webhooks.py": "a8fe00b40e75b5100933fb4f37ff9f60a61b4771c6958571e40f7ac22f8db092",
+    "customizations/components/tianxuan/server/test_cli.py": "343c75e787033e166efe96496f4e5900da03b40e833503cff3cb8d0838941419",
+    "customizations/components/tianxuan/server/test_e2e.py": "0fadd6f861fa02b11b239ada53f197e74eef585a2e16ce4d5f9f2e99689c0e77",
+    "customizations/components/tianxuan/server/test_event_retention.py": "e789227eda54faeb06b26cb27485a01e86c533fbad77f4b8b7bc0c186e90d38c",
+    "customizations/components/tianxuan/server/test_external_links.py": "843553fe3dc17c14774e411d3028d59bdb9dd12ab502b525c26e042f1ccc94a6",
+    "customizations/components/tianxuan/server/test_gateway.py": "a4640d6cb6216e80d64eb602baac7358bc16198a4ea392956dc7a41172f00d48",
+    "customizations/components/tianxuan/server/test_identity_adapters.py": "e6f6d603d7eb40b3276663b5660d898ceb17a8c144e3fc2fdd331b63b36a0b31",
+    "customizations/components/tianxuan/server/test_issue_ancestor_acl.py": "961428b676d963f01e8440a9ccb8f4d793d68346ba370c7b4dec460870bdd62b",
+    "customizations/components/tianxuan/server/test_issue_comments.py": "ceffe2b76c2f3e02c0d9f25e96ab7c39fa225c3510302174b4bc706d0de0af2f",
+    "customizations/components/tianxuan/server/test_main_app.py": "989809fd05d49ec71d2acc50bfe899913e82669b912d171f3f98a6e1e79b4c1a",
+    "customizations/components/tianxuan/server/test_markdown_render.py": "5cf5021bb879aaaa5f66dddc02650c4a173613f6faa8e6490a666557a85e3447",
+    "customizations/components/tianxuan/server/test_merge_queue_api.py": "dc68588e0e250300c81c393f3d23a2e88e2055aefead4a9e09c18c3be11c1b50",
+    "customizations/components/tianxuan/server/test_native_api.py": "4a85726e458399def6555fb94e5259815b37ca7f21eea2fc11f721037083ce1e",
+    "customizations/components/tianxuan/server/test_native_platform.py": "b40695e79772b9296a35178fbc0898772893b61239d89fbae7b22c56b7f24abc",
+    "customizations/components/tianxuan/server/test_scope_idempotency.py": "2bc83d89b8469e5d655e886740cc3fd1b8c2c9159ceac943bea09574d1807d59",
+    "customizations/components/tianxuan/server/test_share_expiry.py": "5728ab899daff8bb3fa048bbef5d97790bb553ad7c4ffa0fae763730610fd347",
+    "customizations/components/tianxuan/server/test_tenant_mutations.py": "9aa7f63fd88d7aca9a956697ebac8c32ac6334a0b9604f521530d18869d81937",
+    "customizations/components/tianxuan/server/test_tianshu_bridge.py": "041dd22c345f3c924f96d6ceb99ed7d6a7dc6c22fbea146bb5e8355915730909",
+    "customizations/components/tianxuan/server/test_tianxuan_boundary.py": "bb561f11373ae1580ed939ded7defb6813e72bbaa4ebe7810524b39dbf25dafe",
+    "customizations/components/tianxuan/server/test_tianxuan_concurrency.py": "7e42d2244562ab7d676b27546a7ef2248846f6a1b4ea5d8543d81efd01af06f1",
+    "customizations/components/tianxuan/server/test_tianxuan_core.py": "76f8390e766f5454444766859b2aa257351d9a757bdcd6ab2aa99e82e7c562a6",
+    "customizations/components/tianxuan/server/test_tool_receipts.py": "d572b79384478674fef4afb9cf92835dd2c258119ebea2ee455557ea5c0979d7",
+    "customizations/components/tianxuan/server/test_webhook_signature.py": "3e1decb8da4a3838fe4689ea0af5872d63ebb3029a3d8792496fd5be024d1e27",
+    "customizations/components/tianxuan/server/test_ws.py": "a8a342a45863ab68248ab9d1925d1567056365b293361f9d58a58486de612b8f",
+    "customizations/components/tianxuan/server/tianshu_bridge.py": "d2b6023adcbf47c1fd471fb89ec0007c735d792d8a1b8228de33c45432142da8",
+    "customizations/components/tianxuan/server/tianxuan_cli.py": "9fc9b4495c3bb6a3ec10247e642c272a4bcef4fa0bd12f3a294820bad8a17074",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "5bdb687f1904ea5d27e5ea84b0bd6526b1179ea90ea2f9b6b2ac6922d831153d",
+    "customizations/components/tianxuan/server/webhooks.py": "ab92309455037d63686260912ec73be6a31140bbaa212988c752c1139a454115",
+    "customizations/components/tianxuan/server/wenqu_bridge.py": "572e23e9b7c236acbcbf4434b84e36a6cc279019fda12a157ea44ef6961f27c1",
+    "customizations/components/tianxuan/sinan-workorders/conftest.py": "c37dc8303d58efd8fb4302254c4fcfd88ea729255fba2af4b5453129d8654e37",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "65c66cd9bf2b136dbab67c35f4074940f4bbe750a907f8773a43d579648dd771",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "63ae67641dcfd156c267afa7f1188c7a54a53cea908f10a5b60ef541a9426029",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "be048a19aaca7cea1e1dce1fae1ebbe60b7b94a8def4e56df7826abed2b8a9cc",
+    "customizations/components/tianxuan/wenqu/test_wenqu.py": "8d4af45f4fd0b1b917b5a1988f71430c8ab858ffff784c2ab313ba6838fad620",
+    "customizations/components/tianxuan/wenqu/wenqu.py": "c968d7e73a2ec833e4d306eba0604e132657bb551529bbfea8c80213568ce933",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "dae76fa5f294c1b08dcfd9e0bb43134d7d3848db9889ddaaf99adedcfe744f57",
+    "customizations/platforms/process-management/yuanheng-local/sinan/coordinator.mjs": "183ab7914292da2ec7fd228a7c79e3f4bdab6145bef807040a712b9444806ae4",
+    "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs": "676f3d4c8797aab5878a7eb66f3c476f09b7d903e25606a55fbdfded819e8654",
+    "customizations/platforms/process-management/yuanheng-local/sinan/refresh.mjs": "726d5eb6c6a682524e757e34173f3d6c7e6f76e58c2fd15a265f1b116e0e5bfa",
+    "tools/ainative/anatomy_base.py": "06715728e688b702a8dde94a08ac3fe0195ec5cf5e72c18f74eb53359d12d5ec",
+    "tools/ainative/anatomy_body.py": "85b9b57a60839b34af188175045beae2b3d7d8bf48a45d6020f9e8a54a186f04",
+    "tools/ainative/anatomy_calibration.py": "36b380de71c7c4c3efcb0f948b5fa50bc49d5aa89b3b0d38262e0f2e87f0fb50",
+    "tools/ainative/api_planner.py": "5c4c8d90f706d76c3a9f459278c9eda8707268c10abed35e877876274ae725fa",
+    "tools/ainative/bundled_hunyuan.py": "db4387a1580a750897f11de19dbacf6acacfc5a1ec22daa96b69c1ff2ee38b9c",
+    "tools/ainative/character_detail.py": "85539a704fb62ae5df13813dd844a1212871e950323e657c6c951ba64cee8a84",
+    "tools/ainative/character_publish.py": "2420c366bccd93826edd5f4e76bdee6cfcf6ccb9e6eba7b77f845e40af258412",
+    "tools/ainative/cloth_anchor_metrics.py": "224248844a6fba8a01a536cc4ab318af54b17329183b7a2917b147996821c49e",
+    "tools/ainative/cloth_pin_fit.py": "b8f66c00f70c3857499dc4f751c7ac2276e59c6c199d2fab16e30e256d441738",
+    "tools/ainative/cloth_prepare.py": "e8f8aa7fec7f71d11ed6dbf83e50c11b6ebe3378ed9701f88427a57abd5de64a",
+    "tools/ainative/codex_provider.py": "2ef478ddc7ed2314915c3ad25849093cb0ccfefd9570d1c1e67468c90efc79fb",
+    "tools/ainative/comfy_provider.py": "cab2c5747d83b0e2cbe1e7768411fc203b321afa02b245a04b7f92c61c661b4b",
+    "tools/ainative/contracts.py": "bfc0c3a659b2501b8bf59554d754769aee0fce538ad48dd7b02dd49ebdd08035",
+    "tools/ainative/customization_publish.py": "b52e06468a0a1ce13858cafde053d363a1b6ed7f5850343e5f18ddfb479673ee",
+    "tools/ainative/editor_demo.py": "aff4c9e698cc4ca36c5b70cb71debf9eaf83fa07c356fd518c7185b44712a5ec",
+    "tools/ainative/editor_host.py": "4765611afc08ae4ad7ac80ae1f0a734f195c15b8f7f36b0b69f3695bbd0de8cb",
+    "tools/ainative/executor.py": "9e400148c5a8e66f5657855494822cbf013eee4062ba95d787c2b1330122c321",
+    "tools/ainative/executor_cli.py": "8b20e1aa69a3a3e8f9d045c33d6db7f7f486a9bebe3808fa24bc8481418e7561",
+    "tools/ainative/extensions.py": "edc695c2555e905e4cf4af810dfbb5327ecac6055535ef772e46e83715362ce8",
+    "tools/ainative/garment_generate.py": "3212edb2dbf8c65b0bbf6f8db8b657a919fe448cbbc0b72e415a6d5d14ee6903",
+    "tools/ainative/garment_prepare.py": "54432e79448674d1425a8d54696fa397cfbb3dee53d00d647d994ff174841d16",
+    "tools/ainative/generate.py": "293a0d362a57f030321a4bc89a34f0b70be507bd4b6498051a7a6dcfcff8554b",
+    "tools/ainative/generation_service.py": "bcb9648872de1cc9b4c2b5154f54cc62bb0c729bb3bb7fd6a5fca1afe8b62d1d",
+    "tools/ainative/hair_select.py": "f224fc6ca3c0c13da1dfa24ff0c17fe8f375e750e9ab1f0193d3561008acf3af",
+    "tools/ainative/interop_publish.py": "0355d62825692729d2afd140ddcc85ebd1973ed85b436585dc261170badbdf15",
+    "tools/ainative/kimi_provider.py": "76678f4b6f0dc7ba1247ee58f1b1910548c47d75ecc627786f0432bb0be89b3f",
+    "tools/ainative/kimi_work_image_provider.py": "8508aa39b6b2db219f29189b1a6534dd7c5f2b5030951bb2d4816163a0bd9762",
+    "tools/ainative/managed_comfy.py": "dbdb54a6c5ee3526f5669d22707c4495be8b7bda4c2bdcda2e79df63d4f4ba2a",
+    "tools/ainative/modeling_provider.py": "3199fd019bfad8194bfc442ac7fc56b10cbd108d6e5ae4badc8fa4d439f399e2",
+    "tools/ainative/motion.py": "551c9899caba439c108d3897b2e27af6ff851a4a9a330db111008c7ea2430f20",
+    "tools/ainative/motion_jobs.py": "64108e782707a0e51597c035ca3c169f4aaaa13157796e628f48615a6d07a6c3",
+    "tools/ainative/motion_mdm.py": "bcb5f5581e65516cd45d8ce4c3a0ff63711306edf7e87ba8911ca16fcf856d2f",
+    "tools/ainative/motion_provider.py": "e07475fd8c65d463d010b24b65bab5c26fd4e4f70afa08884e98817d0f4bb845",
+    "tools/ainative/motion_video.py": "3a144190ef87b07e185a4836aefa51154dd85c0233db0e9c7b4b569813fa691b",
+    "tools/ainative/multi_image_provider.py": "8743d36f48ee3d99f29613048ec4b6eb52a9a22815d64ce009c92e4a8816190f",
+    "tools/ainative/organic_detail.py": "cabbb69af1e3531a81cec5b4ebb8911638667c5a06161706cdb873360a883691",
+    "tools/ainative/owned_process.py": "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78",
+    "tools/ainative/period_groom.py": "d46fe6aceaec2ace96b5eabf39c36b3ad5a2e2e528eb3990c9bef9e8dc48508d",
+    "tools/ainative/portable_scene.py": "728ef1a0b4c1b7bdb6b915e4f353ba78efc6b60d6131d73b0b6e87cde117a7a4",
+    "tools/ainative/provider_common.py": "d90252520f9316cf37f6cd49c4d8727bb80faab7da8b2e21036bbdb2632ad236",
+    "tools/ainative/rain_convert.py": "3a2e2b46cb711d2c6ef3b79d3ac035420a6179f988439d9329cb2e93a9627395",
+    "tools/ainative/rain_inspect.py": "2ea27b34678c52834b74aa8da656b1b5eb6a98c439eadaafca32e463d3186642",
+    "tools/ainative/rain_probe.py": "b6ef91c0fcc70d2696af19d3b827cf248d1b9537696d9ed12e522ac2347bf443",
+    "tools/ainative/rigging_publish.py": "9a9ca6e6befca74054e2a669f6038850b35a5a9eeb11a1d332c0c3f09188a967",
+    "tools/ainative/sculpt_builder.py": "ca44efd4a28135f12758bc41cd72c6e3a46600f00c2eb1d2fd8b2cea02c37154",
+    "tools/ainative/sculpt_provider.py": "38a6258faad12b725a3eb9c1e9d55b2d84436f9bce58df03f49ab4593aa096ae",
+    "tools/ainative/test_anatomy_base.py": "5efedb6af5206bc64e09f5f5b21576a52db5aa0ed80feba6772adf133ab93075",
+    "tools/ainative/test_anatomy_body.py": "85d0b73774b9d7dba204683b2d62c2142542d08c04442c7c6a278829b789df39",
+    "tools/ainative/test_api_node_models.py": "c4d695f7b9538acd6a7d0b78163c8ba1d90c7471c007565040c41c716a4b449a",
+    "tools/ainative/test_character_detail.py": "3bfb9318dffd4810b83ca7e9da23541e5a1280bf60296077f2fb14a37e78b4f7",
+    "tools/ainative/test_character_publish.py": "65aafdcb6de8412e0dd6378e3405c3fb5d95ffde3ddedb5bf6d08d3fa4140491",
+    "tools/ainative/test_codex_provider.py": "42acc108f47d7f78b6ce1a350de5de3ff40c61b9c29ec4429b2f1f43b6b3f3b7",
+    "tools/ainative/test_comfy_provider.py": "477d0af03a58ecf588f915bf2d80e11df98908b40f6cd88d5a5325abf897ef69",
+    "tools/ainative/test_contracts.py": "ae61e409d0665cd9b72a679613e311853aaa2d51df64e726c0ba677c6ade4214",
+    "tools/ainative/test_editor_host.py": "c428a909d9b0eb054789f92faa1cc4135bdc5826f3ed20a4ca9ecd182369c5a1",
+    "tools/ainative/test_executor.py": "41ec3f7f732a39a9a67ca415b556a54cd5d368a8ad26d9951603b6a5ac0b0fb4",
+    "tools/ainative/test_extensions.py": "673b9e9c48046f08382e38c7ee6c22a639d2475b8727c1841d2b44ce4480ce5d",
+    "tools/ainative/test_garment_generate.py": "a3ff62faf3770dda64a6d0dbcd9fa205073547a0eea983ae19d8b633f7eb81fa",
+    "tools/ainative/test_garment_prepare.py": "afc109e422eaa731e6a1eccd87ec7ea7016991b165220bcd63baeae4f61e6c51",
+    "tools/ainative/test_generation_service.py": "f0cf7fac962b68108f17304de478f66efbaeaf3b207423c56878edee023435f6",
+    "tools/ainative/test_generation_service_gui.py": "f4a9bdaea2a76766ff4d70a0d548acd21b32ab180066b6b05c0523511fa5e841",
+    "tools/ainative/test_interop.py": "2cde8c09199ab5308b8e97cf1ebe81f3273cf622c4af0882de28c6233af70e0d",
+    "tools/ainative/test_jpeg_validation.py": "7f272174d028224f9da787f8293967fc6d32cfdf8ec5c1ade30531b67f78ef3f",
+    "tools/ainative/test_kimi_direct_provider.py": "cd16c4d9ca1719d1cab262c73f8f92f370a14d5e6f6d2df303080508b537747f",
+    "tools/ainative/test_kimi_provider.py": "5737fa3ec3e6865172be48703b3670e2b03f2c7f632e688bc4d704ebae83d885",
+    "tools/ainative/test_kimi_service.py": "9b01a2d91f89646a925f0a8a75e8bf751777c74d840d6954f0470756713892eb",
+    "tools/ainative/test_kimi_work_image_provider.py": "82090c2a344af08c10ab067186fecf3a95e66db08d790111ab89109e04a71ab3",
+    "tools/ainative/test_managed_comfy.py": "ca42d61f459fd400b445b81a27de55b31bb7f0508287519d4cf2490f4997f5b3",
+    "tools/ainative/test_modeling_provider.py": "74d7e56f897f20a048c1d23fc0b647c977131e2d5d603e2433daed009ae18aef",
+    "tools/ainative/test_motion.py": "db097a62c06e4a870f6723cba9d08c0d277e43c83096368a3cf46b5a34a8cd58",
+    "tools/ainative/test_motion_provider.py": "987a4df1ef83a0cb544362c63c735861b670b45d4c8a4f15fd035bc929f1e964",
+    "tools/ainative/test_multi_image_host.py": "f8ce94dd5e20fc6057cf1b40eac00a48ca822c15015f7efb597cae3b727aad04",
+    "tools/ainative/test_multi_image_provider.py": "97c8bbedac7d4ea3e2419e383d2e4abbbabce5a4344cf3b65812577e4e7db4fa",
+    "tools/ainative/test_organic_detail.py": "4c8c0a67a6528c7c8aeddbe262b6325ec584314573e970c01a047acf9da1ede4",
+    "tools/ainative/test_owned_process.py": "dd94e0c44946f54d6f14bccbd50dd1a76969e0b81c3fdbe4a91673ffb0127dbc",
+    "tools/ainative/test_period_clothing.py": "e8444336622fb1db02f1a9f6531de262f109c292500de62ddbbc316b7c11e146",
+    "tools/ainative/test_period_groom.py": "7b07d2f76a2d90045473babb06137be13483ad6313903f67ce5c368a9620337e",
+    "tools/ainative/test_per_node_models.py": "dddf2f042a217777e297cccb8de0cfa98253e56e19b0d3a4550f4154e0321bba",
+    "tools/ainative/test_portable_scene.py": "2baf50cb2614fbb276aec13bf877f382a2b363d1ef77df2ed5b7718e225023c2",
+    "tools/ainative/test_provider_independence.py": "ab0dbfde40202583be4c272e0c5ec94af130f9074f86ffb8a21de654197db4d9",
+    "tools/ainative/test_rigging.py": "cb70d290b9ee696152ee3001988e57fc675b55477369ff444368f3b7a22e884a",
+    "tools/ainative/test_sculpt_builder.py": "c625da407d5fd6d67a758053953f9d4c959765575ad256d4013a75234e21d6da",
+    "tools/ainative/test_sculpt_provider.py": "41620c376b8261232e07987a80d050680effdc0eceb977adf1240a9d50a5b637",
+    "tools/ainative/test_turnaround_face.py": "6dbb62db8d326f493cff5d81763236b654f4052708dceab78e6b86c7b0ec4827",
+    "tools/ainative/test_turnaround_surface.py": "9227bcdcf8629a71904716cc0284201f51222045c5cdf7ca9a0522bd08229000",
+    "tools/ainative/turnaround_face.py": "b8339125946faf04b67f7bae232aec226a5a5ded82802d0691787a9ffe0210a2",
+    "tools/ainative/turnaround_surface.py": "8428fd1d494de501185f7cebc7859a690e02aa4873ec94c66cd175f2959cb81d",
+    "tools/editor_provenance_process.py": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1",
+    "editor/ainative/builders.py": "2185b5313bc68b94f87aceee41bf70c60d34d90c6a99a8b7ddd55d7f1fdc6804",
+    "editor/SCsub": "f1774abfafc72675a4e9b09bd187f92d51eb8881d130d202389d5857724de0ac"
+  },
+  "temporary_directory_removed": true,
+  "model_calls": 0,
+  "tokens": null,
+  "limits": "Only selected Python regressions. Existing API image has no Node; actual_node tests explicitly deselected here and listed, must verify separately on real Node host/CI. No production throughput or model-efficiency claim."
+}

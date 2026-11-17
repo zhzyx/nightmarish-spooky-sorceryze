@@ -1,0 +1,56 @@
+{
+  "issue": 1444,
+  "kind": "actual250durableQueueAndTwoCoordinatorProcesses",
+  "passed": true,
+  "tasks": 250,
+  "capacity": 8,
+  "reserved": 8,
+  "ready": 242,
+  "duplicate_reservations": 0,
+  "persisted_fifo_first8": true,
+  "unknown_slots_preserved_after_restart": true,
+  "processes": [
+    {
+      "pid": 61980,
+      "accepted": [],
+      "attempted": 250,
+      "seconds": 0.31419020000612363,
+      "started_ns": 1794934389616503400,
+      "finished_ns": 1794934389930189500
+    },
+    {
+      "pid": 58004,
+      "accepted": [
+        "1ab545cbd2394912674d2800deb048e397edc4d28a06e5988550b0d845cf2fab",
+        "30acfa4c01d098cdd00cc119887d2f77dca63ba669aa30e52923255a174e994e",
+        "25e788ad80fe2507a28743fe692b3ee7c9a2f246c8a0411a71993f86dbf82af0",
+        "4fa4dc43a3cac6c7ff2aa82a90ce51c4922aec4790844750c50bd227bb7dbab0",
+        "6aeaf186bb7ea780c8ca3701690df894871caba58c55f730423e0b21640b7e77",
+        "dbd7ca3059d32b35763a49fff03e6608b282e7d776989280c0768fd45477752b",
+        "0e23f359dfc9eb575472c7c8c4b76fc70150e2ff22957fa9b7d22297f5023267",
+        "becb8c85e0ca339ebff416bbd4aa132bbecafc74224f0380ff78269b0dbf2b32"
+      ],
+      "attempted": 250,
+      "seconds": 0.21084379999956582,
+      "started_ns": 1794934389616503400,
+      "finished_ns": 1794934389827464400
+    }
+  ],
+  "authorize_seconds": 5.544932700009667,
+  "inspect_seconds": [
+    0.027377500009606592,
+    0.029571599996415898,
+    0.03745839999464806,
+    0.032829499992658384,
+    0.03591759999108035
+  ],
+  "model_calls": 0,
+  "tokens": null,
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "63ae67641dcfd156c267afa7f1188c7a54a53cea908f10a5b60ef541a9426029",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "65c66cd9bf2b136dbab67c35f4074940f4bbe750a907f8773a43d579648dd771",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "5bdb687f1904ea5d27e5ea84b0bd6526b1179ea90ea2f9b6b2ac6922d831153d"
+  },
+  "limits": "Queue/reservation load on Windows. No worker/model/build executions; shared-module fixture does not prove same-product integration or production throughput. Server test separate.",
+  "temporary_directory_removed": true
+}

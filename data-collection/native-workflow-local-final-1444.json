@@ -1,0 +1,94 @@
+{
+  "issue": 1444,
+  "kind": "WindowsPostIndependentReviewFixes",
+  "passed": true,
+  "checks": [
+    {
+      "command": [
+        "D:/GongGong-work/tx-venv/Scripts/python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "customizations\\components\\tianxuan\\sinan-workorders\\test_native_workflow.py",
+        "customizations\\components\\tianxuan\\duobao\\test_native_check_inputs.py",
+        "customizations\\components\\tianxuan\\duobao\\test_native_check_runner.py",
+        "customizations\\components\\tianxuan\\duobao\\test_native_evidence.py",
+        "customizations\\components\\tianxuan\\duobao\\test_native_release.py",
+        "customizations\\components\\tianxuan\\duobao\\test_native_store.py",
+        "customizations\\components\\tianxuan\\duobao\\test_native_workspace.py",
+        "customizations\\components\\tianxuan\\server\\test_native_api.py",
+        "customizations\\components\\tianxuan\\server\\test_native_platform.py",
+        "customizations\\components\\tianxuan\\server\\test_issue_ancestor_acl.py",
+        "customizations\\components\\tianxuan\\server\\test_tianxuan_core.py",
+        "customizations\\components\\tianxuan\\server\\test_api_doc_issues.py"
+      ],
+      "exit_code": 0,
+      "seconds": 68.53000700000848,
+      "output": ".............................................................. [ 37%]\n.........................................ss...... [ 67%]\n......................................................                   [100%]\n============================== warnings summary ===============================\n..\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1\n  D:\\GongGong-work\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n163 passed, 2 skipped, 1 warning, 33 subtests passed in 67.25s (0:01:07)\n"
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "check",
+        "customizations/components/tianxuan/sinan-workorders",
+        "customizations/components/tianxuan/server/native_api.py",
+        "customizations/components/tianxuan/duobao/native_release.py",
+        "customizations/components/tianxuan/duobao/test_native_check_inputs.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.1478752999973949,
+      "output": "All checks passed!\n"
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "mypy",
+        "customizations\\components\\tianxuan\\sinan-workorders\\native_workflow.py",
+        "customizations\\components\\tianxuan\\sinan-workorders\\native_worker.py",
+        "customizations\\components\\tianxuan\\server\\native_api.py",
+        "customizations\\components\\tianxuan\\server\\tianxuan_core.py",
+        "customizations\\components\\tianxuan\\duobao\\native_release.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.27727670001331717,
+      "output": "Success: no issues found in 5 source files\n"
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.03778120000788476,
+      "output": ""
+    }
+  ],
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/conftest.py": "c37dc8303d58efd8fb4302254c4fcfd88ea729255fba2af4b5453129d8654e37",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "65c66cd9bf2b136dbab67c35f4074940f4bbe750a907f8773a43d579648dd771",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "63ae67641dcfd156c267afa7f1188c7a54a53cea908f10a5b60ef541a9426029",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "be048a19aaca7cea1e1dce1fae1ebbe60b7b94a8def4e56df7826abed2b8a9cc",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "dae76fa5f294c1b08dcfd9e0bb43134d7d3848db9889ddaaf99adedcfe744f57",
+    "customizations/components/tianxuan/sinan-workorders/README.md": "2b28055d1fc884e93080a07d351a5e64e8543ff450a6456e56f4e75cf661951f",
+    "customizations/components/tianxuan/server/native_api.py": "ee387cbf28890d1a5a85025744e6323daf98f9e2ee3a66713bbbb4ebb5a78184",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "5bdb687f1904ea5d27e5ea84b0bd6526b1179ea90ea2f9b6b2ac6922d831153d",
+    "customizations/components/tianxuan/server/api.py": "e9cf3ea7ddf6041ff2b462dfa2ba0d341827e34b7600cac846a4d0dc2f09e8c7",
+    "customizations/components/tianxuan/duobao/native_release.py": "2ca0a797a44d01fe6852b4c2b0089ecaa5cbcbe5e36dea98111eeb4cae51903b",
+    "customizations/components/tianxuan/duobao/test_native_check_inputs.py": "d5d6eee1ebe6b840511e20dcb281a6d99c02409a38c832067d10e5005bf4856b"
+  },
+  "model_calls": 0,
+  "tokens": null,
+  "limits": "Deterministic production/check/review fixtures and actual HTTP/Node entry; not provider quality, remote node offload, same-product integration or production deployment acceptance."
+}

@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from collections.abc import Callable, Generator
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from typing import Any
 
 from native_evidence import EvidenceCache
@@ -272,7 +272,16 @@ class NativeRelease:
             return record
 
     def publish(
-        self, tenant: str, actor: str, request_key: str, product: str, channel: str, review: str, expected: str | None
+        self,
+        tenant: str,
+        actor: str,
+        request_key: str,
+        product: str,
+        channel: str,
+        review: str,
+        expected: str | None,
+        *,
+        guard=None,
     ) -> dict[str, Any]:
         """Rollback uses this same operation with a valid review of old content."""
         _identifier(channel)
@@ -288,7 +297,7 @@ class NativeRelease:
             expected=expected,
             action="publish",
         )
-        with self.store._connection(write=True) as db:
+        with self.store._connection(write=True) as db, guard(db) if guard is not None else nullcontext():
             self._allow(db, tenant, actor, product, "publish")
             old = self._existing(db, request)
             if old is not None:
@@ -323,6 +332,9 @@ class NativeRelease:
                 "INSERT INTO native_release_events(tenant,product,record) VALUES (?,?,?)",
                 (tenant, product, record["id"]),
             )
+            # A trusted local domain guard must remain held until publication is
+            # committed, not merely until SQL statements have been issued.
+            db.commit()
             return record
 
     def selected(self, tenant: str, actor: str, product: str, channel: str) -> dict[str, Any] | None:

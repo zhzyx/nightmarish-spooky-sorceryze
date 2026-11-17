@@ -1,0 +1,11 @@
+{
+  "request_id": "native-workflow-20261117",
+  "issue": 1444,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1444",
+  "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+  "request_event": "gonggong-diting-data/events/gonggong-workspace/native-workflow-20261117/request-native-workflow-1444.json",
+  "request_event_sha256": "99d22826f27a74dbea67e4e056a2e8f730a4cfa4347829628a8d3ecd31d8e7cf",
+  "implementation_receipt": "data-collection/native-workflow-increment-1444.json",
+  "status": "Reviewed source increment; original issue remains open for unmet acceptance",
+  "binding_correction": "Original intake stored the true issue URL under source_ref and nested issue_readback. Delivery gate requires explicit top-level request_id plus issue identifier in a changed evidence object. This additive binding preserves original evidence bytes."
+}

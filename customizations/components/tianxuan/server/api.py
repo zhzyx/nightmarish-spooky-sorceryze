@@ -305,12 +305,19 @@ def create_app(
     required_checks: Sequence[str] = (),
     native_store: Any | None = None,
     native_only: bool = False,
+    native_workflow: Any | None = None,
 ) -> FastAPI:
     """为给定领域核心实例构建 HTTP 应用；可选的模型网关与多宝合入队列挂载到同一应用。"""
     app = FastAPI(title="Tianxuan API", version="0.1.0")
     app.state.store = store
     app.state.native_only = native_only
     configure_access(app, store)
+    if native_workflow is not None:
+        from native_api import create_native_workflow_router
+
+        if native_workflow.domain is not store:
+            raise ValueError("Native workflow must use authenticated domain store")
+        app.include_router(create_native_workflow_router(native_workflow))
     if native_store is not None:
         from native_api import create_native_router
 

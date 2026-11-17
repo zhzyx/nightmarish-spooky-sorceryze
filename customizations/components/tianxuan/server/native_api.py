@@ -24,6 +24,91 @@ MAX_ENTRIES = 1024
 MAX_MODULES = 128
 
 
+def create_native_workflow_router(workflow) -> APIRouter:
+    """Explicit host installation. No worker executable, principal or approval input."""
+    router = APIRouter(prefix=PREFIX + "/workflow")
+
+    @router.post("/{operation}")
+    async def invoke(operation: str, request: Request):
+        _, actor = _identity(request)
+        payload = await _body(request)
+        fields = {
+            "inspect": set(),
+            "advance": set(),
+            "status": {"key"},
+            "reconcile": {"key"},
+            "execute": {"key"},
+            "check": {"key"},
+            "authorize": {"issue"},
+            "review": {"key"},
+            "finish": {"key"},
+            "publish": {"key", "channel", "expected"},
+            "complete": {"key", "channel"},
+            "reserve": {"assignment", "event"},
+            "revalidate": {"assignment"},
+            "start": {"assignment"},
+            "ack": {"assignment", "receipt"},
+            "record": {"assignment", "event", "state"},
+        }
+        if operation not in fields:
+            raise HTTPException(404, "workflow operation unavailable")
+        optional = {
+            "advance": {"exclude"},
+            "record": {"sourceReceipt", "receipt", "ticket", "key", "stage", "reason"},
+        }
+        _fields(payload, fields[operation], optional.get(operation))
+        if operation == "advance" and (
+            not isinstance(payload.get("exclude", []), list)
+            or len(payload.get("exclude", [])) > 1024
+            or not all(isinstance(key, str) and len(key) == 64 for key in payload.get("exclude", []))
+        ):
+            raise HTTPException(422, "invalid deferred event keys")
+        for key in {"key", "issue", "channel"} & payload.keys():
+            if not isinstance(payload[key], str) or not payload[key] or len(payload[key]) > 256:
+                raise HTTPException(422, "invalid workflow identifier")
+        if "assignment" in payload:
+            assignment = payload["assignment"]
+            if not isinstance(assignment, dict) or not isinstance(assignment.get("ticket"), str):
+                raise HTTPException(422, "invalid assignment")
+            if operation == "reserve" and (
+                not isinstance(assignment.get("sourceSnapshot"), dict)
+                or not isinstance(assignment.get("model"), dict)
+                or not isinstance(assignment["model"].get("id"), str)
+            ):
+                raise HTTPException(422, "invalid assignment contract")
+
+        def call():
+            if operation == "inspect":
+                return workflow.inspect(actor)
+            if operation == "advance":
+                return workflow.advance(actor, isolate=True, exclude=payload.get("exclude", []))
+            if operation in {"status", "execute", "check", "review", "reconcile", "finish"}:
+                return getattr(workflow, operation)(actor, payload["key"])
+            if operation == "authorize":
+                return workflow.authorize_installed(actor, payload["issue"])
+            if operation == "publish":
+                return workflow.publish(actor, payload["key"], payload["channel"], payload["expected"])
+            if operation == "complete":
+                return workflow.complete(actor, payload["key"], payload["channel"])
+            assignment = payload["assignment"]
+            if operation == "reserve":
+                return workflow.reserve(actor, assignment)
+            row = workflow.status(actor, assignment["ticket"])
+            if operation == "revalidate":
+                return row["state"] == "ready"
+            if operation == "start":
+                return {"reference": row["id"]}
+            # A transport ack/report never changes worker terminal state.
+            return {"state": row["state"]}
+
+        try:
+            return await run_in_threadpool(call)
+        except NativeStoreError as error:
+            raise HTTPException(409, str(error)) from None
+
+    return router
+
+
 def _identity(request: Request) -> tuple[str, str]:
     store = request.app.state.store
     actor = getattr(request.state, "verified_actor", None)

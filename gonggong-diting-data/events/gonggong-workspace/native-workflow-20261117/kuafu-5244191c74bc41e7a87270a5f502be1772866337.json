@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5244191c74bc41e7a87270a5f502be1772866337",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-workflow-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1444",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0b7ed7daebdb6c27f80ff09c82b19bc59d196a7f3cd6c6163ecf1fc31148728e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1444",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "validation",
+    "detection_head": "7c7e1fbd4623da2062d01176f5efd03eb30299aa",
+    "context_sha256": "a1cd4aa8bf7358569b3d7498b2f119e12058373e6790068ba13a52e9f66b5f82",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1444",
+    "diagnosis": "Actual Linux tmpfs test immediate touch preserved both mtime_ns/ctime_ns; test assumed observed mutation without ensuring it. Root owns fixture explicit os.utime change and original Linux revalidation; production snapshot unchanged.",
+    "next_action": "Root repairs owned source and verifies original failing operation; independent review and exact candidate delivery remain required.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T15:56:14.558173+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T16:42:13.164674+00:00",
+  "sha256": "b24879224833788af305fe24e1250bc7a52751c1f5c8481eaadf0494ad54abdb"
+}

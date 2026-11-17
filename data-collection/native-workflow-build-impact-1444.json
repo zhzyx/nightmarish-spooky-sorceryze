@@ -1,0 +1,37 @@
+{
+  "module": "customizations/components/tianxuan/sinan-workorders",
+  "measured_at": "2026-11-18",
+  "host": "Python3.12/FastAPI plus Node; explicit optional host installation",
+  "input_blobs": {
+    "customizations/components/tianxuan/duobao/native_check_inputs.py": "5d93f141c16d044ea53badc4cceec1379835d3e4",
+    "customizations/components/tianxuan/duobao/native_check_runner.py": "29f0ad308a6c5ad774dbbff42b7e376fd834a22c",
+    "customizations/components/tianxuan/duobao/native_evidence.py": "a32c57f2d69ae9cc31402d2db366e23899524b54",
+    "customizations/components/tianxuan/duobao/native_release.py": "4a9a031b2ff107e61136c38e193a33bcd7f953c6",
+    "customizations/components/tianxuan/duobao/native_store.py": "1503687c9add396cd2ff7a9902f21f263431e997",
+    "customizations/components/tianxuan/duobao/native_workspace.py": "8e6334622cd69d6a710eed9786ce1c879588fff1",
+    "customizations/components/tianxuan/duobao/test_native_check_inputs.py": "287f33a8c4b77d05a77b467cde6e6156bb59b421",
+    "customizations/components/tianxuan/server/api.py": "6539af39d14fe2666c694ad0a2ceca30999c4e6e",
+    "customizations/components/tianxuan/server/native_api.py": "35d7b33e5f3078bd812ba145fc6e5484d2667f65",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "ea56c7e20efe969bebb967fa17ad629c35e95dda",
+    "customizations/components/tianxuan/sinan-workorders/README.md": "b655e91d510a1669c2777244f0c568d69e566fdf",
+    "customizations/components/tianxuan/sinan-workorders/conftest.py": "9bbc6d468d36e1e0eae99d8a0baa1a95632572ab",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "c3b811781cf6e55ea5bdd5eafa0438ceb1db7c5f",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "add9e8a223a31caf7ec7cdd9ac9bcae36cc25292",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "0e53bfe6bcd8578b9dd0138d6af8dbd5ae2180b3",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "766ea7a04cc5e34eff67607dd854916eba09ad42",
+    "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs": "c31da667a84b3dfe579bca4da0b7233b3f2d2495",
+    "tools/ainative/owned_process.py": "299243639ded6ce63066006df1055ee18021ad68",
+    "tools/editor_provenance_process.py": "1792895eca6d3ff29467380ea4f3be4fd9236fcd"
+  },
+  "checks": {
+    "host_behavior": {
+      "command": "pytest actual authenticated Node HTTP A/B->C + native storage/release/regressions; exact commands in data-collection/native-workflow-local-final-1444.json",
+      "observed": "163 passed, 2 platform skips, 33 subtests. Actual CLI starts real ordinary-file producers, trusted content checks, independent fixture reviewer and exact release; requirement progress100%, repeat no producer/reviewer run. Optional API disabled/restored on same interpreter retains data. Additional Node held-A/fast-B/C proves immediate capacity refill. Linux150passed2skip2Node-deselected, separately Windows Node tested.",
+      "passed": true
+    }
+  },
+  "limits": [
+    "Trusted local execution fixture, not arbitrary code sandbox or live provider acceptance.",
+    "Same-product semantic integration, definition revision, remote node deployment and full parent1382 consumers remain open."
+  ]
+}

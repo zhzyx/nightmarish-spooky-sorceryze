@@ -1,5 +1,6 @@
 """Scoped view boundary fixtures and real-process cross-candidate reuse."""
 
+import os
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -112,7 +113,10 @@ class InputTests(unittest.TestCase):
         self.assertFalse(list(self.root.glob(".duobao-check-stage-*")))
         view.materialize(self.store, "test", dest)
         before = view.snapshot(dest)
-        (dest / "core/code").touch()
+        changed = dest / "core/code"
+        stat = changed.stat()
+        os.utime(changed, ns=(stat.st_atime_ns, stat.st_mtime_ns + 2_000_000_000))
+        self.assertNotEqual(changed.stat().st_mtime_ns, stat.st_mtime_ns)
         self.assertNotEqual(view.snapshot(dest), before)
 
     def test_frozen_binding_limits_and_corrupt_blob_cleanup(self):

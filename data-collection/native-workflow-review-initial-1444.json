@@ -1,0 +1,189 @@
+{
+  "schema": 1,
+  "issue": 1444,
+  "verdict": "request_changes",
+  "reviewer": "independent-native-workflow-review",
+  "reviewed_at": "2026-11-17T16:42:56.660284+00:00",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "fc299a4e495cdf1b61aa0b0dd976fc1b8424fc0a89a365ef44b691d382780563",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "65c66cd9bf2b136dbab67c35f4074940f4bbe750a907f8773a43d579648dd771",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "5b15ab395feda22c06d5f93074119598c4ea7c9d9291b0451395efb97dc4c133",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "76dd283601c5e20f7ebf31e6cfcb782638561140a77814bfb56ed0129fb70767",
+    "customizations/components/tianxuan/server/native_api.py": "2ce7ac871d1426f2aa2cd71febbaa080d16331551437616fe55c22bb793f0424",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "5bdb687f1904ea5d27e5ea84b0bd6526b1179ea90ea2f9b6b2ac6922d831153d",
+    "customizations/components/tianxuan/server/api.py": "e9cf3ea7ddf6041ff2b462dfa2ba0d341827e34b7600cac846a4d0dc2f09e8c7",
+    "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs": "676f3d4c8797aab5878a7eb66f3c476f09b7d903e25606a55fbdfded819e8654",
+    "customizations/components/tianxuan/duobao/native_release.py": "1b0d51f6997fc5226dfc61bedc44f76fe336bc64a68686f47e01b48ee5fb98f8",
+    "design-docs/native-workflow-20261117.md": "4e0ab1e5af78e0850aba7f035b4052d0f72e346f0a48f339267290409355600f"
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "priority": "P1",
+      "title": "Unavailable FIFO head starves eligible tasks; reserve bypasses required capabilities",
+      "file": "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+      "lines": [
+        229,
+        255
+      ],
+      "observed": {
+        "ready": 2,
+        "capacity": 2,
+        "b_reserved": false,
+        "a_direct_reserve": true
+      },
+      "reproduction": "Authorize A with capabilities=[unavailable-capability] and B without requirements; catalog local capabilities=[]; reserve(B) returns False despite no active workers. reserve(A) returns True although no capable model exists.",
+      "fix": "Revalidate trusted catalog availability, target and capabilities atomically at reserve; FIFO priority applies only to currently eligible heads."
+    },
+    {
+      "id": "R2",
+      "priority": "P1",
+      "title": "inspect exposes other tenant task IDs and absolute worker paths",
+      "file": "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+      "lines": [
+        180,
+        184
+      ],
+      "observed": {
+        "tenant_distinct": true,
+        "foreign_requests": [],
+        "foreign_active_contains_private_ticket_and_absolute_path": true
+      },
+      "reproduction": "Reserve A in tenant one; register a new independent tenant actor and call inspect. environment.active contains A hash and absolute worker directory.",
+      "fix": "Preserve global occupancy through anonymous capacity counts, exposing resource identities only after tenant and current issue ACL checks."
+    },
+    {
+      "id": "R3",
+      "priority": "P1",
+      "title": "Producer terminal overwrites concurrent cancellation and permits done",
+      "file": "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+      "lines": [
+        277,
+        285
+      ],
+      "observed": {
+        "cancel_status": "cancelled",
+        "after_worker": "in-review",
+        "after_accept": "done",
+        "acceptance": "content_selected"
+      },
+      "reproduction": "Start fixture actual worker in Thread, wait native task running, transition_issue(cancelled), join. Run fixture independent check/approve/publish/complete.",
+      "fix": "Under terminal transaction revalidate current authorization, definition and cancellation. Persist true terminal independently while retaining stopped business state; never resurrect cancelled work."
+    },
+    {
+      "id": "R4",
+      "priority": "P1",
+      "title": "Revoked private fixed-input ACL is bypassed by worker materialization",
+      "file": "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+      "lines": [
+        97,
+        97,
+        160,
+        171,
+        260,
+        271
+      ],
+      "observed": {
+        "source_read_denied": true,
+        "reserved": true,
+        "worker_state": "produced",
+        "materialized_private": "private-canary"
+      },
+      "reproduction": "Share private requirement source to editor, authorize public task with fixed selected a plus source module, revoke share. require_native_module_read denies, but reserve/execute materializes private snapshot.json.",
+      "fix": "Check current source ACL for every selected and transitive source-bound module at authorization, reserve, execution and acceptance; do not limit checks to issue ancestry."
+    },
+    {
+      "id": "R5",
+      "priority": "P2",
+      "title": "Event driver waits slowest batch before using free capacity or accepting fast output",
+      "file": "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs",
+      "lines": [
+        56,
+        69
+      ],
+      "related": {
+        "file": "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs",
+        "line": 153
+      },
+      "observed": [
+        "start A",
+        "start B",
+        "terminal B",
+        "observe B=produced C=ready A=running",
+        "terminal A",
+        "accepted A",
+        "accepted B",
+        "start C",
+        "terminal C",
+        "accepted C"
+      ],
+      "reproduction": "Execute actual driveNative using installed dispatchEvent against deterministic service adapter with capacity=2, A gated promise, B immediate completion, independent C ready. B completion leaves C idle until external A gate release.",
+      "fix": "React to each genuine terminal independently, accepting output and refilling freed capacity without awaiting unrelated workers. Keep bounded concurrency and unknown occupancy.",
+      "evidence_limit": "Actual Node dispatch code with deterministic service adapter, not remote process performance measurement. Promise ordering establishes barrier; no wallclock threshold used as sole evidence."
+    },
+    {
+      "id": "R6",
+      "priority": "P2",
+      "title": "One failed outbox event prevents independent later events from advancing",
+      "file": "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+      "lines": [
+        338,
+        345
+      ],
+      "observed": {
+        "resolver_calls": [
+          "A",
+          "A"
+        ],
+        "consumed_count": 0,
+        "pending_events": 2
+      },
+      "reproduction": "Produce and independently accept A and B. Installed next_issues throws only for A; call advance twice. B resolver is never invoked.",
+      "fix": "Isolate failures per outbox event, preserve failed event pending with actionable error, continue independent events; partial child authorization must replay idempotently."
+    },
+    {
+      "id": "R7",
+      "priority": "P1",
+      "title": "Cancellation during independent review still changes selected release",
+      "file": "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+      "lines": [
+        397,
+        410,
+        444,
+        453
+      ],
+      "observed": {
+        "review_cancel_status": "cancelled",
+        "published_state": "content_selected",
+        "completion": "Issue execution is stopped"
+      },
+      "reproduction": "Actual produced candidate/check; trusted review_candidate transitions issue to cancelled then returns True. publish returns content_selected; complete subsequently rejects.",
+      "fix": "Revalidate after long reviewer callback and guard current authorization/definition/dependencies/cancellation through actual native publication commit using consistent native-to-domain lock ordering; post-publication completion rejection is insufficient."
+    }
+  ],
+  "validation": {
+    "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -m pytest customizations/components/tianxuan/sinan-workorders/test_native_workflow.py -q -p no:cacheprovider",
+    "result": "15 passed, 1 warning in 14.12s",
+    "warning": "Starlette TestClient httpx deprecation",
+    "independent_probes": "R1-R4/R6/R7 actual Python domain/storage/worker operations in private isolated temp directories; R5 actual Node driver with deterministic adapter"
+  },
+  "limits": [
+    "No production deployment, model/provider call, commit or push performed.",
+    "Windows independently exercised; parent Linux and 250-load results are not claimed as my independent evidence.",
+    "Known same-product integration, explicit managed-definition replacement and remote/provider execution remain unimplemented. Same-product integration and explicit definition lifecycle affect design acceptance where required; deployment/browser/Godot/rendering/office and AA baseline remain parent scope.",
+    "No full business acceptance: deterministic fixture pass does not prove model quality, actual installed consumers or complete parent delivery.",
+    "Unknown review reconciliation has no verified successful recovery path in this review; no affirmative recovery claim.",
+    "Existing source/check fingerprint mechanisms inspected, but arbitrary executable/interpreter imported-dependency provenance not exhaustively attacked."
+  ],
+  "method_learning": {
+    "scope": "editor-dependency-handoff",
+    "applied": [
+      "await-terminal-observers",
+      "bind-consumer-release",
+      "review-context-and-source-evidence"
+    ],
+    "observations": "Held/terminal and accepted-consumer provenance checked against concrete race/revocation probes; historical author receipt not reused as current proof."
+  },
+  "private_original_sha256": "dd94205a5a89c08301633f0453f2fb24d82ebdf03277d551942e21fb1834b0c4",
+  "authority": "Independent native agent real terminal reconciled through bound Sinan host"
+}

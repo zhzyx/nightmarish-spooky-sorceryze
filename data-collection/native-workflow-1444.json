@@ -1,0 +1,97 @@
+{
+  "schema": 1,
+  "issue": "github:zhzyx/nightmarish-spooky-sorceryze#1444",
+  "recorded_at": "2026-11-17T15:32:13.649116+00:00",
+  "status": "local_slice_verified_not_full_issue_acceptance",
+  "command": [
+    "D:/GongGong-work/tx-venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "pytest",
+    "customizations/components/tianxuan/sinan-workorders",
+    "customizations/components/tianxuan/duobao/test_native_release.py",
+    "customizations/components/tianxuan/duobao/test_native_check_runner.py",
+    "customizations/components/tianxuan/duobao/test_native_workspace.py",
+    "customizations/components/tianxuan/server/test_native_api.py",
+    "customizations/components/tianxuan/server/test_issue_ancestor_acl.py",
+    "customizations/components/tianxuan/server/test_tianxuan_core.py",
+    "customizations/components/tianxuan/server/test_api_doc_issues.py",
+    "-q"
+  ],
+  "exit_code": 0,
+  "stdout": "...................................................ss................................................                 [100%]\n============================== warnings summary ===============================\n..\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1\n  D:\\GongGong-work\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n99 passed, 2 skipped, 1 warning, 27 subtests passed in 36.59s\n",
+  "stderr": "",
+  "platform": "win32",
+  "models_called": false,
+  "provider_identity": null,
+  "provider_usage": null,
+  "production_gain_claimed": false,
+  "final_focused_test": {
+    "command": [
+      "D:/GongGong-work/tx-venv/Scripts/python.exe",
+      "-X",
+      "utf8",
+      "-m",
+      "pytest",
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py",
+      "-q"
+    ],
+    "exit_code": 0,
+    "stdout": ".............                                                            [100%]\n============================== warnings summary ===============================\ncustomizations/components/tianxuan/sinan-workorders/test_native_workflow.py::test_actual_node_authenticated_http_dispatch\n  D:\\GongGong-work\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n13 passed, 1 warning in 10.80s\n",
+    "stderr": ""
+  },
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "7d22fa5dfd81bdd695f3c0157542f21d02c430d198766a82c240803e8ef8ac9d",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "65c66cd9bf2b136dbab67c35f4074940f4bbe750a907f8773a43d579648dd771",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "fbde0772f3b4a1af62e3563139b089d8db96e4f90b8e29d8ed0dc9f3b7c2b106",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "0bdaf49fbaae65aed341512151f306d892f0ff41f32e9bd1da68cf9adb4c9649",
+    "customizations/components/tianxuan/sinan-workorders/conftest.py": "c37dc8303d58efd8fb4302254c4fcfd88ea729255fba2af4b5453129d8654e37",
+    "customizations/components/tianxuan/sinan-workorders/README.md": "2392c4955befe4ec3d9630c2df26beb62c7dd26508e927f34688b4fbf77c3ca4",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "5bdb687f1904ea5d27e5ea84b0bd6526b1179ea90ea2f9b6b2ac6922d831153d",
+    "customizations/components/tianxuan/server/native_api.py": "70fdde851542899c5ed2f6eea148ef8cdc04d8791811ae582c667b1ec3c3e455",
+    "customizations/components/tianxuan/server/api.py": "e9cf3ea7ddf6041ff2b462dfa2ba0d341827e34b7600cac846a4d0dc2f09e8c7"
+  },
+  "static_validation": {
+    "ruff": "check --no-fix passed; format applied",
+    "mypy": "4 implementation source files passed --follow-imports=silent",
+    "node": "--check and actual HTTP subprocess dispatch passed"
+  },
+  "placement": "host_tool",
+  "host_entry": "create_app(native_workflow=trusted_installation) and native_dispatch.mjs HTTP CLI",
+  "proven": [
+    "Authenticated Node/Sinan dispatch to real trusted local subprocess A/B; overlapping process intervals; PATH contains no Git",
+    "A/B accepted exact outputs feed C via durable dependency outbox and installed graph resolver; C content and requirement100 percent verified",
+    "Real content-sensitive NativeCheckRunner; independent execution identities under one operator; durable NativeRelease review replay",
+    "Current direct/ancestor/link ACL lists and immutable source excludes operational churn",
+    "Managed done guard rejects domain/tool and historical manual done replay",
+    "Native release writer guard serializes concurrent revocation against domain acceptance",
+    "Publish-before-domain failure recovery, durable terminal reconcile, unknown occupancy preservation, FIFO reservation",
+    "Same interpreter optional HTTP entry disable/restore retains produced state"
+  ],
+  "limits": [
+    "No full Issue1444 business acceptance claimed",
+    "No production provider/model calls or verified cost/performance benefit",
+    "No remote execution-node offload; HTTP coordinator invokes local trusted worker",
+    "Parent owns Linux,250-task,multiprocess and independent review",
+    "Explicit managed-definition replacement/new mandate revision entry still absent; source drift fails closed",
+    "Same-product concurrent Heqi semantic integration absent; NativeRelease CAS remains required",
+    "Review side effect unknown without durable NativeRelease record requires trusted host investigation",
+    "Production admitted profile/principal/review/graph installation required; no automatic role activation",
+    "No browser/Godot consumer installation acceptance"
+  ],
+  "cleanup": {
+    "removed": [],
+    "preserved": [
+      "all uncommitted delivery sources and evidence",
+      "parent dispatch/Kuafu records",
+      "existing shared tx-venv",
+      "pytest temporary process/SQLite diagnostics pending parent review"
+    ],
+    "blocked": [
+      "task-local .native-verify removal denied by automatic tool policy before execution; exact resolved workspace child verified; installer exit1 confirmed; no bypass attempted"
+    ],
+    "pending": "pytest temporary diagnostics remain until parent acceptance; no cleanup completion claimed"
+  },
+  "finished_at": "2026-11-17T15:34:55.009492+00:00"
+}
