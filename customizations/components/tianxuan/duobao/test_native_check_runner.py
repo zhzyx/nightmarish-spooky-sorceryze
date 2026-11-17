@@ -26,6 +26,7 @@ class RunnerTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory(prefix="native-run-test-")
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
+        self.python = str(Path(sys.executable).resolve(strict=True))
         self.store = NativeStore(self.root / "native.sqlite")
         self.cache = EvidenceCache(
             self.store,
@@ -36,7 +37,7 @@ class RunnerTests(unittest.TestCase):
         self.registry = {
             "check": dict(
                 argv=[
-                    sys.executable,
+                    self.python,
                     "-c",
                     "import os,pathlib; assert pathlib.Path.cwd() == pathlib.Path(os.environ['DUOBAO_OUTPUT']); print('actual check')",
                 ],
@@ -59,7 +60,7 @@ class RunnerTests(unittest.TestCase):
 
     def runner(self, code=None, timeout=3, limit=4096):
         if code is not None:
-            self.registry["check"]["argv"] = [sys.executable, "-c", code]
+            self.registry["check"]["argv"] = [self.python, "-c", code]
         self.registry["check"].update(timeout=timeout, log_bytes=limit)
         return NativeCheckRunner(
             self.cache,

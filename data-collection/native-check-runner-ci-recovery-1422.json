@@ -1,0 +1,16 @@
+{
+  "issue": 1422,
+  "bug": 1425,
+  "superseded_pr": 1431,
+  "failure": "Module and web tests run 44082900035: test registry used symlink sys.executable; trusted installed executable contract rejects links.",
+  "correction": "Only canonicalize test interpreter with Path.resolve(strict=True) in setUp and use in two registry argv values. Runtime guard and assertions unchanged.",
+  "windows": "14 runner tests passed in 9.216s; Ruff check/format and CI-shaped mypy passed.",
+  "linux": "Default /usr/local/bin/python alias: 14 runner tests, 13 passed and 1 Windows-only skip; 119 source hashes independently matched.",
+  "prior_evidence": "Committed 93-test Linux report retained unchanged. Runtime source unchanged; changed fixture is covered by new 14-test run, not represented as rerun of 93 tests.",
+  "review": {
+    "path": "data-collection/native-check-runner-ci-review-1422.json",
+    "sha256": "9ec477b59d044d0e96e5794cd60b0c2dd46a0f0e8806261c583a04e9a72648f3"
+  },
+  "state": "Independent review approved; formal candidate, CI and remote main acceptance pending.",
+  "cleanup": "Ephemeral Linux test container and temporary inputs removed by harness. Active worktree retained pending delivery."
+}

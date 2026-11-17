@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-392b0662518f127f86de56310c1cd7e1566e91e8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-check-runner-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1422",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3906c3d0fcf14865918b9f3488f867ab94dec70cea5f580d19e990dcca9319cd",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1422",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1425",
+    "action": "validation",
+    "detection_head": "42ec7ed4fb65f35b93f6ed82d4ba00770aac2e0f",
+    "context_sha256": "7eb86ca20bb829edc0fc67edaf49f8ef4e56b5e6de4cba62b6fca82aba242d0b",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "data-collection/native-check-runner-ci-linux-1422.json",
+    "diagnosis": "CI interpreter sys.executable is a link, correctly rejected by production path validation. Test installation now resolves real executable before registry creation at two argv sites. Runtime unchanged. Windows14 runner tests passed; actual Linux default python alias14tests13passed1Windowsskip. Static checks pass.",
+    "next_action": "Independent fixture-delta review; append final evidence and signed replacement PR, verify exact CI/main before closing.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T12:29:16.193071+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T12:33:38.083187+00:00",
+  "sha256": "1382a2bfff235b5db09bccd38b9e9318c714a07de0060423f5c586d5b6254604"
+}
