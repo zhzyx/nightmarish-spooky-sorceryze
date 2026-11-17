@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "request-native-workflow-revisions-1456",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-workflow-revisions-20261118",
+  "kind": "request",
+  "occurred_at": "2026-11-17T18:04:34.655755+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1456",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1456,
+    "title": "原生任务显式定义换版与固定验收依赖",
+    "body": "<!-- gonggong-request:native-workflow-revisions-20261118 -->\n\n# 原生任务定义换版与固定验收依赖\n\n需求 ID：native-workflow-revisions-20261118。父 #1444（原生需求到交付链路），本子项不缩减原父项验收。路径以仓库根解析。\n\n用户要求固定输入制作不因无关发布前进反复重做，并允许真实需求变化后继续自动推进。PR #1452 已交付首批原生链路，但当前 issue UNIQUE 绑定无法显式换版，依赖验证还错误要求发布频道保持同一指针。已独立实测：上游相同 candidate、同一有效 approval 再次发布，仅产生新选择事件，就使下游 reserve 报 Dependency release no longer current。\n\n## 行为与边界\n\n1. 为同一原生工单保存多份不可变任务合同及显式 active 绑定。换版必须带 expected 原 active 标识，当前认证身份有权授权，输入来自已安装计划；不接受客户端任意命令/actor/来源。并发换版仅一个成功，同操作稳定重放。\n2. 原合同、已产出内容、审查与历史验收保留。已被替换的任务不能开始新生产、结束新定义或产生依赖放行；已在运行或结果未知的旧工作保持实际物理占用，直到可信终态到达。晚到终态只能结清旧工作，不覆盖新工单进度。不按超时自动抢占或重启。\n3. 固定依赖引用精确验收记录和内容。发布频道的无关变化或同内容新选择不使旧依赖失效；仍核对当前读取权限、原 approval 撤销/过期、检查政策、内容完整性及真实发布事件。被新定义替换的原任务不能作为新定义完成证明；旧验收作为固定内容版本的适用性由合同明确，不混淆当前业务完成。\n4. 原领域数据库在一笔短事务内迁移任务表、active 映射和定义历史，不改变真实 worker 状态。迁移失败全回滚；旧 schema 真实持久 fixture 验证、重启幂等、关闭新入口后的数据回读验证。旧程序不能悄悄按已移除唯一约束误处理多版本数据，回退要求已验证兼容读或显式拒绝。\n5. 从真实 Python 和认证 HTTP 入口验证换版，取消/撤权/并发/未知旧工作/重复请求/跨组织反例。用真实 producer/check/review/acceptance 验证频道前进后固定依赖仍可继续；真实撤回必须拒绝。\n\n## 构建与交付\n\n复用 sinan-workorders、Tianxuan 领域存储与 NativeRelease，placement=host_tool。不改框架定义或渲染路径，不降低 AA 保真要求。正式 intake、源码绑定证据、Windows/Linux 复验及独立审查后交付。Git 仅用于实现留底，原生运行时测试无 Git。\n\n候选接收 #1451、合契同产品整合、真实 CLI/API 效率对比仍由 #1444 继续；本项不声明整个链路或生产部署完成。\n\n\n授权：codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117\n\n<!-- gonggong-host-git:Sail-Li -->\n",
+    "updated_at": "2026-11-17T17:47:54Z",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "scope": "Explicit assigned implementation only; parent owns independent acceptance and delivery."
+  },
+  "evidence_refs": [],
+  "sha256": "32bfc6c60b1e0599de25b66808db028f88f15e7408766674db623905dfbc2aa3"
+}

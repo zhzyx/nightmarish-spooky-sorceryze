@@ -348,20 +348,41 @@ class NativeRelease:
             ).fetchone()
             if row is None:
                 return None
-            record = self._record(db, tenant, row[0])
-            request = record["request"]
-            if record["state"] != "content_selected" or (request["product"], request["channel"]) != (product, channel):
-                raise NativeStoreError("Selected pointer integrity failure")
-            approval = self._valid_review(db, tenant, request["review"])
-            if record["candidate"] != approval["request"]["candidate"]:
-                raise NativeStoreError("Selected candidate mismatch")
-            event = db.execute(
+            return self._validated_selection(db, tenant, actor, product, channel, row[0])
+
+    def historical(self, tenant, actor, product, channel, record_id):
+        """Validate an original atomic selection, independent of the current channel."""
+        with self._snapshot() as db:
+            return self._validated_selection(db, tenant, actor, product, channel, record_id)
+
+    def _validated_selection(self, db, tenant, actor, product, channel, record_id) -> dict[str, Any]:
+        self._allow(db, tenant, actor, product, "read")
+        record = self._record(db, tenant, record_id)
+        request = record["request"]
+        if record["state"] != "content_selected" or (request["product"], request["channel"]) != (product, channel):
+            raise NativeStoreError("Selected pointer integrity failure")
+        self._allow(db, tenant, request["actor"], product, "publish")
+        approval = self._valid_review(db, tenant, request["review"])
+        if (
+            record["candidate"] != approval["request"]["candidate"]
+            or approval["request"]["product"] != product
+            or record["policy"] != approval["policy"]
+        ):
+            raise NativeStoreError("Selected candidate mismatch")
+        composition = db.execute(
+            "SELECT payload FROM native_compositions WHERE tenant=? AND id=?", (tenant, record["candidate"])
+        ).fetchone()
+        if composition is None or json.loads(composition[0])["modules"] != record["modules"]:
+            raise NativeStoreError("Selected module integrity failure")
+        if (
+            db.execute(
                 "SELECT 1 FROM native_release_events WHERE tenant=? AND product=? AND record=?",
                 (tenant, product, record["id"]),
             ).fetchone()
-            if event is None:
-                raise NativeStoreError("Atomic event missing")
-            return record
+            is None
+        ):
+            raise NativeStoreError("Atomic event missing")
+        return record
 
     def events(
         self, tenant: str, actor: str, product: str, *, after: int = 0, limit: int = 100

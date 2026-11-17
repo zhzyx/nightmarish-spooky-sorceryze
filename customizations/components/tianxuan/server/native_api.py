@@ -40,6 +40,7 @@ def create_native_workflow_router(workflow) -> APIRouter:
             "execute": {"key"},
             "check": {"key"},
             "authorize": {"issue"},
+            "revise": {"issue", "expected"},
             "review": {"key"},
             "finish": {"key"},
             "publish": {"key", "channel", "expected"},
@@ -66,6 +67,10 @@ def create_native_workflow_router(workflow) -> APIRouter:
         for key in {"key", "issue", "channel"} & payload.keys():
             if not isinstance(payload[key], str) or not payload[key] or len(payload[key]) > 256:
                 raise HTTPException(422, "invalid workflow identifier")
+        if operation == "revise" and (
+            not isinstance(payload["expected"], str) or not re.fullmatch(r"[0-9a-f]{64}", payload["expected"])
+        ):
+            raise HTTPException(422, "exact previous task required")
         if "assignment" in payload:
             assignment = payload["assignment"]
             if not isinstance(assignment, dict) or not isinstance(assignment.get("ticket"), str):
@@ -84,6 +89,8 @@ def create_native_workflow_router(workflow) -> APIRouter:
                 return workflow.advance(actor, isolate=True, exclude=payload.get("exclude", []))
             if operation in {"status", "execute", "check", "review", "reconcile", "finish"}:
                 return getattr(workflow, operation)(actor, payload["key"])
+            if operation == "revise":
+                return workflow.authorize_installed(actor, payload["issue"], expected=payload["expected"])
             if operation == "authorize":
                 return workflow.authorize_installed(actor, payload["issue"])
             if operation == "publish":

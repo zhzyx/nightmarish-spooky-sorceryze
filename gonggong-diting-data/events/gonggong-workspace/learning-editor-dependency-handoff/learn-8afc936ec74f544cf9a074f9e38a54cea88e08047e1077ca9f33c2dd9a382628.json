@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-8afc936ec74f544cf9a074f9e38a54cea88e08047e1077ca9f33c2dd9a382628",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1456",
+  "occurred_at": "2026-11-17T18:10:24.008494+00:00",
+  "evidence_refs": [
+    "request-native-workflow-revisions-1456",
+    "learn-2f2cd49dd1631b1e90fe46edcc9072d91e90fa551ddfec4740ec1d579870e084"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 21,
+    "previous": "17df074b75ea11ac8d2ac8fc82a9a7d9a4fea007ced65f5171228f703a1272a4",
+    "action": "applied",
+    "details": {
+      "task": "#1456 explicit task versions and fixed historical dependencies",
+      "observed": "Original atomic release event and exact immutable content survive channel advance and upstream active-definition changes; current authority/review/policy/evidence stay mandatory. Real worker terminals settle superseded or cancelled tasks without changing the new task. Windows75 tests and8 subtests pass. Earlier intermittent Node-state assertion is retained; five directed observations preserved actual process output and database states without recurrence. Linux/independent acceptance remains parent scope."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-workflow-revisions-1456.json",
+        "sha256": "faaf26799dcf72559f637dc09edd15a4bd2c51064cc67c3898155c839681d832"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-workflow-revisions-20261118/request-native-workflow-revisions-1456.json",
+      "sha256": "32bfc6c60b1e0599de25b66808db028f88f15e7408766674db623905dfbc2aa3"
+    }
+  },
+  "sha256": "eafac72e947a0c81c47f50bc380b0ee7182c08dd3db3d108ddba1d39fa9b070f"
+}
