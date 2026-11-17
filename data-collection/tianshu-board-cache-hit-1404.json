@@ -1,0 +1,52 @@
+{
+  "issue_number": 1404,
+  "request_id": "tianshu-board-runtime-package-20261117",
+  "passed": true,
+  "cases": {
+    "board-cache-hit-package-changed": {
+      "worktree": "D:\\GongGong-work\\tianshu-board-package-20261117",
+      "revision": "c472447b739d5530e832c2089cef8652b751f998",
+      "source_digest": "4b90730f8b15edd0ae060dca22dea08a94b6d4ae0bec60f1b10256b620588075",
+      "clean_source": false,
+      "console_sha256": "a07f6b55c012bfd8340a793dfe769b4935e14b677fe63b7dd34d61d5d6183ecc",
+      "native": {
+        "status": "hit",
+        "key": "36d22a48b7fef9621a3fed0c24c43e0a618d284737caba3ca52a49541c000a19",
+        "reason": "",
+        "artifact_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "producer_head": "c472447b739d5530e832c2089cef8652b751f998",
+        "consumer_head": "c472447b739d5530e832c2089cef8652b751f998",
+        "outputs": {
+          "bin/godot.windows.editor.x86_64.console.exe": "a07f6b55c012bfd8340a793dfe769b4935e14b677fe63b7dd34d61d5d6183ecc",
+          "bin/godot.windows.editor.x86_64.exe": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a"
+        }
+      },
+      "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "tianshu_board_sha256": "df2118ba0bc35f082fd1de996a92fb1c9555810d1d1752031f14905deec6f50b",
+      "aichat": "passed"
+    },
+    "board-cache-hit-package-restored": {
+      "worktree": "D:\\GongGong-work\\tianshu-board-package-20261117",
+      "revision": "c472447b739d5530e832c2089cef8652b751f998",
+      "source_digest": "e09f95abfedfb625318471d97dfe13b3247ce44b9e5d7a7b1f6e0d8b089f43d9",
+      "clean_source": false,
+      "console_sha256": "a07f6b55c012bfd8340a793dfe769b4935e14b677fe63b7dd34d61d5d6183ecc",
+      "native": {
+        "status": "hit",
+        "key": "36d22a48b7fef9621a3fed0c24c43e0a618d284737caba3ca52a49541c000a19",
+        "reason": "",
+        "artifact_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "producer_head": "c472447b739d5530e832c2089cef8652b751f998",
+        "consumer_head": "c472447b739d5530e832c2089cef8652b751f998",
+        "outputs": {
+          "bin/godot.windows.editor.x86_64.console.exe": "a07f6b55c012bfd8340a793dfe769b4935e14b677fe63b7dd34d61d5d6183ecc",
+          "bin/godot.windows.editor.x86_64.exe": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a"
+        }
+      },
+      "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "tianshu_board_sha256": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914",
+      "aichat": "passed"
+    }
+  },
+  "scope": "Actual local native cache hit regenerates package; CI branch shares explicit package command but hosted hit not claimed."
+}

@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "issue": "github:zhzyx/nightmarish-spooky-sorceryze#1404",
+  "reviewer": "independent native sub-agent /root/sinan_ef78e52b339adb2c; inherited host model, exact model identity unknown",
+  "recorded_at": "2026-11-17T08:31:37.605812+00:00",
+  "review_root": "D:\\GongGong-work\\tianshu-board-package-20261117",
+  "base_head": "c472447b739d5530e832c2089cef8652b751f998",
+  "scope": "Final delta review after initial board-review.json. Product read-only; no commit, publication, installation or acceptance authority delegated.",
+  "input_manifest": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\board-final-review-inputs.json",
+  "input_manifest_sha256": "1456e25fbb6ba96bd6372f0330e112bd6887e5102b764c4f1ee2865896faaf18",
+  "frozen_inputs_match": true,
+  "reviewed_file_sha256": {
+    ".github/workflows/windows_builds.yml": "e18498f3ad1ebeb5a9b1aeff180767d345c8292b7921525ce4ec9f5e4b46ef8d",
+    "editor/SCsub": "f1774abfafc72675a4e9b09bd187f92d51eb8881d130d202389d5857724de0ac",
+    "editor/docks/daqian_dock.cpp": "9ac061e591cce4ced21d44b404b65adeccbdd1957be962f03d80ff968bd0789d",
+    "tests/editor/editor_test_isolation.py": "40711cdcc9ad8103dbe800afc445b883d2e0e07f0043d5adf00e163ca69c9a42",
+    "tests/editor/test_editor_native_cache.py": "736a6025d40721158806ef7f91600a02582cb833feaf0f3dd5c3758e2d1274f4",
+    "tools/build_gonggong_editor.py": "5af06d75ad299a930123ec971e4b8265701f4aa976f041939fb5c1cefb6a3084",
+    "tools/editor_native_app.py": "46f454213f890477c3a270d4e81931dc763cfefddd018cc85b407b141f44037c",
+    "tools/editor_native_cache.py": "12756789e5157b27a1d97a756670850a0ee23e0f6ba947a5e2ab5e97b2c35573",
+    "tools/editor_self_build.py": "779b6decfaaf296b2ccca0184d1d68a3573e92f0a01b0536a5e877be804b9957",
+    "tools/editor_source_manifest.py": "0717f8da76643a69b2924849e4fed6967e7952544ec8b062ae85ddcc80cc237d",
+    "tools/launch_gonggong_editor.ps1": "7c7ac08cb278d72014bd93704dfd1ce4721d1d7aa452e7c09b653726b7d7e9ca",
+    "tools/package_maliang_editor.py": "04e44390bd3974ebe90b36d038dff91f2d8fac8983512b56c94318c994ab39dc",
+    "tools/package_tianshu_ui.py": "711f656db3385beeeb6f3849253cef77908b1006c760d84de32816997e4c931f",
+    "tools/stage_installed_editor.py": "49bc5a6d1b7b1bbf887984c31efc3c77f46aaa1b97ef70d49237deadf2bd69a1",
+    "tools/test_build_gonggong_editor.py": "383cd74ee8ffab904d80bb9dc59fc978433e19b5d2a8a7937d0bf97b0ae8a3df",
+    "tools/verify_release_bundle.py": "d84fb7426cc452f01e524db661f0224996751c88f269b80dbcf002fe8fca50c0",
+    "tools/package_tianshu_board.py": "f939429338495f136917c49e43d58ae238993db79c860d35f45acfe59b861284",
+    "tests/editor/test_tianshu_board_package.py": "3ed6090bf88707267b2a9cd0dfc2e04b01f94a47c901c1361cbe99c8b1657461",
+    "tests/editor/run_tianshu_board_package.py": "578eaaa13eb08988990ce2b37f456e0ef82e7b7ddc15200b8bb5a2d70be55c5f",
+    "tests/editor/run_tianshu_board_behavior.py": "63af3d8349462d21bd539822460f06f27707dd15a8b8e718aa77f19cdc390133"
+  },
+  "reviewed_file_git_blob_id": {
+    ".github/workflows/windows_builds.yml": "f2e16d9e65851a6d4df86b5927cc0f5283c7303f",
+    "editor/SCsub": "c2a8be61b202c8341a339a82ffaed6182c74b4ad",
+    "editor/docks/daqian_dock.cpp": "d0c8b273ba8db3b5cf5498153df3efb742713549",
+    "tests/editor/editor_test_isolation.py": "8e5cc499a6046554ed717393ef21e6f1c29e307c",
+    "tests/editor/test_editor_native_cache.py": "8bc0d773067bb94275749e4dbe763fdae9a010c6",
+    "tools/build_gonggong_editor.py": "23d53ed7cfb7bf302e5a2eaf38b510394e855f2a",
+    "tools/editor_native_app.py": "0e773d2c352c980361ad4afcce98093188c23a7e",
+    "tools/editor_native_cache.py": "2cdc5eed7099588d6285c32ef20b5c4940d8426d",
+    "tools/editor_self_build.py": "6b269eb45e7d4620ff9d8189d3a1a24e176e2ca1",
+    "tools/editor_source_manifest.py": "f72100c556765ed4827b752082e2dfa7fed4dd88",
+    "tools/launch_gonggong_editor.ps1": "4528ad1ec72e4d5bf62cff0f0e388e4c4e5a49f3",
+    "tools/package_maliang_editor.py": "929a6df5179c082c78ef057d4aed2278735248ef",
+    "tools/package_tianshu_ui.py": "61928f186bd41b706da084fe5483d3d4132923bf",
+    "tools/stage_installed_editor.py": "aaac331997845c43545a84f338c990c0a71f3721",
+    "tools/test_build_gonggong_editor.py": "b0773c5d91390d2855405c5498a20eecb2f6d703",
+    "tools/verify_release_bundle.py": "dbdd3fed7baf373eef745e7e587a208851d3c61d",
+    "tools/package_tianshu_board.py": "00e49380f4fde466f0852094b47a31d8c754a432",
+    "tests/editor/test_tianshu_board_package.py": "9942b5c130e345c5ae84bc46ba13686dbfdcf3ff",
+    "tests/editor/run_tianshu_board_package.py": "061060b7634492143fb1a23d8a6e840a18afe2bb",
+    "tests/editor/run_tianshu_board_behavior.py": "640baf7b8c6d38f6dd8ca2ab9cd37493d0f241e2"
+  },
+  "git_blob_semantics": "git hash-object --path=<relative> <file>, no -w; repository filters normalize candidate bytes as for index. Original byte SHA256 retained separately.",
+  "evidence_sha256": {
+    "board-review.json": "26552e915d4f780c9e1e71e6283716a01cdb04430ef12760e557cf7e44a3c078",
+    "board-final-review-inputs.json": "1456e25fbb6ba96bd6372f0330e112bd6887e5102b764c4f1ee2865896faaf18",
+    "board-package-final.json": "5f9c59e29e2be6dad67c1c30c5aa82ec8a1e75cddacec40436001f841e0768c1",
+    "board-behavior-final.json": "a497c8d224fb6ea6defb7658c86e0795912d1a52bcc36d7d380ebc2348661f31",
+    "board-graph-final.json": "2da129a7c697be14bf10c9d4b39aef653cdb7fe596b8eeacbd8dc0024ac2f64a",
+    "board-multi-final.json": "1237b5da238feb9bbf00353fca4676a8839896afee083d0c6bfa488794862eb9",
+    "board-build-boundary-proof.json": "24b84a2d5927d18986d870bba3d0a77e2dddee259d95501cfed5c4a34bd6ac17",
+    "board-build-boundary-proof.py": "84fafe8d89e05c2b23f1e9b44359d6b4d6d5af7623ab397c102ece6c21740c04",
+    "board-native-build-final.log": "f09f5575668ac14e1052ca4575b3474a1b84b493659d576863f25655f2e8cea1",
+    "board-graph-final.log": "83495f7dc5e590c5de873f1ce45e49c7498de6d3c467ba76802e53f66e44f38d",
+    "board-multi-final.log": "05aaa739bb8700e3038721f3fabdaf08810bb21f73b2d93edd926ec3f02a3d9d"
+  },
+  "boundary_log_checks": {
+    "board-boundary-baseline": {
+      "sha256": "b458c4e43e02a22f7eb2f318b306ae00d235232860bdf533e918f62cab8458ee",
+      "matches_receipt": true,
+      "replacement_character_count": 0
+    },
+    "board-boundary-package-changed": {
+      "sha256": "9c138e3582429080c4ecd94a2a81394b213fac0a7f166263704924426dfd9204",
+      "matches_receipt": true,
+      "replacement_character_count": 0
+    },
+    "board-boundary-package-restored": {
+      "sha256": "9abe81dbe2046a6312dca8b77f4e09020eb0342308aff7144b7db44cbd3f6aae",
+      "matches_receipt": true,
+      "replacement_character_count": 0
+    },
+    "board-boundary-native-changed": {
+      "sha256": "186dc77a04148fb727e372285b979cf25270079f1f22000d93e7cd0cb3d74a9b",
+      "matches_receipt": false,
+      "replacement_character_count": 3
+    },
+    "board-boundary-native-restored": {
+      "sha256": "ac2bbe2b90f0d74808d7a16d5b055baeb9093454dc434e7ffba158a361c0fa4e",
+      "matches_receipt": false,
+      "replacement_character_count": 3
+    }
+  },
+  "binary": {
+    "path": "D:\\GongGong-work\\tianshu-board-package-20261117\\bin\\godot.windows.editor.x86_64.exe",
+    "sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+    "independently_hashed": true
+  },
+  "verdict": "No actionable product defect reproduced in final delta. Targeted tests pass and supplied native receipts materially close initial compile/runtime gaps. Evidence limitations below remain; this is not whole-issue acceptance or delivery approval.",
+  "product_findings": [],
+  "tests": [
+    {
+      "command": "py -B -X utf8 -m unittest discover -s tests/editor -p test_editor_native_cache.py -v",
+      "exit_code": 0,
+      "result": "14 passed; 15.801 seconds"
+    },
+    {
+      "command": "py -B -X utf8 -m unittest discover -s tests/editor -p test_tianshu_board_package.py -v",
+      "exit_code": 0,
+      "result": "7 passed, including real Windows destination lock; duplicate ZIP-name warning expected"
+    },
+    {
+      "command": "In-memory NativeCacheTests subclass runTest: patch cache.verified_copy to raise InterruptedError during publication; assert error propagates, producer runs once, no cache directory published",
+      "exit_code": 0,
+      "result": "1 passed; 0.312 seconds; no test source written"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "result": "passed"
+    }
+  ],
+  "delta_assessment": {
+    "cache_publication": "Only cache-publication OSError is converted to uncached success after producer and input revalidation. Output digests are retained, producer is not rerun, TemporaryDirectory cleans the stage. InterruptedError is explicitly reraised and cancellation rechecked before uncached return.",
+    "behavior_runner": "Real native loader and workspace._board_entry_args select digest-addressed ZIP; actual editor_board_entry bootstrap executes explicit offline board fixtures yielding A/B/A. Missing helper and cache temporary-file-open failure return original helper arguments. Scope labeling correctly excludes online business.",
+    "format_and_integration": "Reviewed current SCons order-only package edge and copied/staged board-package integration. Common board_sources list contains all four inputs. Formatting changes do not establish a separate runtime result."
+  },
+  "native_evidence_assessment": {
+    "package": "18 cases in board-package-final.json bind the independently hashed binary: A session digest pinned after replacement, next-session B, rollback A, explicit path+pin, slot, legacy/modern/unknown helper, invalid path/pin/ABI/entries/base64/payload/size and truncated ZIP reject. Runner checks explicit rejection diagnostic.",
+    "behavior": "board-behavior-final.json binds same binary. Native-selected helper args run through Python bootstrap and distinguish A/B/A. Cancellation terminates external Python fixture process and confirms no result file after terminal receipt.",
+    "graph_multi": "Supplied graph and multi_issue receipts/logs pass on same binary with fixture graph/execution/model catalog/55-issue board; no live service or online business claim.",
+    "build_boundary": "Earlier source run: board.py comment change alters package while binary digest and mtime stay fixed; native loader comment change compiles dock and links; restoration links final binary acfa5e80... . Source-build experiment was not rerun by reviewer on frozen candidate; retained as earlier evidence.",
+    "original_tests": "Supplied board-native-build-final.log shows 115/115 AIChat cases, 1909 assertions. Also contains Object signal-lifetime and EditorSettings error diagnostics; passing test counts do not prove absence of startup diagnostics. This review did not establish their cause or novelty."
+  },
+  "acceptance_limits": [
+    {
+      "id": "L1",
+      "finding": "Actual build-boundary experiment changes board.py only. Remaining three Python inputs share the SCons declaration but have no individually observed rebuild trials. Earlier-source proof does not bind every final input hash.",
+      "action": "If asserting all-four empirical boundary acceptance, run each input independently and retain final-source hashes; otherwise explicitly report one empirical input plus common-edge static evidence."
+    },
+    {
+      "id": "L2",
+      "finding": "Native invalid-package runner executes truncated ZIP, not every Python malicious-ZIP fixture (local/central disagreement, duplicate, symlink, traversal, trailing data).",
+      "action": "Keep exact coverage distinction or execute those native rejection cases before claiming full adversarial parity."
+    },
+    {
+      "id": "L3",
+      "finding": "CLI cancellation uses external Popen.terminate, after the editor has exited. It does not invoke workspace/controller cancel or stale-result suppression. Cache failure covers temp-file open failure, not independently all create/hash/rename failure branches.",
+      "action": "Do not claim controller cancellation/late-result or all cache-failure branch acceptance from these fixtures."
+    },
+    {
+      "id": "L4",
+      "finding": "No hosted CI cache-hit/upload verification, macOS/Linux/mobile/web runtime or live online board workflow was independently run.",
+      "action": "Preserve unsupported/unexecuted scope in delivery acceptance."
+    },
+    {
+      "id": "L5",
+      "finding": "Native changed/restored boundary log file SHA256 does not match embedded log_sha256. Producer hashes original stdout bytes but persists stdout.decode(utf-8, replace) as UTF-8 text, so lossy decoding can explain divergence; raw bytes are unavailable in these files. Other three logs match.",
+      "action": "Preserve actual stored-log hashes recorded here and distinguish raw-output digest from persisted text; do not claim all five stored logs match original raw output."
+    }
+  ],
+  "method_recall": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 17,
+    "head": "f15cc9f751fa986f0a5654ac7858958a187146ee7c78483ab27f75e6cefcbdc6",
+    "state": "verified",
+    "application": "Trace actual native consumer, distinguish fixture/static/native runtime evidence; Windows evidence does not imply other platforms."
+  },
+  "resource_cleanup": "Only authorized board-final-review.json written. Tests use disposable TemporaryDirectory and cleanup; -B/PYTHONDONTWRITEBYTECODE applied. No native run, source edit, branch/worktree mutation, production installation, or remote action performed.",
+  "issue_number": 1404,
+  "request_id": "tianshu-board-runtime-package-20261117",
+  "original_receipt_sha256": "1232a263be71954806d5e5c974b99ac549b3cfb147461b1e90317ebeb9982d1c"
+}

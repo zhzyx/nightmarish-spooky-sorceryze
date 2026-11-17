@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1404-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianshu-board-runtime-package-20261117",
+  "kind": "request",
+  "occurred_at": "2026-11-17T08:38:37.930615+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1404",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1404,
+    "title": "天枢看板兼容脚本外置：同二进制更新、拒绝与回退",
+    "body": "<!-- gonggong-request:tianshu-board-runtime-package-20261117 -->\r\n\r\n需求文档：`design-docs/tianshu-board-runtime-package-20261117.md`\r\n\r\n[查看主线设计（合入后可用）](https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/main/design-docs/tianshu-board-runtime-package-20261117.md)\r\n\r\n# 天枢看板兼容脚本运行包\r\n\r\n需求 ID：tianshu-board-runtime-package-20261117。父需求 #1382 的 P0-B 引擎业务包实施子项；上游 #1387 已完成源码消费者核查，由当前责任者独立校验 21 个源码摘要并接收契约。静态核查来源 a22d44c5，实施须核对当前 main 的实际消费者。\r\n\r\n用户已于 2026-11-17 授权完整 AI 原生引擎与多 Agent 工作流实施，要求优化内嵌头、模块合入及独立迭代，同时保留至少 AA 写实沉浸渲染与 3D 能力。本项不改变渲染代码或 #951 控制器、#1343 渲染在途工作。\r\n\r\n将 `daqian_board.gen.h` 的四文件兼容 Python ZIP 外置为版本化宿主包，桌面宿主采用 `tianshu-board-compat/1` 契约，原生侧只负责有界读取、摘要/ABI 校验和既有字段注入。保留 workspace.gd 的 legacy helper 摘要条件、现代宿主原脚本路径和 CLI/result 语义。包不成为完整业务权威，也不将可选 Git board 适配变成原生多宝的必需依赖。\r\n\r\n实施范围：打包器、实际 SCons 输入与生成器、daqian_dock 原生装载、必要部署/安装清单与针对性验证。优先保持 `board_bundle_base64/board_bundle_sha256` 注入接口；如确需修改 workspace/controller 等在途文件，先确认具体责任并交接受影响范围，不接管他人副本。\r\n\r\n固定拟议格式沿 #1387 审计：JSON envelope `{sha256,payload}`，payload 含 abi、version、bundle_base64、bundle_sha256 和严格四文件 entries 摘要。完整文件 pin 与 payload/ZIP 摘要分开。默认包路径、self_update 槽及 macOS Resources 参照已有 tianshu-graph/1；显式绝对路径与整包 pin 成对提供。不执行错误 ABI、错摘要、损坏/超限或越界 ZIP。宿主声明与现有可信包选择边界一致，不把内容摘要当授权。\r\n\r\n验收：\r\n\r\n1. 真实原生消费者从独立包读取；改变四个 Python 输入仅更新包，不重编/链接编辑器；改变原生加载器仍正确构建失效。Web/mobile 的嵌入回退按真实支持范围保留。\r\n2. 同一 Windows 编辑器二进制上包 A→B→A，记录可观测行为、二进制及包摘要，拒绝错误 pin、未知 ABI、非法结构/摘要、超限与损坏包；不能用纯 Python 单元测试冒充原生装载验证。\r\n3. 已启动会话固定包版本，新会话选择新版本；Windows 锁定替换失败保留旧有效内容，验证可回退。\r\n4. 两个 legacy helper 摘要、现代 board_delta.py、未知/缺失 helper、缓存失败的既有执行/回退行为保持；新包失败有明确诊断，不假报已启用。\r\n5. 既有图形包、启动检查与控制器接口的受影响回归通过；未支持平台或无法实测项明确保留。执行遵循 Godot 静默验证，先核对已有构建/安装/端口，不修改生产安装。\r\n\r\nplacement=mixed：原生装载器与独立运行包分别留证。输入是四文件源码、打包器与宿主 ABI；宿主接口是既有字段注入及 Python CLI。回退选择上一验收包并保留版本化缓存，不删除在途会话资源。临时构建/测试资产按实际终态清理，未交付源码和必要回退版本保留。\r\n\r\n本项不关闭 #1382，不验收 AA 画质，不重新实现 Engine Next AICore/Executor/Asset/Scene，也不改变多宝原生存储候选。独立审查、正式门禁和 main 回读后方可作为已交付业务包报告。\r\n\r\n\r\n执行授权来源（由调用宿主核实，不代替候选准入）：Codex user 2026-11-17 explicitly started execution of #1382\r\n\r\n\r\n<!-- gonggong-host-git:Sail-Li -->\r\n",
+    "updated_at": "2026-11-17T08:25:54Z",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "operator": "Sail-Li",
+    "scope": "Actual issue readback and user authorization intake; not acceptance or delivery."
+  },
+  "evidence_refs": [],
+  "sha256": "cb9a2ee5aa53dfa7ff81aa9abe5eed7c6f4f576fa625b48bb02ed1109245ec18"
+}

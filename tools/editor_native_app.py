@@ -283,6 +283,13 @@ def package_app(root, artifact, binding, project, destination, template=None):
         installed.unlink(missing_ok=True)  # A template may carry an older package.
         if package.is_file():
             shutil.copyfile(package, installed)
+        from package_tianshu_board import installed_package as board_package
+
+        board = board_package(artifact)
+        installed_board = board_package(executable)
+        installed_board.unlink(missing_ok=True)
+        if board.is_file():
+            shutil.copyfile(board, installed_board)
         info_path = staged / "Contents/Info.plist"
         with info_path.open("rb") as stream:
             info = plistlib.load(stream)

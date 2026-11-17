@@ -1,0 +1,247 @@
+{
+  "request_id": "tianshu-board-runtime-package-20261117",
+  "base_revision": "c472447b739d5530e832c2089cef8652b751f998",
+  "evidence_level": "Windows native MSVC build, same-binary package/CLI fixture behavior, actual SCons boundary and independent review; online/AA/cross-platform not claimed",
+  "method_recall": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 17,
+    "state": "verified",
+    "application": "Trace exact generated/native consumers; retain embedded non-desktop path and configured native override in cache.",
+    "counterexample": "Python suffix alone does not prove independence."
+  },
+  "source_sha256": {
+    ".github/workflows/windows_builds.yml": "e18498f3ad1ebeb5a9b1aeff180767d345c8292b7921525ce4ec9f5e4b46ef8d",
+    "editor/SCsub": "f1774abfafc72675a4e9b09bd187f92d51eb8881d130d202389d5857724de0ac",
+    "editor/docks/daqian_dock.cpp": "9ac061e591cce4ced21d44b404b65adeccbdd1957be962f03d80ff968bd0789d",
+    "tests/editor/editor_test_isolation.py": "40711cdcc9ad8103dbe800afc445b883d2e0e07f0043d5adf00e163ca69c9a42",
+    "tests/editor/test_editor_native_cache.py": "736a6025d40721158806ef7f91600a02582cb833feaf0f3dd5c3758e2d1274f4",
+    "tools/build_gonggong_editor.py": "5af06d75ad299a930123ec971e4b8265701f4aa976f041939fb5c1cefb6a3084",
+    "tools/editor_native_app.py": "46f454213f890477c3a270d4e81931dc763cfefddd018cc85b407b141f44037c",
+    "tools/editor_native_cache.py": "12756789e5157b27a1d97a756670850a0ee23e0f6ba947a5e2ab5e97b2c35573",
+    "tools/editor_self_build.py": "779b6decfaaf296b2ccca0184d1d68a3573e92f0a01b0536a5e877be804b9957",
+    "tools/editor_source_manifest.py": "0717f8da76643a69b2924849e4fed6967e7952544ec8b062ae85ddcc80cc237d",
+    "tools/launch_gonggong_editor.ps1": "7c7ac08cb278d72014bd93704dfd1ce4721d1d7aa452e7c09b653726b7d7e9ca",
+    "tools/package_maliang_editor.py": "04e44390bd3974ebe90b36d038dff91f2d8fac8983512b56c94318c994ab39dc",
+    "tools/package_tianshu_ui.py": "711f656db3385beeeb6f3849253cef77908b1006c760d84de32816997e4c931f",
+    "tools/stage_installed_editor.py": "49bc5a6d1b7b1bbf887984c31efc3c77f46aaa1b97ef70d49237deadf2bd69a1",
+    "tools/test_build_gonggong_editor.py": "383cd74ee8ffab904d80bb9dc59fc978433e19b5d2a8a7937d0bf97b0ae8a3df",
+    "tools/verify_release_bundle.py": "d84fb7426cc452f01e524db661f0224996751c88f269b80dbcf002fe8fca50c0",
+    "tools/package_tianshu_board.py": "f939429338495f136917c49e43d58ae238993db79c860d35f45acfe59b861284",
+    "tests/editor/test_tianshu_board_package.py": "3ed6090bf88707267b2a9cd0dfc2e04b01f94a47c901c1361cbe99c8b1657461",
+    "tests/editor/run_tianshu_board_package.py": "578eaaa13eb08988990ce2b37f456e0ef82e7b7ddc15200b8bb5a2d70be55c5f",
+    "tests/editor/run_tianshu_board_behavior.py": "63af3d8349462d21bd539822460f06f27707dd15a8b8e718aa77f19cdc390133",
+    "editor/editor_builders.py": "df0124d5dcba63b830ab7cee421dc0dc197235073523feb0356847dff0515dfc",
+    "editor/docks/daqian/workspace.gd": "94ab776bf773814dde847bcb3ee766c046cdd78bd465fae1403d5d9d88af7fba",
+    "editor/docks/daqian/workflow_controller.gd": "a75e6edadde617b244b52243ea1b889f2c165f08b75385335615eeea2bce4a14",
+    "customizations/components/godot-host/daqian/editor_board_entry.py": "f221bbe78961dfdcf041affb1cff0a85ed346950814cd021c7f408e8ec4c2474",
+    "customizations/components/godot-host/daqian/board.py": "b4df0fd7ab6f7350aee0c4e8f33d200d23fe2f6b2293b289f1f234eb6bba5cc2",
+    "customizations/components/godot-host/daqian/board_delta.py": "e8b43b529e81d19ebad8f0d8c4b4b12a2c35b7e71f53c863807750c34c9656b0",
+    "customizations/components/godot-host/daqian/progress.py": "8677304588e1a8f966e033a040355ee0ec3ad2df21b9bb8a66d6693edaf7c660"
+  },
+  "package": {
+    "abi": "tianshu-board-compat/1",
+    "file_bytes": 62748,
+    "file_sha256": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914",
+    "zip_bytes": 46588,
+    "zip_sha256": "ae061fab868585fe0f8be05938f4755aa3dc31fbbdee84d2dab6ced9c38191f8",
+    "entries": {
+      "__main__.py": "f221bbe78961dfdcf041affb1cff0a85ed346950814cd021c7f408e8ec4c2474",
+      "board.py": "b4df0fd7ab6f7350aee0c4e8f33d200d23fe2f6b2293b289f1f234eb6bba5cc2",
+      "board_delta.py": "e8b43b529e81d19ebad8f0d8c4b4b12a2c35b7e71f53c863807750c34c9656b0",
+      "progress.py": "8677304588e1a8f966e033a040355ee0ec3ad2df21b9bb8a66d6693edaf7c660"
+    },
+    "format": "canonical ZIP_STORED, fixed order/metadata, local and central records checked"
+  },
+  "tests": [
+    {
+      "command": "py -X utf8 -m unittest discover -s tests/editor -p test_tianshu_board_package.py",
+      "passed": 7,
+      "includes": "real Windows locked destination plus mocked failure; A/B/A Python validation; malformed packages"
+    },
+    {
+      "command": "py -X utf8 -m unittest discover -s tests/editor -p test_editor_native_cache.py",
+      "passed": 14,
+      "scope": "disposable repository dependency mocks; not real compilation"
+    },
+    {
+      "command": "py -X utf8 -m unittest discover -s tests/editor -p test_daqian_board*.py",
+      "passed": 10
+    },
+    {
+      "command": "py -X utf8 -m unittest discover -s tools -p test_editor_source_manifest.py",
+      "passed": 9
+    },
+    {
+      "command": "py -X utf8 -m unittest discover -s tools -p test_build_gonggong_editor.py",
+      "passed": 2
+    },
+    {
+      "command": "py -X utf8 -m unittest discover -s tools -p test_editor_native_app.py",
+      "passed": 0,
+      "skipped": 15,
+      "reason": "macOS only"
+    },
+    {
+      "command": "git diff --check",
+      "passed": true
+    }
+  ],
+  "pending": [
+    "Remote exact-candidate CI/main delivery",
+    "macOS/Linux/Web/mobile runtime untested; non-desktop embedded fallback preserved in source",
+    "Production online business, whole parent and AA rendering remain outside this child scope"
+  ],
+  "resources": {
+    "retained": [
+      "isolated checkout with uncommitted implementation",
+      "bin/tianshu-board.json: generated candidate for further acceptance",
+      "parent-created design and dispatch events"
+    ],
+    "cleaned": [
+      "TemporaryDirectory test fixtures and private lock handles automatically closed/removed"
+    ],
+    "untouched": [
+      "production installation",
+      "#951 controller working copies",
+      "#1343 rendering working copies"
+    ]
+  },
+  "scope": {
+    "native": "editor/docks/daqian_dock.cpp",
+    "runtime_package": "tools/package_tianshu_board.py",
+    "existing_fields": [
+      "board_bundle_base64",
+      "board_bundle_sha256"
+    ],
+    "session": "copied into workspace on creation; no hot swapping",
+    "authority": "default installation or explicitly absolute pinned host path; hashes do not grant authorization",
+    "aa_acceptance": false,
+    "parent_complete": false
+  },
+  "issue_number": 1404,
+  "observed_at": "2026-11-17T08:38:37.171675+00:00",
+  "initial_implementation_source_sha256": {
+    "editor/SCsub": "9aa1128e08cae7e8d353a07ab25f43c925a25c1adf8d0dca51c676f785c4ac5b",
+    "editor/editor_builders.py": "df0124d5dcba63b830ab7cee421dc0dc197235073523feb0356847dff0515dfc",
+    "editor/docks/daqian_dock.cpp": "9ac061e591cce4ced21d44b404b65adeccbdd1957be962f03d80ff968bd0789d",
+    "editor/docks/daqian/workspace.gd": "94ab776bf773814dde847bcb3ee766c046cdd78bd465fae1403d5d9d88af7fba",
+    "editor/docks/daqian/workflow_controller.gd": "a75e6edadde617b244b52243ea1b889f2c165f08b75385335615eeea2bce4a14",
+    "customizations/components/godot-host/daqian/editor_board_entry.py": "f221bbe78961dfdcf041affb1cff0a85ed346950814cd021c7f408e8ec4c2474",
+    "customizations/components/godot-host/daqian/board.py": "b4df0fd7ab6f7350aee0c4e8f33d200d23fe2f6b2293b289f1f234eb6bba5cc2",
+    "customizations/components/godot-host/daqian/board_delta.py": "e8b43b529e81d19ebad8f0d8c4b4b12a2c35b7e71f53c863807750c34c9656b0",
+    "customizations/components/godot-host/daqian/progress.py": "8677304588e1a8f966e033a040355ee0ec3ad2df21b9bb8a66d6693edaf7c660"
+  },
+  "input_blobs": {
+    ".github/workflows/windows_builds.yml": "f2e16d9e65851a6d4df86b5927cc0f5283c7303f",
+    "editor/SCsub": "c2a8be61b202c8341a339a82ffaed6182c74b4ad",
+    "editor/docks/daqian_dock.cpp": "d0c8b273ba8db3b5cf5498153df3efb742713549",
+    "tests/editor/editor_test_isolation.py": "8e5cc499a6046554ed717393ef21e6f1c29e307c",
+    "tests/editor/test_editor_native_cache.py": "8bc0d773067bb94275749e4dbe763fdae9a010c6",
+    "tools/build_gonggong_editor.py": "23d53ed7cfb7bf302e5a2eaf38b510394e855f2a",
+    "tools/editor_native_app.py": "0e773d2c352c980361ad4afcce98093188c23a7e",
+    "tools/editor_native_cache.py": "2cdc5eed7099588d6285c32ef20b5c4940d8426d",
+    "tools/editor_self_build.py": "6b269eb45e7d4620ff9d8189d3a1a24e176e2ca1",
+    "tools/editor_source_manifest.py": "f72100c556765ed4827b752082e2dfa7fed4dd88",
+    "tools/launch_gonggong_editor.ps1": "4528ad1ec72e4d5bf62cff0f0e388e4c4e5a49f3",
+    "tools/package_maliang_editor.py": "929a6df5179c082c78ef057d4aed2278735248ef",
+    "tools/package_tianshu_ui.py": "61928f186bd41b706da084fe5483d3d4132923bf",
+    "tools/stage_installed_editor.py": "aaac331997845c43545a84f338c990c0a71f3721",
+    "tools/test_build_gonggong_editor.py": "b0773c5d91390d2855405c5498a20eecb2f6d703",
+    "tools/verify_release_bundle.py": "dbdd3fed7baf373eef745e7e587a208851d3c61d",
+    "tools/package_tianshu_board.py": "00e49380f4fde466f0852094b47a31d8c754a432",
+    "tests/editor/test_tianshu_board_package.py": "9942b5c130e345c5ae84bc46ba13686dbfdcf3ff",
+    "tests/editor/run_tianshu_board_package.py": "061060b7634492143fb1a23d8a6e840a18afe2bb",
+    "tests/editor/run_tianshu_board_behavior.py": "640baf7b8c6d38f6dd8ca2ab9cd37493d0f241e2",
+    "editor/editor_builders.py": "61f003a74f06331fd0717f5b80020c67714fc6ec",
+    "editor/docks/daqian/workspace.gd": "fb6b9f123549158eeba9952ba7a2d8af4a6ff20c",
+    "editor/docks/daqian/workflow_controller.gd": "0ddd0625d36c15fd620ebe25d77d886afd1f16f1",
+    "customizations/components/godot-host/daqian/editor_board_entry.py": "bb1a163589176baf359eee30154a87128e2f79f5",
+    "customizations/components/godot-host/daqian/board.py": "a6375d02e853b8fe7b12bd60a97cf7c1bb9550ea",
+    "customizations/components/godot-host/daqian/board_delta.py": "3f02fe21d9099a09af1ee238a6ecf712199343ed",
+    "customizations/components/godot-host/daqian/progress.py": "60db119e489e095035027d8693e57c7c27f667f5"
+  },
+  "receipts": {
+    "native": {
+      "path": "data-collection/tianshu-board-native-1404.json",
+      "sha256": "ddc41ba20220cc1c299fbe1ec9fe54b9d362fd96933eb52209988a050ee2e1fb"
+    },
+    "behavior": {
+      "path": "data-collection/tianshu-board-behavior-1404.json",
+      "sha256": "146429df6001dd0ec202216c22729cf1c0f23cb26e0d1c43459c6202bed2ff48"
+    },
+    "graph": {
+      "path": "data-collection/tianshu-board-graph-1404.json",
+      "sha256": "e4b329d82d95eb66f2ee68c8d37541ee8ec0c463fc31c9e4295d94d1335dfd16"
+    },
+    "multi": {
+      "path": "data-collection/tianshu-board-multi-1404.json",
+      "sha256": "6c3cab5c39d7ad491056d7a1a6be83da9681de2ce0e22ae0d5916df8d4b45bac"
+    },
+    "four-inputs": {
+      "path": "data-collection/tianshu-board-four-inputs-1404.json",
+      "sha256": "5e8cdd11e2f1b941289d8f04f5dbc981322fe6b951926b8501ed76c8beb235d5"
+    },
+    "review": {
+      "path": "data-collection/tianshu-board-review-1404.json",
+      "sha256": "fe0d268d886646de0acf195c7cf143e86ecec92837a78f96ff08ab9a4f6f040d"
+    },
+    "build_boundary": {
+      "path": "data-collection/tianshu-board-build-boundary-1404.json",
+      "sha256": "01d3203f3e12ad46112f3ff5cbdd69392b04e3fe02a480a12723acf4bcd5273f"
+    },
+    "cache_hit": {
+      "path": "data-collection/tianshu-board-cache-hit-1404.json",
+      "sha256": "02b8f65990ada440c327c4a35ec314eeba850ce5e28b322559b9449bb37808f8"
+    }
+  },
+  "placement": "mixed",
+  "native_build": {
+    "worktree": "D:\\GongGong-work\\tianshu-board-package-20261117",
+    "revision": "a409f21b95c1a878c8022d7603b64251bfc2faf6",
+    "source_digest": "8994fa89a26bc243e419f9c0bf2b3c0e67bac4b9ec883857c0fa9b26583b9bc8",
+    "clean_source": false,
+    "console_sha256": "a07f6b55c012bfd8340a793dfe769b4935e14b677fe63b7dd34d61d5d6183ecc",
+    "native": {
+      "status": "built",
+      "key": "f3e430ad61a47bb778c63d0f331edbd6203b2300703bfe61b6b147f26c3b7b3a",
+      "reason": "",
+      "artifact_sha256": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+      "producer_head": "a409f21b95c1a878c8022d7603b64251bfc2faf6",
+      "consumer_head": "a409f21b95c1a878c8022d7603b64251bfc2faf6",
+      "outputs": {
+        "bin/godot.windows.editor.x86_64.exe": "acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a",
+        "bin/godot.windows.editor.x86_64.console.exe": "a07f6b55c012bfd8340a793dfe769b4935e14b677fe63b7dd34d61d5d6183ecc"
+      }
+    },
+    "tianshu_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "tianshu_board_sha256": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914",
+    "aichat": "passed"
+  },
+  "checks": {
+    "same_binary_update": {
+      "passed": true,
+      "observed": "Native fixture CLI/result A-B-A with unchanged editor acfa5e808c8033e3aa0a31df4eb08fa9d5ba8a593f232c2786f6c120dbcd777a"
+    },
+    "rollback": {
+      "passed": true,
+      "observed": "A behavior restored on same binary"
+    },
+    "incompatible_rejection": {
+      "passed": true,
+      "observed": "Unknown ABI, wrong pin, absent pin/path, structural/type/digest/size/truncated ZIP cases rejected by real loader"
+    },
+    "native_invalidation": {
+      "passed": true,
+      "observed": "Modified exact loader triggers compilation/link; source restored. Four independent Python sources change only package, binary hash/mtime unchanged."
+    },
+    "host_behavior": {
+      "passed": true,
+      "observed": "Real selected helper arguments and editor_board_entry bootstrap execute offline fixture; missing helper/cache failure fallback and terminal cancelled CLI verified; graph/multi native regressions passed."
+    },
+    "cache_hit_repackages": {
+      "passed": true,
+      "observed": "Actual native cache hit on changed board.py regenerated independent package; restore hit regenerated original package without changing editor bytes. Hosted CI hit not claimed."
+    }
+  }
+}

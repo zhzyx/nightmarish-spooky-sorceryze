@@ -343,6 +343,11 @@ def private_check_editor(artifact, directory):
     package = installed_package(artifact)
     if package.is_file():
         shutil.copyfile(package, installed_package(bare))
+    from package_tianshu_board import installed_package as board_package
+
+    board = board_package(artifact)
+    if board.is_file():
+        shutil.copyfile(board, board_package(bare))
     expected = digest(artifact)
     # copy_editor intentionally consults the parent process environment.
     inherited = os.environ.pop("GONGGONG_WORKSPACE", None)
@@ -495,6 +500,11 @@ def main(argv=None):
                     from package_tianshu_ui import SOURCE, installed_package, pack
 
                     pack(SOURCE, "1", installed_package(artifact))
+                    from package_tianshu_board import SOURCE as BOARD_SOURCE
+                    from package_tianshu_board import installed_package as board_package
+                    from package_tianshu_board import pack as pack_board
+
+                    pack_board(BOARD_SOURCE, "1", board_package(artifact))
                 native_app = None
                 # Older running hosts understand only raw executables and their
                 # adjacent manifests. A native-aware caller explicitly opts in.

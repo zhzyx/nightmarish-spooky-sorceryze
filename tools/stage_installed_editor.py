@@ -14,7 +14,8 @@ from windows_editor_artifact import RECEIPT, digest, restore
 GUI = "godot.windows.editor.x86_64.exe"
 CONSOLE = "godot.windows.editor.x86_64.console.exe"
 PACKAGE = "tianshu-ui.json"
-FILES = (GUI, CONSOLE, PACKAGE)
+BOARD = "tianshu-board.json"
+FILES = (GUI, CONSOLE, PACKAGE, BOARD)
 
 
 def main_revision(workspace):
@@ -41,6 +42,7 @@ def local_receipt(folder, revision, hashes):
             and receipt.get("native", {}).get("artifact_sha256") == hashes[GUI]
             and receipt.get("console_sha256") == hashes[CONSOLE]
             and receipt.get("tianshu_sha256") == hashes[PACKAGE]
+            and receipt.get("tianshu_board_sha256") == hashes[BOARD]
         ):
             return
     raise ValueError("No matching clean main build receipt for the staged files")

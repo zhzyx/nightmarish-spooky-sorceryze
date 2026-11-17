@@ -44,6 +44,8 @@ class EditorCliTests(unittest.TestCase):
             self.calls.append(cmd)
             if "tools/package_tianshu_ui.py" in cmd:
                 (cwd / "bin/tianshu-ui.json").write_text("current checkout")
+            if "tools/package_tianshu_board.py" in cmd:
+                (cwd / "bin/tianshu-board.json").write_text("board checkout")
             if "--test" in cmd and fail:
                 raise subprocess.CalledProcessError(1, cmd)
 
@@ -66,9 +68,9 @@ class EditorCliTests(unittest.TestCase):
         second = self.run_cli()
         self.assertEqual(first["native"]["artifact_sha256"], second["native"]["artifact_sha256"])
         self.assertNotEqual(first["revision"], second["revision"])
-        self.assertEqual(len(self.calls), 2)
+        self.assertEqual(len(self.calls), 3)
         self.assertIn("tools/package_tianshu_ui.py", self.calls[0])
-        self.assertIn("--test-case=*[AIChat]*", self.calls[1])
+        self.assertIn("--test-case=*[AIChat]*", self.calls[2])
         receipts = [json.loads(p.read_text()) for p in (self.root / "bin/gonggong-build-receipts").glob("*.json")]
         self.assertCountEqual([r["revision"] for r in receipts], [first["revision"], second["revision"]])
 

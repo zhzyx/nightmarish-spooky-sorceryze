@@ -78,6 +78,11 @@ def copy_editor(source, directory):
         package = installed_package(source)
         if package.is_file():  # Older editors embed these scripts.
             shutil.copyfile(package, directory / package.name)
+        from package_tianshu_board import installed_package as board_package
+
+        board = board_package(source)
+        if board.is_file():
+            shutil.copyfile(board, board_package(target))
         (directory / "_sc_").touch(exist_ok=False)
         (directory / "editor_data").mkdir()
         return target
