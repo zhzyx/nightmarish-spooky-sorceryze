@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-native-http-input-boundary",
+  "event_id": "learn-7d410ca2d4d84455c5b2fea42e1d075183f6b0820cf4fe8652f73270008bd109",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1419",
+  "occurred_at": "2026-11-17T11:29:58.074525+00:00",
+  "evidence_refs": [
+    "codex-intake-1419-20261117",
+    "learn-9d6c2c135dfdfe11ece0f45fe7127d4ef1300eb6973341dc8cb7500409c80c9d"
+  ],
+  "payload": {
+    "scope": "native-http-input-boundary",
+    "lesson": "inherit-source-acl-in-derived-content",
+    "revision": 2,
+    "previous": "229d301319c000e02866018a5d95511b165b393be69440b0619cb2ae02668917",
+    "action": "revise",
+    "details": {
+      "method": "Bind derived modules to source documents in a trusted domain table and evaluate current source access for every direct and transitive native read. Normalize evidence LF bytes before binding its digest for cross-platform storage.",
+      "when": "Private source content is copied into immutable native snapshots exposed through generic content and composition APIs.",
+      "counterexample": "Tenant membership alone is insufficient for existing private documents; a binding inside caller-supplied content is not an authority record. Legitimately public standalone modules need no source-document mapping.",
+      "trial_plan": "At future adoption test unshared readers and editors against heads, revisions, objects and direct/transitive compositions; share then revoke, restart and replay. Unknown or forged bindings must fail closed while authorized historical replay preserves original bytes."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-platform-review-fixed-1419.json",
+        "sha256": "077c04647432e6be7a60aba220557dc04ac9455450eb36f1d2a0bab1c88b1ea6"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-platform-integration-20261117/codex-intake-1419-20261117.json",
+      "sha256": "16f483364330fb714f72d26ec63bdd789801019a60c212fdea5be1985e44e2e4"
+    }
+  },
+  "sha256": "289e3e21ad6b94116ab10f7a062e11c9b11df4c9426ebaa112532a49ed073d14"
+}

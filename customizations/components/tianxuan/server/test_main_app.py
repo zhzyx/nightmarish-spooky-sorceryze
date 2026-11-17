@@ -17,5 +17,4 @@ def test_main_app_mounts_model_gateway(monkeypatch, tmp_path) -> None:
 
     assert client.get("/api/v1/health").status_code == 200
     usage = client.get("/api/v1/models/usage", params={"tenant_id": "ten_demo"})
-    assert usage.status_code == 200
-    assert usage.json()["totals"]["cost_micros"] == 0
+    assert usage.status_code == 401

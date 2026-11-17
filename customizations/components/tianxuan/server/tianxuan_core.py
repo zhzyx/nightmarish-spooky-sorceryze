@@ -132,6 +132,10 @@ CREATE TABLE IF NOT EXISTS repo_links (
   UNIQUE (provider, owner, name)
 );
 CREATE INDEX IF NOT EXISTS idx_repo_links_tenant ON repo_links(tenant_id);
+CREATE TABLE IF NOT EXISTS native_requirement_sources (
+  tenant_id TEXT NOT NULL, module TEXT NOT NULL, doc_id TEXT NOT NULL,
+  PRIMARY KEY (tenant_id, module), UNIQUE (tenant_id, doc_id)
+);
 """
 
 _FIELD_FIELDS = {"title", "body_md", "status", "visibility"}
@@ -823,6 +827,7 @@ class Tianxuan:
         return self.role_of(actor) == "admin"
 
     def _can_read(self, actor: str, doc: dict[str, Any]) -> bool:
+        self._require_tenant_doc(actor, doc["id"])
         if doc["created_by"] == actor or self._is_admin(actor):
             return True
         if doc["visibility"] == "tenant":
@@ -1180,6 +1185,56 @@ class Tianxuan:
             args.append(requirement_id)
         rows = self.db.execute(sql + " ORDER BY number", args).fetchall()
         return [dict(row) for row in rows]
+
+    @_connection_call
+    def actor_context(self, actor: str) -> dict[str, str]:
+        """Resolve identity fields together under the shared connection lock."""
+        return {"actor": actor, "tenant": self._tenant_of(actor), "role": self.role_of(actor)}
+
+    @_connection_call
+    def bind_native_requirement(self, actor: str, doc_id: str) -> str:
+        """Reserve a source-bound namespace before persisting native content.
+
+        A later native write failure may leave an empty reservation. It never
+        creates content, a successful receipt, or permission to read the source.
+        """
+        self._require_requirement(actor, doc_id, write=True)
+        tenant = self._tenant_of(actor)
+        module = "requirement-" + hashlib.sha256(doc_id.encode()).hexdigest()
+        self.db.execute("INSERT OR IGNORE INTO native_requirement_sources VALUES (?,?,?)", (tenant, module, doc_id))
+        row = self.db.execute(
+            "SELECT doc_id FROM native_requirement_sources WHERE tenant_id=? AND module=?", (tenant, module)
+        ).fetchone()
+        if row is None or row["doc_id"] != doc_id:
+            raise VersionConflict("native requirement binding conflict")
+        return module
+
+    @_connection_call
+    def require_native_module_read(self, actor: str, module: str) -> None:
+        """Use current source ACL, never a caller-authored native object binding."""
+        tenant = self._tenant_of(actor)
+        row = self.db.execute(
+            "SELECT doc_id FROM native_requirement_sources WHERE tenant_id=? AND module=?", (tenant, module)
+        ).fetchone()
+        if row is None:
+            raise PermissionDenied("native requirement source unavailable")
+        self.get_doc_shared(actor, row["doc_id"])
+
+    @_connection_call
+    def requirement_snapshot(self, actor: str, doc_id: str) -> dict[str, Any]:
+        """One deferred SQLite read transaction, including other connections' writes.
+
+        The domain wrapper owns the shared connection and ends this transaction
+        before serialization or native storage work. No writer reservation is taken.
+        """
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN")
+        document = self.get_doc_shared(actor, doc_id)
+        if document["kind"] != "requirement":
+            raise TianxuanError("expected a requirement document")
+        issues = {row["id"]: row for row in self.list_issues(actor, doc_id)}
+        issues.update({row["id"]: row for row in self.list_doc_issues(actor, doc_id)})
+        return {"document": document, "issues": sorted(issues.values(), key=lambda row: row["id"])}
 
     # ---------- 文曲/司南：文档 ↔ 工单关联 ----------
 

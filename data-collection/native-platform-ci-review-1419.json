@@ -1,0 +1,182 @@
+{
+  "issue": 1419,
+  "bug": 1421,
+  "reviewer": "independent Codex native child /root/sinan_cdebbffc6ea589aa",
+  "reviewed_at": "2026-11-17T12:00:12.946818+00:00",
+  "root": "D:\\GongGong-work\\native-platform-integration-20261117",
+  "head_at_review": "cb543f53e3bd37e01179f8f89d397ebfaa20029e",
+  "previous_reviewed_commit": "cb543f53e3bd37e01179f8f89d397ebfaa20029e",
+  "verdict": "approved_for_exact_reviewed_source_typing_only_delta",
+  "source_bindings": [
+    {
+      "path": "customizations/components/tianxuan/server/NATIVE_API.md",
+      "sha256": "bee061adba6611912d6af25882ffd03e6c5e6b8eb914c493109720ad2b7987f4",
+      "git_blob": "d060ed4cee74592ae54354b1acb7e842d1bac1d2"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/access_control.py",
+      "sha256": "4d1f5911bdf4e33aca95b6d73a166687202d0d36553c3d3e4d8082d4473b7ffd",
+      "git_blob": "97ef3718a85fd5824ec40009f32a9791103cce8b"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/api.py",
+      "sha256": "e6b74d3069570f3da4f7f4f33e8e261950459cc20610ec3394d9ced7745d9e4e",
+      "git_blob": "83de6c0434be50a7694af1c4f508cdad124f0260"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/gateway.py",
+      "sha256": "7fb68bcd8d73e7e1377a4a69892f709eef39808bbacb332094ea4c0e4af99522",
+      "git_blob": "7138e272a9dc1fb8f043036ea12a5d15d751d55a"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/main.py",
+      "sha256": "d8f211eb6dd27a126a59bf78489eef06a68f7b454ec4ab2b8a243a305ba76b14",
+      "git_blob": "92c26a6160b56422c5f331b771e3637d7a270754"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/native_api.py",
+      "sha256": "576113892d7d0d84d4259ec19cafeebce30e095416ec362e2fe97236ed8dbb48",
+      "git_blob": "08f03e25468f458fa0e87c3cb4cb440a7d99eec8"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_api_gateway.py",
+      "sha256": "b4ea4125e23bf0c64278be68f2f2acd13cdd13cf8ddbf932b35915848dd11539",
+      "git_blob": "658d0550099d051d539adb36ba5982ea62047f82"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_api_tenant_mutations.py",
+      "sha256": "bf9404bbc51ed91962a5d7a61b165b7b24ebeb03e6461c6531fb9df7101e54bb",
+      "git_blob": "c560b9f23b6c5e9412d8a2d197d3f0f922c2590a"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_gateway.py",
+      "sha256": "a4640d6cb6216e80d64eb602baac7358bc16198a4ea392956dc7a41172f00d48",
+      "git_blob": "7a156046986b850d92b9447a96b6d3e3d148383d"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_main_app.py",
+      "sha256": "989809fd05d49ec71d2acc50bfe899913e82669b912d171f3f98a6e1e79b4c1a",
+      "git_blob": "fbee05046e3f8385c09a1d30517f3b0cf5cf793f"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_tianxuan_boundary.py",
+      "sha256": "bb561f11373ae1580ed939ded7defb6813e72bbaa4ebe7810524b39dbf25dafe",
+      "git_blob": "d82da391049450052c72090e912042ff3148541a"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/tianshu_bridge.py",
+      "sha256": "d2b6023adcbf47c1fd471fb89ec0007c735d792d8a1b8228de33c45432142da8",
+      "git_blob": "1e7ffc56547742e5699691944795dc573383f472"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/tianxuan_core.py",
+      "sha256": "99936b9f608077635fc95fa98f068fd6d7f24193c4a740747d1e1f1b8805f974",
+      "git_blob": "7f4b27b41bdcacba60530697ba57c17369fe8345"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_native_platform.py",
+      "sha256": "b40695e79772b9296a35178fbc0898772893b61239d89fbae7b22c56b7f24abc",
+      "git_blob": "f1734930fdfedfa74e439197472289ec23fb6d81"
+    }
+  ],
+  "findings": [],
+  "delta": {
+    "path": "customizations/components/tianxuan/server/native_api.py",
+    "previous_sha256": "833bcfca592aa985014f6c7edb6296686ca1b7a3d11cad79466fbfb5e9aa5cf4",
+    "current_sha256": "576113892d7d0d84d4259ec19cafeebce30e095416ec362e2fe97236ed8dbb48",
+    "description": "Replace direct store.compose return with dict[str, Any] annotated local result and return it. No call, argument, authorization, dependency traversal, persistence, exception or returned object change. NativeStore.compose declares dict[str, Any] and constructs a dictionary.",
+    "whole_module_ast_equivalent_after_return_alias_normalization": true
+  },
+  "ci_failure": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\platform-ci-failure.log",
+    "sha256": "8e7a554f9f3697e546504a1fe779d64b7ea6fcd8ee6c39099f0a135a09de86d5",
+    "diagnostic": [
+      "📊 Static checks / Code style, file formatting, and docs\tUNKNOWN STEP\t2026-11-17T11:44:26.7812135Z   customizations/components/tianxuan/server/native_api.py:152:5: error: Returning",
+      "📊 Static checks / Code style, file formatting, and docs\tUNKNOWN STEP\t2026-11-17T11:44:26.7812547Z   Any from function declared to return \"dict[str, Any]\"  [no-any-return]",
+      "📊 Static checks / Code style, file formatting, and docs\tUNKNOWN STEP\t2026-11-17T11:44:26.7812868Z           return store.compose(tenant, selected)",
+      "📊 Static checks / Code style, file formatting, and docs\tUNKNOWN STEP\t2026-11-17T11:44:26.7813112Z           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "📊 Static checks / Code style, file formatting, and docs\tUNKNOWN STEP\t2026-11-17T11:44:26.7813344Z   Found 1 error in 1 file (checked 13 source files)"
+    ]
+  },
+  "prior_independent_review": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\platform-fixed-review.json",
+    "sha256": "4631f10dde0e85222adca4c2c7aaac7bcbf675b357561369b9db84bff1e36812",
+    "verdict": "approved_for_reviewed_source"
+  },
+  "immutable_evidence_check": {
+    "count": 7,
+    "all_match": true,
+    "bindings": [
+      {
+        "path": "data-collection/native-platform-integration-1419.json",
+        "sha256": "a72b7a688264c6f512bc7b1e79c310f7cc4da6c0d0abce4d4920c4f0d96d876f"
+      },
+      {
+        "path": "data-collection/native-platform-review-original-1419.json",
+        "sha256": "8938b1734d44c7bc2e075440c4729693498673af0100c1c08a46d48d5bb05303"
+      },
+      {
+        "path": "data-collection/native-platform-review-fixed-1419.json",
+        "sha256": "077c04647432e6be7a60aba220557dc04ac9455450eb36f1d2a0bab1c88b1ea6"
+      },
+      {
+        "path": "data-collection/native-platform-capacity-failure-1419.json",
+        "sha256": "5d9a0fee3c499f4cd44010366578f1592e1387e1163797b5c371154ebcdb8e75"
+      },
+      {
+        "path": "data-collection/native-platform-capacity-1419.json",
+        "sha256": "1b1453316585c000e2fd3266d6f40b1cb17c86965ba29e7411396debbb04cbaa"
+      },
+      {
+        "path": "data-collection/native-platform-final-regression-1419.json",
+        "sha256": "6eb48ac5d0614ad419134244d0f65d44adf6d8aecde7f8a396ac938c52863a18"
+      },
+      {
+        "path": "data-collection/native-platform-final-capacity-1419.json",
+        "sha256": "9057ab4c40afd6d84447cbd2fd12feab069b1afb1c9eb5a8ef1b500b31174029"
+      }
+    ]
+  },
+  "compatibility_evidence": [
+    {
+      "path": "D:\\GongGong-work\\native-platform-integration-20261117\\data-collection\\native-platform-final-regression-1419.json",
+      "sha256": "6eb48ac5d0614ad419134244d0f65d44adf6d8aecde7f8a396ac938c52863a18",
+      "source_count": 101,
+      "changed_sources": [
+        "customizations/components/tianxuan/server/native_api.py"
+      ],
+      "status": "reused historical execution evidence; not rerun on corrected bytes"
+    },
+    {
+      "path": "D:\\GongGong-work\\native-platform-integration-20261117\\data-collection\\native-platform-final-capacity-1419.json",
+      "sha256": "9057ab4c40afd6d84447cbd2fd12feab069b1afb1c9eb5a8ef1b500b31174029",
+      "source_count": 101,
+      "changed_sources": [
+        "customizations/components/tianxuan/server/native_api.py"
+      ],
+      "status": "reused historical execution evidence; not rerun on corrected bytes"
+    }
+  ],
+  "evidence_reuse": "Prior 141 tests +44 subtests and250-request capacity remain historical measurements on the prior native_api bytes. Their101-source bindings differ only in this statically verified behavior-preserving local annotation delta. Reuse supports compatibility; it does not claim execution on the new bytes. Capacity limits, security review scope and original deployment exclusions remain unchanged.",
+  "validation_this_review": [
+    "Read exact diff and NativeStore.compose declaration/body",
+    "Verified cumulative14 bindings against prior review;13 unchanged",
+    "Verified all7 immutable evidence hashes",
+    "Verified101 source hashes in each server receipt;100 unchanged each",
+    "Normalized only typed return alias then compared complete module AST: identical"
+  ],
+  "static_and_regression_execution": {
+    "attribution": "producer-reported by parent /root, tool session84950 terminal exit0; not independently rerun by this reviewer",
+    "mypy": "py -X utf8 -m mypy customizations/components/tianxuan/server/native_api.py without MYPYPATH: Success1 source",
+    "ruff": "check passed; format --check1 unchanged",
+    "regression": "tx-venv Python -B -m pytest -q -p no:cacheprovider customizations/components/tianxuan/server/test_native_platform.py customizations/components/tianxuan/server/test_native_api.py:29 passed,1 Starlette deprecation warning,10.22s",
+    "remaining": "Authoritative remote CI and delivery gates remain parent responsibility"
+  },
+  "method_learning": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 17,
+    "application": "Rechecked actual source bytes and immutable receipts, explicitly superseded one changed binding; retained historical executions without relabelling as new runs. Broader release remains parent responsibility."
+  },
+  "cleanup": "No temporary files or product writes created; only this authorized private review receipt persisted."
+}

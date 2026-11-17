@@ -15,6 +15,7 @@ from gateway import (
     UpstreamContractError,
     create_model_router,
 )
+from tianxuan_core import Tianxuan
 
 PRICES = {"test-model": {"prompt": 1_000_000, "completion": 2_000_000}}
 USAGE = {"prompt_tokens": 12, "completion_tokens": 4, "total_tokens": 16}
@@ -62,8 +63,15 @@ def make_gateway(upstream: Upstream, *, prices: dict[str, dict[str, int]] | None
 
 def make_client(gateway: ModelGateway) -> TestClient:
     app = FastAPI()
+    store = Tianxuan(":memory:")
+    user = store.register("org", "gateway@example.invalid", "password123")
+    store.db.execute("UPDATE users SET id='usr-1', tenant_id='ten-1' WHERE id=?", (user["user_id"],))
+    store.db.commit()
+    app.state.store = store
     app.include_router(create_model_router(gateway))
-    return TestClient(app)
+    client = TestClient(app)
+    client.headers["Authorization"] = "Bearer " + store.issue_session("usr-1")
+    return client
 
 
 def headers(**overrides: str) -> dict[str, str]:
@@ -323,9 +331,6 @@ def test_usage_endpoint_returns_rows_and_totals() -> None:
     }
 
     empty = client.get("/api/v1/models/usage", params={"tenant_id": "other"})
-    assert empty.json() == {
-        "usage": [],
-        "totals": {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "cost_micros": 0},
-    }
+    assert empty.status_code == 403
 
     assert upstream.calls[0].headers["Authorization"] == "Bearer sk-live-secret"

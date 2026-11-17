@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1419-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-platform-integration-20261117",
+  "kind": "request",
+  "occurred_at": "2026-11-17T11:29:55.897748+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1419",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1419,
+    "title": "天璇：原生模式整合文档工单模型与需求版本",
+    "body": "<!-- gonggong-request:native-platform-integration-20261117 -->\r\r\r\n\r\r\r\n需求文档：`design-docs/native-platform-integration-20261117.md`\r\r\r\n\r\r\r\n[查看主线设计（合入后可用）](https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/main/design-docs/native-platform-integration-20261117.md)\r\r\r\n\r\r\r\n# 天璇原生模式：文档、工单、模型与需求版本接线\r\r\r\n\r\r\r\n需求 ID：native-platform-integration-20261117。父目标 #1382；依赖已验收 #1413，main 4b1ca40e3f48c0b766bd9768865412be0ee2d5d0。沿用用户开始执行与继续授权；当前服务、数据库和既有生产部署不在本切片直接替换。\r\r\r\n\r\r\r\n原生候选 API 已不依赖 Git，但原生入口提前返回，文曲文档、偃师需求、司南工单及模型接口未挂载，尚不能形成日常工作链路。本项恢复这些既有能力并接到多宝精确版本；不新建平行协调器，不把候选接收当作完成验收。\r\r\r\n\r\r\r\n验收范围：\r\r\r\n\r\r\r\n1. 原生模式下，真实 HTTP 注册独立组织、登录、创建和编辑文档、创建需求并拆分工单、状态及需求进度回写、评论/历史/机器视图可用；不同组织仍隔离。所有既有非 Git 文档与工单能力应保留，不用一个功能更少的平行平台替代现有实现。\r\r\r\n2. GitService、MergeQueue、Gitea 和 Git 专用环境均不是原生启动或上述操作的前提；原生模式不暴露可执行的 Git 仓库、合并、导入、webhook 和 Git commit 路径。既有 Git 模式可回退。能力接口明确报告实际模式及可用能力，天枢桥 status 不再强制调用 Gitea。\r\r\r\n3. 在原生模式挂载既有模型网关时，actor 与 tenant 必须来自有效会话或生产已核验身份。不能凭 X-Tenant、X-Actor 或 usage 查询读取/记账其他组织；角色/撤销及生产严格 Key 准入不弱化。复用现有网关、用量和预算，不改司南模型选择职责，不通过本项发生未授权实际模型费用。真实上游调用的边界测试使用确定性本地模拟并明确其性质。\r\r\r\n4. 增加需求到原生版本的入口：保存一致的需求文档及其关联工单快照，返回精确模块修订/组合和来源版本。基线条件及稳定操作键明确，原生存储为该快照权威；不创建 Git 仓库。源变化不能被伪装成旧来源，历史回执重试返回原事实，异内容同键拒绝；范围未知沿用保守读取检查。快照不自动批准、发布或把工单标成 done。\r\r\r\n5. 真实 HTTP 端到端验证注册→文档/需求→拆单→原生快照→读取/重启→进度，包含跨组织、撤销、输入错误、源版本变化、幂等和 Git 构造器不可用。复验相关既有 API/模型/核心/天枢桥测试。通过独立审查和当前服务器隔离测试。\r\r\r\n\r\r\r\nplacement=host_tool。实际输入：已认证用户、组织、现有天璇 SQLite 内容、显式绝对原生库路径、有限 JSON；接口：既有 FastAPI/CLI 与 NativeStore。普通 Python 服务包，不进入引擎渲染逐帧路径，不触碰 #951 控制器或 #1343 在途渲染改动。回退为停用未部署候选、保留数据库，按既有 Git 模式恢复入口；无历史删除。文档并行结构、可信执行节点/独立审查发布到工单完成、真实模型用量与250在途对照、整个平台部署和AA体验验收仍由父目标继续。\r\r\r\n\r\r\r\n\r\r\r\n执行授权来源（由调用宿主核实，不代替候选准入）：codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117\r\r\r\n\r\r\r\n\r\r\r\n<!-- gonggong-host-git:Sail-Li -->\r\r\r\n\r\r\n\r\r\n实现交接：原生模式已恢复文档/需求/工单/模型，增加一致来源快照及幂等版本回读；跨组织文档与共享连接并发缺陷关联 #1421。原生身份兼容头/WS冒用路径已修复。本地508项及46子测试通过，最终变更专项40项通过；服务器250在途修复快照通过，后续Unicode和兼容身份边界改动单列核对。当前进入最终格式化源码的独立审查，仍未部署。\r\r\n\r\n\r\n独立审查纠偏：P1私有需求快照绕过文档ACL、P2非法base Unicode返回500均由父责任者复现并修复。新增持久可信来源绑定，保留模块命名空间禁止通用写入，原生读取及组合依赖闭包回查当前源权限，未知绑定拒绝。撤销分享和重启均回归；无效base在序列化前422。65项相关回归通过，原审查回执保留，现进入修复后独立复核。#1414 已交付并快进整合至04fcdb5f，未改变本项14个评审文件范围。\r\n",
+    "updated_at": "2026-11-17T11:16:38Z",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "operator": "Sail-Li",
+    "scope": "Actual issue readback and user authorization intake; not acceptance or delivery."
+  },
+  "evidence_refs": [],
+  "sha256": "16f483364330fb714f72d26ec63bdd789801019a60c212fdea5be1985e44e2e4"
+}

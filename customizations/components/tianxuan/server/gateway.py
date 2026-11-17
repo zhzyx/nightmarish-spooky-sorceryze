@@ -420,12 +420,25 @@ def create_model_router(gateway: ModelGateway) -> APIRouter:
 
     router = APIRouter(prefix="/api/v1/models", tags=["tianxuan-models"])
 
+    def identity(request: Request) -> tuple[str, str]:
+        store = request.app.state.store
+        actor = getattr(request.state, "verified_actor", None)
+        if not actor:
+            scheme, _, token = request.headers.get("authorization", "").partition(" ")
+            actor = store.user_for_token(token.strip()) if scheme.lower() == "bearer" else None
+        if not actor:
+            raise HTTPException(401, "valid authenticated identity required")
+        context = store.actor_context(actor)
+        if request.method != "GET" and context["role"] == "viewer":
+            raise HTTPException(403, "read-only account")
+        tenant = context["tenant"]
+        if _header(request, _HEADER_TENANT) not in ("", tenant) or _header(request, _HEADER_ACTOR) not in ("", actor):
+            raise HTTPException(403, "identity mismatch")
+        return tenant, str(actor)
+
     @router.post("/chat")
     async def chat(request: Request) -> dict[str, Any]:
-        tenant_id = _header(request, _HEADER_TENANT)
-        if not tenant_id:
-            raise HTTPException(status_code=400, detail=f"{_HEADER_TENANT} header is required")
-        actor = _header(request, _HEADER_ACTOR) or "unknown"
+        tenant_id, actor = await run_in_threadpool(identity, request)
         api_key = _header(request, _HEADER_KEY)
         if not api_key:
             raise HTTPException(status_code=400, detail=f"{_HEADER_KEY} header is required")
@@ -465,9 +478,10 @@ def create_model_router(gateway: ModelGateway) -> APIRouter:
 
     @router.get("/usage")
     def usage(request: Request) -> dict[str, Any]:
-        tenant_id = (request.query_params.get("tenant_id") or "").strip()
-        if not tenant_id:
-            raise HTTPException(status_code=400, detail="tenant_id query parameter is required")
+        tenant_id, _ = identity(request)
+        requested = request.query_params.get("tenant_id")
+        if requested is not None and requested != tenant_id:
+            raise HTTPException(403, "tenant mismatch")
         return {"usage": gateway.usage_rows(tenant_id), "totals": gateway.usage_totals(tenant_id)}
 
     return router

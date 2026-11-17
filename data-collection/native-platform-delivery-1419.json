@@ -1,0 +1,152 @@
+{
+  "issue": 1419,
+  "bug": 1421,
+  "parent": 1382,
+  "state": "final reviewed source; formal delivery pending",
+  "source_base": "04fcdb5f1f0e301f179e0581944accee382a2496",
+  "source_bindings": [
+    {
+      "path": "customizations/components/tianxuan/server/NATIVE_API.md",
+      "sha256": "bee061adba6611912d6af25882ffd03e6c5e6b8eb914c493109720ad2b7987f4",
+      "git_blob": "d060ed4cee74592ae54354b1acb7e842d1bac1d2"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/access_control.py",
+      "sha256": "4d1f5911bdf4e33aca95b6d73a166687202d0d36553c3d3e4d8082d4473b7ffd",
+      "git_blob": "97ef3718a85fd5824ec40009f32a9791103cce8b"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/api.py",
+      "sha256": "e6b74d3069570f3da4f7f4f33e8e261950459cc20610ec3394d9ced7745d9e4e",
+      "git_blob": "83de6c0434be50a7694af1c4f508cdad124f0260"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/gateway.py",
+      "sha256": "7fb68bcd8d73e7e1377a4a69892f709eef39808bbacb332094ea4c0e4af99522",
+      "git_blob": "7138e272a9dc1fb8f043036ea12a5d15d751d55a"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/main.py",
+      "sha256": "d8f211eb6dd27a126a59bf78489eef06a68f7b454ec4ab2b8a243a305ba76b14",
+      "git_blob": "92c26a6160b56422c5f331b771e3637d7a270754"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/native_api.py",
+      "sha256": "833bcfca592aa985014f6c7edb6296686ca1b7a3d11cad79466fbfb5e9aa5cf4",
+      "git_blob": "9ff4af6d1a1777ba8e988cde617caad7101e4510"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_api_gateway.py",
+      "sha256": "b4ea4125e23bf0c64278be68f2f2acd13cdd13cf8ddbf932b35915848dd11539",
+      "git_blob": "658d0550099d051d539adb36ba5982ea62047f82"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_api_tenant_mutations.py",
+      "sha256": "bf9404bbc51ed91962a5d7a61b165b7b24ebeb03e6461c6531fb9df7101e54bb",
+      "git_blob": "c560b9f23b6c5e9412d8a2d197d3f0f922c2590a"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_gateway.py",
+      "sha256": "a4640d6cb6216e80d64eb602baac7358bc16198a4ea392956dc7a41172f00d48",
+      "git_blob": "7a156046986b850d92b9447a96b6d3e3d148383d"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_main_app.py",
+      "sha256": "989809fd05d49ec71d2acc50bfe899913e82669b912d171f3f98a6e1e79b4c1a",
+      "git_blob": "fbee05046e3f8385c09a1d30517f3b0cf5cf793f"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_tianxuan_boundary.py",
+      "sha256": "bb561f11373ae1580ed939ded7defb6813e72bbaa4ebe7810524b39dbf25dafe",
+      "git_blob": "d82da391049450052c72090e912042ff3148541a"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/tianshu_bridge.py",
+      "sha256": "d2b6023adcbf47c1fd471fb89ec0007c735d792d8a1b8228de33c45432142da8",
+      "git_blob": "1e7ffc56547742e5699691944795dc573383f472"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/tianxuan_core.py",
+      "sha256": "99936b9f608077635fc95fa98f068fd6d7f24193c4a740747d1e1f1b8805f974",
+      "git_blob": "7f4b27b41bdcacba60530697ba57c17369fe8345"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_native_platform.py",
+      "sha256": "b40695e79772b9296a35178fbc0898772893b61239d89fbae7b22c56b7f24abc",
+      "git_blob": "f1734930fdfedfa74e439197472289ec23fb6d81"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "data-collection/native-platform-integration-1419.json",
+      "sha256": "a72b7a688264c6f512bc7b1e79c310f7cc4da6c0d0abce4d4920c4f0d96d876f"
+    },
+    {
+      "path": "data-collection/native-platform-review-original-1419.json",
+      "sha256": "8938b1734d44c7bc2e075440c4729693498673af0100c1c08a46d48d5bb05303"
+    },
+    {
+      "path": "data-collection/native-platform-review-fixed-1419.json",
+      "sha256": "077c04647432e6be7a60aba220557dc04ac9455450eb36f1d2a0bab1c88b1ea6"
+    },
+    {
+      "path": "data-collection/native-platform-capacity-failure-1419.json",
+      "sha256": "5d9a0fee3c499f4cd44010366578f1592e1387e1163797b5c371154ebcdb8e75"
+    },
+    {
+      "path": "data-collection/native-platform-capacity-1419.json",
+      "sha256": "1b1453316585c000e2fd3266d6f40b1cb17c86965ba29e7411396debbb04cbaa"
+    },
+    {
+      "path": "data-collection/native-platform-final-regression-1419.json",
+      "sha256": "6eb48ac5d0614ad419134244d0f65d44adf6d8aecde7f8a396ac938c52863a18"
+    },
+    {
+      "path": "data-collection/native-platform-final-capacity-1419.json",
+      "sha256": "9057ab4c40afd6d84447cbd2fd12feab069b1afb1c9eb5a8ef1b500b31174029"
+    }
+  ],
+  "final_validation": {
+    "independent_review": "92 passed +44 subtests; original attacks fixed, concurrent snapshot/tenant/share-revoke-restart/replay checked",
+    "server": "141 passed +44 subtests on actual Linux host; same final source hashes",
+    "capacity": {
+      "members": 50,
+      "tasks": 250,
+      "status200": 250,
+      "independent_noise_updates": 20,
+      "seconds": 4.502393780014245,
+      "p95_seconds": 3.5727067769912537,
+      "peak_store_submit_calls": 40,
+      "readbacks": 250,
+      "restarts": 250,
+      "idempotent_replays": 10,
+      "conflicts409": 10
+    }
+  },
+  "corrections": [
+    "Native actor context uses domain connection ownership; cross-tenant document reads reject before role shortcuts.",
+    "Derived requirement versions use trusted source mapping and current source ACL for direct reads and dependency closure; generic requirement namespace writes rejected.",
+    "Validate snapshot base and source before encoding; invalid scalar/nested values422 with no native write.",
+    "Initial external240s SSH timeout retained; diagnostic same-source run completed with password-hash progress; no password-cost reduction.",
+    "Raw first failure stderr remains in private receipt; published JSON escapes one ASCII character in a library identifier to preserve exact decoded diagnostic without triggering prose spelling correction."
+  ],
+  "acceptance": {
+    "1": "verified by referenced tests/review within this slice",
+    "2": "verified by referenced tests/review within this slice",
+    "3": "verified by referenced tests/review within this slice",
+    "4": "verified by referenced tests/review within this slice",
+    "5": "verified by referenced tests/review within this slice"
+  },
+  "limits": [
+    "No production deployment or database migration in this slice.",
+    "250 in-flight ASGI candidates are not250 concurrent models/builds; SQLite writes still serialize briefly.",
+    "No TCP/TLS/browser benchmark and no model/token savings claim.",
+    "Existing private-document ACL preserved; no new complex organization permissions.",
+    "Execution nodes, trusted provenance/review/release-to-issue completion, structured concurrent docs/tables, full workflow comparison, production deployment and AA baseline remain parent work."
+  ],
+  "cleanup": {
+    "server_test_directories_removed": true,
+    "production_services_changed": false,
+    "worktree_retained": "undelivered source and coordination receipts; parent work ongoing"
+  }
+}

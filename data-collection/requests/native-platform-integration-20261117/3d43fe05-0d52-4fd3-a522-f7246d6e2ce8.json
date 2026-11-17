@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "native-platform-integration-20261117",
+  "collected_at": "2026-11-17T11:29:58.064237+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-platform-integration-20261117/codex-intake-1419-20261117.json",
+      "sha256": "df77e0a7ce587b57538e0423405a2a9c998bbfcb11fd7b5bba7b42a69a74dab2",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "codex-intake-1419-20261117",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-platform-integration-20261117/dispatch-357dc931c1ca46df9f3cd3af0167302a.json",
+      "sha256": "e4cabcf872ef08bf98c1a85324fa6d6eeb6a442f9a31f98e5f71dfb58f478b9d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-357dc931c1ca46df9f3cd3af0167302a",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-platform-integration-20261117/dispatch-6d5570f142a94bfc9890d32f34f121d6.json",
+      "sha256": "350f4b2a3a5af0d83f601171d228a9f29162ab5426fb6bc51e0d540dcd19ae2c",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-6d5570f142a94bfc9890d32f34f121d6",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-platform-integration-20261117/dispatch-72fd915eb11f4feb96e89da07057fef1.json",
+      "sha256": "57f3802c54d667a635e4803dd72643b18533ad9e76288a67dd34a4d92d53f54e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-72fd915eb11f4feb96e89da07057fef1",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-platform-integration-20261117/dispatch-7a957313724f4284a99b614cb4cc6c26.json",
+      "sha256": "966c1729aeeb7cd0057b5e784d2902cfa595cec42ed524f3a74d0c9011df6c16",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-7a957313724f4284a99b614cb4cc6c26",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-platform-integration-20261117/dispatch-b3201d4ae47e4fb4ae8d2b248daa0728.json",
+      "sha256": "fdb69069aab37cd8f4af7601c981e68187b9c367f8bffa5f4d012396faf37956",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-b3201d4ae47e4fb4ae8d2b248daa0728",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-platform-integration-20261117/dispatch-b935270595644e9c829e237c1bdbf8ca.json",
+      "sha256": "0bdd923e96dcd88dbf8ceaa0dfe8c0294175389b78899f634fba0f7c64c44ff0",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-b935270595644e9c829e237c1bdbf8ca",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-platform-integration-20261117/kuafu-1538c99c1157951354a11f86e9eec8b2fb579979.json",
+      "sha256": "a31932b978df787df6df792a047b249dfb7dd0bc9388cd2506a612f7cc06d292",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-1538c99c1157951354a11f86e9eec8b2fb579979",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-platform-integration-20261117/kuafu-81ab725213913a20a0cea5a8a030c3a84331e3c9.json",
+      "sha256": "24139a073e5a847085b019e47a24f72e2675a3d84053ceab66666b1c1745e389",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-81ab725213913a20a0cea5a8a030c3a84331e3c9",
+      "origin": "authenticated_host_role"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1419,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1419"
+}

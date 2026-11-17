@@ -125,8 +125,11 @@ def _request(
 
 def status(args: argparse.Namespace) -> dict[str, Any]:
     health = _request(args.api, "GET", "/api/v1/health", actor=args.actor, token=args.token)
-    gitea = _request(args.api, "GET", "/api/v1/gitea/status", actor=args.actor, token=args.token)
-    return {"health": health, "gitea": gitea}
+    capabilities = _request(args.api, "GET", "/api/v1/capabilities", actor=args.actor, token=args.token)
+    result = {"health": health, "capabilities": capabilities}
+    if capabilities.get("git"):
+        result["gitea"] = _request(args.api, "GET", "/api/v1/gitea/status", actor=args.actor, token=args.token)
+    return result
 
 
 def context(args: argparse.Namespace) -> dict[str, Any]:

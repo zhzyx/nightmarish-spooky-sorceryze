@@ -1,0 +1,110 @@
+{
+  "issue": "github:zhzyx/nightmarish-spooky-sorceryze#1419",
+  "bug": "#1421",
+  "source_base": "4b1ca40e3f48c0b766bd9768865412be0ee2d5d0",
+  "authorization": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+  "state": "implementation and local validation; parent independent review and server acceptance pending",
+  "path_basis": "repository root",
+  "source_bindings": {
+    "customizations/components/tianxuan/server/NATIVE_API.md": "0f1f24b5e6f794f2352acf2a33a961da82e07c22c0669e365f2d33207811e140",
+    "customizations/components/tianxuan/server/access_control.py": "307468b400f1b03b4f16f0d040470092238745f869c17aa0fa6cba2fd7eb120f",
+    "customizations/components/tianxuan/server/api.py": "a88dd5d0632eca38b39a5a494da1a8f473a731b67dbe362a792184bd53d101dd",
+    "customizations/components/tianxuan/server/gateway.py": "7268c84b8480621baa0be3e4b4b3d4c3159df0a39bd84fe9daa228fe8e20bb6e",
+    "customizations/components/tianxuan/server/main.py": "0f7547d1683504f4339f40c813715704e1abda002f50df4d1f96bd1bb0e10f22",
+    "customizations/components/tianxuan/server/native_api.py": "6c01a0d52ae21227867183808b2eb8567b7d610e1da2db9b03f7d7527088f1f3",
+    "customizations/components/tianxuan/server/test_api_gateway.py": "07b3fc0b0352af53231482cf099af7eb81507cfc6a2bde4f985846f1f817f05e",
+    "customizations/components/tianxuan/server/test_api_tenant_mutations.py": "3d5191fe976f048fc3d1e9eed744281471308a702eef2efb6edd76a5d971c60d",
+    "customizations/components/tianxuan/server/test_gateway.py": "9ab12bc6b7e3f606c54b1f1a03ae69e9a1fb214b5b70ffe9d85e9fa3cdc7d039",
+    "customizations/components/tianxuan/server/test_main_app.py": "92bd99fd04270ebec606aa9f43d578bd458768945aa31bd990fc5807644f8886",
+    "customizations/components/tianxuan/server/test_tianxuan_boundary.py": "e546851621d0272cc96a5c6ebec4f7ea4fdedb956fa4676c5d5ece6d10934329",
+    "customizations/components/tianxuan/server/tianshu_bridge.py": "072812f9933019b9cbcfcbd2a2016f29c0e8dd6f210100f5d322e12b114d0591",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "0f2103550533a47599b14fc661f2adce225caef3e4dab1f85017dd1df97514c2",
+    "customizations/components/tianxuan/server/test_native_platform.py": "11a662fafd82825b45e4693985feb462ac80bb155cdc6e563a7333682114cad1"
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scopes": [
+      "native-http-input-boundary",
+      "content-storage-integrity"
+    ],
+    "verified_lessons": []
+  },
+  "tests": [
+    {
+      "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -m pytest customizations/components/tianxuan/server -q",
+      "result": "508 passed, 46 subtests passed, 1 Starlette httpx deprecation warning",
+      "seconds": 105.24,
+      "scope": "full server regression before final Unicode snapshot boundary guard"
+    },
+    {
+      "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -m pytest customizations/components/tianxuan/server/test_native_platform.py -q",
+      "result": "6 passed, 1 deprecation warning",
+      "seconds": 1.9,
+      "scope": "final source including Unicode input guard, native-base conflict and second-version replay"
+    },
+    {
+      "command": "py -m ruff check customizations/components/tianxuan/server",
+      "result": "passed"
+    },
+    {
+      "command": "py -m mypy main.py native_api.py gateway.py api.py tianshu_bridge.py access_control.py (server directory paths, MYPYPATH server;duobao)",
+      "result": "Success: no issues found in 6 source files"
+    },
+    {
+      "command": "pytest test_native_platform.py test_native_api.py test_ws.py test_api_auth_mode.py test_access_control.py -q (server paths, tx-venv Python)",
+      "result": "40 passed, 1 deprecation warning",
+      "seconds": 13.64,
+      "scope": "final source after native legacy actor HTTP/WS rejection; valid Bearer websocket verified"
+    }
+  ],
+  "coverage": [
+    "real FastAPI ASGI HTTP registration and session authentication, document edit/comments/history/AI-view, requirement ticket split and progress",
+    "native main startup with Git constructors forbidden and invalid Git-only environment",
+    "native exact source/version/base binding and no approval/done",
+    "cross-org document, websocket and snapshot denial",
+    "mock model upstream accounting, spoof headers/usage tenant denial, session revocation, production strict key and role checks",
+    "SQLite WAL cross-connection coherent read during concurrent issue mutation",
+    "native snapshot and auth database restart, immutable historical replay",
+    "shared connection lock ownership for actor_context"
+  ],
+  "corrections": [
+    {
+      "before": "test_native_platform foreign organization admin GET /docs/{id} returned 200",
+      "cause": "_can_read omitted tenant ownership check",
+      "after": "_require_tenant_doc runs before admin/visibility exceptions; HTTP and websocket now deny foreign tenant"
+    },
+    {
+      "before": "parent Linux250 concurrent API run reproduced sqlite3.InterfaceError at native_api identity private _tenant_of",
+      "evidence": "data-collection/native-platform-capacity-failure-1419.json",
+      "cause": "private helper bypassed shared connection ownership",
+      "after": "public actor_context uses _connection_call lock; native API, gateway and production middleware use it; parent reruns Linux250 exact source"
+    },
+    {
+      "before": "Windows boundary regression TemporaryDirectory cleanup failed due open sqlite observer",
+      "after": "test observer wrapped in contextlib.closing; full regression passed"
+    },
+    {
+      "before": "parent review noted native restored routes inherited explicit Git compatibility actor header/query bypass",
+      "after": "native_only disables HTTP X-Actor and WS actor query even when compatibility env=1; final40 regressions pass; Git compatibility preserved"
+    }
+  ],
+  "method_proposal": {
+    "action": "When mounting authenticated HTTP adapters, audit every private domain DB helper and add a lock-contention test plus cross-tenant read denial before enabling routes.",
+    "conditions": "Tianxuan shared SQLite connection and threadpool HTTP adapters",
+    "counterexample": "NativeStore opens independent per-operation connections and does not use domain shared-connection lock",
+    "falsification": "A held domain connection lock must prevent actor_context completion; foreign org admin must fail document reads"
+  },
+  "limits": [
+    "All model calls use deterministic httpx.MockTransport; no external billable calls or real-model acceptance.",
+    "No production deployment, commit, push or Issue closure by this worker.",
+    "Snapshot is exact coherent read instant, not distributed transaction freezing live editor; independent native base checks remain conservative.",
+    "Parent owns independent review, Linux server capacity rerun, delivery and whole-platform acceptance."
+  ],
+  "cleanup": {
+    "installed_packages": [],
+    "production_changes": [],
+    "temporary_branches_created": [],
+    "temporary_files_in_repository": [],
+    "retained": "Implementation, tests and evidence retained for parent review; pytest OS temp directories are runner-owned and may retain failed-run diagnostics until parent finishes delivery."
+  }
+}

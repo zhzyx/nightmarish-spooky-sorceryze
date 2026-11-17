@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-cae3613f172aff97f7b70c9d93929c05385ff884",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-platform-integration-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1419",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d9ea943927be9b93d237735ec9dc1544f32cc1836db6b41cf51d8403e4e0e726",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1419",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1421",
+    "action": "validation",
+    "detection_head": "04fcdb5f1f0e301f179e0581944accee382a2496",
+    "context_sha256": "d2bbf1943fc949c8cf3fbe8f38fbee3a21a2a120794dd9208bbe8e7177dcadcf",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "data-collection/native-platform-final-regression-1419.json",
+    "diagnosis": "Initial SSH harness240s timeout had no completion receipt. Same-source diagnostic run completed141tests44subtests, elapsed212.72s including pytest startup. Timed stacks show repeated password hashing and continuing progress; no deadlock demonstrated. Container removed; no production service change or password-work reduction.",
+    "next_action": "Preserve first timeout and diagnostic evidence; run final capacity separately, then exact-source formal delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T11:32:14.948276+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T11:39:25.385578+00:00",
+  "sha256": "cc17e0fa3ee5f79ff0c09ed2acaff7ef99c16b206cb7bb79d5f1eb53fb0580e7"
+}

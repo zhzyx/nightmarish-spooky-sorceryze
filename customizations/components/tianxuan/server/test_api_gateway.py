@@ -8,7 +8,16 @@ from fastapi.testclient import TestClient
 from gateway import ModelGateway
 from tianxuan_core import Tianxuan
 
-HEADERS = {"X-Model-Key": "secret-key", "X-Tenant": "tenant-1", "X-Actor": "actor-1"}
+
+def authenticated_client(gateway):
+    store = Tianxuan(":memory:")
+    user = store.register("org", "model@example.invalid", "password123")
+    client = TestClient(create_app(store, gateway=gateway))
+    client.headers["Authorization"] = "Bearer " + store.issue_session(user["user_id"])
+    return client
+
+
+HEADERS = {"X-Model-Key": "secret-key"}
 
 
 def _transport() -> httpx.MockTransport:
@@ -29,7 +38,7 @@ def _transport() -> httpx.MockTransport:
 
 def test_model_router_is_mounted_and_meters_usage() -> None:
     gateway = ModelGateway(":memory:", transport=_transport())
-    client = TestClient(create_app(Tianxuan(":memory:"), gateway=gateway))
+    client = authenticated_client(gateway)
 
     response = client.post(
         "/api/v1/models/chat",
@@ -46,7 +55,9 @@ def test_model_router_is_mounted_and_meters_usage() -> None:
     assert body["usage"]["total_tokens"] == 5
     assert "secret-key" not in response.text
 
-    usage = client.get("/api/v1/models/usage", params={"tenant_id": "tenant-1"})
+    usage = client.get(
+        "/api/v1/models/usage",
+    )
     assert usage.status_code == 200, usage.text
     totals = usage.json()["totals"]
     assert totals["calls"] == 1
@@ -55,10 +66,10 @@ def test_model_router_is_mounted_and_meters_usage() -> None:
 
 def test_model_router_rejects_missing_key() -> None:
     gateway = ModelGateway(":memory:", transport=_transport())
-    client = TestClient(create_app(Tianxuan(":memory:"), gateway=gateway))
+    client = authenticated_client(gateway)
     response = client.post(
         "/api/v1/models/chat",
-        headers={"X-Tenant": "tenant-1", "X-Actor": "actor-1"},
+        headers={},
         json={"model": "m", "messages": [{"role": "user", "content": "x"}], "base_url": "https://model.example/v1"},
     )
     assert response.status_code == 400, response.text
@@ -66,4 +77,9 @@ def test_model_router_rejects_missing_key() -> None:
 
 def test_model_router_absent_without_gateway() -> None:
     client = TestClient(create_app(Tianxuan(":memory:")))
-    assert client.get("/api/v1/models/usage", params={"tenant_id": "tenant-1"}).status_code == 404
+    assert (
+        client.get(
+            "/api/v1/models/usage",
+        ).status_code
+        == 404
+    )
