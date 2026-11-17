@@ -1,0 +1,134 @@
+{
+  "schema": 1,
+  "issue": 1444,
+  "reviewer": "independent-native-workflow-review2",
+  "verdict": "source_fixes_pass_business_acceptance_incomplete",
+  "source_sha256": {
+    "customizations/components/tianxuan/duobao/native_check_inputs.py": "ddefa8b940dbf201e59c0ee9f1b69b02c390146ac9357425dec12bd3391b344d",
+    "customizations/components/tianxuan/duobao/native_check_runner.py": "93a933d4cced3d1c34d991f3814119945ff6b448a2f106e097d8790f7ed98f8f",
+    "customizations/components/tianxuan/duobao/native_evidence.py": "c0497cae5a43cc653b2135dcc99cda3bbd0282b6c9b50066de9759c12f24be1d",
+    "customizations/components/tianxuan/duobao/native_release.py": "2ca0a797a44d01fe6852b4c2b0089ecaa5cbcbe5e36dea98111eeb4cae51903b",
+    "customizations/components/tianxuan/duobao/native_store.py": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+    "customizations/components/tianxuan/duobao/native_workspace.py": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+    "customizations/components/tianxuan/duobao/test_native_check_inputs.py": "d5d6eee1ebe6b840511e20dcb281a6d99c02409a38c832067d10e5005bf4856b",
+    "customizations/components/tianxuan/server/api.py": "e9cf3ea7ddf6041ff2b462dfa2ba0d341827e34b7600cac846a4d0dc2f09e8c7",
+    "customizations/components/tianxuan/server/native_api.py": "ee387cbf28890d1a5a85025744e6323daf98f9e2ee3a66713bbbb4ebb5a78184",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "5bdb687f1904ea5d27e5ea84b0bd6526b1179ea90ea2f9b6b2ac6922d831153d",
+    "customizations/components/tianxuan/sinan-workorders/README.md": "2b28055d1fc884e93080a07d351a5e64e8543ff450a6456e56f4e75cf661951f",
+    "customizations/components/tianxuan/sinan-workorders/conftest.py": "c37dc8303d58efd8fb4302254c4fcfd88ea729255fba2af4b5453129d8654e37",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "dae76fa5f294c1b08dcfd9e0bb43134d7d3848db9889ddaaf99adedcfe744f57",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "65c66cd9bf2b136dbab67c35f4074940f4bbe750a907f8773a43d579648dd771",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "63ae67641dcfd156c267afa7f1188c7a54a53cea908f10a5b60ef541a9426029",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "be048a19aaca7cea1e1dce1fae1ebbe60b7b94a8def4e56df7826abed2b8a9cc",
+    "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs": "676f3d4c8797aab5878a7eb66f3c476f09b7d903e25606a55fbdfded819e8654",
+    "tools/ainative/owned_process.py": "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78",
+    "tools/editor_provenance_process.py": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1",
+    "design-docs/native-workflow-20261117.md": "4e0ab1e5af78e0850aba7f035b4052d0f72e346f0a48f339267290409355600f",
+    "tools/native_host_inputs.json": "605a456ac445cc7801c879829a1daad35a8368b6617ba8485917828b474cbef2",
+    "customizations/components/tianxuan/sinan-workorders/build-impact.json": "e9907c89f44a471af42e26ee3ba31b04fe19ac518b7b02d5fed6de75527c5adb"
+  },
+  "independent_evidence": {
+    "original_R5_probe": [
+      "start A",
+      "start B",
+      "terminal B",
+      "accepted B",
+      "start C",
+      "terminal C",
+      "accepted C",
+      "observe B=accepted C=accepted A=running",
+      "terminal A",
+      "accepted A"
+    ],
+    "callback_cancel": "NativeStoreError: Issue execution is stopped",
+    "callback_definition": "NativeStoreError: Task definition changed",
+    "callback_acl": "PermissionDenied: no access to document: doc_e45bbf4ec9e247339883c575bbf9aab9",
+    "before_sql_cancel": "NativeStoreError: Issue execution is stopped",
+    "before_sql_definition": "NativeStoreError: Task definition changed",
+    "before_sql_acl": "PermissionDenied: no access to document: doc_188d8964a5814b9497a6902217dfd5ee",
+    "cross_process_guard_and_postcommit_replay": "Both independent SQLite writer processes rejected while guard held; selected visible before guard exit; injected postcommit exception replay recovered same receipt and completed",
+    "build_input_blobs": "All 19 canonical Git blob hashes match",
+    "actual_SCons_graph": {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "SCons",
+        "-n",
+        "-Q",
+        "gonggong_native_probe=C:\\Users\\ROG\\AppData\\Local\\Temp\\native-review2-graph-9ww9xnq_\\graph.json",
+        "accesskit=no",
+        "angle=no",
+        "d3d12=no",
+        "debug_symbols=no",
+        "dev_mode=yes",
+        "platform=windows",
+        "target=editor"
+      ],
+      "count": 9378,
+      "new_host_files": [
+        "customizations/components/tianxuan/sinan-workorders/conftest.py",
+        "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs",
+        "customizations/components/tianxuan/sinan-workorders/native_worker.py",
+        "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py"
+      ],
+      "overlap": [],
+      "graph_sha256": "21ce8469c61afe1594dbb8f14c3dcfd42423c5bb855cc3a3ccda85f2d15e2825",
+      "compilation_performed": false
+    },
+    "original_R1_R2_probe": {
+      "eligible_later_task_reserved": true,
+      "unavailable_head_reserved": false,
+      "foreign_active": [
+        {
+          "ticket": "occupied-slot-0",
+          "reads": [],
+          "writes": []
+        }
+      ]
+    },
+    "event_arrives_during_advance": "New accepted B event was retained beyond A snapshot, consumed once by next real invocation, subsequent duplicate invoke no-op",
+    "concurrent_duplicate_event": "Two actual concurrent advance invocations returned identical child key; one durable child and one consumed marker",
+    "private_pending_event": "Current ACL hides event completely and does not call resolver"
+  },
+  "pytest": "24 passed, 1 Starlette deprecation warning in 23.65s; includes actual authenticated Node HTTP A/B->C and replay",
+  "R1_R7": "All seven original defects verified fixed through source inspection, independently executed regression suite, original R1/R2/R5 replay and additional adversarial probes. R6 isolated mode is public HTTP behavior; default internal compatibility mode still raises.",
+  "findings": [],
+  "limits": [
+    "No production/model/provider/deployment/commit/push performed.",
+    "Windows independently executed; Linux and 250-load reports are parent evidence, not independently reproduced here.",
+    "Same-product semantic integration and explicit managed-definition replacement are still absent. Design complete behavior names Heqi real-conflict integration and definition new versions, so these cannot be silently treated as full design acceptance. Track exact remaining acceptance in parent/subissue.",
+    "Live CLI/API model A/B comparison in criterion 6 remains open; deterministic fixture cannot satisfy it.",
+    "Cross-process probe proves writer exclusion using actual separate SQLite processes plus native selection visibility before domain unlock; full multi-coordinator stress and Linux/250-load were not independently rerun.",
+    "Unknown independent-review reconciliation remains fail-closed without successful recovery independently verified."
+  ],
+  "method_learning": {
+    "recalled": "editor-dependency-handoff",
+    "applied": [
+      "await-terminal-observers",
+      "bind-consumer-release",
+      "review-context-and-source-evidence"
+    ],
+    "feedback": "Independently verify guard remains held through actual native commit, and inject postcommit domain failure to distinguish durable selection from transport failure."
+  },
+  "remaining_acceptance": [
+    "Real same-product content conflict integration through Heqi and independent acceptance",
+    "Explicit managed-definition revision/replacement lifecycle",
+    "Criterion 6 real CLI/API provider A/B comparison with actual or unknown usage and time/wait/reread/check evidence",
+    "Full 1444 acceptance remains open; parent consumers and deployment separately remain open"
+  ],
+  "reviewed_at": "2026-11-17T17:04:26.308154+00:00",
+  "R1_R7_status": {
+    "R1": "fixed on reviewed source; independently verified",
+    "R2": "fixed on reviewed source; independently verified",
+    "R3": "fixed on reviewed source; independently verified",
+    "R4": "fixed on reviewed source; independently verified",
+    "R5": "fixed on reviewed source; independently verified",
+    "R6": "fixed on reviewed source; independently verified",
+    "R7": "fixed on reviewed source; independently verified"
+  },
+  "private_original_sha256": "71c50247ccf50adbc16fda52ff1b64a99405137e6691275c82785cd171dc27f9",
+  "authority": "Independent native agent real terminal reconciled through bound Sinan host"
+}

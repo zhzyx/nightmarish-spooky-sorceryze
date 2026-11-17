@@ -79,6 +79,9 @@ CREATE TABLE IF NOT EXISTS doc_issue_links (
   created_by TEXT NOT NULL, created_at TEXT NOT NULL,
   UNIQUE (tenant_id, doc_id, issue_id)
 );
+CREATE TABLE IF NOT EXISTS native_managed_issues (
+  issue_id TEXT PRIMARY KEY, definition TEXT NOT NULL, acceptance TEXT
+);
 CREATE INDEX IF NOT EXISTS idx_doc_issue_links_issue ON doc_issue_links(tenant_id, issue_id);
 CREATE TABLE IF NOT EXISTS import_jobs (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, actor TEXT NOT NULL,
@@ -1184,7 +1187,37 @@ class Tianxuan:
             sql += " AND requirement_id = ?"
             args.append(requirement_id)
         rows = self.db.execute(sql + " ORDER BY number", args).fetchall()
-        return [dict(row) for row in rows]
+        return self._visible_issues(actor, rows)
+
+    def _visible_issues(self, actor: str, rows: list[sqlite3.Row]) -> list[dict[str, Any]]:
+        visible = []
+        for row in rows:
+            try:
+                self._require_tenant_issue(actor, row["id"])
+            except (NotFound, PermissionDenied):
+                continue
+            visible.append(dict(row))
+        return visible
+
+    @_connection_call
+    def issue_snapshot(self, actor: str, issue_id: str, *, write: bool = False) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN")
+        if write:
+            self._require_editor(actor)
+        issue = self._require_tenant_issue(actor, issue_id, write=write)
+        fields = ("id", "tenant_id", "parent_id", "type", "title", "body_md", "acceptance", "requirement_id")
+        definition = {key: issue[key] for key in fields}
+        ancestors = []
+        current: dict[str, Any] | None = issue
+        while current:
+            if current["requirement_id"]:
+                doc = self.get_doc_shared(actor, current["requirement_id"], write=write)
+                ancestors.append({key: doc[key] for key in ("id", "title", "body_md", "kind")})
+            current = self.get_issue(current["parent_id"]) if current["parent_id"] else None
+        definition["requirements"] = ancestors
+        encoded = json.dumps(definition, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+        return {"definition": definition, "revision": hashlib.sha256(encoded.encode()).hexdigest()}
 
     @_connection_call
     def actor_context(self, actor: str) -> dict[str, str]:
@@ -1384,7 +1417,7 @@ class Tianxuan:
             "WHERE l.tenant_id = ? AND l.doc_id = ? ORDER BY i.number",
             (tenant_id, doc_id),
         ).fetchall()
-        return [dict(row) for row in rows]
+        return self._visible_issues(actor, rows)
 
     @_connection_call
     def list_issue_docs(self, actor: str, issue_id: str) -> list[dict[str, Any]]:
@@ -1491,6 +1524,11 @@ class Tianxuan:
     ) -> dict[str, Any]:
         self._require_editor(actor)
         issue = self._require_tenant_issue(actor, issue_id, write=True)
+        if (
+            to_status == "done"
+            and self.db.execute("SELECT 1 FROM native_managed_issues WHERE issue_id=?", (issue_id,)).fetchone()
+        ):
+            raise TransitionRejected("native managed completion requires trusted workflow acceptance")
         current = issue["status"]
         if to_status not in ISSUE_TRANSITIONS.get(current, set()):
             raise TransitionRejected(f"{current} -> {to_status} is not allowed")
@@ -2070,6 +2108,13 @@ class Tianxuan:
             self._require_issue_references(actor, payload["requirement_id"], payload["parent_id"], write=True)
         if name == "issue.transition":
             self._require_tenant_issue(actor, payload["issue_id"], write=True)
+            if (
+                payload["to_status"] == "done"
+                and self.db.execute(
+                    "SELECT 1 FROM native_managed_issues WHERE issue_id=?", (payload["issue_id"],)
+                ).fetchone()
+            ):
+                raise TransitionRejected("native managed completion requires trusted workflow acceptance")
         if result is None:
             return
         if name in ("doc.create", "doc.update", "requirement.create"):

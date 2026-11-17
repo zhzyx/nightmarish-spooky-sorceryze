@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "event_id": "request-native-workflow-1444",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-workflow-20261117",
+  "kind": "request",
+  "occurred_at": "2026-11-17T15:23:32.959985+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1444",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_readback": {
+      "body": "<!-- gonggong-request:native-workflow-20261117 -->\n\n需求文档：`design-docs/native-workflow-20261117.md`\n\n# 原生工单到交付的连续执行\n\n需求 ID：native-workflow-20261117。父目标 #1382；真实子 Issue 由本次入口创建并回读后追加。路径基准为仓库根。\n\n本项承接已验收的天璇原生平台、多宝版本/工作目录/检查/发布；复用现有司南 `dispatchEvent` 与 `selectModel`，不新建协调 Agent。用户授权要求端到端 AI 效率，Git 仅为本实现留底，运行时不得要求仓库、Git 可执行文件或 GitHub。#951/#1343 的在途候选及渲染逐帧能力保持原责任。\n\n## 完整行为\n\n认证组织成员授权现有原生工单，以固定需求、验收、选定内容修订、允许写入范围和已验收依赖形成任务合同。司南在真实事件到达时组织可用节点和模型；真实工作者在独立普通文件目录生产，返回可回读终态及候选。合契处理真实内容冲突，原生检查器执行验证，独立审查者和阎罗通过 NativeRelease 完成精确内容选择及业务验收，随后原生工单、需求进度和依赖放行落库。A/B 并行生产、C 依赖两者集成是本项的完整验收链，不把仅来源适配或仅派发记录当作完成。\n\n## 合同与信任\n\n- 来源由当前认证 actor 解析 tenant；所有工单、祖先需求、文档关联及历史回读核验当前 ACL。现有 `issue.list` 和 `list_doc_issues` 必须修正同租户私有需求的可见性缺口；内部无 actor 的 get_issue 不直接暴露为新来源。\n- 定义修订包括原始诉求/验收/授权/固定输入/依赖验收，不包括 status、updated_at、进度等执行自身产生的变化。真正定义或授权改变需要新版本；无关模块和操作进度不推翻既有任务。\n- 依赖就绪来自精确业务验收记录，不信任单个 done 字符串或进程退出。拒绝循环、跨组织依赖、过期及撤回依据。未知状态保留占用。\n- 短事务持久化 reservation 和启动意图；模型、进程、构建、网络和检查均在事务/协调锁之外执行。采用既有 Sinan 的模型能力/显式偏好选择，节点实际容量和持久等待顺序/老化由宿主提供；不承诺无限物理并发。\n- 资源冲突描述独立任务目录和实际共享的不可版本化资源，不将全局 main 或整个模块锁成制作队列。NativeStore 负责对象/模块修订冲突；当前普通文件生产无法证明完整对象读取，因此 collect 沿用 reads=None，不能相信模型自报空读取集合。\n- 固定输入及允许写入范围由宿主保存；工作区清单不是权限。收集时拒绝范围外修改、派生需求源修改和非法路径。凭据、数据库与宿主安装在工作区外；不把可信本地工具称为恶意代码沙盒。\n- 节点/profile/命令由可信安装选择，任务不能提交任意可执行文件、宿主路径或 actor。当前已准入角色沿既有宿主凭据与批准工作；不激活 `tianxuan/agents` 中尚未准入候选，不复制模型路由或绕过审查。\n- 终态须有真实进程/session 结束、必要 transcript 完成、候选及回执落库。运行中、已确认失败、取消、结果未知分别保存；未知启动/断连不自动释放或重试，不仅凭 PID 接管。\n- 独立 reviewer 与 contributor 由可信执行绑定判断，模型输出不能自证通过。复用 NativeCheckRunner/NativeRelease 的有效证据、独立批准、撤回、过期及 CAS。缺准入的自动审查保留待办，不伪造批准。\n- 原生托管工单的 done 入口在 domain/API/tool 中统一要求完整验收依据，保留无托管绑定的旧人工工单语义。内容选择不冒充实际安装；需要消费者验收的合同必须有对应回执。\n- 业务状态、进度与事件 outbox 在领域数据库内原子更新；跨原生库/领域库失败以稳定操作键和实际回读恢复，不声称跨库事务。真实完成事件触发下一轮；无定时扫描。\n\n## 实施与验收\n\n本项是一个不可拆开的端到端行为；代码可在领域状态、派发薄适配、工作者绑定之间隔离实现，统一交付和验收。优先复用 tianxuan_core、原生多宝和进程所有权工具；必要新增实现位于已有 sinan-workorders 宿主模块，不改冻结框架。\n\n1. 无 Git fixture 中实际 Node 司南入口和 Python 生产/检查进程运行 A/B→C。真实启动重叠、固定输入、实际输出、独立审查/发布、工单完成及需求进度可回读；重启后稳定键重放不重复启动。\n2. 当前/撤回/只读/祖先/跨组织 ACL 在列表、关联、来源、API/tool、依赖和结束中一致；运营状态更新不使合同过期，真实验收/授权改变必须拒绝旧合同。\n3. 无关内容持续更新不要求重新制作，范围外写入、冲突、未知读、路径别名和预算越界拒绝。真实失败/超时/取消/回执丢失不误放行依赖；未知占用保留并有明确恢复入口。\n4. 真实同进程与跨进程竞争、容量和持久公平次序，不把慢任务放在全局协调锁内。250 在途覆盖按实际节点容量验收，不等于 250 模型同时运行。\n5. 发布至关单跨库中断与幂等恢复、伪造终态/审查/依赖、直接 done 绕过、撤回/过期/CAS 冲突的反例通过。父工单仅完整验收后结束。\n6. 独立审查、Windows/Linux 实测；确定性进程结果和真实模型结果分开。后续在该链路运行同等质量的真实 CLI/API A/B，记录 provider 报告 token 或 unknown、总耗时/等待/重复读取与检查，不估算收益。\n\n## 构建与回退\n\nplacement=host_tool，实际输入为认证领域存储、NativeStore、已准入宿主/节点配置、固定任务合同和既有 Sinan 算法。宿主接口为有界命令/API/事件；从正常入口实测实际进程及回执。Python/Node 服务不进入渲染逐帧或生成头输入，若新增实际消费者须据实核验。\n\n回退停用新派发入口并保留数据库、已接收合同、终态、未知占用及必要目录；既有业务不自动切换有效生产安装。服务器部署/迁移、浏览器/Godot 完整交互、文档表格与 AA 基线仍在父项验收，本项不凭进程 fixture 宣称全部完成。\n\n\n执行授权来源：codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117\n\n<!-- gonggong-host-git:Sail-Li -->\n",
+      "number": 1444,
+      "state": "OPEN",
+      "title": "原生工作链路：司南派发、真实生产与审查交付闭环",
+      "updatedAt": "2026-11-17T15:02:21Z",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1444"
+    },
+    "authorization": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "scope": "local implementation and tests; parent owns Git/live-provider delivery"
+  },
+  "evidence_refs": [
+    "dispatch-3075084a0bf746628a3981f2ddf9d1bf"
+  ],
+  "sha256": "99d22826f27a74dbea67e4e056a2e8f730a4cfa4347829628a8d3ecd31d8e7cf"
+}

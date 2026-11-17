@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-2f2cd49dd1631b1e90fe46edcc9072d91e90fa551ddfec4740ec1d579870e084",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1444",
+  "occurred_at": "2026-11-17T17:07:42.530510+00:00",
+  "evidence_refs": [
+    "request-native-workflow-1444",
+    "learn-02ba105b195bc93ccf69bebe1a1f25ba0346ee9775a02d74fb626e0aa471dd40"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 20,
+    "previous": "e5a858249659581b71a9ded487d3566fd5f50a835a93e91b8f9ecc7db0e573ec",
+    "action": "applied",
+    "details": {
+      "task": "#1444 independently reviewed source increment and seven reproduced fixes",
+      "observed": "Real terminal callback and exact hashes verified; independent cancellation/private-source/batch-barrier probes found seven defects despite fixture passes. Fixes independently reverified, Windows/Linux and250reservation evidence bound. Source increment remains distinct from full Heqi/definition/provider acceptance; original issue stays open."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-workflow-increment-1444.json",
+        "sha256": "60777ffce62ac6c2098668e7b93e49fccfa2d3f2c19e9e4cd63ccff7de575bb8"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-workflow-20261117/request-native-workflow-1444.json",
+      "sha256": "99d22826f27a74dbea67e4e056a2e8f730a4cfa4347829628a8d3ecd31d8e7cf"
+    }
+  },
+  "sha256": "17df074b75ea11ac8d2ac8fc82a9a7d9a4fea007ced65f5171228f703a1272a4"
+}

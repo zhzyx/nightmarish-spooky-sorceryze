@@ -1,0 +1,13 @@
+{
+  "issue": 1444,
+  "kind": "actual pre-fix regression reproduction",
+  "observed": {
+    "direct_scoped_read_denied": true,
+    "list_exposes_private_issue": true,
+    "tool_exposes_private_issue": true
+  },
+  "source_sha256": "99936b9f608077635fc95fa98f068fd6d7f24193c4a740747d1e1f1b8805f974",
+  "isolation": "Disposable domain database, test-only identities, no production records or network/model use",
+  "temporary_directory_removed": true,
+  "required_fix": "Shared issue list and linked-doc list/snapshot must filter current direct/ancestor requirement ACL; workflow source cannot consume tenant-only results."
+}

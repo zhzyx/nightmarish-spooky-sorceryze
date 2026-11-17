@@ -1,0 +1,584 @@
+"""Event driven native workflow; host installation supplies all privileged ports.
+
+SQLite reservations are short. Workers/checks/release run after domain locks end.
+Unknown intent survives restart and requires an authenticated owner receipt.
+"""
+
+from __future__ import annotations
+
+import json
+import time
+from contextlib import contextmanager
+
+from native_store import NativeStoreError, _digest, _json
+from tianxuan_core import PermissionDenied
+
+
+class NativeWorkflow:
+    def __init__(
+        self,
+        domain,
+        worker,
+        runner,
+        release,
+        authorize,
+        capacity=2,
+        catalog=None,
+        principals=None,
+        review_candidate=None,
+        installed_plan=None,
+        next_issues=None,
+        installed_target=None,
+    ):
+        if not callable(authorize) or type(capacity) is not int or not 1 <= capacity <= 1024:
+            raise NativeStoreError("Trusted authority and positive capacity required")
+        self.domain, self.worker, self.runner, self.release = domain, worker, runner, release
+        self.authorize, self.capacity = authorize, capacity
+        self.principals, self.review_candidate, self.installed_plan = principals, review_candidate, installed_plan
+        self.next_issues = next_issues
+        self.installed_target = installed_target
+        self.catalog = json.loads(_json(catalog or []))
+        with self._transaction() as db:
+            db.execute(
+                "CREATE TABLE IF NOT EXISTS native_tasks (id TEXT PRIMARY KEY, tenant TEXT NOT NULL, "
+                "issue TEXT UNIQUE NOT NULL, task TEXT NOT NULL, state TEXT NOT NULL, "
+                "ready_at REAL NOT NULL, assignment TEXT, terminal TEXT, acceptance TEXT)"
+            )
+            db.execute(
+                "CREATE TABLE IF NOT EXISTS native_outbox (id TEXT PRIMARY KEY, tenant TEXT NOT NULL, "
+                "payload TEXT NOT NULL)"
+            )
+            db.execute("CREATE TABLE IF NOT EXISTS native_outbox_consumed (id TEXT PRIMARY KEY)")
+            db.execute("CREATE TABLE IF NOT EXISTS native_workflow_reviews (task TEXT PRIMARY KEY, receipt TEXT)")
+            db.execute(
+                "CREATE TABLE IF NOT EXISTS native_workflow_targets (task TEXT PRIMARY KEY, target TEXT NOT NULL)"
+            )
+            db.execute("CREATE INDEX IF NOT EXISTS native_tasks_ready ON native_tasks(tenant,state,ready_at,id)")
+
+    @contextmanager
+    def _transaction(self):
+        with self.domain._connection_lock:
+            db = self.domain.db
+            if db.in_transaction:
+                raise NativeStoreError("Workflow requires independent transaction")
+            db.execute("BEGIN IMMEDIATE")
+            try:
+                yield db
+                db.commit()
+            except BaseException:
+                db.rollback()
+                raise
+
+    def _allow(self, actor, issue, action):
+        source = self.domain.issue_snapshot(actor, issue, write=action != "read")
+        if self.authorize(actor, issue, action) is not True:
+            raise PermissionDenied("Native workflow authority denied")
+        return source
+
+    def _row(self, db, key):
+        row = db.execute("SELECT * FROM native_tasks WHERE id=?", (key,)).fetchone()
+        if row is None:
+            raise NativeStoreError("Native task unavailable")
+        return dict(row)
+
+    def status(self, actor, key):
+        with self._transaction() as db:
+            row = self._row(db, key)
+            self._allow(actor, row["issue"], "read")
+            return row
+
+    def authorize_task(
+        self, actor, issue, *, selected, writes, dependencies, profile, product, checks, mandate, capabilities=None
+    ):
+        source = self._allow(actor, issue, "authorize")
+        if not mandate or not checks or profile not in self.worker.profiles:
+            raise NativeStoreError("Installed profile, checks and mandate required")
+        tenant = source["definition"]["tenant_id"]
+        revisions, _ = self.worker.workspace.sources(tenant, selected)
+        self._inputs_allowed(actor, revisions)
+        if not isinstance(writes, dict) or not writes or set(writes) - revisions.keys():
+            raise NativeStoreError("Writable scope must be inside fixed inputs")
+        if any(module.startswith("requirement-") for module in writes):
+            raise NativeStoreError("Requirement source cannot be writable")
+        if any(
+            value != "*" and (not isinstance(value, list) or not all(isinstance(x, str) for x in value))
+            for value in writes.values()
+        ):
+            raise NativeStoreError("Invalid writable objects")
+        installation = self.worker.installation(profile)
+        capabilities = [] if capabilities is None else capabilities
+        if (
+            not isinstance(capabilities, list)
+            or len(capabilities) > 32
+            or not all(isinstance(c, str) and c for c in capabilities)
+        ):
+            raise NativeStoreError("Invalid required capabilities")
+        producer = self.principals(actor, issue, "producer") if self.principals else actor
+        task = dict(
+            actor=actor,
+            producer=producer,
+            tenant=tenant,
+            issue=issue,
+            source=source,
+            selected=revisions,
+            writes=writes,
+            installation=installation,
+            capabilities=capabilities,
+            check_contexts={check: self.runner.context(check, "0" * 64) for check in checks},
+            dependencies=dependencies,
+            profile=profile,
+            product=product,
+            checks=checks,
+            mandate=mandate,
+        )
+        key = _digest(_json(task).encode())
+        with self._transaction() as db:
+            if self._allow(actor, issue, "authorize") != source:
+                raise NativeStoreError("Source changed")
+            for dependency, acceptance in dependencies.items():
+                row = self._row(db, dependency)
+                self._allow(actor, row["issue"], "read")
+                if row["tenant"] != tenant or row["acceptance"] != acceptance or not acceptance:
+                    raise NativeStoreError("Dependency lacks exact accepted output")
+                accepted = json.loads(acceptance)
+                if any(revisions.get(m) != r for m, r in accepted["modules"].items()):
+                    raise NativeStoreError("Dependency output must be pinned")
+            old = db.execute("SELECT id FROM native_tasks WHERE issue=?", (issue,)).fetchone()
+            if old:
+                if old["id"] != key:
+                    raise NativeStoreError("Managed definition already bound; explicit revision required")
+                return key
+            if self.domain.get_issue(issue)["status"] in {"done", "cancelled"}:
+                raise NativeStoreError("Terminal issue cannot be newly managed")
+            db.execute(
+                "INSERT INTO native_tasks VALUES (?,?,?,?,?,?,NULL,NULL,NULL)",
+                (key, tenant, issue, _json(task), "ready", time.time()),
+            )
+            db.execute("INSERT INTO native_managed_issues VALUES (?,?,NULL)", (issue, source["revision"]))
+            db.execute("UPDATE issues SET status='planned' WHERE id=?", (issue,))
+        return key
+
+    def _valid(self, actor, row):
+        task = json.loads(row["task"])
+        self._inputs_allowed(actor, task["selected"])
+        if self._allow(actor, row["issue"], "execute") != task["source"]:
+            raise NativeStoreError("Task definition changed")
+        if self.domain.get_issue(row["issue"])["status"] in {"cancelled", "blocked"}:
+            raise NativeStoreError("Issue execution is stopped")
+        for dependency, acceptance in task["dependencies"].items():
+            other = self._row(self.domain.db, dependency)
+            self._allow(actor, other["issue"], "read")
+            if other["acceptance"] != acceptance or other["state"] != "accepted":
+                raise NativeStoreError("Dependency acceptance changed")
+        return task
+
+    def _inputs_allowed(self, actor, revisions):
+        # authorize_task stores the complete exact closure, not just caller roots.
+        for module in revisions:
+            if module.startswith("requirement-"):
+                self.domain.require_native_module_read(actor, module)
+
+    def _schedulable(self, task, target="agent"):
+        return target == "agent" and any(
+            model.get("id") == task["profile"]
+            and model.get("available") is True
+            and target in model.get("targets", [])
+            and all(c in model.get("capabilities", []) for c in task["capabilities"])
+            for model in self.catalog
+        )
+
+    def inspect(self, actor):
+        with self._transaction() as db:
+            tenant = self.domain.actor_context(actor)["tenant"]
+            rows = db.execute(
+                "SELECT * FROM native_tasks WHERE tenant=? AND state='ready' ORDER BY ready_at,id LIMIT 1024", (tenant,)
+            ).fetchall()
+            items, ready, sources, active, requests = [], [], [], [], []
+            held = db.execute(
+                "SELECT id,tenant,issue FROM native_tasks WHERE state IN ('reserved','running','held') ORDER BY id LIMIT 1024"
+            ).fetchall()
+            for index, held_row in enumerate(held):
+                visible = held_row["tenant"] == tenant
+                if visible:
+                    try:
+                        self._allow(actor, held_row["issue"], "read")
+                    except PermissionDenied:
+                        visible = False
+                active.append({
+                    "ticket": held_row["id"] if visible else "occupied-slot-" + str(index),
+                    "reads": [],
+                    "writes": [str(self.worker.root / held_row["id"])] if visible else [],
+                })
+            for row in rows:
+                try:
+                    task = self._valid(actor, row)
+                except (PermissionDenied, NativeStoreError):
+                    continue
+                key = row["id"]
+                resource = str(self.worker.root / key)
+                source = {"source": key, "revision": task["source"]["revision"]}
+                sources.append(source)
+                items.append({"key": key, "source": key, "dispatchCandidate": row["state"] == "ready"})
+                if row["state"] == "ready":
+                    ready.append(key)
+                requests.append(
+                    dict(
+                        ticket=key,
+                        outcome=task["source"]["definition"]["title"],
+                        owner=actor,
+                        acceptance=task["source"]["definition"]["acceptance"] or "all criteria",
+                        authorityRef=task["mandate"],
+                        capabilities=task["capabilities"],
+                        contextRefs=[],
+                        reads=[],
+                        writes=[resource],
+                        model=task["profile"],
+                    )
+                )
+            return dict(
+                snapshot=dict(items=items, ready=ready, sourceSnapshots=sources),
+                environment=dict(catalog=self.catalog, active=active, capacity=self.capacity),
+                requests=requests,
+                produced=self._produced_visible(actor, tenant),
+            )
+
+    def _produced_visible(self, actor, tenant):
+        keys = []
+        for row in self.domain.db.execute(
+            "SELECT * FROM native_tasks WHERE tenant=? AND state='produced' ORDER BY ready_at,id LIMIT 1024", (tenant,)
+        ).fetchall():
+            try:
+                self._valid(actor, row)
+            except (PermissionDenied, NativeStoreError):
+                continue
+            keys.append(row["id"])
+        return keys
+
+    def reserve(self, actor, assignment):
+        self._dependencies_current(actor, assignment["ticket"])
+        with self._transaction() as db:
+            row = self._row(db, assignment["ticket"])
+            task = self._valid(actor, row)
+            if row["state"] != "ready":
+                return False
+            if not self._schedulable(task, assignment.get("target", "agent")):
+                return False
+            held = db.execute(
+                "SELECT count(*) FROM native_tasks WHERE state IN ('reserved','running','held')"
+            ).fetchone()[0]
+            if held >= self.capacity:
+                return False
+            earlier = db.execute(
+                "SELECT * FROM native_tasks WHERE tenant=? AND state='ready' "
+                "AND (ready_at < ? OR (ready_at=? AND id<?)) ORDER BY ready_at,id",
+                (row["tenant"], row["ready_at"], row["ready_at"], row["id"]),
+            ).fetchall()
+            for waiting in earlier:
+                try:
+                    waiting_task = self._valid(actor, waiting)
+                except (PermissionDenied, NativeStoreError):
+                    continue
+                if not self._schedulable(waiting_task):
+                    continue
+                return False  # Durable FIFO, including competing dispatcher processes.
+            expected = {"source": row["id"], "revision": task["source"]["revision"]}
+            if assignment["sourceSnapshot"] != expected or assignment["model"]["id"] != task["profile"]:
+                raise NativeStoreError("Untrusted assignment")
+            db.execute(
+                "UPDATE native_tasks SET state='reserved',assignment=? WHERE id=?", (_json(assignment), row["id"])
+            )
+            return True
+
+    def execute(self, actor, key):
+        self._dependencies_current(actor, key)
+        with self._transaction() as db:
+            row = self._row(db, key)
+            task = self._valid(actor, row)
+            if row["state"] != "reserved":
+                return row  # Unknown/running never retried.
+            db.execute("UPDATE native_tasks SET state='running' WHERE id=?", (key,))
+            db.execute("UPDATE issues SET status='in-progress' WHERE id=?", (row["issue"],))
+            self.domain._event(task["tenant"], "native.started", actor, row["issue"], {"task": key})
+        try:
+            terminal = self.worker.run(task, key)
+        except BaseException:
+            with self._transaction() as db:
+                db.execute("UPDATE native_tasks SET state='held' WHERE id=?", (key,))
+            raise
+        with self._transaction() as db:
+            current = self._row(db, key)
+            try:
+                self._valid(actor, current)
+                state = terminal["state"]
+            except (PermissionDenied, NativeStoreError):
+                state = "stopped"
+            db.execute("UPDATE native_tasks SET state=?,terminal=? WHERE id=?", (state, _json(terminal), key))
+            if state != "stopped":
+                db.execute(
+                    "UPDATE issues SET status=? WHERE id=?",
+                    ("in-review" if terminal["state"] == "produced" else "blocked", row["issue"]),
+                )
+            self.domain._event(task["tenant"], "native.terminal", actor, row["issue"], {"task": key, "state": state})
+        return {**terminal, "state": state}
+
+    def _dependencies_current(self, actor, key):
+        row = self.status(actor, key)
+        task = json.loads(row["task"])
+        for dependency, acceptance in task["dependencies"].items():
+            upstream = self.status(actor, dependency)
+            accepted = json.loads(acceptance)
+            if upstream["acceptance"] != acceptance or upstream["state"] != "accepted":
+                raise NativeStoreError("Dependency acceptance changed")
+            request = accepted["request"]
+            current = self.release.selected(task["tenant"], actor, request["product"], request["channel"])
+            if current != accepted:
+                raise NativeStoreError("Dependency release no longer current")
+
+    def reconcile(self, actor, key):
+        row = self.status(actor, key)
+        self._allow(actor, row["issue"], "reconcile")
+        if row["state"] not in {"running", "held"}:
+            return row
+        terminal = self.worker.reconcile(json.loads(row["task"]), key)
+        if terminal is None:
+            return row  # No expiry, PID takeover or automatic relaunch.
+        with self._transaction() as db:
+            current = self._row(db, key)
+            self._valid(actor, current)
+            if current["state"] in {"running", "held"}:
+                db.execute(
+                    "UPDATE native_tasks SET state=?,terminal=? WHERE id=?", (terminal["state"], _json(terminal), key)
+                )
+        return self.status(actor, key)
+
+    def advance(self, actor, *, isolate=False, exclude=()):
+        """Consume actual acceptance events. Installed graph resolver supplies issues.
+
+        Authorizing a dependent uses pinned accepted outputs returned by the installed
+        plan. Failed consumption is replayable; no background scans or model polling.
+        """
+        if not callable(self.next_issues):
+            return {"authorized": [], "errors": []} if isolate else []
+        with self._transaction() as db:
+            tenant = self.domain.actor_context(actor)["tenant"]
+            events = [
+                dict(r)
+                for r in db.execute(
+                    "SELECT * FROM native_outbox WHERE tenant=? "
+                    "AND id NOT IN (SELECT id FROM native_outbox_consumed) ORDER BY rowid",
+                    (tenant,),
+                ).fetchall()
+            ]
+        results, errors = [], []
+        for event in events:
+            if event["id"] in exclude:
+                continue
+            try:
+                self.status(actor, event["id"])
+            except PermissionDenied:
+                continue  # Preserve private pending events without exposing identifiers.
+            try:
+                issues = self.next_issues(actor, json.loads(event["payload"]))
+                if not isinstance(issues, list) or len(issues) > 1024 or not all(isinstance(i, str) for i in issues):
+                    raise NativeStoreError("Invalid installed dependency event response")
+                results.extend(self.authorize_installed(actor, issue) for issue in issues)
+                with self._transaction() as db:
+                    db.execute("INSERT OR IGNORE INTO native_outbox_consumed VALUES (?)", (event["id"],))
+            except Exception as error:
+                if not isolate:
+                    raise
+                errors.append({"event": event["id"], "reason": type(error).__name__})
+        return {"authorized": results, "errors": errors} if isolate else results
+
+    def check(self, actor, key):
+        self._dependencies_current(actor, key)
+        row = self.status(actor, key)
+        task = self._valid(actor, row)
+        if self._allow(actor, row["issue"], "check") != task["source"]:
+            raise NativeStoreError("Task definition changed")
+        if row["state"] != "produced":
+            raise NativeStoreError("Confirmed producer terminal required")
+        candidate = json.loads(row["terminal"])["candidate"]
+        if task["check_contexts"] != {check: self.runner.context(check, candidate) for check in task["checks"]}:
+            raise NativeStoreError("Authorized check installation changed")
+        checker = self.principals(actor, task["issue"], "checker") if self.principals else actor
+        return {
+            check: self.runner.execute(task["tenant"], checker, key + "-" + check, candidate, check)
+            for check in task["checks"]
+        }
+
+    def authorize_installed(self, actor, issue):
+        self._allow(actor, issue, "authorize")
+        if not callable(self.installed_plan):
+            raise NativeStoreError("No admitted native plan installed")
+        plan = self.installed_plan(actor, issue)
+        return self.authorize_task(actor, issue, **plan)
+
+    def review(self, actor, key):
+        self._dependencies_current(actor, key)
+        row = self.status(actor, key)
+        task = self._valid(actor, row)
+        self._allow(actor, row["issue"], "review")
+        if not callable(self.principals) or not callable(self.review_candidate):
+            raise NativeStoreError("Independent review installation unavailable")
+        if row["state"] != "produced":
+            raise NativeStoreError("Producer terminal required")
+        terminal = json.loads(row["terminal"])
+        reviewer = self.principals(actor, row["issue"], "reviewer")
+        if reviewer == task["producer"]:
+            raise NativeStoreError("Independent execution principal required")
+        with self.release.store._connection() as native_db:
+            previous = native_db.execute(
+                "SELECT record FROM native_release_requests WHERE tenant=? AND actor=? AND request_key=?",
+                (task["tenant"], reviewer, "review-" + key),
+            ).fetchone()
+            if previous:
+                return self.release._valid_review(native_db, task["tenant"], previous["record"])
+        facts = self.check(actor, key)
+        if any(fact["outcome"] != "passed" for fact in facts.values()):
+            raise NativeStoreError("Required content checks failed; independent review not started")
+        with self._transaction() as db:
+            if db.execute("SELECT 1 FROM native_workflow_reviews WHERE task=?", (key,)).fetchone():
+                raise NativeStoreError("Review outcome unknown; trusted reconciliation required")
+            db.execute("INSERT INTO native_workflow_reviews VALUES (?,NULL)", (key,))
+        if self.review_candidate(actor, task, terminal) is not True:
+            raise NativeStoreError("Independent candidate review not accepted")
+        self._dependencies_current(actor, key)
+        self._valid(actor, self.status(actor, key))
+        receipt = self.release.approve(
+            task["tenant"],
+            reviewer,
+            "review-" + key,
+            task["product"],
+            terminal["candidate"],
+            {c: r["evidence"] for c, r in facts.items()},
+            "Trusted independent execution accepted exact task candidate",
+        )
+        with self._transaction() as db:
+            db.execute("UPDATE native_workflow_reviews SET receipt=? WHERE task=?", (_json(receipt), key))
+        return receipt
+
+    def finish(self, actor, key):
+        """Installed delivery target only; a replay never silently rebases publication."""
+        row = self.status(actor, key)
+        self._allow(actor, row["issue"], "publish")
+        if row["state"] == "accepted":
+            return {"state": "accepted", "acceptance": json.loads(row["acceptance"])}
+        if row["state"] != "produced" or not callable(self.installed_target):
+            raise NativeStoreError("Produced candidate and admitted delivery target required")
+        with self._transaction() as db:
+            saved = db.execute("SELECT target FROM native_workflow_targets WHERE task=?", (key,)).fetchone()
+        if saved:
+            target = json.loads(saved["target"])
+        else:
+            target = self.installed_target(actor, json.loads(row["task"]))
+            if (
+                not isinstance(target, dict)
+                or set(target) != {"channel", "expected"}
+                or not isinstance(target["channel"], str)
+                or not target["channel"]
+                or len(target["channel"]) > 256
+                or (target["expected"] is not None and not isinstance(target["expected"], str))
+            ):
+                raise NativeStoreError("Invalid installed delivery target")
+            with self._transaction() as db:
+                db.execute("INSERT OR IGNORE INTO native_workflow_targets VALUES (?,?)", (key, _json(target)))
+                target = json.loads(
+                    db.execute("SELECT target FROM native_workflow_targets WHERE task=?", (key,)).fetchone()[0]
+                )
+        self.publish(actor, key, target["channel"], target["expected"])
+        accepted = self.complete(actor, key, target["channel"])
+        return {"state": "accepted", "acceptance": accepted}
+
+    def publish(self, actor, key, channel, expected):
+        self._dependencies_current(actor, key)
+        row = self.status(actor, key)
+        task = self._valid(actor, row)
+        self._allow(actor, row["issue"], "publish")
+        if not callable(self.principals):
+            raise NativeStoreError("Publisher installation unavailable")
+        review = self.review(actor, key)
+        publisher = self.principals(actor, row["issue"], "publisher")
+        return self.release.publish(
+            task["tenant"],
+            publisher,
+            "publish-" + key,
+            task["product"],
+            channel,
+            review["id"],
+            expected,
+            guard=lambda native_db: self._publication_guard(actor, key, native_db),
+        )
+
+    @contextmanager
+    def _publication_guard(self, actor, key, native_db):
+        # Native writer first, domain writer second, matching complete().
+        # Held through native commit, including other coordinator processes.
+        with self._transaction() as db:
+            row = self._row(db, key)
+            task = self._valid(actor, row)
+            self._allow(actor, row["issue"], "publish")
+            if row["state"] != "produced":
+                raise NativeStoreError("Confirmed producer terminal required")
+            for acceptance in task["dependencies"].values():
+                accepted = json.loads(acceptance)
+                request = accepted["request"]
+                if self.release.selected(task["tenant"], actor, request["product"], request["channel"]) != accepted:
+                    raise NativeStoreError("Dependency release no longer current")
+            _, policy = self.release._policy(native_db, task["tenant"], task["product"])
+            if policy["checks"] != task["check_contexts"]:
+                raise NativeStoreError("Release does not cover exact task criteria")
+            yield
+
+    def complete(self, actor, key, channel):
+        # Serialize only the short local acceptance write against native review
+        # revocation/policy/channel changes. No worker/check/network is inside.
+        # Native writer guard precedes domain lock consistently; commits remain
+        # separate, and a crash replays release readback rather than publication.
+        with self.release.store._connection(write=True):
+            return self._complete_guarded(actor, key, channel)
+
+    def _complete_guarded(self, actor, key, channel):
+        self._dependencies_current(actor, key)
+        row = self.status(actor, key)
+        task = json.loads(row["task"])
+        # NativeRelease readback verifies current approval, contributor independence,
+        # checks and policy. Caller cannot supply acceptance facts.
+        selected = self.release.selected(task["tenant"], actor, task["product"], channel)
+        terminal = json.loads(row["terminal"] or "null")
+        if (
+            not terminal
+            or terminal["state"] != "produced"
+            or not selected
+            or selected["candidate"] != terminal["candidate"]
+        ):
+            raise NativeStoreError("Exact independent release required")
+        with self.release.store._connection() as native_db:
+            _, policy = self.release._policy(native_db, task["tenant"], task["product"])
+            if policy["checks"] != task["check_contexts"]:
+                raise NativeStoreError("Release does not cover exact task criteria")
+        acceptance = _json(selected)
+        with self._transaction() as db:
+            row = self._row(db, key)
+            self._valid(actor, row)
+            self._allow(actor, row["issue"], "accept")
+            if row["state"] == "accepted":
+                if row["acceptance"] != acceptance:
+                    raise NativeStoreError("Acceptance changed")
+                return selected
+            if row["state"] != "produced":
+                raise NativeStoreError("Producer terminal required")
+            db.execute("UPDATE native_tasks SET state='accepted',acceptance=? WHERE id=?", (acceptance, key))
+            db.execute("UPDATE native_managed_issues SET acceptance=? WHERE issue_id=?", (acceptance, row["issue"]))
+            db.execute("UPDATE issues SET status='done' WHERE id=?", (row["issue"],))
+            self.domain._event(
+                task["tenant"], "native.accepted", actor, row["issue"], {"task": key, "release": selected["id"]}
+            )
+            requirement = task["source"]["definition"]["requirement_id"]
+            if requirement:
+                self.domain.sync_progress(requirement, actor=actor)
+            db.execute(
+                "INSERT INTO native_outbox VALUES (?,?,?)",
+                (key, task["tenant"], _json({"type": "dependency.changed", "reference": key})),
+            )
+        return selected
